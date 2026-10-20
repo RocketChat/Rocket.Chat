@@ -6,11 +6,11 @@ exports[`renders Default without crashing 1`] = `
     <dialog
       aria-labelledby="_r_0_-title"
       aria-modal="true"
-      class="is_View _p-1708146690 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1560934055 _mh-1075342580 _m-827969624 _p-1943363302 _b-650654186 _os-249893454 _b-1654379586 _ff-409630021 _fvn-1977619713 rcx-modal rcx-css-9ju0e2"
+      class="is_View _p-1708146690 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1560934055 _mw-1502687253 _mh-1075342580 _m-827969624 _p-1264618087 _b-650654186 _os-249893454 _b-1654379586 _ff-409630021 _fvn-1977619713 rcx-modal rcx-css-9ju0e2"
       open=""
     >
       <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-hb8b2e"
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-edzd77 rcx-css-hb8b2e"
       >
         <header
           class="is_View _d-1987097250 _f-1246374076 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 rcx-modal__header"
@@ -142,11 +142,11 @@ exports[`renders app without crashing 1`] = `
     <dialog
       aria-labelledby="_r_b_-title"
       aria-modal="true"
-      class="is_View _p-1708146690 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1560934055 _mh-1075342580 _m-827969624 _p-1943363302 _b-650654186 _os-249893454 _b-1654379586 _ff-409630021 _fvn-1977619713 rcx-modal rcx-css-9ju0e2"
+      class="is_View _p-1708146690 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1560934055 _mw-1502687253 _mh-1075342580 _m-827969624 _p-1264618087 _b-650654186 _os-249893454 _b-1654379586 _ff-409630021 _fvn-1977619713 rcx-modal rcx-css-9ju0e2"
       open=""
     >
       <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-hb8b2e"
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-edzd77 rcx-css-hb8b2e"
       >
         <header
           class="is_View _d-1987097250 _f-1246374076 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 rcx-modal__header"
@@ -210,7 +210,13 @@ exports[`renders app without crashing 1`] = `
               </div>
               <span
                 class="is_View _d-1987097250 _f-571455214 _o-1106425799 _fvn-1977619713 _a-119288947 _o-1083158629 _br-1682169757 _b-326940086 _h-568431264 _m-93279763 _to-611310301 _t-1660003422 rcx-skeleton rcx-skeleton--text"
-              />
+              >
+                <span
+                  aria-hidden="true"
+                >
+                   
+                </span>
+              </span>
               <div
                 class="rcx-box rcx-box--full rcx-css-6hwe8l rcx-css-cdnsod"
               >
@@ -281,11 +287,11 @@ exports[`renders system without crashing 1`] = `
     <dialog
       aria-labelledby="_r_l_-title"
       aria-modal="true"
-      class="is_View _p-1708146690 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1560934055 _mh-1075342580 _m-827969624 _p-1943363302 _b-650654186 _os-249893454 _b-1654379586 _ff-409630021 _fvn-1977619713 rcx-modal rcx-css-9ju0e2"
+      class="is_View _p-1708146690 _f-1069814357 _mw-354604370 _mh-1241200853 _w-1560934055 _mw-1502687253 _mh-1075342580 _m-827969624 _p-1264618087 _b-650654186 _os-249893454 _b-1654379586 _ff-409630021 _fvn-1977619713 rcx-modal rcx-css-9ju0e2"
       open=""
     >
       <div
-        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-hb8b2e"
+        class="rcx-box rcx-box--full rcx-modal__inner rcx-css-edzd77 rcx-css-hb8b2e"
       >
         <header
           class="is_View _d-1987097250 _f-1246374076 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 rcx-modal__header"

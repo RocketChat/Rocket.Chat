@@ -39,7 +39,7 @@ exports[`AttributesForm renders NewAttribute without crashing 1`] = `
                 class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field rcx-css-j4xsg rcx-css-1fuhgt0"
               >
                 <label
-                  class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
+                  class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label"
                   for="_r_1_"
                 >
                   Name
@@ -56,7 +56,7 @@ exports[`AttributesForm renders NewAttribute without crashing 1`] = `
                   <input
                     aria-invalid="false"
                     aria-required="true"
-                    class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box"
+                    class="is_View _m-2017216831 _p-1980417108 _b-95402947 _os-249893454 _ow-485594423 _ff-409630021 _fvn-1977619713 _p-1021290656 _d-1985012034 _f-1440749467 _w-226740859 _va-1675321343 _ws-973912173 _wb-1577688049 _o-1119039191 _to-1727917045 _ls-1782815796 _fs-347291933 _fw-289166179 _lh-1925956564 _c-277036852 _cc-365372135 _br-1975385178 _b-2079286388 _bs-927417523 _mw-327200000 _mh-877089018 rcx-box--animated rcx-input-box--type-text rcx-input-box"
                     id="_r_1_"
                     name="name"
                     size="1"
@@ -68,7 +68,7 @@ exports[`AttributesForm renders NewAttribute without crashing 1`] = `
                 class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field rcx-css-j4xsg rcx-css-1fuhgt0"
               >
                 <label
-                  class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
+                  class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label"
                   id="_r_2_"
                 >
                   Values
@@ -86,14 +86,14 @@ exports[`AttributesForm renders NewAttribute without crashing 1`] = `
                     aria-invalid="false"
                     aria-labelledby="_r_2_"
                     aria-required="true"
-                    class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box"
+                    class="is_View _m-2017216831 _p-1980417108 _b-95402947 _os-249893454 _ow-485594423 _ff-409630021 _fvn-1977619713 _p-1021290656 _d-1985012034 _f-1440749467 _w-226740859 _va-1675321343 _ws-973912173 _wb-1577688049 _o-1119039191 _to-1727917045 _ls-1782815796 _fs-347291933 _fw-289166179 _lh-1925956564 _c-277036852 _cc-365372135 _br-1975385178 _b-2079286388 _bs-927417523 _mw-327200000 _mh-877089018 rcx-box--animated rcx-input-box--type-text rcx-input-box"
                     name="attributeValues.0.value"
                     size="1"
                     type="text"
                   />
                 </span>
                 <button
-                  class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button rcx-css-cnkcl9"
+                  class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 _a-1578443335 _b-1504388127 _br-1397394445 _bs-958948735 _c-131824210 _b-802538122 _c-2102202510 rcx-button rcx-css-cnkcl9"
                   disabled=""
                   type="button"
                 >
@@ -140,7 +140,7 @@ exports[`AttributesForm renders NewAttribute without crashing 1`] = `
           role="group"
         >
           <button
-            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button"
+            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _c-836305799 _b-1331573151 rcx-button"
             type="button"
           >
             <span
@@ -150,7 +150,7 @@ exports[`AttributesForm renders NewAttribute without crashing 1`] = `
             </span>
           </button>
           <button
-            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button--primary rcx-button"
+            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 _a-1578443335 _b-1239149485 _br-1397394445 _bs-2123073523 _c-1718234884 _b-1181624406 _c-2102202510 rcx-button--primary rcx-button"
             disabled=""
             form="_r_0_"
             type="submit"
@@ -196,7 +196,7 @@ exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
           >
             <form
               class="rcx-box rcx-box--full rcx-css-zg7o7h"
-              id="_r_l_"
+              id="_r_n_"
             >
               <div
                 class="rcx-box rcx-box--full rcx-css-j4xsg rcx-css-1fuhgt0"
@@ -207,8 +207,8 @@ exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
                 class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field rcx-css-j4xsg rcx-css-1fuhgt0"
               >
                 <label
-                  class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
-                  for="_r_m_"
+                  class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label"
+                  for="_r_o_"
                 >
                   Name
                   <span
@@ -224,8 +224,8 @@ exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
                   <input
                     aria-invalid="false"
                     aria-required="true"
-                    class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box"
-                    id="_r_m_"
+                    class="is_View _m-2017216831 _p-1980417108 _b-95402947 _os-249893454 _ow-485594423 _ff-409630021 _fvn-1977619713 _p-1021290656 _d-1985012034 _f-1440749467 _w-226740859 _va-1675321343 _ws-973912173 _wb-1577688049 _o-1119039191 _to-1727917045 _ls-1782815796 _fs-347291933 _fw-289166179 _lh-1925956564 _c-277036852 _cc-365372135 _br-1975385178 _b-2079286388 _bs-927417523 _mw-327200000 _mh-877089018 rcx-box--animated rcx-input-box--type-text rcx-input-box"
+                    id="_r_o_"
                     name="name"
                     size="1"
                     type="text"
@@ -236,8 +236,8 @@ exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
                 class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field rcx-css-j4xsg rcx-css-1fuhgt0"
               >
                 <label
-                  class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label"
-                  id="_r_n_"
+                  class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label"
+                  id="_r_p_"
                 >
                   Values
                   <span
@@ -252,9 +252,9 @@ exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
                 >
                   <input
                     aria-invalid="false"
-                    aria-labelledby="_r_n_"
+                    aria-labelledby="_r_p_"
                     aria-required="true"
-                    class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box"
+                    class="is_View _m-2017216831 _p-1980417108 _b-95402947 _os-249893454 _ow-485594423 _ff-409630021 _fvn-1977619713 _p-1021290656 _d-1985012034 _f-1440749467 _w-226740859 _va-1675321343 _ws-973912173 _wb-1577688049 _o-1119039191 _to-1727917045 _ls-1782815796 _fs-347291933 _fw-289166179 _lh-1925956564 _c-277036852 _cc-365372135 _br-1975385178 _b-2079286388 _bs-927417523 _mw-327200000 _mh-877089018 rcx-box--animated rcx-input-box--type-text rcx-input-box"
                     disabled=""
                     name="lockedAttributes.0.value"
                     size="1"
@@ -266,16 +266,16 @@ exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
                 >
                   <input
                     aria-invalid="false"
-                    aria-labelledby="_r_n_"
+                    aria-labelledby="_r_p_"
                     aria-required="true"
-                    class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box"
+                    class="is_View _m-2017216831 _p-1980417108 _b-95402947 _os-249893454 _ow-485594423 _ff-409630021 _fvn-1977619713 _p-1021290656 _d-1985012034 _f-1440749467 _w-226740859 _va-1675321343 _ws-973912173 _wb-1577688049 _o-1119039191 _to-1727917045 _ls-1782815796 _fs-347291933 _fw-289166179 _lh-1925956564 _c-277036852 _cc-365372135 _br-1975385178 _b-2079286388 _bs-927417523 _mw-327200000 _mh-877089018 rcx-box--animated rcx-input-box--type-text rcx-input-box"
                     disabled=""
                     name="lockedAttributes.1.value"
                     size="1"
                     type="text"
                   />
                   <button
-                    class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ws1yyr"
+                    class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ws1yyr"
                     title="ABAC_Remove_attribute"
                     type="button"
                   >
@@ -292,16 +292,16 @@ exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
                 >
                   <input
                     aria-invalid="false"
-                    aria-labelledby="_r_n_"
+                    aria-labelledby="_r_p_"
                     aria-required="true"
-                    class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-text rcx-input-box"
+                    class="is_View _m-2017216831 _p-1980417108 _b-95402947 _os-249893454 _ow-485594423 _ff-409630021 _fvn-1977619713 _p-1021290656 _d-1985012034 _f-1440749467 _w-226740859 _va-1675321343 _ws-973912173 _wb-1577688049 _o-1119039191 _to-1727917045 _ls-1782815796 _fs-347291933 _fw-289166179 _lh-1925956564 _c-277036852 _cc-365372135 _br-1975385178 _b-2079286388 _bs-927417523 _mw-327200000 _mh-877089018 rcx-box--animated rcx-input-box--type-text rcx-input-box"
                     disabled=""
                     name="lockedAttributes.2.value"
                     size="1"
                     type="text"
                   />
                   <button
-                    class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ws1yyr"
+                    class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ws1yyr"
                     title="ABAC_Remove_attribute"
                     type="button"
                   >
@@ -314,7 +314,7 @@ exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
                   </button>
                 </span>
                 <button
-                  class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button rcx-css-cnkcl9"
+                  class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _c-836305799 _b-1331573151 rcx-button rcx-css-cnkcl9"
                   type="button"
                 >
                   <span
@@ -360,7 +360,7 @@ exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
           role="group"
         >
           <button
-            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button"
+            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _c-836305799 _b-1331573151 rcx-button"
             type="button"
           >
             <span
@@ -370,9 +370,9 @@ exports[`AttributesForm renders WithLockedAttributes without crashing 1`] = `
             </span>
           </button>
           <button
-            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button--primary rcx-button"
+            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 _a-1578443335 _b-1239149485 _br-1397394445 _bs-2123073523 _c-1718234884 _b-1181624406 _c-2102202510 rcx-button--primary rcx-button"
             disabled=""
-            form="_r_l_"
+            form="_r_n_"
             type="submit"
           >
             <span
