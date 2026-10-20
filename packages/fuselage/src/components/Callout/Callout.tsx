@@ -136,4 +136,4 @@ const Callout = ({ type, title, children, icon, actions, ...props }: CalloutProp
 	);
 };
 
-export default withFuselageProvider(Callout);
+export default withFuselageProvider(Callout, { takesBoxTransforms: true });

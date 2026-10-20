@@ -24,4 +24,4 @@ const FieldHint = (props: FieldHintProps) => {
 	return component;
 };
 
-export default withFuselageProvider(FieldHint);
+export default withFuselageProvider(FieldHint, { takesBoxTransforms: true });

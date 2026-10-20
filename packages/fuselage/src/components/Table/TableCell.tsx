@@ -39,4 +39,4 @@ const TableCell = ({ align, clickable, children, ...props }: TableCellProps) => 
 	);
 };
 
-export default withFuselageProvider(TableCell);
+export default withFuselageProvider(TableCell, { takesBoxTransforms: true });

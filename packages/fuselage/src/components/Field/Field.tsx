@@ -23,4 +23,4 @@ function Field(props: FieldProps) {
 	);
 }
 
-export default withFuselageProvider(Field);
+export default withFuselageProvider(Field, { takesBoxTransforms: true });
