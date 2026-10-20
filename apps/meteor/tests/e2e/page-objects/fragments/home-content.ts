@@ -642,7 +642,7 @@ export class HomeContent {
 		await this.openLastMessageMenu();
 		await this.btnOptionDeleteMessage.click();
 		await this.btnModalConfirmDelete.click();
-		await expect(this.btnModalConfirmDelete).toBeDisabled();
+		await expect(this.btnModalConfirmDelete).toBeHidden();
 	}
 
 	get btnClearSelection() {
