@@ -39,7 +39,7 @@ exports[`[Menu Component] renders AsNavBarActions without crashing 1`] = `
           aria-haspopup="true"
           aria-label="test"
           class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-navbar-item rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-          id="react-aria-_r_6_"
+          id="react-aria-_r_5_"
           title="test"
           type="button"
         >
@@ -55,7 +55,7 @@ exports[`[Menu Component] renders AsNavBarActions without crashing 1`] = `
           aria-haspopup="true"
           aria-label="sort"
           class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-          id="react-aria-_r_a_"
+          id="react-aria-_r_9_"
           title="sort"
           type="button"
         >
@@ -83,7 +83,7 @@ exports[`[Menu Component] renders Complex without crashing 1`] = `
         aria-haspopup="true"
         aria-label="Complex Menu"
         class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-        id="react-aria-_r_e_"
+        id="react-aria-_r_d_"
         title="Complex Menu"
         type="button"
       >
@@ -110,7 +110,7 @@ exports[`[Menu Component] renders ControlledOpenState without crashing 1`] = `
         aria-haspopup="true"
         aria-label="Controlled Menu"
         class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-        id="react-aria-_r_j_"
+        id="react-aria-_r_h_"
         title="Controlled Menu"
         type="button"
       >
@@ -137,7 +137,7 @@ exports[`[Menu Component] renders ItemVariants without crashing 1`] = `
         aria-haspopup="true"
         aria-label="Item Variants"
         class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-        id="react-aria-_r_o_"
+        id="react-aria-_r_l_"
         title="Item Variants"
         type="button"
       >
@@ -164,7 +164,7 @@ exports[`[Menu Component] renders MenuDisplayExample without crashing 1`] = `
         aria-haspopup="true"
         aria-label="Menu Display Example"
         class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-        id="react-aria-_r_t_"
+        id="react-aria-_r_p_"
         title="Menu Display Example"
         type="button"
       >
@@ -191,7 +191,7 @@ exports[`[Menu Component] renders MenuMapGenericItem without crashing 1`] = `
         aria-haspopup="true"
         aria-label="Menu with mapped items"
         class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-        id="react-aria-_r_12_"
+        id="react-aria-_r_t_"
         title="Menu with mapped items"
         type="button"
       >
@@ -218,7 +218,7 @@ exports[`[Menu Component] renders Scrollable without crashing 1`] = `
         aria-haspopup="true"
         aria-label="Scrollable Menu"
         class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-        id="react-aria-_r_17_"
+        id="react-aria-_r_11_"
         title="Scrollable Menu"
         type="button"
       >
@@ -245,7 +245,7 @@ exports[`[Menu Component] renders Simple without crashing 1`] = `
         aria-haspopup="true"
         aria-label="Simple Menu"
         class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-        id="react-aria-_r_1c_"
+        id="react-aria-_r_15_"
         title="Simple Menu"
         type="button"
       >
@@ -276,7 +276,7 @@ exports[`[Menu Component] renders Sizes without crashing 1`] = `
           aria-haspopup="true"
           aria-label="Large Menu"
           class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1411108109 _mw-1142583649 _h-611412686 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--large-square rcx-button--square rcx-button--icon rcx-button"
-          id="react-aria-_r_1j_"
+          id="react-aria-_r_1a_"
           title="Large Menu"
           type="button"
         >
@@ -292,7 +292,7 @@ exports[`[Menu Component] renders Sizes without crashing 1`] = `
           aria-haspopup="true"
           aria-label="Medium Menu"
           class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1589658138 _mw-327378746 _h-567027737 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--medium-square rcx-button--square rcx-button--icon rcx-button"
-          id="react-aria-_r_1n_"
+          id="react-aria-_r_1e_"
           title="Medium Menu"
           type="button"
         >
@@ -308,7 +308,7 @@ exports[`[Menu Component] renders Sizes without crashing 1`] = `
           aria-haspopup="true"
           aria-label="Small Menu"
           class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-          id="react-aria-_r_1r_"
+          id="react-aria-_r_1i_"
           title="Small Menu"
           type="button"
         >
@@ -324,7 +324,7 @@ exports[`[Menu Component] renders Sizes without crashing 1`] = `
           aria-haspopup="true"
           aria-label="Tiny Menu"
           class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1439737260 _mw-1171212800 _h-640041837 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--tiny-square rcx-button--square rcx-button--icon rcx-button"
-          id="react-aria-_r_1v_"
+          id="react-aria-_r_1m_"
           title="Tiny Menu"
           type="button"
         >
@@ -340,7 +340,7 @@ exports[`[Menu Component] renders Sizes without crashing 1`] = `
           aria-haspopup="true"
           aria-label="Mini Menu"
           class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1686757560 _mw-1952433892 _h-1628964073 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--mini-square rcx-button--square rcx-button--icon rcx-button"
-          id="react-aria-_r_23_"
+          id="react-aria-_r_1q_"
           title="Mini Menu"
           type="button"
         >
@@ -372,7 +372,7 @@ exports[`[Menu Component] renders WithCustomButton without crashing 1`] = `
           aria-haspopup="true"
           aria-label="using prop customButton"
           class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _w-1411108109 _mw-1142583649 _h-611412686 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-836305799 _b-1331573151 rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-          id="react-aria-_r_29_"
+          id="react-aria-_r_1v_"
           title="using prop customButton"
           type="button"
         >
@@ -388,7 +388,7 @@ exports[`[Menu Component] renders WithCustomButton without crashing 1`] = `
           aria-haspopup="true"
           aria-label="using prop is"
           class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _w-1411108109 _mw-1142583649 _h-611412686 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-836305799 _b-1331573151 rcx-button--large-square rcx-button--icon-secondary rcx-button--square rcx-button--icon rcx-button"
-          id="react-aria-_r_2d_"
+          id="react-aria-_r_23_"
           title="using prop is"
           type="button"
         >
@@ -416,7 +416,7 @@ exports[`[Menu Component] renders WithItemAliases without crashing 1`] = `
         aria-haspopup="true"
         aria-label="Status"
         class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-        id="react-aria-_r_2h_"
+        id="react-aria-_r_27_"
         title="Status"
         type="button"
       >
@@ -443,7 +443,7 @@ exports[`[Menu Component] renders WithItemParts without crashing 1`] = `
         aria-haspopup="true"
         aria-label="Preferences"
         class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-        id="react-aria-_r_2m_"
+        id="react-aria-_r_2b_"
         title="Preferences"
         type="button"
       >
@@ -470,7 +470,7 @@ exports[`[Menu Component] renders WithRichSubmenuTrigger without crashing 1`] = 
         aria-haspopup="true"
         aria-label="Menu with rich submenu triggers"
         class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-        id="react-aria-_r_2r_"
+        id="react-aria-_r_2f_"
         title="Menu with rich submenu triggers"
         type="button"
       >
@@ -497,7 +497,7 @@ exports[`[Menu Component] renders WithSections without crashing 1`] = `
         aria-haspopup="true"
         aria-label="Menu with Sections"
         class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-        id="react-aria-_r_30_"
+        id="react-aria-_r_2j_"
         title="Menu with Sections"
         type="button"
       >
@@ -524,7 +524,7 @@ exports[`[Menu Component] renders WithSubmenu without crashing 1`] = `
         aria-haspopup="true"
         aria-label="Menu with Submenu"
         class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button"
-        id="react-aria-_r_35_"
+        id="react-aria-_r_2n_"
         title="Menu with Submenu"
         type="button"
       >
