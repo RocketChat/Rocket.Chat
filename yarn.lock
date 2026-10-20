@@ -9810,6 +9810,7 @@ __metadata:
     mongodb: "npm:6.16.0"
     npm-run-all: "npm:~4.1.5"
     rimraf: "npm:^6.0.1"
+    tsx: "npm:~4.22.5"
     ttsc: "npm:0.18.4"
     typescript: "npm:~5.9.3"
     typia: "npm:13.0.2"
@@ -11651,6 +11652,7 @@ __metadata:
     ajv-formats: "npm:^3.0.1"
     eslint: "npm:~10.12.0"
     mongodb: "npm:6.16.0"
+    tsx: "npm:~4.22.5"
     typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft

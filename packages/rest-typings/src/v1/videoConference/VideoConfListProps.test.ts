@@ -1,51 +1,54 @@
+import assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import { isVideoConfListProps } from '@rocket.chat/rest-typings';
-import { assert } from 'chai';
+import { isVideoConfListProps } from './VideoConfListProps';
 
 describe('VideoConfListProps (definition/rest/v1)', () => {
 	describe('isVideoConfListProps', () => {
 		it('should be a function', () => {
-			assert.isFunction(isVideoConfListProps);
+			assert.equal(typeof isVideoConfListProps, 'function');
 		});
 		it('should return false when provided anything that is not an VideoConfListProps', () => {
-			assert.isFalse(isVideoConfListProps(undefined));
-			assert.isFalse(isVideoConfListProps(null));
-			assert.isFalse(isVideoConfListProps(''));
-			assert.isFalse(isVideoConfListProps(123));
-			assert.isFalse(isVideoConfListProps({}));
-			assert.isFalse(isVideoConfListProps([]));
-			assert.isFalse(isVideoConfListProps(new Date()));
-			assert.isFalse(isVideoConfListProps(new Error()));
+			assert.equal(isVideoConfListProps(undefined), false);
+			assert.equal(isVideoConfListProps(null), false);
+			assert.equal(isVideoConfListProps(''), false);
+			assert.equal(isVideoConfListProps(123), false);
+			assert.equal(isVideoConfListProps({}), false);
+			assert.equal(isVideoConfListProps([]), false);
+			assert.equal(isVideoConfListProps(new Date()), false);
+			assert.equal(isVideoConfListProps(new Error()), false);
 		});
 		it('should return false if roomId is not provided to VideoConfListProps', () => {
-			assert.isFalse(isVideoConfListProps({}));
+			assert.equal(isVideoConfListProps({}), false);
 		});
 
 		it('should accept a roomId with nothing else', () => {
-			assert.isTrue(
+			assert.equal(
 				isVideoConfListProps({
 					roomId: 'roomId',
 				}),
+				true,
 			);
 		});
 
 		it('should accept the count and offset parameters', () => {
-			assert.isTrue(
+			assert.equal(
 				isVideoConfListProps({
 					roomId: 'roomId',
 					offset: 50,
 					count: 25,
 				}),
+				true,
 			);
 		});
 
 		it('should return false when extra parameters are provided to VideoConfListProps', () => {
-			assert.isFalse(
+			assert.equal(
 				isVideoConfListProps({
 					roomId: 'roomId',
 					extra: 'extra',
 				}),
+				false,
 			);
 		});
 	});

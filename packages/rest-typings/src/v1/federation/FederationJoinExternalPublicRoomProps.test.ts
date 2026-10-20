@@ -1,50 +1,53 @@
+import assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import { isFederationJoinExternalPublicRoomProps } from '@rocket.chat/rest-typings';
-import { assert } from 'chai';
+import { isFederationJoinExternalPublicRoomProps } from './FederationJoinExternalPublicRoomProps';
 
 describe('FederationJoinExternalPublicRoomProps (definition/rest/v1)', () => {
 	describe('isFederationJoinExternalPublicRoomProps', () => {
 		it('should be a function', () => {
-			assert.isFunction(isFederationJoinExternalPublicRoomProps);
+			assert.equal(typeof isFederationJoinExternalPublicRoomProps, 'function');
 		});
 		it('should return false when provided anything that is not an FederationJoinExternalPublicRoomProps', () => {
-			assert.isFalse(isFederationJoinExternalPublicRoomProps(undefined));
-			assert.isFalse(isFederationJoinExternalPublicRoomProps(null));
-			assert.isFalse(isFederationJoinExternalPublicRoomProps(''));
-			assert.isFalse(isFederationJoinExternalPublicRoomProps(123));
-			assert.isFalse(isFederationJoinExternalPublicRoomProps({}));
-			assert.isFalse(isFederationJoinExternalPublicRoomProps([]));
-			assert.isFalse(isFederationJoinExternalPublicRoomProps(new Date()));
-			assert.isFalse(isFederationJoinExternalPublicRoomProps(new Error()));
+			assert.equal(isFederationJoinExternalPublicRoomProps(undefined), false);
+			assert.equal(isFederationJoinExternalPublicRoomProps(null), false);
+			assert.equal(isFederationJoinExternalPublicRoomProps(''), false);
+			assert.equal(isFederationJoinExternalPublicRoomProps(123), false);
+			assert.equal(isFederationJoinExternalPublicRoomProps({}), false);
+			assert.equal(isFederationJoinExternalPublicRoomProps([]), false);
+			assert.equal(isFederationJoinExternalPublicRoomProps(new Date()), false);
+			assert.equal(isFederationJoinExternalPublicRoomProps(new Error()), false);
 		});
 
 		it('should return false if externalRoomId is not provided to FederationJoinExternalPublicRoomProps', () => {
-			assert.isFalse(isFederationJoinExternalPublicRoomProps({}));
+			assert.equal(isFederationJoinExternalPublicRoomProps({}), false);
 		});
 
 		it('should return false if externalRoomId was provided in the wrong format FederationJoinExternalPublicRoomProps', () => {
-			assert.isFalse(
+			assert.equal(
 				isFederationJoinExternalPublicRoomProps({
 					externalRoomId: 'wrongFormatId',
 				}),
+				false,
 			);
 		});
 
 		it('should accept a externalRoomId with nothing else', () => {
-			assert.isTrue(
+			assert.equal(
 				isFederationJoinExternalPublicRoomProps({
 					externalRoomId: '!externalRoomId:server.com',
 				}),
+				true,
 			);
 		});
 
 		it('should return false when extra parameters are provided to FederationJoinExternalPublicRoomProps', () => {
-			assert.isFalse(
+			assert.equal(
 				isFederationJoinExternalPublicRoomProps({
 					externalRoomId: '!externalRoomId:server.com',
 					extra: 'extra',
 				}),
+				false,
 			);
 		});
 	});

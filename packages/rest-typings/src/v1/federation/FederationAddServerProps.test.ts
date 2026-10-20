@@ -1,42 +1,44 @@
+import assert from 'node:assert';
 import { describe, it } from 'node:test';
 
-import { isFederationAddServerProps } from '@rocket.chat/rest-typings';
-import { assert } from 'chai';
+import { isFederationAddServerProps } from './FederationAddServerProps';
 
 describe('FederationAddServerProps (definition/rest/v1)', () => {
 	describe('isFederationAddServerProps', () => {
 		it('should be a function', () => {
-			assert.isFunction(isFederationAddServerProps);
+			assert.equal(typeof isFederationAddServerProps, 'function');
 		});
 		it('should return false when provided anything that is not an FederationAddServerProps', () => {
-			assert.isFalse(isFederationAddServerProps(undefined));
-			assert.isFalse(isFederationAddServerProps(null));
-			assert.isFalse(isFederationAddServerProps(''));
-			assert.isFalse(isFederationAddServerProps(123));
-			assert.isFalse(isFederationAddServerProps({}));
-			assert.isFalse(isFederationAddServerProps([]));
-			assert.isFalse(isFederationAddServerProps(new Date()));
-			assert.isFalse(isFederationAddServerProps(new Error()));
+			assert.equal(isFederationAddServerProps(undefined), false);
+			assert.equal(isFederationAddServerProps(null), false);
+			assert.equal(isFederationAddServerProps(''), false);
+			assert.equal(isFederationAddServerProps(123), false);
+			assert.equal(isFederationAddServerProps({}), false);
+			assert.equal(isFederationAddServerProps([]), false);
+			assert.equal(isFederationAddServerProps(new Date()), false);
+			assert.equal(isFederationAddServerProps(new Error()), false);
 		});
 
 		it('should return false if serverName is not provided to FederationAddServerProps', () => {
-			assert.isFalse(isFederationAddServerProps({}));
+			assert.equal(isFederationAddServerProps({}), false);
 		});
 
 		it('should accept a serverName with nothing else', () => {
-			assert.isTrue(
+			assert.equal(
 				isFederationAddServerProps({
 					serverName: 'serverName',
 				}),
+				true,
 			);
 		});
 
 		it('should return false when extra parameters are provided to FederationAddServerProps', () => {
-			assert.isFalse(
+			assert.equal(
 				isFederationAddServerProps({
 					serverName: 'serverName',
 					extra: 'extra',
 				}),
+				false,
 			);
 		});
 	});
