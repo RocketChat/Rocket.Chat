@@ -7,7 +7,7 @@ import { BoxTransforms, useBoxTransform } from '../Box/BoxTransforms';
 import { useStylingProps } from '../Box/useStylingProps';
 
 // Read before anything renders, so it holds only the base rules and none of the atomic ones; the layer order
-// repeats `index.scss` for pages that load `fuselage.css` after this
+// repeats `index.css` for pages that load `fuselage.css` after this
 const baseCSS = `@layer reset, fuselage;\n${tamaguiConfig.getCSS()}`;
 
 const FuselageProviderContext = createContext(false);
