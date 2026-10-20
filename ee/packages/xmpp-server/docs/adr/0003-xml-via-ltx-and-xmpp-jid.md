@@ -30,8 +30,9 @@ declarations, comments, CDATA and processing instructions before an element is b
 
 - Test helpers that use `@xmpp/client` (which depends on `@xmpp/xml`) convert between the
   two element types at the edge; that is confined to `tests/end-to-end/helper/`.
-- Upgrading `ltx` means re-checking `ltx.d.ts` and the hardening cases in
-  `StanzaParser.spec.ts`.
+- Upgrading `ltx` means re-checking `ltx.d.ts`, the hardening cases in
+  `StanzaParser.spec.ts`, and `TopLevelBoundaries.spec.ts`.
 - ltx reports no input offsets, so the stanza size cap finds where each top-level element
   ends with `TopLevelBoundaries`, a scanner that copies ltx's tag and attribute grammar and
-  nothing else. It has to agree with ltx on every `>`; an ltx upgrade re-checks that.
+  nothing else. It has to agree with ltx on every `>`; `TopLevelBoundaries.spec.ts` feeds
+  the same streams through both and fails where they disagree.
