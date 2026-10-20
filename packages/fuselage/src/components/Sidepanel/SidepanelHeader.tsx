@@ -20,7 +20,7 @@ const SidepanelHeader = ({ className, ...props }: SidepanelHeaderProps) => (
 			className={['rcx-sidepanel-header', className].filter(Boolean).join(' ')}
 			{...(props as GetProps<typeof SidepanelHeaderFrame>)}
 		/>
-		<Divider rcx-sidepanel--divider marginBlockStart={-2} marginBlockEnd={0} />
+		<Divider rcx-sidepanel--divider borderColor='light' marginBlockStart={-2} marginBlockEnd={0} />
 	</div>
 );
 
