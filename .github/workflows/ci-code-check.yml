@@ -99,6 +99,10 @@ jobs:
         if: matrix.check == 'lint'
         run: yarn oxlint
 
+      - name: Styling props on Fuselage components
+        if: matrix.check == 'lint'
+        run: node scripts/scan-style-props.mjs --max 914 "$RUNNER_TEMP/style-props-findings.json"
+
       - name: Stylelint
         if: matrix.check == 'lint'
         run: yarn workspaces foreach -A run stylelint
