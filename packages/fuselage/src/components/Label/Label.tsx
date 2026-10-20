@@ -3,7 +3,7 @@ import type { RefAttributes } from 'react';
 import { createContext, useContext } from 'react';
 
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
-import { fontColor, fontFamily, fontScale } from '../../styleTokens';
+import { fontColor, fontFamily, fontScale, spacing } from '../../styleTokens';
 import type { BoxProps } from '../Box';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
@@ -37,6 +37,13 @@ const LabelFrame = styled(Text, {
 			true: {
 				pointerEvents: 'none',
 				color: fontColor('secondary-info'),
+			},
+		},
+		field: {
+			true: {
+				alignSelf: 'flex-start',
+				marginBlock: spacing('x2'),
+				marginInlineEnd: spacing('x8'),
 			},
 		},
 	} as const,
@@ -80,7 +87,11 @@ function Label({ disabled, is, required, children, ...props }: LabelProps) {
 
 	return (
 		<LabelContext.Provider value={true}>
-			<LabelFrame dimmed={disabled} {...(labelProps as GetProps<typeof LabelFrame>)}>
+			<LabelFrame
+				dimmed={disabled}
+				field={Boolean((props as Record<string, unknown>)['rcx-field__label'])}
+				{...(labelProps as GetProps<typeof LabelFrame>)}
+			>
 				{children}
 				{required && <RequiredMark />}
 			</LabelFrame>
