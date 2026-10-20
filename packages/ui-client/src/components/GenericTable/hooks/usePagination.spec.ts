@@ -15,4 +15,8 @@ it('should go back to the first page when the reset key changes', () => {
 	rerender({ resetKey: ['sounds', { text: 'filter' }] });
 
 	expect(result.current.current).toBe(0);
+
+	rerender({ resetKey: ['sounds', { text: '' }] });
+
+	expect(result.current.current).toBe(0);
 });

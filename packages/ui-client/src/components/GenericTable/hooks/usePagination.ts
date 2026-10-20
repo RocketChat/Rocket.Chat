@@ -29,6 +29,11 @@ export const usePagination = ({ resetKey = [] }: UsePaginationOptions = {}): {
 
 	const resetHash = hashKey([resetKey, itemsPerPage]);
 	const [state, setState] = useState({ current: 0, resetHash });
+
+	if (state.resetHash !== resetHash) {
+		setState({ current: 0, resetHash });
+	}
+
 	const current = state.resetHash === resetHash ? state.current : 0;
 
 	const setCurrent = useStableCallback((action: SetStateAction<number>) => {
