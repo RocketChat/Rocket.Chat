@@ -1,33 +1,21 @@
 import { ThemeProvider } from '@tamagui/web';
-import { createContext, useContext, type ComponentType, type ReactNode } from 'react';
+import type { ComponentType, ReactNode } from 'react';
 
+// Creates the Tamagui config before any frame renders
+import '../../tamagui.config';
 import { useArrayLikeClassNameProp } from '../../hooks/useArrayLikeClassNameProp';
-import { tamaguiConfig } from '../../tamagui.config';
 import { BoxTransforms, useBoxTransform } from '../Box/BoxTransforms';
 import { useStylingProps } from '../Box/useStylingProps';
-
-// Read before anything renders, so it holds only the base rules and none of the atomic ones; the layer order
-// repeats `index.css` for pages that load `fuselage.css` after this
-const baseCSS = `@layer reset, fuselage;\n${tamaguiConfig.getCSS()}`;
-
-const FuselageProviderContext = createContext(false);
 
 export type FuselageProviderProps = {
 	children?: ReactNode;
 };
 
-/** Lets the Fuselage components under it share one Tamagui root instead of each mounting its own; it adds no elements around them. */
-const FuselageProvider = ({ children }: FuselageProviderProps) => (
-	<FuselageProviderContext.Provider value>
-		{/* jsdom cannot parse the base stylesheet, and tests don't need it */}
-		{process.env.NODE_ENV !== 'test' && (
-			<style href='fuselage-tamagui' precedence='default'>
-				{baseCSS}
-			</style>
-		)}
-		<ThemeProvider defaultTheme='light'>{children}</ThemeProvider>
-	</FuselageProviderContext.Provider>
-);
+/**
+ * Lets the Fuselage components under it share one Tamagui root instead of each acting as its own; it adds no elements
+ * around them. Optional: Tamagui's base stylesheet ships in `fuselage.css`.
+ */
+const FuselageProvider = ({ children }: FuselageProviderProps) => <ThemeProvider defaultTheme='light'>{children}</ThemeProvider>;
 
 type BoxTransform = (props: Record<string, unknown>) => Record<string, unknown>;
 
@@ -39,22 +27,13 @@ export type WithFuselageProviderOptions = {
 	takesBoxTransforms?: boolean;
 };
 
-/** Keeps a Tamagui-based component renderable in trees that never mounted a `FuselageProvider`. */
+/** Registers a Tamagui-based component, and has it take `BoxTransforms` when it stands in for a `Box`. */
 export const withFuselageProvider = <TProps extends object>(
 	Component: ComponentType<TProps>,
 	{ takesBoxTransforms = false }: WithFuselageProviderOptions = {},
 ) => {
-	const WithRoot = (props: TProps) => {
-		if (useContext(FuselageProviderContext)) {
-			return <Component {...props} />;
-		}
-
-		return (
-			<FuselageProvider>
-				<Component {...props} />
-			</FuselageProvider>
-		);
-	};
+	// A frame with no provider above acts as its own Tamagui root (patched `@tamagui/web`), so no fallback is mounted
+	const WithRoot = Component as (props: TProps) => ReactNode;
 
 	const WithBoxTransform = ({ transform, props }: { transform: BoxTransform; props: TProps }) => {
 		const ownProps = useArrayLikeClassNameProp({ ...(props as Record<string, unknown>) });
@@ -86,7 +65,9 @@ export const withFuselageProvider = <TProps extends object>(
 			}
 		: WithRoot;
 
-	WithFuselageProvider.displayName = `WithFuselageProvider(${Component.displayName || Component.name || 'Component'})`;
+	if (WithFuselageProvider !== WithRoot) {
+		WithFuselageProvider.displayName = `WithFuselageProvider(${Component.displayName || Component.name || 'Component'})`;
+	}
 	tamaguiComponents.add(WithFuselageProvider);
 
 	return WithFuselageProvider;
