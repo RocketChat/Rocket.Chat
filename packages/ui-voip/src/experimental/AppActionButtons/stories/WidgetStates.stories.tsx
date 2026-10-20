@@ -152,7 +152,7 @@ const meta = {
 		mockedContexts,
 		(Story, { args }) => (
 			<MockedMediaCallAppActionsProvider actions={stateAwareActions} handleInteraction={handleInteraction}>
-				<MockedMediaCallProvider state={args.state} transferredBy={args.transferredBy}>
+				<MockedMediaCallProvider key={args.state} state={args.state} transferredBy={args.transferredBy}>
 					<Story />
 				</MockedMediaCallProvider>
 			</MockedMediaCallAppActionsProvider>
