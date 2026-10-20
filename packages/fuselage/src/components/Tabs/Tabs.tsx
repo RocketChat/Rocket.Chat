@@ -1,4 +1,5 @@
 import { styled, View, type GetProps } from '@tamagui/web';
+import { createContext, useMemo } from 'react';
 
 import { strokeColors } from '../../Theme';
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
@@ -51,6 +52,9 @@ const TabsWrapper = styled(View, {
 	paddingInline: 0,
 });
 
+/** Whether the tabs sit on a divider, which their underlines overlap. */
+export const TabsContext = createContext({ divider: false });
+
 export type TabsProps = BoxProps & { divider?: boolean };
 
 /**
@@ -59,14 +63,18 @@ export type TabsProps = BoxProps & { divider?: boolean };
 function Tabs({ children, divider = true, ...props }: TabsProps) {
 	const tabsProps = useTamaguiBoxProps({ 'is': 'div', 'rcx-tabs': true, 'rcx-tabs--with-divider': divider, ...props });
 
+	const context = useMemo(() => ({ divider }), [divider]);
+
 	return (
-		<TabsFrame divider={divider} {...(tabsProps as GetProps<typeof TabsFrame>)}>
-			<TabsScrollBox className='rcx-tabs__scroll-box'>
-				<TabsWrapper className='rcx-tabs__wrapper' role='tablist'>
-					{children}
-				</TabsWrapper>
-			</TabsScrollBox>
-		</TabsFrame>
+		<TabsContext.Provider value={context}>
+			<TabsFrame divider={divider} {...(tabsProps as GetProps<typeof TabsFrame>)}>
+				<TabsScrollBox className='rcx-tabs__scroll-box'>
+					<TabsWrapper className='rcx-tabs__wrapper' role='tablist'>
+						{children}
+					</TabsWrapper>
+				</TabsScrollBox>
+			</TabsFrame>
+		</TabsContext.Provider>
 	);
 }
 

@@ -1,0 +1,4 @@
+/* A scrollbar is no element Tamagui can style */
+.rcx-tabs__scroll-box::-webkit-scrollbar {
+	display: none;
+}
