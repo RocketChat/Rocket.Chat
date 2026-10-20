@@ -1,4 +1,3 @@
-import { SSRProvider } from '@react-aria/ssr';
 import { composeStories } from '@storybook/react-webpack5';
 import { axe } from 'jest-axe';
 
