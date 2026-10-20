@@ -2,20 +2,25 @@ import { styled, Text, View, type GetProps } from '@tamagui/web';
 import type { Dispatch, HTMLAttributes, SetStateAction } from 'react';
 import { useId, useMemo } from 'react';
 
-import { textIconColors } from '../../Theme';
+import { strokeColors, textIconColors } from '../../Theme';
 import { renderAs } from '../../helpers/renderAs';
-import { fontFamily, fontScale, spacing } from '../../styleTokens';
+import { toCSSValue } from '../../helpers/toCSSValue';
+import { borderRadius, fontFamily, fontScale, spacing } from '../../styleTokens';
 import { Chevron } from '../Chevron';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-const c1 = fontScale('c1')!;
+const toFontStyle = (name: 'c1' | 'c2') => {
+	const scale = fontScale(name)!;
 
-const c1Style = {
-	fontSize: c1.fontSize,
-	fontWeight: String(c1.fontWeight) as '400',
-	lineHeight: c1.lineHeight,
-	letterSpacing: c1.letterSpacing,
+	return {
+		fontSize: scale.fontSize,
+		fontWeight: String(scale.fontWeight) as '400',
+		lineHeight: scale.lineHeight,
+		letterSpacing: scale.letterSpacing,
+	};
 };
+
+const c1Style = toFontStyle('c1');
 
 /** What `rcx-box rcx-box--full` used to give the nav, lists and buttons. */
 const boxStyle = {
@@ -43,7 +48,7 @@ const plainStyle = {
 const PaginationFrame = styled(View, {
 	render: 'nav',
 	...boxStyle,
-	flexDirection: 'column-reverse',
+	flexDirection: { default: 'column-reverse', sm: 'column', md: 'row' },
 	flexWrap: 'nowrap',
 	alignItems: 'center',
 	paddingBlock: spacing('x12'),
@@ -58,21 +63,32 @@ const PaginationFrame = styled(View, {
 	} as const,
 });
 
+const PaginationDivider = styled(View, {
+	position: 'absolute',
+	top: 0,
+	left: 0,
+	right: 0,
+	height: 1,
+	borderRadius: toCSSValue('--rcx-pagination-border-radius', toCSSValue('--rcx-border-radius-small', borderRadius('small')!)),
+	backgroundColor: String(strokeColors['stroke-extra-light']),
+});
+
 const PaginationLeft = styled(View, {
 	...plainStyle,
 	flexDirection: 'row',
 	flexWrap: 'nowrap',
 	alignItems: 'center',
 	justifyContent: 'center',
-	marginInlineStart: 0,
+	marginInlineStart: { default: 0, sm: 'auto', md: 0 },
+	marginInlineEnd: { default: 0, md: 'auto' },
 });
 
 const PaginationRight = styled(View, {
 	...plainStyle,
-	flexDirection: 'column',
+	flexDirection: { default: 'column', sm: 'row' },
 	flexWrap: 'nowrap',
 	alignItems: 'center',
-	marginInlineStart: 0,
+	marginInlineStart: { default: 0, sm: 'auto' },
 });
 
 const PaginationLabel = styled(Text, {
@@ -117,19 +133,35 @@ const PaginationButton = styled(Text, {
 	backgroundColor: 'transparent',
 
 	variants: {
-		arrow: {
-			true: {
+		scheme: {
+			'link': {
+				textDecorationLine: { hover: 'underline', focus: 'underline' },
+			},
+			'link-disabled': {
+				...toFontStyle('c2'),
+				cursor: 'default',
+				color: String(textIconColors['font-default']),
+			},
+			'arrow': {
+				color: String(textIconColors['font-secondary-info']),
+			},
+			'arrow-disabled': {
+				cursor: 'not-allowed',
 				color: String(textIconColors['font-secondary-info']),
 			},
 		},
 	} as const,
 });
 
-type PaginationButtonProps = Omit<GetProps<typeof PaginationButton>, 'disabled'> & { disabled?: boolean };
+type PaginationButtonProps = Omit<GetProps<typeof PaginationButton>, 'disabled' | 'scheme'> & { arrow?: boolean; disabled?: boolean };
 
 // Given to the frame, `disabled` would also add an `aria-disabled` attribute the button never had
-const PaginationButtonElement = ({ disabled, ...props }: PaginationButtonProps) => (
-	<PaginationButton {...props} render={renderAs('button', { disabled })} />
+const PaginationButtonElement = ({ arrow, disabled, ...props }: PaginationButtonProps) => (
+	<PaginationButton
+		{...props}
+		scheme={`${arrow ? 'arrow' : 'link'}${disabled ? '-disabled' : ''}`}
+		render={renderAs('button', { disabled })}
+	/>
 );
 
 export type ItemsPerPage = 25 | 50 | 100;
@@ -206,6 +238,7 @@ const Pagination = ({
 			aria-label='Pagination Navigation'
 			{...(props as GetProps<typeof PaginationFrame>)}
 		>
+			{divider && <PaginationDivider aria-hidden />}
 			{hasItemsPerPageSelection && (
 				<PaginationLeft className='rcx-pagination__left'>
 					<PaginationLabel className='rcx-pagination__label' id={itemsPerPageLabelId}>
