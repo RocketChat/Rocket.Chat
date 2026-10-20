@@ -74,4 +74,4 @@ const CardGroup = ({ align = 'start', children, stretch, vertical, wrap, ...prop
 	);
 };
 
-export default withFuselageProvider(CardGroup);
+export default withFuselageProvider(CardGroup, { takesBoxTransforms: true });

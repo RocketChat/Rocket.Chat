@@ -87,4 +87,4 @@ const Card = ({ horizontal, hero, clickable, ...props }: CardProps) => {
 	);
 };
 
-export default withFuselageProvider(Card);
+export default withFuselageProvider(Card, { takesBoxTransforms: true });

@@ -24,4 +24,4 @@ const FieldRow = (props: FieldRowProps) => {
 	return component;
 };
 
-export default withFuselageProvider(FieldRow);
+export default withFuselageProvider(FieldRow, { takesBoxTransforms: true });
