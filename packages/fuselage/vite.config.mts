@@ -1,10 +1,12 @@
 import { resolve } from 'node:path';
 
+import { createTamaguiPlugins } from '@tamagui/vite-plugin';
 import autoprefixer from 'autoprefixer';
 import cssnanoPlugin from 'cssnano';
 import { defineConfig, type Plugin } from 'vite';
 
 import pkg from './package.json' with { type: 'json' };
+import { prevalStyled } from './prevalStyled';
 
 /**
  * Library mode inlines every asset unconditionally -- `shouldInline` returns
@@ -78,7 +80,19 @@ export default defineConfig(({ mode }) => {
 	const production = mode === 'production';
 
 	return {
-		plugins: [pinTamaguiEnv(), stripViteHashMarker()],
+		plugins: [
+			// Turns each frame's options into literals first, since the compiler only reads literals in a module's own definitions
+			prevalStyled(),
+			// Flattens every frame use-site it can into a plain element with static classes; its CSS joins the runtime's in the
+			// `fuselage` layer, below app CSS
+			...createTamaguiPlugins({
+				config: './src/tamagui.config.ts',
+				components: [],
+				wrapExtractedCSS: (css) => `@layer fuselage {\n${css}\n}`,
+			}).plugins,
+			pinTamaguiEnv(),
+			stripViteHashMarker(),
+		],
 		// `index.js` only loads the production bundle under `NODE_ENV=production`,
 		// so pinning it drops the development-only branches from that bundle.
 		define: production ? { 'process.env.NODE_ENV': JSON.stringify('production') } : {},
