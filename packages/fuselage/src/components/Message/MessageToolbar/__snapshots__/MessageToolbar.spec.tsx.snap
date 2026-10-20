@@ -34,11 +34,11 @@ exports[`[MessageToolbar Rendering] renders Default without crashing 1`] = `
         </div>
       </div>
       <div
-        class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 _c-1830342115 t_group_message rcx-message rcx-message--clickable customclass"
+        class="rcx-message rcx-message--clickable customclass Message__1atjrh81 Message_messageBase__1atjrh80 layers_view__dkmfyy0 Message_message_clickable_true__1atjrh83"
         tabindex="0"
       >
         <div
-          class="is_View _ff-409630021 _fv-607544992 _f-866739262 _mw-842769126 _m-1515180012 _ai-845606260 _w-799253879 rcx-message-container rcx-message-container--left"
+          class="rcx-message-container rcx-message-container--left Message__1atjrh8a Message_container_base__1atjrh89 layers_view__dkmfyy0 Message_container_left_true__1atjrh8c"
         >
           <figure
             class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-799253879 _h-1778499542 rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
@@ -51,25 +51,25 @@ exports[`[MessageToolbar Rendering] renders Default without crashing 1`] = `
           </figure>
         </div>
         <div
-          class="is_View _ff-409630021 _fv-607544992 _f-1230447426 _mw-842769126 _m-1515180012 rcx-message-container"
+          class="rcx-message-container Message__1atjrh8a Message_container_base__1atjrh89 layers_view__dkmfyy0"
         >
           <div
-            class="is_View _ff-409630021 _fv-607544992 _f-1871817500 _mw-842769126 _m-183820880 rcx-message-header"
+            class="rcx-message-header Message_header__1atjrh8d layers_view__dkmfyy0"
           >
             <div
-              class="is_View _ff-409630021 _fv-607544992 _f-518507803 _ai-121763387 _mw-842769126 _m-1704226889 rcx-message-header__wrapper"
+              class="rcx-message-header__wrapper Message_headerWrapper__1atjrh8e layers_view__dkmfyy0"
             >
               <span
-                class="is_Text _ff-409630021 _fv-607544992 _o-1119039191 _to-1727917045 _ws-973912173 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _f-1246374077 _m-211896778 _c-1866435217 rcx-message-header__name-container"
+                class="rcx-message-header__name-container Message__1atjrh8g Message_nameContainer_base__1atjrh8f layers_text__dkmfyy1"
               >
                 <span
-                  class="is_Text _ff-409630021 _fv-607544992 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289168101 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374076 _c-1866435217 rcx-message-header__name"
+                  class="rcx-message-header__name Message_name__1atjrh8i layers_text__dkmfyy1"
                 >
                   Haylie George
                 </span>
                  
                 <span
-                  class="is_Text _ff-409630021 _fv-607544992 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374076 _c-1063453128 rcx-message-header__username"
+                  class="rcx-message-header__username Message_username__1atjrh8j layers_text__dkmfyy1"
                 >
                   @haylie.george
                 </span>
@@ -106,14 +106,14 @@ exports[`[MessageToolbar Rendering] renders Default without crashing 1`] = `
                 </span>
               </div>
               <span
-                class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-191671261 rcx-message-header__time"
+                class="rcx-message-header__time Message_timestamp__1atjrh8k layers_text__dkmfyy1"
               >
                 12:00 PM
               </span>
             </div>
           </div>
           <div
-            class="is_Text _d-1987097250 _ws-311910413 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _o-1119039191 _f-1246374076 _m-183820880 _o-1507270695 _wb-1664347834 _c-1063453128 _t-255057237 rcx-message-body"
+            class="rcx-message-body Message__1atjrh8m Message_body_base__1atjrh8l layers_text__dkmfyy1"
           >
             Ut enim ad minim veniam
           </div>

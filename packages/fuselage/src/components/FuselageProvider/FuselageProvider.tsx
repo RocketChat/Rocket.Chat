@@ -94,6 +94,12 @@ export const withFuselageProvider = <TProps extends object>(
 
 const tamaguiComponents = new WeakSet<object>();
 
+/** Marks a component styled by layered static CSS, which `rcx-box` base classes would override just like Tamagui's. */
+export const markStaticComponent = <T extends object>(component: T): T => {
+	tamaguiComponents.add(component);
+	return component;
+};
+
 /** Tells whether a component renders a Tamagui frame, which `rcx-box` base classes would override. */
 export const isTamaguiComponent = (type: unknown): boolean => {
 	if (!type || (typeof type !== 'function' && typeof type !== 'object')) {

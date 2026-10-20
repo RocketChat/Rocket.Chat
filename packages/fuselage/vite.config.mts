@@ -1,5 +1,6 @@
 import { resolve } from 'node:path';
 
+import { vanillaExtractPlugin } from '@vanilla-extract/vite-plugin';
 import autoprefixer from 'autoprefixer';
 import cssnanoPlugin from 'cssnano';
 import { defineConfig, type Plugin } from 'vite';
@@ -78,7 +79,7 @@ export default defineConfig(({ mode }) => {
 	const production = mode === 'production';
 
 	return {
-		plugins: [pinTamaguiEnv(), stripViteHashMarker()],
+		plugins: [pinTamaguiEnv(), vanillaExtractPlugin({ identifiers: production ? 'short' : 'debug' }), stripViteHashMarker()],
 		// `index.js` only loads the production bundle under `NODE_ENV=production`,
 		// so pinning it drops the development-only branches from that bundle.
 		define: production ? { 'process.env.NODE_ENV': JSON.stringify('production') } : {},

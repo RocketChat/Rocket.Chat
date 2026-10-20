@@ -1,38 +1,14 @@
-import { styled, View, type GetProps } from '@tamagui/web';
 import type { HTMLAttributes } from 'react';
 
-import { boxText } from './messageStyles';
-import { spacing } from '../../styleTokens';
-import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
-
-const MessageHeaderFrame = styled(View, {
-	render: 'div',
-	...boxText,
-	flexDirection: 'row',
-	flexGrow: 0,
-	flexShrink: 1,
-	minWidth: 1,
-	marginBlock: spacing('x2'),
-});
-
-const MessageHeaderWrapper = styled(View, {
-	render: 'div',
-	...boxText,
-	flexDirection: 'row',
-	alignItems: 'center',
-	flexGrow: 1,
-	flexShrink: 1,
-	minWidth: 1,
-	marginBlock: spacing('neg-x4'),
-	marginInline: spacing('neg-x2'),
-});
+import * as styles from './Message.css';
+import { markStaticComponent } from '../FuselageProvider/FuselageProvider';
 
 export type MessageHeaderProps = HTMLAttributes<HTMLDivElement>;
 
-const MessageHeader = ({ children, ...props }: MessageHeaderProps) => (
-	<MessageHeaderFrame className='rcx-message-header' {...(props as GetProps<typeof MessageHeaderFrame>)}>
-		<MessageHeaderWrapper className='rcx-message-header__wrapper'>{children}</MessageHeaderWrapper>
-	</MessageHeaderFrame>
+const MessageHeader = ({ children, className, ...props }: MessageHeaderProps) => (
+	<div className={`${className ?? 'rcx-message-header'} ${styles.header}`} {...props}>
+		<div className={`rcx-message-header__wrapper ${styles.headerWrapper}`}>{children}</div>
+	</div>
 );
 
-export default withFuselageProvider(MessageHeader);
+export default markStaticComponent(MessageHeader);

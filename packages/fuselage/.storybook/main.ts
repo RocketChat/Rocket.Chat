@@ -1,6 +1,7 @@
 import { dirname, join } from 'path';
 
 import type { StorybookConfig } from '@storybook/react-webpack5';
+import { VanillaExtractPlugin } from '@vanilla-extract/webpack-plugin';
 import { DefinePlugin } from 'webpack';
 
 const config: StorybookConfig = {
@@ -12,6 +13,7 @@ const config: StorybookConfig = {
 
 		// Matches the cascade layer the published bundle pins in `vite.config.mts`
 		config.plugins?.push(new DefinePlugin({ 'process.env.TAMAGUI_CSS_LAYER': JSON.stringify('fuselage') }));
+		config.plugins?.push(new VanillaExtractPlugin());
 
 		return config;
 	},

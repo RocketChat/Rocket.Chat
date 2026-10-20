@@ -1,42 +1,17 @@
-import { styled, View, type GetProps } from '@tamagui/web';
 import type { HTMLAttributes } from 'react';
 
-import { boxText } from './messageStyles';
-import { size, spacing } from '../../styleTokens';
-import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
-
-export const MessageContainerFrame = styled(View, {
-	render: 'div',
-	...boxText,
-	flexGrow: 1,
-	flexShrink: 1,
-	minWidth: 1,
-	marginBlock: spacing('neg-x2'),
-	marginInline: spacing('x4'),
-
-	variants: {
-		fixed: {
-			true: {
-				alignItems: 'center',
-				flexGrow: 0,
-				flexShrink: 0,
-			},
-		},
-		left: {
-			true: {
-				alignItems: 'flex-end',
-				flexGrow: 0,
-				flexShrink: 0,
-				width: size('x36'),
-			},
-		},
-	} as const,
-});
+import * as styles from './Message.css';
+import { markStaticComponent } from '../FuselageProvider/FuselageProvider';
 
 export type MessageContainerProps = HTMLAttributes<HTMLDivElement>;
 
-const MessageContainer = (props: MessageContainerProps) => (
-	<MessageContainerFrame className='rcx-message-container' {...(props as GetProps<typeof MessageContainerFrame>)} />
+type MessageContainerBaseProps = MessageContainerProps & { fixed?: boolean; left?: boolean; rcxClassName: string };
+
+/** The container every message column renders; `fixed` and `left` pick its layout. */
+export const MessageContainerBase = ({ fixed, left, rcxClassName, className, ...props }: MessageContainerBaseProps) => (
+	<div className={`${className ?? rcxClassName} ${styles.container({ fixed, left })}`} {...props} />
 );
 
-export default withFuselageProvider(MessageContainer);
+const MessageContainer = (props: MessageContainerProps) => <MessageContainerBase rcxClassName='rcx-message-container' {...props} />;
+
+export default markStaticComponent(MessageContainer);
