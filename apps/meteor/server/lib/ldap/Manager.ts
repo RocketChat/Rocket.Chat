@@ -1,4 +1,4 @@
-import { MeteorError } from '@rocket.chat/core-services';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ILDAPEntry, LDAPLoginResult, ILDAPUniqueIdentifierField, IUser, LoginUsername, IImportUser } from '@rocket.chat/core-typings';
 import { Users as UsersRaw } from '@rocket.chat/models';
 import { SHA256 } from '@rocket.chat/sha256';
@@ -108,7 +108,7 @@ export class LDAPManager {
 	private static async connectAndBind(ldap: LDAPConnection): Promise<void> {
 		await ldap.connect();
 		await ldap.bindAuthenticationUserOrFail().catch((err: Error) => {
-			throw new MeteorError('LDAP_Bind_failed', undefined, { error: err.message });
+			throw new ClientSafeError('LDAP_Bind_failed', undefined, { error: err.message });
 		});
 	}
 
@@ -131,10 +131,10 @@ export class LDAPManager {
 			const users = await ldap.searchByUsername(escapedUsername);
 			logger.debug({ msg: 'Search results', count: users.length, username: escapedUsername });
 			if (users.length === 0) {
-				throw new MeteorError('LDAP_User_not_found');
+				throw new ClientSafeError('LDAP_User_not_found');
 			}
 			if (users.length > 1) {
-				throw new MeteorError('LDAP_Multiple_users_found', undefined, { total: String(users.length) });
+				throw new ClientSafeError('LDAP_Multiple_users_found', undefined, { total: String(users.length) });
 			}
 		} finally {
 			ldap.disconnect();

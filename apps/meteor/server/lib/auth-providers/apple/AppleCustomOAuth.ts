@@ -1,4 +1,4 @@
-import { MeteorError } from '@rocket.chat/core-services';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { Accounts } from 'meteor/accounts-base';
 
 import { handleIdentityToken } from './handleIdentityToken';
@@ -31,7 +31,7 @@ export class AppleCustomOAuth extends CustomOAuth {
 		} catch (error: any) {
 			return {
 				type: 'apple',
-				error: new MeteorError(Accounts.LoginCancelledError.numericError, error.message),
+				error: new ClientSafeError(Accounts.LoginCancelledError.numericError, error.message),
 			};
 		}
 	}

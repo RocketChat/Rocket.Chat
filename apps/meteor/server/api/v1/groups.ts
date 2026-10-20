@@ -1,4 +1,4 @@
-import { Team, isMeteorError } from '@rocket.chat/core-services';
+import { Team, isClientSafeError } from '@rocket.chat/core-services';
 import {
 	isRoomNativeFederated,
 	type IIntegration,
@@ -505,7 +505,7 @@ API.v1.post(
 				group: await composeRoomWithLastMessage(room, this.userId),
 			});
 		} catch (error: unknown) {
-			if (isMeteorError(error) && error.reason === 'error-not-allowed') {
+			if (isClientSafeError(error) && error.reason === 'error-not-allowed') {
 				return API.v1.forbidden();
 			}
 			throw error;

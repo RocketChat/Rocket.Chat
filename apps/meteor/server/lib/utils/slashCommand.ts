@@ -1,4 +1,4 @@
-import { MeteorError } from '@rocket.chat/core-services';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type {
 	IMessage,
 	SlashCommand,
@@ -27,7 +27,7 @@ interface ISlashCommandAddParams<T extends string> {
 
 const assertCanUseCommand = async ({ permission }: SlashCommand, userId: string, rid: string): Promise<void> => {
 	if (permission && !(await hasAtLeastOnePermissionAsync(userId, ([] as string[]).concat(permission), rid))) {
-		throw new MeteorError('error-not-authorized', 'Not authorized');
+		throw new ClientSafeError('error-not-authorized', 'Not authorized');
 	}
 };
 
@@ -80,7 +80,7 @@ export const slashCommands = {
 		}
 
 		if (!message?.rid) {
-			throw new MeteorError('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
+			throw new ClientSafeError('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
 		}
 
 		await assertCanUseCommand(cmd, userId, message.rid);
@@ -99,7 +99,7 @@ export const slashCommands = {
 		}
 
 		if (!message?.rid) {
-			throw new MeteorError('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
+			throw new ClientSafeError('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
 		}
 
 		await assertCanUseCommand(cmd, userId, message.rid);
@@ -131,12 +131,12 @@ export const slashCommands = {
 		}
 
 		if (!message?.rid) {
-			throw new MeteorError('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
+			throw new ClientSafeError('invalid-command-usage', 'Executing a command requires at least a message with a room id.');
 		}
 
 		// { id, type, value }
 		if (!preview.id || !preview.type || !preview.value) {
-			throw new MeteorError('error-invalid-preview', 'Preview Item must have an id, type, and value.');
+			throw new ClientSafeError('error-invalid-preview', 'Preview Item must have an id, type, and value.');
 		}
 
 		await assertCanUseCommand(cmd, userId, message.rid);

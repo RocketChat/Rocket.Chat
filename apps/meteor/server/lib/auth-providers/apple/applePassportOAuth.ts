@@ -1,4 +1,4 @@
-import { MeteorError } from '@rocket.chat/core-services';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 import express from 'express';
 import { Accounts } from 'meteor/accounts-base';
@@ -135,7 +135,7 @@ settings.watchMultiple(
 						done(error);
 						return {
 							type: 'apple',
-							error: new MeteorError(Accounts.LoginCancelledError.numericError, error.message),
+							error: new ClientSafeError(Accounts.LoginCancelledError.numericError, error.message),
 						};
 					}
 				},

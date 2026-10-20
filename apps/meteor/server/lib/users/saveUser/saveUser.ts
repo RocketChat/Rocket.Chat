@@ -1,5 +1,5 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
-import { MeteorError, Presence, StatusVisibility } from '@rocket.chat/core-services';
+import { ClientSafeError, Presence, StatusVisibility } from '@rocket.chat/core-services';
 import { isUserFederated, UserStatus } from '@rocket.chat/core-typings';
 import type { IUser, IRole, IUserSettings, RequiredField } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
@@ -136,7 +136,7 @@ const _saveUser = (session?: ClientSession) =>
 		}
 
 		if (!oldUserData) {
-			throw new MeteorError('error-user-not-found', 'User not found', {
+			throw new ClientSafeError('error-user-not-found', 'User not found', {
 				method: 'saveUser',
 			});
 		}

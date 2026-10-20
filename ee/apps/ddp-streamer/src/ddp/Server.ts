@@ -1,5 +1,5 @@
 import type { IServiceMetrics } from '@rocket.chat/core-services';
-import { MeteorError } from '@rocket.chat/core-services';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { Logger } from '@rocket.chat/logger';
 import { v1 as uuidv1 } from 'uuid';
 import WebSocket from 'ws';
@@ -21,11 +21,11 @@ type Methods = {
 export type RemoteMethodCall = (session: Session, method: string, params: any[]) => Promise<unknown>;
 
 const noRemoteMethods: RemoteMethodCall = async (_client, method) => {
-	throw new MeteorError(404, `Method '${method}' not found`);
+	throw new ClientSafeError(404, `Method '${method}' not found`);
 };
 
-const handleInternalException = (err: unknown, msg: string): MeteorError => {
-	if (err instanceof MeteorError) {
+const handleInternalException = (err: unknown, msg: string): ClientSafeError => {
+	if (err instanceof ClientSafeError) {
 		return err;
 	}
 
@@ -33,7 +33,7 @@ const handleInternalException = (err: unknown, msg: string): MeteorError => {
 	// TODO switch to using the logger (ideally broker.logger)
 	logger.error({ msg, err });
 
-	return new MeteorError(500, 'Internal server error');
+	return new ClientSafeError(500, 'Internal server error');
 };
 
 export class Server {
@@ -63,7 +63,7 @@ export class Server {
 
 			const fn = this._methods.get(packet.method);
 			if (!fn) {
-				throw new MeteorError(404, `Method '${packet.method}' not found`);
+				throw new ClientSafeError(404, `Method '${packet.method}' not found`);
 			}
 
 			const result = await fn.apply(session, packet.params);
@@ -90,11 +90,11 @@ export class Server {
 		let publication: Publication | undefined;
 		try {
 			if (!this._subscriptions.has(packet.name)) {
-				throw new MeteorError(404, `Subscription '${packet.name}' not found`);
+				throw new ClientSafeError(404, `Subscription '${packet.name}' not found`);
 			}
 			const fn = this._subscriptions.get(packet.name);
 			if (!fn) {
-				throw new MeteorError(404, `Subscription '${packet.name}' not found`);
+				throw new ClientSafeError(404, `Subscription '${packet.name}' not found`);
 			}
 
 			const end = this.metrics?.timer('rocketchat_subscription', { subscription: packet.name });
@@ -118,7 +118,7 @@ export class Server {
 		this._subscriptions.set(name, fn);
 	}
 
-	private sendResult(session: Session, { id }: IPacket, result?: any, error?: Error | MeteorError): void {
+	private sendResult(session: Session, { id }: IPacket, result?: any, error?: Error | ClientSafeError): void {
 		session.send(encodeResult(id, result, error));
 		return session.send(encodeUpdated(id));
 	}

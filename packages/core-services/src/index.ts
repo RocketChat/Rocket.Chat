@@ -71,7 +71,7 @@ export type { AppStatusReport } from './types/IAppsEngineService';
 export type { IAbacService, AbacActor } from './types/IAbacService';
 export type { PresenceScope } from './types/IStatusVisibilityService';
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
-export { MeteorError, isMeteorError } from './MeteorError';
+export { ClientSafeError, isClientSafeError } from './ClientSafeError';
 export { api } from './api';
 export type { EventSignatures, RelayedStreamEvent } from './events/Events';
 export { LocalBroker } from './LocalBroker';
