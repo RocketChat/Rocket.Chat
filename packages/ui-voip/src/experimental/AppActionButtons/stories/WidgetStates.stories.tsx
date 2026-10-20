@@ -79,16 +79,21 @@ const stateAwareActions: MediaCallAppActionDescriptor[] = [
 	},
 ];
 
+// The mocked session carries no call id, so stand in a stable one for the labels.
+const MOCK_CALL_ID = 'mock-call-id';
+
 const handleInteraction: AppButtonInteractionHandler = async ({ button, sessionState }) => {
+	const callId = sessionState.callId || MOCK_CALL_ID;
+
 	switch (button.actionId) {
 		case 'always-visible':
-			return { update: { label: `Clicked with call id ${sessionState.callId}`, actionId: 'default' } };
+			return { update: { label: `Clicked with call id ${callId}`, actionId: 'default' } };
 		case 'new-only':
 		case 'ringing-states':
 		case 'calling-states':
 		case 'ongoing-only':
 		case 'danger-action':
-			return { update: { label: `Clicked with call id ${sessionState.callId} (filtered)` } };
+			return { update: { label: `Clicked with call id ${callId} (filtered)` } };
 		default:
 			return undefined;
 	}
