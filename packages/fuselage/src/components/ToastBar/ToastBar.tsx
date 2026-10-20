@@ -2,7 +2,7 @@ import { css, keyframes } from '@rocket.chat/css-in-js';
 import { styled, Text, View, type GetProps } from '@tamagui/web';
 import { type ReactNode, type AllHTMLAttributes, useId } from 'react';
 
-import { surfaceColors, textIconColors } from '../../Theme';
+import { statusColors, surfaceColors, textIconColors } from '../../Theme';
 import { toCSSValue } from '../../helpers/toCSSValue';
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { borderRadius, fontFamily, fontScale, size, spacing } from '../../styleTokens';
@@ -38,6 +38,32 @@ const ToastBarFrame = styled(View, {
 	...(fontScale('p2') as object),
 });
 
+const toastBarStatusColors = {
+	success: toCSSValue('--rcx-toastbar-success-color', statusColors['status-font-on-success']),
+	error: toCSSValue('--rcx-toastbar-error-color', statusColors['status-font-on-danger']),
+};
+
+const ToastBarStatusLine = styled(View, {
+	display: 'block',
+	position: 'absolute',
+	top: 0,
+	width: '100%',
+	height: size('x4'),
+	borderTopLeftRadius: toastBarBorderRadius,
+	borderTopRightRadius: toastBarBorderRadius,
+	borderBottomLeftRadius: 0,
+	borderBottomRightRadius: 0,
+	backgroundColor: 'transparent',
+
+	variants: {
+		variant: {
+			info: {},
+			success: { backgroundColor: toastBarStatusColors.success },
+			error: { backgroundColor: toastBarStatusColors.error },
+		},
+	} as const,
+});
+
 const ToastBarInner = styled(View, {
 	flexDirection: 'row',
 	boxSizing: 'content-box',
@@ -66,6 +92,12 @@ const ToastBarProgressBar = styled(View, {
 	borderTopRightRadius: 0,
 	borderBottomLeftRadius: toastBarBorderRadius,
 	borderBottomRightRadius: toastBarBorderRadius,
+});
+
+const ToastBarProgressFill = styled(View, {
+	display: 'block',
+	height: '100%',
+	backgroundColor: toCSSValue('--rcx-toastbar-progressbar-background-color', surfaceColors['surface-neutral']),
 });
 
 /**
@@ -108,12 +140,10 @@ function ToastBar({
 	`;
 
 	const progressBarAnimation = css`
-		&::after {
-			width: 0%;
-			animation: ${progressBar} ${time}s;
-			animation-fill-mode: forwards;
-			animation-play-state: ${isPaused ? 'paused' : 'running'};
-		}
+		width: 0%;
+		animation: ${progressBar} ${time}s;
+		animation-fill-mode: forwards;
+		animation-play-state: ${isPaused ? 'paused' : 'running'};
 	`;
 
 	const uniqueId = useId();
@@ -125,12 +155,23 @@ function ToastBar({
 		{ elevation: '2nb', borderRadius: 'medium', ...props, className: [className, toastBarAnimation] },
 		`rcx-toastbar rcx-toastbar--${variant}`,
 	);
-	const progressBarProps = useTamaguiBoxProps({ className: [progressBarAnimation] }, 'rcx-toastbar_progressbar');
+	const progressFillProps = useTamaguiBoxProps({ className: [progressBarAnimation] });
 
 	return (
 		<ToastBarFrame {...(frameProps as GetProps<typeof ToastBarFrame>)}>
+			<ToastBarStatusLine aria-hidden variant={variant} />
 			<ToastBarInner className='rcx-toastbar_inner'>
-				<Icon className={`rcx-toastbar_icon--${variant}`} size='x20' name={iconName} />
+				<Icon
+					className={[
+						`rcx-toastbar_icon--${variant}`,
+						variant !== 'info' &&
+							css`
+								color: ${toastBarStatusColors[variant]};
+							`,
+					]}
+					size='x20'
+					name={iconName}
+				/>
 				<ToastBarContent role={role} className='rcx-toastbar_content'>
 					{children}
 				</ToastBarContent>
@@ -140,7 +181,9 @@ function ToastBar({
 					</div>
 				)}
 			</ToastBarInner>
-			<ToastBarProgressBar {...progressBarProps} />
+			<ToastBarProgressBar className='rcx-toastbar_progressbar'>
+				<ToastBarProgressFill aria-hidden {...progressFillProps} />
+			</ToastBarProgressBar>
 		</ToastBarFrame>
 	);
 }
