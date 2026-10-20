@@ -18,7 +18,7 @@ exports[`[Modal Component] _WithAnnotation should match the snapshot 1`] = `
             class="is_View _f-1923654442 _mw-354604370 _mh-1241200853 _m-1890934840 rcx-modal__header-inner"
           >
             <div
-              class="is_Text _d-341075704 _f-182718297 _ws-311910413 _ww-408434756 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 rcx-modal__header-text rcx-css-i9v8z4 rcx-css-lma364"
+              class="is_Text _d-341075704 _f-182718297 _ws-311910413 _ww-408434756 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _m-204480586 rcx-modal__header-text rcx-css-i9v8z4"
             >
               <h2
                 class="is_Text _d-1987097250 _f-1230447426 _ws-973912173 _ww-408434756 _o-1119039191 _to-1727917045 _c-1063453128 _ff-409630021 _fvn-1977619713 _fs-1289474947 _fw-289168101 _lh-1306773774 _ls-1782815796 rcx-modal__title"
@@ -28,7 +28,7 @@ exports[`[Modal Component] _WithAnnotation should match the snapshot 1`] = `
             </div>
             <button
               aria-label="Close"
-              class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-i9v8z4 rcx-css-lma364"
+              class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _m-204480586 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-i9v8z4"
               type="button"
             >
               <i
@@ -50,7 +50,7 @@ exports[`[Modal Component] _WithAnnotation should match the snapshot 1`] = `
           </div>
         </div>
         <div
-          class="is_View _f-1069814357 _ai-121763387 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 rcx-modal__footer rcx-css-rzpqmp"
+          class="is_View _f-1069814357 _ai-121763387 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 _jc-509505936 rcx-modal__footer"
         >
           <div
             class="is_Text _d-1987097250 _ws-311910413 _ww-408434756 _c-1756781803 _ff-409630021 _fvn-1977619713 _fs-2088488067 _fw-289165218 _lh-1306743983 _ls-1782815796 rcx-modal__footer-annotation"
@@ -107,7 +107,7 @@ exports[`[Modal Component] _WithForm should match the snapshot 1`] = `
             class="is_View _f-1923654442 _mw-354604370 _mh-1241200853 _m-1890934840 rcx-modal__header-inner"
           >
             <div
-              class="is_Text _d-341075704 _f-182718297 _ws-311910413 _ww-408434756 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 rcx-modal__header-text rcx-css-i9v8z4 rcx-css-lma364"
+              class="is_Text _d-341075704 _f-182718297 _ws-311910413 _ww-408434756 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _m-204480586 rcx-modal__header-text rcx-css-i9v8z4"
             >
               <h2
                 class="is_Text _d-1987097250 _f-1230447426 _ws-973912173 _ww-408434756 _o-1119039191 _to-1727917045 _c-1063453128 _ff-409630021 _fvn-1977619713 _fs-1289474947 _fw-289168101 _lh-1306773774 _ls-1782815796 rcx-modal__title"
@@ -117,7 +117,7 @@ exports[`[Modal Component] _WithForm should match the snapshot 1`] = `
             </div>
             <button
               aria-label="Close"
-              class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-i9v8z4 rcx-css-lma364"
+              class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _m-204480586 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-i9v8z4"
               type="button"
             >
               <i
@@ -162,7 +162,7 @@ exports[`[Modal Component] _WithForm should match the snapshot 1`] = `
           </div>
         </div>
         <div
-          class="is_View _f-1069814357 _ai-121763387 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 rcx-modal__footer rcx-css-17mu816"
+          class="is_View _f-1069814357 _ai-121763387 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 _jc-1427711722 rcx-modal__footer"
         >
           <div
             class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-2011449882 rcx-button-group rcx-button-group--align-end"
@@ -214,7 +214,7 @@ exports[`[Modal Component] _WithHeroImage should match the snapshot 1`] = `
             class="is_View _f-1923654442 _mw-354604370 _mh-1241200853 _m-1890934840 rcx-modal__header-inner"
           >
             <div
-              class="is_Text _d-341075704 _f-182718297 _ws-311910413 _ww-408434756 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 rcx-modal__header-text rcx-css-i9v8z4 rcx-css-lma364"
+              class="is_Text _d-341075704 _f-182718297 _ws-311910413 _ww-408434756 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _m-204480586 rcx-modal__header-text rcx-css-i9v8z4"
             >
               <h2
                 class="is_Text _d-1987097250 _f-1230447426 _ws-973912173 _ww-408434756 _o-1119039191 _to-1727917045 _c-1063453128 _ff-409630021 _fvn-1977619713 _fs-1289474947 _fw-289168101 _lh-1306773774 _ls-1782815796 rcx-modal__title"
@@ -224,7 +224,7 @@ exports[`[Modal Component] _WithHeroImage should match the snapshot 1`] = `
             </div>
             <button
               aria-label="Close"
-              class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-i9v8z4 rcx-css-lma364"
+              class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _m-204480586 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-i9v8z4"
               type="button"
             >
               <i
@@ -254,7 +254,7 @@ exports[`[Modal Component] _WithHeroImage should match the snapshot 1`] = `
           </div>
         </div>
         <div
-          class="is_View _f-1069814357 _ai-121763387 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 rcx-modal__footer rcx-css-17mu816"
+          class="is_View _f-1069814357 _ai-121763387 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 _jc-1427711722 rcx-modal__footer"
         >
           <div
             class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-2011449882 rcx-button-group rcx-button-group--align-end"
@@ -310,13 +310,13 @@ exports[`[Modal Component] _WithIcon should match the snapshot 1`] = `
             >
               <i
                 aria-hidden="true"
-                class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-info rcx-icon rcx-css-zozvgz"
+                class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 _m-91428877 rcx-icon--name-info rcx-icon rcx-css-4pvxx3"
               >
                 
               </i>
             </div>
             <div
-              class="is_Text _d-341075704 _f-182718297 _ws-311910413 _ww-408434756 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 rcx-modal__header-text rcx-css-i9v8z4 rcx-css-lma364"
+              class="is_Text _d-341075704 _f-182718297 _ws-311910413 _ww-408434756 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _m-204480586 rcx-modal__header-text rcx-css-i9v8z4"
             >
               <h2
                 class="is_Text _d-1987097250 _f-1230447426 _ws-973912173 _ww-408434756 _o-1119039191 _to-1727917045 _c-1063453128 _ff-409630021 _fvn-1977619713 _fs-1289474947 _fw-289168101 _lh-1306773774 _ls-1782815796 rcx-modal__title"
@@ -326,7 +326,7 @@ exports[`[Modal Component] _WithIcon should match the snapshot 1`] = `
             </div>
             <button
               aria-label="Close"
-              class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-i9v8z4 rcx-css-lma364"
+              class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _m-204480586 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-i9v8z4"
               type="button"
             >
               <i
@@ -348,7 +348,7 @@ exports[`[Modal Component] _WithIcon should match the snapshot 1`] = `
           </div>
         </div>
         <div
-          class="is_View _f-1069814357 _ai-121763387 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 rcx-modal__footer rcx-css-17mu816"
+          class="is_View _f-1069814357 _ai-121763387 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 _jc-1427711722 rcx-modal__footer"
         >
           <div
             class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-2011449882 rcx-button-group rcx-button-group--align-end"
@@ -404,13 +404,13 @@ exports[`[Modal Component] _WithIconAndTagline should match the snapshot 1`] = `
             >
               <i
                 aria-hidden="true"
-                class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-info rcx-icon rcx-css-zozvgz"
+                class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 _m-91428877 rcx-icon--name-info rcx-icon rcx-css-4pvxx3"
               >
                 
               </i>
             </div>
             <div
-              class="is_Text _d-341075704 _f-182718297 _ws-311910413 _ww-408434756 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 rcx-modal__header-text rcx-css-i9v8z4 rcx-css-lma364"
+              class="is_Text _d-341075704 _f-182718297 _ws-311910413 _ww-408434756 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _m-204480586 rcx-modal__header-text rcx-css-i9v8z4"
             >
               <div
                 class="is_Text _d-1987097250 _ws-311910413 _ww-408434756 _c-1063453128 _ff-409630021 _fvn-1977619713 _fs-2088488067 _fw-289168101 _lh-1306743983 _ls-1782815796 rcx-modal__tagline"
@@ -425,7 +425,7 @@ exports[`[Modal Component] _WithIconAndTagline should match the snapshot 1`] = `
             </div>
             <button
               aria-label="Close"
-              class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-i9v8z4 rcx-css-lma364"
+              class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _m-204480586 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-i9v8z4"
               type="button"
             >
               <i
@@ -447,7 +447,7 @@ exports[`[Modal Component] _WithIconAndTagline should match the snapshot 1`] = `
           </div>
         </div>
         <div
-          class="is_View _f-1069814357 _ai-121763387 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 rcx-modal__footer rcx-css-17mu816"
+          class="is_View _f-1069814357 _ai-121763387 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 _jc-1427711722 rcx-modal__footer"
         >
           <div
             class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-2011449882 rcx-button-group rcx-button-group--align-end"
@@ -499,7 +499,7 @@ exports[`[Modal Component] _WithTagline should match the snapshot 1`] = `
             class="is_View _f-1923654442 _mw-354604370 _mh-1241200853 _m-1890934840 rcx-modal__header-inner"
           >
             <div
-              class="is_Text _d-341075704 _f-182718297 _ws-311910413 _ww-408434756 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 rcx-modal__header-text rcx-css-i9v8z4 rcx-css-lma364"
+              class="is_Text _d-341075704 _f-182718297 _ws-311910413 _ww-408434756 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _m-204480586 rcx-modal__header-text rcx-css-i9v8z4"
             >
               <div
                 class="is_Text _d-1987097250 _ws-311910413 _ww-408434756 _c-1063453128 _ff-409630021 _fvn-1977619713 _fs-2088488067 _fw-289168101 _lh-1306743983 _ls-1782815796 rcx-modal__tagline"
@@ -514,7 +514,7 @@ exports[`[Modal Component] _WithTagline should match the snapshot 1`] = `
             </div>
             <button
               aria-label="Close"
-              class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-i9v8z4 rcx-css-lma364"
+              class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _m-204480586 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-i9v8z4"
               type="button"
             >
               <i
@@ -536,7 +536,7 @@ exports[`[Modal Component] _WithTagline should match the snapshot 1`] = `
           </div>
         </div>
         <div
-          class="is_View _f-1069814357 _ai-121763387 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 rcx-modal__footer rcx-css-17mu816"
+          class="is_View _f-1069814357 _ai-121763387 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 _jc-1427711722 rcx-modal__footer"
         >
           <div
             class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-2011449882 rcx-button-group rcx-button-group--align-end"
@@ -601,7 +601,7 @@ exports[`[Modal Component] _WithThumb should match the snapshot 1`] = `
               </figure>
             </div>
             <div
-              class="is_Text _d-341075704 _f-182718297 _ws-311910413 _ww-408434756 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 rcx-modal__header-text rcx-css-i9v8z4 rcx-css-lma364"
+              class="is_Text _d-341075704 _f-182718297 _ws-311910413 _ww-408434756 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _m-204480586 rcx-modal__header-text rcx-css-i9v8z4"
             >
               <h2
                 class="is_Text _d-1987097250 _f-1230447426 _ws-973912173 _ww-408434756 _o-1119039191 _to-1727917045 _c-1063453128 _ff-409630021 _fvn-1977619713 _fs-1289474947 _fw-289168101 _lh-1306773774 _ls-1782815796 rcx-modal__title"
@@ -611,7 +611,7 @@ exports[`[Modal Component] _WithThumb should match the snapshot 1`] = `
             </div>
             <button
               aria-label="Close"
-              class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-i9v8z4 rcx-css-lma364"
+              class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _m-204480586 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-i9v8z4"
               type="button"
             >
               <i
@@ -633,7 +633,7 @@ exports[`[Modal Component] _WithThumb should match the snapshot 1`] = `
           </div>
         </div>
         <div
-          class="is_View _f-1069814357 _ai-121763387 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 rcx-modal__footer rcx-css-17mu816"
+          class="is_View _f-1069814357 _ai-121763387 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 _jc-1427711722 rcx-modal__footer"
         >
           <div
             class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-2011449882 rcx-button-group rcx-button-group--align-end"
@@ -685,7 +685,7 @@ exports[`[Modal Component] Default should match the snapshot 1`] = `
             class="is_View _f-1923654442 _mw-354604370 _mh-1241200853 _m-1890934840 rcx-modal__header-inner"
           >
             <div
-              class="is_Text _d-341075704 _f-182718297 _ws-311910413 _ww-408434756 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 rcx-modal__header-text rcx-css-i9v8z4 rcx-css-lma364"
+              class="is_Text _d-341075704 _f-182718297 _ws-311910413 _ww-408434756 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _m-204480586 rcx-modal__header-text rcx-css-i9v8z4"
             >
               <h2
                 class="is_Text _d-1987097250 _f-1230447426 _ws-973912173 _ww-408434756 _o-1119039191 _to-1727917045 _c-1063453128 _ff-409630021 _fvn-1977619713 _fs-1289474947 _fw-289168101 _lh-1306773774 _ls-1782815796 rcx-modal__title"
@@ -695,7 +695,7 @@ exports[`[Modal Component] Default should match the snapshot 1`] = `
             </div>
             <button
               aria-label="Close"
-              class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-i9v8z4 rcx-css-lma364"
+              class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _m-204480586 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-i9v8z4"
               type="button"
             >
               <i
@@ -717,7 +717,7 @@ exports[`[Modal Component] Default should match the snapshot 1`] = `
           </div>
         </div>
         <div
-          class="is_View _f-1069814357 _ai-121763387 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 rcx-modal__footer rcx-css-17mu816"
+          class="is_View _f-1069814357 _ai-121763387 _mw-354604370 _mh-1241200853 _m-258138183 _ff-409630021 _fvn-1977619713 _jc-1427711722 rcx-modal__footer"
         >
           <div
             class="is_View _d-341075704 _f-1923654442 _mw-354604370 _mh-1241200853 _ai-121763387 _g-1051447770 _jc-2011449882 rcx-button-group rcx-button-group--align-end"

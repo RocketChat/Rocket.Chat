@@ -15,7 +15,7 @@ exports[`[Field Component] renders WithCheckbox without crashing 1`] = `
         >
           Label
           <span
-            class="is_View _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1069814357 _ai-121763387 _o-823737910 _mw-354604370 _mh-1241200853 rcx-label__info rcx-css-wcp0mp"
+            class="is_View _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1069814357 _ai-121763387 _o-823737910 _mw-354604370 _mh-1241200853 _m-1355910187 rcx-label__info"
           >
             <span
               hidden=""
@@ -33,7 +33,7 @@ exports[`[Field Component] renders WithCheckbox without crashing 1`] = `
           </span>
           <span
             aria-hidden="true"
-            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _c-1184219789 rcx-label__required rcx-css-b7g1a9"
+            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _c-1184219789 _m-746866393 rcx-label__required"
           >
             *
           </span>
@@ -108,7 +108,7 @@ exports[`[Field Component] renders WithRadioButton without crashing 1`] = `
         >
           Label
           <span
-            class="is_View _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1069814357 _ai-121763387 _o-823737910 _mw-354604370 _mh-1241200853 rcx-label__info rcx-css-wcp0mp"
+            class="is_View _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1069814357 _ai-121763387 _o-823737910 _mw-354604370 _mh-1241200853 _m-1355910187 rcx-label__info"
           >
             <span
               hidden=""
@@ -126,7 +126,7 @@ exports[`[Field Component] renders WithRadioButton without crashing 1`] = `
           </span>
           <span
             aria-hidden="true"
-            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _c-1184219789 rcx-label__required rcx-css-b7g1a9"
+            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _c-1184219789 _m-746866393 rcx-label__required"
           >
             *
           </span>
@@ -192,7 +192,7 @@ exports[`[Field Component] renders WithTextArea without crashing 1`] = `
       >
         Label
         <span
-          class="is_View _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1069814357 _ai-121763387 _o-823737910 _mw-354604370 _mh-1241200853 rcx-label__info rcx-css-wcp0mp"
+          class="is_View _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1069814357 _ai-121763387 _o-823737910 _mw-354604370 _mh-1241200853 _m-1355910187 rcx-label__info"
         >
           <span
             hidden=""
@@ -210,7 +210,7 @@ exports[`[Field Component] renders WithTextArea without crashing 1`] = `
         </span>
         <span
           aria-hidden="true"
-          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _c-1184219789 rcx-label__required rcx-css-b7g1a9"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _c-1184219789 _m-746866393 rcx-label__required"
         >
           *
         </span>
@@ -268,7 +268,7 @@ exports[`[Field Component] renders WithTextInput without crashing 1`] = `
       >
         Label
         <span
-          class="is_View _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1069814357 _ai-121763387 _o-823737910 _mw-354604370 _mh-1241200853 rcx-label__info rcx-css-wcp0mp"
+          class="is_View _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1069814357 _ai-121763387 _o-823737910 _mw-354604370 _mh-1241200853 _m-1355910187 rcx-label__info"
         >
           <span
             hidden=""
@@ -286,7 +286,7 @@ exports[`[Field Component] renders WithTextInput without crashing 1`] = `
         </span>
         <span
           aria-hidden="true"
-          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _c-1184219789 rcx-label__required rcx-css-b7g1a9"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _c-1184219789 _m-746866393 rcx-label__required"
         >
           *
         </span>
@@ -347,7 +347,7 @@ exports[`[Field Component] renders WithToggleSwitch without crashing 1`] = `
         >
           Label
           <span
-            class="is_View _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1069814357 _ai-121763387 _o-823737910 _mw-354604370 _mh-1241200853 rcx-label__info rcx-css-wcp0mp"
+            class="is_View _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1069814357 _ai-121763387 _o-823737910 _mw-354604370 _mh-1241200853 _m-1355910187 rcx-label__info"
           >
             <span
               hidden=""
@@ -365,7 +365,7 @@ exports[`[Field Component] renders WithToggleSwitch without crashing 1`] = `
           </span>
           <span
             aria-hidden="true"
-            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _c-1184219789 rcx-label__required rcx-css-b7g1a9"
+            class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _c-1184219789 _m-746866393 rcx-label__required"
           >
             *
           </span>

@@ -100,6 +100,47 @@ Warm mount, root provider, median of 7 runs ([bench-compiler-7runs.md](bench-com
    - named imports at use-sites.
 4. **For React Native:** the same `styled()` sources compile natively, but the web-only parts need platform files: `rcx-*` classes, cascade layers, css-in-js `BoxProps`, `render` tags.
 
+## `Box` styling props as Tamagui tokens
+
+Tamagui v3 tokens take no `$` prefix (the runtime even warns about `$x8`), and they resolve per category (`space`, `size`, `radius`). That matches the `x<n>` grammar of `Box` styling props, so `marginBlockEnd='x8'` can be a Tamagui prop as is.
+
+**Prototype:**
+
+- `tamagui.config.ts` declares `space`, `size` and `radius` tokens computed by the same `spacing()`, `size()` and `borderRadius()` helpers, so every value is the one `Box` produces.
+- `useTamaguiBoxProps` sends margin, padding, gap, inset, sizes and the plain layout props (`display`, `flex*`, `align*`, `overflow`, `position`) to the frame. Colors, `fontScale`, borders, `elevation` and `size` keep the css-in-js path, because Tamagui has a single `color` category while Fuselage resolves `color`, `backgroundColor` and `borderColor` against different palettes.
+
+**Constraints found:**
+
+- **Every token becomes a `:root` custom property, and nothing turns that off.** Enumerating `x0`-`x1280` injected 208,000 characters of CSS at runtime. The prototype only declares `x0`-`x64` plus the 39 larger measures Rocket.Chat uses: 16,900 characters, about 3-4 kB. The hook resolves any other `x<n>` itself.
+- **`none` is a reserved CSS keyword, and Tamagui rejects it as a token name.** `Box` reads `none` as `0px`, so props set to `none` stay on css-in-js.
+- **`!important` is lost.** css-in-js emitted `!important` and unlayered rules. Equal computed styles in every check here, but an unlayered app rule on the same property would now win.
+
+**Results:**
+
+| | pilot | tokens |
+|---|---|---|
+| 300 `Button`s with 4 styling props, warm mount | 21.8 ms | 20.3 ms (−7%) |
+| 300 `Button`s without styling props | 18.9 ms | 19.3 ms (±noise) |
+| Exported frames with styling props, compiled in the app (300 rows) | 14.1 ms | **0.9 ms (−94%)** |
+
+Checks:
+
+- **Fuselage tests:** 669 of 669 pass. 69 snapshots changed, all on `class` lines only (the `rcx-css-*` class goes away); no tag, attribute or text changed.
+- **Typecheck:** `tsc` is clean.
+- **Computed styles:** identical to the pilot on `Button` with styling props.
+- **Exported frames with styling props:** they now apply where the pilot dropped them. In the pilot, `MessageTimestamp marginInlineStart='x12'` reached Tamagui as the unknown token `x12` and was ignored.
+
+**What this means:**
+
+- On its own, tokens shave about 7% off components that receive styling props, by skipping css-in-js.
+- Their real value: they make a styling prop a literal the compiler can flatten. An exported frame with `marginBlockEnd='x8'` at an app use-site now flattens (7 of 7 in the bench).
+- They are also required for React Native, which has no css-in-js.
+- They don't change the ceiling for `Button` or `SidebarItem`. Both stay runtime components:
+  - `Button` normalizes deprecated props, reads two contexts and renders an inner `rcx-button--content` span that no frame can produce.
+  - `SidebarItem` renders `Item`, which has contexts and measures its layout.
+
+  Flattening them means changing their DOM and API (step 4). The most that keeps today's DOM is one runtime frame per `Button`, with its inner span compiled in the library.
+
 ## The runtime that stays
 
 Most frames in a room view keep the runtime, so its per-frame cost still matters. The earlier profile ([REPORT.md](REPORT.md)) puts 24-32% of the JavaScript in `getSplitStyles`. Remaining levers, none of them measured here:

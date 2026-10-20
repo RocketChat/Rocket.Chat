@@ -23,6 +23,17 @@ const rows = {
 			{`Label ${i}`}
 		</F.Button>
 	),
+	buttonStyled: (i, v) => (
+		<F.Button key={i} primary={v % 2 === 0} small marginInlineEnd='x8' marginBlock={4} paddingInline='x12' width='x120'>
+			{`Label ${i}`}
+		</F.Button>
+	),
+	messageStyled: (i, v) => (
+		<MessageContainer key={i} marginBlockEnd='x8'>
+			<MessageName paddingInline='x4' width='x120'>{`User ${i}`}</MessageName>
+			<MessageTimestamp marginInlineStart='x12'>{`12:0${v}`}</MessageTimestamp>
+		</MessageContainer>
+	),
 	tag: (i, v) => (
 		<F.Tag key={i} variant={v % 2 ? 'primary' : 'secondary'}>
 			{`tag ${i}`}
@@ -107,6 +118,7 @@ const run = async () => {
 		'warm react ms': warm.react,
 		'dom elements': dom,
 		'tamagui elements': tamagui,
+		'injected css chars': [...document.querySelectorAll('style')].reduce((n, el) => n + el.textContent.length, 0),
 	};
 };
 

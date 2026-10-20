@@ -875,7 +875,7 @@ exports[`[Table Rendering] renders WithSelection without crashing 1`] = `
       </table>
     </div>
     <div
-      class="is_View _f-85860445 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1943363302 _b-650654186 _c-1866435217 _br-768799339 _b-188836335 rcx-table__selection rcx-css-o5js64"
+      class="is_View _f-85860445 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-592988968 _b-650654186 _c-1866435217 _br-768799339 _b-188836335 _d-255188251 _ai-1055227096 _jc-509505936 rcx-table__selection rcx-css-hb8b2e"
     >
       <div
         class="rcx-box rcx-box--full rcx-css-zm3lo7"
@@ -890,7 +890,7 @@ exports[`[Table Rendering] renders WithSelection without crashing 1`] = `
           role="group"
         >
           <button
-            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 _c-836305799 _b-1331573151 rcx-button--small rcx-button rcx-css-ue04py"
+            class="is_View _d-1409515928 _f-1069811475 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 _c-836305799 _b-1331573151 rcx-button--small rcx-button"
             type="button"
           >
             <span
@@ -900,7 +900,7 @@ exports[`[Table Rendering] renders WithSelection without crashing 1`] = `
             </span>
           </button>
           <button
-            class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 _c-836305799 _b-1331573151 rcx-button--small rcx-button rcx-css-ue04py"
+            class="is_View _d-1409515928 _f-1069811475 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _p-1560025842 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _fs-281033604 _fw-290091622 _lh-1335373134 _ls-1811444947 _mw-1071928195 _h-1633581678 _c-836305799 _b-1331573151 rcx-button--small rcx-button"
             type="button"
           >
             <span

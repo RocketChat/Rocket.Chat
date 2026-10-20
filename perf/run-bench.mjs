@@ -12,7 +12,7 @@ const require = createRequire(join(here, '..', 'package.json'));
 const { chromium } = require('playwright-core');
 
 const runs = Number(process.argv[2] ?? 7);
-const sizes = { box: 300, button: 300, tag: 300, item: 200, message: 150 };
+const sizes = { box: 300, button: 300, buttonStyled: 300, messageStyled: 300, tag: 300, item: 200, message: 150 };
 const scenarios = (process.argv[3] ?? Object.keys(sizes).join(',')).split(',');
 
 const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.woff2': 'font/woff2', '.svg': 'image/svg+xml' };

@@ -28,8 +28,12 @@ const browser = await chromium.launch();
 const snapshot = async (dir) => {
 	const server = await serve(dir);
 	const page = await browser.newPage();
+	page.on('pageerror', (error) => console.log(`[${dir}] ${error.message}`));
+	page.on('console', (message) => message.type() === 'error' && console.log(`[${dir}] ${message.text()}`));
 	await page.goto(`${server.url}/?scenario=${scenario}&n=3&root=1`);
 	await page.waitForFunction(() => window.__result);
+	const error = await page.evaluate(() => window.__result.error);
+	if (error) console.log(`[${dir}] ${error}`);
 	if (hover) await page.hover('#root > * > *:first-child');
 	const result = await page.evaluate(() =>
 		[...document.querySelectorAll('#root *')].map((el) => {

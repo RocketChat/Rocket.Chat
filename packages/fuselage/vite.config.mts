@@ -3,7 +3,7 @@ import { resolve } from 'node:path';
 
 import { tamaguiPlugin } from '@tamagui/vite-plugin';
 
-import { prevalStyled } from './prevalStyled.mts';
+import { prevalStyled } from './prevalStyled';
 import autoprefixer from 'autoprefixer';
 import cssnanoPlugin from 'cssnano';
 import { defineConfig, type Plugin } from 'vite';
@@ -89,7 +89,6 @@ export default defineConfig(({ mode }) => {
 						tamaguiPlugin({
 							config: './src/tamagui.config.ts',
 							components: [],
-							optimize: true,
 							...(process.env.TAMAGUI_ZERO ? { experimental: { zeroRuntime: 'report' as const } } : {}),
 						}),
 					]

@@ -38,7 +38,7 @@ exports[`[MessageReactions Rendering] renders Default without crashing 1`] = `
         tabindex="0"
       >
         <div
-          class="is_View _ff-409630021 _fv-607544992 _f-866739262 _mw-842769126 _m-1515180012 _ai-845606260 _w-799253879 rcx-message-container rcx-message-container--left"
+          class="is_View _ff-409630021 _fv-607544992 _f-1711210172 _mw-842769126 _m-1515180012 _ai-649092755 _w-1008200584 rcx-message-container rcx-message-container--left"
         >
           <figure
             class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-799253879 _h-1778499542 rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
@@ -78,7 +78,7 @@ exports[`[MessageReactions Rendering] renders Default without crashing 1`] = `
                 class="is_View _ff-409630021 _fv-607544992 _o-1119039191 _to-1727917045 _ws-973912173 _f-1069814357 rcx-message-header__roles"
               >
                 <span
-                  class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _fs-285416026 _fw-289168101 _lh-1043070488 _ls-1782815796 _c-244381275 _b-504152703 rcx-tag rcx-message-header__role rcx-css-mb6loq"
+                  class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2009207394 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _fs-285416026 _fw-289168101 _lh-1043070488 _ls-1782815796 _c-244381275 _b-504152703 rcx-tag rcx-message-header__role"
                 >
                   <span
                     class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
@@ -87,7 +87,7 @@ exports[`[MessageReactions Rendering] renders Default without crashing 1`] = `
                   </span>
                 </span>
                 <span
-                  class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _fs-285416026 _fw-289168101 _lh-1043070488 _ls-1782815796 _c-244381275 _b-504152703 rcx-tag rcx-message-header__role rcx-css-mb6loq"
+                  class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2009207394 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _fs-285416026 _fw-289168101 _lh-1043070488 _ls-1782815796 _c-244381275 _b-504152703 rcx-tag rcx-message-header__role"
                 >
                   <span
                     class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
@@ -96,7 +96,7 @@ exports[`[MessageReactions Rendering] renders Default without crashing 1`] = `
                   </span>
                 </span>
                 <span
-                  class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2017216831 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _fs-285416026 _fw-289168101 _lh-1043070488 _ls-1782815796 _c-244381275 _b-504152703 rcx-tag rcx-message-header__role rcx-css-mb6loq"
+                  class="is_Text _d-341075704 _f-606928779 _mw-354604370 _mh-1241200853 _o-1119039191 _jc-1099843255 _ai-121763387 _m-2009207394 _p-1139150377 _ws-973912173 _ww-408434756 _td-1861836084 _to-1727917045 _wb-499914885 _ff-409630021 _fvn-1977619713 _b-1182826059 _br-511985764 _os-249893454 _bs-1333539716 _fs-285416026 _fw-289168101 _lh-1043070488 _ls-1782815796 _c-244381275 _b-504152703 rcx-tag rcx-message-header__role"
                 >
                   <span
                     class="is_Text _o-1119039191 _mw-842770087 _ws-973912173 _ww-408434756 _to-1727917045 rcx-tag__inner"
