@@ -1,9 +1,9 @@
-import { styled, Text } from '@tamagui/web';
+import { styled, Text, View } from '@tamagui/web';
 import type { ReactNode } from 'react';
 
-import { surfaceColors, textIconColors } from '../../../Theme';
+import { strokeColors, surfaceColors, textIconColors } from '../../../Theme';
 import { toCSSValue } from '../../../helpers/toCSSValue';
-import { spacing } from '../../../styleTokens';
+import { borderWidth, spacing } from '../../../styleTokens';
 import { withFuselageProvider } from '../../FuselageProvider/FuselageProvider';
 import { plainDiv } from '../messageStyles';
 
@@ -15,6 +15,22 @@ const MessageDividerBar = styled(Text, {
 	justifyContent: 'flex-end',
 	alignItems: 'center',
 	flexGrow: 1,
+});
+
+// Stands in for the bar's former `::after` line
+const MessageDividerLine = styled(View, {
+	render: 'span',
+	flexGrow: 1,
+	height: toCSSValue('--rcx-message-divider-size', borderWidth('default')!),
+	backgroundColor: toCSSValue('--rcx-message-divider-background-color', strokeColors['stroke-extra-light']),
+
+	variants: {
+		unread: {
+			true: {
+				backgroundColor: toCSSValue('--rcx-message-divider-background-color-unread', strokeColors['stroke-error']),
+			},
+		},
+	} as const,
 });
 
 const MessageDividerWrapper = styled(Text, {
@@ -43,7 +59,9 @@ const MessageDivider = ({ children, unreadLabel, ...props }: MessageDividerProps
 	<div role='separator' className={!unreadLabel ? 'rcx-message-divider' : 'rcx-message-divider rcx-message-divider--unread'} {...props}>
 		{children && (
 			<>
-				<MessageDividerBar className='rcx-message-divider__bar' />
+				<MessageDividerBar className='rcx-message-divider__bar'>
+					<MessageDividerLine aria-hidden unread={!!unreadLabel} />
+				</MessageDividerBar>
 				<MessageDividerWrapper className='rcx-message-divider__wrapper'>{children}</MessageDividerWrapper>{' '}
 			</>
 		)}
@@ -51,6 +69,7 @@ const MessageDivider = ({ children, unreadLabel, ...props }: MessageDividerProps
 			{unreadLabel && (
 				<MessageDividerUnreadWrapper className='rcx-message-divider__wrapper--unread'>{unreadLabel}</MessageDividerUnreadWrapper>
 			)}
+			<MessageDividerLine aria-hidden unread={!!unreadLabel} />
 		</MessageDividerBar>
 	</div>
 );
