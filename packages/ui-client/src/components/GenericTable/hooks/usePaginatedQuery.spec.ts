@@ -88,21 +88,19 @@ it('should report an error when one of the requests fails', async () => {
 	expect(result.current.error?.message).toBe('request failed');
 });
 
-it('should use the provided combineData reducer', async () => {
+it('should return the result of the provided combine function', async () => {
 	const { result } = renderHook(
 		() =>
 			usePaginatedQuery({
 				query: {},
 				queryKey: ['sounds'],
 				queryFn: createGetSounds({ total: 50, limit: 10 }),
-				combineData: (_acc, current) => current,
+				combine: (queries) => queries.map((query) => query.data?.sounds.length),
 				offset: 0,
 				count: 25,
 			}),
 		{ wrapper: mockAppRoot().build() },
 	);
 
-	await waitFor(() => expect(result.current.isSuccess).toBe(true));
-
-	expect(result.current.data?.sounds).toEqual(range(20, 5));
+	await waitFor(() => expect(result.current).toEqual([10, 10, 5]));
 });
