@@ -73,4 +73,4 @@ function Tooltip({ variation = 'dark', placement, ...props }: TooltipProps) {
 	return <TooltipFrame light={variation === 'light'} {...(frameProps as GetProps<typeof TooltipFrame>)} />;
 }
 
-export default withFuselageProvider(Tooltip);
+export default withFuselageProvider(Tooltip, { takesBoxTransforms: true });

@@ -34,4 +34,4 @@ function ToggleSwitch({ className, labelChildren, ...props }: ToggleSwitchProps)
 	);
 }
 
-export default withFuselageProvider(ToggleSwitch);
+export default withFuselageProvider(ToggleSwitch, { takesBoxTransforms: true });

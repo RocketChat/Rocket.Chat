@@ -38,4 +38,4 @@ const ModalHeroImage = ({ ...props }: ModalHeroImageProps) => {
 	);
 };
 
-export default withFuselageProvider(ModalHeroImage);
+export default withFuselageProvider(ModalHeroImage, { takesBoxTransforms: true });
