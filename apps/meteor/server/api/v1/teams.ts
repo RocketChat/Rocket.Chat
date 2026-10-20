@@ -1,7 +1,7 @@
 import { Team } from '@rocket.chat/core-services';
 import type { ITeamAutocompleteResult } from '@rocket.chat/core-services';
 import type { ITeam, UserStatus } from '@rocket.chat/core-typings';
-import { Users, Rooms } from '@rocket.chat/models';
+import { Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
 	ajv,
 	isTeamsAddRoomsProps,
@@ -59,6 +59,17 @@ const successResponseSchema = ajv.compile<void>({
 	required: ['success'],
 	additionalProperties: false,
 });
+
+const teamRolePermissions = new Map([
+	['owner', 'set-owner'],
+	['moderator', 'set-moderator'],
+	['leader', 'set-leader'],
+]);
+
+const getRoleChangePermissions = (roles: Iterable<string>) =>
+	Array.from(roles)
+		.filter((role) => role !== 'member')
+		.map((role) => teamRolePermissions.get(role) ?? 'access-permissions');
 
 const teamsEndpoints = API.v1
 	.get(
@@ -564,6 +575,11 @@ API.v1.post(
 			return API.v1.forbidden();
 		}
 
+		const permissions = getRoleChangePermissions(members.flatMap(({ roles }) => roles ?? []));
+		if (!(await hasAllPermissionAsync(this.user, permissions, team.roomId))) {
+			return API.v1.forbidden();
+		}
+
 		await Team.addMembers(this.userId, team._id, members);
 
 		return API.v1.success();
@@ -592,6 +608,12 @@ API.v1.post(
 		}
 
 		if (!(await hasAtLeastOnePermissionAsync(this.user, ['edit-team-member'], team.roomId))) {
+			return API.v1.forbidden();
+		}
+
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(team.roomId, member.userId, { projection: { roles: 1 } });
+		const changedRoles = new Set(subscription?.roles).symmetricDifference(new Set(member.roles));
+		if (!(await hasAllPermissionAsync(this.user, getRoleChangePermissions(changedRoles), team.roomId))) {
 			return API.v1.forbidden();
 		}
 

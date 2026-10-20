@@ -24,6 +24,7 @@ const teamsAddMembersPropsSchema = {
 								type: 'array',
 								items: {
 									type: 'string',
+									enum: ['owner', 'moderator', 'leader', 'member'],
 								},
 								nullable: true,
 							},
@@ -56,6 +57,7 @@ const teamsAddMembersPropsSchema = {
 								type: 'array',
 								items: {
 									type: 'string',
+									enum: ['owner', 'moderator', 'leader', 'member'],
 								},
 								nullable: true,
 							},
