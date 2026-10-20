@@ -1,6 +1,6 @@
 import type { OperationResult } from '@rocket.chat/rest-typings';
 import type { PaginatedQueryResult } from '@rocket.chat/ui-client';
-import { getCombineFn, usePaginatedQuery } from '@rocket.chat/ui-client';
+import { usePaginatedQuery } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
@@ -41,7 +41,7 @@ export const useLogs = ({
 		query,
 		queryKey: marketplaceQueryKeys.appLogs(appId, query),
 		queryFn: logs,
-		combineData: getCombineFn('logs'),
+		itemsKey: 'logs',
 		offset: current,
 		count: itemsPerPage,
 	});

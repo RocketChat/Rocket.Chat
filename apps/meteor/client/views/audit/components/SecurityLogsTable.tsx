@@ -9,7 +9,6 @@ import {
 	GenericTableHeaderCell,
 	GenericTableLoadingRow,
 	GenericTableRow,
-	getCombineFn,
 	usePaginatedQuery,
 	usePagination,
 	GenericNoResults,
@@ -103,7 +102,7 @@ const SecurityLogsTable = () => {
 		query,
 		queryKey,
 		queryFn: getAudits,
-		combineData: getCombineFn('events'),
+		itemsKey: 'events',
 		offset: current,
 		count: itemsPerPage,
 	});

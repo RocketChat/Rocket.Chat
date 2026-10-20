@@ -1,7 +1,7 @@
 import type { DeviceManagementPopulatedSession, DeviceManagementSession, Serialized } from '@rocket.chat/core-typings';
 import type { TableColumnWidth } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { GenericTableHeaderCell, getCombineFn, usePaginatedQuery, usePagination, useSort } from '@rocket.chat/ui-client';
+import { GenericTableHeaderCell, usePaginatedQuery, usePagination, useSort } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -46,7 +46,7 @@ const DeviceManagementAdminTable = () => {
 		query,
 		queryKey,
 		queryFn: listAllSessions,
-		combineData: getCombineFn('sessions'),
+		itemsKey: 'sessions',
 		offset: current,
 		count: itemsPerPage,
 	});

@@ -1,7 +1,7 @@
 import type { IRole, IRoom } from '@rocket.chat/core-typings';
 import { Box, Field, FieldLabel, FieldRow, ButtonGroup, Button, Callout, FieldError, Stack } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { getCombineFn, usePaginatedQuery, usePagination, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
+import { usePaginatedQuery, usePagination, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo } from 'react';
@@ -72,14 +72,16 @@ const UsersInRolePage = ({ role }: UsersInRolePageProps) => {
 	const paginationData = usePagination({ resetKey: queryKey });
 	const { itemsPerPage, current } = paginationData;
 
+	const getUsersInRole = async (params: Parameters<typeof getUsersInRoleEndpoint>[0]) => {
+		const result = await getUsersInRoleEndpoint(params);
+		return { ...result, count: result.users.length };
+	};
+
 	const { data, isLoading, isSuccess, refetch, isError } = usePaginatedQuery({
 		query,
 		queryKey,
-		queryFn: async (params) => {
-			const result = await getUsersInRoleEndpoint(params);
-			return { ...result, count: result.users.length };
-		},
-		combineData: getCombineFn('users'),
+		queryFn: getUsersInRole,
+		itemsKey: 'users',
 		offset: current,
 		count: itemsPerPage,
 	});
