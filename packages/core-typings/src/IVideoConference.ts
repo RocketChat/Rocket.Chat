@@ -76,7 +76,38 @@ export interface IVideoConferenceUser extends Pick<Required<IUser>, '_id' | 'use
 	lastSeenAt?: Date;
 	/** When they were last rung. Tells a phone ringing now from one rung and ignored. */
 	ringingAt?: Date;
+	/** Where the member publishes, in a conference mirroring a MatrixRTC session. */
+	federation?: VideoConferenceMemberFederation;
 }
+
+/**
+ * Where a member of a federated conference publishes their media. Each homeserver's members publish on that
+ * homeserver's SFU, so this is what tells a client which connection carries whose media.
+ */
+export type VideoConferenceMemberFederation = {
+	/** The member's homeserver, which owns the SFU they publish on. */
+	serverName: string;
+	/** Tells that SFU apart from others on the same homeserver: see `getMatrixRTCTransportKey`. */
+	transport: string;
+	/** The LiveKit identity the member publishes as. */
+	livekitIdentity: string;
+	/** Other identities the member may publish as: see `IMatrixRTCMembership.livekitIdentityAliases`. */
+	livekitIdentityAliases?: string[];
+	/**
+	 * When a member of another server raised their hand, as the room says. Hands of this server's members travel over
+	 * the call itself, so theirs are never here.
+	 */
+	handRaisedAt?: Date;
+	/** A member of this server, publishing on its own SFU. */
+	local: boolean;
+};
+
+/** The MatrixRTC session a conference in a federated room mirrors. */
+export type VideoConferenceFederation = {
+	/** The Matrix room the session lives in. */
+	mrid: string;
+	slotId: string;
+};
 
 /** Absent `joined` predates the flag, and entries were only written on join then — so absent reads as joined. */
 export const hasJoinedVideoConference = (user: Pick<IVideoConferenceUser, 'joined'>): boolean => user.joined !== false;
@@ -135,6 +166,8 @@ export interface IVideoConference extends IRocketChatRecord {
 
 	ringing?: boolean;
 	discussionRid?: IRoom['_id'];
+	/** Present when the conference runs in a federated room, as one MatrixRTC session shared with other homeservers. */
+	federation?: VideoConferenceFederation;
 }
 
 export interface IDirectVideoConference extends IVideoConference {

@@ -1,7 +1,13 @@
+import type { IVideoConferenceUser } from '@rocket.chat/core-typings';
 import type { ComponentType, ReactNode } from 'react';
 
 export type EmbeddedCallProviderProps = {
 	callId: string;
+	/**
+	 * Everyone associated with the call and where each of them stands, kept current as it changes. In a federated
+	 * call it also says where each member publishes their media, and as whom.
+	 */
+	members: IVideoConferenceUser[];
 	/** Whether to be in the call. The provider is mounted before the join, so this flips while its tree stays put. */
 	connect: boolean;
 	/** How the preflight left the devices, read as the call connects. */

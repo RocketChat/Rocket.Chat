@@ -1,5 +1,13 @@
 import type { IVideoConferenceUser, Serialized } from '@rocket.chat/core-typings';
 
+const mapMemberFederationFromApi = ({
+	handRaisedAt,
+	...federation
+}: NonNullable<Serialized<IVideoConferenceUser>['federation']>): NonNullable<IVideoConferenceUser['federation']> => ({
+	...federation,
+	...(handRaisedAt && { handRaisedAt: new Date(handRaisedAt) }),
+});
+
 /**
  * Revives the dates on a conference member. Membership carries several optional timestamps and each one
  * arrives as a string over REST, so they are handled in one place — adding a field to
@@ -13,9 +21,11 @@ export const mapVideoConfUserFromApi = ({
 	leftAt,
 	lastSeenAt,
 	ringingAt,
+	federation,
 	...user
 }: Serialized<IVideoConferenceUser>): IVideoConferenceUser => ({
 	...user,
+	...(federation && { federation: mapMemberFederationFromApi(federation) }),
 	ts: new Date(ts),
 	...(joinedAt && { joinedAt: new Date(joinedAt) }),
 	...(declinedAt && { declinedAt: new Date(declinedAt) }),

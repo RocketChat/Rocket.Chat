@@ -21,7 +21,10 @@ async function runVideoConferences(): Promise<void> {
 	await Promise.all(calls.map((callId) => VideoConf.setStatus(callId, VideoConferenceStatus.EXPIRED)));
 }
 
-/** Treats everyone whose call window has stopped renewing its lease as having left. */
+/**
+ * Treats everyone whose call window has stopped renewing its lease as having left, and every member of another server
+ * whose membership ran out.
+ */
 async function runPresenceSweep(readyForMs: number): Promise<void> {
 	// Measured from registration rather than process launch: a slow boot can eat the whole lease before any
 	// client has had a chance to heartbeat.
@@ -30,6 +33,7 @@ async function runPresenceSweep(readyForMs: number): Promise<void> {
 	}
 
 	await VideoConf.expirePresenceLeases();
+	await VideoConf.expireFederatedMemberships();
 }
 
 export async function videoConferencesCron(): Promise<void> {

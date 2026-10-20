@@ -21,6 +21,7 @@
 		"livekit-client": "^2.20.1"
 	},
 	"devDependencies": {
+		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/fuselage-hooks": "workspace:^",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
@@ -44,6 +45,7 @@
 		"typescript": "~7.0.2"
 	},
 	"peerDependencies": {
+		"@rocket.chat/core-typings": "workspace:^",
 		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/ui-client": "workspace:^",
 		"@rocket.chat/ui-conference": "workspace:^",

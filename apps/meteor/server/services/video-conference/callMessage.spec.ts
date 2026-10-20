@@ -123,4 +123,16 @@ describe('VideoConfService: the call message that names a thread', () => {
 
 		expect(sentRecord().msg).to.equal('Video_Conference');
 	});
+
+	// The message of a federated call stays on this server, so its chat is the room and there is no thread to name.
+	it('falls back to the generic name for a federated call', async () => {
+		await service.createMessage(
+			buildGroupCall([buildMember({ _id: 'creator' })], {
+				title: 'Sprint planning',
+				federation: { mrid: '!room:remote', slotId: 'm.call#ROOM' },
+			}),
+		);
+
+		expect(sentRecord().msg).to.equal('Video_Conference');
+	});
 });

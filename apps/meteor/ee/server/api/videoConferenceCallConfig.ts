@@ -24,6 +24,16 @@ const callConfigResponseSchema = ajv.compile<CallConfig>({
 			required: ['serverUrl', 'token', 'roomName'],
 			additionalProperties: false,
 		},
+		federation: {
+			type: 'object',
+			properties: {
+				serverName: { type: 'string' },
+				transport: { type: 'string' },
+				livekitIdentity: { type: 'string' },
+			},
+			required: ['serverName', 'transport', 'livekitIdentity'],
+			additionalProperties: false,
+		},
 	},
 	required: ['success', 'providerName'],
 	additionalProperties: false,

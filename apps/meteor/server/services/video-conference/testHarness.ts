@@ -53,6 +53,7 @@ export const commonServiceStubs = {
 			}
 		},
 	},
+	'@rocket.chat/federation-matrix': { MATRIXRTC_ROOM_CALL_SLOT_ID: 'm.call#ROOM' },
 	'@rocket.chat/random': { Random: { id: () => 'randomId' } },
 	'@rocket.chat/tools': { wrapExceptions: (fn: () => unknown) => fn() },
 	'meteor/meteor': { Meteor: { startup: () => undefined } },
@@ -107,15 +108,18 @@ export const commonServiceStubs = {
  *
  * @param broadcast the stub to observe `api.broadcast` through.
  * @param models the `@rocket.chat/models` collections this spec stubs; the rest default to inert.
+ * @param services the `@rocket.chat/core-services` services this spec stubs, beside the inert ones.
  * @param overrides any other module to replace — where a spec is testing something `commonServiceStubs` fakes.
  */
 export const createService = ({
 	broadcast = sinon.stub().resolves(),
 	models = {},
+	services = {},
 	overrides = {},
 }: {
 	broadcast?: sinon.SinonStub;
 	models?: Record<string, unknown>;
+	services?: Record<string, unknown>;
 	overrides?: Record<string, unknown>;
 } = {}) => {
 	const { VideoConfService } = proxyquire.noCallThru().load('./service', {
@@ -129,6 +133,8 @@ export const createService = ({
 			},
 			Message: { saveSystemMessage: sinon.stub().resolves() },
 			Room: { addUserToRoom: sinon.stub().resolves() },
+			FederationMatrix: { joinRTCSession: sinon.stub().resolves(), leaveRTCSession: sinon.stub().resolves() },
+			...services,
 		},
 		'@rocket.chat/models': {
 			Users: { findOneById: sinon.stub().resolves(null) },
@@ -137,6 +143,7 @@ export const createService = ({
 			Subscriptions: {
 				findByRoomIdAndNotUserId: sinon.stub().returns({ toArray: sinon.stub().resolves([]), forEach: sinon.stub().resolves() }),
 			},
+			MatrixRTCMemberships: { findLocalByCallId: sinon.stub().returns({ toArray: sinon.stub().resolves([]) }) },
 			...models,
 		},
 		...overrides,

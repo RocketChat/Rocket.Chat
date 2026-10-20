@@ -1,0 +1,200 @@
+# Video conferences in federated rooms (MatrixRTC)
+
+> **Status: proof of concept.** Rocket.Chat ↔ Rocket.Chat first; the wire formats are the ones Element Call,
+> matrix-js-sdk, Synapse and lk-jwt-service use, so other Matrix servers and clients can join later. The exact
+> event and endpoint formats are in [protocol.md](protocol.md).
+
+A LiveKit call in a federated room is one **MatrixRTC session** shared by every homeserver in the room. Rocket.Chat
+is a homeserver: it announces in the room, on behalf of its users, who is in the call, and reads the same
+announcements from other servers. Rocket.Chat users never speak the Matrix client-server API; the server does it
+for them.
+
+## Media: one SFU per homeserver
+
+Every member publishes on **their own homeserver's SFU** and watches the members of other homeservers on theirs
+(Element Call's "multi-SFU"):
+
+```
+ rc1 users ──publish──▶ livekit1 ◀──subscribe── rc2 users
+ rc2 users ──publish──▶ livekit2 ◀──subscribe── rc1 users
+```
+
+- Nothing relays media between servers. A Rocket.Chat client opens one LiveKit connection to its own server's SFU
+  (publish and subscribe) and one subscribe-only connection per other SFU that has members in the call.
+- On every SFU the session uses the same LiveKit room, `liveKitRoomAliasFor(matrixRoomId, slotId)`
+  (`src/matrixrtc/derive.ts` in `@rocket.chat/federation-matrix`). The slot is `m.call#ROOM`: one call per room.
+- A member publishes under a **LiveKit identity derived from their membership**, which is how every client maps a
+  track to a member. A non-federated call keeps `mc-<callId>` and identity `user._id`.
+
+## Signalling: memberships in the Matrix room
+
+Matrix clients are mid-migration, and each generation announces memberships, names SFUs and derives LiveKit
+identities differently. `Federation_Service_MatrixRTC_Mode` picks the profile this server **announces** in; every
+profile is always **read**:
+
+| Profile | Membership | Transport announced | Identity published as | How others get a token for our SFU |
+| --- | --- | --- | --- | --- |
+| `compatibility` (default) | state `org.matrix.msc3401.call.member`, one per device | `livekit_service_url` | `@user:server:DEVICE` | OpenID at our lk-jwt-service-compatible endpoint |
+| `matrix_2_0` | sticky `org.matrix.msc4143.rtc.member` (MSC4354), fresh `member.id` per join | `livekit_service_url` | `H([user, device, member.id])` | OpenID at our lk-jwt-service-compatible endpoint |
+
+These are what deployed Element Call does in its two modes, and both work with it and between Rocket.Chat servers.
+
+Homeserver-issued tokens (MSC4195) are not supported. This server never names its SFU by its address (`url`) alone,
+and a membership that does is not read, so its member stays out of the call here: watching that SFU takes a token
+from the member's homeserver, which no deployed Element Call asks for either
+([protocol §4.1](protocol.md#41-what-element-expects-per-generation), [§5](protocol.md#5-token-issuance)).
+
+Reading a remote membership yields every identity its sender may publish as (`livekitIdentity` plus
+`livekitIdentityAliases`), since the same membership maps to different identities in different client generations.
+
+Rings are `org.matrix.msc4075.rtc.notification` and declines `org.matrix.msc4310.rtc.decline`, both sticky timeline
+events. A ring relates (`m.reference`) to the caller's membership event and mentions the callee.
+
+## Data model
+
+- **`IMatrixRTCMembership`** (`rocketchat_matrix_rtc_memberships`): one device's presence in one session, local or
+  remote. It holds the member's transport (their SFU's token service), their LiveKit identity, their homeserver,
+  the event that announced them and when the membership stops counting (`expiresAt`). A user is in a federated call
+  while any of their memberships counts.
+- **`IVideoConference.federation`** `{ mrid, slotId }`: the session a conference mirrors.
+- **`IVideoConferenceUser.federation`** `{ serverName, transport, livekitIdentity, local }`: where a roster member
+  publishes, taken from their latest membership. This is what a client uses to know which connection carries whose
+  media.
+
+Remote members are on the roster as the federated users that stand for them (`IUserNativeFederated`), like members
+of a federated room.
+
+## Session ↔ conference
+
+- A conference in a federated room mirrors the room's session for as long as **any** membership, local or remote,
+  counts. When the last one goes, the conference ends as any conference does when it empties.
+- A membership arriving for a session with no running conference here starts one. The conference is created
+  by the remote member, with the usual call message in the room.
+- Starting a call in a federated room where a conference already mirrors the session returns that conference.
+  Starting one needs `Federation_Service_MatrixRTC_Enabled` and the LiveKit provider; otherwise the refusal
+  (`error-videoconf-federation-*`) is what the start endpoint answers.
+- A call message (`t: 'videoconf'`) is not sent to Matrix. Other servers learn of the call from the memberships,
+  and Matrix clients show their own call banner.
+- Since the call message stays here, the call's chat is the **room**, never a thread off that message, whatever
+  `VideoConf_Persistent_Chat_Mode` says. A federated call gets no discussion either.
+- Presence of local members still comes from their leases (heartbeat). Presence of remote members comes from their
+  memberships: a leave or the membership expiring. The lease sweep leaves remote members alone; the presence cron
+  removes expired remote memberships and re-syncs their sessions.
+- A remote member who leaves keeps their roster `federation` entry, with `leftAt` set, so clients can tell which SFU
+  connection to close.
+
+## Outbound (this server's users)
+
+- **Join**: the first `join`, `callConfig` or `federatedToken` for a local user creates their membership. A client
+  joining a call that already has remote members asks for their SFU straight away, possibly before its join is
+  announced, so the token request announces it too. That means a device id
+  generated for the join, a fresh member id and this server's SFU as the transport. The membership is announced in
+  the mode's form. Repeated calls return the same membership. (`FederationMatrix.joinRTCSession`)
+- **Refresh**: each heartbeat (`renewPresence`) re-announces a membership due to expire within 10 minutes, and
+  recreates one a sweep removed. Sticky memberships last an hour; compatibility memberships carry `expires`, and
+  their content changes on every refresh, since identical state would be a no-op.
+- **Late joiners**: a server that joins the room mid-call receives this server's unexpired sticky memberships from
+  the SDK (MSC4354), since nothing else would tell it for up to an hour.
+- **Leave**: leaving, or the lease running out, sends the leave form and removes the membership. This server plays
+  the role Matrix clients give to delayed events: it knows when its user is gone.
+- **Ring**: a call in a federated DM rings the remote callee with an `rtc.notification` (`ring`) that mentions them
+  and relates to the caller's membership. (`FederationMatrix.notifyRTCSession`)
+- **Decline**: a local user turning down a remote ring sends `rtc.decline` relating to that notification.
+  (`FederationMatrix.declineRTCSession`)
+
+## Inbound (other servers' members)
+
+The federation SDK emits `homeserver.matrix.event` for every accepted event; the MatrixRTC handler takes the
+membership, notification and decline types.
+
+- A membership event does not update one row: it triggers a **rebuild of the room's remote memberships** from the
+  room's current state (`call.member`) and its unexpired sticky events, keeping the current entry per sender and
+  sticky key as matrix-js-sdk does. Arrival order therefore doesn't matter, and the same rebuild runs at startup for
+  rooms with calls. Rebuilds are queued and coalesced per room.
+- A membership counts only when its sender is on another server, is joined to the room, is in slot `m.call#ROOM`
+  and has not expired. Each remote row carries every identity the sender may publish as (§4.1 of the protocol).
+- The session's conference is then found or started, and roster entries are joined or left.
+- A live `ring` rings the local users it mentions (or every local member of a DM when it mentions the room),
+  through the existing ring path. The conference is found through the membership the ring relates to, and the ring
+  is remembered on that membership so a local decline can answer it.
+
+## Tokens
+
+| Who | For which SFU | How |
+| --- | --- | --- |
+| Local user | this server's | `video-conference.callConfig`: publish + subscribe, identity from their membership, `federation` block in the answer |
+| Local user | another server's | `video-conference.federatedToken` → this server fetches it (`FederationMatrix.getRemoteLiveKitToken`): with an OpenID token from this server at the membership's `livekit_service_url` |
+| Remote user | this server's | OpenID at this server's lk-jwt-service-compatible endpoint, checked through `/_matrix/federation/v1/openid/userinfo` |
+
+Endpoints this server serves for other servers' members:
+
+| Path | Auth | For |
+| --- | --- | --- |
+| `GET /_matrix/federation/v1/openid/userinfo` | none (token in the query) | vouching for this server's users |
+| `POST /matrixrtc/livekit-jwt/{get_token,sfu/get}`, `GET …/healthz` | OpenID in the body, CORS open | lk-jwt-service clients: `compatibility` and `matrix_2_0` members, Element Call |
+
+`/matrixrtc/livekit-jwt` is the `livekit_service_url` this server announces. Unlike lk-jwt-service, its OpenID
+endpoints also require the member to be joined to the room.
+
+Tokens for members of other servers are **subscribe-only**. They watch this SFU but never publish on it. They are
+not hidden, as MSC4195 requires, so clients tell watchers from members by identity. The member must be joined to
+the Matrix room. Token minting stays with the LiveKit provider (`apps/meteor/ee/server/lib/livekit`), reached from
+the federation package through `IMatrixRTCLiveKitIssuer`.
+
+## Client
+
+- `callConfig` gives the own SFU and, for a federated call, `federation.serverName`. The roster gives every
+  member's `federation` entry.
+- The client opens one subscribe-only connection per `(serverName, transport)` of joined remote members, with a
+  token from `video-conference.federatedToken`, and closes it when those members are gone. A token that fails is asked
+  for again twice (after 1 s and 3 s) before the SFU is reported and dropped until the set of SFUs changes.
+- A participant is shown only when their identity matches a roster member's `livekitIdentity` or one of their
+  `livekitIdentityAliases` on that connection. Anyone else there watches the SFU from another server. The name and
+  avatar come from the roster, not from the identity.
+- Hands and reactions of this server's members, and every mute request, go over the data channel of the sender's
+  own SFU. Those of other servers' members come from the room instead (see [Hands and
+  reactions](#hands-and-reactions)), and what their SFUs' data channels carry is ignored, so nothing shows twice.
+
+## Hands and reactions
+
+They cross homeservers the way Element Call sends them, so Rocket.Chat and Element users see each other's:
+
+| | Event | Content |
+| --- | --- | --- |
+| Hand up | `m.reaction` | `m.relates_to: { rel_type: m.annotation, event_id: <sender's current membership>, key: "🖐️" }` |
+| Hand down | `m.room.redaction` | of that reaction |
+| Reaction | `io.element.call.reaction` | `m.relates_to: { rel_type: m.reference, event_id: <sender's current membership> }`, `emoji` |
+
+- **Out**: in a federated call, the client also posts its hand to `video-conference.hand` and its reactions to
+  `video-conference.reaction`, and the server sends them over the member's announced membership. The reaction that
+  raised a hand is kept on the membership, which lowering it redacts. A refresh replaces the membership event, so a
+  raised hand is raised again on the new one and the old reaction redacted: readers only count a hand on the
+  current one.
+- **In**: an event counts only when it relates to a membership of its own sender. A raised hand is kept on the
+  remote membership and shown as `handRaisedAt` on the member's roster entry, so a member arriving later sees it. A
+  reaction is passed to this server's members in the call over the `video-conference` stream (`<callId>/reaction`),
+  and dropped if it arrives over 30 s after it was sent.
+- Mute requests stay Rocket.Chat's own: Element Call has no request to mute someone else.
+
+## Settings
+
+| Setting | Purpose |
+| --- | --- |
+| `Federation_Service_MatrixRTC_Enabled` | Allows calls in federated rooms. Public, so the call button can follow it. |
+| `Federation_Service_MatrixRTC_Mode` | `compatibility` or `matrix_2_0`: the profile this server announces memberships in (see [Signalling](#signalling-memberships-in-the-matrix-room)). |
+
+LiveKit must be configured as for any native call ([native-video-conference](../native-video-conference/README.md)).
+
+## Known limitations (PoC)
+
+- **No end-to-end encryption.** Encrypted Matrix rooms send call keys as Olm to-device messages, and Rocket.Chat
+  users have no Matrix devices. Calls work only in unencrypted rooms.
+- **One membership per user on the roster.** A user on two devices shows once, with the latest device's transport.
+- **Single instance.** OpenID tokens issued for remote SFUs live in memory, and the per-member, per-room and
+  per-session queues that keep memberships and conferences from being created twice are per process.
+- Group calls send no `notification`-type announcement, and Element's room-mention rings outside DMs are ignored.
+- This server's SFU must create LiveKit rooms on demand (`room.auto_create`, LiveKit's default), since nothing
+  creates them ahead of the first token.
+- A server joining a room mid-call learns of Synapse members only when they refresh (up to an hour): Synapse does
+  not push existing sticky events to newly joined servers yet.
+- Mute requests reach only Rocket.Chat clients. A user on two devices has one hand, kept on their latest membership.

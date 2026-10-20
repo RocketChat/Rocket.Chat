@@ -11,6 +11,7 @@ export type VideoGrant = {
 	canSubscribe?: boolean;
 	canPublishData?: boolean;
 	canPublishSources?: ('camera' | 'microphone' | 'screen_share' | 'screen_share_audio')[];
+	canUpdateOwnMetadata?: boolean;
 	hidden?: boolean;
 	ingressAdmin?: boolean;
 	roomAdmin?: boolean;
