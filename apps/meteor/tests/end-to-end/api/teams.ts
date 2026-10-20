@@ -1001,6 +1001,65 @@ describe('/teams.updateMember', () => {
 			.then(() => done())
 			.catch(done);
 	});
+
+	describe('as a team moderator', () => {
+		let moderatorCredentials: Credentials;
+
+		before(async () => {
+			await request
+				.post(api('teams.updateMember'))
+				.set(credentials)
+				.send({ teamName: testTeam.name, member: { userId: testUser2._id, roles: ['moderator'] } })
+				.expect(200);
+			moderatorCredentials = await login(testUser2.username, password);
+		});
+
+		it('should not allow promoting themselves to owner', async () => {
+			await request
+				.post(api('teams.updateMember'))
+				.set(moderatorCredentials)
+				.send({ teamName: testTeam.name, member: { userId: testUser2._id, roles: ['moderator', 'owner'] } })
+				.expect(403);
+		});
+
+		it('should allow adding members with the member role', async () => {
+			await request
+				.post(api('teams.addMembers'))
+				.set(moderatorCredentials)
+				.send({ teamName: testTeam.name, members: [{ userId: testUser2._id, roles: ['member'] }] })
+				.expect(200);
+		});
+
+		it('should not allow granting owner through teams.addMembers', async () => {
+			await request
+				.post(api('teams.addMembers'))
+				.set(moderatorCredentials)
+				.send({ teamName: testTeam.name, members: [{ userId: testUser2._id, roles: ['owner'] }] })
+				.expect(403);
+		});
+
+		it('should not allow demoting an owner', async () => {
+			await request
+				.post(api('teams.updateMember'))
+				.set(moderatorCredentials)
+				.send({ teamName: testTeam.name, member: { userId: testUser._id, roles: ['member'] } })
+				.expect(403);
+		});
+
+		it('should not treat an admin role on the team subscription as global role-assignment rights', async () => {
+			await request
+				.post(api('teams.updateMember'))
+				.set(credentials)
+				.send({ teamName: testTeam.name, member: { userId: testUser2._id, roles: ['moderator', 'admin'] } })
+				.expect(200);
+
+			await request
+				.post(api('teams.updateMember'))
+				.set(moderatorCredentials)
+				.send({ teamName: testTeam.name, member: { userId: testUser2._id, roles: ['moderator', 'admin', 'custom-role'] } })
+				.expect(403);
+		});
+	});
 });
 
 describe('/teams.removeMember', () => {
