@@ -1,4 +1,5 @@
 import { MeteorError } from '@rocket.chat/core-services';
+import { fakeCursor } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import { beforeEach, describe, it } from 'mocha';
 import p from 'proxyquire';
@@ -11,14 +12,11 @@ const canAccessRoomIdMock = sinon.stub();
 const normalizeMessagesForUserMock = sinon.stub();
 const settingsGetMock = sinon.stub();
 
-// the method pushes into the array it gets back, so each call needs a fresh one
-const emptyCursor = () => ({ toArray: async () => [] });
-
 const modelsMock = {
 	Messages: {
 		findOneById: sinon.stub(),
-		findVisibleByRoomIdBeforeTimestamp: sinon.stub().callsFake(emptyCursor),
-		findVisibleByRoomIdAfterTimestamp: sinon.stub().callsFake(emptyCursor),
+		findVisibleByRoomIdBeforeTimestamp: sinon.stub().returns(fakeCursor([])),
+		findVisibleByRoomIdAfterTimestamp: sinon.stub().returns(fakeCursor([])),
 	},
 };
 

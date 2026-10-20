@@ -1,4 +1,5 @@
 import { MeteorError } from '@rocket.chat/core-services';
+import { fakeCursor } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import { beforeEach, describe, it } from 'mocha';
 import sinon from 'sinon';
@@ -30,9 +31,9 @@ import { loadSlashCommand } from './helpers';
 			findUser = sinon.stub().resolves(actor);
 			canAccess = sinon.stub().resolves(true);
 			count = sinon.stub().resolves(2);
-			subscriptions = sinon.stub().returns({
-				toArray: sinon.stub().resolves([{ u: { username: 'bob' } }, { u: { username: '' } }, { u: {} }, { u: { username: 'carol' } }]),
-			});
+			subscriptions = sinon
+				.stub()
+				.returns(fakeCursor([{ u: { username: 'bob' } }, { u: { username: '' } }, { u: {} }, { u: { username: 'carol' } }]));
 
 			addUsers = sinon.stub().resolves();
 			createPublic = sinon.stub().resolves();

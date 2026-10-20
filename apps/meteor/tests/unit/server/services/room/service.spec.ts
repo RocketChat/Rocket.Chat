@@ -1,6 +1,7 @@
 import { MeteorError } from '@rocket.chat/core-services';
 import type { IRoomService } from '@rocket.chat/core-services';
 import type { ISubscription, IUser } from '@rocket.chat/core-typings';
+import { fakeCursor } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import { beforeEach, describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
@@ -84,8 +85,6 @@ const { RoomService } = proxyquire.noCallThru().load('../../../../../server/serv
 	'../../meteor-methods/rooms/removeRoomOwner': { removeRoomOwner: roleMethods.removeRoomOwner },
 });
 
-const cursorOf = <T>(docs: T[]) => ({ toArray: async () => docs });
-
 const renamedTo = (_id: string, fname: string, name: string) => [{ _id }, { $set: { fname, name } }] as const;
 
 const createDirectMessageSubscription = (_id: string, user: Pick<IUser, '_id'>, status?: ISubscription['status']) => ({
@@ -110,7 +109,7 @@ describe('RoomService', () => {
 		const carol = { _id: 'carol-id', name: 'Carol', username: 'carol' };
 
 		beforeEach(() => {
-			Users.findUsersByIds.callsFake((ids: string[]) => cursorOf([alice, bob, carol].filter(({ _id }) => ids.includes(_id))));
+			Users.findUsersByIds.callsFake((ids: string[]) => fakeCursor([alice, bob, carol].filter(({ _id }) => ids.includes(_id))));
 		});
 
 		it('rejects rooms that are not direct messages without touching their subscriptions', async () => {
@@ -122,7 +121,7 @@ describe('RoomService', () => {
 
 		it('names each member subscription after the other members and notifies the update', async () => {
 			Subscriptions.findByRoomId.returns(
-				cursorOf([createDirectMessageSubscription('alice-sub', alice), createDirectMessageSubscription('bob-sub', bob)]),
+				fakeCursor([createDirectMessageSubscription('alice-sub', alice), createDirectMessageSubscription('bob-sub', bob)]),
 			);
 
 			expect(await service.updateDirectMessageRoomName(dm)).to.be.true;
@@ -139,7 +138,7 @@ describe('RoomService', () => {
 
 		it('uses the supplied names instead of loading those users from the database', async () => {
 			Subscriptions.findByRoomId.returns(
-				cursorOf([
+				fakeCursor([
 					createDirectMessageSubscription('alice-sub', alice),
 					createDirectMessageSubscription('bob-sub', bob),
 					createDirectMessageSubscription('carol-sub', carol),
@@ -159,7 +158,7 @@ describe('RoomService', () => {
 
 		it('leaves pending invitations untouched', async () => {
 			Subscriptions.findByRoomId.returns(
-				cursorOf([createDirectMessageSubscription('alice-sub', alice, 'INVITED'), createDirectMessageSubscription('bob-sub', bob)]),
+				fakeCursor([createDirectMessageSubscription('alice-sub', alice, 'INVITED'), createDirectMessageSubscription('bob-sub', bob)]),
 			);
 
 			await service.updateDirectMessageRoomName(dm);
@@ -170,7 +169,7 @@ describe('RoomService', () => {
 
 		it('renames a pending invitation whose id is explicitly ignored', async () => {
 			Subscriptions.findByRoomId.returns(
-				cursorOf([createDirectMessageSubscription('alice-sub', alice, 'INVITED'), createDirectMessageSubscription('bob-sub', bob)]),
+				fakeCursor([createDirectMessageSubscription('alice-sub', alice, 'INVITED'), createDirectMessageSubscription('bob-sub', bob)]),
 			);
 
 			await service.updateDirectMessageRoomName(dm, ['alice-sub']);

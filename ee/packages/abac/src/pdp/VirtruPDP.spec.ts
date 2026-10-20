@@ -1,3 +1,5 @@
+import { fakeCursor } from '@rocket.chat/models/testing';
+
 import { OnlyCompliantCanBeAddedToRoomError, PdpHealthCheckError } from '../errors';
 import { getDeniedSubjects, VirtruPDP } from './VirtruPDP';
 import type { Decision } from './types';
@@ -39,16 +41,6 @@ const mkClient = (over: Partial<Record<'isAvailable' | 'apiCall' | 'getConfig' |
 		getConfig: over.getConfig ?? jest.fn().mockReturnValue(cfg),
 		getClientTokenForHealthCheck: over.getClientTokenForHealthCheck ?? jest.fn().mockResolvedValue('hc-tok'),
 	}) as any;
-
-const cursor = <T>(items: T[]) => ({ toArray: () => Promise.resolve(items) });
-const asyncIterable = <T>(items: T[]) => ({
-	[Symbol.asyncIterator]: () => {
-		let i = 0;
-		return {
-			next: () => Promise.resolve(i < items.length ? { value: items[i++], done: false } : { value: undefined, done: true }),
-		};
-	},
-});
 
 const user = (
 	over: Partial<{ _id: string; username: string; emails: { address: string; verified?: boolean }[]; __rooms: string[] }> = {},
@@ -222,7 +214,7 @@ describe('VirtruPDP.checkUsernamesMatchAttributes', () => {
 	});
 
 	it('throws when any user has no entity key', async () => {
-		usersFindByUsernames.mockReturnValue(cursor([user({ emails: [] })]));
+		usersFindByUsernames.mockReturnValue(fakeCursor([user({ emails: [] })]));
 		const apiCall = jest.fn();
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		await expect(pdp.checkUsernamesMatchAttributes(['bob'], attrs, room)).rejects.toBeInstanceOf(OnlyCompliantCanBeAddedToRoomError);
@@ -230,7 +222,7 @@ describe('VirtruPDP.checkUsernamesMatchAttributes', () => {
 	});
 
 	it('throws when zero decision requests can be built (all users filtered)', async () => {
-		usersFindByUsernames.mockReturnValue(cursor([]));
+		usersFindByUsernames.mockReturnValue(fakeCursor([]));
 		const apiCall = jest.fn();
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		await expect(pdp.checkUsernamesMatchAttributes(['ghost'], attrs, room)).rejects.toBeInstanceOf(OnlyCompliantCanBeAddedToRoomError);
@@ -239,7 +231,7 @@ describe('VirtruPDP.checkUsernamesMatchAttributes', () => {
 
 	it('resolves when all users get DECISION_PERMIT', async () => {
 		usersFindByUsernames.mockReturnValue(
-			cursor([user(), user({ _id: 'u2', username: 'alice', emails: [{ address: 'a@x.com', verified: true }] })]),
+			fakeCursor([user(), user({ _id: 'u2', username: 'alice', emails: [{ address: 'a@x.com', verified: true }] })]),
 		);
 		const apiCall = jest.fn().mockResolvedValue({
 			decisionResponses: [
@@ -253,7 +245,7 @@ describe('VirtruPDP.checkUsernamesMatchAttributes', () => {
 
 	it('throws when any user is DENIED', async () => {
 		usersFindByUsernames.mockReturnValue(
-			cursor([user(), user({ _id: 'u2', username: 'alice', emails: [{ address: 'a@x.com', verified: true }] })]),
+			fakeCursor([user(), user({ _id: 'u2', username: 'alice', emails: [{ address: 'a@x.com', verified: true }] })]),
 		);
 		const apiCall = jest.fn().mockResolvedValue({
 			decisionResponses: [
@@ -268,7 +260,7 @@ describe('VirtruPDP.checkUsernamesMatchAttributes', () => {
 	});
 
 	it('throws when a decision response is empty (no resourceDecisions)', async () => {
-		usersFindByUsernames.mockReturnValue(cursor([user()]));
+		usersFindByUsernames.mockReturnValue(fakeCursor([user()]));
 		const apiCall = jest.fn().mockResolvedValue({ decisionResponses: [{}] });
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		await expect(pdp.checkUsernamesMatchAttributes(['bob'], attrs, room)).rejects.toBeInstanceOf(OnlyCompliantCanBeAddedToRoomError);
@@ -289,7 +281,7 @@ describe('VirtruPDP.onRoomAttributesChanged', () => {
 
 	it('returns user as non-compliant when entity key missing (no API request for that user)', async () => {
 		const u = user({ emails: [] });
-		usersFindActiveByRoomIds.mockReturnValue(asyncIterable([u]));
+		usersFindActiveByRoomIds.mockReturnValue(fakeCursor([u]));
 		const apiCall = jest.fn();
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		const result = await pdp.onRoomAttributesChanged(room, newAttrs);
@@ -298,7 +290,7 @@ describe('VirtruPDP.onRoomAttributesChanged', () => {
 	});
 
 	it('returns [] when all users are DECISION_PERMIT', async () => {
-		usersFindActiveByRoomIds.mockReturnValue(asyncIterable([user()]));
+		usersFindActiveByRoomIds.mockReturnValue(fakeCursor([user()]));
 		const apiCall = jest.fn().mockResolvedValue(permitFor(['r1']));
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		const result = await pdp.onRoomAttributesChanged(room, newAttrs);
@@ -308,7 +300,7 @@ describe('VirtruPDP.onRoomAttributesChanged', () => {
 	it('returns users that are DENIED', async () => {
 		const u1 = user();
 		const u2 = user({ _id: 'u2', username: 'alice', emails: [{ address: 'a@x.com', verified: true }] });
-		usersFindActiveByRoomIds.mockReturnValue(asyncIterable([u1, u2]));
+		usersFindActiveByRoomIds.mockReturnValue(fakeCursor([u1, u2]));
 		const apiCall = jest.fn().mockResolvedValue({
 			decisionResponses: [
 				{ resourceDecisions: [{ ephemeralResourceId: 'r1', decision: 'DECISION_PERMIT' }] },
@@ -322,7 +314,7 @@ describe('VirtruPDP.onRoomAttributesChanged', () => {
 
 	it('does not evict on empty resourceDecisions (inconclusive)', async () => {
 		const u = user();
-		usersFindActiveByRoomIds.mockReturnValue(asyncIterable([u]));
+		usersFindActiveByRoomIds.mockReturnValue(fakeCursor([u]));
 		const apiCall = jest.fn().mockResolvedValue({ decisionResponses: [{ resourceDecisions: [] }] });
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		const result = await pdp.onRoomAttributesChanged(room, newAttrs);
@@ -330,7 +322,7 @@ describe('VirtruPDP.onRoomAttributesChanged', () => {
 	});
 
 	it('does not evict on DECISION_UNSPECIFIED (inconclusive)', async () => {
-		usersFindActiveByRoomIds.mockReturnValue(asyncIterable([user()]));
+		usersFindActiveByRoomIds.mockReturnValue(fakeCursor([user()]));
 		const apiCall = jest.fn().mockResolvedValue({
 			decisionResponses: [{ resourceDecisions: [{ ephemeralResourceId: 'r1', decision: 'DECISION_UNSPECIFIED' }] }],
 		});
@@ -343,7 +335,7 @@ describe('VirtruPDP.onRoomAttributesChanged', () => {
 		const keyless = user({ _id: 'u0', emails: [] });
 		const denied = user({ _id: 'u2', username: 'alice', emails: [{ address: 'a@x.com', verified: true }] });
 		const unspecified = user({ _id: 'u3', username: 'carol', emails: [{ address: 'c@x.com', verified: true }] });
-		usersFindActiveByRoomIds.mockReturnValue(asyncIterable([keyless, denied, unspecified]));
+		usersFindActiveByRoomIds.mockReturnValue(fakeCursor([keyless, denied, unspecified]));
 		const apiCall = jest.fn().mockResolvedValue({
 			decisionResponses: [
 				{ resourceDecisions: [{ ephemeralResourceId: 'r1', decision: 'DECISION_DENY' }] },
@@ -357,7 +349,7 @@ describe('VirtruPDP.onRoomAttributesChanged', () => {
 
 	it('returns only entity-keyless users when ALL users lack entity keys (no API call)', async () => {
 		const u = user({ emails: [] });
-		usersFindActiveByRoomIds.mockReturnValue(asyncIterable([u]));
+		usersFindActiveByRoomIds.mockReturnValue(fakeCursor([u]));
 		const apiCall = jest.fn();
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		const result = await pdp.onRoomAttributesChanged(room, newAttrs);
@@ -375,7 +367,7 @@ describe('VirtruPDP.onSubjectAttributesChanged', () => {
 	});
 
 	it('returns [] when no ABAC rooms among __rooms', async () => {
-		roomsFindPrivateRoomsByIdsWithAbacAttributes.mockReturnValue(cursor([]));
+		roomsFindPrivateRoomsByIdsWithAbacAttributes.mockReturnValue(fakeCursor([]));
 		const pdp = new VirtruPDP(mkClient());
 		const result = await pdp.onSubjectAttributesChanged(user({ __rooms: ['r1'] }) as any, []);
 		expect(result).toEqual([]);
@@ -383,7 +375,7 @@ describe('VirtruPDP.onSubjectAttributesChanged', () => {
 
 	it('returns ALL abac rooms when user has no entity key (no API call)', async () => {
 		const rooms = [{ _id: 'r1', name: 'room-1', abacAttributes: [{ key: 'k', values: ['v'] }] }];
-		roomsFindPrivateRoomsByIdsWithAbacAttributes.mockReturnValue(cursor(rooms));
+		roomsFindPrivateRoomsByIdsWithAbacAttributes.mockReturnValue(fakeCursor(rooms));
 		const apiCall = jest.fn();
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		const result = await pdp.onSubjectAttributesChanged(user({ __rooms: ['r1'], emails: [] }) as any, []);
@@ -396,7 +388,7 @@ describe('VirtruPDP.onSubjectAttributesChanged', () => {
 			{ _id: 'rP', name: 'permitted', abacAttributes: [{ key: 'k', values: ['v'] }] },
 			{ _id: 'rD', name: 'denied', abacAttributes: [{ key: 'k', values: ['v'] }] },
 		];
-		roomsFindPrivateRoomsByIdsWithAbacAttributes.mockReturnValue(cursor(rooms));
+		roomsFindPrivateRoomsByIdsWithAbacAttributes.mockReturnValue(fakeCursor(rooms));
 		const apiCall = jest.fn().mockResolvedValue({
 			decisionResponses: [
 				{ resourceDecisions: [{ ephemeralResourceId: 'rP', decision: 'DECISION_PERMIT' }] },
@@ -410,7 +402,7 @@ describe('VirtruPDP.onSubjectAttributesChanged', () => {
 
 	it('still treats DECISION_UNSPECIFIED as non-compliant (LDAP-driven path cannot yield inconclusive decisions)', async () => {
 		const rooms = [{ _id: 'r1', abacAttributes: [{ key: 'k', values: ['v'] }] }];
-		roomsFindPrivateRoomsByIdsWithAbacAttributes.mockReturnValue(cursor(rooms));
+		roomsFindPrivateRoomsByIdsWithAbacAttributes.mockReturnValue(fakeCursor(rooms));
 		const apiCall = jest.fn().mockResolvedValue({
 			decisionResponses: [{ resourceDecisions: [{ ephemeralResourceId: 'r1', decision: 'DECISION_UNSPECIFIED' }] }],
 		});
@@ -422,7 +414,7 @@ describe('VirtruPDP.onSubjectAttributesChanged', () => {
 	it('splits >200 rooms into multiple decision batches', async () => {
 		const total = 401;
 		const rooms = Array.from({ length: total }, (_, i) => ({ _id: `r${i}`, abacAttributes: [{ key: 'k', values: ['v'] }] }));
-		roomsFindPrivateRoomsByIdsWithAbacAttributes.mockReturnValue(cursor(rooms));
+		roomsFindPrivateRoomsByIdsWithAbacAttributes.mockReturnValue(fakeCursor(rooms));
 		const apiCall = jest.fn().mockImplementation(async (_endpoint, body: any) => ({
 			decisionResponses: body.decisionRequests.map((r: any) => ({
 				resourceDecisions: [{ ephemeralResourceId: r.resources[0].ephemeralId, decision: 'DECISION_PERMIT' }],
@@ -549,7 +541,7 @@ describe('VirtruPDP — PDP unreachable (decision call rejects)', () => {
 	});
 
 	it('checkUsernamesMatchAttributes rejects (never silently admits) when the decision call fails', async () => {
-		usersFindByUsernames.mockReturnValue(cursor([user()]));
+		usersFindByUsernames.mockReturnValue(fakeCursor([user()]));
 		const apiCall = pdpDown();
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		await expect(pdp.checkUsernamesMatchAttributes(['bob'], attrs, room)).rejects.toThrow('pdp down');
@@ -557,7 +549,7 @@ describe('VirtruPDP — PDP unreachable (decision call rejects)', () => {
 	});
 
 	it('onRoomAttributesChanged rejects (never silently keeps everyone) when the decision call fails', async () => {
-		usersFindActiveByRoomIds.mockReturnValue(asyncIterable([user()]));
+		usersFindActiveByRoomIds.mockReturnValue(fakeCursor([user()]));
 		const apiCall = pdpDown();
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		await expect(pdp.onRoomAttributesChanged(room, attrs)).rejects.toThrow('pdp down');
@@ -565,7 +557,7 @@ describe('VirtruPDP — PDP unreachable (decision call rejects)', () => {
 	});
 
 	it('onSubjectAttributesChanged rejects when the decision call fails', async () => {
-		roomsFindPrivateRoomsByIdsWithAbacAttributes.mockReturnValue(cursor([room]));
+		roomsFindPrivateRoomsByIdsWithAbacAttributes.mockReturnValue(fakeCursor([room]));
 		const apiCall = pdpDown();
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 		await expect(pdp.onSubjectAttributesChanged(user({ __rooms: ['r1'] }) as any, [])).rejects.toThrow('pdp down');
@@ -584,7 +576,7 @@ describe('reevaluateUsers', () => {
 	});
 
 	it('returns non-compliant {user, room} pairs for denied users', async () => {
-		roomsFindPrivateRoomsByIdsWithAbacAttributes.mockReturnValue(asyncIterable([room]));
+		roomsFindPrivateRoomsByIdsWithAbacAttributes.mockReturnValue(fakeCursor([room]));
 		const apiCall = jest.fn().mockResolvedValue(denyFor(['r1']));
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 
@@ -595,7 +587,7 @@ describe('reevaluateUsers', () => {
 	});
 
 	it('returns no pairs when the user is permitted', async () => {
-		roomsFindPrivateRoomsByIdsWithAbacAttributes.mockReturnValue(asyncIterable([room]));
+		roomsFindPrivateRoomsByIdsWithAbacAttributes.mockReturnValue(fakeCursor([room]));
 		const apiCall = jest.fn().mockResolvedValue(permitFor(['r1']));
 		const pdp = new VirtruPDP(mkClient({ apiCall }));
 

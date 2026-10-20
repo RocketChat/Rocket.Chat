@@ -1,5 +1,6 @@
 import type { IAppServerOrchestrator } from '@rocket.chat/apps';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
+import { fakeCursor } from '@rocket.chat/models/testing';
 import { expect } from 'chai';
 import { beforeEach, describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
@@ -34,7 +35,7 @@ const ts = new Date('2024-01-01T00:00:00.000Z');
 describe('AppThreadsConverter.convertById', () => {
 	beforeEach(() => {
 		sandbox.reset();
-		findMessages.returns({ toArray: async () => [] });
+		findMessages.returns(fakeCursor([]));
 		converters.rooms.convertById.resolves(room);
 		converters.users.convertById.callsFake(async (id: string) => ({ __converted: 'users', id }));
 		converters.users.convertToApp.callsFake((user: any) => ({ __convertedToApp: 'users', id: user?._id }));
@@ -56,9 +57,7 @@ describe('AppThreadsConverter.convertById', () => {
 
 	it('converts the main message together with every message that replies to it', async () => {
 		findMessage.resolves({ _id: 'thread-1', rid: 'room-1', msg: 'main', u: { _id: 'user-1' } });
-		findMessages.returns({
-			toArray: async () => [{ _id: 'reply-1', rid: 'room-1', tmid: 'thread-1', msg: 'reply', u: { _id: 'user-2' } }],
-		});
+		findMessages.returns(fakeCursor([{ _id: 'reply-1', rid: 'room-1', tmid: 'thread-1', msg: 'reply', u: { _id: 'user-2' } }]));
 
 		const result: any = await converter.convertById('thread-1');
 
@@ -70,12 +69,12 @@ describe('AppThreadsConverter.convertById', () => {
 
 	it('converts a sender shared by several thread messages only once', async () => {
 		findMessage.resolves({ _id: 'thread-1', rid: 'room-1', msg: 'main', u: { _id: 'user-1' } });
-		findMessages.returns({
-			toArray: async () => [
+		findMessages.returns(
+			fakeCursor([
 				{ _id: 'reply-1', rid: 'room-1', tmid: 'thread-1', msg: 'a', u: { _id: 'user-1' } },
 				{ _id: 'reply-2', rid: 'room-1', tmid: 'thread-1', msg: 'b', u: { _id: 'user-1' } },
-			],
-		});
+			]),
+		);
 
 		await converter.convertById('thread-1');
 
