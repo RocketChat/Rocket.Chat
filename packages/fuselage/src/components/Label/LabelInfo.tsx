@@ -23,15 +23,18 @@ export type LabelInfoProps = {
 	id?: string;
 } & Omit<IconProps, 'name'>;
 
-export const LabelInfo = withFuselageProvider(({ title, id, ...props }: LabelInfoProps) => {
-	const frameProps = useTamaguiBoxProps<BoxProps>({ marginInline: 2 }, 'rcx-label__info');
+export const LabelInfo = withFuselageProvider(
+	({ title, id, ...props }: LabelInfoProps) => {
+		const frameProps = useTamaguiBoxProps<BoxProps>({ marginInline: 2 }, 'rcx-label__info');
 
-	return (
-		<LabelInfoFrame {...(frameProps as GetProps<typeof LabelInfoFrame>)}>
-			<span hidden id={id}>
-				{title}
-			</span>
-			<Icon {...props} name='info-circled' title={title} />
-		</LabelInfoFrame>
-	);
-});
+		return (
+			<LabelInfoFrame {...(frameProps as GetProps<typeof LabelInfoFrame>)}>
+				<span hidden id={id}>
+					{title}
+				</span>
+				<Icon {...props} name='info-circled' title={title} />
+			</LabelInfoFrame>
+		);
+	},
+	{ takesBoxTransforms: true },
+);

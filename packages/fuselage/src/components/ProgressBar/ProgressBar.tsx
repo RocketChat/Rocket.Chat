@@ -84,4 +84,4 @@ function ProgressBar({ percentage, variant = 'info', error, animated, light = fa
 	);
 }
 
-export default withFuselageProvider(ProgressBar);
+export default withFuselageProvider(ProgressBar, { takesBoxTransforms: true });

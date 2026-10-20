@@ -58,4 +58,4 @@ function Chevron({ up, right, down, left, size, ...props }: ChevronProps): React
 	);
 }
 
-export default withFuselageProvider(Chevron);
+export default withFuselageProvider(Chevron, { takesBoxTransforms: true });

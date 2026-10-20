@@ -69,4 +69,4 @@ function TabsItem({ selected, disabled, ...props }: TabsItemProps) {
 	return <TabsItemFrame isDisabled={disabled} {...(itemProps as GetProps<typeof TabsItemFrame>)} />;
 }
 
-export default withFuselageProvider(TabsItem);
+export default withFuselageProvider(TabsItem, { takesBoxTransforms: true });

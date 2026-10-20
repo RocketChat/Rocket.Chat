@@ -130,7 +130,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
                           >
                             <img
                               alt="avatar"
@@ -228,7 +228,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
                           >
                             <img
                               alt="avatar"
@@ -303,7 +303,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
                           >
                             <img
                               alt="avatar"
@@ -372,7 +372,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
                           >
                             <img
                               alt="avatar"
@@ -447,7 +447,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
                           >
                             <img
                               alt="avatar"
@@ -516,7 +516,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
                           >
                             <img
                               alt="avatar"
@@ -591,7 +591,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
                           >
                             <img
                               alt="avatar"
@@ -660,7 +660,7 @@ exports[`[SidebarItem Component] renders Condensed without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
                           >
                             <img
                               alt="avatar"
@@ -879,7 +879,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
                           >
                             <img
                               alt="avatar"
@@ -977,7 +977,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
                           >
                             <img
                               alt="avatar"
@@ -1052,7 +1052,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
                           >
                             <img
                               alt="avatar"
@@ -1121,7 +1121,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
                           >
                             <img
                               alt="avatar"
@@ -1196,7 +1196,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
                           >
                             <img
                               alt="avatar"
@@ -1265,7 +1265,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
                           >
                             <img
                               alt="avatar"
@@ -1340,7 +1340,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
                           >
                             <img
                               alt="avatar"
@@ -1409,7 +1409,7 @@ exports[`[SidebarItem Component] renders CondensedItems without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
                           >
                             <img
                               alt="avatar"
@@ -1628,7 +1628,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-799253879 _h-1778499542 rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-799253879 _h-1778499542 rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
                           >
                             <img
                               alt="avatar"
@@ -1725,7 +1725,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-799253879 _h-1778499542 rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-799253879 _h-1778499542 rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
                           >
                             <img
                               alt="avatar"
@@ -1822,7 +1822,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-799253879 _h-1778499542 rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-799253879 _h-1778499542 rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
                           >
                             <img
                               alt="avatar"
@@ -1919,7 +1919,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-799253879 _h-1778499542 rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-799253879 _h-1778499542 rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
                           >
                             <img
                               alt="avatar"
@@ -2016,7 +2016,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-799253879 _h-1778499542 rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-799253879 _h-1778499542 rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
                           >
                             <img
                               alt="avatar"
@@ -2113,7 +2113,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-799253879 _h-1778499542 rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-799253879 _h-1778499542 rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
                           >
                             <img
                               alt="avatar"
@@ -2210,7 +2210,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-799253879 _h-1778499542 rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-799253879 _h-1778499542 rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
                           >
                             <img
                               alt="avatar"
@@ -2307,7 +2307,7 @@ exports[`[SidebarItem Component] renders Extended without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-799253879 _h-1778499542 rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-799253879 _h-1778499542 rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
                           >
                             <img
                               alt="avatar"
@@ -2548,7 +2548,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1682139955 _h-1633581678 rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1682139955 _h-1633581678 rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                           >
                             <img
                               alt="avatar"
@@ -2623,7 +2623,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1682139955 _h-1633581678 rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1682139955 _h-1633581678 rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                           >
                             <img
                               alt="avatar"
@@ -2698,7 +2698,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1682139955 _h-1633581678 rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1682139955 _h-1633581678 rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                           >
                             <img
                               alt="avatar"
@@ -2773,7 +2773,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1682139955 _h-1633581678 rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1682139955 _h-1633581678 rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                           >
                             <img
                               alt="avatar"
@@ -2848,7 +2848,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1682139955 _h-1633581678 rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1682139955 _h-1633581678 rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                           >
                             <img
                               alt="avatar"
@@ -2923,7 +2923,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1682139955 _h-1633581678 rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1682139955 _h-1633581678 rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                           >
                             <img
                               alt="avatar"
@@ -2998,7 +2998,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1682139955 _h-1633581678 rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1682139955 _h-1633581678 rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                           >
                             <img
                               alt="avatar"
@@ -3073,7 +3073,7 @@ exports[`[SidebarItem Component] renders Medium without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1682139955 _h-1633581678 rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1682139955 _h-1633581678 rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                           >
                             <img
                               alt="avatar"
@@ -3291,7 +3291,7 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
                           >
                             <img
                               alt=""
@@ -3366,7 +3366,7 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
                           >
                             <img
                               alt=""
@@ -3447,7 +3447,7 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
                           >
                             <img
                               alt=""
@@ -3523,7 +3523,7 @@ exports[`[SidebarItem Component] renders RoomRowCondensed without crashing 1`] =
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1686757560 _h-1628964073 rcx-box rcx-box--full rcx-avatar rcx-avatar--x20"
                           >
                             <img
                               alt=""
@@ -3770,7 +3770,7 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-799253879 _h-1778499542 rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-799253879 _h-1778499542 rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
                           >
                             <img
                               alt=""
@@ -3867,7 +3867,7 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-799253879 _h-1778499542 rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-799253879 _h-1778499542 rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
                           >
                             <img
                               alt=""
@@ -3970,7 +3970,7 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-799253879 _h-1778499542 rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-799253879 _h-1778499542 rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
                           >
                             <img
                               alt=""
@@ -4068,7 +4068,7 @@ exports[`[SidebarItem Component] renders RoomRowExtended without crashing 1`] = 
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-799253879 _h-1778499542 rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-799253879 _h-1778499542 rcx-box rcx-box--full rcx-avatar rcx-avatar--x36"
                           >
                             <img
                               alt=""
@@ -4337,7 +4337,7 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1682139955 _h-1633581678 rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1682139955 _h-1633581678 rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                           >
                             <img
                               alt=""
@@ -4412,7 +4412,7 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1682139955 _h-1633581678 rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1682139955 _h-1633581678 rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                           >
                             <img
                               alt=""
@@ -4493,7 +4493,7 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1682139955 _h-1633581678 rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1682139955 _h-1633581678 rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                           >
                             <img
                               alt=""
@@ -4569,7 +4569,7 @@ exports[`[SidebarItem Component] renders RoomRowMedium without crashing 1`] = `
                           class="is_Text _d-341075704 _f-1128736932 _jc-1099843255 _ai-121763387 _mw-354604370 _ws-311910413 _ww-408434756 rcx-item__media rcx-sidebar-item__avatar"
                         >
                           <figure
-                            class="is_View _d-1985012034 _f-606928779 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1682139955 _h-1633581678 rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
+                            class="is_View _d-1985012034 _f-606928779 _mw-354604370 _mh-1241200853 _va-1124586065 _m-2017216831 _p-1943363302 _b-650654186 _o-1106425799 _ff-409630021 _fvn-1977619713 _w-1682139955 _h-1633581678 rcx-box rcx-box--full rcx-avatar rcx-avatar--x28"
                           >
                             <img
                               alt=""

@@ -94,4 +94,4 @@ const CodeSnippet = ({
 	);
 };
 
-export default withFuselageProvider(CodeSnippet);
+export default withFuselageProvider(CodeSnippet, { takesBoxTransforms: true });

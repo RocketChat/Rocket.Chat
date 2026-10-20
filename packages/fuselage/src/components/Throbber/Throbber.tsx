@@ -102,4 +102,4 @@ function Throbber({ disabled, size = 'x16', circleCount = 3, inheritColor, ...pr
 	);
 }
 
-export default withFuselageProvider(Throbber);
+export default withFuselageProvider(Throbber, { takesBoxTransforms: true });

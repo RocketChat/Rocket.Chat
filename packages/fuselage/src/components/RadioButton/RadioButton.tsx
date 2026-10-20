@@ -35,4 +35,4 @@ function RadioButton({ className, labelChildren, ...props }: RadioButtonProps) {
 	);
 }
 
-export default withFuselageProvider(RadioButton);
+export default withFuselageProvider(RadioButton, { takesBoxTransforms: true });

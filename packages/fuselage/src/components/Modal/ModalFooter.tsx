@@ -23,4 +23,4 @@ const ModalFooter = ({ children, justifyContent = 'end' }: ModalFooterProps) => 
 	return <ModalFooterFrame {...(frameProps as GetProps<typeof ModalFooterFrame>)}>{children}</ModalFooterFrame>;
 };
 
-export default withFuselageProvider(ModalFooter);
+export default withFuselageProvider(ModalFooter, { takesBoxTransforms: true });

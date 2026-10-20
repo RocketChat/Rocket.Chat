@@ -44,4 +44,4 @@ const Grid = ({ xs, sm, md, lg, xl, ...props }: GridProps) => {
 	);
 };
 
-export default Object.assign(withFuselageProvider(Grid), { Item: GridItem });
+export default Object.assign(withFuselageProvider(Grid, { takesBoxTransforms: true }), { Item: GridItem });
