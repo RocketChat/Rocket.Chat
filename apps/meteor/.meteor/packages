@@ -61,3 +61,5 @@ autoupdate@2.0.1
 
 zodern:types
 standard-minifier-js@3.2.0
+rspack@1.3.0
+static-html@1.5.0

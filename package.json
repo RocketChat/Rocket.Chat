@@ -212,6 +212,7 @@
 		"@react-pdf/layout@npm:^4.6.1": "patch:@react-pdf/layout@npm%3A4.6.1#~/.yarn/patches/@react-pdf-layout-npm-4.6.1-b12fdb71f4.patch"
 	},
 	"dependencies": {
+		"@rocket.chat/meteor": "workspace:*",
 		"@types/stream-buffers": "^3.0.8",
 		"node-gyp": "^11.0.0"
 	},
