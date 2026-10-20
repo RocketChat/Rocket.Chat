@@ -92,7 +92,7 @@ The handler receives a `DesktopUserStatusChangeRequest` (`{ status, customStatus
 
 The handler uses the same flow as the user menu of the web client. Thus the rate limit, permissions and settings of the server apply.
 
-- A status from `availableStatuses` removes the custom status text and its expiration.
+- A status from `availableStatuses` removes the custom status text and its expiration. Exception: when the workspace setting `Accounts_AllowUserStatusMessageChange` is off, `'away'`, `'busy'` and `'offline'` keep the current text. `'online'` always removes it.
 - A custom status sets its base status and uses its name as the text.
 
 The returned promise rejects when the server refuses the change.
