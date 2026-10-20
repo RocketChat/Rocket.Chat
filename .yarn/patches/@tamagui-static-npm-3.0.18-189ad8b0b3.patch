@@ -1,0 +1,38 @@
+diff --git a/dist/cjs/compilerHost.cjs b/dist/cjs/compilerHost.cjs
+index 53270b93d46417dc87519c0edc9b50a5559f0ce7..5abd56e308b41d499db37d3e9de5dfa76d09c47e 100644
+--- a/dist/cjs/compilerHost.cjs
++++ b/dist/cjs/compilerHost.cjs
+@@ -1884,6 +1884,14 @@ function createTamaguiCompilerHost(options) {
+ 				additions: []
+ 			};
+ 			webPropEdits.push(...webDOMResult.edits);
++			// Rocket.Chat: a styled() frame's non-style defaults (role, type, aria-*) go on the flattened host, as they do on native
++			if (platform === "web" && !component.domTag && split.viewProps) for (const name of Object.keys(staticDefaultProps)) {
++				if (name === "style" || name === "className" || name === "children" || name === "render" || !(name in split.viewProps)) continue;
++				if (input.element.entries.some((entry) => entry.kind === "prop" && entry.name === name)) continue;
++				const value = split.viewProps[name];
++				if (!(value === null || typeof value === "string" || typeof value === "boolean" || typeof value === "number" && Number.isFinite(value))) continue;
++				webDOMResult.additions.push([name, JSON.stringify(value)]);
++			}
+ 			if (platform === "native") {
+ 				const nativeStyleResolved = split.viewProps?.style;
+ 				let themedStyleKeys = null;
+diff --git a/dist/esm/compilerHost.mjs b/dist/esm/compilerHost.mjs
+index 6caef09479c8534cf2b3040a7af14777e909e2b3..4df01269ce4b26c562c931f782005dd0590c14a3 100644
+--- a/dist/esm/compilerHost.mjs
++++ b/dist/esm/compilerHost.mjs
+@@ -1859,6 +1859,14 @@ function createTamaguiCompilerHost(options) {
+ 				additions: []
+ 			};
+ 			webPropEdits.push(...webDOMResult.edits);
++			// Rocket.Chat: a styled() frame's non-style defaults (role, type, aria-*) go on the flattened host, as they do on native
++			if (platform === "web" && !component.domTag && split.viewProps) for (const name of Object.keys(staticDefaultProps)) {
++				if (name === "style" || name === "className" || name === "children" || name === "render" || !(name in split.viewProps)) continue;
++				if (input.element.entries.some((entry) => entry.kind === "prop" && entry.name === name)) continue;
++				const value = split.viewProps[name];
++				if (!(value === null || typeof value === "string" || typeof value === "boolean" || typeof value === "number" && Number.isFinite(value))) continue;
++				webDOMResult.additions.push([name, JSON.stringify(value)]);
++			}
+ 			if (platform === "native") {
+ 				const nativeStyleResolved = split.viewProps?.style;
+ 				let themedStyleKeys = null;
