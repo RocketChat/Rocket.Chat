@@ -40,7 +40,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
               </h5>
               <button
                 aria-label="Close"
-                class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
+                class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
                 data-qa="ContextualbarActionClose"
                 type="button"
               >
@@ -174,11 +174,11 @@ exports[`renders AppLogsItem without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-omrq7i"
                     >
                       <label
-                        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-box--animated rcx-input-box__wrapper rcx-css-sdt442"
+                        class="is_Text _b-1714693756 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _ls-1782815796 _fs-347291933 _fw-289166179 _lh-1925956564 _c-1922521888 _c-1063453128 _br-1531773755 _b-730625357 _bs-581064853 _p-1021290656 _d-341075704 _f-1922759564 _ai-994770828 _mw-355799360 _p-1823912888 _va-1675321343 _wb-1577688049 _ow-485594423 rcx-label rcx-input-box__wrapper rcx-box--animated rcx-css-sdt442"
                       >
                         <input
                           aria-label="Start_Date"
-                          class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-date rcx-input-box"
+                          class="is_View _m-2017216831 _p-1943363302 _b-650654186 _os-249893454 _ow-485594423 _ff-409630021 _fvn-1977619713 _p-1021290656 _d-1985012034 _f-1440749467 _w-226740859 _mh-1241200853 _va-1675321343 _ws-973912173 _wb-1577688049 _o-1119039191 _to-1727917045 _b-530853904 _ls-1782815796 _fs-347291933 _fw-289166179 _lh-1925956564 _c-277036852 _cc-365372135 _mw-841846566 rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-date rcx-box--full rcx-input-box"
                           name="startDate"
                           size="1"
                           type="date"
@@ -196,11 +196,11 @@ exports[`renders AppLogsItem without crashing 1`] = `
                         </span>
                       </label>
                       <label
-                        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-box--animated rcx-input-box__wrapper rcx-css-nc7kyx"
+                        class="is_Text _b-1714693756 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _ls-1782815796 _fs-347291933 _fw-289166179 _lh-1925956564 _c-1922521888 _c-1063453128 _br-1531773755 _b-730625357 _bs-581064853 _p-1021290656 _d-341075704 _f-1922759564 _ai-994770828 _mw-355799360 _p-1823912888 _va-1675321343 _wb-1577688049 _ow-485594423 rcx-label rcx-input-box__wrapper rcx-box--animated rcx-css-nc7kyx"
                       >
                         <input
                           aria-label="Start_Time"
-                          class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-time rcx-input-box"
+                          class="is_View _m-2017216831 _p-1943363302 _b-650654186 _os-249893454 _ow-485594423 _ff-409630021 _fvn-1977619713 _p-1021290656 _d-1985012034 _f-1440749467 _w-226740859 _mh-1241200853 _va-1675321343 _ws-973912173 _wb-1577688049 _o-1119039191 _to-1727917045 _b-530853904 _ls-1782815796 _fs-347291933 _fw-289166179 _lh-1925956564 _c-277036852 _cc-365372135 _mw-841846566 rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-time rcx-box--full rcx-input-box"
                           name="startTime"
                           size="1"
                           type="time"
@@ -232,11 +232,11 @@ exports[`renders AppLogsItem without crashing 1`] = `
                       class="rcx-box rcx-box--full rcx-css-omrq7i"
                     >
                       <label
-                        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-box--animated rcx-input-box__wrapper rcx-css-sdt442"
+                        class="is_Text _b-1714693756 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _ls-1782815796 _fs-347291933 _fw-289166179 _lh-1925956564 _c-1922521888 _c-1063453128 _br-1531773755 _b-730625357 _bs-581064853 _p-1021290656 _d-341075704 _f-1922759564 _ai-994770828 _mw-355799360 _p-1823912888 _va-1675321343 _wb-1577688049 _ow-485594423 rcx-label rcx-input-box__wrapper rcx-box--animated rcx-css-sdt442"
                       >
                         <input
                           aria-label="End_Date"
-                          class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-date rcx-input-box"
+                          class="is_View _m-2017216831 _p-1943363302 _b-650654186 _os-249893454 _ow-485594423 _ff-409630021 _fvn-1977619713 _p-1021290656 _d-1985012034 _f-1440749467 _w-226740859 _mh-1241200853 _va-1675321343 _ws-973912173 _wb-1577688049 _o-1119039191 _to-1727917045 _b-530853904 _ls-1782815796 _fs-347291933 _fw-289166179 _lh-1925956564 _c-277036852 _cc-365372135 _mw-841846566 rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-date rcx-box--full rcx-input-box"
                           name="endDate"
                           size="1"
                           type="date"
@@ -254,11 +254,11 @@ exports[`renders AppLogsItem without crashing 1`] = `
                         </span>
                       </label>
                       <label
-                        class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-box--animated rcx-input-box__wrapper rcx-css-nc7kyx"
+                        class="is_Text _b-1714693756 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _ls-1782815796 _fs-347291933 _fw-289166179 _lh-1925956564 _c-1922521888 _c-1063453128 _br-1531773755 _b-730625357 _bs-581064853 _p-1021290656 _d-341075704 _f-1922759564 _ai-994770828 _mw-355799360 _p-1823912888 _va-1675321343 _wb-1577688049 _ow-485594423 rcx-label rcx-input-box__wrapper rcx-box--animated rcx-css-nc7kyx"
                       >
                         <input
                           aria-label="End_Time"
-                          class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-time rcx-input-box"
+                          class="is_View _m-2017216831 _p-1943363302 _b-650654186 _os-249893454 _ow-485594423 _ff-409630021 _fvn-1977619713 _p-1021290656 _d-1985012034 _f-1440749467 _w-226740859 _mh-1241200853 _va-1675321343 _ws-973912173 _wb-1577688049 _o-1119039191 _to-1727917045 _b-530853904 _ls-1782815796 _fs-347291933 _fw-289166179 _lh-1925956564 _c-277036852 _cc-365372135 _mw-841846566 rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-time rcx-box--full rcx-input-box"
                           name="endTime"
                           size="1"
                           type="time"
@@ -294,7 +294,13 @@ exports[`renders AppLogsItem without crashing 1`] = `
                     >
                       <span
                         class="is_View _d-1987097250 _f-571455214 _o-1106425799 _fvn-1977619713 _a-119288947 _o-1083158629 _br-1682169757 _b-326940086 _h-568431264 _m-93279763 _to-611310301 _t-1660003422 rcx-skeleton rcx-skeleton--text rcx-css-1qcz93u"
-                      />
+                      >
+                        <span
+                          aria-hidden="true"
+                        >
+                           
+                        </span>
+                      </span>
                     </div>
                   </div>
                   <div
@@ -351,14 +357,14 @@ exports[`renders AppLogsItem without crashing 1`] = `
                       aria-expanded="false"
                       aria-haspopup="listbox"
                       aria-label="Severity"
-                      aria-labelledby="react-aria-_r_1g_ react-aria-_r_1b_ severityFilterLabel"
+                      aria-labelledby="react-aria-_r_1k_ react-aria-_r_1f_ severityFilterLabel"
                       class="rcx-box rcx-box--full rcx-box--animated rcx-select rcx-css-3ejkxj"
                       id="severityFilter"
                       type="button"
                     >
                       <span
                         class="rcx-box rcx-box--full rcx-css-1ah8hdc"
-                        id="react-aria-_r_1g_"
+                        id="react-aria-_r_1k_"
                       >
                         All
                       </span>
@@ -403,7 +409,7 @@ exports[`renders AppLogsItem without crashing 1`] = `
           >
             <button
               aria-label="Clear_filters"
-              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button--secondary rcx-button rcx-css-1qcz93u"
+              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _c-836305799 _b-1331573151 rcx-button--secondary rcx-button rcx-css-1qcz93u"
               type="button"
             >
               <span

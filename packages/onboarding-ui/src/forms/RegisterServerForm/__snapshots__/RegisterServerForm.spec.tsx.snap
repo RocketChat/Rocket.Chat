@@ -35,7 +35,7 @@ exports[`renders _RegisterServerForm without crashing 1`] = `
             class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field rcx-field-group__item"
           >
             <label
-              class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label rcx-css-127j9mz"
+              class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label rcx-css-127j9mz"
               for="_r_1_"
             >
               Admin email
@@ -53,7 +53,7 @@ exports[`renders _RegisterServerForm without crashing 1`] = `
                 aria-describedby="_r_1_-error"
                 aria-invalid="false"
                 aria-required="true"
-                class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-email rcx-input-box"
+                class="is_View _m-2017216831 _p-1980417108 _b-95402947 _os-249893454 _ow-485594423 _ff-409630021 _fvn-1977619713 _p-1021290656 _d-1985012034 _f-1440749467 _w-226740859 _va-1675321343 _ws-973912173 _wb-1577688049 _o-1119039191 _to-1727917045 _ls-1782815796 _fs-347291933 _fw-289166179 _lh-1925956564 _c-277036852 _cc-365372135 _br-1975385178 _b-2079286388 _bs-927417523 _mw-327200000 _mh-877089018 rcx-box--animated rcx-input-box--type-email rcx-input-box"
                 id="_r_1_"
                 name="email"
                 placeholder="Insert your email to continue"
@@ -70,7 +70,7 @@ exports[`renders _RegisterServerForm without crashing 1`] = `
               class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row rcx-css-gj79e2"
             >
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-check-box"
               >
                 <input
                   aria-describedby="_r_2_-error"
@@ -83,11 +83,21 @@ exports[`renders _RegisterServerForm without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
-                />
+                  class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
+                >
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566"
+                  />
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566 _t-1011287905"
+                  />
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-1769075542 _h-1539106968 _t-663727601"
+                  />
+                </i>
               </label>
               <label
-                class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-box--with-block-elements rcx-box--with-inline-elements rcx-field__label rcx-css-10pt7e2"
+                class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-box--with-block-elements rcx-box--with-inline-elements rcx-field__label rcx-css-10pt7e2"
                 for="_r_2_"
               >
                 I agree with 
@@ -136,7 +146,7 @@ exports[`renders _RegisterServerForm without crashing 1`] = `
             role="group"
           >
             <button
-              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button--primary rcx-button"
+              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 _a-1578443335 _b-1895627589 _br-1397394445 _bs-2123073523 _c-1353765184 _b-1658181062 rcx-button--primary rcx-button"
               type="submit"
             >
               <span
@@ -177,8 +187,8 @@ exports[`renders _RegisterServerFormOffline without crashing 1`] = `
 <body>
   <div>
     <form
-      aria-describedby="_r_k_-informed-disclaimer _r_k_-engagement-disclaimer"
-      aria-labelledby="_r_k_-title"
+      aria-describedby="_r_o_-informed-disclaimer _r_o_-engagement-disclaimer"
+      aria-labelledby="_r_o_-title"
       class="is_Text _d-1987097250 _ws-311910413 _ww-408434756 _f-571455214 _o-1106425799 _ff-409630021 _fvn-1977619713 _b-740265684 _c-1063453128 _br-1937162231 _b-1090939261 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 _bs-1895732505 rcx-tile rcx-tile--elevation-1 rcx-css-h7ntyn"
       tabindex="-1"
     >
@@ -192,7 +202,7 @@ exports[`renders _RegisterServerFormOffline without crashing 1`] = `
         </div>
         <div
           class="rcx-box rcx-box--full rcx-css-tthqrz"
-          id="_r_k_-title"
+          id="_r_o_-title"
         >
           Register your workspace
         </div>
@@ -208,8 +218,8 @@ exports[`renders _RegisterServerFormOffline without crashing 1`] = `
             class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-1378740307 _ai-1227553247 _w-1560934055 rcx-field rcx-field-group__item"
           >
             <label
-              class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-field__label rcx-css-127j9mz"
-              for="_r_l_"
+              class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-field__label rcx-css-127j9mz"
+              for="_r_p_"
             >
               Admin email
               <span
@@ -223,11 +233,11 @@ exports[`renders _RegisterServerFormOffline without crashing 1`] = `
               class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row"
             >
               <input
-                aria-describedby="_r_l_-error"
+                aria-describedby="_r_p_-error"
                 aria-invalid="false"
                 aria-required="true"
-                class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--type-email rcx-input-box"
-                id="_r_l_"
+                class="is_View _m-2017216831 _p-1980417108 _b-95402947 _os-249893454 _ow-485594423 _ff-409630021 _fvn-1977619713 _p-1021290656 _d-1985012034 _f-1440749467 _w-226740859 _va-1675321343 _ws-973912173 _wb-1577688049 _o-1119039191 _to-1727917045 _ls-1782815796 _fs-347291933 _fw-289166179 _lh-1925956564 _c-277036852 _cc-365372135 _br-1975385178 _b-2079286388 _bs-927417523 _mw-327200000 _mh-877089018 rcx-box--animated rcx-input-box--type-email rcx-input-box"
+                id="_r_p_"
                 name="email"
                 placeholder="Insert your email to continue"
                 size="1"
@@ -243,25 +253,35 @@ exports[`renders _RegisterServerFormOffline without crashing 1`] = `
               class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _d-341075704 _f-541922926 _jc-281817805 _ai-121763387 _m-2017978848 _c-1756781803 rcx-field__row rcx-css-gj79e2"
             >
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-check-box"
               >
                 <input
-                  aria-describedby="_r_m_-error"
+                  aria-describedby="_r_q_-error"
                   aria-invalid="false"
                   aria-required="true"
                   class="is_View _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1261267467 _o-1119039191 _c-588872556 _cp-2129451690 _w-226739898 _h-1922295961 _m-1890937723 _p-1943363302 _ws-973912173 _f-1246374076 rcx-check-box__input"
-                  id="_r_m_"
+                  id="_r_q_"
                   name="agreement"
                   type="checkbox"
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
-                />
+                  class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-761515502 _w-120696903 rcx-check-box__fake"
+                >
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566"
+                  />
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-762189173 _h-1673744566 _t-1011287905"
+                  />
+                  <span
+                    class="is_View _p-1261267467 _d-1987097250 _v-46649817 _o-1507270696 _b-156244340 _br-971297206 _w-1769075542 _h-1539106968 _t-663727601"
+                  />
+                </i>
               </label>
               <label
-                class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-box--with-block-elements rcx-box--with-inline-elements rcx-field__label rcx-css-10pt7e2"
-                for="_r_m_"
+                class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 _as-361308821 _m-1067104434 rcx-label rcx-box--with-block-elements rcx-box--with-inline-elements rcx-field__label rcx-css-10pt7e2"
+                for="_r_q_"
               >
                 I agree with 
                 <a
@@ -309,7 +329,7 @@ exports[`renders _RegisterServerFormOffline without crashing 1`] = `
             role="group"
           >
             <button
-              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button--primary rcx-button"
+              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 _a-1578443335 _b-1239149485 _br-1397394445 _bs-2123073523 _c-1718234884 _b-1181624406 _c-2102202510 rcx-button--primary rcx-button"
               disabled=""
               type="submit"
             >
@@ -320,7 +340,7 @@ exports[`renders _RegisterServerFormOffline without crashing 1`] = `
               </span>
             </button>
             <button
-              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 rcx-button"
+              class="is_View _d-1409515928 _f-1069814357 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _mw-1629853272 _h-1940744275 _p-1801169607 _a-1578443335 _b-490095930 _br-1397394445 _bs-958948735 _c-836305799 _b-1331573151 rcx-button"
               type="button"
             >
               <span
@@ -332,13 +352,13 @@ exports[`renders _RegisterServerFormOffline without crashing 1`] = `
           </div>
           <div
             class="rcx-box rcx-box--full rcx-css-5vy0j0"
-            id="_r_k_-engagement-disclaimer"
+            id="_r_o_-engagement-disclaimer"
           >
             Registration allows automatic license updates, notifications of critical vulnerabilities and access to Rocket.Chat Cloud services. No sensitive workspace data is shared; statistics sent to Rocket.Chat are made visible to you within the administration area.
           </div>
           <div
             class="rcx-box rcx-box--full rcx-css-5vy0j0"
-            id="_r_k_-informed-disclaimer"
+            id="_r_o_-informed-disclaimer"
           >
             By submitting this form you consent to receive more information about Rocket.Chat products, events and updates, according to our 
             <a

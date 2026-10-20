@@ -39,7 +39,7 @@ exports[`renders Default with stable structure 1`] = `
               </h5>
               <button
                 aria-label="Close"
-                class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
+                class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
                 data-qa="ContextualbarActionClose"
                 type="button"
               >
@@ -56,12 +56,12 @@ exports[`renders Default with stable structure 1`] = `
             class="rcx-box rcx-box--full rcx-vertical-bar__section rcx-css-16arwmq"
           >
             <label
-              class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-box--animated rcx-input-box__wrapper"
+              class="is_Text _b-1714693756 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _ls-1782815796 _fs-347291933 _fw-289166179 _lh-1925956564 _c-1922521888 _c-1063453128 _br-1531773755 _b-730625357 _bs-581064853 _p-1021290656 _d-341075704 _f-1922759564 _ai-994770828 _mw-355799360 _p-1823912888 _va-1675321343 _wb-1577688049 _ow-485594423 rcx-label rcx-input-box__wrapper rcx-box--animated"
             >
               <input
-                aria-controls="_r_7f_"
+                aria-controls="_r_7i_"
                 aria-label="Search_Messages"
-                class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
+                class="is_View _m-2017216831 _p-1943363302 _b-650654186 _os-249893454 _ow-485594423 _ff-409630021 _fvn-1977619713 _p-1021290656 _d-1985012034 _f-1440749467 _w-226740859 _mh-1241200853 _va-1675321343 _ws-973912173 _wb-1577688049 _o-1119039191 _to-1727917045 _b-530853904 _ls-1782815796 _fs-347291933 _fw-289166179 _lh-1925956564 _c-277036852 _cc-365372135 _mw-841846566 rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-box--full rcx-input-box"
                 placeholder="Search_Messages"
                 size="1"
                 type="text"
@@ -90,7 +90,7 @@ exports[`renders Default with stable structure 1`] = `
             </div>
             <div
               class="rcx-box rcx-box--full rcx-css-4k230l"
-              id="_r_7f_"
+              id="_r_7i_"
             >
               <div
                 class="rcx-box rcx-box--full rcx-css-1cb6i7s"
@@ -104,7 +104,7 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
-                          class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 _c-1830342115 rcx-message rcx-message--clickable rcx-css-c3sy3b rcx-css-mg522s"
+                          class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 _c-1830342115 t_group_message rcx-message rcx-message--clickable rcx-css-c3sy3b rcx-css-mg522s"
                           data-drid="drid-0"
                           tabindex="0"
                         >
@@ -140,14 +140,14 @@ exports[`renders Default with stable structure 1`] = `
                                   user.name
                                 </span>
                                 <span
-                                  class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-1756781803 rcx-message-header__time"
+                                  class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-191671261 rcx-message-header__time"
                                 >
                                   January 1st, 2024
                                 </span>
                               </div>
                             </div>
                             <div
-                              class="is_Text _d-1987097250 _ws-311910413 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _o-1119039191 _f-1246374076 _m-183820880 _o-1507270695 _c-1063453128 rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
+                              class="is_Text _ws-311910413 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _f-1246374076 _m-183820880 _o-1507270695 _wb-1664347834 _c-1063453128 _t-255057237 _d-1340793089 _o-1433117770 _wbo-316830896 _wlc-1555172159 rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
                             >
                               <div>
                                 Discussion 0
@@ -202,7 +202,7 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
-                          class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 _c-1830342115 rcx-message rcx-message--clickable rcx-css-c3sy3b rcx-css-mg522s"
+                          class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 _c-1830342115 t_group_message rcx-message rcx-message--clickable rcx-css-c3sy3b rcx-css-mg522s"
                           data-drid="drid-1"
                           tabindex="0"
                         >
@@ -238,14 +238,14 @@ exports[`renders Default with stable structure 1`] = `
                                   user.name
                                 </span>
                                 <span
-                                  class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-1756781803 rcx-message-header__time"
+                                  class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-191671261 rcx-message-header__time"
                                 >
                                   January 1st, 2024
                                 </span>
                               </div>
                             </div>
                             <div
-                              class="is_Text _d-1987097250 _ws-311910413 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _o-1119039191 _f-1246374076 _m-183820880 _o-1507270695 _c-1063453128 rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
+                              class="is_Text _ws-311910413 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _f-1246374076 _m-183820880 _o-1507270695 _wb-1664347834 _c-1063453128 _t-255057237 _d-1340793089 _o-1433117770 _wbo-316830896 _wlc-1555172159 rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
                             >
                               <div>
                                 Discussion 1
@@ -300,7 +300,7 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
-                          class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 _c-1830342115 rcx-message rcx-message--clickable rcx-css-c3sy3b rcx-css-mg522s"
+                          class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 _c-1830342115 t_group_message rcx-message rcx-message--clickable rcx-css-c3sy3b rcx-css-mg522s"
                           data-drid="drid-2"
                           tabindex="0"
                         >
@@ -336,14 +336,14 @@ exports[`renders Default with stable structure 1`] = `
                                   user.name
                                 </span>
                                 <span
-                                  class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-1756781803 rcx-message-header__time"
+                                  class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-191671261 rcx-message-header__time"
                                 >
                                   January 1st, 2024
                                 </span>
                               </div>
                             </div>
                             <div
-                              class="is_Text _d-1987097250 _ws-311910413 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _o-1119039191 _f-1246374076 _m-183820880 _o-1507270695 _c-1063453128 rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
+                              class="is_Text _ws-311910413 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _f-1246374076 _m-183820880 _o-1507270695 _wb-1664347834 _c-1063453128 _t-255057237 _d-1340793089 _o-1433117770 _wbo-316830896 _wlc-1555172159 rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
                             >
                               <div>
                                 Discussion 2
@@ -398,7 +398,7 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
-                          class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 _c-1830342115 rcx-message rcx-message--clickable rcx-css-c3sy3b rcx-css-mg522s"
+                          class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 _c-1830342115 t_group_message rcx-message rcx-message--clickable rcx-css-c3sy3b rcx-css-mg522s"
                           data-drid="drid-3"
                           tabindex="0"
                         >
@@ -434,14 +434,14 @@ exports[`renders Default with stable structure 1`] = `
                                   user.name
                                 </span>
                                 <span
-                                  class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-1756781803 rcx-message-header__time"
+                                  class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-191671261 rcx-message-header__time"
                                 >
                                   January 1st, 2024
                                 </span>
                               </div>
                             </div>
                             <div
-                              class="is_Text _d-1987097250 _ws-311910413 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _o-1119039191 _f-1246374076 _m-183820880 _o-1507270695 _c-1063453128 rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
+                              class="is_Text _ws-311910413 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _f-1246374076 _m-183820880 _o-1507270695 _wb-1664347834 _c-1063453128 _t-255057237 _d-1340793089 _o-1433117770 _wbo-316830896 _wlc-1555172159 rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
                             >
                               <div>
                                 Discussion 3
@@ -496,7 +496,7 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
-                          class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 _c-1830342115 rcx-message rcx-message--clickable rcx-css-c3sy3b rcx-css-mg522s"
+                          class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 _c-1830342115 t_group_message rcx-message rcx-message--clickable rcx-css-c3sy3b rcx-css-mg522s"
                           data-drid="drid-4"
                           tabindex="0"
                         >
@@ -532,14 +532,14 @@ exports[`renders Default with stable structure 1`] = `
                                   user.name
                                 </span>
                                 <span
-                                  class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-1756781803 rcx-message-header__time"
+                                  class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-191671261 rcx-message-header__time"
                                 >
                                   January 1st, 2024
                                 </span>
                               </div>
                             </div>
                             <div
-                              class="is_Text _d-1987097250 _ws-311910413 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _o-1119039191 _f-1246374076 _m-183820880 _o-1507270695 _c-1063453128 rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
+                              class="is_Text _ws-311910413 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _f-1246374076 _m-183820880 _o-1507270695 _wb-1664347834 _c-1063453128 _t-255057237 _d-1340793089 _o-1433117770 _wbo-316830896 _wlc-1555172159 rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
                             >
                               <div>
                                 Discussion 4
@@ -594,7 +594,7 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
-                          class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 _c-1830342115 rcx-message rcx-message--clickable rcx-css-c3sy3b rcx-css-mg522s"
+                          class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 _c-1830342115 t_group_message rcx-message rcx-message--clickable rcx-css-c3sy3b rcx-css-mg522s"
                           data-drid="drid-5"
                           tabindex="0"
                         >
@@ -630,14 +630,14 @@ exports[`renders Default with stable structure 1`] = `
                                   user.name
                                 </span>
                                 <span
-                                  class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-1756781803 rcx-message-header__time"
+                                  class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-191671261 rcx-message-header__time"
                                 >
                                   January 1st, 2024
                                 </span>
                               </div>
                             </div>
                             <div
-                              class="is_Text _d-1987097250 _ws-311910413 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _o-1119039191 _f-1246374076 _m-183820880 _o-1507270695 _c-1063453128 rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
+                              class="is_Text _ws-311910413 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _f-1246374076 _m-183820880 _o-1507270695 _wb-1664347834 _c-1063453128 _t-255057237 _d-1340793089 _o-1433117770 _wbo-316830896 _wlc-1555172159 rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
                             >
                               <div>
                                 Discussion 5
@@ -692,7 +692,7 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
-                          class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 _c-1830342115 rcx-message rcx-message--clickable rcx-css-c3sy3b rcx-css-mg522s"
+                          class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 _c-1830342115 t_group_message rcx-message rcx-message--clickable rcx-css-c3sy3b rcx-css-mg522s"
                           data-drid="drid-6"
                           tabindex="0"
                         >
@@ -728,14 +728,14 @@ exports[`renders Default with stable structure 1`] = `
                                   user.name
                                 </span>
                                 <span
-                                  class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-1756781803 rcx-message-header__time"
+                                  class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-191671261 rcx-message-header__time"
                                 >
                                   January 1st, 2024
                                 </span>
                               </div>
                             </div>
                             <div
-                              class="is_Text _d-1987097250 _ws-311910413 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _o-1119039191 _f-1246374076 _m-183820880 _o-1507270695 _c-1063453128 rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
+                              class="is_Text _ws-311910413 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _f-1246374076 _m-183820880 _o-1507270695 _wb-1664347834 _c-1063453128 _t-255057237 _d-1340793089 _o-1433117770 _wbo-316830896 _wlc-1555172159 rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
                             >
                               <div>
                                 Discussion 6
@@ -790,7 +790,7 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
-                          class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 _c-1830342115 rcx-message rcx-message--clickable rcx-css-c3sy3b rcx-css-mg522s"
+                          class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 _c-1830342115 t_group_message rcx-message rcx-message--clickable rcx-css-c3sy3b rcx-css-mg522s"
                           data-drid="drid-7"
                           tabindex="0"
                         >
@@ -826,14 +826,14 @@ exports[`renders Default with stable structure 1`] = `
                                   user.name
                                 </span>
                                 <span
-                                  class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-1756781803 rcx-message-header__time"
+                                  class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-191671261 rcx-message-header__time"
                                 >
                                   January 1st, 2024
                                 </span>
                               </div>
                             </div>
                             <div
-                              class="is_Text _d-1987097250 _ws-311910413 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _o-1119039191 _f-1246374076 _m-183820880 _o-1507270695 _c-1063453128 rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
+                              class="is_Text _ws-311910413 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _f-1246374076 _m-183820880 _o-1507270695 _wb-1664347834 _c-1063453128 _t-255057237 _d-1340793089 _o-1433117770 _wbo-316830896 _wlc-1555172159 rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
                             >
                               <div>
                                 Discussion 7
@@ -888,7 +888,7 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
-                          class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 _c-1830342115 rcx-message rcx-message--clickable rcx-css-c3sy3b rcx-css-mg522s"
+                          class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 _c-1830342115 t_group_message rcx-message rcx-message--clickable rcx-css-c3sy3b rcx-css-mg522s"
                           data-drid="drid-8"
                           tabindex="0"
                         >
@@ -924,14 +924,14 @@ exports[`renders Default with stable structure 1`] = `
                                   user.name
                                 </span>
                                 <span
-                                  class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-1756781803 rcx-message-header__time"
+                                  class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-191671261 rcx-message-header__time"
                                 >
                                   January 1st, 2024
                                 </span>
                               </div>
                             </div>
                             <div
-                              class="is_Text _d-1987097250 _ws-311910413 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _o-1119039191 _f-1246374076 _m-183820880 _o-1507270695 _c-1063453128 rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
+                              class="is_Text _ws-311910413 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _f-1246374076 _m-183820880 _o-1507270695 _wb-1664347834 _c-1063453128 _t-255057237 _d-1340793089 _o-1433117770 _wbo-316830896 _wlc-1555172159 rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
                             >
                               <div>
                                 Discussion 8
@@ -986,7 +986,7 @@ exports[`renders Default with stable structure 1`] = `
                     <li>
                       <div>
                         <div
-                          class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 _c-1830342115 rcx-message rcx-message--clickable rcx-css-c3sy3b rcx-css-mg522s"
+                          class="is_View _p-1021290656 _f-1841970073 _ai-994770828 _m-211896778 _p-1260242245 _b-1182826059 _br-1105657738 _ow-1993548942 _bs-1333539716 _b-1741968088 _c-1830342115 t_group_message rcx-message rcx-message--clickable rcx-css-c3sy3b rcx-css-mg522s"
                           data-drid="drid-9"
                           tabindex="0"
                         >
@@ -1022,14 +1022,14 @@ exports[`renders Default with stable structure 1`] = `
                                   user.name
                                 </span>
                                 <span
-                                  class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-1756781803 rcx-message-header__time"
+                                  class="is_Text _ff-409630021 _fv-607544992 _fs-2088488067 _lh-1306743983 _ls-1782815796 _fw-289165218 _o-1119039191 _to-1727917045 _ws-973912173 _f-1246374077 _m-211896778 _c-191671261 rcx-message-header__time"
                                 >
                                   January 1st, 2024
                                 </span>
                               </div>
                             </div>
                             <div
-                              class="is_Text _d-1987097250 _ws-311910413 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _o-1119039191 _f-1246374076 _m-183820880 _o-1507270695 _c-1063453128 rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
+                              class="is_Text _ws-311910413 _fs-347291933 _lh-1925956564 _ls-1782815796 _fw-289165218 _f-1246374076 _m-183820880 _o-1507270695 _wb-1664347834 _c-1063453128 _t-255057237 _d-1340793089 _o-1433117770 _wbo-316830896 _wlc-1555172159 rcx-message-body rcx-message-body--clamp rcx-message-body--clamp-2"
                             >
                               <div>
                                 Discussion 9
@@ -1166,7 +1166,7 @@ exports[`renders Empty with stable structure 1`] = `
               </h5>
               <button
                 aria-label="Close"
-                class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
+                class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
                 data-qa="ContextualbarActionClose"
                 type="button"
               >
@@ -1183,12 +1183,12 @@ exports[`renders Empty with stable structure 1`] = `
             class="rcx-box rcx-box--full rcx-vertical-bar__section rcx-css-16arwmq"
           >
             <label
-              class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-box--animated rcx-input-box__wrapper"
+              class="is_Text _b-1714693756 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _ls-1782815796 _fs-347291933 _fw-289166179 _lh-1925956564 _c-1922521888 _c-1063453128 _br-1531773755 _b-730625357 _bs-581064853 _p-1021290656 _d-341075704 _f-1922759564 _ai-994770828 _mw-355799360 _p-1823912888 _va-1675321343 _wb-1577688049 _ow-485594423 rcx-label rcx-input-box__wrapper rcx-box--animated"
             >
               <input
-                aria-controls="_r_e1_"
+                aria-controls="_r_e5_"
                 aria-label="Search_Messages"
-                class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
+                class="is_View _m-2017216831 _p-1943363302 _b-650654186 _os-249893454 _ow-485594423 _ff-409630021 _fvn-1977619713 _p-1021290656 _d-1985012034 _f-1440749467 _w-226740859 _mh-1241200853 _va-1675321343 _ws-973912173 _wb-1577688049 _o-1119039191 _to-1727917045 _b-530853904 _ls-1782815796 _fs-347291933 _fw-289166179 _lh-1925956564 _c-277036852 _cc-365372135 _mw-841846566 rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-box--full rcx-input-box"
                 placeholder="Search_Messages"
                 size="1"
                 type="text"
@@ -1217,7 +1217,7 @@ exports[`renders Empty with stable structure 1`] = `
             </div>
             <div
               class="rcx-box rcx-box--full rcx-css-4k230l"
-              id="_r_e1_"
+              id="_r_e5_"
             >
               <div
                 class="rcx-box rcx-box--full rcx-vertical-bar__content rcx-css-r8c38r"
@@ -1227,7 +1227,7 @@ exports[`renders Empty with stable structure 1`] = `
                 >
                   <i
                     aria-hidden="true"
-                    class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-states__icon rcx-icon--name-magnifier rcx-icon rcx-css-d884y5"
+                    class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-states__icon rcx-icon--name-magnifier rcx-icon rcx-css-2h9i9l rcx-css-d884y5"
                   >
                     
                   </i>
@@ -1320,7 +1320,7 @@ exports[`renders Loading with stable structure 1`] = `
               </h5>
               <button
                 aria-label="Close"
-                class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
+                class="is_View _f-1069813397 _mh-1241200853 _ta-1906144518 _ws-973912173 _td-211436768 _c-22887652 _os-249893454 _o-1119039191 _to-1727917045 _ff-409630021 _fvn-1977619713 _fs-347291933 _fw-289166179 _ls-1782815796 _p-230374000 _a-1578443335 _b-1628331993 _br-1397394445 _bs-1225725885 _w-1682139955 _mw-1947816287 _h-1633581678 _d-312446553 _jc-642967080 _ai-1864573722 _lh-2067208245 _c-1139941473 _b-1242743842 rcx-button--small-square rcx-button--square rcx-button--icon rcx-button rcx-css-ue04py"
                 data-qa="ContextualbarActionClose"
                 type="button"
               >
@@ -1337,11 +1337,11 @@ exports[`renders Loading with stable structure 1`] = `
             class="rcx-box rcx-box--full rcx-vertical-bar__section rcx-css-16arwmq"
           >
             <label
-              class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-box--animated rcx-input-box__wrapper"
+              class="is_Text _b-1714693756 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _ls-1782815796 _fs-347291933 _fw-289166179 _lh-1925956564 _c-1922521888 _c-1063453128 _br-1531773755 _b-730625357 _bs-581064853 _p-1021290656 _d-341075704 _f-1922759564 _ai-994770828 _mw-355799360 _p-1823912888 _va-1675321343 _wb-1577688049 _ow-485594423 rcx-label rcx-input-box__wrapper rcx-box--animated"
             >
               <input
                 aria-label="Search_Messages"
-                class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
+                class="is_View _m-2017216831 _p-1943363302 _b-650654186 _os-249893454 _ow-485594423 _ff-409630021 _fvn-1977619713 _p-1021290656 _d-1985012034 _f-1440749467 _w-226740859 _mh-1241200853 _va-1675321343 _ws-973912173 _wb-1577688049 _o-1119039191 _to-1727917045 _b-530853904 _ls-1782815796 _fs-347291933 _fw-289166179 _lh-1925956564 _c-277036852 _cc-365372135 _mw-841846566 rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-box--full rcx-input-box"
                 placeholder="Search_Messages"
                 size="1"
                 type="text"
