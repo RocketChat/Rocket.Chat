@@ -15,10 +15,10 @@ import { isIOsDevice } from '../../lib/utils/isIOsDevice';
 import { getMessagePreview } from '../../lib/utils/normalizeMessagePreview/getMessagePreview';
 import RoomListItem from '../../views/navigation/sidebar/RoomList/RoomListItem';
 import type { RoomListItemViewMode } from '../../views/navigation/sidebar/RoomList/RoomListItem';
+import SidebarItemBadges from '../../views/navigation/sidebar/badges/SidebarItemBadges';
+import { useUnreadDisplay } from '../../views/navigation/sidebar/hooks/useUnreadDisplay';
 import { useOmnichannelPriorities } from '../../views/omnichannel/hooks/useOmnichannelPriorities';
 import RoomMenu from '../RoomMenu';
-import SidebarItemBadges from '../badges/SidebarItemBadges';
-import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 type RoomListRowProps = {
 	t: TFunction;
@@ -110,7 +110,7 @@ const SidebarItemTemplateWithData = ({
 			iconLabel={iconLabel}
 			titleIcon={titleIcon}
 			style={style}
-			badges={<SidebarItemBadges room={room} roomTitle={title} />}
+			badges={<SidebarItemBadges room={room} roomTitle={title} showOmnichannelBadges />}
 			actions={actions}
 			menu={
 				!isIOsDevice && !isAnonymous && (!isQueued || (isQueued && isPriorityEnabled)) ? (

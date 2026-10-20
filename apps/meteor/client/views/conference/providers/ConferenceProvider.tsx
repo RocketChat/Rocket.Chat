@@ -9,7 +9,7 @@ import { ReactiveUserStatus } from '../../../components/UserStatus';
 import { videoConferenceQueryKeys } from '../../../lib/queryKeys';
 import { isRefusal } from '../../../lib/utils/isRefusal';
 import { embeddedCallProviders } from '../../../lib/videoConference/embeddedCallProviders';
-import { useUnreadDisplay } from '../../../sidebar/hooks/useUnreadDisplay';
+import { useUnreadDisplay } from '../../navigation/sidebar/hooks/useUnreadDisplay';
 import PageLoading from '../../root/PageLoading';
 import ConferenceChat from '../ConferenceChat';
 import ConferencePageError from '../ConferencePageError';

@@ -6,8 +6,8 @@ import { useTranslation } from 'react-i18next';
 import NavBarSearchItem from './NavBarSearchItem';
 import { RoomIcon } from '../../components/RoomIcon';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
-import SidebarItemBadges from '../../sidebar/badges/SidebarItemBadges';
-import { useUnreadDisplay } from '../../sidebar/hooks/useUnreadDisplay';
+import SidebarItemBadges from '../../views/navigation/sidebar/badges/SidebarItemBadges';
+import { useUnreadDisplay } from '../../views/navigation/sidebar/hooks/useUnreadDisplay';
 
 export type NavBarSearchItemWithDataProps = {
 	room: SubscriptionWithRoom;
@@ -33,7 +33,7 @@ const NavBarSearchItemWithData = ({ room, AvatarTemplate, ...props }: NavBarSear
 			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title }) : title}
 			title={title}
 			icon={icon}
-			badges={<SidebarItemBadges room={room} roomTitle={title} />}
+			badges={<SidebarItemBadges room={room} roomTitle={title} showOmnichannelBadges />}
 			avatar={AvatarTemplate}
 		/>
 	);
