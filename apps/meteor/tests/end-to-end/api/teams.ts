@@ -1018,8 +1018,16 @@ describe('/teams.updateMember', () => {
 			await request
 				.post(api('teams.updateMember'))
 				.set(moderatorCredentials)
-				.send({ teamName: testTeam.name, member: { userId: testUser2._id, roles: ['owner'] } })
+				.send({ teamName: testTeam.name, member: { userId: testUser2._id, roles: ['moderator', 'owner'] } })
 				.expect(403);
+		});
+
+		it('should allow adding members with the member role', async () => {
+			await request
+				.post(api('teams.addMembers'))
+				.set(moderatorCredentials)
+				.send({ teamName: testTeam.name, members: [{ userId: testUser2._id, roles: ['member'] }] })
+				.expect(200);
 		});
 
 		it('should not allow granting owner through teams.addMembers', async () => {
@@ -1034,7 +1042,7 @@ describe('/teams.updateMember', () => {
 			await request
 				.post(api('teams.updateMember'))
 				.set(moderatorCredentials)
-				.send({ teamName: testTeam.name, member: { userId: testUser._id, roles: [] } })
+				.send({ teamName: testTeam.name, member: { userId: testUser._id, roles: ['member'] } })
 				.expect(403);
 		});
 

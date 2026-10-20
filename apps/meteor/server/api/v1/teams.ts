@@ -70,6 +70,10 @@ const canChangeTeamRoles = async (user: IUser, roomId: IRoom['_id'], roles: Iter
 	const globalPermissions = new Set<string>();
 
 	for (const role of roles) {
+		if (role === 'member') {
+			continue;
+		}
+
 		const roomPermission = roomRoleAssignmentPermissions.get(role);
 		if (roomPermission) {
 			roomPermissions.add(roomPermission);
