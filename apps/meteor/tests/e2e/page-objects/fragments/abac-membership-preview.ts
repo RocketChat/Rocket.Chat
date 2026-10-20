@@ -15,7 +15,7 @@ export class ABACMembershipPreview {
 		this.selfLockoutModal = new ABACSelfLockoutModal(page);
 	}
 
-	get losesAccess(): Locator {
+	get listLosesAccess(): Locator {
 		return this.root.getByRole('list', { name: 'Loses access' });
 	}
 

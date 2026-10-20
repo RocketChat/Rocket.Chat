@@ -120,7 +120,7 @@ export abstract class Composer {
 	}
 
 	get btnManageAttributes(): Locator {
-		return this.root.getByRole('button', { name: 'Manage attributes' });
+		return this.root.getByRole('button', { name: 'Manage attributes', exact: true });
 	}
 
 	get typingIndicator(): Locator {
