@@ -96,6 +96,7 @@ export class UIKitInteractionResponderImpl implements UIKitInteractionResponder 
 		variant?: 'default' | 'danger';
 		disabled?: boolean;
 	}): {
+		success: true;
 		appId: string;
 		actionId: string;
 		triggerId: string;
@@ -110,6 +111,7 @@ export class UIKitInteractionResponderImpl implements UIKitInteractionResponder 
 		const { appId, actionId, triggerId } = this.baseContext;
 
 		return {
+			success: true,
 			type: 'action_button.update',
 			appId,
 			actionId: actionId as string,

@@ -40,7 +40,11 @@ declare module '@rocket.chat/apps-engine/definition/uikit/UIKitInteractionRespon
 	};
 
 	export interface IUIKitActionButtonUpdateResponse extends IUIKitResponse {
+		success: true;
 		type: 'action_button.update';
+		appId: string;
+		actionId: string;
+		triggerId: string;
 		update: IUIKitActionButtonUpdateParam;
 	}
 
