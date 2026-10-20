@@ -4013,7 +4013,6 @@
   "Mentions_default": "Omnämningar (standard)",
   "Mentions_online_room_members": "Omnämningar av medlemmar som är online i rum ",
   "Mentions_only": "Endast omnämningar",
-  "Mentions_user": "Omnämningar av användare",
   "Mentions_with_@_symbol": "Omnämnanden med @-symbol",
   "Mentions_with_@_symbol_description": "Mentions meddelar och lyfter fram meddelanden för grupper eller specifika användare, vilket underlättar riktad kommunikation.\n\nSkärmläsarfunktionaliteten optimeras när symbolen \"@\" används i omnämnandefunktionen. Detta säkerställer att användare som använder skärmläsare enkelt kan tolka och engagera sig i dessa omnämnanden.",
   "Mentions_you": "Nämner dig",
