@@ -91,7 +91,8 @@ service with the observer that feeds `/stats`.
   and the configured port.
 - Persisting the dialback secret across restarts.
 - Running more than one instance per domain.
-- Inbound back-pressure: there is no queue and no concurrency limit on handlers.
+- Inbound back-pressure: there is no queue and no concurrency limit on handlers. Part of
+  [scale-and-availability](../intents/scale-and-availability.md).
 
 ## Known defects
 
