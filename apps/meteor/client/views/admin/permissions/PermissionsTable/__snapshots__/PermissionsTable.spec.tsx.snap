@@ -8,7 +8,7 @@ exports[`renders Default without crashing 1`] = `
     >
       <div>
         <label
-          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper rcx-css-cnkcl9"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-box--animated rcx-input-box__wrapper rcx-css-cnkcl9"
         >
           <input
             class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
@@ -291,7 +291,7 @@ exports[`renders Default without crashing 1`] = `
                       class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9"
+                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="0 - Owner of the workspace"
@@ -313,7 +313,7 @@ exports[`renders Default without crashing 1`] = `
                       class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9"
+                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="0 - Administrator"
@@ -336,7 +336,7 @@ exports[`renders Default without crashing 1`] = `
                       class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9"
+                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="0 - Leader"
@@ -358,7 +358,7 @@ exports[`renders Default without crashing 1`] = `
                       class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9"
+                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="0 - Moderator"
@@ -380,7 +380,7 @@ exports[`renders Default without crashing 1`] = `
                       class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9"
+                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="0 - User"
@@ -402,7 +402,7 @@ exports[`renders Default without crashing 1`] = `
                       class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9"
+                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="0 - Guest"
@@ -424,7 +424,7 @@ exports[`renders Default without crashing 1`] = `
                       class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9"
+                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="0 - Bot"
@@ -446,7 +446,7 @@ exports[`renders Default without crashing 1`] = `
                       class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9"
+                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="0 - App"
@@ -480,7 +480,7 @@ exports[`renders Default without crashing 1`] = `
                       class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9"
+                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="1 - Owner of the workspace"
@@ -502,7 +502,7 @@ exports[`renders Default without crashing 1`] = `
                       class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9"
+                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="1 - Administrator"
@@ -524,7 +524,7 @@ exports[`renders Default without crashing 1`] = `
                       class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9"
+                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="1 - Leader"
@@ -546,7 +546,7 @@ exports[`renders Default without crashing 1`] = `
                       class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9"
+                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="1 - Moderator"
@@ -568,7 +568,7 @@ exports[`renders Default without crashing 1`] = `
                       class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9"
+                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="1 - User"
@@ -591,7 +591,7 @@ exports[`renders Default without crashing 1`] = `
                       class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9"
+                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="1 - Guest"
@@ -613,7 +613,7 @@ exports[`renders Default without crashing 1`] = `
                       class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9"
+                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="1 - Bot"
@@ -635,7 +635,7 @@ exports[`renders Default without crashing 1`] = `
                       class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9"
+                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="1 - App"
@@ -669,7 +669,7 @@ exports[`renders Default without crashing 1`] = `
                       class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9"
+                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="2 - Owner of the workspace"
@@ -691,7 +691,7 @@ exports[`renders Default without crashing 1`] = `
                       class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9"
+                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="2 - Administrator"
@@ -713,7 +713,7 @@ exports[`renders Default without crashing 1`] = `
                       class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9"
+                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="2 - Leader"
@@ -735,7 +735,7 @@ exports[`renders Default without crashing 1`] = `
                       class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9"
+                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="2 - Moderator"
@@ -757,7 +757,7 @@ exports[`renders Default without crashing 1`] = `
                       class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9"
+                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="2 - User"
@@ -780,7 +780,7 @@ exports[`renders Default without crashing 1`] = `
                       class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9"
+                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="2 - Guest"
@@ -802,7 +802,7 @@ exports[`renders Default without crashing 1`] = `
                       class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9"
+                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="2 - Bot"
@@ -824,7 +824,7 @@ exports[`renders Default without crashing 1`] = `
                       class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9"
+                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="2 - App"
@@ -858,7 +858,7 @@ exports[`renders Default without crashing 1`] = `
                       class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9"
+                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="3 - Owner of the workspace"
@@ -880,7 +880,7 @@ exports[`renders Default without crashing 1`] = `
                       class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9"
+                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="3 - Administrator"
@@ -902,7 +902,7 @@ exports[`renders Default without crashing 1`] = `
                       class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9"
+                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="3 - Leader"
@@ -924,7 +924,7 @@ exports[`renders Default without crashing 1`] = `
                       class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9"
+                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="3 - Moderator"
@@ -946,7 +946,7 @@ exports[`renders Default without crashing 1`] = `
                       class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9"
+                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="3 - User"
@@ -969,7 +969,7 @@ exports[`renders Default without crashing 1`] = `
                       class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9"
+                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="3 - Guest"
@@ -991,7 +991,7 @@ exports[`renders Default without crashing 1`] = `
                       class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9"
+                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="3 - Bot"
@@ -1013,7 +1013,7 @@ exports[`renders Default without crashing 1`] = `
                       class="is_Text _f-1246374076 _mw-354604370 _mh-1241200853 _os-249893454 _ff-409630021 _fvn-1977619713 _m-2017216831 _p-1360184609 _b-650654186 _d-2041442768 _ws-311910413 _ww-408434756 _us-601042561 _ta-509596644 _va-1124586065 _c-1756781803 _fs-347291933 _fw-289165218 _lh-1925956564 _ls-1782815796 rcx-table__cell rcx-css-1oii38d"
                     >
                       <label
-                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9"
+                        class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-check-box rcx-css-xm5li9 rcx-css-wcp0mp"
                       >
                         <input
                           aria-label="3 - App"
@@ -1137,11 +1137,11 @@ exports[`renders Default without crashing 1`] = `
                 disabled=""
               >
                 <span
-                  class="is_View _d-1985012034 _f-1069814357 _mw-354604370 _mh-1241200853 _as-24266285 _t-322647352 rcx-chevron--left rcx-chevron"
+                  class="is_View _d-1985012034 _f-1069814357 _mw-354604370 _mh-1241200853 _as-24266285 _t-322647352 rcx-chevron--left rcx-chevron rcx-css-cnkcl9"
                 >
                   <i
                     aria-hidden="true"
-                    class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-chevron-down rcx-icon rcx-css-1bs6g29"
+                    class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-chevron-down rcx-icon rcx-css-1g87xs3"
                   >
                     
                   </i>
@@ -1168,11 +1168,11 @@ exports[`renders Default without crashing 1`] = `
                 disabled=""
               >
                 <span
-                  class="is_View _d-1985012034 _f-1069814357 _mw-354604370 _mh-1241200853 _as-24266285 _t-625386512 rcx-chevron--right rcx-chevron"
+                  class="is_View _d-1985012034 _f-1069814357 _mw-354604370 _mh-1241200853 _as-24266285 _t-625386512 rcx-chevron--right rcx-chevron rcx-css-cnkcl9"
                 >
                   <i
                     aria-hidden="true"
-                    class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-chevron-down rcx-icon rcx-css-1bs6g29"
+                    class="is_Text _d-1409515928 _ws-311910413 _ww-408434756 _us-601212022 _va-1101652081 _ls-1720078126 _ff-1916555734 _fs-1279428672 _fw-289165218 _fs-477064150 _fv-1578983722 _lh-2067209205 _tr-1510281189 rcx-icon--name-chevron-down rcx-icon rcx-css-1g87xs3"
                   >
                     
                   </i>
@@ -1195,7 +1195,7 @@ exports[`renders Empty without crashing 1`] = `
     >
       <div>
         <label
-          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-box rcx-box--full rcx-box--animated rcx-input-box__wrapper rcx-css-cnkcl9"
+          class="is_Text _b-650654186 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _fs-347291933 _fw-289166179 _lh-1925956564 _ls-1782815796 _d-341075704 _c-1922521888 _c-1063453128 rcx-label rcx-box--animated rcx-input-box__wrapper rcx-css-cnkcl9"
         >
           <input
             class="rcx-box rcx-box--full rcx-box--animated rcx-input-box--undecorated rcx-input-box--type-text rcx-input-box"
