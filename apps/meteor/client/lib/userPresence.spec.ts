@@ -202,6 +202,26 @@ describe('UserPresence', () => {
 		}
 	});
 
+	it('should not crash when the desktop presence detection call throws', () => {
+		const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+		Object.assign(window, {
+			RocketChatDesktop: {
+				setUserPresenceDetection: () => {
+					throw new Error('desktop failure');
+				},
+			},
+		});
+
+		try {
+			expect(() => render().unmount()).not.toThrow();
+			expect(warn).toHaveBeenCalledTimes(2);
+		} finally {
+			delete (window as { RocketChatDesktop?: unknown }).RocketChatDesktop;
+			warn.mockRestore();
+		}
+	});
+
 	it('should not force the user away on reconnection when auto away is disabled', async () => {
 		state.preferences = { enableAutoAway: false, idleTimeLimit: IDLE_TIME_LIMIT };
 
