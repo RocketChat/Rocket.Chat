@@ -9,7 +9,7 @@ import { PaletteStyleTag } from '../src';
 import DocsContainer from './DocsContainer';
 import logo from './logo.svg';
 
-import './normalize.scss';
+import './normalize.css';
 import '@rocket.chat/icons/dist/rocketchat.css';
 
 export default {
