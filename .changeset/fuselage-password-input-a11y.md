@@ -1,5 +1,5 @@
 ---
-'@rocket.chat/fuselage': patch
+'@rocket.chat/fuselage': minor
 ---
 
-Fixes `PasswordInput` show/hide toggle not being keyboard-focusable and having no accessible name
+Makes the `PasswordInput` show/hide toggle keyboard-focusable and gives it an accessible name. Adds optional `showPasswordLabel` and `hidePasswordLabel` props to translate it

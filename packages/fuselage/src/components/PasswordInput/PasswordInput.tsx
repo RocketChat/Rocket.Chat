@@ -21,6 +21,7 @@ function PasswordInput({ showPasswordLabel = 'Show password', hidePasswordLabel 
 				<IconButton
 					mini
 					type='button'
+					disabled={props.disabled}
 					icon={hidden ? 'eye-off' : 'eye'}
 					aria-label={hidden ? showPasswordLabel : hidePasswordLabel}
 					onClick={handleAddonClick}
