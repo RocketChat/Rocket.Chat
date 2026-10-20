@@ -54,7 +54,9 @@ const Skeleton = ({ variant = 'text', ...props }: SkeletonProps) => (
 					circle: variant === 'circle',
 				}),
 			)}
-		/>
+		>
+			{variant === 'text' && <span aria-hidden='true'>{' '}</span>}
+		</SkeletonFrame>
 	</StylingBox>
 );
 
