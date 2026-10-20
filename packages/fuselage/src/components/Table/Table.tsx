@@ -27,4 +27,4 @@ const Table = ({ striped, sticky, fixed = false, ...props }: TableProps) => {
 	);
 };
 
-export default withFuselageProvider(Table);
+export default withFuselageProvider(Table, { takesBoxTransforms: true });

@@ -24,4 +24,4 @@ const FieldDescription = (props: FieldDescriptionProps) => {
 	return component;
 };
 
-export default withFuselageProvider(FieldDescription);
+export default withFuselageProvider(FieldDescription, { takesBoxTransforms: true });

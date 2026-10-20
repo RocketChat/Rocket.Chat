@@ -58,4 +58,4 @@ function CheckBox({ ref, indeterminate, onChange, className, labelChildren, ...p
 	);
 }
 
-export default withFuselageProvider(CheckBox);
+export default withFuselageProvider(CheckBox, { takesBoxTransforms: true });

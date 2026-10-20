@@ -34,4 +34,4 @@ const TableSelection = ({ children, text, ...props }: TableSelectionProps) => {
 	);
 };
 
-export default withFuselageProvider(TableSelection);
+export default withFuselageProvider(TableSelection, { takesBoxTransforms: true });

@@ -38,4 +38,4 @@ function MessageBlock({ className: _className, fixedWidth, ...props }: MessageBl
 	return <MessageBlockFrame fixedWidth={fixedWidth} {...(frameProps as GetProps<typeof MessageBlockFrame>)} />;
 }
 
-export default withFuselageProvider(MessageBlock);
+export default withFuselageProvider(MessageBlock, { takesBoxTransforms: true });

@@ -65,4 +65,4 @@ const Modal = ({ children, wrapper = Box, wrapperFunction, ...props }: ModalProp
 	);
 };
 
-export default withFuselageProvider(Modal);
+export default withFuselageProvider(Modal, { takesBoxTransforms: true });

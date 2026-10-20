@@ -24,4 +24,4 @@ const FieldLink = (props: FieldLinkProps) => {
 	return component;
 };
 
-export default withFuselageProvider(FieldLink);
+export default withFuselageProvider(FieldLink, { takesBoxTransforms: true });

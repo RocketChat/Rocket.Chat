@@ -88,4 +88,4 @@ function Label({ disabled, is, required, children, ...props }: LabelProps) {
 	);
 }
 
-export default withFuselageProvider(Label);
+export default withFuselageProvider(Label, { takesBoxTransforms: true });

@@ -29,4 +29,4 @@ const ModalTitle = ({ children, ...props }: ModalTitleProps) => {
 	return <ModalTitleFrame {...(frameProps as GetProps<typeof ModalTitleFrame>)}>{children}</ModalTitleFrame>;
 };
 
-export default withFuselageProvider(ModalTitle);
+export default withFuselageProvider(ModalTitle, { takesBoxTransforms: true });

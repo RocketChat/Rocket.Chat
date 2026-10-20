@@ -25,4 +25,4 @@ const ModalTagline = ({ children, ...props }: ModalTaglineProps) => {
 	return <ModalTaglineFrame {...(frameProps as GetProps<typeof ModalTaglineFrame>)}>{children}</ModalTaglineFrame>;
 };
 
-export default withFuselageProvider(ModalTagline);
+export default withFuselageProvider(ModalTagline, { takesBoxTransforms: true });

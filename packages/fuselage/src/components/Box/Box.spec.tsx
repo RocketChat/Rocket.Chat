@@ -2,6 +2,7 @@ import { css } from '@rocket.chat/css-in-js';
 
 import Box from './Box';
 import { render } from '../../testing';
+import { Tag } from '../Tag';
 
 describe('[Box Component]', () => {
 	it('renders without crashing', () => {
@@ -120,6 +121,15 @@ describe('[Box Component]', () => {
 			const { container } = render(<Box is='span' />);
 
 			expect(container.firstElementChild).toHaveProperty('tagName', 'SPAN');
+		});
+
+		it('leaves the rcx-box base classes off a Tamagui-based component', () => {
+			const { container } = render(<Box is={Tag} marginInline={4} />);
+
+			expect(container.firstElementChild).toHaveClass('rcx-tag');
+			expect(container.firstElementChild).not.toHaveClass('rcx-box');
+			expect(container.firstElementChild).not.toHaveClass('rcx-box--full');
+			expect(container.firstElementChild?.className).toMatch(/rcx-css-/);
 		});
 
 		it('accepts a instrinsic SVG element', () => {

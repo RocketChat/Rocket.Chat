@@ -70,4 +70,4 @@ function Tabs({ children, divider = true, ...props }: TabsProps) {
 	);
 }
 
-export default withFuselageProvider(Tabs);
+export default withFuselageProvider(Tabs, { takesBoxTransforms: true });

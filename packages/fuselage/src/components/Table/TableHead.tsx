@@ -20,4 +20,4 @@ const TableHead = (props: TableHeadProps) => {
 	);
 };
 
-export default withFuselageProvider(TableHead);
+export default withFuselageProvider(TableHead, { takesBoxTransforms: true });
