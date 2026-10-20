@@ -124,7 +124,7 @@ services:
       - 'traefik.http.routers.rc1-http.middlewares=rc1'
 
   mongo:
-    image: mongo:${MONGODB_FEDERATION_VERSION:-8.0.19-ubi9}
+    image: mongodb/mongodb-community-server:${MONGODB_FEDERATION_VERSION:-8.0.19-ubi9}
     profiles:
       - test
       - element
