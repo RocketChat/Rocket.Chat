@@ -112,6 +112,9 @@ The Rocket.Chat login page (`yarn dev:next` against open.rocket.chat) is also pi
 - **jsdom cannot parse `@scope`**, which Tamagui's base stylesheet uses, so `FuselageProvider` skips the base stylesheet under `NODE_ENV=test`.
 - **Element rules in the app:** Rocket.Chat's `button`, `input`, `code`, `pre`, `blockquote` and `:focus` rules now sit in the `reset` layer. The Storybook A/B cannot see these rules, because it does not load the app's CSS.
   - The universal `box-sizing: border-box` rule stays unlayered on purpose. It keeps app elements `border-box` as before, even where a frame restates the `content-box` a plain element had in Storybook.
+- **React 19 ref cleanups:** Tamagui 3.0.18 drops the cleanup a callback ref returns. It calls the ref again with `null` instead, so a ref such as `useIsVisible`'s hands `null` to `IntersectionObserver.observe` and never disconnects.
+  - `.yarn/patches` patches `@tamagui/web` (forwarded refs) and `@tamagui/compose-refs` (composed refs) to keep the cleanup.
+  - Drop both patches once upstream handles it; `FuselageProvider.spec.tsx` checks the behavior.
 - **`render` functions:** Tamagui adds the frame's `className` to the element a `render` function returns. Use `renderAs`, which drops it, or the class names render twice.
 - **Vendor-prefixed properties** (`-webkit-font-smoothing`, `-moz-osx-font-smoothing`) have no Tamagui prop. They stay in SCSS where they matter.
 - **Collapsed `ItemGroup`s** rely on normalize's `[hidden] { display: none }` beating `.rcx-item-group { display: flex }`. The Rocket.Chat app loads no normalize, which suggests collapsed groups show there today. This is independent of Tamagui.
