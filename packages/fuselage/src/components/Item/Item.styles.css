@@ -95,3 +95,29 @@
 		transition: none;
 	}
 }
+
+/* What the row group clauses did, as plain rules: a group clause subscribes the actions of every row to the row's state,
+   which re-renders the row on mount. In the `fuselage` layer, where those clauses were; hover only where it exists */
+@layer fuselage {
+	@media (hover: hover) {
+		.rcx-item:hover .rcx-item__actions--reveal-hover,
+		.rcx-item-group-header:hover .rcx-item__actions--reveal-hover {
+			margin-inline-start: 0;
+
+			opacity: 1;
+			grid-template-columns: 1fr;
+		}
+	}
+
+	.rcx-item:focus-within .rcx-item__actions--reveal-hover,
+	.rcx-item-group-header:focus-within .rcx-item__actions--reveal-hover {
+		margin-inline-start: 0;
+
+		opacity: 1;
+		grid-template-columns: 1fr;
+	}
+
+	.rcx-item:focus-within .rcx-item__actions-inner {
+		overflow: visible;
+	}
+}

@@ -8,7 +8,8 @@ import { boxText } from '../messageStyles';
 const MessageToolbarWrapperFrame = styled(View, {
 	render: 'div',
 	...boxText,
-	display: { 'default': 'none', 'group-hover/message': 'inline-block', 'group-focus-within/message': 'inline-block' },
+	// Revealed by its message's hover or focus in `Messages.styles.css`, which costs no group subscription per message
+	display: 'none',
 	flexShrink: 1,
 	userSelect: 'none',
 

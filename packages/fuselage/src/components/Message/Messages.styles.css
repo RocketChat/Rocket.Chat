@@ -313,3 +313,32 @@ code (composer mentions) renders the highlight classes on raw elements */
 	outline: 1px solid var(--rcx-color-stroke-highlight, #156ff5);
 	box-shadow: 0 0 0 2px var(--rcx-color-stroke-extra-light-highlight, #d1ebfe);
 }
+
+/* What the message group clauses did, as plain rules: a group clause subscribes each element to its message's state at
+   about 28 µs per element on mount, and every message renders several. In the `fuselage` layer, where those clauses were. */
+@layer fuselage {
+	@media (hover: hover) {
+		.rcx-message:hover .rcx-message-toolbar__wrapper {
+			display: inline-block;
+		}
+
+		.rcx-message:hover .rcx-message-toolbar,
+		.rcx-message:hover .rcx-message-reactions__reaction--action {
+			opacity: 1;
+		}
+
+		/* secondary-info fails contrast against the hover surface */
+		.rcx-message:hover .rcx-message-header__time {
+			color: var(--rcx-color-font-default, #2f343d);
+		}
+	}
+
+	.rcx-message:focus-within .rcx-message-toolbar__wrapper {
+		display: inline-block;
+	}
+
+	.rcx-message:focus-visible .rcx-message-toolbar,
+	.rcx-message:focus-visible .rcx-message-reactions__reaction--action {
+		opacity: 1;
+	}
+}

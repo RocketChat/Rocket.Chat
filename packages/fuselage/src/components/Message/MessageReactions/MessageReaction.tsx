@@ -46,7 +46,8 @@ export const MessageReactionFrame = styled(Text, {
 		},
 		action: {
 			true: {
-				opacity: { 'default': 0, 'group-hover/message': 1, 'group-focus-visible/message': 1 },
+				// Revealed by its message's hover or focus in `Messages.styles.css`
+				opacity: 0,
 			},
 		},
 	} as const,
