@@ -41,6 +41,8 @@ export type UsersSetPreferencesParamsPOST = {
 		sidebarDisplayAvatar?: boolean;
 		sidebarGroupByType?: boolean;
 		sidebarCategories?: ISidebarCategory[];
+		sidebarGroupTeamsAndChannels?: boolean;
+		sidebarGroupUnlistedInConversations?: boolean;
 		muteFocusedConversations?: boolean;
 		dontAskAgainList?: Array<{ action: string; label: string }>;
 		featuresPreview?: { name: string; value: boolean }[];
@@ -219,6 +221,14 @@ const UsersSetPreferencesParamsPostSchema = {
 						required: ['_id', 'name'],
 						additionalProperties: false,
 					},
+				},
+				sidebarGroupTeamsAndChannels: {
+					type: 'boolean',
+					nullable: true,
+				},
+				sidebarGroupUnlistedInConversations: {
+					type: 'boolean',
+					nullable: true,
 				},
 				muteFocusedConversations: {
 					type: 'boolean',
