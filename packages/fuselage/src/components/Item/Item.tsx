@@ -24,7 +24,6 @@ import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 const ItemFrame = styled(Text, {
 	...itemRowStyle,
-	group: 'rcx-item' as never,
 	textAlign: 'start',
 	textDecorationLine: 'none',
 	color: toCSSValue('--rcx-item-color-font-default', textIconColors['font-default']),
