@@ -6,6 +6,7 @@ import type { HTMLAttributes, ReactNode } from 'react';
 import { toCSSColorValue, toCSSValue } from '../../helpers/toCSSValue';
 import { borderRadius, fontScale, size, spacing } from '../../styleTokens';
 import { Icon } from '../Icon';
+import { BubbleLabel, bubbleSegmentVariants } from './BubbleButton';
 
 const buttonColors = buttonTokens.light;
 
@@ -47,6 +48,7 @@ const BubbleItemFrame = styled(View, {
 				height: size('x20'),
 			},
 		},
+		...bubbleSegmentVariants,
 	} as const,
 
 	defaultVariants: {
@@ -59,16 +61,19 @@ type BubbleItemProps = {
 	secondary?: boolean;
 	small?: boolean;
 	icon?: IconName;
+	segment?: 'first' | 'last';
 } & HTMLAttributes<HTMLSpanElement>;
 
-export const BubbleItem = ({ secondary = false, small, label, icon, ...props }: BubbleItemProps) => (
+export const BubbleItem = ({ secondary = false, small, segment, label, icon, ...props }: BubbleItemProps) => (
 	<BubbleItemFrame
 		secondary={secondary}
 		small={small}
 		className={`rcx-bubble__item ${secondary ? 'rcx-bubble__item--secondary' : 'rcx-bubble__item--primary'}`}
 		{...(props as GetProps<typeof BubbleItemFrame>)}
+		withIcon={Boolean(icon) && !segment}
+		segment={segment}
 	>
 		{icon && <Icon name={icon} size='x16' marginInlineEnd={8} />}
-		{label && <span>{label}</span>}
+		{label && <BubbleLabel>{label}</BubbleLabel>}
 	</BubbleItemFrame>
 );
