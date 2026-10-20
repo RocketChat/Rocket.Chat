@@ -68,6 +68,7 @@ cannot be expressed over a fire-and-forget emitter.
 | `src/jid/normalize.ts` | `normalizeDomain` (IDNA to ASCII plus lowercase) applied at every trust comparison, and `isDomainAllowed` (deny list wins) |
 | `src/jid/escaping.ts` | XEP-0106 localpart escaping with the 1023-byte limit |
 | `src/xml/StanzaParser.ts` | Streaming framing on ltx's SAX parser. Rejects DOCTYPE, entities, comments, CDATA and processing instructions (RFC 6120 §11.1), caps size and depth, `reset()` for the restart after STARTTLS |
+| `src/xml/TopLevelBoundaries.ts` | Finds where the stream header and each top-level element end across reads, so the size cap applies to each element alone |
 | `src/xml/build.ts`, `errors.ts`, `resolve.ts`, `namespaces.ts`, `correction.ts` | Element builder, `buildStanzaError()` (RFC 6120 §8.3), namespace resolution from the stream header, namespace constants, XEP-0308 `<replace/>` build and parse |
 | `src/stream/XmppStream.ts` | One socket plus one parser: open, send, `upgradeToTls`, restart, close, with hard timeouts |
 | `src/stream/InboundSession.ts` | Receiving-server state machine: header, STARTTLS, SASL EXTERNAL or dialback, ready. Owns `authenticatedFromDomains`; every content stanza's `from` domain must be in it (spoofing protection) and its `to` domain must be ours. Answers `db:verify` as authoritative server. Applies the allow and deny lists |

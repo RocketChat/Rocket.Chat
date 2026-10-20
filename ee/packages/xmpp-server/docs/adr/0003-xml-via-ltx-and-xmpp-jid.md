@@ -32,3 +32,6 @@ declarations, comments, CDATA and processing instructions before an element is b
   two element types at the edge; that is confined to `tests/end-to-end/helper/`.
 - Upgrading `ltx` means re-checking `ltx.d.ts` and the hardening cases in
   `StanzaParser.spec.ts`.
+- ltx reports no input offsets, so the stanza size cap finds where each top-level element
+  ends with `TopLevelBoundaries`, a scanner that copies ltx's tag and attribute grammar and
+  nothing else. It has to agree with ltx on every `>`; an ltx upgrade re-checks that.

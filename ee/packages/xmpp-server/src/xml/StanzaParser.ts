@@ -4,6 +4,8 @@ import { Emitter } from '@rocket.chat/emitter';
 import Element from 'ltx/lib/Element';
 import SaxLtx from 'ltx/lib/parsers/ltx';
 
+import { TopLevelBoundaries } from './TopLevelBoundaries';
+
 export type StanzaParserEvents = {
 	/** The `<stream:stream>` opening tag (attributes only, no children). */
 	streamStart: Element;
@@ -22,6 +24,8 @@ const MAX_ATTRIBUTES = 64;
 /** Frames an XMPP stream into its header and depth-1 elements, rejecting what RFC 6120 §11.1 restricts. */
 export class StanzaParser extends Emitter<StanzaParserEvents> {
 	private parser: SaxLtx;
+
+	private boundaries = new TopLevelBoundaries();
 
 	// Holds back the bytes of a character a read split, until the read that completes it
 	private decoder = new StringDecoder('utf8');
@@ -101,7 +105,6 @@ export class StanzaParser extends Emitter<StanzaParserEvents> {
 			if (this.depth === 1) {
 				const stanza = this.current;
 				this.current = undefined;
-				this.stanzaBytes = 0;
 				this.emit('stanza', stanza);
 				return;
 			}
@@ -147,8 +150,16 @@ export class StanzaParser extends Emitter<StanzaParserEvents> {
 		}
 		this.lastChar = text.charAt(text.length - 1);
 
-		// Counted per read, before parsing: the header and the first stanza can share one
-		this.stanzaBytes += Buffer.byteLength(toParse);
+		// Sized before parsing, so the parser never holds more than the cap of one element
+		let start = 0;
+		for (const end of this.boundaries.scan(toParse)) {
+			if (this.stanzaBytes + Buffer.byteLength(toParse.slice(start, end)) > this.maxStanzaSize) {
+				return this.fail(new Error('Stanza size limit exceeded'));
+			}
+			this.stanzaBytes = 0;
+			start = end;
+		}
+		this.stanzaBytes += Buffer.byteLength(toParse.slice(start));
 		if (this.stanzaBytes > this.maxStanzaSize) {
 			return this.fail(new Error('Stanza size limit exceeded'));
 		}
@@ -164,6 +175,7 @@ export class StanzaParser extends Emitter<StanzaParserEvents> {
 	reset(): void {
 		this.parser.removeAllListeners();
 		this.parser = this.createParser();
+		this.boundaries = new TopLevelBoundaries();
 		this.decoder = new StringDecoder('utf8');
 		this.root = undefined;
 		this.current = undefined;

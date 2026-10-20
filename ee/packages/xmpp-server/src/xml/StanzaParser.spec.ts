@@ -113,6 +113,61 @@ describe('StanzaParser', () => {
 		expect(events.map((e) => e.type)).toEqual(['error']);
 	});
 
+	it('accepts a stanza just under the cap whose last read also carries the next stanza (R7)', () => {
+		const parser = new StanzaParser({ maxStanzaSize: 1000 });
+		const events = collect(parser);
+		const big = `<message><body>${'x'.repeat(990 - 32)}</body></message>`;
+		const next = '<message><body>hi</body></message>';
+
+		parser.write(STREAM_HEADER);
+		parser.write(big.slice(0, 980));
+		parser.write(big.slice(980) + next);
+
+		expect(events.map((e) => e.type)).toEqual(['streamStart', 'stanza', 'stanza']);
+	});
+
+	it('accepts one read carrying more stanzas than the cap holds (R7)', () => {
+		const parser = new StanzaParser({ maxStanzaSize: 1000 });
+		const events = collect(parser);
+
+		parser.write(STREAM_HEADER + '<message><body>hi</body></message>'.repeat(100));
+
+		expect(events.filter((e) => e.type === 'stanza')).toHaveLength(100);
+		expect(events.some((e) => e.type === 'error')).toBe(false);
+	});
+
+	it('rejects an oversized stanza that starts in the read where the previous one ended (R7)', () => {
+		const parser = new StanzaParser({ maxStanzaSize: 1000 });
+		const events = collect(parser);
+		const big = `<message><body>${'x'.repeat(1100)}</body></message>`;
+
+		parser.write(STREAM_HEADER);
+		parser.write(`<message><body>hi</body></message>${big.slice(0, 900)}`);
+		parser.write(big.slice(900));
+
+		expect(events.map((e) => e.type)).toEqual(['streamStart', 'stanza', 'error']);
+	});
+
+	it('does not end a stanza at a closing tag quoted in an attribute (R7)', () => {
+		const parser = new StanzaParser({ maxStanzaSize: 1000 });
+		const events = collect(parser);
+
+		parser.write(STREAM_HEADER);
+		parser.write(`<message id='</message><message>'><body>${'x'.repeat(600)}`);
+		parser.write(`${'x'.repeat(600)}</body></message>`);
+
+		expect(events.map((e) => e.type)).toEqual(['streamStart', 'error']);
+	});
+
+	it('does not count the stream header toward the first stanza (R7)', () => {
+		const parser = new StanzaParser({ maxStanzaSize: 1000 });
+		const events = collect(parser);
+
+		parser.write(`${STREAM_HEADER}<message><body>${'x'.repeat(1000 - 32)}</body></message>`);
+
+		expect(events.map((e) => e.type)).toEqual(['streamStart', 'stanza']);
+	});
+
 	it('rejects excessive nesting depth', () => {
 		const parser = new StanzaParser();
 		const events = collect(parser);
