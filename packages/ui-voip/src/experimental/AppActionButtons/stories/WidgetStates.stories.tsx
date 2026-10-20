@@ -105,7 +105,7 @@ type StoryArgs = {
 };
 
 /**
- * Renders a small status bar + a "Receive call" shortcut button so the user
+ * Renders a small status bar + a "Start call" shortcut button so the user
  * can recover from the `closed` state (when the widget renders nothing) without
  * needing to change the Storybook control.
  */
@@ -121,7 +121,7 @@ const StateControls = () => {
 			</Box>
 			<ButtonGroup vertical>
 				<Button size='small' onClick={() => void onCall()}>
-					Receive call (→ ringing)
+					Start call (→ calling)
 				</Button>
 				<Button size='small' onClick={() => toggleWidget()} disabled={state !== 'none'}>
 					Toggle widget
@@ -172,8 +172,8 @@ type Story = StoryObj<typeof meta>;
  * drive it through the full call lifecycle and watch the action list update on
  * every transition.
  *
- * If the widget disappears (state reached `closed`), the "Receive call" shortcut
- * button lets you jump back to `ringing` without changing the control.
+ * If the widget disappears (state reached `closed`), the "Start call" shortcut
+ * button lets you jump back to `calling` (then `ongoing`) without changing the control.
  */
 export const StateTransitions: Story = {
 	render: () => (
