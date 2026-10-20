@@ -1,0 +1,11 @@
+{
+	"extends": "@rocket.chat/tsconfig/client.json",
+	"compilerOptions": {
+		"target": "es2024",
+		"moduleResolution": "bundler",
+		"stripInternal": true,
+		"outDir": "./dist"
+	},
+	"include": ["src", "mocks", ".storybook", "jest.config.ts", "jest-setup.ts", "vite.config.mts"],
+	"exclude": ["dist", "node_modules", "storybook-static"]
+}

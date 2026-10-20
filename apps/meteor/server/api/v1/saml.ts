@@ -1,3 +1,5 @@
+import type { Readable } from 'node:stream';
+
 import {
 	isSamlParseMetadata,
 	validateBadRequestErrorResponse,
@@ -50,7 +52,7 @@ const samlEndpoints = API.v1.post(
 		}
 
 		if (!response.ok) {
-			response.body.resume();
+			(response.body as Readable).destroy();
 			return API.v1.failure('SAML_Metadata_fetch_failed');
 		}
 

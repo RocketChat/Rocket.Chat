@@ -99,7 +99,7 @@ const TeamsChannels = ({
 					<Select onChange={(val) => setType(val as 'all' | 'autoJoin')} value={type} options={options} />
 				</Box>
 			</ContextualbarSection>
-			<ContextualbarContent padding={12}>
+			<ContextualbarContent padding={0} paddingBlock={12}>
 				{loading && (
 					<Box paddingInline={24} paddingBlock={12}>
 						<Throbber size='x12' />
@@ -108,13 +108,9 @@ const TeamsChannels = ({
 				{!loading && channels.length === 0 && <ContextualbarEmptyContent title={t('No_channels_in_team')} />}
 				{!loading && channels.length > 0 && (
 					<>
-						<Box paddingInline={18} paddingBlock={12}>
+						<Box paddingInline={24} paddingBlockStart={4} paddingBlockEnd={8}>
 							<Box is='span' color='hint' fontScale='p2'>
-								{t('Showing')}: {channels.length}
-							</Box>
-
-							<Box is='span' color='hint' fontScale='p2' marginInlineStart={8}>
-								{t('Total')}: {total}
+								{t('Showing_current_of_total', { current: channels.length, total })}
 							</Box>
 						</Box>
 						<Box width='full' height='full' role='list' overflow='hidden' flexShrink={1}>

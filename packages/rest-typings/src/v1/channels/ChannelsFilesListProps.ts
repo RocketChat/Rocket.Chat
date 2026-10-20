@@ -1,5 +1,6 @@
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import { ajvQuery } from '../Ajv';
+import { paginationQueryProperties } from '../pagination';
 
 export type ChannelsFilesListProps = PaginatedRequest<
 	({ roomId: string; roomName?: string } | { roomId?: string; roomName: string }) & {
@@ -21,14 +22,7 @@ const channelsFilesListPropsSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,

@@ -1,0 +1,201 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`renders Default without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full"
+    >
+      <svg
+        aria-hidden="true"
+        class="rcx-status-bullet rcx-status-bullet--online undefined "
+        height="24"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M24 12.0001C24 18.6275 18.6274 24.0001 12 24.0001C5.37255 24.0001 -3.05176e-05 18.6275 -3.05176e-05 12.0001C-3.05176e-05 5.37271 5.37255 0.00012207 12 0.00012207C18.6274 0.00012207 24 5.37271 24 12.0001Z"
+        />
+      </svg>
+      <svg
+        aria-hidden="true"
+        class="rcx-status-bullet rcx-status-bullet--away undefined "
+        height="10"
+        viewBox="0 0 10 10"
+        width="10"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M5.13337 9.93325C7.78434 9.93325 9.93338 7.78422 9.93338 5.13325C9.93338 2.48229 7.78434 0.333252 5.13337 0.333252C2.48241 0.333252 0.333374 2.48229 0.333374 5.13325C0.333374 7.78422 2.48241 9.93325 5.13337 9.93325ZM5.80004 2.33325C5.80004 1.96506 5.50156 1.66659 5.13337 1.66659C4.76518 1.66659 4.46671 1.96506 4.46671 2.33325V5.13325V5.45367L4.71691 5.65383L6.71691 7.25383C7.00442 7.48384 7.42395 7.43722 7.65395 7.14972C7.88396 6.86221 7.83735 6.44268 7.54984 6.21267L5.80004 4.81284V2.33325Z"
+          fill-rule="evenodd"
+        />
+      </svg>
+      <svg
+        aria-hidden="true"
+        class="rcx-status-bullet rcx-status-bullet--busy undefined "
+        height="10"
+        viewBox="0 0 10 10"
+        width="10"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M5.13337 9.93325C7.78434 9.93325 9.93338 7.78422 9.93338 5.13325C9.93338 2.48229 7.78434 0.333252 5.13337 0.333252C2.48241 0.333252 0.333374 2.48229 0.333374 5.13325C0.333374 7.78422 2.48241 9.93325 5.13337 9.93325ZM3.53338 4.46655C3.16519 4.46655 2.86671 4.76503 2.86671 5.13322C2.86671 5.50141 3.16519 5.79989 3.53338 5.79989H6.73338C7.10157 5.79989 7.40004 5.50141 7.40004 5.13322C7.40004 4.76503 7.10157 4.46655 6.73338 4.46655H3.53338Z"
+          fill-rule="evenodd"
+        />
+      </svg>
+      <svg
+        aria-hidden="true"
+        class="rcx-status-bullet rcx-status-bullet--disabled undefined "
+        height="24"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M12 24C18.6274 24 24 18.6274 24 12C24 5.37258 18.6274 0 12 0C5.37258 0 0 5.37258 0 12C0 18.6274 5.37258 24 12 24ZM13.3367 5.33333C13.3367 4.59695 12.7398 4 12.0034 4C11.267 4 10.67 4.59695 10.67 5.33333V14.6667C10.67 15.403 11.267 16 12.0034 16C12.7398 16 13.3367 15.403 13.3367 14.6667V5.33333ZM13.3367 18.6667C13.3367 17.9303 12.7398 17.3333 12.0034 17.3333C11.267 17.3333 10.67 17.9303 10.67 18.6667C10.67 19.403 11.267 20 12.0034 20C12.7398 20 13.3367 19.403 13.3367 18.6667Z"
+          fill-rule="evenodd"
+        />
+      </svg>
+      <svg
+        aria-hidden="true"
+        class="rcx-status-bullet rcx-status-bullet--offline undefined "
+        fill="none"
+        height="12"
+        viewBox="0 0 12 12"
+        width="12"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <circle
+          class="rcx-status-bullet rcx-status-bullet--offline"
+          cx="6"
+          cy="6"
+          r="5"
+          stroke-width="2"
+        />
+      </svg>
+      <svg
+        aria-hidden="true"
+        class="rcx-status-bullet rcx-status-bullet--loading undefined "
+        fill="none"
+        height="12"
+        viewBox="0 0 12 12"
+        width="12"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <circle
+          class="rcx-status-bullet rcx-status-bullet--loading"
+          cx="6"
+          cy="6"
+          r="5"
+          stroke-dasharray="2 2"
+          stroke-width="2"
+        />
+      </svg>
+    </div>
+  </div>
+</body>
+`;
+
+exports[`renders Small without crashing 1`] = `
+<body>
+  <div>
+    <div
+      class="rcx-box rcx-box--full"
+    >
+      <svg
+        aria-hidden="true"
+        class="rcx-status-bullet rcx-status-bullet--online undefined rcx-status-bullet--small"
+        height="24"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          d="M24 12.0001C24 18.6275 18.6274 24.0001 12 24.0001C5.37255 24.0001 -3.05176e-05 18.6275 -3.05176e-05 12.0001C-3.05176e-05 5.37271 5.37255 0.00012207 12 0.00012207C18.6274 0.00012207 24 5.37271 24 12.0001Z"
+        />
+      </svg>
+      <svg
+        aria-hidden="true"
+        class="rcx-status-bullet rcx-status-bullet--away undefined rcx-status-bullet--small"
+        height="10"
+        viewBox="0 0 10 10"
+        width="10"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M5.13337 9.93325C7.78434 9.93325 9.93338 7.78422 9.93338 5.13325C9.93338 2.48229 7.78434 0.333252 5.13337 0.333252C2.48241 0.333252 0.333374 2.48229 0.333374 5.13325C0.333374 7.78422 2.48241 9.93325 5.13337 9.93325ZM5.80004 2.33325C5.80004 1.96506 5.50156 1.66659 5.13337 1.66659C4.76518 1.66659 4.46671 1.96506 4.46671 2.33325V5.13325V5.45367L4.71691 5.65383L6.71691 7.25383C7.00442 7.48384 7.42395 7.43722 7.65395 7.14972C7.88396 6.86221 7.83735 6.44268 7.54984 6.21267L5.80004 4.81284V2.33325Z"
+          fill-rule="evenodd"
+        />
+      </svg>
+      <svg
+        aria-hidden="true"
+        class="rcx-status-bullet rcx-status-bullet--busy undefined rcx-status-bullet--small"
+        height="10"
+        viewBox="0 0 10 10"
+        width="10"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M5.13337 9.93325C7.78434 9.93325 9.93338 7.78422 9.93338 5.13325C9.93338 2.48229 7.78434 0.333252 5.13337 0.333252C2.48241 0.333252 0.333374 2.48229 0.333374 5.13325C0.333374 7.78422 2.48241 9.93325 5.13337 9.93325ZM3.53338 4.46655C3.16519 4.46655 2.86671 4.76503 2.86671 5.13322C2.86671 5.50141 3.16519 5.79989 3.53338 5.79989H6.73338C7.10157 5.79989 7.40004 5.50141 7.40004 5.13322C7.40004 4.76503 7.10157 4.46655 6.73338 4.46655H3.53338Z"
+          fill-rule="evenodd"
+        />
+      </svg>
+      <svg
+        aria-hidden="true"
+        class="rcx-status-bullet rcx-status-bullet--disabled undefined rcx-status-bullet--small"
+        height="24"
+        viewBox="0 0 24 24"
+        width="24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          clip-rule="evenodd"
+          d="M12 24C18.6274 24 24 18.6274 24 12C24 5.37258 18.6274 0 12 0C5.37258 0 0 5.37258 0 12C0 18.6274 5.37258 24 12 24ZM13.3367 5.33333C13.3367 4.59695 12.7398 4 12.0034 4C11.267 4 10.67 4.59695 10.67 5.33333V14.6667C10.67 15.403 11.267 16 12.0034 16C12.7398 16 13.3367 15.403 13.3367 14.6667V5.33333ZM13.3367 18.6667C13.3367 17.9303 12.7398 17.3333 12.0034 17.3333C11.267 17.3333 10.67 17.9303 10.67 18.6667C10.67 19.403 11.267 20 12.0034 20C12.7398 20 13.3367 19.403 13.3367 18.6667Z"
+          fill-rule="evenodd"
+        />
+      </svg>
+      <svg
+        aria-hidden="true"
+        class="rcx-status-bullet rcx-status-bullet--offline undefined rcx-status-bullet--small"
+        fill="none"
+        height="12"
+        viewBox="0 0 12 12"
+        width="12"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <circle
+          class="rcx-status-bullet rcx-status-bullet--offline"
+          cx="6"
+          cy="6"
+          r="5"
+          stroke-width="2"
+        />
+      </svg>
+      <svg
+        aria-hidden="true"
+        class="rcx-status-bullet rcx-status-bullet--loading undefined rcx-status-bullet--small"
+        fill="none"
+        height="12"
+        viewBox="0 0 12 12"
+        width="12"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <circle
+          class="rcx-status-bullet rcx-status-bullet--loading"
+          cx="6"
+          cy="6"
+          r="5"
+          stroke-dasharray="2 2"
+          stroke-width="2"
+        />
+      </svg>
+    </div>
+  </div>
+</body>
+`;

@@ -18,13 +18,13 @@ exports[`renders KeypadStory without crashing 1`] = `
           class="rcx-button--content"
         >
           <span
-            class="rcx-box rcx-box--full rcx-css-1yt2sxa"
+            class="rcx-box rcx-box--full rcx-css-giedro"
           >
             1
           </span>
           <span
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-css-6uv1xr"
+            class="rcx-box rcx-box--full rcx-css-k1p03a"
           />
         </span>
       </button>
@@ -36,13 +36,13 @@ exports[`renders KeypadStory without crashing 1`] = `
           class="rcx-button--content"
         >
           <span
-            class="rcx-box rcx-box--full rcx-css-1yt2sxa"
+            class="rcx-box rcx-box--full rcx-css-giedro"
           >
             2
           </span>
           <span
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-css-6uv1xr"
+            class="rcx-box rcx-box--full rcx-css-k1p03a"
           >
             ABC
           </span>
@@ -56,13 +56,13 @@ exports[`renders KeypadStory without crashing 1`] = `
           class="rcx-button--content"
         >
           <span
-            class="rcx-box rcx-box--full rcx-css-1yt2sxa"
+            class="rcx-box rcx-box--full rcx-css-giedro"
           >
             3
           </span>
           <span
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-css-6uv1xr"
+            class="rcx-box rcx-box--full rcx-css-k1p03a"
           >
             DEF
           </span>
@@ -76,13 +76,13 @@ exports[`renders KeypadStory without crashing 1`] = `
           class="rcx-button--content"
         >
           <span
-            class="rcx-box rcx-box--full rcx-css-1yt2sxa"
+            class="rcx-box rcx-box--full rcx-css-giedro"
           >
             4
           </span>
           <span
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-css-6uv1xr"
+            class="rcx-box rcx-box--full rcx-css-k1p03a"
           >
             GHI
           </span>
@@ -96,13 +96,13 @@ exports[`renders KeypadStory without crashing 1`] = `
           class="rcx-button--content"
         >
           <span
-            class="rcx-box rcx-box--full rcx-css-1yt2sxa"
+            class="rcx-box rcx-box--full rcx-css-giedro"
           >
             5
           </span>
           <span
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-css-6uv1xr"
+            class="rcx-box rcx-box--full rcx-css-k1p03a"
           >
             JKL
           </span>
@@ -116,13 +116,13 @@ exports[`renders KeypadStory without crashing 1`] = `
           class="rcx-button--content"
         >
           <span
-            class="rcx-box rcx-box--full rcx-css-1yt2sxa"
+            class="rcx-box rcx-box--full rcx-css-giedro"
           >
             6
           </span>
           <span
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-css-6uv1xr"
+            class="rcx-box rcx-box--full rcx-css-k1p03a"
           >
             MNO
           </span>
@@ -136,13 +136,13 @@ exports[`renders KeypadStory without crashing 1`] = `
           class="rcx-button--content"
         >
           <span
-            class="rcx-box rcx-box--full rcx-css-1yt2sxa"
+            class="rcx-box rcx-box--full rcx-css-giedro"
           >
             7
           </span>
           <span
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-css-6uv1xr"
+            class="rcx-box rcx-box--full rcx-css-k1p03a"
           >
             PQRS
           </span>
@@ -156,13 +156,13 @@ exports[`renders KeypadStory without crashing 1`] = `
           class="rcx-button--content"
         >
           <span
-            class="rcx-box rcx-box--full rcx-css-1yt2sxa"
+            class="rcx-box rcx-box--full rcx-css-giedro"
           >
             8
           </span>
           <span
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-css-6uv1xr"
+            class="rcx-box rcx-box--full rcx-css-k1p03a"
           >
             TUV
           </span>
@@ -176,13 +176,13 @@ exports[`renders KeypadStory without crashing 1`] = `
           class="rcx-button--content"
         >
           <span
-            class="rcx-box rcx-box--full rcx-css-1yt2sxa"
+            class="rcx-box rcx-box--full rcx-css-giedro"
           >
             9
           </span>
           <span
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-css-6uv1xr"
+            class="rcx-box rcx-box--full rcx-css-k1p03a"
           >
             WXYZ
           </span>
@@ -196,13 +196,13 @@ exports[`renders KeypadStory without crashing 1`] = `
           class="rcx-button--content"
         >
           <span
-            class="rcx-box rcx-box--full rcx-css-t9aukj"
+            class="rcx-box rcx-box--full rcx-css-116rluq"
           >
             *
           </span>
           <span
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-css-6uv1xr"
+            class="rcx-box rcx-box--full rcx-css-k1p03a"
           />
         </span>
       </button>
@@ -215,13 +215,13 @@ exports[`renders KeypadStory without crashing 1`] = `
           class="rcx-button--content"
         >
           <span
-            class="rcx-box rcx-box--full rcx-css-1yt2sxa"
+            class="rcx-box rcx-box--full rcx-css-giedro"
           >
             0
           </span>
           <span
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-css-6uv1xr"
+            class="rcx-box rcx-box--full rcx-css-k1p03a"
           >
             +
           </span>
@@ -235,13 +235,13 @@ exports[`renders KeypadStory without crashing 1`] = `
           class="rcx-button--content"
         >
           <span
-            class="rcx-box rcx-box--full rcx-css-1yt2sxa"
+            class="rcx-box rcx-box--full rcx-css-giedro"
           >
             #
           </span>
           <span
             aria-hidden="true"
-            class="rcx-box rcx-box--full rcx-css-6uv1xr"
+            class="rcx-box rcx-box--full rcx-css-k1p03a"
           />
         </span>
       </button>

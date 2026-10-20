@@ -7,7 +7,7 @@ import { useMemo } from 'react';
 
 import ImportOperationSummary from './ImportOperationSummary';
 import ImportOperationSummarySkeleton from './ImportOperationSummarySkeleton';
-import { ProgressStep } from '../../../../app/importer/lib/ImporterProgressStep';
+import { ProgressStep } from '../../../../lib/importer/ImporterProgressStep';
 
 // TODO: review inner logic
 function ImportHistoryPage() {

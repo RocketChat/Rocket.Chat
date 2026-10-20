@@ -13,12 +13,12 @@ exports[`renders _RegisterServerForm without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-heem01"
       >
         <div
-          class="rcx-box rcx-box--full rcx-css-d369k0"
+          class="rcx-box rcx-box--full rcx-css-tnmbyv"
         >
           Step 1 of 1
         </div>
         <div
-          class="rcx-box rcx-box--full rcx-css-18gg2kh"
+          class="rcx-box rcx-box--full rcx-css-tthqrz"
           id="_r_0_-title"
         >
           Register your workspace
@@ -87,7 +87,7 @@ exports[`renders _RegisterServerForm without crashing 1`] = `
                 />
               </label>
               <label
-                class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements rcx-field__label rcx-label rcx-css-1nlo49l"
+                class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements rcx-field__label rcx-label rcx-css-10pt7e2"
                 for="_r_2_"
               >
                 I agree with 
@@ -147,13 +147,13 @@ exports[`renders _RegisterServerForm without crashing 1`] = `
             </button>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-css-19c5bc1"
+            class="rcx-box rcx-box--full rcx-css-5vy0j0"
             id="_r_0_-engagement-disclaimer"
           >
             Registration allows automatic license updates, notifications of critical vulnerabilities and access to Rocket.Chat Cloud services. No sensitive workspace data is shared; statistics sent to Rocket.Chat are made visible to you within the administration area.
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-css-19c5bc1"
+            class="rcx-box rcx-box--full rcx-css-5vy0j0"
             id="_r_0_-informed-disclaimer"
           >
             By submitting this form you consent to receive more information about Rocket.Chat products, events and updates, according to our 
@@ -186,12 +186,12 @@ exports[`renders _RegisterServerFormOffline without crashing 1`] = `
         class="rcx-box rcx-box--full rcx-css-heem01"
       >
         <div
-          class="rcx-box rcx-box--full rcx-css-d369k0"
+          class="rcx-box rcx-box--full rcx-css-tnmbyv"
         >
           Step 1 of 1
         </div>
         <div
-          class="rcx-box rcx-box--full rcx-css-18gg2kh"
+          class="rcx-box rcx-box--full rcx-css-tthqrz"
           id="_r_3_-title"
         >
           Register your workspace
@@ -260,7 +260,7 @@ exports[`renders _RegisterServerFormOffline without crashing 1`] = `
                 />
               </label>
               <label
-                class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements rcx-field__label rcx-label rcx-css-1nlo49l"
+                class="rcx-box rcx-box--full rcx-box--with-block-elements rcx-box--with-inline-elements rcx-field__label rcx-label rcx-css-10pt7e2"
                 for="_r_5_"
               >
                 I agree with 
@@ -331,13 +331,13 @@ exports[`renders _RegisterServerFormOffline without crashing 1`] = `
             </button>
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-css-19c5bc1"
+            class="rcx-box rcx-box--full rcx-css-5vy0j0"
             id="_r_3_-engagement-disclaimer"
           >
             Registration allows automatic license updates, notifications of critical vulnerabilities and access to Rocket.Chat Cloud services. No sensitive workspace data is shared; statistics sent to Rocket.Chat are made visible to you within the administration area.
           </div>
           <div
-            class="rcx-box rcx-box--full rcx-css-19c5bc1"
+            class="rcx-box rcx-box--full rcx-css-5vy0j0"
             id="_r_3_-informed-disclaimer"
           >
             By submitting this form you consent to receive more information about Rocket.Chat products, events and updates, according to our 

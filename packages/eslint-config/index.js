@@ -374,6 +374,7 @@ export default defineConfig(
 			'import-x/no-absolute-path': 'error',
 			'import-x/no-dynamic-require': 'error',
 			'import-x/no-self-import': 'error',
+			'import-x/no-relative-packages': 'error',
 			'import-x/no-cycle': 'off',
 			'import-x/no-useless-path-segments': 'error',
 		},

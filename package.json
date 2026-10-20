@@ -24,10 +24,10 @@
 		"build": "turbo run build",
 		"dev": "turbo run dev --env-mode=loose --parallel --filter=@rocket.chat/meteor...",
 		"dev:next": "yarn workspace @rocket.chat/meteor dev:next",
+		"docs:check-links": "node scripts/check-docs-links.mjs docs",
 		"dsv": "turbo run dsv --env-mode=loose --filter=@rocket.chat/meteor...",
 		"ms": "turbo run ms --env-mode=loose",
-		"fossify": "TS_NODE_COMPILER_OPTIONS='{\"module\": \"commonjs\"}' ts-node scripts/fossify.ts",
-		"fuselage": "./fuselage.sh",
+		"fossify": "tsx scripts/fossify.ts",
 		"lint": "turbo run lint",
 		"storybook": "yarn workspace @rocket.chat/meteor run storybook",
 		"test-storybook": "turbo run test-storybook",
@@ -64,6 +64,7 @@
 		"tar-fs@npm:^2.0.0": "2.1.4",
 		"tar-fs@npm:^3.0.6": "3.1.2",
 		"express/path-to-regexp": "0.1.13",
+		"express/proxy-addr": "2.0.8",
 		"brace-expansion@npm:^1.1.7": "1.1.21",
 		"brace-expansion@npm:^2.0.1": "^2.1.7",
 		"brace-expansion@npm:^2.0.2": "^2.1.7",
@@ -220,9 +221,11 @@
 		"@types/node": "~24.13.6",
 		"eslint": "~10.12.0",
 		"eslint-plugin-you-dont-need-lodash-underscore": "~6.14.0",
+		"globals": "~17.7.0",
 		"ts-node": "^10.9.2",
+		"tsx": "~4.22.5",
 		"turbo": "2.11.7",
-		"typescript": "~5.9.3"
+		"typescript": "~7.0.2"
 	},
 	"packageManager": "yarn@4.18.1",
 	"engines": {
@@ -237,7 +240,7 @@
 		"minTag": "0.55.0-rc.0",
 		"updateFiles": [
 			"package.json",
-			"apps/meteor/app/utils/rocketchat.info"
+			"apps/meteor/rocketchat.info"
 		]
 	}
 }

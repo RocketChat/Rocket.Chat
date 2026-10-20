@@ -24,9 +24,14 @@ Because the call only renders in the window, the server registers the provider o
 **and** `VideoConf_Conference_Window_Enabled` is on. A provider in the registry is one the camera button offers, and
 offering one that has nowhere to render turns a misconfiguration into a silent, audio-only call.
 
+LiveKit is also sold apart from the rest of video conferencing: it needs the `video-conference-native` license module
+on top of `videoconference-enterprise`. The provider is registered only while the license includes it, and is withdrawn
+as soon as a license without it is applied, no restart needed. `video-conference.callConfig` checks it too, since a call
+started while it was licensed outlives the license: from then on nobody can join or rejoin it.
+
 ## Settings
 
-Under **Video Conference → LiveKit** (enterprise):
+Under **Video Conference → LiveKit** (the `video-conference-native` module):
 
 | Setting | Purpose |
 | --- | --- |
@@ -75,11 +80,20 @@ with the camera off, it is remembered straight away and applied when the camera 
 | Type | Reliable | Payload | Meaning |
 | --- | --- | --- | --- |
 | `hand` | yes | `{ raised, raisedAt, rebroadcast? }` | Raised hands. `rebroadcast` restates a hand for someone who arrived later; only new hands chime. |
-| `reaction` | no | `{ emoji, reactionId? }` | Floating reactions, 3.5s on receivers. |
+| `reaction` | no | `{ emoji, reactionId? }` | Floating reactions: seen for 3s, kept for 3.5s on receivers. |
 | `mute` | yes | `{ target }` | Asks one participant to mute. Only the target acts on it, by muting itself; nothing reaches into anyone's machine. |
 
 Reactions rise from the call area with the sender's name, and raised hands are listed next to the participants button,
 because a call can be larger than the tiles it shows.
+
+Raised hands are a queue. The top bar names the front of it — "You" when that is the reader — and lists the whole line,
+including hands whose tiles are not on screen. On the tiles that are, only the front of the queue gets a green plate:
+anyone else in line gets a white one with their place in it, so whose turn is next reads at a glance however many hands
+are up.
+
+A sender's latest reaction also sits in the top-left corner of their own tile, opposite the microphone, for exactly as
+long as it rises (`REACTION_VISIBLE_MS`) — not for the provider's longer `REACTION_TTL_MS`, which only bounds how long it
+is kept. A newer reaction from the same person replaces it and starts the time over.
 
 ## Who gets rung
 

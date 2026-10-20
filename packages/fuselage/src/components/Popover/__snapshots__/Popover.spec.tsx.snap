@@ -1,0 +1,19 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`[Popover Rendering] renders Default without crashing 1`] = `
+<body>
+  <div>
+    <button
+      aria-expanded="false"
+      class="rcx-box rcx-box--full rcx-button"
+      type="button"
+    >
+      <span
+        class="rcx-button--content"
+      >
+        Open Popover
+      </span>
+    </button>
+  </div>
+</body>
+`;

@@ -29,7 +29,7 @@ import { useChat } from '../../contexts/ChatContext';
 import { useComposerPopupOptions } from '../../contexts/ComposerPopupContext';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useAutoGrow } from '../RoomComposer/hooks/useAutoGrow';
-import { useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
+import { getComposerPopupListboxId, useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
 import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 
 const reducer = (_: unknown, event: ChangeEvent<HTMLInputElement>): boolean => {
@@ -420,6 +420,8 @@ const MessageBox = ({
 					placeholder={composerPlaceholder}
 					onPaste={handlePaste}
 					aria-activedescendant={popup.focused ? `popup-item-${popup.focused._id}` : undefined}
+					aria-autocomplete='list'
+					aria-controls={getComposerPopupListboxId(popup, shouldPopupPreview)}
 				/>
 			}
 			files={<MessageComposerFiles />}

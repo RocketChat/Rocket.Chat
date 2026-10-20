@@ -6,7 +6,7 @@ import { TeamType } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 
-import { getCredentials, api, request, credentials, methodCall } from '../../data/api-data';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
@@ -1838,16 +1838,9 @@ describe('/teams.addRooms', () => {
 
 	it('should fail if the user is not the owner of the channel', (_t, done) => {
 		void request
-			.post(methodCall('addUsersToRoom'))
+			.post(api('groups.invite'))
 			.set(credentials)
-			.send({
-				message: JSON.stringify({
-					method: 'addUsersToRoom',
-					params: [{ rid: privateRoom3._id, users: [testUser.username] }],
-					id: 'id',
-					msg: 'method',
-				}),
-			})
+			.send({ roomId: privateRoom3._id, username: testUser.username })
 			.expect('Content-Type', 'application/json')
 			.expect(200)
 			.expect((res) => {
@@ -2978,16 +2971,9 @@ describe('/teams.update', () => {
 
 		it('should update user prefs', async () => {
 			await request
-				.post(methodCall('saveUserPreferences'))
+				.post(api('users.setPreferences'))
 				.set(userCredentials)
-				.send({
-					message: JSON.stringify({
-						method: 'saveUserPreferences',
-						params: [{ emailNotificationMode: 'nothing' }],
-						id: 'id',
-						msg: 'method',
-					}),
-				})
+				.send({ data: { emailNotificationMode: 'nothing' } })
 				.expect(200);
 		});
 

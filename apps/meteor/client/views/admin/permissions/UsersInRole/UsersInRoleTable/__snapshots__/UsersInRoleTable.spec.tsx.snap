@@ -79,7 +79,7 @@ exports[`renders Default without crashing 1`] = `
                     tabindex="0"
                   >
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <div
                         class="rcx-box rcx-box--full rcx-css-127j9mz"
@@ -97,15 +97,15 @@ exports[`renders Default without crashing 1`] = `
                           />
                         </figure>
                         <div
-                          class="rcx-box rcx-box--full rcx-css-1mrdogu"
+                          class="rcx-box rcx-box--full rcx-css-7by6y2"
                         >
                           <div
-                            class="rcx-box rcx-box--full rcx-css-179jvbj"
+                            class="rcx-box rcx-box--full rcx-css-123yehu"
                           >
                             User 1
                           </div>
                           <div
-                            class="rcx-box rcx-box--full rcx-css-640par"
+                            class="rcx-box rcx-box--full rcx-css-1qgxz5y"
                           >
                             @user.1
                           </div>
@@ -113,7 +113,7 @@ exports[`renders Default without crashing 1`] = `
                       </div>
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       user1@example.com
                     </td>
@@ -140,7 +140,7 @@ exports[`renders Default without crashing 1`] = `
                     tabindex="0"
                   >
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <div
                         class="rcx-box rcx-box--full rcx-css-127j9mz"
@@ -158,15 +158,15 @@ exports[`renders Default without crashing 1`] = `
                           />
                         </figure>
                         <div
-                          class="rcx-box rcx-box--full rcx-css-1mrdogu"
+                          class="rcx-box rcx-box--full rcx-css-7by6y2"
                         >
                           <div
-                            class="rcx-box rcx-box--full rcx-css-179jvbj"
+                            class="rcx-box rcx-box--full rcx-css-123yehu"
                           >
                             User 2
                           </div>
                           <div
-                            class="rcx-box rcx-box--full rcx-css-640par"
+                            class="rcx-box rcx-box--full rcx-css-1qgxz5y"
                           >
                             @user.2
                           </div>
@@ -174,7 +174,7 @@ exports[`renders Default without crashing 1`] = `
                       </div>
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       user2@example.com
                     </td>
@@ -201,7 +201,7 @@ exports[`renders Default without crashing 1`] = `
                     tabindex="0"
                   >
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <div
                         class="rcx-box rcx-box--full rcx-css-127j9mz"
@@ -219,15 +219,15 @@ exports[`renders Default without crashing 1`] = `
                           />
                         </figure>
                         <div
-                          class="rcx-box rcx-box--full rcx-css-1mrdogu"
+                          class="rcx-box rcx-box--full rcx-css-7by6y2"
                         >
                           <div
-                            class="rcx-box rcx-box--full rcx-css-179jvbj"
+                            class="rcx-box rcx-box--full rcx-css-123yehu"
                           >
                             User 3
                           </div>
                           <div
-                            class="rcx-box rcx-box--full rcx-css-640par"
+                            class="rcx-box rcx-box--full rcx-css-1qgxz5y"
                           >
                             @user.3
                           </div>
@@ -235,7 +235,7 @@ exports[`renders Default without crashing 1`] = `
                       </div>
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       user3@example.com
                     </td>
@@ -262,7 +262,7 @@ exports[`renders Default without crashing 1`] = `
                     tabindex="0"
                   >
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <div
                         class="rcx-box rcx-box--full rcx-css-127j9mz"
@@ -280,15 +280,15 @@ exports[`renders Default without crashing 1`] = `
                           />
                         </figure>
                         <div
-                          class="rcx-box rcx-box--full rcx-css-1mrdogu"
+                          class="rcx-box rcx-box--full rcx-css-7by6y2"
                         >
                           <div
-                            class="rcx-box rcx-box--full rcx-css-179jvbj"
+                            class="rcx-box rcx-box--full rcx-css-123yehu"
                           >
                             User 4
                           </div>
                           <div
-                            class="rcx-box rcx-box--full rcx-css-640par"
+                            class="rcx-box rcx-box--full rcx-css-1qgxz5y"
                           >
                             @user.4
                           </div>
@@ -296,7 +296,7 @@ exports[`renders Default without crashing 1`] = `
                       </div>
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       user4@example.com
                     </td>
@@ -323,7 +323,7 @@ exports[`renders Default without crashing 1`] = `
                     tabindex="0"
                   >
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       <div
                         class="rcx-box rcx-box--full rcx-css-127j9mz"
@@ -341,15 +341,15 @@ exports[`renders Default without crashing 1`] = `
                           />
                         </figure>
                         <div
-                          class="rcx-box rcx-box--full rcx-css-1mrdogu"
+                          class="rcx-box rcx-box--full rcx-css-7by6y2"
                         >
                           <div
-                            class="rcx-box rcx-box--full rcx-css-179jvbj"
+                            class="rcx-box rcx-box--full rcx-css-123yehu"
                           >
                             User 5
                           </div>
                           <div
-                            class="rcx-box rcx-box--full rcx-css-640par"
+                            class="rcx-box rcx-box--full rcx-css-1qgxz5y"
                           >
                             @user.5
                           </div>
@@ -357,7 +357,7 @@ exports[`renders Default without crashing 1`] = `
                       </div>
                     </td>
                     <td
-                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1te28na"
+                      class="rcx-box rcx-box--full rcx-table__cell rcx-css-1oii38d"
                     >
                       user5@example.com
                     </td>

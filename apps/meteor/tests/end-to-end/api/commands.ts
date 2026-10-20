@@ -360,6 +360,30 @@ describe('[Commands]', () => {
 		});
 	});
 
+	describe('Command "topic"', () => {
+		let user: TestUser<IUser>;
+		let userCredentials: Credentials;
+
+		before(async () => {
+			user = await createUser({ joinDefaultChannels: true });
+			userCredentials = await login(user.username, password);
+		});
+
+		after(() => deleteUser(user));
+
+		it('should reject a user without the permission declared by the command', async () => {
+			await request
+				.post(api('commands.run'))
+				.set(userCredentials)
+				.send({ command: 'topic', roomId: 'GENERAL', params: 'new topic' })
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-not-authorized');
+				});
+		});
+	});
+
 	describe('Command "invite-all-from"', () => {
 		let group: IRoom;
 		let group1: IRoom;

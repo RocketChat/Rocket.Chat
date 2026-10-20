@@ -1,5 +1,5 @@
-import { t } from '../../../../app/utils/lib/i18n';
 import { MAX_MULTIPLE_UPLOADED_FILES } from '../../../../lib/constants';
+import { t } from '../../../../lib/i18n';
 import { e2e } from '../../e2ee';
 import { settings } from '../../settings';
 import { dispatchToastMessage } from '../../toast';

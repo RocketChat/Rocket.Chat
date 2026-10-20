@@ -626,6 +626,8 @@ describe('LIVECHAT - visitors', () => {
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('count');
 				});
+
+			await closeOmnichannelRoom(createdRoom._id);
 		});
 	});
 
@@ -672,6 +674,8 @@ describe('LIVECHAT - visitors', () => {
 					expect(res.body).to.have.property('total');
 					expect(res.body).to.have.property('count');
 				});
+
+			await closeOmnichannelRoom(createdRoom._id);
 		});
 		describe('token disclosure', () => {
 			let visitor: ILivechatVisitor;
@@ -683,6 +687,7 @@ describe('LIVECHAT - visitors', () => {
 				await sendMessage(room._id, 'hello from visitor', visitor.token);
 			});
 			after(async () => {
+				await closeOmnichannelRoom(room._id);
 				await deleteVisitor(visitor.token);
 			});
 
@@ -768,7 +773,7 @@ describe('LIVECHAT - visitors', () => {
 		it("should return a 'visitor-has-open-rooms' error when there are open rooms", async () => {
 			await updateSetting('Livechat_Allow_collect_and_store_HTTP_header_informations', false);
 			const createdVisitor = await createVisitor();
-			await createLivechatRoom(createdVisitor.token);
+			const room = await createLivechatRoom(createdVisitor.token);
 
 			await request
 				.delete(api(`livechat/visitor/${createdVisitor.token}`))
@@ -779,6 +784,8 @@ describe('LIVECHAT - visitors', () => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body.error).to.be.equal('Cannot remove visitors with opened rooms [visitor-has-open-rooms]');
 				});
+
+			await closeOmnichannelRoom(room._id);
 		});
 
 		it("should not return a 'visitor-has-open-rooms' when visitor has open rooms but GDPR is enabled", async () => {
@@ -985,6 +992,8 @@ describe('LIVECHAT - visitors', () => {
 					expect(res.body.history).to.be.an('array');
 					expect(res.body.history).to.have.lengthOf(0);
 				});
+
+			await closeOmnichannelRoom(room._id);
 		});
 
 		it('should return an empty array if the visitorId doesnt correlate to room', async () => {
@@ -1003,6 +1012,8 @@ describe('LIVECHAT - visitors', () => {
 					expect(res.body.history).to.be.an('array');
 					expect(res.body.history).to.have.lengthOf(0);
 				});
+
+			await closeOmnichannelRoom(room._id);
 		});
 
 		it('should return a list of chats when the query params is all valid', async () => {
@@ -1028,6 +1039,8 @@ describe('LIVECHAT - visitors', () => {
 					expect(res.body.history[0]).to.have.property('fname');
 					expect(res.body.history[0]).to.have.property('v');
 				});
+
+			await closeOmnichannelRoom(roomId);
 		});
 
 		it('should return a list of chats when filtered by ', async () => {
@@ -1050,6 +1063,8 @@ describe('LIVECHAT - visitors', () => {
 					expect(res.body.history[0]).to.have.property('fname');
 					expect(res.body.history[0]).to.have.property('v');
 				});
+
+			await closeOmnichannelRoom(roomId);
 		});
 
 		it('should return only closed chats when closedChatsOnly is true', async () => {
@@ -1088,6 +1103,8 @@ describe('LIVECHAT - visitors', () => {
 					expect(res.body.history).to.be.an('array');
 					expect(res.body.history.find((chat: any) => chat._id === room._id)).to.be.undefined;
 				});
+
+			await closeOmnichannelRoom(room._id);
 		});
 
 		it('should return closed rooms (served & unserved) when `closedChatsOnly` is true & `servedChatsOnly` is false', async () => {
@@ -1119,7 +1136,7 @@ describe('LIVECHAT - visitors', () => {
 			await closeOmnichannelRoom(room._id);
 			const room2 = await createLivechatRoom(visitor.token);
 			await closeOmnichannelRoom(room2._id);
-			await createLivechatRoom(visitor.token);
+			const openRoom = await createLivechatRoom(visitor.token);
 
 			const { body } = await request
 				.get(api(`livechat/visitors.searchChats/room/${room._id}/visitor/${visitor._id}?closedChatsOnly=false&servedChatsOnly=false`))
@@ -1132,6 +1149,8 @@ describe('LIVECHAT - visitors', () => {
 			expect(body.history.filter((chat: any) => !!chat.closedAt).length === 2).to.be.true;
 			expect(body.history.filter((chat: any) => !chat.closedAt).length === 1).to.be.true;
 			expect(body.total).to.be.equal(3);
+
+			await closeOmnichannelRoom(openRoom._id);
 		});
 		describe('token disclosure', () => {
 			let visitor: ILivechatVisitor;
@@ -1144,6 +1163,7 @@ describe('LIVECHAT - visitors', () => {
 				visitor = started.visitor;
 			});
 			after(async () => {
+				await closeOmnichannelRoom(roomId);
 				await deleteVisitor(visitor.token);
 			});
 

@@ -43,7 +43,7 @@ export class HomeContent {
 	}
 
 	get messagePopupUsers(): Locator {
-		return this.page.locator('role=menu[name="People"]');
+		return this.page.getByRole('listbox', { name: 'People' });
 	}
 
 	get mainMessageList(): Locator {

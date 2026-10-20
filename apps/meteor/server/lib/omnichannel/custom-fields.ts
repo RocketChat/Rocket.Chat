@@ -2,7 +2,7 @@ import type { ILivechatContact, ILivechatCustomField, ILivechatVisitor } from '@
 import { LivechatContacts, LivechatCustomField, LivechatRooms, LivechatVisitors } from '@rocket.chat/models';
 
 import { livechatLogger } from './logger';
-import { i18n } from '../../../app/utils/lib/i18n';
+import { i18n } from '../../../lib/i18n';
 
 export const validateRequiredCustomFields = (
 	customFields: string[],

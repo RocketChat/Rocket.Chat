@@ -14,9 +14,9 @@ import NavBarSearchInputAddon from './NavBarSearchInputAddon';
 import NavBarSearchListBox from './NavBarSearchListbox';
 import { getShortcutLabel } from './getShortcutLabel';
 import { useNavBarAISearch } from './hooks/useNavBarAISearch';
+import { SearchActiveOptionContext, useSearchActiveOption } from './hooks/useSearchActiveOption';
 import { useSearchClick } from './hooks/useSearchClick';
 import { useSearchFocus } from './hooks/useSearchFocus';
-import { useSearchInputNavigation } from './hooks/useSearchNavigation';
 
 const NavBarAISearch = () => {
 	const { t } = useTranslation();
@@ -36,7 +36,7 @@ const NavBarAISearch = () => {
 	const { triggerProps, overlayProps } = useOverlayTrigger({ type: 'listbox' }, state, triggerRef);
 	delete triggerProps.onPress;
 
-	const handleKeyDown = useSearchInputNavigation(state);
+	const { activeId, handleKeyDown, handleInput, contextValue } = useSearchActiveOption(state, overlayProps.id);
 	const handleFocus = useSearchFocus(state);
 	const handleClick = useSearchClick(state);
 
@@ -86,6 +86,8 @@ const NavBarAISearch = () => {
 					{...triggerProps}
 					onFocus={handleFocus}
 					onKeyDown={handleKeyDown}
+					onInput={handleInput}
+					aria-activedescendant={activeId}
 					onClick={handleClick}
 					autoComplete='off'
 					placeholder={placeholder}
@@ -108,12 +110,20 @@ const NavBarAISearch = () => {
 						/>
 					}
 				/>
-				{state.isOpen &&
-					(aiSearchActive ? (
-						<NavBarAISearchListBox state={state} overlayProps={overlayProps} aiSearchActive aiSearchAvailable={canSearchWithAIFromTopBar} />
-					) : (
-						<NavBarSearchListBox state={state} overlayProps={overlayProps} />
-					))}
+				{state.isOpen && (
+					<SearchActiveOptionContext.Provider value={contextValue}>
+						{aiSearchActive ? (
+							<NavBarAISearchListBox
+								state={state}
+								overlayProps={overlayProps}
+								aiSearchActive
+								aiSearchAvailable={canSearchWithAIFromTopBar}
+							/>
+						) : (
+							<NavBarSearchListBox state={state} overlayProps={overlayProps} />
+						)}
+					</SearchActiveOptionContext.Provider>
+				)}
 			</Box>
 		</FormProvider>
 	);

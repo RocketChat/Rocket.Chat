@@ -17,6 +17,7 @@ export type ListItem = {
 	type: 'LIST_ITEM';
 	value: Inlines[];
 	number?: number;
+	nested?: NestedList[];
 };
 
 export type Tasks = {
@@ -27,7 +28,10 @@ export type Task = {
 	type: 'TASK';
 	status: boolean;
 	value: Inlines[];
+	nested?: NestedList[];
 };
+
+export type NestedList = OrderedList | UnorderedList | Tasks;
 
 export type CodeLine = {
 	type: 'CODE_LINE';

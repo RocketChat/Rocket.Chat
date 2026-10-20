@@ -15,6 +15,7 @@ import { getCredentials, api, request, credentials } from '../../../data/api-dat
 import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
 import {
 	closeOmnichannelRoom,
+	closeOpenRoomsServedBy,
 	createAgent,
 	createLivechatRoom,
 	createLivechatRoomWidget,
@@ -849,6 +850,7 @@ describe('LIVECHAT - contacts', () => {
 		after(async () => {
 			await restorePermissionToRoles('view-livechat-contact');
 			await Promise.all(roomIdsToClose.map((rid) => closeOmnichannelRoom(rid)));
+			await closeOpenRoomsServedBy(agent.user._id);
 			await deleteUser(agent.user);
 		});
 
