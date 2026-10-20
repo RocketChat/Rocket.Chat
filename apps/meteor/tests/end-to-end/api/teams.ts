@@ -978,6 +978,51 @@ describe('/teams.updateMember', () => {
 			.then(() => done())
 			.catch(done);
 	});
+
+	describe('as a team moderator', () => {
+		let moderatorCredentials: Credentials;
+
+		before(async () => {
+			await request
+				.post(api('teams.updateMember'))
+				.set(credentials)
+				.send({ teamName: testTeam.name, member: { userId: testUser2._id, roles: ['moderator'] } })
+				.expect(200);
+			moderatorCredentials = await login(testUser2.username, password);
+		});
+
+		it('should not allow promoting themselves to owner', async () => {
+			await request
+				.post(api('teams.updateMember'))
+				.set(moderatorCredentials)
+				.send({ teamName: testTeam.name, member: { userId: testUser2._id, roles: ['owner'] } })
+				.expect(403);
+		});
+
+		it('should not allow granting owner through teams.addMembers', async () => {
+			await request
+				.post(api('teams.addMembers'))
+				.set(moderatorCredentials)
+				.send({ teamName: testTeam.name, members: [{ userId: testUser2._id, roles: ['owner'] }] })
+				.expect(403);
+		});
+
+		it('should not allow demoting an owner', async () => {
+			await request
+				.post(api('teams.updateMember'))
+				.set(moderatorCredentials)
+				.send({ teamName: testTeam.name, member: { userId: testUser._id, roles: [] } })
+				.expect(403);
+		});
+	});
+
+	it('should reject roles that are not team roles', async () => {
+		await request
+			.post(api('teams.updateMember'))
+			.set(credentials)
+			.send({ teamName: testTeam.name, member: { userId: testUser2._id, roles: ['admin'] } })
+			.expect(400);
+	});
 });
 
 describe('/teams.removeMember', () => {

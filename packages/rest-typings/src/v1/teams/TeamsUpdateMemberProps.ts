@@ -23,6 +23,7 @@ const teamsUpdateMemberPropsSchema = {
 							type: 'array',
 							items: {
 								type: 'string',
+								enum: ['owner', 'moderator', 'leader', 'member'],
 							},
 							nullable: true,
 						},
@@ -50,6 +51,7 @@ const teamsUpdateMemberPropsSchema = {
 							type: 'array',
 							items: {
 								type: 'string',
+								enum: ['owner', 'moderator', 'leader', 'member'],
 							},
 							nullable: true,
 						},
