@@ -1,28 +1,18 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { Modal } from './modals/modal';
-
-export class ABACConfirmationModal extends Modal {
-	constructor(page: Page, title: string) {
-		super(page.getByRole('dialog').filter({ hasText: title }));
-	}
-
-	get dialog(): Locator {
-		return this.root;
-	}
-}
+import { ABACSelfLockoutModal, ABACUpdateRoomModal } from './modals';
 
 export class ABACMembershipPreview {
 	readonly root: Locator;
 
-	readonly updateRoomModal: ABACConfirmationModal;
+	readonly updateRoomModal: ABACUpdateRoomModal;
 
-	readonly selfLockoutModal: ABACConfirmationModal;
+	readonly selfLockoutModal: ABACSelfLockoutModal;
 
 	constructor(page: Page) {
 		this.root = page.getByRole('dialog', { name: 'Members (preview)' });
-		this.updateRoomModal = new ABACConfirmationModal(page, 'Update ABAC room');
-		this.selfLockoutModal = new ABACConfirmationModal(page, 'Are you sure?');
+		this.updateRoomModal = new ABACUpdateRoomModal(page);
+		this.selfLockoutModal = new ABACSelfLockoutModal(page);
 	}
 
 	get losesAccess(): Locator {

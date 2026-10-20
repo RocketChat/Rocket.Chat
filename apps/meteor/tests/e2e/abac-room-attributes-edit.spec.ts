@@ -104,8 +104,8 @@ test.describe.serial('abac-room-attributes-edit', () => {
 		await expect(preview.losesAccess).not.toContainText(Users.admin.data.username);
 
 		await preview.save();
-		await expect(preview.updateRoomModal.dialog).toContainText(`will be removed from ${name}`);
-		await expect(preview.selfLockoutModal.dialog).toHaveCount(0);
+		await expect(preview.updateRoomModal.getText(`will be removed from ${name}`)).toBeVisible();
+		await expect(preview.selfLockoutModal.getText(`You will lose access to ${name}`)).not.toBeVisible();
 
 		await preview.updateRoomModal.save();
 		await poAdminABACRooms.toastMessage.waitForDisplay({ type: 'success', message: 'Room attributes updated' });
@@ -129,7 +129,7 @@ test.describe.serial('abac-room-attributes-edit', () => {
 		await expect(preview.losesAccess).toContainText(Users.admin.data.username);
 
 		await preview.save();
-		await expect(preview.selfLockoutModal.dialog).toContainText(`You will lose access to ${name}`);
+		await expect(preview.selfLockoutModal.getText(`You will lose access to ${name}`)).toBeVisible();
 
 		await preview.selfLockoutModal.save();
 		await poAdminABACRooms.toastMessage.waitForDisplay({ type: 'success', message: 'Room attributes updated' });
