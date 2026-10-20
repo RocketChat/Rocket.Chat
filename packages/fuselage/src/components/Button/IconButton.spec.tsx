@@ -3,6 +3,7 @@ import { screen } from '@testing-library/react';
 
 import { render } from '../../testing';
 import { Badge } from '../Badge';
+import Button from './Button';
 import IconButton from './IconButton';
 import * as stories from './IconButton.stories';
 
@@ -36,5 +37,21 @@ describe('[IconButton Component]', () => {
 		const { container } = render(<IconButton icon='balloon' aria-label='balloon, 2 unread messages' badge={<Badge>2</Badge>} />);
 		expect(screen.getByRole('button', { name: 'balloon, 2 unread messages' })).toBeInTheDocument();
 		expect(container.querySelector('.rcx-button__badge')).toHaveAttribute('aria-hidden', 'true');
+	});
+
+	it('should keep `pressed` off the DOM element', () => {
+		// `Menu` hands `pressed` to whatever trigger it clones, a plain `Button` included
+		const menuTriggerProps = { pressed: false };
+		const { container } = render(
+			<>
+				<IconButton icon='balloon' aria-label='on' pressed />
+				<IconButton icon='balloon' aria-label='off' pressed={false} />
+				<Button {...menuTriggerProps}>label</Button>
+			</>,
+		);
+
+		expect(container.querySelector('[pressed]')).not.toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'on' })).toHaveClass('rcx-button--icon-pressed');
+		expect(console.error).not.toHaveBeenCalled();
 	});
 });
