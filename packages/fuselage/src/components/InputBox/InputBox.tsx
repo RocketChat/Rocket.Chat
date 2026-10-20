@@ -1,55 +1,50 @@
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
-import type { AllHTMLAttributes, ChangeEvent, ReactNode } from 'react';
-import { useCallback, useLayoutEffect, useRef } from 'react';
+import type { ChangeEvent, ReactNode, RefAttributes } from 'react';
+import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 
-import type { ElementProps } from '../../types/ElementProps';
+import type { BoxProps } from '../Box';
 import { Icon } from '../Icon';
 import Input from './Input';
 import InputBoxAddon from './InputBoxAddon';
 import InputBoxWrapper from './InputBoxWrapper';
 
-export type InputBoxProps<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement = any> = Omit<
-	ElementProps<T, AllHTMLAttributes<T>>,
-	'type'
-> & {
-	invisible?: boolean;
-	startAddon?: ReactNode;
-	endAddon?: ReactNode;
-	/** Reduces the end padding so a button in `endAddon` sits flush with the input's edge. */
-	endAddonFlush?: boolean;
-	input?: ReactNode;
-	multiple?: boolean;
-	error?: string;
-	placeholder?: string;
-	placeholderVisible?: boolean;
-	small?: boolean;
-	type:
-		| 'button'
-		| 'checkbox'
-		| 'color'
-		| 'date'
-		| 'datetime'
-		| 'datetime-local'
-		| 'email'
-		| 'file'
-		| 'hidden'
-		| 'image'
-		| 'month'
-		| 'number'
-		| 'password'
-		| 'radio'
-		| 'range'
-		| 'reset'
-		| 'search'
-		| 'submit'
-		| 'tel'
-		| 'text'
-		| 'time'
-		| 'url'
-		| 'week'
-		| 'textarea'
-		| 'select';
-};
+export type InputBoxProps<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement = any> = Omit<BoxProps, 'ref'> &
+	RefAttributes<T> & {
+		startAddon?: ReactNode;
+		endAddon?: ReactNode;
+		input?: ReactNode;
+		multiple?: boolean;
+		error?: string;
+		placeholder?: string;
+		placeholderVisible?: boolean;
+		small?: boolean;
+		type:
+			| 'button'
+			| 'checkbox'
+			| 'color'
+			| 'date'
+			| 'datetime'
+			| 'datetime-local'
+			| 'email'
+			| 'file'
+			| 'hidden'
+			| 'image'
+			| 'month'
+			| 'number'
+			| 'password'
+			| 'radio'
+			| 'range'
+			| 'reset'
+			| 'search'
+			| 'submit'
+			| 'tel'
+			| 'text'
+			| 'time'
+			| 'url'
+			| 'week'
+			| 'textarea'
+			| 'select';
+	};
 
 /**
  * A decorated input control with support for addons.
@@ -63,7 +58,6 @@ function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaE
 	className,
 	startAddon,
 	endAddon,
-	endAddonFlush,
 	error,
 	hidden,
 	invisible,
@@ -76,6 +70,7 @@ function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaE
 }: InputBoxProps<T>) {
 	const innerRef = useRef<T>(null);
 	const mergedRef = useMergedRefs(ref, innerRef);
+	const [invalid, setInvalid] = useState(false);
 	let defaultAddon = endAddon;
 
 	useLayoutEffect(() => {
@@ -85,15 +80,15 @@ function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaE
 	}, [error]);
 
 	useLayoutEffect(() => {
-		if (defaultAddon && innerRef.current && innerRef.current.parentElement) {
-			innerRef.current.parentElement.classList.toggle('invalid', !innerRef.current.checkValidity());
+		if (defaultAddon && innerRef.current) {
+			setInvalid(!innerRef.current.checkValidity());
 		}
 	}, [defaultAddon, error]);
 
 	const handleChange = useCallback(
-		(event: ChangeEvent<T>) => {
-			if (defaultAddon && innerRef.current && innerRef.current.parentElement) {
-				innerRef.current.parentElement.classList.toggle('invalid', !innerRef.current.checkValidity());
+		(event: ChangeEvent<HTMLElement>) => {
+			if (defaultAddon && innerRef.current) {
+				setInvalid(!innerRef.current.checkValidity());
 			}
 
 			onChange?.call(event.currentTarget, event);
@@ -134,10 +129,10 @@ function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaE
 
 	return (
 		<InputBoxWrapper
-			className={[props.disabled && 'disabled', className].filter(Boolean).join(' ')}
+			className={[props.disabled && 'disabled', invalid && 'invalid', ...(Array.isArray(className) ? className : [className])]}
 			hidden={hidden}
 			invisible={invisible}
-			rcx-input-box__wrapper--end-addon-flush={endAddonFlush}
+			small={small}
 		>
 			{startAddon && <InputBoxAddon>{startAddon}</InputBoxAddon>}
 			<Input
