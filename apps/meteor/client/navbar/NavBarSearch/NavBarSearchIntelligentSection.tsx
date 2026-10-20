@@ -1,5 +1,5 @@
 import type { NavBarSearchFormValues } from '@rocket.chat/ai-search';
-import { serializeSearchQuery } from '@rocket.chat/ai-search';
+import { parseSearchInput, removeDraftFilter, serializeSearchQuery } from '@rocket.chat/ai-search';
 import { Box, Button, IconButton, ItemActions, ItemGroupHeader, ItemGroupTitle } from '@rocket.chat/fuselage';
 import type { AISearchResult } from '@rocket.chat/rest-typings';
 import { useRouter } from '@rocket.chat/ui-contexts';
@@ -26,7 +26,8 @@ const NavBarSearchIntelligentSection = ({ items, onSelect, onClose }: NavBarSear
 		return null;
 	}
 
-	const query = serializeSearchQuery({ text: filterText, filters });
+	const { draft } = parseSearchInput(filterText, { keepDraft: true });
+	const query = serializeSearchQuery({ text: draft ? removeDraftFilter(filterText) : filterText, filters });
 	const searchHref = router.buildRoutePath({
 		name: 'search',
 		search: query ? { q: query } : {},

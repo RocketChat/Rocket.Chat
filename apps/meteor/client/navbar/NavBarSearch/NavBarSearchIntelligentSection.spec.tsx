@@ -12,10 +12,10 @@ import '@testing-library/jest-dom';
 
 jest.mock('./NavBarSearchMessageRow', () => () => null);
 
-const SearchFormProvider = ({ children }: { children: ReactNode }) => {
+const SearchFormProvider = ({ children, filterText }: { children: ReactNode; filterText: string }) => {
 	const methods = useForm<NavBarSearchFormValues>({
 		defaultValues: {
-			filterText: 'deployment errors',
+			filterText,
 			filters: [createAppliedFilter('in', 'general') as AppliedFilter],
 		},
 	});
@@ -27,6 +27,7 @@ const renderSection = (
 	items: Parameters<typeof NavBarSearchIntelligentSection>[0]['items'],
 	router: Partial<RouterContextValue> = {},
 	onClose = jest.fn(),
+	filterText = 'deployment errors',
 ) => {
 	const appWrapper = mockAppRoot()
 		.withTranslations('en', 'core', {
@@ -38,7 +39,7 @@ const renderSection = (
 		.build();
 
 	render(
-		<SearchFormProvider>
+		<SearchFormProvider filterText={filterText}>
 			<NavBarSearchIntelligentSection items={items} onSelect={jest.fn()} onClose={onClose} />
 		</SearchFormProvider>,
 		{ wrapper: appWrapper },
@@ -85,5 +86,29 @@ describe('NavBarSearchIntelligentSection', () => {
 			await user.click(action);
 		}
 		expect(onClose).toHaveBeenCalledTimes(2);
+	});
+
+	it('leaves a filter that is still being typed out of the AI Search page link', () => {
+		const buildRoutePath = jest.fn(() => '/search' as const);
+		renderSection(
+			[{ _id: 'message-id', msgId: 'message-id', text: 'Deployment failed' }],
+			{ buildRoutePath },
+			jest.fn(),
+			'deployment errors from:jo',
+		);
+
+		expect(buildRoutePath).toHaveBeenCalledWith({ name: 'search', search: { q: 'in:general deployment errors' } });
+	});
+
+	it('keeps a filter that is followed by whitespace in the AI Search page link', () => {
+		const buildRoutePath = jest.fn(() => '/search' as const);
+		renderSection(
+			[{ _id: 'message-id', msgId: 'message-id', text: 'Deployment failed' }],
+			{ buildRoutePath },
+			jest.fn(),
+			'deployment errors from:john ',
+		);
+
+		expect(buildRoutePath).toHaveBeenCalledWith({ name: 'search', search: { q: 'in:general deployment errors from:john' } });
 	});
 });
