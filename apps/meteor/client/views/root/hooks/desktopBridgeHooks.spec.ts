@@ -19,10 +19,10 @@ const wrapper = () =>
 		.build();
 
 const hooks = [
-	['useDesktopTitle', useDesktopTitle, 'setTitle'],
-	['useDesktopFavicon', useDesktopFavicon, 'setUrlResolver'],
-	['useDesktopFavicon', useDesktopFavicon, 'setFavicon'],
-	['useDesktopUserRoles', useDesktopUserRoles, 'setUserRoles'],
+	['useDesktopTitle', 'setTitle', useDesktopTitle, 'Rocket.Chat'],
+	['useDesktopFavicon', 'setUrlResolver', useDesktopFavicon, expect.any(Function)],
+	['useDesktopFavicon', 'setFavicon', useDesktopFavicon, expect.stringMatching(/favicon\.svg$/)],
+	['useDesktopUserRoles', 'setUserRoles', useDesktopUserRoles, ['user']],
 ] as const;
 
 describe('desktop bridge hooks', () => {
@@ -37,16 +37,17 @@ describe('desktop bridge hooks', () => {
 		warn.mockRestore();
 	});
 
-	it.each(hooks)('%s should call %s on the desktop bridge', (_name, useHook, member) => {
+	it.each(hooks)('%s should call %s on the desktop bridge', (_name, member, useHook, argument) => {
 		const call = jest.fn();
 		Object.assign(window, { RocketChatDesktop: { setTitle: jest.fn(), setUrlResolver: jest.fn(), setFavicon: jest.fn(), [member]: call } });
 
 		renderHook(() => useHook(), { wrapper: wrapper() });
 
 		expect(call).toHaveBeenCalledTimes(1);
+		expect(call).toHaveBeenCalledWith(argument);
 	});
 
-	it.each(hooks)('%s should not crash the React tree when %s throws', (_name, useHook, member) => {
+	it.each(hooks)('%s should not crash the React tree when %s throws', (_name, member, useHook) => {
 		Object.assign(window, {
 			RocketChatDesktop: { setTitle: jest.fn(), setUrlResolver: jest.fn(), setFavicon: jest.fn(), [member]: jest.fn(throwing) },
 		});
@@ -55,7 +56,7 @@ describe('desktop bridge hooks', () => {
 		expect(warn).toHaveBeenCalledWith(expect.any(String), desktopError);
 	});
 
-	it.each(hooks)('%s should do nothing outside the desktop app', (_name, useHook) => {
+	it.each(hooks)('%s should do nothing outside the desktop app (%s)', (_name, _member, useHook) => {
 		expect(() => renderHook(() => useHook(), { wrapper: wrapper() })).not.toThrow();
 		expect(warn).not.toHaveBeenCalled();
 	});
