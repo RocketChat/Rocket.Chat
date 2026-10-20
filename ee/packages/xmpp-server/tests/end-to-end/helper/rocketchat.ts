@@ -14,6 +14,7 @@ import { createUser, deleteUser, findUserByUsername, getRequestConfig } from '..
 import type { IRequestConfig } from '../../../../../../apps/meteor/tests/data/users.helper';
 import { retry } from '../../../../../../apps/meteor/tests/end-to-end/api/helpers/retry';
 import { DDPListener } from '../../../../federation-matrix/tests/helper/ddp-listener';
+import { isDomainAllowed } from '../../../src/jid/normalize';
 
 type Endpoint = Parameters<typeof api>[0];
 
@@ -92,12 +93,9 @@ export async function connectRocketChat(cleanup: Cleanup): Promise<RocketChat> {
 function assertAllowed(allowList: string, domain: string): void {
 	const allowed = allowList
 		.split(',')
-		.map((entry) => entry.trim().toLowerCase())
+		.map((entry) => entry.trim())
 		.filter(Boolean);
-	assert.ok(
-		!allowed.length || allowed.includes(domain.toLowerCase()),
-		`XMPP_Server_Domain_Allow_List (${allowList}) does not include ${domain}`,
-	);
+	assert.ok(isDomainAllowed(domain, allowed), `XMPP_Server_Domain_Allow_List (${allowList}) does not include ${domain}`);
 }
 
 /** Fails fast when Rocket.Chat's allow list would refuse `domain`, instead of letting a later step time out. */
