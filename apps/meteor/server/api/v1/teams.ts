@@ -1,7 +1,7 @@
 import { Team } from '@rocket.chat/core-services';
 import type { ITeamAutocompleteResult, ITeamMemberInfo } from '@rocket.chat/core-services';
-import type { IRoom, ITeam, UserStatus } from '@rocket.chat/core-typings';
-import { Users, Rooms } from '@rocket.chat/models';
+import type { IRoom, ITeam, IUser, UserStatus } from '@rocket.chat/core-typings';
+import { Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
 	ajv,
 	isTeamsAddMembersProps,
@@ -58,6 +58,32 @@ const successResponseSchema = ajv.compile<void>({
 	required: ['success'],
 	additionalProperties: false,
 });
+
+const roomRoleAssignmentPermissions = new Map([
+	['owner', 'set-owner'],
+	['moderator', 'set-moderator'],
+	['leader', 'set-leader'],
+]);
+
+const canChangeTeamRoles = async (user: IUser, roomId: IRoom['_id'], roles: Iterable<string>): Promise<boolean> => {
+	const roomPermissions = new Set<string>();
+	const globalPermissions = new Set<string>();
+
+	for (const role of roles) {
+		const roomPermission = roomRoleAssignmentPermissions.get(role);
+		if (roomPermission) {
+			roomPermissions.add(roomPermission);
+			continue;
+		}
+
+		globalPermissions.add('access-permissions');
+		if (role === 'admin') {
+			globalPermissions.add('assign-admin-role');
+		}
+	}
+
+	return (await hasAllPermissionAsync(user, [...roomPermissions], roomId)) && hasAllPermissionAsync(user, [...globalPermissions]);
+};
 
 const teamsEndpoints = API.v1
 	.get(
@@ -557,6 +583,11 @@ API.v1.post(
 			return API.v1.forbidden();
 		}
 
+		const requestedRoles = members.flatMap(({ roles }) => roles ?? []);
+		if (!(await canChangeTeamRoles(this.user, team.roomId, requestedRoles))) {
+			return API.v1.forbidden();
+		}
+
 		await Team.addMembers(this.userId, team._id, members);
 
 		return API.v1.success();
@@ -585,6 +616,12 @@ API.v1.post(
 		}
 
 		if (!(await hasAtLeastOnePermissionAsync(this.user, ['edit-team-member'], team.roomId))) {
+			return API.v1.forbidden();
+		}
+
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(team.roomId, member.userId, { projection: { roles: 1 } });
+		const changedRoles = new Set(subscription?.roles).symmetricDifference(new Set(member.roles));
+		if (!(await canChangeTeamRoles(this.user, team.roomId, changedRoles))) {
 			return API.v1.forbidden();
 		}
 
