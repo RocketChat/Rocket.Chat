@@ -4,7 +4,7 @@ exports[`[RadioButton Rendering] renders Checked without crashing 1`] = `
 <body>
   <div>
     <label
-      class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-radio-button"
+      class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-radio-button"
     >
       <input
         aria-label="Decorator Label"
@@ -14,8 +14,12 @@ exports[`[RadioButton Rendering] renders Checked without crashing 1`] = `
       />
       <i
         aria-hidden="true"
-        class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
-      />
+        class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
+      >
+        <span
+          class="is_View _d-1987097250 _v-46649817 _w-2027464954 _h-1735620473 _br-662213014 _b-156244340"
+        />
+      </i>
     </label>
   </div>
 </body>
@@ -25,7 +29,7 @@ exports[`[RadioButton Rendering] renders Default without crashing 1`] = `
 <body>
   <div>
     <label
-      class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-radio-button"
+      class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-radio-button"
     >
       <input
         aria-label="Decorator Label"
@@ -34,8 +38,12 @@ exports[`[RadioButton Rendering] renders Default without crashing 1`] = `
       />
       <i
         aria-hidden="true"
-        class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
-      />
+        class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
+      >
+        <span
+          class="is_View _d-1987097250 _v-46649817 _w-2027464954 _h-1735620473 _br-662213014 _b-156244340"
+        />
+      </i>
     </label>
   </div>
 </body>
@@ -45,7 +53,7 @@ exports[`[RadioButton Rendering] renders Disabled without crashing 1`] = `
 <body>
   <div>
     <label
-      class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-radio-button"
+      class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-radio-button"
     >
       <input
         aria-label="Decorator Label"
@@ -55,8 +63,12 @@ exports[`[RadioButton Rendering] renders Disabled without crashing 1`] = `
       />
       <i
         aria-hidden="true"
-        class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
-      />
+        class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
+      >
+        <span
+          class="is_View _d-1987097250 _v-46649817 _w-2027464954 _h-1735620473 _br-662213014 _b-156244340"
+        />
+      </i>
     </label>
   </div>
 </body>
@@ -109,7 +121,7 @@ exports[`[RadioButton Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-radio-button"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-radio-button"
               >
                 <input
                   aria-label="Decorator Label"
@@ -119,8 +131,12 @@ exports[`[RadioButton Rendering] renders States without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
-                />
+                  class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
+                >
+                  <span
+                    class="is_View _d-1987097250 _v-46649817 _w-2027464954 _h-1735620473 _br-662213014 _b-156244340"
+                  />
+                </i>
               </label>
             </div>
           </td>
@@ -131,7 +147,7 @@ exports[`[RadioButton Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-radio-button"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-radio-button"
               >
                 <input
                   aria-label="Decorator Label"
@@ -140,8 +156,12 @@ exports[`[RadioButton Rendering] renders States without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
-                />
+                  class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
+                >
+                  <span
+                    class="is_View _d-1987097250 _v-46649817 _w-2027464954 _h-1735620473 _br-662213014 _b-156244340"
+                  />
+                </i>
               </label>
             </div>
           </td>
@@ -161,7 +181,7 @@ exports[`[RadioButton Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-radio-button is-hovered"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-radio-button is-hovered"
               >
                 <input
                   aria-label="Decorator Label"
@@ -171,8 +191,12 @@ exports[`[RadioButton Rendering] renders States without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
-                />
+                  class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
+                >
+                  <span
+                    class="is_View _d-1987097250 _v-46649817 _w-2027464954 _h-1735620473 _br-662213014 _b-156244340"
+                  />
+                </i>
               </label>
             </div>
           </td>
@@ -183,7 +207,7 @@ exports[`[RadioButton Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-radio-button is-hovered"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-radio-button is-hovered"
               >
                 <input
                   aria-label="Decorator Label"
@@ -192,8 +216,12 @@ exports[`[RadioButton Rendering] renders States without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
-                />
+                  class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
+                >
+                  <span
+                    class="is_View _d-1987097250 _v-46649817 _w-2027464954 _h-1735620473 _br-662213014 _b-156244340"
+                  />
+                </i>
               </label>
             </div>
           </td>
@@ -213,7 +241,7 @@ exports[`[RadioButton Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-radio-button is-active"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-radio-button is-active"
               >
                 <input
                   aria-label="Decorator Label"
@@ -223,8 +251,12 @@ exports[`[RadioButton Rendering] renders States without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
-                />
+                  class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
+                >
+                  <span
+                    class="is_View _d-1987097250 _v-46649817 _w-2027464954 _h-1735620473 _br-662213014 _b-156244340"
+                  />
+                </i>
               </label>
             </div>
           </td>
@@ -235,7 +267,7 @@ exports[`[RadioButton Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-radio-button is-active"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-radio-button is-active"
               >
                 <input
                   aria-label="Decorator Label"
@@ -244,8 +276,12 @@ exports[`[RadioButton Rendering] renders States without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
-                />
+                  class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
+                >
+                  <span
+                    class="is_View _d-1987097250 _v-46649817 _w-2027464954 _h-1735620473 _br-662213014 _b-156244340"
+                  />
+                </i>
               </label>
             </div>
           </td>
@@ -265,7 +301,7 @@ exports[`[RadioButton Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-radio-button is-focused"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-radio-button is-focused"
               >
                 <input
                   aria-label="Decorator Label"
@@ -275,8 +311,12 @@ exports[`[RadioButton Rendering] renders States without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
-                />
+                  class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
+                >
+                  <span
+                    class="is_View _d-1987097250 _v-46649817 _w-2027464954 _h-1735620473 _br-662213014 _b-156244340"
+                  />
+                </i>
               </label>
             </div>
           </td>
@@ -287,7 +327,7 @@ exports[`[RadioButton Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-radio-button is-focused"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-radio-button is-focused"
               >
                 <input
                   aria-label="Decorator Label"
@@ -296,8 +336,12 @@ exports[`[RadioButton Rendering] renders States without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
-                />
+                  class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
+                >
+                  <span
+                    class="is_View _d-1987097250 _v-46649817 _w-2027464954 _h-1735620473 _br-662213014 _b-156244340"
+                  />
+                </i>
               </label>
             </div>
           </td>
@@ -317,7 +361,7 @@ exports[`[RadioButton Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-radio-button"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-radio-button"
               >
                 <input
                   aria-label="Decorator Label"
@@ -328,8 +372,12 @@ exports[`[RadioButton Rendering] renders States without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
-                />
+                  class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
+                >
+                  <span
+                    class="is_View _d-1987097250 _v-46649817 _w-2027464954 _h-1735620473 _br-662213014 _b-156244340"
+                  />
+                </i>
               </label>
             </div>
           </td>
@@ -340,7 +388,7 @@ exports[`[RadioButton Rendering] renders States without crashing 1`] = `
               class="rcx-box rcx-box--full rcx-css-7rd89h"
             >
               <label
-                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 rcx-radio-button"
+                class="is_Text _b-1639159466 _os-249893454 _ff-409630021 _fvn-1977619713 _ws-311910413 _ww-408434756 _p-1021290656 _d-1985012034 _va-1124586065 _c-22887652 _ow-485594423 rcx-radio-button"
               >
                 <input
                   aria-label="Decorator Label"
@@ -350,8 +398,12 @@ exports[`[RadioButton Rendering] renders States without crashing 1`] = `
                 />
                 <i
                   aria-hidden="true"
-                  class="is_View _b-1639160427 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
-                />
+                  class="is_View _b-523511517 _os-249893454 _ff-409630021 _fvn-1977619713 _p-1021290656 _h-858548760 _f-1069814357 _mw-354604370 _mh-1241200853 _c-991369120 _b-886492876 _d-341075704 _jc-1099843255 _ai-121763387 _br-662213014 _w-120696903 rcx-radio-button__fake"
+                >
+                  <span
+                    class="is_View _d-1987097250 _v-46649817 _w-2027464954 _h-1735620473 _br-662213014 _b-156244340"
+                  />
+                </i>
               </label>
             </div>
           </td>
