@@ -29,6 +29,17 @@ const AccordionItemBar = styled(View, {
 	borderTopColor: String(strokeColors['stroke-extra-light']),
 
 	variants: {
+		// The bar is focusable, so it carries `tabindex`
+		clickable: {
+			true: {
+				cursor: 'pointer',
+				outlineWidth: 0,
+				backgroundColor: { hover: String(surfaceColors['surface-tint']) },
+				borderColor: { default: 'transparent', focus: String(strokeColors['stroke-highlight']) },
+				borderTopColor: { default: String(strokeColors['stroke-extra-light']), focus: String(strokeColors['stroke-highlight']) },
+				boxShadow: { focus: `0 0 0 ${borderWidth('medium')} ${strokeColors['stroke-extra-light-highlight']}` },
+			},
+		},
 		// Not `disabled`, which Tamagui would also turn into an `aria-disabled` attribute
 		isDisabled: {
 			true: {
@@ -155,6 +166,7 @@ const AccordionItem = ({
 				{title && (
 					<AccordionItemBar
 						role='button'
+						clickable={!noncollapsible && !disabled}
 						isDisabled={disabled}
 						className={cx('rcx-box--animated', cxx('rcx-accordion-item__bar')({ disabled }))}
 						{...(barProps as unknown as GetProps<typeof AccordionItemBar>)}
