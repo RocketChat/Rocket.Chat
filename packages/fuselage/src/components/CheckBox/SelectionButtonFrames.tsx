@@ -1,7 +1,8 @@
 import { styled, Text, View, type GetProps } from '@tamagui/web';
 
 import { renderAs } from '../../helpers/renderAs';
-import { borderWidth, fontFamily, size } from '../../styleTokens';
+import { toCSSValue } from '../../helpers/toCSSValue';
+import { backgroundColor, borderWidth, fontColor, fontFamily, size, strokeColor } from '../../styleTokens';
 
 // Restates what `rcx-box--full` gave these elements before they left `Box`
 const boxDefaults = {
@@ -18,7 +19,21 @@ export const SelectionButtonLabel = styled(Text, {
 	borderWidth: 0,
 	whiteSpace: 'inherit',
 	wordWrap: 'inherit',
+	position: 'relative',
+	display: 'inline-flex',
+	verticalAlign: 'middle',
+	cursor: 'pointer',
+	outlineWidth: 0,
+
+	variants: {
+		// The `disabled` class name, which only ever changed the label's cursor
+		notAllowed: {
+			true: { cursor: 'not-allowed' },
+		},
+	} as const,
 });
+
+export const hasDisabledClassName = (className: unknown) => typeof className === 'string' && className.split(/\s+/).includes('disabled');
 
 const SelectionButtonInputFrame = styled(View, {
 	render: 'input',
@@ -41,14 +56,30 @@ export const SelectionButtonInput = ({ disabled, render, ...props }: GetProps<ty
 	<SelectionButtonInputFrame {...props} render={disabled ? renderAs('input', { disabled: true }) : render} />
 );
 
-export const SelectionButtonFake = styled(View, {
-	render: 'i',
-	...boxDefaults,
-	position: 'relative',
-	height: size('x20'),
-	borderWidth: borderWidth('default'),
-	flexDirection: 'row',
-	flexShrink: 1,
-	minWidth: 'auto',
-	minHeight: 'auto',
-});
+// The resting unchecked look; every other state is a sibling rule on the native input in each component's stylesheet
+const restingColors = {
+	empty: {
+		color: toCSSValue('--rcx-button-empty-color', fontColor('white')!),
+		borderColor: toCSSValue('--rcx-button-empty-border-color', strokeColor('dark')!),
+		backgroundColor: toCSSValue('--rcx-button-empty-background-color', backgroundColor('light')!),
+	},
+	off: {
+		color: toCSSValue('--rcx-button-off-color', fontColor('white')!),
+		borderColor: toCSSValue('--rcx-button-off-border-color', strokeColor('medium')!),
+		backgroundColor: toCSSValue('--rcx-button-off-background-color', strokeColor('medium')!),
+	},
+};
+
+export const createSelectionButtonFake = (colors: keyof typeof restingColors) =>
+	styled(View, {
+		render: 'i',
+		...boxDefaults,
+		position: 'relative',
+		height: size('x20'),
+		borderWidth: borderWidth('default'),
+		flexDirection: 'row',
+		flexShrink: 1,
+		minWidth: 'auto',
+		minHeight: 'auto',
+		...restingColors[colors],
+	});
