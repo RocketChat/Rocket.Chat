@@ -1,8 +1,8 @@
 import { styled, Text, View } from '@tamagui/web';
 
-import { surfaceColors, textIconColors } from '../../Theme';
+import { strokeColors, surfaceColors, textIconColors } from '../../Theme';
 import { toCSSValue } from '../../helpers/toCSSValue';
-import { borderRadius, fontFamily, fontScale, spacing } from '../../styleTokens';
+import { borderRadius, borderWidth, fontFamily, fontScale, spacing } from '../../styleTokens';
 
 /** What `rcx-box rcx-box--full` used to give every Table element. */
 const tableBoxStyle = {
@@ -77,9 +77,22 @@ export const TableRowFrame = styled(View, {
 	display: 'table-row',
 
 	variants: {
-		selected: {
-			true: {
-				backgroundColor: String(surfaceColors['surface-tint']),
+		// Hovering a selected row also needs the stylesheet, to beat the stripes
+		scheme: {
+			'selected': { backgroundColor: String(surfaceColors['surface-tint']) },
+			'action': {
+				cursor: { hover: 'pointer', focus: 'pointer' },
+				outlineWidth: { hover: 0, focus: 0 },
+				backgroundColor: { hover: String(surfaceColors['surface-hover']), focus: String(surfaceColors['surface-hover']) },
+			},
+			'selected-action': {
+				cursor: { hover: 'pointer', focus: 'pointer' },
+				outlineWidth: { hover: 0, focus: 0 },
+				backgroundColor: {
+					default: String(surfaceColors['surface-tint']),
+					hover: String(surfaceColors['surface-hover']),
+					focus: String(surfaceColors['surface-hover']),
+				},
 			},
 		},
 	} as const,
@@ -104,6 +117,13 @@ export const TableCellFrame = styled(Text, {
 				position: 'relative',
 				...toFontStyle('c2'),
 			},
+			sticky: {
+				position: 'sticky',
+				zIndex: 10,
+				top: 0,
+				backgroundColor: String(surfaceColors['surface-light']),
+				...toFontStyle('c2'),
+			},
 		},
 		clickable: {
 			true: {
@@ -117,6 +137,19 @@ export const TableCellFrame = styled(Text, {
 			justify: { textAlign: 'justify' },
 		},
 	} as const,
+});
+
+/** The line under a header cell. */
+export const TableCellDivider = styled(View, {
+	display: 'flex',
+	position: 'absolute',
+	bottom: 0,
+	left: 0,
+	right: 0,
+	borderWidth: 0,
+	borderBottomWidth: borderWidth('default'),
+	borderStyle: 'solid',
+	borderColor: String(strokeColors['stroke-light']),
 });
 
 export const TableSelectionFrame = styled(View, {
