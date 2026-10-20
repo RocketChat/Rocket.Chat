@@ -670,6 +670,15 @@ describe('AbacService (unit)', () => {
 				expect(mockUnsetAbacAttributesById).not.toHaveBeenCalled();
 			});
 
+			it('lets a room-scoped editor remove every attribute while enforcement is on without required attributes', async () => {
+				enforce();
+				(service as any).requiredAttributeKeys = new Set();
+
+				await writeAs({});
+
+				expect(mockUnsetAbacAttributesById).toHaveBeenCalledWith('r1');
+			});
+
 			it('lets a room-scoped editor remove every attribute, required ones included, while enforcement is off', async () => {
 				await writeAs({});
 
