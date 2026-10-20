@@ -46,13 +46,19 @@ export const useAppInfo = (appId: string, context: string): AppInfo | undefined 
 
 			if (!appResult) return;
 
+			const isInstalled = Boolean(installedApps?.some((app) => app.id === appId));
+
 			const [settings, apis, screenshots, bundledIn] = await Promise.all([
-				getSettings().catch(() => ({
-					settings: {},
-				})),
-				getApis().catch(() => ({
-					apis: [],
-				})),
+				isInstalled
+					? getSettings().catch(() => ({
+							settings: {},
+					  }))
+					: { settings: {} },
+				isInstalled
+					? getApis().catch(() => ({
+							apis: [],
+					  }))
+					: { apis: [] },
 				getScreenshots().catch(() => ({
 					screenshots: [],
 				})),
@@ -60,13 +66,15 @@ export const useAppInfo = (appId: string, context: string): AppInfo | undefined 
 					? []
 					: getBundledIn({
 							marketplace: 'true',
-							update: 'true',
-							appVersion: appId,
-						})
+							...(appResult.version && { version: appResult.version }),
+					  })
 							.then(({ app }: any) => {
-								appResult.tosLink = app.tosLink;
-								appResult.privacyLink = app.privacyLink;
-								return getBundledInApp(app);
+								if (app) {
+									appResult.tosLink = app.tosLink;
+									appResult.privacyLink = app.privacyLink;
+									return getBundledInApp(app);
+								}
+								return [];
 							})
 							.catch(() => ({
 								settings: {},
