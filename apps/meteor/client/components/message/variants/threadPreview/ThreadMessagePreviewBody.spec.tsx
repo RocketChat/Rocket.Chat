@@ -26,7 +26,7 @@ test.each(testCases)('ThreadMessagePreviewBody should have no a11y violations', 
 });
 
 it('should not show an empty thread preview', async () => {
-	const { container } = render(
+	render(
 		<Default
 			message={{
 				_id: 'message-id',

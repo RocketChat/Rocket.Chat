@@ -33,7 +33,7 @@ describe('renders', () => {
 	it('should have no accessibility violations when rendered', async () => {
 		renderModal(<GenericModal title='Modal' />);
 
-		const results = await axe(screen.getByRole('dialog', { name: 'Modal' }));
+		const results = await axe(await screen.findByRole('dialog', { name: 'Modal' }));
 		expect(results).toHaveNoViolations();
 	});
 });
