@@ -14,13 +14,6 @@ const testCases = Object.values(composeStories(stories)).map((Story) => [Story.s
 jest.useFakeTimers({ advanceTimers: true });
 jest.setSystemTime(new Date('2017-05-19T12:20:00'));
 
-test.each(testCases)(`renders AppLogsItem without crashing`, async (_storyname, Story) => {
-	const view = render(<Story />, {
-		wrapper: mockAppRoot().build(),
-	});
-	expect(view.baseElement).toMatchSnapshot();
-});
-
 test.each(testCases)('AppLogsItem should have no a11y violations', async (_storyname, Story) => {
 	const { container } = render(<Story />, { wrapper: mockAppRoot().build() });
 

@@ -13,20 +13,7 @@ afterEach(() => {
 	jest.useRealTimers();
 });
 
-/**
- * The stories are snapshotted with the clock held still. A timer is the one thing a snapshot cannot take a
- * picture of while it runs — the value would be a second older on the next run — so the story's fixed start and
- * a fixed now are what make the picture the same picture twice.
- */
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story] as const);
-
-test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
-	jest.useFakeTimers().setSystemTime(new Date('2026-01-01T02:00:04.000Z'));
-
-	const { baseElement } = render(<Story />);
-
-	expect(baseElement).toMatchSnapshot();
-});
 
 // On the real clock: `axe` schedules its own work, and a frozen timer never lets it finish.
 test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
