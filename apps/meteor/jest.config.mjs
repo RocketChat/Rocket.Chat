@@ -15,6 +15,7 @@ export default {
 				'<rootDir>/tests/unit/client/views/**/*.spec.{ts,tsx}',
 				'<rootDir>/tests/unit/client/providers/**/*.spec.{ts,tsx}',
 				'<rootDir>/lib/emoji-native/**/**.spec.[jt]s?(x)',
+				'<rootDir>/vite/native/**.spec.[jt]s?(x)',
 			],
 
 			moduleNameMapper: {
