@@ -53,7 +53,7 @@ jest.mock('../MessageList/contexts/SelectedMessagesContext', () => ({
 }));
 
 const appRoot = mockAppRoot().withTranslations('en', 'core', {
-	ABAC_Room_locked_member: 'abac-locked',
+	ABAC_Room_locked_channel: 'abac-locked',
 	room_is_read_only: 'read-only',
 	Room_archived: 'archived',
 });

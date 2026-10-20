@@ -115,6 +115,14 @@ export abstract class Composer {
 		return this.root.getByText('This room is read-only');
 	}
 
+	get abacLockedFooter(): Locator {
+		return this.root.getByText(/^(Channel|Team) locked\. Required ABAC room attributes missing\.$/);
+	}
+
+	get btnManageAttributes(): Locator {
+		return this.root.getByRole('button', { name: 'Manage attributes' });
+	}
+
 	get typingIndicator(): Locator {
 		return this.root.getByRole('status').getByText(/typing/i);
 	}
