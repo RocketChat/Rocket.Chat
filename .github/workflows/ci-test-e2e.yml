@@ -73,8 +73,7 @@ permissions: {}
 
 jobs:
   test:
-    # MongoDB cannot start on kernels >= 6.19: https://jira.mongodb.org/browse/SERVER-121912
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     permissions:
       actions: read
       contents: read
@@ -82,7 +81,7 @@ jobs:
     env:
       # if building for production on develop branch or release, add suffix for coverage images
       DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ inputs.coverage == matrix.mongodb-version && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
-      MONGODB_VERSION: ${{ matrix.mongodb-version }}
+      MONGODB_VERSION: ${{ matrix.mongodb-version == '8.0' && '8.0.19-ubi9' || matrix.mongodb-version }}
       COVERAGE_DIR: '/tmp/coverage/${{ startsWith(inputs.type, ''api'') && ''api'' || inputs.type }}'
       COVERAGE_FILE_NAME: '${{ inputs.type }}-${{ matrix.shard }}.json'
       COVERAGE_REPORTER: ${{ inputs.coverage == matrix.mongodb-version && 'json' || '' }}
@@ -96,15 +95,6 @@ jobs:
     name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.coverage == matrix.mongodb-version && ' coverage' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }})
 
     steps:
-      - name: Check MongoDB kernel compatibility
-        run: |
-          kernel_version="$(uname -r)"
-          echo "Runner kernel: $kernel_version"
-          if dpkg --compare-versions "${kernel_version%%-*}" ge 6.19; then
-            echo "::error::MongoDB requires a kernel older than 6.19 until SERVER-121912 is resolved."
-            exit 1
-          fi
-
       - name: Setup kernel limits
         run: |
           echo "500 65535" > sudo tee -a /proc/sys/net/ipv4/ip_local_port_range
