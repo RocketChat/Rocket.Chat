@@ -1,7 +1,18 @@
 import { styled, Text, View } from '@tamagui/web';
 import { createElement, type ElementType } from 'react';
 
-import { fontFamily, fontScale, size, spacing } from '../../styleTokens';
+import type { ButtonSegment } from './ButtonSegmentContext';
+import {
+	buttonBorderRadius,
+	buttonBorderWidth,
+	buttonColors,
+	ghostButtonColors,
+	type ButtonColors,
+	type ButtonKind,
+	type GhostKind,
+} from './buttonColors';
+import { getForcedState, isForcedDisabled } from '../../helpers/getForcedState';
+import { borderWidth, fontFamily, fontScale, size, spacing } from '../../styleTokens';
 
 // the token's numeric `fontWeight` is wider than Tamagui's weight union
 const font = (name: string) => fontScale(name) as object;
@@ -21,7 +32,82 @@ const squaredSize = (side: number) => ({
 	paddingInline: 0,
 });
 
-/** Layout and typography of `rcx-button`; colors and interaction states stay in `Button.styles.scss`. */
+export const kindStyle = (colors: ButtonColors) => ({
+	color: colors.color,
+	borderColor: {
+		'default': colors.borderColor,
+		'focus-visible': colors.focusBorderColor,
+		'hover': colors.hoverBorderColor,
+		'press': colors.activeBorderColor,
+	},
+	backgroundColor: {
+		'default': colors.backgroundColor,
+		'focus-visible': colors.focusBackgroundColor,
+		'hover': colors.hoverBackgroundColor,
+		'press': colors.activeBackgroundColor,
+	},
+	boxShadow: {
+		'focus-visible': `0 0 0 ${borderWidth('medium')} ${colors.focusShadowColor}`,
+		'hover': 'none',
+		'press': 'none',
+	},
+});
+
+// Disabled colors win over every state, as the `:disabled` rules came last in the SCSS
+export const disabledStyle = (colors: ButtonColors) => ({
+	cursor: 'not-allowed',
+	color: colors.disabledColor,
+	borderColor: {
+		'default': colors.disabledBorderColor,
+		'focus-visible': colors.disabledBorderColor,
+		'hover': colors.disabledBorderColor,
+		'press': colors.disabledBorderColor,
+	},
+	backgroundColor: {
+		'default': colors.disabledBackgroundColor,
+		'focus-visible': colors.disabledBackgroundColor,
+		'hover': colors.disabledBackgroundColor,
+		'press': colors.disabledBackgroundColor,
+	},
+});
+
+const byKind = <T,>(style: (colors: ButtonColors) => T) =>
+	Object.fromEntries(Object.entries(buttonColors).map(([kind, colors]) => [kind, style(colors)])) as Record<ButtonKind, T>;
+
+const segmentCorners = (start: string | 0, end: string | 0) => ({
+	borderStartStartRadius: start,
+	borderEndStartRadius: start,
+	borderStartEndRadius: end,
+	borderEndEndRadius: end,
+});
+
+// keeps the focus ring above the adjacent segment
+const liftOnFocus = {
+	position: { 'focus-visible': 'relative' },
+	zIndex: { 'focus-visible': 1 },
+} as const;
+
+const transparentInEveryState = {
+	'default': 'transparent',
+	'focus-visible': 'transparent',
+	'hover': 'transparent',
+	'press': 'transparent',
+};
+
+const ghostStyle = (colors: (typeof ghostButtonColors)[GhostKind]) => ({
+	color: colors.color,
+	borderColor: transparentInEveryState,
+	backgroundColor: {
+		'default': 'transparent',
+		'focus-visible': colors.focusBackgroundColor,
+		'hover': colors.hoverBackgroundColor,
+		'press': colors.activeBackgroundColor,
+	},
+});
+
+export const pressableKinds = ['icon', 'icon-info', 'icon-success', 'icon-warning', 'icon-danger'] as const;
+
+/** Layout, typography and colors of `rcx-button`. */
 export const ButtonFrame = styled(View, {
 	render: 'button',
 	display: 'inline-block',
@@ -39,8 +125,27 @@ export const ButtonFrame = styled(View, {
 	fontVariantNumeric: 'tabular-nums',
 	...font('p2m'),
 	...rectangularSize(40, 16, 'p2'),
+	appearance: 'none',
+	borderWidth: buttonBorderWidth,
+	borderStyle: 'solid',
+	borderRadius: buttonBorderRadius,
+	...kindStyle(buttonColors.secondary),
 
+	// Prop order decides which variant wins: `kind`, then `pressed`, then `inactive`
 	variants: {
+		kind: byKind(kindStyle),
+		// Only the default colors: hover, press and focus still show over a pressed button
+		pressed: Object.fromEntries(
+			pressableKinds.map((kind) => [
+				kind,
+				{
+					borderColor: { default: buttonColors[kind].pressedBorderColor },
+					backgroundColor: { default: buttonColors[kind].pressedBackgroundColor },
+				},
+			]),
+		) as Record<(typeof pressableKinds)[number], object>,
+		// Not `disabled`: Tamagui would add `aria-disabled`; the value is the kind whose disabled colors apply
+		inactive: byKind(disabledStyle),
 		size: {
 			small: { ...font('c2'), ...rectangularSize(28, 8, 'c1') },
 			medium: { ...font('c2'), ...rectangularSize(32, 12, 'c1') },
@@ -68,6 +173,18 @@ export const ButtonFrame = styled(View, {
 		withBadge: {
 			true: { position: 'relative', overflow: 'visible' },
 		},
+		// Rounds only the outer corners of a `SplitButton`, rather than clipping the group, which would cut off the focus ring
+		segment: {
+			first: { ...segmentCorners(buttonBorderRadius, 0), ...liftOnFocus },
+			middle: { borderRadius: 0, ...liftOnFocus },
+			last: { ...segmentCorners(0, buttonBorderRadius), ...liftOnFocus },
+			only: liftOnFocus,
+		},
+		// Last, as the ghost colors won over the disabled ones too
+		ghost: Object.fromEntries(Object.entries(ghostButtonColors).map(([kind, colors]) => [kind, ghostStyle(colors)])) as Record<
+			GhostKind,
+			ReturnType<typeof ghostStyle>
+		>,
 	} as const,
 });
 
@@ -101,3 +218,26 @@ export const ButtonBadge = styled(View, {
  */
 export const renderButtonElement = (is: ElementType, disabled: boolean | undefined) =>
 	createElement(is, disabled === undefined ? {} : { disabled });
+
+/**
+ * The color variants in the order they override each other, plus the state the `hover`, `active`, `focus`
+ * and `disabled` class names pin the button to.
+ */
+export const getButtonStates = (
+	className: unknown,
+	kind: ButtonKind,
+	disabled: boolean | undefined,
+	segment: ButtonSegment | undefined,
+	pressed?: boolean,
+) => {
+	const classNames = typeof className === 'string' ? className : undefined;
+
+	return {
+		kind,
+		pressed: pressed ? pressableKinds.find((pressable) => pressable === kind) : undefined,
+		inactive: disabled || isForcedDisabled(classNames) ? kind : undefined,
+		segment: segment?.position,
+		ghost: segment?.ghost ? segment.variant : undefined,
+		forceStyle: getForcedState(classNames),
+	};
+};
