@@ -773,6 +773,18 @@ describe('[Settings]', () => {
 					});
 			});
 
+			it('should fail when the name belongs to a built-in OAuth service', async () => {
+				await request
+					.post(api('settings.addCustomOAuth'))
+					.set(credentials)
+					.send({ name: 'GitLab' })
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-invalid-name');
+					});
+			});
+
 			it('should add a custom oauth service', async () => {
 				await request
 					.post(api('settings.addCustomOAuth'))

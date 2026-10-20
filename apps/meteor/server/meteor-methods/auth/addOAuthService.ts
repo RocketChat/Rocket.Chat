@@ -5,6 +5,7 @@ import { Meteor } from 'meteor/meteor';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { addOAuthService } from '../../lib/oauth/addOAuthService';
+import { settings } from '../../settings/cached';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -13,11 +14,25 @@ declare module '@rocket.chat/ddp-client' {
 	}
 }
 
+// A custom service with a built-in's name would register the same login strategy and override it.
+const isBuiltInOAuthService = (name: string): boolean => {
+	const settingId = `accounts_oauth_${name.toLowerCase().replace(/[^a-z0-9_]/g, '')}`;
+	return settings
+		.getByRegexp(/^Accounts_OAuth_[a-z0-9_]+$/i)
+		.some(([key, value]) => typeof value === 'boolean' && key.toLowerCase() === settingId);
+};
+
 export const addOAuthServiceMethod = async (userId: string, name: string): Promise<void> => {
 	if ((await hasPermissionAsync(userId, 'add-oauth-service')) !== true) {
 		throw new Meteor.Error('error-action-not-allowed', 'Adding OAuth Services is not allowed', {
 			method: 'addOAuthService',
 			action: 'Adding_OAuth_Services',
+		});
+	}
+
+	if (isBuiltInOAuthService(name)) {
+		throw new Meteor.Error('error-invalid-name', 'This name is reserved for a built-in OAuth service', {
+			method: 'addOAuthService',
 		});
 	}
 
