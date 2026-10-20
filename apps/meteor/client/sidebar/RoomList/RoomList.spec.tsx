@@ -121,7 +121,7 @@ jest.mock('../hooks/useRoomList', () => ({
 	}),
 }));
 
-jest.mock('../../views/navigation/sidebar/hooks/useShortcutOpenMenu', () => ({
+jest.mock('../hooks/useShortcutOpenMenu', () => ({
 	useShortcutOpenMenu: (ref: unknown) => mockUseShortcutOpenMenu(ref),
 }));
 
