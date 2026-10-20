@@ -1,0 +1,8 @@
+/* Tamagui has no `:dir()` clause */
+.rcx-chevron--right:dir(rtl) {
+	transform: rotate(-270deg);
+}
+
+.rcx-chevron--left:dir(rtl) {
+	transform: rotate(-90deg);
+}
