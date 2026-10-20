@@ -1,14 +1,16 @@
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { GetProps } from '@tamagui/web';
 import type { ReactElement, ReactNode } from 'react';
-import { isValidElement, useMemo } from 'react';
+import { isValidElement, useContext, useMemo } from 'react';
 
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import type { BoxProps } from '../Box';
+import { ButtonBadge, ButtonFrame, getButtonStates, renderButtonElement } from './ButtonFrame';
 import { BoxTransforms, useBoxTransform } from '../Box/BoxTransforms';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 import { Icon } from '../Icon';
-import { ButtonBadge, ButtonFrame, renderButtonElement } from './ButtonFrame';
+import { ButtonSegmentContext } from './ButtonSegmentContext';
+import type { ButtonKind } from './buttonColors';
 
 export type IconButtonSize = {
 	large?: boolean;
@@ -37,6 +39,18 @@ export type IconButtonProps = {
 	pressed?: boolean;
 } & IconButtonSize &
 	BoxProps;
+
+const kindByVariant: Record<string, ButtonKind> = {
+	'secondary': 'secondary',
+	'info': 'icon-info',
+	'success': 'icon-success',
+	'warning': 'icon-warning',
+	'danger': 'icon-danger',
+	'secondary-info': 'primary',
+	'secondary-success': 'success',
+	'secondary-warning': 'warning',
+	'secondary-danger': 'danger',
+};
 
 const getVariantClass = (variant: string) => {
 	if (variant) {
@@ -108,6 +122,7 @@ function IconButton({
 	const getIconSize = () => (large && 'x28') || (medium && 'x24') || (small && 'x20') || (tiny && 'x16') || (mini && 'x12') || 'x28';
 
 	const transform = useBoxTransform();
+	const segment = useContext(ButtonSegmentContext);
 
 	const frameProps = useTamaguiBoxProps(
 		(transform ?? ((props) => props))({
@@ -131,6 +146,7 @@ function IconButton({
 			withBadge={Boolean(badge)}
 			render={renderButtonElement(is, disabled)}
 			{...(frameProps as GetProps<typeof ButtonFrame>)}
+			{...getButtonStates(frameProps.className, kindByVariant[variant] ?? 'icon', disabled, segment, pressed)}
 		>
 			{isValidElement<any>(icon) ? icon : <Icon name={icon} size={getIconSize()} />}
 			{Boolean(badge) && (

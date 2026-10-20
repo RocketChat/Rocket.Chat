@@ -1,0 +1,30 @@
+.rcx-button:active > *:not([role='status']),
+.rcx-button.active > *:not([role='status']),
+.rcx-button.is-active > *:not([role='status']) {
+	transform: translateY(1px);
+}
+
+*:disabled .rcx-button .rcx-button--content,
+.rcx-button:disabled .rcx-button--content,
+.rcx-button.disabled .rcx-button--content,
+.rcx-button.is-disabled .rcx-button--content {
+	transform: none !important;
+}
+
+.rcx-button--loading .rcx-icon--name-loading {
+	animation: spin-animation 0.8s linear infinite;
+}
+
+.rcx-button__badge:dir(rtl) {
+	transform: translate(-30%, -30%);
+}
+
+@keyframes spin-animation {
+	from {
+		transform: rotate(0deg);
+	}
+
+	to {
+		transform: rotate(360deg);
+	}
+}
