@@ -25,6 +25,7 @@ const MediaCallHistoryTable = ({ sort, children }: MediaCallHistoryTableProps) =
 				<GenericTableHeaderCell key='contact' sort='contact' onClick={onClickSort} active={sortBy === 'contact'} direction={sortDirection}>
 					{t('Contact')}
 				</GenericTableHeaderCell>
+				<GenericTableHeaderCell key='number'>{t('Number')}</GenericTableHeaderCell>
 				<GenericTableHeaderCell key='type' sort='type' onClick={onClickSort} active={sortBy === 'type'} direction={sortDirection}>
 					{t('Type')}
 				</GenericTableHeaderCell>
