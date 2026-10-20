@@ -1,12 +1,14 @@
 import { styled, Text, type GetProps } from '@tamagui/web';
 import type { AllHTMLAttributes, ElementType, RefAttributes } from 'react';
+import { useContext } from 'react';
 
-import { itemColorFontSecondary, toRender, truncatedTextStyle, textStyle } from './itemStyles';
+import { ItemHighlightContext } from './ItemContext';
+import { highlightVariant, itemColorFontSecondary, toRender, truncatedTextStyle, textStyle } from './itemStyles';
 import { cx, cxx } from '../../helpers/composeClassNames';
 import { spacing } from '../../styleTokens';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-// The narrow-list layout of `inline` stays in SCSS, as a container query.
+// The narrow-list layout of `inline` stays in `Item.styles.css`, as a container query
 const ItemDescriptionFrame = styled(Text, {
 	...truncatedTextStyle,
 	display: 'block',
@@ -23,6 +25,7 @@ const ItemDescriptionFrame = styled(Text, {
 				marginInlineStart: spacing('x4'),
 			},
 		},
+		highlight: highlightVariant,
 	} as const,
 });
 
@@ -41,6 +44,7 @@ export type ItemDescriptionProps = {
  */
 const ItemDescription = ({ is, inline, className, ...props }: ItemDescriptionProps) => {
 	const Tag = is ?? (inline ? 'span' : 'div');
+	const highlight = useContext(ItemHighlightContext);
 
 	return (
 		<ItemDescriptionFrame
@@ -48,6 +52,7 @@ const ItemDescription = ({ is, inline, className, ...props }: ItemDescriptionPro
 			render={toRender(Tag)}
 			span={Tag === 'span'}
 			inline={!!inline}
+			highlight={highlight}
 			className={cx(cxx('rcx-item__description')({ inline: !!inline }), className)}
 		/>
 	);
