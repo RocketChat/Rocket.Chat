@@ -6,6 +6,7 @@ import type { TranslationKey, LocationPathname } from '@rocket.chat/ui-contexts'
 import { sdk } from './SDKClient';
 
 export interface IAppAccountBoxItem extends IUIActionButtonDescriptorDefault<'accountBoxItem'> {
+	appId: string;
 	name: string;
 	icon?: string;
 	href?: string;
