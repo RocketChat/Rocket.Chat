@@ -5,7 +5,7 @@ import { Users } from '../fixtures/userStates';
 import { HomeChannel } from '../page-objects';
 import { ToastMessages } from '../page-objects/fragments';
 import { CreateE2EEChannel } from '../page-objects/fragments/e2ee';
-import { createTargetGroupAndReturnFullRoom, deletePrivateRoomsByName } from '../utils';
+import { createTargetGroupAndReturnFullRoom, deletePrivateRoomsByName, deleteRoom } from '../utils';
 import { preserveSettings } from '../utils/preserveSettings';
 import { test, expect } from '../utils/test';
 
@@ -394,7 +394,7 @@ test.describe('E2EE Encrypted Channels', () => {
 			await expect(poHomeChannel.content.lastUserMessage).toContainText('Original reply edited');
 			await expect(poHomeChannel.content.lastUserMessage.locator('blockquote')).toHaveCount(1);
 		} finally {
-			await api.post('/groups.delete', { roomId: group._id });
+			await deleteRoom(api, group._id);
 		}
 	});
 
