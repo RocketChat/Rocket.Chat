@@ -1,5 +1,11 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
-import { VerticalWizardLayout, VerticalWizardLayoutFooter, VerticalWizardLayoutForm, VerticalWizardLayoutTitle } from '@rocket.chat/layout';
+import {
+	LayoutLogoImage,
+	VerticalWizardLayout,
+	VerticalWizardLayoutFooter,
+	VerticalWizardLayoutForm,
+	VerticalWizardLayoutTitle,
+} from '@rocket.chat/layout';
 import { useSetting, useAssetWithDarkModePath } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -20,10 +26,7 @@ const CMSPage = ({ page }: CMSPageProps) => {
 	const dangerousContent = useMemo(() => ({ __html: pageContent }), [pageContent]);
 
 	return (
-		<VerticalWizardLayout
-			background={customBackground}
-			logo={customLogo ? <Box is='img' maxHeight='x40' marginInline='neg-x8' src={customLogo} alt='Logo' /> : undefined}
-		>
+		<VerticalWizardLayout background={customBackground} logo={customLogo ? <LayoutLogoImage src={customLogo} alt='Logo' /> : undefined}>
 			<VerticalWizardLayoutTitle>{t(page)}</VerticalWizardLayoutTitle>
 			<VerticalWizardLayoutForm>
 				<Box padding={32}>
