@@ -3,6 +3,9 @@
 // caller.
 import { Meteor } from 'meteor/meteor';
 
+import { getDdpSdk } from '../lib/sdk/ddpSdk';
+import { isSdkTransportEnabled } from '../lib/sdk/sdkTransportEnabled';
+
 export type ConnectionStatus = {
 	status: 'connected' | 'connecting' | 'failed' | 'waiting' | 'offline';
 	connected: boolean;
@@ -30,5 +33,11 @@ export const onRawMessage = (listener: (rawMessage: string) => void): void => {
 };
 
 export const subscribeRaw = (...args: Parameters<typeof Meteor.connection.subscribe>) => Meteor.connection.subscribe(...args);
+
+/** The server's id for the connection this client is logged in on, which session-targeted events name. */
+export const getConnectionSessionId = (): string | undefined =>
+	(isSdkTransportEnabled()
+		? getDdpSdk().connection.session
+		: (Meteor.connection as unknown as { _lastSessionId?: string | null })._lastSessionId) ?? undefined;
 
 window.__rocketChatCallMethod = callMethod;

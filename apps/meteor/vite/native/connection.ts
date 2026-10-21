@@ -109,4 +109,7 @@ export const onRawMessage = (_listener: (rawMessage: string) => void): void => u
 
 export const subscribeRaw = (name: string, ...args: unknown[]) => getDdpSdk().client.subscribe(name, ...args);
 
+/** The server's id for the connection this client is logged in on, which session-targeted events name. */
+export const getConnectionSessionId = (): string | undefined => getDdpSdk().connection.session;
+
 window.__rocketChatCallMethod = callMethod;

@@ -2,6 +2,7 @@ import { useSessionDispatch, useStream, useWipeLocalAuth } from '@rocket.chat/ui
 import { useEffect } from 'react';
 
 import { isSdkTransportEnabled } from '../../../../lib/sdk/sdkTransportEnabled';
+import { getConnectionSessionId } from '../../../../meteor/connection';
 
 const sdkTransportEnabled = isSdkTransportEnabled();
 
@@ -13,7 +14,12 @@ export const useForceLogout = (userId: string) => {
 	useEffect(() => {
 		setForceLogout(false);
 
-		const unsubscribe = getNotifyUserStream(`${userId}/force_logout`, () => {
+		const unsubscribe = getNotifyUserStream(`${userId}/force_logout`, (sessionId) => {
+			// A logout aimed at one device names its session; the user's other sessions stay logged in.
+			if (sessionId && sessionId !== getConnectionSessionId()) {
+				return;
+			}
+
 			setForceLogout(true);
 
 			if (!sdkTransportEnabled) {
