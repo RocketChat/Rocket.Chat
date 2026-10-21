@@ -228,6 +228,24 @@ describe('MessageList scroll position', () => {
 		expect(mockVirtualizerHandle.scrollTo).not.toHaveBeenCalled();
 	});
 
+	it('should stop treating the list as at the bottom while jumping to a message', () => {
+		const store = {
+			scroll: 123,
+			atBottom: true,
+			update: jest.fn(),
+		};
+		(RoomManager.getStore as jest.Mock).mockReturnValue(store);
+		const isAtBottom = { current: true };
+
+		render(<MessageList {...defaultProps} isAtBottom={isAtBottom} isJumpingToMessage />, { wrapper: root.build() });
+
+		// otherwise the keep-at-bottom observer would send the list back to the latest message
+		// as soon as the items measured by the jump change the scroll size
+		expect(isAtBottom.current).toBe(false);
+		expect(defaultProps.setShouldJumpToBottom).toHaveBeenCalledWith(false);
+		expect(mockVirtualizerHandle.scrollToIndex).not.toHaveBeenCalled();
+	});
+
 	it('should update store based on scroll position', async () => {
 		const store = {
 			scroll: 1,
