@@ -114,7 +114,7 @@ export class OutgoingSipCall extends BaseSipCall {
 		}
 
 		this.lastCallState = 'ringing';
-		const referredBy = call.parentCallId && this.session.geContactUri(call.createdBy);
+		const referredBy = call.parentCallId && !call.attended && this.session.geContactUri(call.createdBy);
 
 		let hangupReason: CallHangupReason | null = null;
 		try {
@@ -194,6 +194,8 @@ export class OutgoingSipCall extends BaseSipCall {
 		this.sipDialog.on('modify', (req, res) => {
 			void this.handleDialogModify(req, res);
 		});
+
+		await this.saveDialogIdentity();
 
 		logger.debug({ msg: 'OutgoingSipCall.createDialog - remote data', data: this.sipDialog.remote });
 

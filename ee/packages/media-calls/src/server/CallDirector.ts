@@ -30,7 +30,10 @@ export type CreateCallParams = InternalCallParams & {
 	sipCallId?: string;
 };
 
-type CallIdentityParams = Pick<CreateCallParams, 'caller' | 'callee' | 'requestedCallId' | 'parentCallId' | 'divertedBy'> & {
+type CallIdentityParams = Pick<
+	CreateCallParams,
+	'caller' | 'callee' | 'requestedCallId' | 'parentCallId' | 'attended' | 'replacedCallIds' | 'divertedBy'
+> & {
 	createdBy: MediaCallContact;
 	service: IMediaCall['service'];
 };
@@ -46,7 +49,7 @@ const scheduledExpirationChecks = new Map<string, ReturnType<typeof setTimeout>>
  * The fields that identify a call attempt, whether or not the call goes on to happen.
  */
 function getCallIdentity(params: CallIdentityParams) {
-	const { caller, callee, createdBy, service, requestedCallId, parentCallId, divertedBy } = params;
+	const { caller, callee, createdBy, service, requestedCallId, parentCallId, attended, replacedCallIds, divertedBy } = params;
 
 	return {
 		// Use UUIDs to identify all media calls, for better compatibility with libs that require it (such as React Native's CallKit)
@@ -68,6 +71,8 @@ function getCallIdentity(params: CallIdentityParams) {
 
 		...(requestedCallId && { callerRequestedId: requestedCallId }),
 		...(parentCallId && { parentCallId }),
+		...(attended && { attended }),
+		...(replacedCallIds?.length && { replacedCallIds }),
 		...(divertedBy && { divertedBy }),
 	};
 }
@@ -106,7 +111,21 @@ class MediaCallDirector {
 		logger.info({ msg: 'Call was flagged as active', callId: call._id });
 		this.scheduleExpirationCheckByCallId(call._id);
 		getMediaCallServer().emitter.emit('callActivated', { call: activatedCall });
+		this.hangupReplacedCalls(activatedCall).catch((err) =>
+			logger.error({ msg: 'Failed to end the calls replaced by a call', err, callId: call._id }),
+		);
 		return actorAgent.oppositeAgent?.onCallActive(call._id);
+	}
+
+	private async hangupReplacedCalls(call: IMediaCall): Promise<void> {
+		for (const replacedCallId of call.replacedCallIds ?? []) {
+			const replacedCall = await MediaCalls.findOneById(replacedCallId);
+			if (!replacedCall || replacedCall.ended) {
+				continue;
+			}
+
+			await this.hangupDetachedCall(replacedCall, { endedBy: call.createdBy, reason: 'transfer' });
+		}
 	}
 
 	public async acceptCall(
@@ -357,13 +376,14 @@ class MediaCallDirector {
 		to: MediaCallContact,
 		by: MediaCallSignedContact,
 		agent: IMediaCallAgent,
+		options: { replacesCallId?: string } = {},
 	): Promise<void> {
 		if (!agent.oppositeAgent) {
 			logger.error({ msg: 'Unable to transfer calls without a reference to the opposite agent.' });
 			return;
 		}
 
-		const updateResult = await MediaCalls.transferCallById(call._id, { by, to });
+		const updateResult = await MediaCalls.transferCallById(call._id, { by, to, ...options });
 		if (!updateResult.modifiedCount) {
 			return;
 		}
