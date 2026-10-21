@@ -1775,6 +1775,29 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.countDocuments({ tcount: { $exists: true } });
 	}
 
+	/**
+	 * Per thread, the labeled replies the reader may read: how many, the latest, and who wrote them.
+	 */
+	aggregateReadableLabeledReplyStatsByThreadIds(
+		tmids: IMessage['_id'][],
+		readerAccess: ISecurityReaderAccess,
+	): Promise<{ _id: IMessage['_id']; count: number; lastTs: Date; users: IUser['_id'][] }[]> {
+		const query = withReaderAccess(
+			{ tmid: { $in: tmids }, securityLabel: { $exists: true }, _hidden: { $ne: true }, t: { $ne: 'rm' } } as Filter<IMessage>,
+			readerAccess,
+		);
+		return this.col
+			.aggregate<{ _id: IMessage['_id']; count: number; lastTs: Date; users: IUser['_id'][] }>([
+				{ $match: query },
+				{ $group: { _id: '$tmid', count: { $sum: 1 }, lastTs: { $max: '$ts' }, users: { $addToSet: '$u._id' } } },
+			])
+			.toArray();
+	}
+
+	async hasLabeledRepliesByThreadId(tmid: IMessage['_id']): Promise<boolean> {
+		return Boolean(await this.findOne({ tmid, securityLabel: { $exists: true } }, { projection: { _id: 1 } }));
+	}
+
 	updateRepliesByThreadId(tmid: string, replies: string[], ts: Date): Promise<UpdateResult> {
 		const query = {
 			_id: tmid,
