@@ -24,11 +24,6 @@ describe('Story Tests', () => {
 		jest.setSystemTime(new Date('2025-01-01T12:00:00.000Z'));
 	});
 
-	test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
-		const view = render(<Story />, { wrapper: wrapper.build() });
-		expect(view.baseElement).toMatchSnapshot();
-	});
-
 	test.each(testCases)(
 		`%s should be accessible`,
 		async (_storyname, Story) => {

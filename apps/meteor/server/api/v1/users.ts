@@ -1,4 +1,4 @@
-import { MeteorError, Presence, Team } from '@rocket.chat/core-services';
+import { ClientSafeError, Presence, Team } from '@rocket.chat/core-services';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Sessions, OAuthAccessTokens, OAuthRefreshTokens, OAuthAuthCodes } from '@rocket.chat/models';
 import {
@@ -35,7 +35,6 @@ import { escapeRegExp, getLoginExpirationInMs } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
-import type { Mongo } from 'meteor/mongo';
 import type { Filter } from 'mongodb';
 
 import { generatePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/generateToken';
@@ -62,7 +61,6 @@ import { deleteUser } from '../../lib/users/deleteUser';
 import { getAvatarSuggestionForUser } from '../../lib/users/getAvatarSuggestionForUser';
 import { getFullUserDataByUniqueSearchTerm, defaultFields, fullFields } from '../../lib/users/getFullUserData';
 import { generateUsernameSuggestion } from '../../lib/users/getUsernameSuggestion';
-import { runAfterVerifyEmail } from '../../lib/users/runAfterVerifyEmail';
 import { saveCustomFields } from '../../lib/users/saveCustomFields';
 import { saveCustomFieldsWithoutValidation } from '../../lib/users/saveCustomFieldsWithoutValidation';
 import { saveUser } from '../../lib/users/saveUser';
@@ -399,7 +397,7 @@ API.v1
 				validateCustomFields(this.bodyParams.customFields);
 			}
 
-			if (this.bodyParams.freeSwitchExtension && !(await canEditExtension(this.bodyParams.freeSwitchExtension))) {
+			if (this.bodyParams.sipExtension && !(await canEditExtension(this.bodyParams.sipExtension))) {
 				return API.v1.failure('Setting user voice call extension is not allowed', 'error-action-not-allowed');
 			}
 
@@ -613,13 +611,12 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		const searchTerms: [string, 'id' | 'username' | 'importId' | 'email' | 'freeSwitchExtension'] | false =
+		const searchTerms: [string, 'id' | 'username' | 'importId' | 'email' | 'sipExtension'] | false =
 			('userId' in this.queryParams && !!this.queryParams.userId && [this.queryParams.userId, 'id']) ||
 			('username' in this.queryParams && !!this.queryParams.username && [this.queryParams.username, 'username']) ||
 			('importId' in this.queryParams && !!this.queryParams.importId && [this.queryParams.importId, 'importId']) ||
 			('email' in this.queryParams && !!this.queryParams.email && [this.queryParams.email, 'email']) ||
-			('freeSwitchExtension' in this.queryParams &&
-				!!this.queryParams.freeSwitchExtension && [this.queryParams.freeSwitchExtension, 'freeSwitchExtension']);
+			('sipExtension' in this.queryParams && !!this.queryParams.sipExtension && [this.queryParams.sipExtension, 'sipExtension']);
 
 		if (!searchTerms) {
 			return API.v1.failure('Invalid search query.');
@@ -661,13 +658,10 @@ API.v1.get(
 	},
 );
 
-// users.list accepts arbitrary query filter fields (name, username, etc.)
-// that cannot be statically defined — keeping as addRoute until params are known
 API.v1.addRoute(
 	'users.list',
 	{
 		authRequired: true,
-		queryOperations: ['$or', '$and'],
 		permissionsRequired: ['view-d-room'],
 		query: isUsersListParamsGET,
 	},
@@ -687,15 +681,13 @@ API.v1.addRoute(
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await this.parseJsonQuery();
+			const { sort, fields } = await this.parseJsonQuery();
 
 			const nonEmptyFields = getNonEmptyFields(fields);
 
 			const inclusiveFields = getInclusiveFields(nonEmptyFields);
 
-			const inclusiveFieldsKeys = Object.keys(inclusiveFields);
-
-			const nonEmptyQuery = getNonEmptyQuery(query, canViewFullOtherUserInfo);
+			const nonEmptyQuery = getNonEmptyQuery(canViewFullOtherUserInfo);
 
 			if ('email' in this.queryParams && this.queryParams.email) {
 				if (!canViewFullOtherUserInfo) {
@@ -706,27 +698,6 @@ API.v1.addRoute(
 					$regex: `^${escapedEmail}$`,
 					$options: 'i',
 				};
-			}
-
-			// if user provided a query, validate it with their allowed operators
-			// otherwise we use the default query (with $regex and $options)
-			if (
-				!isValidQuery(
-					nonEmptyQuery,
-					[
-						...inclusiveFieldsKeys,
-						inclusiveFieldsKeys.includes('emails') && 'emails.address.*',
-						inclusiveFieldsKeys.includes('username') && 'username.*',
-						inclusiveFieldsKeys.includes('name') && 'name.*',
-						inclusiveFieldsKeys.includes('type') && 'type.*',
-						inclusiveFieldsKeys.includes('customFields') && 'customFields.*',
-					].filter(Boolean) as string[],
-					// At this point, we have already validated the user query not containing malicious fields
-					// On here we are using our own query so we can allow some extra fields
-					[...this.queryOperations, '$regex', '$options'],
-				)
-			) {
-				throw new Meteor.Error('error-invalid-query', isValidQuery.errors.join('\n'));
 			}
 
 			if (customFields) {
@@ -740,10 +711,6 @@ API.v1.addRoute(
 			}
 
 			const hidden = await getUsersHiddenFrom(this.userId);
-
-			if (queryFiltersStatus(query)) {
-				nonEmptyQuery.$and = [...(nonEmptyQuery.$and ?? []), excludingHiddenFilter(hidden) as Mongo.Query<IUser>];
-			}
 
 			const actualSort = sort ? { ...sort } : { username: 1 };
 
@@ -975,7 +942,7 @@ API.v1.post(
 		const { email } = this.bodyParams;
 
 		if (!isSMTPConfigured()) {
-			throw new MeteorError('error-email-send-failed', 'SMTP is not configured', {
+			throw new ClientSafeError('error-email-send-failed', 'SMTP is not configured', {
 				method: 'sendWelcomeEmail',
 			});
 		}
@@ -983,7 +950,7 @@ API.v1.post(
 		const user = await Users.findOneByEmailAddress(email.trim(), { projection: { name: 1 } });
 
 		if (!user) {
-			throw new MeteorError('error-invalid-user', 'Invalid user', {
+			throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 				method: 'sendWelcomeEmail',
 			});
 		}
@@ -1510,7 +1477,7 @@ API.v1
 		async function action() {
 			const hasUnverifiedEmail = this.user.emails?.some((email) => !email.verified);
 			if (hasUnverifiedEmail) {
-				throw new MeteorError('error-invalid-user', 'You need to verify your emails before setting up 2FA');
+				throw new ClientSafeError('error-invalid-user', 'You need to verify your emails before setting up 2FA');
 			}
 
 			await Users.enableEmail2FAByUserId(this.userId);
@@ -1524,7 +1491,7 @@ API.v1
 			const hashedToken = Accounts._hashLoginToken(xAuthToken);
 
 			if (!(await Users.removeNonPATLoginTokensExcept(this.userId, hashedToken))) {
-				throw new MeteorError('error-logging-out-other-clients', 'Error logging out other clients');
+				throw new ClientSafeError('error-logging-out-other-clients', 'Error logging out other clients');
 			}
 
 			// TODO this can be optmized so places that care about loginTokens being removed are invoked directly
@@ -2262,8 +2229,6 @@ API.v1.post(
 		}
 
 		await verifyEmail(user, token);
-
-		await runAfterVerifyEmail(user._id);
 
 		return API.v1.success();
 	},

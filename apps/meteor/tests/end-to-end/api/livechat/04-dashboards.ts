@@ -1,9 +1,10 @@
+import { after, before, describe, it } from 'node:test';
+
 import { faker } from '@faker-js/faker';
 import type { Credentials } from '@rocket.chat/api-client';
 import type { ILivechatDepartment, ILivechatVisitor, IOmnichannelRoom, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
-import { before, after, describe, it } from 'mocha';
 import moment from 'moment';
 import type { Response } from 'supertest';
 
@@ -25,17 +26,19 @@ import { removePermissionFromAllRoles, restorePermissionToRoles, updateEESetting
 import { deleteUser } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
-describe('LIVECHAT - dashboards', function () {
+describe('LIVECHAT - dashboards', () => {
 	// This test is expected to take more time since we're simulating real time conversations to verify analytics
-	this.timeout(60000);
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done), { timeout: 60000 });
 
-	before(async () => {
-		await updateSetting('Livechat_enabled', true);
-		await updateEESetting('Livechat_Require_Contact_Verification', 'never');
-		await updateSetting('Omnichannel_enable_department_removal', true);
-	});
+	before(
+		async () => {
+			await updateSetting('Livechat_enabled', true);
+			await updateEESetting('Livechat_Require_Contact_Verification', 'never');
+			await updateSetting('Omnichannel_enable_department_removal', true);
+		},
+		{ timeout: 60000 },
+	);
 
 	let department: ILivechatDepartment;
 	let roomList: IOmnichannelRoom[];
@@ -88,66 +91,72 @@ describe('LIVECHAT - dashboards', function () {
 		await Promise.all(promises);
 	};
 
-	before(async () => {
-		if (!IS_EE) {
-			return;
-		}
-
-		await updateSetting('Livechat_visitor_inactivity_timeout', inactivityTimeout);
-		await updateSetting('Livechat_enable_business_hours', false);
-
-		// create dummy test data for further tests
-		const { department: createdDept, agent: agent1 } = await createDepartmentWithAnOnlineAgent();
-		department = createdDept;
-
-		const agent2 = await createAnOnlineAgent();
-		await addOrRemoveAgentFromDepartment(department._id, { agentId: agent2.user._id, username: agent2.user.username }, true);
-		agents.push(agent1);
-		agents.push(agent2);
-
-		const roomCreationStart = moment();
-		// start a few chats
-		const promises = Array.from(Array(TOTAL_ROOMS).keys()).map((i) => {
-			// 2 rooms by agent 1
-			if (i < 2) {
-				return startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent1.credentials });
+	before(
+		async () => {
+			if (!IS_EE) {
+				return;
 			}
-			return startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent2.credentials });
-		});
 
-		const chatInfo = await Promise.all(promises);
+			await updateSetting('Livechat_visitor_inactivity_timeout', inactivityTimeout);
+			await updateSetting('Livechat_enable_business_hours', false);
 
-		roomList = chatInfo.map((info) => info.room);
-		visitorList = chatInfo.map((info) => info.visitor);
+			// create dummy test data for further tests
+			const { department: createdDept, agent: agent1 } = await createDepartmentWithAnOnlineAgent();
+			department = createdDept;
 
-		// simulate messages being exchanged between agents and visitors
-		await simulateRealtimeConversation(chatInfo);
+			const agent2 = await createAnOnlineAgent();
+			await addOrRemoveAgentFromDepartment(department._id, { agentId: agent2.user._id, username: agent2.user.username }, true);
+			agents.push(agent1);
+			agents.push(agent2);
 
-		// put a chat on hold
-		await sendAgentMessage(chatInfo[1].room._id);
-		await placeRoomOnHold(chatInfo[1].room._id);
-		// close a chat
-		await closeOmnichannelRoom(chatInfo[4].room._id);
-		const room5ChatDuration = moment().diff(roomCreationStart, 'seconds');
-		// close an abandoned chat
-		await sendAgentMessage(chatInfo[5].room._id);
-		await sleep(inactivityTimeout * 1000); // wait for the chat to be considered abandoned
-		await closeOmnichannelRoom(chatInfo[5].room._id);
-		const room6ChatDuration = moment().diff(roomCreationStart, 'seconds');
+			const roomCreationStart = moment();
+			// start a few chats
+			const promises = Array.from(Array(TOTAL_ROOMS).keys()).map((i) => {
+				// 2 rooms by agent 1
+				if (i < 2) {
+					return startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent1.credentials });
+				}
+				return startANewLivechatRoomAndTakeIt({ departmentId: department._id, agent: agent2.credentials });
+			});
 
-		avgClosedRoomChatDuration = (room5ChatDuration + room6ChatDuration) / 2;
-	});
+			const chatInfo = await Promise.all(promises);
 
-	after(async () => {
-		if (!IS_EE) {
-			return;
-		}
-		await Promise.allSettled(roomList.map((room) => closeOmnichannelRoom(room._id)));
-		await Promise.allSettled(visitorList.map((visitor) => deleteVisitor(visitor.token)));
-		await deleteDepartment(department._id);
-		await Promise.allSettled(agents.map((agent) => deleteUser(agent.user)));
-		await updateSetting('Omnichannel_enable_department_removal', false);
-	});
+			roomList = chatInfo.map((info) => info.room);
+			visitorList = chatInfo.map((info) => info.visitor);
+
+			// simulate messages being exchanged between agents and visitors
+			await simulateRealtimeConversation(chatInfo);
+
+			// put a chat on hold
+			await sendAgentMessage(chatInfo[1].room._id);
+			await placeRoomOnHold(chatInfo[1].room._id);
+			// close a chat
+			await closeOmnichannelRoom(chatInfo[4].room._id);
+			const room5ChatDuration = moment().diff(roomCreationStart, 'seconds');
+			// close an abandoned chat
+			await sendAgentMessage(chatInfo[5].room._id);
+			await sleep(inactivityTimeout * 1000); // wait for the chat to be considered abandoned
+			await closeOmnichannelRoom(chatInfo[5].room._id);
+			const room6ChatDuration = moment().diff(roomCreationStart, 'seconds');
+
+			avgClosedRoomChatDuration = (room5ChatDuration + room6ChatDuration) / 2;
+		},
+		{ timeout: 60000 },
+	);
+
+	after(
+		async () => {
+			if (!IS_EE) {
+				return;
+			}
+			await Promise.allSettled(roomList.map((room) => closeOmnichannelRoom(room._id)));
+			await Promise.allSettled(visitorList.map((visitor) => deleteVisitor(visitor.token)));
+			await deleteDepartment(department._id);
+			await Promise.allSettled(agents.map((agent) => deleteUser(agent.user)));
+			await updateSetting('Omnichannel_enable_department_removal', false);
+		},
+		{ timeout: 60000 },
+	);
 
 	describe('livechat/analytics/dashboards/conversation-totalizers', () => {
 		const expectedMetrics = [
@@ -159,7 +168,7 @@ describe('LIVECHAT - dashboards', function () {
 			'Total_abandoned_chats',
 			'Total_visitors',
 		];
-		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
+		it('should return an "unauthorized error" when the user does not have the necessary permission', { timeout: 60000 }, async () => {
 			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/dashboards/conversation-totalizers'))
@@ -171,7 +180,7 @@ describe('LIVECHAT - dashboards', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(403);
 		});
-		it('should return an array of conversation totalizers', async () => {
+		it('should return an array of conversation totalizers', { timeout: 60000 }, async () => {
 			await restorePermissionToRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/dashboards/conversation-totalizers'))
@@ -190,7 +199,7 @@ describe('LIVECHAT - dashboards', function () {
 					);
 				});
 		});
-		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
+		(IS_EE ? it : it.skip)('should return data with correct values', { timeout: 60000 }, async () => {
 			const start = moment().subtract(1, 'days').toISOString();
 			const end = moment().toISOString();
 
@@ -231,7 +240,7 @@ describe('LIVECHAT - dashboards', function () {
 
 	describe('livechat/analytics/dashboards/productivity-totalizers', () => {
 		const expectedMetrics = ['Avg_response_time', 'Avg_first_response_time', 'Avg_reaction_time', 'Avg_of_waiting_time'];
-		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
+		it('should return an "unauthorized error" when the user does not have the necessary permission', { timeout: 60000 }, async () => {
 			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/dashboards/productivity-totalizers'))
@@ -243,7 +252,7 @@ describe('LIVECHAT - dashboards', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(403);
 		});
-		it('should return an array of productivity totalizers', async () => {
+		it('should return an array of productivity totalizers', { timeout: 60000 }, async () => {
 			await restorePermissionToRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/dashboards/productivity-totalizers'))
@@ -262,7 +271,7 @@ describe('LIVECHAT - dashboards', function () {
 					);
 				});
 		});
-		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
+		(IS_EE ? it : it.skip)('should return data with correct values', { timeout: 60000 }, async () => {
 			const start = moment().subtract(1, 'days').toISOString();
 			const end = moment().toISOString();
 
@@ -295,7 +304,7 @@ describe('LIVECHAT - dashboards', function () {
 
 	describe('livechat/analytics/dashboards/chats-totalizers', () => {
 		const expectedMetrics = ['Total_abandoned_chats', 'Avg_of_abandoned_chats', 'Avg_of_chat_duration_time'];
-		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
+		it('should return an "unauthorized error" when the user does not have the necessary permission', { timeout: 60000 }, async () => {
 			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/dashboards/chats-totalizers'))
@@ -307,7 +316,7 @@ describe('LIVECHAT - dashboards', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(403);
 		});
-		it('should return an array of chats totalizers', async () => {
+		it('should return an array of chats totalizers', { timeout: 60000 }, async () => {
 			await restorePermissionToRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/dashboards/chats-totalizers'))
@@ -326,7 +335,7 @@ describe('LIVECHAT - dashboards', function () {
 					);
 				});
 		});
-		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
+		(IS_EE ? it : it.skip)('should return data with correct values', { timeout: 60000 }, async () => {
 			const start = moment().subtract(1, 'days').toISOString();
 			const end = moment().toISOString();
 
@@ -363,7 +372,7 @@ describe('LIVECHAT - dashboards', function () {
 
 	describe('livechat/analytics/dashboards/agents-productivity-totalizers', () => {
 		const expectedMetrics = ['Busiest_time', 'Avg_of_available_service_time', 'Avg_of_service_time'];
-		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
+		it('should return an "unauthorized error" when the user does not have the necessary permission', { timeout: 60000 }, async () => {
 			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/dashboards/agents-productivity-totalizers'))
@@ -375,7 +384,7 @@ describe('LIVECHAT - dashboards', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(403);
 		});
-		it('should return an array of agents productivity totalizers', async () => {
+		it('should return an array of agents productivity totalizers', { timeout: 60000 }, async () => {
 			await restorePermissionToRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/dashboards/agents-productivity-totalizers'))
@@ -394,7 +403,7 @@ describe('LIVECHAT - dashboards', function () {
 					);
 				});
 		});
-		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
+		(IS_EE ? it : it.skip)('should return data with correct values', { timeout: 60000 }, async () => {
 			const start = moment().subtract(1, 'days').toISOString();
 			const end = moment().toISOString();
 
@@ -426,7 +435,7 @@ describe('LIVECHAT - dashboards', function () {
 	});
 
 	describe('livechat/analytics/dashboards/charts/chats', () => {
-		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
+		it('should return an "unauthorized error" when the user does not have the necessary permission', { timeout: 60000 }, async () => {
 			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/dashboards/charts/chats'))
@@ -438,7 +447,7 @@ describe('LIVECHAT - dashboards', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(403);
 		});
-		it('should return an array of productivity totalizers', async () => {
+		it('should return an array of productivity totalizers', { timeout: 60000 }, async () => {
 			await restorePermissionToRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/dashboards/charts/chats'))
@@ -456,7 +465,7 @@ describe('LIVECHAT - dashboards', function () {
 					expect(res.body).to.have.property('queued');
 				});
 		});
-		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
+		(IS_EE ? it : it.skip)('should return data with correct values', { timeout: 60000 }, async () => {
 			const start = moment().subtract(1, 'days').toISOString();
 			const end = moment().toISOString();
 
@@ -483,7 +492,7 @@ describe('LIVECHAT - dashboards', function () {
 	});
 
 	describe('livechat/analytics/dashboards/charts/chats-per-agent', () => {
-		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
+		it('should return an "unauthorized error" when the user does not have the necessary permission', { timeout: 60000 }, async () => {
 			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/dashboards/charts/chats-per-agent'))
@@ -495,7 +504,7 @@ describe('LIVECHAT - dashboards', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(403);
 		});
-		it('should return an object with open and closed chats by agent', async () => {
+		it('should return an object with open and closed chats by agent', { timeout: 60000 }, async () => {
 			await restorePermissionToRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/dashboards/charts/chats-per-agent'))
@@ -510,7 +519,7 @@ describe('LIVECHAT - dashboards', function () {
 					expect(res.body).to.have.property('success', true);
 				});
 		});
-		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
+		(IS_EE ? it : it.skip)('should return data with correct values', { timeout: 60000 }, async () => {
 			const start = moment().subtract(1, 'days').toISOString();
 			const end = moment().toISOString();
 
@@ -541,7 +550,7 @@ describe('LIVECHAT - dashboards', function () {
 	});
 
 	describe('livechat/analytics/dashboards/charts/agents-status', () => {
-		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
+		it('should return an "unauthorized error" when the user does not have the necessary permission', { timeout: 60000 }, async () => {
 			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/dashboards/charts/agents-status'))
@@ -549,7 +558,7 @@ describe('LIVECHAT - dashboards', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(403);
 		});
-		it('should return an object with agents status metrics', async () => {
+		it('should return an object with agents status metrics', { timeout: 60000 }, async () => {
 			await restorePermissionToRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/dashboards/charts/agents-status'))
@@ -564,7 +573,7 @@ describe('LIVECHAT - dashboards', function () {
 					expect(res.body).to.have.property('available');
 				});
 		});
-		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
+		(IS_EE ? it : it.skip)('should return data with correct values', { timeout: 60000 }, async () => {
 			const start = moment().subtract(1, 'days').toISOString();
 			const end = moment().toISOString();
 
@@ -594,7 +603,7 @@ describe('LIVECHAT - dashboards', function () {
 	});
 
 	describe('livechat/analytics/dashboards/charts/chats-per-department', () => {
-		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
+		it('should return an "unauthorized error" when the user does not have the necessary permission', { timeout: 60000 }, async () => {
 			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/dashboards/charts/chats-per-department'))
@@ -606,7 +615,7 @@ describe('LIVECHAT - dashboards', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(403);
 		});
-		it('should return an object with open and closed chats by department', async () => {
+		it('should return an object with open and closed chats by department', { timeout: 60000 }, async () => {
 			await restorePermissionToRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/dashboards/charts/chats-per-department'))
@@ -621,7 +630,7 @@ describe('LIVECHAT - dashboards', function () {
 					expect(res.body).to.have.property('success', true);
 				});
 		});
-		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
+		(IS_EE ? it : it.skip)('should return data with correct values', { timeout: 60000 }, async () => {
 			const start = moment().subtract(1, 'days').toISOString();
 			const end = moment().toISOString();
 
@@ -647,7 +656,7 @@ describe('LIVECHAT - dashboards', function () {
 	});
 
 	describe('livechat/analytics/dashboards/charts/timings', () => {
-		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
+		it('should return an "unauthorized error" when the user does not have the necessary permission', { timeout: 60000 }, async () => {
 			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/dashboards/charts/timings'))
@@ -659,7 +668,7 @@ describe('LIVECHAT - dashboards', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(403);
 		});
-		it('should return an object with open and closed chats by department', async () => {
+		it('should return an object with open and closed chats by department', { timeout: 60000 }, async () => {
 			await restorePermissionToRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/dashboards/charts/timings'))
@@ -683,7 +692,7 @@ describe('LIVECHAT - dashboards', function () {
 					expect(res.body.chatDuration).to.have.property('longest');
 				});
 		});
-		(IS_EE ? it : it.skip)('should return data with correct values', async () => {
+		(IS_EE ? it : it.skip)('should return data with correct values', { timeout: 60000 }, async () => {
 			const start = moment().subtract(1, 'days').toISOString();
 			const end = moment().toISOString();
 
@@ -727,7 +736,7 @@ describe('LIVECHAT - dashboards', function () {
 	});
 
 	describe('livechat/analytics/dashboards/charts-data', () => {
-		it('should return the correct data structure for the charts', async () => {
+		it('should return the correct data structure for the charts', { timeout: 60000 }, async () => {
 			const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
 			const today = moment().startOf('day').format('YYYY-MM-DD');
 
@@ -749,7 +758,7 @@ describe('LIVECHAT - dashboards', function () {
 	});
 
 	describe('livechat/analytics/agent-overview', () => {
-		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
+		it('should return an "unauthorized error" when the user does not have the necessary permission', { timeout: 60000 }, async () => {
 			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/agent-overview'))
@@ -758,7 +767,7 @@ describe('LIVECHAT - dashboards', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(403);
 		});
-		it('should return an "invalid-chart-name error" when the chart name is empty', async () => {
+		it('should return an "invalid-chart-name error" when the chart name is empty', { timeout: 60000 }, async () => {
 			await restorePermissionToRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/agent-overview'))
@@ -767,7 +776,7 @@ describe('LIVECHAT - dashboards', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(400);
 		});
-		it('should return empty when chart name is invalid', async () => {
+		it('should return empty when chart name is invalid', { timeout: 60000 }, async () => {
 			await request
 				.get(api('livechat/analytics/agent-overview'))
 				.query({ from: '2020-01-01', to: '2020-01-02', name: 'invalid-chart-name' })
@@ -779,7 +788,7 @@ describe('LIVECHAT - dashboards', function () {
 					expect(Object.keys(res.body)).to.have.lengthOf(1);
 				});
 		});
-		it('should return an array of agent overview data', async () => {
+		it('should return an array of agent overview data', { timeout: 60000 }, async () => {
 			const result = await request
 				.get(api('livechat/analytics/agent-overview'))
 				.query({ from: '2020-01-01', to: '2020-01-02', name: 'Total_conversations' })
@@ -793,7 +802,7 @@ describe('LIVECHAT - dashboards', function () {
 			expect(result.body.head).to.be.an('array');
 			expect(result.body.data).to.be.an('array');
 		});
-		(IS_EE ? it : it.skip)('should return agent overview data with correct values', async () => {
+		(IS_EE ? it : it.skip)('should return agent overview data with correct values', { timeout: 60000 }, async () => {
 			const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
 			const today = moment().startOf('day').format('YYYY-MM-DD');
 
@@ -819,26 +828,31 @@ describe('LIVECHAT - dashboards', function () {
 			expect(user1Data).to.have.property('value', '28.57%');
 			expect(user2Data).to.have.property('value', '71.43%');
 		});
-		(IS_EE ? it : it.skip)('should only return results in the provided date interval when searching for total conversations', async () => {
-			const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+		(IS_EE ? it : it.skip)(
+			'should only return results in the provided date interval when searching for total conversations',
+			{ timeout: 60000 },
+			async () => {
+				const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
 
-			const result = await request
-				.get(api('livechat/analytics/agent-overview'))
-				.query({ from: yesterday, to: yesterday, name: 'Total_conversations', departmentId: department._id })
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				const result = await request
+					.get(api('livechat/analytics/agent-overview'))
+					.query({ from: yesterday, to: yesterday, name: 'Total_conversations', departmentId: department._id })
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200);
 
-			expect(result.body).to.have.property('success', true);
-			expect(result.body).to.have.property('head');
-			expect(result.body.head).to.be.an('array').with.lengthOf(2);
-			expect(result.body.head[0]).to.have.property('name', 'Agent');
-			expect(result.body.head[1]).to.have.property('name', '%_of_conversations');
-			expect(result.body).to.have.property('data');
-			expect(result.body.data).to.be.an('array').that.is.empty;
-		});
+				expect(result.body).to.have.property('success', true);
+				expect(result.body).to.have.property('head');
+				expect(result.body.head).to.be.an('array').with.lengthOf(2);
+				expect(result.body.head[0]).to.have.property('name', 'Agent');
+				expect(result.body.head[1]).to.have.property('name', '%_of_conversations');
+				expect(result.body).to.have.property('data');
+				expect(result.body.data).to.be.an('array').that.is.empty;
+			},
+		);
 		(IS_EE ? it : it.skip)(
 			'should only return results in the provided date interval when searching for average chat durations',
+			{ timeout: 60000 },
 			async () => {
 				const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
 
@@ -858,26 +872,31 @@ describe('LIVECHAT - dashboards', function () {
 				expect(result.body.data).to.be.an('array').that.is.empty;
 			},
 		);
-		(IS_EE ? it : it.skip)('should only return results in the provided date interval when searching for total messages', async () => {
-			const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
+		(IS_EE ? it : it.skip)(
+			'should only return results in the provided date interval when searching for total messages',
+			{ timeout: 60000 },
+			async () => {
+				const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
 
-			const result = await request
-				.get(api('livechat/analytics/agent-overview'))
-				.query({ from: yesterday, to: yesterday, name: 'Total_messages', departmentId: department._id })
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				const result = await request
+					.get(api('livechat/analytics/agent-overview'))
+					.query({ from: yesterday, to: yesterday, name: 'Total_messages', departmentId: department._id })
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200);
 
-			expect(result.body).to.have.property('success', true);
-			expect(result.body).to.have.property('head');
-			expect(result.body.head).to.be.an('array').with.lengthOf(2);
-			expect(result.body.head[0]).to.have.property('name', 'Agent');
-			expect(result.body.head[1]).to.have.property('name', 'Total_messages');
-			expect(result.body).to.have.property('data');
-			expect(result.body.data).to.be.an('array').that.is.empty;
-		});
+				expect(result.body).to.have.property('success', true);
+				expect(result.body).to.have.property('head');
+				expect(result.body.head).to.be.an('array').with.lengthOf(2);
+				expect(result.body.head[0]).to.have.property('name', 'Agent');
+				expect(result.body.head[1]).to.have.property('name', 'Total_messages');
+				expect(result.body).to.have.property('data');
+				expect(result.body.data).to.be.an('array').that.is.empty;
+			},
+		);
 		(IS_EE ? it : it.skip)(
 			'should only return results in the provided date interval when searching for average first response times',
+			{ timeout: 60000 },
 			async () => {
 				const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
 
@@ -899,6 +918,7 @@ describe('LIVECHAT - dashboards', function () {
 		);
 		(IS_EE ? it : it.skip)(
 			'should only return results in the provided date interval when searching for best first response times',
+			{ timeout: 60000 },
 			async () => {
 				const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
 
@@ -920,6 +940,7 @@ describe('LIVECHAT - dashboards', function () {
 		);
 		(IS_EE ? it : it.skip)(
 			'should only return results in the provided date interval when searching for average response times',
+			{ timeout: 60000 },
 			async () => {
 				const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
 
@@ -941,6 +962,7 @@ describe('LIVECHAT - dashboards', function () {
 		);
 		(IS_EE ? it : it.skip)(
 			'should only return results in the provided date interval when searching for average reaction times',
+			{ timeout: 60000 },
 			async () => {
 				const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
 
@@ -973,27 +995,33 @@ describe('LIVECHAT - dashboards', function () {
 		const roomsToClose: IOmnichannelRoom[] = [];
 		const visitorsToDelete: ILivechatVisitor[] = [];
 
-		before(async () => {
-			agent = await createAnOnlineAgent();
-			forwardAgent = await createAnOnlineAgent();
-			botAgent = await createBotAgent();
+		before(
+			async () => {
+				agent = await createAnOnlineAgent();
+				forwardAgent = await createAnOnlineAgent();
+				botAgent = await createBotAgent();
 
-			await updateSetting('Omnichannel_Metrics_Ignore_Automatic_Messages', true);
-		});
+				await updateSetting('Omnichannel_Metrics_Ignore_Automatic_Messages', true);
+			},
+			{ timeout: 60000 },
+		);
 
-		after(async () => {
-			await Promise.allSettled(roomsToClose.map((room) => closeOmnichannelRoom(room._id)));
-			await Promise.allSettled(visitorsToDelete.map((visitor) => deleteVisitor(visitor.token)));
-			await Promise.all([closeOpenRoomsServedBy(agent.user._id), closeOpenRoomsServedBy(forwardAgent.user._id)]);
-			await Promise.all([
-				deleteUser(agent.user),
-				deleteUser(forwardAgent.user),
-				deleteUser(botAgent.user),
-				updateSetting('Omnichannel_Metrics_Ignore_Automatic_Messages', false),
-			]);
-		});
+		after(
+			async () => {
+				await Promise.allSettled(roomsToClose.map((room) => closeOmnichannelRoom(room._id)));
+				await Promise.allSettled(visitorsToDelete.map((visitor) => deleteVisitor(visitor.token)));
+				await Promise.all([closeOpenRoomsServedBy(agent.user._id), closeOpenRoomsServedBy(forwardAgent.user._id)]);
+				await Promise.all([
+					deleteUser(agent.user),
+					deleteUser(forwardAgent.user),
+					deleteUser(botAgent.user),
+					updateSetting('Omnichannel_Metrics_Ignore_Automatic_Messages', false),
+				]);
+			},
+			{ timeout: 60000 },
+		);
 
-		it('should return no average response time for an agent if no response has been sent in the period', async () => {
+		it('should return no average response time for an agent if no response has been sent in the period', { timeout: 60000 }, async () => {
 			const { room, visitor } = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
 			roomsToClose.push(room);
 			visitorsToDelete.push(visitor);
@@ -1014,7 +1042,7 @@ describe('LIVECHAT - dashboards', function () {
 			expect(result.body.data).to.not.deep.include({ name: agent.user.username });
 		});
 
-		it("should not consider system messages in agents' first response time metric", async () => {
+		it("should not consider system messages in agents' first response time metric", { timeout: 60000 }, async () => {
 			const { room, visitor } = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
 			roomsToClose.push(room);
 			visitorsToDelete.push(visitor);
@@ -1046,7 +1074,7 @@ describe('LIVECHAT - dashboards', function () {
 			expect(originalFirstResponseTimeInSeconds).to.be.greaterThanOrEqual(firstDelayInSeconds);
 		});
 
-		it("should not consider bot messages in agent's first response time metric if setting is enabled", async () => {
+		it("should not consider bot messages in agent's first response time metric if setting is enabled", { timeout: 60000 }, async () => {
 			const { room, visitor } = await startANewLivechatRoomAndTakeIt({ agent: botAgent.credentials });
 			roomsToClose.push(room);
 			visitorsToDelete.push(visitor);
@@ -1076,7 +1104,7 @@ describe('LIVECHAT - dashboards', function () {
 			expect(agentData).to.be.undefined;
 		});
 
-		it('should correctly associate the first response time to the first agent who responded the room', async () => {
+		it('should correctly associate the first response time to the first agent who responded the room', { timeout: 60000 }, async () => {
 			const { room, visitor } = await startANewLivechatRoomAndTakeIt({ agent: forwardAgent.credentials });
 			roomsToClose.push(room);
 			visitorsToDelete.push(visitor);
@@ -1134,7 +1162,7 @@ describe('LIVECHAT - dashboards', function () {
 			expect(originalFirstResponseTimeInSeconds).to.be.greaterThan(forwardAgentAverageFirstResponseTimeInSeconds);
 		});
 
-		it('should correctly calculate the average time of first responses for an agent', async () => {
+		it('should correctly calculate the average time of first responses for an agent', { timeout: 60000 }, async () => {
 			const { room, visitor } = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
 			roomsToClose.push(room);
 			visitorsToDelete.push(visitor);
@@ -1177,19 +1205,25 @@ describe('LIVECHAT - dashboards', function () {
 		const roomsToClose: IOmnichannelRoom[] = [];
 		const visitorsToDelete: ILivechatVisitor[] = [];
 
-		before(async () => {
-			agent = await createAnOnlineAgent();
-			forwardAgent = await createAnOnlineAgent();
-		});
+		before(
+			async () => {
+				agent = await createAnOnlineAgent();
+				forwardAgent = await createAnOnlineAgent();
+			},
+			{ timeout: 60000 },
+		);
 
-		after(async () => {
-			await Promise.allSettled(roomsToClose.map((room) => closeOmnichannelRoom(room._id)));
-			await Promise.allSettled(visitorsToDelete.map((visitor) => deleteVisitor(visitor.token)));
-			await Promise.all([closeOpenRoomsServedBy(agent.user._id), closeOpenRoomsServedBy(forwardAgent.user._id)]);
-			await Promise.all([deleteUser(agent.user), deleteUser(forwardAgent.user)]);
-		});
+		after(
+			async () => {
+				await Promise.allSettled(roomsToClose.map((room) => closeOmnichannelRoom(room._id)));
+				await Promise.allSettled(visitorsToDelete.map((visitor) => deleteVisitor(visitor.token)));
+				await Promise.all([closeOpenRoomsServedBy(agent.user._id), closeOpenRoomsServedBy(forwardAgent.user._id)]);
+				await Promise.all([deleteUser(agent.user), deleteUser(forwardAgent.user)]);
+			},
+			{ timeout: 60000 },
+		);
 
-		it('should return no best response time for an agent if no response has been sent in the period', async () => {
+		it('should return no best response time for an agent if no response has been sent in the period', { timeout: 60000 }, async () => {
 			const { room, visitor } = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
 			roomsToClose.push(room);
 			visitorsToDelete.push(visitor);
@@ -1210,7 +1244,7 @@ describe('LIVECHAT - dashboards', function () {
 			expect(result.body.data).to.not.deep.include({ name: agent.user.username });
 		});
 
-		it("should not consider system messages in agents' best response time metric", async () => {
+		it("should not consider system messages in agents' best response time metric", { timeout: 60000 }, async () => {
 			const { room, visitor } = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
 			roomsToClose.push(room);
 			visitorsToDelete.push(visitor);
@@ -1244,41 +1278,45 @@ describe('LIVECHAT - dashboards', function () {
 			expect(originalBestFirstResponseTimeInSeconds).to.be.greaterThanOrEqual(delayInSeconds);
 		});
 
-		it('should correctly calculate the best first response time for an agent and there are multiple first responses in the period', async () => {
-			const { room, visitor } = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
-			roomsToClose.push(room);
-			visitorsToDelete.push(visitor);
-			roomId = room._id;
+		it(
+			'should correctly calculate the best first response time for an agent and there are multiple first responses in the period',
+			{ timeout: 60000 },
+			async () => {
+				const { room, visitor } = await startANewLivechatRoomAndTakeIt({ agent: agent.credentials });
+				roomsToClose.push(room);
+				visitorsToDelete.push(visitor);
+				roomId = room._id;
 
-			const delayInSeconds = 6;
-			await sleep(delayInSeconds * 1000);
+				const delayInSeconds = 6;
+				await sleep(delayInSeconds * 1000);
 
-			await sendAgentMessage(roomId, 'first response from agent', agent.credentials);
+				await sendAgentMessage(roomId, 'first response from agent', agent.credentials);
 
-			const today = moment().startOf('day').format('YYYY-MM-DD');
-			const result = await request
-				.get(api('livechat/analytics/agent-overview'))
-				.query({ from: today, to: today, name: 'Best_first_response_time' })
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+				const today = moment().startOf('day').format('YYYY-MM-DD');
+				const result = await request
+					.get(api('livechat/analytics/agent-overview'))
+					.query({ from: today, to: today, name: 'Best_first_response_time' })
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200);
 
-			expect(result.body).to.have.property('success', true);
-			expect(result.body).to.have.property('head');
-			expect(result.body).to.have.property('data');
-			expect(result.body.data).to.be.an('array');
+				expect(result.body).to.have.property('success', true);
+				expect(result.body).to.have.property('head');
+				expect(result.body).to.have.property('data');
+				expect(result.body.data).to.be.an('array');
 
-			const agentData = result.body.data.find(
-				(agentOverviewData: { name: string; value: string }) => agentOverviewData.name === agent.user.username,
-			);
-			expect(agentData).to.not.be.undefined;
-			expect(agentData).to.have.property('name', agent.user.username);
-			expect(agentData).to.have.property('value');
-			const bestFirstResponseTimeInSeconds = moment.duration(agentData.value).asSeconds();
-			expect(bestFirstResponseTimeInSeconds).to.be.equal(originalBestFirstResponseTimeInSeconds);
-		});
+				const agentData = result.body.data.find(
+					(agentOverviewData: { name: string; value: string }) => agentOverviewData.name === agent.user.username,
+				);
+				expect(agentData).to.not.be.undefined;
+				expect(agentData).to.have.property('name', agent.user.username);
+				expect(agentData).to.have.property('value');
+				const bestFirstResponseTimeInSeconds = moment.duration(agentData.value).asSeconds();
+				expect(bestFirstResponseTimeInSeconds).to.be.equal(originalBestFirstResponseTimeInSeconds);
+			},
+		);
 
-		it('should correctly associate best first response time to the first agent who responded the room', async () => {
+		it('should correctly associate best first response time to the first agent who responded the room', { timeout: 60000 }, async () => {
 			const { room, visitor } = await startANewLivechatRoomAndTakeIt({ agent: forwardAgent.credentials });
 			roomsToClose.push(room);
 			visitorsToDelete.push(visitor);
@@ -1338,7 +1376,7 @@ describe('LIVECHAT - dashboards', function () {
 	});
 
 	describe('livechat/analytics/overview', () => {
-		it('should return an "unauthorized error" when the user does not have the necessary permission', async () => {
+		it('should return an "unauthorized error" when the user does not have the necessary permission', { timeout: 60000 }, async () => {
 			await removePermissionFromAllRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/overview'))
@@ -1347,7 +1385,7 @@ describe('LIVECHAT - dashboards', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(403);
 		});
-		it('should return an "invalid-chart-name error" when the chart name is empty', async () => {
+		it('should return an "invalid-chart-name error" when the chart name is empty', { timeout: 60000 }, async () => {
 			await restorePermissionToRoles('view-livechat-manager');
 			await request
 				.get(api('livechat/analytics/overview'))
@@ -1356,7 +1394,7 @@ describe('LIVECHAT - dashboards', function () {
 				.expect('Content-Type', 'application/json')
 				.expect(400);
 		});
-		it('should return empty when chart name is invalid', async () => {
+		it('should return empty when chart name is invalid', { timeout: 60000 }, async () => {
 			await request
 				.get(api('livechat/analytics/overview'))
 				.query({ from: '2020-01-01', to: '2020-01-02', name: 'invalid-chart-name' })
@@ -1368,7 +1406,7 @@ describe('LIVECHAT - dashboards', function () {
 					expect(Object.keys(res.body)).to.have.lengthOf(1);
 				});
 		});
-		it('should return an array of analytics overview data', async () => {
+		it('should return an array of analytics overview data', { timeout: 60000 }, async () => {
 			const result = await request
 				.get(api('livechat/analytics/overview'))
 				.query({ from: '2020-01-01', to: '2020-01-02', name: 'Conversations' })
@@ -1381,7 +1419,7 @@ describe('LIVECHAT - dashboards', function () {
 			expect(result.body[0]).to.have.property('title', 'Total_conversations');
 			expect(result.body[0]).to.have.property('value', 0);
 		});
-		(IS_EE ? it : it.skip)('should return analytics overview data with correct values', async () => {
+		(IS_EE ? it : it.skip)('should return analytics overview data with correct values', { timeout: 60000 }, async () => {
 			const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
 			const today = moment().startOf('day').format('YYYY-MM-DD');
 
@@ -1419,6 +1457,7 @@ describe('LIVECHAT - dashboards', function () {
 		});
 		(IS_EE ? it : it.skip)(
 			'should only consider conversations in the provided time range when returning analytics conversations overview data',
+			{ timeout: 60000 },
 			async () => {
 				const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
 
@@ -1447,6 +1486,7 @@ describe('LIVECHAT - dashboards', function () {
 		);
 		(IS_EE ? it : it.skip)(
 			'should only consider conversations in the provided time range when returning analytics productivity overview data',
+			{ timeout: 60000 },
 			async () => {
 				const yesterday = moment().subtract(1, 'days').format('YYYY-MM-DD');
 
