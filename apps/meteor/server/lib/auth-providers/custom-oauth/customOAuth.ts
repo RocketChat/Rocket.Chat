@@ -16,6 +16,22 @@ import { settings } from '../../../settings/cached';
 import { callbacks } from '../../callbacks';
 import { notifyOnUserChange } from '../../notifyListener';
 import { saveUserIdentity } from '../../users/saveUserIdentity';
+import { validateUsername } from '../../users/validateUsername';
+
+export const normalizeOAuthUsername = (username: string): string => {
+	if (validateUsername(username)) {
+		return username;
+	}
+
+	if (username.includes('@')) {
+		const sanitized = username.replace(/@/g, '.');
+		if (validateUsername(sanitized)) {
+			return sanitized;
+		}
+	}
+
+	return username;
+};
 
 const logger = new Logger('CustomOAuth');
 const BeforeUpdateOrCreateUserFromExternalService = new Map<
@@ -260,18 +276,20 @@ export class CustomOAuthStrategy extends Strategy {
 			if (serviceData.username) {
 				let user: IUser | null = null;
 
-				if (this.keyField === 'username') {
-					user = this.mergeUsersDistinctServices
-						? await Users.findOneByUsernameIgnoringCase(serviceData.username)
-						: await Users.findOneByUsernameAndServiceNameIgnoringCase(serviceData.username, serviceData.id, serviceName);
-				} else if (this.keyField === 'email') {
-					user = this.mergeUsersDistinctServices
-						? await Users.findOneByEmailAddress(serviceData.email)
-						: await Users.findOneByEmailAddressAndServiceNameIgnoringCase(serviceData.email, serviceData.id, serviceName);
+				if (serviceData.id) {
+					user = await Users.findOneByServiceId(serviceName, serviceData.id);
 				}
 
-				if (!user && serviceData.id) {
-					user = await Users.findOneByServiceId(serviceName, serviceData.id);
+				if (!user) {
+					if (this.keyField === 'username') {
+						user = this.mergeUsersDistinctServices
+							? await Users.findOneByUsernameIgnoringCase(serviceData.username)
+							: await Users.findOneByUsernameAndServiceNameIgnoringCase(serviceData.username, serviceData.id, serviceName);
+					} else if (this.keyField === 'email') {
+						user = this.mergeUsersDistinctServices
+							? await Users.findOneByEmailAddress(serviceData.email)
+							: await Users.findOneByEmailAddressAndServiceNameIgnoringCase(serviceData.email, serviceData.id, serviceName);
+					}
 				}
 
 				if (!user && serviceData.email && this.emailField) {
@@ -291,11 +309,13 @@ export class CustomOAuthStrategy extends Strategy {
 					user.services[serviceName as keyof NonNullable<IUser['services']>].id === serviceData.id,
 				);
 
+				const normalizedUsername = normalizeOAuthUsername(serviceData.username);
+
 				// User already created or merged and has identical name, username, and email as before
 				if (
 					isLinkedUser &&
 					user.name === serviceData.name &&
-					(!serviceData.username || user.username === serviceData.username) &&
+					(!serviceData.username || user.username === serviceData.username || user.username === normalizedUsername) &&
 					(this.keyField === 'email' || !serviceData.email || user.emails?.find(({ address }) => address === serviceData.email))
 				) {
 					return;
@@ -335,13 +355,22 @@ export class CustomOAuthStrategy extends Strategy {
 
 					updater.set(serviceIdKey as keyof IUser['services'], serviceData.id);
 
+					let targetUsername = serviceData.username || user.username;
+					if (targetUsername) {
+						targetUsername = normalizeOAuthUsername(targetUsername);
+
+						if (!validateUsername(targetUsername)) {
+							throw new Meteor.Error('CustomOAuth', `Invalid username "${serviceData.username}" from OAuth attribute mapping`);
+						}
+					}
+
 					const saved = await saveUserIdentity({
 						_id: user._id,
 						name: serviceData.name,
 						updater,
 						session,
 						updateUsernameInBackground: true,
-						username: serviceData.username || user.username,
+						username: targetUsername,
 					});
 
 					if (!saved) {
@@ -373,8 +402,8 @@ Accounts.validateNewUser((user: IUser & { email: string }) => {
 			continue;
 		}
 
-		if (instance.usernameField) {
-			user.username = service.username;
+		if (instance.usernameField && service.username) {
+			user.username = normalizeOAuthUsername(service.username);
 		}
 
 		if (instance.emailField) {

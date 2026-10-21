@@ -559,9 +559,8 @@ describe('CustomOAuthStrategy', () => {
 				expect(env.session.commitTransaction).toHaveBeenCalledTimes(1);
 			});
 
-			it('locates linked account by service ID when keyField is username and username has changed', async () => {
+			it('locates linked account by service ID before attempting mutable matching when username has changed', async () => {
 				env.createStrategy({ keyField: 'username', mergeUsers: false }, 'github');
-				env.users.findOneByUsernameAndServiceNameIgnoringCase.mockResolvedValue(null);
 				const linkedUser = {
 					...makeUser(),
 					services: { github: { id: identity.id } },
@@ -573,12 +572,8 @@ describe('CustomOAuthStrategy', () => {
 
 				await login();
 
-				expect(env.users.findOneByUsernameAndServiceNameIgnoringCase).toHaveBeenCalledWith(
-					identity.username,
-					identity.id,
-					'github',
-				);
 				expect(env.users.findOneByServiceId).toHaveBeenCalledWith('github', identity.id);
+				expect(env.users.findOneByUsernameAndServiceNameIgnoringCase).not.toHaveBeenCalled();
 				expect(env.saveIdentity).toHaveBeenCalledWith(
 					expect.objectContaining({ _id: 'local-user', name: identity.name, username: identity.username }),
 				);
@@ -588,8 +583,8 @@ describe('CustomOAuthStrategy', () => {
 
 			it('locates linked account by email when keyField is username and service ID does not match', async () => {
 				env.createStrategy({ keyField: 'username', emailField: 'email', mergeUsers: true }, 'github');
-				env.users.findOneByUsernameAndServiceNameIgnoringCase.mockResolvedValue(null);
 				env.users.findOneByServiceId.mockResolvedValue(null);
+				env.users.findOneByUsernameAndServiceNameIgnoringCase.mockResolvedValue(null);
 				const linkedUser = {
 					...makeUser(),
 					services: { github: { id: identity.id } },
@@ -611,6 +606,32 @@ describe('CustomOAuthStrategy', () => {
 				);
 				expect(env.users.updateFromUpdater).toHaveBeenCalled();
 				expect(env.session.commitTransaction).toHaveBeenCalledTimes(1);
+			});
+
+			it('normalizes email-shaped mapped username by replacing @ with . so it passes username validation', async () => {
+				env.createStrategy({ keyField: 'username', mergeUsers: true }, 'github');
+				const emailShapedIdentity = { ...identity, username: 'alice@example.com' };
+				env.users.findOneByUsernameAndServiceNameIgnoringCase.mockResolvedValue(makeUser());
+
+				await login(emailShapedIdentity);
+
+				expect(env.saveIdentity).toHaveBeenCalledWith(
+					expect.objectContaining({ _id: 'local-user', username: 'alice.example.com' }),
+				);
+				expect(env.session.commitTransaction).toHaveBeenCalledTimes(1);
+			});
+
+			it('rejects invalid mapped username earlier with a clear error', async () => {
+				env.createStrategy({ keyField: 'username', mergeUsers: true }, 'github');
+				const invalidIdentity = { ...identity, username: 'invalid*user<name>!' };
+				env.users.findOneByUsernameAndServiceNameIgnoringCase.mockResolvedValue(makeUser());
+
+				await expect(login(invalidIdentity)).rejects.toMatchObject({
+					error: 'CustomOAuth',
+					reason: 'Invalid username "invalid*user<name>!" from OAuth attribute mapping',
+				});
+				expect(env.saveIdentity).not.toHaveBeenCalled();
+				expect(env.session.commitTransaction).not.toHaveBeenCalled();
 			});
 
 			it.each([
@@ -718,6 +739,16 @@ describe('CustomOAuthStrategy', () => {
 			const before = structuredClone(user);
 			expect(env.accounts.validateNewUser.mock.calls[0][0](user)).toBe(true);
 			expect(user).toEqual(before);
+		});
+
+		it('normalizes email-shaped username when configuring usernameField for a new user', () => {
+			env.createStrategy({ usernameField: 'login' }, 'github');
+			const user: IUser & { email?: string } = makeUser({
+				services: { github: { id: 'id', username: 'alice@example.com' } },
+			});
+			const validate = env.accounts.validateNewUser.mock.calls[0][0];
+			expect(validate(user)).toBe(true);
+			expect(user.username).toBe('alice.example.com');
 		});
 	});
 
