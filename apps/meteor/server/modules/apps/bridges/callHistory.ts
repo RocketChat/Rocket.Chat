@@ -26,7 +26,7 @@ export class AppCallHistoryBridge extends CallHistoryBridge {
 		this.orch.debugLog(`The App ${appId} is getting the call history item byId: "${id}"`);
 
 		const item = await CallHistory.findOneByIdAndUid(id, uid);
-		if (!item) {
+		if (!item || item?.type !== 'media-call') {
 			return undefined;
 		}
 
@@ -37,7 +37,7 @@ export class AppCallHistoryBridge extends CallHistoryBridge {
 		this.orch.debugLog(`The App ${appId} is getting the call history item byCallId: "${callId}"`);
 
 		const item = await CallHistory.findOneByCallIdAndUid(callId, uid);
-		if (!item) {
+		if (!item || item?.type !== 'media-call') {
 			return undefined;
 		}
 
@@ -54,7 +54,7 @@ export class AppCallHistoryBridge extends CallHistoryBridge {
 
 		const { count = DEFAULT_COUNT, offset = 0, sort } = pagination || {};
 
-		const { items, total } = await CallHistoryService.search(
+		const { items, total } = await CallHistoryService.searchMediaCalls(
 			uid,
 			{
 				...(filters?.searchTerm && { searchTerm: filters.searchTerm }),
