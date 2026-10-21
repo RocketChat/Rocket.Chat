@@ -2,6 +2,7 @@ export { AttachmentContext, type AttachmentContextValue } from './AttachmentCont
 export { type AuthenticationContextValue, AuthenticationContext, type LoginService } from './AuthenticationContext';
 export { AuthorizationContext, type AuthorizationContextValue } from './AuthorizationContext';
 export { AvatarUrlContext, type AvatarUrlContextValue } from './AvatarUrlContext';
+export { ConnectionStatusContext, type ConnectionStatusContextValue } from './ConnectionStatusContext';
 export { CustomSoundContext, type CustomSoundContextValue } from './CustomSoundContext';
 export { LayoutContext, type LayoutContextValue } from './LayoutContext';
 export { ModalContext, type ModalContextValue } from './ModalContext';
