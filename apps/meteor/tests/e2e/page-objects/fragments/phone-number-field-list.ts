@@ -20,11 +20,11 @@ export class PhoneNumberFieldList {
 	}
 
 	get inputPhoneNumber(): Locator {
-		return this.root.getByRole('textbox', { name: /Phone number \d+/, exact: true });
+		return this.root.getByRole('textbox', { name: /^Phone number \d+$/ });
 	}
 
 	private get inputPhoneLabel(): Locator {
-		return this.root.getByRole('textbox', { name: /Label for phone.*\d+/, exact: true });
+		return this.root.getByRole('textbox', { name: /^Label for phone number "\d+"$/ });
 	}
 
 	async removePhone(index: number): Promise<void> {
