@@ -15,7 +15,7 @@ import { getMentions } from './notifyUsersOnMessage';
 import { shortnameToUnicode } from '../../../lib/emoji-native/shortnameToUnicode';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { callbacks } from '../../lib/callbacks';
-import { toWithheldMessage } from '../../lib/messages/securityLabels';
+import { listUsersNotClearedFor, toContentFreeMessage } from '../../lib/messages/securityLabels';
 import { parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../../lib/notifications/message';
 import { notifyDesktopUser, shouldNotifyDesktop } from '../../lib/notifications/message/desktop';
 import { getEmailData, shouldNotifyEmail } from '../../lib/notifications/message/email';
@@ -301,7 +301,7 @@ export async function sendMessageNotifications(message: IMessage, room: IRoom, u
 	mentionIds.push(...usersInThread);
 
 	if (message.securityLabel) {
-		message = toWithheldMessage(message);
+		message = toContentFreeMessage(message);
 	}
 
 	let notificationMessage = await callbacks.run('beforeSendMessageNotifications', message.msg);
@@ -362,7 +362,16 @@ export async function sendMessageNotifications(message: IMessage, room: IRoom, u
 	// the find below is crucial. All subscription records returned will receive at least one kind of notification.
 	// the query is defined by the server's default values and Notifications_Max_Room_Members setting.
 
-	const subscriptions = await Subscriptions.col.aggregate<SubscriptionAggregation>([{ $match: query }, lookup, filter, project]).toArray();
+	const matched = await Subscriptions.col.aggregate<SubscriptionAggregation>([{ $match: query }, lookup, filter, project]).toArray();
+
+	// Members not cleared for a labeled message are never told about it
+	const notCleared = new Set(
+		await listUsersNotClearedFor(
+			message,
+			matched.map(({ u }) => u._id),
+		),
+	);
+	const subscriptions = matched.filter(({ u }) => !notCleared.has(u._id));
 
 	subscriptions.forEach(
 		(subscription) =>

@@ -9,7 +9,6 @@ import { Messages, Subscriptions } from '../stores';
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
 import { sdk } from './SDKClient';
 import { roomCoordinator } from './rooms/roomCoordinator';
-import { resolveWithheldMessage } from './securityLabels/resolveWithheldMessage';
 import { fireGlobalEvent } from './utils/fireGlobalEvent';
 import { getConfig } from './utils/getConfig';
 import { modifyMessageOnFilesDelete } from './utils/modifyMessageOnFilesDelete';
@@ -169,8 +168,7 @@ const openRoom = (typeName: string, record: OpenedRoom) => {
 
 	streams.push(
 		...[
-			sdk.stream('room-messages', [record.rid], async (streamed) => {
-				const msg = await resolveWithheldMessage(streamed);
+			sdk.stream('room-messages', [record.rid], async (msg) => {
 				// Should not send message to room if room has not loaded all the current messages
 				// if (RoomHistoryManager.hasMoreNext(record.rid) !== false) {
 				// 	return;

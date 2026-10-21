@@ -12,7 +12,6 @@ import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
 import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
-import WithheldContent from '../WithheldContent';
 import ThreadMessageContent from './thread/ThreadMessageContent';
 
 export type ThreadMessageProps = {
@@ -70,13 +69,13 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar, ignoredUse
 			<MessageContainer>
 				{!sequential && <MessageHeader message={message} />}
 
-				{message.securityWithheld && <WithheldContent messageId={message._id} />}
-				{!message.securityWithheld && ignored && (
+				{ignored ? (
 					<IgnoredContent messageId={message._id} onShowMessageIgnored={toggleDisplayIgnoredMessage} />
+				) : (
+					<ThreadMessageContent message={message} />
 				)}
-				{!message.securityWithheld && !ignored && <ThreadMessageContent message={message} />}
 			</MessageContainer>
-			{!message.private && !message.securityWithheld && <MessageToolbarHolder message={message} context={messageContext} />}
+			{!message.private && <MessageToolbarHolder message={message} context={messageContext} />}
 		</Message>
 	);
 };

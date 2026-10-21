@@ -13,12 +13,12 @@ import { i18n } from '../../i18n';
  */
 export async function parseMessageTextPerUser(
 	messageText: string,
-	message: Pick<IMessage, 'u' | 'msg' | 't' | 'attachments' | 'securityWithheld'>,
+	message: Pick<IMessage, 'u' | 'msg' | 't' | 'attachments' | 'securityLabel'>,
 	receiver: Pick<IUser, 'language'>,
 ): Promise<string> {
 	const lng = receiver.language || settings.get('Language') || 'en';
 
-	if (message.securityWithheld) {
+	if (message.securityLabel) {
 		return i18n.t('Security_labeled_message', { lng });
 	}
 

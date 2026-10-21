@@ -33,7 +33,7 @@ export const isMessageSequential = (current: IMessage, previous: IMessage | unde
 		return false;
 	}
 
-	if (current.securityMarking?.text !== previous.securityMarking?.text || current.securityWithheld !== previous.securityWithheld) {
+	if (current.securityMarking?.text !== previous.securityMarking?.text) {
 		return false;
 	}
 	return differenceInSeconds(current.ts, previous.ts) < groupingRange && !isMessageNewDay(current, previous);

@@ -39,7 +39,7 @@ import {
 } from '@rocket.chat/models';
 import mem from 'mem';
 
-import { toWithheldMessage } from './messages/securityLabels';
+import { listUsersNotClearedFor } from './messages/securityLabels';
 import { shouldHideSystemMessage } from './systemMessage/hideSystemMessage';
 import { subscriptionFields } from '../../lib/publishFields';
 
@@ -488,12 +488,22 @@ export async function getMessageToBroadcast({ id, data }: { id: IMessage['_id'];
 		}
 	}
 
-	return message.securityLabel ? toWithheldMessage(message) : message;
+	return message;
 }
+
+const listReadersOf = async (message: IMessage): Promise<IUser['_id'][]> => {
+	const members = (await Subscriptions.findByRoomId(message.rid, { projection: { 'u._id': 1 } }).toArray()).map(({ u }) => u._id);
+	const notCleared = new Set(await listUsersNotClearedFor(message, members));
+	return members.filter((uid) => !notCleared.has(uid));
+};
 
 export const notifyOnMessageChange = async ({ id, data }: { id: IMessage['_id']; data?: IMessage }): Promise<void> => {
 	const message = await getMessageToBroadcast({ id, data });
 	if (!message) {
+		return;
+	}
+	if (message.securityLabel) {
+		void api.broadcast('watch.messages', { message, readers: await listReadersOf(message) });
 		return;
 	}
 	void api.broadcast('watch.messages', { message });

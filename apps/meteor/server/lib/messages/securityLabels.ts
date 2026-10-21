@@ -2,12 +2,12 @@ import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { makeFunction } from '@rocket.chat/patch-injection';
 
 /**
- * The copy of a labeled message sent to someone who may not read it: no content, and no label either.
+ * A copy of a labeled message that carries its label but none of its content, for channels that leave the
+ * deployment (push, email) even when the receiver is cleared.
  */
-export const toWithheldMessage = <T extends Partial<IMessage>>(message: T): T => {
-	const { securityLabel: _label, securityMarking: _marking, ...rest } = message;
-	return {
-		...rest,
+export const toContentFreeMessage = <T extends Partial<IMessage>>(message: T): T =>
+	({
+		...message,
 		msg: '',
 		md: undefined,
 		attachments: undefined,
@@ -17,33 +17,32 @@ export const toWithheldMessage = <T extends Partial<IMessage>>(message: T): T =>
 		blocks: undefined,
 		translations: undefined,
 		content: undefined,
-		mentions: undefined,
-		securityWithheld: true,
-	} as unknown as T;
-};
+	}) as T;
 
 /**
  * Settles the confidentiality label a message is stored with, rejecting the message when it may not be sent.
- * Without data-centric security, messages carry no label, and the reader-side fields are never accepted from clients.
+ * Without data-centric security, messages carry no label, and the reader-side marking is never accepted from clients.
  */
 export const applyMessageSecurityLabel = makeFunction(
 	async (message: IMessage, _room: IRoom, _user: Pick<IUser, '_id'>): Promise<IMessage> => {
-		const { securityLabel: _label, securityMarking: _marking, securityWithheld: _withheld, ...rest } = message;
+		const { securityLabel: _label, securityMarking: _marking, ...rest } = message;
 		return rest;
 	},
 );
 
 /**
- * Prepares messages for one reader: labeled messages the reader isn't cleared for are withheld.
- * Without data-centric security nobody is cleared, so labeled messages stay withheld rather than leak.
+ * Prepares messages for one reader: labeled messages the reader isn't cleared for are left out entirely, as if they
+ * had never been sent. Without data-centric security nobody is cleared, so labeled messages stay out rather than leak.
  */
-export const redactMessagesForUser = makeFunction(async <T extends Partial<IMessage>>(messages: T[], _uid?: IUser['_id']): Promise<T[]> =>
-	messages.map((message) => (message.securityLabel ? toWithheldMessage(message) : message)),
+export const prepareMessagesForReader = makeFunction(
+	async <T extends Partial<IMessage>>(messages: T[], _uid?: IUser['_id']): Promise<T[]> =>
+		messages.filter((message) => !message.securityLabel),
 );
 
 /**
- * Search results for one reader: messages the reader may not read are left out entirely, since even a
- * withheld placeholder would confirm that a message matching the search exists.
+ * Picks, among the given users, those who may not read a message, so nothing about it reaches them.
  */
-export const filterSearchResultsForUser = async <T extends Partial<IMessage>>(messages: T[], uid?: IUser['_id']): Promise<T[]> =>
-	(await redactMessagesForUser(messages, uid)).filter(({ securityWithheld }) => !securityWithheld);
+export const listUsersNotClearedFor = makeFunction(
+	async (message: Pick<IMessage, 'securityLabel'>, userIds: IUser['_id'][]): Promise<IUser['_id'][]> =>
+		message.securityLabel ? userIds : [],
+);

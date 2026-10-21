@@ -100,6 +100,7 @@ import {
 	findRoomsAvailableForTeams,
 } from '../lib/rooms';
 import { scopeAdminRoomsForAbac } from '../lib/scopeAdminRoomsForAbac';
+import { prepareMessagesForReader } from '../../lib/messages/securityLabels';
 
 export async function findRoomByIdOrName({
 	params,
@@ -1802,7 +1803,8 @@ export const roomEndpoints = API.v1
 
 			let around: IMessage | undefined;
 			if (aroundId) {
-				const message = await Messages.findOneVisibleByRoomIdAndMessageId(roomId, aroundId);
+				const found = await Messages.findOneVisibleByRoomIdAndMessageId(roomId, aroundId);
+				const [message] = found ? await prepareMessagesForReader([found], this.userId) : [];
 				if (!message) {
 					return API.v1.notFound();
 				}

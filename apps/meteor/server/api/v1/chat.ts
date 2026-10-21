@@ -41,7 +41,7 @@ import { callbacks } from '../../lib/callbacks';
 import { applyAirGappedRestrictionsValidation } from '../../lib/cloud/license/airGappedRestrictionsWrapper';
 import { deleteMessageValidatingPermission } from '../../lib/messages/deleteMessage';
 import { processWebhookMessage } from '../../lib/messages/processWebhookMessage';
-import { redactMessagesForUser } from '../../lib/messages/securityLabels';
+import { prepareMessagesForReader } from '../../lib/messages/securityLabels';
 import { pinMessage, unpinMessage } from '../../lib/messaging/pins/pinMessage';
 import { executeSetReaction } from '../../lib/messaging/reactions/setReaction';
 import { starMessage } from '../../lib/messaging/stars/starMessage';
@@ -793,6 +793,9 @@ const chatEndpoints = API.v1
 			}
 
 			const [message] = await normalizeMessagesForUser([msg], this.userId);
+			if (!message) {
+				return API.v1.failure();
+			}
 
 			return API.v1.success({
 				message,
@@ -1170,7 +1173,7 @@ const chatEndpoints = API.v1
 			const threadQuery = { rid, tcount: { $exists: true } };
 			return API.v1.success({
 				threads: {
-					update: await redactMessagesForUser(
+					update: await prepareMessagesForReader(
 						await Messages.find(
 							{ ...threadQuery, _updatedAt: { $gt: updatedSinceDate } },
 							{
@@ -1256,7 +1259,7 @@ const chatEndpoints = API.v1
 			);
 
 			const [found, total] = await Promise.all([cursor.toArray(), totalCount]);
-			const messages = await redactMessagesForUser(found, this.userId);
+			const messages = await prepareMessagesForReader(found, this.userId);
 
 			return API.v1.success({
 				messages,
@@ -1320,7 +1323,7 @@ const chatEndpoints = API.v1
 			}
 			return API.v1.success({
 				messages: {
-					update: await redactMessagesForUser(
+					update: await prepareMessagesForReader(
 						await Messages.find({ tmid, _updatedAt: { $gt: updatedSinceDate } }, { projection: fields, sort }).toArray(),
 						this.userId,
 					),
@@ -1364,7 +1367,7 @@ const chatEndpoints = API.v1
 				},
 			});
 
-			return API.v1.success({ ...messages, messages: await redactMessagesForUser(messages.messages, this.userId) });
+			return API.v1.success({ ...messages, messages: await prepareMessagesForReader(messages.messages, this.userId) });
 		},
 	)
 	.get(
@@ -1442,7 +1445,7 @@ const chatEndpoints = API.v1
 					sort,
 				},
 			});
-			return API.v1.success({ ...messages, messages: await redactMessagesForUser(messages.messages, this.userId) });
+			return API.v1.success({ ...messages, messages: await prepareMessagesForReader(messages.messages, this.userId) });
 		},
 	)
 	.get(

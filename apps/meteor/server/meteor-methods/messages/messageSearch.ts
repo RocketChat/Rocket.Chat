@@ -5,7 +5,7 @@ import { Match, check } from 'meteor/check';
 
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
-import { filterSearchResultsForUser } from '../../lib/messages/securityLabels';
+import { prepareMessagesForReader } from '../../lib/messages/securityLabels';
 import { parseMessageSearchQuery } from '../../lib/parseMessageSearchQuery';
 import type { IRawSearchResult } from '../../lib/search/model/ISearchResult';
 import { settings } from '../../settings';
@@ -89,7 +89,7 @@ export const messageSearch = async function (
 
 		return {
 			message: {
-				docs: await filterSearchResultsForUser(docs, userId),
+				docs: await prepareMessagesForReader(docs, userId),
 			},
 		};
 	} catch (error) {

@@ -20,6 +20,7 @@ import { parse } from '@rocket.chat/message-parser';
 import { statusVisibilityGate } from './StatusVisibilityGate';
 import { refreshVisibility } from './StreamPresence';
 import type { NotificationsModule } from './notifications.module';
+import type { DDPSubscription } from './types';
 
 /** Synchronous view of setting values; `undefined` when the host has no value cached. */
 export type SettingsReader = {
@@ -253,19 +254,32 @@ export class ListenersModule {
 			notifications.notifyRoomInThisInstance(roomId, 'user-activity', user, isTyping ? ['user-typing'] : []);
 		});
 
-		service.onEvent('watch.messages', async ({ message }) => {
+		service.onEvent('watch.messages', async ({ message, readers }) => {
 			if (!message.rid) {
 				return;
 			}
 
-			notifications.streamRoomMessage._emit('__my_messages__', [message], undefined, false, (streamer, _sub, eventName, args, allowed) =>
-				streamer.changedPayload(streamer.subscriptionName, 'id', {
-					eventName,
-					args: [...args, allowed],
-				}),
+			// A labeled message reaches only the listed readers; everyone else receives nothing at all
+			const allowedReaders = readers && new Set(readers);
+			const isReader = (sub: DDPSubscription) => !allowedReaders || allowedReaders.has(sub.subscription.userId ?? '');
+
+			notifications.streamRoomMessage._emit('__my_messages__', [message], undefined, false, (streamer, sub, eventName, args, allowed) =>
+				isReader(sub)
+					? streamer.changedPayload(streamer.subscriptionName, 'id', {
+							eventName,
+							args: [...args, allowed],
+						})
+					: false,
 			);
 
-			notifications.streamRoomMessage.emitWithoutBroadcast(message.rid, message);
+			if (!allowedReaders) {
+				notifications.streamRoomMessage.emitWithoutBroadcast(message.rid, message);
+				return;
+			}
+
+			notifications.streamRoomMessage._emit(message.rid, [message], undefined, false, (streamer, sub, eventName, args) =>
+				isReader(sub) ? streamer.changedPayload(streamer.subscriptionName, 'id', { eventName, args }) : false,
+			);
 		});
 
 		service.onEvent('notify.messagesRead', ({ rid, until, tmid }): void => {

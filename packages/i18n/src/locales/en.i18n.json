@@ -4380,7 +4380,6 @@
   "Message_view_mode_info": "This changes the amount of space messages take up on screen.",
   "Message_viewed": "Message viewed",
   "Message_with_attachment": "Message with attachment",
-  "Message_withheld_not_cleared": "Withheld: you are not cleared for this message's security label",
   "message-impersonate": "Impersonate other users",
   "message-impersonate_description": "Permission to impersonate other users using message alias",
   "MessageBox_view_mode": "MessageBox view mode",

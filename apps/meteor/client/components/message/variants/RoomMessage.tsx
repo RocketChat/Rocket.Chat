@@ -20,7 +20,6 @@ import IgnoredContent from '../IgnoredContent';
 import MessageHeader from '../MessageHeader';
 import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
-import WithheldContent from '../WithheldContent';
 import RoomMessageContent from './room/RoomMessageContent';
 import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
 import { useMessageListReadReceipts } from '../list/MessageListContext';
@@ -141,17 +140,13 @@ const RoomMessage = ({
 			</MessageLeftContainer>
 			<MessageContainer>
 				{!sequential && <MessageHeader message={message} />}
-				{message.securityWithheld && <WithheldContent messageId={message._id} />}
-				{!message.securityWithheld && ignored && (
+				{ignored ? (
 					<IgnoredContent messageId={message._id} onShowMessageIgnored={toggleDisplayIgnoredMessage} />
-				)}
-				{!message.securityWithheld && !ignored && (
+				) : (
 					<RoomMessageContent message={message} unread={unread} mention={mention} all={all} searchText={searchText} />
 				)}
 			</MessageContainer>
-			{!message.private && message?.e2e !== 'pending' && !message.securityWithheld && !selecting && (
-				<MessageToolbarHolder message={message} context={context} />
-			)}
+			{!message.private && message?.e2e !== 'pending' && !selecting && <MessageToolbarHolder message={message} context={context} />}
 		</Message>
 	);
 };

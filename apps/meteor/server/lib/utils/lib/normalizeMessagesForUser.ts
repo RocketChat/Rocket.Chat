@@ -2,7 +2,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 
 import { settings } from '../../../settings';
-import { redactMessagesForUser } from '../../messages/securityLabels';
+import { prepareMessagesForReader } from '../../messages/securityLabels';
 
 type NormalizableMessage = Pick<IMessage, 'u' | 'starred' | 'mentions' | 'reactions'>;
 
@@ -24,7 +24,7 @@ function getNameOfUsername(users: Map<string, string>, username: string): string
 }
 
 export const normalizeMessagesForUser = async <T extends NormalizableMessage = IMessage>(unredacted: T[], uid?: string): Promise<T[]> => {
-	const messages = await redactMessagesForUser(unredacted, uid);
+	const messages = await prepareMessagesForReader(unredacted, uid);
 
 	// if not using real names, there is nothing else to do
 	if (!settings.get('UI_Use_Real_Name')) {

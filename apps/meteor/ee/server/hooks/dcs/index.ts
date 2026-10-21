@@ -4,7 +4,11 @@ import { canAccess, clearanceForPolicy, displayMarking, validateLabel } from '@r
 import { Users } from '@rocket.chat/models';
 
 import { getRoomClassificationBanner } from '../../../../server/api/lib/getRoomClassificationBanner';
-import { applyMessageSecurityLabel, redactMessagesForUser, toWithheldMessage } from '../../../../server/lib/messages/securityLabels';
+import {
+	applyMessageSecurityLabel,
+	listUsersNotClearedFor,
+	prepareMessagesForReader,
+} from '../../../../server/lib/messages/securityLabels';
 import { settings } from '../../../../server/settings';
 import { policies } from '../../lib/dcs/policies';
 
@@ -18,7 +22,7 @@ const toStoredLabel = ({ policyId, classification, categories, creationDateTime 
 });
 
 const settleLabel = async (message: IMessage, room: IRoom, user: Pick<IUser, '_id'>): Promise<IMessage> => {
-	const { securityMarking: _marking, securityWithheld: _withheld, ...rest } = message;
+	const { securityMarking: _marking, ...rest } = message;
 	const roomClearance = room.securityClearance;
 
 	if (!roomClearance) {
@@ -53,7 +57,13 @@ const settleLabel = async (message: IMessage, room: IRoom, user: Pick<IUser, '_i
 	return { ...rest, securityLabel: toStoredLabel(label) };
 };
 
-const redact = async <T extends Partial<IMessage>>(messages: T[], uid?: IUser['_id']): Promise<T[]> => {
+const isCleared = (label: ISecurityLabel, clearances: IUser['securityClearances']): boolean => {
+	const policy = policies.find(label.policyId);
+	const clearance = clearanceForPolicy(clearances, label.policyId);
+	return Boolean(policy && clearance && canAccess(policy, label, clearance));
+};
+
+const prepareForReader = async <T extends Partial<IMessage>>(messages: T[], uid?: IUser['_id']): Promise<T[]> => {
 	if (!messages.some(({ securityLabel }) => securityLabel)) {
 		return messages;
 	}
@@ -62,18 +72,29 @@ const redact = async <T extends Partial<IMessage>>(messages: T[], uid?: IUser['_
 		? await Users.findOneById<Pick<IUser, 'securityClearances' | 'language'>>(uid, { projection: { securityClearances: 1, language: 1 } })
 		: null;
 
-	return messages.map((message) => {
+	return messages.flatMap((message) => {
 		const label = message.securityLabel;
 		if (!label) {
-			return message;
+			return [message];
 		}
 		const policy = policies.find(label.policyId);
-		const clearance = clearanceForPolicy(reader?.securityClearances, label.policyId);
-		if (!policy || !clearance || !canAccess(policy, label, clearance)) {
-			return toWithheldMessage(message);
+		if (!policy || !isCleared(label, reader?.securityClearances)) {
+			return [];
 		}
-		return { ...message, securityMarking: displayMarking(policy, label, { lang: reader?.language }) };
+		return [{ ...message, securityMarking: displayMarking(policy, label, { lang: reader?.language }) }];
 	});
+};
+
+const notClearedAmong = async (message: Pick<IMessage, 'securityLabel'>, userIds: IUser['_id'][]): Promise<IUser['_id'][]> => {
+	const label = message.securityLabel;
+	if (!label || !userIds.length) {
+		return [];
+	}
+	const users = await Users.findByIds<Pick<IUser, '_id' | 'securityClearances'>>(userIds, {
+		projection: { securityClearances: 1 },
+	}).toArray();
+	const cleared = new Set(users.filter((user) => isCleared(label, user.securityClearances)).map(({ _id }) => _id));
+	return userIds.filter((uid) => !cleared.has(uid));
 };
 
 /**
@@ -84,7 +105,8 @@ export const registerDcsHooks = (): (() => void) => {
 		applyMessageSecurityLabel.patch((next, message, room, user) =>
 			isEnabled() ? settleLabel(message, room, user) : next(message, room, user),
 		),
-		redactMessagesForUser.patch((next, messages, uid) => (isEnabled() ? redact(messages, uid) : next(messages, uid))),
+		prepareMessagesForReader.patch((next, messages, uid) => (isEnabled() ? prepareForReader(messages, uid) : next(messages, uid))),
+		listUsersNotClearedFor.patch((next, message, userIds) => (isEnabled() ? notClearedAmong(message, userIds) : next(message, userIds))),
 		getRoomClassificationBanner.patch(async (next, room) => {
 			const label = room.defaultSecurityLabel;
 			const policy = label && policies.find(label.policyId);
