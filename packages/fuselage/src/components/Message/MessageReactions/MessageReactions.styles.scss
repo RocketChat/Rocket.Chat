@@ -1,20 +1,62 @@
+@use 'sass:map';
 @use '../../../styles/colors.scss';
 @use '../../../styles/functions.scss' as *;
 @use '../../../styles/lengths.scss';
 @use '../../../styles/mixins/button.scss';
+@use '../../../styles/mixins/shadows.scss';
 @use '../../../styles/mixins/size.scss';
-@use '../../../styles/mixins/templates.scss';
+@use '../../../styles/mixins/states.scss';
 @use '../../../styles/typography.scss' as *;
 @use '../../../styles/variables/buttons.scss';
 @use '../mixins.scss';
 
 $message-reaction-border-radius: theme('message-reaction-border-radius', lengths.border-radius(medium));
-$message-reaction-hover-background-color: theme('message-reaction-hover-background-color', colors.surface(tint));
-$message-reaction-hover-border-color: theme('message-reaction-hover-border-color', colors.stroke(dark));
-$message-reaction-hover-background-color: theme('message-reaction-hover-background-color', colors.surface(hover));
-$message-reaction-color: theme('message-reaction-color', colors.font(default));
-$message-reaction-border-color: theme('message-reaction-border-color', colors.stroke(dark));
-$message-reaction-background-color: theme('message-reaction-background-color', colors.surface(selected));
+
+// A reaction reads as a small button: the ones from other people follow the
+// secondary button tokens, the ones the current user has reacted with follow
+// the primary button tokens, so they share the same color system and themes.
+$message-reaction-background-color: theme('message-reaction-background-color', map.get(buttons.$secondary, background-color));
+$message-reaction-border-color: theme('message-reaction-border-color', map.get(buttons.$secondary, border-color));
+$message-reaction-color: theme('message-reaction-color', map.get(buttons.$secondary, color));
+$message-reaction-hover-background-color: theme(
+	'message-reaction-hover-background-color',
+	map.get(buttons.$secondary, hover-background-color)
+);
+$message-reaction-hover-border-color: theme('message-reaction-hover-border-color', map.get(buttons.$secondary, hover-border-color));
+$message-reaction-active-background-color: theme(
+	'message-reaction-active-background-color',
+	map.get(buttons.$secondary, active-background-color)
+);
+$message-reaction-active-border-color: theme('message-reaction-active-border-color', map.get(buttons.$secondary, active-border-color));
+$message-reaction-focus-background-color: theme(
+	'message-reaction-focus-background-color',
+	map.get(buttons.$secondary, focus-background-color)
+);
+$message-reaction-focus-border-color: theme('message-reaction-focus-border-color', map.get(buttons.$secondary, focus-border-color));
+$message-reaction-focus-shadow-color: theme('message-reaction-focus-shadow-color', map.get(buttons.$secondary, focus-shadow-color));
+
+$message-reaction-mine-background-color: theme('message-reaction-mine-background-color', map.get(buttons.$primary, background-color));
+$message-reaction-mine-border-color: theme('message-reaction-mine-border-color', map.get(buttons.$primary, border-color));
+$message-reaction-mine-color: theme('message-reaction-mine-color', map.get(buttons.$primary, color));
+$message-reaction-mine-hover-background-color: theme(
+	'message-reaction-mine-hover-background-color',
+	map.get(buttons.$primary, hover-background-color)
+);
+$message-reaction-mine-hover-border-color: theme('message-reaction-mine-hover-border-color', map.get(buttons.$primary, hover-border-color));
+$message-reaction-mine-active-background-color: theme(
+	'message-reaction-mine-active-background-color',
+	map.get(buttons.$primary, active-background-color)
+);
+$message-reaction-mine-active-border-color: theme(
+	'message-reaction-mine-active-border-color',
+	map.get(buttons.$primary, active-border-color)
+);
+$message-reaction-mine-focus-background-color: theme(
+	'message-reaction-mine-focus-background-color',
+	map.get(buttons.$primary, focus-background-color)
+);
+$message-reaction-mine-focus-border-color: theme('message-reaction-mine-focus-border-color', map.get(buttons.$primary, focus-border-color));
+$message-reaction-mine-focus-shadow-color: theme('message-reaction-mine-focus-shadow-color', map.get(buttons.$primary, focus-shadow-color));
 
 .rcx-message-reactions {
 	&__container {
@@ -36,14 +78,25 @@ $message-reaction-background-color: theme('message-reaction-background-color', c
 
 		cursor: pointer;
 
-		color: colors.font(hint);
-		border: lengths.border-width(default) solid colors.stroke(light);
+		color: $message-reaction-color;
+		border: lengths.border-width(default) solid $message-reaction-border-color;
 		border-radius: $message-reaction-border-radius;
-		background-color: $message-reaction-hover-background-color;
+		background-color: $message-reaction-background-color;
 
-		&:hover {
+		@include states.on-hover {
 			border-color: $message-reaction-hover-border-color;
 			background-color: $message-reaction-hover-background-color;
+		}
+
+		@include states.on-active {
+			border-color: $message-reaction-active-border-color;
+			background-color: $message-reaction-active-background-color;
+		}
+
+		@include states.on-focus-visible {
+			border-color: $message-reaction-focus-border-color;
+			background-color: $message-reaction-focus-background-color;
+			@include shadows.use-focus-shadow($message-reaction-focus-shadow-color);
 		}
 
 		&--action {
@@ -54,14 +107,25 @@ $message-reaction-background-color: theme('message-reaction-background-color', c
 		}
 
 		&--mine {
-			color: $message-reaction-color;
-			border-width: lengths.border-width(default);
-			border-color: $message-reaction-border-color;
-			background-color: $message-reaction-background-color;
-		}
+			color: $message-reaction-mine-color;
+			border-color: $message-reaction-mine-border-color;
+			background-color: $message-reaction-mine-background-color;
 
-		@include templates.focus-state {
-			border-color: colors.stroke(light);
+			@include states.on-hover {
+				border-color: $message-reaction-mine-hover-border-color;
+				background-color: $message-reaction-mine-hover-background-color;
+			}
+
+			@include states.on-active {
+				border-color: $message-reaction-mine-active-border-color;
+				background-color: $message-reaction-mine-active-background-color;
+			}
+
+			@include states.on-focus-visible {
+				border-color: $message-reaction-mine-focus-border-color;
+				background-color: $message-reaction-mine-focus-background-color;
+				@include shadows.use-focus-shadow($message-reaction-mine-focus-shadow-color);
+			}
 		}
 	}
 
