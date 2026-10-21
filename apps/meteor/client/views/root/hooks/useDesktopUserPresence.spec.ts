@@ -173,6 +173,28 @@ describe('useDesktopUserPresence', () => {
 		expect(() => session?.setRecord({ ...user, status: UserStatus.AWAY, statusText: '' })).not.toThrow();
 	});
 
+	it.each(['setUserStatusChangeHandler', 'setUserPresenceState'] as const)(
+		'does not crash the React tree when the desktop bridge throws from %s',
+		(member) => {
+			const desktopError = new Error('desktop bridge failure');
+			const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+			window.RocketChatDesktop = {
+				setUserPresenceState,
+				setUserStatusChangeHandler,
+				[member]: jest.fn(() => {
+					throw desktopError;
+				}),
+			} as unknown as IRocketChatDesktop;
+
+			try {
+				expect(() => renderHook(() => useDesktopUserPresence(), { wrapper: mockAppRoot().withUser(user).build() })).not.toThrow();
+				expect(warn).toHaveBeenCalledWith(expect.any(String), desktopError);
+			} finally {
+				warn.mockRestore();
+			}
+		},
+	);
+
 	it.each([
 		['connecting', 'connecting'],
 		['waiting', 'connecting'],

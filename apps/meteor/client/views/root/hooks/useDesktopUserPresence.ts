@@ -6,6 +6,7 @@ import { useEffect, useMemo } from 'react';
 import { useSetUserStatus } from '../../../hooks/useSetUserStatus';
 import { useUserStatuses } from '../../../hooks/useUserStatuses';
 import { userStatuses } from '../../../lib/userStatuses';
+import { callDesktopBridge } from '../../../lib/utils/callDesktopBridge';
 
 const desktopStatuses: DesktopUserStatus[] = ['online', 'away', 'busy', 'offline'];
 
@@ -65,14 +66,16 @@ export const useDesktopUserPresence = () => {
 	}, [userLoaded, presenceDisabled, allowUserStatusMessageChange, statuses, invisibleAllowed]);
 
 	useEffect(() => {
-		window.RocketChatDesktop?.setUserStatusChangeHandler?.(async ({ status, customStatusId }) => {
-			const descriptor = Array.from(userStatuses).find(({ id }) => id === (customStatusId ?? status));
-			if (!descriptor) {
-				throw new Error(`Unknown user status: ${customStatusId ?? status}`);
-			}
+		callDesktopBridge((desktop) =>
+			desktop.setUserStatusChangeHandler?.(async ({ status, customStatusId }) => {
+				const descriptor = Array.from(userStatuses).find(({ id }) => id === (customStatusId ?? status));
+				if (!descriptor) {
+					throw new Error(`Unknown user status: ${customStatusId ?? status}`);
+				}
 
-			await setUserStatus(descriptor);
-		});
+				await setUserStatus(descriptor);
+			}),
+		);
 	}, [setUserStatus]);
 
 	useEffect(() => {
@@ -82,14 +85,16 @@ export const useDesktopUserPresence = () => {
 			return;
 		}
 
-		window.RocketChatDesktop?.setUserPresenceState?.({
-			loggedIn,
-			connection,
-			status,
-			statusText,
-			statusExpiresAt,
-			availableStatuses,
-			customStatuses,
-		});
+		callDesktopBridge((desktop) =>
+			desktop.setUserPresenceState?.({
+				loggedIn,
+				connection,
+				status,
+				statusText,
+				statusExpiresAt,
+				availableStatuses,
+				customStatuses,
+			}),
+		);
 	}, [loggedIn, isLoggingIn, connection, status, statusText, statusExpiresAt, availableStatuses, customStatuses]);
 };
