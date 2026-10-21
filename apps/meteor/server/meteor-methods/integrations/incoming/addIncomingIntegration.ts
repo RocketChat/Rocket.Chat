@@ -1,5 +1,4 @@
 import type { INewIncomingIntegration, IIncomingIntegration } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Integrations, Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { removeEmpty } from '@rocket.chat/tools';
@@ -7,19 +6,11 @@ import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync, hasAllPermissionAsync } from '../../../lib/authorization/hasPermission';
-import { methodDeprecationLogger } from '../../../lib/deprecationWarningLogger';
-import { compileIntegrationScript } from '../../../lib/integrations/lib/compileIntegrationScript';
 import { validateScriptEngine, isScriptEngineFrozen } from '../../../lib/integrations/lib/validateScriptEngine';
+import { validateScriptSyntax } from '../../../lib/integrations/lib/validateScriptSyntax';
 import { notifyOnIntegrationChanged } from '../../../lib/notifyListener';
 
 const validChannelChars = ['@', '#'];
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		addIncomingIntegration(integration: INewIncomingIntegration): Promise<IIncomingIntegration>;
-	}
-}
 
 export const addIncomingIntegration = async (userId: string, integration: INewIncomingIntegration): Promise<IIncomingIntegration> => {
 	check(
@@ -117,13 +108,16 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 		_createdBy: await Users.findOne({ _id: userId }, { projection: { username: 1 } }),
 	};
 
+	// Validate the script syntax if it is enabled and using a sandbox that is
+	// not frozen. isolated-vm embeds modern V8 and runs the script natively, so
+	// no transpilation is needed.
 	if (
 		!isScriptEngineFrozen(integrationData.scriptEngine) &&
 		integration.scriptEnabled === true &&
 		integration.script &&
 		integration.script.trim() !== ''
 	) {
-		const { script, error } = compileIntegrationScript(integration.script, { transpile: !skipTranspile });
+		const { script, error } = validateScriptSyntax(integration.script);
 		if (error) {
 			integrationData.scriptCompiled = undefined;
 			integrationData.scriptError = error;
@@ -180,18 +174,3 @@ export const addIncomingIntegration = async (userId: string, integration: INewIn
 
 	return integrationStored as IIncomingIntegration;
 };
-
-Meteor.methods<ServerMethods>({
-	async addIncomingIntegration(integration: INewIncomingIntegration): Promise<IIncomingIntegration> {
-		methodDeprecationLogger.method('addIncomingIntegration', '9.0.0', '/v1/integrations.create');
-		const { userId } = this;
-
-		if (!userId) {
-			throw new Meteor.Error('invalid-user', 'Invalid User', {
-				method: 'addIncomingIntegration',
-			});
-		}
-
-		return addIncomingIntegration(userId, integration);
-	},
-});

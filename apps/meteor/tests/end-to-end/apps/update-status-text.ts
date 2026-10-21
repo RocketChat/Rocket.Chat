@@ -1,6 +1,7 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { App } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, request, credentials } from '../../data/api-data';
 import { appUpdateStatusTest } from '../../data/apps/app-packages';
@@ -14,7 +15,7 @@ const APP_USERNAME = 'update-status-test.bot';
 (IS_EE ? describe : describe.skip)('Apps - Update App User Status', () => {
 	let app: App;
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		await cleanupApps();

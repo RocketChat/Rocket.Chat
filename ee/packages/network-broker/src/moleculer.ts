@@ -1,4 +1,4 @@
-import { isMeteorError, MeteorError } from '@rocket.chat/core-services';
+import { isClientSafeError, ClientSafeError } from '@rocket.chat/core-services';
 import EJSON from 'ejson';
 import type Moleculer from 'moleculer';
 import { Errors, Serializers, ServiceBroker } from 'moleculer';
@@ -38,7 +38,7 @@ class CustomRegenerator extends Errors.Regenerator {
 		const { message, reason, details, errorType, isClientSafe } = plainError;
 
 		if (errorType === 'Meteor.Error') {
-			const error = new MeteorError(message, reason, details);
+			const error = new ClientSafeError(message, reason, details);
 			if (typeof isClientSafe !== 'undefined') {
 				error.isClientSafe = isClientSafe;
 			}
@@ -48,10 +48,10 @@ class CustomRegenerator extends Errors.Regenerator {
 		return undefined;
 	}
 
-	override extractPlainError(err: Error | MeteorError): Errors.PlainMoleculerError {
+	override extractPlainError(err: Error | ClientSafeError): Errors.PlainMoleculerError {
 		return {
 			...super.extractPlainError(err),
-			...(isMeteorError(err) && {
+			...(isClientSafeError(err) && {
 				isClientSafe: err.isClientSafe,
 				errorType: err.errorType,
 				reason: err.reason,

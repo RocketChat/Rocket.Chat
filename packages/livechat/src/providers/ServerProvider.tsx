@@ -14,7 +14,6 @@ import { ServerContext } from '@rocket.chat/ui-contexts';
 import { compile } from 'path-to-regexp';
 import type { ComponentChildren } from 'preact';
 import { useMemo } from 'preact/hooks';
-import { useSyncExternalStore } from 'react';
 
 import { useStore } from '../store';
 import { useSDK } from './SDKProvider';
@@ -25,24 +24,6 @@ const ServerProvider = ({ children, serverURL: host }: ServerProviderProps) => {
 	const sdk = useSDK();
 
 	const { token } = useStore();
-
-	const status = useSyncExternalStore(
-		(cb) => sdk.connection.on('connection', cb),
-		() => {
-			switch (sdk.connection.status) {
-				case 'connecting':
-					return 'connecting' as const;
-				case 'connected':
-					return 'connected' as const;
-				case 'failed':
-					return 'failed' as const;
-				case 'idle':
-					return 'waiting' as const;
-				default:
-					return 'offline' as const;
-			}
-		},
-	);
 
 	const contextValue = useMemo(() => {
 		const absoluteUrl = (path: string): string => {
@@ -145,8 +126,6 @@ const ServerProvider = ({ children, serverURL: host }: ServerProviderProps) => {
 		};
 
 		const contextValue = {
-			status,
-			connected: status === 'connected',
 			// info,
 			absoluteUrl,
 			callMethod,
@@ -154,11 +133,10 @@ const ServerProvider = ({ children, serverURL: host }: ServerProviderProps) => {
 			uploadToEndpoint,
 			getStream,
 			getSingleStream,
-			reconnect: () => sdk.connection.reconnect(),
 		} as unknown as ServerContextValue; // FIXME
 
 		return contextValue;
-	}, [host, sdk, status, token]);
+	}, [host, sdk, token]);
 
 	return <ServerContext.Provider value={contextValue}>{children}</ServerContext.Provider>;
 };

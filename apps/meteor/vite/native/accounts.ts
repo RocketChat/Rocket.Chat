@@ -50,8 +50,7 @@ const makeClientLoggedOut = (): void => {
 	removeStoredItem(STORAGE_KEYS.LOGIN_TOKEN_EXPIRES);
 
 	const sdk = getDdpSdk();
-	sdk.account.user = undefined;
-	sdk.account.uid = undefined;
+	sdk.account.clearCredentials();
 	userIdStore.setState(undefined);
 
 	// Clearing the user tears the authenticated socket down; the logged-out UI still needs one.
@@ -108,9 +107,7 @@ export const logout = async (): Promise<void> => {
 
 export const setConnectionUserId = (userId: string | null): void => {
 	if (!userId) {
-		const { account } = getDdpSdk();
-		account.user = undefined;
-		account.uid = undefined;
+		getDdpSdk().account.clearCredentials();
 	}
 	userIdStore.setState(userId ?? undefined);
 };

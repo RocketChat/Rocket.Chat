@@ -1,26 +1,14 @@
 import type { IIntegration, INewIncomingIntegration, IUpdateIncomingIntegration } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Integrations, Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { wrapExceptions } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 
 import { hasAllPermissionAsync, hasPermissionAsync } from '../../../lib/authorization/hasPermission';
-import { methodDeprecationLogger } from '../../../lib/deprecationWarningLogger';
-import { compileIntegrationScript } from '../../../lib/integrations/lib/compileIntegrationScript';
 import { isScriptEngineFrozen, validateScriptEngine } from '../../../lib/integrations/lib/validateScriptEngine';
+import { validateScriptSyntax } from '../../../lib/integrations/lib/validateScriptSyntax';
 import { notifyOnIntegrationChanged } from '../../../lib/notifyListener';
 
 const validChannelChars = ['@', '#'];
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		updateIncomingIntegration(
-			integrationId: string,
-			integration: INewIncomingIntegration | IUpdateIncomingIntegration,
-		): IIntegration | null;
-	}
-}
 
 function validateChannels(channelString: string | undefined): string[] {
 	if (!channelString || typeof channelString.valueOf() !== 'string' || channelString.trim() === '') {
@@ -83,17 +71,15 @@ export const updateIncomingIntegration = async (
 
 	const isFrozen = isScriptEngineFrozen(scriptEngine);
 
-	// Default to transpiling with Babel for backwards compatibility; integrations
-	// can opt-out per-record by setting `skipTranspile: true` (removed in 9.0.0).
-	const skipTranspile = integration.skipTranspile === true;
-
 	if (!isFrozen && integration.scriptEnabled === true && integration.script && integration.script.trim() !== '') {
-		const { script, error } = compileIntegrationScript(integration.script, { transpile: !skipTranspile });
+		// isolated-vm embeds modern V8 and runs the script natively, so no
+		// transpilation is needed. Syntax is still validated at save time.
+		const { script, error } = validateScriptSyntax(integration.script);
 		if (error) {
 			await Integrations.updateOne(
 				{ _id: integrationId },
 				{
-					$set: { scriptError: error, skipTranspile },
+					$set: { scriptError: error },
 					$unset: { scriptCompiled: 1 as const },
 				},
 			);
@@ -101,7 +87,7 @@ export const updateIncomingIntegration = async (
 			await Integrations.updateOne(
 				{ _id: integrationId },
 				{
-					$set: { scriptCompiled: script, skipTranspile },
+					$set: { scriptCompiled: script },
 					$unset: { scriptError: 1 as const },
 				},
 			);
@@ -178,7 +164,6 @@ export const updateIncomingIntegration = async (
 							...(typeof integration.script !== 'undefined' && { script: integration.script }),
 							scriptEnabled: integration.scriptEnabled,
 							...(scriptEngine && { scriptEngine }),
-							skipTranspile,
 						}),
 				...(typeof integration.overrideDestinationChannelEnabled !== 'undefined' && {
 					overrideDestinationChannelEnabled: integration.overrideDestinationChannelEnabled,
@@ -196,16 +181,3 @@ export const updateIncomingIntegration = async (
 
 	return updatedIntegration;
 };
-
-Meteor.methods<ServerMethods>({
-	async updateIncomingIntegration(integrationId, integration) {
-		methodDeprecationLogger.method('updateIncomingIntegration', '9.0.0', '/v1/integrations.update');
-		if (!this.userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'updateOutgoingIntegration',
-			});
-		}
-
-		return updateIncomingIntegration(this.userId, integrationId, integration);
-	},
-});
