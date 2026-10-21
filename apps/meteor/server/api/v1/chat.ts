@@ -62,6 +62,7 @@ import { API } from '../api';
 import { assertValidMessageBlocks } from '../lib/assertValidMessageBlocks';
 import { getPaginationItems } from '../lib/getPaginationItems';
 import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
+import { removeAttachmentMarkdown } from '../lib/removeAttachmentMarkdown';
 import { splitSendMessageFields } from '../lib/splitSendMessageFields';
 
 const MAX_REPORTED_UNSUPPORTED_FIELDS = 10;
@@ -841,7 +842,16 @@ const chatEndpoints = API.v1
 				}
 			}
 
-			const messageReturn = (await applyAirGappedRestrictionsValidation(() => processWebhookMessage(this.bodyParams, this.user)))[0];
+			const messageReturn = (
+				await applyAirGappedRestrictionsValidation(() =>
+					processWebhookMessage(
+						attachments
+							? { ...this.bodyParams, attachments: removeAttachmentMarkdown(attachments) as typeof attachments }
+							: this.bodyParams,
+						this.user,
+					),
+				)
+			)[0];
 
 			if (!messageReturn?.message) {
 				return API.v1.failure('unknown-error');
@@ -947,6 +957,10 @@ const chatEndpoints = API.v1
 			}
 
 			assertValidMessageBlocks(messageFields.blocks);
+
+			if (messageFields.attachments) {
+				messageFields.attachments = removeAttachmentMarkdown(messageFields.attachments);
+			}
 
 			if (MessageTypes.isSystemMessage(messageFields)) {
 				throw new Error("Cannot send system messages using 'chat.sendMessage'");

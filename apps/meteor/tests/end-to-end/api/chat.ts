@@ -936,6 +936,27 @@ describe('[Chat]', () => {
 		});
 	});
 
+	describe('/chat.postMessage attachments', () => {
+		it('should not keep markdown trees sent inside attachments', async () => {
+			const tree = [{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: 'forged' }] }];
+
+			const res = await request
+				.post(api('chat.postMessage'))
+				.set(credentials)
+				.send({
+					roomId: testChannel._id,
+					text: 'with forged attachment trees',
+					attachments: [{ text: 'first', md: tree, descriptionMd: tree, attachments: [{ md: tree }] }],
+				})
+				.expect(200);
+
+			const serialized = JSON.stringify(res.body.message.attachments);
+			expect(serialized).to.not.include('forged"');
+			expect(serialized).to.not.include('descriptionMd');
+			expect(res.body.message.attachments[0]).to.have.property('text', 'first');
+		});
+	});
+
 	describe('/chat.sendMessage', () => {
 		it("should throw an error when the required param 'rid' is not sent", async () => {
 			const res = await request
@@ -997,6 +1018,24 @@ describe('[Chat]', () => {
 
 				expect(JSON.stringify(res.body.message.md ?? [])).to.not.include('HIDDEN_BLOCK');
 				expect(res.body.message.mentions ?? []).to.have.lengthOf(0);
+			});
+
+			it('should not keep markdown trees sent inside attachments', async () => {
+				const tree = [{ type: 'PARAGRAPH', value: [{ type: 'PLAIN_TEXT', value: 'forged' }] }];
+
+				const res = await send({
+					rid: testChannel._id,
+					msg: 'with forged attachment trees',
+					attachments: [
+						{ text: 'first', md: tree, descriptionMd: tree },
+						{ image_url: 'https://example.com/a.png', descriptionMd: tree, attachments: [{ md: tree }] },
+					],
+				}).expect(200);
+
+				const serialized = JSON.stringify(res.body.message.attachments);
+				expect(serialized).to.not.include('forged"');
+				expect(serialized).to.not.include('descriptionMd');
+				expect(res.body.message.attachments[0]).to.have.property('text', 'first');
 			});
 
 			it('should keep accepting the fields that callers use', async () => {
