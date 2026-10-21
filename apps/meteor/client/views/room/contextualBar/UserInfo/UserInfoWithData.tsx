@@ -8,7 +8,6 @@ import {
 	ContextualbarHeader,
 	ContextualbarIcon,
 	ContextualbarTitle,
-	UserCardRole,
 	UserInfo,
 } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
@@ -17,19 +16,19 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import UserInfoActions from './UserInfoActions';
+import UserInfoWithRoles from './UserInfoWithRoles';
 import { getUserEmailAddress } from '../../../../../lib/getUserEmailAddress';
 import { FormSkeleton } from '../../../../components/Skeleton';
 import UserInfoPhoneNumberList from '../../../../components/UserInfoPhoneNumberList';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import { ReactiveUserStatusText } from '../../../../components/UserStatusText';
-import { useUserRolesByScope } from '../../../../hooks/useUserRolesByScope';
 import { usersQueryKeys } from '../../../../lib/queryKeys';
 import { getUserEmailVerified } from '../../../../lib/utils/getUserEmailVerified';
 
 export type UserInfoWithDataProps = {
 	uid?: IUser['_id'];
 	username?: IUser['username'];
-	rid: IRoom['_id'];
+	rid?: IRoom['_id'];
 	invitationDate?: string;
 	onClose: () => void;
 	onClickBack?: () => void;
@@ -47,8 +46,6 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			throw new Error('userId or username is required');
 		},
 	});
-
-	const { workspaceRoles, roomRoles } = useUserRolesByScope(data?.user?._id, rid, { userRoleIds: data?.user?.roles });
 
 	const user = useMemo(() => {
 		if (!data?.user) {
@@ -76,11 +73,6 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			name,
 			username,
 			lastLogin,
-			/**
-			 * TODO: We shouldn't use UserCard components outside UserCard
-			 */
-			roles: workspaceRoles.map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
-			roomRoles: roomRoles.map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
 			bio,
 			canViewAllInfo,
 			phoneNumbers: phones?.length ? <UserInfoPhoneNumberList phones={phones} /> : undefined,
@@ -95,7 +87,7 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			sipExtension,
 			federated,
 		};
-	}, [data, workspaceRoles, roomRoles]);
+	}, [data]);
 
 	return (
 		<ContextualbarDialog>
@@ -117,13 +109,18 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 				</ContextualbarContent>
 			)}
 
-			{!isPending && user && (
-				<UserInfo
+			{!isPending && user && rid && (
+				<UserInfoWithRoles
 					{...user}
+					uid={user._id}
+					rid={rid}
+					userRoleIds={data?.user?.roles}
 					invitationDate={invitationDate}
 					actions={<UserInfoActions user={user} rid={rid} isInvited={Boolean(invitationDate)} backToList={onClickBack} />}
 				/>
 			)}
+
+			{!isPending && user && !rid && <UserInfo {...user} roles={[]} invitationDate={invitationDate} actions={null} />}
 		</ContextualbarDialog>
 	);
 };
