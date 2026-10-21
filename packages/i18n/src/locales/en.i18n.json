@@ -7558,6 +7558,9 @@
     "one": "You can't upload more than {{count}} file at once.",
     "other": "You can't upload more than {{count}} files at once."
   },
+  "You_click_to_remove_and_users_reacted_with": "**You (click to remove)** and {{users}} reacted with {{emoji}}",
+  "You_click_to_remove_reacted_with": "**You (click to remove)** reacted with {{emoji}}",
+  "You_click_to_remove_users_and_more_reacted_with": "**You (click to remove)**, {{users}} and {{counter}} more reacted with {{emoji}}",
   "You_do_not_have_permission_to_execute_this_command": "You do not have enough permissions to execute command: `/{{command}}`",
   "You_followed_this_message": "You followed this message.",
   "You_have_a_new_message": "You have a new message",
