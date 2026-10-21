@@ -1,0 +1,19 @@
+ee/packages/xmpp-server/src/s2s/S2SManager.spec.ts
+  s_08f0c56c164640::t_be7e388221a440 82-86
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "1edd343e6eb50094527329c73aab7ebc9c748a4b",
+  "prompts": {},
+  "sessions": {
+    "s_08f0c56c164640": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7fb7a26c-7025-4e47-b230-074f12c7e190",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
