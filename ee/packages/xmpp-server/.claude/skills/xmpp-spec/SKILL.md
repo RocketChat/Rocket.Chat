@@ -10,6 +10,9 @@ description: >
 arguments: [source]
 ---
 
+Paths in this skill are relative to `ee/packages/xmpp-server/`, wherever the session
+started. `$source` may be given relative to the package or to the repository root.
+
 Run this with `/model opus`; use `fable` when the standard interacts with several others.
 If the session is on a smaller model, say so in one line before starting: a requirement
 that misreads the standard costs a whole plan round.

@@ -10,6 +10,8 @@ description: >
 arguments: [problem]
 ---
 
+Paths in this skill are relative to `ee/packages/xmpp-server/`, wherever the session started.
+
 Run this with `/model sonnet`. If the session is on another model, say so in one line and
 carry on; the work is an interview and a one-page document.
 
