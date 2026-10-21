@@ -100,11 +100,11 @@ export const useRetentionPolicy = (room: IRoom | undefined): RetentionPolicy | u
 		doNotPrunePinned: useSetting('RetentionPolicy_DoNotPrunePinned', false),
 		ignoreThreads: useSetting('RetentionPolicy_DoNotPruneThreads', true),
 		appliesToChannels: useSetting('RetentionPolicy_AppliesToChannels', false),
-		maxAgeChannels: useSetting('RetentionPolicy_TTL_Channels', 2592000000),
+		maxAgeChannels: Number(useSetting('RetentionPolicy_TTL_Channels', 2592000000)),
 		appliesToGroups: useSetting('RetentionPolicy_AppliesToGroups', false),
-		maxAgeGroups: useSetting('RetentionPolicy_TTL_Groups', 2592000000),
+		maxAgeGroups: Number(useSetting('RetentionPolicy_TTL_Groups', 2592000000)),
 		appliesToDMs: useSetting('RetentionPolicy_AppliesToDMs', false),
-		maxAgeDMs: useSetting('RetentionPolicy_TTL_DMs', 2592000000),
+		maxAgeDMs: Number(useSetting('RetentionPolicy_TTL_DMs', 2592000000)),
 	} as const;
 
 	if (!room) {

@@ -29,6 +29,13 @@ describe('timeUnitToMs function', () => {
 		expect(() => timeUnitToMs(TIMEUNIT.days, Infinity)).toThrow(errorMessage);
 		expect(() => timeUnitToMs(TIMEUNIT.days, -Infinity)).toThrow(errorMessage);
 		expect(() => timeUnitToMs(TIMEUNIT.days, -1)).toThrow(errorMessage);
+		expect(() => timeUnitToMs(TIMEUNIT.days, '')).toThrow(errorMessage);
+		expect(() => timeUnitToMs(TIMEUNIT.days, 'invalid')).toThrow(errorMessage);
+	});
+
+	it('should correctly convert numeric strings to milliseconds', () => {
+		expect(timeUnitToMs(TIMEUNIT.days, '1')).toBe(86400000);
+		expect(timeUnitToMs(TIMEUNIT.days, '0.5')).toBe(43200000);
 	});
 });
 
@@ -37,6 +44,11 @@ describe('msToTimeUnit function', () => {
 		expect(msToTimeUnit(TIMEUNIT.days, 86400000)).toBe(1); // 1 day
 		expect(msToTimeUnit(TIMEUNIT.days, 172800000)).toBe(2); // 2 days
 		expect(msToTimeUnit(TIMEUNIT.days, 43200000)).toBe(0.5); // .5 days
+	});
+
+	it('should correctly convert numeric strings and float strings to time units', () => {
+		expect(msToTimeUnit(TIMEUNIT.days, '86400000')).toBe(1);
+		expect(msToTimeUnit(TIMEUNIT.days, '63072000000.0')).toBe(730);
 	});
 
 	it('should correctly convert milliseconds to hours', () => {
@@ -61,5 +73,8 @@ describe('msToTimeUnit function', () => {
 		expect(() => msToTimeUnit(TIMEUNIT.days, Infinity)).toThrow(errorMessage);
 		expect(() => msToTimeUnit(TIMEUNIT.days, -Infinity)).toThrow(errorMessage);
 		expect(() => msToTimeUnit(TIMEUNIT.days, -1)).toThrow(errorMessage);
+		expect(() => msToTimeUnit(TIMEUNIT.days, '')).toThrow(errorMessage);
+		expect(() => msToTimeUnit(TIMEUNIT.days, 'invalid')).toThrow(errorMessage);
+		expect(() => msToTimeUnit(TIMEUNIT.days, '-1')).toThrow(errorMessage);
 	});
 });
