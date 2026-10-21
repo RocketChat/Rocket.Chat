@@ -20,8 +20,8 @@
 		"/oxlint-eslint-rules.js"
 	],
 	"scripts": {
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix ."
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix"
 	},
 	"dependencies": {
 		"@eslint/js": "~10.0.1",

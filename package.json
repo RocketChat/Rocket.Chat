@@ -29,7 +29,6 @@
 		"ms": "turbo run ms --env-mode=loose",
 		"fossify": "tsx scripts/fossify.ts",
 		"lint": "turbo run lint",
-		"lint:oxlint": "oxlint",
 		"storybook": "yarn workspace @rocket.chat/meteor run storybook",
 		"test-storybook": "turbo run test-storybook",
 		"testunit": "turbo run testunit"

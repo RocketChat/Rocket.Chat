@@ -18,8 +18,8 @@
 		".:build:clean": "rimraf dist",
 		"build": "run-s .:build:clean .:build:build",
 		"dev": "ttsc --binary \"$(node -e 'const p=require(`path`);process.stdout.write(p.join(p.dirname(require.resolve(`@typescript/native-preview/package.json`)),`bin`,`tsgo`))')\" --watch --preserveWatchOutput -p tsconfig.json",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix .",
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
 		"testunit": "node --test --experimental-test-isolation=none --require tsx 'src/**/*.test.ts'",
 		"typecheck": "tsc --noEmit --module preserve"
 	},

@@ -17,7 +17,7 @@
 		"bin"
 	],
 	"scripts": {
-		"lint": "eslint ."
+		"lint": "yarn run -T oxlint"
 	},
 	"dependencies": {
 		"vite": "~8.2.2"

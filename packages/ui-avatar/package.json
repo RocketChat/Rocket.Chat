@@ -10,8 +10,8 @@
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.build.json",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix .",
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
 		"typecheck": "tsc -p tsconfig.json --noEmit"
 	},
 	"devDependencies": {
