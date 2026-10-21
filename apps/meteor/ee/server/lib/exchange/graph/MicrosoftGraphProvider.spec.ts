@@ -130,7 +130,6 @@ describe('MicrosoftGraphProvider', () => {
 				endTime: new Date('2026-08-21T11:00:00Z'),
 				isCancelled: false,
 				busy: true,
-				meetingUrl: 'https://teams.example/meet',
 				reminderMinutesBeforeStart: 15,
 			});
 		});
