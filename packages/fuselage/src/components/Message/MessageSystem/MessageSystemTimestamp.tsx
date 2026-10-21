@@ -2,8 +2,9 @@ import { styled, Text } from '@tamagui/web';
 import type { ReactNode } from 'react';
 
 import { textIconColors } from '../../../Theme';
+import { asPublicFrame } from '../../../helpers/asPublicFrame';
+import { variantClass } from '../../../helpers/variantClass';
 import { spacing } from '../../../styleTokens';
-import { withFuselageProvider } from '../../FuselageProvider/FuselageProvider';
 import { boxText, textScale, truncatedText } from '../messageStyles';
 
 const MessageSystemTimestampFrame = styled(Text, {
@@ -14,6 +15,12 @@ const MessageSystemTimestampFrame = styled(Text, {
 	flexShrink: 0,
 	marginInline: spacing('x2'),
 	color: String(textIconColors['font-secondary-info']),
+
+	variants: {
+		rcx: { true: variantClass('rcx-message-system__time') },
+	} as const,
+
+	defaultVariants: { rcx: true },
 });
 
 export type MessageSystemTimestampProps = {
@@ -21,8 +28,4 @@ export type MessageSystemTimestampProps = {
 	title?: string;
 };
 
-const MessageSystemTimestamp = (props: MessageSystemTimestampProps) => (
-	<MessageSystemTimestampFrame className='rcx-message-system__time' {...props} />
-);
-
-export default withFuselageProvider(MessageSystemTimestamp);
+export default asPublicFrame<MessageSystemTimestampProps>(MessageSystemTimestampFrame);

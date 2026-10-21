@@ -1,17 +1,18 @@
-import type { GetProps } from '@tamagui/web';
+import { styled } from '@tamagui/web';
 import type { HTMLAttributes } from 'react';
 
-import { MessageContainerFrame } from './MessageContainer';
-import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
+import { MessageContainerFrame, leftContainer } from './MessageContainer';
+import { asPublicFrame } from '../../helpers/asPublicFrame';
+import { variantClass } from '../../helpers/variantClass';
 
 export type MessageLeftContainerProps = HTMLAttributes<HTMLDivElement>;
 
-const MessageLeftContainer = (props: MessageLeftContainerProps) => (
-	<MessageContainerFrame
-		left
-		className='rcx-message-container rcx-message-container--left'
-		{...(props as GetProps<typeof MessageContainerFrame>)}
-	/>
-);
+const MessageLeftContainer = styled(MessageContainerFrame, {
+	variants: {
+		rcx: { true: variantClass('rcx-message-container rcx-message-container--left', leftContainer) },
+	} as const,
 
-export default withFuselageProvider(MessageLeftContainer);
+	defaultVariants: { rcx: true },
+});
+
+export default asPublicFrame<MessageLeftContainerProps>(MessageLeftContainer);

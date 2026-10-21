@@ -1,17 +1,18 @@
-import type { GetProps } from '@tamagui/web';
+import { styled } from '@tamagui/web';
 import type { HTMLAttributes } from 'react';
 
-import { withFuselageProvider } from '../../FuselageProvider/FuselageProvider';
-import { MessageContainerFrame } from '../MessageContainer';
+import { asPublicFrame } from '../../../helpers/asPublicFrame';
+import { variantClass } from '../../../helpers/variantClass';
+import { MessageContainerFrame, leftContainer } from '../MessageContainer';
 
 export type ThreadMessageLeftContainerProps = HTMLAttributes<HTMLDivElement>;
 
-const ThreadMessageLeftContainer = (props: ThreadMessageLeftContainerProps) => (
-	<MessageContainerFrame
-		left
-		className='rcx-message-container rcx-message-container--left'
-		{...(props as GetProps<typeof MessageContainerFrame>)}
-	/>
-);
+const ThreadMessageLeftContainer = styled(MessageContainerFrame, {
+	variants: {
+		rcx: { true: variantClass('rcx-message-container rcx-message-container--left', leftContainer) },
+	} as const,
 
-export default withFuselageProvider(ThreadMessageLeftContainer);
+	defaultVariants: { rcx: true },
+});
+
+export default asPublicFrame<ThreadMessageLeftContainerProps>(ThreadMessageLeftContainer);

@@ -1,8 +1,9 @@
-import { styled, View, type GetProps } from '@tamagui/web';
+import { styled, View } from '@tamagui/web';
 import type { HTMLAttributes } from 'react';
 
+import { asPublicFrame } from '../../helpers/asPublicFrame';
+import { variantClass } from '../../helpers/variantClass';
 import { spacing } from '../../styleTokens';
-import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 export const SidepanelSectionFrame = styled(View, {
 	boxSizing: 'content-box',
@@ -18,11 +19,12 @@ export const SidepanelSectionFrame = styled(View, {
 
 export type SidepanelSectionProps = HTMLAttributes<HTMLDivElement>;
 
-const SidepanelSection = ({ className, ...props }: SidepanelSectionProps) => (
-	<SidepanelSectionFrame
-		className={['rcx-sidepanel-section', className].filter(Boolean).join(' ')}
-		{...(props as GetProps<typeof SidepanelSectionFrame>)}
-	/>
-);
+const SidepanelSection = styled(SidepanelSectionFrame, {
+	variants: {
+		rcx: { true: variantClass('rcx-sidepanel-section') },
+	} as const,
 
-export default withFuselageProvider(SidepanelSection);
+	defaultVariants: { rcx: true },
+});
+
+export default asPublicFrame<SidepanelSectionProps>(SidepanelSection);

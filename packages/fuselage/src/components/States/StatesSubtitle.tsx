@@ -1,8 +1,9 @@
-import { styled, Text, type GetProps } from '@tamagui/web';
+import { styled, Text } from '@tamagui/web';
 import type { AllHTMLAttributes, ReactNode } from 'react';
 
+import { asPublicFrame } from '../../helpers/asPublicFrame';
+import { variantClass } from '../../helpers/variantClass';
 import { fontScale, spacing } from '../../styleTokens';
-import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 export type StatesSubtitleProps = {
 	children?: ReactNode;
@@ -28,12 +29,14 @@ export const StatesBlockFrame = styled(Text, {
 	...(fontScale('p2m') as object),
 });
 
-const StatesSubtitleFrame = styled(StatesBlockFrame, fontScale('p1') as object);
+const StatesSubtitleFrame = styled(StatesBlockFrame, {
+	...(fontScale('p1') as object),
 
-const StatesSubtitle = ({ children, ...props }: StatesSubtitleProps) => (
-	<StatesSubtitleFrame {...(props as GetProps<typeof StatesSubtitleFrame>)} className='rcx-states__subtitle'>
-		{children}
-	</StatesSubtitleFrame>
-);
+	variants: {
+		rcx: { true: variantClass('rcx-states__subtitle') },
+	} as const,
 
-export default withFuselageProvider(StatesSubtitle);
+	defaultVariants: { rcx: true },
+});
+
+export default asPublicFrame<StatesSubtitleProps>(StatesSubtitleFrame);

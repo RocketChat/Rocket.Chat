@@ -1,8 +1,9 @@
-import { styled, View, type GetProps } from '@tamagui/web';
+import { styled, View } from '@tamagui/web';
 import type { HTMLAttributes } from 'react';
 
 import { boxText, truncatedText } from './messageStyles';
-import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
+import { asPublicFrame } from '../../helpers/asPublicFrame';
+import { variantClass } from '../../helpers/variantClass';
 
 const MessageRolesFrame = styled(View, {
 	render: 'div',
@@ -10,12 +11,14 @@ const MessageRolesFrame = styled(View, {
 	...truncatedText,
 	flexDirection: 'row',
 	flexShrink: 1,
+
+	variants: {
+		rcx: { true: variantClass('rcx-message-header__roles') },
+	} as const,
+
+	defaultVariants: { rcx: true },
 });
 
 export type MessageRolesProps = HTMLAttributes<HTMLDivElement>;
 
-const MessageRoles = (props: MessageRolesProps) => (
-	<MessageRolesFrame className='rcx-message-header__roles' {...(props as GetProps<typeof MessageRolesFrame>)} />
-);
-
-export default withFuselageProvider(MessageRoles);
+export default asPublicFrame<MessageRolesProps>(MessageRolesFrame);

@@ -1,17 +1,18 @@
-import type { GetProps } from '@tamagui/web';
+import { styled } from '@tamagui/web';
 import type { HTMLAttributes } from 'react';
 
-import { MessageContainerFrame } from './MessageContainer';
-import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
+import { MessageContainerFrame, fixedContainer } from './MessageContainer';
+import { asPublicFrame } from '../../helpers/asPublicFrame';
+import { variantClass } from '../../helpers/variantClass';
 
 export type MessageContainerFixedProps = HTMLAttributes<HTMLDivElement>;
 
-const MessageContainerFixed = (props: MessageContainerFixedProps) => (
-	<MessageContainerFrame
-		fixed
-		className='rcx-message-container rcx-message-container--fixed'
-		{...(props as GetProps<typeof MessageContainerFrame>)}
-	/>
-);
+const MessageContainerFixed = styled(MessageContainerFrame, {
+	variants: {
+		rcx: { true: variantClass('rcx-message-container rcx-message-container--fixed', fixedContainer) },
+	} as const,
 
-export default withFuselageProvider(MessageContainerFixed);
+	defaultVariants: { rcx: true },
+});
+
+export default asPublicFrame<MessageContainerFixedProps>(MessageContainerFixed);

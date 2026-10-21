@@ -1,9 +1,10 @@
-import { styled, Text, type GetProps } from '@tamagui/web';
+import { styled, Text } from '@tamagui/web';
 import type { AllHTMLAttributes, ReactNode } from 'react';
 
 import { textIconColors } from '../../Theme';
+import { asPublicFrame } from '../../helpers/asPublicFrame';
+import { variantClass } from '../../helpers/variantClass';
 import { fontScale, spacing } from '../../styleTokens';
-import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 export type StatesTitleProps = {
 	children?: ReactNode;
@@ -20,12 +21,12 @@ const StatesTitleFrame = styled(Text, {
 	textAlign: 'center',
 	color: String(textIconColors['font-default']),
 	...(fontScale('h3') as object),
+
+	variants: {
+		rcx: { true: variantClass('rcx-states__title') },
+	} as const,
+
+	defaultVariants: { rcx: true },
 });
 
-const StatesTitle = ({ children, ...props }: StatesTitleProps) => (
-	<StatesTitleFrame {...(props as GetProps<typeof StatesTitleFrame>)} className='rcx-states__title'>
-		{children}
-	</StatesTitleFrame>
-);
-
-export default withFuselageProvider(StatesTitle);
+export default asPublicFrame<StatesTitleProps>(StatesTitleFrame);

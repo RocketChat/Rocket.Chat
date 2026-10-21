@@ -2,9 +2,10 @@ import { styled, Text } from '@tamagui/web';
 import type { ReactNode } from 'react';
 
 import { textIconColors } from '../../../Theme';
+import { asPublicFrame } from '../../../helpers/asPublicFrame';
 import { toCSSValue } from '../../../helpers/toCSSValue';
+import { variantClass } from '../../../helpers/variantClass';
 import { spacing } from '../../../styleTokens';
-import { withFuselageProvider } from '../../FuselageProvider/FuselageProvider';
 import { lineClamp, plainDiv, textScale, truncatedText } from '../messageStyles';
 
 const MessageGenericPreviewDescriptionFrame = styled(Text, {
@@ -15,13 +16,14 @@ const MessageGenericPreviewDescriptionFrame = styled(Text, {
 	color: toCSSValue('--rcx-message-generic-preview-description-color', textIconColors['font-default']),
 
 	variants: {
-		truncated: {
-			true: truncatedText,
-		},
+		rcx: { true: variantClass('rcx-message-generic-preview__description') },
 		clamp: {
-			true: lineClamp(2),
+			true: variantClass('rcx-message-generic-preview__description--clamp', lineClamp(2)),
+			false: truncatedText,
 		},
 	} as const,
+
+	defaultVariants: { rcx: true, clamp: false },
 });
 
 export type MessageGenericPreviewDescriptionProps = {
@@ -29,16 +31,4 @@ export type MessageGenericPreviewDescriptionProps = {
 	clamp?: boolean;
 };
 
-const MessageGenericPreviewDescription = ({ children, clamp = false }: MessageGenericPreviewDescriptionProps) => (
-	<MessageGenericPreviewDescriptionFrame
-		truncated={!clamp}
-		clamp={clamp}
-		className={['rcx-message-generic-preview__description', clamp && 'rcx-message-generic-preview__description--clamp']
-			.filter(Boolean)
-			.join(' ')}
-	>
-		{children}
-	</MessageGenericPreviewDescriptionFrame>
-);
-
-export default withFuselageProvider(MessageGenericPreviewDescription);
+export default asPublicFrame<MessageGenericPreviewDescriptionProps>(MessageGenericPreviewDescriptionFrame);
