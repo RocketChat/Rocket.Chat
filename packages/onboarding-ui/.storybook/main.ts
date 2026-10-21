@@ -29,7 +29,8 @@ export default {
 	docs: {},
 
 	typescript: {
-		reactDocgen: 'react-docgen-typescript',
+		// react-docgen-typescript needs the TypeScript compiler API, which the native TypeScript 7 package does not expose.
+		reactDocgen: 'react-docgen',
 	},
 } satisfies StorybookConfig;
 
