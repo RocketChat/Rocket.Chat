@@ -25,7 +25,8 @@ export type BridgeName =
 	| 'getEmailBridge'
 	| 'getUiInteractionBridge'
 	| 'getAppResourceBridge'
-	| 'getCallHistoryBridge';
+	| 'getCallHistoryBridge'
+	| 'getMediaCallBridge';
 
 /**
  * Encode and dispatch a single host bridge call from inside the subprocess: a

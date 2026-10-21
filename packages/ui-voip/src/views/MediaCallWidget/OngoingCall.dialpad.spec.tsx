@@ -1,3 +1,4 @@
+import { callControlFeatureList } from '@rocket.chat/media-signaling';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, screen } from '@testing-library/react';
 import type { ComponentType, ReactNode } from 'react';
@@ -29,8 +30,10 @@ const renderView = (Component: ComponentType, { peerInfo, inline = false, localS
 		remoteMuted: false,
 		remoteHeld: false,
 		confirmed: false,
+		hasAlternateCall: false,
+		canCompleteTransfer: false,
 		callId: 'call-1',
-		supportedFeatures: ['audio', 'screen-share', 'hold', 'transfer'],
+		supportedFeatures: ['audio', 'screen-share', 'hold', 'transfer', ...callControlFeatureList],
 	} as SessionState;
 
 	const streams = localScreenActive ? { localScreen: { active: true, stream: null } } : {};
@@ -43,6 +46,8 @@ const renderView = (Component: ComponentType, { peerInfo, inline = false, localS
 		onHold: jest.fn(),
 		onDeviceChange: jest.fn(),
 		onForward: jest.fn(),
+		onSwapCalls: jest.fn(),
+		onCompleteTransfer: jest.fn(),
 		onTone: jest.fn(),
 		onEndCall: jest.fn(),
 		onCall: jest.fn(),

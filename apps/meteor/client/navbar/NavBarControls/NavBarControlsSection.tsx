@@ -8,7 +8,7 @@ import NavBarControlsWithData from './NavBarControlsWithData';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
 import NavBarItemOngoingCalls from '../NavBarItemOngoingCalls';
 import NavBarOmnichannelGroup from '../NavBarOmnichannelGroup';
-import { NavBarItemLoginPage, NavBarItemAdministrationMenu, UserMenu } from '../NavBarSettingsToolbar';
+import { NavBarItemLoginPage, NavBarItemAdministrationMenu, NavBarItemMediaCallDevice, UserMenu } from '../NavBarSettingsToolbar';
 import NavBarVoipGroup from '../NavBarVoipGroup';
 
 const NavBarControlsSection = () => {
@@ -28,6 +28,7 @@ const NavBarControlsSection = () => {
 				{user && showOngoingCalls && <NavBarItemOngoingCalls />}
 				{(showOmnichannel || callAction) && <NavBarControlsWithData />}
 				<NavBarGroup aria-label={t('Workspace_and_user_preferences')}>
+					{user && <NavBarItemMediaCallDevice />}
 					<NavBarItemAdministrationMenu />
 					{user ? <UserMenu user={user} /> : <NavBarItemLoginPage />}
 				</NavBarGroup>
@@ -41,6 +42,7 @@ const NavBarControlsSection = () => {
 			{callAction && <NavBarVoipGroup />}
 			{showOmnichannel && <NavBarOmnichannelGroup />}
 			<NavBarGroup aria-label={t('Workspace_and_user_preferences')}>
+				{user && <NavBarItemMediaCallDevice />}
 				<NavBarItemAdministrationMenu />
 				{user ? <UserMenu user={user} /> : <NavBarItemLoginPage />}
 			</NavBarGroup>

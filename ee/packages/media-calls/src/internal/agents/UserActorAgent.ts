@@ -59,14 +59,18 @@ export class UserActorAgent extends BaseMediaCallAgent {
 	}
 
 	private async getCallHangupReasonForClient(callId: string): Promise<CallHangupReason> {
-		const call = await MediaCalls.findOneById<Pick<IMediaCall, '_id' | 'endedBy' | 'hangupReason'>>(callId, {
-			projection: { endedBy: 1, hangupReason: 1 },
+		const call = await MediaCalls.findOneById<Pick<IMediaCall, '_id' | 'endedBy' | 'hangupReason' | 'escalatedAt'>>(callId, {
+			projection: { endedBy: 1, hangupReason: 1, escalatedAt: 1 },
 		});
 		if (!call) {
 			return 'remote';
 		}
 
-		const { endedBy, hangupReason } = call;
+		const { endedBy, hangupReason, escalatedAt } = call;
+		// If we requested an escalation, treat the hangup as normal
+		if (escalatedAt) {
+			return 'normal';
+		}
 
 		if (endedBy?.type !== this.actorType || endedBy?.id !== this.actorId) {
 			return 'remote';
@@ -89,7 +93,7 @@ export class UserActorAgent extends BaseMediaCallAgent {
 
 	public async onCallCreated(call: IMediaCall): Promise<void> {
 		await this.sendSignal(getNewCallSignal(call, this.role));
-		if (this.role === 'callee') {
+		if (this.role === 'callee' && !call.replacedCallIds?.length) {
 			this.sendPushNotification({ callId: call._id, event: 'new' });
 		}
 	}
@@ -175,9 +179,36 @@ export class UserActorAgent extends BaseMediaCallAgent {
 		});
 	}
 
+	public async onCallUpdated(callId: string): Promise<void> {
+		const call = await MediaCalls.findOneById(callId);
+
+		if (!call?.acceptedAt || call.ended) {
+			return;
+		}
+
+		const contact = this.getOtherCallActor(call);
+
+		await this.sendSignal({
+			type: 'update',
+			callId: call._id,
+			contact,
+			features: call.features as CallFeature[],
+		});
+	}
+
 	public async onDTMF(callId: string, dtmf: string, duration: number): Promise<void> {
 		logger.debug({ msg: 'UserActorAgent.onDTMF', callId, dtmf, duration, role: this.role });
 		// internal calls have nothing to do with DTMFs
+	}
+
+	public async onMute(callId: string, muted: boolean): Promise<void> {
+		logger.debug({ msg: 'UserActorAgent.onMute', callId, muted, role: this.role });
+		// A user actor handles its own mute state locally; nothing to relay for webrtc/internal calls.
+	}
+
+	public async onHold(callId: string, held: boolean): Promise<void> {
+		logger.debug({ msg: 'UserActorAgent.onHold', callId, held, role: this.role });
+		// A user actor handles its own hold state locally; nothing to relay for webrtc/internal calls.
 	}
 
 	private sendPushNotification(params: { callId: string; event: VoipPushNotificationEventType }): void {

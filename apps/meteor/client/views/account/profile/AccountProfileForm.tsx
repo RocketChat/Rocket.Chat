@@ -34,6 +34,7 @@ import { Controller, useFormContext } from 'react-hook-form';
 import type { AccountProfileFormValues } from './getProfileInitialValues';
 import { useAccountProfileSettings } from './useAccountProfileSettings';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
+import PhoneNumberFieldList, { getPersistedPhones } from '../../../components/PhoneNumberFieldList';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import { UserStatus as UserStatusIndicator } from '../../../components/UserStatus';
 import UserStatusDisabledInfo from '../../../components/UserStatusDisabledInfo';
@@ -157,6 +158,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 			bio,
 			customFields,
 			statusVisibilityDenied,
+			phones,
 		} = values;
 
 		const expiresAt = STATUS_DURATION_OPTIONS.find((o) => o.value === statusDuration)?.getExpiresAt?.({
@@ -180,6 +182,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 			...(dirtyFields.username && { username }),
 			...(dirtyFields.nickname && { nickname }),
 			...(dirtyFields.bio && { bio }),
+			...(dirtyFields.phones && { phones: getPersistedPhones(phones) }),
 		};
 		const customFieldsDirty = Boolean(dirtyFields.customFields);
 		const basicInfoDirty = Object.keys(basicInfoData).length > 0 || customFieldsDirty;
@@ -471,7 +474,15 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 					{errors.email && <FieldError>{errors.email.message}</FieldError>}
 					{!allowEmailChange && <FieldHint>{t('Email_Change_Disabled')}</FieldHint>}
 				</Field>
-				{customFieldsMetadata && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />}
+
+				<Divider marginBlockEnd={0} />
+				<PhoneNumberFieldList control={control} />
+				<Divider marginBlockEnd={0} />
+				{!!customFieldsMetadata.length && (
+					<>
+						<CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />
+					</>
+				)}
 			</FieldGroup>
 		</Box>
 	);

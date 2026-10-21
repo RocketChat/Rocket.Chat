@@ -18,6 +18,11 @@ function getCallFlags(call: IMediaCall, role: CallRole): CallFlag[] {
 		}
 	}
 
+	// The actor already is in a call that this one takes over for, so there is nothing to answer
+	if (role === 'callee' && call.replacedCallIds?.length) {
+		flags.push('replaces-call');
+	}
+
 	return flags;
 }
 
@@ -37,7 +42,7 @@ export function getNewCallSignal(call: IMediaCall, role: CallRole): ServerMediaS
 		self: { ...self },
 		contact: { ...contact },
 		flags,
-		...(call.parentCallId && { replacingCallId: call.parentCallId }),
+		...(call.parentCallId && !call.attended && { replacingCallId: call.parentCallId }),
 		...(transferredBy && { transferredBy }),
 		...(call.callerRequestedId && role === 'caller' && { requestedCallId: call.callerRequestedId }),
 		...(iceServers.length && { iceServers }),

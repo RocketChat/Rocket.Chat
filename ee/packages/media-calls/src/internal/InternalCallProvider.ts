@@ -5,6 +5,7 @@ import { BaseCallProvider } from '../base/BaseCallProvider';
 import { CallRejectedError, type InternalCallParams } from '../definition/common';
 import { logger } from '../logger';
 import { mediaCallDirector } from '../server/CallDirector';
+import { assertCallReachesSelectedDevice } from '../server/selectedDevice';
 
 export class InternalCallProvider extends BaseCallProvider {
 	public static async createCall(params: InternalCallParams): Promise<IMediaCall> {
@@ -17,12 +18,13 @@ export class InternalCallProvider extends BaseCallProvider {
 			throw new CallRejectedError('unsupported');
 		}
 
-		if (await MediaCalls.hasUnfinishedCallsByUid(params.caller.id, params.parentCallId)) {
+		if (await MediaCalls.hasUnfinishedCallsByUid(params.caller.id, [params.parentCallId ?? [], params.replacedCallIds ?? []].flat())) {
 			throw new CallRejectedError('busy');
 		}
-		if (await MediaCalls.hasUnfinishedCallsByUid(params.callee.id)) {
+		if (await MediaCalls.hasUnfinishedCallsByUid(params.callee.id, params.replacedCallIds)) {
 			throw new CallRejectedError('unavailable');
 		}
+		await assertCallReachesSelectedDevice(params.callee.id, 'webrtc');
 
 		const callerAgent = await mediaCallDirector.cast.getAgentForActorAndRole(params.caller, 'caller');
 		const calleeAgent = await mediaCallDirector.cast.getAgentForActorAndRole(params.callee, 'callee');
@@ -49,7 +51,7 @@ export class InternalCallProvider extends BaseCallProvider {
 		// If the callee agent fails, this will automatically hangup the call, notify the caller agent and then throw an error
 		await mediaCallDirector.runOnCallCreatedForAgent(call, calleeAgent, callerAgent);
 
-		if (params.parentCallId) {
+		if (params.parentCallId && !params.attended && !params.replacedCallIds?.length) {
 			logger.info({
 				msg: 'Transferred call was created, so the old one will be terminated',
 				newCallId: call._id,

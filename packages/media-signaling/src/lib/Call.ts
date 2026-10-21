@@ -31,6 +31,7 @@ import type {
 	ServerMediaSignalNotification,
 	ServerMediaSignalRemoteSDP,
 	ServerMediaSignalRequestOffer,
+	ServerMediaSignalUpdateCall,
 } from '../definition/signals/server';
 
 export interface IClientMediaCallConfig {
@@ -93,6 +94,13 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private _transferredBy: CallContact | null;
 
+	private _transferringCallId: string | null;
+
+	/** For a call placed to consult someone before an attended transfer: the id of the call that is on hold waiting for it */
+	public get transferringCallId(): string | null {
+		return this._transferringCallId;
+	}
+
 	public get transferredBy(): CallContact | null {
 		if (!this._transferredBy) {
 			return null;
@@ -105,6 +113,15 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	public get service(): CallService | null {
 		return this._service;
+	}
+
+	/**
+	 * True when the call's media and control live outside this client (e.g. a `cti` desk phone handled
+	 * by a Rocket.Chat app). In that case there is no webrtc processor: the client is a remote control
+	 * that issues control signals to the server and reflects the state the backend reports back.
+	 */
+	private get controlledRemotely(): boolean {
+		return this._service === 'cti';
 	}
 
 	public get signed(): boolean {
@@ -120,10 +137,14 @@ export class ClientMediaCall implements IClientMediaCall {
 		 *    Since the Call instance is only created when we receive "something" from the server, this would mean we received signals out of order, or missed one.
 		 */
 
-		return this.ignored || this.contractState === 'ignored' || !this.initialized;
+		return this.ignored || this.contractState === 'ignored' || !this._initialized;
 	}
 
 	public get muted(): boolean {
+		if (this.controlledRemotely) {
+			return this._muted;
+		}
+
 		if (!this.webrtcProcessor) {
 			return false;
 		}
@@ -133,6 +154,10 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	/** indicates if the call is on hold */
 	public get held(): boolean {
+		if (this.controlledRemotely) {
+			return this._held;
+		}
+
 		if (!this.webrtcProcessor) {
 			return false;
 		}
@@ -146,6 +171,11 @@ export class ClientMediaCall implements IClientMediaCall {
 		return this._remoteHeld;
 	}
 
+	/** Local mute/hold state for control-only (`cti`) calls, where there is no webrtc processor to hold it. */
+	private _muted: boolean;
+
+	private _held: boolean;
+
 	private _remoteMute: boolean;
 
 	public get remoteMute(): boolean {
@@ -158,7 +188,8 @@ export class ClientMediaCall implements IClientMediaCall {
 	}
 
 	public get ringing(): boolean {
-		if (this.hidden) {
+		// A call that takes over for one already in progress is accepted without ringing
+		if (this.hidden || this.hasFlag('replaces-call')) {
 			return false;
 		}
 
@@ -247,6 +278,8 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	private enabledFeatures: CallFeature[] | null;
 
+	private escalated: boolean;
+
 	private hangupReason: CallHangupReason | null;
 
 	private _flags: CallFlag[];
@@ -302,6 +335,7 @@ export class ClientMediaCall implements IClientMediaCall {
 			activeTimestamp: this.activeTimestamp,
 			tempCallId: this.tempCallId,
 			hidden: this.hidden,
+			escalated: this.escalated,
 			ringing: this.ringing,
 
 			localParticipant: this.localParticipant,
@@ -338,6 +372,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.sentLocalSdp = false;
 		this.receivedRemoteSdp = false;
 		this.enabledFeatures = null;
+		this.escalated = false;
 		this.hangupReason = null;
 
 		this.earlySignals = new Set();
@@ -349,9 +384,12 @@ export class ClientMediaCall implements IClientMediaCall {
 		this._ignored = false;
 		this._contact = null;
 		this._transferredBy = null;
+		this._transferringCallId = null;
 		this._service = null;
 		this._remoteHeld = false;
 		this._remoteMute = false;
+		this._muted = false;
+		this._held = false;
 		this._flags = [];
 		this.selfContact = null;
 		this.localParticipant = this.createLocalParticipantProxy();
@@ -394,7 +432,7 @@ export class ClientMediaCall implements IClientMediaCall {
 		supportedFeatures: CallFeature[],
 		contactInfo?: CallContact,
 	): Promise<void> {
-		if (this.initialized) {
+		if (this._initialized) {
 			return;
 		}
 
@@ -404,6 +442,28 @@ export class ClientMediaCall implements IClientMediaCall {
 			callee,
 			supportedServices: Object.keys(this.config.processorFactories) as CallService[],
 			supportedFeatures,
+		});
+
+		return this.initializeOutboundCall({ ...contactInfo, ...callee });
+	}
+
+	/** Requests this call as a consultation with `callee` while the call `heldCallId` is on hold, before an attended transfer */
+	public async requestAttendedTransfer(
+		heldCallId: string,
+		callee: { type: CallActorType; id: string },
+		contactInfo?: CallContact,
+	): Promise<void> {
+		if (this._initialized) {
+			return;
+		}
+
+		this.config.logger?.debug('ClientMediaCall.requestAttendedTransfer', callee);
+
+		this._transferringCallId = heldCallId;
+
+		this.config.transporter.sendToServer(heldCallId, 'attended-transfer', {
+			requestedCallId: this.callId,
+			to: callee,
 		});
 
 		return this.initializeOutboundCall({ ...contactInfo, ...callee });
@@ -475,6 +535,10 @@ export class ClientMediaCall implements IClientMediaCall {
 			// Send an ACK so the server knows that this session exists and is reachable
 			this.acknowledge();
 
+			if (this._role === 'callee' && this.hasFlag('replaces-call') && this.isPendingOurAcceptance()) {
+				this.accept();
+			}
+
 			// Adds a secondary timeout for all sessions of the call; Won't matter if the original caller session is still active, but is needed for transferred calls.
 			this.addStateTimeout('pending', TIMEOUT_TO_ACCEPT);
 
@@ -501,6 +565,11 @@ export class ClientMediaCall implements IClientMediaCall {
 
 	public mayNeedInputTrack(): boolean {
 		if (this.isOver() || this._ignored || this.hidden) {
+			return false;
+		}
+
+		// Control-only calls (cti) never capture local media; the audio lives on the external device.
+		if (this.controlledRemotely) {
 			return false;
 		}
 
@@ -544,6 +613,12 @@ export class ClientMediaCall implements IClientMediaCall {
 				}
 				return 'pending';
 			case 'accepted':
+				// Control-only calls (cti) have no local webrtc negotiation; once accepted we simply wait for
+				// the backend to report the call as active, so skip all the negotiation sub-states.
+				if (this.controlledRemotely) {
+					return 'activating';
+				}
+
 				if (!this.negotiationManager.isConfigured()) {
 					return 'waiting-for-track';
 				}
@@ -688,6 +763,8 @@ export class ClientMediaCall implements IClientMediaCall {
 				return this.processOfferRequest(signal);
 			case 'notification':
 				return this.processNotification(signal);
+			case 'update':
+				return this.processCallUpdate(signal);
 		}
 	}
 
@@ -744,6 +821,40 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.config.transporter.sendToServer(this.callId, 'transfer', {
 			to: callee,
 		});
+	}
+
+	/** Finishes the attended transfer this call was placed for, leaving the held call's actor and this call's actor talking to each other */
+	public completeAttendedTransfer(): void {
+		if (!this.busy || !this._transferringCallId) {
+			return;
+		}
+
+		this.config.logger?.debug('ClientMediaCall.completeAttendedTransfer');
+
+		this.config.transporter.sendToServer(this.callId, 'complete-attended-transfer', {});
+	}
+
+	/** Whether this call is happening on another session of the same user and may be moved to this one */
+	public canBeTakenOver(): boolean {
+		return (
+			this.contractState === 'ignored' &&
+			!this._ignored &&
+			this.hasRemoteData &&
+			this._service === 'webrtc' &&
+			this._state === 'active' &&
+			!this.isOver()
+		);
+	}
+
+	/** Asks the server to move this call from the session that carries it to this session */
+	public takeOver(): void {
+		if (!this.canBeTakenOver()) {
+			return;
+		}
+
+		this.config.logger?.debug('ClientMediaCall.takeOver');
+
+		this.config.transporter.sendToServer(this.callId, 'take-over', { supportedFeatures: this.config.supportedFeatures });
 	}
 
 	public hangup(reason: CallHangupReason = 'normal'): void {
@@ -814,6 +925,19 @@ export class ClientMediaCall implements IClientMediaCall {
 		if (this.isOver() || this.hidden) {
 			return;
 		}
+
+		// On control-only calls (e.g. cti), mute is applied by the backend: send the intent to the server
+		// and reflect it optimistically until the backend confirms it back through an 'update' signal.
+		if (this.controlledRemotely) {
+			if (this._muted === muted) {
+				return;
+			}
+			this._muted = muted;
+			this.config.transporter.setMuted(this.callId, muted);
+			this.emitter.emit('trackStateChange');
+			return;
+		}
+
 		if (!this.webrtcProcessor && !muted) {
 			return;
 		}
@@ -830,6 +954,17 @@ export class ClientMediaCall implements IClientMediaCall {
 		if (this.isOver() || this.hidden) {
 			return;
 		}
+
+		if (this.controlledRemotely) {
+			if (this._held === held) {
+				return;
+			}
+			this._held = held;
+			this.config.transporter.setHeld(this.callId, held);
+			this.emitter.emit('trackStateChange');
+			return;
+		}
+
 		if (!this.webrtcProcessor && !held) {
 			return;
 		}
@@ -1023,7 +1158,8 @@ export class ClientMediaCall implements IClientMediaCall {
 		this.updateStateTimeouts();
 		// Any time the client state changes within the 'accepted' call state, set a new timeout for the new client state
 		// This ensures there will be three separate timeouts for the different negotiation stages: "generating local sdp", "waiting for remote sdp" and "connecting"
-		if (this._state === 'accepted') {
+		// Control-only calls (cti) have no negotiation stages, so this progress timeout would spuriously hang them up.
+		if (this._state === 'accepted' && !this.controlledRemotely) {
 			this.addStateTimeout(clientState, TIMEOUT_TO_PROGRESS_SIGNALING);
 		}
 
@@ -1080,6 +1216,14 @@ export class ClientMediaCall implements IClientMediaCall {
 		}
 
 		const { negotiationId } = signal;
+
+		// A control-only call has no peer connection to offer from. Being asked for one means the server
+		// tracked the call as something it is not, but the call itself is still perfectly usable, so it is
+		// reported rather than answered with the critical error that would tear it down.
+		if (this.controlledRemotely) {
+			this.config.logger?.error('Received a webrtc offer request on a call that carries no media.', this.service);
+			return;
+		}
 
 		if (this.shouldIgnoreWebRTC()) {
 			this.sendError({ errorType: 'service', errorCode: 'invalid-service', negotiationId, critical: true });
@@ -1217,6 +1361,115 @@ export class ClientMediaCall implements IClientMediaCall {
 
 			case 'hangup':
 				return this.flagAsEnded('remote', signal.hangupReason);
+			case 'escalated':
+				return this.flagAsEscalated(signal.features);
+			case 'session-changed':
+				return this.processSessionChange(signal);
+		}
+	}
+
+	private processSessionChange({ signedContractId, features }: ServerMediaSignalNotification): void {
+		if (!signedContractId || this.isOver()) {
+			return;
+		}
+
+		this.config.logger?.debug('ClientMediaCall.processSessionChange', signedContractId);
+
+		if (features) {
+			this.enabledFeatures = features;
+		}
+
+		if (signedContractId === this.config.sessionId) {
+			this.acquireContract();
+			return;
+		}
+
+		this.releaseContract();
+	}
+
+	/** This session now carries the call: the media is renegotiated from scratch on a connection of its own */
+	private acquireContract(): void {
+		this.config.logger?.debug('ClientMediaCall.acquireContract');
+		this.resetWebRTC();
+		this.acceptedLocally = true;
+
+		try {
+			this.requireWebRTC();
+		} catch {
+			this.hangup('error');
+			return;
+		}
+
+		this.updateClientState();
+		this.emitter.emit('takenOver');
+		this.reportStates();
+	}
+
+	/** Another session now carries the call: stop the media here without ending the call */
+	private releaseContract(): void {
+		if (!this.signed) {
+			return;
+		}
+
+		this.config.logger?.debug('ClientMediaCall.releaseContract');
+		this.contractState = 'ignored';
+		this.clearStateTimeouts();
+		this.resetWebRTC();
+
+		this.emitter.emit('hidden');
+		this.updateClientState();
+	}
+
+	private resetWebRTC(): void {
+		this.webrtcProcessor?.stop();
+		this.webrtcProcessor = null;
+		this.sentLocalSdp = false;
+		this.receivedRemoteSdp = false;
+		this.negotiationManager = new NegotiationManager(this, { logger: this.config.logger });
+	}
+
+	private async processCallUpdate(signal: ServerMediaSignalUpdateCall) {
+		this.config.logger?.debug('ClientMediaCall.processCallUpdate');
+
+		if (signal.features) {
+			this.enabledFeatures = signal.features;
+		}
+
+		if (signal.contact) {
+			this.changeContact(signal.contact);
+		}
+
+		if (signal.state) {
+			this.applyReportedState(signal.state);
+		}
+	}
+
+	/**
+	 * Applies control state reported by the call backend. Used by control-only services (e.g. cti) where
+	 * the mute/hold state of both legs is owned by the external device/gateway rather than a webrtc peer.
+	 */
+	private applyReportedState(state: NonNullable<ServerMediaSignalUpdateCall['state']>): void {
+		if (!this.controlledRemotely) {
+			return;
+		}
+
+		let changed = false;
+
+		for (const [key, field] of [
+			['muted', '_muted'],
+			['held', '_held'],
+			['remoteMuted', '_remoteMute'],
+			['remoteHeld', '_remoteHeld'],
+		] as const) {
+			const value = state[key];
+			if (typeof value === 'boolean' && this[field] !== value) {
+				this[field] = value;
+				changed = true;
+			}
+		}
+
+		if (changed) {
+			this.emitter.emit('trackStateChange');
 		}
 	}
 
@@ -1270,6 +1523,20 @@ export class ClientMediaCall implements IClientMediaCall {
 			this.config.logger?.debug('Hangup Reason:', reason);
 		}
 		this.changeState('hangup');
+	}
+
+	private flagAsEscalated(overrideFeatures?: CallFeature[]): void {
+		if (this.escalated) {
+			return;
+		}
+
+		this.config.logger?.debug('ClientMediaCall.flagAsEscalated', overrideFeatures || '');
+		if (overrideFeatures) {
+			this.enabledFeatures = overrideFeatures;
+		}
+
+		this.escalated = true;
+		this.emitter.emit('escalated');
 	}
 
 	private addStateTimeout(state: ClientState, timeout: number, callback?: () => void): void {

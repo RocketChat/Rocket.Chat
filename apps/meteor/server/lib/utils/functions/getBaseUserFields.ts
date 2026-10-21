@@ -7,6 +7,7 @@ export const getBaseUserFields = (allowServiceKeys = false): UserFields => ({
 	'username': 1,
 	'nickname': 1,
 	'emails': 1,
+	'phones': 1,
 	'status': 1,
 	'statusDefault': 1,
 	'statusText': 1,
@@ -34,5 +35,6 @@ export const getBaseUserFields = (allowServiceKeys = false): UserFields => ({
 	'avatarETag': 1,
 	'openBusinessHours': 1,
 	'abacAttributes': 1,
+	'mediaCallDevice': 1,
 	...(allowServiceKeys && { 'services.totp.enabled': 1, 'services.email2fa.enabled': 1 }),
 });
