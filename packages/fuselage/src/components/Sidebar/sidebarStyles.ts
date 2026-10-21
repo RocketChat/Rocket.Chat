@@ -1,6 +1,7 @@
 import { statusBackgroundColors, statusColors, strokeColors, surfaceColors, textIconColors } from '../../Theme';
 import { toCSSValue } from '../../helpers/toCSSValue';
 import { borderRadius, borderWidth, fontFamily, fontScale } from '../../styleTokens';
+import type { FontScaleName } from '../../styleTokens';
 
 export const sidebarColorSurfaceDefault = toCSSValue('--rcx-sidebar-color-surface-default', surfaceColors['surface-sidebar']);
 export const sidebarColorSurfaceHover = toCSSValue('--rcx-sidebar-color-surface-hover', surfaceColors['surface-hover']);
@@ -81,10 +82,10 @@ export const focusBorder = {
 	boxShadow: { 'focus-visible': 'none' },
 } as const;
 
-export const focusBorderRadius = toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!);
+export const focusBorderRadius = toCSSValue('--rcx-border-radius-medium', borderRadius('medium'));
 
-export const typography = (name: string) => {
-	const { fontSize, fontWeight, lineHeight, letterSpacing } = fontScale(name)!;
+export const typography = (name: FontScaleName) => {
+	const { fontSize, fontWeight, lineHeight, letterSpacing } = fontScale(name);
 
 	return { fontSize, fontWeight: String(fontWeight) as `${number}`, lineHeight, letterSpacing };
 };

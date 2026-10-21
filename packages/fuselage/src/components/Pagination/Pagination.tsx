@@ -10,7 +10,7 @@ import { Chevron } from '../Chevron';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 const toFontStyle = (name: 'c1' | 'c2') => {
-	const scale = fontScale(name)!;
+	const scale = fontScale(name);
 
 	return {
 		fontSize: scale.fontSize,
@@ -69,7 +69,7 @@ const PaginationDivider = styled(View, {
 	left: 0,
 	right: 0,
 	height: 1,
-	borderRadius: toCSSValue('--rcx-pagination-border-radius', toCSSValue('--rcx-border-radius-small', borderRadius('small')!)),
+	borderRadius: toCSSValue('--rcx-pagination-border-radius', toCSSValue('--rcx-border-radius-small', borderRadius('small'))),
 	backgroundColor: String(strokeColors['stroke-extra-light']),
 });
 

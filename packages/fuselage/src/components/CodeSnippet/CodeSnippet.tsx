@@ -32,7 +32,7 @@ const CodeSnippetFrame = styled(View, {
 	minHeight: size('x60'),
 	padding: spacing('x16'),
 	color: String(textIconColors['font-default']),
-	borderRadius: toCSSValue('--rcx-code-snippet-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!)),
+	borderRadius: toCSSValue('--rcx-code-snippet-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium'))),
 	backgroundColor: String(surfaceColors['surface-neutral']),
 });
 

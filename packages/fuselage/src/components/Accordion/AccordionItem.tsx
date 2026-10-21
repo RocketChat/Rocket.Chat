@@ -51,7 +51,7 @@ const AccordionItemBar = styled(View, {
 	} as const,
 });
 
-const h4 = fontScale('h4')!;
+const h4 = fontScale('h4');
 
 const AccordionItemTitle = styled(Text, {
 	render: 'h2',

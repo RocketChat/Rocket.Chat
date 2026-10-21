@@ -63,7 +63,7 @@ const tagColors = (variant: Variant) => {
 
 const disabledColor = toCSSValue('--rcx-tag-colors-disabled-color', textIconColors['font-secondary-info']);
 const disabledBackground = toCSSValue('--rcx-tag-colors-disabled-background-color', surfaceColors['surface-neutral']);
-const focusBorderRadius = toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!);
+const focusBorderRadius = toCSSValue('--rcx-border-radius-medium', borderRadius('medium'));
 const focusShadow = `0 0 0 ${borderWidth('medium')} ${strokeColors['stroke-extra-light-highlight']}`;
 
 // A clickable tag takes the disabled background but not the disabled color; its colors and focus ring are in `Tag.styles.css`
@@ -121,7 +121,7 @@ const TagFrame = styled(Text, {
 	borderStyle: 'solid',
 	borderColor: { 'default': 'transparent', 'focus-visible': String(strokeColors['stroke-highlight']) },
 	borderRadius: {
-		'default': toCSSValue('--rcx-tag-border-radius', toCSSValue('--rcx-border-radius-small', borderRadius('small')!)),
+		'default': toCSSValue('--rcx-tag-border-radius', toCSSValue('--rcx-border-radius-small', borderRadius('small'))),
 		'focus-visible': focusBorderRadius,
 	},
 	outlineStyle: 'none',
@@ -133,7 +133,7 @@ const TagFrame = styled(Text, {
 		pill: {
 			true: {
 				borderRadius: {
-					'default': toCSSValue('--rcx-border-radius-full', borderRadius('full')!),
+					'default': toCSSValue('--rcx-border-radius-full', borderRadius('full')),
 					'focus-visible': focusBorderRadius,
 				},
 			},

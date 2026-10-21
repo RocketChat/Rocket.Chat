@@ -26,7 +26,7 @@ const TooltipFrame = styled(Text, {
 	fontFamily: fontFamily('sans'),
 	fontVariantNumeric: 'tabular-nums',
 	color: darkTextColor,
-	borderRadius: toCSSValue('--rcx-tooltip-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!)),
+	borderRadius: toCSSValue('--rcx-tooltip-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium'))),
 	backgroundColor: darkBackgroundColor,
 	// the token's numeric `fontWeight` is wider than Tamagui's weight union
 	...(fontScale('p2m') as object),

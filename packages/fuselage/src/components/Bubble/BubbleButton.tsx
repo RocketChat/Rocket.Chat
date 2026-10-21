@@ -56,7 +56,7 @@ const BubbleButtonFrame = styled(View, {
 	...(fontScale('c2') as object),
 	borderWidth: buttonBorderWidth,
 	borderStyle: 'solid',
-	borderRadius: toCSSValue('--rcx-border-radius-extra-large', borderRadius('extra-large')!),
+	borderRadius: toCSSValue('--rcx-border-radius-extra-large', borderRadius('extra-large')),
 	...kindStyle(buttonColors.primary),
 
 	// Prop order decides which variant wins: `secondary`, then `inactive`

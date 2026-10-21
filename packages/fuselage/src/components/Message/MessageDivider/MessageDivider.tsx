@@ -21,7 +21,7 @@ const MessageDividerBar = styled(Text, {
 const MessageDividerLine = styled(View, {
 	render: 'span',
 	flexGrow: 1,
-	height: toCSSValue('--rcx-message-divider-size', borderWidth('default')!),
+	height: toCSSValue('--rcx-message-divider-size', borderWidth('default')),
 	backgroundColor: toCSSValue('--rcx-message-divider-background-color', strokeColors['stroke-extra-light']),
 
 	variants: {

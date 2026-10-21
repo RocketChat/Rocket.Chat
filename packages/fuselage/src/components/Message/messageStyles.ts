@@ -1,12 +1,13 @@
 import { strokeColors } from '../../Theme';
 import { toCSSValue } from '../../helpers/toCSSValue';
 import { borderRadius, borderWidth, fontFamily, fontScale } from '../../styleTokens';
+import type { FontScaleName } from '../../styleTokens';
 
 export const focusState = {
 	borderWidth: borderWidth('default'),
 	borderStyle: 'solid',
 	borderColor: { 'default': 'transparent', 'focus-visible': String(strokeColors['stroke-highlight']) },
-	borderRadius: { 'focus-visible': toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!) },
+	borderRadius: { 'focus-visible': toCSSValue('--rcx-border-radius-medium', borderRadius('medium')) },
 	outlineWidth: { 'focus-visible': 0 },
 	boxShadow: { 'focus-visible': `0 0 0 ${borderWidth('medium')} ${strokeColors['stroke-extra-light-highlight']}` },
 } as const;
@@ -32,8 +33,8 @@ export const plainDiv = {
 	boxSizing: 'content-box',
 } as const;
 
-export const textScale = (name: string) => {
-	const { fontWeight, ...scale } = fontScale(name)!;
+export const textScale = (name: FontScaleName) => {
+	const { fontWeight, ...scale } = fontScale(name);
 	return { ...scale, fontWeight: fontWeight as 400 };
 };
 

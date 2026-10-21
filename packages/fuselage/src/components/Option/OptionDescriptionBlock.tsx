@@ -6,7 +6,7 @@ import { asPublicFrame } from '../../helpers/asPublicFrame';
 import { variantClass } from '../../helpers/variantClass';
 import { fontScale, spacing } from '../../styleTokens';
 
-const { fontWeight, ...p2 } = fontScale('p2')!;
+const { fontWeight, ...p2 } = fontScale('p2');
 
 const OptionDescriptionBlockFrame = styled(Text, {
 	render: 'div',

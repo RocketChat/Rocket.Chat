@@ -26,7 +26,7 @@ const InputBoxSkeletonFrame = styled(View, {
 	borderWidth: borderWidth('default'),
 	borderStyle: 'solid',
 	borderColor: toCSSValue('--rcx-input-colors-border-color', strokeColors['stroke-light']),
-	borderRadius: toCSSValue('--rcx-input-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!)),
+	borderRadius: toCSSValue('--rcx-input-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium'))),
 	backgroundColor: toCSSValue('--rcx-input-colors-background-color', surfaceColors['surface-light']),
 	fontFamily: fontFamily('sans'),
 	...fontScale('p2m'),

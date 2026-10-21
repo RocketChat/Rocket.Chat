@@ -18,7 +18,7 @@ const BubbleItemFrame = styled(View, {
 	flexShrink: 1,
 	height: size('x28'),
 	paddingInline: spacing('x8'),
-	borderRadius: toCSSValue('--rcx-border-radius-extra-large', borderRadius('extra-large')!),
+	borderRadius: toCSSValue('--rcx-border-radius-extra-large', borderRadius('extra-large')),
 	columnGap: spacing('x4'),
 	overflow: 'hidden',
 	textOverflow: 'ellipsis',

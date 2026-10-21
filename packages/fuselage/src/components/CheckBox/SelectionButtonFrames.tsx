@@ -59,14 +59,14 @@ export const SelectionButtonInput = ({ disabled, render, ...props }: GetProps<ty
 // The resting unchecked look; every other state is a sibling rule on the native input in each component's stylesheet
 const restingColors = {
 	empty: {
-		color: toCSSValue('--rcx-button-empty-color', fontColor('white')!),
-		borderColor: toCSSValue('--rcx-button-empty-border-color', strokeColor('dark')!),
-		backgroundColor: toCSSValue('--rcx-button-empty-background-color', backgroundColor('light')!),
+		color: toCSSValue('--rcx-button-empty-color', fontColor('white')),
+		borderColor: toCSSValue('--rcx-button-empty-border-color', strokeColor('dark')),
+		backgroundColor: toCSSValue('--rcx-button-empty-background-color', backgroundColor('light')),
 	},
 	off: {
-		color: toCSSValue('--rcx-button-off-color', fontColor('white')!),
-		borderColor: toCSSValue('--rcx-button-off-border-color', strokeColor('medium')!),
-		backgroundColor: toCSSValue('--rcx-button-off-background-color', strokeColor('medium')!),
+		color: toCSSValue('--rcx-button-off-color', fontColor('white')),
+		borderColor: toCSSValue('--rcx-button-off-border-color', strokeColor('medium')),
+		backgroundColor: toCSSValue('--rcx-button-off-background-color', strokeColor('medium')),
 	},
 };
 

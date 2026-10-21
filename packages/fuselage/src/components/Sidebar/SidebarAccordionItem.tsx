@@ -30,7 +30,7 @@ const SidebarAccordionItemFrame = styled(View, {
 	borderBottomColor: sidebarAccordionBorderColor,
 });
 
-const barRadius = toCSSValue('--rcx-border-radius-small', borderRadius('small')!);
+const barRadius = toCSSValue('--rcx-border-radius-small', borderRadius('small'));
 
 const SidebarAccordionItemBar = styled(View, {
 	...boxFull,

@@ -8,7 +8,7 @@ import { borderWidth, size, spacing } from '../../styleTokens';
 import { Box, type BoxProps } from '../Box';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-const dividerSize = toCSSValue('--rcx-divider-size', borderWidth('default')!);
+const dividerSize = toCSSValue('--rcx-divider-size', borderWidth('default'));
 const dividerColor = toCSSValue('--rcx-divider-color', strokeColors['stroke-extra-light']);
 
 const DividerLine = styled(View, {

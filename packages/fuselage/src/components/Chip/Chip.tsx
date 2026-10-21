@@ -27,7 +27,7 @@ const ChipFrame = styled(View, {
 	padding: spacing('none'),
 	borderWidth: 0,
 	borderStyle: 'solid',
-	borderRadius: toCSSValue('--rcx-button-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!)),
+	borderRadius: toCSSValue('--rcx-button-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium'))),
 	outline: 'none',
 	cursor: 'pointer',
 	appearance: 'none',

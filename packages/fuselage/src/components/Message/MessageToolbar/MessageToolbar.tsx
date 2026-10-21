@@ -19,7 +19,7 @@ const MessageToolbarFrame = styled(View, {
 	borderWidth: borderWidth('default'),
 	borderStyle: 'solid',
 	borderColor: String(strokeColors['stroke-extra-light']),
-	borderRadius: toCSSValue('--rcx-message-toolbar-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!)),
+	borderRadius: toCSSValue('--rcx-message-toolbar-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium'))),
 	backgroundColor: String(surfaceColors['surface-room']),
 	// Revealed by its message's hover or focus in `Messages.styles.css`
 	opacity: 0,

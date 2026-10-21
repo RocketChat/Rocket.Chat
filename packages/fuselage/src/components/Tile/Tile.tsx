@@ -29,7 +29,7 @@ const TileFrame = styled(Text, {
 	borderStyle: 'solid',
 	borderColor: 'currentColor',
 	color: String(textIconColors['font-default']),
-	borderRadius: toCSSValue('--rcx-tile-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!)),
+	borderRadius: toCSSValue('--rcx-tile-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium'))),
 	backgroundColor: String(surfaceColors['surface-light']),
 	...(fontScale('p2') as { fontWeight: 400 }),
 

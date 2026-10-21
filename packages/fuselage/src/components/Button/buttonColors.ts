@@ -39,11 +39,11 @@ export const buttonFont = (name: string) =>
 		primitiveFonts[name] ?? tokens[camelCase(`font-on-${name}`)] ?? tokens[camelCase(`on-${name}`)],
 	);
 
-export const buttonBorderWidth = toCSSValue('--rcx-button-border-width', borderWidth('default')!);
+export const buttonBorderWidth = toCSSValue('--rcx-button-border-width', borderWidth('default'));
 
 export const buttonBorderRadius = toCSSValue(
 	'--rcx-button-border-radius',
-	toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!),
+	toCSSValue('--rcx-border-radius-medium', borderRadius('medium')),
 );
 
 export type ButtonColors = {

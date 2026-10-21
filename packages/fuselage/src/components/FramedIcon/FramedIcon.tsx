@@ -13,7 +13,7 @@ import { IconFrame } from '../Icon/Icon';
 const FramedIconFrame = styled(IconFrame, {
 	padding: spacing('x4'),
 	color: String(textIconColors['font-secondary-info']),
-	borderRadius: toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!),
+	borderRadius: toCSSValue('--rcx-border-radius-medium', borderRadius('medium')),
 	backgroundColor: String(surfaceColors['surface-tint']),
 
 	variants: {

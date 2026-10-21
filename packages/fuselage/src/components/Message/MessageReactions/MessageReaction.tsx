@@ -29,7 +29,7 @@ export const MessageReactionFrame = styled(Text, {
 		'focus-visible': String(strokeColors['stroke-highlight']),
 	},
 	borderRadius: {
-		'default': toCSSValue('--rcx-message-reaction-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!)),
+		'default': toCSSValue('--rcx-message-reaction-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium'))),
 		'focus-visible': focusState.borderRadius['focus-visible'],
 	},
 	backgroundColor: reactionBackgroundColor,
