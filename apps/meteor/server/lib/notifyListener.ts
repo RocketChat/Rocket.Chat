@@ -39,6 +39,7 @@ import {
 } from '@rocket.chat/models';
 import mem from 'mem';
 
+import { listMessageCopiesForReaders, listUsersNotClearedFor } from './messages/securityLabels';
 import { shouldHideSystemMessage } from './systemMessage/hideSystemMessage';
 import { subscriptionFields } from '../../lib/publishFields';
 
@@ -490,12 +491,51 @@ export async function getMessageToBroadcast({ id, data }: { id: IMessage['_id'];
 	return message;
 }
 
-export const notifyOnMessageChange = async ({ id, data }: { id: IMessage['_id']; data?: IMessage }): Promise<void> => {
+const clearedAmong = async (message: Pick<IMessage, 'securityLabel'>, userIds: IUser['_id'][]): Promise<IUser['_id'][]> => {
+	const notCleared = new Set(await listUsersNotClearedFor(message, userIds));
+	return userIds.filter((uid) => !notCleared.has(uid));
+};
+
+/**
+ * `onlyReadersOf` limits the broadcast to members cleared for another message, when the change is caused by it.
+ */
+export const notifyOnMessageChange = async ({
+	id,
+	data,
+	onlyReadersOf,
+}: {
+	id: IMessage['_id'];
+	data?: IMessage;
+	onlyReadersOf?: Pick<IMessage, 'securityLabel'>;
+}): Promise<void> => {
 	const message = await getMessageToBroadcast({ id, data });
 	if (!message) {
 		return;
 	}
-	void api.broadcast('watch.messages', { message });
+
+	// Members are only looked up when the message or its thread is labeled; most broadcasts never need them
+	let members: Promise<IUser['_id'][]> | undefined;
+	const roomMembers = () => {
+		members ??= Subscriptions.findByRoomId(message.rid, { projection: { 'u._id': 1 } })
+			.toArray()
+			.then((subscriptions) => subscriptions.map(({ u }) => u._id));
+		return members;
+	};
+
+	let readers: IUser['_id'][] | undefined;
+	if (message.securityLabel) {
+		readers = await clearedAmong(message, await roomMembers());
+	}
+	if (onlyReadersOf?.securityLabel) {
+		readers = await clearedAmong(onlyReadersOf, readers ?? (await roomMembers()));
+	}
+
+	const allowed = readers && new Set(readers);
+	const variants = (await listMessageCopiesForReaders(message, async () => readers ?? roomMembers()))
+		.map((variant) => ({ ...variant, readers: allowed ? variant.readers.filter((uid) => allowed.has(uid)) : variant.readers }))
+		.filter((variant) => variant.readers.length);
+
+	void api.broadcast('watch.messages', { message, ...(readers && { readers }), ...(variants.length && { variants }) });
 };
 
 export const notifyOnSubscriptionChanged = async (subscription: ISubscription, clientAction: ClientAction = 'updated'): Promise<void> => {

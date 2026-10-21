@@ -160,6 +160,14 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOneAndUpdate({ _id }, { $unset: { abacAttributes: 1 } }, { returnDocument: 'after' });
 	}
 
+	setSecurityClearancesById(_id: IUser['_id'], clearances: NonNullable<IUser['securityClearances']>) {
+		return this.findOneAndUpdate({ _id }, { $set: { securityClearances: clearances } }, { returnDocument: 'after' });
+	}
+
+	unsetSecurityClearancesById(_id: IUser['_id']) {
+		return this.findOneAndUpdate({ _id }, { $unset: { securityClearances: 1 } }, { returnDocument: 'after' });
+	}
+
 	findActiveByRoomIds<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		roomIds: IRoom['_id'][],
 		options?: O,

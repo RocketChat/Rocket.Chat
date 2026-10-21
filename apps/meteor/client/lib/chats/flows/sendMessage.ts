@@ -15,6 +15,7 @@ import { processTooLongMessage } from './processTooLongMessage';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { sdk } from '../../SDKClient';
 import { onClientMessageReceived } from '../../onClientMessageReceived';
+import { selectedSecurityLabels } from '../../securityLabels/selectedSecurityLabels';
 import { settings } from '../../settings';
 import { getUserId, getUser } from '../../user';
 import { upsertThreadMessageInCache } from '../../utils/threadMessageUtils';
@@ -90,6 +91,10 @@ const process = async (chat: ChatAPI, message: IMessage, previewUrls?: string[],
 	}
 
 	chat.composer?.clear();
+	const securityLabel = selectedSecurityLabels.get(message.rid);
+	if (securityLabel) {
+		message.securityLabel = securityLabel;
+	}
 	await runOptimisticSendMessage(message);
 
 	await sdk.rest.post('/v1/chat.sendMessage', { message, previewUrls });

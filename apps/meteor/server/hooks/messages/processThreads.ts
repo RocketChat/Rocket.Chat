@@ -6,6 +6,7 @@ import { Meteor } from 'meteor/meteor';
 import { updateThreadUsersSubscriptions, getMentions } from './notifyUsersOnMessage';
 import { sendMessageNotifications } from './sendNotificationsOnMessage';
 import { callbacks } from '../../lib/callbacks';
+import { listUsersNotClearedFor } from '../../lib/messages/securityLabels';
 import type { SendMessageOptions } from '../../lib/messages/sendMessage';
 import { reply } from '../../lib/messaging/threads/functions';
 import { notifyOnMessageChange } from '../../lib/notifyListener';
@@ -52,13 +53,16 @@ export async function processThreads(message: IMessage, room: IRoom, options?: S
 
 	const { mentionIds } = await getMentions(message);
 
-	const replies = [
+	const involved = [
 		...new Set([
 			...((!parentMessage.tcount ? [parentMessage.u._id] : parentMessage.replies) || []),
 			...(!parentMessage.tcount && room.t === 'd' && room.uids ? room.uids : []),
 			...mentionIds,
 		]),
 	].filter((userId) => userId !== message.u._id);
+	// Members not cleared for a labeled reply are not told about it
+	const notCleared = await listUsersNotClearedFor(message, involved);
+	const replies = involved.filter((userId) => !notCleared.includes(userId));
 
 	await notifyUsersOnReply(message, replies);
 	await metaData(message, parentMessage, replies);
@@ -72,6 +76,7 @@ export async function processThreads(message: IMessage, room: IRoom, options?: S
 	}
 	void notifyOnMessageChange({
 		id: message.tmid,
+		...(message.securityLabel && { onlyReadersOf: message }),
 	});
 
 	return message;

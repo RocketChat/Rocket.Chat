@@ -4,6 +4,7 @@ import { Messages, Subscriptions, NotificationQueue } from '@rocket.chat/models'
 
 import { getMentions, getUserIdsFromHighlights } from '../../../hooks/messages/notifyUsersOnMessage';
 import { callbacks } from '../../callbacks';
+import { listUsersNotClearedFor } from '../../messages/securityLabels';
 import { notifyOnSubscriptionChangedByRoomIdAndUserIds, notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../notifyListener';
 
 export async function reply({ tmid }: { tmid?: string }, message: IMessage, parentMessage: IMessage, followers: string[]) {
@@ -23,20 +24,26 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 		]),
 	];
 
-	await Messages.updateRepliesByThreadId(tmid, addToReplies, ts);
+	// The parent is shared by every reader of the thread, so a labeled reply must not move its counters or followers
+	if (!message.securityLabel) {
+		await Messages.updateRepliesByThreadId(tmid, addToReplies, ts);
+	}
 
-	const [highlightsUids, threadFollowers] = await Promise.all([
+	const [highlights, threadFollowers] = await Promise.all([
 		getUserIdsFromHighlights(rid, message),
 		Messages.getThreadFollowsByThreadId(tmid),
 	]);
 
-	const threadFollowersUids = threadFollowers?.filter((userId) => userId !== u._id && !mentionIds.includes(userId)) || [];
+	const notCleared = await listUsersNotClearedFor(message, [...new Set([...highlights, ...mentionIds, ...(threadFollowers ?? [])])]);
+	const isCleared = (userId: string) => !notCleared.includes(userId);
+	const highlightsUids = highlights.filter(isCleared);
+	const threadFollowersUids = threadFollowers?.filter((userId) => userId !== u._id && !mentionIds.includes(userId)).filter(isCleared) || [];
 
 	// Notify everyone involved in the thread
 	const notifyOptions = toAll || toHere ? { groupMention: true } : {};
 
 	// Notify message mentioned users and highlights
-	const mentionedUsers = [...new Set([...mentionIds, ...highlightsUids])];
+	const mentionedUsers = [...new Set([...mentionIds.filter(isCleared), ...highlightsUids])];
 
 	const promises = [Subscriptions.addUnreadThreadByRoomIdAndUserIds(rid, threadFollowersUids, tmid, notifyOptions)];
 

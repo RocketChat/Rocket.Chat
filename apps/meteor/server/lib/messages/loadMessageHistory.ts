@@ -2,6 +2,7 @@ import type { IMessage, IRoom, MessageTypesValues } from '@rocket.chat/core-typi
 import { Messages, Rooms } from '@rocket.chat/models';
 import type { FindOptions } from 'mongodb';
 
+import { getReaderAccess } from './securityLabels';
 import { settings } from '../../settings/cached';
 import { getHiddenSystemMessages } from '../messaging/getHiddenSystemMessages';
 import { normalizeMessagesForUser } from '../utils/lib/normalizeMessagesForUser';
@@ -44,6 +45,8 @@ export async function loadMessageHistory({
 		skip: offset,
 	};
 
+	const readerAccess = await getReaderAccess(userId);
+
 	const records = end
 		? await Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(
 				rid,
@@ -51,8 +54,10 @@ export async function loadMessageHistory({
 				hiddenMessageTypes,
 				options,
 				showThreadMessages,
+				false,
+				readerAccess,
 			).toArray()
-		: await Messages.findVisibleByRoomIdNotContainingTypes(rid, hiddenMessageTypes, options, showThreadMessages).toArray();
+		: await Messages.findVisibleByRoomIdNotContainingTypes(rid, hiddenMessageTypes, options, showThreadMessages, readerAccess).toArray();
 
 	const firstMessage = records[records.length - 1];
 	const lastSeen = ls ? new Date(ls) : undefined;
@@ -71,6 +76,8 @@ export async function loadMessageHistory({
 				hiddenMessageTypes,
 				{ limit: 1, sort: { ts: 1 } },
 				showThreadMessages,
+				false,
+				readerAccess,
 			).toArray(),
 			Messages.countVisibleByRoomIdBetweenTimestampsNotContainingTypes(
 				rid,
@@ -78,6 +85,8 @@ export async function loadMessageHistory({
 				firstMessage.ts,
 				hiddenMessageTypes,
 				showThreadMessages,
+				false,
+				readerAccess,
 			),
 		]);
 

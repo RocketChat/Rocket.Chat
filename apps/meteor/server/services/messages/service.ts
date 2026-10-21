@@ -21,6 +21,7 @@ import { notifyUsersOnSystemMessage } from '../../hooks/messages/notifyUsersOnMe
 import { SystemLogger } from '../../lib/logger/system';
 import { deleteMessage } from '../../lib/messages/deleteMessage';
 import { parseUrlsInMessage } from '../../lib/messages/parseUrlsInMessage';
+import { applyMessageSecurityLabel, assertMayQuote, getReaderAccess } from '../../lib/messages/securityLabels';
 import { sendMessage } from '../../lib/messages/sendMessage';
 import { updateMessage } from '../../lib/messages/updateMessage';
 import { incrementAndNotifyParentRoomWithParentMessage } from '../../lib/messaging/discussions/updateAndNotifyParentRoomWithParentMessage';
@@ -55,8 +56,9 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		this.badWords = new BeforeSaveBadWords();
 		this.spotify = new BeforeSaveSpotify();
 		this.jumpToMessage = new BeforeSaveJumpToMessage({
-			getMessages(messageIds) {
-				return Messages.findVisibleByIds(messageIds).toArray();
+			// A sender can only quote what they may read; anything else is treated as a missing message
+			async getMessages(messageIds, user) {
+				return Messages.findVisibleByIds(messageIds, undefined, await getReaderAccess(user._id)).toArray();
 			},
 			getRooms(roomIds) {
 				return Rooms.findByIds(roomIds).toArray();
@@ -67,6 +69,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 			getUserAvatarURL(user?: string): string {
 				return (user && getUserAvatarURL(user)) || '';
 			},
+			assertMayQuote,
 		});
 		this.cannedResponse = new BeforeSaveCannedResponse();
 		this.markdownParser = new BeforeSaveMarkdownParser(!disableMarkdownParser);
@@ -245,6 +248,8 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		if (!FederationActions.shouldPerformAction(message, room)) {
 			throw new FederationMatrixInvalidConfigurationError('Unable to send message');
 		}
+
+		message = await applyMessageSecurityLabel(message, room, user);
 
 		message = await this.cannedResponse.replacePlaceholders({ message, room, user });
 		message = await this.badWords.filterBadWords({ message });

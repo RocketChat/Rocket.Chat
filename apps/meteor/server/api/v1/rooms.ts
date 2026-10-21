@@ -62,6 +62,7 @@ import { eraseRoom } from '../../lib/eraseRoom';
 import { findUsersOfRoomOrderedByRole } from '../../lib/findUsersOfRoomOrderedByRole';
 import { FileUpload } from '../../lib/media/file-upload';
 import { loadRoomHistory, type RoomHistoryResult } from '../../lib/messages/loadRoomHistory';
+import { getReaderAccess } from '../../lib/messages/securityLabels';
 import { notifyOnSubscriptionChanged } from '../../lib/notifyListener';
 import { openRoom } from '../../lib/openRoom';
 import type { RoomRoles } from '../../lib/roles/getRoomRoles';
@@ -1802,7 +1803,7 @@ export const roomEndpoints = API.v1
 
 			let around: IMessage | undefined;
 			if (aroundId) {
-				const message = await Messages.findOneVisibleByRoomIdAndMessageId(roomId, aroundId);
+				const message = await Messages.findOneVisibleByRoomIdAndMessageId(roomId, aroundId, undefined, await getReaderAccess(this.userId));
 				if (!message) {
 					return API.v1.notFound();
 				}

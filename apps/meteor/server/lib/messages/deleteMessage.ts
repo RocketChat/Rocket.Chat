@@ -107,7 +107,7 @@ export async function deleteMessage(message: IMessage, user: IUser): Promise<voi
 }
 
 async function deleteThreadMessage(message: IThreadMessage, user: IUser, room: IRoom | null): Promise<void> {
-	const updatedParentMessage = await Messages.decreaseReplyCountById(message.tmid, -1);
+	const updatedParentMessage = message.securityLabel ? null : await Messages.decreaseReplyCountById(message.tmid, -1);
 
 	if (room) {
 		const { modifiedCount } = await Subscriptions.removeUnreadThreadsByRoomId(room._id, [message.tmid]);
@@ -125,5 +125,9 @@ async function deleteThreadMessage(message: IThreadMessage, user: IUser, room: I
 		void notifyOnMessageChange({
 			id: message.tmid,
 		});
+	}
+
+	if (message.securityLabel) {
+		void notifyOnMessageChange({ id: message.tmid, onlyReadersOf: message });
 	}
 }

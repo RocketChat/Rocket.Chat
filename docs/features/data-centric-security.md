@@ -103,13 +103,88 @@ passes. Cases outside this engine are skipped: BER and STANAG 4774 XML inputs, e
 clearance markings. One spiffing fixture, `food-policy.xml`, has a mismatched closing tag that spiffing's parser
 tolerates. This parser rejects it.
 
+## In the app
+
+Enforcement is gated by the `abac` license module and the `DCS_Enabled` setting. The SPIF comes from `DCS_Policy`, and
+the offered labels from `DCS_Catalog`. A room takes part once an administrator gives it a clearance and a default label
+(`POST /v1/dcs/rooms/:rid/clearance`). Users get clearances through `POST /v1/dcs/users/:userId/clearances`.
+
+**On send.** `Message.beforeSave` settles the label. A message without one gets the room default. Then the label must
+be valid, covered by the room's clearance, and covered by the sender's. A client never sets the marking: the server
+computes it for each reader.
+
+**On read: total omission.** A reader who isn't cleared for a label receives nothing about the message: no content, no
+placeholder, no sender, no timestamp. To them the timeline looks as if it had never been sent, following CMBAC practice
+in XMPP. Each path enforces this as follows:
+
+- **In the query.** Each labeled message stores `securityAccess` when it is saved: the flattened form of its label (policy,
+  classification, the restrictive keys a reader must all hold, and one group per permissive tag, of which they must hold
+  one key). `accessRequirement` builds it and is tested to agree with `canAccess`. Message queries behind read paths add
+  the reader's clearance (`getReaderAccess`). Named finders take it as their last parameter, and callers that build their
+  own query use `Messages.readableBy`. So pages, cursors, `total`s, unread counts, search results and deletion feeds only
+  ever see what the reader may read. A labeled message without a stored requirement matches nobody. Requirements of
+  messages saved earlier are backfilled once policies load.
+- **After the query**, `prepareMessagesForReader` checks again with the in-memory decision and attaches markings. That
+  catches policy drift, for example a category removed from the SPIF after messages were saved.
+- An id that names an uncleared message gets the same response as an id that doesn't exist (`chat.getMessage`,
+  `rooms.history?aroundId=`).
+- Search (`chat.search` and `rocketchatSearch.search`) filters in the query too, so result counts can't confirm that a
+  hidden match exists.
+- The room stream sends a labeled message only to the members cleared for it (`watch.messages` carries `readers`), and
+  nothing at all to anyone else. This happens per subscriber in `packages/streamer`, so it holds for monolith and
+  microservice deployments alike.
+- Unread counts, alerts and mentions skip uncleared members. Notifications never reach them. Cleared members get a
+  notification without content ("Labeled message"), because push and email leave the deployment.
+- The room document is shared by every member, so a labeled message never updates its `lastMessage`, activity time
+  (`lm`) or message count.
+
+**Threads.** A parent message is shared by everyone who can read it, so its stored thread state (`tcount`, `tlm`,
+`replies`) and the thread-unread marks only ever reflect unlabeled replies. A labeled reply leaves them untouched and
+notifies, marks unread and makes followers only of members cleared for it. Readers see their own counts instead:
+- **REST reads:** `prepareMessagesForReader` adds the labeled replies the reader may read, using one aggregation per
+  page (`aggregateReadableLabeledReplyStatsByThreadIds`). A symbol-keyed marker keeps a second pass from counting them
+  twice, and never reaches the wire.
+- **Room stream:** when a parent with labeled replies changes, members are grouped by clearance and each group receives
+  its own copy (`watch.messages` `variants`).
+- **Live updates:** after a labeled reply, the parent is re-sent only to members cleared for that reply, so nobody else
+  gets an update at that moment.
+- **Thread lists:** these also include parents of readable labeled replies, because in a DCS room every reply is
+  labeled and none sets `tcount`.
+
+**Copies of content.** Content copied from one message into another may not lose its label:
+
+- **Quotes.** A message that quotes a labeled message must carry a label that dominates it (`dominates`): same policy,
+  a classification at least as high in the SPIF hierarchy, every restrictive category, and for each permissive tag the
+  quoted message uses, a subset of its values. So the quote is never releasable to more parties. An unlabeled message
+  can't quote a labeled one, which also covers quoting across rooms by permalink. Anything else is refused with
+  `error-dcs-quote-not-dominated`. A tested property guarantees that a reader who can read the quoting message could
+  also read the quoted one on its own. A sender who isn't cleared for the quoted message can't quote it: it's fetched
+  with their clearance, so it behaves exactly like a missing message.
+- **Pins and discussions.** The "pinned a message" notice, the "discussion created" notice and the copy at the top of a
+  discussion embed the source message, so they carry its label and access requirement. Labeled system messages don't
+  update the room's last message either. A discussion can only be started from a message the creator may read.
+
+**Known side channels, not closed yet:**
+
+- Rooms under DCS show no last-message preview, and labeled messages don't bump them in the sidebar, even for readers
+  who are cleared. Closing this means previews computed per reader instead of one stored on the room.
+- Discussion counts (`dcount`) on a parent message still count discussions started from labeled messages.
+- Thread lists sort by the stored `tlm`, so a thread with only labeled replies sorts as if it had none. The
+  "following" filter uses the stored `replies`, so it misses threads someone follows only through labeled replies.
+- System messages, such as pin and discussion notices, carry labels but the UI doesn't render their marking yet.
+- Typing indicators ("alice is typing") and read receipts reveal activity.
+- A discussion started from a labeled message is a room whose name and members every invited user sees. Room names
+  and topics are not labeled.
+- Exports, moderation, audit, omnichannel transcripts and Apps-Engine reads don't add the reader's clearance.
+- Queries on `securityAccess` are a residual filter on top of the existing `rid`/`ts` indexes. No dedicated index yet.
+
 ## Roadmap
 
 1. Typings (`core-typings`) ✔
 2. Engine: SPIF parsing, access decision, validation, markings, catalog ✔
 3. STANAG 4774 XML serialization and STANAG 4778 binding: XML-DSig with an administrator-configured X.509 key
-4. Model methods and indexes for labels and clearances
-5. Settings, policy loading at startup, license gate (`abac` module), checks on send and edit
-6. Checks on every read path; uncleared readers get a withheld placeholder with no content and no label
-7. REST: catalog per room, policies, clearance administration
-8. Client: label picker, per-message badges, room banner
+4. Model methods and indexes for labels and clearances ✔ (POC)
+5. Settings, policy loading at startup, license gate (`abac` module), checks on send and edit ✔ (POC)
+6. Total omission on every read path ✔ (POC, side channels above), filtered inside message queries ✔
+7. REST: catalog per room, clearance administration ✔ (POC)
+8. Client: label picker, per-message badges, room banner ✔ (POC)

@@ -106,6 +106,7 @@
 		"@rocket.chat/cron": "workspace:^",
 		"@rocket.chat/css-in-js": "workspace:~",
 		"@rocket.chat/css-supports": "workspace:~",
+		"@rocket.chat/dcs": "workspace:^",
 		"@rocket.chat/ddp-client": "workspace:^",
 		"@rocket.chat/emitter": "workspace:~",
 		"@rocket.chat/favicon": "workspace:^",

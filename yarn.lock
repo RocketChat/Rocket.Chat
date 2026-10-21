@@ -9869,7 +9869,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/dcs@workspace:ee/packages/dcs":
+"@rocket.chat/dcs@workspace:^, @rocket.chat/dcs@workspace:ee/packages/dcs":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/dcs@workspace:ee/packages/dcs"
   dependencies:
@@ -10787,6 +10787,7 @@ __metadata:
     "@rocket.chat/cron": "workspace:^"
     "@rocket.chat/css-in-js": "workspace:~"
     "@rocket.chat/css-supports": "workspace:~"
+    "@rocket.chat/dcs": "workspace:^"
     "@rocket.chat/ddp-client": "workspace:^"
     "@rocket.chat/desktop-api": "workspace:~"
     "@rocket.chat/emitter": "workspace:~"

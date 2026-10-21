@@ -64,6 +64,32 @@ const chatSendMessageSchema = {
 					type: 'object',
 					nullable: true,
 				},
+				securityLabel: {
+					type: 'object',
+					properties: {
+						policyId: { type: 'string' },
+						classification: { type: 'integer' },
+						categories: {
+							type: 'array',
+							items: {
+								type: 'object',
+								properties: {
+									tagSetId: { type: 'string' },
+									tagType: {
+										type: 'string',
+										enum: ['restrictive', 'permissive', 'enumeratedRestrictive', 'enumeratedPermissive', 'informative'],
+									},
+									lacv: { type: 'string' },
+								},
+								required: ['tagSetId', 'tagType', 'lacv'],
+								additionalProperties: false,
+							},
+						},
+					},
+					required: ['policyId', 'classification', 'categories'],
+					additionalProperties: false,
+					nullable: true,
+				},
 			},
 		},
 		previewUrls: {

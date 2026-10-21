@@ -5,6 +5,7 @@ import { Subscriptions, Rooms } from '@rocket.chat/models';
 import moment from 'moment';
 
 import { callbacks } from '../../lib/callbacks';
+import { listUsersNotClearedFor } from '../../lib/messages/securityLabels';
 import { messageContainsHighlight } from '../../lib/notifications/message/messageContainsHighlight';
 import {
 	notifyOnSubscriptionChanged,
@@ -92,7 +93,17 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 	const [mentions, highlightIds] = await Promise.all([getMentions(message), getUserIdsFromHighlights(room._id, message)]);
 
 	const { toAll, toHere, mentionIds } = mentions;
-	const userIds = [...new Set([...mentionIds, ...highlightIds])];
+
+	// Members not cleared for a labeled message get no unread count, alert or mention from it
+	const members = message.securityLabel
+		? (await Subscriptions.findByRoomId(room._id, { projection: { 'u._id': 1 } }).toArray()).map(({ u }) => u._id)
+		: [];
+	const notCleared = await listUsersNotClearedFor(
+		message,
+		members.filter((uid) => uid !== message.u._id),
+	);
+	const excluded = [message.u._id, ...notCleared];
+	const userIds = [...new Set([...mentionIds, ...highlightIds])].filter((uid) => !notCleared.includes(uid));
 	const unreadCount = getUnreadSettingCount(room.t);
 	const unreadAllMessages = unreadCount === 'all_messages';
 
@@ -103,7 +114,7 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 	// we need to use toArray() here and keep results in memory because we'll update the them later
 	const subs = await Subscriptions.findByRoomIdAndNotAlertOrOpenExcludingUserIds({
 		roomId: room._id,
-		uidsExclude: [message.u._id],
+		uidsExclude: excluded,
 		uidsInclude: userIds,
 		onlyRead: !toAll && !toHere && !unreadAllMessages,
 	}).toArray();
@@ -112,17 +123,17 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 	if (userIds.length) {
 		await Subscriptions.incUserMentionsAndUnreadForRoomIdAndUserIds(room._id, userIds, 1, userMentionInc);
 	} else if (toAll || toHere) {
-		await Subscriptions.incGroupMentionsAndUnreadForRoomIdExcludingUserId(room._id, message.u._id, 1, groupMentionInc);
+		await Subscriptions.incGroupMentionsAndUnreadForRoomIdExcludingUserIds(room._id, excluded, 1, groupMentionInc);
 	}
 
 	if (!toAll && !toHere && unreadAllMessages) {
-		await Subscriptions.incUnreadForRoomIdExcludingUserIds(room._id, [...userIds, message.u._id], 1);
+		await Subscriptions.incUnreadForRoomIdExcludingUserIds(room._id, [...userIds, ...excluded], 1);
 	}
 
 	// update subscriptions of other members of the room
 	await Promise.all([
-		Subscriptions.setAlertForRoomIdExcludingUserId(message.rid, message.u._id),
-		Subscriptions.setOpenForRoomIdExcludingUserId(message.rid, message.u._id),
+		Subscriptions.setAlertForRoomIdExcludingUserIds(message.rid, excluded),
+		Subscriptions.setOpenForRoomIdExcludingUserIds(message.rid, excluded),
 	]);
 
 	subs.forEach((sub) => {
@@ -167,12 +178,15 @@ export async function notifyUsersOnMessage(message: IMessage, room: IRoom, roomU
 	if (isEditedMessage(message)) {
 		if (Math.abs(moment(message.editedAt).diff(Date.now())) > 60000) {
 			// TODO: Review as I am not sure how else to get around this as the incrementing of the msgs count shouldn't be in this callback
-			Rooms.getIncMsgCountUpdateQuery(1, roomUpdater);
+			if (!message.securityLabel) {
+				Rooms.getIncMsgCountUpdateQuery(1, roomUpdater);
+			}
 			return message;
 		}
 
 		// Only updates last message if it was edited (skip rest of callback)
 		if (
+			!message.securityLabel &&
 			settings.get('Store_Last_Message') &&
 			(!message.tmid || message.tshow) &&
 			(!room.lastMessage || room.lastMessage._id === message._id)
@@ -184,18 +198,25 @@ export async function notifyUsersOnMessage(message: IMessage, room: IRoom, roomU
 	}
 
 	if (message.ts && Math.abs(moment(message.ts).diff(Date.now())) > 60000) {
-		Rooms.getIncMsgCountUpdateQuery(1, roomUpdater);
+		if (!message.securityLabel) {
+			Rooms.getIncMsgCountUpdateQuery(1, roomUpdater);
+		}
 		return message;
 	}
 
 	// If message sent ONLY on a thread, skips the rest as it is done on a callback specific to threads
 	if (message.tmid && !message.tshow) {
-		Rooms.getIncMsgCountUpdateQuery(1, roomUpdater);
+		if (!message.securityLabel) {
+			Rooms.getIncMsgCountUpdateQuery(1, roomUpdater);
+		}
 		return message;
 	}
 
-	// Update all the room activity tracker fields
-	Rooms.setIncMsgCountAndSetLastMessageUpdateQuery(1, message, !!settings.get('Store_Last_Message'), roomUpdater);
+	// Update all the room activity tracker fields; the room document is shared by every member, so a labeled
+	// message must not move its last message, activity time or message count
+	if (!message.securityLabel) {
+		Rooms.setIncMsgCountAndSetLastMessageUpdateQuery(1, message, !!settings.get('Store_Last_Message'), roomUpdater);
+	}
 	await updateUsersSubscriptions(message, room);
 
 	return message;
@@ -203,7 +224,9 @@ export async function notifyUsersOnMessage(message: IMessage, room: IRoom, roomU
 
 export async function notifyUsersOnSystemMessage(message: IMessage, room: IRoom): Promise<IMessage> {
 	const roomUpdater = Rooms.getUpdater();
-	Rooms.setIncMsgCountAndSetLastMessageUpdateQuery(1, message, !!settings.get('Store_Last_Message'), roomUpdater);
+	if (!message.securityLabel) {
+		Rooms.setIncMsgCountAndSetLastMessageUpdateQuery(1, message, !!settings.get('Store_Last_Message'), roomUpdater);
+	}
 
 	if (roomUpdater.hasChanges()) {
 		await Rooms.updateFromUpdater({ _id: room._id }, roomUpdater);

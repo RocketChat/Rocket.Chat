@@ -124,8 +124,10 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	incUnreadForRoomIdExcludingUserIds(roomId: IRoom['_id'], userIds: IUser['_id'][], inc: number): Promise<UpdateResult | Document>;
 
 	setAlertForRoomIdExcludingUserId(roomId: IRoom['_id'], userId: IUser['_id']): Promise<UpdateResult | Document>;
+	setAlertForRoomIdExcludingUserIds(roomId: IRoom['_id'], userIds: IUser['_id'][]): Promise<UpdateResult | Document>;
 
 	setOpenForRoomIdExcludingUserId(roomId: IRoom['_id'], userId: IUser['_id']): Promise<UpdateResult | Document>;
+	setOpenForRoomIdExcludingUserIds(roomId: IRoom['_id'], userIds: IUser['_id'][]): Promise<UpdateResult | Document>;
 
 	updateNameAndFnameByVisitorIds(visitorIds: string[], name: string): Promise<UpdateResult | Document>;
 
@@ -298,6 +300,12 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	incGroupMentionsAndUnreadForRoomIdExcludingUserId(
 		roomId: IRoom['_id'],
 		userId: IUser['_id'],
+		incGroup?: number,
+		incUnread?: number,
+	): Promise<UpdateResult | Document>;
+	incGroupMentionsAndUnreadForRoomIdExcludingUserIds(
+		roomId: IRoom['_id'],
+		userIds: IUser['_id'][],
 		incGroup?: number,
 		incUnread?: number,
 	): Promise<UpdateResult | Document>;

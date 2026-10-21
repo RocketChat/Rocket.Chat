@@ -5,6 +5,7 @@ import { Match, check } from 'meteor/check';
 
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
+import { getReaderAccess, prepareMessagesForReader } from '../../lib/messages/securityLabels';
 import { parseMessageSearchQuery } from '../../lib/parseMessageSearchQuery';
 import type { IRawSearchResult } from '../../lib/search/model/ISearchResult';
 import { settings } from '../../settings';
@@ -79,14 +80,18 @@ export const messageSearch = async function (
 		};
 	}
 
+	Object.assign(query, Messages.readableBy(await getReaderAccess(userId)));
+
 	try {
+		const docs = await Messages.find(query, {
+			// @ts-expect-error col.s.db is not typed
+			readPreference: readSecondaryPreferred(Messages.col.s.db),
+			...options,
+		}).toArray();
+
 		return {
 			message: {
-				docs: await Messages.find(query, {
-					// @ts-expect-error col.s.db is not typed
-					readPreference: readSecondaryPreferred(Messages.col.s.db),
-					...options,
-				}).toArray(),
+				docs: await prepareMessagesForReader(docs, userId),
 			},
 		};
 	} catch (error) {

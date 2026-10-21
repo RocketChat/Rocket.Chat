@@ -4,6 +4,7 @@ import { Messages, Rooms } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
+import { getReaderAccess } from '../../lib/messages/securityLabels';
 import { getHiddenSystemMessages } from '../../lib/messaging/getHiddenSystemMessages';
 import { normalizeMessagesForUser } from '../../lib/utils/lib/normalizeMessagesForUser';
 import { settings } from '../../settings/cached';
@@ -68,6 +69,8 @@ export const getChannelHistory = async ({
 		limit: count,
 	};
 
+	const readerAccess = await getReaderAccess(fromUserId);
+
 	const records =
 		oldest === undefined
 			? await Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(
@@ -77,6 +80,7 @@ export const getChannelHistory = async ({
 					options,
 					showThreadMessages,
 					inclusive,
+					readerAccess,
 				).toArray()
 			: await Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
 					rid,
@@ -86,6 +90,7 @@ export const getChannelHistory = async ({
 					options,
 					showThreadMessages,
 					inclusive,
+					readerAccess,
 				).toArray();
 
 	const messages = await normalizeMessagesForUser(records, fromUserId);
@@ -109,6 +114,8 @@ export const getChannelHistory = async ({
 						},
 					},
 					showThreadMessages,
+					false,
+					readerAccess,
 				);
 
 				const totalCursor = await Messages.countVisibleByRoomIdBetweenTimestampsNotContainingTypes(
@@ -117,6 +124,8 @@ export const getChannelHistory = async ({
 					firstMsg.ts,
 					hiddenMessageTypes,
 					showThreadMessages,
+					false,
+					readerAccess,
 				);
 
 				firstUnread = (await unreadMessages.toArray())[0];

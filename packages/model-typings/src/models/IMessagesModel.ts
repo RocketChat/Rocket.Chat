@@ -6,6 +6,8 @@ import type {
 	MessageTypesValues,
 	MessageAttachment,
 	IMessageWithPendingFileImport,
+	ISecurityAccessRequirement,
+	ISecurityReaderAccess,
 } from '@rocket.chat/core-typings';
 import type {
 	AggregationCursor,
@@ -39,18 +41,27 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		username: IUser['username'],
 		rid: IRoom['_id'],
 		options?: O,
+		readerAccess?: ISecurityReaderAccess,
 	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
+
+	readableBy(readerAccess: ISecurityReaderAccess): Filter<IMessage>;
+	findLabeledWithoutAccessRequirement<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	setSecurityAccessById(_id: IMessage['_id'], securityAccess: ISecurityAccessRequirement): Promise<UpdateResult>;
 
 	findVisibleByMentionAndRoomId<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		username: IUser['username'],
 		rid: IRoom['_id'],
 		options?: O,
+		readerAccess?: ISecurityReaderAccess,
 	): FindCursor<DocumentWithProjection<T, O>>;
 
 	findStarredByUserAtRoom<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		userId: IUser['_id'],
 		roomId: IRoom['_id'],
 		options?: O,
+		readerAccess?: ISecurityReaderAccess,
 	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
 
 	findPaginatedByRoomIdAndType<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
@@ -63,6 +74,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		rid: IRoom['_id'],
 		text: string,
 		options?: O,
+		readerAccess?: ISecurityReaderAccess,
 	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
 
 	findAllNumberOfTransferredRooms(p: {
@@ -107,6 +119,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	findPaginatedPinnedByRoom<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		roomId: IMessage['rid'],
 		options?: O,
+		readerAccess?: ISecurityReaderAccess,
 	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
 
 	setFederationReactionEventId(username: string, _id: string, reaction: string, federationEventId: string): Promise<void>;
@@ -156,7 +169,12 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		rocketChatUrl: string,
 		attachment: MessageAttachment,
 	): Promise<UpdateResult | Document>;
-	countVisibleByRoomIdBetweenTimestampsInclusive(roomId: string, afterTimestamp: Date, beforeTimestamp: Date): Promise<number>;
+	countVisibleByRoomIdBetweenTimestampsInclusive(
+		roomId: string,
+		afterTimestamp: Date,
+		beforeTimestamp: Date,
+		readerAccess?: ISecurityReaderAccess,
+	): Promise<number>;
 
 	findByMention<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		username: string,
@@ -171,6 +189,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	findVisibleByIds<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		ids: string[],
 		options?: O,
+		readerAccess?: ISecurityReaderAccess,
 	): FindCursor<DocumentWithProjection<T, O>>;
 	findVisibleByRoomIdNotContainingTypes<
 		T extends Document = IMessage,
@@ -180,6 +199,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		types: MessageTypesValues[],
 		options?: O,
 		showThreadMessages?: boolean,
+		readerAccess?: ISecurityReaderAccess,
 	): FindCursor<DocumentWithProjection<T, O>>;
 	findDiscussionRoomIdsContainingTypes(types: MessageTypesValues[]): Promise<IRoom['_id'][]>;
 	countVisibleByRoomIdContainingTypes(roomId: string, types: MessageTypesValues[]): Promise<number>;
@@ -225,6 +245,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		options?: O,
 		showThreadMessages?: boolean,
 		inclusive?: boolean,
+		readerAccess?: ISecurityReaderAccess,
 	): FindCursor<DocumentWithProjection<T, O>>;
 
 	findVisibleByRoomIdBetweenTimestampsNotContainingTypes<
@@ -238,6 +259,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		options?: O,
 		showThreadMessages?: boolean,
 		inclusive?: boolean,
+		readerAccess?: ISecurityReaderAccess,
 	): FindCursor<DocumentWithProjection<T, O>>;
 	countVisibleByRoomIdBetweenTimestampsNotContainingTypes(
 		roomId: string,
@@ -246,6 +268,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		types: MessageTypesValues[],
 		showThreadMessages?: boolean,
 		inclusive?: boolean,
+		readerAccess?: ISecurityReaderAccess,
 	): Promise<number>;
 	findVisibleByRoomIdBeforeTimestamp<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		roomId: string,
@@ -264,6 +287,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		roomId: IMessage['rid'],
 		{ updatedAt, minTs }: { updatedAt: { $lt: Date } | { $gt: Date }; minTs?: Date },
 		options?: O,
+		readerAccess?: ISecurityReaderAccess,
 	): FindCursor<DocumentWithProjection<T, O>>;
 	updateUsernameOfEditByUserId(userId: string, username: string): Promise<UpdateResult | Document>;
 	updateAllUsernamesByUserId(userId: string, username: string): Promise<UpdateResult | Document>;
@@ -295,6 +319,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		rid: string,
 		messageId: string,
 		options?: O,
+		readerAccess?: ISecurityReaderAccess,
 	): Promise<DocumentWithProjection<T, O> | null>;
 
 	updateUserStarById(_id: string, userId: string, starred?: boolean): Promise<UpdateResult>;
@@ -344,6 +369,12 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	getMessageByFileIdAndUsername(fileID: string, userId: string): Promise<IMessage | null>;
 	getMessageByFileId(fileID: string): Promise<IMessage | null>;
 	setThreadMessagesAsRead(rid: string, tmid: string, until: Date): Promise<UpdateResult | Document>;
+	aggregateReadableLabeledReplyStatsByThreadIds(
+		tmids: IMessage['_id'][],
+		readerAccess: ISecurityReaderAccess,
+	): Promise<{ _id: IMessage['_id']; count: number; lastTs: Date; users: IUser['_id'][] }[]>;
+	findThreadIdsOfReadableLabeledRepliesByRoomId(rid: IRoom['_id'], readerAccess: ISecurityReaderAccess): Promise<IMessage['_id'][]>;
+	hasLabeledRepliesByThreadId(tmid: IMessage['_id']): Promise<boolean>;
 	updateRepliesByThreadId(tmid: string, replies: string[], ts: Date): Promise<UpdateResult>;
 	refreshDiscussionMetadata(room: Pick<IRoom, '_id' | 'msgs' | 'lm'>): Promise<null | WithId<IMessage>>;
 	incDiscussionMetadata(room: Pick<IRoom, '_id' | 'lm'>, dcountInc: number): Promise<null | WithId<IMessage>>;

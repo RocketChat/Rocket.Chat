@@ -731,4 +731,52 @@ describe('Create attachments for message URLs', () => {
 			message_link: 'https://open.rocket.chat/linked?msg=msg2',
 		});
 	});
+
+	it('should ask who quotes what, and fetch quoted messages as the quoting user', async () => {
+		const asked: Array<{ message: IMessage; quoted: IMessage[] }> = [];
+		const fetchedAs: string[] = [];
+		const jumpToMessage = new BeforeSaveJumpToMessage({
+			getMessages: async (_ids, user) => {
+				fetchedAs.push(user._id);
+				return [createMessage('linked message', { _id: 'linked' })];
+			},
+			getRooms: async () => [createRoom()],
+			canAccessRoom: async () => true,
+			getUserAvatarURL: () => 'url',
+			assertMayQuote: async (message, quoted) => {
+				asked.push({ message, quoted });
+			},
+		});
+
+		const message = await jumpToMessage.createAttachmentForMessageURLs({
+			message: createMessage('hey', { urls: [{ url: 'https://open.rocket.chat/linked?msg=linked', meta: {} }] }),
+			user: createUser(),
+			config: { chainLimit: 10, siteUrl: 'https://open.rocket.chat', useRealName: true },
+		});
+
+		expect(fetchedAs).to.deep.equal(['userId']);
+		expect(asked.map(({ quoted }) => quoted.map(({ _id }) => _id))).to.deep.equal([['linked']]);
+		expect(asked[0].message).to.equal(message);
+	});
+
+	it('should refuse the message when quoting is not allowed', async () => {
+		const jumpToMessage = new BeforeSaveJumpToMessage({
+			getMessages: async () => [createMessage('linked message', { _id: 'linked' })],
+			getRooms: async () => [createRoom()],
+			canAccessRoom: async () => true,
+			getUserAvatarURL: () => 'url',
+			assertMayQuote: async () => {
+				throw new Error('error-dcs-quote-not-dominated');
+			},
+		});
+
+		const attempt = jumpToMessage.createAttachmentForMessageURLs({
+			message: createMessage('hey', { urls: [{ url: 'https://open.rocket.chat/linked?msg=linked', meta: {} }] }),
+			user: createUser(),
+			config: { chainLimit: 10, siteUrl: 'https://open.rocket.chat', useRealName: true },
+		});
+
+		const error = await attempt.catch((err: Error) => err);
+		expect(error).to.be.instanceOf(Error).with.property('message', 'error-dcs-quote-not-dominated');
+	});
 });

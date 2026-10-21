@@ -42,6 +42,7 @@ import { hasAllPermissionAsync, hasPermissionAsync } from '../../lib/authorizati
 import { eraseRoom } from '../../lib/eraseRoom';
 import { findUsersOfRoom } from '../../lib/findUsersOfRoom';
 import { mountIntegrationQueryBasedOnPermissions } from '../../lib/integrations/lib/mountQueriesBasedOnPermission';
+import { getReaderAccess } from '../../lib/messages/securityLabels';
 import { openRoom } from '../../lib/openRoom';
 import { getUsersHiddenFrom, filterHiddenUsers, redactHiddenUsers } from '../../lib/statusVisibility/hiddenUsers';
 import { normalizeMessagesForUser } from '../../lib/utils/lib/normalizeMessagesForUser';
@@ -441,7 +442,12 @@ API.v1.get(
 		const lm = room.lm ? room.lm : room._updatedAt;
 
 		if (subscription?.open) {
-			unreads = await Messages.countVisibleByRoomIdBetweenTimestampsInclusive(subscription.rid, subscription.ls || subscription.ts, lm);
+			unreads = await Messages.countVisibleByRoomIdBetweenTimestampsInclusive(
+				subscription.rid,
+				subscription.ls || subscription.ts,
+				lm,
+				await getReaderAccess(user),
+			);
 			unreadsFrom = subscription.ls || subscription.ts;
 			userMentions = subscription.userMentions;
 			joined = true;
@@ -1202,6 +1208,7 @@ API.v1.get(
 			...parseIds(starredIds, 'starred._id'),
 			...(pinned?.toLowerCase() === 'true' ? { pinned: true } : {}),
 			_hidden: { $ne: true },
+			...Messages.readableBy(await getReaderAccess(this.userId)),
 		};
 
 		const { cursor, totalCount } = Messages.findPaginated(ourQuery, {

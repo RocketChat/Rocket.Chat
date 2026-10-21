@@ -41,6 +41,7 @@ import { callbacks } from '../../lib/callbacks';
 import { applyAirGappedRestrictionsValidation } from '../../lib/cloud/license/airGappedRestrictionsWrapper';
 import { deleteMessageValidatingPermission } from '../../lib/messages/deleteMessage';
 import { processWebhookMessage } from '../../lib/messages/processWebhookMessage';
+import { getReaderAccess, prepareMessagesForReader } from '../../lib/messages/securityLabels';
 import { pinMessage, unpinMessage } from '../../lib/messaging/pins/pinMessage';
 import { executeSetReaction } from '../../lib/messaging/reactions/setReaction';
 import { starMessage } from '../../lib/messaging/stars/starMessage';
@@ -792,6 +793,9 @@ const chatEndpoints = API.v1
 			}
 
 			const [message] = await normalizeMessagesForUser([msg], this.userId);
+			if (!message) {
+				return API.v1.failure();
+			}
 
 			return API.v1.success({
 				message,
@@ -996,7 +1000,7 @@ const chatEndpoints = API.v1
 
 			const { cursor, totalCount } = Messages.trashFindPaginatedDeletedAfter(
 				new Date(since),
-				{ rid: roomId },
+				{ rid: roomId, ...Messages.readableBy(await getReaderAccess(this.userId)) },
 				{
 					skip: offset,
 					limit: count,
@@ -1042,10 +1046,14 @@ const chatEndpoints = API.v1
 				throw new Meteor.Error('error-not-allowed', 'Not allowed');
 			}
 
-			const { cursor, totalCount } = Messages.findPaginatedPinnedByRoom(roomId, {
-				skip: offset,
-				limit: count,
-			});
+			const { cursor, totalCount } = Messages.findPaginatedPinnedByRoom(
+				roomId,
+				{
+					skip: offset,
+					limit: count,
+				},
+				await getReaderAccess(this.userId),
+			);
 
 			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
@@ -1101,7 +1109,15 @@ const chatEndpoints = API.v1
 				msg: new RegExp(escapeRegExp(text || ''), 'i'),
 			};
 
-			const threadQuery = { ...typeThread, rid: room._id, tcount: { $exists: true } };
+			// Labeled replies don't mark their parent as a thread, so the reader's own are looked up
+			const readerAccess = await getReaderAccess(this.userId);
+			const labeledThreadIds = await Messages.findThreadIdsOfReadableLabeledRepliesByRoomId(room._id, readerAccess);
+			const threadQuery = {
+				...typeThread,
+				rid: room._id,
+				$or: [{ tcount: { $exists: true } }, { _id: { $in: labeledThreadIds } }],
+				...Messages.readableBy(readerAccess),
+			};
 			const { cursor, totalCount } = await Messages.findPaginated<IThreadMainMessage>(threadQuery, {
 				sort: sort || { tlm: -1 },
 				skip: offset,
@@ -1166,16 +1182,25 @@ const chatEndpoints = API.v1
 			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 			}
-			const threadQuery = { rid, tcount: { $exists: true } };
+			const readerAccess = await getReaderAccess(this.userId);
+			const labeledThreadIds = await Messages.findThreadIdsOfReadableLabeledRepliesByRoomId(rid, readerAccess);
+			const threadQuery = {
+				rid,
+				$or: [{ tcount: { $exists: true } }, { _id: { $in: labeledThreadIds } }],
+				...Messages.readableBy(readerAccess),
+			};
 			return API.v1.success({
 				threads: {
-					update: await Messages.find(
-						{ ...threadQuery, _updatedAt: { $gt: updatedSinceDate } },
-						{
-							sort,
-							projection: fields,
-						},
-					).toArray(),
+					update: await prepareMessagesForReader(
+						await Messages.find(
+							{ ...threadQuery, _updatedAt: { $gt: updatedSinceDate } },
+							{
+								sort,
+								projection: fields,
+							},
+						).toArray(),
+						this.userId,
+					),
 					remove: await Messages.trashFindDeletedAfter(updatedSinceDate, threadQuery, {
 						sort,
 						projection: fields,
@@ -1236,13 +1261,18 @@ const chatEndpoints = API.v1
 					if (target?.tmid !== tmid || !target.ts) {
 						throw new Meteor.Error('error-invalid-message', 'The provided "aroundId" does not belong to the thread');
 					}
-					const before = await Messages.countDocuments({ tmid, _hidden: { $ne: true }, ts: { $lt: target.ts } });
+					const before = await Messages.countDocuments({
+						tmid,
+						_hidden: { $ne: true },
+						ts: { $lt: target.ts },
+						...Messages.readableBy(await getReaderAccess(this.userId)),
+					});
 					resolvedOffset = Math.max(0, before - Math.floor(count / 2));
 				}
 			}
 
 			const { cursor, totalCount } = Messages.findPaginated(
-				{ tmid, _hidden: { $ne: true } },
+				{ tmid, _hidden: { $ne: true }, ...Messages.readableBy(await getReaderAccess(this.userId)) },
 				{
 					sort: resolvedSort,
 					skip: resolvedOffset,
@@ -1251,7 +1281,8 @@ const chatEndpoints = API.v1
 				},
 			);
 
-			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
+			const [found, total] = await Promise.all([cursor.toArray(), totalCount]);
+			const messages = await prepareMessagesForReader(found, this.userId);
 
 			return API.v1.success({
 				messages,
@@ -1315,8 +1346,18 @@ const chatEndpoints = API.v1
 			}
 			return API.v1.success({
 				messages: {
-					update: await Messages.find({ tmid, _updatedAt: { $gt: updatedSinceDate } }, { projection: fields, sort }).toArray(),
-					remove: await Messages.trashFindDeletedAfter(updatedSinceDate, { tmid }, { projection: fields, sort }).toArray(),
+					update: await prepareMessagesForReader(
+						await Messages.find(
+							{ tmid, _updatedAt: { $gt: updatedSinceDate }, ...Messages.readableBy(await getReaderAccess(this.userId)) },
+							{ projection: fields, sort },
+						).toArray(),
+						this.userId,
+					),
+					remove: await Messages.trashFindDeletedAfter(
+						updatedSinceDate,
+						{ tmid, ...Messages.readableBy(await getReaderAccess(this.userId)) },
+						{ projection: fields, sort },
+					).toArray(),
 				},
 			});
 		},
@@ -1356,7 +1397,7 @@ const chatEndpoints = API.v1
 				},
 			});
 
-			return API.v1.success(messages);
+			return API.v1.success({ ...messages, messages: await prepareMessagesForReader(messages.messages, this.userId) });
 		},
 	)
 	.get(
@@ -1434,7 +1475,7 @@ const chatEndpoints = API.v1
 					sort,
 				},
 			});
-			return API.v1.success(messages);
+			return API.v1.success({ ...messages, messages: await prepareMessagesForReader(messages.messages, this.userId) });
 		},
 	)
 	.get(
@@ -1493,7 +1534,7 @@ const chatEndpoints = API.v1
 		async function action() {
 			const { messageIds } = this.bodyParams;
 
-			const messages = await Messages.findVisibleByIds(messageIds).toArray();
+			const messages = await Messages.findVisibleByIds(messageIds, undefined, await getReaderAccess(this.userId)).toArray();
 			if (!messages.length) {
 				return API.v1.notFound();
 			}
