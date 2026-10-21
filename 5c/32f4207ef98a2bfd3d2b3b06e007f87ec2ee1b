@@ -1,0 +1,21 @@
+apps/meteor/server/services/federation/utils.test.ts
+  s_848bf8e6bff91e::t_d4d818c6ddacd2 1-2,9
+ee/packages/xmpp-server/docs/specs/configuration-and-lifecycle.md
+  s_848bf8e6bff91e::t_4978e6a5d1e3f6 19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5c32f4207ef98a2bfd3d2b3b06e007f87ec2ee1b",
+  "prompts": {},
+  "sessions": {
+    "s_848bf8e6bff91e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1b0fc686-87b0-46e3-aecd-5344b3467f9e",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
