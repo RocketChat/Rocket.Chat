@@ -1,9 +1,12 @@
 import type { ItemProps } from '@react-types/shared';
+import type { ReactNode } from 'react';
 import { Children } from 'react';
 
 import type { PartialNode } from './PartialNode';
 
-export type MenuItemProps<T> = ItemProps<T>;
+export type MenuItemProps<T> = Omit<ItemProps<T>, 'children'> & {
+	children?: ReactNode | ((item: T) => ReactNode);
+};
 
 function MenuItem<T>(_props: MenuItemProps<T>) {
 	return null;
@@ -12,7 +15,7 @@ function MenuItem<T>(_props: MenuItemProps<T>) {
 MenuItem.getCollectionNode = function* getCollectionNode<T>(props: MenuItemProps<T>, context: any): Generator<PartialNode<T>> {
 	const { childItems, title, children } = props;
 
-	const rendered = props.title || props.children;
+	const rendered = props.title || (typeof props.children !== 'function' ? props.children : null);
 	const textValue = props.textValue || (typeof rendered === 'string' ? rendered : '') || props['aria-label'] || '';
 
 	if (!textValue && !context?.suppressTextValueWarning) {
@@ -34,7 +37,7 @@ MenuItem.getCollectionNode = function* getCollectionNode<T>(props: MenuItemProps
 						value: child,
 					};
 				}
-			} else if (title) {
+			} else if (title && typeof children !== 'function') {
 				const items: PartialNode<T>[] = [];
 				Children.forEach(children, (child) => {
 					items.push({
@@ -58,7 +61,7 @@ function hasChildItems<T>(props: MenuItemProps<T>) {
 		return true;
 	}
 
-	if (props.title && Children.count(props.children) > 0) {
+	if (props.title && typeof props.children !== 'function' && Children.count(props.children) > 0) {
 		return true;
 	}
 

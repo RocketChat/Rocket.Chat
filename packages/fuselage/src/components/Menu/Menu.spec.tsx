@@ -3,6 +3,7 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
+import { Menu, MenuItem } from '.';
 import * as stories from './Menu.stories';
 import { withResizeObserverMock } from '../../../mocks/withResizeObserverMock';
 import { render } from '../../testing';
@@ -305,6 +306,30 @@ describe('[Menu Component]', () => {
 			// both the submenu and the root menu close
 			await waitFor(() => expect(screen.queryByText('Inbox')).not.toBeInTheDocument());
 			expect(screen.queryByText('New')).not.toBeInTheDocument();
+		});
+
+		it('should render items in a data-backed submenu built with childItems', async () => {
+			const user = userEvent.setup();
+			const childItems = [
+				{ id: 'sub-1', name: 'Data Sub Item 1' },
+				{ id: 'sub-2', name: 'Data Sub Item 2' },
+			];
+
+			render(
+				<Menu>
+					<MenuItem key='data-submenu' title='Data Submenu' childItems={childItems}>
+						{(item: any) => <MenuItem key={item.id}>{item.name}</MenuItem>}
+					</MenuItem>
+				</Menu>,
+			);
+
+			await user.click(screen.getByRole('button'));
+			const trigger = await screen.findByRole('menuitem', { name: 'Data Submenu' });
+			expect(trigger).toHaveAttribute('aria-haspopup', 'menu');
+
+			await user.keyboard('{ArrowDown}{ArrowRight}');
+			expect(await screen.findByRole('menuitem', { name: 'Data Sub Item 1' })).toBeInTheDocument();
+			expect(await screen.findByRole('menuitem', { name: 'Data Sub Item 2' })).toBeInTheDocument();
 		});
 	});
 

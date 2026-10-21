@@ -106,6 +106,7 @@ function MenuSubmenu({ item, state, rootMenuTriggerState, parentMenuRef, onActio
 				<MenuPopover {...popoverProps} state={submenuTriggerState} triggerRef={triggerRef} placement='right top'>
 					<MenuDropDown
 						{...submenuProps}
+						items={item.props?.childItems}
 						onKeyDown={onSubmenuKeyDown}
 						rootMenuTriggerState={rootMenuTriggerState}
 						menuRef={submenuRef}
