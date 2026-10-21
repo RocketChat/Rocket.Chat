@@ -1,0 +1,9 @@
+apps/meteor/tests/end-to-end/api/livechat/00-rooms.ts
+  f3f01f470312e99a 140-141,143,145-157,159-235
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "559f343562780c7a1ae0d26fc1a9c47906200fd1",
+  "prompts": {}
+}

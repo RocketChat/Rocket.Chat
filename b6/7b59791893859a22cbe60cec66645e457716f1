@@ -1,0 +1,21 @@
+yarn.lock
+  s_4557b2972c54ed::t_48c4dcf94db046 9803,9808,9811-9812,9814,9816,9833,9869,9887,9889,9935,9937,9947,9949,9996,9998,10033,10035,10057,10059,10062-10065,10080,10082,10089-10120,10124-10128,10130,10141,10143,10150-10160,10167-10171,10175,10177,10199,10201,10219,10221
+packages/core-typings/package.json
+  s_4557b2972c54ed::t_50c133bd8d7f0a 27
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "b67b59791893859a22cbe60cec66645e457716f1",
+  "prompts": {},
+  "sessions": {
+    "s_4557b2972c54ed": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "3dbb9552-fc96-44bd-8a5c-e45d8b819c20",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
