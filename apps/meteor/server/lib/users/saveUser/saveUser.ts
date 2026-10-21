@@ -57,7 +57,7 @@ export type SaveUserData = {
 	statusVisibilityDeniedByAdmin?: string[];
 
 	sipExtension?: string;
-	phones?: Pick<IUser, 'phones'>['phones'];
+	phones?: IUser['phones'];
 };
 export type UpdateUserData = RequiredField<SaveUserData, '_id'>;
 export const isUpdateUserData = (params: SaveUserData): params is UpdateUserData => '_id' in params && !!params._id;
