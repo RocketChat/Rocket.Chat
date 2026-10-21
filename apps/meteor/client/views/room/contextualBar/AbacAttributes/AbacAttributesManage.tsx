@@ -67,15 +67,18 @@ const AbacAttributesManage = ({ room, requiredKeys, onBack, onClose, onSaved }: 
 
 	const saveMutation = useMutation({
 		mutationFn: (attributes: Record<string, string[]>) => saveRoomAttributes({ attributes }),
-		onSuccess: (_data, attributes) => {
-			dispatchToastMessage({ type: 'success', message: t('ABAC_Room_attributes_updated') });
-			void queryClient.invalidateQueries({ queryKey: ABACQueryKeys.assignableAttributes(room._id) });
-
+		onMutate: (attributes) => {
 			const preview = queryClient.getQueryData<InfiniteData<IAbacRoomMembershipPreview>>(
 				ABACQueryKeys.roomMembershipPreview.group(room._id, attributes, '', 'loses'),
 			);
 			const editorVerdict = preview?.pages[0]?.editor;
-			if (editorVerdict && editorVerdict !== 'compliant') {
+			return { editorLosesAccess: !!editorVerdict && editorVerdict !== 'compliant' };
+		},
+		onSuccess: (_data, _attributes, context) => {
+			dispatchToastMessage({ type: 'success', message: t('ABAC_Room_attributes_updated') });
+			void queryClient.invalidateQueries({ queryKey: ABACQueryKeys.assignableAttributes(room._id) });
+
+			if (context?.editorLosesAccess) {
 				router.navigate('/home');
 				return;
 			}
