@@ -78,6 +78,8 @@ const LogsPage = () => {
 		count: itemsPerPage,
 	});
 
+	// TODO: Move this mapping from useQuery's old `select` into a usePaginatedQuery `combine`
+	// The combine's return type has to be annotated explicitly, or useQueries loses the types
 	const data = logs && {
 		events: logs.events.map((event) => {
 			const eventInfo = {
