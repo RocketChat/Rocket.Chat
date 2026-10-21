@@ -1,4 +1,3 @@
-import fs from 'node:fs';
 import path from 'node:path';
 
 import type { IImportProgress, IImporterSelection } from '@rocket.chat/core-typings';
@@ -8,6 +7,7 @@ import { Meteor } from 'meteor/meteor';
 import { ProgressStep } from '../../../lib/importer/ImporterProgressStep';
 import { Importers } from '../../lib/import';
 import { RocketChatImportFileInstance } from '../../lib/import/startup/store';
+import { sanitizeFileName } from '../../lib/media/file/functions/sanitizeFileName';
 
 export const executeGetImportFileData = async (): Promise<IImporterSelection | { waiting: true }> => {
 	const operation = await Imports.findLastImport();
@@ -53,7 +53,7 @@ export const executeGetImportFileData = async (): Promise<IImporterSelection | {
 
 	const fileName = instance.importRecord.file;
 	if (fileName) {
-		const fullFilePath = fs.existsSync(fileName) ? fileName : path.join(RocketChatImportFileInstance.absolutePath, fileName);
+		const fullFilePath = path.join(RocketChatImportFileInstance.absolutePath, sanitizeFileName(fileName));
 		await instance.prepareUsingLocalFile(fullFilePath);
 	}
 
