@@ -35,7 +35,7 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"@rocket.chat/fuselage-tokens": "^0.35.0",
+		"@rocket.chat/fuselage-tokens": "workspace:^",
 		"@rocket.chat/styled": "workspace:~"
 	},
 	"devDependencies": {
@@ -51,7 +51,7 @@
 		"react": "~19.2.8",
 		"react-dom": "~19.2.8",
 		"sharp": "~0.35.5",
-		"typescript": "~5.9.3"
+		"typescript": "~7.0.2"
 	},
 	"peerDependencies": {
 		"react": "*",

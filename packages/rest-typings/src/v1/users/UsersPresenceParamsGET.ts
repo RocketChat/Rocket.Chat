@@ -1,6 +1,6 @@
 import { ajvQuery } from '../Ajv';
 
-type UsersPresenceParamsGET = {
+export type UsersPresenceParamsGET = {
 	from?: string;
 	ids?: string | string[];
 };

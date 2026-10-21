@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 type ComposerCodeBlockProps = {
 	language?: string;
 	lines: MessageParser.CodeLine[];
+	fence: string;
 };
 
 const codeBlockStyle = {
@@ -13,12 +14,12 @@ const codeBlockStyle = {
 	verticalAlign: 'top',
 } as const;
 
-const ComposerCodeBlock = ({ language, lines }: ComposerCodeBlockProps): ReactElement => {
+const ComposerCodeBlock = ({ language, lines, fence }: ComposerCodeBlockProps): ReactElement => {
 	const text = useMemo(() => {
 		const code = lines.map((line) => line.value.value).join('\n');
-		const fence = language && language !== 'none' ? `\`\`\`${language}` : '```';
-		return `${fence}\n${code}\n\`\`\``;
-	}, [language, lines]);
+		const opening = language && language !== 'none' ? `${fence}${language}` : fence;
+		return `${opening}\n${code}\n${fence}`;
+	}, [language, lines, fence]);
 
 	return (
 		<code className='code-colors' style={codeBlockStyle}>

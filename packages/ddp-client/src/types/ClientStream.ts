@@ -2,6 +2,7 @@ import type { Emitter } from '@rocket.chat/emitter';
 
 import type { DDPDispatchOptions } from '../MinimalDDPClient';
 import type { Subscription } from './Subscription';
+import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from './methods';
 import type { PublicationPayloads } from './publicationPayloads';
 
 export interface ClientStream extends Emitter {
@@ -46,8 +47,15 @@ export interface ClientStream extends Emitter {
 	 * });
 	 * ```
 	 */
-	callAsync(
-		method: string,
+	callAsync<MethodName extends ServerMethodName>(
+		method: MethodName,
+		...params: ServerMethodParameters<MethodName>
+	): Promise<ServerMethodReturn<MethodName>> & {
+		id: string;
+	};
+	// Methods missing from ServerMethods only; a declared method must match its declared parameters.
+	callAsync<MethodName extends string>(
+		method: MethodName extends ServerMethodName ? never : MethodName,
 		...params: any[]
 	): Promise<any> & {
 		id: string;
@@ -61,8 +69,15 @@ export interface ClientStream extends Emitter {
 	 * @param params - The parameters to be passed to the method.
 	 * @returns {Promise} - A promise that resolves when the server returns the result.
 	 */
-	callAsyncWithOptions(
-		method: string,
+	callAsyncWithOptions<MethodName extends ServerMethodName>(
+		method: MethodName,
+		options: DDPDispatchOptions,
+		...params: ServerMethodParameters<MethodName>
+	): Promise<ServerMethodReturn<MethodName>> & {
+		id: string;
+	};
+	callAsyncWithOptions<MethodName extends string>(
+		method: MethodName extends ServerMethodName ? never : MethodName,
 		options: DDPDispatchOptions,
 		...params: any[]
 	): Promise<any> & {

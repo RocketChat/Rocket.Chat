@@ -104,7 +104,7 @@ jest.mock('@rocket.chat/models', () => ({
 	},
 }));
 
-// Partial mock for @rocket.chat/core-services: keep real MeteorError, override ServiceClass and Room
+// Partial mock for @rocket.chat/core-services: keep real ClientSafeError, override ServiceClass and Room
 jest.mock('@rocket.chat/core-services', () => {
 	const actual = jest.requireActual('@rocket.chat/core-services');
 	return {

@@ -3,17 +3,22 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 
 import { MoleculerBroker } from './MoleculerBroker';
-import { BrokerMocked } from '../../../../apps/meteor/tests/mocks/server/BrokerMocked';
 
-class DelayedStopBroker extends BrokerMocked {
+type ServiceSchema = { name: string; stopped: () => Promise<void> };
+
+class DelayedStopBroker {
+	services = new Map<string, ServiceSchema>();
+
+	createService(schema: ServiceSchema) {
+		this.services.set(schema.name, schema);
+	}
+
 	async destroyService(name: string) {
-		const instance = this.services.get(name);
-
 		await new Promise((resolve) => setTimeout(resolve, 1000));
 
-		await instance.stopped();
+		await this.services.get(name)?.stopped();
 
-		await super.destroyService(name);
+		this.services.delete(name);
 	}
 }
 

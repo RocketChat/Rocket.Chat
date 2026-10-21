@@ -1,0 +1,70 @@
+@use '../../styles/lengths.scss';
+@use '../../styles/variables/input-colors.scss' as *;
+@use '../../styles/mixins/interactivity.scss' as *;
+@use '../../styles/functions.scss' as *;
+
+@mixin with-colors($color, $placeholder-color, $focus-caret-color, $active-caret-color, $disabled-color) {
+	color: $color;
+
+	&::placeholder {
+		color: $placeholder-color;
+	}
+
+	&.rcx-input-box--placeholder-visible {
+		color: $placeholder-color;
+	}
+
+	&:focus,
+	&.focus {
+		caret-color: $focus-caret-color;
+	}
+
+	&:active,
+	&.active {
+		caret-color: $active-caret-color;
+	}
+
+	*:disabled &,
+	&:disabled,
+	&.disabled {
+		color: $disabled-color;
+
+		&::placeholder {
+			color: $disabled-color;
+		}
+	}
+}
+
+@mixin with-icon-addon-colors($color, $focus-caret-color, $focus-icon-color, $disabled-color) {
+	& + .rcx-input-box__addon,
+	.rcx-input-box__addon:has(+ &) {
+		color: $color;
+	}
+
+	.rcx-input-box__wrapper.focus > & {
+		caret-color: $focus-caret-color;
+	}
+
+	&:focus + .rcx-input-box__addon,
+	&.focus + .rcx-input-box__addon,
+	.rcx-input-box__wrapper.focus > & + .rcx-input-box__addon,
+	.rcx-input-box__addon:has(+ &:focus),
+	.rcx-input-box__addon:has(+ &.focus),
+	.rcx-input-box__wrapper.focus > .rcx-input-box__addon:has(+ &) {
+		color: $focus-icon-color;
+	}
+
+	.rcx-input-box__wrapper.disabled > & {
+		color: $disabled-color;
+	}
+
+	*:disabled & + .rcx-input-box__addon,
+	&:disabled + .rcx-input-box__addon,
+	&.disabled + .rcx-input-box__addon,
+	.rcx-input-box__wrapper.disabled > & + .rcx-input-box__addon,
+	.rcx-input-box__addon:has(+ &:disabled),
+	.rcx-input-box__addon:has(+ &.disabled),
+	.rcx-input-box__wrapper.disabled > .rcx-input-box__addon:has(+ &) {
+		color: $disabled-color;
+	}
+}
