@@ -10,4 +10,4 @@
 "@rocket.chat/livechat": patch
 ---
 
-Adds support for registering multiple phone numbers with labels per user.
+Adds support for registering multiple phone numbers with labels per user. **Breaking:** the `phone` user field is replaced by the `phones` array (`{ number, label? }[]`); existing numbers are migrated automatically on upgrade.
