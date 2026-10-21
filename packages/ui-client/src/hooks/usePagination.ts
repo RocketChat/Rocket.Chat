@@ -12,9 +12,6 @@ type UsePaginationOptions = {
 	resetKey?: readonly unknown[];
 };
 
-/**
- * TODO: Move `usePagination` outside from `GenericTable` folder
- */
 export const usePagination = ({ resetKey = [] }: UsePaginationOptions = {}): {
 	current: ReturnType<typeof useCurrent>[0];
 	setCurrent: ReturnType<typeof useCurrent>[1];
