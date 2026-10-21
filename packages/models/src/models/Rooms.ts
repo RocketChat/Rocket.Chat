@@ -1903,6 +1903,22 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateOne({ _id }, { $unset: { abacAttributes: 1 } });
 	}
 
+	setSecurityClearanceById(
+		_id: IRoom['_id'],
+		clearance: NonNullable<IRoom['securityClearance']>,
+		defaultLabel: NonNullable<IRoom['defaultSecurityLabel']>,
+	): Promise<IRoom | null> {
+		return this.findOneAndUpdate(
+			{ _id },
+			{ $set: { securityClearance: clearance, defaultSecurityLabel: defaultLabel } },
+			{ returnDocument: 'after' },
+		);
+	}
+
+	unsetSecurityClearanceById(_id: IRoom['_id']): Promise<IRoom | null> {
+		return this.findOneAndUpdate({ _id }, { $unset: { securityClearance: 1, defaultSecurityLabel: 1 } }, { returnDocument: 'after' });
+	}
+
 	unsetAllAbacAttributes(): Promise<Document | UpdateResult> {
 		return this.updateMany({ abacAttributes: { $exists: true } }, { $unset: { abacAttributes: '' } });
 	}

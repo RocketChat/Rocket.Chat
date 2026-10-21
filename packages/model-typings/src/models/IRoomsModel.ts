@@ -453,6 +453,12 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	countDistinctFederationRoomsExcluding(serverNames?: string[]): Promise<string[]>;
 	setAbacAttributesById(rid: IRoom['_id'], attributes: NonNullable<IRoom['abacAttributes']>): Promise<IRoom | null>;
 	unsetAbacAttributesById(rid: IRoom['_id']): Promise<UpdateResult>;
+	setSecurityClearanceById(
+		rid: IRoom['_id'],
+		clearance: NonNullable<IRoom['securityClearance']>,
+		defaultLabel: NonNullable<IRoom['defaultSecurityLabel']>,
+	): Promise<IRoom | null>;
+	unsetSecurityClearanceById(rid: IRoom['_id']): Promise<IRoom | null>;
 	unsetAllAbacAttributes(): Promise<Document | UpdateResult>;
 	updateSingleAbacAttributeValuesById(rid: IRoom['_id'], key: string, values: string[]): Promise<UpdateResult>;
 	insertAbacAttributeIfNotExistsById(

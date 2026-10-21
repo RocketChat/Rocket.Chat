@@ -224,6 +224,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 
 	setAbacAttributesById(userId: IUser['_id'], attributes: NonNullable<IUser['abacAttributes']>): Promise<IUser | null>;
 	unsetAbacAttributesById(userId: IUser['_id']): Promise<IUser | null>;
+	setSecurityClearancesById(userId: IUser['_id'], clearances: NonNullable<IUser['securityClearances']>): Promise<IUser | null>;
+	unsetSecurityClearancesById(userId: IUser['_id']): Promise<IUser | null>;
 	findActiveByRoomIds<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		roomIds: IRoom['_id'][],
 		options?: O,
