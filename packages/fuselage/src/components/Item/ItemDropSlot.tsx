@@ -1,6 +1,5 @@
 import type { AllHTMLAttributes, ElementType, RefAttributes } from 'react';
 
-import type { ItemDropTarget } from './types';
 import { cx, cxx } from '../../helpers/composeClassNames';
 
 export type ItemDropSlotProps = {
@@ -8,7 +7,10 @@ export type ItemDropSlotProps = {
 	 * The element to render. Inside an `ItemGroup` rendered as `ul`, pass `li`.
 	 */
 	is?: ElementType;
-	dropTarget?: ItemDropTarget;
+	/**
+	 * `available` while a drag that could land in the empty group is under way, `active` while the pointer is over it.
+	 */
+	dropTarget?: 'available' | 'active';
 } & Omit<AllHTMLAttributes<HTMLElement>, 'is'> &
 	RefAttributes<HTMLElement>;
 

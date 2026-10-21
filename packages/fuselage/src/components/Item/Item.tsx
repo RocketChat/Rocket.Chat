@@ -2,7 +2,7 @@ import type { AllHTMLAttributes, ElementType, MouseEvent, RefAttributes } from '
 import { useMemo } from 'react';
 
 import { ItemContext } from './ItemContext';
-import type { ItemDropTarget, ItemInset } from './types';
+import type { ItemInset } from './types';
 import { useIdRegistry } from './useIdRegistry';
 import { cx, cxx } from '../../helpers/composeClassNames';
 
@@ -47,9 +47,10 @@ export type ItemProps = {
 	 */
 	dropIndicator?: 'before' | 'after';
 	/**
-	 * Marks the row as a place a dragged row goes into, such as a folder.
+	 * Marks the row as a place a dragged row goes into, such as a folder: `available` while a drag that could land on it is
+	 * under way, `active` while the pointer is over it.
 	 */
-	dropTarget?: ItemDropTarget;
+	dropTarget?: 'available' | 'active';
 	/**
 	 * Marks the row as hovered by a drag that cannot land on it.
 	 */

@@ -2,7 +2,6 @@ import type { AllHTMLAttributes, ElementType, RefAttributes } from 'react';
 import { useMemo } from 'react';
 
 import { ItemGroupContext } from './ItemGroupContext';
-import type { ItemDropTarget } from './types';
 import { useIdRegistry } from './useIdRegistry';
 import { cx, cxx } from '../../helpers/composeClassNames';
 
@@ -16,9 +15,10 @@ export type ItemGroupProps = {
 	 */
 	dragging?: boolean;
 	/**
-	 * Highlights the group as the place a dragged row goes into, when its rows keep their own order.
+	 * Highlights the group as the place a dragged row goes into, when its rows keep their own order: `available` while a drag
+	 * that could land on it is under way, `active` while the pointer is over it.
 	 */
-	dropTarget?: ItemDropTarget;
+	dropTarget?: 'available' | 'active';
 	/**
 	 * Draws the line where a dragged group would land, on this group's top (`before`) or bottom (`after`) edge.
 	 */

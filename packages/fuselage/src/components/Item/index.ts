@@ -15,4 +15,4 @@ export { default as ItemMeta, type ItemMetaProps } from './ItemMeta';
 export { default as ItemRow, type ItemRowProps } from './ItemRow';
 export { default as ItemSkeleton, type ItemSkeletonProps } from './ItemSkeleton';
 export { default as ItemTitle, type ItemTitleProps } from './ItemTitle';
-export type { ItemDropTarget, ItemInset } from './types';
+export type { ItemInset } from './types';
