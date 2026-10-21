@@ -10123,7 +10123,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/eslint-config@workspace:packages/eslint-config, @rocket.chat/eslint-config@workspace:~":
+"@rocket.chat/eslint-config@workspace:packages/eslint-config":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/eslint-config@workspace:packages/eslint-config"
   dependencies:
@@ -10654,6 +10654,25 @@ __metadata:
     jest: "npm:~30.5.2"
     jest-websocket-mock: "npm:~2.5.0"
     typescript: "npm:~7.0.2"
+  languageName: unknown
+  linkType: soft
+
+"@rocket.chat/lint-config@workspace:packages/lint-config, @rocket.chat/lint-config@workspace:~":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/lint-config@workspace:packages/lint-config"
+  dependencies:
+    eslint: "npm:~10.12.0"
+    eslint-plugin-anti-trojan-source: "npm:~1.1.7"
+    eslint-plugin-import-x: "npm:~4.17.1"
+    eslint-plugin-jest: "npm:~29.16.6"
+    eslint-plugin-jsx-a11y: "npm:~6.10.2"
+    eslint-plugin-prettier: "npm:~5.5.6"
+    eslint-plugin-react: "patch:eslint-plugin-react@npm%3A7.37.5#~/.yarn/patches/eslint-plugin-react-npm-7.37.5-d03f6b6543.patch"
+    eslint-plugin-storybook: "patch:eslint-plugin-storybook@npm%3A9.1.20#~/.yarn/patches/eslint-plugin-storybook-npm-9.1.20-b86b9c5e4d.patch"
+    eslint-plugin-testing-library: "npm:~7.16.2"
+    prettier: "npm:~3.9.9"
+    storybook: "npm:^9.1.20"
+    typescript: "npm:~5.9.3"
   languageName: unknown
   linkType: soft
 
@@ -36129,7 +36148,7 @@ __metadata:
   resolution: "rocket.chat@workspace:."
   dependencies:
     "@changesets/cli": "npm:^2.27.12"
-    "@rocket.chat/eslint-config": "workspace:~"
+    "@rocket.chat/lint-config": "workspace:~"
     "@types/chart.js": "npm:^2.9.41"
     "@types/js-yaml": "npm:^4.0.9"
     "@types/node": "npm:~24.13.6"
