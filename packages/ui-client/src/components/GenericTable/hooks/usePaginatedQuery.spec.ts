@@ -104,3 +104,19 @@ it('should return the result of the provided combine function', async () => {
 
 	await waitFor(() => expect(result.current).toEqual([10, 10, 5]));
 });
+
+it('should return the query results when neither itemsKey nor combine is provided', async () => {
+	const { result } = renderHook(
+		() =>
+			usePaginatedQuery({
+				query: {},
+				queryKey: ['sounds'],
+				queryFn: createGetSounds({ total: 50, limit: 10 }),
+				offset: 0,
+				count: 25,
+			}),
+		{ wrapper: mockAppRoot().build() },
+	);
+
+	await waitFor(() => expect(result.current.map((query) => query.data?.sounds.length)).toEqual([10, 10, 5]));
+});
