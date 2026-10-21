@@ -3,6 +3,7 @@
 @use '../../styles/typography.scss' as *;
 @use '../../styles/functions.scss' as *;
 @use '../../styles/mixins/elevation.scss' as *;
+@use '../../styles/primitives/traits.scss';
 
 $item-color-font-default: theme('item-color-font-default', colors.font(default));
 $item-color-font-highlighted: theme('item-color-font-highlighted', colors.font(titles-labels));
@@ -576,6 +577,11 @@ $item-group-narrow-width: 320px;
 	border-radius: lengths.border-radius(medium);
 	background-color: color-mix(in srgb, #{$item-color-stroke-focus} 8%, transparent);
 	box-shadow: inset 0 0 0 lengths.border-width(medium) $item-color-stroke-focus;
+}
+
+// Tells assistive technologies where a row moved by keyboard landed.
+.rcx-item-drag-announcer {
+	@extend %visually-hidden;
 }
 
 // Covers the page while a row is dragged, so nothing under the pointer reacts to it.
