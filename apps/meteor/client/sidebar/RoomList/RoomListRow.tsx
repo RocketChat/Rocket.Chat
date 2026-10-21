@@ -21,9 +21,10 @@ export type RoomListRowProps = {
 		userId?: string;
 	};
 	item: SubscriptionWithRoom;
+	dragging?: boolean;
 };
 
-const RoomListRow = ({ data, item }: RoomListRowProps) => {
+const RoomListRow = ({ data, item, dragging }: RoomListRowProps) => {
 	const { t, viewMode, showAvatar, openedRoom, userId } = data;
 
 	const acceptCall = useVideoConfAcceptCall();
@@ -54,6 +55,7 @@ const RoomListRow = ({ data, item }: RoomListRowProps) => {
 			room={item}
 			videoConfActions={videoConfActions}
 			userId={userId}
+			dragging={dragging}
 		/>
 	);
 };

@@ -10,6 +10,8 @@ import {
 	ItemContent,
 	ItemDescription,
 	ItemDivider,
+	ItemDragHandle,
+	ItemDropSlot,
 	ItemGroup,
 	ItemGroupHeader,
 	ItemGroupTitle,
@@ -24,6 +26,40 @@ import * as stories from './Item.stories';
 import { render } from '../../testing';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
+
+describe('[Item drag states]', () => {
+	it('marks the source, the ordered drop edge, the drop targets and the forbidden places', () => {
+		render(
+			<ItemGroup is='ul' aria-label='Rooms' dropTarget='active' dropIndicator='before' dropped>
+				<Item is='li' grabbable dragging>
+					a
+				</Item>
+				<Item is='li' dropIndicator='after' dropDisabled>
+					b
+				</Item>
+				<Item is='li' dropTarget='available' dropped>
+					c
+					<ItemDragHandle disabled data-testid='handle' />
+				</Item>
+				<ItemDropSlot is='li' dropTarget='active'>
+					Drop here
+				</ItemDropSlot>
+			</ItemGroup>,
+		);
+
+		expect(screen.getByRole('list')).toHaveClass(
+			'rcx-item-group--drop-target-active',
+			'rcx-item-group--drop-before',
+			'rcx-item-group--dropped',
+		);
+		expect(screen.getByText('a')).toHaveClass('rcx-item--grabbable', 'rcx-item--dragging');
+		expect(screen.getByText('b')).toHaveClass('rcx-item--drop-after', 'rcx-item--drop-disabled');
+		expect(screen.getByText('c')).toHaveClass('rcx-item--drop-target-available', 'rcx-item--dropped');
+		expect(screen.getByTestId('handle')).toHaveClass('rcx-item__drag-handle--disabled');
+		expect(screen.getByTestId('handle')).toHaveAttribute('aria-hidden', 'true');
+		expect(screen.getByText('Drop here')).toHaveClass('rcx-item-drop-slot--drop-target-active');
+	});
+});
 
 describe('[Item Rendering]', () => {
 	test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {

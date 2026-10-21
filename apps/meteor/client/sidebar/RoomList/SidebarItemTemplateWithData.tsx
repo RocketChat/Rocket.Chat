@@ -34,6 +34,7 @@ type RoomListRowProps = {
 	style?: AllHTMLAttributes<HTMLElement>['style'];
 
 	selected?: boolean;
+	dragging?: boolean;
 
 	videoConfActions?: {
 		[action: string]: () => void;
@@ -44,6 +45,7 @@ const SidebarItemTemplateWithData = ({
 	room,
 	id,
 	selected,
+	dragging,
 	style,
 	viewMode,
 	showAvatar,
@@ -97,6 +99,7 @@ const SidebarItemTemplateWithData = ({
 			data-unread={highlighted}
 			highlighted={highlighted}
 			selected={selected}
+			dragging={dragging}
 			aria-current={selected ? 'page' : undefined}
 			href={href}
 			onClick={() => {
@@ -139,7 +142,7 @@ function safeDateNotEqualCheck(a: Date | string | undefined, b: Date | string | 
 	return new Date(a).toISOString() !== new Date(b).toISOString();
 }
 
-const keys: (keyof RoomListRowProps)[] = ['id', 'style', 'viewMode', 'showAvatar', 'selected', 't', 'videoConfActions'];
+const keys: (keyof RoomListRowProps)[] = ['id', 'style', 'viewMode', 'showAvatar', 'selected', 'dragging', 't', 'videoConfActions'];
 
 export default memo(SidebarItemTemplateWithData, (prevProps, nextProps) => {
 	if (keys.some((key) => prevProps[key] !== nextProps[key])) {
