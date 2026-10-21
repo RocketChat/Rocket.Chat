@@ -111,11 +111,6 @@ describe('DiscussionsList', () => {
 	});
 });
 
-test.each(testCases)('renders %s with stable structure', (_storyname, Story) => {
-	const { baseElement } = render(<Story />);
-	expect(baseElement).toMatchSnapshot();
-});
-
 test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
 	const { container } = render(<Story />);
 

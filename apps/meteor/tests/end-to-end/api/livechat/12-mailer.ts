@@ -1,12 +1,13 @@
+import { after, before, describe, it } from 'node:test';
+
 import { expect } from 'chai';
-import { before, after, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { api, request, credentials, getCredentials } from '../../../data/api-data';
 import { updatePermission } from '../../../data/permissions.helper';
 
 describe('Mailer', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	describe('POST mailer', async () => {
 		before(async () => {

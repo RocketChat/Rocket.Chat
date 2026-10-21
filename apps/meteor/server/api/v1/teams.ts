@@ -1,7 +1,7 @@
 import { Team } from '@rocket.chat/core-services';
-import type { ITeamAutocompleteResult } from '@rocket.chat/core-services';
-import type { ITeam, UserStatus } from '@rocket.chat/core-typings';
-import { Users, Rooms } from '@rocket.chat/models';
+import type { ITeamAutocompleteResult, ITeamMemberInfo } from '@rocket.chat/core-services';
+import type { IRoom, ITeam, IUser, UserStatus } from '@rocket.chat/core-typings';
+import { Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
 	ajv,
 	isTeamsAddMembersProps,
@@ -59,6 +59,36 @@ const successResponseSchema = ajv.compile<void>({
 	additionalProperties: false,
 });
 
+const roomRoleAssignmentPermissions = new Map([
+	['owner', 'set-owner'],
+	['moderator', 'set-moderator'],
+	['leader', 'set-leader'],
+]);
+
+const canChangeTeamRoles = async (user: IUser, roomId: IRoom['_id'], roles: Iterable<string>): Promise<boolean> => {
+	const roomPermissions = new Set<string>();
+	const globalPermissions = new Set<string>();
+
+	for (const role of roles) {
+		if (role === 'member') {
+			continue;
+		}
+
+		const roomPermission = roomRoleAssignmentPermissions.get(role);
+		if (roomPermission) {
+			roomPermissions.add(roomPermission);
+			continue;
+		}
+
+		globalPermissions.add('access-permissions');
+		if (role === 'admin') {
+			globalPermissions.add('assign-admin-role');
+		}
+	}
+
+	return (await hasAllPermissionAsync(user, [...roomPermissions], roomId)) && hasAllPermissionAsync(user, [...globalPermissions]);
+};
+
 const teamsEndpoints = API.v1
 	.get(
 		'teams.list',
@@ -72,9 +102,9 @@ const teamsEndpoints = API.v1
 		},
 		async function action() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, query } = await this.parseJsonQuery();
+			const { sort } = await this.parseJsonQuery();
 
-			const { records, total } = await Team.list(this.userId, { offset, count }, { sort, query });
+			const { records, total } = await Team.list(this.userId, { offset, count }, { sort });
 
 			return API.v1.success({
 				teams: records,
@@ -203,7 +233,7 @@ API.v1.post(
 	},
 );
 
-const roomResponseSchema = ajv.compile<{ room: object }>({
+const roomResponseSchema = ajv.compile<{ room: IRoom }>({
 	type: 'object',
 	properties: {
 		room: { type: 'object' },
@@ -213,7 +243,7 @@ const roomResponseSchema = ajv.compile<{ room: object }>({
 	additionalProperties: false,
 });
 
-const roomsResponseSchema = ajv.compile<{ rooms: object[] }>({
+const roomsResponseSchema = ajv.compile<{ rooms: IRoom[] }>({
 	type: 'object',
 	properties: {
 		rooms: { type: 'array', items: { type: 'object' } },
@@ -323,7 +353,7 @@ API.v1.post(
 	},
 );
 
-const paginatedRoomsResponseSchema = ajv.compile<{ rooms: object[]; total: number; count: number; offset: number }>({
+const paginatedRoomsResponseSchema = ajv.compile<{ rooms: IRoom[]; total: number; count: number; offset: number }>({
 	type: 'object',
 	properties: {
 		rooms: { type: 'array', items: { type: 'object' } },
@@ -445,7 +475,7 @@ API.v1.get(
 		authRequired: true,
 		query: isTeamsListChildrenProps,
 		response: {
-			200: ajv.compile<{ data: object[]; total: number; offset: number; count: number }>({
+			200: ajv.compile<{ data: IRoom[]; total: number; offset: number; count: number }>({
 				type: 'object',
 				properties: {
 					data: { type: 'array', items: { type: 'object' } },
@@ -482,7 +512,7 @@ API.v1.get(
 		authRequired: true,
 		query: isTeamsMembersProps,
 		response: {
-			200: ajv.compile<{ members: object[]; total: number; count: number; offset: number }>({
+			200: ajv.compile<{ members: ITeamMemberInfo[]; total: number; count: number; offset: number }>({
 				type: 'object',
 				properties: {
 					members: { type: 'array', items: { type: 'object' } },
@@ -557,6 +587,11 @@ API.v1.post(
 			return API.v1.forbidden();
 		}
 
+		const requestedRoles = members.flatMap(({ roles }) => roles ?? []);
+		if (!(await canChangeTeamRoles(this.user, team.roomId, requestedRoles))) {
+			return API.v1.forbidden();
+		}
+
 		await Team.addMembers(this.userId, team._id, members);
 
 		return API.v1.success();
@@ -585,6 +620,12 @@ API.v1.post(
 		}
 
 		if (!(await hasAtLeastOnePermissionAsync(this.user, ['edit-team-member'], team.roomId))) {
+			return API.v1.forbidden();
+		}
+
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(team.roomId, member.userId, { projection: { roles: 1 } });
+		const changedRoles = new Set(subscription?.roles).symmetricDifference(new Set(member.roles));
+		if (!(await canChangeTeamRoles(this.user, team.roomId, changedRoles))) {
 			return API.v1.forbidden();
 		}
 

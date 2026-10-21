@@ -6,12 +6,12 @@ import type * as UiKit from '@rocket.chat/ui-kit';
 import type { FormEvent } from 'react';
 
 import ModalBlock from './ModalBlock';
+import { useModalContextValue } from './useModalContextValue';
+import { useUiKitActionManager } from '../../../hooks/uikit/useUiKitActionManager';
+import { useUiKitView } from '../../../hooks/uikit/useUiKitView';
 import { useOpenedRoom } from '../../../lib/RoomManager';
 import { detectEmoji } from '../../../lib/utils/detectEmoji';
 import { preventSyntheticEvent } from '../../../lib/utils/preventSyntheticEvent';
-import { useModalContextValue } from '../../../uikit/hooks/useModalContextValue';
-import { useUiKitActionManager } from '../../../uikit/hooks/useUiKitActionManager';
-import { useUiKitView } from '../../../uikit/hooks/useUiKitView';
 
 export type UiKitModalProps = {
 	key: UiKit.ModalView['id']; // force re-mount when viewId changes

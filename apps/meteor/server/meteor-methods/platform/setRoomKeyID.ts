@@ -1,18 +1,9 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms } from '@rocket.chat/models';
-import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { notifyOnRoomChanged } from '../../lib/notifyListener';
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		'e2e.setRoomKeyID'(rid: IRoom['_id'], keyID: string): void;
-	}
-}
 
 export const setRoomKeyIDMethod = async (userId: string, rid: IRoom['_id'], keyID: string): Promise<void> => {
 	if (!(await canAccessRoomIdAsync(rid, userId))) {
@@ -29,21 +20,3 @@ export const setRoomKeyIDMethod = async (userId: string, rid: IRoom['_id'], keyI
 
 	void notifyOnRoomChanged(room);
 };
-
-Meteor.methods<ServerMethods>({
-	async 'e2e.setRoomKeyID'(rid, keyID) {
-		check(rid, String);
-		check(keyID, String);
-
-		const userId = Meteor.userId();
-		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'e2e.setRoomKeyID' });
-		}
-
-		if (!rid) {
-			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'e2e.setRoomKeyID' });
-		}
-
-		await setRoomKeyIDMethod(userId, rid, keyID);
-	},
-});

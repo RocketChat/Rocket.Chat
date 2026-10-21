@@ -3,7 +3,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useUiKitActionManager } from '../uikit/hooks/useUiKitActionManager';
+import { useUiKitActionManager } from '../hooks/uikit/useUiKitActionManager';
 
 const ActionManagerBusyState = () => {
 	const { t } = useTranslation();

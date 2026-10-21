@@ -23,7 +23,7 @@ import { useShowVoipExtension } from '../useShowVoipExtension';
 
 export type UsersTableProps = {
 	tab: AdminUsersTab;
-	roleData: { roles: Serialized<IRole>[] } | undefined;
+	roleData: { roles: Serialized<Omit<IRole, '_updatedAt'>>[] } | undefined;
 	users: Serialized<DefaultUserInfo>[];
 	total: number;
 	isLoading: boolean;
@@ -146,11 +146,11 @@ const UsersTable = ({
 			tab === 'all' && showVoipExtension && (
 				<GenericTableHeaderCell
 					width='x180'
-					key='freeSwitchExtension'
+					key='sipExtension'
 					direction={sortData?.sortDirection}
-					active={sortData?.sortBy === 'freeSwitchExtension'}
+					active={sortData?.sortBy === 'sipExtension'}
 					onClick={sortData?.setSort}
-					sort='freeSwitchExtension'
+					sort='sipExtension'
 				>
 					{t('Voice_call_extension')}
 				</GenericTableHeaderCell>

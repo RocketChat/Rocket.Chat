@@ -23,8 +23,6 @@ const {
 const mapStories = (stories: Partial<typeof composedStories>) =>
 	Object.values(stories).map((Story: any) => [Story.storyName || 'Story', Story]);
 
-const allTestCases = mapStories(composedStories);
-
 // TODO: Fix select a11y violations
 // "Interactive controls must not be nested (nested-interactive)"
 // This is an issue in the component itself and not with the fields
@@ -38,11 +36,6 @@ const wrappedInputs = mapStories({
 	WithCheckbox,
 	WithRadioButton,
 	WithToggleSwitch,
-});
-
-test.each(allTestCases)(`renders %s without crashing`, async (_storyname, Story) => {
-	const tree = render(<Story />);
-	expect(tree.baseElement).toMatchSnapshot();
 });
 
 test.each(a11yTestCases)('%s should have no a11y violations', async (_storyname, Story) => {

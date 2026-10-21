@@ -13,6 +13,7 @@ import {
 	ModalFooterControllers,
 } from '@rocket.chat/fuselage';
 import { TextInput, ToggleSwitch, Field, FieldGroup, FieldLabel, FieldRow, FieldError, FieldHint } from '@rocket.chat/fuselage-forms';
+import type { TeamsCreateProps } from '@rocket.chat/rest-typings';
 import {
 	useEndpoint,
 	usePermission,
@@ -127,7 +128,7 @@ const CreateTeamModal = ({ onClose, onSuccess }: CreateTeamModalProps) => {
 		broadcast,
 		encrypted,
 	}: CreateTeamModalInputs): Promise<void> => {
-		const params = {
+		const params: TeamsCreateProps = {
 			name,
 			members,
 			type: isPrivate ? 1 : 0,

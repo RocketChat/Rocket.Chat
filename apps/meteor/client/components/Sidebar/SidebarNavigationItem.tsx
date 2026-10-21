@@ -38,16 +38,20 @@ const SidebarNavigationItem = ({
 		<SidebarGenericItem active={isActive} href={path} externalUrl={externalUrl} aria-current={isActive ? 'page' : undefined}>
 			{icon && <Icon name={icon} size='x20' marginInline={4} />}
 			<Box
-				withTruncatedText
 				fontScale='p2'
 				marginInline={4}
 				flexGrow={1}
 				display='flex'
 				alignItems='center'
 				justifyContent='space-between'
+				columnGap={4}
+				minWidth={0}
 				width='100%'
 			>
-				{label} {tag && <Tag>{tag}</Tag>}
+				<Box is='span' withTruncatedText>
+					{label}
+				</Box>
+				{tag && <Tag flexShrink={0}>{tag}</Tag>}
 			</Box>
 			{Badge ? <Badge /> : null}
 		</SidebarGenericItem>
