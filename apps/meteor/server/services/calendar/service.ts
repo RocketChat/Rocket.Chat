@@ -187,14 +187,25 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		let skipped = 0;
 
 		for (const data of events) {
-			const { uid, externalId, source, seriesMasterId, startTime, endTime, subject, description, reminderMinutesBeforeStart, busy } = data;
+			const {
+				uid,
+				externalId,
+				source,
+				meetingUrl,
+				seriesMasterId,
+				startTime,
+				endTime,
+				subject,
+				description,
+				reminderMinutesBeforeStart,
+				busy,
+			} = data;
 
 			if (!externalId) {
 				skipped++;
 				continue;
 			}
 
-			const meetingUrl = data.meetingUrl ? data.meetingUrl : await this.parseDescriptionForMeetingUrl(description);
 			const reminderTime =
 				reminderMinutesBeforeStart !== undefined && reminderMinutesBeforeStart >= 0
 					? getShiftedTime(startTime, -reminderMinutesBeforeStart)
