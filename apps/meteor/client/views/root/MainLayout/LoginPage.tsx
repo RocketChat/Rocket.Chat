@@ -1,6 +1,6 @@
 import { useSession } from '@rocket.chat/ui-contexts';
-import type { LoginRoutes } from '@rocket.chat/web-ui-registration';
-import RegistrationRoute from '@rocket.chat/web-ui-registration';
+import type { LoginRoutes } from '@rocket.chat/ui-registration';
+import RegistrationRoute from '@rocket.chat/ui-registration';
 import type { ReactNode } from 'react';
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';

@@ -201,9 +201,9 @@ const prebundledWorkspaceDeps = [
 	'@rocket.chat/ui-conference',
 	'@rocket.chat/ui-contexts',
 	'@rocket.chat/ui-kit',
+	'@rocket.chat/ui-registration',
 	'@rocket.chat/ui-video-conf',
 	'@rocket.chat/ui-voip',
-	'@rocket.chat/web-ui-registration',
 ];
 
 export default defineConfig({

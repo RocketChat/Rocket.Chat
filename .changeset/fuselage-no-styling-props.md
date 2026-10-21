@@ -7,7 +7,7 @@
 '@rocket.chat/ui-client': patch
 '@rocket.chat/ui-composer': patch
 '@rocket.chat/ui-voip': patch
-'@rocket.chat/web-ui-registration': patch
+'@rocket.chat/ui-registration': patch
 ---
 
 Fuselage components no longer take Box styling props from their callers: containers own layout through `gap`, and components declare the variations they support.

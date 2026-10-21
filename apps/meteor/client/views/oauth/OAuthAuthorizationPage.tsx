@@ -1,5 +1,5 @@
 import { useSearchParameter, useUser } from '@rocket.chat/ui-contexts';
-import RegistrationPageRouter from '@rocket.chat/web-ui-registration';
+import RegistrationPageRouter from '@rocket.chat/ui-registration';
 
 import { getErrorMessage } from '../../lib/errorHandling';
 import PageLoading from '../root/PageLoading';
