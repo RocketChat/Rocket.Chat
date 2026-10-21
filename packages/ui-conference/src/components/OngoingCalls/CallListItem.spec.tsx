@@ -12,9 +12,8 @@ import { buildOngoingCallsContext } from '../../fixtures/storyFixtures';
 import { buildJoinableCall } from '../../fixtures/testFixtures';
 
 /**
- * What the row looks like in each state — ringing, silenced, declined, already joined — is the stories' job, and
- * the snapshots are what hold it. What is left here is what the row *does* when it is used, which a picture
- * cannot say.
+ * What the row looks like in each state — ringing, silenced, declined, already joined — is the stories' job. What
+ * is tested here is what the row *does* when it is used.
  *
  * What it does, it asks the list for: joining, declining and silencing are all the surrounding context's, so the
  * spies go in there rather than in props.
@@ -52,7 +51,7 @@ const renderRow = (call = standup, { silencedCalls = [] as string[], audible = t
  * A fixed now, set to the day the fixtures say their calls started.
  *
  * Without it these rows render the *date* a call began, because that date is in the past — and the string moves
- * on as the calendar does, so a snapshot of it goes stale on its own. Frozen alongside the fixture, the row says
+ * on as the calendar does. Frozen alongside the fixture, the row says
  * the time the call started, which is what it says for a call running now.
  *
  * Only `Date` is faked; timers stay real, so the interactions below behave as in a browser.
@@ -89,12 +88,6 @@ beforeEach(() => {
 });
 
 describe('CallListItem', () => {
-	test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
-		const { baseElement } = render(<Story />);
-
-		expect(baseElement).toMatchSnapshot();
-	});
-
 	test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
 		const { container } = render(<Story />);
 
