@@ -882,11 +882,14 @@ export class Agenda extends EventEmitter {
 			// CALL THE ACTUAL METHOD TO PROCESS THE JOB!!!
 			debug('[%s:%s] processing job', job.attrs.name, job.attrs._id);
 
-			void job
+			await job
 				.run()
 				.then((jobRan) => [null, jobRan])
 				.catch((error) => [error, job])
-				.then(([error, jobRan]) => this._processJobResult(error, jobRan));
+				.then(([error, jobRan]) => this._processJobResult(error, jobRan))
+				.catch((error) => {
+					debug('[%s:%s] failed to process job result: %O', job.attrs.name, job.attrs._id, error);
+				});
 		} else {
 			// Run the job immediately by putting it on the top of the queue
 			debug('[%s:%s] concurrency preventing immediate run, pushing job to top of queue', job.attrs.name, job.attrs._id);
@@ -925,15 +928,15 @@ export class Agenda extends EventEmitter {
 	}
 
 	private _processJobResult(err: Error | null, job: Job): void {
-		if (err) {
-			job.agenda.emit('error', err);
-			return;
-		}
-
 		const { name } = job.attrs;
 
 		// Job isn't in running jobs so throw an error
 		if (!this._runningJobs.includes(job)) {
+			if (err) {
+				job.agenda.emit('error', err);
+				return;
+			}
+
 			debug('[%s] callback was called, job must have been marked as complete already', job.attrs._id);
 			throw new Error(`callback already called - job ${name} already marked complete`);
 		}
@@ -950,8 +953,14 @@ export class Agenda extends EventEmitter {
 			this._definitions[name].locked--;
 		}
 
-		// Re-process jobs now that one has finished
-		this._jobProcessing();
+		try {
+			if (err) {
+				job.agenda.emit('error', err);
+			}
+		} finally {
+			// Re-process jobs now that one has finished
+			this._jobProcessing();
+		}
 	}
 
 	public processJobs(extraJob?: Job): void {

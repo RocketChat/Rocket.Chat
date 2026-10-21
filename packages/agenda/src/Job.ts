@@ -185,15 +185,15 @@ export class Job {
 		return this;
 	}
 
-	public run(): Promise<Job> {
+	public async run(): Promise<Job> {
 		const definition = this.agenda.getDefinition(this.attrs.name);
 
-		return new Promise(async (resolve, reject) => {
-			this.attrs.lastRunAt = new Date();
-			debug('[%s:%s] setting lastRunAt to: %s', this.attrs.name, this.attrs._id, this.attrs.lastRunAt.toISOString());
-			this.computeNextRunAt();
-			await this.save();
+		this.attrs.lastRunAt = new Date();
+		debug('[%s:%s] setting lastRunAt to: %s', this.attrs.name, this.attrs._id, this.attrs.lastRunAt.toISOString());
+		this.computeNextRunAt();
+		await this.save();
 
+		return new Promise((resolve, reject) => {
 			let finished = false;
 			const jobCallback = async (err?: Error): Promise<void> => {
 				// We don't want to complete the job multiple times
@@ -235,27 +235,31 @@ export class Job {
 				resolve(this);
 			};
 
-			try {
-				this.agenda.emit('start', this);
-				this.agenda.emit(`start:${this.attrs.name}`, this);
-				debug('[%s:%s] starting job', this.attrs.name, this.attrs._id);
-				if (!definition) {
-					debug('[%s:%s] has no definition, can not run', this.attrs.name, this.attrs._id);
-					throw new Error('Undefined job');
-				}
+			const execute = async (): Promise<void> => {
+				try {
+					this.agenda.emit('start', this);
+					this.agenda.emit(`start:${this.attrs.name}`, this);
+					debug('[%s:%s] starting job', this.attrs.name, this.attrs._id);
+					if (!definition) {
+						debug('[%s:%s] has no definition, can not run', this.attrs.name, this.attrs._id);
+						throw new Error('Undefined job');
+					}
 
-				if (definition.fn.length === 2) {
-					debug('[%s:%s] process function being called', this.attrs.name, this.attrs._id);
-					await definition.fn(this, jobCallback);
-				} else {
-					debug('[%s:%s] process function being called', this.attrs.name, this.attrs._id);
-					await definition.fn(this);
-					await jobCallback();
+					if (definition.fn.length === 2) {
+						debug('[%s:%s] process function being called', this.attrs.name, this.attrs._id);
+						await definition.fn(this, jobCallback);
+					} else {
+						debug('[%s:%s] process function being called', this.attrs.name, this.attrs._id);
+						await definition.fn(this);
+						await jobCallback();
+					}
+				} catch (error: any) {
+					debug('[%s:%s] unknown error occurred', this.attrs.name, this.attrs._id);
+					await jobCallback(error);
 				}
-			} catch (error: any) {
-				debug('[%s:%s] unknown error occurred', this.attrs.name, this.attrs._id);
-				await jobCallback(error);
-			}
+			};
+
+			void execute().catch(reject);
 		});
 	}
 
