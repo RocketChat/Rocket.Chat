@@ -46,6 +46,7 @@ afterEach(() => {
 	mockIsLoggingIn = false;
 	mockUser = null;
 	mockUserId = null;
+	jest.restoreAllMocks();
 	delete (window as { RocketChatDesktop?: unknown }).RocketChatDesktop;
 });
 
@@ -237,5 +238,19 @@ describe('useDesktopOutlookCredentials', () => {
 		expect(desktop.setUserToken).toHaveBeenCalledTimes(2);
 		expect(desktop.setOutlookExchangeUrl).toHaveBeenCalledTimes(2);
 		expect(desktop.clearOutlookCredentials).toHaveBeenCalledTimes(1);
+	});
+
+	it('should skip the Outlook calls quietly on desktop apps that predate the Outlook integration', () => {
+		const { setUserToken: _token, setOutlookExchangeUrl: _url, clearOutlookCredentials: _clear, ...desktop } = mockDesktop();
+		Object.assign(window, { RocketChatDesktop: desktop });
+		const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+		mockUser = outlookUser(true);
+
+		const { rerender } = renderHook(() => useDesktopOutlookCredentials(), { wrapper: mockAppRoot().build() });
+
+		mockUser = null;
+		rerender();
+
+		expect(warn).not.toHaveBeenCalled();
 	});
 });

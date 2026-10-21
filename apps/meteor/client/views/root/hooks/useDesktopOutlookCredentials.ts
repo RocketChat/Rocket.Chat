@@ -19,15 +19,15 @@ export const useDesktopOutlookCredentials = () => {
 
 	useEffect(() => {
 		if (userId && token && exchangeUrl) {
-			callDesktopBridge((desktop) => desktop.setUserToken(token, userId));
-			callDesktopBridge((desktop) => desktop.setOutlookExchangeUrl(exchangeUrl, userId));
+			callDesktopBridge((desktop) => desktop.setUserToken?.(token, userId));
+			callDesktopBridge((desktop) => desktop.setOutlookExchangeUrl?.(exchangeUrl, userId));
 			handedOver.current = true;
 			return;
 		}
 
 		if (handedOver.current) {
 			handedOver.current = false;
-			callDesktopBridge((desktop) => desktop.clearOutlookCredentials());
+			callDesktopBridge((desktop) => desktop.clearOutlookCredentials?.());
 		}
 	}, [userId, token, exchangeUrl]);
 };
