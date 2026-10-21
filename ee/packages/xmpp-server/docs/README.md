@@ -287,7 +287,8 @@ The package-level [CLAUDE.md](../CLAUDE.md) tells Claude the same rules in the f
 at the start of a session, so a session opened in this package already knows them.
 
 Three skills drive the authoring stages. They live in this package's `.claude/skills/` and are
-linked from the repository root's, so a session started in either place lists them:
+linked from the repository root's `.claude/skills/`, so a session started in either place lists
+them:
 
 - `/xmpp-intent <problem>` interviews you and writes `intents/<slug>.md`.
 - `/xmpp-spec <intent or draft spec>` writes a spec from an accepted intent, or reviews a
