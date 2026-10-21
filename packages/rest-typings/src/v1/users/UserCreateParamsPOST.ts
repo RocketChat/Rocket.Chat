@@ -1,6 +1,7 @@
 import type { IUserPhoneNumber, IUserSettings } from '@rocket.chat/core-typings';
 
 import { ajv } from '../Ajv';
+import { phonesSchema } from './phonesSchema';
 
 export type UserCreateParamsPOST = {
 	email: string;
@@ -44,18 +45,7 @@ const userCreateParamsPostSchema = {
 		verified: { type: 'boolean', nullable: true },
 		customFields: { type: 'object' },
 		sipExtension: { type: 'string', nullable: true },
-		phones: {
-			type: 'array',
-			items: {
-				type: 'object',
-				properties: {
-					number: { type: 'string', transformStripWhitespaces: true, format: 'basic_phone_number' },
-					label: { type: 'string', maxLength: 50 },
-				},
-				required: ['number'],
-				additionalProperties: false,
-			},
-		},
+		phones: phonesSchema,
 	},
 	additionalProperties: false,
 	required: ['email', 'name', 'password', 'username'],
