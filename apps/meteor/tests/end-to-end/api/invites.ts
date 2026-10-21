@@ -1,7 +1,8 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IInvite, IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
@@ -12,7 +13,7 @@ import { createUser, deleteUser, login } from '../../data/users.helper';
 describe('Invites', () => {
 	let testInviteID: IInvite['_id'];
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 	describe('POST [/findOrCreateInvite]', () => {
 		it('should fail if not logged in', async () => {
 			const res = await request

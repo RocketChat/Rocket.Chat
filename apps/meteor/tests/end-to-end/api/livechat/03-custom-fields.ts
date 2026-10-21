@@ -1,6 +1,7 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
@@ -9,7 +10,7 @@ import { closeOmnichannelRoom, createLivechatRoom, createVisitor, deleteVisitor,
 import { updatePermission, updateSetting } from '../../../data/permissions.helper';
 
 describe('LIVECHAT - custom fields', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
