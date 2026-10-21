@@ -7,7 +7,6 @@ import { RateLimiterClass as RateLimiter } from '../../lib/RateLimiter';
 import { settings } from '../../settings';
 
 declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		setUserStatus(statusType: IUser['status'], statusText: IUser['statusText']): void;
 	}

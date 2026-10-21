@@ -48,7 +48,7 @@ export const executeDownloadPublicImportFile = async (userId: IUser['_id'], file
 	}
 
 	const operation = await Import.newOperation(userId, importer.name, importer.key);
-	const instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
+	const instance = new importer.importer(importer, operation); // oxlint-disable-line new-cap
 
 	const oldFileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1).split('?')[0];
 	const date = new Date();

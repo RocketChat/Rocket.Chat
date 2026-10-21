@@ -12,7 +12,7 @@ export function throwIfFederationNotEnabled(): void {
 
 export class FederationMatrixInvalidConfigurationError extends Error {
 	constructor(cause?: string) {
-		// eslint-disable-next-line prefer-template
+		// oxlint-disable-next-line prefer-template
 		const message = 'Federation configuration is invalid' + (cause ? ',' + cause[0].toLowerCase() + cause.slice(1) : '');
 
 		super(message);

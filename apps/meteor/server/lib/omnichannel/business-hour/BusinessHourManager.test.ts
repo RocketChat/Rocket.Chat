@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-empty-function */
+/* oxlint-disable @typescript-eslint/no-empty-function */
 import { afterEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';

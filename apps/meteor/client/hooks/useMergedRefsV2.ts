@@ -52,6 +52,6 @@ export const useMergedRefsV2 = <T>(...refs: (Ref<T> | undefined)[]): RefCallback
 		detachRef.current = detach;
 
 		return detach;
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 	}, refs);
 };

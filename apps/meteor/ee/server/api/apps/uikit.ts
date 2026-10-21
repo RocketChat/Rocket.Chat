@@ -35,7 +35,7 @@ settings.watch('API_CORS_Origin', (value: string) => {
 
 WebApp.rawConnectHandlers.use(apiServer);
 
-// eslint-disable-next-line new-cap
+// oxlint-disable-next-line new-cap
 const router = express.Router();
 
 const unauthorized = (res: Response): unknown =>

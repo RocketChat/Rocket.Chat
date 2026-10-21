@@ -311,7 +311,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 										<Trans
 											i18nKey='Send_Email_SMTP_Warning'
 											components={{
-												// eslint-disable-next-line jsx-a11y/anchor-has-content
+												// oxlint-disable-next-line jsx-a11y/anchor-has-content
 												a: <a href='/admin/settings/Email' />,
 											}}
 										/>
@@ -322,7 +322,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 										<Trans
 											i18nKey='Email_verification_isnt_required'
 											components={{
-												// eslint-disable-next-line jsx-a11y/anchor-has-content
+												// oxlint-disable-next-line jsx-a11y/anchor-has-content
 												a: <a href='/admin/settings/Accounts' />,
 											}}
 										/>
@@ -483,7 +483,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 										<Trans
 											i18nKey='Send_Email_SMTP_Warning'
 											components={{
-												// eslint-disable-next-line jsx-a11y/anchor-has-content
+												// oxlint-disable-next-line jsx-a11y/anchor-has-content
 												a: <a href='/admin/settings/Email' />,
 											}}
 										/>

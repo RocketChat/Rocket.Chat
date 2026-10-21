@@ -54,7 +54,7 @@ export type InputBoxProps<T extends HTMLInputElement | HTMLSelectElement | HTMLT
  * Usually you'll perfer to use `-Input` (e.g. <LinkTo kind='Forms/TextInput' story='Default'>`TextInput`</LinkTo>)
  * components over this one because it works as a construction block for them.
  */
-// eslint-disable-next-line complexity
+// oxlint-disable-next-line complexity
 function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>({
 	ref,
 	className,

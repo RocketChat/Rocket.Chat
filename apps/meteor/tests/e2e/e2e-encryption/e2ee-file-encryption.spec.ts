@@ -53,7 +53,7 @@ test.describe('E2EE File Encryption', () => {
 			.poll(
 				() =>
 					page.evaluate(async (rid) => {
-						// eslint-disable-next-line import-x/no-absolute-path
+						// oxlint-disable-next-line import-x/no-absolute-path
 						const { e2e } = require('/client/lib/e2ee/rocketchat.e2e.ts') as typeof import('../../../client/lib/e2ee/rocketchat.e2e');
 						const room = await e2e.getInstanceByRoomId(rid);
 						return room?.getState();

@@ -16,7 +16,7 @@ export let server: WS;
 const callXTimes = <F extends (...args: any) => any>(fn: F, times: number): F => {
 	return (async (...args) => {
 		const methods = [].concat(...Array(times));
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		// oxlint-disable-next-line @typescript-eslint/no-unused-vars
 		for (const _ of methods) {
 			await fn(...args);
 		}
