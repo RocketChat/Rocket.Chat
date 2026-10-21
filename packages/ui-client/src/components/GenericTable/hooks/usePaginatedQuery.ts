@@ -81,6 +81,9 @@ export function usePaginatedQuery<TQuery, TData extends PaginatedData>(
 export function usePaginatedQuery<TQuery, TData extends PaginatedData, TCombined>(
 	options: UsePaginatedQueryOptions<TQuery, TData> & { combine: Combine<TData, TCombined>; itemsKey?: never },
 ): TCombined;
+export function usePaginatedQuery<TQuery, TData extends PaginatedData>(
+	options: UsePaginatedQueryOptions<TQuery, TData> & { itemsKey?: never; combine?: never },
+): UseQueryResult<TData>[];
 export function usePaginatedQuery<TQuery, TData extends PaginatedData, TCombined>({
 	query,
 	queryKey,
@@ -96,7 +99,17 @@ export function usePaginatedQuery<TQuery, TData extends PaginatedData, TCombined
 	const firstData = queryClient.getQueryData<TData>([...queryKey, { offset: start, count: itemsPerPage }]);
 	const offsets = getOffsets(start, itemsPerPage, firstData?.count, firstData?.total ?? 0);
 
-	const combineFn = useMemo<Combine<TData, unknown>>(() => combine ?? createCombine(itemsKey as keyof TData), [combine, itemsKey]);
+	const combineFn = useMemo<Combine<TData, unknown> | undefined>(() => {
+		if (combine) {
+			return combine;
+		}
+
+		if (itemsKey !== undefined) {
+			return createCombine(itemsKey);
+		}
+
+		return undefined;
+	}, [combine, itemsKey]);
 
 	return useQueries({
 		queries: offsets.map((offset) => {
