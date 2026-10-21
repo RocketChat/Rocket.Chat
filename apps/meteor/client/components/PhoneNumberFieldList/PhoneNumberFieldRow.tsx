@@ -37,7 +37,7 @@ const PhoneNumberFieldRow = ({ control, index, onRemove, className }: PhoneNumbe
 							<IconButton
 								aria-controls={id}
 								title={t('Remove')}
-								aria-label={t('Remove_number__label__', { label: label || index + 1 })}
+								aria-label={t('Remove_number__label__', { label: label?.trim() || index + 1 })}
 								marginInlineStart={8}
 								icon='trash'
 								onClick={() => onRemove(index)}
