@@ -119,6 +119,33 @@ The Rocket.Chat login page (`yarn dev:next` against open.rocket.chat) is also pi
 - After normalizing, every one of those diffs shows only expected changes: Tamagui atomic classes, the removed `rcx-box rcx-box--full`, moved `rcx-css-*` classes, `rcx-*` class order, and shifted `_r_N_` ids (Tamagui's theme state calls `useId`).
 - No tag, attribute, text or `rcx-*` class was added or lost.
 
+### Compiled with the Tamagui compiler
+
+`vite.config.mts` runs `@tamagui/vite-plugin` over the library, so a frame rendered with literal props becomes a plain element with static classes and no Tamagui component at runtime.
+
+- **Literal definitions:** the compiler reads a module's `styled()` options without running them, and our values come from functions (`spacing`, `fontScale`, `String(...)`). `prevalStyled.ts` evaluates each component module at build time and rewrites the options as JSON, only for frames the module renders somewhere without a spread.
+- **Two patches to `@tamagui/static`** (`.yarn/patches`):
+  - a frame's non-style defaults (`role`, `type`, `aria-*`) stay on the flattened element; upstream drops them on the web;
+  - a variant given a runtime value (`selected={isSelected}`) compiles to a lookup over the variant's classes instead of bailing out, so per-row state no longer stops a row from flattening.
+- **Layering:** extracted rules are wrapped in the `fuselage` layer (`wrapExtractedCSS`).
+- **Verification:** Jest and Storybook run `src`, so the compiled code is only checked through `dist`: the computed-style diff of the bench pages and the `ui-client` Storybook built against it.
+
+**Exported frames.** Components that only style one element are the frame itself, so an app that runs the compiler flattens its use-sites too:
+
+- 45 of them: the Message leaves and containers, Card parts, States, Sidepanel, `ButtonGroup`, `NavBar` and others;
+- every `rcx-*` class comes from an always-on variant (`helpers/variantClass.ts`), because a consumer's `className` replaces a `className` default but adds to variant classes;
+- `helpers/asPublicFrame.ts` keeps each component's public props type.
+
+**`PureItem` and its parts** are the `Item` frames with nothing worked out at runtime: the row declares its surface, pointer, gap, highlight and ARIA ids. `Item` itself also takes `multiline` and `interactive`, which skip the re-render it otherwise needs to find them out.
+
+| Compiled in the app, median of 9–11 runs | warm mount | update |
+|---|---|---|
+| 150 messages | 16.1 → 10.1 ms | 19.6 → 15.9 ms |
+| 300 button groups | 11.8 → 1.5 ms | 17.4 → 1.9 ms |
+| 200 sidebar rows, `Item` → `PureItem` | 38.5 → 1.7 ms | 31.4 → 2.6 ms |
+
+The computed styles match in every case, at rest, hovered and focused. Components with hooks, context or `BoxProps` (about 230 of the public components) still render through the runtime.
+
 ## Known costs and open questions
 
 - **React DOM attribute types are not Tamagui prop types**, for example `aria-*` typed `Booleanish` against `boolean`. Each component needs one typed cast at the boundary (`GetProps<typeof Frame>`).
@@ -133,15 +160,9 @@ The Rocket.Chat login page (`yarn dev:next` against open.rocket.chat) is also pi
 - **`render` functions:** Tamagui adds the frame's `className` to the element a `render` function returns. Use `renderAs`, which drops it, or the class names render twice.
 - **Vendor-prefixed properties** (`-webkit-font-smoothing`, `-moz-osx-font-smoothing`) have no Tamagui prop. One `:where(.is_View, .is_Text)` rule in `src/index.css` sets them for every frame.
 - **Collapsed `ItemGroup`s** rely on normalize's `[hidden] { display: none }` beating `.rcx-item-group { display: flex }`. The Rocket.Chat app loads no normalize, which suggests collapsed groups show there today. This is independent of Tamagui.
-- **Static extraction (spike, 2026-10-20): not worth it yet.** We tried `@tamagui/vite-plugin` 3.0.18 on Divider, Tag and Button.
-  - **The compiler only flattens literals.** It reads code without running it, so any style value computed by a function call (`toCSSValue`, `spacing`, `fontScale`, `String(...)`) is skipped silently.
-  - **Few frames qualify.** Neither are frames that spread `useTamaguiBoxProps`, use `context`, or use `forceStyle`/`group`. Only 23 of 227 definitions flattened.
-  - **Size went up, not down.** Extraction added about 1.9 kB gzip: the runtime stays, and each flattened element inlines its class string. Zero-runtime mode reports 293 violations, mostly `ThemeProvider` and live frame references.
-  - **The extracted CSS needs fixes.** It is unlayered by default (an internal `wrapExtractedCSS` option layers it) and is not deduplicated across modules.
-  - **The usual checks miss it.** The compiled code only exists in `dist`, while Jest and Storybook run `src`.
-  - **What it would take:** generating literal value modules from `Theme`/`styleTokens`, and removing the props spreads from root frames. Even then, `Box`-driven roots would keep the runtime.
 - **Still to decide:**
-  - Bundle size: the compiler (`@tamagui/static`) and `TAMAGUI_RUNTIME=island` could remove most of the runtime.
+  - Bundle size: `TAMAGUI_RUNTIME=island` could remove most of the runtime once enough use-sites compile.
+  - Running the compiler in Rocket.Chat's bundler (`tamagui-loader` for rspack), which needs an ESM Fuselage build whose dependencies load under Node.
   - `Box` itself is still css-in-js, and how to migrate it is undecided.
 
 ## Migrating a component
@@ -172,7 +193,7 @@ Follow `Divider` (`components/Divider/Divider.tsx`).
    - any selector that reaches into another component.
 
    Delete each CSS rule you move, and the whole file once it is empty.
-8. **Export:** export the public component through `withFuselageProvider`.
+8. **Export:** when the component only styles one element, export the frame itself through `asPublicFrame`, with its `rcx-*` classes as variants (see `MessageName`). Otherwise export the component through `withFuselageProvider`.
 9. **Verify:**
    - `yarn tsc --noEmit -p tsconfig.json` and the component's Jest specs.
    - Snapshot diffs may show only Tamagui class names (`is_View`, `_m-…`), removed `rcx-box rcx-box--full`, and shifted `_r_N_` ids.
