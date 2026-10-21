@@ -12,11 +12,12 @@ const ClassificationBanner = () => {
 	const room = useRoom();
 	const isABACRoom = useIsABACManagedRoom(room);
 	const bannersEnabled = useSetting('ABAC_Classification_Banners_Enabled', false);
-	const enabled = bannersEnabled && isABACRoom;
+	const securityLabelsEnabled = useSetting('DCS_Enabled', false);
+	const enabled = (bannersEnabled && isABACRoom) || (securityLabelsEnabled && !!room.defaultSecurityLabel);
 	const getRoomInfo = useEndpoint('GET', '/v1/rooms.info');
 
 	const { data: banner } = useQuery({
-		queryKey: [...roomsQueryKeys.info(room._id), 'classificationBanner', room.abacAttributes],
+		queryKey: [...roomsQueryKeys.info(room._id), 'classificationBanner', room.abacAttributes, room.defaultSecurityLabel],
 		queryFn: async () => (await getRoomInfo({ roomId: room._id })).classificationBanner ?? null,
 		enabled,
 	});

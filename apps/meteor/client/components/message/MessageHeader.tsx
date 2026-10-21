@@ -12,6 +12,7 @@ import { useUserPresence, useUserCard } from '@rocket.chat/ui-contexts';
 import { memo, type MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import SecurityMarkingTag from './SecurityMarkingTag';
 import StatusIndicators from './StatusIndicators';
 import MessageRoles from './header/MessageRoles';
 import { useMessageListShowRoles, useMessageListFormatDateAndTime, useMessageListFormatTime } from './list/MessageListContext';
@@ -65,6 +66,7 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 			<MessageTimestamp id={`${message._id}-time`} title={formatDateAndTime(message.ts)}>
 				{formatTime(message.ts)}
 			</MessageTimestamp>
+			{message.securityMarking && <SecurityMarkingTag marking={message.securityMarking} />}
 			{message.private && <MessageStatusPrivateIndicator>{t('Only_you_can_see_this_message')}</MessageStatusPrivateIndicator>}
 			<StatusIndicators message={message} />
 		</FuselageMessageHeader>

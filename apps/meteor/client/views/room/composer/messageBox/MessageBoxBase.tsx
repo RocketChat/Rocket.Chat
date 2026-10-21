@@ -16,6 +16,7 @@ import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxHint from './MessageBoxHint';
 import MessageBoxReplies from './MessageBoxReplies';
+import MessageBoxSecurityLabel from './MessageBoxSecurityLabel';
 import type { ComposerAPI } from '../../../../lib/chats/ChatAPI';
 import type { FormattingButton } from '../../../../lib/messageBoxFormatting';
 import AudioMessageRecorder from '../../../composer/AudioMessageRecorder';
@@ -150,6 +151,7 @@ const MessageBoxBase = ({
 						{composer && formatters.length > 0 && (
 							<MessageBoxFormattingToolbar composer={composer} variant={variant} items={formatters} disabled={isRecording || !canSend} />
 						)}
+						{!isEditing && <MessageBoxSecurityLabel disabled={isRecording || !canSend} />}
 						<MessageBoxActionsToolbar
 							canSend={canSend}
 							isMicrophoneDenied={isMicrophoneDenied}
