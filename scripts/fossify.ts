@@ -16,17 +16,9 @@ const fossify = async () => {
 	await fs.rm('./apps/meteor/ee', removeOptions);
 
 	console.log('Replacing main files...');
+	await fs.access('./apps/meteor/startRocketChatFOSS.ts');
 	await fs.rm('./apps/meteor/startRocketChat.ts', { force: true });
-
-	try {
-		await fs.rename('./apps/meteor/startRocketChatFOSS.ts', './apps/meteor/startRocketChat.ts');
-	} catch (e: any) {
-		if (e.code === 'ENOENT') {
-			console.warn('startRocketChatFOSS.ts not found. Skipping file replacement.');
-		} else {
-			throw e;
-		}
-	}
+	await fs.rename('./apps/meteor/startRocketChatFOSS.ts', './apps/meteor/startRocketChat.ts');
 
 	console.log('Done.');
 };
