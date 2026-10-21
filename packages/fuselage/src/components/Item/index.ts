@@ -3,6 +3,7 @@ export { default as ItemActions, type ItemActionsProps } from './ItemActions';
 export { default as ItemContent, type ItemContentProps } from './ItemContent';
 export { default as ItemDescription, type ItemDescriptionProps } from './ItemDescription';
 export { default as ItemDivider, type ItemDividerProps } from './ItemDivider';
+export { default as ItemDragHandle, type ItemDragHandleProps } from './ItemDragHandle';
 export { default as ItemGroup, type ItemGroupProps } from './ItemGroup';
 export { default as ItemGroupHeader, type ItemGroupHeaderProps } from './ItemGroupHeader';
 export { default as ItemGroupTitle, type ItemGroupTitleProps } from './ItemGroupTitle';

@@ -2,6 +2,8 @@
 @use '../../styles/lengths.scss';
 @use '../../styles/typography.scss' as *;
 @use '../../styles/functions.scss' as *;
+@use '../../styles/mixins/elevation.scss' as *;
+@use '../../styles/primitives/traits.scss';
 
 $item-color-font-default: theme('item-color-font-default', colors.font(default));
 $item-color-font-highlighted: theme('item-color-font-highlighted', colors.font(titles-labels));
@@ -13,6 +15,8 @@ $item-color-surface-selected: theme('item-color-surface-selected', colors.surfac
 $item-color-stroke-focus: theme('item-color-stroke-focus', colors.stroke(highlight));
 $item-color-stroke-divider: theme('item-color-stroke-divider', colors.stroke(extra-light));
 $item-group-header-color-surface: theme('item-group-header-color-surface', colors.surface(light));
+$item-drag-preview-color-surface: theme('item-drag-preview-color-surface', colors.surface(light));
+$item-group-color-surface-drop-target: theme('item-group-color-surface-drop-target', colors.status-background(info));
 
 $item-padding: lengths.padding(4);
 $item-reveal-duration: 0.18s;
@@ -481,5 +485,138 @@ $item-group-narrow-width: 320px;
 	.rcx-item,
 	.rcx-item-group-header {
 		@include reveal-actions;
+	}
+}
+
+.rcx-item__drag-handle {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	flex: none;
+
+	width: lengths.size(16);
+	height: lengths.size(20);
+
+	cursor: grab;
+
+	color: $item-color-font-secondary;
+
+	touch-action: none;
+
+	.rcx-item:hover & {
+		color: $item-color-font-highlighted;
+	}
+}
+
+.rcx-item,
+.rcx-item-group {
+	&--dragging {
+		opacity: 0.4;
+	}
+
+	&--drop-before,
+	&--drop-after {
+		position: relative;
+
+		&::before {
+			position: absolute;
+			z-index: 2;
+			inset-inline: 0;
+
+			height: lengths.border-width(medium);
+
+			content: '';
+
+			pointer-events: none;
+
+			border-radius: lengths.border-width(medium);
+			background-color: $item-color-stroke-focus;
+		}
+	}
+
+	// The line sits on the gap between two rows, so "after" one row and "before" the next draw the same line.
+	&--drop-before::before {
+		top: calc(#{lengths.border-width(medium)} / -2);
+	}
+
+	&--drop-after::before {
+		bottom: calc(#{lengths.border-width(medium)} / -2);
+	}
+}
+
+.rcx-item--drop-disabled {
+	cursor: not-allowed;
+}
+
+.rcx-item-group--drop-target {
+	border-radius: lengths.border-radius(medium);
+	background-color: $item-group-color-surface-drop-target;
+	box-shadow: inset 0 0 0 lengths.border-width(medium) $item-color-stroke-focus;
+}
+
+// Drawn over a list whose rows are not inside their group's element, such as a virtualized list.
+.rcx-item-drop-line,
+.rcx-item-drop-box {
+	position: fixed;
+	z-index: 10000;
+
+	box-sizing: border-box;
+
+	pointer-events: none;
+}
+
+.rcx-item-drop-line {
+	height: lengths.border-width(medium);
+	margin-block-start: calc(#{lengths.border-width(medium)} / -2);
+
+	border-radius: lengths.border-width(medium);
+	background-color: $item-color-stroke-focus;
+}
+
+.rcx-item-drop-box {
+	border-radius: lengths.border-radius(medium);
+	background-color: color-mix(in srgb, #{$item-color-stroke-focus} 8%, transparent);
+	box-shadow: inset 0 0 0 lengths.border-width(medium) $item-color-stroke-focus;
+}
+
+// Tells assistive technologies where a row moved by keyboard landed.
+.rcx-item-drag-announcer {
+	@extend %visually-hidden;
+}
+
+// Covers the page while a row is dragged, so nothing under the pointer reacts to it.
+.rcx-item-drag-shield {
+	position: fixed;
+	z-index: 9997;
+	inset: 0;
+
+	cursor: grabbing;
+
+	&--no-drop {
+		cursor: no-drop;
+	}
+}
+
+// The copy of a row or group header that follows the pointer while it is dragged.
+.rcx-item-drag-preview {
+	position: fixed;
+	z-index: 9999;
+	top: 0;
+	left: 0;
+
+	box-sizing: border-box;
+	margin: 0;
+
+	cursor: grabbing;
+	pointer-events: none;
+
+	opacity: 0.92;
+	border-radius: lengths.border-radius(small);
+	background-color: $item-drag-preview-color-surface;
+
+	@include elevation-level(2);
+
+	.rcx-item__actions {
+		display: none;
 	}
 }

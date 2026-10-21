@@ -25,6 +25,25 @@ import { render } from '../../testing';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
+describe('[Item drag states]', () => {
+	it('marks the dragged row, the drop edge and the drop group', () => {
+		render(
+			<ItemGroup is='ul' aria-label='Rooms' dropTarget dropIndicator='before'>
+				<Item is='li' dragging>
+					a
+				</Item>
+				<Item is='li' dropIndicator='after' dropDisabled>
+					b
+				</Item>
+			</ItemGroup>,
+		);
+
+		expect(screen.getByRole('list')).toHaveClass('rcx-item-group--drop-target', 'rcx-item-group--drop-before');
+		expect(screen.getByText('a')).toHaveClass('rcx-item--dragging');
+		expect(screen.getByText('b')).toHaveClass('rcx-item--drop-after', 'rcx-item--drop-disabled');
+	});
+});
+
 describe('[Item Rendering]', () => {
 	test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
 		const { container } = render(<Story />);
