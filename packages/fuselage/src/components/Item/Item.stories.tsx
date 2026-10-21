@@ -11,13 +11,11 @@ import { Icon, type IconProps } from '../Icon';
 import { Menu, MenuItem } from '../Menu';
 import { leterAvatarUrls } from '../Sidebar/helpers';
 import { StatusBullet, type StatusBulletProps } from '../StatusBullet';
-import Item, { type ItemProps } from './Item';
+import Item from './Item';
 import ItemActions from './ItemActions';
 import ItemContent from './ItemContent';
 import ItemDescription from './ItemDescription';
 import ItemDivider from './ItemDivider';
-import ItemDragHandle from './ItemDragHandle';
-import ItemDropSlot from './ItemDropSlot';
 import ItemGroup from './ItemGroup';
 import ItemGroupHeader from './ItemGroupHeader';
 import ItemGroupTitle from './ItemGroupTitle';
@@ -426,85 +424,6 @@ export const States: Story = {
 						<ItemTitle>Leave room (danger)</ItemTitle>
 					</ItemContent>
 				</Item>
-			</ItemGroup>
-		</Box>
-	),
-};
-
-const DragRow = ({
-	title,
-	handle,
-	handleDisabled,
-	...props
-}: { title: string; handle?: boolean; handleDisabled?: boolean } & ItemProps) => (
-	<Item is='li' inset='md' {...props}>
-		<ItemMedia variant='icon'>
-			<Icon name='hash' size='x20' />
-		</ItemMedia>
-		<ItemContent>
-			<ItemTitle>
-				<ItemLink href={`#${title}`}>{title}</ItemLink>
-			</ItemTitle>
-		</ItemContent>
-		{handle && <ItemDragHandle disabled={handleDisabled} />}
-	</Item>
-);
-
-export const DragStates: Story = {
-	render: () => (
-		<Box display='flex' flexDirection='column' width='x280'>
-			<Caption>Source</Caption>
-			<ItemGroup is='ul' aria-label='Source states'>
-				<DragRow title='general (grabbable)' grabbable />
-				<DragRow title='design (dragging)' dragging />
-				<DragRow title='web (dropped)' dropped />
-			</ItemGroup>
-			<Caption>Handle (dragHandle=&quot;trailing&quot;)</Caption>
-			<ItemGroup is='ul' aria-label='Handle states'>
-				<DragRow title='ana.lima' handle />
-				<DragRow title='bruno.dias (dragging)' handle dragging />
-				<DragRow title='carla.souza (cannot move)' handle handleDisabled />
-			</ItemGroup>
-			<Caption>Ordered drop</Caption>
-			<ItemGroup is='ul' aria-label='Ordered drop states'>
-				<DragRow title='roadmap (drop before)' dropIndicator='before' />
-				<DragRow title='mobile' />
-				<DragRow title='support (drop after)' dropIndicator='after' />
-			</ItemGroup>
-			<Caption>Drop into a row</Caption>
-			<ItemGroup is='ul' aria-label='Row drop target states'>
-				<DragRow title='Clients (available)' dropTarget='available' />
-				<DragRow title='Partners (active)' dropTarget='active' />
-				<DragRow title='Archive (drop disabled)' dropDisabled />
-			</ItemGroup>
-			<Caption>Drop into a group</Caption>
-			<ItemGroup is='ul' aria-label='Available group' dropTarget='available'>
-				<DragRow title='acme-support' />
-			</ItemGroup>
-			<ItemGroup is='ul' aria-label='Active group' dropTarget='active'>
-				<DragRow title='globex-onboarding' />
-			</ItemGroup>
-			<ItemGroup is='ul' aria-label='Disabled group' dropDisabled>
-				<DragRow title='initech' />
-			</ItemGroup>
-			<ItemGroup is='ul' aria-label='Empty group'>
-				<ItemDropSlot is='li'>Drop here</ItemDropSlot>
-				<ItemDropSlot is='li' dropTarget='available'>
-					Drop here (available)
-				</ItemDropSlot>
-				<ItemDropSlot is='li' dropTarget='active'>
-					Drop here (active)
-				</ItemDropSlot>
-			</ItemGroup>
-			<Caption>Groups in order</Caption>
-			<ItemGroup is='ul' aria-label='Group dropped before' dropIndicator='before'>
-				<DragRow title='Favorites' />
-			</ItemGroup>
-			<ItemGroup is='ul' aria-label='Dragged group' dragging>
-				<DragRow title='Projects' />
-			</ItemGroup>
-			<ItemGroup is='ul' aria-label='Landed group' dropped>
-				<DragRow title='Teams' />
 			</ItemGroup>
 		</Box>
 	),
