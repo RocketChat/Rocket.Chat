@@ -1,6 +1,7 @@
+import { after, afterEach, before, describe, it } from 'node:test';
+
 import type { ILivechatVisitor } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, afterEach, after, describe, it } from 'mocha';
 import moment from 'moment';
 
 import { api, getCredentials, request, credentials } from '../../../data/api-data';
@@ -18,7 +19,7 @@ import {
 import { updateSetting } from '../../../data/permissions.helper';
 
 describe('MAC', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);

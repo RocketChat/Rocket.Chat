@@ -114,9 +114,12 @@ Anti-patterns to avoid:
 
 ## Tests
 
-- **Co-located specs** (`server/**/**.spec.ts`) and **mirrored specs** (`tests/unit/server/**` mirrors the source tree; EE code is mirrored under `ee/tests/unit/**`) both exist. When you move source, move its mirror.
-- Two runners with **separate globs**: mocha (`.mocharc.js` `spec` list) and jest (`jest.config.ts` `testMatch`). A spec in a folder not matched by any glob silently never runs; a jest spec caught by a mocha glob throws `jest is not defined`.
-- `proxyquire`/`jest.mock` keys are **string literals matched against the loaded module's import specifiers** — lint and tsc cannot validate them. If you move a module, every mock key referencing it (or referencing its dependencies' specifiers) must be updated, and the affected suites actually run. A stale key silently loads the real dependency; if that dependency reaches `server/settings/index.ts`, the whole mocha run dies with a top-level-await transform error — that error is the signature of a stale settings mock.
+- A unit test sits in the same folder as the file it tests: `foo.test.ts` next to `foo.ts`. When you move source code, move its tests with it.
+- A test for a package goes in that package, not in `apps/meteor`.
+- `tests/` keeps the REST API and e2e suites, and the code that tests share (`tests/mocks/`, `tests/data/`, `tests/setup/`). Coverage does not count files in `tests/`, so shared test code goes there and not next to the source.
+- For unit tests, during the migration from Jest to `node:test`, the file name selects the runner. `*.test.ts` runs on `node:test` and `*.spec.ts` runs on Jest. Both runners find their files with globs.
+- The `node:test` scripts use `--experimental-test-isolation=none`, not `--test-isolation=none`. We support Node 22, and Node 22 knows only the old name of this flag. Node 24 accepts both names.
+- `proxyquire`/`jest.mock` keys are **string literals matched against the loaded module's import specifiers** — lint and tsc cannot validate them. If you move a module, every mock key referencing it (or referencing its dependencies' specifiers) must be updated, and the affected suites actually run. A stale key silently loads the real dependency; if that dependency reaches `server/settings/index.ts`, the file fails to load with a top-level-await transform error — that error is the signature of a stale settings mock.
 - Specs must not depend on suite execution order (e.g. on another spec having installed a mocked core-services broker) — mock `@rocket.chat/core-services` locally.
 
 ## History

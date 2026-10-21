@@ -1,8 +1,9 @@
+import { after, before, describe, it } from 'node:test';
+
 import { faker } from '@faker-js/faker';
 import type { Credentials } from '@rocket.chat/api-client';
 import type { ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, describe, it, after } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
@@ -22,7 +23,7 @@ import { createUser, deleteUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
 (IS_EE ? describe.skip : describe)('LIVECHAT - Departments[CE]', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
@@ -76,8 +77,8 @@ import { IS_EE } from '../../../e2e/config/constants';
 		departmentId = body.department._id;
 	});
 
-	it('should not create a 2nd department', () => {
-		return request
+	it('should not create a 2nd department', async () => {
+		await request
 			.post(api('livechat/department'))
 			.set(credentials)
 			.send({ department: { name: 'Test', enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'bla@bla' } })
@@ -96,7 +97,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('LIVECHAT - Departments', () => {
 	let initialDep: ILivechatDepartment;
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
@@ -364,16 +365,16 @@ import { IS_EE } from '../../../e2e/config/constants';
 	});
 
 	describe('GET livechat/department/:_id', () => {
-		it('should return unauthorized error when the user does not have the necessary permission', async () => {
+		it('should return unauthorized error when the user does not have the necessary permission', { timeout: 5000 }, async () => {
 			await updatePermission('view-livechat-departments', []);
 			await request
 				.get(api('livechat/department/testetetetstetete'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.expect(403);
-		}).timeout(5000);
+		});
 
-		it('should return an error when the department does not exist', async () => {
+		it('should return an error when the department does not exist', { timeout: 5000 }, async () => {
 			await updatePermission('view-livechat-departments', ['admin']);
 			await request
 				.get(api('livechat/department/testesteteste'))
@@ -385,7 +386,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 					expect(res.body).to.have.property('department');
 					expect(res.body.department).to.be.null;
 				});
-		}).timeout(5000);
+		});
 
 		it('should return the department', async () => {
 			await updatePermission('view-livechat-departments', ['admin']);
@@ -563,7 +564,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			expect(latestRoom.departmentId).to.be.undefined;
 		});
 
-		(IS_EE ? it : it.skip)('it should remove the department and disassociate the rooms from it which have its units', async () => {
+		it('it should remove the department and disassociate the rooms from it which have its units', async () => {
 			const { department } = await createDepartmentWithAnOnlineAgent();
 			const newVisitor = await createVisitor(department._id);
 			const newRoom = await createLivechatRoom(newVisitor.token);
@@ -593,49 +594,46 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await deleteUser(monitor);
 		});
 
-		(IS_EE ? it : it.skip)(
-			'contd from above test case: if a unit has more than 1 dept, then it should not disassociate rooms from other dept when any one dept is removed',
-			async () => {
-				const { department: department1 } = await createDepartmentWithAnOnlineAgent();
-				const newVisitor1 = await createVisitor(department1._id);
-				const newRoom1 = await createLivechatRoom(newVisitor1.token);
+		it('contd from above test case: if a unit has more than 1 dept, then it should not disassociate rooms from other dept when any one dept is removed', async () => {
+			const { department: department1 } = await createDepartmentWithAnOnlineAgent();
+			const newVisitor1 = await createVisitor(department1._id);
+			const newRoom1 = await createLivechatRoom(newVisitor1.token);
 
-				const { department: department2 } = await createDepartmentWithAnOnlineAgent();
-				const newVisitor2 = await createVisitor(department2._id);
-				const newRoom2 = await createLivechatRoom(newVisitor2.token);
+			const { department: department2 } = await createDepartmentWithAnOnlineAgent();
+			const newVisitor2 = await createVisitor(department2._id);
+			const newRoom2 = await createLivechatRoom(newVisitor2.token);
 
-				const monitor = await createUser();
-				await createMonitor(monitor.username);
-				const unit = await createUnit(monitor._id, monitor.username, [department1._id, department2._id]);
+			const monitor = await createUser();
+			await createMonitor(monitor.username);
+			const unit = await createUnit(monitor._id, monitor.username, [department1._id, department2._id]);
 
-				// except the room to have the unit
-				let latestRoom1 = await getLivechatRoomInfo(newRoom1._id);
-				let latestRoom2 = await getLivechatRoomInfo(newRoom2._id);
-				expect(latestRoom1.departmentId).to.be.equal(department1._id);
-				expect(latestRoom1.departmentAncestors).to.be.an('array').that.includes(unit._id);
-				expect(latestRoom2.departmentId).to.be.equal(department2._id);
-				expect(latestRoom2.departmentAncestors).to.be.an('array').that.includes(unit._id);
+			// except the room to have the unit
+			let latestRoom1 = await getLivechatRoomInfo(newRoom1._id);
+			let latestRoom2 = await getLivechatRoomInfo(newRoom2._id);
+			expect(latestRoom1.departmentId).to.be.equal(department1._id);
+			expect(latestRoom1.departmentAncestors).to.be.an('array').that.includes(unit._id);
+			expect(latestRoom2.departmentId).to.be.equal(department2._id);
+			expect(latestRoom2.departmentAncestors).to.be.an('array').that.includes(unit._id);
 
-				const resp: Response = await request
-					.delete(api(`livechat/department/${department1._id}`))
-					.set(credentials)
-					.expect('Content-Type', 'application/json')
-					.expect(200);
+			const resp: Response = await request
+				.delete(api(`livechat/department/${department1._id}`))
+				.set(credentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200);
 
-				expect(resp.body).to.have.property('success', true);
+			expect(resp.body).to.have.property('success', true);
 
-				latestRoom1 = await getLivechatRoomInfo(newRoom1._id);
-				expect(latestRoom1.departmentId).to.be.undefined;
-				expect(latestRoom1.departmentAncestors).to.be.undefined;
+			latestRoom1 = await getLivechatRoomInfo(newRoom1._id);
+			expect(latestRoom1.departmentId).to.be.undefined;
+			expect(latestRoom1.departmentAncestors).to.be.undefined;
 
-				latestRoom2 = await getLivechatRoomInfo(newRoom2._id);
-				expect(latestRoom2.departmentId).to.be.equal(department2._id);
-				expect(latestRoom2.departmentAncestors).to.be.an('array').that.includes(unit._id);
+			latestRoom2 = await getLivechatRoomInfo(newRoom2._id);
+			expect(latestRoom2.departmentId).to.be.equal(department2._id);
+			expect(latestRoom2.departmentAncestors).to.be.an('array').that.includes(unit._id);
 
-				// cleanup
-				await deleteUser(monitor);
-			},
-		);
+			// cleanup
+			await deleteUser(monitor);
+		});
 	});
 
 	describe('GET livechat/department.autocomplete', () => {
@@ -723,11 +721,7 @@ import { IS_EE } from '../../../e2e/config/constants';
 			await deleteDepartment(department._id);
 		});
 
-		it('should return a list of departments excluding the ids on selector.exceptions', async function () {
-			if (!IS_EE) {
-				this.skip();
-			}
-
+		it('should return a list of departments excluding the ids on selector.exceptions', async () => {
 			await updatePermission('view-livechat-departments', ['admin']);
 			await updatePermission('view-l-room', ['admin']);
 			const dep1 = await createDepartment();

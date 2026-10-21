@@ -1,5 +1,6 @@
+import { describe, it } from 'node:test';
+
 import { expect } from 'chai';
-import { describe, it } from 'mocha';
 
 import { apiUrl } from '../../data/api-data';
 
@@ -63,24 +64,26 @@ describe('dynamic-import response delivery through the proxy', () => {
 		).to.be.greaterThan(10000);
 	});
 
-	it(`should deliver ${TOTAL_REQUESTS} concurrent dynamic-import responses without a single truncation`, async function () {
-		this.timeout(10 * 60 * 1000);
+	it(
+		`should deliver ${TOTAL_REQUESTS} concurrent dynamic-import responses without a single truncation`,
+		{ timeout: 10 * 60 * 1000 },
+		async () => {
+			const failures: string[] = [];
+			let issued = 0;
 
-		const failures: string[] = [];
-		let issued = 0;
-
-		const worker = async (): Promise<void> => {
-			while (issued < TOTAL_REQUESTS && failures.length === 0) {
-				const current = issued++;
-				const { error } = await fetchModuleTree(BODIES[current % BODIES.length]);
-				if (error) {
-					failures.push(`request #${current}: ${error}`);
+			const worker = async (): Promise<void> => {
+				while (issued < TOTAL_REQUESTS && failures.length === 0) {
+					const current = issued++;
+					const { error } = await fetchModuleTree(BODIES[current % BODIES.length]);
+					if (error) {
+						failures.push(`request #${current}: ${error}`);
+					}
 				}
-			}
-		};
+			};
 
-		await Promise.all(Array.from({ length: CONCURRENCY }, worker));
+			await Promise.all(Array.from({ length: CONCURRENCY }, worker));
 
-		expect(failures).to.deep.equal([]);
-	});
+			expect(failures).to.deep.equal([]);
+		},
+	);
 });

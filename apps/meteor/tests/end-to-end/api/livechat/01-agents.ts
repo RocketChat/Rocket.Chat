@@ -1,9 +1,10 @@
+import { after, afterEach, before, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { ILivechatVisitor, IOmnichannelRoom, ILivechatAgent, ILivechatDepartment, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
@@ -39,7 +40,7 @@ describe('LIVECHAT - Agents', () => {
 
 	let agent2: { user: IUser; credentials: Credentials };
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);
@@ -354,13 +355,13 @@ describe('LIVECHAT - Agents', () => {
 			after(async () => {
 				await deleteUser(user);
 			});
-			it('should return an error when type is invalid', async () => {
+			it('should return an error when type is invalid', { timeout: 5000 }, async () => {
 				await request
 					.get(api(`livechat/users/invalid-type/${agent._id}`))
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(400);
-			}).timeout(5000);
+			});
 
 			it('should return a valid user when all goes fine', async () => {
 				await request
@@ -415,21 +416,21 @@ describe('LIVECHAT - Agents', () => {
 				await restorePermissionToRoles('manage-livechat-agents');
 				await restorePermissionToRoles('manage-livechat-managers');
 			});
-			it('should return an "unauthorized error" when removing an agent without manage-livechat-agents', async () => {
+			it('should return an "unauthorized error" when removing an agent without manage-livechat-agents', { timeout: 5000 }, async () => {
 				await request.delete(api(`livechat/users/agent/id`)).set(credentials).expect('Content-Type', 'application/json').expect(403);
-			}).timeout(5000);
-			it('should return an "unauthorized error" when removing a manager without manage-livechat-managers', async () => {
+			});
+			it('should return an "unauthorized error" when removing a manager without manage-livechat-managers', { timeout: 5000 }, async () => {
 				await request.delete(api(`livechat/users/manager/id`)).set(credentials).expect('Content-Type', 'application/json').expect(403);
-			}).timeout(5000);
+			});
 		});
 
-		it('should return an error when type is invalid', async () => {
+		it('should return an error when type is invalid', { timeout: 5000 }, async () => {
 			await request.delete(api(`livechat/users/invalid-type/id`)).set(credentials).expect('Content-Type', 'application/json').expect(400);
-		}).timeout(5000);
+		});
 
-		it('should return an error when _id is invalid', async () => {
+		it('should return an error when _id is invalid', { timeout: 5000 }, async () => {
 			await request.delete(api('livechat/users/agent/invalid-id')).set(credentials).expect('Content-Type', 'application/json').expect(400);
-		}).timeout(5000);
+		});
 
 		it('should return a valid user when all goes fine', async () => {
 			const agent = await createAgent();
