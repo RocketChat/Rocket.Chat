@@ -9,7 +9,7 @@ import { after, before, beforeEach, describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
-import { ProgressStep } from '../../../../../app/importer/lib/ImporterProgressStep';
+import { ProgressStep } from '../../../../../lib/importer/ImporterProgressStep';
 
 const converter = {
 	clearImportData: sinon.stub(),

@@ -1,21 +1,23 @@
 /**
  * Docs: https://github.com/RocketChat/developer-docs/blob/master/reference/api/rest-api/endpoints/team-collaboration-endpoints/im-endpoints
  */
-import type { IMessage, IRoom, ISubscription, IUser, UserStatus } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription, IUploadWithUser, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Subscriptions, Uploads, Messages, Rooms, Users } from '@rocket.chat/models';
+import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import {
 	ajv,
 	ajvQuery,
-	validateUnauthorizedErrorResponse,
-	validateForbiddenErrorResponse,
-	validateBadRequestErrorResponse,
 	isDmBlockUserProps,
+	isDmCreateProps,
 	isDmFileProps,
+	isDmHistoryProps,
 	isDmLeaveProps,
 	isDmMemberProps,
 	isDmMessagesProps,
-	isDmCreateProps,
-	isDmHistoryProps,
+	paginatedResponseProperties,
+	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -435,13 +437,11 @@ const dmCountersAction = <Path extends string>(_path: Path): TypedAction<typeof 
 		});
 	};
 
-const dmFilesResponseSchema = ajv.compile<{ files: object[]; count: number; offset: number; total: number }>({
+const dmFilesResponseSchema = ajv.compile<PaginatedResult<{ files: IUploadWithUser[] }>>({
 	type: 'object',
 	properties: {
 		files: { type: 'array', items: { type: 'object' } }, // relaxed: IUpload with addUserToFileObj transform
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['files', 'count', 'offset', 'total', 'success'],
@@ -468,7 +468,7 @@ const dmFilesAction = <Path extends string>(_path: Path): TypedAction<typeof dmF
 		const { typeGroup, name, roomId, username, onlyConfirmed } = this.queryParams;
 
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields, query } = await this.parseJsonQuery();
+		const { sort, fields } = await this.parseJsonQuery();
 
 		const { room } = await findDirectMessageRoom(roomId ? { roomId } : { username }, this.userId);
 
@@ -478,7 +478,6 @@ const dmFilesAction = <Path extends string>(_path: Path): TypedAction<typeof dmF
 		}
 
 		const filter = {
-			...query,
 			rid: room._id,
 			...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
 			...(typeGroup ? { typeGroup } : {}),
@@ -502,13 +501,17 @@ const dmFilesAction = <Path extends string>(_path: Path): TypedAction<typeof dmF
 		});
 	};
 
-const dmMembersResponseSchema = ajv.compile<{ members: object[]; count: number; offset: number; total: number }>({
+const dmMembersResponseSchema = ajv.compile<
+	PaginatedResult<{
+		members: (Pick<IUser, '_id' | 'status' | 'statusText' | 'name' | 'username' | 'utcOffset' | 'federated' | 'sipExtension'> & {
+			subscription: Partial<Pick<ISubscription, '_id' | 'status' | 'ts' | 'roles'>>;
+		})[];
+	}>
+>({
 	type: 'object',
 	properties: {
 		members: { type: 'array', items: { type: 'object' } }, // relaxed: projected IUser + subscription info
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['members', 'count', 'offset', 'total', 'success'],
@@ -566,7 +569,7 @@ const dmMembersAction = <Path extends string>(_path: Path): TypedAction<typeof d
 				statusText: 1,
 				utcOffset: 1,
 				federated: 1,
-				freeSwitchExtension: 1,
+				sipExtension: 1,
 			},
 			skip: offset,
 			limit: count,
@@ -614,9 +617,7 @@ const dmMessagesResponseSchema = ajv.compile<{ messages: IMessage[]; count: numb
 	type: 'object',
 	properties: {
 		messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['messages', 'count', 'offset', 'total', 'success'],
@@ -656,14 +657,13 @@ const dmMessagesAction = <Path extends string>(_path: Path): TypedAction<typeof 
 		}
 
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields, query } = await this.parseJsonQuery();
+		const { sort, fields } = await this.parseJsonQuery();
 
 		const parseIds = (ids: string | undefined, field: string) =>
 			typeof ids === 'string' && ids ? { [field]: { $in: ids.split(',').map((id) => id.trim()) } } : {};
 
 		const ourQuery = {
 			rid: room._id,
-			...query,
 			...parseIds(mentionIds, 'mentions._id'),
 			...parseIds(starredIds, 'starred._id'),
 			...(pinned?.toLowerCase() === 'true' && { pinned: true }),
@@ -688,7 +688,7 @@ const dmMessagesAction = <Path extends string>(_path: Path): TypedAction<typeof 
 		});
 	};
 
-const dmHistoryResponseSchema = ajv.compile<Record<string, unknown>>({
+const dmHistoryResponseSchema = ajv.compile<{ messages: IMessage[]; firstUnread?: IMessage; unreadNotLoaded?: number }>({
 	type: 'object',
 	properties: {
 		messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
@@ -741,13 +741,23 @@ const dmHistoryAction = <Path extends string>(_path: Path): TypedAction<typeof d
 			return API.v1.forbidden();
 		}
 
-		return API.v1.success(result as Record<string, unknown>);
+		return API.v1.success(result as { messages: IMessage[]; firstUnread?: IMessage; unreadNotLoaded?: number });
 	};
 
-const dmCreateResponseSchema = ajv.compile<{ room: IRoom & { rid: string } }>({
+const dmCreateResponseSchema = ajv.compile<{ room: Pick<IRoom, '_id' | 't' | 'usernames'> & { rid: string } }>({
 	type: 'object',
 	properties: {
-		room: { type: 'object' }, // relaxed: IRoom shape varies,
+		room: {
+			type: 'object',
+			properties: {
+				_id: { type: 'string' },
+				rid: { type: 'string' },
+				t: { type: 'string', enum: ['d'] },
+				usernames: { type: 'array', items: { type: 'string' } },
+			},
+			required: ['_id', 'rid', 't', 'usernames'],
+			additionalProperties: false,
+		},
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['room', 'success'],
@@ -758,9 +768,7 @@ const paginatedMessagesResponseSchema = ajv.compile<{ messages: IMessage[]; offs
 	type: 'object',
 	properties: {
 		messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
-		offset: { type: 'number' },
-		count: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['messages', 'offset', 'count', 'total', 'success'],
@@ -771,9 +779,7 @@ const paginatedImsResponseSchema = ajv.compile<{ ims: IRoom[]; offset: number; c
 	type: 'object',
 	properties: {
 		ims: { type: 'array', items: { type: 'object' } }, // relaxed: IRoom with lastMessage compose
-		offset: { type: 'number' },
-		count: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['ims', 'offset', 'count', 'total', 'success'],
@@ -810,8 +816,8 @@ const dmMessagesOthersAction = <Path extends string>(_name: Path): TypedAction<t
 		}
 
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields, query } = await this.parseJsonQuery();
-		const ourQuery = Object.assign({}, query, { rid: room._id });
+		const { sort, fields } = await this.parseJsonQuery();
+		const ourQuery = { rid: room._id };
 
 		const { cursor, totalCount } = Messages.findPaginated<IMessage>(ourQuery, {
 			sort: sort || { ts: -1 },
@@ -888,10 +894,10 @@ const dmListEveryoneEndpointsProps = {
 const dmListEveryoneAction = <Path extends string>(_name: Path): TypedAction<typeof dmListEveryoneEndpointsProps, Path> =>
 	async function action() {
 		const { offset, count }: { offset: number; count: number } = await getPaginationItems(this.queryParams);
-		const { sort, fields, query } = await this.parseJsonQuery();
+		const { sort, fields } = await this.parseJsonQuery();
 
 		const { cursor, totalCount } = Rooms.findPaginated(
-			{ ...query, t: 'd' },
+			{ t: 'd' },
 			{
 				sort: sort || { name: 1 },
 				skip: offset,
@@ -927,10 +933,21 @@ const dmCreateAction = <Path extends string>(_path: Path): TypedAction<typeof dm
 				? [this.bodyParams.username]
 				: this.bodyParams.usernames.split(',').map((username: string) => username.trim());
 
+		if (this.bodyParams.excludeSelf && !(await hasPermissionAsync(this.userId, 'create-d-other-users'))) {
+			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+				method: 'createDirectMessage',
+			});
+		}
+
 		const room = await createDirectMessage(users, this.userId, this.bodyParams.excludeSelf);
 
 		return API.v1.success({
-			room: { ...room, _id: room.rid },
+			room: {
+				_id: room.rid,
+				rid: room.rid,
+				t: 'd' as const,
+				usernames: room.usernames,
+			},
 		});
 	};
 

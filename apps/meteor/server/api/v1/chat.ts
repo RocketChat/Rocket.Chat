@@ -1,34 +1,35 @@
 import { Message } from '@rocket.chat/core-services';
-import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import type { IMessage, IThreadMainMessage, MessageUrl } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
 	ajv,
-	isChatReportMessageProps,
-	isChatGetURLPreviewProps,
-	isChatUpdateProps,
-	isChatGetThreadsListProps,
 	isChatDeleteProps,
-	isChatSyncMessagesProps,
+	isChatGetDeletedMessagesProps,
+	isChatGetDiscussionsProps,
+	isChatGetMentionedMessagesProps,
 	isChatGetMessageProps,
 	isChatGetMessagesProps,
+	isChatGetPinnedMessagesProps,
+	isChatGetStarredMessagesProps,
+	isChatGetThreadMessagesProps,
+	isChatGetThreadsListProps,
+	isChatGetURLPreviewProps,
+	isChatIgnoreUserProps,
 	isChatPostMessageProps,
+	isChatReactProps,
+	isChatReportMessageProps,
 	isChatSearchProps,
 	isChatSendMessageProps,
-	isChatIgnoreUserProps,
-	isChatGetPinnedMessagesProps,
-	isChatGetMentionedMessagesProps,
-	isChatReactProps,
-	isChatGetDeletedMessagesProps,
-	isChatSyncThreadsListProps,
-	isChatGetThreadMessagesProps,
+	isChatSyncMessagesProps,
 	isChatSyncThreadMessagesProps,
-	isChatGetStarredMessagesProps,
-	isChatGetDiscussionsProps,
+	isChatSyncThreadsListProps,
+	isChatUpdateProps,
+	paginatedResponseProperties,
 	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
 	validateNotFoundErrorResponse,
 	validateUnauthorizedErrorResponse,
-	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
@@ -979,9 +980,7 @@ const chatEndpoints = API.v1
 					type: 'object',
 					properties: {
 						messages: { type: 'array', items: { type: 'object' } }, // relaxed: only _id is projected,
-						count: { type: 'number' },
-						offset: { type: 'number' },
-						total: { type: 'number' },
+						...paginatedResponseProperties,
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['messages', 'count', 'offset', 'total', 'success'],
@@ -1025,9 +1024,7 @@ const chatEndpoints = API.v1
 					type: 'object',
 					properties: {
 						messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
-						count: { type: 'number' },
-						offset: { type: 'number' },
-						total: { type: 'number' },
+						...paginatedResponseProperties,
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['messages', 'count', 'offset', 'total', 'success'],
@@ -1071,9 +1068,7 @@ const chatEndpoints = API.v1
 					type: 'object',
 					properties: {
 						threads: { type: 'array', items: { type: 'object' } }, // relaxed: IThreadMainMessage not in OpenAPI schemas,
-						count: { type: 'number' },
-						offset: { type: 'number' },
-						total: { type: 'number' },
+						...paginatedResponseProperties,
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['threads', 'count', 'offset', 'total', 'success'],
@@ -1087,7 +1082,7 @@ const chatEndpoints = API.v1
 			const { rid, type, text } = this.queryParams;
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await this.parseJsonQuery();
+			const { sort, fields } = await this.parseJsonQuery();
 
 			if (!settings.get<boolean>('Threads_enabled')) {
 				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
@@ -1106,7 +1101,7 @@ const chatEndpoints = API.v1
 				msg: new RegExp(escapeRegExp(text || ''), 'i'),
 			};
 
-			const threadQuery = { ...query, ...typeThread, rid: room._id, tcount: { $exists: true } };
+			const threadQuery = { ...typeThread, rid: room._id, tcount: { $exists: true } };
 			const { cursor, totalCount } = await Messages.findPaginated<IThreadMainMessage>(threadQuery, {
 				sort: sort || { tlm: -1 },
 				skip: offset,
@@ -1153,7 +1148,7 @@ const chatEndpoints = API.v1
 		},
 		async function action() {
 			const { rid } = this.queryParams;
-			const { query, fields, sort } = await this.parseJsonQuery();
+			const { fields, sort } = await this.parseJsonQuery();
 			const { updatedSince } = this.queryParams;
 			let updatedSinceDate;
 			if (!settings.get<boolean>('Threads_enabled')) {
@@ -1171,7 +1166,7 @@ const chatEndpoints = API.v1
 			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 			}
-			const threadQuery = Object.assign({}, query, { rid, tcount: { $exists: true } });
+			const threadQuery = { rid, tcount: { $exists: true } };
 			return API.v1.success({
 				threads: {
 					update: await Messages.find(
@@ -1200,9 +1195,7 @@ const chatEndpoints = API.v1
 					type: 'object',
 					properties: {
 						messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
-						count: { type: 'number' },
-						offset: { type: 'number' },
-						total: { type: 'number' },
+						...paginatedResponseProperties,
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['messages', 'count', 'offset', 'total', 'success'],
@@ -1214,7 +1207,7 @@ const chatEndpoints = API.v1
 		},
 		async function action() {
 			const { tmid, aroundId } = this.queryParams;
-			const { query, fields, sort } = await this.parseJsonQuery();
+			const { fields, sort } = await this.parseJsonQuery();
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			if (!settings.get('Threads_enabled')) {
@@ -1243,13 +1236,13 @@ const chatEndpoints = API.v1
 					if (target?.tmid !== tmid || !target.ts) {
 						throw new Meteor.Error('error-invalid-message', 'The provided "aroundId" does not belong to the thread');
 					}
-					const before = await Messages.countDocuments({ ...query, tmid, _hidden: { $ne: true }, ts: { $lt: target.ts } });
+					const before = await Messages.countDocuments({ tmid, _hidden: { $ne: true }, ts: { $lt: target.ts } });
 					resolvedOffset = Math.max(0, before - Math.floor(count / 2));
 				}
 			}
 
 			const { cursor, totalCount } = Messages.findPaginated(
-				{ ...query, tmid, _hidden: { $ne: true } },
+				{ tmid, _hidden: { $ne: true } },
 				{
 					sort: resolvedSort,
 					skip: resolvedOffset,
@@ -1297,7 +1290,7 @@ const chatEndpoints = API.v1
 		},
 		async function action() {
 			const { tmid } = this.queryParams;
-			const { query, fields, sort } = await this.parseJsonQuery();
+			const { fields, sort } = await this.parseJsonQuery();
 			const { updatedSince } = this.queryParams;
 			let updatedSinceDate;
 			if (!settings.get<boolean>('Threads_enabled')) {
@@ -1322,8 +1315,8 @@ const chatEndpoints = API.v1
 			}
 			return API.v1.success({
 				messages: {
-					update: await Messages.find({ ...query, tmid, _updatedAt: { $gt: updatedSinceDate } }, { projection: fields, sort }).toArray(),
-					remove: await Messages.trashFindDeletedAfter(updatedSinceDate, { ...query, tmid }, { projection: fields, sort }).toArray(),
+					update: await Messages.find({ tmid, _updatedAt: { $gt: updatedSinceDate } }, { projection: fields, sort }).toArray(),
+					remove: await Messages.trashFindDeletedAfter(updatedSinceDate, { tmid }, { projection: fields, sort }).toArray(),
 				},
 			});
 		},
@@ -1338,9 +1331,7 @@ const chatEndpoints = API.v1
 					type: 'object',
 					properties: {
 						messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
-						count: { type: 'number' },
-						offset: { type: 'number' },
-						total: { type: 'number' },
+						...paginatedResponseProperties,
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['messages', 'count', 'offset', 'total', 'success'],
@@ -1378,9 +1369,7 @@ const chatEndpoints = API.v1
 					type: 'object',
 					properties: {
 						messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
-						count: { type: 'number' },
-						offset: { type: 'number' },
-						total: { type: 'number' },
+						...paginatedResponseProperties,
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['messages', 'count', 'offset', 'total', 'success'],
@@ -1454,10 +1443,10 @@ const chatEndpoints = API.v1
 			authRequired: true,
 			query: isChatGetURLPreviewProps,
 			response: {
-				200: ajv.compile<{ urlPreview: object }>({
+				200: ajv.compile<{ urlPreview: MessageUrl }>({
 					type: 'object',
 					properties: {
-						urlPreview: { type: 'object' }, // relaxed: opaque preview shape,
+						urlPreview: { type: 'object' }, // schema stays permissive; the handler always returns a MessageUrl,
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['urlPreview', 'success'],

@@ -1,0 +1,101 @@
+@use '../../styles/colors.scss';
+@use '../../styles/lengths.scss';
+@use '../../styles/typography.scss' as *;
+@use '../../styles/functions.scss' as *;
+
+$toastbar-color: theme('toastbar-color', colors.font(default));
+
+$toastbar-border-radius: theme('toastbar-border-radius', lengths.border-radius(medium));
+
+$toastbar-success-color: theme('toastbar-success-color', colors.status-font(on-success));
+
+$toastbar-error-color: theme('toastbar-error-color', colors.status-font(on-danger));
+
+$toastbar-background-color: theme('toastbar-background-color', colors.surface(tint));
+
+$toastbar-progressbar-background-color: theme('toastbar-progressbar-background-color', colors.surface(neutral));
+
+.rcx-toastbar {
+	position: relative;
+
+	min-width: lengths.size(232);
+	max-width: lengths.size(416);
+
+	color: $toastbar-color;
+
+	border-radius: $toastbar-border-radius;
+
+	background-color: $toastbar-background-color;
+
+	@include use-font-scale(p2);
+
+	&::before {
+		position: absolute;
+		top: 0;
+
+		display: block;
+
+		width: 100%;
+		height: lengths.size(4);
+
+		content: '';
+
+		border-radius: $toastbar-border-radius $toastbar-border-radius 0 0;
+		background-color: transparent;
+	}
+
+	&--success {
+		&::before {
+			background-color: $toastbar-success-color;
+		}
+	}
+
+	&--error {
+		&::before {
+			background-color: $toastbar-error-color;
+		}
+	}
+
+	&_inner {
+		display: flex;
+
+		padding: lengths.padding(16);
+	}
+
+	&_content {
+		width: lengths.size(full);
+		margin: lengths.margin(0) lengths.margin(16);
+	}
+
+	&_icon {
+		&--success {
+			color: $toastbar-success-color;
+		}
+
+		&--error {
+			color: $toastbar-error-color;
+		}
+	}
+
+	&_progressbar {
+		position: absolute;
+		bottom: 0;
+
+		overflow: hidden;
+
+		width: 100%;
+		height: lengths.size(4);
+
+		border-radius: 0 0 $toastbar-border-radius $toastbar-border-radius;
+
+		&::after {
+			display: block;
+
+			height: 100%;
+
+			content: '';
+
+			background-color: $toastbar-progressbar-background-color;
+		}
+	}
+}

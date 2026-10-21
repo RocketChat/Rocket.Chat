@@ -13,6 +13,7 @@ import type { Response } from 'supertest';
 
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials, apiEmail, apiUsername, wait, reservedWords } from '../../data/api-data';
+import { withDatabase } from '../../data/database.helper';
 import { imgURL, tiffURL } from '../../data/interactions';
 import { createAgent, makeAgentAvailable } from '../../data/livechat/rooms';
 import { removeAgent, getAgent } from '../../data/livechat/users';
@@ -611,7 +612,7 @@ describe('[Users]', () => {
 			});
 
 			it('should create a user with a voice call extension', async () => {
-				const freeSwitchExtension = '888999';
+				const sipExtension = '888999';
 				let user: TestUser<IUser>;
 				await request
 					.post(api('users.create'))
@@ -625,13 +626,13 @@ describe('[Users]', () => {
 						roles: ['user'],
 						joinDefaultChannels: true,
 						verified: true,
-						freeSwitchExtension,
+						sipExtension,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.nested.property('user.freeSwitchExtension', freeSwitchExtension);
+						expect(res.body).to.have.nested.property('user.sipExtension', sipExtension);
 						user = res.body.user;
 					});
 
@@ -641,8 +642,8 @@ describe('[Users]', () => {
 			});
 
 			it('should not create a user with a voice call extension that is already in use', async () => {
-				const freeSwitchExtension = '123123';
-				const user = await createUser({ freeSwitchExtension });
+				const sipExtension = '123123';
+				const user = await createUser({ sipExtension });
 				await request
 					.post(api('users.create'))
 					.set(credentials)
@@ -655,7 +656,7 @@ describe('[Users]', () => {
 						roles: ['user'],
 						joinDefaultChannels: true,
 						verified: true,
-						freeSwitchExtension,
+						sipExtension,
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -681,7 +682,7 @@ describe('[Users]', () => {
 						roles: ['user'],
 						joinDefaultChannels: true,
 						verified: true,
-						freeSwitchExtension: '999',
+						sipExtension: '999',
 					})
 					.expect('Content-Type', 'application/json')
 					.expect(400)
@@ -896,6 +897,21 @@ describe('[Users]', () => {
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('error').and.to.be.equal('The username provided is not valid');
+		});
+
+		it('should return an error when trying register new user without an email', async () => {
+			const res = await request
+				.post(api('users.register'))
+				.send({
+					name: 'name',
+					username: `no-email-${Date.now()}`,
+					pass: password,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'invalid-params');
 		});
 
 		it('should return an error when trying register new user with an existing username', async () => {
@@ -1413,7 +1429,7 @@ describe('[Users]', () => {
 				.set(credentials)
 				.query({
 					userId: targetUser._id,
-					fields: JSON.stringify({ userRooms: 1 }),
+					includeUserRooms: true,
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200);
@@ -1580,14 +1596,14 @@ describe('[Users]', () => {
 			});
 		});
 
-		(IS_EE ? describe : describe.skip)('querying by freeSwitch extension', () => {
+		(IS_EE ? describe : describe.skip)('querying by SIP extension', () => {
 			let previousVoipSetting: boolean;
 			let targetUser: IUser;
 
 			before(async () => {
 				previousVoipSetting = (await getSettingValueById('VoIP_TeamCollab_SIP_Integration_Enabled')) as boolean;
 				await updateSetting('VoIP_TeamCollab_SIP_Integration_Enabled', true);
-				targetUser = await createUser({ freeSwitchExtension: '123123' });
+				targetUser = await createUser({ sipExtension: '123123' });
 			});
 
 			after(async () => {
@@ -1606,7 +1622,7 @@ describe('[Users]', () => {
 						.get(api('users.info'))
 						.set(credentials)
 						.query({
-							freeSwitchExtension: targetUser.freeSwitchExtension,
+							sipExtension: targetUser.sipExtension,
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(200)
@@ -1614,7 +1630,7 @@ describe('[Users]', () => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.nested.property('user.username', targetUser.username);
 							expect(res.body).to.have.nested.property('user._id', targetUser._id);
-							expect(res.body).to.have.nested.property('user.freeSwitchExtension', targetUser.freeSwitchExtension);
+							expect(res.body).to.have.nested.property('user.sipExtension', targetUser.sipExtension);
 						});
 				});
 				it('should return an error when user does not exist', async () => {
@@ -1622,7 +1638,7 @@ describe('[Users]', () => {
 						.get(api('users.info'))
 						.set(credentials)
 						.query({
-							freeSwitchExtension: 'this_is_a_fake_extension_that_does_not_exist',
+							sipExtension: 'this_is_a_fake_extension_that_does_not_exist',
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(400)
@@ -1643,14 +1659,14 @@ describe('[Users]', () => {
 						.get(api('users.info'))
 						.set(credentials)
 						.query({
-							freeSwitchExtension: targetUser.freeSwitchExtension,
+							sipExtension: targetUser.sipExtension,
 						})
 						.expect('Content-Type', 'application/json')
 						.expect(200)
 						.expect((res) => {
 							expect(res.body).to.have.property('success', true);
 							expect(res.body).to.have.nested.property('user.username', targetUser.username);
-							expect(res.body).to.have.nested.property('user.freeSwitchExtension', targetUser.freeSwitchExtension);
+							expect(res.body).to.have.nested.property('user.sipExtension', targetUser.sipExtension);
 						});
 				});
 			});
@@ -1951,6 +1967,22 @@ describe('[Users]', () => {
 			]),
 		);
 
+		it("should reject the removed 'query' and 'fields' parameters", async () => {
+			await Promise.all(
+				[{ query: JSON.stringify({ type: 'user' }) }, { fields: JSON.stringify({ services: 1 }) }].map((params) =>
+					request
+						.get(api('users.list'))
+						.set(credentials)
+						.query(params)
+						.expect('Content-Type', 'application/json')
+						.expect(400)
+						.expect((res) => {
+							expect(res.body).to.have.property('success', false);
+						}),
+				),
+			);
+		});
+
 		it('should query all users in the system', async () => {
 			const res = await request.get(api('users.list')).set(credentials).expect('Content-Type', 'application/json').expect(200);
 
@@ -1963,12 +1995,6 @@ describe('[Users]', () => {
 
 		it('should sort for user statuses and check if deactivated user is correctly sorted', (done) => {
 			const query = {
-				fields: JSON.stringify({
-					username: 1,
-					_id: 1,
-					active: 1,
-					status: 1,
-				}),
 				sort: JSON.stringify({
 					status: 1,
 				}),
@@ -2202,7 +2228,6 @@ describe('[Users]', () => {
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
 				.query({
-					fields: JSON.stringify({ inviteToken: 1 }),
 					sort: JSON.stringify({ inviteToken: -1 }),
 					count: 100,
 				})
@@ -2234,7 +2259,6 @@ describe('[Users]', () => {
 				.set(user3Credentials)
 				.expect('Content-Type', 'application/json')
 				.query({
-					fields: JSON.stringify({ inviteToken: 1 }),
 					sort: JSON.stringify({ inviteToken: -1 }),
 					count: 100,
 				})
@@ -3310,13 +3334,13 @@ describe('[Users]', () => {
 					.send({
 						userId: user._id,
 						data: {
-							freeSwitchExtension: '999',
+							sipExtension: '999',
 						},
 					})
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
-						expect(res.body).to.have.nested.property('user.freeSwitchExtension', '999');
+						expect(res.body).to.have.nested.property('user.sipExtension', '999');
 					});
 			});
 
@@ -3327,7 +3351,7 @@ describe('[Users]', () => {
 					.send({
 						userId: targetUser._id,
 						data: {
-							freeSwitchExtension: '999',
+							sipExtension: '999',
 						},
 					})
 					.expect(400)
@@ -3345,7 +3369,7 @@ describe('[Users]', () => {
 					.send({
 						userId: user._id,
 						data: {
-							freeSwitchExtension: '9998',
+							sipExtension: '9998',
 						},
 					})
 					.expect(400)
@@ -5643,18 +5667,18 @@ describe('[Users]', () => {
 				expect(res.body).to.have.property('items').and.to.be.an('array');
 			});
 
-			(IS_EE ? it : it.skip)('should return users filtered by freeSwitchExtension and display it', async () => {
-				const user = await createUser({ joinDefaultChannels: false, freeSwitchExtension: '1234567890' });
+			(IS_EE ? it : it.skip)('should return users filtered by sipExtension and display it', async () => {
+				const user = await createUser({ joinDefaultChannels: false, sipExtension: '1234567890' });
 				await request
 					.get(api('users.autocomplete'))
-					.query({ selector: JSON.stringify({ conditions: { freeSwitchExtension: '1234567890' } }) })
+					.query({ selector: JSON.stringify({ conditions: { sipExtension: '1234567890' } }) })
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
 					.expect(200)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('items').and.to.be.an('array').with.lengthOf(1);
-						expect(res.body.items[0]).to.have.property('freeSwitchExtension', '1234567890');
+						expect(res.body.items[0]).to.have.property('sipExtension', '1234567890');
 					});
 
 				await deleteUser(user);
@@ -6623,6 +6647,84 @@ describe('[Users]', () => {
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
+				});
+		});
+
+		describe('when the user has email two-factor authentication', () => {
+			let user: TestUser<IUser>;
+
+			const seedPendingCode = (sentAt: Date) =>
+				updateUserInDb(user._id, {
+					'services.emailCode': { code: 'pending-code', expire: new Date(Date.now() + 3_600_000), attempts: 0, sentAt },
+				} as unknown as Partial<IUser>);
+
+			const storedCode = async () => {
+				const stored = await withDatabase((db) =>
+					db.collection<IUser>('users').findOne({ _id: user._id }, { projection: { 'services.emailCode.code': 1 } }),
+				);
+				return stored?.services?.emailCode?.code;
+			};
+
+			before(async () => {
+				user = await createUser({ verified: true });
+				await updateUserInDb(user._id, { 'services.email2fa': { enabled: true, changedAt: new Date() } } as unknown as Partial<IUser>);
+			});
+
+			after(() => deleteUser(user));
+
+			it('should keep the pending code when another one is requested within a minute', async () => {
+				await seedPendingCode(new Date());
+
+				await request.post(api('users.2fa.sendEmailCode')).send({ emailOrUsername: user.username }).expect(200);
+
+				expect(await storedCode()).to.equal('pending-code');
+			});
+
+			it('should replace the pending code once a minute has passed', async () => {
+				await seedPendingCode(new Date(Date.now() - 61_000));
+
+				await request.post(api('users.2fa.sendEmailCode')).send({ emailOrUsername: user.username }).expect(200);
+
+				expect(await storedCode()).to.not.equal('pending-code');
+			});
+		});
+	});
+
+	describe('[/twoFactorChallenges.verifyChallenge]', () => {
+		const insertChallenge = (challenge: Record<string, unknown>) =>
+			withDatabase((db) =>
+				db.collection('rocketchat_two_factor_challenges').insertOne({
+					userId: credentials['X-User-Id'],
+					method: 'email',
+					createdAt: new Date(),
+					expireAt: new Date(Date.now() + 60_000),
+					...challenge,
+				} as any),
+			);
+
+		it('should not log in with a challenge that only allows resending the code', async () => {
+			const challengeId = `resend-${Date.now()}`;
+			await insertChallenge({ _id: challengeId, purpose: 'resend' });
+
+			await request
+				.post(api('twoFactorChallenges.verifyChallenge'))
+				.send({ challengeId, code: '123456' })
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('errorType', 'error-challenge-not-found');
+				});
+		});
+
+		it('should still check the code of a challenge stored before challenges had a purpose', async () => {
+			const challengeId = `legacy-${Date.now()}`;
+			await insertChallenge({ _id: challengeId });
+
+			await request
+				.post(api('twoFactorChallenges.verifyChallenge'))
+				.send({ challengeId, code: '123456' })
+				.expect(400)
+				.expect((res: Response) => {
+					expect(res.body).to.have.property('error', 'error-invalid-code');
 				});
 		});
 	});

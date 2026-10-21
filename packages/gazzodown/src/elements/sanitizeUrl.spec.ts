@@ -104,6 +104,10 @@ describe('sanitizeUrl', () => {
 	});
 
 	it('allows bare domain names', () => {
-		expect(sanitizeUrl('example.com/page')).toBe('//example.com/page');
+		expect(sanitizeUrl('example.com/page')).toBe(`${window.location.protocol}//example.com/page`);
+	});
+
+	it('resolves protocol-relative URLs against the current page', () => {
+		expect(sanitizeUrl('//test.com')).toBe(`${window.location.protocol}//test.com/`);
 	});
 });

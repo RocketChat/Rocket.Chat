@@ -15,15 +15,13 @@ import { useMergedRefsV2 } from '../../hooks/useMergedRefsV2';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import CreateTeamModal from '../../navbar/NavBarPagesGroup/actions/CreateTeamModal';
 import { useCreateRoomModal } from '../../navbar/NavBarPagesGroup/hooks/useCreateRoomModal';
+import { useShortcutOpenMenu } from '../../views/navigation/sidebar/hooks/useShortcutOpenMenu';
 import RoomListRow from '../RoomList/RoomListRow';
 import RoomListRowWrapper from '../RoomList/RoomListRowWrapper';
 import SidebarPanelHeader from '../components/SidebarPanelHeader';
 import SidebarPanelSearch from '../components/SidebarPanelSearch';
 import SidebarVirtualList from '../components/SidebarVirtualList';
-import { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { usePreventDefault } from '../hooks/usePreventDefault';
-import { useShortcutOpenMenu } from '../hooks/useShortcutOpenMenu';
-import { useTemplateByViewMode } from '../hooks/useTemplateByViewMode';
 
 type SidebarViewMode = 'extended' | 'medium' | 'condensed';
 
@@ -65,7 +63,7 @@ const TeamsPanel = () => {
 	};
 
 	const allTeams = useTeamSubscriptions();
-	const { expandedTeams, toggleTeam, handleKeyDown } = useExpandedTeams(allTeams);
+	const { expandedTeams, toggleTeam } = useExpandedTeams(allTeams);
 	const teamsUnreads = teamsPanelStore((state) => state.teamsUnreads);
 	const teams = useTeamsList({ teams: allTeams, expandedTeams, filterText: debouncedFilterText, teamsUnreads });
 	const hasTeams = allTeams.length > 0;
@@ -81,25 +79,21 @@ const TeamsPanel = () => {
 		);
 	};
 
-	const avatarTemplate = useAvatarTemplate();
-	const sideBarItemTemplate = useTemplateByViewMode();
 	const openedRoom = useOpenedRoom() ?? '';
 	const sidebarViewMode = useUserPreference<SidebarViewMode>('sidebarViewMode') || 'extended';
+	const sidebarDisplayAvatar = !!useUserPreference<boolean>('sidebarDisplayAvatar');
 	const bufferSize = sidebarRowHeight[sidebarViewMode] * SIDEBAR_VIRTUAL_BUFFER_ROWS;
 
-	const extended = sidebarViewMode === 'extended';
 	const itemData = useMemo(
 		() => ({
-			extended,
 			t,
-			SidebarItemTemplate: sideBarItemTemplate,
-			AvatarTemplate: avatarTemplate,
+			viewMode: sidebarViewMode,
+			showAvatar: sidebarDisplayAvatar,
 			openedRoom,
-			sidebarViewMode,
 			isAnonymous: !userId,
 			userId,
 		}),
-		[avatarTemplate, extended, openedRoom, sideBarItemTemplate, sidebarViewMode, t, userId],
+		[openedRoom, sidebarDisplayAvatar, sidebarViewMode, t, userId],
 	);
 
 	const virtualGroups = useMemo(
@@ -166,7 +160,6 @@ const TeamsPanel = () => {
 								data-team-key={team.key}
 								// While searching every matching team is shown expanded, so toggling would have no visible effect.
 								onClick={() => !debouncedFilterText && toggleTeam(team.key)}
-								onKeyDown={(e) => !debouncedFilterText && handleKeyDown(e, team.key)}
 							/>
 						)}
 						renderItem={(item, _itemIndex, _team, _teamIndex, rowIndex) => (

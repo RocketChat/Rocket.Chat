@@ -1,3 +1,4 @@
+import { turnServersSchema } from './turnServersSchema';
 import { settingsRegistry } from '../../../server/settings';
 
 export function addSettings(): Promise<void> {
@@ -34,6 +35,16 @@ export function addSettings(): Promise<void> {
 						type: 'int',
 						public: true,
 						invalidValue: 5000,
+					});
+
+					await this.add('VoIP_TeamCollab_TURN_Servers', '', {
+						type: 'code',
+						code: 'application/json',
+						multiline: true,
+						public: false,
+						secret: true,
+						invalidValue: '',
+						schema: turnServersSchema,
 					});
 				});
 

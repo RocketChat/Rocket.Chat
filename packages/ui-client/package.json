@@ -29,9 +29,9 @@
 		"@rocket.chat/core-typings": "workspace:~",
 		"@rocket.chat/css-in-js": "workspace:~",
 		"@rocket.chat/emitter": "workspace:~",
-		"@rocket.chat/fuselage": "^0.94.0",
-		"@rocket.chat/fuselage-hooks": "^0.43.1",
-		"@rocket.chat/fuselage-tokens": "^0.35.0",
+		"@rocket.chat/fuselage": "workspace:~",
+		"@rocket.chat/fuselage-hooks": "workspace:^",
+		"@rocket.chat/fuselage-tokens": "workspace:^",
 		"@rocket.chat/icons": "workspace:~",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/layout": "workspace:~",
@@ -39,7 +39,7 @@
 		"@rocket.chat/mock-providers": "workspace:^",
 		"@rocket.chat/models": "workspace:~",
 		"@rocket.chat/storybook-config": "workspace:~",
-		"@rocket.chat/styled": "~0.34.1",
+		"@rocket.chat/styled": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@rocket.chat/ui-avatar": "workspace:~",
 		"@rocket.chat/ui-contexts": "workspace:~",
@@ -60,7 +60,7 @@
 		"react-i18next": "~17.0.16",
 		"react-virtuoso": "~4.18.16",
 		"storybook": "^9.1.20",
-		"typescript": "~5.9.3"
+		"typescript": "~7.0.2"
 	},
 	"peerDependencies": {
 		"@react-aria/toolbar": "*",

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import type { CustomContainerComponentProps } from 'virtua';
 
 import { useMergedRefsV2 } from '../../hooks/useMergedRefsV2';
-import { useSidebarListNavigation } from '../RoomList/useSidebarListNavigation';
+import { useSidebarListNavigation } from '../../views/navigation/sidebar/RoomList/useSidebarListNavigation';
 
 type TeamsListWrapperProps = CustomContainerComponentProps & Omit<HTMLAttributes<HTMLDivElement>, 'children' | 'style'>;
 
@@ -13,7 +13,7 @@ const TeamsListWrapper = forwardRef(function TeamsListWrapper(
 	ref: ForwardedRef<HTMLDivElement>,
 ) {
 	const { t } = useTranslation();
-	const { sidebarListRef } = useSidebarListNavigation();
+	const sidebarListRef = useSidebarListNavigation();
 	const mergedRefs = useMergedRefsV2(ref, sidebarListRef);
 
 	return (

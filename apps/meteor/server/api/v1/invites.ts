@@ -1,4 +1,4 @@
-import type { IInvite } from '@rocket.chat/core-typings';
+import type { IInvite, IRoom } from '@rocket.chat/core-typings';
 import {
 	ajv,
 	isFindOrCreateInviteParams,
@@ -18,12 +18,15 @@ import { validateInviteToken } from '../../lib/rooms/invites/validateInviteToken
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 
-const removeInviteResponseSchema = ajv.compile({
+const removeInviteResponseSchema = ajv.compile<boolean>({
 	type: 'boolean',
 	enum: [true],
 });
 
-const useInviteTokenResponseSchema = ajv.compile({
+const useInviteTokenResponseSchema = ajv.compile<{
+	room: { rid: IRoom['_id']; prid: IRoom['prid']; fname: IRoom['fname']; name: IRoom['name']; t: IRoom['t'] };
+	success: boolean;
+}>({
 	type: 'object',
 	properties: {
 		room: {
@@ -111,7 +114,7 @@ const invites = API.v1
 			authRequired: true,
 			body: isFindOrCreateInviteParams,
 			response: {
-				200: ajv.compile({
+				200: ajv.compile<IInvite>({
 					additionalProperties: false,
 					type: 'object',
 					properties: {

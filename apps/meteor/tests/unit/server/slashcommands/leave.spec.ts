@@ -1,4 +1,4 @@
-import { MeteorError } from '@rocket.chat/core-services';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { expect } from 'chai';
 import { beforeEach, describe, it } from 'mocha';
 import sinon from 'sinon';
@@ -54,9 +54,9 @@ describe('/leave and /part', () => {
 			findUser.onSecondCall().resolves(feedbackUser);
 			slashCommand.settings.get.withArgs('Language').returns(language);
 			slashCommand.translate.returns('localized leave error');
-			leave.rejects(new MeteorError('error-not-allowed', 'Cannot leave room'));
+			leave.rejects(new ClientSafeError('error-not-allowed', 'Cannot leave room'));
 			await expect(slashCommand.runCommand('leave'))
-				.to.be.rejectedWith(MeteorError, 'Cannot leave room')
+				.to.be.rejectedWith(ClientSafeError, 'Cannot leave room')
 				.and.eventually.have.property('error', 'error-not-allowed');
 			sinon.assert.calledOnce(leave);
 			sinon.assert.calledOnceWithExactly(slashCommand.broadcast, 'notify.ephemeralMessage', 'actor', 'current-room', {

@@ -26,6 +26,10 @@ import { IS_EE } from '../../../e2e/config/constants';
 (IS_EE ? describe : describe.skip)('Omnichannel - Routing', () => {
 	before((done) => getCredentials(done));
 
+	before(async () => {
+		await updateSetting('Livechat_enabled', true);
+	});
+
 	after(async () => {
 		await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
 	});

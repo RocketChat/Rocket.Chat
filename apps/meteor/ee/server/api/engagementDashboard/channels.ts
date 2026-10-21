@@ -1,9 +1,10 @@
 import type { IDirectMessageRoom, IRoom } from '@rocket.chat/core-typings';
 import {
 	ajv,
+	paginatedResponseProperties,
 	validateBadRequestErrorResponse,
-	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { check, Match } from 'meteor/check';
 
@@ -84,9 +85,7 @@ const channelsListResponseSchema = ajv.compile<{
 				additionalProperties: false,
 			},
 		},
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['channels', 'count', 'offset', 'total', 'success'],

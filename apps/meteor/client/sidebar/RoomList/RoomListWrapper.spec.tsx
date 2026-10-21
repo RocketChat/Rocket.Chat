@@ -6,10 +6,8 @@ jest.mock('react-i18next', () => ({
 	useTranslation: () => ({ t: (key: string) => key }),
 }));
 
-jest.mock('./useSidebarListNavigation', () => ({
-	useSidebarListNavigation: () => ({
-		sidebarListRef: { current: null },
-	}),
+jest.mock('../../views/navigation/sidebar/RoomList/useSidebarListNavigation', () => ({
+	useSidebarListNavigation: () => () => undefined,
 }));
 
 describe('RoomListWrapper', () => {

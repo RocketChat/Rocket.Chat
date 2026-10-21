@@ -1,5 +1,4 @@
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
-import type { KeyboardEvent } from 'react';
 import { useCallback, useEffect, useRef } from 'react';
 
 import type { TeamSubscriptions } from './useTeamsList';
@@ -41,28 +40,5 @@ export const useExpandedTeams = (teams: TeamSubscriptions) => {
 		[expandedTeams, setExpandedTeams],
 	);
 
-	const handleKeyDown = useCallback(
-		(event: KeyboardEvent, key: string) => {
-			// Keys pressed on the team's options menu, or inside it, bubble up to the section too; only the header toggles.
-			if (!(event.target as HTMLElement).classList.contains('rcx-sidebar-collapse-group__bar-button')) {
-				return;
-			}
-
-			const expanded = expandedTeams.includes(key);
-
-			// Right and left arrows open and close a team, as in a tree view; Enter and Space toggle it.
-			if (
-				event.key === 'Enter' ||
-				event.key === ' ' ||
-				(event.key === 'ArrowRight' && !expanded) ||
-				(event.key === 'ArrowLeft' && expanded)
-			) {
-				event.preventDefault();
-				toggleTeam(key);
-			}
-		},
-		[expandedTeams, toggleTeam],
-	);
-
-	return { expandedTeams, toggleTeam, handleKeyDown };
+	return { expandedTeams, toggleTeam };
 };

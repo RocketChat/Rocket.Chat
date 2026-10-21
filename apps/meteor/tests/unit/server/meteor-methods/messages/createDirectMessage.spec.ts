@@ -1,4 +1,4 @@
-import { MeteorError } from '@rocket.chat/core-services';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { expect } from 'chai';
 import { beforeEach, describe, it } from 'mocha';
 import p from 'proxyquire';
@@ -26,7 +26,7 @@ const { createDirectMessage } = p.noCallThru().load('../../../../../server/meteo
 	'meteor/meteor': {
 		Meteor: {
 			userId: sandbox.stub(),
-			Error: MeteorError,
+			Error: ClientSafeError,
 			methods: sandbox.stub(),
 		},
 	},

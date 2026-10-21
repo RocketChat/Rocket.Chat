@@ -1,7 +1,10 @@
 import WS from 'jest-websocket-mock';
 
 import { handleConnection, handleMethod } from './helpers';
+import { ClientStreamImpl } from '../src/ClientStream';
+import { DDPDispatcher } from '../src/DDPDispatcher';
 import { DDPSDK } from '../src/DDPSDK';
+import { AccountImpl } from '../src/types/Account';
 
 let server: WS;
 
@@ -32,6 +35,70 @@ describe('login', () => {
 		expect(user?.token).toBe(messageResult.token);
 		expect((user?.tokenExpires as Date)?.toISOString()).toBe(new Date(messageResult.tokenExpires.$date).toISOString());
 		expect(user?.id).toBe(messageResult.id);
+	});
+
+	it.each([
+		['an EJSON-decoded Date', new Date(1700000000000)],
+		['a raw $date number', { $date: 1700000000000 }],
+		['a raw $date string', { $date: '1700000000000' }],
+	])('should read the token expiry from %s', async (_, tokenExpires) => {
+		const ddp = new DDPDispatcher();
+		const account = new AccountImpl(new ClientStreamImpl(ddp, ddp));
+		const sent: { id: string }[] = [];
+		ddp.onDispatchMessage((message) => sent.push(JSON.parse(message)));
+
+		const login = account.loginWithToken('token');
+		// Bypasses decoding so the result carries the value as given.
+		ddp.emit(`result/${sent[0].id}`, { msg: 'result', id: sent[0].id, result: { id: 'uid', token: 'token2', tokenExpires } });
+
+		await expect(login).resolves.toEqual({ id: 'uid', token: 'token2', tokenExpires: new Date(1700000000000) });
+		expect(account.user?.tokenExpires).toEqual(new Date(1700000000000));
+	});
+
+	it('should adopt and forget credentials obtained outside the SDK', () => {
+		const ddp = new DDPDispatcher();
+		const account = new AccountImpl(new ClientStreamImpl(ddp, ddp));
+		const onLogin = jest.fn();
+		const onLogout = jest.fn();
+		account.onLogin(onLogin);
+		account.onLogout(onLogout);
+
+		account.setCredentials({ id: 'uid', token: 'token', tokenExpires: { $date: 1700000000000 } });
+
+		expect(account.uid).toBe('uid');
+		expect(account.user).toEqual({ id: 'uid', token: 'token', tokenExpires: new Date(1700000000000) });
+		expect(onLogin).toHaveBeenCalledTimes(1);
+
+		account.clearCredentials();
+
+		expect(account.uid).toBeUndefined();
+		expect(account.user).toBeUndefined();
+		expect(onLogout).toHaveBeenCalledTimes(1);
+	});
+
+	it('should only take the logged-in user document from the users collection', () => {
+		const ddp = new DDPDispatcher();
+		const account = new AccountImpl(new ClientStreamImpl(ddp, ddp));
+		account.uid = 'me';
+		account.user = { id: 'me', username: 'me' };
+
+		ddp.handleMessage(JSON.stringify({ msg: 'added', collection: 'users', id: 'other', fields: { username: 'other' } }));
+		expect(account.user).toEqual({ id: 'me', username: 'me' });
+
+		ddp.handleMessage(JSON.stringify({ msg: 'changed', collection: 'users', id: 'me', fields: { username: 'renamed' } }));
+		expect(account.user).toEqual({ id: 'me', username: 'renamed' });
+	});
+
+	it('should match a user id Meteor sends with the ObjectID-escaping dash', () => {
+		const ddp = new DDPDispatcher();
+		const account = new AccountImpl(new ClientStreamImpl(ddp, ddp));
+		account.uid = '6ad69395009997a9b9c71d04';
+
+		ddp.handleMessage(
+			JSON.stringify({ msg: 'added', collection: 'users', id: '-6ad69395009997a9b9c71d04', fields: { username: 'admin' } }),
+		);
+
+		expect(account.user).toEqual({ id: '6ad69395009997a9b9c71d04', username: 'admin' });
 	});
 
 	it('should save credentials to user object - loginWithPassword', async () => {

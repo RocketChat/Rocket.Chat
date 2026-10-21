@@ -1,4 +1,5 @@
 import { ajvQuery } from '../Ajv';
+import { paginationQueryProperties } from '../pagination';
 import type { GroupsBaseProps } from './BaseProps';
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 
@@ -19,14 +20,7 @@ const GroupsFilesPropsSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
@@ -36,10 +30,6 @@ const GroupsFilesPropsSchema = {
 			nullable: true,
 		},
 		typeGroup: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
 			type: 'string',
 			nullable: true,
 		},

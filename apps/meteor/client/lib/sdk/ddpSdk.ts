@@ -21,13 +21,6 @@ const computeDdpUrl = (): string => {
 let instance: DDPSDK | undefined;
 let connectPromise: Promise<unknown> | undefined;
 
-const applyEjsonEncoding = (sdk: DDPSDK): void => {
-	const { ddp } = sdk.client as unknown as { ddp: { encode: unknown; decode: unknown } };
-	if (!ddp) return;
-	ddp.encode = EJSON.stringify;
-	ddp.decode = EJSON.parse;
-};
-
 const startConnect = (sdk: DDPSDK): Promise<unknown> => {
 	// Only share an in-flight attempt; a settled promise from an earlier connection would turn a manual reconnect into a no-op.
 	if (connectPromise && sdk.connection.status === 'connecting') return connectPromise;
@@ -39,22 +32,17 @@ const startConnect = (sdk: DDPSDK): Promise<unknown> => {
 	return connectPromise;
 };
 
-const waitForConnected = (sdk: DDPSDK): Promise<void> => {
-	if (sdk.connection.status === 'connected') return Promise.resolve();
-	return new Promise<void>((resolve) => {
-		const stop = sdk.connection.on('connected', () => {
-			stop();
-			resolve();
-		});
-	});
-};
-
 export const getDdpSdk = (): DDPSDK => {
 	if (!instance) {
 		if (sdkTransportEnabled) {
-			// The stubbed Meteor stream never reconnects on its own, so keep retrying until the server
-			// is back (e.g. a restart) instead of giving up after DDPSDK's default single retry.
-			instance = DDPSDK.create(computeDdpUrl(), { retryCount: Infinity, retryTime: 1000 });
+			// Meteor semantics: lost calls are resent after a reconnection, and Meteor's own reconnect login
+			// (driven by the stub stream's reset) decides what a refused token means for the session.
+			instance = DDPSDK.create(computeDdpUrl(), {
+				encode: EJSON.stringify,
+				decode: EJSON.parse,
+				inFlightMethods: 'resend',
+				logoutOnRefusedResume: false,
+			});
 			// TODO: This is a temporary fix to ensure Accounts/Meteor and Update Session On Window Close work together.
 			try {
 				instance.storage = createMeteorBackedStorage();
@@ -63,7 +51,6 @@ export const getDdpSdk = (): DDPSDK => {
 				// to attach the storage hook must not abort SDK bootstrap.
 				console.warn('[ddpSdk] failed to attach storage hook to SDK instance', error);
 			}
-			applyEjsonEncoding(instance);
 			void startConnect(instance);
 		} else {
 			// Meteor-backed pass-through. Same DDPSDK shape, but every call
@@ -85,12 +72,6 @@ let inflightLogin: Promise<void> | undefined;
 export const ensureConnectedAndAuthenticated = async (): Promise<void> => {
 	const sdk = getDdpSdk();
 
-	// IMPORTANT: must wait for the DDP `connected` handshake before issuing
-	// any wait-method (login uses wait:true). DDPDispatcher serializes wait
-	// blocks at the queue head, so a login dispatched while connecting
-	// queues ahead of the connect frame ws.onopen later emits — the connect
-	// frame ends up wedged in a non-wait block behind the wait block and
-	// never flushes, leaving the socket open but DDP-unhandshaked.
 	if (
 		sdk.connection.status === 'idle' ||
 		sdk.connection.status === 'closed' ||
@@ -99,7 +80,12 @@ export const ensureConnectedAndAuthenticated = async (): Promise<void> => {
 	) {
 		void startConnect(sdk);
 	}
-	await waitForConnected(sdk);
+	try {
+		await sdk.connection.whenConnected();
+	} catch {
+		// Closed before it connected (a logout tearing the connection down): nothing to authenticate.
+		return;
+	}
 
 	const token = readStoredLoginToken();
 	if (!token || sdk.account.uid) {
@@ -215,17 +201,7 @@ export const adoptAccountFromMeteorLoginResult = (result: unknown): void => {
 	if (!result || typeof result !== 'object') return;
 	const r = result as { id?: unknown; token?: unknown; tokenExpires?: unknown };
 	if (typeof r.id !== 'string' || typeof r.token !== 'string') return;
-	const tokenExpiresRaw = r.tokenExpires;
-	let tokenExpires: Date | undefined;
-	if (tokenExpiresRaw instanceof Date) {
-		tokenExpires = tokenExpiresRaw;
-	} else if (typeof tokenExpiresRaw === 'object' && tokenExpiresRaw !== null && '$date' in tokenExpiresRaw) {
-		const d = (tokenExpiresRaw as { $date: number | string }).$date;
-		tokenExpires = new Date(typeof d === 'string' ? parseInt(d, 10) : d);
-	}
-	const sdk = getDdpSdk();
-	sdk.account.user = { ...sdk.account.user, token: r.token, tokenExpires, id: r.id } as typeof sdk.account.user;
-	sdk.account.uid = r.id;
+	getDdpSdk().account.setCredentials({ id: r.id, token: r.token, tokenExpires: r.tokenExpires as Date | { $date: number } | undefined });
 };
 
 const teardownAuthenticatedConnection = (): void => {
@@ -235,8 +211,7 @@ const teardownAuthenticatedConnection = (): void => {
 	} catch {
 		// ignore
 	}
-	instance.account.uid = undefined;
-	instance.account.user = undefined;
+	instance.account.clearCredentials();
 	connectPromise = undefined;
 };
 

@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { MessageComposerFileItemProps } from './MessageComposerFileItem';
-import { getMimeType } from '../../../../../app/utils/lib/mimeTypes';
+import { getMimeType } from '../../../../../lib/mimeTypes';
 import { getFileExtension } from '../../../../../lib/utils/getFileExtension';
 import { usePreventPropagation } from '../../../../hooks/usePreventPropagation';
 import { formatBytes } from '../../../../lib/utils/formatBytes';

@@ -1,0 +1,43 @@
+{
+  "font": {
+    "light": {
+      "white": { "value": "{colors.white}" },
+      "disabled": { "value": "{colors.n500}" },
+      "annotation": { "value": "{colors.n600}" },
+      "hint": { "value": "{colors.n700}" },
+      "secondaryInfo": { "value": "{colors.n700}" },
+      "default": { "value": "{colors.n800}" },
+      "titlesLabels": { "value": "{colors.n900}" },
+      "info": { "value": "{colors.b600}" },
+      "danger": { "value": "{colors.r600}" },
+      "pureWhite": { "value": "{colors.white}" },
+      "pureBlack": { "value": "{colors.n800}" }
+    },
+    "high-contrast": {
+      "white": { "value": "{colors.white}" },
+      "disabled": { "value": "{colors.n500}" },
+      "annotation": { "value": "{colors.n900}" },
+      "hint": { "value": "{colors.n900}" },
+      "secondaryInfo": { "value": "{colors.n900}" },
+      "default": { "value": "{colors.n900}" },
+      "titlesLabels": { "value": "{colors.n900}" },
+      "info": { "value": "{colors.b800}" },
+      "danger": { "value": "{colors.r800}" },
+      "pureWhite": { "value": "{colors.white}" },
+      "pureBlack": { "value": "{colors.n900}" }
+    },
+    "dark": {
+      "white": { "value": "#2F343D", "type": "color" },
+      "disabled": { "value": "#60646C", "type": "color" },
+      "annotation": { "value": "#9EA2A8", "type": "color" },
+      "hint": { "value": "#9EA2A8", "type": "color" },
+      "secondaryInfo": { "value": "#9EA2A8", "type": "color" },
+      "default": { "value": "#C1C7D0", "type": "color" },
+      "titlesLabels": { "value": "#F2F3F5", "type": "color" },
+      "info": { "value": "#739EDE", "type": "color" },
+      "danger": { "value": "#D88892", "type": "color" },
+      "pureWhite": { "value": "{colors.white}" },
+      "pureBlack": { "value": "{colors.n900}" }
+    }
+  }
+}

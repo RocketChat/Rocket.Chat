@@ -17,7 +17,7 @@ Practical consequence: when you look for code, ask "what kind of thing is it?" b
 | Path        | What it is |
 | ----------- | ---------- |
 | `server/`   | **All community server code.** Described in detail below. |
-| `ee/server/` | Enterprise server code — an exact mirror of `server/`'s responsibility layout. See [License boundary](#the-license-boundary-ee). |
+| `ee/server/` | Enterprise server code — an exact mirror of `server/`'s responsibility layout. See [License boundary](#the-ee-tree-eeserver-and-the-license-boundary). |
 | `client/`, `ee/client/` | Frontend (React) code. |
 | `app/`      | **Legacy remnant, do not add server code here.** What's left is genuinely shared client+server code (`app/*/lib/`), and client-only feature code (`app/*/client/`). |
 | `lib/`      | Small utilities shared between client and server (isomorphic, no Meteor/server imports). |
@@ -68,7 +68,7 @@ Practical consequence: when you look for code, ask "what kind of thing is it?" b
 | `omnichannel/` | The livechat/omnichannel engine: `QueueManager`, `RoutingManager` (+ `routing/` strategies), `business-hour/`, `contacts/`, `analytics/`, transcripts, visitors, guests, departments… The biggest domain. |
 | `authorization/` | Permission/role checks: `hasPermission`, `canAccessRoom`, `getRoles`, `constant/permissions.ts` (the permission list), `streamer/` (permission change notifications). |
 | `auth/` | Authentication utilities: `passwordPolicy`, `generatePassword`, login attempt logging/restriction, `oauth2-server/` (OAuth app admin), `token-login`. |
-| `auth-providers/` | One folder/file per external login provider: `apple/`, `crowd/`, `custom-oauth/`, `oauth/` (core OAuth glue), `github.ts`, `gitlab.ts`, `google.js`, `wordpress.ts`, … |
+| `auth-providers/` | One folder/file per external login provider: `apple/`, `custom-oauth/`, `gitlab.ts`, `iframe.ts`. The Passport wiring they share lives in the `oauth/` domain. |
 | `saml/`, `cas/`, `ldap/`, `2fa/`, `e2e/` | Protocol-specific auth/crypto subsystems. |
 | `notifications/` | Notification delivery: `push/`, `push-config/`, `email/` (Mailer API), `mail-messages/`, `queue/`, `core/` (Notifications streams), `message/` (per-message desktop/email/mobile decision helpers), direct-reply email processing. |
 | `media/` | Files and media: `file-upload/` (FileUpload + storage configs), `file/`, `emoji-custom/`, `emoji-native/`, `custom-sounds/`, `assets/`. |
@@ -109,6 +109,7 @@ Anti-patterns to avoid:
 - Adding server code under `app/` (the folder is frozen; only shared/client code remains there).
 - Barrel `index.ts` files that just re-export — import the concrete file. (Existing barrels like `settings/index.ts` and `authorization/index.ts` are legacy API surfaces, kept until their consumers are rewritten.)
 - Putting logic in a hook/method/endpoint file instead of `lib`/`services` — those files should be thin entry points.
+- Passing a filter or update document to a model's generic `find`/`findOne`/`updateOne`/… — add a named method to the model instead ([database access](database-access.md)).
 - "Utility" dumping: if it has a domain, it goes in the domain.
 
 ## Tests

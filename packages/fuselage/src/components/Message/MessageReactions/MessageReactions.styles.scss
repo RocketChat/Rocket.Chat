@@ -1,0 +1,81 @@
+@use '../../../styles/colors.scss';
+@use '../../../styles/functions.scss' as *;
+@use '../../../styles/lengths.scss';
+@use '../../../styles/mixins/button.scss';
+@use '../../../styles/mixins/size.scss';
+@use '../../../styles/mixins/templates.scss';
+@use '../../../styles/typography.scss' as *;
+@use '../../../styles/variables/buttons.scss';
+@use '../mixins.scss';
+
+$message-reaction-border-radius: theme('message-reaction-border-radius', lengths.border-radius(medium));
+$message-reaction-hover-background-color: theme('message-reaction-hover-background-color', colors.surface(tint));
+$message-reaction-hover-border-color: theme('message-reaction-hover-border-color', colors.stroke(dark));
+$message-reaction-hover-background-color: theme('message-reaction-hover-background-color', colors.surface(hover));
+$message-reaction-color: theme('message-reaction-color', colors.font(default));
+$message-reaction-border-color: theme('message-reaction-border-color', colors.stroke(dark));
+$message-reaction-background-color: theme('message-reaction-background-color', colors.surface(selected));
+
+.rcx-message-reactions {
+	&__container {
+		display: flex;
+		flex-flow: row wrap;
+		justify-content: flex-start;
+
+		margin: lengths.margin(-2);
+	}
+
+	&__reaction {
+		@include use-font-scale(c1);
+		display: inline-flex;
+		align-items: center;
+
+		margin: lengths.margin(2);
+
+		padding: lengths.padding(2);
+
+		cursor: pointer;
+
+		color: colors.font(hint);
+		border: lengths.border-width(default) solid colors.stroke(light);
+		border-radius: $message-reaction-border-radius;
+		background-color: $message-reaction-hover-background-color;
+
+		&:hover {
+			border-color: $message-reaction-hover-border-color;
+			background-color: $message-reaction-hover-background-color;
+		}
+
+		&--action {
+			@include mixins.message-focus-visible {
+				display: inline-flex;
+			}
+			padding: lengths.padding(2);
+		}
+
+		&--mine {
+			color: $message-reaction-color;
+			border-width: lengths.border-width(default);
+			border-color: $message-reaction-border-color;
+			background-color: $message-reaction-background-color;
+		}
+
+		@include templates.focus-state {
+			border-color: colors.stroke(light);
+		}
+	}
+
+	&__emoji {
+		display: block;
+
+		font-size: lengths.size(12);
+		line-height: lengths.size(16);
+
+		@include size.square(lengths.size(16));
+	}
+
+	&__counter {
+		@include use-font-scale(c1);
+		margin-inline: lengths.margin(2);
+	}
+}

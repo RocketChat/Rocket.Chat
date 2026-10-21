@@ -43,7 +43,7 @@ import { useFileUpload } from '../../body/hooks/useFileUpload';
 import { useChat } from '../../contexts/ChatContext';
 import { useComposerPopupOptions } from '../../contexts/ComposerPopupContext';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
-import { useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
+import { getComposerPopupListboxId, useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
 import { useEnablePopupPreview } from '../hooks/useEnablePopupPreview';
 
 // The first boolean will be used to enable/disable the send button
@@ -526,6 +526,8 @@ const RichTextMessageBox = ({
 					onMouseLeave={handleMouseLeave}
 					linkmodifier={linkModifier}
 					aria-activedescendant={popup.focused ? `popup-item-${popup.focused._id}` : undefined}
+					aria-autocomplete='list'
+					aria-controls={getComposerPopupListboxId(popup, shouldPopupPreview)}
 					onBlur={setLastCursorPosition}
 					onFocus={getLastCursorPosition}
 				/>

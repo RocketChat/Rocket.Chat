@@ -5,7 +5,7 @@ import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import { after, afterEach, before, beforeEach, describe, it } from 'mocha';
 
-import { getCredentials, api, request, credentials, methodCall } from '../../data/api-data';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
@@ -726,6 +726,7 @@ describe('/teams.list', () => {
 	let testUser1Credentials: Credentials;
 	let testTeamAdmin: TestUser<IUser>;
 	let testTeam1: IRoom;
+	let testTeamMemberOnly: IRoom;
 	before('Create test team', (done) => {
 		void request
 			.post(api('teams.create'))
@@ -766,6 +767,16 @@ describe('/teams.list', () => {
 				type: 0,
 			})
 		).body.team;
+		testTeamMemberOnly = (
+			await request
+				.post(api('teams.create'))
+				.set(credentials)
+				.send({
+					name: `test-team-member-only-${Date.now()}`,
+					type: 0,
+					members: [testUser1.username],
+				})
+		).body.team;
 	});
 
 	after(() =>
@@ -773,6 +784,7 @@ describe('/teams.list', () => {
 			deleteTeam(credentials, teamName),
 			deleteTeam(testUser1Credentials, testTeam1.name!),
 			deleteTeam(credentials, testTeamAdmin.name!),
+			deleteTeam(credentials, testTeamMemberOnly.name!),
 		]),
 	);
 
@@ -800,52 +812,17 @@ describe('/teams.list', () => {
 		expect(res.body.teams[0]).to.have.property('numberOfUsers');
 	});
 
-	it("should prevent users from accessing unrelated teams via 'query' parameter", () => {
-		return request
-			.get(api('teams.list'))
-			.set(testUser1Credentials)
-			.query({
-				query: JSON.stringify({ _id: { $regex: '.*' } }),
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body.teams.length).to.be.gte(1);
-				expect(res.body.teams)
-					.to.be.an('array')
-					.and.to.satisfy(
-						(teams: ITeam[]) => teams.every((team) => team.createdBy._id === testUser1._id),
-						`Expected only user's own teams to be returned, but found unowned teams.\n${JSON.stringify(
-							res.body.teams.filter((team: ITeam) => team.createdBy._id !== testUser1._id),
-							null,
-							2,
-						)}`,
-					);
-			});
-	});
+	it('should list the teams the caller is a member of, and no others', async () => {
+		const res = await request.get(api('teams.list')).set(testUser1Credentials).expect('Content-Type', 'application/json').expect(200);
 
-	it("should prevent admins from accessing unrelated teams via 'query' parameter", () => {
-		return request
-			.get(api('teams.list'))
-			.set(credentials)
-			.query({
-				query: JSON.stringify({ _id: { $regex: '.*' } }),
-			})
-			.expect('Content-Type', 'application/json')
-			.expect(200)
-			.expect((res) => {
-				expect(res.body.teams.length).to.be.gte(1);
-				expect(res.body.teams)
-					.to.be.an('array')
-					.and.to.satisfy(
-						(teams: ITeam[]) => teams.every((team) => team.createdBy._id === credentials['X-User-Id']),
-						`Expected only admin's own teams to be returned, but found unowned teams.\n${JSON.stringify(
-							res.body.teams.filter((team: ITeam) => team.createdBy._id !== credentials['X-User-Id']),
-							null,
-							2,
-						)}`,
-					);
-			});
+		expect(res.body).to.have.property('success', true);
+
+		const listedIds = (res.body.teams as ITeam[]).map((team) => team._id);
+
+		// membership, not authorship: a team created by someone else still counts
+		expect(listedIds).to.include(testTeam1._id);
+		expect(listedIds).to.include(testTeamMemberOnly._id);
+		expect(listedIds).to.not.include(testTeamAdmin._id);
 	});
 });
 
@@ -1000,6 +977,65 @@ describe('/teams.updateMember', () => {
 			)
 			.then(() => done())
 			.catch(done);
+	});
+
+	describe('as a team moderator', () => {
+		let moderatorCredentials: Credentials;
+
+		before(async () => {
+			await request
+				.post(api('teams.updateMember'))
+				.set(credentials)
+				.send({ teamName: testTeam.name, member: { userId: testUser2._id, roles: ['moderator'] } })
+				.expect(200);
+			moderatorCredentials = await login(testUser2.username, password);
+		});
+
+		it('should not allow promoting themselves to owner', async () => {
+			await request
+				.post(api('teams.updateMember'))
+				.set(moderatorCredentials)
+				.send({ teamName: testTeam.name, member: { userId: testUser2._id, roles: ['moderator', 'owner'] } })
+				.expect(403);
+		});
+
+		it('should allow adding members with the member role', async () => {
+			await request
+				.post(api('teams.addMembers'))
+				.set(moderatorCredentials)
+				.send({ teamName: testTeam.name, members: [{ userId: testUser2._id, roles: ['member'] }] })
+				.expect(200);
+		});
+
+		it('should not allow granting owner through teams.addMembers', async () => {
+			await request
+				.post(api('teams.addMembers'))
+				.set(moderatorCredentials)
+				.send({ teamName: testTeam.name, members: [{ userId: testUser2._id, roles: ['owner'] }] })
+				.expect(403);
+		});
+
+		it('should not allow demoting an owner', async () => {
+			await request
+				.post(api('teams.updateMember'))
+				.set(moderatorCredentials)
+				.send({ teamName: testTeam.name, member: { userId: testUser._id, roles: ['member'] } })
+				.expect(403);
+		});
+
+		it('should not treat an admin role on the team subscription as global role-assignment rights', async () => {
+			await request
+				.post(api('teams.updateMember'))
+				.set(credentials)
+				.send({ teamName: testTeam.name, member: { userId: testUser2._id, roles: ['moderator', 'admin'] } })
+				.expect(200);
+
+			await request
+				.post(api('teams.updateMember'))
+				.set(moderatorCredentials)
+				.send({ teamName: testTeam.name, member: { userId: testUser2._id, roles: ['moderator', 'admin', 'custom-role'] } })
+				.expect(403);
+		});
 	});
 });
 
@@ -1837,16 +1873,9 @@ describe('/teams.addRooms', () => {
 
 	it('should fail if the user is not the owner of the channel', (done) => {
 		void request
-			.post(methodCall('addUsersToRoom'))
+			.post(api('groups.invite'))
 			.set(credentials)
-			.send({
-				message: JSON.stringify({
-					method: 'addUsersToRoom',
-					params: [{ rid: privateRoom3._id, users: [testUser.username] }],
-					id: 'id',
-					msg: 'method',
-				}),
-			})
+			.send({ roomId: privateRoom3._id, username: testUser.username })
 			.expect('Content-Type', 'application/json')
 			.expect(200)
 			.expect((res) => {
@@ -2977,16 +3006,9 @@ describe('/teams.update', () => {
 
 		it('should update user prefs', async () => {
 			await request
-				.post(methodCall('saveUserPreferences'))
+				.post(api('users.setPreferences'))
 				.set(userCredentials)
-				.send({
-					message: JSON.stringify({
-						method: 'saveUserPreferences',
-						params: [{ emailNotificationMode: 'nothing' }],
-						id: 'id',
-						msg: 'method',
-					}),
-				})
+				.send({ data: { emailNotificationMode: 'nothing' } })
 				.expect(200);
 		});
 

@@ -44,7 +44,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import type { EditRoomInfoFormData } from './useEditRoomInitialValues';
 import { useEditRoomInitialValues } from './useEditRoomInitialValues';
 import { useEditRoomPermissions } from './useEditRoomPermissions';
-import { MessageTypesValues } from '../../../../../../app/lib/lib/MessageTypes';
+import { MessageTypesValues } from '../../../../../../lib/MessageTypes';
 import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
 import { msToTimeUnit, TIMEUNIT } from '../../../../../lib/convertTimeUnit';
 import { links } from '../../../../../lib/links';

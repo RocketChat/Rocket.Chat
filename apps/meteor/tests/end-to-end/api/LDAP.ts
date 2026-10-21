@@ -243,6 +243,16 @@ const waitForLdapConnection = () =>
 					await updateSetting('LDAP_Default_Domain', '');
 					await updateSetting('LDAP_Background_Sync_Import_New_Users', false);
 					await updateSetting('LDAP_Background_Sync_Keep_Existant_Users_Updated', true);
+					await updateSetting('LDAP_BaseDN', 'dc=space,dc=air');
+					await updateSetting('LDAP_User_Search_Filter', `(|(uid=${ldapSyncUsername})(uid=${ldapNoEmailUsername}))`);
+					await waitForLdapConnection();
+
+					const { body } = await request.get(api('users.info')).set(credentials).query({ username: ldapSyncUsername }).expect(200);
+					await request
+						.post(api('users.update'))
+						.set(credentials)
+						.send({ userId: body.user._id, data: { name: 'Renamed In Rocket.Chat' } })
+						.expect(200);
 				});
 
 				after(async () => {
@@ -250,15 +260,28 @@ const waitForLdapConnection = () =>
 					await waitForLdapConnection();
 				});
 
-				it('should report the error that stopped the sync', async () => {
+				it('should skip that user and still update the other existing users', async () => {
 					await retry(
 						'LDAP settings propagation',
 						async () => {
-							const res = await request.post(api('ldap.syncNow')).set(credentials).expect('Content-Type', 'application/json').expect(400);
+							await request
+								.post(api('ldap.syncNow'))
+								.set(credentials)
+								.expect('Content-Type', 'application/json')
+								.expect(200)
+								.expect((res: Response) => {
+									expect(res.body).to.have.property('success', true);
+									expect(res.body).to.have.property('message', 'Sync_in_progress');
+								});
 
-							expect(res.body).to.have.property('success', false);
-							expect(res.body).to.have.property('error', 'LDAP_Sync_failed');
-							expect(res.body.details).to.deep.equal({ error: 'Failed to get email address from LDAP user' });
+							await request
+								.get(api('users.info'))
+								.set(credentials)
+								.query({ username: ldapSyncUsername })
+								.expect(200)
+								.expect((res: Response) => {
+									expect(res.body.user).to.have.property('name', 'LDAP Sync');
+								});
 						},
 						{ delayMs: 1_000 },
 					);

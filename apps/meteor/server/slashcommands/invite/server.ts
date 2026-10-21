@@ -1,4 +1,4 @@
-import { api, FederationMatrix, isMeteorError } from '@rocket.chat/core-services';
+import { api, FederationMatrix, isClientSafeError } from '@rocket.chat/core-services';
 import type { IUser, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { isBannedSubscription } from '@rocket.chat/core-typings';
 import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
@@ -112,7 +112,7 @@ slashCommands.add({
 						inviter,
 					);
 				} catch (e: unknown) {
-					if (isMeteorError(e)) {
+					if (isClientSafeError(e)) {
 						if (e.error === 'error-only-compliant-users-can-be-added-to-abac-rooms') {
 							void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 								msg: i18n.t(e.error, { lng: settings.get('Language') || 'en' }),

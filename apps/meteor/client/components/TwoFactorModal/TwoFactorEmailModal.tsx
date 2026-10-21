@@ -62,11 +62,13 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, invalidAttempt, emailOrUserna
 			} else if (challengeId) {
 				await sendEmailCodeByChallengeId({ challengeId });
 			}
-			dispatchToastMessage({ type: 'success', message: t('Email_sent') });
+			dispatchToastMessage({ type: 'success', message: t('Two-factor_email_code_requested') });
 		} catch (error) {
+			const { errorType } = error as { errorType?: string };
+			const expired = errorType === 'error-challenge-expired' || errorType === 'error-challenge-not-found';
 			dispatchToastMessage({
 				type: 'error',
-				message: t('error-email-send-failed', { message: error }),
+				message: expired ? t('Two-factor_authentication_expired') : t('error-email-send-failed', { message: error }),
 			});
 		}
 	};
