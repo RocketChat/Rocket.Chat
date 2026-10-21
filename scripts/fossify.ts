@@ -1,7 +1,7 @@
 import readline from 'readline';
 import fs from 'fs/promises';
 
-const removeOptions = { maxRetries: 3, recursive: true };
+const removeOptions = { maxRetries: 3, recursive: true, force: true };
 
 const rl = readline.createInterface({
 	input: process.stdin,
@@ -10,15 +10,23 @@ const rl = readline.createInterface({
 
 const fossify = async () => {
 	console.log('Removing Premium Apps and Packages...');
-	await fs.rmdir('./ee', removeOptions);
+	await fs.rm('./ee', removeOptions);
 
 	console.log('Removing Premium code in the main app...');
-	await fs.rmdir('./apps/meteor/ee', removeOptions);
+	await fs.rm('./apps/meteor/ee', removeOptions);
 
 	console.log('Replacing main files...');
-	await fs.unlink('./apps/meteor/startRocketChat.ts');
+	await fs.rm('./apps/meteor/startRocketChat.ts', { force: true });
 
-	await fs.rename('./apps/meteor/startRocketChatFOSS.ts', './apps/meteor/startRocketChat.ts');
+	try {
+		await fs.rename('./apps/meteor/startRocketChatFOSS.ts', './apps/meteor/startRocketChat.ts');
+	} catch (e: any) {
+		if (e.code === 'ENOENT') {
+			console.warn('startRocketChatFOSS.ts not found. Skipping file replacement.');
+		} else {
+			throw e;
+		}
+	}
 
 	console.log('Done.');
 };
@@ -31,11 +39,7 @@ rl.question('Running this script will permanently delete files from the local di
 	}
 
 	fossify().catch((e) => {
-		if (!e) {
-			console.error('Unknown error');
-			return;
-		}
-
-		console.error(e);
+		console.error('Fossify failed:', e?.message || e);
+		process.exit(1);
 	});
 });
