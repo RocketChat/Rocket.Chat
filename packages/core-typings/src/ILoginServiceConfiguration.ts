@@ -19,7 +19,7 @@ export type OAuthConfiguration = {
 	buttonColor: string;
 	tokenSentVia: 'header' | 'payload';
 	identityTokenSentVia: 'default' | 'header' | 'payload';
-	keyField: 'username' | 'email';
+	keyField: 'username' | 'email' | 'service_id';
 	usernameField: string;
 	emailField: string;
 	nameField: string;

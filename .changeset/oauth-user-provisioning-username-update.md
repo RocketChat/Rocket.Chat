@@ -2,6 +2,8 @@
 '@rocket.chat/meteor': patch
 '@rocket.chat/models': patch
 '@rocket.chat/model-typings': patch
+'@rocket.chat/core-typings': patch
+'@rocket.chat/i18n': patch
 ---
 
-Fixes an issue where OAuth provisioned users do not have their username updated on subsequent logins after OAuth username mapping is changed (#27130)
+Add `service_id` option to Custom OAuth Key Field setting and allow updating username on OAuth user provisioning (#27130)

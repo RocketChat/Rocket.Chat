@@ -367,6 +367,7 @@ describe('CustomOAuthStrategy', () => {
 			'findOneByUsernameAndServiceNameIgnoringCase',
 			'findOneByEmailAddress',
 			'findOneByEmailAddressAndServiceNameIgnoringCase',
+			'findOneByServiceId',
 		] as const;
 		const login = (data: Record<string, unknown> = identity, service = 'github') =>
 			env.accounts.updateOrCreateUserFromExternalService(service, data, {});
@@ -401,6 +402,8 @@ describe('CustomOAuthStrategy', () => {
 			['username', true, 'findOneByUsernameIgnoringCase', ['alice']],
 			['email', false, 'findOneByEmailAddressAndServiceNameIgnoringCase', ['alice@example.com', 'external-id', 'github']],
 			['email', true, 'findOneByEmailAddress', ['alice@example.com']],
+			['service_id', false, 'findOneByServiceId', ['github', 'external-id']],
+			['service_id', true, 'findOneByServiceId', ['github', 'external-id']],
 		] as const)('looks up %s with cross-service merging %s', async (keyField, mergeUsersDistinctServices, method, args) => {
 			env.createStrategy({ keyField, mergeUsersDistinctServices }, 'github');
 			await login();
@@ -431,13 +434,22 @@ describe('CustomOAuthStrategy', () => {
 			expect(env.startSession).not.toHaveBeenCalled();
 		});
 
-		it.each(['email', 'username'] as const)('does not update an unchanged linked user using %s', async (keyField) => {
+		it.each(['email', 'username', 'service_id'] as const)('does not update an unchanged linked user using %s', async (keyField) => {
 			env.createStrategy({ keyField, mergeUsers: true }, 'github');
-			const user = makeUser({ name: identity.name, services: { github: { id: identity.id } } });
+			const user = makeUser({
+				name: identity.name,
+				username: identity.username,
+				emails: [{ address: identity.email, verified: true }],
+				services: { github: { id: identity.id } },
+			});
 			const method =
-				keyField === 'email' ? 'findOneByEmailAddressAndServiceNameIgnoringCase' : 'findOneByUsernameAndServiceNameIgnoringCase';
+				keyField === 'email'
+					? 'findOneByEmailAddressAndServiceNameIgnoringCase'
+					: keyField === 'service_id'
+						? 'findOneByServiceId'
+						: 'findOneByUsernameAndServiceNameIgnoringCase';
 			env.users[method].mockResolvedValue(user);
-			const data = keyField === 'email' ? identity : { ...identity, email: undefined };
+			const data = keyField === 'email' ? identity : keyField === 'service_id' ? identity : { ...identity, email: undefined };
 			await login(data);
 			expect(env.users[method]).toHaveBeenCalled();
 			expect(env.runCallback).toHaveBeenCalledWith('afterProcessOAuthUser', { serviceName: 'github', serviceData: data, user });
@@ -542,9 +554,9 @@ describe('CustomOAuthStrategy', () => {
 				expect(env.session.commitTransaction).toHaveBeenCalledTimes(1);
 			});
 
-			it('updates username for an already linked user even when mergeUsers is false', async () => {
-				env.createStrategy({ mergeUsers: false }, 'github');
-				env.users.findOneByUsernameAndServiceNameIgnoringCase.mockResolvedValue({
+			it('updates username for an already linked user when keyField is email even when mergeUsers is false (#27130)', async () => {
+				env.createStrategy({ keyField: 'email', mergeUsers: false }, 'github');
+				env.users.findOneByEmailAddressAndServiceNameIgnoringCase.mockResolvedValue({
 					...makeUser(),
 					services: { github: { id: identity.id } },
 					name: identity.name,
@@ -559,14 +571,14 @@ describe('CustomOAuthStrategy', () => {
 				expect(env.session.commitTransaction).toHaveBeenCalledTimes(1);
 			});
 
-			it('locates linked account by service ID before attempting mutable matching when username has changed', async () => {
-				env.createStrategy({ keyField: 'username', mergeUsers: false }, 'github');
+			it('locates linked account by service ID and updates username and email when keyField is service_id', async () => {
+				env.createStrategy({ keyField: 'service_id', mergeUsers: false }, 'github');
 				const linkedUser = {
 					...makeUser(),
 					services: { github: { id: identity.id } },
-					name: identity.name,
+					name: 'Old name',
 					username: 'old-username',
-					emails: [{ address: identity.email, verified: true }],
+					emails: [{ address: 'old@example.com', verified: true }],
 				};
 				env.users.findOneByServiceId.mockResolvedValue(linkedUser);
 
@@ -581,31 +593,15 @@ describe('CustomOAuthStrategy', () => {
 				expect(env.session.commitTransaction).toHaveBeenCalledTimes(1);
 			});
 
-			it('locates linked account by email when keyField is username and service ID does not match', async () => {
-				env.createStrategy({ keyField: 'username', emailField: 'email', mergeUsers: true }, 'github');
-				env.users.findOneByServiceId.mockResolvedValue(null);
+			it('does not match old user by service ID when keyField is username and username has changed', async () => {
+				env.createStrategy({ keyField: 'username', mergeUsers: false }, 'github');
 				env.users.findOneByUsernameAndServiceNameIgnoringCase.mockResolvedValue(null);
-				const linkedUser = {
-					...makeUser(),
-					services: { github: { id: identity.id } },
-					name: identity.name,
-					username: 'old-username',
-					emails: [{ address: identity.email, verified: true }],
-				};
-				env.users.findOneByEmailAddressAndServiceNameIgnoringCase.mockResolvedValue(linkedUser);
 
 				await login();
 
-				expect(env.users.findOneByEmailAddressAndServiceNameIgnoringCase).toHaveBeenCalledWith(
-					identity.email,
-					identity.id,
-					'github',
-				);
-				expect(env.saveIdentity).toHaveBeenCalledWith(
-					expect.objectContaining({ _id: 'local-user', name: identity.name, username: identity.username }),
-				);
-				expect(env.users.updateFromUpdater).toHaveBeenCalled();
-				expect(env.session.commitTransaction).toHaveBeenCalledTimes(1);
+				expect(env.users.findOneByUsernameAndServiceNameIgnoringCase).toHaveBeenCalledWith('alice', identity.id, 'github');
+				expect(env.users.findOneByServiceId).not.toHaveBeenCalled();
+				expect(env.originalAccountOperation).toHaveBeenCalledWith('github', identity, {});
 			});
 
 			it('normalizes email-shaped mapped username by replacing @ with . so it passes username validation', async () => {

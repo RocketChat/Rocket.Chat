@@ -276,23 +276,15 @@ export class CustomOAuthStrategy extends Strategy {
 			if (serviceData.username) {
 				let user: IUser | null = null;
 
-				if (serviceData.id) {
-					user = await Users.findOneByServiceId(serviceName, serviceData.id);
-				}
-
-				if (!user) {
-					if (this.keyField === 'username') {
-						user = this.mergeUsersDistinctServices
-							? await Users.findOneByUsernameIgnoringCase(serviceData.username)
-							: await Users.findOneByUsernameAndServiceNameIgnoringCase(serviceData.username, serviceData.id, serviceName);
-					} else if (this.keyField === 'email') {
-						user = this.mergeUsersDistinctServices
-							? await Users.findOneByEmailAddress(serviceData.email)
-							: await Users.findOneByEmailAddressAndServiceNameIgnoringCase(serviceData.email, serviceData.id, serviceName);
+				if (this.keyField === 'service_id' || this.keyField === 'serviceId') {
+					if (serviceData.id) {
+						user = await Users.findOneByServiceId(serviceName, serviceData.id);
 					}
-				}
-
-				if (!user && serviceData.email && this.emailField) {
+				} else if (this.keyField === 'username') {
+					user = this.mergeUsersDistinctServices
+						? await Users.findOneByUsernameIgnoringCase(serviceData.username)
+						: await Users.findOneByUsernameAndServiceNameIgnoringCase(serviceData.username, serviceData.id, serviceName);
+				} else if (this.keyField === 'email') {
 					user = this.mergeUsersDistinctServices
 						? await Users.findOneByEmailAddress(serviceData.email)
 						: await Users.findOneByEmailAddressAndServiceNameIgnoringCase(serviceData.email, serviceData.id, serviceName);
@@ -349,7 +341,7 @@ export class CustomOAuthStrategy extends Strategy {
 
 					const updater = Users.getUpdater();
 
-					if (this.keyField === 'username' && serviceData.email) {
+					if ((this.keyField === 'username' || this.keyField === 'service_id' || this.keyField === 'serviceId') && serviceData.email) {
 						updater.set('emails', [{ address: serviceData.email, verified: true }]);
 					}
 

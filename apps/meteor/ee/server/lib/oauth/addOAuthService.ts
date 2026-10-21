@@ -140,6 +140,7 @@ export async function addOAuthService(name: string, values: { [k: string]: strin
 		values: [
 			{ key: 'username', i18nLabel: 'Username' },
 			{ key: 'email', i18nLabel: 'Email' },
+			{ key: 'service_id', i18nLabel: 'Service_ID' },
 		],
 	});
 	await settingsRegistry.add(`Accounts_OAuth_Custom-${name}-username_field`, values.usernameField || '', {
