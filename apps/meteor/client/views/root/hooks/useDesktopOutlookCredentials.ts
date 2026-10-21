@@ -1,23 +1,33 @@
-import type { IUser } from '@rocket.chat/core-typings';
-import { useLoginToken } from '@rocket.chat/ui-contexts';
-import { useEffect } from 'react';
+import { useLoginToken, useUser } from '@rocket.chat/ui-contexts';
+import { useEffect, useRef } from 'react';
 
-import { callDesktopBridge } from '../../../../lib/utils/callDesktopBridge';
+import { callDesktopBridge } from '../../../lib/utils/callDesktopBridge';
 
-/** Gives the desktop app what its Outlook calendar integration needs once the user turned the integration on. */
-export const useDesktopOutlookCredentials = (user: Pick<IUser, '_id' | 'settings'>) => {
+/**
+ * Gives the desktop app what its Outlook calendar integration needs while the user has the integration on, and takes it
+ * back once the user turns it off or logs out.
+ */
+export const useDesktopOutlookCredentials = () => {
+	const user = useUser();
 	const token = useLoginToken();
 
-	const userId = user._id;
-	const outlook = user.settings?.calendar?.outlook;
+	const userId = user?._id;
+	const outlook = user?.settings?.calendar?.outlook;
 	const exchangeUrl = outlook?.Enabled ? outlook.Exchange_Url : undefined;
 
+	const handedOver = useRef(false);
+
 	useEffect(() => {
-		if (!token || !exchangeUrl) {
+		if (userId && token && exchangeUrl) {
+			callDesktopBridge((desktop) => desktop.setUserToken(token, userId));
+			callDesktopBridge((desktop) => desktop.setOutlookExchangeUrl(exchangeUrl, userId));
+			handedOver.current = true;
 			return;
 		}
 
-		callDesktopBridge((desktop) => desktop.setUserToken(token, userId));
-		callDesktopBridge((desktop) => desktop.setOutlookExchangeUrl(exchangeUrl, userId));
+		if (handedOver.current) {
+			handedOver.current = false;
+			callDesktopBridge((desktop) => desktop.clearOutlookCredentials());
+		}
 	}, [userId, token, exchangeUrl]);
 };

@@ -18,6 +18,7 @@ import { useCodeHighlight } from './hooks/useCodeHighlight';
 import { useCorsSSLConfig } from './hooks/useCorsSSLConfig';
 import { useDesktopBridgeContract } from './hooks/useDesktopBridgeContract';
 import { useDesktopFavicon } from './hooks/useDesktopFavicon';
+import { useDesktopOutlookCredentials } from './hooks/useDesktopOutlookCredentials';
 import { useDesktopTitle } from './hooks/useDesktopTitle';
 import { useDesktopUserLoggedIn } from './hooks/useDesktopUserLoggedIn';
 import { useDesktopUserRoles } from './hooks/useDesktopUserRoles';
@@ -86,6 +87,7 @@ const AppLayout = () => {
 	useDesktopFavicon();
 	useDesktopTitle();
 	useDesktopUserLoggedIn();
+	useDesktopOutlookCredentials();
 	useDesktopUserRoles();
 	useStartupEvent();
 	useIframeCommands();

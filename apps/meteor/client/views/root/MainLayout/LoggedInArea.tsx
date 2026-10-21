@@ -3,7 +3,6 @@ import type { ReactNode } from 'react';
 
 import MediaPlayerProvider from '../../../providers/MediaPlayerProvider';
 import { useCustomEmoji } from '../hooks/loggedIn/useCustomEmoji';
-import { useDesktopOutlookCredentials } from '../hooks/loggedIn/useDesktopOutlookCredentials';
 import { useDesktopUnreadAlert } from '../hooks/loggedIn/useDesktopUnreadAlert';
 import { useE2EEncryption } from '../hooks/loggedIn/useE2EEncryption';
 import { useFingerprintChange } from '../hooks/loggedIn/useFingerprintChange';
@@ -34,7 +33,6 @@ const LoggedInArea = ({ children }: LoggedInAreaProps) => {
 	useUpdateVideoConfUser(user._id);
 	useNotificationUserCalendar(user);
 	useDesktopUnreadAlert();
-	useDesktopOutlookCredentials(user);
 	useForceLogout(user._id);
 	useStoreCookiesOnLogin(user._id);
 	useCustomEmoji();
