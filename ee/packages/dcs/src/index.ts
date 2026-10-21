@@ -1,6 +1,7 @@
 export { canAccess, clearanceForPolicy } from './accessControl';
 export { accessRequirement, meetsRequirement, readerAccess } from './accessRequirement';
 export { buildCatalog, defaultCatalogEntries } from './catalog';
+export { dominates } from './dominance';
 export type { CatalogEntry } from './catalog';
 export { SpifError, UnknownPolicyError } from './errors';
 export { displayMarking } from './marking/displayMarking';
