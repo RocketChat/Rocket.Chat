@@ -6,7 +6,7 @@ import { axe } from 'jest-axe';
 import { useForm } from 'react-hook-form';
 
 import PhoneNumberFieldList from './PhoneNumberFieldList';
-import { getInitialPhones } from './phoneNumbers';
+import { getInitialPhones, MAX_PHONE_NUMBER_LABEL_LENGTH } from './phoneNumbers';
 
 type PhoneFormValues = { phones: IUserPhoneNumber[] };
 
@@ -26,7 +26,7 @@ const appRoot = mockAppRoot()
 		Phone_label_hint: 'Others can see name alongside number',
 		Phone_label_placeholder: 'Label',
 		Label_for_phone_number__label__: 'Label for phone number {{label}}',
-		Max_length_is: 'Max length is %s',
+		Max_length_is: 'Max length is {{limit}}',
 	})
 	.build();
 
@@ -170,7 +170,11 @@ describe('PhoneNumberFieldList', () => {
 			await userEvent.type(labelInput, 'a'.repeat(51));
 			await userEvent.tab();
 
-			await waitFor(() => expect(labelInput).toHaveAccessibleDescription(/Max length is/));
+			await waitFor(() =>
+				expect(labelInput).toHaveAccessibleDescription(
+					`Max length is ${MAX_PHONE_NUMBER_LABEL_LENGTH} Others can see name alongside number`,
+				),
+			);
 		});
 
 		it('only shows the hint when the label is exactly 50 characters', async () => {
