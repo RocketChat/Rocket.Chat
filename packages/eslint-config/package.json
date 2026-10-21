@@ -1,7 +1,7 @@
 {
 	"name": "@rocket.chat/eslint-config",
 	"version": "0.9.0",
-	"description": "Rocket.Chat's JS/TS ESLint config",
+	"description": "Deprecated: Rocket.Chat's JS/TS ESLint config. Use @rocket.chat/lint-config (oxlint) instead.",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
@@ -11,13 +11,10 @@
 	"type": "module",
 	"main": "./index.js",
 	"exports": {
-		".": "./index.js",
-		"./oxlint.json": "./oxlint.json"
+		".": "./index.js"
 	},
 	"files": [
-		"/index.js",
-		"/oxlint.json",
-		"/oxlint-eslint-rules.js"
+		"/index.js"
 	],
 	"scripts": {
 		"lint": "yarn run -T oxlint",

@@ -1,5 +1,5 @@
 {
-	"$schema": "./node_modules/oxlint/configuration_schema.json",
+	"$schema": "oxlint/configuration_schema.json",
 	"plugins": ["typescript", "import", "jsx-a11y", "react", "unicorn"],
 	"categories": {
 		"correctness": "off"
@@ -794,27 +794,27 @@
 	"jsPlugins": [
 		{
 			"name": "anti-trojan-source",
-			"specifier": "./node_modules/eslint-plugin-anti-trojan-source"
+			"specifier": "eslint-plugin-anti-trojan-source"
 		},
 		{
 			"name": "prettier",
-			"specifier": "./node_modules/eslint-plugin-prettier"
+			"specifier": "eslint-plugin-prettier"
 		},
 		{
 			"name": "testing-library",
-			"specifier": "./node_modules/eslint-plugin-testing-library"
+			"specifier": "eslint-plugin-testing-library"
 		},
 		{
 			"name": "storybook",
-			"specifier": "./node_modules/eslint-plugin-storybook"
+			"specifier": "eslint-plugin-storybook"
 		},
 		{
 			"name": "importx",
-			"specifier": "./node_modules/eslint-plugin-import-x"
+			"specifier": "eslint-plugin-import-x"
 		},
 		{
 			"name": "react-js",
-			"specifier": "./node_modules/eslint-plugin-react"
+			"specifier": "eslint-plugin-react"
 		},
 		{
 			"name": "eslint-js",
@@ -822,11 +822,11 @@
 		},
 		{
 			"name": "jest-js",
-			"specifier": "./node_modules/eslint-plugin-jest"
+			"specifier": "eslint-plugin-jest"
 		},
 		{
 			"name": "jsx-a11y-js",
-			"specifier": "./node_modules/eslint-plugin-jsx-a11y"
+			"specifier": "eslint-plugin-jsx-a11y"
 		}
 	]
 }

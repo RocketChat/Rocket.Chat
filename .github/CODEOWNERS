@@ -5,6 +5,7 @@
 /packages/rest-typings/ @RocketChat/Architecture @RocketChat/backend
 /packages/ui-contexts/ @RocketChat/frontend
 /packages/eslint-config/ @RocketChat/Architecture
+/packages/lint-config/ @RocketChat/Architecture
 /packages/livechat/ @RocketChat/frontend @RocketChat/Architecture
 /.vscode/ @RocketChat/Architecture
 /.github/ @RocketChat/Architecture

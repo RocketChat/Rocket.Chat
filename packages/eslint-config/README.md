@@ -1,5 +1,8 @@
 # `@rocket.chat/eslint-config`
 
+> [!WARNING]
+> **Deprecated.** The Rocket.Chat monorepo now lints with [oxlint](https://oxc.rs), using [`@rocket.chat/lint-config`](https://www.npmjs.com/package/@rocket.chat/lint-config). This package no longer receives rule updates; existing versions keep working.
+
 > The shared ESLint flat config used across the Rocket.Chat codebase, for JavaScript, TypeScript and React.
 
 [![npm](https://img.shields.io/npm/v/@rocket.chat/eslint-config?style=flat-square)](https://www.npmjs.com/package/@rocket.chat/eslint-config) [![downloads](https://img.shields.io/npm/dw/@rocket.chat/eslint-config?style=flat-square)](https://www.npmjs.com/package/@rocket.chat/eslint-config)
@@ -90,7 +93,7 @@ yarn workspace @rocket.chat/eslint-config lint
 yarn workspace @rocket.chat/eslint-config lint:fix
 ```
 
-The config is a single file, `index.js`. The repository's root `eslint.config.mjs` builds on it, so a change here affects every package in the monorepo.
+The config is a single file, `index.js`. Nothing in the monorepo uses it any more.
 
 ## License
 

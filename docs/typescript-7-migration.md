@@ -13,7 +13,8 @@ supports TS7.
 | Package | Blocker |
 | --- | --- |
 | `@rocket.chat/core-typings`, `@rocket.chat/ui-kit` | typia toolchain — they build with `ttsc`/`tsgo` but keep TS5.9 for the editor/`typecheck` path until typia settles on a released TS7 binary. |
-| `@rocket.chat/eslint-config` | `typescript-eslint` peer range `<6.1.0`; typed linting needs the JS compiler API. `installConfig.hoistingLimits: workspaces` nests the lint toolchain beside the pinned TS. |
+| `@rocket.chat/lint-config` | the ESLint plugins oxlint loads as JS plugins (jest, storybook) import `@typescript-eslint/utils`, which links the JS compiler API. Typed linting itself runs on oxlint's TS7-based tsgolint. `installConfig.hoistingLimits: workspaces` nests the plugins beside the pinned TS. |
+| `@rocket.chat/eslint-config` (deprecated, unused in the repo) | `typescript-eslint` peer range `<6.1.0`; typed linting needs the JS compiler API. |
 | `@rocket.chat/message-parser`, `@rocket.chat/livechat` | webpack configs load `webpack.config.ts` through ts-node. |
 | `@rocket.chat/emitter`, `@rocket.chat/mp3-encoder`, `@rocket.chat/css-in-js`, `@rocket.chat/fuselage-hooks`, `@rocket.chat/styled` | `@rollup/plugin-typescript` links the JS compiler API. |
 | `@rocket.chat/apps` | `node --test` suites load TS through ts-node (extensionless CJS relative imports rule out native type stripping). |
@@ -37,7 +38,7 @@ supports TS7.
 ## Follow-ups
 
 - Drop each pin as its tool ships TS7 (or a TS6-bridge) support:
-  typescript-eslint, `@rollup/plugin-typescript`, ts-node (→ Node native type
+  `@typescript-eslint/utils` (in the oxlint JS plugins), `@rollup/plugin-typescript`, ts-node (→ Node native type
   stripping), typedoc.
 - Move the typia toolchain to a released `typescript@7` binary instead of
   `@typescript/native-preview` once ttsc resolves it directly.
