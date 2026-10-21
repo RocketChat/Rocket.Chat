@@ -100,7 +100,7 @@
 		"webdav/axios": "0.34.0",
 		"wait-on/joi": "17.13.8",
 		"webpack-dev-server/launch-editor": "2.14.1",
-		"webpack-dev-server/http-proxy-middleware": "2.0.10",
+		"webpack-dev-middleware@npm:^6.1.2": "8.3.0",
 		"@changesets/parse/js-yaml": "4.3.2",
 		"@eslint/eslintrc/js-yaml": "4.3.2",
 		"cosmiconfig/js-yaml": "4.3.2",

@@ -18,7 +18,7 @@
 		"dev": "yarn build",
 		"eslint": "eslint .",
 		"lint": "yarn run eslint && yarn run stylelint",
-		"start": "cross-env TS_NODE_PROJECT=\"tsconfig.webpack.json\" webpack-dev-server --mode development",
+		"start": "cross-env TS_NODE_PROJECT=\"tsconfig.webpack.json\" webpack-cli serve --mode development",
 		"storybook": "storybook dev -p 9001 -c .storybook",
 		"stylelint": "stylelint 'src/**/*.scss'",
 		"typecheck": "tsc -p tsconfig.json --noEmit"
@@ -108,7 +108,7 @@
 		"url-loader": "^4.1.1",
 		"webpack": "~5.104.1",
 		"webpack-cli": "~5.1.4",
-		"webpack-dev-server": "~5.2.6"
+		"webpack-dev-server": "~6.0.0"
 	},
 	"peerDependencies": {
 		"@rocket.chat/fuselage-tokens": "*",
