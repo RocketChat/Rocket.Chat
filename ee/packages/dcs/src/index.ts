@@ -1,4 +1,5 @@
 export { canAccess, clearanceForPolicy } from './accessControl';
+export { accessRequirement, meetsRequirement, readerAccess } from './accessRequirement';
 export { buildCatalog, defaultCatalogEntries } from './catalog';
 export type { CatalogEntry } from './catalog';
 export { SpifError, UnknownPolicyError } from './errors';
