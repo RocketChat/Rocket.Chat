@@ -1,5 +1,6 @@
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useSetting } from '@rocket.chat/ui-contexts';
+import { useTranslation } from 'react-i18next';
 
 import { useIsEnterprise } from '../../hooks/useIsEnterprise';
 import { useItemListDrag } from '../../hooks/useItemListDrag';
@@ -36,6 +37,7 @@ const moveKey = (keys: string[], key: string, target: string, position: 'before'
  * Lets the sidebar categories be reordered by dragging their headers, and a room be dragged into another category.
  */
 export const useSidebarListDrag = (groups: SidebarRoomListGroup[]) => {
+	const { t } = useTranslation();
 	const { data: { isEnterprise = false } = {} } = useIsEnterprise();
 	const { customCategories } = useUserSidebarCategories();
 	const isFavoritesEnabled = useSetting('Favorite_Rooms', true);
@@ -103,10 +105,32 @@ export const useSidebarListDrag = (groups: SidebarRoomListGroup[]) => {
 		});
 	};
 
+	const onMove = async (source: ItemListDragSource, direction: 'up' | 'down') => {
+		const group = groups.find(({ key }) => key === source.key);
+		if (source.kind !== 'group' || !group) {
+			return undefined;
+		}
+
+		const groupName = group.translateTitle ? t(group.title) : group.title;
+		const index = groupKeys.indexOf(source.key);
+		const neighbor = groupKeys[direction === 'up' ? index - 1 : index + 1];
+		if (!neighbor || isDynamicGroup(neighbor)) {
+			return t('Group_cannot_move_further', { groupName });
+		}
+
+		await saveCategoryOrder(moveKey(groupKeys, source.key, neighbor, direction === 'up' ? 'before' : 'after'));
+		return t('Group_moved_to_position', {
+			groupName,
+			position: groupKeys.indexOf(neighbor) + 1,
+			total: groupKeys.length,
+		});
+	};
+
 	return useItemListDrag({
 		disabled: !isEnterprise,
 		canDrag: (source) => source.kind === 'item' || !isDynamicGroup(source.key),
 		resolveTarget,
 		onDrop,
+		onMove,
 	});
 };

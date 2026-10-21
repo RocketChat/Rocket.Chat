@@ -2,6 +2,8 @@ import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { RefCallback } from 'react';
 import { useCallback, useState } from 'react';
 
+import { isMoveRowShortcut } from './useItemListNavigation';
+
 export type ItemListDragKind = 'item' | 'group';
 
 export type ItemListDragSource = {
@@ -38,6 +40,10 @@ type ItemListDragOptions = {
 	canDrag?: (source: ItemListDragSource) => boolean;
 	resolveTarget: (source: ItemListDragSource, hover: ItemListDropHover) => ItemListDropTarget | undefined;
 	onDrop: (source: ItemListDragSource, target: ItemListDropTarget) => void;
+	/**
+	 * Moves the focused row one step with Cmd+Shift (Ctrl+Shift) and the up or down arrow. Resolves with what to announce.
+	 */
+	onMove?: (source: ItemListDragSource, direction: 'up' | 'down') => Promise<string | undefined> | string | undefined;
 };
 
 const DRAG_THRESHOLD = 4;
@@ -80,12 +86,13 @@ const groupRect = (list: HTMLElement, group: string) => {
  * Lets the rows and groups of a list of rows be dragged with the pointer. Rows opt in with `data-drag-key`, `data-drag-kind` and
  * `data-drag-group`; the hook draws the lifted copy and the drop line or box, and the caller applies the change on drop.
  */
-export const useItemListDrag = ({ disabled = false, dragHandle = 'none', canDrag, resolveTarget, onDrop }: ItemListDragOptions) => {
+export const useItemListDrag = ({ disabled = false, dragHandle = 'none', canDrag, resolveTarget, onDrop, onMove }: ItemListDragOptions) => {
 	const [source, setSource] = useState<ItemListDragSource>();
 
 	const stableCanDrag = useStableCallback((source: ItemListDragSource) => canDrag?.(source) ?? true);
 	const stableResolveTarget = useStableCallback(resolveTarget);
 	const stableOnDrop = useStableCallback(onDrop);
+	const stableOnMove = useStableCallback((source: ItemListDragSource, direction: 'up' | 'down') => onMove?.(source, direction));
 
 	const ref: RefCallback<HTMLElement> = useCallback(
 		(list: HTMLElement) => {
@@ -293,15 +300,72 @@ export const useItemListDrag = ({ disabled = false, dragHandle = 'none', canDrag
 				window.addEventListener('keydown', handleKeyDown, true);
 			};
 
+			const announcer = document.createElement('div');
+			announcer.className = 'rcx-item-drag-announcer';
+			announcer.setAttribute('role', 'status');
+			announcer.setAttribute('aria-live', 'polite');
+			document.body.append(announcer);
+
+			const handleKeyDown = async (event: KeyboardEvent) => {
+				if (!isMoveRowShortcut(event) || !(event.target instanceof HTMLElement)) {
+					return;
+				}
+
+				const sourceElement = event.target.closest('[data-drag-key]');
+				const dragSource = sourceElement && readSource(sourceElement);
+				if (!sourceElement || !dragSource || !list.contains(sourceElement) || !stableCanDrag(dragSource)) {
+					return;
+				}
+
+				event.preventDefault();
+				event.stopPropagation();
+
+				const focused = event.target;
+				const message = await stableOnMove(dragSource, event.key === 'ArrowUp' ? 'up' : 'down');
+
+				// Reordering detaches or remounts the row, which drops its focus; give it back to the same control once it lands.
+				const focusedClass = focused.classList[0];
+				const findFocused = () => {
+					if (focused.isConnected) {
+						return focused;
+					}
+					const row = list.querySelector(`[data-drag-key="${CSS.escape(dragSource.key)}"]`);
+					return focusedClass ? row?.querySelector<HTMLElement>(`.${CSS.escape(focusedClass)}`) : undefined;
+				};
+
+				const deadline = performance.now() + 1000;
+				const refocus = () => {
+					const active = document.activeElement;
+					const target = findFocused();
+					if (active && active !== document.body && active !== target) {
+						return;
+					}
+					if (target && active !== target) {
+						target.focus();
+					}
+					if (performance.now() < deadline) {
+						requestAnimationFrame(refocus);
+					}
+				};
+				requestAnimationFrame(refocus);
+
+				if (message) {
+					announcer.textContent = message;
+				}
+			};
+
 			list.addEventListener('pointerdown', handlePointerDown);
 			list.addEventListener('dragstart', preventNativeDrag);
+			list.addEventListener('keydown', handleKeyDown);
 
 			return () => {
 				list.removeEventListener('pointerdown', handlePointerDown);
 				list.removeEventListener('dragstart', preventNativeDrag);
+				list.removeEventListener('keydown', handleKeyDown);
+				announcer.remove();
 			};
 		},
-		[disabled, dragHandle, stableCanDrag, stableResolveTarget, stableOnDrop],
+		[disabled, dragHandle, stableCanDrag, stableResolveTarget, stableOnDrop, stableOnMove],
 	);
 
 	return { ref, source };
