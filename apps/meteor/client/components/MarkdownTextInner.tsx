@@ -49,9 +49,7 @@ const codeMarked = (code: string, language: string | undefined, _isEscaped: bool
 	return `<pre><code>${code} </code></pre>`;
 };
 const codespanMarked = (code: string): string => {
-	const decoded = code.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
-	const escaped = decoded.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-	return `<code>${escaped}</code>`;
+	return `<code>${code.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&')}</code>`;
 };
 
 documentRenderer.link = linkMarked;

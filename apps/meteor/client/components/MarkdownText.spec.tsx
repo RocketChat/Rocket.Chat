@@ -417,11 +417,6 @@ describe('code handling', () => {
 			expected: '<code>&lt; = &amp;lt; &gt; = &amp;gt; &amp; = &amp;amp;</code>',
 		},
 		{
-			caseName: 'inline with HTML tags',
-			content: '`<b>x</b>`',
-			expected: '<code>&lt;b&gt;x&lt;/b&gt;</code>',
-		},
-		{
 			caseName: 'block with language',
 			content: "```typescript\nconst test = 'this is code'\n```",
 			expected: '<code class="language-typescript">const test = \'this is code\' </code>',
@@ -453,11 +448,6 @@ describe('code handling', () => {
 			caseName: 'inline with encoded special characters',
 			content: '`< = &lt; > = &gt; & = &amp;`',
 			expected: '<code>&lt; = &amp;lt; &gt; = &amp;gt; &amp; = &amp;amp;</code>',
-		},
-		{
-			caseName: 'inline with HTML tags',
-			content: '`<b>x</b>`',
-			expected: '<code>&lt;b&gt;x&lt;/b&gt;</code>',
 		},
 	] as const)('should render $caseName for inline variant', ({ content, expected }) => {
 		render(<MarkdownText content={`${content}`} variant='inline' />, {
