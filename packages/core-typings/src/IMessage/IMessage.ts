@@ -9,7 +9,7 @@ import type { ILivechatVisitor } from '../ILivechatVisitor';
 import type { IOmnichannelServiceLevelAgreements } from '../IOmnichannelServiceLevelAgreements';
 import type { IRocketChatRecord } from '../IRocketChatRecord';
 import type { IRoom } from '../IRoom';
-import type { ISecurityLabel } from '../ISecurityLabel';
+import type { ISecurityLabel, SecurityLabelDisplayMarking } from '../ISecurityLabel';
 import type { IUser } from '../IUser';
 import type { FileProp } from './MessageAttachment/Files/FileProp';
 import type { MessageAttachment } from './MessageAttachment/MessageAttachment';
@@ -242,6 +242,9 @@ export interface IMessage extends IRocketChatRecord {
 	content?: EncryptedContent;
 
 	securityLabel?: ISecurityLabel;
+	// Set on the copy sent to a reader: the marking of securityLabel, or that the reader isn't cleared for it
+	securityMarking?: SecurityLabelDisplayMarking;
+	securityWithheld?: true;
 
 	// Read receipts migration flag
 	receiptsArchived?: boolean;
