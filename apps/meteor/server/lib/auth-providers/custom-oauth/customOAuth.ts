@@ -16,6 +16,26 @@ import { settings } from '../../../settings/cached';
 import { callbacks } from '../../callbacks';
 import { notifyOnUserChange } from '../../notifyListener';
 import { saveUserIdentity } from '../../users/saveUserIdentity';
+import { validateUsername } from '../../users/validateUsername';
+
+export const normalizeOAuthUsername = (username?: string): string => {
+	if (!username) {
+		return '';
+	}
+
+	if (validateUsername(username)) {
+		return username;
+	}
+
+	if (username.includes('@')) {
+		const sanitized = username.replace(/@/g, '.');
+		if (validateUsername(sanitized)) {
+			return sanitized;
+		}
+	}
+
+	return username;
+};
 
 const logger = new Logger('CustomOAuth');
 const BeforeUpdateOrCreateUserFromExternalService = new Map<
@@ -257,89 +277,119 @@ export class CustomOAuthStrategy extends Strategy {
 				return;
 			}
 
-			if (serviceData.username) {
-				let user: IUser | null = null;
+			let user: IUser | null = null;
 
-				if (this.keyField === 'username') {
+			if (this.keyField === 'service_id' || this.keyField === 'serviceId') {
+				if (serviceData.id) {
+					user = await Users.findOneByServiceId(serviceName, serviceData.id);
+				}
+			} else if (this.keyField === 'username') {
+				if (serviceData.username) {
+					const username = normalizeOAuthUsername(serviceData.username);
 					user = this.mergeUsersDistinctServices
-						? await Users.findOneByUsernameIgnoringCase(serviceData.username)
-						: await Users.findOneByUsernameAndServiceNameIgnoringCase(serviceData.username, serviceData.id, serviceName);
-				} else if (this.keyField === 'email') {
+						? await Users.findOneByUsernameIgnoringCase(username)
+						: await Users.findOneByUsernameAndServiceNameIgnoringCase(username, serviceData.id, serviceName);
+				}
+			} else if (this.keyField === 'email') {
+				if (serviceData.email) {
 					user = this.mergeUsersDistinctServices
 						? await Users.findOneByEmailAddress(serviceData.email)
 						: await Users.findOneByEmailAddressAndServiceNameIgnoringCase(serviceData.email, serviceData.id, serviceName);
 				}
-
-				if (!user) {
-					return;
-				}
-
-				await callbacks.run('afterProcessOAuthUser', { serviceName, serviceData, user });
-				// User already created or merged and has identical name as before
-				if (
-					user.services?.[serviceName as keyof NonNullable<IUser['services']>] &&
-					user.services[serviceName as keyof NonNullable<IUser['services']>].id === serviceData.id &&
-					user.name === serviceData.name &&
-					(this.keyField === 'email' || !serviceData.email || user.emails?.find(({ address }) => address === serviceData.email))
-				) {
-					return;
-				}
-
-				if (this.mergeUsers !== true) {
-					throw new Meteor.Error('CustomOAuth', `User with username ${user.username} already exists`);
-				}
-
-				const serviceIdKey = `services.${serviceName}.id`;
-				const successCallbacks = [
-					async () => {
-						const updatedUser = await Users.findOneById(user._id, { projection: { name: 1, emails: 1, [serviceIdKey]: 1 } });
-						if (updatedUser) {
-							const { _id, ...diff } = updatedUser;
-							void notifyOnUserChange({ clientAction: 'updated', id: user._id, diff });
-						}
-					},
-				];
-
-				const session = client.startSession();
-				try {
-					// Extend the session to match the ExtendedSession type expected by saveUserIdentity
-					Object.assign(session, {
-						onceSuccesfulCommit: (cb: () => Promise<void>) => {
-							successCallbacks.push(cb);
-						},
-					});
-
-					session.startTransaction();
-
-					const updater = Users.getUpdater();
-
-					if (this.keyField === 'username' && serviceData.email) {
-						updater.set('emails', [{ address: serviceData.email, verified: true }]);
-					}
-
-					updater.set(serviceIdKey as keyof IUser['services'], serviceData.id);
-
-					await saveUserIdentity({
-						_id: user._id,
-						name: serviceData.name,
-						updater,
-						session,
-						updateUsernameInBackground: true,
-						// Username needs to be included otherwise the name won't be updated in some collections
-						username: user.username,
-					});
-					await Users.updateFromUpdater({ _id: user._id }, updater, { session });
-
-					await session.commitTransaction();
-				} catch (e) {
-					await session.abortTransaction();
-					throw e;
-				} finally {
-					await session.endSession();
-				}
-
-				void Promise.allSettled(successCallbacks.map((cb) => cb()));
 			}
+
+			if (!user) {
+				return;
+			}
+
+			await callbacks.run('afterProcessOAuthUser', { serviceName, serviceData, user });
+
+			const isLinkedUser = Boolean(
+				user.services?.[serviceName as keyof NonNullable<IUser['services']>] &&
+				user.services[serviceName as keyof NonNullable<IUser['services']>].id === serviceData.id,
+			);
+
+			const normalizedUsername = serviceData.username ? normalizeOAuthUsername(serviceData.username) : undefined;
+
+			// User already created or merged and has identical name, username, and email as before
+			if (
+				isLinkedUser &&
+				user.name === serviceData.name &&
+				(!serviceData.username || user.username === serviceData.username || user.username === normalizedUsername) &&
+				(this.keyField === 'email' || !serviceData.email || user.emails?.find(({ address }) => address === serviceData.email))
+			) {
+				return;
+			}
+
+			if (!isLinkedUser && this.mergeUsers !== true) {
+				throw new Meteor.Error('CustomOAuth', `User with username ${user.username} already exists`);
+			}
+
+			const serviceIdKey = `services.${serviceName}.id`;
+			const successCallbacks = [
+				async () => {
+					const updatedUser = await Users.findOneById(user._id, { projection: { name: 1, emails: 1, [serviceIdKey]: 1 } });
+					if (updatedUser) {
+						const { _id, ...diff } = updatedUser;
+						void notifyOnUserChange({ clientAction: 'updated', id: user._id, diff });
+					}
+				},
+			];
+
+			const session = client.startSession();
+			try {
+				// Extend the session to match the ExtendedSession type expected by saveUserIdentity
+				Object.assign(session, {
+					onceSuccesfulCommit: (cb: () => Promise<void>) => {
+						successCallbacks.push(cb);
+					},
+				});
+
+				session.startTransaction();
+
+				const updater = Users.getUpdater();
+
+				if ((this.keyField === 'username' || this.keyField === 'service_id' || this.keyField === 'serviceId') && serviceData.email) {
+					updater.set('emails', [{ address: serviceData.email, verified: true }]);
+				}
+
+				updater.set(serviceIdKey as keyof IUser['services'], serviceData.id);
+
+				let targetUsername = user.username;
+				if (serviceData.username) {
+					const normalizedUsername = normalizeOAuthUsername(serviceData.username);
+					if (normalizedUsername !== user.username) {
+						if (!validateUsername(normalizedUsername)) {
+							throw new Meteor.Error('CustomOAuth', `Invalid username "${serviceData.username}" from OAuth attribute mapping`);
+						}
+						targetUsername = normalizedUsername;
+					}
+				}
+
+				const saved = await saveUserIdentity({
+					_id: user._id,
+					name: serviceData.name,
+					updater,
+					session,
+					updateUsernameInBackground: true,
+					username: targetUsername,
+				});
+
+				if (!saved) {
+					throw new Meteor.Error('CustomOAuth', 'Failed to update user identity');
+				}
+
+				await Users.updateFromUpdater({ _id: user._id }, updater, { session });
+
+				await session.commitTransaction();
+			} catch (e) {
+				await session.abortTransaction();
+				throw e;
+			} finally {
+				await session.endSession();
+			}
+
+			void Promise.allSettled(successCallbacks.map((cb) => cb()));
 		});
 
 		CustomOAuthInstances.set(this.name, this);
@@ -353,8 +403,8 @@ Accounts.validateNewUser((user: IUser & { email: string }) => {
 			continue;
 		}
 
-		if (instance.usernameField) {
-			user.username = service.username;
+		if (instance.usernameField && service.username) {
+			user.username = normalizeOAuthUsername(service.username);
 		}
 
 		if (instance.emailField) {

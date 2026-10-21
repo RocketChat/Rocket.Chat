@@ -6060,6 +6060,7 @@
   "Service_disabled": "The service is now disabled",
   "Service_disabled_description": "You can't reenable it again until there's less than 200 active connections at the same time",
   "Service_fallback_message_hint": "External service is currently active. Leave the field empty if you do not wish to send the message after the timeout ends.",
+  "Service_ID": "Service ID",
   "Service_level_agreements": "Service level agreements",
   "Service_status": "Service status",
   "set__username__as__role_": "set {{username}} as {{role}}",
