@@ -1,11 +1,17 @@
-import { styled, View, type GetProps } from '@tamagui/web';
+import { styled, View } from '@tamagui/web';
 import type { HTMLAttributes, RefAttributes } from 'react';
 
+import { asPublicFrame } from '../../helpers/asPublicFrame';
+import { variantClass } from '../../helpers/variantClass';
 import { spacing } from '../../styleTokens';
-import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-const ButtonGroupFrame = styled(View, {
+/**
+ * A container for grouping buttons that semantically share a common action context.
+ */
+const ButtonGroup = styled(View, {
+	displayName: 'ButtonGroup',
 	render: 'div',
+	role: 'group',
 	display: 'flex',
 	flexDirection: 'row',
 	flexWrap: 'nowrap',
@@ -16,68 +22,46 @@ const ButtonGroupFrame = styled(View, {
 	alignItems: 'center',
 	gap: spacing('x8'),
 
+	// Every `rcx-button-group*` class comes from a variant, so a consumer's `className` adds to them
 	variants: {
-		gapSize: {
-			small: { gap: spacing('x4') },
-			large: { gap: spacing('x16') },
-		},
-		wrap: {
-			true: { flexWrap: 'wrap' },
+		rcx: {
+			true: variantClass('rcx-button-group'),
 		},
 		stretch: {
-			true: { alignItems: 'stretch', flexGrow: 1 },
+			true: variantClass('rcx-button-group--stretch', { alignItems: 'stretch', flexGrow: 1 }),
 		},
 		vertical: {
-			true: { flexDirection: 'column' },
+			true: variantClass('rcx-button-group--vertical', { flexDirection: 'column' }),
 		},
 		align: {
-			start: { justifyContent: 'flex-start' },
-			center: { justifyContent: 'center' },
-			end: { justifyContent: 'flex-end' },
+			start: variantClass('rcx-button-group--align-start', { justifyContent: 'flex-start' }),
+			center: variantClass('rcx-button-group--align-center', { justifyContent: 'center' }),
+			end: variantClass('rcx-button-group--align-end', { justifyContent: 'flex-end' }),
+		},
+		small: {
+			true: variantClass('rcx-button-group--small', { gap: spacing('x4') }),
+		},
+		large: {
+			true: variantClass('rcx-button-group--large', { gap: spacing('x16') }),
+		},
+		wrap: {
+			true: variantClass('rcx-button-group--wrap', { flexWrap: 'wrap' }),
 		},
 	} as const,
+
+	defaultVariants: {
+		rcx: true,
+		align: 'start',
+	},
 });
 
 export type ButtonGroupProps = RefAttributes<HTMLDivElement> & {
 	align?: 'start' | 'center' | 'end';
-	/** `equal` also gives every button the same width. */
-	stretch?: boolean | 'equal';
+	stretch?: boolean;
 	wrap?: boolean;
 	vertical?: boolean;
 	small?: boolean;
 	large?: boolean;
 } & HTMLAttributes<HTMLDivElement>;
 
-/**
- * A container for grouping buttons that semantically share a common action context.
- */
-function ButtonGroup({ align = 'start', children, stretch, vertical, wrap, small, large, className, ...props }: ButtonGroupProps) {
-	return (
-		<ButtonGroupFrame
-			className={[
-				'rcx-button-group',
-				stretch && 'rcx-button-group--stretch',
-				stretch === 'equal' && 'rcx-button-group--stretch-equal',
-				vertical && 'rcx-button-group--vertical',
-				align && `rcx-button-group--align-${align}`,
-				small && 'rcx-button-group--small',
-				large && 'rcx-button-group--large',
-				wrap && 'rcx-button-group--wrap',
-				className,
-			]
-				.filter(Boolean)
-				.join(' ')}
-			gapSize={(large && 'large') || (small && 'small') || undefined}
-			wrap={wrap}
-			stretch={stretch}
-			vertical={vertical}
-			align={align}
-			role='group'
-			{...(props as GetProps<typeof ButtonGroupFrame>)}
-		>
-			{children}
-		</ButtonGroupFrame>
-	);
-}
-
-export default withFuselageProvider(ButtonGroup);
+export default asPublicFrame<ButtonGroupProps>(ButtonGroup);

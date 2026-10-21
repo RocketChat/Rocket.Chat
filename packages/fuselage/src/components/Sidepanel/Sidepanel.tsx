@@ -1,9 +1,10 @@
-import { styled, View, type GetProps } from '@tamagui/web';
+import { styled, View } from '@tamagui/web';
 import type { HTMLAttributes } from 'react';
 
 import { strokeColors, surfaceColors, textIconColors } from '../../Theme';
+import { asPublicFrame } from '../../helpers/asPublicFrame';
+import { variantClass } from '../../helpers/variantClass';
 import { borderWidth, size } from '../../styleTokens';
-import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 const SidepanelFrame = styled(View, {
 	boxSizing: 'content-box',
@@ -19,12 +20,14 @@ const SidepanelFrame = styled(View, {
 	borderStyle: 'solid',
 	borderColor: String(strokeColors['stroke-light']),
 	backgroundColor: String(surfaceColors['surface-sidebar']),
+
+	variants: {
+		rcx: { true: variantClass('rcx-sidepanel') },
+	} as const,
+
+	defaultVariants: { rcx: true },
 });
 
 export type SidepanelProps = HTMLAttributes<HTMLDivElement>;
 
-const Sidepanel = ({ className, ...props }: SidepanelProps) => (
-	<SidepanelFrame className={['rcx-sidepanel', className].filter(Boolean).join(' ')} {...(props as GetProps<typeof SidepanelFrame>)} />
-);
-
-export default withFuselageProvider(Sidepanel);
+export default asPublicFrame<SidepanelProps>(SidepanelFrame);

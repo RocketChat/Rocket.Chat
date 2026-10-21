@@ -1,8 +1,9 @@
-import { styled, View, type GetProps } from '@tamagui/web';
+import { styled, View } from '@tamagui/web';
 import type { HTMLAttributes } from 'react';
 
+import { asPublicFrame } from '../../../helpers/asPublicFrame';
+import { variantClass } from '../../../helpers/variantClass';
 import { size } from '../../../styleTokens';
-import { withFuselageProvider } from '../../FuselageProvider/FuselageProvider';
 import { boxText, truncatedText } from '../messageStyles';
 
 const ThreadMessageRowFrame = styled(View, {
@@ -14,12 +15,14 @@ const ThreadMessageRowFrame = styled(View, {
 	flexShrink: 1,
 	width: size('full'),
 	cursor: 'pointer',
+
+	variants: {
+		rcx: { true: variantClass('rcx-message-thread__row') },
+	} as const,
+
+	defaultVariants: { rcx: true },
 });
 
 export type ThreadMessageRowProps = HTMLAttributes<HTMLDivElement>;
 
-const ThreadMessageRow = (props: ThreadMessageRowProps) => (
-	<ThreadMessageRowFrame className='rcx-message-thread__row' {...(props as GetProps<typeof ThreadMessageRowFrame>)} />
-);
-
-export default withFuselageProvider(ThreadMessageRow);
+export default asPublicFrame<ThreadMessageRowProps>(ThreadMessageRowFrame);

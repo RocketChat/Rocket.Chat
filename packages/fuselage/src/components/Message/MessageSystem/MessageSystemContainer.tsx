@@ -1,8 +1,9 @@
 import { styled, View } from '@tamagui/web';
 import type { ReactNode } from 'react';
 
+import { asPublicFrame } from '../../../helpers/asPublicFrame';
+import { variantClass } from '../../../helpers/variantClass';
 import { size, spacing } from '../../../styleTokens';
-import { withFuselageProvider } from '../../FuselageProvider/FuselageProvider';
 import { boxText, truncatedText } from '../messageStyles';
 
 const MessageSystemContainerFrame = styled(View, {
@@ -13,14 +14,16 @@ const MessageSystemContainerFrame = styled(View, {
 	alignSelf: 'center',
 	width: size('full'),
 	marginBlock: spacing('neg-x4'),
+
+	variants: {
+		rcx: { true: variantClass('rcx-message-system__container') },
+	} as const,
+
+	defaultVariants: { rcx: true },
 });
 
 export type MessageSystemContainerProps = {
 	children?: ReactNode;
 };
 
-const MessageSystemContainer = (props: MessageSystemContainerProps) => (
-	<MessageSystemContainerFrame className='rcx-message-system__container' {...props} />
-);
-
-export default withFuselageProvider(MessageSystemContainer);
+export default asPublicFrame<MessageSystemContainerProps>(MessageSystemContainerFrame);
