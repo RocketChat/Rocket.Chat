@@ -103,7 +103,14 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 						<MessageSystemName>{displayName}</MessageSystemName>
 					</MessageNameContainer>
 					{messageType && (
-						<MessageSystemBody role='document' aria-roledescription={t('system_message_body')}>
+						<MessageSystemBody
+							role='document'
+							aria-roledescription={t('system_message_body')}
+							{...(message.t === 'livechat_transfer_history' && {
+								wordBreak: 'break-word',
+								style: { whiteSpace: 'pre-wrap' },
+							})}
+						>
 							{messageType.text(t, message)}
 						</MessageSystemBody>
 					)}
