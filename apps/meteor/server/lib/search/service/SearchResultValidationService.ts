@@ -5,6 +5,7 @@ import mem from 'mem';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync } from '../../authorization';
+import { filterSearchResultsForUser } from '../../messages/securityLabels';
 import { SearchLogger } from '../logger/logger';
 import type { IRawSearchResult, ISearchResult } from '../model/ISearchResult';
 
@@ -44,7 +45,7 @@ export class SearchResultValidationService {
 			validatedResult.message = {
 				docs: (
 					await Promise.all(
-						result.message.docs.map(async (msg) => {
+						(await filterSearchResultsForUser(result.message.docs, uid)).map(async (msg) => {
 							const user = await this.getUser(msg.u._id);
 							const subscription = await this.getSubscription(msg.rid, uid);
 

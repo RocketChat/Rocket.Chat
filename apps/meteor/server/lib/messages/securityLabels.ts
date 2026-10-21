@@ -40,3 +40,10 @@ export const applyMessageSecurityLabel = makeFunction(
 export const redactMessagesForUser = makeFunction(async <T extends Partial<IMessage>>(messages: T[], _uid?: IUser['_id']): Promise<T[]> =>
 	messages.map((message) => (message.securityLabel ? toWithheldMessage(message) : message)),
 );
+
+/**
+ * Search results for one reader: messages the reader may not read are left out entirely, since even a
+ * withheld placeholder would confirm that a message matching the search exists.
+ */
+export const filterSearchResultsForUser = async <T extends Partial<IMessage>>(messages: T[], uid?: IUser['_id']): Promise<T[]> =>
+	(await redactMessagesForUser(messages, uid)).filter(({ securityWithheld }) => !securityWithheld);
