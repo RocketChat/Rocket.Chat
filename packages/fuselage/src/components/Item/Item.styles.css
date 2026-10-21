@@ -38,16 +38,16 @@
 }
 
 /* A focused link or title button rings the whole row */
-.rcx-item:has(.rcx-item__link:focus-visible),
-.rcx-item-group-header:has(.rcx-item-group-title:is(button):focus-visible) {
+.rcx-item:focus-within:has(.rcx-item__link:focus-visible),
+.rcx-item-group-header:focus-within:has(.rcx-item-group-title:is(button):focus-visible) {
 	outline: 2px solid transparent;
 	outline-offset: -2px;
 	box-shadow: inset 0 0 0 2px var(--rcx-item-color-stroke-focus, var(--rcx-color-stroke-highlight, #156ff5));
 }
 
 /* An open menu keeps its actions shown */
-.rcx-item:has(.rcx-item__actions [aria-expanded='true']) .rcx-item__actions--reveal-hover,
-.rcx-item-group-header:has(.rcx-item__actions [aria-expanded='true']) .rcx-item__actions--reveal-hover {
+.rcx-item:has(> .rcx-item__actions [aria-expanded='true']) .rcx-item__actions--reveal-hover,
+.rcx-item-group-header:has(> .rcx-item__actions [aria-expanded='true']) .rcx-item__actions--reveal-hover {
 	margin-inline-start: 0;
 
 	opacity: 1;
