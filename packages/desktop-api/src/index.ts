@@ -27,8 +27,10 @@ export type CustomNotificationOptions = {
 };
 
 /**
- * The version of this contract the web client implements. A web client that announces it pushes every value below
- * through the bridge itself, so the desktop app has no reason to read them from the web client's modules.
+ * The version of this contract the web client implements. A web client that announces version 1 pushes the server info,
+ * URL resolver, title, favicon, user roles, badge, login state, unread alert preference, git commit hash and Outlook
+ * credentials through the bridge itself, so the desktop app has no reason to read those from the web client's modules.
+ * Version 1 does not cover presence.
  */
 export type WebClientBridgeVersion = 1;
 
