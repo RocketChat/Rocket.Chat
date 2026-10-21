@@ -8,6 +8,8 @@ import type {
 	MessageAttachment,
 	IMessageWithPendingFileImport,
 	DeepWritable,
+	ISecurityAccessRequirement,
+	ISecurityReaderAccess,
 } from '@rocket.chat/core-typings';
 import type { FindPaginated, IMessagesModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
@@ -32,6 +34,21 @@ import type {
 
 import { BaseRaw } from './BaseRaw';
 import { readSecondaryPreferred } from '../readSecondaryPreferred';
+
+const readableClause = (readerAccess: ISecurityReaderAccess): Filter<IMessage> => ({
+	$or: [
+		{ securityLabel: { $exists: false } },
+		...readerAccess.map(({ policyId, classifications, keys }) => ({
+			'securityAccess.policyId': policyId,
+			'securityAccess.classification': { $in: classifications },
+			'securityAccess.required': { $not: { $elemMatch: { $nin: keys } } },
+			'securityAccess.anyOf': { $not: { $elemMatch: { keys: { $nin: keys } } } },
+		})),
+	],
+});
+
+const withReaderAccess = <Q extends Filter<IMessage>>(query: Q, readerAccess?: ISecurityReaderAccess): Q =>
+	readerAccess ? { ...query, $and: [...((query.$and as Filter<IMessage>[] | undefined) ?? []), readableClause(readerAccess)] } : query;
 
 export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	constructor(db: Db, trash?: Collection<RocketChatRecordDeleted<IMessage>>) {
@@ -78,10 +95,28 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		];
 	}
 
+	/**
+	 * The clause that limits a query to messages the reader may read, for callers that build their own message queries.
+	 */
+	readableBy(readerAccess: ISecurityReaderAccess): Filter<IMessage> {
+		return { $and: [readableClause(readerAccess)] };
+	}
+
+	findLabeledWithoutAccessRequirement<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>({ securityLabel: { $exists: true }, securityAccess: { $exists: false } }, options);
+	}
+
+	setSecurityAccessById(_id: IMessage['_id'], securityAccess: ISecurityAccessRequirement): Promise<UpdateResult> {
+		return this.updateOne({ _id }, { $set: { securityAccess } });
+	}
+
 	findVisibleByMentionAndRoomId<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		username: IUser['username'],
 		rid: IRoom['_id'],
 		options?: O,
+		readerAccess?: ISecurityReaderAccess,
 	): FindCursor<DocumentWithProjection<T, O>> {
 		const query: Filter<IMessage> = {
 			'_hidden': { $ne: true },
@@ -89,26 +124,32 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			rid,
 		};
 
-		return this.find<T, O>(query, options);
+		return this.find<T, O>(withReaderAccess(query, readerAccess), options);
 	}
 
 	findPaginatedVisibleByMentionAndRoomId<
 		T extends Document = IMessage,
 		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
-	>(username: IUser['username'], rid: IRoom['_id'], options?: O): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
+	>(
+		username: IUser['username'],
+		rid: IRoom['_id'],
+		options?: O,
+		readerAccess?: ISecurityReaderAccess,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
 		const query: Filter<IMessage> = {
 			'_hidden': { $ne: true },
 			'mentions.username': username,
 			rid,
 		};
 
-		return this.findPaginated<T, O>(query, options);
+		return this.findPaginated<T, O>(withReaderAccess(query, readerAccess), options);
 	}
 
 	findStarredByUserAtRoom<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		userId: IUser['_id'],
 		roomId: IRoom['_id'],
 		options?: O,
+		readerAccess?: ISecurityReaderAccess,
 	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
 		const query: Filter<IMessage> = {
 			'_hidden': { $ne: true },
@@ -116,7 +157,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			'rid': roomId,
 		};
 
-		return this.findPaginated<T, O>(query, options);
+		return this.findPaginated<T, O>(withReaderAccess(query, readerAccess), options);
 	}
 
 	findPaginatedByRoomIdAndType<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
@@ -136,6 +177,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		rid: IRoom['_id'],
 		text: string,
 		options?: O,
+		readerAccess?: ISecurityReaderAccess,
 	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
 		const query: Filter<IMessage> = {
 			rid,
@@ -143,7 +185,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			msg: new RegExp(escapeRegExp(text), 'i'),
 		};
 
-		return this.findPaginated<T, O>(query, options);
+		return this.findPaginated<T, O>(withReaderAccess(query, readerAccess), options);
 	}
 
 	findAllNumberOfTransferredRooms({
@@ -504,6 +546,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	findPaginatedPinnedByRoom<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		roomId: IMessage['rid'],
 		options?: O,
+		readerAccess?: ISecurityReaderAccess,
 	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
 		const query: Filter<IMessage> = {
 			t: { $ne: 'rm' },
@@ -512,7 +555,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			rid: roomId,
 		};
 
-		return this.findPaginated<T, O>(query, options);
+		return this.findPaginated<T, O>(withReaderAccess(query, readerAccess), options);
 	}
 
 	countStarred(options?: CountDocumentsOptions): Promise<number> {
@@ -640,7 +683,12 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		});
 	}
 
-	countVisibleByRoomIdBetweenTimestampsInclusive(roomId: string, afterTimestamp: Date, beforeTimestamp: Date): Promise<number> {
+	countVisibleByRoomIdBetweenTimestampsInclusive(
+		roomId: string,
+		afterTimestamp: Date,
+		beforeTimestamp: Date,
+		readerAccess?: ISecurityReaderAccess,
+	): Promise<number> {
 		const query = {
 			_hidden: {
 				$ne: true,
@@ -652,7 +700,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 		};
 
-		return this.countDocuments(query);
+		return this.countDocuments(withReaderAccess(query, readerAccess));
 	}
 
 	// FIND
@@ -744,6 +792,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	findVisibleByIds<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		ids: string[],
 		options?: O,
+		readerAccess?: ISecurityReaderAccess,
 	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			_id: { $in: ids },
@@ -752,7 +801,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 		};
 
-		return this.find<T, O>(query, options);
+		return this.find<T, O>(withReaderAccess(query, readerAccess), options);
 	}
 
 	findVisibleThreadByThreadId<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
@@ -773,7 +822,13 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	findVisibleByRoomIdNotContainingTypes<
 		T extends Document = IMessage,
 		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
-	>(roomId: string, types: MessageTypesValues[], options?: O, showThreadMessages = true): FindCursor<DocumentWithProjection<T, O>> {
+	>(
+		roomId: string,
+		types: MessageTypesValues[],
+		options?: O,
+		showThreadMessages = true,
+		readerAccess?: ISecurityReaderAccess,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query: Filter<IMessage> = {
 			_hidden: {
 				$ne: true,
@@ -795,7 +850,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 				}),
 		};
 
-		return this.find<T, O>(query, options);
+		return this.find<T, O>(withReaderAccess(query, readerAccess), options);
 	}
 
 	findDiscussionRoomIdsContainingTypes(types: MessageTypesValues[]): Promise<IRoom['_id'][]> {
@@ -863,6 +918,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		roomId: IMessage['rid'],
 		{ updatedAt, minTs }: { updatedAt: { $lt: Date } | { $gt: Date }; minTs?: Date },
 		options?: O,
+		readerAccess?: ISecurityReaderAccess,
 	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			rid: roomId,
@@ -871,7 +927,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			...(minTs && { ts: { $gte: minTs } }),
 		};
 
-		return this.find<T, O>(query, options);
+		return this.find<T, O>(withReaderAccess(query, readerAccess), options);
 	}
 
 	findVisibleByRoomIdBeforeTimestamp<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
@@ -913,6 +969,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		options?: O,
 		showThreadMessages = true,
 		inclusive = false,
+		readerAccess?: ISecurityReaderAccess,
 	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			_hidden: {
@@ -938,7 +995,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 				}),
 		};
 
-		return this.find<T, O>(query, options);
+		return this.find<T, O>(withReaderAccess(query, readerAccess), options);
 	}
 
 	findVisibleByRoomIdBetweenTimestampsNotContainingTypes<
@@ -952,6 +1009,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		options?: O,
 		showThreadMessages = true,
 		inclusive = false,
+		readerAccess?: ISecurityReaderAccess,
 	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			_hidden: {
@@ -978,7 +1036,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 				}),
 		};
 
-		return this.find<T, O>(query, options);
+		return this.find<T, O>(withReaderAccess(query, readerAccess), options);
 	}
 
 	countVisibleByRoomIdBetweenTimestampsNotContainingTypes(
@@ -988,6 +1046,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		types: MessageTypesValues[],
 		showThreadMessages = true,
 		inclusive = false,
+		readerAccess?: ISecurityReaderAccess,
 	): Promise<number> {
 		const query = {
 			_hidden: {
@@ -1014,7 +1073,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 				}),
 		};
 
-		return this.countDocuments(query);
+		return this.countDocuments(withReaderAccess(query, readerAccess));
 	}
 
 	async getLastTimestamp(options: FindOptions<IMessage> = { projection: { _id: 0, ts: 1 } }): Promise<Date | undefined> {
@@ -1071,6 +1130,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		rid: string,
 		messageId: string,
 		options?: O,
+		readerAccess?: ISecurityReaderAccess,
 	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = {
 			rid,
@@ -1080,7 +1140,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			},
 		};
 
-		return this.findOne<T, O>(query, options);
+		return this.findOne<T, O>(withReaderAccess(query, readerAccess), options);
 	}
 
 	getLastVisibleUserMessageSentByRoomId(rid: string, messageId?: string): Promise<IMessage | null> {
