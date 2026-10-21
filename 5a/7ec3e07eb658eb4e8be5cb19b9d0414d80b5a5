@@ -1,0 +1,34 @@
+apps/meteor/server/api/ApiClass.ts
+  s_699c21f8808612::t_613119374f55c5 1,1021
+apps/meteor/server/api/v1/omnichannel/room.ts
+  s_699c21f8808612::t_613119374f55c5 1,500
+apps/meteor/server/api/v1/omnichannel/inquiries.ts
+  s_699c21f8808612::t_613119374f55c5 1,146
+apps/meteor/server/api/v1/custom-sounds.ts
+  s_699c21f8808612::t_613119374f55c5 1,314
+apps/meteor/server/meteor-methods/users/registerUser.ts
+  s_699c21f8808612::t_613119374f55c5 1,74
+apps/meteor/ee/server/lib/saml/loginHandler.ts
+  s_699c21f8808612::t_613119374f55c5 65
+  s_699c21f8808612::t_41b5d21bf78b2c 1
+apps/meteor/server/lib/auth/loginErrorMessageOverride.ts
+  s_699c21f8808612::t_613119374f55c5 2,12
+apps/meteor/ee/server/api/v1/omnichannel/monitors.ts
+  s_699c21f8808612::t_613119374f55c5 1,114
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5a7ec3e07eb658eb4e8be5cb19b9d0414d80b5a5",
+  "prompts": {},
+  "sessions": {
+    "s_699c21f8808612": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bc613666-12e8-4cb3-840a-00452e745c7b",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
