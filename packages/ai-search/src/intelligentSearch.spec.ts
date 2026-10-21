@@ -2,6 +2,7 @@ import { filterSemanticCandidatesByMinimumSimilarity } from './fusion';
 import {
 	buildIntelligentSearchPipelineFilters,
 	getSemanticDistanceThreshold,
+	isIntelligentSearchErrorCode,
 	normalizeIntelligentSearchCandidates,
 	normalizeSimilarityPercent,
 	searchIntelligentPipeline,
@@ -312,6 +313,14 @@ describe('AI Search intelligent search helpers', () => {
 		});
 	});
 
+	describe('isIntelligentSearchErrorCode', () => {
+		it('recognizes only the codes the pipeline client throws', () => {
+			expect(isIntelligentSearchErrorCode('error-ai-search-timeout')).toBe(true);
+			expect(isIntelligentSearchErrorCode('error-ai-provider-request-failed')).toBe(false);
+			expect(isIntelligentSearchErrorCode(undefined)).toBe(false);
+		});
+	});
+
 	describe('searchIntelligentPipeline', () => {
 		it('sends the expected bounded request to the pipeline', async () => {
 			let requestUrl = '';
@@ -403,15 +412,8 @@ describe('AI Search intelligent search helpers', () => {
 			});
 		});
 
-		it('rejects non-2xx responses so orchestration can distinguish failure from no matches', async () => {
-			const fetch: AIServiceFetch = async () => ({
-				ok: false,
-				status: 500,
-				json: async () => ({}),
-				text: async () => 'failed',
-			});
-
-			const result = searchIntelligentPipeline({
+		const searchWith = (fetch: AIServiceFetch) =>
+			searchIntelligentPipeline({
 				query: 'fruit colors',
 				config: {
 					baseUrl: 'https://pipeline.example.com',
@@ -425,7 +427,51 @@ describe('AI Search intelligent search helpers', () => {
 				fetch,
 			});
 
-			await expect(result).rejects.toThrow('Intelligent search pipeline returned HTTP 500');
+		const respondWith =
+			(status: number): AIServiceFetch =>
+			async () => ({
+				ok: false,
+				status,
+				json: async () => ({}),
+				text: async () => 'failed',
+			});
+
+		it.each([
+			[401, 'error-ai-search-credentials-rejected'],
+			[403, 'error-ai-search-credentials-rejected'],
+			[404, 'error-ai-search-pipeline-not-found'],
+			[429, 'error-ai-search-unavailable'],
+			[500, 'error-ai-search-unavailable'],
+			[503, 'error-ai-search-unavailable'],
+			[400, 'error-ai-search-request-failed'],
+		])('rejects HTTP %i with %s', async (status, code) => {
+			await expect(searchWith(respondWith(status))).rejects.toThrow(code);
+		});
+
+		it('rejects a request that timed out as a timeout', async () => {
+			const abortError = Object.assign(new Error('The user aborted a request.'), { name: 'AbortError' });
+
+			await expect(
+				searchWith(async () => {
+					throw abortError;
+				}),
+			).rejects.toThrow('error-ai-search-timeout');
+		});
+
+		it('rejects a request that never reached the pipeline as unreachable', async () => {
+			await expect(
+				searchWith(async () => {
+					throw new Error('connect ECONNREFUSED 127.0.0.1:9');
+				}),
+			).rejects.toThrow('error-ai-search-unreachable');
+		});
+
+		it('rejects a request blocked by SSRF protection as a blocked URL', async () => {
+			await expect(
+				searchWith(async () => {
+					throw new Error('error-ssrf-validation-failed');
+				}),
+			).rejects.toThrow('error-ai-search-url-blocked');
 		});
 	});
 });
