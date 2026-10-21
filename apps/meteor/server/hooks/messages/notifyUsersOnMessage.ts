@@ -224,7 +224,9 @@ export async function notifyUsersOnMessage(message: IMessage, room: IRoom, roomU
 
 export async function notifyUsersOnSystemMessage(message: IMessage, room: IRoom): Promise<IMessage> {
 	const roomUpdater = Rooms.getUpdater();
-	Rooms.setIncMsgCountAndSetLastMessageUpdateQuery(1, message, !!settings.get('Store_Last_Message'), roomUpdater);
+	if (!message.securityLabel) {
+		Rooms.setIncMsgCountAndSetLastMessageUpdateQuery(1, message, !!settings.get('Store_Last_Message'), roomUpdater);
+	}
 
 	if (roomUpdater.hasChanges()) {
 		await Rooms.updateFromUpdater({ _id: room._id }, roomUpdater);

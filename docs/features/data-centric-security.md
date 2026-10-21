@@ -138,6 +138,19 @@ in XMPP. Each path enforces this as follows:
 - The room document is shared by every member, so a labeled message never updates its `lastMessage`, activity time
   (`lm`) or message count.
 
+**Copies of content.** Content copied from one message into another may not lose its label:
+
+- **Quotes.** A message that quotes a labeled message must carry a label that dominates it (`dominates`): same policy,
+  a classification at least as high in the SPIF hierarchy, every restrictive category, and for each permissive tag the
+  quoted message uses, a subset of its values. So the quote is never releasable to more parties. An unlabeled message
+  can't quote a labeled one, which also covers quoting across rooms by permalink. Anything else is refused with
+  `error-dcs-quote-not-dominated`. A tested property guarantees that a reader who can read the quoting message could
+  also read the quoted one on its own. A sender who isn't cleared for the quoted message can't quote it: it's fetched
+  with their clearance, so it behaves exactly like a missing message.
+- **Pins and discussions.** The "pinned a message" notice, the "discussion created" notice and the copy at the top of a
+  discussion embed the source message, so they carry its label and access requirement. Labeled system messages don't
+  update the room's last message either. A discussion can only be started from a message the creator may read.
+
 **Known side channels, not closed yet:**
 
 - Rooms under DCS show no last-message preview, and labeled messages don't bump them in the sidebar, even for readers
@@ -145,8 +158,8 @@ in XMPP. Each path enforces this as follows:
 - A labeled reply in a thread still updates the parent's thread counters (`tcount`, `tlm`), which every reader of the
   parent sees, and the reply participants' subscriptions. The same holds for discussion counts (`dcount`).
 - Typing indicators ("alice is typing") and read receipts reveal activity.
-- Quoting a message copies its content into the new message (`BeforeSaveJumpToMessage`), so a SECRET message quoted
-  in an UNCLASSIFIED one is downgraded. Quotes need to carry the higher label, or be refused.
+- A discussion started from a labeled message is a room whose name and members every invited user sees. Room names
+  and topics are not labeled.
 - Exports, moderation, audit, omnichannel transcripts and Apps-Engine reads don't add the reader's clearance.
 - Queries on `securityAccess` are a residual filter on top of the existing `rid`/`ts` indexes. No dedicated index yet.
 

@@ -1,11 +1,12 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, ISecurityLabel, IUser } from '@rocket.chat/core-typings';
-import { accessRequirement, canAccess, clearanceForPolicy, displayMarking, readerAccess, validateLabel } from '@rocket.chat/dcs';
+import { accessRequirement, canAccess, clearanceForPolicy, displayMarking, dominates, readerAccess, validateLabel } from '@rocket.chat/dcs';
 import { Users } from '@rocket.chat/models';
 
 import { getRoomClassificationBanner } from '../../../../server/api/lib/getRoomClassificationBanner';
 import {
 	applyMessageSecurityLabel,
+	assertMayQuote,
 	getReaderAccess,
 	listUsersNotClearedFor,
 	prepareMessagesForReader,
@@ -99,6 +100,21 @@ const notClearedAmong = async (message: Pick<IMessage, 'securityLabel'>, userIds
 	return userIds.filter((uid) => !cleared.has(uid));
 };
 
+const assertQuotesDominated = async (message: IMessage, quoted: IMessage[]): Promise<void> => {
+	for (const { securityLabel } of quoted) {
+		if (!securityLabel) {
+			continue;
+		}
+		const policy = policies.find(securityLabel.policyId);
+		if (!message.securityLabel || !policy || !dominates(policy, message.securityLabel, securityLabel)) {
+			throw new ClientSafeError(
+				'error-dcs-quote-not-dominated',
+				'A message quoting a labeled message needs a label at least as restrictive as the quoted one',
+			);
+		}
+	}
+};
+
 /**
  * Turns on enforcement of message security labels, and returns how to turn it off again.
  */
@@ -109,6 +125,7 @@ export const registerDcsHooks = (): (() => void) => {
 		),
 		prepareMessagesForReader.patch((next, messages, uid) => (isEnabled() ? prepareForReader(messages, uid) : next(messages, uid))),
 		listUsersNotClearedFor.patch((next, message, userIds) => (isEnabled() ? notClearedAmong(message, userIds) : next(message, userIds))),
+		assertMayQuote.patch((next, message, quoted) => (isEnabled() ? assertQuotesDominated(message, quoted) : next(message, quoted))),
 		getReaderAccess.patch(async (next, uid) => {
 			if (!isEnabled() || !uid) {
 				return next(uid);

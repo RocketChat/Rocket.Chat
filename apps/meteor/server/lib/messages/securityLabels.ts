@@ -52,3 +52,17 @@ export const listUsersNotClearedFor = makeFunction(
 	async (message: Pick<IMessage, 'securityLabel'>, userIds: IUser['_id'][]): Promise<IUser['_id'][]> =>
 		message.securityLabel ? userIds : [],
 );
+
+/**
+ * Refuses a message that would carry quoted content under a label that doesn't dominate the quoted message's label.
+ * Without data-centric security labeled messages can't be read, so they are never quoted.
+ */
+export const assertMayQuote = makeFunction(async (_message: IMessage, _quoted: IMessage[]): Promise<void> => undefined);
+
+/**
+ * The label fields a message copying another message's content must carry, so the copy is as protected as its source.
+ */
+export const securityFieldsOf = (
+	source: Pick<IMessage, 'securityLabel' | 'securityAccess'>,
+): Pick<IMessage, 'securityLabel' | 'securityAccess'> =>
+	source.securityLabel ? { securityLabel: source.securityLabel, securityAccess: source.securityAccess } : {};

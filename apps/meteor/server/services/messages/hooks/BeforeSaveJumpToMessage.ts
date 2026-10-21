@@ -46,10 +46,12 @@ const removeQuoteAttachments = (message: IMessage) => {
 };
 
 type JumpToMessageInit = {
-	getMessages(messageIds: IMessage['_id'][]): Promise<IMessage[]>;
+	getMessages(messageIds: IMessage['_id'][], user: Pick<IUser, '_id'>): Promise<IMessage[]>;
 	getRooms(roomIds: IRoom['_id'][]): Promise<IRoom[] | IOmnichannelRoom[] | null>;
 	canAccessRoom(room: IRoom, user: Pick<IUser, '_id' | 'username' | 'name' | 'language'>): Promise<boolean>;
 	getUserAvatarURL(user?: string): string;
+	// Refuses the message when it may not carry what it quotes
+	assertMayQuote?(message: IMessage, quoted: IMessage[]): Promise<void>;
 };
 
 /**
@@ -64,11 +66,14 @@ export class BeforeSaveJumpToMessage {
 
 	private getUserAvatarURL: JumpToMessageInit['getUserAvatarURL'];
 
+	private assertMayQuote: JumpToMessageInit['assertMayQuote'];
+
 	constructor(options: JumpToMessageInit) {
 		this.getMessages = options.getMessages;
 		this.getRooms = options.getRooms;
 		this.canAccessRoom = options.canAccessRoom;
 		this.getUserAvatarURL = options.getUserAvatarURL;
+		this.assertMayQuote = options.assertMayQuote;
 	}
 
 	async createAttachmentForMessageURLs({
@@ -112,7 +117,7 @@ export class BeforeSaveJumpToMessage {
 			})
 			.filter(Boolean);
 
-		const msgs = await this.getMessages(linkedMessages.map((linkedMsg) => linkedMsg?.msgId) as string[]);
+		const msgs = await this.getMessages(linkedMessages.map((linkedMsg) => linkedMsg?.msgId) as string[], currentUser);
 
 		const validMessages = msgs.filter((msg) => validateAttachmentDeepness(msg, config.chainLimit));
 
@@ -137,6 +142,7 @@ export class BeforeSaveJumpToMessage {
 		const { useRealName } = config;
 
 		const quotes = [];
+		const quoted: IMessage[] = [];
 
 		for (const item of message.urls) {
 			if (!item.url.includes(config.siteUrl)) {
@@ -159,8 +165,11 @@ export class BeforeSaveJumpToMessage {
 
 			item.ignoreParse = true;
 
+			quoted.push(messageFromUrl);
 			quotes.push(createQuoteAttachment(messageFromUrl, item.url, useRealName, this.getUserAvatarURL(messageFromUrl.u.username)));
 		}
+
+		await this.assertMayQuote?.(message, quoted);
 
 		if (quotes.length > 0) {
 			const currentAttachments = message.attachments || [];

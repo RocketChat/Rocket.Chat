@@ -9,6 +9,7 @@ import { canSendMessageAsync } from '../../lib/authorization/canSendMessage';
 import { hasAtLeastOnePermissionAsync } from '../../lib/authorization/hasPermission';
 import { i18n } from '../../lib/i18n';
 import { attachMessage } from '../../lib/messages/attachMessage';
+import { prepareMessagesForReader, securityFieldsOf } from '../../lib/messages/securityLabels';
 import { sendMessage } from '../../lib/messages/sendMessage';
 import { addUserToRoom } from '../../lib/rooms/addUserToRoom';
 import { createRoom } from '../../lib/rooms/createRoom';
@@ -26,10 +27,12 @@ async function createDiscussionMessage(
 	drid: IRoom['_id'],
 	msg: IMessage['msg'],
 	messageEmbedded?: MessageAttachmentDefault,
+	embeddedFrom?: IMessage,
 ): Promise<IMessage> {
 	return Message.saveSystemMessage('discussion-created', rid, msg, user, {
 		drid,
 		...(messageEmbedded && { attachments: [messageEmbedded] }),
+		...(embeddedFrom && securityFieldsOf(embeddedFrom)),
 	});
 }
 
@@ -37,6 +40,7 @@ async function mentionMessage(
 	rid: IRoom['_id'],
 	{ _id, username, name }: Pick<IUser, '_id' | 'username' | 'name'>,
 	messageEmbedded?: MessageAttachmentDefault,
+	embeddedFrom?: IMessage,
 ) {
 	if (!username) {
 		return null;
@@ -48,6 +52,7 @@ async function mentionMessage(
 		ts: new Date(),
 		_updatedAt: new Date(),
 		...(messageEmbedded && { attachments: [messageEmbedded] }),
+		...(embeddedFrom && securityFieldsOf(embeddedFrom)),
 	});
 }
 
@@ -75,7 +80,9 @@ const create = async ({
 	// if you set both, prid and pmid, and the rooms dont match... should throw an error)
 	let message: null | IMessage = null;
 	if (pmid) {
-		message = await Messages.findOneById(pmid);
+		const found = await Messages.findOneById(pmid);
+		// A message the creator may not read is treated as missing
+		message = (found && (await prepareMessagesForReader([found], user._id))[0]) || null;
 		if (!message) {
 			throw new Meteor.Error('error-invalid-message', 'Invalid message', {
 				method: 'DiscussionCreation',
@@ -185,9 +192,16 @@ const create = async ({
 		if (parentRoom.encrypted) {
 			message.msg = i18n.t('Encrypted_message');
 		}
-		await mentionMessage(discussion._id, user, attachMessage(message, parentRoom));
+		await mentionMessage(discussion._id, user, attachMessage(message, parentRoom), message);
 
-		discussionMsg = await createDiscussionMessage(message.rid, user, discussion._id, discussionName, attachMessage(message, parentRoom));
+		discussionMsg = await createDiscussionMessage(
+			message.rid,
+			user,
+			discussion._id,
+			discussionName,
+			attachMessage(message, parentRoom),
+			message,
+		);
 	} else {
 		discussionMsg = await createDiscussionMessage(prid, user, discussion._id, discussionName);
 	}

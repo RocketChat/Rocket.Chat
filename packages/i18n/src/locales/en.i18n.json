@@ -2510,6 +2510,7 @@
   "error-dcs-label-required": "Messages in this room need a security label",
   "error-dcs-not-cleared-for-label": "You are not cleared for this security label",
   "error-dcs-not-enabled": "Security labels are not enabled",
+  "error-dcs-quote-not-dominated": "A message quoting a labeled message needs a label at least as restrictive as the quoted one",
   "error-dcs-room-not-labeled": "This room does not accept security labels",
   "error-dcs-unknown-policy": "The security label uses an unknown security policy",
   "error-delete-protected-role": "Cannot delete a protected role",

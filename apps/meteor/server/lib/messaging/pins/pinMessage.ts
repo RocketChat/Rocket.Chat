@@ -10,6 +10,7 @@ import { settings } from '../../../settings';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization';
 import { hasPermissionAsync } from '../../authorization/hasPermission';
 import { isTheLastMessage } from '../../messages/isTheLastMessage';
+import { securityFieldsOf } from '../../messages/securityLabels';
 import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../notifyListener';
 import { getUserAvatarURL } from '../../utils/getUserAvatarURL';
 
@@ -101,6 +102,7 @@ export async function pinMessage(message: IMessage, userId: string, pinnedAt?: D
 	const pinMessageType = originalMessage.t === 'e2e' ? 'message_pinned_e2e' : 'message_pinned';
 
 	return Message.saveSystemMessage(pinMessageType, originalMessage.rid, '', me, {
+		...securityFieldsOf(originalMessage),
 		attachments: [
 			{
 				text: originalMessage.msg,
