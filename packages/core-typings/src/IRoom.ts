@@ -28,7 +28,7 @@ export interface IRoom extends IRocketChatRecord {
 	abacAttributes?: IAbacAttributeDefinition[];
 	// The labels the room may carry; its presence puts the room under data-centric security
 	securityClearance?: ISecurityClearance;
-	defaultSecurityLabel?: ISecurityLabel;
+	defaultSecurityLabel?: Pick<ISecurityLabel, 'policyId' | 'classification' | 'categories'>;
 	topic?: string;
 
 	reactWhenReadOnly?: boolean;
