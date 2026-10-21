@@ -83,9 +83,9 @@
     "@rocket.chat/ui-conference": "1.0.0",
     "@rocket.chat/ui-contexts": "34.0.0",
     "@rocket.chat/ui-kit": "1.1.0",
+    "@rocket.chat/ui-registration": "34.0.0",
     "@rocket.chat/ui-video-conf": "34.0.0",
-    "@rocket.chat/ui-voip": "24.0.0",
-    "@rocket.chat/web-ui-registration": "34.0.0"
+    "@rocket.chat/ui-voip": "24.0.0"
   },
   "changesets": [
     "afraid-trains-cross",
