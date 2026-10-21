@@ -228,7 +228,6 @@
 	"apps/meteor/client/views/navigation/sidebar/RoomList/TeamCollabFilters.tsx": 2,
 	"apps/meteor/client/views/navigation/sidepanel/SidePanelInternal.tsx": 2,
 	"apps/meteor/client/views/notAuthorized/NotAuthorizedPage.tsx": 1,
-	"apps/meteor/client/views/oauth/components/Layout.tsx": 1,
 	"apps/meteor/client/views/omnichannel/additionalForms/BusinessHoursMultiple.stories.tsx": 1,
 	"apps/meteor/client/views/omnichannel/agents/AgentEditWithData.tsx": 1,
 	"apps/meteor/client/views/omnichannel/agents/AgentInfo.tsx": 2,

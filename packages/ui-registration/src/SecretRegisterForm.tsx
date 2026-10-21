@@ -1,10 +1,10 @@
+import { FormSkeleton } from '@rocket.chat/layout';
 import { useRouteParameter } from '@rocket.chat/ui-contexts';
 
 import RegisterForm from './RegisterForm';
 import SecretRegisterInvalidForm from './SecretRegisterInvalidForm';
 import { useCheckRegistrationSecret } from './hooks/useCheckRegistrationSecret';
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
-import FormSkeleton from './template/FormSkeleton';
 import HorizontalTemplate from './template/HorizontalTemplate';
 
 export type SecretRegisterFormProps = { setLoginRoute: DispatchLoginRouter };
