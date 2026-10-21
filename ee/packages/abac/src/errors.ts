@@ -1,4 +1,4 @@
-import { MeteorError, isMeteorError } from '@rocket.chat/core-services';
+import { ClientSafeError, isClientSafeError } from '@rocket.chat/core-services';
 
 export enum AbacErrorCode {
 	InvalidAttributeValues = 'error-invalid-attribute-values',
@@ -122,7 +122,7 @@ export class AbacNotAuthorizedToModifyRoomError extends AbacError {
 	}
 }
 
-export class PdpHealthCheckError extends MeteorError {
+export class PdpHealthCheckError extends ClientSafeError {
 	constructor(errorCode: string) {
 		super(errorCode, errorCode);
 		this.message = errorCode;
@@ -132,7 +132,7 @@ export class PdpHealthCheckError extends MeteorError {
 }
 
 export const getPdpHealthErrorCode = (err: unknown): string => {
-	if (isMeteorError(err) && err.reason?.startsWith('ABAC_PDP_Health_')) {
+	if (isClientSafeError(err) && err.reason?.startsWith('ABAC_PDP_Health_')) {
 		return err.reason;
 	}
 	return 'ABAC_PDP_Health_Not_OK';

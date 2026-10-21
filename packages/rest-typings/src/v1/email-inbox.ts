@@ -5,17 +5,13 @@ import { paginationQueryProperties } from './pagination';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
-type EmailInboxListProps = PaginatedRequest<{ query?: string }>;
+type EmailInboxListProps = PaginatedRequest<{}>;
 
 const EmailInboxListPropsSchema = {
 	type: 'object',
 	properties: {
 		...paginationQueryProperties,
 		sort: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
 			type: 'string',
 			nullable: true,
 		},

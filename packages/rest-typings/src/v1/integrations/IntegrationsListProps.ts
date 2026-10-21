@@ -2,7 +2,7 @@ import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import { ajvQuery } from '../Ajv';
 import { paginationQueryProperties } from '../pagination';
 
-export type IntegrationsListProps = PaginatedRequest<{ name?: string; type?: string; query?: string }>;
+export type IntegrationsListProps = PaginatedRequest<{ name?: string; type?: string }>;
 
 const integrationsListSchema = {
 	type: 'object',
@@ -17,10 +17,6 @@ const integrationsListSchema = {
 			nullable: true,
 		},
 		type: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
 			type: 'string',
 			nullable: true,
 		},
