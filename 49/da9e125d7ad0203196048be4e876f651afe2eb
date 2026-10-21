@@ -1,0 +1,38 @@
+ee/packages/xmpp-server/docs/architecture.md
+  s_08f0c56c164640::t_139886be22a19e 71
+ee/packages/xmpp-server/src/xml/StanzaParser.spec.ts
+  s_08f0c56c164640::t_c0a55a67f42ff0 145
+  s_08f0c56c164640::t_1c7400b5236ccf 166
+  s_08f0c56c164640::t_df151ae142d155 142-144
+  s_08f0c56c164640::t_d4102ed4db253a 146-148,163-165
+  s_08f0c56c164640::t_97e20c4d0a8d81 167-169
+  s_08f0c56c164640::t_59dbf35a246a70 116-141,149-162,170
+ee/packages/xmpp-server/docs/adr/0003-xml-via-ltx-and-xmpp-jid.md
+  s_08f0c56c164640::t_5b3caf13b80824 35-37
+ee/packages/xmpp-server/src/xml/TopLevelBoundaries.ts
+  s_08f0c56c164640::t_8664bf547d42e7 1-10,12-107
+  s_08f0c56c164640::t_8c378a5dc0d392 11
+ee/packages/xmpp-server/src/xml/StanzaParser.ts
+  s_08f0c56c164640::t_7b7f8a935d2edd 153-162
+  s_08f0c56c164640::t_7a96370934fe1a 7-8
+  s_08f0c56c164640::t_714b53b3de23fb 28-29
+  s_08f0c56c164640::t_5579fa282715d5 178
+ee/packages/xmpp-server/docs/specs/s2s-connectivity.md
+  s_08f0c56c164640::t_003f2530a9e159 78-80
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "49da9e125d7ad0203196048be4e876f651afe2eb",
+  "prompts": {},
+  "sessions": {
+    "s_08f0c56c164640": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7fb7a26c-7025-4e47-b230-074f12c7e190",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
