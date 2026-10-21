@@ -1,7 +1,7 @@
 import type { IUserPhoneNumber } from '@rocket.chat/core-typings';
 import { Box, Button } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { useId } from 'react';
+import { useEffect, useId, useRef } from 'react';
 import { useVisuallyHidden } from 'react-aria';
 import type { Control } from 'react-hook-form';
 import { useFieldArray } from 'react-hook-form';
@@ -25,21 +25,36 @@ const PhoneNumberFieldList = <T extends { phones?: IUserPhoneNumber[] }>({ contr
 	const phonesControl = control as unknown as Control<PhoneNumbersFormValues>;
 	const { fields, append, remove, update } = useFieldArray({ control: phonesControl, name: 'phones' });
 
+	const listRef = useRef<HTMLUListElement>(null);
+	const focusIndexAfterRemove = useRef<number | null>(null);
+
+	useEffect(() => {
+		const index = focusIndexAfterRemove.current;
+		if (index === null) {
+			return;
+		}
+
+		focusIndexAfterRemove.current = null;
+		listRef.current?.querySelector<HTMLInputElement>(`input[name="phones.${index}.number"]`)?.focus();
+	}, [fields]);
+
 	const handleAdd = useStableCallback(() => append({ ...EMPTY_PHONE }));
 
 	const handleRemove = useStableCallback((index: number) => {
 		if (fields.length > 1) {
+			focusIndexAfterRemove.current = Math.min(index, fields.length - 2);
 			remove(index);
 			return;
 		}
 
+		focusIndexAfterRemove.current = index;
 		update(index, { ...EMPTY_PHONE });
 	});
 
 	return (
 		<Box is='fieldset' className={className} display='flex' flexDirection='column' width='100%'>
 			<legend {...visuallyHiddenProps}>{t('Phone_Numbers')}</legend>
-			<Box is='ul' id={listId} display='flex' flexDirection='column' gap={16}>
+			<Box is='ul' ref={listRef} id={listId} display='flex' flexDirection='column' gap={16}>
 				{fields.map((field, index) => (
 					<PhoneNumberFieldRow key={field.id} control={phonesControl} index={index} onRemove={handleRemove} className={className} />
 				))}
