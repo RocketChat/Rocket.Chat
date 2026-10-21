@@ -1,8 +1,9 @@
-import { Skeleton } from '@rocket.chat/fuselage';
+import { Box, MessageEmoji, Skeleton } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
+import { getEmojiClassNameAndDataTitle } from '../../../../lib/utils/renderEmoji';
 import { useGetMessageByID } from '../../../../views/room/contextualBar/Threads/hooks/useGetMessageByID';
 import MarkdownText from '../../../MarkdownText';
 
@@ -18,19 +19,19 @@ export type ReactionTooltipProps = {
 const getTranslationKey = (users: string[], mine: boolean): TranslationKey => {
 	if (users.length === 0) {
 		if (mine) {
-			return 'You_reacted_with';
+			return 'You_click_to_remove_reacted_with';
 		}
 	}
 
 	if (users.length > 10) {
 		if (mine) {
-			return 'You_users_and_more_Reacted_with';
+			return 'You_click_to_remove_users_and_more_reacted_with';
 		}
 		return 'Users_and_more_reacted_with';
 	}
 
 	if (mine) {
-		return 'You_and_users_Reacted_with';
+		return 'You_click_to_remove_and_users_reacted_with';
 	}
 	return 'Users_reacted_with';
 };
@@ -39,6 +40,7 @@ const ReactionTooltip = ({ emojiName, usernames, mine, messageId, showRealName, 
 	const { t } = useTranslation();
 
 	const key = getTranslationKey(usernames, mine);
+	const emojiProps = getEmojiClassNameAndDataTitle(emojiName);
 
 	const getMessage = useGetMessageByID();
 
@@ -87,14 +89,19 @@ const ReactionTooltip = ({ emojiName, usernames, mine, messageId, showRealName, 
 	}
 
 	return (
-		<MarkdownText
-			content={t(key, {
-				counter: usernames.length > 10 ? usernames.length - 10 : usernames.length,
-				users: users?.slice(0, 10).join(', ') || '',
-				emoji: emojiName,
-			})}
-			variant='inline'
-		/>
+		<Box display='flex' flexDirection='column' alignItems='center' textAlign='center' paddingBlock={4}>
+			<Box paddingBlockEnd={8}>
+				<MessageEmoji big {...emojiProps} />
+			</Box>
+			<MarkdownText
+				content={t(key, {
+					counter: usernames.length > 10 ? usernames.length - 10 : usernames.length,
+					users: users?.slice(0, 10).join(', ') || '',
+					emoji: emojiName,
+				})}
+				variant='inline'
+			/>
+		</Box>
 	);
 };
 
