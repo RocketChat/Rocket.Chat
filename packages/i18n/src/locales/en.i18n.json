@@ -3085,6 +3085,7 @@
   "Group": "Group",
   "Group_by": "Group by",
   "Group_by_Type": "Group by type",
+  "Group_cannot_move_further": "{{groupName}} cannot move further",
   "Group_discussions": "Group discussions",
   "Group_favorites": "Group favorites",
   "group_mentions_counter": {
@@ -3093,6 +3094,7 @@
   },
   "Group_mentions_disabled_x_members": "Group mentions `@all` and `@here` have been disabled for rooms with more than {{total}} members.",
   "Group_mentions_only": "Group mentions only",
+  "Group_moved_to_position": "{{groupName}} moved to position {{position}} of {{total}}",
   "Grouping": "Grouping",
   "Guest": "Guest",
   "Hang_up_and_transfer_call": "Hang up and transfer call",
