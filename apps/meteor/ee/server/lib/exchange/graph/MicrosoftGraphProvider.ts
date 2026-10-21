@@ -28,7 +28,6 @@ type GraphEvent = {
 	'end'?: GraphDateTimeTimeZone;
 	'isCancelled'?: unknown;
 	'showAs'?: unknown;
-	'onlineMeeting'?: { joinUrl?: unknown } | null;
 	'reminderMinutesBeforeStart'?: unknown;
 	'@removed'?: unknown;
 };
@@ -122,7 +121,6 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 
 		const endTime = parseGraphDateTime(event.end);
 		const description = asString(event.body?.content) ?? asString(event.bodyPreview) ?? '';
-		const meetingUrl = asString(event.onlineMeeting?.joinUrl);
 
 		return {
 			kind: 'upsert',
@@ -133,7 +131,6 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 			...(endTime && { endTime }),
 			isCancelled: event.isCancelled === true,
 			busy: event.showAs === 'busy',
-			...(meetingUrl && { meetingUrl }),
 			...(typeof event.reminderMinutesBeforeStart === 'number' && {
 				reminderMinutesBeforeStart: event.reminderMinutesBeforeStart,
 			}),
