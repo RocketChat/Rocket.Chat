@@ -3,6 +3,7 @@ import type { AllHTMLAttributes, ButtonHTMLAttributes, ReactNode } from 'react';
 
 import { BubbleButton } from './BubbleButton';
 import { BubbleItem } from './BubbleItem';
+import { prependClassName } from '../../helpers/prependClassName';
 
 export type BubbleProps = {
 	secondary?: boolean;
@@ -15,9 +16,12 @@ export type BubbleProps = {
 	dismissProps?: Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'>;
 } & Omit<AllHTMLAttributes<HTMLDivElement>, 'onClick'>;
 
-const Bubble = ({ secondary, children, onClick, icon, onDismiss, small, contentProps, dismissProps, ...props }: BubbleProps) => (
+const Bubble = ({ secondary, children, onClick, icon, onDismiss, small, contentProps, dismissProps, className, ...props }: BubbleProps) => (
 	<div
-		className={['rcx-bubble', 'rcx-box', 'rcx-box--full', onDismiss && 'rcx-bubble__group', small && 'rcx-bubble--small'].join(' ')}
+		className={prependClassName(
+			className,
+			['rcx-bubble', 'rcx-box', 'rcx-box--full', onDismiss && 'rcx-bubble__group', small && 'rcx-bubble--small'].filter(Boolean).join(' '),
+		)}
 		{...props}
 	>
 		{onClick ? (

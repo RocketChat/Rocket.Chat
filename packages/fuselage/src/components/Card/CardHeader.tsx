@@ -1,11 +1,13 @@
 import type { AllHTMLAttributes, ReactNode } from 'react';
 
+import { prependClassName } from '../../helpers/prependClassName';
+
 export type CardHeaderProps = {
 	children: ReactNode;
 } & AllHTMLAttributes<HTMLElement>;
 
-const CardHeader = ({ children, ...props }: CardHeaderProps) => (
-	<div className='rcx-card__header' {...props}>
+const CardHeader = ({ children, className, ...props }: CardHeaderProps) => (
+	<div className={prependClassName(className, 'rcx-card__header')} {...props}>
 		{children}
 	</div>
 );

@@ -20,8 +20,12 @@ export type StylingBoxProps = {
  */
 export const StylingBox = ({ children, ...props }: StylingBoxProps) => {
 	const propsWithStringClassName = useArrayLikeClassNameProp(props);
-	propsWithStringClassName.className = [children.props.className, propsWithStringClassName.className].filter(Boolean).join(' ');
-	const propsWithoutStylingProps = useStylingProps(propsWithStringClassName);
+	const className = [children.props.className, propsWithStringClassName.className].filter(Boolean).join(' ');
+	const { className: _unused, ...propsWithoutStylingProps } = useStylingProps(propsWithStringClassName) as Record<string, unknown>;
+
+	if (className) {
+		propsWithoutStylingProps.className = className;
+	}
 
 	return cloneElement(children, propsWithoutStylingProps);
 };
