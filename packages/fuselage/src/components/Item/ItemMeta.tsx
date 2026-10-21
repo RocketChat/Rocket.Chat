@@ -7,7 +7,7 @@ import { highlightVariant, itemColorFontSecondary, toRender, textStyle } from '.
 import { cx, cxx } from '../../helpers/composeClassNames';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-const ItemMetaFrame = styled(Text, {
+export const ItemMetaFrame = styled(Text, {
 	display: 'block',
 	flexGrow: 0,
 	flexShrink: 0,
