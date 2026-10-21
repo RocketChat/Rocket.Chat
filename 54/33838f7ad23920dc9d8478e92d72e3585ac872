@@ -1,0 +1,120 @@
+ee/packages/xmpp-server/src/service/helpers/messageId.spec.ts
+  s_bf193bee63afbe::t_a41350f98c41e7 1,32-63
+  s_bf193bee63afbe::t_f689f1432776b6 64
+ee/packages/xmpp-server/src/service/helpers/messageId.ts
+  s_bf193bee63afbe::t_7227b0340b8c25 52-54
+  s_bf193bee63afbe::t_a41350f98c41e7 1,34-51,55-57
+  s_bf193bee63afbe::t_7c009ddaca154c 58
+ee/packages/xmpp-server/src/service/XMPPServerService.ts
+  s_bf193bee63afbe::t_b1d4d60fb3068c 23-24,56,674,700,724
+ee/packages/xmpp-server/src/events.ts
+  s_bf193bee63afbe::t_a41350f98c41e7 66
+ee/packages/xmpp-server/src/muc/RemoteMucSession.ts
+  s_bf193bee63afbe::t_a41350f98c41e7 138
+ee/packages/xmpp-server/docs/adr/0007-inbound-messages-are-deduplicated-by-federation-event-id.md
+  s_bf193bee63afbe::t_f5daba0039b291 10-13,24-26
+ee/packages/xmpp-server/docs/specs/message-deduplication.md
+  s_bf193bee63afbe::t_f5daba0039b291 38-48,63-64,71-72
+  s_bf193bee63afbe::t_9e7fe89232d395 5-18
+ee/packages/xmpp-server/src/muc/RemoteMucSession.spec.ts
+  s_bf193bee63afbe::t_7227b0340b8c25 70
+  s_bf193bee63afbe::t_a41350f98c41e7 143
+apps/meteor/ee/server/hooks/xmpp/index.ts
+  s_bf193bee63afbe::t_de81aad0d5be1c 91,93-94,96-100
+  s_bf193bee63afbe::t_81a2ca8eb93e1a 121-122
+  s_848bf8e6bff91e::t_e71b7c368ff51f 1,163
+  s_848bf8e6bff91e::t_189843b8dad313 92,95
+apps/meteor/client/navbar/NavBarPagesGroup/actions/CreateChannelModal.tsx
+  s_bf193bee63afbe::t_de81aad0d5be1c 155,158,228-229,360
+  s_bf193bee63afbe::t_dc465a3a3d9378 374-376
+ee/packages/xmpp-server/docs/specs/hosted-muc.md
+  s_bf193bee63afbe::t_c4b3ba710ff933 14-15,41-43
+  s_bf193bee63afbe::t_a29e695337cb8d 162
+  s_bf193bee63afbe::t_5596fff9ed1780 162
+  s_08f0c56c164640::t_f81ff1507e899b 162
+apps/meteor/server/lib/e2e/beforeCreateRoom.ts
+  s_bf193bee63afbe::t_de81aad0d5be1c 11-15
+ee/packages/xmpp-server/tests/end-to-end/hosted-muc.spec.ts
+  s_bf193bee63afbe::t_137a21ee6a2535 72,77
+  s_bf193bee63afbe::t_c4b3ba710ff933 15,22,65-71,73-76,78-91
+  s_bf193bee63afbe::t_2f4f7383d8a683 92
+ee/packages/xmpp-server/docs/specs/s2s-connectivity.md
+  s_bf193bee63afbe::t_ec6e34a1343490 140
+ee/packages/xmpp-server/tests/integration/s2s.spec.ts
+  s_bf193bee63afbe::t_d8a0fc7267f1c5 125-126,128-129,130,134-135
+ee/packages/xmpp-server/src/jid/normalize.spec.ts
+  s_08f0c56c164640::t_172ae4bbbb4534 45
+ee/packages/xmpp-server/src/muc/MucService.spec.ts
+  s_08f0c56c164640::t_5186ff9176c015 78
+ee/packages/xmpp-server/src/xml/StanzaParser.ts
+  s_08f0c56c164640::t_7b7f8a935d2edd 145-146
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5433838f7ad23920dc9d8478e92d72e3585ac872",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_00c732e8cecd61": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d590b592-298a-461a-91dd-d4b7f266f4c1",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    },
+    "s_08f0c56c164640": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7fb7a26c-7025-4e47-b230-074f12c7e190",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    },
+    "s_3284c415b4eb8a": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6a4321dd-caef-4a4a-b39c-f0c4f1e53d4c",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    },
+    "s_848bf8e6bff91e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1b0fc686-87b0-46e3-aecd-5344b3467f9e",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    },
+    "s_86c4301bdd42f4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6e2074bb-fc5c-4fc0-81cf-9ab20da2e555",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    },
+    "s_bf193bee63afbe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0f126c7e-b9e6-435d-856c-ef1cd07242d5",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    },
+    "s_e9337e86666589": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5a3a76d3-1b29-4d70-9030-e71ad27ba8bb",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
