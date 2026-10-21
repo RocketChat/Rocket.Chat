@@ -1,3 +1,5 @@
+import { describe, it } from 'node:test';
+
 import type { IAbacAttributeDefinition } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 

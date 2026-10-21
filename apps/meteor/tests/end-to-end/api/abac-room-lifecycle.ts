@@ -1,8 +1,9 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
 import { TeamType } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, after, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';
 
 import { addAbacAttributesToUserDirectly, setRoomAbacAttributesDirectly } from '../../data/abac.helper';
@@ -15,9 +16,7 @@ import { adminUsername, password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
-(IS_EE ? describe : describe.skip)('[ABAC Room Lifecycle] (Enterprise Only)', function () {
-	this.retries(0);
-
+(IS_EE ? describe : describe.skip)('[ABAC Room Lifecycle] (Enterprise Only)', () => {
 	let connection: MongoClient;
 
 	const SETTLE_MS = 500;
@@ -59,7 +58,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				expect(res.body).to.include({ errorType: 'error-abac-room-locked' });
 			});
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		connection = await MongoClient.connect(URL_MONGODB);

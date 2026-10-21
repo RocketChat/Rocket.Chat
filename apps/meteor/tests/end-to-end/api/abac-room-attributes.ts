@@ -1,7 +1,8 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IMessage, IPermission, IRoom, ISetting, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';
 
 import { addAbacAttributesToUserDirectly } from '../../data/abac.helper';
@@ -12,9 +13,7 @@ import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
-(IS_EE ? describe : describe.skip)('[ABAC Room Attributes] (Enterprise Only)', function () {
-	this.retries(0);
-
+(IS_EE ? describe : describe.skip)('[ABAC Room Attributes] (Enterprise Only)', () => {
 	const v1 = '/api/v1';
 	const SETTLE_MS = 500;
 	const suffix = Date.now();
@@ -82,68 +81,70 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 	const assignable = (rid: IRoom['_id'], as: Credentials = ownerCredentials) =>
 		request.get(`${v1}/abac/attributes.listAssignable`).query({ rid }).set(as);
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
-	before(async function () {
-		this.timeout(30000);
+	before(
+		async () => {
+			connection = await MongoClient.connect(URL_MONGODB);
 
-		connection = await MongoClient.connect(URL_MONGODB);
+			savedPermissionRoles = await getPermissionRoles(savedPermissionId);
+			for (const id of settingIds) {
+				savedSettings.set(id, await getSettingValueById(id));
+			}
 
-		savedPermissionRoles = await getPermissionRoles(savedPermissionId);
-		for (const id of settingIds) {
-			savedSettings.set(id, await getSettingValueById(id));
-		}
+			await setSetting('ABAC_Enabled', true);
+			await setSetting('ABAC_Restrict_To_Owned_Attributes', true);
+			await setSetting('ABAC_Enforce_All_Rooms', false);
+			await setSetting('ABAC_Required_Attributes', []);
+			await request
+				.post(`${v1}/abac/attributes`)
+				.set(credentials)
+				.send({ key: dept, values: ['eng', 'sales', 'ops'] })
+				.expect(200);
 
-		await setSetting('ABAC_Enabled', true);
-		await setSetting('ABAC_Restrict_To_Owned_Attributes', true);
-		await setSetting('ABAC_Enforce_All_Rooms', false);
-		await setSetting('ABAC_Required_Attributes', []);
-		await request
-			.post(`${v1}/abac/attributes`)
-			.set(credentials)
-			.send({ key: dept, values: ['eng', 'sales', 'ops'] })
-			.expect(200);
+			adminId = credentials['X-User-Id'];
+			await addAbacAttributesToUserDirectly(connection, adminId, [{ key: dept, values: ['eng', 'sales'] }]);
 
-		adminId = credentials['X-User-Id'];
-		await addAbacAttributesToUserDirectly(connection, adminId, [{ key: dept, values: ['eng', 'sales'] }]);
+			owner = await newUser(['eng', 'sales']);
+			ownerCredentials = await login(owner.username, password);
+			member = await newUser(['eng', 'sales']);
+			memberCredentials = await login(member.username, password);
+			removable = await Promise.all(Array.from({ length: 5 }, () => newUser(['eng'])));
 
-		owner = await newUser(['eng', 'sales']);
-		ownerCredentials = await login(owner.username, password);
-		member = await newUser(['eng', 'sales']);
-		memberCredentials = await login(member.username, password);
-		removable = await Promise.all(Array.from({ length: 5 }, () => newUser(['eng'])));
+			ownedRoomId = await createAttributedGroup([owner, member, ...removable]);
+			await request.post(api('groups.addOwner')).set(credentials).send({ roomId: ownedRoomId, userId: owner._id }).expect(200);
 
-		ownedRoomId = await createAttributedGroup([owner, member, ...removable]);
-		await request.post(api('groups.addOwner')).set(credentials).send({ roomId: ownedRoomId, userId: owner._id }).expect(200);
+			otherRoomId = await createAttributedGroup([owner, member]);
+		},
+		{ timeout: 30000 },
+	);
 
-		otherRoomId = await createAttributedGroup([owner, member]);
-	});
+	after(
+		async () => {
+			for (const roomId of createdRoomIds) {
+				await request.post(api('rooms.delete')).set(credentials).send({ roomId }).expect(200);
+			}
 
-	after(async function () {
-		this.timeout(30000);
+			await addAbacAttributesToUserDirectly(connection, adminId, []);
+			for (const user of createdUsers) {
+				await deleteUser(user);
+			}
 
-		for (const roomId of createdRoomIds) {
-			await request.post(api('rooms.delete')).set(credentials).send({ roomId }).expect(200);
-		}
+			const res = await request.get(`${v1}/abac/attributes`).query({ key: dept }).set(credentials).expect(200);
+			const attribute = (res.body.attributes as { _id: string; key: string }[]).find((a) => a.key === dept);
+			if (attribute) {
+				await request.delete(`${v1}/abac/attributes/${attribute._id}`).set(credentials).expect(200);
+			}
 
-		await addAbacAttributesToUserDirectly(connection, adminId, []);
-		for (const user of createdUsers) {
-			await deleteUser(user);
-		}
+			await updatePermission(savedPermissionId, savedPermissionRoles);
+			for (const [id, value] of savedSettings) {
+				await setSetting(id, value);
+			}
 
-		const res = await request.get(`${v1}/abac/attributes`).query({ key: dept }).set(credentials).expect(200);
-		const attribute = (res.body.attributes as { _id: string; key: string }[]).find((a) => a.key === dept);
-		if (attribute) {
-			await request.delete(`${v1}/abac/attributes/${attribute._id}`).set(credentials).expect(200);
-		}
-
-		await updatePermission(savedPermissionId, savedPermissionRoles);
-		for (const [id, value] of savedSettings) {
-			await setSetting(id, value);
-		}
-
-		await connection.close();
-	});
+			await connection.close();
+		},
+		{ timeout: 30000 },
+	);
 
 	describe('POST /abac/rooms/:rid/attributes', () => {
 		it("lets an owner save their room's attributes", async () => {

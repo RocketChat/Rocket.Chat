@@ -4397,10 +4397,12 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 					.set(creatorV.creds)
 					.send({ name: `vstore-create-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, excludeSelf: true, abacAttributes });
 
-			before(async function () {
-				this.timeout(15000);
-				creatorV = await makeAdmin('create');
-			});
+			before(
+				async () => {
+					creatorV = await makeAdmin('create');
+				},
+				{ timeout: 15000 },
+			);
 
 			after(async () => {
 				await mockServerReset();

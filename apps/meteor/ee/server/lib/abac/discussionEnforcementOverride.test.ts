@@ -1,5 +1,6 @@
+import { beforeEach, describe, it } from 'node:test';
+
 import { expect } from 'chai';
-import { beforeEach, describe, it } from 'mocha';
 import p from 'proxyquire';
 import sinon from 'sinon';
 
@@ -12,7 +13,7 @@ const hasModuleMock = sinon.stub();
 
 const { applyDiscussionEnforcementOverride, restoreDiscussionEnabled, restoreDiscussionEnabledWithoutLicense } = p
 	.noCallThru()
-	.load('../../../../../../ee/server/lib/abac/discussionEnforcementOverride.ts', {
+	.load('./discussionEnforcementOverride.ts', {
 		'@rocket.chat/license': { License: { hasModule: hasModuleMock } },
 		'@rocket.chat/logger': { Logger: sinon.stub().returns(loggerMock) },
 		'@rocket.chat/models': { Settings: { updateValueById: updateValueByIdMock, findOneById: findOneByIdMock } },

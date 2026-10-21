@@ -1,8 +1,9 @@
+import { beforeEach, describe, it } from 'node:test';
+
 import { suppliesAbacAttributes } from '@rocket.chat/apps/dist/server/bridges/RoomBridge';
 import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms';
 import { expect } from 'chai';
-import { beforeEach, describe, it } from 'mocha';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
@@ -11,7 +12,7 @@ const createChannelMethod = sinon.stub();
 const createDirectMessage = sinon.stub();
 const getSetting = sinon.stub();
 
-const { AppRoomBridge } = proxyquire.noCallThru().load('../../../../../../server/modules/apps/bridges/rooms', {
+const { AppRoomBridge } = proxyquire.noCallThru().load('./rooms', {
 	'@rocket.chat/apps/dist/server/bridges/RoomBridge': { RoomBridge: class {}, suppliesAbacAttributes },
 	'@rocket.chat/models': {
 		Users: { findOneById: async (_id: string) => ({ _id, username: 'creator' }) },

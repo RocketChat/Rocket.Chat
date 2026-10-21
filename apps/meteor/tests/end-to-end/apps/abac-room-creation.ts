@@ -1,8 +1,9 @@
+import { after, before, beforeEach, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IPermission as IAppPermission } from '@rocket.chat/apps-engine/definition/permissions/IPermission';
 import type { App, IAbacAttributeDefinition, IPermission, IRoom, ISetting, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, beforeEach, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';
 
 import { addAbacAttributesToUserDirectly } from '../../data/abac.helper';
@@ -24,9 +25,7 @@ type CreateRoomBody = {
 	abacAttributes?: IAbacAttributeDefinition[];
 };
 
-(IS_EE ? describe : describe.skip)('Apps - ABAC room creation', function () {
-	this.retries(0);
-
+(IS_EE ? describe : describe.skip)('Apps - ABAC room creation', () => {
 	const SETTLE_MS = 500;
 	const suffix = Date.now();
 	const clearance = `app-clearance-${suffix}`;
@@ -94,66 +93,68 @@ type CreateRoomBody = {
 		return res.body.rooms;
 	};
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
-	before(async function () {
-		this.timeout(20000);
+	before(
+		async () => {
+			connection = await MongoClient.connect(URL_MONGODB);
 
-		connection = await MongoClient.connect(URL_MONGODB);
+			for (const id of settingIds) {
+				savedSettings.set(id, await getSettingValueById(id));
+			}
+			const permissions = await request.get(api('permissions.listAll')).set(credentials).expect(200);
+			const rolesOf = (permissionId: string) =>
+				(permissions.body.update as IPermission[]).find(({ _id }) => _id === permissionId)?.roles ?? [];
+			savedCreatePermissionRoles = rolesOf('create-abac-managed-room');
+			savedCreatePrivateRoles = rolesOf('create-p');
 
-		for (const id of settingIds) {
-			savedSettings.set(id, await getSettingValueById(id));
-		}
-		const permissions = await request.get(api('permissions.listAll')).set(credentials).expect(200);
-		const rolesOf = (permissionId: string) =>
-			(permissions.body.update as IPermission[]).find(({ _id }) => _id === permissionId)?.roles ?? [];
-		savedCreatePermissionRoles = rolesOf('create-abac-managed-room');
-		savedCreatePrivateRoles = rolesOf('create-p');
+			await setSetting('ABAC_Enabled', true);
+			await setSetting('ABAC_PDP_Type', 'local');
+			await setSetting('ABAC_Enforce_All_Rooms', false);
 
-		await setSetting('ABAC_Enabled', true);
-		await setSetting('ABAC_PDP_Type', 'local');
-		await setSetting('ABAC_Enforce_All_Rooms', false);
+			await request
+				.post('/api/v1/abac/attributes')
+				.set(credentials)
+				.send({ key: clearance, values: ['secret', 'topsecret'] })
+				.expect(200);
 
-		await request
-			.post('/api/v1/abac/attributes')
-			.set(credentials)
-			.send({ key: clearance, values: ['secret', 'topsecret'] })
-			.expect(200);
+			creator = await createUser();
+			creatorCredentials = await login(creator.username, password);
+			await addAbacAttributesToUserDirectly(connection, creator._id, [{ key: clearance, values: ['secret'] }]);
 
-		creator = await createUser();
-		creatorCredentials = await login(creator.username, password);
-		await addAbacAttributesToUserDirectly(connection, creator._id, [{ key: clearance, values: ['secret'] }]);
+			unattributedUser = await createUser();
+		},
+		{ timeout: 20000 },
+	);
 
-		unattributedUser = await createUser();
-	});
+	after(
+		async () => {
+			await cleanupApps();
+			await setSetting('ABAC_Enforce_All_Rooms', false);
 
-	after(async function () {
-		this.timeout(30000);
+			for (const roomId of createdRoomIds) {
+				await request.post(api('rooms.delete')).set(credentials).send({ roomId }).expect(200);
+			}
 
-		await cleanupApps();
-		await setSetting('ABAC_Enforce_All_Rooms', false);
+			await deleteUser(creator);
+			await deleteUser(unattributedUser);
 
-		for (const roomId of createdRoomIds) {
-			await request.post(api('rooms.delete')).set(credentials).send({ roomId }).expect(200);
-		}
+			const res = await request.get('/api/v1/abac/attributes').query({ key: clearance }).set(credentials).expect(200);
+			const attribute = (res.body.attributes as { _id: string; key: string }[]).find((a) => a.key === clearance);
+			if (attribute) {
+				await request.delete(`/api/v1/abac/attributes/${attribute._id}`).set(credentials).expect(200);
+			}
 
-		await deleteUser(creator);
-		await deleteUser(unattributedUser);
+			await updatePermission('create-abac-managed-room', savedCreatePermissionRoles);
+			await updatePermission('create-p', savedCreatePrivateRoles);
+			for (const [id, value] of savedSettings) {
+				await setSetting(id, value);
+			}
 
-		const res = await request.get('/api/v1/abac/attributes').query({ key: clearance }).set(credentials).expect(200);
-		const attribute = (res.body.attributes as { _id: string; key: string }[]).find((a) => a.key === clearance);
-		if (attribute) {
-			await request.delete(`/api/v1/abac/attributes/${attribute._id}`).set(credentials).expect(200);
-		}
-
-		await updatePermission('create-abac-managed-room', savedCreatePermissionRoles);
-		await updatePermission('create-p', savedCreatePrivateRoles);
-		for (const [id, value] of savedSettings) {
-			await setSetting(id, value);
-		}
-
-		await connection.close();
-	});
+			await connection.close();
+		},
+		{ timeout: 30000 },
+	);
 
 	beforeEach(async () => {
 		await updatePermission('create-abac-managed-room', ['admin', 'user']);
@@ -162,12 +163,13 @@ type CreateRoomBody = {
 	});
 
 	describe('an app granted abac.write', () => {
-		before(async function () {
-			this.timeout(20000);
-
-			await cleanupApps();
-			app = await installLocalTestPackage(appAbacRoomCreationTest, grantedWithAbacWrite);
-		});
+		before(
+			async () => {
+				await cleanupApps();
+				app = await installLocalTestPackage(appAbacRoomCreationTest, grantedWithAbacWrite);
+			},
+			{ timeout: 20000 },
+		);
 
 		it('creates a private room carrying attributes its creator holds', async () => {
 			const { res } = await createRoomThroughApp({
@@ -341,12 +343,13 @@ type CreateRoomBody = {
 	});
 
 	describe('an app without abac.write', () => {
-		before(async function () {
-			this.timeout(20000);
-
-			await cleanupApps();
-			app = await installLocalTestPackage(appAbacRoomCreationTest);
-		});
+		before(
+			async () => {
+				await cleanupApps();
+				app = await installLocalTestPackage(appAbacRoomCreationTest);
+			},
+			{ timeout: 20000 },
+		);
 
 		it('is refused a room carrying attributes, and no room is created', async () => {
 			const { res, name } = await createRoomThroughApp({
@@ -369,15 +372,16 @@ type CreateRoomBody = {
 	});
 
 	describe('an app without room.write', () => {
-		before(async function () {
-			this.timeout(20000);
-
-			await cleanupApps();
-			app = await installLocalTestPackage(
-				appAbacRoomCreationTest,
-				grantedWithAbacWrite.filter(({ name }) => name !== 'room.write'),
-			);
-		});
+		before(
+			async () => {
+				await cleanupApps();
+				app = await installLocalTestPackage(
+					appAbacRoomCreationTest,
+					grantedWithAbacWrite.filter(({ name }) => name !== 'room.write'),
+				);
+			},
+			{ timeout: 20000 },
+		);
 
 		it('creates no room carrying attributes, even with abac.write, while finish() resolves', async () => {
 			const { res, name } = await requestRoomThroughApp({

@@ -1,6 +1,7 @@
+import { beforeEach, describe, it } from 'node:test';
+
 import type { IRoom } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { beforeEach, describe, it } from 'mocha';
 import p from 'proxyquire';
 import sinon from 'sinon';
 
