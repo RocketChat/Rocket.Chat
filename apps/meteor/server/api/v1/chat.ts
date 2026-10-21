@@ -940,7 +940,7 @@ const chatEndpoints = API.v1
 			if (unsupportedNames.length) {
 				const names = unsupportedNames
 					.slice(0, MAX_REPORTED_UNSUPPORTED_FIELDS)
-					.map((name) => name.slice(0, MAX_REPORTED_FIELD_NAME_LENGTH));
+					.map((name) => name.slice(0, MAX_REPORTED_FIELD_NAME_LENGTH).replace(/[^\x20-\x7e]/g, '?'));
 
 				if (applyBreakingChanges) {
 					throw new Error(`The message fields cannot be set through 'chat.sendMessage': ${names.join(', ')}`);

@@ -1051,6 +1051,13 @@ describe('[Chat]', () => {
 				expect(res.body.message.location).to.deep.equal(location);
 			});
 
+			it('should ignore a field whose name cannot be sent in a header', async () => {
+				const res = await send({ 'rid': testChannel._id, 'msg': 'with an unsafe field name', 'bad\nname': true, 'имя': true }).expect(200);
+
+				expect(res.body.message).to.have.property('msg', 'with an unsafe field name');
+				expect(res.headers['x-deprecation-message']).to.include('bad?name');
+			});
+
 			describe('blocks', () => {
 				const text = { type: 'plain_text', text: 'hi' };
 

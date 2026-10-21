@@ -21,6 +21,7 @@ const accepted: Record<string, unknown> = {
 	'a block without a type': [{}],
 	'a linear scale with the default range': [{ type: 'actions', elements: [{ type: 'linear_scale' }] }],
 	'a linear scale at the point limit': [{ type: 'actions', elements: [{ type: 'linear_scale', minValue: 1, maxValue: 100 }] }],
+	'a linear scale with fractional bounds': [{ type: 'actions', elements: [{ type: 'linear_scale', minValue: 0.5, maxValue: 2.5 }] }],
 	'a linear scale as a section accessory': [{ type: 'section', text, accessory: { type: 'linear_scale', maxValue: 5 } }],
 };
 

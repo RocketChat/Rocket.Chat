@@ -30,11 +30,17 @@ describe('normalizeMessagesForUser', () => {
 
 	it('should not fail on a reaction that has no list of usernames', async () => {
 		const [message] = await normalizeMessagesForUser(
-			[{ u: { _id: 'u', username: 'alice' }, reactions: { ':smile:': {}, ':wink:': { usernames: ['alice'] } } }],
+			[
+				{
+					u: { _id: 'u', username: 'alice' },
+					reactions: { ':smile:': {}, ':cry:': { usernames: 'alice' }, ':wink:': { usernames: ['alice'] } },
+				},
+			],
 			'viewer',
 		);
 
 		expect(message.reactions[':wink:'].names).to.deep.equal(['Alice Real']);
-		expect(message.reactions[':smile:'].names).to.deep.equal([]);
+		expect(message.reactions[':smile:']).to.deep.equal({ usernames: [], names: [] });
+		expect(message.reactions[':cry:']).to.deep.equal({ usernames: [], names: [] });
 	});
 });

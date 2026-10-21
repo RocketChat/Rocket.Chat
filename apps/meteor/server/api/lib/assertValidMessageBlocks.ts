@@ -6,8 +6,8 @@ const MAX_NESTING_DEPTH = 10;
 const assertValidLinearScale = (element: Record<string, unknown>, path: string): void => {
 	const { minValue = 0, maxValue = 10 } = element;
 
-	if (!Number.isInteger(minValue) || !Number.isInteger(maxValue)) {
-		throw new Error(`Invalid blocks: ${path} must have integer minValue and maxValue`);
+	if (!Number.isFinite(minValue) || !Number.isFinite(maxValue)) {
+		throw new Error(`Invalid blocks: ${path} must have numeric minValue and maxValue`);
 	}
 
 	if ((maxValue as number) - (minValue as number) + 1 > MAX_LINEAR_SCALE_POINTS) {
