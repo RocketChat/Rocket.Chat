@@ -10,6 +10,7 @@
  * If this spec fails because of an intended change, keep the old event firing
  * as well, and coordinate the change with the desktop app.
  */
+import type { DesktopWindowEvent } from '@rocket.chat/desktop-api';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook, waitFor } from '@testing-library/react';
 
@@ -25,9 +26,7 @@ const DESKTOP_WINDOW_EVENTS = [
 	'status-changed',
 	'Custom_Script_Logged_In',
 	'Custom_Script_Logged_Out',
-] as const;
-
-type DesktopWindowEvent = (typeof DESKTOP_WINDOW_EVENTS)[number];
+] as const satisfies readonly DesktopWindowEvent[];
 
 let received: { type: DesktopWindowEvent; detail: unknown }[] = [];
 
