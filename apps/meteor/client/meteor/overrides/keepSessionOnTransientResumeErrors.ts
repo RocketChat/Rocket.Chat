@@ -22,9 +22,13 @@ let retryTimer: ReturnType<typeof setTimeout> | undefined;
 
 const { makeClientLoggedOut, logout } = accounts;
 
+// Spreads the retries of clients that failed at the same moment, such as every client of a server being redeployed.
+const withJitter = (delay: number): number => delay / 2 + Math.random() * (delay / 2);
+
 const retryResume = (token: string): void => {
 	clearTimeout(retryTimer);
 	retryTimer = setTimeout(() => {
+		retryDelay = Math.min(retryDelay * 2, MAX_RETRY_DELAY);
 		if (accounts._storedLoginToken() !== token) {
 			return;
 		}
@@ -42,8 +46,7 @@ const retryResume = (token: string): void => {
 
 			retryResume(token);
 		});
-	}, retryDelay);
-	retryDelay = Math.min(retryDelay * 2, MAX_RETRY_DELAY);
+	}, withJitter(retryDelay));
 };
 
 Accounts.onLoginFailure(({ error }: { error?: unknown }) => {
