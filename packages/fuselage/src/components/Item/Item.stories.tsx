@@ -26,6 +26,7 @@ import ItemMeta from './ItemMeta';
 import ItemRow from './ItemRow';
 import ItemSkeleton from './ItemSkeleton';
 import ItemTitle from './ItemTitle';
+import { PureItem, PureItemContent, PureItemDescription, PureItemMedia, PureItemMeta, PureItemRow, PureItemTitle } from './pure';
 import type { ItemInset } from './types';
 
 export default {
@@ -1021,6 +1022,51 @@ export const CommandSuggestions: Story = {
 							{description}
 						</ItemMeta>
 					</Item>
+				))}
+			</ItemGroup>
+		</Box>
+	),
+};
+
+const pureRooms = [
+	{ name: 'general', time: '12:30', preview: 'See you all at the release call', avatar: 0, selected: true },
+	{ name: 'design', time: '12:10', preview: 'New icons are up for review', avatar: 1, unread: true },
+	{ name: 'support', time: '11:42', preview: 'Ticket closed', avatar: 2 },
+];
+
+/**
+ * The same sidebar rows from the pure parts, which compile to plain elements: each row declares its state, gap and
+ * highlight instead of having `Item` work them out.
+ */
+export const PureParts: Story = {
+	render: () => (
+		<Box width='x320' backgroundColor='light' paddingBlock={8}>
+			<ItemGroup>
+				{pureRooms.map(({ name, time, preview, avatar, selected, unread }) => (
+					<PureItem
+						key={name}
+						render='a'
+						href={`#${name}`}
+						inset='md'
+						selected={selected}
+						highlighted={unread}
+						surface={selected ? 'selected' : 'interactive'}
+						pointer='interactive'
+						gap='x8'
+					>
+						<PureItemMedia>
+							<Avatar size='x36' url={leterAvatarUrls[avatar]} alt='' />
+						</PureItemMedia>
+						<PureItemContent>
+							<PureItemRow>
+								<PureItemTitle highlight={unread ? 'item' : undefined}>{name}</PureItemTitle>
+								<PureItemMeta highlight={unread ? 'item' : undefined}>{time}</PureItemMeta>
+							</PureItemRow>
+							<PureItemRow>
+								<PureItemDescription highlight={unread ? 'item' : undefined}>{preview}</PureItemDescription>
+							</PureItemRow>
+						</PureItemContent>
+					</PureItem>
 				))}
 			</ItemGroup>
 		</Box>

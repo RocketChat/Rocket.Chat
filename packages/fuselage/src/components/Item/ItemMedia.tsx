@@ -6,7 +6,7 @@ import { cx, cxx } from '../../helpers/composeClassNames';
 import { size } from '../../styleTokens';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-const ItemMediaFrame = styled(Text, {
+export const ItemMediaFrame = styled(Text, {
 	...centeredSlotStyle,
 
 	variants: {
