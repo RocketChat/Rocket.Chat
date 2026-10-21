@@ -80,6 +80,20 @@ const chatSendMessageSchema = {
 					type: 'array',
 					items: {
 						type: 'object',
+						allOf: [
+							{
+								if: { properties: { type: { enum: ['actions', 'context'] } }, required: ['type'] },
+								then: { properties: { elements: { type: 'array', items: { type: 'object' } } }, required: ['elements'] },
+							},
+							{
+								if: { properties: { type: { const: 'section' } }, required: ['type'] },
+								then: { properties: { fields: { type: 'array', items: { type: 'object' } } } },
+							},
+							{
+								if: { properties: { type: { const: 'input' } }, required: ['type'] },
+								then: { properties: { element: { type: 'object' } }, required: ['element'] },
+							},
+						],
 					},
 					nullable: true,
 				},
