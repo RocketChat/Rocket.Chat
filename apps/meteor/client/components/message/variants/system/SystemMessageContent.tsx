@@ -16,7 +16,7 @@ const SystemMessageContent = ({ message }: SystemMessageContentProps) => (
 				<Attachments attachments={message.attachments} />
 			</MessageSystemBlock>
 		)}
-		{message.actionLinks?.length && (
+		{!!message.actionLinks?.length && (
 			<MessageActions
 				message={message}
 				actions={message.actionLinks.map(({ method_id: methodId, i18nLabel, ...action }) => ({
