@@ -405,8 +405,8 @@ export default [
 			'packages/fuselage-ui-kit/**/*.@(ts|tsx)',
 			'packages/ui-account/**/*.@(ts|tsx)',
 			'packages/ui-client/**/*.@(ts|tsx)',
+			'packages/ui-registration/**/*.@(ts|tsx)',
 			'packages/ui-voip/**/*.@(ts|tsx)',
-			'packages/web-ui-registration/**/*.@(ts|tsx)',
 		],
 		rules: {
 			'@typescript-eslint/no-misused-promises': 'warn',
@@ -480,7 +480,7 @@ export default [
 			'@(ee/packages|packages)/*/jest.config.ts',
 
 			'ee/packages/pdf-worker/.storybook/*.@(ts|tsx)',
-			'packages/@(gazzodown|ui-account|ui-client|ui-composer|ui-voip|web-ui-registration)/.storybook/*.@(ts|tsx)',
+			'packages/@(gazzodown|ui-account|ui-client|ui-composer|ui-registration|ui-voip)/.storybook/*.@(ts|tsx)',
 		],
 		rules: {
 			'@typescript-eslint/prefer-optional-chain': 'off',
