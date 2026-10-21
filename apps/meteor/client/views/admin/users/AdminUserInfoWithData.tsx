@@ -10,6 +10,7 @@ import AdminUserInfoActions from './AdminUserInfoActions';
 import type { AdminUsersTab } from './AdminUsersPage';
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import { FormSkeleton } from '../../../components/Skeleton';
+import UserInfoPhoneNumberList from '../../../components/UserInfoPhoneNumberList';
 import { UserStatus } from '../../../components/UserStatus';
 import { UserStatusText } from '../../../components/UserStatusText';
 import { getUserEmailVerified } from '../../../lib/utils/getUserEmailVerified';
@@ -54,7 +55,7 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 			avatarETag,
 			name,
 			username,
-			phone,
+			phones,
 			createdAt,
 			roles = [],
 			status,
@@ -78,7 +79,7 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 			roles: getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
 			bio,
 			canViewAllInfo,
-			phone,
+			phoneNumbers: phones?.length ? <UserInfoPhoneNumberList phones={phones} /> : undefined,
 			utcOffset,
 			customFields: {
 				...data.user.customFields,
