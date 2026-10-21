@@ -1,7 +1,16 @@
+import { isChatSendMessageProps } from '@rocket.chat/rest-typings';
 import { expect } from 'chai';
 import { describe, it } from 'mocha';
 
 import { assertValidMessageBlocks } from './assertValidMessageBlocks';
+
+const assertSendableBlocks = (blocks: unknown): void => {
+	if (!isChatSendMessageProps({ message: { rid: 'rid', blocks } })) {
+		throw new Error(`Invalid blocks: ${JSON.stringify(isChatSendMessageProps.errors)}`);
+	}
+
+	assertValidMessageBlocks(blocks);
+};
 
 describe('assertValidMessageBlocks', () => {
 	const text = { type: 'plain_text', text: 'hi' };
@@ -27,7 +36,7 @@ describe('assertValidMessageBlocks', () => {
 
 		Object.entries(accepted).forEach(([name, blocks]) => {
 			it(`should accept ${name}`, () => {
-				expect(() => assertValidMessageBlocks(blocks)).to.not.throw();
+				expect(() => assertSendableBlocks(blocks)).to.not.throw();
 			});
 		});
 	});
@@ -52,7 +61,7 @@ describe('assertValidMessageBlocks', () => {
 
 		Object.entries(rejected).forEach(([name, blocks]) => {
 			it(`should reject ${name}`, () => {
-				expect(() => assertValidMessageBlocks(blocks)).to.throw(/^Invalid blocks: /);
+				expect(() => assertSendableBlocks(blocks)).to.throw(/^Invalid blocks: /);
 			});
 		});
 
@@ -62,13 +71,11 @@ describe('assertValidMessageBlocks', () => {
 				node = { type: 'wrapper', child: node };
 			}
 
-			expect(() => assertValidMessageBlocks([node])).to.throw('nested too deeply');
+			expect(() => assertSendableBlocks([node])).to.throw('nested too deeply');
 		});
 	});
 
 	it('should name the part of the blocks that is wrong', () => {
-		expect(() => assertValidMessageBlocks([{ type: 'divider' }, { type: 'actions' }])).to.throw(
-			'blocks[1].elements must be an array of objects',
-		);
+		expect(() => assertSendableBlocks([{ type: 'divider' }, { type: 'actions' }])).to.throw('/message/blocks/1');
 	});
 });

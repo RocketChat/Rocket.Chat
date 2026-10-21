@@ -1018,18 +1018,24 @@ describe('[Chat]', () => {
 					await send({ rid: testChannel._id, blocks: [{ type: 'section', text }] }).expect(200);
 				});
 
-				[
-					['actions without elements', [{ type: 'actions' }]],
-					['context without elements', [{ type: 'context' }]],
-					['an input without an element', [{ type: 'input' }]],
-					['a section with null fields', [{ type: 'section', fields: [null] }]],
-					['a linear scale with too many points', [{ type: 'actions', elements: [{ type: 'linear_scale', maxValue: 4294967295 }] }]],
-				].forEach(([name, blocks]) => {
-					it(`should reject ${name as string}`, async () => {
+				(
+					[
+						['actions without elements', [{ type: 'actions' }], /must have required property 'elements'/],
+						['context without elements', [{ type: 'context' }], /must have required property 'elements'/],
+						['an input without an element', [{ type: 'input' }], /must have required property 'element'/],
+						['a section with null fields', [{ type: 'section', fields: [null] }], /must be object/],
+						[
+							'a linear scale with too many points',
+							[{ type: 'actions', elements: [{ type: 'linear_scale', maxValue: 4294967295 }] }],
+							/^Invalid blocks: /,
+						],
+					] as const
+				).forEach(([name, blocks, error]) => {
+					it(`should reject ${name}`, async () => {
 						const res = await send({ rid: testChannel._id, blocks }).expect(400);
 
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.match(/^Invalid blocks: /);
+						expect(res.body.error).to.match(error);
 					});
 				});
 			});
