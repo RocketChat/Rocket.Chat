@@ -113,7 +113,7 @@ describe('ListenersModule', () => {
 
 		it('sends the same payload to every subscriber of an unrestricted message', () => {
 			roomEmit();
-			const shared = jest.spyOn(notifications.streamRoomMessage, 'emitWithoutBroadcast').mockReturnValue(true);
+			const shared = jest.spyOn(notifications.streamRoomMessage, 'emitWithoutBroadcast').mockImplementation(() => undefined);
 
 			fire('watch.messages', { message } as any);
 
