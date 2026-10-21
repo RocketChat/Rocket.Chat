@@ -275,17 +275,23 @@ export class CustomOAuthStrategy extends Strategy {
 				}
 
 				await callbacks.run('afterProcessOAuthUser', { serviceName, serviceData, user });
-				// User already created or merged and has identical name as before
-				if (
+
+				const isLinkedUser = Boolean(
 					user.services?.[serviceName as keyof NonNullable<IUser['services']>] &&
-					user.services[serviceName as keyof NonNullable<IUser['services']>].id === serviceData.id &&
+					user.services[serviceName as keyof NonNullable<IUser['services']>].id === serviceData.id,
+				);
+
+				// User already created or merged and has identical name, username, and email as before
+				if (
+					isLinkedUser &&
 					user.name === serviceData.name &&
+					(!serviceData.username || user.username === serviceData.username) &&
 					(this.keyField === 'email' || !serviceData.email || user.emails?.find(({ address }) => address === serviceData.email))
 				) {
 					return;
 				}
 
-				if (this.mergeUsers !== true) {
+				if (!isLinkedUser && this.mergeUsers !== true) {
 					throw new Meteor.Error('CustomOAuth', `User with username ${user.username} already exists`);
 				}
 
@@ -325,8 +331,7 @@ export class CustomOAuthStrategy extends Strategy {
 						updater,
 						session,
 						updateUsernameInBackground: true,
-						// Username needs to be included otherwise the name won't be updated in some collections
-						username: user.username,
+						username: serviceData.username || user.username,
 					});
 					await Users.updateFromUpdater({ _id: user._id }, updater, { session });
 

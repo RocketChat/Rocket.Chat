@@ -518,6 +518,15 @@ describe('CustomOAuthStrategy', () => {
 					{ services: { github: { id: identity.id } }, name: 'Old name', emails: [{ address: identity.email, verified: true }] },
 				],
 				[
+					'changed username',
+					{
+						services: { github: { id: identity.id } },
+						name: identity.name,
+						username: 'old-username',
+						emails: [{ address: identity.email, verified: true }],
+					},
+				],
+				[
 					'changed email',
 					{ services: { github: { id: identity.id } }, name: identity.name, emails: [{ address: 'old@example.com', verified: true }] },
 				],
@@ -525,7 +534,26 @@ describe('CustomOAuthStrategy', () => {
 			] as const)('updates a linked user with %s', async (_label, overrides) => {
 				env.users.findOneByUsernameAndServiceNameIgnoringCase.mockResolvedValue({ ...makeUser(), ...overrides });
 				await login();
-				expect(env.saveIdentity).toHaveBeenCalledWith(expect.objectContaining({ _id: 'local-user', name: identity.name }));
+				expect(env.saveIdentity).toHaveBeenCalledWith(
+					expect.objectContaining({ _id: 'local-user', name: identity.name, username: identity.username }),
+				);
+				expect(env.users.updateFromUpdater).toHaveBeenCalled();
+				expect(env.session.commitTransaction).toHaveBeenCalledTimes(1);
+			});
+
+			it('updates username for an already linked user even when mergeUsers is false', async () => {
+				env.createStrategy({ mergeUsers: false }, 'github');
+				env.users.findOneByUsernameAndServiceNameIgnoringCase.mockResolvedValue({
+					...makeUser(),
+					services: { github: { id: identity.id } },
+					name: identity.name,
+					username: 'old-username',
+					emails: [{ address: identity.email, verified: true }],
+				});
+				await login();
+				expect(env.saveIdentity).toHaveBeenCalledWith(
+					expect.objectContaining({ _id: 'local-user', name: identity.name, username: identity.username }),
+				);
 				expect(env.users.updateFromUpdater).toHaveBeenCalled();
 				expect(env.session.commitTransaction).toHaveBeenCalledTimes(1);
 			});
