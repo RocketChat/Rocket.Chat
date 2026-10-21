@@ -179,7 +179,7 @@ describe('useDesktopUserPresence', () => {
 		['failed', 'disconnected'],
 	] as const)('reports the %s connection as %s', (status, connection) => {
 		renderHook(() => useDesktopUserPresence(), {
-			wrapper: mockAppRoot().withUser(user).withServerContext({ status, connected: false }).build(),
+			wrapper: mockAppRoot().withUser(user).withConnectionStatus({ status, connected: false }).build(),
 		});
 
 		expect(lastPresence().connection).toBe(connection);
