@@ -19,7 +19,7 @@ import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
 
-type CustomUserStatusListProps = PaginatedRequest<{ name?: string; _id?: string; query?: string }>;
+type CustomUserStatusListProps = PaginatedRequest<{ name?: string; _id?: string }>;
 
 const CustomUserStatusListSchema = {
 	type: 'object',
@@ -34,10 +34,6 @@ const CustomUserStatusListSchema = {
 			nullable: true,
 		},
 		_id: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
 			type: 'string',
 			nullable: true,
 		},
@@ -83,12 +79,11 @@ const customUserStatusEndpoints = API.v1.get(
 	},
 	async function action() {
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, query } = await this.parseJsonQuery();
+		const { sort } = await this.parseJsonQuery();
 
 		const { name, _id } = this.queryParams;
 
 		const filter = {
-			...query,
 			...(name ? { name: { $regex: escapeRegExp(name), $options: 'i' } } : {}),
 			...(_id ? { _id } : {}),
 		};

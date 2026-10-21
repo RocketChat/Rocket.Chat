@@ -26,7 +26,7 @@ const sdkTransportEnabled = isSdkTransportEnabled();
 const isChangedCollectionPayload = (
 	msg: any,
 ): msg is { msg: 'changed'; collection: string; fields: { eventName: string; args: unknown[] } } => {
-	if (typeof msg !== 'object' && (msg !== null || msg !== undefined)) {
+	if (!msg || typeof msg !== 'object') {
 		return false;
 	}
 	if (msg.msg !== 'changed') {
@@ -35,7 +35,7 @@ const isChangedCollectionPayload = (
 	if (typeof msg.collection !== 'string') {
 		return false;
 	}
-	if (typeof msg.fields !== 'object' && (msg.fields !== null || msg.fields !== undefined)) {
+	if (!msg.fields || typeof msg.fields !== 'object') {
 		return false;
 	}
 	if (typeof msg.fields.eventName !== 'string') {
@@ -55,7 +55,7 @@ type StreamMapValue = {
 	stop: () => void;
 	onError: (cb: (...args: any[]) => void) => () => void;
 	onChange: ReturnType<ClientStream['subscribe']>['onChange'];
-	onStop: (cb: () => void) => () => void;
+	onStop: (cb: (error?: unknown) => void) => () => void;
 	ready: () => Promise<void>;
 	isReady: boolean;
 	unsubList: Set<() => void>;
@@ -155,7 +155,7 @@ const createNewDdpSdkStream = (
 	const ee = new Emitter<{
 		ready: [error: any] | [undefined, any];
 		error: [error: any];
-		stop: undefined;
+		stop: unknown;
 	}>();
 	const meta = { ready: false };
 
@@ -174,6 +174,7 @@ const createNewDdpSdkStream = (
 	let subscription: ReturnType<ReturnType<typeof getDdpSdk>['client']['subscribe']> | undefined;
 	let offCollection: (() => void) | undefined;
 	let stopped = false;
+	let stopError: unknown;
 
 	void ensureConnectedAndAuthenticated()
 		.catch(() => undefined)
@@ -181,6 +182,14 @@ const createNewDdpSdkStream = (
 			if (stopped) return;
 			const sdk = getDdpSdk();
 			subscription = sdk.client.subscribe(`stream-${streamName}`, key, { useCollection: false, args });
+
+			// A failure before ready goes through the ready/error path below.
+			subscription.onStop((error) => {
+				if (stopped || !meta.ready) return;
+				meta.ready = false;
+				stopError = error ?? new Error(`Stream ${streamName} was stopped by the server`);
+				ee.emit('stop', error);
+			});
 
 			subscription
 				.ready()
@@ -230,6 +239,7 @@ const createNewDdpSdkStream = (
 		onChange,
 		ready: () => {
 			if (meta.ready) return Promise.resolve();
+			if (stopError !== undefined) return Promise.reject(stopError);
 			return new Promise<void>((resolve, reject) => {
 				ee.once('ready', ([err]) => {
 					if (err) {
@@ -241,7 +251,7 @@ const createNewDdpSdkStream = (
 			});
 		},
 		onError: (cb: (...args: any[]) => void) => ee.once('error', (error) => cb(error)),
-		onStop: (cb: () => void) => ee.once('stop', cb),
+		onStop: (cb: (error?: unknown) => void) => ee.once('stop', cb),
 		get isReady() {
 			return meta.ready;
 		},
@@ -336,6 +346,7 @@ const createStreamManager = () => {
 			stop,
 			ready: stream.ready,
 			onChange: stream.onChange,
+			onStop: stream.onStop,
 			isReady: stream.isReady,
 		};
 	};

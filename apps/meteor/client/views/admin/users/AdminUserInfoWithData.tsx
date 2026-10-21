@@ -69,7 +69,7 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 			nickname,
 			canViewAllInfo,
 			reason,
-			freeSwitchExtension,
+			sipExtension,
 			abacAttributes,
 		} = data.user;
 
@@ -94,7 +94,7 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 			customStatus: <UserStatusText status={status} statusText={statusText} statusExpiresAt={statusExpiresAt} />,
 			nickname,
 			reason,
-			freeSwitchExtension,
+			sipExtension,
 			abacAttributes,
 		};
 	}, [approveManuallyUsers, data, getRoles]);

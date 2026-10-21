@@ -78,23 +78,19 @@ describe('content', () => {
 		test('parse v1 web message', async () => {
 			const parsed = decodeEncryptedContent(msgv1web.content);
 			const decrypted = await decrypt(key, parsed);
-			expect(decrypted).toMatchInlineSnapshot(`"{"msg":"hello"}"`);
+			expect(decrypted).toBe('{"msg":"hello"}');
 		});
 
 		test('parse v1 mobile message', async () => {
 			const parsed = decodeEncryptedContent(msgv1mob.content);
 			const decrypted = await decrypt(key, parsed);
-			expect(decrypted).toMatchInlineSnapshot(
-				`"{"_id":"AZF8Myj605B3f7ZPL","text":"world","userId":"RQTYT5RJoDKZFwDhk","ts":{"$date":1759174115076}}"`,
-			);
+			expect(decrypted).toBe('{"_id":"AZF8Myj605B3f7ZPL","text":"world","userId":"RQTYT5RJoDKZFwDhk","ts":{"$date":1759174115076}}');
 		});
 
 		test('parse v1 mobile message from msg field', async () => {
 			const parsed = decodeEncryptedContent(msgv1mob.msg);
 			const decrypted = await decrypt(key, parsed);
-			expect(decrypted).toMatchInlineSnapshot(
-				`"{"_id":"AZF8Myj605B3f7ZPL","text":"world","userId":"RQTYT5RJoDKZFwDhk","ts":{"$date":1759174115076}}"`,
-			);
+			expect(decrypted).toBe('{"_id":"AZF8Myj605B3f7ZPL","text":"world","userId":"RQTYT5RJoDKZFwDhk","ts":{"$date":1759174115076}}');
 		});
 	});
 
@@ -139,6 +135,6 @@ describe('content', () => {
 			kty: 'oct',
 		});
 		const decrypted = await decrypt(key, parsed);
-		expect(decrypted).toMatchInlineSnapshot(`"{"msg":"hello"}"`);
+		expect(decrypted).toBe('{"msg":"hello"}');
 	});
 });

@@ -1,7 +1,10 @@
 import { FocusScope } from '@react-aria/focus';
+import { useToolbar } from '@react-aria/toolbar';
 import { Message, MessageSystem } from '@rocket.chat/fuselage';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import type { ReactNode } from 'react';
+import { useRef } from 'react';
 
 import { useMessageListNavigation } from './useMessageListNavigation';
 
@@ -17,6 +20,18 @@ beforeEach(() => {
 afterEach(() => {
 	jest.restoreAllMocks();
 });
+
+// A real react-aria toolbar, whose `onKeyDownCapture` runs at the app root, as the message toolbar's does
+const Toolbar = ({ children, 'aria-label': ariaLabel }: { 'children': ReactNode; 'aria-label': string }) => {
+	const ref = useRef<HTMLDivElement>(null);
+	const { toolbarProps } = useToolbar({ 'aria-label': ariaLabel }, ref);
+
+	return (
+		<div {...toolbarProps} ref={ref}>
+			{children}
+		</div>
+	);
+};
 
 const Room = () => {
 	const { messageListRef } = useMessageListNavigation();
@@ -34,9 +49,10 @@ const Room = () => {
 					<Message key={message} role='listitem' tabIndex={0} aria-label={message}>
 						<button aria-label={`Author of ${message}`}>User</button>
 						{message}
-						<div role='toolbar' aria-label={`Actions for ${message}`}>
+						<Toolbar aria-label={`Actions for ${message}`}>
 							<button aria-label={`React to ${message}`}>Add reaction</button>
-						</div>
+							<button aria-label={`Reply to ${message}`}>Reply</button>
+						</Toolbar>
 					</Message>
 				))}
 			</div>
@@ -96,7 +112,7 @@ it('moves to the room header with Shift+Tab and restores the last message on re-
 	expect(screen.getByRole('listitem', { name: 'msg1' })).toHaveFocus();
 });
 
-it('tabs through message controls and then moves to the composer', async () => {
+it('tabs through the focused message only, then moves to the composer instead of the next message', async () => {
 	const user = userEvent.setup();
 	renderRoom();
 
@@ -110,13 +126,59 @@ it('tabs through message controls and then moves to the composer', async () => {
 	expect(screen.getByRole('button', { name: 'React to msg1' })).toHaveFocus();
 
 	await user.tab();
-	expect(screen.getByRole('listitem', { name: 'msg2' })).toHaveFocus();
+	expect(screen.getByRole('textbox', { name: 'Message composer' })).toHaveFocus();
+});
+
+it('moves between the toolbar buttons with the arrow keys, and comes back to the one used last', async () => {
+	const user = userEvent.setup();
+	renderRoom();
+
+	await user.tab();
+	await user.tab();
 	await user.tab();
 	await user.tab();
 	expect(screen.getByRole('button', { name: 'React to msg2' })).toHaveFocus();
 
+	await user.keyboard('{ArrowRight}');
+	expect(screen.getByRole('button', { name: 'Reply to msg2' })).toHaveFocus();
+
+	await user.tab({ shift: true });
+	expect(screen.getByRole('button', { name: 'Author of msg2' })).toHaveFocus();
+
 	await user.tab();
-	expect(screen.getByRole('textbox', { name: 'Message composer' })).toHaveFocus();
+	expect(screen.getByRole('button', { name: 'Reply to msg2' })).toHaveFocus();
+});
+
+it('walks back through the message with Shift+Tab, then moves to the room header', async () => {
+	const user = userEvent.setup();
+	renderRoom();
+
+	await user.tab();
+	await user.tab();
+	await user.tab();
+	await user.tab();
+	expect(screen.getByRole('button', { name: 'React to msg2' })).toHaveFocus();
+
+	await user.tab({ shift: true });
+	expect(screen.getByRole('button', { name: 'Author of msg2' })).toHaveFocus();
+	await user.tab({ shift: true });
+	expect(screen.getByRole('listitem', { name: 'msg2' })).toHaveFocus();
+	await user.tab({ shift: true });
+	expect(screen.getByRole('button', { name: 'Favorite' })).toHaveFocus();
+});
+
+it('returns from a message control to its message with Escape', async () => {
+	const user = userEvent.setup();
+	renderRoom();
+
+	await user.tab();
+	await user.tab();
+	await user.tab();
+	await user.tab();
+	expect(screen.getByRole('button', { name: 'React to msg2' })).toHaveFocus();
+
+	await user.keyboard('{Escape}');
+	expect(screen.getByRole('listitem', { name: 'msg2' })).toHaveFocus();
 });
 
 it('moves from a system message directly to the composer with Tab', async () => {

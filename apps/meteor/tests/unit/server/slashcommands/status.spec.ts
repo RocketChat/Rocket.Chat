@@ -1,4 +1,4 @@
-import { MeteorError } from '@rocket.chat/core-services';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { expect } from 'chai';
 import { beforeEach, describe, it } from 'mocha';
 import sinon from 'sinon';
@@ -54,7 +54,7 @@ describe('/status', () => {
 	});
 
 	it('reports disabled status editing and rethrows the permission error without success feedback', async () => {
-		const error = new MeteorError('error-not-allowed');
+		const error = new ClientSafeError('error-not-allowed');
 		setStatus.rejects(error);
 		await expect(slashCommand.runCommand('status')).to.be.rejectedWith(error);
 		sinon.assert.calledOnce(setStatus);

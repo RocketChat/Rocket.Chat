@@ -3,7 +3,7 @@ import type { ILivechatAgent, ILivechatVisitor, IOmnichannelRoom, IRoom } from '
 import { expect } from 'chai';
 import { before, describe, it, after } from 'mocha';
 
-import { api, getCredentials, request } from '../../../data/api-data';
+import { api, getCredentials, methodCallAnon, request } from '../../../data/api-data';
 import { sendSimpleMessage } from '../../../data/chat.helper';
 import {
 	sendMessage,
@@ -23,6 +23,7 @@ describe('LIVECHAT - messages', () => {
 	before((done) => getCredentials(done));
 
 	before(async () => {
+		await updateSetting('Livechat_enabled', true);
 		agent = await createAgent();
 		await makeAgentAvailable();
 		await updateSetting('Livechat_Routing_Method', 'Manual_Selection');
@@ -93,6 +94,43 @@ describe('LIVECHAT - messages', () => {
 		});
 
 		after(() => Promise.all([closeOmnichannelRoom(room._id), deleteRoom({ roomId: privateRoom._id, type: 'p' })]));
+
+		['file', 'files'].forEach((field) => {
+			it(`should reject MongoDB operators in ${field} IDs through anonymous DDP calls`, async () => {
+				const messageId = faker.string.uuid();
+				const file = { _id: { $gt: '' }, name: 'image.png', type: 'image/png' };
+				const { body } = await request
+					.post(methodCallAnon('sendMessageLivechat'))
+					.send({
+						message: JSON.stringify({
+							id: messageId,
+							msg: 'method',
+							method: 'sendMessageLivechat',
+							params: [
+								{
+									_id: messageId,
+									rid: room._id,
+									token: visitor.token,
+									msg: 'file validation',
+									[field]: field === 'files' ? [file] : file,
+									attachments: [{ type: 'file', title: file.name, image_url: 'https://example.com/image.png', image_type: file.type }],
+								},
+							],
+						}),
+					})
+					.expect(400);
+
+				expect(JSON.parse(body.message).error.sanitizedError).to.have.property('reason', 'Match failed');
+
+				await request
+					.get(api(`livechat/message/${messageId}`))
+					.query({ token: visitor.token, rid: room._id })
+					.expect(400)
+					.expect((res) => {
+						expect(res.body.error).to.equal('invalid-message');
+					});
+			});
+		});
 
 		it('should not allow fetching arbitrary messages from another channel', async () => {
 			const response = await sendSimpleMessage({ roomId: privateRoom._id } as any);

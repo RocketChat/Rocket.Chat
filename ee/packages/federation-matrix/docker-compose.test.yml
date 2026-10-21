@@ -124,13 +124,16 @@ services:
       - 'traefik.http.routers.rc1-http.middlewares=rc1'
 
   mongo:
-    image: mongo:${MONGODB_FEDERATION_VERSION:-8.0}
+    image: mongodb/mongodb-community-server:${MONGODB_FEDERATION_VERSION:-8.0.19-ubi9}
     profiles:
       - test
       - element
     restart: on-failure
     ports:
       - '27017:27017'
+    environment:
+      # MongoDB 8.0 refuses to start on Linux kernel 6.19+; see https://jira.mongodb.org/browse/SERVER-121912
+      GLIBC_TUNABLES: glibc.pthread.rseq=0
     entrypoint: |
       bash -c
         "mongod --replSet rs0 --bind_ip_all &

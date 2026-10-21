@@ -55,8 +55,8 @@ describe('eraseTeam (TypeScript) module', () => {
 				},
 			},
 			'@rocket.chat/core-services': {
-				MeteorError: (function () {
-					class MeteorError extends Error {
+				ClientSafeError: (function () {
+					class ClientSafeError extends Error {
 						public error: string | undefined;
 
 						public details: any;
@@ -67,7 +67,7 @@ describe('eraseTeam (TypeScript) module', () => {
 							this.details = details;
 						}
 					}
-					return MeteorError;
+					return ClientSafeError;
 				})(),
 			},
 		};
@@ -79,7 +79,7 @@ describe('eraseTeam (TypeScript) module', () => {
 			'../../lib/rooms/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
 			'../../lib/logger/system': stubs['../../lib/logger/system'],
 			'@rocket.chat/core-services': {
-				MeteorError: stubs['@rocket.chat/core-services'].MeteorError,
+				ClientSafeError: stubs['@rocket.chat/core-services'].ClientSafeError,
 				Team: stubs.Team,
 			},
 		});
@@ -166,7 +166,7 @@ describe('eraseTeam (TypeScript) module', () => {
 				'../../lib/rooms/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
 				'../../lib/logger/system': stubs['../../lib/logger/system'],
 				'@rocket.chat/core-services': {
-					MeteorError: stubs['@rocket.chat/core-services'].MeteorError,
+					ClientSafeError: stubs['@rocket.chat/core-services'].ClientSafeError,
 					Team: stubs.Team,
 				},
 			});
@@ -187,7 +187,7 @@ describe('eraseTeam (TypeScript) module', () => {
 				'../../lib/rooms/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
 				'../../lib/logger/system': stubs['../../lib/logger/system'],
 				'@rocket.chat/core-services': {
-					MeteorError: stubs['@rocket.chat/core-services'].MeteorError,
+					ClientSafeError: stubs['@rocket.chat/core-services'].ClientSafeError,
 					Team: stubs.Team,
 				},
 			});
@@ -224,7 +224,7 @@ describe('eraseTeam (TypeScript) module', () => {
 				'../../lib/rooms/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
 				'../../lib/logger/system': stubs['../../lib/logger/system'],
 				'@rocket.chat/core-services': {
-					MeteorError: stubs['@rocket.chat/core-services'].MeteorError,
+					ClientSafeError: stubs['@rocket.chat/core-services'].ClientSafeError,
 					Team: stubs.Team,
 				},
 			});
@@ -247,7 +247,7 @@ describe('eraseTeam (TypeScript) module', () => {
 				'../../lib/rooms/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
 				'../../lib/logger/system': stubs['../../lib/logger/system'],
 				'@rocket.chat/core-services': {
-					MeteorError: stubs['@rocket.chat/core-services'].MeteorError,
+					ClientSafeError: stubs['@rocket.chat/core-services'].ClientSafeError,
 					Team: stubs.Team,
 				},
 			});
@@ -277,7 +277,7 @@ describe('eraseTeam (TypeScript) module', () => {
 				'../../lib/rooms/deleteRoom': { __esModule: true, deleteRoom: stubs.deleteRoomStub },
 				'../../lib/logger/system': stubs['../../lib/logger/system'],
 				'@rocket.chat/core-services': {
-					MeteorError: stubs['@rocket.chat/core-services'].MeteorError,
+					ClientSafeError: stubs['@rocket.chat/core-services'].ClientSafeError,
 					Team: stubs.Team,
 				},
 			});

@@ -1,5 +1,5 @@
 import type { ISettingsService, IStatusVisibilityService } from '@rocket.chat/core-services';
-import { LocalBroker, MeteorError, ServiceClass, api } from '@rocket.chat/core-services';
+import { LocalBroker, ClientSafeError, ServiceClass, api } from '@rocket.chat/core-services';
 import type { IUser, SettingValue } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { cronJobs } from '@rocket.chat/cron';
@@ -181,7 +181,7 @@ describe('Presence', () => {
 			aliceIsConnected();
 
 			await expect(presence.setStatus('alice', UserStatus.BUSY, 'Focus')).rejects.toThrow(
-				new MeteorError('error-presence-disabled', 'Presence is disabled for this user'),
+				new ClientSafeError('error-presence-disabled', 'Presence is disabled for this user'),
 			);
 			expect(listener.received).toEqual([]);
 		});

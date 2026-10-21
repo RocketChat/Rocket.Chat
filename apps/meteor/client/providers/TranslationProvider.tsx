@@ -19,7 +19,7 @@ import { useEffect, useMemo } from 'react';
 import { I18nextProvider, initReactI18next, useTranslation } from 'react-i18next';
 
 import { i18n } from '../../lib/i18n';
-import { AppClientOrchestratorInstance } from '../apps/orchestrator';
+import { AppClientOrchestratorInstance } from '../lib/apps/orchestrator';
 import { getURL } from '../lib/getURL';
 import { onLoggedIn } from '../lib/loggedIn';
 import { isRTLScriptLanguage } from '../lib/utils/isRTLScriptLanguage';

@@ -5,14 +5,14 @@ const Authorization = {
 	hasPermission: async (_uid: string, _permission: string, _room?: string): Promise<boolean> => true,
 };
 
-class MeteorError extends Error {}
+class ClientSafeError extends Error {}
 
 const { BeforeSavePreventMention } = proxyquire
 	.noCallThru()
 	.load('../../../../../../server/services/messages/hooks/BeforeSavePreventMention', {
 		'@rocket.chat/core-services': {
 			Authorization,
-			MeteorError,
+			ClientSafeError,
 		},
 		'../../../lib/i18n': {
 			i18n: {
@@ -109,6 +109,6 @@ describe('Prevent mention on messages', () => {
 				mention: 'all',
 				permission: 'mention-all',
 			}),
-		).to.be.rejectedWith(MeteorError);
+		).to.be.rejectedWith(ClientSafeError);
 	});
 });
