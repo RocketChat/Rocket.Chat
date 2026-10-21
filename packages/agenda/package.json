@@ -12,6 +12,8 @@
 		"build": "rm -rf dist && tsc -p tsconfig.json",
 		"lint": "yarn run -T oxlint",
 		"lint:fix": "yarn run -T oxlint --fix",
+		"test": "yarn workspace @rocket.chat/jest-presets build && jest",
+		"testunit": "jest",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
@@ -23,8 +25,10 @@
 		"mongodb": "6.16.0"
 	},
 	"devDependencies": {
+		"@rocket.chat/jest-presets": "workspace:~",
 		"@types/debug": "^4.1.13",
 		"eslint": "~10.12.0",
+		"jest": "~30.5.2",
 		"typescript": "~7.0.2"
 	},
 	"volta": {
