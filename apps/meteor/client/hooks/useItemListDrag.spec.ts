@@ -48,6 +48,28 @@ describe('useItemListDrag', () => {
 		expect(document.querySelector('[role="status"]')).toHaveTextContent('Projects moved to position 2 of 2');
 	});
 
+	it('advertises the shortcut only on the rows the keyboard can move', async () => {
+		const { list, rows } = createList();
+		const onMove = jest.fn();
+
+		const { result } = renderHook(() =>
+			useItemListDrag({ resolveTarget: () => undefined, onDrop: jest.fn(), onMove, canMove: (source) => source.key === 'Projects' }),
+		);
+		act(() => {
+			result.current.ref(list);
+		});
+
+		rows[0].focus();
+		rows[1].focus();
+		expect(rows[0]).toHaveAttribute('aria-keyshortcuts', expect.stringContaining('Meta+Shift+ArrowDown'));
+		expect(rows[1]).not.toHaveAttribute('aria-keyshortcuts');
+
+		await act(async () => {
+			fireEvent.keyDown(rows[1], { key: 'ArrowDown', ctrlKey: true, shiftKey: true });
+		});
+		expect(onMove).not.toHaveBeenCalled();
+	});
+
 	it('leaves the plain arrows to the list navigation', async () => {
 		const { list, rows } = createList();
 		const onMove = jest.fn();

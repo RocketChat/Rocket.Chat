@@ -39,7 +39,11 @@ type ItemListDragOptions = {
 	dragHandle?: 'none' | 'trailing';
 	canDrag?: (source: ItemListDragSource) => boolean;
 	resolveTarget: (source: ItemListDragSource, hover: ItemListDropHover) => ItemListDropTarget | undefined;
-	onDrop: (source: ItemListDragSource, target: ItemListDropTarget) => void;
+	onDrop: (source: ItemListDragSource, target: ItemListDropTarget) => Promise<unknown> | void;
+	/**
+	 * Tells which rows the keyboard can move, so only those advertise the shortcut. Defaults to every row `onMove` is given for.
+	 */
+	canMove?: (source: ItemListDragSource) => boolean;
 	/**
 	 * Moves the focused row one step with Cmd+Shift (Ctrl+Shift) and the up or down arrow. Resolves with what to announce.
 	 */
@@ -47,10 +51,14 @@ type ItemListDragOptions = {
 };
 
 const DRAG_THRESHOLD = 4;
+const TOUCH_SLOP = 8;
+const TOUCH_HOLD_MS = 300;
 const EDGE_SIZE = 32;
 const MAX_SCROLL_SPEED = 12;
 const PREVIEW_OFFSET = 12;
 const PREVIEW_MAX_WIDTH = 240;
+const LANDING_TIMEOUT_MS = 1500;
+const MOVE_SHORTCUTS = 'Meta+Shift+ArrowUp Meta+Shift+ArrowDown Control+Shift+ArrowUp Control+Shift+ArrowDown';
 
 const findScroller = (element: Element) => {
 	for (let ancestor = element.parentElement; ancestor; ancestor = ancestor.parentElement) {
@@ -70,6 +78,8 @@ const readSource = (element: Element): ItemListDragSource | undefined => {
 	return { key: dragKey, kind: dragKind, group: dragGroup };
 };
 
+const findRow = (list: HTMLElement, key: string) => list.querySelector<HTMLElement>(`[data-drag-key="${CSS.escape(key)}"]`);
+
 const groupRect = (list: HTMLElement, group: string) => {
 	const rects = Array.from(list.querySelectorAll(`[data-drag-group="${CSS.escape(group)}"]`), (element) =>
 		element.getBoundingClientRect(),
@@ -82,14 +92,64 @@ const groupRect = (list: HTMLElement, group: string) => {
 	return { top: Math.min(...rects.map((rect) => rect.top)), bottom: Math.max(...rects.map((rect) => rect.bottom)) };
 };
 
+const placeBox = (box: HTMLElement, list: HTMLElement, scroller: HTMLElement, rect: { top: number; bottom: number } | undefined) => {
+	const scrollerRect = scroller.getBoundingClientRect();
+	const top = rect && Math.max(rect.top, scrollerRect.top);
+	const height = rect && top !== undefined ? Math.min(rect.bottom, scrollerRect.bottom) - top : 0;
+
+	box.hidden = !rect || height <= 0;
+	if (box.hidden || top === undefined) {
+		return;
+	}
+
+	const listRect = list.getBoundingClientRect();
+	box.style.left = `${listRect.left}px`;
+	box.style.width = `${listRect.width}px`;
+	box.style.top = `${top}px`;
+	box.style.height = `${height}px`;
+};
+
+// Flashes the row once it shows up away from where it was, so the eye finds where it landed.
+const flashWhenLanded = (list: HTMLElement, key: string, fromTop: number | undefined) => {
+	const deadline = performance.now() + LANDING_TIMEOUT_MS;
+
+	const check = () => {
+		const row = findRow(list, key);
+		const top = row?.getBoundingClientRect().top;
+		if (row && top !== undefined && (fromTop === undefined || Math.abs(top - fromTop) > 1)) {
+			const surface = row.matches('.rcx-item, .rcx-item-group-header')
+				? row
+				: (row.querySelector<HTMLElement>('.rcx-item, .rcx-item-group-header') ?? row);
+			surface.classList.add('rcx-item--dropped');
+			setTimeout(() => surface.classList.remove('rcx-item--dropped'), 700);
+			return;
+		}
+		if (performance.now() < deadline) {
+			requestAnimationFrame(check);
+		}
+	};
+
+	requestAnimationFrame(check);
+};
+
 /**
- * Lets the rows and groups of a list of rows be dragged with the pointer. Rows opt in with `data-drag-key`, `data-drag-kind` and
- * `data-drag-group`; the hook draws the lifted copy and the drop line or box, and the caller applies the change on drop.
+ * Lets the rows and groups of a list of rows be dragged with the pointer, held and dragged on touch, and moved one step with the
+ * keyboard. Rows opt in with `data-drag-key`, `data-drag-kind` and `data-drag-group`; the hook draws the lifted copy, the drop line or
+ * box and the targets a row can go into, and the caller applies the change on drop.
  */
-export const useItemListDrag = ({ disabled = false, dragHandle = 'none', canDrag, resolveTarget, onDrop, onMove }: ItemListDragOptions) => {
+export const useItemListDrag = ({
+	disabled = false,
+	dragHandle = 'none',
+	canDrag,
+	resolveTarget,
+	onDrop,
+	canMove,
+	onMove,
+}: ItemListDragOptions) => {
 	const [source, setSource] = useState<ItemListDragSource>();
 
 	const stableCanDrag = useStableCallback((source: ItemListDragSource) => canDrag?.(source) ?? true);
+	const stableCanMove = useStableCallback((source: ItemListDragSource) => !!onMove && stableCanDrag(source) && (canMove?.(source) ?? true));
 	const stableResolveTarget = useStableCallback(resolveTarget);
 	const stableOnDrop = useStableCallback(onDrop);
 	const stableOnMove = useStableCallback((source: ItemListDragSource, direction: 'up' | 'down') => onMove?.(source, direction));
@@ -103,7 +163,7 @@ export const useItemListDrag = ({ disabled = false, dragHandle = 'none', canDrag
 			const preventNativeDrag = (event: DragEvent) => event.preventDefault();
 
 			const handlePointerDown = (event: PointerEvent) => {
-				if (event.button !== 0 || event.pointerType === 'touch') {
+				if (event.button !== 0) {
 					return;
 				}
 
@@ -118,6 +178,7 @@ export const useItemListDrag = ({ disabled = false, dragHandle = 'none', canDrag
 					return;
 				}
 
+				const isTouch = event.pointerType === 'touch';
 				const startX = event.clientX;
 				const startY = event.clientY;
 				const scroller = findScroller(sourceElement);
@@ -126,8 +187,10 @@ export const useItemListDrag = ({ disabled = false, dragHandle = 'none', canDrag
 				let preview: HTMLElement | undefined;
 				let indicator: HTMLElement | undefined;
 				let shield: HTMLElement | undefined;
+				let available: { group: string; box: HTMLElement }[] = [];
 				let target: ItemListDropTarget | undefined;
 				let frame = 0;
+				let holdTimer: ReturnType<typeof setTimeout> | undefined;
 
 				const placeIndicator = () => {
 					if (!indicator) {
@@ -136,31 +199,33 @@ export const useItemListDrag = ({ disabled = false, dragHandle = 'none', canDrag
 
 					shield?.classList.toggle('rcx-item-drag-shield--no-drop', !target);
 
-					const listRect = list.getBoundingClientRect();
-					const scrollerRect = scroller.getBoundingClientRect();
-					const rect =
-						target?.key && target.position !== 'inside'
-							? list.querySelector(`[data-drag-key="${CSS.escape(target.key)}"]`)?.getBoundingClientRect()
-							: target && groupRect(list, target.group);
+					for (const { group, box } of available) {
+						placeBox(box, list, scroller, target?.position === 'inside' && target.group === group ? undefined : groupRect(list, group));
+					}
 
-					if (!target || !rect) {
+					if (!target) {
 						indicator.hidden = true;
 						return;
 					}
 
-					indicator.hidden = false;
-					indicator.className = target.position === 'inside' ? 'rcx-item-drop-box' : 'rcx-item-drop-line';
-					indicator.style.left = `${listRect.left}px`;
-					indicator.style.width = `${listRect.width}px`;
-
 					if (target.position === 'inside') {
-						const top = Math.max(rect.top, scrollerRect.top);
-						indicator.style.top = `${top}px`;
-						indicator.style.height = `${Math.max(0, Math.min(rect.bottom, scrollerRect.bottom) - top)}px`;
+						indicator.className = 'rcx-item-drop-box';
+						placeBox(indicator, list, scroller, groupRect(list, target.group));
 						return;
 					}
 
+					const rect = target.key ? findRow(list, target.key)?.getBoundingClientRect() : groupRect(list, target.group);
+					if (!rect) {
+						indicator.hidden = true;
+						return;
+					}
+
+					const listRect = list.getBoundingClientRect();
+					const scrollerRect = scroller.getBoundingClientRect();
 					const y = target.position === 'before' ? rect.top : rect.bottom;
+					indicator.className = 'rcx-item-drop-line';
+					indicator.style.left = `${listRect.left}px`;
+					indicator.style.width = `${listRect.width}px`;
 					indicator.style.height = '';
 					indicator.style.top = `${y}px`;
 					indicator.hidden = y < scrollerRect.top || y > scrollerRect.bottom;
@@ -198,6 +263,27 @@ export const useItemListDrag = ({ disabled = false, dragHandle = 'none', canDrag
 					frame = requestAnimationFrame(autoScroll);
 				};
 
+				// The groups a dragged row can go into are outlined from the start, so the places to aim at are visible before hovering.
+				const markAvailableGroups = () => {
+					const groups = new Set(Array.from(list.querySelectorAll<HTMLElement>('[data-drag-group]'), (element) => element.dataset.dragGroup!));
+					available = Array.from(groups)
+						.filter((group) => stableResolveTarget(dragSource, { group, key: group, kind: 'group', half: 'top' })?.position === 'inside')
+						.map((group) => {
+							const box = document.createElement('div');
+							box.className = 'rcx-item-drop-box rcx-item-drop-box--available';
+							box.hidden = true;
+							document.body.append(box);
+							return { group, box };
+						});
+				};
+
+				const movePreview = () => {
+					// The copy trails the pointer instead of sitting under it, so the row or group being aimed at stays visible.
+					if (preview) {
+						preview.style.transform = `translate(${pointerX + PREVIEW_OFFSET}px, ${pointerY + PREVIEW_OFFSET}px)`;
+					}
+				};
+
 				const lift = () => {
 					preview = sourceElement.cloneNode(true) as HTMLElement;
 					preview.removeAttribute('id');
@@ -223,7 +309,13 @@ export const useItemListDrag = ({ disabled = false, dragHandle = 'none', canDrag
 					);
 					document.body.append(shield);
 
+					if (dragSource.kind === 'item') {
+						markAvailableGroups();
+					}
+
 					setSource(dragSource);
+					movePreview();
+					updateTarget();
 					frame = requestAnimationFrame(autoScroll);
 				};
 
@@ -232,18 +324,34 @@ export const useItemListDrag = ({ disabled = false, dragHandle = 'none', canDrag
 					pointerY = event.clientY;
 
 					if (!preview) {
-						if (Math.hypot(pointerX - startX, pointerY - startY) < DRAG_THRESHOLD) {
+						const distance = Math.hypot(pointerX - startX, pointerY - startY);
+
+						// On touch, moving before the hold ends is a scroll, not a drag.
+						if (isTouch) {
+							if (distance > TOUCH_SLOP) {
+								finish(false);
+							}
+							return;
+						}
+
+						if (distance < DRAG_THRESHOLD) {
 							return;
 						}
 						lift();
 					}
 
-					// The copy trails the pointer instead of sitting under it, so the row or group being aimed at stays visible.
-					if (preview) {
-						preview.style.transform = `translate(${pointerX + PREVIEW_OFFSET}px, ${pointerY + PREVIEW_OFFSET}px)`;
-					}
+					movePreview();
 					updateTarget();
 				};
+
+				// Once a touch drag has started, the finger moves the row instead of scrolling the page.
+				const preventTouchScroll = (event: TouchEvent) => {
+					if (preview) {
+						event.preventDefault();
+					}
+				};
+
+				const preventContextMenu = (event: Event) => event.preventDefault();
 
 				// A drag ends with a click on the row it started from; that click must not open the row.
 				const swallowClick = (event: MouseEvent) => {
@@ -257,19 +365,25 @@ export const useItemListDrag = ({ disabled = false, dragHandle = 'none', canDrag
 				};
 
 				const finish = (drop: boolean, buttonReleased = true) => {
+					clearTimeout(holdTimer);
 					window.removeEventListener('pointermove', handlePointerMove);
 					window.removeEventListener('pointerup', handlePointerUp);
 					window.removeEventListener('pointercancel', handlePointerCancel);
 					window.removeEventListener('keydown', handleKeyDown, true);
+					window.removeEventListener('touchmove', preventTouchScroll);
+					window.removeEventListener('contextmenu', preventContextMenu, true);
 					cancelAnimationFrame(frame);
 
 					if (!preview) {
 						return;
 					}
 
+					const sourceTop = sourceElement.isConnected ? sourceElement.getBoundingClientRect().top : undefined;
+
 					preview.remove();
 					indicator?.remove();
 					shield?.remove();
+					available.forEach(({ box }) => box.remove());
 					setSource(undefined);
 
 					// After Escape the button is still down; its release would otherwise click the row or toggle the group.
@@ -280,7 +394,10 @@ export const useItemListDrag = ({ disabled = false, dragHandle = 'none', canDrag
 					}
 
 					if (drop && target) {
-						stableOnDrop(dragSource, target);
+						void Promise.resolve(stableOnDrop(dragSource, target)).then(
+							() => flashWhenLanded(list, dragSource.key, sourceTop),
+							() => undefined,
+						);
 					}
 				};
 
@@ -298,6 +415,12 @@ export const useItemListDrag = ({ disabled = false, dragHandle = 'none', canDrag
 				window.addEventListener('pointerup', handlePointerUp);
 				window.addEventListener('pointercancel', handlePointerCancel);
 				window.addEventListener('keydown', handleKeyDown, true);
+
+				if (isTouch) {
+					window.addEventListener('touchmove', preventTouchScroll, { passive: false });
+					window.addEventListener('contextmenu', preventContextMenu, true);
+					holdTimer = setTimeout(lift, TOUCH_HOLD_MS);
+				}
 			};
 
 			const announcer = document.createElement('div');
@@ -306,6 +429,18 @@ export const useItemListDrag = ({ disabled = false, dragHandle = 'none', canDrag
 			announcer.setAttribute('aria-live', 'polite');
 			document.body.append(announcer);
 
+			// Only the rows the keyboard can move advertise the shortcut to assistive technologies.
+			const handleFocusIn = (event: FocusEvent) => {
+				if (!(event.target instanceof HTMLElement) || event.target.hasAttribute('aria-keyshortcuts')) {
+					return;
+				}
+				const row = event.target.closest('[data-drag-key]');
+				const dragSource = row && list.contains(row) ? readSource(row) : undefined;
+				if (dragSource && stableCanMove(dragSource)) {
+					event.target.setAttribute('aria-keyshortcuts', MOVE_SHORTCUTS);
+				}
+			};
+
 			const handleKeyDown = async (event: KeyboardEvent) => {
 				if (!isMoveRowShortcut(event) || !(event.target instanceof HTMLElement)) {
 					return;
@@ -313,7 +448,7 @@ export const useItemListDrag = ({ disabled = false, dragHandle = 'none', canDrag
 
 				const sourceElement = event.target.closest('[data-drag-key]');
 				const dragSource = sourceElement && readSource(sourceElement);
-				if (!sourceElement || !dragSource || !list.contains(sourceElement) || !stableCanDrag(dragSource)) {
+				if (!sourceElement || !dragSource || !list.contains(sourceElement) || !stableCanMove(dragSource)) {
 					return;
 				}
 
@@ -321,6 +456,7 @@ export const useItemListDrag = ({ disabled = false, dragHandle = 'none', canDrag
 				event.stopPropagation();
 
 				const focused = event.target;
+				const sourceTop = sourceElement.getBoundingClientRect().top;
 				const message = await stableOnMove(dragSource, event.key === 'ArrowUp' ? 'up' : 'down');
 
 				// Reordering detaches or remounts the row, which drops its focus; give it back to the same control once it lands.
@@ -329,11 +465,10 @@ export const useItemListDrag = ({ disabled = false, dragHandle = 'none', canDrag
 					if (focused.isConnected) {
 						return focused;
 					}
-					const row = list.querySelector(`[data-drag-key="${CSS.escape(dragSource.key)}"]`);
-					return focusedClass ? row?.querySelector<HTMLElement>(`.${CSS.escape(focusedClass)}`) : undefined;
+					return focusedClass ? findRow(list, dragSource.key)?.querySelector<HTMLElement>(`.${CSS.escape(focusedClass)}`) : undefined;
 				};
 
-				const deadline = performance.now() + 1000;
+				const deadline = performance.now() + LANDING_TIMEOUT_MS;
 				const refocus = () => {
 					const active = document.activeElement;
 					const target = findFocused();
@@ -348,6 +483,7 @@ export const useItemListDrag = ({ disabled = false, dragHandle = 'none', canDrag
 					}
 				};
 				requestAnimationFrame(refocus);
+				flashWhenLanded(list, dragSource.key, sourceTop);
 
 				if (message) {
 					announcer.textContent = message;
@@ -357,15 +493,17 @@ export const useItemListDrag = ({ disabled = false, dragHandle = 'none', canDrag
 			list.addEventListener('pointerdown', handlePointerDown);
 			list.addEventListener('dragstart', preventNativeDrag);
 			list.addEventListener('keydown', handleKeyDown);
+			list.addEventListener('focusin', handleFocusIn);
 
 			return () => {
 				list.removeEventListener('pointerdown', handlePointerDown);
 				list.removeEventListener('dragstart', preventNativeDrag);
 				list.removeEventListener('keydown', handleKeyDown);
+				list.removeEventListener('focusin', handleFocusIn);
 				announcer.remove();
 			};
 		},
-		[disabled, dragHandle, stableCanDrag, stableResolveTarget, stableOnDrop, stableOnMove],
+		[disabled, dragHandle, stableCanDrag, stableCanMove, stableResolveTarget, stableOnDrop, stableOnMove],
 	);
 
 	return { ref, source };

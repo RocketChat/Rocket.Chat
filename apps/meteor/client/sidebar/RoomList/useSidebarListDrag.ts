@@ -87,9 +87,9 @@ export const useSidebarListDrag = (groups: SidebarRoomListGroup[]) => {
 		return { group: hover.group, position };
 	};
 
-	const onDrop = (source: ItemListDragSource, target: ItemListDropTarget) => {
+	const onDrop = async (source: ItemListDragSource, target: ItemListDropTarget) => {
 		if (source.kind === 'group' && target.position !== 'inside') {
-			void saveCategoryOrder(moveKey(groupKeys, source.key, target.group, target.position));
+			await saveCategoryOrder(moveKey(groupKeys, source.key, target.group, target.position));
 			return;
 		}
 
@@ -99,7 +99,7 @@ export const useSidebarListDrag = (groups: SidebarRoomListGroup[]) => {
 			return;
 		}
 
-		moveRoomCategory.mutate({
+		await moveRoomCategory.mutateAsync({
 			room: { rid: room.rid, name: room.fname || room.name, isFavorite: !!room.f, categoryId: room.category },
 			target: categoryTarget ?? undefined,
 		});
@@ -131,6 +131,7 @@ export const useSidebarListDrag = (groups: SidebarRoomListGroup[]) => {
 		canDrag: (source) => source.kind === 'item' || !isDynamicGroup(source.key),
 		resolveTarget,
 		onDrop,
+		canMove: (source) => source.kind === 'group',
 		onMove,
 	});
 };
