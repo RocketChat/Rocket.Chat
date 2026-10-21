@@ -58,3 +58,24 @@ export type SecurityLabelCatalogItem = {
 	label: ISecurityLabel;
 	marking: SecurityLabelDisplayMarking;
 };
+
+/**
+ * What a reader must hold to read a labeled message, flattened so a database query can check it: the classification,
+ * every key in `required`, and at least one key of each `anyOf` group. Keys identify categories as
+ * `tagSetId|tagType|lacv`.
+ */
+export type ISecurityAccessRequirement = {
+	policyId: string;
+	classification: number;
+	required: string[];
+	anyOf: { keys: string[] }[];
+};
+
+/**
+ * A reader's clearances flattened the same way, one entry per policy.
+ */
+export type ISecurityReaderAccess = {
+	policyId: string;
+	classifications: number[];
+	keys: string[];
+}[];
