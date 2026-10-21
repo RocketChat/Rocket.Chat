@@ -1,4 +1,4 @@
-import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISecurityReaderAccess, IUser } from '@rocket.chat/core-typings';
 import { makeFunction } from '@rocket.chat/patch-injection';
 
 /**
@@ -21,14 +21,20 @@ export const toContentFreeMessage = <T extends Partial<IMessage>>(message: T): T
 
 /**
  * Settles the confidentiality label a message is stored with, rejecting the message when it may not be sent.
- * Without data-centric security, messages carry no label, and the reader-side marking is never accepted from clients.
+ * Without data-centric security, messages carry no label, and the fields derived from one are never accepted from clients.
  */
 export const applyMessageSecurityLabel = makeFunction(
 	async (message: IMessage, _room: IRoom, _user: Pick<IUser, '_id'>): Promise<IMessage> => {
-		const { securityLabel: _label, securityMarking: _marking, ...rest } = message;
+		const { securityLabel: _label, securityMarking: _marking, securityAccess: _access, ...rest } = message;
 		return rest;
 	},
 );
+
+/**
+ * What a reader holds, for message queries to match only what they may read.
+ * Without data-centric security nobody is cleared, so queries match no labeled message.
+ */
+export const getReaderAccess = makeFunction(async (_uid?: IUser['_id']): Promise<ISecurityReaderAccess> => []);
 
 /**
  * Prepares messages for one reader: labeled messages the reader isn't cleared for are left out entirely, as if they

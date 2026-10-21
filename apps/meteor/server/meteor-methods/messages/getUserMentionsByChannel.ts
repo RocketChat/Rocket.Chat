@@ -3,6 +3,7 @@ import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync } from '../../lib/authorization';
+import { getReaderAccess } from '../../lib/messages/securityLabels';
 
 export const getUserMentionsByChannel = async (
 	userId: string,
@@ -24,5 +25,5 @@ export const getUserMentionsByChannel = async (
 		});
 	}
 
-	return Messages.findVisibleByMentionAndRoomId(user.username, roomId, options).toArray();
+	return Messages.findVisibleByMentionAndRoomId(user.username, roomId, options, await getReaderAccess(userId)).toArray();
 };

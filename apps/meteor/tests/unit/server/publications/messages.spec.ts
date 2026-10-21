@@ -19,7 +19,10 @@ const messagesMock = {
 	findForUpdates: sinon.stub(),
 	trashFindDeletedAfter: sinon.stub(),
 	trashFind: sinon.stub(),
+	readableBy: sinon.stub().returns({ $and: [{ readable: true }] }),
 };
+
+const readerAccess = [{ policyId: '2.999.1', classifications: [1], keys: [] }];
 
 const canAccessRoomIdAsyncStub = sinon.stub().resolves(true);
 const getChannelHistoryStub = sinon.stub();
@@ -52,6 +55,9 @@ const {
 	},
 	'@rocket.chat/models': {
 		Messages: messagesMock,
+	},
+	'../lib/messages/securityLabels': {
+		getReaderAccess: sinon.stub().resolves(readerAccess),
 	},
 });
 
@@ -350,5 +356,18 @@ describe('getMessageHistory', () => {
 		await getMessageHistory(rid, fromId, { lastUpdate, fromTs });
 
 		sinon.assert.calledWith(messagesMock.findForUpdates, rid, { updatedAt: { $gt: lastUpdate }, minTs: fromTs }, { sort: { ts: -1 } });
+	});
+
+	it('should only match updated and deleted messages the reader may read', async () => {
+		const lastUpdate = new Date('2024-01-02T00:00:00.000Z');
+
+		messagesMock.findForUpdates.returns({ toArray: sinon.stub().resolves([]) });
+		messagesMock.trashFindDeletedAfter.returns({ toArray: sinon.stub().resolves([]) });
+
+		await getMessageHistory(rid, fromId, { lastUpdate });
+
+		sinon.assert.calledWith(messagesMock.findForUpdates, rid, sinon.match.any, sinon.match.any, readerAccess);
+		sinon.assert.calledWith(messagesMock.readableBy, readerAccess);
+		sinon.assert.calledWith(messagesMock.trashFindDeletedAfter, lastUpdate, sinon.match({ rid, $and: [{ readable: true }] }));
 	});
 });

@@ -26,6 +26,7 @@ import type { FindOptions } from 'mongodb';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { eraseRoom } from '../../lib/eraseRoom';
+import { getReaderAccess } from '../../lib/messages/securityLabels';
 import { openRoom } from '../../lib/openRoom';
 import { getRoomByNameOrIdWithOptionToJoin } from '../../lib/rooms/getRoomByNameOrIdWithOptionToJoin';
 import { effectiveStatusFilter } from '../../lib/statusVisibility/effectiveStatus';
@@ -668,6 +669,7 @@ const dmMessagesAction = <Path extends string>(_path: Path): TypedAction<typeof 
 			...parseIds(starredIds, 'starred._id'),
 			...(pinned?.toLowerCase() === 'true' && { pinned: true }),
 			_hidden: { $ne: true },
+			...Messages.readableBy(await getReaderAccess(this.userId)),
 		};
 		const sortObj = sort || { ts: -1 };
 
@@ -817,7 +819,7 @@ const dmMessagesOthersAction = <Path extends string>(_name: Path): TypedAction<t
 
 		const { offset, count } = await getPaginationItems(this.queryParams);
 		const { sort, fields } = await this.parseJsonQuery();
-		const ourQuery = { rid: room._id };
+		const ourQuery = { rid: room._id, ...Messages.readableBy(await getReaderAccess(this.userId)) };
 
 		const { cursor, totalCount } = Messages.findPaginated<IMessage>(ourQuery, {
 			sort: sort || { ts: -1 },

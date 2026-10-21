@@ -1,20 +1,15 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
-import type { IMessage, IRoom, MessageTypesValues } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISecurityReaderAccess, MessageTypesValues } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import type { FindOptions } from 'mongodb';
 
-import { prepareMessagesForReader } from './securityLabels';
+import { getReaderAccess } from './securityLabels';
 import { settings } from '../../settings/cached';
 import { getHiddenSystemMessages } from '../messaging/getHiddenSystemMessages';
 import { normalizeMessagesForUser } from '../utils/lib/normalizeMessagesForUser';
 
 // The range query needs a closed upper bound; `new Date()` would drop client-stamped future `ts`.
 const FAR_FUTURE = new Date(8640000000000000);
-
-// Bounds how far a page looks past messages the reader may not read before giving up on filling it.
-const MAX_SCANNED_PAGES = 20;
-
-type Readable = (records: IMessage[]) => Promise<IMessage[]>;
 
 export type RoomHistoryCursor = {
 	next: string | null;
@@ -76,13 +71,14 @@ export async function loadRoomHistory({
 	}
 
 	const rid = room._id;
-	const readable: Readable = (records) => prepareMessagesForReader(records, userId);
+	// Queries only match what the reader may read, so pages, cursors and counts never account for anything else
+	const readerAccess = await getReaderAccess(userId);
 
 	const hiddenMessageTypes = getHiddenSystemMessages(room, settings.get<MessageTypesValues[]>('Hide_System_Messages'));
 
 	const { records, hasNewer, hasOlder } = around
-		? await loadAround({ rid, around, count, hiddenMessageTypes, showThreadMessages, readable })
-		: await loadPage({ rid, next, previous, count, hiddenMessageTypes, showThreadMessages, readable });
+		? await loadAround({ rid, around, count, hiddenMessageTypes, showThreadMessages, readerAccess })
+		: await loadPage({ rid, next, previous, count, hiddenMessageTypes, showThreadMessages, readerAccess });
 
 	const newest = records[0];
 	const oldest = records[records.length - 1];
@@ -94,15 +90,7 @@ export async function loadRoomHistory({
 
 	const [messages, unread] = await Promise.all([
 		normalizeMessagesForUser(records, userId),
-		computeUnread({
-			rid,
-			userId,
-			lastSeen,
-			oldest,
-			hiddenMessageTypes,
-			showThreadMessages,
-			readable: room.securityClearance ? readable : undefined,
-		}),
+		computeUnread({ rid, userId, lastSeen, oldest, hiddenMessageTypes, showThreadMessages, readerAccess }),
 	]);
 
 	return { messages, cursor, ...unread };
@@ -123,7 +111,7 @@ async function loadPage({
 	count,
 	hiddenMessageTypes,
 	showThreadMessages,
-	readable,
+	readerAccess,
 }: {
 	rid: IRoom['_id'];
 	next?: string;
@@ -131,50 +119,38 @@ async function loadPage({
 	count: number;
 	hiddenMessageTypes: MessageTypesValues[];
 	showThreadMessages: boolean;
-	readable: Readable;
+	readerAccess: ISecurityReaderAccess;
 }): Promise<Window> {
-	const fetchFrom = (boundary: Date, limit: number) => {
-		const options: FindOptions<IMessage> = { sort: { ts: next ? 1 : -1 }, limit };
-		return next
-			? Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
-					rid,
-					boundary,
-					FAR_FUTURE,
-					hiddenMessageTypes,
-					options,
-					showThreadMessages,
-				).toArray()
-			: Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(
-					rid,
-					boundary,
-					hiddenMessageTypes,
-					options,
-					showThreadMessages,
-				).toArray();
-	};
+	// One extra document reveals whether a further page exists.
+	const options: FindOptions<IMessage> = { sort: { ts: next ? 1 : -1 }, limit: count + 1 };
 
-	// One extra document reveals whether a further page exists. Messages the reader may not read are skipped
-	// while filling the page, so neither the page nor its cursors betray when they were sent.
-	const records: IMessage[] = [];
-	const cursor = next ?? previous;
-	let boundary = cursor ? decodeHistoryCursor(cursor) : FAR_FUTURE;
-	let exhausted = false;
-	for (let scanned = 0; scanned < MAX_SCANNED_PAGES && records.length <= count && !exhausted; scanned++) {
-		const limit = count + 1 - records.length;
-		// eslint-disable-next-line no-await-in-loop
-		const page = sortByTs(await fetchFrom(boundary, limit), next ? 1 : -1);
-		exhausted = page.length < limit;
-		if (page.length) {
-			boundary = page[page.length - 1].ts;
-		}
-		// eslint-disable-next-line no-await-in-loop
-		records.push(...(await readable(page)));
-	}
+	const records = next
+		? await Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
+				rid,
+				decodeHistoryCursor(next),
+				FAR_FUTURE,
+				hiddenMessageTypes,
+				options,
+				showThreadMessages,
+				false,
+				readerAccess,
+			).toArray()
+		: await Messages.findVisibleByRoomIdBeforeTimestampNotContainingTypes(
+				rid,
+				previous ? decodeHistoryCursor(previous) : FAR_FUTURE,
+				hiddenMessageTypes,
+				options,
+				showThreadMessages,
+				false,
+				readerAccess,
+			).toArray();
 
-	const hasMoreInPagingDirection = records.length > count || !exhausted;
+	sortByTs(records, next ? 1 : -1);
 
-	if (records.length > count) {
-		records.length = count;
+	const hasMoreInPagingDirection = records.length > count;
+
+	if (hasMoreInPagingDirection) {
+		records.pop();
 	}
 
 	if (next) {
@@ -196,14 +172,14 @@ async function loadAround({
 	count,
 	hiddenMessageTypes,
 	showThreadMessages,
-	readable,
+	readerAccess,
 }: {
 	rid: IRoom['_id'];
 	around: IMessage;
 	count: number;
 	hiddenMessageTypes: MessageTypesValues[];
 	showThreadMessages: boolean;
-	readable: Readable;
+	readerAccess: ISecurityReaderAccess;
 }): Promise<Window> {
 	// A non-positive count would produce a Mongo `limit: 0`, which means "no limit".
 	const remaining = Math.max(count, 1) - 1;
@@ -217,6 +193,8 @@ async function loadAround({
 			hiddenMessageTypes,
 			{ sort: { ts: -1 }, limit: olderLimit + 1 },
 			showThreadMessages,
+			false,
+			readerAccess,
 		).toArray(),
 		Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
 			rid,
@@ -225,6 +203,8 @@ async function loadAround({
 			hiddenMessageTypes,
 			{ sort: { ts: 1 }, limit: newerLimit + 1 },
 			showThreadMessages,
+			false,
+			readerAccess,
 		).toArray(),
 	]);
 
@@ -243,7 +223,7 @@ async function loadAround({
 	}
 
 	// The anchor is included whatever its type, so a jump always lands on its target.
-	return { records: [...(await readable(newer.reverse())), around, ...(await readable(older))], hasNewer, hasOlder };
+	return { records: [...newer.reverse(), around, ...older], hasNewer, hasOlder };
 }
 
 async function computeUnread({
@@ -253,7 +233,7 @@ async function computeUnread({
 	oldest,
 	hiddenMessageTypes,
 	showThreadMessages,
-	readable,
+	readerAccess,
 }: {
 	rid: IRoom['_id'];
 	userId?: string;
@@ -261,26 +241,10 @@ async function computeUnread({
 	oldest?: IMessage;
 	hiddenMessageTypes: MessageTypesValues[];
 	showThreadMessages: boolean;
-	readable?: Readable;
+	readerAccess: ISecurityReaderAccess;
 }): Promise<{ firstUnread?: IMessage; unreadNotLoaded?: number }> {
 	if (!lastSeen || Number.isNaN(lastSeen.getTime()) || !oldest || !(new Date(oldest.ts) > lastSeen)) {
 		return { firstUnread: undefined, unreadNotLoaded: 0 };
-	}
-
-	// In a room that may hold labeled messages, only those the reader may read count as unread
-	if (readable) {
-		const unread = await readable(
-			await Messages.findVisibleByRoomIdBetweenTimestampsNotContainingTypes(
-				rid,
-				lastSeen,
-				oldest.ts,
-				hiddenMessageTypes,
-				{ sort: { ts: 1 } },
-				showThreadMessages,
-			).toArray(),
-		);
-		const [firstUnread] = await normalizeMessagesForUser(unread.slice(0, 1), userId);
-		return { firstUnread, unreadNotLoaded: unread.length };
 	}
 
 	const [firstUnreadRecords, unreadNotLoaded] = await Promise.all([
@@ -291,8 +255,18 @@ async function computeUnread({
 			hiddenMessageTypes,
 			{ limit: 1, sort: { ts: 1 } },
 			showThreadMessages,
+			false,
+			readerAccess,
 		).toArray(),
-		Messages.countVisibleByRoomIdBetweenTimestampsNotContainingTypes(rid, lastSeen, oldest.ts, hiddenMessageTypes, showThreadMessages),
+		Messages.countVisibleByRoomIdBetweenTimestampsNotContainingTypes(
+			rid,
+			lastSeen,
+			oldest.ts,
+			hiddenMessageTypes,
+			showThreadMessages,
+			false,
+			readerAccess,
+		),
 	]);
 
 	const [firstUnread] = await normalizeMessagesForUser(firstUnreadRecords, userId);

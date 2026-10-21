@@ -4,48 +4,50 @@ import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const findBefore = sinon.stub();
-
-const label = { policyId: '2.999.1', classification: 4, categories: [] };
+const findBetween = sinon.stub();
+const countBetween = sinon.stub();
+const readerAccess = [{ policyId: '2.999.1', classifications: [1, 2, 3], keys: ['2.999.1.2|permissive|840'] }];
 
 const { loadRoomHistory } = proxyquire.noCallThru().load('../../../../../server/lib/messages/loadRoomHistory', {
-	'@rocket.chat/models': { Messages: { findVisibleByRoomIdBeforeTimestampNotContainingTypes: findBefore } },
+	'@rocket.chat/models': {
+		Messages: {
+			findVisibleByRoomIdBeforeTimestampNotContainingTypes: findBefore,
+			findVisibleByRoomIdBetweenTimestampsNotContainingTypes: findBetween,
+			countVisibleByRoomIdBetweenTimestampsNotContainingTypes: countBetween,
+		},
+	},
 	'../../settings/cached': { settings: { get: () => [] } },
 	'../utils/lib/normalizeMessagesForUser': { normalizeMessagesForUser: async (messages: unknown[]) => messages },
-	'./securityLabels': {
-		prepareMessagesForReader: async (messages: Array<{ securityLabel?: unknown }>) =>
-			messages.filter(({ securityLabel }) => !securityLabel),
-	},
+	'./securityLabels': { getReaderAccess: async (uid: string) => (uid === 'bob' ? readerAccess : []) },
 });
 
-// Each entry is a timestamp; negative ones mark messages the reader may not read.
-const pageOf = (...entries: number[]) => ({
-	toArray: async () =>
-		entries.map((entry, i) => ({ _id: `m${i}`, rid: 'room', ts: new Date(Math.abs(entry)), ...(entry < 0 && { securityLabel: label }) })),
+const pageOf = (...timestamps: number[]) => ({
+	toArray: async () => timestamps.map((ts, i) => ({ _id: `m${i}`, rid: 'room', ts: new Date(ts) })),
 });
 
-describe('loadRoomHistory with messages the reader may not read', () => {
-	it('leaves them out and keeps their timestamps out of the cursors', async () => {
+describe('loadRoomHistory reader access', () => {
+	it('limits the page, the first unread and the unread count to what the reader may read', async () => {
 		findBefore.reset();
-		findBefore.onFirstCall().returns(pageOf(4000, -3000, 2000));
-		findBefore.onSecondCall().returns(pageOf(-1500));
-		findBefore.onThirdCall().returns(pageOf());
+		findBefore.returns(pageOf(5000, 4000));
+		findBetween.reset();
+		findBetween.returns(pageOf(3000));
+		countBetween.reset();
+		countBetween.resolves(1);
 
-		const { messages, cursor } = await loadRoomHistory({ room: { _id: 'room' }, previous: '5000', count: 2 });
+		const { unreadNotLoaded } = await loadRoomHistory({ room: { _id: 'room' }, userId: 'bob', lastSeen: new Date(1000), count: 2 });
 
-		expect(messages.map(({ ts }: { ts: Date }) => ts.getTime())).to.deep.equal([4000, 2000]);
-		// The oldest record scanned is unreadable, so the page ends at the oldest readable one instead
-		expect(cursor).to.deep.equal({ next: '4000', previous: null });
+		expect(unreadNotLoaded).to.equal(1);
+		expect(findBefore.firstCall.args.at(-1)).to.equal(readerAccess);
+		expect(findBetween.firstCall.args.at(-1)).to.equal(readerAccess);
+		expect(countBetween.firstCall.args.at(-1)).to.equal(readerAccess);
 	});
 
-	it('keeps scanning past a page that only holds unreadable messages', async () => {
+	it('matches no labeled message for a reader without clearances', async () => {
 		findBefore.reset();
-		findBefore.onFirstCall().returns(pageOf(-4000, -3000, -2500));
-		findBefore.onSecondCall().returns(pageOf(2000, 1000, 500));
+		findBefore.returns(pageOf(5000));
 
-		const { messages, cursor } = await loadRoomHistory({ room: { _id: 'room' }, previous: '5000', count: 2 });
+		await loadRoomHistory({ room: { _id: 'room' }, count: 2 });
 
-		expect(messages.map(({ ts }: { ts: Date }) => ts.getTime())).to.deep.equal([2000, 1000]);
-		expect(cursor).to.deep.equal({ next: '2000', previous: '1000' });
-		expect(findBefore.secondCall.args[1].getTime()).to.equal(2500);
+		expect(findBefore.firstCall.args.at(-1)).to.deep.equal([]);
 	});
 });

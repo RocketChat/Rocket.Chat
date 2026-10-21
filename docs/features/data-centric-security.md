@@ -117,14 +117,19 @@ computes it for each reader.
 placeholder, no sender, no timestamp. To them the timeline looks as if it had never been sent, following CMBAC practice
 in XMPP. Each path enforces this as follows:
 
-- REST reads go through `prepareMessagesForReader`, which drops uncleared messages and attaches the marking to the rest.
-  An id that names an uncleared message gets the same response as an id that doesn't exist (`chat.getMessage`,
+- **In the query.** Each labeled message stores `securityAccess` when it is saved: the flattened form of its label (policy,
+  classification, the restrictive keys a reader must all hold, and one group per permissive tag, of which they must hold
+  one key). `accessRequirement` builds it and is tested to agree with `canAccess`. Message queries behind read paths add
+  the reader's clearance (`getReaderAccess`). Named finders take it as their last parameter, and callers that build their
+  own query use `Messages.readableBy`. So pages, cursors, `total`s, unread counts, search results and deletion feeds only
+  ever see what the reader may read. A labeled message without a stored requirement matches nobody. Requirements of
+  messages saved earlier are backfilled once policies load.
+- **After the query**, `prepareMessagesForReader` checks again with the in-memory decision and attaches markings. That
+  catches policy drift, for example a category removed from the SPIF after messages were saved.
+- An id that names an uncleared message gets the same response as an id that doesn't exist (`chat.getMessage`,
   `rooms.history?aroundId=`).
-- `rooms.history` drops messages before computing cursors and unread counts. It keeps scanning (up to 20 pages) past
-  runs of unreadable messages. So no cursor holds the timestamp of a message the reader can't see, and the unread count
-  only counts readable ones.
-- Search (`chat.search` and `rocketchatSearch.search`) drops them too, so a search can't confirm that a hidden match
-  exists.
+- Search (`chat.search` and `rocketchatSearch.search`) filters in the query too, so result counts can't confirm that a
+  hidden match exists.
 - The room stream sends a labeled message only to the members cleared for it (`watch.messages` carries `readers`), and
   nothing at all to anyone else. This happens per subscriber in `packages/streamer`, so it holds for monolith and
   microservice deployments alike.
@@ -137,16 +142,13 @@ in XMPP. Each path enforces this as follows:
 
 - Rooms under DCS show no last-message preview, and labeled messages don't bump them in the sidebar, even for readers
   who are cleared. Closing this means previews computed per reader instead of one stored on the room.
-- A labeled reply in a thread still updates the parent's thread counters (`tcount`, `tlm`) and the reply participants'
-  subscriptions.
+- A labeled reply in a thread still updates the parent's thread counters (`tcount`, `tlm`), which every reader of the
+  parent sees, and the reply participants' subscriptions. The same holds for discussion counts (`dcount`).
 - Typing indicators ("alice is typing") and read receipts reveal activity.
-- Endpoints that return a `total` (`groups.messages`, `chat.getThreadMessages`) count before filtering. Search pages can
-  come back shorter than their page size.
-- Exports, moderation, livechat and Apps-Engine reads are not filtered.
-
-The complete answer to the counts and paging channels is filtering inside the database query. That means storing each
-message's access requirement (classification, restrictive keys, permissive groups) alongside its label, and adding the
-reader's clearance to every message query.
+- Quoting a message copies its content into the new message (`BeforeSaveJumpToMessage`), so a SECRET message quoted
+  in an UNCLASSIFIED one is downgraded. Quotes need to carry the higher label, or be refused.
+- Exports, moderation, audit, omnichannel transcripts and Apps-Engine reads don't add the reader's clearance.
+- Queries on `securityAccess` are a residual filter on top of the existing `rid`/`ts` indexes. No dedicated index yet.
 
 ## Roadmap
 
@@ -155,7 +157,6 @@ reader's clearance to every message query.
 3. STANAG 4774 XML serialization and STANAG 4778 binding: XML-DSig with an administrator-configured X.509 key
 4. Model methods and indexes for labels and clearances ✔ (POC)
 5. Settings, policy loading at startup, license gate (`abac` module), checks on send and edit ✔ (POC)
-6. Total omission on every read path ✔ (POC, side channels above)
+6. Total omission on every read path ✔ (POC, side channels above), filtered inside message queries ✔
 7. REST: catalog per room, clearance administration ✔ (POC)
 8. Client: label picker, per-message badges, room banner ✔ (POC)
-9. Access filtering inside message queries, to close counts and paging

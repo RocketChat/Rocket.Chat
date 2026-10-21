@@ -1,11 +1,12 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, ISecurityLabel, IUser } from '@rocket.chat/core-typings';
-import { canAccess, clearanceForPolicy, displayMarking, validateLabel } from '@rocket.chat/dcs';
+import { accessRequirement, canAccess, clearanceForPolicy, displayMarking, readerAccess, validateLabel } from '@rocket.chat/dcs';
 import { Users } from '@rocket.chat/models';
 
 import { getRoomClassificationBanner } from '../../../../server/api/lib/getRoomClassificationBanner';
 import {
 	applyMessageSecurityLabel,
+	getReaderAccess,
 	listUsersNotClearedFor,
 	prepareMessagesForReader,
 } from '../../../../server/lib/messages/securityLabels';
@@ -22,7 +23,7 @@ const toStoredLabel = ({ policyId, classification, categories, creationDateTime 
 });
 
 const settleLabel = async (message: IMessage, room: IRoom, user: Pick<IUser, '_id'>): Promise<IMessage> => {
-	const { securityMarking: _marking, ...rest } = message;
+	const { securityMarking: _marking, securityAccess: _access, ...rest } = message;
 	const roomClearance = room.securityClearance;
 
 	if (!roomClearance) {
@@ -54,7 +55,8 @@ const settleLabel = async (message: IMessage, room: IRoom, user: Pick<IUser, '_i
 		throw new ClientSafeError('error-dcs-not-cleared-for-label', 'You are not cleared for this security label');
 	}
 
-	return { ...rest, securityLabel: toStoredLabel(label) };
+	const securityLabel = toStoredLabel(label);
+	return { ...rest, securityLabel, securityAccess: accessRequirement(policy, securityLabel) };
 };
 
 const isCleared = (label: ISecurityLabel, clearances: IUser['securityClearances']): boolean => {
@@ -107,6 +109,13 @@ export const registerDcsHooks = (): (() => void) => {
 		),
 		prepareMessagesForReader.patch((next, messages, uid) => (isEnabled() ? prepareForReader(messages, uid) : next(messages, uid))),
 		listUsersNotClearedFor.patch((next, message, userIds) => (isEnabled() ? notClearedAmong(message, userIds) : next(message, userIds))),
+		getReaderAccess.patch(async (next, uid) => {
+			if (!isEnabled() || !uid) {
+				return next(uid);
+			}
+			const reader = await Users.findOneById<Pick<IUser, 'securityClearances'>>(uid, { projection: { securityClearances: 1 } });
+			return readerAccess(reader?.securityClearances);
+		}),
 		getRoomClassificationBanner.patch(async (next, room) => {
 			const label = room.defaultSecurityLabel;
 			const policy = label && policies.find(label.policyId);

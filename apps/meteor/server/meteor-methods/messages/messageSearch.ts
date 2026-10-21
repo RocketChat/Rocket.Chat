@@ -5,7 +5,7 @@ import { Match, check } from 'meteor/check';
 
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
-import { prepareMessagesForReader } from '../../lib/messages/securityLabels';
+import { getReaderAccess, prepareMessagesForReader } from '../../lib/messages/securityLabels';
 import { parseMessageSearchQuery } from '../../lib/parseMessageSearchQuery';
 import type { IRawSearchResult } from '../../lib/search/model/ISearchResult';
 import { settings } from '../../settings';
@@ -79,6 +79,8 @@ export const messageSearch = async function (
 			$in: user?._id ? (await Subscriptions.findByUserId(user._id).toArray()).map((subscription: ISubscription) => subscription.rid) : [],
 		};
 	}
+
+	Object.assign(query, Messages.readableBy(await getReaderAccess(userId)));
 
 	try {
 		const docs = await Messages.find(query, {
