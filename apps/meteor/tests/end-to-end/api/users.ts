@@ -911,7 +911,7 @@ describe('[Users]', () => {
 				.expect(400);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'error-invalid-params');
+			expect(res.body).to.have.property('errorType', 'invalid-params');
 		});
 
 		it('should return an error when trying register new user with an existing username', async () => {
