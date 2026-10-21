@@ -1,0 +1,26 @@
+ee/packages/xmpp-server/src/jid/normalize.ts
+  s_e9337e86666589::t_ada7161e399cfd 12-13
+  s_e9337e86666589::t_45d3999d363002 5-6
+ee/packages/xmpp-server/src/jid/normalize.spec.ts
+  s_e9337e86666589::t_22b9f97ada752e 60-66
+ee/packages/xmpp-server/docs/specs/addressing.md
+  s_e9337e86666589::t_b0fffb7830d6e2 59-60
+  s_e9337e86666589::t_8d6384cb3b9e99 63-68
+  s_e9337e86666589::t_e4c46790039267 61-62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "41ef776dab932db740281731134069a6c4b626ee",
+  "prompts": {},
+  "sessions": {
+    "s_e9337e86666589": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5a3a76d3-1b29-4d70-9030-e71ad27ba8bb",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

@@ -1,0 +1,35 @@
+ee/packages/xmpp-server/src/service/helpers/remoteRoom.spec.ts
+  s_e9337e86666589::t_a7f4a4b867f668 41-49
+ee/packages/xmpp-server/src/service/helpers/remoteRoom.ts
+  s_e9337e86666589::t_2e0360933d898c 19-21
+ee/packages/xmpp-server/docs/specs/addressing.md
+  s_e9337e86666589::t_11fce41ef14eda 79-80
+apps/meteor/server/services/federation/utils.test.ts
+  s_848bf8e6bff91e::t_d4d818c6ddacd2 1-2,9
+ee/packages/xmpp-server/docs/specs/configuration-and-lifecycle.md
+  s_848bf8e6bff91e::t_4978e6a5d1e3f6 19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c443c33b7b9581f353bf5df228bbc0a481ace0c7",
+  "prompts": {},
+  "sessions": {
+    "s_848bf8e6bff91e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1b0fc686-87b0-46e3-aecd-5344b3467f9e",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    },
+    "s_e9337e86666589": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5a3a76d3-1b29-4d70-9030-e71ad27ba8bb",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

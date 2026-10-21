@@ -1,0 +1,19 @@
+apps/meteor/server/api/v1/im.ts
+  s_699c21f8808612::t_6465c77bcdec5c 937
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "738beaf4f35e8e7caa29cc4cb81ab9049b4eda70",
+  "prompts": {},
+  "sessions": {
+    "s_699c21f8808612": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bc613666-12e8-4cb3-840a-00452e745c7b",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
