@@ -254,32 +254,41 @@ export class ListenersModule {
 			notifications.notifyRoomInThisInstance(roomId, 'user-activity', user, isTyping ? ['user-typing'] : []);
 		});
 
-		service.onEvent('watch.messages', async ({ message, readers }) => {
+		service.onEvent('watch.messages', async ({ message, readers, variants }) => {
 			if (!message.rid) {
 				return;
 			}
 
-			// A labeled message reaches only the listed readers; everyone else receives nothing at all
+			// Users not in `readers` receive nothing at all; users in a variant receive their own copy
 			const allowedReaders = readers && new Set(readers);
-			const isReader = (sub: DDPSubscription) => !allowedReaders || allowedReaders.has(sub.subscription.userId ?? '');
+			const copies = new Map(variants?.flatMap((variant) => variant.readers.map((uid) => [uid, variant.message] as const)));
+			const messageFor = (sub: DDPSubscription) => {
+				const uid = sub.subscription.userId ?? '';
+				if (allowedReaders && !allowedReaders.has(uid)) {
+					return undefined;
+				}
+				return copies.get(uid) ?? message;
+			};
 
-			notifications.streamRoomMessage._emit('__my_messages__', [message], undefined, false, (streamer, sub, eventName, args, allowed) =>
-				isReader(sub)
+			notifications.streamRoomMessage._emit('__my_messages__', [message], undefined, false, (streamer, sub, eventName, args, allowed) => {
+				const copy = messageFor(sub);
+				return copy
 					? streamer.changedPayload(streamer.subscriptionName, 'id', {
 							eventName,
-							args: [...args, allowed],
+							args: [copy, ...args.slice(1), allowed],
 						})
-					: false,
-			);
+					: false;
+			});
 
-			if (!allowedReaders) {
+			if (!allowedReaders && !copies.size) {
 				notifications.streamRoomMessage.emitWithoutBroadcast(message.rid, message);
 				return;
 			}
 
-			notifications.streamRoomMessage._emit(message.rid, [message], undefined, false, (streamer, sub, eventName, args) =>
-				isReader(sub) ? streamer.changedPayload(streamer.subscriptionName, 'id', { eventName, args }) : false,
-			);
+			notifications.streamRoomMessage._emit(message.rid, [message], undefined, false, (streamer, sub, eventName) => {
+				const copy = messageFor(sub);
+				return copy ? streamer.changedPayload(streamer.subscriptionName, 'id', { eventName, args: [copy] }) : false;
+			});
 		});
 
 		service.onEvent('notify.messagesRead', ({ rid, until, tmid }): void => {

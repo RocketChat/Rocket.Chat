@@ -9,17 +9,21 @@ const modelsMock = { Messages: { findOneById: sinon.stub() } };
 const getMentionsMock = sinon.stub();
 const replyMock = sinon.stub();
 const callbacksRunAsyncMock = sinon.stub();
+const updateThreadUsersSubscriptionsMock = sinon.stub();
+const notifyOnMessageChangeMock = sinon.stub();
+const listUsersNotClearedForMock = sinon.stub();
 
 const { processThreads } = p.noCallThru().load('../../../../../server/hooks/messages/processThreads.ts', {
 	'@rocket.chat/models': modelsMock,
 	'meteor/meteor': { Meteor: { startup: sinon.stub() } },
-	'./notifyUsersOnMessage': { updateThreadUsersSubscriptions: sinon.stub(), getMentions: getMentionsMock },
+	'./notifyUsersOnMessage': { updateThreadUsersSubscriptions: updateThreadUsersSubscriptionsMock, getMentions: getMentionsMock },
 	'./sendNotificationsOnMessage': { sendMessageNotifications: sinon.stub() },
 	'../../lib/callbacks': {
 		callbacks: { runAsync: callbacksRunAsyncMock, add: sinon.stub(), remove: sinon.stub(), priority: { LOW: 'low' } },
 	},
 	'../../lib/messaging/threads/functions': { reply: replyMock },
-	'../../lib/notifyListener': { notifyOnMessageChange: sinon.stub() },
+	'../../lib/notifyListener': { notifyOnMessageChange: notifyOnMessageChangeMock },
+	'../../lib/messages/securityLabels': { listUsersNotClearedFor: listUsersNotClearedForMock },
 	'../../settings': { settings: { watch: sinon.stub() } },
 });
 
@@ -38,6 +42,22 @@ describe('processThreads', () => {
 		modelsMock.Messages.findOneById.resolves(parentMessage);
 		getMentionsMock.reset();
 		getMentionsMock.resolves({ mentionIds: [] });
+		updateThreadUsersSubscriptionsMock.reset();
+		notifyOnMessageChangeMock.reset();
+		listUsersNotClearedForMock.reset();
+		listUsersNotClearedForMock.resolves([]);
+	});
+
+	it('should involve only members cleared for a labeled reply, and update the parent only for them', async () => {
+		modelsMock.Messages.findOneById.resolves({ ...parentMessage, replies: ['alice', 'bob'] });
+		listUsersNotClearedForMock.resolves(['bob']);
+		const labeled = threadReply({ securityLabel: { policyId: '2.999.1', classification: 4, categories: [] } });
+
+		await processThreads(labeled, room);
+
+		expect(updateThreadUsersSubscriptionsMock.calledWith(labeled, ['alice'])).to.be.true;
+		expect(replyMock.firstCall.args[3]).to.deep.equal(['alice']);
+		expect(notifyOnMessageChangeMock.calledWith({ id: parentMessage._id, onlyReadersOf: labeled })).to.be.true;
 	});
 
 	it('should mark the thread as read for the author of the reply', async () => {

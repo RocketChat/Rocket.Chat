@@ -165,8 +165,12 @@ export type EventSignatures = {
 	 * One event for all of it, because there is one answer to all of it: read the conference again.
 	 */
 	'video-conference.updated'(data: { callId: VideoConference['_id'] }): void;
-	// readers lists who may receive a labeled message; nobody else is sent it
-	'watch.messages'(data: { message: IMessage; readers?: IUser['_id'][] }): void;
+	// readers lists who may receive the message, when not everyone may; variants replace it for the users they list
+	'watch.messages'(data: {
+		message: IMessage;
+		readers?: IUser['_id'][];
+		variants?: { readers: IUser['_id'][]; message: IMessage }[];
+	}): void;
 	'watch.roles'(
 		data:
 			| { clientAction: Exclude<ClientAction, 'removed'>; role: IRole }

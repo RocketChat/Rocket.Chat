@@ -1109,11 +1109,14 @@ const chatEndpoints = API.v1
 				msg: new RegExp(escapeRegExp(text || ''), 'i'),
 			};
 
+			// Labeled replies don't mark their parent as a thread, so the reader's own are looked up
+			const readerAccess = await getReaderAccess(this.userId);
+			const labeledThreadIds = await Messages.findThreadIdsOfReadableLabeledRepliesByRoomId(room._id, readerAccess);
 			const threadQuery = {
 				...typeThread,
 				rid: room._id,
-				tcount: { $exists: true },
-				...Messages.readableBy(await getReaderAccess(this.userId)),
+				$or: [{ tcount: { $exists: true } }, { _id: { $in: labeledThreadIds } }],
+				...Messages.readableBy(readerAccess),
 			};
 			const { cursor, totalCount } = await Messages.findPaginated<IThreadMainMessage>(threadQuery, {
 				sort: sort || { tlm: -1 },
@@ -1179,7 +1182,13 @@ const chatEndpoints = API.v1
 			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
 				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
 			}
-			const threadQuery = { rid, tcount: { $exists: true }, ...Messages.readableBy(await getReaderAccess(this.userId)) };
+			const readerAccess = await getReaderAccess(this.userId);
+			const labeledThreadIds = await Messages.findThreadIdsOfReadableLabeledRepliesByRoomId(rid, readerAccess);
+			const threadQuery = {
+				rid,
+				$or: [{ tcount: { $exists: true } }, { _id: { $in: labeledThreadIds } }],
+				...Messages.readableBy(readerAccess),
+			};
 			return API.v1.success({
 				threads: {
 					update: await prepareMessagesForReader(

@@ -138,6 +138,19 @@ in XMPP. Each path enforces this as follows:
 - The room document is shared by every member, so a labeled message never updates its `lastMessage`, activity time
   (`lm`) or message count.
 
+**Threads.** A parent message is shared by everyone who can read it, so its stored thread state (`tcount`, `tlm`,
+`replies`) and the thread-unread marks only ever reflect unlabeled replies. A labeled reply leaves them untouched and
+notifies, marks unread and makes followers only of members cleared for it. Readers see their own counts instead:
+- **REST reads:** `prepareMessagesForReader` adds the labeled replies the reader may read, using one aggregation per
+  page (`aggregateReadableLabeledReplyStatsByThreadIds`). A symbol-keyed marker keeps a second pass from counting them
+  twice, and never reaches the wire.
+- **Room stream:** when a parent with labeled replies changes, members are grouped by clearance and each group receives
+  its own copy (`watch.messages` `variants`).
+- **Live updates:** after a labeled reply, the parent is re-sent only to members cleared for that reply, so nobody else
+  gets an update at that moment.
+- **Thread lists:** these also include parents of readable labeled replies, because in a DCS room every reply is
+  labeled and none sets `tcount`.
+
 **Copies of content.** Content copied from one message into another may not lose its label:
 
 - **Quotes.** A message that quotes a labeled message must carry a label that dominates it (`dominates`): same policy,
@@ -155,8 +168,10 @@ in XMPP. Each path enforces this as follows:
 
 - Rooms under DCS show no last-message preview, and labeled messages don't bump them in the sidebar, even for readers
   who are cleared. Closing this means previews computed per reader instead of one stored on the room.
-- A labeled reply in a thread still updates the parent's thread counters (`tcount`, `tlm`), which every reader of the
-  parent sees, and the reply participants' subscriptions. The same holds for discussion counts (`dcount`).
+- Discussion counts (`dcount`) on a parent message still count discussions started from labeled messages.
+- Thread lists sort by the stored `tlm`, so a thread with only labeled replies sorts as if it had none. The
+  "following" filter uses the stored `replies`, so it misses threads someone follows only through labeled replies.
+- System messages, such as pin and discussion notices, carry labels but the UI doesn't render their marking yet.
 - Typing indicators ("alice is typing") and read receipts reveal activity.
 - A discussion started from a labeled message is a room whose name and members every invited user sees. Room names
   and topics are not labeled.

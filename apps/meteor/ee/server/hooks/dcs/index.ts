@@ -1,13 +1,14 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
-import type { IMessage, IRoom, ISecurityLabel, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISecurityLabel, IUser, ISecurityReaderAccess } from '@rocket.chat/core-typings';
 import { accessRequirement, canAccess, clearanceForPolicy, displayMarking, dominates, readerAccess, validateLabel } from '@rocket.chat/dcs';
-import { Users } from '@rocket.chat/models';
+import { Messages, Users } from '@rocket.chat/models';
 
 import { getRoomClassificationBanner } from '../../../../server/api/lib/getRoomClassificationBanner';
 import {
 	applyMessageSecurityLabel,
 	assertMayQuote,
 	getReaderAccess,
+	listMessageCopiesForReaders,
 	listUsersNotClearedFor,
 	prepareMessagesForReader,
 } from '../../../../server/lib/messages/securityLabels';
@@ -66,16 +67,51 @@ const isCleared = (label: ISecurityLabel, clearances: IUser['securityClearances'
 	return Boolean(policy && clearance && canAccess(policy, label, clearance));
 };
 
+// Marks messages whose thread counters already include the reader's labeled replies, so preparing twice adds nothing.
+// A symbol key survives object spreads but never reaches the wire.
+const threadCountersPrepared = Symbol('threadCountersPrepared');
+
+type ReplyStats = { count: number; lastTs: Date; users: IUser['_id'][] };
+
+const withLabeledReplies = <T extends Partial<IMessage>>(message: T, stats: ReplyStats | undefined): T => {
+	if (!stats) {
+		return message;
+	}
+	return {
+		...message,
+		tcount: (message.tcount ?? 0) + stats.count,
+		tlm: message.tlm && message.tlm > stats.lastTs ? message.tlm : stats.lastTs,
+		replies: [...new Set([...(message.replies ?? []), ...stats.users])],
+		[threadCountersPrepared]: true,
+	};
+};
+
+// Thread counters stored on a parent only count unlabeled replies; readers also see the labeled ones they may read
+const addReadableLabeledReplies = async <T extends Partial<IMessage>>(messages: T[], access: ISecurityReaderAccess): Promise<T[]> => {
+	const ids = messages.filter((message) => message._id && !(threadCountersPrepared in message)).map(({ _id }) => _id as string);
+	if (!ids.length || !access.length) {
+		return messages;
+	}
+	const stats = new Map(
+		(await Messages.aggregateReadableLabeledReplyStatsByThreadIds(ids, access)).map(({ _id, ...rest }) => [_id, rest] as const),
+	);
+	if (!stats.size) {
+		return messages;
+	}
+	return messages.map((message) => (message._id ? withLabeledReplies(message, stats.get(message._id)) : message));
+};
+
 const prepareForReader = async <T extends Partial<IMessage>>(messages: T[], uid?: IUser['_id']): Promise<T[]> => {
-	if (!messages.some(({ securityLabel }) => securityLabel)) {
+	if (!messages.length) {
 		return messages;
 	}
 
 	const reader = uid
 		? await Users.findOneById<Pick<IUser, 'securityClearances' | 'language'>>(uid, { projection: { securityClearances: 1, language: 1 } })
 		: null;
+	const withReplies = await addReadableLabeledReplies(messages, readerAccess(reader?.securityClearances));
 
-	return messages.flatMap((message) => {
+	return withReplies.flatMap((message) => {
 		const label = message.securityLabel;
 		if (!label) {
 			return [message];
@@ -115,6 +151,39 @@ const assertQuotesDominated = async (message: IMessage, quoted: IMessage[]): Pro
 	}
 };
 
+// One copy of a thread parent per group of members whose clearances let them read the same labeled replies
+const parentCopiesForReaders = async (
+	message: IMessage,
+	members: () => Promise<IUser['_id'][]>,
+): Promise<{ readers: IUser['_id'][]; message: IMessage }[]> => {
+	if (!(await Messages.hasLabeledRepliesByThreadId(message._id))) {
+		return [];
+	}
+	const users = await Users.findByIds<Pick<IUser, '_id' | 'securityClearances'>>(await members(), {
+		projection: { securityClearances: 1 },
+	}).toArray();
+
+	const groups = new Map<string, { access: ISecurityReaderAccess; readers: IUser['_id'][] }>();
+	for (const { _id, securityClearances } of users) {
+		const access = readerAccess(securityClearances);
+		if (!access.length) {
+			continue;
+		}
+		const key = JSON.stringify(access);
+		const group = groups.get(key) ?? { access, readers: [] };
+		group.readers.push(_id);
+		groups.set(key, group);
+	}
+
+	const copies = await Promise.all(
+		[...groups.values()].map(async ({ access, readers }) => {
+			const [stats] = await Messages.aggregateReadableLabeledReplyStatsByThreadIds([message._id], access);
+			return stats && { readers, message: withLabeledReplies(message, stats) };
+		}),
+	);
+	return copies.filter((copy): copy is { readers: IUser['_id'][]; message: IMessage } => Boolean(copy));
+};
+
 /**
  * Turns on enforcement of message security labels, and returns how to turn it off again.
  */
@@ -125,6 +194,9 @@ export const registerDcsHooks = (): (() => void) => {
 		),
 		prepareMessagesForReader.patch((next, messages, uid) => (isEnabled() ? prepareForReader(messages, uid) : next(messages, uid))),
 		listUsersNotClearedFor.patch((next, message, userIds) => (isEnabled() ? notClearedAmong(message, userIds) : next(message, userIds))),
+		listMessageCopiesForReaders.patch((next, message, members) =>
+			isEnabled() ? parentCopiesForReaders(message, members) : next(message, members),
+		),
 		assertMayQuote.patch((next, message, quoted) => (isEnabled() ? assertQuotesDominated(message, quoted) : next(message, quoted))),
 		getReaderAccess.patch(async (next, uid) => {
 			if (!isEnabled() || !uid) {

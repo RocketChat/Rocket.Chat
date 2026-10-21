@@ -373,6 +373,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		tmids: IMessage['_id'][],
 		readerAccess: ISecurityReaderAccess,
 	): Promise<{ _id: IMessage['_id']; count: number; lastTs: Date; users: IUser['_id'][] }[]>;
+	findThreadIdsOfReadableLabeledRepliesByRoomId(rid: IRoom['_id'], readerAccess: ISecurityReaderAccess): Promise<IMessage['_id'][]>;
 	hasLabeledRepliesByThreadId(tmid: IMessage['_id']): Promise<boolean>;
 	updateRepliesByThreadId(tmid: string, replies: string[], ts: Date): Promise<UpdateResult>;
 	refreshDiscussionMetadata(room: Pick<IRoom, '_id' | 'msgs' | 'lm'>): Promise<null | WithId<IMessage>>;

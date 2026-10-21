@@ -1794,6 +1794,16 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			.toArray();
 	}
 
+	findThreadIdsOfReadableLabeledRepliesByRoomId(rid: IRoom['_id'], readerAccess: ISecurityReaderAccess): Promise<IMessage['_id'][]> {
+		return this.col.distinct(
+			'tmid',
+			withReaderAccess(
+				{ rid, tmid: { $exists: true }, securityLabel: { $exists: true }, _hidden: { $ne: true } } as Filter<IMessage>,
+				readerAccess,
+			),
+		) as Promise<IMessage['_id'][]>;
+	}
+
 	async hasLabeledRepliesByThreadId(tmid: IMessage['_id']): Promise<boolean> {
 		return Boolean(await this.findOne({ tmid, securityLabel: { $exists: true } }, { projection: { _id: 1 } }));
 	}

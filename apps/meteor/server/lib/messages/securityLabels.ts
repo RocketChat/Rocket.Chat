@@ -66,3 +66,11 @@ export const securityFieldsOf = (
 	source: Pick<IMessage, 'securityLabel' | 'securityAccess'>,
 ): Pick<IMessage, 'securityLabel' | 'securityAccess'> =>
 	source.securityLabel ? { securityLabel: source.securityLabel, securityAccess: source.securityAccess } : {};
+
+/**
+ * Copies of a message that differ per reader, each with the members it goes to; without data-centric security a message
+ * is the same for everyone.
+ */
+export const listMessageCopiesForReaders = makeFunction(
+	async (_message: IMessage, _members: () => Promise<IUser['_id'][]>): Promise<{ readers: IUser['_id'][]; message: IMessage }[]> => [],
+);
