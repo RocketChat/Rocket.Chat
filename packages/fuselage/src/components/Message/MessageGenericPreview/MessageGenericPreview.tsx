@@ -10,7 +10,7 @@ import { plainDiv } from '../messageStyles';
 
 export const previewContextColor = toCSSValue('--rcx-message-generic-preview-context-color', textIconColors['font-secondary-info']);
 export const previewTitleColor = toCSSValue('--rcx-message-generic-preview-title-color', textIconColors['font-default']);
-export const previewBorderRadius = toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!);
+export const previewBorderRadius = toCSSValue('--rcx-border-radius-medium', borderRadius('medium'));
 
 const MessageGenericPreviewFrame = styled(Text, {
 	...plainDiv,

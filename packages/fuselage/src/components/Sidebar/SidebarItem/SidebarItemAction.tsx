@@ -37,7 +37,7 @@ const SidebarItemActionFrame = styled(Text, {
 		'focus-within': toCSSValue('--rcx-link-focus-color', fontDefault),
 		'press': sidebarColorFontActive,
 	},
-	borderRadius: { 'default': toCSSValue('--rcx-border-radius-small', borderRadius('small')!), 'focus-visible': focusBorderRadius },
+	borderRadius: { 'default': toCSSValue('--rcx-border-radius-small', borderRadius('small')), 'focus-visible': focusBorderRadius },
 	backgroundColor: { hover: sidebarColorSurfaceHover },
 	fontFamily: fontFamily('sans'),
 	fontVariantNumeric: 'tabular-nums',

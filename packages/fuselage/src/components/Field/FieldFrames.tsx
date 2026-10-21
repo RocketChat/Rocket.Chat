@@ -4,7 +4,7 @@ import { fontColor, fontScale, spacing } from '../../styleTokens';
 import { labelBoxDefaults } from '../Label/Label';
 
 const typography = (name: 'p2' | 'c1') => {
-	const { fontSize, fontWeight, lineHeight, letterSpacing } = fontScale(name)!;
+	const { fontSize, fontWeight, lineHeight, letterSpacing } = fontScale(name);
 	return { fontSize, fontWeight: fontWeight as 400, lineHeight, letterSpacing };
 };
 

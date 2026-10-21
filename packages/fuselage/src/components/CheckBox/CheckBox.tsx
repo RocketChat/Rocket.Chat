@@ -14,7 +14,7 @@ const CheckBoxFake = styled(createSelectionButtonFake('empty'), {
 	display: 'flex',
 	justifyContent: 'center',
 	alignItems: 'center',
-	borderRadius: toCSSValue('--rcx-check-box-border-radius', toCSSValue('--rcx-border-radius-small', borderRadius('small')!)),
+	borderRadius: toCSSValue('--rcx-check-box-border-radius', toCSSValue('--rcx-border-radius-small', borderRadius('small'))),
 	width: size('x20'),
 });
 

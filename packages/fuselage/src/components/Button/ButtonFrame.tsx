@@ -13,14 +13,15 @@ import {
 } from './buttonColors';
 import { getForcedState, isForcedDisabled } from '../../helpers/getForcedState';
 import { borderWidth, fontFamily, fontScale, size, spacing } from '../../styleTokens';
+import type { FontScaleName } from '../../styleTokens';
 
 // the token's numeric `fontWeight` is wider than Tamagui's weight union
-const font = (name: string) => fontScale(name) as object;
+const font = (name: FontScaleName) => fontScale(name) as object;
 
-const rectangularSize = (height: number, paddingX: number, lineHeightScale: string) => ({
+const rectangularSize = (height: number, paddingX: number, lineHeightScale: FontScaleName) => ({
 	minWidth: `calc(${size(`x${height}`)} * 2)`,
 	height: size(`x${height}`),
-	paddingBlock: `calc((${spacing(`x${height}`)} - ${fontScale(lineHeightScale)!.lineHeight}) / 2 - 2px)`,
+	paddingBlock: `calc((${spacing(`x${height}`)} - ${fontScale(lineHeightScale).lineHeight}) / 2 - 2px)`,
 	paddingInline: `calc(${spacing(`x${paddingX}`)} - 2px)`,
 });
 

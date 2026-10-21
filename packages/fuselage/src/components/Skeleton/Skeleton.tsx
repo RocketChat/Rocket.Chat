@@ -20,7 +20,7 @@ const SkeletonFrame = styled(View, {
 	height: '1.2em',
 	animation: 'rcx-skeleton__animation 1s linear 0s infinite running',
 	opacity: 0.1,
-	borderRadius: toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!),
+	borderRadius: toCSSValue('--rcx-border-radius-medium', borderRadius('medium')),
 	background: `repeat 0% 0%/100vw 100% linear-gradient(to right, ${skeletonColor}, color-mix(in srgb, ${skeletonColor}, transparent 50%) 50%, ${skeletonColor})`,
 
 	variants: {
@@ -33,7 +33,7 @@ const SkeletonFrame = styled(View, {
 			},
 			rect: {},
 			circle: {
-				borderRadius: toCSSValue('--rcx-border-radius-full', borderRadius('full')!),
+				borderRadius: toCSSValue('--rcx-border-radius-full', borderRadius('full')),
 			},
 		},
 	} as const,

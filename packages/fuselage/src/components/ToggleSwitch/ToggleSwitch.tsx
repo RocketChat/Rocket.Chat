@@ -14,7 +14,7 @@ import {
 } from '../CheckBox/SelectionButtonFrames';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-const toggleSwitchRadius = toCSSValue('--rcx-toggle-switch-border-radius', toCSSValue('--rcx-border-radius-full', borderRadius('full')!));
+const toggleSwitchRadius = toCSSValue('--rcx-toggle-switch-border-radius', toCSSValue('--rcx-border-radius-full', borderRadius('full')));
 const onPrimary = toCSSColorValue('button-font-on-primary', buttonTokens.light.fontOnPrimary);
 
 const ToggleSwitchFake = styled(createSelectionButtonFake('off'), {

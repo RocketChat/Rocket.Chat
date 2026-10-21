@@ -10,7 +10,7 @@ import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 const progressBarBorderRadius = toCSSValue(
 	'--rcx-progress-bar-border-radius',
-	toCSSValue('--rcx-border-radius-large', borderRadius('large')!),
+	toCSSValue('--rcx-border-radius-large', borderRadius('large')),
 );
 
 const resetBox = {

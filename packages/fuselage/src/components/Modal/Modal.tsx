@@ -62,12 +62,12 @@ const innerStyle = css`
 	min-width: 0;
 	padding: 0;
 	color: ${textIconColors['font-default']};
-	border-radius: ${toCSSValue('--rcx-modal-border-radius', toCSSValue('--rcx-border-radius-large', borderRadius('large')!))};
+	border-radius: ${toCSSValue('--rcx-modal-border-radius', toCSSValue('--rcx-border-radius-large', borderRadius('large')))};
 	background-color: ${surfaceColors['surface-light']};
-	letter-spacing: ${fontScale('p2')!.letterSpacing};
-	font-size: ${fontScale('p2')!.fontSize};
-	font-weight: ${fontScale('p2')!.fontWeight};
-	line-height: ${fontScale('p2')!.lineHeight};
+	letter-spacing: ${fontScale('p2').letterSpacing};
+	font-size: ${fontScale('p2').fontSize};
+	font-weight: ${fontScale('p2').fontWeight};
+	line-height: ${fontScale('p2').lineHeight};
 `;
 
 const Modal = ({ children, wrapper = Box, wrapperFunction, ...props }: ModalProps) => {

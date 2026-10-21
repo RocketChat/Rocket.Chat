@@ -21,7 +21,7 @@ export type ToastBarProps = {
 	buttonLabel?: string;
 } & Omit<AllHTMLAttributes<HTMLElement>, 'is'>;
 
-const toastBarBorderRadius = toCSSValue('--rcx-toastbar-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!));
+const toastBarBorderRadius = toCSSValue('--rcx-toastbar-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium')));
 
 const ToastBarFrame = styled(View, {
 	display: 'block',

@@ -7,7 +7,7 @@ import type { BoxProps } from '../Box';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 import { labelBoxDefaults } from '../Label/Label';
 
-const p2m = fontScale('p2m')!;
+const p2m = fontScale('p2m');
 
 // The wrapper used to render as `Label`, so it keeps the `Label` styles the input box did not override
 const InputBoxWrapperFrame = styled(Text, {

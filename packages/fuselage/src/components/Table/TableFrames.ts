@@ -20,7 +20,7 @@ const tableBoxStyle = {
 } as const;
 
 const toFontStyle = (name: 'p2' | 'c2') => {
-	const scale = fontScale(name)!;
+	const scale = fontScale(name);
 
 	return {
 		fontSize: scale.fontSize,
@@ -156,6 +156,6 @@ export const TableSelectionFrame = styled(View, {
 	...tableBoxStyle,
 	flexDirection: 'row',
 	color: String(textIconColors['font-titles-labels']),
-	borderRadius: toCSSValue('--rcx-table-selected-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!)),
+	borderRadius: toCSSValue('--rcx-table-selected-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium'))),
 	backgroundColor: String(surfaceColors['surface-neutral']),
 });

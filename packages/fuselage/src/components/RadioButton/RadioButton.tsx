@@ -17,7 +17,7 @@ const RadioButtonFake = styled(createSelectionButtonFake('empty'), {
 	display: 'flex',
 	justifyContent: 'center',
 	alignItems: 'center',
-	borderRadius: toCSSValue('--rcx-border-radius-full', borderRadius('full')!),
+	borderRadius: toCSSValue('--rcx-border-radius-full', borderRadius('full')),
 	width: size('x20'),
 });
 
@@ -28,7 +28,7 @@ const RadioButtonDot = styled(View, {
 	visibility: 'hidden',
 	width: '0.375rem',
 	height: '0.375rem',
-	borderRadius: toCSSValue('--rcx-border-radius-full', borderRadius('full')!),
+	borderRadius: toCSSValue('--rcx-border-radius-full', borderRadius('full')),
 	backgroundColor: 'currentColor',
 });
 
