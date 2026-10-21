@@ -22,9 +22,6 @@
 	"dependencies": {
 		"vite": "~8.2.2"
 	},
-	"devDependencies": {
-		"eslint": "~10.12.0"
-	},
 	"engines": {
 		"node": ">=22.12.0"
 	},

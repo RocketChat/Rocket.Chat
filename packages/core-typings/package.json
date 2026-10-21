@@ -35,7 +35,6 @@
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@types/express": "^4.17.25",
 		"@typescript/native-preview": "7.0.0-dev.20260707.2",
-		"eslint": "~10.12.0",
 		"mongodb": "6.16.0",
 		"npm-run-all": "~4.1.5",
 		"rimraf": "^6.0.1",

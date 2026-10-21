@@ -28,8 +28,7 @@ describe('isRecord', () => {
 		['case-4', Object.create(null), true],
 		['case-5', { 0: 'zero', 1: 'one' }, true],
 		['case-6', { [Symbol('key')]: 'value' }, true],
-		// we testing, we ignore eslint
-		// oxlint-disable-next-line no-new-wrappers
+		// oxlint-disable-next-line no-new-wrappers -- a wrapper object is the case under test
 		['case-7', new String('string'), false],
 		// oxlint-disable-next-line no-new-wrappers
 		['case-8', new Number(1), false],

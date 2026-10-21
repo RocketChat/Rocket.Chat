@@ -20,7 +20,6 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/tsconfig": "workspace:*",
-		"eslint": "~10.12.0",
 		"mongodb": "6.16.0",
 		"typescript": "~7.0.2"
 	},
