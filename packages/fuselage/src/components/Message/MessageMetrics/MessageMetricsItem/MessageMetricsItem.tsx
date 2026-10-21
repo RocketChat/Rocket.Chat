@@ -1,10 +1,10 @@
-import { styled, Text, type GetProps } from '@tamagui/web';
+import { styled, Text } from '@tamagui/web';
 import type { HTMLAttributes } from 'react';
 
 import { textIconColors } from '../../../../Theme';
-import { prependClassName } from '../../../../helpers/prependClassName';
+import { asPublicFrame } from '../../../../helpers/asPublicFrame';
+import { variantClass } from '../../../../helpers/variantClass';
 import { spacing } from '../../../../styleTokens';
-import { withFuselageProvider } from '../../../FuselageProvider/FuselageProvider';
 import { plainDiv, textScale } from '../../messageStyles';
 
 const MessageMetricsItemFrame = styled(Text, {
@@ -15,15 +15,14 @@ const MessageMetricsItemFrame = styled(Text, {
 	alignItems: 'center',
 	marginInline: spacing('x4'),
 	color: String(textIconColors['font-default']),
+
+	variants: {
+		rcx: { true: variantClass('rcx-message-metrics__item') },
+	} as const,
+
+	defaultVariants: { rcx: true },
 });
 
 export type MessageMetricsItemProps = HTMLAttributes<HTMLDivElement>;
 
-const MessageMetricsItem = ({ className, ...props }: MessageMetricsItemProps) => (
-	<MessageMetricsItemFrame
-		className={prependClassName(className, 'rcx-message-metrics__item')}
-		{...(props as GetProps<typeof MessageMetricsItemFrame>)}
-	/>
-);
-
-export default withFuselageProvider(MessageMetricsItem);
+export default asPublicFrame<MessageMetricsItemProps>(MessageMetricsItemFrame);

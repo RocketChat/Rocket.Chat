@@ -1,9 +1,10 @@
-import { styled, View, type GetProps } from '@tamagui/web';
+import { styled, View } from '@tamagui/web';
 import type { HTMLAttributes } from 'react';
 
 import { strokeColors, surfaceColors } from '../../Theme';
+import { asPublicFrame } from '../../helpers/asPublicFrame';
+import { variantClass } from '../../helpers/variantClass';
 import { borderWidth, spacing } from '../../styleTokens';
-import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 const NavBarFrame = styled(View, {
 	render: 'nav',
@@ -22,10 +23,14 @@ const NavBarFrame = styled(View, {
 	borderStyle: 'solid',
 	borderColor: String(strokeColors['stroke-light']),
 	backgroundColor: String(surfaceColors['surface-sidebar']),
+
+	variants: {
+		rcx: { true: variantClass('rcx-navbar') },
+	} as const,
+
+	defaultVariants: { rcx: true },
 });
 
 export type NavBarProps = HTMLAttributes<HTMLElement>;
 
-const NavBar = (props: NavBarProps) => <NavBarFrame className='rcx-navbar' {...(props as GetProps<typeof NavBarFrame>)} />;
-
-export default withFuselageProvider(NavBar);
+export default asPublicFrame<NavBarProps>(NavBarFrame);

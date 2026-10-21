@@ -1,17 +1,23 @@
-import type { GetProps } from '@tamagui/web';
+import { styled } from '@tamagui/web';
 import type { AllHTMLAttributes, ReactNode } from 'react';
 
 import { CardBlock } from './CardFrames';
-import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
+import { asPublicFrame } from '../../helpers/asPublicFrame';
+import { variantClass } from '../../helpers/variantClass';
 
 export type CardRowProps = {
 	children: ReactNode;
 } & AllHTMLAttributes<HTMLElement>;
 
-const CardRow = ({ children, ...props }: CardRowProps) => (
-	<CardBlock row flexGrow={1} className='rcx-card__row' {...(props as GetProps<typeof CardBlock>)}>
-		{children}
-	</CardBlock>
-);
+const CardRow = styled(CardBlock, {
+	row: true,
+	flexGrow: 1,
 
-export default withFuselageProvider(CardRow);
+	variants: {
+		rcx: { true: variantClass('rcx-card__row') },
+	} as const,
+
+	defaultVariants: { rcx: true },
+});
+
+export default asPublicFrame<CardRowProps>(CardRow);

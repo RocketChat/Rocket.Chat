@@ -1,10 +1,11 @@
-import { styled, Text, type GetProps } from '@tamagui/web';
+import { styled, Text } from '@tamagui/web';
 import type { HTMLAttributes } from 'react';
 
 import { strokeColors, surfaceColors, textIconColors } from '../../../Theme';
+import { asPublicFrame } from '../../../helpers/asPublicFrame';
 import { toCSSValue } from '../../../helpers/toCSSValue';
+import { variantClass } from '../../../helpers/variantClass';
 import { borderRadius, borderWidth } from '../../../styleTokens';
-import { withFuselageProvider } from '../../FuselageProvider/FuselageProvider';
 import { plainDiv } from '../messageStyles';
 
 export const previewContextColor = toCSSValue('--rcx-message-generic-preview-context-color', textIconColors['font-secondary-info']);
@@ -23,12 +24,14 @@ const MessageGenericPreviewFrame = styled(Text, {
 	borderRadius: previewBorderRadius,
 	backgroundColor: toCSSValue('--rcx-message-generic-preview-content-background-color', surfaceColors['surface-tint']),
 	fontSize: 0,
+
+	variants: {
+		rcx: { true: variantClass('rcx-message-generic-preview') },
+	} as const,
+
+	defaultVariants: { rcx: true },
 });
 
 export type MessageGenericPreviewProps = HTMLAttributes<HTMLDivElement>;
 
-const MessageGenericPreview = (props: MessageGenericPreviewProps) => (
-	<MessageGenericPreviewFrame className='rcx-message-generic-preview' {...(props as GetProps<typeof MessageGenericPreviewFrame>)} />
-);
-
-export default withFuselageProvider(MessageGenericPreview);
+export default asPublicFrame<MessageGenericPreviewProps>(MessageGenericPreviewFrame);

@@ -1,8 +1,9 @@
-import { styled, type GetProps } from '@tamagui/web';
+import { styled } from '@tamagui/web';
 import type { AllHTMLAttributes, ReactNode } from 'react';
 
 import { StatesBlockFrame } from './StatesSubtitle';
-import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
+import { asPublicFrame } from '../../helpers/asPublicFrame';
+import { variantClass } from '../../helpers/variantClass';
 
 export type StatesSuggestionListProps = {
 	children?: ReactNode;
@@ -12,12 +13,12 @@ const StatesSuggestionListFrame = styled(StatesBlockFrame, {
 	render: 'ul',
 	marginBlockEnd: 0,
 	listStyle: 'initial',
+
+	variants: {
+		rcx: { true: variantClass('rcx-states__list') },
+	} as const,
+
+	defaultVariants: { rcx: true },
 });
 
-const StatesSuggestionList = ({ children, ...props }: StatesSuggestionListProps) => (
-	<StatesSuggestionListFrame {...(props as GetProps<typeof StatesSuggestionListFrame>)} className='rcx-states__list'>
-		{children}
-	</StatesSuggestionListFrame>
-);
-
-export default withFuselageProvider(StatesSuggestionList);
+export default asPublicFrame<StatesSuggestionListProps>(StatesSuggestionListFrame);

@@ -2,7 +2,8 @@ import { styled, Text } from '@tamagui/web';
 import type { ReactNode } from 'react';
 
 import { textIconColors } from '../../../Theme';
-import { withFuselageProvider } from '../../FuselageProvider/FuselageProvider';
+import { asPublicFrame } from '../../../helpers/asPublicFrame';
+import { variantClass } from '../../../helpers/variantClass';
 import { boxText, textScale, truncatedText } from '../messageStyles';
 
 const ThreadMessageOriginFrame = styled(Text, {
@@ -16,12 +17,15 @@ const ThreadMessageOriginFrame = styled(Text, {
 	color: String(textIconColors['font-info']),
 
 	variants: {
+		rcx: { true: variantClass('rcx-message-thread__origin') },
 		system: {
-			true: {
+			true: variantClass('rcx-message-thread__origin--system', {
 				color: String(textIconColors['font-default']),
-			},
+			}),
 		},
 	} as const,
+
+	defaultVariants: { rcx: true },
 });
 
 export type ThreadMessageOriginProps = {
@@ -29,13 +33,4 @@ export type ThreadMessageOriginProps = {
 	system?: boolean;
 };
 
-const ThreadMessageOrigin = ({ children, system }: ThreadMessageOriginProps) => (
-	<ThreadMessageOriginFrame
-		system={system}
-		className={['rcx-message-thread__origin', system && 'rcx-message-thread__origin--system'].filter(Boolean).join(' ')}
-	>
-		{children}
-	</ThreadMessageOriginFrame>
-);
-
-export default withFuselageProvider(ThreadMessageOrigin);
+export default asPublicFrame<ThreadMessageOriginProps>(ThreadMessageOriginFrame);

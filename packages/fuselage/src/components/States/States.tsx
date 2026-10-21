@@ -1,9 +1,10 @@
-import { styled, View, type GetProps } from '@tamagui/web';
+import { styled, View } from '@tamagui/web';
 import type { AllHTMLAttributes, ReactNode } from 'react';
 
 import { textIconColors } from '../../Theme';
+import { asPublicFrame } from '../../helpers/asPublicFrame';
+import { variantClass } from '../../helpers/variantClass';
 import { spacing } from '../../styleTokens';
-import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 export type StatesProps = {
 	children?: ReactNode;
@@ -18,12 +19,12 @@ const StatesFrame = styled(View, {
 	boxSizing: 'content-box',
 	padding: spacing('x16'),
 	color: String(textIconColors['font-secondary-info']),
+
+	variants: {
+		rcx: { true: variantClass('rcx-states') },
+	} as const,
+
+	defaultVariants: { rcx: true },
 });
 
-const States = ({ children, ...props }: StatesProps) => (
-	<StatesFrame {...(props as GetProps<typeof StatesFrame>)} className='rcx-states'>
-		{children}
-	</StatesFrame>
-);
-
-export default withFuselageProvider(States);
+export default asPublicFrame<StatesProps>(StatesFrame);

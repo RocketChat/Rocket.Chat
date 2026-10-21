@@ -1,13 +1,20 @@
-import type { GetProps } from '@tamagui/web';
+import { styled } from '@tamagui/web';
 import type { HTMLAttributes } from 'react';
 
 import { CardBlock } from './CardFrames';
-import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
+import { asPublicFrame } from '../../helpers/asPublicFrame';
+import { variantClass } from '../../helpers/variantClass';
 
 export type CardControlsProps = HTMLAttributes<HTMLDivElement>;
 
-const CardControls = ({ ...props }: CardControlsProps) => (
-	<CardBlock row className='rcx-card__controls' {...(props as GetProps<typeof CardBlock>)} />
-);
+const CardControls = styled(CardBlock, {
+	row: true,
 
-export default withFuselageProvider(CardControls);
+	variants: {
+		rcx: { true: variantClass('rcx-card__controls') },
+	} as const,
+
+	defaultVariants: { rcx: true },
+});
+
+export default asPublicFrame<CardControlsProps>(CardControls);

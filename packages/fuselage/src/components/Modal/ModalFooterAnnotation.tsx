@@ -2,9 +2,10 @@ import { styled, Text } from '@tamagui/web';
 
 import { modalBoxFont } from './Modal';
 import { textIconColors } from '../../Theme';
+import { asPublicFrame } from '../../helpers/asPublicFrame';
+import { variantClass } from '../../helpers/variantClass';
 import { fontScale } from '../../styleTokens';
 import type { BoxProps } from '../Box';
-import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 export type ModalFooterAnnotationProps = BoxProps;
 
@@ -16,10 +17,12 @@ const ModalFooterAnnotationFrame = styled(Text, {
 	color: String(textIconColors['font-secondary-info']),
 	...modalBoxFont,
 	...(fontScale('c1') as object),
+
+	variants: {
+		rcx: { true: variantClass('rcx-modal__footer-annotation') },
+	} as const,
+
+	defaultVariants: { rcx: true },
 });
 
-const ModalFooterAnnotation = ({ children }: ModalFooterAnnotationProps) => (
-	<ModalFooterAnnotationFrame className='rcx-modal__footer-annotation'>{children}</ModalFooterAnnotationFrame>
-);
-
-export default withFuselageProvider(ModalFooterAnnotation);
+export default asPublicFrame<ModalFooterAnnotationProps>(ModalFooterAnnotationFrame);
