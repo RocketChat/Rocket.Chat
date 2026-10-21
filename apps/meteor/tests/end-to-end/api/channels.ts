@@ -1881,6 +1881,55 @@ describe('[Channels]', () => {
 		});
 	});
 
+	describe('/channels.invite with multiple users', () => {
+		let room: IRoom;
+		let users: TestUser<IUser>[];
+
+		before(async () => {
+			room = (await createRoom({ type: 'c', name: `channel.invite.multiple.${Date.now()}` })).body.channel;
+			users = await Promise.all([createUser(), createUser(), createUser(), createUser()]);
+		});
+
+		after(() => Promise.all([deleteRoom({ type: 'c', roomId: room._id }), ...users.map((user) => deleteUser(user))]));
+
+		it('should invite every user listed in userIds', async () => {
+			await request
+				.post(api('channels.invite'))
+				.set(credentials)
+				.send({ roomId: room._id, userIds: [users[0]._id, users[1]._id] })
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			const res = await request.get(api('channels.members')).set(credentials).query({ roomId: room._id }).expect(200);
+
+			expect(res.body.members.map((member: IUser) => member._id)).to.include.members([users[0]._id, users[1]._id]);
+		});
+
+		it('should invite every user listed in usernames', async () => {
+			await request
+				.post(api('channels.invite'))
+				.set(credentials)
+				.send({ roomName: room.name, usernames: [users[2].username, users[3].username] })
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			const res = await request.get(api('channels.members')).set(credentials).query({ roomId: room._id }).expect(200);
+
+			expect(res.body.members.map((member: IUser) => member._id)).to.include.members([users[2]._id, users[3]._id]);
+		});
+
+		it('should reject a request that mixes user IDs and usernames', async () => {
+			const res = await request
+				.post(api('channels.invite'))
+				.set(credentials)
+				.send({ roomId: room._id, userId: users[0]._id, usernames: [users[1].username] })
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+		});
+	});
+
 	describe('/channels.members', () => {
 		let testUser: TestUser<IUser>;
 
