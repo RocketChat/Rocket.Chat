@@ -6,13 +6,13 @@ import { test, expect } from './utils/test';
 // Meteor method that requires 2FA: there isn't one in the codebase right now
 // (every twoFactorRequired/`requireSecondFactor: true` user-facing surface is
 // a typed REST endpoint), and the bug we're guarding against lives inside
-// `ddpOverREST`'s `.catch` — a unit-style server fixture exercises it more
+// the client's REST method bridge — a unit-style server fixture exercises it more
 // reliably than wiring up TOTP for a real account.
 test.use({ storageState: Users.admin.state });
 
 const METHOD_NAME = 'rc-test-totp-flow';
 
-test.describe('account-totp ddpOverREST preserves the totp-required error', () => {
+test.describe('account-totp REST method bridge preserves the totp-required error', () => {
 	test('opens the TOTP modal when the REST envelope carries a `totp-required` DDP frame, and resolves on retry', async ({ page }) => {
 		await new Authenticated(page).goto();
 
@@ -68,9 +68,9 @@ test.describe('account-totp ddpOverREST preserves the totp-required error', () =
 			});
 		});
 
-		// Drive the call from the page so it goes through the client's callMethod —
-		// the same path the UI uses, where the catch handler used to drop
-		// `error: 'totp-required'` and the TOTP modal therefore never opened.
+		// Drive the call from the page so it goes through the client's callMethod →
+		// REST method bridge → process2faAsyncReturn — the path where the
+		// `error: 'totp-required'` frame must survive for the TOTP modal to open.
 		await page.evaluate((method) => {
 			(window as any).__totpCallResult = (window as any)
 				.__rocketChatCallMethod(method)

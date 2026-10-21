@@ -1,10 +1,11 @@
-// Single point of access to Meteor's DDP connection for code outside
-// client/meteor, so an SDK-only transport replaces one module instead of every
-// caller.
-import { Meteor } from 'meteor/meteor';
+// The client's method and subscription transport: DDPSDK and the REST method bridge, with no Meteor connection.
+import { Random } from '@rocket.chat/random';
 
+import { process2faAsyncReturn } from '../lib/2fa/process2faReturn';
+import { APIClient } from '../lib/RestApiClient';
+import { parseDDP, stringifyDDP } from '../lib/sdk/ddpProtocol';
 import { getDdpSdk } from '../lib/sdk/ddpSdk';
-import { isSdkTransportEnabled } from '../lib/sdk/sdkTransportEnabled';
+import { getUserId } from '../lib/user';
 
 export type ConnectionStatus = {
 	status: 'connected' | 'connecting' | 'failed' | 'waiting' | 'offline';
@@ -13,31 +14,109 @@ export type ConnectionStatus = {
 	retryTime?: number;
 };
 
-export const getConnectionStatus = (): ConnectionStatus => ({ ...Meteor.status() });
+const toStatus = (status: string): Pick<ConnectionStatus, 'status' | 'connected'> => {
+	switch (status) {
+		case 'connected':
+			return { status: 'connected', connected: true };
+		case 'connecting':
+		case 'reconnecting':
+			return { status: 'connecting', connected: false };
+		case 'failed':
+			return { status: 'failed', connected: false };
+		case 'closed':
+		case 'disconnected':
+			return { status: 'waiting', connected: false };
+		default:
+			return { status: 'offline', connected: false };
+	}
+};
 
-export const disconnect = () => Meteor.disconnect();
+export const getConnectionStatus = (): ConnectionStatus => {
+	const { connection } = getDdpSdk();
+	return { ...toStatus(connection.status), retryCount: connection.retryCount, retryTime: connection.nextRetryAt };
+};
 
-export const reconnect = () => Meteor.reconnect();
+// ServerProvider closes and reconnects DDPSDK itself.
+export const disconnect = (): void => undefined;
 
-export const callMethod = (method: string, ...args: unknown[]): Promise<any> => Meteor.callAsync(method, ...args);
+export const reconnect = (): void => undefined;
+
+// Deployments behind ddp-streamer only answer these over the socket; every other method goes through the
+// REST method bridge.
+const isSocketMethod = (method: string, args: unknown[]): boolean =>
+	method === 'logout' ||
+	method === 'setUserStatus' ||
+	method.startsWith('UserPresence:') ||
+	method.startsWith('stream-') ||
+	(method === 'login' && Boolean((args[0] as { resume?: string } | undefined)?.resume));
+
+const unwrapMethodResult = (message: string): unknown => {
+	const response = parseDDP(message) as { error?: unknown; result?: unknown };
+	if (response.error) {
+		throw response.error;
+	}
+	return response.result;
+};
+
+const callOverREST = async (method: string, params: unknown[]): Promise<any> => {
+	const endpoint = !getUserId() || method === 'login' ? 'method.callAnon' : 'method.call';
+
+	let body: { message?: unknown };
+	try {
+		body = await APIClient.post(`/v1/${endpoint}/${encodeURIComponent(method.replace(/\//g, ':'))}` as any, {
+			message: stringifyDDP({ msg: 'method', id: Random.id(), method, params }),
+		});
+	} catch (error) {
+		// Method errors (e.g. totp-required) come back as a 400 whose body still carries the DDP result frame.
+		const message = (error as { message?: unknown })?.message;
+		if (typeof message !== 'string' || !message.startsWith('{')) throw error;
+		body = { message };
+	}
+
+	if (typeof body.message !== 'string') {
+		throw body;
+	}
+	return unwrapMethodResult(body.message);
+};
+
+let pendingMethods = 0;
+
+// Only the calls themselves count as pending; waiting for the user to enter a second factor does not.
+const callMethodOnce = async (method: string, args: unknown[]): Promise<any> => {
+	pendingMethods++;
+	try {
+		return await (isSocketMethod(method, args) ? getDdpSdk().client.callAsync(method, ...args) : callOverREST(method, args));
+	} finally {
+		pendingMethods--;
+	}
+};
+
+export const callMethod = async (method: string, ...args: unknown[]): Promise<any> => {
+	try {
+		return await callMethodOnce(method, args);
+	} catch (error) {
+		// Methods guarded by a second factor retry with the code the user enters; login answers its own challenge.
+		if (method === 'login') throw error;
+		return process2faAsyncReturn({
+			error,
+			onCode: (twoFactorCode, twoFactorMethod) => callMethodOnce(method, [...args, { twoFactorCode, twoFactorMethod }]),
+			emailOrUsername: undefined,
+		});
+	}
+};
 
 export const callMethodWithoutResult = (method: string, ...args: unknown[]): void => {
-	Meteor.call(method, ...args);
+	void callMethod(method, ...args).catch((error) => console.warn(`[connection] ${method} failed`, error));
 };
 
-/** Whether method calls are still waiting for their results, which a store sync must not race */
-export const hasPendingMethods = (): boolean => Meteor.connection._outstandingMethodBlocks.length !== 0;
+export const hasPendingMethods = (): boolean => pendingMethods !== 0;
 
-export const onRawMessage = (listener: (rawMessage: string) => void): void => {
-	Meteor.connection._stream!.on('message', listener);
-};
+// Frames only reach DDPSDK's own listeners; there is no second socket to tap.
+export const onRawMessage = (_listener: (rawMessage: string) => void): void => undefined;
 
-export const subscribeRaw = (...args: Parameters<typeof Meteor.connection.subscribe>) => Meteor.connection.subscribe(...args);
+export const subscribeRaw = (name: string, ...args: unknown[]) => getDdpSdk().client.subscribe(name, ...args);
 
 /** The server's id for the connection this client is logged in on, which session-targeted events name. */
-export const getConnectionSessionId = (): string | undefined =>
-	(isSdkTransportEnabled()
-		? getDdpSdk().connection.session
-		: (Meteor.connection as unknown as { _lastSessionId?: string | null })._lastSessionId) ?? undefined;
+export const getConnectionSessionId = (): string | undefined => getDdpSdk().connection.session;
 
 window.__rocketChatCallMethod = callMethod;
