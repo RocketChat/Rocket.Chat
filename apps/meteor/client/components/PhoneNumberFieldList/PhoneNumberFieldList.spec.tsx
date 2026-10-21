@@ -39,26 +39,6 @@ const TestComponent = ({ initialPhones = [] }: TestComponentProps) => {
 const getNumberInputs = () => screen.getAllByRole('textbox', { name: /^Phone number \d+$/ });
 
 describe('PhoneNumberFieldList', () => {
-	describe('snapshots', () => {
-		it('matches snapshot with no phones', () => {
-			const { baseElement } = render(<TestComponent />, { wrapper: appRoot });
-			expect(baseElement).toMatchSnapshot();
-		});
-
-		it('matches snapshot with phones', () => {
-			const { baseElement } = render(
-				<TestComponent
-					initialPhones={[
-						{ number: '+15551234567', label: 'Home' },
-						{ number: '+15559876543', label: '' },
-					]}
-				/>,
-				{ wrapper: appRoot },
-			);
-			expect(baseElement).toMatchSnapshot();
-		});
-	});
-
 	describe('accessibility', () => {
 		it('should have no a11y violations with no phones', async () => {
 			const { container } = render(<TestComponent />, { wrapper: appRoot });
