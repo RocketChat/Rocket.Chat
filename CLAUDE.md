@@ -70,4 +70,5 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
 - [docs/adr/](docs/adr/) — architecture decision records
 - [docs/features/](docs/features/) — per-feature notes
   - [uikit/](docs/features/uikit/README.md) — UiKit blocks, surfaces, rendering, interactions; field reference and per-surface support matrix
+  - [data-centric-security.md](docs/features/data-centric-security.md) — message confidentiality labels and clearances: mapping to SPIF / STANAG 4774 / XEP-0258, access decision, label validity, markings, catalog
 - [docs/proposals/](docs/proposals/) — design proposals, not yet implemented

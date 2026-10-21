@@ -9869,6 +9869,21 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/dcs@workspace:ee/packages/dcs":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/dcs@workspace:ee/packages/dcs"
+  dependencies:
+    "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/tsconfig": "workspace:*"
+    "@types/node": "npm:~24.13.6"
+    "@xmldom/xmldom": "npm:^0.9.10"
+    eslint: "npm:~10.12.0"
+    jest: "npm:~30.5.2"
+    typescript: "npm:~7.0.2"
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/ddp-client@workspace:^, @rocket.chat/ddp-client@workspace:packages/ddp-client, @rocket.chat/ddp-client@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ddp-client@workspace:packages/ddp-client"
