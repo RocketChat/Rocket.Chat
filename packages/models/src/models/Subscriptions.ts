@@ -557,6 +557,14 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateMany(query, update);
 	}
 
+	setAlertForRoomIdExcludingUserIds(roomId: IRoom['_id'], userIds: IUser['_id'][]): Promise<UpdateResult | Document> {
+		return this.updateMany({ 'rid': roomId, 'u._id': { $nin: userIds }, 'alert': { $ne: true } }, { $set: { alert: true } });
+	}
+
+	setOpenForRoomIdExcludingUserIds(roomId: IRoom['_id'], userIds: IUser['_id'][]): Promise<UpdateResult | Document> {
+		return this.updateMany({ 'rid': roomId, 'u._id': { $nin: userIds }, 'open': { $ne: true } }, { $set: { open: true } });
+	}
+
 	setOpenForRoomIdExcludingUserId(roomId: IRoom['_id'], userId: IUser['_id']): Promise<UpdateResult | Document> {
 		const query = {
 			'rid': roomId,
@@ -1435,6 +1443,18 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		};
 
 		return this.updateMany(query, update);
+	}
+
+	incGroupMentionsAndUnreadForRoomIdExcludingUserIds(
+		roomId: IRoom['_id'],
+		userIds: IUser['_id'][],
+		incGroup = 1,
+		incUnread = 1,
+	): Promise<UpdateResult | Document> {
+		return this.updateMany(
+			{ 'rid': roomId, 'u._id': { $nin: userIds } },
+			{ $set: { alert: true, open: true }, $inc: { unread: incUnread, groupMentions: incGroup } },
+		);
 	}
 
 	incUserMentionsAndUnreadForRoomIdAndUserIds(
