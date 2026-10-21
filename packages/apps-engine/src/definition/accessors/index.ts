@@ -20,6 +20,7 @@ export type * from './ILivechatRead';
 export type * from './ILivechatUpdater';
 export * from './ILogEntry';
 export type * from './ILogger';
+export type * from './IMediaCallRead';
 export type * from './IMessageBuilder';
 export type * from './IMessageExtender';
 export type * from './IMessageRead';
