@@ -3,7 +3,7 @@ import EJSON from 'ejson';
 
 import { createMeteorBackedSdk, createMeteorBackedStorage } from './meteorBackedSdk';
 import { isSdkTransportEnabled } from './sdkTransportEnabled';
-import { onEmailVerificationLink, onPageLoadLogin, setConnectionUserId } from '../../meteor/accounts';
+import { isLoggingIn, onEmailVerificationLink, onPageLoadLogin, setConnectionUserId } from '../../meteor/accounts';
 import { getRootUrl } from '../meteorRuntimeConfig';
 import { STORAGE_KEYS, getStoredItem, removeStoredItem } from './storage';
 import { userIdStore } from '../user';
@@ -205,7 +205,8 @@ export const adoptAccountFromMeteorLoginResult = (result: unknown): void => {
 };
 
 const teardownAuthenticatedConnection = (): void => {
-	if (!instance) return;
+	// Closing the socket would fail a login already on it; that login authenticates the socket again.
+	if (!instance || isLoggingIn()) return;
 	try {
 		instance.connection.close();
 	} catch {
