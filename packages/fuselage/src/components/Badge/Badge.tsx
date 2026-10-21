@@ -36,7 +36,7 @@ const BadgeFrame = styled(Text, {
 	wordBreak: 'keep-all',
 	fontFamily: fontFamily('sans'),
 	fontVariantNumeric: 'tabular-nums',
-	borderRadius: toCSSValue('--rcx-badge-border-radius', toCSSValue('--rcx-border-radius-full', borderRadius('full')!)),
+	borderRadius: toCSSValue('--rcx-badge-border-radius', toCSSValue('--rcx-border-radius-full', borderRadius('full'))),
 	...(fontScale('micro') as { fontWeight: 700 }),
 
 	variants: {

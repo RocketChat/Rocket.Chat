@@ -40,7 +40,7 @@ const CalloutFrame = styled(View, {
 	borderWidth: borderWidth('default'),
 	borderStyle: 'solid',
 	borderColor: calloutColors.default,
-	borderRadius: toCSSValue('--rcx-callout-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!)),
+	borderRadius: toCSSValue('--rcx-callout-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium'))),
 	backgroundColor: toCSSValue('--rcx-callout-background-color', surfaceColors['surface-light']),
 	fontFamily: fontFamily('sans'),
 	fontVariantNumeric: 'tabular-nums',

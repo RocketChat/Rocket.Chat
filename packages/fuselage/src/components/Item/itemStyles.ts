@@ -26,13 +26,13 @@ export const itemRowStyle = {
 	listStyle: 'none',
 	whiteSpace: 'inherit',
 	wordWrap: 'inherit',
-	borderRadius: toCSSValue('--rcx-border-radius-small', borderRadius('small')!),
+	borderRadius: toCSSValue('--rcx-border-radius-small', borderRadius('small')),
 	fontFamily: fontFamily('sans'),
 } as const;
 
 /** Forced colors drop the box-shadow and paint the transparent outline instead. */
 export const focusRing = {
-	outlineWidth: borderWidth('medium')!,
+	outlineWidth: borderWidth('medium'),
 	outlineStyle: 'solid',
 	outlineColor: 'transparent',
 	outlineOffset: `calc(-1 * ${borderWidth('medium')})`,
@@ -89,7 +89,7 @@ export const centeredSlotStyle = {
 } as const;
 
 export const textStyle = (name: 'p2' | 'c1' | 'c2') => {
-	const { fontWeight, ...rest } = fontScale(name)!;
+	const { fontWeight, ...rest } = fontScale(name);
 	return { ...rest, fontWeight: fontWeight as 400 };
 };
 

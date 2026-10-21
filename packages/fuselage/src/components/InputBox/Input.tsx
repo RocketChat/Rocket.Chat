@@ -24,7 +24,7 @@ export const inputChrome = {
 		'focus': inputColor('focus-border-color', strokeColors['stroke-highlight']),
 		'press': inputColor('active-border-color', strokeColors['stroke-dark']),
 	},
-	borderRadius: toCSSValue('--rcx-input-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!)),
+	borderRadius: toCSSValue('--rcx-input-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium'))),
 	backgroundColor: inputColor('background-color', surfaceColors['surface-light']),
 	boxShadow: {
 		'default': 'none',
@@ -34,7 +34,7 @@ export const inputChrome = {
 	},
 } as const;
 
-const p2m = fontScale('p2m')!;
+const p2m = fontScale('p2m');
 
 const InputFrame = styled(View, {
 	render: 'input',

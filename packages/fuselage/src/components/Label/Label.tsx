@@ -19,7 +19,7 @@ export const labelBoxDefaults = {
 	wordWrap: 'inherit',
 } as const;
 
-const p2m = fontScale('p2m')!;
+const p2m = fontScale('p2m');
 
 const LabelFrame = styled(Text, {
 	render: 'label',

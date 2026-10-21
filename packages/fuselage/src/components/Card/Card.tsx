@@ -22,7 +22,7 @@ const CardFrame = styled(View, {
 	fontFamily: fontFamily('sans'),
 	fontVariantNumeric: 'tabular-nums',
 	color: toCSSValue('--rcx-card-color', textIconColors['font-default']),
-	borderRadius: toCSSValue('--rcx-border-radius-large', borderRadius('large')!),
+	borderRadius: toCSSValue('--rcx-border-radius-large', borderRadius('large')),
 	backgroundColor: cardBackgroundColor,
 
 	variants: {

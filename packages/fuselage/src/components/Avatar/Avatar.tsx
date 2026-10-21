@@ -8,7 +8,7 @@ import { borderRadius, borderWidth } from '../../styleTokens';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 const radius = (px: number, token: 'small' | 'medium' | 'large') => ({
-	borderRadius: toCSSValue(`--rcx-avatar-border-radius-${px}`, toCSSValue(`--rcx-border-radius-${token}`, borderRadius(token)!)),
+	borderRadius: toCSSValue(`--rcx-avatar-border-radius-${px}`, toCSSValue(`--rcx-border-radius-${token}`, borderRadius(token))),
 });
 
 const AvatarElementFrame = styled(View, {
@@ -53,7 +53,7 @@ const AvatarElementFrame = styled(View, {
 		},
 		rounded: {
 			true: {
-				borderRadius: toCSSValue('--rcx-avatar-border-radius-rounded', toCSSValue('--rcx-border-radius-full', borderRadius('full')!)),
+				borderRadius: toCSSValue('--rcx-avatar-border-radius-rounded', toCSSValue('--rcx-border-radius-full', borderRadius('full'))),
 			},
 		},
 	} as const,

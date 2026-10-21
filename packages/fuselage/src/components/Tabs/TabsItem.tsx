@@ -11,7 +11,7 @@ import { borderRadius, borderWidth, fontScale, size, spacing } from '../../style
 import type { BoxProps } from '../Box';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-const h4 = fontScale('h4')!;
+const h4 = fontScale('h4');
 
 const hoverColor = toCSSValue('--rcx-tabs-hover-border-color', textIconColors['font-default']);
 const activeColor = toCSSValue('--rcx-tabs-active-color', textIconColors['font-titles-labels']);
@@ -97,7 +97,7 @@ const TabsItemFrame = styled(Text, {
 	borderLeftColor: sideBorderColor,
 	borderRightColor: sideBorderColor,
 	borderRadius: {
-		'focus-visible': toCSSValue('--rcx-tabs-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!)),
+		'focus-visible': toCSSValue('--rcx-tabs-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium'))),
 	},
 	boxShadow: {
 		'focus-visible': `0 0 0 ${borderWidth('medium')} ${toCSSValue('--rcx-tabs-focus-shadow-color', strokeColors['stroke-extra-light-highlight'])}`,

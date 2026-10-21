@@ -21,7 +21,7 @@ const iconStyle = (variation: StatesIconProps['variation']) => css`
 	margin-block-end: 1.25rem;
 	padding: 1rem;
 	color: ${variation ? variationColors[variation] : textIconColors['font-secondary-info']};
-	border-radius: ${toCSSValue('--rcx-border-radius-full', borderRadius('full')!)};
+	border-radius: ${toCSSValue('--rcx-border-radius-full', borderRadius('full'))};
 	background-color: ${surfaceColors['surface-neutral']};
 `;
 

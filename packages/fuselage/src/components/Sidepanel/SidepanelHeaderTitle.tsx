@@ -6,7 +6,7 @@ import { asPublicFrame } from '../../helpers/asPublicFrame';
 import { variantClass } from '../../helpers/variantClass';
 import { fontScale } from '../../styleTokens';
 
-const h5 = fontScale('h5')!;
+const h5 = fontScale('h5');
 
 const SidepanelHeaderTitleFrame = styled(Text, {
 	render: 'div',
