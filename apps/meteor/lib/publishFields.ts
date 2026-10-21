@@ -128,4 +128,6 @@ export const roomFields = {
 
 	// ABAC fields
 	abacAttributes: 1,
+	securityClearance: 1,
+	defaultSecurityLabel: 1,
 } as const;

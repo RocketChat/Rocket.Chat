@@ -5,6 +5,7 @@ import { Subscriptions, Rooms } from '@rocket.chat/models';
 import moment from 'moment';
 
 import { callbacks } from '../../lib/callbacks';
+import { toWithheldMessage } from '../../lib/messages/securityLabels';
 import { messageContainsHighlight } from '../../lib/notifications/message/messageContainsHighlight';
 import {
 	notifyOnSubscriptionChanged,
@@ -177,7 +178,7 @@ export async function notifyUsersOnMessage(message: IMessage, room: IRoom, roomU
 			(!message.tmid || message.tshow) &&
 			(!room.lastMessage || room.lastMessage._id === message._id)
 		) {
-			Rooms.getLastMessageUpdateQuery(message, roomUpdater);
+			Rooms.getLastMessageUpdateQuery(message.securityLabel ? toWithheldMessage(message) : message, roomUpdater);
 		}
 
 		return message;
@@ -195,7 +196,12 @@ export async function notifyUsersOnMessage(message: IMessage, room: IRoom, roomU
 	}
 
 	// Update all the room activity tracker fields
-	Rooms.setIncMsgCountAndSetLastMessageUpdateQuery(1, message, !!settings.get('Store_Last_Message'), roomUpdater);
+	Rooms.setIncMsgCountAndSetLastMessageUpdateQuery(
+		1,
+		message.securityLabel ? toWithheldMessage(message) : message,
+		!!settings.get('Store_Last_Message'),
+		roomUpdater,
+	);
 	await updateUsersSubscriptions(message, room);
 
 	return message;

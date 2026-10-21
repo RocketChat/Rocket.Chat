@@ -15,6 +15,7 @@ import { getMentions } from './notifyUsersOnMessage';
 import { shortnameToUnicode } from '../../../lib/emoji-native/shortnameToUnicode';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { callbacks } from '../../lib/callbacks';
+import { toWithheldMessage } from '../../lib/messages/securityLabels';
 import { parseMessageTextPerUser, replaceMentionedUsernamesWithFullNames } from '../../lib/notifications/message';
 import { notifyDesktopUser, shouldNotifyDesktop } from '../../lib/notifications/message/desktop';
 import { getEmailData, shouldNotifyEmail } from '../../lib/notifications/message/email';
@@ -298,6 +299,10 @@ export async function sendMessageNotifications(message: IMessage, room: IRoom, u
 
 	// add users in thread to mentions array because they follow the same rules
 	mentionIds.push(...usersInThread);
+
+	if (message.securityLabel) {
+		message = toWithheldMessage(message);
+	}
 
 	let notificationMessage = await callbacks.run('beforeSendMessageNotifications', message.msg);
 	if (mentionIds.length > 0 && settings.get('UI_Use_Real_Name')) {

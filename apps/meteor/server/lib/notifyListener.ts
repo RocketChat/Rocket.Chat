@@ -39,6 +39,7 @@ import {
 } from '@rocket.chat/models';
 import mem from 'mem';
 
+import { toWithheldMessage } from './messages/securityLabels';
 import { shouldHideSystemMessage } from './systemMessage/hideSystemMessage';
 import { subscriptionFields } from '../../lib/publishFields';
 
@@ -487,7 +488,7 @@ export async function getMessageToBroadcast({ id, data }: { id: IMessage['_id'];
 		}
 	}
 
-	return message;
+	return message.securityLabel ? toWithheldMessage(message) : message;
 }
 
 export const notifyOnMessageChange = async ({ id, data }: { id: IMessage['_id']; data?: IMessage }): Promise<void> => {

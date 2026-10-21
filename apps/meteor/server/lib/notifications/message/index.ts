@@ -13,10 +13,14 @@ import { i18n } from '../../i18n';
  */
 export async function parseMessageTextPerUser(
 	messageText: string,
-	message: Pick<IMessage, 'u' | 'msg' | 't' | 'attachments'>,
+	message: Pick<IMessage, 'u' | 'msg' | 't' | 'attachments' | 'securityWithheld'>,
 	receiver: Pick<IUser, 'language'>,
 ): Promise<string> {
 	const lng = receiver.language || settings.get('Language') || 'en';
+
+	if (message.securityWithheld) {
+		return i18n.t('Security_labeled_message', { lng });
+	}
 
 	const firstAttachment = message.attachments?.[0];
 	if (!message.msg && firstAttachment && isFileAttachment(firstAttachment) && isFileImageAttachment(firstAttachment)) {

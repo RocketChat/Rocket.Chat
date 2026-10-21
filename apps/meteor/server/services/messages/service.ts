@@ -21,6 +21,7 @@ import { notifyUsersOnSystemMessage } from '../../hooks/messages/notifyUsersOnMe
 import { SystemLogger } from '../../lib/logger/system';
 import { deleteMessage } from '../../lib/messages/deleteMessage';
 import { parseUrlsInMessage } from '../../lib/messages/parseUrlsInMessage';
+import { applyMessageSecurityLabel } from '../../lib/messages/securityLabels';
 import { sendMessage } from '../../lib/messages/sendMessage';
 import { updateMessage } from '../../lib/messages/updateMessage';
 import { incrementAndNotifyParentRoomWithParentMessage } from '../../lib/messaging/discussions/updateAndNotifyParentRoomWithParentMessage';
@@ -245,6 +246,8 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		if (!FederationActions.shouldPerformAction(message, room)) {
 			throw new FederationMatrixInvalidConfigurationError('Unable to send message');
 		}
+
+		message = await applyMessageSecurityLabel(message, room, user);
 
 		message = await this.cannedResponse.replacePlaceholders({ message, room, user });
 		message = await this.badWords.filterBadWords({ message });

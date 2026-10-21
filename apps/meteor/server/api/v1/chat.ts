@@ -41,6 +41,7 @@ import { callbacks } from '../../lib/callbacks';
 import { applyAirGappedRestrictionsValidation } from '../../lib/cloud/license/airGappedRestrictionsWrapper';
 import { deleteMessageValidatingPermission } from '../../lib/messages/deleteMessage';
 import { processWebhookMessage } from '../../lib/messages/processWebhookMessage';
+import { redactMessagesForUser } from '../../lib/messages/securityLabels';
 import { pinMessage, unpinMessage } from '../../lib/messaging/pins/pinMessage';
 import { executeSetReaction } from '../../lib/messaging/reactions/setReaction';
 import { starMessage } from '../../lib/messaging/stars/starMessage';
@@ -1169,13 +1170,16 @@ const chatEndpoints = API.v1
 			const threadQuery = { rid, tcount: { $exists: true } };
 			return API.v1.success({
 				threads: {
-					update: await Messages.find(
-						{ ...threadQuery, _updatedAt: { $gt: updatedSinceDate } },
-						{
-							sort,
-							projection: fields,
-						},
-					).toArray(),
+					update: await redactMessagesForUser(
+						await Messages.find(
+							{ ...threadQuery, _updatedAt: { $gt: updatedSinceDate } },
+							{
+								sort,
+								projection: fields,
+							},
+						).toArray(),
+						this.userId,
+					),
 					remove: await Messages.trashFindDeletedAfter(updatedSinceDate, threadQuery, {
 						sort,
 						projection: fields,
@@ -1251,7 +1255,8 @@ const chatEndpoints = API.v1
 				},
 			);
 
-			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
+			const [found, total] = await Promise.all([cursor.toArray(), totalCount]);
+			const messages = await redactMessagesForUser(found, this.userId);
 
 			return API.v1.success({
 				messages,
@@ -1315,7 +1320,10 @@ const chatEndpoints = API.v1
 			}
 			return API.v1.success({
 				messages: {
-					update: await Messages.find({ tmid, _updatedAt: { $gt: updatedSinceDate } }, { projection: fields, sort }).toArray(),
+					update: await redactMessagesForUser(
+						await Messages.find({ tmid, _updatedAt: { $gt: updatedSinceDate } }, { projection: fields, sort }).toArray(),
+						this.userId,
+					),
 					remove: await Messages.trashFindDeletedAfter(updatedSinceDate, { tmid }, { projection: fields, sort }).toArray(),
 				},
 			});
@@ -1356,7 +1364,7 @@ const chatEndpoints = API.v1
 				},
 			});
 
-			return API.v1.success(messages);
+			return API.v1.success({ ...messages, messages: await redactMessagesForUser(messages.messages, this.userId) });
 		},
 	)
 	.get(
@@ -1434,7 +1442,7 @@ const chatEndpoints = API.v1
 					sort,
 				},
 			});
-			return API.v1.success(messages);
+			return API.v1.success({ ...messages, messages: await redactMessagesForUser(messages.messages, this.userId) });
 		},
 	)
 	.get(
