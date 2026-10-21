@@ -16,6 +16,83 @@ Component SCSS went from 5,923 lines to none, and about 2,650 lines of plain CSS
 - `Select` (267);
 - `Field` (251): rich text inside hints and descriptions.
 
+## Why migrate
+
+The goal is one styling system for Fuselage and for the packages built on it. Today a component's styles come from three places:
+
+- the SCSS compiled into `fuselage.css`;
+- the runtime css-in-js behind `Box` styling props and `` css`…` `` template literals;
+- inline styles.
+
+A package that wants to extend a component copies SCSS or overrides `rcx-*` classes with loose CSS.
+
+The reasons, in order of weight:
+
+1. **Leave SCSS, the css-in-js runtime and `Box` behind.**
+   - The pilot already removed the SCSS: 5,923 lines went to none, and Sass is gone from the build, Storybook and lint. About 2,650 lines of plain CSS remain, for what Tamagui cannot express.
+   - The css-in-js runtime is the next step:
+     - `@rocket.chat/css-in-js` and `stylis` are about 10 kB gzip, on top of the Fuselage bundle;
+     - `<Box>` has 1,917 use-sites in 875 files outside Fuselage, and 527 inside it;
+     - `` css`…` `` appears 173 times;
+     - about 97 public components accept `BoxProps`.
+2. **Extend and reuse components from other packages.**
+   - `styled(Component, { … })` inherits a component's variants, states and tokens, with types.
+   - 45 components are already their own Tamagui frame (see "Compiled with the Tamagui compiler"), so they can be extended this way today.
+3. **Enforce our tokens and patterns.**
+   - Values come from helpers typed by the token lists (`spacing`, `size`, `borderRadius`, the `Theme` colors), so a value outside the scale does not compile.
+   - Variants and states are declared once, next to the component, instead of SCSS modifiers and overrides.
+   - Values still resolve to `--rcx-*` custom properties, so palettes, dark mode, high contrast and admin Custom CSS keep working.
+4. **Performance and size: gains are welcome, but nothing extreme is promised.** The result is mixed today and depends on running the compiler in the app:
+
+   | Better | Worse |
+   |---|---|
+   | `fuselage.css` 26.7 → about 12 kB gzip; 12.7% of it used on a room page, against 5.5% of `develop`'s | `fuselage.production.js` 34.4 (plus about 10 kB of css-in-js) → 96.5 kB gzip |
+   | Compiled in an app: 150 messages mount in 10.1 instead of 16.1 ms, 300 button groups in 1.5 instead of 11.8 ms, and 200 sidebar rows from `PureItem` in 1.7 ms (`develop`'s `Item` took about 5.7 ms in an earlier run) | Without the compiler in the app, mounting is slower than `develop`: 150 messages take 16.1 ms, against about 1.8 ms in an earlier run |
+   | — | A full style recalc costs 3.51 ms instead of 2.39 ms per thousand elements, because atomic classes give each element about 3.2× more matching rules |
+
+5. **React Native, as a bonus.** The same `styled()` sources compile for native, so sharing components with the mobile app becomes cheap if it is ever wanted. It is not a reason to migrate on its own.
+
+## Plan
+
+1. **Phase 0, on `develop`, without Tamagui:** fix the API inconsistencies first, so migrating each component only changes how it is styled. [fuselage-phase-0-inventory.md](fuselage-phase-0-inventory.md) lists 57 findings:
+   - 43 are non-breaking: `className` replaced or dropped, props dropped, state discovered after mount, state carried by class names, default styling written as runtime styling props;
+   - 14 need a deprecation now and a removal in 9.0.0: naming, polymorphism, `BoxTransforms`, `BoxProps` on components that are not layout primitives.
+
+   Each fix is its own pull request and pays off even if the migration stops.
+2. **Phase 1, this pilot:** components render with Tamagui, and the library's own frames are compiled.
+3. **Phase 2, replace `Box` and the css-in-js runtime:**
+   - layout primitives as compiled frames, with styling props kept only on them;
+   - a codemod for static `Box` usage;
+   - the Tamagui compiler in Rocket.Chat's bundler (the rspack migration, #42862);
+   - then `TAMAGUI_RUNTIME=island` to drop most of the runtime.
+4. **9.0.0:** the breaking removals from the phase 0 inventory.
+
+## Costs and risks
+
+- **Bundle:** the Tamagui runtime stays bundled until most use-sites compile.
+- **Runtime cost:** without the compiler in the app, frames cost more to mount than `Box` with `rcx-*` classes. The performance case depends on phase 2.
+- **Patches:** six patches on Tamagui 3.0.18:
+  - React 19 ref cleanups;
+  - `forceStyle` and `onLayout` leaking to the DOM;
+  - `stopPropagation()` after every `onClick`;
+  - frames without a provider;
+  - two in the compiler.
+
+  Tamagui is maintained mostly by one person.
+- **Replacing `Box`:** about 1,900 app use-sites have to move to the new primitives, through a codemod plus manual work.
+
+## Alternatives considered
+
+- **Plain CSS or CSS modules, no Sass:**
+  - removes Sass and keeps zero runtime;
+  - but gives no typed extension or token enforcement, still needs its own replacement for `Box` and the css-in-js, and has no native path.
+- **vanilla-extract:**
+  - typed, zero-runtime styles;
+  - web only, and extending a component means composing class names rather than inheriting variants.
+- **StyleX, with react-strict-dom for native:**
+  - compile-time atomic CSS with zero runtime, and a native path;
+  - the closest alternative. It needs its compiler everywhere from day one, with no runtime fallback, and was not measured against the pilot.
+
 ## Problem
 
 Fuselage styles come from three places: the SCSS compiled into `fuselage.css`, the runtime css-in-js behind `Box` styling props, and inline styles. Tamagui would put component styles, variants and pseudo states next to the component in TypeScript, and could later let a compiler extract them.
@@ -163,7 +240,7 @@ The computed styles match in every case, at rest, hovered and focused. Component
 - **Still to decide:**
   - Bundle size: `TAMAGUI_RUNTIME=island` could remove most of the runtime once enough use-sites compile.
   - Running the compiler in Rocket.Chat's bundler (`tamagui-loader` for rspack), which needs an ESM Fuselage build whose dependencies load under Node.
-  - `Box` itself is still css-in-js, and how to migrate it is undecided.
+  - `Box` itself is still css-in-js; replacing it is phase 2 of the plan.
 
 ## Migrating a component
 
