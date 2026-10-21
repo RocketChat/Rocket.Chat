@@ -1,4 +1,4 @@
-import { MeteorError, isMeteorError } from '@rocket.chat/core-services';
+import { ClientSafeError, isClientSafeError } from '@rocket.chat/core-services';
 import { isBannedSubscription } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import { beforeEach, describe, it } from 'mocha';
@@ -42,7 +42,7 @@ describe('/invite', () => {
 			'@rocket.chat/core-services': {
 				api: { broadcast },
 				FederationMatrix: { ensureFederatedUsersExistLocally: ensureFederatedUsers },
-				isMeteorError,
+				isClientSafeError,
 			},
 			'@rocket.chat/core-typings': { isBannedSubscription },
 			'@rocket.chat/federation-matrix': { validateFederatedUsername: (username: string) => username === external.username },
@@ -158,7 +158,7 @@ describe('/invite', () => {
 
 	[
 		{
-			error: new MeteorError('error-only-compliant-users-can-be-added-to-abac-rooms', 'ABAC failure'),
+			error: new ClientSafeError('error-only-compliant-users-can-be-added-to-abac-rooms', 'ABAC failure'),
 			key: 'error-only-compliant-users-can-be-added-to-abac-rooms',
 		},
 		{ error: { error: 'error-federated-users-in-non-federated-rooms' }, key: 'You_cannot_add_external_users_to_non_federated_room' },
@@ -180,7 +180,7 @@ describe('/invite', () => {
 
 	it('delivers translated Meteor error feedback while continuing other invitations', async () => {
 		toArray.resolves([bob, carol]);
-		addUsers.onFirstCall().rejects(new MeteorError('error-not-allowed', 'Not allowed'));
+		addUsers.onFirstCall().rejects(new ClientSafeError('error-not-allowed', 'Not allowed'));
 		slashCommand.settings.get.withArgs('Language').returns('pt');
 		// The handler currently translates error.message, including Meteor's error-code suffix.
 		// Protect delivery of the translation result without requiring that translation key.

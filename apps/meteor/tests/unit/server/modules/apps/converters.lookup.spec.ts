@@ -31,7 +31,13 @@ const { AppMessagesConverter } = load('messages', models({ Messages: { findOneBy
 const { AppRolesConverter } = load('roles', models({ Roles: { findOneById: findRole } }));
 const { AppRoomsConverter } = load('rooms', models({ Rooms: { findOneById: findRoomById, findOneByName: findRoomByName } }));
 const { AppSettingsConverter } = load('settings', models({ Settings: { findOneById: findSetting } }));
-const { AppUploadsConverter } = load('uploads', models({ Uploads: { findOneById: findUpload } }));
+const uploadsCodec = proxyquire.noCallThru().load('../../../../../server/modules/apps/converters/codecs/uploads', {
+	'../../../../lib/utils/getURL': { getURL: (path: string) => path },
+});
+const { AppUploadsConverter } = load('uploads', {
+	...models({ Uploads: { findOneById: findUpload } }),
+	'./codecs/uploads': uploadsCodec,
+});
 const { AppUsersConverter } = load('users', models({ Users: { findOneById: findUserById, findOneByUsername: findUserByUsername } }));
 const { AppVisitorsConverter } = load(
 	'visitors',

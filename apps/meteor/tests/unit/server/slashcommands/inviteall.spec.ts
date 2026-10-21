@@ -1,4 +1,4 @@
-import { MeteorError } from '@rocket.chat/core-services';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { expect } from 'chai';
 import { beforeEach, describe, it } from 'mocha';
 import sinon from 'sinon';
@@ -129,7 +129,7 @@ import { loadSlashCommand } from './helpers';
 			{ error: 'error-not-allowed', key: 'error-not-allowed' },
 		].forEach(({ error, key }) => {
 			it(`reports ${error} without success feedback`, async () => {
-				addUsers.rejects(new MeteorError(error));
+				addUsers.rejects(new ClientSafeError(error));
 				await slashCommand.runCommand(command, { params: '#general' });
 				sinon.assert.calledOnce(addUsers);
 				slashCommand.expectTranslatedFeedback(key);
@@ -158,7 +158,7 @@ import { loadSlashCommand } from './helpers';
 
 			it('does not announce success if destination creation fails', async () => {
 				findRoomByName.resolves(null);
-				createPublic.rejects(new MeteorError('error-not-allowed'));
+				createPublic.rejects(new ClientSafeError('error-not-allowed'));
 				await slashCommand.runCommand(command, { params: '#new-room' });
 				sinon.assert.calledOnce(createPublic);
 				slashCommand.expectTranslatedFeedback('error-not-allowed');

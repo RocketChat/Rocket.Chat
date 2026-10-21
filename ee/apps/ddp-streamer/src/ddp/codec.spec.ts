@@ -1,4 +1,4 @@
-import { MeteorError } from '@rocket.chat/core-services';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import ejson from 'ejson';
 
 import {
@@ -38,7 +38,7 @@ describe('decode', () => {
 	it('rejects binary messages with the Meteor error clients expect', () => {
 		const decodeBinary = () => decode(Buffer.from('{"msg":"ping"}'), true);
 
-		expect(decodeBinary).toThrow(MeteorError);
+		expect(decodeBinary).toThrow(ClientSafeError);
 		expect(decodeBinary).toThrow(expect.objectContaining({ error: 500, reason: 'Binary data not supported' }));
 	});
 
@@ -48,7 +48,7 @@ describe('decode', () => {
 });
 
 describe('message encoders', () => {
-	const meteorError = new MeteorError(403, 'Forbidden', { permission: 'view-room' });
+	const meteorError = new ClientSafeError(403, 'Forbidden', { permission: 'view-room' });
 	const plainError = Object.assign(new Error('non-enumerable message'), { code: 'transport-error' });
 
 	it.each([

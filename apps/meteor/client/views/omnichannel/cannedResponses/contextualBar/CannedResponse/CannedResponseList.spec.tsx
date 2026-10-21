@@ -5,6 +5,7 @@ import { axe } from 'jest-axe';
 
 import CannedResponseList from './CannedResponseList';
 import * as stories from './CannedResponseList.stories';
+import { expectListKeyboard, listWrapper } from '../../../../../../tests/mocks/utils/listContract';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
@@ -18,11 +19,6 @@ jest.mock('@rocket.chat/ui-contexts', () => ({
 
 describe('CannedResponseList', () => {
 	describe('Storybook Stories', () => {
-		test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
-			const { baseElement } = render(<Story />);
-			expect(baseElement).toMatchSnapshot();
-		});
-
 		test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
 			const { container } = render(<Story />);
 
@@ -123,4 +119,11 @@ describe('CannedResponseList', () => {
 			expect(screen.queryByText('Create')).not.toBeInTheDocument();
 		});
 	});
+});
+
+it('follows the keyboard model of a list of rows', async () => {
+	const { Default } = composeStories(stories);
+	render(<Default />, { wrapper: listWrapper() });
+
+	await expectListKeyboard(screen.getByTestId('virtuoso-item-list'));
 });

@@ -1,4 +1,4 @@
-import { MeteorError } from '@rocket.chat/core-services';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IRoomService } from '@rocket.chat/core-services';
 import type { ISubscription, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
@@ -54,7 +54,7 @@ const { RoomService } = proxyquire.noCallThru().load('../../../../../server/serv
 		ServiceClassInternal: class {},
 		Authorization,
 		Message,
-		MeteorError,
+		ClientSafeError,
 		FederationMatrix,
 	},
 	'@rocket.chat/models': { Rooms, Subscriptions, Users },
@@ -302,7 +302,7 @@ describe('RoomService', () => {
 		it('rejects when the room type does not allow joining', async () => {
 			allowMemberAction.resolves(false);
 
-			await expect(service.join({ room, user })).to.be.rejectedWith(MeteorError, 'Not allowed [error-not-allowed]');
+			await expect(service.join({ room, user })).to.be.rejectedWith(ClientSafeError, 'Not allowed [error-not-allowed]');
 
 			expect(roomCoordinator.getRoomDirectives.calledOnceWithExactly('c')).to.be.true;
 			expect(allowMemberAction.calledOnceWithExactly(room, 'join', 'joiner-id')).to.be.true;
@@ -312,7 +312,7 @@ describe('RoomService', () => {
 
 		it('rejects closed omnichannel rooms', async () => {
 			await expect(service.join({ room: createFakeOmnichannelRoom({ open: false }), user })).to.be.rejectedWith(
-				MeteorError,
+				ClientSafeError,
 				'Room is closed [room-closed]',
 			);
 
@@ -322,7 +322,7 @@ describe('RoomService', () => {
 		it('rejects users who cannot access the room', async () => {
 			Authorization.canAccessRoom.resolves(false);
 
-			await expect(service.join({ room, user })).to.be.rejectedWith(MeteorError, 'Not allowed [error-not-allowed]');
+			await expect(service.join({ room, user })).to.be.rejectedWith(ClientSafeError, 'Not allowed [error-not-allowed]');
 
 			expect(Authorization.canAccessRoom.calledOnceWithExactly(room, user)).to.be.true;
 			expect(addUserToRoom.notCalled).to.be.true;
@@ -337,7 +337,7 @@ describe('RoomService', () => {
 				FederationMatrix.canUserAccessFederation.resolves(false);
 
 				await expect(service.join({ room, user })).to.be.rejectedWith(
-					MeteorError,
+					ClientSafeError,
 					'Not authorized to access federation [error-not-authorized-federation]',
 				);
 
@@ -386,7 +386,7 @@ describe('RoomService', () => {
 			});
 
 			it('rejects a join without a code', async () => {
-				await expect(service.join({ room: lockedRoom, user })).to.be.rejectedWith(MeteorError, 'Code required [error-code-required]');
+				await expect(service.join({ room: lockedRoom, user })).to.be.rejectedWith(ClientSafeError, 'Code required [error-code-required]');
 
 				expect(Authorization.hasPermission.calledOnceWithExactly('joiner-id', 'join-without-join-code')).to.be.true;
 				expect(Rooms.findOneByJoinCodeAndId.notCalled).to.be.true;
@@ -395,7 +395,7 @@ describe('RoomService', () => {
 
 			it('rejects a join with a wrong code', async () => {
 				await expect(service.join({ room: lockedRoom, user, joinCode: 'guess' })).to.be.rejectedWith(
-					MeteorError,
+					ClientSafeError,
 					'Invalid code [error-code-invalid]',
 				);
 

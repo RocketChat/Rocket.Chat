@@ -1,4 +1,4 @@
-import { FederationMatrix, MeteorError, Room, Team } from '@rocket.chat/core-services';
+import { FederationMatrix, ClientSafeError, Room, Team } from '@rocket.chat/core-services';
 import {
 	type IRoom,
 	type IRoomAbacRedaction,
@@ -206,7 +206,7 @@ const roomDeleteEndpoint = API.v1.post(
 		const room = await Rooms.findOneById(roomId);
 
 		if (!room) {
-			throw new MeteorError('error-invalid-room', 'Invalid room', {
+			throw new ClientSafeError('error-invalid-room', 'Invalid room', {
 				method: 'eraseRoom',
 			});
 		}
@@ -315,8 +315,6 @@ API.v1.addRoute(
 			// TODO: In the future, we should isolate file receival from storage and post-processing.
 			const fileStore = FileUpload.getStore('Uploads');
 			const uploadedFile = await fileStore.insert(details, file.tempFilePath);
-
-			uploadedFile.path = FileUpload.getPath(`${uploadedFile._id}/${encodeURI(uploadedFile.name || '')}`);
 
 			await Uploads.updateFileComplete(uploadedFile._id, this.userId, omit(uploadedFile, '_id'));
 
@@ -636,13 +634,13 @@ API.v1.get(
 	async function action() {
 		const room = await findRoomByIdOrName({ params: this.queryParams });
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields, query } = await this.parseJsonQuery();
+		const { sort, fields } = await this.parseJsonQuery();
 
 		if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
 			return API.v1.failure('not-allowed', 'Not Allowed');
 		}
 
-		const ourQuery = Object.assign(query, { prid: room._id });
+		const ourQuery = { prid: room._id };
 
 		const { cursor, totalCount } = await Rooms.findPaginated(ourQuery, {
 			sort: sort || { fname: 1 },
@@ -1775,7 +1773,7 @@ export const roomEndpoints = API.v1
 			const { roomId, next, previous, aroundId, lastSeen, showThreadMessages = true } = this.queryParams;
 
 			if ([next, previous, aroundId].filter(Boolean).length > 1) {
-				throw new MeteorError('error-cursor-conflict', 'Only one of "next", "previous" and "aroundId" can be provided');
+				throw new ClientSafeError('error-cursor-conflict', 'Only one of "next", "previous" and "aroundId" can be provided');
 			}
 
 			// Defaults to 20 (matching the replaced DDP method) instead of API_Default_Count, but still

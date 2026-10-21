@@ -4,8 +4,9 @@ import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updatePermission } from '../../data/permissions.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
-describe('SAML', () => {
+(IS_EE ? describe : describe.skip)('SAML', () => {
 	before((done) => getCredentials(done));
 
 	describe('[/saml.parseMetadata]', () => {

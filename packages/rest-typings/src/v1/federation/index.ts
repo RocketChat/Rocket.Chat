@@ -1,18 +1,9 @@
-export type FederationPaginatedRequest<T = Record<string, boolean | number | string | object>> = {
-	count?: number;
-	pageToken?: string;
-} & T;
+export type FederationVerifyMatrixIdProps = {
+	matrixIds: string[];
+};
 
-export type FederationPaginatedResult<T = Record<string, boolean | number | string | object>> = {
-	count: number;
-	nextPageToken?: string;
-	previousPageToken?: string;
-	total: number;
-} & T;
-
-export type * from './rooms';
-export * from './FederationJoinExternalPublicRoomProps';
-export * from './FederationPublicRoomsProps';
-export * from './FederationAddServerProps';
-export * from './FederationRemoveServerProps';
-export * from './FederationVerifyMatrixIdProps';
+export type FederationEndpoints = {
+	'/v1/federation/matrixIds.verify': {
+		GET: (params: FederationVerifyMatrixIdProps) => { results: Record<string, string> };
+	};
+};
