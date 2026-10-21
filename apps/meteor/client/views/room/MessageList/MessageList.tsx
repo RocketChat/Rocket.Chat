@@ -150,6 +150,10 @@ export const MessageList = function MessageList({
 	// Scroll to bottom
 	useEffect(() => {
 		if (isJumpingToMessage || messageJumpParam) {
+			// While a jump is in flight the list must not be treated as sitting at the bottom: the
+			// keep-at-bottom observer and the at-bottom branch below would otherwise send it back to
+			// the latest message as soon as the items measured by the jump change the scroll size.
+			isAtBottom.current = false;
 			if (!isRoomInitialized.current) {
 				// Jump to message will have to load messages, thus removing the need to initialize the room here
 				isRoomInitialized.current = true;
