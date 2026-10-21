@@ -1,0 +1,119 @@
+packages/rest-typings/src/v1/groups/GroupsCreateProps.ts
+  s_22158ff20cd246::t_fd5a06ead716d7 14,63-64
+  s_22158ff20cd246::t_d4b8f7b29dd2d7 65-66
+packages/ui-contexts/src/types/SubscriptionWithRoom.ts
+  s_22158ff20cd246::t_fd5a06ead716d7 17
+.changeset/native-xmpp-server.md
+  s_22158ff20cd246::t_fd5a06ead716d7 1-15
+apps/meteor/client/cachedStores/SubscriptionsCachedStore.ts
+  s_22158ff20cd246::t_fd5a06ead716d7 68
+apps/meteor/client/lib/rooms/roomTypes/direct.ts
+  s_22158ff20cd246::t_fd5a06ead716d7 2,125
+apps/meteor/client/views/room/Header/ParentRoom/ParentDiscussion/ParentDiscussionRoute.tsx
+  s_22158ff20cd246::t_fd5a06ead716d7 30
+apps/meteor/client/components/UserAutoCompleteMultiple/UserAutoCompleteMultiple.tsx
+  s_22158ff20cd246::t_fd5a06ead716d7 3,19-20,37,45,57-58
+  s_22158ff20cd246::t_be19a2eb4881e7 59-61
+apps/meteor/ee/server/hooks/xmpp/index.ts
+  s_22158ff20cd246::t_fd5a06ead716d7 2-153,155-217
+apps/meteor/server/settings/federation-service.ts
+  s_22158ff20cd246::t_fd5a06ead716d7 2-3,156-236
+  s_22158ff20cd246::t_ba9ed21071507d 237
+apps/meteor/client/lib/rooms/roomTypes/public.ts
+  s_22158ff20cd246::t_fd5a06ead716d7 2,53,88
+apps/meteor/client/lib/rooms/roomTypes/private.ts
+  s_22158ff20cd246::t_fd5a06ead716d7 2,55,99
+apps/meteor/client/views/room/Header/ParentRoom/ParentDiscussion/ParentDiscussion.tsx
+  s_22158ff20cd246::t_fd5a06ead716d7 2,11,15
+apps/meteor/client/navbar/NavBarPagesGroup/actions/CreateChannelModal.tsx
+  s_22158ff20cd246::t_fd5a06ead716d7 54,94-96,121,125,128,133-139,142-147,181-190,201,286-288,322-324,329-340
+  s_22158ff20cd246::t_02a362bd348149 341
+apps/meteor/lib/rooms/adminFields.ts
+  s_22158ff20cd246::t_fd5a06ead716d7 33
+apps/meteor/client/views/room/contextualBar/RoomMembers/AddUsers/AddUsers.tsx
+  s_22158ff20cd246::t_fd5a06ead716d7 2,41,134
+apps/meteor/package.json
+  s_22158ff20cd246::t_fd5a06ead716d7 171,177,254
+apps/meteor/server/lib/rooms/invitesByRawUsername.ts
+  s_22158ff20cd246::t_fd5a06ead716d7 2,5
+apps/meteor/lib/publishFields.ts
+  s_22158ff20cd246::t_fd5a06ead716d7 122
+apps/meteor/server/lib/rooms/roomTypes/public.ts
+  s_22158ff20cd246::t_fd5a06ead716d7 3,53
+apps/meteor/client/hooks/useRoomIcon.spec.ts
+  s_22158ff20cd246::t_fd5a06ead716d7 37-42,62
+apps/meteor/server/lib/rooms/roomTypes/private.ts
+  s_22158ff20cd246::t_fd5a06ead716d7 2,53
+packages/i18n/src/locales/en.i18n.json
+  s_22158ff20cd246::t_fd5a06ead716d7 7514-7533
+apps/meteor/client/navbar/NavBarPagesGroup/actions/CreateDirectMessage.tsx
+  s_22158ff20cd246::t_fd5a06ead716d7 27,90
+apps/meteor/client/cachedStores/RoomsCachedStore.ts
+  s_22158ff20cd246::t_fd5a06ead716d7 56
+apps/meteor/client/hooks/useRoomIcon.tsx
+  s_22158ff20cd246::t_fd5a06ead716d7 2,18
+apps/meteor/server/lib/rooms/createRoom.ts
+  s_22158ff20cd246::t_fd5a06ead716d7 3,5-12,14,92-96
+  s_22158ff20cd246::t_ef1ea342c76be9 97-98
+apps/meteor/ee/server/index.ts
+  s_22158ff20cd246::t_fd5a06ead716d7 19
+packages/rest-typings/src/v1/channels/ChannelsCreateProps.ts
+  s_22158ff20cd246::t_fd5a06ead716d7 15,64
+  s_22158ff20cd246::t_8769abcb340974 65-66
+yarn.lock
+  s_22158ff20cd246::t_863e7ff23e6f21 10845,10929,11022
+ee/packages/xmpp-server/.env.example
+  s_22158ff20cd246::t_34914d19c69ffd 1
+ee/packages/xmpp-server/docker-compose.test.yml
+  s_22158ff20cd246::t_846b1b464ec5a4 1-132
+ee/packages/xmpp-server/docker-compose/certs/.gitignore
+  s_22158ff20cd246::t_c252c78bff74ce 1
+ee/packages/xmpp-server/docker-compose/certs/generate.sh
+  s_22158ff20cd246::t_f8e16f2022f2cb 1-37
+ee/packages/xmpp-server/docker-compose/openfire/entrypoint.sh
+  s_22158ff20cd246::t_8c4a418dc9cb7a 1-27
+ee/packages/xmpp-server/docker-compose/openfire/openfire.xml
+  s_22158ff20cd246::t_6a7f00f2e53143 1-28
+ee/packages/xmpp-server/tests/end-to-end/connectivity.spec.ts
+  s_22158ff20cd246::t_62e4d5672ee311 1-112
+ee/packages/xmpp-server/tests/end-to-end/direct-messages.spec.ts
+  s_22158ff20cd246::t_5ddbe5d84479ca 1-109
+ee/packages/xmpp-server/tests/end-to-end/helper/cleanup.ts
+  s_22158ff20cd246::t_1c853edf02650a 1-18
+ee/packages/xmpp-server/tests/end-to-end/helper/config.ts
+  s_22158ff20cd246::t_a8018966575e77 1-36
+ee/packages/xmpp-server/tests/end-to-end/helper/predicates.ts
+  s_22158ff20cd246::t_10d65ea74a99b4 1-67
+ee/packages/xmpp-server/tests/end-to-end/helper/rocketchat.ts
+  s_22158ff20cd246::t_3ebbc8458fa387 1-280
+ee/packages/xmpp-server/tests/end-to-end/helper/stanza.ts
+  s_22158ff20cd246::t_a3274a5b7d71be 1-20
+ee/packages/xmpp-server/tests/end-to-end/helper/suite.ts
+  s_22158ff20cd246::t_b2e3f0b475b261 1-53
+ee/packages/xmpp-server/tests/end-to-end/helper/xmpp-client.ts
+  s_22158ff20cd246::t_bf662b7c7253ad 1-267
+ee/packages/xmpp-server/tests/end-to-end/hosted-muc.spec.ts
+  s_22158ff20cd246::t_43dec506cb4617 1-366
+ee/packages/xmpp-server/tests/end-to-end/presence.spec.ts
+  s_22158ff20cd246::t_2c68197e33f396 1-82
+ee/packages/xmpp-server/tests/end-to-end/remote-muc.spec.ts
+  s_22158ff20cd246::t_a88e939da907fe 1-311
+ee/packages/xmpp-server/tests/scripts/run-e2e-stack.sh
+  s_22158ff20cd246::t_4e900015b5cd25 1-224
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "09f42065ec62de72a07e27b8a7ebaaeb9ff67be2",
+  "prompts": {},
+  "sessions": {
+    "s_22158ff20cd246": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e3bc8f7d-2ca9-481d-9c88-43497a3e53ec",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

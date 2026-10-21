@@ -1,0 +1,19 @@
+apps/meteor/server/meteor-methods/messages/createDirectMessage.test.ts
+  s_86c4301bdd42f4::t_5bf9d3d38b3a31 14,45-48,62
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "3f33d68926c91c7c2362819a8198026b3b5695ed",
+  "prompts": {},
+  "sessions": {
+    "s_86c4301bdd42f4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6e2074bb-fc5c-4fc0-81cf-9ab20da2e555",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

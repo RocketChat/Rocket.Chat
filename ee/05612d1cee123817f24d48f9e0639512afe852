@@ -1,0 +1,25 @@
+ee/packages/xmpp-server/docs/specs/hosted-muc.md
+  s_bf193bee63afbe::t_f086ca1c8b54a9 17-24,105-109
+ee/packages/xmpp-server/src/muc/MucService.ts
+  s_bf193bee63afbe::t_c32756653d8334 111,113-119
+  s_bf193bee63afbe::t_8f16b635384e51 11,84-87,89,92-95,97-106,108-109,112
+ee/packages/xmpp-server/src/muc/MucService.spec.ts
+  s_bf193bee63afbe::t_77248eeaa60e5b 128-138
+  s_bf193bee63afbe::t_8f16b635384e51 23,29,31,34-36,84-127
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ee05612d1cee123817f24d48f9e0639512afe852",
+  "prompts": {},
+  "sessions": {
+    "s_bf193bee63afbe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0f126c7e-b9e6-435d-856c-ef1cd07242d5",
+        "model": "unknown"
+      },
+      "human_author": null
+    }
+  }
+}

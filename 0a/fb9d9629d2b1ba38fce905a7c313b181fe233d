@@ -1,0 +1,21 @@
+ee/packages/xmpp-server/docs/specs/hosted-muc.md
+  s_bf193bee63afbe::t_1c0e38f4d64b69 105
+ee/packages/xmpp-server/src/muc/MucService.spec.ts
+  s_bf193bee63afbe::t_3db1cc5f90da88 103
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "0afb9d9629d2b1ba38fce905a7c313b181fe233d",
+  "prompts": {},
+  "sessions": {
+    "s_bf193bee63afbe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0f126c7e-b9e6-435d-856c-ef1cd07242d5",
+        "model": "unknown"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

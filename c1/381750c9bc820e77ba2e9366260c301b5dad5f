@@ -1,0 +1,19 @@
+apps/meteor/ee/server/hooks/xmpp/index.ts
+  s_bf193bee63afbe::t_81a2ca8eb93e1a 124-130
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c1381750c9bc820e77ba2e9366260c301b5dad5f",
+  "prompts": {},
+  "sessions": {
+    "s_bf193bee63afbe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "0f126c7e-b9e6-435d-856c-ef1cd07242d5",
+        "model": "unknown"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
