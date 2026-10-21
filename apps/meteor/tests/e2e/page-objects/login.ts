@@ -55,7 +55,7 @@ export class LoginPage {
 				});
 
 				// The storage poller skips a token it already saw, and every login of this user reuses the same token.
-				require('meteor/accounts-base').Accounts.loginWithToken(loginToken);
+				return (window as any).__rocketChatLoginWithToken(loginToken);
 			},
 			{ items: localStorageItems, loginToken: userState.data.loginToken },
 		);

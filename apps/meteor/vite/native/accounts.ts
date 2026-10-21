@@ -162,3 +162,5 @@ queueMicrotask(() => {
 		},
 	);
 });
+
+window.__rocketChatLoginWithToken = loginWithToken;

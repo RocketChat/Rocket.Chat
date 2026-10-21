@@ -108,3 +108,5 @@ export const hasPendingMethods = (): boolean => pendingMethods !== 0;
 export const onRawMessage = (_listener: (rawMessage: string) => void): void => undefined;
 
 export const subscribeRaw = (name: string, ...args: unknown[]) => getDdpSdk().client.subscribe(name, ...args);
+
+window.__rocketChatCallMethod = callMethod;

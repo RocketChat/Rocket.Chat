@@ -75,3 +75,5 @@ export const subscribeLoggingIn = (cb: () => void): (() => void) => {
 };
 
 export const isLoggingIn = (): boolean => Accounts.loggingIn();
+
+window.__rocketChatLoginWithToken = loginWithToken;

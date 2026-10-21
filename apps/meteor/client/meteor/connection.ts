@@ -30,3 +30,5 @@ export const onRawMessage = (listener: (rawMessage: string) => void): void => {
 };
 
 export const subscribeRaw = (...args: Parameters<typeof Meteor.connection.subscribe>) => Meteor.connection.subscribe(...args);
+
+window.__rocketChatCallMethod = callMethod;

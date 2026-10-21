@@ -68,12 +68,12 @@ test.describe('account-totp ddpOverREST preserves the totp-required error', () =
 			});
 		});
 
-		// Drive the call from the page so it goes through Meteor.callAsync →
-		// withAsyncTOTP → ddpOverREST → process2faAsyncReturn — the exact path
-		// where the catch handler used to drop `error: 'totp-required'` and the
-		// TOTP modal therefore never opened.
+		// Drive the call from the page so it goes through the client's callMethod —
+		// the same path the UI uses, where the catch handler used to drop
+		// `error: 'totp-required'` and the TOTP modal therefore never opened.
 		await page.evaluate((method) => {
-			(window as any).__totpCallResult = (window as any).Meteor.callAsync(method)
+			(window as any).__totpCallResult = (window as any)
+				.__rocketChatCallMethod(method)
 				.then((value: unknown) => ({ ok: true, value }))
 				.catch((err: unknown) => ({ ok: false, error: String((err as Error)?.message ?? err) }));
 		}, METHOD_NAME);
