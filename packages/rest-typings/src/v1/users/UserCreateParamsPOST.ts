@@ -46,7 +46,6 @@ const userCreateParamsPostSchema = {
 		sipExtension: { type: 'string', nullable: true },
 		phones: {
 			type: 'array',
-			nullable: true,
 			items: {
 				type: 'object',
 				properties: {

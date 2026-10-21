@@ -62,7 +62,6 @@ const UsersUpdateOwnBasicInfoParamsPostSchema = {
 				},
 				phones: {
 					type: 'array',
-					nullable: true,
 					items: {
 						type: 'object',
 						properties: {
