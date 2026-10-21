@@ -52,5 +52,10 @@ $sidepanel-color-default: colors.font(default);
 
 	&-list {
 		padding-block: lengths.padding(8);
+
+		// Side panel rows are roomier than sidebar rows.
+		&__item > .rcx-item {
+			padding-block: lengths.padding(8);
+		}
 	}
 }

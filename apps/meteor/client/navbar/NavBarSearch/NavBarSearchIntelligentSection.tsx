@@ -1,5 +1,5 @@
 import { emptySearchFilters, serializeSearchQuery, type NavBarSearchFormValues } from '@rocket.chat/ai-search';
-import { Box, Icon, ItemGroupHeader, ItemGroupTitle, SidebarItemIcon } from '@rocket.chat/fuselage';
+import { Box, Icon, ItemGroupHeader, ItemGroupTitle, ItemIcon } from '@rocket.chat/fuselage';
 import type { AISearchResult } from '@rocket.chat/rest-typings';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
@@ -46,7 +46,11 @@ const NavBarSearchIntelligentSection = ({ items, onSelect, onClose }: NavBarSear
 				id='search-view-all-results'
 				title={t('View_all_results')}
 				avatar={null}
-				icon={<SidebarItemIcon icon={<Icon name='arrow-forward' size='x16' />} />}
+				icon={
+					<ItemIcon>
+						<Icon name='arrow-forward' size='x16' />
+					</ItemIcon>
+				}
 				href={searchHref}
 				onClick={onClose}
 			/>

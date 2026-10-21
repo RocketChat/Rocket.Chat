@@ -4,6 +4,11 @@ import { render, screen } from '@testing-library/react';
 import SidebarItemBadges from './SidebarItemBadges';
 import { createFakeSubscription } from '../../../../../tests/mocks/data';
 
+jest.mock('../../../omnichannel/components/OmnichannelBadges', () => ({
+	__esModule: true,
+	default: () => <i role='status' aria-label='OmnichannelBadges' />,
+}));
+
 describe('SidebarItemBadges', () => {
 	const appRoot = mockAppRoot()
 		.withTranslations('en', 'core', {
@@ -32,6 +37,24 @@ describe('SidebarItemBadges', () => {
 		});
 
 		expect(screen.queryByRole('status', { name: 'Test Room' })).not.toBeInTheDocument();
+	});
+
+	it('should render OmnichannelBadges for an omnichannel room when asked to', () => {
+		render(<SidebarItemBadges room={createFakeSubscription({ t: 'l' })} showOmnichannelBadges />, { wrapper: appRoot });
+
+		expect(screen.getByRole('status', { name: 'OmnichannelBadges' })).toBeInTheDocument();
+	});
+
+	it('should not render OmnichannelBadges for an omnichannel room by default', () => {
+		render(<SidebarItemBadges room={createFakeSubscription({ t: 'l' })} />, { wrapper: appRoot });
+
+		expect(screen.queryByRole('status', { name: 'OmnichannelBadges' })).not.toBeInTheDocument();
+	});
+
+	it('should not render OmnichannelBadges when the room is not an omnichannel room', () => {
+		render(<SidebarItemBadges room={createFakeSubscription({ t: 'p' })} showOmnichannelBadges />, { wrapper: appRoot });
+
+		expect(screen.queryByRole('status', { name: 'OmnichannelBadges' })).not.toBeInTheDocument();
 	});
 
 	it('should render InvitationBadge when subscription has status INVITED and has inviter', () => {

@@ -1,5 +1,5 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { Icon, IconButton, SidebarItemActions } from '@rocket.chat/fuselage';
+import { Icon, IconButton, ItemActions } from '@rocket.chat/fuselage';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
@@ -15,10 +15,10 @@ import { isIOsDevice } from '../../lib/utils/isIOsDevice';
 import { getMessagePreview } from '../../lib/utils/normalizeMessagePreview/getMessagePreview';
 import RoomListItem from '../../views/navigation/sidebar/RoomList/RoomListItem';
 import type { RoomListItemViewMode } from '../../views/navigation/sidebar/RoomList/RoomListItem';
+import SidebarItemBadges from '../../views/navigation/sidebar/badges/SidebarItemBadges';
+import { useUnreadDisplay } from '../../views/navigation/sidebar/hooks/useUnreadDisplay';
 import { useOmnichannelPriorities } from '../../views/omnichannel/hooks/useOmnichannelPriorities';
 import RoomMenu from '../RoomMenu';
-import SidebarItemBadges from '../badges/SidebarItemBadges';
-import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 type RoomListRowProps = {
 	t: TFunction;
@@ -74,10 +74,10 @@ const SidebarItemTemplateWithData = ({
 	const actions = useMemo(
 		() =>
 			videoConfActions && (
-				<SidebarItemActions>
+				<ItemActions>
 					<IconButton onClick={videoConfActions.acceptCall} mini secondary success icon='phone' aria-label={t('Accept_Call')} />
 					<IconButton onClick={videoConfActions.rejectCall} mini secondary danger icon='phone-off' aria-label={t('Reject_call')} />
-				</SidebarItemActions>
+				</ItemActions>
 			),
 		[t, videoConfActions],
 	);
@@ -110,7 +110,7 @@ const SidebarItemTemplateWithData = ({
 			iconLabel={iconLabel}
 			titleIcon={titleIcon}
 			style={style}
-			badges={<SidebarItemBadges room={room} roomTitle={title} />}
+			badges={<SidebarItemBadges room={room} roomTitle={title} showOmnichannelBadges />}
 			actions={actions}
 			menu={
 				!isIOsDevice && !isAnonymous && (!isQueued || (isQueued && isPriorityEnabled)) ? (

@@ -477,6 +477,11 @@ $item-group-narrow-width: 320px;
 	block-size: 0;
 }
 
+// A description sharing its line takes only the room its neighbours leave, so a long preview never squeezes a badge.
+.rcx-item__row > .rcx-item__description {
+	flex-basis: 0;
+}
+
 @media (hover: none) {
 	.rcx-item,
 	.rcx-item-group-header {

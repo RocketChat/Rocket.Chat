@@ -1,5 +1,5 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { IconButton, SidebarItemActions } from '@rocket.chat/fuselage';
+import { IconButton, ItemActions } from '@rocket.chat/fuselage';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
@@ -45,10 +45,10 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListR
 	const actions = useMemo(
 		() =>
 			videoConfActions && (
-				<SidebarItemActions>
+				<ItemActions>
 					<IconButton onClick={videoConfActions.acceptCall} mini secondary success icon='phone' aria-label={t('Accept_Call')} />
 					<IconButton onClick={videoConfActions.rejectCall} mini secondary danger icon='phone-off' aria-label={t('Reject_call')} />
-				</SidebarItemActions>
+				</ItemActions>
 			),
 		[videoConfActions, t],
 	);

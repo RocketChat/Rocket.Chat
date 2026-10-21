@@ -1,5 +1,5 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { Icon, SidebarItemIcon } from '@rocket.chat/fuselage';
+import { Icon, ItemIcon } from '@rocket.chat/fuselage';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useUserId, type SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
@@ -67,7 +67,11 @@ const RoomSidePanelItem = ({ room, openedRoom, isRoomFilter, ...props }: RoomSid
 			title={title}
 			titleIcon={titleIcon}
 			avatar={<RoomAvatar size='x20' room={{ ...room, _id: room.rid || room._id, type: room.t }} />}
-			icon={<SidebarItemIcon highlighted={highlighted} icon={<RoomIcon room={room} placement='sidebar' size='x20' />} />}
+			icon={
+				<ItemIcon>
+					<RoomIcon room={room} placement='sidebar' size='x20' />
+				</ItemIcon>
+			}
 			unread={highlighted}
 			time={time}
 			subtitle={message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null}
