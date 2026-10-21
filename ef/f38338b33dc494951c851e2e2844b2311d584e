@@ -1,0 +1,22 @@
+ee/packages/xmpp-server/docs/specs/avatar-sync.md
+  s_fc3ba6dc2ef270::t_95ff02ebbb1c34 2
+ee/packages/xmpp-server/docs/compliance.md
+  s_fc3ba6dc2ef270::t_a734e140462fcb 47
+  s_fc3ba6dc2ef270::t_0e6d5d2a51b580 46
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "eff38338b33dc494951c851e2e2844b2311d584e",
+  "prompts": {},
+  "sessions": {
+    "s_fc3ba6dc2ef270": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d710cbed-2501-4ef2-aa23-ec1f9fd7d0bb",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
