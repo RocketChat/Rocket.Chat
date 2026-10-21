@@ -3799,7 +3799,6 @@
   "Mentions_default": "提及（默认）",
   "Mentions_online_room_members": "提及在线房间成员",
   "Mentions_only": "只提及",
-  "Mentions_user": "提及用户",
   "Mentions_with_@_symbol": "使用 @ 符号提及",
   "Mentions_with_@_symbol_description": "提及会通知并高亮群组或特定用户的消息，便于定向沟通。\n\n在提及功能中使用“@”符号可优化屏幕阅读器体验，确保依赖屏幕阅读器的用户能更容易理解并参与这些提及。",
   "Mentions_you": "提及你",

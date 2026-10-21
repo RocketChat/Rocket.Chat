@@ -3926,7 +3926,6 @@
   "Mentions_default": "Menções (padrão)",
   "Mentions_online_room_members": "Menciona os membros da sala on-line",
   "Mentions_only": "Menções apenas",
-  "Mentions_user": "Menções ao usuário",
   "Mentions_with_@_symbol": "Menções com o símbolo @",
   "Mentions_with_@_symbol_description": "As menções notificam e destacam mensagens para grupos ou usuários específicos, facilitando a comunicação direcionada.\n\nA funcionalidade do leitor de tela é otimizada quando o símbolo \"@\" é empregado no recurso de menção. Isso garante que os usuários que dependem de leitores de tela possam interpretar e interagir facilmente com essas menções.",
   "Mentions_you": "Menciona você",
