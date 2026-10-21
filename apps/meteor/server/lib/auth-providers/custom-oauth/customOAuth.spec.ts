@@ -593,6 +593,28 @@ describe('CustomOAuthStrategy', () => {
 				expect(env.session.commitTransaction).toHaveBeenCalledTimes(1);
 			});
 
+			it('updates name and email for a service_id linked user even when username attribute is missing', async () => {
+				env.createStrategy({ keyField: 'service_id', mergeUsers: false }, 'github');
+				const linkedUser = {
+					...makeUser(),
+					services: { github: { id: identity.id } },
+					name: 'Old name',
+					username: 'alice',
+					emails: [{ address: 'old@example.com', verified: true }],
+				};
+				env.users.findOneByServiceId.mockResolvedValue(linkedUser);
+
+				const dataWithoutUsername = { id: identity.id, name: 'New Name', email: 'new@example.com' };
+				await login(dataWithoutUsername);
+
+				expect(env.users.findOneByServiceId).toHaveBeenCalledWith('github', identity.id);
+				expect(env.saveIdentity).toHaveBeenCalledWith(
+					expect.objectContaining({ _id: 'local-user', name: 'New Name', username: 'alice' }),
+				);
+				expect(env.users.updateFromUpdater).toHaveBeenCalled();
+				expect(env.session.commitTransaction).toHaveBeenCalledTimes(1);
+			});
+
 			it('does not match old user by service ID when keyField is username and username has changed', async () => {
 				env.createStrategy({ keyField: 'username', mergeUsers: false }, 'github');
 				env.users.findOneByUsernameAndServiceNameIgnoringCase.mockResolvedValue(null);
