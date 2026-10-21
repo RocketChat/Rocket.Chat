@@ -66,6 +66,7 @@ function setup() {
 		findOneByUsernameAndServiceNameIgnoringCase: jest.fn(),
 		findOneByEmailAddress: jest.fn(),
 		findOneByEmailAddressAndServiceNameIgnoringCase: jest.fn(),
+		findOneByServiceId: jest.fn(),
 		findOneById: jest.fn(),
 		getUpdater: jest.fn(),
 		updateFromUpdater: jest.fn().mockResolvedValue(undefined),
@@ -558,6 +559,60 @@ describe('CustomOAuthStrategy', () => {
 				expect(env.session.commitTransaction).toHaveBeenCalledTimes(1);
 			});
 
+			it('locates linked account by service ID when keyField is username and username has changed', async () => {
+				env.createStrategy({ keyField: 'username', mergeUsers: false }, 'github');
+				env.users.findOneByUsernameAndServiceNameIgnoringCase.mockResolvedValue(null);
+				const linkedUser = {
+					...makeUser(),
+					services: { github: { id: identity.id } },
+					name: identity.name,
+					username: 'old-username',
+					emails: [{ address: identity.email, verified: true }],
+				};
+				env.users.findOneByServiceId.mockResolvedValue(linkedUser);
+
+				await login();
+
+				expect(env.users.findOneByUsernameAndServiceNameIgnoringCase).toHaveBeenCalledWith(
+					identity.username,
+					identity.id,
+					'github',
+				);
+				expect(env.users.findOneByServiceId).toHaveBeenCalledWith('github', identity.id);
+				expect(env.saveIdentity).toHaveBeenCalledWith(
+					expect.objectContaining({ _id: 'local-user', name: identity.name, username: identity.username }),
+				);
+				expect(env.users.updateFromUpdater).toHaveBeenCalled();
+				expect(env.session.commitTransaction).toHaveBeenCalledTimes(1);
+			});
+
+			it('locates linked account by email when keyField is username and service ID does not match', async () => {
+				env.createStrategy({ keyField: 'username', emailField: 'email', mergeUsers: true }, 'github');
+				env.users.findOneByUsernameAndServiceNameIgnoringCase.mockResolvedValue(null);
+				env.users.findOneByServiceId.mockResolvedValue(null);
+				const linkedUser = {
+					...makeUser(),
+					services: { github: { id: identity.id } },
+					name: identity.name,
+					username: 'old-username',
+					emails: [{ address: identity.email, verified: true }],
+				};
+				env.users.findOneByEmailAddressAndServiceNameIgnoringCase.mockResolvedValue(linkedUser);
+
+				await login();
+
+				expect(env.users.findOneByEmailAddressAndServiceNameIgnoringCase).toHaveBeenCalledWith(
+					identity.email,
+					identity.id,
+					'github',
+				);
+				expect(env.saveIdentity).toHaveBeenCalledWith(
+					expect.objectContaining({ _id: 'local-user', name: identity.name, username: identity.username }),
+				);
+				expect(env.users.updateFromUpdater).toHaveBeenCalled();
+				expect(env.session.commitTransaction).toHaveBeenCalledTimes(1);
+			});
+
 			it.each([
 				['email', 'findOneByEmailAddressAndServiceNameIgnoringCase', identity],
 				['username', 'findOneByUsernameAndServiceNameIgnoringCase', { ...identity, email: undefined }],
@@ -619,6 +674,15 @@ describe('CustomOAuthStrategy', () => {
 				expect(env.session.endSession).toHaveBeenCalledTimes(1);
 				expect(env.notify).not.toHaveBeenCalled();
 				expect(env.originalAccountOperation).not.toHaveBeenCalled();
+			});
+
+			it('aborts and ends the session when saveIdentity returns false', async () => {
+				env.saveIdentity.mockResolvedValue(false);
+				await expect(login()).rejects.toThrow('Failed to update user identity');
+				expect(env.session.startTransaction).toHaveBeenCalledTimes(1);
+				expect(env.session.abortTransaction).toHaveBeenCalledTimes(1);
+				expect(env.session.endSession).toHaveBeenCalledTimes(1);
+				expect(env.users.updateFromUpdater).not.toHaveBeenCalled();
 			});
 		});
 	});

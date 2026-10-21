@@ -427,6 +427,14 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		serviceName: string,
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null>;
+	findOneByServiceId<
+		T extends Document = IUser,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		serviceName: string,
+		serviceId: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null>;
 	findOneByEmailAddress<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		emailAddress: string,
 		options?: O,

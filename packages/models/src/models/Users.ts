@@ -2351,6 +2351,13 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		} as unknown as O);
 	}
 
+	findOneByServiceId<
+		T extends Document = IUser,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(serviceName: string, serviceId: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+		return this.findOne<T, O>({ [`services.${serviceName}.id`]: serviceId }, options);
+	}
+
 	findOneByEmailAddress<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		emailAddress: string,
 		options?: O,

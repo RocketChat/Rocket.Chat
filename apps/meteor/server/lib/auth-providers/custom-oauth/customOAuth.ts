@@ -270,6 +270,16 @@ export class CustomOAuthStrategy extends Strategy {
 						: await Users.findOneByEmailAddressAndServiceNameIgnoringCase(serviceData.email, serviceData.id, serviceName);
 				}
 
+				if (!user && serviceData.id) {
+					user = await Users.findOneByServiceId(serviceName, serviceData.id);
+				}
+
+				if (!user && serviceData.email && this.emailField) {
+					user = this.mergeUsersDistinctServices
+						? await Users.findOneByEmailAddress(serviceData.email)
+						: await Users.findOneByEmailAddressAndServiceNameIgnoringCase(serviceData.email, serviceData.id, serviceName);
+				}
+
 				if (!user) {
 					return;
 				}
@@ -325,7 +335,7 @@ export class CustomOAuthStrategy extends Strategy {
 
 					updater.set(serviceIdKey as keyof IUser['services'], serviceData.id);
 
-					await saveUserIdentity({
+					const saved = await saveUserIdentity({
 						_id: user._id,
 						name: serviceData.name,
 						updater,
@@ -333,6 +343,11 @@ export class CustomOAuthStrategy extends Strategy {
 						updateUsernameInBackground: true,
 						username: serviceData.username || user.username,
 					});
+
+					if (!saved) {
+						throw new Meteor.Error('CustomOAuth', 'Failed to update user identity');
+					}
+
 					await Users.updateFromUpdater({ _id: user._id }, updater, { session });
 
 					await session.commitTransaction();
