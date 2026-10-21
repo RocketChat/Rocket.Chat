@@ -1,6 +1,6 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { Subscriptions, Rooms } from '@rocket.chat/models';
 import { check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../authorization/hasPermission';
 import { notifyOnSubscriptionChangedById } from '../../notifyListener';
@@ -13,7 +13,7 @@ export const saveAutoTranslateSettings = async (
 	options: { defaultLanguage: string },
 ) => {
 	if (!(await hasPermissionAsync(userId, 'auto-translate'))) {
-		throw new Meteor.Error('error-action-not-allowed', 'Auto-Translate is not allowed', {
+		throw new ClientSafeError('error-action-not-allowed', 'Auto-Translate is not allowed', {
 			method: 'autoTranslate.saveSettings',
 		});
 	}
@@ -23,14 +23,14 @@ export const saveAutoTranslateSettings = async (
 	check(value, String);
 
 	if (['autoTranslate', 'autoTranslateLanguage'].indexOf(field) === -1) {
-		throw new Meteor.Error('error-invalid-settings', 'Invalid settings field', {
+		throw new ClientSafeError('error-invalid-settings', 'Invalid settings field', {
 			method: 'saveAutoTranslateSettings',
 		});
 	}
 
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userId);
 	if (!subscription) {
-		throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', {
+		throw new ClientSafeError('error-invalid-subscription', 'Invalid subscription', {
 			method: 'saveAutoTranslateSettings',
 		});
 	}
@@ -41,7 +41,7 @@ export const saveAutoTranslateSettings = async (
 		case 'autoTranslate':
 			const room = await Rooms.findE2ERoomById(rid, { projection: { _id: 1 } });
 			if (room && value === '1') {
-				throw new Meteor.Error('error-e2e-enabled', 'Enabling auto-translation in E2E encrypted rooms is not allowed', {
+				throw new ClientSafeError('error-e2e-enabled', 'Enabling auto-translation in E2E encrypted rooms is not allowed', {
 					method: 'saveAutoTranslateSettings',
 				});
 			}

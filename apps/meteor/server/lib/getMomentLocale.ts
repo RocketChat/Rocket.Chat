@@ -1,4 +1,4 @@
-import { Meteor } from 'meteor/meteor';
+import { ClientSafeError } from '@rocket.chat/core-services';
 
 const mapLocaleToMomentLocale: Record<string, string> = {
 	ug: 'ug-cn',
@@ -19,5 +19,5 @@ export async function getMomentLocale(locale: string): Promise<string | undefine
 			continue;
 		}
 	}
-	throw new Meteor.Error('moment-locale-not-found', `Moment locale not found: ${locale}`);
+	throw new ClientSafeError('moment-locale-not-found', `Moment locale not found: ${locale}`);
 }

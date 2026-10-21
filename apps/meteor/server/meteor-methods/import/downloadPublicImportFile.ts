@@ -2,10 +2,9 @@ import fs from 'node:fs';
 import type { Readable } from 'node:stream';
 import { pipeline } from 'node:stream/promises';
 
-import { Import } from '@rocket.chat/core-services';
+import { Import, ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { Meteor } from 'meteor/meteor';
 
 import { ProgressStep } from '../../../lib/importer/ImporterProgressStep';
 import { Importers } from '../../lib/import';
@@ -37,7 +36,7 @@ export const executeDownloadPublicImportFile = async (userId: IUser['_id'], file
 	const importer = Importers.get(importerKey);
 	const isUrl = fileUrl.startsWith('http');
 	if (!importer) {
-		throw new Meteor.Error(
+		throw new ClientSafeError(
 			'error-importer-not-defined',
 			`The importer (${importerKey}) has no import class defined.`,
 			'downloadImportFile',
@@ -45,7 +44,7 @@ export const executeDownloadPublicImportFile = async (userId: IUser['_id'], file
 	}
 	// Check if it's a valid url or path before creating a new import record
 	if (!isUrl && !fs.existsSync(fileUrl)) {
-		throw new Meteor.Error('error-import-file-missing', fileUrl, 'downloadPublicImportFile');
+		throw new ClientSafeError('error-import-file-missing', fileUrl, 'downloadPublicImportFile');
 	}
 
 	const operation = await Import.newOperation(userId, importer.name, importer.key);

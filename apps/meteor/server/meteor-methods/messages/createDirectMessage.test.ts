@@ -1,6 +1,5 @@
 import { beforeEach, describe, it } from 'node:test';
 
-import { ClientSafeError } from '@rocket.chat/core-services';
 import { expect } from 'chai';
 import p from 'proxyquire';
 import sinon from 'sinon';
@@ -27,7 +26,6 @@ const { createDirectMessage } = p.noCallThru().load('./createDirectMessage', {
 	'meteor/meteor': {
 		Meteor: {
 			userId: sandbox.stub(),
-			Error: ClientSafeError,
 			methods: sandbox.stub(),
 		},
 	},

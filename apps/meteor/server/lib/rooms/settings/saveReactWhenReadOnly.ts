@@ -1,7 +1,6 @@
-import { Message } from '@rocket.chat/core-services';
+import { Message, ClientSafeError } from '@rocket.chat/core-services';
 import { Rooms } from '@rocket.chat/models';
 import { Match } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 export const saveReactWhenReadOnly = async function (
 	rid: string,
@@ -13,7 +12,7 @@ export const saveReactWhenReadOnly = async function (
 	sendMessage = true,
 ) {
 	if (!Match.test(rid, String)) {
-		throw new Meteor.Error('invalid-room', 'Invalid room', {
+		throw new ClientSafeError('invalid-room', 'Invalid room', {
 			function: 'RocketChat.saveReactWhenReadOnly',
 		});
 	}

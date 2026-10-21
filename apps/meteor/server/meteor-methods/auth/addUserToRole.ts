@@ -1,7 +1,6 @@
-import { api } from '@rocket.chat/core-services';
+import { api, ClientSafeError } from '@rocket.chat/core-services';
 import type { IRole, IUser } from '@rocket.chat/core-typings';
 import { Roles, Users } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { addUserRolesAsync } from '../../lib/roles/addUserRoles';
@@ -9,14 +8,14 @@ import { settings } from '../../settings';
 
 export const addUserToRole = async (userId: string, roleId: string, username: IUser['username'], scope?: string): Promise<boolean> => {
 	if (!(await hasPermissionAsync(userId, 'access-permissions'))) {
-		throw new Meteor.Error('error-action-not-allowed', 'Accessing permissions is not allowed', {
+		throw new ClientSafeError('error-action-not-allowed', 'Accessing permissions is not allowed', {
 			method: 'authorization:addUserToRole',
 			action: 'Accessing_permissions',
 		});
 	}
 
 	if (!roleId || typeof roleId.valueOf() !== 'string' || !username || typeof username.valueOf() !== 'string') {
-		throw new Meteor.Error('error-invalid-arguments', 'Invalid arguments', {
+		throw new ClientSafeError('error-invalid-arguments', 'Invalid arguments', {
 			method: 'authorization:addUserToRole',
 		});
 	}
@@ -24,13 +23,13 @@ export const addUserToRole = async (userId: string, roleId: string, username: IU
 	const role = await Roles.findOneById<Pick<IRole, '_id'>>(roleId, { projection: { _id: 1 } });
 
 	if (!role) {
-		throw new Meteor.Error('error-invalid-role', 'Invalid Role', {
+		throw new ClientSafeError('error-invalid-role', 'Invalid Role', {
 			method: 'authorization:addUserToRole',
 		});
 	}
 
 	if (role._id === 'admin' && !(await hasPermissionAsync(userId, 'assign-admin-role'))) {
-		throw new Meteor.Error('error-action-not-allowed', 'Assigning admin is not allowed', {
+		throw new ClientSafeError('error-action-not-allowed', 'Assigning admin is not allowed', {
 			method: 'authorization:addUserToRole',
 			action: 'Assign_admin',
 		});
@@ -43,14 +42,14 @@ export const addUserToRole = async (userId: string, roleId: string, username: IU
 	});
 
 	if (!user?._id) {
-		throw new Meteor.Error('error-user-not-found', 'User not found', {
+		throw new ClientSafeError('error-user-not-found', 'User not found', {
 			method: 'authorization:addUserToRole',
 		});
 	}
 
 	// verify if user can be added to given scope
 	if (scope && !(await Roles.canAddUserToRole(user._id, role._id, scope))) {
-		throw new Meteor.Error('error-invalid-user', 'User is not part of given room', {
+		throw new ClientSafeError('error-invalid-user', 'User is not part of given room', {
 			method: 'authorization:addUserToRole',
 		});
 	}

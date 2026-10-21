@@ -1,5 +1,5 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { addUserToDefaultChannels } from './addUserToDefaultChannels';
 
@@ -7,7 +7,7 @@ export const joinDefaultChannels = async (userId: string, silenced?: boolean): P
 	const user = await Users.findOneById(userId);
 
 	if (!user) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user');
+		throw new ClientSafeError('error-invalid-user', 'Invalid user');
 	}
 	return addUserToDefaultChannels(user, Boolean(silenced));
 };

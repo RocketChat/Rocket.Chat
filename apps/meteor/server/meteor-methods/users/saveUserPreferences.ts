@@ -1,9 +1,8 @@
-import { StatusVisibility } from '@rocket.chat/core-services';
+import { StatusVisibility, ClientSafeError } from '@rocket.chat/core-services';
 import type { ISidebarCategory, ISubscription, ThemePreference } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import type { FontSize } from '@rocket.chat/rest-typings';
 import { Match, check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import {
 	notifyOnSubscriptionChangedByAutoTranslateAndUserId,
@@ -93,16 +92,16 @@ export const validateSidebarCategories = (categories: ISidebarCategory[]): void 
 		}
 		const trimmed = category.name.trim();
 		if (!trimmed) {
-			throw new Meteor.Error('error-invalid-param', 'sidebarCategories contains a blank category name');
+			throw new ClientSafeError('error-invalid-param', 'sidebarCategories contains a blank category name');
 		}
 		if (trimmed.length > MAX_CATEGORY_NAME_LENGTH) {
-			throw new Meteor.Error('error-invalid-param', 'sidebarCategories category name exceeds maximum length');
+			throw new ClientSafeError('error-invalid-param', 'sidebarCategories category name exceeds maximum length');
 		}
 	}
 
 	const hasDuplicates = (values: string[]): boolean => new Set(values).size !== values.length;
 	if (hasDuplicates(categories.map((category) => category._id))) {
-		throw new Meteor.Error('error-invalid-param', 'sidebarCategories contains duplicate category _id values');
+		throw new ClientSafeError('error-invalid-param', 'sidebarCategories contains duplicate category _id values');
 	}
 };
 
@@ -199,7 +198,7 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 	}
 
 	if (settings.idleTimeLimit != null && settings.idleTimeLimit < 60) {
-		throw new Meteor.Error('invalid-idle-time-limit-value', 'Invalid idleTimeLimit');
+		throw new ClientSafeError('invalid-idle-time-limit-value', 'Invalid idleTimeLimit');
 	}
 
 	if (!isUserHidingAllowed()) {

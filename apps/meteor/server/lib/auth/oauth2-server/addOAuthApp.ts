@@ -1,7 +1,7 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IOAuthApps, IUser } from '@rocket.chat/core-typings';
 import { OAuthApps, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import { Meteor } from 'meteor/meteor';
 
 import { parseUriList } from './parseUriList';
 import type { OauthAppsAddParams } from '../../../api/v1/oauthapps';
@@ -9,22 +9,22 @@ import { hasPermissionAsync } from '../../authorization/hasPermission';
 
 export async function addOAuthApp(applicationParams: OauthAppsAddParams, uid: IUser['_id'] | undefined): Promise<IOAuthApps> {
 	if (!uid) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'addOAuthApp' });
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', { method: 'addOAuthApp' });
 	}
 
 	const user = await Users.findOneById(uid, { projection: { username: 1 } });
 
 	if (!user?.username) {
 		// TODO: username is required, but not always present
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'addOAuthApp' });
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', { method: 'addOAuthApp' });
 	}
 
 	if (!(await hasPermissionAsync(uid, 'manage-oauth-apps'))) {
-		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'addOAuthApp' });
+		throw new ClientSafeError('error-not-allowed', 'Not allowed', { method: 'addOAuthApp' });
 	}
 
 	if (!applicationParams.name || typeof applicationParams.name.valueOf() !== 'string' || applicationParams.name.trim() === '') {
-		throw new Meteor.Error('error-invalid-name', 'Invalid name', { method: 'addOAuthApp' });
+		throw new ClientSafeError('error-invalid-name', 'Invalid name', { method: 'addOAuthApp' });
 	}
 
 	if (
@@ -32,13 +32,13 @@ export async function addOAuthApp(applicationParams: OauthAppsAddParams, uid: IU
 		typeof applicationParams.redirectUri.valueOf() !== 'string' ||
 		applicationParams.redirectUri.trim() === ''
 	) {
-		throw new Meteor.Error('error-invalid-redirectUri', 'Invalid redirectUri', {
+		throw new ClientSafeError('error-invalid-redirectUri', 'Invalid redirectUri', {
 			method: 'addOAuthApp',
 		});
 	}
 
 	if (typeof applicationParams.active !== 'boolean') {
-		throw new Meteor.Error('error-invalid-arguments', 'Invalid arguments', {
+		throw new ClientSafeError('error-invalid-arguments', 'Invalid arguments', {
 			method: 'addOAuthApp',
 		});
 	}
@@ -57,7 +57,7 @@ export async function addOAuthApp(applicationParams: OauthAppsAddParams, uid: IU
 	};
 
 	if (application.redirectUri.length === 0) {
-		throw new Meteor.Error('error-invalid-redirectUri', 'Invalid redirectUri', {
+		throw new ClientSafeError('error-invalid-redirectUri', 'Invalid redirectUri', {
 			method: 'addOAuthApp',
 		});
 	}

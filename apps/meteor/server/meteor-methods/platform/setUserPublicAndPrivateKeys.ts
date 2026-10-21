@@ -1,5 +1,5 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { Rooms, Users } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { notifyOnRoomChangedById } from '../../lib/notifyListener';
 
@@ -15,7 +15,7 @@ export const setUserPublicAndPrivateKeysMethod = async (
 		const keys = await Users.fetchKeysByUserId(userId);
 
 		if (isKeysResult(keys)) {
-			throw new Meteor.Error('error-keys-already-set', 'Keys already set', {
+			throw new ClientSafeError('error-keys-already-set', 'Keys already set', {
 				method: 'e2e.setUserPublicAndPrivateKeys',
 			});
 		}

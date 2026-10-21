@@ -1,7 +1,7 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 export const sendConfirmationEmail = async (to: string): Promise<boolean> => {
 	check(to, String);
@@ -23,7 +23,7 @@ export const sendConfirmationEmail = async (to: string): Promise<boolean> => {
 		Accounts.sendVerificationEmail(user._id, target.address);
 		return true;
 	} catch (error: any) {
-		throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${error.message}`, {
+		throw new ClientSafeError('error-email-send-failed', `Error trying to send email: ${error.message}`, {
 			method: 'registerUser',
 			message: error.message,
 		});

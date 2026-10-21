@@ -1,9 +1,9 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ICreateRoomParams } from '@rocket.chat/core-services';
 import type { ICreatedRoom, IUser } from '@rocket.chat/core-typings';
 import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
 import { Rooms, Users } from '@rocket.chat/models';
 import { check, Match } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { callbacks } from '../../lib/callbacks';
@@ -21,14 +21,14 @@ export async function createDirectMessage(
 	check(excludeSelf, Match.Optional(Boolean));
 
 	if (!userId) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 			method: 'createDirectMessage',
 		});
 	}
 
 	const me = await Users.findOneById(userId, { projection: { username: 1, name: 1 } });
 	if (!me?.username) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 			method: 'createDirectMessage',
 		});
 	}
@@ -38,14 +38,14 @@ export async function createDirectMessage(
 	const targets = usernames.filter((username) => username.toLowerCase() !== myUsername);
 
 	if (!targets.length && (excludeSelf || settings.get('Message_AllowDirectMessagesToYourself') === false)) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 			method: 'createDirectMessage',
 		});
 	}
 
 	const maxUsers = settings.get<number>('DirectMesssage_maxUsers') || 1;
 	if ((excludeSelf ? targets.length : targets.length + 1) > maxUsers) {
-		throw new Meteor.Error(
+		throw new ClientSafeError(
 			'error-direct-message-max-user-exceeded',
 			`You cannot add more than ${maxUsers} users, including yourself to a direct message`,
 			{ method: 'createDirectMessage' },
@@ -63,7 +63,7 @@ export async function createDirectMessage(
 				return to;
 			}
 
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 				method: 'createDirectMessage',
 			});
 		}),
@@ -74,7 +74,7 @@ export async function createDirectMessage(
 
 	// allow self-DMs
 	if (roomUsers.length === 1 && roomUsers[0] !== undefined && typeof roomUsers[0] !== 'string' && roomUsers[0]._id !== me._id) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 			method: 'createDirectMessage',
 		});
 	}
@@ -95,7 +95,7 @@ export async function createDirectMessage(
 			}
 		}
 
-		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+		throw new ClientSafeError('error-not-allowed', 'Not allowed', {
 			method: 'createDirectMessage',
 		});
 	}
@@ -109,7 +109,7 @@ export async function createDirectMessage(
 	try {
 		await callbacks.run('federation.beforeCreateDirectMessage', roomUsers, extraData);
 	} catch (error) {
-		throw new Meteor.Error((error as any)?.message);
+		throw new ClientSafeError((error as any)?.message);
 	}
 	const {
 		_id: rid,

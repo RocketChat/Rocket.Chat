@@ -1,9 +1,8 @@
-import { isClientSafeError } from '@rocket.chat/core-services';
+import { isClientSafeError, ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import { trim } from '../../../lib/utils/stringUtils';
 import { passwordPolicy } from '../../lib/auth/passwordPolicy';
@@ -32,7 +31,7 @@ export const registerUser = async (formData: {
 	);
 
 	if (settings.get('Accounts_RegistrationForm') === 'Disabled') {
-		throw new Meteor.Error('error-user-registration-disabled', 'User registration is disabled', {
+		throw new ClientSafeError('error-user-registration-disabled', 'User registration is disabled', {
 			method: 'registerUser',
 		});
 	}
@@ -42,7 +41,7 @@ export const registerUser = async (formData: {
 		(!formData.secretURL || formData.secretURL !== settings.get('Accounts_RegistrationForm_SecretURL'))
 	) {
 		if (!formData.secretURL) {
-			throw new Meteor.Error('error-user-registration-secret', 'User registration is only allowed via Secret URL', {
+			throw new ClientSafeError('error-user-registration-secret', 'User registration is only allowed via Secret URL', {
 				method: 'registerUser',
 			});
 		}
@@ -50,7 +49,7 @@ export const registerUser = async (formData: {
 		try {
 			await validateInviteToken(formData.secretURL);
 		} catch (e) {
-			throw new Meteor.Error('error-user-registration-secret', 'User registration is only allowed via Secret URL', {
+			throw new ClientSafeError('error-user-registration-secret', 'User registration is only allowed via Secret URL', {
 				method: 'registerUser',
 			});
 		}
@@ -76,10 +75,10 @@ export const registerUser = async (formData: {
 		}
 
 		if (e instanceof Error) {
-			throw new Meteor.Error(e.message);
+			throw new ClientSafeError(e.message);
 		}
 
-		throw new Meteor.Error(String(e));
+		throw new ClientSafeError(String(e));
 	}
 
 	const reason = trim(formData.reason);

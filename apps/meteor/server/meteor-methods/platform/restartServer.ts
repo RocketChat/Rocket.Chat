@@ -1,3 +1,4 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Meteor } from 'meteor/meteor';
 
@@ -18,11 +19,11 @@ Meteor.methods<ServerMethods>({
 		const uid = Meteor.userId();
 
 		if (!uid) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'restart_server' });
+			throw new ClientSafeError('error-invalid-user', 'Invalid user', { method: 'restart_server' });
 		}
 
 		if ((await hasPermissionAsync(uid, 'restart-server')) !== true) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'restart_server' });
+			throw new ClientSafeError('error-not-allowed', 'Not allowed', { method: 'restart_server' });
 		}
 
 		setTimeout(() => {

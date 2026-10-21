@@ -1,3 +1,4 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IPermission } from '@rocket.chat/core-typings';
 import { Permissions, Roles } from '@rocket.chat/models';
 import {
@@ -7,7 +8,6 @@ import {
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
-import { Meteor } from 'meteor/meteor';
 
 import { addPermissionToRoleMethod, removeRoleFromPermissionMethod } from '../../lib/authorization/permissionRole';
 import { permissionsGetMethod } from '../../lib/authorization/streamer/permissions';
@@ -122,7 +122,7 @@ const permissionsEndpoints = API.v1
 			let updatedSinceDate: Date | undefined;
 			if (updatedSince) {
 				if (isNaN(Date.parse(updatedSince))) {
-					throw new Meteor.Error('error-roomId-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
+					throw new ClientSafeError('error-roomId-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
 				}
 				updatedSinceDate = new Date(updatedSince);
 			}

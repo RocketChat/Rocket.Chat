@@ -1,5 +1,5 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
-import { Message } from '@rocket.chat/core-services';
+import { Message, ClientSafeError } from '@rocket.chat/core-services';
 import type {
 	ILivechatInquiryRecord,
 	ILivechatVisitor,
@@ -16,7 +16,6 @@ import { LivechatInquiryStatus } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { LivechatInquiry, LivechatRooms, Subscriptions, Rooms, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import {
 	createLivechatSubscription,
@@ -86,7 +85,7 @@ export const RoutingManager: Routing = {
 	getMethod() {
 		const setting = settings.get<string>('Livechat_Routing_Method');
 		if (!this.methods[setting]) {
-			throw new Meteor.Error('error-routing-method-not-available');
+			throw new ClientSafeError('error-routing-method-not-available');
 		}
 		return this.methods[setting];
 	},
@@ -132,7 +131,7 @@ export const RoutingManager: Routing = {
 		}
 
 		if (!room) {
-			throw new Meteor.Error('error-invalid-room');
+			throw new ClientSafeError('error-invalid-room');
 		}
 
 		logger.debug({ msg: 'Inquiry will be taken by agent', inquiryId: inquiry._id, agentId: agent.agentId });
@@ -153,7 +152,7 @@ export const RoutingManager: Routing = {
 		const { rid, name, v, department } = inquiry;
 		if (!(await createLivechatSubscription(rid, name, v, agent, department))) {
 			logger.debug({ msg: 'Cannot assign agent to inquiry. Cannot create subscription', inquiryId: inquiry._id, agentId: agent.agentId });
-			throw new Meteor.Error('error-creating-subscription', 'Error creating subscription');
+			throw new ClientSafeError('error-creating-subscription', 'Error creating subscription');
 		}
 
 		await LivechatRooms.changeAgentByRoomId(rid, agent);

@@ -1,8 +1,7 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
-import { Message } from '@rocket.chat/core-services';
+import { Message, ClientSafeError } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Messages, EmojiCustom, Rooms, Users } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync } from '../../authorization';
 import { hasPermissionAsync } from '../../authorization/hasPermission';
@@ -35,7 +34,7 @@ export async function setReaction(room: IRoom, user: IUser, message: IMessage, r
 	await Message.beforeReacted(message, room);
 
 	if (Array.isArray(room.muted) && room.muted.includes(user.username as string)) {
-		throw new Meteor.Error('error-not-allowed', i18n.t('You_have_been_muted', { lng: user.language }), {
+		throw new ClientSafeError('error-not-allowed', i18n.t('You_have_been_muted', { lng: user.language }), {
 			rid: room._id,
 		});
 	}
@@ -104,19 +103,19 @@ export async function executeSetReaction(
 	reaction = `:${reactionWithoutColons}:`;
 
 	if (!emoji.list[reaction] && (await EmojiCustom.countByNameOrAlias(reactionWithoutColons)) === 0) {
-		throw new Meteor.Error('error-not-allowed', 'Invalid emoji provided.', {
+		throw new ClientSafeError('error-not-allowed', 'Invalid emoji provided.', {
 			method: 'setReaction',
 		});
 	}
 
 	const user = await Users.findOneById(userId);
 	if (!user) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setReaction' });
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', { method: 'setReaction' });
 	}
 
 	const message = typeof messageParam === 'string' ? await Messages.findOneById(messageParam) : messageParam;
 	if (!message) {
-		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setReaction' });
+		throw new ClientSafeError('error-not-allowed', 'Not allowed', { method: 'setReaction' });
 	}
 
 	const userAlreadyReacted = Boolean(message.reactions?.[reaction]?.usernames?.includes(user.username as string));
@@ -132,11 +131,11 @@ export async function executeSetReaction(
 
 	const room = await Rooms.findOneById(message.rid);
 	if (!room) {
-		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setReaction' });
+		throw new ClientSafeError('error-not-allowed', 'Not allowed', { method: 'setReaction' });
 	}
 
 	if (!(await canAccessRoomAsync(room, user))) {
-		throw new Meteor.Error('not-authorized', 'Not Authorized', { method: 'setReaction' });
+		throw new ClientSafeError('not-authorized', 'Not Authorized', { method: 'setReaction' });
 	}
 
 	return setReaction(room, user, message, reaction, userAlreadyReacted);

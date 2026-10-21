@@ -1,18 +1,18 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
-import { Meteor } from 'meteor/meteor';
 
 import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../notifyListener';
 import { TOTP } from '../lib/totp';
 
 const requireUser = async (userId: string | null) => {
 	if (!userId) {
-		throw new Meteor.Error('not-authorized');
+		throw new ClientSafeError('not-authorized');
 	}
 
 	const user = await Users.findOneById(userId);
 	if (!user) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user');
+		throw new ClientSafeError('error-invalid-user', 'Invalid user');
 	}
 
 	return user;
@@ -22,11 +22,11 @@ export const enableTotp = async (userId: string | null): Promise<{ secret: strin
 	const user = await requireUser(userId);
 
 	if (!user.username) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user');
+		throw new ClientSafeError('error-invalid-user', 'Invalid user');
 	}
 
 	if (user.services?.totp?.enabled) {
-		throw new Meteor.Error('error-2fa-already-enabled');
+		throw new ClientSafeError('error-2fa-already-enabled');
 	}
 
 	const secret = TOTP.generateSecret();
@@ -72,7 +72,7 @@ export const validateTotpTempToken = async (userId: string | null, userToken: st
 	const user = await requireUser(userId);
 
 	if (!user.services?.totp?.tempSecret) {
-		throw new Meteor.Error('invalid-totp');
+		throw new ClientSafeError('invalid-totp');
 	}
 
 	const verified = await TOTP.verify({
@@ -80,7 +80,7 @@ export const validateTotpTempToken = async (userId: string | null, userToken: st
 		token: userToken,
 	});
 	if (!verified) {
-		throw new Meteor.Error('invalid-totp');
+		throw new ClientSafeError('invalid-totp');
 	}
 
 	const { codes, hashedCodes } = TOTP.generateCodes();
@@ -120,7 +120,7 @@ export const regenerateTotpCodes = async (userId: string | null, userToken: stri
 	const user = await requireUser(userId);
 
 	if (!user.services?.totp?.enabled) {
-		throw new Meteor.Error('invalid-totp');
+		throw new ClientSafeError('invalid-totp');
 	}
 
 	const verified = await TOTP.verify({
@@ -145,7 +145,7 @@ export const codesRemainingTotp = async (userId: string | null): Promise<{ remai
 	const user = await requireUser(userId);
 
 	if (!user.services?.totp?.enabled) {
-		throw new Meteor.Error('invalid-totp');
+		throw new ClientSafeError('invalid-totp');
 	}
 
 	return {

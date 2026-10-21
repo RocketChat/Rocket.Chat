@@ -1,10 +1,9 @@
-import { api, FederationMatrix, isClientSafeError } from '@rocket.chat/core-services';
+import { api, FederationMatrix, isClientSafeError, ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { isBannedSubscription } from '@rocket.chat/core-typings';
 import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
 import { Logger } from '@rocket.chat/logger';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { i18n } from '../../lib/i18n';
 import { slashCommands } from '../../lib/utils/slashCommand';
@@ -97,7 +96,7 @@ slashCommands.add({
 		const inviter = await Users.findOneById(userId);
 
 		if (!inviter) {
-			throw new Meteor.Error('error-user-not-found', 'Inviter not found', {
+			throw new ClientSafeError('error-user-not-found', 'Inviter not found', {
 				method: 'slashcommand-invite',
 			});
 		}

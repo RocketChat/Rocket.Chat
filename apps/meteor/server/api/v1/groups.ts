@@ -1,5 +1,5 @@
 import { AbacContractError, AbacErrorCode } from '@rocket.chat/abac';
-import { Team, isClientSafeError } from '@rocket.chat/core-services';
+import { Team, isClientSafeError, ClientSafeError } from '@rocket.chat/core-services';
 import {
 	isRoomNativeFederated,
 	type IIntegration,
@@ -35,7 +35,6 @@ import {
 } from '@rocket.chat/rest-typings';
 import { isTruthy } from '@rocket.chat/tools';
 import { check, Match } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
 import { canAccessRoomAsync, roomAccessAttributes } from '../../lib/authorization';
@@ -76,7 +75,7 @@ async function getRoomFromParams(params: { roomId?: string } | { roomName?: stri
 		(!('roomId' in params) && !('roomName' in params)) ||
 		('roomId' in params && !(params as { roomId?: string }).roomId && 'roomName' in params && !(params as { roomName?: string }).roomName)
 	) {
-		throw new Meteor.Error('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
+		throw new ClientSafeError('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 	}
 
 	const roomOptions = {
@@ -102,7 +101,7 @@ async function getRoomFromParams(params: { roomId?: string } | { roomName?: stri
 	})();
 
 	if (room?.t !== 'p') {
-		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+		throw new ClientSafeError('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 	}
 
 	return room;
@@ -136,14 +135,14 @@ async function findPrivateGroupByIdOrName({
 	const user = await Users.findOneById(userId, { projection: { username: 1, roles: 1, abacAttributes: 1 } });
 
 	if (!room || !user || !(await canAccessRoomAsync(room, user))) {
-		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+		throw new ClientSafeError('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 	}
 
 	// discussions have their names saved on `fname` property
 	const roomName = room.prid ? room.fname : room.name;
 
 	if (checkedArchived && room.archived) {
-		throw new Meteor.Error('error-room-archived', `The private group, ${roomName}, is archived`);
+		throw new ClientSafeError('error-room-archived', `The private group, ${roomName}, is archived`);
 	}
 
 	const sub = await Subscriptions.findOneByRoomIdAndUserId(room._id, userId, { projection: { open: 1 } });
@@ -243,7 +242,7 @@ API.v1.post(
 		const room = await Rooms.findOneById(findResult.rid, { projection: API.v1.defaultFieldsToExclude });
 
 		if (!room) {
-			throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+			throw new ClientSafeError('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 		}
 
 		return API.v1.success({
@@ -428,7 +427,7 @@ API.v1.get(
 		let members = null;
 
 		if (('roomId' in params && !params.roomId) || ('roomName' in params && !params.roomName)) {
-			throw new Meteor.Error('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
+			throw new ClientSafeError('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 		}
 
 		if ('roomId' in params) {
@@ -438,11 +437,11 @@ API.v1.get(
 		}
 
 		if (room?.t !== 'p') {
-			throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+			throw new ClientSafeError('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 		}
 
 		if (room.archived) {
-			throw new Meteor.Error('error-room-archived', `The private group, ${room.name}, is archived`);
+			throw new ClientSafeError('error-room-archived', `The private group, ${room.name}, is archived`);
 		}
 
 		if (params.userId) {
@@ -517,7 +516,7 @@ API.v1.post(
 
 			const room = await Rooms.findOneById(result.rid, { projection: API.v1.defaultFieldsToExclude });
 			if (!room) {
-				throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+				throw new ClientSafeError('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 			}
 
 			return API.v1.success({
@@ -833,7 +832,7 @@ API.v1.get(
 		const room = await Rooms.findOneById(findResult.rid, { projection: API.v1.defaultFieldsToExclude });
 
 		if (!room) {
-			throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+			throw new ClientSafeError('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 		}
 
 		return API.v1.success({
@@ -859,14 +858,14 @@ API.v1.post(
 		const idOrName = roomId || roomName;
 
 		if (!idOrName?.trim()) {
-			throw new Meteor.Error('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
+			throw new ClientSafeError('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 		}
 
 		const groupRoom = await Rooms.findOneByIdOrName(idOrName);
 		const { _id: rid, t: type } = groupRoom || {};
 
 		if (!rid || type !== 'p') {
-			throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+			throw new ClientSafeError('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 		}
 
 		// Federated rooms invite by raw username: the federated user record is created
@@ -879,7 +878,7 @@ API.v1.post(
 			const users = await getUserListFromParams(this.bodyParams);
 
 			if (!users.length) {
-				throw new Meteor.Error('error-empty-invite-list', 'Cannot invite if no valid users are provided');
+				throw new ClientSafeError('error-empty-invite-list', 'Cannot invite if no valid users are provided');
 			}
 
 			await addUsersToRoomMethod(this.userId, { rid, users: users.map((u) => u.username).filter(isTruthy) }, this.user);
@@ -888,7 +887,7 @@ API.v1.post(
 		const room = await Rooms.findOneById(rid, { projection: API.v1.defaultFieldsToExclude });
 
 		if (!room) {
-			throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+			throw new ClientSafeError('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 		}
 
 		return API.v1.success({
@@ -1281,7 +1280,7 @@ API.v1.get(
 		}
 
 		if (!(await canAccessRoomAsync(room, this.user))) {
-			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
+			throw new ClientSafeError('error-not-allowed', 'Not Allowed');
 		}
 
 		const hidden = await getUsersHiddenFrom(this.userId);
@@ -1444,7 +1443,7 @@ API.v1.post(
 		const room = await Rooms.findOneById(findResult.rid, { projection: API.v1.defaultFieldsToExclude });
 
 		if (!room) {
-			throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+			throw new ClientSafeError('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 		}
 
 		return API.v1.success({
@@ -1478,7 +1477,7 @@ API.v1.post(
 		const room = await Rooms.findOneById(findResult.rid, { projection: API.v1.defaultFieldsToExclude });
 
 		if (!room) {
-			throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+			throw new ClientSafeError('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 		}
 
 		return API.v1.success({
@@ -1563,7 +1562,7 @@ API.v1.post(
 		const room = await Rooms.findOneById(findResult.rid, { projection: API.v1.defaultFieldsToExclude });
 
 		if (!room) {
-			throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+			throw new ClientSafeError('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 		}
 
 		return API.v1.success({
@@ -1627,7 +1626,7 @@ API.v1.post(
 		const room = await Rooms.findOneById(findResult.rid, { projection: API.v1.defaultFieldsToExclude });
 
 		if (!room) {
-			throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+			throw new ClientSafeError('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 		}
 
 		return API.v1.success({
@@ -1813,7 +1812,7 @@ API.v1.post(
 		const room = await Rooms.findOneById(findResult.rid, { projection: API.v1.defaultFieldsToExclude });
 
 		if (!room) {
-			throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
+			throw new ClientSafeError('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any group');
 		}
 
 		return API.v1.success({

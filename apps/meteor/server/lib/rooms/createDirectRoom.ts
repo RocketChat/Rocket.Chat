@@ -1,11 +1,11 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ISubscriptionExtraData } from '@rocket.chat/core-services';
 import type { ICreatedRoom, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { isTruthy } from '@rocket.chat/tools';
-import { Meteor } from 'meteor/meteor';
 import type { MatchKeysAndValues } from 'mongodb';
 
 import { getNameForDMs } from '../../services/room/getNameForDMs';
@@ -49,7 +49,7 @@ export async function createDirectRoom(
 ): Promise<ICreatedRoom> {
 	const maxUsers = settings.get<number>('DirectMesssage_maxUsers') || 1;
 	if (members.length > maxUsers) {
-		throw new Meteor.Error(
+		throw new ClientSafeError(
 			'error-direct-message-max-user-exceeded',
 			`You cannot add more than ${maxUsers} users, including yourself to a direct message`,
 			{
@@ -105,14 +105,14 @@ export async function createDirectRoom(
 
 		const prevent = await Apps.self?.triggerEvent(AppEvents.IPreRoomCreatePrevent, tmpRoom).catch((error) => {
 			if (error.name === AppsEngineException.name) {
-				throw new Meteor.Error('error-app-prevented', error.message);
+				throw new ClientSafeError('error-app-prevented', error.message);
 			}
 
 			throw error;
 		});
 
 		if (prevent) {
-			throw new Meteor.Error('error-app-prevented', 'A Rocket.Chat App prevented the room creation.');
+			throw new ClientSafeError('error-app-prevented', 'A Rocket.Chat App prevented the room creation.');
 		}
 
 		const result = await Apps.self?.triggerEvent(
@@ -157,7 +157,7 @@ export async function createDirectRoom(
 
 		const creatorUser = roomMembers.find((member) => member._id === options?.creator);
 		if (roomExtraData.federated && !creatorUser) {
-			throw new Meteor.Error('error-creator-not-in-room', 'The creator user must be part of the direct room');
+			throw new ClientSafeError('error-creator-not-in-room', 'The creator user must be part of the direct room');
 		}
 
 		const roomNames = getNameForDMs(roomMembers);
