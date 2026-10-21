@@ -76,6 +76,14 @@ $table-selected-border-radius: theme('table-selected-border-radius', lengths.bor
 			@include clickable;
 			background-color: colors.surface(hover);
 		}
+
+		@each $vertical-align in (top, middle, bottom, baseline) {
+			&--cell-align-#{$vertical-align} {
+				.rcx-table__cell {
+					vertical-align: $vertical-align;
+				}
+			}
+		}
 	}
 
 	&__cell {
@@ -117,6 +125,12 @@ $table-selected-border-radius: theme('table-selected-border-radius', lengths.bor
 		@each $align in (start, end, center, justify) {
 			&--align-#{$align} {
 				text-align: $align;
+			}
+		}
+
+		@each $vertical-align in (top, middle, bottom, baseline) {
+			&--vertical-align-#{$vertical-align} {
+				vertical-align: $vertical-align;
 			}
 		}
 	}
