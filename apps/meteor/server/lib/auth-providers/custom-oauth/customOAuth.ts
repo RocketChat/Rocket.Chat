@@ -285,9 +285,10 @@ export class CustomOAuthStrategy extends Strategy {
 				}
 			} else if (this.keyField === 'username') {
 				if (serviceData.username) {
+					const username = normalizeOAuthUsername(serviceData.username);
 					user = this.mergeUsersDistinctServices
-						? await Users.findOneByUsernameIgnoringCase(serviceData.username)
-						: await Users.findOneByUsernameAndServiceNameIgnoringCase(serviceData.username, serviceData.id, serviceName);
+						? await Users.findOneByUsernameIgnoringCase(username)
+						: await Users.findOneByUsernameAndServiceNameIgnoringCase(username, serviceData.id, serviceName);
 				}
 			} else if (this.keyField === 'email') {
 				if (serviceData.email) {
@@ -354,12 +355,14 @@ export class CustomOAuthStrategy extends Strategy {
 
 				updater.set(serviceIdKey as keyof IUser['services'], serviceData.id);
 
-				let targetUsername = serviceData.username || user.username;
-				if (targetUsername) {
-					targetUsername = normalizeOAuthUsername(targetUsername);
-
-					if (!validateUsername(targetUsername)) {
-						throw new Meteor.Error('CustomOAuth', `Invalid username "${serviceData.username}" from OAuth attribute mapping`);
+				let targetUsername = user.username;
+				if (serviceData.username) {
+					const normalizedUsername = normalizeOAuthUsername(serviceData.username);
+					if (normalizedUsername !== user.username) {
+						if (!validateUsername(normalizedUsername)) {
+							throw new Meteor.Error('CustomOAuth', `Invalid username "${serviceData.username}" from OAuth attribute mapping`);
+						}
+						targetUsername = normalizedUsername;
 					}
 				}
 

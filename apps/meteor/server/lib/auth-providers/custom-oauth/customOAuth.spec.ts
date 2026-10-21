@@ -633,6 +633,26 @@ describe('CustomOAuthStrategy', () => {
 
 				await login(emailShapedIdentity);
 
+				expect(env.users.findOneByUsernameAndServiceNameIgnoringCase).toHaveBeenCalledWith(
+					'alice.example.com',
+					identity.id,
+					'github',
+				);
+				expect(env.saveIdentity).toHaveBeenCalledWith(
+					expect.objectContaining({ _id: 'local-user', username: 'alice.example.com' }),
+				);
+				expect(env.session.commitTransaction).toHaveBeenCalledTimes(1);
+			});
+
+			it('preserves existing username without re-validating when incoming username normalizes to existing username', async () => {
+				env.createStrategy({ keyField: 'username', mergeUsers: true }, 'github');
+				const emailShapedIdentity = { ...identity, username: 'alice@example.com' };
+				env.users.findOneByUsernameAndServiceNameIgnoringCase.mockResolvedValue(
+					makeUser({ username: 'alice.example.com' }),
+				);
+
+				await login(emailShapedIdentity);
+
 				expect(env.saveIdentity).toHaveBeenCalledWith(
 					expect.objectContaining({ _id: 'local-user', username: 'alice.example.com' }),
 				);
