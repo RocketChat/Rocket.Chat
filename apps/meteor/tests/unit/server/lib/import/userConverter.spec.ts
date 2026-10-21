@@ -8,6 +8,8 @@ const modelsMock = {
 		findOneByEmailAddress: sinon.stub(),
 		findOneByUsernameIgnoringCase: sinon.stub(),
 		findOneById: sinon.stub(),
+		updateOne: sinon.stub(),
+		setUtcOffset: sinon.stub(),
 	},
 };
 const addUserToDefaultChannels = sinon.stub();
@@ -66,6 +68,8 @@ describe('User Converter', () => {
 		modelsMock.Users.findOneByEmailAddress.reset();
 		modelsMock.Users.findOneByUsernameIgnoringCase.reset();
 		modelsMock.Users.findOneById.reset();
+		modelsMock.Users.updateOne.reset();
+		modelsMock.Users.setUtcOffset.reset();
 		callbacks.run.reset();
 		insertUserDoc.reset();
 		addUserToDefaultChannels.reset();
@@ -487,6 +491,43 @@ describe('User Converter', () => {
 			await converter.convertData();
 
 			expect(converter.updateUser.getCall(0)).to.be.null;
+		});
+
+		it('should keep the existing roles and type when the imported data has none', async () => {
+			const converter = new UserConverter({ workInMemory: true });
+
+			await converter.updateUser({ _id: 'oldId', roles: ['admin'], type: 'user' }, { ...userToImport, importIds: ['importId1'] });
+
+			expect(modelsMock.Users.updateOne.getCalls()).to.be.an('array').with.lengthOf(1);
+			const [filter, update] = modelsMock.Users.updateOne.getCall(0).args;
+			expect(filter).to.be.deep.equal({ _id: 'oldId' });
+			expect(update.$set).to.not.have.property('roles');
+			expect(update.$set).to.not.have.property('type');
+		});
+
+		it('should set the default roles and type when neither the imported data nor the existing user has them', async () => {
+			const converter = new UserConverter({ workInMemory: true });
+
+			await converter.updateUser({ _id: 'oldId' }, { ...userToImport, importIds: ['importId1'] });
+
+			expect(modelsMock.Users.updateOne.getCalls()).to.be.an('array').with.lengthOf(1);
+			const [, update] = modelsMock.Users.updateOne.getCall(0).args;
+			expect(update.$set.roles).to.be.deep.equal(['user']);
+			expect(update.$set.type).to.be.equal('user');
+		});
+
+		it('should replace the existing roles and type with the imported ones', async () => {
+			const converter = new UserConverter({ workInMemory: true });
+
+			await converter.updateUser(
+				{ _id: 'oldId', roles: ['admin'], type: 'user' },
+				{ ...userToImport, importIds: ['importId1'], roles: ['bot'], type: 'bot' },
+			);
+
+			expect(modelsMock.Users.updateOne.getCalls()).to.be.an('array').with.lengthOf(1);
+			const [, update] = modelsMock.Users.updateOne.getCall(0).args;
+			expect(update.$set.roles).to.be.deep.equal(['bot']);
+			expect(update.$set.type).to.be.equal('bot');
 		});
 	});
 
