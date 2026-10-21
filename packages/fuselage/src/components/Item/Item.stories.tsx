@@ -17,6 +17,7 @@ import ItemContent from './ItemContent';
 import ItemDescription from './ItemDescription';
 import ItemDivider from './ItemDivider';
 import ItemDragHandle from './ItemDragHandle';
+import ItemDropSlot from './ItemDropSlot';
 import ItemGroup from './ItemGroup';
 import ItemGroupHeader from './ItemGroupHeader';
 import ItemGroupTitle from './ItemGroupTitle';
@@ -430,7 +431,12 @@ export const States: Story = {
 	),
 };
 
-const DragRow = ({ title, handle, ...props }: { title: string; handle?: boolean } & ItemProps) => (
+const DragRow = ({
+	title,
+	handle,
+	handleDisabled,
+	...props
+}: { title: string; handle?: boolean; handleDisabled?: boolean } & ItemProps) => (
 	<Item is='li' inset='md' {...props}>
 		<ItemMedia variant='icon'>
 			<Icon name='hash' size='x20' />
@@ -440,36 +446,65 @@ const DragRow = ({ title, handle, ...props }: { title: string; handle?: boolean 
 				<ItemLink href={`#${title}`}>{title}</ItemLink>
 			</ItemTitle>
 		</ItemContent>
-		{handle && <ItemDragHandle />}
+		{handle && <ItemDragHandle disabled={handleDisabled} />}
 	</Item>
 );
 
 export const DragStates: Story = {
 	render: () => (
 		<Box display='flex' flexDirection='column' width='x280'>
-			<Caption>Rows</Caption>
-			<ItemGroup is='ul' aria-label='Row drag states'>
-				<DragRow title='general' />
+			<Caption>Source</Caption>
+			<ItemGroup is='ul' aria-label='Source states'>
+				<DragRow title='general (grabbable)' grabbable />
 				<DragRow title='design (dragging)' dragging />
-				<DragRow title='engineering (drop after)' dropIndicator='after' />
-				<DragRow title='support' />
-				<DragRow title='random (drop disabled)' dropDisabled />
+				<DragRow title='web (dropped)' dropped />
 			</ItemGroup>
-			<Caption>dragHandle=&quot;trailing&quot;</Caption>
-			<ItemGroup is='ul' aria-label='Rows with a drag handle'>
+			<Caption>Handle (dragHandle=&quot;trailing&quot;)</Caption>
+			<ItemGroup is='ul' aria-label='Handle states'>
 				<DragRow title='ana.lima' handle />
-				<DragRow title='bruno.dias' handle />
+				<DragRow title='bruno.dias (dragging)' handle dragging />
+				<DragRow title='carla.souza (cannot move)' handle handleDisabled />
 			</ItemGroup>
-			<Caption>Groups</Caption>
-			<ItemGroup is='ul' aria-label='Projects' dropTarget>
-				<DragRow title='roadmap' />
-				<DragRow title='web' />
+			<Caption>Ordered drop</Caption>
+			<ItemGroup is='ul' aria-label='Ordered drop states'>
+				<DragRow title='roadmap (drop before)' dropIndicator='before' />
+				<DragRow title='mobile' />
+				<DragRow title='support (drop after)' dropIndicator='after' />
 			</ItemGroup>
-			<ItemGroup is='ul' aria-label='Clients' dropIndicator='before'>
+			<Caption>Drop into a row</Caption>
+			<ItemGroup is='ul' aria-label='Row drop target states'>
+				<DragRow title='Clients (available)' dropTarget='available' />
+				<DragRow title='Partners (active)' dropTarget='active' />
+				<DragRow title='Archive (drop disabled)' dropDisabled />
+			</ItemGroup>
+			<Caption>Drop into a group</Caption>
+			<ItemGroup is='ul' aria-label='Available group' dropTarget='available'>
 				<DragRow title='acme-support' />
 			</ItemGroup>
-			<ItemGroup is='ul' aria-label='Archive' dragging>
-				<DragRow title='old-project' />
+			<ItemGroup is='ul' aria-label='Active group' dropTarget='active'>
+				<DragRow title='globex-onboarding' />
+			</ItemGroup>
+			<ItemGroup is='ul' aria-label='Disabled group' dropDisabled>
+				<DragRow title='initech' />
+			</ItemGroup>
+			<ItemGroup is='ul' aria-label='Empty group'>
+				<ItemDropSlot is='li'>Drop here</ItemDropSlot>
+				<ItemDropSlot is='li' dropTarget='available'>
+					Drop here (available)
+				</ItemDropSlot>
+				<ItemDropSlot is='li' dropTarget='active'>
+					Drop here (active)
+				</ItemDropSlot>
+			</ItemGroup>
+			<Caption>Groups in order</Caption>
+			<ItemGroup is='ul' aria-label='Group dropped before' dropIndicator='before'>
+				<DragRow title='Favorites' />
+			</ItemGroup>
+			<ItemGroup is='ul' aria-label='Dragged group' dragging>
+				<DragRow title='Projects' />
+			</ItemGroup>
+			<ItemGroup is='ul' aria-label='Landed group' dropped>
+				<DragRow title='Teams' />
 			</ItemGroup>
 		</Box>
 	),

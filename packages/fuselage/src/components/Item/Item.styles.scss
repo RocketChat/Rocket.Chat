@@ -17,6 +17,7 @@ $item-color-stroke-divider: theme('item-color-stroke-divider', colors.stroke(ext
 $item-group-header-color-surface: theme('item-group-header-color-surface', colors.surface(light));
 $item-drag-preview-color-surface: theme('item-drag-preview-color-surface', colors.surface(light));
 $item-group-color-surface-drop-target: theme('item-group-color-surface-drop-target', colors.status-background(info));
+$item-color-stroke-slot: theme('item-color-stroke-slot', colors.stroke(light));
 
 $item-padding: lengths.padding(4);
 $item-reveal-duration: 0.18s;
@@ -506,12 +507,62 @@ $item-group-narrow-width: 320px;
 	.rcx-item:hover & {
 		color: $item-color-font-highlighted;
 	}
+
+	&:active,
+	.rcx-item--dragging & {
+		cursor: grabbing;
+	}
+
+	&--disabled,
+	.rcx-item:hover &--disabled {
+		cursor: not-allowed;
+
+		color: $item-color-font-disabled;
+	}
+}
+
+.rcx-item--grabbable,
+.rcx-item--grabbable .rcx-item__link {
+	cursor: grab;
+}
+
+@keyframes rcx-item-dropped {
+	from {
+		background-color: $item-color-surface-selected;
+	}
 }
 
 .rcx-item,
 .rcx-item-group {
 	&--dragging {
 		opacity: 0.4;
+	}
+
+	&--drop-target-available {
+		border-radius: lengths.border-radius(medium);
+		outline: lengths.border-width(default) dashed $item-color-stroke-focus;
+		outline-offset: calc(-1 * #{lengths.border-width(default)});
+	}
+
+	&--drop-target-active {
+		border-radius: lengths.border-radius(medium);
+		background-color: $item-group-color-surface-drop-target;
+		box-shadow: inset 0 0 0 lengths.border-width(medium) $item-color-stroke-focus;
+	}
+
+	&--drop-disabled,
+	&--drop-disabled:hover {
+		cursor: not-allowed;
+
+		background-color: transparent;
+	}
+
+	&--dropped {
+		animation: rcx-item-dropped 0.6s ease-out;
+
+		@media (prefers-reduced-motion: reduce) {
+			animation: none;
+		}
 	}
 
 	&--drop-before,
@@ -544,14 +595,55 @@ $item-group-narrow-width: 320px;
 	}
 }
 
-.rcx-item--drop-disabled {
-	cursor: not-allowed;
+.rcx-item-drop-slot {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	box-sizing: border-box;
+	min-height: lengths.size(28);
+	margin: 0;
+	padding: $item-padding;
+
+	list-style: none;
+
+	color: $item-color-font-secondary;
+	border: lengths.border-width(default) dashed $item-color-stroke-slot;
+	border-radius: lengths.border-radius(small);
+
+	font-family: font-family('sans');
+	@include use-font-scale(c1);
+
+	&--drop-target-available {
+		border-color: $item-color-stroke-focus;
+	}
+
+	&--drop-target-active {
+		color: $item-color-font-highlighted;
+		border-style: solid;
+		border-color: $item-color-stroke-focus;
+		background-color: $item-group-color-surface-drop-target;
+	}
 }
 
-.rcx-item-group--drop-target {
-	border-radius: lengths.border-radius(medium);
-	background-color: $item-group-color-surface-drop-target;
-	box-shadow: inset 0 0 0 lengths.border-width(medium) $item-color-stroke-focus;
+// Forced colors drop backgrounds and box-shadows, so the drop line and target use system colors instead.
+@media (forced-colors: active) {
+	.rcx-item--drop-before::before,
+	.rcx-item--drop-after::before,
+	.rcx-item-group--drop-before::before,
+	.rcx-item-group--drop-after::before,
+	.rcx-item-drop-line {
+		forced-color-adjust: none;
+
+		background-color: Highlight;
+	}
+
+	.rcx-item--drop-target-active,
+	.rcx-item-group--drop-target-active,
+	.rcx-item-drop-box {
+		outline: lengths.border-width(medium) solid Highlight;
+		outline-offset: calc(-1 * #{lengths.border-width(medium)});
+	}
 }
 
 // Drawn over a list whose rows are not inside their group's element, such as a virtualized list.
@@ -577,6 +669,15 @@ $item-group-narrow-width: 320px;
 	border-radius: lengths.border-radius(medium);
 	background-color: color-mix(in srgb, #{$item-color-stroke-focus} 8%, transparent);
 	box-shadow: inset 0 0 0 lengths.border-width(medium) $item-color-stroke-focus;
+
+	&--available {
+		z-index: 9996;
+
+		background-color: transparent;
+		box-shadow: none;
+		outline: lengths.border-width(default) dashed $item-color-stroke-focus;
+		outline-offset: calc(-1 * #{lengths.border-width(default)});
+	}
 }
 
 // Tells assistive technologies where a row moved by keyboard landed.
