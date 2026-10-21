@@ -17,7 +17,7 @@
 		"dev": "tsc --watch --preserveWatchOutput",
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix .",
-		"testunit": "node --test --test-isolation=none --require tsx 'src/**/*.test.ts'",
+		"testunit": "node --test --experimental-test-isolation=none --require tsx 'src/**/*.test.ts'",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
