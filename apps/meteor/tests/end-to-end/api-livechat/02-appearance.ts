@@ -3,10 +3,10 @@ import { before, describe, it } from 'node:test';
 import { expect } from 'chai';
 import type { Response } from 'supertest';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { sleep } from '../../../data/livechat/utils';
-import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
-import { IS_EE } from '../../../e2e/config/constants';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { sleep } from '../../data/livechat/utils';
+import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../data/permissions.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 describe('LIVECHAT - appearance', () => {
 	before((_t, done) => getCredentials(done));

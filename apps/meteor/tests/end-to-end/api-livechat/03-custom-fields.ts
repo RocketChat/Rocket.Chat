@@ -4,10 +4,10 @@ import type { ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typin
 import { expect } from 'chai';
 import type { Response } from 'supertest';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
-import { closeOmnichannelRoom, createLivechatRoom, createVisitor, deleteVisitor, getLivechatRoomInfo } from '../../../data/livechat/rooms';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { createCustomField, deleteCustomField } from '../../data/livechat/custom-fields';
+import { closeOmnichannelRoom, createLivechatRoom, createVisitor, deleteVisitor, getLivechatRoomInfo } from '../../data/livechat/rooms';
+import { updatePermission, updateSetting } from '../../data/permissions.helper';
 
 describe('LIVECHAT - custom fields', () => {
 	before((_t, done) => getCredentials(done));

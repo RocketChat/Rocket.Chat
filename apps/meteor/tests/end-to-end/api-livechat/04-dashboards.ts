@@ -8,8 +8,8 @@ import { expect } from 'chai';
 import moment from 'moment';
 import type { Response } from 'supertest';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { addOrRemoveAgentFromDepartment, createDepartmentWithAnOnlineAgent, deleteDepartment } from '../../../data/livechat/department';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { addOrRemoveAgentFromDepartment, createDepartmentWithAnOnlineAgent, deleteDepartment } from '../../data/livechat/department';
 import {
 	closeOmnichannelRoom,
 	closeOpenRoomsServedBy,
@@ -19,12 +19,12 @@ import {
 	sendAgentMessage,
 	sendMessage,
 	startANewLivechatRoomAndTakeIt,
-} from '../../../data/livechat/rooms';
-import { createAnOnlineAgent, createBotAgent } from '../../../data/livechat/users';
-import { sleep } from '../../../data/livechat/utils';
-import { removePermissionFromAllRoles, restorePermissionToRoles, updateEESetting, updateSetting } from '../../../data/permissions.helper';
-import { deleteUser } from '../../../data/users.helper';
-import { IS_EE } from '../../../e2e/config/constants';
+} from '../../data/livechat/rooms';
+import { createAnOnlineAgent, createBotAgent } from '../../data/livechat/users';
+import { sleep } from '../../data/livechat/utils';
+import { removePermissionFromAllRoles, restorePermissionToRoles, updateEESetting, updateSetting } from '../../data/permissions.helper';
+import { deleteUser } from '../../data/users.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 describe('LIVECHAT - dashboards', () => {
 	// This test is expected to take more time since we're simulating real time conversations to verify analytics

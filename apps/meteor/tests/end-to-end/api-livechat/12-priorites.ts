@@ -10,10 +10,10 @@ import type {
 import { OmnichannelSortingMechanismSettingType } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { createDepartmentWithAnOnlineAgent } from '../../../data/livechat/department';
-import { fetchAllInquiries } from '../../../data/livechat/inquiries';
-import { createSLA, deleteSLA, bulkCreateSLA, deleteAllSLA } from '../../../data/livechat/priorities';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { createDepartmentWithAnOnlineAgent } from '../../data/livechat/department';
+import { fetchAllInquiries } from '../../data/livechat/inquiries';
+import { createSLA, deleteSLA, bulkCreateSLA, deleteAllSLA } from '../../data/livechat/priorities';
 import {
 	createAgent,
 	createVisitor,
@@ -22,7 +22,7 @@ import {
 	startANewLivechatRoomAndTakeIt,
 	makeAgentAvailable,
 	deleteAgent,
-} from '../../../data/livechat/rooms';
+} from '../../data/livechat/rooms';
 import {
 	addPermissions,
 	removePermissionFromAllRoles,
@@ -31,9 +31,9 @@ import {
 	updateEESetting,
 	updatePermission,
 	updateSetting,
-} from '../../../data/permissions.helper';
-import { IS_EE } from '../../../e2e/config/constants';
-import { generateRandomSLAData } from '../../../e2e/utils/omnichannel/sla';
+} from '../../data/permissions.helper';
+import { IS_EE } from '../../e2e/config/constants';
+import { generateRandomSLAData } from '../../e2e/utils/omnichannel/sla';
 
 (IS_EE ? describe : describe.skip)('[EE] LIVECHAT - Priorities & SLAs', () => {
 	before((_t, done) => getCredentials(done));

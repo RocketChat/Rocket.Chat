@@ -6,8 +6,8 @@ import type { ILivechatDepartment, ILivechatVisitor, IOmnichannelRoom, IUser } f
 import { expect } from 'chai';
 import type { Response } from 'supertest';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { createDepartmentWithAnOnlineAgent, deleteDepartment, addOrRemoveAgentFromDepartment } from '../../../data/livechat/department';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { createDepartmentWithAnOnlineAgent, deleteDepartment, addOrRemoveAgentFromDepartment } from '../../data/livechat/department';
 import {
 	createVisitor,
 	createLivechatRoom,
@@ -21,13 +21,13 @@ import {
 	startANewLivechatRoomAndTakeIt,
 	fetchInquiry,
 	takeInquiry,
-} from '../../../data/livechat/rooms';
-import { createAnOnlineAgent, updateLivechatSettingsForUser } from '../../../data/livechat/users';
-import { sleep } from '../../../data/livechat/utils';
-import { updateEESetting, updatePermission, updateSetting } from '../../../data/permissions.helper';
-import { password } from '../../../data/user';
-import { createUser, deleteUser, login } from '../../../data/users.helper';
-import { IS_EE } from '../../../e2e/config/constants';
+} from '../../data/livechat/rooms';
+import { createAnOnlineAgent, updateLivechatSettingsForUser } from '../../data/livechat/users';
+import { sleep } from '../../data/livechat/utils';
+import { updateEESetting, updatePermission, updateSetting } from '../../data/permissions.helper';
+import { password } from '../../data/user';
+import { createUser, deleteUser, login } from '../../data/users.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 const cleanupRooms = async () => {
 	const response = await request

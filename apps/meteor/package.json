@@ -23,6 +23,7 @@
 	},
 	"type": "commonjs",
 	"scripts": {
+		".testapi": "node --test --experimental-test-isolation=none --test-concurrency=1 --test-timeout=10000 --require tsx --require ./tests/setup/chaiPlugins.ts --require ./tests/end-to-end/dumpLastRequestOnFailure.ts",
 		".testunit:jest": "TZ=UTC TS_NODE_COMPILER_OPTIONS='{\"allowJs\": false}' jest",
 		".testunit:server": "node --test --experimental-test-isolation=none --require tsx --require ./tests/setup/chaiPlugins.ts '**/*.test.{ts,js}'",
 		".testunit:server:cov": "nyc -r text -r lcov yarn .testunit:server",
@@ -54,8 +55,8 @@
 		"test": "yarn testunit && yarn testapi",
 		"test:e2e": "playwright test",
 		"test:e2e:nyc": "nyc report --reporter=lcovonly",
-		"testapi": "node --test --experimental-test-isolation=none --test-concurrency=1 --test-timeout=10000 --require tsx --require ./tests/setup/chaiPlugins.ts --require ./tests/end-to-end/dumpLastRequestOnFailure.ts 'tests/end-to-end/api/*.ts' 'tests/end-to-end/api/helpers/**/*' 'tests/end-to-end/api/methods/**/*' 'tests/end-to-end/apps/*'",
-		"testapi:livechat": "node --test --experimental-test-isolation=none --test-concurrency=1 --test-timeout=10000 --require tsx --require ./tests/setup/chaiPlugins.ts --require ./tests/end-to-end/dumpLastRequestOnFailure.ts 'tests/end-to-end/api/livechat/**/*'",
+		"testapi": "yarn .testapi 'tests/end-to-end/api/**/*.ts' 'tests/end-to-end/apps/**/*.ts'",
+		"testapi:livechat": "yarn .testapi 'tests/end-to-end/api-livechat/**/*.ts'",
 		"testunit": "yarn .testunit:jest && yarn .testunit:server:cov",
 		"testunit-watch": "node --test --watch --experimental-test-isolation=none --require tsx --require ./tests/setup/chaiPlugins.ts '**/*.test.{ts,js}'",
 		"typecheck": "meteor lint && cross-env NODE_OPTIONS=\"--max-old-space-size=8192\" tsc --noEmit --skipLibCheck",

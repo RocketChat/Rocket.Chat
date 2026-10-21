@@ -4,15 +4,15 @@ import type { Credentials } from '@rocket.chat/api-client';
 import type { ILivechatDepartment, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
-import { sleep } from '../../../../lib/utils/sleep';
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
+import { sleep } from '../../../lib/utils/sleep';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { createCustomField, deleteCustomField } from '../../data/livechat/custom-fields';
 import {
 	addOrRemoveAgentFromDepartment,
 	createDepartmentWithAnOfflineAgent,
 	createDepartmentWithAnOnlineAgent,
 	deleteDepartment,
-} from '../../../data/livechat/department';
+} from '../../data/livechat/department';
 import {
 	createVisitor,
 	createLivechatRoom,
@@ -21,12 +21,12 @@ import {
 	sendMessage,
 	deleteVisitor,
 	createDepartment,
-} from '../../../data/livechat/rooms';
-import { createBotAgent, getRandomVisitorToken } from '../../../data/livechat/users';
-import type { WithRequiredProperty } from '../../../data/livechat/utils';
-import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
-import { deleteUser } from '../../../data/users.helper';
-import { IS_EE } from '../../../e2e/config/constants';
+} from '../../data/livechat/rooms';
+import { createBotAgent, getRandomVisitorToken } from '../../data/livechat/users';
+import type { WithRequiredProperty } from '../../data/livechat/utils';
+import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../data/permissions.helper';
+import { deleteUser } from '../../data/users.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 describe('LIVECHAT - Utils', () => {
 	before((_t, done) => getCredentials(done));

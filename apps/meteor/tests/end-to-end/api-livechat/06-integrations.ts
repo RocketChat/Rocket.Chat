@@ -3,7 +3,7 @@ import { after, before, describe, it } from 'node:test';
 import type { ILivechatVisitor, IOmnichannelRoom, ISetting } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
 import {
 	closeOmnichannelRoom,
 	createAgent,
@@ -12,10 +12,10 @@ import {
 	deleteVisitor,
 	getLivechatRoomInfo,
 	startANewLivechatRoomAndTakeIt,
-} from '../../../data/livechat/rooms';
-import { sleep } from '../../../data/livechat/utils';
-import { getLivechatVisitorByToken } from '../../../data/livechat/visitor';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
+} from '../../data/livechat/rooms';
+import { sleep } from '../../data/livechat/utils';
+import { getLivechatVisitorByToken } from '../../data/livechat/visitor';
+import { updatePermission, updateSetting } from '../../data/permissions.helper';
 
 describe('LIVECHAT - Integrations', () => {
 	before((_t, done) => getCredentials(done));

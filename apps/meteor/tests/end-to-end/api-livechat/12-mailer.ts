@@ -3,8 +3,8 @@ import { after, before, describe, it } from 'node:test';
 import { expect } from 'chai';
 import type { Response } from 'supertest';
 
-import { api, request, credentials, getCredentials } from '../../../data/api-data';
-import { updatePermission } from '../../../data/permissions.helper';
+import { api, request, credentials, getCredentials } from '../../data/api-data';
+import { updatePermission } from '../../data/permissions.helper';
 
 describe('Mailer', () => {
 	before((_t, done) => getCredentials(done));

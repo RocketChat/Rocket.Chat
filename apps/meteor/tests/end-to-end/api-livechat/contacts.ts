@@ -11,8 +11,8 @@ import type {
 } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { createCustomField, deleteCustomField } from '../../data/livechat/custom-fields';
 import {
 	closeOmnichannelRoom,
 	closeOpenRoomsServedBy,
@@ -24,12 +24,12 @@ import {
 	fetchInquiry,
 	getLivechatRoomInfo,
 	startANewLivechatRoomAndTakeIt,
-} from '../../../data/livechat/rooms';
-import { createAnOnlineAgent, removeAgent } from '../../../data/livechat/users';
-import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
-import { createUser, deleteUser } from '../../../data/users.helper';
-import { expectInvalidParams } from '../../../data/validation.helper';
-import { IS_EE } from '../../../e2e/config/constants';
+} from '../../data/livechat/rooms';
+import { createAnOnlineAgent, removeAgent } from '../../data/livechat/users';
+import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../data/permissions.helper';
+import { createUser, deleteUser } from '../../data/users.helper';
+import { expectInvalidParams } from '../../data/validation.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 describe('LIVECHAT - contacts', () => {
 	let agentUser: IUser;

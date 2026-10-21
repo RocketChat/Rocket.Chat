@@ -5,8 +5,8 @@ import type { ILivechatDepartment, ILivechatInquiryRecord, ILivechatVisitor, IOm
 import { expect } from 'chai';
 import type { Response } from 'supertest';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { deleteDepartment } from '../../../data/livechat/department';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { deleteDepartment } from '../../data/livechat/department';
 import {
 	closeOmnichannelRoom,
 	createAgent,
@@ -19,18 +19,18 @@ import {
 	makeAgentAvailable,
 	startANewLivechatRoomAndTakeIt,
 	takeInquiry,
-} from '../../../data/livechat/rooms';
+} from '../../data/livechat/rooms';
 import {
 	removePermissionFromAllRoles,
 	restorePermissionToRoles,
 	updateEESetting,
 	updatePermission,
 	updateSetting,
-} from '../../../data/permissions.helper';
-import { password } from '../../../data/user';
-import { createUser, login, deleteUser } from '../../../data/users.helper';
-import { IS_EE } from '../../../e2e/config/constants';
-import { retry } from '../helpers/retry';
+} from '../../data/permissions.helper';
+import { retry } from '../../data/retry';
+import { password } from '../../data/user';
+import { createUser, login, deleteUser } from '../../data/users.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 describe('LIVECHAT - inquiries', () => {
 	before((_t, done) => getCredentials(done));

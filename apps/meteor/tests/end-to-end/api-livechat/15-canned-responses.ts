@@ -4,15 +4,15 @@ import { faker } from '@faker-js/faker';
 import type { IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { createCannedResponse } from '../../../data/livechat/canned-responses';
-import { createAgent, createDepartment } from '../../../data/livechat/rooms';
-import { removeTag, saveTags } from '../../../data/livechat/tags';
-import { createMonitor, createUnit } from '../../../data/livechat/units';
-import { updatePermission, updateSetting } from '../../../data/permissions.helper';
-import { password, adminUsername } from '../../../data/user';
-import { createUser, login } from '../../../data/users.helper';
-import { IS_EE } from '../../../e2e/config/constants';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { createCannedResponse } from '../../data/livechat/canned-responses';
+import { createAgent, createDepartment } from '../../data/livechat/rooms';
+import { removeTag, saveTags } from '../../data/livechat/tags';
+import { createMonitor, createUnit } from '../../data/livechat/units';
+import { updatePermission, updateSetting } from '../../data/permissions.helper';
+import { password, adminUsername } from '../../data/user';
+import { createUser, login } from '../../data/users.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('[EE] LIVECHAT - Canned responses', () => {
 	before((_t, done) => getCredentials(done));

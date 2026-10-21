@@ -4,14 +4,9 @@ import type { ILivechatCustomField } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import type { Response } from 'supertest';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
-import {
-	getSettingValueById,
-	removePermissionFromAllRoles,
-	restorePermissionToRoles,
-	updateSetting,
-} from '../../../data/permissions.helper';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { createCustomField, deleteCustomField } from '../../data/livechat/custom-fields';
+import { getSettingValueById, removePermissionFromAllRoles, restorePermissionToRoles, updateSetting } from '../../data/permissions.helper';
 
 describe('LIVECHAT - custom fields', () => {
 	let settingLivechatEnabled: boolean;

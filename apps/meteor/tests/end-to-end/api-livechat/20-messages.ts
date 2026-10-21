@@ -4,8 +4,8 @@ import { faker } from '@faker-js/faker';
 import type { ILivechatAgent, ILivechatVisitor, IOmnichannelRoom, IRoom } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
-import { api, getCredentials, request } from '../../../data/api-data';
-import { sendSimpleMessage } from '../../../data/chat.helper';
+import { api, getCredentials, request } from '../../data/api-data';
+import { sendSimpleMessage } from '../../data/chat.helper';
 import {
 	sendMessage,
 	startANewLivechatRoomAndTakeIt,
@@ -14,10 +14,10 @@ import {
 	makeAgentAvailable,
 	uploadFile,
 	closeOmnichannelRoom,
-} from '../../../data/livechat/rooms';
-import { removeAgent } from '../../../data/livechat/users';
-import { updateEESetting, updateSetting } from '../../../data/permissions.helper';
-import { createRoom, deleteRoom } from '../../../data/rooms.helper';
+} from '../../data/livechat/rooms';
+import { removeAgent } from '../../data/livechat/users';
+import { updateEESetting, updateSetting } from '../../data/permissions.helper';
+import { createRoom, deleteRoom } from '../../data/rooms.helper';
 
 describe('LIVECHAT - messages', () => {
 	let agent: ILivechatAgent;

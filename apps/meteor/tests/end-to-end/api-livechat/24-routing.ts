@@ -6,7 +6,7 @@ import { UserStatus } from '@rocket.chat/core-typings';
 import type { ILivechatDepartment, IUser, ILivechatAgent } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
-import { getCredentials, request, api, credentials } from '../../../data/api-data';
+import { getCredentials, request, api, credentials } from '../../data/api-data';
 import {
 	closeOpenRoomsServedBy,
 	createAgent,
@@ -17,12 +17,12 @@ import {
 	getLivechatRoomInfo,
 	makeAgentUnavailable,
 	switchLivechatStatus,
-} from '../../../data/livechat/rooms';
-import { getAgent } from '../../../data/livechat/users';
-import { getSettingValueById, updateSetting } from '../../../data/permissions.helper';
-import { password } from '../../../data/user';
-import { createUser, deleteUser, login, setUserActiveStatus, setUserStatus } from '../../../data/users.helper';
-import { IS_EE } from '../../../e2e/config/constants';
+} from '../../data/livechat/rooms';
+import { getAgent } from '../../data/livechat/users';
+import { getSettingValueById, updateSetting } from '../../data/permissions.helper';
+import { password } from '../../data/user';
+import { createUser, deleteUser, login, setUserActiveStatus, setUserStatus } from '../../data/users.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('Omnichannel - Routing', () => {
 	before((_t, done) => getCredentials(done));

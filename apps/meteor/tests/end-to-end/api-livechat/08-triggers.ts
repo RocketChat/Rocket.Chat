@@ -3,10 +3,10 @@ import { after, before, describe, it } from 'node:test';
 import { expect } from 'chai';
 import type { Response } from 'supertest';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { createTrigger, fetchTriggers } from '../../../data/livechat/triggers';
-import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../../data/permissions.helper';
-import { IS_EE } from '../../../e2e/config/constants';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { createTrigger, fetchTriggers } from '../../data/livechat/triggers';
+import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermission, updateSetting } from '../../data/permissions.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 describe('LIVECHAT - triggers', () => {
 	before((_t, done) => getCredentials(done));

@@ -6,13 +6,13 @@ import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import type { Response } from 'supertest';
 
-import { retry } from './helpers/retry';
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials, apiUrl } from '../../data/api-data';
 import { followMessage, sendMessage, sendSimpleMessage, deleteMessage, updateMessage } from '../../data/chat.helper';
 import { imgURL } from '../../data/interactions';
 import { mockServerHealthy, mockServerReset, mockServerSet } from '../../data/mock-server.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
+import { retry } from '../../data/retry';
 import { addUserToRoom, createRoom, deleteRoom, getSubscriptionByRoomId } from '../../data/rooms.helper';
 import { password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
