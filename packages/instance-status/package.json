@@ -11,8 +11,7 @@
 		"build": "rm -rf dist && tsc -p tsconfig.json",
 		"dev": "tsc --watch --preserveWatchOutput -p tsconfig.json",
 		"lint": "eslint .",
-		"lint:fix": "eslint --fix .",
-		"typecheck": "tsc --noEmit"
+		"lint:fix": "eslint --fix ."
 	},
 	"dependencies": {
 		"@rocket.chat/models": "workspace:^",

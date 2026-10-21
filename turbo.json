@@ -22,10 +22,15 @@
 			"dependsOn": ["^build"],
 			"outputs": ["coverage/**"]
 		},
+		"transit": {
+			"dependsOn": ["^transit"]
+		},
 		"lint": {
+			"dependsOn": ["^transit"],
 			"outputs": []
 		},
 		"typecheck": {
+			"dependsOn": ["^transit"],
 			"outputs": []
 		},
 		"dev": {

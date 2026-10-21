@@ -18,12 +18,29 @@ jobs:
     permissions:
       contents: read
 
-    name: ${{ matrix.check == 'ts' && 'TypeScript' || 'Code Lint' }}
+    name: ${{ matrix.name }}
 
     strategy:
       fail-fast: false
       matrix:
-        check: ['ts', 'lint']
+        include:
+          - check: ts
+            name: TypeScript
+          - check: lint
+            name: Code Lint
+          # apps/meteor ESLint is split by directory; the last shard lints everything the others ignore
+          - check: eslint-meteor
+            name: 'ESLint meteor (client views)'
+            eslint-args: client/views/room client/views/admin client/views/omnichannel
+          - check: eslint-meteor
+            name: 'ESLint meteor (client)'
+            eslint-args: client --ignore-pattern 'client/views/room/' --ignore-pattern 'client/views/admin/' --ignore-pattern 'client/views/omnichannel/'
+          - check: eslint-meteor
+            name: 'ESLint meteor (server)'
+            eslint-args: server ee
+          - check: eslint-meteor
+            name: 'ESLint meteor (rest)'
+            eslint-args: . --ignore-pattern 'client/' --ignore-pattern 'server/' --ignore-pattern 'ee/'
 
     steps:
       - name: Set Swap Space
@@ -45,25 +62,8 @@ jobs:
 
       - uses: ./.github/actions/restore-packages
 
-      - name: Restore TypeScript incremental cache
-        id: restore-typecheck
-        if: matrix.check == 'ts'
-        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ./apps/meteor/tsconfig.typecheck.tsbuildinfo
-          key: typecheck-cache-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            typecheck-cache-${{ runner.os }}-
-
-      - name: Cache observability (typecheck)
-        if: matrix.check == 'ts'
-        run: |
-          {
-            echo "### TypeScript incremental cache"
-            echo "- **exact hit**: \`${{ steps.restore-typecheck.outputs.cache-hit }}\`"
-          } >> "$GITHUB_STEP_SUMMARY"
-
       - name: Install Meteor
+        if: matrix.check != 'lint'
         shell: bash
         run: |
           # Restore bin from cache
@@ -87,38 +87,16 @@ jobs:
         if: matrix.check == 'ts'
         run: yarn turbo run typecheck --concurrency=5
 
-      - name: Save TypeScript incremental cache
-        if: matrix.check == 'ts' && github.ref == 'refs/heads/develop' && github.event_name == 'push'
-        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ./apps/meteor/tsconfig.typecheck.tsbuildinfo
-          key: typecheck-cache-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
-
-      - name: Restore ESLint cache
-        id: restore-eslint
-        if: matrix.check == 'lint'
-        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ./apps/meteor/.eslintcache
-          key: eslintcache-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
-          restore-keys: |
-            eslintcache-${{ runner.os }}-
-
-      - name: Cache observability (eslint)
-        if: matrix.check == 'lint'
-        run: |
-          {
-            echo "### ESLint cache"
-            echo "- **exact hit**: \`${{ steps.restore-eslint.outputs.cache-hit }}\`"
-          } >> "$GITHUB_STEP_SUMMARY"
-
       - name: Lint
         if: matrix.check == 'lint'
-        run: yarn lint
+        run: |
+          yarn turbo run lint --filter='!@rocket.chat/meteor'
+          yarn workspace @rocket.chat/meteor stylelint
 
-      - name: Save ESLint cache
-        if: matrix.check == 'lint' && github.ref == 'refs/heads/develop' && github.event_name == 'push'
-        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
-        with:
-          path: ./apps/meteor/.eslintcache
-          key: eslintcache-${{ runner.os }}-${{ hashFiles('yarn.lock') }}
+      - name: ESLint (apps/meteor shard)
+        if: matrix.check == 'eslint-meteor'
+        working-directory: ./apps/meteor
+        run: |
+          meteor lint
+          yarn eslint ${{ matrix.eslint-args }}
+

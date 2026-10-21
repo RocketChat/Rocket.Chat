@@ -13,8 +13,7 @@
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix .",
 		"test": "jest",
-		"testunit": "jest",
-		"typecheck": "tsc --noEmit"
+		"testunit": "jest"
 	},
 	"dependencies": {
 		"jose": "^4.15.9"

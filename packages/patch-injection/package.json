@@ -13,8 +13,7 @@
 		"lint": "eslint .",
 		"lint:fix": "eslint --fix .",
 		"test": "jest",
-		"testunit": "jest",
-		"typecheck": "tsc --noEmit"
+		"testunit": "jest"
 	},
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
