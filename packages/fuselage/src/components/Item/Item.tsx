@@ -22,7 +22,7 @@ import { toCSSValue } from '../../helpers/toCSSValue';
 import { spacing } from '../../styleTokens';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-const ItemFrame = styled(Text, {
+export const ItemFrame = styled(Text, {
 	...itemRowStyle,
 	textAlign: 'start',
 	textDecorationLine: 'none',

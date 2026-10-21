@@ -7,7 +7,7 @@ import { highlightVariant, toRender, truncatedTextStyle } from './itemStyles';
 import { cx } from '../../helpers/composeClassNames';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-const ItemTitleFrame = styled(Text, {
+export const ItemTitleFrame = styled(Text, {
 	...truncatedTextStyle,
 	display: 'block',
 
