@@ -13,13 +13,19 @@ jest.mock('../../../../rocketchat.info', () => ({
 
 let mockIsLoggingIn = false;
 let mockUser: Pick<IUser, '_id' | 'settings'> | null = null;
+// `null` keeps the user id of the `mockAppRoot` wrapper.
+let mockUserId: string | undefined | null = null;
 
-jest.mock('@rocket.chat/ui-contexts', () => ({
-	...jest.requireActual('@rocket.chat/ui-contexts'),
-	useLoginToken: () => 'login-token',
-	useIsLoggingIn: () => mockIsLoggingIn,
-	useUser: () => mockUser,
-}));
+jest.mock('@rocket.chat/ui-contexts', () => {
+	const actual = jest.requireActual('@rocket.chat/ui-contexts');
+	return {
+		...actual,
+		useLoginToken: () => 'login-token',
+		useIsLoggingIn: () => mockIsLoggingIn,
+		useUser: () => mockUser,
+		useUserId: () => (mockUserId === null ? actual.useUserId() : mockUserId),
+	};
+});
 
 const mockDesktop = () => {
 	const desktop = {
@@ -39,6 +45,7 @@ const mockDesktop = () => {
 afterEach(() => {
 	mockIsLoggingIn = false;
 	mockUser = null;
+	mockUserId = null;
 	delete (window as { RocketChatDesktop?: unknown }).RocketChatDesktop;
 });
 
@@ -60,6 +67,18 @@ describe('useDesktopBridgeContract', () => {
 		renderHook(() => useDesktopBridgeContract(), { wrapper: mockAppRoot().build() });
 
 		expect(desktop.setServerInfo).toHaveBeenCalledTimes(1);
+	});
+
+	it('should announce the contract once, not on every render', () => {
+		const desktop = mockDesktop();
+
+		const { rerender } = renderHook(() => useDesktopBridgeContract(), { wrapper: mockAppRoot().build() });
+		rerender();
+		rerender();
+
+		expect(desktop.setWebClientBridgeVersion).toHaveBeenCalledTimes(1);
+		expect(desktop.setServerInfo).toHaveBeenCalledTimes(1);
+		expect(desktop.setGitCommitHash).toHaveBeenCalledTimes(1);
 	});
 });
 
@@ -89,6 +108,41 @@ describe('useDesktopUserLoggedIn', () => {
 		expect(desktop.setUserLoggedIn).not.toHaveBeenCalled();
 
 		mockIsLoggingIn = false;
+		rerender();
+
+		expect(desktop.setUserLoggedIn).toHaveBeenLastCalledWith(false);
+	});
+
+	// The Vite build starts the resume with no user id and sets it when the resume succeeds.
+	it('should report only the login when a stored session resumes on reload', () => {
+		const desktop = mockDesktop();
+		mockUserId = undefined;
+		mockIsLoggingIn = true;
+
+		const { rerender } = renderHook(() => useDesktopUserLoggedIn(), { wrapper: mockAppRoot().build() });
+
+		mockUserId = 'user-id';
+		rerender();
+		mockIsLoggingIn = false;
+		rerender();
+
+		expect(desktop.setUserLoggedIn).not.toHaveBeenCalledWith(false);
+		expect(desktop.setUserLoggedIn).toHaveBeenLastCalledWith(true);
+	});
+
+	// Meteor's accounts-base presents the stored user id while the resume is in flight, and drops it when the resume fails.
+	it('should report the logout when the optimistic user id of a failed resume goes away', () => {
+		const desktop = mockDesktop();
+		mockUserId = 'user-id';
+		mockIsLoggingIn = true;
+
+		const { rerender } = renderHook(() => useDesktopUserLoggedIn(), { wrapper: mockAppRoot().build() });
+
+		expect(desktop.setUserLoggedIn).toHaveBeenLastCalledWith(true);
+
+		mockIsLoggingIn = false;
+		rerender();
+		mockUserId = undefined;
 		rerender();
 
 		expect(desktop.setUserLoggedIn).toHaveBeenLastCalledWith(false);
@@ -152,7 +206,36 @@ describe('useDesktopOutlookCredentials', () => {
 
 		mockUser = nextUser();
 		rerender();
+		rerender();
 
+		expect(desktop.clearOutlookCredentials).toHaveBeenCalledTimes(1);
+	});
+
+	it('should not take the credentials back while a stored session resumes on reload', () => {
+		const desktop = mockDesktop();
+
+		const { rerender } = renderHook(() => useDesktopOutlookCredentials(), { wrapper: mockAppRoot().build() });
+
+		mockUser = outlookUser(true);
+		rerender();
+
+		expect(desktop.clearOutlookCredentials).not.toHaveBeenCalled();
+		expect(desktop.setUserToken).toHaveBeenCalledTimes(1);
+	});
+
+	it('should hand the credentials over again when the user logs back in', () => {
+		const desktop = mockDesktop();
+		mockUser = outlookUser(true);
+
+		const { rerender } = renderHook(() => useDesktopOutlookCredentials(), { wrapper: mockAppRoot().build() });
+
+		mockUser = null;
+		rerender();
+		mockUser = outlookUser(true);
+		rerender();
+
+		expect(desktop.setUserToken).toHaveBeenCalledTimes(2);
+		expect(desktop.setOutlookExchangeUrl).toHaveBeenCalledTimes(2);
 		expect(desktop.clearOutlookCredentials).toHaveBeenCalledTimes(1);
 	});
 });
