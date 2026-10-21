@@ -1,6 +1,5 @@
 import { Message } from '@rocket.chat/core-services';
 import type { IRoom } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -8,18 +7,10 @@ import { Meteor } from 'meteor/meteor';
 import { beforeAddUserToRoom } from '../../hooks/rooms/beforeAddUserToRoom';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { callbacks } from '../../lib/callbacks';
-import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../lib/getSubscriptionAutotranslateDefaultConfig';
 import { notifyOnSubscriptionChangedById } from '../../lib/notifyListener';
 import { getDefaultSubscriptionPref } from '../../lib/utils/lib/getDefaultSubscriptionPref';
 import { settings } from '../../settings';
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		addAllUserToRoom(rid: IRoom['_id'], activeUsersOnly?: boolean): Promise<true>;
-	}
-}
 
 export const addAllUserToRoomFn = async (userId: string, rid: IRoom['_id'], activeUsersOnly = false): Promise<true> => {
 	check(rid, String);
@@ -83,16 +74,3 @@ export const addAllUserToRoomFn = async (userId: string, rid: IRoom['_id'], acti
 	}
 	return true;
 };
-
-Meteor.methods<ServerMethods>({
-	async addAllUserToRoom(rid, activeUsersOnly = false) {
-		methodDeprecationLogger.method('addAllUserToRoom', '9.0.0', ['/v1/channels.addAll', '/v1/groups.addAll']);
-		if (!this.userId) {
-			throw new Meteor.Error(403, 'Access to Method Forbidden', {
-				method: 'addAllToRoom',
-			});
-		}
-
-		return addAllUserToRoomFn(this.userId, rid, activeUsersOnly);
-	},
-});

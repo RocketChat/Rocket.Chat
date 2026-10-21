@@ -6,6 +6,7 @@
 		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
 		"directory": "packages/api-client"
 	},
+	"license": "MIT",
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
@@ -34,7 +35,7 @@
 		"eslint": "~10.12.0",
 		"jest": "~30.5.2",
 		"jest-fetch-mock": "~4.2.0",
-		"typescript": "~5.9.3"
+		"typescript": "~7.0.2"
 	},
 	"volta": {
 		"extends": "../../package.json"

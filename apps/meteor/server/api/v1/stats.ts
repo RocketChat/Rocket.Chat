@@ -2,9 +2,10 @@ import type { IStats } from '@rocket.chat/core-typings';
 import {
 	ajv,
 	isTelemetryPayload,
-	validateUnauthorizedErrorResponse,
-	validateForbiddenErrorResponse,
+	paginatedResponseProperties,
 	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 
 import { getStatistics, getLastStatistics } from '../../lib/statistics';
@@ -25,9 +26,7 @@ const statisticsListResponseSchema = ajv.compile<{ statistics: IStats[]; count: 
 	type: 'object',
 	properties: {
 		statistics: { type: 'array', items: {} },
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['statistics', 'count', 'offset', 'total', 'success'],
@@ -79,12 +78,11 @@ API.v1.get(
 	},
 	async function action() {
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields, query } = await this.parseJsonQuery();
+		const { sort, fields } = await this.parseJsonQuery();
 
 		return API.v1.success(
 			await getStatistics({
 				userId: this.userId,
-				query,
 				pagination: {
 					offset,
 					count,

@@ -1,9 +1,10 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IInstanceStatus, IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
 import { TeamType } from '@rocket.chat/core-typings';
 import type { IInstance } from '@rocket.chat/rest-typings';
 import { AssertionError, expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
@@ -16,7 +17,7 @@ import { createUser, deleteUser, login as doLogin } from '../../data/users.helpe
 import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 describe('miscellaneous', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	describe('API default', () => {
 		// Required by mobile apps

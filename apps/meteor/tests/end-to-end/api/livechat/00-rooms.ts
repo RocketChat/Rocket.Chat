@@ -1,4 +1,5 @@
 import fs from 'fs';
+import { after, afterEach, before, describe, it } from 'node:test';
 import path from 'path';
 
 import { faker } from '@faker-js/faker';
@@ -15,7 +16,6 @@ import type {
 } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, afterEach, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import type { SuccessResult } from '../../../../server/api/definition';
@@ -84,7 +84,7 @@ describe('LIVECHAT - rooms', () => {
 	let room: IOmnichannelRoom;
 	let appId: string;
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		if (IS_EE) {
@@ -137,79 +137,102 @@ describe('LIVECHAT - rooms', () => {
 		it('should fail when token is not a valid guest token', async () => {
 			await request.get(api('livechat/room')).query({ token: 'invalid-token' }).expect(400);
 		});
-		it('should fail if rid is passed but doesnt point to a valid room', async () => {
-			const visitor = await createVisitor();
-			await request.get(api('livechat/room')).query({ token: visitor.token, rid: 'invalid-rid' }).expect(400);
-			await deleteVisitor(visitor.token);
-		});
-		(IS_EE ? it : it.skip)('should prevent create a room for visitor if an app throws an error', async () => {
+
+		(IS_EE ? describe : describe.skip)('with a visitor that triggers app error', () => {
 			// this test relies on the app installed by the insertApp fixture
-			// TODO: this visitor should be created on before block and deleted on after block
-			const visitor = await createVisitor(undefined, 'visitor prevent from app');
-			const { body } = await request.get(api('livechat/room')).query({ token: visitor.token });
+			let visitor: ILivechatVisitor;
 
-			expect(body).to.have.property('success', false);
-			await deleteVisitor(visitor.token);
+			before(async () => {
+				visitor = await createVisitor(undefined, 'visitor prevent from app');
+			});
+
+			after(async () => {
+				await deleteVisitor(visitor.token);
+			});
+
+			it('should prevent create a room for visitor if an app throws an error', async () => {
+				const { body } = await request.get(api('livechat/room')).query({ token: visitor.token });
+
+				expect(body).to.have.property('success', false);
+			});
 		});
-		it('should create a room for visitor', async () => {
-			// TODO: this visitor should be created on before block and deleted on after block
-			const visitor = await createVisitor();
-			const { body } = await request.get(api('livechat/room')).query({ token: visitor.token });
 
-			expect(body).to.have.property('success', true);
-			expect(body).to.have.property('room');
-			expect(body.room).to.have.property('v');
-			expect(body.room.v).to.have.property('token', visitor.token);
-			expect(body.room.source.type).to.be.equal('api');
-			await closeOmnichannelRoom(body.room._id);
-			await deleteVisitor(visitor.token);
-		});
-		it('should return an existing open room when visitor has one available', async () => {
-			// TODO: this visitor should be created on before block and deleted on after block
-			const visitor = await createVisitor();
-			const { body } = await request.get(api('livechat/room')).query({ token: visitor.token });
+		describe('with a valid visitor', () => {
+			let visitor: ILivechatVisitor;
+			const roomsToClose = new Set<string>();
 
-			expect(body).to.have.property('success', true);
-			expect(body).to.have.property('room');
-			expect(body.room).to.have.property('v');
-			expect(body.room.v).to.have.property('token', visitor.token);
+			before(async () => {
+				visitor = await createVisitor();
+			});
 
-			const { body: body2 } = await request.get(api('livechat/room')).query({ token: visitor.token });
+			afterEach(async () => {
+				await Promise.all([...roomsToClose].map((roomId) => closeOmnichannelRoom(roomId).then(() => roomsToClose.delete(roomId))));
+			});
 
-			expect(body2).to.have.property('success', true);
-			expect(body2).to.have.property('room');
-			expect(body2.room).to.have.property('_id', body.room._id);
-			expect(body2.newRoom).to.be.false;
-			await closeOmnichannelRoom(body.room._id);
-			await deleteVisitor(visitor.token);
-		});
-		it('should return a room for the visitor when rid points to a valid open room', async () => {
-			// TODO: this visitor should be created on before block and deleted on after block
-			const visitor = await createVisitor();
-			const room = await createLivechatRoom(visitor.token);
-			const { body } = await request.get(api('livechat/room')).query({ token: visitor.token, rid: room._id });
+			after(async () => {
+				await deleteVisitor(visitor.token);
+			});
 
-			expect(body).to.have.property('success', true);
-			expect(body).to.have.property('room');
-			expect(body.room.v).to.have.property('token', visitor.token);
-			expect(body.newRoom).to.be.false;
-			await closeOmnichannelRoom(room._id);
-			await deleteVisitor(visitor.token);
-		});
-		it('should properly read widget cookies', async () => {
-			// TODO: this visitor should be created on before block and deleted on after block
-			const visitor = await createVisitor();
-			const { body } = await request
-				.get(api('livechat/room'))
-				.set('Cookie', [`rc_room_type=l`, `rc_is_widget=t`])
-				.query({ token: visitor.token });
+			it('should fail if rid is passed but doesnt point to a valid room', async () => {
+				await request.get(api('livechat/room')).query({ token: visitor.token, rid: 'invalid-rid' }).expect(400);
+			});
 
-			expect(body).to.have.property('success', true);
-			expect(body).to.have.property('room');
-			expect(body.room.v).to.have.property('token', visitor.token);
-			expect(body.room.source.type).to.be.equal('widget');
-			await closeOmnichannelRoom(body.room._id);
-			await deleteVisitor(visitor.token);
+			it('should create a room for visitor', async () => {
+				const { body } = await request.get(api('livechat/room')).query({ token: visitor.token });
+
+				roomsToClose.add(body.room._id);
+
+				expect(body).to.have.property('success', true);
+				expect(body).to.have.property('room');
+				expect(body.room).to.have.property('v');
+				expect(body.room.v).to.have.property('token', visitor.token);
+				expect(body.room.source.type).to.be.equal('api');
+			});
+
+			it('should return an existing open room when visitor has one available', async () => {
+				const { body } = await request.get(api('livechat/room')).query({ token: visitor.token });
+
+				roomsToClose.add(body.room._id);
+
+				expect(body).to.have.property('success', true);
+				expect(body).to.have.property('room');
+				expect(body.room).to.have.property('v');
+				expect(body.room.v).to.have.property('token', visitor.token);
+
+				const { body: body2 } = await request.get(api('livechat/room')).query({ token: visitor.token });
+
+				expect(body2).to.have.property('success', true);
+				expect(body2).to.have.property('room');
+				expect(body2.room).to.have.property('_id', body.room._id);
+				expect(body2.newRoom).to.be.false;
+			});
+
+			it('should return a room for the visitor when rid points to a valid open room', async () => {
+				const room = await createLivechatRoom(visitor.token);
+
+				roomsToClose.add(room._id);
+
+				const { body } = await request.get(api('livechat/room')).query({ token: visitor.token, rid: room._id });
+
+				expect(body).to.have.property('success', true);
+				expect(body).to.have.property('room');
+				expect(body.room.v).to.have.property('token', visitor.token);
+				expect(body.newRoom).to.be.false;
+			});
+
+			it('should properly read widget cookies', async () => {
+				const { body } = await request
+					.get(api('livechat/room'))
+					.set('Cookie', [`rc_room_type=l`, `rc_is_widget=t`])
+					.query({ token: visitor.token });
+
+				roomsToClose.add(body.room._id);
+
+				expect(body).to.have.property('success', true);
+				expect(body).to.have.property('room');
+				expect(body.room.v).to.have.property('token', visitor.token);
+				expect(body.room.source.type).to.be.equal('widget');
+			});
 		});
 	});
 
@@ -346,7 +369,6 @@ describe('LIVECHAT - rooms', () => {
 					'count': 3,
 					'offset': 1,
 					'sort': '{ "_updatedAt": 1 }',
-					'fields': '{ "msgs": 0 }',
 					'roomName': 'test',
 				})
 				.expect('Content-Type', 'application/json')
@@ -805,8 +827,8 @@ describe('LIVECHAT - rooms', () => {
 				]);
 			});
 
-			it('should return valid list of rooms for monitor', () => {
-				return request
+			it('should return valid list of rooms for monitor', async () => {
+				await request
 					.get(api('livechat/rooms'))
 					.set(userCreds)
 					.expect(200)
@@ -814,8 +836,8 @@ describe('LIVECHAT - rooms', () => {
 						expect(res.body.rooms.some((r: IOmnichannelRoom) => r._id === room1._id)).to.be.true;
 					});
 			});
-			it('should return a valid list of rooms for monitor 2', () => {
-				return request
+			it('should return a valid list of rooms for monitor 2', async () => {
+				await request
 					.get(api('livechat/rooms'))
 					.set(user2Creds)
 					.expect(200)
@@ -3162,7 +3184,7 @@ describe('LIVECHAT - rooms', () => {
 				expect(response2.body).to.have.property('success', true);
 			});
 
-			(IS_EE ? it : it.skip)('should update room priority', async () => {
+			it('should update room priority', async () => {
 				await addPermissions({
 					'save-others-livechat-room-info': ['admin', 'livechat-manager'],
 					'view-l-room': ['livechat-agent', 'admin', 'livechat-manager'],

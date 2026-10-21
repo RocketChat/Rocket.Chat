@@ -42,7 +42,7 @@ setting was left at, so turning the window off puts a workspace back exactly whe
 The provider has no say in it. A thread off the call's message is *our* chat panel's, not the provider's
 feature, and an iframed provider renders inside our page — so a Jitsi call in our window threads exactly like a
 call we run ourselves. The provider's `persistentChat` capability decides only the discussion of main-room mode
-(see [Persistent chat](#persistent-chat)), which is what it decided before the window existed.
+(see [Provider Requirements](#provider-requirements)), which is what it decided before the window existed.
 
 `VideoConfService.chatLivesInAThread` is where the server applies exactly that, and `autoFollowCallThread` and
 the thread's title both ask it; `useConferenceEmbedded` mirrors it from the two public settings.
@@ -1023,7 +1023,7 @@ whoever added them, which their client would read as their own call being turned
 Manual cases live in [`qa/`](./qa/README.md) — 70 of them, in Qase import format, split along the setting the
 way the code is. Its README also records where this document is ahead of the code.
 
-The cheap runners were used deliberately: mocha under `apps/meteor/tests/unit/**` (~2s for the whole config) and
+We used the cheap runners on purpose: `node:test` for the `apps/meteor` unit tests (`*.test.{ts,js}`) and
 package-level jest. The specs sit beside what they test, so the file names say where to look; enumerating them
 here only produced a list that went stale on its own.
 
@@ -1034,7 +1034,7 @@ reason. The same split runs end to end: `tests/e2e/video-conference-ring.spec.ts
 off, untouched from before the feature, and `tests/e2e/video-conference-call-window.spec.ts` turns it on in a
 `beforeAll` and back off in an `afterAll`.
 
-Two things about the arrangement are worth knowing. `apps/meteor/tests/unit/server/services/video-conference/testHarness.ts`
+Two things about the arrangement are worth knowing. `apps/meteor/server/services/video-conference/testHarness.ts`
 is what makes the service testable at all: `createService` proxyquires it with ~25 inert module stubs (one of
 which would otherwise open a Mongo driver at import time) and a models map each spec narrows to the collections
 it exercises. And the decisions worth pinning down were deliberately moved *out* of the service into pure

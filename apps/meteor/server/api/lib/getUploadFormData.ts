@@ -1,7 +1,7 @@
 import { Readable } from 'node:stream';
 import { ReadableStream } from 'node:stream/web';
 
-import { MeteorError } from '@rocket.chat/core-services';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ValidateFunction } from 'ajv';
 import busboy from 'busboy';
 
@@ -67,7 +67,7 @@ export async function getUploadFormData<
 	} = {},
 ): Promise<UploadResultWithOptionalFile<K>> {
 	if (!(request.body instanceof ReadableStream)) {
-		return Promise.reject(new MeteorError('Invalid request body'));
+		return Promise.reject(new ClientSafeError('Invalid request body'));
 	}
 
 	const limits = {
@@ -96,14 +96,14 @@ export async function getUploadFormData<
 
 	function onEnd() {
 		if (!uploadedFile) {
-			return reject(new MeteorError('No file or fields were uploaded'));
+			return reject(new ClientSafeError('No file or fields were uploaded'));
 		}
 		if (!options.fileOptional && !uploadedFile?.file) {
-			return reject(new MeteorError('No file uploaded'));
+			return reject(new ClientSafeError('No file uploaded'));
 		}
 		if (options.validate !== undefined && !options.validate(fields)) {
 			return reject(
-				new MeteorError(`Invalid fields ${(options.validate.errors ?? []).map((e) => `${e.instancePath} ${e.message}`).join(', ')}`),
+				new ClientSafeError(`Invalid fields ${(options.validate.errors ?? []).map((e) => `${e.instancePath} ${e.message}`).join(', ')}`),
 			);
 		}
 		return resolve(uploadedFile);
@@ -116,7 +116,7 @@ export async function getUploadFormData<
 	) {
 		if (options.field && fieldname !== options.field) {
 			file.resume();
-			return reject(new MeteorError('invalid-field'));
+			return reject(new ClientSafeError('invalid-field'));
 		}
 
 		const fileChunks: Uint8Array[] = [];
@@ -127,7 +127,7 @@ export async function getUploadFormData<
 		file.on('end', () => {
 			if (file.truncated) {
 				fileChunks.length = 0;
-				return reject(new MeteorError('error-file-too-large'));
+				return reject(new ClientSafeError('error-file-too-large'));
 			}
 
 			uploadedFile = {

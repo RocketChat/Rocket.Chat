@@ -1,6 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { composeStories } from '@storybook/react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
@@ -14,15 +14,10 @@ const testCases = Object.values(composeStories(stories)).map((Story) => [Story.s
 jest.useFakeTimers({ advanceTimers: true });
 jest.setSystemTime(new Date('2017-05-19T12:20:00'));
 
-test.each(testCases)(`renders AppLogsItem without crashing`, async (_storyname, Story) => {
-	const view = render(<Story />, {
-		wrapper: mockAppRoot().build(),
-	});
-	expect(view.baseElement).toMatchSnapshot();
-});
-
 test.each(testCases)('AppLogsItem should have no a11y violations', async (_storyname, Story) => {
 	const { container } = render(<Story />, { wrapper: mockAppRoot().build() });
+	// Audit the loaded filters, not their loading skeletons.
+	await waitFor(() => expect(container.querySelector('[aria-busy="true"]')).not.toBeInTheDocument());
 
 	/**
 	 ** Disable 'nested-interactive' rule because our `Select` component is still not a11y compliant

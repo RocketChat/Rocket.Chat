@@ -178,11 +178,10 @@ const namesake = {
 		await namesakeDdp.connect();
 
 		const current = await rc1AdminRequestConfig.request
-			.get(api('settings'))
+			.get(api(`settings/${REAL_NAME_SETTING}`))
 			.set(rc1AdminRequestConfig.credentials)
-			.query({ query: JSON.stringify({ _id: REAL_NAME_SETTING }) })
 			.expect(200);
-		originalRealName = Boolean(current.body.settings?.[0]?.value);
+		originalRealName = Boolean(current.body.value);
 	}, 180000);
 
 	afterAll(async () => {

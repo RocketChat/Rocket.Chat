@@ -26,8 +26,8 @@ jest.mock('@rocket.chat/core-services', () => ({
 	Authorization: {
 		hasPermission: async () => false,
 	},
-	MeteorError: class extends Error {},
-	isMeteorError: () => false,
+	ClientSafeError: class extends Error {},
+	isClientSafeError: () => false,
 }));
 
 describe('AbacService integration (onRoomAttributesChanged)', () => {

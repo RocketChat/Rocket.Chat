@@ -14,6 +14,7 @@ import type {
 } from '@rocket.chat/core-typings';
 
 import { ajv, ajvQuery } from './Ajv';
+import { paginationQueryProperties } from './pagination';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
@@ -42,14 +43,7 @@ const RoomsAutocompleteChannelAndPrivateWithPaginationSchema = {
 		selector: {
 			type: 'string',
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
@@ -300,14 +294,7 @@ const RoomsAdminRoomsSchema = {
 			},
 			nullable: true,
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
@@ -645,14 +632,7 @@ const RoomsBannedUsersSchema = {
 			type: 'string',
 			minLength: 1,
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 	},
 	required: ['roomId'],
 	additionalProperties: false,
@@ -676,14 +656,7 @@ const roomsImagesPropsSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 	},
 	required: ['roomId'],
 	additionalProperties: false,
@@ -831,12 +804,7 @@ const membersOrderedByRoleRolePropsSchema = {
 		filter: {
 			type: 'string',
 		},
-		count: {
-			type: 'integer',
-		},
-		offset: {
-			type: 'integer',
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 		},
@@ -918,7 +886,7 @@ export type RoomsEndpoints = {
 
 	'/v1/rooms.info': {
 		GET: (params: RoomsInfoProps) => {
-			room: IRoom | undefined;
+			room: IRoom | null;
 			parent?: Pick<IRoom, '_id' | 'name' | 'fname' | 't' | 'prid' | 'u'>;
 			team?: Pick<ITeam, 'name' | 'roomId' | 'type' | '_id'>;
 			classificationBanner?: ClassificationBannerPayload;
@@ -926,20 +894,17 @@ export type RoomsEndpoints = {
 	};
 
 	'/v1/rooms.cleanHistory': {
-		POST: (params: RoomsCleanHistoryProps) => { _id: IRoom['_id']; count: number; success: boolean };
+		POST: (params: RoomsCleanHistoryProps) => { _id: string; count: number };
 	};
 
 	'/v1/rooms.createDiscussion': {
 		POST: (params: RoomsCreateDiscussionProps) => {
-			discussion: IRoom & { rid: IRoom['_id'] };
+			discussion: IRoom;
 		};
 	};
 
 	'/v1/rooms.export': {
-		POST: (params: RoomsExportProps) => {
-			missing?: string[];
-			success: boolean;
-		} | void;
+		POST: (params: RoomsExportProps) => void | { missing: string[] };
 	};
 
 	'/v1/rooms.adminRooms': {
@@ -950,17 +915,21 @@ export type RoomsEndpoints = {
 		GET: (params: RoomsAdminRoomsGetRoomProps) => Pick<IRoom, RoomAdminFieldsType> & IRoomAbacRedaction;
 	};
 
-	'/v1/rooms.saveRoomSettings': {
-		POST: (params: RoomsSaveRoomSettingsProps) => {
-			success: boolean;
-			rid: string;
+	'/v1/rooms.adminRooms.privateRooms': {
+		GET: (params: { filter?: string; offset?: number; count?: number; sort?: string }) => {
+			rooms: Array<Pick<IRoom, RoomAdminFieldsType> & IRoomAbacRedaction>;
+			count: number;
+			offset: number;
+			total: number;
 		};
 	};
 
+	'/v1/rooms.saveRoomSettings': {
+		POST: (params: RoomsSaveRoomSettingsProps) => { rid: string; success: boolean };
+	};
+
 	'/v1/rooms.changeArchivationState': {
-		POST: (params: RoomsChangeArchivationStateProps) => {
-			success: boolean;
-		};
+		POST: (params: RoomsChangeArchivationStateProps) => void;
 	};
 
 	'/v1/rooms.media/:rid': {
@@ -992,11 +961,23 @@ export type RoomsEndpoints = {
 		};
 	};
 
+	'/v1/rooms.delete': {
+		POST: (params: { roomId: string }) => void;
+	};
+
 	'/v1/rooms.get': {
 		GET: (params: { updatedSince: string }) => {
 			update: IRoom[];
 			remove: IRoom[];
 		};
+	};
+
+	'/v1/rooms.saveNotification': {
+		POST: (params: { roomId: string; notifications: Record<string, string> }) => { success: boolean };
+	};
+
+	'/v1/rooms.saveDraft': {
+		POST: (params: { rid: IRoom['_id']; draft: string; tmid?: IMessage['_id'] }) => void;
 	};
 
 	'/v1/rooms.getDiscussions': {
@@ -1026,9 +1007,13 @@ export type RoomsEndpoints = {
 	};
 
 	'/v1/rooms.bannedUsers': {
-		GET: (params: RoomsBannedUsersProps) => PaginatedResult<{
-			bannedUsers: RequiredField<Pick<IUser, '_id' | 'username' | 'name'>, 'username'>[];
-		}>;
+		GET: (params: RoomsBannedUsersProps) => {
+			success: true;
+			bannedUsers: RequiredField<Pick<IUser, '_id' | 'username' | 'name'>, '_id' | 'username'>[];
+			count: number;
+			offset: number;
+			total: number;
+		};
 	};
 
 	'/v1/rooms.images': {
@@ -1057,8 +1042,31 @@ export type RoomsEndpoints = {
 		POST: (params: RoomsHideProps) => void;
 	};
 
+	'/v1/rooms.roles': {
+		GET: (params: { rid: string }) => {
+			roles: { rid: IRoom['_id']; u: { _id: string; username: string; name?: string }; roles: string[] }[];
+		};
+	};
+
 	'/v1/rooms.invite': {
 		POST: (params: RoomsInviteProps) => void;
+	};
+
+	'/v1/rooms.favorite': {
+		POST: (params: { roomId: string; favorite: boolean } | { roomName: string; favorite: boolean }) => void;
+	};
+
+	'/v1/rooms.leave': {
+		POST: (params: { roomId: string } | { roomName: string }) => void;
+	};
+
+	'/v1/rooms.history': {
+		GET: (params: RoomsHistoryProps) => {
+			messages: IMessage[];
+			cursor: { next: string | null; previous: string | null };
+			firstUnread?: IMessage;
+			unreadNotLoaded?: number;
+		};
 	};
 };
 

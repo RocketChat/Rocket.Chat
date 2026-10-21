@@ -2,17 +2,18 @@ import type { ICustomSound } from '@rocket.chat/core-typings';
 import { CustomSounds } from '@rocket.chat/models';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import {
-	isCustomSoundsGetOneProps,
-	isCustomSoundsListProps,
+	ajv,
 	isCustomSoundsCreateProps,
 	isCustomSoundsDeleteProps,
+	isCustomSoundsGetOneProps,
+	isCustomSoundsListProps,
 	isCustomSoundsUpdateProps,
-	ajv,
+	paginatedResponseProperties,
 	validateBadRequestErrorResponse,
-	validateNotFoundErrorResponse,
 	validateForbiddenErrorResponse,
-	validateUnauthorizedErrorResponse,
 	validateInternalErrorResponse,
+	validateNotFoundErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
@@ -90,18 +91,7 @@ const customSoundsEndpoints = API.v1
 					additionalProperties: false,
 					type: 'object',
 					properties: {
-						count: {
-							type: 'number',
-							description: 'The number of sounds returned in this response.',
-						},
-						offset: {
-							type: 'number',
-							description: 'The number of sounds that were skipped in this response.',
-						},
-						total: {
-							type: 'number',
-							description: 'The total number of sounds that match the query.',
-						},
+						...paginatedResponseProperties,
 						success: {
 							type: 'boolean',
 							description: 'Indicates if the request was successful.',
@@ -121,12 +111,11 @@ const customSoundsEndpoints = API.v1
 		},
 		async function action() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, query } = await this.parseJsonQuery();
+			const { sort } = await this.parseJsonQuery();
 
 			const { name } = this.queryParams;
 
 			const filter = {
-				...query,
 				...(name ? { name: { $regex: escapeRegExp(name), $options: 'i' } } : {}),
 			};
 

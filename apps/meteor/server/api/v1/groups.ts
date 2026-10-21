@@ -1,4 +1,4 @@
-import { Team, isMeteorError } from '@rocket.chat/core-services';
+import { Team, isClientSafeError } from '@rocket.chat/core-services';
 import {
 	isRoomNativeFederated,
 	type IIntegration,
@@ -12,6 +12,8 @@ import {
 } from '@rocket.chat/core-typings';
 import { Integrations, Messages, Rooms, Subscriptions, Uploads, Users } from '@rocket.chat/models';
 import {
+	ajv,
+	ajvQuery,
 	isGroupsConvertToTeamProps,
 	isGroupsCountersProps,
 	isGroupsCreateProps,
@@ -24,8 +26,8 @@ import {
 	isGroupsModeratorsProps,
 	isGroupsOnlineProps,
 	isGroupsRolesProps,
-	ajv,
-	ajvQuery,
+	paginatedResponseProperties,
+	paginationQueryProperties,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
@@ -503,7 +505,7 @@ API.v1.post(
 				group: await composeRoomWithLastMessage(room, this.userId),
 			});
 		} catch (error: unknown) {
-			if (isMeteorError(error) && error.reason === 'error-not-allowed') {
+			if (isClientSafeError(error) && error.reason === 'error-not-allowed') {
 				return API.v1.forbidden();
 			}
 			throw error;
@@ -550,9 +552,7 @@ const groupsFilesResponseSchema = ajv.compile<{ files: IUploadWithUser[]; count:
 				additionalProperties: true,
 			},
 		},
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['files', 'count', 'offset', 'total', 'success'],
@@ -580,10 +580,9 @@ API.v1.get(
 		});
 
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields, query } = await this.parseJsonQuery();
+		const { sort, fields } = await this.parseJsonQuery();
 
 		const filter = {
-			...query,
 			rid: findResult.rid,
 			...(name ? { name: { $regex: name || '', $options: 'i' } } : {}),
 			...(typeGroup ? { typeGroup } : {}),
@@ -616,19 +615,14 @@ const groupsGetIntegrationsQuery = ajvQuery.compile<{
 	offset?: number;
 	count?: number;
 	sort?: string;
-	query?: string;
-	fields?: string;
 }>({
 	type: 'object',
 	properties: {
 		roomId: { type: 'string' },
 		roomName: { type: 'string' },
 		includeAllPrivateGroups: { type: 'string' },
-		offset: { type: 'number' },
-		count: { type: 'number' },
+		...paginationQueryProperties,
 		sort: { type: 'string' },
-		query: { type: 'string' },
-		fields: { type: 'string' },
 	},
 	anyOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
 	additionalProperties: false,
@@ -648,9 +642,7 @@ const groupsGetIntegrationsResponseSchema = ajv.compile<{
 				oneOf: [{ $ref: '#/components/schemas/IIncomingIntegration' }, { $ref: '#/components/schemas/IOutgoingIntegration' }],
 			},
 		},
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['integrations', 'count', 'offset', 'total', 'success'],
@@ -698,12 +690,10 @@ API.v1.get(
 		}
 
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields: projection, query } = await this.parseJsonQuery();
+		const { sort, fields: projection } = await this.parseJsonQuery();
 
-		// query and channel filters cannot override the permission scope (mountIntegrationQueryBasedOnPermissions).
 		const ourQuery = Object.assign(
 			{},
-			query,
 			{ channel: { $in: channelsToSearch } },
 			await mountIntegrationQueryBasedOnPermissions(this.userId),
 		) as Filter<IIntegration>;
@@ -944,9 +934,7 @@ const groupsListResponseSchema = ajv.compile<{ groups: IRoom[]; count: number; o
 	type: 'object',
 	properties: {
 		groups: { type: 'array', items: { $ref: '#/components/schemas/IRoom' } },
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['groups', 'count', 'offset', 'total', 'success'],
@@ -1013,8 +1001,8 @@ API.v1.get(
 	},
 	async function action() {
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields, query } = await this.parseJsonQuery();
-		const ourQuery = Object.assign({}, query, { t: 'p' as RoomType });
+		const { sort, fields } = await this.parseJsonQuery();
+		const ourQuery = { t: 'p' as RoomType };
 
 		const { cursor, totalCount } = await Rooms.findPaginated(ourQuery, {
 			sort: sort || { name: 1 },
@@ -1050,8 +1038,7 @@ const groupsMembersQuery = ajvQuery.compile<{
 		roomName: { type: 'string' },
 		filter: { type: 'string' },
 		status: { type: 'array', items: { type: 'string' } },
-		offset: { type: 'number' },
-		count: { type: 'number' },
+		...paginationQueryProperties,
 		sort: { type: 'string' },
 	},
 	anyOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
@@ -1081,9 +1068,7 @@ const groupsMembersResponseSchema = ajv.compile<{ members: IUser[]; count: numbe
 				additionalProperties: true,
 			},
 		},
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['members', 'count', 'offset', 'total', 'success'],
@@ -1158,8 +1143,6 @@ const groupsMessagesQuery = ajvQuery.compile<{
 	offset?: number;
 	count?: number;
 	sort?: string;
-	query?: string;
-	fields?: string;
 }>({
 	type: 'object',
 	properties: {
@@ -1168,11 +1151,8 @@ const groupsMessagesQuery = ajvQuery.compile<{
 		mentionIds: { type: 'string' },
 		starredIds: { type: 'string' },
 		pinned: { type: 'string' },
-		offset: { type: 'number' },
-		count: { type: 'number' },
+		...paginationQueryProperties,
 		sort: { type: 'string' },
-		query: { type: 'string' },
-		fields: { type: 'string' },
 	},
 	oneOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
 	additionalProperties: false,
@@ -1182,9 +1162,7 @@ const groupsMessagesResponseSchema = ajv.compile<{ messages: IMessage[]; count: 
 	type: 'object',
 	properties: {
 		messages: { type: 'array', items: { $ref: '#/components/schemas/IMessage' } },
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['messages', 'count', 'offset', 'total', 'success'],
@@ -1213,13 +1191,12 @@ API.v1.get(
 			userId: this.userId,
 		});
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields, query } = await this.parseJsonQuery();
+		const { sort, fields } = await this.parseJsonQuery();
 
 		const parseIds = (ids: string | undefined, field: string) =>
 			typeof ids === 'string' && ids ? { [field]: { $in: ids.split(',').map((id) => id.trim()) } } : {};
 
 		const ourQuery = {
-			...query,
 			rid: findResult.rid,
 			...parseIds(mentionIds, 'mentions._id'),
 			...parseIds(starredIds, 'starred._id'),
@@ -1276,20 +1253,9 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		const { query } = await this.parseJsonQuery();
 		const { _id } = this.queryParams;
 
-		if ((!query || Object.keys(query).length === 0) && !_id) {
-			return API.v1.failure('Invalid query');
-		}
-
-		const filter = {
-			...query,
-			...(_id ? { _id } : {}),
-			t: 'p',
-		};
-
-		const room = await Rooms.findOne(filter as Record<string, any>);
+		const room = await Rooms.findOneByIdAndType(_id, 'p');
 		if (!room) {
 			return API.v1.failure('Group does not exists');
 		}

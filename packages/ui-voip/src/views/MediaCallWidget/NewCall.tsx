@@ -17,6 +17,7 @@ import {
 import { usePeerAutocomplete } from '../../context';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import { useWidgetExternalControls } from '../../context/useWidgetExternalControls';
+import { isUnknownPeer } from '../../utils/isUnknownPeer';
 
 const NewCall = () => {
 	const { t } = useTranslation();
@@ -35,7 +36,7 @@ const NewCall = () => {
 			</WidgetHeader>
 			<WidgetContent>
 				<PeerAutocomplete {...autocomplete} />
-				{targetPeer && (
+				{targetPeer && !isUnknownPeer(targetPeer) && (
 					<Box marginBlock={8}>
 						<PeerInfo {...targetPeer} />
 					</Box>

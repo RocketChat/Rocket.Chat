@@ -12,6 +12,7 @@ import { Virtuoso } from 'react-virtuoso';
 
 import ContactInfoHistoryItem from './ContactInfoHistoryItem';
 import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
+import { useItemListNavigation } from '../../../../../hooks/useItemListNavigation';
 import { useOmnichannelSource } from '../../../hooks/useOmnichannelSource';
 import AdvancedContactModal from '../../AdvancedContactModal';
 
@@ -31,6 +32,7 @@ const ContactInfoHistory = ({ contact, setChatId }: ContactInfoHistoryProps) => 
 	const type = isFilterBlocked(hasLicense, storedType) ? 'all' : storedType;
 
 	const { getSourceName } = useOmnichannelSource();
+	const historyListRef = useItemListNavigation();
 
 	const getContactHistory = useEndpoint('GET', '/v1/omnichannel/contacts.history');
 	const { data, isLoading, isError } = useQuery({
@@ -111,7 +113,7 @@ const ContactInfoHistory = ({ contact, setChatId }: ContactInfoHistoryProps) => 
 							{t('Showing_current_of_total', { current: data?.history.length, total: data?.total })}
 						</Box>
 					</Box>
-					<Box role='list' height='100%' overflow='hidden' flexShrink={1}>
+					<Box role='list' height='100%' overflow='hidden' flexShrink={1} ref={historyListRef}>
 						<VirtualizedScrollbars>
 							<Virtuoso
 								totalCount={data.history.length}
