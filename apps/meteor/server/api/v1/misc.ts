@@ -552,7 +552,6 @@ API.v1.get(
  */
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
 		'method.call/:method': {
 			POST: (params: { method: string; args: any[] }) => any;

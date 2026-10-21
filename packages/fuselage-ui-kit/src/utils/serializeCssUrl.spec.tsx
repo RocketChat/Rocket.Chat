@@ -52,7 +52,7 @@ it.each([
 	render(createComponent());
 
 	// The CSSOM is the behavior under test.
-	// eslint-disable-next-line testing-library/no-node-access
+	// oxlint-disable-next-line testing-library/no-node-access
 	const style = document.getElementById('rcx-styles') as HTMLStyleElement;
 	const selectors = Array.from(style.sheet?.cssRules ?? []).flatMap((rule) => (rule instanceof CSSStyleRule ? [rule.selectorText] : []));
 

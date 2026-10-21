@@ -143,7 +143,7 @@ const CallContexts = ({ state, deviceSelection, videoQuality, diagnostics = null
 /** The contexts a provider running the call in this window fills, told rather than connected: every action logs. */
 export const withCall =
 	(fixture: CallFixture = {}): Decorator =>
-	// eslint-disable-next-line react/display-name, react/no-multi-comp
+	// oxlint-disable-next-line react/display-name
 	(Story) => (
 		<CallContexts
 			state={fixture.state}

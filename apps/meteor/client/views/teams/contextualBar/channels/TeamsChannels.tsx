@@ -118,7 +118,6 @@ const TeamsChannels = ({
 								<Virtuoso
 									totalCount={total}
 									data={channels}
-									// eslint-disable-next-line react/no-multi-comp
 									components={{ Footer: () => <InfiniteListAnchor loadMore={loadMoreChannels} /> }}
 									itemContent={(index, data) => (
 										<TeamsChannelItem onClickView={onClickView} room={data} mainRoom={mainRoom} reload={reload} key={index} />

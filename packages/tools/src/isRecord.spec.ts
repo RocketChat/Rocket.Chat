@@ -29,9 +29,9 @@ describe('isRecord', () => {
 		['case-5', { 0: 'zero', 1: 'one' }, true],
 		['case-6', { [Symbol('key')]: 'value' }, true],
 		// we testing, we ignore eslint
-		// eslint-disable-next-line no-new-wrappers
+		// oxlint-disable-next-line no-new-wrappers
 		['case-7', new String('string'), false],
-		// eslint-disable-next-line no-new-wrappers
+		// oxlint-disable-next-line no-new-wrappers
 		['case-8', new Number(1), false],
 		['case-9', [], false],
 	])('should return true for records %# (%s)', (_caseId, input, expected) => {

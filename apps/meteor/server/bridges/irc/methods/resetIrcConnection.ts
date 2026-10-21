@@ -10,7 +10,6 @@ import { updateAuditedByUser } from '../../../settings/lib/auditedSettingUpdates
 import Bridge from '../irc-bridge';
 
 declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		resetIrcConnection(): { message: string; params: unknown[] };
 	}
@@ -85,7 +84,7 @@ Meteor.methods<ServerMethods>({
 });
 
 declare module 'meteor/meteor' {
-	// eslint-disable-next-line @typescript-eslint/no-namespace
+	// oxlint-disable-next-line @typescript-eslint/no-namespace
 	namespace Meteor {
 		export let ircBridge: Bridge;
 	}

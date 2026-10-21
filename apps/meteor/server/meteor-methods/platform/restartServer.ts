@@ -5,7 +5,6 @@ import { Meteor } from 'meteor/meteor';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 
 declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		restart_server(): {
 			message: string;
