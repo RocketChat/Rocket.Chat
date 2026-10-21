@@ -33,12 +33,14 @@ function UserAvatarEditor({ currentUsername, username, avatarObj, setAvatarObj, 
 	const dispatchToastMessage = useToastMessageDispatch();
 	const [avatarUrlError, setAvatarUrlError] = useState<string | undefined>(undefined);
 	const previousAvatarObjRef = useRef(avatarObj);
+	const uploadGenerationRef = useRef(0);
 
 	useEffect(() => {
 		const previous = previousAvatarObjRef.current;
 		previousAvatarObjRef.current = avatarObj;
 
 		if (previous && !avatarObj) {
+			uploadGenerationRef.current += 1;
 			setNewAvatarSource(undefined);
 			setAvatarFromUrl('');
 			setAvatarUrlError(undefined);
@@ -47,15 +49,28 @@ function UserAvatarEditor({ currentUsername, username, avatarObj, setAvatarObj, 
 
 	const setUploadedPreview = useCallback(
 		async (file: File, avatarObj: AvatarObject) => {
+			const uploadGeneration = ++uploadGenerationRef.current;
 			setAvatarObj(avatarObj);
 			try {
 				const dataURL = await readFileAsDataURL(file);
 
-				if (await isValidImageFormat(dataURL)) {
+				if (uploadGeneration !== uploadGenerationRef.current) {
+					return;
+				}
+
+				const isValid = await isValidImageFormat(dataURL);
+
+				if (uploadGeneration !== uploadGenerationRef.current) {
+					return;
+				}
+
+				if (isValid) {
 					setNewAvatarSource(dataURL);
 				}
 			} catch (error) {
-				dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
+				if (uploadGeneration === uploadGenerationRef.current) {
+					dispatchToastMessage({ type: 'error', message: t('Avatar_format_invalid') });
+				}
 			}
 		},
 		[setAvatarObj, t, dispatchToastMessage],
