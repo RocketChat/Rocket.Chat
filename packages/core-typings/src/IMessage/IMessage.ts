@@ -242,9 +242,8 @@ export interface IMessage extends IRocketChatRecord {
 	content?: EncryptedContent;
 
 	securityLabel?: ISecurityLabel;
-	// Set on the copy sent to a reader: the marking of securityLabel, or that the reader isn't cleared for it
+	// Set on the copy sent to a reader cleared for securityLabel
 	securityMarking?: SecurityLabelDisplayMarking;
-	securityWithheld?: true;
 
 	// Read receipts migration flag
 	receiptsArchived?: boolean;
