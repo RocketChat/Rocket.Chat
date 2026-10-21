@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- A fictitious policy under the 2.999 example OID arc, exercising every SPIF rule the engine reads. -->
+<spif:SPIF xmlns:spif="http://www.xmlspif.org/spif" schemaVersion="2.1" version="3" creationDate="20261021120000Z">
+	<spif:securityPolicyId name="EXERCISE" id="2.999.1"/>
+	<spif:securityClassifications>
+		<spif:securityClassification name="UNMARKED" lacv="0" hierarchy="0" obsolete="true"/>
+		<spif:securityClassification name="UNCLASSIFIED" lacv="1" hierarchy="1" color="green"/>
+		<spif:securityClassification name="RESTRICTED" lacv="2" hierarchy="2" color="#FFA500"/>
+		<spif:securityClassification name="CONFIDENTIAL" lacv="3" hierarchy="3" color="blue"/>
+		<spif:securityClassification name="SECRET" lacv="4" hierarchy="4" color="red">
+			<spif:requiredCategory operation="oneOrMore">
+				<spif:categoryGroup tagSetRef="Releasable To" tagType="permissive" all="true"/>
+			</spif:requiredCategory>
+		</spif:securityClassification>
+		<spif:securityClassification name="TOP SECRET" lacv="5" hierarchy="5" color="gold">
+			<spif:markingData phrase="COSMIC">
+				<spif:code>replacePolicy</spif:code>
+			</spif:markingData>
+			<spif:markingData xml:lang="fr" phrase="TRES SECRET">
+				<spif:code>pageTopBottom</spif:code>
+			</spif:markingData>
+		</spif:securityClassification>
+	</spif:securityClassifications>
+	<spif:securityCategoryTagSets>
+		<spif:securityCategoryTagSet name="Additional Sensitivity" id="2.999.1.1">
+			<spif:securityCategoryTag name="Additional Sensitivity" tagType="restrictive">
+				<spif:tagCategory name="ATOMAL" lacv="1">
+					<spif:excludedClass>UNCLASSIFIED</spif:excludedClass>
+					<spif:excludedClass>RESTRICTED</spif:excludedClass>
+				</spif:tagCategory>
+				<spif:tagCategory name="CRYPTO" lacv="2">
+					<spif:requiredCategory operation="all">
+						<spif:categoryGroup tagSetRef="Releasable To" tagType="permissive" lacv="826"/>
+					</spif:requiredCategory>
+				</spif:tagCategory>
+				<spif:tagCategory name="BOHEMIA" lacv="9" obsolete="true"/>
+				<spif:markingQualifier markingCode="pageTopBottom">
+					<spif:qualifier markingQualifier=" " qualifierCode="separator"/>
+				</spif:markingQualifier>
+			</spif:securityCategoryTag>
+		</spif:securityCategoryTagSet>
+		<spif:securityCategoryTagSet name="Releasable To" id="2.999.1.2">
+			<spif:securityCategoryTag name="Releasable To" tagType="permissive">
+				<spif:tagCategory name="GBR" lacv="826"/>
+				<spif:tagCategory name="USA" lacv="840"/>
+				<spif:tagCategory name="FRA" lacv="250"/>
+				<spif:markingQualifier markingCode="pageTopBottom">
+					<spif:qualifier markingQualifier="REL TO " qualifierCode="prefix"/>
+					<spif:qualifier markingQualifier=", " qualifierCode="separator"/>
+				</spif:markingQualifier>
+			</spif:securityCategoryTag>
+		</spif:securityCategoryTagSet>
+		<spif:securityCategoryTagSet name="Special Category" id="2.999.1.3">
+			<spif:securityCategoryTag name="Special Category" tagType="enumerated" enumType="permissive" singleSelection="true">
+				<spif:tagCategory name="EXERCISE" lacv="1">
+					<spif:excludedCategory tagSetRef="2.999.1.1" tagType="restrictive" all="true"/>
+				</spif:tagCategory>
+				<spif:tagCategory name="OPERATION" lacv="2">
+					<spif:requiredCategory operation="onlyOne">
+						<spif:categoryGroup tagSetRef="Releasable To" tagType="permissive"/>
+						<spif:categoryGroup tagSetRef="Context" tagType="permissive"/>
+					</spif:requiredCategory>
+				</spif:tagCategory>
+			</spif:securityCategoryTag>
+			<spif:securityCategoryTag name="Handling" tagType="tagType7">
+				<spif:tagCategory name="ORCON" lacv="1">
+					<spif:markingData phrase="ORIGINATOR CONTROLLED"/>
+				</spif:tagCategory>
+			</spif:securityCategoryTag>
+		</spif:securityCategoryTagSet>
+		<spif:securityCategoryTagSet name="Context" id="2.999.1.4">
+			<spif:securityCategoryTag name="Context" tagType="permissive">
+				<spif:tagCategory name="KFOR" lacv="1">
+					<spif:markingData phrase="EXERCISE/KFOR">
+						<spif:code>noNameDisplay</spif:code>
+						<spif:code>replacePolicy</spif:code>
+					</spif:markingData>
+				</spif:tagCategory>
+			</spif:securityCategoryTag>
+		</spif:securityCategoryTagSet>
+	</spif:securityCategoryTagSets>
+</spif:SPIF>
