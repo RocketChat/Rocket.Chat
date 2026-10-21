@@ -1,9 +1,9 @@
 import type { IRoomNativeFederated } from '@rocket.chat/core-typings';
 
 import { api } from '../../../../../apps/meteor/tests/data/api-data';
+import { retry } from '../../../../../apps/meteor/tests/data/retry';
 import { type IRequestConfig, createUser, deleteUser, getRequestConfig } from '../../../../../apps/meteor/tests/data/users.helper';
 import { IS_EE } from '../../../../../apps/meteor/tests/e2e/config/constants';
-import { retry } from '../../../../../apps/meteor/tests/data/retry';
 import { federationConfig } from '../helper/config';
 import { DDPListener } from '../helper/ddp-listener';
 import { SynapseClient } from '../helper/synapse-client';

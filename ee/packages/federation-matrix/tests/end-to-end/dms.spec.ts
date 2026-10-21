@@ -3,6 +3,7 @@ import type { MatrixEvent, Room, RoomEmittedEvents } from 'matrix-js-sdk';
 import { RoomStateEvent } from 'matrix-js-sdk';
 
 import { api } from '../../../../../apps/meteor/tests/data/api-data';
+import { retry } from '../../../../../apps/meteor/tests/data/retry';
 import {
 	acceptRoomInvite,
 	addUserToRoomSlashCommand,
@@ -12,7 +13,6 @@ import {
 import { getRequestConfig, createUser, deleteUser } from '../../../../../apps/meteor/tests/data/users.helper';
 import type { TestUser, IRequestConfig } from '../../../../../apps/meteor/tests/data/users.helper';
 import { IS_EE } from '../../../../../apps/meteor/tests/e2e/config/constants';
-import { retry } from '../../../../../apps/meteor/tests/data/retry';
 import { federationConfig } from '../helper/config';
 import { SynapseClient } from '../helper/synapse-client';
 import { withTimeout } from '../helper/withTimeout';
