@@ -69,6 +69,8 @@ describe('SystemMessage', () => {
 		render(<SystemMessage message={message} showUserAvatar />, { wrapper: wrapper.build() });
 
 		expect(screen.getByText('Message_could_not_be_displayed')).toBeInTheDocument();
+		expect(screen.getByRole('listitem')).toBeInTheDocument();
+		expect(screen.getByText('changed room description to: test')).toBeInTheDocument();
 	});
 
 	it('should not inject html', () => {

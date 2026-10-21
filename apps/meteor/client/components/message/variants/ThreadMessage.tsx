@@ -4,19 +4,17 @@ import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, useUserId, useUserCard } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 
 import type { MessageActionContext } from '../../../lib/MessageAction';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
 import Emoji from '../../Emoji';
-import { withErrorBoundary } from '../../withErrorBoundary';
 import IgnoredContent from '../IgnoredContent';
 import MessageContentFallback from '../MessageContentFallback';
 import MessageHeader from '../MessageHeader';
 import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
 import ThreadMessageContent from './thread/ThreadMessageContent';
-
-const GuardedThreadMessageContent = withErrorBoundary(ThreadMessageContent, <MessageContentFallback />);
 
 export type ThreadMessageProps = {
 	message: IThreadMessage | IThreadMainMessage;
@@ -76,7 +74,9 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar, ignoredUse
 				{ignored ? (
 					<IgnoredContent messageId={message._id} onShowMessageIgnored={toggleDisplayIgnoredMessage} />
 				) : (
-					<GuardedThreadMessageContent message={message} />
+					<ErrorBoundary fallback={<MessageContentFallback />} resetKeys={[message]}>
+						<ThreadMessageContent message={message} />
+					</ErrorBoundary>
 				)}
 			</MessageContainer>
 			{!message.private && <MessageToolbarHolder message={message} context={messageContext} />}
