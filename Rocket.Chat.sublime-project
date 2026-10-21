@@ -30,7 +30,7 @@
 	],
 	"settings": {
 		"LSP": {
-			"LSP-typescript": {
+			"LSP-tsgo": {
 				"enabled": true,
 				"disabled_capabilities": {
 					// Uncomment the line below to load auto complete suggestions from sublime's index instead of typescript.
