@@ -194,7 +194,10 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 	const handleSaveUser = useStableCallback(async (userFormPayload: UserFormProps) => {
 		const { avatar, passwordConfirmation, statusVisibilityDeniedByAdmin, presenceDisabledByAdmin, statusText, phones, ...rest } =
 			userFormPayload;
-		const userFormData = { ...rest, phones: getPersistedPhones(phones) };
+		const userFormData = {
+			...rest,
+			...((isNewUserPage || dirtyFields.phones) && { phones: getPersistedPhones(phones) }),
+		};
 
 		if (!isNewUserPage && userData?._id) {
 			return handleUpdateUser.mutateAsync({
