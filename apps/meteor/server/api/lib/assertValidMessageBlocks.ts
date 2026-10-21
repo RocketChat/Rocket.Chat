@@ -1,7 +1,7 @@
+import { isRecord } from '@rocket.chat/tools';
+
 const MAX_LINEAR_SCALE_POINTS = 100;
 const MAX_NESTING_DEPTH = 10;
-
-const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
 
 const assertValidLinearScale = (element: Record<string, unknown>, path: string): void => {
 	const { minValue = 0, maxValue = 10 } = element;
