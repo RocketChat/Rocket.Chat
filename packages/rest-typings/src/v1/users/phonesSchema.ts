@@ -4,7 +4,7 @@ export const phonesSchema = {
 		type: 'object',
 		properties: {
 			number: { type: 'string', transformStripWhitespaces: true, format: 'basic_phone_number' },
-			label: { type: 'string', maxLength: 50 },
+			label: { type: 'string', isNotEmpty: true, maxLength: 50 },
 		},
 		required: ['number'],
 		additionalProperties: false,

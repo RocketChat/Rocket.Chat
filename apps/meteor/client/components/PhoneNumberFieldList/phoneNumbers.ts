@@ -13,7 +13,12 @@ export const getInitialPhones = (phones?: IUserPhoneNumber[]): Required<IUserPho
 	phones?.length ? phones.map(({ number, label }) => ({ number, label: label ?? '' })) : [{ ...EMPTY_PHONE }];
 
 export const getPersistedPhones = (phones: IUserPhoneNumber[] = []): IUserPhoneNumber[] =>
-	phones.filter(({ number }) => number.trim() !== '');
+	phones
+		.filter(({ number }) => number.trim() !== '')
+		.map(({ number, label }) => {
+			const trimmedLabel = label?.trim();
+			return trimmedLabel ? { number, label: trimmedLabel } : { number };
+		});
 
 export const isBlankPhone = ({ number, label }: IUserPhoneNumber): boolean => !number.trim() && !label?.trim();
 
