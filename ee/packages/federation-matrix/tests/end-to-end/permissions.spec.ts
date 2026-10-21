@@ -5,7 +5,7 @@ import { addUserToRoom, createRoom, getSubscriptionByRoomId, getSubscriptions } 
 import { createUser, deleteUser, getRequestConfig } from '../../../../../apps/meteor/tests/data/users.helper';
 import type { IRequestConfig, TestUser } from '../../../../../apps/meteor/tests/data/users.helper';
 import { IS_EE } from '../../../../../apps/meteor/tests/e2e/config/constants';
-import { retry } from '../../../../../apps/meteor/tests/end-to-end/api/helpers/retry.ts';
+import { retry } from '../../../../../apps/meteor/tests/data/retry';
 import { federationConfig } from '../helper/config';
 import { SynapseClient } from '../helper/synapse-client';
 

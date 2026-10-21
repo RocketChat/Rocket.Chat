@@ -17,7 +17,7 @@ import {
 } from '../../../../../apps/meteor/tests/data/rooms.helper';
 import { type IRequestConfig, getRequestConfig, createUser, deleteUser } from '../../../../../apps/meteor/tests/data/users.helper';
 import { IS_EE } from '../../../../../apps/meteor/tests/e2e/config/constants';
-import { retry } from '../../../../../apps/meteor/tests/end-to-end/api/helpers/retry';
+import { retry } from '../../../../../apps/meteor/tests/data/retry';
 import { federationConfig } from '../helper/config';
 import { createDDPListener } from '../helper/ddp-listener';
 import { SynapseClient } from '../helper/synapse-client';
