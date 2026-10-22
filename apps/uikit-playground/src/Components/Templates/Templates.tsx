@@ -30,17 +30,18 @@ const Templates = () => {
 							left: 0;
 						`}
 					>
-						<Button
+						<Box
 							position='fixed'
-							square
+							display='flex'
 							className={css`
 								top: 80px;
 								right: 40px;
 							`}
-							onClick={() => dispatch(templatesToggleAction(false))}
 						>
-							<Icon name='cross' size='x15' />
-						</Button>
+							<Button square onClick={() => dispatch(templatesToggleAction(false))}>
+								<Icon name='cross' size='x15' />
+							</Button>
+						</Box>
 						<Container templates={templates} />
 					</Box>
 				</Scrollable>

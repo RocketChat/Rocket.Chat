@@ -118,7 +118,7 @@ jobs:
 
       - name: Styling props on Fuselage components
         if: matrix.check == 'lint'
-        run: node packages/fuselage/scripts/scan-style-props.mjs --max 337 "$RUNNER_TEMP/style-props-findings.json"
+        run: node packages/fuselage/scripts/scan-style-props.mjs --max 332 "$RUNNER_TEMP/style-props-findings.json"
 
       - name: Save ESLint cache
         if: matrix.check == 'lint' && github.ref == 'refs/heads/develop' && github.event_name == 'push'
