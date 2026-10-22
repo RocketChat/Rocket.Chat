@@ -111,8 +111,12 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 				<ButtonGroup stretch>
 					{isCallHistoryInternalContact(contact) && directMessage && (
 						<Button onClick={directMessage}>
-							<Icon name='balloon' size='x20' marginInlineEnd='x4' />
-							{t('Direct_message')}
+							<Box is='span' display='flex' alignItems='center' justifyContent='center' columnGap={4}>
+								<Icon name='balloon' size='x20' />
+								<Box is='span' withTruncatedText>
+									{t('Direct_message')}
+								</Box>
+							</Box>
 						</Button>
 					)}
 					{voiceCall && (
@@ -122,8 +126,12 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 							disabled={state !== 'available'}
 							title={state !== 'available' ? t('Call_in_progress') : undefined}
 						>
-							<Icon name='phone' size='x20' marginInlineEnd='x4' />
-							{t('Call')}
+							<Box is='span' display='flex' alignItems='center' justifyContent='center' columnGap={4}>
+								<Icon name='phone' size='x20' />
+								<Box is='span' withTruncatedText>
+									{t('Call')}
+								</Box>
+							</Box>
 						</Button>
 					)}
 				</ButtonGroup>
