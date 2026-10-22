@@ -124,6 +124,24 @@ $input-border-radius: theme('input-border-radius', lengths.border-radius(medium)
 		}
 	}
 
+	// Browsers pad the date and time fields vertically, which makes the input taller than its line height.
+	&--type-date,
+	&--type-time,
+	&--type-datetime-local {
+		&::-webkit-datetime-edit,
+		&::-webkit-datetime-edit-fields-wrapper,
+		&::-webkit-datetime-edit-year-field,
+		&::-webkit-datetime-edit-month-field,
+		&::-webkit-datetime-edit-day-field,
+		&::-webkit-datetime-edit-hour-field,
+		&::-webkit-datetime-edit-minute-field,
+		&::-webkit-datetime-edit-second-field,
+		&::-webkit-datetime-edit-millisecond-field,
+		&::-webkit-datetime-edit-meridiem-field {
+			padding-block: 0;
+		}
+	}
+
 	// Firefox shows its own (non-hideable) calendar icon for date inputs, so hide
 	// our addon there to avoid a duplicate. `-moz-orient` is Firefox-exclusive.
 	&--type-date {
