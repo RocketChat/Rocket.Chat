@@ -337,6 +337,15 @@ export const _IconButtonSecondaryDanger: Story = {
 	},
 };
 
+export const Colors: Story = {
+	render: () => (
+		<ButtonGroup>
+			<IconButton icon='pencil' aria-label='pencil' small color='default' />
+			<IconButton icon='trash' aria-label='trash' small color='danger' />
+		</ButtonGroup>
+	),
+};
+
 export const _IconButtonWithBadge: Story = {
 	render: () => (
 		<ButtonGroup>

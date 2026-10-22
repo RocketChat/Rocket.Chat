@@ -4,7 +4,7 @@ import type { ComponentProps } from 'react';
 
 export type UserInfoActionProps = {
 	icon: IconName;
-} & ComponentProps<typeof Button>;
+} & Omit<ComponentProps<typeof Button>, 'color'>;
 
 const UserInfoAction = ({ icon, label, title, ...props }: UserInfoActionProps) => {
 	if (!label && icon && title) {

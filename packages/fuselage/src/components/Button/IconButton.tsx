@@ -36,8 +36,10 @@ export type IconButtonProps = {
 	is?: 'button' | 'a';
 	/** Opens the link in a new tab, without giving it access to this page. */
 	external?: boolean;
+	/** Paints the glyph with a font token, for icon-only actions on light surfaces. */
+	color?: 'default' | 'danger';
 } & IconButtonSize &
-	Omit<BoxProps, 'is'>;
+	Omit<BoxProps, 'is' | 'color'>;
 
 const getVariantClass = (variant: string) => {
 	if (variant) {
@@ -70,6 +72,7 @@ function IconButton({
 	pressed,
 	is = 'button',
 	external,
+	color,
 	children,
 	...props
 }: IconButtonProps) {
@@ -122,6 +125,7 @@ function IconButton({
 			{...getSizeClass()}
 			rcx-button--icon-pressed={pressed}
 			rcx-button--with-badge={Boolean(badge)}
+			color={color}
 			{...props}
 		>
 			{isValidElement<any>(icon) ? icon : <Icon name={icon} size={getIconSize()} />}
