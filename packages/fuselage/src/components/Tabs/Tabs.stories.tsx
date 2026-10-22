@@ -28,6 +28,11 @@ export default {
 			description: 'Shows a bottom border dividing the tabs from the content below.',
 			table: { defaultValue: { summary: 'true' } },
 		},
+		scrollShadow: {
+			control: 'boolean',
+			description: 'Shows overflow shadows on the start and end edges when tabs exceed the visible scroll area.',
+			table: { defaultValue: { summary: 'true' } },
+		},
 	},
 } satisfies Meta<typeof Tabs>;
 
@@ -75,4 +80,16 @@ export const NoUnderline: Story = {
 		selected: true,
 		divider: false,
 	},
+};
+
+export const Overflowing: Story = {
+	render: (args) => (
+		<Tabs {...args} style={{ maxWidth: 600 }}>
+			{Array.from({ length: 15 }, (_, i) => (
+				<TabsItem key={i} selected={i === 0}>
+					Tab {i + 1}
+				</TabsItem>
+			))}
+		</Tabs>
+	),
 };
