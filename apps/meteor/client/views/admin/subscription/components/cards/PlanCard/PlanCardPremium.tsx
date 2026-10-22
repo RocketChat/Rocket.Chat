@@ -29,7 +29,7 @@ const PlanCardPremium = ({ licenseInformation, licenseLimits }: PlanCardProps) =
 	const { visualExpiration } = licenseInformation;
 
 	return (
-		<Card height='full'>
+		<Card>
 			<PlanCardHeader name={planName.data ?? ''} />
 			<CardBody flexDirection='column'>
 				{licenseLimits?.activeUsers.max === Infinity && (
