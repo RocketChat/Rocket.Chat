@@ -62,6 +62,11 @@ $chip-disabled-color: theme('chip-disabled-color', colors.font(disabled));
 		background-color: $button-secondary-background-color;
 	}
 
+	&--small {
+		height: lengths.size(20);
+		min-height: lengths.size(20);
+	}
+
 	&__text {
 		@include use-text-ellipsis;
 

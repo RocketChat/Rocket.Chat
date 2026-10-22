@@ -42,6 +42,11 @@ export default {
 			description: 'Custom renderer for the dismiss icon.',
 			table: { category: 'Content' },
 		},
+		small: {
+			control: 'boolean',
+			description: 'Renders a 20px tall chip.',
+			table: { category: 'Appearance' },
+		},
 		disabled: {
 			control: 'boolean',
 			description: 'Disables the chip and blocks pointer interaction.',
@@ -82,6 +87,14 @@ export const Disabled: Story = {
 	args: {
 		children: 'Marie Rowe',
 		disabled: true,
+	},
+};
+
+export const Small: Story = {
+	args: {
+		children: 'Marie Rowe',
+		small: true,
+		onClick: action('click'),
 	},
 };
 
