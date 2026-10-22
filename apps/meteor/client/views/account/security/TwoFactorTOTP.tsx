@@ -162,10 +162,12 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps) => {
 						<Field>
 							<FieldLabel htmlFor={totpCodeId}>{t('Enter_code_provided_by_authentication_app')}</FieldLabel>
 							<FieldRow>
-								<TextInput id={totpCodeId} marginInlineEnd='8px' {...register('authCode')} />
-								<Button primary onClick={handleSubmit(handleVerifyCode)}>
-									{t('Verify')}
-								</Button>
+								<Box display='flex' alignItems='center' flexGrow={1} gap={8}>
+									<TextInput id={totpCodeId} {...register('authCode')} />
+									<Button primary onClick={handleSubmit(handleVerifyCode)}>
+										{t('Verify')}
+									</Button>
+								</Box>
 							</FieldRow>
 						</Field>
 					</>

@@ -94,7 +94,6 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps) {
 						<TextInput
 							id={nameFieldId}
 							placeholder={t('Name')}
-							flexGrow={1}
 							{...nameField}
 							aria-describedby={`${nameFieldId}-error`}
 							aria-invalid={Boolean(errors.name?.message)}
@@ -110,7 +109,7 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps) {
 				<Field>
 					<FieldLabel htmlFor={descFieldId}>{t('Description')}</FieldLabel>
 					<FieldRow>
-						<TextInput id={descFieldId} placeholder={t('Description')} flexGrow={1} {...descField} />
+						<TextInput id={descFieldId} placeholder={t('Description')} {...descField} />
 					</FieldRow>
 				</Field>
 				<Field>
