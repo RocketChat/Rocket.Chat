@@ -1,6 +1,6 @@
 import type { CSSProperties, ReactNode, RefAttributes } from 'react';
 
-import { Box } from '..';
+import { Box, Tile } from '..';
 
 export type DropdownDesktopProps = RefAttributes<HTMLElement> & {
 	children: ReactNode;
@@ -12,19 +12,10 @@ export type DropdownDesktopProps = RefAttributes<HTMLElement> & {
 
 export function DropdownDesktop({ children, style, ...props }: DropdownDesktopProps) {
 	return (
-		<Box
-			style={style}
-			rcx-tile
-			rcx-tile--elevation='2'
-			display='flex'
-			flexDirection='column'
-			overflow='auto'
-			data-testid='dropdown'
-			{...props}
-		>
+		<Tile style={style} flush elevation='2' display='flex' flexDirection='column' overflow='auto' data-testid='dropdown' {...props}>
 			<Box flexShrink={1} paddingBlock={12}>
 				{style?.visibility === 'hidden' ? null : children}
 			</Box>
-		</Box>
+		</Tile>
 	);
 }
