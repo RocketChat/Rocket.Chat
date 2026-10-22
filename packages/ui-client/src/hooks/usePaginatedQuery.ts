@@ -109,7 +109,11 @@ export const usePaginatedQuery = <
 
 	return useQueries({
 		queries: offsets.map((offset) => {
-			const pagination = { offset, count: firstData?.count ?? itemsPerPage };
+			// Count needs to be adjusted for the last page, since it is not guaranteed that the server returns a multiple of 25
+			const pagination = {
+				offset,
+				count: offset === start ? itemsPerPage : Math.min(firstData?.count ?? itemsPerPage, start + itemsPerPage - offset),
+			};
 
 			return {
 				...queryOptions,
