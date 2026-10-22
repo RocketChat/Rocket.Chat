@@ -69,12 +69,9 @@ jest.mock('@rocket.chat/ui-client', () => ({
 		{ children, ...props },
 		ref,
 	) {
-		// eslint-disable-next-line testing-library/no-node-access
-		const content = isValidElement<{ children?: ReactNode }>(children) && children.type === 'div' ? children.props.children : children;
-
 		return (
 			<div ref={ref} {...props}>
-				{content}
+				{children}
 			</div>
 		);
 	}),
@@ -88,9 +85,7 @@ describe('DiscussionsList', () => {
 		const { Default } = composed;
 		render(<Default />);
 
-		const list = screen.getByTestId('discussions-virtual-list');
-		expect(list).toBeInTheDocument();
-		expect(list.tagName.toLowerCase()).toBe('ul');
+		const list = screen.getByRole('list', { name: 'Discussions' });
 		expect(within(list).getAllByRole('listitem')).toHaveLength(10);
 		expect(within(list).getAllByText('user.name')).toHaveLength(10);
 	});
