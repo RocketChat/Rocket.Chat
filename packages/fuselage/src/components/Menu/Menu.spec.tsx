@@ -360,6 +360,38 @@ describe('[Menu Component]', () => {
 			expect(await screen.findByRole('menuitem', { name: 'Data Sub Item 1' })).toBeInTheDocument();
 			expect(await screen.findByRole('menuitem', { name: 'Data Sub Item 2' })).toBeInTheDocument();
 		});
+
+		it('should keep single-use childItems after the root menu closes and reopens', async () => {
+			const user = userEvent.setup();
+			function* generateChildItems() {
+				yield { id: 'sub-1', name: 'Data Sub Item 1' };
+				yield { id: 'sub-2', name: 'Data Sub Item 2' };
+			}
+			const childItems = generateChildItems();
+
+			render(
+				<Menu>
+					<MenuItem key='data-submenu' title='Data Submenu' childItems={childItems}>
+						{(item: any) => <MenuItem key={item.id}>{item.name}</MenuItem>}
+					</MenuItem>
+				</Menu>,
+			);
+
+			const button = screen.getByRole('button');
+			await user.click(button);
+			await screen.findByRole('menuitem', { name: 'Data Submenu' });
+			await user.keyboard('{ArrowDown}{ArrowRight}');
+			expect(await screen.findByRole('menuitem', { name: 'Data Sub Item 1' })).toBeInTheDocument();
+
+			await user.click(document.body);
+			await waitFor(() => expect(screen.queryByRole('menuitem', { name: 'Data Submenu' })).not.toBeInTheDocument());
+
+			await user.click(button);
+			await screen.findByRole('menuitem', { name: 'Data Submenu' });
+			await user.keyboard('{ArrowDown}{ArrowRight}');
+			expect(await screen.findByRole('menuitem', { name: 'Data Sub Item 1' })).toBeInTheDocument();
+			expect(await screen.findByRole('menuitem', { name: 'Data Sub Item 2' })).toBeInTheDocument();
+		});
 	});
 
 	describe('Sizing', () => {

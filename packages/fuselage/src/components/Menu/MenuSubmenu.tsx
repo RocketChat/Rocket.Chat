@@ -1,6 +1,6 @@
 import type { CollectionChildren, Key, KeyboardEvent, Node } from '@react-types/shared';
 import type { RefObject } from 'react';
-import { useMemo, useRef } from 'react';
+import { useRef } from 'react';
 import { mergeProps, useFocusVisible, useMenuItem, useSubmenuTrigger } from 'react-aria';
 import type { RootMenuTriggerState, TreeState } from 'react-stately';
 import { useSubmenuTriggerState } from 'react-stately';
@@ -21,6 +21,23 @@ type MenuSubmenuProps = {
 	onAction?: (key: Key) => void;
 };
 
+const materializedChildItems = new WeakMap<Iterable<object>, object[]>();
+
+// Keeps a data-backed submenu populated every time it opens, even when its `childItems` can only be iterated once
+const getChildItems = (childItems: Iterable<object> | undefined): object[] | undefined => {
+	if (!childItems) {
+		return undefined;
+	}
+
+	let items = materializedChildItems.get(childItems);
+	if (!items) {
+		items = Array.from(childItems);
+		materializedChildItems.set(childItems, items);
+	}
+
+	return items;
+};
+
 /**
  * Renders a menu item that opens a nested submenu.
  *
@@ -35,9 +52,7 @@ function MenuSubmenu({ item, state, rootMenuTriggerState, parentMenuRef, onActio
 
 	const submenuTriggerState = useSubmenuTriggerState({ triggerKey: item.key }, rootMenuTriggerState);
 
-	// Keeps a data-backed submenu populated each time it reopens, even when `childItems` can only be iterated once
-	const rawChildItems: Iterable<object> | undefined = item.props?.childItems;
-	const childItems = useMemo(() => (rawChildItems ? Array.from(rawChildItems) : undefined), [rawChildItems]);
+	const childItems = getChildItems(item.props?.childItems);
 
 	const { submenuTriggerProps, submenuProps, popoverProps } = useSubmenuTrigger<object>(
 		{ parentMenuRef, submenuRef },
