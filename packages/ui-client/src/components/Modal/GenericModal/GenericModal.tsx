@@ -69,8 +69,12 @@ const renderIcon = (icon: GenericModalProps['icon'], variant: VariantType): Reac
 	}
 
 	if (icon === undefined) {
-		// The warning and success icons have always rendered in the text colour
-		return <ModalIcon variant={variant === 'danger' || variant === 'info' ? variant : undefined} name={iconMap[variant]} />;
+		return (
+			<ModalIcon
+				variant={variant === 'danger' || variant === 'info' || variant === 'warning' || variant === 'success' ? variant : undefined}
+				name={iconMap[variant]}
+			/>
+		);
 	}
 
 	if (typeof icon === 'string') {
