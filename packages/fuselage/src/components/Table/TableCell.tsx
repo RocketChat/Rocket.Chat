@@ -4,7 +4,8 @@ import { Box } from '../Box';
 import type { TableProps } from './Table';
 import { TableHeadContext } from './TableHead';
 
-export type TableCellProps = TableProps & {
+export type TableCellProps = Omit<TableProps, 'is'> & {
+	is?: 'td' | 'th';
 	align?: 'start' | 'center' | 'end' | 'justify' | object;
 	clickable?: boolean;
 };
