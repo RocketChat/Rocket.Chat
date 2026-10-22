@@ -37,7 +37,7 @@ export class FakeNatsConnection {
 	subscribe(
 		subject: string,
 		{ callback, queue }: { callback: (error: null, msg: Msg) => void; queue?: string },
-	): { drain: () => Promise<void> } {
+	): { drain: () => Promise<void>; unsubscribe: () => void } {
 		const listener: Listener = Object.assign((msg: Msg): void => callback(null, msg), { queue });
 
 		const listeners = this.subscriptions.get(subject) ?? new Set();
@@ -48,6 +48,9 @@ export class FakeNatsConnection {
 			drain: async (): Promise<void> => {
 				listeners.delete(listener);
 				this.drainedSubscriptions++;
+			},
+			unsubscribe: (): void => {
+				listeners.delete(listener);
 			},
 		};
 	}
@@ -72,13 +75,21 @@ export class FakeNatsConnection {
 		this.requested.push(subject);
 
 		const handler = this.endpoints.get(subject);
-		if (!handler) {
-			throw NatsError.errorForCode(ErrorCode.NoResponders);
+		if (handler) {
+			return new Promise<Msg>((resolve) => {
+				handler(null, this.toServiceMsg(subject, data, resolve));
+			});
 		}
 
-		return new Promise<Msg>((resolve) => {
-			handler(null, this.toServiceMsg(subject, data, resolve));
-		});
+		// plain subscribers answer requests too, which is how a stream chunk server replies
+		const listeners = this.subscriptions.get(subject);
+		if (listeners?.size) {
+			return new Promise<Msg>((resolve) => {
+				listeners.forEach((listener) => listener(this.toRepliableMsg(subject, data, resolve)));
+			});
+		}
+
+		throw NatsError.errorForCode(ErrorCode.NoResponders);
 	}
 
 	readonly services = {
@@ -141,13 +152,19 @@ export class FakeNatsConnection {
 		};
 	}
 
-	private toServiceMsg(subject: string, data: Uint8Array, resolve: (msg: Msg) => void): ServiceMsg {
+	private toRepliableMsg(subject: string, data: Uint8Array, resolve: (msg: Msg) => void): Msg {
 		return {
 			...this.toMsg(subject, data),
 			respond: (payload: Uint8Array = Empty, opts?: PublishOptions): boolean => {
 				resolve(this.toMsg(subject, payload, opts?.headers));
 				return true;
 			},
+		};
+	}
+
+	private toServiceMsg(subject: string, data: Uint8Array, resolve: (msg: Msg) => void): ServiceMsg {
+		return {
+			...this.toRepliableMsg(subject, data, resolve),
 			respondError: (code: number, description: string, payload: Uint8Array = Empty): boolean => {
 				const hdrs = headers();
 				hdrs.set(ServiceErrorCodeHeader, `${code}`);
