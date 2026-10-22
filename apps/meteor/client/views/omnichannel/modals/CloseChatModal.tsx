@@ -19,6 +19,7 @@ import {
 	ModalFooter,
 	ModalFooterControllers,
 	ModalContent,
+	Stack,
 } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { usePermission, useSetting, useUserPreference, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
@@ -181,13 +182,13 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 							<FieldError>{errors.tags?.message}</FieldError>
 						</Field>
 						{canSendTranscript && (
-							<Box display='flex' flexDirection='column' gap={16}>
-								<Box display='flex' flexDirection='column' gap={10}>
+							<Stack gap={16}>
+								<Stack gap={10}>
 									<Field>
-										<Box display='flex' flexDirection='column' gap={6}>
+										<Stack gap={6}>
 											<Divider />
 											<FieldLabel>{t('Chat_transcript')}</FieldLabel>
-										</Box>
+										</Stack>
 									</Field>
 									{canSendTranscriptPDF && (
 										<Field>
@@ -198,7 +199,7 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 										</Field>
 									)}
 									{canSendTranscriptEmail && (
-										<Box display='flex' flexDirection='column' gap={14}>
+										<Stack gap={14}>
 											<Field>
 												<FieldRow>
 													<FieldLabel htmlFor='transcript-email'>{t('Omnichannel_transcript_email')}</FieldLabel>
@@ -206,7 +207,7 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 												</FieldRow>
 											</Field>
 											{transcriptEmail && (
-												<Box display='flex' flexDirection='column' gap={12}>
+												<Stack gap={12}>
 													<Field>
 														<FieldLabel required>{t('Contact_email')}</FieldLabel>
 														<FieldRow>
@@ -224,11 +225,11 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 														</FieldRow>
 														<FieldError>{errors.subject?.message}</FieldError>
 													</Field>
-												</Box>
+												</Stack>
 											)}
-										</Box>
+										</Stack>
 									)}
-								</Box>
+								</Stack>
 								<Field>
 									<FieldLabel color='annotation' fontScale='c1'>
 										{canSendTranscriptPDF && canSendTranscriptEmail
@@ -236,7 +237,7 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 											: t('This_option_affect_this_conversation_only_To_set_default_selection_go_to_My_Account_Omnichannel')}
 									</FieldLabel>
 								</Field>
-							</Box>
+							</Stack>
 						)}
 					</FieldGroup>
 				</ModalContent>

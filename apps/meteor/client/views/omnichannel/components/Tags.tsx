@@ -1,4 +1,4 @@
-import { Box, TextInput, Chip, Button, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import { Box, TextInput, Chip, Button, FieldLabel, FieldRow, Stack } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
@@ -86,7 +86,7 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 			) : (
 				<>
 					<FieldRow>
-						<Box display='flex' alignItems='center' justifyContent='space-between' flexGrow={1} gap={8}>
+						<Stack direction='row' align='center' justify='space-between' grow gap={8}>
 							<TextInput
 								error={error}
 								value={tagValue}
@@ -97,7 +97,7 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 							<Button disabled={!tagValue} title={t('Add')} onClick={handleTagTextSubmit}>
 								{t('Add')}
 							</Button>
-						</Box>
+						</Stack>
 					</FieldRow>
 				</>
 			)}

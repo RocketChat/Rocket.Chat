@@ -10,6 +10,7 @@ import {
 	FieldLabel,
 	FieldRow,
 	FieldError,
+	Stack,
 } from '@rocket.chat/fuselage';
 import { Form, FormFooter, FormSteps, FormSubtitle, FormTitle } from '@rocket.chat/layout';
 import type { FieldPathValue, SubmitHandler, Validate } from 'react-hook-form';
@@ -52,7 +53,7 @@ export const CreateFirstMemberForm = ({
 
 	return (
 		<Form onSubmit={handleSubmit(onSubmit)}>
-			<Box display='flex' flexDirection='column' gap={16}>
+			<Stack gap={16}>
 				<Box>
 					<FormSteps currentStep={currentStep} stepCount={stepCount} />
 					<FormTitle>{t('form.createFirstMemberForm.title')}</FormTitle>
@@ -92,7 +93,7 @@ export const CreateFirstMemberForm = ({
 						{errors.password && <FieldError>{errors.password.message}</FieldError>}
 					</Field>
 				</FieldGroup>
-			</Box>
+			</Stack>
 
 			<FormFooter>
 				<ButtonGroup>

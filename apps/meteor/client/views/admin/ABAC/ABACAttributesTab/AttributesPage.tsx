@@ -1,4 +1,4 @@
-import { Box, Button, Icon, Margins, Pagination, TextInput } from '@rocket.chat/fuselage';
+import { Box, Button, Icon, Margins, Pagination, TextInput, Stack } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
@@ -58,7 +58,7 @@ const AttributesPage = () => {
 	return (
 		<>
 			<Margins block={24}>
-				<Box display='flex' gap={8}>
+				<Stack direction='row' gap={8}>
 					<TextInput
 						endAddon={<Icon name='magnifier' size='x20' />}
 						placeholder={t('ABAC_Search_attributes')}
@@ -68,7 +68,7 @@ const AttributesPage = () => {
 					<Button onClick={handleNewAttribute} primary disabled={!isABACAvailable}>
 						{t('ABAC_New_attribute')}
 					</Button>
-				</Box>
+				</Stack>
 			</Margins>
 			{(!data || data.attributes?.length === 0) && !isLoading ? (
 				<Box display='flex' justifyContent='center' height='full'>

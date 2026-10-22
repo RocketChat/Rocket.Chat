@@ -18,6 +18,7 @@ import {
 	ButtonGroup,
 	Callout,
 	Skeleton,
+	Stack,
 } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
@@ -286,12 +287,12 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 						) : (
 							<>
 								<FieldRow marginBlockStart={12}>
-									<Box display='flex' alignItems='center' gap={4}>
+									<Stack direction='row' align='center' gap={4}>
 										<FieldLabel htmlFor={verifiedId} disabled={!isSmtpEnabled || !isVerificationNeeded} margin={0}>
 											{t('Mark_email_as_verified')}
 										</FieldLabel>
 										<Icon name='info-circled' size='x20' title={t('Enable_to_bypass_email_verification')} color='default' />
-									</Box>
+									</Stack>
 									<Controller
 										control={control}
 										name='verified'

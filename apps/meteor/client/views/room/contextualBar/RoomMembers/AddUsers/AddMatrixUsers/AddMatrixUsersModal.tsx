@@ -13,6 +13,7 @@ import {
 	ModalFooter,
 	ModalFooterAnnotation,
 	ModalFooterControllers,
+	Stack,
 } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 import { useId, useState } from 'react';
@@ -113,10 +114,10 @@ const AddMatrixUsersModal = ({ onClose, matrixIdVerifiedStatus, onSave, complete
 			<ModalFooter justifyContent={bannedError ? 'space-between' : 'flex-end'}>
 				{bannedError && (
 					<ModalFooterAnnotation>
-						<Box display='flex' alignItems='center' gap={8}>
+						<Stack direction='row' align='center' gap={8}>
 							<CheckBox checked={unbanConfirmed} onChange={() => setUnbanConfirmed((prev) => !prev)} id={checkboxId} />
 							<Label htmlFor={checkboxId}>{t('Yes_unban_user')}</Label>
-						</Box>
+						</Stack>
 					</ModalFooterAnnotation>
 				)}
 				<ModalFooterControllers>

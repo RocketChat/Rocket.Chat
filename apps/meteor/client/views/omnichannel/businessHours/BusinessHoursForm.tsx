@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { InputBox, Field, MultiSelect, FieldGroup, Box, Select, FieldLabel, FieldRow, Callout } from '@rocket.chat/fuselage';
+import { InputBox, Field, MultiSelect, FieldGroup, Box, Select, FieldLabel, FieldRow, Callout, Stack } from '@rocket.chat/fuselage';
 import { useId, useMemo } from 'react';
 import { useFormContext, Controller, useFieldArray } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -63,7 +63,7 @@ const BusinessHoursForm = ({ type }: BusinessHoursFormProps) => {
 			{type === 'custom' && <BusinessHoursMultiple />}
 			<Field>
 				<FieldLabel htmlFor={timezoneField}>{t('Timezone')}</FieldLabel>
-				<Box display='flex' flexDirection='column' gap={8}>
+				<Stack gap={8}>
 					<FieldRow>
 						<Controller
 							name='timezoneName'
@@ -74,7 +74,7 @@ const BusinessHoursForm = ({ type }: BusinessHoursFormProps) => {
 					<Callout title={t('Daylight_savings_time')} type='info'>
 						{t('Business_hours_will_update_automatically')}
 					</Callout>
-				</Box>
+				</Stack>
 			</Field>
 			<Field>
 				<FieldLabel htmlFor={daysOpenField}>{t('Open_days_of_the_week')}</FieldLabel>

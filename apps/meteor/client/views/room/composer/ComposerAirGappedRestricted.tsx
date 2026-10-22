@@ -1,11 +1,11 @@
-import { Box, Icon } from '@rocket.chat/fuselage';
+import { Box, Icon, Stack } from '@rocket.chat/fuselage';
 import { MessageFooterCallout } from '@rocket.chat/ui-composer';
 import { Trans } from 'react-i18next';
 
 const ComposerAirGappedRestricted = () => {
 	return (
 		<MessageFooterCallout color='default'>
-			<Box display='flex' alignItems='center' gap={4}>
+			<Stack direction='row' align='center' gap={4}>
 				<Icon name='warning' size={20} />
 				<span>
 					<Trans i18nKey='Composer_readonly_airgapped'>
@@ -15,7 +15,7 @@ const ComposerAirGappedRestricted = () => {
 						Admins can restore full functionality by connecting it to internet or upgrading to a premium plan.
 					</Trans>
 				</span>
-			</Box>
+			</Stack>
 		</MessageFooterCallout>
 	);
 };

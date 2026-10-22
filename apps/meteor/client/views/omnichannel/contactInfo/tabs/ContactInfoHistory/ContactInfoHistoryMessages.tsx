@@ -10,6 +10,7 @@ import {
 	StatesTitle,
 	TextInput,
 	Throbber,
+	Stack,
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import { VirtualizedScrollbars, ContextualbarContent, ContextualbarEmptyContent, ContextualbarFooter } from '@rocket.chat/ui-client';
@@ -67,7 +68,7 @@ const ContactInfoHistoryMessages = ({ chatId, onBack, onOpenRoom }: ContactHisto
 					borderBlockEndColor='extra-light'
 					flexShrink={0}
 				>
-					<Box display='flex' alignItems='center' flexDirection='row' flexGrow={1} gap={8}>
+					<Stack direction='row' align='center' grow gap={8}>
 						<TextInput
 							placeholder={t('Search')}
 							value={text}
@@ -75,7 +76,7 @@ const ContactInfoHistoryMessages = ({ chatId, onBack, onOpenRoom }: ContactHisto
 							endAddon={<Icon name='magnifier' size='x20' />}
 						/>
 						<IconButton title={t('Back')} small icon='back' onClick={onBack} />
-					</Box>
+					</Stack>
 				</Box>
 				{isPending && (
 					<Box paddingInline={24} paddingBlock={12}>

@@ -1,4 +1,4 @@
-import { Box, Button, Icon, Margins, Pagination, Select, TextInput } from '@rocket.chat/fuselage';
+import { Box, Button, Icon, Margins, Pagination, Select, TextInput, Stack } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
@@ -70,7 +70,7 @@ const RoomsPage = () => {
 	return (
 		<>
 			<Margins block={24}>
-				<Box display='flex' gap={8}>
+				<Stack direction='row' gap={8}>
 					<TextInput
 						endAddon={<Icon name='magnifier' size='x20' />}
 						placeholder={t('ABAC_Search_rooms')}
@@ -92,7 +92,7 @@ const RoomsPage = () => {
 					<Button onClick={handleNewAttribute} primary disabled={isABACAvailable !== true}>
 						{t('Add_room')}
 					</Button>
-				</Box>
+				</Stack>
 			</Margins>
 			{(!data || data.rooms?.length === 0) && !isLoading ? (
 				<Box display='flex' justifyContent='center' height='full'>

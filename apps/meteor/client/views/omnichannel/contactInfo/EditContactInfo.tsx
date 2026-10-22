@@ -1,5 +1,5 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
-import { Box, ButtonGroup, Button, IconButton, Divider } from '@rocket.chat/fuselage';
+import { Box, ButtonGroup, Button, IconButton, Divider, Stack } from '@rocket.chat/fuselage';
 import { Field, FieldLabel, FieldRow, FieldError, TextInput } from '@rocket.chat/fuselage-forms';
 import { validateEmail } from '@rocket.chat/tools';
 import {
@@ -219,12 +219,12 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 				</Field>
 				<Field>
 					<FieldLabel>{t('Email')}</FieldLabel>
-					<Box display='flex' flexDirection='column' gap={8}>
+					<Stack gap={8}>
 						<Box display='flex' flexDirection='column'>
 							{emailFields.map((field, index) => (
 								<Fragment key={field.id}>
 									<FieldRow>
-										<Box display='flex' alignItems='center' justifyContent='space-between' flexGrow={1} gap={8}>
+										<Stack direction='row' align='center' justify='space-between' grow gap={8}>
 											<Controller
 												name={`emails.${index}.address`}
 												control={control}
@@ -237,7 +237,7 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 												)}
 											/>
 											<IconButton title={t('Remove_email')} small onClick={() => removeEmail(index)} icon='trash' />
-										</Box>
+										</Stack>
 									</FieldRow>
 									{errors.emails?.[index]?.address && <FieldError>{errors.emails?.[index]?.address?.message}</FieldError>}
 								</Fragment>
@@ -248,16 +248,16 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 						>
 							{t('Add_email')}
 						</Button>
-					</Box>
+					</Stack>
 				</Field>
 				<Field>
 					<FieldLabel>{t('Phone')}</FieldLabel>
-					<Box display='flex' flexDirection='column' gap={8}>
+					<Stack gap={8}>
 						<Box display='flex' flexDirection='column'>
 							{phoneFields.map((field, index) => (
 								<Fragment key={field.id}>
 									<FieldRow>
-										<Box display='flex' alignItems='center' justifyContent='space-between' flexGrow={1} gap={8}>
+										<Stack direction='row' align='center' justify='space-between' grow gap={8}>
 											<Controller
 												name={`phones.${index}.phoneNumber`}
 												control={control}
@@ -270,7 +270,7 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 												)}
 											/>
 											<IconButton title={t('Remove_phone')} small onClick={() => removePhone(index)} icon='trash' />
-										</Box>
+										</Stack>
 									</FieldRow>
 									{errors.phones?.[index]?.phoneNumber && <FieldError>{errors.phones?.[index]?.phoneNumber?.message}</FieldError>}
 								</Fragment>
@@ -283,7 +283,7 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 						>
 							{t('Add_phone')}
 						</Button>
-					</Box>
+					</Stack>
 				</Field>
 				<Field>
 					<FieldLabel>{t('Contact_Manager')}</FieldLabel>

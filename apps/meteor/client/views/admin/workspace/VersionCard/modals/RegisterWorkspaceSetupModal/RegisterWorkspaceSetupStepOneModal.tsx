@@ -15,6 +15,7 @@ import {
 	ModalClose,
 	ModalContent,
 	ModalFooter,
+	Stack,
 } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
@@ -83,7 +84,7 @@ const RegisterWorkspaceSetupStepOneModal = ({
 			</ModalHeader>
 			<ModalContent>
 				<Box>
-					<Box display='flex' flexDirection='column' gap={10}>
+					<Stack gap={10}>
 						<Box is='p' fontSize='p2' withRichContent>
 							{t('RegisterWorkspace_Setup_Subtitle')}
 						</Box>
@@ -98,7 +99,7 @@ const RegisterWorkspaceSetupStepOneModal = ({
 								/>
 							</FieldRow>
 						</Field>
-					</Box>
+					</Stack>
 					<Box marginBlock={16} fontSize='c1'>
 						<Box is='p'>
 							<strong>{t('RegisterWorkspace_Setup_Have_Account_Title')}</strong>

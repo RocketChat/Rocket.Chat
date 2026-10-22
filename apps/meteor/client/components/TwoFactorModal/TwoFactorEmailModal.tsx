@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Stack } from '@rocket.chat/fuselage';
 import { FieldGroup, TextInput, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
@@ -97,7 +97,7 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, invalidAttempt, emailOrUserna
 			tagline={t('Email_two-factor_authentication')}
 			icon={null}
 		>
-			<Box display='flex' flexDirection='column' gap={24}>
+			<Stack gap={24}>
 				<FieldGroup>
 					<Field>
 						<FieldLabel alignSelf='stretch'>{t('Enter_the_code_we_just_emailed_you')}</FieldLabel>
@@ -130,7 +130,7 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, invalidAttempt, emailOrUserna
 						{t('Cloud_resend_email')}
 					</Button>
 				</ButtonGroup>
-			</Box>
+			</Stack>
 		</GenericModal>
 	);
 };

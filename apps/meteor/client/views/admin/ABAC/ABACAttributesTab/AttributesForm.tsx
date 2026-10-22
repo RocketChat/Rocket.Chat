@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Field, FieldError, FieldLabel, FieldRow, IconButton, TextInput } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Field, FieldError, FieldLabel, FieldRow, IconButton, TextInput, Stack } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { ContextualbarFooter, ContextualbarScrollableContent } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
@@ -122,7 +122,7 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 							{lockedAttributesFields.map((field, index) => (
 								<Fragment key={field.id}>
 									<FieldRow key={field.id}>
-										<Box display='flex' alignItems='center' justifyContent='space-between' flexGrow={1} gap={8}>
+										<Stack direction='row' align='center' justify='space-between' grow gap={8}>
 											<TextInput
 												disabled
 												aria-labelledby={valuesField}
@@ -138,7 +138,7 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 											{index !== 0 && (
 												<IconButton small title={t('ABAC_Remove_attribute')} icon='trash' onClick={() => removeLockedAttribute(index)} />
 											)}
-										</Box>
+										</Stack>
 									</FieldRow>
 									{errors.lockedAttributes?.[index]?.value && (
 										<FieldError id={`${valuesField}-lockedAttr-${index}-error`} role='alert'>
@@ -170,7 +170,7 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 							{fields.map((field, index) => (
 								<Fragment key={field.id}>
 									<FieldRow>
-										<Box display='flex' alignItems='center' justifyContent='space-between' flexGrow={1} gap={8}>
+										<Stack direction='row' align='center' justify='space-between' grow gap={8}>
 											<TextInput
 												aria-labelledby={valuesField}
 												aria-describedby={errors.attributeValues?.[index]?.value ? `${valuesField}-attr-${index}-error` : undefined}
@@ -185,7 +185,7 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 											{(index !== 0 || lockedAttributesFields.length > 0) && (
 												<IconButton small title={t('ABAC_Remove_attribute')} icon='trash' onClick={() => remove(index)} />
 											)}
-										</Box>
+										</Stack>
 									</FieldRow>
 									{errors.attributeValues?.[index]?.value && (
 										<FieldError id={`${valuesField}-attr-${index}-error`} role='alert'>

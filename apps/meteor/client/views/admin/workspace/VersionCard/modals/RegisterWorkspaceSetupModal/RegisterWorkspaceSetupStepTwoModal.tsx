@@ -12,6 +12,7 @@ import {
 	ModalClose,
 	ModalContent,
 	ModalFooter,
+	Stack,
 } from '@rocket.chat/fuselage';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect } from 'react';
@@ -93,7 +94,7 @@ const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, int
 							</Box>
 						</Trans>
 					</Box>
-					<Box display='flex' flexDirection='column' gap={10}>
+					<Stack gap={10}>
 						<Box is='p'>{t('RegisterWorkspace_Setup_Email_Verification')}</Box>
 						<Field>
 							<FieldLabel>{t('Security_code')}</FieldLabel>
@@ -101,7 +102,7 @@ const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, int
 								<TextInput defaultValue={intentData.user_code} disabled />
 							</FieldRow>
 						</Field>
-					</Box>
+					</Stack>
 				</Box>
 			</ModalContent>
 			<ModalFooter>

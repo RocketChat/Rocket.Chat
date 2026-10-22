@@ -1,5 +1,5 @@
 import { isSetting, isSettingColor } from '@rocket.chat/core-typings';
-import { AccordionItem, Box, Button, ButtonGroup, FieldGroup } from '@rocket.chat/fuselage';
+import { AccordionItem, Box, Button, ButtonGroup, FieldGroup, Stack } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode } from 'react';
 import { useMemo } from 'react';
@@ -81,7 +81,7 @@ function SettingsSection({ groupId, hasReset = true, sectionTitle, sectionName, 
 					{help}
 				</Box>
 			)}
-			<Box display='flex' flexDirection='column' gap={16}>
+			<Stack gap={16}>
 				<FieldGroup>
 					{editableSettings.map(
 						(setting) => isSetting(setting) && <Setting key={setting._id} settingId={setting._id} sectionChanged={changed} />,
@@ -96,7 +96,7 @@ function SettingsSection({ groupId, hasReset = true, sectionTitle, sectionName, 
 						</Button>
 					</ButtonGroup>
 				)}
-			</Box>
+			</Stack>
 		</AccordionItem>
 	);
 }

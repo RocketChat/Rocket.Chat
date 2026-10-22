@@ -1,4 +1,4 @@
-import { Box, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Skeleton, Stack } from '@rocket.chat/fuselage';
 import type { ComponentPropsWithoutRef } from 'react';
 
 export type FormSkeletonProps = ComponentPropsWithoutRef<typeof Box>;
@@ -6,11 +6,11 @@ export type FormSkeletonProps = ComponentPropsWithoutRef<typeof Box>;
 export const FormSkeleton = (props: FormSkeletonProps) => (
 	<Box width='full' paddingBlock={24} display='flex' flexDirection='column' gap={8} {...props}>
 		<Skeleton />
-		<Box display='flex' flexDirection='column' gap={4}>
+		<Stack gap={4}>
 			<Skeleton />
 			<Skeleton />
 			<Skeleton />
-		</Box>
+		</Stack>
 		<Box display='flex' flexDirection='column' gap={4} paddingBlockEnd={8}>
 			<Skeleton />
 			<Skeleton />

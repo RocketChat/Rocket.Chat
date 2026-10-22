@@ -12,6 +12,7 @@ import {
 	ModalFooter,
 	ModalFooterAnnotation,
 	ModalFooterControllers,
+	Stack,
 } from '@rocket.chat/fuselage';
 import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -58,10 +59,10 @@ const BannedUsersUnbanModal = ({ onClose, onConfirm }: BannedUsersUnbanModalProp
 			</ModalContent>
 			<ModalFooter justifyContent='space-between'>
 				<ModalFooterAnnotation>
-					<Box display='flex' alignItems='center' gap={8}>
+					<Stack direction='row' align='center' gap={8}>
 						<CheckBox checked={unbanConfirmed} onChange={() => setUnbanConfirmed((prev) => !prev)} id={checkboxId} />
 						<Label htmlFor={checkboxId}>{t('Yes_unban_user')}</Label>
-					</Box>
+					</Stack>
 				</ModalFooterAnnotation>
 				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
