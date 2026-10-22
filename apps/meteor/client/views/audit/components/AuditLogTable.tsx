@@ -66,7 +66,7 @@ const AuditLogTable = () => {
 
 	return (
 		<>
-			<Field alignSelf='stretch'>
+			<Field>
 				<FieldLabel>{t('Date')}</FieldLabel>
 				<FieldRow>
 					<DateRangePicker display='flex' flexGrow={1} value={dateRange} onChange={setDateRange} />

@@ -93,13 +93,15 @@ const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, int
 							</Box>
 						</Trans>
 					</Box>
-					<Box is='p'>{t('RegisterWorkspace_Setup_Email_Verification')}</Box>
-					<Field paddingBlockStart={10}>
-						<FieldLabel>{t('Security_code')}</FieldLabel>
-						<FieldRow>
-							<TextInput defaultValue={intentData.user_code} disabled />
-						</FieldRow>
-					</Field>
+					<Box display='flex' flexDirection='column' gap={10}>
+						<Box is='p'>{t('RegisterWorkspace_Setup_Email_Verification')}</Box>
+						<Field>
+							<FieldLabel>{t('Security_code')}</FieldLabel>
+							<FieldRow>
+								<TextInput defaultValue={intentData.user_code} disabled />
+							</FieldRow>
+						</Field>
+					</Box>
 				</Box>
 			</ModalContent>
 			<ModalFooter>

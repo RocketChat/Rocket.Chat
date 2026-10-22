@@ -40,7 +40,7 @@ const OmnichannelTab = ({ form: { control } }: OmnichannelTabProps) => {
 				{visitorFieldState.error?.type === 'required' && <FieldError>{t('Required_field', { field: t('Visitor') })}</FieldError>}
 				{visitorFieldState.error?.type === 'validate' && <FieldError>{visitorFieldState.error.message}</FieldError>}
 			</Field>
-			<Field flexShrink={1} marginInlineStart={8}>
+			<Field flexShrink={1}>
 				<FieldLabel>{t('Agent')}</FieldLabel>
 				<FieldRow>
 					<AutoCompleteAgent

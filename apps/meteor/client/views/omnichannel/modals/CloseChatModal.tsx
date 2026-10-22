@@ -182,61 +182,63 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 							<FieldError>{errors.tags?.message}</FieldError>
 						</Field>
 						{canSendTranscript && (
-							<>
-								<Field>
-									<Box display='flex' flexDirection='column' gap={6}>
-										<Divider />
-										<FieldLabel>{t('Chat_transcript')}</FieldLabel>
-									</Box>
-								</Field>
-								{canSendTranscriptPDF && (
-									<Field marginBlockStart={10}>
-										<FieldRow>
-											<FieldLabel htmlFor='transcript-pdf'>{t('Omnichannel_transcript_pdf')}</FieldLabel>
-											<CheckBox id='transcript-pdf' {...register('transcriptPDF', { value: userTranscriptPDF })} />
-										</FieldRow>
+							<Box display='flex' flexDirection='column' gap={16}>
+								<Box display='flex' flexDirection='column' gap={10}>
+									<Field>
+										<Box display='flex' flexDirection='column' gap={6}>
+											<Divider />
+											<FieldLabel>{t('Chat_transcript')}</FieldLabel>
+										</Box>
 									</Field>
-								)}
-								{canSendTranscriptEmail && (
-									<>
-										<Field marginBlockStart={10}>
+									{canSendTranscriptPDF && (
+										<Field>
 											<FieldRow>
-												<FieldLabel htmlFor='transcript-email'>{t('Omnichannel_transcript_email')}</FieldLabel>
-												<CheckBox id='transcript-email' {...register('transcriptEmail', { value: userTranscriptEmail })} />
+												<FieldLabel htmlFor='transcript-pdf'>{t('Omnichannel_transcript_pdf')}</FieldLabel>
+												<CheckBox id='transcript-pdf' {...register('transcriptPDF', { value: userTranscriptPDF })} />
 											</FieldRow>
 										</Field>
-										{transcriptEmail && (
-											<>
-												<Field marginBlockStart={14}>
-													<FieldLabel required>{t('Contact_email')}</FieldLabel>
-													<FieldRow>
-														<EmailInput value={visitorEmail} required disabled flexGrow={1} />
-													</FieldRow>
-												</Field>
-												<Field marginBlockStart={12}>
-													<FieldLabel required>{t('Subject')}</FieldLabel>
-													<FieldRow>
-														<TextInput
-															{...register('subject', { required: true })}
-															className='active'
-															error={errors.subject && t('Required_field', { field: t('Subject') })}
-															flexGrow={1}
-														/>
-													</FieldRow>
-													<FieldError>{errors.subject?.message}</FieldError>
-												</Field>
-											</>
-										)}
-									</>
-								)}
-								<Field marginBlockStart={16}>
+									)}
+									{canSendTranscriptEmail && (
+										<Box display='flex' flexDirection='column' gap={14}>
+											<Field>
+												<FieldRow>
+													<FieldLabel htmlFor='transcript-email'>{t('Omnichannel_transcript_email')}</FieldLabel>
+													<CheckBox id='transcript-email' {...register('transcriptEmail', { value: userTranscriptEmail })} />
+												</FieldRow>
+											</Field>
+											{transcriptEmail && (
+												<Box display='flex' flexDirection='column' gap={12}>
+													<Field>
+														<FieldLabel required>{t('Contact_email')}</FieldLabel>
+														<FieldRow>
+															<EmailInput value={visitorEmail} required disabled flexGrow={1} />
+														</FieldRow>
+													</Field>
+													<Field>
+														<FieldLabel required>{t('Subject')}</FieldLabel>
+														<FieldRow>
+															<TextInput
+																{...register('subject', { required: true })}
+																className='active'
+																error={errors.subject && t('Required_field', { field: t('Subject') })}
+																flexGrow={1}
+															/>
+														</FieldRow>
+														<FieldError>{errors.subject?.message}</FieldError>
+													</Field>
+												</Box>
+											)}
+										</Box>
+									)}
+								</Box>
+								<Field>
 									<FieldLabel color='annotation' fontScale='c1'>
 										{canSendTranscriptPDF && canSendTranscriptEmail
 											? t('These_options_affect_this_conversation_only_To_set_default_selections_go_to_My_Account_Omnichannel')
 											: t('This_option_affect_this_conversation_only_To_set_default_selection_go_to_My_Account_Omnichannel')}
 									</FieldLabel>
 								</Field>
-							</>
+							</Box>
 						)}
 					</FieldGroup>
 				</ModalContent>

@@ -16,8 +16,8 @@ const Dialpad = ({ autoFocus = true }: DialpadProps) => {
 
 	return (
 		<Box display='flex' width='100%' flexDirection='column' marginBlockEnd={8}>
-			<Box display='flex' justifyContent='center' alignItems='center' flexDirection='column'>
-				<Field marginBlockEnd={8}>
+			<Box display='flex' justifyContent='center' alignItems='center' flexDirection='column' gap={8}>
+				<Field>
 					<FieldRow>
 						<TextInput aria-label={t('Dialpad')} value={inputValue} readOnly small marginInline={24} />
 					</FieldRow>

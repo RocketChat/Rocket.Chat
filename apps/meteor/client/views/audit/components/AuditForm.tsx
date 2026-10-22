@@ -39,14 +39,14 @@ const AuditForm = ({ type, onSubmit, setSelectedRoom }: AuditFormProps) => {
 
 	return (
 		<form onSubmit={handleSubmit(submit)}>
-			<Box display='flex' flexDirection='row' justifyContent='stretch' marginInline={-4}>
-				<Field flexShrink={1} marginInline={4}>
+			<Box display='flex' flexDirection='row' justifyContent='stretch' gap={8}>
+				<Field flexShrink={1}>
 					<FieldLabel>{t('Message')}</FieldLabel>
 					<FieldRow>
 						<TextInput placeholder={t('Search')} {...register('msg')} />
 					</FieldRow>
 				</Field>
-				<Field flexShrink={1} marginInline={4}>
+				<Field flexShrink={1}>
 					<FieldLabel>{t('Date')}</FieldLabel>
 					<FieldRow>
 						<DateRangePicker value={dateRangeField.value} onChange={dateRangeField.onChange} display='flex' flexGrow={1} />
@@ -55,12 +55,12 @@ const AuditForm = ({ type, onSubmit, setSelectedRoom }: AuditFormProps) => {
 					</FieldRow>
 				</Field>
 			</Box>
-			<Box display='flex' flexDirection='row' alignItems='flex-start'>
+			<Box display='flex' flexDirection='row' alignItems='flex-start' gap={8}>
 				{type === '' && <RoomsTab form={form} setSelectedRoom={setSelectedRoom} />}
 				{type === 'u' && <UsersTab form={form} />}
 				{type === 'd' && <DirectTab form={form} />}
 				{type === 'l' && <OmnichannelTab form={form} />}
-				<Box flexShrink={0} marginBlockStart={28} marginInlineStart={8}>
+				<Box flexShrink={0} marginBlockStart={28}>
 					<ButtonGroup align='end'>
 						<Button secondary onClick={() => window.print()}>
 							{t('Export')} {t('PDF')}
