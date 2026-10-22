@@ -10,10 +10,6 @@ $divider-color: theme('divider-color', colors.stroke(extra-light));
 
 	border-top: $divider-size solid $divider-color;
 
-	&--danger {
-		border-color: colors.stroke(error);
-	}
-
 	&__bar {
 		display: flex;
 		justify-content: flex-end;
@@ -41,6 +37,10 @@ $divider-color: theme('divider-color', colors.stroke(extra-light));
 		margin-inline: lengths.margin(8);
 
 		border-left: $divider-size solid $divider-color;
+	}
+
+	&--danger {
+		border-color: colors.stroke(error);
 	}
 
 	&--light {
