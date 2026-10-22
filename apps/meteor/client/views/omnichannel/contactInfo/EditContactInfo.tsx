@@ -224,16 +224,20 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 							{emailFields.map((field, index) => (
 								<Fragment key={field.id}>
 									<FieldRow>
-										<Controller
-											name={`emails.${index}.address`}
-											control={control}
-											rules={{
-												required: t('Required_field', { field: t('Email') }),
-												validate: validateEmailFormat,
-											}}
-											render={({ field }) => <TextInput {...field} error={errors.emails?.[index]?.address?.message} aria-required='true' />}
-										/>
-										<IconButton title={t('Remove_email')} small onClick={() => removeEmail(index)} marginInlineStart={8} icon='trash' />
+										<Box display='flex' alignItems='center' justifyContent='space-between' flexGrow={1} gap={8}>
+											<Controller
+												name={`emails.${index}.address`}
+												control={control}
+												rules={{
+													required: t('Required_field', { field: t('Email') }),
+													validate: validateEmailFormat,
+												}}
+												render={({ field }) => (
+													<TextInput {...field} error={errors.emails?.[index]?.address?.message} aria-required='true' />
+												)}
+											/>
+											<IconButton title={t('Remove_email')} small onClick={() => removeEmail(index)} icon='trash' />
+										</Box>
 									</FieldRow>
 									{errors.emails?.[index]?.address && <FieldError>{errors.emails?.[index]?.address?.message}</FieldError>}
 								</Fragment>
@@ -253,18 +257,20 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 							{phoneFields.map((field, index) => (
 								<Fragment key={field.id}>
 									<FieldRow>
-										<Controller
-											name={`phones.${index}.phoneNumber`}
-											control={control}
-											rules={{
-												required: t('Required_field', { field: t('Phone') }),
-												validate: validatePhone,
-											}}
-											render={({ field }) => (
-												<TextInput {...field} error={errors.phones?.[index]?.phoneNumber?.message} aria-required='true' />
-											)}
-										/>
-										<IconButton title={t('Remove_phone')} small onClick={() => removePhone(index)} marginInlineStart={8} icon='trash' />
+										<Box display='flex' alignItems='center' justifyContent='space-between' flexGrow={1} gap={8}>
+											<Controller
+												name={`phones.${index}.phoneNumber`}
+												control={control}
+												rules={{
+													required: t('Required_field', { field: t('Phone') }),
+													validate: validatePhone,
+												}}
+												render={({ field }) => (
+													<TextInput {...field} error={errors.phones?.[index]?.phoneNumber?.message} aria-required='true' />
+												)}
+											/>
+											<IconButton title={t('Remove_phone')} small onClick={() => removePhone(index)} icon='trash' />
+										</Box>
 									</FieldRow>
 									{errors.phones?.[index]?.phoneNumber && <FieldError>{errors.phones?.[index]?.phoneNumber?.message}</FieldError>}
 								</Fragment>
