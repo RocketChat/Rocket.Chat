@@ -9,7 +9,7 @@ export type DescriptionListEntryProps = {
 
 const DescriptionListEntry = ({ children, label }: DescriptionListEntryProps) => (
 	<TableRow>
-		<TableCell wordBreak='break-word' is='th' scope='row' align='end' color='hint' backgroundColor='surface' fontScale='p2m'>
+		<TableCell rowHeader align='end'>
 			{label}
 		</TableCell>
 		<TableCell align='start' color='default'>
