@@ -12,7 +12,7 @@ export const useCustomScript = (): void => {
 	const session = uid ?? (isLoggingIn ? undefined : null);
 
 	// A failed login attempt on the login page toggles `isLoggingIn` without a logout, so each event fires once per change.
-	const firedFor = useRef<string | null>();
+	const firedFor = useRef<string | null | undefined>(undefined);
 
 	useEffect(() => {
 		if (session === undefined || session === firedFor.current) {
