@@ -73,9 +73,11 @@ const ContactField = ({ control, isError = false, isFetching = false, onRetry, .
 				/>
 			</FieldRow>
 			{contactFieldError && (
-				<FieldError aria-live='assertive' id={`${contactFieldId}-error`} display='flex' alignItems='center'>
-					{contactFieldError.message}
-					{isError && <RetryButton loading={isFetching} onClick={onRetry} />}
+				<FieldError aria-live='assertive' id={`${contactFieldId}-error`}>
+					<Box display='flex' alignItems='center'>
+						{contactFieldError.message}
+						{isError && <RetryButton loading={isFetching} onClick={onRetry} />}
+					</Box>
 				</FieldError>
 			)}
 		</Field>
