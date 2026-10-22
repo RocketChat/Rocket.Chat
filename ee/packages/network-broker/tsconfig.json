@@ -6,5 +6,5 @@
 		"rootDir": "./src",
 	},
 	"include": ["./src/**/*"],
-	"exclude": ["node_modules", "./src/**/*.spec.ts", "./src/**/*.test.ts", "./src/fakeNatsConnection.ts"]
+	"exclude": ["node_modules", "./dist"]
 }
