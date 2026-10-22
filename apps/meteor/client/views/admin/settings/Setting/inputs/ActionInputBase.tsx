@@ -1,4 +1,4 @@
-import { Button, FieldRow, FieldHint } from '@rocket.chat/fuselage';
+import { Button, Field, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
@@ -11,7 +11,7 @@ export type ActionInputBaseProps = SettingInputProps & {
 	onAction: () => Promise<{ message: TranslationKey; params?: string[] }>;
 };
 
-function ActionInputBase({ actionText, hint, disabled, sectionChanged, onAction }: ActionInputBaseProps) {
+function ActionInputBase({ _id, label, actionText, hint, disabled, sectionChanged, onAction }: ActionInputBaseProps) {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -26,7 +26,10 @@ function ActionInputBase({ actionText, hint, disabled, sectionChanged, onAction 
 	};
 
 	return (
-		<>
+		<Field>
+			<FieldRow>
+				<FieldLabel title={_id}>{label}</FieldLabel>
+			</FieldRow>
 			<FieldRow>
 				<Button disabled={disabled || sectionChanged} primary onClick={handleClick}>
 					{t(actionText)}
@@ -34,7 +37,7 @@ function ActionInputBase({ actionText, hint, disabled, sectionChanged, onAction 
 			</FieldRow>
 			{sectionChanged && <FieldHint>{t('Save_to_enable_this_action')}</FieldHint>}
 			{hint && <FieldHint>{hint}</FieldHint>}
-		</>
+		</Field>
 	);
 }
 
