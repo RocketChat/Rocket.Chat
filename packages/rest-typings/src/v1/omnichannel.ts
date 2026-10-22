@@ -182,9 +182,11 @@ const LivechatDepartmentDepartmentIdAgentsPOSTSchema = {
 					name: { type: 'string' },
 					count: {
 						type: 'number',
+						minimum: 0,
 					},
 					order: {
 						type: 'number',
+						minimum: 0,
 					},
 				},
 				required: ['agentId', 'username'],
@@ -207,9 +209,11 @@ const LivechatDepartmentDepartmentIdAgentsPOSTSchema = {
 					},
 					count: {
 						type: 'number',
+						minimum: 0,
 					},
 					order: {
 						type: 'number',
+						minimum: 0,
 					},
 					departmentEnabled: { type: 'boolean' },
 					departmentId: { type: 'string' },
@@ -789,10 +793,12 @@ const POSTLivechatDepartmentSchema = {
 					},
 					count: {
 						type: 'number',
+						minimum: 0,
 						nullable: true,
 					},
 					order: {
 						type: 'number',
+						minimum: 0,
 						nullable: true,
 					},
 				},
