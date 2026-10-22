@@ -32,7 +32,7 @@ export abstract class CreateNewModal extends Modal {
 	}
 
 	get checkboxFederated(): Locator {
-		return this.root.locator('label', { has: this.toggleFederated });
+		return this.root.locator('label', { has: this.root.page().getByRole('checkbox', { name: 'Federated', exact: true }) });
 	}
 
 	get btnCreate(): Locator {
