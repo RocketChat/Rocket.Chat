@@ -1,7 +1,30 @@
+import { UserStatus, type IUser } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { UserContext } from '@rocket.chat/ui-contexts';
 import { render, screen } from '@testing-library/react';
+import { useContext } from 'react';
 
 import UserMenuButton from './UserMenuButton';
+
+const UserMenuButtonWithStatus = ({ status }: { status: IUser['status'] }) => {
+	const userContext = useContext(UserContext);
+	return (
+		<UserContext.Provider value={{ ...userContext, user: userContext.user && { ...userContext.user, status } }}>
+			<UserMenuButton icon='user' aria-label='User menu' />
+		</UserContext.Provider>
+	);
+};
+
+const appRoot = () =>
+	mockAppRoot()
+		.withUser({ _id: 'alice-id', username: 'alice', status: 'online' } as IUser)
+		.withTranslations('en', 'core', {
+			Online: 'Online',
+			Away: 'Away',
+			Busy: 'Busy',
+			Offline: 'Offline',
+			User_status_disabled: 'Status disabled',
+		});
 
 describe('UserMenuButton', () => {
 	it.each([
@@ -44,5 +67,46 @@ describe('UserMenuButton', () => {
 
 		// eslint-disable-next-line testing-library/no-node-access
 		expect(screen.getByRole('button').querySelector(`.rcx-button__badge .rcx-status-bullet--${expected}`)).toBeInTheDocument();
+	});
+
+	it.each([
+		{ scenario: 'the real status', settings: {}, presenceDisabledByAdmin: false, expected: 'Online' },
+		{
+			scenario: 'Offline when status is off for the workspace',
+			settings: { Accounts_UserStatus_Enabled: false },
+			presenceDisabledByAdmin: false,
+			expected: 'Offline',
+		},
+		{
+			scenario: 'Offline when an admin hid it',
+			settings: { Accounts_StatusVisibility_Admin_Enabled: true },
+			presenceDisabledByAdmin: true,
+			expected: 'Offline',
+		},
+		{
+			scenario: 'that status is disabled when presence broadcast is off',
+			settings: { Presence_broadcast_disabled: true },
+			presenceDisabledByAdmin: false,
+			expected: 'Status disabled',
+		},
+	])('describes the button with $scenario', ({ settings, presenceDisabledByAdmin, expected }) => {
+		const root = appRoot().withUser({ _id: 'alice-id', username: 'alice', status: 'online', presenceDisabledByAdmin } as IUser);
+		Object.entries(settings).forEach(([id, value]) => root.withSetting(id, value));
+
+		render(<UserMenuButton icon='user' aria-label='User menu' />, { wrapper: root.build() });
+
+		expect(screen.getByRole('button', { name: 'User menu' })).toHaveAccessibleDescription(expected);
+	});
+
+	it('updates the description and announces the status only when it changes', () => {
+		const { rerender } = render(<UserMenuButtonWithStatus status={UserStatus.AWAY} />, { wrapper: appRoot().build() });
+
+		expect(screen.getByRole('button', { name: 'User menu' })).toHaveAccessibleDescription('Away');
+		expect(screen.getByRole('status')).toBeEmptyDOMElement();
+
+		rerender(<UserMenuButtonWithStatus status={UserStatus.BUSY} />);
+
+		expect(screen.getByRole('button', { name: 'User menu' })).toHaveAccessibleDescription('Busy');
+		expect(screen.getByRole('status')).toHaveTextContent('Busy');
 	});
 });
