@@ -415,9 +415,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 									<Divider />
 								</Stack>
 								<Field>
-									<FieldLabel id={agentsLabelId} marginBlock={4}>
-										{t('Agents')}
-									</FieldLabel>
+									<FieldLabel id={agentsLabelId}>{t('Agents')}</FieldLabel>
 									<Box display='flex' flexDirection='column' height='50vh'>
 										<DepartmentsAgentsTable aria-labelledby={agentsLabelId} control={control} register={register} />
 									</Box>

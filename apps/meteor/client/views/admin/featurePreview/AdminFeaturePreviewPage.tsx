@@ -104,7 +104,7 @@ const AdminFeaturePreviewPage = () => {
 														disabled={feature.disabled || !allowFeaturePreviewSetting.value}
 													/>
 												</FieldRow>
-												{feature.description && <FieldHint marginBlockStart={12}>{t(feature.description)}</FieldHint>}
+												{feature.description && <FieldHint>{t(feature.description)}</FieldHint>}
 											</Field>
 											{feature.imageUrl && <Box is='img' width='100%' height='auto' marginBlockStart={16} src={feature.imageUrl} alt='' />}
 										</Fragment>

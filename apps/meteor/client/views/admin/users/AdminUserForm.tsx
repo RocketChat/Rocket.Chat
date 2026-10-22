@@ -286,9 +286,9 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							<Skeleton width='full' height={26} />
 						) : (
 							<>
-								<FieldRow marginBlockStart={12}>
+								<FieldRow>
 									<Stack direction='row' align='center' gap={4}>
-										<FieldLabel htmlFor={verifiedId} disabled={!isSmtpEnabled || !isVerificationNeeded} margin={0}>
+										<FieldLabel htmlFor={verifiedId} disabled={!isSmtpEnabled || !isVerificationNeeded}>
 											{t('Mark_email_as_verified')}
 										</FieldLabel>
 										<Icon name='info-circled' size='x20' title={t('Enable_to_bypass_email_verification')} />
@@ -392,9 +392,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							<PasswordFieldSkeleton />
 						) : (
 							<>
-								<FieldLabel htmlFor={passwordId} marginBlockEnd={8}>
-									{t('Password')}
-								</FieldLabel>
+								<FieldLabel htmlFor={passwordId}>{t('Password')}</FieldLabel>
 								<AdminUserSetRandomPasswordRadios
 									isNewUserPage={isNewUserPage}
 									setRandomPasswordId={setRandomPasswordId}
@@ -481,7 +479,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 									</FieldRow>
 								</Box>
 								{!isSmtpEnabled && (
-									<FieldHint id={`${sendWelcomeEmailId}-hint`} marginBlockStart={0}>
+									<FieldHint id={`${sendWelcomeEmailId}-hint`}>
 										<Trans
 											i18nKey='Send_Email_SMTP_Warning'
 											components={{
@@ -605,9 +603,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 											/>
 										</FieldRow>
 									</Box>
-									<FieldHint id={`${userStatusId}-hint`} marginBlockStart={0}>
-										{t('User_status_admin_hint')}
-									</FieldHint>
+									<FieldHint id={`${userStatusId}-hint`}>{t('User_status_admin_hint')}</FieldHint>
 								</Field>
 								<Field>
 									<FieldLabel htmlFor={statusTextId} disabled={statusFieldsDisabled}>
