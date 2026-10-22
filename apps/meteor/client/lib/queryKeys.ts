@@ -9,7 +9,7 @@ import type {
 	IOutboundProvider,
 	RoomType,
 } from '@rocket.chat/core-typings';
-import type { PaginatedRequest } from '@rocket.chat/rest-typings';
+import type { PaginatedRequest, UsersListStatusParamsGET } from '@rocket.chat/rest-typings';
 import { videoConferenceInfoQueryKey } from '@rocket.chat/ui-video-conf';
 
 export const roomsQueryKeys = {
@@ -38,6 +38,7 @@ export const roomsQueryKeys = {
 	files: (rid: IRoom['_id'], options?: { type: string; text: string }) => [...roomsQueryKeys.room(rid), 'files', options] as const,
 	images: (rid: IRoom['_id'], options?: { startingFromId?: string }) => [...roomsQueryKeys.room(rid), 'images', options] as const,
 	autocomplete: (text: string) => [...roomsQueryKeys.all, 'autocomplete', text] as const,
+	adminList: (...args: [query?: PaginatedRequest]) => [...roomsQueryKeys.all, 'admin-list', ...args] as const,
 	discussions: (rid: IRoom['_id'], ...args: [filter: { text?: string }]) => [...roomsQueryKeys.room(rid), 'discussions', ...args] as const,
 	threadMessages: (rid: IRoom['_id'], tmid: IMessage['_id']) => [...roomsQueryKeys.room(rid), 'threads', tmid, 'messages'] as const,
 	threadMainMessage: (rid: IRoom['_id'], tmid: IMessage['_id']) => [...roomsQueryKeys.room(rid), 'threads', tmid, 'main-message'] as const,
@@ -126,6 +127,7 @@ export const usersQueryKeys = {
 		[...usersQueryKeys.all, 'info', { uid, username }] as const,
 	userAutoComplete: (filter: string, { federated, xmpp }: { federated: boolean; xmpp: boolean }, exceptions: string[] = []) =>
 		[...usersQueryKeys.all, 'autocomplete', filter, { federated, xmpp }, exceptions] as const,
+	list: (...args: [query?: UsersListStatusParamsGET, tab?: string]) => [...usersQueryKeys.all, 'list', ...args] as const,
 };
 
 export const teamsQueryKeys = {
