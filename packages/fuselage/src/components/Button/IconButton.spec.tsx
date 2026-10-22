@@ -37,4 +37,9 @@ describe('[IconButton Component]', () => {
 		expect(screen.getByRole('button', { name: 'balloon, 2 unread messages' })).toBeInTheDocument();
 		expect(container.querySelector('.rcx-button__badge')).toHaveAttribute('aria-hidden', 'true');
 	});
+
+	it('should pin the badge to the bottom end corner', () => {
+		const { container } = render(<IconButton icon='balloon' aria-label='balloon' badgePosition='bottom-end' badge={<Badge>2</Badge>} />);
+		expect(container.querySelector('.rcx-button__badge')).toHaveClass('rcx-button__badge--bottom-end');
+	});
 });
