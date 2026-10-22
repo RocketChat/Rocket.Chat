@@ -10,8 +10,12 @@ const customStyle = css`
 		flex-direction: column;
 		justify-content: flex-end;
 		width: 100%;
-		max-height: calc(100% - 96px);
+		max-height: 100%;
 		padding: 0 24px;
+
+		& > [role='group'] {
+			flex-shrink: 0;
+		}
 
 		&.embedded {
 			min-height: 36px;

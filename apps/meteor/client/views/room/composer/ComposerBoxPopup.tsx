@@ -94,7 +94,7 @@ function ComposerBoxPopup<
 	}, [focused]);
 
 	return (
-		<Tile ref={composerBoxPopupRef} padding={0} display='flex' flexDirection='column' minHeight='x80' marginBlockEnd={8} overflow='hidden'>
+		<Tile ref={composerBoxPopupRef} padding={0} display='flex' flexDirection='column' marginBlockEnd={8} overflow='hidden'>
 			{title && (
 				<Box backgroundColor='tint'>
 					<ItemGroupHeader inset='md'>
