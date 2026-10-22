@@ -186,7 +186,6 @@ export const ChangePassphrase = () => {
 											{...field}
 											id={confirmPassphraseId}
 											error={errors.confirmationPassphrase?.message}
-											flexGrow={1}
 											disabled={!keysExist || !valid}
 											aria-required={passphrase ? 'true' : 'false'}
 											aria-invalid={errors.confirmationPassphrase ? 'true' : 'false'}
