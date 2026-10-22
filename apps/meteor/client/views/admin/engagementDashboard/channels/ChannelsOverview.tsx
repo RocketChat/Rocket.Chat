@@ -1,4 +1,4 @@
-import { Icon, Margins, Pagination, Skeleton, Table, TableBody, TableCell, TableHead, TableRow, Tile } from '@rocket.chat/fuselage';
+import { Box, Icon, Margins, Pagination, Skeleton, Table, TableBody, TableCell, TableHead, TableRow, Tile } from '@rocket.chat/fuselage';
 import { format } from 'date-fns/format';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -60,8 +60,10 @@ const ChannelsOverview = () => {
 			</EngagementDashboardCardFilter>
 			<div>
 				{channels && !channels.length && (
-					<Tile fontScale='p1' color='hint' style={{ textAlign: 'center' }}>
-						{t('No_data_found')}
+					<Tile>
+						<Box fontScale='p1' color='hint' textAlign='center'>
+							{t('No_data_found')}
+						</Box>
 					</Tile>
 				)}
 				{(!channels || channels.length) && (
