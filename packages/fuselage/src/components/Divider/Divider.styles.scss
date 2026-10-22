@@ -61,3 +61,7 @@ $divider-color: theme('divider-color', colors.stroke(extra-light));
 		margin: 0;
 	}
 }
+
+.rcx-message-divider.rcx-divider--labelled {
+	padding-inline: 0;
+}

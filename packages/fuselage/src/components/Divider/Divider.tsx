@@ -31,7 +31,7 @@ const Divider = ({ variation, children, vertical, flush, small, stretch, ...prop
 		);
 	}
 	return (
-		<Box rcx-message-divider role='separator' {...props}>
+		<Box rcx-message-divider rcx-divider--labelled role='separator' {...props}>
 			<div className='rcx-divider__bar' />
 			<div className='rcx-divider__wrapper'>{children}</div>
 			<div className='rcx-divider__bar' />
