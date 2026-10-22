@@ -17,7 +17,7 @@ const DIRS = ['apps', 'packages', 'ee'];
 
 // `Box` and the layout primitives built on it are where styling props belong; `Margins` and `Scrollable` are reported
 // through the elements they lay out
-const LAYOUT_PRIMITIVES = new Set(['Box', 'Margins', 'Scrollable', 'Flex', 'FlexContainer', 'FlexItem', 'StylingBox']);
+const LAYOUT_PRIMITIVES = new Set(['Box', 'Margins', 'Scrollable', 'Flex', 'FlexContainer', 'FlexItem', 'StylingBox', 'Stack']);
 const PROP_INJECTORS = new Set(['Margins', 'Scrollable']);
 
 const walk = (dir, files = []) => {
