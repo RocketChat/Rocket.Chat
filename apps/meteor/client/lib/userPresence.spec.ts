@@ -223,6 +223,38 @@ describe('UserPresence', () => {
 		}
 	});
 
+	it('should not set an active user away at once when a later desktop detection setup fails', async () => {
+		const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+		let fail = false;
+
+		Object.assign(window, {
+			RocketChatDesktop: {
+				setUserPresenceDetection: () => {
+					if (fail) throw new Error('desktop failure');
+				},
+			},
+		});
+
+		try {
+			const { rerender } = render();
+			await jest.advanceTimersByTimeAsync(IDLE_TIME_LIMIT_MS * 2);
+
+			fail = true;
+			state.preferences = { ...state.preferences, idleTimeLimit: IDLE_TIME_LIMIT + 60 };
+			rerender();
+			await jest.advanceTimersByTimeAsync(DEBOUNCE_WAIT);
+
+			expect(goAway).not.toHaveBeenCalled();
+
+			await jest.advanceTimersByTimeAsync((IDLE_TIME_LIMIT + 60) * 1000);
+
+			expect(goAway).toHaveBeenCalledTimes(1);
+		} finally {
+			delete (window as { RocketChatDesktop?: unknown }).RocketChatDesktop;
+			warn.mockRestore();
+		}
+	});
+
 	it('should set the user away through its own idle detection when the desktop one cannot be set up', async () => {
 		const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
 

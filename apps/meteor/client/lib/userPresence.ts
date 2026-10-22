@@ -142,7 +142,11 @@ export class UserPresence {
 					return true;
 				}) === true;
 			setDesktopDetectsIdle(registered);
-			if (!registered) return;
+			if (!registered) {
+				// The browser saw no activity while the desktop app detected it, so its countdown starts now for an active user.
+				if (!this.idle) this.lastActivityAt = Date.now();
+				return;
+			}
 
 			return () => {
 				callDesktopBridge((desktop) =>
