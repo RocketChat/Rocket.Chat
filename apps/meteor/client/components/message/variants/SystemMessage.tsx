@@ -29,6 +29,7 @@ import {
 import Attachments from '../content/Attachments';
 import MessageActions from '../content/MessageActions';
 import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
+import { getMessageLabelledBy } from '../helpers/getMessageLabelledBy';
 import { useMessageListFormatDateAndTime, useMessageListFormatTime } from '../list/MessageListContext';
 
 export type SystemMessageProps = {
@@ -69,9 +70,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 		<MessageSystem
 			role='listitem'
 			aria-roledescription={t('system_message')}
-			aria-labelledby={[`${message._id}-displayName`, messageType && `${message._id}-content`, `${message._id}-time`]
-				.filter(Boolean)
-				.join(' ')}
+			aria-labelledby={getMessageLabelledBy({ messageId: message._id, hasContent: !!messageType })}
 			tabIndex={0}
 			onClick={isSelecting ? toggleSelected : undefined}
 			onKeyDown={handleKeyDown}
