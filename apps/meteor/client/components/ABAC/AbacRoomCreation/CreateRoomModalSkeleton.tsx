@@ -16,9 +16,9 @@ const CreateRoomModalSkeleton = ({ title, onClose }: CreateRoomModalSkeletonProp
 				<ModalClose title={t('Close')} onClick={onClose} />
 			</ModalHeader>
 			<ModalContent>
-				<Box marginBlockEnd={24}>
+				<Box display='flex' flexDirection='column' gap={16} marginBlockEnd={24}>
 					{Array.from({ length: 4 }, (_, index) => (
-						<InputBoxSkeleton key={index} marginBlockEnd={16} />
+						<InputBoxSkeleton key={index} />
 					))}
 				</Box>
 			</ModalContent>
