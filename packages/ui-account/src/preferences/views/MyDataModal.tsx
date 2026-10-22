@@ -25,7 +25,7 @@ const MyDataModal = ({ onCancel, title, text, ...props }: MyDataModalProps) => {
 	return (
 		<Modal {...props}>
 			<ModalHeader>
-				<ModalIcon color='status-font-on-success' name='circle-check' />
+				<ModalIcon variant='success' name='circle-check' />
 				<ModalTitle>{title}</ModalTitle>
 				<ModalClose onClick={onCancel} />
 			</ModalHeader>

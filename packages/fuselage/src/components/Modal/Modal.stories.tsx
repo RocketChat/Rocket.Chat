@@ -191,6 +191,48 @@ export const _WithIconAndTagline: Story = {
 	),
 };
 
+export const _WithIconVariants: Story = {
+	render: () => (
+		<Box display='flex' flexDirection='column' gap={16}>
+			{(['danger', 'warning', 'info', 'success'] as const).map((variant) => (
+				<Modal key={variant}>
+					<ModalHeader>
+						<ModalIcon variant={variant} name='info' />
+						<ModalHeaderText>
+							<ModalTitle>Modal Header ({variant})</ModalTitle>
+						</ModalHeaderText>
+						<ModalClose />
+					</ModalHeader>
+					<ModalContent>Modal Body</ModalContent>
+				</Modal>
+			))}
+		</Box>
+	),
+};
+
+export const _WithSubtleTagline: Story = {
+	render: () => (
+		<Modal>
+			<ModalHeader>
+				<ModalHeaderText>
+					<ModalTagline subtle>Premium capability</ModalTagline>
+					<ModalTitle>Modal Header</ModalTitle>
+				</ModalHeaderText>
+				<ModalClose />
+			</ModalHeader>
+			<ModalContent>Modal Body</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
+					<Button>Cancel</Button>
+					<Button primary onClick={action('click')}>
+						Upgrade
+					</Button>
+				</ModalFooterControllers>
+			</ModalFooter>
+		</Modal>
+	),
+};
+
 export const _WithAnnotation: Story = {
 	render: () => (
 		<Modal>
