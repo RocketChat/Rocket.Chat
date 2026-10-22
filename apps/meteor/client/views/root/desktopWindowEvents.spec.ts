@@ -155,6 +155,7 @@ const scenarios: Record<DesktopWindowEvent, () => void> = {
 
 	'Custom_Script_Logged_In': () => {
 		it('should fire when a user is logged in', () => {
+			// oxlint-disable-next-line react-hooks/rules-of-hooks -- oxlint takes the capitalized scenario key for a component name
 			renderHook(() => useCustomScript(), {
 				wrapper: mockAppRoot()
 					.withUser({ _id: 'uid' } as any)
@@ -168,6 +169,7 @@ const scenarios: Record<DesktopWindowEvent, () => void> = {
 
 	'Custom_Script_Logged_Out': () => {
 		it('should fire when no user is logged in', () => {
+			// oxlint-disable-next-line react-hooks/rules-of-hooks -- oxlint takes the capitalized scenario key for a component name
 			renderHook(() => useCustomScript(), { wrapper: mockAppRoot().build() });
 
 			expect(eventsOf('Custom_Script_Logged_Out')).toEqual([{ type: 'Custom_Script_Logged_Out', detail: null }]);
