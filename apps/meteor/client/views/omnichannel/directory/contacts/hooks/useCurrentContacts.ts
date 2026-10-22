@@ -11,7 +11,7 @@ type CurrentContactsResult = OperationResult<'GET', '/v1/omnichannel/contacts.se
 export const useCurrentContacts = (query: CurrentContactsQuery, { offset, count }: { offset: number; count: number }) => {
 	const currentContacts = useEndpoint('GET', '/v1/omnichannel/contacts.search');
 
-	return usePaginatedQuery<CurrentContactsResult>({
+	return usePaginatedQuery({
 		query: {
 			queryKey: ['current-contacts', query],
 			queryFn: (page) => currentContacts({ ...query, ...page }) as unknown as Promise<CurrentContactsResult>,
