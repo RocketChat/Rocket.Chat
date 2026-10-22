@@ -111,7 +111,7 @@ const CustomUserStatusService = () => {
 			{!license?.isEnterprise && (
 				<ContextualbarFooter borderBlockStartWidth='default' borderBlockColor='extra-light'>
 					<ButtonGroup stretch vertical>
-						<Button primary width='100%' is='a' href={links.enterprise} target='_blank'>
+						<Button primary is='a' href={links.enterprise} target='_blank'>
 							{t('More_about_Premium_plans')}
 						</Button>
 					</ButtonGroup>

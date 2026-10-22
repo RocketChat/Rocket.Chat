@@ -7,7 +7,7 @@ export type VideoConfMessageFooterProps = Omit<AllHTMLAttributes<HTMLDivElement>
 
 const VideoConfMessageFooter = ({ children, ...props }: VideoConfMessageFooterProps) => (
 	<VideoConfMessageRow backgroundColor='tint' {...props}>
-		<Box marginInline='neg-x4' display='flex' alignItems='center'>
+		<Box display='flex' alignItems='center' gap={8}>
 			{children}
 		</Box>
 	</VideoConfMessageRow>

@@ -114,11 +114,11 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 					onError={() => setAvatarUrlError(t('error-invalid-image-url'))}
 				/>
 				<Box display='flex' flexDirection='column' flexGrow='1' marginInlineStart={4}>
-					<Box display='flex' flexDirection='row' marginBlockStart='none'>
-						<Button square disabled={disabled} marginInline={4} title={t('Accounts_SetDefaultAvatar')} onClick={clickReset}>
+					<Box display='flex' flexDirection='row' marginBlockStart='none' paddingInlineStart={4} gap={8}>
+						<Button square disabled={disabled} title={t('Accounts_SetDefaultAvatar')} onClick={clickReset}>
 							<Avatar url={`/avatar/%40${useFullNameForDefaultAvatar ? name : username}`} />
 						</Button>
-						<IconButton icon='upload' secondary disabled={disabled} title={t('Upload')} marginInline={4} onClick={clickUpload} />
+						<IconButton icon='upload' secondary disabled={disabled} title={t('Upload')} onClick={clickUpload} />
 						<UserAvatarSuggestions disabled={disabled} onSelectOne={handleSelectSuggestion} />
 					</Box>
 					<Field paddingInlineStart={4} marginBlockStart={12}>

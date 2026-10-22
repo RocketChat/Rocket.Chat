@@ -1,4 +1,15 @@
-import { Box, Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow, PasswordInput, Button } from '@rocket.chat/fuselage';
+import {
+	Box,
+	Field,
+	FieldError,
+	FieldGroup,
+	FieldHint,
+	FieldLabel,
+	FieldRow,
+	PasswordInput,
+	Button,
+	ButtonGroup,
+} from '@rocket.chat/fuselage';
 import { PasswordVerifierList } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, usePasswordPolicy } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
@@ -101,8 +112,8 @@ export const ChangePassphrase = () => {
 			<Box is='p' fontScale='p1' id={e2ePasswordExplanationId}>
 				<Trans i18nKey='E2E_Encryption_Password_Explanation' />
 			</Box>
-			<Box marginBlockStart={36} width='full'>
-				<Box is='h3' fontScale='h4' marginBlockEnd={12}>
+			<Box marginBlockStart={36} width='full' display='flex' flexDirection='column' gap={12}>
+				<Box is='h3' fontScale='h4'>
 					{t('Change_E2EE_password')}
 				</Box>
 				<FieldGroup>
@@ -192,9 +203,11 @@ export const ChangePassphrase = () => {
 						</Field>
 					)}
 				</FieldGroup>
-				<Button primary disabled={!(keysExist && valid && isValid)} onClick={handleSubmit(handleSave)} marginBlockStart={12}>
-					{t('Save_changes')}
-				</Button>
+				<ButtonGroup>
+					<Button primary disabled={!(keysExist && valid && isValid)} onClick={handleSubmit(handleSave)}>
+						{t('Save_changes')}
+					</Button>
+				</ButtonGroup>
 			</Box>
 		</>
 	);
