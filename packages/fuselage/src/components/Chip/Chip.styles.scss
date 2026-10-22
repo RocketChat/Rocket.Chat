@@ -67,6 +67,10 @@ $chip-disabled-color: theme('chip-disabled-color', colors.font(disabled));
 		min-height: lengths.size(20);
 	}
 
+	&--label {
+		text-transform: uppercase;
+	}
+
 	&__text {
 		@include use-text-ellipsis;
 

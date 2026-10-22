@@ -100,9 +100,17 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 						<Box fontScale='h4' marginBlockEnd={8} color='titles-labels'>
 							{t('Categories')}
 						</Box>
-						<Box display='flex' flexDirection='row' flexWrap='wrap' justifyContent='start' alignItems='center'>
-							{categories?.map((current) => (
-								<Chip key={current} textTransform='uppercase' margin={4}>
+						<Box
+							display='flex'
+							flexDirection='row'
+							flexWrap='wrap'
+							justifyContent='start'
+							alignItems='center'
+							gap={8}
+							padding={categories.length > 0 ? 4 : undefined}
+						>
+							{categories.map((current) => (
+								<Chip key={current} label>
 									{current}
 								</Chip>
 							))}
