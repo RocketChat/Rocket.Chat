@@ -428,7 +428,6 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 											id={rolesId}
 											value={value}
 											onChange={onChange}
-											flexGrow={1}
 											placeholder={t('Select_role')}
 											options={availableRoles}
 										/>
