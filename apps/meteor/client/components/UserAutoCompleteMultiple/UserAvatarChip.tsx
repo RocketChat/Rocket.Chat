@@ -13,8 +13,8 @@ const UserAvatarChip = ({ federated, username, name, ...props }: UserAvatarChipP
 	const displayName = useUserDisplayName({ name, username });
 	return (
 		<Chip {...props}>
-			{federated ? <Icon size='x20' name='globe' verticalAlign='middle' /> : <UserAvatar size='x20' username={username} />}
-			<Box is='span' margin='none' marginInlineStart={4} verticalAlign='middle'>
+			<Box is='span' display='inline-flex' alignItems='center' gap={4}>
+				{federated ? <Icon size='x20' name='globe' /> : <UserAvatar size='x20' username={username} />}
 				{displayName}
 			</Box>
 		</Chip>
