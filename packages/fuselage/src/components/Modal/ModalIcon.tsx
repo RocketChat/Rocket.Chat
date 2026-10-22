@@ -6,8 +6,8 @@ export type ModalIconProps = BoxProps & {
 };
 
 const ModalIcon = ({ size = 'x20', name, alignItems = 'center', ...props }: ModalIconProps) => (
-	<Box {...props} display='flex' alignItems={alignItems}>
-		<Icon marginBlock={4} name={name} size={size} />
+	<Box paddingBlock={4} {...props} display='flex' alignItems={alignItems}>
+		<Icon name={name} size={size} />
 	</Box>
 );
 

@@ -188,8 +188,8 @@ function AutoComplete<TLabel = ReactNode>({
 					)}
 				</Margins>
 			</Box>
-			<Box rcx-autocomplete__addon>
-				<Icon name={optionsAreVisible === AnimatedVisibility.VISIBLE ? 'cross' : 'magnifier'} size='x20' color='titles-labels' />
+			<Box rcx-autocomplete__addon color='titles-labels'>
+				<Icon name={optionsAreVisible === AnimatedVisibility.VISIBLE ? 'cross' : 'magnifier'} size='x20' />
 			</Box>
 			<PositionAnimated visible={optionsAreVisible} anchor={containerRef}>
 				<Options
