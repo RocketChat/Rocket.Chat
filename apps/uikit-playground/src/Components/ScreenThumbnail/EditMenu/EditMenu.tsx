@@ -59,10 +59,10 @@ const EditMenu = ({
 			</Button>
 			{isOpen && (
 				<Box position='absolute'>
-					<Box elevation='1' paddingBlock='10px' backgroundColor='white'>
-						<Box marginInline='10px'>
+					<Box elevation='1' paddingBlock='8px' backgroundColor='white'>
+						<Box marginInline='8px'>
 							<EditableLabel value={name} onChange={onChange} onBlur={onBlur} {...labelProps} />
-							<Box withTruncatedText marginBlockStart='2px' fontScale='p2'>
+							<Box withTruncatedText marginBlockStart='4px' fontScale='p2'>
 								{formatDate(date)}
 							</Box>
 						</Box>

@@ -6,13 +6,13 @@ import type { templateType } from '../../../utils/templates';
 export type SectionProps = { template: templateType; index: number };
 
 const Section = ({ template, index }: SectionProps) => (
-	<Box marginBlockStart='25px' width='100%' key={index}>
-		<Box marginBlockEnd='5px'>
+	<Box marginBlockStart='24px' width='100%' key={index}>
+		<Box marginBlockEnd='4px'>
 			<Box fontSize={24} fontWeight={800}>
 				{template.heading}
 			</Box>
 		</Box>
-		<Box marginBlockEnd='15px'>
+		<Box marginBlockEnd='16px'>
 			<Label>{template.description}</Label>
 		</Box>
 		{template.payloads.map((payload, i) => (

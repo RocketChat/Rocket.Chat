@@ -31,7 +31,7 @@ const Payload = ({ blocks, surface }: PayloadProps) => {
 		);
 	};
 	return (
-		<Box display='flex' flexDirection='column' gap='15px' paddingBlockEnd='25px'>
+		<Box display='flex' flexDirection='column' gap='16px' paddingBlockEnd='24px'>
 			<Box
 				onClick={clickHandler}
 				border='1px solid #e6e6e6'
