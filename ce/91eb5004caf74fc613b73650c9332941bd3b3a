@@ -1,0 +1,31 @@
+apps/meteor/server/startup/disconnectGracePeriod.ts
+  s_222eddbf4413ed::t_5d21f00be662bd 1-2,7
+  s_222eddbf4413ed::t_d6a8916f26c9d4 3-6
+apps/meteor/tests/e2e/presence.spec.ts
+  s_222eddbf4413ed::t_c9ce16ea845ac0 4,7,9-10
+  s_222eddbf4413ed::t_25f3d09cdbaf38 32-52
+apps/meteor/definition/externals/meteor/meteor.d.ts
+  s_222eddbf4413ed::t_e41951a151b7e9 37
+.changeset/hungry-actors-spend.md
+  s_222eddbf4413ed::t_9cb60b7e409042 5
+  s_222eddbf4413ed::t_4c67331d02d72e 2,4
+  s_222eddbf4413ed::t_edfbe2f2e077da 1,3
+apps/meteor/server/startup/index.ts
+  s_222eddbf4413ed::t_e1e2a14b35c7ee 10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "ce91eb5004caf74fc613b73650c9332941bd3b3a",
+  "prompts": {},
+  "sessions": {
+    "s_222eddbf4413ed": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "a6181e55-e372-4b49-acaf-19c0732d7764",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
