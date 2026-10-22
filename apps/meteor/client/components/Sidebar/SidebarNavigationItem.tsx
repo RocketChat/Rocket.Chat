@@ -48,10 +48,10 @@ const SidebarNavigationItem = ({
 				minWidth={0}
 				width='100%'
 			>
-				<Box is='span' withTruncatedText>
+				<Box is='span' withTruncatedText flexGrow={1} flexBasis='0%'>
 					{label}
 				</Box>
-				{tag && <Tag flexShrink={0}>{tag}</Tag>}
+				{tag && <Tag>{tag}</Tag>}
 			</Box>
 			{Badge ? <Badge /> : null}
 		</SidebarGenericItem>
