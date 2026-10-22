@@ -11,6 +11,8 @@ export type ChipProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & 
 	thumbUrl?: string;
 	renderThumb?: (props: { url: string }) => ReactNode;
 	renderDismissSymbol?: () => ReactNode;
+	/** Renders a 20px tall chip. */
+	small?: boolean;
 };
 
 const defaultRenderThumb = ({ url }: { url: string }) => (
@@ -28,12 +30,19 @@ const Chip = ({
 	onMouseDown,
 	renderThumb = defaultRenderThumb,
 	renderDismissSymbol = defaultRenderDismissSymbol,
+	small,
 	...rest
 }: ChipProps) => {
 	const onDismiss = onClick || onMouseDown;
 
 	return (
-		<button type='button' className={prependClassName(className, 'rcx-box rcx-chip')} disabled={!onDismiss} onClick={onDismiss} {...rest}>
+		<button
+			type='button'
+			className={prependClassName(className, `rcx-box rcx-chip${small ? ' rcx-chip--small' : ''}`)}
+			disabled={!onDismiss}
+			onClick={onDismiss}
+			{...rest}
+		>
 			<Margins all='x4'>
 				{thumbUrl && renderThumb?.({ url: thumbUrl })}
 				{children && <span className='rcx-box rcx-chip__text'>{children}</span>}
