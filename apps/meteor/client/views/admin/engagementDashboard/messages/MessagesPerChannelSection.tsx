@@ -174,8 +174,10 @@ const MessagesPerChannelSection = () => {
 										{table ? <Box fontScale='p1'>{t('Most_popular_channels_top_5')}</Box> : <Skeleton width='50%' />}
 									</Margins>
 									{table && !table.length && (
-										<Tile fontScale='p1' color='hint' style={{ textAlign: 'center' }}>
-											{t('Not_enough_data')}
+										<Tile>
+											<Box fontScale='p1' color='hint' textAlign='center'>
+												{t('Not_enough_data')}
+											</Box>
 										</Tile>
 									)}
 									{(!table || !!table.length) && (
