@@ -69,7 +69,7 @@ const AuditLogTable = () => {
 			<Field>
 				<FieldLabel>{t('Date')}</FieldLabel>
 				<FieldRow>
-					<DateRangePicker display='flex' flexGrow={1} value={dateRange} onChange={setDateRange} />
+					<DateRangePicker flexGrow={1} value={dateRange} onChange={setDateRange} />
 				</FieldRow>
 			</Field>
 			{isLoading && (

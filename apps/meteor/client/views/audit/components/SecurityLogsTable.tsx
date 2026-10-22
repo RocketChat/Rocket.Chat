@@ -105,7 +105,7 @@ const SecurityLogsTable = () => {
 				<Field width='unset' flexShrink={1} flexGrow={1}>
 					<Box display='flex' flexDirection='column' paddingInline={6}>
 						<FieldLabel>{t('Date')}</FieldLabel>
-						<DateRangePicker display='flex' flexGrow={1} value={dateRange} onChange={setDateRange} />
+						<DateRangePicker flexGrow={1} value={dateRange} onChange={setDateRange} />
 					</Box>
 				</Field>
 				<Field width={300}>
