@@ -92,15 +92,15 @@ const UsersTableFilters = ({ roleData, setUsersFilters, showStatusManagementFilt
 			alignItems='center'
 			columnGap={isLargeScreenOrBigger ? 16 : undefined}
 		>
-			<TextInput
-				placeholder={t('Search_Users')}
-				endAddon={<Icon name='magnifier' size='x20' />}
-				onChange={handleSearchTextChange}
-				value={text}
-				flexGrow={2}
-				minWidth='x220'
-				aria-label={t('Search_Users')}
-			/>
+			<Box display='flex' flexGrow={1} minWidth='x280'>
+				<TextInput
+					placeholder={t('Search_Users')}
+					endAddon={<Icon name='magnifier' size='x20' />}
+					onChange={handleSearchTextChange}
+					value={text}
+					aria-label={t('Search_Users')}
+				/>
+			</Box>
 			<Box marginBlock={4} width={isLargeScreenOrBigger ? 'unset' : '100%'}>
 				<MultiSelectCustom
 					dropdownOptions={userRolesFilterStructure}
