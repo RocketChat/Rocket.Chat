@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Divider } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Divider } from '@rocket.chat/fuselage';
 import { useLoginServices, useSetting } from '@rocket.chat/ui-contexts';
 import { useMemo, type Dispatch, type SetStateAction } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -39,7 +39,11 @@ const LoginServices = ({ disabled, setError }: LoginServicesProps) => {
 
 	return (
 		<>
-			{showFormLogin && <Divider marginBlock={24}>{t('registration.component.form.divider')}</Divider>}
+			{showFormLogin && (
+				<Box paddingBlock={24}>
+					<Divider>{t('registration.component.form.divider')}</Divider>
+				</Box>
+			)}
 
 			{servicesToShow.length > 0 && (
 				<ButtonGroup vertical stretch small>
