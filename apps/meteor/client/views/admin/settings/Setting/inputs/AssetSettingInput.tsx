@@ -94,9 +94,11 @@ function AssetSettingInput({ _id, label, value, hint, asset, required, disabled,
 
 	return (
 		<Field>
-			<FieldLabel htmlFor={_id} title={_id} required={required}>
-				{label}
-			</FieldLabel>
+			<FieldRow>
+				<FieldLabel htmlFor={_id} title={_id} required={required}>
+					{label}
+				</FieldLabel>
+			</FieldRow>
 			<FieldRow>
 				<Box className={settingsFilePreview}>
 					{value?.url ? (
