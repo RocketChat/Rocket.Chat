@@ -144,7 +144,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 					alignItems='center'
 					justifyContent='center'
 					borderRadius='medium'
-					gap={4}
+					gap={12}
 					paddingInlineEnd={shouldShowPriceDisplay ? 4 : undefined}
 					invisible={!showStatus && !loading}
 				>
@@ -155,7 +155,6 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 						loading={loading}
 						disabled={action === 'request' && (app?.requestedEndUser || endUserRequested)}
 						onClick={handleAcquireApp}
-						marginInlineEnd={8}
 					>
 						{t(button.label)}
 					</Button>
