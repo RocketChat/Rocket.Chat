@@ -37,14 +37,12 @@ const CannedResponsesFilter = ({ createdBy, setCreatedBy, sharing, setSharing, t
 				<Field>
 					<FieldLabel htmlFor={searchId}>{t('Search')}</FieldLabel>
 					<FieldRow>
-						<Box height='x40' display='flex' width='full'>
-							<TextInput
-								id={searchId}
-								value={text}
-								onChange={(e: ChangeEvent<HTMLInputElement>) => setText(e.target.value)}
-								endAddon={<Icon name='magnifier' size='x20' />}
-							/>
-						</Box>
+						<TextInput
+							id={searchId}
+							value={text}
+							onChange={(e: ChangeEvent<HTMLInputElement>) => setText(e.target.value)}
+							endAddon={<Icon name='magnifier' size='x20' />}
+						/>
 					</FieldRow>
 				</Field>
 			</Box>

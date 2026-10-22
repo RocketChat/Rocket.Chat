@@ -134,9 +134,7 @@ const DateRangePicker = ({ onChange = () => undefined, ...props }: DateRangePick
 					<Field>
 						<FieldLabel>{t('Start')}</FieldLabel>
 						<FieldRow>
-							<Box height='x40' display='flex' width='full'>
-								<InputBox type='date' onChange={handleStart} max={todayDate} value={start} />
-							</Box>
+							<InputBox type='date' onChange={handleStart} max={todayDate} value={start} />
 						</FieldRow>
 					</Field>
 				</Box>
@@ -144,9 +142,7 @@ const DateRangePicker = ({ onChange = () => undefined, ...props }: DateRangePick
 					<Field>
 						<FieldLabel>{t('End')}</FieldLabel>
 						<FieldRow>
-							<Box height='x40' display='flex' width='full'>
-								<InputBox type='date' onChange={handleEnd} min={start} max={todayDate} value={end} />
-							</Box>
+							<InputBox type='date' onChange={handleEnd} min={start} max={todayDate} value={end} />
 							<Box marginInlineStart={8}>
 								<GenericMenu title={t('Date_range_presets')} items={options} small />
 							</Box>
