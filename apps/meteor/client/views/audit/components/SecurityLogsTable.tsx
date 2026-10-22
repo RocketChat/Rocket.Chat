@@ -102,18 +102,22 @@ const SecurityLogsTable = () => {
 	return (
 		<>
 			<Box marginBlock={16} display='flex' flexWrap='wrap' alignItems='flex-end'>
-				<Field width='unset' flexShrink={1} flexGrow={1}>
-					<Box display='flex' flexDirection='column' paddingInline={6}>
-						<FieldLabel>{t('Date')}</FieldLabel>
-						<DateRangePicker flexGrow={1} value={dateRange} onChange={setDateRange} />
-					</Box>
-				</Field>
-				<Field width={300}>
-					<Box display='flex' flexDirection='column' paddingInline={6}>
-						<FieldLabel>{t('Setting')}</FieldLabel>
-						<SettingSelect value={setting} onChange={setSetting} />
-					</Box>
-				</Field>
+				<Box flexGrow={1}>
+					<Field>
+						<Box display='flex' flexDirection='column' paddingInline={6}>
+							<FieldLabel>{t('Date')}</FieldLabel>
+							<DateRangePicker flexGrow={1} value={dateRange} onChange={setDateRange} />
+						</Box>
+					</Field>
+				</Box>
+				<Box width={300} flexShrink={0}>
+					<Field>
+						<Box display='flex' flexDirection='column' paddingInline={6}>
+							<FieldLabel>{t('Setting')}</FieldLabel>
+							<SettingSelect value={setting} onChange={setSetting} />
+						</Box>
+					</Field>
+				</Box>
 				<Box role='group' display='flex' alignItems='center' gap={20} paddingInline={6} paddingBlockStart={12}>
 					<Button secondary onClick={handleClearFilters}>
 						{t('Clear_filters')}

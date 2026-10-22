@@ -40,20 +40,24 @@ const AuditForm = ({ type, onSubmit, setSelectedRoom }: AuditFormProps) => {
 	return (
 		<form onSubmit={handleSubmit(submit)}>
 			<Stack direction='row' gap={8}>
-				<Field flexShrink={1}>
-					<FieldLabel>{t('Message')}</FieldLabel>
-					<FieldRow>
-						<TextInput placeholder={t('Search')} {...register('msg')} />
-					</FieldRow>
-				</Field>
-				<Field flexShrink={1}>
-					<FieldLabel>{t('Date')}</FieldLabel>
-					<FieldRow>
-						<DateRangePicker value={dateRangeField.value} onChange={dateRangeField.onChange} flexGrow={1} />
-						{dateRangeFieldState.error?.type === 'required' && <FieldError>{t('Required_field', { field: t('Date') })}</FieldError>}
-						{dateRangeFieldState.error?.type === 'validate' && <FieldError>{dateRangeFieldState.error.message}</FieldError>}
-					</FieldRow>
-				</Field>
+				<Box width='full'>
+					<Field>
+						<FieldLabel>{t('Message')}</FieldLabel>
+						<FieldRow>
+							<TextInput placeholder={t('Search')} {...register('msg')} />
+						</FieldRow>
+					</Field>
+				</Box>
+				<Box width='full'>
+					<Field>
+						<FieldLabel>{t('Date')}</FieldLabel>
+						<FieldRow>
+							<DateRangePicker value={dateRangeField.value} onChange={dateRangeField.onChange} flexGrow={1} />
+							{dateRangeFieldState.error?.type === 'required' && <FieldError>{t('Required_field', { field: t('Date') })}</FieldError>}
+							{dateRangeFieldState.error?.type === 'validate' && <FieldError>{dateRangeFieldState.error.message}</FieldError>}
+						</FieldRow>
+					</Field>
+				</Box>
 			</Stack>
 			<Stack direction='row' align='start' gap={8}>
 				{type === '' && <RoomsTab form={form} setSelectedRoom={setSelectedRoom} />}
