@@ -38,7 +38,7 @@ const AuditForm = ({ type, onSubmit, setSelectedRoom }: AuditFormProps) => {
 	};
 
 	return (
-		<form onSubmit={handleSubmit(submit)}>
+		<Box is='form' onSubmit={handleSubmit(submit)} display='flex' flexDirection='column' gap={4}>
 			<Stack direction='row' gap={8}>
 				<Box width='full'>
 					<Field>
@@ -75,7 +75,7 @@ const AuditForm = ({ type, onSubmit, setSelectedRoom }: AuditFormProps) => {
 					</ButtonGroup>
 				</Box>
 			</Stack>
-		</form>
+		</Box>
 	);
 };
 
