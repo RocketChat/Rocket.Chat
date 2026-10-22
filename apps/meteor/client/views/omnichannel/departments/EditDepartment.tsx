@@ -414,18 +414,22 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								<FieldHint id={`${allowReceiveForwardOffline}-hint`}>{t('Accept_receive_inquiry_no_online_agents_Hint')}</FieldHint>
 							</FieldRow>
 						</Field>
-						<Field>
-							<DepartmentBusinessHours bhId={department?.businessHourId} />
-						</Field>
-						<Divider marginBlock={16} />
-						<Field>
-							<FieldLabel id={agentsLabelId} marginBlock={4}>
-								{t('Agents')}
-							</FieldLabel>
-							<Box display='flex' flexDirection='column' height='50vh'>
-								<DepartmentsAgentsTable aria-labelledby={agentsLabelId} control={control} register={register} />
+						<Box display='flex' flexDirection='column' gap={32}>
+							<Box display='flex' flexDirection='column' gap={8}>
+								<Field>
+									<DepartmentBusinessHours bhId={department?.businessHourId} />
+								</Field>
+								<Divider />
 							</Box>
-						</Field>
+							<Field>
+								<FieldLabel id={agentsLabelId} marginBlock={4}>
+									{t('Agents')}
+								</FieldLabel>
+								<Box display='flex' flexDirection='column' height='50vh'>
+									<DepartmentsAgentsTable aria-labelledby={agentsLabelId} control={control} register={register} />
+								</Box>
+							</Field>
+						</Box>
 					</FieldGroup>
 				</PageScrollableContentWithShadow>
 			</Page>

@@ -5,10 +5,14 @@ import { ResetPassphrase } from './ResetPassphrase';
 
 const EndToEnd = () => {
 	return (
-		<Box display='flex' flexDirection='column' alignItems='flex-start'>
-			<ChangePassphrase />
-			<Divider marginBlock={36} width='full' />
-			<ResetPassphrase />
+		<Box display='flex' flexDirection='column' gap={28}>
+			<Box display='flex' flexDirection='column' alignItems='flex-start'>
+				<ChangePassphrase />
+			</Box>
+			<Divider />
+			<Box display='flex' flexDirection='column' alignItems='flex-start'>
+				<ResetPassphrase />
+			</Box>
 		</Box>
 	);
 };
