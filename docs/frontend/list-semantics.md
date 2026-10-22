@@ -14,7 +14,8 @@ The list is a `role=list` with an accessible name, and it owns its rows: each ro
 ## A row
 
 - A row is never a clickable `div`. In lists of `Item` rows, the row is an `Item` and its one focus target is an `ItemLink`: a link when the row navigates, a button otherwise. Sidebar rooms follow the same shape with `SidebarItem` and `SidebarItemLink`; message rows are described below.
-- The `ItemLink` is the row's name. Point `aria-describedby` at the text that explains it, such as a message preview, and clamp long previews with `ItemDescription`'s `clamp`.
+- The `ItemLink` is the row's name. Point `aria-describedby` at the text that explains it, and clamp long previews with `ItemDescription`'s `clamp`.
+- A row that shows a message, as threads and discussions do, is named as a message row is: its `ItemLink` holds the message preview and takes `aria-labelledby` pointing at the preview, the author and the time, in that order. The author and the time stay visible but `aria-hidden`, so they are read once, inside the name.
 - A row with nothing to open still gets an `ItemLink`, with `aria-disabled` rather than `disabled`, so the keyboard can land on it and reach its actions.
 
 ## Actions

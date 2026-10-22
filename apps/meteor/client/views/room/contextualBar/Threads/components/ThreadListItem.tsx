@@ -39,6 +39,8 @@ const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, hasDraft, onC
 	const uid = useUserId();
 	const formatDate = useTimeAgo();
 	const messageId = useId();
+	const authorId = useId();
+	const timeId = useId();
 	const decryptedMsg = useDecryptedMessage(thread);
 	const msg = normalizeThreadMessage({ ...thread, msg: decryptedMsg }, t);
 
@@ -59,20 +61,22 @@ const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, hasDraft, onC
 			</ItemMedia>
 			<ItemContent>
 				<ItemRow>
-					<ItemTitle>
-						<ItemLink is='button' aria-describedby={messageId} onClick={() => onClick(thread._id)}>
-							{showRealNames ? name : thread.u.username}
-						</ItemLink>
+					<ItemTitle id={authorId} aria-hidden>
+						{showRealNames ? name : thread.u.username}
 					</ItemTitle>
-					<ItemMeta>{formatDate(thread.ts)}</ItemMeta>
+					<ItemMeta id={timeId} aria-hidden>
+						{formatDate(thread.ts)}
+					</ItemMeta>
 					{hasDraft && (
 						<ItemIcon label={t('Thread_draft')}>
 							<Icon name='pencil' size='x16' />
 						</ItemIcon>
 					)}
 				</ItemRow>
-				<ItemDescription id={messageId} clamp={2}>
-					{msg}
+				<ItemDescription clamp={2}>
+					<ItemLink is='button' aria-labelledby={`${messageId} ${authorId} ${timeId}`} onClick={() => onClick(thread._id)}>
+						<span id={messageId}>{msg}</span>
+					</ItemLink>
 				</ItemDescription>
 				<ThreadListMetrics lm={thread.tlm ?? thread.ts} participants={thread.replies ?? []} counter={thread.tcount ?? 0} />
 			</ItemContent>

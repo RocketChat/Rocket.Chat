@@ -47,6 +47,8 @@ const DiscussionListItem = ({
 }: DiscussionListItemProps) => {
 	const { t } = useTranslation();
 	const messageId = useId();
+	const authorId = useId();
+	const timeId = useId();
 
 	return (
 		<Item inset='lg'>
@@ -59,15 +61,17 @@ const DiscussionListItem = ({
 			</ItemMedia>
 			<ItemContent>
 				<ItemRow>
-					<ItemTitle>
-						<ItemLink is='button' data-drid={drid} aria-describedby={messageId} onClick={onClick}>
-							{name}
-						</ItemLink>
+					<ItemTitle id={authorId} aria-hidden>
+						{name}
 					</ItemTitle>
-					<ItemMeta>{formatDate(ts)}</ItemMeta>
+					<ItemMeta id={timeId} aria-hidden>
+						{formatDate(ts)}
+					</ItemMeta>
 				</ItemRow>
-				<ItemDescription id={messageId} clamp={2}>
-					{msg}
+				<ItemDescription clamp={2}>
+					<ItemLink is='button' data-drid={drid} aria-labelledby={`${messageId} ${authorId} ${timeId}`} onClick={onClick}>
+						<span id={messageId}>{msg}</span>
+					</ItemLink>
 				</ItemDescription>
 				<MessageMetrics>
 					{!dcount && (
