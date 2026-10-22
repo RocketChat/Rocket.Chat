@@ -72,7 +72,7 @@ test.describe('Admin > Users', () => {
 
 		test.beforeAll(async ({ api }) => {
 			users = await createTestUsers(api, 3);
-			await setSettingValueById(api, 'API_Upper_Count_Limit', 2);
+			await expect(await setSettingValueById(api, 'API_Upper_Count_Limit', 2)).toBeOK();
 		});
 
 		test.afterAll(async () => {
