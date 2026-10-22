@@ -50,7 +50,8 @@ export default {
 		},
 		square: {
 			control: 'boolean',
-			description: 'Renders the button as a square, label-less footprint sized to match neighbouring buttons and inputs.',
+			description:
+				'Renders the button as a square footprint sized to match neighbouring buttons and inputs; omit the label for icon-only use.',
 			table: { category: 'Shape' },
 		},
 		icon: {
@@ -314,7 +315,7 @@ export const IconAndLabel: Story = {
 			description: {
 				story:
 					'How a leading icon pairs with a label at every size.\n\n' +
-					'**The rule.** The icon canvas is sized to the label\u2019s line-height, so it scales with the button: 20px on the 40px and 48px buttons, 16px on the 32px and 28px ones. The gap between icon and label is a constant 4px and does **not** scale. The inset on the icon side is one 4px step tighter than the inset on the label side, so the icon reads as optically centred.\n\n' +
+					'**The rule.** The icon canvas is sized to the label\u2019s line-height, so it scales with the button: 20px on the 40px and 48px buttons, 16px on the 32px and 28px ones. The gap between icon and label is a constant 4px and does **not** scale. The inset on the icon side is 2px tighter than the inset on the label side, so the icon reads as optically centred.\n\n' +
 					'**Reading the overlay.** The dashed red box is the icon canvas \u2014 note it is the canvas, not the glyph, which sits inside it. The pale band to its right is the 4px gap.\n\n' +
 					'`mini` and `tiny` are not shown: they accept a `size` value but have no rectangular styles, so they fall back to the default box. They are only defined as squares.',
 			},
@@ -329,7 +330,7 @@ export const IconAndLabel: Story = {
 				xAxis={{
 					'icon + label': { icon: 'baloon-text' },
 					'label only': {},
-					'icon only': { icon: 'baloon-text', square: true, children: undefined },
+					'icon only': { 'icon': 'baloon-text', 'square': true, 'children': undefined, 'aria-label': 'Example icon-only button' },
 				}}
 				yAxis={{
 					small: { size: 'small' },

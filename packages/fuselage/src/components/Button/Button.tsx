@@ -118,7 +118,7 @@ function Button({
 			rcx-button--medium={effectiveSize === 'medium'}
 			rcx-button--large={effectiveSize === 'large'}
 			rcx-button--square={square}
-			rcx-button--with-icon={hasLeadingIcon && !square}
+			rcx-button--with-icon={hasLeadingIcon && !square && Boolean(children)}
 			rcx-button--tiny-square={effectiveSize === 'tiny' && square}
 			rcx-button--mini-square={effectiveSize === 'mini' && square}
 			rcx-button--small-square={effectiveSize === 'small' && square}

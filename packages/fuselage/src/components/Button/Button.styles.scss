@@ -17,7 +17,7 @@ $inset-default: lengths.padding(16) - lengths.padding(2); // 14px
 $inset-small: lengths.padding(8); // 8px
 $inset-large: lengths.padding(24); // 24px
 
-// Icon-side inset, one 4px step tighter than the label-side inset.
+// Icon-side inset, 2px tighter than the label-side inset.
 $inset-icon-default: lengths.padding(12); // 12px
 $inset-icon-small: lengths.padding(8); // 8px
 $inset-label-small: lengths.padding(8) + lengths.padding(2); // 10px
