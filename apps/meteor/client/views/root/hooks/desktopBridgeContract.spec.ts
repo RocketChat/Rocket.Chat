@@ -190,10 +190,40 @@ describe('useDesktopOutlookCredentials', () => {
 		const desktop = mockDesktop();
 		mockUser = outlookUser(false);
 
-		renderHook(() => useDesktopOutlookCredentials(), { wrapper: mockAppRoot().build() });
+		const { rerender } = renderHook(() => useDesktopOutlookCredentials(), { wrapper: mockAppRoot().build() });
+		rerender();
 
 		expect(desktop.setUserToken).not.toHaveBeenCalled();
+		// An earlier page load may have handed credentials over before the user turned the integration off.
+		expect(desktop.clearOutlookCredentials).toHaveBeenCalledTimes(1);
+	});
+
+	it('should take back the credentials an earlier page load left when a reload ends logged out', () => {
+		const desktop = mockDesktop();
+		mockIsLoggingIn = true;
+
+		const { rerender } = renderHook(() => useDesktopOutlookCredentials(), { wrapper: mockAppRoot().build() });
+
 		expect(desktop.clearOutlookCredentials).not.toHaveBeenCalled();
+
+		mockIsLoggingIn = false;
+		rerender();
+		rerender();
+
+		expect(desktop.clearOutlookCredentials).toHaveBeenCalledTimes(1);
+	});
+
+	it('should not take the credentials back while the user of a stored user id loads', () => {
+		const desktop = mockDesktop();
+		mockUserId = 'user-id';
+
+		const { rerender } = renderHook(() => useDesktopOutlookCredentials(), { wrapper: mockAppRoot().build() });
+
+		mockUser = outlookUser(true);
+		rerender();
+
+		expect(desktop.clearOutlookCredentials).not.toHaveBeenCalled();
+		expect(desktop.setUserToken).toHaveBeenCalledTimes(1);
 	});
 
 	it.each([
@@ -214,10 +244,12 @@ describe('useDesktopOutlookCredentials', () => {
 
 	it('should not take the credentials back while a stored session resumes on reload', () => {
 		const desktop = mockDesktop();
+		mockIsLoggingIn = true;
 
 		const { rerender } = renderHook(() => useDesktopOutlookCredentials(), { wrapper: mockAppRoot().build() });
 
 		mockUser = outlookUser(true);
+		mockIsLoggingIn = false;
 		rerender();
 
 		expect(desktop.clearOutlookCredentials).not.toHaveBeenCalled();
