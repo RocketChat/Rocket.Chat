@@ -114,6 +114,14 @@ $table-selected-border-radius: theme('table-selected-border-radius', lengths.bor
 			}
 		}
 
+		&--row-header {
+			word-break: break-word;
+
+			color: colors.font(hint);
+			background-color: colors.surface(light);
+			@include use-font-scale(p2m);
+		}
+
 		&--clickable {
 			@include clickable;
 		}

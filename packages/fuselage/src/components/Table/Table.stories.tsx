@@ -283,6 +283,33 @@ export const Columns: Story = {
 	),
 };
 
+export const RowHeader: Story = {
+	render: () => (
+		<Table striped>
+			<TableBody>
+				<TableRow>
+					<TableCell rowHeader align='end'>
+						Address
+					</TableCell>
+					<TableCell>10.0.4.17</TableCell>
+				</TableRow>
+				<TableRow>
+					<TableCell rowHeader align='end'>
+						Current Status &gt; Connected
+					</TableCell>
+					<TableCell>true</TableCell>
+				</TableRow>
+				<TableRow>
+					<TableCell rowHeader align='end'>
+						Instance Record &gt; Created at
+					</TableCell>
+					<TableCell>22/10/2026 09:14</TableCell>
+				</TableRow>
+			</TableBody>
+		</Table>
+	),
+};
+
 export const Fixed: Story = {
 	render: () => (
 		<Table fixed>
