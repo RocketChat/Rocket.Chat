@@ -7,7 +7,7 @@ export const PreferencesGeneral = () => {
 	const { control } = useFormContext();
 
 	return (
-		<FieldGroup marginBlockEnd='1.5rem' paddingInline='0.5rem'>
+		<FieldGroup marginBlockEnd='x24' paddingInline='x8'>
 			<Field>
 				<FieldRow>
 					<FieldLabel>{t('Omnichannel_hide_conversation_after_closing')}</FieldLabel>
