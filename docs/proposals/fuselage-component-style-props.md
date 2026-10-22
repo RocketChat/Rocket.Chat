@@ -116,7 +116,6 @@ Each step is its own pull request, revertible on its own.
    CI runs it with `--max <n>` in the lint job (`.github/workflows/ci-code-check.yml`), failing when a change adds a finding. The count grows with `develop` otherwise: 26 sites appeared in the 55 commits of the day after the measurement above. Each migration pull request lowers `n` to its new count.
 
 2. **Declare the legitimate variations** the data shows, as additive API with no behavior change:
-   - `Skeleton` `width`/`height`;
    - `Icon` `color`;
    - a full-width variation on `Button` and `TextInput`;
    - a header variation on `TableCell`;
@@ -127,7 +126,8 @@ Each step is its own pull request, revertible on its own.
 
 3. **Migrate the app, one category per pull request:**
    - spacing first (`gap` instead of margins, `Margins` removed), together with the spacing-scale work;
-   - then dimensions, flex child, own layout, visual and `is`.
+   - then dimensions, flex child, own layout, visual and `is`;
+   - `Skeleton` last, as its own step: its `width`/`height` variation and its 185 sites, once every other component is migrated.
 
    Every pull request runs the pixel A/B against `develop`. `gap` and a wrapping `Box` can change layout at the edges (wrapping, collapsing margins).
 
