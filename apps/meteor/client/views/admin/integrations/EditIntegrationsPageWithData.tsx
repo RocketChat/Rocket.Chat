@@ -22,13 +22,19 @@ const EditIntegrationsPageWithData = ({ integrationId }: EditIntegrationsPageWit
 
 	if (isPending) {
 		return (
-			<Box width='full' padding={24}>
-				<Skeleton marginBlockEnd={4} />
-				<Skeleton marginBlockEnd={8} />
-				<Skeleton marginBlockEnd={4} />
-				<Skeleton marginBlockEnd={8} />
-				<Skeleton marginBlockEnd={4} />
-				<Skeleton marginBlockEnd={8} />
+			<Box width='full' padding={24} display='flex' flexDirection='column' gap={8}>
+				<Box display='flex' flexDirection='column' gap={4}>
+					<Skeleton />
+					<Skeleton />
+				</Box>
+				<Box display='flex' flexDirection='column' gap={4}>
+					<Skeleton />
+					<Skeleton />
+				</Box>
+				<Box display='flex' flexDirection='column' gap={4} paddingBlockEnd={8}>
+					<Skeleton />
+					<Skeleton />
+				</Box>
 			</Box>
 		);
 	}
