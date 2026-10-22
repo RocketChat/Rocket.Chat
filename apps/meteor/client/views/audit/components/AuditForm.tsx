@@ -39,7 +39,7 @@ const AuditForm = ({ type, onSubmit, setSelectedRoom }: AuditFormProps) => {
 
 	return (
 		<form onSubmit={handleSubmit(submit)}>
-			<Box display='flex' flexDirection='row' justifyContent='stretch' gap={8}>
+			<Stack direction='row' gap={8}>
 				<Field flexShrink={1}>
 					<FieldLabel>{t('Message')}</FieldLabel>
 					<FieldRow>
@@ -54,7 +54,7 @@ const AuditForm = ({ type, onSubmit, setSelectedRoom }: AuditFormProps) => {
 						{dateRangeFieldState.error?.type === 'validate' && <FieldError>{dateRangeFieldState.error.message}</FieldError>}
 					</FieldRow>
 				</Field>
-			</Box>
+			</Stack>
 			<Stack direction='row' align='start' gap={8}>
 				{type === '' && <RoomsTab form={form} setSelectedRoom={setSelectedRoom} />}
 				{type === 'u' && <UsersTab form={form} />}
