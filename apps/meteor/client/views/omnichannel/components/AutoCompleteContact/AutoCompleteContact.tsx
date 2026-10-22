@@ -1,5 +1,5 @@
 import type { Serialized } from '@rocket.chat/core-typings';
-import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
+import { Box, PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { ILivechatContactWithManagerData } from '@rocket.chat/rest-typings';
 import type { ComponentProps, ReactNode, SyntheticEvent } from 'react';
@@ -42,21 +42,22 @@ const AutoCompleteContact = ({ value, placeholder, disabled, renderItem, onChang
 	});
 
 	return (
-		<PaginatedSelectFiltered
-			{...props}
-			aria-busy={isPending}
-			placeholder={isPending ? t('Loading...') : placeholder}
-			aria-disabled={isPending || disabled}
-			disabled={isPending || disabled}
-			value={value}
-			flexShrink={0}
-			filter={contactsFilter}
-			setFilter={setContactFilter as (value: string | number | undefined) => void}
-			options={contactsItems}
-			onChange={onChange}
-			endReached={() => fetchNextPage()}
-			renderItem={renderItem ? (props: OptionProps) => renderItem(props, contactsItems[props.index]) : undefined}
-		/>
+		<Box display='flex' flexGrow={1} flexShrink={0}>
+			<PaginatedSelectFiltered
+				{...props}
+				aria-busy={isPending}
+				placeholder={isPending ? t('Loading...') : placeholder}
+				aria-disabled={isPending || disabled}
+				disabled={isPending || disabled}
+				value={value}
+				filter={contactsFilter}
+				setFilter={setContactFilter as (value: string | number | undefined) => void}
+				options={contactsItems}
+				onChange={onChange}
+				endReached={() => fetchNextPage()}
+				renderItem={renderItem ? (props: OptionProps) => renderItem(props, contactsItems[props.index]) : undefined}
+			/>
+		</Box>
 	);
 };
 

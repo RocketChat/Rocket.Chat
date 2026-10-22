@@ -223,18 +223,19 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										control={control}
 										name='offlineMessageChannelName'
 										render={({ field: { value, onChange } }) => (
-											<PaginatedSelectFiltered
-												id={offlineMessageChannelNameField}
-												value={value}
-												onChange={onChange}
-												flexShrink={0}
-												filter={fallbackFilter}
-												setFilter={setFallbackFilter as (value?: string | number) => void}
-												options={roomItems}
-												placeholder={t('Channel_name')}
-												endReached={() => fetchNextPage()}
-												aria-busy={fallbackFilter !== debouncedFallbackFilter}
-											/>
+											<Box display='flex' flexGrow={1} flexShrink={0}>
+												<PaginatedSelectFiltered
+													id={offlineMessageChannelNameField}
+													value={value}
+													onChange={onChange}
+													filter={fallbackFilter}
+													setFilter={setFallbackFilter as (value?: string | number) => void}
+													options={roomItems}
+													placeholder={t('Channel_name')}
+													endReached={() => fetchNextPage()}
+													aria-busy={fallbackFilter !== debouncedFallbackFilter}
+												/>
+											</Box>
 										)}
 									/>
 								</FieldRow>
