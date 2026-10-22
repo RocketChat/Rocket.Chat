@@ -1,6 +1,7 @@
 import { Settings } from '@rocket.chat/models';
 
 import { addMigration } from '../../lib/migrations';
+import { settings } from '../../settings';
 
 addMigration({
 	version: 351,
@@ -20,6 +21,12 @@ addMigration({
 					i18nLabel: 'Microsoft_Exchange_Enabled',
 					i18nDescription: 'Microsoft_Exchange_Enabled_Description',
 				});
+			}
+
+			// The settings cache was loaded before migrations ran, and the registry inserts whatever it does not hold
+			const migrated = await Settings.findOneById('Microsoft_Exchange_Enabled');
+			if (migrated) {
+				settings.set(migrated);
 			}
 
 			await Settings.removeById('Outlook_Calendar_Enabled');
