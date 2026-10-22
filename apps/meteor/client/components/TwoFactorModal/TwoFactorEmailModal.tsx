@@ -1,4 +1,4 @@
-import { Box, Button } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { FieldGroup, TextInput, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage-forms';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
@@ -97,36 +97,40 @@ const TwoFactorEmailModal = ({ onConfirm, onClose, invalidAttempt, emailOrUserna
 			tagline={t('Email_two-factor_authentication')}
 			icon={null}
 		>
-			<FieldGroup>
-				<Field>
-					<FieldLabel alignSelf='stretch'>{t('Enter_the_code_we_just_emailed_you')}</FieldLabel>
-					<FieldRow>
-						<Controller
-							name='code'
-							control={control}
-							rules={{ required: t('Required_field', { field: t('Code') }) }}
-							render={({ field: { onChange, ...fieldProps } }) => (
-								<TextInput
-									{...fieldProps}
-									onChange={(e) => {
-										clearErrors('code');
-										onChange(e);
-									}}
-									placeholder={t('Enter_code_here')}
-									autoComplete='one-time-code'
-									inputMode='numeric'
-									disabled={isSubmitting}
-									error={errors.code?.message}
-								/>
-							)}
-						/>
-					</FieldRow>
-					{errors.code && <FieldError>{errors.code.message}</FieldError>}
-				</Field>
-			</FieldGroup>
-			<Button display='flex' justifyContent='end' onClick={onClickResendCode} small marginBlockStart={24}>
-				{t('Cloud_resend_email')}
-			</Button>
+			<Box display='flex' flexDirection='column' gap={24}>
+				<FieldGroup>
+					<Field>
+						<FieldLabel alignSelf='stretch'>{t('Enter_the_code_we_just_emailed_you')}</FieldLabel>
+						<FieldRow>
+							<Controller
+								name='code'
+								control={control}
+								rules={{ required: t('Required_field', { field: t('Code') }) }}
+								render={({ field: { onChange, ...fieldProps } }) => (
+									<TextInput
+										{...fieldProps}
+										onChange={(e) => {
+											clearErrors('code');
+											onChange(e);
+										}}
+										placeholder={t('Enter_code_here')}
+										autoComplete='one-time-code'
+										inputMode='numeric'
+										disabled={isSubmitting}
+										error={errors.code?.message}
+									/>
+								)}
+							/>
+						</FieldRow>
+						{errors.code && <FieldError>{errors.code.message}</FieldError>}
+					</Field>
+				</FieldGroup>
+				<ButtonGroup>
+					<Button display='flex' justifyContent='end' onClick={onClickResendCode} small>
+						{t('Cloud_resend_email')}
+					</Button>
+				</ButtonGroup>
+			</Box>
 		</GenericModal>
 	);
 };

@@ -138,11 +138,11 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps) {
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					{!isNew && (
-						<Button flexGrow={1} type='reset' disabled={!isDirty} onClick={(): void => reset()}>
+						<Button type='reset' disabled={!isDirty} onClick={(): void => reset()}>
 							{t('Reset')}
 						</Button>
 					)}
-					<Button primary marginInlineEnd='none' type='submit' flexGrow={1} form={formId}>
+					<Button primary type='submit' form={formId}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

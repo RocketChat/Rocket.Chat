@@ -43,9 +43,9 @@ function AddAgent({ agentList, onAdd, 'aria-labelledby': ariaLabelledBy }: AddAg
 	});
 
 	return (
-		<Box role='group' aria-labelledby={ariaLabelledBy} display='flex' alignItems='center'>
+		<Box role='group' aria-labelledby={ariaLabelledBy} display='flex' alignItems='center' gap={8}>
 			<AutoCompleteAgent value={userId} onChange={handleAgent} />
-			<Button disabled={!userId} onClick={handleSave} marginInlineStart={8} primary>
+			<Button disabled={!userId} onClick={handleSave} primary>
 				{t('Add')}
 			</Button>
 		</Box>

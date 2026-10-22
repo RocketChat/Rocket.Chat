@@ -58,14 +58,14 @@ const AttributesPage = () => {
 	return (
 		<>
 			<Margins block={24}>
-				<Box display='flex'>
+				<Box display='flex' gap={8}>
 					<TextInput
 						endAddon={<Icon name='magnifier' size='x20' />}
 						placeholder={t('ABAC_Search_attributes')}
 						value={text}
 						onChange={(e) => setText((e.target as HTMLInputElement).value)}
 					/>
-					<Button onClick={handleNewAttribute} primary marginInlineStart={8} disabled={!isABACAvailable}>
+					<Button onClick={handleNewAttribute} primary disabled={!isABACAvailable}>
 						{t('ABAC_New_attribute')}
 					</Button>
 				</Box>

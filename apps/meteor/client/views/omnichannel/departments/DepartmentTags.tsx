@@ -29,16 +29,18 @@ const DepartmentTags = ({ error, value: tags, onChange, ...props }: DepartmentTa
 	return (
 		<>
 			<FieldRow>
-				<TextInput
-					error={error}
-					placeholder={t('Enter_a_tag')}
-					value={tagText}
-					onChange={(e: ChangeEvent<HTMLInputElement>) => setTagText(e.currentTarget.value)}
-					{...props}
-				/>
-				<Button disabled={Boolean(!tagText.trim()) || tags.includes(tagText)} marginInlineStart={8} title={t('Add')} onClick={handleAddTag}>
-					{t('Add')}
-				</Button>
+				<Box display='flex' alignItems='center' justifyContent='space-between' flexGrow={1} gap={8}>
+					<TextInput
+						error={error}
+						placeholder={t('Enter_a_tag')}
+						value={tagText}
+						onChange={(e: ChangeEvent<HTMLInputElement>) => setTagText(e.currentTarget.value)}
+						{...props}
+					/>
+					<Button disabled={Boolean(!tagText.trim()) || tags.includes(tagText)} title={t('Add')} onClick={handleAddTag}>
+						{t('Add')}
+					</Button>
+				</Box>
 			</FieldRow>
 			{tags?.length > 0 && (
 				<FieldRow>

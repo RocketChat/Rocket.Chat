@@ -122,25 +122,27 @@ const UsersInRolePage = ({ role }: UsersInRolePageProps) => {
 						<Field>
 							<FieldLabel htmlFor={usersFieldId}>{t('Add_users')}</FieldLabel>
 							<FieldRow>
-								<Controller
-									control={control}
-									name='users'
-									rules={{ required: t('Required_field', { field: t('Users') }) }}
-									render={({ field: { onChange, value } }) => (
-										<UserAutoCompleteMultiple
-											id={usersFieldId}
-											aria-required='true'
-											aria-invalid={Boolean(errors.users)}
-											aria-describedby={`${usersFieldId}-error`}
-											value={value}
-											placeholder={t('Users')}
-											onChange={onChange}
-										/>
-									)}
-								/>
-								<Button marginInlineStart={8} primary onClick={handleSubmit(handleAdd)} disabled={!isDirty}>
-									{t('Add')}
-								</Button>
+								<Box display='flex' alignItems='center' justifyContent='space-between' flexGrow={1} gap={8}>
+									<Controller
+										control={control}
+										name='users'
+										rules={{ required: t('Required_field', { field: t('Users') }) }}
+										render={({ field: { onChange, value } }) => (
+											<UserAutoCompleteMultiple
+												id={usersFieldId}
+												aria-required='true'
+												aria-invalid={Boolean(errors.users)}
+												aria-describedby={`${usersFieldId}-error`}
+												value={value}
+												placeholder={t('Users')}
+												onChange={onChange}
+											/>
+										)}
+									/>
+									<Button primary onClick={handleSubmit(handleAdd)} disabled={!isDirty}>
+										{t('Add')}
+									</Button>
+								</Box>
 							</FieldRow>
 							{errors.users && (
 								<FieldRow>

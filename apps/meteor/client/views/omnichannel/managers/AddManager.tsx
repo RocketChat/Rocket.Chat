@@ -41,10 +41,12 @@ const AddManager = () => {
 			<Field>
 				<FieldLabel htmlFor={usernameFieldId}>{t('Username')}</FieldLabel>
 				<FieldRow>
-					<UserAutoComplete id={usernameFieldId} value={username} onChange={handleChange} />
-					<Button disabled={!username} onClick={handleSave} marginInlineStart={8} primary>
-						{t('Add_manager')}
-					</Button>
+					<Box display='flex' alignItems='center' justifyContent='space-between' flexGrow={1} gap={8}>
+						<UserAutoComplete id={usernameFieldId} value={username} onChange={handleChange} />
+						<Button disabled={!username} onClick={handleSave} primary>
+							{t('Add_manager')}
+						</Button>
+					</Box>
 				</FieldRow>
 			</Field>
 		</Box>

@@ -15,6 +15,7 @@ import {
 	Icon,
 	FieldGroup,
 	Button,
+	ButtonGroup,
 	Callout,
 	Skeleton,
 } from '@rocket.chat/fuselage';
@@ -682,9 +683,11 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 				)}
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
-				<Button primary disabled={!isDirty} onClick={handleSubmit(handleSaveUser)} width='100%'>
-					{isNewUserPage ? t('Add_user') : t('Save_user')}
-				</Button>
+				<ButtonGroup stretch>
+					<Button primary disabled={!isDirty} onClick={handleSubmit(handleSaveUser)}>
+						{isNewUserPage ? t('Add_user') : t('Save_user')}
+					</Button>
+				</ButtonGroup>
 			</ContextualbarFooter>
 		</>
 	);

@@ -86,17 +86,19 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 			) : (
 				<>
 					<FieldRow>
-						<TextInput
-							error={error}
-							value={tagValue}
-							id={tagsFieldId}
-							onChange={({ currentTarget }: ChangeEvent<HTMLInputElement>): void => handleTagValue(currentTarget.value)}
-							flexGrow={1}
-							placeholder={t('Enter_a_tag')}
-						/>
-						<Button disabled={!tagValue} marginInlineStart={8} title={t('Add')} onClick={handleTagTextSubmit}>
-							{t('Add')}
-						</Button>
+						<Box display='flex' alignItems='center' justifyContent='space-between' flexGrow={1} gap={8}>
+							<TextInput
+								error={error}
+								value={tagValue}
+								id={tagsFieldId}
+								onChange={({ currentTarget }: ChangeEvent<HTMLInputElement>): void => handleTagValue(currentTarget.value)}
+								flexGrow={1}
+								placeholder={t('Enter_a_tag')}
+							/>
+							<Button disabled={!tagValue} title={t('Add')} onClick={handleTagTextSubmit}>
+								{t('Add')}
+							</Button>
+						</Box>
 					</FieldRow>
 				</>
 			)}
