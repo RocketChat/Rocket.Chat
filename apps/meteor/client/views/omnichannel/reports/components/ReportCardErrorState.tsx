@@ -9,7 +9,7 @@ export const ReportCardErrorState = ({ onRetry }: ReportCardErrorStateProps) => 
 	const { t } = useTranslation();
 
 	return (
-		<States width='100%' height='100%'>
+		<States>
 			<StatesIcon name='circle-exclamation' />
 			<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
 			<StatesActions>
