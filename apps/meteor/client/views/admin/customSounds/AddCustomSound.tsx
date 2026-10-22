@@ -92,7 +92,7 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel alignSelf='stretch'>{t('Sound File')}</FieldLabel>
+					<FieldLabel>{t('Sound File')}</FieldLabel>
 					<Box display='flex' flexDirection='row' marginBlockStart='none' alignItems='center'>
 						<Margins inline={4}>
 							<IconButton secondary small icon='upload' onClick={clickUpload} />

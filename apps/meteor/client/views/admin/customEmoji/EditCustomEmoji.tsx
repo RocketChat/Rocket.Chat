@@ -168,7 +168,7 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 						{errors.aliases && <FieldError>{t('Custom_Emoji_Error_Same_Name_And_Alias')}</FieldError>}
 					</Field>
 					<Field>
-						<FieldLabel alignSelf='stretch' display='flex' justifyContent='space-between' alignItems='center'>
+						<FieldLabel alignSelf='stretch' justifyContent='space-between' alignItems='center'>
 							{t('Custom_Emoji')}
 							<IconButton icon='upload' secondary onClick={clickUpload} />
 						</FieldLabel>

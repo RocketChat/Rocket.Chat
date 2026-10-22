@@ -221,9 +221,7 @@ function NewImportPage() {
 				<Box marginInline='auto' marginBlock='neg-x24' width='full' maxWidth='x580'>
 					<Margins block='x24'>
 						<Field>
-							<FieldLabel alignSelf='stretch' htmlFor={importerKeySelectId}>
-								{t('Import_Type')}
-							</FieldLabel>
+							<FieldLabel htmlFor={importerKeySelectId}>{t('Import_Type')}</FieldLabel>
 							<FieldRow>
 								<Select
 									id={importerKeySelectId}
@@ -242,9 +240,7 @@ function NewImportPage() {
 						</Field>
 						{importer && (
 							<Field>
-								<FieldLabel alignSelf='stretch' htmlFor={fileTypeSelectId}>
-									{t('File_Type')}
-								</FieldLabel>
+								<FieldLabel htmlFor={fileTypeSelectId}>{t('File_Type')}</FieldLabel>
 								<FieldRow>
 									<Select
 										id={fileTypeSelectId}
@@ -277,9 +273,7 @@ function NewImportPage() {
 											</Callout>
 										)}
 										<Field>
-											<FieldLabel alignSelf='stretch' htmlFor={fileSourceInputId}>
-												{t('Importer_Source_File')}
-											</FieldLabel>
+											<FieldLabel htmlFor={fileSourceInputId}>{t('Importer_Source_File')}</FieldLabel>
 											<FieldRow>
 												<InputBox type='file' id={fileSourceInputId} onChange={handleImportFileChange} />
 											</FieldRow>
@@ -297,9 +291,7 @@ function NewImportPage() {
 								)}
 								{fileType === 'url' && (
 									<Field>
-										<FieldLabel alignSelf='stretch' htmlFor={fileSourceInputId}>
-											{t('File_URL')}
-										</FieldLabel>
+										<FieldLabel htmlFor={fileSourceInputId}>{t('File_URL')}</FieldLabel>
 										<FieldRow>
 											<UrlInput id={fileSourceInputId} value={fileUrl} onChange={handleFileUrlChange} />
 										</FieldRow>
@@ -307,9 +299,7 @@ function NewImportPage() {
 								)}
 								{fileType === 'path' && (
 									<Field>
-										<FieldLabel alignSelf='stretch' htmlFor={fileSourceInputId}>
-											{t('File_Path')}
-										</FieldLabel>
+										<FieldLabel htmlFor={fileSourceInputId}>{t('File_Path')}</FieldLabel>
 										<FieldRow>
 											<TextInput id={fileSourceInputId} value={filePath} onChange={handleFilePathChange} />
 										</FieldRow>
