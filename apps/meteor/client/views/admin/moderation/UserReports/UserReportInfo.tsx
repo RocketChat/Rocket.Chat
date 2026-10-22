@@ -85,10 +85,12 @@ const UserReportInfo = ({ userId }: UserReportInfoProps) => {
 								<Field>{userProfile}</Field>
 								<Field>
 									<FieldLabel>{t('Roles')}</FieldLabel>
-									<FieldRow justifyContent='flex-start' spacing={1}>
-										{report.user.roles.map((role, index) => (
-											<UserCardRole key={index}>{role}</UserCardRole>
-										))}
+									<FieldRow spacing={1}>
+										<Box display='flex' alignItems='center' minWidth={0}>
+											{report.user.roles.map((role, index) => (
+												<UserCardRole key={index}>{role}</UserCardRole>
+											))}
+										</Box>
 									</FieldRow>
 								</Field>
 								<Field>

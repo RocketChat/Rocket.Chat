@@ -1,4 +1,4 @@
-import { Button, Chip, FieldRow, TextInput } from '@rocket.chat/fuselage';
+import { Box, Button, Chip, FieldRow, TextInput } from '@rocket.chat/fuselage';
 import type { ComponentProps, ChangeEvent } from 'react';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -41,12 +41,14 @@ const DepartmentTags = ({ error, value: tags, onChange, ...props }: DepartmentTa
 				</Button>
 			</FieldRow>
 			{tags?.length > 0 && (
-				<FieldRow justifyContent='flex-start'>
-					{tags.map((tag, i) => (
-						<Chip key={i} onClick={handleTagChipClick(tag)} marginInlineEnd={8}>
-							{tag}
-						</Chip>
-					))}
+				<FieldRow>
+					<Box display='flex' alignItems='center' minWidth={0}>
+						{tags.map((tag, i) => (
+							<Chip key={i} onClick={handleTagChipClick(tag)} marginInlineEnd={8}>
+								{tag}
+							</Chip>
+						))}
+					</Box>
 				</FieldRow>
 			)}
 		</>

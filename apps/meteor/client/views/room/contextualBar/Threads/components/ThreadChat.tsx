@@ -126,16 +126,18 @@ const ThreadChat = ({ mainMessage, onEscape, ...boxProps }: ThreadChatProps) => 
 							tshow={sendToChannel}
 						>
 							<Field marginBlock={8}>
-								<FieldRow justifyContent='initial'>
-									<CheckBox
-										id={sendToChannelID}
-										checked={sendToChannel}
-										onChange={() => setSendToChannel((checked) => !checked)}
-										name='alsoSendThreadToChannel'
-									/>
-									<FieldLabel marginInlineStart='x8' htmlFor={sendToChannelID} color='annotation' fontScale='p2'>
-										{t('Also_send_to_channel')}
-									</FieldLabel>
+								<FieldRow>
+									<Box display='flex' alignItems='center' minWidth={0} gap={8}>
+										<CheckBox
+											id={sendToChannelID}
+											checked={sendToChannel}
+											onChange={() => setSendToChannel((checked) => !checked)}
+											name='alsoSendThreadToChannel'
+										/>
+										<FieldLabel htmlFor={sendToChannelID} color='annotation' fontScale='p2'>
+											{t('Also_send_to_channel')}
+										</FieldLabel>
+									</Box>
 								</FieldRow>
 							</Field>
 						</ComposerContainer>

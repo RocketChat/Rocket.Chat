@@ -33,8 +33,8 @@ const AdminUserSetRandomPasswordRadios = ({
 
 	return (
 		<>
-			<Box display='flex' flexDirection='row' alignItems='center' flexGrow={1} marginBlockEnd={8}>
-				<FieldRow marginInlineEnd={8}>
+			<Box display='flex' flexDirection='row' alignItems='center' flexGrow={1} marginBlockEnd={8} gap={8}>
+				<FieldRow>
 					<Controller
 						control={control}
 						name='setRandomPassword'
@@ -66,8 +66,8 @@ const AdminUserSetRandomPasswordRadios = ({
 					/>
 				</FieldHint>
 			)}
-			<Box display='flex' flexDirection='row' alignItems='center' flexGrow={1}>
-				<FieldRow marginInlineEnd={8}>
+			<Box display='flex' flexDirection='row' alignItems='center' flexGrow={1} gap={8}>
+				<FieldRow>
 					<Controller
 						control={control}
 						name='setRandomPassword'
