@@ -172,10 +172,10 @@ function AutoComplete<TLabel = ReactNode>({
 						onKeyDown={handleKeyDown}
 						placeholder={optionsAreVisible === AnimatedVisibility.HIDDEN || !value ? placeholder : undefined}
 						order={1}
-						rcx-input-box--undecorated
 						value={filter}
 						disabled={disabled}
 						{...props}
+						className={['rcx-input-box--undecorated', props.className]}
 					/>
 					{selected.map((itemSelected) =>
 						RenderSelected ? (

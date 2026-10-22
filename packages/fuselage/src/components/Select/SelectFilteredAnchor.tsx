@@ -13,12 +13,11 @@ function SelectFilteredAnchor({ children: _children, ...props }: SelectFilteredA
 		<Input
 			marginInline={4}
 			flexGrow={1}
-			className='rcx-select__focus'
+			className='rcx-select__focus rcx-input-box--undecorated'
 			placeholder={placeholder}
 			value={filter}
 			onInput={(e: InputEvent<HTMLInputElement>) => setFilter?.(e.currentTarget.value)}
 			{...props}
-			rcx-input-box--undecorated
 		/>
 	);
 }
