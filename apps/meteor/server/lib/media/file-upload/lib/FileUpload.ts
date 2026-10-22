@@ -28,7 +28,7 @@ import streamBuffers from 'stream-buffers';
 import { mime } from '../../../../../lib/mimeTypes';
 import { isRenderableImageType } from '../../../../../lib/renderableImageTypes';
 import { MultipartUploadHandler } from '../../../../api/lib/MultipartUploadHandler';
-import { settings } from '../../../../settings';
+import { settings } from '../../../../settings/cached';
 import { UploadFS } from '../../../../ufs';
 import { ufsComplete } from '../../../../ufs/ufs-methods';
 import type { Store, StoreOptions } from '../../../../ufs/ufs-store';
