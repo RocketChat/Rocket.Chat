@@ -5,12 +5,10 @@
 export const getMessageLabelledBy = ({
 	messageId,
 	sequential = false,
-	hasContent = true,
 	readReceiptEnabled = false,
 }: {
 	messageId: string;
 	sequential?: boolean;
-	hasContent?: boolean;
 	readReceiptEnabled?: boolean;
 }): string => {
 	const labels: string[] = [];
@@ -19,9 +17,7 @@ export const getMessageLabelledBy = ({
 		labels.push(`${messageId}-displayName`, `${messageId}-time`);
 	}
 
-	if (hasContent) {
-		labels.push(`${messageId}-content`);
-	}
+	labels.push(`${messageId}-content`);
 
 	if (readReceiptEnabled) {
 		labels.push(`${messageId}-read-status`);
