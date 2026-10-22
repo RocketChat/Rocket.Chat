@@ -1,7 +1,7 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Select, Field, FieldLabel, FieldRow, Label, Option } from '@rocket.chat/fuselage';
+import { Box, Select, Field, FieldLabel, FieldRow, Option } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
-import { useMemo, useState, useEffect } from 'react';
+import { useId, useMemo, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AgentOverview from './AgentOverview';
@@ -35,6 +35,8 @@ const AnalyticsPage = () => {
 	const [department, setDepartment] = useState<string | null>(null);
 	const [dateRange, setDateRange] = useState({ start: '', end: '' });
 	const [chartName, setChartName] = useState<string | undefined>();
+	const typeLabelId = useId();
+	const departmentsLabelId = useId();
 
 	const typeOptions: SelectOption[] = useMemo(
 		() => [
@@ -54,24 +56,35 @@ const AnalyticsPage = () => {
 		<Page>
 			<PageHeader title={t('Analytics')} />
 			<PageScrollableContentWithShadow display='flex' flexDirection='column' gap={8} paddingBlock={20}>
-				<Box display='flex' marginInline='neg-x4' flexWrap='wrap' flexGrow={1}>
-					<Box display='flex' flexWrap='wrap' flexGrow={1}>
-						<Box display='flex' marginInline={4} flexDirection='column' flexGrow={1}>
-							<Label marginBlock={4}>{t('Type')}</Label>
-							<Select options={typeOptions} value={type} onChange={(value) => setType(String(value))} />
+				<Box display='flex' flexWrap='wrap' flexGrow={1} columnGap={8}>
+					<Box display='flex' flexWrap='wrap' flexGrow={1} columnGap={8}>
+						<Box flexGrow={1}>
+							<Field>
+								<FieldLabel id={typeLabelId}>{t('Type')}</FieldLabel>
+								<FieldRow>
+									<Select aria-labelledby={typeLabelId} options={typeOptions} value={type} onChange={(value) => setType(String(value))} />
+								</FieldRow>
+							</Field>
 						</Box>
-						<Box display='flex' marginInline={4} flexDirection='column' flexGrow={1}>
-							<Label marginBlock={4}>{t('Departments')}</Label>
-							<AutoCompleteDepartment
-								value={department || undefined}
-								onChange={setDepartment}
-								onlyMyDepartments
-								withTitle={false}
-								renderItem={({ label, ...props }) => <Option {...props} label={<span style={{ whiteSpace: 'normal' }}>{label}</span>} />}
-							/>
+						<Box flexGrow={1}>
+							<Field>
+								<FieldLabel id={departmentsLabelId}>{t('Departments')}</FieldLabel>
+								<FieldRow>
+									<AutoCompleteDepartment
+										aria-labelledby={departmentsLabelId}
+										value={department || undefined}
+										onChange={setDepartment}
+										onlyMyDepartments
+										withTitle={false}
+										renderItem={({ label, ...props }) => (
+											<Option {...props} label={<span style={{ whiteSpace: 'normal' }}>{label}</span>} />
+										)}
+									/>
+								</FieldRow>
+							</Field>
 						</Box>
 					</Box>
-					<DateRangePicker flexGrow={1} marginInline={4} onChange={setDateRange} />
+					<DateRangePicker flexGrow={1} onChange={setDateRange} />
 				</Box>
 				<Box>
 					<Overview type={type} dateRange={dateRange} departmentId={department || ''} />
