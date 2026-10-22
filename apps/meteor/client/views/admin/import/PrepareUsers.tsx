@@ -25,10 +25,10 @@ const PrepareUsers = ({ usersCount, users, setUsers }: PrepareUsersProps) => {
 
 	return (
 		<>
-			<Table>
+			<Table columns={['x36', 'auto', 'auto', 'auto']}>
 				<TableHead>
 					<TableRow>
-						<TableCell width='x36'>
+						<TableCell>
 							<CheckBox
 								checked={usersCount > 0}
 								indeterminate={usersCount > 0 && usersCount !== users.length}
@@ -58,7 +58,7 @@ const PrepareUsers = ({ usersCount, users, setUsers }: PrepareUsersProps) => {
 				<TableBody>
 					{users.slice(current, current + itemsPerPage).map((user) => (
 						<TableRow key={user.user_id}>
-							<TableCell width='x36'>
+							<TableCell>
 								<CheckBox
 									checked={user.do_import}
 									onChange={(event: ChangeEvent<HTMLInputElement>): void => {

@@ -131,18 +131,20 @@ function ImportHistoryPage() {
 				</ButtonGroup>
 			</PageHeader>
 			<PageScrollableContentWithShadow>
-				<Table fixed data-qa-id='ImportTable'>
+				<Table
+					fixed
+					columns={small ? ['x140', 'auto'] : ['x140', 'auto', 'auto', 'auto', 'x80', 'x80', 'x80', 'x80', 'x80']}
+					data-qa-id='ImportTable'
+				>
 					<TableHead>
 						<TableRow>
-							<TableCell rowSpan={2} width='x140'>
-								{t('Import_Type')}
-							</TableCell>
+							<TableCell rowSpan={2}>{t('Import_Type')}</TableCell>
 							<TableCell rowSpan={2}>{t('Last_Updated')}</TableCell>
 							{!small && (
 								<>
 									<TableCell rowSpan={2}>{t('Last_Status')}</TableCell>
 									<TableCell rowSpan={2}>{t('File')}</TableCell>
-									<TableCell align='center' colSpan={5} width='x400'>
+									<TableCell align='center' colSpan={5}>
 										{t('Counters')}
 									</TableCell>
 								</>

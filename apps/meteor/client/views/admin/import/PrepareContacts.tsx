@@ -16,10 +16,10 @@ const PrepareContacts = ({ contactsCount, contacts, setContacts }: PrepareContac
 
 	return (
 		<>
-			<Table>
+			<Table columns={['x36', 'auto', 'auto', 'auto']}>
 				<TableHead>
 					<TableRow>
-						<TableCell width='x36'>
+						<TableCell>
 							<CheckBox
 								checked={contactsCount > 0}
 								indeterminate={contactsCount > 0 && contactsCount !== contacts.length}
@@ -40,7 +40,7 @@ const PrepareContacts = ({ contactsCount, contacts, setContacts }: PrepareContac
 				<TableBody>
 					{contacts.slice(current, current + itemsPerPage).map((contact) => (
 						<TableRow key={contact.id}>
-							<TableCell width='x36'>
+							<TableCell>
 								<CheckBox
 									checked={contact.do_import}
 									onChange={(event: ChangeEvent<HTMLInputElement>): void => {
