@@ -30,6 +30,11 @@
 		> * {
 			flex-grow: 1;
 		}
+
+		> .rcx-button--square {
+			flex-grow: 0;
+			flex-shrink: 0;
+		}
 	}
 
 	&--vertical {
