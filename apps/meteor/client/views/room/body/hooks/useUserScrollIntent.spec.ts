@@ -3,7 +3,7 @@ import { renderHook } from '@testing-library/react';
 import { useUserScrollIntent } from './useUserScrollIntent';
 
 describe('useUserScrollIntent', () => {
-	it.each(['wheel', 'touchmove', 'keydown', 'pointerdown'])('should flag a user scroll on %s', (eventName) => {
+	it.each(['wheel', 'touchmove', 'keydown', 'pointerdown', 'click'])('should flag a user scroll on %s', (eventName) => {
 		const { result } = renderHook(() => useUserScrollIntent());
 		const node = document.createElement('div');
 
@@ -14,7 +14,7 @@ describe('useUserScrollIntent', () => {
 		expect(result.current.hasUserScrolled.current).toBe(true);
 	});
 
-	it.each(['wheel', 'touchmove', 'keydown', 'pointerdown'])('should notify the user scroll on %s', (eventName) => {
+	it.each(['wheel', 'touchmove', 'keydown', 'pointerdown', 'click'])('should notify the user scroll on %s', (eventName) => {
 		const onUserScroll = jest.fn();
 		const { result } = renderHook(() => useUserScrollIntent(onUserScroll));
 		const node = document.createElement('div');

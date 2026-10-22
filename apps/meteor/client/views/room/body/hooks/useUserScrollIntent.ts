@@ -2,7 +2,7 @@ import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { RefCallback, RefObject } from 'react';
 import { useCallback, useRef } from 'react';
 
-const userScrollEvents = ['wheel', 'touchmove', 'keydown', 'pointerdown'] as const;
+const userScrollEvents = ['wheel', 'touchmove', 'keydown', 'pointerdown', 'click'] as const;
 
 /**
  * Tells scrolls the user performed apart from the ones the list does by itself, such as landing on the latest message when a room opens.
