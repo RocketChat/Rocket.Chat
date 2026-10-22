@@ -364,6 +364,18 @@ describe('MessageList message selection synchronization', () => {
 		expect(selectedMessageStore.setAvailableMessages).toHaveBeenCalledWith(['message-1', 'message-2']);
 	});
 
+	it('should resync available messages when the loaded messages change while selecting', () => {
+		const { selectedMessageStore } = jest.requireMock('../providers/SelectedMessagesProvider');
+		selectedMessageStore.getIsSelecting.mockReturnValue(true);
+
+		const { rerender } = render(<MessageList {...defaultProps} />, { wrapper: root.build() });
+
+		(useMessages as jest.Mock).mockReturnValue([createMessage('message-1'), createMessage('message-2'), createMessage('message-3')]);
+		rerender(<MessageList {...defaultProps} />);
+
+		expect(selectedMessageStore.setAvailableMessages).toHaveBeenLastCalledWith(['message-1', 'message-2', 'message-3']);
+	});
+
 	it('should not sync available messages to store when isSelecting is false', () => {
 		const { selectedMessageStore } = jest.requireMock('../providers/SelectedMessagesProvider');
 		selectedMessageStore.getIsSelecting.mockReturnValue(false);

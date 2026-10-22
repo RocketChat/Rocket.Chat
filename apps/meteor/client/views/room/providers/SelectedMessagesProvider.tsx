@@ -14,9 +14,12 @@ export const selectedMessageStore = new (class SelectMessageStore extends Emitte
 
 	availableMessages = new Set<string>();
 
+	loadedMessages = new Set<string>();
+
 	isSelecting = false;
 
 	addAvailableMessage(mid: string): void {
+		this.loadedMessages.add(mid);
 		if (this.isSelected(mid) || this.availableMessages.has(mid)) {
 			return;
 		}
@@ -33,6 +36,7 @@ export const selectedMessageStore = new (class SelectMessageStore extends Emitte
 	}
 
 	setAvailableMessages(mids: string[]): void {
+		this.loadedMessages = new Set(mids);
 		const nextAvailable = new Set<string>();
 		let changed = false;
 
@@ -102,20 +106,18 @@ export const selectedMessageStore = new (class SelectMessageStore extends Emitte
 		const selectedMessages = this.getSelectedMessages();
 		this.store.clear();
 		selectedMessages.forEach((mid) => {
-			this.availableMessages.add(mid);
+			if (this.loadedMessages.has(mid)) {
+				this.availableMessages.add(mid);
+			}
 			this.emit(mid, false);
 		});
 		this.emit('change');
 	}
 
 	reset(): void {
-		const selectedMessages = this.getSelectedMessages();
-		this.store.clear();
-		this.availableMessages.clear();
+		this.clearStore();
 		this.isSelecting = false;
-		selectedMessages.forEach((mid) => this.emit(mid, false));
 		this.emit('toggleIsSelecting', false);
-		this.emit('change');
 	}
 
 	toggleAll(mids: string[]): void {

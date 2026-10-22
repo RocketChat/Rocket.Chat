@@ -6,6 +6,7 @@ import { useIsSelectedMessage } from '../MessageList/contexts/SelectedMessagesCo
 describe('selectedMessageStore', () => {
 	beforeEach(() => {
 		selectedMessageStore.reset();
+		selectedMessageStore.setAvailableMessages([]);
 	});
 
 	it('should add available message and emit change', () => {
@@ -128,6 +129,7 @@ describe('selectedMessageStore', () => {
 	});
 
 	it('should clearStore and restore cleared messages to availableMessages', () => {
+		selectedMessageStore.setAvailableMessages(['msg-1', 'msg-2']);
 		selectedMessageStore.toggleAll(['msg-1', 'msg-2']);
 		expect(selectedMessageStore.count()).toBe(2);
 
@@ -143,10 +145,20 @@ describe('selectedMessageStore', () => {
 		unsub1();
 	});
 
-	it('should reset store, availableMessages, and isSelecting', () => {
+	it('should not restore a cleared message that is no longer loaded', () => {
+		selectedMessageStore.setAvailableMessages(['msg-1', 'msg-2']);
+		selectedMessageStore.toggleAll(['msg-1', 'msg-2']);
+		selectedMessageStore.setAvailableMessages(['msg-2']);
+
+		selectedMessageStore.clearStore();
+
+		expect(selectedMessageStore.availableMessagesCount()).toBe(1);
+	});
+
+	it('should reset the selection and isSelecting while keeping loaded messages available', () => {
 		selectedMessageStore.setIsSelecting(true);
+		selectedMessageStore.setAvailableMessages(['msg-1', 'msg-2']);
 		selectedMessageStore.toggleAll(['msg-1']);
-		selectedMessageStore.addAvailableMessage('msg-2');
 
 		const toggleSelectingListener = jest.fn();
 		const unsubSelecting = selectedMessageStore.on('toggleIsSelecting', toggleSelectingListener);
@@ -154,17 +166,28 @@ describe('selectedMessageStore', () => {
 		selectedMessageStore.reset();
 
 		expect(selectedMessageStore.count()).toBe(0);
-		expect(selectedMessageStore.availableMessagesCount()).toBe(0);
+		expect(selectedMessageStore.availableMessagesCount()).toBe(2);
 		expect(selectedMessageStore.getIsSelecting()).toBe(false);
 		expect(toggleSelectingListener).toHaveBeenCalledWith(false);
 
 		unsubSelecting();
+	});
+
+	it('should keep messages selectable when selection restarts right after a reset', () => {
+		selectedMessageStore.setIsSelecting(true);
+		selectedMessageStore.setAvailableMessages(['msg-1', 'msg-2']);
+
+		selectedMessageStore.reset();
+		selectedMessageStore.setIsSelecting(true);
+
+		expect(selectedMessageStore.availableMessagesCount()).toBe(2);
 	});
 });
 
 describe('useIsSelectedMessage hook', () => {
 	beforeEach(() => {
 		selectedMessageStore.reset();
+		selectedMessageStore.setAvailableMessages([]);
 	});
 
 	it('should return selection status and update when toggleAll selects it', () => {
@@ -181,8 +204,6 @@ describe('useIsSelectedMessage hook', () => {
 	});
 
 	it('should not remove message from availableMessages on hook unmount', () => {
-		selectedMessageStore.reset();
-
 		const { unmount } = renderHook(() => useIsSelectedMessage('msg-unmounted'));
 		expect(selectedMessageStore.availableMessagesCount()).toBe(1);
 
