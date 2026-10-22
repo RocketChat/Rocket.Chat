@@ -1,0 +1,30 @@
+packages/models/src/models/ScheduledMessages.ts
+  s_478a7742cf0448::t_f288e5dc9d970b 63-66
+packages/i18n/src/locales/en.i18n.json
+  s_478a7742cf0448::t_f288e5dc9d970b 4508-4509
+apps/meteor/server/services/scheduled-messages/service.ts
+  s_478a7742cf0448::t_f288e5dc9d970b 32-36,172-178
+apps/meteor/server/services/scheduled-messages/service.spec.ts
+  s_478a7742cf0448::t_7cfd3f8748edaf 100-108
+  s_478a7742cf0448::t_8ad2a9a7c96090 1,7,19-20,82-97
+packages/model-typings/src/models/IScheduledMessagesModel.ts
+  s_478a7742cf0448::t_f288e5dc9d970b 19
+apps/meteor/server/settings/message.ts
+  s_478a7742cf0448::t_f288e5dc9d970b 179
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "481f4aa77608b95d1f79c69e0f29e224525e2bae",
+  "prompts": {},
+  "sessions": {
+    "s_478a7742cf0448": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "78511215-04eb-4d9d-beb9-8d0ec0460bb1",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
