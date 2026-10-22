@@ -113,7 +113,9 @@ const NavBarAISearchListBox = ({
 										<NavBarSearchFilterSuggestions suggestions={aiItems.filterSuggestions} />
 									</div>
 								)}
-								<Divider marginBlockStart={12} />
+								<Box paddingBlockStart={12} paddingBlockEnd={8}>
+									<Divider flush />
+								</Box>
 								{hasAISearchProblem && (
 									<AISearchErrorCallout
 										role='alert'
