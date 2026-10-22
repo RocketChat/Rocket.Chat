@@ -1,5 +1,5 @@
 import { AbacContractError } from '@rocket.chat/abac';
-import { Message } from '@rocket.chat/core-services';
+import { ClientSafeError, Message } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser, MessageAttachmentDefault } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
@@ -109,7 +109,7 @@ const create = async ({
 	}
 
 	if (user.type !== 'app' && !(await Subscriptions.countByRoomIdAndUserId(parentRoom._id, user._id))) {
-		throw new Meteor.Error('error-user-not-in-room', 'You must join the room to create a discussion', {
+		throw new ClientSafeError('error-user-not-in-room', 'You must join the room to create a discussion', {
 			method: 'DiscussionCreation',
 		});
 	}
