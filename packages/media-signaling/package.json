@@ -21,8 +21,8 @@
 		"build": "rm -rf dist && tsc -p tsconfig.json",
 		"build-preview": "mkdir -p ../../.preview && cp -r ./dist ../../.preview/media-signaling",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix .",
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
 		"test": "jest",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit"

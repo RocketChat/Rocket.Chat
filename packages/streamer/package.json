@@ -14,8 +14,8 @@
 	],
 	"scripts": {
 		"build": "tsc -p tsconfig.build.json",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix .",
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
 		"test": "jest",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit -p tsconfig.json"
