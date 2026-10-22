@@ -37,10 +37,12 @@ const AuditPage = () => {
 			<PageScrollableContentWithShadow gap={8}>
 				<AuditForm key={type} type={type} setSelectedRoom={setSelectedRoom} onSubmit={auditMutation.mutate} />
 				{selectedRoom?.encrypted && type === '' ? (
-					<Callout type='warning' icon='circle-exclamation' marginBlock='x16'>
-						<Box fontScale='p2b'>{t('Encrypted_content_cannot_be_searched_and_audited')}</Box>
-						{t('Encrypted_content_cannot_be_searched_and_audited_subtitle')}
-					</Callout>
+					<Box paddingBlock={16}>
+						<Callout type='warning' icon='circle-exclamation'>
+							<Box fontScale='p2b'>{t('Encrypted_content_cannot_be_searched_and_audited')}</Box>
+							{t('Encrypted_content_cannot_be_searched_and_audited_subtitle')}
+						</Callout>
+					</Box>
 				) : null}
 				{auditMutation.isPending && <ListSkeleton listCount={5} />}
 				{auditMutation.isError && (
