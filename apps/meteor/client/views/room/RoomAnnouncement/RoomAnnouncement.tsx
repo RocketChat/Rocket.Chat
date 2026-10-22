@@ -56,7 +56,7 @@ const RoomAnnouncement = ({ announcement }: RoomAnnouncementParams) => {
 
 	return announcement ? (
 		<AnnouncementBanner onClick={handleClick} onKeyDown={handleKeyDown}>
-			<MarkdownText variant='inlineWithoutBreaks' content={announcement} withTruncatedText parseEmoji />
+			<MarkdownText className='rcx-room-announcement' variant='inlineWithoutBreaks' content={announcement} withTruncatedText parseEmoji />
 		</AnnouncementBanner>
 	) : null;
 };
