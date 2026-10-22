@@ -15,8 +15,8 @@ const PruneMessagesDateTimeRow = ({ label, field }: PruneMessagesDateTimeRowProp
 		<Field>
 			<FieldLabel>{label}</FieldLabel>
 			<Stack direction='row' gap={8}>
-				<InputBox aria-label={`${label} ${t('Date')}`} type='date' height='x20' {...register(`${field}.date`)} />
-				<InputBox aria-label={`${label} ${t('Time')}`} type='time' height='x20' {...register(`${field}.time`)} />
+				<InputBox aria-label={`${label} ${t('Date')}`} type='date' {...register(`${field}.date`)} />
+				<InputBox aria-label={`${label} ${t('Time')}`} type='time' {...register(`${field}.time`)} />
 			</Stack>
 		</Field>
 	);
