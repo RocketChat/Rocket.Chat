@@ -59,22 +59,22 @@ const EditMenu = ({
 			</Button>
 			{isOpen && (
 				<Box position='absolute'>
-					<Box elevation='1' paddingBlock='10px' backgroundColor='white' display='flex' flexDirection='column' gap={4}>
+					<Box elevation='1' paddingBlock='10px' backgroundColor='white'>
 						<Box marginInline='10px'>
 							<EditableLabel value={name} onChange={onChange} onBlur={onBlur} {...labelProps} />
 							<Box withTruncatedText marginBlockStart='2px' fontScale='p2'>
 								{formatDate(date)}
 							</Box>
 						</Box>
-						<Box>
+						<Box paddingBlockStart={4}>
 							<Divider />
-							<Option disabled={!onDuplicate} onClick={duplicatehandler}>
-								Duplicate
-							</Option>
-							<Option disabled={!onDelete} onClick={deleteHandler}>
-								Delete
-							</Option>
 						</Box>
+						<Option disabled={!onDuplicate} onClick={duplicatehandler}>
+							Duplicate
+						</Option>
+						<Option disabled={!onDelete} onClick={deleteHandler}>
+							Delete
+						</Option>
 					</Box>
 				</Box>
 			)}
