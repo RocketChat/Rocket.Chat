@@ -184,7 +184,7 @@ export const CreateCloudWorkspaceForm = ({
 				<Field>
 					<FieldRow>
 						<Box display='flex' alignItems='center' minWidth={0}>
-							<CheckBox {...register('agreement', { required: true })} marginInlineEnd={8} />
+							<CheckBox {...register('agreement', { required: true })} />
 							<Box is='label' htmlFor='agreement' withRichContent fontScale='c1'>
 								<Trans i18nKey='component.form.termsAndConditions'>
 									I agree with
@@ -205,7 +205,7 @@ export const CreateCloudWorkspaceForm = ({
 				<Field>
 					<FieldRow>
 						<Box display='flex' alignItems='center' minWidth={0}>
-							<CheckBox {...register('updates')} marginInlineEnd={8} />
+							<CheckBox {...register('updates')} />
 							<Box fontScale='c1'>{t('form.createCloudWorkspace.fields.keepMeInformed')}</Box>
 						</Box>
 					</FieldRow>
