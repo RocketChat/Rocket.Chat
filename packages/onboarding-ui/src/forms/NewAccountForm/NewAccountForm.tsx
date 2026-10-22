@@ -102,7 +102,7 @@ const NewAccountForm = ({ validateEmail, validatePassword, validateConfirmationP
 					<Field>
 						<FieldRow>
 							<Box display='flex' alignItems='center' minWidth={0}>
-								<CheckBox {...register('agreement', { required: true })} marginInlineEnd={8} />
+								<CheckBox {...register('agreement', { required: true })} />
 								<Box is='label' htmlFor='agreement' withRichContent fontScale='c1'>
 									<Trans i18nKey='component.form.termsAndConditions'>
 										I agree with
