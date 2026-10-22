@@ -62,16 +62,17 @@ const ModerationConsoleTable = () => {
 	} = usePagination({ resetKey: queryKey });
 
 	const { data, isLoading, isSuccess } = usePaginatedQuery({
-		query,
-		queryKey,
-		queryFn: getReports,
+		query: {
+			queryKey,
+			queryFn: (page) => getReports({ ...query, ...page }),
+			meta: {
+				apiErrorToastMessage: true,
+			},
+			placeholderData: keepPreviousData,
+		},
 		itemsKey: 'reports',
 		offset: current,
 		count: itemsPerPage,
-		meta: {
-			apiErrorToastMessage: true,
-		},
-		placeholderData: keepPreviousData,
 	});
 
 	const handleClick = useStableCallback((id: IUser['_id']): void => {
