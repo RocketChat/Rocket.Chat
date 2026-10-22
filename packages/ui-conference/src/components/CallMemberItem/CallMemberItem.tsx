@@ -10,6 +10,7 @@ import {
 	ItemMedia,
 	ItemRow,
 	ItemTitle,
+	StatusIcon,
 } from '@rocket.chat/fuselage';
 import { ITEM_MEDIA_SIZE, UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ReactNode } from 'react';
@@ -98,7 +99,7 @@ const CallMemberItem = ({
 					{controls && <CallParticipantStatus participant={controls.participant} />}
 					{!hasChatAccess && (
 						<ItemIcon label={t('No_chat_access')} title={t('No_chat_access')}>
-							<Icon name='balloon-off' size='x16' color='hint' />
+							<StatusIcon name='balloon-off' size='x16' status='hint' />
 						</ItemIcon>
 					)}
 					{handRaised && (

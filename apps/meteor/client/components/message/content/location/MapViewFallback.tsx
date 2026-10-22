@@ -1,4 +1,4 @@
-import { Box, Icon } from '@rocket.chat/fuselage';
+import { Box, StatusIcon } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
@@ -11,7 +11,7 @@ const MapViewFallback = ({ linkUrl }: MapViewFallbackProps) => {
 
 	return (
 		<Box is='span' fontScale='p2' display='inline-flex' alignItems='center' paddingBlock={4}>
-			<Icon name='map-pin' size='x20' color='hint' />
+			<StatusIcon name='map-pin' size='x20' status='hint' />
 			<ExternalLink to={linkUrl}>{t('Shared_Location')}</ExternalLink>
 		</Box>
 	);
