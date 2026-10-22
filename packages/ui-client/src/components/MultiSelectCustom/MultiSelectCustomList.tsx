@@ -39,16 +39,7 @@ const MultiSelectCustomList = ({
 	const filteredOptions = useFilteredOptions(text, options);
 
 	return (
-		<Tile
-			overflow='auto'
-			paddingBlock={12}
-			paddingInline={0}
-			elevation='2'
-			width='full'
-			backgroundColor='light'
-			borderRadius='small'
-			maxHeight='50vh'
-		>
+		<Tile flush overflow='auto' paddingBlock={12} elevation='2' width='full' backgroundColor='light' borderRadius='small' maxHeight='50vh'>
 			{searchBarText && (
 				<Box paddingInline={12} marginBlockEnd={12}>
 					<SearchInput

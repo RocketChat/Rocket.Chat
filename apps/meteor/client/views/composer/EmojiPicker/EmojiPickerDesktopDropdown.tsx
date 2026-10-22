@@ -61,16 +61,7 @@ const EmojiPickerDesktopDropdown = forwardRef(function ToolboxDropdownDesktop(
 	const style = useDropdownPosition(reference, targetRef);
 
 	return (
-		<Tile
-			style={style}
-			ref={mergedRef}
-			elevation='2'
-			paddingInline='0'
-			paddingBlock='0'
-			display='flex'
-			flexDirection='column'
-			overflow='auto'
-		>
+		<Tile style={style} ref={mergedRef} flush elevation='2' display='flex' flexDirection='column' overflow='auto'>
 			<Box flexShrink={1} paddingBlock={12}>
 				{children}
 			</Box>
