@@ -154,6 +154,11 @@ export interface IUserEmail {
 	verified?: boolean;
 }
 
+export interface IUserPhoneNumber {
+	number: string;
+	label?: string;
+}
+
 export interface IUserCalendar {
 	outlook?: {
 		Enabled: boolean;
@@ -237,7 +242,7 @@ export interface IUser extends IRocketChatRecord {
 	sipExtension?: string;
 	inviteToken?: string;
 	canViewAllInfo?: boolean;
-	phone?: string;
+	phones?: IUserPhoneNumber[];
 	reason?: string;
 	// TODO: move this to a specific federation user type
 	federated?: boolean;
