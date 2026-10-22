@@ -11413,6 +11413,7 @@ __metadata:
     eslint: "npm:~10.12.0"
     jest: "npm:~30.5.2"
     moleculer: "npm:^0.14.36"
+    nats: "npm:^2.29.1"
     pino: "npm:10.3.1"
     sinon: "npm:^19.0.5"
     typescript: "npm:~7.0.2"
