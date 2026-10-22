@@ -254,6 +254,15 @@ $message-emoji-size: $message-body-line-height;
 			@include use-font-scale(h1);
 		}
 
+		// Headings are taller than the emoji box, so an emoji snapped to the top of
+		// the line would float above the text; center both kinds on the text instead.
+		// The native glyph keeps a one-line box here so it does not grow the heading.
+		& :is(h1, h2, h3, h4) .rcx-message__emoji {
+			vertical-align: middle;
+
+			line-height: 1;
+		}
+
 		& h2 {
 			@include use-font-scale(h2);
 		}
@@ -301,6 +310,13 @@ $message-emoji-size: $message-body-line-height;
 			padding-block: lengths.padding(none);
 
 			word-break: break-word;
+
+			// Without the body padding, a native glyph that paints past its line
+			// (Noto Color Emoji, Segoe UI Emoji) would be cropped on the first and last
+			// visible lines; a slightly smaller glyph keeps its ink inside the line.
+			.rcx-message__emoji:not(.rcx-message__emoji--custom) {
+				font-size: to-rem(20);
+			}
 			-webkit-box-orient: vertical;
 			-webkit-line-clamp: 2;
 
@@ -349,6 +365,14 @@ $message-emoji-size: $message-body-line-height;
 	}
 
 	&-block {
+		// Blocks render outside the message body with their own font scales (section
+		// p2, context c1); the emoji takes the line of the text it sits in.
+		.rcx-message__emoji {
+			font-size: 1lh;
+			line-height: inherit;
+
+			@include size.square(1lh);
+		}
 		@extend %rcx-margins-block;
 		display: flex;
 		flex-direction: column;
