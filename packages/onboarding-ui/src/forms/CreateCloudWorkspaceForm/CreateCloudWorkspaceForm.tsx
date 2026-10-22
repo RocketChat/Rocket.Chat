@@ -77,7 +77,7 @@ export const CreateCloudWorkspaceForm = ({
 				<FormTitle>{t('form.createCloudWorkspace.title')}</FormTitle>
 			</FormHeader>
 
-			<FieldGroup marginBlockStart={16}>
+			<FieldGroup>
 				<Field>
 					<FieldLabel>{t('form.createCloudWorkspace.fields.orgEmaillabel')}</FieldLabel>
 					<FieldRow>

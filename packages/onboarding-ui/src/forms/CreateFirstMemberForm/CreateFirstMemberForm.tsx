@@ -52,44 +52,47 @@ export const CreateFirstMemberForm = ({
 
 	return (
 		<Form onSubmit={handleSubmit(onSubmit)}>
-			<FormSteps currentStep={currentStep} stepCount={stepCount} />
-			<FormTitle>{t('form.createFirstMemberForm.title')}</FormTitle>
-			<FormSubtitle>{t('form.createFirstMemberForm.subtitle', { organizationName })}</FormSubtitle>
+			<Box display='flex' flexDirection='column' gap={16}>
+				<Box>
+					<FormSteps currentStep={currentStep} stepCount={stepCount} />
+					<FormTitle>{t('form.createFirstMemberForm.title')}</FormTitle>
+					<FormSubtitle>{t('form.createFirstMemberForm.subtitle', { organizationName })}</FormSubtitle>
+				</Box>
+				<FieldGroup>
+					<Field>
+						<FieldLabel>
+							<Box display='inline' marginInlineEnd={8}>
+								{t('form.createFirstMemberForm.fields.username.label')}
+							</Box>
+						</FieldLabel>
+						<FieldRow>
+							<TextInput
+								{...register('username', {
+									validate: validateUsername,
+									required: true,
+								})}
+								defaultValue={defaultValues?.username}
+								error={errors?.username?.type || undefined}
+							/>
+						</FieldRow>
+						{errors?.username && <FieldError>{errors.username.message}</FieldError>}
+					</Field>
 
-			<FieldGroup marginBlockStart={16}>
-				<Field>
-					<FieldLabel>
-						<Box display='inline' marginInlineEnd={8}>
-							{t('form.createFirstMemberForm.fields.username.label')}
-						</Box>
-					</FieldLabel>
-					<FieldRow>
-						<TextInput
-							{...register('username', {
-								validate: validateUsername,
-								required: true,
-							})}
-							defaultValue={defaultValues?.username}
-							error={errors?.username?.type || undefined}
-						/>
-					</FieldRow>
-					{errors?.username && <FieldError>{errors.username.message}</FieldError>}
-				</Field>
-
-				<Field>
-					<FieldLabel>{t('form.createFirstMemberForm.fields.password.label')}</FieldLabel>
-					<FieldRow>
-						<PasswordInput
-							{...register('password', {
-								validate: validatePassword,
-								required: true,
-							})}
-							defaultValue={defaultValues?.password}
-						/>
-					</FieldRow>
-					{errors.password && <FieldError>{errors.password.message}</FieldError>}
-				</Field>
-			</FieldGroup>
+					<Field>
+						<FieldLabel>{t('form.createFirstMemberForm.fields.password.label')}</FieldLabel>
+						<FieldRow>
+							<PasswordInput
+								{...register('password', {
+									validate: validatePassword,
+									required: true,
+								})}
+								defaultValue={defaultValues?.password}
+							/>
+						</FieldRow>
+						{errors.password && <FieldError>{errors.password.message}</FieldError>}
+					</Field>
+				</FieldGroup>
+			</Box>
 
 			<FormFooter>
 				<ButtonGroup>

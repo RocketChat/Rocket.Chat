@@ -105,7 +105,7 @@ export const ChangePassphrase = () => {
 				<Box is='h3' fontScale='h4' marginBlockEnd={12}>
 					{t('Change_E2EE_password')}
 				</Box>
-				<FieldGroup width='full'>
+				<FieldGroup>
 					<Field>
 						<FieldLabel htmlFor={passphraseId}>{t('New_E2EE_password')}</FieldLabel>
 						<FieldRow>

@@ -79,45 +79,47 @@ const EnterE2EPasswordModal = ({ onConfirm, onClose, onCancel }: EnterE2EPasswor
 			onClose={onClose}
 			onCancel={onCancel}
 		>
-			<Box>{t('E2E_password_request_text')}</Box>
-			<FieldGroup marginBlockStart={24} width='full'>
-				<Field>
-					<FieldRow>
-						<Controller
-							name='password'
-							control={control}
-							rules={{ required: t('Invalid_pass') }}
-							render={({ field, fieldState: { error, invalid } }) => (
-								<PasswordInput
-									{...field}
-									error={error?.message}
-									aria-invalid={invalid ? 'true' : 'false'}
-									aria-required='true'
-									aria-describedby={error ? `${passwordInputId}-error` : undefined}
-									placeholder={t('Please_enter_E2EE_password')}
-								/>
-							)}
-						/>
-					</FieldRow>
-					{errors.password && (
-						<FieldError id={`${passwordInputId}-error`} role='alert'>
-							{errors.password.message}
-						</FieldError>
-					)}
-					<FieldRow alignSelf='end'>
-						<FieldLink
-							href='#'
-							target={undefined}
-							onClick={(e) => {
-								e.preventDefault();
-								setConfirmResetPassword(true);
-							}}
-						>
-							{t('Forgot_E2EE_Password')}
-						</FieldLink>
-					</FieldRow>
-				</Field>
-			</FieldGroup>
+			<Box display='flex' flexDirection='column' gap={24}>
+				<Box>{t('E2E_password_request_text')}</Box>
+				<FieldGroup>
+					<Field>
+						<FieldRow>
+							<Controller
+								name='password'
+								control={control}
+								rules={{ required: t('Invalid_pass') }}
+								render={({ field, fieldState: { error, invalid } }) => (
+									<PasswordInput
+										{...field}
+										error={error?.message}
+										aria-invalid={invalid ? 'true' : 'false'}
+										aria-required='true'
+										aria-describedby={error ? `${passwordInputId}-error` : undefined}
+										placeholder={t('Please_enter_E2EE_password')}
+									/>
+								)}
+							/>
+						</FieldRow>
+						{errors.password && (
+							<FieldError id={`${passwordInputId}-error`} role='alert'>
+								{errors.password.message}
+							</FieldError>
+						)}
+						<FieldRow alignSelf='end'>
+							<FieldLink
+								href='#'
+								target={undefined}
+								onClick={(e) => {
+									e.preventDefault();
+									setConfirmResetPassword(true);
+								}}
+							>
+								{t('Forgot_E2EE_Password')}
+							</FieldLink>
+						</FieldRow>
+					</Field>
+				</FieldGroup>
+			</Box>
 		</GenericModal>
 	);
 };
