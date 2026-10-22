@@ -123,8 +123,8 @@ function Button({
 			{...props}
 		>
 			<span className='rcx-button--content'>
-				{icon && !loading && <Icon size='x16' name={icon} marginInlineEnd={4} />}
-				{loading && <Icon size='x16' name='loading' marginInlineEnd={4} />}
+				{icon && !loading && <Icon className='rcx-button__icon' size='x16' name={icon} />}
+				{loading && <Icon className='rcx-button__icon' size='x16' name='loading' />}
 				{children}
 			</span>
 		</Box>

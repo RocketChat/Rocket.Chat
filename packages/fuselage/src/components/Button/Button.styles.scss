@@ -50,6 +50,10 @@
 		@include use-with-truncated-text();
 	}
 
+	.rcx-button__icon {
+		margin-inline-end: lengths.margin(4);
+	}
+
 	@include clickable;
 	@include use-font-scale(p2m);
 	@include use-text-ellipsis;
