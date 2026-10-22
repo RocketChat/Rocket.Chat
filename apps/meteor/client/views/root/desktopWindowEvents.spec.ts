@@ -53,7 +53,7 @@ let mockLoggedInCallbacks: (() => unknown)[];
 let mockUsersListeners: (() => void)[];
 let mockUsers: Map<string, { _id: string; status: string }>;
 
-const loadStartup = (sdkTransportEnabled: boolean) => {
+const loadStartup = () => {
 	mockLoggedInCallbacks = [];
 	mockUsersListeners = [];
 	mockUsers = new Map();
@@ -68,7 +68,6 @@ const loadStartup = (sdkTransportEnabled: boolean) => {
 		getDdpSdk: () => ({ account: { onLogout: jest.fn() } }),
 		isAuthError: jest.fn(),
 	}));
-	jest.doMock('../../lib/sdk/sdkTransportEnabled', () => ({ isSdkTransportEnabled: () => sdkTransportEnabled }));
 	jest.doMock('../../lib/sdk/storage', () => ({ STORAGE_KEYS: {}, getStoredItem: () => 'token' }));
 	jest.doMock('../../lib/user', () => ({ userIdStore: { getState: () => 'uid', subscribe: jest.fn() } }));
 	jest.doMock('../../lib/userData', () => ({
@@ -134,18 +133,15 @@ const scenarios: Record<DesktopWindowEvent, () => void> = {
 	},
 
 	'status-changed': () => {
-		it.each([
-			['default', false],
-			['SDK transport', true],
-		])('should fire with the user status after login (%s login path)', async (_name, sdkTransportEnabled) => {
-			loadStartup(sdkTransportEnabled);
+		it('should fire with the user status after login', async () => {
+			loadStartup();
 			await Promise.all(mockLoggedInCallbacks.map((callback) => callback()));
 
 			await waitFor(() => expect(eventsOf('status-changed')).toEqual([{ type: 'status-changed', detail: 'online' }]));
 		});
 
 		it('should fire when the status of the user changes', () => {
-			loadStartup(false);
+			loadStartup();
 			mockUsers.set('uid', { _id: 'uid', status: 'away' });
 			mockUsersListeners.forEach((listener) => listener());
 

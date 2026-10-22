@@ -1,5 +1,5 @@
 // Rocket.Chat Desktop 4.18 and older reload the workspace when Meteor's `window.require` cannot give them the server
-// version, so the Vite build provides that one module.
+// version, so a build without that `window.require` (the Vite one) provides that one module.
 const desktopModuleIds = new Set(['/rocketchat.info', '/app/utils/rocketchat.info']);
 
 export type DesktopWindow = Pick<Window, 'RocketChatDesktop'> & { require?: (id: string) => unknown };

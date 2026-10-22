@@ -51,17 +51,10 @@ const rocketchatInfo = (): Plugin => {
 	};
 };
 
-// Swaps the modules that wrap Meteor's client runtime for their implementations in vite/native.
+// Swaps the modules whose dev-server behaviour differs for their implementations in vite/native.
 const nativeModules = (): Plugin => {
 	const replacements = new Map(
 		Object.entries({
-			'client/meteor/accounts.ts': 'accounts.ts',
-			'client/meteor/connection.ts': 'connection.ts',
-			'client/meteor/overrides/index.ts': 'overrides.ts',
-			'client/meteor/login/index.ts': 'login.ts',
-			'client/lib/sdk/meteorBackedSdk.ts': 'meteorBackedSdk.ts',
-			'client/lib/sdk/sdkTransportEnabled.ts': 'sdkTransportEnabled.ts',
-			'client/lib/sdk/ddpProtocol.ts': 'ddpProtocol.ts',
 			'client/lib/getURL.ts': 'getURL.ts',
 		}).map(([original, native]) => [join(appRoot, original), join(here, 'native', native)]),
 	);
