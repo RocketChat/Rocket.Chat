@@ -240,6 +240,7 @@ apps/meteor/ee/server/api/roles.ts
   s_699c21f8808612::t_2d74ad1710ae45 1,115,121,127,163,171
 apps/meteor/server/meteor-methods/rooms/addUsersToRoom.ts
   s_699c21f8808612::t_2d74ad1710ae45 1,27,44,75,88,95
+  s_699c21f8808612::t_bbb0b45571dcad 52,58,66
 apps/meteor/ee/server/meteor-methods/getReadReceipts.ts
   s_699c21f8808612::t_2d74ad1710ae45 1,12,18,24
 apps/meteor/server/lib/messaging/stars/starMessage.ts
@@ -376,6 +377,7 @@ apps/meteor/server/meteor-methods/rooms/addRoomOwner.ts
   s_699c21f8808612::t_2d74ad1710ae45 1,20,28,40,48,54,70
 apps/meteor/server/slashcommands/inviteall/server.ts
   s_699c21f8808612::t_2d74ad1710ae45 118
+  s_699c21f8808612::t_bbb0b45571dcad 6
 apps/meteor/ee/server/lib/audit/functions.ts
   s_699c21f8808612::t_2d74ad1710ae45 1,59,64,121,216
 apps/meteor/server/lib/rooms/settings/saveReactWhenReadOnly.ts
@@ -513,6 +515,7 @@ apps/meteor/server/meteor-methods/integrations/incoming/addIncomingIntegration.t
   s_699c21f8808612::t_2d74ad1710ae45 1,39,45,51,60,67,79,85,149,158
 apps/meteor/server/api/v1/ai-search.ts
   s_699c21f8808612::t_2d74ad1710ae45 7,201,212,236,374,388,391,394,396
+  s_699c21f8808612::t_bbb0b45571dcad 304
 ---
 {
   "schema_version": "authorship/3.0.0",
