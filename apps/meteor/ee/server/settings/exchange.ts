@@ -1,6 +1,6 @@
 import { settingsRegistry } from '../../../server/settings';
 
-const enabled = { _id: 'Outlook_Calendar_Enabled', value: true };
+const enabled = { _id: 'Microsoft_Exchange_Enabled', value: true };
 
 const legacyOnly = [enabled, { _id: 'Exchange_Mode', value: 'legacy' }];
 const serverOnly = [enabled, { _id: 'Exchange_Mode', value: 'server' }];
@@ -11,14 +11,14 @@ const ewsOnly = [...serverOnly, { _id: 'Exchange_Sync_Provider', value: 'ews' }]
 const contactsOnly = [...serverOnly, { _id: 'Exchange_Contacts_Sync_Enabled', value: true }];
 
 export function addSettings(): Promise<void> {
-	return settingsRegistry.addGroup('Outlook_Calendar', async function () {
+	return settingsRegistry.addGroup('Microsoft_Exchange', async function () {
 		await this.with(
 			{
 				enterprise: true,
 				modules: ['outlook-calendar'],
 			},
 			async function () {
-				await this.add('Outlook_Calendar_Enabled', false, {
+				await this.add('Microsoft_Exchange_Enabled', false, {
 					type: 'boolean',
 					public: true,
 					invalidValue: false,
@@ -33,7 +33,7 @@ export function addSettings(): Promise<void> {
 						{ key: 'legacy', i18nLabel: 'Exchange_Mode_Legacy' },
 						{ key: 'server', i18nLabel: 'Exchange_Mode_Server' },
 					],
-					enableQuery: { _id: 'Outlook_Calendar_Enabled', value: true },
+					enableQuery: { _id: 'Microsoft_Exchange_Enabled', value: true },
 				});
 
 				await this.section('Exchange_Desktop', async function () {

@@ -4767,7 +4767,6 @@
   "Outlook_authentication_description": "Deaktivieren Sie dies, um alle auf diesem Gerät gespeicherten Outlook-Anmeldedaten zu löschen.",
   "Outlook_authentication_disabled": "Outlook-Authentifizierung deaktiviert",
   "Outlook_calendar": "Outlook-Kalender",
-  "Outlook_Calendar_Enabled": "aktiviert",
   "Outlook_calendar_event": "Outlook-Kalendertermin",
   "Outlook_Calendar_Exchange_Url": "Exchange-URL",
   "Outlook_Calendar_Exchange_Url_Description": "Standard-Host-URL für die EWS-API.",

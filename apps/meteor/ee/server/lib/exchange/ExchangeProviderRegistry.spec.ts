@@ -78,7 +78,7 @@ describe('getCalendarSyncWindow', () => {
 describe('provider selection', () => {
 	const configured = (over: Record<string, unknown> = {}) => {
 		const values: Record<string, unknown> = {
-			Outlook_Calendar_Enabled: true,
+			Microsoft_Exchange_Enabled: true,
 			Exchange_Mode: 'server',
 			Exchange_Sync_Provider: 'graph',
 			Exchange_Graph_Tenant_Id: 'contoso',
@@ -112,7 +112,7 @@ describe('provider selection', () => {
 	});
 
 	it.each([
-		['the integration is off', { Outlook_Calendar_Enabled: false }],
+		['the integration is off', { Microsoft_Exchange_Enabled: false }],
 		['the mode is legacy', { Exchange_Mode: 'legacy' }],
 		['the configured type is not one we implement', { Exchange_Sync_Provider: 'imap' }],
 	])('builds nothing when %s', (_label, over) => {

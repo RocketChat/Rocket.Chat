@@ -2674,7 +2674,6 @@
   "others": "다른 사용자",
   "Outgoing_WebHook": "나가는 WebHook",
   "Outgoing_WebHook_Description": "Rocket.Chat에서 실시간으로 데이터를 가져옵니다.",
-  "Outlook_Calendar_Enabled": "사용",
   "Output_format": "출력 형식",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "파일이 업로드되는 재정의 URL. CDN이 지정되지 않으면, 다운로드 URL로 설정됩니다.",
   "Page_title": "페이지 제목",

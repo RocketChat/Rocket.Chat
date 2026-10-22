@@ -968,7 +968,6 @@
   "OS_Type": "סוג מערכת הפעלה",
   "OS_Uptime": "זמן פעילות",
   "others": "אחרים",
-  "Outlook_Calendar_Enabled": "מופעל",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "כתובת אתר דרוס שאליו קבצים מועלים. url זה משמש גם עבור הורדות אלא אם CDN ניתן",
   "Password": "ססמה",
   "Password_Change_Disabled": "מנהל המערכת שלך ביטל את האפשרות לשנות סיסמאות",

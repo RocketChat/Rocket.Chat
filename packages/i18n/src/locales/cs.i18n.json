@@ -2593,7 +2593,6 @@
   "others": "ostatní",
   "Outgoing_WebHook": "Odchozí Webhook",
   "Outgoing_WebHook_Description": "Získávejte data z Rocket.Chat v reálném čase.",
-  "Outlook_Calendar_Enabled": "Povoleno",
   "Output_format": "Výstupní formát",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "Přepsat URL, na které jsou nahrané soubory. Tato adresa se také používá pro stahování pokud není nastavena CDN",
   "Page_title": "Titulku stránky",

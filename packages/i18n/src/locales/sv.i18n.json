@@ -4726,7 +4726,6 @@
   "Outlook_authentication_description": "Avaktivera detta för att rensa alla Outlook-autentiseringsuppgifter som lagras på den här datorn.",
   "Outlook_authentication_disabled": "Outlook-autentisering inaktiverad",
   "Outlook_calendar": "Outlook-kalender",
-  "Outlook_Calendar_Enabled": "Aktiverad",
   "Outlook_calendar_event": "Händelse i Outlook-kalender",
   "Outlook_Calendar_Exchange_Url": "Exchange URL",
   "Outlook_Calendar_Exchange_Url_Description": "Värd-URL för EWS api.",

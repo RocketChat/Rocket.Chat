@@ -11,7 +11,7 @@ import { scrubForLog } from './scrub';
 import { settings } from '../../../../server/settings';
 
 const WATCHED_SETTINGS = [
-	'Outlook_Calendar_Enabled',
+	'Microsoft_Exchange_Enabled',
 	'Exchange_Mode',
 	'Exchange_Sync_Provider',
 	'Exchange_Graph_Tenant_Id',
@@ -30,7 +30,7 @@ const WATCHED_SETTINGS = [
 let current: IExchangeProvider | undefined;
 
 const buildExchangeProvider = (): IExchangeProvider | undefined => {
-	if (!settings.get<boolean>('Outlook_Calendar_Enabled') || settings.get<string>('Exchange_Mode') !== 'server') {
+	if (!settings.get<boolean>('Microsoft_Exchange_Enabled') || settings.get<string>('Exchange_Mode') !== 'server') {
 		return undefined;
 	}
 
