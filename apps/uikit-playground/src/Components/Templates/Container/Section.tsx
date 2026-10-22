@@ -8,9 +8,9 @@ export type SectionProps = { template: templateType; index: number };
 const Section = ({ template, index }: SectionProps) => (
 	<Box marginBlockStart='25px' width='100%' key={index}>
 		<Box marginBlockEnd='5px'>
-			<Label fontSize={24} fontWeight={800}>
+			<Box fontSize={24} fontWeight={800}>
 				{template.heading}
-			</Label>
+			</Box>
 		</Box>
 		<Box marginBlockEnd='15px'>
 			<Label>{template.description}</Label>

@@ -1,4 +1,4 @@
-import { Label, CheckBox, Stack } from '@rocket.chat/fuselage';
+import { Box, CheckBox, Stack } from '@rocket.chat/fuselage';
 import { useUserPreference, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ComponentType, ReactNode } from 'react';
 import { useId, useState } from 'react';
@@ -51,9 +51,9 @@ function withDoNotAskAgain<T extends RequiredModalProps>(Component: ComponentTyp
 				dontAskAgain={
 					<Stack direction='row' gap={8}>
 						<CheckBox id={dontAskAgainId} checked={state} onChange={onChange} name='dont_ask_again' />
-						<Label color='annotation' fontScale='p2' htmlFor={dontAskAgainId}>
+						<Box is='label' color='annotation' fontScale='p2' htmlFor={dontAskAgainId}>
 							{t('Dont_ask_me_again')}
-						</Label>
+						</Box>
 					</Stack>
 				}
 				onConfirm={handleConfirm}
