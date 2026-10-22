@@ -1,0 +1,4 @@
+.rcx-card-grid__item {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+}

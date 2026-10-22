@@ -28,7 +28,7 @@ const UsersUploadsCard = ({ statistics }: UsersUploadsCardProps) => {
 	const { data: canViewEngagement = false } = useHasLicenseModule('engagement-dashboard');
 
 	return (
-		<Card height='full'>
+		<Card>
 			<CardBody flexDirection='column'>
 				<Margins blockEnd={24}>
 					<WorkspaceCardSection>
