@@ -29,7 +29,8 @@ State goes in the name or in ARIA attributes, never only in color:
 
 - put the unread state in the `ItemLink` name;
 - label the room type and user status icons through the `label` of `ItemIcon` or `SidebarItemIcon`;
-- mark the open room with `aria-current="page"`.
+- mark the open room with `aria-current="page"`;
+- give a value shown only beside an icon, such as a message count, a visually hidden phrase that says what it is, and hide the bare value with `aria-hidden`.
 
 ## Group headers and messages
 

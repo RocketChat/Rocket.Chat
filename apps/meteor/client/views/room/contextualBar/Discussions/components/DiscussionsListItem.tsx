@@ -1,3 +1,4 @@
+import { VisuallyHidden } from '@react-aria/visually-hidden';
 import type { IDiscussionMessage } from '@rocket.chat/core-typings';
 import {
 	Item,
@@ -82,13 +83,15 @@ const DiscussionListItem = ({
 					{!!dcount && (
 						<MessageMetricsItem>
 							<MessageMetricsItemIcon name='discussion' />
-							<MessageMetricsItemLabel>{dcount}</MessageMetricsItemLabel>
+							<MessageMetricsItemLabel aria-hidden>{dcount}</MessageMetricsItemLabel>
+							<VisuallyHidden>{t('message_counter', { count: dcount })}</VisuallyHidden>
 						</MessageMetricsItem>
 					)}
 					{!!dcount && dlm && (
 						<MessageMetricsItem>
 							<MessageMetricsItemIcon name='clock' />
-							<MessageMetricsItemLabel>{formatDate(dlm)}</MessageMetricsItemLabel>
+							<MessageMetricsItemLabel aria-hidden>{formatDate(dlm)}</MessageMetricsItemLabel>
+							<VisuallyHidden>{t('Last_message__date__', { date: formatDate(dlm) })}</VisuallyHidden>
 						</MessageMetricsItem>
 					)}
 				</MessageMetrics>
