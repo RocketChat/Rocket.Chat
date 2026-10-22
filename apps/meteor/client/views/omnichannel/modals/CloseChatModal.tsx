@@ -162,7 +162,7 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 					<ModalTitle>{t('Wrap_up_conversation')}</ModalTitle>
 					<ModalClose onClick={onCancel} />
 				</ModalHeader>
-				<ModalContent fontScale='p2'>
+				<ModalContent>
 					<Box color='annotation'>{t('Close_room_description')}</Box>
 					<FieldGroup>
 						<Field>

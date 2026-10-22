@@ -30,7 +30,7 @@ const MyDataModal = ({ onCancel, title, text, ...props }: MyDataModalProps) => {
 				<ModalClose onClick={onCancel} />
 			</ModalHeader>
 			{text && (
-				<ModalContent fontScale='p2'>
+				<ModalContent>
 					<Box marginBlock={8}>{text}</Box>
 				</ModalContent>
 			)}

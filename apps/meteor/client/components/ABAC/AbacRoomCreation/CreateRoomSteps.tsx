@@ -1,6 +1,7 @@
 import {
 	Accordion,
 	AccordionItem,
+	Box,
 	Button,
 	ModalContent,
 	ModalFooter,
@@ -32,34 +33,36 @@ const CreateRoomSteps = ({ abac, flow, details, security, onCancel, submitDisabl
 
 	return (
 		<>
-			<ModalContent marginBlockEnd={2}>
-				{step === 'details' && (
-					<>
-						{details}
-						{!isStepped && (
-							<Accordion>
-								<AccordionItem title={t('Advanced_settings')}>{security}</AccordionItem>
-							</Accordion>
-						)}
-					</>
-				)}
-				{step === 'attributes' && (
-					<AbacAttributesStep
-						requiredKeys={abac?.requiredAttributes ?? []}
-						assignable={flow.assignable.data}
-						isPending={flow.assignable.isPending}
-						error={flow.assignable.error}
-					/>
-				)}
-				{step === 'security' && security}
-				{step === 'preview' && (
-					<AbacMembershipPreview
-						data={flow.preview.data}
-						isPending={flow.preview.isPending}
-						isError={flow.preview.isError}
-						error={flow.preview.error}
-					/>
-				)}
+			<ModalContent>
+				<Box marginBlockEnd={2}>
+					{step === 'details' && (
+						<>
+							{details}
+							{!isStepped && (
+								<Accordion>
+									<AccordionItem title={t('Advanced_settings')}>{security}</AccordionItem>
+								</Accordion>
+							)}
+						</>
+					)}
+					{step === 'attributes' && (
+						<AbacAttributesStep
+							requiredKeys={abac?.requiredAttributes ?? []}
+							assignable={flow.assignable.data}
+							isPending={flow.assignable.isPending}
+							error={flow.assignable.error}
+						/>
+					)}
+					{step === 'security' && security}
+					{step === 'preview' && (
+						<AbacMembershipPreview
+							data={flow.preview.data}
+							isPending={flow.preview.isPending}
+							isError={flow.preview.isError}
+							error={flow.preview.error}
+						/>
+					)}
+				</Box>
 			</ModalContent>
 			<ModalFooter justifyContent={isStepped ? 'space-between' : undefined}>
 				{isStepped && <ModalFooterAnnotation>{t('Step_of_total', { step: index + 1, total })}</ModalFooterAnnotation>}
