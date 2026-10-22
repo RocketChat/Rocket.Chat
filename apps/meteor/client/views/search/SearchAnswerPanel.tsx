@@ -87,7 +87,7 @@ const SearchAnswerPanel = ({
 		<Box marginBlockEnd={40}>
 			<Card role='region' aria-labelledby={titleId}>
 				<CardHeader>
-					<FramedIcon icon='stars' size={20} />
+					<FramedIcon icon='stars' />
 					<CardTitle id={titleId} info={info}>
 						{t('Search_AI_answer')}
 					</CardTitle>

@@ -38,7 +38,7 @@ const getFramedIconProps = (
 const IconElement = ({ block }: IconElementProps) => {
 	const { icon, variant, framed } = block;
 	if (framed) {
-		return <FramedIcon size={20} icon={icon} {...getFramedIconProps(variant)} />;
+		return <FramedIcon icon={icon} {...getFramedIconProps(variant)} />;
 	}
 	const status = getVariantStatus(variant);
 	return status ? <StatusIcon size={20} name={icon} status={status} /> : <Icon size={20} name={icon} />;
