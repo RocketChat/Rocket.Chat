@@ -39,11 +39,7 @@ const LoginServices = ({ disabled, setError }: LoginServicesProps) => {
 
 	return (
 		<>
-			{showFormLogin && (
-				<Divider marginBlock={24} padding={0}>
-					{t('registration.component.form.divider')}
-				</Divider>
-			)}
+			{showFormLogin && <Divider marginBlock={24}>{t('registration.component.form.divider')}</Divider>}
 
 			{servicesToShow.length > 0 && (
 				<ButtonGroup vertical stretch small>
