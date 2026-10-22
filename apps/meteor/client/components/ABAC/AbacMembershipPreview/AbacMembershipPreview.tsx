@@ -17,9 +17,9 @@ const AbacMembershipPreview = ({ data, isPending, isError, error }: AbacMembersh
 
 	if (isPending) {
 		return (
-			<Box>
+			<Box display='flex' flexDirection='column' gap={8} marginBlockEnd={8}>
 				{Array.from({ length: 4 }, (_, index) => (
-					<Skeleton key={index} marginBlockEnd={8} />
+					<Skeleton key={index} />
 				))}
 			</Box>
 		);
