@@ -40,7 +40,7 @@ const RoomHeaderCategoryMenu = ({ room }: RoomHeaderCategoryMenuProps) => {
 
 	return (
 		<GenericMenu
-			button={<IconButton small color={favorite ? 'status-font-on-warning' : undefined} icon={groupingIcon} marginInlineEnd={4} />}
+			button={<IconButton small color={favorite ? 'status-font-on-warning' : undefined} icon={groupingIcon} />}
 			title={t('Move_to')}
 			icon={groupingIcon}
 			sections={sections}

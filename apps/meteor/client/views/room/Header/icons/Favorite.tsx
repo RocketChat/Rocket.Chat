@@ -31,7 +31,6 @@ const Favorite = ({ room: { _id, f: favorite = false, t: type, name } }: Favorit
 	return (
 		<IconButton
 			small
-			marginInlineEnd={4}
 			icon={favorite ? 'star-filled' : 'star'}
 			title={favoriteLabel}
 			color={favorite ? 'status-font-on-warning' : undefined}
