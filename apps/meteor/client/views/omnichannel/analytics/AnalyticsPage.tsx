@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Select, Margins, Field, FieldLabel, FieldRow, Label, Option } from '@rocket.chat/fuselage';
+import { Box, Select, Field, FieldLabel, FieldRow, Label, Option } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useMemo, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -76,15 +76,13 @@ const AnalyticsPage = () => {
 				<Box>
 					<Overview type={type} dateRange={dateRange} departmentId={department || ''} />
 				</Box>
-				<Box display='flex'>
-					<Margins inline={2}>
-						<Field>
-							<FieldLabel>{t('Chart')}</FieldLabel>
-							<FieldRow>
-								<Select options={graphOptions} value={chartName} onChange={(value) => setChartName(String(value))} />
-							</FieldRow>
-						</Field>
-					</Margins>
+				<Box display='flex' paddingInline={2}>
+					<Field>
+						<FieldLabel>{t('Chart')}</FieldLabel>
+						<FieldRow>
+							<Select options={graphOptions} value={chartName} onChange={(value) => setChartName(String(value))} />
+						</FieldRow>
+					</Field>
 				</Box>
 				<Box display='flex' flexGrow={1} flexShrink={1}>
 					<InterchangeableChart

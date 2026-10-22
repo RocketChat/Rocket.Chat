@@ -1,6 +1,6 @@
 import { AuthorizationUtils } from '@rocket.chat/authorization/dist/AuthorizationUtils';
 import type { IRole } from '@rocket.chat/core-typings';
-import { Margins, Box, CheckBox, Throbber } from '@rocket.chat/fuselage';
+import { Box, CheckBox, Throbber } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal, GenericTableCell } from '@rocket.chat/ui-client';
 import { useSetModal } from '@rocket.chat/ui-contexts';
@@ -57,15 +57,15 @@ const RoleCell = ({ _id, name, description, onChange, permissionId, permissionNa
 
 	return (
 		<GenericTableCell withTruncatedText>
-			<Margins inline={2}>
+			<Box display='inline-flex' alignItems='center' gap={4} paddingInline={2}>
 				<CheckBox aria-label={checkboxLabel} checked={granted} onChange={handleChange} disabled={isDisabled} />
 				{!loading && (
 					<Box display='inline' color='hint' invisible>
 						{description || name}
 					</Box>
 				)}
-				{loading && <Throbber size='x12' display='inline-block' />}
-			</Margins>
+				{loading && <Throbber size='x12' />}
+			</Box>
 		</GenericTableCell>
 	);
 };
