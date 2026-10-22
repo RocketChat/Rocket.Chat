@@ -36,11 +36,6 @@ export const getConnectionStatus = (): ConnectionStatus => {
 	return { ...toStatus(connection.status), retryCount: connection.retryCount, retryTime: connection.nextRetryAt };
 };
 
-// ServerProvider closes and reconnects DDPSDK itself.
-export const disconnect = (): void => undefined;
-
-export const reconnect = (): void => undefined;
-
 // Deployments behind ddp-streamer only answer these over the socket; every other method goes through the
 // REST method bridge.
 const isSocketMethod = (method: string, args: unknown[]): boolean =>
@@ -105,14 +100,7 @@ export const callMethod = async (method: string, ...args: unknown[]): Promise<an
 	}
 };
 
-export const callMethodWithoutResult = (method: string, ...args: unknown[]): void => {
-	void callMethod(method, ...args).catch((error) => console.warn(`[connection] ${method} failed`, error));
-};
-
 export const hasPendingMethods = (): boolean => pendingMethods !== 0;
-
-// Frames only reach DDPSDK's own listeners; there is no second socket to tap.
-export const onRawMessage = (_listener: (rawMessage: string) => void): void => undefined;
 
 export const subscribeRaw = (name: string, ...args: unknown[]) => getDdpSdk().client.subscribe(name, ...args);
 

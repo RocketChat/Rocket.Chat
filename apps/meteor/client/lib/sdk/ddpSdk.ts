@@ -1,8 +1,7 @@
 import { DDPSDK } from '@rocket.chat/ddp-client';
 import EJSON from 'ejson';
 
-import { createMeteorBackedSdk, createMeteorBackedStorage } from './meteorBackedSdk';
-import { isSdkTransportEnabled } from './sdkTransportEnabled';
+import { createMeteorBackedStorage } from './meteorBackedSdk';
 import {
 	clearLocalSession,
 	isLoggingIn,
@@ -14,8 +13,6 @@ import {
 import { getRootUrl } from '../meteorRuntimeConfig';
 import { STORAGE_KEYS, getStoredItem } from './storage';
 import { userIdStore } from '../user';
-
-const sdkTransportEnabled = isSdkTransportEnabled();
 
 const stripTrailingSlash = (value: string): string => (value.endsWith('/') ? value.slice(0, -1) : value);
 
@@ -41,33 +38,23 @@ const startConnect = (sdk: DDPSDK): Promise<unknown> => {
 
 export const getDdpSdk = (): DDPSDK => {
 	if (!instance) {
-		if (sdkTransportEnabled) {
-			// Meteor semantics: lost calls are resent after a reconnection, and Meteor's own reconnect login
-			// (driven by the stub stream's reset) decides what a refused token means for the session.
-			instance = DDPSDK.create(computeDdpUrl(), {
-				encode: EJSON.stringify,
-				decode: EJSON.parse,
-				inFlightMethods: 'resend',
-				logoutOnRefusedResume: false,
-			});
-			// TODO: This is a temporary fix to ensure Accounts/Meteor and Update Session On Window Close work together.
-			try {
-				instance.storage = createMeteorBackedStorage();
-			} catch (error) {
-				// DDPSDK.create may return a sealed/frozen instance under strict mode; failing
-				// to attach the storage hook must not abort SDK bootstrap.
-				console.warn('[ddpSdk] failed to attach storage hook to SDK instance', error);
-			}
-			void startConnect(instance);
-		} else {
-			// Meteor-backed pass-through. Same DDPSDK shape, but every call
-			// delegates to Meteor.connection / Meteor.callAsync / Meteor.userId
-			// — no second WebSocket opened, no auth lifecycle, no Presence
-			// session duplicated server-side. Lets ServerProvider, presence.ts,
-			// SDKClient, etc. continue calling getDdpSdk() unconditionally
-			// without per-call-site flag gates.
-			instance = createMeteorBackedSdk();
+		// Meteor semantics: lost calls are resent after a reconnection, and the accounts module decides what a refused
+		// token means for the session.
+		instance = DDPSDK.create(computeDdpUrl(), {
+			encode: EJSON.stringify,
+			decode: EJSON.parse,
+			inFlightMethods: 'resend',
+			logoutOnRefusedResume: false,
+		});
+		// TODO: This is a temporary fix to ensure Accounts/Meteor and Update Session On Window Close work together.
+		try {
+			instance.storage = createMeteorBackedStorage();
+		} catch (error) {
+			// DDPSDK.create may return a sealed/frozen instance under strict mode; failing
+			// to attach the storage hook must not abort SDK bootstrap.
+			console.warn('[ddpSdk] failed to attach storage hook to SDK instance', error);
 		}
+		void startConnect(instance);
 	}
 	return instance;
 };
@@ -196,11 +183,7 @@ declare global {
 	}
 }
 
-if (typeof window !== 'undefined' && isSdkTransportEnabled()) {
-	console.info(
-		'%c[Rocket.Chat] SDK-over-DDP transport enabled (experimental)',
-		'color:#fff;background:#f5455c;padding:2px 6px;border-radius:3px;font-weight:bold',
-	);
+if (typeof window !== 'undefined') {
 	const sdk = getDdpSdk();
 	window.__rocketChatSdk = sdk;
 

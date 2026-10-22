@@ -1,10 +1,7 @@
 import { useSessionDispatch, useStream, useWipeLocalAuth } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { isSdkTransportEnabled } from '../../../../lib/sdk/sdkTransportEnabled';
 import { getConnectionSessionId } from '../../../../meteor/connection';
-
-const sdkTransportEnabled = isSdkTransportEnabled();
 
 export const useForceLogout = (userId: string) => {
 	const getNotifyUserStream = useStream('notify-user');
@@ -22,18 +19,8 @@ export const useForceLogout = (userId: string) => {
 
 			setForceLogout(true);
 
-			if (!sdkTransportEnabled) {
-				// Flag off: develop's exact behaviour — only set the session flag.
-				// The legacy WS-reconnect → loginWithToken-fails → accounts-base
-				// chain handles the actual local cleanup.
-				return;
-			}
-
-			// With the SDK socket as the transport, that chain no longer fires
-			// reliably: DDPSDK auto-retries loginWithToken on every `connected`
-			// and swallows the rejection with `void`, so the navbar stays on
-			// Home with stale credentials. Wipe the stored login token + userId
-			// here so the router falls back to /login.
+			// DDPSDK retries the refused token on every reconnection and swallows the rejection, so the stored
+			// credentials are wiped here for the router to fall back to /login.
 			wipeLocalAuth();
 		});
 

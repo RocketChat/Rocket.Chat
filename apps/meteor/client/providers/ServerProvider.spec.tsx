@@ -22,10 +22,6 @@ jest.mock('../lib/sdk/ddpSdk', () => {
 	};
 });
 
-jest.mock('../lib/sdk/sdkTransportEnabled', () => ({
-	isSdkTransportEnabled: () => false,
-}));
-
 jest.mock('../lib/SDKClient', () => ({
 	sdk: {
 		call: jest.fn(),

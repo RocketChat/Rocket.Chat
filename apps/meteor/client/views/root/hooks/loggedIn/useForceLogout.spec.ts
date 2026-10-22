@@ -15,8 +15,6 @@ jest.mock('@rocket.chat/ui-contexts', () => ({
 	useWipeLocalAuth: () => wipeLocalAuth,
 }));
 
-jest.mock('../../../../lib/sdk/sdkTransportEnabled', () => ({ isSdkTransportEnabled: () => true }));
-
 jest.mock('../../../../meteor/connection', () => ({ getConnectionSessionId: () => 'this-session' }));
 
 describe('useForceLogout', () => {

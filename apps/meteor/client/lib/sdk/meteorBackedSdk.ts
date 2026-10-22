@@ -28,7 +28,3 @@ export const createMeteorBackedStorage = () => ({
 		}
 	},
 });
-
-export const createMeteorBackedSdk = (): never => {
-	throw new Error('The Meteor-backed SDK no longer exists');
-};
