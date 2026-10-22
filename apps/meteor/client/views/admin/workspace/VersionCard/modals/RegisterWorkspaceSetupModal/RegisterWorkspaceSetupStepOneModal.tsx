@@ -108,14 +108,16 @@ const RegisterWorkspaceSetupStepOneModal = ({
 						<Box is='p'>{t('RegisterWorkspace_Setup_No_Account_Subtitle')}</Box>
 					</Box>
 					<Field>
-						<FieldRow justifyContent='initial'>
-							<FieldLabel display='block' fontScale='c1' htmlFor={termsField}>
-								<Trans i18nKey='RegisterWorkspace_Setup_Terms_Privacy'>
-									I agree with <ExternalLink to={links.terms}>Terms and Conditions</ExternalLink> and{' '}
-									<ExternalLink to={links.privacy}>Privacy Policy</ExternalLink>
-								</Trans>
-							</FieldLabel>
-							<CheckBox id={termsField} checked={terms} onChange={() => setTerms(!terms)} />
+						<FieldRow>
+							<Box display='flex' alignItems='center' minWidth={0}>
+								<FieldLabel display='block' fontScale='c1' htmlFor={termsField}>
+									<Trans i18nKey='RegisterWorkspace_Setup_Terms_Privacy'>
+										I agree with <ExternalLink to={links.terms}>Terms and Conditions</ExternalLink> and{' '}
+										<ExternalLink to={links.privacy}>Privacy Policy</ExternalLink>
+									</Trans>
+								</FieldLabel>
+								<CheckBox id={termsField} checked={terms} onChange={() => setTerms(!terms)} />
+							</Box>
 						</FieldRow>
 					</Field>
 				</Box>

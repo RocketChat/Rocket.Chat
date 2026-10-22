@@ -1,4 +1,4 @@
-import { TextInput, Chip, Button, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import { Box, TextInput, Chip, Button, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
@@ -102,12 +102,14 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 			)}
 
 			{customTags.length > 0 && (
-				<FieldRow justifyContent='flex-start'>
-					{customTags?.map((tag, i) => (
-						<Chip key={i} onClick={(): void => removeTag(tag)} marginInlineEnd={8}>
-							{tag}
-						</Chip>
-					))}
+				<FieldRow>
+					<Box display='flex' alignItems='center' minWidth={0}>
+						{customTags?.map((tag, i) => (
+							<Chip key={i} onClick={(): void => removeTag(tag)} marginInlineEnd={8}>
+								{tag}
+							</Chip>
+						))}
+					</Box>
 				</FieldRow>
 			)}
 		</>
