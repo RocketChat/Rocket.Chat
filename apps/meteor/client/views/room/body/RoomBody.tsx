@@ -130,9 +130,9 @@ const RoomBody = () => {
 
 	useEffect(() => {
 		chat.readStateManager.setHasUserReachedLatestMessageCallback(
-			() => hasUserScrolled.current && isAtBottom.current && !hasMoreNextMessages,
+			() => hasUserScrolled.current && isAtBottom.current && !hasMoreNextMessages && !isLoadingMoreMessages,
 		);
-	}, [chat.readStateManager, hasUserScrolled, isAtBottom, hasMoreNextMessages]);
+	}, [chat.readStateManager, hasUserScrolled, isAtBottom, hasMoreNextMessages, isLoadingMoreMessages]);
 
 	const innerRef = useMergedRefsV2(getMoreInnerRef, selectAndScrollRef, messageListRef, keepAtBottomRef);
 
