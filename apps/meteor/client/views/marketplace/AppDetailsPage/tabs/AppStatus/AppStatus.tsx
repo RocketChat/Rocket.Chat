@@ -167,8 +167,8 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 			{statuses?.map((status, index) => (
 				<Margins inlineEnd={index !== statuses.length - 1 ? 8 : undefined} key={index}>
 					<Tag data-qa-type='app-status-tag' variant={getStatusVariant(status)} title={status.tooltipText ? status.tooltipText : ''}>
-						<Box display='flex' color={getStatusFontColor(status)} alignItems='center'>
-							{status.icon && <Icon name={status.icon} size={16} marginInlineEnd={2} />}
+						<Box display='flex' color={getStatusFontColor(status)} alignItems='center' gap={2}>
+							{status.icon && <Icon name={status.icon} size={16} />}
 							{handleAppRequestsNumber(status)} {t(status.label)}
 						</Box>
 					</Tag>
