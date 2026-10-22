@@ -37,8 +37,6 @@ const LinearScaleElement = ({ className, block, context, surfaceRenderer }: Line
 							compact
 							small
 							value={point}
-							marginInline={2}
-							flexShrink={1}
 							onClick={action}
 						>
 							{surfaceRenderer.renderTextObject(
