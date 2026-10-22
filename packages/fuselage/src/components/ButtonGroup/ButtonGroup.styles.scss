@@ -34,7 +34,12 @@
 		> .rcx-button--square {
 			flex-grow: 0;
 			flex-shrink: 0;
+			flex-basis: auto;
 		}
+	}
+
+	&--stretch-equal > * {
+		flex-basis: 0;
 	}
 
 	&--vertical {
