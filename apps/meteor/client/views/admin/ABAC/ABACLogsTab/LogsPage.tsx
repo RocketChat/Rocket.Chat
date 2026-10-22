@@ -158,30 +158,26 @@ const LogsPage = () => {
 	return (
 		<>
 			<Margins block={24}>
-				<Box display='flex'>
+				<Box display='flex' gap={8}>
 					<InputBox
 						type='date'
 						placeholder={t('Start_date')}
 						value={startDate}
 						onChange={(e) => setStartDate((e.target as HTMLInputElement).value)}
 					/>
-					<Margins inlineStart={8}>
-						<InputBox
-							type='date'
-							placeholder={t('End_date')}
-							value={endDate}
-							onChange={(e) => setEndDate((e.target as HTMLInputElement).value)}
-						/>
-					</Margins>
-					<Margins inlineStart={8}>
-						<DateRangePicker
-							defaultSelectedKey='today'
-							onChange={(range) => {
-								setStartDate(range.start);
-								setEndDate(range.end);
-							}}
-						/>
-					</Margins>
+					<InputBox
+						type='date'
+						placeholder={t('End_date')}
+						value={endDate}
+						onChange={(e) => setEndDate((e.target as HTMLInputElement).value)}
+					/>
+					<DateRangePicker
+						defaultSelectedKey='today'
+						onChange={(range) => {
+							setStartDate(range.start);
+							setEndDate(range.end);
+						}}
+					/>
 				</Box>
 			</Margins>
 			{(!data || data.events?.length === 0) && !isLoading ? (

@@ -3,7 +3,7 @@ import type { AvatarObject } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Button, Divider, Icon, InputBox, Margins } from '@rocket.chat/fuselage';
+import { Box, Button, Divider, Icon, InputBox } from '@rocket.chat/fuselage';
 import {
 	Field,
 	FieldGroup,
@@ -345,38 +345,34 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 								/>
 							</FieldRow>
 							{statusDuration === 'custom' && (
-								<Box display='flex' marginInline='neg-x4' marginBlockStart={8}>
-									<Margins inline={4}>
-										<Controller
-											control={control}
-											name='statusCustomDate'
-											render={({ field: { value, onChange } }) => (
-												<InputBox
-													aria-label={t('Status_expiration_date')}
-													type='date'
-													disabled={!allowUserStatusMessageChange}
-													flexGrow={1}
-													value={value}
-													onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.currentTarget.value)}
-													min={new Date().toLocaleDateString('en-CA')}
-												/>
-											)}
-										/>
-										<Controller
-											control={control}
-											name='statusCustomTime'
-											render={({ field: { value, onChange } }) => (
-												<InputBox
-													aria-label={t('Status_expiration_time')}
-													type='time'
-													disabled={!allowUserStatusMessageChange}
-													flexGrow={1}
-													value={value}
-													onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.currentTarget.value)}
-												/>
-											)}
-										/>
-									</Margins>
+								<Box display='flex' gap={8} marginBlockStart={8}>
+									<Controller
+										control={control}
+										name='statusCustomDate'
+										render={({ field: { value, onChange } }) => (
+											<InputBox
+												aria-label={t('Status_expiration_date')}
+												type='date'
+												disabled={!allowUserStatusMessageChange}
+												value={value}
+												onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.currentTarget.value)}
+												min={new Date().toLocaleDateString('en-CA')}
+											/>
+										)}
+									/>
+									<Controller
+										control={control}
+										name='statusCustomTime'
+										render={({ field: { value, onChange } }) => (
+											<InputBox
+												aria-label={t('Status_expiration_time')}
+												type='time'
+												disabled={!allowUserStatusMessageChange}
+												value={value}
+												onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.currentTarget.value)}
+											/>
+										)}
+									/>
 								</Box>
 							)}
 							{errors.statusDuration && <FieldError>{errors.statusDuration.message}</FieldError>}
