@@ -44,7 +44,7 @@ const CodeMirrorBox = ({ label, children, error }: CodeMirrorBoxProps) => {
 					{children}
 				</Box>
 				{error && (
-					<FieldError id={errorId} role='alert' marginBlockStart={4}>
+					<FieldError id={errorId} role='alert'>
 						{error}
 					</FieldError>
 				)}
@@ -75,7 +75,7 @@ const CodeMirrorBox = ({ label, children, error }: CodeMirrorBoxProps) => {
 				{children}
 			</Box>
 			{error && (
-				<FieldError id={errorId} role='alert' marginBlockStart={4}>
+				<FieldError id={errorId} role='alert'>
 					{error}
 				</FieldError>
 			)}

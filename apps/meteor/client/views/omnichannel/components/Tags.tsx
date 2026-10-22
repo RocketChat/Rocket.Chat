@@ -67,7 +67,7 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 
 	return (
 		<>
-			<FieldLabel htmlFor={tagsFieldId} required={tagRequired} marginBlock={4}>
+			<FieldLabel htmlFor={tagsFieldId} required={tagRequired}>
 				{t('Tags')}
 			</FieldLabel>
 
