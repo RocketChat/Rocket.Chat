@@ -44,6 +44,18 @@ export class AdminUsers extends Admin {
 		return this.page.getByRole('button', { name: 'More actions' });
 	}
 
+	get userRows(): Locator {
+		return this.page.getByRole('table').getByRole('link');
+	}
+
+	getColumnHeader(name: 'Name' | 'Username'): Locator {
+		return this.page.getByRole('table').getByRole('cell', { name, exact: true });
+	}
+
+	async filterUsers(term: string): Promise<void> {
+		await this.inputSearchUsers.fill(term);
+	}
+
 	getUserRowByUsername(username: string): Locator {
 		return this.page.locator('tr', { hasText: username }).first();
 	}

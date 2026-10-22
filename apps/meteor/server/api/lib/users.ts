@@ -165,7 +165,7 @@ export async function findPaginatedUsersByStatus({
 		sipExtension: 1,
 	};
 
-	const { cursor, totalCount } = Users.findPaginatedByStatus(
+	const { users, total } = await Users.findPaginatedByStatus(
 		{
 			active: status === undefined ? undefined : status === 'active',
 			hasLoggedIn,
@@ -184,7 +184,6 @@ export async function findPaginatedUsersByStatus({
 			allowDiskUse: true,
 		},
 	);
-	const [users, total] = await Promise.all([cursor.toArray(), totalCount]);
 	return {
 		users,
 		count: users.length,

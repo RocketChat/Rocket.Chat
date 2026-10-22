@@ -2558,10 +2558,16 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findPaginated(filter, options);
 	}
 
-	findPaginatedByStatus(
+	async findPaginatedByStatus(
 		{ active, hasLoggedIn, type, searchTerm, searchEmails, roles, inactiveReasons, statusManagement }: UsersByStatusFilters,
-		options?: FindOptions<IUser>,
-	): FindPaginated<FindCursor<IUser>> {
+		{
+			sort,
+			skip,
+			limit,
+			projection,
+			allowDiskUse,
+		}: { sort: Record<string, 1 | -1>; skip: number; limit: number; projection: Record<string, 1>; allowDiskUse?: boolean },
+	): Promise<{ users: IUser[]; total: number }> {
 		const match: Filter<IUser & RootFilterOperators<IUser>> = {};
 
 		if (active !== undefined) {
@@ -2616,7 +2622,32 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			match.$and = [...(match.$and ?? []), statusManagement === 'managed' ? managedStatus : { $nor: [managedStatus] }];
 		}
 
-		return this.findPaginated(match, options);
+		const sortKeys: Record<string, string> = { name: 'nameSortKey', username: 'usernameSortKey' };
+		const sortStage = Object.fromEntries(Object.entries(sort).map(([field, direction]) => [sortKeys[field] ?? field, direction]));
+		const displayName = { $cond: [{ $eq: [{ $ifNull: ['$name', ''] }, ''] }, '$username', '$name'] };
+
+		const [{ users, total: [{ total } = { total: 0 }] } = { users: [], total: [] }] = await this.col
+			.aggregate<{ users: IUser[]; total: { total: number }[] }>(
+				[
+					{ $match: match },
+					{
+						$facet: {
+							users: [
+								{ $addFields: { nameSortKey: { $toLower: displayName }, usernameSortKey: { $toLower: '$username' } } },
+								{ $sort: sortStage },
+								{ $skip: skip },
+								...(limit ? [{ $limit: limit }] : []),
+								{ $project: projection },
+							],
+							total: [{ $count: 'total' }],
+						},
+					},
+				],
+				{ allowDiskUse },
+			)
+			.toArray();
+
+		return { users, total };
 	}
 
 	findPresenceDisabledByAdmin<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(

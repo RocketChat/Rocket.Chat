@@ -495,7 +495,14 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		>
 	>;
 	findPaginatedManagedPresenceUsers(searchTerm?: string, options?: FindOptions<IUser>): FindPaginated<FindCursor<IUser>>;
-	findPaginatedByStatus(filters: UsersByStatusFilters, options?: FindOptions<IUser>): FindPaginated<FindCursor<IUser>>;
+	/**
+	 * Sorting by `name` orders users by the name people see (the username when there is no name), and
+	 * sorting by `name` or `username` ignores case.
+	 */
+	findPaginatedByStatus(
+		filters: UsersByStatusFilters,
+		options: { sort: Record<string, 1 | -1>; skip: number; limit: number; projection: Record<string, 1>; allowDiskUse?: boolean },
+	): Promise<{ users: IUser[]; total: number }>;
 	findPresenceDisabledByAdmin<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		userIds?: string[],
 		options?: O,
