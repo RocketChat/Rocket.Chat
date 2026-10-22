@@ -57,8 +57,8 @@ const HistoryItem = ({ data }: HistoryItemProps) => {
 		<AccordionItem
 			title={
 				<Box display='inline-flex' width='full' flexDirection='row' justifyContent='space-between'>
-					<Box display='flex' flexDirection='row' alignItems='center'>
-						<Icon name='info-circled' size='x16' marginInlineEnd={4} />
+					<Box display='flex' flexDirection='row' alignItems='center' gap={4}>
+						<Icon name='info-circled' size='x16' />
 						{formatDateAndTime(_createdAt)}
 					</Box>
 					<Button secondary onClick={handleClickReplay}>

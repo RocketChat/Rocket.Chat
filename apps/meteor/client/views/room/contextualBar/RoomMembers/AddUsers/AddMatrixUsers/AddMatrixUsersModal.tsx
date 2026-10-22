@@ -89,9 +89,8 @@ const AddMatrixUsersModal = ({ onClose, matrixIdVerifiedStatus, onSave, complete
 			<ModalContent>
 				<Box is='ul'>
 					{[...matrixIdVerifiedStatus.entries()].map(([_matrixId, _verificationStatus]) => (
-						<Box is='li' display='flex' key={_matrixId}>
-							{_matrixId}{' '}
-							<Icon marginInlineStart={4} name={verificationStatusAsIcon(_verificationStatus)} title={t(_verificationStatus)} size='x20' />
+						<Box is='li' display='flex' gap={4} key={_matrixId}>
+							{_matrixId} <Icon name={verificationStatusAsIcon(_verificationStatus)} title={t(_verificationStatus)} size='x20' />
 						</Box>
 					))}
 					{rocketChatUsers.map((_user) => (

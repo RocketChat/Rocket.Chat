@@ -12,8 +12,8 @@ const ListItem = ({
 	iconColor?: ComponentProps<typeof Icon>['color'];
 	fontScale?: ComponentProps<typeof Box>['fontScale'];
 }) => (
-	<Box display='flex' is='li' fontScale={fontScale}>
-		{icon && <Icon name={icon} color={iconColor} size='x16' marginInlineEnd={4} />}
+	<Box display='flex' is='li' fontScale={fontScale} gap={icon ? 4 : undefined}>
+		{icon && <Icon name={icon} color={iconColor} size='x16' />}
 		{children}
 	</Box>
 );

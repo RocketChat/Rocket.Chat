@@ -89,11 +89,11 @@ const NavBarAISearchListBox = ({
 					{aiSearchAvailable && (
 						<>
 							<Box display='flex' justifyContent='space-between' alignItems='center' paddingInline={12}>
-								<Box display='flex' alignItems='center'>
+								<Box display='flex' alignItems='center' gap={2}>
 									<Box is='span' id={aiSearchLabelId}>
 										{t('AI_Search')}
 									</Box>
-									<Icon name='info' size={16} marginInlineStart={2} title={t('AI_Search_description')} />
+									<Icon name='info' size={16} title={t('AI_Search_description')} />
 								</Box>
 								<ToggleSwitch aria-labelledby={aiSearchLabelId} checked={aiSearchActive} onChange={handleToggleAISearch} />
 							</Box>

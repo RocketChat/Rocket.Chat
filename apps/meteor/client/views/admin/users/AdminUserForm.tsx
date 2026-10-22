@@ -286,17 +286,11 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 						) : (
 							<>
 								<FieldRow marginBlockStart={12}>
-									<Box display='flex' alignItems='center'>
+									<Box display='flex' alignItems='center' gap={4}>
 										<FieldLabel htmlFor={verifiedId} padding={0} disabled={!isSmtpEnabled || !isVerificationNeeded} margin={0}>
 											{t('Mark_email_as_verified')}
 										</FieldLabel>
-										<Icon
-											name='info-circled'
-											size='x20'
-											marginInlineStart={4}
-											title={t('Enable_to_bypass_email_verification')}
-											color='default'
-										/>
+										<Icon name='info-circled' size='x20' title={t('Enable_to_bypass_email_verification')} color='default' />
 									</Box>
 									<Controller
 										control={control}

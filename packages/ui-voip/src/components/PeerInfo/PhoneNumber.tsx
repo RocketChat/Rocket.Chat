@@ -6,8 +6,8 @@ export type PhoneNumberProps = {
 
 const PhoneNumber = ({ number }: PhoneNumberProps) => {
 	return (
-		<Box display='flex' flexDirection='row' id='rcx-media-call-widget-caller-info'>
-			<Icon size='x20' name='phone' marginInlineEnd={8} aria-hidden='true' />
+		<Box display='flex' flexDirection='row' gap={8} id='rcx-media-call-widget-caller-info'>
+			<Icon size='x20' name='phone' aria-hidden='true' />
 			<Box fontScale='p2b'>{number}</Box>
 		</Box>
 	);
