@@ -1,4 +1,5 @@
 @use '../../styles/lengths.scss';
+@use '../../styles/functions.scss' as *;
 @use '../../styles/typography.scss' as *;
 @use '../../styles/variables/input-colors.scss' as *;
 @use '../../styles/mixins/interactivity.scss' as *;
@@ -47,6 +48,12 @@
 
 	&__filter {
 		margin-inline: lengths.margin(4);
+	}
+
+	&__chip {
+		max-width: to-rem(150);
+
+		@include use-with-truncated-text;
 	}
 
 	&__wrapper {
