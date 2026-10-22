@@ -1,5 +1,5 @@
 import type { IRole, IRoom } from '@rocket.chat/core-typings';
-import { Box, Field, FieldLabel, FieldRow, Margins, ButtonGroup, Button, Callout, FieldError, Stack } from '@rocket.chat/fuselage';
+import { Box, Field, FieldLabel, FieldRow, ButtonGroup, Button, Callout, FieldError, Stack } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { usePagination, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
@@ -87,7 +87,7 @@ const UsersInRolePage = ({ role }: UsersInRolePageProps) => {
 					<Button onClick={() => router.navigate(`/admin/permissions/edit/${_id}`)}>{t('Back')}</Button>
 				</ButtonGroup>
 			</PageHeader>
-			<PageContent>
+			<PageContent gap={8}>
 				<Box display='flex' flexDirection='column' width='full' gap={4}>
 					{role.scope !== 'Users' && (
 						<Field>
@@ -152,21 +152,19 @@ const UsersInRolePage = ({ role }: UsersInRolePageProps) => {
 						)}
 					</Field>
 				</Box>
-				<Margins blockStart={8}>
-					{(role.scope === 'Users' || rid) && (
-						<UsersInRoleTable
-							isLoading={isLoading}
-							isError={isError}
-							isSuccess={isSuccess}
-							total={data?.total || 0}
-							users={data?.users || []}
-							onRemove={handleRemove}
-							refetch={refetch}
-							paginationData={paginationData}
-						/>
-					)}
-					{role.scope !== 'Users' && !rid && <Callout type='info'>{t('Select_a_room')}</Callout>}
-				</Margins>
+				{(role.scope === 'Users' || rid) && (
+					<UsersInRoleTable
+						isLoading={isLoading}
+						isError={isError}
+						isSuccess={isSuccess}
+						total={data?.total || 0}
+						users={data?.users || []}
+						onRemove={handleRemove}
+						refetch={refetch}
+						paginationData={paginationData}
+					/>
+				)}
+				{role.scope !== 'Users' && !rid && <Callout type='info'>{t('Select_a_room')}</Callout>}
 			</PageContent>
 		</Page>
 	);
