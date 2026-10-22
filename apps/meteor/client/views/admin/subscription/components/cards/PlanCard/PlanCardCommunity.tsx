@@ -8,7 +8,7 @@ const PlanCardCommunity = () => {
 	const { t } = useTranslation();
 
 	return (
-		<Card height='full'>
+		<Card>
 			<PlanCardHeader name={t('Community')} />
 			<CardBody flexDirection='column'>
 				<Stack direction='row' align='center' gap={12}>
