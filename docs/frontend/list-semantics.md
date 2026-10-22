@@ -33,7 +33,7 @@ State goes in the name or in ARIA attributes, never only in color:
 ## Group headers and messages
 
 - Group headers are `listitem`s holding a `SidebarCollapseGroup`, named after the group title. The toggle states whether the group is expanded with `aria-expanded`, so its name does not repeat the action.
-- Message rows are `listitem`s named with `aria-labelledby`, for user and system messages alike: after their author, text and time when the message starts a group, and after their text alone when it continues one.
+- Message rows are `listitem`s named with `aria-labelledby`, for room, thread and system messages alike, through `getMessageLabelledBy`: after their author, time and text when the message starts a group, and after their text alone when it continues one.
 
 ## Testing
 
