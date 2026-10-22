@@ -79,12 +79,16 @@ it('should isActive be false if global retention is active for rooms of the type
 	expect(result.current?.isActive).toBe(false);
 });
 
-it('should fall back to the default max age when the TTL setting is blank', async () => {
-	const fakeRoom = createFakeRoom({ t: CHANNELS_TYPE });
+it.each([
+	['c', 'RetentionPolicy_TTL_Channels'],
+	['p', 'RetentionPolicy_TTL_Groups'],
+	['d', 'RetentionPolicy_TTL_DMs'],
+] as const)('should fall back to the default max age for a "%s" room when %s is blank', async (roomType, ttlSetting) => {
+	const fakeRoom = createFakeRoom({ t: roomType });
 
 	const { result } = renderHook(() => useRetentionPolicy(fakeRoom), {
-		wrapper: getGlobalSettings({ enabled: true, ...roomTypeConfig[CHANNELS_TYPE] })
-			.withSetting('RetentionPolicy_TTL_Channels', '')
+		wrapper: getGlobalSettings({ enabled: true, ...roomTypeConfig[roomType] })
+			.withSetting(ttlSetting, '')
 			.build(),
 	});
 
