@@ -6,7 +6,6 @@ import { prevent } from '../../helpers/prevent';
 import { AnimatedVisibility } from '../AnimatedVisibility';
 import { Box } from '../Box';
 import { Icon } from '../Icon';
-import { Margins } from '../Margins';
 import { Option } from '../Option';
 import { useVisible } from '../Options/useVisible';
 import { OptionsPaginated } from '../OptionsPaginated';
@@ -103,11 +102,9 @@ export const PaginatedSelect = ({
 					onClick={show}
 					onBlur={hide}
 				/>
-				<Margins inline='x4'>
-					<SelectAddon>
-						<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : 'chevron-down'} size='x20' />
-					</SelectAddon>
-				</Margins>
+				<SelectAddon>
+					<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : 'chevron-down'} size='x20' />
+				</SelectAddon>
 			</PaginatedSelectWrapper>
 			<PositionAnimated visible={visible} anchor={containerRef}>
 				<_Options

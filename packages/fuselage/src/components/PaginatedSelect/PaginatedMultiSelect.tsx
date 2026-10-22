@@ -176,11 +176,9 @@ const PaginatedMultiSelect = ({
 				</Margins>
 			</FlexItem>
 			<FlexItem grow={0} shrink={0}>
-				<Margins inline='x4'>
-					<SelectAddon>
-						<Icon name={visible === AnimatedVisibility.VISIBLE ? 'cross' : 'chevron-down'} size='x20' />
-					</SelectAddon>
-				</Margins>
+				<SelectAddon>
+					<Icon name={visible === AnimatedVisibility.VISIBLE ? 'cross' : 'chevron-down'} size='x20' />
+				</SelectAddon>
 			</FlexItem>
 			<PositionAnimated visible={visible} anchor={containerRef}>
 				<OptionsComponent

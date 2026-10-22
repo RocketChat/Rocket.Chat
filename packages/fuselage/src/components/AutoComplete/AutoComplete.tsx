@@ -193,7 +193,7 @@ function AutoComplete<TLabel = ReactNode>({
 			</Box>
 			<PositionAnimated visible={optionsAreVisible} anchor={containerRef}>
 				<Options
-					width={borderBoxSize.inlineSize}
+					style={{ width: borderBoxSize.inlineSize }}
 					onSelect={handleSelect}
 					renderItem={renderItem}
 					renderEmpty={renderEmpty}

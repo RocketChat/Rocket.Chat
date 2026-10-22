@@ -5,7 +5,6 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 import { AnimatedVisibility } from '../AnimatedVisibility';
 import { Box, type BoxProps } from '../Box';
 import { Icon, type IconProps } from '../Icon';
-import { Margins } from '../Margins';
 import type { OptionType } from '../Options';
 import { Options, useCursor } from '../Options';
 import { PositionAnimated } from '../PositionAnimated';
@@ -152,11 +151,9 @@ function SelectLegacy({
 				<Anchor ref={anchorRef} disabled={disabled ?? false} onClick={show} onBlur={hide} onKeyDown={handleKeyDown} onKeyUp={handleKeyUp}>
 					{!value ? option || placeholder : null}
 				</Anchor>
-				<Margins inline='x4'>
-					<SelectAddon>
-						<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : addonIcon || 'chevron-down'} size='x20' />
-					</SelectAddon>
-				</Margins>
+				<SelectAddon>
+					<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : addonIcon || 'chevron-down'} size='x20' />
+				</SelectAddon>
 			</Wrapper>
 			<PositionAnimated visible={visible} anchor={containerRef}>
 				<_Options

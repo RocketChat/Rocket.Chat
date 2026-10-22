@@ -45,6 +45,10 @@
 		padding: initial;
 	}
 
+	&__filter {
+		margin-inline: lengths.margin(4);
+	}
+
 	&__wrapper {
 		align-items: center;
 		flex-grow: 1;
@@ -89,4 +93,9 @@
 			$disabled-color: $input-colors-invalid-disabled-color
 		);
 	}
+}
+
+// beats the spacing .rcx-input-box__addon gets next to an input
+.rcx-select .rcx-select__addon {
+	margin-inline: lengths.margin(4);
 }
