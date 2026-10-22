@@ -35,7 +35,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 	const button = appButtonProps({ ...app, isAdminUser, endUserRequested });
 	const isAppRequestsPage = context === 'requested';
-	const shouldShowPriceDisplay = isAppDetailsPage && button && !app.isEnterpriseOnly;
+	const shouldShowPriceDisplay = isAppDetailsPage && button && !app.isEnterpriseOnly && !installed;
 	const canUpdate = installed && app?.version && app?.marketplaceVersion && semver.lt(app?.version, app?.marketplaceVersion);
 
 	const { data } = useIsEnterprise();
@@ -144,6 +144,8 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 					alignItems='center'
 					justifyContent='center'
 					borderRadius='medium'
+					gap={4}
+					paddingInlineEnd={shouldShowPriceDisplay ? 4 : undefined}
 					invisible={!showStatus && !loading}
 				>
 					<Button
@@ -158,7 +160,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 						{t(button.label)}
 					</Button>
 
-					{shouldShowPriceDisplay && !installed && (
+					{shouldShowPriceDisplay && (
 						<AppStatusPriceDisplay purchaseType={purchaseType} pricingPlans={pricingPlans} price={price} showType={false} />
 					)}
 				</Box>
