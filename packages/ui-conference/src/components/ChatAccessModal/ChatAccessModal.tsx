@@ -96,7 +96,7 @@ const ChatAccessModal = ({ access, onClose }: ChatAccessModalProps) => {
 				</ModalHeaderText>
 				<ModalClose tabIndex={-1} aria-label={t('Close')} onClick={onClose} />
 			</ModalHeader>
-			<ModalContent fontScale='p2'>
+			<ModalContent>
 				<Box id={membersDescriptionId} color='default'>
 					{t('These_participants_cannot_see_the_chat')}
 				</Box>

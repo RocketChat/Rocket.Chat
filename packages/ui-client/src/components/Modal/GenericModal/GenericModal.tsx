@@ -146,7 +146,7 @@ const GenericModal = ({
 				</ModalHeaderText>
 				{onClose && <ModalClose tabIndex={-1} aria-label={t('Close')} onClick={handleCloseButtonClick} />}
 			</ModalHeader>
-			<ModalContent fontScale='p2'>{children}</ModalContent>
+			<ModalContent>{children}</ModalContent>
 			<ModalFooter justifyContent={dontAskAgain || annotation ? 'space-between' : 'end'}>
 				{dontAskAgain}
 				{annotation && !dontAskAgain && <ModalFooterAnnotation>{annotation}</ModalFooterAnnotation>}

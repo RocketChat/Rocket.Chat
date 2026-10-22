@@ -38,7 +38,7 @@ const AppUpdateModal = ({ confirm, cancel, ...props }: AppUpdateModalProps) => {
 				<ModalTitle>{t('Apps_Manual_Update_Modal_Title')}</ModalTitle>
 				<ModalClose onClick={handleCloseButtonClick} />
 			</ModalHeader>
-			<ModalContent fontScale='p2'>{t('Apps_Manual_Update_Modal_Body')}</ModalContent>
+			<ModalContent>{t('Apps_Manual_Update_Modal_Body')}</ModalContent>
 			<ModalFooter>
 				<ModalFooterControllers>
 					<Button secondary onClick={handleCancelButtonClick}>

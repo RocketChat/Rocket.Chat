@@ -28,7 +28,7 @@ const PlaceChatOnHoldModal = ({ onCancel, onOnHoldChat, confirm = onOnHoldChat, 
 				<ModalTitle>{t('Omnichannel_onHold_Chat')}</ModalTitle>
 				<ModalClose onClick={onCancel} />
 			</ModalHeader>
-			<ModalContent fontScale='p2'>{t('Would_you_like_to_place_chat_on_hold')}</ModalContent>
+			<ModalContent>{t('Would_you_like_to_place_chat_on_hold')}</ModalContent>
 			<ModalFooter>
 				<ModalFooterControllers>
 					<Button onClick={onCancel}>{t('Cancel')}</Button>
