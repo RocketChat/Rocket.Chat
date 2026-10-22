@@ -68,4 +68,28 @@ describe('useCustomScript', () => {
 
 		expect(firedEvents()).toEqual(['Custom_Script_Logged_In']);
 	});
+
+	it('should not fire the logout event again when a login attempt on the login page fails', () => {
+		const { rerender } = renderHook(() => useCustomScript(), { wrapper: mockAppRoot().build() });
+
+		mockIsLoggingIn = true;
+		rerender();
+		mockIsLoggingIn = false;
+		rerender();
+
+		expect(firedEvents()).toEqual(['Custom_Script_Logged_Out']);
+	});
+
+	it('should fire each event again on a later logout and login', () => {
+		mockUserId = 'user-id';
+
+		const { rerender } = renderHook(() => useCustomScript(), { wrapper: mockAppRoot().build() });
+
+		mockUserId = undefined;
+		rerender();
+		mockUserId = 'user-id';
+		rerender();
+
+		expect(firedEvents()).toEqual(['Custom_Script_Logged_In', 'Custom_Script_Logged_Out', 'Custom_Script_Logged_In']);
+	});
 });
