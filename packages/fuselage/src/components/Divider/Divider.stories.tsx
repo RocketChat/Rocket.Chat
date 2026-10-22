@@ -37,6 +37,16 @@ export default {
 			description: "Removes the divider's own margin; the container spaces it instead.",
 			table: { category: 'Layout' },
 		},
+		small: {
+			control: 'boolean',
+			description: 'Vertical only: uses a 4px inline margin instead of 8px.',
+			table: { category: 'Layout' },
+		},
+		stretch: {
+			control: 'boolean',
+			description: 'Vertical only: grows to the height of its container instead of 20px.',
+			table: { category: 'Layout' },
+		},
 		children: {
 			control: 'text',
 			description: 'Text rendered inside the divider; when set, the divider renders as a labeled separator instead of a plain `hr`.',
@@ -85,4 +95,24 @@ export const Light: Story = {
 	args: {
 		variation: 'light',
 	},
+};
+
+export const VerticalSmall: Story = {
+	render: () => (
+		<ButtonGroup small>
+			<IconButton small icon='emoji' />
+			<Divider vertical small />
+			<IconButton small icon='bold' />
+		</ButtonGroup>
+	),
+};
+
+export const VerticalStretch: Story = {
+	render: () => (
+		<Box display='flex' alignItems='center' height='x80'>
+			<Box>Before</Box>
+			<Divider vertical stretch />
+			<Box>After</Box>
+		</Box>
+	),
 };

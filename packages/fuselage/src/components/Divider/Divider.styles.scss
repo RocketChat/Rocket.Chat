@@ -47,6 +47,16 @@ $divider-color: theme('divider-color', colors.stroke(extra-light));
 		border-color: colors.stroke(light);
 	}
 
+	&--small {
+		margin-inline: lengths.margin(4);
+	}
+
+	&--stretch {
+		align-self: stretch;
+
+		height: auto;
+	}
+
 	&#{&}--flush {
 		margin: 0;
 	}
