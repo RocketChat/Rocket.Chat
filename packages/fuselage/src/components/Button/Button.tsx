@@ -4,7 +4,9 @@ import { useMemo } from 'react';
 import { Box, type BoxProps } from '../Box';
 import { Icon, type IconProps } from '../Icon';
 
-export type ButtonProps = Omit<BoxProps, 'ref'> & {
+export type ButtonProps = Omit<BoxProps, 'ref' | 'is'> & {
+	/** Renders a link instead of a button, for actions that navigate or download. */
+	is?: 'button' | 'a';
 	variant?: 'primary' | 'secondary' | 'danger' | 'warning' | 'success' | 'secondary-danger' | 'secondary-warning' | 'secondary-success';
 	size?: 'mini' | 'tiny' | 'small' | 'medium' | 'large';
 	/** @deprecated Use `variant="primary"` instead. */
@@ -102,7 +104,6 @@ function Button({
 	return (
 		<Box
 			is={is}
-			type='button'
 			rcx-button
 			{...kindAndVariantProps}
 			rcx-button--small={effectiveSize === 'small'}

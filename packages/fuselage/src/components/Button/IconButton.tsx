@@ -32,8 +32,12 @@ export type IconButtonProps = {
 	warning?: boolean;
 	success?: boolean;
 	pressed?: boolean;
+	/** Renders a link instead of a button, for actions that navigate or download. */
+	is?: 'button' | 'a';
+	/** Opens the link in a new tab, without giving it access to this page. */
+	external?: boolean;
 } & IconButtonSize &
-	BoxProps;
+	Omit<BoxProps, 'is'>;
 
 const getVariantClass = (variant: string) => {
 	if (variant) {
@@ -64,6 +68,8 @@ function IconButton({
 	small,
 	medium,
 	pressed,
+	is = 'button',
+	external,
 	children,
 	...props
 }: IconButtonProps) {
@@ -105,8 +111,10 @@ function IconButton({
 
 	return (
 		<Box
-			is='button'
-			type='button'
+			is={is}
+			{...(is === 'a'
+				? { rel: external ? 'noopener noreferrer' : undefined, target: external ? '_blank' : undefined }
+				: { type: 'button' })}
 			rcx-button
 			rcx-button--icon
 			rcx-button--square
