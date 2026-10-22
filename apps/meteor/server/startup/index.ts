@@ -7,6 +7,7 @@ import './coreApps';
 import { generateFederationKeys } from './generateKeys';
 import './presenceTroubleshoot';
 import './httpSocketTimeout';
+import './disconnectGracePeriod';
 import '../hooks';
 import '../lib/rooms/roomTypes';
 import '../lib/settingsRegenerator';
