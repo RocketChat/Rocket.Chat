@@ -1,5 +1,7 @@
+import { Box } from '@rocket.chat/fuselage';
 import { MessageFooterCallout } from '@rocket.chat/ui-composer';
 import { useUserId } from '@rocket.chat/ui-contexts';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useIsRoomOverMacLimit } from '../../../omnichannel/hooks/useIsRoomOverMacLimit';
@@ -10,6 +12,14 @@ import ComposerOmnichannelCallout from './ComposerOmnichannelCallout';
 import { ComposerOmnichannelInquiry } from './ComposerOmnichannelInquiry';
 import { ComposerOmnichannelJoin } from './ComposerOmnichannelJoin';
 import { ComposerOmnichannelOnHold } from './ComposerOmnichannelOnHold';
+
+// Keeps the footer's own siblings in block flow, out of the gap.
+const ComposerOmnichannelLayout = ({ children }: { children: ReactNode }) => (
+	<Box display='flex' flexDirection='column' gap={16}>
+		<ComposerOmnichannelCallout />
+		<Box>{children}</Box>
+	</Box>
+);
 
 const ComposerOmnichannel = (props: ComposerMessageProps) => {
 	const { t } = useTranslation();
@@ -25,54 +35,48 @@ const ComposerOmnichannel = (props: ComposerMessageProps) => {
 
 	if (!open) {
 		return (
-			<>
-				<ComposerOmnichannelCallout />
+			<ComposerOmnichannelLayout>
 				<MessageFooterCallout color='default'>{t('This_conversation_is_already_closed')}</MessageFooterCallout>
-			</>
+			</ComposerOmnichannelLayout>
 		);
 	}
 
 	if (isRoomOverMacLimit) {
 		return (
-			<>
-				<ComposerOmnichannelCallout />
+			<ComposerOmnichannelLayout>
 				<MessageFooterCallout color='default'>{t('Workspace_exceeded_MAC_limit_disclaimer')}</MessageFooterCallout>
-			</>
+			</ComposerOmnichannelLayout>
 		);
 	}
 
 	if (onHold) {
 		return (
-			<>
-				<ComposerOmnichannelCallout />
+			<ComposerOmnichannelLayout>
 				<ComposerOmnichannelOnHold />
-			</>
+			</ComposerOmnichannelLayout>
 		);
 	}
 
 	if (isInquired) {
 		return (
-			<>
-				<ComposerOmnichannelCallout />
+			<ComposerOmnichannelLayout>
 				<ComposerOmnichannelInquiry />
-			</>
+			</ComposerOmnichannelLayout>
 		);
 	}
 
 	if (!isSubscribed && !isSameAgent) {
 		return (
-			<>
-				<ComposerOmnichannelCallout />
+			<ComposerOmnichannelLayout>
 				<ComposerOmnichannelJoin />
-			</>
+			</ComposerOmnichannelLayout>
 		);
 	}
 
 	return (
-		<>
-			<ComposerOmnichannelCallout />
+		<ComposerOmnichannelLayout>
 			<ComposerMessage {...props} />
-		</>
+		</ComposerOmnichannelLayout>
 	);
 };
 
