@@ -1,3 +1,4 @@
+import { AbacContractError } from '@rocket.chat/abac';
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
 import { Message, Team, Room } from '@rocket.chat/core-services';
@@ -61,6 +62,9 @@ export const addUserToRoom = async (
 		await beforeAddUserToRoomPatch([userToBeAdded.username!], room, inviterUser);
 		await beforeAddUserToRoom.run({ user: userToBeAdded, inviter: inviterUser }, room);
 	} catch (error) {
+		if (error instanceof AbacContractError) {
+			throw error;
+		}
 		throw new Meteor.Error((error as any)?.message);
 	}
 

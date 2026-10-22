@@ -13,13 +13,15 @@ type DmKickProps = {
 	roomId: string;
 };
 
+type DmCreateResult = Pick<IRoom, '_id' | 't' | 'usernames'> & { rid: IRoom['_id'] };
+
 // Public mirror of the implementation-derived routes (apps/meteor/server/api/v1/im.ts,
 // `ExtractRoutesFromAPI<typeof dmEndpoints>`). Kept identical so the two declarations merge
 // without TS2320, and so SDK/external consumers that don't compile apps/meteor keep these routes.
 // `im.kick` is the exception: still registered through the legacy API.v1.addRoute.
 export type ImEndpoints = {
 	'/v1/im.create': {
-		POST: (params: DmCreateProps) => { room: IRoom & { rid: string } };
+		POST: (params: DmCreateProps) => { room: DmCreateResult };
 	};
 	'/v1/im.delete': {
 		POST: (params: { roomId: string } | { username: string }) => void;
@@ -60,7 +62,7 @@ export type ImEndpoints = {
 	};
 	'/v1/im.members': {
 		GET: (params: DmMemberProps) => PaginatedResult<{
-			members: (Pick<IUser, '_id' | 'status' | 'statusText' | 'name' | 'username' | 'utcOffset' | 'federated' | 'freeSwitchExtension'> & {
+			members: (Pick<IUser, '_id' | 'status' | 'statusText' | 'name' | 'username' | 'utcOffset' | 'federated' | 'sipExtension'> & {
 				subscription: Partial<Pick<ISubscription, '_id' | 'status' | 'ts' | 'roles'>>;
 			})[];
 		}>;

@@ -28,7 +28,7 @@ type SettingsUpdatePropDefault = {
 
 export const isSettingsUpdatePropDefault = (props: Partial<SettingsUpdateProps>): props is SettingsUpdatePropDefault => 'value' in props;
 
-type SettingsPublicWithPaginationProps = PaginatedRequest<{ _id?: string; query?: string }>;
+type SettingsPublicWithPaginationProps = PaginatedRequest<{ _id?: string }>;
 
 const SettingsPublicWithPaginationSchema = {
 	type: 'object',
@@ -41,9 +41,6 @@ const SettingsPublicWithPaginationSchema = {
 		_id: {
 			type: 'string',
 		},
-		query: {
-			type: 'string',
-		},
 	},
 	required: [],
 	additionalProperties: false,
@@ -51,7 +48,7 @@ const SettingsPublicWithPaginationSchema = {
 
 export const isSettingsPublicWithPaginationProps = ajvQuery.compile<SettingsPublicWithPaginationProps>(SettingsPublicWithPaginationSchema);
 
-type SettingsGetParams = PaginatedRequest<{ includeDefaults?: boolean; query?: string }>;
+type SettingsGetParams = PaginatedRequest<{ includeDefaults?: boolean }>;
 
 const SettingsGetSchema = {
 	type: 'object',
@@ -61,12 +58,6 @@ const SettingsGetSchema = {
 		},
 		...paginationQueryProperties,
 		sort: {
-			type: 'string',
-		},
-		fields: {
-			type: 'string',
-		},
-		query: {
 			type: 'string',
 		},
 	},

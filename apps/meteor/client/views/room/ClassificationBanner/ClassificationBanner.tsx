@@ -1,27 +1,20 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useEndpoint, useSetting } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import { roomsQueryKeys } from '../../../lib/queryKeys';
-import { useIsABACManagedRoom } from '../../admin/ABAC/hooks/useIsABACManagedRoom';
 import { useRoom } from '../contexts/RoomContext';
+import { useRoomAbacInfo } from '../hooks/useRoomAbacInfo';
 
 const ClassificationBanner = () => {
 	const { t } = useTranslation();
 	const room = useRoom();
-	const isABACRoom = useIsABACManagedRoom(room);
 	const bannersEnabled = useSetting('ABAC_Classification_Banners_Enabled', false);
-	const enabled = bannersEnabled && isABACRoom;
-	const getRoomInfo = useEndpoint('GET', '/v1/rooms.info');
-
-	const { data: banner } = useQuery({
-		queryKey: [...roomsQueryKeys.info(room._id), 'classificationBanner', room.abacAttributes],
-		queryFn: async () => (await getRoomInfo({ roomId: room._id })).classificationBanner ?? null,
-		enabled,
+	const { data: banner } = useRoomAbacInfo(room._id, room.abacAttributes, {
+		enabled: bannersEnabled,
+		select: (data) => data.classificationBanner,
 	});
 
-	if (!enabled || !banner) {
+	if (!bannersEnabled || !banner) {
 		return null;
 	}
 
@@ -29,7 +22,7 @@ const ClassificationBanner = () => {
 		<Box
 			role='region'
 			aria-live='polite'
-			aria-label={t('ABAC_Room_Attributes')}
+			aria-label={t('ABAC_Classification_Banner')}
 			{...(banner.monospace && { fontFamily: 'mono' })}
 			backgroundColor={banner.backgroundColor}
 			color={banner.color}

@@ -45,7 +45,6 @@ const UserMentionElement = ({ mention }: UserMentionElementProps) => {
 	return (
 		<MessageHighlight
 			variant={resolved._id === ownUserId ? 'critical' : 'other'}
-			title={resolved._id === ownUserId ? t('Mentions_you') : t('Mentions_user')}
 			clickable
 			{...(handleClick && buttonProps)}
 			onMouseEnter={handleMouseEnter}

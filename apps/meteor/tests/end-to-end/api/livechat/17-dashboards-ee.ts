@@ -1,6 +1,7 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { ILivechatDepartment, ILivechatVisitor } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
 import { createDepartment, deleteDepartment } from '../../../data/livechat/department';
@@ -22,7 +23,7 @@ import { pagination } from '../../../data/utils';
 import { IS_EE } from '../../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('[EE] LIVECHAT - dashboards', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);

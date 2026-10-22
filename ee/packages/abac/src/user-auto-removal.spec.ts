@@ -17,6 +17,9 @@ jest.mock('@rocket.chat/core-services', () => ({
 			await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
 		},
 	},
+	Message: {
+		saveSystemMessage: jest.fn(),
+	},
 	api: {
 		broadcast: jest.fn(),
 	},
@@ -26,8 +29,8 @@ jest.mock('@rocket.chat/core-services', () => ({
 	Authorization: {
 		hasPermission: async () => false,
 	},
-	MeteorError: class extends Error {},
-	isMeteorError: () => false,
+	ClientSafeError: class extends Error {},
+	isClientSafeError: () => false,
 }));
 
 describe('AbacService integration (onRoomAttributesChanged)', () => {
@@ -206,7 +209,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 		} as any);
 
 		try {
-			await service.setRoomAbacAttributes(warmupRid, { [warmupAttributeKey]: ['a'] }, fakeActor);
+			await service.setRoomAbacAttributes(warmupRid, { [warmupAttributeKey]: ['a'] }, fakeActor, 'manage-abac-admin-rooms');
 		} finally {
 			await roomsCol.deleteOne({ _id: warmupRid });
 			await usersCol.deleteOne({ _id: warmupUserId });
@@ -278,7 +281,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 		it('logs users that do not satisfy newly added attribute key or its values and actually removes them', async () => {
 			const changeSpy = jest.spyOn<any, any>(service as any, 'onRoomAttributesChanged');
 
-			await service.setRoomAbacAttributes(rid1, { dept: ['eng', 'sales'] }, fakeActor);
+			await service.setRoomAbacAttributes(rid1, { dept: ['eng', 'sales'] }, fakeActor, 'manage-abac-admin-rooms');
 
 			expect(changeSpy).toHaveBeenCalledTimes(1);
 			expect(changeSpy.mock.calls[0][0]).toMatchObject({ _id: rid1 });
@@ -294,7 +297,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 		});
 
 		it('handles duplicate values in room attributes equivalently to unique set (logs non compliant and removes them)', async () => {
-			await service.setRoomAbacAttributes(rid2, { dep2t: ['eng', 'eng', 'sales'] }, fakeActor);
+			await service.setRoomAbacAttributes(rid2, { dep2t: ['eng', 'eng', 'sales'] }, fakeActor, 'manage-abac-admin-rooms');
 
 			expect(auditSpy).toHaveBeenCalledTimes(1);
 
@@ -430,6 +433,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 					region: ['emea'],
 				},
 				fakeActor,
+				'manage-abac-admin-rooms',
 			);
 
 			expect(auditSpy).toHaveBeenCalledTimes(3);
@@ -459,7 +463,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 		});
 
 		it('does not remove anyone when calling with identical attribute set twice', async () => {
-			await service.setRoomAbacAttributes(rid, { dept: ['eng', 'sales'] }, fakeActor);
+			await service.setRoomAbacAttributes(rid, { dept: ['eng', 'sales'] }, fakeActor, 'manage-abac-admin-rooms');
 			expect(auditSpy).toHaveBeenCalledTimes(1);
 			expect(auditSpy.mock.calls[0][0]).toMatchObject({ _id: 'u2_idem', username: 'u2_idem' });
 			expect(auditSpy.mock.calls[0][1]).toMatchObject({ _id: rid });
@@ -474,7 +478,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 			debugSpy.mockClear();
 			auditSpy.mockClear();
 
-			await service.setRoomAbacAttributes(rid, { dept: ['eng', 'sales'] }, fakeActor);
+			await service.setRoomAbacAttributes(rid, { dept: ['eng', 'sales'] }, fakeActor, 'manage-abac-admin-rooms');
 			expect(auditSpy).not.toHaveBeenCalled();
 
 			u1 = await usersCol.findOne({ _id: 'u1_idem' }, { projection: { __rooms: 1 } });
@@ -516,7 +520,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 		});
 
 		it('keeps user with superset values and removes user missing one required value', async () => {
-			await service.setRoomAbacAttributes(ridSuperset, { dept: ['eng', 'sales', 'hr'] }, fakeActor);
+			await service.setRoomAbacAttributes(ridSuperset, { dept: ['eng', 'sales', 'hr'] }, fakeActor, 'manage-abac-admin-rooms');
 
 			expect(auditSpy).toHaveBeenCalledTimes(1);
 			expect(auditSpy.mock.calls[0][0]).toMatchObject({ _id: 'u2_superset', username: 'u2_superset' });
@@ -530,7 +534,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 		});
 
 		it('removes user missing attribute key entirely', async () => {
-			await service.setRoomAbacAttributes(ridMissingKey, { region: ['emea'] }, fakeActor);
+			await service.setRoomAbacAttributes(ridMissingKey, { region: ['emea'] }, fakeActor, 'manage-abac-admin-rooms');
 
 			expect(auditSpy).toHaveBeenCalledTimes(2);
 			const auditedUsers = auditSpy.mock.calls.map((call) => call[0]._id).sort();
@@ -573,7 +577,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 		});
 
 		it('removes only expected fraction in a larger population', async () => {
-			await service.setRoomAbacAttributes(rid, { dept: ['eng', 'sales'] }, fakeActor);
+			await service.setRoomAbacAttributes(rid, { dept: ['eng', 'sales'] }, fakeActor, 'manage-abac-admin-rooms');
 
 			expect(auditSpy).toHaveBeenCalledTimes(150);
 			const removed = auditSpy.mock.calls.map((call) => call[0]._id);

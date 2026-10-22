@@ -33,7 +33,7 @@ test.describe.serial('settings-account-profile', () => {
 		// FIXME: solve test intermitencies
 		test.skip('expect update profile with new name/username', async () => {
 			const newName = faker.person.fullName();
-			const newUsername = faker.internet.userName({ firstName: newName });
+			const newUsername = faker.internet.username({ firstName: newName });
 
 			await poAccountProfile.inputName.fill(newName);
 			await poAccountProfile.inputUsername.fill(newUsername);
@@ -58,7 +58,9 @@ test.describe.serial('settings-account-profile', () => {
 			});
 
 			test('should change avatar image from url', async () => {
-				await poAccountProfile.inputAvatarLink.fill('https://www.gravatar.com/avatar/205e460b479e2e5b48aec07710c08d50');
+				await poAccountProfile.inputAvatarLink.fill(
+					'https://raw.githubusercontent.com/RocketChat/Rocket.Chat.Artwork/master/Logos/2020/png/logo-horizontal-red.png',
+				);
 				await poAccountProfile.btnSetAvatarLink.click();
 
 				await poAccountProfile.btnSubmit.click();

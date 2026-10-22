@@ -1,5 +1,6 @@
+import { before, describe, it } from 'node:test';
+
 import { expect } from 'chai';
-import { before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../../data/api-data';
@@ -8,7 +9,7 @@ import { removePermissionFromAllRoles, restorePermissionToRoles, updatePermissio
 import { IS_EE } from '../../../e2e/config/constants';
 
 describe('LIVECHAT - appearance', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		await updateSetting('Livechat_enabled', true);

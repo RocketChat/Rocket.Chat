@@ -1,24 +1,11 @@
-import type { ICreatedRoom, IUser, ITeam } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { Users, Team } from '@rocket.chat/models';
+import type { ICreateRoomParams } from '@rocket.chat/core-services';
+import type { IAbacAttributeDefinition, ICreatedRoom, IUser, ITeam } from '@rocket.chat/core-typings';
+import { Team } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { createRoom } from '../../lib/rooms/createRoom';
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		createPrivateGroup(
-			name: string,
-			members: string[],
-			readOnly?: boolean,
-			customFields?: Record<string, unknown>,
-			extraData?: Record<string, unknown>,
-		): ICreatedRoom;
-	}
-}
 
 export const createPrivateGroupMethod = async (
 	user: IUser,
@@ -28,9 +15,12 @@ export const createPrivateGroupMethod = async (
 	customFields?: Record<string, any>,
 	extraData: Record<string, any> = {},
 	excludeSelf = false,
+	abacAttributes?: IAbacAttributeDefinition[],
+	options?: ICreateRoomParams['options'],
 ): Promise<
 	ICreatedRoom & {
 		rid: string;
+		skippedMembers?: string[];
 	}
 > => {
 	check(name, String);
@@ -50,29 +40,20 @@ export const createPrivateGroupMethod = async (
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createPrivateGroup' });
 	}
 
-	return createRoom('p', name, user, members, excludeSelf, readOnly, {
-		...(customFields && Object.keys(customFields).length && { customFields }),
-		...extraData,
-	});
+	const { abacAttributes: _untrustedAbacAttributes, ...roomExtraData } = extraData;
+
+	return createRoom(
+		'p',
+		name,
+		user,
+		members,
+		excludeSelf,
+		readOnly,
+		{
+			...(customFields && Object.keys(customFields).length && { customFields }),
+			...roomExtraData,
+			...(abacAttributes && { abacAttributes }),
+		},
+		options,
+	);
 };
-
-Meteor.methods<ServerMethods>({
-	async createPrivateGroup(name, members, readOnly = false, customFields = {}, extraData = {}) {
-		const uid = Meteor.userId();
-
-		if (!uid) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'createPrivateGroup',
-			});
-		}
-
-		const user = await Users.findOneById(uid, { projection: { services: 0 } });
-		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'createPrivateGroup',
-			});
-		}
-
-		return createPrivateGroupMethod(user, name, members, readOnly, customFields, extraData);
-	},
-});
