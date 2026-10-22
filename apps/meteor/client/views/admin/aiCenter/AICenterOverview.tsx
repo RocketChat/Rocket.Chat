@@ -45,9 +45,11 @@ const AICenterOverview = (): ReactElement => {
 					{hasAILicense === false && (
 						<Callout type='info' icon='stars' title={t('AI_Center_license_required_title')}>
 							<Box>{t('AI_Center_license_required_description')}</Box>
-							<Button is='a' href={subscriptionHref} small marginBlockStart={12}>
-								{t('View_options')}
-							</Button>
+							<Box paddingBlockStart={12}>
+								<Button is='a' href={subscriptionHref} small>
+									{t('View_options')}
+								</Button>
+							</Box>
 						</Callout>
 					)}
 					<Box>
