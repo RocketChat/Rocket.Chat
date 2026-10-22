@@ -1,4 +1,4 @@
-import { Box, Skeleton, Margins, Callout } from '@rocket.chat/fuselage';
+import { Box, Skeleton, Callout } from '@rocket.chat/fuselage';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -60,14 +60,12 @@ const NewZapier = ({ ...props }) => {
 			{zapierAvailable && (
 				<Box>
 					{!script && (
-						<Box display='flex' flexDirection='column' alignItems='stretch' marginBlockStart={10}>
-							<Margins blockEnd={14}>
-								<Skeleton variant='rect' height={71} />
-								<Skeleton variant='rect' height={71} />
-								<Skeleton variant='rect' height={71} />
-								<Skeleton variant='rect' height={71} />
-								<Skeleton variant='rect' height={71} />
-							</Margins>
+						<Box display='flex' flexDirection='column' alignItems='stretch' marginBlockStart={10} gap={14} paddingBlockEnd={14}>
+							<Skeleton variant='rect' height={71} />
+							<Skeleton variant='rect' height={71} />
+							<Skeleton variant='rect' height={71} />
+							<Skeleton variant='rect' height={71} />
+							<Skeleton variant='rect' height={71} />
 						</Box>
 					)}
 					<Box id='zapier-goes-here' {...props} />
