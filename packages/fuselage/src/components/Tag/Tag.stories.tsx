@@ -139,7 +139,7 @@ export const _SecondaryInfo: Story = {
 export const WithIcon: Story = {
 	render,
 	args: {
-		icon: <Icon size='x12' marginInlineEnd={4} name='team-lock' />,
+		icon: <Icon size='x12' name='team-lock' />,
 		children: 'Team',
 	},
 };
@@ -225,7 +225,7 @@ export const Variants: Story = {
 											key={variant ?? 'default'}
 											pill={pill}
 											variant={variant}
-											icon={withIcon ? <Icon size='x12' marginInlineEnd={4} name='team-lock' /> : undefined}
+											icon={withIcon ? <Icon size='x12' name='team-lock' /> : undefined}
 											{...props}
 										>
 											john.doe
