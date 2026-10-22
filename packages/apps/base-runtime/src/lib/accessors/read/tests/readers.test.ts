@@ -7,6 +7,7 @@ import { CallHistoryRead } from '../CallHistoryRead';
 import { CloudWorkspaceRead } from '../CloudWorkspaceRead';
 import { ContactRead } from '../ContactRead';
 import { LivechatRead } from '../LivechatRead';
+import { MediaCallRead } from '../MediaCallRead';
 import { MessageRead } from '../MessageRead';
 import { OAuthAppsReader } from '../OAuthAppsReader';
 import { PersistenceRead } from '../PersistenceRead';
@@ -158,6 +159,16 @@ describe('Reader family (base-runtime)', () => {
 				method: 'bridges:getCallHistoryBridge:doSearch',
 				params: ['u1', undefined, undefined, 'APP_ID'],
 			});
+		});
+	});
+
+	describe('MediaCallRead', () => {
+		it('getById forwards to getMediaCallBridge:doGetById with the APP_ID sentinel', async () => {
+			const { rec, senderFn } = setup({ 'bridges:getMediaCallBridge:doGetById': { id: 'm1' } });
+			const result = await new MediaCallRead(senderFn).getById('m1');
+
+			assert.deepStrictEqual(rec.emitted(), [{ method: 'bridges:getMediaCallBridge:doGetById', params: ['m1', 'APP_ID'] }]);
+			assert.deepStrictEqual(result, { id: 'm1' });
 		});
 	});
 
