@@ -52,12 +52,12 @@ const DepartmentField = ({
 
 	return (
 		<Field {...props}>
-			<FieldLabel is='span' id={departmentFieldId}>{`${t('Department')} (${t('optional')})`}</FieldLabel>
+			<FieldLabel htmlFor={departmentFieldId}>{`${t('Department')} (${t('optional')})`}</FieldLabel>
 			<FieldRow>
 				<AutoCompleteDepartment
 					name={departmentField.name}
 					aria-invalid={!!departmentFieldError}
-					aria-labelledby={departmentFieldId}
+					id={departmentFieldId}
 					aria-describedby={cxp(departmentFieldId, {
 						error: !!departmentFieldError,
 						hint: true,

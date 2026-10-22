@@ -37,7 +37,7 @@ const SenderField = ({ control, provider, disabled = false, isLoading = false, .
 
 	return (
 		<Field {...props}>
-			<FieldLabel is='span' required id={senderFieldId}>
+			<FieldLabel required id={senderFieldId}>
 				{t('From')}
 			</FieldLabel>
 			<FieldRow>
