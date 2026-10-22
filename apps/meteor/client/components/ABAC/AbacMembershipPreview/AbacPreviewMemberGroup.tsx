@@ -48,7 +48,6 @@ const AbacPreviewMemberGroup = ({ title, members, verdict }: AbacPreviewMemberGr
 						<Icon
 							{...verdictIcons[verdict]}
 							size='x16'
-							flexShrink={0}
 							marginInlineStart={8}
 							role='img'
 							aria-hidden={false}
