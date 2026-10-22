@@ -121,9 +121,9 @@ const MessageSearchTab = () => {
 					</>
 				)}
 				{providerQuery.isError && (
-					<Callout margin={24} type='danger'>
-						{t('Search_current_provider_not_active')}
-					</Callout>
+					<Box margin={24}>
+						<Callout type='danger'>{t('Search_current_provider_not_active')}</Callout>
+					</Box>
 				)}
 			</ContextualbarContent>
 		</ContextualbarDialog>

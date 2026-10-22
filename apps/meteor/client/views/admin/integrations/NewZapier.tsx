@@ -50,15 +50,15 @@ const NewZapier = ({ ...props }) => {
 
 	return (
 		<>
-			<Callout
-				type='warning'
-				icon='warning'
-				title={t(!zapierAvailable ? 'Zapier_integration_is_not_available' : 'Zapier_integration_has_been_deprecated')}
-				marginBlockStart={16}
-				marginBlockEnd={4}
-			>
-				{t(!zapierAvailable ? 'Install_Zapier_from_marketplace_new_workspaces' : 'Install_Zapier_from_marketplace')}
-			</Callout>
+			<Box marginBlockStart={16} marginBlockEnd={4}>
+				<Callout
+					type='warning'
+					icon='warning'
+					title={t(!zapierAvailable ? 'Zapier_integration_is_not_available' : 'Zapier_integration_has_been_deprecated')}
+				>
+					{t(!zapierAvailable ? 'Install_Zapier_from_marketplace_new_workspaces' : 'Install_Zapier_from_marketplace')}
+				</Callout>
+			</Box>
 			{zapierAvailable && (
 				<>
 					{!script && (

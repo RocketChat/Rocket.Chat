@@ -124,9 +124,11 @@ const SubscriptionPage = () => {
 			)}
 			<PageScrollableContentWithShadow padding={16}>
 				{(showSubscriptionCallout || syncLicenseUpdate.isPending) && (
-					<Callout type='info' title={t('Sync_license_update_Callout_Title')} margin={8}>
-						{t('Sync_license_update_Callout')}
-					</Callout>
+					<Box margin={8}>
+						<Callout type='info' title={t('Sync_license_update_Callout_Title')}>
+							{t('Sync_license_update_Callout')}
+						</Callout>
+					</Box>
 				)}
 				<SubscriptionCalloutLimits />
 				{isLicenseLoading && <SubscriptionPageSkeleton />}

@@ -218,9 +218,9 @@ const RoomMembers = ({
 			{!isDirect && (onClickInvite || onClickAdd) && (
 				<ContextualbarFooter>
 					{isAbacLocked && (
-						<Callout type='danger' marginBlockEnd={16}>
-							{t('ABAC_Cannot_add_members_to_locked_room')}
-						</Callout>
+						<Box marginBlockEnd={16}>
+							<Callout type='danger'>{t('ABAC_Cannot_add_members_to_locked_room')}</Callout>
+						</Box>
 					)}
 					<ButtonGroup stretch>
 						{onClickInvite && (

@@ -76,19 +76,25 @@ const SearchPage = (): ReactElement => {
 				<Box marginInline='auto' width='full' maxWidth='x800'>
 					<SearchResultsHeader query={debouncedQuery} filters={filters} />
 					{hasIntelligentSearchLicense === false && (
-						<Callout type='info' icon='stars' title={t('Intelligent_Search_upsell_title')} marginBlockEnd={16}>
-							{t('Intelligent_Search_upsell_description')}
-						</Callout>
+						<Box marginBlockEnd={16}>
+							<Callout type='info' icon='stars' title={t('Intelligent_Search_upsell_title')}>
+								{t('Intelligent_Search_upsell_description')}
+							</Callout>
+						</Box>
 					)}
 					{hasIntelligentSearchLicense && !aiSearchFeatureEnabled && (
-						<Callout type='warning' icon='warning' title={t('AI_Search_feature_disabled_title')} marginBlockEnd={16}>
-							{t('AI_Search_feature_disabled_description')}
-						</Callout>
+						<Box marginBlockEnd={16}>
+							<Callout type='warning' icon='warning' title={t('AI_Search_feature_disabled_title')}>
+								{t('AI_Search_feature_disabled_description')}
+							</Callout>
+						</Box>
 					)}
 					{canUseAISearch && !intelligentSearchEnabled && (
-						<Callout type='warning' icon='warning' title={t('Intelligent_Search_disabled_title')} marginBlockEnd={16}>
-							{t('Intelligent_Search_disabled_description')}
-						</Callout>
+						<Box marginBlockEnd={16}>
+							<Callout type='warning' icon='warning' title={t('Intelligent_Search_disabled_title')}>
+								{t('Intelligent_Search_disabled_description')}
+							</Callout>
+						</Box>
 					)}
 					{canUseAISearch && intelligentSearchEnabled && meta && !meta.intelligentSearchConfigured && (
 						<AISearchErrorCallout role='alert' notConfigured marginBlockEnd={16} />

@@ -253,9 +253,9 @@ const CreateTeamModal = ({ onClose, onSuccess, abac }: CreateTeamModalProps) => 
 								{t('Teams_new_description')}
 							</Box>
 							{creationBlocked && (
-								<Callout type='danger' marginBlockEnd={16}>
-									{t('ABAC_Room_Creation_Not_Allowed')}
-								</Callout>
+								<Box marginBlockEnd={16}>
+									<Callout type='danger'>{t('ABAC_Room_Creation_Not_Allowed')}</Callout>
+								</Box>
 							)}
 							<FieldGroup marginBlockEnd={24}>
 								<Field>

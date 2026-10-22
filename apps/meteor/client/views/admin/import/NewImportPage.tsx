@@ -266,15 +266,17 @@ function NewImportPage() {
 								{fileType === 'upload' && (
 									<>
 										{maxFileSize > 0 ? (
-											<Callout type='warning' marginBlock='x16'>
-												{t('Importer_Upload_FileSize_Message', {
-													maxFileSize: formatMemorySize(maxFileSize),
-												})}
-											</Callout>
+											<Box marginBlock='x16'>
+												<Callout type='warning'>
+													{t('Importer_Upload_FileSize_Message', {
+														maxFileSize: formatMemorySize(maxFileSize),
+													})}
+												</Callout>
+											</Box>
 										) : (
-											<Callout type='info' marginBlock='x16'>
-												{t('Importer_Upload_Unlimited_FileSize')}
-											</Callout>
+											<Box marginBlock='x16'>
+												<Callout type='info'>{t('Importer_Upload_Unlimited_FileSize')}</Callout>
+											</Box>
 										)}
 										<Field>
 											<FieldLabel alignSelf='stretch' htmlFor={fileSourceInputId}>

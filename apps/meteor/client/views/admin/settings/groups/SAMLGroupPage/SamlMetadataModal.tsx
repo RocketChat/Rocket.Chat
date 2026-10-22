@@ -116,14 +116,14 @@ const SamlMetadataModal = ({ onClose, onFetch, onApply, showIdentifierFormat = f
 					</FieldRow>
 				</Field>
 				{error && (
-					<Callout type='danger' marginBlockStart={16}>
-						{t(error as Parameters<typeof t>[0])}
-					</Callout>
+					<Box marginBlockStart={16}>
+						<Callout type='danger'>{t(error as Parameters<typeof t>[0])}</Callout>
+					</Box>
 				)}
 				{warnings.map((warning) => (
-					<Callout key={warning} type='warning' marginBlockStart={16}>
-						{t(warning as Parameters<typeof t>[0])}
-					</Callout>
+					<Box key={warning} marginBlockStart={16}>
+						<Callout type='warning'>{t(warning as Parameters<typeof t>[0])}</Callout>
+					</Box>
 				))}
 				{values && (
 					<>

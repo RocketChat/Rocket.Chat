@@ -35,24 +35,24 @@ const AbacMembershipPreview = ({ data, isPending, isError, error }: AbacMembersh
 	return (
 		<Box>
 			{!hasCompliant && (
-				<Callout type='danger' marginBlockEnd={16}>
-					{t('ABAC_Preview_No_Compliant_Members')}
-				</Callout>
+				<Box marginBlockEnd={16}>
+					<Callout type='danger'>{t('ABAC_Preview_No_Compliant_Members')}</Callout>
+				</Box>
 			)}
 			{hasCompliant && (nonCompliant.length > 0 || inconclusive.length > 0) && (
-				<Callout icon='info-circled' marginBlockEnd={16}>
-					{t('ABAC_Preview_Only_Compliant_Added')}
-				</Callout>
+				<Box marginBlockEnd={16}>
+					<Callout icon='info-circled'>{t('ABAC_Preview_Only_Compliant_Added')}</Callout>
+				</Box>
 			)}
 			{hasCompliant && creator === 'nonCompliant' && (
-				<Callout type='warning' marginBlockEnd={16}>
-					{t('ABAC_Preview_Creator_Not_Added')}
-				</Callout>
+				<Box marginBlockEnd={16}>
+					<Callout type='warning'>{t('ABAC_Preview_Creator_Not_Added')}</Callout>
+				</Box>
 			)}
 			{inconclusive.length > 0 && (
-				<Callout type='warning' marginBlockEnd={16}>
-					{t('ABAC_Preview_Inconclusive_Warning')}
-				</Callout>
+				<Box marginBlockEnd={16}>
+					<Callout type='warning'>{t('ABAC_Preview_Inconclusive_Warning')}</Callout>
+				</Box>
 			)}
 			<AbacPreviewMemberGroup title={t('ABAC_Preview_Compliant')} members={compliant} verdict='compliant' />
 			<AbacPreviewMemberGroup title={t('ABAC_Preview_Non_Compliant')} members={nonCompliant} verdict='nonCompliant' />

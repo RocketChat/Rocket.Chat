@@ -12,9 +12,14 @@ const AnalyticsReports = () => {
 
 	return (
 		<Box display='flex' flexDirection='column' overflow='hidden' height='100%'>
-			<Callout title={t('Server_logs_access_has_changed_callout_title')} marginBlockEnd={16}>
-				<MarkdownText variant='inline' content={t('Server_logs_access_has_changed_callout_description', { docsUrl: links.go.logsDocs })} />
-			</Callout>
+			<Box marginBlockEnd={16}>
+				<Callout title={t('Server_logs_access_has_changed_callout_title')}>
+					<MarkdownText
+						variant='inline'
+						content={t('Server_logs_access_has_changed_callout_description', { docsUrl: links.go.logsDocs })}
+					/>
+				</Callout>
+			</Box>
 			<Box backgroundColor='light' padding={20} paddingBlockEnd={28} marginBlockEnd={16} borderRadius='medium'>
 				<Box display='flex' flexDirection='row' alignItems='center' marginBlockEnd={20}>
 					<Box

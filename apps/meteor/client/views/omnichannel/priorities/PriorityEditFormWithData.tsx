@@ -1,4 +1,4 @@
-import { Callout } from '@rocket.chat/fuselage';
+import { Box, Callout } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import type { PriorityEditFormProps } from './PriorityEditForm';
@@ -20,9 +20,9 @@ function PriorityEditFormWithData({ priorityId, ...props }: PriorityEditFormWith
 
 	if (isError || !data) {
 		return (
-			<Callout margin={16} type='danger'>
-				{t('Not_Available')}
-			</Callout>
+			<Box margin={16}>
+				<Callout type='danger'>{t('Not_Available')}</Callout>
+			</Box>
 		);
 	}
 

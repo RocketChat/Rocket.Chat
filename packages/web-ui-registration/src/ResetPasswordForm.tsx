@@ -1,4 +1,4 @@
-import { FieldGroup, TextInput, Field, FieldLabel, FieldRow, FieldError, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
+import { Box, FieldGroup, TextInput, Field, FieldLabel, FieldRow, FieldError, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
 import { Form, FormContainer, FormFooter, FormHeader, FormTitle, ActionLink } from '@rocket.chat/layout';
 import { useDocumentTitle } from '@rocket.chat/ui-client';
 import { useEffect, useId, useRef } from 'react';
@@ -79,9 +79,11 @@ export const ResetPasswordForm = ({ setLoginRoute }: ResetPasswordFormProps) => 
 				</FieldGroup>
 				{isSuccess && (
 					<FieldGroup>
-						<Callout aria-live='assertive' role='status' marginBlockStart={24} icon='mail'>
-							{t('registration.page.resetPassword.sent')}
-						</Callout>
+						<Box marginBlockStart={24}>
+							<Callout aria-live='assertive' role='status' icon='mail'>
+								{t('registration.page.resetPassword.sent')}
+							</Callout>
+						</Box>
 					</FieldGroup>
 				)}
 			</FormContainer>

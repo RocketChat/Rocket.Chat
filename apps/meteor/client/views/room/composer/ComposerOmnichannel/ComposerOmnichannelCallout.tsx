@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Callout, IconButton } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Callout, IconButton } from '@rocket.chat/fuselage';
 import { useSessionStorage } from '@rocket.chat/fuselage-hooks';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -37,24 +37,25 @@ const ComposerOmnichannelCallout = () => {
 	}
 
 	return (
-		<Callout
-			role='status'
-			aria-labelledby={calloutDescriptionId}
-			marginBlockEnd={16}
-			actions={
-				<ButtonGroup>
-					<Button onClick={() => navigate(`/live/${_id}/contact-profile/edit`)} small>
-						{t('Add_contact')}
-					</Button>
-					<Button danger secondary small onClick={handleBlock}>
-						{currentChannel?.blocked ? t('Unblock') : t('Block')}
-					</Button>
-					<IconButton icon='cross' secondary small title={t('Dismiss')} onClick={() => setDismissed(true)} />
-				</ButtonGroup>
-			}
-		>
-			<p id={calloutDescriptionId}>{t('Unknown_contact_callout_description')}</p>
-		</Callout>
+		<Box marginBlockEnd={16}>
+			<Callout
+				role='status'
+				aria-labelledby={calloutDescriptionId}
+				actions={
+					<ButtonGroup>
+						<Button onClick={() => navigate(`/live/${_id}/contact-profile/edit`)} small>
+							{t('Add_contact')}
+						</Button>
+						<Button danger secondary small onClick={handleBlock}>
+							{currentChannel?.blocked ? t('Unblock') : t('Block')}
+						</Button>
+						<IconButton icon='cross' secondary small title={t('Dismiss')} onClick={() => setDismissed(true)} />
+					</ButtonGroup>
+				}
+			>
+				<p id={calloutDescriptionId}>{t('Unknown_contact_callout_description')}</p>
+			</Callout>
+		</Box>
 	);
 };
 

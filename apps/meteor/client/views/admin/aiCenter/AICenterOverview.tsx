@@ -43,12 +43,14 @@ const AICenterOverview = (): ReactElement => {
 			<PageScrollableContentWithShadow padding={24}>
 				<Box marginInline='auto' width='full'>
 					{hasAILicense === false && (
-						<Callout type='info' icon='stars' title={t('AI_Center_license_required_title')} marginBlockEnd={24}>
-							<Box>{t('AI_Center_license_required_description')}</Box>
-							<Button is='a' href={subscriptionHref} small marginBlockStart={12}>
-								{t('View_options')}
-							</Button>
-						</Callout>
+						<Box marginBlockEnd={24}>
+							<Callout type='info' icon='stars' title={t('AI_Center_license_required_title')}>
+								<Box>{t('AI_Center_license_required_description')}</Box>
+								<Button is='a' href={subscriptionHref} small marginBlockStart={12}>
+									{t('View_options')}
+								</Button>
+							</Callout>
+						</Box>
 					)}
 					<Box is='h2' fontScale='h3' marginBlockEnd={16}>
 						{t('Capabilities')}

@@ -319,9 +319,11 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 					details={
 						<>
 							{creationBlocked && (
-								<Callout type='danger' marginBlockEnd={16}>
-									{t(canUseFederation ? 'ABAC_Room_Creation_Federated_Only' : 'ABAC_Room_Creation_Not_Allowed')}
-								</Callout>
+								<Box marginBlockEnd={16}>
+									<Callout type='danger'>
+										{t(canUseFederation ? 'ABAC_Room_Creation_Federated_Only' : 'ABAC_Room_Creation_Not_Allowed')}
+									</Callout>
+								</Box>
 							)}
 							<FieldGroup marginBlockEnd={24}>
 								<Field>

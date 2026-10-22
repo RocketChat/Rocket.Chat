@@ -68,19 +68,20 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 					</Box>
 				)}
 				{hasConflicts && (
-					<Callout
-						marginBlockEnd={8}
-						alignItems='center'
-						icon='members'
-						actions={
-							<ButtonGroup>
-								<Button onClick={() => setModal(<ReviewContactModal onCancel={() => setModal(null)} contact={contact} />)} small>
-									{t('See_conflicts')}
-								</Button>
-							</ButtonGroup>
-						}
-						title={t('Conflicts_found', { conflicts: conflictingFields?.length })}
-					/>
+					<Box marginBlockEnd={8}>
+						<Callout
+							alignItems='center'
+							icon='members'
+							actions={
+								<ButtonGroup>
+									<Button onClick={() => setModal(<ReviewContactModal onCancel={() => setModal(null)} contact={contact} />)} small>
+										{t('See_conflicts')}
+									</Button>
+								</ButtonGroup>
+							}
+							title={t('Conflicts_found', { conflicts: conflictingFields?.length })}
+						/>
+					</Box>
 				)}
 			</Box>
 			<Tabs>
