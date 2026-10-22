@@ -82,6 +82,10 @@
 		@include with-rectangular-size($height: 48, $padding-x: 24, $line-height: line-height(p2));
 	}
 
+	&--compact {
+		min-width: 4ch;
+	}
+
 	&--square {
 		@include with-squared-size($size: 40);
 		display: flex;
