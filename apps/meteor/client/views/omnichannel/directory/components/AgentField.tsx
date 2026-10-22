@@ -41,7 +41,7 @@ const AgentField = ({ agent, isSmall = false }: AgentFieldProps) => {
 			<Info style={{ display: 'flex' }}>
 				<UserAvatar size={isSmall ? 'x28' : 'x40'} title={username} username={username || ''} />
 				<AgentInfoDetails
-					marginInlineStart={isSmall ? 'x8' : 'x10'}
+					marginInlineStart={isSmall ? 'x8' : 'x8'}
 					name={displayName}
 					shortName={username}
 					status={<UserStatus status={status} />}

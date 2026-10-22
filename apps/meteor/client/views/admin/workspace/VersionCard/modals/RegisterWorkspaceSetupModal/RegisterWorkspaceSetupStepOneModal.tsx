@@ -84,7 +84,7 @@ const RegisterWorkspaceSetupStepOneModal = ({
 			</ModalHeader>
 			<ModalContent>
 				<Box>
-					<Stack gap={10}>
+					<Stack gap={8}>
 						<Box is='p' fontSize='p2' withRichContent>
 							{t('RegisterWorkspace_Setup_Subtitle')}
 						</Box>

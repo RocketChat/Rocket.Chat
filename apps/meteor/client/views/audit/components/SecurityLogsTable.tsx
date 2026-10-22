@@ -104,7 +104,7 @@ const SecurityLogsTable = () => {
 			<Box marginBlock={16} display='flex' flexWrap='wrap' alignItems='flex-end'>
 				<Box flexGrow={1}>
 					<Field>
-						<Box display='flex' flexDirection='column' paddingInline={6}>
+						<Box display='flex' flexDirection='column' paddingInline={4}>
 							<FieldLabel>{t('Date')}</FieldLabel>
 							<DateRangePicker flexGrow={1} value={dateRange} onChange={setDateRange} />
 						</Box>
@@ -112,13 +112,13 @@ const SecurityLogsTable = () => {
 				</Box>
 				<Box width={300} flexShrink={0}>
 					<Field>
-						<Box display='flex' flexDirection='column' paddingInline={6}>
+						<Box display='flex' flexDirection='column' paddingInline={4}>
 							<FieldLabel>{t('Setting')}</FieldLabel>
 							<SettingSelect value={setting} onChange={setSetting} />
 						</Box>
 					</Field>
 				</Box>
-				<Box role='group' display='flex' alignItems='center' gap={20} paddingInline={6} paddingBlockStart={12}>
+				<Box role='group' display='flex' alignItems='center' gap={20} paddingInline={4} paddingBlockStart={12}>
 					<Button secondary onClick={handleClearFilters}>
 						{t('Clear_filters')}
 					</Button>

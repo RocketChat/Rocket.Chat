@@ -12,7 +12,7 @@ const AppsPageContentSkeleton = () => {
 		</Stack>
 	);
 	return (
-		<Box paddingInline={24} display='flex' flexDirection='column' gap={36} marginBlockEnd={8}>
+		<Box paddingInline={24} display='flex' flexDirection='column' gap={32} marginBlockEnd={8}>
 			{loadingSection}
 			{loadingSection}
 			{loadingSection}

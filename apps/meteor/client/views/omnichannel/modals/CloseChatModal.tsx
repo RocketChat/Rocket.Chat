@@ -184,7 +184,7 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 						</Field>
 						{canSendTranscript && (
 							<Stack gap={16}>
-								<Stack gap={10}>
+								<Stack gap={8}>
 									<Field>
 										<Stack gap={6}>
 											<Divider />
@@ -200,7 +200,7 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 										</Field>
 									)}
 									{canSendTranscriptEmail && (
-										<Stack gap={14}>
+										<Stack gap={12}>
 											<Field>
 												<FieldRow>
 													<FieldLabel htmlFor='transcript-email'>{t('Omnichannel_transcript_email')}</FieldLabel>
