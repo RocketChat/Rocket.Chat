@@ -12,7 +12,6 @@ export type InputBoxProps<T extends HTMLInputElement | HTMLSelectElement | HTMLT
 	RefAttributes<T> & {
 		startAddon?: ReactNode;
 		endAddon?: ReactNode;
-		input?: ReactNode;
 		multiple?: boolean;
 		error?: string;
 		placeholder?: string;
@@ -66,7 +65,6 @@ function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaE
 	type = 'text',
 	small,
 	onChange,
-	input,
 	...props
 }: InputBoxProps<T>) {
 	const innerRef = useRef<T>(null);
@@ -106,10 +104,6 @@ function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaE
 	}
 
 	if (!defaultAddon && !startAddon) {
-		if (input) {
-			return <>{input}</>;
-		}
-
 		return (
 			<Input
 				is={(type === 'textarea' && 'textarea') || (type === 'select' && 'select') || 'input'}
@@ -138,24 +132,22 @@ function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaE
 			invisible={invisible}
 		>
 			{startAddon && <InputBoxAddon>{startAddon}</InputBoxAddon>}
-			{input || (
-				<Input
-					is={(type === 'textarea' && 'textarea') || (type === 'select' && 'select') || 'input'}
-					className={className}
-					cols={(type === 'textarea' && 1) || (type === 'select' && 0) || 0}
-					multiple={multiple}
-					ref={mergedRef}
-					htmlSize={(type === 'textarea' && undefined) || (type === 'select' && 1) || 1}
-					type={type === 'textarea' || type === 'select' ? undefined : type}
-					onChange={handleChange}
-					rcx-input-box--multiple={multiple}
-					rcx-input-box--placeholder-visible={placeholderVisible}
-					rcx-input-box--type={type}
-					rcx-input-box--undecorated
-					rcx-input-box--small={small}
-					{...props}
-				/>
-			)}
+			<Input
+				is={(type === 'textarea' && 'textarea') || (type === 'select' && 'select') || 'input'}
+				className={className}
+				cols={(type === 'textarea' && 1) || (type === 'select' && 0) || 0}
+				multiple={multiple}
+				ref={mergedRef}
+				htmlSize={(type === 'textarea' && undefined) || (type === 'select' && 1) || 1}
+				type={type === 'textarea' || type === 'select' ? undefined : type}
+				onChange={handleChange}
+				rcx-input-box--multiple={multiple}
+				rcx-input-box--placeholder-visible={placeholderVisible}
+				rcx-input-box--type={type}
+				rcx-input-box--undecorated
+				rcx-input-box--small={small}
+				{...props}
+			/>
 			{defaultAddon && <InputBoxAddon>{defaultAddon}</InputBoxAddon>}
 		</InputBoxWrapper>
 	);

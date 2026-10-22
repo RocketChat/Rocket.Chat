@@ -2,4 +2,4 @@
 '@rocket.chat/fuselage': patch
 ---
 
-Fixes `InputBox` ignoring its declared `input` prop and leaking it as an unrecognized attribute to the underlying DOM element
+Removes the unused `input` prop from `InputBoxProps`. `InputBox` never rendered it and passed it on to the underlying element as an unknown attribute.

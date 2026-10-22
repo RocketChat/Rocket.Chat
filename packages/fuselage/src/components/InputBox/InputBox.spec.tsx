@@ -1,9 +1,9 @@
 import { composeStories } from '@storybook/react-webpack5';
-import { waitFor, screen } from '@testing-library/react';
+import { waitFor } from '@testing-library/react';
 import { axe } from 'jest-axe';
 import { useEffect, useState } from 'react';
 
-import InputBox from './InputBox';
+import type { InputBoxProps } from './InputBox';
 import * as stories from './InputBox.stories';
 import { render } from '../../testing';
 
@@ -39,29 +39,9 @@ it('should update error class when error changes asynchronously', async () => {
 	});
 });
 
-it('should render custom input when input prop is provided', () => {
-	render(<InputBox type='text' input={<input data-testid='custom-input' defaultValue='custom' />} />);
+it('does not accept an input prop', () => {
+	// @ts-expect-error InputBox always renders its own control, so it takes no `input` element
+	const props: InputBoxProps = { type: 'text', input: null };
 
-	expect(screen.getByTestId('custom-input')).toBeInTheDocument();
-	expect(screen.queryByRole('textbox')).toHaveValue('custom');
-});
-
-it('should render custom input inside InputBoxWrapper when addons are present', () => {
-	render(
-		<InputBox
-			type='text'
-			startAddon={<span data-testid='custom-addon'>addon</span>}
-			input={<input data-testid='custom-input-with-addon' />}
-		/>,
-	);
-
-	expect(screen.getByTestId('custom-addon')).toBeInTheDocument();
-	expect(screen.getByTestId('custom-input-with-addon')).toBeInTheDocument();
-});
-
-it('should not leak input prop as a DOM attribute', () => {
-	render(<InputBox type='text' data-testid='default-input' />);
-
-	const input = screen.getByTestId('default-input');
-	expect(input).not.toHaveAttribute('input');
+	expect(props.type).toBe('text');
 });
