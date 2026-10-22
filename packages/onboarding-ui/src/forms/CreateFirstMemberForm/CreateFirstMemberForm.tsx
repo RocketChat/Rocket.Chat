@@ -101,7 +101,7 @@ export const CreateFirstMemberForm = ({
 						{t('component.form.action.back')}
 					</Button>
 
-					<Button type='submit' primary disabled={!isValid} loading={isSubmitting || isValidating} minHeight='x40'>
+					<Button type='submit' primary disabled={!isValid} loading={isSubmitting || isValidating}>
 						{isSubmitting ? <Throbber inheritColor /> : t('form.createFirstMemberForm.button.submit')}
 					</Button>
 				</ButtonGroup>
