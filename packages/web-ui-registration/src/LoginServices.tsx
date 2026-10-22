@@ -45,18 +45,17 @@ const LoginServices = ({ disabled, setError }: LoginServicesProps) => {
 				</Box>
 			)}
 
-			{servicesToShow.length > 0 && (
+			{(servicesToShow.length > 0 || isDesktopApp) && (
 				<ButtonGroup vertical stretch small>
 					{servicesToShow.map((service) => (
 						<LoginServicesButton disabled={disabled} key={service.service} {...service} setError={setError} />
 					))}
+					{isDesktopApp && (
+						<Button primary onClick={handleLoginOnWeb}>
+							{t('registration.component.login.onWeb')}
+						</Button>
+					)}
 				</ButtonGroup>
-			)}
-
-			{isDesktopApp && (
-				<Button width='100%' primary onClick={handleLoginOnWeb} marginBlockStart={4}>
-					{t('registration.component.login.onWeb')}
-				</Button>
 			)}
 		</>
 	);
