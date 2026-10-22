@@ -43,6 +43,6 @@ describe('UserMenuButton', () => {
 		});
 
 		// eslint-disable-next-line testing-library/no-node-access
-		expect(screen.getByRole('status').querySelector(`.rcx-status-bullet--${expected}`)).toBeInTheDocument();
+		expect(screen.getByRole('button').querySelector(`.rcx-button__badge .rcx-status-bullet--${expected}`)).toBeInTheDocument();
 	});
 });

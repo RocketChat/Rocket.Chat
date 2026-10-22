@@ -1,5 +1,7 @@
+import { VisuallyHidden } from '@react-aria/visually-hidden';
+import { Badge } from '@rocket.chat/fuselage';
 import type { BadgeProps } from '@rocket.chat/fuselage';
-import { HeaderToolbarAction, HeaderToolbarActionBadge } from '@rocket.chat/ui-client';
+import { HeaderToolbarAction } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 import { lazy, useMemo } from 'react';
@@ -56,10 +58,12 @@ export const useThreadRoomAction = () => {
 					onClick={action}
 					disabled={disabled}
 					tooltip={tooltip}
+					aria-label={tunread ? t('Threads_unread_count', { count: tunread }) : undefined}
+					badge={!!unread && <Badge variant={variant}>{unread}</Badge>}
 				>
-					{!!unread && <HeaderToolbarActionBadge variant={variant}>{unread}</HeaderToolbarActionBadge>}
+					<VisuallyHidden role='status'>{!!tunread && t('Threads_unread_count', { count: tunread })}</VisuallyHidden>
 				</HeaderToolbarAction>
 			),
 		};
-	}, [enabled, t, unread, variant]);
+	}, [enabled, t, tunread, unread, variant]);
 };
