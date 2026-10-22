@@ -104,16 +104,18 @@ const AddExistingModal = ({ teamId, onClose, reload }: AddExistingModalProps) =>
 				<ModalClose onClick={onClose} />
 			</ModalHeader>
 			<ModalContent>
-				<Field marginBlockEnd={24}>
-					<FieldLabel>{t('Channels')}</FieldLabel>
-					<Controller
-						control={control}
-						name='rooms'
-						render={({ field: { value, onChange } }) => (
-							<RoomsAvailableForTeamsAutoComplete value={value} onChange={onChange} onAbacRoomsChange={setAbacRoomNames} />
-						)}
-					/>
-				</Field>
+				<Box paddingBlockEnd={24}>
+					<Field>
+						<FieldLabel>{t('Channels')}</FieldLabel>
+						<Controller
+							control={control}
+							name='rooms'
+							render={({ field: { value, onChange } }) => (
+								<RoomsAvailableForTeamsAutoComplete value={value} onChange={onChange} onAbacRoomsChange={setAbacRoomNames} />
+							)}
+						/>
+					</Field>
+				</Box>
 			</ModalContent>
 			<ModalFooter>
 				<ModalFooterControllers>

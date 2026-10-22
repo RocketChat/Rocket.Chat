@@ -105,7 +105,7 @@ const EnterE2EPasswordModal = ({ onConfirm, onClose, onCancel }: EnterE2EPasswor
 								{errors.password.message}
 							</FieldError>
 						)}
-						<FieldRow alignSelf='end'>
+						<FieldRow justify='end'>
 							<FieldLink
 								href='#'
 								target={undefined}

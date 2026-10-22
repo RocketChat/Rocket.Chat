@@ -219,7 +219,7 @@ export const LoginForm = ({ setLoginRoute }: LoginFormProps) => {
 									</FieldError>
 								)}
 								{isResetPasswordAllowed && (
-									<FieldRow justifyContent='end'>
+									<FieldRow justify='end'>
 										<FieldLink
 											href='#'
 											onClick={(e): void => {
