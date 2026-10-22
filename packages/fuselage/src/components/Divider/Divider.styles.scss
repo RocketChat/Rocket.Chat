@@ -43,6 +43,10 @@ $divider-color: theme('divider-color', colors.stroke(extra-light));
 		border-left: $divider-size solid $divider-color;
 	}
 
+	&--light {
+		border-color: colors.stroke(light);
+	}
+
 	&#{&}--flush {
 		margin: 0;
 	}

@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import { Box, type BoxProps } from '../Box';
 
 export type DividerProps = BoxProps & {
-	variation?: 'danger';
+	variation?: 'danger' | 'light';
 	children?: ReactNode;
 	vertical?: boolean;
 	/** Removes the divider's own margin, leaving the spacing to its container. */
@@ -19,6 +19,7 @@ const Divider = ({ variation, children, vertical, flush, ...props }: DividerProp
 				rcx-divider--vertical={vertical}
 				rcx-divider--flush={flush}
 				rcx-divider--danger={variation === 'danger'}
+				rcx-divider--light={variation === 'light'}
 				{...props}
 			/>
 		);
