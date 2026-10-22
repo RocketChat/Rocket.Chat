@@ -19,14 +19,22 @@ const getKeyPrefix = (storage: Storage | undefined) => {
 const getStorageItem = <T>(storedKey: `fuselage-${string}`, fallbackValue: T, storage?: Storage): T => {
 	if (!storage) return fallbackValue;
 
-	const item = storage.getItem(storedKey);
-	return item ? JSON.parse(item) : fallbackValue;
+	try {
+		const item = storage.getItem(storedKey);
+		return item ? JSON.parse(item) : fallbackValue;
+	} catch {
+		return fallbackValue;
+	}
 };
 
 const setStorageItem = <T>(storedKey: `fuselage-${string}`, value: T, storage?: Storage): void => {
 	if (!storage) return;
 
-	storage.setItem(storedKey, JSON.stringify(value));
+	try {
+		storage.setItem(storedKey, JSON.stringify(value));
+	} catch {
+		// Ignore write errors (quota exceeded, private browsing restrictions)
+	}
 	ee.emit(storedKey, value);
 };
 
@@ -58,7 +66,13 @@ export const useStorage = <T>(storage: Storage | undefined, key: string, fallbac
 				if (event.storageArea !== storage) return;
 				if (event.key !== storedKey) return;
 
-				ee.emit(storedKey, event.newValue ? JSON.parse(event.newValue) : fallbackValueRef.current);
+				let parsedValue: T;
+				try {
+					parsedValue = event.newValue ? JSON.parse(event.newValue) : fallbackValueRef.current;
+				} catch {
+					parsedValue = fallbackValueRef.current;
+				}
+				ee.emit(storedKey, parsedValue);
 			};
 
 			const offCb = ee.on(storedKey, (value: T): void => {
