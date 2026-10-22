@@ -41,6 +41,7 @@ export const PaginatedSelect = ({
 	'renderOptions': _Options = OptionsPaginated,
 	renderItem = Option,
 	endReached,
+	id,
 	'aria-labelledby': ariaLabelledBy,
 	'aria-describedby': ariaDescribedBy,
 	'aria-invalid': ariaInvalid,
@@ -102,6 +103,7 @@ export const PaginatedSelect = ({
 					filter={filter}
 					ref={ref}
 					aria-haspopup='listbox'
+					id={id}
 					aria-labelledby={ariaLabelledBy}
 					aria-describedby={ariaDescribedBy}
 					aria-invalid={ariaInvalid}

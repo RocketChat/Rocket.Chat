@@ -62,6 +62,7 @@ function SelectLegacy({
 	'renderOptions': _Options = Options,
 	addonIcon,
 	customEmpty,
+	id,
 	'aria-labelledby': ariaLabelledBy,
 	'aria-describedby': ariaDescribedBy,
 	'aria-invalid': ariaInvalid,
@@ -153,6 +154,7 @@ function SelectLegacy({
 					))}
 				<Anchor
 					ref={anchorRef}
+					id={id}
 					aria-labelledby={ariaLabelledBy}
 					aria-describedby={ariaDescribedBy}
 					aria-invalid={ariaInvalid}
