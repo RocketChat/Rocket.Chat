@@ -40,7 +40,9 @@ export const useDesktopUserPresence = () => {
 	// desktop app does not see a logout in between.
 	const loggedIn = Boolean(userId);
 	const userLoaded = Boolean(user);
-	const statuses = useUserStatuses({ enabled: loggedIn });
+	// Only a desktop app with the presence contract reads the statuses. Layouts without the user menu do not share the query.
+	const desktopReadsPresence = typeof window.RocketChatDesktop?.setUserPresenceState === 'function';
+	const statuses = useUserStatuses({ enabled: loggedIn && desktopReadsPresence });
 	const connection = toDesktopConnection(connectionStatus);
 	const status = isDesktopStatus(user?.status) ? user.status : undefined;
 	const statusText = user?.statusText || undefined;

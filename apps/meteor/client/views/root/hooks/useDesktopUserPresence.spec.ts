@@ -163,6 +163,25 @@ describe('useDesktopUserPresence', () => {
 		expect(olderDesktopSetUserPresence).not.toHaveBeenCalled();
 	});
 
+	it.each([
+		['a browser without the desktop bridge', undefined],
+		['a desktop app without the presence contract', { setUserPresence: jest.fn() }],
+	])('does not load the custom statuses in %s', async (_name, bridge) => {
+		if (bridge) {
+			window.RocketChatDesktop = bridge as unknown as IRocketChatDesktop;
+		} else {
+			delete window.RocketChatDesktop;
+		}
+		const listStatuses = jest.fn(customStatuses);
+
+		renderHook(() => useDesktopUserPresence(), {
+			wrapper: mockAppRoot().withUser(user).withEndpoint('GET', '/v1/custom-user-status.list', listStatuses).build(),
+		});
+		await new Promise((resolve) => setTimeout(resolve, 0));
+
+		expect(listStatuses).not.toHaveBeenCalled();
+	});
+
 	it('runs in a browser without the desktop bridge', () => {
 		delete window.RocketChatDesktop;
 
