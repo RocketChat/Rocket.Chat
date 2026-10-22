@@ -25,8 +25,9 @@ const AnalyticsReports = () => {
 						padding={4}
 						marginInlineEnd={8}
 						backgroundColor='status-background-info'
+						color='info'
 					>
-						<Icon name='info' size={20} color='info' />
+						<Icon name='info' size={20} />
 					</Box>
 					<Box fontScale='h4'>{t('How_and_why_we_collect_usage_data')}</Box>
 				</Box>
