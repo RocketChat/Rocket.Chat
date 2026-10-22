@@ -1,0 +1,41 @@
+CLAUDE.md
+  s_d28e7e696a6a9b::t_b84aa5a2150952 53
+docs/service-brokers.md
+  s_d28e7e696a6a9b::t_3ccff5620d9dec 30-31,33-45,49,99-101,108-306,319-320,341,404,406-414,452-468
+ee/packages/network-broker/src/NatsBroker.ts
+  s_443de6a05d76f4::t_1e7172a1acd01b 199-200
+  s_443de6a05d76f4::t_21aac8cff6bd12 293
+  s_443de6a05d76f4::t_9b8482179b70fd 69
+  s_443de6a05d76f4::t_19258da06797b5 32-33
+  s_443de6a05d76f4::t_d465660abdb6cb 17
+  s_443de6a05d76f4::t_126aa819c1df9c 446-447
+  s_443de6a05d76f4::t_7e87cb203bfbe2 298
+ee/packages/network-broker/src/streams.ts
+  s_443de6a05d76f4::t_11fe1f0bf7060e 7
+ee/packages/network-broker/src/nats.ts
+  s_443de6a05d76f4::t_8ec10ded9712d6 8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4b0684800451424bb288e15c27fb539bdd9c9069",
+  "prompts": {},
+  "sessions": {
+    "s_443de6a05d76f4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5923b277-3672-4f0a-80fe-0776a4a5fc4b",
+        "model": "unknown"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    },
+    "s_d28e7e696a6a9b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "efb7e527-2913-474e-b956-7e47c477c378",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

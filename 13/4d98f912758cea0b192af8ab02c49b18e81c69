@@ -1,0 +1,33 @@
+ee/apps/ddp-streamer/package.json
+  s_d28e7e696a6a9b::t_ceacc14753253e 40
+ee/apps/account-service/package.json
+  s_d28e7e696a6a9b::t_ceacc14753253e 38
+ee/apps/presence-service/package.json
+  s_d28e7e696a6a9b::t_ceacc14753253e 37
+ee/apps/queue-worker/package.json
+  s_d28e7e696a6a9b::t_ceacc14753253e 38
+ee/apps/omnichannel-transcript/package.json
+  s_d28e7e696a6a9b::t_ceacc14753253e 44
+apps/meteor/package.json
+  s_d28e7e696a6a9b::t_ceacc14753253e 264
+ee/apps/authorization-service/package.json
+  s_d28e7e696a6a9b::t_ceacc14753253e 38
+yarn.lock
+  s_d28e7e696a6a9b::t_2ed9961fb6cb06 9577,9717,9923,11026,11347,11505,11559,30734-30736,30739
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "134d98f912758cea0b192af8ab02c49b18e81c69",
+  "prompts": {},
+  "sessions": {
+    "s_d28e7e696a6a9b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "efb7e527-2913-474e-b956-7e47c477c378",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

@@ -1,0 +1,21 @@
+CLAUDE.md
+  s_d28e7e696a6a9b::t_b84aa5a2150952 45
+docs/service-brokers.md
+  s_d28e7e696a6a9b::t_3ccff5620d9dec 30-31,33-45,49,99-101,108-306,319-320,341,404,406-414,452-468
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b44e3006957479115bf96f56a0f5f9054dd4eb9e",
+  "prompts": {},
+  "sessions": {
+    "s_d28e7e696a6a9b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "efb7e527-2913-474e-b956-7e47c477c378",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

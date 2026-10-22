@@ -1,0 +1,19 @@
+ee/packages/network-broker/src/NatsBroker.ts
+  s_443de6a05d76f4::t_1e7172a1acd01b 214-215
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b34ce78a1f33743c09d20de5d48b850f7dfeb368",
+  "prompts": {},
+  "sessions": {
+    "s_443de6a05d76f4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5923b277-3672-4f0a-80fe-0776a4a5fc4b",
+        "model": "unknown"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
