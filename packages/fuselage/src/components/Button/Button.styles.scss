@@ -10,8 +10,8 @@
 	@mixin with-rectangular-size($height, $padding-x, $line-height) {
 		min-width: calc(lengths.size($height) * 2);
 		height: lengths.size($height);
-		padding: calc((lengths.padding($height) - $line-height) / 2 - 2px) calc(lengths.padding($padding-x) - 2px);
-		padding-block: calc((lengths.padding($height) - $line-height) / 2 - 2px);
+		padding: calc((lengths.size($height) - $line-height) / 2 - 2px) calc(lengths.padding($padding-x) - 2px);
+		padding-block: calc((lengths.size($height) - $line-height) / 2 - 2px);
 
 		padding-inline: calc(lengths.padding($padding-x) - 2px);
 	}

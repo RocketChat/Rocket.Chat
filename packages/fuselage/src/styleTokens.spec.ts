@@ -1,4 +1,4 @@
-import { spacing, spacingScale } from './styleTokens';
+import { inset, spacing, spacingScale } from './styleTokens';
 
 describe('spacingScale', () => {
 	it('lists the eight steps in pixels', () => {
@@ -7,25 +7,41 @@ describe('spacingScale', () => {
 });
 
 describe('spacing', () => {
-	it.each(Object.entries(spacingScale))('resolves %s and its negative forms', (token, px) => {
-		expect(spacing(token)).toBe(`${px / 16}rem`);
-		expect(spacing(`neg-${token}`)).toBe(`${-px / 16}rem`);
-		expect(spacing(`-${token}`)).toBe(`${-px / 16}rem`);
+	it.each(Object.entries(spacingScale))('resolves %s and its negative forms to pixels', (token, px) => {
+		expect(spacing(token)).toBe(`${px}px`);
+		expect(spacing(`neg-${token}`)).toBe(`${-px}px`);
+		expect(spacing(`-${token}`)).toBe(`${-px}px`);
 	});
 
 	it.each([
-		['x10', '0.625rem'],
-		['neg-x2', '-0.125rem'],
-		[10, '10px'],
+		['x10', '10px'],
+		['neg-x2', '-2px'],
+		[8, '8px'],
 		[-2, '-2px'],
 		['none', '0px'],
 		['auto', 'auto'],
 		['0.5rem', '0.5rem'],
-	])('keeps resolving %p to %p', (value, expected) => {
+	])('resolves %p to %p', (value, expected) => {
 		expect(spacing(value)).toBe(expected);
+	});
+
+	it('gives a number and its token the same value', () => {
+		expect(spacing(8)).toBe(spacing('x8'));
 	});
 
 	it('ignores values that are not numbers or strings', () => {
 		expect(spacing(undefined)).toBeUndefined();
+	});
+});
+
+describe('inset', () => {
+	it.each([
+		['x8', '0.5rem'],
+		['neg-x8', '-0.5rem'],
+		[8, '8px'],
+		['none', '0px'],
+		['auto', 'auto'],
+	])('keeps resolving %p to %p', (value, expected) => {
+		expect(inset(value)).toBe(expected);
 	});
 });

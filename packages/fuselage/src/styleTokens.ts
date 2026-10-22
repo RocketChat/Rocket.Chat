@@ -224,28 +224,37 @@ export const size = measure((value: unknown) => {
 	return undefined;
 });
 
-const spacingScaleValue = (value: unknown) => {
+export const spacing = memoize((value: unknown) => {
+	if (typeof value === 'number') {
+		return `${value}px`;
+	}
+
 	if (typeof value !== 'string') {
 		return undefined;
 	}
 
-	const [, negativeMark, token] = /^(neg-|-)?(x\d+)$/.exec(value) ?? [];
-	if (!token || !isSpacingToken(token)) {
-		return undefined;
+	if (value === 'none') {
+		return '0px';
 	}
 
-	return `${((negativeMark ? -1 : 1) * tokenSpacing[token]) / 16}rem`;
-};
+	const [, negativeMark, step] = /^(neg-|-)?x(\d+)$/.exec(value) ?? [];
+	if (!step) {
+		return value;
+	}
 
-const measureSpacing = measure((value: unknown) => {
+	const token = `x${step}`;
+	const pixels = isSpacingToken(token) ? tokenSpacing[token] : Number(step);
+	return `${(negativeMark ? -1 : 1) * pixels}px`;
+});
+
+/** @internal */
+export const inset = measure((value: unknown) => {
 	if (value === 'none') {
 		return '0px';
 	}
 
 	return undefined;
 });
-
-export const spacing = memoize((value: unknown) => spacingScaleValue(value) ?? measureSpacing(value));
 
 type FontFamily = keyof typeof tokenTypography.fontFamily;
 

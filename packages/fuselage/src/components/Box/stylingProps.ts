@@ -13,6 +13,7 @@ import {
 	fontColor,
 	fontFamily,
 	fontScale,
+	inset,
 	spacing,
 	size,
 	strokeColor,
@@ -180,7 +181,7 @@ const sizeProp: PropDefinition = {
 };
 
 const insetProp: PropDefinition = {
-	toCSSValue: spacing,
+	toCSSValue: inset,
 };
 
 const marginProp: PropDefinition = {
