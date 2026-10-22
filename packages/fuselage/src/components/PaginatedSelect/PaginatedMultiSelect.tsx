@@ -69,12 +69,15 @@ const PaginatedMultiSelect = ({
 	options = [],
 	error,
 	disabled,
-	anchor: Anchor = SelectFocus,
+	'anchor': Anchor = SelectFocus,
 	onChange = () => {},
 	placeholder,
-	renderOptions: OptionsComponent = OptionsPaginated,
+	'renderOptions': OptionsComponent = OptionsPaginated,
 	renderItem = Option,
 	endReached,
+	'aria-labelledby': ariaLabelledBy,
+	'aria-describedby': ariaDescribedBy,
+	'aria-invalid': ariaInvalid,
 	...props
 }: PaginatedMultiSelectProps) => {
 	const [internalValue, setInternalValue] = useState(value || []);
@@ -144,6 +147,9 @@ const PaginatedMultiSelect = ({
 									disabled={disabled}
 									ref={ref}
 									aria-haspopup='listbox'
+									aria-labelledby={ariaLabelledBy}
+									aria-describedby={ariaDescribedBy}
+									aria-invalid={ariaInvalid}
 									onClick={show}
 									onBlur={hide}
 									order={1}

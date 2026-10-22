@@ -52,16 +52,19 @@ function SelectLegacy({
 	error,
 	disabled,
 	options = [],
-	anchor: Anchor = SelectFocus,
+	'anchor': Anchor = SelectFocus,
 	onChange = () => {},
 	getValue = ([value] = ['', '']) => value,
 	getLabel = ([, label] = ['', '']) => label,
 	placeholder = '',
 	renderItem,
-	renderSelected: RenderSelected,
-	renderOptions: _Options = Options,
+	'renderSelected': RenderSelected,
+	'renderOptions': _Options = Options,
 	addonIcon,
 	customEmpty,
+	'aria-labelledby': ariaLabelledBy,
+	'aria-describedby': ariaDescribedBy,
+	'aria-invalid': ariaInvalid,
 	...props
 }: SelectProps) {
 	const [internalValue, setInternalValue] = useState(value || '');
@@ -148,7 +151,17 @@ function SelectLegacy({
 							{visibleText}
 						</Box>
 					))}
-				<Anchor ref={anchorRef} disabled={disabled ?? false} onClick={show} onBlur={hide} onKeyDown={handleKeyDown} onKeyUp={handleKeyUp}>
+				<Anchor
+					ref={anchorRef}
+					aria-labelledby={ariaLabelledBy}
+					aria-describedby={ariaDescribedBy}
+					aria-invalid={ariaInvalid}
+					disabled={disabled ?? false}
+					onClick={show}
+					onBlur={hide}
+					onKeyDown={handleKeyDown}
+					onKeyUp={handleKeyUp}
+				>
 					{!value ? option || placeholder : null}
 				</Anchor>
 				<SelectAddon>
