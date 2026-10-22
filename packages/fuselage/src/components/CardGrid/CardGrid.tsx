@@ -10,9 +10,9 @@ export type CardGridProps = {
 };
 
 const CardGrid = ({ children, breakpoints, ...props }: CardGridProps) => (
-	<Grid rcx-card-grid margin={-8} {...props}>
+	<Grid className='rcx-card-grid' {...props}>
 		{Children.map(children, (child) => (
-			<GridItem rcx-card-grid__item padding={8} {...breakpoints}>
+			<GridItem className='rcx-card-grid__item' {...breakpoints}>
 				{child}
 			</GridItem>
 		))}
