@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 
+import { Box } from '../Box';
 import { IconButton } from '../Button';
 import { ButtonGroup } from '../ButtonGroup';
 import Divider from './Divider';
@@ -29,6 +30,11 @@ export default {
 		vertical: {
 			control: 'boolean',
 			description: 'Renders the divider along the vertical axis instead of horizontal.',
+			table: { category: 'Layout' },
+		},
+		flush: {
+			control: 'boolean',
+			description: "Removes the divider's own margin; the container spaces it instead.",
 			table: { category: 'Layout' },
 		},
 		children: {
@@ -62,5 +68,15 @@ export const AsButtonSeparator: Story = {
 			<Divider vertical />
 			<IconButton small icon='user' />
 		</ButtonGroup>
+	),
+};
+
+export const Flush: Story = {
+	render: () => (
+		<Box display='flex' flexDirection='column' gap={16}>
+			<Box>Section</Box>
+			<Divider flush />
+			<Box>Section</Box>
+		</Box>
 	),
 };

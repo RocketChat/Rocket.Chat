@@ -179,7 +179,7 @@ export const CreateCloudWorkspaceForm = ({
 					</Grid.Item>
 				</Grid>
 
-				<Divider marginBlock={0} />
+				<Divider flush />
 
 				<Field>
 					<FieldRow>
