@@ -139,37 +139,34 @@ const PaginatedMultiSelect = ({
 				<Margins inline='x4'>
 					<FlexContainer>
 						<Box is='div'>
-							<Box is='div' display='flex' alignItems='center' flexWrap='wrap' margin='-x8' role='listbox'>
-								<Margins all='x4'>
-									<Anchor
-										disabled={disabled}
-										ref={ref}
-										aria-haspopup='listbox'
-										onClick={show}
-										onBlur={hide}
-										order={1}
-										rcx-input-box--undecorated
-									>
-										{placeholder ?? null}
-									</Anchor>
+							<Box is='div' display='flex' alignItems='center' flexWrap='wrap' margin='neg-x4' gap={8} role='listbox'>
+								<Anchor
+									disabled={disabled}
+									ref={ref}
+									aria-haspopup='listbox'
+									onClick={show}
+									onBlur={hide}
+									order={1}
+									rcx-input-box--undecorated
+								>
+									{placeholder ?? null}
+								</Anchor>
 
-									{selectedOptions.map(({ value, label }, index) => (
-										<Chip
-											key={value ?? index}
-											maxWidth='x150'
-											withTruncatedText
-											title={withTitle ? label : undefined}
-											tabIndex={-1}
-											role='option'
-											onClick={(e) => {
-												prevent(e);
-												removeOption(value);
-											}}
-										>
-											{label}
-										</Chip>
-									))}
-								</Margins>
+								{selectedOptions.map(({ value, label }, index) => (
+									<Chip
+										key={value ?? index}
+										className='rcx-select__chip'
+										title={withTitle ? label : undefined}
+										tabIndex={-1}
+										role='option'
+										onClick={(e) => {
+											prevent(e);
+											removeOption(value);
+										}}
+									>
+										{label}
+									</Chip>
+								))}
 							</Box>
 						</Box>
 					</FlexContainer>
