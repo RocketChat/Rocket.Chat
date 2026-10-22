@@ -25,7 +25,7 @@ class Accounts extends ServiceClass {
 		this.contextInCreated = this.context;
 	}
 
-	async whereAmI(): Promise<string | undefined> {
+	async whereAmI(): Promise<string | null | undefined> {
 		return this.context?.nodeID;
 	}
 

@@ -29,7 +29,7 @@ const loadStartNatsBroker = async (skipProcessEventRegistration?: string): Promi
 
 const flushPromises = (): Promise<void> => new Promise((resolve) => setImmediate(resolve));
 
-const listenersBefore = new Map<string, ReturnType<typeof process.listeners>>();
+const listenersBefore = new Map<string, NodeJS.SignalsListener[]>();
 
 beforeEach(() => {
 	signals.forEach((signal) => listenersBefore.set(signal, process.listeners(signal)));
