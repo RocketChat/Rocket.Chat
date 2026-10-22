@@ -171,7 +171,7 @@ describe('checkCodeForUser - remembered two-factor authorization', () => {
 		httpHeaders: { 'user-agent': 'Mozilla/5.0 Rocket.Chat test browser' },
 	} as any;
 
-	// Registered long before the post-registration grace window, with TOTP enabled.
+	// Registered long before the post-registration grace window; TOTP is enabled through the mocked check.
 	const buildUser = (loginToken: Record<string, unknown> = {}) =>
 		({
 			_id: 'user-id',
