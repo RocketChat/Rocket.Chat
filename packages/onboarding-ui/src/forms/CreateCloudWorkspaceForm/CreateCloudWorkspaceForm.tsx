@@ -129,55 +129,57 @@ export const CreateCloudWorkspaceForm = ({
 					{errors?.workspaceURL && <FieldError>{errors.workspaceURL.message}</FieldError>}
 				</Field>
 
-				<Grid marginBlock={16}>
-					<Grid.Item>
-						<Field>
-							<FieldLabel>
-								<Box display='inline' marginInlineEnd={8}>
-									{t('form.createCloudWorkspace.fields.serverRegionlabel')}
-								</Box>
-								<Tooltip text={t('form.createCloudWorkspace.fields.serverRegion.tooltip')} />
-							</FieldLabel>
-							<FieldRow>
-								<Controller
-									name='serverRegion'
-									control={control}
-									rules={{ required: true }}
-									defaultValue={defaultValues?.serverRegion}
-									render={({ field }) => (
-										<Select
-											{...field}
-											options={serverRegionOptions}
-											placeholder={t('form.createCloudWorkspace.fields.serverRegionlabel')}
-										/>
-									)}
-								/>
-							</FieldRow>
-						</Field>
-					</Grid.Item>
+				<Box paddingBlock={16}>
+					<Grid>
+						<Grid.Item>
+							<Field>
+								<FieldLabel>
+									<Box display='inline' marginInlineEnd={8}>
+										{t('form.createCloudWorkspace.fields.serverRegionlabel')}
+									</Box>
+									<Tooltip text={t('form.createCloudWorkspace.fields.serverRegion.tooltip')} />
+								</FieldLabel>
+								<FieldRow>
+									<Controller
+										name='serverRegion'
+										control={control}
+										rules={{ required: true }}
+										defaultValue={defaultValues?.serverRegion}
+										render={({ field }) => (
+											<Select
+												{...field}
+												options={serverRegionOptions}
+												placeholder={t('form.createCloudWorkspace.fields.serverRegionlabel')}
+											/>
+										)}
+									/>
+								</FieldRow>
+							</Field>
+						</Grid.Item>
 
-					<Grid.Item>
-						<Field>
-							<FieldLabel>
-								<Box display='inline' marginInlineEnd={8}>
-									{t('form.createCloudWorkspace.fields.languagelabel')}
-								</Box>
-								<Tooltip text={t('form.createCloudWorkspace.fields.language.tooltip')} />
-							</FieldLabel>
-							<FieldRow>
-								<Controller
-									name='language'
-									control={control}
-									rules={{ required: true }}
-									defaultValue={defaultValues?.language}
-									render={({ field }) => (
-										<Select {...field} options={languageOptions} placeholder={t('form.createCloudWorkspace.fields.languagelabel')} />
-									)}
-								/>
-							</FieldRow>
-						</Field>
-					</Grid.Item>
-				</Grid>
+						<Grid.Item>
+							<Field>
+								<FieldLabel>
+									<Box display='inline' marginInlineEnd={8}>
+										{t('form.createCloudWorkspace.fields.languagelabel')}
+									</Box>
+									<Tooltip text={t('form.createCloudWorkspace.fields.language.tooltip')} />
+								</FieldLabel>
+								<FieldRow>
+									<Controller
+										name='language'
+										control={control}
+										rules={{ required: true }}
+										defaultValue={defaultValues?.language}
+										render={({ field }) => (
+											<Select {...field} options={languageOptions} placeholder={t('form.createCloudWorkspace.fields.languagelabel')} />
+										)}
+									/>
+								</FieldRow>
+							</Field>
+						</Grid.Item>
+					</Grid>
+				</Box>
 
 				<Divider flush />
 
