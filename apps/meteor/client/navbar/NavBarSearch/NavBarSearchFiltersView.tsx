@@ -1,5 +1,5 @@
 import type { AppliedFilter } from '@rocket.chat/ai-search';
-import { Box, Button, Icon, IconButton } from '@rocket.chat/fuselage';
+import { Box, Button, IconButton } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -36,8 +36,7 @@ const NavBarSearchFiltersView = ({ id, filters, onBack }: NavBarSearchFiltersVie
 						{t('Search_filters_with_count', { count: filters.length })}
 					</Box>
 				</Box>
-				<Button small secondary onClick={clearFilters}>
-					<Icon name='cross' size='x16' marginInlineEnd={4} />
+				<Button small secondary icon='cross' onClick={clearFilters}>
 					{t('Clear_all')}
 				</Button>
 			</Box>
