@@ -28,6 +28,17 @@ import type {
 import type { FindPaginated, IBaseModel } from './IBaseModel';
 import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
 
+export type UsersByStatusFilters = {
+	active?: boolean;
+	hasLoggedIn?: boolean;
+	type?: string;
+	searchTerm?: string;
+	searchEmails?: boolean;
+	roles?: IRole['_id'][];
+	inactiveReasons?: NonNullable<IUser['inactiveReason']>[];
+	statusManagement?: 'default' | 'managed';
+};
+
 export interface IUsersModel extends IBaseModel<IUser> {
 	addRolesByUserId(uid: IUser['_id'], roles: IRole['_id'][]): Promise<UpdateResult>;
 	findUsersInRoles<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
@@ -484,6 +495,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		>
 	>;
 	findPaginatedManagedPresenceUsers(searchTerm?: string, options?: FindOptions<IUser>): FindPaginated<FindCursor<IUser>>;
+	findPaginatedByStatus(filters: UsersByStatusFilters, options?: FindOptions<IUser>): FindPaginated<FindCursor<IUser>>;
 	findPresenceDisabledByAdmin<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		userIds?: string[],
 		options?: O,
