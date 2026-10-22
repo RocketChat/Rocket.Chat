@@ -184,8 +184,10 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 						{canSendTranscript && (
 							<>
 								<Field>
-									<Divider />
-									<FieldLabel marginBlockStart={8}>{t('Chat_transcript')}</FieldLabel>
+									<Box display='flex' flexDirection='column' gap={6}>
+										<Divider />
+										<FieldLabel>{t('Chat_transcript')}</FieldLabel>
+									</Box>
 								</Field>
 								{canSendTranscriptPDF && (
 									<Field marginBlockStart={10}>

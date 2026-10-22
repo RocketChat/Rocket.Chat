@@ -28,7 +28,7 @@ const OmnichannelTab = ({ form: { control } }: OmnichannelTabProps) => {
 	return (
 		<>
 			<Field flexShrink={1}>
-				<FieldLabel flexGrow={0}>{t('Visitor')}</FieldLabel>
+				<FieldLabel>{t('Visitor')}</FieldLabel>
 				<FieldRow>
 					<VisitorAutoComplete
 						value={visitorField.value}
@@ -41,7 +41,7 @@ const OmnichannelTab = ({ form: { control } }: OmnichannelTabProps) => {
 				{visitorFieldState.error?.type === 'validate' && <FieldError>{visitorFieldState.error.message}</FieldError>}
 			</Field>
 			<Field flexShrink={1} marginInlineStart={8}>
-				<FieldLabel flexGrow={0}>{t('Agent')}</FieldLabel>
+				<FieldLabel>{t('Agent')}</FieldLabel>
 				<FieldRow>
 					<AutoCompleteAgent
 						error={(() => {
