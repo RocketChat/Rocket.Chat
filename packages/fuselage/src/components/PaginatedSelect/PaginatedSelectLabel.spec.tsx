@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import type { ComponentType } from 'react';
 
 import PaginatedMultiSelect from './PaginatedMultiSelect';
@@ -34,5 +35,21 @@ describe.each<[string, ComponentType<any>, string, Record<string, unknown>]>([
 		const control = screen.getByRole(role, { name: 'Fruit' });
 		expect(control).toHaveAccessibleDescription('Required field');
 		expect(control).toHaveAttribute('aria-invalid', 'true');
+	});
+
+	it('should focus its control when the label pointing to its id is clicked', async () => {
+		render(
+			<>
+				<label htmlFor='fruit'>Fruit</label>
+				<Component id='fruit' placeholder='Pick one' options={options} {...extraProps} onChange={jest.fn()} />
+			</>,
+		);
+
+		const control = screen.getByLabelText('Fruit');
+		expect(control).toHaveAttribute('id', 'fruit');
+		expect(control).toHaveRole(role);
+
+		await userEvent.click(screen.getByText('Fruit'));
+		expect(control).toHaveFocus();
 	});
 });

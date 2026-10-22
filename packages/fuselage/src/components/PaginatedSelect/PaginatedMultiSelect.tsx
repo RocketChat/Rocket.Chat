@@ -75,6 +75,7 @@ const PaginatedMultiSelect = ({
 	'renderOptions': OptionsComponent = OptionsPaginated,
 	renderItem = Option,
 	endReached,
+	id,
 	'aria-labelledby': ariaLabelledBy,
 	'aria-describedby': ariaDescribedBy,
 	'aria-invalid': ariaInvalid,
@@ -147,6 +148,7 @@ const PaginatedMultiSelect = ({
 									disabled={disabled}
 									ref={ref}
 									aria-haspopup='listbox'
+									id={id}
 									aria-labelledby={ariaLabelledBy}
 									aria-describedby={ariaDescribedBy}
 									aria-invalid={ariaInvalid}
