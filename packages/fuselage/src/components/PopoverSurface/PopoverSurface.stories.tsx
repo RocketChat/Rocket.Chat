@@ -27,6 +27,11 @@ export default {
 			control: 'boolean',
 			description: 'Drops the 12px block padding.',
 		},
+		elevation: {
+			control: 'inline-radio',
+			options: ['1', '2'],
+			description: 'How far the surface is raised above the page; defaults to `2`.',
+		},
 	},
 	decorators: [
 		(Story) => (

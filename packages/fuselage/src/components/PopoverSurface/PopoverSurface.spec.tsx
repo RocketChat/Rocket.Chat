@@ -14,6 +14,11 @@ describe('[PopoverSurface Component]', () => {
 		expect(getComputedStyle(surface(container))).toMatchObject({ display: 'flex', flexDirection: 'column', overflow: 'auto' });
 	});
 
+	it('sits lower at elevation 1', () => {
+		const { container } = render(<Default elevation='1' />);
+		expect(surface(container)).toHaveClass('rcx-tile--elevation-1');
+	});
+
 	it('caps the height at half the viewport', () => {
 		const { container } = render(<HalfScreen />);
 		expect(getComputedStyle(surface(container)).maxHeight).toBe('50vh');

@@ -8,6 +8,8 @@ export type PopoverSurfaceProps = Omit<HTMLAttributes<HTMLElement>, 'color' | 'i
 		maxHeight?: 'half-screen' | 'most-of-screen';
 		/** Drops the block padding, for content that reaches the surface's edges. */
 		flush?: boolean;
+		/** How far the surface is raised above the page. */
+		elevation?: '1' | '2';
 	};
 
 const maxHeights = { 'half-screen': '50vh', 'most-of-screen': '80vh' } as const;
@@ -15,11 +17,11 @@ const maxHeights = { 'half-screen': '50vh', 'most-of-screen': '80vh' } as const;
 /**
  * The raised surface of a dropdown or popover: it fills its positioner and scrolls its content.
  */
-function PopoverSurface({ maxHeight, flush, ...props }: PopoverSurfaceProps) {
+function PopoverSurface({ maxHeight, flush, elevation = '2', ...props }: PopoverSurfaceProps) {
 	return (
 		<Box
 			rcx-tile
-			rcx-tile--elevation='2'
+			rcx-tile--elevation={elevation}
 			display='flex'
 			flexDirection='column'
 			overflow='auto'
