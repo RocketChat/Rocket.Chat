@@ -1,4 +1,4 @@
-import { Box, Icon } from '@rocket.chat/fuselage';
+import { Box, StatusIcon } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import FeatureUsageCard from '../FeatureUsageCard';
@@ -18,7 +18,7 @@ const CountSeatsCard = ({ activeUsers }: CountSeatsCardProps) => {
 		>
 			<FeatureUsageCardBody>
 				<Box fontScale='h1' display='flex' alignItems='center' justifyContent='center' gap={4}>
-					<Icon color='font-annotation' name='user' size={40} />
+					<StatusIcon status='hint' name='user' size={40} />
 					{activeUsers}
 				</Box>
 			</FeatureUsageCardBody>

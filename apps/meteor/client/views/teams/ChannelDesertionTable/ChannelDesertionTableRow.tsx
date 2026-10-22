@@ -1,5 +1,5 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
-import { Box, CheckBox, Icon } from '@rocket.chat/fuselage';
+import { Box, CheckBox, Icon, StatusIcon } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericTableRow, GenericTableCell, useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useId } from 'react';
@@ -32,7 +32,7 @@ const ChannelDesertionTableRow = ({ room, onChange, selected, lastOwnerWarning }
 				>
 					<Icon name={room.t === 'p' ? 'hashtag-lock' : 'hashtag'} />
 					{fname ?? name}
-					{isLastOwner && <Icon size='x16' name='info-circled' color='status-font-on-danger' title={lastOwnerWarning} />}
+					{isLastOwner && <StatusIcon size='x16' name='info-circled' status='danger' title={lastOwnerWarning} />}
 				</Box>
 			</GenericTableCell>
 			<GenericTableCell align='end' withTruncatedText>
