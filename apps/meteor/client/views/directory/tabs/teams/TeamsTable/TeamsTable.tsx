@@ -67,9 +67,10 @@ const TeamsTable = () => {
 		resetKey: queryKey,
 	});
 	const { data, isFetched, isLoading, isError, refetch } = usePaginatedQuery({
-		query,
-		queryKey,
-		queryFn: getDirectoryData,
+		query: {
+			queryKey,
+			queryFn: (page) => getDirectoryData({ ...query, ...page }),
+		},
 		itemsKey: 'result',
 		offset: current,
 		count: itemsPerPage,

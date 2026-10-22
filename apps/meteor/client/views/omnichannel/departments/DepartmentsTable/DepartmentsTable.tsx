@@ -62,13 +62,14 @@ const DepartmentsTable = ({ archived }: DepartmentsTableProps) => {
 	} = usePagination({ resetKey: queryKey });
 
 	const { data, isSuccess, isLoading } = usePaginatedQuery({
-		query,
-		queryKey,
-		queryFn: getDepartments,
+		query: {
+			queryKey,
+			queryFn: (page) => getDepartments({ ...query, ...page }),
+			placeholderData: keepPreviousData,
+		},
 		itemsKey: 'departments',
 		offset: current,
 		count: itemsPerPage,
-		placeholderData: keepPreviousData,
 	});
 
 	const [defaultQuery] = useState(hashKey([query, current, itemsPerPage]));

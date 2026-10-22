@@ -54,9 +54,10 @@ const ManagersTable = () => {
 
 	const getManagers = useEndpoint('GET', '/v1/livechat/users/manager');
 	const { data, isLoading, isSuccess, isError, refetch } = usePaginatedQuery({
-		query,
-		queryKey,
-		queryFn: getManagers,
+		query: {
+			queryKey,
+			queryFn: (page) => getManagers({ ...query, ...page }),
+		},
 		itemsKey: 'users',
 		offset: current,
 		count: itemsPerPage,

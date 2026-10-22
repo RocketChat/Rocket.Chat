@@ -50,7 +50,7 @@ it.each([
 	const getSounds = createGetSounds({ total, limit });
 
 	const { result } = renderHook(
-		() => usePaginatedQuery({ query: {}, queryKey: ['sounds'], queryFn: getSounds, itemsKey: 'sounds', offset, count: 25 }),
+		() => usePaginatedQuery({ query: { queryKey: ['sounds'], queryFn: getSounds }, itemsKey: 'sounds', offset, count: 25 }),
 		{ wrapper: mockAppRoot().build() },
 	);
 
@@ -73,9 +73,7 @@ it('should report an error when one of the requests fails', async () => {
 	const { result } = renderHook(
 		() =>
 			usePaginatedQuery({
-				query: {},
-				queryKey: ['sounds'],
-				queryFn: getSounds,
+				query: { queryKey: ['sounds'], queryFn: getSounds },
 				itemsKey: 'sounds',
 				offset: 0,
 				count: 25,
@@ -92,9 +90,7 @@ it('should return the result of the provided combine function', async () => {
 	const { result } = renderHook(
 		() =>
 			usePaginatedQuery({
-				query: {},
-				queryKey: ['sounds'],
-				queryFn: createGetSounds({ total: 50, limit: 10 }),
+				query: { queryKey: ['sounds'], queryFn: createGetSounds({ total: 50, limit: 10 }) },
 				combine: (queries) => queries.map((query) => query.data?.sounds.length),
 				offset: 0,
 				count: 25,
@@ -109,9 +105,7 @@ it('should return the query results when neither itemsKey nor combine is provide
 	const { result } = renderHook(
 		() =>
 			usePaginatedQuery({
-				query: {},
-				queryKey: ['sounds'],
-				queryFn: createGetSounds({ total: 50, limit: 10 }),
+				query: { queryKey: ['sounds'], queryFn: createGetSounds({ total: 50, limit: 10 }) },
 				offset: 0,
 				count: 25,
 			}),

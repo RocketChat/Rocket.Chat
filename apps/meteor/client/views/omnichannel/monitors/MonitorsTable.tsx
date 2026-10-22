@@ -77,9 +77,10 @@ const MonitorsTable = () => {
 	} = usePagination({ resetKey: queryKey });
 
 	const { data, refetch, isLoading, isSuccess, isError } = usePaginatedQuery({
-		query,
-		queryKey,
-		queryFn: getMonitors,
+		query: {
+			queryKey,
+			queryFn: (page) => getMonitors({ ...query, ...page }),
+		},
 		itemsKey: 'monitors',
 		offset: current,
 		count: itemsPerPage,
