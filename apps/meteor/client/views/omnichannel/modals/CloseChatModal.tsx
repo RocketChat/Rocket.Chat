@@ -210,7 +210,7 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 													<Field>
 														<FieldLabel required>{t('Contact_email')}</FieldLabel>
 														<FieldRow>
-															<EmailInput value={visitorEmail} required disabled flexGrow={1} />
+															<EmailInput value={visitorEmail} required disabled />
 														</FieldRow>
 													</Field>
 													<Field>

@@ -120,7 +120,6 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps) {
 						<NumberInput
 							id={dueTimeFieldId}
 							placeholder={t('Estimated_wait_time_in_minutes')}
-							flexGrow={1}
 							{...dueTimeField}
 							aria-describedby={`${dueTimeFieldId}-error`}
 							aria-invalid={Boolean(errors.dueTimeInMinutes?.message)}
