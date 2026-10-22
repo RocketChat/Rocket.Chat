@@ -36,7 +36,7 @@ integrations:
 
 ## What an administrator sees
 
-Everything lives under **Admin → Microsoft Exchange**. It requires a premium license that includes the
+Everything lives under **Manage -> Workspace -> Settings → Microsoft Exchange**. It requires a premium license that includes the
 `outlook-calendar` module.
 
 1. **Pick the mode.** `Legacy` keeps today's behaviour, where each user signs in from the desktop app.
