@@ -137,7 +137,7 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 				<Field>
 					<FieldLabel htmlFor={topicField}>{t('Topic')}</FieldLabel>
 					<FieldRow>
-						<TextInput {...register('topic')} id={topicField} flexGrow={1} />
+						<TextInput {...register('topic')} id={topicField} />
 					</FieldRow>
 				</Field>
 

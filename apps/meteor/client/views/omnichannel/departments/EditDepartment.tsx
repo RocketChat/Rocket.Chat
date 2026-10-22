@@ -163,7 +163,6 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 								<FieldRow>
 									<TextInput
 										id={nameField}
-										flexGrow={1}
 										error={errors.name?.message}
 										placeholder={t('Name')}
 										{...register('name', { required: t('Required_field', { field: t('Name') }) })}

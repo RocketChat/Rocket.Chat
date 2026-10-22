@@ -92,7 +92,6 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 								value={tagValue}
 								id={tagsFieldId}
 								onChange={({ currentTarget }: ChangeEvent<HTMLInputElement>): void => handleTagValue(currentTarget.value)}
-								flexGrow={1}
 								placeholder={t('Enter_a_tag')}
 							/>
 							<Button disabled={!tagValue} title={t('Add')} onClick={handleTagTextSubmit}>

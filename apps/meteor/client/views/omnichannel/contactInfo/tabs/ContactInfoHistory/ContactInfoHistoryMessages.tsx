@@ -4,7 +4,6 @@ import {
 	ButtonGroup,
 	Icon,
 	IconButton,
-	Margins,
 	States,
 	StatesIcon,
 	StatesSubtitle,
@@ -68,16 +67,14 @@ const ContactInfoHistoryMessages = ({ chatId, onBack, onOpenRoom }: ContactHisto
 					borderBlockEndColor='extra-light'
 					flexShrink={0}
 				>
-					<Box display='flex' alignItems='center' flexDirection='row' flexGrow={1} marginInline='neg-x4'>
-						<Margins inline={4}>
-							<TextInput
-								placeholder={t('Search')}
-								value={text}
-								onChange={handleSearchChange}
-								endAddon={<Icon name='magnifier' size='x20' />}
-							/>
-							<IconButton title={t('Back')} small icon='back' onClick={onBack} />
-						</Margins>
+					<Box display='flex' alignItems='center' flexDirection='row' flexGrow={1} gap={8}>
+						<TextInput
+							placeholder={t('Search')}
+							value={text}
+							onChange={handleSearchChange}
+							endAddon={<Icon name='magnifier' size='x20' />}
+						/>
+						<IconButton title={t('Back')} small icon='back' onClick={onBack} />
 					</Box>
 				</Box>
 				{isPending && (

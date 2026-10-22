@@ -272,7 +272,6 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 										aria-invalid={errors.email ? 'true' : 'false'}
 										aria-describedby={`${emailId}-error`}
 										error={errors.email?.message}
-										flexGrow={1}
 									/>
 								)}
 							/>
@@ -345,7 +344,6 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 										aria-invalid={errors.name ? 'true' : 'false'}
 										aria-describedby={`${nameId}-error`}
 										error={errors.name?.message}
-										flexGrow={1}
 									/>
 								)}
 							/>
@@ -370,7 +368,6 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 										aria-invalid={errors.username ? 'true' : 'false'}
 										aria-describedby={`${usernameId}-error`}
 										error={errors.username?.message}
-										flexGrow={1}
 									/>
 								)}
 							/>
@@ -385,11 +382,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 						<Field>
 							<FieldLabel htmlFor={voiceExtensionId}>{t('Voice_call_extension')}</FieldLabel>
 							<FieldRow>
-								<Controller
-									control={control}
-									name='sipExtension'
-									render={({ field }) => <TextInput {...field} id={voiceExtensionId} flexGrow={1} />}
-								/>
+								<Controller control={control} name='sipExtension' render={({ field }) => <TextInput {...field} id={voiceExtensionId} />} />
 							</FieldRow>
 						</Field>
 					)}
@@ -521,7 +514,6 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 											error={errors?.statusText?.message}
 											aria-invalid={errors.statusText ? 'true' : 'false'}
 											aria-describedby={`${statusTextId}-error ${statusTextId}-hint`}
-											flexGrow={1}
 										/>
 									)}
 								/>
@@ -564,7 +556,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 					<Field>
 						<FieldLabel htmlFor={nicknameId}>{t('Nickname')}</FieldLabel>
 						<FieldRow>
-							<Controller control={control} name='nickname' render={({ field }) => <TextInput {...field} id={nicknameId} flexGrow={1} />} />
+							<Controller control={control} name='nickname' render={({ field }) => <TextInput {...field} id={nicknameId} />} />
 						</FieldRow>
 					</Field>
 					{!!customFieldsMetadata.length && (
@@ -640,7 +632,6 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 													error={errors?.statusText?.message}
 													aria-invalid={errors.statusText ? 'true' : 'false'}
 													aria-describedby={`${statusTextId}-error ${statusTextId}-hint`}
-													flexGrow={1}
 												/>
 											)}
 										/>
