@@ -49,9 +49,9 @@ function withDoNotAskAgain<T extends RequiredModalProps>(Component: ComponentTyp
 			<Component
 				{...props}
 				dontAskAgain={
-					<Box display='flex' flexDirection='row'>
+					<Box display='flex' flexDirection='row' gap={8}>
 						<CheckBox id={dontAskAgainId} checked={state} onChange={onChange} name='dont_ask_again' />
-						<Label color='annotation' fontScale='p2' marginInlineStart={8} htmlFor={dontAskAgainId}>
+						<Label color='annotation' fontScale='p2' htmlFor={dontAskAgainId}>
 							{t('Dont_ask_me_again')}
 						</Label>
 					</Box>
