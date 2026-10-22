@@ -1,5 +1,5 @@
 import { isInVideoConference } from '@rocket.chat/core-typings';
-import { Badge, Box, Icon, IconButton } from '@rocket.chat/fuselage';
+import { Badge, Box, Icon, IconButton, StatusIcon } from '@rocket.chat/fuselage';
 import { useBreakpoints, useLocalStorage, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useCustomSound } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useMemo, useState } from 'react';
@@ -180,7 +180,7 @@ const ConferenceWindow = () => {
 				title={t('__count__people_in_the_call', { count: presentCount })}
 				aria-pressed={activePanel === 'members'}
 				onClick={() => togglePanel('members')}
-				icon={<Icon name='members' size='x20' color={activePanel === 'members' ? 'info' : undefined} />}
+				icon={activePanel === 'members' ? <StatusIcon name='members' size='x20' status='info' /> : <Icon name='members' size='x20' />}
 				badge={presentCount > 0 ? <Badge>{presentCount}</Badge> : undefined}
 			/>
 			<IconButton
@@ -190,7 +190,7 @@ const ConferenceWindow = () => {
 				title={t('Chat')}
 				aria-pressed={chatVisible}
 				onClick={() => togglePanel('chat')}
-				icon={<Icon name='balloon' size='x20' color={chatVisible ? 'info' : undefined} />}
+				icon={chatVisible ? <StatusIcon name='balloon' size='x20' status='info' /> : <Icon name='balloon' size='x20' />}
 				// `chatBadge` is `null` for activity with no count behind it, which is the dot — a `Badge` with
 				// nothing in it. Only `undefined` means no badge at all, so the test is against that rather than
 				// for truth.

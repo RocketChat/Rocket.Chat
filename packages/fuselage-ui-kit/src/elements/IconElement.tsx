@@ -1,4 +1,4 @@
-import { Icon, FramedIcon } from '@rocket.chat/fuselage';
+import { Icon, FramedIcon, StatusIcon, type StatusIconProps } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import type { ComponentProps } from 'react';
 
@@ -6,17 +6,17 @@ import type { BlockProps } from '../utils/BlockProps';
 
 export type IconElementProps = BlockProps<UiKit.FrameableIconElement>;
 
-const getVariantColor = (variant: UiKit.FrameableIconElement['variant']): string => {
+const getVariantStatus = (variant: UiKit.FrameableIconElement['variant']): StatusIconProps['status'] | undefined => {
 	switch (variant) {
 		case 'danger':
 			return 'danger';
 		case 'secondary':
-			return 'secondary-info';
+			return 'hint';
 		case 'warning':
-			return 'status-font-on-warning';
+			return 'warning';
 		case 'default':
 		default:
-			return 'default';
+			return undefined;
 	}
 };
 
@@ -40,7 +40,8 @@ const IconElement = ({ block }: IconElementProps) => {
 	if (framed) {
 		return <FramedIcon size={20} icon={icon} {...getFramedIconProps(variant)} />;
 	}
-	return <Icon size={20} name={icon} color={getVariantColor(variant)} />;
+	const status = getVariantStatus(variant);
+	return status ? <StatusIcon size={20} name={icon} status={status} /> : <Icon size={20} name={icon} />;
 };
 
 export default IconElement;

@@ -8,7 +8,7 @@ const CallHistoryTableDirection = ({ direction }: CallHistoryTableDirectionProps
 	const iconName = direction === 'outbound' ? 'arrow-up-right' : 'arrow-down-left';
 	return (
 		<Stack direction='row' align='center' gap={8}>
-			<Icon name={iconName} color='primary' size={20} />
+			<Icon name={iconName} size={20} />
 			{t('Voice')}
 		</Stack>
 	);

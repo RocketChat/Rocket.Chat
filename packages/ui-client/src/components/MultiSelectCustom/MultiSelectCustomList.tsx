@@ -10,6 +10,7 @@ import {
 	ItemMedia,
 	ItemTitle,
 	SearchInput,
+	StatusIcon,
 	Tile,
 } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
@@ -19,18 +20,6 @@ import { useTranslation } from 'react-i18next';
 
 import type { OptionProp } from './MultiSelectCustom';
 import { useFilteredOptions } from './useFilteredOptions';
-
-const getIconColor = (color: 'default' | 'danger' | 'warning' | undefined) => {
-	switch (color) {
-		case 'danger':
-			return 'status-font-on-danger';
-		case 'warning':
-			return 'status-font-on-warning';
-		case 'default':
-		default:
-			return undefined;
-	}
-};
 
 const MultiSelectCustomList = ({
 	options,
@@ -82,7 +71,11 @@ const MultiSelectCustomList = ({
 						<Item inset='md'>
 							{option.icon && (
 								<ItemMedia variant='icon'>
-									<Icon name={option.icon.name} size='x20' color={getIconColor(option.icon.color)} />
+									{option.icon.color === 'danger' || option.icon.color === 'warning' ? (
+										<StatusIcon name={option.icon.name} size='x20' status={option.icon.color} />
+									) : (
+										<Icon name={option.icon.name} size='x20' />
+									)}
 								</ItemMedia>
 							)}
 							<ItemContent>

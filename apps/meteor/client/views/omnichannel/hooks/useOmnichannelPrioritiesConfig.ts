@@ -6,7 +6,12 @@ import { useTranslation } from 'react-i18next';
 
 import { useOmnichannelPriorities } from './useOmnichannelPriorities';
 
-type PrioritiesConfig = { iconName: Keys; color?: string; variant?: 'secondary-danger' | 'secondary-warning' | 'secondary-info' };
+type PrioritiesConfig = {
+	iconName: Keys;
+	color?: string;
+	status?: 'danger' | 'warning' | 'info';
+	variant?: 'secondary-danger' | 'secondary-warning' | 'secondary-info';
+};
 
 export const PRIORITIES_CONFIG: Record<number, PrioritiesConfig> = {
 	[LivechatPriorityWeight.NOT_SPECIFIED]: {
@@ -15,26 +20,31 @@ export const PRIORITIES_CONFIG: Record<number, PrioritiesConfig> = {
 	[LivechatPriorityWeight.HIGHEST]: {
 		iconName: 'chevron-double-up',
 		color: Palette.badge['badge-background-level-4'].toString(),
+		status: 'danger',
 		variant: 'secondary-danger',
 	},
 	[LivechatPriorityWeight.HIGH]: {
 		iconName: 'chevron-up',
 		color: Palette.badge['badge-background-level-4'].toString(),
+		status: 'danger',
 		variant: 'secondary-danger',
 	},
 	[LivechatPriorityWeight.MEDIUM]: {
 		iconName: 'equal',
 		color: Palette.badge['badge-background-level-3'].toString(),
+		status: 'warning',
 		variant: 'secondary-warning',
 	},
 	[LivechatPriorityWeight.LOW]: {
 		iconName: 'chevron-down',
 		color: Palette.badge['badge-background-level-2'].toString(),
+		status: 'info',
 		variant: 'secondary-info',
 	},
 	[LivechatPriorityWeight.LOWEST]: {
 		iconName: 'chevron-double-down',
 		color: Palette.badge['badge-background-level-2'].toString(),
+		status: 'info',
 		variant: 'secondary-info',
 	},
 };
@@ -42,7 +52,7 @@ export const PRIORITIES_CONFIG: Record<number, PrioritiesConfig> = {
 export const useOmnichannelPrioritiesConfig = (level: LivechatPriorityWeight, showUnprioritized: boolean) => {
 	const { t } = useTranslation();
 
-	const { iconName, color, variant } = PRIORITIES_CONFIG[level];
+	const { iconName, status, variant } = PRIORITIES_CONFIG[level];
 	const { data: priorities } = useOmnichannelPriorities();
 
 	const name = useMemo(() => {
@@ -59,5 +69,5 @@ export const useOmnichannelPrioritiesConfig = (level: LivechatPriorityWeight, sh
 		return null;
 	}
 
-	return { iconName, name, color, variant };
+	return { iconName, name, status, variant };
 };
