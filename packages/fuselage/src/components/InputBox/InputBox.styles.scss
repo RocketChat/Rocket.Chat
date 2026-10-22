@@ -177,10 +177,21 @@ $input-border-radius: theme('input-border-radius', lengths.border-radius(medium)
 		}
 	}
 
+	&__wrapper:has(> .rcx-input-box) {
+		align-items: center;
+
+		min-height: lengths.size(40);
+	}
+
+	&__wrapper:has(> .rcx-input-box--type-textarea) {
+		align-items: flex-start;
+	}
+
 	&__wrapper:has(.rcx-input-box--small) {
 		align-items: center;
 
 		min-width: lengths.size(112);
+		min-height: lengths.size(28);
 		max-height: lengths.size(28);
 		padding: lengths.padding(4) lengths.padding(8);
 	}
