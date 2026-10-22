@@ -52,7 +52,7 @@ const expectNoSideEffects = ({ warn, metrics }: ReturnType<typeof loadLogger>, r
 	expect(metrics.deprecations.inc.called).to.be.false;
 	expect(metrics.deprecationsTotal.inc.called).to.be.false;
 	if (res) {
-		expect(res.headers.get('x-deprecation-type')).to.be.null;
+		expect(deprecationHeaders(res)).to.deep.equal({ type: null, message: null, version: null });
 	}
 };
 
