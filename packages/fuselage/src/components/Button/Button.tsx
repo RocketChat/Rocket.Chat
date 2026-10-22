@@ -4,7 +4,8 @@ import { useMemo } from 'react';
 import { Box, type BoxProps } from '../Box';
 import { Icon, type IconProps } from '../Icon';
 
-export type ButtonProps = Omit<BoxProps, 'ref'> & {
+export type ButtonProps = Omit<BoxProps, 'ref' | 'is'> & {
+	is?: 'button' | 'a';
 	variant?: 'primary' | 'secondary' | 'danger' | 'warning' | 'success' | 'secondary-danger' | 'secondary-warning' | 'secondary-success';
 	size?: 'mini' | 'tiny' | 'small' | 'medium' | 'large';
 	/** @deprecated Use `variant="primary"` instead. */

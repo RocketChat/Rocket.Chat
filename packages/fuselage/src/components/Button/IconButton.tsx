@@ -14,6 +14,7 @@ export type IconButtonSize = {
 };
 
 export type IconButtonProps = {
+	is?: 'button' | 'a';
 	icon: IconName | ReactElement<any>;
 	/**
 	 * What to pin to the button's corner, if anything — a `Badge`, as a rule.
@@ -33,7 +34,7 @@ export type IconButtonProps = {
 	success?: boolean;
 	pressed?: boolean;
 } & IconButtonSize &
-	BoxProps;
+	Omit<BoxProps, 'is'>;
 
 const getVariantClass = (variant: string) => {
 	if (variant) {
