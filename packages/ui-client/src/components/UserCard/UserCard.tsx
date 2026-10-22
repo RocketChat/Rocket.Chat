@@ -124,7 +124,7 @@ const UserCard = ({
 				</Box>
 				{actions && (
 					<Box display='flex' flexDirection='column' marginBlockStart='x24'>
-						<HoverCardActions aria-label={t('User_card_actions')} stretch>
+						<HoverCardActions aria-label={t('User_card_actions')} stretch='equal'>
 							{actions}
 						</HoverCardActions>
 					</Box>
