@@ -52,7 +52,7 @@ export function SelectAria({
 
 	return (
 		<>
-			<Box position='relative' size={0}>
+			<Box position='absolute' size={0}>
 				<HiddenSelect state={state} triggerRef={ref} label={props.label} name={props.name} isDisabled={isDisabled} />
 			</Box>
 			<SelectTrigger
