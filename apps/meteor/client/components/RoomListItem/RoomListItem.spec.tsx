@@ -5,7 +5,7 @@ import { axe } from 'jest-axe';
 
 import RoomListItem from './RoomListItem';
 import type { RoomListItemProps, RoomListItemViewMode } from './RoomListItem';
-import { createFakeSubscription } from '../../../../../tests/mocks/data';
+import { createFakeSubscription } from '../../../tests/mocks/data';
 
 const room = createFakeSubscription({ t: 'c', name: 'general', fname: 'general' });
 

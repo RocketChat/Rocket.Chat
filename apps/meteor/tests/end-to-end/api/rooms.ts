@@ -2090,6 +2090,63 @@ describe('[Rooms]', () => {
 			expect(res.body.discussion).to.have.property('fname').and.to.be.equal(`discussion-create-from-tests-${testChannel.name}`);
 		});
 
+		describe('when the user is not a member of the parent room', () => {
+			let nonMember: TestUser<IUser>;
+			let nonMemberCredentials: Credentials;
+
+			before(async () => {
+				nonMember = await createUser({ joinDefaultChannels: false });
+				nonMemberCredentials = await login(nonMember.username, password);
+			});
+
+			after(() => deleteUser(nonMember, { confirmRelinquish: true }));
+
+			it('should not allow creating a discussion in a public channel the user has not joined', async () => {
+				const res = await request
+					.post(api('rooms.createDiscussion'))
+					.set(nonMemberCredentials)
+					.send({
+						prid: testChannel._id,
+						t_name: `discussion-non-member-${Date.now()}`,
+					})
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('errorType', 'error-user-not-in-room');
+			});
+
+			it('should not allow creating a discussion from a message of a public channel the user has not joined', async () => {
+				const res = await request
+					.post(api('rooms.createDiscussion'))
+					.set(nonMemberCredentials)
+					.send({
+						prid: testChannel._id,
+						pmid: messageSent._id,
+						t_name: `discussion-non-member-${Date.now()}`,
+					})
+					.expect(400);
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('errorType', 'error-user-not-in-room');
+			});
+
+			it('should allow creating a discussion once the user joins the channel', async () => {
+				await request.post(api('rooms.join')).set(nonMemberCredentials).send({ roomId: testChannel._id }).expect(200);
+
+				const res = await request
+					.post(api('rooms.createDiscussion'))
+					.set(nonMemberCredentials)
+					.send({
+						prid: testChannel._id,
+						t_name: `discussion-after-join-${Date.now()}`,
+					})
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.nested.property('discussion.prid', testChannel._id);
+			});
+		});
+
 		describe('it should create a *private* discussion if the parent channel is public and inside a private team', async () => {
 			it('should create a team', async () => {
 				const res = await request

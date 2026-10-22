@@ -6,8 +6,8 @@ import type { TFunction } from 'i18next';
 import type { AllHTMLAttributes } from 'react';
 import { memo, useMemo } from 'react';
 
-import RoomListItem from './RoomListItem';
 import { RoomIcon, useRoomIconLabel } from '../../../../components/RoomIcon';
+import RoomListItem from '../../../../components/RoomListItem/RoomListItem';
 import { useUserStatusTooltip } from '../../../../hooks/useUserStatusTooltip';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { getUidDirectMessage } from '../../../../lib/utils/getUidDirectMessage';

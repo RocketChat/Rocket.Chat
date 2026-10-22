@@ -12,7 +12,7 @@ import {
 	type UserStatus,
 } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/models';
-import type { Notifications } from '@rocket.chat/rest-typings';
+import type { Notifications, RoomAvailableForTeams } from '@rocket.chat/rest-typings';
 import {
 	ajv,
 	ajvQuery,
@@ -53,6 +53,7 @@ import { Meteor } from 'meteor/meteor';
 import { adminFields } from '../../../lib/rooms/adminFields';
 import { omit } from '../../../lib/utils/omit';
 import { canAccessRoomAsync, canAccessRoomIdAsync, roomAccessAttributes } from '../../lib/authorization/canAccessRoom';
+import { getRoomAbacLockContext } from '../../lib/authorization/getRoomAbacLockContext';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { isABACManagedRoom, stripABACManagedFieldsForAdmin } from '../../lib/authorization/isABACManagedRoom';
 import { banUserFromRoomMethod } from '../../lib/banUserFromRoom';
@@ -533,6 +534,7 @@ API.v1.get(
 					team: { type: 'object' },
 					parent: { type: 'object' },
 					classificationBanner: { type: 'object' },
+					abacRequiredAttributes: { type: 'array', items: { type: 'string' } },
 					success: { type: 'boolean', enum: [true] },
 				},
 				required: ['room', 'success'],
@@ -564,12 +566,14 @@ API.v1.get(
 		const { team, parentRoom } = await Team.getRoomInfo(room);
 		const parent = discussionParent || parentRoom;
 		const classificationBanner = await getRoomClassificationBanner(room);
+		const { enforcementOn, requiredAttributeKeys } = getRoomAbacLockContext();
 
 		return API.v1.success({
 			room: await Rooms.findOneByIdOrName(room._id, { projection: fields }),
 			...(team && { team }),
 			...(parent && { parent }),
 			...(classificationBanner && { classificationBanner }),
+			...(enforcementOn && { abacRequiredAttributes: requiredAttributeKeys }),
 		});
 	},
 );
@@ -910,7 +914,7 @@ API.v1.get(
 		authRequired: true,
 		query: isRoomsAutocompleteAvailableForTeamsProps,
 		response: {
-			200: ajv.compile<{ items: IRoom[] }>({
+			200: ajv.compile<{ items: RoomAvailableForTeams[] }>({
 				type: 'object',
 				properties: {
 					items: { type: 'array', items: { type: 'object' } }, // relaxed: IRoom autocomplete subset

@@ -4,7 +4,7 @@ import type { Meta, StoryObj } from '@storybook/react';
 
 import RoomListItem from './RoomListItem';
 import type { RoomListItemProps } from './RoomListItem';
-import { createFakeSubscription } from '../../../../../tests/mocks/data';
+import { createFakeSubscription } from '../../../tests/mocks/data';
 
 const room = createFakeSubscription({ t: 'c', name: 'general', fname: 'general' });
 

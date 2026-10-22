@@ -1,6 +1,7 @@
-import { Message } from '@rocket.chat/core-services';
+import { AbacContractError } from '@rocket.chat/abac';
+import { ClientSafeError, Message } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser, MessageAttachmentDefault } from '@rocket.chat/core-typings';
-import { Messages, Rooms, Users } from '@rocket.chat/models';
+import { Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { Meteor } from 'meteor/meteor';
 
@@ -101,7 +102,16 @@ const create = async ({
 	try {
 		parentRoom = await canSendMessageAsync(prid, { uid: user._id, username: user.username, type: user.type });
 	} catch (error) {
+		if (error instanceof AbacContractError) {
+			throw error;
+		}
 		throw new Meteor.Error((error as Error).message);
+	}
+
+	if (user.type !== 'app' && !(await Subscriptions.countByRoomIdAndUserId(parentRoom._id, user._id))) {
+		throw new ClientSafeError('error-user-not-in-room', 'You must join the room to create a discussion', {
+			method: 'DiscussionCreation',
+		});
 	}
 
 	if (parentRoom.prid) {

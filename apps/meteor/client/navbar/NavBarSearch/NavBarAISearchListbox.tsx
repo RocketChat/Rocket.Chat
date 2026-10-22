@@ -1,19 +1,23 @@
 import type { OverlayTriggerAria } from '@react-aria/overlays';
 import type { OverlayTriggerState } from '@react-stately/overlays';
-import { emptySearchFilters, type NavBarSearchFormValues } from '@rocket.chat/ai-search';
-import { Tile } from '@rocket.chat/fuselage';
+import type { NavBarSearchFormValues } from '@rocket.chat/ai-search';
+import { Tile, Box, ToggleSwitch, Divider, Icon } from '@rocket.chat/fuselage';
 import { useOutsideClick, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
-import { useMemo, useRef } from 'react';
-import { useFormContext } from 'react-hook-form';
+import { useId, useMemo, useRef } from 'react';
+import { useFormContext, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import NavBarSearchFilterSuggestions from './NavBarSearchFilterSuggestions';
+import NavBarSearchFilterTypeRow from './NavBarSearchFilterTypeRow';
+import NavBarSearchFiltersView from './NavBarSearchFiltersView';
 import NavBarSearchIntelligentSection from './NavBarSearchIntelligentSection';
 import NavBarSearchRoomSection from './NavBarSearchRoomSection';
 import { useAISearchItems } from './hooks/useAISearchItems';
 import { useAISearchRooms } from './hooks/useAISearchRooms';
 import { useSyncSearchOptions } from './hooks/useSearchActiveOption';
+import { useSearchFilters } from './hooks/useSearchFilters';
+import AISearchErrorCallout from '../../components/AISearchErrorCallout';
 import ResultsLiveRegion from '../../components/ResultsLiveRegion';
 
 export type NavBarAISearchListBoxProps = {
@@ -21,28 +25,42 @@ export type NavBarAISearchListBoxProps = {
 	overlayProps: OverlayTriggerAria['overlayProps'];
 	aiSearchActive: boolean;
 	aiSearchAvailable: boolean;
+	filtersOpen: boolean;
+	handleToggleAISearch: () => void;
+	onCloseFilters: () => void;
 };
 
-const NavBarAISearchListBox = ({ state, overlayProps, aiSearchActive, aiSearchAvailable }: NavBarAISearchListBoxProps) => {
+const NavBarAISearchListBox = ({
+	state,
+	overlayProps,
+	aiSearchActive,
+	aiSearchAvailable,
+	filtersOpen,
+	handleToggleAISearch,
+	onCloseFilters,
+}: NavBarAISearchListBoxProps) => {
 	const { t } = useTranslation();
 	const containerRef = useRef<HTMLElement>(null);
+	const aiSearchLabelId = useId();
 
 	useOutsideClick([containerRef], state.close);
 
-	const { resetField, setValue, watch } = useFormContext<NavBarSearchFormValues>();
-	const { filterText = '', appliedFilters = emptySearchFilters() } = watch();
+	const { control } = useFormContext<NavBarSearchFormValues>();
+	const filterText = useWatch({ control, name: 'filterText' }) ?? '';
+	const filters = useWatch({ control, name: 'filters' }) ?? [];
+	const { clearQuery } = useSearchFilters();
 
 	const handleSelect = useStableCallback(() => {
 		state.close();
-		resetField('filterText');
-		setValue('appliedFilters', emptySearchFilters(), { shouldDirty: true });
+		clearQuery();
 	});
 
-	const { data: aiItems, isFetching } = useAISearchItems(filterText, appliedFilters, aiSearchActive);
+	const { data: aiItems, isFetching, refetch: refetchAISearch } = useAISearchItems(filterText, filters, aiSearchActive);
 	const { items: rooms, isLoading } = useAISearchRooms(aiSearchActive ? aiItems.searchText : filterText);
 	useSyncSearchOptions(useMemo(() => [rooms, aiItems], [rooms, aiItems]));
 	const itemCount = rooms.length + aiItems.intelligent.length + aiItems.filterSuggestions.length;
 	const isSearchLoading = isLoading || isFetching;
+	const hasAISearchProblem = aiSearchActive && Boolean(aiItems.error || aiItems.notConfigured);
 	const listboxLabel = aiSearchActive ? t('AI_Search_results') : t('Channels');
 
 	return (
@@ -51,7 +69,7 @@ const NavBarAISearchListBox = ({ state, overlayProps, aiSearchActive, aiSearchAv
 			position='absolute'
 			zIndex={99}
 			padding={0}
-			paddingBlock={16}
+			paddingBlock={filtersOpen ? 0 : 12}
 			marginBlockStart={4}
 			minHeight='x52'
 			maxHeight='50vh'
@@ -59,29 +77,79 @@ const NavBarAISearchListBox = ({ state, overlayProps, aiSearchActive, aiSearchAv
 			width='100%'
 			flexDirection='column'
 		>
-			<ResultsLiveRegion shouldAnnounce={!isSearchLoading} itemCount={itemCount} isLoading={isSearchLoading} />
-			<CustomScrollbars>
-				<div
-					{...overlayProps}
-					role='listbox'
-					aria-label={listboxLabel}
-					aria-busy={isSearchLoading}
-					tabIndex={-1}
-					onMouseDown={(event) => event.preventDefault()}
-				>
-					<NavBarSearchIntelligentSection items={aiItems.intelligent} onSelect={handleSelect} onClose={state.close} />
-					<NavBarSearchFilterSuggestions suggestions={aiItems.filterSuggestions} />
-					<NavBarSearchRoomSection
-						filterText={filterText}
+			{filtersOpen ? (
+				<NavBarSearchFiltersView id={overlayProps.id} filters={filters} onBack={onCloseFilters} />
+			) : (
+				<>
+					<ResultsLiveRegion
+						shouldAnnounce={!isSearchLoading && !(hasAISearchProblem && itemCount === 0)}
 						itemCount={itemCount}
-						isLoading={isLoading}
-						isFetching={isFetching}
-						rooms={rooms}
-						suggestAISearch={aiSearchAvailable && !aiSearchActive}
-						onSelect={handleSelect}
+						isLoading={isSearchLoading}
 					/>
-				</div>
-			</CustomScrollbars>
+					{aiSearchAvailable && (
+						<>
+							<Box display='flex' justifyContent='space-between' alignItems='center' paddingInline={12}>
+								<Box display='flex' alignItems='center'>
+									<Box is='span' id={aiSearchLabelId}>
+										{t('AI_Search')}
+									</Box>
+									<Icon name='info' size={16} marginInlineStart={2} title={t('AI_Search_description')} />
+								</Box>
+								<ToggleSwitch aria-labelledby={aiSearchLabelId} checked={aiSearchActive} onChange={handleToggleAISearch} />
+							</Box>
+							{aiSearchActive && <NavBarSearchFilterTypeRow draft={aiItems.draft} />}
+						</>
+					)}
+					<div {...overlayProps} style={{ display: 'contents' }}>
+						{aiSearchAvailable && (
+							<>
+								{aiItems.filterSuggestions.length > 0 && (
+									<div
+										role='listbox'
+										aria-label={t('Search_filter_suggestions')}
+										tabIndex={-1}
+										onMouseDown={(event) => event.preventDefault()}
+									>
+										<NavBarSearchFilterSuggestions suggestions={aiItems.filterSuggestions} />
+									</div>
+								)}
+								<Divider marginBlockStart={12} />
+								{hasAISearchProblem && (
+									<AISearchErrorCallout
+										role='alert'
+										error={aiItems.error}
+										notConfigured={aiItems.notConfigured}
+										onRetry={refetchAISearch}
+										marginInline={12}
+										marginBlockStart={8}
+									/>
+								)}
+							</>
+						)}
+						<CustomScrollbars>
+							<div
+								role='listbox'
+								aria-label={listboxLabel}
+								aria-busy={isSearchLoading}
+								tabIndex={-1}
+								onMouseDown={(event) => event.preventDefault()}
+							>
+								<NavBarSearchIntelligentSection items={aiItems.intelligent} onSelect={handleSelect} onClose={state.close} />
+								{aiItems.intelligent.length > 0 && rooms.length > 0 && <Box marginBlockStart={12} />}
+								<NavBarSearchRoomSection
+									filterText={filterText}
+									itemCount={itemCount}
+									isLoading={isLoading}
+									isFetching={isFetching}
+									rooms={rooms}
+									suggestAISearch={aiSearchAvailable && !aiSearchActive}
+									onSelect={handleSelect}
+								/>
+							</div>
+						</CustomScrollbars>
+					</div>
+				</>
+			)}
 		</Tile>
 	);
 };

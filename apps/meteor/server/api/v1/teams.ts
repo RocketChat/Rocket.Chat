@@ -1,3 +1,4 @@
+import { AbacContractError, AbacErrorCode } from '@rocket.chat/abac';
 import { Team } from '@rocket.chat/core-services';
 import type { ITeamAutocompleteResult, ITeamMemberInfo } from '@rocket.chat/core-services';
 import type { IRoom, ITeam, IUser, UserStatus } from '@rocket.chat/core-typings';
@@ -32,7 +33,9 @@ import { escapeRegExp } from '@rocket.chat/tools';
 import { canAccessRoomAsync } from '../../lib/authorization';
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync, hasAllPermissionAsync } from '../../lib/authorization/hasPermission';
 import { eraseRoom } from '../../lib/eraseRoom';
+import { assertCanRemoveRoomAbacAttributes, removeRoomAbacAttributes } from '../../lib/rooms/removeRoomAbacAttributes';
 import { removeUserFromRoom } from '../../lib/rooms/removeUserFromRoom';
+import { toAbacAttributeDefinitions } from '../../lib/rooms/toAbacAttributeDefinitions';
 import { effectiveStatusFilter } from '../../lib/statusVisibility/effectiveStatus';
 import { getUsersHiddenFrom, redactHiddenMembers } from '../../lib/statusVisibility/hiddenUsers';
 import { settings } from '../../settings';
@@ -145,10 +148,11 @@ const teamsEndpoints = API.v1
 			permissionsRequired: ['create-team'],
 			body: isTeamsCreateProps,
 			response: {
-				200: ajv.compile<{ team: ITeam }>({
+				200: ajv.compile<{ team: ITeam; skippedMembers?: string[] }>({
 					type: 'object',
 					properties: {
 						team: { type: 'object' },
+						skippedMembers: { type: 'array', items: { type: 'string' } },
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['team', 'success'],
@@ -160,13 +164,25 @@ const teamsEndpoints = API.v1
 			},
 		},
 		async function action() {
-			const { name, type, members, room, owner } = this.bodyParams;
+			const { name, type, members, room, owner, abacAttributes } = this.bodyParams;
 
 			if (room?.id && !(await hasAllPermissionAsync(this.user, ['create-team', 'edit-room'], room.id))) {
 				return API.v1.forbidden();
 			}
 
-			const team = await Team.create(this.userId, {
+			if (abacAttributes) {
+				if (!settings.get('ABAC_Enabled')) {
+					throw new AbacContractError(AbacErrorCode.NotEnabled);
+				}
+				if (room?.id) {
+					throw new AbacContractError(AbacErrorCode.AttributesRoomConversion);
+				}
+				if (owner && owner !== this.userId) {
+					throw new AbacContractError(AbacErrorCode.AttributesOwnerMustBeCaller);
+				}
+			}
+
+			const { skippedMembers, ...team } = await Team.create(this.userId, {
 				team: {
 					name,
 					type,
@@ -174,9 +190,10 @@ const teamsEndpoints = API.v1
 				room: room as Parameters<typeof Team.create>[1]['room'],
 				members,
 				owner,
+				abacAttributes: toAbacAttributeDefinitions(abacAttributes),
 			});
 
-			return API.v1.success({ team });
+			return API.v1.success({ team, ...(skippedMembers && { skippedMembers }) });
 		},
 	);
 
@@ -217,6 +234,13 @@ API.v1.post(
 			return API.v1.forbidden();
 		}
 
+		const teamRoom = await Rooms.findOneById<Pick<IRoom, '_id' | 'name' | 'abacAttributes'>>(team.roomId, {
+			projection: { name: 1, abacAttributes: 1 },
+		});
+		if (teamRoom) {
+			await assertCanRemoveRoomAbacAttributes(teamRoom, this.user);
+		}
+
 		const rooms = await Team.getMatchingTeamRooms(team._id, roomsToRemove);
 
 		if (rooms.length) {
@@ -226,6 +250,10 @@ API.v1.post(
 		}
 
 		await Promise.all([Team.unsetTeamIdOfRooms(this.user, team), Team.removeAllMembersFromTeam(team._id)]);
+
+		if (teamRoom) {
+			await removeRoomAbacAttributes(teamRoom, this.user);
+		}
 
 		await Team.deleteById(team._id);
 
@@ -339,13 +367,6 @@ API.v1.post(
 			return API.v1.forbidden();
 		}
 		const canUpdateAny = !!(await hasPermissionAsync(this.user, 'view-all-team-channels', team.roomId));
-
-		if (settings.get('ABAC_Enabled') && isDefault) {
-			const room = await Rooms.findOneByIdAndType(roomId, 'p', { projection: { abacAttributes: 1 } });
-			if (room?.abacAttributes?.length) {
-				return API.v1.failure('error-room-is-abac-managed');
-			}
-		}
 
 		const room = await Team.updateRoom(this.userId, roomId, isDefault, canUpdateAny);
 

@@ -5,12 +5,16 @@ import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const Rooms = {
+	findOneByName: sinon.stub(),
+	setTeamMainById: sinon.stub(),
 	findDefaultRoomsForTeam: sinon.stub(),
 	findOneById: sinon.stub(),
 	unsetTeamId: sinon.stub(),
 };
 
 const Users = {
+	findOneById: sinon.stub(),
+	findActiveByIdsOrUsernames: sinon.stub(),
 	findActiveByIds: sinon.stub(),
 };
 
@@ -18,22 +22,32 @@ const Message = {
 	saveSystemMessage: sinon.stub(),
 };
 
+const Room = { create: sinon.stub() };
+
+const Team = { insertOne: sinon.stub(), updateMainRoomForTeam: sinon.stub() };
+
+const TeamMember = { insertMany: sinon.stub() };
+
+const checkUsernameAvailability = sinon.stub();
+
 const addUserToRoom = sinon.stub();
+
+const filterDefaultChannelsForUser = sinon.stub();
 
 const { TeamService } = proxyquire.noCallThru().load('./service', {
 	'@rocket.chat/core-services': {
-		Room: {},
+		Room,
 		Authorization: {},
 		Message,
 		ServiceClassInternal: class {},
 		api: {},
 	},
 	'@rocket.chat/models': {
-		Team: {},
+		Team,
 		Rooms,
 		Subscriptions: {},
 		Users,
-		TeamMember: {},
+		TeamMember,
 	},
 	'@rocket.chat/tools': {
 		escapeRegExp: (value: string) => value,
@@ -47,8 +61,11 @@ const { TeamService } = proxyquire.noCallThru().load('./service', {
 	'../../lib/rooms/addUserToRoom': {
 		addUserToRoom,
 	},
+	'../../lib/rooms/filterDefaultChannelsForUser': {
+		filterDefaultChannelsForUser,
+	},
 	'../../lib/users/checkUsernameAvailability': {
-		checkUsernameAvailability: sinon.stub(),
+		checkUsernameAvailability,
 	},
 	'../../lib/rooms/getRoomsWithSingleOwner': {
 		getSubscribedRoomsForUserWithDetails: sinon.stub(),
@@ -75,6 +92,24 @@ describe('Team service', () => {
 		Rooms.unsetTeamId.reset();
 		Users.findActiveByIds.reset();
 		Message.saveSystemMessage.reset();
+		filterDefaultChannelsForUser.reset();
+		filterDefaultChannelsForUser.callsFake((rooms: unknown[]) => Promise.resolve(rooms));
+	});
+
+	it('should not forward client room options to room creation', async () => {
+		checkUsernameAvailability.resolves(true);
+		Rooms.findOneByName.resolves(null);
+		Users.findOneById.resolves({ _id: 'caller', username: 'caller' });
+		Room.create.resolves({ _id: 'room-id' });
+		Team.insertOne.resolves({ insertedId: 'team-id' });
+
+		await service.create('caller', {
+			team: { name: 'team', type: 0 },
+			room: { name: 'team', options: { app: { _id: 'spoofed', name: 'Spoofed' } } } as any,
+		});
+
+		expect(Room.create.calledOnce).to.equal(true);
+		expect(Room.create.firstCall.args[1]).to.not.have.property('options');
 	});
 
 	it('should wait for default room membership operations to finish', { timeout: 15000 }, async () => {
@@ -120,6 +155,40 @@ describe('Team service', () => {
 		).to.be.rejectedWith('room-add-failed');
 
 		expect(addUserToRoom.callCount).to.equal(1);
+	});
+
+	it('should leave out the default rooms the user is not allowed to join', async () => {
+		const allowedRoom = { _id: 'allowed-room' };
+		const refusedRoom = { _id: 'refused-room' };
+
+		addUserToRoom.resolves(true);
+		Rooms.findDefaultRoomsForTeam.returns({
+			toArray: () => Promise.resolve([allowedRoom, refusedRoom]),
+		});
+		Users.findActiveByIds.returns({
+			toArray: () => Promise.resolve([{ _id: 'user-1', username: 'user-1' }]),
+		});
+		filterDefaultChannelsForUser.resolves([allowedRoom]);
+
+		await service.addMembersToDefaultRooms({ _id: 'inviter', username: 'inviter' }, 'team-id', [{ userId: 'user-1' }]);
+
+		expect(addUserToRoom.callCount).to.equal(1);
+		expect(addUserToRoom.firstCall.args[0]).to.equal('allowed-room');
+	});
+
+	it('should filter the default rooms without refreshing the member attributes or auditing the grant', async () => {
+		Rooms.findDefaultRoomsForTeam.returns({
+			toArray: () => Promise.resolve([{ _id: 'default-room' }]),
+		});
+		Users.findActiveByIds.returns({
+			toArray: () => Promise.resolve([{ _id: 'user-1', username: 'user-1' }]),
+		});
+
+		await service.addMembersToDefaultRooms({ _id: 'inviter', username: 'inviter' }, 'team-id', [{ userId: 'user-1' }]);
+
+		expect(filterDefaultChannelsForUser.calledOnce).to.be.true;
+		expect(filterDefaultChannelsForUser.firstCall.args[2]?.refreshUserAttributes).to.not.be.true;
+		expect(filterDefaultChannelsForUser.firstCall.args[2]?.audit).to.equal(false);
 	});
 
 	describe('unsetTeamIdOfRooms', () => {

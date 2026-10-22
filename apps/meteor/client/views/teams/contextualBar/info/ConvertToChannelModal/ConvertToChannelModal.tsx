@@ -12,9 +12,10 @@ export type ConvertToChannelModalProps = {
 	onConfirm: (deletedRooms: { [key: string]: Serialized<IRoom> }) => void;
 	teamId: string;
 	userId: string;
+	removesAbacAttributes?: boolean;
 };
 
-const ConvertToChannelModal = ({ onClose, onCancel, onConfirm, teamId, userId }: ConvertToChannelModalProps) => {
+const ConvertToChannelModal = ({ onClose, onCancel, onConfirm, teamId, userId, removesAbacAttributes }: ConvertToChannelModalProps) => {
 	const listRoomsOfUser = useEndpoint('GET', '/v1/teams.listRoomsOfUser');
 	const { isPending, data } = useQuery({
 		queryKey: teamsQueryKeys.roomsOfUser(teamId, userId, { canUserDelete: true }),
@@ -25,7 +26,15 @@ const ConvertToChannelModal = ({ onClose, onCancel, onConfirm, teamId, userId }:
 		return <GenericModalSkeleton />;
 	}
 
-	return <BaseConvertToChannelModal onClose={onClose} onCancel={onCancel} onConfirm={onConfirm} rooms={data?.rooms} />;
+	return (
+		<BaseConvertToChannelModal
+			onClose={onClose}
+			onCancel={onCancel}
+			onConfirm={onConfirm}
+			rooms={data?.rooms}
+			removesAbacAttributes={removesAbacAttributes}
+		/>
+	);
 };
 
 export default ConvertToChannelModal;
