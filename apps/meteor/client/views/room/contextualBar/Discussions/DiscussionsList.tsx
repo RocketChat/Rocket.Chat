@@ -73,8 +73,8 @@ function DiscussionsList({
 			</ContextualbarHeader>
 			<ContextualbarSection>
 				<TextInput
-					placeholder={t('Search_Messages')}
-					aria-label={t('Search_Messages')}
+					placeholder={t('Search_discussions')}
+					aria-label={t('Search_discussions')}
 					aria-controls={isSuccess ? discussionListId : undefined}
 					value={text}
 					onChange={onChangeFilter}

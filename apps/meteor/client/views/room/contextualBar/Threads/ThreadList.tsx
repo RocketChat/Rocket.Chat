@@ -131,9 +131,9 @@ const ThreadList = () => {
 			</ContextualbarHeader>
 			<ContextualbarSection>
 				<TextInput
-					aria-label={t('Search_Messages')}
+					aria-label={t('Search_threads')}
 					aria-controls={isSuccess ? threadListId : undefined}
-					placeholder={t('Search_Messages')}
+					placeholder={t('Search_threads')}
 					endAddon={<Icon name='magnifier' size='x20' />}
 					ref={autoFocusRef}
 					value={searchText}
