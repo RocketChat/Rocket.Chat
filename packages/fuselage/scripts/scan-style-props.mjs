@@ -141,7 +141,8 @@ for (const dir of DIRS) {
 			if (node.type === 'JSXElement') {
 				const component = componentOf(node.openingElement);
 				visit(node.openingElement, injector);
-				const next = component ? (PROP_INJECTORS.has(component) ? component : undefined) : injector;
+				let next = injector;
+				if (component) next = PROP_INJECTORS.has(component) ? component : undefined;
 				for (const child of node.children) visit(child, next);
 				return;
 			}
