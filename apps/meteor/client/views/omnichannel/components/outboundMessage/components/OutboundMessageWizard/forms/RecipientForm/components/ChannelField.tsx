@@ -76,7 +76,7 @@ const ProviderField = ({
 			</FieldRow>
 			{providerFieldError && (
 				<FieldError aria-live='assertive' id={`${channelFieldId}-error`}>
-					<Box display='flex' alignItems='center'>
+					<Box display='flex' alignItems='center' gap={4}>
 						{providerFieldError.message}
 						{isError && <RetryButton loading={isFetching} onClick={onRetry} />}
 					</Box>

@@ -71,7 +71,7 @@ const DepartmentField = ({
 			</FieldRow>
 			{departmentFieldError && (
 				<FieldError aria-live='assertive' id={`${departmentFieldId}-error`}>
-					<Box display='flex' alignItems='center'>
+					<Box display='flex' alignItems='center' gap={4}>
 						{departmentFieldError.message}
 						{isError && <RetryButton loading={isFetching} onClick={onRefetch} />}
 					</Box>

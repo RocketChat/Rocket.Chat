@@ -27,7 +27,6 @@ const RetryButton = ({ loading, onClick }: RetryButtonProps) => {
 			disabled={loading}
 			icon={loading ? 'loading' : 'reload'}
 			title={loading ? t('Loading...') : t('Retry')}
-			marginInlineStart={4}
 			onClick={() => onClick()}
 		/>
 	);
