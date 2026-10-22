@@ -9,9 +9,9 @@ import {
 	ItemGroupTitle,
 	ItemMedia,
 	ItemTitle,
+	PopoverSurface,
 	SearchInput,
 	StatusIcon,
-	Tile,
 } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
@@ -39,7 +39,7 @@ const MultiSelectCustomList = ({
 	const filteredOptions = useFilteredOptions(text, options);
 
 	return (
-		<Tile flush overflow='auto' paddingBlock={12} elevation='2' width='full' backgroundColor='light' borderRadius='small' maxHeight='50vh'>
+		<PopoverSurface maxHeight='half-screen'>
 			{searchBarText && (
 				<Box paddingInline={12} marginBlockEnd={12}>
 					<SearchInput
@@ -81,7 +81,7 @@ const MultiSelectCustomList = ({
 					)}
 				</Fragment>
 			))}
-		</Tile>
+		</PopoverSurface>
 	);
 };
 
