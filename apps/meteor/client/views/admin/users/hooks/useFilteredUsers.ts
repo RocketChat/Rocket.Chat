@@ -47,15 +47,16 @@ const useFilteredUsers = ({ searchTerm, sortData, tab, selectedRoles, statusMana
 	const paginationData = usePagination({ resetKey: queryKey });
 	const getUsers = useEndpoint('GET', '/v1/users.listByStatus');
 	const usersListQueryResult = usePaginatedQuery({
-		query: payload,
-		queryKey,
-		queryFn: getUsers,
+		query: {
+			queryKey,
+			queryFn: (page) => getUsers({ ...payload, ...page }),
+			meta: {
+				apiErrorToastMessage: true,
+			},
+		},
 		itemsKey: 'users',
 		offset: paginationData.current,
 		count: paginationData.itemsPerPage,
-		meta: {
-			apiErrorToastMessage: true,
-		},
 	});
 	return { usersListQueryResult, paginationData };
 };

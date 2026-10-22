@@ -57,13 +57,14 @@ const RoomsPage = () => {
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination({ resetKey: queryKey });
 
 	const { data, isLoading } = usePaginatedQuery({
-		query,
-		queryKey,
-		queryFn: getRooms,
+		query: {
+			queryKey,
+			queryFn: (page) => getRooms({ ...query, ...page }),
+			...(isExternalStore && { staleTime: 0, gcTime: 0 }),
+		},
 		itemsKey: 'rooms',
 		offset: current,
 		count: itemsPerPage,
-		...(isExternalStore && { staleTime: 0, gcTime: 0 }),
 	});
 
 	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 'auto', 40];

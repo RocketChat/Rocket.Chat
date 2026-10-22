@@ -49,9 +49,10 @@ const UnitsTable = () => {
 
 	const getUnits = useEndpoint('GET', '/v1/livechat/units');
 	const { isSuccess, isLoading, data } = usePaginatedQuery({
-		query,
-		queryKey,
-		queryFn: getUnits,
+		query: {
+			queryKey,
+			queryFn: (page) => getUnits({ ...query, ...page }),
+		},
 		itemsKey: 'units',
 		offset: current,
 		count: itemsPerPage,

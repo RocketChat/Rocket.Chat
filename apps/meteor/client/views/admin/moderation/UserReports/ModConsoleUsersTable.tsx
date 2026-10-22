@@ -61,13 +61,14 @@ const ModConsoleUsersTable = () => {
 	} = usePagination({ resetKey: queryKey });
 
 	const { data, isLoading, isSuccess, isError, refetch } = usePaginatedQuery({
-		query,
-		queryKey,
-		queryFn: getReports,
+		query: {
+			queryKey,
+			queryFn: (page) => getReports({ ...query, ...page }),
+			placeholderData: keepPreviousData,
+		},
 		itemsKey: 'reports',
 		offset: current,
 		count: itemsPerPage,
-		placeholderData: keepPreviousData,
 	});
 
 	const handleClick = useStableCallback((id: IUser['_id']): void => {

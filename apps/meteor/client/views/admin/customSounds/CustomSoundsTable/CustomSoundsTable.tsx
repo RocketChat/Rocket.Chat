@@ -52,13 +52,14 @@ const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 
 	const getSounds = useEndpoint('GET', '/v1/custom-sounds.list');
 	const { data, refetch, isLoading, isError, isSuccess } = usePaginatedQuery({
-		query,
-		queryKey,
-		queryFn: getSounds,
+		query: {
+			queryKey,
+			queryFn: (page) => getSounds({ ...query, ...page }),
+			refetchOnMount: false,
+		},
 		itemsKey: 'sounds',
 		offset: current,
 		count: itemsPerPage,
-		refetchOnMount: false,
 	});
 
 	useEffect(() => {

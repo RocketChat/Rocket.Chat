@@ -55,13 +55,14 @@ const TagsTable = () => {
 
 	const getTags = useEndpoint('GET', '/v1/livechat/tags');
 	const { data, isSuccess, isLoading } = usePaginatedQuery({
-		query,
-		queryKey,
-		queryFn: getTags,
+		query: {
+			queryKey,
+			queryFn: (page) => getTags({ ...query, ...page }),
+			refetchOnWindowFocus: false,
+		},
 		itemsKey: 'tags',
 		offset: current,
 		count: itemsPerPage,
-		refetchOnWindowFocus: false,
 	});
 
 	const [defaultQuery] = useState(hashKey([query, current, itemsPerPage]));

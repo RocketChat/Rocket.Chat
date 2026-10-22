@@ -99,9 +99,10 @@ const SecurityLogsTable = () => {
 	const getAudits = useEndpoint('GET', '/v1/audit.settings');
 
 	const { data, isLoading, isSuccess } = usePaginatedQuery({
-		query,
-		queryKey,
-		queryFn: getAudits,
+		query: {
+			queryKey,
+			queryFn: (page) => getAudits({ ...query, ...page }),
+		},
 		itemsKey: 'events',
 		offset: current,
 		count: itemsPerPage,

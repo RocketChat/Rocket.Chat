@@ -51,9 +51,10 @@ const AttributesPage = () => {
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination({ resetKey: queryKey });
 
 	const { data, isLoading } = usePaginatedQuery({
-		query,
-		queryKey,
-		queryFn: getAttributes,
+		query: {
+			queryKey,
+			queryFn: (page) => getAttributes({ ...query, ...page }),
+		},
 		itemsKey: 'attributes',
 		offset: current,
 		count: itemsPerPage,

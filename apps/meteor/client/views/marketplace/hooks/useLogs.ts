@@ -38,9 +38,10 @@ export const useLogs = ({
 	const logs = useEndpoint('GET', '/apps/:id/logs', { id: appId });
 
 	return usePaginatedQuery({
-		query,
-		queryKey: marketplaceQueryKeys.appLogs(appId, query),
-		queryFn: logs,
+		query: {
+			queryKey: marketplaceQueryKeys.appLogs(appId, query),
+			queryFn: (page) => logs({ ...query, ...page }),
+		},
 		itemsKey: 'logs',
 		offset: current,
 		count: itemsPerPage,

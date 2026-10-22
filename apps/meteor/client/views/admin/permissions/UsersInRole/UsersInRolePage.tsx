@@ -78,9 +78,10 @@ const UsersInRolePage = ({ role }: UsersInRolePageProps) => {
 	};
 
 	const { data, isLoading, isSuccess, refetch, isError } = usePaginatedQuery({
-		query,
-		queryKey,
-		queryFn: getUsersInRole,
+		query: {
+			queryKey,
+			queryFn: (page) => getUsersInRole({ ...query, ...page }),
+		},
 		itemsKey: 'users',
 		offset: current,
 		count: itemsPerPage,

@@ -33,9 +33,10 @@ const TriggersTable = () => {
 
 	const getTriggers = useEndpoint('GET', '/v1/livechat/triggers');
 	const { data, refetch, isSuccess, isLoading, isError } = usePaginatedQuery({
-		query,
-		queryKey,
-		queryFn: getTriggers,
+		query: {
+			queryKey,
+			queryFn: (page) => getTriggers({ ...query, ...page }),
+		},
 		itemsKey: 'triggers',
 		offset: current,
 		count: itemsPerPage,

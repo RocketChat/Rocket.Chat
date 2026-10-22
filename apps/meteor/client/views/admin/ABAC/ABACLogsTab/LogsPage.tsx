@@ -70,9 +70,10 @@ const LogsPage = () => {
 	};
 
 	const { data: logs, isLoading } = usePaginatedQuery({
-		query,
-		queryKey,
-		queryFn: getLogs,
+		query: {
+			queryKey,
+			queryFn: (page) => getLogs({ ...query, ...page }),
+		},
 		itemsKey: 'events',
 		offset: current,
 		count: itemsPerPage,
