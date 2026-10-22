@@ -6,11 +6,22 @@ export type DividerProps = BoxProps & {
 	variation?: 'danger';
 	children?: ReactNode;
 	vertical?: boolean;
+	/** Removes the divider's own margin, leaving the spacing to its container. */
+	flush?: boolean;
 };
 
-const Divider = ({ variation, children, vertical, ...props }: DividerProps) => {
+const Divider = ({ variation, children, vertical, flush, ...props }: DividerProps) => {
 	if (!children) {
-		return <Box is='hr' rcx-divider rcx-divider--vertical={vertical} rcx-divider--danger={variation === 'danger'} {...props} />;
+		return (
+			<Box
+				is='hr'
+				rcx-divider
+				rcx-divider--vertical={vertical}
+				rcx-divider--flush={flush}
+				rcx-divider--danger={variation === 'danger'}
+				{...props}
+			/>
+		);
 	}
 	return (
 		<Box rcx-message-divider role='separator' {...props}>

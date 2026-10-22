@@ -42,4 +42,8 @@ $divider-color: theme('divider-color', colors.stroke(extra-light));
 
 		border-left: $divider-size solid $divider-color;
 	}
+
+	&#{&}--flush {
+		margin: 0;
+	}
 }
