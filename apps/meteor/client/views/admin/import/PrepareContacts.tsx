@@ -32,9 +32,9 @@ const PrepareContacts = ({ contactsCount, contacts, setContacts }: PrepareContac
 								}}
 							/>
 						</TableCell>
-						<TableCell is='th'>{t('Name')}</TableCell>
-						<TableCell is='th'>{t('Emails')}</TableCell>
-						<TableCell is='th'>{t('Phones')}</TableCell>
+						<TableCell>{t('Name')}</TableCell>
+						<TableCell>{t('Emails')}</TableCell>
+						<TableCell>{t('Phones')}</TableCell>
 					</TableRow>
 				</TableHead>
 				<TableBody>
