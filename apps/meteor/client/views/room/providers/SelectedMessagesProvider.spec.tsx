@@ -1,7 +1,15 @@
 import { renderHook, act } from '@testing-library/react';
 
 import { selectedMessageStore } from './SelectedMessagesProvider';
-import { useIsSelectedMessage } from '../MessageList/contexts/SelectedMessagesContext';
+import { useIsSelectedMessage, useSelectedMessageStore } from '../MessageList/contexts/SelectedMessagesContext';
+
+describe('useSelectedMessageStore', () => {
+	it('returns the shared store when rendered without a provider', () => {
+		const { result } = renderHook(() => useSelectedMessageStore());
+
+		expect(result.current).toBe(selectedMessageStore);
+	});
+});
 
 describe('selectedMessageStore', () => {
 	beforeEach(() => {
@@ -143,6 +151,16 @@ describe('selectedMessageStore', () => {
 		expect(listener1).toHaveBeenCalledWith(false);
 
 		unsub1();
+	});
+
+	it('should not return a deselected message that is no longer loaded to availableMessages', () => {
+		selectedMessageStore.setAvailableMessages(['msg-1', 'msg-2']);
+		selectedMessageStore.toggle('msg-1');
+		selectedMessageStore.setAvailableMessages(['msg-2']);
+
+		selectedMessageStore.toggle('msg-1');
+
+		expect(selectedMessageStore.availableMessagesCount()).toBe(1);
 	});
 
 	it('should not restore a cleared message that is no longer loaded', () => {

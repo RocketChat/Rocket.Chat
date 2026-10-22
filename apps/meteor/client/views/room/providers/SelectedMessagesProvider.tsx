@@ -83,7 +83,9 @@ export const selectedMessageStore = new (class SelectMessageStore extends Emitte
 	toggle(mid: string): void {
 		if (this.store.has(mid)) {
 			this.store.delete(mid);
-			this.availableMessages.add(mid);
+			if (this.loadedMessages.has(mid)) {
+				this.availableMessages.add(mid);
+			}
 			this.emit(mid, false);
 			this.emit('change');
 			return;
