@@ -1,0 +1,42 @@
+ee/packages/network-broker/src/fakeNatsConnection.ts
+  s_d28e7e696a6a9b::t_3cbf922076fe6e 1-39,41-51,55-77,82-83,93-154,156-161,168-178
+  s_d28e7e696a6a9b::t_4e8355abbcc42a 40,52-54,78-81,84-92,155,162-167
+ee/packages/network-broker/tsconfig.json
+  s_d28e7e696a6a9b::t_3cbf922076fe6e 8-9
+ee/packages/network-broker/src/moleculer.ts
+  s_d28e7e696a6a9b::t_3cbf922076fe6e 75
+ee/packages/network-broker/src/nats.ts
+  s_d28e7e696a6a9b::t_3cbf922076fe6e 1-7,9-16
+ee/packages/network-broker/src/NatsBroker.ts
+  s_d28e7e696a6a9b::t_3cbf922076fe6e 1,3-8,10-15,17-30,33-62,64-183,190-191,193-235,240-293,295-299,301-306,308-331,334-441
+  s_d28e7e696a6a9b::t_b6ae8784a2948a 2,9,185-188,192,236-239,294,300,307
+ee/packages/network-broker/src/startBroker.ts
+  s_d28e7e696a6a9b::t_3cbf922076fe6e 1-15
+ee/packages/network-broker/src/NatsBroker.test.ts
+  s_d28e7e696a6a9b::t_3cbf922076fe6e 5-21,32-52,73-95,97-99,101-102,104,106-320,322-461
+  s_d28e7e696a6a9b::t_3de6de136e2ac6 1-4,22-31,53-72,96,100,103,105,321,462-543
+ee/packages/network-broker/package.json
+  s_d28e7e696a6a9b::t_3cbf922076fe6e 22
+ee/packages/network-broker/src/index.ts
+  s_d28e7e696a6a9b::t_3cbf922076fe6e 2,4
+yarn.lock
+  s_d28e7e696a6a9b::t_156ef539d39431 11241
+ee/packages/network-broker/src/streams.ts
+  s_d28e7e696a6a9b::t_519b0f7adfb6c5 1-6,8-204
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "db26f8ad5209e41c957c7cde96009f933c0b4355",
+  "prompts": {},
+  "sessions": {
+    "s_d28e7e696a6a9b": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "efb7e527-2913-474e-b956-7e47c477c378",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
