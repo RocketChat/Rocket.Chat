@@ -87,8 +87,8 @@ test.describe('Messaging', () => {
 		});
 
 		test('should focus the latest message when moving the focus on the list and theres no previous focus', async ({ page }) => {
-			await channelPage.getBtnOpenRoomInfo(targetChannel).focus();
-			await expect(channelPage.getBtnOpenRoomInfo(targetChannel)).toBeFocused();
+			await channelPage.btnOpenRoomInfo.focus();
+			await expect(channelPage.btnOpenRoomInfo).toBeFocused();
 
 			await test.step('move focus to the list', async () => {
 				await page.keyboard.press('Tab');
@@ -97,8 +97,8 @@ test.describe('Messaging', () => {
 			});
 
 			await test.step('move focus to the list again', async () => {
-				await channelPage.getBtnOpenRoomInfo(targetChannel).focus();
-				await expect(channelPage.getBtnOpenRoomInfo(targetChannel)).toBeFocused();
+				await channelPage.btnOpenRoomInfo.focus();
+				await expect(channelPage.btnOpenRoomInfo).toBeFocused();
 				await page.keyboard.press('Tab');
 				await page.keyboard.press('Tab');
 				await expect(channelPage.content.lastUserMessage).toBeFocused();
