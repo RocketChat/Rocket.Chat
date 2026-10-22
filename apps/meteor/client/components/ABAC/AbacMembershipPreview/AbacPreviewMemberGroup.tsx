@@ -35,7 +35,7 @@ const AbacPreviewMemberGroup = ({ title, members, verdict }: AbacPreviewMemberGr
 								<UserAvatar username={username} size='x20' />
 							</Box>
 						)}
-						<Box flexGrow={1} withTruncatedText marginInlineStart={8}>
+						<Box flexGrow={1} withTruncatedText marginInline={8}>
 							<Box is='span' fontScale='p2m' color='default'>
 								{name || username}
 							</Box>
@@ -45,15 +45,7 @@ const AbacPreviewMemberGroup = ({ title, members, verdict }: AbacPreviewMemberGr
 								</Box>
 							)}
 						</Box>
-						<Icon
-							{...verdictIcons[verdict]}
-							size='x16'
-							marginInlineStart={8}
-							role='img'
-							aria-hidden={false}
-							aria-label={title}
-							title={title}
-						/>
+						<Icon {...verdictIcons[verdict]} size='x16' role='img' aria-hidden={false} aria-label={title} title={title} />
 					</Box>
 				))}
 			</Box>
