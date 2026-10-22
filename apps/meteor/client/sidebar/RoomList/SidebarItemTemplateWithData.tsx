@@ -6,6 +6,7 @@ import type { TFunction } from 'i18next';
 import type { AllHTMLAttributes } from 'react';
 import { memo, useMemo } from 'react';
 
+import ScheduledMessagesIndicator from './ScheduledMessagesIndicator';
 import { RoomIcon, useRoomIconLabel } from '../../components/RoomIcon';
 import RoomListItem from '../../components/RoomListItem/RoomListItem';
 import type { RoomListItemViewMode } from '../../components/RoomListItem/RoomListItem';
@@ -67,9 +68,12 @@ const SidebarItemTemplateWithData = ({
 	const isIncomingCall = Boolean(videoConfActions);
 	const iconLabel = useRoomIconLabel(room, isIncomingCall);
 
-	const titleIcon = getSubscriptionDraft(room) ? (
-		<Icon name='pencil' size='x12' title={room.draft ? t('Draft') : t('Thread_draft')} />
-	) : undefined;
+	const titleIcon = (
+		<>
+			{getSubscriptionDraft(room) && <Icon name='pencil' size='x12' title={room.draft ? t('Draft') : t('Thread_draft')} />}
+			<ScheduledMessagesIndicator rid={room.rid} />
+		</>
+	);
 
 	const actions = useMemo(
 		() =>

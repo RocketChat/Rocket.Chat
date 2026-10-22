@@ -7,12 +7,13 @@ import { useE2EERoomState } from '../../hooks/useE2EERoomState';
 
 export type MessageBoxHintProps = {
 	isEditing?: boolean;
+	isEditingScheduled?: boolean;
 	e2eEnabled?: boolean;
 	unencryptedMessagesAllowed?: boolean;
 	isMobile?: boolean;
 };
 
-const MessageBoxHint = ({ isEditing, e2eEnabled, unencryptedMessagesAllowed, isMobile }: MessageBoxHintProps) => {
+const MessageBoxHint = ({ isEditing, isEditingScheduled, e2eEnabled, unencryptedMessagesAllowed, isMobile }: MessageBoxHintProps) => {
 	const room = useRoom();
 	const isReadOnly = room?.ro || false;
 	const { t } = useTranslation();
@@ -27,6 +28,14 @@ const MessageBoxHint = ({ isEditing, e2eEnabled, unencryptedMessagesAllowed, isM
 		e2eRoomState !== 'DISABLED' &&
 		!isEditing &&
 		!isReadOnly;
+
+	if (isEditingScheduled) {
+		return (
+			<MessageComposerHint icon='clock' helperText={!isMobile ? <Trans i18nKey='Editing_message_hint' /> : undefined}>
+				{t('Editing_scheduled_message')}
+			</MessageComposerHint>
+		);
+	}
 
 	if (!isEditing && !isUnencryptedHintVisible && !isReadOnly) {
 		return null;

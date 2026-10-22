@@ -173,3 +173,15 @@ describe('MessageBox drafts', () => {
 		await waitFor(() => expect(endpointHandler).toHaveBeenCalledWith({ rid: 'rid', draft: 'a message over the limit' }));
 	});
 });
+
+describe('MessageBox send button', () => {
+	it('turns the send pair primary while there is text to send', async () => {
+		renderMessageBox(jest.fn(), jest.fn());
+		const pair = screen.getByRole('group', { name: 'Send' });
+		expect(pair).not.toHaveClass('rcx-split-button--primary');
+
+		await userEvent.type(screen.getByRole('textbox', { name: 'Message #general' }), 'hello');
+
+		expect(pair).toHaveClass('rcx-split-button--primary');
+	});
+});
