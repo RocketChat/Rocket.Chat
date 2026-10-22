@@ -7,7 +7,7 @@ type CurrentChatsResult = OperationResult<'GET', '/v1/livechat/rooms'>;
 export const useCurrentChats = (query: GETLivechatRoomsParams, { offset, count }: { offset: number; count: number }) => {
 	const currentChats = useEndpoint('GET', '/v1/livechat/rooms');
 
-	return usePaginatedQuery<CurrentChatsResult>({
+	return usePaginatedQuery({
 		query: {
 			queryKey: ['current-chats', query],
 			queryFn: (page) => currentChats({ ...query, ...page }) as unknown as Promise<CurrentChatsResult>,
