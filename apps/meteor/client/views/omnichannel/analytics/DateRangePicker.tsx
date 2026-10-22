@@ -130,25 +130,29 @@ const DateRangePicker = ({ onChange = () => undefined, ...props }: DateRangePick
 	return (
 		<Box {...props}>
 			<Box height='full' display='flex' flexDirection='row' gap={8}>
-				<Field flexShrink={1} flexGrow={1}>
-					<FieldLabel>{t('Start')}</FieldLabel>
-					<FieldRow>
-						<Box height='x40' display='flex' width='full'>
-							<InputBox type='date' onChange={handleStart} max={todayDate} value={start} />
-						</Box>
-					</FieldRow>
-				</Field>
-				<Field flexShrink={1} flexGrow={1}>
-					<FieldLabel>{t('End')}</FieldLabel>
-					<FieldRow>
-						<Box height='x40' display='flex' width='full'>
-							<InputBox type='date' onChange={handleEnd} min={start} max={todayDate} value={end} />
-						</Box>
-						<Box marginInlineStart={8}>
-							<GenericMenu title={t('Date_range_presets')} items={options} small />
-						</Box>
-					</FieldRow>
-				</Field>
+				<Box flexGrow={1} width='full'>
+					<Field>
+						<FieldLabel>{t('Start')}</FieldLabel>
+						<FieldRow>
+							<Box height='x40' display='flex' width='full'>
+								<InputBox type='date' onChange={handleStart} max={todayDate} value={start} />
+							</Box>
+						</FieldRow>
+					</Field>
+				</Box>
+				<Box flexGrow={1} width='full'>
+					<Field>
+						<FieldLabel>{t('End')}</FieldLabel>
+						<FieldRow>
+							<Box height='x40' display='flex' width='full'>
+								<InputBox type='date' onChange={handleEnd} min={start} max={todayDate} value={end} />
+							</Box>
+							<Box marginInlineStart={8}>
+								<GenericMenu title={t('Date_range_presets')} items={options} small />
+							</Box>
+						</FieldRow>
+					</Field>
+				</Box>
 			</Box>
 		</Box>
 	);
