@@ -234,7 +234,7 @@ function PrepareImportPage() {
 										</Box>
 									</Box>
 								) : (
-									<Throbber justifyContent='center' />
+									<Throbber />
 								)}
 							</>
 						)}
