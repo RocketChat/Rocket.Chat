@@ -24,7 +24,7 @@ export function DropdownDesktop({ children, style, ...props }: DropdownDesktopPr
 			{...props}
 		>
 			<Box flexShrink={1} paddingBlock={12}>
-				{style?.visibility === 'hidden' ? null : children}
+				{children}
 			</Box>
 		</Tile>
 	);
