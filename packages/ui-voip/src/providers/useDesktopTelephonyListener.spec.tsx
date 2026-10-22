@@ -53,7 +53,7 @@ it('opens the widget with the received phone number', () => {
 
 	bridge.fire('+15551234567');
 
-	expect(openWidget).toHaveBeenCalledWith<[PeerInfo]>({ number: '+15551234567' });
+	expect(openWidget).toHaveBeenCalledWith<[PeerInfo]>({ number: '+15551234567', type: 'sip' });
 });
 
 // phoneNumber is typed as `any` since we are testing invalid format treatment
@@ -91,9 +91,10 @@ it('re-registers the callback when the openWidget reference changes', () => {
 	const newOpenWidget = jest.fn();
 	rerender({ openWidget: newOpenWidget });
 
-	expect(bridge.onTelephonyCallRequested).toHaveBeenCalledTimes(2);
+	// onTelephonyCallRequested callback is unregistered by passing a noop, so it is called once more before setting the new callback
+	expect(bridge.onTelephonyCallRequested).toHaveBeenCalledTimes(3);
 
 	bridge.fire('5551234567');
 
-	expect(newOpenWidget).toHaveBeenCalledWith<[PeerInfo]>({ number: '5551234567' });
+	expect(newOpenWidget).toHaveBeenCalledWith<[PeerInfo]>({ number: '5551234567', type: 'sip' });
 });

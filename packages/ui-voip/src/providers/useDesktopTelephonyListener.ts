@@ -17,7 +17,7 @@ export const useDesktopTelephonyListener = (openWidget: (peerInfo: PeerInfo) => 
 				console.warn('MediaCall - Telephony Deeplink listener - Invalid number format: ', phoneNumber);
 				return;
 			}
-			openWidget({ number: phoneNumber });
+			openWidget({ number: phoneNumber, type: 'sip' });
 		});
 
 		// onTelephonyCallRequested returns no cleanup, and registered callbacks overwrite the previous ones
