@@ -3,29 +3,9 @@ import { Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
 import { retrieveRegistrationStatus } from './retrieveRegistrationStatus';
+import { userLoggedOut } from './userLoggedOut';
 import { settings } from '../../settings';
 import { SystemLogger } from '../logger/system';
-
-async function userLoggedOut(userId: string) {
-	if (!userId) {
-		return false;
-	}
-
-	const user = await Users.findOneById(userId);
-
-	if (user?.services?.cloud) {
-		await Users.updateOne(
-			{ _id: user._id },
-			{
-				$unset: {
-					'services.cloud': 1,
-				},
-			},
-		);
-	}
-
-	return true;
-}
 
 export async function userLogout(userId: string): Promise<string | boolean> {
 	const { workspaceRegistered } = await retrieveRegistrationStatus();
