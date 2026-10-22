@@ -15,9 +15,7 @@ const PaginatedSelectFiltered = ({ filter, setFilter, options, placeholder, ...p
 		() =>
 			({ filter, onChange: _onChange, ...props }: PaginatedSelectFilteredProps) => (
 				<Input
-					marginInline={4}
-					flexGrow={1}
-					className='rcx-select__focus rcx-input-box--undecorated'
+					className='rcx-select__focus rcx-select__filter rcx-input-box--undecorated'
 					placeholder={placeholder}
 					value={filter}
 					onChange={(e: ChangeEvent<HTMLInputElement>) => {

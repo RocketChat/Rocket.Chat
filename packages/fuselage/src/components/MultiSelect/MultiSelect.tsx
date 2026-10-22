@@ -203,11 +203,9 @@ function MultiSelect({
 				</Margins>
 			</FlexItem>
 			<FlexItem grow={0} shrink={0}>
-				<Margins inline='x4'>
-					<SelectAddon>
-						<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : addonIcon || 'chevron-down'} size='x20' />
-					</SelectAddon>
-				</Margins>
+				<SelectAddon>
+					<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : addonIcon || 'chevron-down'} size='x20' />
+				</SelectAddon>
 			</FlexItem>
 			<PositionAnimated visible={visible} anchor={containerRef}>
 				<_Options
