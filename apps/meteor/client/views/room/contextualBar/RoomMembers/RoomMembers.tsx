@@ -217,30 +217,28 @@ const RoomMembers = ({
 			</ContextualbarContent>
 			{!isDirect && (onClickInvite || onClickAdd) && (
 				<ContextualbarFooter>
-					{isAbacLocked && (
-						<Callout type='danger' marginBlockEnd={16}>
-							{t('ABAC_Cannot_add_members_to_locked_room')}
-						</Callout>
-					)}
-					<ButtonGroup stretch>
-						{onClickInvite && (
-							<Button
-								icon='link'
-								onClick={onClickInvite}
-								width='50%'
-								disabled={isABACRoom || isAbacLocked}
-								title={isABACRoom ? t('Not_available_for_ABAC_enabled_rooms') : undefined}
-								aria-label={t('Invite_Link')}
-							>
-								{t('Invite_Link')}
-							</Button>
-						)}
-						{onClickAdd && (
-							<Button icon='user-plus' onClick={onClickAdd} width='50%' primary disabled={isAbacLocked}>
-								{t('Add')}
-							</Button>
-						)}
-					</ButtonGroup>
+					<Box display='flex' flexDirection='column' gap={16}>
+						{isAbacLocked && <Callout type='danger'>{t('ABAC_Cannot_add_members_to_locked_room')}</Callout>}
+						<ButtonGroup stretch>
+							{onClickInvite && (
+								<Button
+									icon='link'
+									onClick={onClickInvite}
+									width='50%'
+									disabled={isABACRoom || isAbacLocked}
+									title={isABACRoom ? t('Not_available_for_ABAC_enabled_rooms') : undefined}
+									aria-label={t('Invite_Link')}
+								>
+									{t('Invite_Link')}
+								</Button>
+							)}
+							{onClickAdd && (
+								<Button icon='user-plus' onClick={onClickAdd} width='50%' primary disabled={isAbacLocked}>
+									{t('Add')}
+								</Button>
+							)}
+						</ButtonGroup>
+					</Box>
 				</ContextualbarFooter>
 			)}
 		</ContextualbarDialog>

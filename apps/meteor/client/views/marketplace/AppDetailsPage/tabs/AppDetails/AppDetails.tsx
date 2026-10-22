@@ -44,36 +44,38 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 
 	const openExternalLink = useExternalLink();
 
+	const showAddonCallout = !!appAddon && !workspaceHasAddon;
+	const licenseWarnings = Object.keys(app.licenseValidation?.warnings ?? {});
+	const licenseErrors = Object.keys(app.licenseValidation?.errors ?? {});
+
 	return (
 		<Box marginBlockStart='36px' maxWidth='x640' width='full' marginInline='auto' color='default'>
-			{appAddon && !workspaceHasAddon && (
-				<Callout
-					marginBlock={16}
-					title={t('Subscription_add-on_required')}
-					type='info'
-					actions={
-						<Button small onClick={() => openExternalLink(GET_ADDONS_LINK)}>
-							{t('Contact_sales')}
-						</Button>
-					}
-				>
-					{t('App_cannot_be_enabled_without_add-on')}
-				</Callout>
-			)}
-			{app.licenseValidation && (
-				<>
-					{Object.entries(app.licenseValidation.warnings).map(([key]) => (
-						<Callout key={key} type='warning' marginBlock={16}>
+			{(showAddonCallout || licenseWarnings.length > 0 || licenseErrors.length > 0) && (
+				<Box display='flex' flexDirection='column' gap={16} marginBlock={16}>
+					{showAddonCallout && (
+						<Callout
+							title={t('Subscription_add-on_required')}
+							type='info'
+							actions={
+								<Button small onClick={() => openExternalLink(GET_ADDONS_LINK)}>
+									{t('Contact_sales')}
+								</Button>
+							}
+						>
+							{t('App_cannot_be_enabled_without_add-on')}
+						</Callout>
+					)}
+					{licenseWarnings.map((key) => (
+						<Callout key={key} type='warning'>
 							{t(`Apps_License_Message_${key}`)}
 						</Callout>
 					))}
-
-					{Object.entries(app.licenseValidation.errors).map(([key]) => (
-						<Callout key={key} type='danger' marginBlock={16}>
+					{licenseErrors.map((key) => (
+						<Callout key={key} type='danger'>
 							{t(`Apps_License_Message_${key}`)}
 						</Callout>
 					))}
-				</>
+				</Box>
 			)}
 
 			<Box display='flex' flexDirection='column'>

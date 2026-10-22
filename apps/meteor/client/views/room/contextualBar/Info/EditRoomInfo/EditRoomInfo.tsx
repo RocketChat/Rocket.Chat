@@ -211,7 +211,9 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 				onCancel={() => setModal(null)}
 				onClose={() => setModal(null)}
 			>
-				<AbacAttributesRemovalWarning />
+				<Box paddingBlockStart={16}>
+					<AbacAttributesRemovalWarning />
+				</Box>
 			</GenericModal>,
 		);
 	});

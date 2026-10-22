@@ -142,7 +142,9 @@ const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 				onCancel={() => setModal(null)}
 				onClose={() => setModal(null)}
 			>
-				<AbacAttributesRemovalWarning />
+				<Box paddingBlockStart={16}>
+					<AbacAttributesRemovalWarning />
+				</Box>
 			</GenericModal>,
 		);
 	});

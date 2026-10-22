@@ -63,16 +63,18 @@ const BusinessHoursForm = ({ type }: BusinessHoursFormProps) => {
 			{type === 'custom' && <BusinessHoursMultiple />}
 			<Field>
 				<FieldLabel htmlFor={timezoneField}>{t('Timezone')}</FieldLabel>
-				<FieldRow>
-					<Controller
-						name='timezoneName'
-						control={control}
-						render={({ field }) => <Select id={timezoneField} {...field} options={timeZonesOptions} />}
-					/>
-				</FieldRow>
-				<Callout title={t('Daylight_savings_time')} type='info' marginBlockStart='x8'>
-					{t('Business_hours_will_update_automatically')}
-				</Callout>
+				<Box display='flex' flexDirection='column' gap={8}>
+					<FieldRow>
+						<Controller
+							name='timezoneName'
+							control={control}
+							render={({ field }) => <Select id={timezoneField} {...field} options={timeZonesOptions} />}
+						/>
+					</FieldRow>
+					<Callout title={t('Daylight_savings_time')} type='info'>
+						{t('Business_hours_will_update_automatically')}
+					</Callout>
+				</Box>
 			</Field>
 			<Field>
 				<FieldLabel htmlFor={daysOpenField}>{t('Open_days_of_the_week')}</FieldLabel>

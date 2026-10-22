@@ -1,5 +1,5 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
-import { Icon } from '@rocket.chat/fuselage';
+import { Box, Icon } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
@@ -31,8 +31,10 @@ const SecondStep = ({ onClose, onCancel, onConfirm, deletedRooms = {}, rooms = [
 			onCancel={onCancel}
 			onConfirm={(): void => onConfirm(deletedRooms)}
 		>
-			{t('You_are_converting_team_to_channel')}
-			{removesAbacAttributes && <AbacAttributesRemovalWarning />}
+			<Box display='flex' flexDirection='column' gap={16}>
+				{t('You_are_converting_team_to_channel')}
+				{removesAbacAttributes && <AbacAttributesRemovalWarning />}
+			</Box>
 		</GenericModal>
 	);
 };

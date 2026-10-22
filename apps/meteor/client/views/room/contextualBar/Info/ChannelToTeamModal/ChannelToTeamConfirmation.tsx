@@ -23,8 +23,10 @@ const ChannelToTeamConfirmation = ({ onCancel, onConfirm, removesAbacAttributes 
 			onCancel={onCancel}
 			onConfirm={onConfirm}
 		>
-			<Box>{t('Teams_move_channel_to_team_confirm_description')}</Box>
-			{removesAbacAttributes && <AbacAttributesRemovalWarning />}
+			<Box display='flex' flexDirection='column' gap={16}>
+				<Box>{t('Teams_move_channel_to_team_confirm_description')}</Box>
+				{removesAbacAttributes && <AbacAttributesRemovalWarning />}
+			</Box>
 		</GenericModal>
 	);
 };
