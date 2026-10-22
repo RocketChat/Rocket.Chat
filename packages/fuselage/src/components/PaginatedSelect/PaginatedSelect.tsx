@@ -31,16 +31,19 @@ export const PaginatedSelect = ({
 	value,
 	withTitle,
 	filter,
-	setFilter: _setFilter,
+	'setFilter': _setFilter,
 	error,
 	disabled,
 	options = [],
-	anchor: Anchor = SelectFocus,
+	'anchor': Anchor = SelectFocus,
 	onChange = () => {},
 	placeholder,
-	renderOptions: _Options = OptionsPaginated,
+	'renderOptions': _Options = OptionsPaginated,
 	renderItem = Option,
 	endReached,
+	'aria-labelledby': ariaLabelledBy,
+	'aria-describedby': ariaDescribedBy,
+	'aria-invalid': ariaInvalid,
 	...props
 }: PaginatedSelectProps) => {
 	const [internalValue, setInternalValue] = useState(value);
@@ -99,6 +102,9 @@ export const PaginatedSelect = ({
 					filter={filter}
 					ref={ref}
 					aria-haspopup='listbox'
+					aria-labelledby={ariaLabelledBy}
+					aria-describedby={ariaDescribedBy}
+					aria-invalid={ariaInvalid}
 					onClick={show}
 					onBlur={hide}
 				/>
