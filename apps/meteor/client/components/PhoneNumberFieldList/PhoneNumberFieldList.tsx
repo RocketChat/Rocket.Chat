@@ -1,5 +1,6 @@
 import type { IUserPhoneNumber } from '@rocket.chat/core-typings';
-import { Box, Button } from '@rocket.chat/fuselage';
+import { MAX_USER_PHONES } from '@rocket.chat/core-typings';
+import { Box, Button, Callout } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useEffect, useId, useRef } from 'react';
 import { useVisuallyHidden } from 'react-aria';
@@ -38,6 +39,8 @@ const PhoneNumberFieldList = <T extends { phones?: IUserPhoneNumber[] }>({ contr
 		listRef.current?.querySelector<HTMLInputElement>(`input[name="phones.${index}.number"]`)?.focus();
 	}, [fields]);
 
+	const isAtPhonesLimit = fields.length >= MAX_USER_PHONES;
+
 	const handleAdd = useStableCallback(() => append({ ...EMPTY_PHONE }));
 
 	const handleRemove = useStableCallback((index: number) => {
@@ -59,8 +62,13 @@ const PhoneNumberFieldList = <T extends { phones?: IUserPhoneNumber[] }>({ contr
 					<PhoneNumberFieldRow key={field.id} control={phonesControl} index={index} onRemove={handleRemove} className={className} />
 				))}
 			</Box>
+			{isAtPhonesLimit && (
+				<Callout type='info' marginBlockStart={16}>
+					{t('Phone_numbers_limit', { count: MAX_USER_PHONES })}
+				</Callout>
+			)}
 			<Box>
-				<Button icon='plus' aria-controls={listId} onClick={handleAdd} marginBlockStart={16}>
+				<Button icon='plus' aria-controls={listId} onClick={handleAdd} disabled={isAtPhonesLimit} marginBlockStart={16}>
 					{t('Add_number')}
 				</Button>
 			</Box>

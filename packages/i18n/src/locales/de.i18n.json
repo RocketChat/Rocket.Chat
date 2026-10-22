@@ -4840,6 +4840,10 @@
   "Phone_number": "Telefonnummer",
   "Phone_number_copied": "Telefonnummer kopiert",
   "Phone_Numbers": "Telefonnummern",
+  "Phone_numbers_limit": {
+    "one": "Sie können bis zu {{count}} Telefonnummer hinzufügen",
+    "other": "Sie können bis zu {{count}} Telefonnummern hinzufügen"
+  },
   "PID": "PID",
   "Pin": "Anheften",
   "Pin_Message": "Nachricht anheften",

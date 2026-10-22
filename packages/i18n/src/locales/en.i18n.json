@@ -5269,6 +5269,10 @@
   "Phone_number": "Phone number",
   "Phone_number_copied": "Phone number copied",
   "Phone_Numbers": "Phone Numbers",
+  "Phone_numbers_limit": {
+    "one": "You can add up to {{count}} phone",
+    "other": "You can add up to {{count}} phones"
+  },
   "PID": "PID",
   "Pin": "Pin",
   "Pin_Message": "Pin message",

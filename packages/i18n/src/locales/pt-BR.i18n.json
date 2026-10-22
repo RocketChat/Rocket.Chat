@@ -4818,6 +4818,11 @@
   "Phone_number": "Número de telefone",
   "Phone_number_copied": "Número de telefone copiado",
   "Phone_Numbers": "Números de telefone",
+  "Phone_numbers_limit": {
+    "one": "Você pode adicionar até {{count}} número de telefone",
+    "other": "Você pode adicionar até {{count}} números de telefone",
+    "many": "Você pode adicionar até {{count}} números de telefone"
+  },
   "PID": "PID",
   "Pin": "Fixar",
   "Pin_Message": "Fixar mensagem",
