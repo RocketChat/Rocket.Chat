@@ -8,13 +8,14 @@ type AgreeTermsFieldProp = {
 	policyHref: string;
 	control: any;
 	errors: any;
+	className?: string;
 };
 
-const AgreeTermsField = ({ agreementField, termsHref, policyHref, control, errors }: AgreeTermsFieldProp) => {
+const AgreeTermsField = ({ agreementField, termsHref, policyHref, control, errors, className }: AgreeTermsFieldProp) => {
 	const { t } = useTranslation();
 
 	return (
-		<Field marginBlockStart='24px'>
+		<Field className={className}>
 			<FieldRow>
 				<Box display='flex' alignItems='center' minWidth={0} gap={4}>
 					<Controller
@@ -37,7 +38,7 @@ const AgreeTermsField = ({ agreementField, termsHref, policyHref, control, error
 							/>
 						)}
 					/>
-					<FieldLabel display='inline' htmlFor={agreementField} withRichContent required fontScale='c1'>
+					<FieldLabel htmlFor={agreementField} withRichContent required>
 						<Trans i18nKey='component.form.termsAndConditions'>
 							I agree with
 							<Box is='a' href={termsHref} target='_blank' rel='noopener noreferrer'>

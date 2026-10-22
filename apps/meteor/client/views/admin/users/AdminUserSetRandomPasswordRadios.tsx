@@ -51,7 +51,7 @@ const AdminUserSetRandomPasswordRadios = ({
 						)}
 					/>
 				</FieldRow>
-				<FieldLabel htmlFor={setRandomPasswordId} alignSelf='center' fontScale='p2' disabled={!isSmtpEnabled}>
+				<FieldLabel htmlFor={setRandomPasswordId} disabled={!isSmtpEnabled}>
 					{t('Set_randomly_and_send_by_email')}
 				</FieldLabel>
 			</Box>
@@ -83,9 +83,7 @@ const AdminUserSetRandomPasswordRadios = ({
 						)}
 					/>
 				</FieldRow>
-				<FieldLabel htmlFor={setPasswordManuallyId} alignSelf='center' fontScale='p2'>
-					{t('Set_manually')}
-				</FieldLabel>
+				<FieldLabel htmlFor={setPasswordManuallyId}>{t('Set_manually')}</FieldLabel>
 			</Stack>
 		</>
 	);

@@ -113,7 +113,7 @@ const RegisterWorkspaceSetupStepOneModal = ({
 					<Field>
 						<FieldRow>
 							<Box display='flex' alignItems='center' minWidth={0}>
-								<FieldLabel display='block' fontScale='c1' htmlFor={termsField}>
+								<FieldLabel htmlFor={termsField}>
 									<Trans i18nKey='RegisterWorkspace_Setup_Terms_Privacy'>
 										I agree with <ExternalLink to={links.terms}>Terms and Conditions</ExternalLink> and{' '}
 										<ExternalLink to={links.privacy}>Privacy Policy</ExternalLink>
