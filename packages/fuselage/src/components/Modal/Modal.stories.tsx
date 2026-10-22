@@ -233,6 +233,43 @@ export const _WithSubtleTagline: Story = {
 	),
 };
 
+export const _WithFixedSize: Story = {
+	render: () => (
+		<Modal width='x480' height='x360'>
+			<ModalHeader>
+				<ModalHeaderText>
+					<ModalTitle>Modal Header</ModalTitle>
+				</ModalHeaderText>
+				<ModalClose />
+			</ModalHeader>
+			<ModalContent>Modal Body</ModalContent>
+		</Modal>
+	),
+};
+
+export const _WithFillContent: Story = {
+	render: () => (
+		<Modal height='x360'>
+			<ModalHeader>
+				<ModalHeaderText>
+					<ModalTitle>Modal Header</ModalTitle>
+				</ModalHeaderText>
+				<ModalClose />
+			</ModalHeader>
+			<ModalContent fill>
+				<Box display='flex' flexDirection='column' justifyContent='space-between' height='100%'>
+					Content that brings its own footer
+					<Box display='flex' justifyContent='end'>
+						<Button primary onClick={action('click')}>
+							Next
+						</Button>
+					</Box>
+				</Box>
+			</ModalContent>
+		</Modal>
+	),
+};
+
 export const _WithAnnotation: Story = {
 	render: () => (
 		<Modal>
