@@ -58,6 +58,7 @@ export * from './SplitButton';
 export * from './Stack';
 export * from './States';
 export * from './StatusBullet';
+export * from './StatusIcon';
 export * from './Table';
 export * from './Tabs';
 export * from './Tag';
