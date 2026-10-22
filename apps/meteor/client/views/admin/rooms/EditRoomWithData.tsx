@@ -1,15 +1,17 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { ContextualbarHeader, ContextualbarTitle, ContextualbarClose, ContextualbarSkeletonBody } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 import EditRoom from './EditRoom';
+import { roomsQueryKeys } from '../../../lib/queryKeys';
 
-export type EditRoomWithDataProps = { rid?: IRoom['_id']; onReload: () => void; onClose: () => void };
+export type EditRoomWithDataProps = { rid?: IRoom['_id']; onClose: () => void };
 
-const EditRoomWithData = ({ rid, onReload, onClose }: EditRoomWithDataProps) => {
+const EditRoomWithData = ({ rid, onClose }: EditRoomWithDataProps) => {
 	const { t } = useTranslation();
+	const queryClient = useQueryClient();
 
 	const getAdminRooms = useEndpoint('GET', '/v1/rooms.adminRooms.getRoom');
 
@@ -30,11 +32,11 @@ const EditRoomWithData = ({ rid, onReload, onClose }: EditRoomWithDataProps) => 
 
 	const handleChange = (): void => {
 		refetch();
-		onReload();
+		queryClient.invalidateQueries({ queryKey: roomsQueryKeys.adminList() });
 	};
 
 	const handleDelete = (): void => {
-		onReload();
+		queryClient.invalidateQueries({ queryKey: roomsQueryKeys.adminList() });
 	};
 
 	return data ? (
