@@ -123,9 +123,10 @@ const CallHistoryPage = () => {
 	}, [setTab, historyId, onClickRow, tab?.rid]);
 
 	const { data, isPending, error, refetch } = usePaginatedQuery({
-		query,
-		queryKey,
-		queryFn: getCallHistory,
+		query: {
+			queryKey,
+			queryFn: (page) => getCallHistory({ ...query, ...page }),
+		},
 		itemsKey: 'items',
 		offset: paginationProps.current,
 		count: paginationProps.itemsPerPage,

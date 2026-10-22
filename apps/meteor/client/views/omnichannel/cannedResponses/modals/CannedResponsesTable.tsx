@@ -65,13 +65,14 @@ const CannedResponsesTable = () => {
 
 	const getCannedResponses = useEndpoint('GET', '/v1/canned-responses');
 	const { data, isLoading, isSuccess } = usePaginatedQuery({
-		query,
-		queryKey,
-		queryFn: getCannedResponses,
+		query: {
+			queryKey,
+			queryFn: (page) => getCannedResponses({ ...query, ...page }),
+			refetchOnWindowFocus: false,
+		},
 		itemsKey: 'cannedResponses',
 		offset: current,
 		count: itemsPerPage,
-		refetchOnWindowFocus: false,
 	});
 
 	const handleAddNew = useStableCallback(() => router.navigate('/omnichannel/canned-responses/new'));

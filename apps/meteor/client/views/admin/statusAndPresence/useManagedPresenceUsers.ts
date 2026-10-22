@@ -33,15 +33,16 @@ export const useManagedPresenceUsers = ({ searchTerm, count, offset }: { searchT
 	const listStatusVisibility = useEndpoint('GET', '/v1/users.listStatusVisibility');
 
 	return usePaginatedQuery({
-		query: { searchTerm },
-		queryKey: managedPresenceQueryKeys.list({ searchTerm }),
-		queryFn: listStatusVisibility,
+		query: {
+			queryKey: managedPresenceQueryKeys.list({ searchTerm }),
+			queryFn: (page) => listStatusVisibility({ searchTerm, ...page }),
+			meta: {
+				apiErrorToastMessage: true,
+			},
+		},
 		itemsKey: 'users',
 		offset,
 		count,
-		meta: {
-			apiErrorToastMessage: true,
-		},
 	});
 };
 

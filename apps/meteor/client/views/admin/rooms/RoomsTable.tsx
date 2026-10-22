@@ -56,9 +56,10 @@ const RoomsTable = () => {
 	const getAdminRooms = useEndpoint('GET', '/v1/rooms.adminRooms');
 
 	const { data, refetch, isSuccess, isLoading, isError } = usePaginatedQuery({
-		query,
-		queryKey,
-		queryFn: getAdminRooms,
+		query: {
+			queryKey,
+			queryFn: (page) => getAdminRooms({ ...query, ...page }),
+		},
 		itemsKey: 'rooms',
 		offset: current,
 		count: itemsPerPage,

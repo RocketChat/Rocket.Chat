@@ -20,12 +20,14 @@ type PaginatedData = { count: number; total: number };
 
 type Combine<TData, TCombined> = (results: UseQueryResult<TData>[]) => TCombined;
 
-type UsePaginatedQueryOptions<TQuery, TData> = Omit<UseQueryOptions<TData>, 'queryKey' | 'queryFn' | 'select'> &
-	QueryPagination & {
-		query: TQuery;
-		queryKey: readonly unknown[];
-		queryFn: (query: TQuery & QueryPagination) => Promise<TData>;
-	};
+type PaginatedQueryOptions<TData> = NoInfer<Omit<UseQueryOptions<TData>, 'queryKey' | 'queryFn' | 'select'>> & {
+	queryKey: readonly unknown[];
+	queryFn: (pagination: QueryPagination) => Promise<TData & PaginatedData>;
+};
+
+type UsePaginatedQueryOptions<TData> = QueryPagination & {
+	query: PaginatedQueryOptions<TData>;
+};
 
 const mergeItems =
 	<TData extends PaginatedData>(itemsKey: keyof TData) =>
@@ -75,25 +77,22 @@ const getOffsets = (start: number, itemsPerPage: number, returned: number | unde
 	return offsets;
 };
 
-export function usePaginatedQuery<TQuery, TData extends PaginatedData>(
-	options: UsePaginatedQueryOptions<TQuery, TData> & { itemsKey: keyof TData; combine?: never },
+export function usePaginatedQuery<TData>(
+	options: UsePaginatedQueryOptions<TData> & { itemsKey: keyof TData; combine?: never },
 ): PaginatedQueryResult<TData>;
-export function usePaginatedQuery<TQuery, TData extends PaginatedData, TCombined>(
-	options: UsePaginatedQueryOptions<TQuery, TData> & { combine: Combine<TData, TCombined>; itemsKey?: never },
+export function usePaginatedQuery<TData, TCombined>(
+	options: UsePaginatedQueryOptions<TData> & { combine: Combine<TData, TCombined>; itemsKey?: never },
 ): TCombined;
-export function usePaginatedQuery<TQuery, TData extends PaginatedData>(
-	options: UsePaginatedQueryOptions<TQuery, TData> & { itemsKey?: never; combine?: never },
+export function usePaginatedQuery<TData>(
+	options: UsePaginatedQueryOptions<TData> & { itemsKey?: never; combine?: never },
 ): UseQueryResult<TData>[];
-export function usePaginatedQuery<TQuery, TData extends PaginatedData, TCombined>({
-	query,
-	queryKey,
-	queryFn,
+export function usePaginatedQuery<TData extends PaginatedData, TCombined>({
+	query: { queryKey, queryFn, ...queryOptions },
 	itemsKey,
 	combine,
 	offset: start,
 	count: itemsPerPage,
-	...queryOptions
-}: UsePaginatedQueryOptions<TQuery, TData> & { itemsKey?: keyof TData; combine?: Combine<TData, TCombined> }) {
+}: UsePaginatedQueryOptions<TData> & { itemsKey?: keyof TData; combine?: Combine<TData, TCombined> }) {
 	const queryClient = useQueryClient();
 
 	const firstData = queryClient.getQueryData<TData>([...queryKey, { offset: start, count: itemsPerPage }]);
@@ -118,7 +117,7 @@ export function usePaginatedQuery<TQuery, TData extends PaginatedData, TCombined
 			return {
 				...queryOptions,
 				queryKey: [...queryKey, pagination],
-				queryFn: () => queryFn({ ...query, ...pagination }),
+				queryFn: () => queryFn(pagination),
 			};
 		}),
 		combine: combineFn,
