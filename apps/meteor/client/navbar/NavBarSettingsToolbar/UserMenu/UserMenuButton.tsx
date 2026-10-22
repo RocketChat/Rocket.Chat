@@ -1,4 +1,3 @@
-import { css } from '@rocket.chat/css-in-js';
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useSetting, useUser } from '@rocket.chat/ui-contexts';
@@ -36,33 +35,24 @@ const UserMenuButton = forwardRef(function UserMenuButton(props: UserMenuButtonP
 		<IconButton
 			{...props}
 			ref={ref}
-			position='relative'
-			display='flex'
-			flexDirection='column'
-			overflow='visible'
 			icon={username ? <UserAvatar size='x28' username={username} etag={avatarETag} /> : 'user'}
-		>
-			<Box
-				position='absolute'
-				role='status'
-				className={css`
-					bottom: 0;
-					right: 0;
-					transform: translate(30%, 30%);
-				`}
-				display='flex'
-				justifyContent='center'
-				alignItems='center'
-				overflow='hidden'
-				size='x12'
-				borderWidth='default'
-				backgroundColor='surface-tint'
-				borderColor='extra-light'
-				borderRadius='full'
-			>
-				<UserStatus small status={getDisplayedStatus()} />
-			</Box>
-		</IconButton>
+			badgePosition='bottom-end'
+			badge={
+				<Box
+					display='flex'
+					justifyContent='center'
+					alignItems='center'
+					overflow='hidden'
+					size='x12'
+					borderWidth='default'
+					backgroundColor='surface-tint'
+					borderColor='extra-light'
+					borderRadius='full'
+				>
+					<UserStatus small status={getDisplayedStatus()} />
+				</Box>
+			}
+		/>
 	);
 });
 
