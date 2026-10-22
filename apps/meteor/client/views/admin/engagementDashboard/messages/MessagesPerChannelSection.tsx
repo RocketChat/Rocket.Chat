@@ -4,7 +4,6 @@ import {
 	FlexContainer,
 	FlexItem,
 	Icon,
-	Margins,
 	Skeleton,
 	Table,
 	Tile,
@@ -185,12 +184,12 @@ const MessagesPerChannelSection = () => {
 											<TableRow key={i}>
 												<TableCell>{i + 1}.</TableCell>
 												<TableCell>
-													<Margins inlineEnd={4}>
+													<Box display='flex' alignItems='center' gap={4}>
 														{(t === 'd' && <Icon name='at' />) ||
 															(t === 'p' && <Icon name='lock' />) ||
 															(t === 'c' && <Icon name='hashtag' />)}
-													</Margins>
-													{name}
+														{name}
+													</Box>
 												</TableCell>
 												<TableCell align='end'>{messages}</TableCell>
 											</TableRow>

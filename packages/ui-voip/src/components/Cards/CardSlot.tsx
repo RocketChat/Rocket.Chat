@@ -50,7 +50,7 @@ const CardSlot = ({ children, position, margin, variant = 'default', showOnHover
 			showOnHover={showOnHover}
 			className={showOnHover ? 'rcx-card-slot--onHover' : undefined}
 		>
-			<Box is='span' fontScale='c2'>
+			<Box is='span' fontScale='c2' display='flex' alignItems='center' columnGap={4}>
 				{children}
 			</Box>
 		</CardSlotBase>
