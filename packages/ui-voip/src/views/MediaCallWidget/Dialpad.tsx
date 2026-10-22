@@ -17,11 +17,13 @@ const Dialpad = ({ autoFocus = true }: DialpadProps) => {
 	return (
 		<Box display='flex' width='100%' flexDirection='column' marginBlockEnd={8}>
 			<Stack justify='center' align='center' gap={8}>
-				<Field>
-					<FieldRow>
-						<TextInput aria-label={t('Dialpad')} value={inputValue} readOnly small marginInline={24} />
-					</FieldRow>
-				</Field>
+				<Box width='full' paddingInline={24}>
+					<Field>
+						<FieldRow>
+							<TextInput aria-label={t('Dialpad')} value={inputValue} readOnly small />
+						</FieldRow>
+					</Field>
+				</Box>
 				<Keypad
 					autoFocus={autoFocus}
 					onKeyPress={(tone) => {
