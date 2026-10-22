@@ -1,6 +1,6 @@
 import type { ReactNode, RefAttributes } from 'react';
 
-import { Box } from '..';
+import { Box, Tile } from '..';
 
 export type DropdownMobileProps = RefAttributes<HTMLElement> & {
 	children: ReactNode;
@@ -8,9 +8,9 @@ export type DropdownMobileProps = RefAttributes<HTMLElement> & {
 
 export function DropdownMobile({ children, ...props }: DropdownMobileProps) {
 	return (
-		<Box
-			rcx-tile
-			rcx-tile--elevation='2'
+		<Tile
+			flush
+			elevation='2'
 			width='100vw'
 			maxHeight='80%'
 			position='fixed'
@@ -25,6 +25,6 @@ export function DropdownMobile({ children, ...props }: DropdownMobileProps) {
 			<Box flexShrink={1} paddingBlock={16}>
 				{children}
 			</Box>
-		</Box>
+		</Tile>
 	);
 }
