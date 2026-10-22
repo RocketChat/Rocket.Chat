@@ -7,6 +7,7 @@ import { Empty, ErrorCode, NatsError, RequestStrategy, ServiceError, connect } f
 import type { ServiceNodes } from './licenseEnforcement';
 import { startLicenseEnforcement } from './licenseEnforcement';
 import { consumeStreams, serveStreams } from './streams';
+import { withDefaultDependencies } from './withDefaultDependencies';
 
 const TE = new TextEncoder();
 const TD = new TextDecoder();
@@ -39,6 +40,9 @@ const NO_RESPONDERS_CODE: string = ErrorCode.NoResponders;
 /** Discovery is a request-many round trip; a short TTL keeps back to back lookups to a single ping. */
 const DISCOVERY_TTL = 1000;
 
+/** How often a service still waiting on a remote dependency looks for it again. */
+const DEPENDENCY_INTERVAL = 1000;
+
 const delay = async (ms: number): Promise<void> =>
 	new Promise((resolve) => {
 		setTimeout(resolve, ms);
@@ -49,6 +53,8 @@ function isNoResponders(e: unknown): boolean {
 }
 
 type NatsBrokerOptions = {
+	/** milliseconds a service may wait for its dependencies before `start()` gives up; `0` waits forever */
+	dependencyTimeout?: number;
 	requestTimeout?: number;
 	/** kill switch: `false` routes every call over nats, as if nothing were local */
 	localRouting?: boolean;
@@ -126,13 +132,19 @@ export class NatsBroker implements IBroker {
 
 	private nc?: NatsConnection;
 
-	private pendingServices: IServiceClass[] = [];
-
 	private services = new Map<IServiceClass, RegisteredService>();
+
+	private dependencies = new Map<IServiceClass, string[]>();
+
+	private registrationWaiters = new Set<() => void>();
+
+	private registrations = 0;
 
 	private discovery?: { at: number; identities: Promise<ServiceIdentity[]> };
 
 	private readonly localRegistry?: LocalServiceRegistry;
+
+	private readonly dependencyTimeout: number;
 
 	private readonly requestTimeout: number;
 
@@ -145,9 +157,10 @@ export class NatsBroker implements IBroker {
 	constructor(
 		private options: ConnectionOptions,
 		nodeID: string,
-		{ requestTimeout = 60_000, localRouting = true }: NatsBrokerOptions = {},
+		{ dependencyTimeout = 0, requestTimeout = 60_000, localRouting = true }: NatsBrokerOptions = {},
 	) {
 		this.nodeID = toSubjectToken(nodeID);
+		this.dependencyTimeout = dependencyTimeout;
 		this.requestTimeout = requestTimeout;
 		this.localRegistry = localRouting ? new LocalServiceRegistry() : undefined;
 	}
@@ -155,6 +168,7 @@ export class NatsBroker implements IBroker {
 	async destroyService(instance: IServiceClass): Promise<void> {
 		const registered = this.services.get(instance);
 		this.services.delete(instance);
+		this.dependencies.delete(instance);
 		this.localRegistry?.remove(instance);
 
 		if (registered) {
@@ -170,15 +184,110 @@ export class NatsBroker implements IBroker {
 		instance.removeAllListeners();
 	}
 
-	async createService(instance: IServiceClass, _serviceDependencies?: string[]): Promise<void> {
+	async createService(instance: IServiceClass, serviceDependencies: string[] = []): Promise<void> {
+		this.dependencies.set(instance, withDefaultDependencies(instance.getName(), serviceDependencies));
+
+		// `start()` picks it up from `dependencies`
 		if (!this.nc) {
-			this.pendingServices.push(instance);
 			return;
 		}
 
-		await this.registerService(instance);
-		await this.runLifecycleHook(instance, 'created');
-		await this.runLifecycleHook(instance, 'started');
+		await this.startWhenReady([instance]);
+	}
+
+	/**
+	 * Registers each service once everything it depends on is reachable, so `started()`
+	 * can read from its dependencies, and from any sibling that became ready with it.
+	 */
+	private async startWhenReady(instances: IServiceClass[]): Promise<void> {
+		let waiting = instances;
+		const reported = new Set<IServiceClass>();
+		const deadline = this.dependencyTimeout > 0 ? Date.now() + this.dependencyTimeout : Infinity;
+
+		while (waiting.length) {
+			// a service destroyed while it waited is dropped rather than registered
+			waiting = waiting.filter((instance) => this.dependencies.has(instance));
+			if (!waiting.length) {
+				return;
+			}
+
+			const seen = this.registrations;
+			const available = await this.availableServices(waiting);
+			const missingOf = (instance: IServiceClass): string[] =>
+				(this.dependencies.get(instance) ?? []).filter((dependency) => !available.has(dependency));
+
+			const ready = waiting.filter((instance) => !missingOf(instance).length);
+			waiting = waiting.filter((instance) => !ready.includes(instance));
+
+			if (!ready.length) {
+				for (const instance of waiting.filter((instance) => !reported.has(instance))) {
+					reported.add(instance);
+					console.log(`Service ${instance.getName()} waiting for ${missingOf(instance).join(', ')}`);
+				}
+
+				const remaining = deadline - Date.now();
+				if (remaining <= 0) {
+					const missing = waiting.map((instance) => `${instance.getName()} (${missingOf(instance).join(', ')})`);
+					throw new Error(`Services timed out waiting for their dependencies: ${missing.join('; ')}`);
+				}
+
+				await this.nextRegistration(seen, Math.min(DEPENDENCY_INTERVAL, remaining));
+				continue;
+			}
+
+			for (const instance of ready) {
+				await this.registerService(instance);
+			}
+
+			for (const instance of ready) {
+				await this.runLifecycleHook(instance, 'created');
+			}
+
+			for (const instance of ready) {
+				await this.runLifecycleHook(instance, 'started');
+			}
+		}
+	}
+
+	/** Only asks the cluster when a dependency is not already running in this process. */
+	private async availableServices(waiting: IServiceClass[]): Promise<Set<string>> {
+		const available = new Set([...this.services.keys()].map((instance) => instance.getName()));
+
+		const needsDiscovery = waiting.some((instance) => this.dependencies.get(instance)?.some((dependency) => !available.has(dependency)));
+		if (!needsDiscovery) {
+			return available;
+		}
+
+		try {
+			for (const { name } of await this.discover()) {
+				available.add(name);
+			}
+		} catch (err) {
+			console.error('NatsBroker could not discover services', err);
+		}
+
+		return available;
+	}
+
+	/**
+	 * Resolves on the next local registration, which may satisfy a dependency, or
+	 * after `timeout` to look for remote ones. A registration since `seen` counts:
+	 * it happened while the caller was still checking, and would otherwise be missed.
+	 */
+	private async nextRegistration(seen: number, timeout: number): Promise<void> {
+		if (this.registrations !== seen) {
+			return;
+		}
+
+		return new Promise((resolve) => {
+			const wake = (): void => {
+				clearTimeout(timer);
+				this.registrationWaiters.delete(wake);
+				resolve();
+			};
+			const timer = setTimeout(wake, timeout);
+			this.registrationWaiters.add(wake);
+		});
 	}
 
 	/** Everything a service runs through this broker sees the same context, on the local and the remote path alike. */
@@ -259,6 +368,11 @@ export class NatsBroker implements IBroker {
 			subscriptions,
 			...(!instance.isInternal() && { stopLicenseEnforcement: this.startLicenseEnforcement(name) }),
 		});
+
+		// a discovery cached before this registration would leave it out
+		this.discovery = undefined;
+		this.registrations++;
+		this.registrationWaiters.forEach((wake) => wake());
 	}
 
 	private startLicenseEnforcement(serviceName: string): () => void {
@@ -417,24 +531,7 @@ export class NatsBroker implements IBroker {
 	async start(): Promise<void> {
 		this.nc = await connect(this.options);
 
-		const pending = this.pendingServices;
-		this.pendingServices = [];
-
-		// Two-phase init: register all endpoints/events for every pending
-		// service before invoking any lifecycle hooks, so that a service's
-		// started() can call into another local service that was registered
-		// later in the list.
-		for (const instance of pending) {
-			await this.registerService(instance);
-		}
-
-		for (const instance of pending) {
-			await this.runLifecycleHook(instance, 'created');
-		}
-
-		for (const instance of pending) {
-			await this.runLifecycleHook(instance, 'started');
-		}
+		await this.startWhenReady([...this.dependencies.keys()]);
 
 		console.log('NatsBroker started successfully.');
 	}

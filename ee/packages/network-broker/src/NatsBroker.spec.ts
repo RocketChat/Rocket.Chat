@@ -80,21 +80,51 @@ class DeviceManagement extends ServiceClass {
 	}
 }
 
+/** Stands in for a service others wait on, such as the `settings` and `license` every service depends on. */
+class Dependency extends ServiceClass {
+	protected override internal = true;
+
+	constructor(protected name: string) {
+		super();
+	}
+}
+
+/** Long enough for a start that needs no polling, so a dependency that is never met fails the test instead of hanging it. */
+const QUICK_START = 200;
+
 const running: { broker: NatsBroker; services: ServiceClass[] }[] = [];
 
-const setup = ({ nodeID = 'node-a', localRouting = true } = {}) => {
+const createCore = async (broker: NatsBroker): Promise<void> => {
+	const core = [new Dependency('settings'), new Dependency('license')];
+
+	for (const service of core) {
+		await broker.createService(service);
+	}
+
+	running.push({ broker, services: core });
+};
+
+const setup = (dependencyTimeout = QUICK_START, { nodeID = 'node-a', localRouting = true } = {}) => {
 	const nc = new FakeNatsConnection();
 	(connect as jest.Mock).mockResolvedValue(nc);
 
-	return { nc, broker: new NatsBroker({}, nodeID, { localRouting }) };
+	return { nc, broker: new NatsBroker({}, nodeID, { dependencyTimeout, localRouting }) };
 };
 
+/** A start that timed out is asserted on, instead of escaping as an unhandled rejection. */
+const outcome = (starting: Promise<void>): Promise<unknown> =>
+	starting.then(
+		() => 'started',
+		(e: unknown) => e,
+	);
+
 const start = async (nodeID = 'node-a', { localRouting = true } = {}) => {
-	const { nc, broker } = setup({ nodeID, localRouting });
+	const { nc, broker } = setup(QUICK_START, { nodeID, localRouting });
 	const accounts = new Accounts();
 	const deviceManagement = new DeviceManagement();
 	const files = new Files();
 
+	await createCore(broker);
 	await broker.createService(accounts);
 	await broker.createService(deviceManagement);
 	await broker.createService(files);
@@ -105,9 +135,23 @@ const start = async (nodeID = 'node-a', { localRouting = true } = {}) => {
 	return { broker, nc, accounts, deviceManagement, files };
 };
 
+/** A call nobody answers backs off for seconds; the fake clock runs its retries out instead. */
+const runOutRetries = async (call: () => Promise<unknown>): Promise<void> => {
+	jest.useFakeTimers();
+	const pending = call().catch(() => undefined);
+	await jest.advanceTimersByTimeAsync(10_000);
+	await pending;
+};
+
 beforeEach(() => {
 	jest.clearAllMocks();
 	loginStub.mockResolvedValue({ token: 'ok' });
+});
+
+// restored here rather than at the end of each test, so one that fails does not
+// leave every test after it on a clock that never moves
+afterEach(() => {
+	jest.useRealTimers();
 });
 
 // registering a non internal service starts a license check interval; leaving it
@@ -160,7 +204,7 @@ describe('NatsBroker.call', () => {
 	it('should route to the node scoped subject when another node is targeted', async () => {
 		const { broker, nc } = await start();
 
-		await broker.call('accounts.login', [], { nodeID: 'node-b' }).catch(() => undefined);
+		await runOutRetries(() => broker.call('accounts.login', [], { nodeID: 'node-b' }));
 
 		expect(nc.requested[0]).toBe('node.node-b.accounts.login');
 	});
@@ -188,8 +232,8 @@ describe('NatsBroker.call', () => {
 
 describe('NatsBroker.call retries', () => {
 	it('should retry until a responder shows up', async () => {
-		jest.useFakeTimers();
 		const { broker, nc } = await start();
+		jest.useFakeTimers();
 
 		const pending = broker.call('late.arrival', []);
 
@@ -202,13 +246,11 @@ describe('NatsBroker.call retries', () => {
 
 		await expect(pending).resolves.toBe('here');
 		expect(nc.requested).toHaveLength(2);
-
-		jest.useRealTimers();
 	});
 
 	it('should give up after a bounded number of attempts', async () => {
-		jest.useFakeTimers();
 		const { broker, nc } = await start();
+		jest.useFakeTimers();
 
 		// caught up front so the rejection is handled while the timers are driven
 		const pending = broker.call('never.there', []).catch((e: unknown) => e);
@@ -217,8 +259,6 @@ describe('NatsBroker.call retries', () => {
 
 		expect(await pending).toMatchObject({ code: '503' });
 		expect(nc.requested).toHaveLength(6);
-
-		jest.useRealTimers();
 	});
 
 	it('should not retry an error raised by the service itself', async () => {
@@ -271,7 +311,7 @@ describe('NatsBroker local routing', () => {
 	it('should go over the wire for a service this process does not run', async () => {
 		const { broker, nc } = await start();
 
-		await broker.call('elsewhere.method', []).catch(() => undefined);
+		await runOutRetries(() => broker.call('elsewhere.method', []));
 
 		expect(nc.requested[0]).toBe('rpc.elsewhere.method');
 	});
@@ -280,7 +320,7 @@ describe('NatsBroker local routing', () => {
 		const { broker, nc, accounts } = await start();
 		await broker.destroyService(accounts);
 
-		await broker.call('accounts.login', []).catch(() => undefined);
+		await runOutRetries(() => broker.call('accounts.login', []));
 
 		expect(nc.requested[0]).toBe('rpc.accounts.login');
 	});
@@ -316,6 +356,8 @@ describe('NatsBroker discovery', () => {
 		nc.addRemoteIdentity('accounts', 'node-b');
 
 		await expect(broker.call('$node.services', {})).resolves.toEqual([
+			{ name: 'settings', nodes: ['node-a'] },
+			{ name: 'license', nodes: ['node-a'] },
 			{ name: 'accounts', nodes: ['node-a', 'node-b'] },
 			{ name: 'device-management', nodes: ['node-a'] },
 			{ name: 'files', nodes: ['node-a'] },
@@ -345,6 +387,7 @@ describe('NatsBroker lifecycle hooks', () => {
 		const broken = new Broken();
 		const accounts = new Accounts();
 
+		await createCore(broker);
 		await broker.createService(broken);
 		await broker.createService(accounts);
 		running.push({ broker, services: [broken, accounts] });
@@ -361,6 +404,7 @@ describe('NatsBroker lifecycle hooks', () => {
 
 		const broken = new Broken();
 
+		await createCore(broker);
 		await broker.createService(broken);
 		running.push({ broker, services: [broken] });
 		await broker.start();
@@ -376,12 +420,141 @@ describe('NatsBroker lifecycle hooks', () => {
 		const accounts = new Accounts();
 		const started = jest.spyOn(accounts, 'started');
 
+		await createCore(broker);
 		await broker.createService(broken);
 		await broker.createService(accounts);
 		running.push({ broker, services: [broken, accounts] });
 		await broker.start();
 
 		expect(started).toHaveBeenCalled();
+	});
+});
+
+describe('NatsBroker service dependencies', () => {
+	// past the 5s these tests wait under fake timers, and short of the 7s they drive the
+	// clock to, so a start that never completes times out instead of hanging the test
+	const WAITING_START = 6_500;
+
+	it('should not register a service, nor start it, until settings and license are reachable', async () => {
+		jest.useFakeTimers();
+		const { nc, broker } = setup(WAITING_START);
+		const accounts = new Accounts();
+		const started = jest.spyOn(accounts, 'started');
+		await broker.createService(accounts);
+		running.push({ broker, services: [accounts] });
+
+		let settled = false;
+		const starting = outcome(broker.start()).finally(() => {
+			settled = true;
+		});
+		await jest.advanceTimersByTimeAsync(5_000);
+
+		expect(settled).toBe(false);
+		expect(nc.endpoints.has('rpc.accounts.login')).toBe(false);
+		expect(started).not.toHaveBeenCalled();
+
+		nc.addRemoteIdentity('settings', 'monolith');
+		nc.addRemoteIdentity('license', 'monolith');
+		await jest.advanceTimersByTimeAsync(2_000);
+
+		expect(await starting).toBe('started');
+		expect(nc.endpoints.has('rpc.accounts.login')).toBe(true);
+		expect(started).toHaveBeenCalled();
+	});
+
+	it('should wait for a dependency the service declares on top of the default ones', async () => {
+		jest.useFakeTimers();
+		const { nc, broker } = setup(WAITING_START);
+		const accounts = new Accounts();
+		await createCore(broker);
+		await broker.createService(accounts, ['queue-worker']);
+		running.push({ broker, services: [accounts] });
+
+		const starting = outcome(broker.start());
+		await jest.advanceTimersByTimeAsync(5_000);
+
+		expect(nc.endpoints.has('rpc.accounts.login')).toBe(false);
+
+		nc.addRemoteIdentity('queue-worker', 'worker');
+		await jest.advanceTimersByTimeAsync(2_000);
+
+		expect(await starting).toBe('started');
+		expect(nc.endpoints.has('rpc.accounts.login')).toBe(true);
+	});
+
+	it('should give up after the dependency timeout, naming what is missing', async () => {
+		const { broker } = setup(50);
+		const accounts = new Accounts();
+		await broker.createService(accounts, ['queue-worker']);
+		running.push({ broker, services: [accounts] });
+
+		await expect(broker.start()).rejects.toThrow('accounts (queue-worker, settings, license)');
+	});
+
+	it('should not make settings wait for anything', async () => {
+		const { broker } = setup();
+		const settings = new Dependency('settings');
+		await broker.createService(settings);
+		running.push({ broker, services: [settings] });
+
+		await broker.start();
+
+		await expect(broker.call('$node.services', {})).resolves.toEqual([{ name: 'settings', nodes: ['node-a'] }]);
+	});
+
+	it('should resolve a chain of dependencies in this process without polling', async () => {
+		// the timeout is shorter than one polling interval, so a start that polled would reject
+		const { nc, broker } = setup();
+		const accounts = new Accounts();
+		// listed before what it depends on, so the order has to come from the dependencies
+		await broker.createService(accounts);
+		await createCore(broker);
+		running.push({ broker, services: [accounts] });
+
+		await broker.start();
+
+		expect(nc.endpoints.has('rpc.accounts.login')).toBe(true);
+	});
+
+	it('should register a service created after start as soon as a local dependency registers', async () => {
+		const { nc, broker } = setup(WAITING_START);
+		await createCore(broker);
+		await broker.start();
+		jest.useFakeTimers();
+
+		const accounts = new Accounts();
+		const files = new Files();
+		running.push({ broker, services: [accounts, files] });
+
+		const accountsStarting = outcome(broker.createService(accounts, ['files']));
+		await jest.advanceTimersByTimeAsync(0);
+		expect(nc.endpoints.has('rpc.accounts.login')).toBe(false);
+
+		await broker.createService(files);
+		// the clock has not moved, so only the registration itself can have let it through
+		await jest.advanceTimersByTimeAsync(0);
+		expect(nc.endpoints.has('rpc.accounts.login')).toBe(true);
+
+		await jest.advanceTimersByTimeAsync(7_000);
+		expect(await accountsStarting).toBe('started');
+	});
+
+	it('should not register a service destroyed while it waited', async () => {
+		jest.useFakeTimers();
+		const { nc, broker } = setup(WAITING_START);
+		const accounts = new Accounts();
+		await broker.createService(accounts);
+
+		const starting = outcome(broker.start());
+		await jest.advanceTimersByTimeAsync(0);
+		await broker.destroyService(accounts);
+
+		nc.addRemoteIdentity('settings', 'monolith');
+		nc.addRemoteIdentity('license', 'monolith');
+		await jest.advanceTimersByTimeAsync(7_000);
+
+		expect(await starting).toBe('started');
+		expect(nc.endpoints.has('rpc.accounts.login')).toBe(false);
 	});
 });
 
@@ -412,9 +585,10 @@ describe('NatsBroker.emitToOne', () => {
 	/** A second node on the same NATS connection, running only another instance of device-management. */
 	const startSecondNode = async (nc: FakeNatsConnection): Promise<void> => {
 		(connect as jest.Mock).mockResolvedValue(nc);
-		const broker = new NatsBroker({}, 'node-b');
+		const broker = new NatsBroker({}, 'node-b', { dependencyTimeout: QUICK_START });
 		const deviceManagement = new DeviceManagement();
 
+		await createCore(broker);
 		await broker.createService(deviceManagement);
 		await broker.start();
 
