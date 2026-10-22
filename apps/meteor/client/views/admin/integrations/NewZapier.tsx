@@ -49,18 +49,16 @@ const NewZapier = ({ ...props }) => {
 	}
 
 	return (
-		<>
+		<Box display='flex' flexDirection='column' gap={4} paddingBlockStart={16}>
 			<Callout
 				type='warning'
 				icon='warning'
 				title={t(!zapierAvailable ? 'Zapier_integration_is_not_available' : 'Zapier_integration_has_been_deprecated')}
-				marginBlockStart={16}
-				marginBlockEnd={4}
 			>
 				{t(!zapierAvailable ? 'Install_Zapier_from_marketplace_new_workspaces' : 'Install_Zapier_from_marketplace')}
 			</Callout>
 			{zapierAvailable && (
-				<>
+				<Box>
 					{!script && (
 						<Box display='flex' flexDirection='column' alignItems='stretch' marginBlockStart={10}>
 							<Margins blockEnd={14}>
@@ -73,9 +71,9 @@ const NewZapier = ({ ...props }) => {
 						</Box>
 					)}
 					<Box id='zapier-goes-here' {...props} />
-				</>
+				</Box>
 			)}
-		</>
+		</Box>
 	);
 };
 

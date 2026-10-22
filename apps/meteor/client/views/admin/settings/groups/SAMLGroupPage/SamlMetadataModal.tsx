@@ -98,8 +98,8 @@ const SamlMetadataModal = ({ onClose, onFetch, onApply, showIdentifierFormat = f
 			confirmDisabled={fetching || (!values && url.trim() === '')}
 			confirmLoading={fetching}
 		>
-			<Box display='flex' flexDirection='column'>
-				<Box marginBlockEnd={16}>{t('SAML_Metadata_modal_description')}</Box>
+			<Box display='flex' flexDirection='column' gap={16}>
+				<Box>{t('SAML_Metadata_modal_description')}</Box>
 				<Field>
 					<FieldLabel htmlFor={urlFieldId}>{t('SAML_Metadata_url')}</FieldLabel>
 					<FieldRow>
@@ -115,19 +115,15 @@ const SamlMetadataModal = ({ onClose, onFetch, onApply, showIdentifierFormat = f
 						/>
 					</FieldRow>
 				</Field>
-				{error && (
-					<Callout type='danger' marginBlockStart={16}>
-						{t(error as Parameters<typeof t>[0])}
-					</Callout>
-				)}
+				{error && <Callout type='danger'>{t(error as Parameters<typeof t>[0])}</Callout>}
 				{warnings.map((warning) => (
-					<Callout key={warning} type='warning' marginBlockStart={16}>
+					<Callout key={warning} type='warning'>
 						{t(warning as Parameters<typeof t>[0])}
 					</Callout>
 				))}
 				{values && (
 					<>
-						<Field marginBlockStart={16}>
+						<Field>
 							<FieldLabel htmlFor={entryPointFieldId}>{t('SAML_Custom_Entry_point')}</FieldLabel>
 							<FieldRow>
 								<TextInput
@@ -138,7 +134,7 @@ const SamlMetadataModal = ({ onClose, onFetch, onApply, showIdentifierFormat = f
 								/>
 							</FieldRow>
 						</Field>
-						<Field marginBlockStart={16}>
+						<Field>
 							<FieldLabel htmlFor={sloFieldId}>{t('SAML_Custom_IDP_SLO_Redirect_URL')}</FieldLabel>
 							<FieldRow>
 								<TextInput
@@ -149,7 +145,7 @@ const SamlMetadataModal = ({ onClose, onFetch, onApply, showIdentifierFormat = f
 								/>
 							</FieldRow>
 						</Field>
-						<Field marginBlockStart={16}>
+						<Field>
 							<FieldLabel htmlFor={certFieldId}>{t('SAML_Custom_Cert')}</FieldLabel>
 							<FieldRow>
 								<TextAreaInput
@@ -162,7 +158,7 @@ const SamlMetadataModal = ({ onClose, onFetch, onApply, showIdentifierFormat = f
 							</FieldRow>
 						</Field>
 						{showIdentifierFormat && (
-							<Field marginBlockStart={16}>
+							<Field>
 								<FieldLabel htmlFor={identifierFormatFieldId}>{t('SAML_Identifier_Format')}</FieldLabel>
 								<FieldRow>
 									<TextInput

@@ -1,4 +1,4 @@
-import { Callout } from '@rocket.chat/fuselage';
+import { Box, Callout } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
@@ -25,9 +25,9 @@ function SlaEditWithData({ slaId, reload }: SlaEditProps) {
 
 	if (isError || !data) {
 		return (
-			<Callout margin={16} type='danger'>
-				{t('Not_Available')}
-			</Callout>
+			<Box padding={16}>
+				<Callout type='danger'>{t('Not_Available')}</Callout>
+			</Box>
 		);
 	}
 

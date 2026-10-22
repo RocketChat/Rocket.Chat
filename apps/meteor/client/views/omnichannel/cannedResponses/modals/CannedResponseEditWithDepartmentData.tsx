@@ -1,5 +1,5 @@
 import type { IOmnichannelCannedResponse, Serialized } from '@rocket.chat/core-typings';
-import { Callout } from '@rocket.chat/fuselage';
+import { Box, Callout } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
@@ -39,9 +39,9 @@ const CannedResponseEditWithDepartmentData = ({
 
 	if (isError) {
 		return (
-			<Callout margin={16} type='danger'>
-				{t('Not_Available')}
-			</Callout>
+			<Box padding={16}>
+				<Callout type='danger'>{t('Not_Available')}</Callout>
+			</Box>
 		);
 	}
 

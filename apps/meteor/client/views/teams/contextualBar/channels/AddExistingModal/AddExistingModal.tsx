@@ -87,7 +87,9 @@ const AddExistingModal = ({ teamId, onClose, reload }: AddExistingModalProps) =>
 				onCancel={onClose}
 				onClose={onClose}
 			>
-				<AbacAttributesRemovalWarning roomNames={abacRoomNames} />
+				<Box paddingBlockStart={16}>
+					<AbacAttributesRemovalWarning roomNames={abacRoomNames} />
+				</Box>
 			</GenericModal>
 		);
 	}

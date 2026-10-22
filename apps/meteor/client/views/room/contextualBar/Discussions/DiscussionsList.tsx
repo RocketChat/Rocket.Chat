@@ -89,9 +89,9 @@ function DiscussionsList({
 					</Box>
 				)}
 				{error instanceof Error && (
-					<Callout marginInline={24} type='danger'>
-						{error.toString()}
-					</Callout>
+					<Box paddingInline={24}>
+						<Callout type='danger'>{error.toString()}</Callout>
+					</Box>
 				)}
 				{isSuccess && (
 					<Box id={discussionListId} ref={discussionListRef} width='full' height='full' overflow='hidden' flexShrink={1}>

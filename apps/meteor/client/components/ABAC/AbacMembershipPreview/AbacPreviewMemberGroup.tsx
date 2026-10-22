@@ -21,7 +21,7 @@ const AbacPreviewMemberGroup = ({ title, members, verdict }: AbacPreviewMemberGr
 	}
 
 	return (
-		<Box is='section' aria-label={title} marginBlockEnd={16}>
+		<Box is='section' aria-label={title}>
 			<Box display='flex' justifyContent='space-between' fontScale='c2' color='hint'>
 				<span>{title}</span>
 				<span>{members.length}</span>
