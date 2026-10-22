@@ -11,7 +11,7 @@ function OptionContainer(props: OptionContainerProps) {
 		<Box rcx-options>
 			<Tile flush paddingBlock='x12'>
 				<Scrollable vertical smooth>
-					<Tile flush elevation='0' maxHeight='x240' {...props} />
+					<Box borderRadius='medium' backgroundColor='light' maxHeight='x240' {...props} />
 				</Scrollable>
 			</Tile>
 		</Box>
