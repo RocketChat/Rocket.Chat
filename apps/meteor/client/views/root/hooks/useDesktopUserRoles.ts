@@ -7,8 +7,8 @@ import { callDesktopBridge } from '../../../lib/utils/callDesktopBridge';
  * Pushes the logged-in user's roles to the desktop app so it can decide which
  * supportedVersions messages to show (e.g. restricting version-expiration
  * warnings to admins). The desktop app trusts the first pushed list over its
- * own role lookup, so only resolved roles are pushed, and an empty list is
- * pushed only when the user logs out.
+ * own role lookup, so only resolved roles are pushed: an empty list goes out
+ * for a loaded user with no roles, and once on logout.
  */
 export const useDesktopUserRoles = () => {
 	const loggedOut = !useUserId();

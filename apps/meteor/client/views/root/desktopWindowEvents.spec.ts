@@ -161,8 +161,8 @@ const scenarios: Record<DesktopWindowEvent, () => void> = {
 					.build(),
 			});
 
-			expect(eventsOf('Custom_Script_Logged_In')).toHaveLength(1);
-			expect(eventsOf('Custom_Script_Logged_Out')).toHaveLength(0);
+			expect(eventsOf('Custom_Script_Logged_In')).toEqual([{ type: 'Custom_Script_Logged_In', detail: null }]);
+			expect(eventsOf('Custom_Script_Logged_Out')).toEqual([]);
 		});
 	},
 
@@ -170,8 +170,8 @@ const scenarios: Record<DesktopWindowEvent, () => void> = {
 		it('should fire when no user is logged in', () => {
 			renderHook(() => useCustomScript(), { wrapper: mockAppRoot().build() });
 
-			expect(eventsOf('Custom_Script_Logged_Out')).toHaveLength(1);
-			expect(eventsOf('Custom_Script_Logged_In')).toHaveLength(0);
+			expect(eventsOf('Custom_Script_Logged_Out')).toEqual([{ type: 'Custom_Script_Logged_Out', detail: null }]);
+			expect(eventsOf('Custom_Script_Logged_In')).toEqual([]);
 		});
 	},
 };
