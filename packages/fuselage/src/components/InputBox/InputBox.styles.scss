@@ -47,6 +47,11 @@ $input-border-radius: theme('input-border-radius', lengths.border-radius(medium)
 	}
 }
 
+.rcx-input-box__wrapper--end-addon-flush {
+	padding-block: lengths.padding(4);
+	padding-inline-end: lengths.padding(4);
+}
+
 .rcx-input-box__addon {
 	@include clickable;
 	display: flex;
