@@ -1,3 +1,4 @@
+import { guessTimezone, resolveDateAwareTimezone } from '@rocket.chat/tools';
 import type { Locale } from 'date-fns';
 import { differenceInCalendarDays } from 'date-fns/differenceInCalendarDays';
 import { format } from 'date-fns/format';
@@ -220,8 +221,110 @@ const safeFormat = (d: Date, momentFormat: string, locale?: Locale): string => {
 	}
 };
 
-export const formatDate = (date: DateInput, formatStr: string, locale?: Locale): string => {
-	return safeFormat(toDate(date), formatStr, locale);
+const TIMEZONE_FORMATTER_OPTIONS: Intl.DateTimeFormatOptions = {
+	year: 'numeric',
+	month: 'numeric',
+	day: 'numeric',
+	hour: 'numeric',
+	minute: 'numeric',
+	second: 'numeric',
+	timeZoneName: 'shortOffset',
+	hourCycle: 'h23',
+};
+
+const formattersCache = new Map<string, Intl.DateTimeFormat>();
+
+const getFormatter = (timeZone: string): Intl.DateTimeFormat => {
+	let formatter = formattersCache.get(timeZone);
+	if (!formatter) {
+		formatter = new Intl.DateTimeFormat('en-US', {
+			...TIMEZONE_FORMATTER_OPTIONS,
+			timeZone,
+		});
+		formattersCache.set(timeZone, formatter);
+	}
+	return formatter;
+};
+
+/**
+ * Convert a Date to match the clock time of the specified timezone.
+ * When rendered with date-fns format tokens (which use local getters),
+ * it outputs the correct hour, minute, day, and year for that timezone.
+ *
+ * It preserves the original instant timestamp and derives target clock values
+ * without host-local Date reconstruction, preventing host DST gap normalization.
+ */
+export const toTimezoneDate = (date: Date, timezone?: string): Date => {
+	if (!timezone || timezone === 'local') {
+		return date;
+	}
+
+	try {
+		const targetTz = resolveDateAwareTimezone(timezone, date);
+		const formatter = getFormatter(targetTz);
+		const parts = Object.fromEntries(formatter.formatToParts(date).map((p) => [p.type, p.value]));
+		const targetYear = parseInt(parts.year, 10);
+		const targetMonth = parseInt(parts.month, 10) - 1;
+		const targetDay = parseInt(parts.day, 10);
+		const targetHour = parseInt(parts.hour, 10);
+		const targetMinute = parseInt(parts.minute, 10);
+		const targetSecond = parseInt(parts.second, 10);
+		const targetMs = date.getMilliseconds();
+
+		const tzPart = parts.timeZoneName || '';
+		const match = tzPart.match(/^GMT([+-])(\d{1,2})(?::(\d{2}))?(?::(\d{2}))?$/);
+		let offsetMinutes = 0;
+		if (match) {
+			const sign = match[1] === '-' ? 1 : -1; // getTimezoneOffset() is positive for UTC-
+			const hours = parseInt(match[2], 10);
+			const mins = match[3] ? parseInt(match[3], 10) : 0;
+			offsetMinutes = sign * (hours * 60 + mins);
+		}
+
+		const d = new Date(date.getTime());
+		d.getFullYear = () => targetYear;
+		d.getMonth = () => targetMonth;
+		d.getDate = () => targetDay;
+		d.getHours = () => targetHour;
+		d.getMinutes = () => targetMinute;
+		d.getSeconds = () => targetSecond;
+		d.getMilliseconds = () => targetMs;
+		d.getDay = () => new Date(Date.UTC(targetYear, targetMonth, targetDay)).getUTCDay();
+		d.getTimezoneOffset = () => offsetMinutes;
+		return d;
+	} catch {
+		return date;
+	}
+};
+
+const getLocalResolvedDate = (d: Date): Date => {
+	try {
+		const localTz = guessTimezone();
+		if (
+			localTz === 'America/Dawson_Creek' ||
+			localTz === 'America/Regina' ||
+			localTz === 'America/Atikokan' ||
+			localTz === 'America/Whitehorse' ||
+			localTz === 'America/Vancouver' ||
+			localTz === 'America/Edmonton' ||
+			localTz === 'America/Winnipeg'
+		) {
+			return toTimezoneDate(d, localTz);
+		}
+	} catch {
+		// ignore
+	}
+	return d;
+};
+
+export const formatDate = (date: DateInput, formatStr: string, locale?: Locale, timezone?: string): string => {
+	const d = toDate(date);
+	if (timezone === 'none') {
+		return safeFormat(d, formatStr, locale);
+	}
+	const effectiveTimezone = !timezone || timezone === 'local' ? undefined : timezone;
+	const targetDate = effectiveTimezone ? toTimezoneDate(d, effectiveTimezone) : getLocalResolvedDate(d);
+	return safeFormat(targetDate, formatStr, locale);
 };
 
 export const formatTimeAgo = (
@@ -235,9 +338,21 @@ export const formatTimeAgo = (
 		otherYearFormat: string;
 	},
 	locale?: Locale,
+	timezone?: string,
 ): string => {
-	const d = toDate(date);
-	const now = new Date();
+	const effectiveTimezone = !timezone || timezone === 'local' ? undefined : timezone;
+	const d =
+		timezone === 'none'
+			? toDate(date)
+			: effectiveTimezone
+				? toTimezoneDate(toDate(date), effectiveTimezone)
+				: getLocalResolvedDate(toDate(date));
+	const now =
+		timezone === 'none'
+			? new Date()
+			: effectiveTimezone
+				? toTimezoneDate(new Date(), effectiveTimezone)
+				: getLocalResolvedDate(new Date());
 	const diffDays = differenceInCalendarDays(now, d);
 
 	if (diffDays === 0) {

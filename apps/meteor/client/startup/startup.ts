@@ -1,4 +1,5 @@
 import type { UserStatus } from '@rocket.chat/core-typings';
+import { getTimezoneOffsetHours, guessTimezone } from '@rocket.chat/tools';
 
 import 'highlight.js/styles/github.css';
 import { sdk } from '../lib/SDKClient';
@@ -32,7 +33,7 @@ if (!sdkTransportEnabled) {
 		const user = await synchronizeUserData(uid);
 		if (!user) return;
 
-		const utcOffset = -new Date().getTimezoneOffset() / 60;
+		const utcOffset = getTimezoneOffsetHours(guessTimezone());
 		if (user.utcOffset !== utcOffset) {
 			void sdk.rest.post('/v1/users.setPreferences', { data: { utcOffset } });
 		}
@@ -77,7 +78,7 @@ if (!sdkTransportEnabled) {
 		}
 		if (!user) return;
 
-		const utcOffset = -new Date().getTimezoneOffset() / 60;
+		const utcOffset = getTimezoneOffsetHours(guessTimezone());
 		if (user.utcOffset !== utcOffset) {
 			void sdk.rest.post('/v1/users.setPreferences', { data: { utcOffset } });
 		}
