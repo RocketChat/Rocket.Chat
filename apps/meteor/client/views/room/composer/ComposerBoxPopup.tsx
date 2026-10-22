@@ -95,7 +95,7 @@ function ComposerBoxPopup<
 
 	return (
 		<Box position='relative'>
-			<Tile ref={composerBoxPopupRef} padding={0} marginBlockEnd={8} overflow='hidden'>
+			<Tile flush ref={composerBoxPopupRef} marginBlockEnd={8} overflow='hidden'>
 				{title && (
 					<Box backgroundColor='tint'>
 						<ItemGroupHeader inset='md'>

@@ -38,10 +38,10 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 
 	return (
 		<Tile
+			flush
 			ref={containerRef}
 			position='absolute'
 			zIndex={99}
-			padding={0}
 			paddingBlock={12}
 			marginBlockStart={4}
 			minHeight='x52'

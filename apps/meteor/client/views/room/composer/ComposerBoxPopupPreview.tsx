@@ -115,7 +115,7 @@ const ComposerBoxPopupPreview = forwardRef(function ComposerBoxPopupPreview(
 
 	return (
 		<Box position='relative'>
-			<Tile padding={0} marginBlockEnd={8} overflow='hidden'>
+			<Tile flush marginBlockEnd={8} overflow='hidden'>
 				{title && (
 					<Box backgroundColor='tint'>
 						<ItemGroupHeader inset='md'>

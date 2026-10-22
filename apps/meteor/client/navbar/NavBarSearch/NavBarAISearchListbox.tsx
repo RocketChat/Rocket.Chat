@@ -65,10 +65,10 @@ const NavBarAISearchListBox = ({
 
 	return (
 		<Tile
+			flush
 			ref={containerRef}
 			position='absolute'
 			zIndex={99}
-			padding={0}
 			paddingBlock={filtersOpen ? 0 : 12}
 			marginBlockStart={4}
 			minHeight='x52'
