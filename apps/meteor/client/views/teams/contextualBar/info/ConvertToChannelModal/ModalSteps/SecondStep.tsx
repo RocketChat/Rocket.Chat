@@ -1,5 +1,5 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
-import { Icon, Stack } from '@rocket.chat/fuselage';
+import { Stack } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
@@ -23,7 +23,6 @@ const SecondStep = ({ onClose, onCancel, onConfirm, deletedRooms = {}, rooms = [
 		<GenericModal
 			{...props}
 			variant='warning'
-			icon={<Icon name='modal-warning' size='x24' color='status-font-on-warning' />}
 			cancelText={rooms?.length > 0 ? t('Back') : t('Cancel')}
 			confirmText={t('Convert')}
 			title={t('Confirmation')}
