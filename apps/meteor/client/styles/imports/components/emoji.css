@@ -58,7 +58,7 @@ Only exists on Windows, so other platforms skip it in the fallback list. */
 		(plain inline) aligns by font metrics; Segoe UI Emoji's asymmetric metrics make those
 		disagree by ~2px, leaving message glyphs off-center. Use the same inline model
 		everywhere. */
-		&:not(&--custom, &--big) {
+		&:not(&--custom) {
 			display: inline;
 			width: auto;
 			height: auto;
@@ -67,11 +67,50 @@ Only exists on Windows, so other platforms skip it in the fallback list. */
 			`--rcx-message-body-line-height` token (22px by default). The native glyph keeps
 			the inline model from the comment above but inherits that line height from the
 			body instead of growing to 1.2em, and `top` snaps its inline box to the line box,
-			so a line holding an emoji is exactly as tall as one without. Big emojis
-			(emoji-only messages) keep Fuselage's 44px box. */
+			so a line holding an emoji is exactly as tall as one without. */
 			line-height: inherit;
 			vertical-align: top;
 		}
+
+		/* Emoji-only messages: the 44px glyph needs its own line, taller than Fuselage's
+		44px box, or Segoe UI Emoji / Noto Color Emoji ink (~50px) would be cropped by the
+		body's overflow: hidden. */
+		&--big:not(&--custom) {
+			/* Apple Color Emoji paints its ink ~0.03em above the center of its font box, so a
+			glyph aligned by its middle sits ~1.3px above a 44px image emoji aligned the same
+			way; nudge the glyph onto the image's center without touching layout. */
+			position: relative;
+			inset-block-start: 0.03em;
+			line-height: 1.2;
+			vertical-align: middle;
+		}
+	}
+}
+
+/* Room header topic: a single truncated line of p2 text with `line-height: normal`. An
+emoji sized to the text (1rem box and line) and aligned by its middle keeps that line at
+its height instead of stretching it to 1.2em, and its ink sits on the capitals' center. */
+.rcx-room-header {
+	.emoji {
+		width: 1rem;
+		height: 1rem;
+		font-size: 1rem;
+		line-height: 1;
+		vertical-align: middle;
+	}
+}
+
+/* Announcement banner: a single truncated p2 line with a definite 20px line height, so
+the emoji takes the whole line (`1lh`) and snaps to its top, like the inline emojis in the
+message body. Native and image emojis then land on the capitals' center; a 1rem box
+aligned by its middle sat them 1-2px low. */
+.rcx-room-announcement {
+	.emoji {
+		width: 1lh;
+		height: 1lh;
+		font-size: 1lh;
+		line-height: inherit;
+		vertical-align: top;
 	}
 }
 
