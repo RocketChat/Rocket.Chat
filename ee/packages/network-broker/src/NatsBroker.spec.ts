@@ -2,7 +2,7 @@ import { Readable } from 'node:stream';
 import { buffer } from 'node:stream/consumers';
 
 import type { IServiceContext } from '@rocket.chat/core-services';
-import { MeteorError, ServiceClass } from '@rocket.chat/core-services';
+import { ClientSafeError, ServiceClass } from '@rocket.chat/core-services';
 import { connect } from 'nats';
 
 import { NatsBroker } from './NatsBroker';
@@ -34,7 +34,7 @@ class Accounts extends ServiceClass {
 	}
 
 	async explode(): Promise<never> {
-		throw new MeteorError('error-too-many-requests', 'slow down', { hint: 42 });
+		throw new ClientSafeError('error-too-many-requests', 'slow down', { hint: 42 });
 	}
 }
 
@@ -215,12 +215,12 @@ describe('NatsBroker.call', () => {
 		await expect(broker.call('accounts.explode', [])).rejects.toThrow();
 	});
 
-	it('should restore a MeteorError across the wire', async () => {
+	it('should restore a ClientSafeError across the wire', async () => {
 		const { broker } = await start();
 
 		const error = await broker.call('accounts.explode', []).catch((e: unknown) => e);
 
-		expect(error).toBeInstanceOf(MeteorError);
+		expect(error).toBeInstanceOf(ClientSafeError);
 		expect(error).toMatchObject({
 			error: 'error-too-many-requests',
 			reason: 'slow down',

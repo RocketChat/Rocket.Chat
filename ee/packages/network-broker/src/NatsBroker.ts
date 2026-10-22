@@ -1,5 +1,11 @@
 import type { CallingOptions, IBroker, IBrokerNode, IServiceMetrics, IServiceClass, EventSignatures } from '@rocket.chat/core-services';
-import { LocalServiceRegistry, MeteorError, asyncLocalStorage, getCallableMethods, isMeteorError } from '@rocket.chat/core-services';
+import {
+	LocalServiceRegistry,
+	ClientSafeError,
+	asyncLocalStorage,
+	getCallableMethods,
+	isClientSafeError,
+} from '@rocket.chat/core-services';
 import EJSON from 'ejson';
 import type { ConnectionOptions, Msg, NatsConnection, Service, ServiceHandler, ServiceIdentity, ServiceMsg, Subscription } from 'nats';
 import { Empty, ErrorCode, NatsError, RequestStrategy, ServiceError, connect } from 'nats';
@@ -86,7 +92,7 @@ function decodeParams(data: Uint8Array): any[] {
 }
 
 function encodeError(e: unknown): Uint8Array {
-	if (isMeteorError(e)) {
+	if (isClientSafeError(e)) {
 		return encodePayload(e.toJSON());
 	}
 
@@ -110,7 +116,7 @@ function restoreError(msg: Msg, serviceError: ServiceError): Error {
 	}
 
 	if (plain.errorType === 'Meteor.Error') {
-		const error = new MeteorError(plain.error, plain.reason, plain.details);
+		const error = new ClientSafeError(plain.error, plain.reason, plain.details);
 		if (typeof plain.isClientSafe !== 'undefined') {
 			error.isClientSafe = plain.isClientSafe;
 		}
