@@ -50,9 +50,9 @@ const PrepareUsers = ({ usersCount, users, setUsers }: PrepareUsersProps) => {
 								}}
 							/>
 						</TableCell>
-						<TableCell is='th'>{t('Username')}</TableCell>
-						<TableCell is='th'>{t('Email')}</TableCell>
-						<TableCell is='th'></TableCell>
+						<TableCell>{t('Username')}</TableCell>
+						<TableCell>{t('Email')}</TableCell>
+						<TableCell></TableCell>
 					</TableRow>
 				</TableHead>
 				<TableBody>

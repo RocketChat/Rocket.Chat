@@ -54,8 +54,8 @@ const PrepareChannels = ({ channels, channelsCount, setChannels }: PrepareChanne
 								}}
 							/>
 						</TableCell>
-						<TableCell is='th'>{t('Name')}</TableCell>
-						<TableCell is='th' align='end'></TableCell>
+						<TableCell>{t('Name')}</TableCell>
+						<TableCell align='end'></TableCell>
 					</TableRow>
 				</TableHead>
 				<TableBody>
