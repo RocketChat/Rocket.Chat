@@ -55,13 +55,13 @@ const ProviderField = ({
 
 	return (
 		<Field {...props}>
-			<FieldLabel is='span' required id={channelFieldId}>
+			<FieldLabel required htmlFor={channelFieldId}>
 				{t('Channel')}
 			</FieldLabel>
 			<FieldRow>
 				<AutoCompleteOutboundProvider
 					contact={contact}
-					aria-labelledby={channelFieldId}
+					id={channelFieldId}
 					aria-invalid={!!providerFieldError}
 					aria-describedby={cxp(channelFieldId, {
 						error: !!providerFieldError,

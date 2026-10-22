@@ -57,12 +57,12 @@ const ContactField = ({ control, isError = false, isFetching = false, onRetry, .
 
 	return (
 		<Field {...props}>
-			<FieldLabel is='span' required id={contactFieldId}>
+			<FieldLabel required htmlFor={contactFieldId}>
 				{t('Contact')}
 			</FieldLabel>
 			<FieldRow>
 				<AutoCompleteContact
-					aria-labelledby={contactFieldId}
+					id={contactFieldId}
 					aria-describedby={contactFieldError && `${contactFieldId}-error`}
 					aria-invalid={!!contactFieldError}
 					placeholder={t('Select_recipient')}
