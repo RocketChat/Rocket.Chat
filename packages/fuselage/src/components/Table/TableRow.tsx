@@ -1,3 +1,5 @@
+import { createContext } from 'react';
+
 import { Box, type BoxProps } from '../Box';
 
 export type TableRowProps = Omit<BoxProps, 'action'> & {
@@ -6,15 +8,12 @@ export type TableRowProps = Omit<BoxProps, 'action'> & {
 	cellVerticalAlign?: 'top' | 'middle' | 'bottom' | 'baseline';
 };
 
-const TableRow = ({ action, selected, cellVerticalAlign, ...props }: TableRowProps) => (
-	<Box
-		is='tr'
-		rcx-table__row
-		rcx-table__row--selected={selected}
-		rcx-table__row--action={action}
-		rcx-table__row--cell-align={cellVerticalAlign}
-		{...props}
-	/>
+export const TableRowContext = createContext<TableRowProps['cellVerticalAlign']>(undefined);
+
+const TableRow = ({ action, selected, cellVerticalAlign, children, ...props }: TableRowProps) => (
+	<Box is='tr' rcx-table__row rcx-table__row--selected={selected} rcx-table__row--action={action} {...props}>
+		<TableRowContext.Provider value={cellVerticalAlign}>{children}</TableRowContext.Provider>
+	</Box>
 );
 
 export default TableRow;

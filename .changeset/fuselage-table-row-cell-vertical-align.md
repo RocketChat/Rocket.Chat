@@ -3,4 +3,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Added `cellVerticalAlign` to `TableRow` and `verticalAlign` to `TableCell` in `@rocket.chat/fuselage`, removing custom CSS workarounds in omnichannel directory tables.
+Added `cellVerticalAlign` to `TableRow` in `@rocket.chat/fuselage` to set the default vertical alignment of its cells, and used it to replace custom CSS in the omnichannel directory tables.
