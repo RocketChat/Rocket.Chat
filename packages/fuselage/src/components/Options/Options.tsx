@@ -6,7 +6,6 @@ import { Box, type BoxProps } from '../Box';
 import { ItemDivider } from '../Item';
 import { Option, OptionHeader } from '../Option';
 import { Scrollable } from '../Scrollable';
-import { Tile } from '../Tile';
 import type { OptionType } from './OptionType';
 import OptionsEmpty from './OptionsEmpty';
 
@@ -95,12 +94,12 @@ function Options<TValue extends string | number = string | number, TLabel = Reac
 
 	return (
 		<Box rcx-options {...props}>
-			<Tile padding={0} paddingBlock='x12' paddingInline={0} elevation='2'>
+			<Box rcx-tile rcx-tile--elevation='2' paddingBlock='x12'>
 				<Scrollable vertical smooth>
-					<Tile
+					<Box
 						ref={liRef}
-						elevation='0'
-						padding='none'
+						rcx-tile
+						rcx-tile--elevation='0'
 						maxHeight={maxHeight}
 						onMouseDown={prevent}
 						onClick={prevent}
@@ -112,9 +111,9 @@ function Options<TValue extends string | number = string | number, TLabel = Reac
 					>
 						{!options.length && <EmptyComponent customEmpty={customEmpty} />}
 						{optionsMemoized}
-					</Tile>
+					</Box>
 				</Scrollable>
-			</Tile>
+			</Box>
 		</Box>
 	);
 }
