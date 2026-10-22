@@ -240,177 +240,181 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 						)}
 					/>
 				</Field>
-				<Box display='flex' flexDirection={isMobile ? 'column' : 'row'} style={{ gap: '16px' }}>
-					<Field flexShrink={1}>
-						<FieldLabel required={requireName}>{t('Name')}</FieldLabel>
-						<FieldRow>
-							<Controller
-								control={control}
-								name='name'
-								rules={{ required: requireName && t('Required_field', { field: t('Name') }) }}
-								render={({ field }) => (
-									<TextInput {...field} disabled={!allowRealNameChange} error={errors.name?.message} aria-required={true} />
-								)}
-							/>
-						</FieldRow>
-						{errors.name && <FieldError>{errors.name.message}</FieldError>}
-						{!allowRealNameChange && <FieldHint>{t('RealName_Change_Disabled')}</FieldHint>}
-					</Field>
-					<Field flexShrink={1}>
-						<FieldLabel required>{t('Username')}</FieldLabel>
-						<FieldRow>
-							<Controller
-								control={control}
-								name='username'
-								rules={{
-									required: t('Required_field', { field: t('Username') }),
-									validate: validateUsername,
-								}}
-								render={({ field }) => (
-									<TextInput
-										{...field}
-										aria-required={true}
-										disabled={!canChangeUsername}
-										endAddon={<Icon name='at' size='x20' />}
-										error={errors.username?.message}
+				<Box display='flex' flexDirection='column' gap={16}>
+					<Box display='flex' flexDirection={isMobile ? 'column' : 'row'} style={{ gap: '16px' }}>
+						<Field flexShrink={1}>
+							<FieldLabel required={requireName}>{t('Name')}</FieldLabel>
+							<FieldRow>
+								<Controller
+									control={control}
+									name='name'
+									rules={{ required: requireName && t('Required_field', { field: t('Name') }) }}
+									render={({ field }) => (
+										<TextInput {...field} disabled={!allowRealNameChange} error={errors.name?.message} aria-required={true} />
+									)}
+								/>
+							</FieldRow>
+							{errors.name && <FieldError>{errors.name.message}</FieldError>}
+							{!allowRealNameChange && <FieldHint>{t('RealName_Change_Disabled')}</FieldHint>}
+						</Field>
+						<Field flexShrink={1}>
+							<FieldLabel required>{t('Username')}</FieldLabel>
+							<FieldRow>
+								<Controller
+									control={control}
+									name='username'
+									rules={{
+										required: t('Required_field', { field: t('Username') }),
+										validate: validateUsername,
+									}}
+									render={({ field }) => (
+										<TextInput
+											{...field}
+											aria-required={true}
+											disabled={!canChangeUsername}
+											endAddon={<Icon name='at' size='x20' />}
+											error={errors.username?.message}
+										/>
+									)}
+								/>
+							</FieldRow>
+							{errors.username && <FieldError>{errors.username.message}</FieldError>}
+							{!canChangeUsername && <FieldHint>{t('Username_Change_Disabled')}</FieldHint>}
+						</Field>
+					</Box>
+					<Divider />
+					<Box display='flex' flexDirection='column' gap={24}>
+						<Field>
+							<FieldLabel>{t('Status')}</FieldLabel>
+							<FieldRow>
+								<Controller
+									control={control}
+									name='statusText'
+									rules={{
+										maxLength: {
+											value: USER_STATUS_TEXT_MAX_LENGTH,
+											message: t('Max_length_is', { limit: USER_STATUS_TEXT_MAX_LENGTH }),
+										},
+									}}
+									render={({ field }) => (
+										<TextInput
+											{...field}
+											placeholder={t('StatusMessage_Placeholder')}
+											disabled={!allowUserStatusMessageChange || presenceDisabledByAdmin}
+											flexGrow={1}
+											error={errors.statusText?.message}
+											endAddon={presenceDisabledByAdmin ? <UserStatusDisabledInfo workspace={workspacePresenceDisabled} /> : undefined}
+											startAddon={
+												presenceDisabledByAdmin ? (
+													<UserStatusIndicator status={UserStatus.OFFLINE} />
+												) : (
+													<Controller
+														control={control}
+														name='statusType'
+														render={({ field: { value, onChange } }) => <UserStatusMenu onChange={onChange} initialStatus={value} />}
+													/>
+												)
+											}
+										/>
+									)}
+								/>
+							</FieldRow>
+							{errors.statusText && <FieldError>{errors.statusText.message}</FieldError>}
+							{!allowUserStatusMessageChange && <FieldHint>{t('StatusMessage_Change_Disabled')}</FieldHint>}
+							{allowUserStatusMessageChange && !presenceDisabledByAdmin && <FieldHint>{t('Status_you_can_use_emoji')}</FieldHint>}
+						</Field>
+						<Field>
+							<FieldLabel>{t('Status_clear_after')}</FieldLabel>
+							<FieldRow>
+								<Controller
+									control={control}
+									name='statusDuration'
+									rules={{
+										deps: ['statusCustomDate', 'statusCustomTime'],
+										validate: (value, { statusCustomDate, statusCustomTime }) =>
+											validateStatusExpiration(value, { statusCustomDate, statusCustomTime }, t),
+									}}
+									render={({ field: { value, onChange } }) => (
+										<Select
+											value={value}
+											options={statusDurationOptions}
+											disabled={!allowUserStatusMessageChange || isExpirationDisabled}
+											onChange={(next) => onChange(String(next))}
+										/>
+									)}
+								/>
+							</FieldRow>
+							{statusDuration === 'custom' && (
+								<Box display='flex' marginInline='neg-x4' marginBlockStart={8}>
+									<Margins inline={4}>
+										<Controller
+											control={control}
+											name='statusCustomDate'
+											render={({ field: { value, onChange } }) => (
+												<InputBox
+													aria-label={t('Status_expiration_date')}
+													type='date'
+													disabled={!allowUserStatusMessageChange}
+													flexGrow={1}
+													value={value}
+													onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.currentTarget.value)}
+													min={new Date().toLocaleDateString('en-CA')}
+												/>
+											)}
+										/>
+										<Controller
+											control={control}
+											name='statusCustomTime'
+											render={({ field: { value, onChange } }) => (
+												<InputBox
+													aria-label={t('Status_expiration_time')}
+													type='time'
+													disabled={!allowUserStatusMessageChange}
+													flexGrow={1}
+													value={value}
+													onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.currentTarget.value)}
+												/>
+											)}
+										/>
+									</Margins>
+								</Box>
+							)}
+							{errors.statusDuration && <FieldError>{errors.statusDuration.message}</FieldError>}
+							<FieldHint>{t('Status_new_status_warning')}</FieldHint>
+						</Field>
+						{statusVisibilityEnabled && (
+							<Field>
+								<FieldLabel>{t('Accounts_StatusVisibility_HideStatusFromUsers')}</FieldLabel>
+								<FieldRow>
+									<Controller
+										control={control}
+										name='statusVisibilityDenied'
+										render={({ field: { onChange, value } }) => (
+											<UserAutoCompleteMultiple
+												value={value}
+												onChange={onChange}
+												exceptions={user?.username ? [user.username] : undefined}
+												placeholder={t('Select_users')}
+											/>
+										)}
 									/>
-								)}
+								</FieldRow>
+								<FieldHint>{t('Accounts_StatusVisibility_HideFromUsers_Description')}</FieldHint>
+							</Field>
+						)}
+					</Box>
+					<Divider />
+					<Field>
+						<FieldLabel>{t('Nickname')}</FieldLabel>
+						<FieldRow>
+							<Controller
+								control={control}
+								name='nickname'
+								render={({ field }) => <TextInput {...field} flexGrow={1} endAddon={<Icon name='edit' size='x20' alignSelf='center' />} />}
 							/>
 						</FieldRow>
-						{errors.username && <FieldError>{errors.username.message}</FieldError>}
-						{!canChangeUsername && <FieldHint>{t('Username_Change_Disabled')}</FieldHint>}
 					</Field>
 				</Box>
-				<Divider marginBlockStart={24} marginBlockEnd={0} />
-				<Field>
-					<FieldLabel>{t('Status')}</FieldLabel>
-					<FieldRow>
-						<Controller
-							control={control}
-							name='statusText'
-							rules={{
-								maxLength: {
-									value: USER_STATUS_TEXT_MAX_LENGTH,
-									message: t('Max_length_is', { limit: USER_STATUS_TEXT_MAX_LENGTH }),
-								},
-							}}
-							render={({ field }) => (
-								<TextInput
-									{...field}
-									placeholder={t('StatusMessage_Placeholder')}
-									disabled={!allowUserStatusMessageChange || presenceDisabledByAdmin}
-									flexGrow={1}
-									error={errors.statusText?.message}
-									endAddon={presenceDisabledByAdmin ? <UserStatusDisabledInfo workspace={workspacePresenceDisabled} /> : undefined}
-									startAddon={
-										presenceDisabledByAdmin ? (
-											<UserStatusIndicator status={UserStatus.OFFLINE} />
-										) : (
-											<Controller
-												control={control}
-												name='statusType'
-												render={({ field: { value, onChange } }) => <UserStatusMenu onChange={onChange} initialStatus={value} />}
-											/>
-										)
-									}
-								/>
-							)}
-						/>
-					</FieldRow>
-					{errors.statusText && <FieldError>{errors.statusText.message}</FieldError>}
-					{!allowUserStatusMessageChange && <FieldHint>{t('StatusMessage_Change_Disabled')}</FieldHint>}
-					{allowUserStatusMessageChange && !presenceDisabledByAdmin && <FieldHint>{t('Status_you_can_use_emoji')}</FieldHint>}
-				</Field>
-				<Field>
-					<FieldLabel>{t('Status_clear_after')}</FieldLabel>
-					<FieldRow>
-						<Controller
-							control={control}
-							name='statusDuration'
-							rules={{
-								deps: ['statusCustomDate', 'statusCustomTime'],
-								validate: (value, { statusCustomDate, statusCustomTime }) =>
-									validateStatusExpiration(value, { statusCustomDate, statusCustomTime }, t),
-							}}
-							render={({ field: { value, onChange } }) => (
-								<Select
-									value={value}
-									options={statusDurationOptions}
-									disabled={!allowUserStatusMessageChange || isExpirationDisabled}
-									onChange={(next) => onChange(String(next))}
-								/>
-							)}
-						/>
-					</FieldRow>
-					{statusDuration === 'custom' && (
-						<Box display='flex' marginInline='neg-x4' marginBlockStart={8}>
-							<Margins inline={4}>
-								<Controller
-									control={control}
-									name='statusCustomDate'
-									render={({ field: { value, onChange } }) => (
-										<InputBox
-											aria-label={t('Status_expiration_date')}
-											type='date'
-											disabled={!allowUserStatusMessageChange}
-											flexGrow={1}
-											value={value}
-											onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.currentTarget.value)}
-											min={new Date().toLocaleDateString('en-CA')}
-										/>
-									)}
-								/>
-								<Controller
-									control={control}
-									name='statusCustomTime'
-									render={({ field: { value, onChange } }) => (
-										<InputBox
-											aria-label={t('Status_expiration_time')}
-											type='time'
-											disabled={!allowUserStatusMessageChange}
-											flexGrow={1}
-											value={value}
-											onChange={(e: ChangeEvent<HTMLInputElement>) => onChange(e.currentTarget.value)}
-										/>
-									)}
-								/>
-							</Margins>
-						</Box>
-					)}
-					{errors.statusDuration && <FieldError>{errors.statusDuration.message}</FieldError>}
-					<FieldHint>{t('Status_new_status_warning')}</FieldHint>
-				</Field>
-				{statusVisibilityEnabled && (
-					<Field>
-						<FieldLabel>{t('Accounts_StatusVisibility_HideStatusFromUsers')}</FieldLabel>
-						<FieldRow>
-							<Controller
-								control={control}
-								name='statusVisibilityDenied'
-								render={({ field: { onChange, value } }) => (
-									<UserAutoCompleteMultiple
-										value={value}
-										onChange={onChange}
-										exceptions={user?.username ? [user.username] : undefined}
-										placeholder={t('Select_users')}
-									/>
-								)}
-							/>
-						</FieldRow>
-						<FieldHint>{t('Accounts_StatusVisibility_HideFromUsers_Description')}</FieldHint>
-					</Field>
-				)}
-				<Divider marginBlockStart={24} marginBlockEnd={0} />
-				<Field>
-					<FieldLabel>{t('Nickname')}</FieldLabel>
-					<FieldRow>
-						<Controller
-							control={control}
-							name='nickname'
-							render={({ field }) => <TextInput {...field} flexGrow={1} endAddon={<Icon name='edit' size='x20' alignSelf='center' />} />}
-						/>
-					</FieldRow>
-				</Field>
 				<Field>
 					<FieldLabel>{t('Bio')}</FieldLabel>
 					<FieldRow>

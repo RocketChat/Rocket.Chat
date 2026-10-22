@@ -15,20 +15,22 @@ const Dialpad = ({ autoFocus = true }: DialpadProps) => {
 	const [inputValue, setInputValue] = useState('');
 
 	return (
-		<Box display='flex' justifyContent='center' alignItems='center' width='100%' flexDirection='column' marginBlockEnd={8}>
-			<Field marginBlockEnd={8}>
-				<FieldRow>
-					<TextInput aria-label={t('Dialpad')} value={inputValue} readOnly small marginInline={24} />
-				</FieldRow>
-			</Field>
-			<Keypad
-				autoFocus={autoFocus}
-				onKeyPress={(tone) => {
-					setInputValue((value) => value + tone);
-					onTone(tone);
-				}}
-			/>
-			<Divider width='100%' />
+		<Box display='flex' width='100%' flexDirection='column' marginBlockEnd={8}>
+			<Box display='flex' justifyContent='center' alignItems='center' flexDirection='column'>
+				<Field marginBlockEnd={8}>
+					<FieldRow>
+						<TextInput aria-label={t('Dialpad')} value={inputValue} readOnly small marginInline={24} />
+					</FieldRow>
+				</Field>
+				<Keypad
+					autoFocus={autoFocus}
+					onKeyPress={(tone) => {
+						setInputValue((value) => value + tone);
+						onTone(tone);
+					}}
+				/>
+			</Box>
+			<Divider />
 		</Box>
 	);
 };
