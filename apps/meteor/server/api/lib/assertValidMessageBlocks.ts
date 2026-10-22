@@ -1,4 +1,5 @@
 import { isRecord } from '@rocket.chat/tools';
+import { isValidAppId } from '@rocket.chat/ui-kit';
 
 const MAX_LINEAR_SCALE_POINTS = 100;
 const MAX_NESTING_DEPTH = 10;
@@ -29,6 +30,10 @@ const assertValidNode = (node: unknown, path: string, depth: number): void => {
 		return;
 	}
 
+	if (node.appId !== undefined && !isValidAppId(node.appId)) {
+		throw new Error(`Invalid blocks: ${path}.appId must contain only letters, digits, "-" and "_"`);
+	}
+
 	if (node.type === 'linear_scale') {
 		assertValidLinearScale(node, path);
 	}
@@ -36,7 +41,7 @@ const assertValidNode = (node: unknown, path: string, depth: number): void => {
 	Object.entries(node).forEach(([key, child]) => assertValidNode(child, `${path}.${key}`, depth + 1));
 };
 
-/** Rejects blocks that the message renderer cannot walk, so a sent message never makes its room unreadable. */
+/** Rejects blocks that the message renderer cannot walk, or that name an app by something other than an app ID. */
 export function assertValidMessageBlocks(blocks: unknown): void {
 	if (!Array.isArray(blocks)) {
 		return;
