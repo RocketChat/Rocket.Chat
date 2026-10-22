@@ -40,16 +40,17 @@ const SaveE2EPasswordModal = ({ randomPassword, onClose, onCancel, onConfirm }: 
 			<Box is='p' fontWeight='bold' marginBlock={20}>
 				{t('E2E_password_save_text')}
 			</Box>
-			<p id={passwordId}>{t('Your_E2EE_password_is')}</p>
-			<CodeSnippet
-				aria-labelledby={passwordId}
-				buttonText={hasCopied ? t('Copied') : t('Copy')}
-				buttonDisabled={hasCopied}
-				onClick={() => copy()}
-				marginBlockStart={8}
-			>
-				{randomPassword}
-			</CodeSnippet>
+			<Box display='flex' flexDirection='column' gap={8}>
+				<p id={passwordId}>{t('Your_E2EE_password_is')}</p>
+				<CodeSnippet
+					aria-labelledby={passwordId}
+					buttonText={hasCopied ? t('Copied') : t('Copy')}
+					buttonDisabled={hasCopied}
+					onClick={() => copy()}
+				>
+					{randomPassword}
+				</CodeSnippet>
+			</Box>
 		</GenericModal>
 	);
 };
