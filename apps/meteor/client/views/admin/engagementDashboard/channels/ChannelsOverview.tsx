@@ -1,4 +1,4 @@
-import { Box, Icon, Margins, Pagination, Skeleton, Table, TableBody, TableCell, TableHead, TableRow, Tile } from '@rocket.chat/fuselage';
+import { Box, Icon, Pagination, Skeleton, Table, TableBody, TableCell, TableHead, TableRow, Tile } from '@rocket.chat/fuselage';
 import { format } from 'date-fns/format';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -82,10 +82,10 @@ const ChannelsOverview = () => {
 								<TableRow key={i}>
 									<TableCell>{i + 1}.</TableCell>
 									<TableCell>
-										<Margins inlineEnd={4}>
+										<Box display='flex' alignItems='center' gap={4}>
 											{(t === 'd' && <Icon name='at' />) || (t === 'p' && <Icon name='lock' />) || (t === 'c' && <Icon name='hashtag' />)}
-										</Margins>
-										{name}
+											{name}
+										</Box>
 									</TableCell>
 									<TableCell>{format(new Date(createdAt ?? new Date()), 'P')}</TableCell>
 									<TableCell>{format(new Date(updatedAt ?? new Date()), 'P')}</TableCell>
