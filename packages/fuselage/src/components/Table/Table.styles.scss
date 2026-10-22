@@ -25,6 +25,10 @@ $table-selected-border-radius: theme('table-selected-border-radius', lengths.bor
 		background-color: colors.surface(neutral);
 	}
 
+	&__selection-button {
+		flex-shrink: 0;
+	}
+
 	&__wrapper {
 		position: relative;
 	}
