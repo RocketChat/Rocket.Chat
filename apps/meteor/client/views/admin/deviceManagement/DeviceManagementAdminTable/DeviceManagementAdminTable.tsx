@@ -1,8 +1,9 @@
 import type { DeviceManagementPopulatedSession, DeviceManagementSession, Serialized } from '@rocket.chat/core-typings';
 import type { TableColumnWidth } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { GenericTableHeaderCell, usePaginatedQuery, usePagination, useSort } from '@rocket.chat/ui-client';
+import { GenericTableHeaderCell, usePagination, useSort } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useQuery } from '@tanstack/react-query';
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -25,6 +26,7 @@ const isSessionPopulatedSession = (
 const DeviceManagementAdminTable = () => {
 	const { t } = useTranslation();
 	const [text, setText] = useState('');
+	const { current, itemsPerPage, setCurrent, setItemsPerPage, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'client' | 'os' | 'username' | 'loginAt'>('username');
 
 	const query = useDebouncedValue(
@@ -32,24 +34,18 @@ const DeviceManagementAdminTable = () => {
 			() => ({
 				filter: text,
 				sort: JSON.stringify({ [sortMapping[sortBy]]: sortDirection === 'asc' ? 1 : -1 }),
+				count: itemsPerPage,
+				offset: text ? undefined : current,
 			}),
-			[text, sortBy, sortDirection],
+			[text, itemsPerPage, current, sortBy, sortDirection],
 		),
 		500,
 	);
 
-	const queryKey = deviceManagementQueryKeys.sessions(query);
-	const { current, itemsPerPage, setCurrent, setItemsPerPage, ...paginationProps } = usePagination({ resetKey: queryKey });
-
 	const listAllSessions = useEndpoint('GET', '/v1/sessions/list.all');
-	const queryResult = usePaginatedQuery({
-		query: {
-			queryKey,
-			queryFn: (page) => listAllSessions({ ...query, ...page }),
-		},
-		itemsKey: 'sessions',
-		offset: current,
-		count: itemsPerPage,
+	const queryResult = useQuery({
+		queryKey: deviceManagementQueryKeys.sessions(query),
+		queryFn: () => listAllSessions(query),
 	});
 
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
