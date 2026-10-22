@@ -215,7 +215,31 @@ describe('UserPresence', () => {
 
 		try {
 			expect(() => render().unmount()).not.toThrow();
-			expect(warn).toHaveBeenCalledTimes(2);
+			// A detection that never registered has nothing to unregister.
+			expect(warn).toHaveBeenCalledTimes(1);
+		} finally {
+			delete (window as { RocketChatDesktop?: unknown }).RocketChatDesktop;
+			warn.mockRestore();
+		}
+	});
+
+	it('should set the user away through its own idle detection when the desktop one cannot be set up', async () => {
+		const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+
+		Object.assign(window, {
+			RocketChatDesktop: {
+				setUserPresenceDetection: () => {
+					throw new Error('desktop failure');
+				},
+			},
+		});
+
+		try {
+			render();
+
+			await goIdle();
+
+			expect(goAway).toHaveBeenCalledTimes(1);
 		} finally {
 			delete (window as { RocketChatDesktop?: unknown }).RocketChatDesktop;
 			warn.mockRestore();
