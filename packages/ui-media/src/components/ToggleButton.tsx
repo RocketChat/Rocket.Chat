@@ -1,4 +1,4 @@
-import { Icon, IconButton, StatusIcon } from '@rocket.chat/fuselage';
+import { Icon, IconButton } from '@rocket.chat/fuselage';
 import type { Keys } from '@rocket.chat/icons';
 import type { ComponentProps } from 'react';
 
@@ -71,9 +71,7 @@ const ToggleButton = ({
 			medium={!tiny && !large}
 			secondary={secondary}
 			danger={dangerWhenPressed && pressed}
-			icon={
-				glyphStatus ? <StatusIcon size={glyphSize} status={glyphStatus} name={glyphName} /> : <Icon size={glyphSize} name={glyphName} />
-			}
+			icon={<Icon size={glyphSize} color={glyphStatus} name={glyphName} />}
 			title={titles[pressed ? 1 : 0]}
 			aria-label={label}
 			disabled={disabled}

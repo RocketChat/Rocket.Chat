@@ -1,4 +1,4 @@
-import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemRow, ItemTitle, StatusIcon } from '@rocket.chat/fuselage';
+import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemRow, ItemTitle, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import type { CallParticipantControlsProps } from '../CallParticipantControls/CallParticipantControls';
@@ -26,7 +26,7 @@ const CallParticipantItem = (props: CallParticipantItemProps) => {
 		<Item role='listitem' inset='lg'>
 			<ItemMedia>
 				{/* No avatar to show, and a blank circle would read as one still loading. */}
-				<StatusIcon name='user-rounded' size='x20' status='hint' />
+				<Icon name='user-rounded' size='x20' color='hint' />
 			</ItemMedia>
 			<ItemContent>
 				<ItemRow>

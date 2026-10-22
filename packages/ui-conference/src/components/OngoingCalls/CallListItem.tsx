@@ -1,6 +1,6 @@
 import type { JoinableVideoConference } from '@rocket.chat/core-typings';
 import { isRingingVideoConferenceMember } from '@rocket.chat/core-typings';
-import { Box, Icon, IconButton, StatusIcon } from '@rocket.chat/fuselage';
+import { Box, Icon, IconButton } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import OngoingCallItem from './OngoingCallItem';
@@ -33,7 +33,7 @@ const CallListItem = ({ call }: CallListItemProps) => {
 		if (ringing) {
 			return (
 				<>
-					{silenced && <StatusIcon name='bell-off' size='x16' status='hint' title={t('Incoming_call_silenced')} />}
+					{silenced && <Icon name='bell-off' size='x16' color='hint' title={t('Incoming_call_silenced')} />}
 					{audible && <IconButton mini secondary icon='bell-off' title={t('Silence')} aria-label={t('Silence')} onClick={silence} />}
 					{decline}
 				</>

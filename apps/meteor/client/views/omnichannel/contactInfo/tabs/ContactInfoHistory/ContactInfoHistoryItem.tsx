@@ -14,7 +14,7 @@ import {
 	MessageGenericPreviewContent,
 	MessageGenericPreviewDescription,
 	MessageGenericPreviewTitle,
-	StatusIcon,
+	Icon,
 } from '@rocket.chat/fuselage';
 import type { ContactSearchChatsResult } from '@rocket.chat/rest-typings';
 import { useSetModal } from '@rocket.chat/ui-contexts';
@@ -56,7 +56,7 @@ const ContactInfoHistoryItem = ({ source, lastMessage, verified, onClick }: Cont
 					{lastMessage && <ItemMeta>{getTimeFromNow(lastMessage.ts)}</ItemMeta>}
 					{isVerified && (
 						<ItemIcon label={t('Verified')} title={t('Verified')}>
-							<StatusIcon size='x16' name='success-circle' status='info' />
+							<Icon size='x16' name='success-circle' color='info' />
 						</ItemIcon>
 					)}
 				</ItemRow>

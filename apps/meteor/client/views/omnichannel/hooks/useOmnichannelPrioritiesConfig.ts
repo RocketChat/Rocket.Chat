@@ -8,7 +8,6 @@ import { useOmnichannelPriorities } from './useOmnichannelPriorities';
 type PrioritiesConfig = {
 	iconName: Keys;
 	color?: 'danger' | 'status-font-on-warning' | 'info';
-	status?: 'danger' | 'warning' | 'info';
 	variant?: 'secondary-danger' | 'secondary-warning' | 'secondary-info';
 };
 
@@ -19,31 +18,26 @@ export const PRIORITIES_CONFIG: Record<number, PrioritiesConfig> = {
 	[LivechatPriorityWeight.HIGHEST]: {
 		iconName: 'chevron-double-up',
 		color: 'danger',
-		status: 'danger',
 		variant: 'secondary-danger',
 	},
 	[LivechatPriorityWeight.HIGH]: {
 		iconName: 'chevron-up',
 		color: 'danger',
-		status: 'danger',
 		variant: 'secondary-danger',
 	},
 	[LivechatPriorityWeight.MEDIUM]: {
 		iconName: 'equal',
 		color: 'status-font-on-warning',
-		status: 'warning',
 		variant: 'secondary-warning',
 	},
 	[LivechatPriorityWeight.LOW]: {
 		iconName: 'chevron-down',
 		color: 'info',
-		status: 'info',
 		variant: 'secondary-info',
 	},
 	[LivechatPriorityWeight.LOWEST]: {
 		iconName: 'chevron-double-down',
 		color: 'info',
-		status: 'info',
 		variant: 'secondary-info',
 	},
 };
@@ -51,7 +45,7 @@ export const PRIORITIES_CONFIG: Record<number, PrioritiesConfig> = {
 export const useOmnichannelPrioritiesConfig = (level: LivechatPriorityWeight, showUnprioritized: boolean) => {
 	const { t } = useTranslation();
 
-	const { iconName, status, variant } = PRIORITIES_CONFIG[level];
+	const { iconName, color, variant } = PRIORITIES_CONFIG[level];
 	const { data: priorities } = useOmnichannelPriorities();
 
 	const name = useMemo(() => {
@@ -68,5 +62,5 @@ export const useOmnichannelPrioritiesConfig = (level: LivechatPriorityWeight, sh
 		return null;
 	}
 
-	return { iconName, name, status, variant };
+	return { iconName, name, color, variant };
 };

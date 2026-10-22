@@ -1,9 +1,9 @@
 import type { LivechatPriorityWeight } from '@rocket.chat/core-typings';
-import { Icon, StatusIcon, type StatusIconProps } from '@rocket.chat/fuselage';
+import { Icon, type IconProps } from '@rocket.chat/fuselage';
 
 import { useOmnichannelPrioritiesConfig } from '../hooks/useOmnichannelPrioritiesConfig';
 
-export type PriorityIconProps = Omit<StatusIconProps, 'name' | 'status'> & {
+export type PriorityIconProps = Omit<IconProps, 'name' | 'color'> & {
 	level: LivechatPriorityWeight;
 	showUnprioritized?: boolean;
 };
@@ -15,11 +15,5 @@ export const PriorityIcon = ({ level, size = 20, showUnprioritized = false, ...p
 		return null;
 	}
 
-	if (!prioritiesConfig.status) {
-		return <Icon {...props} name={prioritiesConfig.iconName} size={size} title={prioritiesConfig.name} />;
-	}
-
-	return (
-		<StatusIcon {...props} name={prioritiesConfig.iconName} status={prioritiesConfig.status} size={size} title={prioritiesConfig.name} />
-	);
+	return <Icon {...props} name={prioritiesConfig.iconName} color={prioritiesConfig.color} size={size} title={prioritiesConfig.name} />;
 };

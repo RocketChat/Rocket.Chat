@@ -1,34 +1,25 @@
 import type { IOmnichannelSourceFromApp } from '@rocket.chat/core-typings';
-import { Box, StatusIcon, type StatusIconProps } from '@rocket.chat/fuselage';
+import { Box, Icon, type IconColor, type IconProps } from '@rocket.chat/fuselage';
 
 import { useOmnichannelRoomIcon } from './context/OmnichannelRoomIconContext';
 
-// The colours StatusIcon gives each status, for the app's own SVG icon.
-const svgColors = {
-	hint: 'hint',
-	info: 'info',
-	danger: 'danger',
-	warning: 'status-font-on-warning',
-	success: 'status-font-on-success',
-} as const;
-
 export type OmnichannelAppSourceRoomIconProps = {
 	source: IOmnichannelSourceFromApp;
-	status: StatusIconProps['status'];
-	size: StatusIconProps['size'];
+	color: IconColor;
+	size: IconProps['size'];
 	placement: 'sidebar' | 'default';
 };
 
-export const OmnichannelAppSourceRoomIcon = ({ source, status, size, placement }: OmnichannelAppSourceRoomIconProps) => {
+export const OmnichannelAppSourceRoomIcon = ({ source, color, size, placement }: OmnichannelAppSourceRoomIconProps) => {
 	const icon = (placement === 'sidebar' && source.sidebarIcon) || source.defaultIcon;
 	const value = useOmnichannelRoomIcon(source.id, icon || '');
 
 	if (!value) {
-		return <StatusIcon name='headset' size={size} status={status} />;
+		return <Icon name='headset' size={size} color={color} />;
 	}
 
 	return (
-		<Box size={size} color={svgColors[status]}>
+		<Box size={size} color={color}>
 			<Box is='svg' size={size} aria-hidden='true'>
 				<Box is='use' href={`#${value}`} />
 			</Box>

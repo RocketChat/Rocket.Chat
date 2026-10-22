@@ -2,4 +2,4 @@
 '@rocket.chat/fuselage-ui-kit': patch
 ---
 
-Draws UiKit icon elements with `danger`, `warning` and `secondary` variants with Fuselage's `StatusIcon`; `secondary` now uses the hint colour.
+Colours UiKit icon elements with `danger`, `warning` and `secondary` variants through Fuselage's `Icon` `color`; `secondary` now uses the hint colour.

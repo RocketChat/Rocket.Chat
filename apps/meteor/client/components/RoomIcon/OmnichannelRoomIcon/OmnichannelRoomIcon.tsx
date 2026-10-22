@@ -1,14 +1,14 @@
 import type { IOmnichannelSource } from '@rocket.chat/core-typings';
 import { UserStatus, isOmnichannelSourceFromApp } from '@rocket.chat/core-typings';
-import type { StatusIconProps } from '@rocket.chat/fuselage';
+import type { IconProps } from '@rocket.chat/fuselage';
 
 import { OmnichannelAppSourceRoomIcon } from './OmnichannelAppSourceRoomIcon';
 import { OmnichannelCoreSourceRoomIcon } from './OmnichannelCoreSourceRoomIcon';
 
 const statuses = {
 	busy: 'danger',
-	away: 'warning',
-	online: 'success',
+	away: 'status-font-on-warning',
+	online: 'status-font-on-success',
 	offline: 'hint',
 	disabled: 'hint',
 } as const;
@@ -16,16 +16,16 @@ const statuses = {
 export type OmnichannelRoomIconProps = {
 	source: IOmnichannelSource;
 	status?: UserStatus;
-	size: StatusIconProps['size'];
+	size: IconProps['size'];
 	placement?: 'sidebar' | 'default';
 };
 
 export const OmnichannelRoomIcon = ({ source, status, size = 'x16', placement = 'default' }: OmnichannelRoomIconProps) => {
-	const iconStatus = statuses[status || UserStatus.OFFLINE];
+	const iconColor = statuses[status || UserStatus.OFFLINE];
 
 	if (isOmnichannelSourceFromApp(source)) {
-		return <OmnichannelAppSourceRoomIcon source={source} placement={placement} status={iconStatus} size={size} />;
+		return <OmnichannelAppSourceRoomIcon source={source} placement={placement} color={iconColor} size={size} />;
 	}
 
-	return <OmnichannelCoreSourceRoomIcon source={source} status={iconStatus} size={size} />;
+	return <OmnichannelCoreSourceRoomIcon source={source} color={iconColor} size={size} />;
 };

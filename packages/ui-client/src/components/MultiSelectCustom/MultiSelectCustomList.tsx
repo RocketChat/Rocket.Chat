@@ -11,7 +11,6 @@ import {
 	ItemTitle,
 	PopoverSurface,
 	SearchInput,
-	StatusIcon,
 } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
@@ -20,6 +19,12 @@ import { useTranslation } from 'react-i18next';
 
 import type { OptionProp } from './MultiSelectCustom';
 import { useFilteredOptions } from './useFilteredOptions';
+
+const iconColors = {
+	default: undefined,
+	danger: 'danger',
+	warning: 'status-font-on-warning',
+} as const;
 
 const MultiSelectCustomList = ({
 	options,
@@ -62,11 +67,7 @@ const MultiSelectCustomList = ({
 						<Item inset='md'>
 							{option.icon && (
 								<ItemMedia variant='icon'>
-									{option.icon.color === 'danger' || option.icon.color === 'warning' ? (
-										<StatusIcon name={option.icon.name} size='x20' status={option.icon.color} />
-									) : (
-										<Icon name={option.icon.name} size='x20' />
-									)}
+									<Icon name={option.icon.name} size='x20' color={option.icon.color && iconColors[option.icon.color]} />
 								</ItemMedia>
 							)}
 							<ItemContent>

@@ -1,5 +1,13 @@
-import { Box, Icon, StatusIcon } from '@rocket.chat/fuselage';
+import { Box, Icon } from '@rocket.chat/fuselage';
 import type { ComponentProps, ReactNode } from 'react';
+
+const iconColors = {
+	hint: 'hint',
+	info: 'info',
+	danger: 'danger',
+	warning: 'status-font-on-warning',
+	success: 'status-font-on-success',
+} as const;
 
 const ListItem = ({
 	children,
@@ -9,11 +17,11 @@ const ListItem = ({
 }: {
 	children: ReactNode;
 	icon?: ComponentProps<typeof Icon>['name'];
-	iconColor?: ComponentProps<typeof StatusIcon>['status'];
+	iconColor?: keyof typeof iconColors;
 	fontScale?: ComponentProps<typeof Box>['fontScale'];
 }) => (
 	<Box display='flex' is='li' fontScale={fontScale} gap={icon ? 4 : undefined}>
-		{icon && (iconColor ? <StatusIcon name={icon} status={iconColor} size='x16' /> : <Icon name={icon} size='x16' />)}
+		{icon && <Icon name={icon} color={iconColor && iconColors[iconColor]} size='x16' />}
 		{children}
 	</Box>
 );

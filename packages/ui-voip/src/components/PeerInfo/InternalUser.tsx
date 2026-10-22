@@ -1,5 +1,5 @@
 import type { UserStatus } from '@rocket.chat/core-typings';
-import { Avatar, Box, Icon, StatusBullet, StatusIcon } from '@rocket.chat/fuselage';
+import { Avatar, Box, Icon, StatusBullet } from '@rocket.chat/fuselage';
 
 import type { Slot } from './useInfoSlots';
 
@@ -30,7 +30,7 @@ const InternalUser = ({ displayName, avatarUrl, callerId, status, slots, remoteM
 						{status && <StatusBullet status={status} size='small' />}
 						<Box marginInlineStart={4}>{displayName}</Box>
 					</Box>
-					{remoteMuted && <StatusIcon name='mic-off' size='x16' status='danger' />}
+					{remoteMuted && <Icon name='mic-off' size='x16' color='danger' />}
 				</Box>
 				{callerId && (
 					<Box fontScale='c1' color='secondary-info'>
