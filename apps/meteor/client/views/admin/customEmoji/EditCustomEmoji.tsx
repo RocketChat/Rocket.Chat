@@ -168,10 +168,10 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 						{errors.aliases && <FieldError>{t('Custom_Emoji_Error_Same_Name_And_Alias')}</FieldError>}
 					</Field>
 					<Field>
-						<FieldLabel alignSelf='stretch' justifyContent='space-between' alignItems='center'>
-							{t('Custom_Emoji')}
+						<FieldRow>
+							<FieldLabel>{t('Custom_Emoji')}</FieldLabel>
 							<IconButton icon='upload' secondary onClick={clickUpload} />
-						</FieldLabel>
+						</FieldRow>
 						{newEmojiPreview && (
 							<Box display='flex' flexDirection='row' marginBlockStart='none' justifyContent='center'>
 								<Margins inline={4}>

@@ -99,10 +99,10 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps) => {
 					{errors.aliases && <FieldError>{t('Custom_Emoji_Error_Same_Name_And_Alias')}</FieldError>}
 				</Field>
 				<Field>
-					<FieldLabel alignSelf='stretch' justifyContent='space-between' alignItems='center'>
-						{t('Custom_Emoji')}
+					<FieldRow>
+						<FieldLabel>{t('Custom_Emoji')}</FieldLabel>
 						<IconButton secondary small icon='upload' onClick={clickUpload} />
-					</FieldLabel>
+					</FieldRow>
 					{errors.emoji && <FieldError>{t('Required_field', { field: t('Custom_Emoji') })}</FieldError>}
 					{newEmojiPreview && (
 						<Box display='flex' flexDirection='row' marginInline='neg-x4' justifyContent='center'>
