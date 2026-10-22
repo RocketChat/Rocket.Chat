@@ -3,8 +3,8 @@ import { after, before, describe, it } from 'node:test';
 import type { ILivechatDepartment, ILivechatVisitor } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { createDepartment, deleteDepartment } from '../../../data/livechat/department';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { createDepartment, deleteDepartment } from '../../data/livechat/department';
 import {
 	createVisitor,
 	createLivechatRoom,
@@ -17,10 +17,10 @@ import {
 	sendMessage,
 	fetchInquiry,
 	deleteVisitor,
-} from '../../../data/livechat/rooms';
-import { updateEESetting, updatePermission, updateSetting } from '../../../data/permissions.helper';
-import { pagination } from '../../../data/utils';
-import { IS_EE } from '../../../e2e/config/constants';
+} from '../../data/livechat/rooms';
+import { updateEESetting, updatePermission, updateSetting } from '../../data/permissions.helper';
+import { pagination } from '../../data/utils';
+import { IS_EE } from '../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('[EE] LIVECHAT - dashboards', () => {
 	before((_t, done) => getCredentials(done));

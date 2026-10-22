@@ -7,9 +7,9 @@ import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import type { Response } from 'supertest';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { disableDefaultBusinessHour, makeDefaultBusinessHourActiveAndClosed } from '../../../data/livechat/businessHours';
-import { createDepartment, deleteDepartment } from '../../../data/livechat/department';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { disableDefaultBusinessHour, makeDefaultBusinessHourActiveAndClosed } from '../../data/livechat/businessHours';
+import { createDepartment, deleteDepartment } from '../../data/livechat/department';
 import {
 	createAgent,
 	createManager,
@@ -22,17 +22,17 @@ import {
 	moveBackToQueue,
 	closeOmnichannelRoom,
 	deleteVisitor,
-} from '../../../data/livechat/rooms';
+} from '../../data/livechat/rooms';
 import {
 	removePermissionFromAllRoles,
 	restorePermissionToRoles,
 	updateEESetting,
 	updatePermission,
 	updateSetting,
-} from '../../../data/permissions.helper';
-import { password } from '../../../data/user';
-import { createUser, deleteUser, getMe, login, setUserStatus } from '../../../data/users.helper';
-import { IS_EE } from '../../../e2e/config/constants';
+} from '../../data/permissions.helper';
+import { password } from '../../data/user';
+import { createUser, deleteUser, getMe, login, setUserStatus } from '../../data/users.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 describe('LIVECHAT - Agents', () => {
 	let agent: ILivechatAgent;

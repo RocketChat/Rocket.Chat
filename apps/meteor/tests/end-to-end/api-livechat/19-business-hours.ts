@@ -5,8 +5,8 @@ import type { ILivechatAgent, ILivechatBusinessHour, ILivechatDepartment } from 
 import { LivechatBusinessHourBehaviors, LivechatBusinessHourTypes, ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
-import { sleep } from '../../../../lib/utils/sleep';
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
+import { sleep } from '../../../lib/utils/sleep';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
 import {
 	getDefaultBusinessHour,
 	removeAllCustomBusinessHours,
@@ -15,7 +15,7 @@ import {
 	createCustomBusinessHour,
 	getCustomBusinessHourById,
 	getWorkHours,
-} from '../../../data/livechat/businessHours';
+} from '../../data/livechat/businessHours';
 import {
 	addOrRemoveAgentFromDepartment,
 	archiveDepartment,
@@ -24,15 +24,15 @@ import {
 	disableDepartment,
 	getDepartmentById,
 	deleteDepartment,
-} from '../../../data/livechat/department';
-import { createAgent, createManager, makeAgentAvailable } from '../../../data/livechat/rooms';
-import { createAnOnlineAgent, removeAgent } from '../../../data/livechat/users';
-import { removePermissionFromAllRoles, restorePermissionToRoles, updateSetting, updateEESetting } from '../../../data/permissions.helper';
-import { password } from '../../../data/user';
-import type { TestUser } from '../../../data/users.helper';
-import { setUserActiveStatus, createUser, deleteUser, getMe, getUserByUsername, login } from '../../../data/users.helper';
-import { IS_EE } from '../../../e2e/config/constants';
-import { retry } from '../helpers/retry';
+} from '../../data/livechat/department';
+import { createAgent, createManager, makeAgentAvailable } from '../../data/livechat/rooms';
+import { createAnOnlineAgent, removeAgent } from '../../data/livechat/users';
+import { removePermissionFromAllRoles, restorePermissionToRoles, updateSetting, updateEESetting } from '../../data/permissions.helper';
+import { retry } from '../../data/retry';
+import { password } from '../../data/user';
+import type { TestUser } from '../../data/users.helper';
+import { setUserActiveStatus, createUser, deleteUser, getMe, getUserByUsername, login } from '../../data/users.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 describe('LIVECHAT - business hours', () => {
 	before((_t, done) => getCredentials(done));

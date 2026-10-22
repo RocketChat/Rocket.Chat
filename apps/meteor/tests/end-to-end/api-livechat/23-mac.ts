@@ -4,7 +4,7 @@ import type { ILivechatVisitor } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import moment from 'moment';
 
-import { api, getCredentials, request, credentials } from '../../../data/api-data';
+import { api, getCredentials, request, credentials } from '../../data/api-data';
 import {
 	createVisitor,
 	createLivechatRoom,
@@ -15,8 +15,8 @@ import {
 	fetchInquiry,
 	closeOmnichannelRoom,
 	deleteVisitor,
-} from '../../../data/livechat/rooms';
-import { updateSetting } from '../../../data/permissions.helper';
+} from '../../data/livechat/rooms';
+import { updateSetting } from '../../data/permissions.helper';
 
 describe('MAC', () => {
 	before((_t, done) => getCredentials(done));

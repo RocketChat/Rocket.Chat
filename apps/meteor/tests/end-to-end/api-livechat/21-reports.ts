@@ -4,14 +4,14 @@ import type { Credentials } from '@rocket.chat/api-client';
 import type { IUser, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
-import { api, request, credentials, getCredentials } from '../../../data/api-data';
-import { createDepartment, addOrRemoveAgentFromDepartment } from '../../../data/livechat/department';
-import { startANewLivechatRoomAndTakeIt, createAgent } from '../../../data/livechat/rooms';
-import { createMonitor, createUnit } from '../../../data/livechat/units';
-import { restorePermissionToRoles, updateEESetting, updatePermission, updateSetting } from '../../../data/permissions.helper';
-import { password } from '../../../data/user';
-import { createUser, deleteUser, login } from '../../../data/users.helper';
-import { IS_EE } from '../../../e2e/config/constants';
+import { api, request, credentials, getCredentials } from '../../data/api-data';
+import { createDepartment, addOrRemoveAgentFromDepartment } from '../../data/livechat/department';
+import { startANewLivechatRoomAndTakeIt, createAgent } from '../../data/livechat/rooms';
+import { createMonitor, createUnit } from '../../data/livechat/units';
+import { restorePermissionToRoles, updateEESetting, updatePermission, updateSetting } from '../../data/permissions.helper';
+import { password } from '../../data/user';
+import { createUser, deleteUser, login } from '../../data/users.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('LIVECHAT - reports', () => {
 	before((_t, done) => getCredentials(done));

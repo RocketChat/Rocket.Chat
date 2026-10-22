@@ -5,8 +5,8 @@ import type { ILivechatVisitor, IOmnichannelRoom } from '@rocket.chat/core-typin
 import { expect } from 'chai';
 import type { Response } from 'supertest';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { createCustomField, deleteCustomField } from '../../data/livechat/custom-fields';
 import {
 	makeAgentAvailable,
 	createAgent,
@@ -18,18 +18,18 @@ import {
 	createVisitorWithCustomData,
 	sendAgentMessage,
 	sendMessage,
-} from '../../../data/livechat/rooms';
-import { getRandomVisitorToken } from '../../../data/livechat/users';
-import { getLivechatVisitorByToken } from '../../../data/livechat/visitor';
+} from '../../data/livechat/rooms';
+import { getRandomVisitorToken } from '../../data/livechat/users';
+import { getLivechatVisitorByToken } from '../../data/livechat/visitor';
 import {
 	updatePermission,
 	updateSetting,
 	removePermissionFromAllRoles,
 	restorePermissionToRoles,
 	updateEESetting,
-} from '../../../data/permissions.helper';
-import { adminUsername } from '../../../data/user';
-import { IS_EE } from '../../../e2e/config/constants';
+} from '../../data/permissions.helper';
+import { adminUsername } from '../../data/user';
+import { IS_EE } from '../../e2e/config/constants';
 
 const getLicenseInfo = (loadValues = false) => {
 	return request.get(api('licenses.info')).set(credentials).query({ loadValues }).expect(200);

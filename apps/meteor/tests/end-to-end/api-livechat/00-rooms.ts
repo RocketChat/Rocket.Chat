@@ -18,18 +18,18 @@ import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import type { Response } from 'supertest';
 
-import type { SuccessResult } from '../../../../server/api/definition';
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { apps, APP_URL } from '../../../data/apps/apps-data';
-import { createCustomField, deleteCustomField } from '../../../data/livechat/custom-fields';
-import type { OnlineAgent } from '../../../data/livechat/department';
+import type { SuccessResult } from '../../../server/api/definition';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { apps, APP_URL } from '../../data/apps/apps-data';
+import { createCustomField, deleteCustomField } from '../../data/livechat/custom-fields';
+import type { OnlineAgent } from '../../data/livechat/department';
 import {
 	createDepartmentWith2OnlineAgents,
 	createDepartmentWithAnOfflineAgent,
 	createDepartmentWithAnOnlineAgent,
 	deleteDepartment,
-} from '../../../data/livechat/department';
-import { createSLA, getRandomPriority } from '../../../data/livechat/priorities';
+} from '../../data/livechat/department';
+import { createSLA, getRandomPriority } from '../../data/livechat/priorities';
 import {
 	createVisitor,
 	createLivechatRoom,
@@ -47,11 +47,11 @@ import {
 	sendAgentMessage,
 	fetchInquiry,
 	takeInquiry,
-} from '../../../data/livechat/rooms';
-import { saveTags } from '../../../data/livechat/tags';
-import { createMonitor, createUnit, deleteUnit } from '../../../data/livechat/units';
-import type { DummyResponse } from '../../../data/livechat/utils';
-import { sleep } from '../../../data/livechat/utils';
+} from '../../data/livechat/rooms';
+import { saveTags } from '../../data/livechat/tags';
+import { createMonitor, createUnit, deleteUnit } from '../../data/livechat/units';
+import type { DummyResponse } from '../../data/livechat/utils';
+import { sleep } from '../../data/livechat/utils';
 import {
 	restorePermissionToRoles,
 	addPermissions,
@@ -60,11 +60,11 @@ import {
 	updatePermission,
 	updateSetting,
 	updateEESetting,
-} from '../../../data/permissions.helper';
-import { adminUsername, password } from '../../../data/user';
-import type { TestUser } from '../../../data/users.helper';
-import { createUser, deleteUser, login } from '../../../data/users.helper';
-import { IS_EE } from '../../../e2e/config/constants';
+} from '../../data/permissions.helper';
+import { adminUsername, password } from '../../data/user';
+import type { TestUser } from '../../data/users.helper';
+import { createUser, deleteUser, login } from '../../data/users.helper';
+import { IS_EE } from '../../e2e/config/constants';
 
 const getSubscriptionForRoom = async (roomId: string, overrideCredential?: Credentials): Promise<ISubscription> => {
 	const response = await request
@@ -2224,7 +2224,7 @@ describe('LIVECHAT - rooms', () => {
 			await request
 				.post(api('livechat/upload/test'))
 				.set(credentials)
-				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
+				.attach('file', fs.createReadStream(path.join(__dirname, '../../data/livechat/sample.png')))
 				.expect('Content-Type', 'application/json')
 				.expect(403);
 		});
@@ -2234,7 +2234,7 @@ describe('LIVECHAT - rooms', () => {
 				.post(api('livechat/upload/test'))
 				.set(credentials)
 				.set('x-visitor-token', 'invalid-token')
-				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
+				.attach('file', fs.createReadStream(path.join(__dirname, '../../data/livechat/sample.png')))
 				.expect('Content-Type', 'application/json')
 				.expect(403);
 		});
@@ -2245,7 +2245,7 @@ describe('LIVECHAT - rooms', () => {
 				.post(api('livechat/upload/test'))
 				.set(credentials)
 				.set('x-visitor-token', visitor.token)
-				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
+				.attach('file', fs.createReadStream(path.join(__dirname, '../../data/livechat/sample.png')))
 				.expect('Content-Type', 'application/json')
 				.expect(403);
 		});
@@ -2256,7 +2256,7 @@ describe('LIVECHAT - rooms', () => {
 			const { body } = await request
 				.post(api(`livechat/upload/${room._id}`))
 				.set('x-visitor-token', visitor.token)
-				.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
+				.attach('file', fs.createReadStream(path.join(__dirname, '../../data/livechat/sample.png')))
 				.expect('Content-Type', 'application/json')
 				.expect(200);
 
@@ -2295,7 +2295,7 @@ describe('LIVECHAT - rooms', () => {
 					.post(api(`livechat/upload/${room._id}`))
 					.set(credentials)
 					.set('x-visitor-token', visitor.token)
-					.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
+					.attach('file', fs.createReadStream(path.join(__dirname, '../../data/livechat/sample.png')))
 					.expect('Content-Type', 'application/json')
 					.expect(400);
 			});
@@ -2306,7 +2306,7 @@ describe('LIVECHAT - rooms', () => {
 					.post(api(`livechat/upload/${room._id}`))
 					.set(credentials)
 					.set('x-visitor-token', visitor.token)
-					.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
+					.attach('file', fs.createReadStream(path.join(__dirname, '../../data/livechat/sample.png')))
 					.expect('Content-Type', 'application/json')
 					.expect(400);
 				await updateSetting('Livechat_fileupload_enabled', true);
@@ -2317,7 +2317,7 @@ describe('LIVECHAT - rooms', () => {
 					.post(api(`livechat/upload/${room._id}`))
 					.set(credentials)
 					.set('x-visitor-token', visitor.token)
-					.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
+					.attach('file', fs.createReadStream(path.join(__dirname, '../../data/livechat/sample.png')))
 					.expect('Content-Type', 'application/json')
 					.expect(400);
 				await updateSetting('FileUpload_Enabled', true);
@@ -2329,7 +2329,7 @@ describe('LIVECHAT - rooms', () => {
 					.post(api(`livechat/upload/${room._id}`))
 					.set(credentials)
 					.set('x-visitor-token', visitor.token)
-					.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
+					.attach('file', fs.createReadStream(path.join(__dirname, '../../data/livechat/sample.png')))
 					.expect('Content-Type', 'application/json')
 					.expect(200);
 			});
@@ -2338,7 +2338,7 @@ describe('LIVECHAT - rooms', () => {
 				const { body } = await request
 					.post(api(`livechat/upload/${room._id}`))
 					.set('x-visitor-token', visitor.token)
-					.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
+					.attach('file', fs.createReadStream(path.join(__dirname, '../../data/livechat/sample.png')))
 					.expect('Content-Type', 'application/json')
 					.expect(200);
 
@@ -2355,7 +2355,7 @@ describe('LIVECHAT - rooms', () => {
 					.post(api(`livechat/upload/${room._id}`))
 					.set(credentials)
 					.set('x-visitor-token', visitor.token)
-					.attach('file', fs.createReadStream(path.join(__dirname, '../../../data/livechat/sample.png')))
+					.attach('file', fs.createReadStream(path.join(__dirname, '../../data/livechat/sample.png')))
 					.expect('Content-Type', 'application/json')
 					.expect(200);
 

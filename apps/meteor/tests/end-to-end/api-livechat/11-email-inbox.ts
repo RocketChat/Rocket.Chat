@@ -4,9 +4,9 @@ import type { IEmailInbox } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 import type { Response } from 'supertest';
 
-import { getCredentials, api, request, credentials } from '../../../data/api-data';
-import { createEmailInbox } from '../../../data/livechat/inboxes';
-import { updatePermission } from '../../../data/permissions.helper';
+import { getCredentials, api, request, credentials } from '../../data/api-data';
+import { createEmailInbox } from '../../data/livechat/inboxes';
+import { updatePermission } from '../../data/permissions.helper';
 
 describe('Email inbox', () => {
 	before((_t, done) => getCredentials(done));
