@@ -1,6 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 
 import { CheckBox } from '../CheckBox';
+import { PasswordInput } from '../PasswordInput';
 import { RadioButton } from '../RadioButton';
 import { TextAreaInput } from '../TextAreaInput';
 import { TextInput } from '../TextInput';
@@ -140,6 +141,20 @@ export const WithCheckbox: Story = {
 			<FieldRow>
 				<FieldHint>Hint</FieldHint>
 				<FieldLink href='#'>Link</FieldLink>
+			</FieldRow>
+		</Field>
+	),
+};
+
+export const WithLinkAtTheEnd: Story = {
+	render: () => (
+		<Field>
+			<FieldLabel htmlFor='fieldWithLinkAtTheEnd'>Password</FieldLabel>
+			<FieldRow>
+				<PasswordInput id='fieldWithLinkAtTheEnd' />
+			</FieldRow>
+			<FieldRow justify='end'>
+				<FieldLink href='#'>Forgot your password?</FieldLink>
 			</FieldRow>
 		</Field>
 	),
