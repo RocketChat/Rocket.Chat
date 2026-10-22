@@ -3,12 +3,11 @@
  * @param {Object} message - The message object
  */
 
-import { api, isClientSafeError } from '@rocket.chat/core-services';
+import { api, Authorization, isClientSafeError } from '@rocket.chat/core-services';
 import type { IRoom, SlashCommand, SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { canAccessRoomAsync } from '../../lib/authorization';
 import { i18n } from '../../lib/i18n';
 import type { AbacEvaluableUser } from '../../lib/rooms/filterUsersAllowedInRoom';
 import { filterUsersAllowedInRoomOrThrow } from '../../lib/rooms/filterUsersAllowedInRoom';
@@ -103,7 +102,7 @@ function inviteAll<T extends string>(type: T): SlashCommand<T>['callback'] {
 			return;
 		}
 
-		if (!(await canAccessRoomAsync(baseChannel, user))) {
+		if (!(await Authorization.canAccessRoom(baseChannel, user))) {
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: i18n.t('Room_not_exist_or_not_permission', { lng }),
 			});

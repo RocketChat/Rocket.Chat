@@ -129,6 +129,11 @@ export const createService = ({
 			},
 			Message: { saveSystemMessage: sinon.stub().resolves() },
 			Room: { addUserToRoom: sinon.stub().resolves() },
+			Authorization: {
+				canAccessRoomId: sinon.stub().resolves(true),
+				canAccessRoom: sinon.stub().resolves(true),
+			},
+			...((overrides['@rocket.chat/core-services'] as Record<string, unknown>) || {}),
 		},
 		'@rocket.chat/models': {
 			Users: { findOneById: sinon.stub().resolves(null) },

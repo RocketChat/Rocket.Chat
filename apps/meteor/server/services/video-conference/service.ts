@@ -2,7 +2,7 @@ import { Apps } from '@rocket.chat/apps';
 import type { AppVideoConfProviderManager } from '@rocket.chat/apps/dist/server/managers/AppVideoConfProviderManager';
 import type { VideoConfData, VideoConfDataExtended } from '@rocket.chat/apps-engine/definition/videoConfProviders';
 import type { IVideoConfService, VideoConferenceJoinOptions } from '@rocket.chat/core-services';
-import { api, ServiceClassInternal, Message, Presence, Room } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal, Message, Presence, Room, Authorization } from '@rocket.chat/core-services';
 import type {
 	IDirectVideoConference,
 	ILivechatVideoConference,
@@ -53,7 +53,6 @@ import { availabilityErrors, CALL_FACES_SHOWN, EMPTY_CALL_GRACE_MS, shouldRingRe
 import { canRingConferenceMember, isUnaskedConferenceMember } from '../../../lib/videoConference/memberStatus';
 import { expiredPresenceLeases, INFERRED_LEAVE_REASONS } from '../../../lib/videoConference/presence';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
-import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { hasAtLeastOnePermissionAsync } from '../../lib/authorization/hasPermission';
 import { callbacks } from '../../lib/callbacks';
 import { i18n } from '../../lib/i18n';
@@ -480,7 +479,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			return false;
 		}
 
-		if (!(await canAccessRoomIdAsync(rid, caller)) || (caller !== uid && !(await canAccessRoomIdAsync(rid, uid)))) {
+		if (!(await Authorization.canAccessRoomId(rid, caller)) || (caller !== uid && !(await Authorization.canAccessRoomId(rid, uid)))) {
 			return false;
 		}
 
@@ -1785,7 +1784,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 		}
 
 		if ((room.t === 'c' && room.teamId) || room.prid || room.abacAttributes?.length) {
-			const access = await Promise.all(memberIds.map(async (_id) => ({ _id, allowed: await canAccessRoomIdAsync(room._id, _id) })));
+			const access = await Promise.all(memberIds.map(async (_id) => ({ _id, allowed: await Authorization.canAccessRoomId(room._id, _id) })));
 			return access.filter(({ allowed }) => !allowed).map(({ _id }) => _id);
 		}
 

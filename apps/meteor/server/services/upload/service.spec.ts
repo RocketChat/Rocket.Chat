@@ -4,14 +4,13 @@ import path from 'node:path';
 import { PassThrough, Readable } from 'node:stream';
 import { buffer } from 'node:stream/consumers';
 
-import { api } from '@rocket.chat/core-services';
+import { api, Authorization } from '@rocket.chat/core-services';
 import type { IMessage, IUpload, IUser } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Uploads, Users } from '@rocket.chat/models';
 import sharp from 'sharp';
 
 import { UploadService } from './service';
-import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { canDeleteMessageAsync } from '../../lib/authorization/canDeleteMessage';
 import { FileUpload } from '../../lib/media/file-upload';
 import { updateMessage } from '../../lib/messages/updateMessage';
@@ -20,6 +19,7 @@ import { UploadFS } from '../../ufs';
 
 jest.mock('@rocket.chat/core-services', () => ({
 	api: { broadcast: jest.fn() },
+	Authorization: { canAccessRoomId: jest.fn() },
 	ServiceClassInternal: class {},
 }));
 jest.mock('@rocket.chat/models', () => ({
@@ -28,7 +28,6 @@ jest.mock('@rocket.chat/models', () => ({
 }));
 jest.mock('@rocket.chat/logger', () => ({ Logger: jest.fn(() => ({ error: jest.fn() })) }));
 jest.mock('../../lib/media/file-upload', () => ({ FileUpload: { getStore: jest.fn(), getBuffer: jest.fn() } }));
-jest.mock('../../lib/authorization/canAccessRoom', () => ({ canAccessRoomIdAsync: jest.fn() }));
 jest.mock('../../lib/authorization/canDeleteMessage', () => ({ canDeleteMessageAsync: jest.fn() }));
 jest.mock('../../lib/messages/updateMessage', () => ({ updateMessage: jest.fn() }));
 jest.mock('../../lib/users/setUserAvatar', () => ({ setUserAvatar: jest.fn() }));
@@ -76,7 +75,7 @@ describe('UploadService', () => {
 			await expect(service.canDeleteFile(user, file, msg)).resolves.toBe(true);
 
 			expect(canDeleteMessageAsync).toHaveBeenCalledWith(user, msg);
-			expect(canAccessRoomIdAsync).not.toHaveBeenCalled();
+			expect(Authorization.canAccessRoomId).not.toHaveBeenCalled();
 		});
 
 		it('rejects an orphan file that has no owner or no room', async () => {
@@ -84,19 +83,19 @@ describe('UploadService', () => {
 			await expect(service.canDeleteFile(user, { ...file, rid: undefined }, null)).resolves.toBe(false);
 
 			expect(canDeleteMessageAsync).not.toHaveBeenCalled();
-			expect(canAccessRoomIdAsync).not.toHaveBeenCalled();
+			expect(Authorization.canAccessRoomId).not.toHaveBeenCalled();
 		});
 
 		it('answers with room access for an unconfirmed file owned by the requesting user', async () => {
 			const unconfirmed = { ...file, userId: user._id, expiresAt: new Date() };
 
-			jest.mocked(canAccessRoomIdAsync).mockResolvedValue(false);
+			jest.mocked(Authorization.canAccessRoomId).mockResolvedValue(false);
 			await expect(service.canDeleteFile(user, unconfirmed, null)).resolves.toBe(false);
 
-			jest.mocked(canAccessRoomIdAsync).mockResolvedValue(true);
+			jest.mocked(Authorization.canAccessRoomId).mockResolvedValue(true);
 			await expect(service.canDeleteFile(user, unconfirmed, null)).resolves.toBe(true);
 
-			expect(canAccessRoomIdAsync).toHaveBeenCalledWith('r1', 'u1');
+			expect(Authorization.canAccessRoomId).toHaveBeenCalledWith('r1', 'u1');
 			expect(canDeleteMessageAsync).not.toHaveBeenCalled();
 		});
 
@@ -106,7 +105,7 @@ describe('UploadService', () => {
 			await expect(service.canDeleteFile(user, { ...file, userId: user._id }, null)).resolves.toBe(true);
 
 			expect(canDeleteMessageAsync).toHaveBeenCalledWith(user, { u: { _id: 'u1' }, ts: uploadedAt, rid: 'r1' });
-			expect(canAccessRoomIdAsync).not.toHaveBeenCalled();
+			expect(Authorization.canAccessRoomId).not.toHaveBeenCalled();
 		});
 
 		it('runs the message deletion check over an unconfirmed file owned by someone else', async () => {
@@ -115,7 +114,7 @@ describe('UploadService', () => {
 			await expect(service.canDeleteFile(user, { ...file, expiresAt: new Date() }, null)).resolves.toBe(true);
 
 			expect(canDeleteMessageAsync).toHaveBeenCalledWith(user, { u: { _id: 'u2' }, ts: uploadedAt, rid: 'r1' });
-			expect(canAccessRoomIdAsync).not.toHaveBeenCalled();
+			expect(Authorization.canAccessRoomId).not.toHaveBeenCalled();
 		});
 	});
 

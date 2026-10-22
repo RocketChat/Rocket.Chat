@@ -41,6 +41,9 @@ const VideoConfService = createService({
 		Subscriptions: SubscriptionsMock,
 	},
 	overrides: {
+		'@rocket.chat/core-services': {
+			Authorization: { canAccessRoomId: canAccessRoomIdAsyncStub },
+		},
 		'../../lib/authorization/canAccessRoom': { canAccessRoomIdAsync: canAccessRoomIdAsyncStub },
 		'../../lib/rooms/roomCoordinator': {
 			roomCoordinator: { getRoomDirectives: () => ({ allowMemberAction: allowMemberActionStub, getDiscussionType: () => 'p' }) },
