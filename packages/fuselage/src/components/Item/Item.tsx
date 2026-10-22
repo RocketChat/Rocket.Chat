@@ -58,8 +58,8 @@ const Item = ({
 	const [titleIds, registerTitle] = useIdRegistry();
 
 	const contextValue = useMemo(
-		() => ({ role: props.role, descriptionIds, registerDescription, titleIds, registerTitle }),
-		[props.role, descriptionIds, registerDescription, titleIds, registerTitle],
+		() => ({ descriptionIds, registerDescription, registerTitle }),
+		[descriptionIds, registerDescription, registerTitle],
 	);
 
 	// A menu item is named by its titles and described by its labelled icons, as an `ItemLink` is.

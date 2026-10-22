@@ -20,7 +20,6 @@ The list is a `role=list` with an accessible name, and it owns its rows: each ro
 ## Actions
 
 - Actions sit in `ItemActions`, beside the `ItemLink`, never inside it.
-- In an `Item` with a title, `ItemActions` is a group named after the title, so a button named "Options" still tells which row it acts on.
 - Name icon buttons with `aria-label`, not only `title`, and give toggles `aria-pressed`.
 
 ## State
