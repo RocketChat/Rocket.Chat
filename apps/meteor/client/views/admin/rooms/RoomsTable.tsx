@@ -13,12 +13,12 @@ import {
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import type { MutableRefObject } from 'react';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RoomRow from './RoomRow';
 import RoomsTableFilters from './RoomsTableFilters';
+import { roomsQueryKeys } from '../../../lib/queryKeys';
 
 type RoomFilters = {
 	searchText: string;
@@ -27,7 +27,7 @@ type RoomFilters = {
 
 const DEFAULT_TYPES = ['d', 'p', 'c', 'l', 'discussions', 'teams'];
 
-const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
+const RoomsTable = () => {
 	const { t } = useTranslation();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
@@ -50,7 +50,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 		500,
 	);
 
-	const queryKey = ['rooms', query, 'admin'];
+	const queryKey = roomsQueryKeys.adminList(query);
 	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination({ resetKey: queryKey });
 
 	const getAdminRooms = useEndpoint('GET', '/v1/rooms.adminRooms');
@@ -63,10 +63,6 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 		offset: current,
 		count: itemsPerPage,
 	});
-
-	useEffect(() => {
-		reload.current = refetch;
-	}, [reload, refetch]);
 
 	const columns: TableColumnWidth[] = ['x200', 'x100', 'x80', ...(mediaQuery ? (['x80', 'x80', 'x80', 'x120'] as const) : [])];
 

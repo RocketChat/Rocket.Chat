@@ -4,6 +4,7 @@ import { usePaginatedQuery, usePagination } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
+import { usersQueryKeys } from '../../../../lib/queryKeys';
 import type { AdminUsersTab, UsersTableSortingOption } from '../AdminUsersPage';
 
 type UseFilteredUsersOptions = {
@@ -42,7 +43,7 @@ const useFilteredUsers = ({ searchTerm, sortData, tab, selectedRoles, statusMana
 			sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
 		};
 	}, [searchTerm, selectedRoles, sortBy, sortDirection, statusManagement, tab]);
-	const queryKey = ['users.list', payload, tab];
+	const queryKey = usersQueryKeys.list(payload, tab);
 	const paginationData = usePagination({ resetKey: queryKey });
 	const getUsers = useEndpoint('GET', '/v1/users.listByStatus');
 	const usersListQueryResult = usePaginatedQuery({
