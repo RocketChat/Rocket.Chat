@@ -39,13 +39,12 @@ const UserInfoCopyableText = ({ text, label, children, ...props }: UserInfoCopya
 	const { copy } = useClipboardWithToast(text);
 
 	return (
-		<InfoPanelText display='flex' flexDirection='row' alignItems='center' className={revealOnHoverStyle} {...props}>
+		<InfoPanelText display='flex' flexDirection='row' alignItems='center' gap={4} className={revealOnHoverStyle} {...props}>
 			<Box display='flex' flexDirection='row' alignItems='center' flexShrink={1} withTruncatedText={props.withTruncatedText ?? true}>
 				{children ?? text}
 			</Box>
 			<IconButton
 				className='rcx-user-info-copy'
-				marginInlineStart='x4'
 				tiny
 				icon='copy'
 				title={label ? t('Copy_field', { field: label }) : t('Copy')}

@@ -122,27 +122,23 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 							{lockedAttributesFields.map((field, index) => (
 								<Fragment key={field.id}>
 									<FieldRow key={field.id}>
-										<TextInput
-											disabled
-											aria-labelledby={valuesField}
-											aria-describedby={errors.lockedAttributes?.[index]?.value ? `${valuesField}-lockedAttr-${index}-error` : undefined}
-											error={errors.lockedAttributes?.[index]?.value?.message || ''}
-											aria-invalid={errors.lockedAttributes?.[index]?.value ? 'true' : 'false'}
-											aria-required='true'
-											{...register(`lockedAttributes.${index}.value`, {
-												required: t('Required_field', { field: t('Values') }),
-												validate: (value: string) => validateRepeatedValues(value),
-											})}
-										/>
-										{index !== 0 && (
-											<IconButton
-												marginInlineStart={8}
-												small
-												title={t('ABAC_Remove_attribute')}
-												icon='trash'
-												onClick={() => removeLockedAttribute(index)}
+										<Box display='flex' alignItems='center' justifyContent='space-between' flexGrow={1} gap={8}>
+											<TextInput
+												disabled
+												aria-labelledby={valuesField}
+												aria-describedby={errors.lockedAttributes?.[index]?.value ? `${valuesField}-lockedAttr-${index}-error` : undefined}
+												error={errors.lockedAttributes?.[index]?.value?.message || ''}
+												aria-invalid={errors.lockedAttributes?.[index]?.value ? 'true' : 'false'}
+												aria-required='true'
+												{...register(`lockedAttributes.${index}.value`, {
+													required: t('Required_field', { field: t('Values') }),
+													validate: (value: string) => validateRepeatedValues(value),
+												})}
 											/>
-										)}
+											{index !== 0 && (
+												<IconButton small title={t('ABAC_Remove_attribute')} icon='trash' onClick={() => removeLockedAttribute(index)} />
+											)}
+										</Box>
 									</FieldRow>
 									{errors.lockedAttributes?.[index]?.value && (
 										<FieldError id={`${valuesField}-lockedAttr-${index}-error`} role='alert'>
@@ -174,26 +170,22 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 							{fields.map((field, index) => (
 								<Fragment key={field.id}>
 									<FieldRow>
-										<TextInput
-											aria-labelledby={valuesField}
-											aria-describedby={errors.attributeValues?.[index]?.value ? `${valuesField}-attr-${index}-error` : undefined}
-											error={errors.attributeValues?.[index]?.value?.message || ''}
-											aria-invalid={errors.attributeValues?.[index]?.value ? 'true' : 'false'}
-											aria-required='true'
-											{...register(`attributeValues.${index}.value`, {
-												required: t('Required_field', { field: t('Values') }),
-												validate: (value: string) => validateRepeatedValues(value),
-											})}
-										/>
-										{(index !== 0 || lockedAttributesFields.length > 0) && (
-											<IconButton
-												marginInlineStart={8}
-												small
-												title={t('ABAC_Remove_attribute')}
-												icon='trash'
-												onClick={() => remove(index)}
+										<Box display='flex' alignItems='center' justifyContent='space-between' flexGrow={1} gap={8}>
+											<TextInput
+												aria-labelledby={valuesField}
+												aria-describedby={errors.attributeValues?.[index]?.value ? `${valuesField}-attr-${index}-error` : undefined}
+												error={errors.attributeValues?.[index]?.value?.message || ''}
+												aria-invalid={errors.attributeValues?.[index]?.value ? 'true' : 'false'}
+												aria-required='true'
+												{...register(`attributeValues.${index}.value`, {
+													required: t('Required_field', { field: t('Values') }),
+													validate: (value: string) => validateRepeatedValues(value),
+												})}
 											/>
-										)}
+											{(index !== 0 || lockedAttributesFields.length > 0) && (
+												<IconButton small title={t('ABAC_Remove_attribute')} icon='trash' onClick={() => remove(index)} />
+											)}
+										</Box>
 									</FieldRow>
 									{errors.attributeValues?.[index]?.value && (
 										<FieldError id={`${valuesField}-attr-${index}-error`} role='alert'>
