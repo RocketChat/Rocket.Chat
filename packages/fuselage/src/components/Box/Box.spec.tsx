@@ -145,5 +145,15 @@ describe('[Box Component]', () => {
 			expect(container.firstElementChild).toHaveClass('default-class');
 			expect(container.firstElementChild?.getAttribute('class')).toBe('default-class');
 		});
+
+		it('applies styling props to the child alongside its own class names', () => {
+			const { container } = render(
+				<StylingBox padding='x8' className='extra-class'>
+					<div className='default-class'>Child</div>
+				</StylingBox>,
+			);
+			expect(container.firstElementChild).toHaveClass('default-class', 'extra-class');
+			expect(container.firstElementChild?.className).toMatch(/rcx-css-/);
+		});
 	});
 });

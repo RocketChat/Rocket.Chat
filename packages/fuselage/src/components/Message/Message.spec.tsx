@@ -14,21 +14,29 @@ describe('[Message Component]', () => {
 	describe('className handling', () => {
 		it('preserves default classes on MessageContainer when className is passed', () => {
 			const { container } = render(<MessageContainer className='custom-container' />);
-			expect(container.firstElementChild).toHaveClass('rcx-message-container');
-			expect(container.firstElementChild).toHaveClass('rcx-box');
-			expect(container.firstElementChild).toHaveClass('custom-container');
+			expect(container.firstElementChild).toHaveClass('rcx-box', 'rcx-box--full', 'rcx-message-container', 'custom-container');
 		});
 
 		it('preserves default classes on MessageContainerFixed when className is passed', () => {
 			const { container } = render(<MessageContainerFixed className='custom-fixed' />);
-			expect(container.firstElementChild).toHaveClass('rcx-message-container--fixed');
-			expect(container.firstElementChild).toHaveClass('custom-fixed');
+			expect(container.firstElementChild).toHaveClass(
+				'rcx-box',
+				'rcx-box--full',
+				'rcx-message-container',
+				'rcx-message-container--fixed',
+				'custom-fixed',
+			);
 		});
 
 		it('preserves default classes on MessageLeftContainer when className is passed', () => {
 			const { container } = render(<MessageLeftContainer className='custom-left' />);
-			expect(container.firstElementChild).toHaveClass('rcx-message-container--left');
-			expect(container.firstElementChild).toHaveClass('custom-left');
+			expect(container.firstElementChild).toHaveClass(
+				'rcx-box',
+				'rcx-box--full',
+				'rcx-message-container',
+				'rcx-message-container--left',
+				'custom-left',
+			);
 		});
 	});
 });
