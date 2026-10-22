@@ -22,11 +22,7 @@ const CounterRow = ({ children, ...props }: CounterRowProps) => (
 			flattenChildren(children).reduce(
 				(acc: ReactNode[], child, i) =>
 					children.length - 1 !== i
-						? [
-								...acc,
-								<Fragment key={i}>{child}</Fragment>,
-								<Divider key={(i + 1) * children.length} width='x2' alignSelf='stretch' flush />,
-							]
+						? [...acc, <Fragment key={i}>{child}</Fragment>, <Divider key={(i + 1) * children.length} vertical stretch flush />]
 						: [...acc, child],
 				[],
 			)}
