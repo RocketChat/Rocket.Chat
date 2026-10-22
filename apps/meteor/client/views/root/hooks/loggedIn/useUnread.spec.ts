@@ -74,6 +74,18 @@ describe('useUnread', () => {
 
 			expect(setBadge).toHaveBeenLastCalledWith(0);
 		});
+
+		it('should clear the badge when the user logs out', () => {
+			const { unmount } = renderHook(() => useUnread(), {
+				wrapper: mockAppRoot()
+					.withSubscriptions([unreadRoom(2)])
+					.build(),
+			});
+
+			unmount();
+
+			expect(setBadge).toHaveBeenLastCalledWith(0);
+		});
 	});
 
 	describe('when the desktop app call throws', () => {

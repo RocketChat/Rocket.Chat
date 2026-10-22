@@ -67,6 +67,9 @@ export const useUnread = () => {
 		callDesktopBridge((desktop) => desktop.setBadge(unreadCount > 0 ? unreadCount : badgeIndicator || 0));
 	}, [setUnread, subscriptions, unreadAlertEnabled, fireEventUnreadChangedBySubscription, fireEventUnreadChanged]);
 
+	// The hook unmounts on logout, and the desktop app would keep showing the last badge.
+	useEffect(() => () => callDesktopBridge((desktop) => desktop.setBadge(0)), []);
+
 	useEffect(() => {
 		updateFavicon(unread);
 	}, [unread]);
