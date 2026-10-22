@@ -2,7 +2,8 @@ import type { HTMLAttributes, RefAttributes } from 'react';
 
 export type ButtonGroupProps = RefAttributes<HTMLDivElement> & {
 	align?: 'start' | 'center' | 'end';
-	stretch?: boolean;
+	/** `equal` also gives every button the same width. */
+	stretch?: boolean | 'equal';
 	wrap?: boolean;
 	vertical?: boolean;
 	small?: boolean;
@@ -18,6 +19,7 @@ function ButtonGroup({ align = 'start', children, stretch, vertical, wrap, small
 			className={[
 				'rcx-button-group',
 				stretch && 'rcx-button-group--stretch',
+				stretch === 'equal' && 'rcx-button-group--stretch-equal',
 				vertical && 'rcx-button-group--vertical',
 				align && `rcx-button-group--align-${align}`,
 				small && 'rcx-button-group--small',

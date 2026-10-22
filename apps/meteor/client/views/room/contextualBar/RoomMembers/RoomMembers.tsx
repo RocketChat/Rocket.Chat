@@ -219,12 +219,11 @@ const RoomMembers = ({
 				<ContextualbarFooter>
 					<Stack gap={16}>
 						{isAbacLocked && <Callout type='danger'>{t('ABAC_Cannot_add_members_to_locked_room')}</Callout>}
-						<ButtonGroup stretch>
+						<ButtonGroup stretch='equal'>
 							{onClickInvite && (
 								<Button
 									icon='link'
 									onClick={onClickInvite}
-									width='50%'
 									disabled={isABACRoom || isAbacLocked}
 									title={isABACRoom ? t('Not_available_for_ABAC_enabled_rooms') : undefined}
 									aria-label={t('Invite_Link')}
@@ -233,7 +232,7 @@ const RoomMembers = ({
 								</Button>
 							)}
 							{onClickAdd && (
-								<Button icon='user-plus' onClick={onClickAdd} width='50%' primary disabled={isAbacLocked}>
+								<Button icon='user-plus' onClick={onClickAdd} primary disabled={isAbacLocked}>
 									{t('Add')}
 								</Button>
 							)}
