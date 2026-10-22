@@ -56,7 +56,7 @@ function ColorSettingInput({
 				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
 			<FieldRow>
-				<Box display='flex' flexGrow={1} gap={8} paddingInline={8}>
+				<Box display='flex' flexGrow={1} gap={8}>
 					<FlexItem grow={2}>
 						{editor === 'color' && (
 							<InputBox
