@@ -9,7 +9,7 @@ export type StackProps = RefAttributes<HTMLDivElement> & {
 	justify?: 'start' | 'center' | 'end' | 'space-between';
 	wrap?: boolean;
 	grow?: boolean;
-} & HTMLAttributes<HTMLDivElement>;
+} & Omit<HTMLAttributes<HTMLDivElement>, 'color' | 'is'>;
 
 const flexValues: Record<string, string> = { start: 'flex-start', end: 'flex-end' };
 

@@ -5,7 +5,7 @@ import { Button } from '../Button';
 import Stack from './Stack';
 
 const Item = ({ children }: { children: string }) => (
-	<Box padding={8} bg='tint' color='default' fontScale='p2'>
+	<Box padding={8} backgroundColor='tint' color='default' fontScale='p2'>
 		{children}
 	</Box>
 );
