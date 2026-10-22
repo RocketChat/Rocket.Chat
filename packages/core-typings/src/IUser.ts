@@ -159,6 +159,8 @@ export interface IUserPhoneNumber {
 	label?: string;
 }
 
+export const MAX_USER_PHONES = 10;
+
 export interface IUserCalendar {
 	outlook?: {
 		Enabled: boolean;

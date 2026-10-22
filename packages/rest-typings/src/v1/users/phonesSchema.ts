@@ -1,5 +1,8 @@
+import { MAX_USER_PHONES } from '@rocket.chat/core-typings';
+
 export const phonesSchema = {
 	type: 'array',
+	maxItems: MAX_USER_PHONES,
 	items: {
 		type: 'object',
 		properties: {
