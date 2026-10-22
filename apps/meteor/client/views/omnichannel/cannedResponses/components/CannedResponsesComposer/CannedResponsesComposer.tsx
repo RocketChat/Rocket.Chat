@@ -1,4 +1,4 @@
-import { Button, PositionAnimated, Tile } from '@rocket.chat/fuselage';
+import { Box, Button, PopoverSurface, PositionAnimated } from '@rocket.chat/fuselage';
 import {
 	MessageComposerAction,
 	MessageComposerToolbarActions,
@@ -123,9 +123,13 @@ const CannedResponsesComposer = ({ onChange, ...props }: CannedResponsesComposer
 						}}
 					/>
 					<PositionAnimated visible={visible ? 'visible' : 'hidden'} anchor={ref}>
-						<Tile elevation='1' width='224px'>
-							<InsertPlaceholderDropdown onChange={onChange} textAreaRef={textAreaRef} setVisible={setVisible} />
-						</Tile>
+						<Box width='224px'>
+							<PopoverSurface elevation='1' flush>
+								<Box padding={16}>
+									<InsertPlaceholderDropdown onChange={onChange} textAreaRef={textAreaRef} setVisible={setVisible} />
+								</Box>
+							</PopoverSurface>
+						</Box>
 					</PositionAnimated>
 				</MessageComposerToolbarActions>
 			</MessageComposerToolbar>
