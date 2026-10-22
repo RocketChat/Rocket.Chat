@@ -111,7 +111,8 @@ beforeCreateRoomCallback.add(
 			origin: domain,
 		};
 	},
-	callbacks.priority.HIGH,
+	// Ahead of the guards that let XMPP federated rooms through, so they see the room as one
+	callbacks.priority.HIGH - 1,
 	'xmpp-server-before-create-room',
 );
 

@@ -135,7 +135,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 
 	const { isPrivate, broadcast, readOnly, federated, xmppFederated, encrypted, isAbacManaged, members, attributes } = watch();
 
-	const creationBlocked = isAbacCreationBlocked(abac, canCreatePrivate, federated);
+	const creationBlocked = isAbacCreationBlocked(abac, canCreatePrivate, federated || xmppFederated);
 	const abacFlow = useAbacCreationFlow({ abac, isAbacManaged, members, attributes });
 
 	useEffect(() => {
@@ -147,12 +147,12 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 	}, [isAbacManaged, canOnlyCreateOneType, setValue]);
 
 	useEffect(() => {
-		if (federated) {
+		if (federated || xmppFederated) {
 			setValue('isAbacManaged', false);
 		} else if (abac?.enforced) {
 			setValue('isAbacManaged', true);
 		}
-	}, [federated, abac?.enforced, setValue]);
+	}, [federated, xmppFederated, abac?.enforced, setValue]);
 
 	useEffect(() => {
 		if (federated || xmppFederated) {
@@ -364,7 +364,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 						<Box display='flex' flexDirection='column' gap={16} marginBlockEnd={24}>
 							{creationBlocked && (
 								<Callout type='danger'>
-									{t(canUseFederation ? 'ABAC_Room_Creation_Federated_Only' : 'ABAC_Room_Creation_Not_Allowed')}
+									{t(canUseFederation || canUseXmpp ? 'ABAC_Room_Creation_Federated_Only' : 'ABAC_Room_Creation_Not_Allowed')}
 								</Callout>
 							)}
 							<FieldGroup>
@@ -413,7 +413,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 									/>
 									{errors.members && <FieldError>{errors.members.message}</FieldError>}
 								</Field>
-								{abac && <AbacManagedField abac={abac} canCreatePrivate={canCreatePrivate} federated={federated} />}
+								{abac && <AbacManagedField abac={abac} canCreatePrivate={canCreatePrivate} federated={federated || xmppFederated} />}
 								{abac && federatedField}
 								{abac && xmppFederatedField}
 								<Field>

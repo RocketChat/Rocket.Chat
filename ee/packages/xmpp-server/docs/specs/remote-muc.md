@@ -67,6 +67,10 @@ network already uses. Entry is by invitation only ([ADR 0008](../adr/0008-only-d
   and the second invitation Openfire sends when the inviter grants membership before
   inviting.
 
+- **R13** ABAC treats the mirrored channel as a federated room, as in
+  [hosted-muc R18](hosted-muc.md): it never carries ABAC attributes and ABAC enforcement
+  never locks it, so an invitation creates it, and its members write to it, while
+  enforcement is on.
 - **R2** The invitee is then joined into the remote room with their own session: occupant
   JID `<username>@<domain>/rocketchat`, nick `<username>`
   ([ADR 0009](../adr/0009-one-remote-muc-session-per-local-member.md)).

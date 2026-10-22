@@ -239,6 +239,10 @@ Deliberately minimal:
   The checks are `isRoomFederated(room) || isRoomXMPPFederated(room)`; the Matrix-only
   restrictions behind `isRoomFederated` alone (blocked actions, the composer, room settings)
   do not apply.
+- ABAC exempts every XMPP room wherever it exempts a Matrix federated one: `isRoomAbacLocked`,
+  the ABAC `beforeCreateRoom` guard, `assertRoomAcceptsAttributes` in `@rocket.chat/abac`,
+  the room's ABAC hooks and the create-channel modal. The XMPP `beforeCreateRoom` callback
+  runs ahead of the ABAC guard so the guard already sees `xmppFederation`.
 - Everything else renders as ordinary rooms and users.
 
 ## Testing layout

@@ -48,6 +48,11 @@ history in Rocket.Chat and lets remote users join with nothing but a room addres
   Creating one is refused while XMPP federation is not enabled, and when it would also be
   Matrix federated, encrypted, read-only or broadcast. A workspace that forces encryption
   on private rooms does not apply it to XMPP federated groups.
+- **R18** ABAC treats the room as it treats a Matrix federated room, since it cannot evaluate
+  remote occupants: the room never carries ABAC attributes, so creating it with attributes or
+  assigning some later is refused with `error-abac-federated-room-attributes`, and ABAC
+  enforcement never locks it, so it can be created, joined and written to while enforcement
+  is on. The creation modal turns ABAC-managed off while XMPP Federated is on.
 - **R2** The room is registered with the protocol core when it is created and again on every
   service start, with its topic as subject and each Rocket.Chat member as a virtual occupant
   (role `moderator` for the owner, `participant` otherwise). It is registered again whenever
