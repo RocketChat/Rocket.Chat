@@ -20,6 +20,14 @@ const accepted: Record<string, unknown> = {
 	'an input with an element': [{ type: 'input', label: text, element: { type: 'plain_text_input', actionId: 'a' } }],
 	'a block type the renderer does not know': [{ type: 'unknown-type' }],
 	'a block without a type': [{}],
+	'a button of an installed app': [
+		{
+			type: 'actions',
+			appId: 'ce0e318b-ffc0-4ce4-832b-f1b464beb22a',
+			elements: [{ type: 'button', appId: 'ce0e318b-ffc0-4ce4-832b-f1b464beb22a', text }],
+		},
+	],
+	'a button of a core app': [{ type: 'actions', appId: 'videoconf-core', elements: [{ type: 'button', appId: 'videoconf-core', text }] }],
 	'a linear scale with the default range': [{ type: 'actions', elements: [{ type: 'linear_scale' }] }],
 	'a linear scale at the point limit': [{ type: 'actions', elements: [{ type: 'linear_scale', minValue: 1, maxValue: 100 }] }],
 	'a linear scale with fractional bounds': [{ type: 'actions', elements: [{ type: 'linear_scale', minValue: 0.5, maxValue: 2.5 }] }],
@@ -71,6 +79,12 @@ describe('assertValidMessageBlocks', () => {
 		'a linear scale above the limit as a section accessory': [
 			{ type: 'section', text, accessory: { type: 'linear_scale', maxValue: 4294967295 } },
 		],
+		'a block whose appId leaves the interaction path': [{ type: 'actions', appId: '../../v1/users.removeOtherTokens', elements: [] }],
+		'an element whose appId leaves the interaction path': [
+			{ type: 'actions', elements: [{ type: 'button', appId: '../../v1/users.removeOtherTokens', text }] },
+		],
+		'an appId that is not a string': [{ type: 'actions', elements: [{ type: 'button', appId: 42, text }] }],
+		'an empty appId': [{ type: 'actions', elements: [{ type: 'button', appId: '', text }] }],
 	};
 
 	Object.entries(rejected).forEach(([name, blocks]) => {
