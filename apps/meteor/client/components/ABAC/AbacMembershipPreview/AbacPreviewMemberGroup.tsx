@@ -26,7 +26,7 @@ const AbacPreviewMemberGroup = ({ title, members, verdict }: AbacPreviewMemberGr
 				<span>{title}</span>
 				<span>{members.length}</span>
 			</Box>
-			<Divider marginBlock={8} />
+			<Divider />
 			<Box is='ul'>
 				{members.map(({ _id, username, name }) => (
 					<Box is='li' key={_id} display='flex' alignItems='center' paddingBlock={4}>
