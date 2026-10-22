@@ -23,7 +23,7 @@ export default {
 	argTypes: {
 		variation: {
 			control: 'select',
-			options: ['danger'],
+			options: ['danger', 'light'],
 			description: 'Color variation of the divider.',
 			table: { category: 'Kind' },
 		},
@@ -79,4 +79,10 @@ export const Flush: Story = {
 			<Box>Section</Box>
 		</Box>
 	),
+};
+
+export const Light: Story = {
+	args: {
+		variation: 'light',
+	},
 };
