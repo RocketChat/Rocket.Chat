@@ -80,7 +80,7 @@ const ContactInfoHistory = ({ contact, setChatId }: ContactInfoHistoryProps) => 
 				borderBlockEndColor='extra-light'
 				flexShrink={0}
 			>
-				<Box display='flex' flexDirection='row' flexGrow={1} paddingInlineStart={8}>
+				<Box display='flex' flexDirection='row' flexGrow={1}>
 					<Select
 						value={type}
 						onChange={handleChangeFilter}
