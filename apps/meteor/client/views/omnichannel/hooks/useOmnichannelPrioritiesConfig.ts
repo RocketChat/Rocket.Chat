@@ -1,5 +1,4 @@
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
-import { Palette } from '@rocket.chat/fuselage';
 import type { Keys } from '@rocket.chat/icons';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,7 +7,7 @@ import { useOmnichannelPriorities } from './useOmnichannelPriorities';
 
 type PrioritiesConfig = {
 	iconName: Keys;
-	color?: string;
+	color?: 'danger' | 'status-font-on-warning' | 'info';
 	status?: 'danger' | 'warning' | 'info';
 	variant?: 'secondary-danger' | 'secondary-warning' | 'secondary-info';
 };
@@ -19,31 +18,31 @@ export const PRIORITIES_CONFIG: Record<number, PrioritiesConfig> = {
 	},
 	[LivechatPriorityWeight.HIGHEST]: {
 		iconName: 'chevron-double-up',
-		color: Palette.badge['badge-background-level-4'].toString(),
+		color: 'danger',
 		status: 'danger',
 		variant: 'secondary-danger',
 	},
 	[LivechatPriorityWeight.HIGH]: {
 		iconName: 'chevron-up',
-		color: Palette.badge['badge-background-level-4'].toString(),
+		color: 'danger',
 		status: 'danger',
 		variant: 'secondary-danger',
 	},
 	[LivechatPriorityWeight.MEDIUM]: {
 		iconName: 'equal',
-		color: Palette.badge['badge-background-level-3'].toString(),
+		color: 'status-font-on-warning',
 		status: 'warning',
 		variant: 'secondary-warning',
 	},
 	[LivechatPriorityWeight.LOW]: {
 		iconName: 'chevron-down',
-		color: Palette.badge['badge-background-level-2'].toString(),
+		color: 'info',
 		status: 'info',
 		variant: 'secondary-info',
 	},
 	[LivechatPriorityWeight.LOWEST]: {
 		iconName: 'chevron-double-down',
-		color: Palette.badge['badge-background-level-2'].toString(),
+		color: 'info',
 		status: 'info',
 		variant: 'secondary-info',
 	},
