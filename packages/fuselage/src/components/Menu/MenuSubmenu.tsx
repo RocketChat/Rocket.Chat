@@ -1,6 +1,6 @@
 import type { CollectionChildren, Key, KeyboardEvent, Node } from '@react-types/shared';
 import type { RefObject } from 'react';
-import { useRef } from 'react';
+import { useMemo, useRef } from 'react';
 import { mergeProps, useFocusVisible, useMenuItem, useSubmenuTrigger } from 'react-aria';
 import type { RootMenuTriggerState, TreeState } from 'react-stately';
 import { useSubmenuTriggerState } from 'react-stately';
@@ -34,6 +34,10 @@ function MenuSubmenu({ item, state, rootMenuTriggerState, parentMenuRef, onActio
 	const submenuRef = useRef<HTMLDivElement>(null);
 
 	const submenuTriggerState = useSubmenuTriggerState({ triggerKey: item.key }, rootMenuTriggerState);
+
+	// Keeps a data-backed submenu populated each time it reopens, even when `childItems` can only be iterated once
+	const rawChildItems: Iterable<object> | undefined = item.props?.childItems;
+	const childItems = useMemo(() => (rawChildItems ? Array.from(rawChildItems) : undefined), [rawChildItems]);
 
 	const { submenuTriggerProps, submenuProps, popoverProps } = useSubmenuTrigger<object>(
 		{ parentMenuRef, submenuRef },
@@ -106,7 +110,7 @@ function MenuSubmenu({ item, state, rootMenuTriggerState, parentMenuRef, onActio
 				<MenuPopover {...popoverProps} state={submenuTriggerState} triggerRef={triggerRef} placement='right top'>
 					<MenuDropDown
 						{...submenuProps}
-						items={item.props?.childItems}
+						items={childItems}
 						onKeyDown={onSubmenuKeyDown}
 						rootMenuTriggerState={rootMenuTriggerState}
 						menuRef={submenuRef}
