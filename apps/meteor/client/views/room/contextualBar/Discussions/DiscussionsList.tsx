@@ -21,6 +21,7 @@ import DiscussionsListRow from './DiscussionsListRow';
 import { PaginatedVirtualList } from '../../../../components/PaginatedVirtualList';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import { useItemListNavigation } from '../../../../hooks/useItemListNavigation';
+import { getErrorMessage } from '../../../../lib/errorHandling';
 import { useGoToRoom } from '../../hooks/useGoToRoom';
 
 export type DiscussionsListProps = {
@@ -82,15 +83,15 @@ function DiscussionsList({
 				/>
 			</ContextualbarSection>
 			<ContextualbarContent paddingInline={0}>
-				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
+				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} isLoading={isPending} />
 				{isPending && (
 					<Box paddingInline={24} paddingBlock={12}>
 						<Throbber size='x12' />
 					</Box>
 				)}
-				{error instanceof Error && (
-					<Callout marginInline={24} type='danger'>
-						{error.toString()}
+				{!!error && (
+					<Callout role='alert' marginInline={24} type='danger'>
+						{getErrorMessage(error, t('Something_went_wrong'))}
 					</Callout>
 				)}
 				{isSuccess && (
