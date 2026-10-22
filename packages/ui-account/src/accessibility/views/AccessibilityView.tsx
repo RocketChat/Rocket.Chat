@@ -111,7 +111,7 @@ const AccessibilityView = ({ vm: { values: preferencesValues, displayRolesEnable
 								return (
 									<Field
 										key={id}
-										paddingBlockEnd={themes.length - 1 ? undefined : 'x28'}
+										paddingBlockEnd={themes.length - 1 ? undefined : 'x24'}
 										paddingBlockStart={index === 0 ? undefined : 'x28'}
 									>
 										<FieldRow>

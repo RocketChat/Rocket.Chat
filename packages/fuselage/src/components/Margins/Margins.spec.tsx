@@ -8,7 +8,7 @@ describe('[Margins Component]', () => {
 
 	it('patches non-`Box` children', () => {
 		const { container } = render(
-			<Margins all='10px'>
+			<Margins all='8px'>
 				<div />
 			</Margins>,
 		);
