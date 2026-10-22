@@ -406,7 +406,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 							<Controller
 								control={control}
 								name='nickname'
-								render={({ field }) => <TextInput {...field} flexGrow={1} endAddon={<Icon name='edit' size='x20' alignSelf='center' />} />}
+								render={({ field }) => <TextInput {...field} flexGrow={1} endAddon={<Icon name='edit' size='x20' />} />}
 							/>
 						</FieldRow>
 					</Field>
@@ -421,13 +421,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 								maxLength: { value: BIO_TEXT_MAX_LENGTH, message: t('Max_length_is', { limit: BIO_TEXT_MAX_LENGTH }) },
 							}}
 							render={({ field }) => (
-								<TextAreaInput
-									{...field}
-									rows={3}
-									flexGrow={1}
-									error={errors.bio?.message}
-									endAddon={<Icon name='edit' size='x20' alignSelf='center' />}
-								/>
+								<TextAreaInput {...field} rows={3} flexGrow={1} error={errors.bio?.message} endAddon={<Icon name='edit' size='x20' />} />
 							)}
 						/>
 					</FieldRow>

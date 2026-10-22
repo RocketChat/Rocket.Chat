@@ -540,7 +540,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 										error={errors?.bio?.message}
 										aria-invalid={errors.bio ? 'true' : 'false'}
 										aria-describedby={`${bioId}-error`}
-										endAddon={<Icon name='edit' size='x20' alignSelf='center' />}
+										endAddon={<Icon name='edit' size='x20' />}
 									/>
 								)}
 							/>
