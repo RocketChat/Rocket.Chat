@@ -1,0 +1,30 @@
+ee/packages/xmpp-server/docs/compliance.md
+  s_9582b0f50b02d9::t_82ef4e9910c703 46-47
+ee/packages/xmpp-server/docs/intents/avatar-sync.md
+  s_9582b0f50b02d9::t_3c2daf94da11de 15-16,64-65
+  s_9582b0f50b02d9::t_6c2673ae4a6a67 1-2,4-14,25-39,43-53,57-60
+  s_9582b0f50b02d9::t_5e3b04a9a2e992 3
+  s_9582b0f50b02d9::t_f98b943dc0c233 56,76
+  s_9582b0f50b02d9::t_188603798aefa9 40-42,68-70
+  s_9582b0f50b02d9::t_e918673be22b4d 17-18,66-67
+  s_9582b0f50b02d9::t_8415b46f27e32d 19-20,71-72
+  s_9582b0f50b02d9::t_49624083cc66a5 21-22,73-75
+  s_9582b0f50b02d9::t_8671ed3aeeee04 23-24,77-79
+  s_9582b0f50b02d9::t_82ef4e9910c703 54-55,61-63
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "70b18256060989783a3e31fee689ebac421628c4",
+  "prompts": {},
+  "sessions": {
+    "s_9582b0f50b02d9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "aafef4af-e567-4ad0-9bba-47cd5c3e0fe9",
+        "model": "claude-sonnet-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

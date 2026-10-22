@@ -1,0 +1,27 @@
+CLAUDE.md
+  s_9c3bc2f707bebe::t_c8c864837059e4 71
+ee/packages/xmpp-server/docs/README.md
+  s_9c3bc2f707bebe::t_c8c864837059e4 289-290
+.claude/skills/xmpp-intent
+  s_9c3bc2f707bebe::t_9783aa6620fe93 1
+.claude/skills/xmpp-plan
+  s_9c3bc2f707bebe::t_3f68d72c50b6a3 1
+.claude/skills/xmpp-spec
+  s_9c3bc2f707bebe::t_7840bdc462c238 1
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2854e89be80c87bf4009e0eeb5a325f781bf5d58",
+  "prompts": {},
+  "sessions": {
+    "s_9c3bc2f707bebe": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "74e1bc87-e2d7-44c7-9d24-252697d3243b",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
