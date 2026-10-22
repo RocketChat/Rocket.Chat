@@ -81,9 +81,7 @@ const RoomFormAttributeField = ({
 						aria-invalid={keyFieldState.error ? 'true' : 'false'}
 						aria-describedby={keyFieldState.error ? `${keyField.name}-error` : undefined}
 						placeholder={t('ABAC_Search_Attribute')}
-						marginBlockEnd={4}
 						error={keyFieldState.error?.message}
-						withTruncatedText
 						disabled={disabled || lockKey}
 						onChange={(value) => {
 							keyField.onChange(value);
@@ -103,7 +101,6 @@ const RoomFormAttributeField = ({
 						aria-labelledby={labelId}
 						aria-invalid={valuesFieldState.error ? 'true' : 'false'}
 						aria-describedby={valuesFieldState.error ? `${valuesField.name}-error` : undefined}
-						withTruncatedText
 						{...valuesField}
 						options={valueOptions}
 						placeholder={t('ABAC_Select_Attribute_Values')}
