@@ -77,16 +77,21 @@
 		}
 	}
 
+	// Sized to the c1 line (16px) and snapped to its top, like the inline emojis in the
+	// message body: a 12px box used to sit on the text's middle, which left native glyphs
+	// (and, with `bottom`, image emojis) ~2px below the text's optical center.
 	&__emoji {
 		display: inline-block;
 
 		margin-inline: lengths.margin(2);
 
+		vertical-align: top;
+
 		background-size: contain;
 
-		font-size: lengths.size(12);
-		line-height: lengths.size(8);
+		font-size: lengths.size(16);
+		line-height: lengths.size(16);
 
-		@include size.square(lengths.size(12));
+		@include size.square(lengths.size(16));
 	}
 }
