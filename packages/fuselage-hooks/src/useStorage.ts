@@ -4,13 +4,27 @@ import { useRef, useCallback, useSyncExternalStore, useState } from 'react';
 
 const ee = new Emitter<Record<`fuselage-${string}`, any>>();
 
-const getKeyPrefix = (storage: Storage | undefined) => {
-	if (storage === globalThis.window?.sessionStorage) {
-		return 'fuselage-sessionStorage' as const;
+const getWindowStorage = (storageType: 'localStorage' | 'sessionStorage'): Storage | undefined => {
+	try {
+		return typeof window === 'undefined' ? undefined : window[storageType];
+	} catch {
+		return undefined;
 	}
+};
 
-	if (storage === globalThis.window?.localStorage) {
-		return 'fuselage-localStorage' as const;
+const getKeyPrefix = (storage: Storage | undefined) => {
+	if (!storage) return 'fuselage-unknownStorage' as const;
+
+	try {
+		if (storage === globalThis.window?.sessionStorage) {
+			return 'fuselage-sessionStorage' as const;
+		}
+
+		if (storage === globalThis.window?.localStorage) {
+			return 'fuselage-localStorage' as const;
+		}
+	} catch {
+		return 'fuselage-unknownStorage' as const;
 	}
 
 	return 'fuselage-unknownStorage' as const;
@@ -30,8 +44,9 @@ const getStorageItem = <T>(storedKey: `fuselage-${string}`, fallbackValue: T, st
 const setStorageItem = <T>(storedKey: `fuselage-${string}`, value: T, storage?: Storage): void => {
 	if (!storage) return;
 
+	const serialized = JSON.stringify(value);
 	try {
-		storage.setItem(storedKey, JSON.stringify(value));
+		storage.setItem(storedKey, serialized);
 	} catch {
 		// Ignore write errors (quota exceeded, private browsing restrictions)
 	}
@@ -110,7 +125,7 @@ export const useStorage = <T>(storage: Storage | undefined, key: string, fallbac
  * @returns a state and a setter function
  * @public
  */
-export const useLocalStorage = useStorage.bind(null, typeof window !== 'undefined' ? window.localStorage : undefined) as <T>(
+export const useLocalStorage = useStorage.bind(null, getWindowStorage('localStorage')) as <T>(
 	key: string,
 	fallbackValue: T,
 ) => [T, Dispatch<SetStateAction<T>>];
@@ -122,7 +137,7 @@ export const useLocalStorage = useStorage.bind(null, typeof window !== 'undefine
  * @returns a state and a setter function
  * @public
  */
-export const useSessionStorage = useStorage.bind(null, typeof window !== 'undefined' ? window.sessionStorage : undefined) as <T>(
+export const useSessionStorage = useStorage.bind(null, getWindowStorage('sessionStorage')) as <T>(
 	key: string,
 	fallbackValue: T,
 ) => [T, Dispatch<SetStateAction<T>>];
