@@ -80,7 +80,7 @@ const MessageForm = (props: MessageFormProps) => {
 	return (
 		<Form id={messageFormId} onSubmit={handleSubmit(submit)} noValidate>
 			<Scrollable vertical>
-				<Box paddingInline={2}>
+				<Box>
 					<FieldGroup>
 						<TemplateField control={control} templates={templates} onChange={() => setValue('templateParameters', {})} />
 

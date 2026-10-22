@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { action } from 'storybook/actions';
+import { userEvent, within } from 'storybook/test';
 
 import {
 	Modal,
@@ -362,4 +363,11 @@ export const _WithForm: Story = {
 			</ModalFooter>
 		</Modal>
 	),
+};
+
+export const _WithFocusedField: Story = {
+	..._WithForm,
+	play: async ({ canvasElement }) => {
+		await userEvent.click(within(canvasElement.ownerDocument.body).getByPlaceholderText('Placeholder'));
+	},
 };
