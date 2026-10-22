@@ -193,61 +193,57 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 	return (
 		<EmojiPickerDropdown reference={ref as RefObject<HTMLElement | null>} ref={emojiContainerRef}>
 			<EmojiPickerContainer role='dialog' aria-label={t('Emoji_picker')} onKeyDown={handleKeyDown}>
-				<Box display='flex' flexDirection='column' flexGrow={1} minHeight={0} gap={4}>
-					<Box>
-						<EmojiPickerHeader>
-							<TextInput
-								// FIXME: remove autoFocus prop when rewriting the emojiPicker dropdown
-								autoFocus
-								ref={mergedTextInputRef}
-								value={searchTerm}
-								onChange={handleSearch}
-								endAddon={<Icon name='magnifier' size='x20' />}
-								placeholder={t('Search')}
-								aria-label={t('Search')}
-							/>
-						</EmojiPickerHeader>
-						<EmojiPickerCategoryHeader role='tablist' {...(scrollCategories && { style: { overflowX: 'scroll' } })}>
-							{emojiCategories.map((category) => (
-								<EmojiPickerCategoryItem
-									key={category.key}
-									category={category}
-									active={category.key === currentCategory}
-									handleGoToCategory={() => handleGoToCategory(category.key)}
-								/>
-							))}
-						</EmojiPickerCategoryHeader>
-					</Box>
+				<EmojiPickerHeader>
+					<TextInput
+						// FIXME: remove autoFocus prop when rewriting the emojiPicker dropdown
+						autoFocus
+						ref={mergedTextInputRef}
+						value={searchTerm}
+						onChange={handleSearch}
+						endAddon={<Icon name='magnifier' size='x20' />}
+						placeholder={t('Search')}
+						aria-label={t('Search')}
+					/>
+				</EmojiPickerHeader>
+				<EmojiPickerCategoryHeader role='tablist' {...(scrollCategories && { style: { overflowX: 'scroll' } })}>
+					{emojiCategories.map((category) => (
+						<EmojiPickerCategoryItem
+							key={category.key}
+							category={category}
+							active={category.key === currentCategory}
+							handleGoToCategory={() => handleGoToCategory(category.key)}
+						/>
+					))}
+				</EmojiPickerCategoryHeader>
+				<Box paddingBlock={4}>
 					<Divider />
-					<Box display='flex' flexDirection='column' flexGrow={1} minHeight={0}>
-						<EmojiPickerListArea role='tabpanel'>
-							{searching && <SearchingResult searchResults={searchResults} handleSelectEmoji={handleSelectEmoji} />}
-							{!searching && (
-								<CategoriesResult
-									ref={virtuosoRef}
-									items={emojiListByCategory}
-									customItemsLimit={customItemsLimit}
-									handleLoadMore={handleLoadMore}
-									handleSelectEmoji={handleSelectEmoji}
-									handleScroll={handleScroll}
-								/>
-							)}
-						</EmojiPickerListArea>
-						<EmojiPickerPreviewArea>
-							<div>
-								{emojiToPreview && <EmojiPickerPreview emoji={emojiToPreview.emoji} name={emojiToPreview.name} />}
-								{canManageEmoji && emojiToPreview === null && (
-									<Button small onClick={handleGoToAddCustom}>
-										{t('Add_emoji')}
-									</Button>
-								)}
-							</div>
-							<ToneSelectorWrapper caption={t('Skin_tone')}>
-								<ToneSelector tone={actualTone} setTone={setActualTone} />
-							</ToneSelectorWrapper>
-						</EmojiPickerPreviewArea>
-					</Box>
 				</Box>
+				<EmojiPickerListArea role='tabpanel'>
+					{searching && <SearchingResult searchResults={searchResults} handleSelectEmoji={handleSelectEmoji} />}
+					{!searching && (
+						<CategoriesResult
+							ref={virtuosoRef}
+							items={emojiListByCategory}
+							customItemsLimit={customItemsLimit}
+							handleLoadMore={handleLoadMore}
+							handleSelectEmoji={handleSelectEmoji}
+							handleScroll={handleScroll}
+						/>
+					)}
+				</EmojiPickerListArea>
+				<EmojiPickerPreviewArea>
+					<div>
+						{emojiToPreview && <EmojiPickerPreview emoji={emojiToPreview.emoji} name={emojiToPreview.name} />}
+						{canManageEmoji && emojiToPreview === null && (
+							<Button small onClick={handleGoToAddCustom}>
+								{t('Add_emoji')}
+							</Button>
+						)}
+					</div>
+					<ToneSelectorWrapper caption={t('Skin_tone')}>
+						<ToneSelector tone={actualTone} setTone={setActualTone} />
+					</ToneSelectorWrapper>
+				</EmojiPickerPreviewArea>
 			</EmojiPickerContainer>
 		</EmojiPickerDropdown>
 	);
