@@ -558,17 +558,11 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 					</Field>
 					{!!customFieldsMetadata.length && (
 						<>
-							<Button
-								fontScale='c2'
-								width='x140'
-								height='x28'
-								display='flex'
-								alignItems='center'
-								justifyContent='center'
-								onClick={() => setShowCustomFields((prevState) => !prevState)}
-							>
-								{showCustomFields ? t('Hide_additional_fields') : t('Show_additional_fields')}
-							</Button>
+							<Box>
+								<Button small onClick={() => setShowCustomFields((prevState) => !prevState)}>
+									{showCustomFields ? t('Hide_additional_fields') : t('Show_additional_fields')}
+								</Button>
+							</Box>
 							{showCustomFields && <CustomFieldsForm formName='customFields' formControl={control} metadata={customFieldsMetadata} />}
 						</>
 					)}

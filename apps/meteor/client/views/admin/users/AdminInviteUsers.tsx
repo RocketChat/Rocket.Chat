@@ -68,11 +68,13 @@ const AdminInviteUsers = () => {
 				<TextAreaInput rows={5} onChange={(e: ChangeEvent<HTMLInputElement>): void => setText(e.currentTarget.value)} />
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
-				<ButtonGroup stretch>
-					<Button icon='send' primary onClick={handleClick} disabled={!getEmails(text).length} alignItems='stretch' marginBlock={8}>
-						{t('Send')}
-					</Button>
-				</ButtonGroup>
+				<Box paddingBlock={8}>
+					<ButtonGroup stretch>
+						<Button icon='send' primary onClick={handleClick} disabled={!getEmails(text).length}>
+							{t('Send')}
+						</Button>
+					</ButtonGroup>
+				</Box>
 			</ContextualbarFooter>
 		</>
 	);
