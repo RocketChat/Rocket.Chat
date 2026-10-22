@@ -1,5 +1,5 @@
 import type { AbacAttributeDefinitionChangeType, AbacActionPerformed } from '@rocket.chat/core-typings';
-import { Box, InputBox, Margins, Pagination } from '@rocket.chat/fuselage';
+import { Box, InputBox, Margins, Pagination, Stack } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import {
 	GenericTable,
@@ -158,7 +158,7 @@ const LogsPage = () => {
 	return (
 		<>
 			<Margins block={24}>
-				<Box display='flex' gap={8}>
+				<Stack direction='row' gap={8}>
 					<InputBox
 						type='date'
 						placeholder={t('Start_date')}
@@ -178,7 +178,7 @@ const LogsPage = () => {
 							setEndDate(range.end);
 						}}
 					/>
-				</Box>
+				</Stack>
 			</Margins>
 			{(!data || data.events?.length === 0) && !isLoading ? (
 				<Box display='flex' justifyContent='center' height='full'>

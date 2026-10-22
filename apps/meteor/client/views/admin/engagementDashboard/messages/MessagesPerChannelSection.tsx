@@ -14,6 +14,7 @@ import {
 	TableRow,
 	TableBody,
 	TableCell,
+	Stack,
 } from '@rocket.chat/fuselage';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -138,7 +139,7 @@ const MessagesPerChannelSection = () => {
 											</Box>
 										</FlexItem>
 										<FlexItem basis='auto'>
-											<Box display='flex' flexDirection='column' gap={4}>
+											<Stack gap={4}>
 												<Box color='hint' fontScale='p1'>
 													<LegendSymbol color={colors.warning} />
 													{t('Private_Chats')}
@@ -151,7 +152,7 @@ const MessagesPerChannelSection = () => {
 													<LegendSymbol color={colors.info} />
 													{t('Public_Channels')}
 												</Box>
-											</Box>
+											</Stack>
 										</FlexItem>
 									</Box>
 								) : (
@@ -161,7 +162,7 @@ const MessagesPerChannelSection = () => {
 						</Box>
 					</FlexItem>
 					<FlexItem grow={1} shrink={0} basis='0'>
-						<Box display='flex' flexDirection='column' gap={16}>
+						<Stack gap={16}>
 							{table ? <Box fontScale='p1'>{t('Most_popular_channels_top_5')}</Box> : <Skeleton width='50%' />}
 							{table && !table.length && (
 								<Tile>
@@ -211,7 +212,7 @@ const MessagesPerChannelSection = () => {
 									</TableBody>
 								</Table>
 							)}
-						</Box>
+						</Stack>
 					</FlexItem>
 				</Box>
 			</FlexContainer>

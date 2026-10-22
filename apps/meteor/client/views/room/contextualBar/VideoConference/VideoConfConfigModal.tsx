@@ -13,6 +13,7 @@ import {
 	ModalFooter,
 	ModalFooterAnnotation,
 	ModalFooterControllers,
+	Stack,
 } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
@@ -43,7 +44,7 @@ const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigMo
 						<li>{t('Call_history_provides_a_record_of_when_calls_took_place_and_who_joined')}</li>
 					</Box>
 				</Box>
-				<Box display='flex' flexDirection='column' gap={12}>
+				<Stack gap={12}>
 					<Box fontScale='h3'>{t('Conference_call_apps')}</Box>
 					<Callout icon='team' title={isAdmin ? t('Jitsi_included_with_Community') : 'Jitsi'}>
 						{t('Open-source_conference_call_solution')}
@@ -54,7 +55,7 @@ const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigMo
 					<Callout icon='lightning' title={t('Google_Meet_Premium_only')}>
 						{t('Secure_SaaS_solution')} {t('A_cloud-based_platform_for_those_needing_a_plug-and-play_app')}
 					</Callout>
-				</Box>
+				</Stack>
 				<Box display='flex' flexDirection='column' gap={12} marginBlock={24}>
 					<Box fontScale='h3'>{t('Required_action')}</Box>
 					<Callout title={t('Missing_configuration')} type='warning'>

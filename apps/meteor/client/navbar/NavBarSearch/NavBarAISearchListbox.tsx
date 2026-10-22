@@ -1,7 +1,7 @@
 import type { OverlayTriggerAria } from '@react-aria/overlays';
 import type { OverlayTriggerState } from '@react-stately/overlays';
 import type { NavBarSearchFormValues } from '@rocket.chat/ai-search';
-import { Tile, Box, ToggleSwitch, Divider, Icon } from '@rocket.chat/fuselage';
+import { Tile, Box, ToggleSwitch, Divider, Icon, Stack } from '@rocket.chat/fuselage';
 import { useOutsideClick, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
 import { useId, useMemo, useRef } from 'react';
@@ -89,12 +89,12 @@ const NavBarAISearchListBox = ({
 					{aiSearchAvailable && (
 						<>
 							<Box display='flex' justifyContent='space-between' alignItems='center' paddingInline={12}>
-								<Box display='flex' alignItems='center' gap={2}>
+								<Stack direction='row' align='center' gap={2}>
 									<Box is='span' id={aiSearchLabelId}>
 										{t('AI_Search')}
 									</Box>
 									<Icon name='info' size={16} title={t('AI_Search_description')} />
-								</Box>
+								</Stack>
 								<ToggleSwitch aria-labelledby={aiSearchLabelId} checked={aiSearchActive} onChange={handleToggleAISearch} />
 							</Box>
 							{aiSearchActive && <NavBarSearchFilterTypeRow draft={aiItems.draft} />}

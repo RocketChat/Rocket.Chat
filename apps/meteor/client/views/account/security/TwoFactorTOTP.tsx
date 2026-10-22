@@ -1,4 +1,4 @@
-import { Box, Button, TextInput, Field, FieldRow, FieldLabel, ToggleSwitch } from '@rocket.chat/fuselage';
+import { Box, Button, TextInput, Field, FieldRow, FieldLabel, ToggleSwitch, Stack } from '@rocket.chat/fuselage';
 import { useStableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useUser, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ComponentPropsWithoutRef, ChangeEvent } from 'react';
@@ -161,12 +161,12 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps) => {
 					<Field>
 						<FieldLabel htmlFor={totpCodeId}>{t('Enter_code_provided_by_authentication_app')}</FieldLabel>
 						<FieldRow>
-							<Box display='flex' alignItems='center' flexGrow={1} gap={8}>
+							<Stack direction='row' align='center' grow gap={8}>
 								<TextInput id={totpCodeId} {...register('authCode')} />
 								<Button primary onClick={handleSubmit(handleVerifyCode)}>
 									{t('Verify')}
 								</Button>
-							</Box>
+							</Stack>
 						</FieldRow>
 					</Field>
 				</>

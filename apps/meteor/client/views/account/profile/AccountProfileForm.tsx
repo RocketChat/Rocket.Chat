@@ -3,7 +3,7 @@ import type { AvatarObject } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Button, Divider, Icon, InputBox } from '@rocket.chat/fuselage';
+import { Box, Button, Divider, Icon, InputBox, Stack } from '@rocket.chat/fuselage';
 import {
 	Field,
 	FieldGroup,
@@ -240,7 +240,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 						)}
 					/>
 				</Field>
-				<Box display='flex' flexDirection='column' gap={16}>
+				<Stack gap={16}>
 					<Box display='flex' flexDirection={isMobile ? 'column' : 'row'} style={{ gap: '16px' }}>
 						<Field flexShrink={1}>
 							<FieldLabel required={requireName}>{t('Name')}</FieldLabel>
@@ -283,7 +283,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 						</Field>
 					</Box>
 					<Divider />
-					<Box display='flex' flexDirection='column' gap={24}>
+					<Stack gap={24}>
 						<Field>
 							<FieldLabel>{t('Status')}</FieldLabel>
 							<FieldRow>
@@ -398,7 +398,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 								<FieldHint>{t('Accounts_StatusVisibility_HideFromUsers_Description')}</FieldHint>
 							</Field>
 						)}
-					</Box>
+					</Stack>
 					<Divider />
 					<Field>
 						<FieldLabel>{t('Nickname')}</FieldLabel>
@@ -410,7 +410,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 							/>
 						</FieldRow>
 					</Field>
-				</Box>
+				</Stack>
 				<Field>
 					<FieldLabel>{t('Bio')}</FieldLabel>
 					<FieldRow>

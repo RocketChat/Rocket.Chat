@@ -1,5 +1,5 @@
 import type { IAuditLog, IRoom } from '@rocket.chat/core-typings';
-import { Box, Field, FieldLabel, FieldRow, FieldError, TextInput, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, Field, FieldLabel, FieldRow, FieldError, TextInput, Button, ButtonGroup, Stack } from '@rocket.chat/fuselage';
 import type { Dispatch, SetStateAction } from 'react';
 import { useController } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -55,7 +55,7 @@ const AuditForm = ({ type, onSubmit, setSelectedRoom }: AuditFormProps) => {
 					</FieldRow>
 				</Field>
 			</Box>
-			<Box display='flex' flexDirection='row' alignItems='flex-start' gap={8}>
+			<Stack direction='row' align='start' gap={8}>
 				{type === '' && <RoomsTab form={form} setSelectedRoom={setSelectedRoom} />}
 				{type === 'u' && <UsersTab form={form} />}
 				{type === 'd' && <DirectTab form={form} />}
@@ -70,7 +70,7 @@ const AuditForm = ({ type, onSubmit, setSelectedRoom }: AuditFormProps) => {
 						</Button>
 					</ButtonGroup>
 				</Box>
-			</Box>
+			</Stack>
 		</form>
 	);
 };

@@ -1,4 +1,4 @@
-import { Box, Field, FieldLabel, InputBox } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, InputBox, Stack } from '@rocket.chat/fuselage';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -14,10 +14,10 @@ const PruneMessagesDateTimeRow = ({ label, field }: PruneMessagesDateTimeRowProp
 	return (
 		<Field>
 			<FieldLabel>{label}</FieldLabel>
-			<Box display='flex' gap={8}>
+			<Stack direction='row' gap={8}>
 				<InputBox aria-label={`${label} ${t('Date')}`} type='date' height='x20' {...register(`${field}.date`)} />
 				<InputBox aria-label={`${label} ${t('Time')}`} type='time' height='x20' {...register(`${field}.time`)} />
-			</Box>
+			</Stack>
 		</Field>
 	);
 };

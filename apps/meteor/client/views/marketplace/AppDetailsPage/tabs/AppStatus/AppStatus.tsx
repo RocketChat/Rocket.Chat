@@ -1,5 +1,5 @@
 import type { App } from '@rocket.chat/core-typings';
-import { Box, Button, Tag, Icon } from '@rocket.chat/fuselage';
+import { Box, Button, Tag, Icon, Stack } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useRouteParameter, usePermission, useSetModal } from '@rocket.chat/ui-contexts';
 import { useCallback, useState, memo } from 'react';
@@ -164,7 +164,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 				</Box>
 			)}
 
-			<Box display='flex' alignItems='center' gap={8}>
+			<Stack direction='row' align='center' gap={8}>
 				{statuses?.map((status, index) => (
 					<Tag
 						key={index}
@@ -178,7 +178,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 						</Box>
 					</Tag>
 				))}
-			</Box>
+			</Stack>
 		</Box>
 	);
 };

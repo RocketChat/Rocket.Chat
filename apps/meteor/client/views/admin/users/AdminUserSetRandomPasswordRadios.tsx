@@ -1,4 +1,4 @@
-import { Box, FieldHint, FieldLabel, FieldRow, RadioButton } from '@rocket.chat/fuselage';
+import { Box, FieldHint, FieldLabel, FieldRow, RadioButton, Stack } from '@rocket.chat/fuselage';
 import { useId } from 'react';
 import type { Control, UseFormSetValue } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
@@ -66,7 +66,7 @@ const AdminUserSetRandomPasswordRadios = ({
 					/>
 				</FieldHint>
 			)}
-			<Box display='flex' flexDirection='row' alignItems='center' flexGrow={1} gap={8}>
+			<Stack direction='row' align='center' grow gap={8}>
 				<FieldRow>
 					<Controller
 						control={control}
@@ -86,7 +86,7 @@ const AdminUserSetRandomPasswordRadios = ({
 				<FieldLabel htmlFor={setPasswordManuallyId} alignSelf='center' fontScale='p2'>
 					{t('Set_manually')}
 				</FieldLabel>
-			</Box>
+			</Stack>
 		</>
 	);
 };

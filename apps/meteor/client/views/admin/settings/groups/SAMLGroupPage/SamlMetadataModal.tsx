@@ -1,4 +1,4 @@
-import { Box, Callout, Field, FieldLabel, FieldRow, TextAreaInput, TextInput } from '@rocket.chat/fuselage';
+import { Box, Callout, Field, FieldLabel, FieldRow, TextAreaInput, TextInput, Stack } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import type { ChangeEvent } from 'react';
 import { useId, useState } from 'react';
@@ -98,7 +98,7 @@ const SamlMetadataModal = ({ onClose, onFetch, onApply, showIdentifierFormat = f
 			confirmDisabled={fetching || (!values && url.trim() === '')}
 			confirmLoading={fetching}
 		>
-			<Box display='flex' flexDirection='column' gap={16}>
+			<Stack gap={16}>
 				<Box>{t('SAML_Metadata_modal_description')}</Box>
 				<Field>
 					<FieldLabel htmlFor={urlFieldId}>{t('SAML_Metadata_url')}</FieldLabel>
@@ -172,7 +172,7 @@ const SamlMetadataModal = ({ onClose, onFetch, onApply, showIdentifierFormat = f
 						)}
 					</>
 				)}
-			</Box>
+			</Stack>
 		</GenericModal>
 	);
 };

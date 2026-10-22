@@ -16,6 +16,7 @@ import {
 	PaginatedSelectFiltered,
 	FieldHint,
 	Option,
+	Stack,
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { validateEmail } from '@rocket.chat/tools';
@@ -406,13 +407,13 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 									<FieldHint id={`${allowReceiveForwardOffline}-hint`}>{t('Accept_receive_inquiry_no_online_agents_Hint')}</FieldHint>
 								</FieldRow>
 							</Field>
-							<Box display='flex' flexDirection='column' gap={32}>
-								<Box display='flex' flexDirection='column' gap={8}>
+							<Stack gap={32}>
+								<Stack gap={8}>
 									<Field>
 										<DepartmentBusinessHours bhId={department?.businessHourId} />
 									</Field>
 									<Divider />
-								</Box>
+								</Stack>
 								<Field>
 									<FieldLabel id={agentsLabelId} marginBlock={4}>
 										{t('Agents')}
@@ -421,7 +422,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 										<DepartmentsAgentsTable aria-labelledby={agentsLabelId} control={control} register={register} />
 									</Box>
 								</Field>
-							</Box>
+							</Stack>
 						</FieldGroup>
 					</Box>
 				</PageScrollableContentWithShadow>

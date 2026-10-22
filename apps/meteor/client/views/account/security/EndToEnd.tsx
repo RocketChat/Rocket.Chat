@@ -1,11 +1,11 @@
-import { Box, Divider } from '@rocket.chat/fuselage';
+import { Box, Divider, Stack } from '@rocket.chat/fuselage';
 
 import { ChangePassphrase } from './ChangePassphrase';
 import { ResetPassphrase } from './ResetPassphrase';
 
 const EndToEnd = () => {
 	return (
-		<Box display='flex' flexDirection='column' gap={28}>
+		<Stack gap={28}>
 			<Box display='flex' flexDirection='column' alignItems='flex-start'>
 				<ChangePassphrase />
 			</Box>
@@ -13,7 +13,7 @@ const EndToEnd = () => {
 			<Box display='flex' flexDirection='column' alignItems='flex-start'>
 				<ResetPassphrase />
 			</Box>
-		</Box>
+		</Stack>
 	);
 };
 

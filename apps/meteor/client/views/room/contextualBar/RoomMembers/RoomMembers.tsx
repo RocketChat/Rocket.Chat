@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
+import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button, Callout, Stack } from '@rocket.chat/fuselage';
 import { useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
@@ -217,7 +217,7 @@ const RoomMembers = ({
 			</ContextualbarContent>
 			{!isDirect && (onClickInvite || onClickAdd) && (
 				<ContextualbarFooter>
-					<Box display='flex' flexDirection='column' gap={16}>
+					<Stack gap={16}>
 						{isAbacLocked && <Callout type='danger'>{t('ABAC_Cannot_add_members_to_locked_room')}</Callout>}
 						<ButtonGroup stretch>
 							{onClickInvite && (
@@ -238,7 +238,7 @@ const RoomMembers = ({
 								</Button>
 							)}
 						</ButtonGroup>
-					</Box>
+					</Stack>
 				</ContextualbarFooter>
 			)}
 		</ContextualbarDialog>

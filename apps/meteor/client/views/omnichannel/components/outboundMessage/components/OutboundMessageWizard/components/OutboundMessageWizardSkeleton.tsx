@@ -1,14 +1,14 @@
-import { Box, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Skeleton, Stack } from '@rocket.chat/fuselage';
 
 const OutboubdMessageWizardSkeleton = () => {
 	return (
 		<Box role='status' aria-busy='true'>
-			<Box display='flex' gap={8}>
+			<Stack direction='row' gap={8}>
 				<Skeleton width={75} height={40} />
 				<Skeleton width={100} height={50} />
 				<Skeleton width={100} height={50} />
 				<Skeleton width={100} height={50} />
-			</Box>
+			</Stack>
 
 			<Box marginBlockStart={10}>
 				<Skeleton width={80} height={30} />

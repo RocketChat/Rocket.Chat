@@ -1,5 +1,5 @@
 import type { IRole, IRoom } from '@rocket.chat/core-typings';
-import { Box, Field, FieldLabel, FieldRow, Margins, ButtonGroup, Button, Callout, FieldError } from '@rocket.chat/fuselage';
+import { Box, Field, FieldLabel, FieldRow, Margins, ButtonGroup, Button, Callout, FieldError, Stack } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { usePagination, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
@@ -121,7 +121,7 @@ const UsersInRolePage = ({ role }: UsersInRolePageProps) => {
 					<Field>
 						<FieldLabel htmlFor={usersFieldId}>{t('Add_users')}</FieldLabel>
 						<FieldRow>
-							<Box display='flex' alignItems='center' justifyContent='space-between' flexGrow={1} gap={8}>
+							<Stack direction='row' align='center' justify='space-between' grow gap={8}>
 								<Controller
 									control={control}
 									name='users'
@@ -141,7 +141,7 @@ const UsersInRolePage = ({ role }: UsersInRolePageProps) => {
 								<Button primary onClick={handleSubmit(handleAdd)} disabled={!isDirty}>
 									{t('Add')}
 								</Button>
-							</Box>
+							</Stack>
 						</FieldRow>
 						{errors.users && (
 							<FieldRow>

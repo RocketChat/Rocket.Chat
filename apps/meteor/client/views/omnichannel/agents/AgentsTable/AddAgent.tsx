@@ -1,4 +1,4 @@
-import { Button, Box, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import { Button, Box, Field, FieldLabel, FieldRow, Stack } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { UserAutoComplete } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
@@ -40,12 +40,12 @@ const AddAgent = () => {
 			<Field>
 				<FieldLabel htmlFor={usernameFieldId}>{t('Username')}</FieldLabel>
 				<FieldRow>
-					<Box display='flex' alignItems='center' justifyContent='space-between' flexGrow={1} gap={8}>
+					<Stack direction='row' align='center' justify='space-between' grow gap={8}>
 						<UserAutoComplete id={usernameFieldId} value={username} onChange={handleChange} />
 						<Button disabled={!username} onClick={handleSave} primary>
 							{t('Add_agent')}
 						</Button>
-					</Box>
+					</Stack>
 				</FieldRow>
 			</Field>
 		</Box>

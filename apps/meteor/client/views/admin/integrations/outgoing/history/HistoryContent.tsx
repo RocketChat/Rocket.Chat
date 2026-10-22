@@ -1,5 +1,5 @@
 import type { IIntegrationHistory, Serialized } from '@rocket.chat/core-typings';
-import { Skeleton, Box, Accordion } from '@rocket.chat/fuselage';
+import { Skeleton, Box, Accordion, Stack } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import HistoryItem from './HistoryItem';
@@ -12,14 +12,14 @@ const HistoryContent = ({ data, isLoading }: HistoryContentProps) => {
 	if (isLoading) {
 		return (
 			<Box width='full' paddingBlock={24} display='flex' flexDirection='column' gap={8}>
-				<Box display='flex' flexDirection='column' gap={4}>
+				<Stack gap={4}>
 					<Skeleton />
 					<Skeleton />
-				</Box>
-				<Box display='flex' flexDirection='column' gap={4}>
+				</Stack>
+				<Stack gap={4}>
 					<Skeleton />
 					<Skeleton />
-				</Box>
+				</Stack>
 				<Box display='flex' flexDirection='column' gap={4} paddingBlockEnd={8}>
 					<Skeleton />
 					<Skeleton />
