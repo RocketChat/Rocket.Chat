@@ -75,11 +75,7 @@ const SidePanelItem = ({
 					{parentRoom}
 					{titleIcon}
 					{badges}
-					{menu && (
-						<SidebarItemMenu>
-							{menuVisibility ? menu : <IconButton tabIndex={-1} aria-hidden mini rcx-sidebar-item__menu icon='kebab' />}
-						</SidebarItemMenu>
-					)}
+					{menu && <SidebarItemMenu>{menuVisibility ? menu : <IconButton tabIndex={-1} aria-hidden mini icon='kebab' />}</SidebarItemMenu>}
 				</SidebarItemRow>
 			</SidebarItemCol>
 		</SidebarItem>
