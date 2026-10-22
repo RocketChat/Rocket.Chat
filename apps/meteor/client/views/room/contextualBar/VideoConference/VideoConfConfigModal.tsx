@@ -36,7 +36,7 @@ const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigMo
 				<ModalClose title={t('Close')} onClick={onClose} />
 			</ModalHeader>
 			<ModalContent>
-				<ModalHeroImage maxHeight='initial' src='/images/conf-call-config.svg' />
+				<ModalHeroImage src='/images/conf-call-config.svg' />
 				<Box fontScale='h3'>{t('Premium_capabilities')}</Box>
 				<Box withRichContent>
 					<Box is='ul' paddingInlineStart={24}>
