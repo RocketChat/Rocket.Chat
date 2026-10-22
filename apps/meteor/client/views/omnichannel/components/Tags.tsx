@@ -104,9 +104,9 @@ const Tags = ({ tags = [], handler, error, tagRequired, department }: TagsProps)
 
 			{customTags.length > 0 && (
 				<FieldRow>
-					<Box display='flex' alignItems='center' minWidth={0}>
+					<Box display='flex' alignItems='center' minWidth={0} gap={8} paddingInlineEnd={8}>
 						{customTags?.map((tag, i) => (
-							<Chip key={i} onClick={(): void => removeTag(tag)} marginInlineEnd={8}>
+							<Chip key={i} onClick={(): void => removeTag(tag)}>
 								{tag}
 							</Chip>
 						))}

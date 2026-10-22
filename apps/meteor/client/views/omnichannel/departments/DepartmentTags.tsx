@@ -44,9 +44,9 @@ const DepartmentTags = ({ error, value: tags, onChange, ...props }: DepartmentTa
 			</FieldRow>
 			{tags?.length > 0 && (
 				<FieldRow>
-					<Box display='flex' alignItems='center' minWidth={0}>
+					<Box display='flex' alignItems='center' minWidth={0} gap={8} paddingInlineEnd={8}>
 						{tags.map((tag, i) => (
-							<Chip key={i} onClick={handleTagChipClick(tag)} marginInlineEnd={8}>
+							<Chip key={i} onClick={handleTagChipClick(tag)}>
 								{tag}
 							</Chip>
 						))}
