@@ -83,20 +83,22 @@ const RegisterWorkspaceSetupStepOneModal = ({
 			</ModalHeader>
 			<ModalContent>
 				<Box>
-					<Box is='p' fontSize='p2' withRichContent>
-						{t('RegisterWorkspace_Setup_Subtitle')}
+					<Box display='flex' flexDirection='column' gap={10}>
+						<Box is='p' fontSize='p2' withRichContent>
+							{t('RegisterWorkspace_Setup_Subtitle')}
+						</Box>
+						<Field>
+							<FieldLabel htmlFor={emailField}>{t('RegisterWorkspace_Setup_Label')}</FieldLabel>
+							<FieldRow>
+								<TextInput
+									id={emailField}
+									onChange={(e) => {
+										setEmail((e.target as HTMLInputElement).value);
+									}}
+								/>
+							</FieldRow>
+						</Field>
 					</Box>
-					<Field paddingBlockStart={10}>
-						<FieldLabel htmlFor={emailField}>{t('RegisterWorkspace_Setup_Label')}</FieldLabel>
-						<FieldRow>
-							<TextInput
-								id={emailField}
-								onChange={(e) => {
-									setEmail((e.target as HTMLInputElement).value);
-								}}
-							/>
-						</FieldRow>
-					</Field>
 					<Box marginBlock={16} fontSize='c1'>
 						<Box is='p'>
 							<strong>{t('RegisterWorkspace_Setup_Have_Account_Title')}</strong>

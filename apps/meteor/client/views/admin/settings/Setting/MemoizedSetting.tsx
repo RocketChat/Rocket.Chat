@@ -92,23 +92,25 @@ const MemoizedSetting = ({
 	const InputComponent = inputsByType[type];
 
 	return (
-		<Field className={className} flexDirection='row' justifyContent='space-between' alignItems='flex-start'>
-			<Box flexDirection='column' flexGrow={1} wordBreak='break-word' width='full'>
-				<InputComponent
-					value={value}
-					hint={hint}
-					editor={editor}
-					onChangeValue={onChangeValue}
-					onChangeEditor={onChangeEditor}
-					disabled={disabled}
-					{...inputProps}
-				/>
-				{callout && (
-					<Margins block={16}>
-						<Callout type='warning'>{callout}</Callout>
-					</Margins>
-				)}
-				{showUpgradeButton}
+		<Field className={className}>
+			<Box display='flex' justifyContent='space-between' alignItems='flex-start'>
+				<Box flexDirection='column' flexGrow={1} wordBreak='break-word' width='full'>
+					<InputComponent
+						value={value}
+						hint={hint}
+						editor={editor}
+						onChangeValue={onChangeValue}
+						onChangeEditor={onChangeEditor}
+						disabled={disabled}
+						{...inputProps}
+					/>
+					{callout && (
+						<Margins block={16}>
+							<Callout type='warning'>{callout}</Callout>
+						</Margins>
+					)}
+					{showUpgradeButton}
+				</Box>
 			</Box>
 		</Field>
 	);
