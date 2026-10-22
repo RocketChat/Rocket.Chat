@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Field, FieldLabel, FieldRow, FieldError, Icon } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, FieldError, StatusIcon } from '@rocket.chat/fuselage';
 import type { Dispatch, SetStateAction } from 'react';
 import type { UseFormReturn } from 'react-hook-form';
 import { useController } from 'react-hook-form';
@@ -30,7 +30,7 @@ const RoomsTab = ({ form: { control }, setSelectedRoom }: RoomsTabProps) => {
 					placeholder={t('Channel_Name_Placeholder')}
 					onChange={ridField.onChange}
 					renderRoomIcon={({ encrypted }) =>
-						encrypted ? <Icon name='key' color='danger' title={t('Encrypted_content_will_not_appear_search')} /> : null
+						encrypted ? <StatusIcon name='key' status='danger' title={t('Encrypted_content_will_not_appear_search')} /> : null
 					}
 				/>
 			</FieldRow>

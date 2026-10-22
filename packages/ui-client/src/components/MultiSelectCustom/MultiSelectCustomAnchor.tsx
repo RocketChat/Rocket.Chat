@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Icon } from '@rocket.chat/fuselage';
+import { Box, StatusIcon } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ComponentPropsWithoutRef } from 'react';
 import { forwardRef } from 'react';
@@ -38,7 +38,7 @@ const MultiSelectCustomAnchor = forwardRef<HTMLElement, MultiSelectCustomAnchorP
 			{...props}
 		>
 			{isDirty ? `${t(selectedOptionsTitle as TranslationKey)} (${selectedOptionsCount})` : t(defaultTitle as TranslationKey)}
-			<Icon name={collapsed ? 'chevron-up' : 'chevron-down'} fontSize='x20' color='hint' />
+			<StatusIcon name={collapsed ? 'chevron-up' : 'chevron-down'} size='x20' status='hint' />
 		</Box>
 	);
 });
