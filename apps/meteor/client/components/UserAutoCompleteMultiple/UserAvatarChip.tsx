@@ -12,7 +12,7 @@ export type UserAvatarChipProps = ComponentProps<typeof Chip> & {
 const UserAvatarChip = ({ federated, username, name, ...props }: UserAvatarChipProps) => {
 	const displayName = useUserDisplayName({ name, username });
 	return (
-		<Chip height='x20' {...props}>
+		<Chip {...props}>
 			{federated ? <Icon size='x20' name='globe' verticalAlign='middle' /> : <UserAvatar size='x20' username={username} />}
 			<Box is='span' margin='none' marginInlineStart={4} verticalAlign='middle'>
 				{displayName}
