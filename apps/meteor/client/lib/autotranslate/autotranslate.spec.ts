@@ -215,6 +215,21 @@ describe('AutoTranslate', () => {
 
 			expect((attachments[0] as any).attachments[0].text).toBe('interieur');
 		});
+
+		it('should translate nested attachments with inverse translation', () => {
+			const attachments = [
+				{
+					author_name: 'someone',
+					text: 'outer',
+					translations: { fr: 'exterieur' },
+					attachments: [{ author_name: 'someone', text: 'inner', translations: { fr: 'interieur' } }],
+				},
+			] as unknown as MessageAttachmentDefault[];
+
+			AutoTranslate.translateAttachments(attachments, 'fr', true);
+
+			expect((attachments[0] as any).attachments[0].text).toBe('inner');
+		});
 	});
 
 	describe('init', () => {
