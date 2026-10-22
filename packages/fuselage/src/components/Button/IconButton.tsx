@@ -23,6 +23,8 @@ export type IconButtonProps = {
 	 * instead, which is the caller's to write.
 	 */
 	badge?: ReactNode;
+	/** The corner the badge is pinned to. */
+	badgePosition?: 'top-end' | 'bottom-end';
 	primary?: boolean;
 	secondary?: boolean;
 	info?: boolean;
@@ -49,6 +51,7 @@ const getPressedClass = (variant: string) => {
 function IconButton({
 	icon,
 	badge,
+	badgePosition = 'top-end',
 	primary,
 	info,
 	secondary,
@@ -115,7 +118,7 @@ function IconButton({
 		>
 			{isValidElement<any>(icon) ? icon : <Icon name={icon} size={getIconSize()} />}
 			{Boolean(badge) && (
-				<span className='rcx-button__badge' aria-hidden='true'>
+				<span className={`rcx-button__badge rcx-button__badge--${badgePosition}`} aria-hidden='true'>
 					{badge}
 				</span>
 			)}
