@@ -46,8 +46,9 @@ const AppInstallPage = () => {
 										readOnly
 										{...field}
 										value={field.value?.name || ''}
+										endAddonFlush
 										endAddon={
-											<Button icon='upload' small primary onClick={handleUploadButtonClick} marginBlock='neg-x4' marginInlineEnd='neg-x8'>
+											<Button icon='upload' small primary onClick={handleUploadButtonClick}>
 												{t('Browse_Files')}
 											</Button>
 										}
