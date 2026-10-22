@@ -84,7 +84,7 @@ export const usePaginatedQuery = <
 	TKey extends PropertyKey = never,
 	TCombined = [TKey] extends [never] ? UseQueryResult<TData>[] : PaginatedQueryResult<TData>,
 >({
-	query: { queryKey, queryFn, ...queryOptions },
+\	query: { queryKey, queryFn, ...queryOptions },
 	itemsKey,
 	combine,
 	offset: start,
@@ -109,7 +109,7 @@ export const usePaginatedQuery = <
 
 	return useQueries({
 		queries: offsets.map((offset) => {
-			const pagination = { offset, count: start + itemsPerPage - offset };
+		const pagination = { offset, count: firstData?.count ?? itemsPerPage };
 
 			return {
 				...queryOptions,
