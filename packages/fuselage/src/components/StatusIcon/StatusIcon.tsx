@@ -7,7 +7,7 @@ export type StatusIconProps = {
 	name: IconName;
 	status: 'hint' | 'info' | 'danger' | 'warning' | 'success';
 	size?: IconProps['size'];
-} & Omit<AllHTMLAttributes<HTMLElement>, 'is' | 'size'>;
+} & Omit<AllHTMLAttributes<HTMLElement>, 'is' | 'size' | 'color'>;
 
 /** An icon coloured by the status it reports, apart from the text beside it. */
 const StatusIcon = ({ name, status, size, className, ...props }: StatusIconProps) => (
