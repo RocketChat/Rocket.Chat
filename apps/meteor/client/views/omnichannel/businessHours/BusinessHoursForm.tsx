@@ -94,7 +94,6 @@ const BusinessHoursForm = ({ type }: BusinessHoursFormProps) => {
 								options={daysOptions}
 								value={value}
 								placeholder={t('Select_an_option')}
-								width='full'
 							/>
 						)}
 					/>

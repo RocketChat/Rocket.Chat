@@ -113,12 +113,7 @@ export const RequestTrialForm = ({
 							control={control}
 							rules={{ required: true }}
 							render={({ field }) => (
-								<SelectFiltered
-									{...field}
-									options={countryOptions}
-									width='full'
-									placeholder={t('form.requestTrialForm.fields.country.placeholder')}
-								/>
+								<SelectFiltered {...field} options={countryOptions} placeholder={t('form.requestTrialForm.fields.country.placeholder')} />
 							)}
 							defaultValue={defaultValues?.country}
 						/>
