@@ -45,7 +45,7 @@
 		"jest": "~30.5.2",
 		"path-browserify": "^1.0.1",
 		"react-dom": "~19.2.8",
-		"storybook": "^9.1.20",
+		"storybook": "^9.1.21",
 		"typescript": "~7.0.2"
 	},
 	"volta": {
