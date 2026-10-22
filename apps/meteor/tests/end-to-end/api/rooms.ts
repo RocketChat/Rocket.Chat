@@ -2099,7 +2099,7 @@ describe('[Rooms]', () => {
 				nonMemberCredentials = await login(nonMember.username, password);
 			});
 
-			after(() => deleteUser(nonMember));
+			after(() => deleteUser(nonMember, { confirmRelinquish: true }));
 
 			it('should not allow creating a discussion in a public channel the user has not joined', async () => {
 				const res = await request
