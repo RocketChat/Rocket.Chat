@@ -6,6 +6,7 @@ import type { MouseEvent } from 'react';
 import { memo, useCallback, useEffect, useMemo, useState } from 'react';
 
 import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
+import { RoomHistoryManager } from '../../../lib/RoomHistoryManager';
 import { BubbleDate } from '../BubbleDate';
 import { MessageList } from '../MessageList';
 import DropTargetOverlay from './DropTargetOverlay';
@@ -130,9 +131,9 @@ const RoomBody = () => {
 
 	useEffect(() => {
 		chat.readStateManager.setHasUserReachedLatestMessageCallback(
-			() => hasUserScrolled.current && isAtBottom.current && !hasMoreNextMessages && !isLoadingMoreMessages,
+			() => hasUserScrolled.current && isAtBottom.current && !hasMoreNextMessages && RoomHistoryManager.isLoaded(room._id),
 		);
-	}, [chat.readStateManager, hasUserScrolled, isAtBottom, hasMoreNextMessages, isLoadingMoreMessages]);
+	}, [chat.readStateManager, hasUserScrolled, isAtBottom, hasMoreNextMessages, room._id]);
 
 	const innerRef = useMergedRefsV2(getMoreInnerRef, selectAndScrollRef, messageListRef, keepAtBottomRef);
 
