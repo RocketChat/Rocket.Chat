@@ -1,5 +1,6 @@
+import { after, before, describe, it } from 'node:test';
+
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { sleep } from '../../../lib/utils/sleep';
@@ -13,7 +14,7 @@ import { withTimeout } from '../../data/utils';
 const IMPORT_MOCK_SERVER_URL = process.env.IMPORT_MOCK_SERVER_URL ?? 'http://mock-server.dev:8080';
 
 describe('Imports', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	describe('[/getCurrentImportOperation]', () => {
 		it('should return the current import operation', async () => {

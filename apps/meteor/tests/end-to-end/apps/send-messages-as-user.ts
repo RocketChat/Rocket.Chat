@@ -1,7 +1,8 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import type { App, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, request, credentials } from '../../data/api-data';
 import { apps } from '../../data/apps/apps-data';
@@ -16,7 +17,7 @@ import { IS_EE } from '../../e2e/config/constants';
 (IS_EE ? describe : describe.skip)('Apps - Send Messages As User', () => {
 	let app: App;
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 	before(async () => {
 		await cleanupApps();
 		app = await installTestApp();
@@ -25,7 +26,7 @@ import { IS_EE } from '../../e2e/config/constants';
 	after(() => cleanupApps());
 
 	describe('[Send Message as user]', () => {
-		it('should return an error when the room is not found', (done) => {
+		it('should return an error when the room is not found', (_t, done) => {
 			void request
 				.post(apps(`/public/${app.id}/send-message-as-user`))
 				.send({
@@ -41,7 +42,7 @@ import { IS_EE } from '../../e2e/config/constants';
 				})
 				.end(done);
 		});
-		it('should return an error when the user is not found', (done) => {
+		it('should return an error when the user is not found', (_t, done) => {
 			void request
 				.post(apps(`/public/${app.id}/send-message-as-user?userId=invalid-user`))
 				.send({
@@ -59,7 +60,7 @@ import { IS_EE } from '../../e2e/config/constants';
 		});
 		describe('Send to a Public Channel', () => {
 			let publicMessageId: IMessage['_id'];
-			it('should send a message as app user', (done) => {
+			it('should send a message as app user', (_t, done) => {
 				void request
 					.post(apps(`/public/${app.id}/send-message-as-user?userId=${adminUsername}`))
 					.set(credentials)
@@ -98,7 +99,7 @@ import { IS_EE } from '../../e2e/config/constants';
 
 			after(() => Promise.all([deleteRoom({ type: 'p', roomId: group._id }), deleteUser(user)]));
 
-			it('should return 500 when sending a message as user that has no permissions', (done) => {
+			it('should return 500 when sending a message as user that has no permissions', (_t, done) => {
 				void request
 					.post(apps(`/public/${app.id}/send-message-as-user?userId=${user._id}`))
 					.set(userCredentials)
@@ -108,7 +109,7 @@ import { IS_EE } from '../../e2e/config/constants';
 					.expect(500)
 					.end(done);
 			});
-			it('should send a message as app user', (done) => {
+			it('should send a message as app user', (_t, done) => {
 				void request
 					.post(apps(`/public/${app.id}/send-message-as-user?userId=${adminUsername}`))
 					.set(credentials)
@@ -143,7 +144,7 @@ import { IS_EE } from '../../e2e/config/constants';
 
 			after(() => deleteRoom({ type: 'd', roomId: dmRoom._id }));
 
-			it('should send a message as app user', (done) => {
+			it('should send a message as app user', (_t, done) => {
 				void request
 					.post(apps(`/public/${app.id}/send-message-as-user?userId=${adminUsername}`))
 					.set(credentials)

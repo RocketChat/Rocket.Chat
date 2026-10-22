@@ -1,4 +1,5 @@
-import type { ICreatedRoom, IUser, ITeam } from '@rocket.chat/core-typings';
+import type { ICreateRoomParams } from '@rocket.chat/core-services';
+import type { IAbacAttributeDefinition, ICreatedRoom, IUser, ITeam } from '@rocket.chat/core-typings';
 import { Team } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -14,9 +15,12 @@ export const createPrivateGroupMethod = async (
 	customFields?: Record<string, any>,
 	extraData: Record<string, any> = {},
 	excludeSelf = false,
+	abacAttributes?: IAbacAttributeDefinition[],
+	options?: ICreateRoomParams['options'],
 ): Promise<
 	ICreatedRoom & {
 		rid: string;
+		skippedMembers?: string[];
 	}
 > => {
 	check(name, String);
@@ -36,8 +40,20 @@ export const createPrivateGroupMethod = async (
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createPrivateGroup' });
 	}
 
-	return createRoom('p', name, user, members, excludeSelf, readOnly, {
-		...(customFields && Object.keys(customFields).length && { customFields }),
-		...extraData,
-	});
+	const { abacAttributes: _untrustedAbacAttributes, ...roomExtraData } = extraData;
+
+	return createRoom(
+		'p',
+		name,
+		user,
+		members,
+		excludeSelf,
+		readOnly,
+		{
+			...(customFields && Object.keys(customFields).length && { customFields }),
+			...roomExtraData,
+			...(abacAttributes && { abacAttributes }),
+		},
+		options,
+	);
 };
