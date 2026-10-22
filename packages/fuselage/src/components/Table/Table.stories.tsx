@@ -45,6 +45,10 @@ export default {
 			control: 'boolean',
 			description: 'Uses a fixed table layout algorithm for column widths.',
 		},
+		columns: {
+			control: 'object',
+			description: "Declares the width of each column, in order: a size token like `'x36'`, or `'auto'`.",
+		},
 	},
 } satisfies Meta<typeof Table>;
 
@@ -234,6 +238,45 @@ export const Striped: Story = {
 					<TableCell align='end'>9</TableCell>
 					<TableCell align='end'>37</TableCell>
 					<TableCell align='end'>4.3</TableCell>
+				</TableRow>
+			</TableBody>
+		</Table>
+	),
+};
+
+export const Columns: Story = {
+	render: () => (
+		<Table columns={['x36', 'auto', 'x80', 'x80']}>
+			<TableHead>
+				<TableRow>
+					<TableCell>
+						<CheckBox aria-label='select all' checked={false} />
+					</TableCell>
+					<TableCell>Dessert (100g serving)</TableCell>
+					<TableCell align='end'>Calories</TableCell>
+					<TableCell align='end'>Fat&nbsp;(g)</TableCell>
+				</TableRow>
+			</TableHead>
+			<TableBody>
+				<TableRow>
+					<TableCell>
+						<CheckBox aria-label='select frozen yoghurt' checked={false} />
+					</TableCell>
+					<TableCell is='th' scope='row'>
+						Frozen yoghurt
+					</TableCell>
+					<TableCell align='end'>159</TableCell>
+					<TableCell align='end'>6</TableCell>
+				</TableRow>
+				<TableRow>
+					<TableCell>
+						<CheckBox aria-label='select ice cream sandwich' checked={false} />
+					</TableCell>
+					<TableCell is='th' scope='row'>
+						Ice cream sandwich
+					</TableCell>
+					<TableCell align='end'>237</TableCell>
+					<TableCell align='end'>9</TableCell>
 				</TableRow>
 			</TableBody>
 		</Table>
