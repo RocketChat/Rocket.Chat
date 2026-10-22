@@ -6,6 +6,7 @@ import NavBarItemCreateNew from './NavBarItemCreateNew';
 import NavBarItemDirectoryPage from './NavBarItemDirectoryPage';
 import NavBarItemHomePage from './NavBarItemHomePage';
 import NavBarItemMarketPlaceMenu from './NavBarItemMarketPlaceMenu';
+import NavBarItemScheduledMessages from './NavBarItemScheduledMessages';
 import NavBarItemSort from './NavBarItemSort';
 import NavBarPagesStackMenu from './NavBarPagesStackMenu';
 
@@ -24,6 +25,7 @@ const NavBarPagesGroup = () => {
 				<>
 					<NavBarItemHomePage title={t('Home')} />
 					<NavBarItemDirectoryPage title={t('Directory')} />
+					<NavBarItemScheduledMessages title={t('Scheduled_messages')} />
 				</>
 			)}
 			{showMarketplace && !isMobile && <NavBarItemMarketPlaceMenu />}
