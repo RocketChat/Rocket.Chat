@@ -126,18 +126,8 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 						<FieldRow>
 							<TextInput
 								placeholder={t('Use_url_for_avatar')}
-								endAddon={
-									<IconButton
-										icon='permalink'
-										secondary
-										small
-										disabled={!canAddUrl}
-										title={t('Add_URL')}
-										onClick={handleAddUrl}
-										marginBlock={-4}
-										marginInlineEnd={-4}
-									/>
-								}
+								endAddonFlush
+								endAddon={<IconButton icon='permalink' secondary small disabled={!canAddUrl} title={t('Add_URL')} onClick={handleAddUrl} />}
 								disabled={disabled}
 								value={avatarFromUrl}
 								onChange={handleAvatarFromUrlChange}
