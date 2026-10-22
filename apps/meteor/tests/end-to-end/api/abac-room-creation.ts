@@ -5,11 +5,11 @@ import type { IPermission, IRoom, ISetting, IUser } from '@rocket.chat/core-typi
 import { expect } from 'chai';
 import { MongoClient } from 'mongodb';
 
-import { retry } from './helpers/retry';
 import { addAbacAttributesToUserDirectly } from '../../data/abac.helper';
 import { api, credentials, getCredentials, request } from '../../data/api-data';
 import { sleep } from '../../data/livechat/utils';
 import { getSettingValueById, updatePermission, updateSetting } from '../../data/permissions.helper';
+import { retry } from '../../data/retry';
 import { deleteTeam } from '../../data/teams.helper';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
