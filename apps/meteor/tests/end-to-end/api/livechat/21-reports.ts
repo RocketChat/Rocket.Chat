@@ -1,7 +1,8 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IUser, IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 
 import { api, request, credentials, getCredentials } from '../../../data/api-data';
 import { createDepartment, addOrRemoveAgentFromDepartment } from '../../../data/livechat/department';
@@ -13,7 +14,7 @@ import { createUser, deleteUser, login } from '../../../data/users.helper';
 import { IS_EE } from '../../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('LIVECHAT - reports', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	let agent2: { user: IUser; credentials: Credentials };
 	let agent3: { user: IUser; credentials: Credentials };

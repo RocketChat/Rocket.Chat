@@ -7,8 +7,10 @@ import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { createDirectRoom } from './createDirectRoom';
+import { filterUsersAllowedInRoom } from './filterUsersAllowedInRoom';
 import { calculateRoomRolePriorityFromRoles } from '../../../lib/roles/calculateRoomRolePriorityFromRoles';
 import { callbacks } from '../callbacks';
+import { afterCreateRoomCallback } from '../callbacks/afterCreateRoomCallback';
 import { beforeAddUserToRoom } from '../callbacks/beforeAddUserToRoom';
 import { beforeCreateRoomCallback, prepareCreateRoomCallback } from '../callbacks/beforeCreateRoomCallback';
 import { getSubscriptionAutotranslateDefaultConfig } from '../getSubscriptionAutotranslateDefaultConfig';
@@ -87,7 +89,9 @@ async function createUsersSubscriptions({
 
 	const memberIdAndRolePriorityMap: Record<IUser['_id'], number> = {};
 
-	const membersCursor = Users.findUsersByUsernames(members);
+	const { allowedMembers, skippedMembers } = await filterMembersAllowedInRoom(members, room);
+
+	const membersCursor = Users.findUsersByUsernames(allowedMembers);
 
 	// TODO: Check re new federation-service - should we add them here or keep on createRoom inside of homeserver?!
 	for await (const member of membersCursor) {
@@ -131,12 +135,35 @@ async function createUsersSubscriptions({
 		await Users.addRoomByUserIds(memberIds, room._id);
 	}
 
+	if (!subs.length) {
+		return skippedMembers;
+	}
+
 	const { insertedIds } = await Subscriptions.createWithRoomAndManyUsers(room, subs);
 	await Users.assignRoomRolePrioritiesByUserIdPriorityMap(memberIdAndRolePriorityMap, room._id);
 
 	Object.values(insertedIds).forEach((subId) => notifyOnSubscriptionChangedById(subId, 'inserted'));
 
 	await Rooms.incUsersCountById(room._id, subs.length);
+
+	return skippedMembers;
+}
+
+async function filterMembersAllowedInRoom(
+	members: string[],
+	room: IRoom,
+): Promise<{ allowedMembers: string[]; skippedMembers?: string[] }> {
+	if (!room.abacAttributes?.length) {
+		return { allowedMembers: members };
+	}
+
+	const candidates = await Users.findUsersByUsernames(members, { projection: { _id: 1, username: 1 } }).toArray();
+	const allowed = new Set((await filterUsersAllowedInRoom(candidates, room)).map(({ username }) => username));
+
+	return {
+		allowedMembers: members.filter((username) => allowed.has(username)),
+		skippedMembers: candidates.flatMap(({ username }) => (username && !allowed.has(username) ? [username] : [])),
+	};
 }
 
 export const createRoom = async <T extends RoomType>(
@@ -151,6 +178,7 @@ export const createRoom = async <T extends RoomType>(
 ): Promise<
 	ICreatedRoom & {
 		rid: string;
+		skippedMembers?: string[];
 	}
 > => {
 	const { teamId, ...extraData } = roomExtraData || ({} as IRoom);
@@ -286,6 +314,7 @@ export const createRoom = async <T extends RoomType>(
 	await beforeCreateRoomCallback.run({
 		owner,
 		room: roomProps,
+		members: memberList,
 	});
 
 	if (type === 'c') {
@@ -303,7 +332,7 @@ export const createRoom = async <T extends RoomType>(
 		await callbacks.run('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: memberList, options });
 	}
 
-	await createUsersSubscriptions({ room, members: memberList, now, owner, options, shouldBeHandledByFederation });
+	const skippedMembers = await createUsersSubscriptions({ room, members: memberList, now, owner, options, shouldBeHandledByFederation });
 
 	if (type === 'c') {
 		if (room.teamId) {
@@ -317,11 +346,13 @@ export const createRoom = async <T extends RoomType>(
 		callbacks.runAsync('afterCreatePrivateGroup', owner, room);
 	}
 	callbacks.runAsync('afterCreateRoom', owner, room);
+	void afterCreateRoomCallback.run({ owner, room, app: options?.app });
 
 	void Apps.self?.triggerEvent(AppEvents.IPostRoomCreate, room);
 	return {
 		rid: room._id, // backwards compatible
 		inserted: true,
 		...room,
+		...(skippedMembers && { skippedMembers }),
 	};
 };

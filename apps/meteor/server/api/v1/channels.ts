@@ -1362,20 +1362,29 @@ API.v1.get(
 	},
 );
 
-const channelsInviteBody = ajv.compile<({ roomId: string } | { roomName: string }) & { userId?: string; username?: string; user?: string }>(
-	{
-		type: 'object',
-		properties: {
-			roomId: { type: 'string' },
-			roomName: { type: 'string' },
-			userId: { type: 'string' },
-			username: { type: 'string' },
-			user: { type: 'string' },
-		},
-		anyOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
-		additionalProperties: false,
+const channelsInviteBody = ajv.compile<
+	({ roomId: string } | { roomName: string }) &
+		({ userId?: string; userIds?: string[] } | { username?: string; user?: string; usernames?: string[] })
+>({
+	type: 'object',
+	properties: {
+		roomId: { type: 'string' },
+		roomName: { type: 'string' },
+		userId: { type: 'string' },
+		username: { type: 'string' },
+		user: { type: 'string' },
+		userIds: { type: 'array', items: { type: 'string' } },
+		usernames: { type: 'array', items: { type: 'string' } },
 	},
-);
+	anyOf: [{ required: ['roomId'] }, { required: ['roomName'] }],
+	not: {
+		allOf: [
+			{ anyOf: [{ required: ['userId'] }, { required: ['userIds'] }] },
+			{ anyOf: [{ required: ['username'] }, { required: ['user'] }, { required: ['usernames'] }] },
+		],
+	},
+	additionalProperties: false,
+});
 
 API.v1.post(
 	'channels.invite',

@@ -3,6 +3,7 @@ import { useSession, useSessionDispatch, useUserPreference, useUserSubscriptions
 import { useEffect, useRef } from 'react';
 
 import { useFireGlobalEvent } from '../../../../hooks/useFireGlobalEvent';
+import { callDesktopBridge } from '../../../../lib/utils/callDesktopBridge';
 
 const query = { open: { $ne: false }, hideUnreadStatus: { $ne: true }, archived: { $ne: true } };
 const options = { fields: { unread: 1, alert: 1, rid: 1, t: 1, name: 1, ls: 1, unreadAlert: 1, fname: 1, prid: 1 } };
@@ -61,7 +62,13 @@ export const useUnread = () => {
 		}
 
 		fireEventUnreadChanged(unreadCount);
+
+		// The global events above do not carry the `unreadAlert` preference, so the desktop app gets the resolved badge.
+		callDesktopBridge((desktop) => desktop.setBadge(unreadCount > 0 ? unreadCount : badgeIndicator || 0));
 	}, [setUnread, subscriptions, unreadAlertEnabled, fireEventUnreadChangedBySubscription, fireEventUnreadChanged]);
+
+	// The hook unmounts on logout, and the desktop app would keep showing the last badge.
+	useEffect(() => () => callDesktopBridge((desktop) => desktop.setBadge(0)), []);
 
 	useEffect(() => {
 		updateFavicon(unread);

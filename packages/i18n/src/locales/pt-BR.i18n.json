@@ -141,7 +141,6 @@
   "ABAC_room_membership": "sala filiação",
   "ABAC_Room_removed": "sala {{roomName}} removido do gerenciamento do ABAC",
   "ABAC_Room_to_be_managed": "sala para ser gerenciado pelo ABAC",
-  "ABAC_Room_updated": "{{roomName}} ABAC sala atualizado",
   "ABAC_Rooms_Affected": {
     "one": "{{count}} sala afetada",
     "other": "{{count}} salas afetadas"
@@ -152,9 +151,6 @@
   "ABAC_Select_Attribute_Values": "Selecionar valores de atributos",
   "ABAC_ShowAttributesInRooms": "Mostrar atributos ABAC na sala",
   "ABAC_ShowAttributesInRooms_Description": "Exibir os atributos ABAC atribuídos ao site sala na barra contextual",
-  "ABAC_Update_room_confirmation_modal_annotation": "Proceder com cautela",
-  "ABAC_Update_room_confirmation_modal_title": "Atualização do ABAC sala",
-  "ABAC_Update_room_content": "{{roomName}} é atualmente gerenciado pelo ABAC. Mudanças podem alterar quem pode acessar este sala.",
   "ABAC_Value_removed": "Valor removido",
   "ABAC_Virtru_Attribute_Namespace": "Espaço de nomes de atributos",
   "ABAC_Virtru_Attribute_Namespace_Description": "O namespace usado para criar FQNs de atributos (por exemplo, opentdf.io produz https://opentdf.io/attr/{key}/value/{value}).",
@@ -2312,7 +2308,6 @@
   "error-business-hour-finish-time-equals-start-time": "O horário de início e de término não pode ser o mesmo",
   "error-business-hours-are-closed": "Horário de expediente fechado",
   "error-canned-response-not-found": "Resposta automática não encontrada",
-  "error-cannot-convert-default-room-to-abac": "Padrão e padrão de equipe sala não podem ser convertidos em controle de acesso baseado em atributos sala.",
   "error-cannot-delete-app-user": "Excluir um usuário de aplicativo não é permitido, desinstale o app correspondente para removê-lo.",
   "error-cannot-place-chat-on-hold": "Você não pode colocar a conversa em espera",
   "error-cant-add-federated-users": "Não é possível adicionar usuários federados a uma sala não federada",
@@ -3926,7 +3921,6 @@
   "Mentions_default": "Menções (padrão)",
   "Mentions_online_room_members": "Menciona os membros da sala on-line",
   "Mentions_only": "Menções apenas",
-  "Mentions_user": "Menções ao usuário",
   "Mentions_with_@_symbol": "Menções com o símbolo @",
   "Mentions_with_@_symbol_description": "As menções notificam e destacam mensagens para grupos ou usuários específicos, facilitando a comunicação direcionada.\n\nA funcionalidade do leitor de tela é otimizada quando o símbolo \"@\" é empregado no recurso de menção. Isso garante que os usuários que dependem de leitores de tela possam interpretar e interagir facilmente com essas menções.",
   "Mentions_you": "Menciona você",

@@ -2,6 +2,7 @@ import './absoluteUrl';
 import './ddpOverREST';
 import './ddpSdkCollectionBridge';
 import './desktopInjection';
+import './keepSessionOnTransientResumeErrors';
 import './killMeteorStream';
 import './stubMeteorStream';
 import './subscribeViaSDK';

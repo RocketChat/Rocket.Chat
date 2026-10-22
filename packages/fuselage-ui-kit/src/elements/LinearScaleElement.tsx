@@ -7,13 +7,15 @@ import type { BlockProps } from '../utils/BlockProps';
 
 export type LinearScaleElementProps = BlockProps<UiKit.LinearScaleElement>;
 
+const MAX_POINTS = 100;
+
 const LinearScaleElement = ({ className, block, context, surfaceRenderer }: LinearScaleElementProps) => {
 	const { minValue = 0, maxValue = 10, initialValue, preLabel, postLabel } = block;
 
 	const [{ loading, value = initialValue, error }, action] = useUiKitState(block, context);
 
 	const points = useMemo(
-		() => Array.from({ length: Math.max(maxValue - minValue + 1, 1) }, (_, i) => String(minValue + i)),
+		() => Array.from({ length: Math.min(Math.max(maxValue - minValue + 1, 1), MAX_POINTS) }, (_, i) => String(minValue + i)),
 		[maxValue, minValue],
 	);
 

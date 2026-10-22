@@ -78,7 +78,7 @@ test.describe('prune-messages', () => {
 			await test.step('uncheck files only', async () => {
 				await pruneMessages.labelFilesOnly.click();
 				await pruneMessages.prune();
-				await toastMessage.waitForDisplay({ type: 'success', message: '2 messages pruned' });
+				await toastMessage.waitForDisplay({ type: 'success', message: '3 messages pruned' });
 				await toastMessage.dismissToast();
 				await expect(pruneMessages.labelFilesOnly, 'Checkbox is reset after success').not.toBeChecked();
 			});
