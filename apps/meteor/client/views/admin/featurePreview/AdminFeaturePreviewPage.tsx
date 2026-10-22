@@ -11,7 +11,6 @@ import {
 	FieldRow,
 	FieldHint,
 	Callout,
-	Margins,
 } from '@rocket.chat/fuselage';
 import {
 	useDefaultSettingFeaturePreviewList,
@@ -82,13 +81,11 @@ const AdminFeaturePreviewPage = () => {
 			<PageHeader title={t('Feature_preview')} />
 			<PageScrollableContentWithShadow>
 				<Box maxWidth='x600' width='full' alignSelf='center'>
-					<Box>
-						<Margins block={24}>
-							<Box fontScale='p1'>{t('Feature_preview_admin_page_description')}</Box>
-							<Callout>{t('Feature_preview_page_callout')}</Callout>
-							<Callout>{t('Feature_preview_admin_page_callout')}</Callout>
-							<Setting settingId='Accounts_AllowFeaturePreview' sectionChanged={allowFeaturePreviewSetting.changed} />
-						</Margins>
+					<Box display='flex' flexDirection='column' gap={24} paddingBlock={24}>
+						<Box fontScale='p1'>{t('Feature_preview_admin_page_description')}</Box>
+						<Callout>{t('Feature_preview_page_callout')}</Callout>
+						<Callout>{t('Feature_preview_admin_page_callout')}</Callout>
+						<Setting settingId='Accounts_AllowFeaturePreview' sectionChanged={allowFeaturePreviewSetting.changed} />
 					</Box>
 					<Accordion>
 						{grouppedFeaturesPreview?.map(([group, features], index) => (

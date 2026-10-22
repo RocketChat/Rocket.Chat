@@ -88,71 +88,69 @@ const UsersInRolePage = ({ role }: UsersInRolePageProps) => {
 				</ButtonGroup>
 			</PageHeader>
 			<PageContent>
-				<Box display='flex' flexDirection='column' width='full' marginInline='neg-x4'>
-					<Margins inline={4}>
-						{role.scope !== 'Users' && (
-							<Field marginBlockEnd={4}>
-								<FieldLabel htmlFor={roomFieldId}>{t('Choose_a_room')}</FieldLabel>
-								<FieldRow>
-									<Controller
-										control={control}
-										name='rid'
-										rules={{ required: t('Required_field', { field: t('Room') }) }}
-										render={({ field: { onChange, value } }) => (
-											<RoomAutoComplete
-												id={roomFieldId}
-												aria-required='true'
-												aria-invalid={Boolean(errors.rid)}
-												aria-describedby={`${roomFieldId}-error`}
-												scope='admin'
-												value={value}
-												onChange={onChange}
-												placeholder={t('Room')}
-											/>
-										)}
-									/>
-								</FieldRow>
-								{errors.rid && (
-									<FieldError aria-live='assertive' id={`${roomFieldId}-error`}>
-										{errors.rid.message}
-									</FieldError>
-								)}
-							</Field>
-						)}
+				<Box display='flex' flexDirection='column' width='full' gap={4}>
+					{role.scope !== 'Users' && (
 						<Field>
-							<FieldLabel htmlFor={usersFieldId}>{t('Add_users')}</FieldLabel>
+							<FieldLabel htmlFor={roomFieldId}>{t('Choose_a_room')}</FieldLabel>
 							<FieldRow>
-								<Box display='flex' alignItems='center' justifyContent='space-between' flexGrow={1} gap={8}>
-									<Controller
-										control={control}
-										name='users'
-										rules={{ required: t('Required_field', { field: t('Users') }) }}
-										render={({ field: { onChange, value } }) => (
-											<UserAutoCompleteMultiple
-												id={usersFieldId}
-												aria-required='true'
-												aria-invalid={Boolean(errors.users)}
-												aria-describedby={`${usersFieldId}-error`}
-												value={value}
-												placeholder={t('Users')}
-												onChange={onChange}
-											/>
-										)}
-									/>
-									<Button primary onClick={handleSubmit(handleAdd)} disabled={!isDirty}>
-										{t('Add')}
-									</Button>
-								</Box>
+								<Controller
+									control={control}
+									name='rid'
+									rules={{ required: t('Required_field', { field: t('Room') }) }}
+									render={({ field: { onChange, value } }) => (
+										<RoomAutoComplete
+											id={roomFieldId}
+											aria-required='true'
+											aria-invalid={Boolean(errors.rid)}
+											aria-describedby={`${roomFieldId}-error`}
+											scope='admin'
+											value={value}
+											onChange={onChange}
+											placeholder={t('Room')}
+										/>
+									)}
+								/>
 							</FieldRow>
-							{errors.users && (
-								<FieldRow>
-									<FieldError aria-live='assertive' id={`${usersFieldId}-error`}>
-										{errors.users.message}
-									</FieldError>
-								</FieldRow>
+							{errors.rid && (
+								<FieldError aria-live='assertive' id={`${roomFieldId}-error`}>
+									{errors.rid.message}
+								</FieldError>
 							)}
 						</Field>
-					</Margins>
+					)}
+					<Field>
+						<FieldLabel htmlFor={usersFieldId}>{t('Add_users')}</FieldLabel>
+						<FieldRow>
+							<Box display='flex' alignItems='center' justifyContent='space-between' flexGrow={1} gap={8}>
+								<Controller
+									control={control}
+									name='users'
+									rules={{ required: t('Required_field', { field: t('Users') }) }}
+									render={({ field: { onChange, value } }) => (
+										<UserAutoCompleteMultiple
+											id={usersFieldId}
+											aria-required='true'
+											aria-invalid={Boolean(errors.users)}
+											aria-describedby={`${usersFieldId}-error`}
+											value={value}
+											placeholder={t('Users')}
+											onChange={onChange}
+										/>
+									)}
+								/>
+								<Button primary onClick={handleSubmit(handleAdd)} disabled={!isDirty}>
+									{t('Add')}
+								</Button>
+							</Box>
+						</FieldRow>
+						{errors.users && (
+							<FieldRow>
+								<FieldError aria-live='assertive' id={`${usersFieldId}-error`}>
+									{errors.users.message}
+								</FieldError>
+							</FieldRow>
+						)}
+					</Field>
 				</Box>
 				<Margins blockStart={8}>
 					{(role.scope === 'Users' || rid) && (
