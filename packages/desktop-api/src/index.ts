@@ -26,6 +26,29 @@ export type CustomNotificationOptions = {
 	};
 };
 
+export type DesktopUserStatus = 'online' | 'away' | 'busy' | 'offline';
+
+export type DesktopUserPresence = {
+	loggedIn: boolean;
+	connection: 'connected' | 'connecting' | 'disconnected';
+	status?: DesktopUserStatus;
+	statusText?: string;
+	statusExpiresAt?: string;
+	availableStatuses: DesktopUserStatus[];
+	customStatuses: DesktopCustomUserStatus[];
+};
+
+export type DesktopCustomUserStatus = {
+	id: string;
+	name: string;
+	status: DesktopUserStatus;
+};
+
+export type DesktopUserStatusChangeRequest = {
+	status: DesktopUserStatus;
+	customStatusId?: string;
+};
+
 /**
  * The version of this contract the web client implements. A web client that announces version 1 pushes the server info,
  * URL resolver, title, favicon, user roles, badge, login state, unread alert preference, git commit hash and Outlook
@@ -65,6 +88,8 @@ export interface IRocketChatDesktop {
 		idleThreshold: number | null;
 		setUserOnline: (online: boolean) => void;
 	}) => void;
+	setUserPresenceState?: (presence: DesktopUserPresence) => void;
+	setUserStatusChangeHandler?: (handler: (request: DesktopUserStatusChangeRequest) => Promise<void>) => void;
 	setUserThemeAppearance: (themeAppearance: ThemeAppearance) => void;
 	createNotification: (
 		options: NotificationOptions & {
