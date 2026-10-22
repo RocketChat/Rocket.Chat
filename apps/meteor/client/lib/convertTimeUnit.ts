@@ -5,17 +5,16 @@ export enum TIMEUNIT {
 }
 
 export const isValidTimespan = (timespan: unknown): boolean => {
-	if (timespan === null || timespan === undefined || timespan === '') {
+	if (typeof timespan !== 'number' && typeof timespan !== 'string') {
+		return false;
+	}
+
+	if (typeof timespan === 'string' && timespan.trim() === '') {
 		return false;
 	}
 
 	const value = Number(timespan);
-
-	if (Number.isNaN(value) || !Number.isFinite(value) || value < 0) {
-		return false;
-	}
-
-	return true;
+	return Number.isFinite(value) && value >= 0;
 };
 
 export const timeUnitToMs = (unit: TIMEUNIT, timespan: number | string) => {

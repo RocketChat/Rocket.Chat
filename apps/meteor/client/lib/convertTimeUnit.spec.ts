@@ -1,4 +1,14 @@
-import { TIMEUNIT, timeUnitToMs, msToTimeUnit } from './convertTimeUnit';
+import { TIMEUNIT, isValidTimespan, timeUnitToMs, msToTimeUnit } from './convertTimeUnit';
+
+describe('isValidTimespan function', () => {
+	it.each([0, 5, 2.5, '0', '5', '2592000000'])('accepts %p', (timespan) => {
+		expect(isValidTimespan(timespan)).toBe(true);
+	});
+
+	it.each(['', '   ', true, false, [], {}, null, undefined, NaN, Infinity, -1, '-1', 'abc'])('rejects %p', (timespan) => {
+		expect(isValidTimespan(timespan)).toBe(false);
+	});
+});
 
 describe('timeUnitToMs function', () => {
 	it('should correctly convert days to milliseconds', () => {
