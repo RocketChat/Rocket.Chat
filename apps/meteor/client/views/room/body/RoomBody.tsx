@@ -126,7 +126,7 @@ const RoomBody = () => {
 
 	const { keepAtBottomRef, setKeepAtBottom } = useKeepAtBottom(isAtBottom);
 
-	const { ref: userScrollIntentRef, hasUserScrolled } = useUserScrollIntent();
+	const { ref: userScrollIntentRef, hasUserScrolled } = useUserScrollIntent(debouncedMessageRead);
 
 	useEffect(() => {
 		chat.readStateManager.setHasUserReachedLatestMessageCallback(

@@ -14,6 +14,17 @@ describe('useUserScrollIntent', () => {
 		expect(result.current.hasUserScrolled.current).toBe(true);
 	});
 
+	it.each(['wheel', 'touchmove', 'keydown', 'pointerdown'])('should notify the user scroll on %s', (eventName) => {
+		const onUserScroll = jest.fn();
+		const { result } = renderHook(() => useUserScrollIntent(onUserScroll));
+		const node = document.createElement('div');
+
+		result.current.ref(node);
+		node.dispatchEvent(new Event(eventName));
+
+		expect(onUserScroll).toHaveBeenCalledTimes(1);
+	});
+
 	it('should reset the flag when bound to a new node', () => {
 		const { result } = renderHook(() => useUserScrollIntent());
 		const firstNode = document.createElement('div');
