@@ -68,10 +68,20 @@ $message-reaction-background-color: theme('message-reaction-background-color', c
 	&__emoji {
 		display: block;
 
+		// A native glyph advances ~1.25em, wider than its 16px square; the box is that
+		// wide for both kinds, with the glyph or image centered, so pills with the same
+		// count have the same width whatever the emoji.
+		width: lengths.size(20);
+		height: lengths.size(16);
+
+		// Image emojis arrive with the renderer's global horizontal margin; inside a
+		// reaction the pill padding is the only spacing, so every pill has the same width.
+		margin: lengths.margin(none);
+
+		text-align: center;
+
 		font-size: lengths.size(12);
 		line-height: lengths.size(16);
-
-		@include size.square(lengths.size(16));
 	}
 
 	&__counter {

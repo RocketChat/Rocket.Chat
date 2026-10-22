@@ -81,12 +81,12 @@ Only exists on Windows, so other platforms skip it in the fallback list. */
 		carry the renderer's global `.emoji--custom` class, not a block modifier. */
 		/* stylelint-disable-next-line selector-class-pattern */
 		&:not(.emoji--custom) {
-			width: auto;
 			height: auto;
 
-			/* 1rem glyph on Fuselage's 1rem line, so a native reaction is the same 16px tall as
-			an image one and every reaction pill has the same height. A 1.2 line-height here
-			made native reactions ~19px and their pills 3px taller than the rest. */
+			/* 1rem glyph on Fuselage's 1rem line and 20px-wide box, so a native reaction is the
+			same size as an image one and every reaction pill has the same height and width. A
+			1.2 line-height here used to make native reactions ~19px tall and their pills 3px
+			taller than the rest. */
 			font-size: 1rem;
 		}
 	}
