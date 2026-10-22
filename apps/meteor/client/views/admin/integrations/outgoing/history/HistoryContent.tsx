@@ -27,8 +27,8 @@ const HistoryContent = ({ data, isLoading }: HistoryContentProps) => {
 	}
 
 	return (
-		<Box display='flex' alignItems='center' flexDirection='column'>
-			<Accordion width='full' maxWidth='x600' alignSelf='center' key='content'>
+		<Box width='full' maxWidth='x600' marginInline='auto'>
+			<Accordion key='content'>
 				{data.map((current) => (
 					<HistoryItem data={current} key={current._id} />
 				))}
