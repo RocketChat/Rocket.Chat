@@ -46,7 +46,7 @@ const Items = ({ label, children, layer, payload }: ItemProps) => {
 								transition: var(--animation-very-fast);
 							`}
 						>
-							<Chevron width='12px' />
+							<Chevron size='x12' />
 						</Box>
 					)}
 				</Box>

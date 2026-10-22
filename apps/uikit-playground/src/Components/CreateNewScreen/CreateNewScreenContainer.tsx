@@ -82,7 +82,6 @@ const CreateNewScreenContainer = () => {
 						<Icon
 							onClick={createNewScreenhandler}
 							size='60px'
-							height='60px'
 							name='plus'
 							className={css`
 								cursor: pointer;
