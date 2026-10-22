@@ -151,10 +151,12 @@ const AdminUsersPage = () => {
 					<TabsItem selected={!tab || tab === 'all'} onClick={() => handleTabChange('all')}>
 						{t('All')}
 					</TabsItem>
-					<TabsItem selected={tab === 'pending'} onClick={() => handleTabChange('pending')} display='flex' flexDirection='row'>
-						{`${t('Pending')} `}
-						{pendingUsersCount.isLoading && <Skeleton variant='circle' height='x16' width='x16' marginInlineStart={8} />}
-						{pendingUsersCount.isSuccess && `(${pendingUsersCount.data})`}
+					<TabsItem selected={tab === 'pending'} onClick={() => handleTabChange('pending')}>
+						<Box is='span' display='flex' alignItems='center'>
+							{`${t('Pending')} `}
+							{pendingUsersCount.isLoading && <Skeleton variant='circle' height='x16' width='x16' marginInlineStart={8} />}
+							{pendingUsersCount.isSuccess && `(${pendingUsersCount.data})`}
+						</Box>
 					</TabsItem>
 					<TabsItem selected={tab === 'active'} onClick={() => handleTabChange('active')}>
 						{t('Active')}

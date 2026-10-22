@@ -207,7 +207,7 @@ function PrepareImportPage() {
 						{statusDebounced && t(statusDebounced.replace('importer_', 'importer_status_'))}
 					</Box>
 					{!isPreparing && (
-						<Tabs flexShrink={0}>
+						<Tabs>
 							<TabsItem selected={tab === 'users'} onClick={handleTabClick('users')}>
 								{t('Users')} <Badge>{usersCount}</Badge>
 							</TabsItem>
