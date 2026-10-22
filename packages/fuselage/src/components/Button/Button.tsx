@@ -30,6 +30,8 @@ export type ButtonProps = Omit<BoxProps, 'ref'> & {
 	/** @deprecated Use `size="large"` instead. */
 	large?: boolean;
 	square?: boolean;
+	/** Lowers the minimum width so a label of one or two characters fits. */
+	compact?: boolean;
 	external?: boolean;
 	icon?: IconProps['name'];
 } & Omit<AllHTMLAttributes<HTMLButtonElement | HTMLAnchorElement>, 'is' | 'className' | 'size'> &
@@ -57,6 +59,7 @@ function Button({
 	medium,
 	large,
 	square,
+	compact,
 	loading,
 	disabled,
 	children,
@@ -106,6 +109,7 @@ function Button({
 			rcx-button--medium={effectiveSize === 'medium'}
 			rcx-button--large={effectiveSize === 'large'}
 			rcx-button--square={square}
+			rcx-button--compact={compact}
 			rcx-button--tiny-square={effectiveSize === 'tiny' && square}
 			rcx-button--mini-square={effectiveSize === 'mini' && square}
 			rcx-button--small-square={effectiveSize === 'small' && square}

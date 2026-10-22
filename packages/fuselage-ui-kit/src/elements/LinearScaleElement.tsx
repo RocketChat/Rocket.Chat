@@ -32,7 +32,7 @@ const LinearScaleElement = ({ className, block, context, surfaceRenderer }: Line
 							className={point === String(value) ? 'active' : undefined}
 							disabled={loading}
 							danger={!!error}
-							minWidth='4ch'
+							compact
 							small
 							value={point}
 							marginInline={2}
