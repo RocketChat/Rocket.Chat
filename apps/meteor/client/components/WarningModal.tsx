@@ -26,7 +26,7 @@ const WarningModal = ({ text, confirmText, close, cancel, cancelText, confirm, .
 	return (
 		<Modal open {...props}>
 			<ModalHeader>
-				<ModalIcon color='danger' name='modal-warning' />
+				<ModalIcon variant='danger' name='modal-warning' />
 				<ModalTitle>{t('Are_you_sure')}</ModalTitle>
 				<ModalClose onClick={close} />
 			</ModalHeader>

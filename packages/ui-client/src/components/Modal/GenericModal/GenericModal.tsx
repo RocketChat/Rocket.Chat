@@ -69,7 +69,8 @@ const renderIcon = (icon: GenericModalProps['icon'], variant: VariantType): Reac
 	}
 
 	if (icon === undefined) {
-		return <ModalIcon color={variant} name={iconMap[variant]} />;
+		// The warning and success icons have always rendered in the text colour
+		return <ModalIcon variant={variant === 'danger' || variant === 'info' ? variant : undefined} name={iconMap[variant]} />;
 	}
 
 	if (typeof icon === 'string') {
@@ -103,8 +104,6 @@ const GenericModal = ({
 	const genericModalId = useId();
 
 	const dismissedRef = useRef(true);
-
-	const taglineColor = variant === 'upsell' ? 'annotation' : undefined;
 
 	const handleConfirm = useStableCallback(() => {
 		dismissedRef.current = false;
@@ -141,7 +140,7 @@ const GenericModal = ({
 			<ModalHeader>
 				{renderIcon(icon, variant)}
 				<ModalHeaderText>
-					{tagline && <ModalTagline color={taglineColor}>{tagline}</ModalTagline>}
+					{tagline && <ModalTagline subtle={variant === 'upsell'}>{tagline}</ModalTagline>}
 					<ModalTitle id={`${genericModalId}-title`}>{title ?? t('Are_you_sure')}</ModalTitle>
 				</ModalHeaderText>
 				{onClose && <ModalClose tabIndex={-1} aria-label={t('Close')} onClick={handleCloseButtonClick} />}
