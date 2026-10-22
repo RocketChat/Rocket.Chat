@@ -10,7 +10,7 @@ const UserCardSkeleton = () => {
 		<HoverCard aria-label={t('User_card')}>
 			<HoverCardSection>
 				<Box display='flex' alignItems='center'>
-					<Skeleton borderRadius='medium' width='x36' height='x36' variant='rect' />
+					<Skeleton width='x36' height='x36' variant='rect' />
 					<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} marginInlineStart='x4'>
 						<Skeleton width='50%' />
 						<Skeleton width='75%' />
@@ -21,10 +21,10 @@ const UserCardSkeleton = () => {
 						<Skeleton key={i} width='100%' />
 					))}
 				</Box>
-				<Box display='flex' marginBlockStart='x24'>
-					<Skeleton variant='rect' height='x32' flexGrow={1} borderRadius='medium' marginInlineEnd='x8' />
-					<Skeleton variant='rect' height='x32' flexGrow={1} borderRadius='medium' marginInlineEnd='x8' />
-					<Skeleton variant='rect' height='x32' width='x32' borderRadius='medium' />
+				<Box display='grid' gap='x8' marginBlockStart='x24' style={{ gridTemplateColumns: '1fr 1fr auto' }}>
+					<Skeleton variant='rect' height='x32' />
+					<Skeleton variant='rect' height='x32' />
+					<Skeleton variant='rect' height='x32' width='x32' />
 				</Box>
 			</HoverCardSection>
 		</HoverCard>

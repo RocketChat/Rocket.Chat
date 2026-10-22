@@ -14,9 +14,9 @@ const VideoConfPopupSkeleton = (props: VideoConfPopupSkeletonProps) => (
 			<Skeleton width='100%' />
 		</VideoConfPopupHeader>
 		<VideoConfPopupContent>
-			<Box display='flex' alignItems='center'>
+			<Box display='flex' alignItems='center' gap={8}>
 				<Skeleton variant='rect' height='x36' width='x36' />
-				<Skeleton marginInlineStart={8} variant='rect' height='x24' width='x120' />
+				<Skeleton variant='rect' height='x24' width='x120' />
 			</Box>
 		</VideoConfPopupContent>
 		<VideoConfPopupFooter>
