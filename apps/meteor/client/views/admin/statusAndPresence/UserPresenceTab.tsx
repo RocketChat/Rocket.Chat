@@ -7,6 +7,7 @@ import {
 	GenericTableBody,
 	GenericTableLoadingTable,
 	usePagination,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -16,7 +17,6 @@ import type { ManagedPresenceUser } from './useManagedPresenceUsers';
 import { useManagedPresenceUsers } from './useManagedPresenceUsers';
 import FilterByText from '../../../components/FilterByText';
 import GenericError from '../../../components/GenericError';
-import GenericNoResults from '../../../components/GenericNoResults';
 
 export type UserPresenceTabProps = {
 	onEdit: (user?: ManagedPresenceUser) => void;

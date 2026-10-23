@@ -16,10 +16,32 @@ export type ToggleButtonProps = {
 	 * problem, and colouring it as one would read as an error.
 	 */
 	dangerWhenPressed?: boolean;
+	/**
+	 * Draws the pressed glyph blue rather than red, for a toggle whose pressed state is something the user is doing —
+	 * sharing their screen, raising their hand — rather than something they have switched off.
+	 */
+	info?: boolean;
 	/** Renders the larger variant used by the conference UI. The widget keeps its original size by default. */
 	large?: boolean;
 	onToggle?: () => void;
 } & Omit<ComponentProps<typeof IconButton>, 'icon' | 'title' | 'aria-label' | 'disabled' | 'onClick'>;
+
+const pressedGlyphColor = ({
+	pressed,
+	dangerWhenPressed,
+	danger,
+	info,
+}: Pick<ToggleButtonProps, 'pressed' | 'dangerWhenPressed' | 'danger' | 'info'>) => {
+	if (!pressed || dangerWhenPressed) {
+		return undefined;
+	}
+
+	if (info) {
+		return 'font-info';
+	}
+
+	return danger ? 'font-danger' : undefined;
+};
 
 const ToggleButton = ({
 	disabled,
@@ -29,6 +51,7 @@ const ToggleButton = ({
 	titles,
 	onToggle,
 	danger = true,
+	info = false,
 	secondary = true,
 	tiny = false,
 	large = false,
@@ -44,11 +67,7 @@ const ToggleButton = ({
 		secondary={secondary}
 		danger={dangerWhenPressed && pressed}
 		icon={
-			<Icon
-				size={large ? 20 : 16}
-				color={!dangerWhenPressed && pressed && danger ? 'font-danger' : undefined}
-				name={icons[pressed ? 1 : 0]}
-			/>
+			<Icon size={large ? 20 : 16} color={pressedGlyphColor({ pressed, dangerWhenPressed, danger, info })} name={icons[pressed ? 1 : 0]} />
 		}
 		title={titles[pressed ? 1 : 0]}
 		aria-label={label}

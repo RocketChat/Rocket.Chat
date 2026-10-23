@@ -3,7 +3,7 @@ import { Option, Box } from '@rocket.chat/fuselage';
 import type { AutoCompleteProps } from '@rocket.chat/fuselage';
 import { AutoComplete } from '@rocket.chat/fuselage-forms';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { RoomAvatar } from '@rocket.chat/ui-avatar';
+import { ITEM_MEDIA_SIZE, RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
@@ -96,7 +96,7 @@ const RoomAutoComplete = forwardRef<HTMLInputElement, RoomAutoCompleteProps>(fun
 							{renderRoomIcon?.({ encrypted: label?.encrypted, type: label?.type })}
 						</>
 					}
-					avatar={<RoomAvatar size={AVATAR_SIZE} room={{ _id: value, ...label }} />}
+					avatar={<RoomAvatar size={ITEM_MEDIA_SIZE.condensed} room={{ _id: value, ...label }} />}
 				/>
 			)}
 			options={options}

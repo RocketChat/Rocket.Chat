@@ -22,7 +22,7 @@ import { useId, useMemo } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
 import { Trans, useTranslation } from 'react-i18next';
 
-import { outgoingEvents } from '../../../../../app/integrations/lib/outgoingEvents';
+import { outgoingEvents } from '../../../../../lib/integrations/outgoingEvents';
 import { useHighlightedCode } from '../../../../hooks/useHighlightedCode';
 import { useExampleData } from '../hooks/useExampleIncomingData';
 

@@ -3,8 +3,13 @@ import type { IRocketChatDesktop, IVideoCallWindow } from '@rocket.chat/desktop-
 declare global {
 	interface Window {
 		RocketChatDesktop?: IRocketChatDesktop;
+		/** @deprecated Desktop 4.15–4.17 only; 4.18 and later expose it as `RocketChatDesktop.videoCall`. */
 		videoCallWindow?: IVideoCallWindow;
 		opera?: string;
+		/** Logs in with a resume token through the same path as a page load; end-to-end specs use it. */
+		__rocketChatLoginWithToken?: (token: string) => Promise<void>;
+		/** Calls a server method through the same path as the UI; end-to-end specs use it. */
+		__rocketChatCallMethod?: (method: string, ...args: unknown[]) => Promise<unknown>;
 	}
 
 	interface Navigator {

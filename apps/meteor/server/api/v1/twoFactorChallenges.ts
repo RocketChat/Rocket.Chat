@@ -65,7 +65,7 @@ API.v1.addRoute(
 
 			const challenge = await TwoFactorChallenges.findOneByPendingChallengeId(challengeId);
 
-			if (!challenge) {
+			if (!challenge || challenge.purpose === 'resend') {
 				throw new Meteor.Error('error-challenge-not-found', 'challenge not found');
 			}
 

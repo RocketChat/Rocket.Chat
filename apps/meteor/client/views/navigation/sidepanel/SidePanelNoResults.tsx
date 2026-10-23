@@ -1,6 +1,6 @@
+import { GenericNoResults } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
-import GenericNoResults from '../../../components/GenericNoResults';
 import { sidePanelFiltersConfig } from '../contexts/RoomsNavigationContext';
 import type { AllGroupsKeys } from '../contexts/RoomsNavigationContext';
 

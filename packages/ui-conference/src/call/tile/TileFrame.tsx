@@ -4,6 +4,10 @@ import { Box, Icon, Palette, borderRadius } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import VoiceActivity from '../VoiceActivity';
+import { useSpeakingRing } from '../hooks/useSpeakingRing';
+import { REACTION_VISIBLE_MS } from '../lib/reactions';
+import { speakingRingThickness } from '../lib/speakingRing';
 import type { TileParticipant } from '../lib/stageTiles';
 
 const tileStyles = css`
@@ -19,7 +23,10 @@ const tileStyles = css`
 	color: ${Palette.text['font-pure-white'].toString()};
 `;
 
-/** The name over the tile: plain text with a shadow to keep it legible over any picture, without covering it. */
+/**
+ * The name over the tile: plain text with a shadow to keep it legible over any picture, without covering it. The
+ * padding stays with nothing to pad, so the name holds its position when a raised hand gives it a plate.
+ */
 const labelStyles = css`
 	position: absolute;
 	left: 0.5rem;
@@ -36,6 +43,25 @@ const labelStyles = css`
 	overflow: hidden;
 	text-overflow: ellipsis;
 	pointer-events: none;
+`;
+
+/** The top-left corner: what the reader's own tile is sending, and the latest reaction from whoever's tile it is. */
+const leftIndicatorRowStyles = css`
+	position: absolute;
+	top: 0.25rem;
+	left: 0.25rem;
+	display: flex;
+	align-items: center;
+	gap: 0.25rem;
+	pointer-events: none;
+`;
+
+const sendBadgeStyles = css`
+	padding: 0.125rem 0.25rem;
+	border-radius: ${borderRadius('medium')};
+	background-color: ${Palette.surface['surface-overlay'].toString()};
+	color: ${Palette.text['font-pure-white'].toString()};
+	font-variant-numeric: tabular-nums;
 `;
 
 const indicatorRowStyles = css`
@@ -58,27 +84,137 @@ const indicatorBadgeStyles = css`
 	color: ${Palette.text['font-pure-white'].toString()};
 `;
 
-export type TileFrameProps = Pick<TileParticipant, 'displayName' | 'muted' | 'held'> & {
+/** Seen for exactly as long as the same reaction rises over the call. */
+const reactionBadgeStyles = css`
+	font-size: 1rem;
+	line-height: 1;
+	animation: rcx-tile-reaction ${REACTION_VISIBLE_MS}ms ease-out forwards;
+
+	@keyframes rcx-tile-reaction {
+		0% {
+			opacity: 0;
+			transform: scale(0.6);
+		}
+		12% {
+			opacity: 1;
+			transform: scale(1);
+		}
+		75% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0;
+		}
+	}
+
+	/* For anyone who asked for less motion: no pop, but still gone when the reaction is. */
+	@media (prefers-reduced-motion: reduce) {
+		animation-name: rcx-tile-reaction-fade;
+	}
+
+	@keyframes rcx-tile-reaction-fade {
+		75% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0;
+		}
+	}
+`;
+
+/** A raised hand waiting its turn: a plate, fixed white like the name it holds, so it reads over any picture. */
+const handRaisedLabelStyles = css`
+	background-color: ${Palette.text['font-pure-white'].toString()};
+	color: ${Palette.text['font-pure-black'].toString()};
+	padding: 0.25rem 0.75rem;
+	border-radius: ${borderRadius('full')};
+	text-shadow: none;
+`;
+
+/** The hand at the front of the queue, the one whose turn is next: green, so it stands out from the rest of the line. */
+const nextHandLabelStyles = css`
+	/* Palette carries no button colours: this is the token fuselage's success button is drawn with. */
+	background-color: var(--rcx-color-button-background-success-default);
+	color: ${Palette.text['font-pure-white'].toString()};
+`;
+
+export type TileFrameProps = Pick<TileParticipant, 'displayName' | 'muted' | 'held' | 'audioStream' | 'handPosition' | 'reaction'> & {
+	/** How wide the speaking ring gets at full volume. */
+	ringWidth: number;
+	/**
+	 * The height of the picture actually being sent, shown as a badge. Only for the reader's own tile: what someone
+	 * else's encoder is doing is not something this client can honestly claim.
+	 */
+	sendHeight?: number;
 	/** The picture: their camera, or their avatar. */
 	children: ReactNode;
 };
 
-/** Everything a tile says over the picture: who it is, and whether their microphone is off or they are on hold. */
-const TileFrame = ({ displayName, muted, held, children }: TileFrameProps) => {
+/** Everything a tile says over the picture: who it is, whether they are speaking, their microphone, their hand, their reaction. */
+const TileFrame = ({ displayName, muted, held, audioStream, handPosition, reaction, ringWidth, sendHeight, children }: TileFrameProps) => {
 	const { t } = useTranslation();
+	const { audioLevel: rawLevel, ringLevel: displayLevel } = useSpeakingRing(audioStream ?? null, muted);
+	const ringThickness = speakingRingThickness(displayLevel, ringWidth);
+	const ringColor = Palette.stroke['stroke-highlight'].toString();
 
 	return (
 		<Box className={tileStyles}>
+			{displayLevel > 0 && (
+				<Box
+					style={{
+						position: 'absolute',
+						inset: 0,
+						borderRadius: 'inherit',
+						border: `${ringThickness}px solid ${ringColor}`,
+						boxShadow: `inset 0 0 ${ringThickness * 3}px color-mix(in srgb, ${ringColor} 25%, transparent)`,
+						pointerEvents: 'none',
+						zIndex: 1,
+					}}
+				/>
+			)}
 			{children}
-			<Box className={labelStyles} fontScale='p1'>
+			<Box
+				className={[
+					labelStyles,
+					handPosition !== undefined ? handRaisedLabelStyles : null,
+					handPosition === 1 ? nextHandLabelStyles : null,
+				]}
+				fontScale='p1'
+			>
+				{handPosition !== undefined && (
+					<>
+						<Icon name='hand' size='x20' verticalAlign='text-bottom' />
+						<VisuallyHidden>{t('Raised_hand')}</VisuallyHidden> ({handPosition}){'  '}
+					</>
+				)}
 				{displayName}
 			</Box>
+			{(sendHeight || reaction) && (
+				<Box className={leftIndicatorRowStyles}>
+					{/* What is sent rather than captured: the encoder drops to a smaller layer when bandwidth or CPU says so. */}
+					{sendHeight && (
+						<Box className={sendBadgeStyles} fontScale='c1'>
+							{sendHeight}p
+						</Box>
+					)}
+					{/* Keyed by the reaction, so a newer one starts over instead of taking up the fade of the one it replaces.
+					    Hidden from assistive technology: the call already announces each reaction as it arrives. */}
+					{reaction && (
+						<Box key={reaction.id} className={[indicatorBadgeStyles, reactionBadgeStyles]} aria-hidden>
+							{reaction.emoji}
+						</Box>
+					)}
+				</Box>
+			)}
 			<Box className={indicatorRowStyles}>
-				{muted && (
+				{/* The corner always says something about the microphone: crossed out when off, moving with the voice when on. */}
+				{muted ? (
 					<Box className={indicatorBadgeStyles} title={t('Microphone_muted')}>
 						<Icon name='mic-off' size='x16' />
 						<VisuallyHidden>{t('Microphone_muted')}</VisuallyHidden>
 					</Box>
+				) : (
+					<VoiceActivity level={rawLevel} size={18} badge />
 				)}
 				{held && (
 					<Box className={indicatorBadgeStyles} title={t('On_Hold')}>

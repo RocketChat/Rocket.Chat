@@ -19,7 +19,7 @@ import {
 	ImportPreparingStartedStates,
 	ImportingStartedStates,
 	ImportingErrorStates,
-} from '../../../../app/importer/lib/ImporterProgressStep';
+} from '../../../../lib/importer/ImporterProgressStep';
 import { numberFormat } from '../../../../lib/utils/stringUtils';
 
 const waitFor = <T, U extends T>(fn: () => Promise<T>, predicate: (arg: T) => arg is U) =>

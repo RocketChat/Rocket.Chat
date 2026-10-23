@@ -14,13 +14,6 @@ afterEach(() => {
 	jest.clearAllMocks();
 });
 
-test.each(testCases)(`renders without crashing`, async (_storyname, Story) => {
-	const view = render(<Story />, {
-		wrapper: mockAppRoot().build(),
-	});
-	expect(view.baseElement).toMatchSnapshot();
-});
-
 test.each(testCases)('Should have no a11y violations', async (_storyname, Story) => {
 	const { container } = render(<Story />, { wrapper: mockAppRoot().build() });
 

@@ -5,7 +5,7 @@ import type { CSSProperties, ReactNode } from 'react';
 import { useMemo, useCallback, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useLocalePercentage } from '../../../../hooks/useLocalePercentage';
+import { useLocalePercentage } from '../hooks/useLocalePercentage';
 
 type GraphColorsReturn = { [key: string]: string };
 

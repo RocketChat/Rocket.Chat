@@ -15,6 +15,10 @@ const MainTile = ({ tile }: MainTileProps) =>
 			muted={tile.muted}
 			held={tile.held}
 			cameraStream={tile.cameraStream}
+			audioStream={tile.audioStream}
+			handPosition={tile.handPosition}
+			reaction={tile.reaction}
+			sendHeight={tile.sendHeight}
 		/>
 	) : (
 		<ParticipantTile
@@ -23,6 +27,9 @@ const MainTile = ({ tile }: MainTileProps) =>
 			muted={tile.muted}
 			held={tile.held}
 			cameraStream={tile.cameraStream}
+			audioStream={tile.audioStream}
+			handPosition={tile.handPosition}
+			reaction={tile.reaction}
 		/>
 	);
 

@@ -1,4 +1,4 @@
-import { getSelectionRange, setSelectionRange } from './selectionRange';
+import { getContentEndOffset, getSelectionRange, setSelectionRange } from './selectionRange';
 
 const makeInput = (html: string): HTMLDivElement => {
 	const input = document.createElement('div');
@@ -79,11 +79,40 @@ describe('getSelectionRange', () => {
 		expect(getSelectionRange(input)).toEqual({ selectionStart: 3, selectionEnd: 3 });
 	});
 
+	it('falls back to before the rendered paragraph newline when the selection is outside the input', () => {
+		const input = makeInput('<span>sd\n</span>');
+		clearSelection();
+
+		expect(getSelectionRange(input)).toEqual({ selectionStart: 2, selectionEnd: 2 });
+	});
+
 	it('returns 0 for an empty composer with a placeholder <br>', () => {
 		const input = makeInput('<br>');
 		placeCaret(input, 0);
 
 		expect(getSelectionRange(input)).toEqual({ selectionStart: 0, selectionEnd: 0 });
+	});
+});
+
+describe('getContentEndOffset', () => {
+	it('excludes the newline the paragraph renderer appends', () => {
+		expect(getContentEndOffset(makeInput('<span>sd\n</span>'))).toBe(2);
+	});
+
+	it('keeps the offset when the content does not end with a newline', () => {
+		expect(getContentEndOffset(makeInput('<div>a</div><div>b</div>'))).toBe(3);
+	});
+
+	it('drops only the last of several trailing newlines', () => {
+		expect(getContentEndOffset(makeInput('<span>sd\n</span><span>\n</span>'))).toBe(3);
+	});
+
+	it('excludes a trailing <br>', () => {
+		expect(getContentEndOffset(makeInput('a<br>'))).toBe(1);
+	});
+
+	it('returns 0 for an empty composer with a placeholder <br>', () => {
+		expect(getContentEndOffset(makeInput('<br>'))).toBe(0);
 	});
 });
 

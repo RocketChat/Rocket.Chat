@@ -43,7 +43,7 @@ export class HomeContent {
 	}
 
 	get messagePopupUsers(): Locator {
-		return this.page.locator('role=menu[name="People"]');
+		return this.page.getByRole('listbox', { name: 'People' });
 	}
 
 	get mainMessageList(): Locator {
@@ -536,10 +536,6 @@ export class HomeContent {
 
 	get btnAnonymousSignIn(): Locator {
 		return this.page.locator('footer >> role=button[name="Sign in to start talking"]');
-	}
-
-	get btnAnonymousTalk(): Locator {
-		return this.page.locator('role=button[name="Or talk as anonymous"]');
 	}
 
 	get nextSlideButton(): Locator {

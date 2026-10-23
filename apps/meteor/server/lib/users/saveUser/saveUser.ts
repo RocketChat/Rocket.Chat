@@ -1,5 +1,5 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
-import { MeteorError, Presence, StatusVisibility } from '@rocket.chat/core-services';
+import { ClientSafeError, Presence, StatusVisibility } from '@rocket.chat/core-services';
 import { isUserFederated, UserStatus } from '@rocket.chat/core-typings';
 import type { IUser, IRole, IUserSettings, RequiredField } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
@@ -55,7 +55,7 @@ export type SaveUserData = {
 	presenceDisabledByAdmin?: boolean;
 	statusVisibilityDeniedByAdmin?: string[];
 
-	freeSwitchExtension?: string;
+	sipExtension?: string;
 };
 export type UpdateUserData = RequiredField<SaveUserData, '_id'>;
 export const isUpdateUserData = (params: SaveUserData): params is UpdateUserData => '_id' in params && !!params._id;
@@ -136,7 +136,7 @@ const _saveUser = (session?: ClientSession) =>
 		}
 
 		if (!oldUserData) {
-			throw new MeteorError('error-user-not-found', 'User not found', {
+			throw new ClientSafeError('error-user-not-found', 'User not found', {
 				method: 'saveUser',
 			});
 		}
@@ -207,11 +207,11 @@ const _saveUser = (session?: ClientSession) =>
 			}
 		}
 
-		if (typeof userData.freeSwitchExtension === 'string' && userData.freeSwitchExtension !== (oldUserData?.freeSwitchExtension ?? '')) {
-			if (userData.freeSwitchExtension.trim() === '') {
-				updater.unset('freeSwitchExtension');
+		if (typeof userData.sipExtension === 'string' && userData.sipExtension !== (oldUserData?.sipExtension ?? '')) {
+			if (userData.sipExtension.trim() === '') {
+				updater.unset('sipExtension');
 			} else {
-				updater.set('freeSwitchExtension', userData.freeSwitchExtension);
+				updater.set('sipExtension', userData.sipExtension);
 			}
 		}
 

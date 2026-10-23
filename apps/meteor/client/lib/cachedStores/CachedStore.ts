@@ -119,7 +119,9 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 			this.updatedAt = new Date(updatedAt);
 		}
 
-		this.store.getState().replaceAll(deserializedRecords.filter(hasId));
+		const records = deserializedRecords.filter(hasId);
+		this.store.getState().replaceAll(records);
+		this.handleLoadedFromServer(records);
 
 		this.updatedAt = data.updatedAt || this.updatedAt;
 

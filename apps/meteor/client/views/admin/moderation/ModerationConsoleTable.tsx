@@ -9,6 +9,7 @@ import {
 	GenericTableHeader,
 	usePagination,
 	useSort,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
@@ -17,7 +18,6 @@ import { useTranslation } from 'react-i18next';
 
 import ModerationConsoleTableRow from './ModerationConsoleTableRow';
 import ModerationFilter from './helpers/ModerationFilter';
-import GenericNoResults from '../../../components/GenericNoResults';
 
 // TODO: Missing error state
 const ModerationConsoleTable = () => {

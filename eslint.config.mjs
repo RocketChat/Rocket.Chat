@@ -198,15 +198,7 @@ export default [
 		},
 	},
 	{
-		files: ['apps/meteor/**/*.tests.js'],
-		languageOptions: {
-			globals: {
-				...globals.mocha,
-			},
-		},
-	},
-	{
-		files: ['apps/meteor/tests/@(end-to-end|unit)/**/*.spec.ts'],
+		files: ['apps/meteor/tests/end-to-end/**/*.@(spec|test).ts'],
 		rules: {
 			'jest/expect-expect': 'off',
 			'jest/no-conditional-expect': 'off',
@@ -222,7 +214,7 @@ export default [
 		},
 	},
 	{
-		files: ['apps/meteor/tests/@(end-to-end|unit)/**/*.ts'],
+		files: ['apps/meteor/tests/end-to-end/**/*.ts'],
 		rules: {
 			'@typescript-eslint/no-unused-expressions': 'off',
 		},
@@ -403,6 +395,7 @@ export default [
 			'apps/meteor/ee/server/**/*.ts',
 			'apps/meteor/server/**/*.ts',
 			'packages/fuselage-ui-kit/**/*.@(ts|tsx)',
+			'packages/ui-account/**/*.@(ts|tsx)',
 			'packages/ui-client/**/*.@(ts|tsx)',
 			'packages/ui-voip/**/*.@(ts|tsx)',
 			'packages/web-ui-registration/**/*.@(ts|tsx)',
@@ -431,6 +424,33 @@ export default [
 			],
 		},
 	},
+	// View-agnostic logic: must stay reusable by clients that do not render with Fuselage (e.g. mobile).
+	{
+		files: ['packages/ui-account/src/**/logic/**/*.@(ts|tsx)'],
+		ignores: ['**/*.spec.@(ts|tsx)'],
+		rules: {
+			'no-restricted-imports': [
+				'error',
+				{
+					paths: [
+						{
+							// ui-client mixes headless hooks with Fuselage components; only the former are allowed here.
+							name: '@rocket.chat/ui-client',
+							allowTypeImports: true,
+							allowImportNames: ['usePreferenceFeaturePreviewList'],
+							message: 'logic/ may only use headless hooks from ui-client; add the hook to the allow list if it renders nothing.',
+						},
+					],
+					patterns: [
+						{
+							group: ['@rocket.chat/fuselage', 'react-dom', '**/views/**'],
+							message: 'logic/ must not depend on rendering; move this to views/ or pass it in.',
+						},
+					],
+				},
+			],
+		},
+	},
 	// FIXME: these rules require type information and the files are not included in the main tsconfig.json
 	{
 		files: [
@@ -452,7 +472,7 @@ export default [
 			'@(ee/packages|packages)/*/jest.config.ts',
 
 			'ee/packages/pdf-worker/.storybook/*.@(ts|tsx)',
-			'packages/@(gazzodown|ui-client|ui-composer|ui-voip|web-ui-registration)/.storybook/*.@(ts|tsx)',
+			'packages/@(gazzodown|ui-account|ui-client|ui-composer|ui-voip|web-ui-registration)/.storybook/*.@(ts|tsx)',
 		],
 		rules: {
 			'@typescript-eslint/prefer-optional-chain': 'off',
@@ -464,6 +484,32 @@ export default [
 		files: ['**/*.stories.@(ts|tsx|js|jsx|mjs|cjs)'],
 		rules: {
 			'storybook/no-renderer-packages': 'off',
+		},
+	},
+	// FIXME: violations carried over from the Fuselage monorepo, which linted with a different config
+	{
+		files: ['packages/fuselage/src/**/*.@(ts|tsx)'],
+		rules: {
+			'@typescript-eslint/naming-convention': 'warn',
+			'@typescript-eslint/no-empty-function': 'warn',
+			'react-hooks/exhaustive-deps': 'warn',
+			'react/display-name': 'warn',
+			'react/jsx-key': 'warn',
+			'react/no-children-prop': 'warn',
+			'react/no-multi-comp': 'warn',
+		},
+	},
+	// FIXME: existing imports that reach into another package's files; new ones are rejected everywhere else
+	{
+		files: [
+			'apps/meteor/client/views/room/ClassificationBanner/lib/schema.spec.ts',
+			'ee/packages/federation-matrix/tests/end-to-end/@(ban|dms|first-contact|messaging|permissions|presence|room|typing).spec.ts',
+			'ee/packages/federation-matrix/tests/helper/ddp-listener.ts',
+			'ee/packages/pdf-worker/.storybook/preview.tsx',
+			'packages/gazzodown/.storybook/preview.tsx',
+		],
+		rules: {
+			'import-x/no-relative-packages': 'off',
 		},
 	},
 	// FIXME

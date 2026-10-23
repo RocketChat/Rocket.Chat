@@ -6,7 +6,7 @@ import type { ReactNode } from 'react';
 
 import { LiveKitCallProvider } from './LiveKitCallProvider';
 
-const room = { state: ConnectionState.Disconnected };
+const room = { state: ConnectionState.Disconnected, on: jest.fn(), off: jest.fn() };
 const localParticipant = {
 	identity: 'me',
 	getTrackPublication: () => undefined,
@@ -47,12 +47,24 @@ jest.mock('@rocket.chat/ui-conference', () => ({
 		actions = value;
 		return children;
 	},
+	VideoQualityProvider: ({ children }: { children: ReactNode }) => children,
+	CallDiagnosticsProvider: ({ children }: { children: ReactNode }) => children,
+	playJoinChime: jest.fn(),
+	playMutedReminder: jest.fn(),
 	useUpdateCallPreferences: () => jest.fn(),
 }));
 
 jest.mock('@rocket.chat/ui-media', () => ({
 	DeviceSelectionProvider: ({ children }: { children: ReactNode }) => children,
 }));
+
+jest.mock('./useCallDataChannel', () => ({
+	useCallDataChannel: () => ({ raisedHands: [], localHandRaised: false, activeReactions: [] }),
+}));
+jest.mock('./useCallDiagnostics', () => ({ useCallDiagnostics: () => null }));
+jest.mock('./useSendResolution', () => ({ useSendResolution: () => undefined }));
+jest.mock('./useSpeakingWhileMuted', () => ({ useSpeakingWhileMuted: () => false }));
+jest.mock('./useVideoQuality', () => ({ useVideoQuality: () => ({}) }));
 
 jest.mock('./useLiveKitTransport', () => ({
 	useLiveKitTransport: () => ({ data: { serverUrl: 'wss://lk', token: 'token' }, error: null }),

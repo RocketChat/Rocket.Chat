@@ -1,10 +1,8 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { Box, CheckBox, Icon, Margins } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
+import { GenericTableRow, GenericTableCell, useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useId } from 'react';
-
-import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
 
 export type ChannelDesertionTableRowProps = {
 	onChange: (room: Serialized<IRoom> & { isLastOwner?: boolean }) => void;

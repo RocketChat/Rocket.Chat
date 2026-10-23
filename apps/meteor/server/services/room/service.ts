@@ -1,4 +1,4 @@
-import { ServiceClassInternal, Authorization, Message, MeteorError, FederationMatrix } from '@rocket.chat/core-services';
+import { ServiceClassInternal, Authorization, Message, ClientSafeError, FederationMatrix } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, IRoomService } from '@rocket.chat/core-services';
 import {
 	type AtLeast,
@@ -8,8 +8,8 @@ import {
 	type ISubscription,
 	isOmnichannelRoom,
 	isRoomWithJoinCode,
+	isUserNativeFederated,
 } from '@rocket.chat/core-typings';
-import { isUserNativeFederated } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import { getNameForDMs } from './getNameForDMs';
@@ -74,7 +74,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		return true;
 	}
 
-	async create(uid: string, params: ICreateRoomParams): Promise<IRoom> {
+	async create(uid: string, params: ICreateRoomParams): Promise<IRoom & { skippedMembers?: string[] }> {
 		const { type, name, members = [], readOnly, extraData, options } = params;
 
 		const hasPermission = await Authorization.hasPermission(uid, `create-${type}`);
@@ -88,7 +88,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		}
 
 		// TODO convert `createRoom` function to "raw" and move to here
-		return createRoom(type, name, user, members, false, readOnly, extraData, options) as unknown as IRoom;
+		return createRoom(type, name, user, members, false, readOnly, extraData, options);
 	}
 
 	async createDirectMessage({ to, from }: { to: string; from: string }): Promise<{ rid: string }> {
@@ -131,7 +131,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	async removeUserFromRoom(
 		roomId: string,
 		user: IUser,
-		options?: { byUser?: IUser; skipAppPreEvents?: boolean; customSystemMessage?: MessageTypesValues },
+		options?: { byUser?: IUser; skipAppPreEvents?: boolean; customSystemMessage?: MessageTypesValues; skipSystemMessage?: boolean },
 	): Promise<void> {
 		return removeUserFromRoom(roomId, user, options);
 	}
@@ -183,15 +183,15 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	 */
 	async join({ room, user, joinCode }: { room: IRoom; user: IUser; joinCode?: string }) {
 		if (!(await roomCoordinator.getRoomDirectives(room.t)?.allowMemberAction(room, RoomMemberActions.JOIN, user._id))) {
-			throw new MeteorError('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
+			throw new ClientSafeError('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
 		}
 
 		if (isOmnichannelRoom(room) && !room.open) {
-			throw new MeteorError('room-closed', 'Room is closed', { method: 'joinRoom' });
+			throw new ClientSafeError('room-closed', 'Room is closed', { method: 'joinRoom' });
 		}
 
 		if (!(await Authorization.canAccessRoom(room, user))) {
-			throw new MeteorError('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
+			throw new ClientSafeError('error-not-allowed', 'Not allowed', { method: 'joinRoom' });
 		}
 
 		if (
@@ -199,12 +199,12 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 			!isUserNativeFederated(user) &&
 			!(await FederationMatrix.canUserAccessFederation(user))
 		) {
-			throw new MeteorError('error-not-authorized-federation', 'Not authorized to access federation', { method: 'joinRoom' });
+			throw new ClientSafeError('error-not-authorized-federation', 'Not authorized to access federation', { method: 'joinRoom' });
 		}
 
 		if (isRoomWithJoinCode(room) && !(await Authorization.hasPermission(user._id, 'join-without-join-code'))) {
 			if (!joinCode) {
-				throw new MeteorError('error-code-required', 'Code required', { method: 'joinRoom' });
+				throw new ClientSafeError('error-code-required', 'Code required', { method: 'joinRoom' });
 			}
 
 			const isCorrectJoinCode = !!(await Rooms.findOneByJoinCodeAndId(joinCode, room._id, {
@@ -212,7 +212,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 			}));
 
 			if (!isCorrectJoinCode) {
-				throw new MeteorError('error-code-invalid', 'Invalid code', { method: 'joinRoom' });
+				throw new ClientSafeError('error-code-invalid', 'Invalid code', { method: 'joinRoom' });
 			}
 		}
 

@@ -6,6 +6,7 @@ import * as React from 'react';
 import { Children, forwardRef, isValidElement } from 'react';
 
 import * as stories from './DiscussionsList.stories';
+import { expectListKeyboard, listWrapper } from '../../../../../tests/mocks/utils/listContract';
 
 jest.mock('../../../../lib/rooms/roomCoordinator', () => ({
 	roomCoordinator: {
@@ -110,14 +111,16 @@ describe('DiscussionsList', () => {
 	});
 });
 
-test.each(testCases)('renders %s with stable structure', (_storyname, Story) => {
-	const { baseElement } = render(<Story />);
-	expect(baseElement).toMatchSnapshot();
-});
-
 test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
 	const { container } = render(<Story />);
 
 	const results = await axe(container);
 	expect(results).toHaveNoViolations();
+});
+
+it('follows the keyboard model of a list of rows', async () => {
+	render(<composed.Default />, { wrapper: listWrapper() });
+
+	const list = screen.getByTestId('discussions-virtual-list');
+	await expectListKeyboard(list, list.querySelector<HTMLElement>('.rcx-message[tabindex="0"]') ?? undefined);
 });

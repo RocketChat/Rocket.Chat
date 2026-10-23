@@ -2,6 +2,8 @@ import type { LicenseModule } from '@rocket.chat/core-typings';
 import type { ValidateFunction } from 'ajv';
 import type { Request } from 'express';
 
+import type { OpenAPIDocumentation } from './openapi';
+
 type Range<N extends number, Result extends number[] = []> = Result['length'] extends N
 	? Result[number]
 	: Range<N, [...Result, Result['length']]>;
@@ -53,5 +55,6 @@ export type TypedOptions = {
 	tags?: string[];
 	typed?: boolean;
 	license?: LicenseModule[];
+	licenseRequired?: boolean;
 	authRequired?: boolean;
-};
+} & OpenAPIDocumentation;

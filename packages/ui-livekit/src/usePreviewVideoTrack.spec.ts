@@ -1,21 +1,23 @@
+import type { VideoQuality } from '@rocket.chat/ui-conference';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import type { LocalVideoTrack } from 'livekit-client';
-import { createLocalVideoTrack } from 'livekit-client';
+import { VideoPresets, createLocalVideoTrack } from 'livekit-client';
 
 import { usePreviewVideoTrack } from './usePreviewVideoTrack';
 
 jest.mock('livekit-client', () => ({
+	...jest.requireActual('livekit-client'),
 	createLocalVideoTrack: jest.fn(),
 }));
 
 const mockedCreateLocalVideoTrack = jest.mocked(createLocalVideoTrack);
 
 const makeTrack = () => {
-	const mediaStreamTrack = Object.assign(new EventTarget(), { readyState: 'live' });
+	const mediaStreamTrack = Object.assign(new EventTarget(), { readyState: 'live', getSettings: () => ({ deviceId: 'brio' }) });
 	const stop = jest.fn(() => {
 		mediaStreamTrack.readyState = 'ended';
 	});
-	return { stop, mediaStreamTrack } as unknown as LocalVideoTrack;
+	return { stop, mediaStreamTrack, restartTrack: jest.fn().mockResolvedValue(undefined) } as unknown as LocalVideoTrack;
 };
 
 beforeEach(() => {
@@ -89,6 +91,39 @@ it('drops the camera that ends on its own', async () => {
 	});
 	expect(result.current.track).toBeUndefined();
 	expect(result.current.error).toBe(true);
+});
+
+it('restarts the attached preview track instead of replacing it when resolution changes', async () => {
+	const track = makeTrack();
+	mockedCreateLocalVideoTrack.mockResolvedValue(track);
+
+	const { result, rerender, unmount } = renderHook(({ quality }) => usePreviewVideoTrack(true, { quality }), {
+		initialProps: { quality: 'h720' as VideoQuality },
+	});
+
+	await waitFor(() => expect(result.current.track).toBe(track));
+
+	rerender({ quality: 'h180' });
+
+	await waitFor(() => expect(track.restartTrack).toHaveBeenCalledWith({ resolution: VideoPresets.h180.resolution, deviceId: 'brio' }));
+	expect(mockedCreateLocalVideoTrack).toHaveBeenCalledTimes(1);
+	expect(track.stop).not.toHaveBeenCalled();
+	expect(result.current.track).toBe(track);
+
+	unmount();
+	expect(track.stop).toHaveBeenCalledTimes(1);
+});
+
+it('opens the initial preview at the selected resolution without an unnecessary restart', async () => {
+	const track = makeTrack();
+	mockedCreateLocalVideoTrack.mockResolvedValue(track);
+
+	const { result } = renderHook(() => usePreviewVideoTrack(true, { quality: 'h360' }));
+
+	await waitFor(() => expect(result.current.track).toBe(track));
+
+	expect(mockedCreateLocalVideoTrack).toHaveBeenCalledWith({ resolution: VideoPresets.h360.resolution });
+	expect(track.restartTrack).not.toHaveBeenCalled();
 });
 
 // Trying again is not failing again: the note waits for this attempt's own answer.

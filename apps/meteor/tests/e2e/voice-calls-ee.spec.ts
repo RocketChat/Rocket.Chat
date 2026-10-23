@@ -617,3 +617,69 @@ test.describe('Internal Voice Calls - Docked Widget (call panel) - Enterprise Ed
 		});
 	});
 });
+
+test.describe('Internal Voice Calls - TURN shared secret - Enterprise Edition', () => {
+	test.skip(!IS_EE, 'Enterprise Edition Only');
+
+	const sharedSecret = 'e2e-turn-shared-secret';
+	const turnServer = 'turn:turn.example.com:3478';
+	const credentialTtl = 3600;
+
+	let caller: { page: Page; poHomeChannel: HomeChannel };
+	let callee: { page: Page; poHomeChannel: HomeChannel };
+	const calleeFrames: string[] = [];
+
+	test.beforeAll(async ({ api }) => {
+		await Promise.all([
+			setSettingValueById(
+				api,
+				'VoIP_TeamCollab_TURN_Servers',
+				JSON.stringify([{ urls: turnServer, auth: { type: 'shared-secret', secret: sharedSecret, ttl: credentialTtl } }]),
+			),
+			api.post('/users.setStatus', { status: 'online', username: 'user1' }),
+			api.post('/users.setStatus', { status: 'online', username: 'user2' }),
+		]);
+	});
+
+	test.beforeAll(async ({ browser }) => {
+		const calleePage = await browser.newPage({ storageState: Users.user2.state });
+		calleePage.on('websocket', (ws) => ws.on('framereceived', ({ payload }) => calleeFrames.push(String(payload))));
+		await calleePage.goto('/');
+		await calleePage.locator('#main-content').waitFor();
+
+		callee = { page: calleePage, poHomeChannel: new HomeChannel(calleePage) };
+		caller = await createAuxContext(browser, Users.user1).then(({ page }) => ({ page, poHomeChannel: new HomeChannel(page) }));
+	});
+
+	test.afterAll(async ({ api }) => {
+		await Promise.all([setSettingValueById(api, 'VoIP_TeamCollab_TURN_Servers', ''), caller.page.close(), callee.page.close()]);
+	});
+
+	test('should issue time-limited TURN credentials to the callee without exposing the secret', async () => {
+		const callStartedAt = Math.floor(Date.now() / 1000);
+
+		await test.step('user1 calls user2', async () => {
+			await caller.poHomeChannel.navbar.btnNewVoiceCall.click();
+			await caller.poHomeChannel.voiceCalls.widget.initiateCall(Users.user2.data.username);
+			await expect(callee.poHomeChannel.voiceCalls.widget.controls.accept).toBeVisible();
+		});
+
+		await test.step('user2 received credentials issued to them, expiring after the configured lifetime', async () => {
+			const signalFrames = calleeFrames.filter((frame) => frame.includes('media-signal')).join('\n');
+			expect(signalFrames).toContain(turnServer);
+
+			const expiresAt = Number(signalFrames.match(/(\d{10}):user2/)?.[1]);
+			expect(expiresAt).toBeGreaterThanOrEqual(callStartedAt + credentialTtl);
+			expect(expiresAt).toBeLessThanOrEqual(Math.floor(Date.now() / 1000) + credentialTtl);
+		});
+
+		await test.step('the shared secret never reached user2', async () => {
+			expect(calleeFrames.join('\n')).not.toContain(sharedSecret);
+		});
+
+		await test.step('user2 declines the call', async () => {
+			await callee.poHomeChannel.voiceCalls.widget.reject();
+			await expect(callee.poHomeChannel.voiceCalls.widget.content).not.toBeVisible();
+		});
+	});
+});
