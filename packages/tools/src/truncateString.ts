@@ -11,13 +11,13 @@ export function truncateString(str: string, maxLength: number, shouldAddEllipses
 		return str;
 	}
 
-	if (shouldAddEllipses && str.length > maxLength) {
-		if (maxLength <= ellipsis.length) {
-			return str.slice(0, maxLength);
-		}
-
-		return `${str.slice(0, maxLength - ellipsis.length)}${ellipsis}`;
+	const suffix = shouldAddEllipses && maxLength > ellipsis.length ? ellipsis : '';
+	let prefix = str.slice(0, maxLength - suffix.length);
+	const lastCodeUnit = prefix.charCodeAt(prefix.length - 1);
+	const nextCodeUnit = str.charCodeAt(prefix.length);
+	if (lastCodeUnit >= 0xd800 && lastCodeUnit <= 0xdbff && nextCodeUnit >= 0xdc00 && nextCodeUnit <= 0xdfff) {
+		prefix = prefix.slice(0, -1);
 	}
 
-	return str.slice(0, maxLength);
+	return prefix + suffix;
 }
