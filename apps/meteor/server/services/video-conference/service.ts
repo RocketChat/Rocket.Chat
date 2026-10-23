@@ -1725,7 +1725,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 	 * That record is what lets a client tell a phone ringing now from one rung and ignored.
 	 */
 	private async ringUsers(callId: VideoConference['_id'], rid: IRoom['_id'], uid: IUser['_id'], memberIds: IUser['_id'][]): Promise<void> {
-		memberIds.forEach((memberId) => this.notifyUser(memberId, 'ring', { callId, rid, uid }));
+		memberIds.forEach((memberId) => this.notifyUser(memberId, 'ring-member', { callId, rid, uid }));
 		await VideoConferenceModel.setUsersRingingById(callId, memberIds);
 		this.notifyConferenceUpdate(callId);
 		this.notifyVideoConfUpdate(rid, callId);

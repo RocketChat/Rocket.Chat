@@ -40,9 +40,9 @@ const TimedVideoConfPopup = ({ id, rid, isReceiving = false, isCalling = false, 
 	// Whether anything renders below at all — the same condition, so the two cannot drift. Focusing when nothing
 	// does looks for the parent of a node the focus scope never got, and throws.
 	//
-	// An incoming call needs no room only with the call window, where it can reach a conference member who has no
-	// access to the room it belongs to. Without it, a popup with no room renders nothing, as it always did.
-	const hasPopup = Boolean(room) || (conferenceWindowEnabled && isReceiving);
+	// An incoming call needs no room: the server checks access to the conference before announcing it, so it can
+	// reach a member who has no access to the room it belongs to.
+	const hasPopup = Boolean(room) || isReceiving;
 
 	useEffect(() => {
 		if (!hasPopup) {
@@ -84,12 +84,8 @@ const TimedVideoConfPopup = ({ id, rid, isReceiving = false, isCalling = false, 
 		dismissOutgoing();
 	};
 
-	// Without the call window every popup is about a room, so there is nothing to show until it is there — which
-	// is what this rendered before an incoming call could arrive for a room the user cannot see.
-	if (!room && !conferenceWindowEnabled) {
-		return null;
-	}
-
+	// No room access is needed to be told of a call: the server only announces it to people with access to the
+	// conference.
 	if (isReceiving) {
 		return <IncomingPopup room={room} id={id} position={position} onClose={handleClose} onMute={handleMute} onConfirm={handleConfirm} />;
 	}

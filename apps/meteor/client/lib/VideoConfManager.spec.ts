@@ -95,14 +95,22 @@ describe('VideoConfManager without the call window', () => {
 			expect(incoming('call-plain-ring')).toBeDefined();
 		});
 
-		// The server has always broadcast `ring` for group calls, and a client with no case for it ignored them.
-		// Ringing a whole channel for every group call is exactly the change that has to wait for the setting.
-		it('should ignore a server-originated ring', async () => {
+		// The server broadcasts `ring` to a whole room for group calls, and a client with no case for it ignores
+		// them. Ringing a whole channel for every group call is not something a client opts into.
+		it('should ignore the room-wide ring', async () => {
 			manager.userId = 'my-user';
 
 			await notify('ring', 'call-dark-ring', 'dark-ring-caller');
 
 			expect(incoming('call-dark-ring')).toBeUndefined();
+		});
+
+		it('should register a ring aimed at this user, whatever the call window setting', async () => {
+			manager.userId = 'my-user';
+
+			await notify('ring-member', 'call-member-ring', 'member-ring-caller');
+
+			expect(incoming('call-member-ring')).toBeDefined();
 		});
 	});
 
@@ -245,10 +253,10 @@ describe('VideoConfManager with the call window', () => {
 	});
 
 	describe('ringing', () => {
-		// The server broadcasts `ring` for conferences; before it was handled, the action fell through the
+		// The server sends `ring-member` to the people it rings; before it was handled, the action fell through the
 		// switch and an added user was never rung.
 		it('should register an incoming call from a server-originated ring', async () => {
-			await notify('ring', 'call-window-ring', 'window-ring-caller');
+			await notify('ring-member', 'call-window-ring', 'window-ring-caller');
 
 			expect(incoming('call-window-ring')).toBeDefined();
 		});
@@ -266,7 +274,7 @@ describe('VideoConfManager with the call window', () => {
 		// A ring means the conference already exists and membership is what authorizes joining it — there's no
 		// caller waiting on a handshake, so accepting must join straight away.
 		it('joins outright for a ring, without publishing an accepted notification', async () => {
-			await notify('ring', 'call-ring-accept', 'ring-accept-caller');
+			await notify('ring-member', 'call-ring-accept', 'ring-accept-caller');
 			VideoConfManager.acceptIncomingCall('call-ring-accept');
 			await flushPromises();
 
@@ -278,7 +286,7 @@ describe('VideoConfManager with the call window', () => {
 		// A ring has no caller waiting on the other end; publishing `rejected` would read as us ending the call for
 		// whoever added us to it, so only the server-side decline record should happen.
 		it('records the decline for a ring without publishing a rejected notification', async () => {
-			await notify('ring', 'call-ring-decline', 'ring-decline-caller');
+			await notify('ring-member', 'call-ring-decline', 'ring-decline-caller');
 			VideoConfManager.rejectIncomingCall('call-ring-decline');
 			await flushPromises();
 
@@ -303,11 +311,11 @@ describe('VideoConfManager with the call window', () => {
 		// outlives the call. A deliberate second ring from the server must not be swallowed by it — that is what made
 		// "Ring again" arrive at the callee silently once they had declined.
 		it('rings again for a server ring after the call was declined', async () => {
-			await notify('ring', 'call-rering', 'rering-caller');
+			await notify('ring-member', 'call-rering', 'rering-caller');
 			VideoConfManager.rejectIncomingCall('call-rering');
 			expect(incoming('call-rering')).toBeUndefined();
 
-			await notify('ring', 'call-rering', 'rering-caller');
+			await notify('ring-member', 'call-rering', 'rering-caller');
 
 			expect(incoming('call-rering')?.dismissed).toBe(false);
 		});

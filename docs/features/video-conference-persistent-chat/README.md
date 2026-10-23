@@ -120,9 +120,9 @@ this avoids. The screen says as much before it happens ("Alice will be notified 
 button is the call itself rather than a join.
 
 Without the call window there is no preflight to wait for, so nothing changes: the caller's own client rings the
-callee from the room, on the 1:1 handshake it always used. A server-originated `ring` — which the server has
-always broadcast for group calls — is ignored by the client then, exactly as it was before this work, so a group
-call does not start ringing a whole channel.
+callee from the room, on the 1:1 handshake it always used. The room-wide `ring` the server has always broadcast for
+group calls is ignored by the client, exactly as it was before this work, so a group call does not start ringing a
+whole channel. The targeted `ring-member` is not: it names the people being rung, so it is handled either way.
 
 ### How the call window is opened
 
@@ -408,7 +408,7 @@ Adding someone to a conference makes them a **member of the conference**. It put
 `POST /v1/video-conference.add-participants` takes `{ callId, users, ring }` — no `keepHistory`, no room choice — and calls `addMembers`:
 
 - Each user who isn't already associated with the call gets a `users[]` entry with `joined: false`. Users who already have an entry are skipped, so an existing member's `joinedAt` (or `declined`) is never overwritten.
-- Everyone actually added is **rung** (`notifyUser(…, 'ring', …)`) when the caller asked for it and may: the server rings on `ring` *and* `videoconf-ring-users`, so a caller without the permission adds silently rather than being refused. The endpoint caps a single add at `VIDEO_CONF_RINGING_LIMIT` (10) — the same constant the server rings by, which is what guarantees an add always rings, unlike starting a call in a large room where the subscriber count can exceed the cap and nobody is rung.
+- Everyone actually added is **rung** (`notifyUser(…, 'ring-member', …)`) when the caller asked for it and may: the server rings on `ring` *and* `videoconf-ring-users`, so a caller without the permission adds silently rather than being refused. The endpoint caps a single add at `VIDEO_CONF_RINGING_LIMIT` (10) — the same constant the server rings by, which is what guarantees an add always rings, unlike starting a call in a large room where the subscriber count can exceed the cap and nobody is rung.
 - They also get a desktop notification, because the ring only reaches a client that is on screen and is one-shot. It deliberately carries **no room name**, which is what stops its click from navigating: the room behind the call may be one they can't open. Clicking focuses the app, where the ring is; the "Join call" action joins the conference itself.
 
 Nothing about the conference's rooms changes, so `discussionRid` is untouched and no discussion is created.
@@ -959,13 +959,13 @@ and [Access Control](#access-control).
 
 Things worth knowing that aren't visible from the code alone.
 
-### Group ringing was dead code before this work
+### The room-wide `ring` stays unhandled
 
-The server had long broadcast an `action: 'ring'` to each room member of a group conference, and **no client ever
+The server has long broadcast an `action: 'ring'` to each room member of a group conference, and **no client ever
 handled it** — 1:1 ringing is driven entirely client-side, by the caller's own `VideoConfManager` republishing
-`'call'` while it waits. `VideoConfManager` now handles `'ring'`, which is what makes ringing-on-add work; the side
-effect is that group conferences which had been silently not ringing **will now ring**, which the EE code always
-intended but is a visible change beyond "ring on add".
+`'call'` while it waits. It is left alone: handling it would make every group conference ring its whole channel.
+Ringing people who were added to a running conference uses its own action, `'ring-member'`, which names exactly
+the people to ring.
 
 A server-originated ring is one-shot: nothing refreshes the 10s abort timeout a 1:1 caller keeps alive, so it rings
 once and gives up. That suits an already-running conference, where there is no caller waiting.
