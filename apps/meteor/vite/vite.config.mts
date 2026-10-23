@@ -55,6 +55,34 @@ const rocketchatInfo = (): Plugin => {
 // a proxy to the server (the default, used by the dev server and ui-preview).
 const servedByServer = process.env.RC_CLIENT_TARGET === 'server';
 
+type Instrumenter = {
+	instrumentSync(code: string, filename: string, inputSourceMap?: unknown): string;
+	lastSourceMap(): unknown;
+};
+
+// Coverage builds (`BABEL_ENV=coverage`, as CI sets it) count which app code the e2e tests run, which they read from
+// `window.__coverage__`. Files are named by their absolute path, the form the coverage reports expect.
+const coverage = (): Plugin => {
+	const { createInstrumenter } = require('istanbul-lib-instrument') as {
+		createInstrumenter: (options: Record<string, unknown>) => Instrumenter;
+	};
+	const instrumenter = createInstrumenter({ esModules: true, compact: false, produceSourceMap: true });
+
+	return {
+		name: 'rocketchat-coverage',
+		apply: 'build',
+		enforce: 'post',
+		transform(code, id) {
+			const file = id.split('?')[0];
+			if (!file.startsWith(appRoot) || file.includes('/node_modules/') || !/\.[cm]?[jt]sx?$/.test(file)) {
+				return null;
+			}
+
+			return { code: instrumenter.instrumentSync(code, file, this.getCombinedSourcemap()), map: instrumenter.lastSourceMap() as never };
+		},
+	};
+};
+
 // Swaps the modules whose behaviour behind a proxy differs for their implementations in vite/native.
 const nativeModules = (): Plugin => {
 	const replacements = new Map(
@@ -75,21 +103,36 @@ const nativeModules = (): Plugin => {
 	};
 };
 
-// In dev the page is served by Vite instead of the Meteor server, which would otherwise inject this global.
-const devRuntimeConfig = (): Plugin => ({
-	name: 'rocketchat-dev-runtime-config',
-	apply: 'serve',
-	transformIndexHtml: () => [
-		{
-			tag: 'script',
-			children: `window.__meteor_runtime_config__ = { ROOT_URL: window.location.origin + '/', ROOT_URL_PATH_PREFIX: '' };`,
-			injectTo: 'head-prepend',
-		},
-	],
-});
-
 // Routes the running Rocket.Chat server answers; everything else is served by Vite.
 const serverUrl = process.env.RC_SERVER_URL || 'http://localhost:3100';
+
+// In dev the page is the one the local server renders, as in production, with Vite's entry in place of the built one.
+// A remote server renders its own built client, so against one (or while the local server is still starting) the page
+// is `index.html` with the runtime config the server would otherwise inject.
+const devPage = (): Plugin => ({
+	name: 'rocketchat-dev-page',
+	apply: 'serve',
+	transformIndexHtml: {
+		order: 'pre',
+		handler: async (html, { originalUrl }) => {
+			if (process.env.RC_DEV_SERVER_PAGE === '1') {
+				try {
+					const response = await fetch(new URL(originalUrl ?? '/', serverUrl), { headers: { accept: 'text/html' } });
+					if (response.ok) {
+						return (await response.text()).replace('</head>', '<script type="module" src="/entry.ts"></script>\n</head>');
+					}
+				} catch {
+					// The local server is not up yet.
+				}
+			}
+
+			return html.replace(
+				'<head>',
+				`<head>\n<script>window.__meteor_runtime_config__ = { ROOT_URL: window.location.origin + '/', ROOT_URL_PATH_PREFIX: '' };</script>`,
+			);
+		},
+	},
+});
 const serverRoutes = [
 	'/api',
 	'/_oauth',
@@ -111,6 +154,10 @@ const serverRoutes = [
 	'/robots.txt',
 	'^/css-theme',
 	'^/scripts_',
+	// What the page the server renders loads from Meteor itself: the runtime config and the files of its (empty)
+	// client program, all versioned by a query parameter.
+	'^/[^?]*\\?(hash|meteor_js_resource|meteor_css_resource)=',
+	'/__meteor__',
 ];
 
 // Cookies the server sets (rc_token for avatars and downloads) are scoped to its own domain; rewrite them to the dev origin.
@@ -215,7 +262,13 @@ export default defineConfig({
 	publicDir: join(appRoot, 'public'),
 	// Relative, so chunks, fonts and images resolve from wherever the entry is loaded: a CDN, a path prefix or the root.
 	base: './',
-	plugins: [react(), rocketchatInfo(), ...(servedByServer ? [] : [nativeModules()]), devRuntimeConfig()],
+	plugins: [
+		react(),
+		rocketchatInfo(),
+		...(servedByServer ? [] : [nativeModules()]),
+		...(servedByServer && process.env.BABEL_ENV === 'coverage' ? [coverage()] : []),
+		devPage(),
+	],
 	resolve: {
 		alias: [
 			{ find: /^meteor\/.*$/, replacement: join(here, 'shims/meteor.ts') },
@@ -227,6 +280,9 @@ export default defineConfig({
 			...workspaceSourceAliases,
 		],
 		dedupe: ['react', 'react-dom', 'i18next', 'react-i18next', '@tanstack/react-query', '@rocket.chat/fuselage'],
+		// A production install has the dependencies of workspace packages only in the app's node_modules, so their
+		// imports resolve from the link the app sees, as in Meteor's build, not from the package's own folder.
+		preserveSymlinks: servedByServer,
 	},
 	define: {
 		'process.env.TEST_MODE': JSON.stringify(process.env.TEST_MODE),
