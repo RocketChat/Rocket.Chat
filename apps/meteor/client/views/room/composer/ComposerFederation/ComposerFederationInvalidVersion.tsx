@@ -1,8 +1,6 @@
-import { ExternalLink } from '@rocket.chat/ui-client';
+import { ExternalLink, links } from '@rocket.chat/ui-client';
 import { MessageFooterCallout, MessageFooterCalloutContent } from '@rocket.chat/ui-composer';
 import { Trans } from 'react-i18next';
-
-import { links } from '../../../../lib/links';
 
 const ComposerFederationInvalidVersion = () => {
 	return (

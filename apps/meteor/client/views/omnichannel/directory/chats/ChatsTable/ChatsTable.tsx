@@ -8,6 +8,7 @@ import {
 	usePagination,
 	useSort,
 	GenericNoResults,
+	links,
 } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import { hashKey } from '@tanstack/react-query';
@@ -18,7 +19,6 @@ import ChatFilterByText from './ChatsTableFilter';
 import ChatsTableRow from './ChatsTableRow';
 import { useCurrentChats } from './hooks/useCurrentChats';
 import { useChatsQuery } from './useChatsQuery';
-import { links } from '../../../../../lib/links';
 import { useOmnichannelPriorities } from '../../../hooks/useOmnichannelPriorities';
 import { useChatsContext } from '../../contexts/ChatsContext';
 

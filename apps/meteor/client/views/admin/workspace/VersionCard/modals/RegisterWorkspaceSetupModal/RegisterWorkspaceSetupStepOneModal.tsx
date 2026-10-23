@@ -16,12 +16,11 @@ import {
 	ModalContent,
 	ModalFooter,
 } from '@rocket.chat/fuselage';
-import { ExternalLink } from '@rocket.chat/ui-client';
+import { ExternalLink, links } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 
-import { links } from '../../../../../../lib/links';
 import WorkspaceRegistrationModal from '../RegisterWorkspaceModal';
 
 type Props = {

@@ -26,13 +26,13 @@ import {
 	usePagination,
 	useSort,
 	GenericNoResults,
+	links,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useToastMessageDispatch, useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery, hashKey, useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo, useState } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
-import { links } from '../../../lib/links';
 
 const MonitorsTable = () => {
 	const t = useTranslation();
