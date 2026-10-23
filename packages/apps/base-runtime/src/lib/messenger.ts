@@ -4,6 +4,7 @@ import { sanitizeForIpc } from '@rocket.chat/apps/dist/lib/IpcSanitizer';
 
 import * as jsonrpc from './jsonrpc';
 import type { RequestContext } from './requestContext';
+import { isPlainObject } from '../handlers/lib/assertions';
 
 export type RequestDescriptor = Pick<jsonrpc.RequestObject, 'method' | 'params' | 'meta'>;
 
@@ -93,7 +94,8 @@ export async function errorResponse(
 	const { logger } = req?.context || {};
 
 	if (logger?.hasEntries()) {
-		data.logs = logger.getLogs();
+		const payload = isPlainObject(data) ? data : { value: data };
+		data = { ...payload, logs: logger.getLogs() };
 	}
 
 	const rpc = jsonrpc.error(id, new jsonrpc.JsonRpcError(message, code, data), meta);
