@@ -1,5 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { Callout } from '@rocket.chat/fuselage';
+import { Box, Callout } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { ContextualbarContent, UserCardRole, UserInfo } from '@rocket.chat/ui-client';
 import { useSetting, useRolesDescription, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
@@ -106,8 +106,10 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 
 	if (error || !user || !data?.user) {
 		return (
-			<ContextualbarContent paddingBlock={16}>
-				<Callout type='danger'>{t('User_not_found')}</Callout>
+			<ContextualbarContent>
+				<Box paddingBlock={16}>
+					<Callout type='danger'>{t('User_not_found')}</Callout>
+				</Box>
 			</ContextualbarContent>
 		);
 	}

@@ -1,3 +1,4 @@
+import { Box } from '@rocket.chat/fuselage';
 import type { Meta, StoryFn } from '@storybook/react';
 
 import UserInfo from './UserInfo';
@@ -13,9 +14,9 @@ export default {
 	},
 	decorators: [
 		(fn) => (
-			<ContextualbarDialog aria-label='User Info' height='100vh'>
-				{fn()}
-			</ContextualbarDialog>
+			<Box height='100vh'>
+				<ContextualbarDialog aria-label='User Info'>{fn()}</ContextualbarDialog>
+			</Box>
 		),
 	],
 } satisfies Meta<typeof UserInfo>;

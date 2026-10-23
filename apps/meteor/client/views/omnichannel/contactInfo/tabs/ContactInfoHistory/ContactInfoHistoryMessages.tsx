@@ -58,7 +58,7 @@ const ContactInfoHistoryMessages = ({ chatId, onBack, onOpenRoom }: ContactHisto
 
 	return (
 		<>
-			<ContextualbarContent paddingInline={0}>
+			<ContextualbarContent flush>
 				<Box
 					display='flex'
 					flexDirection='row'
