@@ -876,7 +876,7 @@
   "App_status_error_disabled": "Disabled: Uncaught error",
   "App_status_initialized": "Initialized",
   "App_status_invalid_installation_disabled": "Disabled: Invalid installation",
-  "App_status_invalid_license_disabled":"Disabled: Invalid license",
+  "App_status_invalid_license_disabled": "Disabled: Invalid license",
   "App_status_invalid_settings_disabled": "Disabled: Configuration needed",
   "App_status_manually_disabled": "Disabled: Manually",
   "App_status_manually_enabled": "Enabled",
