@@ -25,6 +25,8 @@ import { saveCustomFields } from '../saveCustomFields';
 import { saveUserIdentity } from '../saveUserIdentity';
 import { setEmail } from '../setEmail';
 
+const isBroken = shouldBreakInVersion('9.0.0');
+
 export type SaveUserData = {
 	_id?: IUser['_id'];
 	setRandomPassword?: boolean;
@@ -55,6 +57,7 @@ export type SaveUserData = {
 	statusVisibilityDeniedByAdmin?: string[];
 
 	sipExtension?: string;
+	phones?: IUser['phones'];
 };
 export type UpdateUserData = RequiredField<SaveUserData, '_id'>;
 export const isUpdateUserData = (params: SaveUserData): params is UpdateUserData => '_id' in params && !!params._id;
@@ -214,6 +217,18 @@ const _saveUser = (session?: ClientSession) =>
 			}
 		}
 
+		const unset: Record<string, number> = {};
+
+		if (Array.isArray(userData.phones)) {
+			if (userData.phones.length === 0) {
+				updater.unset('phones');
+				delete userData.phones;
+				unset.phones = 1;
+			} else {
+				updater.set('phones', userData.phones);
+			}
+		}
+
 		if (typeof userData.verified === 'boolean') {
 			if (oldUserData && 'emails' in oldUserData && oldUserData.emails?.some(({ address }) => address === userData.email)) {
 				const index = oldUserData.emails.findIndex(({ address }) => address === userData.email);
@@ -310,6 +325,7 @@ const _saveUser = (session?: ClientSession) =>
 			if (typeof userData.verified === 'boolean') {
 				delete userData.verified;
 			}
+
 			const { statusVisibilityDeniedByAdmin: _adminOnly, statusText: _presenceOwned, ...notifiableUserData } = userData;
 
 			void notifyOnUserChange({
@@ -319,13 +335,13 @@ const _saveUser = (session?: ClientSession) =>
 					...notifiableUserData,
 					emails: userUpdated?.emails,
 				},
+				unset,
 			});
 		}, session);
 
 		return true;
 	};
 
-const isBroken = shouldBreakInVersion('9.0.0');
 export const saveUser = (() => {
 	if (!process.env.DEBUG_DISABLE_USER_AUDIT) {
 		return wrapInSessionTransaction(_saveUser);
