@@ -3,12 +3,16 @@ import { memo } from 'react';
 
 import { Box, type BoxProps } from '../Box';
 
-export type ContextualbarProps = Omit<BoxProps, 'ref'> & RefAttributes<HTMLElement>;
+export type ContextualbarProps = Omit<BoxProps, 'ref'> &
+	RefAttributes<HTMLElement> & {
+		/** Makes the bar as wide as its container, as when it is positioned over the room. */
+		stretch?: boolean;
+	};
 
 /**
  * The `Contextualbar` has the purpose to persist and input information about the scope of the related page.
  */
-function Contextualbar({ width, position, backgroundColor = 'room', ...props }: ContextualbarProps) {
+function Contextualbar({ stretch, width = stretch ? '100%' : undefined, position, backgroundColor = 'room', ...props }: ContextualbarProps) {
 	return (
 		<Box
 			rcx-vertical-bar
