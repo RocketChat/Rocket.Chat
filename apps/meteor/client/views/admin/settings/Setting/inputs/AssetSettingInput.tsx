@@ -3,6 +3,7 @@ import { Box, Button, Field, FieldHint, FieldLabel, FieldRow, Icon, Palette } fr
 import { Random } from '@rocket.chat/random';
 import { useToastMessageDispatch, useEndpoint, useTranslation, useUpload } from '@rocket.chat/ui-contexts';
 import type { ChangeEventHandler, DragEvent, SyntheticEvent } from 'react';
+import { useId } from 'react';
 
 import type { SettingInputProps } from './types';
 
@@ -13,6 +14,7 @@ export type AssetSettingInputProps = Omit<SettingInputProps<{ url: string }>, 'o
 
 function AssetSettingInput({ _id, label, value, hint, asset, required, disabled, fileConstraints }: AssetSettingInputProps) {
 	const t = useTranslation();
+	const labelId = useId();
 
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setAsset = useUpload('/v1/assets.setAsset');
@@ -95,12 +97,12 @@ function AssetSettingInput({ _id, label, value, hint, asset, required, disabled,
 	return (
 		<Field>
 			<FieldRow>
-				<FieldLabel htmlFor={_id} title={_id} required={required}>
+				<FieldLabel id={labelId} htmlFor={_id} title={_id} required={required}>
 					{label}
 				</FieldLabel>
 			</FieldRow>
 			<FieldRow>
-				<Box className={settingsFilePreview}>
+				<Box role='group' aria-labelledby={labelId} className={settingsFilePreview}>
 					{value?.url ? (
 						<div
 							className='preview'
