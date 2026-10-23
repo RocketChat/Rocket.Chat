@@ -15,7 +15,7 @@ import { GenericModal, ContextualbarScrollableContent, ContextualbarFooter } fro
 import { useSetModal, useAbsoluteUrl, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ChangeEvent } from 'react';
-import { useCallback, useState, useMemo, useEffect } from 'react';
+import { useCallback, useId, useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
@@ -36,6 +36,7 @@ export type EditCustomEmojiProps = {
 
 const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiProps) => {
 	const { t } = useTranslation();
+	const emojiLabelId = useId();
 	const setModal = useSetModal();
 	const absoluteUrl = useAbsoluteUrl();
 	const queryClient = useQueryClient();
@@ -169,8 +170,8 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 					</Field>
 					<Field>
 						<FieldRow>
-							<FieldLabel>{t('Custom_Emoji')}</FieldLabel>
-							<IconButton icon='upload' secondary onClick={clickUpload} />
+							<FieldLabel id={emojiLabelId}>{t('Custom_Emoji')}</FieldLabel>
+							<IconButton aria-labelledby={emojiLabelId} icon='upload' secondary onClick={clickUpload} />
 						</FieldRow>
 						{newEmojiPreview && (
 							<Box display='flex' flexDirection='row' marginBlockStart='none' justifyContent='center'>
