@@ -101,6 +101,8 @@ export type MessageType =
 	| 'room-allowed-reacting'
 	/** Sent when a room is set to disallow reacting */
 	| 'room-disallowed-reacting'
+	| 'room-allowed-replying'
+	| 'room-disallowed-replying'
 	/** Sent on several instances when, such as when a livechat room is started */
 	| 'command'
 	/** Sent when a message is the start of a videoconf */

@@ -1,5 +1,5 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { Subscriptions, Rooms } from '@rocket.chat/models';
+import { Subscriptions, Rooms, Messages } from '@rocket.chat/models';
 
 import { canAccessRoomAsync } from './canAccessRoom';
 import { hasPermissionAsync } from './hasPermission';
@@ -43,9 +43,19 @@ export async function validateRoomMessagePermissionsAsync(
 	}
 
 	if (room.ro === true && !(await hasPermissionAsync('uid' in args ? args.uid : args._id, 'post-readonly', room._id))) {
-		// Unless the user was manually unmuted
-		if (args.username && !(room.unmuted || []).includes(args.username)) {
-			throw new Error("You can't send messages because the room is readonly.");
+		let isThreadReply = false;
+		if (extraData?.tmid && !extraData?.tshow && room.replyWhenReadOnly === true) {
+			const parent = await Messages.findOneById(extraData.tmid, { projection: { rid: 1 } });
+			if (parent?.rid === room._id) {
+				isThreadReply = true;
+			}
+		}
+
+		if (!isThreadReply) {
+			// Unless the user was manually unmuted
+			if (args.username && !(room.unmuted || []).includes(args.username)) {
+				throw new Error("You can't send messages because the room is readonly.");
+			}
 		}
 	}
 

@@ -91,6 +91,7 @@ export const roomFields = {
 	label: 1,
 	ro: 1,
 	reactWhenReadOnly: 1,
+	replyWhenReadOnly: 1,
 	sysMes: 1,
 	sentiment: 1,
 	broadcast: 1,

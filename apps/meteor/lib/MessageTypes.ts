@@ -122,6 +122,14 @@ export const MessageTypesValues: Array<{ key: MessageTypesValuesType; i18nLabel:
 		i18nLabel: 'Message_HideType_room_allowed_reacting',
 	},
 	{
+		key: 'room-disallowed-replying',
+		i18nLabel: 'Message_HideType_room_disallowed_replying',
+	},
+	{
+		key: 'room-allowed-replying',
+		i18nLabel: 'Message_HideType_room_allowed_replying',
+	},
+	{
 		key: 'user-added-room-to-team',
 		i18nLabel: 'Message_HideType_user_added_room_to_team',
 	},

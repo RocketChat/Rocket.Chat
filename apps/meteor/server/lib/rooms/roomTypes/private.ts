@@ -25,6 +25,7 @@ roomCoordinator.add(PrivateRoomType, {
 			case RoomSettingsEnum.READ_ONLY:
 				return !room.broadcast;
 			case RoomSettingsEnum.REACT_WHEN_READ_ONLY:
+			case RoomSettingsEnum.REPLY_WHEN_READ_ONLY:
 				return Boolean(!room.broadcast && room.ro);
 			case RoomSettingsEnum.E2E:
 				return settings.get('E2E_Enable') === true;

@@ -188,6 +188,18 @@ export default (instance: MessageTypes) => {
 	});
 
 	instance.registerType({
+		id: 'room-allowed-replying',
+		system: true,
+		text: (t, message) => t('room_allowed_replying', { user_by: message.u?.name || message.u?.username }),
+	});
+
+	instance.registerType({
+		id: 'room-disallowed-replying',
+		system: true,
+		text: (t, message) => t('room_disallowed_replying', { user_by: message.u?.name || message.u?.username }),
+	});
+
+	instance.registerType({
 		id: 'room_changed_privacy',
 		system: true,
 		text: (t, message) => t('room_changed_type', { room_type: t(message.msg) }),

@@ -359,6 +359,7 @@ type RoomsSaveRoomSettingsProps = {
 	roomType?: IRoom['t'];
 	readOnly?: boolean;
 	reactWhenReadOnly?: boolean;
+	replyWhenReadOnly?: boolean;
 	systemMessages?: MessageTypesValues[];
 	default?: boolean;
 	joinCode?: string;
@@ -420,6 +421,9 @@ const RoomsSaveRoomSettingsSchema = {
 		reactWhenReadOnly: {
 			type: 'boolean',
 			nullable: true,
+		},
+		replyWhenReadOnly: {
+			type: 'boolean',
 		},
 		systemMessages: {
 			type: 'array',

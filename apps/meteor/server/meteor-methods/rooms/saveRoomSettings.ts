@@ -14,6 +14,7 @@ import { notifyOnRoomChangedById } from '../../lib/notifyListener';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { setRoomAvatar } from '../../lib/rooms/setRoomAvatar';
 import { saveReactWhenReadOnly } from '../../lib/rooms/settings/saveReactWhenReadOnly';
+import { saveReplyWhenReadOnly } from '../../lib/rooms/settings/saveReplyWhenReadOnly';
 import { saveRoomAnnouncement } from '../../lib/rooms/settings/saveRoomAnnouncement';
 import { saveRoomCustomFields } from '../../lib/rooms/settings/saveRoomCustomFields';
 import { saveRoomDescription } from '../../lib/rooms/settings/saveRoomDescription';
@@ -36,6 +37,7 @@ type RoomSettings = {
 	roomType: IRoom['t'];
 	readOnly: boolean;
 	reactWhenReadOnly: boolean;
+	replyWhenReadOnly: boolean;
 	systemMessages: MessageTypesValues[];
 	default: boolean;
 	joinCode: string;
@@ -247,6 +249,19 @@ const validators: RoomSettingsValidators = {
 			});
 		}
 	},
+	async replyWhenReadOnly({ userId, value, room, rid }) {
+		if (typeof value !== 'boolean') {
+			throw new Meteor.Error('error-invalid-settings', 'Invalid setting value', {
+				method: 'saveRoomSettings',
+			});
+		}
+		if (value !== room.replyWhenReadOnly && !(await hasPermissionAsync(userId, 'set-reply-when-readonly', rid))) {
+			throw new Meteor.Error('error-action-not-allowed', 'Editing replyWhenReadOnly is not allowed', {
+				method: 'saveRoomSettings',
+				action: 'Editing_room',
+			});
+		}
+	},
 };
 
 type RoomSettingsSavers = {
@@ -326,6 +341,11 @@ const settingSavers: RoomSettingsSavers = {
 			await saveReactWhenReadOnly(rid, value, user);
 		}
 	},
+	async replyWhenReadOnly({ value, room, rid, user }) {
+		if (value !== room.replyWhenReadOnly) {
+			await saveReplyWhenReadOnly(rid, value, user);
+		}
+	},
 	async systemMessages({ value, room, rid }) {
 		if (JSON.stringify(value) !== JSON.stringify(room.sysMes)) {
 			await saveRoomSystemMessages(rid, value);
@@ -387,6 +407,7 @@ const fields: (keyof RoomSettings)[] = [
 	'roomType',
 	'readOnly',
 	'reactWhenReadOnly',
+	'replyWhenReadOnly',
 	'systemMessages',
 	'default',
 	'joinCode',
@@ -485,11 +506,15 @@ export async function saveRoomSettings(
 		settings = { encrypted: settings.encrypted };
 	}
 
-	if (room.broadcast && (settings.readOnly || settings.reactWhenReadOnly)) {
-		throw new Meteor.Error('error-action-not-allowed', 'Editing readOnly/reactWhenReadOnly are not allowed for broadcast rooms', {
-			method: 'saveRoomSettings',
-			action: 'Editing_room',
-		});
+	if (room.broadcast && (settings.readOnly || settings.reactWhenReadOnly || settings.replyWhenReadOnly)) {
+		throw new Meteor.Error(
+			'error-action-not-allowed',
+			'Editing readOnly/reactWhenReadOnly/replyWhenReadOnly are not allowed for broadcast rooms',
+			{
+				method: 'saveRoomSettings',
+				action: 'Editing_room',
+			},
+		);
 	}
 
 	const user = await Users.findOneById(userId, { projection: { username: 1, name: 1 } });

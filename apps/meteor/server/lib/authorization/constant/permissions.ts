@@ -218,6 +218,7 @@ export const permissions = [
 	{ _id: 'post-readonly', roles: ['admin', 'owner', 'moderator'] },
 	{ _id: 'set-readonly', roles: ['admin', 'owner'] },
 	{ _id: 'set-react-when-readonly', roles: ['admin', 'owner'] },
+	{ _id: 'set-reply-when-readonly', roles: ['admin', 'owner'] },
 	{ _id: 'manage-cloud', roles: ['admin'] },
 	{ _id: 'manage-sounds', roles: ['admin'] },
 	{ _id: 'access-mailer', roles: ['admin'] },

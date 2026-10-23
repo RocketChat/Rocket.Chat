@@ -120,12 +120,14 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		retentionOverrideGlobal,
 		roomType: roomTypeP,
 		reactWhenReadOnly,
+		replyWhenReadOnly,
 	} = watch();
 
 	const {
 		canChangeType,
 		canSetReadOnly,
 		canSetReactWhenReadOnly,
+		canSetReplyWhenReadOnly,
 		canEditRoomRetentionPolicy,
 		canArchiveOrUnarchive,
 		canViewName,
@@ -137,6 +139,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		canViewReadOnly,
 		canViewHideSysMes,
 		canViewJoinCode,
+		canViewReplyWhenReadOnly,
 	} = useEditRoomPermissions(room);
 
 	const changeArchiving = archived !== !!room.archived;
@@ -238,6 +241,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const roomTypeField = useId();
 	const readOnlyField = useId();
 	const reactWhenReadOnlyField = useId();
+	const replyWhenReadOnlyField = useId();
 	const archivedField = useId();
 	const joinCodeRequiredField = useId();
 	const hideSysMesField = useId();
@@ -441,6 +445,31 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 												<FieldRow>
 													<FieldHint id={`${reactWhenReadOnlyField}-hint`}>
 														{reactWhenReadOnly ? t('Anyone_can_react_to_messages') : t('Only_authorized_users_can_react_to_messages')}
+													</FieldHint>
+												</FieldRow>
+											</Field>
+										)}
+										{canViewReplyWhenReadOnly && readOnly && (
+											<Field>
+												<FieldRow>
+													<FieldLabel htmlFor={replyWhenReadOnlyField}>{t('Reply_when_read_only')}</FieldLabel>
+													<Controller
+														control={control}
+														name='replyWhenReadOnly'
+														render={({ field: { value, ...field } }) => (
+															<ToggleSwitch
+																id={replyWhenReadOnlyField}
+																{...field}
+																disabled={!canSetReplyWhenReadOnly}
+																checked={value}
+																aria-describedby={`${replyWhenReadOnlyField}-hint`}
+															/>
+														)}
+													/>
+												</FieldRow>
+												<FieldRow>
+													<FieldHint id={`${replyWhenReadOnlyField}-hint`}>
+														{replyWhenReadOnly ? t('Anyone_can_reply_in_threads') : t('Only_authorized_users_can_reply_in_threads')}
 													</FieldHint>
 												</FieldRow>
 											</Field>

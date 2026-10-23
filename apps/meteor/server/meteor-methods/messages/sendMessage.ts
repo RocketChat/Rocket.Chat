@@ -75,10 +75,15 @@ export async function executeSendMessage(
 	// do not allow nested threads
 	if (message.tmid) {
 		const parentMessage = await Messages.findOneById(message.tmid, { projection: { rid: 1, tmid: 1 } });
-		message.tmid = parentMessage?.tmid || message.tmid;
+		if (!parentMessage) {
+			throw new Meteor.Error('error-message-not-found', 'The thread parent message does not exist', {
+				method: 'sendMessage',
+			});
+		}
+		message.tmid = parentMessage.tmid || message.tmid;
 
-		if (parentMessage?.rid) {
-			rid = parentMessage?.rid;
+		if (parentMessage.rid) {
+			rid = parentMessage.rid;
 		}
 	}
 
@@ -89,7 +94,7 @@ export async function executeSendMessage(
 	check(rid, String);
 
 	try {
-		const room = await canSendMessageAsync(rid, user);
+		const room = await canSendMessageAsync(rid, user, { tmid: message.tmid, tshow: message.tshow });
 
 		if (room.encrypted && settings.get<boolean>('E2E_Enable') && !settings.get<boolean>('E2E_Allow_Unencrypted_Messages')) {
 			if (message.t !== 'e2e') {

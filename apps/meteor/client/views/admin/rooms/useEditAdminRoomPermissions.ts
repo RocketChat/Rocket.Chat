@@ -17,6 +17,7 @@ export const useEditAdminRoomPermissions = (room: Pick<IRoom, RoomAdminFieldsTyp
 		canViewType,
 		canViewReadOnly,
 		canViewReactWhenReadOnly,
+		canViewReplyWhenReadOnly,
 	] = useMemo(() => {
 		const isAllowed = roomCoordinator.getRoomDirectives(room.t).allowRoomSettingChange;
 		return [
@@ -28,6 +29,7 @@ export const useEditAdminRoomPermissions = (room: Pick<IRoom, RoomAdminFieldsTyp
 			isAllowed?.(room, RoomSettingsEnum.TYPE),
 			isAllowed?.(room, RoomSettingsEnum.READ_ONLY),
 			isAllowed?.(room, RoomSettingsEnum.REACT_WHEN_READ_ONLY),
+			isAllowed?.(room, RoomSettingsEnum.REPLY_WHEN_READ_ONLY),
 		];
 	}, [room]);
 
@@ -40,5 +42,6 @@ export const useEditAdminRoomPermissions = (room: Pick<IRoom, RoomAdminFieldsTyp
 		canViewType,
 		canViewReadOnly,
 		canViewReactWhenReadOnly,
+		canViewReplyWhenReadOnly,
 	};
 };
