@@ -33,6 +33,17 @@ it('shows the thumbnail and only loads the player once the video is clicked', as
 	const player = screen.getByTitle('Release walkthrough');
 	expect(player).toHaveAttribute('src', 'https://player.example.com/embed/1');
 	expect(player).toHaveAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+	expect(player).toHaveFocus();
+});
+
+it('shows the thumbnail again when the block changes to another video', async () => {
+	const { rerender } = renderVideo(video());
+
+	await userEvent.click(screen.getByRole('button', { name: 'Release walkthrough' }));
+	rerender(<MockedServerContext>{messageParser.render([video({ video_url: 'https://player.example.com/embed/2' })])}</MockedServerContext>);
+
+	expect(screen.queryByTitle('Release walkthrough')).not.toBeInTheDocument();
+	expect(screen.getByRole('button', { name: 'Release walkthrough' })).toBeEnabled();
 });
 
 it('links the title and shows the provider and the author', () => {

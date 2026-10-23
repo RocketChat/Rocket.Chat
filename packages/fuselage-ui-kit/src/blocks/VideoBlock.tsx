@@ -1,6 +1,6 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
 import * as UiKit from '@rocket.chat/ui-kit';
-import { memo, useState } from 'react';
+import { memo, useCallback, useState } from 'react';
 
 import type { BlockProps } from '../utils/BlockProps';
 import { isTextObject } from '../utils/isTextObject';
@@ -20,7 +20,9 @@ const isPlayableUrl = (url: string) => {
 };
 
 const VideoBlock = ({ className, block, surfaceRenderer }: VideoBlockProps) => {
-	const [playing, setPlaying] = useState(false);
+	// Remembers the clicked URL, so a block replaced with another video shows its thumbnail again.
+	const [playedUrl, setPlayedUrl] = useState<string>();
+	const focusPlayer = useCallback((player: HTMLIFrameElement | null) => player?.focus(), []);
 
 	const playable = isPlayableUrl(block.video_url);
 	const titleUrl = block.title_url && UiKit.isSafeUrl(block.title_url) ? block.title_url : undefined;
@@ -37,8 +39,9 @@ const VideoBlock = ({ className, block, surfaceRenderer }: VideoBlockProps) => {
 				backgroundColor='surface-tint'
 				style={{ aspectRatio: '16 / 9' }}
 			>
-				{playing && playable ? (
+				{playedUrl === block.video_url && playable ? (
 					<iframe
+						ref={focusPlayer}
 						src={block.video_url}
 						title={block.alt_text}
 						allow='autoplay; encrypted-media; picture-in-picture; fullscreen'
@@ -54,7 +57,7 @@ const VideoBlock = ({ className, block, surfaceRenderer }: VideoBlockProps) => {
 						type='button'
 						aria-label={block.alt_text}
 						disabled={!playable}
-						onClick={() => setPlaying(true)}
+						onClick={() => setPlayedUrl(block.video_url)}
 						position='relative'
 						width='full'
 						height='full'
