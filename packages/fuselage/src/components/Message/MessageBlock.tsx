@@ -1,11 +1,10 @@
 import { styled, View, type GetProps } from '@tamagui/web';
-import type { RefAttributes } from 'react';
 
 import { boxText } from './messageStyles';
 import { toCSSValue } from '../../helpers/toCSSValue';
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { spacing } from '../../styleTokens';
-import type { BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 const MessageBlockFrame = styled(View, {
@@ -25,14 +24,13 @@ const MessageBlockFrame = styled(View, {
 	} as const,
 });
 
-export type MessageBlockProps = Omit<BoxProps, 'ref'> &
-	RefAttributes<HTMLDivElement> & {
-		fixedWidth?: boolean;
-	};
+export type MessageBlockProps = ElementProps<HTMLDivElement> & {
+	fixedWidth?: boolean;
+};
 
 function MessageBlock({ className: _className, fixedWidth, ...props }: MessageBlockProps) {
 	const frameProps = useTamaguiBoxProps(
-		props,
+		props as typeof props & { className?: string },
 		['rcx-message-block', fixedWidth && 'rcx-message-block--width-fixed'].filter(Boolean).join(' '),
 	);
 

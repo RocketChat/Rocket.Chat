@@ -2,6 +2,7 @@ import { css } from '@rocket.chat/css-in-js';
 
 import { statusColors, surfaceColors, textIconColors } from '../../Theme';
 import { toCSSValue } from '../../helpers/toCSSValue';
+import { useStyle } from '../../hooks/useStyle';
 import { borderRadius } from '../../styleTokens';
 import { Icon, type IconProps } from '../Icon';
 
@@ -25,17 +26,16 @@ const iconStyle = (variation: StatesIconProps['variation']) => css`
 	background-color: ${surfaceColors['surface-neutral']};
 `;
 
-const StatesIcon = ({ variation, className, ...props }: StatesIconProps) => (
-	<Icon
-		{...props}
-		className={[
-			'rcx-states__icon',
-			variation && `rcx-states__icon--${variation}`,
-			iconStyle(variation),
-			...(Array.isArray(className) ? className : [className]),
-		]}
-		size='x32'
-	/>
-);
+const StatesIcon = ({ variation, className, ...props }: StatesIconProps) => {
+	const iconClassName = useStyle(iconStyle(variation));
+
+	return (
+		<Icon
+			{...props}
+			className={['rcx-states__icon', variation && `rcx-states__icon--${variation}`, iconClassName, className].filter(Boolean).join(' ')}
+			size='x32'
+		/>
+	);
+};
 
 export default StatesIcon;

@@ -1,14 +1,14 @@
 import button from '@rocket.chat/fuselage-tokens/dist/button.json';
 import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
 import { styled, Text, type GetProps } from '@tamagui/web';
-import type { ReactNode } from 'react';
+import type { AnchorHTMLAttributes, ReactNode } from 'react';
 
 import { statusColors, strokeColors, surfaceColors, textIconColors } from '../../Theme';
 import { prependClassName } from '../../helpers/prependClassName';
 import { toCSSColorValue, toCSSValue } from '../../helpers/toCSSValue';
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { borderRadius, borderWidth, fontFamily, fontScale, spacing } from '../../styleTokens';
-import type { BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 type Variant = NonNullable<TagProps['variant']> | 'default';
@@ -166,7 +166,7 @@ export type TagProps = {
 	variant?: 'primary' | 'secondary' | 'danger' | 'warning' | 'secondary-danger' | 'secondary-warning' | 'secondary-info' | 'featured';
 	disabled?: boolean;
 	icon?: ReactNode;
-} & Omit<BoxProps, 'is'>;
+} & ElementProps<HTMLElement, AnchorHTMLAttributes<HTMLElement>>;
 
 /**
  * Used for mentions
@@ -189,7 +189,7 @@ const Tag = ({ large, medium, pill, className, disabled, onClick, variant, child
 
 	const frameProps = useTamaguiBoxProps({
 		is: href ? 'a' : 'span',
-		className: prependClassName(className as string, `rcx-tag ${modifiers}`),
+		className: prependClassName(className, `rcx-tag ${modifiers}`),
 		onClick,
 		href,
 		...props,

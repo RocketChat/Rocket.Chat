@@ -1,6 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { styled, View, type GetProps } from '@tamagui/web';
-import type { ElementType, ReactNode, RefAttributes } from 'react';
+import type { DialogHTMLAttributes, ElementType, ReactNode } from 'react';
 import { createElement } from 'react';
 
 import { surfaceColors, textIconColors } from '../../Theme';
@@ -8,20 +8,22 @@ import { toCSSValue } from '../../helpers/toCSSValue';
 import { useStyle } from '../../hooks/useStyle';
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { borderRadius, fontFamily, fontScale, size } from '../../styleTokens';
+import type { ElementProps } from '../../types/ElementProps';
 import { Box, type BoxProps } from '../Box';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-export type ModalProps = Omit<BoxProps, 'ref'> &
-	RefAttributes<Element> & {
-		/** A fixed width, for content that needs it instead of the default fluid one. */
-		width?: BoxProps['width'];
-		/** A fixed height, for content that has no intrinsic height (e.g. an iframe). */
-		height?: BoxProps['height'];
-		/** Hides the modal while keeping it, and its state, mounted. */
-		hidden?: boolean;
-		wrapperFunction?: (props: Pick<BoxProps, 'elevation' | 'className' | 'children'>) => ReactNode;
-		wrapper?: ElementType<Pick<BoxProps, 'elevation' | 'className' | 'children'>>;
-	};
+export type ModalProps = ElementProps<Element, DialogHTMLAttributes<HTMLDialogElement>> & {
+	/** A fixed width, for content that needs it instead of the default fluid one. */
+	width?: BoxProps['width'];
+	/** A fixed height, for content that has no intrinsic height (e.g. an iframe). */
+	height?: BoxProps['height'];
+	/** A maximum height, past which the content scrolls, for content taller than the default limit allows. */
+	maxHeight?: BoxProps['maxHeight'];
+	/** Hides the modal while keeping it, and its state, mounted. */
+	hidden?: boolean;
+	wrapperFunction?: (props: Pick<BoxProps, 'elevation' | 'className' | 'children'>) => ReactNode;
+	wrapper?: ElementType<Pick<BoxProps, 'elevation' | 'className' | 'children'>>;
+};
 
 /** The margin around the header and the footer. */
 export const modalContainerMargin = toCSSValue('--rcx-modal-container-margin', size('x24')!);

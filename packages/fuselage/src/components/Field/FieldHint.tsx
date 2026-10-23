@@ -1,13 +1,13 @@
 import type { GetProps } from '@tamagui/web';
 
-import WithErrorWrapper from '../../helpers/WithErrorWrapper';
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
-import type { BoxProps } from '../Box';
 import { FieldContext } from './Field';
 import { FieldHintFrame } from './FieldFrames';
+import WithErrorWrapper from '../../helpers/WithErrorWrapper';
+import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-export type FieldHintProps = BoxProps;
+export type FieldHintProps = ElementProps<HTMLSpanElement>;
 
 const FieldHint = (props: FieldHintProps) => {
 	const frameProps = useTamaguiBoxProps({ ...props }, 'rcx-field__hint');

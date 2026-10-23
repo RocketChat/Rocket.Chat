@@ -1,14 +1,14 @@
 import type { GetProps } from '@tamagui/web';
 import { createContext } from 'react';
 
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
-import type { BoxProps } from '../Box';
 import { FieldFrame } from './FieldFrames';
+import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 export const FieldContext = createContext(false);
 
-export type FieldProps = BoxProps;
+export type FieldProps = ElementProps<HTMLDivElement>;
 
 /**
  * A `Field` is a wrapper representing an entry in a form.

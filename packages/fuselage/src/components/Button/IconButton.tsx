@@ -1,11 +1,11 @@
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { GetProps } from '@tamagui/web';
-import type { ReactElement, ReactNode } from 'react';
+import type { AllHTMLAttributes, ReactElement, ReactNode, RefAttributes } from 'react';
 import { isValidElement, useContext, useMemo } from 'react';
 
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
-import type { BoxProps } from '../Box';
 import { ButtonBadge, ButtonFrame, getButtonStates, renderButtonElement } from './ButtonFrame';
+import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import type { ElementProps } from '../../types/ElementProps';
 import { BoxTransforms, useBoxTransform } from '../Box/BoxTransforms';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 import { Icon } from '../Icon';
@@ -46,7 +46,8 @@ export type IconButtonProps = {
 	/** Paints the glyph with a font token, for icon-only actions on light surfaces. */
 	color?: 'default' | 'danger';
 } & IconButtonSize &
-	Omit<BoxProps, 'is' | 'color'>;
+	Omit<ElementProps<HTMLButtonElement | HTMLAnchorElement, AllHTMLAttributes<HTMLButtonElement | HTMLAnchorElement>>, 'ref'> &
+	RefAttributes<Element>;
 
 const kindByVariant: Record<string, ButtonKind> = {
 	'secondary': 'secondary',

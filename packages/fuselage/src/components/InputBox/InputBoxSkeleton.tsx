@@ -4,7 +4,7 @@ import { strokeColors, surfaceColors, textIconColors } from '../../Theme';
 import { toCSSValue } from '../../helpers/toCSSValue';
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { borderRadius, borderWidth, fontFamily, fontScale, size, spacing } from '../../styleTokens';
-import type { BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 import { Skeleton } from '../Skeleton';
 
@@ -32,7 +32,7 @@ const InputBoxSkeletonFrame = styled(View, {
 	...fontScale('p2m'),
 });
 
-export type InputBoxSkeletonProps = BoxProps;
+export type InputBoxSkeletonProps = ElementProps<HTMLDivElement>;
 
 const InputBoxSkeleton = (props: InputBoxSkeletonProps) => (
 	<InputBoxSkeletonFrame {...(useTamaguiBoxProps({ ...props }, 'rcx-skeleton__input') as GetProps<typeof InputBoxSkeletonFrame>)}>

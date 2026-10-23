@@ -1,9 +1,10 @@
 import { styled, Text, type GetProps } from '@tamagui/web';
+import type { LabelHTMLAttributes } from 'react';
 
 import { InputBoxWrapperContext, inputChrome } from './Input';
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { borderWidth, fontColor, fontScale, size, spacing } from '../../styleTokens';
-import type { BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 import { labelBoxDefaults } from '../Label/Label';
 
@@ -59,7 +60,12 @@ const InputBoxWrapperFrame = styled(Text, {
 	} as const,
 });
 
-export type InputBoxWrapperProps = BoxProps & { small?: boolean; textarea?: boolean; endAddonFlush?: boolean };
+export type InputBoxWrapperProps = ElementProps<HTMLLabelElement, LabelHTMLAttributes<HTMLLabelElement>> & {
+	invisible?: boolean;
+	small?: boolean;
+	textarea?: boolean;
+	endAddonFlush?: boolean;
+};
 
 const InputBoxWrapper = ({ small, textarea, endAddonFlush, ...props }: InputBoxWrapperProps) => (
 	<InputBoxWrapperContext.Provider value={true}>

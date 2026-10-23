@@ -5,13 +5,14 @@ import type { ReactNode, RefObject } from 'react';
 
 import { statusColors, surfaceColors, textIconColors } from '../../Theme';
 import { toCSSValue } from '../../helpers/toCSSValue';
+import { useStyle } from '../../hooks/useStyle';
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { borderRadius, borderWidth, fontFamily, fontScale, spacing } from '../../styleTokens';
-import type { BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 import { Icon, type IconProps } from '../Icon';
 
-export type CalloutProps = Omit<BoxProps, 'type' | 'name'> & {
+export type CalloutProps = ElementProps<HTMLElement> & {
 	type?: 'info' | 'success' | 'warning' | 'danger';
 	title?: ReactNode;
 	children?: ReactNode;
@@ -127,6 +128,14 @@ const Callout = ({ type, title, children, icon, actions, ...props }: CalloutProp
 	const { ref, borderBoxSize } = useResizeObserver();
 	const isLarge = !!borderBoxSize.inlineSize && borderBoxSize.inlineSize >= WRAPPER_LIMIT_SIZE;
 
+	const iconColorClassName = useStyle(
+		type
+			? css`
+					color: ${calloutColors[type]};
+				`
+			: undefined,
+	);
+
 	const frameProps = useTamaguiBoxProps(props, ['rcx-callout', type && `rcx-callout--${type}`].filter(Boolean).join(' '));
 
 	const defaultIcon =
@@ -138,17 +147,7 @@ const Callout = ({ type, title, children, icon, actions, ...props }: CalloutProp
 
 	return (
 		<CalloutFrame ref={ref as RefObject<TamaguiElement>} type={type} {...(frameProps as GetProps<typeof CalloutFrame>)}>
-			<Icon
-				className={[
-					'rcx-callout__icon',
-					type &&
-						css`
-							color: ${calloutColors[type]};
-						`,
-				]}
-				name={icon || defaultIcon}
-				size='x20'
-			/>
+			<Icon className={['rcx-callout__icon', iconColorClassName].filter(Boolean).join(' ')} name={icon || defaultIcon} size='x20' />
 			<CalloutWrapper large={isLarge} className={isLarge ? 'rcx-callout__wrapper rcx-callout__wrapper--large' : 'rcx-callout__wrapper'}>
 				<CalloutWrapperContent className='rcx-callout__wrapper-content'>
 					{title && <CalloutTitle className='rcx-callout__title'>{title}</CalloutTitle>}

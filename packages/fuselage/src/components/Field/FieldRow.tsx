@@ -1,13 +1,13 @@
 import type { GetProps } from '@tamagui/web';
 
-import WithErrorWrapper from '../../helpers/WithErrorWrapper';
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
-import type { BoxProps } from '../Box';
 import { FieldContext } from './Field';
 import { FieldRowFrame } from './FieldFrames';
+import WithErrorWrapper from '../../helpers/WithErrorWrapper';
+import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-export type FieldRowProps = BoxProps & {
+export type FieldRowProps = ElementProps<HTMLSpanElement> & {
 	/** Packs the row's content at the end of the line. */
 	justify?: 'end';
 };

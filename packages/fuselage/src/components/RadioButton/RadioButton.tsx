@@ -1,10 +1,10 @@
 import { styled, View, type GetProps } from '@tamagui/web';
-import type { AllHTMLAttributes, ReactNode, RefAttributes } from 'react';
+import type { InputHTMLAttributes, ReactNode } from 'react';
 
 import { toCSSValue } from '../../helpers/toCSSValue';
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { borderRadius, size } from '../../styleTokens';
-import type { BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
 import {
 	createSelectionButtonFake,
 	hasDisabledClassName,
@@ -32,15 +32,13 @@ const RadioButtonDot = styled(View, {
 	backgroundColor: 'currentColor',
 });
 
-export type RadioButtonProps = Omit<BoxProps, 'ref'> &
-	RefAttributes<HTMLInputElement> &
-	AllHTMLAttributes<HTMLInputElement> & {
-		labelChildren?: ReactNode;
-	};
+export type RadioButtonProps = ElementProps<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>> & {
+	labelChildren?: ReactNode;
+};
 
 function RadioButton({ className, labelChildren, ...props }: RadioButtonProps) {
 	const labelProps = useTamaguiBoxProps({ className }, 'rcx-radio-button');
-	const inputProps = useTamaguiBoxProps(props, 'rcx-radio-button__input');
+	const inputProps = useTamaguiBoxProps(props as typeof props & { className?: string }, 'rcx-radio-button__input');
 
 	return (
 		<SelectionButtonLabel notAllowed={hasDisabledClassName(labelProps.className)} {...labelProps}>

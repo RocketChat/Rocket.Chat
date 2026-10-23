@@ -1,13 +1,13 @@
 import { styled, Text, type GetProps } from '@tamagui/web';
-import type { AllHTMLAttributes } from 'react';
+import type { AnchorHTMLAttributes } from 'react';
 
 import { textIconColors } from '../../Theme';
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { fontFamily, fontScale, spacing } from '../../styleTokens';
-import type { BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-export type StatesLinkProps = BoxProps & AllHTMLAttributes<HTMLAnchorElement>;
+export type StatesLinkProps = ElementProps<HTMLAnchorElement, AnchorHTMLAttributes<HTMLAnchorElement>>;
 
 const StatesLinkFrame = styled(Text, {
 	render: 'a',

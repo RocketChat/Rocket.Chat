@@ -12,6 +12,7 @@
 @import './InputBox/InputBox.styles.css';
 @import './Item/Item.styles.css';
 @import './Message/Messages.styles.css';
+@import './NavBar/NavBar.styles.css';
 @import './Option/Option.styles.css';
 @import './Options/Options.styles.css';
 @import './ProgressBar/ProgressBar.styles.css';

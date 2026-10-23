@@ -1,11 +1,13 @@
 import { styled, View, type GetProps } from '@tamagui/web';
+import type { ImgHTMLAttributes } from 'react';
 
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { size } from '../../styleTokens';
+import type { ElementProps } from '../../types/ElementProps';
 import type { BoxProps } from '../Box';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-export type ModalHeroImageProps = BoxProps & {
+export type ModalHeroImageProps = ElementProps<HTMLImageElement, ImgHTMLAttributes<HTMLImageElement>> & {
 	/** The rendered width, which the `width` attribute alone cannot set over the fluid default. */
 	width?: BoxProps['width'];
 	/** The rendered height, which the `height` attribute alone cannot set over the fluid default. */

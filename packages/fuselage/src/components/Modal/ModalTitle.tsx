@@ -4,10 +4,10 @@ import { modalBoxFont } from './Modal';
 import { textIconColors } from '../../Theme';
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { fontScale } from '../../styleTokens';
-import type { BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-export type ModalTitleProps = BoxProps;
+export type ModalTitleProps = ElementProps<HTMLHeadingElement>;
 
 const ModalTitleFrame = styled(Text, {
 	render: 'h2',

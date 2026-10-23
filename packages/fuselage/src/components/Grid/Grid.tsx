@@ -1,9 +1,9 @@
 import { styled, View, type GetProps } from '@tamagui/web';
 import { useMemo } from 'react';
 
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
-import type { BoxProps } from '../Box';
 import GridItem, { gridBoxStyle, GridContext, gutter } from './GridItem';
+import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 const GridWrapper = styled(View, {
@@ -21,7 +21,7 @@ const GridFrame = styled(View, {
 	marginInline: { default: gutter('xs', -1 / 2), sm: gutter('sm', -1 / 2), md: gutter('md', -1 / 2) },
 });
 
-export type GridProps = BoxProps & {
+export type GridProps = ElementProps<HTMLDivElement> & {
 	xs?: boolean;
 	sm?: boolean;
 	md?: boolean;

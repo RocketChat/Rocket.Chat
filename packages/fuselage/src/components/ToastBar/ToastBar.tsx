@@ -4,6 +4,7 @@ import { type ReactNode, type AllHTMLAttributes, useId } from 'react';
 
 import { statusColors, surfaceColors, textIconColors } from '../../Theme';
 import { toCSSValue } from '../../helpers/toCSSValue';
+import { useStyle } from '../../hooks/useStyle';
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { borderRadius, fontFamily, fontScale, size, spacing } from '../../styleTokens';
 import { IconButton } from '../Button';
@@ -156,22 +157,19 @@ function ToastBar({
 		`rcx-toastbar rcx-toastbar--${variant}`,
 	);
 	const progressFillProps = useTamaguiBoxProps({ className: [progressBarAnimation] });
+	const iconColorClassName = useStyle(
+		variant !== 'info'
+			? css`
+					color: ${toastBarStatusColors[variant]};
+				`
+			: undefined,
+	);
 
 	return (
 		<ToastBarFrame {...(frameProps as GetProps<typeof ToastBarFrame>)}>
 			<ToastBarStatusLine aria-hidden variant={variant} />
 			<ToastBarInner className='rcx-toastbar_inner'>
-				<Icon
-					className={[
-						`rcx-toastbar_icon--${variant}`,
-						variant !== 'info' &&
-							css`
-								color: ${toastBarStatusColors[variant]};
-							`,
-					]}
-					size='x20'
-					name={iconName}
-				/>
+				<Icon className={[`rcx-toastbar_icon--${variant}`, iconColorClassName].filter(Boolean).join(' ')} size='x20' name={iconName} />
 				<ToastBarContent role={role} className='rcx-toastbar_content'>
 					{children}
 				</ToastBarContent>

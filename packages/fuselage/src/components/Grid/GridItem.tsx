@@ -4,7 +4,7 @@ import { createContext, useContext } from 'react';
 
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { fontFamily } from '../../styleTokens';
-import type { BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 /** What `rcx-box rcx-box--full` used to give every Grid element. */
@@ -81,7 +81,7 @@ const useItemStyle = (columnsByBreakpoint: Partial<Record<Breakpoint, number>>) 
 	};
 };
 
-export type GridItemProps = BoxProps & {
+export type GridItemProps = ElementProps<HTMLDivElement> & {
 	xs?: 1 | 2 | 3 | 4;
 	sm?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 	md?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;

@@ -5,7 +5,8 @@ import { strokeColors } from '../../Theme';
 import { toCSSValue } from '../../helpers/toCSSValue';
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { borderWidth, size, spacing } from '../../styleTokens';
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 const dividerSize = toCSSValue('--rcx-divider-size', borderWidth('default'));
@@ -68,7 +69,7 @@ const DividerWrapper = styled(Text, {
 	paddingInline: spacing('x8'),
 });
 
-export type DividerProps = BoxProps & {
+export type DividerProps = ElementProps<HTMLElement> & {
 	variation?: 'danger' | 'light';
 	children?: ReactNode;
 	vertical?: boolean;

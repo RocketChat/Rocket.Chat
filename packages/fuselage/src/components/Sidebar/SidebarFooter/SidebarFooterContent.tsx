@@ -1,7 +1,7 @@
 import { styled, Text, type GetProps } from '@tamagui/web';
 
 import { useTamaguiBoxProps } from '../../../hooks/useTamaguiBoxProps';
-import type { BoxProps } from '../../Box';
+import type { ElementProps } from '../../../types/ElementProps';
 import { withFuselageProvider } from '../../FuselageProvider/FuselageProvider';
 import { boxFull, typography } from '../sidebarStyles';
 
@@ -13,7 +13,7 @@ const SidebarFooterContentFrame = styled(Text, {
 	...typography('micro'),
 });
 
-const SidebarFooterContentBase = ({ children, ...props }: BoxProps) => {
+const SidebarFooterContentBase = ({ children, ...props }: ElementProps<HTMLDivElement>) => {
 	const frameProps = useTamaguiBoxProps(props, 'rcx-sidebar-footer__content');
 
 	return <SidebarFooterContentFrame {...(frameProps as GetProps<typeof SidebarFooterContentFrame>)}>{children}</SidebarFooterContentFrame>;

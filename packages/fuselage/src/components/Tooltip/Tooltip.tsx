@@ -1,11 +1,10 @@
 import { styled, Text, View, type GetProps } from '@tamagui/web';
-import type { RefAttributes } from 'react';
 
 import { surfaceColors, textIconColors } from '../../Theme';
 import { toCSSValue } from '../../helpers/toCSSValue';
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { borderRadius, fontFamily, fontScale } from '../../styleTokens';
-import type { BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 const darkBackgroundColor = toCSSValue('--rcx-tooltip-dark-background-color', surfaceColors['surface-dark']);
@@ -89,12 +88,11 @@ const parsePlacement = (placement: string | null | undefined) => {
 	return [direction, position];
 };
 
-export type TooltipProps = Omit<BoxProps, 'ref'> &
-	RefAttributes<HTMLElement> & {
-		variation?: 'dark' | 'light';
-		placement?:
-			'top-start' | 'top-middle' | 'top-end' | 'bottom-start' | 'bottom-middle' | 'bottom-end' | 'top' | 'left' | 'bottom' | 'right' | null;
-	};
+export type TooltipProps = ElementProps<HTMLElement> & {
+	variation?: 'dark' | 'light';
+	placement?:
+		'top-start' | 'top-middle' | 'top-end' | 'bottom-start' | 'bottom-middle' | 'bottom-end' | 'top' | 'left' | 'bottom' | 'right' | null;
+};
 
 function Tooltip({ variation = 'dark', placement, children, ...props }: TooltipProps) {
 	const [direction, position] = parsePlacement(placement);

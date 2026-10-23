@@ -138,6 +138,21 @@ export const TableCellFrame = styled(Text, {
 				cursor: 'pointer',
 			},
 		},
+		truncate: {
+			true: {
+				overflow: 'hidden',
+				textOverflow: 'ellipsis',
+				whiteSpace: 'nowrap',
+			},
+		},
+		// Not `color`, which Tamagui takes as the style prop
+		tone: {
+			default: { color: String(textIconColors['font-default']) },
+			hint: { color: String(textIconColors['font-hint']) },
+		},
+		strong: {
+			true: toFontStyle('p2m'),
+		},
 		align: {
 			start: { textAlign: 'start' },
 			end: { textAlign: 'end' },

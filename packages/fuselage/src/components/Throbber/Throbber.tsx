@@ -1,11 +1,11 @@
 import { css } from '@rocket.chat/css-in-js';
 import button from '@rocket.chat/fuselage-tokens/dist/button.json';
 import { styled, View, type GetProps } from '@tamagui/web';
-import type { RefAttributes } from 'react';
 
 import { toCSSColorValue } from '../../helpers/toCSSValue';
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { fontFamily, spacing } from '../../styleTokens';
+import type { ElementProps } from '../../types/ElementProps';
 import type { BoxProps } from '../Box';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
@@ -73,12 +73,12 @@ function Circle({ disabled, circleCount, iteration, inheritColor, ...props }: Ci
 	return <CircleFrame disabled={disabled} inheritColor={inheritColor} {...frameProps} />;
 }
 
-export type ThrobberProps = Omit<BoxProps, 'ref' | 'disabled'> &
-	RefAttributes<HTMLElement> & {
-		circleCount?: number;
-		disabled?: boolean;
-		inheritColor?: boolean;
-	};
+export type ThrobberProps = ElementProps<HTMLElement> & {
+	size?: BoxProps['size'];
+	circleCount?: number;
+	disabled?: boolean;
+	inheritColor?: boolean;
+};
 
 /**
  * Indicates content that has not loaded yet.

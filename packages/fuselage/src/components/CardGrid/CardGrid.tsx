@@ -1,31 +1,32 @@
-import type { CSSProperties, ReactNode } from 'react';
+import { css } from '@rocket.chat/css-in-js';
+import type { ReactNode } from 'react';
 import { Children, isValidElement } from 'react';
 
 import CardGridItem from './CardGridItem';
-import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
+import { useStyle } from '../../hooks/useStyle';
 import type { GridItemProps } from '../Grid';
-import { GridItem } from '../Grid';
+import { Grid, GridItem } from '../Grid';
 
-export type CardGridProps = Omit<ElementProps<HTMLDivElement>, 'children'> & {
+export type CardGridProps = {
 	children: ReactNode;
 	breakpoints?: GridItemProps;
 	/** Minimum height of each row in pixels, gutters included. */
 	minRowHeight?: number;
 };
 
-const CardGrid = ({ children, breakpoints, minRowHeight, className, ...props }: CardGridProps) => (
-	<Box rcx-grid__wrapper>
-		<Box
-			rcx-grid
-			{...props}
-			className={['rcx-card-grid', className]}
-			style={
-				minRowHeight === undefined
-					? props.style
-					: ({ '--rcx-card-grid-min-row-height': `${minRowHeight}px`, ...props.style } as CSSProperties)
-			}
-		>
+const CardGrid = ({ children, breakpoints, minRowHeight }: CardGridProps) => {
+	const rowHeightClassName = useStyle(
+		minRowHeight !== undefined
+			? css`
+					& > .rcx-card-grid__item {
+						min-height: ${minRowHeight}px;
+					}
+				`
+			: undefined,
+	);
+
+	return (
+		<Grid className={['rcx-card-grid', rowHeightClassName].filter(Boolean).join(' ')}>
 			{Children.map(children, (child) => {
 				if (child === null) {
 					return null;
@@ -41,8 +42,8 @@ const CardGrid = ({ children, breakpoints, minRowHeight, className, ...props }: 
 					</GridItem>
 				);
 			})}
-		</Box>
-	</Box>
-);
+		</Grid>
+	);
+};
 
 export default CardGrid;

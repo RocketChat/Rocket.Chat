@@ -11,9 +11,7 @@ export type SplitButtonTriggerProps = IconButtonProps;
  */
 function SplitButtonTrigger({ className, ...props }: SplitButtonTriggerProps) {
 	const segment = useContext(ButtonSegmentContext);
-	const button = (
-		<IconButton {...props} className={['rcx-split-button__trigger', ...(Array.isArray(className) ? className : [className])]} />
-	);
+	const button = <IconButton {...props} className={['rcx-split-button__trigger', className].filter(Boolean).join(' ')} />;
 
 	if (!segment) {
 		return button;
