@@ -1,4 +1,4 @@
-import { Box, Button } from '@rocket.chat/fuselage';
+import { Button, Stack } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { useState } from 'react';
 
@@ -17,7 +17,7 @@ const FeedbackButtonsElement = ({ block, context }: FeedbackButtonsElementProps)
 	] as const;
 
 	return (
-		<Box display='flex'>
+		<Stack direction='row' gap={4}>
 			{buttons.map(({ kind, button, emoji }) => (
 				<Button
 					key={kind}
@@ -32,12 +32,11 @@ const FeedbackButtonsElement = ({ block, context }: FeedbackButtonsElementProps)
 						setChosen(kind);
 						void action({ target: { value: button.value } });
 					}}
-					marginInlineEnd={4}
 				>
 					<span aria-hidden>{emoji}</span>
 				</Button>
 			))}
-		</Box>
+		</Stack>
 	);
 };
 

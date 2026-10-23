@@ -28,14 +28,11 @@ const TableBlock = ({ className, block, surfaceRenderer }: TableBlockProps) => {
 			const setting = block.column_settings?.[index];
 
 			return (
-				<TableCell
-					key={index}
-					align={setting?.align ? alignments[setting.align] : undefined}
-					withTruncatedText={!setting?.is_wrapped}
-					fontScale='p2'
-				>
-					{isRawTextCell(cell) && cell.text}
-					{isTextObject(cell) && surfaceRenderer.renderTextObject(cell, index, UiKit.BlockContext.NONE)}
+				<TableCell key={index} align={setting?.align ? alignments[setting.align] : undefined}>
+					<Box fontScale='p2' withTruncatedText={!setting?.is_wrapped}>
+						{isRawTextCell(cell) && cell.text}
+						{isTextObject(cell) && surfaceRenderer.renderTextObject(cell, index, UiKit.BlockContext.NONE)}
+					</Box>
 				</TableCell>
 			);
 		});
