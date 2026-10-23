@@ -37,7 +37,6 @@ const { FileUpload, FileUploadClass } = proxyquire.noCallThru().load('./FileUplo
 	},
 	'meteor/check': sinon.stub(),
 	'meteor/meteor': sinon.stub(),
-	'meteor/ostrio:cookies': { Cookies: sinon.stub() },
 	'sharp': sinon.stub(),
 	'stream-buffers': sinon.stub(),
 	'@rocket.chat/tools': sinon.stub(),

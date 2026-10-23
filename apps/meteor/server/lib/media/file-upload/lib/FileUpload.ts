@@ -17,9 +17,9 @@ import { isE2EEUpload, type IUpload } from '@rocket.chat/core-typings';
 import { Users, Avatars, UserDataFiles, Uploads, Settings, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
 import { streamToBuffer } from '@rocket.chat/tools';
 import type { NextFunction } from 'connect';
+import { parseCookie } from 'cookie';
 import filesize from 'filesize';
 import { Match } from 'meteor/check';
-import { Cookies } from 'meteor/ostrio:cookies';
 import type { ClientSession, OptionalId } from 'mongodb';
 import sharp from 'sharp';
 import type { WritableStreamBuffer } from 'stream-buffers';
@@ -39,8 +39,6 @@ import { roomCoordinator } from '../../../rooms/roomCoordinator';
 import { getURL } from '../../../utils/getURL';
 import { validateAndDecodeJWT, generateJWT } from '../../../utils/lib/JWTHelper';
 import { fileUploadIsValidContentType } from '../../../utils/restrictions';
-
-const cookie = new Cookies();
 
 // Caps GIF frames decoded per thumbnail; limitInputPixels doesn't bound frame count.
 const MAX_ANIMATED_THUMBNAIL_PAGES = 100;
@@ -451,8 +449,7 @@ export const FileUpload = {
 		let { rc_uid, rc_token } = query as Record<string, string | undefined>;
 
 		if (!rc_uid && headers.cookie) {
-			rc_uid = cookie.get('rc_uid', headers.cookie);
-			rc_token = cookie.get('rc_token', headers.cookie);
+			({ rc_uid, rc_token } = parseCookie(headers.cookie));
 		}
 
 		const uid = rc_uid || (headers['x-user-id'] as string);
@@ -477,10 +474,7 @@ export const FileUpload = {
 		const { token } = query;
 
 		if (!rc_uid && headers.cookie) {
-			rc_uid = cookie.get('rc_uid', headers.cookie);
-			rc_token = cookie.get('rc_token', headers.cookie);
-			rc_rid = cookie.get('rc_rid', headers.cookie);
-			rc_room_type = cookie.get('rc_room_type', headers.cookie);
+			({ rc_uid, rc_token, rc_rid, rc_room_type } = parseCookie(headers.cookie));
 		}
 
 		const isAuthorizedByRoom = async () =>
