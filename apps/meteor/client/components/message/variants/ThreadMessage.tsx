@@ -14,6 +14,8 @@ import MessageContentFallback from '../MessageContentFallback';
 import MessageHeader from '../MessageHeader';
 import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
+import { getMessageLabelledBy } from '../helpers/getMessageLabelledBy';
+import { useMessageListReadReceipts } from '../list/MessageListContext';
 import ThreadMessageContent from './thread/ThreadMessageContent';
 
 export type ThreadMessageProps = {
@@ -31,6 +33,7 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar, ignoredUse
 	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
 	const ignored = ignoredUser && !displayIgnoredMessage;
 	const { openUserCard, openUserInfo } = useUserCard();
+	const { enabled: readReceiptEnabled } = useMessageListReadReceipts();
 
 	// Checks if is videoconf message to limit toolbox actions
 	const messageContext: MessageActionContext = isVideoConfMessage(message) ? 'videoconf-threads' : 'threads';
@@ -39,6 +42,7 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar, ignoredUse
 		<Message
 			role='listitem'
 			aria-roledescription={t('thread_message')}
+			aria-labelledby={getMessageLabelledBy({ messageId: message._id, sequential, readReceiptEnabled })}
 			tabIndex={0}
 			id={message._id}
 			isEditing={editing}

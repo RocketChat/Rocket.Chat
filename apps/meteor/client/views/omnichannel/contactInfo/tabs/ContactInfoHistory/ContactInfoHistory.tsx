@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import ContactInfoHistoryItem from './ContactInfoHistoryItem';
+import { virtuosoListComponents } from '../../../../../components/VirtuosoList';
 import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 import { useItemListNavigation } from '../../../../../hooks/useItemListNavigation';
 import { useOmnichannelSource } from '../../../hooks/useOmnichannelSource';
@@ -86,6 +87,7 @@ const ContactInfoHistory = ({ contact, setChatId }: ContactInfoHistoryProps) => 
 							value={type}
 							onChange={handleChangeFilter}
 							placeholder={t('Filter')}
+							aria-label={t('Filter')}
 							options={historyFilterOptions}
 							disabled={type === 'all' && data?.history.length === 0}
 						/>
@@ -113,10 +115,12 @@ const ContactInfoHistory = ({ contact, setChatId }: ContactInfoHistoryProps) => 
 							{t('Showing_current_of_total', { current: data?.history.length, total: data?.total })}
 						</Box>
 					</Box>
-					<Box role='list' height='100%' overflow='hidden' flexShrink={1} ref={historyListRef}>
+					<Box height='100%' overflow='hidden' flexShrink={1} ref={historyListRef}>
 						<VirtualizedScrollbars>
 							<Virtuoso
 								totalCount={data.history.length}
+								components={virtuosoListComponents}
+								context={{ 'aria-label': t('History') }}
 								overscan={25}
 								data={data?.history}
 								itemContent={(index, data) => <ContactInfoHistoryItem key={index} onClick={() => setChatId(data._id)} {...data} />}

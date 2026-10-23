@@ -5,7 +5,7 @@ import { axe } from 'jest-axe';
 
 import CannedResponseList from './CannedResponseList';
 import * as stories from './CannedResponseList.stories';
-import { expectListKeyboard, listWrapper } from '../../../../../../tests/mocks/utils/listContract';
+import { expectListKeyboard, expectListSemantics, listWrapper } from '../../../../../../tests/mocks/utils/listContract';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
@@ -121,9 +121,10 @@ describe('CannedResponseList', () => {
 	});
 });
 
-it('follows the keyboard model of a list of rows', async () => {
+it('follows the semantics and keyboard model of a composite list', async () => {
 	const { Default } = composeStories(stories);
 	render(<Default />, { wrapper: listWrapper() });
 
-	await expectListKeyboard(screen.getByTestId('virtuoso-item-list'));
+	const list = await expectListSemantics('Canned_Responses');
+	await expectListKeyboard(list);
 });

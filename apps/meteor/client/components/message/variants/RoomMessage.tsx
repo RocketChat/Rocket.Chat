@@ -24,6 +24,7 @@ import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
 import RoomMessageContent from './room/RoomMessageContent';
 import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
+import { getMessageLabelledBy } from '../helpers/getMessageLabelledBy';
 import { useMessageListReadReceipts } from '../list/MessageListContext';
 
 export type RoomMessageProps = {
@@ -37,30 +38,6 @@ export type RoomMessageProps = {
 	ignoredUser?: boolean;
 	searchText?: string;
 } & ComponentProps<typeof Message>;
-
-const getAriaLabelledBy = ({
-	readReceiptEnabled,
-	messageId,
-	sequential,
-}: {
-	readReceiptEnabled: boolean;
-	messageId: string;
-	sequential: boolean;
-}) => {
-	const labels: string[] = [];
-
-	if (!sequential) {
-		labels.push(`${messageId}-displayName`, `${messageId}-time`);
-	}
-
-	labels.push(`${messageId}-content`);
-
-	if (readReceiptEnabled) {
-		labels.push(`${messageId}-read-status`);
-	}
-
-	return labels.join(' ');
-};
 
 const RoomMessage = ({
 	message,
@@ -107,7 +84,7 @@ const RoomMessage = ({
 			role='listitem'
 			tabIndex={0}
 			aria-roledescription={t('message')}
-			aria-labelledby={getAriaLabelledBy({ readReceiptEnabled, messageId: message._id, sequential })}
+			aria-labelledby={getMessageLabelledBy({ messageId: message._id, sequential, readReceiptEnabled })}
 			onClick={selecting ? toggleSelected : undefined}
 			onKeyDown={handleKeyDown}
 			isSelected={selected}

@@ -1,9 +1,9 @@
 import { composeStories } from '@storybook/react';
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
 import * as stories from './RoomFiles.stories';
-import { expectListKeyboard, listWrapper } from '../../../../../tests/mocks/utils/listContract';
+import { expectListKeyboard, expectListSemantics, listWrapper } from '../../../../../tests/mocks/utils/listContract';
 
 jest.mock('../../../../../client/lib/getURL', () => ({
 	getURL: jest.fn((url: string) => url),
@@ -19,10 +19,10 @@ test.each(testCases)('%s should have no a11y violations', async (_storyname, Sto
 	expect(results).toHaveNoViolations();
 });
 
-it('follows the keyboard model of a list of rows', async () => {
+it('follows the semantics and keyboard model of a composite list', async () => {
 	const { Default } = composeStories(stories);
-	const files = (Default.args.filesItems ?? []).map((file) => ({ ...file, path: `/file-upload/${file._id}` }));
-	render(<Default filesItems={files} />, { wrapper: listWrapper() });
+	render(<Default />, { wrapper: listWrapper() });
 
-	await expectListKeyboard(screen.getByTestId('virtuoso-item-list'));
+	const list = await expectListSemantics('Files_list');
+	await expectListKeyboard(list);
 });

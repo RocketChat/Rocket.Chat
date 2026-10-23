@@ -16,7 +16,7 @@ const SystemMessageBody = ({ message }: SystemMessageBodyProps) => {
 	}
 
 	return (
-		<MessageSystemBody role='document' aria-roledescription={t('system_message_body')}>
+		<MessageSystemBody id={`${message._id}-content`} role='document' aria-roledescription={t('system_message_body')}>
 			{messageType.text(t, message)}
 		</MessageSystemBody>
 	);

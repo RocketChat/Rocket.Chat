@@ -14,10 +14,10 @@ import {
 } from '@rocket.chat/ui-client';
 import { useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { UseQueryResult } from '@tanstack/react-query';
-import type { ReactNode } from 'react';
 import { useCallback } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
+import { VirtuosoList } from '../../../components/VirtuosoList';
 import RoomMessage from '../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../components/message/variants/SystemMessage';
 import { useFormatDate } from '../../../hooks/useFormatDate';
@@ -28,9 +28,12 @@ import { isMessageNewDay } from '../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../MessageList/providers/MessageListProvider';
 import { useRoomSubscription } from '../contexts/RoomContext';
 
+// The messages are list items themselves
+const listComponents = { List: VirtuosoList };
+
 export type MessageListTabProps = {
 	iconName: IconName;
-	title: ReactNode;
+	title: string;
 	emptyResultMessage: string;
 	context: MessageActionContext;
 	queryResult: UseQueryResult<IMessage[]>;
@@ -81,6 +84,8 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 										<VirtualizedScrollbars>
 											<Virtuoso
 												totalCount={queryResult.data.length}
+												components={listComponents}
+												context={{ 'aria-label': title }}
 												overscan={25}
 												data={queryResult.data}
 												itemContent={(index, message) => {
@@ -96,7 +101,11 @@ const MessageListTab = ({ iconName, title, emptyResultMessage, context, queryRes
 
 													return (
 														<>
-															{newDay && <MessageDivider>{formatDate(message.ts)}</MessageDivider>}
+															{newDay && (
+																<div role='listitem'>
+																	<MessageDivider>{formatDate(message.ts)}</MessageDivider>
+																</div>
+															)}
 
 															{system ? (
 																<SystemMessage message={message} showUserAvatar={showUserAvatar} />

@@ -69,7 +69,6 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 					</SidebarCollapseGroupMenu>
 				) : undefined
 			}
-			aria-label={group.collapsed ? t('Expand_group', { group: title }) : t('Collapse_group', { group: title })}
 			onFocus={mountNow}
 			onPointerEnter={requestMount}
 			onClick={onClick}
