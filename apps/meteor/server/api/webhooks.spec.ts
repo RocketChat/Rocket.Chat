@@ -89,7 +89,7 @@ jest.mock('@rocket.chat/models', () => ({
 	Users: mockUsers,
 }));
 
-jest.mock('meteor/email', () => ({ Email: {} }), { virtual: true });
+jest.mock('../lib/notifications/email/transport', () => ({ sendMail: jest.fn() }));
 jest.mock('../lib/authorization/hasPermission', () => ({ hasPermissionAsync: mockHasPermissionAsync }));
 jest.mock('../lib/messages/processWebhookMessage', () => ({ processWebhookMessage: mockProcessWebhookMessage }));
 jest.mock('../meteor-methods/integrations/outgoing/addOutgoingIntegration', () => ({
