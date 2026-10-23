@@ -1,6 +1,8 @@
+import type { IRoom } from '@rocket.chat/core-typings';
+
 import { readableTextColor } from './colors';
-import { buildClassificationBanner, parseClassificationBannersConfig } from './engine';
-import type { ClassificationBannersConfig } from './types';
+import { buildClassificationBanner, buildRoomClassificationBanner, parseClassificationBannersConfig } from './engine';
+import type { ClassificationBannersConfig, ClassificationRoomMatch } from './types';
 
 const config: ClassificationBannersConfig = {
 	version: 1,
@@ -191,6 +193,152 @@ describe('buildClassificationBanner', () => {
 			segments: [],
 			backgroundColor: '#6C727A',
 			color: '#FFFFFF',
+		});
+	});
+});
+
+describe('buildRoomClassificationBanner', () => {
+	const nonAbacBanner = { enabled: true, text: 'UNCLASSIFIED', color: '#007a33' };
+	const configWithNonAbacBanner: ClassificationBannersConfig = { ...config, nonAbacBanner: [nonAbacBanner] };
+
+	it('renders the attribute banner for an ABAC managed room', () => {
+		expect(
+			buildRoomClassificationBanner(configWithNonAbacBanner, { t: 'p', abacAttributes: [{ key: 'clearance.level', values: ['TS'] }] }),
+		).toMatchObject({ text: 'TOP SECRET', backgroundColor: '#ff8c00' });
+	});
+
+	it('renders the fallback banner, not the nonAbacBanner, for an ABAC managed room whose attributes are not in the config', () => {
+		expect(
+			buildRoomClassificationBanner(configWithNonAbacBanner, { t: 'p', abacAttributes: [{ key: 'country', values: ['USA'] }] }),
+		).toMatchObject({ text: 'NO CLASSIFICATION DATA', backgroundColor: '#6C727A' });
+	});
+
+	it.each<[string, Pick<IRoom, 't' | 'abacAttributes'>]>([
+		['a DM', { t: 'd' }],
+		['a public channel', { t: 'c' }],
+		['a private room without attributes', { t: 'p' }],
+		['a private room with an empty attribute list', { t: 'p', abacAttributes: [] }],
+	])('renders the nonAbacBanner with the shared banner style for %s', (_name, room) => {
+		expect(buildRoomClassificationBanner(configWithNonAbacBanner, room)).toEqual({
+			style: 'classic',
+			uppercase: true,
+			monospace: false,
+			text: 'UNCLASSIFIED',
+			segments: [],
+			backgroundColor: '#007a33',
+			color: readableTextColor('#007a33'),
+		});
+	});
+
+	it('renders nothing for an Omnichannel room even with a default entry that matches every room', () => {
+		expect(buildRoomClassificationBanner(configWithNonAbacBanner, { t: 'l' })).toBeUndefined();
+	});
+
+	it('renders nothing for a room that is not ABAC managed when nonAbacBanner is absent', () => {
+		expect(buildRoomClassificationBanner(config, { t: 'd' })).toBeUndefined();
+	});
+
+	describe('with a list of entries', () => {
+		const dm: Pick<IRoom, 't' | 'uids'> = { t: 'd', uids: ['alice', 'bob'] };
+
+		it('renders the first enabled entry that matches the room', () => {
+			const banner = buildRoomClassificationBanner(
+				{
+					...config,
+					nonAbacBanner: [
+						{ enabled: true, text: 'PUBLIC', color: '#0033a0', match: { type: ['public'] } },
+						{ enabled: true, text: 'PERSONAL', color: '#502b85', match: { type: ['direct'] } },
+						{ enabled: true, text: 'UNCLASSIFIED', color: '#007a33' },
+					],
+				},
+				dm,
+			);
+
+			expect(banner).toMatchObject({ text: 'PERSONAL', backgroundColor: '#502b85' });
+		});
+
+		it('skips a disabled entry and keeps looking', () => {
+			const banner = buildRoomClassificationBanner(
+				{
+					...config,
+					nonAbacBanner: [
+						{ enabled: false, text: 'PERSONAL', color: '#502b85', match: { type: ['direct'] } },
+						{ enabled: true, text: 'UNCLASSIFIED', color: '#007a33' },
+					],
+				},
+				dm,
+			);
+
+			expect(banner).toMatchObject({ text: 'UNCLASSIFIED', backgroundColor: '#007a33' });
+		});
+
+		it('prefers a matching entry over a default listed before it', () => {
+			const banner = buildRoomClassificationBanner(
+				{
+					...config,
+					nonAbacBanner: [
+						{ enabled: true, text: 'UNCLASSIFIED', color: '#007a33' },
+						{ enabled: true, text: 'PERSONAL', color: '#502b85', match: { type: ['direct'] } },
+					],
+				},
+				dm,
+			);
+
+			expect(banner).toMatchObject({ text: 'PERSONAL', backgroundColor: '#502b85' });
+		});
+
+		it('renders the first enabled default when no entry matches the room', () => {
+			const banner = buildRoomClassificationBanner(
+				{
+					...config,
+					nonAbacBanner: [
+						{ enabled: false, text: 'OFF', color: '#6C727A' },
+						{ enabled: true, text: 'UNCLASSIFIED', color: '#007a33' },
+						{ enabled: true, text: 'PUBLIC', color: '#0033a0', match: { type: ['public'] } },
+						{ enabled: true, text: 'LATER', color: '#502b85' },
+					],
+				},
+				dm,
+			);
+
+			expect(banner).toMatchObject({ text: 'UNCLASSIFIED', backgroundColor: '#007a33' });
+		});
+	});
+
+	describe('matching a room', () => {
+		type Room = Pick<IRoom, 't' | 'abacAttributes' | 'uids' | 'federated' | 'prid' | 'teamMain' | 'teamId'>;
+
+		const dm: Room = { t: 'd', uids: ['alice', 'bob'] };
+		const groupDm: Room = { t: 'd', uids: ['alice', 'bob', 'carol'] };
+		const publicRoom: Room = { t: 'c' };
+		const privateRoom: Room = { t: 'p' };
+		const federatedPublicRoom: Room = { t: 'c', federated: true };
+		const federatedPrivateRoom: Room = { t: 'p', federated: true };
+		const discussion: Room = { t: 'p', prid: 'parent' };
+		const teamRoom: Room = { t: 'p', teamMain: true, teamId: 'team' };
+		const roomInTeam: Room = { t: 'c', teamId: 'team' };
+
+		it.each<[string, ClassificationRoomMatch, Room, boolean]>([
+			['type direct matches a DM', { type: ['direct'] }, dm, true],
+			['type direct matches a group DM', { type: ['direct'] }, groupDm, true],
+			['a type list matches any of its types', { type: ['public', 'private'] }, privateRoom, true],
+			['a type list does not match other types', { type: ['public', 'private'] }, dm, false],
+			['private and federated matches a federated private room', { type: ['private'], federated: true }, federatedPrivateRoom, true],
+			['private and federated does not match a federated public room', { type: ['private'], federated: true }, federatedPublicRoom, false],
+			['private and federated does not match a private room', { type: ['private'], federated: true }, privateRoom, false],
+			['federated false does not match a federated room', { federated: false }, federatedPublicRoom, false],
+			['federated false matches a room that is not federated', { federated: false }, publicRoom, true],
+			['discussion matches a discussion', { discussion: true }, discussion, true],
+			['discussion false does not match a discussion', { discussion: false }, discussion, false],
+			["team matches the team's own room", { team: true }, teamRoom, true],
+			['team matches a room in a team', { team: true }, roomInTeam, true],
+			['team does not match a room outside a team', { team: true }, publicRoom, false],
+			["team false does not match the team's own room", { team: false }, teamRoom, false],
+			['team false does not match a room in a team', { team: false }, roomInTeam, false],
+		])('%s', (_name, match, room, matches) => {
+			const banner = buildRoomClassificationBanner({ ...config, nonAbacBanner: [{ ...nonAbacBanner, match }] }, room);
+
+			expect(banner !== undefined).toBe(matches);
 		});
 	});
 });

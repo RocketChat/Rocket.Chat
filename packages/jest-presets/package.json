@@ -24,7 +24,7 @@
 	"scripts": {
 		"build": "tsc",
 		"clean": "rm -rf ./dist",
-		"lint": "eslint .",
+		"lint": "yarn run -T oxlint",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {

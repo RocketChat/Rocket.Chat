@@ -2,9 +2,17 @@ import type { IUser, IRoom, IAuditServerEventType, IAbacAttributeDefinition, ISe
 
 export type MinimalUser = Pick<IUser, 'username'> & Optional<Pick<IUser, '_id'>, '_id'>;
 export type MinimalRoom = Pick<IRoom, '_id' | 'name'>;
+export type MinimalApp = { _id: string; name?: string };
 
 export type AbacAuditReason =
-	'ldap-sync' | 'room-attributes-change' | 'system' | 'api' | 'realtime-policy-eval' | 'virtru-pdp-sync' | 'attribute-store-switch';
+	| 'ldap-sync'
+	| 'room-attributes-change'
+	| 'system'
+	| 'api'
+	| 'realtime-policy-eval'
+	| 'virtru-pdp-sync'
+	| 'attribute-store-switch'
+	| 'store-validation-bypassed';
 
 export type AbacPdpType = 'local' | 'virtru';
 
@@ -28,6 +36,7 @@ export interface IServerEventAbacObjectAttributeChanged extends IAuditServerEven
 	| { key: 'previous'; value: IAbacAttributeDefinition[] }
 	| { key: 'current'; value: IAbacAttributeDefinition[] | null }
 	| { key: 'change'; value: AbacAttributeDefinitionChangeType }
+	| { key: 'app'; value: MinimalApp | null }
 > {
 	t: 'abac.object.attribute.changed';
 }
@@ -69,6 +78,14 @@ export interface IServerEventAbacAttributeStoreSwitched extends IAuditServerEven
 	| { key: 'roomsAffected'; value: number }
 > {
 	t: 'abac.attribute.store.switched';
+}
+
+export interface IServerEventAbacMembershipEvaluated extends IAuditServerEventType<
+	| { key: 'reason'; value: AbacAuditReason }
+	| { key: 'attributes'; value: IAbacAttributeDefinition[] }
+	| { key: 'subjects'; value: MinimalUser[] }
+> {
+	t: 'abac.membership.evaluated';
 }
 
 // Utility type to extract all ABAC-related server event names

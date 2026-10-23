@@ -1,12 +1,96 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import CreateTeamModal from './CreateTeamModal';
+import CreateTeamModalWithData from './CreateTeamModalWithData';
+import { mockAbacRoomCreationRoot } from '../../../../tests/mocks/client/mockAbacRoomCreationRoot';
 
 jest.mock('../../../lib/rooms/roomCoordinator', () => ({}));
 
+const selectAttributeValue = async (value: string) => {
+	const comboboxes = screen.getAllByRole('combobox');
+	await userEvent.click(comboboxes[comboboxes.length - 1]);
+
+	const listboxes = await screen.findAllByRole('listbox', { hidden: true });
+	const option = listboxes.map((element) => within(element).queryByText(value)).find(Boolean);
+	if (!option) {
+		throw new Error(`Could not find the option ${value}`);
+	}
+
+	await userEvent.click(option);
+};
+
 describe('CreateTeamModal', () => {
+	describe('ABAC', () => {
+		it('should keep the single-page modal when ABAC is disabled', () => {
+			render(<CreateTeamModalWithData onClose={() => null} />, { wrapper: mockAppRoot().build() });
+
+			expect(screen.queryByLabelText('ABAC_Managed')).not.toBeInTheDocument();
+			expect(screen.getByText('Advanced_settings')).toBeInTheDocument();
+		});
+
+		it('should take two steps for a team that is not ABAC-managed', async () => {
+			render(<CreateTeamModalWithData onClose={() => null} />, { wrapper: mockAbacRoomCreationRoot() });
+
+			expect(await screen.findByLabelText('ABAC_Managed')).not.toBeChecked();
+			expect(screen.getByText('Step 1 of 2')).toBeInTheDocument();
+		});
+
+		it('should walk the same four steps as a channel and create the team with its attributes', async () => {
+			const createTeam = jest.fn(() => ({ team: { roomId: 'team-room' } }));
+			render(<CreateTeamModalWithData onClose={() => null} />, {
+				wrapper: mockAbacRoomCreationRoot({ requiredAttributes: ['dept'], createTeam }),
+			});
+
+			await userEvent.click(await screen.findByLabelText('ABAC_Managed'));
+			expect(screen.getByText('Step 1 of 4')).toBeInTheDocument();
+			expect(screen.getByLabelText('Teams_New_Private_Label')).toBeChecked();
+			expect(screen.getByLabelText('Teams_New_Private_Label')).toBeDisabled();
+
+			await userEvent.type(screen.getByRole('textbox', { name: 'Teams_New_Name_Label' }), 'restricted');
+			await userEvent.click(screen.getByRole('button', { name: 'Next' }));
+
+			expect(await screen.findByText('ABAC_Room_Attributes')).toBeInTheDocument();
+			expect(screen.getByText('Step 2 of 4')).toBeInTheDocument();
+
+			await selectAttributeValue('eng');
+			await userEvent.click(screen.getByRole('button', { name: 'Next' }));
+			expect(await screen.findByText('Step 3 of 4')).toBeInTheDocument();
+
+			await userEvent.click(screen.getByRole('button', { name: 'Next' }));
+			expect(await screen.findByText('Step 4 of 4')).toBeInTheDocument();
+
+			const create = await screen.findByRole('button', { name: 'Create' });
+			await waitFor(() => expect(create).toBeEnabled());
+			await userEvent.click(create);
+
+			await waitFor(() =>
+				expect(createTeam).toHaveBeenCalledWith(
+					expect.objectContaining({ name: 'restricted', type: 1, abacAttributes: { dept: ['eng'] } }),
+				),
+			);
+		});
+
+		it('should lock ABAC-managed on under enforcement', async () => {
+			render(<CreateTeamModalWithData onClose={() => null} />, { wrapper: mockAbacRoomCreationRoot({ enforced: true }) });
+
+			const managed = await screen.findByLabelText('ABAC_Managed');
+			expect(managed).toBeChecked();
+			expect(managed).toBeDisabled();
+		});
+
+		it('should stop a creator who cannot create an ABAC-managed team under enforcement', async () => {
+			render(<CreateTeamModalWithData onClose={() => null} />, {
+				wrapper: mockAbacRoomCreationRoot({ enforced: true, permissions: ['create-c', 'create-p', 'create-team'] }),
+			});
+
+			expect(await screen.findByText('ABAC_Room_Creation_Not_Allowed')).toBeInTheDocument();
+			expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled();
+			expect(screen.getByText('Step 1 of 2')).toBeInTheDocument();
+		});
+	});
+
 	it('should render with encryption option disabled and set to off when E2E_Enable=false and E2E_Enabled_Default_PrivateRooms=false', async () => {
 		render(<CreateTeamModal onClose={() => null} />, {
 			wrapper: mockAppRoot().withSetting('E2E_Enable', false).withSetting('E2E_Enabled_Default_PrivateRooms', false).build(),

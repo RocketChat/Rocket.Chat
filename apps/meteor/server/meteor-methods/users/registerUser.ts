@@ -1,60 +1,25 @@
+import { isClientSafeError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
-import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
 import { trim } from '../../../lib/utils/stringUtils';
-import { RateLimiterClass as RateLimiter } from '../../lib/RateLimiter';
 import { passwordPolicy } from '../../lib/auth/passwordPolicy';
 import { validateInviteToken } from '../../lib/rooms/invites/validateInviteToken';
 import { validateEmailDomain } from '../../lib/validateEmailDomain';
 import { settings } from '../../settings';
 
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		registerUser(
-			formData:
-				{ email: string; pass: string; username: IUser['username']; name?: string; secretURL?: string; reason?: string } | { email?: null },
-		):
-			| {
-					token: string;
-					when: Date;
-			  }
-			| string;
-	}
-}
-
-export const registerUser = async (
-	formData:
-		{ email: string; pass: string; username: IUser['username']; name?: string; secretURL?: string; reason?: string } | { email?: null },
-): Promise<
-	| {
-			token: string;
-			when: Date;
-	  }
-	| string
-> => {
-	const AllowAnonymousRead = settings.get<boolean>('Accounts_AllowAnonymousRead');
-	const AllowAnonymousWrite = settings.get<boolean>('Accounts_AllowAnonymousWrite');
+export const registerUser = async (formData: {
+	email: string;
+	pass: string;
+	username: IUser['username'];
+	name?: string;
+	secretURL?: string;
+	reason?: string;
+}): Promise<string> => {
 	const manuallyApproveNewUsers = settings.get<boolean>('Accounts_ManuallyApproveNewUsers');
-	if (AllowAnonymousRead === true && AllowAnonymousWrite === true && !formData.email) {
-		const userId = await Accounts.insertUserDoc(
-			{},
-			{
-				globalRoles: ['anonymous'],
-				active: true,
-			},
-		);
-
-		const stampedLoginToken = await Accounts._generateStampedLoginToken();
-
-		await Accounts._insertLoginToken(userId, stampedLoginToken);
-		return stampedLoginToken;
-	}
 	check(
 		formData,
 		Match.ObjectIncluding({
@@ -106,7 +71,7 @@ export const registerUser = async (
 	try {
 		userId = await Accounts.createUserAsync(userData);
 	} catch (e) {
-		if (e instanceof Meteor.Error) {
+		if (isClientSafeError(e)) {
 			throw e;
 		}
 
@@ -130,38 +95,3 @@ export const registerUser = async (
 
 	return userId;
 };
-
-Meteor.methods<ServerMethods>({
-	async registerUser(formData) {
-		return registerUser(formData);
-	},
-});
-
-let registerUserRuleId = RateLimiter.limitMethod(
-	'registerUser',
-	settings.get('Rate_Limiter_Limit_RegisterUser'),
-	settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'),
-	{
-		userId() {
-			return true;
-		},
-	},
-);
-
-settings.watch('Rate_Limiter_Limit_RegisterUser', (value) => {
-	// When running on testMode, there's no rate limiting added, so this function throws an error
-	if (process.env.TEST_MODE === 'true' || process.env.TEST_MODE === 'api') {
-		return;
-	}
-
-	if (!registerUserRuleId) {
-		throw new Error('Rate limiter rule for "registerUser" not found');
-	}
-	// remove old DDP rate limiter rule and create a new one with the updated setting value
-	DDPRateLimiter.removeRule(registerUserRuleId);
-	registerUserRuleId = RateLimiter.limitMethod('registerUser', value, settings.get('API_Enable_Rate_Limiter_Limit_Time_Default'), {
-		userId() {
-			return true;
-		},
-	});
-});

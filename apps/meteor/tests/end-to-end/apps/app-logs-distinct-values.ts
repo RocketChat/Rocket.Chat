@@ -1,5 +1,6 @@
+import { after, before, describe, it } from 'node:test';
+
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, request, credentials } from '../../data/api-data';
 import { apps } from '../../data/apps/apps-data';
@@ -10,7 +11,7 @@ import { IS_EE } from '../../e2e/config/constants';
 (IS_EE ? describe : describe.skip)('Apps - Logs Distinct Values', () => {
 	let appId: string;
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		await cleanupApps();
@@ -20,7 +21,7 @@ import { IS_EE } from '../../e2e/config/constants';
 
 	after(() => Promise.all([cleanupApps(), updatePermission('manage-apps', ['admin'])]));
 
-	it('should return distinct values successfully', (done) => {
+	it('should return distinct values successfully', (_t, done) => {
 		void request
 			.get(apps(`/${appId}/logs/distinctValues`))
 			.set(credentials)
@@ -44,7 +45,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should require authentication', (done) => {
+	it('should require authentication', (_t, done) => {
 		void request
 			.get(apps(`/${appId}/logs/distinctValues`))
 			.expect(401)
@@ -56,7 +57,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should require manage-apps permission', (done) => {
+	it('should require manage-apps permission', (_t, done) => {
 		void updatePermission('manage-apps', []).then(
 			() =>
 				void request
@@ -72,7 +73,7 @@ import { IS_EE } from '../../e2e/config/constants';
 		);
 	});
 
-	it('should return 404 for non-existent app', (done) => {
+	it('should return 404 for non-existent app', (_t, done) => {
 		void request
 			.get(apps('/non-existent-app-id/logs/distinctValues'))
 			.set(credentials)
@@ -85,7 +86,7 @@ import { IS_EE } from '../../e2e/config/constants';
 			.end(done);
 	});
 
-	it('should return empty arrays when no logs exist', (done) => {
+	it('should return empty arrays when no logs exist', (_t, done) => {
 		// Clean up all apps first to ensure no logs
 		void cleanupApps().then(async () => {
 			// Install a fresh app

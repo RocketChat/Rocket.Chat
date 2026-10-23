@@ -11,8 +11,8 @@
 	"scripts": {
 		"build": "tsc -p tsconfig.build.json",
 		"dev": "tsc --watch --preserveWatchOutput",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix .",
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
 		"test": "jest",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit --skipLibCheck"
@@ -39,6 +39,7 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/rest-typings": "workspace:^",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/node": "~24.13.6",
 		"eslint": "~10.12.0",

@@ -4,7 +4,7 @@ import type { IMediaCallStartedContext } from './IMediaCallStartedContext';
 import type { IPreMediaCallCreatedContext } from './IPreMediaCallCreatedContext';
 import type { MediaCallCreateEventResult } from './MediaCallEventResult';
 import type { IHttp, IModify, IPersistence, IRead } from '../accessors';
-import { AppMethod } from '../metadata';
+import type { AppMethod } from '../metadata';
 
 /**
  * The media-call lifecycle events.
