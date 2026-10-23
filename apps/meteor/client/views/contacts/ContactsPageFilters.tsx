@@ -15,7 +15,7 @@ export type ContactsPageFiltersProps = {
 const ContactsPageFilters = ({ onChangeText, onCreate, searchText, total }: ContactsPageFiltersProps) => {
 	const { t } = useTranslation();
 	const syncContacts = useContactsSync();
-	const isExchangeIntegrationEnabled = useSetting('Microsoft_Exchange_Enabled', false);
+	const isExchangeIntegrationEnabled = useSetting('Outlook_Calendar_Enabled', false);
 	const isServerManaged = useSetting('Exchange_Mode', 'legacy') === 'server';
 	const isContactSyncEnabled = useSetting('Exchange_Contacts_Sync_Enabled', false);
 

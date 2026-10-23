@@ -61,7 +61,7 @@ const getUserCalendar = (email: false | IUserEmail | undefined): IUserCalendar =
 	const isLegacyMode = settings.get<string>('Exchange_Mode') !== 'server';
 
 	const outlook = {
-		Enabled: settings.get<boolean>('Microsoft_Exchange_Enabled'),
+		Enabled: settings.get<boolean>('Outlook_Calendar_Enabled'),
 		Exchange_Url: isLegacyMode ? settings.get<string>('Outlook_Calendar_Exchange_Url') : '',
 		Outlook_Url: settings.get<string>('Outlook_Calendar_Outlook_Url'),
 	};

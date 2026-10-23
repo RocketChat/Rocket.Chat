@@ -1785,6 +1785,7 @@
   "others": "lain-lain",
   "Outgoing_WebHook": "WebHook keluar",
   "Outgoing_WebHook_Description": "Dapatkan data dari Rocket.Chat secara real-time.",
+  "Outlook_Calendar_Enabled": "didayakan",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "URL Override untuk fail yang dimuat naik. url ini juga digunakan untuk muat turun melainkan CDN diberikan",
   "Page_title": "Tajuk halaman",
   "Page_URL": "URL halaman",

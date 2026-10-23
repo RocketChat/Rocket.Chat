@@ -16,7 +16,7 @@ function ExchangeGroupPage({ _id, i18nLabel, onClickBack, ...group }: ExchangeGr
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const testConnection = useEndpoint('POST', '/v1/exchange.testConnection');
-	const exchangeEnabled = useSetting('Microsoft_Exchange_Enabled', false);
+	const exchangeEnabled = useSetting('Outlook_Calendar_Enabled', false);
 	const serverMode = useSetting('Exchange_Mode') === 'server';
 
 	const editableSettings = useEditableSettings(useMemo(() => ({ group: _id }), [_id]));

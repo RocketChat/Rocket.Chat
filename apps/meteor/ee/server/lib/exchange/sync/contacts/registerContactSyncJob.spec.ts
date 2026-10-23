@@ -22,7 +22,7 @@ jest.mock('./runContactSync', () => ({ runContactSync: (...args: unknown[]) => r
 
 const settingsOf = (over: Record<string, unknown> = {}) => {
 	const values: Record<string, unknown> = {
-		Microsoft_Exchange_Enabled: true,
+		Outlook_Calendar_Enabled: true,
 		Exchange_Mode: 'server',
 		Exchange_Contacts_Sync_Enabled: true,
 		...over,
@@ -68,7 +68,7 @@ describe('configureContactSyncJob', () => {
 
 	describe('what has to be on for it to be scheduled', () => {
 		it.each([
-			['the feature is off', { Microsoft_Exchange_Enabled: false }],
+			['the feature is off', { Outlook_Calendar_Enabled: false }],
 			['the server does not own the sync', { Exchange_Mode: 'legacy' }],
 			['contact sync is off on its own', { Exchange_Contacts_Sync_Enabled: false }],
 		])('schedules nothing while %s', async (_case, over) => {
@@ -108,7 +108,7 @@ describe('registerContactSyncJob', () => {
 		registerContactSyncJob();
 
 		expect(watchMultiple).toHaveBeenCalledWith(
-			['Microsoft_Exchange_Enabled', 'Exchange_Mode', 'Exchange_Contacts_Sync_Enabled'],
+			['Outlook_Calendar_Enabled', 'Exchange_Mode', 'Exchange_Contacts_Sync_Enabled'],
 			expect.any(Function),
 		);
 	});

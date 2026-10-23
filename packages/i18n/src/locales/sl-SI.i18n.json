@@ -1768,6 +1768,7 @@
   "others": "drugi",
   "Outgoing_WebHook": "Odhodni WebHook",
   "Outgoing_WebHook_Description": "Pridobite podatke iz aplikacije Rocket.Chat v realnem času.",
+  "Outlook_Calendar_Enabled": "Omogočeno",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "Prevozi URL, na katerega so naložene datoteke. Ta URL je bil uporabljen tudi za prenose, razen če je podan CDN",
   "Page_title": "Naslov strani",
   "Page_URL": "URL strani",

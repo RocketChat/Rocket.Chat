@@ -5,7 +5,7 @@ import { lazy, useMemo } from 'react';
 const OutlookEventsRoute = lazy(() => import('../../views/outlookCalendar/OutlookEventsRoute'));
 
 export const useOutlookCalenderRoomAction = () => {
-	const enabled = useSetting('Microsoft_Exchange_Enabled', false);
+	const enabled = useSetting('Outlook_Calendar_Enabled', false);
 
 	return useMemo((): RoomToolboxActionConfig | undefined => {
 		if (!enabled) {

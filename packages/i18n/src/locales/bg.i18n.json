@@ -1774,6 +1774,7 @@
   "others": "други",
   "Outgoing_WebHook": "Изходяща WebHook",
   "Outgoing_WebHook_Description": "Извличайте данни от Rocket.Chat в реално време.",
+  "Outlook_Calendar_Enabled": "Позволено",
   "Override_URL_to_which_files_are_uploaded_This_url_also_used_for_downloads_unless_a_CDN_is_given": "Замяна на URL адреса, към който се качват файловете. Този URL адрес също се използва за изтегляне, освен ако не е даден CDN",
   "Page_title": "Заглавие на страница",
   "Page_URL": "URL адрес на страницата",

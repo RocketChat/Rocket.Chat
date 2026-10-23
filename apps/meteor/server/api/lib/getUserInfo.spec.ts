@@ -126,7 +126,7 @@ describe('getUserInfo', () => {
 
 	describe('outlook calendar settings', () => {
 		beforeEach(() => {
-			settings.set('Microsoft_Exchange_Enabled', true);
+			settings.set('Outlook_Calendar_Enabled', true);
 			settings.set('Outlook_Calendar_Exchange_Url', 'https://outlook.office365.com/');
 			settings.set('Outlook_Calendar_Outlook_Url', 'https://outlook.office365.com/owa/#calendar/view/month');
 			settings.set('Outlook_Calendar_Url_Mapping', JSON.stringify({}));
@@ -134,7 +134,7 @@ describe('getUserInfo', () => {
 		});
 
 		it('should return empty calendar settings if Outlook is disabled', async () => {
-			settings.set('Microsoft_Exchange_Enabled', false);
+			settings.set('Outlook_Calendar_Enabled', false);
 			const userInfo = await getUserInfo(user);
 			expect(userInfo.settings?.calendar).toEqual({});
 		});
@@ -166,7 +166,7 @@ describe('getUserInfo', () => {
 		});
 
 		it('should return calendar settings with outlook disabled but enabled for specific domain', async () => {
-			settings.set('Microsoft_Exchange_Enabled', false);
+			settings.set('Outlook_Calendar_Enabled', false);
 			settings.set(
 				'Outlook_Calendar_Url_Mapping',
 				JSON.stringify({

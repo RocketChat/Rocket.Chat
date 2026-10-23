@@ -11,7 +11,7 @@ import { scrubForLog } from '../../scrub';
 
 export const CALENDAR_SYNC_JOB = 'Exchange_Calendar_Sync';
 
-const WATCHED_SETTINGS = ['Microsoft_Exchange_Enabled', 'Exchange_Mode', 'Exchange_Calendar_Sync_Interval'];
+const WATCHED_SETTINGS = ['Outlook_Calendar_Enabled', 'Exchange_Mode', 'Exchange_Calendar_Sync_Interval'];
 
 export const DEFAULT_INTERVAL_HOURS = 1;
 
@@ -22,7 +22,7 @@ const stopCalendarSyncJob = async (): Promise<void> => {
 };
 
 export const isServerSyncOn = (): boolean =>
-	Boolean(settings.get<boolean>('Microsoft_Exchange_Enabled')) && settings.get<string>('Exchange_Mode') === 'server';
+	Boolean(settings.get<boolean>('Outlook_Calendar_Enabled')) && settings.get<string>('Exchange_Mode') === 'server';
 
 /** Every await here is a chance for the switch to be undone, so `stillOff` is asked again before each step that cannot be */
 const discardServerSyncedCalendarEvents = async (stillOff: () => boolean): Promise<void> => {

@@ -8,7 +8,7 @@ import { scrubForLog } from '../../scrub';
 
 export const CONTACT_SYNC_JOB = 'Exchange_Contacts_Sync';
 
-const WATCHED_SETTINGS = ['Microsoft_Exchange_Enabled', 'Exchange_Mode', 'Exchange_Contacts_Sync_Enabled'];
+const WATCHED_SETTINGS = ['Outlook_Calendar_Enabled', 'Exchange_Mode', 'Exchange_Contacts_Sync_Enabled'];
 
 const DAILY_AT_HOUR = 3;
 
@@ -22,7 +22,7 @@ export const configureContactSyncJob = async (isCurrent: () => boolean = () => t
 	await stopContactSyncJob();
 
 	if (
-		!settings.get<boolean>('Microsoft_Exchange_Enabled') ||
+		!settings.get<boolean>('Outlook_Calendar_Enabled') ||
 		settings.get<string>('Exchange_Mode') !== 'server' ||
 		!settings.get<boolean>('Exchange_Contacts_Sync_Enabled')
 	) {

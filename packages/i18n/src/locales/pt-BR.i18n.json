@@ -4745,6 +4745,7 @@
   "Outlook_authentication_description": "Desative essa opção para limpar todas as credenciais do Outlook armazenadas nesse computador.",
   "Outlook_authentication_disabled": "Autenticação do Outlook desativada",
   "Outlook_calendar": "Calendário do Outlook",
+  "Outlook_Calendar_Enabled": "Habilitado",
   "Outlook_calendar_event": "Evento do calendário do Outlook",
   "Outlook_Calendar_Exchange_Url": "URL de troca",
   "Outlook_Calendar_Exchange_Url_Description": "URL do host para a API do EWS.",

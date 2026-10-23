@@ -4193,6 +4193,7 @@
   "Outlook_authentication_description": "Deaktiver denne for å slette eventuelle outlook-autentiseringsinfo som er lagret på denne maskinen.",
   "Outlook_authentication_disabled": "Outlook-autentisering er deaktivert",
   "Outlook_calendar": "Outlook-kalender",
+  "Outlook_Calendar_Enabled": "aktivert",
   "Outlook_calendar_event": "Outlook-kalenderhendelse",
   "Outlook_Calendar_Exchange_Url": "Exchange URL",
   "Outlook_Calendar_Exchange_Url_Description": "Verts-URL for EWS-api.",
