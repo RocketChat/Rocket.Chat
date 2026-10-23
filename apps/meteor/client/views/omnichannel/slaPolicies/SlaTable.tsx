@@ -8,12 +8,13 @@ import {
 	GenericTableBody,
 	GenericTableRow,
 	GenericTableCell,
+	usePaginatedQuery,
 	usePagination,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery, hashKey } from '@tanstack/react-query';
+import { hashKey } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
 import { useMemo, useState, useEffect } from 'react';
 
@@ -27,7 +28,6 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 
 	const [filter, setFilter] = useState('');
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'description' | 'dueTimeInMinutes'>('name');
 
 	const query = useDebouncedValue(
@@ -35,22 +35,34 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 			() => ({
 				text: filter,
 				sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
-				...(itemsPerPage && { count: itemsPerPage }),
-				...(current && { offset: current }),
 			}),
-			[filter, itemsPerPage, current, sortBy, sortDirection],
+			[filter, sortBy, sortDirection],
 		),
 		500,
 	);
 
+	const queryKey = ['/v1/livechat/sla', query];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ resetKey: queryKey });
+
 	const getSlaData = useEndpoint('GET', '/v1/livechat/sla');
-	const { data, isSuccess, isLoading, refetch } = useQuery({
-		queryKey: ['/v1/livechat/sla', query],
-		queryFn: () => getSlaData(query),
+	const { data, isSuccess, isLoading, refetch } = usePaginatedQuery({
+		query: {
+			queryKey,
+			queryFn: (page) => getSlaData({ ...query, ...page }),
+		},
+		itemsKey: 'sla',
+		offset: current,
+		count: itemsPerPage,
 	});
 
-	const [defaultQuery] = useState(hashKey([query]));
-	const queryHasChanged = defaultQuery !== hashKey([query]);
+	const [defaultQuery] = useState(hashKey([query, current, itemsPerPage]));
+	const queryHasChanged = defaultQuery !== hashKey([query, current, itemsPerPage]);
 
 	useEffect(() => {
 		reload.current = refetch;

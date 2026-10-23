@@ -26,7 +26,6 @@ function ContactTable() {
 	const [term, setTerm] = useState('');
 	const omnichannelDirectoryRouter = useOmnichannelDirectoryRouter();
 
-	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'channels.lastChat.ts' | 'contactManager.username' | 'lastChat.ts'>('name');
 
 	const query = useDebouncedValue(
@@ -34,10 +33,8 @@ function ContactTable() {
 			() => ({
 				searchText: term,
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
-				...(itemsPerPage && { count: itemsPerPage }),
-				...(current && { offset: current }),
 			}),
-			[itemsPerPage, current, sortBy, sortDirection, term],
+			[sortBy, sortDirection, term],
 		),
 		500,
 	);
@@ -49,10 +46,11 @@ function ContactTable() {
 		}),
 	);
 
-	const { data, isLoading, isError, isSuccess, refetch } = useCurrentContacts(query);
+	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination({ resetKey: [query] });
+	const { data, isLoading, isError, isSuccess, refetch } = useCurrentContacts(query, { offset: current, count: itemsPerPage });
 
-	const [defaultQuery] = useState(hashKey([query]));
-	const queryHasChanged = defaultQuery !== hashKey([query]);
+	const [defaultQuery] = useState(hashKey([query, current, itemsPerPage]));
+	const queryHasChanged = defaultQuery !== hashKey([query, current, itemsPerPage]);
 
 	const headers = (
 		<>

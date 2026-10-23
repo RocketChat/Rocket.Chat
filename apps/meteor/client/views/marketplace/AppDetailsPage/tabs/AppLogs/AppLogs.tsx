@@ -10,6 +10,7 @@ import { CollapsiblePanel } from './Components/CollapsiblePanel';
 import { AppLogsFilter } from './Filters/AppLogsFilter';
 import { useAppLogsFilterFormContext } from './useAppLogsFilterForm';
 import GenericError from '../../../../../components/GenericError';
+import { marketplaceQueryKeys } from '../../../../../lib/queryKeys';
 import AccordionLoading from '../../../components/AccordionLoading';
 import { useLogs } from '../../../hooks/useLogs';
 
@@ -58,7 +59,23 @@ const AppLogs = ({ id }: AppLogsProps) => {
 
 	const { startTime, endTime, startDate, endDate, event, severity, instance } = watch();
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
+	const query = {
+		...(instance !== 'all' && { instanceId: instance }),
+		...(severity !== 'all' && { logLevel: severity }),
+		...(event !== 'all' && { method: event }),
+		...(startTime && startDate && { startDate: new Date(`${startDate}T${startTime}`).toISOString() }),
+		...(endTime && endDate && { endDate: new Date(`${endDate}T${endTime}`).toISOString() }),
+	};
+
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({
+		resetKey: marketplaceQueryKeys.appLogs(id, query),
+	});
 
 	const [expandedStates, dispatch] = useReducer(expandedReducer, []);
 
@@ -72,11 +89,7 @@ const AppLogs = ({ id }: AppLogsProps) => {
 		appId: id,
 		current,
 		itemsPerPage,
-		...(instance !== 'all' && { instanceId: instance }),
-		...(severity !== 'all' && { logLevel: severity }),
-		...(event !== 'all' && { method: event }),
-		...(startTime && startDate && { startDate: new Date(`${startDate}T${startTime}`).toISOString() }),
-		...(endTime && endDate && { endDate: new Date(`${endDate}T${endTime}`).toISOString() }),
+		...query,
 	});
 
 	useEffect(() => {
