@@ -2,7 +2,8 @@
 	"$schema": "./node_modules/oxlint/configuration_schema.json",
 	"extends": ["./packages/lint-config/oxlint.json"],
 	"options": {
-		"typeAware": true
+		"typeAware": true,
+		"reportUnusedDisableDirectives": "error"
 	},
 	"ignorePatterns": [
 		"apps/meteor/**/public",
