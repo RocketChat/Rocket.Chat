@@ -1,4 +1,4 @@
 import { Meteor } from 'meteor/meteor';
 
-// Meteor 3.5 keeps a dropped DDP session for 15s, so users would stay online that long after closing the browser.
+// Turns off DDP session resumption (Meteor 3.5+), so a session ends when its socket closes, as in microservices.
 Meteor.server.options.disconnectGracePeriod = 0;
