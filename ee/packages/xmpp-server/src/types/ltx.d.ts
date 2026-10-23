@@ -57,7 +57,7 @@ declare module 'ltx/lib/Element' {
 }
 
 declare module 'ltx/lib/parsers/ltx' {
-	import { EventEmitter } from 'events';
+	import type { EventEmitter } from 'events';
 
 	class SaxLtx extends EventEmitter {
 		write(data: string | Buffer): void;
