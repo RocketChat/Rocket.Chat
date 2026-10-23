@@ -25,7 +25,7 @@ export type LabelInfoProps = {
 
 export const LabelInfo = withFuselageProvider(
 	({ title, id, ...props }: LabelInfoProps) => {
-		const frameProps = useTamaguiBoxProps<BoxProps>({ marginInline: 2 }, 'rcx-label__info');
+		const frameProps = useTamaguiBoxProps<BoxProps>({ marginInline: 'x4' }, 'rcx-label__info');
 
 		return (
 			<LabelInfoFrame {...(frameProps as GetProps<typeof LabelInfoFrame>)}>
