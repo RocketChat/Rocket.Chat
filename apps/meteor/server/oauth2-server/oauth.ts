@@ -1,8 +1,8 @@
 import OAuthServer, { OAuthError, UnauthorizedRequestError } from '@node-oauth/oauth2-server';
+import { hashLoginToken } from '@rocket.chat/account-utils';
 import { OAuthApps, Users } from '@rocket.chat/models';
 import express from 'express';
 import type { Express, NextFunction, Request, Response } from 'express';
-import { Accounts } from 'meteor/accounts-base';
 
 import type { ModelConfig } from './model';
 import { Model } from './model';
@@ -150,7 +150,7 @@ export class OAuth2Server {
 
 			const user = await Users.findOne(
 				{
-					'services.resume.loginTokens.hashedToken': Accounts._hashLoginToken(req.body.access_token),
+					'services.resume.loginTokens.hashedToken': hashLoginToken(req.body.access_token),
 				},
 				{ projection: { _id: 1 } },
 			);

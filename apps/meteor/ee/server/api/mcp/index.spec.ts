@@ -1,6 +1,6 @@
+import { hashLoginToken } from '@rocket.chat/account-utils';
 import { AI_LICENSE_MODULE } from '@rocket.chat/ai-search';
 import { Users } from '@rocket.chat/models';
-import { Accounts } from 'meteor/accounts-base';
 
 import { handleMcpGet, handleMcpPost } from './index';
 import { handleRpcMessage } from './server';
@@ -10,9 +10,7 @@ import { permissionsMiddleware } from '../../../../server/api/v1/middlewares/per
 import { settings } from '../../../../server/settings/cached';
 import { license } from '../v1/middlewares/license';
 
-jest.mock('meteor/accounts-base', () => ({ Accounts: { _hashLoginToken: jest.fn((token: string) => `hashed-${token}`) } }), {
-	virtual: true,
-});
+jest.mock('@rocket.chat/account-utils', () => ({ hashLoginToken: jest.fn((token: string) => `hashed-${token}`) }));
 
 jest.mock('@rocket.chat/models', () => ({
 	Users: { findPersonalAccessTokenByHashedTokenAndUserId: jest.fn() },
@@ -181,7 +179,7 @@ describe('MCP HTTP route', () => {
 		expect(result).toBeInstanceOf(Response);
 		expect(result.status).toBe(200);
 		await expect(result.json()).resolves.toEqual(response);
-		expect(Accounts._hashLoginToken).toHaveBeenCalledWith('auth-token');
+		expect(hashLoginToken).toHaveBeenCalledWith('auth-token');
 		expect(Users.findPersonalAccessTokenByHashedTokenAndUserId).toHaveBeenCalledWith({
 			userId: 'user-id',
 			hashedToken: 'hashed-auth-token',

@@ -1,3 +1,4 @@
+import { hashLoginToken } from '@rocket.chat/account-utils';
 import { Push, ClientSafeError } from '@rocket.chat/core-services';
 import { pushTokenTypes } from '@rocket.chat/core-typings';
 import type { IMessage, IPushNotificationConfig, IPushToken, IPushTokenTypes, PushTokenTarget } from '@rocket.chat/core-typings';
@@ -11,7 +12,6 @@ import {
 	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 import type { JSONSchemaType } from 'ajv';
-import { Accounts } from 'meteor/accounts-base';
 
 import { canAccessRoomAsync } from '../../lib/authorization/canAccessRoom';
 import PushNotification from '../../lib/notifications/push-config/lib/PushNotification';
@@ -160,7 +160,7 @@ const pushTokenEndpoints = API.v1
 			if (!rawToken) {
 				throw new ClientSafeError('error-authToken-param-not-valid', 'The required "authToken" header param is missing or invalid.');
 			}
-			const authToken = Accounts._hashLoginToken(rawToken);
+			const authToken = hashLoginToken(rawToken);
 
 			const result = await Push.registerPushToken({
 				...(id && { _id: id }),

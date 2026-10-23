@@ -1,3 +1,4 @@
+import { hashLoginToken } from '@rocket.chat/account-utils';
 import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IMethodConnection } from '@rocket.chat/core-typings';
 import { TwoFactorChallenges } from '@rocket.chat/models';
@@ -94,7 +95,7 @@ API.v1.addRoute(
 
 			await Accounts._insertLoginToken(user._id, stampedToken);
 
-			const hashedToken = Accounts._hashLoginToken(stampedToken.token);
+			const hashedToken = hashLoginToken(stampedToken.token);
 
 			const connection = {
 				...generateConnection(this.requestIp, this.request.headers),

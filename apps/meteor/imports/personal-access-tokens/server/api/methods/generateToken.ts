@@ -1,6 +1,6 @@
+import { hashLoginToken } from '@rocket.chat/account-utils';
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { Random } from '@rocket.chat/random';
-import { Accounts } from 'meteor/accounts-base';
 import { Users } from '@rocket.chat/models';
 
 import { hasPermissionAsync } from '../../../../../server/lib/authorization/hasPermission';
@@ -34,7 +34,7 @@ export const generatePersonalAccessTokenOfUser = async ({
 	await Users.addPersonalAccessTokenToUser({
 		userId,
 		loginTokenObject: {
-			hashedToken: Accounts._hashLoginToken(token),
+			hashedToken: hashLoginToken(token),
 			type: 'personalAccessToken',
 			createdAt: new Date(),
 			lastTokenPart: token.slice(-6),
