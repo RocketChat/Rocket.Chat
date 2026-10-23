@@ -250,4 +250,5 @@ queueMicrotask(() => {
 		() => settlePageLoadLogin({ type: 'resume', allowed: true, methodName: 'login', methodArguments }),
 		(error) => settlePageLoadLogin({ type: 'resume', allowed: false, error, methodName: 'login', methodArguments }),
 	);
+	userIdStore.setState(getStoredItem(STORAGE_KEYS.USER_ID) ?? undefined);
 });
