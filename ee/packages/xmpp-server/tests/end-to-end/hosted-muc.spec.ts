@@ -33,8 +33,8 @@ import { NS } from './helper/stanza';
 import { assertFederationReachable, registerXmppUser, setupSuite } from './helper/suite';
 import { StanzaError } from './helper/xmpp-client';
 import type { XmppUser } from './helper/xmpp-client';
+import { retry } from '../../../../../apps/meteor/tests/data/retry';
 import { createRoom } from '../../../../../apps/meteor/tests/data/rooms.helper';
-import { retry } from '../../../../../apps/meteor/tests/end-to-end/api/helpers/retry';
 
 const mucJidOf = (room: IRoom): string => {
 	assert.ok(room.xmppFederation?.role === 'host-muc', `expected a host-muc room, got ${room.xmppFederation?.role}`);

@@ -8,11 +8,11 @@ import type { Cleanup } from './cleanup';
 import { DUPLICATE_SETTLE_MS, config, federationPolling, uniqueSuffix } from './config';
 import { api, apiUrl } from '../../../../../../apps/meteor/tests/data/api-data';
 import { sendMessage as sendMessageViaRest } from '../../../../../../apps/meteor/tests/data/messages.helper';
+import { retry } from '../../../../../../apps/meteor/tests/data/retry';
 import { createRoom, getRoomInfo, getRoomMembers } from '../../../../../../apps/meteor/tests/data/rooms.helper';
 import { adminPassword, adminUsername, password } from '../../../../../../apps/meteor/tests/data/user';
 import { createUser, deleteUser, findUserByUsername, getRequestConfig } from '../../../../../../apps/meteor/tests/data/users.helper';
 import type { IRequestConfig } from '../../../../../../apps/meteor/tests/data/users.helper';
-import { retry } from '../../../../../../apps/meteor/tests/end-to-end/api/helpers/retry';
 import { DDPListener } from '../../../../federation-matrix/tests/helper/ddp-listener';
 import { isDomainAllowed } from '../../../src/jid/normalize';
 

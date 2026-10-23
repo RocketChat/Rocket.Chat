@@ -10,7 +10,7 @@ import type { LocalUser, RocketChat } from './helper/rocketchat';
 import { NS } from './helper/stanza';
 import { assertFederationReachable, registerXmppUser, serviceStats, setupSuite } from './helper/suite';
 import type { XmppUser } from './helper/xmpp-client';
-import { retry } from '../../../../../apps/meteor/tests/end-to-end/api/helpers/retry';
+import { retry } from '../../../../../apps/meteor/tests/data/retry';
 
 const SETTING_PROPAGATION_MS = 2000;
 const DELIVERY_WINDOW_MS = 4000;

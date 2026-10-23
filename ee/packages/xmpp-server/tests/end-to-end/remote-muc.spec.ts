@@ -28,7 +28,7 @@ import {
 import type { LocalUser, RocketChat } from './helper/rocketchat';
 import { assertFederationReachable, registerXmppUser, setupSuite } from './helper/suite';
 import type { XmppUser } from './helper/xmpp-client';
-import { retry } from '../../../../../apps/meteor/tests/end-to-end/api/helpers/retry';
+import { retry } from '../../../../../apps/meteor/tests/data/retry';
 
 describe('XMPP federation: rooms hosted by the XMPP server', () => {
 	let rc: RocketChat;
