@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { isAppLogsExportProps } from '@rocket.chat/rest-typings';
 import { ajv } from '@rocket.chat/rest-typings/src/v1/Ajv';
-import { parse } from 'cookie';
+import { parseCookie } from 'cookie';
 import { json2csv } from 'json-2-csv';
 
 import type { AppsRestApi } from '../rest';
@@ -27,7 +27,7 @@ const isErrorResponse = ajv.compile<{
 
 class ExportHandlerAPI extends APIClass {
 	public override async authenticatedRoute(routeContext: APIActionContext): Promise<IUser | null> {
-		const { rc_uid, rc_token } = parse(routeContext.request.headers.get('cookie') || '');
+		const { rc_uid, rc_token } = parseCookie(routeContext.request.headers.get('cookie') || '');
 
 		if (rc_uid) {
 			routeContext.request.headers.set('x-user-id', rc_uid);
