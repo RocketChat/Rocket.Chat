@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import type Stream from 'node:stream';
 
 import type { IUploadDetails } from '@rocket.chat/apps-engine/definition/uploads/IUploadDetails';
-import { api, ServiceClassInternal } from '@rocket.chat/core-services';
+import { api, Authorization, ServiceClassInternal } from '@rocket.chat/core-services';
 import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from '@rocket.chat/core-services';
 import type { IUpload, IUser, FilesAndAttachments, IMessage, AtLeast } from '@rocket.chat/core-typings';
 import { isFileAttachment } from '@rocket.chat/core-typings';
@@ -12,7 +12,6 @@ import { Random } from '@rocket.chat/random';
 import sharp from 'sharp';
 
 import { NOTIFICATION_ATTACHMENT_COLOR } from '../../../lib/constants';
-import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
 import { canDeleteMessageAsync } from '../../lib/authorization/canDeleteMessage';
 import { i18n } from '../../lib/i18n';
 import { FileUpload } from '../../lib/media/file-upload';
@@ -72,7 +71,7 @@ export class UploadService extends ServiceClassInternal implements IUploadServic
 
 		// If file is not confirmed and was sent by the same user
 		if (file.expiresAt && file.userId === user._id) {
-			return canAccessRoomIdAsync(file.rid, user._id);
+			return Authorization.canAccessRoomId(file.rid, user._id);
 		}
 
 		// It's a confirmed file but it has no message, so use data from the file to run message delete permission checks

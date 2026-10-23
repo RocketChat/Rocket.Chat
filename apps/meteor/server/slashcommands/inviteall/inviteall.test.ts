@@ -46,7 +46,10 @@ import { loadSlashCommand } from '../../../tests/mocks/server/slashcommands/help
 			filterAllowed = sinon.stub().callsFake(async (users) => users);
 			assertCanAdd = sinon.stub().resolves();
 			slashCommand = loadSlashCommand('inviteall/server', {
-				'@rocket.chat/core-services': { isClientSafeError },
+				'@rocket.chat/core-services': {
+					isClientSafeError,
+					Authorization: { canAccessRoom: canAccess },
+				},
 				'../../lib/rooms/filterUsersAllowedInRoom': { filterUsersAllowedInRoomOrThrow: filterAllowed },
 				'@rocket.chat/models': {
 					Rooms: { findOneById: findRoomById, findOneByName: findRoomByName },

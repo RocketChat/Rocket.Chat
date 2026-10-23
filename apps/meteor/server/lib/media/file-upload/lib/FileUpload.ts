@@ -12,6 +12,7 @@ import { isArrayBufferView } from 'node:util/types';
 import { hashLoginToken } from '@rocket.chat/account-utils';
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
+import { Authorization } from '@rocket.chat/core-services';
 import { isE2EEUpload, type IUpload } from '@rocket.chat/core-typings';
 import { Users, Avatars, UserDataFiles, Uploads, Settings, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
 import { streamToBuffer } from '@rocket.chat/tools';
@@ -32,7 +33,6 @@ import { settings } from '../../../../settings';
 import { UploadFS } from '../../../../ufs';
 import { ufsComplete } from '../../../../ufs/ufs-methods';
 import type { Store, StoreOptions } from '../../../../ufs/ufs-store';
-import { canAccessRoomAsync, canAccessRoomIdAsync } from '../../../authorization/canAccessRoom';
 import { i18n } from '../../../i18n';
 import { SystemLogger } from '../../../logger/system';
 import { roomCoordinator } from '../../../rooms/roomCoordinator';
@@ -139,7 +139,7 @@ export const FileUpload = {
 		}
 		const directMessageAllowed = settings.get('FileUpload_Enabled_Direct');
 		const fileUploadAllowed = settings.get('FileUpload_Enabled');
-		if (!isFederationUpload && room && user?.type !== 'app' && (await canAccessRoomAsync(room, user, file)) !== true) {
+		if (!isFederationUpload && room && user?.type !== 'app' && (await Authorization.canAccessRoom(room, user, file)) !== true) {
 			return false;
 		}
 		const language = user?.language || 'en';
@@ -548,7 +548,7 @@ export const FileUpload = {
 		}
 
 		if (fileUploadRestrictToUsersWhoCanAccessRoom && !fileUploadRestrictedToMembers) {
-			return canAccessRoomIdAsync(file.rid, user._id);
+			return Authorization.canAccessRoomId(file.rid, user._id);
 		}
 
 		return false;
