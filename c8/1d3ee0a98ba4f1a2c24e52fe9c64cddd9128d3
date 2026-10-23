@@ -1,0 +1,19 @@
+apps/meteor/client/stories/contexts/TranslationContextMock.tsx
+  s_0cb38b25974acb::t_22b87695013e91 1,21
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c81d3ee0a98ba4f1a2c24e52fe9c64cddd9128d3",
+  "prompts": {},
+  "sessions": {
+    "s_0cb38b25974acb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "54d9c941-dbdb-4ccc-bacb-f58cdfd0833d",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

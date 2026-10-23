@@ -1,0 +1,37 @@
+apps/meteor/ee/server/api/mcp/index.spec.ts
+  s_0cb38b25974acb::t_58ec84ae18a798 1,13,182
+apps/meteor/ee/server/api/mcp/index.ts
+  s_0cb38b25974acb::t_5a6991b0a72318 1,250
+apps/meteor/imports/personal-access-tokens/server/api/methods/generateToken.ts
+  s_0cb38b25974acb::t_11308b318c6c35 1,37
+apps/meteor/server/api/ApiClass.ts
+  s_0cb38b25974acb::t_941010c264fc56 1,781,890
+apps/meteor/server/api/v1/push.ts
+  s_0cb38b25974acb::t_93f04609c6b483 1,163
+apps/meteor/server/api/v1/twoFactorChallenges.ts
+  s_0cb38b25974acb::t_24da02aca2f4e9 1,98
+apps/meteor/server/api/v1/users.ts
+  s_0cb38b25974acb::t_a413f15e6cc18f 1,1494,1754
+apps/meteor/server/api/webhooks.spec.ts
+  s_0cb38b25974acb::t_01912fb9941a37 65
+apps/meteor/server/lib/2fa/functions/totp.ts
+  s_0cb38b25974acb::t_ea8002dd0e2477 1,91
+apps/meteor/server/oauth2-server/oauth.ts
+  s_0cb38b25974acb::t_203dc46a4f6333 2,153
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b7ce8ae12f00be3a88b435acfc1749d95866362a",
+  "prompts": {},
+  "sessions": {
+    "s_0cb38b25974acb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "54d9c941-dbdb-4ccc-bacb-f58cdfd0833d",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

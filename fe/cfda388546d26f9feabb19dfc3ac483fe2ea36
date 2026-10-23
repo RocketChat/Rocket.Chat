@@ -1,0 +1,19 @@
+apps/meteor/server/lib/messaging/markdown.ts
+  s_0cb38b25974acb::t_2505a68332a66b 9-10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "fecfda388546d26f9feabb19dfc3ac483fe2ea36",
+  "prompts": {},
+  "sessions": {
+    "s_0cb38b25974acb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "54d9c941-dbdb-4ccc-bacb-f58cdfd0833d",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

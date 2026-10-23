@@ -1,0 +1,31 @@
+ee/packages/xmpp-server/docs/specs/addressing.md
+  s_0b9c785848afbd::t_23ce1cf8eea9a0 14-17,28-30,62-65
+apps/meteor/server/meteor-methods/rooms/addUsersToRoom.ts
+  s_0b9c785848afbd::t_23ce1cf8eea9a0 2,4,81-84,87
+ee/packages/xmpp-server/tests/end-to-end/direct-messages.spec.ts
+  s_0b9c785848afbd::t_23ce1cf8eea9a0 7,79-81
+apps/meteor/server/meteor-methods/messages/createDirectMessage.ts
+  s_0b9c785848afbd::t_23ce1cf8eea9a0 6,62-64,69-70
+ee/packages/xmpp-server/tests/end-to-end/hosted-muc.spec.ts
+  s_0b9c785848afbd::t_23ce1cf8eea9a0 6,79-94
+apps/meteor/server/lib/rooms/createRoom.ts
+  s_0b9c785848afbd::t_23ce1cf8eea9a0 14,93-97,106,198,234
+ee/packages/xmpp-server/tests/end-to-end/helper/config.ts
+  s_0b9c785848afbd::t_23ce1cf8eea9a0 37-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b90b0ac39ff16071655b6b2d92b093b0e3462648",
+  "prompts": {},
+  "sessions": {
+    "s_0b9c785848afbd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1587771d-1045-4797-b980-067c06ba506f",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

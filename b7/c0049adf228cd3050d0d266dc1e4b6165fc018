@@ -1,0 +1,24 @@
+apps/meteor/server/lib/ui-master/inject.test.ts
+  s_0cb38b25974acb::t_fc025b4bd6390f 1-117
+  s_0cb38b25974acb::t_a5ed9ee76d8a6d 118-120
+apps/meteor/server/lib/ui-master/index.ts
+  s_0cb38b25974acb::t_04b3ef51f50000 6
+apps/meteor/server/lib/ui-master/inject.ts
+  s_0cb38b25974acb::t_cdf3d5afa8ed10 18,73-81,83-86,88-92
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b7c0049adf228cd3050d0d266dc1e4b6165fc018",
+  "prompts": {},
+  "sessions": {
+    "s_0cb38b25974acb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "54d9c941-dbdb-4ccc-bacb-f58cdfd0833d",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

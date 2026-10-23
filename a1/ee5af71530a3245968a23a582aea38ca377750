@@ -1,0 +1,25 @@
+apps/meteor/ee/server/hooks/xmpp/index.ts
+  s_0b9c785848afbd::t_a77f7bbf2de35f 55-57
+ee/packages/xmpp-server/docs/specs/direct-messages.md
+  s_0b9c785848afbd::t_a77f7bbf2de35f 12,55-56
+apps/meteor/server/meteor-methods/messages/createDirectMessage.ts
+  s_0b9c785848afbd::t_a77f7bbf2de35f 6,12
+ee/packages/xmpp-server/tests/end-to-end/direct-messages.spec.ts
+  s_0b9c785848afbd::t_a77f7bbf2de35f 79-99
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a1ee5af71530a3245968a23a582aea38ca377750",
+  "prompts": {},
+  "sessions": {
+    "s_0b9c785848afbd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1587771d-1045-4797-b980-067c06ba506f",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
