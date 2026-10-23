@@ -39,15 +39,25 @@ const StubPicker = ({ value, onChange, placeholder }: UserPickerProps) => (
 );
 
 const addParticipants = jest.fn(async (users: string[]) => ({ added: users.length }));
+const shareChat = jest.fn(async () => undefined);
 
 const preferencesKey = callPreferencesStorageKey('john.doe');
 
-const renderModal = ({ canRing = true, ring = true }: { canRing?: boolean; ring?: boolean } = {}) => {
+const renderModal = ({
+	canRing = true,
+	ring = true,
+	canInvite,
+	onClose = jest.fn(),
+}: { canRing?: boolean; ring?: boolean; canInvite?: boolean; onClose?: () => void } = {}) => {
 	localStorage.setItem(preferencesKey, JSON.stringify({ mic: true, cam: false, ring }));
 
 	const AppRoot = mockAppRoot().withJohnDoe().build();
 	const conference = buildConferenceContext({
-		actions: { addParticipants },
+		actions: { addParticipants, shareChat },
+		room:
+			canInvite === undefined
+				? {}
+				: { chatAccess: { rid: 'room', name: 'room', type: 'd', membersWithoutAccess: [], canInvite, members: [] } },
 		slots: { renderUserPicker: (props) => <StubPicker {...props} /> },
 		viewer: { canRingUsers: canRing },
 	});
@@ -58,7 +68,7 @@ const renderModal = ({ canRing = true, ring = true }: { canRing?: boolean; ring?
 		</AppRoot>
 	);
 
-	return render(<AddParticipantsModal onClose={jest.fn()} />, { wrapper });
+	return render(<AddParticipantsModal onClose={onClose} />, { wrapper });
 };
 
 const choose = async (...usernames: string[]) => {
@@ -69,6 +79,7 @@ const choose = async (...usernames: string[]) => {
 
 beforeEach(() => {
 	addParticipants.mockClear();
+	shareChat.mockClear();
 	addParticipants.mockImplementation(async (users: string[]) => ({ added: users.length }));
 	dispatchToastMessage.mockClear();
 	localStorage.removeItem(preferencesKey);
@@ -166,4 +177,53 @@ it('does not offer to ring where the workspace would not let this caller ring', 
 	await userEvent.click(screen.getByRole('button', { name: 'Add' }));
 
 	await waitFor(() => expect(addParticipants).toHaveBeenCalledWith(['grace'], false));
+});
+
+it('keeps the chat history by default', async () => {
+	renderModal({ canInvite: true });
+
+	await choose('grace');
+	await userEvent.click(screen.getByRole('button', { name: 'Add' }));
+
+	await waitFor(() => expect(shareChat).toHaveBeenCalledWith('invite', ['grace']));
+});
+
+it('does not offer to keep the chat history where the chat cannot take new members', async () => {
+	renderModal({ canInvite: false });
+
+	await choose('grace');
+
+	const keepHistory = screen.getByRole('checkbox', { name: 'Keep_chat_history' });
+	expect(keepHistory).toBeDisabled();
+	expect(keepHistory).not.toBeChecked();
+
+	await userEvent.click(screen.getByRole('button', { name: 'Add' }));
+
+	await waitFor(() => expect(shareChat).toHaveBeenCalledWith('discussion', ['grace']));
+});
+
+it('says so, and closes, when the people were added but the chat could not be shared with them', async () => {
+	shareChat.mockRejectedValueOnce(new Error('error-not-allowed'));
+	const onClose = jest.fn();
+	renderModal({ onClose });
+
+	await choose('grace');
+	await userEvent.click(screen.getByRole('button', { name: 'Add' }));
+
+	await waitFor(() => expect(onClose).toHaveBeenCalled());
+	expect(addParticipants).toHaveBeenCalledWith(['grace'], true);
+	expect(dispatchToastMessage).toHaveBeenCalledWith({ type: 'error', message: 'Users_added_but_chat_could_not_be_shared' });
+});
+
+it('stays open, having added nobody, when adding fails', async () => {
+	addParticipants.mockRejectedValueOnce(new Error('error-invalid-user'));
+	const onClose = jest.fn();
+	renderModal({ onClose });
+
+	await choose('grace');
+	await userEvent.click(screen.getByRole('button', { name: 'Add' }));
+
+	await waitFor(() => expect(dispatchToastMessage).toHaveBeenCalledWith(expect.objectContaining({ type: 'error' })));
+	expect(shareChat).not.toHaveBeenCalled();
+	expect(onClose).not.toHaveBeenCalled();
 });
