@@ -1,5 +1,5 @@
 import { css, keyframes } from '@rocket.chat/css-in-js';
-import type { ReactNode } from 'react';
+import type { AnimationEvent, ReactNode } from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
 import { appendClassName } from '../../helpers/appendClassName';
@@ -74,27 +74,37 @@ const AnimatedVisibility = (props: AnimatedVisibilityProps) => {
 		null,
 	);
 
-	const handleAnimationEnd = useCallback(
-		() =>
-			setVisibility((visibility) => {
-				if (visibility === AnimatedVisibility.HIDING) {
-					return AnimatedVisibility.HIDDEN;
-				}
+	const handleAnimationEnd = useCallback((event?: AnimationEvent<HTMLElement>) => {
+		if (event && event.target !== event.currentTarget) {
+			return;
+		}
 
-				if (visibility === AnimatedVisibility.UNHIDING) {
-					return AnimatedVisibility.VISIBLE;
-				}
+		setVisibility((visibility) => {
+			if (visibility === AnimatedVisibility.HIDING) {
+				return AnimatedVisibility.HIDDEN;
+			}
 
-				return visibility;
-			}),
-		[],
-	);
+			if (visibility === AnimatedVisibility.UNHIDING) {
+				return AnimatedVisibility.VISIBLE;
+			}
+
+			return visibility;
+		});
+	}, []);
 
 	const transformFn = useCallback(
 		(props: any) => {
-			if (props.onAnimationEnd === undefined) {
+			const { onAnimationEnd } = props;
+
+			if (!onAnimationEnd) {
 				props.onAnimationEnd = handleAnimationEnd;
+			} else if (onAnimationEnd !== handleAnimationEnd) {
+				props.onAnimationEnd = (event: AnimationEvent<HTMLElement>) => {
+					onAnimationEnd(event);
+					handleAnimationEnd(event);
+				};
 			}
+
 			props.className = className && appendClassName(props.className, className);
 			return props;
 		},
