@@ -3,7 +3,7 @@ import { styled, View } from '@tamagui/web';
 import { MessageToolbarContext } from './MessageToolbarContext';
 import { strokeColors, surfaceColors } from '../../../Theme';
 import { toCSSValue } from '../../../helpers/toCSSValue';
-import { borderRadius, borderWidth, spacing } from '../../../styleTokens';
+import { borderRadius, borderWidth, inset, spacing } from '../../../styleTokens';
 import { ButtonGroup, type ButtonGroupProps } from '../../ButtonGroup';
 import { withFuselageProvider } from '../../FuselageProvider/FuselageProvider';
 import { MessageContext } from '../MessageContext';
@@ -29,7 +29,7 @@ const MessageToolbarFrame = styled(View, {
 			true: {
 				position: 'absolute',
 				zIndex: 10,
-				top: spacing('neg-x24'),
+				top: inset('neg-x24'),
 				insetInlineEnd: 0,
 			},
 		},
