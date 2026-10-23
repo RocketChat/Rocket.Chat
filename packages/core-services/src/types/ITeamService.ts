@@ -1,4 +1,5 @@
 import type {
+	IAbacAttributeDefinition,
 	IPaginationOptions,
 	IQueryOptions,
 	IRecordsWithTotal,
@@ -24,6 +25,7 @@ export interface ITeamCreateParams {
 	room: ITeamCreateRoom;
 	members?: Array<string> | null; // list of user _ids
 	owner?: string | null; // the team owner. If not present, owner = requester
+	abacAttributes?: IAbacAttributeDefinition[];
 }
 
 export interface ITeamMemberParams {
@@ -72,7 +74,7 @@ export type ITeamUpdateData = { updateRoom?: boolean } & (
 export type ITeamAutocompleteResult = Pick<IRoom, '_id' | 'fname' | 'teamId' | 'name' | 't' | 'avatarETag'>;
 
 export interface ITeamService {
-	create(uid: string, params: ITeamCreateParams): Promise<ITeam>;
+	create(uid: string, params: ITeamCreateParams): Promise<ITeam & { skippedMembers?: string[] }>;
 	addRooms(uid: string, rooms: Array<string>, teamId: string): Promise<Array<IRoom>>;
 	removeRoom(uid: string, rid: string, teamId: string, canRemoveAnyRoom: boolean): Promise<IRoom>;
 	listRooms(uid: string, teamId: string, filter: IListRoomsFilter, pagination: IPaginationOptions): Promise<IRecordsWithTotal<IRoom>>;

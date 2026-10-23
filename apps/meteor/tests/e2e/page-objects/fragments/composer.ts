@@ -108,11 +108,19 @@ export abstract class Composer {
 	}
 
 	get boxPopup(): Locator {
-		return this.root.locator('[role="menu"][name="ComposerBoxPopup"]');
+		return this.root.getByRole('listbox');
 	}
 
 	get readOnlyFooter(): Locator {
 		return this.root.getByText('This room is read-only');
+	}
+
+	get abacLockedFooter(): Locator {
+		return this.root.getByText(/^(Channel|Team) locked\. Required ABAC room attributes missing\.$/);
+	}
+
+	get btnManageAttributes(): Locator {
+		return this.root.getByRole('button', { name: 'Manage attributes', exact: true });
 	}
 
 	get typingIndicator(): Locator {

@@ -1,4 +1,4 @@
-import { FederationMatrix, Message, MeteorError, Room } from '@rocket.chat/core-services';
+import { FederationMatrix, Message, ClientSafeError, Room } from '@rocket.chat/core-services';
 import { isEditedMessage, isRoomNativeFederated, isUserNativeFederated, isBannedSubscription } from '@rocket.chat/core-typings';
 import type { IRoomNativeFederated, IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { isReservedByExclusiveBridge, validateFederatedUsername } from '@rocket.chat/federation-matrix';
@@ -43,7 +43,7 @@ callbacks.add('federation.afterCreateFederatedRoom', async (room, { owner, origi
 
 	const federationRoom = await Rooms.findOneById(room._id);
 	if (!federationRoom || !isRoomNativeFederated(federationRoom)) {
-		throw new MeteorError('error-invalid-room', 'Invalid room');
+		throw new ClientSafeError('error-invalid-room', 'Invalid room');
 	}
 
 	// TODO this won't be neeeded once we receive all state events at ee/packages/federation-matrix/src/events/member.ts
@@ -102,7 +102,7 @@ beforeAddUsersToRoom.add(async ({ usernames, inviter }, room) => {
 		// check if trying to invite a federated user to a non-federated room
 		const federatedUsernames = usernames.filter((u) => validateFederatedUsername(u));
 		if (federatedUsernames.length > 0) {
-			throw new MeteorError('error-federated-users-in-non-federated-rooms', 'Cannot add federated users to non-federated rooms');
+			throw new ClientSafeError('error-federated-users-in-non-federated-rooms', 'Cannot add federated users to non-federated rooms');
 		}
 		return;
 	}
@@ -142,7 +142,7 @@ beforeAddUserToRoom.add(
 		}
 
 		if (!isUserNativeFederated(user) && !(await FederationMatrix.canUserAccessFederation(user))) {
-			throw new MeteorError('error-not-authorized-federation', 'Not authorized to access federation');
+			throw new ClientSafeError('error-not-authorized-federation', 'Not authorized to access federation');
 		}
 
 		// If inviter is federated, the invite came from an external transaction.
@@ -390,7 +390,7 @@ callbacks.add('afterSaveUser', async ({ user: userUpdated, oldUser: oldUserData 
 checkUsernameAvailabilityCallback.add(
 	(name, type) => {
 		if (isReservedByExclusiveBridge(type, name)) {
-			throw new MeteorError('error-username-reserved-by-bridge', 'Name is reserved by a federation bridge');
+			throw new ClientSafeError('error-username-reserved-by-bridge', 'Name is reserved by a federation bridge');
 		}
 	},
 	callbacks.priority.HIGH,

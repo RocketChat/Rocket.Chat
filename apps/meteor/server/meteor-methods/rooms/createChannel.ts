@@ -1,25 +1,10 @@
-import type { ICreatedRoom, ITeam } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
+import type { ITeam } from '@rocket.chat/core-typings';
 import { Users, Team } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
-import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { createRoom } from '../../lib/rooms/createRoom';
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		createChannel(
-			name: string,
-			members: string[],
-			readOnly?: boolean,
-			customFields?: Record<string, any>,
-			extraData?: Record<string, any>,
-		): ICreatedRoom;
-	}
-}
 
 export const createChannelMethod = async (
 	userId: string,
@@ -53,21 +38,10 @@ export const createChannelMethod = async (
 		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'createChannel' });
 	}
 
+	const { abacAttributes: _untrustedAbacAttributes, ...roomExtraData } = extraData;
+
 	return createRoom('c', name, user, members, excludeSelf, readOnly, {
 		...(customFields && Object.keys(customFields).length && { customFields }),
-		...extraData,
+		...roomExtraData,
 	});
 };
-
-Meteor.methods<ServerMethods>({
-	async createChannel(name, members, readOnly = false, customFields = {}, extraData = {}) {
-		methodDeprecationLogger.method('createChannel', '9.0.0', '/v1/channels.create');
-		const uid = Meteor.userId();
-
-		if (!uid) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'createChannel' });
-		}
-
-		return createChannelMethod(uid, name, members, readOnly, customFields, extraData);
-	},
-});

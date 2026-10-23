@@ -71,7 +71,7 @@ balanced round robin. This local shortcut matters more than it sounds; see
 [What crosses a process boundary](#what-crosses-a-process-boundary).
 
 **Serialisation** is EJSON, via a custom serializer in `moleculer.ts`. A custom
-`Errors.Regenerator` carries `MeteorError` across the wire with its `errorType`,
+`Errors.Regenerator` carries `ClientSafeError` across the wire with its `errorType`,
 `reason`, `details` and `isClientSafe` intact, so a client-safe error thrown in a
 service still reaches the client as one.
 

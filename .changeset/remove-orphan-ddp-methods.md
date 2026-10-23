@@ -1,0 +1,167 @@
+---
+'@rocket.chat/meteor': major
+---
+
+**Breaking:** Removed 157 Meteor (DDP) methods that no longer have callers inside the Rocket.Chat codebase, including some that were never deprecated because the web client had already moved to their REST counterparts. External DDP/SDK clients that still invoke these by name will receive a `Method 'X' not found [404]` error. Clients should migrate to the matching `/v1/...` REST endpoint where one exists, or stop using the method otherwise.
+
+Removed methods:
+
+- `2fa:checkCodesRemaining` — use `GET /v1/users.totpCodesRemaining`
+- `2fa:disable` — use `POST /v1/users.disableTotp`
+- `2fa:enable` — use `POST /v1/users.enableTotp`
+- `2fa:regenerateCodes` — use `POST /v1/users.regenerateTotpCodes`
+- `2fa:validateTempToken` — use `POST /v1/users.validateTotp`
+- `addAllUserToRoom`
+- `addIncomingIntegration` — use `POST /v1/integrations.create`
+- `addOAuthService` — use `POST /v1/settings.addCustomOAuth`
+- `addOutgoingIntegration` — use `POST /v1/integrations.create`
+- `addRoomLeader` — use `POST /v1/channels.addLeader` / `groups.addLeader`
+- `addRoomModerator` — use `POST /v1/channels.addModerator` / `groups.addModerator`
+- `addRoomOwner` — use `POST /v1/channels.addOwner` / `groups.addOwner`
+- `addSamlService`
+- `addUsersToRoom` — use `POST /v1/channels.invite` / `groups.invite`
+- `addUserToRoom` — use `POST /v1/channels.invite` / `groups.invite`
+- `archiveRoom` — use `POST /v1/channels.archive` / `groups.archive`
+- `auditGetAuditions` — use `GET /v1/audit.auditions`
+- `auditGetMessages` — use `POST /v1/audit.messages`
+- `auditGetOmnichannelMessages` — use `POST /v1/audit.omnichannelMessages`
+- `authorization:addPermissionToRole` — use `POST /v1/permissions.addRole`
+- `authorization:removeRoleFromPermission` — use `POST /v1/permissions.removeRole`
+- `autoTranslate.getProviderUiMetadata` — use `GET /v1/autotranslate.getProviderUiMetadata`
+- `autoTranslate.getSupportedLanguages` — use `GET /v1/autotranslate.getSupportedLanguages`
+- `autoTranslate.saveSettings`
+- `autoTranslate.translateMessage` — use `POST /v1/autotranslate.translateMessage`
+- `banner/dismiss` — use `POST /v1/banners.dismiss`
+- `blockUser` — use `POST /v1/im.blockUser`
+- `botRequest`
+- `browseChannels` — use `GET /v1/directory`
+- `channelsList` — use `GET /v1/channels.list`
+- `cleanRoomHistory` — use `POST /v1/rooms.cleanHistory`
+- `clearIntegrationHistory` — use `POST /v1/integrations.clearHistory`
+- `cloud:checkRegisterStatus` — use `GET /v1/cloud.registrationStatus`
+- `cloud:checkUserLoggedIn`
+- `cloud:connectWorkspace` — use `POST /v1/cloud.connectWorkspace`
+- `cloud:finishOAuthAuthorization`
+- `cloud:getOAuthAuthorizationUrl`
+- `cloud:getWorkspaceRegisterData` — use `GET /v1/cloud.workspaceRegisterData`
+- `cloud:logout`
+- `cloud:registerWorkspace`
+- `cloud:syncWorkspace` — use `POST /v1/cloud.syncWorkspace`
+- `createChannel` — use `POST /v1/channels.create`
+- `createDirectMessage` — use `POST /v1/im.create`
+- `createDiscussion` — use `POST /v1/rooms.createDiscussion`
+- `createPrivateGroup` — use `POST /v1/groups.create`
+- `deleteCustomUserStatus` — use `POST /v1/custom-user-status.delete`
+- `deleteEmojiCustom` — use `POST /v1/emoji-custom.delete`
+- `deleteFileMessage` — use `POST /v1/chat.delete`
+- `deleteIncomingIntegration` — use `POST /v1/integrations.remove`
+- `deleteOAuthApp` — use `POST /v1/oauth-apps.delete`
+- `deleteOutgoingIntegration` — use `POST /v1/integrations.remove`
+- `deleteUser` — use `POST /v1/users.delete`
+- `deleteUserOwnAccount` — use `POST /v1/users.deleteOwnAccount`
+- `downloadPublicImportFile` — use `POST /v1/downloadPublicImportFile`
+- `e2e.fetchMyKeys` — use `GET /v1/e2e.fetchMyKeys`
+- `e2e.getUsersOfRoomWithoutKey` — use `GET /v1/e2e.getUsersOfRoomWithoutKey`
+- `e2e.requestSubscriptionKeys` — use `POST /v1/e2e.requestSubscriptionKeys`
+- `e2e.resetOwnE2EKey` — use `POST /v1/users.resetE2EKey`
+- `e2e.setRoomKeyID` — use `POST /v1/e2e.setRoomKeyID`
+- `e2e.setUserPublicAndPrivateKeys` — use `POST /v1/e2e.setUserPublicAndPrivateKeys`
+- `executeSlashCommandPreview` — use `POST /v1/commands.preview`
+- `followMessage` — use `POST /v1/chat.followMessage`
+- `getChannelHistory` — use `GET /v1/channels.history`
+- `getImportFileData` — use `GET /v1/getImportFileData`
+- `getImportProgress` — use `GET /v1/getImportProgress`
+- `getLatestImportOperations` — use `GET /v1/getLatestImportOperations`
+- `getMessages` — use `POST /v1/chat.getMessages`
+- `getReadReceipts` — use `GET /v1/chat.getMessageReadReceipts`
+- `getRoomById` — use `GET /v1/rooms.info`
+- `getRoomIdByNameOrId`
+- `getRoomJoinCode`
+- `getRoomNameById` — use `GET /v1/rooms.info`
+- `getS3FileUrl`
+- `getSetupWizardParameters` — use `GET /v1/setupWizard.parameters`
+- `getSingleMessage` — use `GET /v1/chat.getMessage`
+- `getSlashCommandPreviews` — use `GET /v1/commands.preview`
+- `getStatistics` — use `GET /v1/statistics`
+- `getThreadMessages` — use `GET /v1/chat.getThreadMessages`
+- `getThreadsList` — use `GET /v1/chat.getThreadsList`
+- `getTotalChannels`
+- `getUserMentionsByChannel` — use `GET /v1/channels.getAllUserMentionsByChannel`
+- `getUsernameSuggestion`
+- `getUsersOfRoom` — use `GET /v1/channels.members` / `groups.members`
+- `getUserStatusText`
+- `hideRoom` — use `POST /v1/rooms.leave`
+- `ignoreUser` — use `GET /v1/chat.ignoreUser`
+- `insertOrUpdateEmoji` — use `POST /v1/emoji-custom.create` / `update`
+- `insertOrUpdateUserStatus`
+- `joinDefaultChannels`
+- `joinRoom` — use `POST /v1/rooms.join`
+- `leaveRoom` — use `POST /v1/channels.leave` / `groups.leave` / `im.leave`
+- `license:getModules` — use `GET /v1/licenses.info`
+- `license:getTags`
+- `license:hasLicense` — use `GET /v1/licenses.info`
+- `license:isEnterprise` — use `GET /v1/licenses.info`
+- `listCustomSounds` — use `GET /v1/custom-sounds.list`
+- `listCustomUserStatus` — use `GET /v1/custom-user-status.list`
+- `loadHistory` — use `GET /v1/rooms.history`
+- `loadLocale`
+- `loadMissedMessages` — use `GET /v1/chat.syncMessages`
+- `loadNextMessages` — use `GET /v1/rooms.history`
+- `loadSurroundingMessages` — use `GET /v1/rooms.history`
+- `logoutCleanUp` — use `POST /v1/users.logout`
+- `messages/get`
+- `messageSearch` — use `GET /v1/chat.search`
+- `OAuth.retrieveCredential`
+- `openRoom`
+- `personalAccessTokens:generateToken` — use `POST /v1/users.generatePersonalAccessToken`
+- `personalAccessTokens:regenerateToken` — use `POST /v1/users.regeneratePersonalAccessToken`
+- `personalAccessTokens:removeToken` — use `POST /v1/users.removePersonalAccessToken`
+- `pinMessage` — use `POST /v1/chat.pinMessage`
+- `push_test` — use `POST /v1/push.test`
+- `raix:push-update`
+- `readMessages` — use `POST /v1/subscriptions.read`
+- `readThreads` — use `POST /v1/chat.readThread`
+- `refreshOAuthService` — use `POST /v1/settings.refreshOAuthServices`
+- `registerUser` — use `POST /v1/users.register`
+- `removeOAuthService` — use `POST /v1/settings.removeCustomOAuth`
+- `removeRoomLeader` — use `POST /v1/channels.removeLeader` / `groups.removeLeader`
+- `removeRoomModerator` — use `POST /v1/channels.removeModerator` / `groups.removeModerator`
+- `removeRoomOwner` — use `POST /v1/channels.removeOwner` / `groups.removeOwner`
+- `removeUserFromRoom` — use `POST /v1/channels.kick` / `groups.kick`
+- `replayOutgoingIntegration` — use `POST /v1/integrations.replayOutgoing`
+- `requestDataDownload` — use `GET /v1/users.requestDataDownload`
+- `resetAvatar` — use `POST /v1/users.resetAvatar`
+- `rocketchatSearch.suggest`
+- `saveAudioNotificationValue`
+- `saveNotificationSettings` — use `POST /v1/rooms.saveNotification`
+- `saveRoomSettings` — use `POST /v1/rooms.saveRoomSettings`
+- `saveSetting` — use `POST /v1/settings/:_id`
+- `saveSettings` — use `POST /v1/settings`
+- `saveUserPreferences` — use `POST /v1/users.setPreferences`
+- `sendForgotPasswordEmail` — use `POST /v1/users.forgotPassword`
+- `sendMessage` — use `POST /v1/chat.sendMessage`
+- `sendMessageLivechat`
+- `setAvatarFromService` — use `POST /v1/users.setAvatar`
+- `setEmail` — use `POST /v1/users.update`
+- `setRealName` — use `POST /v1/users.update`
+- `setUserActiveStatus` — use `POST /v1/users.setActiveStatus`
+- `slashCommand` — use `POST /v1/commands.run`
+- `spotlight` — use `GET /v1/spotlight`
+- `starMessage` — use `POST /v1/chat.starMessage`
+- `startImport` — use `POST /v1/startImport`
+- `toggleFavorite` — use `POST /v1/rooms.favorite`
+- `unarchiveRoom` — use `POST /v1/channels.unarchive` / `groups.unarchive`
+- `unblockUser` — use `POST /v1/im.blockUser`
+- `unfollowMessage` — use `POST /v1/chat.unfollowMessage`
+- `unpinMessage` — use `POST /v1/chat.unPinMessage`
+- `unreadMessages` — use `POST /v1/subscriptions.unread`
+- `updateIncomingIntegration` — use `PUT /v1/integrations.update`
+- `updateMessage` — use `POST /v1/chat.update`
+- `updateOAuthApp` — use `POST /v1/oauth-apps.update`
+- `updateOutgoingIntegration` — use `PUT /v1/integrations.update`
+- `uploadEmojiCustom`
+- `uploadImportFile` — use `POST /v1/uploadImportFile`
+- `UserPresence:setDefaultStatus`
+- `userSetUtcOffset` — use `POST /v1/users.setPreferences`
+
+Methods still called by the web client (presence, cached stores, message search, SAML logout, registration secret URL) and the ones dispatched by admin setting action buttons stay registered.

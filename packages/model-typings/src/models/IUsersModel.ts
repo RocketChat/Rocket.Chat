@@ -228,6 +228,24 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		roomIds: IRoom['_id'][],
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>>;
+	findActiveByRoomIdAfterUsername<T extends Document = IUser>(
+		roomId: IRoom['_id'],
+		range: { search?: string; after?: Required<Pick<IUser, '_id' | 'username'>>; match?: Filter<IUser>; limit: number },
+		options?: FindOptions<IUser>,
+	): FindCursor<T>;
+	countActiveByRoomIdAfterUsername(
+		roomId: IRoom['_id'],
+		range?: {
+			search?: string;
+			after?: Required<Pick<IUser, '_id' | 'username'>>;
+			until?: Required<Pick<IUser, '_id' | 'username'>>;
+		},
+	): Promise<number>;
+	findOneByIdAndRoomId<T extends Document = IUser>(
+		userId: IUser['_id'],
+		roomId: IRoom['_id'],
+		options?: FindOptions<IUser>,
+	): Promise<T | null>;
 	setCasExternalIdByUsername(username: string): Promise<IUser | null>;
 
 	updateStatusText(_id: IUser['_id'], statusText: string, options?: UpdateOptions): Promise<UpdateResult>;
@@ -403,7 +421,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	resetE2EKey(userId: string): Promise<UpdateResult>;
 	removeExpiredEmailCodeOfUserId(userId: string): Promise<UpdateResult>;
 	maxInvalidEmailCodeAttemptsReached(userId: string, maxAttemtps: number): Promise<boolean>;
-	addEmailCodeByUserId(userId: string, code: string, expire: Date): Promise<UpdateResult>;
+	addEmailCodeByUserId(userId: string, code: string, expire: Date, notSentSince: Date): Promise<UpdateResult>;
 	findActiveUsersInRoles<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		roles: string[],
 		options?: O,
@@ -500,9 +518,6 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>>;
 	countActiveLocalGuests(idsExceptions: string[]): Promise<number>;
-	findCrowdUsers<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
-		options?: O,
-	): FindCursor<DocumentWithProjection<T, O>>;
 	getLastLogin(options?: FindOptions<IUser>): Promise<Date | undefined>;
 	findUsersByUsernames<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		usernames: string[],
@@ -592,8 +607,8 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	findOnlineButNotAvailableAgents<T extends Document = ILivechatAgent>(userIds?: IUser['_id'][]): FindCursor<T>;
 	findAgentsAvailableWithoutBusinessHours(userIds?: IUser['_id'][]): FindCursor<Pick<ILivechatAgent, '_id' | 'openBusinessHours'>>;
 	updateLivechatStatusByAgentIds(userIds: string[], status: ILivechatAgentStatus): Promise<UpdateResult | Document>;
-	findOneByFreeSwitchExtension<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
-		freeSwitchExtension: string,
+	findOneBySipExtension<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		sipExtension: string,
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null>;
 	countUsersInRoles(roles: IRole['_id'][]): Promise<number>;

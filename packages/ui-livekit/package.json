@@ -10,8 +10,8 @@
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.build.json",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix .",
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
 		"test": "jest",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit"
@@ -41,7 +41,7 @@
 		"react": "~19.2.8",
 		"react-dom": "~19.2.8",
 		"react-i18next": "~17.0.16",
-		"typescript": "~5.9.3"
+		"typescript": "~7.0.2"
 	},
 	"peerDependencies": {
 		"@rocket.chat/fuselage-hooks": "*",

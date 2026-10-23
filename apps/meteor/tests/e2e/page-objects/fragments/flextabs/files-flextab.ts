@@ -24,6 +24,7 @@ export class FilesFlexTab extends FlexTab {
 	}
 
 	async deleteFile(name: string) {
+		await this.getFileByName(name).hover();
 		await this.getFileByName(name).getByRole('button', { name: 'More' }).click();
 		await this.menu.selectMenuItem('Delete');
 		await this.confirmDeleteModal.confirmDelete();

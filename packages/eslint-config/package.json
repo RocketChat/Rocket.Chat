@@ -7,17 +7,21 @@
 		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
 		"directory": "packages/eslint-config"
 	},
+	"license": "MIT",
 	"type": "module",
 	"main": "./index.js",
 	"exports": {
-		".": "./index.js"
+		".": "./index.js",
+		"./oxlint.json": "./oxlint.json"
 	},
 	"files": [
-		"/index.js"
+		"/index.js",
+		"/oxlint.json",
+		"/oxlint-eslint-rules.js"
 	],
 	"scripts": {
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix ."
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix"
 	},
 	"dependencies": {
 		"@eslint/js": "~10.0.1",
@@ -43,5 +47,8 @@
 	},
 	"volta": {
 		"extends": "../../package.json"
+	},
+	"installConfig": {
+		"hoistingLimits": "workspaces"
 	}
 }

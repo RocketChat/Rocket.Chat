@@ -126,4 +126,6 @@ export type MessageType =
 	/** Sent when a user was added to a room */
 	| 'discussion-created'
 	// ** Sent when a user was removed from an abac room */
-	| 'abac-removed-user-from-room';
+	| 'abac-removed-user-from-room'
+	// ** Sent once when an attribute change removes several members from an abac room */
+	| 'abac-removed-users-from-room';

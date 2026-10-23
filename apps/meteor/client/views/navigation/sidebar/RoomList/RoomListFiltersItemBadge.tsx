@@ -1,37 +1,20 @@
-import { SidebarItemBadge } from '@rocket.chat/fuselage';
-import type { SubscriptionWithRoom, TranslationKey } from '@rocket.chat/ui-contexts';
-import { useTranslation } from 'react-i18next';
+import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
+import UnreadBadge from '../badges/UnreadBadge';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 export type RoomListFiltersItemBadgeProps = {
-	roomTitle: TranslationKey;
+	roomTitle: string;
 	unreadGroupCount: Pick<
 		SubscriptionWithRoom,
 		'alert' | 'userMentions' | 'unread' | 'tunread' | 'tunreadUser' | 'groupMentions' | 'hideMentionStatus' | 'hideUnreadStatus'
 	>;
 };
 
-/**
- * TODO: This component can be optimized and used in multiple places.
- * The usage of the <span> to handle properly the aria label together with the
- * unread number could be moved to fuselage
- **/
-
 const RoomListFiltersItemBadge = ({ roomTitle, unreadGroupCount }: RoomListFiltersItemBadgeProps) => {
-	const { t } = useTranslation();
 	const { unreadTitle, unreadVariant, unreadCount } = useUnreadDisplay(unreadGroupCount);
 
-	return (
-		<SidebarItemBadge
-			variant={unreadVariant}
-			title={unreadTitle}
-			role='status'
-			aria-label={t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle })}
-		>
-			<span aria-hidden>{unreadCount.total}</span>
-		</SidebarItemBadge>
-	);
+	return <UnreadBadge title={unreadTitle} roomTitle={roomTitle} variant={unreadVariant} total={unreadCount.total} />;
 };
 
 export default RoomListFiltersItemBadge;

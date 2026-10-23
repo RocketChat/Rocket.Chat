@@ -28,8 +28,8 @@
 	],
 	"scripts": {
 		"build": "rollup -c",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix .",
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
 		"start": "rollup -c -w",
 		"test": "jest",
 		"testunit": "jest",
