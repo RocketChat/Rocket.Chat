@@ -24,6 +24,14 @@ const BeforeUpdateOrCreateUserFromExternalService = new Map<
 >();
 const CustomOAuthInstances = new Map<string, CustomOAuthStrategy>();
 
+const resolveEndpoint = (serverURL: string, path: string): string => {
+	if (isAbsoluteURL(path)) {
+		return path;
+	}
+
+	return `${serverURL.replace(/\/+$/, '')}/${path.replace(/^\/+/, '')}`;
+};
+
 export class CustomOAuthStrategy extends Strategy {
 	options: StrategyOptions;
 
@@ -64,9 +72,11 @@ export class CustomOAuthStrategy extends Strategy {
 			throw new Meteor.Error('customOAuth: serverURL is required and must be String');
 		}
 
+		const tokenURL = resolveEndpoint(config.serverURL, config.tokenPath || '/oauth/token');
+
 		const options: StrategyOptions = {
-			authorizationURL: config.serverURL + config.authorizePath,
-			tokenURL: config.serverURL + config.tokenPath,
+			authorizationURL: resolveEndpoint(config.serverURL, config.authorizePath),
+			tokenURL,
 			clientID: config.clientId,
 			clientSecret: config.clientSecret,
 			callbackURL: `${settings.get<string>('Site_Url').replace(/\/$/, '')}/_oauth/${name}`,
@@ -78,7 +88,7 @@ export class CustomOAuthStrategy extends Strategy {
 		super(options, verify);
 
 		this.serverURL = config.serverURL;
-		this.tokenPath = config.tokenPath || '/oauth/token';
+		this.tokenPath = tokenURL;
 		this.identityPath = config.identityPath || '/me';
 		this.tokenSentVia = config.tokenSentVia;
 		this.identityTokenSentVia = config.identityTokenSentVia;
@@ -94,10 +104,6 @@ export class CustomOAuthStrategy extends Strategy {
 
 		if (this.identityTokenSentVia == null || this.identityTokenSentVia === 'default') {
 			this.identityTokenSentVia = this.tokenSentVia;
-		}
-
-		if (!isAbsoluteURL(this.tokenPath)) {
-			this.tokenPath = this.serverURL + this.tokenPath;
 		}
 
 		if (!isAbsoluteURL(this.identityPath)) {
