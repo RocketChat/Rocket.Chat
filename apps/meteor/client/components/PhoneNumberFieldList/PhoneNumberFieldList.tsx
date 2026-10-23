@@ -55,20 +55,16 @@ const PhoneNumberFieldList = <T extends { phones?: IUserPhoneNumber[] }>({ contr
 	});
 
 	return (
-		<Box is='fieldset' className={className} display='flex' flexDirection='column' width='100%'>
+		<Box is='fieldset' className={className} display='flex' flexDirection='column' gap={16} width='100%'>
 			<legend {...visuallyHiddenProps}>{t('Phone_Numbers')}</legend>
 			<Box is='ul' ref={listRef} id={listId} display='flex' flexDirection='column' gap={16}>
 				{fields.map((field, index) => (
 					<PhoneNumberFieldRow key={field.id} control={phonesControl} index={index} onRemove={handleRemove} className={className} />
 				))}
 			</Box>
-			{isAtPhonesLimit && (
-				<Callout type='info' marginBlockStart={16}>
-					{t('Phone_numbers_limit', { count: MAX_USER_PHONES })}
-				</Callout>
-			)}
+			{isAtPhonesLimit && <Callout type='info'>{t('Phone_numbers_limit', { count: MAX_USER_PHONES })}</Callout>}
 			<Box>
-				<Button icon='plus' aria-controls={listId} onClick={handleAdd} disabled={isAtPhonesLimit} marginBlockStart={16}>
+				<Button icon='plus' aria-controls={listId} onClick={handleAdd} disabled={isAtPhonesLimit}>
 					{t('Add_number')}
 				</Button>
 			</Box>

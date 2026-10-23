@@ -565,9 +565,9 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 						</FieldRow>
 					</Field>
 
-					<Divider marginBlockEnd={0} />
+					<Divider flush />
 					<PhoneNumberFieldList control={control} />
-					<Divider marginBlockEnd={0} />
+					<Divider flush />
 					{!!customFieldsMetadata.length && (
 						<>
 							<Box>

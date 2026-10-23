@@ -1,4 +1,4 @@
-import { Box, IconButton } from '@rocket.chat/fuselage';
+import { Box, IconButton, Stack } from '@rocket.chat/fuselage';
 import { Field, FieldLabel, FieldError, FieldHint, FieldRow, TextInput } from '@rocket.chat/fuselage-forms';
 import { useId } from 'react';
 import type { Control } from 'react-hook-form';
@@ -33,15 +33,16 @@ const PhoneNumberFieldRow = ({ control, index, onRemove, className }: PhoneNumbe
 					<Field className={className}>
 						<FieldLabel>{t('Phone_number')}</FieldLabel>
 						<FieldRow>
-							<TextInput {...field} aria-label={`${t('Phone_number')} ${index + 1}`} flexGrow={1} error={error?.message} />
-							<IconButton
-								aria-controls={id}
-								title={t('Remove')}
-								aria-label={t('Remove_number__label__', { label: label?.trim() || index + 1 })}
-								marginInlineStart={8}
-								icon='trash'
-								onClick={() => onRemove(index)}
-							/>
+							<Stack direction='row' align='center' grow gap={8}>
+								<TextInput {...field} aria-label={`${t('Phone_number')} ${index + 1}`} error={error?.message} />
+								<IconButton
+									aria-controls={id}
+									title={t('Remove')}
+									aria-label={t('Remove_number__label__', { label: label?.trim() || index + 1 })}
+									icon='trash'
+									onClick={() => onRemove(index)}
+								/>
+							</Stack>
 						</FieldRow>
 						{error?.message && <FieldError>{error.message}</FieldError>}
 					</Field>
@@ -66,7 +67,6 @@ const PhoneNumberFieldRow = ({ control, index, onRemove, className }: PhoneNumbe
 								{...field}
 								value={field.value ?? ''}
 								aria-label={t('Label_for_phone_number__label__', { label: index + 1 })}
-								flexGrow={1}
 								error={error?.message}
 								placeholder={t('Phone_label_placeholder')}
 							/>
