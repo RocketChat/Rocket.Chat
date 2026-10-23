@@ -1,9 +1,17 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { FederationMatrix, Message, Room, Team, ClientSafeError } from '@rocket.chat/core-services';
+import { FederationMatrix, Message, Room, Team, ClientSafeError, XMPPServer } from '@rocket.chat/core-services';
 import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
-import { type ICreatedRoom, type IUser, type IRoom, type RoomType, isUserNativeFederated } from '@rocket.chat/core-typings';
+import {
+	type ICreatedRoom,
+	type IUser,
+	type IRoom,
+	type RoomType,
+	isRoomXMPPHostedMuc,
+	isUserNativeFederated,
+} from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { isBareJid, normalizeBareJid } from '@rocket.chat/tools';
 
 import { createDirectRoom } from './createDirectRoom';
 import { filterUsersAllowedInRoom } from './filterUsersAllowedInRoom';
@@ -82,13 +90,20 @@ async function createUsersSubscriptions({
 		return;
 	}
 
+	// A typed JID names the user record of that XMPP account, however its domain was spelled
+	const memberUsernames = isRoomXMPPHostedMuc(room) ? members.map((member) => normalizeBareJid(member) ?? member) : members;
+	const jids = isRoomXMPPHostedMuc(room) ? memberUsernames.filter(isBareJid) : [];
+	if (jids.length) {
+		await XMPPServer.ensureXMPPUsersExistLocally(jids);
+	}
+
 	const subs = [];
 
 	const memberIds = [];
 
 	const memberIdAndRolePriorityMap: Record<IUser['_id'], number> = {};
 
-	const { allowedMembers, skippedMembers } = await filterMembersAllowedInRoom(members, room);
+	const { allowedMembers, skippedMembers } = await filterMembersAllowedInRoom(memberUsernames, room);
 
 	const membersCursor = Users.findUsersByUsernames(allowedMembers);
 
@@ -180,7 +195,7 @@ export const createRoom = async <T extends RoomType>(
 		skippedMembers?: string[];
 	}
 > => {
-	const { teamId, ...extraData } = roomExtraData || ({} as IRoom);
+	const { teamId, ...extraData } = roomExtraData || {};
 
 	// TODO: use a shared helper to check whether a user is federated
 	const hasFederatedMembers = members.some((member) => {
@@ -216,7 +231,7 @@ export const createRoom = async <T extends RoomType>(
 	}
 
 	if (type === 'd') {
-		return createDirectRoom(members as IUser[], extraData, { ...options, creator: options?.creator || owner?._id });
+		return createDirectRoom(members, extraData, { ...options, creator: options?.creator || owner?._id });
 	}
 
 	const memberList = [...members];

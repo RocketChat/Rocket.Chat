@@ -1,7 +1,6 @@
 import { Team, Room, ClientSafeError } from '@rocket.chat/core-services';
 import {
 	TeamType,
-	isRoomNativeFederated,
 	type IIntegration,
 	type IMessage,
 	type IRoom,
@@ -52,6 +51,7 @@ import { eraseRoom } from '../../lib/eraseRoom';
 import { findUsersOfRoom } from '../../lib/findUsersOfRoom';
 import { mountIntegrationQueryBasedOnPermissions } from '../../lib/integrations/lib/mountQueriesBasedOnPermission';
 import { openRoom } from '../../lib/openRoom';
+import { invitesByRawUsername } from '../../lib/rooms/invitesByRawUsername';
 import { getUsersHiddenFrom, filterHiddenUsers, redactHiddenUsers } from '../../lib/statusVisibility/hiddenUsers';
 import { normalizeMessagesForUser } from '../../lib/utils/lib/normalizeMessagesForUser';
 import { getChannelHistory } from '../../meteor-methods/messages/getChannelHistory';
@@ -1399,9 +1399,7 @@ API.v1.post(
 	async function action() {
 		const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-		// Federated rooms invite by raw username: the federated user record is created
-		// lazily inside addUsersToRoomMethod, so we must not require it to exist locally yet.
-		if (isRoomNativeFederated(findResult)) {
+		if (invitesByRawUsername(findResult)) {
 			const users = await getUsernameListFromParams(this.bodyParams);
 
 			await addUsersToRoomMethod(this.userId, { rid: findResult._id, users }, this.user);

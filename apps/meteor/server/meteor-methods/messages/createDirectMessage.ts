@@ -3,12 +3,13 @@ import type { ICreateRoomParams } from '@rocket.chat/core-services';
 import type { ICreatedRoom, IUser } from '@rocket.chat/core-typings';
 import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
 import { Rooms, Users } from '@rocket.chat/models';
+import { normalizeBareJid } from '@rocket.chat/tools';
 import { check, Match } from 'meteor/check';
 
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { callbacks } from '../../lib/callbacks';
 import { createRoom } from '../../lib/rooms/createRoom';
-import { isFederationEnabled } from '../../services/federation/utils';
+import { isFederationEnabled, isXMPPServerEnabled } from '../../services/federation/utils';
 import { settings } from '../../settings';
 
 export async function createDirectMessage(
@@ -58,9 +59,15 @@ export async function createDirectMessage(
 				return username;
 			}
 
-			const to: IUser | null = await Users.findOneByUsernameIgnoringCase(username);
+			// A typed JID names the user record of that XMPP account, however its domain was spelled
+			const jid = isXMPPServerEnabled() ? normalizeBareJid(username) : undefined;
+			const to: IUser | null = await Users.findOneByUsernameIgnoringCase(jid ?? username);
 			if (to) {
 				return to;
+			}
+
+			if (jid) {
+				return jid;
 			}
 
 			throw new ClientSafeError('error-invalid-user', 'Invalid user', {
