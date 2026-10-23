@@ -4,16 +4,6 @@
 	"categories": {
 		"correctness": "off"
 	},
-	"settings": {
-		"import-x/extensions": [".ts", ".tsx", ".cts", ".mts", ".js", ".jsx", ".cjs", ".mjs"],
-		"import-x/external-module-folders": ["node_modules", "node_modules/@types"],
-		"import-x/parsers": {
-			"@typescript-eslint/parser": [".ts", ".tsx", ".cts", ".mts"]
-		},
-		"import-x/resolver": {
-			"typescript": true
-		}
-	},
 	"ignorePatterns": ["**/dist", "**/coverage", "**/storybook-static"],
 	"rules": {
 		"eslint-js/constructor-super": "error",

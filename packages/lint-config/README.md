@@ -2,7 +2,22 @@
 
 > The shared [oxlint](https://oxc.rs) config used across the Rocket.Chat codebase, for JavaScript, TypeScript and React.
 
-It replaces [`@rocket.chat/eslint-config`](https://www.npmjs.com/package/@rocket.chat/eslint-config), with the same rules except `@typescript-eslint/naming-convention` and `import-x/no-relative-packages`, which oxlint can't run. Where oxlint has no native version of a rule, the config loads the original ESLint plugin as an oxlint JS plugin. Those plugins are dependencies of this package, so you don't install them yourself.
+It replaces [`@rocket.chat/eslint-config`](https://www.npmjs.com/package/@rocket.chat/eslint-config), with the same rules except:
+
+- `@typescript-eslint/naming-convention`, `import-x/no-relative-packages` and `import-x/no-unresolved` are not enforced.
+- `import-x/no-useless-path-segments` only catches what it can see in the import path (`./a/../a/b`, `./`), not paths that point back into the current directory (`../current/b`). That needs an import resolver, and oxlint ignores `settings` in a config you `extends`. To get the full check, install `eslint-import-resolver-typescript` and add the resolver to your own `settings`:
+
+  ```json
+  {
+  	"settings": {
+  		"import-x/resolver": { "typescript": true }
+  	}
+  }
+  ```
+
+- Unused disable directives are not reported. oxlint reads `options.reportUnusedDisableDirectives` only from your root config, so set it there.
+
+Where oxlint has no native version of a rule, the config loads the original ESLint plugin as an oxlint JS plugin. Those plugins are dependencies of this package, so you don't install them yourself.
 
 ## Installation
 
