@@ -6,8 +6,9 @@ import { WebApp } from 'meteor/webapp';
 
 import { addServerUrlToIndex } from './Assets';
 import { settings } from '../../settings';
+import { readPrivateAssetText } from '../privateAssets';
 
-const indexHtmlWithServerURL = await Assets.getTextAsync('livechat/index.html');
+let indexHtml: string | undefined;
 
 function parseExtraAttributes(widgetData: string): string {
 	const liveChatAdditionalScripts = settings.get<string>('Livechat_AdditionalWidgetScripts');
@@ -42,7 +43,7 @@ const memoizedParseExtraAttributes = mem(parseExtraAttributes, {
 	maxAge: process.env.TEST_MODE === 'true' || process.env.TEST_MODE === 'api' ? 1 : 60000,
 });
 
-WebApp.connectHandlers.use('/livechat', (req, res, next) => {
+WebApp.connectHandlers.use('/livechat', async (req, res, next) => {
 	if (!req.url) {
 		return next();
 	}
@@ -51,6 +52,8 @@ WebApp.connectHandlers.use('/livechat', (req, res, next) => {
 	if (reqUrl.pathname !== '/') {
 		return next();
 	}
+
+	indexHtml ??= await readPrivateAssetText('livechat/index.html');
 
 	res.setHeader('content-type', 'text/html; charset=utf-8');
 	const domainWhiteListSetting = settings.get<string>('Livechat_AllowedDomainsList');
@@ -68,6 +71,6 @@ WebApp.connectHandlers.use('/livechat', (req, res, next) => {
 		res.removeHeader('Content-Security-Policy');
 	}
 
-	res.write(memoizedParseExtraAttributes(addServerUrlToIndex(indexHtmlWithServerURL || '')));
+	res.write(memoizedParseExtraAttributes(addServerUrlToIndex(indexHtml)));
 	res.end();
 });
