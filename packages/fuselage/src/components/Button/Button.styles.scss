@@ -103,10 +103,10 @@
 
 		display: flex;
 
-		transform: translate(30%, -30%);
+		translate: 30% -30%;
 
 		&:dir(rtl) {
-			transform: translate(-30%, -30%);
+			translate: -30% -30%;
 		}
 	}
 
