@@ -86,10 +86,6 @@ declare module '@rocket.chat/ui-contexts' {
 			pathname: `/conference/${string}`;
 			pattern: '/conference/:id';
 		};
-		'setup-wizard': {
-			pathname: `/setup-wizard${`/${string}` | ''}`;
-			pattern: '/setup-wizard/:step?';
-		};
 		'mailer-unsubscribe': {
 			pathname: `/mailer/unsubscribe/${string}/${string}`;
 			pattern: '/mailer/unsubscribe/:_id/:createdAt';
