@@ -34,6 +34,7 @@ declare module 'meteor/meteor' {
 		}
 
 		const server: {
+			options: { disconnectGracePeriod: number };
 			sessions: Map<string, { userId: string; heartbeat: DDPCommon.Heartbeat; connectionHandle: Meteor.Connection }>;
 			publish_handlers: {
 				meteor_autoupdate_clientVersions(): void;
