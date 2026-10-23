@@ -4,11 +4,11 @@ import type { ISetting } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 import { escapeHTML, validateEmail } from '@rocket.chat/tools';
 import juice from 'juice';
-import { Email } from 'meteor/email';
 import { stripHtml } from 'string-strip-html';
 import _ from 'underscore';
 
 import { replaceVariables } from './replaceVariables';
+import { sendMail } from './transport';
 import { strLeft, strRightBack } from '../../../../lib/utils/stringUtils';
 import { settings } from '../../../settings';
 import { i18n } from '../../i18n';
@@ -175,7 +175,7 @@ export const sendNoWrap = async ({
 
 	const eventResult = await Apps.self?.triggerEvent(AppEvents.IPreEmailSent, { email });
 
-	setImmediate(() => Email.sendAsync(eventResult || email).catch((e) => console.error(e)));
+	setImmediate(() => sendMail(eventResult || email).catch((e) => console.error(e)));
 };
 
 export const send = async ({
