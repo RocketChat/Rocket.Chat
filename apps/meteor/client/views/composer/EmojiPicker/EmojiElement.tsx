@@ -2,7 +2,7 @@ import { css } from '@rocket.chat/css-in-js';
 import { IconButton } from '@rocket.chat/fuselage';
 import DOMPurify from 'dompurify';
 import type { MouseEvent, AllHTMLAttributes } from 'react';
-import { memo } from 'react';
+import { memo, useMemo } from 'react';
 
 import { usePreviewEmoji } from '../../../contexts/EmojiPickerContext';
 import type { EmojiItem } from '../../../lib/emoji';
@@ -20,12 +20,14 @@ const smallEmojiClass = css`
 
 const EmojiElement = ({ emoji, image, onClick, small = false, ...props }: EmojiElementProps) => {
 	const { handlePreview, handleRemovePreview } = usePreviewEmoji();
+	// Preserve the tooltip anchor across preview updates.
+	const html = useMemo(() => ({ __html: DOMPurify.sanitize(image) }), [image]);
 
 	if (!image) {
 		return null;
 	}
 
-	const emojiElement = <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(image) }} />;
+	const emojiElement = <div dangerouslySetInnerHTML={html} />;
 
 	return (
 		<IconButton
