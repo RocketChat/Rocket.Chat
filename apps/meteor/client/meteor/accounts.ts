@@ -250,4 +250,6 @@ queueMicrotask(() => {
 		() => settlePageLoadLogin({ type: 'resume', allowed: true, methodName: 'login', methodArguments }),
 		(error) => settlePageLoadLogin({ type: 'resume', allowed: false, error, methodName: 'login', methodArguments }),
 	);
+	// The stored user stays until the server refuses the token, as accounts-base did, so a failed resume does not look like a logout.
+	userIdStore.setState(getStoredItem(STORAGE_KEYS.USER_ID) ?? undefined);
 });
