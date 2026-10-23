@@ -103,7 +103,7 @@ const CustomField = <T extends FieldValues>({
 	);
 };
 
-// eslint-disable-next-line react/no-multi-comp
+// oxlint-disable-next-line react/no-multi-comp
 export const CustomFieldsForm = <T extends FieldValues>({ formName, formControl, metadata }: CustomFieldFormProps<T>) => {
 	const { t } = useTranslation();
 

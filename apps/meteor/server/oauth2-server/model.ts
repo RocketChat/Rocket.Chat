@@ -239,7 +239,7 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 		}
 
 		const result: RefreshToken = {
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			// oxlint-disable-next-line @typescript-eslint/no-non-null-assertion
 			refreshToken: token.refreshToken!,
 			// Keep compatibility with old collection
 			// Deprecated: Remove on next major within a migration

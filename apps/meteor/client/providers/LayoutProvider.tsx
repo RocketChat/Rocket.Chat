@@ -82,12 +82,12 @@ const LayoutProvider = ({ children }: LayoutProviderProps) => {
 					},
 					size: {
 						sidebar: shouldToggle ? '280px' : defaultSidebarWidth,
-						// eslint-disable-next-line no-nested-ternary
+						// oxlint-disable-next-line no-nested-ternary
 						contextualBar: breakpoints.includes('sm') ? (breakpoints.includes('xl') ? '38%' : '380px') : '100%',
 					},
 					roomToolboxExpanded: breakpoints.includes('lg'),
 					contextualBarExpanded: breakpoints.includes('sm'),
-					// eslint-disable-next-line no-nested-ternary
+					// oxlint-disable-next-line no-nested-ternary
 					contextualBarPosition: breakpoints.includes('sm') ? (breakpoints.includes('lg') ? 'relative' : 'absolute') : 'fixed',
 					hiddenActions,
 				}),

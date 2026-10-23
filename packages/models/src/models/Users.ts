@@ -2136,7 +2136,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne(query, options);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	setE2EPublicAndPrivateKeysByUserId(userId: IUser['_id'], { public_key, private_key }: { public_key: string; private_key: string }) {
 		return this.updateOne(
 			{ _id: userId },

@@ -63,7 +63,7 @@ jest.mock('@rocket.chat/ui-client', () => ({
 		{ children, ...props },
 		ref,
 	) {
-		// eslint-disable-next-line testing-library/no-node-access
+		// oxlint-disable-next-line testing-library/no-node-access
 		const content = isValidElement<{ children?: ReactNode }>(children) && children.type === 'div' ? children.props.children : children;
 
 		return (

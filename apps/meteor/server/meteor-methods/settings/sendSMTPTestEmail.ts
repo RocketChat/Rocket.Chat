@@ -7,7 +7,6 @@ import * as Mailer from '../../lib/notifications/email/api';
 import { settings } from '../../settings';
 
 declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		sendSMTPTestEmail(): {
 			message: string;

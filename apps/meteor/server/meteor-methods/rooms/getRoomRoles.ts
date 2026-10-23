@@ -9,7 +9,6 @@ import { getRoomRoles } from '../../lib/roles/getRoomRoles';
 import { settings } from '../../settings';
 
 declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		getRoomRoles(rid: IRoom['_id']): RoomRoles[];
 	}

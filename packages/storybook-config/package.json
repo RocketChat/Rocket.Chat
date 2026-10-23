@@ -38,7 +38,6 @@
 		"@rocket.chat/icons": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@storybook/react": "^9.1.21",
-		"eslint": "~10.12.0",
 		"react": "~19.2.8",
 		"react-dom": "~19.2.8",
 		"typescript": "~7.0.2"

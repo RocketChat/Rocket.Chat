@@ -54,7 +54,7 @@ const getFeatureSet = (modules: string[], isEnterprise: boolean): FeatureSet[] =
 		},
 	];
 
-	// eslint-disable-next-line no-nested-ternary
+	// oxlint-disable-next-line no-nested-ternary
 	return featureSet.sort(({ success: a }, { success: b }) => (a === b ? 0 : a ? -1 : 1));
 };
 

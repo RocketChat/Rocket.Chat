@@ -41,7 +41,6 @@ export const PrioritiesSelect = ({ value = '', label, options, onChange }: Prior
 		[sorting],
 	);
 
-	// eslint-disable-next-line react/no-multi-comp
 	const renderOptions = forwardRef<HTMLElement, ComponentProps<typeof Options>>(function OptionsWrapper(props, ref) {
 		return <Options ref={ref} {...props} maxHeight={200} />;
 	});
