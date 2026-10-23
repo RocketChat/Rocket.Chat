@@ -5,12 +5,12 @@ import path from 'node:path';
 import { Readable } from 'node:stream';
 
 import type { ObjectId } from 'bson';
-import { NpmModuleMongodb } from 'meteor/npm-mongo';
 import mime from 'mime-type/with-db';
 import mkdirp from 'mkdirp';
+import type { GridFSBucketReadStream } from 'mongodb';
 
 import { sanitizeFileName } from './functions/sanitizeFileName';
-import { db } from '../../../database/utils';
+import { db, GridFSBucket } from '../../../database/utils';
 
 type IFile = {
 	buffer: Buffer;
@@ -28,7 +28,7 @@ interface IRocketChatFileStore {
 
 	getFileWithReadStream(fileName: string): Promise<
 		| {
-				readStream: NpmModuleMongodb.GridFSBucketReadStream | ReadStream;
+				readStream: GridFSBucketReadStream | ReadStream;
 				contentType?: string;
 				length: number;
 				uploadDate?: Date;
@@ -44,12 +44,12 @@ interface IRocketChatFileStore {
 class GridFS implements IRocketChatFileStore {
 	private name: string;
 
-	private bucket: NpmModuleMongodb.GridFSBucket;
+	private bucket: GridFSBucket;
 
 	constructor({ name = 'file' } = {}) {
 		this.name = name;
 
-		this.bucket = new NpmModuleMongodb.GridFSBucket(db as any, { bucketName: this.name });
+		this.bucket = new GridFSBucket(db, { bucketName: this.name });
 	}
 
 	private async findOne(filename: string) {
