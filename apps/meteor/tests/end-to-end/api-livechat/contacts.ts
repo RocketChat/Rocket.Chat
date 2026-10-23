@@ -1521,6 +1521,18 @@ describe('LIVECHAT - contacts', () => {
 			expect(res.body.history[0].source).to.have.property('type', 'api');
 		});
 
+		(IS_EE ? it : it.skip)('should not list rooms from other sources when filtering by source', async () => {
+			const res = await request
+				.get(api(`omnichannel/contacts.history`))
+				.set(credentials)
+				.query({ contactId: room1.contactId, source: 'widget' });
+
+			expect(res.status).to.be.equal(200);
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.history).to.be.an('array').that.is.empty;
+			expect(res.body.total).to.be.equal(0);
+		});
+
 		it('should return an empty list if contact does not have history', async () => {
 			const { body } = await request
 				.post(api('omnichannel/contacts'))
