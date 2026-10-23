@@ -1,12 +1,12 @@
 import { styled, View, type GetProps } from '@tamagui/web';
-import { createContext, useContext, type RefAttributes } from 'react';
+import { createContext, useContext, type AllHTMLAttributes } from 'react';
 
 import { shadowColors, strokeColors, surfaceColors, textIconColors } from '../../Theme';
 import { renderAs } from '../../helpers/renderAs';
 import { toCSSValue } from '../../helpers/toCSSValue';
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { borderRadius, borderWidth, fontFamily, fontScale, size, spacing } from '../../styleTokens';
-import type { BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 const inputColor = (name: string, fallback: unknown) => toCSSValue(`--rcx-input-colors-${name}`, String(fallback));
@@ -116,7 +116,11 @@ const InputFrame = styled(View, {
 
 export const InputBoxWrapperContext = createContext(false);
 
-export type InputProps<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement> = Omit<BoxProps, 'ref'> & RefAttributes<T>;
+export type InputProps<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement> = ElementProps<T, AllHTMLAttributes<T>> & {
+	is?: 'input' | 'textarea' | 'select';
+	htmlSize?: number;
+	invisible?: boolean;
+};
 
 function Input<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>({
 	is = 'input',

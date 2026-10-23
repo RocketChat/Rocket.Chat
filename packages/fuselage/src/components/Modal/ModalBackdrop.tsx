@@ -3,10 +3,10 @@ import { styled, View, type GetProps } from '@tamagui/web';
 import { modalBoxFont } from './Modal';
 import { surfaceColors } from '../../Theme';
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
-import type { BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-export type ModalBackdropProps = BoxProps & {
+export type ModalBackdropProps = ElementProps<HTMLDivElement> & {
 	/** Drops the overlay colour, for a backdrop that only catches events or stacks over another one. */
 	transparent?: boolean;
 };

@@ -1,11 +1,12 @@
 import type { GetProps } from '@tamagui/web';
 
 import { useTamaguiBoxProps } from '../../../hooks/useTamaguiBoxProps';
-import { Box, type BoxProps } from '../../Box';
+import type { ElementProps } from '../../../types/ElementProps';
+import { Box } from '../../Box';
 import { withFuselageProvider } from '../../FuselageProvider/FuselageProvider';
 import { TableSelectionFrame } from '../TableFrames';
 
-export type TableSelectionProps = BoxProps & {
+export type TableSelectionProps = ElementProps<HTMLDivElement> & {
 	text?: string;
 };
 

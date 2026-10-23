@@ -3,6 +3,7 @@ import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import type { ElementProps } from '../../types/ElementProps';
 import type { BoxProps } from '../Box';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 import { Icon } from '../Icon';
@@ -26,7 +27,7 @@ const ChevronFrame = styled(View, {
 	} as const,
 });
 
-export type ChevronProps = Omit<BoxProps, 'size'> & {
+export type ChevronProps = ElementProps<HTMLSpanElement> & {
 	size?: BoxProps['width'];
 	up?: boolean;
 	right?: boolean;

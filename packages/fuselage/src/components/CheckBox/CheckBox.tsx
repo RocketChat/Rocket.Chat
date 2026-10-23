@@ -1,13 +1,13 @@
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { styled, View, type GetProps } from '@tamagui/web';
-import type { AllHTMLAttributes, ChangeEvent, ReactNode, RefAttributes } from 'react';
+import type { ChangeEvent, InputHTMLAttributes, ReactNode } from 'react';
 import { useLayoutEffect, useRef, useCallback } from 'react';
 
 import { createSelectionButtonFake, hasDisabledClassName, SelectionButtonInput, SelectionButtonLabel } from './SelectionButtonFrames';
 import { toCSSValue } from '../../helpers/toCSSValue';
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { borderRadius, size } from '../../styleTokens';
-import type { BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 const CheckBoxFake = styled(createSelectionButtonFake('empty'), {
@@ -41,11 +41,10 @@ const CheckBoxMark = styled(View, {
 	} as const,
 });
 
-export type CheckBoxProps = Omit<BoxProps, 'ref'> &
-	RefAttributes<HTMLInputElement> & {
-		indeterminate?: boolean;
-		labelChildren?: ReactNode;
-	} & AllHTMLAttributes<HTMLInputElement>;
+export type CheckBoxProps = ElementProps<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>> & {
+	indeterminate?: boolean;
+	labelChildren?: ReactNode;
+};
 
 function CheckBox({ ref, indeterminate, onChange, className, labelChildren, ...props }: CheckBoxProps) {
 	const innerRef = useRef<HTMLInputElement>(null);
@@ -68,7 +67,7 @@ function CheckBox({ ref, indeterminate, onChange, className, labelChildren, ...p
 	);
 
 	const labelProps = useTamaguiBoxProps({ className }, 'rcx-check-box');
-	const inputProps = useTamaguiBoxProps(props, 'rcx-check-box__input');
+	const inputProps = useTamaguiBoxProps(props as typeof props & { className?: string }, 'rcx-check-box__input');
 
 	return (
 		<SelectionButtonLabel notAllowed={hasDisabledClassName(labelProps.className)} {...labelProps}>

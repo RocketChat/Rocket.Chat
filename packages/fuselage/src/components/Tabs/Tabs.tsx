@@ -4,7 +4,7 @@ import { createContext, useMemo } from 'react';
 import { strokeColors } from '../../Theme';
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { borderWidth, fontFamily, spacing } from '../../styleTokens';
-import type { BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 /** What `rcx-box rcx-box--full` used to give every Tabs element. */
@@ -58,7 +58,7 @@ const TabsWrapper = styled(View, {
 /** Whether the tabs sit on a divider, which their underlines overlap, and whether they fill the width. */
 export const TabsContext = createContext({ divider: false, stretch: false });
 
-export type TabsProps = BoxProps & {
+export type TabsProps = ElementProps<HTMLDivElement> & {
 	divider?: boolean;
 	/** Grows the items to fill the whole width. */
 	stretch?: boolean;

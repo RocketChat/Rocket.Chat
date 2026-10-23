@@ -2,11 +2,11 @@ import { styled, Text, type GetProps } from '@tamagui/web';
 
 import { modalBoxFont } from './Modal';
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
-import type { BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
 import { BoxTransforms, useBoxTransform } from '../Box/BoxTransforms';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-export type ModalHeaderTextProps = BoxProps;
+export type ModalHeaderTextProps = ElementProps<HTMLDivElement>;
 
 const ModalHeaderTextFrame = styled(Text, {
 	render: 'div',

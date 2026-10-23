@@ -1,9 +1,10 @@
 import { styled, Text, type GetProps } from '@tamagui/web';
-import type { RefAttributes } from 'react';
+import type { ElementType, LabelHTMLAttributes } from 'react';
 import { createContext, useContext } from 'react';
 
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { fontColor, fontFamily, fontScale, spacing } from '../../styleTokens';
+import type { ElementProps } from '../../types/ElementProps';
 import type { BoxProps } from '../Box';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
@@ -72,11 +73,12 @@ const isFieldLabel = (props: { className?: unknown }) =>
 	Boolean((props as Record<string, unknown>)['rcx-field__label']) ||
 	[props.className].flat().some((name) => typeof name === 'string' && name.split(' ').includes('rcx-field__label'));
 
-export type LabelProps = Omit<BoxProps, 'ref'> &
-	RefAttributes<HTMLElement> & {
-		disabled?: boolean;
-		required?: boolean;
-	};
+export type LabelProps = ElementProps<HTMLElement, LabelHTMLAttributes<HTMLElement>> & {
+	/** Renders another element, such as a `legend` or a `span`. */
+	is?: ElementType;
+	disabled?: boolean;
+	required?: boolean;
+};
 
 /**
  * A caption for an input component.
@@ -92,11 +94,7 @@ function Label({ disabled, is, required, children, ...props }: LabelProps) {
 
 	return (
 		<LabelContext.Provider value={true}>
-			<LabelFrame
-				dimmed={disabled}
-				field={isFieldLabel(props)}
-				{...(labelProps as GetProps<typeof LabelFrame>)}
-			>
+			<LabelFrame dimmed={disabled} field={isFieldLabel(props)} {...(labelProps as GetProps<typeof LabelFrame>)}>
 				{children}
 				{required && <RequiredMark />}
 			</LabelFrame>

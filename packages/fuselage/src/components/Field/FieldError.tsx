@@ -1,13 +1,13 @@
 import type { GetProps } from '@tamagui/web';
 
-import WithErrorWrapper from '../../helpers/WithErrorWrapper';
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
-import type { BoxProps } from '../Box';
 import { FieldContext } from './Field';
 import { FieldErrorFrame } from './FieldFrames';
+import WithErrorWrapper from '../../helpers/WithErrorWrapper';
+import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-export type FieldErrorProps = BoxProps;
+export type FieldErrorProps = ElementProps<HTMLSpanElement>;
 
 const FieldError = (props: FieldErrorProps) => {
 	const frameProps = useTamaguiBoxProps({ ...props }, 'rcx-field__error');

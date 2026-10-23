@@ -1,9 +1,10 @@
 import { styled, Text, type GetProps } from '@tamagui/web';
+import type { FieldsetHTMLAttributes } from 'react';
 
 import { appendClassName } from '../../helpers/appendClassName';
 import { patchChildren } from '../../helpers/patchChildren';
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
-import type { BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 import { labelBoxDefaults } from '../Label/Label';
 
@@ -20,7 +21,7 @@ const FieldGroupFrame = styled(Text, {
 	padding: 0,
 });
 
-export type FieldGroupProps = BoxProps;
+export type FieldGroupProps = ElementProps<HTMLFieldSetElement, FieldsetHTMLAttributes<HTMLFieldSetElement>>;
 
 /**
  * A container for grouping fields that semantically share a common data context.

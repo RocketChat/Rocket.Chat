@@ -1,16 +1,16 @@
 import type { GetProps } from '@tamagui/web';
-import type { AllHTMLAttributes, RefAttributes } from 'react';
+import type { AllHTMLAttributes } from 'react';
 import { useContext } from 'react';
 
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
-import type { BoxProps } from '../Box';
 import { ButtonContent, ButtonFrame, getButtonStates, renderButtonElement } from './ButtonFrame';
+import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import type { ElementProps } from '../../types/ElementProps';
 import { BoxTransforms, useBoxTransform } from '../Box/BoxTransforms';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 import { Icon, type IconProps } from '../Icon';
 import { ButtonSegmentContext } from './ButtonSegmentContext';
 
-export type ButtonProps = Omit<BoxProps, 'ref' | 'is'> & {
+export type ButtonProps = {
 	/** Renders a link instead of a button, for actions that navigate or download. */
 	is?: 'button' | 'a';
 	variant?: 'primary' | 'secondary' | 'danger' | 'warning' | 'success' | 'secondary-danger' | 'secondary-warning' | 'secondary-success';
@@ -42,8 +42,7 @@ export type ButtonProps = Omit<BoxProps, 'ref' | 'is'> & {
 	compact?: boolean;
 	external?: boolean;
 	icon?: IconProps['name'];
-} & Omit<AllHTMLAttributes<HTMLButtonElement | HTMLAnchorElement>, 'is' | 'className' | 'size'> &
-	RefAttributes<HTMLButtonElement | HTMLAnchorElement>;
+} & ElementProps<HTMLButtonElement | HTMLAnchorElement, AllHTMLAttributes<HTMLButtonElement | HTMLAnchorElement>>;
 
 /**
  * Indicates an actionable user action.

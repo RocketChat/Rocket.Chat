@@ -138,6 +138,11 @@
 	text-transform: uppercase;
 }
 
+.rcx-message-thread__icon--follow,
+.rcx-message-thread__icon--unfollow {
+	cursor: pointer;
+}
+
 /* The icon is an `Icon` element */
 .rcx-message:not(:hover) .rcx-message-thread__icon--unfollow {
 	display: none;

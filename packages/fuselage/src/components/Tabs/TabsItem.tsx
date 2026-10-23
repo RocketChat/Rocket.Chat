@@ -1,6 +1,7 @@
 import button from '@rocket.chat/fuselage-tokens/dist/button.json';
 import { styled, Text, type GetProps } from '@tamagui/web';
-import { useContext, type RefAttributes } from 'react';
+import type { ButtonHTMLAttributes } from 'react';
+import { useContext } from 'react';
 
 import { TabsContext, tabsBoxStyle } from './Tabs';
 import { statusBackgroundColors, strokeColors, textIconColors } from '../../Theme';
@@ -8,7 +9,7 @@ import { getForcedState } from '../../helpers/getForcedState';
 import { toCSSColorValue, toCSSValue } from '../../helpers/toCSSValue';
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { borderRadius, borderWidth, fontScale, size, spacing } from '../../styleTokens';
-import type { BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 const h4 = fontScale('h4');
@@ -129,11 +130,10 @@ const TabsItemFrame = styled(Text, {
 	} as const,
 });
 
-export type TabsItemProps = Omit<BoxProps, 'ref'> &
-	RefAttributes<HTMLButtonElement> & {
-		selected?: boolean;
-		disabled?: boolean;
-	};
+export type TabsItemProps = ElementProps<HTMLButtonElement, ButtonHTMLAttributes<HTMLButtonElement>> & {
+	selected?: boolean;
+	disabled?: boolean;
+};
 
 function TabsItem({ selected, disabled, ...props }: TabsItemProps) {
 	const itemProps = useTamaguiBoxProps({

@@ -2,11 +2,11 @@ import { styled, View, type GetProps } from '@tamagui/web';
 
 import { modalBoxFont, modalContainerMargin } from './Modal';
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
-import type { BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 import { Margins } from '../Margins';
 
-export type ModalHeaderProps = BoxProps;
+export type ModalHeaderProps = ElementProps<HTMLElement>;
 
 const ModalHeaderFrame = styled(View, {
 	render: 'header',

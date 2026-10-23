@@ -4,10 +4,10 @@ import { modalBoxFont } from './Modal';
 import { textIconColors } from '../../Theme';
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { fontScale } from '../../styleTokens';
-import type { BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-export type ModalTaglineProps = BoxProps & {
+export type ModalTaglineProps = ElementProps<HTMLDivElement> & {
 	/** Mutes the tagline, so it reads as a category above the title. */
 	subtle?: boolean;
 };

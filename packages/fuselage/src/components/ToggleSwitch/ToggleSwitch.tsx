@@ -1,11 +1,11 @@
 import buttonTokens from '@rocket.chat/fuselage-tokens/dist/button.json';
 import { styled, View, type GetProps } from '@tamagui/web';
-import type { AllHTMLAttributes, ReactNode, RefAttributes } from 'react';
+import type { InputHTMLAttributes, ReactNode } from 'react';
 
 import { toCSSColorValue, toCSSValue } from '../../helpers/toCSSValue';
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { borderRadius, borderWidth, size } from '../../styleTokens';
-import type { BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
 import {
 	createSelectionButtonFake,
 	hasDisabledClassName,
@@ -42,15 +42,13 @@ const ToggleSwitchKnob = styled(View, {
 	} as const,
 });
 
-export type ToggleSwitchProps = Omit<BoxProps, 'ref'> &
-	RefAttributes<HTMLInputElement> &
-	AllHTMLAttributes<HTMLInputElement> & {
-		labelChildren?: ReactNode;
-	};
+export type ToggleSwitchProps = ElementProps<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>> & {
+	labelChildren?: ReactNode;
+};
 
 function ToggleSwitch({ className, labelChildren, ...props }: ToggleSwitchProps) {
 	const labelProps = useTamaguiBoxProps({ className }, 'rcx-toggle-switch');
-	const inputProps = useTamaguiBoxProps(props, 'rcx-toggle-switch__input');
+	const inputProps = useTamaguiBoxProps(props as typeof props & { className?: string }, 'rcx-toggle-switch__input');
 
 	return (
 		<SelectionButtonLabel notAllowed={hasDisabledClassName(labelProps.className)} {...labelProps}>

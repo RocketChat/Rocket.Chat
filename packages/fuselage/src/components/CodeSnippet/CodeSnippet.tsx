@@ -5,7 +5,8 @@ import { surfaceColors, textIconColors } from '../../Theme';
 import { toCSSValue } from '../../helpers/toCSSValue';
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { borderRadius, fontFamily, size, spacing } from '../../styleTokens';
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 import { Button } from '../Button';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 import { Skeleton } from '../Skeleton';
@@ -47,7 +48,7 @@ const CodeboxFrame = styled(Text, {
 	fontFamily: 'monospace',
 });
 
-export type CodeSnippetProps = BoxProps & {
+export type CodeSnippetProps = ElementProps<HTMLPreElement> & {
 	children: string;
 	buttonText?: string;
 	buttonDisabled?: boolean;

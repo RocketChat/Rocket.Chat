@@ -1,7 +1,8 @@
 import type { GetProps } from '@tamagui/web';
-import type { AllHTMLAttributes, CSSProperties, ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import type { ElementProps } from '../../types/ElementProps';
 import type { BoxProps } from '../Box';
 import { CardText } from './CardFrames';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
@@ -10,7 +11,7 @@ export type CardBodyProps = {
 	flexDirection?: CSSProperties['flexDirection'];
 	height?: BoxProps['height'];
 	children: ReactNode;
-} & Omit<AllHTMLAttributes<HTMLElement>, 'is'>;
+} & ElementProps<HTMLDivElement>;
 
 const CardBody = ({ children, flexDirection = 'row', height, ...props }: CardBodyProps) => {
 	const bodyProps = useTamaguiBoxProps({

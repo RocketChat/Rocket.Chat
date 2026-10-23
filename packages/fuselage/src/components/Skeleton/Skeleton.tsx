@@ -1,11 +1,11 @@
 import { styled, View } from '@tamagui/web';
-import type { AllHTMLAttributes } from 'react';
 
 import { strokeColors, surfaceColors } from '../../Theme';
 import { cx, cxx } from '../../helpers/composeClassNames';
 import { toCSSValue } from '../../helpers/toCSSValue';
 import { borderRadius } from '../../styleTokens';
-import type { BoxProps, StylingBoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import type { BoxProps } from '../Box';
 import { StylingBox } from '../Box';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
@@ -46,14 +46,14 @@ const SkeletonFrame = styled(View, {
 	} as const,
 });
 
-export type SkeletonProps = Omit<StylingBoxProps, 'children'> & {
+export type SkeletonProps = ElementProps<HTMLSpanElement> & {
 	variant?: 'text' | 'rect' | 'circle';
 	/** Whether the placeholder sits on a dark surface, such as a tooltip */
 	inverted?: boolean;
 	/** The size of the content the placeholder stands in for */
 	width?: BoxProps['width'];
 	height?: BoxProps['height'];
-} & AllHTMLAttributes<HTMLSpanElement>;
+};
 
 const Skeleton = ({ variant = 'text', inverted, ...props }: SkeletonProps) => (
 	<StylingBox {...props}>

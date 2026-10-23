@@ -1,11 +1,12 @@
 import type { GetProps } from '@tamagui/web';
 
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
-import type { BoxProps } from '../Box';
 import { TableRowFrame } from './TableFrames';
+import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-export type TableRowProps = Omit<BoxProps, 'action'> & {
+export type TableRowProps = ElementProps<HTMLTableRowElement> & {
+	selected?: boolean;
 	action?: boolean;
 	hasAction?: boolean;
 };

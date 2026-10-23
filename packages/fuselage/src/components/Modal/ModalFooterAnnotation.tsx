@@ -5,9 +5,9 @@ import { textIconColors } from '../../Theme';
 import { asPublicFrame } from '../../helpers/asPublicFrame';
 import { variantClass } from '../../helpers/variantClass';
 import { fontScale } from '../../styleTokens';
-import type { BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
 
-export type ModalFooterAnnotationProps = BoxProps;
+export type ModalFooterAnnotationProps = ElementProps<HTMLDivElement>;
 
 const ModalFooterAnnotationFrame = styled(Text, {
 	render: 'div',
