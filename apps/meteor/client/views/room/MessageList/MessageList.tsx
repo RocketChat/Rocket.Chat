@@ -4,7 +4,7 @@ import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { useSearchParameter, useSetting, useUserPreference } from '@rocket.chat/ui-contexts';
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
-import { Fragment, useCallback, useEffect, useLayoutEffect, useRef } from 'react';
+import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { VirtualizerHandle } from 'virtua';
 import { VList } from 'virtua';
@@ -145,10 +145,21 @@ export const MessageList = function MessageList({
 
 	const firstUnreadMessageId = useFirstUnreadMessageId();
 	const subscription = useRoomSubscription();
-	// The first unread id is only known once the room history loads, which may happen after the room is initialized.
-	// Thread-only replies raise `alert` without a new room message, so they must not count here.
-	const hasUnseenRoomMessage = Boolean(subscription?.ls && room.lm && new Date(room.lm) > new Date(subscription.ls));
-	const hasUnreadMessages = Boolean(firstUnreadMessageId || subscription?.unread || hasUnseenRoomMessage);
+	// The first unread id may only be computed after the room is initialized, so the messages already listed are checked too.
+	const hasUnseenMessages = useMemo(() => {
+		const lastSeen = subscription?.ls?.getTime();
+		if (lastSeen === undefined) {
+			return false;
+		}
+		for (let i = messages.length - 1; i >= 0 && messages[i].ts.getTime() > lastSeen; i--) {
+			const message = messages[i];
+			if (message.u._id !== user?._id && (!message.tmid || message.tshow)) {
+				return true;
+			}
+		}
+		return false;
+	}, [messages, subscription?.ls, user?._id]);
+	const hasUnreadMessages = Boolean(firstUnreadMessageId || hasUnseenMessages);
 
 	const messageJumpParam = useSearchParameter('msg');
 
