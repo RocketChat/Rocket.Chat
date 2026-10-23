@@ -22,8 +22,9 @@ the variations it declares itself. Nothing else: no `Box` styling prop (`margin*
 - **`Stack` and `PopoverSurface`** are the components that replace the most common `Box`-props compositions: a
   flex row or column spaced by `gap`, and the raised scrolling surface of a dropdown.
 - **`Box` keeps its styling props.** It stays the styling primitive and the escape hatch for layout in the app.
-- **CI holds the line.** `scripts/scan-style-props.mjs` counts every styling prop passed to a component and every
-  element laid out by `Margins`/`Scrollable`, and the lint job fails when the count exceeds `--max 1`. The one
+- **CI holds the line.** `scripts/scan-style-props.mjs` counts JSX use-sites: each use of a component that passes it
+  a styling, `is` or `rcx-*` prop it doesn't declare, and each element laid out by `Margins`/`Scrollable`, is one
+  finding however many props it passes. The lint job fails when the count exceeds `--max 1`. The one
   finding left, the ContactInfo conflicts `Callout`, stays until `Callout` has an API to centre its icon. The check
   is on the total, so a change that removes that finding and adds another one still passes.
 
