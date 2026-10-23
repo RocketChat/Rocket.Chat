@@ -18,6 +18,7 @@ const MessageBlockFrame = styled(View, {
 		fixedWidth: {
 			true: {
 				flexGrow: 0,
+				width: '100%',
 				maxWidth: toCSSValue('--rcx-message-block-width-fixed', '368px'),
 			},
 		},

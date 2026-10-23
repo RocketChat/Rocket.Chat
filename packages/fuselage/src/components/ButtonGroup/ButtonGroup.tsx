@@ -29,6 +29,7 @@ const ButtonGroup = styled(View, {
 		},
 		stretch: {
 			true: variantClass('rcx-button-group--stretch', { alignItems: 'stretch', flexGrow: 1 }),
+			equal: variantClass('rcx-button-group--stretch rcx-button-group--stretch-equal', { alignItems: 'stretch', flexGrow: 1 }),
 		},
 		vertical: {
 			true: variantClass('rcx-button-group--vertical', { flexDirection: 'column' }),
@@ -57,7 +58,8 @@ const ButtonGroup = styled(View, {
 
 export type ButtonGroupProps = RefAttributes<HTMLDivElement> & {
 	align?: 'start' | 'center' | 'end';
-	stretch?: boolean;
+	/** `equal` also gives every button the same width. */
+	stretch?: boolean | 'equal';
 	wrap?: boolean;
 	vertical?: boolean;
 	small?: boolean;

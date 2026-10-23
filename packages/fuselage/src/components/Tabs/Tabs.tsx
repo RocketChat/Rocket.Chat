@@ -31,6 +31,9 @@ const TabsFrame = styled(View, {
 				borderColor: String(strokeColors['stroke-light']),
 			},
 		},
+		stretch: {
+			true: { flexDirection: 'column' },
+		},
 	} as const,
 });
 
@@ -52,22 +55,32 @@ const TabsWrapper = styled(View, {
 	paddingInline: 0,
 });
 
-/** Whether the tabs sit on a divider, which their underlines overlap. */
-export const TabsContext = createContext({ divider: false });
+/** Whether the tabs sit on a divider, which their underlines overlap, and whether they fill the width. */
+export const TabsContext = createContext({ divider: false, stretch: false });
 
-export type TabsProps = BoxProps & { divider?: boolean };
+export type TabsProps = BoxProps & {
+	divider?: boolean;
+	/** Grows the items to fill the whole width. */
+	stretch?: boolean;
+};
 
 /**
  * Tabs is a component to navigate around the UI using buttons arranged together with the selected tab highlighted.
  */
-function Tabs({ children, divider = true, ...props }: TabsProps) {
-	const tabsProps = useTamaguiBoxProps({ 'is': 'div', 'rcx-tabs': true, 'rcx-tabs--with-divider': divider, ...props });
+function Tabs({ children, divider = true, stretch = false, ...props }: TabsProps) {
+	const tabsProps = useTamaguiBoxProps({
+		'is': 'div',
+		'rcx-tabs': true,
+		'rcx-tabs--with-divider': divider,
+		'rcx-tabs--stretch': stretch,
+		...props,
+	});
 
-	const context = useMemo(() => ({ divider }), [divider]);
+	const context = useMemo(() => ({ divider, stretch }), [divider, stretch]);
 
 	return (
 		<TabsContext.Provider value={context}>
-			<TabsFrame divider={divider} {...(tabsProps as GetProps<typeof TabsFrame>)}>
+			<TabsFrame divider={divider} stretch={stretch} {...(tabsProps as GetProps<typeof TabsFrame>)}>
 				<TabsScrollBox className='rcx-tabs__scroll-box'>
 					<TabsWrapper className='rcx-tabs__wrapper' role='tablist'>
 						{children}

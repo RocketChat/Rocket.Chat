@@ -19,7 +19,7 @@ const tableBoxStyle = {
 	borderColor: 'currentColor',
 } as const;
 
-const toFontStyle = (name: 'p2' | 'c2') => {
+const toFontStyle = (name: 'p2' | 'p2m' | 'c2') => {
 	const scale = fontScale(name);
 
 	return {
@@ -123,6 +123,14 @@ export const TableCellFrame = styled(Text, {
 				top: 0,
 				backgroundColor: String(surfaceColors['surface-light']),
 				...toFontStyle('c2'),
+			},
+		},
+		rowHeader: {
+			true: {
+				wordBreak: 'break-word',
+				color: String(textIconColors['font-hint']),
+				backgroundColor: String(surfaceColors['surface-light']),
+				...toFontStyle('p2m'),
 			},
 		},
 		clickable: {

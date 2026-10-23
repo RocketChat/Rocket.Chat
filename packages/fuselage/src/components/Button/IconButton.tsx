@@ -30,6 +30,8 @@ export type IconButtonProps = {
 	 * instead, which is the caller's to write.
 	 */
 	badge?: ReactNode;
+	/** The corner the badge is pinned to. */
+	badgePosition?: 'top-end' | 'bottom-end';
 	primary?: boolean;
 	secondary?: boolean;
 	info?: boolean;
@@ -37,8 +39,14 @@ export type IconButtonProps = {
 	warning?: boolean;
 	success?: boolean;
 	pressed?: boolean;
+	/** Renders a link instead of a button, for actions that navigate or download. */
+	is?: 'button' | 'a';
+	/** Opens the link in a new tab, without giving it access to this page. */
+	external?: boolean;
+	/** Paints the glyph with a font token, for icon-only actions on light surfaces. */
+	color?: 'default' | 'danger';
 } & IconButtonSize &
-	BoxProps;
+	Omit<BoxProps, 'is' | 'color'>;
 
 const kindByVariant: Record<string, ButtonKind> = {
 	'secondary': 'secondary',
@@ -68,6 +76,7 @@ const getPressedClass = (variant: string) => {
 function IconButton({
 	icon,
 	badge,
+	badgePosition = 'top-end',
 	primary,
 	info,
 	secondary,
@@ -82,6 +91,8 @@ function IconButton({
 	pressed,
 	children,
 	is = 'button',
+	external,
+	color,
 	disabled,
 	...props
 }: IconButtonProps) {
@@ -126,7 +137,7 @@ function IconButton({
 
 	const frameProps = useTamaguiBoxProps(
 		(transform ?? ((props) => props))({
-			'type': 'button',
+			...(is === 'a' ? { rel: external ? 'noopener noreferrer' : undefined, target: external ? '_blank' : undefined } : { type: 'button' }),
 			'rcx-button': true,
 			'rcx-button--icon': true,
 			'rcx-button--square': true,
@@ -134,6 +145,7 @@ function IconButton({
 			...getSizeClass(),
 			'rcx-button--icon-pressed': pressed,
 			'rcx-button--with-badge': Boolean(badge),
+			color,
 			...props,
 		}),
 	);
@@ -150,7 +162,7 @@ function IconButton({
 		>
 			{isValidElement<any>(icon) ? icon : <Icon name={icon} size={getIconSize()} />}
 			{Boolean(badge) && (
-				<ButtonBadge className='rcx-button__badge' aria-hidden>
+				<ButtonBadge className={`rcx-button__badge rcx-button__badge--${badgePosition}`} badgePosition={badgePosition} aria-hidden>
 					{badge}
 				</ButtonBadge>
 			)}

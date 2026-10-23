@@ -117,6 +117,9 @@ const TabsItemFrame = styled(Text, {
 		divider: {
 			true: { marginBlockEnd: `-${borderWidth('default')}` },
 		},
+		stretch: {
+			true: { flexGrow: 1, textAlign: 'center' },
+		},
 		// Not `disabled`, which Tamagui would also turn into an `aria-disabled` attribute
 		isDisabled: {
 			true: {
@@ -144,7 +147,7 @@ function TabsItem({ selected, disabled, ...props }: TabsItemProps) {
 		...props,
 	});
 
-	const { divider } = useContext(TabsContext);
+	const { divider, stretch } = useContext(TabsContext);
 	const className = typeof itemProps.className === 'string' ? itemProps.className : undefined;
 
 	return (
@@ -152,6 +155,7 @@ function TabsItem({ selected, disabled, ...props }: TabsItemProps) {
 			{...{ scheme: `${!!selected}:${!!disabled}:${divider}` }}
 			selected={selected}
 			divider={divider}
+			stretch={stretch}
 			isDisabled={disabled}
 			forceStyle={getForcedState(className)}
 			{...(className?.split(/\s+/).includes('disabled') && { cursor: 'not-allowed' })}

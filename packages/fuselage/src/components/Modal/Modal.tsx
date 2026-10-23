@@ -51,6 +51,13 @@ const ModalFrame = styled(View, {
 	backgroundColor: 'transparent',
 	backgroundImage: 'none',
 	...modalBoxFont,
+
+	variants: {
+		// Not `hidden`, which the dialog still needs as an attribute
+		isHidden: {
+			true: { display: 'none' },
+		},
+	} as const,
 });
 
 // The wrapper is any element a consumer renders, so its look travels as a class name
@@ -70,7 +77,7 @@ const innerStyle = css`
 	line-height: ${fontScale('p2').lineHeight};
 `;
 
-const Modal = ({ children, wrapper = Box, wrapperFunction, ...props }: ModalProps) => {
+const Modal = ({ children, wrapper = Box, wrapperFunction, hidden, ...props }: ModalProps) => {
 	const wrapperProps = {
 		children,
 		className: `rcx-modal__inner ${useStyle(innerStyle, undefined)}`,
@@ -80,7 +87,7 @@ const Modal = ({ children, wrapper = Box, wrapperFunction, ...props }: ModalProp
 	const frameProps = useTamaguiBoxProps(props, 'rcx-modal');
 
 	return (
-		<ModalFrame {...({ 'open': true, 'aria-modal': 'true', ...frameProps } as GetProps<typeof ModalFrame>)}>
+		<ModalFrame isHidden={hidden} {...({ 'open': true, 'aria-modal': 'true', hidden, ...frameProps } as GetProps<typeof ModalFrame>)}>
 			{wrapperFunction ? wrapperFunction(wrapperProps) : createElement(wrapper, wrapperProps)}
 		</ModalFrame>
 	);

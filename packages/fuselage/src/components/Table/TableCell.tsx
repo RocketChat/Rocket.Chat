@@ -8,25 +8,30 @@ import { TableCellDivider, TableCellFrame } from './TableFrames';
 import { TableHeadContext } from './TableHead';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-export type TableCellProps = TableProps & {
+export type TableCellProps = Omit<TableProps, 'is' | 'columns'> & {
+	is?: 'td' | 'th';
 	align?: 'start' | 'center' | 'end' | 'justify' | object;
 	clickable?: boolean;
+	/** Renders the cell as the header of its row, like the label of a key/value pair. */
+	rowHeader?: boolean;
 };
 
 const isDisabled = ({ className, disabled }: { className?: unknown; disabled?: unknown }) =>
 	!!disabled || (typeof className === 'string' && className.split(/\s+/).includes('disabled'));
 
-const TableCell = ({ align, clickable, children, ...props }: TableCellProps) => {
+const TableCell = ({ align, clickable, rowHeader, children, ...props }: TableCellProps) => {
 	const isInsideHead = useContext(TableHeadContext);
 	const { sticky } = useContext(TableContext);
 
 	const innerElement = children ?? (!isInsideHead ? <Box rcx-table__cell-placeholder is='hr' /> : undefined);
 
 	const cellProps = useTamaguiBoxProps({
-		'is': isInsideHead ? 'th' : 'td',
+		'is': isInsideHead || rowHeader ? 'th' : 'td',
+		'scope': rowHeader ? 'row' : undefined,
 		'rcx-table__cell': true,
 		'rcx-table__cell--align': align,
 		'rcx-table__cell--header': isInsideHead,
+		'rcx-table__cell--row-header': rowHeader,
 		'rcx-table__cell--clickable': clickable,
 		...props,
 	});
@@ -34,6 +39,7 @@ const TableCell = ({ align, clickable, children, ...props }: TableCellProps) => 
 	return (
 		<TableCellFrame
 			header={isInsideHead && (sticky ? 'sticky' : true)}
+			rowHeader={rowHeader}
 			clickable={clickable}
 			{...(clickable && isDisabled(cellProps) && { cursor: 'not-allowed' })}
 			align={typeof align === 'string' ? align : undefined}

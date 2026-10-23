@@ -30,6 +30,12 @@ export const FieldRowFrame = styled(Text, {
 	marginBlockStart: spacing('x4'),
 	marginBlockEnd: spacing('x2'),
 	color: fontColor('secondary-info'),
+
+	variants: {
+		justify: {
+			end: { justifyContent: 'flex-end' },
+		},
+	} as const,
 });
 
 export const FieldDescriptionFrame = styled(Text, {

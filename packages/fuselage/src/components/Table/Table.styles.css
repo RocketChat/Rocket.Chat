@@ -8,3 +8,8 @@
 .rcx-table__row--selected.rcx-table__row--action:focus {
 	background-color: var(--rcx-color-surface-hover, #f2f3f5);
 }
+
+/* Reaches into Button, which keeps its own shrinking */
+.rcx-table__selection-button {
+	flex-shrink: 0;
+}

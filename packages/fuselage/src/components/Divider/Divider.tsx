@@ -31,9 +31,23 @@ const DividerLine = styled(View, {
 				borderLeftWidth: dividerSize,
 			},
 		},
+		small: {
+			true: { marginInline: spacing('x4') },
+		},
+		stretch: {
+			true: { alignSelf: 'stretch', height: 'auto' },
+		},
+		flush: {
+			true: { marginBlock: 0, marginInline: 0 },
+		},
 		danger: {
 			true: {
 				borderColor: String(strokeColors['stroke-error']),
+			},
+		},
+		light: {
+			true: {
+				borderColor: String(strokeColors['stroke-light']),
 			},
 		},
 	} as const,
@@ -55,27 +69,53 @@ const DividerWrapper = styled(Text, {
 });
 
 export type DividerProps = BoxProps & {
-	variation?: 'danger';
+	variation?: 'danger' | 'light';
 	children?: ReactNode;
 	vertical?: boolean;
+	/** Removes the divider's own margin, leaving the spacing to its container. */
+	flush?: boolean;
+	/** Uses a 4px inline margin on a vertical divider instead of 8px. */
+	small?: boolean;
+	/** Makes a vertical divider as tall as its container instead of 20px. */
+	stretch?: boolean;
 };
 
-const PlainDivider = ({ variation, vertical, ...props }: Omit<DividerProps, 'children'>) => {
+const PlainDivider = ({ variation, vertical, flush, small, stretch, ...props }: Omit<DividerProps, 'children'>) => {
 	const lineProps = useTamaguiBoxProps(
 		props,
-		['rcx-divider', vertical && 'rcx-divider--vertical', variation === 'danger' && 'rcx-divider--danger'].filter(Boolean).join(' '),
+		[
+			'rcx-divider',
+			vertical && 'rcx-divider--vertical',
+			vertical && small && 'rcx-divider--small',
+			vertical && stretch && 'rcx-divider--stretch',
+			flush && 'rcx-divider--flush',
+			variation === 'danger' && 'rcx-divider--danger',
+			variation === 'light' && 'rcx-divider--light',
+		]
+			.filter(Boolean)
+			.join(' '),
 	);
 
-	return <DividerLine vertical={vertical} danger={variation === 'danger'} {...(lineProps as GetProps<typeof DividerLine>)} />;
+	return (
+		<DividerLine
+			vertical={vertical}
+			small={vertical && small}
+			stretch={vertical && stretch}
+			flush={flush}
+			danger={variation === 'danger'}
+			light={variation === 'light'}
+			{...(lineProps as GetProps<typeof DividerLine>)}
+		/>
+	);
 };
 
-const Divider = ({ variation, children, vertical, ...props }: DividerProps) => {
+const Divider = ({ variation, children, vertical, flush, small, stretch, ...props }: DividerProps) => {
 	if (!children) {
-		return <PlainDivider variation={variation} vertical={vertical} {...props} />;
+		return <PlainDivider variation={variation} vertical={vertical} flush={flush} small={small} stretch={stretch} {...props} />;
 	}
 
 	return (
-		<Box rcx-message-divider role='separator' {...props}>
+		<Box rcx-message-divider rcx-divider--labelled role='separator' {...props}>
 			<DividerBar className='rcx-divider__bar' />
 			<DividerWrapper className='rcx-divider__wrapper'>{children}</DividerWrapper>
 			<DividerBar className='rcx-divider__bar' />

@@ -22,6 +22,7 @@ const ChipFrame = styled(View, {
 	overflow: 'hidden',
 	alignItems: 'center',
 	minWidth: 'auto',
+	height: size('x28'),
 	minHeight: size('x28'),
 	margin: spacing('none'),
 	padding: spacing('none'),
@@ -53,6 +54,12 @@ const ChipFrame = styled(View, {
 	},
 
 	variants: {
+		small: {
+			true: { height: size('x20'), minHeight: size('x20') },
+		},
+		label: {
+			true: { textTransform: 'uppercase' },
+		},
 		// Not `disabled`: Tamagui would add `aria-disabled`, so the frame gets the attribute through `render` instead
 		inactive: {
 			true: {
@@ -82,6 +89,10 @@ export type ChipProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & 
 	thumbUrl?: string;
 	renderThumb?: (props: { url: string }) => ReactNode;
 	renderDismissSymbol?: () => ReactNode;
+	/** Renders a 20px tall chip. */
+	small?: boolean;
+	/** Renders the text in uppercase, for chips that categorize rather than select. */
+	label?: boolean;
 };
 
 const defaultRenderThumb = ({ url }: { url: string }) => (
@@ -101,6 +112,8 @@ const Chip = (props: ChipProps) => {
 		renderThumb = defaultRenderThumb,
 		renderDismissSymbol = defaultRenderDismissSymbol,
 		disabled: disabledProp,
+		small,
+		label,
 		...rest
 	} = props;
 	const onDismiss = onClick || onMouseDown;
@@ -108,7 +121,9 @@ const Chip = (props: ChipProps) => {
 
 	return (
 		<ChipFrame
-			className={prependClassName(className, 'rcx-box rcx-chip')}
+			className={prependClassName(className, `rcx-box rcx-chip${small ? ' rcx-chip--small' : ''}${label ? ' rcx-chip--label' : ''}`)}
+			small={small}
+			label={label}
 			inactive={!!disabled}
 			render={disabled ? <button disabled /> : 'button'}
 			{...({ type: 'button', onClick: onDismiss, ...rest } as GetProps<typeof ChipFrame>)}

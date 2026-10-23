@@ -1,3 +1,8 @@
+/* A role tag is a `Tag`, which takes no spacing of its own */
+.rcx-message-header__role {
+	margin-inline: 2px;
+}
+
 /* `Divider` renders this class on its own root too */
 .rcx-message-divider {
 	position: relative;
@@ -16,6 +21,10 @@
 	font-size: 0.75rem;
 	font-weight: 700;
 	line-height: 1rem;
+}
+
+.rcx-message-divider.rcx-divider--labelled {
+	padding-inline: 0;
 }
 
 /* Link colors carry `:visited`, which has no Tamagui state, and the footer styles the links callers put in it */
@@ -341,4 +350,10 @@ code (composer mentions) renders the highlight classes on raw elements */
 	.rcx-message:focus-visible .rcx-message-reactions__reaction--action {
 		opacity: 1;
 	}
+}
+
+/* Lets the follow badge overflow the `IconButton` frame, which clips its contents */
+.rcx-message-metrics__item__follow {
+	position: relative;
+	overflow: visible;
 }

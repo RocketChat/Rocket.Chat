@@ -21,7 +21,7 @@ const font = (name: FontScaleName) => fontScale(name) as object;
 const rectangularSize = (height: number, paddingX: number, lineHeightScale: FontScaleName) => ({
 	minWidth: `calc(${size(`x${height}`)} * 2)`,
 	height: size(`x${height}`),
-	paddingBlock: `calc((${spacing(`x${height}`)} - ${fontScale(lineHeightScale).lineHeight}) / 2 - 2px)`,
+	paddingBlock: `calc((${size(`x${height}`)} - ${fontScale(lineHeightScale).lineHeight}) / 2 - 2px)`,
 	paddingInline: `calc(${spacing(`x${paddingX}`)} - 2px)`,
 });
 
@@ -152,6 +152,9 @@ export const ButtonFrame = styled(View, {
 			medium: { ...font('c2'), ...rectangularSize(32, 12, 'c1') },
 			large: { ...font('p2'), ...rectangularSize(48, 24, 'p2') },
 		},
+		compact: {
+			true: { minWidth: '4ch' },
+		},
 		square: {
 			true: {
 				...squaredSize(40),
@@ -210,7 +213,12 @@ export const ButtonBadge = styled(View, {
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',
-	transform: 'translate(30%, -30%)',
+	variants: {
+		badgePosition: {
+			'top-end': {},
+			'bottom-end': { insetBlockStart: 'auto', insetBlockEnd: 0 },
+		},
+	} as const,
 });
 
 /**

@@ -137,7 +137,7 @@ function Input<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaElem
 
 	return (
 		<InputFrame
-			decorated={!rcxProps['rcx-input-box--undecorated']}
+			decorated={!(typeof frameProps.className === 'string' && frameProps.className.split(/\s+/).includes('rcx-input-box--undecorated'))}
 			kind={kind}
 			placeholderVisible={Boolean(rcxProps['rcx-input-box--placeholder-visible'])}
 			wrapped={wrapped}

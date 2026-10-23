@@ -7,7 +7,10 @@ import { fontScale } from '../../styleTokens';
 import type { BoxProps } from '../Box';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-export type ModalTaglineProps = BoxProps;
+export type ModalTaglineProps = BoxProps & {
+	/** Mutes the tagline, so it reads as a category above the title. */
+	subtle?: boolean;
+};
 
 const ModalTaglineFrame = styled(Text, {
 	render: 'div',
@@ -17,12 +20,22 @@ const ModalTaglineFrame = styled(Text, {
 	color: String(textIconColors['font-default']),
 	...modalBoxFont,
 	...(fontScale('c2') as object),
+
+	variants: {
+		subtle: {
+			true: { color: String(textIconColors['font-annotation']) },
+		},
+	} as const,
 });
 
-const ModalTagline = ({ children, ...props }: ModalTaglineProps) => {
+const ModalTagline = ({ subtle, children, ...props }: ModalTaglineProps) => {
 	const frameProps = useTamaguiBoxProps(props, 'rcx-modal__tagline');
 
-	return <ModalTaglineFrame {...(frameProps as GetProps<typeof ModalTaglineFrame>)}>{children}</ModalTaglineFrame>;
+	return (
+		<ModalTaglineFrame subtle={subtle} {...(frameProps as GetProps<typeof ModalTaglineFrame>)}>
+			{children}
+		</ModalTaglineFrame>
+	);
 };
 
 export default withFuselageProvider(ModalTagline, { takesBoxTransforms: true });

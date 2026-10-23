@@ -25,8 +25,17 @@ const iconStyle = (variation: StatesIconProps['variation']) => css`
 	background-color: ${surfaceColors['surface-neutral']};
 `;
 
-const StatesIcon = ({ variation, ...props }: StatesIconProps) => (
-	<Icon {...props} rcx-states__icon className={[variation && `rcx-states__icon--${variation}`, iconStyle(variation)]} size='x32' />
+const StatesIcon = ({ variation, className, ...props }: StatesIconProps) => (
+	<Icon
+		{...props}
+		className={[
+			'rcx-states__icon',
+			variation && `rcx-states__icon--${variation}`,
+			iconStyle(variation),
+			...(Array.isArray(className) ? className : [className]),
+		]}
+		size='x32'
+	/>
 );
 
 export default StatesIcon;

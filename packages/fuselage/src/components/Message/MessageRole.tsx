@@ -3,6 +3,6 @@ import { Tag } from '../Tag';
 
 export type MessageRoleProps = TagProps;
 
-const MessageRole = (props: MessageRoleProps) => <Tag className='rcx-message-header__role' marginInline='x2' {...props} />;
+const MessageRole = (props: MessageRoleProps) => <Tag className='rcx-message-header__role' {...props} />;
 
 export default MessageRole;
