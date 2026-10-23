@@ -57,15 +57,19 @@ const RoleCell = ({ _id, name, description, onChange, permissionId, permissionNa
 
 	return (
 		<GenericTableCell withTruncatedText>
-			<Box display='inline-flex' alignItems='center' gap={4} paddingInline={2}>
+			<Box is='span' paddingInline={2}>
 				<CheckBox aria-label={checkboxLabel} checked={granted} onChange={handleChange} disabled={isDisabled} />
-				{!loading && (
-					<Box display='inline' color='hint' invisible>
-						{description || name}
-					</Box>
-				)}
-				{loading && <Throbber size='x12' />}
 			</Box>
+			{!loading && (
+				<Box display='inline' marginInline={2} color='hint' invisible>
+					{description || name}
+				</Box>
+			)}
+			{loading && (
+				<Box is='span' display='inline-block' marginInline={2}>
+					<Throbber size='x12' />
+				</Box>
+			)}
 		</GenericTableCell>
 	);
 };
