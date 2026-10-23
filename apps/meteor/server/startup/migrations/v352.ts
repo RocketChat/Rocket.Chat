@@ -4,7 +4,7 @@ import { addMigration } from '../../lib/migrations';
 import { settings } from '../../settings';
 
 addMigration({
-	version: 351,
+	version: 352,
 	name: 'Rename the Outlook_Calendar settings group to Microsoft_Exchange and Outlook_Calendar_Enabled to Microsoft_Exchange_Enabled',
 	async up() {
 		const legacySetting = await Settings.findOneById('Outlook_Calendar_Enabled');
