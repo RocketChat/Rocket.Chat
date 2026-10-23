@@ -2,7 +2,7 @@
 
 ## Status
 
-Proposal. Measured on `develop` at `36b596b453`.
+Accepted: see [ADR-0008](../adr/0008-fuselage-components-take-no-styling-props.md). Measured on `develop` at `36b596b453`.
 
 ## Decision
 
