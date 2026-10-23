@@ -7,7 +7,7 @@ export type SplitButtonTriggerProps = IconButtonProps;
  * primary action. Pass it as a `Menu`'s `button`.
  */
 function SplitButtonTrigger({ className, ...props }: SplitButtonTriggerProps) {
-	return <IconButton {...props} className={['rcx-split-button__trigger', ...(Array.isArray(className) ? className : [className])]} />;
+	return <IconButton {...props} className={['rcx-split-button__trigger', className].filter(Boolean).join(' ')} />;
 }
 
 export default SplitButtonTrigger;

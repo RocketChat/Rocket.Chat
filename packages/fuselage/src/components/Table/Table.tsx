@@ -1,9 +1,12 @@
-import { Box, type BoxProps } from '../Box';
+import type { TableHTMLAttributes } from 'react';
+
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 
 /** A column width: a Fuselage size (`x40`), a length in pixels or a share of the table's width. */
 export type TableColumnWidth = `x${number}` | `${number}px` | `${number}%` | number | 'auto';
 
-export type TableProps = BoxProps & {
+export type TableProps = ElementProps<HTMLTableElement, TableHTMLAttributes<HTMLTableElement>> & {
 	striped?: boolean;
 	sticky?: boolean;
 	fixed?: boolean;

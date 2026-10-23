@@ -178,7 +178,7 @@ const AccessibilityView = ({ vm: { values: preferencesValues, displayRolesEnable
 											name='hideUsernames'
 											control={control}
 											render={({ field: { value, onChange, ...field } }) => (
-												<ToggleSwitch {...field} checked={!value} onChange={(e) => onChange(!(e.target as HTMLInputElement).checked)} />
+												<ToggleSwitch {...field} checked={!value} onChange={(e) => onChange(!e.target.checked)} />
 											)}
 										/>
 									</FieldRow>
@@ -192,7 +192,7 @@ const AccessibilityView = ({ vm: { values: preferencesValues, displayRolesEnable
 												name='hideRoles'
 												control={control}
 												render={({ field: { value, onChange, ...field } }) => (
-													<ToggleSwitch {...field} checked={!value} onChange={(e) => onChange(!(e.target as HTMLInputElement).checked)} />
+													<ToggleSwitch {...field} checked={!value} onChange={(e) => onChange(!e.target.checked)} />
 												)}
 											/>
 										</FieldRow>

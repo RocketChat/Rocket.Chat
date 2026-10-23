@@ -12,7 +12,7 @@ export default {
 			value: i,
 			label: `Item #${i}`,
 		})),
-		width: '250px',
+		style: { width: '250px' },
 	},
 	parameters: {
 		actions: { argTypesRegex: '^on.*' },

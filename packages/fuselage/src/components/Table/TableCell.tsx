@@ -1,10 +1,14 @@
+import type { TdHTMLAttributes, ThHTMLAttributes } from 'react';
 import { useContext } from 'react';
 
+import type { ElementProps } from '../../types/ElementProps';
 import { Box } from '../Box';
-import type { TableProps } from './Table';
 import { TableHeadContext } from './TableHead';
 
-export type TableCellProps = Omit<TableProps, 'is' | 'columns'> & {
+export type TableCellProps = Omit<
+	ElementProps<HTMLTableCellElement, TdHTMLAttributes<HTMLTableCellElement> & ThHTMLAttributes<HTMLTableCellElement>>,
+	'align'
+> & {
 	is?: 'td' | 'th';
 	align?: 'start' | 'center' | 'end' | 'justify' | object;
 	clickable?: boolean;

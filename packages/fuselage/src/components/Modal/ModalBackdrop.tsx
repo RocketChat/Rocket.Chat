@@ -1,6 +1,7 @@
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 
-export type ModalBackdropProps = BoxProps & {
+export type ModalBackdropProps = ElementProps<HTMLDivElement> & {
 	/** Drops the overlay colour, for a backdrop that only catches events or stacks over another one. */
 	transparent?: boolean;
 };
