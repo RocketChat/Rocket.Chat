@@ -65,4 +65,4 @@ A list without a story gets one first: the story is the fixture the test renders
 
 ## Combobox
 
-The composer popup (`useComposerBoxPopup`) and the navbar search (`useSearchActiveOption`) keep the focus in the text field, both on top of `useActiveDescendant` from `apps/meteor/client/hooks`. The arrows move a highlighted option, written to the field's `aria-activedescendant`, and Enter picks it. Options carry an `id` and never receive focus.
+The composer popup (`useComposerBoxPopup`) and the navbar search (`useSearchActiveOption`) keep the focus in the text field, both on top of `useActiveDescendant` from `@rocket.chat/fuselage-hooks`. The arrows move a highlighted option, written to the field's `aria-activedescendant`, and Enter picks it. Options carry an `id` and never receive focus.

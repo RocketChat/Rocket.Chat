@@ -1,9 +1,9 @@
 import type { OverlayTriggerState } from '@react-stately/overlays';
-import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { useActiveDescendant, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { KeyboardEvent } from 'react';
 import { createContext, useContext, useEffect, useMemo, useRef } from 'react';
 
-import { getActiveDescendantOptionProps, useActiveDescendant } from '../../../hooks/useActiveDescendant';
+import { getActiveDescendantOptionProps } from '../../../hooks/getActiveDescendantOptionProps';
 
 type SearchActiveOptionContextValue = {
 	activeId: string | undefined;

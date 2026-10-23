@@ -1,10 +1,9 @@
-import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { useActiveDescendant, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { UseQueryResult } from '@tanstack/react-query';
 import type { MutableRefObject, RefCallback } from 'react';
 import { useEffect, useCallback, useId, useState, useRef } from 'react';
 
 import { useComposerBoxPopupQueries } from './useComposerBoxPopupQueries';
-import { useActiveDescendant } from '../../../../hooks/useActiveDescendant';
 import { useChat } from '../../contexts/ChatContext';
 import type { ComposerPopupOption } from '../../contexts/ComposerPopupContext';
 
