@@ -3,7 +3,7 @@
 Screens compose named layout containers. They don't lay themselves out with `Box`, with raw HTML elements, or with styling props passed to Fuselage components.
 
 - A **screen** (anything under `apps/meteor/client/views/`) builds its UI from containers whose name says what they are: `Page`, `PageContent`, `Contextualbar`, `GenericModal`, `GenericTable`, `FieldGroup`, `Stack`, `Card`…
-- **`Box` is for building containers**, inside their implementation. A raw `Box` in a screen means a container is missing.
+- **`Box` is for building containers**, inside their implementation. A raw `Box` in a screen means a container is missing. CI counts the raw `Box`, `div`, `span` and `section` elements screens render (`node scripts/scan-raw-layout.mjs`) and fails when that count rises above the limit it sets. Files in a `layout/` folder are containers and are not counted.
 - A Fuselage component decides how it looks; its container decides where it sits. Nobody passes it a styling prop it doesn't declare as a variation (`margin*`, `width`/`height`/`size`, `flexGrow`/`alignSelf`, `color`, `fontScale`, `padding*`, `display`, `is`) or an `rcx-*` prop. CI enforces this part: `node scripts/scan-style-props.mjs` lists every violation with its `file:line`, and the lint job fails when their count rises above the limit it sets.
 
 ## The containers
@@ -63,7 +63,7 @@ Buttons go in a `ButtonGroup`. An icon-only action is an `IconButton`; a counter
 
 Create one, named for what it is, and grow it as it gets reused:
 
-1. **Next to the screen**, for example `views/omnichannel/directory/components/ChatsFilterBar.tsx`, built with `Stack`, `Field` or, inside it, `Box`. The screen uses `<ChatsFilterBar>`, not the `Box`es.
+1. **In a `layout/` folder next to the screen**, for example `views/omnichannel/directory/layout/ChatsFilterBar.tsx` (as `views/room/layout/RoomLayout.tsx` already does), built with `Stack`, `Field` or `Box`. The screen uses `<ChatsFilterBar>`, not the `Box`es.
 2. **`apps/meteor/client/components/`** once a second feature needs it.
 3. **`packages/ui-client`** once another package or app needs it.
 4. **Fuselage** once it is part of the design system: a reusable layout or a variation of an existing component, reviewed with design.

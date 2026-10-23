@@ -19,7 +19,7 @@ A layout container arranges other components: `Page`, `FieldGroup`, `Stack`, `Ch
 
 - **Name it for its role** in the UI (`SettingsSection`, `EmptyState`), not its shape (`FlexRow`, `Wrapper`).
 - **Give it only the options callers really vary**, as declared props with closed values, the same as any component (below).
-- **It lives where its users are**, and moves up as it gets reused: next to the screen, then `apps/meteor/client/components/`, then `packages/ui-client`, then Fuselage. Promoting it to Fuselage is a design-system decision, reviewed with design.
+- **It lives where its users are**, and moves up as it gets reused: in a `layout/` folder next to the screen, then `apps/meteor/client/components/`, then `packages/ui-client`, then Fuselage. Promoting it to Fuselage is a design-system decision, reviewed with design.
 - **Don't wrap one primitive under a new name.** A container that only renames `Stack` with fixed props isn't worth one.
 
 ## The props a component accepts
