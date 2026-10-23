@@ -1,3 +1,4 @@
+import { hashLoginToken } from '@rocket.chat/account-utils';
 import { ClientSafeError, Presence, Team, isClientSafeError } from '@rocket.chat/core-services';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Sessions, OAuthAccessTokens, OAuthRefreshTokens, OAuthAuthCodes } from '@rocket.chat/models';
@@ -32,7 +33,6 @@ import {
 } from '@rocket.chat/rest-typings';
 import { isHiddenFor } from '@rocket.chat/streamer';
 import { escapeRegExp, getLoginExpirationInMs } from '@rocket.chat/tools';
-import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
 import type { Filter } from 'mongodb';
 
@@ -1492,7 +1492,7 @@ API.v1
 				return API.v1.success();
 			}
 
-			const hashedToken = Accounts._hashLoginToken(xAuthToken);
+			const hashedToken = hashLoginToken(xAuthToken);
 
 			if (!(await Users.removeNonPATLoginTokensExcept(this.userId, hashedToken))) {
 				throw new ClientSafeError('error-logging-out-other-clients', 'Error logging out other clients');
@@ -1752,7 +1752,7 @@ API.v1
 			if (!xAuthToken) {
 				throw new ClientSafeError('error-parameter-required', 'x-auth-token is required');
 			}
-			const hashedToken = Accounts._hashLoginToken(xAuthToken);
+			const hashedToken = hashLoginToken(xAuthToken);
 
 			if (!(await Users.removeNonPATLoginTokensExcept(this.userId, hashedToken))) {
 				throw new ClientSafeError('error-invalid-user-id', 'Invalid user id');

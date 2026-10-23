@@ -1,6 +1,6 @@
+import { hashLoginToken } from '@rocket.chat/account-utils';
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
-import { Accounts } from 'meteor/accounts-base';
 
 import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../notifyListener';
 import { TOTP } from '../lib/totp';
@@ -88,7 +88,7 @@ export const validateTotpTempToken = async (userId: string | null, userToken: st
 	await Users.enable2FAAndSetSecretAndCodesByUserId(user._id, user.services.totp.tempSecret, hashedCodes);
 
 	if (authToken) {
-		const hashedToken = Accounts._hashLoginToken(authToken);
+		const hashedToken = hashLoginToken(authToken);
 
 		const { modifiedCount } = await Users.removeNonPATLoginTokensExcept(user._id, hashedToken);
 
