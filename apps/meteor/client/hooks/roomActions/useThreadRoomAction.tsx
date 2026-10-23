@@ -4,7 +4,7 @@ import type { BadgeProps } from '@rocket.chat/fuselage';
 import { HeaderToolbarAction } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
-import { lazy, useMemo } from 'react';
+import { Fragment, lazy, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useRoomSubscription } from '../../views/room/contexts/RoomContext';
@@ -48,21 +48,21 @@ export const useThreadRoomAction = () => {
 			tabComponent: Threads,
 			order: 2,
 			renderToolboxItem: ({ id, className, icon, title, toolbox: { tab }, disabled, action, tooltip }) => (
-				<HeaderToolbarAction
-					key={id}
-					className={className}
-					id={id}
-					icon={icon}
-					title={t(title)}
-					pressed={id === tab?.id}
-					onClick={action}
-					disabled={disabled}
-					tooltip={tooltip}
-					aria-label={tunread ? t('Threads_unread_count', { count: tunread }) : undefined}
-					badge={!!unread && <Badge variant={variant}>{unread}</Badge>}
-				>
+				<Fragment key={id}>
+					<HeaderToolbarAction
+						className={className}
+						id={id}
+						icon={icon}
+						title={t(title)}
+						pressed={id === tab?.id}
+						onClick={action}
+						disabled={disabled}
+						tooltip={tooltip}
+						aria-label={tunread ? t('Threads_unread_count', { count: tunread }) : undefined}
+						badge={!!unread && <Badge variant={variant}>{unread}</Badge>}
+					/>
 					<VisuallyHidden role='status'>{!!tunread && t('Threads_unread_count', { count: tunread })}</VisuallyHidden>
-				</HeaderToolbarAction>
+				</Fragment>
 			),
 		};
 	}, [enabled, t, tunread, unread, variant]);
