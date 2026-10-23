@@ -38,7 +38,7 @@ const PermissionRow = ({ permission, roleList, onGrant, onRemove }: PermissionRo
 
 	return (
 		<GenericTableRow key={permissionId} role='link' action tabIndex={0}>
-			<GenericTableCell maxWidth='x300' withTruncatedText title={t(`${permissionId}_description`)}>
+			<GenericTableCell maxWidth='x300' truncate title={t(`${permissionId}_description`)}>
 				{permissionName}
 			</GenericTableCell>
 			{roleList.map(({ _id: roleId, name, description }) => (

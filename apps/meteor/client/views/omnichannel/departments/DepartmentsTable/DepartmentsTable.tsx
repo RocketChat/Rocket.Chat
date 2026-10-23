@@ -128,12 +128,12 @@ const DepartmentsTable = ({ archived }: DepartmentsTableProps) => {
 						<GenericTableBody>
 							{data.departments.map((department: Omit<ILivechatDepartment, '_updatedAt'>) => (
 								<GenericTableRow key={department._id} tabIndex={0} width='full'>
-									<GenericTableCell withTruncatedText>{department.name}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{department.description}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{department.numAgents || '0'}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{department.enabled ? t('Yes') : t('No')}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{department.showOnRegistration ? t('Yes') : t('No')}</GenericTableCell>
-									<GenericTableCell withTruncatedText>
+									<GenericTableCell truncate>{department.name}</GenericTableCell>
+									<GenericTableCell truncate>{department.description}</GenericTableCell>
+									<GenericTableCell truncate>{department.numAgents || '0'}</GenericTableCell>
+									<GenericTableCell truncate>{department.enabled ? t('Yes') : t('No')}</GenericTableCell>
+									<GenericTableCell truncate>{department.showOnRegistration ? t('Yes') : t('No')}</GenericTableCell>
+									<GenericTableCell truncate>
 										<DepartmentItemMenu department={department} archived={archived} />
 									</GenericTableCell>
 								</GenericTableRow>

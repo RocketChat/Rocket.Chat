@@ -111,19 +111,19 @@ const RoomsPage = () => {
 						<GenericTableBody>
 							{data?.rooms?.map((room) => (
 								<GenericTableRow key={room._id}>
-									<GenericTableCell withTruncatedText>
+									<GenericTableCell truncate>
 										<Margins inline={8}>
 											<RoomIcon room={room} size='x20' />
 										</Margins>
 										{room.fname || room.name}
 									</GenericTableCell>
 									<GenericTableCell>{room.usersCount}</GenericTableCell>
-									<GenericTableCell withTruncatedText>
+									<GenericTableCell truncate>
 										{room.abacAttributesRedacted
 											? t('ABAC_Redacted_Placeholder')
 											: room.abacAttributes?.flatMap((attribute) => attribute.key ?? []).join(', ')}
 									</GenericTableCell>
-									<GenericTableCell withTruncatedText>
+									<GenericTableCell truncate>
 										{room.abacAttributesRedacted
 											? t('ABAC_Redacted_Placeholder')
 											: room.abacAttributes?.flatMap((attribute) => attribute.values ?? []).join(', ')}

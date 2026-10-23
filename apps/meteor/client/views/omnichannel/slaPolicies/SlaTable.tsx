@@ -120,9 +120,9 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 						<GenericTableBody>
 							{data?.sla.map(({ _id, name, description, dueTimeInMinutes }) => (
 								<GenericTableRow key={_id} tabIndex={0} onClick={onRowClick(_id)} action>
-									<GenericTableCell withTruncatedText>{name}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{description}</GenericTableCell>
-									<GenericTableCell withTruncatedText>
+									<GenericTableCell truncate>{name}</GenericTableCell>
+									<GenericTableCell truncate>{description}</GenericTableCell>
+									<GenericTableCell truncate>
 										{dueTimeInMinutes} {t('minutes')}
 									</GenericTableCell>
 									<RemoveSlaButton _id={_id} reload={refetch} />

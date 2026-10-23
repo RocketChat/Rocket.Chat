@@ -106,8 +106,8 @@ const TagsTable = () => {
 						<GenericTableBody>
 							{data?.tags.map(({ _id, name, description }) => (
 								<GenericTableRow key={_id} tabIndex={0} onClick={() => onRowClick(_id)} action>
-									<GenericTableCell withTruncatedText>{name}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{description}</GenericTableCell>
+									<GenericTableCell truncate>{name}</GenericTableCell>
+									<GenericTableCell truncate>{description}</GenericTableCell>
 									<GenericTableCell>
 										<IconButton
 											icon='trash'

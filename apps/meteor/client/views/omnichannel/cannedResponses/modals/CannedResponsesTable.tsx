@@ -153,9 +153,9 @@ const CannedResponsesTable = () => {
 						<GenericTableBody>
 							{data?.cannedResponses.map(({ _id, shortcut, scope, createdBy, _createdAt, tags = [] }) => (
 								<GenericTableRow key={_id} tabIndex={0} role='link' onClick={onRowClick(_id, scope)} action>
-									<GenericTableCell withTruncatedText>{shortcut}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{defaultOptions[scope as Scope]}</GenericTableCell>
-									<GenericTableCell withTruncatedText>
+									<GenericTableCell truncate>{shortcut}</GenericTableCell>
+									<GenericTableCell truncate>{defaultOptions[scope as Scope]}</GenericTableCell>
+									<GenericTableCell truncate>
 										<Box display='flex' alignItems='center'>
 											<UserAvatar size='x24' username={createdBy.username} />
 											<Box display='flex' withTruncatedText marginInline={8}>
@@ -167,8 +167,8 @@ const CannedResponsesTable = () => {
 											</Box>
 										</Box>
 									</GenericTableCell>
-									<GenericTableCell withTruncatedText>{getTime(_createdAt)}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{tags.join(', ')}</GenericTableCell>
+									<GenericTableCell truncate>{getTime(_createdAt)}</GenericTableCell>
+									<GenericTableCell truncate>{tags.join(', ')}</GenericTableCell>
 									{!(scope === 'global' && isMonitor && !isManager) && <RemoveCannedResponseButton id={_id} />}
 								</GenericTableRow>
 							))}

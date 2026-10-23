@@ -87,9 +87,9 @@ const EmailInboxTable = () => {
 									action
 									width='full'
 								>
-									<GenericTableCell withTruncatedText>{emailInbox.name}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{emailInbox.email}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{emailInbox.active ? t('Yes') : t('No')}</GenericTableCell>
+									<GenericTableCell truncate>{emailInbox.name}</GenericTableCell>
+									<GenericTableCell truncate>{emailInbox.email}</GenericTableCell>
+									<GenericTableCell truncate>{emailInbox.active ? t('Yes') : t('No')}</GenericTableCell>
 									<SendTestButton id={emailInbox._id} />
 								</GenericTableRow>
 							))}

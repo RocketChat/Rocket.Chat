@@ -42,7 +42,7 @@ const RoomRow = ({ room }: RoomRowProps) => {
 		if (isDiscussion(room as IRoom)) {
 			return 'Discussion';
 		}
-		return roomTypeI18nMap[(room as IRoom).t as keyof typeof roomTypeI18nMap];
+		return roomTypeI18nMap[(room as IRoom).t];
 	};
 
 	const onClick = useCallback(
@@ -59,7 +59,7 @@ const RoomRow = ({ room }: RoomRowProps) => {
 
 	return (
 		<GenericTableRow action key={_id} onKeyDown={onClick(_id)} onClick={onClick(_id)} tabIndex={0} role='link' qa-room-id={_id}>
-			<GenericTableCell withTruncatedText>
+			<GenericTableCell truncate>
 				<Box display='flex' alignContent='center'>
 					<RoomAvatar size={mediaQuery ? 'x28' : 'x40'} room={{ type, name: roomName, _id, ...args }} />
 					<Box
@@ -88,11 +88,11 @@ const RoomRow = ({ room }: RoomRowProps) => {
 					{t(getRoomType(room))}
 				</Box>
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText>{usersCount}</GenericTableCell>
-			{mediaQuery && <GenericTableCell withTruncatedText>{msgs}</GenericTableCell>}
-			{mediaQuery && <GenericTableCell withTruncatedText>{isDefault ? t('True') : t('False')}</GenericTableCell>}
-			{mediaQuery && <GenericTableCell withTruncatedText>{featured ? t('True') : t('False')}</GenericTableCell>}
-			{mediaQuery && <GenericTableCell withTruncatedText>{ts ? formatDate(ts) : ''}</GenericTableCell>}
+			<GenericTableCell truncate>{usersCount}</GenericTableCell>
+			{mediaQuery && <GenericTableCell truncate>{msgs}</GenericTableCell>}
+			{mediaQuery && <GenericTableCell truncate>{isDefault ? t('True') : t('False')}</GenericTableCell>}
+			{mediaQuery && <GenericTableCell truncate>{featured ? t('True') : t('False')}</GenericTableCell>}
+			{mediaQuery && <GenericTableCell truncate>{ts ? formatDate(ts) : ''}</GenericTableCell>}
 		</GenericTableRow>
 	);
 };

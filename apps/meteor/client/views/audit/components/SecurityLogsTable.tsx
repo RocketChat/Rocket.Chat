@@ -181,7 +181,7 @@ const SecurityLogsTable = () => {
 										})
 									}
 								>
-									<GenericTableCell withTruncatedText>
+									<GenericTableCell truncate>
 										<Box display='flex' alignItems='center'>
 											{item.actor.type === 'user' && (
 												<Box marginInlineEnd={4}>
@@ -193,12 +193,12 @@ const SecurityLogsTable = () => {
 											</Box>
 										</Box>
 									</GenericTableCell>
-									<GenericTableCell withTruncatedText>{format(new Date(item.ts), 'MMMM d yyyy, h:mm:ss a')}</GenericTableCell>
-									<GenericTableCell withTruncatedText title={setting && String(setting)}>
+									<GenericTableCell truncate>{format(new Date(item.ts), 'MMMM d yyyy, h:mm:ss a')}</GenericTableCell>
+									<GenericTableCell truncate title={setting && String(setting)}>
 										{setting && String(setting)}
 									</GenericTableCell>
-									<GenericTableCell withTruncatedText>{String(previous)}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{String(current)}</GenericTableCell>
+									<GenericTableCell truncate>{String(previous)}</GenericTableCell>
+									<GenericTableCell truncate>{String(current)}</GenericTableCell>
 								</GenericTableRow>
 							);
 						})}

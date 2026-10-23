@@ -172,10 +172,10 @@ const MonitorsTable = () => {
 						<GenericTableBody>
 							{data.monitors?.map((monitor) => (
 								<GenericTableRow key={monitor._id} tabIndex={0} width='full'>
-									<GenericTableCell withTruncatedText>{monitor.name}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{monitor.username}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{monitor.email}</GenericTableCell>
-									<GenericTableCell withTruncatedText>
+									<GenericTableCell truncate>{monitor.name}</GenericTableCell>
+									<GenericTableCell truncate>{monitor.username}</GenericTableCell>
+									<GenericTableCell truncate>{monitor.email}</GenericTableCell>
+									<GenericTableCell truncate>
 										<IconButton icon='trash' small title={t('Remove')} onClick={() => handleRemove(monitor.username)} />
 									</GenericTableCell>
 								</GenericTableRow>

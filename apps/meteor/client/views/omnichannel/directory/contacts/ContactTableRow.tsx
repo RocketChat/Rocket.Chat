@@ -52,10 +52,10 @@ const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILiv
 			className={customAlignTop}
 			onClick={() => onRowClick(_id)}
 		>
-			<GenericTableCell fontScale='p2m' color='default' withTruncatedText>
+			<GenericTableCell strong color='default' truncate>
 				{name}
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText>
+			<GenericTableCell truncate>
 				{latestChannel?.details && (
 					<Box withTruncatedText display='flex' alignItems='center'>
 						<OmnichannelRoomIcon size='x20' source={latestChannel?.details} />
@@ -65,8 +65,8 @@ const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILiv
 					</Box>
 				)}
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText>{contactManager?.username}</GenericTableCell>
-			<GenericTableCell withTruncatedText>
+			<GenericTableCell truncate>{contactManager?.username}</GenericTableCell>
+			<GenericTableCell truncate>
 				{lastChat && (
 					<Box display='flex' flexDirection='column'>
 						<Box fontScale='p2m' withTruncatedText color='default'>

@@ -109,11 +109,11 @@ const CustomFieldsTable = () => {
 						<GenericTableBody>
 							{data.customFields.map(({ label, _id, scope, visibility }) => (
 								<GenericTableRow key={_id} tabIndex={0} onClick={onRowClick(_id)} action>
-									<GenericTableCell withTruncatedText>{_id}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{label}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{scope === 'visitor' ? t('Visitor') : t('Room')}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{visibility === 'visible' ? t('Visible') : t('Hidden')}</GenericTableCell>
-									<GenericTableCell withTruncatedText>
+									<GenericTableCell truncate>{_id}</GenericTableCell>
+									<GenericTableCell truncate>{label}</GenericTableCell>
+									<GenericTableCell truncate>{scope === 'visitor' ? t('Visitor') : t('Room')}</GenericTableCell>
+									<GenericTableCell truncate>{visibility === 'visible' ? t('Visible') : t('Hidden')}</GenericTableCell>
+									<GenericTableCell truncate>
 										<IconButton
 											icon='trash'
 											small

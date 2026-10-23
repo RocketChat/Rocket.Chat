@@ -123,7 +123,7 @@ const UsersTableRow = ({ user, tab, isMobile, isLaptop, isSeatsCapExceeded, show
 
 	return (
 		<GenericTableRow onKeyDown={(e) => onClick(_id, e)} onClick={(e) => onClick(_id, e)} tabIndex={0} role='link' action qa-user-id={_id}>
-			<GenericTableCell withTruncatedText>
+			<GenericTableCell truncate>
 				<Box display='flex' alignItems='center'>
 					{username && <UserAvatar size={isMobile || isLaptop ? 'x28' : 'x40'} username={username} etag={avatarETag} />}
 					<Box display='flex' flexGrow={1} flexShrink={1} flexBasis='0%' alignSelf='center' alignItems='center' withTruncatedText>
@@ -143,18 +143,18 @@ const UsersTableRow = ({ user, tab, isMobile, isLaptop, isSeatsCapExceeded, show
 				</Box>
 			</GenericTableCell>
 
-			{!isLaptop && <GenericTableCell withTruncatedText>{emails?.length && emails[0].address}</GenericTableCell>}
+			{!isLaptop && <GenericTableCell truncate>{emails?.length && emails[0].address}</GenericTableCell>}
 
-			{!isLaptop && <GenericTableCell withTruncatedText>{roleNames}</GenericTableCell>}
+			{!isLaptop && <GenericTableCell truncate>{roleNames}</GenericTableCell>}
 
 			{tab === 'all' && !isMobile && (
-				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
+				<GenericTableCell color='hint' truncate>
 					{registrationStatusText}
 				</GenericTableCell>
 			)}
 
 			{tab === 'pending' && !isMobile && (
-				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
+				<GenericTableCell color='hint' truncate>
 					<Box display='flex' flexDirection='row' alignContent='flex-end'>
 						{active ? t('User_first_log_in') : t('Activation')}
 					</Box>
@@ -162,7 +162,7 @@ const UsersTableRow = ({ user, tab, isMobile, isLaptop, isSeatsCapExceeded, show
 			)}
 
 			{tab === 'all' && showVoipExtension && (
-				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
+				<GenericTableCell color='hint' truncate>
 					{sipExtension || t('Not_assigned')}
 				</GenericTableCell>
 			)}

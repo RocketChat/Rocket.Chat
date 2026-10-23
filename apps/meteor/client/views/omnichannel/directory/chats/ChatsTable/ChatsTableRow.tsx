@@ -59,7 +59,7 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 
 	return (
 		<GenericTableRow className={customAlignTop} key={_id} tabIndex={0} onClick={() => onRowClick(_id)} action>
-			<GenericTableCell withTruncatedText>
+			<GenericTableCell truncate>
 				<Box display='flex' flexDirection='column'>
 					<Box withTruncatedText fontScale='p2m' color='default'>
 						{fname}
@@ -82,20 +82,20 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 					<PriorityIcon level={priorityWeight} />
 				</GenericTableCell>
 			)}
-			<GenericTableCell withTruncatedText>
+			<GenericTableCell truncate>
 				<Box display='flex' alignItems='center'>
 					<OmnichannelRoomIcon size='x20' source={source} />
 					<Box marginInlineStart={8}>{getSourceLabel(source)}</Box>
 				</Box>
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText>{servedBy?.username}</GenericTableCell>
+			<GenericTableCell truncate>{servedBy?.username}</GenericTableCell>
 			<GenericTableCell>
 				<Box display='flex'>
 					<OmnichannelVerificationTag verified={verified} />
 				</Box>
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText>{department?.name}</GenericTableCell>
-			<GenericTableCell withTruncatedText>
+			<GenericTableCell truncate>{department?.name}</GenericTableCell>
+			<GenericTableCell truncate>
 				<Box display='flex' flexDirection='column'>
 					<Box fontScale='p2m' withTruncatedText color='default'>
 						{formatDate(ts)}
@@ -103,7 +103,7 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 					<Box withTruncatedText>{getTimeFromNow(ts)}</Box>
 				</Box>
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText>
+			<GenericTableCell truncate>
 				{lm && (
 					<Box display='flex' flexDirection='column'>
 						<Box fontScale='p2m' withTruncatedText color='default'>
@@ -113,7 +113,7 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 					</Box>
 				)}
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText>
+			<GenericTableCell truncate>
 				<Box display='flex' alignItems='center'>
 					<RoomActivityIcon room={room} />
 					{getStatusText(open, onHold)}

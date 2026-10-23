@@ -108,7 +108,7 @@ const ManagersTable = () => {
 						<GenericTableBody>
 							{data.users.map((user) => (
 								<GenericTableRow key={user._id} tabIndex={0}>
-									<GenericTableCell withTruncatedText>
+									<GenericTableCell truncate>
 										<Box display='flex' alignItems='center'>
 											<UserAvatar size='x28' username={user.username || ''} etag={user.avatarETag} />
 											<Box display='flex' withTruncatedText marginInline={8}>
@@ -126,7 +126,7 @@ const ManagersTable = () => {
 										</Box>
 										<Box marginInline={4} />
 									</GenericTableCell>
-									<GenericTableCell withTruncatedText>{user.emails?.length && user.emails[0].address}</GenericTableCell>
+									<GenericTableCell truncate>{user.emails?.length && user.emails[0].address}</GenericTableCell>
 									<RemoveManagerButton _id={user._id} />
 								</GenericTableRow>
 							))}
