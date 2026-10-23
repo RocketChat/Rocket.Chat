@@ -10163,7 +10163,7 @@ __metadata:
     eslint-plugin-testing-library: "npm:~7.16.2"
     globals: "npm:~17.13.0"
     prettier: "npm:~3.9.9"
-    storybook: "npm:^9.1.20"
+    storybook: "npm:~9.1.21"
     typescript: "npm:~5.9.3"
     typescript-eslint: "npm:~8.71.1"
   languageName: unknown
@@ -10257,7 +10257,7 @@ __metadata:
     react: "npm:~19.2.8"
     react-aria: "npm:~3.37.0"
     react-dom: "npm:~19.2.8"
-    storybook: "npm:~9.1.20"
+    storybook: "npm:~9.1.21"
     typescript: "npm:~7.0.2"
   peerDependencies:
     "@rocket.chat/fuselage": "*"
@@ -10318,7 +10318,7 @@ __metadata:
     react: "npm:~19.2.8"
     react-dom: "npm:~19.2.8"
     react-timing-hooks: "npm:~5.2.0"
-    storybook: "npm:~9.1.20"
+    storybook: "npm:~9.1.21"
     typescript: "npm:~7.0.2"
   peerDependencies:
     "@rocket.chat/fuselage": "*"
@@ -10359,8 +10359,8 @@ __metadata:
     "@rocket.chat/ui-contexts": "workspace:^"
     "@rocket.chat/ui-kit": "workspace:~"
     "@rocket.chat/ui-video-conf": "workspace:^"
-    "@storybook/react": "npm:^9.1.20"
-    "@storybook/react-webpack5": "npm:^9.1.20"
+    "@storybook/react": "npm:~9.1.21"
+    "@storybook/react-webpack5": "npm:~9.1.21"
     "@tanstack/react-query": "npm:~5.65.1"
     "@testing-library/dom": "npm:~10.4.2"
     "@testing-library/react": "npm:~16.3.3"
@@ -10376,7 +10376,7 @@ __metadata:
     react-dom: "npm:~19.2.8"
     react-i18next: "npm:~17.0.16"
     react-virtuoso: "npm:~4.18.16"
-    storybook: "npm:^9.1.20"
+    storybook: "npm:~9.1.21"
     typescript: "npm:~7.0.2"
     webpack: "npm:~5.104.1"
   peerDependencies:
@@ -10411,11 +10411,11 @@ __metadata:
     "@rocket.chat/storybook-dark-mode": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:~"
     "@rocket.chat/visual-regression": "workspace:~"
-    "@storybook/addon-a11y": "npm:^9.1.20"
-    "@storybook/addon-docs": "npm:^9.1.20"
+    "@storybook/addon-a11y": "npm:~9.1.21"
+    "@storybook/addon-docs": "npm:~9.1.21"
     "@storybook/addon-styling-webpack": "npm:~2.0.0"
     "@storybook/addon-webpack5-compiler-swc": "npm:~4.0.3"
-    "@storybook/react-webpack5": "npm:^9.1.20"
+    "@storybook/react-webpack5": "npm:~9.1.21"
     "@testing-library/dom": "npm:~10.4.2"
     "@testing-library/react": "npm:~16.3.3"
     "@testing-library/user-event": "npm:~14.6.7"
@@ -10445,7 +10445,7 @@ __metadata:
     resolve-url-loader: "npm:~5.0.0"
     sass: "npm:~1.102.0"
     sass-loader: "npm:~17.0.1"
-    storybook: "npm:~9.1.20"
+    storybook: "npm:~9.1.21"
     stylelint: "npm:~17.14.1"
     stylelint-order: "npm:~8.1.1"
     stylelint-prettier: "npm:~5.0.3"
@@ -10501,9 +10501,9 @@ __metadata:
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
-    "@storybook/addon-links": "npm:^9.1.20"
-    "@storybook/react": "npm:^9.1.20"
-    "@storybook/react-webpack5": "npm:^9.1.20"
+    "@storybook/addon-links": "npm:~9.1.21"
+    "@storybook/react": "npm:~9.1.21"
+    "@storybook/react-webpack5": "npm:~9.1.21"
     "@testing-library/dom": "npm:~10.4.2"
     "@testing-library/react": "npm:~16.3.3"
     "@types/katex": "npm:~0.16.8"
@@ -10524,7 +10524,7 @@ __metadata:
     react-error-boundary: "npm:~6.1.6"
     react-i18next: "npm:~17.0.16"
     react-virtuoso: "npm:~4.18.16"
-    storybook: "npm:^9.1.20"
+    storybook: "npm:~9.1.21"
     typescript: "npm:~7.0.2"
     webpack: "npm:~5.104.1"
   peerDependencies:
@@ -10667,7 +10667,7 @@ __metadata:
     react: "npm:~19.2.8"
     react-dom: "npm:~19.2.8"
     react-i18next: "npm:~17.0.16"
-    storybook: "npm:~9.1.20"
+    storybook: "npm:~9.1.21"
     typescript: "npm:~7.0.2"
   peerDependencies:
     "@rocket.chat/fuselage": "*"
@@ -10716,7 +10716,7 @@ __metadata:
     "@rocket.chat/storybook-dark-mode": "workspace:~"
     "@rocket.chat/ui-contexts": "workspace:^"
     "@rocket.chat/ui-kit": "workspace:~"
-    "@storybook/addon-docs": "npm:^9.1.20"
+    "@storybook/addon-docs": "npm:~9.1.21"
     "@storybook/addon-styling-webpack": "npm:^1.0.1"
     "@storybook/addon-webpack5-compiler-swc": "npm:^4.0.3"
     "@storybook/preact": "npm:9.0.0-alpha.11"
@@ -10767,7 +10767,7 @@ __metadata:
     resolve-url-loader: "npm:~5.0.0"
     sass: "npm:~1.80.7"
     sass-loader: "npm:~16.0.8"
-    storybook: "npm:^9.1.20"
+    storybook: "npm:~9.1.21"
     style-loader: "npm:^1.3.0"
     stylelint: "npm:^16.10.0"
     stylelint-order: "npm:^6.0.4"
@@ -11023,8 +11023,8 @@ __metadata:
     "@rocket.chat/web-ui-registration": "workspace:^"
     "@slack/bolt": "npm:^3.22.0"
     "@slack/rtm-api": "npm:~7.0.4"
-    "@storybook/react": "npm:^9.1.20"
-    "@storybook/react-webpack5": "npm:^9.1.20"
+    "@storybook/react": "npm:~9.1.21"
+    "@storybook/react-webpack5": "npm:~9.1.21"
     "@tanstack/react-query": "npm:~5.65.1"
     "@testing-library/dom": "npm:~10.4.2"
     "@testing-library/react": "npm:~16.3.3"
@@ -11269,7 +11269,7 @@ __metadata:
     sodium-plus: "npm:^0.9.0"
     source-map: "npm:~0.7.6"
     speakeasy: "npm:^2.0.0"
-    storybook: "npm:^9.1.20"
+    storybook: "npm:~9.1.21"
     stream-buffers: "npm:^3.0.3"
     strict-uri-encode: "npm:^2.0.0"
     string-strip-html: "npm:^8.5.0"
@@ -11322,7 +11322,7 @@ __metadata:
     "@rocket.chat/tools": "workspace:~"
     "@rocket.chat/ui-contexts": "workspace:^"
     "@rocket.chat/ui-video-conf": "workspace:*"
-    "@storybook/react": "npm:^9.1.20"
+    "@storybook/react": "npm:~9.1.21"
     "@tanstack/react-query": "npm:~5.65.1"
     "@testing-library/dom": "npm:~10.4.2"
     "@testing-library/jest-dom": "npm:~7.0.1"
@@ -11335,7 +11335,7 @@ __metadata:
     react: "npm:~19.2.8"
     react-dom: "npm:~19.2.8"
     react-i18next: "npm:~17.0.16"
-    storybook: "npm:^9.1.20"
+    storybook: "npm:~9.1.21"
     typescript: "npm:~7.0.2"
   peerDependencies:
     "@storybook/react": "*"
@@ -11567,7 +11567,7 @@ __metadata:
     react-dom: "npm:~19.2.8"
     react-hook-form: "npm:~7.54.2"
     react-i18next: "npm:~17.0.16"
-    storybook: "npm:~9.1.20"
+    storybook: "npm:~9.1.21"
     typescript: "npm:~7.0.2"
   peerDependencies:
     "@rocket.chat/fuselage": "*"
@@ -11617,8 +11617,8 @@ __metadata:
     "@rocket.chat/message-parser": "workspace:~"
     "@rocket.chat/storybook-config": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
-    "@storybook/react": "npm:^9.1.20"
-    "@storybook/react-webpack5": "npm:^9.1.20"
+    "@storybook/react": "npm:~9.1.21"
+    "@storybook/react-webpack5": "npm:~9.1.21"
     "@testing-library/dom": "npm:~10.4.2"
     "@testing-library/react": "npm:~16.3.3"
     "@types/react": "npm:~19.2.18"
@@ -11635,7 +11635,7 @@ __metadata:
     react: "npm:~19.2.8"
     react-dom: "npm:~19.2.8"
     react-i18next: "npm:~17.0.16"
-    storybook: "npm:^9.1.20"
+    storybook: "npm:~9.1.21"
     typescript: "npm:~7.0.2"
   languageName: unknown
   linkType: soft
@@ -11868,17 +11868,17 @@ __metadata:
     "@rocket.chat/icons": "workspace:~"
     "@rocket.chat/storybook-dark-mode": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
-    "@storybook/addon-a11y": "npm:^9.1.20"
-    "@storybook/addon-docs": "npm:^9.1.20"
+    "@storybook/addon-a11y": "npm:~9.1.21"
+    "@storybook/addon-docs": "npm:~9.1.21"
     "@storybook/addon-styling-webpack": "npm:^2.0.0"
     "@storybook/addon-webpack5-compiler-swc": "npm:^4.0.3"
-    "@storybook/react": "npm:^9.1.20"
-    "@storybook/react-webpack5": "npm:^9.1.20"
+    "@storybook/react": "npm:~9.1.21"
+    "@storybook/react-webpack5": "npm:~9.1.21"
     eslint: "npm:~10.12.0"
     react: "npm:~19.2.8"
     react-dom: "npm:~19.2.8"
     react-virtuoso: "npm:~4.18.16"
-    storybook: "npm:^9.1.20"
+    storybook: "npm:~9.1.21"
     typescript: "npm:~7.0.2"
     webpack: "npm:~5.104.1"
   peerDependencies:
@@ -11902,7 +11902,7 @@ __metadata:
     fast-deep-equal: "npm:~3.1.3"
     react: "npm:~19.2.8"
     react-dom: "npm:~19.2.8"
-    storybook: "npm:^9.1.20"
+    storybook: "npm:~9.1.21"
     typescript: "npm:~7.0.2"
   peerDependencies:
     react: "*"
@@ -12027,7 +12027,7 @@ __metadata:
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
-    "@storybook/react": "npm:^9.1.20"
+    "@storybook/react": "npm:~9.1.21"
     "@tanstack/react-query": "npm:~5.65.1"
     "@testing-library/react": "npm:~16.3.3"
     "@testing-library/user-event": "npm:~14.6.7"
@@ -12043,7 +12043,7 @@ __metadata:
     react-dom: "npm:~19.2.8"
     react-hook-form: "npm:~7.54.2"
     react-i18next: "npm:~17.0.16"
-    storybook: "npm:^9.1.20"
+    storybook: "npm:~9.1.21"
     typescript: "npm:~7.0.2"
   peerDependencies:
     "@react-aria/visually-hidden": "*"
@@ -12110,7 +12110,7 @@ __metadata:
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-avatar": "workspace:~"
     "@rocket.chat/ui-contexts": "workspace:~"
-    "@storybook/react": "npm:^9.1.20"
+    "@storybook/react": "npm:~9.1.21"
     "@testing-library/dom": "npm:~10.4.2"
     "@testing-library/react": "npm:~16.3.3"
     "@types/react": "npm:~19.2.18"
@@ -12128,7 +12128,7 @@ __metadata:
     react-hook-form: "npm:~7.54.2"
     react-i18next: "npm:~17.0.16"
     react-virtuoso: "npm:~4.18.16"
-    storybook: "npm:^9.1.20"
+    storybook: "npm:~9.1.21"
     typescript: "npm:~7.0.2"
   peerDependencies:
     "@react-aria/toolbar": "*"
@@ -12162,7 +12162,7 @@ __metadata:
     "@rocket.chat/storybook-config": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-client": "workspace:~"
-    "@storybook/react": "npm:^9.1.20"
+    "@storybook/react": "npm:~9.1.21"
     "@testing-library/dom": "npm:~10.4.2"
     "@testing-library/react": "npm:~16.3.3"
     "@testing-library/user-event": "npm:~14.6.7"
@@ -12173,7 +12173,7 @@ __metadata:
     react: "npm:~19.2.8"
     react-dom: "npm:~19.2.8"
     react-virtuoso: "npm:~4.18.16"
-    storybook: "npm:^9.1.20"
+    storybook: "npm:~9.1.21"
     typescript: "npm:~7.0.2"
     webpack: "npm:~5.104.1"
   peerDependencies:
@@ -12210,7 +12210,7 @@ __metadata:
     "@rocket.chat/ui-contexts": "workspace:^"
     "@rocket.chat/ui-media": "workspace:^"
     "@rocket.chat/ui-video-conf": "workspace:^"
-    "@storybook/react": "npm:^9.1.20"
+    "@storybook/react": "npm:~9.1.21"
     "@testing-library/dom": "npm:~10.4.2"
     "@testing-library/react": "npm:~16.3.3"
     "@testing-library/user-event": "npm:~14.6.7"
@@ -12225,7 +12225,7 @@ __metadata:
     react-dom: "npm:~19.2.8"
     react-hook-form: "npm:~7.54.2"
     react-i18next: "npm:~17.0.16"
-    storybook: "npm:^9.1.20"
+    storybook: "npm:~9.1.21"
     typescript: "npm:~7.0.2"
   peerDependencies:
     "@react-aria/focus": "*"
@@ -12361,7 +12361,7 @@ __metadata:
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
-    "@storybook/react": "npm:^9.1.20"
+    "@storybook/react": "npm:~9.1.21"
     "@tanstack/react-query": "npm:~5.65.1"
     "@testing-library/react": "npm:~16.3.3"
     "@testing-library/user-event": "npm:~14.6.7"
@@ -12376,7 +12376,7 @@ __metadata:
     react: "npm:~19.2.8"
     react-dom: "npm:~19.2.8"
     react-i18next: "npm:~17.0.16"
-    storybook: "npm:^9.1.20"
+    storybook: "npm:~9.1.21"
     typescript: "npm:~7.0.2"
   peerDependencies:
     "@rocket.chat/css-in-js": "workspace:^"
@@ -12419,7 +12419,7 @@ __metadata:
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-avatar": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
-    "@storybook/react": "npm:^9.1.20"
+    "@storybook/react": "npm:~9.1.21"
     "@tanstack/react-query": "npm:~5.65.1"
     "@types/jest-axe": "npm:~3.5.9"
     "@types/react": "npm:~19.2.18"
@@ -12430,7 +12430,7 @@ __metadata:
     react: "npm:~19.2.8"
     react-dom: "npm:~19.2.8"
     react-virtuoso: "npm:~4.18.16"
-    storybook: "npm:^9.1.20"
+    storybook: "npm:~9.1.21"
     typescript: "npm:~7.0.2"
     webpack: "npm:~5.104.1"
   peerDependencies:
@@ -12472,7 +12472,7 @@ __metadata:
     "@rocket.chat/ui-contexts": "workspace:^"
     "@rocket.chat/ui-kit": "workspace:^"
     "@rocket.chat/ui-media": "workspace:^"
-    "@storybook/react": "npm:^9.1.20"
+    "@storybook/react": "npm:~9.1.21"
     "@storybook/test-runner": "npm:^0.22.1"
     "@tanstack/react-query": "npm:~5.65.1"
     "@testing-library/dom": "npm:~10.4.2"
@@ -12492,7 +12492,7 @@ __metadata:
     react-dom: "npm:~19.2.8"
     react-i18next: "npm:~17.0.16"
     react-virtuoso: "npm:~4.18.16"
-    storybook: "npm:^9.1.20"
+    storybook: "npm:~9.1.21"
     typescript: "npm:~7.0.2"
   peerDependencies:
     "@rocket.chat/css-in-js": "workspace:^"
@@ -12589,7 +12589,7 @@ __metadata:
     "@rocket.chat/tools": "workspace:~"
     "@rocket.chat/ui-client": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
-    "@storybook/react": "npm:^9.1.20"
+    "@storybook/react": "npm:~9.1.21"
     "@tanstack/react-query": "npm:~5.65.1"
     "@testing-library/dom": "npm:~10.4.2"
     "@testing-library/react": "npm:~16.3.3"
@@ -12603,7 +12603,7 @@ __metadata:
     react-hook-form: "npm:~7.54.2"
     react-i18next: "npm:~17.0.16"
     react-virtuoso: "npm:~4.18.16"
-    storybook: "npm:^9.1.20"
+    storybook: "npm:~9.1.21"
     typescript: "npm:~7.0.2"
   peerDependencies:
     "@rocket.chat/layout": "*"
@@ -13952,47 +13952,47 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-a11y@npm:^9.1.20":
-  version: 9.1.20
-  resolution: "@storybook/addon-a11y@npm:9.1.20"
+"@storybook/addon-a11y@npm:~9.1.21":
+  version: 9.1.21
+  resolution: "@storybook/addon-a11y@npm:9.1.21"
   dependencies:
     "@storybook/global": "npm:^5.0.0"
     axe-core: "npm:^4.2.0"
   peerDependencies:
-    storybook: ^9.1.20
-  checksum: 10/f4abdac66261a031d9870a2d55d4881107541d89ed684fc47aa37ab2dc9ab43fc6fd0f2e6f1ffdbf0d2b2f3715a2b2352cd3be45b6662eb1028fd1bcaaad3be8
+    storybook: ^9.1.21
+  checksum: 10/3cade0b2799f6bae00238c3aa1a94212be010fd3c8f3a8b4ebadbdbd52dab1c6ff04fa0d3a11a57b8e51ef96eaf492d71964f3a8a04dd2b8830c56c3fc7b0e3d
   languageName: node
   linkType: hard
 
-"@storybook/addon-docs@npm:^9.1.20":
-  version: 9.1.20
-  resolution: "@storybook/addon-docs@npm:9.1.20"
+"@storybook/addon-docs@npm:~9.1.21":
+  version: 9.1.21
+  resolution: "@storybook/addon-docs@npm:9.1.21"
   dependencies:
     "@mdx-js/react": "npm:^3.0.0"
-    "@storybook/csf-plugin": "npm:9.1.20"
+    "@storybook/csf-plugin": "npm:9.1.21"
     "@storybook/icons": "npm:^1.4.0"
-    "@storybook/react-dom-shim": "npm:9.1.20"
+    "@storybook/react-dom-shim": "npm:9.1.21"
     react: "npm:^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
     react-dom: "npm:^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
     ts-dedent: "npm:^2.0.0"
   peerDependencies:
-    storybook: ^9.1.20
-  checksum: 10/5f67138fa398d400831160ffdefaacf9679441bd84890890e2da7ab94112773a49e0846b3db6b6700eb92e4509928543086345d7c9ab78d3bd23df22b9933b9c
+    storybook: ^9.1.21
+  checksum: 10/ba18066d0e796daeac2cc9ddd11acd1fadeb4b6816b4a21738100696065d2b6538a48ad8ea376c617f39b6f624b6a7d9867e85e502cf24149f0156586a15eaed
   languageName: node
   linkType: hard
 
-"@storybook/addon-links@npm:^9.1.20":
-  version: 9.1.20
-  resolution: "@storybook/addon-links@npm:9.1.20"
+"@storybook/addon-links@npm:~9.1.21":
+  version: 9.1.21
+  resolution: "@storybook/addon-links@npm:9.1.21"
   dependencies:
     "@storybook/global": "npm:^5.0.0"
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
-    storybook: ^9.1.20
+    storybook: ^9.1.21
   peerDependenciesMeta:
     react:
       optional: true
-  checksum: 10/18726de95d1c2a187e63f61488505d164f0afe84830652b231ee55ba8c3809b3c87baefd4b5d803b5383a0d93b2c636fcf0dee343bfa03e7db7702c7add86909
+  checksum: 10/d7deec1a2e421a399dfbf45265d79aa7c14096ec1ae36a6245a3815c0cf71fb830326f1ca45eeedc0fae76b483a35acfe159774cd7e576164dd1edfd17bcecc9
   languageName: node
   linkType: hard
 
@@ -14066,11 +14066,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/builder-webpack5@npm:9.1.20":
-  version: 9.1.20
-  resolution: "@storybook/builder-webpack5@npm:9.1.20"
+"@storybook/builder-webpack5@npm:9.1.21":
+  version: 9.1.21
+  resolution: "@storybook/builder-webpack5@npm:9.1.21"
   dependencies:
-    "@storybook/core-webpack": "npm:9.1.20"
+    "@storybook/core-webpack": "npm:9.1.21"
     case-sensitive-paths-webpack-plugin: "npm:^2.4.0"
     cjs-module-lexer: "npm:^1.2.3"
     css-loader: "npm:^6.7.1"
@@ -14086,11 +14086,11 @@ __metadata:
     webpack-hot-middleware: "npm:^2.25.1"
     webpack-virtual-modules: "npm:^0.6.0"
   peerDependencies:
-    storybook: ^9.1.20
+    storybook: ^9.1.21
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10/ba9d758fca8ef6e56a72bbb16360da47971d54fc7610ce28694ba8434adda1ed7ddd36c7da8ccb61a761dda1d7808c68abf5198354dace330826c6f29685f522
+  checksum: 10/1d880ee234d184d7d3174138219e66f45c380e1eea7b26f00868a07492391ccbe616c0096da1c7362a5ac5bdb80c2a95d724666a96c7ce284aae45a8704270c0
   languageName: node
   linkType: hard
 
@@ -14105,25 +14105,25 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/core-webpack@npm:9.1.20":
-  version: 9.1.20
-  resolution: "@storybook/core-webpack@npm:9.1.20"
+"@storybook/core-webpack@npm:9.1.21":
+  version: 9.1.21
+  resolution: "@storybook/core-webpack@npm:9.1.21"
   dependencies:
     ts-dedent: "npm:^2.0.0"
   peerDependencies:
-    storybook: ^9.1.20
-  checksum: 10/71f361cb0f21b293ae3c3f5f7f9816252b5b9f5bbef479ebbaf1c89ad2b7496582d338ba06f1faf9bca899acb84d3e6f0fefaa5b70174c24101a6401889dd01b
+    storybook: ^9.1.21
+  checksum: 10/a0bd2912f07e14ed5916506d2238bb10d37ab5a68e2487094241f9f74bd45df34f36fa7d1bd7dc2b6a69151a013b1644948a85959f9844f456ce344abdb95f6c
   languageName: node
   linkType: hard
 
-"@storybook/csf-plugin@npm:9.1.20":
-  version: 9.1.20
-  resolution: "@storybook/csf-plugin@npm:9.1.20"
+"@storybook/csf-plugin@npm:9.1.21":
+  version: 9.1.21
+  resolution: "@storybook/csf-plugin@npm:9.1.21"
   dependencies:
     unplugin: "npm:^1.3.1"
   peerDependencies:
-    storybook: ^9.1.20
-  checksum: 10/bc53ad292a0abcadd0cb3e7a5d5da3fc2580db5b52d8ffa617aad4dda7cd666d700337d76588db61d388ccc8b0ed54ab95f16b0f96949b331ae1134c43035406
+    storybook: ^9.1.21
+  checksum: 10/a103fafe9804cd38aabd91d358f6843290b5398f0d15150cd7e9453fe9eb0cf339121ce5ea8947d133a764a193ead2c1d3c5e0804e1f5e9f52b7595e3362a4f3
   languageName: node
   linkType: hard
 
@@ -14201,11 +14201,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/preset-react-webpack@npm:9.1.20":
-  version: 9.1.20
-  resolution: "@storybook/preset-react-webpack@npm:9.1.20"
+"@storybook/preset-react-webpack@npm:9.1.21":
+  version: 9.1.21
+  resolution: "@storybook/preset-react-webpack@npm:9.1.21"
   dependencies:
-    "@storybook/core-webpack": "npm:9.1.20"
+    "@storybook/core-webpack": "npm:9.1.21"
     "@storybook/react-docgen-typescript-plugin": "npm:1.0.6--canary.9.0c3f3b7.0"
     "@types/semver": "npm:^7.3.4"
     find-up: "npm:^7.0.0"
@@ -14218,11 +14218,11 @@ __metadata:
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
-    storybook: ^9.1.20
+    storybook: ^9.1.21
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10/357525baea99e4fafea017054064ea94fad8e493d95287090fb728549e5f8ba88aa8221d5b92507375ba141113a3bd737726d5dc882727079768876c8266ce5b
+  checksum: 10/87c2c11283ae031cfd6e736dee42acec55ff59898245b5bd79fb4c5241aa96036851baed76f66a00a9bc0b9f28c54151fd59cf7dc298f6a089ff8d9c85ab2352
   languageName: node
   linkType: hard
 
@@ -14244,51 +14244,51 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/react-dom-shim@npm:9.1.20":
-  version: 9.1.20
-  resolution: "@storybook/react-dom-shim@npm:9.1.20"
+"@storybook/react-dom-shim@npm:9.1.21":
+  version: 9.1.21
+  resolution: "@storybook/react-dom-shim@npm:9.1.21"
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
-    storybook: ^9.1.20
-  checksum: 10/7a341d5ec846e27752a8719f84c025a7d2d890a92631f83f48387b4408d8afe3fa7e5940b51ab007515bfd94c2d4c74692c3d9793e3b3140d79de91870a9d7ac
+    storybook: ^9.1.21
+  checksum: 10/52f73b1b55cf8fa9d7c08ef27098a47d8261b219b18a758ede200c92cf0da8903fb4d1260849e36c0922959a3a07f390cf380f77b950c23400c578137d72ec97
   languageName: node
   linkType: hard
 
-"@storybook/react-webpack5@npm:^9.1.20":
-  version: 9.1.20
-  resolution: "@storybook/react-webpack5@npm:9.1.20"
+"@storybook/react-webpack5@npm:~9.1.21":
+  version: 9.1.21
+  resolution: "@storybook/react-webpack5@npm:9.1.21"
   dependencies:
-    "@storybook/builder-webpack5": "npm:9.1.20"
-    "@storybook/preset-react-webpack": "npm:9.1.20"
-    "@storybook/react": "npm:9.1.20"
+    "@storybook/builder-webpack5": "npm:9.1.21"
+    "@storybook/preset-react-webpack": "npm:9.1.21"
+    "@storybook/react": "npm:9.1.21"
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
-    storybook: ^9.1.20
+    storybook: ^9.1.21
     typescript: ">= 4.9.x"
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10/3dc99ec39f23e8ec9fa9e0ef773216b33f9ac6032436defe7c8d9002b788308609bf5c7b8fcbe8ef8b545353792b1783c257f5fb1101ec5a64ca9a8cd7408361
+  checksum: 10/d5d73b2055e0fc4800879ae5699f37c17d8bca16c9d30815b94efe69e1fa85897407a1f76f0e4bb31398ef987ff742609eb3795d4d7fca38b2d9476dcba4c680
   languageName: node
   linkType: hard
 
-"@storybook/react@npm:9.1.20, @storybook/react@npm:^9.1.20":
-  version: 9.1.20
-  resolution: "@storybook/react@npm:9.1.20"
+"@storybook/react@npm:9.1.21, @storybook/react@npm:~9.1.21":
+  version: 9.1.21
+  resolution: "@storybook/react@npm:9.1.21"
   dependencies:
     "@storybook/global": "npm:^5.0.0"
-    "@storybook/react-dom-shim": "npm:9.1.20"
+    "@storybook/react-dom-shim": "npm:9.1.21"
   peerDependencies:
     react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
     react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0-beta
-    storybook: ^9.1.20
+    storybook: ^9.1.21
     typescript: ">= 4.9.x"
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10/9a9f442fae46e225b1fc8701ca1bbfce6c0486cda5fdc185f494da495ce99e54e7ac2400353a4c3903eadb1d045508fa6a6e560ed2a4b495eb0e6e531518e015
+  checksum: 10/4cdaf5b276ba72781cce2e27915b0ac53a217e4e17291a80364786743b87e0bfe408892f94b2fbe4fde7095ea9c33d5d19cde5cb14bfca9714b66da724d8291d
   languageName: node
   linkType: hard
 
@@ -34515,18 +34515,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0":
-  version: 19.0.0
-  resolution: "react-dom@npm:19.0.0"
-  dependencies:
-    scheduler: "npm:^0.25.0"
-  peerDependencies:
-    react: ^19.0.0
-  checksum: 10/aa64a2f1991042f516260e8b0eca0ae777b6c8f1aa2b5ae096e80bbb6ac9b005aef2bca697969841d34f7e1819556263476bdfea36c35092e8d9aefde3de2d9a
-  languageName: node
-  linkType: hard
-
-"react-dom@npm:~19.2.8":
+"react-dom@npm:^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0, react-dom@npm:~19.2.8":
   version: 19.2.8
   resolution: "react-dom@npm:19.2.8"
   dependencies:
@@ -34786,14 +34775,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0":
-  version: 19.0.0
-  resolution: "react@npm:19.0.0"
-  checksum: 10/2490969c503f644703c88990d20e4011fa6119ddeca451e9de48f6d7ab058d670d2852a5fcd3aa3cd90a923ab2815d532637bd4a814add402ae5c0d4f129ee71
-  languageName: node
-  linkType: hard
-
-"react@npm:~19.2.8":
+"react@npm:^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0, react@npm:~19.2.8":
   version: 19.2.8
   resolution: "react@npm:19.2.8"
   checksum: 10/a3c697798035e295ca9e51591d3a8700824535cb8c070fac1f8abbe69717ceb99108cbc4ba7b31a606806f336b1eba705705f63b9d39ace198fe51e8990ac843
@@ -35998,13 +35980,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"scheduler@npm:^0.25.0":
-  version: 0.25.0
-  resolution: "scheduler@npm:0.25.0"
-  checksum: 10/e661e38503ab29a153429a99203fefa764f28b35c079719eb5efdd2c1c1086522f6653d8ffce388209682c23891a6d1d32fa6badf53c35fb5b9cd0c55ace42de
-  languageName: node
-  linkType: hard
-
 "scheduler@npm:^0.27.0":
   version: 0.27.0
   resolution: "scheduler@npm:0.27.0"
@@ -36974,9 +36949,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"storybook@npm:^9.1.20, storybook@npm:~9.1.20":
-  version: 9.1.20
-  resolution: "storybook@npm:9.1.20"
+"storybook@npm:~9.1.21":
+  version: 9.1.21
+  resolution: "storybook@npm:9.1.21"
   dependencies:
     "@storybook/global": "npm:^5.0.0"
     "@testing-library/jest-dom": "npm:^6.6.3"
@@ -36997,7 +36972,7 @@ __metadata:
       optional: true
   bin:
     storybook: ./bin/index.cjs
-  checksum: 10/e09f29cd5fd0a635df10298b650143e4145feb63e8b217b71a20eae6162112decf3a3715655aec5fa57c9ed08c86886944c9b93551f041b9b60e151b343d1f7c
+  checksum: 10/90475ce5c62df774aa8f7165fca697a09e36967003a512804fb9443bfc3dbad95a01bd5e6f115a83a325dc02e8941212f751ec0b57e342098aeb8a1361a37fa6
   languageName: node
   linkType: hard
 
