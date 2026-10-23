@@ -1,4 +1,5 @@
 import type { IRole, IPermission } from '@rocket.chat/core-typings';
+import { Box } from '@rocket.chat/fuselage';
 import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
 import type { TFunction } from 'i18next';
 import { memo } from 'react';
@@ -38,8 +39,10 @@ const PermissionRow = ({ permission, roleList, onGrant, onRemove }: PermissionRo
 
 	return (
 		<GenericTableRow key={permissionId} role='link' action tabIndex={0}>
-			<GenericTableCell maxWidth='x300' truncate title={t(`${permissionId}_description`)}>
-				{permissionName}
+			<GenericTableCell truncate title={t(`${permissionId}_description`)}>
+				<Box maxWidth='x284' withTruncatedText>
+					{permissionName}
+				</Box>
 			</GenericTableCell>
 			{roleList.map(({ _id: roleId, name, description }) => (
 				<RoleCell

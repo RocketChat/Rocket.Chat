@@ -1,4 +1,4 @@
-import { Box, Pagination } from '@rocket.chat/fuselage';
+import { Box, Pagination, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import {
@@ -55,6 +55,8 @@ const ManagersTable = () => {
 	const [defaultQuery] = useState(hashKey([query]));
 	const queryHasChanged = defaultQuery !== hashKey([query]);
 
+	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 'x60'];
+
 	const headers = (
 		<>
 			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
@@ -72,9 +74,7 @@ const ManagersTable = () => {
 			>
 				{t('Email')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='remove' width='x60'>
-				{t('Remove')}
-			</GenericTableHeaderCell>
+			<GenericTableHeaderCell key='remove'>{t('Remove')}</GenericTableHeaderCell>
 		</>
 	);
 
@@ -85,7 +85,7 @@ const ManagersTable = () => {
 				<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			)}
 			{isLoading && (
-				<GenericTable aria-busy={isLoading} aria-label={t('Managers')}>
+				<GenericTable columns={columns} aria-busy={isLoading} aria-label={t('Managers')}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingTable headerCells={4} />
@@ -103,7 +103,7 @@ const ManagersTable = () => {
 			)}
 			{isSuccess && data.users.length > 0 && (
 				<>
-					<GenericTable aria-busy={isLoading} aria-label={t('Managers')}>
+					<GenericTable columns={columns} aria-busy={isLoading} aria-label={t('Managers')}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.users.map((user) => (

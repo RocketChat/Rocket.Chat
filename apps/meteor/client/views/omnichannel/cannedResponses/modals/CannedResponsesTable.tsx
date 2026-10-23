@@ -1,4 +1,4 @@
-import { Box, Pagination } from '@rocket.chat/fuselage';
+import { Box, Pagination, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import {
@@ -85,6 +85,8 @@ const CannedResponsesTable = () => {
 		[t],
 	);
 
+	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 'auto', 'auto', 'x60'];
+
 	const headers = (
 		<>
 			<GenericTableHeaderCell key='shortcut' direction={sortDirection} active={sortBy === 'shortcut'} onClick={setSort} sort='shortcut'>
@@ -108,9 +110,7 @@ const CannedResponsesTable = () => {
 			<GenericTableHeaderCell key='tags' direction={sortDirection} active={sortBy === 'tags'} onClick={setSort} sort='tags'>
 				{t('Tags')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='remove' width='x60'>
-				{t('Remove')}
-			</GenericTableHeaderCell>
+			<GenericTableHeaderCell key='remove'>{t('Remove')}</GenericTableHeaderCell>
 		</>
 	);
 
@@ -127,7 +127,7 @@ const CannedResponsesTable = () => {
 				/>
 			)}
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingRow cols={6} />
@@ -148,7 +148,7 @@ const CannedResponsesTable = () => {
 			)}
 			{isSuccess && data?.cannedResponses.length > 0 && (
 				<>
-					<GenericTable aria-label={t('Canned_Responses')} aria-busy={text !== debouncedText}>
+					<GenericTable columns={columns} aria-label={t('Canned_Responses')} aria-busy={text !== debouncedText}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data?.cannedResponses.map(({ _id, shortcut, scope, createdBy, _createdAt, tags = [] }) => (

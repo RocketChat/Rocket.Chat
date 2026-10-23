@@ -1,4 +1,4 @@
-import { Pagination } from '@rocket.chat/fuselage';
+import { Pagination, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
@@ -59,6 +59,8 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 	const handleAddNew = useStableCallback(() => router.navigate('/omnichannel/sla-policies/new'));
 	const onRowClick = useStableCallback((id: string) => () => router.navigate(`/omnichannel/sla-policies/edit/${id}`));
 
+	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 'x60'];
+
 	const headers = (
 		<>
 			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
@@ -82,9 +84,7 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 			>
 				{t('Estimated_wait_time')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='remove' width='x60'>
-				{t('Remove')}
-			</GenericTableHeaderCell>
+			<GenericTableHeaderCell key='remove'>{t('Remove')}</GenericTableHeaderCell>
 		</>
 	);
 
@@ -94,7 +94,7 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 				<FilterByText value={filter} onChange={(event) => setFilter(event.target.value)} />
 			)}
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingRow cols={4} />
@@ -115,7 +115,7 @@ const SlaTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 			)}
 			{isSuccess && data?.sla.length > 0 && (
 				<>
-					<GenericTable aria-label={t('SLA_Policies')}>
+					<GenericTable columns={columns} aria-label={t('SLA_Policies')}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data?.sla.map(({ _id, name, description, dueTimeInMinutes }) => (

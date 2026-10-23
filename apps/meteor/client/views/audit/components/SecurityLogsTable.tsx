@@ -170,7 +170,6 @@ const SecurityLogsTable = () => {
 									role='link'
 									action
 									tabIndex={0}
-									height={44}
 									onClick={() =>
 										handleItemClick({
 											actor: item.actor,
@@ -182,7 +181,7 @@ const SecurityLogsTable = () => {
 									}
 								>
 									<GenericTableCell truncate>
-										<Box display='flex' alignItems='center'>
+										<Box display='flex' alignItems='center' minHeight={28}>
 											{item.actor.type === 'user' && (
 												<Box marginInlineEnd={4}>
 													<UserAvatar size='x24' userId={item.actor._id} />

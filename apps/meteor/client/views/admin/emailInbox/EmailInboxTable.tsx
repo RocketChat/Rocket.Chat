@@ -85,7 +85,6 @@ const EmailInboxTable = () => {
 									tabIndex={0}
 									role='link'
 									action
-									width='full'
 								>
 									<GenericTableCell truncate>{emailInbox.name}</GenericTableCell>
 									<GenericTableCell truncate>{emailInbox.email}</GenericTableCell>

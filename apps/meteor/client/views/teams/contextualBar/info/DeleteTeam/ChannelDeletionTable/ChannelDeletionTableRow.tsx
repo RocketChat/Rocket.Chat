@@ -17,7 +17,7 @@ const ChannelDeletionTableRow = ({ room, onChange, selected }: ChannelDeletionTa
 
 	return (
 		<GenericTableRow action>
-			<GenericTableCell maxWidth='x300' truncate>
+			<GenericTableCell truncate>
 				<CheckBox checked={selected} onChange={handleChange} />
 				<Margins inline='x8'>
 					<RoomIcon room={room} />

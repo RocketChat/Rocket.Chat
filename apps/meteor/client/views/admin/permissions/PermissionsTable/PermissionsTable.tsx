@@ -80,9 +80,9 @@ const PermissionsTable = ({ roleList, permissions, setFilter, total, paginationD
 			{permissions?.length === 0 && <GenericNoResults />}
 			{permissions?.length > 0 && (
 				<>
-					<GenericTable className={[tableCustomStyle]} fixed={false}>
+					<GenericTable className={[tableCustomStyle]} fixed={false} columns={['x120']}>
 						<GenericTableHeader>
-							<GenericTableHeaderCell width='x120'>{t('Name')}</GenericTableHeaderCell>
+							<GenericTableHeaderCell>{t('Name')}</GenericTableHeaderCell>
 							{roleList?.map(({ _id, name, description }) => (
 								<RoleHeader key={_id} _id={_id} name={name} description={description} />
 							))}
