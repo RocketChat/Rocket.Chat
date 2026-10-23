@@ -2,4 +2,8 @@
 
 .rcx-autocomplete {
 	@extend .rcx-select;
+
+	&__addon {
+		@extend .rcx-select__addon;
+	}
 }
