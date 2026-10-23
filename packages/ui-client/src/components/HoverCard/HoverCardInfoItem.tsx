@@ -33,7 +33,7 @@ const HoverCardInfoItem = ({ icon, label, children }: HoverCardInfoItemProps) =>
 
 	if (!label) {
 		return (
-			<Box display='flex' alignItems='flex-start' fontScale='p2' color='default' marginBlock='x2'>
+			<Box display='flex' alignItems='flex-start' fontScale='p2' color='default' marginBlock='x4'>
 				{content}
 			</Box>
 		);
@@ -44,7 +44,7 @@ const HoverCardInfoItem = ({ icon, label, children }: HoverCardInfoItemProps) =>
 			<Box is='dt' className={srOnly}>
 				{label}
 			</Box>
-			<Box is='dd' display='flex' alignItems='flex-start' fontScale='p2' color='default' marginBlock='x2'>
+			<Box is='dd' display='flex' alignItems='flex-start' fontScale='p2' color='default' marginBlock='x4'>
 				{content}
 			</Box>
 		</>

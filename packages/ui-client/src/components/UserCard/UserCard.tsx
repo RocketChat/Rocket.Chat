@@ -86,7 +86,7 @@ const UserCard = ({
 						)
 					}
 				/>
-				<Box display='flex' flexDirection='column' marginBlockStart='x18'>
+				<Box display='flex' flexDirection='column' marginBlockStart='x16'>
 					{(showUsername || roles || localTime) && (
 						<HoverCardInfoList>
 							{showUsername && (
