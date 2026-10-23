@@ -1,4 +1,4 @@
-import { describe, it } from 'node:test';
+import { afterEach, beforeEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
 import p from 'proxyquire';
@@ -20,6 +20,16 @@ p.noCallThru().load('./i18n', {
 });
 
 describe('i18n route', () => {
+	let previousAssets: unknown;
+
+	beforeEach(() => {
+		previousAssets = (globalThis as { Assets?: unknown }).Assets;
+	});
+
+	afterEach(() => {
+		(globalThis as { Assets?: unknown }).Assets = previousAssets;
+	});
+
 	it('should send the byte length of the locale file as Content-Length', async () => {
 		const locale = JSON.stringify({ Hello: 'Olá, ação' });
 		(globalThis as { Assets?: unknown }).Assets = { getTextAsync: async () => locale };
