@@ -1,6 +1,7 @@
 import { Box, type BoxProps } from '../Box';
 
-export type TableColumnWidth = `x${number}` | 'auto';
+/** A column width: a Fuselage size (`x40`), a length in pixels or a share of the table's width. */
+export type TableColumnWidth = `x${number}` | `${number}px` | `${number}%` | number | 'auto';
 
 export type TableProps = BoxProps & {
 	striped?: boolean;
