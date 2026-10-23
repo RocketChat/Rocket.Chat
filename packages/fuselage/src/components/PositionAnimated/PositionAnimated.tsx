@@ -10,6 +10,7 @@ export type PositionAnimatedProps = Omit<BoxProps, 'children' | 'margin'> & {
 	children: ReactElement<any>;
 	margin?: number;
 	placement?: UsePositionOptions['placement'];
+	preventScroll?: boolean;
 	visible?: 'hidden' | 'visible' | 'hiding' | 'unhiding';
 };
 
