@@ -1,5 +1,5 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUpload } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
 import type { OptionalId } from 'mongodb';
 
 type IFilterOptions = {
@@ -8,11 +8,11 @@ type IFilterOptions = {
 	minSize?: number;
 	maxSize?: number;
 	onCheck?: (file: IUpload, content?: Buffer | string) => Promise<boolean>;
-	invalidFileError?: () => Meteor.Error;
-	fileTooSmallError?: (fileSize: number, minFileSize: number) => Meteor.Error;
-	fileTooLargeError?: (fileSize: number, maxFileSize: number) => Meteor.Error;
-	invalidFileExtension?: (fileExtension: string, allowedExtensions: string[]) => Meteor.Error;
-	invalidFileType?: (fileType: string | undefined, allowedContentTypes: string[]) => Meteor.Error;
+	invalidFileError?: () => ClientSafeError;
+	fileTooSmallError?: (fileSize: number, minFileSize: number) => ClientSafeError;
+	fileTooLargeError?: (fileSize: number, maxFileSize: number) => ClientSafeError;
+	invalidFileExtension?: (fileExtension: string, allowedExtensions: string[]) => ClientSafeError;
+	invalidFileType?: (fileType: string | undefined, allowedContentTypes: string[]) => ClientSafeError;
 };
 
 export class Filter {
@@ -24,15 +24,15 @@ export class Filter {
 			extensions: [],
 			minSize: 1,
 			maxSize: 0,
-			invalidFileError: () => new Meteor.Error('invalid-file', 'File is not valid'),
+			invalidFileError: () => new ClientSafeError('invalid-file', 'File is not valid'),
 			fileTooSmallError: (fileSize, minFileSize) =>
-				new Meteor.Error('file-too-small', `File size (size = ${fileSize}) is too small (min = ${minFileSize})`),
+				new ClientSafeError('file-too-small', `File size (size = ${fileSize}) is too small (min = ${minFileSize})`),
 			fileTooLargeError: (fileSize, maxFileSize) =>
-				new Meteor.Error('file-too-large', `File size (size = ${fileSize}) is too large (max = ${maxFileSize})`),
+				new ClientSafeError('file-too-large', `File size (size = ${fileSize}) is too large (max = ${maxFileSize})`),
 			invalidFileExtension: (fileExtension, allowedExtensions) =>
-				new Meteor.Error('invalid-file-extension', `File extension "${fileExtension}" is not accepted (${allowedExtensions})`),
+				new ClientSafeError('invalid-file-extension', `File extension "${fileExtension}" is not accepted (${allowedExtensions})`),
 			invalidFileType: (fileType, allowedContentTypes) =>
-				new Meteor.Error('invalid-file-type', `File type "${fileType}" is not accepted (${allowedContentTypes})`),
+				new ClientSafeError('invalid-file-type', `File type "${fileType}" is not accepted (${allowedContentTypes})`),
 			onCheck: this.onCheck,
 			...options,
 		};
@@ -88,7 +88,7 @@ export class Filter {
 		}
 		// Apply custom check
 		if (typeof this.onCheck === 'function' && !(await this.onCheck(file, content))) {
-			error = new Meteor.Error('invalid-file', 'File does not match filter');
+			error = new ClientSafeError('invalid-file', 'File does not match filter');
 		}
 
 		if (error) {

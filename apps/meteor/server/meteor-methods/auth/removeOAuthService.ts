@@ -1,6 +1,6 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { Settings } from '@rocket.chat/models';
 import { capitalize } from '@rocket.chat/tools';
-import { Meteor } from 'meteor/meteor';
 
 import { notifyOnSettingChangedById } from '../../lib/notifyListener';
 
@@ -8,7 +8,7 @@ export const removeCustomOAuthSettings = async (name: string): Promise<void> => 
 	const normalized = capitalize(name.toLowerCase().replace(/[^a-z0-9_]/g, ''));
 
 	if (!normalized) {
-		throw new Meteor.Error('error-invalid-name', 'Invalid OAuth service name', { method: 'removeOAuthService' });
+		throw new ClientSafeError('error-invalid-name', 'Invalid OAuth service name', { method: 'removeOAuthService' });
 	}
 
 	const settingsIds = [

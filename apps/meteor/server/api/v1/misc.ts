@@ -1,5 +1,6 @@
 import crypto from 'node:crypto';
 
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IDirectoryChannelResult, IDirectoryUserResult, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Settings, Users, WorkspaceCredentials } from '@rocket.chat/models';
 import {
@@ -221,7 +222,7 @@ API.v1.get(
 		const { type, icon } = this.queryParams;
 		let { channel, name } = this.queryParams;
 		if (!settings.get('API_Enable_Shields')) {
-			throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', {
+			throw new ClientSafeError('error-endpoint-disabled', 'This endpoint is disabled', {
 				route: '/api/v1/shield.svg',
 			});
 		}
@@ -235,7 +236,7 @@ API.v1.get(
 				.map((t: string) => t.trim())
 				.includes(type)
 		) {
-			throw new Meteor.Error('error-shield-disabled', 'This shield type is disabled', {
+			throw new ClientSafeError('error-shield-disabled', 'This shield type is disabled', {
 				route: '/api/v1/shield.svg',
 			});
 		}
@@ -663,7 +664,7 @@ API.v1.post(
 			DDPRateLimiter._increment(rateLimiterInput);
 			const rateLimitResult = DDPRateLimiter._check(rateLimiterInput);
 			if (!rateLimitResult.allowed) {
-				throw new Meteor.Error('too-many-requests', DDPRateLimiter.getErrorMessage(rateLimitResult), {
+				throw new ClientSafeError('too-many-requests', DDPRateLimiter.getErrorMessage(rateLimitResult), {
 					timeToReset: rateLimitResult.timeToReset,
 				});
 			}
@@ -719,7 +720,7 @@ API.v1.post(
 
 			const rateLimitResult = DDPRateLimiter._check(rateLimiterInput);
 			if (!rateLimitResult.allowed) {
-				throw new Meteor.Error('too-many-requests', DDPRateLimiter.getErrorMessage(rateLimitResult), {
+				throw new ClientSafeError('too-many-requests', DDPRateLimiter.getErrorMessage(rateLimitResult), {
 					timeToReset: rateLimitResult.timeToReset,
 				});
 			}

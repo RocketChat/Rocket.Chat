@@ -1,8 +1,8 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { INewOutgoingIntegration, IOutgoingIntegration } from '@rocket.chat/core-typings';
 import { Integrations } from '@rocket.chat/models';
 import { removeEmpty } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../lib/authorization/hasPermission';
 import { validateOutgoingIntegration } from '../../../lib/integrations/lib/validateOutgoingIntegration';
@@ -43,7 +43,7 @@ export const addOutgoingIntegration = async (userId: string, integration: INewOu
 		(!(await hasPermissionAsync(userId, 'manage-outgoing-integrations')) &&
 			!(await hasPermissionAsync(userId, 'manage-own-outgoing-integrations')))
 	) {
-		throw new Meteor.Error('not_authorized');
+		throw new ClientSafeError('not_authorized');
 	}
 
 	if (integration.script?.trim()) {

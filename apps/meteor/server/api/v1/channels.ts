@@ -1,4 +1,4 @@
-import { Team, Room } from '@rocket.chat/core-services';
+import { Team, Room, ClientSafeError } from '@rocket.chat/core-services';
 import {
 	TeamType,
 	isRoomNativeFederated,
@@ -44,7 +44,6 @@ import {
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { isTruthy } from '@rocket.chat/tools';
-import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
 import { canAccessRoomAsync } from '../../lib/authorization';
@@ -106,11 +105,11 @@ async function findChannelByIdOrName({
 	}
 
 	if (!room || (room.t !== 'c' && room.t !== 'l')) {
-		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any channel');
+		throw new ClientSafeError('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any channel');
 	}
 
 	if (checkedArchived && room.archived) {
-		throw new Meteor.Error('error-room-archived', `The channel, ${room.name}, is archived`);
+		throw new ClientSafeError('error-room-archived', `The channel, ${room.name}, is archived`);
 	}
 	if (userId && room.lastMessage) {
 		const [lastMessage] = await normalizeMessagesForUser([room.lastMessage], userId);
@@ -1712,7 +1711,7 @@ API.v1.get(
 		}
 
 		if (!(await canAccessRoomAsync(room, this.user))) {
-			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
+			throw new ClientSafeError('error-not-allowed', 'Not Allowed');
 		}
 
 		const hidden = await getUsersHiddenFrom(this.userId);
@@ -2112,7 +2111,7 @@ API.v1.get(
 		const ourQuery = { rid: findResult._id };
 
 		if (!settings.get<boolean>('Accounts_AllowAnonymousRead')) {
-			throw new Meteor.Error('error-not-allowed', 'Enable "Allow Anonymous Read"', {
+			throw new ClientSafeError('error-not-allowed', 'Enable "Allow Anonymous Read"', {
 				method: 'channels.anonymousread',
 			});
 		}

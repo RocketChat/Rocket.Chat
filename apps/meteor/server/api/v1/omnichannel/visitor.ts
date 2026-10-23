@@ -1,8 +1,8 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { LivechatVisitors as VisitorsRaw, LivechatRooms } from '@rocket.chat/models';
 import { registerGuest } from '@rocket.chat/omni-core';
 import { Match, check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import { API } from '../..';
 import { findGuest, normalizeHttpHeaderData } from './lib/livechat';
@@ -44,7 +44,7 @@ API.v1.addRoute(
 			const { customFields, id, token, name, email, department, phone, username, connectionData } = this.bodyParams.visitor;
 
 			if (!token?.trim()) {
-				throw new Meteor.Error('error-invalid-token', 'Token cannot be empty', { method: 'livechat/visitor' });
+				throw new ClientSafeError('error-invalid-token', 'Token cannot be empty', { method: 'livechat/visitor' });
 			}
 
 			const guest = {
@@ -64,7 +64,7 @@ API.v1.addRoute(
 				shouldConsiderOfflineAgent: settings.get<boolean>('Livechat_accept_chats_with_no_agents'),
 			});
 			if (!visitor) {
-				throw new Meteor.Error('error-livechat-visitor-registration', 'Error registering visitor', {
+				throw new ClientSafeError('error-livechat-visitor-registration', 'Error registering visitor', {
 					method: 'livechat/visitor',
 				});
 			}
@@ -109,7 +109,7 @@ API.v1.addRoute('livechat/visitor/:token', {
 		const visitor = await VisitorsRaw.getVisitorByToken(this.urlParams.token, {});
 
 		if (!visitor) {
-			throw new Meteor.Error('invalid-token');
+			throw new ClientSafeError('invalid-token');
 		}
 
 		return API.v1.success({ visitor });
@@ -121,7 +121,7 @@ API.v1.addRoute('livechat/visitor/:token', {
 
 		const visitor = await VisitorsRaw.getVisitorByToken(this.urlParams.token, {});
 		if (!visitor) {
-			throw new Meteor.Error('invalid-token');
+			throw new ClientSafeError('invalid-token');
 		}
 		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId: this.userId });
 		const rooms = await LivechatRooms.findOpenByVisitorToken(
@@ -141,7 +141,7 @@ API.v1.addRoute('livechat/visitor/:token', {
 
 		// if gdpr is enabled, bypass rooms check
 		if (rooms?.length && !settings.get('Livechat_Allow_collect_and_store_HTTP_header_informations')) {
-			throw new Meteor.Error('visitor-has-open-rooms', 'Cannot remove visitors with opened rooms');
+			throw new ClientSafeError('visitor-has-open-rooms', 'Cannot remove visitors with opened rooms');
 		}
 
 		const { _id } = visitor;
@@ -155,7 +155,7 @@ API.v1.addRoute('livechat/visitor/:token', {
 			});
 		} catch (e) {
 			livechatLogger.error({ msg: 'Error removing visitor', err: e });
-			throw new Meteor.Error('error-removing-visitor', 'An error ocurred while deleting visitor');
+			throw new ClientSafeError('error-removing-visitor', 'An error ocurred while deleting visitor');
 		}
 	},
 });
@@ -196,7 +196,7 @@ API.v1.addRoute('livechat/visitor.status', {
 
 		const guest = await findGuest(token);
 		if (!guest) {
-			throw new Meteor.Error('invalid-token');
+			throw new ClientSafeError('invalid-token');
 		}
 
 		await notifyGuestStatusChanged(token, status);

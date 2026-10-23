@@ -1,8 +1,7 @@
-import { Authorization } from '@rocket.chat/core-services';
+import { Authorization, ClientSafeError } from '@rocket.chat/core-services';
 import type { IMessage, MessageTypesValues } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
 import { check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import { getHiddenSystemMessages } from '../../lib/messaging/getHiddenSystemMessages';
 import { normalizeMessagesForUser } from '../../lib/utils/lib/normalizeMessagesForUser';
@@ -53,7 +52,7 @@ export const getChannelHistory = async ({
 	// Verify oldest is a date if it exists
 
 	if (oldest !== undefined && {}.toString.call(oldest) !== '[object Date]') {
-		throw new Meteor.Error('error-invalid-date', 'Invalid date', { method: 'getChannelHistory' });
+		throw new ClientSafeError('error-invalid-date', 'Invalid date', { method: 'getChannelHistory' });
 	}
 
 	const hiddenSystemMessages = settings.get<MessageTypesValues[]>('Hide_System_Messages');

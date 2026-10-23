@@ -1,3 +1,4 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { Meteor } from 'meteor/meteor';
@@ -12,7 +13,7 @@ export async function finishOAuthAuthorization(code: string, state: string) {
 	assertNotOfflineLicense();
 
 	if (settings.get<string>('Cloud_Workspace_Registration_State') !== state) {
-		throw new Meteor.Error('error-invalid-state', 'Invalid state provided', {
+		throw new ClientSafeError('error-invalid-state', 'Invalid state provided', {
 			method: 'cloud:finishOAuthAuthorization',
 		});
 	}
@@ -60,7 +61,7 @@ export async function finishOAuthAuthorization(code: string, state: string) {
 
 	const uid = Meteor.userId();
 	if (!uid) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 			method: 'cloud:finishOAuthAuthorization',
 		});
 	}

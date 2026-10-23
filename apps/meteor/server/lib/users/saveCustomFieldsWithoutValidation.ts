@@ -1,7 +1,7 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
 import { Subscriptions, Users } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 
 import { trim } from '../../../lib/utils/stringUtils';
@@ -13,7 +13,7 @@ const getCustomFieldsMeta = function (customFieldsMeta: string) {
 	try {
 		return JSON.parse(customFieldsMeta);
 	} catch (e) {
-		throw new Meteor.Error('error-invalid-customfield-json', 'Invalid JSON for Custom Fields');
+		throw new ClientSafeError('error-invalid-customfield-json', 'Invalid JSON for Custom Fields');
 	}
 };
 export const saveCustomFieldsWithoutValidation = async function (

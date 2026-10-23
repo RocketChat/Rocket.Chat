@@ -1,6 +1,6 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ILivechatInquiryRecord, ILivechatPriority, IOmnichannelServiceLevelAgreements } from '@rocket.chat/core-typings';
 import { LivechatPriority, OmnichannelServiceLevelAgreements } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../server/lib/callbacks';
 
@@ -18,7 +18,7 @@ callbacks.add(
 				projection: { dueTimeInMinutes: 1 },
 			});
 			if (!sla) {
-				throw new Meteor.Error('error-invalid-sla', 'Invalid sla', {
+				throw new ClientSafeError('error-invalid-sla', 'Invalid sla', {
 					function: 'livechat.beforeInquiry',
 				});
 			}
@@ -28,7 +28,7 @@ callbacks.add(
 				projection: { _id: 1, sortItem: 1 },
 			});
 			if (!priority) {
-				throw new Meteor.Error('error-invalid-priority', 'Invalid priority', {
+				throw new ClientSafeError('error-invalid-priority', 'Invalid priority', {
 					function: 'livechat.beforeInquiry',
 				});
 			}

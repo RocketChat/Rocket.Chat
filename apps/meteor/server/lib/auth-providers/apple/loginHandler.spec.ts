@@ -15,23 +15,6 @@ jest.mock(
 	{ virtual: true },
 );
 
-jest.mock(
-	'meteor/meteor',
-	() => ({
-		Meteor: {
-			Error: class extends Error {
-				constructor(
-					public error: number,
-					public reason: string,
-				) {
-					super(reason);
-				}
-			},
-		},
-	}),
-	{ virtual: true },
-);
-
 jest.mock('../../../settings', () => ({
 	settings: {
 		get: jest.fn(),

@@ -1,6 +1,6 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { Messages, Users, Rooms } from '@rocket.chat/models';
 import { check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync } from '../../lib/authorization';
 
@@ -13,13 +13,13 @@ export const getUserMentionsByChannel = async (
 
 	const user = await Users.findOneById(userId);
 	if (!user) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user');
+		throw new ClientSafeError('error-invalid-user', 'Invalid user');
 	}
 
 	const room = await Rooms.findOneById(roomId);
 
 	if (!room || !(await canAccessRoomAsync(room, user))) {
-		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+		throw new ClientSafeError('error-invalid-room', 'Invalid room', {
 			method: 'getUserMentionsByChannel',
 		});
 	}

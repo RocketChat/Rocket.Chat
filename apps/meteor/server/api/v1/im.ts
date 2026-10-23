@@ -1,6 +1,7 @@
 /**
  * Docs: https://github.com/RocketChat/developer-docs/blob/master/reference/api/rest-api/endpoints/team-collaboration-endpoints/im-endpoints
  */
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, ISubscription, IUploadWithUser, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Subscriptions, Uploads, Messages, Rooms, Users } from '@rocket.chat/models';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
@@ -20,7 +21,6 @@ import {
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { Match, check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
 
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
@@ -52,12 +52,12 @@ const findDirectMessageRoom = async (
 ): Promise<{ room: IRoom; subscription: ISubscription | null }> => {
 	const nameOrId = 'roomId' in keys ? keys.roomId : keys.username;
 	if (typeof nameOrId !== 'string') {
-		throw new Meteor.Error('error-room-param-not-provided', 'Query param "roomId" or "username" is required');
+		throw new ClientSafeError('error-room-param-not-provided', 'Query param "roomId" or "username" is required');
 	}
 
 	const user = await Users.findOneById(uid);
 	if (!user) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 			method: 'findDirectMessageRoom',
 		});
 	}
@@ -69,7 +69,7 @@ const findDirectMessageRoom = async (
 	});
 
 	if (!room || room?.t !== 'd') {
-		throw new Meteor.Error('error-room-not-found', 'The required "roomId" param provided does not match any direct message');
+		throw new ClientSafeError('error-room-not-found', 'The required "roomId" param provided does not match any direct message');
 	}
 
 	const subscription = await Subscriptions.findOne({ 'rid': room._id, 'u._id': uid });
@@ -179,7 +179,7 @@ const dmDeleteAction = <Path extends string>(_path: Path): TypedAction<typeof dm
 			(await canAccessRoomIdAsync(room._id, this.userId)) || (await hasPermissionAsync(this.user, 'view-room-administration'));
 
 		if (!canAccess) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed');
+			throw new ClientSafeError('error-not-allowed', 'Not allowed');
 		}
 
 		await eraseRoom(room._id, this.user);
@@ -191,10 +191,10 @@ const dmCloseAction = <Path extends string>(_path: Path): TypedAction<typeof dmC
 	async function action() {
 		const { roomId } = this.bodyParams;
 		if (!roomId) {
-			throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" is required');
+			throw new ClientSafeError('error-room-param-not-provided', 'Body param "roomId" is required');
 		}
 		if (!this.userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 				method: 'dm.close',
 			});
 		}
@@ -303,10 +303,10 @@ const dmSetTopicAction = <Path extends string>(_path: Path): TypedAction<typeof 
 	async function action() {
 		const { roomId, topic } = this.bodyParams;
 		if (!roomId) {
-			throw new Meteor.Error('error-room-param-not-provided', 'Body param "roomId" is required');
+			throw new ClientSafeError('error-room-param-not-provided', 'Body param "roomId" is required');
 		}
 		if (!this.userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user');
+			throw new ClientSafeError('error-invalid-user', 'Invalid user');
 		}
 
 		const canAccess = await canAccessRoomIdAsync(roomId, this.userId);
@@ -377,13 +377,13 @@ const dmCountersEndpointsProps = {
 const dmCountersAction = <Path extends string>(_path: Path): TypedAction<typeof dmCountersEndpointsProps, Path> =>
 	async function action() {
 		if (!this.userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user');
+			throw new ClientSafeError('error-invalid-user', 'Invalid user');
 		}
 
 		const access = await hasPermissionAsync(this.userId, 'view-room-administration');
 		const { roomId, userId: ruserId } = this.queryParams;
 		if (!roomId) {
-			throw new Meteor.Error('error-room-param-not-provided', 'Query param "roomId" is required');
+			throw new ClientSafeError('error-room-param-not-provided', 'Query param "roomId" is required');
 		}
 		let user = this.userId;
 		let unreads = null;
@@ -462,7 +462,7 @@ const dmFilesEndpointsProps = {
 const dmFilesAction = <Path extends string>(_path: Path): TypedAction<typeof dmFilesEndpointsProps, Path> =>
 	async function action() {
 		if (!this.userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user');
+			throw new ClientSafeError('error-invalid-user', 'Invalid user');
 		}
 
 		const { typeGroup, name, roomId, username, onlyConfirmed } = this.queryParams;
@@ -532,7 +532,7 @@ const dmMembersEndpointsProps = {
 const dmMembersAction = <Path extends string>(_path: Path): TypedAction<typeof dmMembersEndpointsProps, Path> =>
 	async function action() {
 		if (!this.userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user');
+			throw new ClientSafeError('error-invalid-user', 'Invalid user');
 		}
 
 		const { room } = await findDirectMessageRoom(this.queryParams, this.userId);
@@ -638,7 +638,7 @@ const dmMessagesEndpointsProps = {
 const dmMessagesAction = <Path extends string>(_path: Path): TypedAction<typeof dmMessagesEndpointsProps, Path> =>
 	async function action() {
 		if (!this.userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user');
+			throw new ClientSafeError('error-invalid-user', 'Invalid user');
 		}
 
 		const { roomId, username, mentionIds, starredIds, pinned } = this.queryParams as {
@@ -712,14 +712,14 @@ const dmHistoryEndpointsProps = {
 const dmHistoryAction = <Path extends string>(_path: Path): TypedAction<typeof dmHistoryEndpointsProps, Path> =>
 	async function action() {
 		if (!this.userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user');
+			throw new ClientSafeError('error-invalid-user', 'Invalid user');
 		}
 
 		const { offset = 0, count = 20 } = await getPaginationItems(this.queryParams);
 		const { roomId, latest, oldest, inclusive, unreads, showThreadMessages } = this.queryParams;
 
 		if (!roomId) {
-			throw new Meteor.Error('error-room-param-not-provided', 'Query param "roomId" is required');
+			throw new ClientSafeError('error-room-param-not-provided', 'Query param "roomId" is required');
 		}
 		const { room } = await findDirectMessageRoom({ roomId }, this.userId);
 
@@ -800,19 +800,19 @@ const dmMessagesOthersEndpointsProps = {
 const dmMessagesOthersAction = <Path extends string>(_name: Path): TypedAction<typeof dmMessagesOthersEndpointsProps, Path> =>
 	async function action() {
 		if (settings.get('API_Enable_Direct_Message_History_EndPoint') !== true) {
-			throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', {
+			throw new ClientSafeError('error-endpoint-disabled', 'This endpoint is disabled', {
 				route: '/api/v1/im.messages.others',
 			});
 		}
 
 		const { roomId } = this.queryParams;
 		if (!roomId) {
-			throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" is required');
+			throw new ClientSafeError('error-roomid-param-not-provided', 'The parameter "roomId" is required');
 		}
 
 		const room = await Rooms.findOneById<Pick<IRoom, '_id' | 't'>>(roomId, { projection: { _id: 1, t: 1 } });
 		if (!room || room?.t !== 'd') {
-			throw new Meteor.Error('error-room-not-found', `No direct message room found by the id of: ${roomId}`);
+			throw new ClientSafeError('error-room-not-found', `No direct message room found by the id of: ${roomId}`);
 		}
 
 		const { offset, count } = await getPaginationItems(this.queryParams);
@@ -829,7 +829,7 @@ const dmMessagesOthersAction = <Path extends string>(_name: Path): TypedAction<t
 		const [msgs, total] = await Promise.all([cursor.toArray(), totalCount]);
 
 		if (!msgs) {
-			throw new Meteor.Error('error-no-messages', 'No messages found');
+			throw new ClientSafeError('error-no-messages', 'No messages found');
 		}
 
 		return API.v1.success({
@@ -934,7 +934,7 @@ const dmCreateAction = <Path extends string>(_path: Path): TypedAction<typeof dm
 				: this.bodyParams.usernames.split(',').map((username: string) => username.trim());
 
 		if (this.bodyParams.excludeSelf && !(await hasPermissionAsync(this.userId, 'create-d-other-users'))) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+			throw new ClientSafeError('error-not-allowed', 'Not allowed', {
 				method: 'createDirectMessage',
 			});
 		}
@@ -1004,7 +1004,7 @@ const dmBlockUserAction = <Path extends string>(_path: Path): TypedAction<typeof
 
 		const blocked = room.uids?.find((uid) => uid !== this.userId);
 		if (!blocked) {
-			throw new Meteor.Error('error-invalid-room', 'Invalid room', { method: 'im.blockUser' });
+			throw new ClientSafeError('error-invalid-room', 'Invalid room', { method: 'im.blockUser' });
 		}
 
 		if (block) {

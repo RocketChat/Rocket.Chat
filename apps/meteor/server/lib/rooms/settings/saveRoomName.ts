@@ -1,8 +1,7 @@
-import { Message, Room } from '@rocket.chat/core-services';
+import { Message, Room, ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { isRoomNativeFederated } from '@rocket.chat/core-typings';
 import { Integrations, Rooms, Subscriptions } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 import type { Document, UpdateResult } from 'mongodb';
 
 import { callbacks } from '../../callbacks';
@@ -24,7 +23,7 @@ const updateFName = async (rid: string, displayName: string): Promise<(UpdateRes
 const updateRoomName = async (rid: string, displayName: string, slugifiedRoomName: string) => {
 	// Check if the name is available
 	if (!(await checkUsernameAvailability(slugifiedRoomName, 'room'))) {
-		throw new Meteor.Error('error-duplicate-handle', `A room, team or user with name '${slugifiedRoomName}' already exists`, {
+		throw new ClientSafeError('error-duplicate-handle', `A room, team or user with name '${slugifiedRoomName}' already exists`, {
 			function: 'RocketChat.updateRoomName',
 			handle: slugifiedRoomName,
 		});
@@ -50,13 +49,13 @@ export async function saveRoomName(
 ): Promise<string | undefined> {
 	const room = await Rooms.findOneById(rid);
 	if (!room) {
-		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+		throw new ClientSafeError('error-invalid-room', 'Invalid room', {
 			function: 'RocketChat.saveRoomdisplayName',
 		});
 	}
 
 	if (roomCoordinator.getRoomDirectives(room.t).preventRenaming()) {
-		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+		throw new ClientSafeError('error-not-allowed', 'Not allowed', {
 			function: 'RocketChat.saveRoomdisplayName',
 		});
 	}

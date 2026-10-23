@@ -1,9 +1,8 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { Message } from '@rocket.chat/core-services';
+import { Message, ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser, IRoom, ISubscription } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../callbacks';
 import { notifyOnSubscriptionChangedById } from '../notifyListener';
@@ -23,7 +22,7 @@ export const performAcceptRoomInvite = async (
 	user: IUser & { username: string },
 ): Promise<void> => {
 	if (subscription.status !== 'INVITED' || !subscription.inviter) {
-		throw new Meteor.Error('error-not-invited', `User was not invited to this room ${subscription.status}`);
+		throw new ClientSafeError('error-not-invited', `User was not invited to this room ${subscription.status}`);
 	}
 	const inviter = await Users.findOneById(subscription.inviter._id);
 
@@ -35,7 +34,7 @@ export const performAcceptRoomInvite = async (
 		await Apps.self?.triggerEvent(AppEvents.IPreRoomUserJoined, room, user, inviter);
 	} catch (error: any) {
 		if (error.name === AppsEngineException.name) {
-			throw new Meteor.Error('error-app-prevented', error.message);
+			throw new ClientSafeError('error-app-prevented', error.message);
 		}
 
 		throw error;

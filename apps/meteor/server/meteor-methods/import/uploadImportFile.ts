@@ -1,6 +1,5 @@
-import { Import } from '@rocket.chat/core-services';
+import { Import, ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
-import { Meteor } from 'meteor/meteor';
 
 import { ProgressStep } from '../../../lib/importer/ImporterProgressStep';
 import { Importers } from '../../lib/import';
@@ -16,7 +15,11 @@ export const executeUploadImportFile = async (
 ): Promise<void> => {
 	const importer = Importers.get(importerKey);
 	if (!importer) {
-		throw new Meteor.Error('error-importer-not-defined', `The importer (${importerKey}) has no import class defined.`, 'uploadImportFile');
+		throw new ClientSafeError(
+			'error-importer-not-defined',
+			`The importer (${importerKey}) has no import class defined.`,
+			'uploadImportFile',
+		);
 	}
 
 	const operation = await Import.newOperation(userId, importer.name, importer.key);

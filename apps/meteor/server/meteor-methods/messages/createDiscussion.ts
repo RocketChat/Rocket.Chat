@@ -3,7 +3,6 @@ import { ClientSafeError, Message } from '@rocket.chat/core-services';
 import type { IMessage, IRoom, IUser, MessageAttachmentDefault } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import { Meteor } from 'meteor/meteor';
 
 import { afterSaveMessageAsync } from '../../hooks/messages/afterSaveMessage';
 import { canSendMessageAsync } from '../../lib/authorization/canSendMessage';
@@ -78,14 +77,14 @@ const create = async ({
 	if (pmid) {
 		message = await Messages.findOneById(pmid);
 		if (!message) {
-			throw new Meteor.Error('error-invalid-message', 'Invalid message', {
+			throw new ClientSafeError('error-invalid-message', 'Invalid message', {
 				method: 'DiscussionCreation',
 			});
 		}
 		if (prid) {
 			const parentRoom = await getParentRoom(message.rid);
 			if (prid !== parentRoom?._id) {
-				throw new Meteor.Error('error-invalid-arguments', 'Root message room ID does not match parent room ID ', {
+				throw new ClientSafeError('error-invalid-arguments', 'Root message room ID does not match parent room ID ', {
 					method: 'DiscussionCreation',
 				});
 			}
@@ -95,7 +94,7 @@ const create = async ({
 	}
 
 	if (!prid) {
-		throw new Meteor.Error('error-invalid-arguments', 'Missing parent room ID', { method: 'DiscussionCreation' });
+		throw new ClientSafeError('error-invalid-arguments', 'Missing parent room ID', { method: 'DiscussionCreation' });
 	}
 
 	let parentRoom;
@@ -105,7 +104,7 @@ const create = async ({
 		if (error instanceof AbacContractError) {
 			throw error;
 		}
-		throw new Meteor.Error((error as Error).message);
+		throw new ClientSafeError((error as Error).message);
 	}
 
 	if (user.type !== 'app' && !(await Subscriptions.countByRoomIdAndUserId(parentRoom._id, user._id))) {
@@ -115,7 +114,7 @@ const create = async ({
 	}
 
 	if (parentRoom.prid) {
-		throw new Meteor.Error('error-nested-discussion', 'Cannot create nested discussions', {
+		throw new ClientSafeError('error-nested-discussion', 'Cannot create nested discussions', {
 			method: 'DiscussionCreation',
 		});
 	}
@@ -125,7 +124,7 @@ const create = async ({
 	}
 
 	if (encrypted && reply) {
-		throw new Meteor.Error('error-invalid-arguments', 'Encrypted discussions must not receive an initial reply.', {
+		throw new ClientSafeError('error-invalid-arguments', 'Encrypted discussions must not receive an initial reply.', {
 			method: 'DiscussionCreation',
 		});
 	}
@@ -153,7 +152,7 @@ const create = async ({
 	const discussionTopic = topic || parentRoom.name;
 
 	if (!type) {
-		throw new Meteor.Error('error-invalid-type', 'Cannot define discussion room type', {
+		throw new ClientSafeError('error-invalid-type', 'Cannot define discussion room type', {
 			method: 'DiscussionCreation',
 		});
 	}
@@ -164,7 +163,7 @@ const create = async ({
 		settings.get<boolean>('E2E_Enable') &&
 		settings.get<boolean>('E2E_Force_Encryption_For_Private_Rooms')
 	) {
-		throw new Meteor.Error(
+		throw new ClientSafeError(
 			'error-encrypted-private-rooms-enforced-discussion',
 			'Workspace policy requires all private rooms to be encrypted. To create this discussion, make the parent channel public or enable encryption on it.',
 			{ method: 'DiscussionCreation' },
@@ -222,22 +221,22 @@ export const createDiscussion = async (
 	}
 > => {
 	if (!settings.get('Discussion_enabled')) {
-		throw new Meteor.Error('error-action-not-allowed', 'You are not allowed to create a discussion', { method: 'createDiscussion' });
+		throw new ClientSafeError('error-action-not-allowed', 'You are not allowed to create a discussion', { method: 'createDiscussion' });
 	}
 
 	if (!userId) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 			method: 'DiscussionCreation',
 		});
 	}
 
 	if (!(await hasAtLeastOnePermissionAsync(userId, ['start-discussion', 'start-discussion-other-user'], prid))) {
-		throw new Meteor.Error('error-action-not-allowed', 'You are not allowed to create a discussion', { method: 'createDiscussion' });
+		throw new ClientSafeError('error-action-not-allowed', 'You are not allowed to create a discussion', { method: 'createDiscussion' });
 	}
 	const user = await Users.findOneById(userId, { projection: { services: 0 } });
 
 	if (!user) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 			method: 'createDiscussion',
 		});
 	}

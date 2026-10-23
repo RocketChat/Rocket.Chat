@@ -424,6 +424,22 @@ export default [
 			],
 		},
 	},
+	{
+		files: ['apps/meteor/server/**/*.@(ts|js)', 'apps/meteor/ee/server/**/*.@(ts|js)'],
+		rules: {
+			'no-restricted-syntax': [
+				'error',
+				{
+					selector: "MemberExpression[object.name='Meteor'][property.name='Error']",
+					message: "Use ClientSafeError from '@rocket.chat/core-services' instead.",
+				},
+				{
+					selector: "TSQualifiedName[left.name='Meteor'][right.name='Error']",
+					message: "Use ClientSafeError from '@rocket.chat/core-services' instead.",
+				},
+			],
+		},
+	},
 	// View-agnostic logic: must stay reusable by clients that do not render with Fuselage (e.g. mobile).
 	{
 		files: ['packages/ui-account/src/**/logic/**/*.@(ts|tsx)'],

@@ -1,8 +1,8 @@
 import fs from 'node:fs';
 
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUpload } from '@rocket.chat/core-typings';
 import { check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 
 import { UploadFS } from './ufs';
@@ -14,7 +14,7 @@ export async function ufsComplete(fileId: string, storeName: string, options?: {
 	// Get store
 	const store = UploadFS.getStore(storeName);
 	if (!store) {
-		throw new Meteor.Error('invalid-store', 'Store not found');
+		throw new ClientSafeError('invalid-store', 'Store not found');
 	}
 
 	const tmpFile = UploadFS.getTempFilePath(fileId);
@@ -32,7 +32,7 @@ export async function ufsComplete(fileId: string, storeName: string, options?: {
 			const file = await store.getCollection().findOne<IUpload>({ _id: fileId }, { session: options?.session });
 
 			if (!file) {
-				throw new Meteor.Error('invalid-file', 'File is not valid');
+				throw new ClientSafeError('invalid-file', 'File is not valid');
 			}
 
 			// Validate file before moving to the store
@@ -72,7 +72,7 @@ export async function ufsComplete(fileId: string, storeName: string, options?: {
 		} catch (err: any) {
 			// If write failed, remove the file
 			await store.removeById(fileId, { session: options?.session });
-			reject(new Meteor.Error('ufs: cannot upload file', err));
+			reject(new ClientSafeError('ufs: cannot upload file', err));
 		}
 	});
 }

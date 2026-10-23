@@ -56,18 +56,6 @@ jest.mock(
 	() => ({
 		Meteor: {
 			startup: (callback: () => void) => callback(),
-			Error: class MeteorError extends Error {
-				public details?: unknown;
-
-				constructor(
-					public error: string,
-					public reason?: string,
-					details?: unknown,
-				) {
-					super(reason ?? error);
-					this.details = details;
-				}
-			},
 		},
 	}),
 	{ virtual: true },

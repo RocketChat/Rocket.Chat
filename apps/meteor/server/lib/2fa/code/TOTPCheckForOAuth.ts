@@ -1,5 +1,5 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { TwoFactorChallenges } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import type { TwoFactorUser } from './ICodeCheck';
 import { TOTPCheck } from './TOTPCheck';
@@ -20,7 +20,7 @@ export class TOTPCheckForOAuth extends TOTPCheck {
 		}
 
 		if (challenge.expireAt && challenge.expireAt < new Date()) {
-			throw new Meteor.Error('error-challenge-expired', 'challenge expired');
+			throw new ClientSafeError('error-challenge-expired', 'challenge expired');
 		}
 
 		const isCodeValid = await this.verify(user, code);

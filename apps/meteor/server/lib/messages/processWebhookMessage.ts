@@ -1,6 +1,6 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IMessage, IUser, RequiredField, MessageAttachment, IRoom } from '@rocket.chat/core-typings';
 import { removeEmpty } from '@rocket.chat/tools';
-import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { sendMessage, validateMessage } from './sendMessage';
@@ -90,7 +90,7 @@ const getRoomWithOptionToJoin = async (channelType: string, channelValue: string
 			}
 
 			// No room, so throw an error
-			throw new Meteor.Error('invalid-channel');
+			throw new ClientSafeError('invalid-channel');
 	}
 };
 

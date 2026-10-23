@@ -3,7 +3,6 @@ import { ClientSafeError, Presence, StatusVisibility } from '@rocket.chat/core-s
 import { isUserFederated, UserStatus } from '@rocket.chat/core-typings';
 import type { IUser, IRole, IUserSettings, RequiredField } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 
 import { handleBio } from './handleBio';
@@ -67,7 +66,7 @@ type SaveUserOptions = {
 const findUserById = async (uid: IUser['_id']): Promise<IUser> => {
 	const user = await Users.findOneById(uid);
 	if (!user) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user');
+		throw new ClientSafeError('error-invalid-user', 'Invalid user');
 	}
 
 	return user;
@@ -108,7 +107,7 @@ const _saveUser = (session?: ClientSession) =>
 
 		const oldUserData = userData._id && (await Users.findOneById(userData._id));
 		if (oldUserData && isUserFederated(oldUserData)) {
-			throw new Meteor.Error('Edit_Federated_User_Not_Allowed', 'Not possible to edit a federated user');
+			throw new ClientSafeError('Edit_Federated_User_Not_Allowed', 'Not possible to edit a federated user');
 		}
 
 		await validateUserData(userId, userData);
@@ -159,7 +158,7 @@ const _saveUser = (session?: ClientSession) =>
 					session,
 				}))
 			) {
-				throw new Meteor.Error('error-could-not-save-identity', 'Could not save user identity', {
+				throw new ClientSafeError('error-could-not-save-identity', 'Could not save user identity', {
 					method: 'saveUser',
 				});
 			}

@@ -1,4 +1,4 @@
-import { Push } from '@rocket.chat/core-services';
+import { Push, ClientSafeError } from '@rocket.chat/core-services';
 import { pushTokenTypes } from '@rocket.chat/core-typings';
 import type { IMessage, IPushNotificationConfig, IPushToken, IPushTokenTypes, PushTokenTarget } from '@rocket.chat/core-typings';
 import { Messages, PushToken, Users, Rooms, Settings } from '@rocket.chat/models';
@@ -12,7 +12,6 @@ import {
 } from '@rocket.chat/rest-typings';
 import type { JSONSchemaType } from 'ajv';
 import { Accounts } from 'meteor/accounts-base';
-import { Meteor } from 'meteor/meteor';
 
 import { canAccessRoomAsync } from '../../lib/authorization/canAccessRoom';
 import PushNotification from '../../lib/notifications/push-config/lib/PushNotification';
@@ -159,7 +158,7 @@ const pushTokenEndpoints = API.v1
 
 			const rawToken = this.request.headers.get('x-auth-token');
 			if (!rawToken) {
-				throw new Meteor.Error('error-authToken-param-not-valid', 'The required "authToken" header param is missing or invalid.');
+				throw new ClientSafeError('error-authToken-param-not-valid', 'The required "authToken" header param is missing or invalid.');
 			}
 			const authToken = Accounts._hashLoginToken(rawToken);
 
@@ -369,7 +368,7 @@ const pushTestEndpoints = API.v1.post(
 
 	async function action() {
 		if (settings.get('Push_enable') !== true) {
-			throw new Meteor.Error('error-push-disabled', 'Push is disabled', {
+			throw new ClientSafeError('error-push-disabled', 'Push is disabled', {
 				method: 'push_test',
 			});
 		}

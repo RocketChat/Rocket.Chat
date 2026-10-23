@@ -1,8 +1,7 @@
-import { api } from '@rocket.chat/core-services';
+import { api, ClientSafeError } from '@rocket.chat/core-services';
 import { isBannedSubscription, isRoomNativeFederated, type IRoom, type IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Match } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { beforeAddUsersToRoom } from '../../lib/callbacks/beforeAddUserToRoom';
@@ -25,7 +24,7 @@ export const assertCanAddUsersToRoom = async (userId: string, room: IRoom): Prom
 	const userInRoom = subscription != null;
 
 	if (room.t === 'd' && !isRoomNativeFederated(room)) {
-		throw new Meteor.Error('error-cant-invite-for-direct-room', "Can't invite user to direct rooms", {
+		throw new ClientSafeError('error-cant-invite-for-direct-room', "Can't invite user to direct rooms", {
 			method: 'addUsersToRoom',
 		});
 	}
@@ -42,7 +41,7 @@ export const assertCanAddUsersToRoom = async (userId: string, room: IRoom): Prom
 
 	// Adding wasn't allowed
 	if (!canAddUser) {
-		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+		throw new ClientSafeError('error-not-allowed', 'Not allowed', {
 			method: 'addUsersToRoom',
 		});
 	}
@@ -50,13 +49,13 @@ export const assertCanAddUsersToRoom = async (userId: string, room: IRoom): Prom
 
 export const addUsersToRoomMethod = async (userId: string, data: { rid: string; users: string[] }, user?: IUser): Promise<boolean> => {
 	if (!userId) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 			method: 'addUsersToRoom',
 		});
 	}
 
 	if (!Match.test(data.rid, String)) {
-		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+		throw new ClientSafeError('error-invalid-room', 'Invalid room', {
 			method: 'addUsersToRoom',
 		});
 	}
@@ -64,7 +63,7 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 	// Get user and room details
 	const room = await Rooms.findOneById(data.rid);
 	if (!room) {
-		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+		throw new ClientSafeError('error-invalid-room', 'Invalid room', {
 			method: 'addUsersToRoom',
 		});
 	}
@@ -73,7 +72,7 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 
 	// Missing the users to be added
 	if (!Array.isArray(data.users)) {
-		throw new Meteor.Error('error-invalid-arguments', 'Invalid arguments', {
+		throw new ClientSafeError('error-invalid-arguments', 'Invalid arguments', {
 			method: 'addUsersToRoom',
 		});
 	}
@@ -86,14 +85,14 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 
 			const newUser = await Users.findOneByUsernameIgnoringCase(sanitizedUsername);
 			if (!newUser) {
-				throw new Meteor.Error('error-user-not-found', 'User not found', {
+				throw new ClientSafeError('error-user-not-found', 'User not found', {
 					method: 'addUsersToRoom',
 				});
 			}
 
 			const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, newUser._id);
 			if (subscription && isBannedSubscription(subscription)) {
-				throw new Meteor.Error('error-user-is-banned', 'User is banned from this room', {
+				throw new ClientSafeError('error-user-is-banned', 'User is banned from this room', {
 					method: 'addUsersToRoom',
 				});
 			}

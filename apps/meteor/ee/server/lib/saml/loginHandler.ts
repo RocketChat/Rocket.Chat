@@ -1,8 +1,7 @@
-import { isClientSafeError } from '@rocket.chat/core-services';
+import { isClientSafeError, ClientSafeError } from '@rocket.chat/core-services';
 import { License } from '@rocket.chat/license';
 import { CredentialTokens } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
-import { Meteor } from 'meteor/meteor';
 
 import { SAML } from './lib/SAML';
 import { SAMLUtils } from './lib/Utils';
@@ -13,7 +12,7 @@ import { doesUserRequire2FA } from '../../../../server/lib/oauth/twoFactorAuth';
 
 const makeError = (message: string): Record<string, any> => ({
 	type: 'saml',
-	error: new Meteor.Error(Accounts.LoginCancelledError.numericError, message),
+	error: new ClientSafeError(Accounts.LoginCancelledError.numericError, message),
 });
 
 Accounts.registerLoginHandler('saml', async (loginRequest) => {

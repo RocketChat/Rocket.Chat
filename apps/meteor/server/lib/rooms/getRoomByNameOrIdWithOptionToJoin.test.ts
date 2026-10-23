@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, it } from 'node:test';
 
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import Sinon from 'sinon';
@@ -47,15 +48,6 @@ const RoomServiceStub = {
 	join: Sinon.stub().resolves(),
 };
 
-const MeteorStub = {
-	Meteor: {
-		Error: Sinon.stub().callsFake(function (this: any, code: string) {
-			this.error = code;
-			this.errorType = 'Meteor.Error';
-		} as any),
-	},
-};
-
 const createDirectMessageStub = Sinon.stub().resolves({ rid: 'newDirectRoomId' });
 
 const isObjectMock = {
@@ -76,12 +68,12 @@ const {
 	},
 	'@rocket.chat/core-services': {
 		Room: RoomServiceStub,
+		ClientSafeError,
 	},
 	'../../../lib/utils/isObject': isObjectMock,
 	'../../meteor-methods/messages/createDirectMessage': {
 		createDirectMessage: createDirectMessageStub,
 	},
-	'meteor/meteor': MeteorStub,
 }) as any;
 
 describe('getRoomByNameOrIdWithOptionToJoin', () => {
@@ -102,13 +94,6 @@ describe('getRoomByNameOrIdWithOptionToJoin', () => {
 
 		RoomServiceStub.join.reset();
 		RoomServiceStub.join.resolves();
-
-		MeteorStub.Meteor.Error.resetBehavior();
-		MeteorStub.Meteor.Error.resetHistory();
-		MeteorStub.Meteor.Error.callsFake(function (this: any, code: string) {
-			this.error = code;
-			this.errorType = 'Meteor.Error';
-		} as any);
 
 		createDirectMessageStub.reset();
 		createDirectMessageStub.resolves({ rid: 'newDirectRoomId' });
@@ -155,7 +140,7 @@ describe('getRoomByNameOrIdWithOptionToJoin', () => {
 			expect(result).to.equal(room);
 		});
 
-		it('should throw Meteor.Error("invalid-channel") when channel not found and errorOnEmpty=true', async () => {
+		it('should throw ClientSafeError("invalid-channel") when channel not found and errorOnEmpty=true', async () => {
 			RoomsStub.findOneByIdOrName.resolves(null);
 
 			let caught: any;
@@ -172,7 +157,7 @@ describe('getRoomByNameOrIdWithOptionToJoin', () => {
 				caught = e;
 			}
 
-			expect(caught).to.be.an('object');
+			expect(caught).to.be.instanceOf(ClientSafeError);
 			expect(caught.error).to.equal('invalid-channel');
 		});
 
@@ -210,7 +195,7 @@ describe('getRoomByNameOrIdWithOptionToJoin', () => {
 			expect(result).to.equal(room);
 		});
 
-		it('should throw Meteor.Error when type does not match and errorOnEmpty=true', async () => {
+		it('should throw ClientSafeError when type does not match and errorOnEmpty=true', async () => {
 			const room: IRoom = { _id: 'room4', t: 'p', name: 'private' };
 			RoomsStub.findOneByIdOrName.resolves(room);
 			SubscriptionsStub.findOneByRoomIdAndUserId.resolves(null);
@@ -229,7 +214,7 @@ describe('getRoomByNameOrIdWithOptionToJoin', () => {
 				caught = e;
 			}
 
-			expect(caught).to.be.an('object');
+			expect(caught).to.be.instanceOf(ClientSafeError);
 			expect(caught.error).to.equal('invalid-channel');
 		});
 
@@ -454,7 +439,7 @@ describe('getRoomByNameOrIdWithOptionToJoin', () => {
 	});
 
 	describe('direct message creation when roomUser exists but room does not', () => {
-		it('should throw Meteor.Error when roomUser not found and errorOnEmpty=true', async () => {
+		it('should throw ClientSafeError when roomUser not found and errorOnEmpty=true', async () => {
 			UsersStub.findOne.resolves(null);
 			RoomsStub.findOneById.resolves(null);
 			RoomsStub.findOneDirectRoomContainingAllUserIDs.resolves(null);
@@ -473,7 +458,7 @@ describe('getRoomByNameOrIdWithOptionToJoin', () => {
 				caught = e;
 			}
 
-			expect(caught).to.be.an('object');
+			expect(caught).to.be.instanceOf(ClientSafeError);
 			expect(caught.error).to.equal('invalid-channel');
 			expect(createDirectMessageStub.notCalled).to.equal(true);
 		});

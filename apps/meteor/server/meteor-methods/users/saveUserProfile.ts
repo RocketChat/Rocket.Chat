@@ -1,9 +1,9 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { UserStatus, IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 import type { UpdateFilter } from 'mongodb';
 
 import { setEmailFunction } from './setEmail';
@@ -40,13 +40,13 @@ async function saveUserProfile(
 ) {
 	const unset: UpdateFilter<IUser> = {};
 	if (!rcSettings.get<boolean>('Accounts_AllowUserProfileChange')) {
-		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+		throw new ClientSafeError('error-not-allowed', 'Not allowed', {
 			method: 'saveUserProfile',
 		});
 	}
 
 	if (!this.userId) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 			method: 'saveUserProfile',
 		});
 	}
@@ -63,7 +63,7 @@ async function saveUserProfile(
 	const user = await Users.findOneById(this.userId);
 
 	if (!user) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 			method: 'saveUserProfile',
 		});
 	}
@@ -76,7 +76,7 @@ async function saveUserProfile(
 				username: settings.username,
 			}))
 		) {
-			throw new Meteor.Error('error-could-not-save-identity', 'Could not save user identity', {
+			throw new ClientSafeError('error-could-not-save-identity', 'Could not save user identity', {
 				method: 'saveUserProfile',
 			});
 		}
@@ -88,12 +88,12 @@ async function saveUserProfile(
 
 	if (user && (settings.bio || settings.bio === '')) {
 		if (typeof settings.bio !== 'string') {
-			throw new Meteor.Error('error-invalid-field', 'bio', {
+			throw new ClientSafeError('error-invalid-field', 'bio', {
 				method: 'saveUserProfile',
 			});
 		}
 		if (settings.bio.length > MAX_BIO_LENGTH) {
-			throw new Meteor.Error('error-bio-size-exceeded', `Bio size exceeds ${MAX_BIO_LENGTH} characters`, {
+			throw new ClientSafeError('error-bio-size-exceeded', `Bio size exceeds ${MAX_BIO_LENGTH} characters`, {
 				method: 'saveUserProfile',
 			});
 		}
@@ -102,12 +102,12 @@ async function saveUserProfile(
 
 	if (user && (settings.nickname || settings.nickname === '')) {
 		if (typeof settings.nickname !== 'string') {
-			throw new Meteor.Error('error-invalid-field', 'nickname', {
+			throw new ClientSafeError('error-invalid-field', 'nickname', {
 				method: 'saveUserProfile',
 			});
 		}
 		if (settings.nickname.length > MAX_NICKNAME_LENGTH) {
-			throw new Meteor.Error('error-nickname-size-exceeded', `Nickname size exceeds ${MAX_NICKNAME_LENGTH} characters`, {
+			throw new ClientSafeError('error-nickname-size-exceeded', `Nickname size exceeds ${MAX_NICKNAME_LENGTH} characters`, {
 				method: 'saveUserProfile',
 			});
 		}
@@ -124,13 +124,13 @@ async function saveUserProfile(
 		if (settings.newPassword && rcSettings.get<boolean>('Accounts_AllowPasswordChange') === true && user?.services?.password?.bcrypt) {
 			// don't let user change to same password
 			if (user && (await compareUserPassword(user, { plain: settings.newPassword }))) {
-				throw new Meteor.Error('error-password-same-as-current', 'Entered password same as current password', {
+				throw new ClientSafeError('error-password-same-as-current', 'Entered password same as current password', {
 					method: 'saveUserProfile',
 				});
 			}
 
 			if (user?.services?.passwordHistory && !(await compareUserPasswordHistory(user, { plain: settings.newPassword }))) {
-				throw new Meteor.Error('error-password-in-history', 'Entered password has been previously used', {
+				throw new ClientSafeError('error-password-in-history', 'Entered password has been previously used', {
 					method: 'saveUserProfile',
 				});
 			}
