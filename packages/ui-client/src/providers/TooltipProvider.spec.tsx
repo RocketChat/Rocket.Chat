@@ -42,6 +42,25 @@ it('should show the tooltip on hover and stash the title attribute', () => {
 	expect(anchor).toHaveAttribute('data-title', 'Hello');
 });
 
+it('should clear stale tooltip state when the window blurs and reopen on hover', () => {
+	const { anchor } = setup();
+
+	fireEvent.mouseOver(anchor);
+	waitForTooltipDebounce();
+	expect(screen.getByRole('tooltip', { hidden: true })).toHaveTextContent('Hello');
+
+	act(() => {
+		window.dispatchEvent(new Event('blur'));
+	});
+
+	expect(screen.queryByRole('tooltip', { hidden: true })).not.toBeInTheDocument();
+
+	fireEvent.mouseOver(anchor);
+	waitForTooltipDebounce();
+
+	expect(screen.getByRole('tooltip', { hidden: true })).toHaveTextContent('Hello');
+});
+
 it('should restore the title attribute on unhover without depending on timers', () => {
 	const { anchor } = setup();
 

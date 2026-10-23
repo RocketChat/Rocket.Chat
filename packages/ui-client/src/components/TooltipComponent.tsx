@@ -8,7 +8,8 @@ export type TooltipComponentProps = {
 };
 
 export const TooltipComponent = ({ title, anchor }: TooltipComponentProps) => {
-	const ref = useRef(anchor);
+	const ref = useRef<Element | null>(null);
+	ref.current = anchor;
 
 	return (
 		<PositionAnimated anchor={ref} placement='top-middle' margin={8} visible={AnimatedVisibility.UNHIDING}>
