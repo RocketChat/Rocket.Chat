@@ -1,3 +1,4 @@
+import { useRedirectToSetupWizard } from '@rocket.chat/ui-setup-wizard';
 import { useEffect, Suspense, useSyncExternalStore } from 'react';
 
 import DocumentTitleWrapper from './DocumentTitleWrapper';
@@ -29,7 +30,6 @@ import { useNativeEmoji } from './hooks/useNativeEmoji';
 import { useNotificationPermission } from './hooks/useNotificationPermission';
 import { useOAuthLogin } from './hooks/useOAuthLogin';
 import { useOAuthPopupCommands } from './hooks/useOAuthPopupCommands';
-import { useRedirectToSetupWizard } from './hooks/useRedirectToSetupWizard';
 import { useSettingsOnLoadSiteUrl } from './hooks/useSettingsOnLoadSiteUrl';
 import { useShareSessionWithOtherClients } from './hooks/useShareSessionWithOtherClients';
 import { useStartupEvent } from './hooks/useStartupEvent';
