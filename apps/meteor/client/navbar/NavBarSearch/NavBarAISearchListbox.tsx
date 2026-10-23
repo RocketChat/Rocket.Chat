@@ -106,14 +106,14 @@ const NavBarAISearchListBox = ({
 										<Divider flush />
 									</Box>
 									{hasAISearchProblem && (
-										<AISearchErrorCallout
-											role='alert'
-											error={aiItems.error}
-											notConfigured={aiItems.notConfigured}
-											onRetry={refetchAISearch}
-											marginInline={12}
-											marginBlockStart={8}
-										/>
+										<Box marginInline={12} marginBlockStart={8}>
+											<AISearchErrorCallout
+												role='alert'
+												error={aiItems.error}
+												notConfigured={aiItems.notConfigured}
+												onRetry={refetchAISearch}
+											/>
+										</Box>
 									)}
 								</>
 							)}

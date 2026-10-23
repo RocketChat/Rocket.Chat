@@ -120,8 +120,6 @@ const ForwardChatModal = ({ room, onCancel }: ForwardChatModalProps) => {
 									id={departmentFieldId}
 									aria-label={t('Forward_to_department')}
 									withTitle={false}
-									maxWidth='100%'
-									flexGrow={1}
 									disabled={!!username}
 								/>
 							)}

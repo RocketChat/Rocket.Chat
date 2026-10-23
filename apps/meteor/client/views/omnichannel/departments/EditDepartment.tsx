@@ -293,7 +293,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 									<Field>
 										<FieldLabel htmlFor={departmentsAllowedToForwardFieldId}>{t('List_of_departments_for_forward')}</FieldLabel>
 										<FieldRow>
-											<Box width='100%'>
+											<Box display='flex' width='100%'>
 												<Controller
 													control={control}
 													name='departmentsAllowedToForward'
@@ -304,9 +304,6 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 															showArchived
 															excludeId={id ?? ''}
 															value={value}
-															maxWidth='100%'
-															width='100%'
-															flexGrow={1}
 															onChange={onChange}
 														/>
 													)}
