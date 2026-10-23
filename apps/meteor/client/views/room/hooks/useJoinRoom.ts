@@ -24,7 +24,7 @@ export const useJoinRoom = () => {
 			// Prefix-match the open-room query key (roomsQueryKeys.roomReference) so the
 			// "not subscribed" screen refetches and flips to the joined state without a reload.
 			queryClient.invalidateQueries({
-				queryKey: [...roomsQueryKeys.all, data.reference, data.type],
+				queryKey: roomsQueryKeys.roomReferences(data.reference, data.type),
 			});
 		},
 		onError: (error: unknown) => {

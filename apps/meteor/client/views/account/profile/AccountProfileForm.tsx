@@ -41,6 +41,7 @@ import UserStatusMenu from '../../../components/UserStatusMenu';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useUpdateAvatar } from '../../../hooks/useUpdateAvatar';
 import { USER_STATUS_TEXT_MAX_LENGTH, BIO_TEXT_MAX_LENGTH } from '../../../lib/constants';
+import { usersQueryKeys } from '../../../lib/queryKeys';
 import { STATUS_DURATION_OPTIONS, validateStatusExpiration } from '../../../lib/statusDurations';
 
 const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
@@ -140,7 +141,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 	// Refresh the user card, full profile and admin panel views of this user.
 	const refreshUserViews = async () => {
 		await queryClient.invalidateQueries({ queryKey: ['users.info'] });
-		await queryClient.invalidateQueries({ queryKey: ['users'] });
+		await queryClient.invalidateQueries({ queryKey: usersQueryKeys.all });
 	};
 
 	const handleSave = async (values: AccountProfileFormValues) => {

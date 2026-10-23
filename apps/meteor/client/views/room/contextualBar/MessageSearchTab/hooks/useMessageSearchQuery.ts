@@ -1,6 +1,7 @@
 import { useMethod, useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
+import { roomsQueryKeys } from '../../../../../lib/queryKeys';
 import { useRoom } from '../../../contexts/RoomContext';
 
 export const useMessageSearchQuery = ({
@@ -19,7 +20,7 @@ export const useMessageSearchQuery = ({
 
 	const searchMessages = useMethod('rocketchatSearch.search');
 	return useQuery({
-		queryKey: ['rooms', room._id, 'message-search', { uid, rid: room._id, searchText, limit, globalSearch }] as const,
+		queryKey: roomsQueryKeys.messageSearch(room._id, { uid, searchText, limit, globalSearch }),
 
 		queryFn: async () => {
 			const result = await searchMessages(searchText, { uid, rid: room._id }, { limit, searchAll: globalSearch });

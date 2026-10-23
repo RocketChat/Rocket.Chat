@@ -180,7 +180,7 @@ export function useOpenRoom({ type, reference }: { type: RoomType; reference: st
 		if (error) {
 			if (type === 'l' && error instanceof RoomNotFoundError) {
 				Rooms.state.remove((record) => Object.values(record).includes(reference));
-				queryClient.removeQueries({ queryKey: ['rooms', reference] });
+				queryClient.removeQueries({ queryKey: roomsQueryKeys.room(reference) });
 				queryClient.removeQueries({ queryKey: roomsQueryKeys.info(reference) });
 			}
 		}

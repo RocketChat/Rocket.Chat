@@ -15,13 +15,20 @@ import { videoConferenceInfoQueryKey } from '@rocket.chat/ui-video-conf';
 export const roomsQueryKeys = {
 	all: ['rooms'] as const,
 	room: (rid: IRoom['_id']) => ['rooms', rid] as const,
+	roomReferences: (reference: string, type: RoomType) => [...roomsQueryKeys.all, reference, type] as const,
 	roomReference: (reference: string, type: RoomType, uid?: IUser['_id'], username?: IUser['username']) => [
-		...roomsQueryKeys.all,
-		reference,
-		type,
+		...roomsQueryKeys.roomReferences(reference, type),
 		uid ?? username,
 	],
+	open: (rid: IRoom['_id'], uid?: IUser['_id'], username?: IUser['username']) =>
+		[...roomsQueryKeys.room(rid), 'open', uid, username] as const,
+	adminInfo: (rid?: IRoom['_id']) => [...roomsQueryKeys.all, rid, 'admin'] as const,
 	starredMessages: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'starred-messages'] as const,
+	mentionedMessages: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'mentioned-messages'] as const,
+	messageSearch: (
+		rid: IRoom['_id'],
+		{ uid, searchText, limit, globalSearch }: { uid: IUser['_id'] | undefined; searchText: string; limit: number; globalSearch: boolean },
+	) => [...roomsQueryKeys.room(rid), 'message-search', { uid, rid, searchText, limit, globalSearch }] as const,
 	pinnedMessages: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'pinned-messages'] as const,
 	messages: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'messages'] as const,
 	message: (rid: IRoom['_id'], mid: IMessage['_id']) => [...roomsQueryKeys.messages(rid), mid] as const,
@@ -30,6 +37,7 @@ export const roomsQueryKeys = {
 	roles: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'roles'] as const,
 	info: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'info'] as const,
 	abacInfo: (rid: IRoom['_id'], abacAttributes: IRoom['abacAttributes']) => [...roomsQueryKeys.info(rid), 'abac', abacAttributes] as const,
+	allMembers: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'members'] as const,
 	members: (rid: IRoom['_id'], roomType: RoomType, type?: 'all' | 'online', filter?: string) =>
 		!type && !filter
 			? ([...roomsQueryKeys.room(rid), 'members', roomType] as const)
@@ -66,6 +74,7 @@ export const omnichannelQueryKeys = {
 		!query ? ([...omnichannelQueryKeys.all, 'agents'] as const) : ([...omnichannelQueryKeys.all, 'agents', query] as const),
 	agent: (uid: ILivechatAgent['_id']) => [...omnichannelQueryKeys.agents(), uid] as const,
 	agentDepartments: (uid: ILivechatAgent['_id']) => [...omnichannelQueryKeys.agent(uid), 'departments'] as const,
+	monitors: (...args: [query?: { text: string; sort: string }]) => [...omnichannelQueryKeys.all, 'monitors', ...args] as const,
 	managers: (query?: PaginatedRequest) =>
 		!query ? ([...omnichannelQueryKeys.all, 'managers'] as const) : ([...omnichannelQueryKeys.all, 'managers', query] as const),
 	livechat: {
@@ -128,6 +137,7 @@ export const usersQueryKeys = {
 	userAutoComplete: (filter: string, federated: boolean, exceptions: string[] = []) =>
 		[...usersQueryKeys.all, 'autocomplete', filter, federated, exceptions] as const,
 	list: (...args: [query?: UsersListStatusParamsGET, tab?: string]) => [...usersQueryKeys.all, 'list', ...args] as const,
+	adminInfo: (query: { userId: IUser['_id'] }) => [...usersQueryKeys.all, query, 'admin'] as const,
 };
 
 export const teamsQueryKeys = {
@@ -144,6 +154,9 @@ export const teamsQueryKeys = {
 export const appsQueryKeys = {
 	all: ['apps'] as const,
 	slashCommands: () => [...appsQueryKeys.all, 'slashCommands'] as const,
+	actionButtons: (...args: [status?: string]) => [...appsQueryKeys.all, 'actionButtons', ...args] as const,
+	translations: () => [...appsQueryKeys.all, 'translations'] as const,
+	versions: (appId: string) => [...appsQueryKeys.all, appId, 'versions'] as const,
 };
 
 export const ABACQueryKeys = {
@@ -176,6 +189,8 @@ export const ABACQueryKeys = {
 export const callHistoryQueryKeys = {
 	all: ['call-history'] as const,
 	info: (callId?: string) => [...callHistoryQueryKeys.all, 'info', callId] as const,
+	list: (query: { sort: string; direction?: string; state?: string[]; filter?: string }) =>
+		[...callHistoryQueryKeys.all, 'list', query] as const,
 };
 
 export const marketplaceQueryKeys = {
@@ -215,6 +230,7 @@ export const videoConferenceQueryKeys = {
 export const messagesQueryKeys = {
 	all: ['messages'] as const,
 	message: (messageId: IMessage['_id']) => [...messagesQueryKeys.all, messageId] as const,
+	subscription: (messageId: IMessage['_id']) => [...messagesQueryKeys.message(messageId), 'subscription'] as const,
 };
 
 export const managedPresenceQueryKeys = {

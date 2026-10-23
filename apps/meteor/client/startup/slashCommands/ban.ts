@@ -6,7 +6,7 @@ const invalidateMembers = (err: unknown, _result: unknown, params: { msg: { rid:
 	if (err) return;
 
 	void queryClient.invalidateQueries({ queryKey: roomsQueryKeys.bannedUsers(params.msg.rid) });
-	void queryClient.invalidateQueries({ queryKey: [...roomsQueryKeys.room(params.msg.rid), 'members'] });
+	void queryClient.invalidateQueries({ queryKey: roomsQueryKeys.allMembers(params.msg.rid) });
 };
 
 slashCommands.add({
