@@ -5,14 +5,12 @@ import path from 'node:path';
 import { Readable } from 'node:stream';
 
 import type { ObjectId } from 'bson';
-import { MongoInternals } from 'meteor/mongo';
 import { NpmModuleMongodb } from 'meteor/npm-mongo';
 import mime from 'mime-type/with-db';
 import mkdirp from 'mkdirp';
 
 import { sanitizeFileName } from './functions/sanitizeFileName';
-
-const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
+import { db } from '../../../database/utils';
 
 type IFile = {
 	buffer: Buffer;
