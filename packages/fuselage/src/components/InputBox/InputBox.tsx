@@ -12,6 +12,8 @@ export type InputBoxProps<T extends HTMLInputElement | HTMLSelectElement | HTMLT
 	RefAttributes<T> & {
 		startAddon?: ReactNode;
 		endAddon?: ReactNode;
+		/** Reduces the end padding so a button in `endAddon` sits flush with the input's edge. */
+		endAddonFlush?: boolean;
 		input?: ReactNode;
 		multiple?: boolean;
 		error?: string;
@@ -58,6 +60,7 @@ function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaE
 	className,
 	startAddon,
 	endAddon,
+	endAddonFlush,
 	error,
 	hidden,
 	invisible,
@@ -133,6 +136,8 @@ function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaE
 			hidden={hidden}
 			invisible={invisible}
 			small={small}
+			textarea={type === 'textarea'}
+			endAddonFlush={endAddonFlush}
 		>
 			{startAddon && <InputBoxAddon>{startAddon}</InputBoxAddon>}
 			<Input

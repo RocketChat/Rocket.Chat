@@ -315,6 +315,40 @@
 	-webkit-text-fill-color: var(--rcx-input-colors-disabled-color, var(--rcx-color-font-disabled, #cbced1));
 }
 
+/* Browsers pad the date and time fields vertically, which makes the input taller than its line height */
+.rcx-input-box--type-date::-webkit-datetime-edit,
+.rcx-input-box--type-date::-webkit-datetime-edit-fields-wrapper,
+.rcx-input-box--type-date::-webkit-datetime-edit-year-field,
+.rcx-input-box--type-date::-webkit-datetime-edit-month-field,
+.rcx-input-box--type-date::-webkit-datetime-edit-day-field,
+.rcx-input-box--type-date::-webkit-datetime-edit-hour-field,
+.rcx-input-box--type-date::-webkit-datetime-edit-minute-field,
+.rcx-input-box--type-date::-webkit-datetime-edit-second-field,
+.rcx-input-box--type-date::-webkit-datetime-edit-millisecond-field,
+.rcx-input-box--type-date::-webkit-datetime-edit-meridiem-field,
+.rcx-input-box--type-time::-webkit-datetime-edit,
+.rcx-input-box--type-time::-webkit-datetime-edit-fields-wrapper,
+.rcx-input-box--type-time::-webkit-datetime-edit-year-field,
+.rcx-input-box--type-time::-webkit-datetime-edit-month-field,
+.rcx-input-box--type-time::-webkit-datetime-edit-day-field,
+.rcx-input-box--type-time::-webkit-datetime-edit-hour-field,
+.rcx-input-box--type-time::-webkit-datetime-edit-minute-field,
+.rcx-input-box--type-time::-webkit-datetime-edit-second-field,
+.rcx-input-box--type-time::-webkit-datetime-edit-millisecond-field,
+.rcx-input-box--type-time::-webkit-datetime-edit-meridiem-field,
+.rcx-input-box--type-datetime-local::-webkit-datetime-edit,
+.rcx-input-box--type-datetime-local::-webkit-datetime-edit-fields-wrapper,
+.rcx-input-box--type-datetime-local::-webkit-datetime-edit-year-field,
+.rcx-input-box--type-datetime-local::-webkit-datetime-edit-month-field,
+.rcx-input-box--type-datetime-local::-webkit-datetime-edit-day-field,
+.rcx-input-box--type-datetime-local::-webkit-datetime-edit-hour-field,
+.rcx-input-box--type-datetime-local::-webkit-datetime-edit-minute-field,
+.rcx-input-box--type-datetime-local::-webkit-datetime-edit-second-field,
+.rcx-input-box--type-datetime-local::-webkit-datetime-edit-millisecond-field,
+.rcx-input-box--type-datetime-local::-webkit-datetime-edit-meridiem-field {
+	padding-block: 0;
+}
+
 /* Firefox shows its own non-hideable calendar icon on date inputs; `-moz-orient` only exists there */
 @supports (-moz-orient: inline) {
 	.rcx-input-box--type-date + .rcx-input-box__addon {

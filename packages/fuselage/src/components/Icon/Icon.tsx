@@ -3,6 +3,7 @@ import nameToCharacterMapping from '@rocket.chat/icons';
 import { styled, Text, type GetProps } from '@tamagui/web';
 import type { RefAttributes } from 'react';
 
+import type { statusColors, textIconColors } from '../../Theme';
 import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import type { BoxProps } from '../Box';
 import { useBoxTransform } from '../Box/BoxTransforms';
@@ -11,6 +12,7 @@ import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 export const IconFrame = styled(Text, {
 	render: 'i',
 	display: 'inline-block',
+	flexShrink: 0,
 	whiteSpace: 'inherit',
 	wordWrap: 'inherit',
 	userSelect: 'none',
@@ -25,10 +27,17 @@ export const IconFrame = styled(Text, {
 	textRendering: 'auto',
 });
 
-export type IconProps = Omit<BoxProps, 'ref' | 'name' | 'size'> &
+type FontColor<T> = T extends `font-${infer Color}` ? Color : never;
+
+/** A semantic text or status font token. */
+export type IconColor = FontColor<keyof typeof textIconColors> | keyof typeof statusColors;
+
+export type IconProps = Omit<BoxProps, 'ref' | 'name' | 'size' | 'color'> &
 	RefAttributes<HTMLElement> & {
 		name: IconName;
 		size?: BoxProps['width'];
+		/** The colour of the glyph; without it, the icon takes the colour of the text around it. */
+		color?: IconColor;
 	};
 
 function Icon({ name, size, ...props }: IconProps) {

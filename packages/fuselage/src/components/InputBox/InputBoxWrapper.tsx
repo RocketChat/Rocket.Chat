@@ -25,9 +25,11 @@ const InputBoxWrapperFrame = styled(Text, {
 	display: 'flex',
 	flexDirection: 'row',
 	flexWrap: 'nowrap',
-	alignItems: 'flex-start',
+	// Centred on the 40px row it always holds an input for, as `:has(> .rcx-input-box)` did
+	alignItems: 'center',
 	flexGrow: 1,
 	minWidth: size('x144'),
+	minHeight: size('x40'),
 	paddingBlock: spacing('x8'),
 	paddingInline: `calc(${spacing('x16')} - ${borderWidth('default')})`,
 	verticalAlign: 'baseline',
@@ -35,10 +37,20 @@ const InputBoxWrapperFrame = styled(Text, {
 	outlineWidth: 0,
 
 	variants: {
+		endAddonFlush: {
+			true: {
+				paddingBlock: spacing('x4'),
+				paddingInlineEnd: spacing('x4'),
+			},
+		},
+		textarea: {
+			true: { alignItems: 'flex-start' },
+		},
 		small: {
 			true: {
 				alignItems: 'center',
 				minWidth: size('x112'),
+				minHeight: size('x28'),
 				maxHeight: size('x28'),
 				paddingBlock: spacing('x4'),
 				paddingInline: spacing('x8'),
@@ -47,13 +59,18 @@ const InputBoxWrapperFrame = styled(Text, {
 	} as const,
 });
 
-export type InputBoxWrapperProps = BoxProps & { small?: boolean };
+export type InputBoxWrapperProps = BoxProps & { small?: boolean; textarea?: boolean; endAddonFlush?: boolean };
 
-const InputBoxWrapper = ({ small, ...props }: InputBoxWrapperProps) => (
+const InputBoxWrapper = ({ small, textarea, endAddonFlush, ...props }: InputBoxWrapperProps) => (
 	<InputBoxWrapperContext.Provider value={true}>
 		<InputBoxWrapperFrame
+			endAddonFlush={endAddonFlush}
+			textarea={textarea}
 			small={small}
-			{...(useTamaguiBoxProps({ animated: true, ...props }, 'rcx-label rcx-input-box__wrapper') as GetProps<typeof InputBoxWrapperFrame>)}
+			{...(useTamaguiBoxProps(
+				{ 'animated': true, 'rcx-input-box__wrapper--end-addon-flush': endAddonFlush, ...props },
+				'rcx-label rcx-input-box__wrapper',
+			) as GetProps<typeof InputBoxWrapperFrame>)}
 		/>
 	</InputBoxWrapperContext.Provider>
 );

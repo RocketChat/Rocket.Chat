@@ -67,6 +67,11 @@ const RequiredMark = () => {
 
 const LabelContext = createContext(false);
 
+// `FieldLabel` marks its label with this class; the `rcx-field__label` prop is the older spelling
+const isFieldLabel = (props: { className?: unknown }) =>
+	Boolean((props as Record<string, unknown>)['rcx-field__label']) ||
+	[props.className].flat().some((name) => typeof name === 'string' && name.split(' ').includes('rcx-field__label'));
+
 export type LabelProps = Omit<BoxProps, 'ref'> &
 	RefAttributes<HTMLElement> & {
 		disabled?: boolean;
@@ -89,7 +94,7 @@ function Label({ disabled, is, required, children, ...props }: LabelProps) {
 		<LabelContext.Provider value={true}>
 			<LabelFrame
 				dimmed={disabled}
-				field={Boolean((props as Record<string, unknown>)['rcx-field__label'])}
+				field={isFieldLabel(props)}
 				{...(labelProps as GetProps<typeof LabelFrame>)}
 			>
 				{children}

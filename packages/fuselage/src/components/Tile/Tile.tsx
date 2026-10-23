@@ -52,9 +52,13 @@ const TileFrame = styled(Text, {
 	} as const,
 });
 
-export type TileProps = Omit<BoxProps, 'ref'> & RefAttributes<HTMLElement>;
+export type TileProps = Omit<BoxProps, 'ref'> &
+	RefAttributes<HTMLElement> & {
+		/** Drops the default padding, for a surface whose content brings its own. */
+		flush?: boolean;
+	};
 
-function Tile({ elevation = '1', padding = 16, ...props }: TileProps) {
+function Tile({ elevation = '1', flush, padding = flush ? undefined : 16, ...props }: TileProps) {
 	const transformFn = useBoxTransform();
 	const boxProps = useArrayLikeClassNameProp({ padding, ...props });
 	const frameProps = useTamaguiBoxProps(transformFn ? transformFn(boxProps) : boxProps, `rcx-tile rcx-tile--elevation-${elevation}`);

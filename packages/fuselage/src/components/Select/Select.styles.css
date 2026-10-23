@@ -241,6 +241,19 @@
 	color: var(--rcx-input-colors-disabled-color, var(--rcx-color-font-disabled, #cbced1));
 }
 
+.rcx-select__filter {
+	margin-inline: 0.25rem;
+}
+
+.rcx-select__chip {
+	overflow: hidden;
+
+	max-width: 9.375rem;
+
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
 .rcx-select__wrapper {
 	align-items: center;
 	flex-grow: 1;
@@ -264,4 +277,19 @@
 	transition: none;
 
 	opacity: 0;
+}
+
+/* The trigger's chevron, which keeps the label colour whatever the value shows */
+.rcx-select > .rcx-icon {
+	color: var(--rcx-color-font-titles-labels, #1f2329);
+}
+
+/* Beats the spacing `.rcx-input-box + .rcx-select__addon` gets next to the filter input */
+.rcx-select .rcx-select__addon {
+	margin-inline: 0.25rem;
+}
+
+/* The autocomplete input comes after the chips of the picked values */
+.rcx-autocomplete__input {
+	order: 1;
 }

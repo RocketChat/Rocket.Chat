@@ -107,6 +107,7 @@ const TagFrame = styled(Text, {
 	overflow: 'hidden',
 	justifyContent: 'center',
 	alignItems: 'center',
+	gap: spacing('x4'),
 	margin: 0,
 	paddingBlock: spacing('x2'),
 	paddingInline: spacing('x4'),

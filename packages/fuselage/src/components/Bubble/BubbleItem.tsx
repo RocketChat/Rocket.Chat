@@ -73,7 +73,7 @@ export const BubbleItem = ({ secondary = false, small, segment, label, icon, ...
 		withIcon={Boolean(icon) && !segment}
 		segment={segment}
 	>
-		{icon && <Icon name={icon} size='x16' marginInlineEnd={8} />}
+		{icon && <Icon name={icon} size='x16' />}
 		{label && <BubbleLabel>{label}</BubbleLabel>}
 	</BubbleItemFrame>
 );

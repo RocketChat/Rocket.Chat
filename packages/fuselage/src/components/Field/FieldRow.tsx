@@ -7,11 +7,14 @@ import { FieldContext } from './Field';
 import { FieldRowFrame } from './FieldFrames';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-export type FieldRowProps = BoxProps;
+export type FieldRowProps = BoxProps & {
+	/** Packs the row's content at the end of the line. */
+	justify?: 'end';
+};
 
-const FieldRow = (props: FieldRowProps) => {
-	const frameProps = useTamaguiBoxProps({ ...props }, 'rcx-field__row');
-	const component = <FieldRowFrame {...(frameProps as GetProps<typeof FieldRowFrame>)} />;
+const FieldRow = ({ justify, ...props }: FieldRowProps) => {
+	const frameProps = useTamaguiBoxProps({ 'rcx-field__row--justify-end': justify === 'end', ...props }, 'rcx-field__row');
+	const component = <FieldRowFrame justify={justify} {...(frameProps as GetProps<typeof FieldRowFrame>)} />;
 
 	if (process.env.NODE_ENV === 'development') {
 		return (

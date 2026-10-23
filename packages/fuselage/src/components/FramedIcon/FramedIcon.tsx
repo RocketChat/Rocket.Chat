@@ -33,7 +33,7 @@ export type FramedIconProps = {
 	danger?: boolean;
 	neutral?: boolean;
 	icon: Keys;
-} & Omit<AllHTMLAttributes<HTMLElement>, 'is'>;
+} & Omit<AllHTMLAttributes<HTMLElement>, 'is' | 'color'>;
 
 const FramedIcon = ({ info, success, warning, danger, neutral, icon, ...props }: FramedIconProps) => {
 	const frameProps = useTamaguiBoxProps(
