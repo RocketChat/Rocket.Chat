@@ -1,0 +1,22 @@
+apps/meteor/client/meteor/accounts.ts
+  s_fc29804799b039::t_4c9e2d31a97b35 253
+apps/meteor/client/meteor/accounts.spec.ts
+  s_fc29804799b039::t_33cbf39444254e 1-6,8-23,25-55
+  s_fc29804799b039::t_25ca6f5341fc5c 7,24
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "ca3e39a10ce197a668668c1891588bf55f16395a",
+  "prompts": {},
+  "sessions": {
+    "s_fc29804799b039": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "17673cbb-9f1f-4703-b718-9f3e4f880195",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
