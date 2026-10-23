@@ -20,19 +20,22 @@ const ChannelDesertionTableRow = ({ room, onChange, selected, lastOwnerWarning }
 	return (
 		<GenericTableRow action>
 			<GenericTableCell maxWidth='x300' withTruncatedText>
-				<CheckBox id={checkboxId} checked={selected} onChange={handleChange} disabled={isLastOwner} />
-				<Box
-					is='label'
-					htmlFor={checkboxId}
-					display='inline-flex'
-					alignItems='center'
-					gap={8}
-					paddingInline={8}
-					style={{ cursor: isLastOwner ? undefined : 'pointer' }}
-				>
-					<Icon name={room.t === 'p' ? 'hashtag-lock' : 'hashtag'} />
-					{fname ?? name}
-					{isLastOwner && <Icon size='x16' name='info-circled' color='danger' title={lastOwnerWarning} />}
+				<Box display='flex' alignItems='center'>
+					<CheckBox id={checkboxId} checked={selected} onChange={handleChange} disabled={isLastOwner} />
+					<Box
+						is='label'
+						htmlFor={checkboxId}
+						display='flex'
+						alignItems='center'
+						gap={8}
+						paddingInline={8}
+						withTruncatedText
+						style={{ cursor: isLastOwner ? undefined : 'pointer' }}
+					>
+						<Icon name={room.t === 'p' ? 'hashtag-lock' : 'hashtag'} />
+						<Box withTruncatedText>{fname ?? name}</Box>
+						{isLastOwner && <Icon size='x16' name='info-circled' color='danger' title={lastOwnerWarning} />}
+					</Box>
 				</Box>
 			</GenericTableCell>
 			<GenericTableCell align='end' withTruncatedText>
