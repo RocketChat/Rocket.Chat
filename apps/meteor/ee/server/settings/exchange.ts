@@ -11,7 +11,7 @@ const ewsOnly = [...serverOnly, { _id: 'Exchange_Sync_Provider', value: 'ews' }]
 const contactsOnly = [...serverOnly, { _id: 'Exchange_Contacts_Sync_Enabled', value: true }];
 
 export function addSettings(): Promise<void> {
-	return settingsRegistry.addGroup('Outlook_Calendar', async function () {
+	return settingsRegistry.addGroup('Microsoft_Exchange', async function () {
 		await this.with(
 			{
 				enterprise: true,

@@ -29,7 +29,7 @@ const SettingsGroupSelector = ({ groupId, onClickBack }: SettingsGroupSelectorPr
 		return <LDAPGroupPage {...group} onClickBack={onClickBack} />;
 	}
 
-	if (groupId === 'Outlook_Calendar') {
+	if (groupId === 'Microsoft_Exchange') {
 		return <ExchangeGroupPage {...group} onClickBack={onClickBack} />;
 	}
 
