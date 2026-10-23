@@ -19,7 +19,6 @@ export default [
 		languageOptions: {
 			globals: {
 				__meteor_runtime_config__: 'readonly',
-				Assets: 'readonly',
 				chrome: 'readonly',
 				jscolor: 'readonly',
 				...globals.browser,
