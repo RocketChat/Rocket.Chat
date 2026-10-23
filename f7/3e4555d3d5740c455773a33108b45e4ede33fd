@@ -1,0 +1,19 @@
+ee/packages/xmpp-server/src/types/ltx.d.ts
+  s_f1620061840e4c::t_57948880329d63 60
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "f73e4555d3d5740c455773a33108b45e4ede33fd",
+  "prompts": {},
+  "sessions": {
+    "s_f1620061840e4c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4f9aaac7-c01d-493c-b6e1-eb0d85ca2014",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

@@ -1,0 +1,82 @@
+apps/meteor/client/cachedStores/SubscriptionsCachedStore.ts
+  s_f1620061840e4c::t_cd0858242a4d77 68
+.changeset/native-xmpp-server.md
+  s_f1620061840e4c::t_cd0858242a4d77 1-15
+apps/meteor/client/navbar/NavBarPagesGroup/actions/CreateDirectMessage.tsx
+  s_f1620061840e4c::t_cd0858242a4d77 27
+apps/meteor/lib/publishFields.ts
+  s_f1620061840e4c::t_cd0858242a4d77 122
+apps/meteor/server/lib/rooms/createRoom.ts
+  s_f1620061840e4c::t_cd0858242a4d77 5-12,14,93-97
+  s_0b9c785848afbd::t_e80f525ab852bc 3,98-99
+apps/meteor/server/lib/rooms/roomTypes/private.ts
+  s_f1620061840e4c::t_cd0858242a4d77 2,53
+apps/meteor/server/lib/rooms/roomTypes/public.ts
+  s_f1620061840e4c::t_cd0858242a4d77 3,53
+packages/rest-typings/src/v1/channels/ChannelsCreateProps.ts
+  s_f1620061840e4c::t_cd0858242a4d77 15,64
+apps/meteor/server/lib/rooms/invitesByRawUsername.ts
+  s_f1620061840e4c::t_cd0858242a4d77 2,5
+packages/i18n/src/locales/en.i18n.json
+  s_f1620061840e4c::t_cd0858242a4d77 7677-7696
+apps/meteor/client/views/room/Header/ParentRoom/ParentDiscussion/ParentDiscussionRoute.tsx
+  s_f1620061840e4c::t_cd0858242a4d77 30
+apps/meteor/client/lib/rooms/roomTypes/public.ts
+  s_f1620061840e4c::t_cd0858242a4d77 2,53,88
+apps/meteor/client/hooks/useRoomIcon.tsx
+  s_f1620061840e4c::t_cd0858242a4d77 2,18
+apps/meteor/package.json
+  s_f1620061840e4c::t_cd0858242a4d77 172,178,255
+packages/rest-typings/src/v1/groups/GroupsCreateProps.ts
+  s_f1620061840e4c::t_cd0858242a4d77 16,67-68
+apps/meteor/client/lib/rooms/roomTypes/direct.ts
+  s_f1620061840e4c::t_cd0858242a4d77 2,125
+apps/meteor/client/views/room/Header/ParentRoom/ParentDiscussion/ParentDiscussion.tsx
+  s_f1620061840e4c::t_cd0858242a4d77 2,11,15
+apps/meteor/client/lib/rooms/roomTypes/private.ts
+  s_f1620061840e4c::t_cd0858242a4d77 2,55,99
+apps/meteor/ee/server/hooks/xmpp/index.ts
+  s_f1620061840e4c::t_cd0858242a4d77 1-217
+apps/meteor/client/components/UserAutoCompleteMultiple/UserAutoCompleteMultiple.tsx
+  s_f1620061840e4c::t_cd0858242a4d77 3,19-20,37,45,57-58
+apps/meteor/client/views/room/contextualBar/RoomMembers/AddUsers/AddUsers.tsx
+  s_f1620061840e4c::t_cd0858242a4d77 2,41,134
+apps/meteor/client/cachedStores/RoomsCachedStore.ts
+  s_f1620061840e4c::t_cd0858242a4d77 56
+apps/meteor/client/hooks/useRoomIcon.spec.ts
+  s_f1620061840e4c::t_cd0858242a4d77 37-42,62
+apps/meteor/lib/rooms/adminFields.ts
+  s_f1620061840e4c::t_cd0858242a4d77 33
+apps/meteor/server/settings/federation-service.ts
+  s_f1620061840e4c::t_cd0858242a4d77 2-3,156-236
+apps/meteor/ee/server/index.ts
+  s_f1620061840e4c::t_cd0858242a4d77 19
+apps/meteor/client/navbar/NavBarPagesGroup/actions/CreateChannelModal.tsx
+  s_f1620061840e4c::t_cd0858242a4d77 50,100-102,122,136,158,163-169,172-177,211-220,231,276-278,285-298,305,410-412,418
+packages/ui-contexts/src/types/SubscriptionWithRoom.ts
+  s_0b9c785848afbd::t_e80f525ab852bc 17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ab958bb1322f6041a7c68a2064927ed5705f653f",
+  "prompts": {},
+  "sessions": {
+    "s_0b9c785848afbd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1587771d-1045-4797-b980-067c06ba506f",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    },
+    "s_f1620061840e4c": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4f9aaac7-c01d-493c-b6e1-eb0d85ca2014",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

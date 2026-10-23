@@ -1,0 +1,54 @@
+apps/meteor/client/views/room/hooks/useCanManageRoomAbacAttributes.ts
+  s_802b7158293251::t_beee385cbcede9 2,21
+apps/meteor/lib/rooms/isRoomAbacLocked.test.ts
+  s_802b7158293251::t_ba7cf65e12a18f 57-64
+apps/meteor/client/navbar/NavBarPagesGroup/actions/CreateChannelModal.spec.tsx
+  s_802b7158293251::t_12fb37cae0575a 185-223
+apps/meteor/client/navbar/NavBarPagesGroup/actions/CreateChannelModal.tsx
+  s_802b7158293251::t_b0ab9ca1b53bea 138,150,155,367,416
+apps/meteor/ee/server/hooks/abac/beforeCreateRoom.test.ts
+  s_802b7158293251::t_23616ebcc66761 41-42
+  s_802b7158293251::t_ba7cf65e12a18f 84-87,173-176
+  s_802b7158293251::t_7ab441cd00cd11 177
+apps/meteor/ee/server/hooks/xmpp/index.ts
+  s_802b7158293251::t_b17d6375cc5ba6 114-115
+ee/packages/xmpp-server/docs/specs/hosted-muc.md
+  s_802b7158293251::t_dd8ad3fa1353da 51-55
+ee/packages/xmpp-server/docs/specs/remote-muc.md
+  s_802b7158293251::t_dd8ad3fa1353da 70-73
+apps/meteor/client/views/room/hooks/useIsRoomAbacLocked.ts
+  s_802b7158293251::t_b0ab9ca1b53bea 16-18
+  s_802b7158293251::t_beee385cbcede9 2,12-15
+apps/meteor/lib/rooms/isRoomAbacLocked.ts
+  s_802b7158293251::t_beee385cbcede9 2,4,16
+ee/packages/xmpp-server/docs/architecture.md
+  s_802b7158293251::t_dd8ad3fa1353da 242-245
+ee/packages/abac/src/helper.ts
+  s_802b7158293251::t_beee385cbcede9 12,413
+apps/meteor/client/views/room/hooks/useCanManageRoomAbacAttributes.spec.ts
+  s_802b7158293251::t_ba7cf65e12a18f 84-85,90
+  s_802b7158293251::t_23616ebcc66761 86-89
+ee/packages/abac/src/service.spec.ts
+  s_802b7158293251::t_ba7cf65e12a18f 914-918
+apps/meteor/ee/server/hooks/abac/beforeCreateRoom.ts
+  s_802b7158293251::t_beee385cbcede9 35,65
+  s_802b7158293251::t_b0ab9ca1b53bea 4-11
+apps/meteor/tests/mocks/client/mockAbacRoomCreationRoot.ts
+  s_802b7158293251::t_12fb37cae0575a 8,22,37,45,52
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "eb5c61f00d2f7c1dae11195bb208018b5208ac30",
+  "prompts": {},
+  "sessions": {
+    "s_802b7158293251": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "994338f7-25cc-476c-8b7a-44bb02a58f50",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
