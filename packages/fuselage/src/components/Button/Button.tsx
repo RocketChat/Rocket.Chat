@@ -72,6 +72,18 @@ function Button({
 		}) ||
 		{};
 
+	const inactiveLinkProps =
+		is === 'a' && (disabled || loading)
+			? {
+					'href': undefined,
+					'role': 'link',
+					'onClick': undefined,
+					'onClickCapture': undefined,
+					'tabIndex': -1,
+					'aria-disabled': true,
+				}
+			: {};
+
 	const kindAndVariantProps = useMemo(() => {
 		const kind =
 			variant ||
@@ -116,6 +128,7 @@ function Button({
 			ref={ref}
 			{...extraProps}
 			{...props}
+			{...inactiveLinkProps}
 		>
 			<span className='rcx-button--content'>
 				{icon && !loading && <Icon size='x16' name={icon} marginInlineEnd={4} />}
