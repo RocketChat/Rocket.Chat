@@ -342,7 +342,7 @@ Source: [`packages/ui-kit/src/blocks/elements/FeedbackButtonsElement.ts`](../../
 
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
-| `type` | `'feedback_buttons'` | yes | A thumbs up and a thumbs down button, to rate the message they close. Only accepted in `context_actions`. |
+| `type` | `'feedback_buttons'` | yes | A thumbs up and a thumbs down button, to rate the message they close. Typed only for `context_actions`; the renderer does not check the container, so it also draws inside other blocks such as `actions`. |
 | `positive_button` | `FeedbackButton` | yes | `{ text: PlainText; value: string; accessibility_label?: string }`. `text` names the button and shows on hover; `accessibility_label` replaces it for screen readers. |
 | `negative_button` | `FeedbackButton` | yes | Same shape as `positive_button`. |
 | `appId` | `string` | yes |  |
