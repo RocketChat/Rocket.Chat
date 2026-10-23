@@ -9,27 +9,27 @@ export type FeedbackButtonsElementProps = BlockProps<UiKit.FeedbackButtonsElemen
 
 const FeedbackButtonsElement = ({ block, context }: FeedbackButtonsElementProps) => {
 	const [{ loading }, action] = useUiKitState(block, context);
-	const [chosen, setChosen] = useState<string>();
+	const [chosen, setChosen] = useState<'positive' | 'negative'>();
 
 	const buttons = [
-		{ button: block.positive_button, emoji: '👍' },
-		{ button: block.negative_button, emoji: '👎' },
-	];
+		{ kind: 'positive', button: block.positive_button, emoji: '👍' },
+		{ kind: 'negative', button: block.negative_button, emoji: '👎' },
+	] as const;
 
 	return (
 		<Box display='flex'>
-			{buttons.map(({ button, emoji }) => (
+			{buttons.map(({ kind, button, emoji }) => (
 				<Button
-					key={emoji}
+					key={kind}
 					small
 					square
-					secondary={chosen === button.value}
+					secondary={chosen === kind}
 					disabled={loading}
 					aria-label={button.accessibility_label ?? button.text.text}
-					aria-pressed={chosen === button.value}
+					aria-pressed={chosen === kind}
 					title={button.text.text}
 					onClick={() => {
-						setChosen(button.value);
+						setChosen(kind);
 						void action({ target: { value: button.value } });
 					}}
 					marginInlineEnd={4}

@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event';
 import { UiKitContext } from '../contexts/UiKitContext';
 import { messageParser } from '../surfaces';
 
-const renderFeedback = (action = jest.fn()) => {
+const renderFeedback = (action = jest.fn(), negativeValue = 'bad') => {
 	render(
 		<MockedServerContext>
 			<UiKitContext.Provider value={{ action, updateState: jest.fn(), values: {}, appId: 'app' }}>
@@ -22,7 +22,7 @@ const renderFeedback = (action = jest.fn()) => {
 								positive_button: { text: { type: 'plain_text', text: 'Good answer' }, value: 'good' },
 								negative_button: {
 									text: { type: 'plain_text', text: 'Bad answer' },
-									value: 'bad',
+									value: negativeValue,
 									accessibility_label: 'Mark this answer as bad',
 								},
 							},
@@ -49,6 +49,15 @@ it('sends the clicked button value and marks it as pressed', async () => {
 	await userEvent.click(screen.getByRole('button', { name: 'Good answer' }));
 
 	expect(action).toHaveBeenCalledWith(expect.objectContaining({ actionId: 'rate', value: 'good' }), expect.anything());
+	expect(screen.getByRole('button', { name: 'Good answer' })).toHaveAttribute('aria-pressed', 'true');
+	expect(screen.getByRole('button', { name: 'Mark this answer as bad' })).toHaveAttribute('aria-pressed', 'false');
+});
+
+it('marks only the clicked button as pressed when both carry the same value', async () => {
+	renderFeedback(jest.fn(), 'good');
+
+	await userEvent.click(screen.getByRole('button', { name: 'Good answer' }));
+
 	expect(screen.getByRole('button', { name: 'Good answer' })).toHaveAttribute('aria-pressed', 'true');
 	expect(screen.getByRole('button', { name: 'Mark this answer as bad' })).toHaveAttribute('aria-pressed', 'false');
 });

@@ -349,7 +349,7 @@ Source: [`packages/ui-kit/src/blocks/elements/FeedbackButtonsElement.ts`](../../
 | `blockId` | `string` | yes |  |
 | `actionId` | `string` | yes |  |
 
-A click sends a `blockAction` whose `value` is the clicked button's `value`, and marks that button as pressed.
+A click sends a `blockAction` whose `value` is the clicked button's `value`, and marks that button as pressed. The pressed state lives only in the rendered message: it is gone after a reload or a room switch, and it stays even when the app fails to handle the action. An app that must not count a second rating dedupes by user and message, or replaces the block once rated.
 
 ### `icon`
 
