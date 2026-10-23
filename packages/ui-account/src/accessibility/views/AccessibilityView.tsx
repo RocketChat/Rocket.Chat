@@ -112,27 +112,23 @@ const AccessibilityView = ({ vm: { values: preferencesValues, displayRolesEnable
 						<AccordionItem defaultExpanded={true} title={t('Theme')}>
 							{themes.map(({ id, title, description }, index) => {
 								return (
-									<Field
-										key={id}
-										paddingBlockEnd={themes.length - 1 ? undefined : 'x24'}
-										paddingBlockStart={index === 0 ? undefined : 'x24'}
-									>
-										<FieldRow>
-											<FieldLabel display='flex' alignItems='center'>
-												{t(title)}
-											</FieldLabel>
-											<Controller
-												control={control}
-												name='themeAppearence'
-												render={({ field: { value, onChange, ...field } }) => (
-													<RadioButton id={id} {...field} onChange={() => onChange(id)} checked={value === id} />
-												)}
-											/>
-										</FieldRow>
-										<FieldHint marginBlockStart={12} style={{ whiteSpace: 'break-spaces' }}>
-											{t(description)}
-										</FieldHint>
-									</Field>
+									<Box key={id} paddingBlockEnd={themes.length - 1 ? undefined : 'x24'} paddingBlockStart={index === 0 ? undefined : 'x24'}>
+										<Field>
+											<FieldRow>
+												<FieldLabel>{t(title)}</FieldLabel>
+												<Controller
+													control={control}
+													name='themeAppearence'
+													render={({ field: { value, onChange, ...field } }) => (
+														<RadioButton id={id} {...field} onChange={() => onChange(id)} checked={value === id} />
+													)}
+												/>
+											</FieldRow>
+											<Box paddingBlockStart={12}>
+												<FieldHint style={{ whiteSpace: 'break-spaces' }}>{t(description)}</FieldHint>
+											</Box>
+										</Field>
+									</Box>
 								);
 							})}
 						</AccordionItem>
@@ -142,11 +138,15 @@ const AccessibilityView = ({ vm: { values: preferencesValues, displayRolesEnable
 									<legend>{t('Adjustable_layout')}</legend>
 								</VisuallyHidden>
 								<Field>
-									<FieldLabel marginBlockEnd={12}>{t('Font_size')}</FieldLabel>
+									<Box paddingBlockEnd={12}>
+										<FieldLabel>{t('Font_size')}</FieldLabel>
+									</Box>
 									<FieldRow>
 										<Controller control={control} name='fontSize' render={({ field }) => <Select {...field} options={fontSizes(t)} />} />
 									</FieldRow>
-									<FieldDescription marginBlock={12}>{t('Adjustable_font_size_description')}</FieldDescription>
+									<Box paddingBlock={12}>
+										<FieldDescription>{t('Adjustable_font_size_description')}</FieldDescription>
+									</Box>
 								</Field>
 								<Field>
 									<FieldRow>
@@ -157,9 +157,9 @@ const AccessibilityView = ({ vm: { values: preferencesValues, displayRolesEnable
 											render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} />}
 										/>
 									</FieldRow>
-									<FieldDescription className={breakSpacesClassName} marginBlock={12}>
-										{t('Mentions_with_@_symbol_description')}
-									</FieldDescription>
+									<Box paddingBlock={12}>
+										<FieldDescription className={breakSpacesClassName}>{t('Mentions_with_@_symbol_description')}</FieldDescription>
+									</Box>
 								</Field>
 								<Field id='clockMode'>
 									<FieldLabel>{t('Message_TimeFormat')}</FieldLabel>
