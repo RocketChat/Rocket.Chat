@@ -15,6 +15,7 @@ import { API } from '../..';
 import { findGuest, findRoom, normalizeHttpHeaderData } from './lib/livechat';
 import { callbacks } from '../../../lib/callbacks';
 import { loadMessageHistory } from '../../../lib/messages/loadMessageHistory';
+import { getLivechatMessageCharacterLimit } from '../../../lib/omnichannel/getLivechatMessageCharacterLimit';
 import { updateMessage, deleteMessage, sendMessage } from '../../../lib/omnichannel/messages';
 import { normalizeMessageFileUpload } from '../../../lib/utils/functions/normalizeMessageFileUpload';
 import { settings } from '../../../settings';
@@ -42,10 +43,8 @@ API.v1.addRoute(
 				throw new Error('room-closed');
 			}
 
-			if (
-				settings.get('Livechat_enable_message_character_limit') &&
-				msg.length > parseInt(settings.get('Livechat_message_character_limit'))
-			) {
+			const characterLimit = getLivechatMessageCharacterLimit();
+			if (characterLimit !== undefined && msg.length > characterLimit) {
 				throw new Error('message-length-exceeds-character-limit');
 			}
 
