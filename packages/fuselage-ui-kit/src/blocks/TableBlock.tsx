@@ -29,7 +29,7 @@ const TableBlock = ({ className, block, surfaceRenderer }: TableBlockProps) => {
 
 			return (
 				<TableCell key={index} align={setting?.align ? alignments[setting.align] : undefined}>
-					<Box fontScale='p2' withTruncatedText={!setting?.is_wrapped}>
+					<Box withTruncatedText={!setting?.is_wrapped}>
 						{isRawTextCell(cell) && cell.text}
 						{isTextObject(cell) && surfaceRenderer.renderTextObject(cell, index, UiKit.BlockContext.NONE)}
 					</Box>
