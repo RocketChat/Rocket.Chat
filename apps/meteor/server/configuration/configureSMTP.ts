@@ -1,4 +1,5 @@
 import { SystemLogger } from '../lib/logger/system';
+import { configureMailTransport } from '../lib/notifications/email/transport';
 import type { ICachedSettings } from '../settings/CachedSettings';
 
 export function configureSMTP(settings: ICachedSettings): void {
@@ -7,28 +8,48 @@ export function configureSMTP(settings: ICachedSettings): void {
 		() => {
 			SystemLogger.info('Updating process.env.MAIL_URL');
 
-			if (!settings.get('SMTP_Host')) {
+			const host = settings.get<string>('SMTP_Host');
+			if (!host) {
 				delete process.env.MAIL_URL;
+				configureMailTransport(undefined);
 				return;
 			}
 
-			process.env.MAIL_URL = `${settings.get('SMTP_Protocol')}://`;
+			const protocol = settings.get<string>('SMTP_Protocol');
+			const username = settings.get<string>('SMTP_Username');
+			const password = settings.get<string>('SMTP_Password');
+			const rawPort = settings.get<string>('SMTP_Port');
+			const port = parseInt(rawPort);
+			const pool = settings.get<boolean>('SMTP_Pool');
+			const ignoreTLS = protocol === 'smtp' && settings.get<boolean>('SMTP_IgnoreTLS');
+			const auth = username && password ? { user: username, pass: password } : undefined;
 
-			if (settings.get('SMTP_Username') && settings.get('SMTP_Password')) {
-				process.env.MAIL_URL += `${encodeURIComponent(settings.get('SMTP_Username'))}:${encodeURIComponent(settings.get('SMTP_Password'))}@`;
+			process.env.MAIL_URL = `${protocol}://`;
+
+			if (auth) {
+				process.env.MAIL_URL += `${encodeURIComponent(username)}:${encodeURIComponent(password)}@`;
 			}
 
-			process.env.MAIL_URL += encodeURIComponent(settings.get('SMTP_Host'));
+			process.env.MAIL_URL += encodeURIComponent(host);
 
-			if (settings.get('SMTP_Port')) {
-				process.env.MAIL_URL += `:${parseInt(settings.get('SMTP_Port'))}`;
+			if (rawPort) {
+				process.env.MAIL_URL += `:${port}`;
 			}
 
-			process.env.MAIL_URL += `?pool=${settings.get('SMTP_Pool')}`;
+			process.env.MAIL_URL += `?pool=${pool}`;
 
-			if (settings.get('SMTP_Protocol') === 'smtp' && settings.get('SMTP_IgnoreTLS')) {
+			if (ignoreTLS) {
 				process.env.MAIL_URL += '&secure=false&ignoreTLS=true';
 			}
+
+			configureMailTransport({
+				host,
+				secure: protocol === 'smtps',
+				pool,
+				...(port && { port }),
+				...(auth && { auth }),
+				...(ignoreTLS && { ignoreTLS }),
+			});
 		},
 	);
 }
