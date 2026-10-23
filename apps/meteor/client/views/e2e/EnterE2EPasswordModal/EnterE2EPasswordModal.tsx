@@ -1,4 +1,4 @@
-import { Box, PasswordInput, Field, FieldGroup, FieldRow, FieldError, FieldLink } from '@rocket.chat/fuselage';
+import { Box, PasswordInput, Field, FieldGroup, FieldRow, FieldError, FieldLink, Stack } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useEffect, useId, useState } from 'react';
@@ -79,45 +79,47 @@ const EnterE2EPasswordModal = ({ onConfirm, onClose, onCancel }: EnterE2EPasswor
 			onClose={onClose}
 			onCancel={onCancel}
 		>
-			<Box>{t('E2E_password_request_text')}</Box>
-			<FieldGroup marginBlockStart={24} width='full'>
-				<Field>
-					<FieldRow>
-						<Controller
-							name='password'
-							control={control}
-							rules={{ required: t('Invalid_pass') }}
-							render={({ field, fieldState: { error, invalid } }) => (
-								<PasswordInput
-									{...field}
-									error={error?.message}
-									aria-invalid={invalid ? 'true' : 'false'}
-									aria-required='true'
-									aria-describedby={error ? `${passwordInputId}-error` : undefined}
-									placeholder={t('Please_enter_E2EE_password')}
-								/>
-							)}
-						/>
-					</FieldRow>
-					{errors.password && (
-						<FieldError id={`${passwordInputId}-error`} role='alert'>
-							{errors.password.message}
-						</FieldError>
-					)}
-					<FieldRow alignSelf='end'>
-						<FieldLink
-							href='#'
-							target={undefined}
-							onClick={(e) => {
-								e.preventDefault();
-								setConfirmResetPassword(true);
-							}}
-						>
-							{t('Forgot_E2EE_Password')}
-						</FieldLink>
-					</FieldRow>
-				</Field>
-			</FieldGroup>
+			<Stack gap={24}>
+				<Box>{t('E2E_password_request_text')}</Box>
+				<FieldGroup>
+					<Field>
+						<FieldRow>
+							<Controller
+								name='password'
+								control={control}
+								rules={{ required: t('Invalid_pass') }}
+								render={({ field, fieldState: { error, invalid } }) => (
+									<PasswordInput
+										{...field}
+										error={error?.message}
+										aria-invalid={invalid ? 'true' : 'false'}
+										aria-required='true'
+										aria-describedby={error ? `${passwordInputId}-error` : undefined}
+										placeholder={t('Please_enter_E2EE_password')}
+									/>
+								)}
+							/>
+						</FieldRow>
+						{errors.password && (
+							<FieldError id={`${passwordInputId}-error`} role='alert'>
+								{errors.password.message}
+							</FieldError>
+						)}
+						<FieldRow justify='end'>
+							<FieldLink
+								href='#'
+								target={undefined}
+								onClick={(e) => {
+									e.preventDefault();
+									setConfirmResetPassword(true);
+								}}
+							>
+								{t('Forgot_E2EE_Password')}
+							</FieldLink>
+						</FieldRow>
+					</Field>
+				</FieldGroup>
+			</Stack>
 		</GenericModal>
 	);
 };

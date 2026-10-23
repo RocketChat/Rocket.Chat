@@ -3,6 +3,8 @@ import { Divider } from '../Divider';
 
 export type NavBarDividerProps = DividerProps;
 
-const NavBarDivider = (props: NavBarDividerProps) => <Divider rcx-navbar-divider vertical {...props} />;
+const NavBarDivider = ({ className, ...props }: NavBarDividerProps) => (
+	<Divider vertical {...props} className={['rcx-navbar-divider', ...(Array.isArray(className) ? className : [className])]} />
+);
 
 export default NavBarDivider;

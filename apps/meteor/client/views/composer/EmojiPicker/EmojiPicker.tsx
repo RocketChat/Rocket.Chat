@@ -1,4 +1,4 @@
-import { TextInput, Icon, Button, Divider } from '@rocket.chat/fuselage';
+import { Box, TextInput, Icon, Button, Divider } from '@rocket.chat/fuselage';
 import { useMediaQuery, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import {
 	EmojiPickerCategoryHeader,
@@ -215,7 +215,9 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 						/>
 					))}
 				</EmojiPickerCategoryHeader>
-				<Divider marginBlock={12} />
+				<Box paddingBlock={12}>
+					<Divider flush />
+				</Box>
 				<EmojiPickerListArea role='tabpanel'>
 					{searching && <SearchingResult searchResults={searchResults} handleSelectEmoji={handleSelectEmoji} />}
 					{!searching && (

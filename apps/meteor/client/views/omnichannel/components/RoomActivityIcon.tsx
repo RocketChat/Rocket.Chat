@@ -12,9 +12,7 @@ const RoomActivityIcon = ({ room }: RoomActivityIconProps) => {
 	const { t } = useTranslation();
 	const isRoomOverMacLimit = useIsRoomOverMacLimit(room);
 
-	return isRoomOverMacLimit ? (
-		<Icon name='warning' verticalAlign='middle' size='x20' color='danger' title={t('Workspace_exceeded_MAC_limit_disclaimer')} />
-	) : null;
+	return isRoomOverMacLimit ? <Icon name='warning' size='x20' color='danger' title={t('Workspace_exceeded_MAC_limit_disclaimer')} /> : null;
 };
 
 export default RoomActivityIcon;

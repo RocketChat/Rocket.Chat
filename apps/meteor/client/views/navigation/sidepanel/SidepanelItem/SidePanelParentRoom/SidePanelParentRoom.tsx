@@ -11,12 +11,7 @@ const SidePanelParentRoom = ({ subscription }: SidePanelParentRoomProps) => {
 	const icon = isPrivateRoom(subscription) ? 'hashtag-lock' : 'hashtag';
 	const roomName = roomCoordinator.getRoomName(subscription?.t, subscription);
 
-	return (
-		<SidePanelTag>
-			{icon && <SidePanelTagIcon icon={{ name: icon }} />}
-			{roomName}
-		</SidePanelTag>
-	);
+	return <SidePanelTag icon={<SidePanelTagIcon icon={{ name: icon }} />}>{roomName}</SidePanelTag>;
 };
 
 export default SidePanelParentRoom;

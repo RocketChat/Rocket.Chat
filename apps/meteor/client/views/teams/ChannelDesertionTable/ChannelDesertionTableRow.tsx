@@ -1,5 +1,5 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
-import { Box, CheckBox, Icon, Margins } from '@rocket.chat/fuselage';
+import { Box, CheckBox, Icon } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericTableRow, GenericTableCell, useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useId } from 'react';
@@ -20,13 +20,22 @@ const ChannelDesertionTableRow = ({ room, onChange, selected, lastOwnerWarning }
 	return (
 		<GenericTableRow action>
 			<GenericTableCell maxWidth='x300' withTruncatedText>
-				<CheckBox id={checkboxId} checked={selected} onChange={handleChange} disabled={isLastOwner} />
-				<Box is='label' htmlFor={checkboxId} style={{ cursor: isLastOwner ? undefined : 'pointer' }}>
-					<Margins inline={8}>
+				<Box display='flex' alignItems='center'>
+					<CheckBox id={checkboxId} checked={selected} onChange={handleChange} disabled={isLastOwner} />
+					<Box
+						is='label'
+						htmlFor={checkboxId}
+						display='flex'
+						alignItems='center'
+						gap={8}
+						paddingInline={8}
+						withTruncatedText
+						style={{ cursor: isLastOwner ? undefined : 'pointer' }}
+					>
 						<Icon name={room.t === 'p' ? 'hashtag-lock' : 'hashtag'} />
-						{fname ?? name}
-						{isLastOwner && <Icon size='x16' name='info-circled' color='status-font-on-danger' title={lastOwnerWarning} />}
-					</Margins>
+						<Box withTruncatedText>{fname ?? name}</Box>
+						{isLastOwner && <Icon size='x16' name='info-circled' color='danger' title={lastOwnerWarning} />}
+					</Box>
 				</Box>
 			</GenericTableCell>
 			<GenericTableCell align='end' withTruncatedText>

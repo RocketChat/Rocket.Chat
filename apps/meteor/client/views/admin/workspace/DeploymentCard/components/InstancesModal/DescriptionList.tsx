@@ -8,16 +8,16 @@ export type DescriptionListProps = {
 };
 
 const DescriptionList = ({ children, title }: DescriptionListProps) => (
-	<>
+	<Box paddingBlockEnd={32}>
 		{title && (
 			<Box display='flex' justifyContent='flex-end' width='30%' paddingInline={8}>
 				{title}
 			</Box>
 		)}
-		<Table striped marginBlockEnd={32} width='full'>
+		<Table striped>
 			<TableBody>{children}</TableBody>
 		</Table>
-	</>
+	</Box>
 );
 
 export default memo(DescriptionList);

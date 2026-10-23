@@ -16,7 +16,7 @@ const VideoConfMessageUserStack = ({ users }: VideoConfMessageUserStackProps) =>
 	const getUserAvatarPath = useUserAvatarPath();
 
 	return (
-		<Box marginInline={4}>
+		<Box>
 			{displayAvatars && (
 				<Box display='flex' alignItems='center' marginInline='neg-x2'>
 					{users.slice(0, MAX_USERS).map(({ name, username }, index) => (

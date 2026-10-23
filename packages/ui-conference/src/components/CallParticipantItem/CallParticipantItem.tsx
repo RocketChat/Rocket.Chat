@@ -1,4 +1,4 @@
-import { Icon, Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemRow, ItemTitle } from '@rocket.chat/fuselage';
+import { Item, ItemActions, ItemContent, ItemDescription, ItemMedia, ItemRow, ItemTitle, Icon } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import type { CallParticipantControlsProps } from '../CallParticipantControls/CallParticipantControls';

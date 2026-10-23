@@ -1,5 +1,5 @@
 import type { IUser, Serialized } from '@rocket.chat/core-typings';
-import { Box, Margins, Tag } from '@rocket.chat/fuselage';
+import { Box, Tag } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 import { memo, useContext, useId } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -174,12 +174,12 @@ const UserInfo = ({
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Email')}</InfoPanelLabel>
 							<UserInfoCopyableText text={email} label={t('Email')}>
-								<Box is='a' withTruncatedText href={`mailto:${email}`}>
-									{email}
-								</Box>
-								<Margins inline={4}>
+								<Box display='flex' alignItems='center' gap={4} paddingInlineEnd={4} minWidth={0}>
+									<Box is='a' withTruncatedText href={`mailto:${email}`}>
+										{email}
+									</Box>
 									<Tag>{verified ? t('Verified') : t('Not_verified')}</Tag>
-								</Margins>
+								</Box>
 							</UserInfoCopyableText>
 						</InfoPanelField>
 					)}

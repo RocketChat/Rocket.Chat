@@ -57,9 +57,9 @@ const PreflightDeviceMenuButton = forwardRef<HTMLButtonElement, PreflightDeviceM
 			aria-label={current ? `${label}: ${current}` : label}
 			title={current || label}
 		>
-			<Icon name={icons[kind]} size='x16' flexShrink={0} />
+			<Icon name={icons[kind]} size='x16' />
 			<Box className={nameStyles}>{current || label}</Box>
-			<Icon name={pressed ? 'chevron-up' : 'chevron-down'} size='x16' flexShrink={0} />
+			<Icon name={pressed ? 'chevron-up' : 'chevron-down'} size='x16' />
 		</Button>
 	);
 });

@@ -25,6 +25,10 @@ $table-selected-border-radius: theme('table-selected-border-radius', lengths.bor
 		background-color: colors.surface(neutral);
 	}
 
+	&__selection-button {
+		flex-shrink: 0;
+	}
+
 	&__wrapper {
 		position: relative;
 	}
@@ -108,6 +112,14 @@ $table-selected-border-radius: theme('table-selected-border-radius', lengths.bor
 				content: '';
 				border-block-end: lengths.border-width(default) solid colors.stroke(light);
 			}
+		}
+
+		&--row-header {
+			word-break: break-word;
+
+			color: colors.font(hint);
+			background-color: colors.surface(light);
+			@include use-font-scale(p2m);
 		}
 
 		&--clickable {

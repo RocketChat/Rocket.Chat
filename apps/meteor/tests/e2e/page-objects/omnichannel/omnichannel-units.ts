@@ -13,20 +13,12 @@ export class OmnichannelUnitFlexTab extends FlexTab {
 		this.listbox = new Listbox(page);
 	}
 
-	private get fieldDepartments() {
+	get inputDepartments() {
 		return this.root.getByLabel('Departments');
 	}
 
-	get inputDepartments() {
-		return this.fieldDepartments.getByRole('textbox');
-	}
-
-	private get fieldMonitors() {
-		return this.root.getByLabel('Monitors');
-	}
-
 	get inputMonitors() {
-		return this.fieldMonitors.getByRole('textbox');
+		return this.root.getByLabel('Monitors');
 	}
 
 	get inputVisibility(): Locator {
@@ -34,11 +26,17 @@ export class OmnichannelUnitFlexTab extends FlexTab {
 	}
 
 	findDepartmentsChipOption(name: string) {
-		return this.fieldDepartments.getByRole('option', { name, exact: true });
+		return this.root
+			.getByRole('listbox')
+			.filter({ has: this.root.page().getByLabel('Departments') })
+			.getByRole('option', { name, exact: true });
 	}
 
 	findMonitorChipOption(name: string) {
-		return this.fieldMonitors.getByRole('option', { name, exact: true });
+		return this.root
+			.getByRole('listbox')
+			.filter({ has: this.root.page().getByLabel('Monitors') })
+			.getByRole('option', { name, exact: true });
 	}
 
 	async selectDepartment(name: string) {

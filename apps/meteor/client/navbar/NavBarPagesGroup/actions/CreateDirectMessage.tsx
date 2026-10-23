@@ -64,38 +64,40 @@ const CreateDirectMessage = ({ onClose, onSuccess }: CreateDirectMessageProps) =
 				<ModalTitle id={`${createDMFormId}-title`}>{t('Create_direct_message')}</ModalTitle>
 				<ModalClose tabIndex={-1} onClick={onClose} />
 			</ModalHeader>
-			<ModalContent marginBlockEnd={2}>
-				<FieldGroup>
-					<Field>
-						<FieldLabel>{t('Direct_message_creation_description')}</FieldLabel>
-						<FieldRow>
-							<Controller
-								name='users'
-								rules={{
-									required: t('Direct_message_creation_error'),
-									validate: (users) =>
-										users.length + 1 > directMaxUsers
-											? t('error-direct-message-max-user-exceeded', { maxUsers: directMaxUsers })
-											: undefined,
-								}}
-								control={control}
-								render={({ field: { name, onChange, value, onBlur } }) => (
-									<UserAutoCompleteMultiple
-										name={name}
-										onChange={onChange}
-										value={value}
-										onBlur={onBlur}
-										federated
-										aria-required='true'
-										error={errors.users?.message}
-									/>
-								)}
-							/>
-						</FieldRow>
-						{errors.users && <FieldError>{errors.users.message}</FieldError>}
-						<FieldHint>{t('Direct_message_creation_description_hint')}</FieldHint>
-					</Field>
-				</FieldGroup>
+			<ModalContent>
+				<Box paddingBlockEnd={2}>
+					<FieldGroup>
+						<Field>
+							<FieldLabel>{t('Direct_message_creation_description')}</FieldLabel>
+							<FieldRow>
+								<Controller
+									name='users'
+									rules={{
+										required: t('Direct_message_creation_error'),
+										validate: (users) =>
+											users.length + 1 > directMaxUsers
+												? t('error-direct-message-max-user-exceeded', { maxUsers: directMaxUsers })
+												: undefined,
+									}}
+									control={control}
+									render={({ field: { name, onChange, value, onBlur } }) => (
+										<UserAutoCompleteMultiple
+											name={name}
+											onChange={onChange}
+											value={value}
+											onBlur={onBlur}
+											federated
+											aria-required='true'
+											error={errors.users?.message}
+										/>
+									)}
+								/>
+							</FieldRow>
+							{errors.users && <FieldError>{errors.users.message}</FieldError>}
+							<FieldHint>{t('Direct_message_creation_description_hint')}</FieldHint>
+						</Field>
+					</FieldGroup>
+				</Box>
 			</ModalContent>
 			<ModalFooter>
 				<ModalFooterControllers>

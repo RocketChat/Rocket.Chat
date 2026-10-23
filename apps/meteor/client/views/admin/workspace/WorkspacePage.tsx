@@ -50,11 +50,9 @@ const WorkspacePage = ({
 			</PageHeader>
 
 			<PageScrollableContentWithShadow padding={16}>
-				<Box marginBlock='none' marginInline='auto' width='full' color='default'>
-					{warningMultipleInstances && (
-						<Callout type='warning' title={t('Multiple_monolith_instances_alert')} marginBlockEnd={16}></Callout>
-					)}
-					<Box marginBlockEnd={16}>
+				<Box display='flex' flexDirection='column' gap={16} marginBlock='none' marginInline='auto' width='full' color='default'>
+					{warningMultipleInstances && <Callout type='warning' title={t('Multiple_monolith_instances_alert')}></Callout>}
+					<Box>
 						<VersionCard serverInfo={serverInfo} />
 					</Box>
 					<CardGrid breakpoints={{ lg: 4, xs: 4, padding: 8 }}>

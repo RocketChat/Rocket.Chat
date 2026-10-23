@@ -90,7 +90,6 @@ const CallHistoryPageFilters = ({ onChangeText, onChangeType, onChangeStates, se
 			<Box minWidth='x224' flexBasis='45%' display='flex' margin='x4' flexGrow={2} flexShrink={0}>
 				<TextInput
 					name='search-rooms'
-					alignItems='center'
 					placeholder={t('Search_calls')}
 					endAddon={<Icon name='magnifier' size='x20' />}
 					onChange={(e: ChangeEvent<HTMLInputElement>) => onChangeText(e.currentTarget.value)}

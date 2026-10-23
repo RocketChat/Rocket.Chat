@@ -87,7 +87,7 @@ const RegisterServerForm = ({
 				<FormContainer>
 					<FieldGroup>
 						<Field>
-							<FieldLabel required display='flex' alignItems='center' htmlFor={emailField}>
+							<FieldLabel required htmlFor={emailField}>
 								{t('form.registeredServerForm.fields.accountEmail.inputLabel')}
 							</FieldLabel>
 							<FieldRow>

@@ -84,18 +84,17 @@ const CodeBlock = ({ lines = [], language }: CodeBlockProps) => {
 
 	return (
 		<Box is='pre' position='relative' data-code-block-wrapper role='region'>
-			<IconButton
-				icon='copy'
-				small
-				className={onHoverStyle}
-				title={t('Copy')}
-				onClick={() => {
-					void handleCopy();
-				}}
-				position='absolute'
-				insetInlineEnd={0}
-				margin={8}
-			/>
+			<Box is='span' position='absolute' insetInlineEnd={0} margin={8}>
+				<IconButton
+					icon='copy'
+					small
+					className={onHoverStyle}
+					title={t('Copy')}
+					onClick={() => {
+						void handleCopy();
+					}}
+				/>
+			</Box>
 			<span className='copyonly'>```</span>
 			<code
 				key={language + code}

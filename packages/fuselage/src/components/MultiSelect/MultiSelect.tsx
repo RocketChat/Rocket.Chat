@@ -144,70 +144,66 @@ function MultiSelect({
 				<Margins inline='x4'>
 					<FlexContainer>
 						<Box is='div'>
-							<Box is='div' display='flex' alignItems='center' flexWrap='wrap' margin='-x8'>
-								<Margins all='x4'>
-									<Anchor
-										ref={anchorRef}
-										disabled={disabled ?? false}
-										onClick={show}
-										onBlur={hide}
-										onKeyDown={handleKeyDown}
-										onKeyUp={handleKeyUp}
-										role='combobox'
-										aria-expanded={visible === AnimatedVisibility.VISIBLE}
-										aria-haspopup='listbox'
-										aria-controls={listboxId}
-										id={id}
-										name={name}
-										aria-label={ariaLabel}
-										aria-labelledby={ariaLabelledBy}
-										aria-describedby={ariaDescribedBy}
-										aria-invalid={ariaInvalid}
-										aria-required={ariaRequired}
-									>
-										{internalValue.length === 0 ? placeholder : null}
-									</Anchor>
-									{internalValue.map((value: SelectOption[0]) => {
-										const currentOption = options.find(([val]) => val === value) as SelectOption;
-										return RenderSelected ? (
-											<RenderSelected
-												value={value}
-												key={value}
-												label={getLabel(currentOption)}
-												onMouseDown={(e) => {
-													prevent(e);
-													internalChanged(currentOption);
-													removeFocusClass();
-												}}
-											>
-												{getLabel(currentOption)}
-											</RenderSelected>
-										) : (
-											<SelectedOptions
-												tabIndex={-1}
-												key={String(value)}
-												onMouseDown={(e) => {
-													prevent(e);
-													internalChanged(currentOption);
-													removeFocusClass();
-												}}
-											>
-												{getLabel(currentOption)}
-											</SelectedOptions>
-										);
-									})}
-								</Margins>
+							<Box is='div' display='flex' alignItems='center' flexWrap='wrap' margin='-x4' gap={4}>
+								<Anchor
+									ref={anchorRef}
+									disabled={disabled ?? false}
+									onClick={show}
+									onBlur={hide}
+									onKeyDown={handleKeyDown}
+									onKeyUp={handleKeyUp}
+									role='combobox'
+									aria-expanded={visible === AnimatedVisibility.VISIBLE}
+									aria-haspopup='listbox'
+									aria-controls={listboxId}
+									id={id}
+									name={name}
+									aria-label={ariaLabel}
+									aria-labelledby={ariaLabelledBy}
+									aria-describedby={ariaDescribedBy}
+									aria-invalid={ariaInvalid}
+									aria-required={ariaRequired}
+								>
+									{internalValue.length === 0 ? placeholder : null}
+								</Anchor>
+								{internalValue.map((value: SelectOption[0]) => {
+									const currentOption = options.find(([val]) => val === value) as SelectOption;
+									return RenderSelected ? (
+										<RenderSelected
+											value={value}
+											key={value}
+											label={getLabel(currentOption)}
+											onMouseDown={(e) => {
+												prevent(e);
+												internalChanged(currentOption);
+												removeFocusClass();
+											}}
+										>
+											{getLabel(currentOption)}
+										</RenderSelected>
+									) : (
+										<SelectedOptions
+											tabIndex={-1}
+											key={String(value)}
+											onMouseDown={(e) => {
+												prevent(e);
+												internalChanged(currentOption);
+												removeFocusClass();
+											}}
+										>
+											{getLabel(currentOption)}
+										</SelectedOptions>
+									);
+								})}
 							</Box>
 						</Box>
 					</FlexContainer>
 				</Margins>
 			</FlexItem>
 			<FlexItem grow={0} shrink={0}>
-				<Margins inline='x4'>
-					<SelectAddon>
-						<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : addonIcon || 'chevron-down'} size='x20' />
-					</SelectAddon>
-				</Margins>
+				<SelectAddon>
+					<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : addonIcon || 'chevron-down'} size='x20' />
+				</SelectAddon>
 			</FlexItem>
 			<PositionAnimated visible={visible} anchor={containerRef}>
 				<_Options

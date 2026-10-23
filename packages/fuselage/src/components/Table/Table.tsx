@@ -1,14 +1,27 @@
 import { Box, type BoxProps } from '../Box';
 
+export type TableColumnWidth = `x${number}` | 'auto';
+
 export type TableProps = BoxProps & {
 	striped?: boolean;
 	sticky?: boolean;
 	fixed?: boolean;
+	/** The width of each column, in order. In a `fixed` table they take precedence over the cells' widths. */
+	columns?: TableColumnWidth[];
 };
 
-const Table = ({ striped, sticky, fixed = false, ...props }: TableProps) => (
+const Table = ({ striped, sticky, fixed = false, columns, children, ...props }: TableProps) => (
 	<Box rcx-table__wrapper>
-		<Box is='table' rcx-table rcx-table--fixed={fixed} rcx-table--sticky={sticky} rcx-table--striped={striped} {...props} />
+		<Box is='table' rcx-table rcx-table--fixed={fixed} rcx-table--sticky={sticky} rcx-table--striped={striped} {...props}>
+			{columns && (
+				<colgroup>
+					{columns.map((width, index) => (
+						<Box is='col' key={index} width={width} />
+					))}
+				</colgroup>
+			)}
+			{children}
+		</Box>
 	</Box>
 );
 

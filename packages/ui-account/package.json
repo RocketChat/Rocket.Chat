@@ -20,7 +20,7 @@
 	"dependencies": {
 		"@react-aria/visually-hidden": "^3.8.27",
 		"@tanstack/react-query": "~5.65.1",
-		"dompurify": "~3.4.16",
+		"dompurify": "~3.4.17",
 		"react-hook-form": "~7.54.2",
 		"react-i18next": "~17.0.16"
 	},

@@ -28,6 +28,10 @@ export default {
 			description: 'Shows a bottom border dividing the tabs from the content below.',
 			table: { defaultValue: { summary: 'true' } },
 		},
+		stretch: {
+			control: 'boolean',
+			description: 'Grows the items to fill the whole width.',
+		},
 	},
 } satisfies Meta<typeof Tabs>;
 
@@ -74,5 +78,18 @@ export const NoUnderline: Story = {
 	args: {
 		selected: true,
 		divider: false,
+	},
+};
+
+export const Stretch: Story = {
+	render: (args) => (
+		<Tabs {...args}>
+			<TabsItem selected>Tab text 1</TabsItem>
+			<TabsItem>Tab text 2</TabsItem>
+			<TabsItem>Tab text 3</TabsItem>
+		</Tabs>
+	),
+	args: {
+		stretch: true,
 	},
 };

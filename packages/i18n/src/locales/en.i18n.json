@@ -6828,6 +6828,10 @@
   },
   "Threads_Description": "Threads allow organized discussions around a specific message.",
   "Threads_unavailable_for_federation": "Threads are unavailable for federated rooms",
+  "Threads_unread_count": {
+    "one": "Threads, {{count}} unread",
+    "other": "Threads, {{count}} unread"
+  },
   "Thursday": "Thursday",
   "Time": "Time",
   "Time_in_minutes": "Time in minutes",

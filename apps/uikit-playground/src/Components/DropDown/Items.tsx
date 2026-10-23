@@ -29,6 +29,7 @@ const Items = ({ label, children, layer, payload }: ItemProps) => {
 			<Box
 				display='flex'
 				alignItems='center'
+				color={hover ? 'pure-white' : 'secondary-info'}
 				className={itemStyle(layer, hover)}
 				onMouseEnter={() => setHover(true)}
 				onMouseLeave={() => setHover(false)}
@@ -45,12 +46,12 @@ const Items = ({ label, children, layer, payload }: ItemProps) => {
 								transition: var(--animation-very-fast);
 							`}
 						>
-							<Chevron width='12px' color={hover ? '#fff' : '#000'} />
+							<Chevron size='x12' />
 						</Box>
 					)}
 				</Box>
 				<Box height='25px' display='flex' alignItems='center'>
-					<ItemsIcon layer={layer} hover={hover} lastNode={children === undefined} />
+					<ItemsIcon layer={layer} lastNode={children === undefined} />
 					<Label className={labelStyle(layer, hover)}>{label}</Label>
 				</Box>
 			</Box>

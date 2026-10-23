@@ -5,7 +5,6 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 import { AnimatedVisibility } from '../AnimatedVisibility';
 import { Box, type BoxProps } from '../Box';
 import { Icon, type IconProps } from '../Icon';
-import { Margins } from '../Margins';
 import type { OptionType } from '../Options';
 import { Options, useCursor } from '../Options';
 import { PositionAnimated } from '../PositionAnimated';
@@ -53,16 +52,20 @@ function SelectLegacy({
 	error,
 	disabled,
 	options = [],
-	anchor: Anchor = SelectFocus,
+	'anchor': Anchor = SelectFocus,
 	onChange = () => {},
 	getValue = ([value] = ['', '']) => value,
 	getLabel = ([, label] = ['', '']) => label,
 	placeholder = '',
 	renderItem,
-	renderSelected: RenderSelected,
-	renderOptions: _Options = Options,
+	'renderSelected': RenderSelected,
+	'renderOptions': _Options = Options,
 	addonIcon,
 	customEmpty,
+	id,
+	'aria-labelledby': ariaLabelledBy,
+	'aria-describedby': ariaDescribedBy,
+	'aria-invalid': ariaInvalid,
 	...props
 }: SelectProps) {
 	const [internalValue, setInternalValue] = useState(value || '');
@@ -149,14 +152,23 @@ function SelectLegacy({
 							{visibleText}
 						</Box>
 					))}
-				<Anchor ref={anchorRef} disabled={disabled ?? false} onClick={show} onBlur={hide} onKeyDown={handleKeyDown} onKeyUp={handleKeyUp}>
+				<Anchor
+					ref={anchorRef}
+					id={id}
+					aria-labelledby={ariaLabelledBy}
+					aria-describedby={ariaDescribedBy}
+					aria-invalid={ariaInvalid}
+					disabled={disabled ?? false}
+					onClick={show}
+					onBlur={hide}
+					onKeyDown={handleKeyDown}
+					onKeyUp={handleKeyUp}
+				>
 					{!value ? option || placeholder : null}
 				</Anchor>
-				<Margins inline='x4'>
-					<SelectAddon>
-						<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : addonIcon || 'chevron-down'} size='x20' />
-					</SelectAddon>
-				</Margins>
+				<SelectAddon>
+					<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : addonIcon || 'chevron-down'} size='x20' />
+				</SelectAddon>
 			</Wrapper>
 			<PositionAnimated visible={visible} anchor={containerRef}>
 				<_Options

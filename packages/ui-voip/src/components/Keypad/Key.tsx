@@ -14,6 +14,12 @@ export type KeyProps = {
 };
 
 const dialPadButtonClass = css`
+	min-width: 3.25rem;
+	width: 3.25rem;
+	height: 2.5rem;
+	padding: 0;
+	border-radius: 0.5rem;
+
 	> .rcx-button--content {
 		display: flex;
 		flex-direction: column;
@@ -33,16 +39,7 @@ const Key = ({ primaryKey, alternativeKey, longPressKey, onLongKeyPress, onKeyPr
 	const buttonProps = longPressKey ? mergeProps(pressProps, longPressProps) : pressProps;
 
 	return (
-		<Button
-			minWidth={52}
-			width={52}
-			height={40}
-			padding={0}
-			margin={4}
-			{...buttonProps}
-			className={dialPadButtonClass}
-			borderRadius='large'
-		>
+		<Button {...buttonProps} className={dialPadButtonClass}>
 			<Box is='span' fontScale={large ? 'h1' : 'p1'} fontWeight={large ? 300 : 400} marginBlock={-4}>
 				{primaryKey}
 			</Box>

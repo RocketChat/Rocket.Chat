@@ -53,7 +53,7 @@ const AutoTranslate = ({ language, languages, handleSwitch, translateEnable, han
 					</Field>
 					<Field>
 						<FieldLabel htmlFor='translate-to'>{t('Translate_to')}</FieldLabel>
-						<FieldRow verticalAlign='middle'>
+						<FieldRow>
 							<Select
 								id='language'
 								value={language}

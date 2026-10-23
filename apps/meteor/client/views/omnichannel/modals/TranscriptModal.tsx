@@ -74,7 +74,7 @@ const TranscriptModal = ({ email: emailDefault = '', room, onRequest, onSend, on
 				<ModalTitle>{t('Transcript')}</ModalTitle>
 				<ModalClose onClick={onCancel} />
 			</ModalHeader>
-			<ModalContent fontScale='p2'>
+			<ModalContent>
 				{!!transcriptRequest && <p>{t('Livechat_transcript_already_requested_warning')}</p>}
 				<FieldGroup>
 					<Field>

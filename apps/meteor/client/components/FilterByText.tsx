@@ -24,14 +24,12 @@ const FilterByText = forwardRef<HTMLInputElement, FilterByTextProps>(function Fi
 
 	return (
 		<Box marginBlock={16} marginInline='neg-x4' is='form' onSubmit={handleFormSubmit} display='flex' flexWrap='wrap' alignItems='center'>
-			<Box marginInline={4} display='flex' flexGrow={1}>
+			<Box marginInline={4} display='flex' flexGrow={1} minWidth='x280'>
 				<TextInput
 					{...props}
 					placeholder={placeholder ?? t('Search')}
 					ref={mergedRefs}
 					endAddon={<Icon name='magnifier' size='x20' />}
-					flexGrow={2}
-					minWidth='x220'
 					aria-label={placeholder ?? t('Search')}
 				/>
 			</Box>

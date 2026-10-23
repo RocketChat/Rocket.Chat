@@ -66,7 +66,9 @@ const EditMenu = ({
 								{formatDate(date)}
 							</Box>
 						</Box>
-						<Divider marginBlockStart='12px' />
+						<Box paddingBlockStart={4}>
+							<Divider />
+						</Box>
 						<Option disabled={!onDuplicate} onClick={duplicatehandler}>
 							Duplicate
 						</Option>

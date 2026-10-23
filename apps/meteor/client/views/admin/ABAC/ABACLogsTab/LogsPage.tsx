@@ -1,5 +1,5 @@
 import type { AbacAttributeDefinitionChangeType, AbacActionPerformed } from '@rocket.chat/core-typings';
-import { Box, InputBox, Margins, Pagination } from '@rocket.chat/fuselage';
+import { Box, InputBox, Margins, Pagination, Stack } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import {
 	GenericTable,
@@ -158,31 +158,27 @@ const LogsPage = () => {
 	return (
 		<>
 			<Margins block={24}>
-				<Box display='flex'>
+				<Stack direction='row' gap={8}>
 					<InputBox
 						type='date'
 						placeholder={t('Start_date')}
 						value={startDate}
 						onChange={(e) => setStartDate((e.target as HTMLInputElement).value)}
 					/>
-					<Margins inlineStart={8}>
-						<InputBox
-							type='date'
-							placeholder={t('End_date')}
-							value={endDate}
-							onChange={(e) => setEndDate((e.target as HTMLInputElement).value)}
-						/>
-					</Margins>
-					<Margins inlineStart={8}>
-						<DateRangePicker
-							defaultSelectedKey='today'
-							onChange={(range) => {
-								setStartDate(range.start);
-								setEndDate(range.end);
-							}}
-						/>
-					</Margins>
-				</Box>
+					<InputBox
+						type='date'
+						placeholder={t('End_date')}
+						value={endDate}
+						onChange={(e) => setEndDate((e.target as HTMLInputElement).value)}
+					/>
+					<DateRangePicker
+						defaultSelectedKey='today'
+						onChange={(range) => {
+							setStartDate(range.start);
+							setEndDate(range.end);
+						}}
+					/>
+				</Stack>
 			</Margins>
 			{(!data || data.events?.length === 0) && !isLoading ? (
 				<Box display='flex' justifyContent='center' height='full'>

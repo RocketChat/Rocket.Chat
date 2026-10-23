@@ -52,7 +52,7 @@ const Position = ({ anchor, children, placement, margin, className: _className, 
 	return createPortal(
 		cloneElement(children, {
 			ref: target,
-			style,
+			style: { ...children.props.style, ...style },
 			...props,
 			placement: positionPlacement,
 		}),

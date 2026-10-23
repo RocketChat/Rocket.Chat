@@ -316,7 +316,7 @@ function Select<V extends Key = Key>({
 				<Box is='span' color={selectedOption ? 'titles-labels' : 'hint'} {...(small && { fontScale: 'c1' })}>
 					{selectedOption ? (selectedOption[1] ?? selectedOption[0]) : placeholder}
 				</Box>
-				<Icon color='titles-labels' name={isOpen ? 'chevron-up' : 'chevron-down'} size='x20' />
+				<Icon name={isOpen ? 'chevron-up' : 'chevron-down'} size='x20' />
 			</Box>
 			{isOpen && (
 				<Popover state={overlayState} triggerRef={triggerRef} placement='bottom' offset={4} containerPadding={8} isNonModal>

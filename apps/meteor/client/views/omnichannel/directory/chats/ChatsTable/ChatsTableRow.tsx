@@ -114,8 +114,10 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 				)}
 			</GenericTableCell>
 			<GenericTableCell withTruncatedText>
-				<RoomActivityIcon room={room} />
-				{getStatusText(open, onHold)}
+				<Box display='flex' alignItems='center'>
+					<RoomActivityIcon room={room} />
+					{getStatusText(open, onHold)}
+				</Box>
 			</GenericTableCell>
 			{canRemoveClosedChats && <GenericTableCell>{!open && <RemoveChatButton _id={_id} />}</GenericTableCell>}
 		</GenericTableRow>
