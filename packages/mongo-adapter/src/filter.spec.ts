@@ -1,6 +1,12 @@
 import { createPredicateFromFilter } from './filter';
 
 describe('createPredicateFromFilter', () => {
+	it('does not match empty objects or binary data against a date equality filter', () => {
+		const matches = createPredicateFromFilter({ value: { $eq: new Date(0) } });
+		expect(matches({ value: {} })).toBe(false);
+		expect(matches({ value: new Uint8Array() })).toBe(false);
+		expect(matches({ value: new Date(0) })).toBe(true);
+	});
 	it('matches simple equality', () => {
 		const fn = createPredicateFromFilter({ foo: 'bar' });
 		expect(fn({ foo: 'bar' })).toBe(true);
