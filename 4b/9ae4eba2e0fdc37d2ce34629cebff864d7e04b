@@ -9,6 +9,7 @@ apps/meteor/lib/publishFields.ts
   s_f1620061840e4c::t_cd0858242a4d77 122
 apps/meteor/server/lib/rooms/createRoom.ts
   s_f1620061840e4c::t_cd0858242a4d77 5-12,14,93-97
+  s_0b9c785848afbd::t_e80f525ab852bc 3,98-99
 apps/meteor/server/lib/rooms/roomTypes/private.ts
   s_f1620061840e4c::t_cd0858242a4d77 2,53
 apps/meteor/server/lib/rooms/roomTypes/public.ts
@@ -53,6 +54,8 @@ apps/meteor/ee/server/index.ts
   s_f1620061840e4c::t_cd0858242a4d77 19
 apps/meteor/client/navbar/NavBarPagesGroup/actions/CreateChannelModal.tsx
   s_f1620061840e4c::t_cd0858242a4d77 50,100-102,122,136,158,163-169,172-177,211-220,231,276-278,285-298,305,410-412,418
+packages/ui-contexts/src/types/SubscriptionWithRoom.ts
+  s_0b9c785848afbd::t_e80f525ab852bc 17
 ---
 {
   "schema_version": "authorship/3.0.0",
@@ -60,6 +63,14 @@ apps/meteor/client/navbar/NavBarPagesGroup/actions/CreateChannelModal.tsx
   "base_commit_sha": "4b9ae4eba2e0fdc37d2ce34629cebff864d7e04b",
   "prompts": {},
   "sessions": {
+    "s_0b9c785848afbd": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1587771d-1045-4797-b980-067c06ba506f",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    },
     "s_f1620061840e4c": {
       "agent_id": {
         "tool": "claude",
