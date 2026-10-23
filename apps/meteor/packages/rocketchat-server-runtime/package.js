@@ -28,7 +28,6 @@ const serverPackages = [
 	'webapp-hashing@1.1.2',
 	'facts-base@1.0.2',
 	'tracker@1.3.4',
-	'reactive-dict@1.3.2',
 	'reactive-var@1.0.13',
 	'autoupdate@2.0.1',
 	'dispatch:run-as-user',
