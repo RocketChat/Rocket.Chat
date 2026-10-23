@@ -14,6 +14,8 @@ export type OptionProps<TLabel = ReactNode> = RefAttributes<Element> & {
 	children?: ReactNode;
 	label?: TLabel;
 	focus?: boolean;
+	/** Shows the focus ring on the option when a script moves focus to it, such as a combobox's active descendant. */
+	focusVisible?: boolean;
 	selected?: boolean;
 	className?: BoxProps['className'];
 	icon?: IconProps['name'];
@@ -33,6 +35,7 @@ export type OptionProps<TLabel = ReactNode> = RefAttributes<Element> & {
 		| 'id'
 		| 'children'
 		| 'label'
+		| 'focusVisible'
 		| 'selected'
 		| 'className'
 		| 'ref'
@@ -57,6 +60,7 @@ function Option<TLabel = ReactNode>({
 	children,
 	label,
 	focus,
+	focusVisible,
 	selected,
 	className,
 	icon,
@@ -80,6 +84,7 @@ function Option<TLabel = ReactNode>({
 			is={is}
 			inset='md'
 			focused={focus}
+			focusVisible={focusVisible}
 			selected={selected}
 			disabled={disabled}
 			variant={variant === 'danger' ? 'danger' : undefined}
