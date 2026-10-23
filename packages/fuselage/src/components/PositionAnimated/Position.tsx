@@ -1,5 +1,5 @@
 import type { UsePositionOptions } from '@rocket.chat/fuselage-hooks';
-import { usePosition } from '@rocket.chat/fuselage-hooks';
+import { usePosition, usePreventScrollOutside } from '@rocket.chat/fuselage-hooks';
 import type { RefObject, ReactElement } from 'react';
 import { useRef, useMemo, cloneElement, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
@@ -12,9 +12,11 @@ export type PositionProps = Omit<BoxProps, 'children' | 'margin'> & {
 	children: ReactElement<any>;
 	margin?: number;
 	placement?: UsePositionOptions['placement'];
+	/** Holds the page still while the element is shown, so it cannot drift away from its anchor; it keeps scrolling itself. */
+	preventScroll?: boolean;
 };
 
-const Position = ({ anchor, children, placement, margin, className: _className, ...props }: PositionProps) => {
+const Position = ({ anchor, children, placement, margin, preventScroll = false, className: _className, ...props }: PositionProps) => {
 	const target = useRef<Element>(null);
 	const { style: positionStyle, placement: positionPlacement } =
 		usePosition(
@@ -22,6 +24,8 @@ const Position = ({ anchor, children, placement, margin, className: _className, 
 			target,
 			useMemo(() => ({ placement, margin }), [placement, margin]),
 		) || {};
+
+	usePreventScrollOutside(target, preventScroll);
 
 	const style = useMemo(() => ({ position: 'fixed', ...positionStyle }), [positionStyle]);
 
