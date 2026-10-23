@@ -1,4 +1,4 @@
-# Fuselage components take no styling props
+# ADR 0008 — Fuselage components take no styling props
 
 - **Status:** accepted
 - **Date:** 2026-10
@@ -14,7 +14,7 @@ the variations it declares itself. Nothing else: no `Box` styling prop (`margin*
   `FieldGroup`, a `Box`). Sizing and flex-child behavior belong to the parent's layout. Spacing a component needs
   for itself, such as the icon inside a `Button`, lives in that component's styles.
 - **An override that is a real option of the component becomes a declared variation**, with a closed set of values:
-  `Button` `compact`, `ButtonGroup` `stretch='equal'`, `Divider` `flush`/`light`, `Icon` `color` restricted to the
+  `Button` `compact`, `ButtonGroup` `stretch='equal'`, `Divider` `flush` and `variation='light'`, `Icon` `color` restricted to the
   semantic tokens, `FieldRow` `justify`, `Skeleton` `width`/`height`/`inverted`, and so on. The full list is the
   changeset of #42974.
 - **`is` is a closed set where the component needs one:** `Button`/`IconButton` render as `'button' | 'a'`,
@@ -22,9 +22,10 @@ the variations it declares itself. Nothing else: no `Box` styling prop (`margin*
 - **`Stack` and `PopoverSurface`** are the components that replace the most common `Box`-props compositions: a
   flex row or column spaced by `gap`, and the raised scrolling surface of a dropdown.
 - **`Box` keeps its styling props.** It stays the styling primitive and the escape hatch for layout in the app.
-- **CI holds the line.** `scripts/scan-style-props.mjs` runs in the lint job with `--max 1` and fails on any new
-  styling prop passed to a component, or any element laid out by `Margins`/`Scrollable`. The one finding left, the
-  ContactInfo conflicts `Callout`, stays until `Callout` has an API to centre its icon.
+- **CI holds the line.** `scripts/scan-style-props.mjs` counts every styling prop passed to a component and every
+  element laid out by `Margins`/`Scrollable`, and the lint job fails when the count exceeds `--max 1`. The one
+  finding left, the ContactInfo conflicts `Callout`, stays until `Callout` has an API to centre its icon. The check
+  is on the total, so a change that removes that finding and adds another one still passes.
 
 The migration landed in #42974 (scanner count 914 → 1); the scanner and the CI step in #43056. The data behind
 the decision, per component and per prop category, is in
