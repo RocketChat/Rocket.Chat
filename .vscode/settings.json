@@ -1,5 +1,4 @@
 {
-	"typescript.tsdk": "./node_modules/typescript/lib",
 	"cSpell.words": [
 		"autotranslate",
 		"ciphertext",
@@ -16,5 +15,6 @@
 		"searchbox",
 		"tmid",
 		"tshow"
-	]
+	],
+	"js/ts.tsdk.path": "./node_modules/typescript/lib"
 }
