@@ -63,7 +63,7 @@
 		"@rocket.chat/logo": "workspace:~",
 		"@rocket.chat/storybook-dark-mode": "workspace:~",
 		"@rocket.chat/ui-contexts": "workspace:^",
-		"@storybook/addon-docs": "^9.1.20",
+		"@storybook/addon-docs": "^9.1.21",
 		"@storybook/addon-styling-webpack": "^1.0.1",
 		"@storybook/addon-webpack5-compiler-swc": "^4.0.3",
 		"@storybook/preact": "9.0.0-alpha.11",

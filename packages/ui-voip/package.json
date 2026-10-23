@@ -45,7 +45,7 @@
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@rocket.chat/ui-kit": "workspace:^",
 		"@rocket.chat/ui-media": "workspace:^",
-		"@storybook/react": "^9.1.20",
+		"@storybook/react": "^9.1.21",
 		"@storybook/test-runner": "^0.22.1",
 		"@testing-library/dom": "~10.4.2",
 		"@testing-library/react": "~16.3.3",
