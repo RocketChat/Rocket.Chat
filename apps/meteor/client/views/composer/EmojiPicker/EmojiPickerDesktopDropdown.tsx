@@ -1,4 +1,4 @@
-import { Box, Tile } from '@rocket.chat/fuselage';
+import { Box, PopoverSurface } from '@rocket.chat/fuselage';
 import { useMergedRefs, usePosition } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode, Ref, RefObject } from 'react';
 import { useMemo, useRef, forwardRef } from 'react';
@@ -61,20 +61,9 @@ const EmojiPickerDesktopDropdown = forwardRef(function ToolboxDropdownDesktop(
 	const style = useDropdownPosition(reference, targetRef);
 
 	return (
-		<Tile
-			style={style}
-			ref={mergedRef}
-			elevation='2'
-			paddingInline='0'
-			paddingBlock='0'
-			display='flex'
-			flexDirection='column'
-			overflow='auto'
-		>
-			<Box flexShrink={1} paddingBlock={12}>
-				{children}
-			</Box>
-		</Tile>
+		<PopoverSurface style={style} ref={mergedRef}>
+			<Box>{children}</Box>
+		</PopoverSurface>
 	);
 });
 

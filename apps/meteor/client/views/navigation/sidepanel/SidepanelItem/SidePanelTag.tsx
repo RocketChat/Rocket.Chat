@@ -1,8 +1,10 @@
-import { Tag } from '@rocket.chat/fuselage';
+import { Box, Tag } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 
 const SidePanelTag = (props: ComponentProps<typeof Tag>) => (
-	<Tag role='button' tabIndex={0} {...props} maxWidth='50%' flexShrink={1} flexGrow={0} />
+	<Box display='flex' maxWidth='50%' minWidth={0}>
+		<Tag role='button' tabIndex={0} {...props} />
+	</Box>
 );
 
 export default SidePanelTag;

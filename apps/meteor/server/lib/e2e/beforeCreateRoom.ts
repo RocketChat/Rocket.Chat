@@ -1,4 +1,4 @@
-import { MeteorError } from '@rocket.chat/core-services';
+import { ClientSafeError } from '@rocket.chat/core-services';
 
 import { settings } from '../../settings';
 import { prepareCreateRoomCallback } from '../callbacks/beforeCreateRoomCallback';
@@ -16,7 +16,7 @@ prepareCreateRoomCallback.add(({ type, extraData }) => {
 	}
 	if (type === 'p' && extraData.federated !== true && settings.get<boolean>('E2E_Force_Encryption_For_Private_Rooms')) {
 		if (extraData.encrypted === false) {
-			throw new MeteorError('error-encrypted-private-rooms-enforced', 'Workspace policy requires all private rooms to be encrypted.');
+			throw new ClientSafeError('error-encrypted-private-rooms-enforced', 'Workspace policy requires all private rooms to be encrypted.');
 		}
 		extraData.encrypted = true;
 	}

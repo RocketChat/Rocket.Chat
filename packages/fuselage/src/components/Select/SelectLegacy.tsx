@@ -5,7 +5,6 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 import { AnimatedVisibility } from '../AnimatedVisibility';
 import { Box, type BoxProps } from '../Box';
 import { Icon, type IconProps } from '../Icon';
-import { Margins } from '../Margins';
 import type { OptionType } from '../Options';
 import { Options, useCursor } from '../Options';
 import { PositionAnimated } from '../PositionAnimated';
@@ -55,16 +54,20 @@ function SelectLegacy({
 	error,
 	disabled,
 	options = [],
-	anchor: AnchorComponent = SelectFocus,
+	'anchor': AnchorComponent = SelectFocus,
 	onChange = () => undefined,
 	getValue = ([value] = ['', '']) => value,
 	getLabel = ([, label] = ['', '']) => label,
 	placeholder = '',
 	renderItem,
-	renderSelected: SelectedComponent,
-	renderOptions: OptionsComponent = Options,
+	'renderSelected': SelectedComponent,
+	'renderOptions': OptionsComponent = Options,
 	addonIcon,
 	customEmpty,
+	id,
+	'aria-labelledby': ariaLabelledBy,
+	'aria-describedby': ariaDescribedBy,
+	'aria-invalid': ariaInvalid,
 	...props
 }: SelectProps) {
 	const [internalValue, setInternalValue] = useState(value || '');
@@ -153,6 +156,10 @@ function SelectLegacy({
 					))}
 				<AnchorComponent
 					ref={anchorRef}
+					id={id}
+					aria-labelledby={ariaLabelledBy}
+					aria-describedby={ariaDescribedBy}
+					aria-invalid={ariaInvalid}
 					disabled={disabled ?? false}
 					onClick={show}
 					onBlur={hide}
@@ -161,11 +168,9 @@ function SelectLegacy({
 				>
 					{!value ? option || placeholder : null}
 				</AnchorComponent>
-				<Margins inline='x4'>
-					<SelectAddon>
-						<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : addonIcon || 'chevron-down'} size='x20' />
-					</SelectAddon>
-				</Margins>
+				<SelectAddon>
+					<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : addonIcon || 'chevron-down'} size='x20' />
+				</SelectAddon>
 			</Wrapper>
 			<PositionAnimated visible={visible} anchor={containerRef}>
 				<OptionsComponent

@@ -120,7 +120,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps) => {
 			<ContextualbarScrollableContent>
 				<FieldGroup>
 					<Field>
-						<FieldLabel flexGrow={0}>{t('Choose_users')}</FieldLabel>
+						<FieldLabel>{t('Choose_users')}</FieldLabel>
 						<Controller
 							name='users'
 							control={control}

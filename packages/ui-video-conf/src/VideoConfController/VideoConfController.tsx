@@ -8,7 +8,7 @@ export type VideoConfControllerProps = {
 	secondary?: boolean;
 	disabled?: boolean;
 	small?: boolean;
-} & Omit<ButtonHTMLAttributes<HTMLElement>, 'ref' | 'is' | 'className' | 'size' | 'elevation'>;
+} & Omit<ButtonHTMLAttributes<HTMLElement>, 'ref' | 'is' | 'className' | 'size' | 'elevation' | 'color'>;
 
 const VideoConfController = ({ icon, active, secondary, disabled, small = true, ...props }: VideoConfControllerProps) => (
 	<IconButton

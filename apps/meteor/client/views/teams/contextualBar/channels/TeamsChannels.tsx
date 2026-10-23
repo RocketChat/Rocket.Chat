@@ -131,17 +131,9 @@ const TeamsChannels = ({
 			</ContextualbarContent>
 			{(onClickAddExisting || onClickCreateNew) && (
 				<ContextualbarFooter>
-					<ButtonGroup stretch>
-						{onClickAddExisting && (
-							<Button onClick={onClickAddExisting} width='50%'>
-								{t('Team_Add_existing')}
-							</Button>
-						)}
-						{onClickCreateNew && (
-							<Button onClick={onClickCreateNew} width='50%'>
-								{t('Create_new')}
-							</Button>
-						)}
+					<ButtonGroup stretch='equal'>
+						{onClickAddExisting && <Button onClick={onClickAddExisting}>{t('Team_Add_existing')}</Button>}
+						{onClickCreateNew && <Button onClick={onClickCreateNew}>{t('Create_new')}</Button>}
 					</ButtonGroup>
 				</ContextualbarFooter>
 			)}

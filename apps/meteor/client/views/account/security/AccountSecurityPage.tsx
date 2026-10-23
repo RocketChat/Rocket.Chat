@@ -58,9 +58,11 @@ const AccountSecurityPage = () => {
 						{(twoFactorTOTP || showEmailTwoFactor) && twoFactorEnabled && (
 							<AccordionItem defaultExpanded={require2faSetup} title={t('Two Factor Authentication')}>
 								{require2faSetup && (
-									<Callout type='warning' title={t('Enable_two-factor_authentication')} marginBlockEnd='24px'>
-										{t('Enable_two-factor_authentication_callout_description')}
-									</Callout>
+									<Box marginBlockEnd={24}>
+										<Callout type='warning' title={t('Enable_two-factor_authentication')}>
+											{t('Enable_two-factor_authentication_callout_description')}
+										</Callout>
+									</Box>
 								)}
 								{twoFactorTOTP && <TwoFactorTOTP />}
 								{showEmailTwoFactor && <TwoFactorEmail />}

@@ -51,7 +51,7 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }) 
 				</ModalHeaderText>
 				<ModalClose onClick={onClose} />
 			</ModalHeader>
-			<ModalContent fontScale='p2'>
+			<ModalContent>
 				<ModalHeroImage src='/images/departments.svg' />
 				<Box fontScale='h3' marginBlockEnd={28}>
 					{t('Premium_Departments_title')}

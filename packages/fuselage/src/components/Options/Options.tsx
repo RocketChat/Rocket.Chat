@@ -5,8 +5,8 @@ import { prevent } from '../../helpers/prevent';
 import { Box, type BoxProps } from '../Box';
 import { ItemDivider } from '../Item';
 import { Option, OptionHeader } from '../Option';
+import { PopoverSurface } from '../PopoverSurface';
 import { Scrollable } from '../Scrollable';
-import { Tile } from '../Tile';
 import type { OptionType } from './OptionType';
 import OptionsEmpty from './OptionsEmpty';
 
@@ -95,12 +95,12 @@ function Options<TValue extends string | number = string | number, TLabel = Reac
 
 	return (
 		<Box rcx-options {...props}>
-			<Tile padding={0} paddingBlock='x12' paddingInline={0} elevation='2'>
+			<PopoverSurface>
 				<Scrollable vertical smooth>
-					<Tile
+					<Box
 						ref={liRef}
-						elevation='0'
-						padding='none'
+						borderRadius='medium'
+						backgroundColor='light'
 						maxHeight={maxHeight}
 						onMouseDown={prevent}
 						onClick={prevent}
@@ -112,9 +112,9 @@ function Options<TValue extends string | number = string | number, TLabel = Reac
 					>
 						{!options.length && <EmptyComponent customEmpty={customEmpty} />}
 						{optionsMemoized}
-					</Tile>
+					</Box>
 				</Scrollable>
-			</Tile>
+			</PopoverSurface>
 		</Box>
 	);
 }

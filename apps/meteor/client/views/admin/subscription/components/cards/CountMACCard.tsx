@@ -17,8 +17,8 @@ const CountMACCard = ({ macsCount }: CountMACCardProps) => {
 			}}
 		>
 			<FeatureUsageCardBody>
-				<Box fontScale='h1'>
-					<Icon color='font-annotation' name='headset' size={40} marginInlineEnd={4} />
+				<Box fontScale='h1' display='flex' alignItems='center' justifyContent='center' gap={4}>
+					<Icon color='hint' name='headset' size={40} />
 					{macsCount}
 				</Box>
 			</FeatureUsageCardBody>

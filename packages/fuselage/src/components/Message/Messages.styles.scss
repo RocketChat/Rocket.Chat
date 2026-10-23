@@ -337,7 +337,7 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 			flex-grow: 0;
 			flex-shrink: 1;
 
-			width: 100;
+			width: 100%;
 			max-width: $message-block-width-fixed;
 		}
 	}

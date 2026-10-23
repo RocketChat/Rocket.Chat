@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Label } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { useContext, useMemo } from 'react';
 
 import { context, sidebarToggleAction } from '../../Context';
@@ -56,8 +56,9 @@ const SliderBtn = () => {
 			zIndex={1}
 			className={toggleStyle}
 		>
-			<Label
+			<Box
 				width='80px'
+				fontScale='p2m'
 				className={
 					isMobile && !sideBarToggle
 						? css`
@@ -67,7 +68,7 @@ const SliderBtn = () => {
 				}
 			>
 				Components
-			</Label>
+			</Box>
 			{isMobile && (
 				<Box
 					width='40px'

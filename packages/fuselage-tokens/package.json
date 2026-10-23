@@ -28,8 +28,8 @@
 	],
 	"scripts": {
 		"build": "rm -rf dist && node ./build.js",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix ."
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix"
 	},
 	"devDependencies": {
 		"change-case": "~5.4.4",

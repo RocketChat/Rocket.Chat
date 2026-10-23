@@ -1,5 +1,6 @@
+import { after, afterEach, before, beforeEach, describe, it } from 'node:test';
+
 import { expect } from 'chai';
-import { after, afterEach, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
@@ -20,7 +21,7 @@ describe('[CustomUserStatus]', () => {
 	let unauthorizedUser: any;
 	let unauthorizedUserCredentials: any;
 
-	before((done) => {
+	before((_t, done) => {
 		getCredentials(done);
 	});
 

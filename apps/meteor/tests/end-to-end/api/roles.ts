@@ -1,6 +1,7 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
@@ -8,20 +9,16 @@ import { updatePermission } from '../../data/permissions.helper';
 import { password, adminUsername } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 
-describe('[Roles]', function () {
-	this.retries(0);
+describe('[Roles]', () => {
 	const isEnterprise = Boolean(process.env.IS_EE);
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	describe.skip('[/roles.create]', () => {
 		const testRoleName = `role.test.${Date.now()}`;
-		it('should throw an error when not running EE to create a role', async function () {
-			// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
-			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
-			if (isEnterprise) {
-				this.skip();
-			}
+		// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
+		// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
+		it('should throw an error when not running EE to create a role', { skip: isEnterprise }, async () => {
 			await request
 				.post(api('roles.create'))
 				.set(credentials)
@@ -37,12 +34,9 @@ describe('[Roles]', function () {
 				});
 		});
 
-		it('should successfully create a role in EE', async function () {
-			// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
-			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
-			if (!isEnterprise) {
-				this.skip();
-			}
+		// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
+		// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
+		it('should successfully create a role in EE', { skip: !isEnterprise }, async () => {
 			await request
 				.post(api('roles.create'))
 				.set(credentials)
@@ -64,7 +58,7 @@ describe('[Roles]', function () {
 		const newTestRoleName = `role.test.updated.${Date.now()}`;
 		let testRoleId = '';
 
-		before('Create a new role with Users scope', async () => {
+		before(async () => {
 			if (!isEnterprise) {
 				return;
 			}
@@ -94,12 +88,9 @@ describe('[Roles]', function () {
 			});
 		});
 
-		it('should throw an error when not running EE to update a role', async function () {
-			// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
-			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
-			if (isEnterprise) {
-				this.skip();
-			}
+		// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
+		// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
+		it('should throw an error when not running EE to update a role', { skip: isEnterprise }, async () => {
 			await request
 				.post(api('roles.update'))
 				.set(credentials)
@@ -116,13 +107,9 @@ describe('[Roles]', function () {
 				});
 		});
 
-		it('should successfully update a role in EE', async function () {
-			// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
-			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
-			if (!isEnterprise) {
-				this.skip();
-			}
-
+		// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
+		// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
+		it('should successfully update a role in EE', { skip: !isEnterprise }, async () => {
 			await request
 				.post(api('roles.update'))
 				.set(credentials)
@@ -182,11 +169,7 @@ describe('[Roles]', function () {
 			});
 		});
 
-		it('should successfully get an empty list of users in a role if no user has been assigned to it', async function () {
-			if (!isEnterprise) {
-				this.skip();
-			}
-
+		it('should successfully get an empty list of users in a role if no user has been assigned to it', { skip: !isEnterprise }, async () => {
 			await request
 				.get(api('roles.getUsersInRole'))
 				.set(credentials)
@@ -202,11 +185,7 @@ describe('[Roles]', function () {
 				});
 		});
 
-		it('should successfully get a list of users in a role', async function () {
-			if (!isEnterprise) {
-				this.skip();
-			}
-
+		it('should successfully get a list of users in a role', { skip: !isEnterprise }, async () => {
 			await request
 				.post(api('roles.addUserToRole'))
 				.set(credentials)
@@ -236,11 +215,7 @@ describe('[Roles]', function () {
 				});
 		});
 
-		it('should fail getting a list of users in a role in case an invalid role is provided', async function () {
-			if (!isEnterprise) {
-				this.skip();
-			}
-
+		it('should fail getting a list of users in a role in case an invalid role is provided', { skip: !isEnterprise }, async () => {
 			await request
 				.get(api('roles.getUsersInRole'))
 				.set(credentials)
@@ -323,13 +298,9 @@ describe('[Roles]', function () {
 			await deleteUser(testUser);
 		});
 
-		it('should fail deleting a role when user does NOT have the access-permissions permission', async function () {
-			// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
-			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
-			if (!isEnterprise) {
-				this.skip();
-			}
-
+		// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
+		// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
+		it('should fail deleting a role when user does NOT have the access-permissions permission', { skip: !isEnterprise }, async () => {
 			await request
 				.post(api('roles.delete'))
 				.set(testUserCredentials)
@@ -344,13 +315,9 @@ describe('[Roles]', function () {
 				});
 		});
 
-		it('should fail deleting a role in EE in case an invalid role is provided', async function () {
-			// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
-			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
-			if (!isEnterprise) {
-				this.skip();
-			}
-
+		// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
+		// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
+		it('should fail deleting a role in EE in case an invalid role is provided', { skip: !isEnterprise }, async () => {
 			await request
 				.post(api('roles.delete'))
 				.set(credentials)
@@ -366,13 +333,9 @@ describe('[Roles]', function () {
 				});
 		});
 
-		it('should successfully delete a role in EE', async function () {
-			// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
-			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
-			if (!isEnterprise) {
-				this.skip();
-			}
-
+		// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
+		// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
+		it('should successfully delete a role in EE', { skip: !isEnterprise }, async () => {
 			await request
 				.post(api('roles.delete'))
 				.set(credentials)
@@ -452,13 +415,9 @@ describe('[Roles]', function () {
 				});
 		});
 
-		it('should fail removing an invalid user from a role', async function () {
-			// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
-			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
-			if (!isEnterprise) {
-				this.skip();
-			}
-
+		// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
+		// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
+		it('should fail removing an invalid user from a role', { skip: !isEnterprise }, async () => {
 			await request
 				.post(api('roles.removeUserFromRole'))
 				.set(credentials)
@@ -475,13 +434,9 @@ describe('[Roles]', function () {
 				});
 		});
 
-		it('should fail removing a user from an invalid role', async function () {
-			// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
-			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
-			if (!isEnterprise) {
-				this.skip();
-			}
-
+		// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
+		// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
+		it('should fail removing a user from an invalid role', { skip: !isEnterprise }, async () => {
 			await request
 				.post(api('roles.removeUserFromRole'))
 				.set(credentials)
@@ -498,13 +453,9 @@ describe('[Roles]', function () {
 				});
 		});
 
-		it('should fail removing a user from a role they do not have', async function () {
-			// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
-			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
-			if (!isEnterprise) {
-				this.skip();
-			}
-
+		// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
+		// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
+		it('should fail removing a user from a role they do not have', { skip: !isEnterprise }, async () => {
 			await request
 				.post(api('roles.removeUserFromRole'))
 				.set(credentials)
@@ -521,13 +472,9 @@ describe('[Roles]', function () {
 				});
 		});
 
-		it('should successfully remove a user from a role', async function () {
-			// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
-			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
-			if (!isEnterprise) {
-				this.skip();
-			}
-
+		// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
+		// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
+		it('should successfully remove a user from a role', { skip: !isEnterprise }, async () => {
 			await request
 				.post(api('roles.removeUserFromRole'))
 				.set(credentials)

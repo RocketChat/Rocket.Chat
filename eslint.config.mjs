@@ -198,15 +198,7 @@ export default [
 		},
 	},
 	{
-		files: ['apps/meteor/**/*.tests.js'],
-		languageOptions: {
-			globals: {
-				...globals.mocha,
-			},
-		},
-	},
-	{
-		files: ['apps/meteor/tests/@(end-to-end|unit)/**/*.spec.ts'],
+		files: ['apps/meteor/tests/end-to-end/**/*.@(spec|test).ts'],
 		rules: {
 			'jest/expect-expect': 'off',
 			'jest/no-conditional-expect': 'off',
@@ -222,7 +214,7 @@ export default [
 		},
 	},
 	{
-		files: ['apps/meteor/tests/@(end-to-end|unit)/**/*.ts'],
+		files: ['apps/meteor/tests/end-to-end/**/*.ts'],
 		rules: {
 			'@typescript-eslint/no-unused-expressions': 'off',
 		},

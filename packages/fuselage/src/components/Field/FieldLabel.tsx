@@ -5,8 +5,8 @@ import { FieldContext } from './Field';
 
 export type FieldLabelProps = LabelProps;
 
-function FieldLabel(props: FieldLabelProps) {
-	const component = <Label rcx-field__label {...props} />;
+function FieldLabel({ className, ...props }: FieldLabelProps) {
+	const component = <Label {...props} className={['rcx-field__label', ...(Array.isArray(className) ? className : [className])]} />;
 	if (process.env.NODE_ENV === 'development') {
 		return (
 			<WithErrorWrapper context={FieldContext} parentComponent='Field' componentName={FieldLabel.name}>

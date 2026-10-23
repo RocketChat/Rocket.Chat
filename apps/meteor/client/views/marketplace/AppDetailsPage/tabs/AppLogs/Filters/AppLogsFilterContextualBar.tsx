@@ -1,4 +1,4 @@
-import { Box, Button, Label } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Label } from '@rocket.chat/fuselage';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -73,9 +73,11 @@ export const AppLogsFilterContextualBar = ({ appId, onClose = () => undefined }:
 				</Box>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
-				<Button secondary width='full' aria-label={t('Clear_filters')} onClick={() => reset()}>
-					{t('Clear_filters')}
-				</Button>
+				<ButtonGroup stretch>
+					<Button secondary aria-label={t('Clear_filters')} onClick={() => reset()}>
+						{t('Clear_filters')}
+					</Button>
+				</ButtonGroup>
 			</ContextualbarFooter>
 		</ContextualbarDialog>
 	);

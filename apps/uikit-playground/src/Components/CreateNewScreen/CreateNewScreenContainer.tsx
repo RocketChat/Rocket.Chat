@@ -49,18 +49,18 @@ const CreateNewScreenContainer = () => {
 					transition: var(--animation-default);
 				`}
 			>
-				<Button
+				<Box
 					position='fixed'
-					square
-					tiny
+					display='flex'
 					className={css`
 						top: 20px;
 						right: 20px;
 					`}
-					onClick={onClosehandler}
 				>
-					<Icon name='cross' size='x15' />
-				</Button>
+					<Button square tiny onClick={onClosehandler}>
+						<Icon name='cross' size='x15' />
+					</Button>
+				</Box>
 				{openCreateNewScreen && (
 					<Box
 						width='max-content'
@@ -82,7 +82,6 @@ const CreateNewScreenContainer = () => {
 						<Icon
 							onClick={createNewScreenhandler}
 							size='60px'
-							height='60px'
 							name='plus'
 							className={css`
 								cursor: pointer;

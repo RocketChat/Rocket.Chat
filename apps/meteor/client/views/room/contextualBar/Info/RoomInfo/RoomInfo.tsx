@@ -66,12 +66,7 @@ const RoomInfo = ({ room, icon, onClickBack, onClickClose, onClickEnterRoom, onC
 						<InfoPanelActionGroup>
 							<RoomInfoActions actions={buttons} />
 							{menu && (
-								<GenericMenu
-									title={t('More')}
-									placement='bottom-end'
-									button={<IconButton icon='kebab' secondary flexShrink={0} flexGrow={0} maxHeight='initial' />}
-									sections={menu}
-								/>
+								<GenericMenu title={t('More')} placement='bottom-end' button={<IconButton icon='kebab' secondary />} sections={menu} />
 							)}
 						</InfoPanelActionGroup>
 					</InfoPanelSection>

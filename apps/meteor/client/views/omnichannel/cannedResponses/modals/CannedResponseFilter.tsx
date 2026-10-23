@@ -1,7 +1,7 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Icon, TextInput, Select } from '@rocket.chat/fuselage';
+import { Box, Field, FieldLabel, FieldRow, Icon, TextInput, Select } from '@rocket.chat/fuselage';
 import type { ChangeEvent } from 'react';
-import { memo } from 'react';
+import { memo, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AutoCompleteAgent from '../../components/AutoCompleteAgent';
@@ -20,6 +20,10 @@ export type CannedResponsesFilterProps = {
 const CannedResponsesFilter = ({ createdBy, setCreatedBy, sharing, setSharing, text, setText }: CannedResponsesFilterProps) => {
 	const { t } = useTranslation();
 
+	const searchId = useId();
+	const sharingLabelId = useId();
+	const createdByLabelId = useId();
+
 	const sharingList: SelectOption[] = [
 		['', t('All')],
 		['user', t('Private')],
@@ -28,22 +32,40 @@ const CannedResponsesFilter = ({ createdBy, setCreatedBy, sharing, setSharing, t
 	];
 
 	return (
-		<Box marginBlock={16} display='flex' flexDirection='row'>
-			<Box display='flex' marginInlineEnd={8} flexGrow={1} flexDirection='column'>
-				<Box marginBlock={4}>{t('Search')}</Box>
-				<TextInput
-					value={text}
-					onChange={(e: ChangeEvent<HTMLInputElement>) => setText(e.target.value)}
-					endAddon={<Icon name='magnifier' size='x20' />}
-				/>
+		<Box marginBlock={16} display='flex' flexDirection='row' columnGap={8} paddingInlineEnd={8}>
+			<Box flexGrow={1}>
+				<Field>
+					<FieldLabel htmlFor={searchId}>{t('Search')}</FieldLabel>
+					<FieldRow>
+						<TextInput
+							id={searchId}
+							value={text}
+							onChange={(e: ChangeEvent<HTMLInputElement>) => setText(e.target.value)}
+							endAddon={<Icon name='magnifier' size='x20' />}
+						/>
+					</FieldRow>
+				</Field>
 			</Box>
-			<Box display='flex' marginInlineEnd={8} flexGrow={1} flexDirection='column'>
-				<Box marginBlock={4}>{t('Sharing')}</Box>
-				<Select value={sharing} onChange={(value) => setSharing(value as SharingValues)} options={sharingList} />
+			<Box flexGrow={1}>
+				<Field>
+					<FieldLabel id={sharingLabelId}>{t('Sharing')}</FieldLabel>
+					<FieldRow>
+						<Select
+							aria-labelledby={sharingLabelId}
+							value={sharing}
+							onChange={(value) => setSharing(value as SharingValues)}
+							options={sharingList}
+						/>
+					</FieldRow>
+				</Field>
 			</Box>
-			<Box display='flex' marginInlineEnd={8} flexGrow={1} flexDirection='column'>
-				<Box marginBlock={4}>{t('Created_by')}</Box>
-				<AutoCompleteAgent value={createdBy} onChange={setCreatedBy} haveAll />
+			<Box flexGrow={1}>
+				<Field>
+					<FieldLabel id={createdByLabelId}>{t('Created_by')}</FieldLabel>
+					<FieldRow>
+						<AutoCompleteAgent aria-labelledby={createdByLabelId} value={createdBy} onChange={setCreatedBy} haveAll />
+					</FieldRow>
+				</Field>
 			</Box>
 		</Box>
 	);

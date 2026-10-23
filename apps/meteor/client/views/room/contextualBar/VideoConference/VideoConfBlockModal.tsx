@@ -8,8 +8,8 @@ const VideoConfBlockModal = ({ onClose, onConfirm }: { onClose: () => void; onCo
 	const workspaceUrl = useSetting('Site_Url');
 
 	const confirmButtonContent = (
-		<Box>
-			<Icon marginInlineEnd={8} size='x20' name='new-window' />
+		<Box display='flex' alignItems='center' gap={8}>
+			<Icon size='x20' name='new-window' />
 			{t('Open_call')}
 		</Box>
 	);

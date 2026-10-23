@@ -22,6 +22,7 @@ const MessageFooterCallout = forwardRef<
 			borderColor='light'
 			borderRadius='medium'
 			padding={8}
+			gap={8}
 			marginBlockEnd={24}
 			backgroundColor='surface-tint'
 			alignItems='center'

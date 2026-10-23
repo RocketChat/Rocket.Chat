@@ -25,7 +25,7 @@ function BooleanSettingInput({
 
 	return (
 		<Field>
-			<FieldRow marginBlockEnd={8}>
+			<FieldRow>
 				<FieldLabel htmlFor={_id} title={_id} required={required}>
 					{label}
 				</FieldLabel>

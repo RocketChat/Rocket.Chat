@@ -5,7 +5,8 @@ import { Icon, type IconProps } from '../../Icon';
 export type MessageStatusIndicatorItemProps = {
 	name: IconProps['name'];
 	variant?: 'success' | 'danger' | 'warning' | 'primary';
-} & Omit<AllHTMLAttributes<HTMLElement>, 'is'>;
+	color?: IconProps['color'];
+} & Omit<AllHTMLAttributes<HTMLElement>, 'is' | 'color'>;
 
 const MessageStatusIndicatorItem = ({ name, variant, ...props }: MessageStatusIndicatorItemProps) => (
 	<Icon

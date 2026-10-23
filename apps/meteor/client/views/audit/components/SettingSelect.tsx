@@ -16,7 +16,6 @@ export const SettingSelect = ({ value, onChange }: { value: string; onChange: (v
 
 	return (
 		<PaginatedSelectFiltered
-			flexShrink={1}
 			value={value}
 			onChange={(val) => onChange(val)}
 			placeholder={t('All_Settings')}

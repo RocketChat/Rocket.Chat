@@ -3,12 +3,10 @@ import { ajv } from '../Ajv';
 export type ChannelsOpenProps =
 	| {
 			roomId: string;
-			query?: string; // { 'mentions._id': { $in: string[] } } | { 'starred._id': { $in: string[] } } | { pinned: boolean };
 			sort?: { ts: 1 | -1 };
 	  }
 	| {
 			roomName: string;
-			query?: string;
 			sort?: { ts: 1 | -1 };
 	  };
 
@@ -19,10 +17,6 @@ const channelsOpenPropsSchema = {
 			properties: {
 				roomId: {
 					type: 'string',
-				},
-				query: {
-					type: 'string',
-					nullable: true,
 				},
 				sort: {
 					type: 'object',
@@ -47,10 +41,6 @@ const channelsOpenPropsSchema = {
 			properties: {
 				roomName: {
 					type: 'string',
-				},
-				query: {
-					type: 'string',
-					nullable: true,
 				},
 				sort: {
 					type: 'object',

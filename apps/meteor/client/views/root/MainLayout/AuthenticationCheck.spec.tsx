@@ -70,7 +70,7 @@ describe('while the session is being resumed', () => {
 	it.each(['waiting', 'failed'] as const)('shows the login page when the connection has given up (%s)', (status) => {
 		localStorage.setItem(STORAGE_KEYS.LOGIN_TOKEN, 'a-stored-token');
 
-		renderGate(mockAppRoot().withAnonymous().withServerContext({ connected: false, status }));
+		renderGate(mockAppRoot().withAnonymous().withConnectionStatus({ connected: false, status }));
 
 		expect(screen.getByText('login-page')).toBeInTheDocument();
 		expect(screen.queryByText('home-skeleton')).not.toBeInTheDocument();
@@ -81,7 +81,7 @@ describe('while the session is being resumed', () => {
 	it('keeps the skeleton up while the connection is merely idle', () => {
 		localStorage.setItem(STORAGE_KEYS.LOGIN_TOKEN, 'a-stored-token');
 
-		renderGate(mockAppRoot().withAnonymous().withServerContext({ connected: false, status: 'offline' }));
+		renderGate(mockAppRoot().withAnonymous().withConnectionStatus({ connected: false, status: 'offline' }));
 
 		expect(screen.getByText('home-skeleton')).toBeInTheDocument();
 		expect(screen.queryByText('login-page')).not.toBeInTheDocument();
@@ -91,7 +91,7 @@ describe('while the session is being resumed', () => {
 	it('keeps the skeleton up while the connection is still being made', () => {
 		localStorage.setItem(STORAGE_KEYS.LOGIN_TOKEN, 'a-stored-token');
 
-		renderGate(mockAppRoot().withAnonymous().withServerContext({ connected: false, status: 'connecting' }));
+		renderGate(mockAppRoot().withAnonymous().withConnectionStatus({ connected: false, status: 'connecting' }));
 
 		expect(screen.getByText('home-skeleton')).toBeInTheDocument();
 		expect(screen.queryByText('login-page')).not.toBeInTheDocument();

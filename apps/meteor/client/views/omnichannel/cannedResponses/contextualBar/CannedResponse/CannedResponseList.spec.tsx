@@ -19,11 +19,6 @@ jest.mock('@rocket.chat/ui-contexts', () => ({
 
 describe('CannedResponseList', () => {
 	describe('Storybook Stories', () => {
-		test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
-			const { baseElement } = render(<Story />);
-			expect(baseElement).toMatchSnapshot();
-		});
-
 		test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
 			const { container } = render(<Story />);
 

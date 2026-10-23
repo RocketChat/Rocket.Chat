@@ -1,4 +1,6 @@
+@use '../../styles/colors.scss';
 @use '../../styles/lengths.scss';
+@use '../../styles/functions.scss' as *;
 @use '../../styles/typography.scss' as *;
 @use '../../styles/variables/input-colors.scss' as *;
 @use '../../styles/mixins/interactivity.scss' as *;
@@ -45,6 +47,16 @@
 		padding: initial;
 	}
 
+	&__filter {
+		margin-inline: lengths.margin(4);
+	}
+
+	&__chip {
+		max-width: to-rem(150);
+
+		@include use-with-truncated-text;
+	}
+
 	&__wrapper {
 		align-items: center;
 		flex-grow: 1;
@@ -89,4 +101,14 @@
 			$disabled-color: $input-colors-invalid-disabled-color
 		);
 	}
+}
+
+// the trigger's chevron, which keeps the label colour whatever the value shows
+.rcx-select > .rcx-icon {
+	color: colors.font(titles-labels);
+}
+
+// beats the spacing .rcx-input-box__addon gets next to an input
+.rcx-select .rcx-select__addon {
+	margin-inline: lengths.margin(4);
 }

@@ -24,6 +24,7 @@ export enum AdminSectionsHref {
 	sounds = '/admin/sounds',
 	emoji = '/admin/emoji',
 	settings = '/admin/settings',
+	abacRooms = '/admin/ABAC/rooms',
 }
 
 /**

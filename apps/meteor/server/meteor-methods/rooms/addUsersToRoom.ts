@@ -1,22 +1,13 @@
 import { api } from '@rocket.chat/core-services';
-import { isBannedSubscription, isRoomNativeFederated, type IUser } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { isBannedSubscription, isRoomNativeFederated, type IRoom, type IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { beforeAddUsersToRoom } from '../../lib/callbacks/beforeAddUserToRoom';
-import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { i18n } from '../../lib/i18n';
 import { addUserToRoom } from '../../lib/rooms/addUserToRoom';
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		addUsersToRoom(data: { rid: string; users: string[] }): boolean;
-	}
-}
 
 export const sanitizeUsername = (username: string) => {
 	const isFederatedUsername = username.includes('@') && username.includes(':');
@@ -27,28 +18,8 @@ export const sanitizeUsername = (username: string) => {
 	return username.replace(/(^@)|( @)/, '');
 };
 
-export const addUsersToRoomMethod = async (userId: string, data: { rid: string; users: string[] }, user?: IUser): Promise<boolean> => {
-	if (!userId) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-			method: 'addUsersToRoom',
-		});
-	}
-
-	if (!Match.test(data.rid, String)) {
-		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
-			method: 'addUsersToRoom',
-		});
-	}
-
-	// Get user and room details
-	const room = await Rooms.findOneById(data.rid);
-	if (!room) {
-		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
-			method: 'addUsersToRoom',
-		});
-	}
-
-	const subscription = await Subscriptions.findOneByRoomIdAndUserId(data.rid, userId, {
+export const assertCanAddUsersToRoom = async (userId: string, room: IRoom): Promise<void> => {
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, userId, {
 		projection: { _id: 1 },
 	});
 	const userInRoom = subscription != null;
@@ -75,6 +46,30 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 			method: 'addUsersToRoom',
 		});
 	}
+};
+
+export const addUsersToRoomMethod = async (userId: string, data: { rid: string; users: string[] }, user?: IUser): Promise<boolean> => {
+	if (!userId) {
+		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			method: 'addUsersToRoom',
+		});
+	}
+
+	if (!Match.test(data.rid, String)) {
+		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+			method: 'addUsersToRoom',
+		});
+	}
+
+	// Get user and room details
+	const room = await Rooms.findOneById(data.rid);
+	if (!room) {
+		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+			method: 'addUsersToRoom',
+		});
+	}
+
+	await assertCanAddUsersToRoom(userId, room);
 
 	// Missing the users to be added
 	if (!Array.isArray(data.users)) {
@@ -120,18 +115,3 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 
 	return true;
 };
-
-Meteor.methods<ServerMethods>({
-	async addUsersToRoom(data) {
-		methodDeprecationLogger.method('addUsersToRoom', '9.0.0', ['/v1/channels.invite', '/v1/groups.invite']);
-		const uid = Meteor.userId();
-		// Validate user and room
-		if (!uid) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'addUsersToRoom',
-			});
-		}
-
-		return addUsersToRoomMethod(uid, data, ((await Meteor.userAsync()) as IUser | null) ?? undefined);
-	},
-});

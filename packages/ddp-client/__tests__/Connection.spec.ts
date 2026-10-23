@@ -1,8 +1,13 @@
 import WS from 'jest-websocket-mock';
 
 import { handleConnection, handleConnectionAndRejects, handleMethod } from './helpers';
-import { ConnectionImpl } from '../src/Connection';
+import { ConnectionImpl, getRetryDelay } from '../src/Connection';
 import { MinimalDDPClient } from '../src/MinimalDDPClient';
+
+// The Node build of the ws package, not the mock-socket stand-in from __mocks__ nor its browser build.
+const { WebSocket: RealWebSocket } = jest.requireActual<typeof import('ws')>(
+	require.resolve('ws/package.json').replace('package.json', 'index.js'),
+);
 
 let server: WS;
 let connection: ConnectionImpl;
@@ -15,6 +20,23 @@ afterEach(() => {
 	server.close();
 	WS.clean();
 	jest.useRealTimers();
+});
+
+it.each([
+	[1, 50, 100],
+	[2, 100, 200],
+	[4, 400, 800],
+	[20, 15_000, 30_000],
+])('should wait between half and all of the backoff before attempt %i', (attempt, min, max) => {
+	const random = jest.spyOn(Math, 'random');
+	try {
+		random.mockReturnValue(0);
+		expect(getRetryDelay(100, attempt)).toBe(min);
+		random.mockReturnValue(0.999999);
+		expect(getRetryDelay(100, attempt)).toBeCloseTo(max, 0);
+	} finally {
+		random.mockRestore();
+	}
 });
 
 it('should connect', async () => {
@@ -40,6 +62,82 @@ it('should handle a failing connection', async () => {
 
 	expect(connection.session).toBeUndefined();
 	expect(connection.status).toBe('failed');
+});
+
+it('should reject connect() when the socket closes before the handshake', async () => {
+	const client = new MinimalDDPClient();
+	connection = new ConnectionImpl('ws://localhost:1234', WebSocket as any, client, { retryCount: 0, retryTime: 0 });
+
+	const promise = connection.connect();
+	await server.connected;
+	await server.nextMessage;
+	server.close();
+
+	await expect(promise).rejects.toThrow('Connection closed before the DDP handshake completed');
+	expect(connection.status).toBe('disconnected');
+});
+
+it('should emit connected once after a handshake that failed', async () => {
+	const client = new MinimalDDPClient();
+	connection = new ConnectionImpl('ws://localhost:1234', WebSocket as any, client, { retryCount: 0, retryTime: 0 });
+
+	const failed = connection.connect();
+	await server.connected;
+	await server.nextMessage;
+	server.close();
+	await expect(failed).rejects.toThrow();
+
+	WS.clean();
+	server = new WS('ws://localhost:1234/websocket');
+	const connected = jest.fn();
+	connection.on('connected', connected);
+	await handleConnection(server, connection.connect());
+
+	expect(connected).toHaveBeenCalledTimes(1);
+});
+
+it('should reject connect() without crashing when the ws package cannot reach the server', async () => {
+	const client = new MinimalDDPClient();
+	connection = new ConnectionImpl('ws://localhost:1', RealWebSocket as any, client, { retryCount: 0, retryTime: 0 });
+
+	await expect(connection.connect()).rejects.toThrow();
+	expect(connection.status).toBe('disconnected');
+});
+
+it('should reject connect() when the server is unreachable', async () => {
+	const client = new MinimalDDPClient();
+	connection = new ConnectionImpl('ws://localhost:1', WebSocket as any, client, { retryCount: 0, retryTime: 0 });
+
+	await expect(connection.connect()).rejects.toThrow();
+	expect(connection.status).toBe('disconnected');
+});
+
+it('should resolve whenConnected() once connected, and right away while connected', async () => {
+	const client = new MinimalDDPClient();
+	connection = new ConnectionImpl('ws://localhost:1234', WebSocket as any, client, { retryCount: 0, retryTime: 0 });
+
+	const whenConnected = connection.whenConnected();
+	const settled = jest.fn();
+	void whenConnected.then(settled);
+	const connecting = connection.connect();
+	await server.connected;
+	await Promise.resolve();
+	expect(settled).not.toHaveBeenCalled();
+
+	await handleConnection(server, connecting);
+
+	await expect(whenConnected).resolves.toBeUndefined();
+	await expect(connection.whenConnected()).resolves.toBeUndefined();
+});
+
+it('should reject whenConnected() when the connection is closed first', async () => {
+	const client = new MinimalDDPClient();
+	connection = new ConnectionImpl('ws://localhost:1234', WebSocket as any, client, { retryCount: 0, retryTime: 0 });
+
+	const whenConnected = connection.whenConnected();
+	connection.close();
+
+	await expect(whenConnected).rejects.toThrow('Connection closed before it was established');
 });
 
 it('should trigger a disconnect callback', async () => {
@@ -148,7 +246,7 @@ it('should keep reconnecting while the server stays down', async () => {
 
 	await handleConnection(
 		server,
-		jest.advanceTimersByTimeAsync(30_000),
+		jest.advanceTimersByTimeAsync(60_000),
 		new Promise((resolve) => {
 			const handler = (status: string) => {
 				if (status === 'connected') {

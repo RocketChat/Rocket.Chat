@@ -39,12 +39,16 @@ export class AdminSettings extends Admin {
 		return this.page.locator('[data-qa-id="Assets"] >> role=link[name="Open"]');
 	}
 
+	private get assetsLogo(): Locator {
+		return this.page.getByRole('group', { name: 'logo (svg, png, jpg)', exact: true });
+	}
+
 	get btnDeleteAssetsLogo(): Locator {
-		return this.page.locator('//label[@title="Assets_logo"]/following-sibling::span >> role=button[name="Delete"]');
+		return this.assetsLogo.getByRole('button', { name: 'Delete' });
 	}
 
 	get inputAssetsLogo(): Locator {
-		return this.page.locator('//label[@title="Assets_logo"]/following-sibling::span >> input[type="file"]');
+		return this.assetsLogo.locator('input[type="file"]');
 	}
 
 	get btnFullScreen(): Locator {

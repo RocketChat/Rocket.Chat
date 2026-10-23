@@ -1,9 +1,9 @@
 import type { IRoomNativeFederated } from '@rocket.chat/core-typings';
 
 import { api } from '../../../../../apps/meteor/tests/data/api-data';
+import { retry } from '../../../../../apps/meteor/tests/data/retry';
 import { type IRequestConfig, createUser, deleteUser, getRequestConfig } from '../../../../../apps/meteor/tests/data/users.helper';
 import { IS_EE } from '../../../../../apps/meteor/tests/e2e/config/constants';
-import { retry } from '../../../../../apps/meteor/tests/end-to-end/api/helpers/retry';
 import { federationConfig } from '../helper/config';
 import { DDPListener } from '../helper/ddp-listener';
 import { SynapseClient } from '../helper/synapse-client';
@@ -178,11 +178,10 @@ const namesake = {
 		await namesakeDdp.connect();
 
 		const current = await rc1AdminRequestConfig.request
-			.get(api('settings'))
+			.get(api(`settings/${REAL_NAME_SETTING}`))
 			.set(rc1AdminRequestConfig.credentials)
-			.query({ query: JSON.stringify({ _id: REAL_NAME_SETTING }) })
 			.expect(200);
-		originalRealName = Boolean(current.body.settings?.[0]?.value);
+		originalRealName = Boolean(current.body.value);
 	}, 180000);
 
 	afterAll(async () => {

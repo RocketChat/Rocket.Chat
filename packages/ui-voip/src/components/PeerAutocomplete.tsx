@@ -50,7 +50,7 @@ const PeerAutocomplete = ({ options, filter, value, onChangeValue, onChangeFilte
 	const fieldErrorId = useId();
 
 	return (
-		<Field marginBlock={-2}>
+		<Field>
 			<FieldRow>
 				<AutoComplete
 					aria-labelledby={fieldDescriptionId}
