@@ -34,7 +34,8 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
   - [typescript-conventions.md](docs/frontend/typescript-conventions.md) — ES modules, `import type`, `type` vs `interface`, `any` vs `unknown`
   - [migrating-from-javascript.md](docs/frontend/migrating-from-javascript.md) — gradual JS → TS migration
   - [react.md](docs/frontend/react.md) — component structure, naming, exports, explicit and generic props types
-  - [building-components.md](docs/frontend/building-components.md) — application vs Fuselage components, styling rules, Storybook-first
+  - [layout.md](docs/frontend/layout.md) — screens compose named layout containers, never raw `Box` or styling props on Fuselage components; where a new container lives and when it gets promoted
+  - [building-components.md](docs/frontend/building-components.md) — application vs Fuselage components, the props a component accepts, layout containers, adding a variation, Storybook-first
   - [list-keyboard-navigation.md](docs/frontend/list-keyboard-navigation.md) — the three keyboard models for lists (combobox, menu, composite list), the implementation of each, and how to test them
   - [dom-hooks.md](docs/frontend/dom-hooks.md) — hooks that attach listeners or observers return a callback ref instead of taking a `RefObject`
   - [i18n.md](docs/frontend/i18n.md) — client side only: `useTranslation`, `Trans`, runtime keys, escaping (shared rules in [docs/i18n.md](docs/i18n.md))
