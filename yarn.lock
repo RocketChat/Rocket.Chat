@@ -11018,6 +11018,7 @@ __metadata:
     "@rocket.chat/ui-kit": "workspace:~"
     "@rocket.chat/ui-livekit": "workspace:^"
     "@rocket.chat/ui-media": "workspace:^"
+    "@rocket.chat/ui-setup-wizard": "workspace:^"
     "@rocket.chat/ui-video-conf": "workspace:^"
     "@rocket.chat/ui-voip": "workspace:^"
     "@rocket.chat/web-ui-registration": "workspace:^"
@@ -12102,14 +12103,11 @@ __metadata:
     "@rocket.chat/fuselage-tokens": "workspace:^"
     "@rocket.chat/icons": "workspace:~"
     "@rocket.chat/jest-presets": "workspace:~"
-    "@rocket.chat/layout": "workspace:~"
     "@rocket.chat/logo": "workspace:~"
     "@rocket.chat/mock-providers": "workspace:^"
     "@rocket.chat/models": "workspace:~"
-    "@rocket.chat/onboarding-ui": "workspace:^"
     "@rocket.chat/storybook-config": "workspace:~"
     "@rocket.chat/styled": "workspace:~"
-    "@rocket.chat/tools": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
     "@rocket.chat/ui-avatar": "workspace:~"
     "@rocket.chat/ui-contexts": "workspace:~"
@@ -12405,20 +12403,30 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@rocket.chat/ui-setup-wizard@workspace:packages/ui-setup-wizard":
+"@rocket.chat/ui-setup-wizard@workspace:^, @rocket.chat/ui-setup-wizard@workspace:packages/ui-setup-wizard":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-setup-wizard@workspace:packages/ui-setup-wizard"
   dependencies:
+    "@rocket.chat/core-typings": "workspace:~"
+    "@rocket.chat/css-in-js": "workspace:~"
     "@rocket.chat/fuselage": "workspace:~"
+    "@rocket.chat/fuselage-hooks": "workspace:^"
     "@rocket.chat/icons": "workspace:~"
     "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/layout": "workspace:~"
+    "@rocket.chat/onboarding-ui": "workspace:^"
     "@rocket.chat/storybook-config": "workspace:~"
+    "@rocket.chat/tools": "workspace:~"
     "@rocket.chat/tsconfig": "workspace:*"
+    "@rocket.chat/ui-client": "workspace:^"
+    "@rocket.chat/ui-contexts": "workspace:^"
     "@storybook/react": "npm:^9.1.21"
+    "@tanstack/react-query": "npm:~5.65.1"
     "@testing-library/react": "npm:~16.3.3"
     "@types/jest": "npm:~30.0.0"
     "@types/react": "npm:~19.2.18"
     "@types/react-dom": "npm:~19.2.7"
+    i18next: "npm:~26.4.2"
     jest: "npm:~30.5.2"
     react: "npm:~19.2.8"
     react-dom: "npm:~19.2.8"
@@ -12426,8 +12434,14 @@ __metadata:
     storybook: "npm:^9.1.21"
     typescript: "npm:~7.0.2"
   peerDependencies:
+    "@rocket.chat/css-in-js": "workspace:^"
     "@rocket.chat/fuselage": "*"
+    "@rocket.chat/fuselage-hooks": "*"
+    "@rocket.chat/ui-client": "workspace:^"
+    "@rocket.chat/ui-contexts": "workspace:^"
+    "@tanstack/react-query": ~5.65.1
     react: "*"
+    react-i18next: "*"
   languageName: unknown
   linkType: soft
 

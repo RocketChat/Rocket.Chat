@@ -17,17 +17,29 @@
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit"
 	},
+	"dependencies": {
+		"@rocket.chat/onboarding-ui": "workspace:^",
+		"@rocket.chat/tools": "workspace:~"
+	},
 	"devDependencies": {
+		"@rocket.chat/core-typings": "workspace:~",
+		"@rocket.chat/css-in-js": "workspace:~",
 		"@rocket.chat/fuselage": "workspace:~",
+		"@rocket.chat/fuselage-hooks": "workspace:^",
 		"@rocket.chat/icons": "workspace:~",
 		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/layout": "workspace:~",
 		"@rocket.chat/storybook-config": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
+		"@rocket.chat/ui-client": "workspace:^",
+		"@rocket.chat/ui-contexts": "workspace:^",
 		"@storybook/react": "^9.1.21",
+		"@tanstack/react-query": "~5.65.1",
 		"@testing-library/react": "~16.3.3",
 		"@types/jest": "~30.0.0",
 		"@types/react": "~19.2.18",
 		"@types/react-dom": "~19.2.7",
+		"i18next": "~26.4.2",
 		"jest": "~30.5.2",
 		"react": "~19.2.8",
 		"react-dom": "~19.2.8",
@@ -36,8 +48,14 @@
 		"typescript": "~7.0.2"
 	},
 	"peerDependencies": {
+		"@rocket.chat/css-in-js": "workspace:^",
 		"@rocket.chat/fuselage": "*",
-		"react": "*"
+		"@rocket.chat/fuselage-hooks": "*",
+		"@rocket.chat/ui-client": "workspace:^",
+		"@rocket.chat/ui-contexts": "workspace:^",
+		"@tanstack/react-query": "~5.65.1",
+		"react": "*",
+		"react-i18next": "*"
 	},
 	"volta": {
 		"extends": "../../package.json"
