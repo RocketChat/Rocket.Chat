@@ -1,3 +1,4 @@
+import { SetupWizardRoute } from '@rocket.chat/ui-setup-wizard';
 import { createElement, lazy, useEffect } from 'react';
 
 import { appLayout } from '../lib/appLayout';
@@ -26,7 +27,6 @@ const NotFoundPage = lazy(() => import('../views/notFound/NotFoundPage'));
 const CallHistoryPage = lazy(() => import('../views/mediaCallHistory/CallHistoryPage'));
 const SidebarRailCallPanel = lazy(() => import('../sidebar/SidebarRail/SidebarRailCallPanel'));
 const SearchPage = lazy(() => import('../views/search/SearchPage'));
-const SetupWizardRoute = lazy(() => import('@rocket.chat/ui-setup-wizard').then(({ SetupWizardRoute }) => ({ default: SetupWizardRoute })));
 
 declare module '@rocket.chat/ui-contexts' {
 	interface IRouterPaths {
