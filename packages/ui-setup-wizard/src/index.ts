@@ -1,3 +1,5 @@
+import { lazy } from 'react';
+
 import './routes';
 
-export { default as SetupWizardRoute } from './SetupWizardRoute';
+export const SetupWizardRoute = lazy(() => import('./SetupWizardRoute'));
