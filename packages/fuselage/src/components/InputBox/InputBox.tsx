@@ -12,7 +12,6 @@ export type InputBoxProps<T extends HTMLInputElement | HTMLSelectElement | HTMLT
 	RefAttributes<T> & {
 		startAddon?: ReactNode;
 		endAddon?: ReactNode;
-		input?: ReactNode;
 		multiple?: boolean;
 		error?: string;
 		placeholder?: string;

@@ -55,11 +55,6 @@ export default {
 			description: 'Content rendered after the input, inside its border.',
 			table: { category: 'Content' },
 		},
-		input: {
-			control: false,
-			description: 'Overrides the rendered input element entirely.',
-			table: { category: 'Content' },
-		},
 		multiple: {
 			control: 'boolean',
 			description: 'Allows multiple values to be entered/selected.',
