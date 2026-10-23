@@ -77,7 +77,7 @@ describe('TimespanSettingInput component', () => {
 			{ wrapper: mockAppRoot().build() },
 		);
 
-		const selectInput = screen.getByRole('button', { name: 'hours' });
+		const selectInput = screen.getByRole('combobox');
 		await userEvent.click(selectInput);
 		const minutesOption = screen.getByRole('option', { name: 'minutes' });
 		await userEvent.click(minutesOption);
@@ -102,7 +102,7 @@ describe('TimespanSettingInput component', () => {
 			{ wrapper: mockAppRoot().build() },
 		);
 
-		const selectInput = screen.getByRole('button', { name: 'days' });
+		const selectInput = screen.getByRole('combobox');
 		await userEvent.click(selectInput);
 		const hoursOption = screen.getByRole('option', { name: 'hours' });
 		await userEvent.click(hoursOption);
@@ -127,7 +127,7 @@ describe('TimespanSettingInput component', () => {
 			{ wrapper: mockAppRoot().build() },
 		);
 
-		const selectInput = screen.getByRole('button', { name: 'hours' });
+		const selectInput = screen.getByRole('combobox');
 		await userEvent.click(selectInput);
 		const daysOption = screen.getByRole('option', { name: 'days' });
 		await userEvent.click(daysOption);

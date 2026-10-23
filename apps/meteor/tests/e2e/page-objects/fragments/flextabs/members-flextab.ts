@@ -155,7 +155,7 @@ export class MembersFlexTab extends FlexTab {
 	}
 
 	async showAllUsers() {
-		await this.root.getByRole('button', { name: 'Online' }).click();
+		await this.root.getByRole('combobox', { name: 'Status' }).click();
 		await this.listbox.selectOption('All');
 	}
 
