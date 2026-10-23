@@ -25,7 +25,10 @@ const statusLabels = {
 
 export type UserMenuButtonProps = ComponentPropsWithoutRef<typeof IconButton>;
 
-const UserMenuButton = forwardRef(function UserMenuButton(props: UserMenuButtonProps, ref: ForwardedRef<HTMLElement>) {
+const UserMenuButton = forwardRef(function UserMenuButton(
+	{ 'aria-describedby': ariaDescribedBy, ...props }: UserMenuButtonProps,
+	ref: ForwardedRef<HTMLElement>,
+) {
 	const { t } = useTranslation();
 	const user = useUser();
 
@@ -46,23 +49,23 @@ const UserMenuButton = forwardRef(function UserMenuButton(props: UserMenuButtonP
 	const statusLabel = t(statusLabels[displayedStatus as keyof typeof statusLabels] ?? 'Loading');
 	const descriptionId = useId();
 
-	// Announces status changes only, never the status the page loaded with.
+	// Announces status changes only: neither the status the page loaded with nor a language change.
 	const [announcement, setAnnouncement] = useState('');
-	const previousStatusLabel = useRef(statusLabel);
+	const previousStatus = useRef(displayedStatus);
 	useEffect(() => {
-		if (previousStatusLabel.current === statusLabel) {
+		if (previousStatus.current === displayedStatus) {
 			return;
 		}
-		previousStatusLabel.current = statusLabel;
+		previousStatus.current = displayedStatus;
 		setAnnouncement(statusLabel);
-	}, [statusLabel]);
+	}, [displayedStatus, statusLabel]);
 
 	return (
 		<>
 			<IconButton
 				{...props}
 				ref={ref}
-				aria-describedby={descriptionId}
+				aria-describedby={ariaDescribedBy ? `${ariaDescribedBy} ${descriptionId}` : descriptionId}
 				icon={username ? <UserAvatar size='x28' username={username} etag={avatarETag} /> : 'user'}
 				badgePosition='bottom-end'
 				badge={

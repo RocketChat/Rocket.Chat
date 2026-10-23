@@ -1,13 +1,20 @@
 import { UserStatus, type IUser } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { UserContext } from '@rocket.chat/ui-contexts';
-import { render, screen } from '@testing-library/react';
-import { useContext } from 'react';
+import { render, screen, waitFor } from '@testing-library/react';
+import { useContext, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import UserMenuButton from './UserMenuButton';
 
-const UserMenuButtonWithStatus = ({ status }: { status: IUser['status'] }) => {
+const UserMenuButtonWithStatus = ({ status, language }: { status: IUser['status']; language?: string }) => {
 	const userContext = useContext(UserContext);
+	const { i18n } = useTranslation();
+	useEffect(() => {
+		if (language) {
+			void i18n.changeLanguage(language);
+		}
+	}, [i18n, language]);
 	return (
 		<UserContext.Provider value={{ ...userContext, user: userContext.user && { ...userContext.user, status } }}>
 			<UserMenuButton icon='user' aria-label='User menu' />
@@ -24,7 +31,8 @@ const appRoot = () =>
 			Busy: 'Busy',
 			Offline: 'Offline',
 			User_status_disabled: 'Status disabled',
-		});
+		})
+		.withTranslations('pt-BR', 'core', { Away: 'Ausente' });
 
 describe('UserMenuButton', () => {
 	it.each([
@@ -108,5 +116,26 @@ describe('UserMenuButton', () => {
 
 		expect(screen.getByRole('button', { name: 'User menu' })).toHaveAccessibleDescription('Busy');
 		expect(screen.getByRole('status')).toHaveTextContent('Busy');
+	});
+
+	it('does not announce when only the language changes', async () => {
+		const { rerender } = render(<UserMenuButtonWithStatus status={UserStatus.AWAY} />, { wrapper: appRoot().build() });
+
+		rerender(<UserMenuButtonWithStatus status={UserStatus.AWAY} language='pt-BR' />);
+
+		await waitFor(() => expect(screen.getByRole('button', { name: 'User menu' })).toHaveAccessibleDescription('Ausente'));
+		expect(screen.getByRole('status')).toBeEmptyDOMElement();
+	});
+
+	it('keeps the description passed by the caller', () => {
+		render(
+			<>
+				<span id='caller-hint'>Opens the user menu</span>
+				<UserMenuButton icon='user' aria-label='User menu' aria-describedby='caller-hint' />
+			</>,
+			{ wrapper: appRoot().build() },
+		);
+
+		expect(screen.getByRole('button', { name: 'User menu' })).toHaveAccessibleDescription('Opens the user menu Online');
 	});
 });
