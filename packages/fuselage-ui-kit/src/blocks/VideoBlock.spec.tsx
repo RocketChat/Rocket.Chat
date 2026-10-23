@@ -1,3 +1,6 @@
+/**
+ * @jest-environment-options {"url": "https://workspace.example.com/channel/general"}
+ */
 import { MockedServerContext } from '@rocket.chat/mock-providers';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { render, screen } from '@testing-library/react';
@@ -39,7 +42,13 @@ it('links the title and shows the provider and the author', () => {
 	expect(screen.getByText('Example · Docs team')).toBeInTheDocument();
 });
 
-it.each([['http://player.example.com/embed/1'], ['javascript:alert(1)']])('never plays %s', async (url) => {
+it.each([
+	['http://player.example.com/embed/1'],
+	['javascript:alert(1)'],
+	['/api/apps/public/app/player.html'],
+	['//player.example.com/embed/1'],
+	['https://workspace.example.com/api/apps/public/app/player.html'],
+])('never plays %s', async (url) => {
 	renderVideo(video({ video_url: url }));
 
 	expect(screen.getByRole('button', { name: 'Release walkthrough' })).toBeDisabled();

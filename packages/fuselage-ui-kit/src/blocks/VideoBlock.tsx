@@ -8,7 +8,15 @@ export type VideoBlockProps = BlockProps<UiKit.VideoBlock>;
 
 const maxWidth = 480;
 
-const isPlayableUrl = (url: string) => UiKit.isSafeUrl(url) && new URL(url, window.location.href).protocol === 'https:';
+// The frame keeps its origin so players can run; a page from the workspace's own origin could then reach out of the sandbox.
+const isPlayableUrl = (url: string) => {
+	try {
+		const { protocol, origin } = new URL(url);
+		return protocol === 'https:' && origin !== window.location.origin;
+	} catch {
+		return false;
+	}
+};
 
 const VideoBlock = ({ className, block, surfaceRenderer }: VideoBlockProps) => {
 	const [playing, setPlaying] = useState(false);

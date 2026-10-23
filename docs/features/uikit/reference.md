@@ -195,7 +195,7 @@ Source: [`packages/ui-kit/src/blocks/layout/VideoBlock.ts`](../../../packages/ui
 | Field | Type | Required | Notes |
 | --- | --- | --- | --- |
 | `type` | `'video'` | yes | A video shown as its thumbnail, which plays in place once clicked. |
-| `video_url` | `string` | yes | An embeddable page that plays the video, loaded in a sandboxed frame on click. Only `https` URLs that pass `isSafeUrl` play; any other URL leaves the thumbnail inert. |
+| `video_url` | `string` | yes | An embeddable page that plays the video, loaded in a sandboxed frame on click. Only absolute `https` URLs on another origin than the workspace play; relative URLs, other schemes and the workspace's own origin leave the thumbnail inert. |
 | `thumbnail_url` | `string` | yes |  |
 | `alt_text` | `string` | yes | Describes the video for screen readers and when the thumbnail does not load. |
 | `title` | `PlainText` | yes |  |
