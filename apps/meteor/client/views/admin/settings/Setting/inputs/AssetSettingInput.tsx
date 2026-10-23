@@ -123,7 +123,13 @@ function AssetSettingInput({ _id, label, value, hint, asset, required, disabled,
 						) : (
 							<Box position='relative' className={`rcx-button rcx-button--primary ${disabled ? 'is-disabled' : ''}`}>
 								{t('Select_file')}
-								<input type='file' accept={`.${fileConstraints?.extensions?.join(', .')}`} onChange={handleUpload} disabled={disabled} />
+								<input
+									id={_id}
+									type='file'
+									accept={`.${fileConstraints?.extensions?.join(', .')}`}
+									onChange={handleUpload}
+									disabled={disabled}
+								/>
 							</Box>
 						)}
 					</div>
