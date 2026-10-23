@@ -27,7 +27,7 @@ const AccordionItem = ({
 	...props
 }: AccordionItemProps) => {
 	const [stateExpanded, toggleStateExpanded] = useToggle(defaultExpanded);
-	const expanded = propExpanded || stateExpanded;
+	const expanded = propExpanded ?? stateExpanded;
 
 	const panelExpanded = noncollapsible || expanded;
 
