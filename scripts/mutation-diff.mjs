@@ -4,11 +4,11 @@ import { dirname, isAbsolute, matchesGlob, relative, resolve, sep } from 'node:p
 
 export class UsageError extends Error {}
 const slash = (path) => path.split(sep).join('/');
-const runnerConfigs = { jest: 'jest.config.ts', mocha: '.mocharc.js' };
+const runnerConfigs = { jest: ['jest.config.ts', 'jest.config.mjs'], mocha: ['.mocharc.js'] };
 
 function packageRunners(directory) {
 	return Object.entries(runnerConfigs)
-		.filter(([, config]) => existsSync(resolve(directory, config)))
+		.filter(([, configs]) => configs.some((config) => existsSync(resolve(directory, config))))
 		.map(([runner]) => runner);
 }
 
@@ -32,7 +32,7 @@ export function planExplicit(root, packagePath, scope) {
 		throw new UsageError('Expected a workspace package directory inside this repository.');
 	}
 	const runners = packageRunners(directory);
-	if (!runners.length) throw new UsageError(`${packagePath} has no jest.config.ts or .mocharc.js.`);
+	if (!runners.length) throw new UsageError(`${packagePath} has no jest.config.ts, jest.config.mjs, or .mocharc.js.`);
 	// Match Stryker CLI's comma-separated scope; Stryker resolves globs, exclusions, and line ranges.
 	const targets = scope.split(',').filter(Boolean);
 	if (!targets.some((target) => !target.startsWith('!'))) throw new UsageError('--mutate requires a production source target.');
@@ -118,7 +118,7 @@ export function planDiff(root, base = 'origin/develop') {
 		}
 		const runners = packageRunners(directory);
 		if (!runners.length) {
-			skip('package has no jest.config.ts or .mocharc.js');
+			skip('package has no jest.config.ts, jest.config.mjs, or .mocharc.js');
 			continue;
 		}
 		const target = slash(relative(directory, absolute));

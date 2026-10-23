@@ -1,4 +1,4 @@
-import { ClientSafeError, Presence, Team } from '@rocket.chat/core-services';
+import { ClientSafeError, Presence, Team, isClientSafeError } from '@rocket.chat/core-services';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Sessions, OAuthAccessTokens, OAuthRefreshTokens, OAuthAuthCodes } from '@rocket.chat/models';
 import {
@@ -1000,6 +1000,10 @@ API.v1.post(
 			try {
 				validateCustomFields(this.bodyParams.customFields);
 			} catch (e) {
+				if (isClientSafeError(e)) {
+					const { isClientSafe, errorType, error, reason, message, details } = e;
+					return API.v1.failure({ isClientSafe, errorType, error, reason, message, details });
+				}
 				return API.v1.failure(e);
 			}
 		}

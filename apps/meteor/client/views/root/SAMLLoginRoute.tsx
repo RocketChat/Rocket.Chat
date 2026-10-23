@@ -1,8 +1,8 @@
 import { useRouter, useToastMessageDispatch, useSearchParameter } from '@rocket.chat/ui-contexts';
-import { Meteor } from 'meteor/meteor';
 import { useEffect, useRef } from 'react';
 
 import { buildSamlDeepLinkURL } from '../../lib/buildAuthDeeplinkURL';
+import { loginWithSamlToken } from '../../meteor/login/saml';
 import { useSamlInviteToken } from '../invite/hooks/useSamlInviteToken';
 
 const SAMLLoginRoute = () => {
@@ -31,7 +31,7 @@ const SAMLLoginRoute = () => {
 			return () => clearTimeout(timeout);
 		}
 
-		Meteor.loginWithSamlToken(token, (error?: unknown) => {
+		void loginWithSamlToken(token, (error?: unknown) => {
 			if (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}

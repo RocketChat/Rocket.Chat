@@ -1,4 +1,4 @@
-import type { AtLeast, IRoom, ISubscription, IUser, MessageTypesValues } from '@rocket.chat/core-typings';
+import type { AtLeast, IRoom, ISubscription, IUser, MessageTypesValues, MinimalApp } from '@rocket.chat/core-typings';
 
 export interface ISubscriptionExtraData {
 	open: boolean;
@@ -7,10 +7,11 @@ export interface ISubscriptionExtraData {
 	roles?: string[];
 }
 
-export interface ICreateRoomOptions extends Partial<Record<string, boolean | string | ISubscriptionExtraData>> {
+export interface ICreateRoomOptions extends Partial<Record<string, boolean | string | ISubscriptionExtraData | MinimalApp>> {
 	forceNew?: boolean;
 	creator: string;
 	subscriptionExtra?: ISubscriptionExtraData;
+	app?: MinimalApp;
 }
 
 export interface ICreateRoomParams<T extends IRoom = IRoom> {
@@ -23,7 +24,7 @@ export interface ICreateRoomParams<T extends IRoom = IRoom> {
 }
 export interface IRoomService {
 	addMember(uid: string, rid: string): Promise<boolean>;
-	create<T extends IRoom = IRoom>(uid: string, params: ICreateRoomParams<T>): Promise<IRoom>;
+	create<T extends IRoom = IRoom>(uid: string, params: ICreateRoomParams<T>): Promise<IRoom & { skippedMembers?: string[] }>;
 	createDirectMessage(data: { to: string; from: string }): Promise<{ rid: string }>;
 	createDirectMessageWithMultipleUsers(members: string[], creatorId: string): Promise<{ rid: string }>;
 	addUserToRoom(
@@ -44,7 +45,12 @@ export interface IRoomService {
 	removeUserFromRoom(
 		roomId: string,
 		user: IUser,
-		options?: { byUser?: Pick<IUser, '_id' | 'username'>; skipAppPreEvents?: boolean; customSystemMessage?: MessageTypesValues },
+		options?: {
+			byUser?: Pick<IUser, '_id' | 'username'>;
+			skipAppPreEvents?: boolean;
+			customSystemMessage?: MessageTypesValues;
+			skipSystemMessage?: boolean;
+		},
 	): Promise<void>;
 	getValidRoomName(displayName: string, roomId?: string, options?: { allowDuplicates?: boolean }): Promise<string>;
 	saveRoomTopic(

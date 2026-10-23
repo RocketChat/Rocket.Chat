@@ -7,8 +7,12 @@ import { useAnalyticsEventTracking } from './hooks/useAnalyticsEventTracking';
 import { useAutoupdate } from './hooks/useAutoupdate';
 import { useCodeHighlight } from './hooks/useCodeHighlight';
 import { useCorsSSLConfig } from './hooks/useCorsSSLConfig';
+import { useDesktopBridgeContract } from './hooks/useDesktopBridgeContract';
 import { useDesktopFavicon } from './hooks/useDesktopFavicon';
+import { useDesktopOutlookCredentials } from './hooks/useDesktopOutlookCredentials';
 import { useDesktopTitle } from './hooks/useDesktopTitle';
+import { useDesktopUserLoggedIn } from './hooks/useDesktopUserLoggedIn';
+import { useDesktopUserPresence } from './hooks/useDesktopUserPresence';
 import { useDesktopUserRoles } from './hooks/useDesktopUserRoles';
 import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
@@ -62,9 +66,13 @@ const AppLayout = () => {
 	useOAuthPopupCommands();
 	useShareSessionWithOtherClients();
 	useLoadMissedMessages();
+	useDesktopBridgeContract();
 	useDesktopFavicon();
 	useDesktopTitle();
+	useDesktopUserLoggedIn();
+	useDesktopOutlookCredentials();
 	useDesktopUserRoles();
+	useDesktopUserPresence();
 	useStartupEvent();
 	useIframeCommands();
 

@@ -34,8 +34,8 @@ full. Skipped files are printed with a reason.
 
 Affected packages run their configured Jest and Mocha unit suites. If a package has
 both, each runs separately. Meteor's Jest client and server projects retain their
-jsdom and Node environments. Vitest, Playwright, and API tests against a separate
-server are unsupported.
+jsdom and Node environments. This wrapper does not yet support `node:test`, Vitest,
+Playwright, or API tests against a separate server.
 
 Add `--testRunner jest` or `--testRunner mocha` to either command to run only that
 runner. This avoids unrelated suites when you know which runner tests the selected

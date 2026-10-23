@@ -1,4 +1,9 @@
-import { AI_SEARCH_PAGE_SIZE, MAX_INTELLIGENT_SEARCH_RESULTS, MAX_SEARCH_FILTER_VALUES } from '@rocket.chat/ai-search';
+import {
+	AI_SEARCH_PAGE_SIZE,
+	isIntelligentSearchErrorCode,
+	MAX_INTELLIGENT_SEARCH_RESULTS,
+	MAX_SEARCH_FILTER_VALUES,
+} from '@rocket.chat/ai-search';
 import { AISearch } from '@rocket.chat/core-services';
 import { isBannedSubscription, type IRoom } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Subscriptions } from '@rocket.chat/models';
@@ -296,7 +301,8 @@ API.v1.get(
 				});
 			} catch (error) {
 				this.logger.warn({ msg: 'AI search request failed', err: error });
-				intelligentResults = [];
+				const message = error instanceof Error ? error.message : '';
+				throw new Meteor.Error(isIntelligentSearchErrorCode(message) ? message : 'error-ai-search-request-failed');
 			}
 		}
 

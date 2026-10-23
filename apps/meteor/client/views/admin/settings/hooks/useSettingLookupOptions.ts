@@ -15,13 +15,14 @@ const isSettingLookupOption = (option: unknown): option is SettingLookupOption =
 const toSettingLookupOptions = (response: unknown): SettingLookupOption[] =>
 	isRecord(response) && Array.isArray(response.data) ? response.data.filter(isSettingLookupOption) : [];
 
-export const useSettingLookupOptions = (lookupEndpoint: SettingLookupEndpoint): SettingLookupOption[] => {
+export const useSettingLookupQuery = (lookupEndpoint: SettingLookupEndpoint) => {
 	const lookup = useEndpoint('GET', lookupEndpoint) as unknown as () => Promise<unknown>;
 
-	const { data: options = [] } = useQuery({
+	return useQuery({
 		queryKey: miscQueryKeys.lookup(lookupEndpoint),
 		queryFn: async () => toSettingLookupOptions(await lookup()),
 	});
-
-	return options;
 };
+
+export const useSettingLookupOptions = (lookupEndpoint: SettingLookupEndpoint): SettingLookupOption[] =>
+	useSettingLookupQuery(lookupEndpoint).data ?? [];

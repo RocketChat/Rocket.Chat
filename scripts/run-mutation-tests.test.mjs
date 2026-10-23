@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { execFile, spawn } from 'node:child_process';
-import { copyFile, mkdir, mkdtemp, readFile, rm, symlink, writeFile } from 'node:fs/promises';
+import { copyFile, mkdir, mkdtemp, readFile, rename, rm, symlink, writeFile } from 'node:fs/promises';
 import { createRequire } from 'node:module';
 import { dirname, resolve } from 'node:path';
 import { test } from 'node:test';
@@ -93,7 +93,7 @@ async function report(directory, runner = 'jest') {
 	return JSON.parse(await readFile(resolve(directory, `reports/mutation/${runner}/mutation.json`), 'utf8'));
 }
 
-test('Jest projects preserve client/server environments, setup, and aliases while detecting shared mutations', async (t) => {
+test('Jest .mjs projects preserve client/server environments, setup, and aliases while detecting shared mutations', async (t) => {
 	const directory = await fixture(
 		t,
 		`
@@ -110,6 +110,7 @@ export default { projects: [
 ] };
 `,
 	);
+	await rename(resolve(directory, 'jest.config.ts'), resolve(directory, 'jest.config.mjs'));
 	await writeFile(resolve(directory, 'tsconfig.json'), JSON.stringify({ compilerOptions: { allowJs: true } }));
 	await writeFile(resolve(directory, 'client-setup.ts'), "globalThis.projectSetup = 'client';");
 	await writeFile(resolve(directory, 'server-setup.ts'), "globalThis.projectSetup = 'server';");

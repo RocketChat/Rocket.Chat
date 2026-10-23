@@ -6,7 +6,6 @@ import { fileURLToPath } from 'node:url';
 // Keep Jest's version-dependent configuration loading here. When upgrading Jest or
 // Stryker, run yarn test:mutation:tooling to check environments and alias resolution.
 export async function loadMutationJestConfig() {
-	const configFile = 'jest.config.ts';
 	// Keep ts-node from compiling ESM JavaScript dependencies when loading Meteor's TypeScript config.
 	process.env.TS_NODE_COMPILER_OPTIONS = JSON.stringify({ ...JSON.parse(process.env.TS_NODE_COMPILER_OPTIONS ?? '{}'), allowJs: false });
 	// Resolve through the selected package's Jest so jest-config uses the same version.
@@ -14,8 +13,9 @@ export async function loadMutationJestConfig() {
 	const requireJest = createRequire(requirePackage.resolve('jest'));
 	const requireJestCli = createRequire(requireJest.resolve('jest-cli'));
 	const { readConfigs, readInitialOptions } = requireJestCli('jest-config');
-	const { configs } = await readConfigs({ $0: 'mutation-tests', _: [], config: resolve(configFile) }, [process.cwd()]);
-	const { config } = await readInitialOptions(resolve(configFile));
+	const { config, configPath } = await readInitialOptions(process.cwd());
+	const configFile = relative(process.cwd(), configPath);
+	const { configs } = await readConfigs({ $0: 'mutation-tests', _: [], config: configPath }, [process.cwd()]);
 
 	// Local aliases must read mutated files in the sandbox. External aliases must retain
 	// their resolved paths, e.g. <rootDir>/../../node_modules/react in UI packages.

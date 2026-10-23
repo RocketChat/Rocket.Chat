@@ -1,6 +1,6 @@
 import type { IEmailDescriptor, IPreEmailSentContext } from '.';
 import type { IHttp, IModify, IPersistence, IRead } from '../accessors';
-import { AppMethod } from '../metadata';
+import type { AppMethod } from '../metadata';
 
 /**
  * Event interface that allows apps to
