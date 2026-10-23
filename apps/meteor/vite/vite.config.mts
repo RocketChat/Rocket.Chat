@@ -51,7 +51,11 @@ const rocketchatInfo = (): Plugin => {
 	};
 };
 
-// Swaps the modules whose dev-server behaviour differs for their implementations in vite/native.
+// The Rocket.Chat server serves the client itself (`RC_CLIENT_TARGET=server`), or another host serves it in front of
+// a proxy to the server (the default, used by the dev server and ui-preview).
+const servedByServer = process.env.RC_CLIENT_TARGET === 'server';
+
+// Swaps the modules whose behaviour behind a proxy differs for their implementations in vite/native.
 const nativeModules = (): Plugin => {
 	const replacements = new Map(
 		Object.entries({
@@ -209,7 +213,9 @@ const prebundledWorkspaceDeps = [
 export default defineConfig({
 	root: here,
 	publicDir: join(appRoot, 'public'),
-	plugins: [react(), rocketchatInfo(), nativeModules(), devRuntimeConfig()],
+	// Relative, so chunks, fonts and images resolve from wherever the entry is loaded: a CDN, a path prefix or the root.
+	base: './',
+	plugins: [react(), rocketchatInfo(), ...(servedByServer ? [] : [nativeModules()]), devRuntimeConfig()],
 	resolve: {
 		alias: [
 			{ find: /^meteor\/.*$/, replacement: join(here, 'shims/meteor.ts') },
@@ -253,5 +259,9 @@ export default defineConfig({
 		// Minify stylesheets without rewriting their values, so they render as the Meteor build ships them.
 		cssMinify: 'esbuild',
 		sourcemap: true,
+		// The server reads it to inject the entry and its preloads into the page it renders.
+		manifest: true,
+		// The polyfill is an inline script, which the server's Content-Security-Policy blocks.
+		modulePreload: { polyfill: false },
 	},
 });
