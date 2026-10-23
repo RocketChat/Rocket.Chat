@@ -1,3 +1,4 @@
+/* eslint-disable react/no-multi-comp */
 import type { Decorator } from '@storybook/react-webpack5';
 
 import {

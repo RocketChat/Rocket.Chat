@@ -36,6 +36,7 @@ export type ThrobberProps = Omit<BoxProps, 'ref' | 'disabled'> &
 /**
  * Indicates content that has not loaded yet.
  */
+// eslint-disable-next-line react/no-multi-comp
 function Throbber({ disabled, size = 'x16', circleCount = 3, inheritColor, ...props }: ThrobberProps) {
 	return (
 		<Box rcx-throbber {...props}>

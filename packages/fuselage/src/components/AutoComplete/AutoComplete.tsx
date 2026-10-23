@@ -85,14 +85,14 @@ function AutoComplete<TLabel = ReactNode>({
 	setFilter,
 	options = [],
 	renderItem,
-	renderSelected: RenderSelected,
+	renderSelected: SelectedComponent,
 	onChange,
 	renderEmpty,
 	placeholder,
 	error,
 	disabled,
 	multiple,
-	onBlur: onBlurAction = () => {},
+	onBlur: onBlurAction = () => undefined,
 	...props
 }: AutoCompleteProps<TLabel>) {
 	const innerRef = useRef<HTMLInputElement>(null);
@@ -175,8 +175,8 @@ function AutoComplete<TLabel = ReactNode>({
 					className={['rcx-input-box--undecorated', 'rcx-autocomplete__input', props.className]}
 				/>
 				{selected.map((itemSelected) =>
-					RenderSelected ? (
-						<RenderSelected key={itemSelected.value} selected={itemSelected} onRemove={handleRemove} />
+					SelectedComponent ? (
+						<SelectedComponent key={itemSelected.value} selected={itemSelected} onRemove={handleRemove} />
 					) : (
 						<Chip key={itemSelected.value} value={itemSelected.value} onClick={handleRemove}>
 							{itemSelected.label as ReactNode}

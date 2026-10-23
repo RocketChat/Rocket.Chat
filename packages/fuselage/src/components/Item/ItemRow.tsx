@@ -10,6 +10,8 @@ export type ItemRowProps = {
 /**
  * A horizontal line inside `ItemContent`, such as a title with a timestamp or a description with a badge.
  */
-const ItemRow = ({ is: Tag = 'div', className, ...props }: ItemRowProps) => <Tag {...props} className={cx('rcx-item__row', className)} />;
+const ItemRow = ({ is: Component = 'div', className, ...props }: ItemRowProps) => (
+	<Component {...props} className={cx('rcx-item__row', className)} />
+);
 
 export default ItemRow;

@@ -41,6 +41,7 @@ export function ListBox(props: ListBoxProps) {
 	);
 }
 
+// eslint-disable-next-line react/no-multi-comp
 function ListBoxSection({ section, state }: SectionProps) {
 	const { itemProps, headingProps, groupProps } = useListBoxSection({
 		'heading': section.rendered,
@@ -63,6 +64,7 @@ function ListBoxSection({ section, state }: SectionProps) {
 	);
 }
 
+// eslint-disable-next-line react/no-multi-comp
 function OptionAria({ item, state }: OptionProps) {
 	const ref = useRef<HTMLLIElement>(null);
 	const { optionProps, isDisabled, isSelected, isFocused } = useOption(

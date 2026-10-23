@@ -486,19 +486,6 @@ export default [
 			'storybook/no-renderer-packages': 'off',
 		},
 	},
-	// FIXME: violations carried over from the Fuselage monorepo, which linted with a different config
-	{
-		files: ['packages/fuselage/src/**/*.@(ts|tsx)'],
-		rules: {
-			'@typescript-eslint/naming-convention': 'warn',
-			'@typescript-eslint/no-empty-function': 'warn',
-			'react-hooks/exhaustive-deps': 'warn',
-			'react/display-name': 'warn',
-			'react/jsx-key': 'warn',
-			'react/no-children-prop': 'warn',
-			'react/no-multi-comp': 'warn',
-		},
-	},
 	// FIXME: existing imports that reach into another package's files; new ones are rejected everywhere else
 	{
 		files: [
