@@ -6,9 +6,9 @@ import { dispatchToastMessage } from '../../../lib/toast';
 
 export const warnStatusChange = (appName: string, status: AppStatus): void => {
 	if (appErroredStatuses.includes(status)) {
-		dispatchToastMessage({ type: 'error', message: (t(`App_status_${status}`), appName) });
+		dispatchToastMessage({ type: 'error', title: appName, message: t(`App_status_${status}`) });
 		return;
 	}
 
-	dispatchToastMessage({ type: 'info', message: (t(`App_status_${status}`), appName) });
+	dispatchToastMessage({ type: 'info', title: appName, message: t(`App_status_${status}`) });
 };
