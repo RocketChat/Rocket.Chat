@@ -53,6 +53,16 @@ it('sends the clicked button value and marks it as pressed', async () => {
 	expect(screen.getByRole('button', { name: 'Mark this answer as bad' })).toHaveAttribute('aria-pressed', 'false');
 });
 
+it('sends the negative value and marks only the negative button as pressed', async () => {
+	const action = renderFeedback();
+
+	await userEvent.click(screen.getByRole('button', { name: 'Mark this answer as bad' }));
+
+	expect(action).toHaveBeenCalledWith(expect.objectContaining({ actionId: 'rate', value: 'bad' }), expect.anything());
+	expect(screen.getByRole('button', { name: 'Mark this answer as bad' })).toHaveAttribute('aria-pressed', 'true');
+	expect(screen.getByRole('button', { name: 'Good answer' })).toHaveAttribute('aria-pressed', 'false');
+});
+
 it('marks only the clicked button as pressed when both carry the same value', async () => {
 	renderFeedback(jest.fn(), 'good');
 

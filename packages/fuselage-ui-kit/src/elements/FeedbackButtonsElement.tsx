@@ -2,6 +2,7 @@ import { Button, Stack } from '@rocket.chat/fuselage';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { useState } from 'react';
 
+import { useStringFromTextObject } from '../hooks/useStringFromTextObject';
 import { useUiKitState } from '../hooks/useUiKitState';
 import type { BlockProps } from '../utils/BlockProps';
 
@@ -10,6 +11,7 @@ export type FeedbackButtonsElementProps = BlockProps<UiKit.FeedbackButtonsElemen
 const FeedbackButtonsElement = ({ block, context }: FeedbackButtonsElementProps) => {
 	const [{ loading }, action] = useUiKitState(block, context);
 	const [chosen, setChosen] = useState<'positive' | 'negative'>();
+	const fromTextObject = useStringFromTextObject();
 
 	const buttons = [
 		{ kind: 'positive', button: block.positive_button, emoji: '👍' },
@@ -25,9 +27,9 @@ const FeedbackButtonsElement = ({ block, context }: FeedbackButtonsElementProps)
 					square
 					secondary={chosen === kind}
 					disabled={loading}
-					aria-label={button.accessibility_label ?? button.text.text}
+					aria-label={button.accessibility_label ?? fromTextObject(button.text)}
 					aria-pressed={chosen === kind}
-					title={button.text.text}
+					title={fromTextObject(button.text)}
 					onClick={() => {
 						setChosen(kind);
 						void action({ target: { value: button.value } });
