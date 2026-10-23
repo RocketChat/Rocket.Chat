@@ -1,4 +1,4 @@
-import { afterEach, describe, it } from 'node:test';
+import { describe, it } from 'node:test';
 
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
@@ -7,10 +7,8 @@ import sinon from 'sinon';
 type Env = { TEST_MODE?: string; ROCKET_CHAT_DEPRECATION_THROW_ERRORS_FOR_VERSIONS_UNDER?: string };
 
 const ENV_KEYS = ['TEST_MODE', 'ROCKET_CHAT_DEPRECATION_THROW_ERRORS_FOR_VERSIONS_UNDER'] as const;
-const originalEnv = Object.fromEntries(ENV_KEYS.map((key) => [key, process.env[key]]));
 
-// The module reads its environment once, at load time, so each scenario loads a fresh copy.
-const loadLogger = (env: Env = {}) => {
+const setEnv = (env: Env) => {
 	for (const key of ENV_KEYS) {
 		if (env[key] === undefined) {
 			delete process.env[key];
@@ -18,26 +16,36 @@ const loadLogger = (env: Env = {}) => {
 			process.env[key] = env[key];
 		}
 	}
+};
 
+// The module reads its environment once, at load time, so each scenario loads a fresh copy under its own
+// environment, and the shared process gets its environment back as soon as the copy is loaded.
+const loadLogger = (env: Env = {}) => {
+	const previousEnv: Env = Object.fromEntries(ENV_KEYS.map((key) => [key, process.env[key]]));
 	const warn: Record<string, sinon.SinonStub> = {};
 	const metrics = {
 		deprecations: { inc: sinon.stub() },
 		deprecationsTotal: { inc: sinon.stub() },
 	};
 
-	const module = proxyquire.noCallThru().load('./deprecationWarningLogger', {
-		'@rocket.chat/logger': {
-			Logger: class {
-				section(name: string) {
-					warn[name] = sinon.stub();
-					return { warn: warn[name] };
-				}
+	setEnv(env);
+	try {
+		const module = proxyquire.noCallThru().load('./deprecationWarningLogger', {
+			'@rocket.chat/logger': {
+				Logger: class {
+					section(name: string) {
+						warn[name] = sinon.stub();
+						return { warn: warn[name] };
+					}
+				},
 			},
-		},
-		'./metrics/lib/metrics': { metrics },
-	});
+			'./metrics/lib/metrics': { metrics },
+		});
 
-	return { ...module, warn, metrics };
+		return { ...module, warn, metrics };
+	} finally {
+		setEnv(previousEnv);
+	}
 };
 
 const deprecationHeaders = (res: Response) => ({
@@ -46,27 +54,16 @@ const deprecationHeaders = (res: Response) => ({
 	version: res.headers.get('x-deprecation-version'),
 });
 
-const expectNoSideEffects = ({ warn, metrics }: ReturnType<typeof loadLogger>, res?: Response) => {
+const NO_DEPRECATION_HEADERS = { type: null, message: null, version: null };
+
+const expectNothingRecorded = ({ warn, metrics }: ReturnType<typeof loadLogger>) => {
 	expect(warn.API.called).to.be.false;
 	expect(warn.METHOD.called).to.be.false;
 	expect(metrics.deprecations.inc.called).to.be.false;
 	expect(metrics.deprecationsTotal.inc.called).to.be.false;
-	if (res) {
-		expect(deprecationHeaders(res)).to.deep.equal({ type: null, message: null, version: null });
-	}
 };
 
 describe('deprecationWarningLogger', () => {
-	afterEach(() => {
-		for (const key of ENV_KEYS) {
-			if (originalEnv[key] === undefined) {
-				delete process.env[key];
-			} else {
-				process.env[key] = originalEnv[key];
-			}
-		}
-	});
-
 	describe('apiDeprecationLogger', () => {
 		describe('endpoint', () => {
 			it('should warn, set the deprecation headers and count the deprecated endpoint', () => {
@@ -281,7 +278,8 @@ describe('deprecationWarningLogger', () => {
 			expect(() => logger.apiDeprecationLogger.endpoint('/v1/foo', '9.0.0', res)).to.throw(
 				'The endpoint "/v1/foo" is deprecated and will be removed on version 9.0.0',
 			);
-			expectNoSideEffects(logger, res);
+			expectNothingRecorded(logger);
+			expect(deprecationHeaders(res)).to.deep.equal(NO_DEPRECATION_HEADERS);
 		});
 
 		it('should throw for a deprecated endpoint parameter before writing headers, counting or warning', () => {
@@ -291,7 +289,8 @@ describe('deprecationWarningLogger', () => {
 			expect(() => logger.apiDeprecationLogger.parameter('/v1/foo', 'bar', '9.0.0', res)).to.throw(
 				'The parameter "bar" in the endpoint "/v1/foo" is deprecated',
 			);
-			expectNoSideEffects(logger, res);
+			expectNothingRecorded(logger);
+			expect(deprecationHeaders(res)).to.deep.equal(NO_DEPRECATION_HEADERS);
 		});
 
 		it('should throw for a deprecated endpoint usage before writing headers, counting or warning', () => {
@@ -301,7 +300,8 @@ describe('deprecationWarningLogger', () => {
 			expect(() => logger.apiDeprecationLogger.deprecatedParameterUsage('/v1/foo', 'bar', '9.0.0', res)).to.throw(
 				'The usage of the endpoint "/v1/foo" is deprecated',
 			);
-			expectNoSideEffects(logger, res);
+			expectNothingRecorded(logger);
+			expect(deprecationHeaders(res)).to.deep.equal(NO_DEPRECATION_HEADERS);
 		});
 
 		it('should throw for every method deprecation without counting or warning', () => {
@@ -315,7 +315,7 @@ describe('deprecationWarningLogger', () => {
 				'The usage of the method "getFoo" is deprecated',
 			);
 			expect(() => logger.methodDeprecationLogger.warn('something old was used')).to.throw('something old was used');
-			expectNoSideEffects(logger);
+			expectNothingRecorded(logger);
 		});
 	});
 
@@ -351,7 +351,8 @@ describe('deprecationWarningLogger', () => {
 			expect(() => logger.apiDeprecationLogger.endpoint('/v1/foo', '9.0.0', res)).to.throw(
 				'The endpoint "/v1/foo" is deprecated and will be removed on version 9.0.0',
 			);
-			expectNoSideEffects(logger, res);
+			expectNothingRecorded(logger);
+			expect(deprecationHeaders(res)).to.deep.equal(NO_DEPRECATION_HEADERS);
 		});
 
 		it('should throw when the removal version is below the threshold', () => {
