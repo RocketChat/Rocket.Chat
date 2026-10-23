@@ -25,9 +25,9 @@ it('renders the first row as the header and the rest as body rows', async () => 
 		</MockedServerContext>,
 	);
 
-	const [headerGroup, bodyGroup] = screen.getAllByRole('rowgroup');
-	expect(within(headerGroup).getByText('Service')).toBeInTheDocument();
-	expect(within(headerGroup).getByText('Uptime')).toBeInTheDocument();
+	expect(screen.getAllByRole('columnheader').map((cell) => cell.textContent)).toEqual(['Service', 'Uptime']);
+
+	const [, bodyGroup] = screen.getAllByRole('rowgroup');
 	expect(await within(bodyGroup).findByText('API')).toBeInTheDocument();
 	expect(within(bodyGroup).getByText('99.9%')).toBeInTheDocument();
 });
@@ -66,6 +66,15 @@ it.each([
 	['rows that are not a list', 'rows'],
 	['a row that is not a list', [[{ type: 'raw_text', text: 'Service' }], 'row']],
 	['cells that are not objects', [[null, 'cell', { type: 'raw_text', text: 'Service' }]]],
+	[
+		'text cells without string text',
+		[
+			[
+				{ type: 'plain_text', text: 1 },
+				{ type: 'mrkdwn', text: { bold: true } },
+			],
+		],
+	],
 ])('renders %s without throwing', (_, rows) => {
 	render(<MockedServerContext>{messageParser.render([{ type: 'table', rows }] as any)}</MockedServerContext>);
 

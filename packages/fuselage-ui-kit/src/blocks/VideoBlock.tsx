@@ -86,7 +86,7 @@ const VideoBlock = ({ className, block, surfaceRenderer }: VideoBlockProps) => {
 				)}
 			</Box>
 			<Box marginBlockStart={8} fontScale='p2b' color='default'>
-				{titleUrl ? (
+				{titleUrl && title ? (
 					<Box is='a' href={titleUrl} target='_blank' rel='noopener noreferrer'>
 						{title}
 					</Box>

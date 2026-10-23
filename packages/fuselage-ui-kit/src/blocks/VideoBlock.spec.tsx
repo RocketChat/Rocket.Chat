@@ -72,4 +72,5 @@ it('leaves out a title or description that is not text', () => {
 
 	expect(screen.queryByText('Delete')).not.toBeInTheDocument();
 	expect(screen.getAllByRole('button')).toHaveLength(1);
+	expect(screen.queryByRole('link')).not.toBeInTheDocument();
 });
