@@ -138,6 +138,14 @@ export default [
 		},
 	},
 	{
+		files: ['apps/meteor/server/**/*', 'apps/meteor/ee/server/**/*', 'ee/apps/**/*'],
+		languageOptions: {
+			globals: {
+				...globals.node,
+			},
+		},
+	},
+	{
 		files: ['apps/meteor/**/*.@(ts|tsx)'],
 		ignores: ['apps/meteor/.scripts/*.ts', 'apps/meteor/**/*.d.ts'],
 		rules: {

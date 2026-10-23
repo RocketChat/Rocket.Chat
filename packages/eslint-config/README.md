@@ -47,7 +47,7 @@ npx eslint .
 
 ### Adding your own settings
 
-The default export is an array of flat config objects. Spread it and add your own entries after it. The example also imports `globals`, which this package depends on but does not re-export; install it too (`npm install --save-dev globals`) so strict package managers resolve it:
+The default export is an array of flat config objects. Spread it and add your own entries after it. The example also imports `globals` (`npm install --save-dev globals`):
 
 ```js
 import rocketChatConfig from '@rocket.chat/eslint-config';
@@ -79,7 +79,7 @@ Formatting problems are reported by the `prettier/prettier` rule and fixed by `e
 
 ### Globals
 
-The config enables Node.js globals for all files. Add browser or other globals yourself, as shown above.
+Environment-specific globals (such as Node.js or browser globals) are not enabled by default, as they are not available in all environments. Add the appropriate globals (`globals.node`, `globals.browser`, etc.) for your files as shown above.
 
 ## Development
 
