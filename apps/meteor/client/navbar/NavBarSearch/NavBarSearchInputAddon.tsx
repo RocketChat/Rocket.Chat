@@ -26,10 +26,10 @@ const NavBarSearchInputAddon = ({
 	return (
 		<Box display='flex' alignItems='center' gap={8}>
 			{filters.length > 1 ? (
-				<Chip height='x20' minHeight='x20' aria-expanded={filtersOpen} onClick={onToggleFilters} renderDismissSymbol={() => null}>
-					<Box is='span' display='flex' alignItems='center'>
+				<Chip small aria-expanded={filtersOpen} onClick={onToggleFilters} renderDismissSymbol={() => null}>
+					<Box is='span' display='flex' alignItems='center' gap={4}>
 						{t('Search_filters_with_count', { count: filters.length })}
-						<Icon name={filtersOpen ? 'chevron-up' : 'chevron-down'} size='x16' marginInlineStart={4} />
+						<Icon name={filtersOpen ? 'chevron-up' : 'chevron-down'} size='x16' />
 					</Box>
 				</Chip>
 			) : (

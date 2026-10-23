@@ -14,7 +14,6 @@ import {
 	FieldRow,
 	FieldHint,
 	Callout,
-	Margins,
 } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageScrollableContentWithShadow, PageFooter, useFeaturePreviewEnableQuery } from '@rocket.chat/ui-client';
 import type { ChangeEvent } from 'react';
@@ -68,11 +67,9 @@ const FeaturePreviewView = ({ vm: { features, save } }: FeaturePreviewViewProps)
 					)}
 					{featuresPreview.length > 0 && (
 						<>
-							<Box>
-								<Margins block={24}>
-									<Box fontScale='p1'>{t('Feature_preview_page_description')}</Box>
-									<Callout>{t('Feature_preview_page_callout')}</Callout>
-								</Margins>
+							<Box display='flex' flexDirection='column' gap={24} paddingBlock={24}>
+								<Box fontScale='p1'>{t('Feature_preview_page_description')}</Box>
+								<Callout>{t('Feature_preview_page_callout')}</Callout>
 							</Box>
 							<Accordion>
 								{grouppedFeaturesPreview?.map(([group, features], index) => (
@@ -91,7 +88,7 @@ const FeaturePreviewView = ({ vm: { features, save } }: FeaturePreviewViewProps)
 																disabled={feature.disabled}
 															/>
 														</FieldRow>
-														{feature.description && <FieldHint marginBlockStart={12}>{t(feature.description)}</FieldHint>}
+														{feature.description && <FieldHint>{t(feature.description)}</FieldHint>}
 													</Field>
 													{feature.imageUrl && (
 														<Box is='img' width='100%' height='auto' marginBlockStart={16} src={feature.imageUrl} alt='' />

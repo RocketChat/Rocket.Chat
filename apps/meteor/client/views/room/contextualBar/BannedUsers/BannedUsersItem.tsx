@@ -31,7 +31,7 @@ const BannedUsersItem = ({ user, useRealName, onClickUnban }: BannedUsersItemPro
 				id: 'unban-user',
 				content: <Box color='status-font-on-danger'>{t('Unban_user_from_room')}</Box>,
 				icon: 'ban' as const,
-				iconColor: 'status-font-on-danger',
+				iconColor: 'status-font-on-danger' as const,
 				onClick: () => onClickUnban(user.username),
 			},
 		],

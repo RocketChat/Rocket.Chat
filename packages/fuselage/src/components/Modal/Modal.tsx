@@ -5,6 +5,12 @@ import { Box, type BoxProps } from '../Box';
 
 export type ModalProps = Omit<BoxProps, 'ref'> &
 	RefAttributes<Element> & {
+		/** A fixed width, for content that needs it instead of the default fluid one. */
+		width?: BoxProps['width'];
+		/** A fixed height, for content that has no intrinsic height (e.g. an iframe). */
+		height?: BoxProps['height'];
+		/** Hides the modal while keeping it, and its state, mounted. */
+		hidden?: boolean;
 		wrapperFunction?: (props: Pick<BoxProps, 'elevation' | 'className' | 'children'>) => ReactNode;
 		wrapper?: ElementType<Pick<BoxProps, 'elevation' | 'className' | 'children'>>;
 	};

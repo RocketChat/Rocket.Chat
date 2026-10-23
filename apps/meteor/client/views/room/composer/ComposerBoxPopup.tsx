@@ -1,4 +1,14 @@
-import { Box, Item, ItemContent, ItemGroup, ItemGroupHeader, ItemGroupTitle, ItemSkeleton, ItemTitle, Tile } from '@rocket.chat/fuselage';
+import {
+	Box,
+	Item,
+	ItemContent,
+	ItemGroup,
+	ItemGroupHeader,
+	ItemGroupTitle,
+	ItemSkeleton,
+	ItemTitle,
+	PopoverSurface,
+} from '@rocket.chat/fuselage';
 import { useContentBoxSize } from '@rocket.chat/fuselage-hooks';
 import { ITEM_MEDIA_SIZE } from '@rocket.chat/ui-avatar';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
@@ -94,8 +104,8 @@ function ComposerBoxPopup<
 	}, [focused]);
 
 	return (
-		<Box position='relative'>
-			<Tile ref={composerBoxPopupRef} padding={0} marginBlockEnd={8} overflow='hidden'>
+		<Box position='relative' marginBlockEnd={8}>
+			<PopoverSurface elevation='1' flush ref={composerBoxPopupRef}>
 				{title && (
 					<Box backgroundColor='tint'>
 						<ItemGroupHeader inset='md'>
@@ -138,7 +148,7 @@ function ComposerBoxPopup<
 						</ItemGroup>
 					</Box>
 				</CustomScrollbars>
-			</Tile>
+			</PopoverSurface>
 		</Box>
 	);
 }

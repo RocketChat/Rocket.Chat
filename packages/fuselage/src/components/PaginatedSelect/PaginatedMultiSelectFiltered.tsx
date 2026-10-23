@@ -11,14 +11,14 @@ export type PaginatedMultiSelectFilteredProps = {
 } & PaginatedMultiSelectProps;
 
 const PaginatedMultiSelectFiltered = ({ filter, setFilter, options, placeholder, ...props }: PaginatedMultiSelectFilteredProps) => {
-	const anchor = useStableCallback(({ children: _children, filter, ...props }: InputProps<HTMLInputElement>) => (
+	const anchor = useStableCallback(({ children: _children, filter, className, ...props }: InputProps<HTMLInputElement>) => (
 		<FlexItem grow={1}>
 			<Input
 				placeholder={placeholder}
 				value={filter}
 				onInput={(e: InputEvent<HTMLInputElement>) => setFilter?.(e.currentTarget.value)}
 				{...props}
-				rcx-input-box--undecorated
+				className={['rcx-input-box--undecorated', ...(Array.isArray(className) ? className : [className])]}
 			/>
 		</FlexItem>
 	));

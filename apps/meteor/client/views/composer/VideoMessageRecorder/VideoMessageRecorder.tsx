@@ -121,8 +121,8 @@ const VideoMessageRecorder = ({ rid, tmid, reference }: VideoMessageRecorderProp
 				</Box>
 				<Box marginBlockStart={4} display='flex' justifyContent='space-between'>
 					<Button aria-label={isRecording ? t('Stop_Recording') : t('Record')} small onClick={handleRecord}>
-						<Box is='span' display='flex' alignItems='center'>
-							<Icon size='x16' marginInlineEnd={time ? 4 : undefined} name={isRecording ? 'stop-unfilled' : 'rec'} />
+						<Box is='span' display='flex' alignItems='center' gap={4}>
+							<Icon size='x16' name={isRecording ? 'stop-unfilled' : 'rec'} />
 							{time && <span>{time}</span>}
 						</Box>
 					</Button>

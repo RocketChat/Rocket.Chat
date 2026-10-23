@@ -248,16 +248,10 @@ const CreateTeamModal = ({ onClose, onSuccess, abac }: CreateTeamModalProps) => 
 					submitDisabled={!canCreateTeam || creationBlocked}
 					isSubmitting={isSubmitting}
 					details={
-						<>
-							<Box fontScale='p2' marginBlockEnd={16}>
-								{t('Teams_new_description')}
-							</Box>
-							{creationBlocked && (
-								<Callout type='danger' marginBlockEnd={16}>
-									{t('ABAC_Room_Creation_Not_Allowed')}
-								</Callout>
-							)}
-							<FieldGroup marginBlockEnd={24}>
+						<Box display='flex' flexDirection='column' gap={16} marginBlockEnd={24}>
+							<Box fontScale='p2'>{t('Teams_new_description')}</Box>
+							{creationBlocked && <Callout type='danger'>{t('ABAC_Room_Creation_Not_Allowed')}</Callout>}
+							<FieldGroup>
 								<Field>
 									<FieldLabel required>{t('Teams_New_Name_Label')}</FieldLabel>
 									<FieldRow>
@@ -320,7 +314,7 @@ const CreateTeamModal = ({ onClose, onSuccess, abac }: CreateTeamModalProps) => 
 									<FieldHint>{isPrivate ? t('People_can_only_join_by_being_invited') : t('Anyone_can_access')}</FieldHint>
 								</Field>
 							</FieldGroup>
-						</>
+						</Box>
 					}
 				/>
 			</Modal>

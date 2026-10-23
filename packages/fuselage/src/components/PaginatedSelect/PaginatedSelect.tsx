@@ -6,7 +6,6 @@ import { prevent } from '../../helpers/prevent';
 import { AnimatedVisibility } from '../AnimatedVisibility';
 import { Box } from '../Box';
 import { Icon } from '../Icon';
-import { Margins } from '../Margins';
 import { Option } from '../Option';
 import { useVisible } from '../Options/useVisible';
 import { OptionsPaginated } from '../OptionsPaginated';
@@ -32,16 +31,20 @@ export const PaginatedSelect = ({
 	value,
 	withTitle,
 	filter,
-	setFilter: _setFilter,
+	'setFilter': _setFilter,
 	error,
 	disabled,
 	options = [],
-	anchor: Anchor = SelectFocus,
+	'anchor': Anchor = SelectFocus,
 	onChange = () => {},
 	placeholder,
-	renderOptions: _Options = OptionsPaginated,
+	'renderOptions': _Options = OptionsPaginated,
 	renderItem = Option,
 	endReached,
+	id,
+	'aria-labelledby': ariaLabelledBy,
+	'aria-describedby': ariaDescribedBy,
+	'aria-invalid': ariaInvalid,
 	...props
 }: PaginatedSelectProps) => {
 	const [internalValue, setInternalValue] = useState(value);
@@ -100,14 +103,16 @@ export const PaginatedSelect = ({
 					filter={filter}
 					ref={ref}
 					aria-haspopup='listbox'
+					id={id}
+					aria-labelledby={ariaLabelledBy}
+					aria-describedby={ariaDescribedBy}
+					aria-invalid={ariaInvalid}
 					onClick={show}
 					onBlur={hide}
 				/>
-				<Margins inline='x4'>
-					<SelectAddon>
-						<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : 'chevron-down'} size='x20' />
-					</SelectAddon>
-				</Margins>
+				<SelectAddon>
+					<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : 'chevron-down'} size='x20' />
+				</SelectAddon>
 			</PaginatedSelectWrapper>
 			<PositionAnimated visible={visible} anchor={containerRef}>
 				<_Options

@@ -7,7 +7,7 @@ import { prevent } from '../../helpers/prevent';
 import { AnimatedVisibility } from '../AnimatedVisibility';
 import { Box, type BoxProps } from '../Box';
 import { CheckOption, Option } from '../Option';
-import { Tile } from '../Tile';
+import { PopoverSurface } from '../PopoverSurface';
 
 export type OptionsPaginatedProps = Omit<BoxProps, 'ref' | 'onSelect'> &
 	RefAttributes<Element> & {
@@ -72,7 +72,7 @@ export function OptionsPaginated({
 
 	return (
 		<Box rcx-options {...props} ref={ref}>
-			<Tile padding={0} paddingBlock='x12' paddingInline={0} elevation='2'>
+			<PopoverSurface>
 				{!options.length ? (
 					<EmptyComponent />
 				) : (
@@ -86,7 +86,7 @@ export function OptionsPaginated({
 						itemContent={(index, data) => <OptionsComponentWithData index={index} data={data} />}
 					/>
 				)}
-			</Tile>
+			</PopoverSurface>
 		</Box>
 	);
 }

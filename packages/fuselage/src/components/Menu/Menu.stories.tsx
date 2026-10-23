@@ -62,7 +62,7 @@ export const Complex: StoryFn<typeof Menu> = (args) => (
 			<MenuItemContent>Chats</MenuItemContent>
 		</MenuItem>
 		<MenuItem key='settings' aria-label='Settings'>
-			<MenuItemIcon name='cog' color='font-info' />
+			<MenuItemIcon name='cog' color='info' />
 			<MenuItemContent>Settings</MenuItemContent>
 		</MenuItem>
 	</Menu>

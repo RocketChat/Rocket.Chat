@@ -74,7 +74,6 @@ const AdminUserSetRandomPasswordContent = ({
 							aria-invalid={errors.password ? 'true' : 'false'}
 							aria-describedby={`${passwordId}-error`}
 							error={errors.password?.message}
-							flexGrow={1}
 							placeholder={passwordPlaceholder || t('Password')}
 						/>
 					)}
@@ -102,7 +101,6 @@ const AdminUserSetRandomPasswordContent = ({
 								aria-invalid={errors.passwordConfirmation ? 'true' : 'false'}
 								aria-describedby={`${passwordConfirmationId}-error`}
 								error={errors.passwordConfirmation?.message}
-								flexGrow={1}
 								placeholder={passwordConfirmationPlaceholder || t('Confirm_password')}
 							/>
 						)}

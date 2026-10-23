@@ -1,14 +1,19 @@
 import type { AllHTMLAttributes } from 'react';
 
 import { cx, cxx } from '../../helpers/composeClassNames';
-import type { StylingBoxProps } from '../Box';
+import type { BoxProps, StylingBoxProps } from '../Box';
 import { StylingBox } from '../Box';
 
 export type SkeletonProps = Omit<StylingBoxProps, 'children'> & {
 	variant?: 'text' | 'rect' | 'circle';
+	/** Whether the placeholder sits on a dark surface, such as a tooltip */
+	inverted?: boolean;
+	/** The size of the content the placeholder stands in for */
+	width?: BoxProps['width'];
+	height?: BoxProps['height'];
 } & AllHTMLAttributes<HTMLSpanElement>;
 
-const Skeleton = ({ variant = 'text', ...props }: SkeletonProps) => (
+const Skeleton = ({ variant = 'text', inverted, ...props }: SkeletonProps) => (
 	<StylingBox {...props}>
 		<span
 			className={cx(
@@ -16,6 +21,7 @@ const Skeleton = ({ variant = 'text', ...props }: SkeletonProps) => (
 					text: variant === 'text',
 					rect: variant === 'rect',
 					circle: variant === 'circle',
+					inverted: !!inverted,
 				}),
 			)}
 		/>

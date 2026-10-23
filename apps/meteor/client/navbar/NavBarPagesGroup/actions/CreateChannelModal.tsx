@@ -317,13 +317,13 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 					submitDisabled={creationBlocked}
 					isSubmitting={isSubmitting}
 					details={
-						<>
+						<Box display='flex' flexDirection='column' gap={16} marginBlockEnd={24}>
 							{creationBlocked && (
-								<Callout type='danger' marginBlockEnd={16}>
+								<Callout type='danger'>
 									{t(canUseFederation ? 'ABAC_Room_Creation_Federated_Only' : 'ABAC_Room_Creation_Not_Allowed')}
 								</Callout>
 							)}
-							<FieldGroup marginBlockEnd={24}>
+							<FieldGroup>
 								<Field>
 									<FieldLabel required>{t('Name')}</FieldLabel>
 									<FieldRow>
@@ -387,7 +387,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 									<FieldHint>{isPrivate ? t('People_can_only_join_by_being_invited') : t('Anyone_can_access')}</FieldHint>
 								</Field>
 							</FieldGroup>
-						</>
+						</Box>
 					}
 				/>
 			</Modal>

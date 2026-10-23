@@ -1,4 +1,4 @@
-import { Box, Skeleton } from '@rocket.chat/fuselage';
+import { Skeleton, Stack } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 
 import VideoConfPopup from './VideoConfPopup';
@@ -14,10 +14,10 @@ const VideoConfPopupSkeleton = (props: VideoConfPopupSkeletonProps) => (
 			<Skeleton width='100%' />
 		</VideoConfPopupHeader>
 		<VideoConfPopupContent>
-			<Box display='flex' alignItems='center'>
+			<Stack direction='row' align='center' gap={8}>
 				<Skeleton variant='rect' height='x36' width='x36' />
-				<Skeleton marginInlineStart={8} variant='rect' height='x24' width='x120' />
-			</Box>
+				<Skeleton variant='rect' height='x24' width='x120' />
+			</Stack>
 		</VideoConfPopupContent>
 		<VideoConfPopupFooter>
 			<Skeleton variant='rect' height='x40' />

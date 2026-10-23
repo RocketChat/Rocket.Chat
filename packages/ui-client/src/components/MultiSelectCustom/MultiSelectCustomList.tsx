@@ -9,8 +9,8 @@ import {
 	ItemGroupTitle,
 	ItemMedia,
 	ItemTitle,
+	PopoverSurface,
 	SearchInput,
-	Tile,
 } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
@@ -20,17 +20,11 @@ import { useTranslation } from 'react-i18next';
 import type { OptionProp } from './MultiSelectCustom';
 import { useFilteredOptions } from './useFilteredOptions';
 
-const getIconColor = (color: 'default' | 'danger' | 'warning' | undefined) => {
-	switch (color) {
-		case 'danger':
-			return 'status-font-on-danger';
-		case 'warning':
-			return 'status-font-on-warning';
-		case 'default':
-		default:
-			return undefined;
-	}
-};
+const iconColors = {
+	default: undefined,
+	danger: 'danger',
+	warning: 'status-font-on-warning',
+} as const;
 
 const MultiSelectCustomList = ({
 	options,
@@ -50,16 +44,7 @@ const MultiSelectCustomList = ({
 	const filteredOptions = useFilteredOptions(text, options);
 
 	return (
-		<Tile
-			overflow='auto'
-			paddingBlock={12}
-			paddingInline={0}
-			elevation='2'
-			width='full'
-			backgroundColor='light'
-			borderRadius='small'
-			maxHeight='50vh'
-		>
+		<PopoverSurface maxHeight='half-screen'>
 			{searchBarText && (
 				<Box paddingInline={12} marginBlockEnd={12}>
 					<SearchInput
@@ -82,7 +67,7 @@ const MultiSelectCustomList = ({
 						<Item inset='md'>
 							{option.icon && (
 								<ItemMedia variant='icon'>
-									<Icon name={option.icon.name} size='x20' color={getIconColor(option.icon.color)} />
+									<Icon name={option.icon.name} size='x20' color={option.icon.color && iconColors[option.icon.color]} />
 								</ItemMedia>
 							)}
 							<ItemContent>
@@ -97,7 +82,7 @@ const MultiSelectCustomList = ({
 					)}
 				</Fragment>
 			))}
-		</Tile>
+		</PopoverSurface>
 	);
 };
 

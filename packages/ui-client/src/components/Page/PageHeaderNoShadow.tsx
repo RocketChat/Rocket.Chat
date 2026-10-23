@@ -29,6 +29,7 @@ const PageHeaderNoShadow = ({ children = undefined, title, onClickBack, ...props
 				flexDirection='row'
 				flexWrap='wrap'
 				alignItems='center'
+				columnGap={8}
 				color='default'
 			>
 				{sidebar.shouldToggle && isEmbedded ? (
@@ -36,7 +37,7 @@ const PageHeaderNoShadow = ({ children = undefined, title, onClickBack, ...props
 						<SidebarToggler />
 					</HeaderToolbar>
 				) : null}
-				{onClickBack && <IconButton small marginInlineEnd={8} icon='arrow-back' onClick={onClickBack} title={t('Back')} />}
+				{onClickBack && <IconButton small icon='arrow-back' onClick={onClickBack} title={t('Back')} />}
 				<Box is='h1' fontScale='h2' flexGrow={1}>
 					{title}
 				</Box>

@@ -23,12 +23,10 @@ const RetryButton = ({ loading, onClick }: RetryButtonProps) => {
 			mini
 			danger
 			secondary
-			className={btnStyle}
+			className={[btnStyle, loading && 'rcx-button--loading']}
 			disabled={loading}
-			rcx-button--loading={loading}
 			icon={loading ? 'loading' : 'reload'}
 			title={loading ? t('Loading...') : t('Retry')}
-			marginInlineStart={4}
 			onClick={() => onClick()}
 		/>
 	);

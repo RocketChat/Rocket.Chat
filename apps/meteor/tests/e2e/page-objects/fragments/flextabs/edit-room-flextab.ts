@@ -105,7 +105,7 @@ export class OmnichannelEditRoomFlexTab extends EditRoomFlexTab {
 	}
 
 	get inputTags(): Locator {
-		return this.root.getByRole('textbox', { name: 'Select an option' });
+		return this.root.getByRole('textbox', { name: 'Tags' });
 	}
 
 	getRoomCustomField(label: string): Locator {

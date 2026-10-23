@@ -5,7 +5,7 @@ import { useMediaCallAction } from '@rocket.chat/ui-voip';
 import type { HTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type SidebarRailPhoneProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
+type SidebarRailPhoneProps = Omit<HTMLAttributes<HTMLElement>, 'is' | 'color'>;
 
 const SidebarRailPhone = (props: SidebarRailPhoneProps) => {
 	const { t } = useTranslation();

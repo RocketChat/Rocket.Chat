@@ -80,8 +80,8 @@ export const useStatusItems = (user?: IUser): GenericMenuItemProps[] => {
 					<>
 						{contentValue && <MarkdownText withTruncatedText content={contentValue} parseEmoji variant='inline' />}
 						{customStatusExpiration && (
-							<Box color='secondary-info' display='flex' alignItems='center'>
-								<Icon name='clock' size='x16' marginInlineEnd={4} />
+							<Box color='secondary-info' display='flex' alignItems='center' gap={4}>
+								<Icon name='clock' size='x16' />
 								{customStatusExpiration}
 							</Box>
 						)}

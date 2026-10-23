@@ -35,6 +35,12 @@
 			margin-inline-start: lengths.margin(4);
 		}
 
+		&__follow {
+			position: relative;
+
+			overflow: visible;
+		}
+
 		&__follow-badge {
 			position: absolute;
 			top: 0;

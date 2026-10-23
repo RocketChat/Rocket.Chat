@@ -58,12 +58,16 @@ const AbacAttributesInfo = ({ attributes, requiredKeys, isTeam, onManage, onClos
 							<Box fontScale='p1' color='default' marginBlockEnd={8}>
 								{key}
 							</Box>
-							<Box display='flex' flexWrap='wrap'>
+							<Box
+								display='flex'
+								flexWrap='wrap'
+								gap={4}
+								paddingInlineEnd={values.length ? 4 : undefined}
+								paddingBlockEnd={values.length ? 4 : undefined}
+							>
 								{values.length === 0 && <Tag variant='danger'>{t('ABAC_Not_set')}</Tag>}
 								{values.map((value) => (
-									<Tag key={value} marginInlineEnd={4} marginBlockEnd={4}>
-										{value}
-									</Tag>
+									<Tag key={value}>{value}</Tag>
 								))}
 							</Box>
 						</Box>

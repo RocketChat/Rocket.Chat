@@ -11,6 +11,7 @@ import {
 	StatesTitle,
 	StatesActions,
 	StatesAction,
+	Stack,
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import {
@@ -134,10 +135,12 @@ const MonitorsTable = () => {
 				<Field>
 					<FieldLabel htmlFor={usernameFieldId}>{t('Username')}</FieldLabel>
 					<FieldRow>
-						<UserAutoComplete id={usernameFieldId} name='monitor' value={username} onChange={setUsername as () => void} />
-						<Button primary disabled={!username} loading={addMutation.isPending} onClick={() => handleAdd()} marginInlineStart={8}>
-							{t('Add_monitor')}
-						</Button>
+						<Stack direction='row' align='center' justify='space-between' grow gap={8}>
+							<UserAutoComplete id={usernameFieldId} name='monitor' value={username} onChange={setUsername as () => void} />
+							<Button primary disabled={!username} loading={addMutation.isPending} onClick={() => handleAdd()}>
+								{t('Add_monitor')}
+							</Button>
+						</Stack>
 					</FieldRow>
 				</Field>
 			</Box>

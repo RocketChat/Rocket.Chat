@@ -5,7 +5,6 @@ import {
 	Callout,
 	Chip,
 	Field,
-	Margins,
 	Select,
 	InputBox,
 	TextInput,
@@ -205,119 +204,99 @@ function NewImportPage() {
 			<PageHeader title={t('Import_New_File')} onClickBack={() => router.navigate('/admin/import')}>
 				<ButtonGroup>
 					{importer && (
-						<Button
-							primary
-							minHeight='x40'
-							loading={isLoading}
-							disabled={fileType === 'upload' && files.length === 0}
-							onClick={handleImportButtonClick}
-						>
+						<Button primary loading={isLoading} disabled={fileType === 'upload' && files.length === 0} onClick={handleImportButtonClick}>
 							{t('Import')}
 						</Button>
 					)}
 				</ButtonGroup>
 			</PageHeader>
 			<PageScrollableContentWithShadow>
-				<Box marginInline='auto' marginBlock='neg-x24' width='full' maxWidth='x580'>
-					<Margins block='x24'>
+				<Box marginInline='auto' width='full' maxWidth='x580' display='flex' flexDirection='column' gap={24}>
+					<Field>
+						<FieldLabel htmlFor={importerKeySelectId}>{t('Import_Type')}</FieldLabel>
+						<FieldRow>
+							<Select
+								id={importerKeySelectId}
+								value={importerKey}
+								disabled={isLoading}
+								placeholder={t('Select_an_option')}
+								onChange={handleImporterKeyChange}
+								options={options}
+							/>
+						</FieldRow>
+						{importer && (
+							<FieldHint>
+								{importer.key === 'csv' ? t('Importer_From_Description_CSV') : t('Importer_From_Description', { from: t(importer.name) })}
+							</FieldHint>
+						)}
+					</Field>
+					{importer && (
 						<Field>
-							<FieldLabel alignSelf='stretch' htmlFor={importerKeySelectId}>
-								{t('Import_Type')}
-							</FieldLabel>
+							<FieldLabel htmlFor={fileTypeSelectId}>{t('File_Type')}</FieldLabel>
 							<FieldRow>
 								<Select
-									id={importerKeySelectId}
-									value={importerKey}
+									id={fileTypeSelectId}
+									value={fileType}
 									disabled={isLoading}
 									placeholder={t('Select_an_option')}
-									onChange={handleImporterKeyChange}
-									options={options}
+									onChange={handleFileTypeChange}
+									options={[
+										['upload', t('Upload')],
+										['url', t('Public_URL')],
+										['path', t('Server_File_Path')],
+									]}
 								/>
 							</FieldRow>
-							{importer && (
-								<FieldHint>
-									{importer.key === 'csv' ? t('Importer_From_Description_CSV') : t('Importer_From_Description', { from: t(importer.name) })}
-								</FieldHint>
-							)}
 						</Field>
-						{importer && (
-							<Field>
-								<FieldLabel alignSelf='stretch' htmlFor={fileTypeSelectId}>
-									{t('File_Type')}
-								</FieldLabel>
-								<FieldRow>
-									<Select
-										id={fileTypeSelectId}
-										value={fileType}
-										disabled={isLoading}
-										placeholder={t('Select_an_option')}
-										onChange={handleFileTypeChange}
-										options={[
-											['upload', t('Upload')],
-											['url', t('Public_URL')],
-											['path', t('Server_File_Path')],
-										]}
-									/>
-								</FieldRow>
-							</Field>
-						)}
-						{importer && (
-							<>
-								{fileType === 'upload' && (
-									<>
-										{maxFileSize > 0 ? (
-											<Callout type='warning' marginBlock='x16'>
-												{t('Importer_Upload_FileSize_Message', {
-													maxFileSize: formatMemorySize(maxFileSize),
-												})}
-											</Callout>
-										) : (
-											<Callout type='info' marginBlock='x16'>
-												{t('Importer_Upload_Unlimited_FileSize')}
-											</Callout>
-										)}
-										<Field>
-											<FieldLabel alignSelf='stretch' htmlFor={fileSourceInputId}>
-												{t('Importer_Source_File')}
-											</FieldLabel>
+					)}
+					{importer && (
+						<>
+							{fileType === 'upload' && (
+								<>
+									{maxFileSize > 0 ? (
+										<Callout type='warning'>
+											{t('Importer_Upload_FileSize_Message', {
+												maxFileSize: formatMemorySize(maxFileSize),
+											})}
+										</Callout>
+									) : (
+										<Callout type='info'>{t('Importer_Upload_Unlimited_FileSize')}</Callout>
+									)}
+									<Field>
+										<FieldLabel htmlFor={fileSourceInputId}>{t('Importer_Source_File')}</FieldLabel>
+										<FieldRow>
+											<InputBox type='file' id={fileSourceInputId} onChange={handleImportFileChange} />
+										</FieldRow>
+										{files?.length > 0 && (
 											<FieldRow>
-												<InputBox type='file' id={fileSourceInputId} onChange={handleImportFileChange} />
+												{files.map((file, i) => (
+													<Chip key={i} onClick={handleFileUploadChipClick(file)}>
+														{file.name}
+													</Chip>
+												))}
 											</FieldRow>
-											{files?.length > 0 && (
-												<FieldRow>
-													{files.map((file, i) => (
-														<Chip key={i} onClick={handleFileUploadChipClick(file)}>
-															{file.name}
-														</Chip>
-													))}
-												</FieldRow>
-											)}
-										</Field>
-									</>
-								)}
-								{fileType === 'url' && (
-									<Field>
-										<FieldLabel alignSelf='stretch' htmlFor={fileSourceInputId}>
-											{t('File_URL')}
-										</FieldLabel>
-										<FieldRow>
-											<UrlInput id={fileSourceInputId} value={fileUrl} onChange={handleFileUrlChange} />
-										</FieldRow>
+										)}
 									</Field>
-								)}
-								{fileType === 'path' && (
-									<Field>
-										<FieldLabel alignSelf='stretch' htmlFor={fileSourceInputId}>
-											{t('File_Path')}
-										</FieldLabel>
-										<FieldRow>
-											<TextInput id={fileSourceInputId} value={filePath} onChange={handleFilePathChange} />
-										</FieldRow>
-									</Field>
-								)}
-							</>
-						)}
-					</Margins>
+								</>
+							)}
+							{fileType === 'url' && (
+								<Field>
+									<FieldLabel htmlFor={fileSourceInputId}>{t('File_URL')}</FieldLabel>
+									<FieldRow>
+										<UrlInput id={fileSourceInputId} value={fileUrl} onChange={handleFileUrlChange} />
+									</FieldRow>
+								</Field>
+							)}
+							{fileType === 'path' && (
+								<Field>
+									<FieldLabel htmlFor={fileSourceInputId}>{t('File_Path')}</FieldLabel>
+									<FieldRow>
+										<TextInput id={fileSourceInputId} value={filePath} onChange={handleFilePathChange} />
+									</FieldRow>
+								</Field>
+							)}
+						</>
+					)}
 				</Box>
 			</PageScrollableContentWithShadow>
 		</Page>

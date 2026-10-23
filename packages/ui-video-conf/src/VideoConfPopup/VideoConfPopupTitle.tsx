@@ -1,4 +1,4 @@
-import { Box, Throbber } from '@rocket.chat/fuselage';
+import { Box, Throbber, Stack } from '@rocket.chat/fuselage';
 
 export type VideoConfPopupTitleProps = {
 	text: string;
@@ -6,10 +6,10 @@ export type VideoConfPopupTitleProps = {
 };
 
 const VideoConfPopupTitle = ({ text, counter = false }: VideoConfPopupTitleProps) => (
-	<Box display='flex' alignItems='center'>
+	<Stack direction='row' align='center' gap={4}>
 		<Box fontScale='p2b'>{text}</Box>
-		{counter && <Throbber size='x8' marginInlineStart={4} />}
-	</Box>
+		{counter && <Throbber size='x8' />}
+	</Stack>
 );
 
 export default VideoConfPopupTitle;

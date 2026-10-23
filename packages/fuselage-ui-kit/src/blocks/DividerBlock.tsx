@@ -6,6 +6,6 @@ import type { BlockProps } from '../utils/BlockProps';
 
 export type DividerBlockProps = BlockProps<UiKit.DividerBlock>;
 
-const DividerBlock = ({ className }: DividerBlockProps) => <Divider className={className} marginBlock={24} />;
+const DividerBlock = ({ className }: DividerBlockProps) => <Divider className={className} flush />;
 
 export default memo(DividerBlock);

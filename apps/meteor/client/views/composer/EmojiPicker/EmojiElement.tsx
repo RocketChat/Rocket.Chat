@@ -9,7 +9,7 @@ import type { EmojiItem } from '../../../lib/emoji';
 
 export type EmojiElementProps = EmojiItem & { small?: boolean; onClick: (e: MouseEvent<HTMLElement>) => void } & Omit<
 		AllHTMLAttributes<HTMLButtonElement>,
-		'is'
+		'is' | 'color'
 	>;
 
 const smallEmojiClass = css`

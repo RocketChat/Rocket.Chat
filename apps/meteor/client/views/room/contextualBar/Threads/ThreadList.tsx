@@ -155,9 +155,9 @@ const ThreadList = () => {
 					</Box>
 				)}
 				{error && (
-					<Callout marginInline={24} type='danger'>
-						{getErrorMessage(error, t('Something_went_wrong'))}
-					</Callout>
+					<Box paddingInline={24}>
+						<Callout type='danger'>{getErrorMessage(error, t('Something_went_wrong'))}</Callout>
+					</Box>
 				)}
 				{isSuccess && (
 					<Box id={threadListId} ref={threadListRef} width='full' height='full' overflow='hidden' flexShrink={1}>

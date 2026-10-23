@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import * as stories from './InputBox.stories';
 import { render } from '../../testing';
 
-const { WithAddon } = composeStories(stories);
+const { WithAddon, WithFlushEndAddon } = composeStories(stories);
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
@@ -36,4 +36,17 @@ it('should update error class when error changes asynchronously', async () => {
 		const input = getByRole('textbox', { name: /test-input/i }).parentElement as HTMLElement;
 		expect(input).toHaveClass('invalid');
 	});
+});
+
+it('should flush the end addon only when requested', () => {
+	const { getAllByRole } = render(
+		<>
+			<WithAddon />
+			<WithFlushEndAddon />
+		</>,
+	);
+
+	const [regular, flush] = getAllByRole('textbox').map((input) => input.parentElement);
+	expect(regular).not.toHaveClass('rcx-input-box__wrapper--end-addon-flush');
+	expect(flush).toHaveClass('rcx-input-box__wrapper--end-addon-flush');
 });

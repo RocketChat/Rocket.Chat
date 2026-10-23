@@ -13,4 +13,11 @@ describe('[Table Rendering]', () => {
 		const results = await axe(container);
 		expect(results).toHaveNoViolations();
 	});
+
+	test('renders one col per declared column', () => {
+		const { Columns } = composeStories(stories);
+		const { container } = render(<Columns />);
+
+		expect(container.querySelectorAll('table > colgroup > col')).toHaveLength(4);
+	});
 });

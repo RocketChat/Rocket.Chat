@@ -27,8 +27,8 @@ export const ReportCard = forwardRef<HTMLElement, ReportCardProps>(function Repo
 	ref,
 ) {
 	return (
-		<Box height='full' ref={ref}>
-			<Card height='full' aria-busy={isPending} data-qa={id}>
+		<Box height='full' display='grid' ref={ref}>
+			<Card aria-busy={isPending} data-qa={id}>
 				<Box rcx-card__header justifyContent='space-between'>
 					<CardCol>
 						<CardTitle>{title}</CardTitle>

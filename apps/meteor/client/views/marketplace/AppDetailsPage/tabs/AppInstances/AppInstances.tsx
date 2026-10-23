@@ -1,6 +1,6 @@
 import type { AppStatus } from '@rocket.chat/apps';
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
-import { Box, Palette, Tag } from '@rocket.chat/fuselage';
+import { Box, Tag } from '@rocket.chat/fuselage';
 import {
 	GenericMenu,
 	CustomScrollbars,
@@ -26,13 +26,7 @@ const AppInstances = ({ id }: AppInstanceProps) => {
 	const { t } = useTranslation();
 	const { data, isSuccess, isError, isLoading } = useAppInstances({ appId: id });
 
-	const getStatusColor = (status: AppStatus) => {
-		if (AppStatusUtils.isDisabled(status) || AppStatusUtils.isError(status)) {
-			return Palette.text['font-danger'].toString();
-		}
-
-		return Palette.text['font-default'].toString();
-	};
+	const isFailing = (status: AppStatus) => AppStatusUtils.isDisabled(status) || AppStatusUtils.isError(status);
 
 	const router = useRouter();
 
@@ -69,7 +63,7 @@ const AppInstances = ({ id }: AppInstanceProps) => {
 									<GenericTableCell>{instance.instanceId}</GenericTableCell>
 									<GenericTableCell>
 										<Box justifyContent='flex-start' display='flex'>
-											<Tag medium color={getStatusColor(instance.status)}>
+											<Tag medium variant={isFailing(instance.status) ? 'secondary-danger' : undefined}>
 												{t(`App_status_${instance.status}`)}
 											</Tag>
 										</Box>

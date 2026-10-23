@@ -3,6 +3,6 @@ import type { ComponentPropsWithoutRef } from 'react';
 import { memo } from 'react';
 
 const ContextualbarHeader = (props: ComponentPropsWithoutRef<typeof FuselageContextualbarHeader>) => (
-	<FuselageContextualbarHeader marginBlockStart={-1} {...props} />
+	<FuselageContextualbarHeader {...props} />
 );
 export default memo(ContextualbarHeader);

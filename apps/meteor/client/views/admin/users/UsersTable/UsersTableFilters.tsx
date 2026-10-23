@@ -1,5 +1,5 @@
 import type { IRole, Serialized } from '@rocket.chat/core-typings';
-import { Box, Icon, Margins, Select, TextInput } from '@rocket.chat/fuselage';
+import { Box, Icon, Select, TextInput } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { OptionProp } from '@rocket.chat/ui-client';
 import { MultiSelectCustom } from '@rocket.chat/ui-client';
@@ -90,18 +90,17 @@ const UsersTableFilters = ({ roleData, setUsersFilters, showStatusManagementFilt
 			display='flex'
 			flexWrap='wrap'
 			alignItems='center'
+			columnGap={isLargeScreenOrBigger ? 16 : undefined}
 		>
-			<Margins inlineEnd={isLargeScreenOrBigger ? 16 : 0}>
+			<Box display='flex' flexGrow={1} minWidth='x280'>
 				<TextInput
 					placeholder={t('Search_Users')}
 					endAddon={<Icon name='magnifier' size='x20' />}
 					onChange={handleSearchTextChange}
 					value={text}
-					flexGrow={2}
-					minWidth='x220'
 					aria-label={t('Search_Users')}
 				/>
-			</Margins>
+			</Box>
 			<Box marginBlock={4} width={isLargeScreenOrBigger ? 'unset' : '100%'}>
 				<MultiSelectCustom
 					dropdownOptions={userRolesFilterStructure}
@@ -114,7 +113,7 @@ const UsersTableFilters = ({ roleData, setUsersFilters, showStatusManagementFilt
 				/>
 			</Box>
 			{showStatusManagementFilter && (
-				<Box marginBlock={4} marginInlineStart={isLargeScreenOrBigger ? 16 : 0} width={isLargeScreenOrBigger ? 'unset' : '100%'}>
+				<Box marginBlock={4} width={isLargeScreenOrBigger ? 'unset' : '100%'}>
 					<Select
 						aria-label={t('User_Status')}
 						options={statusManagementOptions}

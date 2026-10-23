@@ -31,21 +31,22 @@ const NabBar = () => {
 					user-select: none;
 				`}
 			>
-				<Button primary onClick={() => navigate(routes.home)} marginInlineStart='20px' small square>
-					<Icon name='home' size='x24' />
-				</Button>
-				{!isMobile && (
-					<Button
-						marginInlineStart='12px'
-						small
-						success
-						onClick={() => {
-							dispatch(openCreateNewScreenAction(true));
-						}}
-					>
-						Screens
+				<Box display='inline-flex' alignItems='center' gap='12px' paddingInlineStart='20px'>
+					<Button primary onClick={() => navigate(routes.home)} small square>
+						<Icon name='home' size='x24' />
 					</Button>
-				)}
+					{!isMobile && (
+						<Button
+							small
+							success
+							onClick={() => {
+								dispatch(openCreateNewScreenAction(true));
+							}}
+						>
+							Screens
+						</Button>
+					)}
+				</Box>
 				<Box flexGrow={1} minWidth='15px' display='flex' justifyContent='flex-end'>
 					<Box display='flex' height='100%'>
 						{!isMobile && (
