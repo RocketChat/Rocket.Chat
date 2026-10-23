@@ -79,10 +79,14 @@ class Bridge {
 	}
 
 	stop() {
-		this.server.disconnect();
+		this.server?.disconnect();
 	}
 
 	remove() {
+		if (!this.server) {
+			return;
+		}
+
 		this.log('Removing current connection.');
 		removed = true;
 		this.server = null;
@@ -118,7 +122,7 @@ class Bridge {
 			return;
 		}
 
-		const lastResetTime = Settings.findOneById('IRC_Bridge_Reset_Time');
+		const lastResetTime = await Settings.findOneById('IRC_Bridge_Reset_Time');
 		if (lastResetTime && lastResetTime.value > this.initTime) {
 			this.stop();
 			this.remove();
