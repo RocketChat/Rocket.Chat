@@ -11,6 +11,7 @@ const MessageToolbarWrapperFrame = styled(View, {
 	// Revealed by its message's hover or focus in `Messages.styles.css`, which costs no group subscription per message
 	display: 'none',
 	flexShrink: 1,
+	userSelect: 'none',
 
 	variants: {
 		visible: {
