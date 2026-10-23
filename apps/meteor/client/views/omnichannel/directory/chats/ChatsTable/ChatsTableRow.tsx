@@ -1,6 +1,6 @@
 import type { IOmnichannelRoomWithDepartment } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Tag, Box } from '@rocket.chat/fuselage';
+import { Tag, Box, useStyle } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
@@ -27,6 +27,7 @@ const customAlignTop = css`
 `;
 
 const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
+	const customAlignTopClassName = useStyle(customAlignTop);
 	const { t } = useTranslation();
 	const { _id, fname, tags, servedBy, ts, department, open, priorityWeight, lm, onHold, source, verified } = room;
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
@@ -58,7 +59,7 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 	);
 
 	return (
-		<GenericTableRow className={customAlignTop} key={_id} tabIndex={0} onClick={() => onRowClick(_id)} action>
+		<GenericTableRow className={customAlignTopClassName} key={_id} tabIndex={0} onClick={() => onRowClick(_id)} action>
 			<GenericTableCell truncate>
 				<Box display='flex' flexDirection='column'>
 					<Box withTruncatedText fontScale='p2m' color='default'>

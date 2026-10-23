@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box } from '@rocket.chat/fuselage';
+import { Box, useStyle } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { ILivechatContactWithManagerData } from '@rocket.chat/rest-typings';
 import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
@@ -21,6 +21,7 @@ const customAlignTop = css`
 `;
 
 const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILivechatContactWithManagerData) => {
+	const customAlignTopClassName = useStyle(customAlignTop);
 	const { getSourceLabel } = useOmnichannelSource();
 	const getTimeFromNow = useTimeFromNow(true);
 	const formatDate = useFormatDate();
@@ -43,7 +44,14 @@ const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILiv
 	);
 
 	return (
-		<GenericTableRow action key={_id} tabIndex={0} rcx-show-call-button-on-hover className={customAlignTop} onClick={() => onRowClick(_id)}>
+		<GenericTableRow
+			action
+			key={_id}
+			tabIndex={0}
+			rcx-show-call-button-on-hover
+			className={customAlignTopClassName}
+			onClick={() => onRowClick(_id)}
+		>
 			<GenericTableCell strong color='default' truncate>
 				{name}
 			</GenericTableCell>

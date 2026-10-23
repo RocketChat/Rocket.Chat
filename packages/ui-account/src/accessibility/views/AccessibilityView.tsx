@@ -1,7 +1,7 @@
 import { VisuallyHidden } from '@react-aria/visually-hidden';
 import { css } from '@rocket.chat/css-in-js';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Accordion, AccordionItem, Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Accordion, AccordionItem, Box, Button, ButtonGroup, useStyle } from '@rocket.chat/fuselage';
 import {
 	FieldDescription,
 	Field,
@@ -37,6 +37,9 @@ export type AccessibilityViewProps = {
 
 const AccessibilityView = ({ vm: { values: preferencesValues, displayRolesEnabled, save } }: AccessibilityViewProps) => {
 	const t = useTranslation();
+	const breakSpacesClassName = useStyle(css`
+		white-space: break-spaces;
+	`);
 
 	const createFontStyleElement = useCreateFontStyleElement();
 	const shouldExpand = useLocationHash().length > 1;
@@ -154,12 +157,7 @@ const AccessibilityView = ({ vm: { values: preferencesValues, displayRolesEnable
 											render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} />}
 										/>
 									</FieldRow>
-									<FieldDescription
-										className={css`
-											white-space: break-spaces;
-										`}
-										marginBlock={12}
-									>
+									<FieldDescription className={breakSpacesClassName} marginBlock={12}>
 										{t('Mentions_with_@_symbol_description')}
 									</FieldDescription>
 								</Field>
