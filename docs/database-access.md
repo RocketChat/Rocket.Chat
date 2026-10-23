@@ -85,7 +85,9 @@ logic to where it belongs as its own refactor commit, below the change that need
 ## Migrations
 
 These rules do not apply to migrations in `apps/meteor/server/startup/migrations/`. A migration
-runs once, against the data shape of the version it upgrades from, and is never changed after it
-ships. Its queries are not queries the product runs, so they don't belong in the model interface,
-and a method added only for a migration is left behind with no caller once that shape is gone.
-Write the filter and update inline in the migration.
+normally runs once during a forward upgrade, against the data shape of the version it upgrades
+from; the runner also supports explicit reruns (`MIGRATION_VERSION=<version>,rerun`) and down
+migrations. Keep a migration unchanged once it ships. Its queries are not queries the product
+runs, so they don't belong in the model interface, and a method added only for a migration is
+left behind with no caller once that shape is gone. Write the filter and update inline in the
+migration.
