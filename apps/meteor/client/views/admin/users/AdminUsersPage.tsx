@@ -34,6 +34,7 @@ import { useSeatsCap } from './useSeatsCap';
 import { useCanManageUserStatus } from '../../../hooks/useCanManageUserStatus';
 import { useLicenseLimitsByBehavior } from '../../../hooks/useLicenseLimitsByBehavior';
 import { useShouldPreventAction } from '../../../hooks/useShouldPreventAction';
+import { rolesQueryKeys } from '../../../lib/queryKeys';
 import { useCheckoutUrl } from '../subscription/hooks/useCheckoutUrl';
 
 export type UsersFilters = {
@@ -63,7 +64,7 @@ const AdminUsersPage = () => {
 
 	const getRoles = useEndpoint('GET', '/v1/roles.list');
 	const { data, error } = useQuery({
-		queryKey: ['roles'],
+		queryKey: rolesQueryKeys.all,
 		queryFn: async () => getRoles(),
 	});
 

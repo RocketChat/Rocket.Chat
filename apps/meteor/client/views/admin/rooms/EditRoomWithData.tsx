@@ -16,7 +16,7 @@ const EditRoomWithData = ({ rid, onClose }: EditRoomWithDataProps) => {
 	const getAdminRooms = useEndpoint('GET', '/v1/rooms.adminRooms.getRoom');
 
 	const { data, isPending, refetch } = useQuery({
-		queryKey: ['rooms', rid, 'admin'],
+		queryKey: roomsQueryKeys.adminInfo(rid),
 		queryFn: async () => {
 			const rooms = await getAdminRooms({ rid });
 			return rooms;

@@ -34,6 +34,7 @@ import { useId, useMemo, useState } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
 import { links } from '../../../lib/links';
+import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 
 const MonitorsTable = () => {
 	const t = useTranslation();
@@ -65,7 +66,7 @@ const MonitorsTable = () => {
 		500,
 	);
 
-	const queryKey = ['omnichannel', 'monitors', query];
+	const queryKey = omnichannelQueryKeys.monitors(query);
 	const {
 		current,
 		itemsPerPage,
@@ -93,7 +94,7 @@ const MonitorsTable = () => {
 		mutationFn: async (username: string) => {
 			await addMonitor({ username });
 
-			await queryClient.invalidateQueries({ queryKey: ['omnichannel', 'monitors'] });
+			await queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.monitors() });
 		},
 		onSuccess: () => {
 			setUsername('');
@@ -116,7 +117,7 @@ const MonitorsTable = () => {
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
-			queryClient.invalidateQueries({ queryKey: ['omnichannel', 'monitors'] });
+			queryClient.invalidateQueries({ queryKey: omnichannelQueryKeys.monitors() });
 			setModal();
 		};
 

@@ -11,6 +11,6 @@ slashCommands.add({
 	},
 	providesPreview: false,
 	result: (err, _result, params) => {
-		if (!err) void queryClient.invalidateQueries({ queryKey: [...roomsQueryKeys.room(params.msg.rid), 'members'] });
+		if (!err) void queryClient.invalidateQueries({ queryKey: roomsQueryKeys.allMembers(params.msg.rid) });
 	},
 });

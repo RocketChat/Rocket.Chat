@@ -15,6 +15,7 @@ import CallHistoryRowInternalUser from './CallHistoryRowInternalUser';
 import CallHistoryRowUnknownUser from './CallHistoryRowUnknownUser';
 import MediaCallHistoryContextualbar from './MediaCallHistoryContextualbar';
 import { getExternalContact } from './MediaCallHistoryExternal';
+import { callHistoryQueryKeys } from '../../lib/queryKeys';
 import UserInfoWithData from '../room/contextualBar/UserInfo/UserInfoWithData';
 
 const getSort = (sortBy: 'contact' | 'type' | 'status' | 'timestamp', sortDirection: 'asc' | 'desc') => {
@@ -91,7 +92,7 @@ const CallHistoryPage = () => {
 		...(stateFilter && { state: stateFilter }),
 		...(debouncedSearchText && { filter: debouncedSearchText }),
 	};
-	const queryKey = ['call-history', 'list', query];
+	const queryKey = callHistoryQueryKeys.list(query);
 	const { setItemsPerPage, setCurrent, ...paginationProps } = usePagination({ resetKey: queryKey });
 
 	const onClickRow = useCallback(

@@ -5,6 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 import AppReleasesItem from './AppReleasesItem';
+import { appsQueryKeys } from '../../../../../lib/queryKeys';
 import AccordionLoading from '../../../components/AccordionLoading';
 
 export type AppReleasesProps = { id: App['id'] };
@@ -14,7 +15,7 @@ const AppReleases = ({ id }: AppReleasesProps) => {
 	const { t } = useTranslation();
 
 	const { data, isLoading, isFetched } = useQuery({
-		queryKey: ['apps', id, 'versions'],
+		queryKey: appsQueryKeys.versions(id),
 		queryFn: async () => {
 			const { apps } = await getVersions();
 

@@ -56,7 +56,7 @@ export function useOpenRoomById(rid: IRoom['_id']) {
 	}, [rid, user?._id]);
 
 	return useQuery({
-		queryKey: [...roomsQueryKeys.room(rid), 'open', user?._id, user?.username],
+		queryKey: roomsQueryKeys.open(rid, user?._id, user?.username),
 
 		placeholderData: tryCacheShortcut,
 

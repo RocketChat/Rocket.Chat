@@ -3,7 +3,7 @@ import { roomsQueryKeys } from '../../lib/queryKeys';
 import { slashCommands } from '../../lib/slashCommand';
 
 const invalidateMembers = (_err: unknown, _result: unknown, params: { msg: { rid: string } }) => {
-	if (!_err) void queryClient.invalidateQueries({ queryKey: [...roomsQueryKeys.room(params.msg.rid), 'members'] });
+	if (!_err) void queryClient.invalidateQueries({ queryKey: roomsQueryKeys.allMembers(params.msg.rid) });
 };
 
 slashCommands.add({

@@ -5,12 +5,13 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { withDebouncing } from '../../lib/utils/highOrderFunctions';
+import { appsQueryKeys } from '../lib/queryKeys';
 
 export const useTranslationsForApps = () => {
 	const getAppsLanguages = useEndpoint('GET', '/apps/languages');
 
 	const { isSuccess, data } = useQuery({
-		queryKey: ['apps', 'translations'] as const,
+		queryKey: appsQueryKeys.translations(),
 		queryFn: () => getAppsLanguages(),
 		staleTime: Infinity,
 	});
@@ -42,7 +43,7 @@ export const useTranslationsForApps = () => {
 
 		const invalidate = withDebouncing({ wait: 100 })(() => {
 			queryClient.invalidateQueries({
-				queryKey: ['apps', 'translations'],
+				queryKey: appsQueryKeys.translations(),
 			});
 		});
 

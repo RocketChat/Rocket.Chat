@@ -12,6 +12,7 @@ import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
 import { FormSkeleton } from '../../../components/Skeleton';
 import { UserStatus } from '../../../components/UserStatus';
 import { UserStatusText } from '../../../components/UserStatusText';
+import { usersQueryKeys } from '../../../lib/queryKeys';
 import { getUserEmailVerified } from '../../../lib/utils/getUserEmailVerified';
 
 export type AdminUserInfoWithDataProps = {
@@ -30,7 +31,7 @@ const AdminUserInfoWithData = ({ uid, onReload, tab }: AdminUserInfoWithDataProp
 	const query = useMemo(() => ({ userId: uid }), [uid]);
 
 	const { data, isPending, error, refetch } = useQuery({
-		queryKey: ['users', query, 'admin'],
+		queryKey: usersQueryKeys.adminInfo(query),
 		queryFn: async () => {
 			const usersInfo = await getUsersInfo(query);
 			return usersInfo;

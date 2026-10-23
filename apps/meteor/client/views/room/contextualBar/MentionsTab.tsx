@@ -4,6 +4,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 import MessageListTab from './MessageListTab';
+import { roomsQueryKeys } from '../../../lib/queryKeys';
 import { mapMessageFromApi } from '../../../lib/utils/mapMessageFromApi';
 import { useRoom } from '../contexts/RoomContext';
 
@@ -13,7 +14,7 @@ const MentionsTab = () => {
 	const room = useRoom();
 
 	const mentionedMessagesQueryResult = useQuery({
-		queryKey: ['rooms', room._id, 'mentioned-messages'] as const,
+		queryKey: roomsQueryKeys.mentionedMessages(room._id),
 
 		queryFn: async () => {
 			const messages: IMessage[] = [];

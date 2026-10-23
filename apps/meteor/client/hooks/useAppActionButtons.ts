@@ -4,6 +4,8 @@ import { useConnectionStatus, useEndpoint, useStream, useUserId } from '@rocket.
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 
+import { appsQueryKeys } from '../lib/queryKeys';
+
 export const getIdForActionButton = ({ appId, actionId }: IUIActionButton): string => `${appId}/${actionId}`;
 
 export const useAppActionButtons = <TContext extends `${UIActionButtonContext}`>(context?: TContext) => {
@@ -15,7 +17,7 @@ export const useAppActionButtons = <TContext extends `${UIActionButtonContext}`>
 	const getActionButtons = useEndpoint('GET', '/apps/actionButtons');
 
 	const result = useQuery({
-		queryKey: ['apps', 'actionButtons', status],
+		queryKey: appsQueryKeys.actionButtons(status),
 		enabled: status === 'connected',
 		queryFn: () => getActionButtons(),
 
@@ -36,7 +38,7 @@ export const useAppActionButtons = <TContext extends `${UIActionButtonContext}`>
 	const invalidate = useDebouncedCallback(
 		() => {
 			queryClient.invalidateQueries({
-				queryKey: ['apps', 'actionButtons'],
+				queryKey: appsQueryKeys.actionButtons(),
 			});
 		},
 		100,
