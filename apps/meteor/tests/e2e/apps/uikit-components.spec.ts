@@ -214,7 +214,8 @@ test.describe.serial('Apps > UIKit components', () => {
 		const table = message.getByRole('table');
 
 		await test.step('the table shows its header and rows', async () => {
-			await expect(table.getByRole('columnheader', { name: 'Service' })).toBeVisible();
+			// Playwright gives a `th` the columnheader role only with `scope="col"`.
+			await expect(table.getByRole('cell', { name: 'Service' })).toBeVisible();
 			await expect(table.getByRole('cell', { name: 'API' })).toBeVisible();
 			await expect(table.getByRole('cell', { name: '99.98%' })).toBeVisible();
 		});
