@@ -1,0 +1,31 @@
+ee/packages/network-broker/src/NatsBroker.spec.ts
+  s_632493253427e4::t_e30751df1b160a 5,37,218,223
+ee/packages/network-broker/tsconfig.json
+  s_443de6a05d76f4::t_fb154ec256cef8 9
+docs/service-brokers.md
+  s_443de6a05d76f4::t_19be299ed9e88e 406-415
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "98d92a4d9b74cab42de38dce7302a02c742694e3",
+  "prompts": {},
+  "sessions": {
+    "s_443de6a05d76f4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "5923b277-3672-4f0a-80fe-0776a4a5fc4b",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    },
+    "s_632493253427e4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b9388e82-bba6-4c03-8352-162c0543de02",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

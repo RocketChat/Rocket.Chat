@@ -1,0 +1,22 @@
+.oxlintrc.json
+  s_ce7805500d42e4::t_5a8a027ecdfc57 297-311
+  s_ce7805500d42e4::t_57ebc5ff3105a4 296
+eslint.config.mjs
+  s_ce7805500d42e4::t_d5aff0367eaa60 427-442
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "67f7c7f939442edca29187af4f0ce5e8735bf61e",
+  "prompts": {},
+  "sessions": {
+    "s_ce7805500d42e4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7f277593-d674-4300-98ab-1d4b9b229a1a",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": null
+    }
+  }
+}
