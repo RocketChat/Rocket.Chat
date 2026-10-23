@@ -10,13 +10,13 @@ jest.mock('../lib/sdk/ddpSdk', () => ({
 	}),
 }));
 
-const loadAccounts = (): typeof UserIdStore => {
-	let store!: typeof UserIdStore;
+const loadAccounts = (): { userIdStore: typeof UserIdStore; accounts: typeof import('./accounts') } => {
+	let loaded!: { userIdStore: typeof UserIdStore; accounts: typeof import('./accounts') };
 	jest.isolateModules(() => {
-		({ userIdStore: store } = jest.requireActual<typeof import('../lib/user')>('../lib/user'));
-		jest.requireActual('./accounts');
+		const { userIdStore } = jest.requireActual<typeof import('../lib/user')>('../lib/user');
+		loaded = { userIdStore, accounts: jest.requireActual<typeof import('./accounts')>('./accounts') };
 	});
-	return store;
+	return loaded;
 };
 
 describe('page load resume', () => {
@@ -35,18 +35,20 @@ describe('page load resume', () => {
 	it('keeps the stored user when the resume fails for a reason other than the token', async () => {
 		mockLogin.mockRejectedValue({ error: 'error-service-unavailable' });
 
-		const userIdStore = loadAccounts();
+		const { userIdStore, accounts } = loadAccounts();
 		await jest.advanceTimersByTimeAsync(0);
 
 		expect(mockLogin).toHaveBeenCalled();
+		// Between two resume attempts no login is in progress, which is when a missing user would read as a logout.
+		expect(accounts.isLoggingIn()).toBe(false);
 		expect(userIdStore.getState()).toBe('user-id');
 		expect(localStorage.getItem('Meteor.loginToken')).toBe('token');
 	});
 
 	it('logs out when the server refuses the stored token', async () => {
-		mockLogin.mockRejectedValue({ error: 403, reason: "You've been logged out by the server. Please log in again." });
+		mockLogin.mockRejectedValue({ error: 401, reason: "You've been logged out by the server. Please log in again." });
 
-		const userIdStore = loadAccounts();
+		const { userIdStore } = loadAccounts();
 		await jest.advanceTimersByTimeAsync(0);
 
 		expect(userIdStore.getState()).toBeUndefined();
