@@ -3,16 +3,28 @@ import * as UiKit from '@rocket.chat/ui-kit';
 import { memo } from 'react';
 
 import type { BlockProps } from '../utils/BlockProps';
+import { isTextObject } from '../utils/isTextObject';
 
 export type TableBlockProps = BlockProps<UiKit.TableBlock>;
 
 const alignments = { left: 'start', center: 'center', right: 'end' } as const;
 
+const isRawTextCell = (cell: unknown): cell is UiKit.RawTextTableCell =>
+	typeof cell === 'object' &&
+	cell !== null &&
+	'type' in cell &&
+	cell.type === 'raw_text' &&
+	'text' in cell &&
+	typeof cell.text === 'string';
+
+// Payloads reach the renderer unchecked: a cell that is not text renders empty, and a row that is not a list renders no cells.
+const toList = <T,>(value: readonly T[] | undefined): readonly T[] => (Array.isArray(value) ? value : []);
+
 const TableBlock = ({ className, block, surfaceRenderer }: TableBlockProps) => {
-	const [header = [], ...rows] = block.rows;
+	const [header = [], ...rows] = toList(block.rows);
 
 	const renderCells = (cells: readonly UiKit.TableCell[]) =>
-		cells.map((cell, index) => {
+		toList(cells).map((cell, index) => {
 			const setting = block.column_settings?.[index];
 
 			return (
@@ -22,7 +34,8 @@ const TableBlock = ({ className, block, surfaceRenderer }: TableBlockProps) => {
 					withTruncatedText={!setting?.is_wrapped}
 					fontScale='p2'
 				>
-					{cell.type === 'raw_text' ? cell.text : surfaceRenderer.renderTextObject(cell, index, UiKit.BlockContext.NONE)}
+					{isRawTextCell(cell) && cell.text}
+					{isTextObject(cell) && surfaceRenderer.renderTextObject(cell, index, UiKit.BlockContext.NONE)}
 				</TableCell>
 			);
 		});

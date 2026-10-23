@@ -41,3 +41,33 @@ it('renders nothing in a banner, which does not accept tables', () => {
 
 	expect(screen.queryByRole('table')).not.toBeInTheDocument();
 });
+
+it('renders cells that are not text as empty instead of drawing them', () => {
+	render(
+		<MockedServerContext>
+			{messageParser.render([
+				{
+					type: 'table',
+					rows: [
+						[{ type: 'raw_text', text: 'Action' }],
+						[{ type: 'button', text: { type: 'plain_text', text: 'Delete' }, actionId: 'delete', appId: 'app', blockId: 'b' }],
+					],
+				},
+			] as any)}
+		</MockedServerContext>,
+	);
+
+	expect(screen.getByText('Action')).toBeInTheDocument();
+	expect(screen.queryByRole('button')).not.toBeInTheDocument();
+	expect(screen.queryByText('Delete')).not.toBeInTheDocument();
+});
+
+it.each([
+	['rows that are not a list', 'rows'],
+	['a row that is not a list', [[{ type: 'raw_text', text: 'Service' }], 'row']],
+	['cells that are not objects', [[null, 'cell', { type: 'raw_text', text: 'Service' }]]],
+])('renders %s without throwing', (_, rows) => {
+	render(<MockedServerContext>{messageParser.render([{ type: 'table', rows }] as any)}</MockedServerContext>);
+
+	expect(screen.getByRole('table')).toBeInTheDocument();
+});

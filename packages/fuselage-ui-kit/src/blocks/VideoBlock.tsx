@@ -3,6 +3,7 @@ import * as UiKit from '@rocket.chat/ui-kit';
 import { memo, useState } from 'react';
 
 import type { BlockProps } from '../utils/BlockProps';
+import { isTextObject } from '../utils/isTextObject';
 
 export type VideoBlockProps = BlockProps<UiKit.VideoBlock>;
 
@@ -24,7 +25,7 @@ const VideoBlock = ({ className, block, surfaceRenderer }: VideoBlockProps) => {
 	const playable = isPlayableUrl(block.video_url);
 	const titleUrl = block.title_url && UiKit.isSafeUrl(block.title_url) ? block.title_url : undefined;
 	const providerIconUrl = block.provider_icon_url && UiKit.isSafeUrl(block.provider_icon_url) ? block.provider_icon_url : undefined;
-	const title = surfaceRenderer.renderTextObject(block.title, 0, UiKit.BlockContext.NONE);
+	const title = isTextObject(block.title) ? surfaceRenderer.renderTextObject(block.title, 0, UiKit.BlockContext.NONE) : null;
 
 	return (
 		<Box className={className} maxWidth={maxWidth} display='flex' flexDirection='column'>
@@ -90,7 +91,7 @@ const VideoBlock = ({ className, block, surfaceRenderer }: VideoBlockProps) => {
 					title
 				)}
 			</Box>
-			{block.description && (
+			{isTextObject(block.description) && (
 				<Box fontScale='p2' color='hint'>
 					{surfaceRenderer.renderTextObject(block.description, 0, UiKit.BlockContext.NONE)}
 				</Box>

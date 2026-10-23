@@ -54,3 +54,11 @@ it.each([
 	expect(screen.getByRole('button', { name: 'Release walkthrough' })).toBeDisabled();
 	expect(document.querySelector('iframe')).toBeNull();
 });
+
+it('leaves out a title or description that is not text', () => {
+	const button = { type: 'button', text: { type: 'plain_text', text: 'Delete' }, actionId: 'delete', appId: 'app', blockId: 'b' };
+	renderVideo(video({ title: button, description: button } as any));
+
+	expect(screen.queryByText('Delete')).not.toBeInTheDocument();
+	expect(screen.getAllByRole('button')).toHaveLength(1);
+});
