@@ -29,6 +29,7 @@
 		"ms": "turbo run ms --env-mode=loose",
 		"fossify": "tsx scripts/fossify.ts",
 		"lint": "turbo run lint",
+		"lint:spacing": "node scripts/spacing-scale/check.mjs",
 		"storybook": "yarn workspace @rocket.chat/meteor run storybook",
 		"test-storybook": "turbo run test-storybook",
 		"testunit": "turbo run testunit"
