@@ -1,4 +1,5 @@
 import tokenBorder from '@rocket.chat/fuselage-tokens/dist/border.json';
+import tokenSpacing from '@rocket.chat/fuselage-tokens/dist/spacing.json';
 import tokenTypography from '@rocket.chat/fuselage-tokens/dist/typography.json';
 import { memoize } from '@rocket.chat/memo';
 import invariant from 'invariant';
@@ -24,6 +25,11 @@ import { toCSSColorValue, toCSSFontValue, toCSSValue } from './helpers/toCSSValu
 
 export type BorderWidth = keyof typeof tokenBorder.width;
 export type BorderRadius = keyof typeof tokenBorder.radius;
+export type SpacingToken = keyof typeof tokenSpacing;
+
+export const spacingScale: Readonly<Record<SpacingToken, number>> = tokenSpacing;
+
+const isSpacingToken = (value: string): value is SpacingToken => Object.hasOwn(tokenSpacing, value);
 
 const measure = (computeSpecialValue?: (value: string) => null | undefined | string) =>
 	memoize((value) => {
@@ -218,7 +224,31 @@ export const size = measure((value: unknown) => {
 	return undefined;
 });
 
-export const spacing = measure((value: unknown) => {
+export const spacing = memoize((value: unknown) => {
+	if (typeof value === 'number') {
+		return `${value}px`;
+	}
+
+	if (typeof value !== 'string') {
+		return undefined;
+	}
+
+	if (value === 'none') {
+		return '0px';
+	}
+
+	const [, negativeMark, step] = /^(neg-|-)?x(\d+)$/.exec(value) ?? [];
+	if (!step) {
+		return value;
+	}
+
+	const token = `x${step}`;
+	const pixels = isSpacingToken(token) ? tokenSpacing[token] : Number(step);
+	return `${(negativeMark ? -1 : 1) * pixels}px`;
+});
+
+/** @internal */
+export const inset = measure((value: unknown) => {
 	if (value === 'none') {
 		return '0px';
 	}
