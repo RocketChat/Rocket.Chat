@@ -6,9 +6,8 @@ describe('en.i18n.json', () => {
 		'FileUpload_NotAllowed',
 		'Message_not_found',
 		'Omnichannel_is_not_enabled',
-		'Outbound_message_upsell_image_alt',
 		'You_cant_send_unencrypted_files_in_an_encrypted_room',
 	])('should define %s, which the app looks up by name', (key) => {
-		expect((en as Record<string, unknown>)[key]).toEqual(expect.any(String));
+		expect((en as Record<string, string>)[key]).toMatch(/\S/);
 	});
 });

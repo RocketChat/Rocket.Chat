@@ -5174,7 +5174,6 @@
   "Outbound_message_upsell_alt": "Illustration of a smartphone receiving a new message notification.",
   "Outbound_message_upsell_annotation": "Contact your workspace admin to enable outbound chat",
   "Outbound_message_upsell_description": "Send personalized outbound messages on WhatsApp and other channels — ideal for reminders, alerts and follow-ups.",
-  "Outbound_message_upsell_image_alt": "Outbound message illustration",
   "Outbound_message_upsell_title": "Take the first step in the conversation",
   "outbound.can-assign-any-agent": "Can assign any agent to receive outbound messages responses",
   "outbound.can-assign-any-agent_description": "Permission to assign any agent to receive outbound messages responses",
