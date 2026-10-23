@@ -28,7 +28,7 @@ describe('getLivechatMessageCharacterLimit', () => {
 		expect(getLivechatMessageCharacterLimit()).to.equal(10);
 	});
 
-	[0, '', undefined].forEach((limit) => {
+	[0, -1, '', undefined].forEach((limit) => {
 		it(`falls back to Message_MaxAllowedSize when the limit is ${JSON.stringify(limit)}`, () => {
 			workspaceSettings.Livechat_enable_message_character_limit = true;
 			workspaceSettings.Livechat_message_character_limit = limit;

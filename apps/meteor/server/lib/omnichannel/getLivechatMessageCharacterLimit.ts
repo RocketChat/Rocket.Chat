@@ -6,5 +6,6 @@ export const getLivechatMessageCharacterLimit = (): number | undefined => {
 		return undefined;
 	}
 
-	return parseInt(settings.get('Livechat_message_character_limit')) || settings.get<number>('Message_MaxAllowedSize');
+	const configuredLimit = parseInt(settings.get('Livechat_message_character_limit'));
+	return configuredLimit > 0 ? configuredLimit : settings.get<number>('Message_MaxAllowedSize');
 };
