@@ -89,7 +89,6 @@ const TranscriptModal = ({ email: emailDefault = '', room, onRequest, onSend, on
 										{...field}
 										disabled={!!emailDefault || !!transcriptRequest}
 										error={errors.email?.message}
-										flexGrow={1}
 										aria-required='true'
 									/>
 								)}
@@ -105,7 +104,7 @@ const TranscriptModal = ({ email: emailDefault = '', room, onRequest, onSend, on
 								control={control}
 								rules={{ required: t('Required_field', { field: t('Subject') }) }}
 								render={({ field }) => (
-									<TextInput {...field} disabled={!!transcriptRequest} error={errors.subject?.message} flexGrow={1} aria-required='true' />
+									<TextInput {...field} disabled={!!transcriptRequest} error={errors.subject?.message} aria-required='true' />
 								)}
 							/>
 						</FieldRow>

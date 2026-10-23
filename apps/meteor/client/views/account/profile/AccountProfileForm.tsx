@@ -301,7 +301,6 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 											{...field}
 											placeholder={t('StatusMessage_Placeholder')}
 											disabled={!allowUserStatusMessageChange || presenceDisabledByAdmin}
-											flexGrow={1}
 											error={errors.statusText?.message}
 											endAddon={presenceDisabledByAdmin ? <UserStatusDisabledInfo workspace={workspacePresenceDisabled} /> : undefined}
 											startAddon={
@@ -406,7 +405,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 							<Controller
 								control={control}
 								name='nickname'
-								render={({ field }) => <TextInput {...field} flexGrow={1} endAddon={<Icon name='edit' size='x20' />} />}
+								render={({ field }) => <TextInput {...field} endAddon={<Icon name='edit' size='x20' />} />}
 							/>
 						</FieldRow>
 					</Field>
@@ -421,7 +420,7 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 								maxLength: { value: BIO_TEXT_MAX_LENGTH, message: t('Max_length_is', { limit: BIO_TEXT_MAX_LENGTH }) },
 							}}
 							render={({ field }) => (
-								<TextAreaInput {...field} rows={3} flexGrow={1} error={errors.bio?.message} endAddon={<Icon name='edit' size='x20' />} />
+								<TextAreaInput {...field} rows={3} error={errors.bio?.message} endAddon={<Icon name='edit' size='x20' />} />
 							)}
 						/>
 					</FieldRow>
@@ -449,7 +448,6 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 								<TextInput
 									{...field}
 									aria-required={true}
-									flexGrow={1}
 									disabled={!allowEmailChange}
 									endAddon={<Icon name={isUserVerified ? 'circle-check' : 'mail'} size='x20' />}
 									error={errors.email?.message}
