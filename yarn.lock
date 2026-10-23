@@ -12260,6 +12260,32 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/ui-setup-wizard@workspace:packages/ui-setup-wizard":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/ui-setup-wizard@workspace:packages/ui-setup-wizard"
+  dependencies:
+    "@rocket.chat/fuselage": "workspace:~"
+    "@rocket.chat/icons": "workspace:~"
+    "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/storybook-config": "workspace:~"
+    "@rocket.chat/tsconfig": "workspace:*"
+    "@storybook/react": "npm:^9.1.21"
+    "@testing-library/react": "npm:~16.3.3"
+    "@types/jest": "npm:~30.0.0"
+    "@types/react": "npm:~19.2.18"
+    "@types/react-dom": "npm:~19.2.7"
+    jest: "npm:~30.5.2"
+    react: "npm:~19.2.8"
+    react-dom: "npm:~19.2.8"
+    react-i18next: "npm:~17.0.16"
+    storybook: "npm:^9.1.21"
+    typescript: "npm:~7.0.2"
+  peerDependencies:
+    "@rocket.chat/fuselage": "*"
+    react: "*"
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/ui-video-conf@workspace:*, @rocket.chat/ui-video-conf@workspace:^, @rocket.chat/ui-video-conf@workspace:packages/ui-video-conf":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ui-video-conf@workspace:packages/ui-video-conf"
