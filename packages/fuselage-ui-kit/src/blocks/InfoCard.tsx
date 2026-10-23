@@ -32,7 +32,7 @@ const InfoCard = ({ block, surfaceRenderer, context }: InfoCardProps) => {
 						justifyContent='space-between'
 						flexDirection='row'
 					>
-						<Box display='flex' alignItems='center' flexDirection='row' gap={8}>
+						<Box display='flex' alignItems='center' flexDirection='row' gap='x8'>
 							{elements.map((element, index) => {
 								if (element.type === 'icon') {
 									return (

@@ -20,7 +20,7 @@ const DropDown = ({ blocksTree }: DropDownProps) => {
 	);
 
 	return (
-		<Box paddingBlockStart='16px' paddingBlockEnd='32px'>
+		<Box paddingBlockStart='x16' paddingBlockEnd='x32'>
 			{blocksTree.map((branch: ItemBranch, i: number) => (
 				<Box key={i}>{recursiveComponentTree(branch, layer)}</Box>
 			))}

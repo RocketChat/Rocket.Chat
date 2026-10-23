@@ -23,7 +23,7 @@ const FilterByText = forwardRef<HTMLInputElement, FilterByTextProps>(function Fi
 	}, []);
 
 	return (
-		<Box marginBlock={16} is='form' onSubmit={handleFormSubmit} display='flex' flexWrap='wrap' alignItems='center' columnGap={8}>
+		<Box marginBlock='x16' is='form' onSubmit={handleFormSubmit} display='flex' flexWrap='wrap' alignItems='center' columnGap='x8'>
 			<Box display='flex' flexGrow={1} minWidth='x280'>
 				<TextInput
 					{...props}

@@ -97,7 +97,7 @@ const OutboundMessagePreview = ({
 			</ul>
 
 			{template ? (
-				<Box marginBlockStart={32}>
+				<Box marginBlockStart='x32'>
 					<TemplatePreview template={template} parameters={templateParameters} />
 				</Box>
 			) : null}

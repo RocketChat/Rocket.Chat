@@ -14,7 +14,7 @@ const UrlPreview = (props: UrlPreviewMetadata) => {
 
 	return (
 		<>
-			<Box display='flex' flexDirection='row' color='hint' fontScale='c1' alignItems='center' gap={4}>
+			<Box display='flex' flexDirection='row' color='hint' fontScale='c1' alignItems='center' gap='x4'>
 				{t('Link_Preview')}
 				<CollapsibleContent key='collapsible-content-action' collapsed={collapsed} onClick={toggleCollapse} />
 			</Box>

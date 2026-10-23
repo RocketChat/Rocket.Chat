@@ -133,7 +133,7 @@ const QueueListTable = () => {
 							{data?.queue.map(({ user, department, chats }) => (
 								<GenericTableRow key={user._id} tabIndex={0}>
 									<GenericTableCell withTruncatedText>
-										<Box display='flex' alignItems='center' marginBlock='4px'>
+										<Box display='flex' alignItems='center' marginBlock='x4'>
 											<UserAvatar size={mediaQuery ? 'x28' : 'x40'} username={user.username} />
 											<Box display='flex' marginInline={8}>
 												{user.username}

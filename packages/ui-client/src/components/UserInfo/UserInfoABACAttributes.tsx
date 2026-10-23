@@ -9,7 +9,7 @@ export type UserInfoABACAttributesProps = {
 
 const UserInfoABACAttributes = ({ abacAttributes }: UserInfoABACAttributesProps) => {
 	return (
-		<Box flexWrap='wrap' display='flex' flexShrink={0} gap='x4' marginBlock={8}>
+		<Box flexWrap='wrap' display='flex' flexShrink={0} gap='x4' marginBlock='x8'>
 			{abacAttributes.map((attribute, index) =>
 				attribute.values.map((value) => <UserInfoABACAttribute key={`${attribute.key}-${value}-${index}`} attribute={value} />),
 			)}

@@ -17,7 +17,7 @@ const PreviewItem = ({ icon, label, children }: PreviewItemProps) => {
 	return (
 		<Box display='flex'>
 			<Icon size={18} name={icon} />
-			<Box marginInlineStart={4}>
+			<Box marginInlineStart='x4'>
 				<Box is='span' id={id} fontScale='p2m'>
 					{label}
 				</Box>

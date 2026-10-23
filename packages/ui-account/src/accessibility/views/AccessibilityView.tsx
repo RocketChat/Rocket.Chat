@@ -86,7 +86,7 @@ const AccessibilityView = ({ vm: { values: preferencesValues, displayRolesEnable
 					width='full'
 					alignSelf='center'
 					marginBlock={40}
-					marginInline={32}
+					marginInline='x32'
 				>
 					<Box fontScale='p1' marginBlockEnd={24}>
 						<Box paddingBlock={16} is='p'>

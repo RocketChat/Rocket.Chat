@@ -28,7 +28,7 @@ export default {
 			return (
 				<AppRoot>
 					<BusinessHoursFormProvider>
-						<Box maxWidth='x600' alignSelf='center' width='full' margin={24}>
+						<Box maxWidth='x600' alignSelf='center' width='full' margin='x24'>
 							{fn()}
 						</Box>
 					</BusinessHoursFormProvider>

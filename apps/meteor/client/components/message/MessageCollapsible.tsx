@@ -20,7 +20,7 @@ const MessageCollapsible = ({ children, title, hasDownload, link, size, isCollap
 
 	return (
 		<>
-			<Box display='flex' flexDirection='row' color='hint' fontScale='c1' alignItems='center' gap={4}>
+			<Box display='flex' flexDirection='row' color='hint' fontScale='c1' alignItems='center' gap='x4'>
 				<Box withTruncatedText title={title}>
 					{title}
 				</Box>

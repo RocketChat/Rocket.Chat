@@ -28,7 +28,7 @@ const ActionsBlock = ({ className, block, surfaceRenderer }: ActionsBlockProps) 
 	);
 
 	return (
-		<Box className={className} display='flex' flexWrap='wrap' gap={8}>
+		<Box className={className} display='flex' flexWrap='wrap' gap='x8'>
 			{actionElements.map((element, i) => (
 				<Action key={i} element={element} parser={surfaceRenderer} index={i} />
 			))}
