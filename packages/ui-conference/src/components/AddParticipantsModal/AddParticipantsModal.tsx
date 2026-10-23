@@ -7,7 +7,13 @@ import { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { useConferenceActions, useConferenceProvider, useConferenceSlots, useConferenceViewer } from '../../context/ConferenceContext';
+import {
+	useConferenceActions,
+	useConferenceProvider,
+	useConferenceRoom,
+	useConferenceSlots,
+	useConferenceViewer,
+} from '../../context/ConferenceContext';
 import { useCallRingPreference } from '../../hooks/useCallDevicesInitialState';
 
 type AddParticipantsModalProps = {
@@ -65,6 +71,11 @@ const AddParticipantsModal = ({ onClose }: AddParticipantsModalProps) => {
 	// The permission the server checks before honouring `ring`: without it the request is accepted and dropped.
 	const { canRingUsers } = useConferenceViewer();
 
+	// A DM can't take new members, so for one the people added can only be given a new chat. Not told yet counts
+	// as allowed: the server refuses an invite that can't happen, so the worst of waiting is that refusal.
+	const { chatAccess } = useConferenceRoom();
+	const canKeepHistory = chatAccess?.canInvite !== false;
+
 	const [adding, setAdding] = useState(false);
 
 	const handleAdd = ({ users, destinations, keepHistory }: AddParticipantsFormValues) => {
@@ -74,18 +85,28 @@ const AddParticipantsModal = ({ onClose }: AddParticipantsModalProps) => {
 
 		void (async () => {
 			if (!users.length) {
-				return 0;
+				return { added: 0, chatShared: true };
 			}
 
 			const { added } = await addParticipants(users, canRingUsers && ring);
 
 			// Membership is what lets them into the call and puts them in no room, so the chat is a second ask:
-			// either the room they are joining as it stands, or a fresh one started for the call.
-			await shareChat(keepHistory ? 'invite' : 'discussion', users);
+			// either the room they are joining as it stands, or a fresh one started for the call. Refused, the
+			// people are in the call already — so that is told apart from the add failing, which leaves nothing done.
+			const chatShared = await shareChat(keepHistory && canKeepHistory ? 'invite' : 'discussion', users).then(
+				() => true,
+				() => false,
+			);
 
-			return added;
+			return { added, chatShared };
 		})()
-			.then((added) => {
+			.then(({ added, chatShared }) => {
+				if (!chatShared) {
+					dispatchToastMessage({ type: 'error', message: t('Users_added_but_chat_could_not_be_shared') });
+					onClose();
+					return;
+				}
+
 				// Anyone already associated is skipped, so a selection can come back empty.
 				dispatchToastMessage(
 					added || !users.length
@@ -147,13 +168,17 @@ const AddParticipantsModal = ({ onClose }: AddParticipantsModalProps) => {
 							<Controller
 								control={control}
 								name='keepHistory'
-								render={({ field: { value, onChange } }) => <CheckBox checked={value} onChange={() => onChange(!value)} />}
+								render={({ field: { value, onChange } }) => (
+									<CheckBox checked={value && canKeepHistory} disabled={!canKeepHistory} onChange={() => onChange(!value)} />
+								)}
 							/>
 							<Box marginInlineStart={8}>
 								<FieldLabel>{t('Keep_chat_history')}</FieldLabel>
 							</Box>
 						</FieldRow>
-						<FieldDescription>{t('Keep_chat_history_Description')}</FieldDescription>
+						<FieldDescription>
+							{canKeepHistory ? t('Keep_chat_history_Description') : t('Keep_chat_history_Unavailable_Description')}
+						</FieldDescription>
 					</Field>
 				)}
 				{canDialOut && (
