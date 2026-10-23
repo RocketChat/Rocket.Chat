@@ -1,6 +1,6 @@
 import { useActiveDescendant, useMergedRefs, useResizeObserver, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { AllHTMLAttributes, FocusEvent, KeyboardEvent, Key, MouseEvent, PointerEvent, RefAttributes } from 'react';
-import { useEffect, useId, useRef, useState } from 'react';
+import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { useOverlayTriggerState } from 'react-stately';
 
 import { Box } from '../Box';
@@ -67,7 +67,7 @@ function Select<V extends Key = Key>({
 	const generatedId = useId();
 	const id = idProp ?? generatedId;
 	const listboxId = `${id}-listbox`;
-	const getOptionId = (index: number) => `${id}-option-${index}`;
+	const getOptionId = useCallback((index: number) => `${id}-option-${index}`, [id]);
 
 	const [uncontrolledValue, setUncontrolledValue] = useState<Key | null | undefined>(defaultSelectedKey);
 	const selectedKey = value !== undefined ? value : uncontrolledValue;
@@ -270,8 +270,8 @@ function Select<V extends Key = Key>({
 			return;
 		}
 
-		triggerRef.current?.ownerDocument.getElementById(`${id}-option-${active}`)?.scrollIntoView?.({ block: 'nearest' });
-	}, [overlayState.isOpen, active, id]);
+		triggerRef.current?.ownerDocument.getElementById(getOptionId(active))?.scrollIntoView?.({ block: 'nearest' });
+	}, [overlayState.isOpen, active, getOptionId]);
 
 	const { isOpen } = overlayState;
 
