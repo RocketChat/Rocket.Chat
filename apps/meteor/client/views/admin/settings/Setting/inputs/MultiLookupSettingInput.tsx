@@ -15,7 +15,7 @@ function MultiLookupSettingInput({
 	value = [],
 	hint,
 	placeholder,
-	readonly,
+	readonly: _readonly,
 	disabled,
 	required,
 	lookupEndpoint,
@@ -48,7 +48,6 @@ function MultiLookupSettingInput({
 					value={value}
 					placeholder={placeholder}
 					disabled={disabled}
-					readOnly={readonly}
 					onChange={handleChange}
 					options={optionPairs}
 					aria-label={typeof label === 'string' ? label : _id}

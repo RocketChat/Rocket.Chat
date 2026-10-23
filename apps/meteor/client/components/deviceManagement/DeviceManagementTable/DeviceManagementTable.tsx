@@ -57,7 +57,7 @@ const DeviceManagementTable = <T extends DeviceManagementSession | DeviceManagem
 					<StatesSubtitle>{t('We_Could_not_retrive_any_data')}</StatesSubtitle>
 					<StatesSubtitle>{error.message}</StatesSubtitle>
 					<StatesActions>
-						<StatesAction onClick={refetch}>{t('Retry')}</StatesAction>
+						<StatesAction onClick={() => refetch()}>{t('Retry')}</StatesAction>
 					</StatesActions>
 				</States>
 			</Box>

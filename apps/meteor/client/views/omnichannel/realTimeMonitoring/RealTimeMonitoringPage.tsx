@@ -70,7 +70,6 @@ const RealTimeMonitoringPage = () => {
 										value={departmentId}
 										onChange={setDepartment}
 										placeholder={t('All')}
-										label={t('All')}
 										onlyMyDepartments
 										withTitle={false}
 										renderItem={({ label, ...props }) => (
