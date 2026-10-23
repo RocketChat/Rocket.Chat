@@ -2,7 +2,6 @@ import crypto from 'node:crypto';
 
 import type { NextHandleFunction } from 'connect';
 import { Inject } from 'meteor/meteorhacks:inject-initial';
-import { ReactiveDict } from 'meteor/reactive-dict';
 import { WebApp } from 'meteor/webapp';
 import parseRequest from 'parseurl';
 
@@ -16,7 +15,7 @@ type Injection =
 			tag: string;
 	  };
 
-export const headInjections = new ReactiveDict<Record<string, Injection>>();
+const headInjections = new Map<string, Injection>();
 
 const callback: NextHandleFunction = (req, res, next) => {
 	if (req.method !== 'GET' && req.method !== 'HEAD' && req.method !== 'OPTIONS') {
@@ -71,8 +70,26 @@ const callback: NextHandleFunction = (req, res, next) => {
 
 WebApp.connectHandlers.use(callback);
 
+let headRenderScheduled = false;
+
+const renderHeadInjections = (): void => {
+	headRenderScheduled = false;
+	const injections = [...headInjections.values()].filter((injection) => !!injection);
+	Inject.rawModHtml('headInjections', applyHeadInjections(injections));
+};
+
+// Changes made in the same tick share one re-render of the page head.
 export const injectIntoHead = (key: string, value: Injection): void => {
+	if (JSON.stringify(headInjections.get(key)) === JSON.stringify(value)) {
+		return;
+	}
+
 	headInjections.set(key, value);
+
+	if (!headRenderScheduled) {
+		headRenderScheduled = true;
+		setImmediate(renderHeadInjections);
+	}
 };
 
 export const addScript = (key: string, content: string): void => {
