@@ -18,7 +18,7 @@ const isRawTextCell = (cell: unknown): cell is UiKit.RawTextTableCell =>
 	typeof cell.text === 'string';
 
 // Payloads reach the renderer unchecked: a cell that is not text renders empty, and a row that is not a list renders no cells.
-const toList = <T,>(value: readonly T[] | undefined): readonly T[] => (Array.isArray(value) ? value : []);
+const toList = <T,>(value: readonly T[] | undefined): readonly T[] => (Array.isArray(value) ? (value as readonly T[]) : []);
 
 const TableBlock = ({ className, block, surfaceRenderer }: TableBlockProps) => {
 	const [header = [], ...rows] = toList(block.rows);
