@@ -230,6 +230,36 @@ describe('MessageList scroll position', () => {
 		expect(mockVirtualizerHandle.scrollTo).not.toHaveBeenCalled();
 	});
 
+	it('should jump to bottom if the room has messages newer than the last seen date but no unread count', () => {
+		const store = {
+			scroll: 123,
+			atBottom: false,
+			update: jest.fn(),
+		};
+		(useRoomSubscription as jest.Mock).mockReturnValue({ rid: 'room-id', unread: 0, alert: true, ls: new Date('2026-01-01') });
+		(RoomManager.getStore as jest.Mock).mockReturnValue(store);
+
+		render(<MessageList {...defaultProps} room={{ ...defaultProps.room, lm: new Date('2026-01-02') }} />, { wrapper: root.build() });
+
+		expect(defaultProps.setShouldJumpToBottom).toHaveBeenCalledWith(true);
+		expect(mockVirtualizerHandle.scrollTo).not.toHaveBeenCalled();
+	});
+
+	it('should restore the scroll position if only a thread reply is unread', () => {
+		const store = {
+			scroll: 123,
+			atBottom: false,
+			update: jest.fn(),
+		};
+		(useRoomSubscription as jest.Mock).mockReturnValue({ rid: 'room-id', unread: 0, alert: true, ls: new Date('2026-01-02') });
+		(RoomManager.getStore as jest.Mock).mockReturnValue(store);
+
+		render(<MessageList {...defaultProps} room={{ ...defaultProps.room, lm: new Date('2026-01-01') }} />, { wrapper: root.build() });
+
+		expect(mockVirtualizerHandle.scrollTo).toHaveBeenCalledWith(123);
+		expect(defaultProps.setShouldJumpToBottom).not.toHaveBeenCalledWith(true);
+	});
+
 	it('should report the top visible message without waiting for a scroll', () => {
 		(RoomManager.getStore as jest.Mock).mockReturnValue({ scroll: undefined, atBottom: true, update: jest.fn() });
 		// the top padding offset lands on the first message, right after the foreword

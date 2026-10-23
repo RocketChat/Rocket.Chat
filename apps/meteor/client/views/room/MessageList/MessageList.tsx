@@ -146,7 +146,9 @@ export const MessageList = function MessageList({
 	const firstUnreadMessageId = useFirstUnreadMessageId();
 	const subscription = useRoomSubscription();
 	// The first unread id is only known once the room history loads, which may happen after the room is initialized.
-	const hasUnreadMessages = Boolean(firstUnreadMessageId || subscription?.unread || subscription?.alert);
+	// Thread-only replies raise `alert` without a new room message, so they must not count here.
+	const hasUnseenRoomMessage = Boolean(subscription?.ls && room.lm && new Date(room.lm) > new Date(subscription.ls));
+	const hasUnreadMessages = Boolean(firstUnreadMessageId || subscription?.unread || hasUnseenRoomMessage);
 
 	const messageJumpParam = useSearchParameter('msg');
 
