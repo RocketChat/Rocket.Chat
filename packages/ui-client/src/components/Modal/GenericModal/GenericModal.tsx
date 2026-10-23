@@ -29,6 +29,7 @@ export type GenericModalProps = RequiredModalProps & {
 	children?: ReactNode;
 	cancelText?: ReactNode;
 	confirmText?: ReactNode;
+	confirmIcon?: IconName;
 	title?: string | ReactElement<any>;
 	icon?: IconName | ReactElement<any> | null;
 	confirmDisabled?: boolean;
@@ -89,6 +90,7 @@ const GenericModal = ({
 	children,
 	cancelText,
 	confirmText,
+	confirmIcon,
 	title,
 	icon,
 	onCancel,
@@ -160,12 +162,18 @@ const GenericModal = ({
 						</Button>
 					)}
 					{wrapperFunction && (
-						<Button {...getButtonProps(variant)} type='submit' disabled={confirmDisabled} loading={confirmLoading}>
+						<Button {...getButtonProps(variant)} type='submit' icon={confirmIcon} disabled={confirmDisabled} loading={confirmLoading}>
 							{confirmText ?? t('Ok')}
 						</Button>
 					)}
 					{!wrapperFunction && onConfirm && (
-						<Button {...getButtonProps(variant)} onClick={handleConfirm} disabled={confirmDisabled} loading={confirmLoading}>
+						<Button
+							{...getButtonProps(variant)}
+							onClick={handleConfirm}
+							icon={confirmIcon}
+							disabled={confirmDisabled}
+							loading={confirmLoading}
+						>
 							{confirmText ?? t('Ok')}
 						</Button>
 					)}
