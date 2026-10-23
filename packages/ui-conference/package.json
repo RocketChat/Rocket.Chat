@@ -53,7 +53,7 @@
 		"react-dom": "~19.2.8",
 		"react-hook-form": "~7.54.2",
 		"react-i18next": "~17.0.16",
-		"storybook": "^9.1.20",
+		"storybook": "^9.1.21",
 		"typescript": "~7.0.2"
 	},
 	"peerDependencies": {
