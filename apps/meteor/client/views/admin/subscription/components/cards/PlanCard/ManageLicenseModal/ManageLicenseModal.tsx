@@ -47,7 +47,7 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 		margin-block-end: 8px !important;
 		width: 100% !important;
 		border-style: ${isDragOver ? 'dashed' : 'solid'} !important;
-		border-color: ${strokeColor(isDragOver ? 'stroke-highlight' : 'stroke-light')} !important;
+		border-color: ${strokeColor(isDragOver ? 'highlight' : 'light')} !important;
 		${isDragOver ? `background-color: ${backgroundColor('tint')} !important;` : ''}
 	`);
 
