@@ -40,7 +40,7 @@ const SignInSignUp = ({ route }: SignInSignUpProps) => {
 						<Box marginBlockStart='20px' fontScale='hero'>
 							{labels[route].header}
 						</Box>
-						<Box marginBlockStart='10px' fontScale='p2'>
+						<Box marginBlockStart='x8' fontScale='p2'>
 							{labels[route].description}
 						</Box>
 						<Box display='flex' flexDirection='column' gap='20px' paddingBlockStart='20px' width='80%'>

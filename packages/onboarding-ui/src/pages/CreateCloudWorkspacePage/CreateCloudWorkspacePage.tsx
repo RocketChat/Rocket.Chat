@@ -18,7 +18,7 @@ const CreateCloudWorkspacePage = (props: CreateCloudWorkspacePageProps) => {
 			<FormPageLayout title={<TitleCreateCloudPage />} description={<Description />} subtitle={t('page.createCloudWorkspace.tryGold')}>
 				<CreateCloudWorkspaceForm {...props} />
 
-				<Box marginBlockStart={28} display='inline' textAlign='center'>
+				<Box marginBlockStart='x24' display='inline' textAlign='center'>
 					<Trans i18nKey='page.alreadyHaveAccount'>
 						Already have an account?
 						<Box

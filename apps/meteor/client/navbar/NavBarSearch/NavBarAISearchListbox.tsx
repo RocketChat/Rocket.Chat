@@ -78,7 +78,7 @@ const NavBarAISearchListBox = ({
 						{aiSearchAvailable && (
 							<>
 								<Box display='flex' justifyContent='space-between' alignItems='center' paddingInline={12}>
-									<Stack direction='row' align='center' gap={2}>
+									<Stack direction='row' align='center' gap='x4'>
 										<Box is='span' id={aiSearchLabelId}>
 											{t('AI_Search')}
 										</Box>

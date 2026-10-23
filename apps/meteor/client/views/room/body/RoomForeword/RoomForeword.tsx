@@ -39,7 +39,7 @@ const RoomForeword = ({ user, room }: RoomForewordProps) => {
 			<Box display='flex' color='default' fontScale='h4' flexGrow={1} justifyContent='center' marginBlock={16}>
 				{t('Direct_message_you_have_joined')}
 			</Box>
-			<Box is='div' flexGrow={1} display='flex' justifyContent='center'>
+			<Box is='div' flexGrow={1} display='flex' justifyContent='center' gap='x8'>
 				<RoomForewordUsernameList usernames={usernames} />
 			</Box>
 		</Box>

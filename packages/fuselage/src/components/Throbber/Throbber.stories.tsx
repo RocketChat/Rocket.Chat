@@ -57,7 +57,7 @@ export const InsideButton: Story = {
 export const InsideButtonInheritColor: Story = {
 	render: () => (
 		<Box>
-			<Button primary danger minHeight='x40' marginInlineEnd='5px'>
+			<Button primary danger minHeight='x40' marginInlineEnd='x4'>
 				<Throbber size='x12' inheritColor />
 			</Button>
 			<Button primary minHeight='x40'>

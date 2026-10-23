@@ -22,7 +22,7 @@ const OauthAuthorizationPage = ({ clientName, onClickAuthorizeOAuth, error }: Oa
 				<Box fontScale='p1' padding={40} textAlign='start' color={colors.n900}>
 					{!clientName || error.message ? (
 						<>
-							<Box fontScale='h1' marginBlockEnd={18}>
+							<Box fontScale='h1' marginBlockEnd='x16'>
 								Error
 							</Box>
 							{error.message}

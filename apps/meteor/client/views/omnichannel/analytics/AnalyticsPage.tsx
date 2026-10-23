@@ -89,7 +89,7 @@ const AnalyticsPage = () => {
 				<Box>
 					<Overview type={type} dateRange={dateRange} departmentId={department || ''} />
 				</Box>
-				<Box display='flex' paddingInline={2}>
+				<Box display='flex' paddingInline='x4'>
 					<Field>
 						<FieldLabel>{t('Chart')}</FieldLabel>
 						<FieldRow>
@@ -107,7 +107,7 @@ const AnalyticsPage = () => {
 						dateRange={dateRange}
 						alignSelf='stretch'
 					/>
-					<Box display='flex' width='33%' justifyContent='stretch' padding={10} marginInlineStart={4}>
+					<Box display='flex' width='33%' justifyContent='stretch' padding='x8' marginInlineStart='x4'>
 						<AgentOverview type={chartName || ''} dateRange={dateRange} departmentId={department || ''} />
 					</Box>
 				</Box>

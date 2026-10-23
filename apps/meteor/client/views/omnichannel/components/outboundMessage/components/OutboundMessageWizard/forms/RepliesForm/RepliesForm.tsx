@@ -118,7 +118,7 @@ const RepliesForm = (props: RepliesFormProps) => {
 	return (
 		<Form id={repliesFormId} onSubmit={handleSubmit(submit)} noValidate>
 			<Scrollable vertical>
-				<Box paddingInline={2}>
+				<Box>
 					<FieldGroup>
 						<DepartmentField
 							control={control}

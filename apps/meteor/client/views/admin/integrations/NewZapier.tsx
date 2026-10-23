@@ -60,7 +60,7 @@ const NewZapier = ({ ...props }) => {
 			{zapierAvailable && (
 				<Box>
 					{!script && (
-						<Box display='flex' flexDirection='column' alignItems='stretch' marginBlockStart={10} gap={14} paddingBlockEnd={14}>
+						<Box display='flex' flexDirection='column' alignItems='stretch' marginBlockStart='x8' gap='x12' paddingBlockEnd='x12'>
 							<Skeleton variant='rect' height={71} />
 							<Skeleton variant='rect' height={71} />
 							<Skeleton variant='rect' height={71} />

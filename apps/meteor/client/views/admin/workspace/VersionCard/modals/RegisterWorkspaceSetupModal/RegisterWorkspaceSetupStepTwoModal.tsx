@@ -94,7 +94,7 @@ const RegisterWorkspaceSetupStepTwoModal = ({ email, step, setStep, onClose, int
 							</Box>
 						</Trans>
 					</Box>
-					<Stack gap={10}>
+					<Stack gap='x8'>
 						<Box is='p'>{t('RegisterWorkspace_Setup_Email_Verification')}</Box>
 						<Field>
 							<FieldLabel>{t('Security_code')}</FieldLabel>

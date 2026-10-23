@@ -86,7 +86,7 @@ const AccessibilityView = ({ vm: { values: preferencesValues, displayRolesEnable
 					width='full'
 					alignSelf='center'
 					marginBlock={40}
-					marginInline={36}
+					marginInline='x32'
 				>
 					<Box fontScale='p1' marginBlockEnd={24}>
 						<Box paddingBlock={16} is='p'>
@@ -111,8 +111,8 @@ const AccessibilityView = ({ vm: { values: preferencesValues, displayRolesEnable
 								return (
 									<Field
 										key={id}
-										paddingBlockEnd={themes.length - 1 ? undefined : 'x28'}
-										paddingBlockStart={index === 0 ? undefined : 'x28'}
+										paddingBlockEnd={themes.length - 1 ? undefined : 'x24'}
+										paddingBlockStart={index === 0 ? undefined : 'x24'}
 									>
 										<FieldRow>
 											<FieldLabel display='flex' alignItems='center'>

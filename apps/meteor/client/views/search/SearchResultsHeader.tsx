@@ -34,7 +34,7 @@ const SearchResultsHeader = ({ query, filters }: SearchResultsHeaderProps): Reac
 				{t('Intelligent_Search_scope_all_rooms')}
 			</Box>
 			{filters.length > 0 && (
-				<Box display='flex' flexWrap='wrap' gap={10} marginBlockStart={12}>
+				<Box display='flex' flexWrap='wrap' gap='x8' marginBlockStart='x12'>
 					{filters.map((filter) => (
 						<Chip key={filter.id}>{serializeSearchQuery({ text: '', filters: [filter] })}</Chip>
 					))}
