@@ -65,6 +65,11 @@ type UseUserInfoActionsResult = {
 	menuActions: UserMenuAction | undefined;
 };
 
+// Only the ways of reaching the user (message, calls) become buttons. Room roles, management and moderation stay in the
+// menu even when there are fewer actions than slots; so does opening the user's reported messages, a moderator's shortcut
+// that is grouped with communication in the menu.
+const isButtonAction = ([key, action]: [string, UserInfoAction]) => action.type === 'communication' && key !== 'openModerationConsole';
+
 export const useUserInfoActions = ({
 	user,
 	rid,
@@ -132,8 +137,13 @@ export const useUserInfoActions = ({
 	const actionSpread = useMemo(() => {
 		const entries = Object.entries(userinfoActions).filter(([key]) => !hiddenActions.includes(key));
 
-		const options = entries.slice(0, size);
-		const slicedOptions = entries.slice(size, entries.length);
+		const buttonKeys = entries
+			.filter(isButtonAction)
+			.slice(0, size)
+			.map(([key]) => key);
+
+		const options = entries.filter(([key]) => buttonKeys.includes(key));
+		const slicedOptions = entries.filter(([key]) => !buttonKeys.includes(key));
 
 		const menuActions = slicedOptions.reduce((acc, [_key, item]) => {
 			const group = item.type ? item.type : '';

@@ -34,3 +34,18 @@ it('groups the menu as communication, management, room roles and moderation', ()
 		{ id: 'moderation', title: '', items: ['Remove_from_room', 'Ban'] },
 	]);
 });
+
+it('only turns communication actions into buttons, leaving the rest in the menu even when a slot is free', () => {
+	const { result } = renderHook(
+		() => useUserInfoActions({ user: { _id: 'member-id', username: 'member' }, rid: 'room-1', isMember: true, size: 3 }),
+		{ wrapper: mockAppRoot().withPermission('view-moderation-console').build() },
+	);
+
+	expect(result.current.actions.map(([key]) => key)).toEqual(['openDirectMessage', 'videoCall']);
+	expect(result.current.menuActions?.map(({ id, items }) => ({ id, items: items.map((item) => item.content) }))).toEqual([
+		{ id: 'communication', items: ['Moderation_Action_View_reports'] },
+		{ id: 'management', items: ['Mute_user', 'Ignore'] },
+		{ id: 'privileges', items: ['Set_as_owner', 'Set_as_leader', 'Set_as_moderator'] },
+		{ id: 'moderation', items: ['Remove_from_room', 'Ban'] },
+	]);
+});

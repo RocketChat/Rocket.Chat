@@ -1,5 +1,5 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { ButtonGroup, IconButton, Skeleton } from '@rocket.chat/fuselage';
+import { IconButton, Skeleton } from '@rocket.chat/fuselage';
 import { GenericMenu, UserInfoAction } from '@rocket.chat/ui-client';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -67,7 +67,9 @@ const UserInfoActions = ({ user, rid, isInvited, backToList }: UserInfoActionsPr
 	if (isPending) {
 		return <Skeleton width='full' />;
 	}
-	return <ButtonGroup stretch>{actions}</ButtonGroup>;
+	// The actions are rendered straight into UserInfo's InfoPanelActionGroup, a stretched ButtonGroup that can shrink:
+	// nesting another group here kept the row from shrinking, so long labels pushed the buttons out of the panel.
+	return <>{actions}</>;
 };
 
 export default UserInfoActions;
