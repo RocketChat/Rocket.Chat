@@ -81,3 +81,11 @@ Many inline queries, models that import other models from `../index`, and models
 validate their input predate these rules. Don't add new ones. When you touch one, move the
 logic to where it belongs as its own refactor commit, below the change that needed it
 ([change organization](change-organization.md)).
+
+## Migrations
+
+These rules do not apply to migrations in `apps/meteor/server/startup/migrations/`. A migration
+runs once, against the data shape of the version it upgrades from, and is never changed after it
+ships. Its queries are not queries the product runs, so they don't belong in the model interface,
+and a method added only for a migration is left behind with no caller once that shape is gone.
+Write the filter and update inline in the migration.
