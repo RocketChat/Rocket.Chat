@@ -18,8 +18,13 @@ export async function compareUserPasswordHistory(user: IUser, pass: IPassword): 
 		return false;
 	}
 
+	const historyLength = Number(settings.get('Accounts_Password_History_Amount'));
+	if (!(historyLength > 0)) {
+		return true;
+	}
+
 	const currentPassword = user.services.password.bcrypt;
-	const passwordHistory = user.services.passwordHistory.slice(-Number(settings.get('Accounts_Password_History_Amount')));
+	const passwordHistory = user.services.passwordHistory.slice(-historyLength);
 
 	for await (const password of passwordHistory) {
 		if (!password.trim()) {
