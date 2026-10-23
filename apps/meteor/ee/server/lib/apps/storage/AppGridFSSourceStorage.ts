@@ -1,9 +1,10 @@
 import { AppSourceStorage } from '@rocket.chat/apps/dist/server/storage/AppSourceStorage';
 import type { IAppStorageItem } from '@rocket.chat/apps/dist/server/storage/IAppStorageItem';
 import { streamToBuffer } from '@rocket.chat/tools';
-import { MongoInternals } from 'meteor/mongo';
 import { NpmModuleMongodb } from 'meteor/npm-mongo';
 import { ObjectId } from 'mongodb';
+
+import { db } from '../../../../../server/database/utils';
 
 export class AppGridFSSourceStorage extends AppSourceStorage {
 	private pathPrefix = 'GridFS:/';
@@ -12,8 +13,6 @@ export class AppGridFSSourceStorage extends AppSourceStorage {
 
 	constructor() {
 		super();
-
-		const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 		this.bucket = new NpmModuleMongodb.GridFSBucket(db as any, {
 			bucketName: 'rocketchat_apps_packages',
