@@ -1,7 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { Accounts } from 'meteor/accounts-base';
 
-import { compareUserPasswordHistory } from './compareUserPasswordHistory';
+import { compareUserPasswordHistory, getPasswordHistoryLength } from './compareUserPasswordHistory';
 import { settings } from '../settings';
 
 jest.mock('meteor/accounts-base', () => ({ Accounts: { _checkPasswordAsync: jest.fn() } }), { virtual: true });
@@ -17,6 +17,20 @@ const makeUser = (passwordHistory: string[]) =>
 	}) as unknown as IUser;
 
 const withSettings = (values: Record<string, unknown>) => getSetting.mockImplementation((key: string) => values[key]);
+
+describe('getPasswordHistoryLength', () => {
+	it.each([
+		[5, 5],
+		[0, 0],
+		[-1, 0],
+		['', 0],
+		[undefined, 0],
+	])('returns %p as %p', (amount, expected) => {
+		withSettings({ Accounts_Password_History_Amount: amount });
+
+		expect(getPasswordHistoryLength()).toBe(expected);
+	});
+});
 
 describe('compareUserPasswordHistory', () => {
 	beforeEach(() => {
