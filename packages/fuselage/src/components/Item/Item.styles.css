@@ -54,6 +54,12 @@
 	grid-template-columns: 1fr;
 }
 
+/* Sidebar rows all share one height, so even always-visible actions overhang their line there */
+.rcx-sidebar-item .rcx-item__row > .rcx-item__actions {
+	align-content: center;
+	height: 0;
+}
+
 @container rcx-item-group (width < 320px) {
 	.rcx-item--inset-lg,
 	.rcx-item-group-header--inset-lg,

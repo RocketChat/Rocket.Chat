@@ -45,7 +45,7 @@ const ItemActionsFrame = styled(View, {
 			x4: cancelGap('x4'),
 			x8: cancelGap('x8'),
 		},
-		// Inside an `ItemRow` it overhangs the line instead of growing it, so the row keeps its text height
+		// Hover-revealed inside an `ItemRow`, it overhangs the line instead of growing it, so the row keeps its height
 		overhang: {
 			true: {
 				alignContent: 'center',
@@ -88,7 +88,7 @@ const ItemActions = ({ is: Tag = 'div', reveal = 'always', className, children, 
 			render={toRender(Tag)}
 			reveal={reveal}
 			gapOffset={reveal === 'hover' && parent ? parent.gap : 'none'}
-			overhang={parent?.kind === 'row'}
+			overhang={reveal === 'hover' && parent?.kind === 'row'}
 			className={cx(cxx('rcx-item__actions')({ 'reveal-hover': reveal === 'hover' }), className)}
 		>
 			{reveal === 'hover' ? <ItemActionsInner className='rcx-item__actions-inner'>{children}</ItemActionsInner> : children}
