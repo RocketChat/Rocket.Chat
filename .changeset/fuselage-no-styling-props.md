@@ -47,6 +47,7 @@ Fuselage components no longer take Box styling props from their callers: contain
 - `Tag` now spaces its `icon` from the label, so the icon no longer needs a margin of its own.
 - Adds a `flush` flag to `Tile` that drops its default padding, for surfaces whose content brings its own.
 - Adds `badgePosition` to `IconButton`, which pins the badge to the top end (default) or bottom end corner.
+- Fixes the `IconButton` badge jumping toward the button's center while the button is pressed; it now keeps its corner and moves 1px with the icon.
 - `IconButton` accepts `color`, `'default'` or `'danger'`, which paints the icon with that font color.
 - A Divider with a label no longer adds 20px of inline padding, so its bars run from edge to edge of its container.
 - `SelectLegacy`, `SelectFiltered`, `PaginatedSelectFiltered` and `PaginatedMultiSelectFiltered` put `id` on their focusable control, so clicking a `FieldLabel` whose `htmlFor` points to that `id` focuses the field.

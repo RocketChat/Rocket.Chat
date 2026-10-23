@@ -111,19 +111,19 @@
 
 		display: flex;
 
-		transform: translate(30%, -30%);
+		translate: 30% -30%;
 
 		&:dir(rtl) {
-			transform: translate(-30%, -30%);
+			translate: -30% -30%;
 		}
 
 		&--bottom-end {
 			inset-block: auto 0;
 
-			transform: translate(30%, 30%);
+			translate: 30% 30%;
 
 			&:dir(rtl) {
-				transform: translate(-30%, 30%);
+				translate: -30% 30%;
 			}
 		}
 	}
