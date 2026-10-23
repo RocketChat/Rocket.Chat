@@ -177,3 +177,7 @@ export const Conditional = createStory(payloads.conditional);
 export const Callout = createStory(payloads.callout);
 
 export const CalloutWithAction = createStory(payloads.calloutWithAction);
+
+export const Table = createStory(payloads.table);
+
+export const Video = createStory(payloads.video);
