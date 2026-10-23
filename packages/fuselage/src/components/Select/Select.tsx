@@ -270,8 +270,8 @@ function Select<V extends Key = Key>({
 			return;
 		}
 
-		triggerRef.current?.ownerDocument.getElementById(getOptionId(active))?.scrollIntoView?.({ block: 'nearest' });
-	});
+		triggerRef.current?.ownerDocument.getElementById(`${id}-option-${active}`)?.scrollIntoView?.({ block: 'nearest' });
+	}, [overlayState.isOpen, active, id]);
 
 	const { isOpen } = overlayState;
 
