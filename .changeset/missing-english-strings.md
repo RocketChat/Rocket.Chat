@@ -3,4 +3,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Fixes several messages showing a raw translation key instead of text, such as the toast after converting a team to a channel, the conference chat access modal, and the SMS reply when a file can't be sent
+Fixes several messages showing a raw translation key instead of text, such as the SMS reply when a file can't be sent and the toast when uploading an unencrypted file to an encrypted room

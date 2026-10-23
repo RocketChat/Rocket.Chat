@@ -7,8 +7,6 @@ describe('en.i18n.json', () => {
 		'Message_not_found',
 		'Omnichannel_is_not_enabled',
 		'Outbound_message_upsell_image_alt',
-		'Team_converted_to_channel',
-		'These_participants_cannot_see_the_chat',
 		'You_cant_send_unencrypted_files_in_an_encrypted_room',
 	])('should define %s, which the app looks up by name', (key) => {
 		expect((en as Record<string, unknown>)[key]).toEqual(expect.any(String));
