@@ -103,19 +103,21 @@ const BusinessHoursForm = ({ type }: BusinessHoursFormProps) => {
 				<Field key={dayTime.id}>
 					<FieldLabel>{t(dayTime.day)}</FieldLabel>
 					<FieldRow>
-						<Box display='flex' flexDirection='column' flexGrow={1} marginInlineEnd={2}>
-							<FieldLabel htmlFor={`${daysTimeField + index}-start`}>{t('Open')}</FieldLabel>
-							<Controller
-								name={`daysTime.${index}.start.time`}
-								render={({ field }) => <InputBox id={`${daysTimeField + index}-start`} type='time' {...field} />}
-							/>
-						</Box>
-						<Box display='flex' flexDirection='column' flexGrow={1} marginInlineStart={2}>
-							<FieldLabel htmlFor={`${daysTimeField + index}-finish`}>{t('Close')}</FieldLabel>
-							<Controller
-								name={`daysTime.${index}.finish.time`}
-								render={({ field }) => <InputBox id={`${daysTimeField + index}-finish`} type='time' {...field} />}
-							/>
+						<Box display='flex' alignItems='center' flexGrow={1} gap='x4'>
+							<Box display='flex' flexDirection='column' flexGrow={1}>
+								<FieldLabel htmlFor={`${daysTimeField + index}-start`}>{t('Open')}</FieldLabel>
+								<Controller
+									name={`daysTime.${index}.start.time`}
+									render={({ field }) => <InputBox id={`${daysTimeField + index}-start`} type='time' {...field} />}
+								/>
+							</Box>
+							<Box display='flex' flexDirection='column' flexGrow={1}>
+								<FieldLabel htmlFor={`${daysTimeField + index}-finish`}>{t('Close')}</FieldLabel>
+								<Controller
+									name={`daysTime.${index}.finish.time`}
+									render={({ field }) => <InputBox id={`${daysTimeField + index}-finish`} type='time' {...field} />}
+								/>
+							</Box>
 						</Box>
 					</FieldRow>
 				</Field>

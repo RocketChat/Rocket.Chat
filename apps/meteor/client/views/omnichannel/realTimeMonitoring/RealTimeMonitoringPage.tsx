@@ -97,30 +97,16 @@ const RealTimeMonitoringPage = () => {
 					<Box display='flex' flexDirection='row' width='full' alignItems='stretch' flexShrink={1}>
 						<ConversationOverview flexGrow={1} flexShrink={1} width='50%' departmentId={departmentId} dateRange={dateRange} />
 					</Box>
-					<Box display='flex' flexDirection='row' width='full' alignItems='stretch' flexShrink={1}>
-						<ChatsChart flexGrow={1} flexShrink={1} width='50%' marginInlineEnd={2} departmentId={departmentId} dateRange={dateRange} />
-						<ChatsPerAgentChart
-							flexGrow={1}
-							flexShrink={1}
-							width='50%'
-							marginInlineStart={2}
-							departmentId={departmentId}
-							dateRange={dateRange}
-						/>
+					<Box display='flex' flexDirection='row' width='full' alignItems='stretch' flexShrink={1} gap='x4'>
+						<ChatsChart flexGrow={1} flexShrink={1} width='50%' departmentId={departmentId} dateRange={dateRange} />
+						<ChatsPerAgentChart flexGrow={1} flexShrink={1} width='50%' departmentId={departmentId} dateRange={dateRange} />
 					</Box>
 					<Box display='flex' flexDirection='row' width='full' alignItems='stretch' flexShrink={1}>
 						<ChatsOverview flexGrow={1} flexShrink={1} width='50%' departmentId={departmentId} dateRange={dateRange} />
 					</Box>
-					<Box display='flex' flexDirection='row' width='full' alignItems='stretch' flexShrink={1}>
-						<AgentStatusChart flexGrow={1} flexShrink={1} width='50%' marginInlineEnd={2} departmentId={departmentId} />
-						<ChatsPerDepartmentChart
-							flexGrow={1}
-							flexShrink={1}
-							width='50%'
-							marginInlineStart={2}
-							departmentId={departmentId}
-							dateRange={dateRange}
-						/>
+					<Box display='flex' flexDirection='row' width='full' alignItems='stretch' flexShrink={1} gap='x4'>
+						<AgentStatusChart flexGrow={1} flexShrink={1} width='50%' departmentId={departmentId} />
+						<ChatsPerDepartmentChart flexGrow={1} flexShrink={1} width='50%' departmentId={departmentId} dateRange={dateRange} />
 					</Box>
 					<Box display='flex' flexDirection='row' width='full' alignItems='stretch' flexShrink={1}>
 						<AgentsOverview flexGrow={1} flexShrink={1} departmentId={departmentId} dateRange={dateRange} />
