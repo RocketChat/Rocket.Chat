@@ -122,8 +122,9 @@ spoof check, domain lists) and the authentication (STARTTLS, SASL EXTERNAL, dial
 `XmppStream` (socket plus `StanzaParser`). `S2SManager` owns the listener, the per-domain
 routes with their queues and `Backoff`, and performs dialback verification by opening a
 one-shot `OutboundSession` in `verifyDialback` mode towards the claimed domain. `dialback.ts`
-derives and checks keys; `saslExternal.ts` checks a peer certificate for a domain;
-`dnsResolver.ts` resolves and orders addresses and is injectable for tests. `StanzaRouter`
+derives and checks keys; `saslExternal.ts` verifies peer certificate
+identity using DNS SAN, SRVName, or XmppAddr, never CN; `dnsResolver.ts`
+resolves and orders addresses and is injectable for tests. `StanzaRouter`
 dispatches what the sessions accepted.
 
 The dialback secret is generated at start and never persisted
