@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 
 import UserInfoActions from './UserInfoActions';
 import { getUserEmailAddress } from '../../../../../lib/getUserEmailAddress';
+import MarkdownText from '../../../../components/MarkdownText';
 import { FormSkeleton } from '../../../../components/Skeleton';
 import UserInfoPhoneNumberList from '../../../../components/UserInfoPhoneNumberList';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
@@ -34,6 +35,8 @@ export type UserInfoWithDataProps = {
 	onClose: () => void;
 	onClickBack?: () => void;
 };
+
+const renderMarkdown = (content: string) => <MarkdownText variant='inline' content={content} />;
 
 const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClickBack }: UserInfoWithDataProps) => {
 	const { t } = useTranslation();
@@ -122,6 +125,7 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			{!isPending && user && (
 				<UserInfo
 					{...user}
+					renderMarkdown={renderMarkdown}
 					invitationDate={invitationDate}
 					actions={<UserInfoActions user={user} rid={rid} isInvited={Boolean(invitationDate)} backToList={onClickBack} />}
 				/>

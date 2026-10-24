@@ -2,7 +2,6 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Palette } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import type { ReactNode } from 'react';
-import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useEmbeddedLayout } from '../../hooks/useEmbeddedLayout';
@@ -15,7 +14,6 @@ import {
 	HoverCardInfoList,
 	HoverCardSection,
 } from '../HoverCard';
-import { MarkdownTextContext } from '../MarkdownTextContext';
 import * as Status from '../UserStatus';
 import UserCardRoles from './UserCardRoles';
 import UserCardUsername from './UserCardUsername';
@@ -55,7 +53,6 @@ const UserCard = ({
 }: UserCardProps) => {
 	const { t } = useTranslation();
 	const isLayoutEmbedded = useEmbeddedLayout();
-	const MarkdownText = useContext(MarkdownTextContext);
 	const showUsername = !!username && name !== username;
 
 	return (
@@ -77,11 +74,7 @@ const UserCard = ({
 					subtitle={
 						customStatus && (
 							<Box fontScale='p2' color='default' paddingInlineStart='x4' withTruncatedText>
-								{typeof customStatus === 'string' ? (
-									<MarkdownText withTruncatedText variant='inlineWithoutBreaks' content={customStatus} parseEmoji={true} />
-								) : (
-									customStatus
-								)}
+								{customStatus}
 							</Box>
 						)
 					}
