@@ -12,12 +12,14 @@
 	"main": "./index.js",
 	"exports": {
 		".": "./index.js",
-		"./oxlint.json": "./oxlint.json"
+		"./oxlint.json": "./oxlint.json",
+		"./rules": "./rules/index.js"
 	},
 	"files": [
 		"/index.js",
 		"/oxlint.json",
-		"/oxlint-eslint-rules.js"
+		"/oxlint-eslint-rules.js",
+		"/rules"
 	],
 	"scripts": {
 		"lint": "yarn run -T oxlint",

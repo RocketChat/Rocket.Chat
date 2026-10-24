@@ -81,6 +81,36 @@ Formatting problems are reported by the `prettier/prettier` rule and fixed by `e
 
 The config enables Node.js globals for all files. Add browser or other globals yourself, as shown above.
 
+### Opt-in rules
+
+`@rocket.chat/eslint-config/rules` exports a plugin with rules the default config doesn't turn on. It works as an ESLint plugin and as an oxlint JS plugin:
+
+| Rule            | What it reports                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            |
+| --------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `spacing-scale` | Literal spacing values that aren't Fuselage spacing tokens. Only `x4`, `x8`, `x12`, `x16`, `x20`, `x24`, `x32`, `x40`, their negatives (`neg-x8` or `-x8`), `0`, `none` and `auto` are allowed, so numbers and `px` strings fail even when they match a scale step (`8` and `'8px'` are reported with a hint to use `'x8'`). It checks `margin*`, `padding*`, `gap`, `rowGap` and `columnGap` on capitalized JSX components, the `Margins` props, and `spacing()` calls, following ternary and `\|\|`/`??` branches. The `ignoreComponents` option skips components whose spacing props aren't Fuselage's. |
+
+```js
+import rocketChatConfig from '@rocket.chat/eslint-config';
+import rocketChatRules from '@rocket.chat/eslint-config/rules';
+
+export default [
+	...rocketChatConfig,
+	{
+		plugins: { 'rocket.chat': rocketChatRules },
+		rules: { 'rocket.chat/spacing-scale': ['error', { ignoreComponents: ['ResponsiveBar'] }] },
+	},
+];
+```
+
+With oxlint, load it through `jsPlugins` in `.oxlintrc.json`:
+
+```json
+{
+	"jsPlugins": [{ "name": "rocket.chat", "specifier": "@rocket.chat/eslint-config/rules" }],
+	"rules": { "rocket.chat/spacing-scale": ["error", { "ignoreComponents": ["ResponsiveBar"] }] }
+}
+```
+
 ## Development
 
 This package lives in the [Rocket.Chat monorepo](https://github.com/RocketChat/Rocket.Chat/tree/develop/packages/eslint-config). From the repository root:
@@ -90,7 +120,7 @@ yarn workspace @rocket.chat/eslint-config lint
 yarn workspace @rocket.chat/eslint-config lint:fix
 ```
 
-The config is a single file, `index.js`. The repository's root `eslint.config.mjs` builds on it, so a change here affects every package in the monorepo.
+The config is `index.js` (`oxlint.json` for oxlint), and the opt-in rules live in `rules/`. The repository's root `eslint.config.mjs` and `.oxlintrc.json` build on it, so a change here affects every package in the monorepo.
 
 ## License
 
