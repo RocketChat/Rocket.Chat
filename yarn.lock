@@ -20959,10 +20959,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cookie@npm:^2.0.1":
+"cookie@npm:2.0.1":
   version: 2.0.1
   resolution: "cookie@npm:2.0.1"
   checksum: 10/9fd785e98334f78e6337f4aafd5a3558a2ff49931b92c9cd9f1f3f042819532dc7f0730d55bd1666bb1d82b86090581d690388764aab1b84dfcd47eb0b959361
+  languageName: node
+  linkType: hard
+
+"cookie@patch:cookie@npm%3A2.0.1#~/.yarn/patches/cookie-npm-2.0.1-2aea16e44e.patch":
+  version: 2.0.1
+  resolution: "cookie@patch:cookie@npm%3A2.0.1#~/.yarn/patches/cookie-npm-2.0.1-2aea16e44e.patch::version=2.0.1&hash=ff39be"
+  checksum: 10/abf2e4fc70a906071da79371ced3c178870efdc6ac20f5bcd706ac04c4e25748e5025fed54d77e46c3b5e9cfae162892b4abc22ff7365e4f40939cfb21e3d927
   languageName: node
   linkType: hard
 
