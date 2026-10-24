@@ -8,6 +8,7 @@ tests:
     src/xml/StanzaParser.spec.ts,
     src/stream/XmppStream.spec.ts,
     src/s2s/dialback.spec.ts,
+    src/s2s/saslExternal.spec.ts,
     src/s2s/dnsResolver.spec.ts,
     src/s2s/S2SManager.spec.ts,
     src/router/StanzaRouter.spec.ts,
@@ -49,11 +50,7 @@ spoof check, domain lists) and the authentication (STARTTLS, SASL EXTERNAL, dial
   or on an already secure stream, is answered with `<failure/>` and the stream closed. TLS
   material that cannot be loaded fails that one upgrade, in either direction, and closes
   only that stream.
-- **R4** After TLS, SASL `EXTERNAL` is offered when the peer certificate verifies for the
-  domain the stream header claimed. An `<auth mechanism='EXTERNAL'/>` whose authzid (or, for
-  `=`, the stream `from`) is an allowed domain and matches the certificate authenticates that
-  domain and restarts the stream. Failures are `invalid-mechanism`, `encryption-required`,
-  `invalid-authzid` or `not-authorized`, each followed by a stream close.
+- **R4** After TLS, SASL `EXTERNAL` is offered when the peer certificate is authorized and identifies the claimed domain using a matching DNS SAN, SRVName (`_xmpp-server.<domain>`), or XmppAddr. The subject CN is never accepted as an identity. An `<auth mechanism='EXTERNAL'/>` whose authzid (or, for `=`, the stream `from`) is an allowed domain and matches the certificate authenticates that domain and restarts the stream. Failures are `invalid-mechanism`, `encryption-required`, `invalid-authzid` or `not-authorized`, each followed by a stream close.
 - **R5** Server Dialback is accepted in all three roles. Receiving: a `<db:result/>` for an
   allowed domain is verified with the claimed domain over a separate outbound connection
   (never over the inbound one); `valid` authenticates the domain and is echoed as
@@ -140,8 +137,6 @@ The dialback secret is generated at start and never persisted
 - Stream management (XEP-0198): no acknowledgements, no resumption. Pending triage in
   [compliance.md](../compliance.md).
 - Serving more than one domain: the server is exactly one domain plus its MUC subdomain.
-- XmppAddr and SRVName certificate names, and refusing the subject CN, wanted by
-  [accreditation-readiness](../intents/accreditation-readiness.md) ([ADR 0005](../adr/0005-peer-certificates-name-a-domain-by-dnsname-srvname-or-xmppaddr.md)).
 - A deny list exists in the core config but has no setting ([configuration-and-lifecycle](configuration-and-lifecycle.md)).
 - A cap on inbound connections, overall or per peer address, and closing authenticated
   inbound streams that sit idle: only the authentication deadline (R17) bounds them today.
