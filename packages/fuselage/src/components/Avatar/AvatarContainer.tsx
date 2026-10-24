@@ -1,11 +1,11 @@
 import { styled, View } from '@tamagui/web';
 import type { HTMLAttributes } from 'react';
 
-import { prependClassName } from '../../helpers/prependClassName';
+import { asPublicFrame } from '../../helpers/asPublicFrame';
+import { variantClass } from '../../helpers/variantClass';
 import { fontFamily, size } from '../../styleTokens';
-import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
-const square = (px: number) => ({ width: size(`x${px}`), height: size(`x${px}`) });
+const square = (px: number) => variantClass(`rcx-avatar--x${px}`, { width: size(`x${px}`), height: size(`x${px}`) });
 
 const AvatarContainerFrame = styled(View, {
 	render: 'figure',
@@ -26,6 +26,8 @@ const AvatarContainerFrame = styled(View, {
 	fontVariantNumeric: 'tabular-nums',
 
 	variants: {
+		// `rcx-box--full` keeps `Margins` from styling the avatar itself; its reset matches the frame's own values
+		rcx: { true: variantClass('rcx-box rcx-box--full rcx-avatar') },
 		size: {
 			x16: square(16),
 			x18: square(18),
@@ -41,21 +43,12 @@ const AvatarContainerFrame = styled(View, {
 			x332: square(332),
 		},
 	} as const,
+
+	defaultVariants: { rcx: true, size: 'x36' },
 });
 
 export type AvatarContainerProps = {
 	size?: 'x16' | 'x18' | 'x20' | 'x24' | 'x28' | 'x32' | 'x36' | 'x40' | 'x48' | 'x124' | 'x200' | 'x332';
 } & HTMLAttributes<HTMLElement>;
 
-const AvatarContainer = ({ size = 'x36', children, className, ...props }: AvatarContainerProps) => (
-	<AvatarContainerFrame
-		size={size}
-		// `rcx-box--full` keeps `Margins` from styling the avatar itself; its reset matches the frame's own values
-		className={prependClassName(className, ['rcx-box rcx-box--full rcx-avatar', size && `rcx-avatar--${size}`].filter(Boolean).join(' '))}
-		render={<figure {...props} />}
-	>
-		{children}
-	</AvatarContainerFrame>
-);
-
-export default withFuselageProvider(AvatarContainer);
+export default asPublicFrame<AvatarContainerProps>(AvatarContainerFrame);

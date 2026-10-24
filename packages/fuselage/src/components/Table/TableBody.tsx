@@ -1,15 +1,18 @@
-import type { GetProps } from '@tamagui/web';
+import { styled } from '@tamagui/web';
 
 import { TableBodyFrame } from './TableFrames';
+import { asPublicFrame } from '../../helpers/asPublicFrame';
+import { variantClass } from '../../helpers/variantClass';
 import type { ElementProps } from '../../types/ElementProps';
-import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 export type TableBodyProps = ElementProps<HTMLTableSectionElement>;
 
-const TableBody = ({ className, ...props }: TableBodyProps) => {
-	return (
-		<TableBodyFrame className={['rcx-table__body', className].filter(Boolean).join(' ')} {...(props as GetProps<typeof TableBodyFrame>)} />
-	);
-};
+const TableBody = styled(TableBodyFrame, {
+	variants: {
+		rcx: { true: variantClass('rcx-table__body') },
+	} as const,
 
-export default withFuselageProvider(TableBody);
+	defaultVariants: { rcx: true },
+});
+
+export default asPublicFrame<TableBodyProps>(TableBody);

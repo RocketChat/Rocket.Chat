@@ -1,11 +1,11 @@
-import { styled, View, type GetProps } from '@tamagui/web';
+import { styled, View } from '@tamagui/web';
 
 import { boxText } from './messageStyles';
-import { cx } from '../../helpers/composeClassNames';
+import { asPublicFrame } from '../../helpers/asPublicFrame';
 import { toCSSValue } from '../../helpers/toCSSValue';
+import { variantClass } from '../../helpers/variantClass';
 import { spacing } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
-import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 const MessageBlockFrame = styled(View, {
 	render: 'div',
@@ -14,28 +14,21 @@ const MessageBlockFrame = styled(View, {
 	marginBlock: spacing('x2'),
 
 	variants: {
+		rcx: { true: variantClass('rcx-message-block') },
 		fixedWidth: {
-			true: {
+			true: variantClass('rcx-message-block--width-fixed', {
 				flexGrow: 0,
 				width: '100%',
 				maxWidth: toCSSValue('--rcx-message-block-width-fixed', '368px'),
-			},
+			}),
 		},
 	} as const,
+
+	defaultVariants: { rcx: true },
 });
 
 export type MessageBlockProps = ElementProps<HTMLDivElement> & {
 	fixedWidth?: boolean;
 };
 
-function MessageBlock({ className: _className, fixedWidth, ...props }: MessageBlockProps) {
-	return (
-		<MessageBlockFrame
-			fixedWidth={fixedWidth}
-			{...(props as GetProps<typeof MessageBlockFrame>)}
-			className={cx('rcx-message-block', fixedWidth && 'rcx-message-block--width-fixed')}
-		/>
-	);
-}
-
-export default withFuselageProvider(MessageBlock);
+export default asPublicFrame<MessageBlockProps>(MessageBlockFrame);

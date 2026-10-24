@@ -1,7 +1,5 @@
-import { ButtonGroup, type ButtonGroupProps } from '../ButtonGroup';
+import type { ButtonGroupProps } from '../ButtonGroup';
 
 export type ContextualbarActionsProps = ButtonGroupProps;
 
-const ContextualbarActions = (props: ContextualbarActionsProps) => <ButtonGroup {...props} />;
-
-export default ContextualbarActions;
+export { ButtonGroup as default } from '../ButtonGroup';

@@ -1,9 +1,10 @@
-import { styled, View, type GetProps } from '@tamagui/web';
+import { styled, View } from '@tamagui/web';
 
 import { modalBoxFont } from './Modal';
 import { surfaceColors } from '../../Theme';
+import { asPublicFrame } from '../../helpers/asPublicFrame';
+import { variantClass } from '../../helpers/variantClass';
 import type { ElementProps } from '../../types/ElementProps';
-import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 export type ModalBackdropProps = ElementProps<HTMLDivElement> & {
 	/** Drops the overlay colour, for a backdrop that only catches events or stacks over another one. */
@@ -21,18 +22,13 @@ const ModalBackdropFrame = styled(View, {
 	...modalBoxFont,
 
 	variants: {
+		rcx: { true: variantClass('rcx-modal__backdrop') },
 		transparent: {
 			true: { backgroundColor: 'transparent' },
 		},
 	} as const,
+
+	defaultVariants: { rcx: true },
 });
 
-const ModalBackdrop = ({ transparent, className, ...props }: ModalBackdropProps) => (
-	<ModalBackdropFrame
-		transparent={transparent}
-		className={['rcx-modal__backdrop', className].filter(Boolean).join(' ')}
-		{...(props as GetProps<typeof ModalBackdropFrame>)}
-	/>
-);
-
-export default withFuselageProvider(ModalBackdrop);
+export default asPublicFrame<ModalBackdropProps>(ModalBackdropFrame);

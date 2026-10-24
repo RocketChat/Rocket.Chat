@@ -1,8 +1,8 @@
-import { styled, Text, type GetProps } from '@tamagui/web';
+import { styled, Text } from '@tamagui/web';
 
-import { cx } from '../../../helpers/composeClassNames';
+import { asPublicFrame } from '../../../helpers/asPublicFrame';
+import { variantClass } from '../../../helpers/variantClass';
 import type { ElementProps } from '../../../types/ElementProps';
-import { withFuselageProvider } from '../../FuselageProvider/FuselageProvider';
 import { boxFull, typography } from '../sidebarStyles';
 
 const SidebarFooterContentFrame = styled(Text, {
@@ -11,13 +11,12 @@ const SidebarFooterContentFrame = styled(Text, {
 	display: 'block',
 	whiteSpace: 'inherit',
 	...typography('micro'),
+
+	variants: {
+		rcx: { true: variantClass('rcx-sidebar-footer__content') },
+	} as const,
+
+	defaultVariants: { rcx: true },
 });
 
-const SidebarFooterContentBase = ({ className, ...props }: ElementProps<HTMLDivElement>) => (
-	<SidebarFooterContentFrame
-		{...(props as GetProps<typeof SidebarFooterContentFrame>)}
-		className={cx('rcx-sidebar-footer__content', className)}
-	/>
-);
-
-export const SidebarFooterContent = withFuselageProvider(SidebarFooterContentBase);
+export const SidebarFooterContent = asPublicFrame<ElementProps<HTMLDivElement>>(SidebarFooterContentFrame);

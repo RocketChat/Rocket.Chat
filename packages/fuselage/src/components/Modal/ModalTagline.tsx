@@ -1,10 +1,11 @@
-import { styled, Text, type GetProps } from '@tamagui/web';
+import { styled, Text } from '@tamagui/web';
 
 import { modalBoxFont } from './Modal';
 import { textIconColors } from '../../Theme';
+import { asPublicFrame } from '../../helpers/asPublicFrame';
+import { variantClass } from '../../helpers/variantClass';
 import { fontScale } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
-import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 export type ModalTaglineProps = ElementProps<HTMLDivElement> & {
 	/** Mutes the tagline, so it reads as a category above the title. */
@@ -21,18 +22,13 @@ const ModalTaglineFrame = styled(Text, {
 	...(fontScale('c2') as object),
 
 	variants: {
+		rcx: { true: variantClass('rcx-modal__tagline') },
 		subtle: {
 			true: { color: String(textIconColors['font-annotation']) },
 		},
 	} as const,
+
+	defaultVariants: { rcx: true },
 });
 
-const ModalTagline = ({ subtle, className, ...props }: ModalTaglineProps) => (
-	<ModalTaglineFrame
-		subtle={subtle}
-		className={['rcx-modal__tagline', className].filter(Boolean).join(' ')}
-		{...(props as GetProps<typeof ModalTaglineFrame>)}
-	/>
-);
-
-export default withFuselageProvider(ModalTagline);
+export default asPublicFrame<ModalTaglineProps>(ModalTaglineFrame);

@@ -1,15 +1,18 @@
-import type { GetProps } from '@tamagui/web';
+import { styled } from '@tamagui/web';
 
 import { TableFootFrame } from './TableFrames';
+import { asPublicFrame } from '../../helpers/asPublicFrame';
+import { variantClass } from '../../helpers/variantClass';
 import type { ElementProps } from '../../types/ElementProps';
-import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 export type TableFootProps = ElementProps<HTMLTableSectionElement>;
 
-const TableFoot = ({ className, ...props }: TableFootProps) => {
-	return (
-		<TableFootFrame className={['rcx-table__foot', className].filter(Boolean).join(' ')} {...(props as GetProps<typeof TableFootFrame>)} />
-	);
-};
+const TableFoot = styled(TableFootFrame, {
+	variants: {
+		rcx: { true: variantClass('rcx-table__foot') },
+	} as const,
 
-export default withFuselageProvider(TableFoot);
+	defaultVariants: { rcx: true },
+});
+
+export default asPublicFrame<TableFootProps>(TableFoot);
