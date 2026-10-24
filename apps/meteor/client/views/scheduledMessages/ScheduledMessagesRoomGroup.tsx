@@ -1,10 +1,10 @@
 import type { IRoom, IScheduledMessage, Serialized } from '@rocket.chat/core-typings';
-import { Box, Button, Divider } from '@rocket.chat/fuselage';
+import { Button } from '@rocket.chat/fuselage';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useUserSubscription } from '@rocket.chat/ui-contexts';
-import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import RoomSection from './layout/RoomSection';
 import ScheduledMessageRow from '../../components/ScheduledMessages/ScheduledMessageRow';
 import type { useScheduledMessageActions } from '../../components/ScheduledMessages/useScheduledMessageActions';
 import { scheduledMessageEditing } from '../room/composer/messageBox/ScheduleMessage/useScheduledMessageEditing';
@@ -24,25 +24,18 @@ const ScheduledMessagesRoomGroup = ({
 	const { t } = useTranslation();
 	const subscription = useUserSubscription(rid);
 	const goToRoom = useGoToRoom();
-	const headingId = useId();
 	const roomType = subscription?.t ?? scheduledMessages[0]?.roomType;
 
 	return (
-		<Box is='section' aria-labelledby={headingId} marginBlockEnd={24}>
-			<Box display='flex' alignItems='center' justifyContent='space-between' paddingBlock={8} paddingInline={24}>
-				<Box display='flex' alignItems='center' minWidth={0}>
-					{roomType && <RoomAvatar size='x28' room={{ _id: rid, type: roomType }} />}
-					<Box is='h3' id={headingId} fontScale='h4' color='default' marginInlineStart={8} withTruncatedText>
-						{subscription?.fname || subscription?.name || scheduledMessages[0]?.roomName || rid}
-					</Box>
-				</Box>
+		<RoomSection
+			avatar={roomType && <RoomAvatar size='x28' room={{ _id: rid, type: roomType }} />}
+			title={subscription?.fname || subscription?.name || scheduledMessages[0]?.roomName || rid}
+			action={
 				<Button small secondary icon='arrow-forward' onClick={() => goToRoom(rid)}>
 					{t('Open_room')}
 				</Button>
-			</Box>
-			<Box marginInline={24}>
-				<Divider flush />
-			</Box>
+			}
+		>
 			{scheduledMessages.map((scheduledMessage) => (
 				<ScheduledMessageRow
 					key={scheduledMessage._id}
@@ -57,7 +50,7 @@ const ScheduledMessagesRoomGroup = ({
 					disabled={isPending}
 				/>
 			))}
-		</Box>
+		</RoomSection>
 	);
 };
 

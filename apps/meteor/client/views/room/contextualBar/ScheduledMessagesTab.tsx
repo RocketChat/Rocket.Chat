@@ -31,7 +31,7 @@ const ScheduledMessagesTab = () => {
 				<ContextualbarTitle>{t('Scheduled_messages')}</ContextualbarTitle>
 				<ContextualbarClose onClick={closeTab} />
 			</ContextualbarHeader>
-			<ContextualbarContent paddingInline={0} paddingBlock={8}>
+			<ContextualbarContent flush>
 				{isLoading && <Throbber size='x12' />}
 				{scheduledMessages?.length === 0 && <ContextualbarEmptyContent title={t('No_scheduled_messages')} />}
 				{scheduledMessages?.map((scheduledMessage) => (
