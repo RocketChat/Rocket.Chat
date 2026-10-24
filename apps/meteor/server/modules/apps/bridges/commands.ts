@@ -85,7 +85,7 @@ export class AppCommandsBridge extends CommandBridge {
 		const item = slashCommands.commands[cmd];
 
 		item.params = command.i18nParamsExample ? command.i18nParamsExample : item.params;
-		item.description = command.i18nDescription ? command.i18nDescription : item.params;
+		item.description = command.i18nDescription ?? item.description;
 		item.permission = command.permission ? command.permission : item.permission;
 		item.callback = this._appCommandExecutor.bind(this);
 		item.providesPreview = command.providesPreview;
