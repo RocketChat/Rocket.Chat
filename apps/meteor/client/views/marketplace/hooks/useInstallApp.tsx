@@ -50,6 +50,8 @@ export const useInstallApp = (file: File): { install: () => void; isInstalling: 
 					context: 'private',
 					page: 'info',
 					id: data.app.id,
+					version: data.app.version || '0.0.0',
+					tab: 'details',
 				},
 			});
 		},
