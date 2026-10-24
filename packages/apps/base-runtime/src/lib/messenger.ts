@@ -86,17 +86,35 @@ export async function sendMethodNotFound(id: jsonrpc.ID): Promise<void> {
 	await ipcChannel.send(rpc);
 }
 
+function isPlainObject(v: unknown): v is Record<string, unknown> {
+	if (typeof v !== 'object' || v === null || Array.isArray(v)) {
+		return false;
+	}
+
+	const prototype = Object.getPrototypeOf(v);
+
+	return prototype === null || Object.getOwnPropertyDescriptor(prototype, 'constructor')?.value === Object;
+}
+
 export async function errorResponse(
-	{ error: { message, code = -32000, data = {} }, id, meta }: ErrorResponseDescriptor,
+	{ error: { message, code = -32000, data }, id, meta }: ErrorResponseDescriptor,
 	req?: RequestContext,
 ): Promise<void> {
 	const { logger } = req?.context || {};
 
+	let responseData = data;
+
 	if (logger?.hasEntries()) {
-		data.logs = logger.getLogs();
+		if (isPlainObject(data)) {
+			responseData = { ...data, logs: logger.getLogs() };
+		} else if (typeof data !== 'undefined') {
+			responseData = { value: data, logs: logger.getLogs() };
+		} else {
+			responseData = { logs: logger.getLogs() };
+		}
 	}
 
-	const rpc = jsonrpc.error(id, new jsonrpc.JsonRpcError(message, code, data), meta);
+	const rpc = jsonrpc.error(id, new jsonrpc.JsonRpcError(message, code, responseData), meta);
 
 	await ipcChannel.send(rpc);
 }
