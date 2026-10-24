@@ -71,10 +71,9 @@ describe('TimestampPicker', () => {
 		await userEvent.type(timeInput, '{selectall}14:30');
 
 		// 3. Select format
-		const formatSelectButton = screen.getByRole('button', {
-			name: /timestamps\.fullDateTime/i,
-		});
-		await userEvent.click(formatSelectButton);
+		const [formatSelect, timezoneSelect] = screen.getAllByRole('combobox');
+		expect(formatSelect).toHaveTextContent(/timestamps\.fullDateTime/i);
+		await userEvent.click(formatSelect);
 
 		const formatOption = screen.getByRole('option', {
 			name: /timestamps\.fullDateTime \(timestamps\.fullDateTimeDescription\)/,
@@ -82,8 +81,7 @@ describe('TimestampPicker', () => {
 		await userEvent.click(formatOption);
 
 		// 4. Select timezone
-		const timezoneSelects = screen.getAllByRole('button', { name: /Local_Time/ });
-		const timezoneSelect = timezoneSelects[0];
+		expect(timezoneSelect).toHaveTextContent(/Local_Time/);
 		await userEvent.click(timezoneSelect);
 
 		const timezoneOption = screen.getByRole('option', { name: /UTC\+8/ });

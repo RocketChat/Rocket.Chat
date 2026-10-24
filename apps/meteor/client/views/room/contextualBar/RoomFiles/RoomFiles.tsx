@@ -84,7 +84,13 @@ const RoomFiles = ({
 					endAddon={<Icon name='magnifier' size='x20' />}
 				/>
 				<Box width='x144' marginInlineStart={8}>
-					<Select aria-controls={isSuccess ? filesListId : undefined} onChange={setType} value={type} options={options} />
+					<Select
+						aria-label={t('File_Type')}
+						aria-controls={isSuccess ? filesListId : undefined}
+						onChange={setType}
+						value={type}
+						options={options}
+					/>
 				</Box>
 			</ContextualbarSection>
 			<ContextualbarContent flush>

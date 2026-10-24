@@ -160,6 +160,7 @@ const RoomMembers = ({
 				/>
 				<Box width='x144' marginInlineStart={8}>
 					<Select
+						aria-label={t('Status')}
 						aria-controls={isSuccess ? membersListId : undefined}
 						options={options}
 						value={type}

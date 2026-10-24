@@ -51,7 +51,7 @@ export class OmnichannelChatsFilters extends FlexTab {
 	}
 
 	get selectStatusContainer(): Locator {
-		return this.root.getByRole('button', { name: 'Status' });
+		return this.root.getByRole('combobox', { name: 'Status' });
 	}
 
 	get inputTags(): Locator {
