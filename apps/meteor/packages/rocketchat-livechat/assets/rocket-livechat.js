@@ -672,16 +672,29 @@
 		title: null
 	};
 	var trackNavigation = function() {
-		setInterval(function() {
-			if (document.location.href !== currentPage.href) {
+		if (typeof navigation !== 'undefined'){
+			navigation.addEventListener('navigationSuccess', function(){
 				pageVisited('url');
 				currentPage.href = document.location.href;
-			}
-			if (document.title !== currentPage.title) {
-				pageVisited('title');
-				currentPage.title = document.title;
-			}
-		}, 800);
+			});
+			new MutationObserver(function(mutations) {
+				if (document.title !== currentPage.title){
+					pageVisited('title');
+					currentPage.title = document.title;
+				}
+			}).observe(document.querySelector('title'), { subtree: true, characterData: true, childList: true });
+		} else {
+			setInterval(function() {
+				if (document.location.href !== currentPage.href) {
+					pageVisited('url');
+					currentPage.href = document.location.href;
+				}
+				if (document.title !== currentPage.title) {
+					pageVisited('title');
+					currentPage.title = document.title;
+				}
+			}, 800);
+		}
 	};
 
 	var init = function(url) {
