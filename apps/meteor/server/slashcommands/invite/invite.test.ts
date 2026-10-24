@@ -165,11 +165,37 @@ describe('/invite', () => {
 		it(`reports ${error.error} while allowing other invitees to proceed`, async () => {
 			toArray.resolves([bob, carol]);
 			addUsers.onFirstCall().rejects(error);
+			slashCommand.translationExists.withArgs(key).returns(true);
 			slashCommand.settings.get.withArgs('Language').returns('pt');
 			await slashCommand.runCommand('invite', { params: '@bob @carol' });
 			slashCommand.expectTranslatedFeedback(key);
 			sinon.assert.calledOnce(broadcast);
 			expect(slashCommand.translate.firstCall.args[1]).to.deep.equal({ lng: 'pt' });
+			sinon.assert.notCalled(slashCommand.logger.error);
+			sinon.assert.calledTwice(addUsers);
+			sinon.assert.calledWithExactly(addUsers, 'actor', { rid: 'current-room', users: ['carol'] }, actor);
+		});
+	});
+
+	[
+		{ description: 'an untranslatable error code', error: { error: 'other-invitation-error' } },
+		{ description: 'an error without a code', error: new Error('connection lost') },
+	].forEach(({ description, error }) => {
+		it(`keeps ${description} server-side and reports a generic failure`, async () => {
+			toArray.resolves([bob, carol]);
+			addUsers.onFirstCall().rejects(error);
+			slashCommand.settings.get.withArgs('Language').returns('pt');
+			await slashCommand.runCommand('invite', { params: '@bob @carol' });
+			slashCommand.expectTranslatedFeedback('Error_something_went_wrong');
+			sinon.assert.calledOnce(broadcast);
+			expect(slashCommand.translate.firstCall.args[1]).to.deep.equal({ lng: 'pt' });
+			sinon.assert.calledOnceWithExactly(slashCommand.logger.error, {
+				msg: 'Failed to invite user to room',
+				err: error,
+				rid: 'current-room',
+				uid: 'actor',
+			});
+
 			sinon.assert.calledTwice(addUsers);
 			sinon.assert.calledWithExactly(addUsers, 'actor', { rid: 'current-room', users: ['carol'] }, actor);
 		});
