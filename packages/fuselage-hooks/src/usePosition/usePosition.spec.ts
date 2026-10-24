@@ -77,3 +77,16 @@ it('measures the target at its own size, not at the size its fallback placement 
 	expect(result.current.style).toMatchObject({ top: 84 });
 	expect(target.style.bottom).toBe('8px');
 });
+
+it('keeps the target in place once its anchor leaves the page', () => {
+	const { result } = renderPosition();
+
+	scrollBy(document, 0);
+	expect(result.current.style).toMatchObject({ top: 244, left: 100 });
+
+	anchor.remove();
+	anchorRect = createRect(0, 0, 0, 0);
+	scrollBy(document, 0);
+
+	expect(result.current.style).toMatchObject({ top: 244, left: 100 });
+});
