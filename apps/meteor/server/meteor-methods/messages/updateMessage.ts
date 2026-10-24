@@ -21,6 +21,7 @@ export async function executeUpdateMessage(
 		return;
 	}
 
+
 	Object.entries(message).forEach(([key, value]) => {
 		if (!allowedEditedFields.includes(key) && value !== originalMessage[key as keyof IMessage]) {
 			throw new ClientSafeError('error-invalid-update-key', `Cannot update the message ${key}`, {
