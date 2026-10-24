@@ -1,0 +1,37 @@
+import type { IRocketChatRecord } from './IRocketChatRecord';
+import type { IUser } from './IUser';
+
+export type ContactSource = 'outlook' | 'local';
+
+export interface IContactPhone {
+	// As it came from the source, kept for display.
+	raw: string;
+	// E.164, the reverse lookup key for caller id. Absent when `raw` carried no resolvable country.
+	e164?: string;
+	label?: string;
+}
+
+export interface IContactEmail {
+	address: string;
+	// Only local contacts carry one: neither EWS nor Graph v1.0 says the address type
+	label?: string;
+}
+
+/** A personal contact. Distinct from `ILivechatContact` */
+export interface IContact extends IRocketChatRecord {
+	uid: IUser['_id'];
+	source: ContactSource;
+	displayName: string;
+	givenName?: string;
+	surname?: string;
+	companyName?: string;
+	officeLocation?: string;
+	emails: IContactEmail[];
+	phones: IContactPhone[];
+	categories?: string[];
+	externalId?: string;
+	folderId?: string;
+	lastSyncAt?: Date;
+}
+
+export type IContactPublic = Omit<IContact, 'uid' | 'externalId' | 'folderId' | 'lastSyncAt'>;

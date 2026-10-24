@@ -12,6 +12,7 @@ const NavBarVoipGroup = () => {
 	const openCallHistory = useCallback(() => {
 		router.navigate('/call-history');
 	}, [router]);
+
 	if (!callAction) {
 		return null;
 	}
@@ -19,7 +20,7 @@ const NavBarVoipGroup = () => {
 	return (
 		<NavBarGroup aria-label={t('Voice_Call')}>
 			<NavBarItem title={callAction.title} icon={callAction.icon} onClick={() => callAction.action()} />
-			<NavBarItem title={t('Call_history')} icon='clock' onClick={openCallHistory} />
+			<NavBarItem title={t('Call_history_and_contacts')} icon='book-clock' onClick={openCallHistory} />
 		</NavBarGroup>
 	);
 };

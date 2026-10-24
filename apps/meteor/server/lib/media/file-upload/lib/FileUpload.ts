@@ -78,7 +78,7 @@ const defaults: Record<string, () => Partial<StoreOptions>> = {
 				onCheck: FileUpload.validateAvatarUpload,
 			}),
 			getPath(file: IUpload) {
-				const avatarFile = file.rid ? `room-${file.rid}` : file.userId;
+				const avatarFile = (file.rid && `room-${file.rid}`) || (file.contactId && `contact-${file._id}`) || file.userId;
 				return `${settings.get('uniqueID')}/avatars/${avatarFile}`;
 			},
 			onValidate: FileUpload.avatarsOnValidate,
@@ -421,7 +421,7 @@ export const FileUpload = {
 	},
 
 	async avatarsOnFinishUpload(file: IUpload) {
-		if (file.rid) {
+		if (file.rid || file.contactId) {
 			return;
 		}
 
