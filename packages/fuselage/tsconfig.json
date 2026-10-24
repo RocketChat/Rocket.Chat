@@ -4,8 +4,9 @@
 		"target": "es2024",
 		"moduleResolution": "bundler",
 		"stripInternal": true,
+		"allowImportingTsExtensions": true,
 		"outDir": "./dist"
 	},
-	"include": ["src", "mocks", ".storybook", "jest.config.ts", "jest-setup.ts", "vite.config.mts", "prevalStyled.ts"],
+	"include": ["src", "mocks", ".storybook", "jest.config.ts", "jest-setup.ts", "vite.config.mts", "prevalStyled.ts", "lowerStyled.ts", "scripts/*.mts"],
 	"exclude": ["dist", "node_modules", "storybook-static"]
 }

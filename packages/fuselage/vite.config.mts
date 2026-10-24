@@ -6,6 +6,7 @@ import cssnanoPlugin from 'cssnano';
 import { defineConfig, type Plugin } from 'vite';
 
 import pkg from './package.json' with { type: 'json' };
+import { lowerStyled } from './lowerStyled';
 import { prevalStyled } from './prevalStyled';
 
 /**
@@ -81,6 +82,8 @@ export default defineConfig(({ mode }) => {
 
 	return {
 		plugins: [
+			// Compiles the allowlisted frames into runtime-free recipes, before anything else reads their definitions
+			lowerStyled(),
 			// Turns each frame's options into literals first, since the compiler only reads literals in a module's own definitions
 			prevalStyled(),
 			// Flattens every frame use-site it can into a plain element with static classes; its CSS joins the runtime's in the
