@@ -523,7 +523,7 @@ API.v1.get(
 
 		const result = await Team.listChildren(this.userId, team, filter, type, sort, offset, count);
 
-		return API.v1.success({ data: result.data, total: result.total, offset, count });
+		return API.v1.success({ data: result.data, total: result.total, offset, count: result.data.length });
 	},
 );
 

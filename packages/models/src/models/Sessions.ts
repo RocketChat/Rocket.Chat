@@ -857,7 +857,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 			},
 		] = await this.col.aggregate<WithItemCount<{ docs: DeviceManagementSession[] }>>(queryArray).toArray();
 
-		return { sessions, total, count, offset };
+		return { sessions, total, count: sessions.length, offset };
 	}
 
 	async aggregateSessionsAndPopulate({
@@ -983,7 +983,7 @@ export class SessionsRaw extends BaseRaw<ISession> implements ISessionsModel {
 			},
 		] = await this.col.aggregate<WithItemCount<{ docs: DeviceManagementPopulatedSession[] }>>(queryArray).toArray();
 
-		return { sessions, total, count, offset };
+		return { sessions, total, count: sessions.length, offset };
 	}
 
 	protected override modelIndexes(): IndexDescription[] {

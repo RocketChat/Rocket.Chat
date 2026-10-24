@@ -3489,6 +3489,7 @@ describe('[Rooms]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('files').and.to.be.an('array').and.to.have.lengthOf(2);
+					expect(res.body).to.have.property('count', 2);
 					expect((res.body.files as IUpload[]).find((file) => file._id === fileId1)).to.exist;
 					expect((res.body.files as IUpload[]).find((file) => file._id === fileId2)).to.exist;
 				});
