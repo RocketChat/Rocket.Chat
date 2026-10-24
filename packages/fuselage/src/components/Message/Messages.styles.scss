@@ -37,6 +37,13 @@ $message-highlight-colors-link-color: theme('message-highlight-colors-link-color
 
 $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 
+// The message body is the one surface where inline emojis share a line with
+// running text. Its line box has to be as tall as the emoji so a line holding
+// one never grows, so the body keeps the `p2` font metrics but takes its line
+// height from this component token, and inline emojis are sized to match it.
+$message-body-line-height: theme('message-body-line-height', to-rem(22));
+$message-emoji-size: $message-body-line-height;
+
 %rcx-margins-header {
 	margin-inline: lengths.margin(2);
 }
@@ -220,12 +227,18 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 	}
 
 	&-body {
-		@extend %rcx-margins-block;
 		@include use-font-scale(p2);
 
 		overflow: hidden;
 
 		flex-shrink: 1;
+
+		// Same 2px of block spacing as `%rcx-margins-block`, but as padding so the
+		// `overflow: hidden` clip (kept for zalgo text) leaves room for native emoji
+		// glyphs that paint a bit past the line box (Noto Color Emoji, Segoe UI Emoji)
+		// on the first and last lines.
+		margin-block: lengths.margin(none);
+		padding-block: lengths.padding(2);
 
 		transition: opacity 0.3s linear;
 
@@ -235,8 +248,16 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 
 		color: colors.font(default);
 
+		line-height: $message-body-line-height;
+
 		& h1 {
 			@include use-font-scale(h1);
+		}
+
+		// Headings are taller than the emoji box, so an image emoji snapped to the
+		// top of the line would float above the text; center it instead.
+		& :is(h1, h2, h3, h4) .rcx-message__emoji--custom {
+			vertical-align: middle;
 		}
 
 		& h2 {
@@ -280,7 +301,19 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 			display: -webkit-box;
 			overflow: hidden;
 
+			// `-webkit-line-clamp` clips at the padding edge, so the clamped variant goes
+			// back to margin spacing.
+			margin-block: lengths.margin(2);
+			padding-block: lengths.padding(none);
+
 			word-break: break-word;
+
+			// Without the body padding, a native glyph that paints past its line
+			// (Noto Color Emoji, Segoe UI Emoji) would be cropped on the first and last
+			// visible lines; a slightly smaller glyph keeps its ink inside the line.
+			.rcx-message__emoji:not(.rcx-message__emoji--custom) {
+				font-size: to-rem(20);
+			}
 			-webkit-box-orient: vertical;
 			-webkit-line-clamp: 2;
 
@@ -329,6 +362,14 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 	}
 
 	&-block {
+		// Blocks render outside the message body with their own font scales (section
+		// p2, context c1); the emoji takes the line of the text it sits in.
+		.rcx-message__emoji {
+			font-size: 1lh;
+			line-height: inherit;
+
+			@include size.square(1lh);
+		}
 		@extend %rcx-margins-block;
 		display: flex;
 		flex-direction: column;
@@ -347,14 +388,22 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 
 		margin-inline: lengths.margin(2);
 
+		// Same height as the body line box and snapped to its top, so the emoji
+		// fills the line without stretching it.
+		vertical-align: top;
+
 		background-size: contain;
 
-		font-size: lengths.size(24);
-		line-height: lengths.size(24);
+		font-size: $message-emoji-size;
+		line-height: $message-emoji-size;
 
-		@include size.square(lengths.size(24));
+		@include size.square($message-emoji-size);
 
 		&--big {
+			// Emoji-only messages mix native glyphs (inline, with their own line) and
+			// image boxes; aligning both by their middle keeps them on one axis.
+			vertical-align: middle;
+
 			font-size: lengths.size(44);
 			line-height: lengths.size(48);
 
