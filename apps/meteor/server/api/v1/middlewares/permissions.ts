@@ -2,7 +2,6 @@ import { Logger } from '@rocket.chat/logger';
 import type { Method } from '@rocket.chat/rest-typings';
 import type { MiddlewareHandler } from 'hono';
 
-import { applyBreakingChanges } from '../../ApiClass';
 import { API } from '../../api';
 import { type PermissionsPayload, checkPermissionsForInvocation } from '../../api.helpers';
 import type { TypedOptions } from '../../definition';
@@ -20,13 +19,8 @@ export const permissionsMiddleware =
 		const user = c.get('user');
 
 		if (!user) {
-			if (applyBreakingChanges) {
-				const unauthorized = API.v1.unauthorized('You must be logged in to do this');
-				return c.json(unauthorized.body, unauthorized.statusCode);
-			}
-
-			const failure = API.v1.forbidden('User does not have the permissions required for this action [error-unauthorized]');
-			return c.json(failure.body, failure.statusCode);
+			const unauthorized = API.v1.unauthorized('You must be logged in to do this');
+			return c.json(unauthorized.body, unauthorized.statusCode);
 		}
 
 		let hasPermission: boolean;
@@ -43,13 +37,8 @@ export const permissionsMiddleware =
 		}
 
 		if (!hasPermission) {
-			if (applyBreakingChanges) {
-				const forbidden = API.v1.forbidden('User does not have the permissions required for this action [error-unauthorized]');
-				return c.json(forbidden.body, forbidden.statusCode);
-			}
-
-			const failure = API.v1.forbidden('User does not have the permissions required for this action [error-unauthorized]');
-			return c.json(failure.body, failure.statusCode);
+			const forbidden = API.v1.forbidden('User does not have the permissions required for this action [error-unauthorized]');
+			return c.json(forbidden.body, forbidden.statusCode);
 		}
 
 		return next();
