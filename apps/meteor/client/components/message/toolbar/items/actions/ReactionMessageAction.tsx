@@ -20,9 +20,10 @@ export type ReactionMessageActionProps = {
 	message: IMessage;
 	room: IRoom;
 	subscription: ISubscription | undefined;
+	onChangeMenuVisibility?: (visible: boolean) => void;
 };
 
-const ReactionMessageAction = ({ message, room, subscription }: ReactionMessageActionProps) => {
+const ReactionMessageAction = ({ message, room, subscription, onChangeMenuVisibility }: ReactionMessageActionProps) => {
 	const chat = useChat();
 	const user = useUser();
 	const setReaction = useEndpoint('POST', '/v1/chat.react');
@@ -77,9 +78,14 @@ const ReactionMessageAction = ({ message, room, subscription }: ReactionMessageA
 				title={t('Add_Reaction')}
 				onClick={(event) => {
 					event.stopPropagation();
-					chat?.emojiPicker.open(event.currentTarget, (emoji) => {
-						toggleReaction(emoji);
-					});
+					onChangeMenuVisibility?.(true);
+					chat?.emojiPicker.open(
+						event.currentTarget,
+						(emoji) => {
+							toggleReaction(emoji);
+						},
+						() => onChangeMenuVisibility?.(false),
+					);
 				}}
 			/>
 		</>
