@@ -13,6 +13,7 @@ import { MessageListItem } from './MessageListItem';
 import { useRoomSubscription } from '../contexts/RoomContext';
 import { useFirstUnreadMessageId } from '../hooks/useFirstUnreadMessageId';
 import { SelectedMessagesProvider } from '../providers/SelectedMessagesProvider';
+import { useIsSelecting, useSelectedMessageStore } from './contexts/SelectedMessagesContext';
 import { useMessages } from './hooks/useMessages';
 import useTryToJumpToMessage from './hooks/useTryToJumpToMessage';
 import { isMessageSequential } from './lib/isMessageSequential';
@@ -84,6 +85,16 @@ export const MessageList = function MessageList({
 	const lastScrollSizeRef = useRef(0);
 
 	const messages = useMessages({ rid });
+	const isSelecting = useIsSelecting();
+	const selectedMessageStore = useSelectedMessageStore();
+
+	useEffect(() => {
+		if (!isSelecting) {
+			return;
+		}
+
+		selectedMessageStore.setAvailableMessages(messages.map((message) => message._id));
+	}, [isSelecting, messages, selectedMessageStore]);
 
 	// Virtua's cache is positional, so only reuse it when the message count still matches the one it was captured against.
 	const initialCacheRef = useRef(
