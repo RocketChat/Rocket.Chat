@@ -20,13 +20,13 @@ const OmnichannelPreferencesPage = () => {
 	const omnichannelTranscriptEmail = useUserPreference<boolean>('omnichannelTranscriptEmail') ?? false;
 	const omnichannelHideConversationAfterClosing = useUserPreference<boolean>('omnichannelHideConversationAfterClosing') ?? true;
 
-	const methods = useForm({
-		defaultValues: {
-			omnichannelTranscriptPDF,
-			omnichannelTranscriptEmail: alwaysSendEmailTranscript || omnichannelTranscriptEmail,
-			omnichannelHideConversationAfterClosing,
-		},
-	});
+	const defaultValues = {
+		omnichannelTranscriptPDF,
+		omnichannelTranscriptEmail: alwaysSendEmailTranscript || omnichannelTranscriptEmail,
+		omnichannelHideConversationAfterClosing,
+	};
+
+	const methods = useForm({ defaultValues });
 
 	const {
 		handleSubmit,
@@ -61,7 +61,7 @@ const OmnichannelPreferencesPage = () => {
 			</PageScrollableContentWithShadow>
 			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
-					<Button onClick={() => reset({ omnichannelTranscriptPDF, omnichannelTranscriptEmail })}>{t('Cancel')}</Button>
+					<Button onClick={() => reset(defaultValues)}>{t('Cancel')}</Button>
 					<Button primary disabled={!isDirty} onClick={handleSubmit(handleSave)}>
 						{t('Save_changes')}
 					</Button>
