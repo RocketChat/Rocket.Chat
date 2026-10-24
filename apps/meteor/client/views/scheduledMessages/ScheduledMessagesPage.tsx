@@ -1,5 +1,5 @@
 import type { IRoom, IScheduledMessage, Serialized } from '@rocket.chat/core-typings';
-import { Badge, Box, Tabs, TabsItem, Throbber } from '@rocket.chat/fuselage';
+import { Badge, Tabs, TabsItem, Throbber } from '@rocket.chat/fuselage';
 import { GenericNoResults, Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -26,23 +26,14 @@ const ScheduledMessagesPage = () => {
 	return (
 		<Page background='room'>
 			<PageHeader title={t('Scheduled_messages')} />
-			<Box paddingInline={24}>
-				<Tabs>
-					<TabsItem selected={tab === 'all'} onClick={() => setTab('all')}>
-						{t('All')}
-					</TabsItem>
-					<TabsItem selected={tab === 'failed'} onClick={() => setTab('failed')}>
-						<Box is='span' display='inline-flex' alignItems='center'>
-							{t('Failed')}
-							{failed.length > 0 && (
-								<Box is='span' marginInlineStart={8}>
-									<Badge variant='danger'>{failed.length}</Badge>
-								</Box>
-							)}
-						</Box>
-					</TabsItem>
-				</Tabs>
-			</Box>
+			<Tabs>
+				<TabsItem selected={tab === 'all'} onClick={() => setTab('all')}>
+					{t('All')}
+				</TabsItem>
+				<TabsItem selected={tab === 'failed'} onClick={() => setTab('failed')}>
+					{t('Failed')} {failed.length > 0 && <Badge variant='danger'>{failed.length}</Badge>}
+				</TabsItem>
+			</Tabs>
 			<PageScrollableContentWithShadow>
 				{isLoading && <Throbber size='x12' />}
 				{!isLoading && visible.length === 0 && (
