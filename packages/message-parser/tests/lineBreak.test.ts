@@ -11,9 +11,10 @@ test2`,
 	[
 		`test
 
+
 test2
 `,
-		[paragraph([plain('test')]), lineBreak(), paragraph([plain('test2')])],
+		[paragraph([plain('test')]), lineBreak(), lineBreak(), paragraph([plain('test2')])],
 	],
 	[
 		`test
