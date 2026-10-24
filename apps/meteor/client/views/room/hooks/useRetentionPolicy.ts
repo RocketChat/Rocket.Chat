@@ -6,6 +6,10 @@ import { TIMEUNIT, isValidTimespan, timeUnitToMs } from '../../../lib/convertTim
 const hasRetentionPolicy = (room: IRoom & { retention?: any }): room is IRoomWithRetentionPolicy =>
 	'retention' in room && room.retention !== undefined;
 
+const DEFAULT_MAX_AGE = 2592000000;
+
+const toMaxAge = (value: unknown): number => (isValidTimespan(value) ? Number(value) : DEFAULT_MAX_AGE);
+
 const isRetentionOverridden = (room: IRoom & { retention?: any }) => 'overrideGlobal' in room.retention && room.retention.overrideGlobal;
 
 type RetentionPolicySettings = {
@@ -100,11 +104,11 @@ export const useRetentionPolicy = (room: IRoom | undefined): RetentionPolicy | u
 		doNotPrunePinned: useSetting('RetentionPolicy_DoNotPrunePinned', false),
 		ignoreThreads: useSetting('RetentionPolicy_DoNotPruneThreads', true),
 		appliesToChannels: useSetting('RetentionPolicy_AppliesToChannels', false),
-		maxAgeChannels: useSetting('RetentionPolicy_TTL_Channels', 2592000000),
+		maxAgeChannels: toMaxAge(useSetting('RetentionPolicy_TTL_Channels', DEFAULT_MAX_AGE)),
 		appliesToGroups: useSetting('RetentionPolicy_AppliesToGroups', false),
-		maxAgeGroups: useSetting('RetentionPolicy_TTL_Groups', 2592000000),
+		maxAgeGroups: toMaxAge(useSetting('RetentionPolicy_TTL_Groups', DEFAULT_MAX_AGE)),
 		appliesToDMs: useSetting('RetentionPolicy_AppliesToDMs', false),
-		maxAgeDMs: useSetting('RetentionPolicy_TTL_DMs', 2592000000),
+		maxAgeDMs: toMaxAge(useSetting('RetentionPolicy_TTL_DMs', DEFAULT_MAX_AGE)),
 	} as const;
 
 	if (!room) {
