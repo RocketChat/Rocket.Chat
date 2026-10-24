@@ -199,6 +199,10 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 			...((isNewUserPage || dirtyFields.phones) && { phones: getPersistedPhones(phones) }),
 		};
 
+		if (userFormData.email) {
+			userFormData.email = userFormData.email.trim();
+		}
+
 		if (!isNewUserPage && userData?._id) {
 			return handleUpdateUser.mutateAsync({
 				userId: userData?._id,
