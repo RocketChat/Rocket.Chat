@@ -10,7 +10,7 @@ export type MessageStatusPrivateIndicatorProps = {
 const MessageStatusPrivateIndicator = ({ children, variant }: MessageStatusPrivateIndicatorProps) => (
 	<span
 		className={[
-			'rcx-message-status-indicator__item `rcx-message-status-indicator__item--private',
+			'rcx-message-status-indicator__item rcx-message-status-indicator__item--private',
 			variant && `rcx-message-status-indicator__item--${variant}`,
 		]
 			.filter(Boolean)
