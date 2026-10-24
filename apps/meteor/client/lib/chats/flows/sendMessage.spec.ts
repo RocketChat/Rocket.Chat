@@ -138,4 +138,27 @@ describe('sendMessage', () => {
 		expect(clear).not.toHaveBeenCalled();
 		expect(mockedPost).not.toHaveBeenCalled();
 	});
+
+	it('preserves files without copying a reconstructed quote when editing an encrypted reply', async () => {
+		const { chat } = createChat();
+		const quote = {
+			author_name: 'Other user',
+			author_icon: '',
+			message_link: 'http://localhost:3000/group/test?msg=quoted',
+			text: 'Quoted',
+		};
+		const file = { type: 'file' as const, fileId: 'file-id' };
+		const original = createFakeMessage({ _id: 'reply-id', t: 'e2e', attachments: [quote, file] });
+		jest.spyOn(chat.currentEditingMessage, 'getMID').mockReturnValue(original._id);
+		jest.mocked(chat.data.findMessageByID).mockResolvedValue(original);
+		jest
+			.mocked(chat.data.composeMessage)
+			.mockResolvedValue(createFakeMessage({ _id: original._id, msg: `${quote.message_link}\nEdited reply` }));
+		mockedProcessMessageEditing.mockResolvedValue(true);
+
+		await sendMessage(chat, { text: 'Edited reply' });
+
+		expect(mockedProcessMessageEditing).toHaveBeenCalledWith(chat, expect.objectContaining({ attachments: [file] }), undefined);
+		expect(original.attachments).toEqual([quote, file]);
+	});
 });
