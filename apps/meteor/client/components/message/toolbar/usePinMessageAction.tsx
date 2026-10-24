@@ -14,13 +14,13 @@ export const usePinMessageAction = (
 
 	const allowPinning = useSetting('Message_AllowPinning');
 	const hasPermission = usePermission('pin-message', room._id);
-	const { mutateAsync: pinMessage } = usePinMessageMutation();
+	const { mutate: pinMessage } = usePinMessageMutation();
 
 	if (!allowPinning || isOmnichannelRoom(room) || !hasPermission || message.pinned || !subscription) {
 		return null;
 	}
 
-	const onConfirm = async () => {
+	const onConfirm = () => {
 		pinMessage(message);
 		setModal(null);
 	};
