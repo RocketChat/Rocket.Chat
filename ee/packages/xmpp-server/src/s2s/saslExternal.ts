@@ -21,11 +21,14 @@ export function verifyPeerCertForDomain(socket: tls.TLSSocket, domain: string): 
 		const normalizedDomain = normalizeDomain(domain);
 		const subjectAltName = cert.subjectaltname;
 
-		// DNS SANs support standard hostname and wildcard matching.
-		if (/(?:^|,\s*)DNS:/i.test(subjectAltName)) {
+		// Only DNS SAN entries may be used for hostname verification.
+		const dnsSubjectAltNames = [...subjectAltName.matchAll(/(?:^|,\s*)DNS:([^,]+)/gi)].map(([, value]) => `DNS:${value.trim()}`);
+
+		if (dnsSubjectAltNames.length > 0) {
 			if (
 				checkServerIdentity(normalizedDomain, {
 					...cert,
+					subjectaltname: dnsSubjectAltNames.join(', '),
 					subject: {},
 				}) === undefined
 			) {

@@ -43,6 +43,18 @@ describe('verifyPeerCertForDomain', () => {
 		expect(verifyPeerCertForDomain(createSocket('DNS:*.example.com'), 'chat.example.com')).toBe(true);
 	});
 
+	it('rejects a wildcard DNS SAN for the bare domain', () => {
+		expect(verifyPeerCertForDomain(createSocket('DNS:*.example.com'), 'example.com')).toBe(false);
+	});
+
+	it('rejects a wildcard DNS SAN for a multi-label subdomain', () => {
+		expect(verifyPeerCertForDomain(createSocket('DNS:*.example.com'), 'a.b.example.com')).toBe(false);
+	});
+
+	it('rejects an IP SAN when the domain is an IP literal and the DNS SAN does not match', () => {
+		expect(verifyPeerCertForDomain(createSocket('DNS:wrong.example.com, IP Address:127.0.0.1'), '127.0.0.1')).toBe(false);
+	});
+
 	it('accepts a matching SRVName identity', () => {
 		expect(verifyPeerCertForDomain(createSocket('othername:SRVName:_xmpp-server.a.localhost'), 'a.localhost')).toBe(true);
 	});
