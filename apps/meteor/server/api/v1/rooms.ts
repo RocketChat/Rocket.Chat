@@ -547,6 +547,10 @@ API.v1.get(
 		const room = await findRoomByIdOrName({ params: this.queryParams, checkedArchived: false });
 		const { fields } = await this.parseJsonQuery();
 
+		if (!room) {
+			return API.v1.failure('not-allowed', 'Not Allowed');
+		}
+
 		const canAccess =
 			(await canAccessRoomAsync(room, { _id: this.userId })) ||
 			((isPublicRoom(room) || isPrivateRoom(room)) &&
