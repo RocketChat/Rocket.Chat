@@ -37,7 +37,7 @@ export type AppPermissionsListProps = { appPermissions: AppPermission[] | undefi
 
 const AppPermissionsList = ({ appPermissions }: AppPermissionsListProps) => {
 	const { t } = useTranslation();
-	const handleAppPermissions = (permission: string): string => t(`Apps_Permissions_${permission.replace('.', '_')}`);
+	const handleAppPermissions = (permission: string): string => t(`Apps_Permissions_${permission.replaceAll('.', '_')}`);
 
 	if (appPermissions?.length) {
 		return (
