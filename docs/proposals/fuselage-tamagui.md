@@ -223,6 +223,70 @@ The Rocket.Chat login page (`yarn dev:next` against open.rocket.chat) is also pi
 
 The computed styles match in every case, at rest, hovered and focused. Components with hooks, context or `BoxProps` (about 230 of the public components) still render through the runtime.
 
+## Removing the runtime
+
+**Where the bytes go** (`fuselage.production.js`, 100.7 kB gzip, attributed through source maps):
+
+| | gzip |
+|---|---|
+| `@tamagui/*` runtime (`web` 26.3 kB, `helpers` 3.3, `style-grammar` 1.0, the rest 0.6) | 31.2 kB |
+| The 249 `styled()` and `createStyledContext()` definitions | 20.5 kB |
+| Component logic and everything else | 49.0 kB |
+
+css-in-js is external. Its closure costs consumers another 6.2 kB, plus a render-time pass on every `Box`.
+
+**Tamagui's own zero-runtime mode doesn't fit.** In 3.0.18 it sits under `experimental.zeroRuntime`.
+
+- **Enforce mode needs an application build:** an HTML entry. It also fails when an exported `styled()` binding has importers it didn't transform, and every consumer of a library is such an importer.
+- **It only supports `vite`, `next-webpack` and `metro-web`.** Rocket.Chat builds with rspack.
+- **Its report on the library lists 276 violations.** 214 are definitions it can't erase because something outside the module still uses them. 53 are dynamic values, and 36 of those are React context providers it mistakes for theme updates. 8 are unsafe spreads, and 1 is an animation.
+
+**Flattening use-sites isn't enough either.** A flattened element no longer calls the runtime, but its `styled()` definition stays in the bundle. 34 definitions are already orphans and still run `createComponent` at load. The 63 exported frames only flatten in an app that runs the compiler.
+
+**The approach: compile the definition, not the use-site.** A Fuselage build plugin turns each `styled()` definition into a recipe:
+
+- At build time, Tamagui itself produces the atomic CSS for every value the definition can take: base, each variant value, each state. `prevalStyled` already evaluates the options, and the `@tamagui/static` patches already produce per-variant class tables.
+- At runtime, a component of about 1 to 2 kB maps props to those classes, merges `className`, honors `render` and forwards `ref`. It has no state hooks and inserts no CSS.
+- Every component then costs about what a plain element does, at any use-site, in apps that don't run the compiler too.
+- The web build replaces `@tamagui/web` with a stub. The same `styled()` sources still compile for React Native through Tamagui, from a separate `react-native` entry.
+
+### Phases
+
+0. **Lock and measure.** A CI ratchet on the web bundle (count of `@tamagui/*` modules, gzip size). The computed-style A/B over every story already exists (`perf/story-ab.mjs`, `perf/story-computed.mjs`), and so does the mount and update bench.
+1. **Prototype on three definitions:** `MessageName` (plain), `ButtonGroup` (variants) and `ButtonFrame` (states, `forceStyle`, `render`).
+   - It must reach computed-style parity.
+   - It must measure JS and CSS size. The open question is how much CSS grows when every variant value is emitted ahead of time instead of inserted on demand.
+   - This phase decides whether the plan goes on.
+2. **Remove what needs the runtime:**
+
+   | Runtime need | Uses | Replacement |
+   |---|---|---|
+   | dynamic style values | 17 frames | a finite variant, or a CSS custom property through `style` |
+   | `context:` / `createStyledContext` | 6 / 4 | a React context read by the recipe, or a `data-*` attribute on the parent with a descendant selector |
+   | `forceStyle` | 9 | each state's CSS also emitted under its state class (`:hover, .is-hovered`) |
+   | `group` | 2 | a parent rule in the `fuselage` layer, as Message and Item already do |
+   | `animation:` | 5 | CSS `@keyframes` |
+   | computed `render` | 35 | the recipe takes a tag or an element |
+   | `getTokens` | 1 (PaletteStyleTag) | a token module |
+   | `isTamaguiComponent` | 2 | a marker the recipe sets |
+
+3. **Convert all 249 definitions with the plugin.**
+   - A definition the plugin can't lower is reported and keeps the runtime for now.
+   - The CI ratchet drives that count to zero.
+4. **Drop the runtime from the web build.**
+   - Alias `@tamagui/web` to the stub, so `tamagui.config.ts` only exists in the native build. The base stylesheet is already static (`tamagui-base.css`).
+   - CI then requires zero `@tamagui/*` modules in the web bundle.
+5. **In parallel, the second runtime.** css-in-js leaves when `Box` loses its styling props in favor of layout primitives such as `Stack`. That continues #42974 and #43100.
+
+**Expected result:**
+- **JS:** about −31 kB gzip of runtime and part of the 20.5 kB of definitions, against 1 to 2 kB of recipe runtime.
+- **CSS:** grows by an amount phase 1 has to measure.
+- **Render cost:** back near `develop`'s. 150 messages mount in 1.8 ms on `develop` against 29 ms on the first pilot.
+
+**Risks:**
+- The build depends on Tamagui internals (`getSplitStyles`, the atomic CSS helpers), so the version stays pinned and patched.
+- The web build runs without Tamagui while the native one runs with it, so they can drift. The computed-style A/B therefore runs against the compiled `dist`.
+
 ## Known costs and open questions
 
 - **React DOM attribute types are not Tamagui prop types**, for example `aria-*` typed `Booleanish` against `boolean`. Each component needs one typed cast at the boundary (`GetProps<typeof Frame>`).
