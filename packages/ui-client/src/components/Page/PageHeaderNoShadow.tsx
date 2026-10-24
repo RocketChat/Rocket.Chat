@@ -1,8 +1,10 @@
 import { Box, IconButton } from '@rocket.chat/fuselage';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { ComponentPropsWithoutRef, ReactNode } from 'react';
+import { useContext } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import PageCloseContext from './PageCloseContext';
 import { useDocumentTitle } from '../../hooks';
 import { HeaderToolbar } from '../Header';
 import { SidebarToggler } from '../SidebarToggler';
@@ -16,6 +18,7 @@ type PageHeaderProps = {
 const PageHeaderNoShadow = ({ children = undefined, title, onClickBack, ...props }: PageHeaderProps) => {
 	const { t } = useTranslation();
 	const { sidebar, isEmbedded } = useLayout();
+	const onClose = useContext(PageCloseContext);
 
 	useDocumentTitle(typeof title === 'string' ? title : undefined);
 
@@ -42,6 +45,7 @@ const PageHeaderNoShadow = ({ children = undefined, title, onClickBack, ...props
 					{title}
 				</Box>
 				{children}
+				{onClose && <IconButton small marginInlineStart={8} icon='cross' title={t('Close')} onClick={onClose} />}
 			</Box>
 		</Box>
 	);
