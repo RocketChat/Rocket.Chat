@@ -1,10 +1,11 @@
-import { styled, Text, type GetProps } from '@tamagui/web';
+import { styled, Text } from '@tamagui/web';
 
 import { modalBoxFont } from './Modal';
 import { textIconColors } from '../../Theme';
+import { asPublicFrame } from '../../helpers/asPublicFrame';
+import { variantClass } from '../../helpers/variantClass';
 import { fontScale } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
-import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 export type ModalTitleProps = ElementProps<HTMLHeadingElement>;
 
@@ -20,10 +21,12 @@ const ModalTitleFrame = styled(Text, {
 	color: String(textIconColors['font-default']),
 	...modalBoxFont,
 	...(fontScale('h2') as object),
+
+	variants: {
+		rcx: { true: variantClass('rcx-modal__title') },
+	} as const,
+
+	defaultVariants: { rcx: true },
 });
 
-const ModalTitle = ({ className, ...props }: ModalTitleProps) => (
-	<ModalTitleFrame className={['rcx-modal__title', className].filter(Boolean).join(' ')} {...(props as GetProps<typeof ModalTitleFrame>)} />
-);
-
-export default withFuselageProvider(ModalTitle);
+export default asPublicFrame<ModalTitleProps>(ModalTitleFrame);

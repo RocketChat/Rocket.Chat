@@ -8,7 +8,7 @@ import { spacing } from '../../styleTokens';
 /**
  * A container for grouping buttons that semantically share a common action context.
  */
-const ButtonGroup = styled(View, {
+export const ButtonGroupFrame = styled(View, {
 	displayName: 'ButtonGroup',
 	render: 'div',
 	role: 'group',
@@ -66,4 +66,4 @@ export type ButtonGroupProps = RefAttributes<HTMLDivElement> & {
 	large?: boolean;
 } & HTMLAttributes<HTMLDivElement>;
 
-export default asPublicFrame<ButtonGroupProps>(ButtonGroup);
+export default asPublicFrame<ButtonGroupProps>(ButtonGroupFrame);
