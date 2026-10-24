@@ -2,7 +2,6 @@ import { styled, Text, type GetProps } from '@tamagui/web';
 import type { LabelHTMLAttributes } from 'react';
 
 import { InputBoxWrapperContext, inputChrome } from './Input';
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { borderWidth, fontColor, fontScale, size, spacing } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
@@ -57,6 +56,9 @@ const InputBoxWrapperFrame = styled(Text, {
 				paddingInline: spacing('x8'),
 			},
 		},
+		invisible: {
+			true: { visibility: 'hidden', opacity: 0 },
+		},
 	} as const,
 });
 
@@ -67,18 +69,23 @@ export type InputBoxWrapperProps = ElementProps<HTMLLabelElement, LabelHTMLAttri
 	endAddonFlush?: boolean;
 };
 
-const InputBoxWrapper = ({ small, textarea, endAddonFlush, ...props }: InputBoxWrapperProps) => (
+const InputBoxWrapper = ({ small, textarea, endAddonFlush, invisible, className, ...props }: InputBoxWrapperProps) => (
 	<InputBoxWrapperContext.Provider value={true}>
 		<InputBoxWrapperFrame
 			endAddonFlush={endAddonFlush}
 			textarea={textarea}
 			small={small}
-			{...(useTamaguiBoxProps(
-				{ 'animated': true, 'rcx-input-box__wrapper--end-addon-flush': endAddonFlush, ...props },
-				'rcx-label rcx-input-box__wrapper',
-			) as GetProps<typeof InputBoxWrapperFrame>)}
+			invisible={invisible}
+			className={[
+				'rcx-label rcx-input-box__wrapper rcx-box--animated',
+				endAddonFlush && 'rcx-input-box__wrapper--end-addon-flush',
+				className,
+			]
+				.filter(Boolean)
+				.join(' ')}
+			{...(props as GetProps<typeof InputBoxWrapperFrame>)}
 		/>
 	</InputBoxWrapperContext.Provider>
 );
 
-export default withFuselageProvider(InputBoxWrapper, { takesBoxTransforms: true });
+export default withFuselageProvider(InputBoxWrapper);

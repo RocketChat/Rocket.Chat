@@ -2,7 +2,6 @@ import { styled, View, type GetProps } from '@tamagui/web';
 
 import { modalBoxFont } from './Modal';
 import { surfaceColors } from '../../Theme';
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
@@ -28,10 +27,12 @@ const ModalBackdropFrame = styled(View, {
 	} as const,
 });
 
-const ModalBackdrop = ({ transparent, ...props }: ModalBackdropProps) => {
-	const frameProps = useTamaguiBoxProps(props, 'rcx-modal__backdrop');
-
-	return <ModalBackdropFrame transparent={transparent} {...(frameProps as GetProps<typeof ModalBackdropFrame>)} />;
-};
+const ModalBackdrop = ({ transparent, className, ...props }: ModalBackdropProps) => (
+	<ModalBackdropFrame
+		transparent={transparent}
+		className={['rcx-modal__backdrop', className].filter(Boolean).join(' ')}
+		{...(props as GetProps<typeof ModalBackdropFrame>)}
+	/>
+);
 
 export default withFuselageProvider(ModalBackdrop);

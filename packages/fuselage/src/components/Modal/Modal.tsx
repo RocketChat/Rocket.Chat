@@ -6,7 +6,6 @@ import { createElement } from 'react';
 import { surfaceColors, textIconColors } from '../../Theme';
 import { toCSSValue } from '../../helpers/toCSSValue';
 import { useStyle } from '../../hooks/useStyle';
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { borderRadius, fontFamily, fontScale, size } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
 import { Box, type BoxProps } from '../Box';
@@ -79,20 +78,26 @@ const innerStyle = css`
 	line-height: ${fontScale('p2').lineHeight};
 `;
 
-const Modal = ({ children, wrapper = Box, wrapperFunction, hidden, ...props }: ModalProps) => {
+const Modal = ({ children, wrapper = Box, wrapperFunction, hidden, width, height, maxHeight, className, ...props }: ModalProps) => {
 	const wrapperProps = {
 		children,
 		className: `rcx-modal__inner ${useStyle(innerStyle, undefined)}`,
 		elevation: '2',
 	} as const;
 
-	const frameProps = useTamaguiBoxProps(props, 'rcx-modal');
-
 	return (
-		<ModalFrame isHidden={hidden} {...({ 'open': true, 'aria-modal': 'true', hidden, ...frameProps } as GetProps<typeof ModalFrame>)}>
+		<ModalFrame
+			isHidden={hidden}
+			// An `undefined` style prop would still override the frame's own
+			{...(width !== undefined && { width: size(width) })}
+			{...(height !== undefined && { height: size(height) })}
+			{...(maxHeight !== undefined && { maxHeight: size(maxHeight) })}
+			className={['rcx-modal', className].filter(Boolean).join(' ')}
+			{...({ 'open': true, 'aria-modal': 'true', hidden, ...props } as GetProps<typeof ModalFrame>)}
+		>
 			{wrapperFunction ? wrapperFunction(wrapperProps) : createElement(wrapper, wrapperProps)}
 		</ModalFrame>
 	);
 };
 
-export default withFuselageProvider(Modal, { takesBoxTransforms: true });
+export default withFuselageProvider(Modal);

@@ -2,8 +2,8 @@ import { styled, Text, View, type GetProps } from '@tamagui/web';
 import type { ReactElement } from 'react';
 
 import { surfaceColors, textIconColors } from '../../Theme';
+import { cx } from '../../helpers/composeClassNames';
 import { toCSSValue } from '../../helpers/toCSSValue';
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { borderRadius, fontFamily, size, spacing } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
 import { Box } from '../Box';
@@ -67,9 +67,10 @@ const CodeSnippet = ({
 	onClick,
 	buttonText = 'Copy',
 	buttonDisabled = false,
+	className,
 	...props
 }: CodeSnippetProps): ReactElement<CodeSnippetProps> => {
-	const frameProps = useTamaguiBoxProps({ 'is': 'pre', 'rcx-code-snippet': true, ...props }) as GetProps<typeof CodeSnippetFrame>;
+	const frameProps = { ...props, className: cx('rcx-code-snippet', className) } as GetProps<typeof CodeSnippetFrame>;
 
 	if (!children) {
 		return (
@@ -95,4 +96,4 @@ const CodeSnippet = ({
 	);
 };
 
-export default withFuselageProvider(CodeSnippet, { takesBoxTransforms: true });
+export default withFuselageProvider(CodeSnippet);

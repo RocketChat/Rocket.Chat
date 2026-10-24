@@ -2,7 +2,6 @@ import { styled, Text, type GetProps } from '@tamagui/web';
 
 import { modalBoxFont } from './Modal';
 import { textIconColors } from '../../Theme';
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { fontScale } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
@@ -23,10 +22,8 @@ const ModalTitleFrame = styled(Text, {
 	...(fontScale('h2') as object),
 });
 
-const ModalTitle = ({ children, ...props }: ModalTitleProps) => {
-	const frameProps = useTamaguiBoxProps(props, 'rcx-modal__title');
+const ModalTitle = ({ className, ...props }: ModalTitleProps) => (
+	<ModalTitleFrame className={['rcx-modal__title', className].filter(Boolean).join(' ')} {...(props as GetProps<typeof ModalTitleFrame>)} />
+);
 
-	return <ModalTitleFrame {...(frameProps as GetProps<typeof ModalTitleFrame>)}>{children}</ModalTitleFrame>;
-};
-
-export default withFuselageProvider(ModalTitle, { takesBoxTransforms: true });
+export default withFuselageProvider(ModalTitle);

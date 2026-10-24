@@ -1,13 +1,11 @@
 import { styled, Text, type GetProps } from '@tamagui/web';
 
 import { shadowColors, surfaceColors, textIconColors } from '../../Theme';
+import { cx } from '../../helpers/composeClassNames';
 import { toCSSValue } from '../../helpers/toCSSValue';
-import { useArrayLikeClassNameProp } from '../../hooks/useArrayLikeClassNameProp';
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { borderRadius, fontFamily, fontScale } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
 import type { BoxProps } from '../Box';
-import { BoxTransforms, useBoxTransform } from '../Box/BoxTransforms';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 const elevationBorder = {
@@ -31,6 +29,7 @@ const TileFrame = styled(Text, {
 	color: String(textIconColors['font-default']),
 	borderRadius: toCSSValue('--rcx-tile-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium'))),
 	backgroundColor: String(surfaceColors['surface-light']),
+	padding: 16,
 	...(fontScale('p2') as { fontWeight: 400 }),
 
 	variants: {
@@ -49,6 +48,9 @@ const TileFrame = styled(Text, {
 			'1nb': {},
 			'2nb': {},
 		},
+		flush: {
+			true: { padding: 0 },
+		},
 	} as const,
 });
 
@@ -58,17 +60,15 @@ export type TileProps = ElementProps<HTMLElement> & {
 	flush?: boolean;
 };
 
-function Tile({ elevation = '1', flush, ...props }: TileProps) {
-	const transformFn = useBoxTransform();
-	const boxProps = useArrayLikeClassNameProp({ padding: flush ? undefined : 16, ...props });
-	const frameProps = useTamaguiBoxProps(transformFn ? transformFn(boxProps) : boxProps, `rcx-tile rcx-tile--elevation-${elevation}`);
-	const element = <TileFrame elevation={elevation} {...(frameProps as GetProps<typeof TileFrame>)} />;
-
-	if (transformFn) {
-		return <BoxTransforms.Provider value={null}>{element}</BoxTransforms.Provider>;
-	}
-
-	return element;
+function Tile({ elevation = '1', flush, className, ...props }: TileProps) {
+	return (
+		<TileFrame
+			elevation={elevation}
+			flush={flush}
+			{...(props as GetProps<typeof TileFrame>)}
+			className={cx('rcx-tile', `rcx-tile--elevation-${elevation}`, className)}
+		/>
+	);
 }
 
-export default withFuselageProvider(Tile);
+export default withFuselageProvider(Tile, { takesBoxTransforms: true });

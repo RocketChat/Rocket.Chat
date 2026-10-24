@@ -2,7 +2,6 @@ import { styled, View, type GetProps } from '@tamagui/web';
 
 import { strokeColors, surfaceColors, textIconColors } from '../../Theme';
 import { toCSSValue } from '../../helpers/toCSSValue';
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { borderRadius, borderWidth, fontFamily, fontScale, size, spacing } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
@@ -34,10 +33,13 @@ const InputBoxSkeletonFrame = styled(View, {
 
 export type InputBoxSkeletonProps = ElementProps<HTMLDivElement>;
 
-const InputBoxSkeleton = (props: InputBoxSkeletonProps) => (
-	<InputBoxSkeletonFrame {...(useTamaguiBoxProps({ ...props }, 'rcx-skeleton__input') as GetProps<typeof InputBoxSkeletonFrame>)}>
+const InputBoxSkeleton = ({ className, ...props }: InputBoxSkeletonProps) => (
+	<InputBoxSkeletonFrame
+		className={['rcx-skeleton__input', className].filter(Boolean).join(' ')}
+		{...(props as GetProps<typeof InputBoxSkeletonFrame>)}
+	>
 		<Skeleton width='100%' />
 	</InputBoxSkeletonFrame>
 );
 
-export default withFuselageProvider(InputBoxSkeleton, { takesBoxTransforms: true });
+export default withFuselageProvider(InputBoxSkeleton);

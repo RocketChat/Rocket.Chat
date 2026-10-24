@@ -1,11 +1,10 @@
-import type { GetProps } from '@tamagui/web';
-import type { AllHTMLAttributes } from 'react';
+import type { GetProps, TamaguiElement } from '@tamagui/web';
+import type { AllHTMLAttributes, Ref } from 'react';
 import { useContext } from 'react';
 
 import { ButtonContent, ButtonFrame, getButtonStates, renderButtonElement } from './ButtonFrame';
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import { cx } from '../../helpers/composeClassNames';
 import type { ElementProps } from '../../types/ElementProps';
-import { BoxTransforms, useBoxTransform } from '../Box/BoxTransforms';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 import { Icon, type IconProps } from '../Icon';
 import { ButtonSegmentContext } from './ButtonSegmentContext';
@@ -70,6 +69,7 @@ function Button({
 	loading,
 	disabled,
 	children,
+	className: rawClassName,
 	...props
 }: ButtonProps) {
 	const extraProps =
@@ -97,46 +97,35 @@ function Button({
 	const effectiveSize =
 		size || (mini && 'mini') || (tiny && 'tiny') || (small && 'small') || (medium && 'medium') || (large && 'large') || undefined;
 
-	const transform = useBoxTransform();
 	const segment = useContext(ButtonSegmentContext);
 
 	// `<Box is={Button}>` hands over `rcx-box--full`, whose unlayered reset would beat the frame's padding
-	if (typeof props.className === 'string') {
-		props.className = props.className.replace(/(^|\s)rcx-box--full(?=\s|$)/g, '');
-	}
-
-	const frameProps = useTamaguiBoxProps(
-		(transform ?? ((props) => props))({
-			'rcx-button': true,
-			...(kind && { [`rcx-button--${kind}`]: true }),
-			'rcx-button--small': effectiveSize === 'small',
-			'rcx-button--medium': effectiveSize === 'medium',
-			'rcx-button--large': effectiveSize === 'large',
-			'rcx-button--square': square,
-			'rcx-button--compact': compact,
-			'rcx-button--tiny-square': effectiveSize === 'tiny' && square,
-			'rcx-button--mini-square': effectiveSize === 'mini' && square,
-			'rcx-button--small-square': effectiveSize === 'small' && square,
-			'rcx-button--medium-square': effectiveSize === 'medium' && square,
-			'rcx-button--large-square': effectiveSize === 'large' && square,
-			'rcx-button--loading': loading,
-			ref,
-			...extraProps,
-			...props,
-		}),
-	);
+	const className = rawClassName?.replace(/(^|\s)rcx-box--full(?=\s|$)/g, '');
 
 	const squareSize = square && effectiveSize && effectiveSize !== 'large' ? effectiveSize : undefined;
 
-	const button = (
+	return (
 		<ButtonFrame
 			size={effectiveSize === 'small' || effectiveSize === 'medium' || effectiveSize === 'large' ? effectiveSize : undefined}
 			compact={compact}
 			square={square}
 			squareSize={squareSize}
 			render={renderButtonElement(is, disabled || loading)}
-			{...(frameProps as GetProps<typeof ButtonFrame>)}
-			{...getButtonStates(frameProps.className, kind ?? 'secondary', disabled || loading, segment)}
+			ref={ref as Ref<TamaguiElement>}
+			{...({ ...extraProps, ...props } as GetProps<typeof ButtonFrame>)}
+			className={cx(
+				'rcx-button',
+				kind && `rcx-button--${kind}`,
+				effectiveSize === 'small' && 'rcx-button--small',
+				effectiveSize === 'medium' && 'rcx-button--medium',
+				effectiveSize === 'large' && 'rcx-button--large',
+				square && 'rcx-button--square',
+				compact && 'rcx-button--compact',
+				square && effectiveSize && `rcx-button--${effectiveSize}-square`,
+				loading && 'rcx-button--loading',
+				className,
+			)}
+			{...getButtonStates(className, kind ?? 'secondary', disabled || loading, segment)}
 		>
 			<ButtonContent className='rcx-button--content'>
 				{icon && !loading && <Icon className='rcx-button__icon' size='x16' name={icon} />}
@@ -145,8 +134,6 @@ function Button({
 			</ButtonContent>
 		</ButtonFrame>
 	);
-
-	return transform ? <BoxTransforms.Provider value={null}>{button}</BoxTransforms.Provider> : button;
 }
 
-export default withFuselageProvider(Button);
+export default withFuselageProvider(Button, { takesBoxTransforms: true });

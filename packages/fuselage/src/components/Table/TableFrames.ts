@@ -1,6 +1,6 @@
 import { styled, Text, View } from '@tamagui/web';
 
-import { strokeColors, surfaceColors, textIconColors } from '../../Theme';
+import { shadowColors, strokeColors, surfaceColors, textIconColors } from '../../Theme';
 import { toCSSValue } from '../../helpers/toCSSValue';
 import { borderRadius, borderWidth, fontFamily, fontScale, spacing } from '../../styleTokens';
 
@@ -178,6 +178,12 @@ export const TableCellDivider = styled(View, {
 export const TableSelectionFrame = styled(View, {
 	...tableBoxStyle,
 	flexDirection: 'row',
+	alignItems: 'center',
+	justifyContent: 'space-between',
+	paddingInline: spacing(24),
+	borderWidth: 1,
+	borderColor: String(shadowColors['shadow-elevation-border']),
+	boxShadow: `0 0 2px 0 ${String(shadowColors['shadow-elevation-2x'])}, 0 0 12px 0 ${String(shadowColors['shadow-elevation-2y'])}`,
 	color: String(textIconColors['font-titles-labels']),
 	borderRadius: toCSSValue('--rcx-table-selected-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium'))),
 	backgroundColor: String(surfaceColors['surface-neutral']),

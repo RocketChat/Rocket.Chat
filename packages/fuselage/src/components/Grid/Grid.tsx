@@ -2,7 +2,7 @@ import { styled, View, type GetProps } from '@tamagui/web';
 import { useMemo } from 'react';
 
 import GridItem, { gridBoxStyle, GridContext, gutter } from './GridItem';
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import { cx } from '../../helpers/composeClassNames';
 import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
@@ -29,26 +29,27 @@ export type GridProps = ElementProps<HTMLDivElement> & {
 	xl?: boolean;
 };
 
-const Grid = ({ xs, sm, md, lg, xl, ...props }: GridProps) => {
-	const gridProps = useTamaguiBoxProps({
-		'rcx-grid': true,
-		'rcx-grid--xs': xs,
-		'rcx-grid--sm': sm,
-		'rcx-grid--md': md,
-		'rcx-grid--lg': lg,
-		'rcx-grid--xl': xl,
-		...props,
-	});
-
+const Grid = ({ xs, sm, md, lg, xl, className, ...props }: GridProps) => {
 	const pinned = useMemo(() => ({ xs, sm, md, lg, xl }), [xs, sm, md, lg, xl]);
 
 	return (
 		<GridContext.Provider value={pinned}>
 			<GridWrapper className='rcx-grid__wrapper'>
-				<GridFrame {...(gridProps as GetProps<typeof GridFrame>)} />
+				<GridFrame
+					{...(props as GetProps<typeof GridFrame>)}
+					className={cx(
+						'rcx-grid',
+						xs && 'rcx-grid--xs',
+						sm && 'rcx-grid--sm',
+						md && 'rcx-grid--md',
+						lg && 'rcx-grid--lg',
+						xl && 'rcx-grid--xl',
+						className,
+					)}
+				/>
 			</GridWrapper>
 		</GridContext.Provider>
 	);
 };
 
-export default Object.assign(withFuselageProvider(Grid, { takesBoxTransforms: true }), { Item: GridItem });
+export default Object.assign(withFuselageProvider(Grid), { Item: GridItem });

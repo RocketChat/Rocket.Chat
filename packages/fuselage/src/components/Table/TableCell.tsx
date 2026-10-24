@@ -1,7 +1,6 @@
 import type { GetProps } from '@tamagui/web';
 import { useContext, type TdHTMLAttributes, type ThHTMLAttributes } from 'react';
 
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import type { ElementProps } from '../../types/ElementProps';
 import { Box } from '../Box';
 import { TableContext } from './Table';
@@ -26,28 +25,13 @@ export type TableCellProps = Omit<
 	strong?: boolean;
 };
 
-const isDisabled = ({ className, disabled }: { className?: unknown; disabled?: unknown }) =>
-	!!disabled || (typeof className === 'string' && className.split(/\s+/).includes('disabled'));
+const isDisabled = (className?: string) => !!className?.split(/\s+/).includes('disabled');
 
-const TableCell = ({ align, clickable, rowHeader, truncate, color, strong, children, ...props }: TableCellProps) => {
+const TableCell = ({ is, align, clickable, rowHeader, truncate, color, strong, className, children, ...props }: TableCellProps) => {
 	const isInsideHead = useContext(TableHeadContext);
 	const { sticky } = useContext(TableContext);
 
 	const innerElement = children ?? (!isInsideHead ? <Box display='inline-block' is='hr' width='x14' borderWidth='default' /> : undefined);
-
-	const cellProps = useTamaguiBoxProps({
-		'is': isInsideHead || rowHeader ? 'th' : 'td',
-		'scope': rowHeader ? 'row' : undefined,
-		'rcx-table__cell': true,
-		'rcx-table__cell--align': align,
-		'rcx-table__cell--header': isInsideHead,
-		'rcx-table__cell--row-header': rowHeader,
-		'rcx-table__cell--clickable': clickable,
-		'rcx-table__cell--truncate': truncate,
-		'rcx-table__cell--color': color,
-		'rcx-table__cell--strong': strong,
-		...props,
-	});
 
 	return (
 		<TableCellFrame
@@ -57,9 +41,23 @@ const TableCell = ({ align, clickable, rowHeader, truncate, color, strong, child
 			truncate={truncate}
 			tone={color}
 			strong={strong}
-			{...(clickable && isDisabled(cellProps) && { cursor: 'not-allowed' })}
+			{...(clickable && isDisabled(className) && { cursor: 'not-allowed' })}
 			align={typeof align === 'string' ? align : undefined}
-			{...(cellProps as GetProps<typeof TableCellFrame>)}
+			render={is ?? (isInsideHead || rowHeader ? 'th' : 'td')}
+			className={[
+				'rcx-table__cell',
+				typeof align === 'string' && `rcx-table__cell--align-${align}`,
+				isInsideHead && 'rcx-table__cell--header',
+				rowHeader && 'rcx-table__cell--row-header',
+				clickable && 'rcx-table__cell--clickable',
+				truncate && 'rcx-table__cell--truncate',
+				color && `rcx-table__cell--color-${color}`,
+				strong && 'rcx-table__cell--strong',
+				className,
+			]
+				.filter(Boolean)
+				.join(' ')}
+			{...({ scope: rowHeader ? 'row' : undefined, ...props } as GetProps<typeof TableCellFrame>)}
 		>
 			{innerElement}
 			{isInsideHead && <TableCellDivider aria-hidden />}
@@ -67,4 +65,4 @@ const TableCell = ({ align, clickable, rowHeader, truncate, color, strong, child
 	);
 };
 
-export default withFuselageProvider(TableCell, { takesBoxTransforms: true });
+export default withFuselageProvider(TableCell);

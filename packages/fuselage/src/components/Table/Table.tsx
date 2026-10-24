@@ -1,7 +1,6 @@
 import type { GetProps } from '@tamagui/web';
 import { createContext, useMemo, type TableHTMLAttributes } from 'react';
 
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import type { ElementProps } from '../../types/ElementProps';
 import { Box } from '../Box';
 import { TableFrame, TableWrapper } from './TableFrames';
@@ -21,21 +20,19 @@ export type TableProps = ElementProps<HTMLTableElement, TableHTMLAttributes<HTML
 	columns?: TableColumnWidth[];
 };
 
-const Table = ({ striped, sticky, fixed = false, columns, children, ...props }: TableProps) => {
-	const tableProps = useTamaguiBoxProps({
-		'rcx-table': true,
-		'rcx-table--fixed': fixed,
-		'rcx-table--sticky': sticky,
-		'rcx-table--striped': striped,
-		...props,
-	});
-
+const Table = ({ striped, sticky, fixed = false, columns, className, children, ...props }: TableProps) => {
 	const context = useMemo(() => ({ sticky: !!sticky }), [sticky]);
 
 	return (
 		<TableContext.Provider value={context}>
 			<TableWrapper className='rcx-table__wrapper'>
-				<TableFrame fixed={fixed} {...(tableProps as GetProps<typeof TableFrame>)}>
+				<TableFrame
+					fixed={fixed}
+					className={['rcx-table', fixed && 'rcx-table--fixed', sticky && 'rcx-table--sticky', striped && 'rcx-table--striped', className]
+						.filter(Boolean)
+						.join(' ')}
+					{...(props as GetProps<typeof TableFrame>)}
+				>
 					{columns && (
 						<colgroup>
 							{columns.map((width, index) => (
@@ -50,4 +47,4 @@ const Table = ({ striped, sticky, fixed = false, columns, children, ...props }: 
 	);
 };
 
-export default withFuselageProvider(Table, { takesBoxTransforms: true });
+export default withFuselageProvider(Table);

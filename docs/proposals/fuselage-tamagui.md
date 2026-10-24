@@ -252,8 +252,9 @@ Follow `Divider` (`components/Divider/Divider.tsx`).
    - Keep each SCSS `theme('<name>', …)` hook as `toCSSValue('--rcx-<name>', …)`.
    - Never hard-code a color.
 4. **Class names:** keep every `rcx-*` class name the SCSS version rendered, on the same elements, along with the same DOM structure and attributes. E2E tests, app CSS and admin custom CSS select on them.
-5. **`Box` props:** components typed with `BoxProps` pass their remaining props through `useTamaguiBoxProps(props, '<rcx class names>')`, then spread the result onto the frame as `GetProps<typeof Frame>`.
-   - This covers `withRichContent`, `animated`, `focusable` and `htmlSize` too.
+5. **Props:** a component takes DOM and ARIA attributes plus the variations it declares (`ElementProps`, see #43100), never `Box` styling props. It builds its `className` itself, `rcx-*` classes first and the caller's last, maps a declared `is` to `render`, and spreads the rest onto the frame. Cast the spread to `GetProps<typeof Frame>` only for React's `Booleanish` ARIA types; a cast never carries a style.
+   - Styling a component used to receive from inside Fuselage moves into its frame: a margin, a size, an `rcx-box--*` flag.
+   - Only components that `Margins`, `Flex` or `Scrollable` still lay out keep `withFuselageProvider(Component, { takesBoxTransforms: true })`.
    - A frame that replaces a `Box` restates what `rcx-box--full` gave it: `border-box`, `flex-shrink: 1`, `auto` minimum sizes, zero margin, padding and border, no outline, the sans font family and tabular numbers.
    - Never render a Tamagui frame through `<Box is={…}>`, because `rcx-box--full` would reset its margin, padding and border.
    - Keep `ref` forwarding and the `is` behavior.

@@ -1,8 +1,8 @@
 import { styled, Text, View, type GetProps } from '@tamagui/web';
 
 import { surfaceColors, textIconColors } from '../../Theme';
+import { cx } from '../../helpers/composeClassNames';
 import { toCSSValue } from '../../helpers/toCSSValue';
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { borderRadius, fontFamily, fontScale } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
@@ -94,20 +94,22 @@ export type TooltipProps = ElementProps<HTMLElement> & {
 		'top-start' | 'top-middle' | 'top-end' | 'bottom-start' | 'bottom-middle' | 'bottom-end' | 'top' | 'left' | 'bottom' | 'right' | null;
 };
 
-function Tooltip({ variation = 'dark', placement, children, ...props }: TooltipProps) {
+function Tooltip({ variation = 'dark', placement, children, className, ...props }: TooltipProps) {
 	const [direction, position] = parsePlacement(placement);
 
-	const frameProps = useTamaguiBoxProps({
-		'rcx-tooltip': true,
-		'rcx-tooltip--dir': direction,
-		'rcx-tooltip--pos': position,
-		'rcx-tooltip--light': variation === 'light',
-		'rcx-tooltip--dark': variation === 'dark',
-		...props,
-	});
-
 	return (
-		<TooltipFrame light={variation === 'light'} {...(frameProps as GetProps<typeof TooltipFrame>)}>
+		<TooltipFrame
+			light={variation === 'light'}
+			{...(props as GetProps<typeof TooltipFrame>)}
+			className={cx(
+				'rcx-tooltip',
+				direction && `rcx-tooltip--dir-${direction}`,
+				position && `rcx-tooltip--pos-${position}`,
+				variation === 'light' && 'rcx-tooltip--light',
+				variation === 'dark' && 'rcx-tooltip--dark',
+				className,
+			)}
+		>
 			{children}
 			{isArrowDirection(direction) && (
 				<TooltipArrow aria-hidden side={direction} align={isArrowPosition(position) ? position : undefined} />
@@ -116,4 +118,4 @@ function Tooltip({ variation = 'dark', placement, children, ...props }: TooltipP
 	);
 }
 
-export default withFuselageProvider(Tooltip, { takesBoxTransforms: true });
+export default withFuselageProvider(Tooltip);

@@ -2,7 +2,7 @@ import breakpoints from '@rocket.chat/fuselage-tokens/dist/breakpoints.json';
 import { styled, View, type GetProps } from '@tamagui/web';
 import { createContext, useContext } from 'react';
 
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import { cx } from '../../helpers/composeClassNames';
 import { fontFamily } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
@@ -89,19 +89,24 @@ export type GridItemProps = ElementProps<HTMLDivElement> & {
 	xl?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 };
 
-const GridItem = ({ xs, sm, md, lg, xl, ...props }: GridItemProps) => {
+const GridItem = ({ xs, sm, md, lg, xl, className, ...props }: GridItemProps) => {
 	const itemStyle = useItemStyle({ xs, sm, md, lg, xl });
-	const itemProps = useTamaguiBoxProps({
-		'rcx-grid__item': true,
-		'rcx-grid__item--xs': xs,
-		'rcx-grid__item--sm': sm,
-		'rcx-grid__item--md': md,
-		'rcx-grid__item--lg': lg,
-		'rcx-grid__item--xl': xl,
-		...props,
-	});
 
-	return <GridItemFrame {...itemStyle} {...(itemProps as GetProps<typeof GridItemFrame>)} />;
+	return (
+		<GridItemFrame
+			{...itemStyle}
+			{...(props as GetProps<typeof GridItemFrame>)}
+			className={cx(
+				'rcx-grid__item',
+				xs && `rcx-grid__item--xs-${xs}`,
+				sm && `rcx-grid__item--sm-${sm}`,
+				md && `rcx-grid__item--md-${md}`,
+				lg && `rcx-grid__item--lg-${lg}`,
+				xl && `rcx-grid__item--xl-${xl}`,
+				className,
+			)}
+		/>
+	);
 };
 
-export default withFuselageProvider(GridItem, { takesBoxTransforms: true });
+export default withFuselageProvider(GridItem);

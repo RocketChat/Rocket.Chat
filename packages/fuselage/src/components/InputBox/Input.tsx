@@ -4,7 +4,6 @@ import { createContext, useContext, type AllHTMLAttributes } from 'react';
 import { shadowColors, strokeColors, surfaceColors, textIconColors } from '../../Theme';
 import { renderAs } from '../../helpers/renderAs';
 import { toCSSValue } from '../../helpers/toCSSValue';
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { borderRadius, borderWidth, fontFamily, fontScale, size, spacing } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
@@ -111,6 +110,9 @@ const InputFrame = styled(View, {
 				minWidth: size('none'),
 			},
 		},
+		invisible: {
+			true: { visibility: 'hidden', opacity: 0 },
+		},
 	} as const,
 });
 
@@ -122,34 +124,60 @@ export type InputProps<T extends HTMLInputElement | HTMLSelectElement | HTMLText
 	invisible?: boolean;
 };
 
+// The modifiers `InputBox` passes as `rcx-*` attributes, outside the public props
+type InputBoxModifiers = {
+	'rcx-input-box--type'?: string;
+	'rcx-input-box--multiple'?: boolean;
+	'rcx-input-box--placeholder-visible'?: boolean;
+	'rcx-input-box--small'?: boolean;
+	'rcx-input-box--undecorated'?: boolean;
+};
+
 function Input<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>({
 	is = 'input',
 	disabled,
 	htmlSize,
-	...props
+	invisible,
+	className,
+	...rest
 }: InputProps<T>) {
 	const wrapped = useContext(InputBoxWrapperContext);
-	const rcxProps = props as Record<string, unknown>;
-	const type = rcxProps['rcx-input-box--type'];
-	const kind =
-		(type === 'textarea' && 'textarea') ||
-		(type === 'select' && (rcxProps['rcx-input-box--multiple'] ? 'multipleSelect' : 'select')) ||
-		undefined;
-
-	// `InputBox` hands its class names to both the wrapper and this input; `rcx-box--full` keeps the `Margins` ones off the input, as before, and resets nothing the undecorated frame doesn't
-	const frameProps = useTamaguiBoxProps({ is, 'animated': true, 'rcx-input-box': true, 'rcx-box--full': wrapped || undefined, ...props });
+	const {
+		'rcx-input-box--type': type,
+		'rcx-input-box--multiple': multiple,
+		'rcx-input-box--placeholder-visible': placeholderVisible,
+		'rcx-input-box--small': small,
+		'rcx-input-box--undecorated': undecorated,
+		...props
+	} = rest as typeof rest & InputBoxModifiers;
+	const kind = (type === 'textarea' && 'textarea') || (type === 'select' && (multiple ? 'multipleSelect' : 'select')) || undefined;
 
 	return (
 		<InputFrame
-			decorated={!(typeof frameProps.className === 'string' && frameProps.className.split(/\s+/).includes('rcx-input-box--undecorated'))}
+			decorated={!(undecorated || className?.split(/\s+/).includes('rcx-input-box--undecorated'))}
 			kind={kind}
-			placeholderVisible={Boolean(rcxProps['rcx-input-box--placeholder-visible'])}
+			placeholderVisible={!!placeholderVisible}
 			wrapped={wrapped}
-			{...(frameProps as GetProps<typeof InputFrame>)}
+			invisible={invisible}
+			render={is}
+			// `InputBox` hands its class names to both the wrapper and this input; `rcx-box--full` keeps the `Margins` ones off the input, as before
+			className={[
+				'rcx-input-box rcx-box--animated',
+				wrapped && 'rcx-box--full',
+				type && `rcx-input-box--type-${type}`,
+				multiple && 'rcx-input-box--multiple',
+				placeholderVisible && 'rcx-input-box--placeholder-visible',
+				small && 'rcx-input-box--small',
+				undecorated && 'rcx-input-box--undecorated',
+				className,
+			]
+				.filter(Boolean)
+				.join(' ')}
+			{...(props as GetProps<typeof InputFrame>)}
 			// Tamagui takes `size` as a style and adds `aria-disabled` next to `disabled`; rendering both attributes directly keeps the input as it was.
 			{...((disabled || htmlSize !== undefined) && { render: renderAs(is, { disabled, size: htmlSize }) })}
 		/>
 	);
 }
 
-export default withFuselageProvider(Input, { takesBoxTransforms: true });
+export default withFuselageProvider(Input);

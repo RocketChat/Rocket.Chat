@@ -1,7 +1,6 @@
 import { styled, View, type GetProps } from '@tamagui/web';
 
 import { modalBoxFont, modalContainerMargin } from './Modal';
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 import { Margins } from '../Margins';
@@ -27,16 +26,15 @@ const ModalHeaderInner = styled(View, {
 	margin: -4,
 });
 
-const ModalHeader = ({ children, ...props }: ModalHeaderProps) => {
-	const frameProps = useTamaguiBoxProps(props, 'rcx-modal__header');
+const ModalHeader = ({ children, className, ...props }: ModalHeaderProps) => (
+	<ModalHeaderFrame
+		className={['rcx-modal__header', className].filter(Boolean).join(' ')}
+		{...(props as GetProps<typeof ModalHeaderFrame>)}
+	>
+		<ModalHeaderInner className='rcx-modal__header-inner'>
+			<Margins all='x4'>{children}</Margins>
+		</ModalHeaderInner>
+	</ModalHeaderFrame>
+);
 
-	return (
-		<ModalHeaderFrame {...(frameProps as GetProps<typeof ModalHeaderFrame>)}>
-			<ModalHeaderInner className='rcx-modal__header-inner'>
-				<Margins all='x4'>{children}</Margins>
-			</ModalHeaderInner>
-		</ModalHeaderFrame>
-	);
-};
-
-export default withFuselageProvider(ModalHeader, { takesBoxTransforms: true });
+export default withFuselageProvider(ModalHeader);

@@ -1,8 +1,8 @@
 import { styled, View, type GetProps } from '@tamagui/web';
 
 import { boxText } from './messageStyles';
+import { cx } from '../../helpers/composeClassNames';
 import { toCSSValue } from '../../helpers/toCSSValue';
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { spacing } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
@@ -29,12 +29,13 @@ export type MessageBlockProps = ElementProps<HTMLDivElement> & {
 };
 
 function MessageBlock({ className: _className, fixedWidth, ...props }: MessageBlockProps) {
-	const frameProps = useTamaguiBoxProps(
-		props as typeof props & { className?: string },
-		['rcx-message-block', fixedWidth && 'rcx-message-block--width-fixed'].filter(Boolean).join(' '),
+	return (
+		<MessageBlockFrame
+			fixedWidth={fixedWidth}
+			{...(props as GetProps<typeof MessageBlockFrame>)}
+			className={cx('rcx-message-block', fixedWidth && 'rcx-message-block--width-fixed')}
+		/>
 	);
-
-	return <MessageBlockFrame fixedWidth={fixedWidth} {...(frameProps as GetProps<typeof MessageBlockFrame>)} />;
 }
 
-export default withFuselageProvider(MessageBlock, { takesBoxTransforms: true });
+export default withFuselageProvider(MessageBlock);

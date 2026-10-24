@@ -2,10 +2,10 @@ import { css, keyframes } from '@rocket.chat/css-in-js';
 import { styled, Text, View, type GetProps } from '@tamagui/web';
 import { type ReactNode, type AllHTMLAttributes, useId } from 'react';
 
-import { statusColors, surfaceColors, textIconColors } from '../../Theme';
+import { shadowColors, statusColors, surfaceColors, textIconColors } from '../../Theme';
+import { cx } from '../../helpers/composeClassNames';
 import { toCSSValue } from '../../helpers/toCSSValue';
 import { useStyle } from '../../hooks/useStyle';
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { borderRadius, fontFamily, fontScale, size, spacing } from '../../styleTokens';
 import { IconButton } from '../Button';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
@@ -32,7 +32,8 @@ const ToastBarFrame = styled(View, {
 	minHeight: 'auto',
 	maxWidth: size('x416'),
 	color: toCSSValue('--rcx-toastbar-color', textIconColors['font-default']),
-	borderRadius: toastBarBorderRadius,
+	borderRadius: borderRadius('medium'),
+	boxShadow: `0px 0px 2px 0px ${String(shadowColors['shadow-elevation-2x'])}, 0px 0px 12px 0px ${String(shadowColors['shadow-elevation-2y'])}`,
 	backgroundColor: toCSSValue('--rcx-toastbar-background-color', surfaceColors['surface-tint']),
 	fontFamily: fontFamily('sans'),
 	fontVariantNumeric: 'tabular-nums',
@@ -152,11 +153,8 @@ function ToastBar({
 
 	const role = variant === 'error' ? 'alert' : 'status';
 
-	const frameProps = useTamaguiBoxProps(
-		{ elevation: '2nb', borderRadius: 'medium', ...props, className: [className, toastBarAnimation] },
-		`rcx-toastbar rcx-toastbar--${variant}`,
-	);
-	const progressFillProps = useTamaguiBoxProps({ className: [progressBarAnimation] });
+	const toastBarAnimationClassName = useStyle(toastBarAnimation);
+	const progressBarAnimationClassName = useStyle(progressBarAnimation);
 	const iconColorClassName = useStyle(
 		variant !== 'info'
 			? css`
@@ -166,7 +164,10 @@ function ToastBar({
 	);
 
 	return (
-		<ToastBarFrame {...(frameProps as GetProps<typeof ToastBarFrame>)}>
+		<ToastBarFrame
+			{...(props as GetProps<typeof ToastBarFrame>)}
+			className={cx('rcx-toastbar', `rcx-toastbar--${variant}`, toastBarAnimationClassName, className)}
+		>
 			<ToastBarStatusLine aria-hidden variant={variant} />
 			<ToastBarInner className='rcx-toastbar_inner'>
 				<Icon className={[`rcx-toastbar_icon--${variant}`, iconColorClassName].filter(Boolean).join(' ')} size='x20' name={iconName} />
@@ -180,10 +181,10 @@ function ToastBar({
 				)}
 			</ToastBarInner>
 			<ToastBarProgressBar className='rcx-toastbar_progressbar'>
-				<ToastBarProgressFill aria-hidden {...progressFillProps} />
+				<ToastBarProgressFill aria-hidden className={progressBarAnimationClassName} />
 			</ToastBarProgressBar>
 		</ToastBarFrame>
 	);
 }
 
-export default withFuselageProvider(ToastBar, { takesBoxTransforms: true });
+export default withFuselageProvider(ToastBar);

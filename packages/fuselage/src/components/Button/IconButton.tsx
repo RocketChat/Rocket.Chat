@@ -4,9 +4,9 @@ import type { AllHTMLAttributes, ReactElement, ReactNode, RefAttributes } from '
 import { isValidElement, useContext, useMemo } from 'react';
 
 import { ButtonBadge, ButtonFrame, getButtonStates, renderButtonElement } from './ButtonFrame';
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import { cx } from '../../helpers/composeClassNames';
+import { resolveFontColor } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
-import { BoxTransforms, useBoxTransform } from '../Box/BoxTransforms';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 import { Icon } from '../Icon';
 import { ButtonSegmentContext } from './ButtonSegmentContext';
@@ -61,19 +61,6 @@ const kindByVariant: Record<string, ButtonKind> = {
 	'secondary-danger': 'danger',
 };
 
-const getVariantClass = (variant: string) => {
-	if (variant) {
-		const variantClass = [`rcx-button--icon-${[variant].filter(Boolean).join('-')}`];
-		return variantClass;
-	}
-	return [''];
-};
-
-const getPressedClass = (variant: string) => {
-	const variantClass = [`rcx-button--icon-${[variant].filter(Boolean).join('-')}-pressed`];
-	return variantClass;
-};
-
 function IconButton({
 	icon,
 	badge,
@@ -95,6 +82,7 @@ function IconButton({
 	external,
 	color,
 	disabled,
+	className,
 	...props
 }: IconButtonProps) {
 	const variant = useMemo(
@@ -113,53 +101,39 @@ function IconButton({
 		[danger, info, primary, secondary, success, warning],
 	);
 
-	const kindAndVariantProps = useMemo(() => {
-		const variantProp = {} as any;
-		if (variant) {
-			variantProp[`${getVariantClass(variant)}`] = true;
-		}
-		if (pressed) {
-			variantProp[`${getPressedClass(variant)}`] = true;
-		}
-		return variantProp;
-	}, [variant, pressed]);
-
 	const size = useMemo(
 		() => (mini && 'mini') || (tiny && 'tiny') || (small && 'small') || (medium && 'medium') || (large && 'large') || 'large',
 		[medium, mini, small, tiny, large],
 	);
 
-	const getSizeClass = () => ({ [`rcx-button--${size}-square`]: true });
-
 	const getIconSize = () => (large && 'x28') || (medium && 'x24') || (small && 'x20') || (tiny && 'x16') || (mini && 'x12') || 'x28';
 
-	const transform = useBoxTransform();
 	const segment = useContext(ButtonSegmentContext);
 
-	const frameProps = useTamaguiBoxProps(
-		(transform ?? ((props) => props))({
-			...(is === 'a' ? { rel: external ? 'noopener noreferrer' : undefined, target: external ? '_blank' : undefined } : { type: 'button' }),
-			'rcx-button': true,
-			'rcx-button--icon': true,
-			'rcx-button--square': true,
-			...kindAndVariantProps,
-			...getSizeClass(),
-			'rcx-button--icon-pressed': pressed,
-			'rcx-button--with-badge': Boolean(badge),
-			color,
-			...props,
-		}),
-	);
-
-	const button = (
+	return (
 		<ButtonFrame
 			square
 			icon
 			squareSize={size}
 			withBadge={Boolean(badge)}
 			render={renderButtonElement(is, disabled)}
-			{...(frameProps as GetProps<typeof ButtonFrame>)}
-			{...getButtonStates(frameProps.className, kindByVariant[variant] ?? 'icon', disabled, segment, pressed)}
+			{...(is === 'a'
+				? { rel: external ? 'noopener noreferrer' : undefined, target: external ? '_blank' : undefined }
+				: { type: 'button' })}
+			{...(props as GetProps<typeof ButtonFrame>)}
+			className={cx(
+				'rcx-button',
+				'rcx-button--icon',
+				'rcx-button--square',
+				variant && `rcx-button--icon-${variant}`,
+				pressed && `rcx-button--icon-${variant}-pressed`,
+				`rcx-button--${size}-square`,
+				pressed && 'rcx-button--icon-pressed',
+				Boolean(badge) && 'rcx-button--with-badge',
+				className,
+			)}
+			{...getButtonStates(className, kindByVariant[variant] ?? 'icon', disabled, segment, pressed)}
+			{...(color && { color: resolveFontColor(color) })}
 		>
 			{isValidElement<any>(icon) ? icon : <Icon name={icon} size={getIconSize()} />}
 			{Boolean(badge) && (
@@ -170,8 +144,6 @@ function IconButton({
 			{children}
 		</ButtonFrame>
 	);
-
-	return transform ? <BoxTransforms.Provider value={null}>{button}</BoxTransforms.Provider> : button;
 }
 
-export default withFuselageProvider(IconButton);
+export default withFuselageProvider(IconButton, { takesBoxTransforms: true });
