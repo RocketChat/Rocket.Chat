@@ -41,7 +41,7 @@ const UsersTableRow = ({
 									{username}
 								</Box>
 							</Box>
-							<MarkdownText variant='inline' fontScale='p2' color='hint' content={bio} />
+							<MarkdownText variant='inlineWithoutBreaks' fontScale='p2' color='hint' withTruncatedText content={bio} />
 						</Box>
 					</Box>
 				</FlexContainer>
