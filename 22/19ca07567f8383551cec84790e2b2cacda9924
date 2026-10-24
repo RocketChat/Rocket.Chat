@@ -1,0 +1,21 @@
+apps/meteor/client/lib/chats/ChatAPI.ts
+  s_478a7742cf0448::t_b4509182574199 123
+apps/meteor/client/lib/chats/uploads.ts
+  s_478a7742cf0448::t_b4509182574199 50-53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "2219ca07567f8383551cec84790e2b2cacda9924",
+  "prompts": {},
+  "sessions": {
+    "s_478a7742cf0448": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "78511215-04eb-4d9d-beb9-8d0ec0460bb1",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
