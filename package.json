@@ -214,7 +214,7 @@
 		"@rocket.chat/eslint-config": "workspace:~",
 		"@types/chart.js": "^2.9.41",
 		"@types/js-yaml": "^4.0.9",
-		"@types/node": "~24.13.6",
+		"@types/node": "~26.6.5",
 		"eslint": "~10.12.0",
 		"eslint-plugin-you-dont-need-lodash-underscore": "~6.14.0",
 		"globals": "~17.7.0",
