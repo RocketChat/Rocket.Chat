@@ -1,17 +1,22 @@
 import './tracing';
 import './models';
 
+import { initSettingsStorage, settings } from './settings';
+
 /**
- * ./settings uses top level await, in theory the settings creation
- * and the startup should be done in parallel
+ * Initialize settings store from MongoDB into CachedSettings memory
  */
-import './settings/definitions';
+await initSettingsStorage();
+
+/**
+ * Load settings schema definitions once storage cache is initialized
+ */
+await import('./settings/definitions');
 
 import { startRestAPI } from './api/api';
 import { configureServer } from './configuration';
 import { SystemLogger } from './lib/logger/system';
 import { registerServices } from './services/startup';
-import { settings } from './settings';
 import { startup } from './startup';
 import { startCronJobs } from './startup/cron';
 import { startupApp } from '../ee/server';

@@ -73,7 +73,7 @@ import { getUserPreference } from '../../lib/utils/lib/getUserPreference';
 import { videoConfProviders } from '../../lib/videoConfProviders';
 import { videoConfTypes } from '../../lib/videoConfTypes';
 import { addUsersToRoomMethod } from '../../meteor-methods/rooms/addUsersToRoom';
-import { settings } from '../../settings';
+import { settings } from '../../settings/cached';
 
 const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 

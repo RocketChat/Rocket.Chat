@@ -15,7 +15,7 @@ import { slashCommands } from '../../lib/utils/slashCommand';
 import { addUsersToRoomMethod, assertCanAddUsersToRoom } from '../../meteor-methods/rooms/addUsersToRoom';
 import { createChannelMethod } from '../../meteor-methods/rooms/createChannel';
 import { createPrivateGroupMethod } from '../../meteor-methods/rooms/createPrivateGroup';
-import { settings } from '../../settings';
+import { settings } from '../../settings/cached';
 
 type InvitedMember = Required<AbacEvaluableUser>;
 

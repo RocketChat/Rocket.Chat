@@ -32,6 +32,7 @@ export function loadSlashCommand(path: string, dependencies: Dependencies = {}) 
 			'@rocket.chat/logger': { Logger: sinon.stub().returns(logger) },
 			'../../lib/i18n': { i18n: { t: translate, exists: translationExists } },
 			'../../settings': { settings },
+			'../../settings/cached': { settings },
 			...dependencies,
 			'@rocket.chat/core-services': { ClientSafeError, isClientSafeError, ...coreServices, api: { ...coreServices?.api, broadcast } },
 			'../../lib/utils/slashCommand': {
