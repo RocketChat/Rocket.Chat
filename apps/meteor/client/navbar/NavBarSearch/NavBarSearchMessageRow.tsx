@@ -1,5 +1,6 @@
 import { Box, Icon, SidebarItemIcon } from '@rocket.chat/fuselage';
 import type { AISearchResult } from '@rocket.chat/rest-typings';
+import { useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -33,7 +34,12 @@ const NavBarSearchMessageRow = ({ item, onClick }: NavBarSearchMessageRowProps):
 	const { t } = useTranslation();
 	const { room } = item;
 	const title = item.text.trim() || t('Intelligent_Search_Result');
-	const roomLabel = room?.fname || room?.name;
+	const useRealName = useSetting('UI_Use_Real_Name');
+	let roomLabel = room?.fname || room?.name;
+
+	if (room?.t === 'd' && !useRealName) {
+		roomLabel = room.name || room.fname;
+	}
 	const href = getHref(item);
 
 	return (
