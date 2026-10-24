@@ -13,6 +13,7 @@ export type RoomToolboxActionConfig = {
 	id: string;
 	icon: IconName;
 	title: TranslationKey;
+	count?: number;
 	anonymous?: boolean;
 	tooltip?: string;
 	disabled?: boolean;

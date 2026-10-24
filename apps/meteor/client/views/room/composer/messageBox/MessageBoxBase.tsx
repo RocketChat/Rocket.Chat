@@ -1,5 +1,5 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
+import { Box, SplitButton } from '@rocket.chat/fuselage';
 import {
 	MessageComposerAction,
 	MessageComposerToolbarActions,
@@ -16,6 +16,7 @@ import MessageBoxActionsToolbar from './MessageBoxActionsToolbar';
 import MessageBoxFormattingToolbar from './MessageBoxFormattingToolbar';
 import MessageBoxHint from './MessageBoxHint';
 import MessageBoxReplies from './MessageBoxReplies';
+import ScheduleMessageMenu from './ScheduleMessage/ScheduleMessageMenu';
 import type { ComposerAPI } from '../../../../lib/chats/ChatAPI';
 import type { FormattingButton } from '../../../../lib/messageBoxFormatting';
 import AudioMessageRecorder from '../../../composer/AudioMessageRecorder';
@@ -28,6 +29,7 @@ import type { useComposerBoxPopup } from '../hooks/useComposerBoxPopup';
 type MessageBoxBaseProps = {
 	rid: IRoom['_id'];
 	tmid?: IMessage['_id'];
+	tshow?: IMessage['tshow'];
 	input: ReactNode;
 	hint?: ReactNode;
 	files?: ReactNode;
@@ -36,6 +38,7 @@ type MessageBoxBaseProps = {
 	popup: ReturnType<typeof useComposerBoxPopup>;
 	shouldPopupPreview?: boolean;
 	isEditing: boolean;
+	isEditingScheduled?: boolean;
 	isRecording: boolean;
 	isRecordingAudio: boolean;
 	isRecordingVideo: boolean;
@@ -59,6 +62,7 @@ type MessageBoxBaseProps = {
 const MessageBoxBase = ({
 	rid,
 	tmid,
+	tshow,
 	input,
 	hint,
 	files,
@@ -67,6 +71,7 @@ const MessageBoxBase = ({
 	popup,
 	shouldPopupPreview,
 	isEditing,
+	isEditingScheduled = false,
 	isRecording,
 	isRecordingAudio,
 	isRecordingVideo,
@@ -129,12 +134,13 @@ const MessageBoxBase = ({
 			)}
 			<MessageBoxHint
 				isEditing={isEditing}
+				isEditingScheduled={isEditingScheduled}
 				e2eEnabled={e2eEnabled}
 				unencryptedMessagesAllowed={unencryptedMessagesAllowed}
 				isMobile={isMobile}
 			/>
 			{isRecordingVideo && <VideoMessageRecorder reference={messageComposerRef} rid={rid} tmid={tmid} />}
-			<MessageComposer ref={messageComposerRef} variant={isEditing ? 'editing' : undefined}>
+			<MessageComposer ref={messageComposerRef} variant={isEditing || isEditingScheduled ? 'editing' : undefined}>
 				{isRecordingAudio && <AudioMessageRecorder rid={rid} isMicrophoneDenied={isMicrophoneDenied} />}
 				{input}
 				{files}
@@ -168,15 +174,24 @@ const MessageBoxBase = ({
 						)}
 						{canSend && (
 							<>
-								{isEditing && <MessageComposerButton onClick={closeEditing}>{t('Cancel')}</MessageComposerButton>}
-								<MessageComposerAction
-									aria-label={t('Send')}
-									icon='send'
-									disabled={!sendEnabled}
-									onClick={onSend}
-									secondary={sendActive}
-									info={sendActive}
-								/>
+								{(isEditing || isEditingScheduled) && <MessageComposerButton onClick={closeEditing}>{t('Cancel')}</MessageComposerButton>}
+								<SplitButton primary={sendActive} aria-label={t('Send')}>
+									<MessageComposerAction
+										aria-label={t('Send')}
+										icon='send'
+										disabled={!sendEnabled}
+										onClick={onSend}
+										secondary={sendActive}
+										info={sendActive}
+									/>
+									<ScheduleMessageMenu
+										rid={rid}
+										tmid={tmid}
+										tshow={tshow}
+										composer={composer}
+										disabled={!sendEnabled || isEditing || isEditingScheduled}
+									/>
+								</SplitButton>
 							</>
 						)}
 					</MessageComposerToolbarSubmit>

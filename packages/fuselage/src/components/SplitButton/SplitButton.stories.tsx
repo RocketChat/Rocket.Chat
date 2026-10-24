@@ -97,6 +97,23 @@ export const Danger: Story = {
 	),
 };
 
+export const Disabled: Story = {
+	decorators: [withLightSurface],
+	render: () => (
+		<SplitButton aria-label='Send'>
+			<IconButton secondary small disabled icon='send' aria-label='Send' />
+			<Menu
+				icon='chevron-up'
+				button={<SplitButtonTrigger secondary small disabled icon='chevron-up' />}
+				aria-label='Send options'
+				placement='top-end'
+			>
+				<MenuItem key='later'>Send later</MenuItem>
+			</Menu>
+		</SplitButton>
+	),
+};
+
 export const Variants: Story = {
 	decorators: [withLightSurface],
 	render: () => (

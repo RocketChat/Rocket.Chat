@@ -5,11 +5,17 @@ import { defaultFeaturesPreview, usePreferenceFeaturePreviewList } from '@rocket
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
+import { useCanScheduleMessages } from '../../../../hooks/useCanScheduleMessages';
+import { useScheduledMessages } from '../../../../hooks/useScheduledMessages';
+
 export const useAccountItems = (): GenericMenuItemProps[] => {
 	const { t } = useTranslation();
 	const router = useRouter();
 
 	const { unseenFeatures, featurePreviewEnabled } = usePreferenceFeaturePreviewList();
+	const canSchedule = useCanScheduleMessages();
+	const { data: scheduledMessages = [] } = useScheduledMessages(undefined, { enabled: canSchedule });
+	const failedCount = scheduledMessages.filter(({ status }) => status === 'failed').length;
 
 	const handleMyAccount = useStableCallback(() => {
 		router.navigate('/account');
@@ -22,6 +28,9 @@ export const useAccountItems = (): GenericMenuItemProps[] => {
 	});
 	const handleAccessibility = useStableCallback(() => {
 		router.navigate('/account/accessibility-and-appearance');
+	});
+	const handleScheduledMessages = useStableCallback(() => {
+		router.navigate('/scheduled-messages');
 	});
 
 	const featurePreviewItem = {
@@ -51,6 +60,23 @@ export const useAccountItems = (): GenericMenuItemProps[] => {
 			content: t('Preferences'),
 			onClick: handlePreferences,
 		},
+		...(canSchedule
+			? [
+					{
+						id: 'scheduled-messages',
+						icon: 'clock' as const,
+						content: t('Scheduled_messages'),
+						onClick: handleScheduledMessages,
+						...(failedCount > 0 && {
+							addon: (
+								<Badge variant='danger' aria-label={t('Scheduled_messages_failed', { count: failedCount })}>
+									{failedCount}
+								</Badge>
+							),
+						}),
+					},
+				]
+			: []),
 		{
 			id: 'accessibility',
 			icon: 'person-arms-spread',

@@ -23,6 +23,7 @@ import { OmnichannelIntegrationService } from './omnichannel-integrations/servic
 import { PushService } from './push/service';
 import { RoomService } from './room/service';
 import { SAUMonitorService } from './sauMonitor/service';
+import { ScheduledMessageService } from './scheduled-messages/service';
 import { SettingsService } from './settings/service';
 import { StatusVisibilityService } from './statusVisibility/service';
 import { TeamService } from './team/service';
@@ -41,6 +42,7 @@ export const registerServices = async (): Promise<void> => {
 	api.registerService(new AuthorizationLivechat());
 	api.registerService(new BannerService());
 	api.registerService(new CalendarService());
+	api.registerService(new ScheduledMessageService());
 	api.registerService(new MediaService());
 	api.registerService(new MeteorService());
 	api.registerService(new NPSService());
