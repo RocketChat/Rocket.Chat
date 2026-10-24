@@ -52,11 +52,14 @@ const Menu = <T extends object>({
 	const ref = useRef<Element>(null);
 	const { menuTriggerProps, menuProps } = useMenuTrigger<T>({}, state, ref);
 
+	const resolvedTitle = title ?? button?.props?.title;
+	const ariaLabel = props['aria-label'] || button?.props?.['aria-label'] || title;
+
 	const { buttonProps } = useButton(
 		{
 			...menuTriggerProps,
-			'aria-label': props['aria-label'] || title,
-			...{ preventFocusOnPress: true },
+			...(ariaLabel && { 'aria-label': ariaLabel }),
+			preventFocusOnPress: true,
 		},
 		ref,
 	);
@@ -81,7 +84,7 @@ const Menu = <T extends object>({
 					ref,
 					icon,
 					className,
-					title,
+					...(resolvedTitle !== undefined && { title: resolvedTitle }),
 					pressed: pressed || state.isOpen,
 				})
 			) : (

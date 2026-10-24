@@ -6,6 +6,8 @@ import { axe } from 'jest-axe';
 import * as stories from './Menu.stories';
 import { withResizeObserverMock } from '../../../mocks/withResizeObserverMock';
 import { render } from '../../testing';
+import { IconButton } from '../Button';
+import { Menu, MenuItem } from '.';
 
 withResizeObserverMock();
 
@@ -342,6 +344,95 @@ describe('[Menu Component]', () => {
 
 			const button = screen.getByRole('button');
 			expect(button).toHaveClass('rcx-button--mini-square');
+		});
+	});
+
+	describe('Custom trigger', () => {
+		it('should retain custom trigger aria-label when the menu has no label', () => {
+			render(
+				<Menu button={<IconButton icon='kebab' aria-label='Open settings' />}>
+					<MenuItem key='1'>Item 1</MenuItem>
+				</Menu>,
+			);
+
+			const button = screen.getByRole('button', { name: 'Open settings' });
+			expect(button).toBeInTheDocument();
+			expect(button).toHaveAttribute('aria-label', 'Open settings');
+		});
+
+		it('should retain custom trigger title when the menu has no title', () => {
+			render(
+				<Menu button={<IconButton icon='kebab' title='Open settings' />}>
+					<MenuItem key='1'>Item 1</MenuItem>
+				</Menu>,
+			);
+
+			const button = screen.getByRole('button', { name: 'Open settings' });
+			expect(button).toBeInTheDocument();
+			expect(button).toHaveAttribute('title', 'Open settings');
+		});
+
+		it('should prefer menu aria-label over custom trigger aria-label', () => {
+			render(
+				<Menu aria-label='Menu label' button={<IconButton icon='kebab' aria-label='Trigger label' />}>
+					<MenuItem key='1'>Item 1</MenuItem>
+				</Menu>,
+			);
+
+			const button = screen.getByRole('button', { name: 'Menu label' });
+			expect(button).toBeInTheDocument();
+			expect(button).toHaveAttribute('aria-label', 'Menu label');
+		});
+
+		it('should prefer menu title over custom trigger title', () => {
+			render(
+				<Menu title='Menu title' button={<IconButton icon='kebab' title='Trigger title' />}>
+					<MenuItem key='1'>Item 1</MenuItem>
+				</Menu>,
+			);
+
+			const button = screen.getByRole('button', { name: 'Menu title' });
+			expect(button).toBeInTheDocument();
+			expect(button).toHaveAttribute('title', 'Menu title');
+		});
+
+		it('should retain custom trigger aria-label when menu only supplies title', () => {
+			render(
+				<Menu title='Menu title' button={<IconButton icon='kebab' aria-label='Open settings' />}>
+					<MenuItem key='1'>Item 1</MenuItem>
+				</Menu>,
+			);
+
+			const button = screen.getByRole('button', { name: 'Open settings' });
+			expect(button).toBeInTheDocument();
+			expect(button).toHaveAttribute('aria-label', 'Open settings');
+			expect(button).toHaveAttribute('title', 'Menu title');
+		});
+
+		it('should retain custom trigger title when menu only supplies aria-label', () => {
+			render(
+				<Menu aria-label='Menu label' button={<IconButton icon='kebab' title='Open settings' />}>
+					<MenuItem key='1'>Item 1</MenuItem>
+				</Menu>,
+			);
+
+			const button = screen.getByRole('button', { name: 'Menu label' });
+			expect(button).toBeInTheDocument();
+			expect(button).toHaveAttribute('aria-label', 'Menu label');
+			expect(button).toHaveAttribute('title', 'Open settings');
+		});
+
+		it('should open menu when custom trigger is clicked', async () => {
+			render(
+				<Menu button={<IconButton icon='kebab' aria-label='Open settings' />}>
+					<MenuItem key='1'>Profile</MenuItem>
+				</Menu>,
+			);
+
+			const button = screen.getByRole('button', { name: 'Open settings' });
+			await userEvent.click(button);
+
+			expect(await screen.findByRole('menuitem', { name: 'Profile' })).toBeInTheDocument();
 		});
 	});
 });
