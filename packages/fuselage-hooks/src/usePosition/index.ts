@@ -223,8 +223,14 @@ export function usePosition<TTarget extends Element, TAnchor extends Element>(
 			return;
 		}
 
-		const targetRect = measureTarget(target);
 		const anchorRect = anchor.getBoundingClientRect();
+
+		// An anchor that left the page, or is no longer rendered, has no place to follow: the target stays where it was.
+		if (!anchor.isConnected || (anchorRect.width === 0 && anchorRect.height === 0)) {
+			return;
+		}
+
+		const targetRect = measureTarget(target);
 
 		const position = getPositionStyle({
 			placement,
