@@ -126,6 +126,9 @@ const ErrorResponseSchema = {
 
 const isErrorResponseProps = ajv.compile(ErrorResponseSchema);
 
+const isTooManyConcurrentTransactionsError = (error: unknown): error is Error =>
+	error instanceof Error && error.message === 'too-many-concurrent-transactions';
+
 const GetStateIdsParamsSchema = {
 	type: 'object',
 	properties: {
@@ -286,9 +289,8 @@ export const getMatrixTransactionsRoutes = () => {
 
 					try {
 						await federationSDK.processIncomingTransaction(body);
-					} catch (error: any) {
-						// TODO custom error types?
-						if (error.message === 'too-many-concurrent-transactions') {
+					} catch (error) {
+						if (isTooManyConcurrentTransactionsError(error)) {
 							return {
 								statusCode: 429,
 								body: {
