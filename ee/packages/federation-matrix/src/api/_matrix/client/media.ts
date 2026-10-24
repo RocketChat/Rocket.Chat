@@ -4,8 +4,8 @@ import { Upload } from '@rocket.chat/core-services';
 import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
 
 import type { ClientRouter } from './_shared';
-import { internalError, isMatrixErrorProps, license, tags } from './_shared';
-import { MatrixMediaService } from '../../../services/MatrixMediaService';
+import { internalError, isMatrixErrorProps, license, remoteMediaFetchFailed, tags } from './_shared';
+import { MatrixMediaService, RemoteMediaFetchError } from '../../../services/MatrixMediaService';
 import { isAppServiceAuthenticatedMiddleware } from '../../middlewares/isAppServiceAuthenticated';
 
 const MediaParamsSchema = {
@@ -100,6 +100,7 @@ export const addClientMediaRoutes = (router: ClientRouter) => {
 					401: isMatrixErrorProps,
 					404: isMatrixErrorProps,
 					500: isMatrixErrorProps,
+					502: isMatrixErrorProps,
 				},
 				tags,
 				license,
@@ -110,7 +111,7 @@ export const addClientMediaRoutes = (router: ClientRouter) => {
 					const serverName = c.req.param('serverName') as string;
 					const mediaId = c.req.param('mediaId') as string;
 
-					const file = await MatrixMediaService.getLocalFileForMatrixNode(mediaId, serverName);
+					const file = await MatrixMediaService.getLocalFileForMatrixNode(mediaId, serverName, { fetchRemote: true });
 					if (!file) {
 						return {
 							statusCode: 404,
@@ -133,6 +134,9 @@ export const addClientMediaRoutes = (router: ClientRouter) => {
 						body: buffer,
 					};
 				} catch (error) {
+					if (error instanceof RemoteMediaFetchError) {
+						return remoteMediaFetchFailed(error);
+					}
 					return internalError('Failed to download media', error);
 				}
 			},
@@ -150,6 +154,7 @@ export const addClientMediaRoutes = (router: ClientRouter) => {
 					401: isMatrixErrorProps,
 					404: isMatrixErrorProps,
 					500: isMatrixErrorProps,
+					502: isMatrixErrorProps,
 				},
 				tags,
 				license,
@@ -176,7 +181,7 @@ export const addClientMediaRoutes = (router: ClientRouter) => {
 						};
 					}
 
-					const file = await MatrixMediaService.getLocalFileForMatrixNode(mediaId, serverName);
+					const file = await MatrixMediaService.getLocalFileForMatrixNode(mediaId, serverName, { fetchRemote: true });
 					if (!file) {
 						return {
 							statusCode: 404,
@@ -209,6 +214,9 @@ export const addClientMediaRoutes = (router: ClientRouter) => {
 						body: Readable.toWeb(stream),
 					};
 				} catch (error) {
+					if (error instanceof RemoteMediaFetchError) {
+						return remoteMediaFetchFailed(error);
+					}
 					return internalError('Failed to generate media thumbnail', error);
 				}
 			},
