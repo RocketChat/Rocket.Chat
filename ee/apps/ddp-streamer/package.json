@@ -44,7 +44,7 @@
 		"prometheus-gc-stats": "^1.1.0",
 		"sharp": "^0.35.5",
 		"underscore": "^1.13.8",
-		"uuid": "^11.1.1",
+		"uuid": "^14.0.0",
 		"ws": "~8.21.3"
 	},
 	"devDependencies": {
