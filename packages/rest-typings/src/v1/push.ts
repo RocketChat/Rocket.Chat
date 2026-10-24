@@ -1,4 +1,4 @@
-import type { IMessage, IPushNotificationConfig, IPushTokenTypes } from '@rocket.chat/core-typings';
+import type { IMessage, IPushNotificationConfig, IPushToken, IPushTokenTypes } from '@rocket.chat/core-typings';
 
 import { ajv, ajvQuery } from './Ajv';
 
@@ -65,6 +65,14 @@ export type PushEndpoints = {
 		GET: (params?: never) => {
 			pushGatewayEnabled: boolean;
 			defaultPushGateway: boolean;
+		};
+	};
+	'/v1/push.token': {
+		POST: (payload: PushTokenProps) => {
+			result: IPushToken;
+		};
+		DELETE: (payload: { token: string }) => {
+			success: boolean;
 		};
 	};
 };
