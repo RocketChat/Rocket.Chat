@@ -1,11 +1,17 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { GenericModal, imperativeModal } from '@rocket.chat/ui-client';
+import { format } from 'date-fns/format';
 
 import { t } from '../../../../lib/i18n';
 import { settings } from '../../settings';
 import { dispatchToastMessage } from '../../toast';
 import { getUser } from '../../user';
 import type { ChatAPI } from '../ChatAPI';
+
+export const formatTooLongMessageFileName = (username?: string, date: Date = new Date()): string => {
+	const cleanUsername = username?.replace(/[/\\?%*:|"<>]/g, '_').trim() || 'anonymous';
+	return `${cleanUsername} - ${format(date, 'yyyy-MM-dd HH-mm-ss')}.txt`;
+};
 
 export const processTooLongMessage = async (chat: ChatAPI, { msg }: Pick<IMessage, 'msg'>): Promise<boolean> => {
 	const maxAllowedSize = settings.peek('Message_MaxAllowedSize');
@@ -26,7 +32,7 @@ export const processTooLongMessage = async (chat: ChatAPI, { msg }: Pick<IMessag
 		const onConfirm = async (): Promise<void> => {
 			const contentType = 'text/plain';
 			const messageBlob = new Blob([msg], { type: contentType });
-			const fileName = `${getUser()?.username ?? 'anonymous'} - ${new Date()}.txt`; // TODO: proper naming and formatting
+			const fileName = formatTooLongMessageFileName(getUser()?.username);
 			const file = new File([messageBlob], fileName, {
 				type: contentType,
 				lastModified: Date.now(),
