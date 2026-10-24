@@ -21,7 +21,7 @@ import ToneSelector from './ToneSelector';
 import ToneSelectorWrapper from './ToneSelector/ToneSelectorWrapper';
 import { usePreviewEmoji, useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
 import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
-import { emoji, getCategoriesList, getEmojisBySearchTerm } from '../../../lib/emoji';
+import { emoji, getCategoriesList, getCurrentCategory, getEmojisBySearchTerm } from '../../../lib/emoji';
 import type { EmojiItem } from '../../../lib/emoji';
 import { useIsVisible } from '../../room/hooks/useIsVisible';
 
@@ -160,12 +160,8 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 		setCustomItemsLimit(customItemsLimit + 90);
 	};
 
-	const handleScroll = (range: ListRange) => {
-		const { startIndex } = range;
-
-		const category = categoriesIndexes.find(
-			(category, index) => category.index <= startIndex + 1 && categoriesIndexes[index + 1]?.index >= startIndex,
-		);
+	const handleScroll = ({ startIndex, endIndex }: ListRange) => {
+		const category = getCurrentCategory(categoriesIndexes, startIndex, endIndex);
 
 		if (!category) {
 			return;
