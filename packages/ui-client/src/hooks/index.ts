@@ -12,6 +12,8 @@ export * from './useFeaturePreview';
 export * from './useFeaturePreviewEnableQuery';
 export * from './useFeaturePreviewList';
 export * from './useGoToDirectMessage';
+export * from './useHasLicenseModule';
+export * from './useIsEnterprise';
 export * from './useLicense';
 export * from './usePreferenceFeaturePreviewList';
 export * from './useResizeInlineBreakpoint';
