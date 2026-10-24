@@ -78,7 +78,6 @@ const ReactionMessageAction = ({ message, room, subscription, onChangeMenuVisibi
 				title={t('Add_Reaction')}
 				onClick={(event) => {
 					event.stopPropagation();
-					onChangeMenuVisibility?.(true);
 					chat?.emojiPicker.open(
 						event.currentTarget,
 						(emoji) => {
@@ -86,6 +85,7 @@ const ReactionMessageAction = ({ message, room, subscription, onChangeMenuVisibi
 						},
 						() => onChangeMenuVisibility?.(false),
 					);
+					onChangeMenuVisibility?.(true);
 				}}
 			/>
 		</>
