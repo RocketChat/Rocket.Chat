@@ -22,6 +22,14 @@ Only exists on Windows, so other platforms skip it in the fallback list. */
 	line-height: 1.2;
 	vertical-align: middle;
 
+	/* Windows emoji fonts render country flag sequences as their two regional letters. */
+	&--flag {
+		display: inline-block;
+		width: 1em;
+		height: 1em;
+		white-space: nowrap;
+	}
+
 	/* custom emojis */
 	&--custom {
 		height: 1.375rem;
@@ -37,6 +45,12 @@ Only exists on Windows, so other platforms skip it in the fallback list. */
 		background-repeat: no-repeat;
 		background-size: contain;
 	}
+}
+
+/* stylelint-disable-next-line selector-class-pattern */
+html.emoji-flag-sprites-loaded .emoji--flag {
+	overflow: hidden;
+	text-indent: 100%;
 }
 
 /* emoji picker */
@@ -63,6 +77,14 @@ Only exists on Windows, so other platforms skip it in the fallback list. */
 			height: auto;
 			line-height: 1.2;
 		}
+
+		/* stylelint-disable-next-line selector-class-pattern */
+		&.emoji--flag {
+			display: inline-block;
+			width: 1em;
+			height: 1em;
+			line-height: 1em;
+		}
 	}
 }
 
@@ -76,6 +98,13 @@ Only exists on Windows, so other platforms skip it in the fallback list. */
 			height: auto;
 			font-size: 1rem;
 			line-height: 1.2;
+		}
+
+		/* stylelint-disable-next-line selector-class-pattern */
+		&.emoji--flag {
+			width: 1em;
+			height: 1em;
+			line-height: 1em;
 		}
 	}
 }

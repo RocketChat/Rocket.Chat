@@ -5,7 +5,16 @@ import { getEmojiConfig } from '../../../../lib/emoji-native/getEmojiConfig';
 import { legacyEmojioneMap } from '../../../../lib/emoji-native/legacyEmojioneMap';
 import { emoji } from '../../../lib/emoji';
 
-const config = getEmojiConfig(emoji);
+const platform = navigator.userAgentData?.platform ?? navigator.platform;
+const useFlagSprites = /^win/i.test(platform);
+
+if (useFlagSprites) {
+	const flagSprite = new Image();
+	flagSprite.onload = () => document.documentElement.classList.add('emoji-flag-sprites-loaded');
+	flagSprite.src = '/packages/rocketchat/emoji/flags-sprites.png';
+}
+
+const config = getEmojiConfig(emoji, { useFlagSprites });
 
 export const useNativeEmoji = () => {
 	const convertAsciiToEmoji = useUserPreference<boolean>('convertAsciiEmoji', true);
