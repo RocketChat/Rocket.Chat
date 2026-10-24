@@ -12,6 +12,7 @@ const variants: BannerVariant[] = ['neutral', 'info', 'success', 'warning', 'dan
 export type BannerProps = {
 	actionable?: boolean;
 	closeable?: boolean;
+	closeButtonLabel?: string;
 	icon?: ReactNode;
 	inline?: boolean;
 	link?: string;
@@ -28,6 +29,7 @@ const Banner = ({
 	children,
 	className,
 	closeable,
+	closeButtonLabel = 'Close',
 	icon,
 	inline = false,
 	link,
@@ -94,7 +96,7 @@ const Banner = ({
 			</div>
 			{closeable && (
 				<div className={cx('rcx-banner__close-button')({ inline })}>
-					<IconButton small onClick={handleCloseButtonClick} icon='cross' />
+					<IconButton small onClick={handleCloseButtonClick} icon='cross' aria-label={closeButtonLabel} />
 				</div>
 			)}
 		</div>
