@@ -221,9 +221,36 @@ describe('Password Policy', () => {
 		const policy = passwordPolicy.getPasswordPolicy();
 
 		expect(policy.enabled).toBe(true);
-		// even when no policy is specified, forbidRepeatingCharactersCount is still configured
-		// since its default value is 3
-		expect(policy.policy.length).toBe(1);
+		expect(policy.policy.length).toBe(0);
+	});
+
+	it('should not include forbidRepeatingCharactersCount if forbidRepeatingCharacters is false', () => {
+		const passwordPolicy = new PasswordPolicy({
+			enabled: true,
+			forbidRepeatingCharacters: false,
+			forbidRepeatingCharactersCount: 5,
+		});
+
+		const policy = passwordPolicy.getPasswordPolicy();
+
+		expect(policy.enabled).toBe(true);
+		expect(policy.policy).toEqual([]);
+	});
+
+	it('should include forbidRepeatingCharactersCount when forbidRepeatingCharacters is true', () => {
+		const passwordPolicy = new PasswordPolicy({
+			enabled: true,
+			forbidRepeatingCharacters: true,
+			forbidRepeatingCharactersCount: 3,
+		});
+
+		const policy = passwordPolicy.getPasswordPolicy();
+
+		expect(policy.enabled).toBe(true);
+		expect(policy.policy).toEqual([
+			['get-password-policy-forbidRepeatingCharacters'],
+			['get-password-policy-forbidRepeatingCharactersCount', { forbidRepeatingCharactersCount: 3 }],
+		]);
 	});
 });
 
