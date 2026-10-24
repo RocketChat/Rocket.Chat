@@ -13,7 +13,7 @@ import { type AuthenticatedContext, twoFactorRequired } from '../../lib/2fa/twoF
 import { passwordPolicy } from '../../lib/auth/passwordPolicy';
 import { callbacks } from '../../lib/callbacks';
 import { compareUserPassword } from '../../lib/compareUserPassword';
-import { compareUserPasswordHistory } from '../../lib/compareUserPasswordHistory';
+import { compareUserPasswordHistory, getPasswordHistoryLength } from '../../lib/compareUserPasswordHistory';
 import { notifyOnUserChange } from '../../lib/notifyListener';
 import { saveCustomFields } from '../../lib/users/saveCustomFields';
 import { validateUserEditing } from '../../lib/users/saveUser';
@@ -156,11 +156,7 @@ async function saveUserProfile(
 				unset.requirePasswordChangeReason = true;
 			}
 
-			await Users.addPasswordToHistory(
-				this.userId,
-				user.services?.password.bcrypt,
-				rcSettings.get<number>('Accounts_Password_History_Amount'),
-			);
+			await Users.addPasswordToHistory(this.userId, user.services?.password.bcrypt, getPasswordHistoryLength());
 
 			try {
 				await Users.removeNonLoginTokensExcept(this.userId, this.token);
