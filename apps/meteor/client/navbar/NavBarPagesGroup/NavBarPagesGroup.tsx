@@ -26,7 +26,7 @@ const NavBarPagesGroup = () => {
 					<NavBarItemDirectoryPage title={t('Directory')} />
 				</>
 			)}
-			{showMarketplace && !isMobile && <NavBarItemMarketPlaceMenu />}
+			{showMarketplace && <NavBarItemMarketPlaceMenu />}
 			{!isMobile && <NavBarItemSort />}
 			<NavBarItemCreateNew />
 		</NavBarGroup>
