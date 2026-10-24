@@ -23,6 +23,7 @@ export type Prettify<T> = {
 } & unknown;
 
 export type { RateLimiterOptions } from './definition';
+export type { ExtractRoutesFromAPI } from './ApiClass';
 
 export const defaultRateLimiterOptions: RateLimiterOptions = {
 	numRequestsAllowed: settings.get<number>('API_Enable_Rate_Limiter_Limit_Calls_Default'),
