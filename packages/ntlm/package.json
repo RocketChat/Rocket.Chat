@@ -1,0 +1,27 @@
+{
+	"name": "@rocket.chat/ntlm",
+	"version": "0.0.1",
+	"private": true,
+	"description": "NTLMv2 with channel binding for Extended Protection; no NTLM client on npm reaches the binding field",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
+	"scripts": {
+		"build": "rm -rf dist && tsc -p tsconfig.build.json",
+		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+		"lint": "eslint .",
+		"lint:fix": "eslint --fix .",
+		"test": "jest",
+		"testunit": "jest",
+		"typecheck": "tsc --noEmit"
+	},
+	"devDependencies": {
+		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/tsconfig": "workspace:*",
+		"eslint": "~10.12.0",
+		"jest": "~30.5.2",
+		"typescript": "~7.0.2"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	}
+}
