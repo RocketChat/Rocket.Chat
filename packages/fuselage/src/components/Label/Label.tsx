@@ -2,10 +2,9 @@ import { styled, Text, type GetProps } from '@tamagui/web';
 import type { ElementType, LabelHTMLAttributes } from 'react';
 import { createContext, useContext } from 'react';
 
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import { renderAs } from '../../helpers/renderAs';
 import { fontColor, fontFamily, fontScale, spacing } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
-import type { BoxProps } from '../Box';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 // Restates what `rcx-box--full` gave these elements before they left `Box`
@@ -53,25 +52,20 @@ const LabelFrame = styled(Text, {
 const LabelRequired = styled(Text, {
 	render: 'span',
 	...labelBoxDefaults,
+	marginInlineStart: spacing('x4'),
 	color: fontColor('danger'),
 });
 
-const RequiredMark = () => {
-	const requiredProps = useTamaguiBoxProps<BoxProps>({ marginInlineStart: 'x4' }, 'rcx-label__required');
-
-	return (
-		<LabelRequired aria-hidden {...(requiredProps as GetProps<typeof LabelRequired>)}>
-			*
-		</LabelRequired>
-	);
-};
+const RequiredMark = () => (
+	<LabelRequired aria-hidden className='rcx-label__required'>
+		*
+	</LabelRequired>
+);
 
 const LabelContext = createContext(false);
 
-// `FieldLabel` marks its label with this class; the `rcx-field__label` prop is the older spelling
-const isFieldLabel = (props: { className?: unknown }) =>
-	Boolean((props as Record<string, unknown>)['rcx-field__label']) ||
-	[props.className].flat().some((name) => typeof name === 'string' && name.split(' ').includes('rcx-field__label'));
+// `FieldLabel` marks its label with this class
+const isFieldLabel = (className?: string) => !!className?.split(' ').includes('rcx-field__label');
 
 export type LabelProps = ElementProps<HTMLElement, LabelHTMLAttributes<HTMLElement>> & {
 	/** Renders another element, such as a `legend` or a `span`. */
@@ -83,18 +77,19 @@ export type LabelProps = ElementProps<HTMLElement, LabelHTMLAttributes<HTMLEleme
 /**
  * A caption for an input component.
  */
-function Label({ disabled, is, required, children, ...props }: LabelProps) {
+function Label({ disabled, is, required, className, children, ...props }: LabelProps) {
 	const isInsideLabel = useContext(LabelContext);
 	const component = is || (isInsideLabel && 'span') || 'label';
 
-	const labelProps = useTamaguiBoxProps(
-		{ ...props, is: component },
-		['rcx-label', disabled && 'rcx-label--disabled'].filter(Boolean).join(' '),
-	);
-
 	return (
 		<LabelContext.Provider value={true}>
-			<LabelFrame dimmed={disabled} field={isFieldLabel(props)} {...(labelProps as GetProps<typeof LabelFrame>)}>
+			<LabelFrame
+				dimmed={disabled}
+				field={isFieldLabel(className)}
+				render={typeof component === 'string' ? component : renderAs(component)}
+				className={['rcx-label', disabled && 'rcx-label--disabled', className].filter(Boolean).join(' ')}
+				{...(props as GetProps<typeof LabelFrame>)}
+			>
 				{children}
 				{required && <RequiredMark />}
 			</LabelFrame>
@@ -102,4 +97,4 @@ function Label({ disabled, is, required, children, ...props }: LabelProps) {
 	);
 }
 
-export default withFuselageProvider(Label, { takesBoxTransforms: true });
+export default withFuselageProvider(Label);

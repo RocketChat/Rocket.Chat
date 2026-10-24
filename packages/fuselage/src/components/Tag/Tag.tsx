@@ -4,9 +4,8 @@ import { styled, Text, type GetProps } from '@tamagui/web';
 import type { AnchorHTMLAttributes, ReactNode } from 'react';
 
 import { statusColors, strokeColors, surfaceColors, textIconColors } from '../../Theme';
-import { prependClassName } from '../../helpers/prependClassName';
+import { cx } from '../../helpers/composeClassNames';
 import { toCSSColorValue, toCSSValue } from '../../helpers/toCSSValue';
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { borderRadius, borderWidth, fontFamily, fontScale, spacing } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
@@ -187,14 +186,6 @@ const Tag = ({ large, medium, pill, className, disabled, onClick, variant, child
 
 	const clickable = !!(onClick || href);
 
-	const frameProps = useTamaguiBoxProps({
-		is: href ? 'a' : 'span',
-		className: prependClassName(className, `rcx-tag ${modifiers}`),
-		onClick,
-		href,
-		...props,
-	});
-
 	return (
 		<TagFrame
 			{...{
@@ -202,7 +193,9 @@ const Tag = ({ large, medium, pill, className, disabled, onClick, variant, child
 				size: (large && 'large') || (medium && 'medium') || 'default',
 				pill,
 			}}
-			{...(frameProps as GetProps<typeof TagFrame>)}
+			{...({ onClick, href, ...props } as GetProps<typeof TagFrame>)}
+			render={href ? 'a' : 'span'}
+			className={cx('rcx-tag', modifiers, className)}
 			{...(clickable && hasClassName(className, 'disabled') && { cursor: 'not-allowed' })}
 			{...(hasClassName(className, 'focus-visible') && hasClassName(className, 'focus') && { forceStyle: 'focusVisible' as const })}
 		>
@@ -212,4 +205,4 @@ const Tag = ({ large, medium, pill, className, disabled, onClick, variant, child
 	);
 };
 
-export default withFuselageProvider(Tag, { takesBoxTransforms: true });
+export default withFuselageProvider(Tag);

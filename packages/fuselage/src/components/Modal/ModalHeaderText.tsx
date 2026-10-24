@@ -1,7 +1,6 @@
 import { styled, Text, type GetProps } from '@tamagui/web';
 
 import { modalBoxFont } from './Modal';
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import type { ElementProps } from '../../types/ElementProps';
 import { BoxTransforms, useBoxTransform } from '../Box/BoxTransforms';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
@@ -21,11 +20,17 @@ const ModalHeaderTextFrame = styled(Text, {
 	...modalBoxFont,
 });
 
-const ModalHeaderText = ({ children, ...props }: ModalHeaderTextProps) => {
+const ModalHeaderText = ({ children, className, ...props }: ModalHeaderTextProps) => {
 	const transform = useBoxTransform();
-	const frameProps = useTamaguiBoxProps(transform ? transform(props) : props, 'rcx-modal__header-text');
 
-	const frame = <ModalHeaderTextFrame {...(frameProps as GetProps<typeof ModalHeaderTextFrame>)}>{children}</ModalHeaderTextFrame>;
+	const frame = (
+		<ModalHeaderTextFrame
+			className={['rcx-modal__header-text', className].filter(Boolean).join(' ')}
+			{...(props as GetProps<typeof ModalHeaderTextFrame>)}
+		>
+			{children}
+		</ModalHeaderTextFrame>
+	);
 
 	return transform ? <BoxTransforms.Provider value={null}>{frame}</BoxTransforms.Provider> : frame;
 };

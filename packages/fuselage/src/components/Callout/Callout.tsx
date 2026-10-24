@@ -4,9 +4,9 @@ import { styled, Text, View, type GetProps, type TamaguiElement } from '@tamagui
 import type { ReactNode, RefObject } from 'react';
 
 import { statusColors, surfaceColors, textIconColors } from '../../Theme';
+import { cx } from '../../helpers/composeClassNames';
 import { toCSSValue } from '../../helpers/toCSSValue';
 import { useStyle } from '../../hooks/useStyle';
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { borderRadius, borderWidth, fontFamily, fontScale, spacing } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
@@ -124,7 +124,7 @@ const CalloutActions = styled(View, {
 /**
  * The `Callout` is used to get the user's attention explaining something important in the content of the current page.
  */
-const Callout = ({ type, title, children, icon, actions, ...props }: CalloutProps) => {
+const Callout = ({ type, title, children, icon, actions, className, ...props }: CalloutProps) => {
 	const { ref, borderBoxSize } = useResizeObserver();
 	const isLarge = !!borderBoxSize.inlineSize && borderBoxSize.inlineSize >= WRAPPER_LIMIT_SIZE;
 
@@ -136,8 +136,6 @@ const Callout = ({ type, title, children, icon, actions, ...props }: CalloutProp
 			: undefined,
 	);
 
-	const frameProps = useTamaguiBoxProps(props, ['rcx-callout', type && `rcx-callout--${type}`].filter(Boolean).join(' '));
-
 	const defaultIcon =
 		(type === 'info' && 'info-circled') ||
 		(type === 'success' && 'checkmark-circled') ||
@@ -146,7 +144,12 @@ const Callout = ({ type, title, children, icon, actions, ...props }: CalloutProp
 		'info-circled';
 
 	return (
-		<CalloutFrame ref={ref as RefObject<TamaguiElement>} type={type} {...(frameProps as GetProps<typeof CalloutFrame>)}>
+		<CalloutFrame
+			ref={ref as RefObject<TamaguiElement>}
+			type={type}
+			{...(props as GetProps<typeof CalloutFrame>)}
+			className={cx('rcx-callout', type && `rcx-callout--${type}`, className)}
+		>
 			<Icon className={['rcx-callout__icon', iconColorClassName].filter(Boolean).join(' ')} name={icon || defaultIcon} size='x20' />
 			<CalloutWrapper large={isLarge} className={isLarge ? 'rcx-callout__wrapper rcx-callout__wrapper--large' : 'rcx-callout__wrapper'}>
 				<CalloutWrapperContent className='rcx-callout__wrapper-content'>
@@ -167,4 +170,4 @@ const Callout = ({ type, title, children, icon, actions, ...props }: CalloutProp
 	);
 };
 
-export default withFuselageProvider(Callout, { takesBoxTransforms: true });
+export default withFuselageProvider(Callout);

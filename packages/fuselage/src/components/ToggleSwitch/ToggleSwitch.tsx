@@ -2,8 +2,8 @@ import buttonTokens from '@rocket.chat/fuselage-tokens/dist/button.json';
 import { styled, View, type GetProps } from '@tamagui/web';
 import type { InputHTMLAttributes, ReactNode } from 'react';
 
+import { cx } from '../../helpers/composeClassNames';
 import { toCSSColorValue, toCSSValue } from '../../helpers/toCSSValue';
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { borderRadius, borderWidth, size } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
 import {
@@ -47,14 +47,14 @@ export type ToggleSwitchProps = ElementProps<HTMLInputElement, InputHTMLAttribut
 };
 
 function ToggleSwitch({ className, labelChildren, ...props }: ToggleSwitchProps) {
-	const labelProps = useTamaguiBoxProps({ className }, 'rcx-toggle-switch');
-	const inputProps = useTamaguiBoxProps(props as typeof props & { className?: string }, 'rcx-toggle-switch__input');
-
 	return (
-		<SelectionButtonLabel notAllowed={hasDisabledClassName(labelProps.className)} {...labelProps}>
+		<SelectionButtonLabel notAllowed={hasDisabledClassName(className)} className={cx('rcx-toggle-switch', className)}>
 			{labelChildren}
 
-			<SelectionButtonInput {...({ type: 'checkbox', ...inputProps } as GetProps<typeof SelectionButtonInput>)} />
+			<SelectionButtonInput
+				{...({ type: 'checkbox', ...props } as GetProps<typeof SelectionButtonInput>)}
+				className='rcx-toggle-switch__input'
+			/>
 			<ToggleSwitchFake className='rcx-toggle-switch__fake' aria-hidden>
 				<ToggleSwitchKnob dimmed={Boolean(props.disabled)} />
 			</ToggleSwitchFake>
@@ -62,4 +62,4 @@ function ToggleSwitch({ className, labelChildren, ...props }: ToggleSwitchProps)
 	);
 }
 
-export default withFuselageProvider(ToggleSwitch, { takesBoxTransforms: true });
+export default withFuselageProvider(ToggleSwitch);

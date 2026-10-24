@@ -1,8 +1,7 @@
-import { styled, View, type GetProps } from '@tamagui/web';
+import { styled, View } from '@tamagui/web';
 
 import { labelBoxDefaults } from './Label';
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
-import type { BoxProps } from '../Box';
+import { spacing } from '../../styleTokens';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 import { Icon, type IconProps } from '../Icon';
 
@@ -16,6 +15,7 @@ const LabelInfoFrame = styled(View, {
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',
+	marginInline: spacing('x4'),
 });
 
 export type LabelInfoProps = {
@@ -23,18 +23,11 @@ export type LabelInfoProps = {
 	id?: string;
 } & Omit<IconProps, 'name'>;
 
-export const LabelInfo = withFuselageProvider(
-	({ title, id, ...props }: LabelInfoProps) => {
-		const frameProps = useTamaguiBoxProps<BoxProps>({ marginInline: 'x4' }, 'rcx-label__info');
-
-		return (
-			<LabelInfoFrame {...(frameProps as GetProps<typeof LabelInfoFrame>)}>
-				<span hidden id={id}>
-					{title}
-				</span>
-				<Icon {...props} name='info-circled' title={title} />
-			</LabelInfoFrame>
-		);
-	},
-	{ takesBoxTransforms: true },
-);
+export const LabelInfo = withFuselageProvider(({ title, id, ...props }: LabelInfoProps) => (
+	<LabelInfoFrame className='rcx-label__info'>
+		<span hidden id={id}>
+			{title}
+		</span>
+		<Icon {...props} name='info-circled' title={title} />
+	</LabelInfoFrame>
+));

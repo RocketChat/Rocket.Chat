@@ -1,6 +1,6 @@
 import { styled, Text, type GetProps } from '@tamagui/web';
 
-import { useTamaguiBoxProps } from '../../../hooks/useTamaguiBoxProps';
+import { cx } from '../../../helpers/composeClassNames';
 import type { ElementProps } from '../../../types/ElementProps';
 import { withFuselageProvider } from '../../FuselageProvider/FuselageProvider';
 import { boxFull, typography } from '../sidebarStyles';
@@ -13,10 +13,11 @@ const SidebarFooterContentFrame = styled(Text, {
 	...typography('micro'),
 });
 
-const SidebarFooterContentBase = ({ children, ...props }: ElementProps<HTMLDivElement>) => {
-	const frameProps = useTamaguiBoxProps(props, 'rcx-sidebar-footer__content');
+const SidebarFooterContentBase = ({ className, ...props }: ElementProps<HTMLDivElement>) => (
+	<SidebarFooterContentFrame
+		{...(props as GetProps<typeof SidebarFooterContentFrame>)}
+		className={cx('rcx-sidebar-footer__content', className)}
+	/>
+);
 
-	return <SidebarFooterContentFrame {...(frameProps as GetProps<typeof SidebarFooterContentFrame>)}>{children}</SidebarFooterContentFrame>;
-};
-
-export const SidebarFooterContent = withFuselageProvider(SidebarFooterContentBase, { takesBoxTransforms: true });
+export const SidebarFooterContent = withFuselageProvider(SidebarFooterContentBase);

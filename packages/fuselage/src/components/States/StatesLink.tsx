@@ -2,7 +2,7 @@ import { styled, Text, type GetProps } from '@tamagui/web';
 import type { AnchorHTMLAttributes } from 'react';
 
 import { textIconColors } from '../../Theme';
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import { cx } from '../../helpers/composeClassNames';
 import { fontFamily, fontScale, spacing } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
@@ -21,10 +21,12 @@ const StatesLinkFrame = styled(Text, {
 	...(fontScale('p2') as object),
 });
 
-const StatesLink = ({ ...props }: StatesLinkProps) => {
-	const linkProps = useTamaguiBoxProps({ withRichContent: 'inlineWithoutBreaks', ...props }, 'rcx-states__link');
-
-	return <StatesLinkFrame {...(linkProps as GetProps<typeof StatesLinkFrame>)} />;
-};
+// `rcx-box--with-inline-elements` styles the rich content nested in the link, which Tamagui can't reach
+const StatesLink = ({ className, ...props }: StatesLinkProps) => (
+	<StatesLinkFrame
+		{...(props as GetProps<typeof StatesLinkFrame>)}
+		className={cx('rcx-states__link', 'rcx-box--with-inline-elements', className)}
+	/>
+);
 
 export default withFuselageProvider(StatesLink);

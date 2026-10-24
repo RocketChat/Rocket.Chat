@@ -2,10 +2,9 @@ import { styled, View, type GetProps } from '@tamagui/web';
 import type { AllHTMLAttributes, RefAttributes } from 'react';
 
 import { surfaceColors } from '../../Theme';
+import { cx } from '../../helpers/composeClassNames';
 import { toCSSValue } from '../../helpers/toCSSValue';
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
-import { borderRadius, fontFamily } from '../../styleTokens';
-import type { BoxProps } from '../Box';
+import { borderRadius, fontFamily, resolveBackgroundColor } from '../../styleTokens';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 const progressBarBorderRadius = toCSSValue(
@@ -78,20 +77,21 @@ export type ProgressBarProps = RefAttributes<unknown> & {
 /**
  * The `ProgressBar` is used to inform the user the progress of an operation.
  */
-function ProgressBar({ percentage, variant = 'info', error, animated, light = false, ...props }: ProgressBarProps) {
-	const frameProps = useTamaguiBoxProps({ 'rcx-progress-bar': true, 'title': error || undefined, 'overflow': 'hidden', ...props });
-	const fillProps = useTamaguiBoxProps({
-		'backgroundColor': getColor(light, variant, error),
-		'rcx-progress-bar__fill--animated': animated,
-		'rcx-progress-bar__fill': true,
-		'width': getWidth(percentage),
-	} as BoxProps);
-
+function ProgressBar({ percentage, variant = 'info', error, animated, light = false, className, ...props }: ProgressBarProps) {
 	return (
-		<ProgressBarFrame {...(frameProps as GetProps<typeof ProgressBarFrame>)}>
-			<ProgressBarFill {...(fillProps as GetProps<typeof ProgressBarFill>)}>{animated && <ProgressBarShine aria-hidden />}</ProgressBarFill>
+		<ProgressBarFrame
+			{...({ title: error || undefined, ...props } as GetProps<typeof ProgressBarFrame>)}
+			className={cx('rcx-progress-bar', className)}
+		>
+			<ProgressBarFill
+				backgroundColor={resolveBackgroundColor(getColor(light, variant, error))}
+				width={getWidth(percentage)}
+				className={cx('rcx-progress-bar__fill', animated && 'rcx-progress-bar__fill--animated')}
+			>
+				{animated && <ProgressBarShine aria-hidden />}
+			</ProgressBarFill>
 		</ProgressBarFrame>
 	);
 }
 
-export default withFuselageProvider(ProgressBar, { takesBoxTransforms: true });
+export default withFuselageProvider(ProgressBar);

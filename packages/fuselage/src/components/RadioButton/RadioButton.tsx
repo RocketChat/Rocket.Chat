@@ -1,8 +1,8 @@
 import { styled, View, type GetProps } from '@tamagui/web';
 import type { InputHTMLAttributes, ReactNode } from 'react';
 
+import { cx } from '../../helpers/composeClassNames';
 import { toCSSValue } from '../../helpers/toCSSValue';
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { borderRadius, size } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
 import {
@@ -37,13 +37,13 @@ export type RadioButtonProps = ElementProps<HTMLInputElement, InputHTMLAttribute
 };
 
 function RadioButton({ className, labelChildren, ...props }: RadioButtonProps) {
-	const labelProps = useTamaguiBoxProps({ className }, 'rcx-radio-button');
-	const inputProps = useTamaguiBoxProps(props as typeof props & { className?: string }, 'rcx-radio-button__input');
-
 	return (
-		<SelectionButtonLabel notAllowed={hasDisabledClassName(labelProps.className)} {...labelProps}>
+		<SelectionButtonLabel notAllowed={hasDisabledClassName(className)} className={cx('rcx-radio-button', className)}>
 			{labelChildren}
-			<SelectionButtonInput {...({ type: 'radio', ...inputProps } as GetProps<typeof SelectionButtonInput>)} />
+			<SelectionButtonInput
+				{...({ type: 'radio', ...props } as GetProps<typeof SelectionButtonInput>)}
+				className='rcx-radio-button__input'
+			/>
 			<RadioButtonFake className='rcx-radio-button__fake' aria-hidden>
 				<RadioButtonDot />
 			</RadioButtonFake>
@@ -51,4 +51,4 @@ function RadioButton({ className, labelChildren, ...props }: RadioButtonProps) {
 	);
 }
 
-export default withFuselageProvider(RadioButton, { takesBoxTransforms: true });
+export default withFuselageProvider(RadioButton);

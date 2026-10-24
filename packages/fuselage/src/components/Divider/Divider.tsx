@@ -2,8 +2,8 @@ import { styled, Text, View, type GetProps } from '@tamagui/web';
 import type { ReactNode } from 'react';
 
 import { strokeColors } from '../../Theme';
+import { cx } from '../../helpers/composeClassNames';
 import { toCSSValue } from '../../helpers/toCSSValue';
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { borderWidth, size, spacing } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
 import { Box } from '../Box';
@@ -81,10 +81,16 @@ export type DividerProps = ElementProps<HTMLElement> & {
 	stretch?: boolean;
 };
 
-const PlainDivider = ({ variation, vertical, flush, small, stretch, ...props }: Omit<DividerProps, 'children'>) => {
-	const lineProps = useTamaguiBoxProps(
-		props,
-		[
+const PlainDivider = ({ variation, vertical, flush, small, stretch, className, ...props }: Omit<DividerProps, 'children'>) => (
+	<DividerLine
+		vertical={vertical}
+		small={vertical && small}
+		stretch={vertical && stretch}
+		flush={flush}
+		danger={variation === 'danger'}
+		light={variation === 'light'}
+		{...(props as GetProps<typeof DividerLine>)}
+		className={cx(
 			'rcx-divider',
 			vertical && 'rcx-divider--vertical',
 			vertical && small && 'rcx-divider--small',
@@ -92,23 +98,10 @@ const PlainDivider = ({ variation, vertical, flush, small, stretch, ...props }: 
 			flush && 'rcx-divider--flush',
 			variation === 'danger' && 'rcx-divider--danger',
 			variation === 'light' && 'rcx-divider--light',
-		]
-			.filter(Boolean)
-			.join(' '),
-	);
-
-	return (
-		<DividerLine
-			vertical={vertical}
-			small={vertical && small}
-			stretch={vertical && stretch}
-			flush={flush}
-			danger={variation === 'danger'}
-			light={variation === 'light'}
-			{...(lineProps as GetProps<typeof DividerLine>)}
-		/>
-	);
-};
+			className,
+		)}
+	/>
+);
 
 const Divider = ({ variation, children, vertical, flush, small, stretch, ...props }: DividerProps) => {
 	if (!children) {
@@ -124,4 +117,4 @@ const Divider = ({ variation, children, vertical, flush, small, stretch, ...prop
 	);
 };
 
-export default withFuselageProvider(Divider, { takesBoxTransforms: true });
+export default withFuselageProvider(Divider);

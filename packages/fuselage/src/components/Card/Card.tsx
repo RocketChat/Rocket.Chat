@@ -4,9 +4,9 @@ import type { AllHTMLAttributes } from 'react';
 
 import { CardContext } from './CardFrames';
 import { surfaceColors, textIconColors } from '../../Theme';
+import { cx } from '../../helpers/composeClassNames';
 import { toCSSValue } from '../../helpers/toCSSValue';
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
-import { borderRadius, fontFamily, spacing } from '../../styleTokens';
+import { borderRadius, fontFamily, size, spacing } from '../../styleTokens';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 const cardBackgroundColor = toCSSValue('--rcx-card-background-color', surfaceColors['surface-light']);
@@ -64,19 +64,10 @@ export type CardProps = {
 	clickable?: boolean;
 } & Omit<AllHTMLAttributes<HTMLElement>, 'is'>;
 
-const Card = ({ horizontal, hero, clickable, ...props }: CardProps) => {
+// `width` and `height` are HTML attributes too, so the type still lets callers size the card with a size token
+const Card = ({ horizontal, hero, clickable, className, width, height, ...props }: CardProps) => {
 	const breakpoints = useBreakpoints();
 	const isMobile = !breakpoints.includes('sm');
-
-	const cardProps = useTamaguiBoxProps({
-		'rcx-card': true,
-		'rcx-card__horizontal': horizontal,
-		'rcx-card__vertical': !horizontal,
-		'rcx-card__hero': hero,
-		'rcx-card__horizontal--wrap': horizontal && isMobile,
-		'rcx-card__clickable': clickable,
-		...props,
-	});
 
 	return (
 		<CardFrame
@@ -84,9 +75,19 @@ const Card = ({ horizontal, hero, clickable, ...props }: CardProps) => {
 			wrap={!!horizontal && isMobile}
 			hero={hero}
 			clickable={clickable}
-			{...(cardProps as GetProps<typeof CardFrame>)}
+			width={size(width)}
+			height={size(height)}
+			{...(props as GetProps<typeof CardFrame>)}
+			className={cx(
+				'rcx-card',
+				horizontal ? 'rcx-card__horizontal' : 'rcx-card__vertical',
+				hero && 'rcx-card__hero',
+				horizontal && isMobile && 'rcx-card__horizontal--wrap',
+				clickable && 'rcx-card__clickable',
+				className,
+			)}
 		/>
 	);
 };
 
-export default withFuselageProvider(Card, { takesBoxTransforms: true });
+export default withFuselageProvider(Card);

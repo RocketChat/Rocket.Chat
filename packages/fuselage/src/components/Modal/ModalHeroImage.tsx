@@ -1,7 +1,6 @@
 import { styled, View, type GetProps } from '@tamagui/web';
 import type { ImgHTMLAttributes } from 'react';
 
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { size } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
 import type { BoxProps } from '../Box';
@@ -35,14 +34,15 @@ const ModalHeroImageFrame = styled(View, {
 	outlineStyle: 'none',
 });
 
-const ModalHeroImage = ({ ...props }: ModalHeroImageProps) => {
-	const imageProps = useTamaguiBoxProps(props, 'rcx-modal__hero-image');
+const ModalHeroImage = ({ width, height, className, ...props }: ModalHeroImageProps) => (
+	<ModalHeroImageWrapper className='rcx-modal__hero-image-wrapper'>
+		<ModalHeroImageFrame
+			{...(width !== undefined && { width: size(width) })}
+			{...(height !== undefined && { height: size(height) })}
+			className={['rcx-modal__hero-image', className].filter(Boolean).join(' ')}
+			{...(props as GetProps<typeof ModalHeroImageFrame>)}
+		/>
+	</ModalHeroImageWrapper>
+);
 
-	return (
-		<ModalHeroImageWrapper className='rcx-modal__hero-image-wrapper'>
-			<ModalHeroImageFrame {...(imageProps as GetProps<typeof ModalHeroImageFrame>)} />
-		</ModalHeroImageWrapper>
-	);
-};
-
-export default withFuselageProvider(ModalHeroImage, { takesBoxTransforms: true });
+export default withFuselageProvider(ModalHeroImage);

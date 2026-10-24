@@ -2,8 +2,8 @@ import { styled, View, type GetProps } from '@tamagui/web';
 import type { AllHTMLAttributes, ReactNode } from 'react';
 
 import { appendClassName } from '../../helpers/appendClassName';
+import { cx } from '../../helpers/composeClassNames';
 import { patchChildren } from '../../helpers/patchChildren';
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { fontFamily, spacing } from '../../styleTokens';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
@@ -54,19 +54,24 @@ export type CardGroupProps = {
 	children?: ReactNode;
 } & Omit<AllHTMLAttributes<HTMLElement>, 'is' | 'wrap'>;
 
-const CardGroup = ({ align = 'start', children, stretch, vertical, wrap, ...props }: CardGroupProps) => {
-	const groupProps = useTamaguiBoxProps({
-		'rcx-card-group': true,
-		'rcx-card-group--align': align,
-		'rcx-card-group--stretch': stretch,
-		'rcx-card-group--vertical': vertical,
-		'rcx-card-group--wrap': wrap,
-		'role': 'group',
-		...props,
-	});
-
+const CardGroup = ({ align = 'start', children, stretch, vertical, wrap, className, ...props }: CardGroupProps) => {
 	return (
-		<CardGroupFrame wrap={wrap} stretch={stretch} vertical={vertical} align={align} {...(groupProps as GetProps<typeof CardGroupFrame>)}>
+		<CardGroupFrame
+			wrap={wrap}
+			stretch={stretch}
+			vertical={vertical}
+			align={align}
+			role='group'
+			{...(props as GetProps<typeof CardGroupFrame>)}
+			className={cx(
+				'rcx-card-group',
+				`rcx-card-group--align-${align}`,
+				stretch && 'rcx-card-group--stretch',
+				vertical && 'rcx-card-group--vertical',
+				wrap && 'rcx-card-group--wrap',
+				className,
+			)}
+		>
 			{patchChildren(children, (childProps: { className: string | string[] }) => ({
 				className: appendClassName(childProps.className, 'rcx-card-group__item'),
 			}))}
@@ -74,4 +79,4 @@ const CardGroup = ({ align = 'start', children, stretch, vertical, wrap, ...prop
 	);
 };
 
-export default withFuselageProvider(CardGroup, { takesBoxTransforms: true });
+export default withFuselageProvider(CardGroup);

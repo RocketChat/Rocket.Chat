@@ -3,10 +3,10 @@ import nameToCharacterMapping from '@rocket.chat/icons';
 import { styled, Text, type GetProps } from '@tamagui/web';
 
 import type { statusColors, textIconColors } from '../../Theme';
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import { cx } from '../../helpers/composeClassNames';
+import { resolveFontColor, resolveFontScale, size as sizeToken } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
 import type { BoxProps } from '../Box';
-import { useBoxTransform } from '../Box/BoxTransforms';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 export const IconFrame = styled(Text, {
@@ -39,16 +39,18 @@ export type IconProps = ElementProps<HTMLElement> & {
 	color?: IconColor;
 };
 
-function Icon({ name, size, ...props }: IconProps) {
-	const transformFn = useBoxTransform();
-	const boxProps = { 'rcx-icon': true, 'rcx-icon--name': name, 'fontSize': size, ...props };
-	const frameProps = useTamaguiBoxProps(transformFn ? transformFn(boxProps) : boxProps);
-
+function Icon({ name, size, color, className, ...props }: IconProps) {
 	return (
-		<IconFrame aria-hidden {...(frameProps as GetProps<typeof IconFrame>)}>
+		<IconFrame
+			aria-hidden
+			fontSize={resolveFontScale(size)?.fontSize ?? sizeToken(size)}
+			color={color && resolveFontColor(color)}
+			{...(props as GetProps<typeof IconFrame>)}
+			className={cx('rcx-icon', `rcx-icon--name-${name}`, className)}
+		>
 			{nameToCharacterMapping[name]}
 		</IconFrame>
 	);
 }
 
-export default withFuselageProvider(Icon);
+export default withFuselageProvider(Icon, { takesBoxTransforms: true });

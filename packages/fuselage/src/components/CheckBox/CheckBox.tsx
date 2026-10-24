@@ -4,8 +4,8 @@ import type { ChangeEvent, InputHTMLAttributes, ReactNode } from 'react';
 import { useLayoutEffect, useRef, useCallback } from 'react';
 
 import { createSelectionButtonFake, hasDisabledClassName, SelectionButtonInput, SelectionButtonLabel } from './SelectionButtonFrames';
+import { cx } from '../../helpers/composeClassNames';
 import { toCSSValue } from '../../helpers/toCSSValue';
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { borderRadius, size } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
@@ -66,14 +66,12 @@ function CheckBox({ ref, indeterminate, onChange, className, labelChildren, ...p
 		[innerRef, indeterminate, onChange],
 	);
 
-	const labelProps = useTamaguiBoxProps({ className }, 'rcx-check-box');
-	const inputProps = useTamaguiBoxProps(props as typeof props & { className?: string }, 'rcx-check-box__input');
-
 	return (
-		<SelectionButtonLabel notAllowed={hasDisabledClassName(labelProps.className)} {...labelProps}>
+		<SelectionButtonLabel notAllowed={hasDisabledClassName(className)} className={cx('rcx-check-box', className)}>
 			{labelChildren}
 			<SelectionButtonInput
-				{...({ type: 'checkbox', ref: mergedRef, onChange: handleChange, ...inputProps } as GetProps<typeof SelectionButtonInput>)}
+				{...({ type: 'checkbox', ref: mergedRef, onChange: handleChange, ...props } as GetProps<typeof SelectionButtonInput>)}
+				className='rcx-check-box__input'
 			/>
 			<CheckBoxFake className='rcx-check-box__fake' aria-hidden>
 				<CheckBoxMark />
@@ -84,4 +82,4 @@ function CheckBox({ ref, indeterminate, onChange, className, labelChildren, ...p
 	);
 }
 
-export default withFuselageProvider(CheckBox, { takesBoxTransforms: true });
+export default withFuselageProvider(CheckBox);

@@ -2,7 +2,7 @@ import { styled, View, type GetProps } from '@tamagui/web';
 import { createContext, useMemo } from 'react';
 
 import { strokeColors } from '../../Theme';
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
+import { cx } from '../../helpers/composeClassNames';
 import { borderWidth, fontFamily, spacing } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
@@ -67,20 +67,17 @@ export type TabsProps = ElementProps<HTMLDivElement> & {
 /**
  * Tabs is a component to navigate around the UI using buttons arranged together with the selected tab highlighted.
  */
-function Tabs({ children, divider = true, stretch = false, ...props }: TabsProps) {
-	const tabsProps = useTamaguiBoxProps({
-		'is': 'div',
-		'rcx-tabs': true,
-		'rcx-tabs--with-divider': divider,
-		'rcx-tabs--stretch': stretch,
-		...props,
-	});
-
+function Tabs({ children, divider = true, stretch = false, className, ...props }: TabsProps) {
 	const context = useMemo(() => ({ divider, stretch }), [divider, stretch]);
 
 	return (
 		<TabsContext.Provider value={context}>
-			<TabsFrame divider={divider} stretch={stretch} {...(tabsProps as GetProps<typeof TabsFrame>)}>
+			<TabsFrame
+				divider={divider}
+				stretch={stretch}
+				{...(props as GetProps<typeof TabsFrame>)}
+				className={cx('rcx-tabs', divider && 'rcx-tabs--with-divider', stretch && 'rcx-tabs--stretch', className)}
+			>
 				<TabsScrollBox className='rcx-tabs__scroll-box'>
 					<TabsWrapper className='rcx-tabs__wrapper' role='tablist'>
 						{children}
@@ -91,4 +88,4 @@ function Tabs({ children, divider = true, stretch = false, ...props }: TabsProps
 	);
 }
 
-export default withFuselageProvider(Tabs, { takesBoxTransforms: true });
+export default withFuselageProvider(Tabs);

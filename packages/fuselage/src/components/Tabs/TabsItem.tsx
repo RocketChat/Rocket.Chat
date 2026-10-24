@@ -5,9 +5,9 @@ import { useContext } from 'react';
 
 import { TabsContext, tabsBoxStyle } from './Tabs';
 import { statusBackgroundColors, strokeColors, textIconColors } from '../../Theme';
+import { cx } from '../../helpers/composeClassNames';
 import { getForcedState } from '../../helpers/getForcedState';
 import { toCSSColorValue, toCSSValue } from '../../helpers/toCSSValue';
-import { useTamaguiBoxProps } from '../../hooks/useTamaguiBoxProps';
 import { borderRadius, borderWidth, fontScale, size, spacing } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
@@ -135,20 +135,8 @@ export type TabsItemProps = ElementProps<HTMLButtonElement, ButtonHTMLAttributes
 	disabled?: boolean;
 };
 
-function TabsItem({ selected, disabled, ...props }: TabsItemProps) {
-	const itemProps = useTamaguiBoxProps({
-		'is': 'button',
-		'rcx-tabs__item': true,
-		'rcx-tabs__item--selected': selected,
-		'rcx-tabs__item--disabled': disabled,
-		'rcx-tabs__item--selected--disabled': selected && disabled,
-		'aria-selected': selected ? 'true' : 'false',
-		'role': 'tab',
-		...props,
-	});
-
+function TabsItem({ selected, disabled, className, ...props }: TabsItemProps) {
 	const { divider, stretch } = useContext(TabsContext);
-	const className = typeof itemProps.className === 'string' ? itemProps.className : undefined;
 
 	return (
 		<TabsItemFrame
@@ -159,9 +147,16 @@ function TabsItem({ selected, disabled, ...props }: TabsItemProps) {
 			isDisabled={disabled}
 			forceStyle={getForcedState(className)}
 			{...(className?.split(/\s+/).includes('disabled') && { cursor: 'not-allowed' })}
-			{...(itemProps as GetProps<typeof TabsItemFrame>)}
+			{...({ 'aria-selected': selected ? 'true' : 'false', 'role': 'tab', ...props } as GetProps<typeof TabsItemFrame>)}
+			className={cx(
+				'rcx-tabs__item',
+				selected && 'rcx-tabs__item--selected',
+				disabled && 'rcx-tabs__item--disabled',
+				selected && disabled && 'rcx-tabs__item--selected--disabled',
+				className,
+			)}
 		/>
 	);
 }
 
-export default withFuselageProvider(TabsItem, { takesBoxTransforms: true });
+export default withFuselageProvider(TabsItem);
