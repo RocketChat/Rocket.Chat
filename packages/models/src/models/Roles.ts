@@ -129,8 +129,9 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 	findCustomRoles<T extends Document = IRole, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>> {
+		// roles older than the `protected` field carry no value at all, so `false` would miss them
 		const query: Filter<IRole> = {
-			protected: false,
+			protected: { $ne: true },
 		};
 
 		return this.find<T, O>(query, options);
@@ -138,7 +139,7 @@ export class RolesRaw extends BaseRaw<IRole> implements IRolesModel {
 
 	countCustomRoles(options?: CountDocumentsOptions): Promise<number> {
 		const query: Filter<IRole> = {
-			protected: false,
+			protected: { $ne: true },
 		};
 
 		return this.countDocuments(query, options || {});
