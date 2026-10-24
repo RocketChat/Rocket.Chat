@@ -2,6 +2,9 @@ import type tls from 'node:tls';
 
 import { verifyPeerCertForDomain } from './saslExternal';
 
+/**
+ * Creates a mock TLS socket with the supplied certificate identity data.
+ */
 function createSocket(
 	subjectaltname: string,
 	authorized = true,
