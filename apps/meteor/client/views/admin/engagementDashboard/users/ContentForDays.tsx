@@ -56,7 +56,7 @@ const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, ti
 							</Box>
 						</Margins>
 					</FlexItem>
-					<IconButton icon='chevron-right' small aria-label={t('Next')} disabled={displacement === 0} onClick={onNextDateClick} />
+					<IconButton icon='chevron-right' small aria-label={t('Next_week')} disabled={displacement === 0} onClick={onNextDateClick} />
 				</Box>
 			</FlexContainer>
 			<FlexContainer>
