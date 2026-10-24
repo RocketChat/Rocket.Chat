@@ -347,6 +347,27 @@ API.v1.addRoute(
 				throw new ClientSafeError('error-message-size-exceeded');
 			}
 
+			const existingMessage = await Messages.getMessageByFileIdAndUsername(this.urlParams.fileId, this.userId, this.urlParams.rid);
+			if (existingMessage) {
+				return API.v1.success({
+					message: existingMessage,
+				});
+			}
+
+			const claim = await Uploads.confirmTemporaryFile(this.urlParams.fileId, this.userId);
+			if (!claim?.matchedCount) {
+				for (let attempt = 0; attempt < 5; attempt++) {
+					const racedMessage = await Messages.getMessageByFileIdAndUsername(this.urlParams.fileId, this.userId, this.urlParams.rid);
+					if (racedMessage) {
+						return API.v1.success({
+							message: racedMessage,
+						});
+					}
+					await new Promise((resolve) => setTimeout(resolve, 200));
+				}
+				throw new Meteor.Error('error-file-already-confirmed');
+			}
+
 			file.description = this.bodyParams.description;
 			delete this.bodyParams.description;
 
@@ -360,13 +381,24 @@ API.v1.addRoute(
 				delete this.bodyParams.fileContent;
 			}
 
-			await applyAirGappedRestrictionsValidation(() =>
-				sendFileMessage(this.userId, { roomId: this.urlParams.rid, file, msgData: this.bodyParams }),
-			);
+			try {
+				const sent = await applyAirGappedRestrictionsValidation(() =>
+					sendFileMessage(this.userId, { roomId: this.urlParams.rid, file, msgData: this.bodyParams }),
+				);
+				if (!sent) {
+					throw new Meteor.Error('error-not-allowed');
+				}
+			} catch (err) {
+				const createdMessage = await Messages.getMessageByFileIdAndUsername(this.urlParams.fileId, this.userId, this.urlParams.rid);
+				if (!createdMessage) {
+					const expiresAt = new Date();
+					expiresAt.setHours(expiresAt.getHours() + 24);
+					await Uploads.releaseTemporaryFileClaim(this.urlParams.fileId, this.userId, expiresAt).catch(() => undefined);
+				}
+				throw err;
+			}
 
-			await Uploads.confirmTemporaryFile(this.urlParams.fileId, this.userId);
-
-			const message = await Messages.getMessageByFileIdAndUsername(file._id, this.userId);
+			const message = await Messages.getMessageByFileIdAndUsername(file._id, this.userId, this.urlParams.rid);
 
 			return API.v1.success({
 				message,
