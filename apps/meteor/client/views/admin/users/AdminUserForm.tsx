@@ -251,11 +251,12 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							<Controller
 								name='avatar'
 								control={control}
-								render={({ field: { onChange } }) => (
+								render={({ field: { onChange, value } }) => (
 									<UserAvatarEditor
 										currentUsername={userData?.username}
 										username={username}
 										etag={userData?.avatarETag}
+										avatarObj={value}
 										setAvatarObj={onChange}
 										name={userFullName}
 									/>

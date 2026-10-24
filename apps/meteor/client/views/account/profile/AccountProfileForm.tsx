@@ -230,12 +230,13 @@ const AccountProfileForm = (props: AllHTMLAttributes<HTMLFormElement>) => {
 					<Controller
 						control={control}
 						name='avatar'
-						render={({ field: { onChange } }) => (
+						render={({ field: { onChange, value } }) => (
 							<UserAvatarEditor
 								etag={user?.avatarETag}
 								currentUsername={user?.username}
 								name={userFullName}
 								username={username}
+								avatarObj={value}
 								setAvatarObj={onChange}
 								disabled={!allowUserAvatarChange}
 							/>
