@@ -19,6 +19,7 @@ import type {
 	DocumentWithProjection,
 	FindOptionsWithProjection,
 	FindPaginated,
+	UsersByStatusFilters,
 } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
 import type {
@@ -35,6 +36,7 @@ import type {
 	SortDirection,
 	FindOneAndUpdateOptions,
 	AnyBulkWriteOperation,
+	RootFilterOperators,
 } from 'mongodb';
 
 import { Rooms, Subscriptions } from '../index';
@@ -2587,6 +2589,98 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			: managed;
 
 		return this.findPaginated(filter, options);
+	}
+
+	async findPaginatedByStatus(
+		{ active, hasLoggedIn, type, searchTerm, searchEmails, roles, inactiveReasons, statusManagement }: UsersByStatusFilters,
+		{
+			sort,
+			skip,
+			limit,
+			projection,
+			allowDiskUse,
+		}: { sort: Record<string, 1 | -1>; skip: number; limit: number; projection: Record<string, 1>; allowDiskUse?: boolean },
+	): Promise<{ users: IUser[]; total: number }> {
+		const match: Filter<IUser & RootFilterOperators<IUser>> = {};
+
+		if (active !== undefined) {
+			match.active = active;
+		}
+
+		if (hasLoggedIn !== undefined) {
+			match.lastLogin = { $exists: hasLoggedIn };
+		}
+
+		if (type) {
+			match.type = type;
+		}
+
+		if (searchTerm?.trim()) {
+			const pattern = escapeRegExp(searchTerm);
+			match.$or = [
+				...(searchEmails ? [{ 'emails.address': { $regex: pattern, $options: 'i' } }] : []),
+				{ username: { $regex: pattern, $options: 'i' } },
+				{ name: { $regex: pattern, $options: 'i' } },
+			];
+		}
+
+		if (roles?.length) {
+			match.roles = { $in: roles };
+		}
+
+		if (inactiveReasons) {
+			const inactiveReasonCondition = {
+				$or: [
+					{ inactiveReason: { $in: inactiveReasons } },
+					// users deactivated before `inactiveReason` existed have no such field
+					...(inactiveReasons.includes('deactivated') || inactiveReasons.includes('idle_too_long')
+						? [{ inactiveReason: { $exists: false } }]
+						: []),
+				],
+			};
+
+			if (match.$or) {
+				match.$and = [{ $or: match.$or }, inactiveReasonCondition];
+				delete match.$or;
+			} else {
+				Object.assign(match, inactiveReasonCondition);
+			}
+		}
+
+		if (statusManagement) {
+			const managedStatus = {
+				$or: [{ presenceDisabledByAdmin: true }, { statusVisibilityDeniedByAdmin: { $exists: true, $ne: [] } }],
+			};
+
+			match.$and = [...(match.$and ?? []), statusManagement === 'managed' ? managedStatus : { $nor: [managedStatus] }];
+		}
+
+		const sortKeys: Record<string, string> = { name: 'nameSortKey', username: 'usernameSortKey' };
+		const sortStage = Object.fromEntries(Object.entries(sort).map(([field, direction]) => [sortKeys[field] ?? field, direction]));
+		const displayName = { $cond: [{ $eq: [{ $ifNull: ['$name', ''] }, ''] }, '$username', '$name'] };
+
+		const [{ users, total: [{ total } = { total: 0 }] } = { users: [], total: [] }] = await this.col
+			.aggregate<{ users: IUser[]; total: { total: number }[] }>(
+				[
+					{ $match: match },
+					{
+						$facet: {
+							users: [
+								{ $addFields: { nameSortKey: { $toLower: displayName }, usernameSortKey: { $toLower: '$username' } } },
+								{ $sort: sortStage },
+								{ $skip: skip },
+								...(limit ? [{ $limit: limit }] : []),
+								{ $project: projection },
+							],
+							total: [{ $count: 'total' }],
+						},
+					},
+				],
+				{ allowDiskUse },
+			)
+			.toArray();
+
+		return { users, total };
 	}
 
 	findPresenceDisabledByAdmin<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
