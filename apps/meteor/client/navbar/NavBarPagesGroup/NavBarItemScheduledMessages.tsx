@@ -6,7 +6,7 @@ import type { HTMLAttributes } from 'react';
 import { useCanScheduleMessages } from '../../hooks/useCanScheduleMessages';
 import { useMyScheduledMessages } from '../../hooks/useScheduledMessages';
 
-export type NavBarItemScheduledMessagesProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
+export type NavBarItemScheduledMessagesProps = Omit<HTMLAttributes<HTMLElement>, 'is' | 'color'>;
 
 const NavBarItemScheduledMessages = (props: NavBarItemScheduledMessagesProps) => {
 	const router = useRouter();

@@ -69,8 +69,10 @@ const ScheduledMessageRow = ({
 				<MessageHeader>
 					<MessageName title={u.username}>{u.name || u.username}</MessageName>
 					<MessageTimestamp>
-						<Icon name='clock' size='x12' marginInlineStart={4} marginInlineEnd={2} />
-						{formatDateAndTime(new Date(scheduledAt))}
+						<Box is='span' display='inline-flex' alignItems='center' gap={2} marginInlineStart={4}>
+							<Icon name='clock' size='x12' />
+							{formatDateAndTime(new Date(scheduledAt))}
+						</Box>
 					</MessageTimestamp>
 				</MessageHeader>
 				{msg && <MessageBody clamp={2}>{body}</MessageBody>}

@@ -40,7 +40,9 @@ const ScheduledMessagesRoomGroup = ({
 					{t('Open_room')}
 				</Button>
 			</Box>
-			<Divider marginBlock={0} marginInline={24} />
+			<Box marginInline={24}>
+				<Divider flush />
+			</Box>
 			{scheduledMessages.map((scheduledMessage) => (
 				<ScheduledMessageRow
 					key={scheduledMessage._id}

@@ -1,4 +1,4 @@
-import { Box, InputBox, Margins } from '@rocket.chat/fuselage';
+import { Box, InputBox } from '@rocket.chat/fuselage';
 import { GenericModal, useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { format } from 'date-fns/format';
 import type { ChangeEvent } from 'react';
@@ -48,24 +48,24 @@ const ScheduleMessageModal = ({ initialDate, onConfirm, onClose }: ScheduleMessa
 			confirmDisabled={!inRange}
 			confirmLoading={isSubmitting}
 		>
-			<Box display='flex' marginInline='neg-x4'>
-				<Margins inline={4}>
+			<Box display='flex' gap={8}>
+				<Box flexGrow={1}>
 					<InputBox
 						aria-label={t('Date')}
 						type='date'
-						flexGrow={1}
 						value={date}
 						min={format(new Date(), 'yyyy-MM-dd')}
 						onChange={(e: ChangeEvent<HTMLInputElement>) => setDate(e.currentTarget.value)}
 					/>
+				</Box>
+				<Box flexGrow={1}>
 					<InputBox
 						aria-label={t('Time')}
 						type='time'
-						flexGrow={1}
 						value={time}
 						onChange={(e: ChangeEvent<HTMLInputElement>) => setTime(e.currentTarget.value)}
 					/>
-				</Margins>
+				</Box>
 			</Box>
 			<Box marginBlockStart={8} fontScale='c1' color={inRange ? 'hint' : 'danger'}>
 				{inRange
