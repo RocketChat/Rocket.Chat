@@ -61,18 +61,33 @@ export class Spotlight {
 				projection: { rid: 1 },
 				readPreference: roomOptions.readPreference,
 			}).toArray(),
-			Rooms.findOneByNameAndType(text, searchableRoomTypeIds, roomOptions, includeFederatedRooms),
+			Rooms.findOneByNameAndType(text.trim(), searchableRoomTypeIds, roomOptions, includeFederatedRooms, true),
 		]);
 
 		const roomIds = subscriptions.map((s) => s.rid);
+		let remainingLimit = roomOptions.limit;
+
 		if (exactRoom) {
-			roomIds.push(exactRoom.rid);
+			roomIds.push(exactRoom._id);
+			remainingLimit -= 1;
 		}
 
-		return this.fetchRooms(
-			userId,
-			await Rooms.findByNameOrFNameAndTypesNotInIds(regex, searchableRoomTypeIds, roomIds, roomOptions, includeFederatedRooms).toArray(),
-		);
+		const rooms =
+			remainingLimit > 0
+				? await Rooms.findByNameOrFNameAndTypesNotInIds(
+						regex,
+						searchableRoomTypeIds,
+						roomIds,
+						{ ...roomOptions, limit: remainingLimit },
+						includeFederatedRooms,
+				  ).toArray()
+				: [];
+
+		if (exactRoom) {
+			rooms.unshift(exactRoom);
+		}
+
+		return this.fetchRooms(userId, rooms);
 	}
 
 	mapOutsiders(u) {
