@@ -1,6 +1,7 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
-import type { PeerInfo } from '@rocket.chat/ui-voip';
+import { useUserId } from '@rocket.chat/ui-contexts';
+import { type PeerInfo, isInternalPeer } from '@rocket.chat/ui-voip';
 import {
 	MediaCallRoomActivity,
 	usePeekMediaSessionState,
@@ -12,18 +13,25 @@ import { memo } from 'react';
 
 import { useRoom } from '../contexts/RoomContext';
 
-const isMediaCallRoom = (room: IRoom, peerInfo?: PeerInfo) => {
-	if (!peerInfo || 'number' in peerInfo) {
+const isSameList = (list1: string[], list2: string[]): boolean => {
+	const extraList1 = list1.filter((uid) => !list2.includes(uid));
+	const extraList2 = list2.filter((uid) => !list1.includes(uid));
+
+	return !extraList1.length && !extraList2.length;
+};
+
+const isMediaCallRoom = (room: IRoom, peerInfo?: PeerInfo, myUserId?: string) => {
+	if (!myUserId) {
 		return false;
 	}
-	if (!isDirectMessageRoom(room)) {
+	if (!peerInfo || !isInternalPeer(peerInfo)) {
 		return false;
 	}
-	if (room.uids?.length !== 2) {
+	if (!isDirectMessageRoom(room) || !room.uids?.length) {
 		return false;
 	}
 
-	return room.uids.includes(peerInfo.userId);
+	return isSameList([myUserId, peerInfo.userId], room.uids);
 };
 
 export type MediaCallRoomProps = {
@@ -34,9 +42,10 @@ const MediaCallRoom = ({ children }: MediaCallRoomProps) => {
 	const state = usePeekMediaSessionState();
 	const hidden = usePeekMediaSessionHidden();
 	const peerInfo = usePeekMediaSessionPeerInfo();
+	const userId = useUserId();
 	const room = useRoom();
 
-	if (hidden || state !== 'ongoing' || !isMediaCallRoom(room, peerInfo)) {
+	if (hidden || state !== 'ongoing' || !isMediaCallRoom(room, peerInfo, userId)) {
 		return children;
 	}
 
