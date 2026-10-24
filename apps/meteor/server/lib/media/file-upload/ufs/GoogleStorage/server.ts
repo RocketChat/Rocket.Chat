@@ -4,6 +4,7 @@ import type { IUpload } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { check } from 'meteor/check';
 
+import { getContentDisposition } from './getContentDisposition';
 import { UploadFS } from '../../../../../ufs';
 import type { StoreOptions } from '../../../../../ufs/ufs-store';
 import { SystemLogger } from '../../../../logger/system';
@@ -149,7 +150,7 @@ class GoogleStorageStore extends UploadFS.Store {
 				gzip: false,
 				metadata: {
 					contentType: file.type,
-					contentDisposition: `inline; filename=${file.name}`,
+					contentDisposition: getContentDisposition('inline', file.name || ''),
 					// metadata: {
 					// 	custom: 'metadata'
 					// }
