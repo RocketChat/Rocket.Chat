@@ -47,7 +47,7 @@ const UserPresenceTabRow = ({ user, onClick }: UserPresenceTabRowProps) => {
 
 	return (
 		<GenericTableRow key={_id} action tabIndex={0} onClick={handleClick} onKeyDown={handleKeyDown}>
-			<GenericTableCell withTruncatedText>
+			<GenericTableCell truncate>
 				<Box display='flex' alignItems='center'>
 					<UserAvatar size='x28' username={username ?? ''} />
 					<Box display='flex' alignItems='center' marginInline={8} withTruncatedText>
@@ -60,10 +60,8 @@ const UserPresenceTabRow = ({ user, onClick }: UserPresenceTabRowProps) => {
 					</Box>
 				</Box>
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText>{presenceDisabledByAdmin ? t('Hidden') : t('Visible')}</GenericTableCell>
-			<GenericTableCell withTruncatedText>
-				{presenceDisabledByAdmin ? t('Everyone') : statusVisibilityDeniedByAdmin.join(', ')}
-			</GenericTableCell>
+			<GenericTableCell truncate>{presenceDisabledByAdmin ? t('Hidden') : t('Visible')}</GenericTableCell>
+			<GenericTableCell truncate>{presenceDisabledByAdmin ? t('Everyone') : statusVisibilityDeniedByAdmin.join(', ')}</GenericTableCell>
 			<GenericTableCell onClick={stopPropagation} onKeyDown={stopPropagation}>
 				<Box display='flex' justifyContent='flex-end'>
 					<GenericMenu detached title={t('More_actions')} sections={[{ title: '', items: menuItems }]} placement='bottom-end' />

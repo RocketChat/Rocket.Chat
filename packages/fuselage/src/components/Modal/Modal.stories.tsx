@@ -172,7 +172,7 @@ export const _WithIconAndTagline: Story = {
 	render: () => (
 		<Modal>
 			<ModalHeader>
-				<ModalIcon alignItems='end' name='info' />
+				<ModalIcon align='end' name='info' />
 				<ModalHeaderText>
 					<ModalTagline>Tagline</ModalTagline>
 					<ModalTitle>Modal Header</ModalTitle>
@@ -281,7 +281,7 @@ export const _WithAnnotation: Story = {
 				<ModalClose />
 			</ModalHeader>
 			<ModalContent>Modal Body</ModalContent>
-			<ModalFooter justifyContent='space-between'>
+			<ModalFooter justify='space-between'>
 				<ModalFooterAnnotation>Anototation</ModalFooterAnnotation>
 				<ModalFooterControllers>
 					<Button>Cancel</Button>

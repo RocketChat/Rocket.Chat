@@ -147,7 +147,7 @@ const ThreadList = () => {
 					/>
 				</Box>
 			</ContextualbarSection>
-			<ContextualbarContent paddingInline={0} ref={ref}>
+			<ContextualbarContent flush ref={ref}>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
 				{isPending && (
 					<Box paddingInline={24} paddingBlock={12}>

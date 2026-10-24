@@ -89,7 +89,6 @@ const CustomField = <T extends FieldValues>({
 							aria-describedby={errorMessage && `${fieldId}-error`}
 							error={errorMessage}
 							options={selectOptions as SelectOption[]}
-							flexGrow={1}
 						/>
 					</FieldRow>
 					{errorMessage ? (

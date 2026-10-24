@@ -48,10 +48,10 @@ const TriggersRow = ({ _id, name, description, enabled, reload }: TriggersRowPro
 
 	return (
 		<GenericTableRow key={_id} action tabIndex={0} onClick={handleClick} onKeyDown={handleKeyDown}>
-			<GenericTableCell withTruncatedText>{name}</GenericTableCell>
-			<GenericTableCell withTruncatedText>{description}</GenericTableCell>
-			<GenericTableCell withTruncatedText>{enabled ? t('Yes') : t('No')}</GenericTableCell>
-			<GenericTableCell withTruncatedText>
+			<GenericTableCell truncate>{name}</GenericTableCell>
+			<GenericTableCell truncate>{description}</GenericTableCell>
+			<GenericTableCell truncate>{enabled ? t('Yes') : t('No')}</GenericTableCell>
+			<GenericTableCell truncate>
 				<IconButton icon='trash' small title={t('Remove')} onClick={handleDelete} />
 			</GenericTableCell>
 		</GenericTableRow>

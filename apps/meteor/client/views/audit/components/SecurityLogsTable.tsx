@@ -170,7 +170,6 @@ const SecurityLogsTable = () => {
 									role='link'
 									action
 									tabIndex={0}
-									height={44}
 									onClick={() =>
 										handleItemClick({
 											actor: item.actor,
@@ -181,8 +180,8 @@ const SecurityLogsTable = () => {
 										})
 									}
 								>
-									<GenericTableCell withTruncatedText>
-										<Box display='flex' alignItems='center'>
+									<GenericTableCell truncate>
+										<Box display='flex' alignItems='center' minHeight={28}>
 											{item.actor.type === 'user' && (
 												<Box marginInlineEnd={4}>
 													<UserAvatar size='x24' userId={item.actor._id} />
@@ -193,12 +192,12 @@ const SecurityLogsTable = () => {
 											</Box>
 										</Box>
 									</GenericTableCell>
-									<GenericTableCell withTruncatedText>{format(new Date(item.ts), 'MMMM d yyyy, h:mm:ss a')}</GenericTableCell>
-									<GenericTableCell withTruncatedText title={setting && String(setting)}>
+									<GenericTableCell truncate>{format(new Date(item.ts), 'MMMM d yyyy, h:mm:ss a')}</GenericTableCell>
+									<GenericTableCell truncate title={setting && String(setting)}>
 										{setting && String(setting)}
 									</GenericTableCell>
-									<GenericTableCell withTruncatedText>{String(previous)}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{String(current)}</GenericTableCell>
+									<GenericTableCell truncate>{String(previous)}</GenericTableCell>
+									<GenericTableCell truncate>{String(current)}</GenericTableCell>
 								</GenericTableRow>
 							);
 						})}

@@ -132,7 +132,7 @@ const QueueListTable = () => {
 						<GenericTableBody>
 							{data?.queue.map(({ user, department, chats }) => (
 								<GenericTableRow key={user._id} tabIndex={0}>
-									<GenericTableCell withTruncatedText>
+									<GenericTableCell truncate>
 										<Box display='flex' alignItems='center' marginBlock='x4'>
 											<UserAvatar size={mediaQuery ? 'x28' : 'x40'} username={user.username} />
 											<Box display='flex' marginInline={8}>
@@ -140,9 +140,9 @@ const QueueListTable = () => {
 											</Box>
 										</Box>
 									</GenericTableCell>
-									<GenericTableCell withTruncatedText>{department ? department.name : ''}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{chats}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{getUserStatus(user?.status)}</GenericTableCell>
+									<GenericTableCell truncate>{department ? department.name : ''}</GenericTableCell>
+									<GenericTableCell truncate>{chats}</GenericTableCell>
+									<GenericTableCell truncate>{getUserStatus(user?.status)}</GenericTableCell>
 								</GenericTableRow>
 							))}
 						</GenericTableBody>

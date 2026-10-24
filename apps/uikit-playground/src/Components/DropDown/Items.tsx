@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Label, Chevron } from '@rocket.chat/fuselage';
+import { Box, Label, Chevron, useStyle } from '@rocket.chat/fuselage';
 import { useState, useContext } from 'react';
 
 import ItemsIcon from './ItemsIcon';
@@ -12,6 +12,9 @@ const Items = ({ label, children, layer, payload }: ItemProps) => {
 	const [isOpen, toggleItemOpen] = useState<boolean>(layer === 1);
 	const [hover, setHover] = useState<boolean>(false);
 	const { state, dispatch } = useContext(context);
+	const labelClassName = useStyle(css`
+		${labelStyle(layer, hover)}
+	`);
 
 	const itemClickHandler = () => {
 		toggleItemOpen(!isOpen);
@@ -52,7 +55,7 @@ const Items = ({ label, children, layer, payload }: ItemProps) => {
 				</Box>
 				<Box height='25px' display='flex' alignItems='center'>
 					<ItemsIcon layer={layer} lastNode={children === undefined} />
-					<Label className={labelStyle(layer, hover)}>{label}</Label>
+					<Label className={labelClassName}>{label}</Label>
 				</Box>
 			</Box>
 			<Box>{isOpen && children}</Box>

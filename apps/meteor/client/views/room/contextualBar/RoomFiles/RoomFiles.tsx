@@ -87,7 +87,7 @@ const RoomFiles = ({
 					<Select aria-controls={isSuccess ? filesListId : undefined} onChange={setType} value={type} options={options} />
 				</Box>
 			</ContextualbarSection>
-			<ContextualbarContent paddingInline={0}>
+			<ContextualbarContent flush>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={total} />
 				{isPending && (
 					<Box padding={24}>

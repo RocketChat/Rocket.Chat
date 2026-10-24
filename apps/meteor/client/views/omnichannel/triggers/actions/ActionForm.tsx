@@ -21,7 +21,7 @@ import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 import type { TriggersPayload } from '../EditTrigger';
 import { getActionFormFields } from '../utils';
 
-type SendMessageFormType = ComponentProps<typeof Field> & {
+type SendMessageFormType = ComponentProps<typeof FieldGroup> & {
 	control: Control<TriggersPayload>;
 	trigger: UseFormTrigger<TriggersPayload>;
 	index: number;

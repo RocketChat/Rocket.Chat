@@ -32,7 +32,7 @@ const OutboundMessageCloseConfirmationModal = ({ onConfirm, onCancel }: Outbound
 					{t('Are_you_sure_you_want_to_discard_this_outbound_message')}
 				</p>
 			</ModalContent>
-			<ModalFooter justifyContent='space-between'>
+			<ModalFooter justify='space-between'>
 				<ModalFooterAnnotation>{t('This_action_cannot_be_undone')}</ModalFooterAnnotation>
 				<ModalFooterControllers>
 					<Button

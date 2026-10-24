@@ -5,9 +5,9 @@ import { useRef, useMemo, cloneElement, useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 
 import { useOwnerDocument } from '../../contexts';
-import type { BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
 
-export type PositionProps = Omit<BoxProps, 'children' | 'margin'> & {
+export type PositionProps = Omit<ElementProps<HTMLElement>, 'children'> & {
 	anchor: RefObject<Element | null>;
 	children: ReactElement<any>;
 	margin?: number;

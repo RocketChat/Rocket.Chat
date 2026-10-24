@@ -54,7 +54,7 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps) => 
 				<ContextualbarTitle>{t('Outlook_calendar')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
-			<ContextualbarContent paddingInline={0} color='default'>
+			<ContextualbarContent flush>
 				<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex' justifyContent='center' ref={eventsListRef}>
 					{calendarListResult.isPending && <Throbber size='x12' />}
 					{calendarListResult.isError && (
