@@ -69,7 +69,12 @@ const AudioPlayerControls = ({
 				/>
 			</Box>
 
-			<Button secondary small onClick={onChangePlaybackSpeed} aria-label={changePlaybackSpeedLabel}>
+			<Button
+				secondary
+				small
+				onClick={onChangePlaybackSpeed}
+				aria-label={`${changePlaybackSpeedLabel}, ${playbackSpeed}x`}
+			>
 				{playbackSpeed}x
 			</Button>
 		</Box>
