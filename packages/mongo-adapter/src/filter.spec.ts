@@ -85,6 +85,23 @@ describe('createPredicateFromFilter', () => {
 		expect(fn({ foo: [{ bar: 2 }] })).toBe(false);
 	});
 
+	it('matches $elemMatch after non-document entries', () => {
+		const fn = createPredicateFromFilter({ foo: { $elemMatch: { bar: 1 } } });
+		expect(fn({ foo: [null, { bar: 1 }] })).toBe(true);
+		expect(fn({ foo: [undefined, { bar: 1 }] })).toBe(true);
+		expect(fn({ foo: [1, { bar: 1 }] })).toBe(true);
+		expect(fn({ foo: ['x', { bar: 1 }] })).toBe(true);
+		expect(fn({ foo: [true, { bar: 1 }] })).toBe(true);
+		expect(fn({ foo: [1, { bar: 1 }, 'x'] })).toBe(true);
+	});
+
+	it('does not match $elemMatch without a matching document', () => {
+		const fn = createPredicateFromFilter({ foo: { $elemMatch: { bar: 1 } } });
+		expect(fn({ foo: [null, 1, 'x', true] })).toBe(false);
+		expect(fn({ foo: [null, { bar: 2 }] })).toBe(false);
+		expect(fn({ foo: [] })).toBe(false);
+	});
+
 	it('matches $eq', () => {
 		const fn = createPredicateFromFilter({ foo: { $eq: 1 } });
 		expect(fn({ foo: 1 })).toBe(true);
