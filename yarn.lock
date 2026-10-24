@@ -11042,7 +11042,6 @@ __metadata:
     "@types/chai-dom": "npm:1.11.3"
     "@types/chai-spies": "npm:~1.0.6"
     "@types/codemirror": "npm:~5.60.18"
-    "@types/cookie": "npm:^0.5.4"
     "@types/cookie-parser": "npm:^1.4.10"
     "@types/cors": "npm:^2.8.19"
     "@types/cssom": "npm:^0.4.3"
@@ -11132,7 +11131,7 @@ __metadata:
     colors: "npm:^1.4.0"
     connect: "npm:^3.7.0"
     connect-mongo: "npm:5.1.0"
-    cookie: "npm:^0.7.2"
+    cookie: "npm:^2.0.1"
     cookie-parser: "npm:^1.4.7"
     cors: "npm:^2.8.6"
     cron: "npm:~1.8.2"
@@ -15325,13 +15324,6 @@ __metadata:
   peerDependencies:
     "@types/express": "*"
   checksum: 10/1f37b5a4115dbfd4b7bbea2d874fbf9495eca8c3e8c87fa7e38c50f9fff66222377c911cfdc7a1ea08855e822919c5534ebbcc4bf25b596bc6f7270e403483d9
-  languageName: node
-  linkType: hard
-
-"@types/cookie@npm:^0.5.4":
-  version: 0.5.4
-  resolution: "@types/cookie@npm:0.5.4"
-  checksum: 10/44c09d55b79ccc7701876dae868a4a6a9e1291228792b81983e94ab55482eaa853dfc23dede0165d135817dca2845e48bf280f9b1f8d3401f012d410091513c0
   languageName: node
   linkType: hard
 
@@ -21574,10 +21566,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cookie@npm:0.7.2, cookie@npm:^0.7.2, cookie@npm:~0.7.1, cookie@npm:~0.7.2":
+"cookie@npm:0.7.2, cookie@npm:~0.7.1, cookie@npm:~0.7.2":
   version: 0.7.2
   resolution: "cookie@npm:0.7.2"
   checksum: 10/24b286c556420d4ba4e9bc09120c9d3db7d28ace2bd0f8ccee82422ce42322f73c8312441271e5eefafbead725980e5996cc02766dbb89a90ac7f5636ede608f
+  languageName: node
+  linkType: hard
+
+"cookie@npm:2.0.1":
+  version: 2.0.1
+  resolution: "cookie@npm:2.0.1"
+  checksum: 10/9fd785e98334f78e6337f4aafd5a3558a2ff49931b92c9cd9f1f3f042819532dc7f0730d55bd1666bb1d82b86090581d690388764aab1b84dfcd47eb0b959361
+  languageName: node
+  linkType: hard
+
+"cookie@patch:cookie@npm%3A2.0.1#~/.yarn/patches/cookie-npm-2.0.1-2aea16e44e.patch":
+  version: 2.0.1
+  resolution: "cookie@patch:cookie@npm%3A2.0.1#~/.yarn/patches/cookie-npm-2.0.1-2aea16e44e.patch::version=2.0.1&hash=ff39be"
+  checksum: 10/abf2e4fc70a906071da79371ced3c178870efdc6ac20f5bcd706ac04c4e25748e5025fed54d77e46c3b5e9cfae162892b4abc22ff7365e4f40939cfb21e3d927
   languageName: node
   linkType: hard
 
