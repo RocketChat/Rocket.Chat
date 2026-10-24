@@ -1,14 +1,14 @@
 # Features
 
-- Self Host
+- Self-Host
   - Docker
-  - Multiple Deployment Options (Heroku, Digital Ocean, Sandstorm, etc.)
+  - Multiple deployment options (Heroku, Digital Ocean, Sandstorm, etc.)
 - Authentication Options
   - OAuth
   - SAML
   - LDAP
   - CAS (1.0, 2.0 + attribute sync)
-  - Facebook, Github, Google, etc.
+  - Facebook, GitHub, Google, etc.
 - I18N: More than 30 languages so far
 - File Uploading
   - Drag-and-drop
@@ -21,10 +21,10 @@
   - Video Conferencing
   - Screen Sharing
 - Notifications
-  - Desktop and Mobile
+  - Desktop and mobile
   - Use your own gateway
   - Use @all to notify everyone in the room (configurable to max. users)
-  - Receive missed messages in your e-mail
+  - Receive missed messages by e-mail
 - Apps
   - Mobile
   - Native
@@ -41,8 +41,8 @@
   - Link Preview
   - Embedded videos
   - Markdown
-  - Code, single or multi-line
-  - TexMath
+  - Single-line or multi-line code
+  - TeX Math
   - Emojis
     - Reactions
 - Message editing
