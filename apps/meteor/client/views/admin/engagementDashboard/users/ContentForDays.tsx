@@ -5,6 +5,7 @@ import { formatDate } from '@rocket.chat/ui-client';
 import { format } from 'date-fns/format';
 import { subDays } from 'date-fns/subDays';
 import { useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import { useWeeklyChatActivity } from './useWeeklyChatActivity';
 
@@ -16,6 +17,7 @@ export type ContentForDaysProps = {
 };
 
 const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, timezone }: ContentForDaysProps) => {
+	const { t } = useTranslation();
 	const utc = timezone === 'utc';
 	const { data } = useWeeklyChatActivity({ displacement, utc });
 
@@ -46,7 +48,7 @@ const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, ti
 		<>
 			<FlexContainer alignItems='center' justifyContent='center'>
 				<Box>
-					<IconButton icon='chevron-down' small onClick={onPreviousDateClick} />
+					<IconButton icon='chevron-left' small aria-label={t('Previous_week')} onClick={onPreviousDateClick} />
 					<FlexItem basis='50%'>
 						<Margins inline={8}>
 							<Box is='span' textAlign='center'>
@@ -54,7 +56,7 @@ const ContentForDays = ({ displacement, onPreviousDateClick, onNextDateClick, ti
 							</Box>
 						</Margins>
 					</FlexItem>
-					<IconButton icon='chevron-down' small disabled={displacement === 0} onClick={onNextDateClick} />
+					<IconButton icon='chevron-right' small aria-label={t('Next_week')} disabled={displacement === 0} onClick={onNextDateClick} />
 				</Box>
 			</FlexContainer>
 			<FlexContainer>
