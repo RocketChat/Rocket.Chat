@@ -4,10 +4,8 @@ import { checkServerIdentity } from 'node:tls';
 import { normalizeDomain } from '../jid/normalize';
 
 /**
- * Whether the peer's trusted certificate names `domain`, by dNSName or, without one, by CN.
- *
- * TODO: match SRVName and XmppAddr and refuse the CN, per ADR 0005
- * See ../../docs/adr/0005-peer-certificates-name-a-domain-by-dnsname-srvname-or-xmppaddr.md
+ * Whether the peer's trusted certificate names `domain` using a DNS SAN,
+ * SRVName, or XmppAddr identity. Common Name (CN) is never accepted.
  */
 export function verifyPeerCertForDomain(socket: tls.TLSSocket, domain: string): boolean {
 	if (!socket.authorized) {
@@ -15,12 +13,51 @@ export function verifyPeerCertForDomain(socket: tls.TLSSocket, domain: string): 
 	}
 
 	const cert = socket.getPeerCertificate(false);
-	if (!cert || Object.keys(cert).length === 0) {
+	if (!cert || Object.keys(cert).length === 0 || !cert.subjectaltname) {
 		return false;
 	}
 
 	try {
-		return checkServerIdentity(normalizeDomain(domain), cert) === undefined;
+		const normalizedDomain = normalizeDomain(domain);
+		const subjectAltName = cert.subjectaltname;
+
+		// DNS SANs support standard hostname and wildcard matching.
+		if (/(?:^|,\s*)DNS:/i.test(subjectAltName)) {
+			if (
+				checkServerIdentity(normalizedDomain, {
+					...cert,
+					subject: {},
+				}) === undefined
+			) {
+				return true;
+			}
+		}
+
+		// RFC 6120: the SRVName must identify the XMPP server service.
+		const srvNames = subjectAltName.matchAll(/(?:^|,\s*)othername:SRVName:([^,]+)/gi);
+
+		for (const [, value] of srvNames) {
+			const srvName = value.trim().replace(/\.$/, '').toLowerCase();
+
+			if (srvName === `_xmpp-server.${normalizedDomain}`) {
+				return true;
+			}
+		}
+
+		// XmppAddr must identify the expected domain exactly.
+		const xmppAddresses = subjectAltName.matchAll(/(?:^|,\s*)othername:XmppAddr:([^,]+)/gi);
+
+		for (const [, value] of xmppAddresses) {
+			try {
+				if (normalizeDomain(value.trim()) === normalizedDomain) {
+					return true;
+				}
+			} catch {
+				// Ignore malformed identities and check the remaining SANs.
+			}
+		}
+
+		return false;
 	} catch {
 		return false;
 	}
