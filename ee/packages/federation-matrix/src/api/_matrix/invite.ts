@@ -1,5 +1,5 @@
 import { FederationMatrix } from '@rocket.chat/core-services';
-import { NotAllowedError, federationSDK } from '@rocket.chat/federation-sdk';
+import { NotAllowedError, eventSchemas, federationSDK } from '@rocket.chat/federation-sdk';
 import { Router } from '@rocket.chat/http-router';
 import { Users } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings/dist/v1/Ajv';
@@ -136,8 +136,6 @@ export const getMatrixInviteRoutes = () => {
 	return new Router('/federation').put(
 		'/v2/invite/:roomId/:eventId',
 		{
-			// TODO: add schema from room package. `event` is a PDU whose format varies by room
-			// version, so it stays unconstrained here; room_version and event are required per spec.
 			body: ajv.compile({
 				type: 'object',
 				properties: {
@@ -162,6 +160,45 @@ export const getMatrixInviteRoutes = () => {
 		async (c) => {
 			const { roomId, eventId } = c.req.param();
 			const { event, room_version: roomVersion, invite_room_state: strippedStateEvents } = await c.req.json();
+
+			// validate `event` against the room package's PduSchema. format varies by room_version,
+			// so look up the schema dynamically; fall back to the room version's `default` schema
+			// when the event type has no specific one. all lookups use own-key checks to avoid
+			// prototype pollution (e.g. room_version: '__proto__') and to avoid throwing when
+			// event.type is not a string or when no matching/default schema exists.
+			const hasOwn = Object.prototype.hasOwnProperty;
+
+			if (!hasOwn.call(eventSchemas, roomVersion)) {
+				return { body: { errcode: 'M_UNSUPPORTED_ROOM_VERSION', error: `Unsupported room version: ${roomVersion}` }, statusCode: 400 };
+			}
+			const schemasForVersion = eventSchemas[roomVersion];
+
+			const eventType = event?.type;
+			const hasTypeSchema = typeof eventType === 'string' && hasOwn.call(schemasForVersion, eventType);
+			const hasDefaultSchema = hasOwn.call(schemasForVersion, 'default');
+
+			if (!hasTypeSchema && !hasDefaultSchema) {
+				return {
+					body: {
+						errcode: 'M_BAD_JSON',
+						error: 'The event does not match a valid PDU schema for this room version',
+					},
+					statusCode: 400,
+				};
+			}
+
+			const pduSchema = hasTypeSchema ? schemasForVersion[eventType] : schemasForVersion.default;
+			const pduResult = pduSchema.safeParse(event);
+
+			if (!pduResult.success) {
+				return {
+					body: {
+						errcode: 'M_BAD_JSON',
+						error: 'The event does not match a valid PDU schema for this room version',
+					},
+					statusCode: 400,
+				};
+			}
 
 			const userToCheck = event.state_key;
 
