@@ -29,7 +29,7 @@ const CardGrid = ({ children, breakpoints, minRowHeight }: CardGridProps) => (
 			]}
 		>
 			{Children.map(children, (child) => {
-				if (child === null) {
+				if (child == null || typeof child === 'boolean') {
 					return null;
 				}
 
