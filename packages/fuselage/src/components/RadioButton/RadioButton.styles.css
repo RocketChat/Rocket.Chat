@@ -1,0 +1,69 @@
+/* The native input's states, including the uncontrolled `:checked` that React state never sees */
+
+.rcx-radio-button__input:hover + .rcx-radio-button__fake,
+.rcx-radio-button.is-hovered .rcx-radio-button__input + .rcx-radio-button__fake {
+	border-color: var(--rcx-button-empty-hover-border-color, var(--rcx-color-stroke-extra-dark, #2f343d));
+	background-color: var(--rcx-button-empty-hover-background-color, var(--rcx-color-surface-light, #ffffff));
+	box-shadow: none;
+}
+
+.rcx-radio-button__input:active + .rcx-radio-button__fake,
+.rcx-radio-button.is-active .rcx-radio-button__input + .rcx-radio-button__fake {
+	border-color: var(--rcx-button-empty-active-border-color, var(--rcx-color-stroke-extra-dark, #2f343d));
+	background-color: var(--rcx-button-empty-active-background-color, var(--rcx-color-surface-light, #ffffff));
+	box-shadow: none;
+}
+
+.rcx-radio-button__input:focus + .rcx-radio-button__fake,
+.rcx-radio-button.is-focused .rcx-radio-button__input + .rcx-radio-button__fake {
+	border-color: var(--rcx-button-empty-focus-border-color, var(--rcx-color-stroke-extra-dark, #2f343d));
+	background-color: var(--rcx-button-empty-focus-background-color, var(--rcx-color-surface-light, #ffffff));
+	box-shadow: 0 0 0 2px var(--rcx-input-colors-focus-shadow-color, var(--rcx-color-shadow-highlight, #d1ebfe));
+}
+
+.rcx-radio-button__input:disabled + .rcx-radio-button__fake,
+.rcx-radio-button.is-disabled .rcx-radio-button__input + .rcx-radio-button__fake {
+	cursor: not-allowed;
+
+	color: var(--rcx-button-empty-disabled-color, var(--rcx-color-font-white, #ffffff));
+	border-color: var(--rcx-button-empty-disabled-border-color, var(--rcx-color-stroke-light, #cbced1));
+	background-color: var(--rcx-button-empty-disabled-background-color, var(--rcx-color-button-background-secondary-disabled, #ebecef));
+}
+
+.rcx-radio-button__input:checked + .rcx-radio-button__fake {
+	color: var(--rcx-button-primary-color, var(--rcx-color-button-font-on-primary, #ffffff));
+	border-color: var(--rcx-button-primary-border-color, var(--rcx-color-button-background-primary-default, #156ff5));
+	background-color: var(--rcx-button-primary-background-color, var(--rcx-color-button-background-primary-default, #156ff5));
+}
+
+.rcx-radio-button__input:checked:hover + .rcx-radio-button__fake,
+.rcx-radio-button.is-hovered .rcx-radio-button__input:checked + .rcx-radio-button__fake {
+	border-color: var(--rcx-button-primary-hover-border-color, var(--rcx-color-button-background-primary-hover, #095ad2));
+	background-color: var(--rcx-button-primary-hover-background-color, var(--rcx-color-button-background-primary-hover, #095ad2));
+	box-shadow: none;
+}
+
+.rcx-radio-button__input:checked:active + .rcx-radio-button__fake,
+.rcx-radio-button.is-active .rcx-radio-button__input:checked + .rcx-radio-button__fake {
+	border-color: var(--rcx-button-primary-active-border-color, var(--rcx-color-button-background-primary-press, #10529e));
+	background-color: var(--rcx-button-primary-active-background-color, var(--rcx-color-button-background-primary-press, #10529e));
+	box-shadow: none;
+}
+
+.rcx-radio-button__input:checked:focus + .rcx-radio-button__fake,
+.rcx-radio-button.is-focused .rcx-radio-button__input:checked + .rcx-radio-button__fake {
+	border-color: var(--rcx-button-primary-focus-border-color, var(--rcx-color-stroke-extra-dark, #2f343d));
+	background-color: var(--rcx-button-primary-focus-background-color, var(--rcx-color-button-background-primary-focus, #156ff5));
+	box-shadow: 0 0 0 2px var(--rcx-input-colors-focus-shadow-color, var(--rcx-color-shadow-highlight, #d1ebfe));
+}
+
+.rcx-radio-button__input:checked:disabled + .rcx-radio-button__fake,
+.rcx-radio-button.is-disabled .rcx-radio-button__input:checked + .rcx-radio-button__fake {
+	color: var(--rcx-button-primary-disabled-color, var(--rcx-color-button-font-on-primary-disabled, #ffffff));
+	border-color: var(--rcx-button-primary-disabled-border-color, var(--rcx-color-button-background-primary-disabled, #d1ebfe));
+	background-color: var(--rcx-button-primary-disabled-background-color, var(--rcx-color-button-background-primary-disabled, #d1ebfe));
+}
+
+.rcx-radio-button__input:checked + .rcx-radio-button__fake > * {
+	visibility: visible;
+}

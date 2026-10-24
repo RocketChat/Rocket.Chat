@@ -1,6 +1,7 @@
 import { dirname, join } from 'path';
 
 import type { StorybookConfig } from '@storybook/react-webpack5';
+import { DefinePlugin } from 'webpack';
 
 const config: StorybookConfig = {
 	webpackFinal: async (config) => {
@@ -8,6 +9,9 @@ const config: StorybookConfig = {
 			test: /\.woff2$/,
 			type: 'asset/resource',
 		});
+
+		// Matches the cascade layer the published bundle pins in `vite.config.mts`
+		config.plugins?.push(new DefinePlugin({ 'process.env.TAMAGUI_CSS_LAYER': JSON.stringify('fuselage') }));
 
 		return config;
 	},
@@ -35,34 +39,10 @@ const config: StorybookConfig = {
 								loader: require.resolve('postcss-loader'),
 								options: {
 									implementation: require.resolve('postcss'),
-								},
-							},
-						],
-					},
-					{
-						test: /\.s[ac]ss$/,
-						sideEffects: true,
-						use: [
-							require.resolve('style-loader'),
-							{
-								loader: require.resolve('css-loader'),
-								options: {
-									importLoaders: 3,
-								},
-							},
-							{
-								loader: require.resolve('postcss-loader'),
-								options: {
-									implementation: require.resolve('postcss'),
-								},
-							},
-							require.resolve('resolve-url-loader'),
-							{
-								loader: require.resolve('sass-loader'),
-								options: {
-									// Want to add more Sass options? Read more here: https://webpack.js.org/loaders/sass-loader/#options
-									sourceMap: true,
-									sassOptions: {},
+									// Inlines normalize's `@import … layer(reset)` keeping the layer, which css-loader drops
+									postcssOptions: {
+										plugins: [[require.resolve('postcss-import'), { filter: (path: string) => path.startsWith('normalize.css/') }]],
+									},
 								},
 							},
 						],

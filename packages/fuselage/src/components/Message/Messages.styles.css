@@ -1,0 +1,364 @@
+/* A role tag is a `Tag`, which takes no spacing of its own */
+.rcx-message-header__role {
+	margin-inline: 2px;
+}
+
+/* `Divider` renders this class on its own root too */
+.rcx-message-divider {
+	position: relative;
+	z-index: 1;
+
+	display: flex;
+	align-items: center;
+
+	margin-bottom: var(--rcx-message-divider-size-neg, -0.0625rem);
+	padding-inline: 1.25rem;
+
+	letter-spacing: 0;
+
+	color: var(--rcx-message-divider-color, var(--rcx-color-font-default, #2f343d));
+
+	font-size: 0.75rem;
+	font-weight: 700;
+	line-height: 1rem;
+}
+
+.rcx-message-divider.rcx-divider--labelled {
+	padding-inline: 0;
+}
+
+/* Link colors carry `:visited`, which has no Tamagui state, and the footer styles the links callers put in it */
+.rcx-message-generic-preview__title-link:focus-visible,
+.rcx-message-generic-preview__footer a:focus-visible,
+.rcx-message-generic-preview__title-link.is-focused,
+.rcx-message-generic-preview__footer a.is-focused,
+.rcx-message-generic-preview__title-link.focus,
+.rcx-message-generic-preview__footer a.focus {
+	text-decoration: none;
+
+	color: var(--rcx-link-focus-color, var(--rcx-color-font-info, #095ad2));
+	border-radius: var(--rcx-border-radius-small, 0.125rem);
+	outline: var(--rcx-link-focus-outline-color, var(--rcx-color-stroke-highlight, #156ff5)) solid 1px;
+	outline-offset: 0;
+	box-shadow: 0 0 0 2px var(--rcx-link-focus-box-shadow-color, var(--rcx-color-stroke-extra-light-highlight, #d1ebfe));
+}
+
+.rcx-message-generic-preview__title-link {
+	color: var(--rcx-link-color, var(--rcx-color-font-info, #095ad2));
+}
+
+.rcx-message-generic-preview__title-link:focus,
+.rcx-message-generic-preview__title-link:focus-within,
+.rcx-message-generic-preview__title-link.focus,
+.rcx-message-generic-preview__title-link.is-focused {
+	color: var(--rcx-link-focus-color, var(--rcx-color-font-info, #095ad2));
+}
+
+.rcx-message-generic-preview__title-link:where(:visited),
+.rcx-message-generic-preview__title-link:where(.is-visited) {
+	color: var(--rcx-link-visited-color, var(--rcx-color-font-info, #095ad2));
+}
+
+.rcx-message-generic-preview__title-link:where(:active),
+.rcx-message-generic-preview__title-link:where(.active),
+.rcx-message-generic-preview__title-link:where(.is-active) {
+	color: var(--rcx-link-active-color, var(--rcx-color-font-info, #095ad2));
+}
+
+.rcx-message-generic-preview__footer a {
+	color: var(--rcx-link-color, var(--rcx-color-font-secondary-info, #6c737a));
+}
+
+.rcx-message-generic-preview__footer a:focus,
+.rcx-message-generic-preview__footer a:focus-within,
+.rcx-message-generic-preview__footer a.focus,
+.rcx-message-generic-preview__footer a.is-focused {
+	color: var(--rcx-link-focus-color, var(--rcx-color-font-secondary-info, #6c737a));
+}
+
+.rcx-message-generic-preview__footer a:where(:visited),
+.rcx-message-generic-preview__footer a:where(.is-visited) {
+	color: var(--rcx-link-visited-color, var(--rcx-color-font-secondary-info, #6c737a));
+}
+
+.rcx-message-generic-preview__footer a:where(:active),
+.rcx-message-generic-preview__footer a:where(.active),
+.rcx-message-generic-preview__footer a:where(.is-active) {
+	color: var(--rcx-link-active-color, var(--rcx-color-font-secondary-info, #6c737a));
+}
+
+/* Sibling selectors have no Tamagui equivalent */
+.rcx-message-metrics__content-item + .rcx-message-metrics__content-item {
+	margin-inline-start: 0.25rem;
+}
+
+/* Keyboard-only focus anywhere in the message; `:has()` has no Tamagui equivalent */
+.rcx-message:has(:focus-visible) .rcx-message-reactions__reaction--action,
+.rcx-message:has(:focus-visible) .rcx-message-toolbar {
+	opacity: 1;
+}
+
+/* Emoji classes compete with app emoji sprite classes on the same element */
+.rcx-message-reactions__emoji {
+	display: block;
+
+	width: 1rem;
+	height: 1rem;
+
+	font-size: 0.75rem;
+	line-height: 1rem;
+}
+
+.rcx-message-status-indicator:empty {
+	display: none;
+}
+
+/* The items are `Icon` elements */
+.rcx-message-status-indicator__item {
+	color: var(--rcx-color-font-secondary-info, #6c737a);
+}
+
+.rcx-message-status-indicator__item--success {
+	color: var(--rcx-message-status-variant-color-success, var(--rcx-color-status-font-on-success, #148660));
+}
+
+.rcx-message-status-indicator__item--danger {
+	color: var(--rcx-message-status-variant-color-danger, var(--rcx-color-status-font-on-danger, #9b1325));
+}
+
+.rcx-message-status-indicator__item--warning {
+	color: var(--rcx-message-status-variant-color-warning, var(--rcx-color-status-font-on-warning, #895f00));
+}
+
+.rcx-message-status-indicator__item--primary {
+	color: var(--rcx-message-status-variant-color-primary, var(--rcx-color-status-font-on-primary,));
+}
+
+.rcx-message-thread__origin--system::first-letter {
+	text-transform: uppercase;
+}
+
+.rcx-message-thread__icon--follow,
+.rcx-message-thread__icon--unfollow {
+	cursor: pointer;
+}
+
+/* The icon is an `Icon` element */
+.rcx-message:not(:hover) .rcx-message-thread__icon--unfollow {
+	display: none;
+}
+
+.rcx-message-thread__emoji {
+	display: inline-block;
+
+	width: 0.75rem;
+	height: 0.75rem;
+	margin-inline: 0.125rem;
+
+	background-size: contain;
+
+	font-size: 0.75rem;
+	line-height: 0.5rem;
+}
+
+@keyframes background-fade {
+	50% {
+		background: var(--rcx-message-background-color-highlight, var(--rcx-color-status-background-warning-2, #fff8e0));
+	}
+
+	100% {
+		background: var(--rcx-message-background-color, var(--rcx-color-surface-room, #ffffff));
+	}
+}
+
+/* Sibling selectors have no Tamagui equivalent */
+.rcx-message-header + .rcx-message-block {
+	margin-block-start: 0.25rem;
+}
+
+/* Rich text: the body styles arbitrary HTML no component renders */
+.rcx-message-body h1 {
+	letter-spacing: 0;
+
+	font-size: 2rem;
+	font-weight: 700;
+	line-height: 2.5rem;
+}
+
+.rcx-message-body h2 {
+	letter-spacing: 0;
+
+	font-size: 1.5rem;
+	font-weight: 700;
+	line-height: 2rem;
+}
+
+.rcx-message-body h3 {
+	letter-spacing: 0;
+
+	font-size: 1.25rem;
+	font-weight: 700;
+	line-height: 1.75rem;
+}
+
+.rcx-message-body h4 {
+	letter-spacing: 0;
+
+	font-size: 1rem;
+	font-weight: 700;
+	line-height: 1.5rem;
+}
+
+.rcx-message-body ul,
+.rcx-message-body ol {
+	margin: 0;
+	padding-block: 0.25rem 0;
+	padding-inline: 0;
+
+	list-style: none;
+}
+
+.rcx-message-body ul li::before {
+	padding: 0 0.5rem;
+
+	content: '•';
+
+	font-weight: bold;
+}
+
+.rcx-message-body ol li::before {
+	padding: 0 0.5rem;
+
+	content: attr(value) '.';
+
+	font-weight: bold;
+}
+
+.rcx-message-body blockquote {
+	padding-inline: 0.5rem;
+
+	border: 1px solid var(--rcx-color-stroke-extra-light, #ebecef);
+	border-radius: var(--rcx-border-radius-small, 0.125rem);
+	background-color: var(--rcx-color-surface-tint, #f7f8fa);
+	border-inline-start-color: var(--rcx-color-stroke-medium, #9ea2a8);
+}
+
+.rcx-message-body blockquote:hover,
+.rcx-message-body blockquote:focus {
+	border-color: var(--rcx-color-stroke-light, #cbced1);
+	background-color: var(--rcx-color-surface-hover, #f2f3f5);
+	border-inline-start-color: var(--rcx-color-stroke-medium, #9ea2a8);
+}
+
+.rcx-message-body ul.task-list > li::before {
+	display: none;
+}
+
+.rcx-message-body ul.task-list > li > .rcx-check-box > .rcx-check-box__input:focus + .rcx-check-box__fake {
+	z-index: 1;
+}
+
+.rcx-message-body ul.task-list {
+	margin-inline-start: 0;
+	padding-inline-start: 0;
+
+	list-style: none;
+}
+
+/* Kept as plain classes: `MessageEmoji` competes with app emoji sprite classes on the same element, and app
+code (composer mentions) renders the highlight classes on raw elements */
+.rcx-message__emoji {
+	display: inline-block;
+
+	width: 1.5rem;
+	height: 1.5rem;
+	margin-inline: 0.125rem;
+
+	background-size: contain;
+
+	font-size: 1.5rem;
+	line-height: 1.5rem;
+}
+
+.rcx-message__emoji--big {
+	width: 2.75rem;
+	height: 2.75rem;
+
+	font-size: 2.75rem;
+	line-height: 3rem;
+}
+
+.rcx-message__highlight {
+	display: inline;
+
+	white-space: nowrap;
+	word-break: keep-all;
+
+	font-weight: 500;
+}
+
+.rcx-message__highlight--clickable {
+	cursor: pointer;
+}
+
+.rcx-message__highlight--clickable:hover {
+	text-decoration: underline;
+}
+
+.rcx-message__highlight--critical {
+	color: var(--rcx-message-highlight-colors-critical-color, var(--rcx-color-status-font-on-danger, #9b1325));
+}
+
+.rcx-message__highlight--relevant {
+	color: var(--rcx-message-highlight-colors-relevant-color, var(--rcx-color-status-font-on-service-1, #974809));
+}
+
+.rcx-message__highlight--link {
+	color: var(--rcx-message-highlight-colors-link-color, var(--rcx-color-status-font-on-info, #095ad2));
+}
+
+.rcx-message__highlight--other {
+	color: var(--rcx-message-highlight-colors-other-color, var(--rcx-color-status-font-on-warning, #895f00));
+}
+
+.rcx-message__highlight:focus-visible,
+.rcx-message__highlight.focus.focus-visible {
+	border-radius: var(--rcx-border-radius-medium, 0.25rem);
+	outline: 1px solid var(--rcx-color-stroke-highlight, #156ff5);
+	box-shadow: 0 0 0 2px var(--rcx-color-stroke-extra-light-highlight, #d1ebfe);
+}
+
+/* What the message group clauses did, as plain rules: a group clause subscribes each element to its message's state at
+   about 28 µs per element on mount, and every message renders several. In the `fuselage` layer, where those clauses were. */
+@layer fuselage {
+	@media (hover: hover) {
+		.rcx-message:hover .rcx-message-toolbar__wrapper {
+			display: inline-block;
+		}
+
+		.rcx-message:hover .rcx-message-toolbar,
+		.rcx-message:hover .rcx-message-reactions__reaction--action {
+			opacity: 1;
+		}
+
+		/* secondary-info fails contrast against the hover surface */
+		.rcx-message:hover .rcx-message-header__time {
+			color: var(--rcx-color-font-default, #2f343d);
+		}
+	}
+
+	.rcx-message:focus-within .rcx-message-toolbar__wrapper {
+		display: inline-block;
+	}
+
+	.rcx-message:focus-visible .rcx-message-toolbar,
+	.rcx-message:focus-visible .rcx-message-reactions__reaction--action {
+		opacity: 1;
+	}
+}
+
+/* Lets the follow badge overflow the `IconButton` frame, which clips its contents */
+.rcx-message-metrics__item__follow {
+	position: relative;
+	overflow: visible;
+}

@@ -1,9 +1,18 @@
+import { styled } from '@tamagui/web';
 import type { HTMLAttributes } from 'react';
+
+import { MessageContainerFrame, fixedContainer } from './MessageContainer';
+import { asPublicFrame } from '../../helpers/asPublicFrame';
+import { variantClass } from '../../helpers/variantClass';
 
 export type MessageContainerFixedProps = HTMLAttributes<HTMLDivElement>;
 
-const MessageContainerFixed = (props: MessageContainerFixedProps) => (
-	<div className='rcx-box rcx-box--full rcx-message-container rcx-message-container--fixed' {...props} />
-);
+const MessageContainerFixed = styled(MessageContainerFrame, {
+	variants: {
+		rcx: { true: variantClass('rcx-message-container rcx-message-container--fixed', fixedContainer) },
+	} as const,
 
-export default MessageContainerFixed;
+	defaultVariants: { rcx: true },
+});
+
+export default asPublicFrame<MessageContainerFixedProps>(MessageContainerFixed);

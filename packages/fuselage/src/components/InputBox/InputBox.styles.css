@@ -1,0 +1,546 @@
+/* Apps put the `rcx-input-box` and `rcx-input-box__wrapper` classes on plain `Box`es; the frames style themselves, so these skip them */
+.rcx-input-box__wrapper:where(:not(.is_Text)) {
+	position: relative;
+
+	display: inline-flex;
+	flex-flow: row nowrap;
+	align-items: flex-start;
+	flex-grow: 1;
+
+	min-width: 9rem;
+	padding-block: 0.5rem;
+	padding-inline: calc(1rem - 1px);
+
+	vertical-align: baseline;
+	word-break: break-all;
+
+	outline: 0;
+}
+
+.rcx-input-box:where(:not(.is_View)) {
+	position: relative;
+
+	display: inline-flex;
+	overflow: hidden;
+	flex: 1 0 auto;
+
+	width: 0;
+	min-width: 8rem;
+
+	user-select: initial;
+	vertical-align: baseline;
+	white-space: nowrap;
+	letter-spacing: 0;
+	text-overflow: ellipsis;
+	word-break: break-all;
+
+	color: var(--rcx-input-colors-color, var(--rcx-color-font-titles-labels, #1f2329));
+	outline: 0;
+	background-color: transparent;
+
+	font-size: 0.875rem;
+	font-weight: 500;
+	line-height: 1.25rem;
+}
+
+.rcx-input-box:where(:not(.is_View)).rcx-input-box--placeholder-visible {
+	color: var(--rcx-input-colors-placeholder-color, var(--rcx-color-font-hint, #6c737a));
+}
+
+.rcx-input-box:where(:not(.is_View)):focus {
+	caret-color: var(--rcx-input-colors-focus-caret-color, var(--rcx-color-font-titles-labels, #1f2329));
+}
+
+.rcx-input-box:where(:not(.is_View)):active {
+	caret-color: var(--rcx-input-colors-active-caret-color, var(--rcx-color-font-titles-labels, #1f2329));
+}
+
+.rcx-input-box__wrapper:where(:not(.is_Text)),
+.rcx-input-box:where(:not(.is_View)):not(.rcx-input-box--undecorated) {
+	border-width: 1px;
+	border-color: var(--rcx-input-colors-border-color, var(--rcx-color-stroke-light, #cbced1));
+	border-radius: var(--rcx-input-border-radius, var(--rcx-border-radius-medium, 0.25rem));
+	background-color: var(--rcx-input-colors-background-color, var(--rcx-color-surface-light, #ffffff));
+	box-shadow: none;
+}
+
+.rcx-input-box:where(:not(.is_View)):not(.rcx-input-box--undecorated) {
+	min-width: 8rem;
+	min-height: 2.5rem;
+	padding: 0.5rem calc(1rem - 1px);
+}
+
+.rcx-input-box--small:not(.rcx-input-box--undecorated) {
+	min-width: 7rem;
+	min-height: 1.75rem;
+	padding: 0.25rem 0.5rem;
+
+	border-width: 1px;
+	border-color: var(--rcx-input-colors-border-color, var(--rcx-color-stroke-light, #cbced1));
+	border-radius: var(--rcx-input-border-radius, var(--rcx-border-radius-medium, 0.25rem));
+	background-color: var(--rcx-input-colors-background-color, var(--rcx-color-surface-light, #ffffff));
+	box-shadow: none;
+}
+
+.rcx-input-box__wrapper:where(:not(.is_Text)):hover,
+.rcx-input-box:where(:not(.is_View)):hover:not(.rcx-input-box--undecorated),
+.rcx-input-box--small:hover:not(.rcx-input-box--undecorated),
+.hover.rcx-input-box__wrapper,
+.hover.rcx-input-box:not(.rcx-input-box--undecorated),
+.hover.rcx-input-box--small:not(.rcx-input-box--undecorated),
+.is-hovered.rcx-input-box__wrapper,
+.is-hovered.rcx-input-box:not(.rcx-input-box--undecorated),
+.is-hovered.rcx-input-box--small:not(.rcx-input-box--undecorated) {
+	border-color: var(--rcx-input-colors-hover-border-color, var(--rcx-color-stroke-dark, #6c737a));
+}
+
+.rcx-input-box__wrapper:where(:not(.is_Text)):focus,
+.rcx-input-box__wrapper:where(:not(.is_Text)):focus-within,
+.rcx-input-box:where(:not(.is_View)):focus:not(.rcx-input-box--undecorated),
+.rcx-input-box:where(:not(.is_View)):focus-within:not(.rcx-input-box--undecorated),
+.rcx-input-box--small:focus:not(.rcx-input-box--undecorated),
+.rcx-input-box--small:focus-within:not(.rcx-input-box--undecorated),
+.focus.rcx-input-box__wrapper,
+.focus.rcx-input-box:not(.rcx-input-box--undecorated),
+.focus.rcx-input-box--small:not(.rcx-input-box--undecorated),
+.is-focused.rcx-input-box__wrapper,
+.is-focused.rcx-input-box:not(.rcx-input-box--undecorated),
+.is-focused.rcx-input-box--small:not(.rcx-input-box--undecorated) {
+	border-color: var(--rcx-input-colors-focus-border-color, var(--rcx-color-stroke-highlight, #156ff5));
+	box-shadow: 0 0 0 2px var(--rcx-input-colors-focus-shadow-color, var(--rcx-color-shadow-highlight, #d1ebfe));
+}
+
+.rcx-input-box__wrapper:where(:not(.is_Text)):active,
+.rcx-input-box:where(:not(.is_View)):active:not(.rcx-input-box--undecorated),
+.rcx-input-box--small:active:not(.rcx-input-box--undecorated),
+.active.rcx-input-box__wrapper,
+.active.rcx-input-box:not(.rcx-input-box--undecorated),
+.active.rcx-input-box--small:not(.rcx-input-box--undecorated),
+.is-active.rcx-input-box__wrapper,
+.is-active.rcx-input-box:not(.rcx-input-box--undecorated),
+.is-active.rcx-input-box--small:not(.rcx-input-box--undecorated) {
+	border-color: var(--rcx-input-colors-active-border-color, var(--rcx-color-stroke-dark, #6c737a));
+	box-shadow: none;
+}
+
+*:disabled .rcx-input-box__wrapper,
+*:disabled .rcx-input-box:not(.rcx-input-box--undecorated),
+*:disabled .rcx-input-box--small:not(.rcx-input-box--undecorated),
+.rcx-input-box:disabled:not(.rcx-input-box--undecorated),
+.rcx-input-box--small:disabled:not(.rcx-input-box--undecorated),
+.disabled.rcx-input-box__wrapper,
+.disabled.rcx-input-box:not(.rcx-input-box--undecorated),
+.disabled.rcx-input-box--small:not(.rcx-input-box--undecorated),
+.is-disabled.rcx-input-box__wrapper,
+.is-disabled.rcx-input-box:not(.rcx-input-box--undecorated),
+.is-disabled.rcx-input-box--small:not(.rcx-input-box--undecorated) {
+	border-color: var(--rcx-input-colors-disabled-border-color, var(--rcx-color-stroke-light, #cbced1));
+	background-color: var(--rcx-input-colors-disabled-background-color, var(--rcx-color-surface-disabled, #f7f8fa));
+}
+
+.rcx-input-box__wrapper.invalid,
+.rcx-input-box:not(.rcx-input-box--undecorated):invalid,
+.rcx-input-box:not(.rcx-input-box--undecorated).invalid,
+.rcx-input-box--small:not(.rcx-input-box--undecorated):invalid,
+.rcx-input-box--small:not(.rcx-input-box--undecorated).invalid {
+	border-width: 1px;
+	border-color: var(--rcx-input-colors-invalid-border-color, var(--rcx-color-stroke-error, #ec0d2a));
+	border-radius: var(--rcx-input-border-radius, var(--rcx-border-radius-medium, 0.25rem));
+	background-color: var(--rcx-input-colors-invalid-background-color, var(--rcx-color-surface-light, #ffffff));
+	box-shadow: none;
+}
+
+.rcx-input-box__wrapper.invalid:hover,
+.rcx-input-box:hover:not(.rcx-input-box--undecorated):invalid,
+.rcx-input-box.invalid:hover:not(.rcx-input-box--undecorated),
+.rcx-input-box--small:hover:not(.rcx-input-box--undecorated):invalid,
+.rcx-input-box--small.invalid:hover:not(.rcx-input-box--undecorated),
+.hover.rcx-input-box__wrapper.invalid,
+.hover.rcx-input-box:not(.rcx-input-box--undecorated):invalid,
+.hover.rcx-input-box.invalid:not(.rcx-input-box--undecorated),
+.hover.rcx-input-box--small:not(.rcx-input-box--undecorated):invalid,
+.hover.rcx-input-box--small.invalid:not(.rcx-input-box--undecorated),
+.is-hovered.rcx-input-box__wrapper.invalid,
+.is-hovered.rcx-input-box:not(.rcx-input-box--undecorated):invalid,
+.is-hovered.rcx-input-box.invalid:not(.rcx-input-box--undecorated),
+.is-hovered.rcx-input-box--small:not(.rcx-input-box--undecorated):invalid,
+.is-hovered.rcx-input-box--small.invalid:not(.rcx-input-box--undecorated) {
+	border-color: var(--rcx-input-colors-invalid-hover-border-color, var(--rcx-color-stroke-error, #ec0d2a));
+}
+
+.rcx-input-box__wrapper.invalid:focus,
+.rcx-input-box:focus:not(.rcx-input-box--undecorated):invalid,
+.rcx-input-box.invalid:focus:not(.rcx-input-box--undecorated),
+.rcx-input-box--small:focus:not(.rcx-input-box--undecorated):invalid,
+.rcx-input-box--small.invalid:focus:not(.rcx-input-box--undecorated),
+.rcx-input-box__wrapper.invalid:focus-within,
+.rcx-input-box:focus-within:not(.rcx-input-box--undecorated):invalid,
+.rcx-input-box.invalid:focus-within:not(.rcx-input-box--undecorated),
+.rcx-input-box--small:focus-within:not(.rcx-input-box--undecorated):invalid,
+.rcx-input-box--small.invalid:focus-within:not(.rcx-input-box--undecorated),
+.focus.rcx-input-box__wrapper.invalid,
+.focus.rcx-input-box:not(.rcx-input-box--undecorated):invalid,
+.focus.rcx-input-box.invalid:not(.rcx-input-box--undecorated),
+.focus.rcx-input-box--small:not(.rcx-input-box--undecorated):invalid,
+.focus.rcx-input-box--small.invalid:not(.rcx-input-box--undecorated),
+.is-focused.rcx-input-box__wrapper.invalid,
+.is-focused.rcx-input-box:not(.rcx-input-box--undecorated):invalid,
+.is-focused.rcx-input-box.invalid:not(.rcx-input-box--undecorated),
+.is-focused.rcx-input-box--small:not(.rcx-input-box--undecorated):invalid,
+.is-focused.rcx-input-box--small.invalid:not(.rcx-input-box--undecorated) {
+	border-color: var(--rcx-input-colors-invalid-focus-border-color, var(--rcx-color-stroke-error, #ec0d2a));
+	box-shadow: 0 0 0 2px var(--rcx-input-colors-invalid-focus-shadow-color, var(--rcx-color-shadow-danger, #ffe9ec));
+}
+
+.rcx-input-box__wrapper.invalid:active,
+.rcx-input-box:active:not(.rcx-input-box--undecorated):invalid,
+.rcx-input-box.invalid:active:not(.rcx-input-box--undecorated),
+.rcx-input-box--small:active:not(.rcx-input-box--undecorated):invalid,
+.rcx-input-box--small.invalid:active:not(.rcx-input-box--undecorated),
+.active.rcx-input-box__wrapper.invalid,
+.active.rcx-input-box:not(.rcx-input-box--undecorated):invalid,
+.active.rcx-input-box.invalid:not(.rcx-input-box--undecorated),
+.active.rcx-input-box--small:not(.rcx-input-box--undecorated):invalid,
+.active.rcx-input-box--small.invalid:not(.rcx-input-box--undecorated),
+.is-active.rcx-input-box__wrapper.invalid,
+.is-active.rcx-input-box:not(.rcx-input-box--undecorated):invalid,
+.is-active.rcx-input-box.invalid:not(.rcx-input-box--undecorated),
+.is-active.rcx-input-box--small:not(.rcx-input-box--undecorated):invalid,
+.is-active.rcx-input-box--small.invalid:not(.rcx-input-box--undecorated) {
+	border-color: var(--rcx-input-colors-invalid-active-border-color, var(--rcx-color-stroke-error, #ec0d2a));
+	box-shadow: none;
+}
+
+*:disabled .rcx-input-box__wrapper.invalid,
+*:disabled .rcx-input-box:not(.rcx-input-box--undecorated):invalid,
+*:disabled .rcx-input-box:not(.rcx-input-box--undecorated).invalid,
+*:disabled .rcx-input-box--small:not(.rcx-input-box--undecorated):invalid,
+*:disabled .rcx-input-box--small:not(.rcx-input-box--undecorated).invalid,
+.rcx-input-box:disabled:not(.rcx-input-box--undecorated):invalid,
+.rcx-input-box.invalid:disabled:not(.rcx-input-box--undecorated),
+.rcx-input-box--small:disabled:not(.rcx-input-box--undecorated):invalid,
+.rcx-input-box--small.invalid:disabled:not(.rcx-input-box--undecorated),
+.disabled.rcx-input-box__wrapper.invalid,
+.disabled.rcx-input-box:not(.rcx-input-box--undecorated):invalid,
+.disabled.rcx-input-box.invalid:not(.rcx-input-box--undecorated),
+.disabled.rcx-input-box--small:not(.rcx-input-box--undecorated):invalid,
+.disabled.rcx-input-box--small.invalid:not(.rcx-input-box--undecorated),
+.is-disabled.rcx-input-box__wrapper.invalid,
+.is-disabled.rcx-input-box:not(.rcx-input-box--undecorated):invalid,
+.is-disabled.rcx-input-box.invalid:not(.rcx-input-box--undecorated),
+.is-disabled.rcx-input-box--small:not(.rcx-input-box--undecorated):invalid,
+.is-disabled.rcx-input-box--small.invalid:not(.rcx-input-box--undecorated) {
+	border-color: var(--rcx-input-colors-invalid-disabled-border-color, var(--rcx-color-stroke-light, #cbced1));
+	background-color: var(--rcx-input-colors-invalid-disabled-background-color, var(--rcx-color-surface-disabled, #f7f8fa));
+}
+
+.rcx-input-box--type-textarea::-webkit-scrollbar,
+.rcx-input-box--type-select::-webkit-scrollbar {
+	width: 0.25rem;
+	height: 0.25rem;
+}
+
+.rcx-input-box--type-textarea::-webkit-scrollbar-track,
+.rcx-input-box--type-select::-webkit-scrollbar-track {
+	background-color: transparent;
+}
+
+.rcx-input-box--type-textarea::-webkit-scrollbar-thumb,
+.rcx-input-box--type-select::-webkit-scrollbar-thumb {
+	background-color: rgba(247, 248, 250, 0.05);
+}
+
+.rcx-input-box--type-textarea:hover::-webkit-scrollbar-thumb,
+.rcx-input-box--type-select:hover::-webkit-scrollbar-thumb {
+	background-color: rgba(247, 248, 250, 0.15);
+}
+
+*:disabled .rcx-input-box__wrapper,
+.rcx-input-box__wrapper.disabled {
+	cursor: not-allowed;
+	pointer-events: none;
+}
+
+.rcx-input-box__addon {
+	display: flex;
+	flex-flow: row nowrap;
+	align-items: flex-start;
+	flex: 0 0 auto;
+
+	cursor: pointer;
+
+	outline: 0;
+}
+
+.rcx-input-box__addon.disabled,
+.rcx-input-box__addon:disabled {
+	cursor: not-allowed;
+}
+
+.rcx-input-box__addon:has(+ .rcx-input-box) {
+	margin-inline-end: 0.5rem;
+}
+
+.rcx-input-box + .rcx-input-box__addon {
+	margin-inline-start: 0.5rem;
+}
+
+.rcx-input-box--type-date::-webkit-inner-spin-button,
+.rcx-input-box--type-date::-webkit-calendar-picker-indicator,
+.rcx-input-box--type-time::-webkit-inner-spin-button,
+.rcx-input-box--type-time::-webkit-calendar-picker-indicator {
+	position: absolute;
+	inset: 0;
+
+	width: auto;
+	height: auto;
+
+	cursor: pointer;
+
+	color: transparent;
+	background: transparent;
+}
+
+.rcx-input-box--type-date,
+.rcx-input-box--type-time {
+	-webkit-text-fill-color: var(--rcx-input-colors-color, var(--rcx-color-font-titles-labels, #1f2329));
+}
+
+*:disabled .rcx-input-box--type-date,
+.rcx-input-box--type-date:disabled,
+.rcx-input-box--type-date.disabled,
+*:disabled .rcx-input-box--type-time,
+.rcx-input-box--type-time:disabled,
+.rcx-input-box--type-time.disabled {
+	-webkit-text-fill-color: var(--rcx-input-colors-disabled-color, var(--rcx-color-font-disabled, #cbced1));
+}
+
+/* Browsers pad the date and time fields vertically, which makes the input taller than its line height */
+.rcx-input-box--type-date::-webkit-datetime-edit,
+.rcx-input-box--type-date::-webkit-datetime-edit-fields-wrapper,
+.rcx-input-box--type-date::-webkit-datetime-edit-year-field,
+.rcx-input-box--type-date::-webkit-datetime-edit-month-field,
+.rcx-input-box--type-date::-webkit-datetime-edit-day-field,
+.rcx-input-box--type-date::-webkit-datetime-edit-hour-field,
+.rcx-input-box--type-date::-webkit-datetime-edit-minute-field,
+.rcx-input-box--type-date::-webkit-datetime-edit-second-field,
+.rcx-input-box--type-date::-webkit-datetime-edit-millisecond-field,
+.rcx-input-box--type-date::-webkit-datetime-edit-meridiem-field,
+.rcx-input-box--type-time::-webkit-datetime-edit,
+.rcx-input-box--type-time::-webkit-datetime-edit-fields-wrapper,
+.rcx-input-box--type-time::-webkit-datetime-edit-year-field,
+.rcx-input-box--type-time::-webkit-datetime-edit-month-field,
+.rcx-input-box--type-time::-webkit-datetime-edit-day-field,
+.rcx-input-box--type-time::-webkit-datetime-edit-hour-field,
+.rcx-input-box--type-time::-webkit-datetime-edit-minute-field,
+.rcx-input-box--type-time::-webkit-datetime-edit-second-field,
+.rcx-input-box--type-time::-webkit-datetime-edit-millisecond-field,
+.rcx-input-box--type-time::-webkit-datetime-edit-meridiem-field,
+.rcx-input-box--type-datetime-local::-webkit-datetime-edit,
+.rcx-input-box--type-datetime-local::-webkit-datetime-edit-fields-wrapper,
+.rcx-input-box--type-datetime-local::-webkit-datetime-edit-year-field,
+.rcx-input-box--type-datetime-local::-webkit-datetime-edit-month-field,
+.rcx-input-box--type-datetime-local::-webkit-datetime-edit-day-field,
+.rcx-input-box--type-datetime-local::-webkit-datetime-edit-hour-field,
+.rcx-input-box--type-datetime-local::-webkit-datetime-edit-minute-field,
+.rcx-input-box--type-datetime-local::-webkit-datetime-edit-second-field,
+.rcx-input-box--type-datetime-local::-webkit-datetime-edit-millisecond-field,
+.rcx-input-box--type-datetime-local::-webkit-datetime-edit-meridiem-field {
+	padding-block: 0;
+}
+
+/* Firefox shows its own non-hideable calendar icon on date inputs; `-moz-orient` only exists there */
+@supports (-moz-orient: inline) {
+	.rcx-input-box--type-date + .rcx-input-box__addon {
+		display: none;
+	}
+}
+
+.rcx-input-box--small {
+	letter-spacing: 0;
+
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 1rem;
+}
+
+.rcx-input-box::placeholder {
+	color: var(--rcx-input-colors-placeholder-color, var(--rcx-color-font-hint, #6c737a));
+}
+
+.rcx-input-box.focus {
+	caret-color: var(--rcx-input-colors-focus-caret-color, var(--rcx-color-font-titles-labels, #1f2329));
+}
+
+.rcx-input-box.active {
+	caret-color: var(--rcx-input-colors-active-caret-color, var(--rcx-color-font-titles-labels, #1f2329));
+}
+
+*:disabled .rcx-input-box,
+.rcx-input-box:disabled,
+.rcx-input-box.disabled {
+	cursor: not-allowed;
+
+	color: var(--rcx-input-colors-disabled-color, var(--rcx-color-font-disabled, #cbced1));
+}
+
+*:disabled .rcx-input-box::placeholder,
+.rcx-input-box:disabled::placeholder,
+.rcx-input-box.disabled::placeholder {
+	color: var(--rcx-input-colors-disabled-color, var(--rcx-color-font-disabled, #cbced1));
+}
+
+.rcx-input-box:invalid,
+.rcx-input-box.invalid {
+	color: var(--rcx-input-colors-invalid-color, var(--rcx-color-font-titles-labels, #1f2329));
+}
+
+.rcx-input-box:invalid::placeholder,
+.rcx-input-box.invalid::placeholder {
+	color: var(--rcx-input-colors-invalid-placeholder-color, var(--rcx-color-font-hint, #6c737a));
+}
+
+.rcx-input-box:invalid.rcx-input-box--placeholder-visible,
+.rcx-input-box.invalid.rcx-input-box--placeholder-visible {
+	color: var(--rcx-input-colors-invalid-placeholder-color, var(--rcx-color-font-hint, #6c737a));
+}
+
+.rcx-input-box:invalid:focus,
+.rcx-input-box:invalid.focus,
+.rcx-input-box.invalid:focus,
+.rcx-input-box.invalid.focus {
+	caret-color: var(--rcx-input-colors-invalid-focus-caret-color, var(--rcx-color-font-titles-labels, #1f2329));
+}
+
+.rcx-input-box:invalid:active,
+.rcx-input-box:invalid.active,
+.rcx-input-box.invalid:active,
+.rcx-input-box.invalid.active {
+	caret-color: var(--rcx-input-colors-invalid-active-caret-color, var(--rcx-color-font-titles-labels, #1f2329));
+}
+
+*:disabled .rcx-input-box:invalid,
+.rcx-input-box:invalid:disabled,
+.rcx-input-box:invalid.disabled,
+*:disabled .rcx-input-box.invalid,
+.rcx-input-box.invalid:disabled,
+.rcx-input-box.invalid.disabled {
+	color: var(--rcx-input-colors-invalid-disabled-color, var(--rcx-color-font-disabled, #cbced1));
+}
+
+*:disabled .rcx-input-box:invalid::placeholder,
+.rcx-input-box:invalid:disabled::placeholder,
+.rcx-input-box:invalid.disabled::placeholder,
+*:disabled .rcx-input-box.invalid::placeholder,
+.rcx-input-box.invalid:disabled::placeholder,
+.rcx-input-box.invalid.disabled::placeholder {
+	color: var(--rcx-input-colors-invalid-disabled-color, var(--rcx-color-font-disabled, #cbced1));
+}
+
+.rcx-input-box:invalid + .rcx-input-box__addon,
+.rcx-input-box__addon:has(+ .rcx-input-box:invalid, + .rcx-input-box.invalid),
+.rcx-input-box.invalid + .rcx-input-box__addon {
+	color: var(--rcx-input-colors-invalid-color, var(--rcx-color-font-titles-labels, #1f2329));
+}
+
+.rcx-input-box__wrapper.focus > .rcx-input-box:invalid,
+.rcx-input-box__wrapper.focus > .rcx-input-box.invalid {
+	caret-color: var(--rcx-input-colors-invalid-focus-caret-color, var(--rcx-color-font-titles-labels, #1f2329));
+}
+
+.rcx-input-box:invalid:focus + .rcx-input-box__addon,
+.rcx-input-box:invalid.focus + .rcx-input-box__addon,
+.rcx-input-box__wrapper.focus > .rcx-input-box:invalid + .rcx-input-box__addon,
+.rcx-input-box__addon:has(+ .rcx-input-box:invalid:focus, + .rcx-input-box.invalid:focus),
+.rcx-input-box__addon:has(+ .rcx-input-box:invalid.focus, + .rcx-input-box.invalid.focus),
+.rcx-input-box__wrapper.focus > .rcx-input-box__addon:has(+ .rcx-input-box:invalid, + .rcx-input-box.invalid),
+.rcx-input-box.invalid:focus + .rcx-input-box__addon,
+.rcx-input-box.invalid.focus + .rcx-input-box__addon,
+.rcx-input-box__wrapper.focus > .rcx-input-box.invalid + .rcx-input-box__addon {
+	color: var(--rcx-input-colors-invalid-focus-icon-color, var(--rcx-color-font-titles-labels, #1f2329));
+}
+
+.rcx-input-box__wrapper.disabled > .rcx-input-box:invalid,
+.rcx-input-box__wrapper.disabled > .rcx-input-box.invalid {
+	color: var(--rcx-input-colors-invalid-disabled-color, var(--rcx-color-font-disabled, #cbced1));
+}
+
+*:disabled .rcx-input-box:invalid + .rcx-input-box__addon,
+.rcx-input-box:invalid:disabled + .rcx-input-box__addon,
+.rcx-input-box:invalid.disabled + .rcx-input-box__addon,
+.rcx-input-box__wrapper.disabled > .rcx-input-box:invalid + .rcx-input-box__addon,
+.rcx-input-box__addon:has(+ .rcx-input-box:invalid:disabled, + .rcx-input-box.invalid:disabled),
+.rcx-input-box__addon:has(+ .rcx-input-box:invalid.disabled, + .rcx-input-box.invalid.disabled),
+.rcx-input-box__wrapper.disabled > .rcx-input-box__addon:has(+ .rcx-input-box:invalid, + .rcx-input-box.invalid),
+*:disabled .rcx-input-box.invalid + .rcx-input-box__addon,
+.rcx-input-box.invalid:disabled + .rcx-input-box__addon,
+.rcx-input-box.invalid.disabled + .rcx-input-box__addon,
+.rcx-input-box__wrapper.disabled > .rcx-input-box.invalid + .rcx-input-box__addon {
+	color: var(--rcx-input-colors-invalid-disabled-color, var(--rcx-color-font-disabled, #cbced1));
+}
+
+.rcx-input-box + .rcx-input-box__addon,
+.rcx-input-box__addon:has(+ .rcx-input-box) {
+	color: var(--rcx-input-colors-color, var(--rcx-color-font-titles-labels, #1f2329));
+}
+
+.rcx-input-box__wrapper.focus > .rcx-input-box {
+	caret-color: var(--rcx-input-colors-focus-caret-color, var(--rcx-color-font-titles-labels, #1f2329));
+}
+
+.rcx-input-box:focus + .rcx-input-box__addon,
+.rcx-input-box.focus + .rcx-input-box__addon,
+.rcx-input-box__wrapper.focus > .rcx-input-box + .rcx-input-box__addon,
+.rcx-input-box__addon:has(+ .rcx-input-box:focus),
+.rcx-input-box__addon:has(+ .rcx-input-box.focus),
+.rcx-input-box__wrapper.focus > .rcx-input-box__addon:has(+ .rcx-input-box) {
+	color: var(--rcx-input-colors-focus-icon-color, var(--rcx-color-font-titles-labels, #1f2329));
+}
+
+.rcx-input-box__wrapper.disabled > .rcx-input-box {
+	color: var(--rcx-input-colors-disabled-color, var(--rcx-color-font-disabled, #cbced1));
+}
+
+*:disabled .rcx-input-box + .rcx-input-box__addon,
+.rcx-input-box:disabled + .rcx-input-box__addon,
+.rcx-input-box.disabled + .rcx-input-box__addon,
+.rcx-input-box__wrapper.disabled > .rcx-input-box + .rcx-input-box__addon,
+.rcx-input-box__addon:has(+ .rcx-input-box:disabled),
+.rcx-input-box__addon:has(+ .rcx-input-box.disabled),
+.rcx-input-box__wrapper.disabled > .rcx-input-box__addon:has(+ .rcx-input-box) {
+	color: var(--rcx-input-colors-disabled-color, var(--rcx-color-font-disabled, #cbced1));
+}
+
+*:disabled .rcx-input-box + .rcx-input-box__addon,
+.rcx-input-box:disabled + .rcx-input-box__addon,
+.rcx-input-box.disabled + .rcx-input-box__addon {
+	pointer-events: none;
+}
+
+.rcx-input-box__placeholder {
+	overflow: hidden;
+
+	white-space: nowrap;
+	letter-spacing: 0;
+	text-overflow: ellipsis;
+
+	color: var(--rcx-input-colors-placeholder-color, var(--rcx-color-font-hint, #6c737a));
+
+	font-size: 0.875rem;
+	font-weight: 500;
+	line-height: 1.25rem;
+}
+
+.rcx-input-box__option {
+	overflow: hidden;
+
+	white-space: nowrap;
+	letter-spacing: 0;
+	text-overflow: ellipsis;
+
+	color: var(--rcx-input-colors-color, var(--rcx-color-font-titles-labels, #1f2329));
+
+	font-size: 0.875rem;
+	font-weight: 500;
+	line-height: 1.25rem;
+}

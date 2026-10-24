@@ -1,9 +1,52 @@
+import { styled, Text, View, type GetProps } from '@tamagui/web';
 import type { ReactElement } from 'react';
 
+import { surfaceColors, textIconColors } from '../../Theme';
+import { cx } from '../../helpers/composeClassNames';
+import { toCSSValue } from '../../helpers/toCSSValue';
+import { borderRadius, fontFamily, size, spacing } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
 import { Box } from '../Box';
 import { Button } from '../Button';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 import { Skeleton } from '../Skeleton';
+
+const resetBox = {
+	flex: '0 1 auto',
+	margin: 0,
+	borderWidth: 0,
+	borderStyle: 'solid',
+	borderColor: 'currentColor',
+	outline: 'none',
+	fontVariantNumeric: 'tabular-nums',
+} as const;
+
+const CodeSnippetFrame = styled(View, {
+	...resetBox,
+	render: 'pre',
+	fontFamily: fontFamily('sans'),
+	display: 'flex',
+	flexDirection: 'row',
+	justifyContent: 'space-between',
+	alignItems: 'center',
+	width: '100%',
+	minHeight: size('x60'),
+	padding: spacing('x16'),
+	color: String(textIconColors['font-default']),
+	borderRadius: toCSSValue('--rcx-code-snippet-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium'))),
+	backgroundColor: String(surfaceColors['surface-neutral']),
+});
+
+const CodeboxFrame = styled(Text, {
+	...resetBox,
+	render: 'div',
+	display: 'block',
+	marginRight: spacing('x8'),
+	whiteSpace: 'pre-line',
+	wordWrap: 'inherit',
+	wordBreak: 'break-all',
+	fontFamily: 'monospace',
+});
 
 export type CodeSnippetProps = ElementProps<HTMLPreElement> & {
 	children: string;
@@ -24,21 +67,24 @@ const CodeSnippet = ({
 	onClick,
 	buttonText = 'Copy',
 	buttonDisabled = false,
+	className,
 	...props
 }: CodeSnippetProps): ReactElement<CodeSnippetProps> => {
+	const frameProps = { ...props, className: cx('rcx-code-snippet', className) } as GetProps<typeof CodeSnippetFrame>;
+
 	if (!children) {
 		return (
-			<Box is='pre' rcx-code-snippet {...props}>
+			<CodeSnippetFrame {...frameProps}>
 				<Skeleton width='100%' aria-hidden aria-busy />
-			</Box>
+			</CodeSnippetFrame>
 		);
 	}
 
 	return (
-		<Box is='pre' rcx-code-snippet {...props}>
-			<Box role='code' rcx-code-snippet__codebox>
+		<CodeSnippetFrame {...frameProps}>
+			<CodeboxFrame {...({ role: 'code' } as Record<string, unknown>)} className='rcx-code-snippet__codebox'>
 				{children}
-			</Box>
+			</CodeboxFrame>
 			{onClick && children && (
 				<Box>
 					<Button small primary onClick={onClick} disabled={buttonDisabled}>
@@ -46,8 +92,8 @@ const CodeSnippet = ({
 					</Button>
 				</Box>
 			)}
-		</Box>
+		</CodeSnippetFrame>
 	);
 };
 
-export default CodeSnippet;
+export default withFuselageProvider(CodeSnippet);

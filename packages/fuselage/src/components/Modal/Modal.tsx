@@ -1,8 +1,15 @@
+import { css } from '@rocket.chat/css-in-js';
+import { styled, View, type GetProps } from '@tamagui/web';
 import type { DialogHTMLAttributes, ElementType, ReactNode } from 'react';
 import { createElement } from 'react';
 
+import { surfaceColors, textIconColors } from '../../Theme';
+import { toCSSValue } from '../../helpers/toCSSValue';
+import { useStyle } from '../../hooks/useStyle';
+import { borderRadius, fontFamily, fontScale, size } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
 import { Box, type BoxProps } from '../Box';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 export type ModalProps = ElementProps<Element, DialogHTMLAttributes<HTMLDialogElement>> & {
 	/** A fixed width, for content that needs it instead of the default fluid one. */
@@ -17,18 +24,80 @@ export type ModalProps = ElementProps<Element, DialogHTMLAttributes<HTMLDialogEl
 	wrapper?: ElementType<Pick<BoxProps, 'elevation' | 'className' | 'children'>>;
 };
 
-const Modal = ({ children, wrapper = Box, wrapperFunction, ...props }: ModalProps) => {
+/** The margin around the header and the footer. */
+export const modalContainerMargin = toCSSValue('--rcx-modal-container-margin', size('x24')!);
+
+/** Font settings every `Box` used to carry, restated on frames that hold text. */
+export const modalBoxFont = {
+	fontFamily: fontFamily('sans'),
+	fontVariantNumeric: 'tabular-nums',
+} as const;
+
+const ModalFrame = styled(View, {
+	render: 'dialog',
+	position: 'static',
+	flexDirection: 'row',
+	flexShrink: 1,
+	minWidth: 'auto',
+	minHeight: 'auto',
+	width: '100%',
+	maxWidth: { sm: '40rem' },
+	maxHeight: '100%',
+	margin: toCSSValue('--rcx-modal-margin', 'auto'),
+	padding: { default: 0, sm: '1rem' },
+	borderWidth: 0,
+	borderStyle: 'solid',
+	borderColor: 'currentColor',
+	outlineStyle: 'none',
+	backgroundColor: 'transparent',
+	backgroundImage: 'none',
+	...modalBoxFont,
+
+	variants: {
+		// Not `hidden`, which the dialog still needs as an attribute
+		isHidden: {
+			true: { display: 'none' },
+		},
+	} as const,
+});
+
+// The wrapper is any element a consumer renders, so its look travels as a class name
+const innerStyle = css`
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+	width: 100%;
+	min-width: 0;
+	padding: 0;
+	color: ${textIconColors['font-default']};
+	border-radius: ${toCSSValue('--rcx-modal-border-radius', toCSSValue('--rcx-border-radius-large', borderRadius('large')))};
+	background-color: ${surfaceColors['surface-light']};
+	letter-spacing: ${fontScale('p2').letterSpacing};
+	font-size: ${fontScale('p2').fontSize};
+	font-weight: ${fontScale('p2').fontWeight};
+	line-height: ${fontScale('p2').lineHeight};
+`;
+
+const Modal = ({ children, wrapper = Box, wrapperFunction, hidden, width, height, maxHeight, className, ...props }: ModalProps) => {
 	const wrapperProps = {
 		children,
-		className: 'rcx-modal__inner',
+		className: `rcx-modal__inner ${useStyle(innerStyle, undefined)}`,
 		elevation: '2',
 	} as const;
 
 	return (
-		<Box is='dialog' open aria-modal='true' rcx-modal {...props}>
+		<ModalFrame
+			isHidden={hidden}
+			// An `undefined` style prop would still override the frame's own
+			{...(width !== undefined && { width: size(width) })}
+			{...(height !== undefined && { height: size(height) })}
+			{...(maxHeight !== undefined && { maxHeight: size(maxHeight) })}
+			className={['rcx-modal', className].filter(Boolean).join(' ')}
+			{...({ 'open': true, 'aria-modal': 'true', hidden, ...props } as GetProps<typeof ModalFrame>)}
+		>
 			{wrapperFunction ? wrapperFunction(wrapperProps) : createElement(wrapper, wrapperProps)}
-		</Box>
+		</ModalFrame>
 	);
 };
 
-export default Modal;
+export default withFuselageProvider(Modal);

@@ -1,0 +1,47 @@
+.rcx-button:active > *:not([role='status']),
+.rcx-button.active > *:not([role='status']),
+.rcx-button.is-active > *:not([role='status']) {
+	transform: translateY(1px);
+}
+
+*:disabled .rcx-button .rcx-button--content,
+.rcx-button:disabled .rcx-button--content,
+.rcx-button.disabled .rcx-button--content,
+.rcx-button.is-disabled .rcx-button--content {
+	transform: none !important;
+}
+
+.rcx-button--loading .rcx-icon--name-loading {
+	animation: spin-animation 0.8s linear infinite;
+}
+
+.rcx-button .rcx-button__icon {
+	margin-inline-end: 4px;
+}
+
+/* `translate`, not `transform`, so the press nudge on the button's children moves the badge along */
+.rcx-button__badge {
+	translate: 30% -30%;
+}
+
+.rcx-button__badge:dir(rtl) {
+	translate: -30% -30%;
+}
+
+.rcx-button__badge--bottom-end {
+	translate: 30% 30%;
+}
+
+.rcx-button__badge--bottom-end:dir(rtl) {
+	translate: -30% 30%;
+}
+
+@keyframes spin-animation {
+	from {
+		transform: rotate(0deg);
+	}
+
+	to {
+		transform: rotate(360deg);
+	}
+}

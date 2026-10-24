@@ -1,9 +1,23 @@
 /// <reference types="vite/client" />
 /** @internal */
-import './index.scss';
+import './index.css';
 
 export * from './components';
-export * from './styleTokens';
+export {
+	backgroundColor,
+	borderRadius,
+	borderWidth,
+	color,
+	fontColor,
+	fontFamily,
+	fontScale,
+	size,
+	spacing,
+	strokeColor,
+	type BorderRadius,
+	type BorderWidth,
+	type FontScaleName,
+} from './styleTokens';
 export * from './contexts';
 export { useStyle } from './hooks/useStyle';
 

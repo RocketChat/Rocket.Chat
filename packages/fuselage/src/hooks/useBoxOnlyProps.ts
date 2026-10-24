@@ -1,34 +1,25 @@
 import type { AllHTMLAttributes } from 'react';
 
 import { prependClassName } from '../helpers/prependClassName';
+import { prependRcxClassNames } from '../helpers/prependRcxClassNames';
 
-export const useBoxOnlyProps = <
+type BoxOnlyProps = {
+	animated?: boolean;
+	withRichContent?: boolean | 'inlineWithoutBreaks';
+	htmlSize?: AllHTMLAttributes<HTMLElement>['size'];
+	size?: AllHTMLAttributes<HTMLElement>['size'];
+	focusable?: boolean;
+};
+
+/** Turns the props only `Box` understands into class names and attributes, without the `rcx-box` base classes. */
+export const applyBoxOnlyProps = <
 	T extends {
 		className: string;
 	},
 >(
-	props: T & {
-		animated?: boolean;
-		withRichContent?: boolean | 'inlineWithoutBreaks';
-		htmlSize?: AllHTMLAttributes<HTMLElement>['size'];
-		size?: AllHTMLAttributes<HTMLElement>['size'];
-		focusable?: boolean;
-	},
+	props: T & BoxOnlyProps,
 ): T => {
-	Object.entries(props).forEach(([key, value]) => {
-		if (key.slice(0, 4) === 'rcx-') {
-			try {
-				if (!value) {
-					return;
-				}
-
-				const newClassName = value === true ? key : `${key}-${value}`;
-				props.className = prependClassName(props.className, newClassName);
-			} finally {
-				delete (props as Record<string, unknown>)[key];
-			}
-		}
-	});
+	prependRcxClassNames(props);
 
 	if (props.animated) {
 		props.className = prependClassName(props.className, 'rcx-box--animated');
@@ -57,7 +48,22 @@ export const useBoxOnlyProps = <
 
 	delete props.withRichContent;
 
-	props.className = prependClassName(props.className, 'rcx-box rcx-box--full');
+	return props;
+};
+
+export const useBoxOnlyProps = <
+	T extends {
+		className: string;
+	},
+>(
+	props: T & BoxOnlyProps,
+	withBaseClassNames = true,
+): T => {
+	applyBoxOnlyProps(props);
+
+	if (withBaseClassNames) {
+		props.className = prependClassName(props.className, 'rcx-box rcx-box--full');
+	}
 
 	return props;
 };

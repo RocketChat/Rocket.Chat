@@ -1,6 +1,48 @@
+import { styled, View, type GetProps } from '@tamagui/web';
 import type { AllHTMLAttributes, RefAttributes } from 'react';
 
-import { Box } from '../Box';
+import { surfaceColors } from '../../Theme';
+import { cx } from '../../helpers/composeClassNames';
+import { toCSSValue } from '../../helpers/toCSSValue';
+import { borderRadius, fontFamily, resolveBackgroundColor } from '../../styleTokens';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
+
+const progressBarBorderRadius = toCSSValue(
+	'--rcx-progress-bar-border-radius',
+	toCSSValue('--rcx-border-radius-large', borderRadius('large')),
+);
+
+const resetBox = {
+	display: 'block',
+	flex: '0 1 auto',
+	borderWidth: 0,
+	borderStyle: 'solid',
+	borderColor: 'currentColor',
+	outline: 'none',
+	fontFamily: fontFamily('sans'),
+	fontVariantNumeric: 'tabular-nums',
+	height: 8,
+	borderRadius: progressBarBorderRadius,
+} as const;
+
+const ProgressBarFrame = styled(View, {
+	...resetBox,
+	overflow: 'hidden',
+	width: '100%',
+	backgroundColor: toCSSValue('--rcx-progress-bar-color-background', surfaceColors['surface-neutral']),
+});
+
+const ProgressBarFill = styled(View, resetBox);
+
+const ProgressBarShine = styled(View, {
+	position: 'absolute',
+	inset: 0,
+	width: 'inherit',
+	animation: 'rcx-progress-bar__animation 2s ease-out infinite',
+	opacity: 0,
+	borderRadius: progressBarBorderRadius,
+	background: toCSSValue('--rcx-progress-bar-color-shine', `${surfaceColors['surface-light']}`),
+});
 
 const getWidth = (percentage: number): string => `${Math.min(Math.max(0, percentage), 100).toFixed(1)}%`;
 
@@ -35,17 +77,21 @@ export type ProgressBarProps = RefAttributes<unknown> & {
 /**
  * The `ProgressBar` is used to inform the user the progress of an operation.
  */
-function ProgressBar({ percentage, variant = 'info', error, animated, light = false, ...props }: ProgressBarProps) {
+function ProgressBar({ percentage, variant = 'info', error, animated, light = false, className, ...props }: ProgressBarProps) {
 	return (
-		<Box rcx-progress-bar title={error || undefined} overflow='hidden' {...props}>
-			<Box
-				backgroundColor={getColor(light, variant, error)}
-				rcx-progress-bar__fill--animated={animated}
-				rcx-progress-bar__fill
+		<ProgressBarFrame
+			{...({ title: error || undefined, ...props } as GetProps<typeof ProgressBarFrame>)}
+			className={cx('rcx-progress-bar', className)}
+		>
+			<ProgressBarFill
+				backgroundColor={resolveBackgroundColor(getColor(light, variant, error))}
 				width={getWidth(percentage)}
-			/>
-		</Box>
+				className={cx('rcx-progress-bar__fill', animated && 'rcx-progress-bar__fill--animated')}
+			>
+				{animated && <ProgressBarShine aria-hidden />}
+			</ProgressBarFill>
+		</ProgressBarFrame>
 	);
 }
 
-export default ProgressBar;
+export default withFuselageProvider(ProgressBar);

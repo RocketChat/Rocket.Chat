@@ -1,9 +1,31 @@
 import type { Keys as IconName } from '@rocket.chat/icons';
 import nameToCharacterMapping from '@rocket.chat/icons';
+import { styled, Text, type GetProps } from '@tamagui/web';
 
 import type { statusColors, textIconColors } from '../../Theme';
+import { cx } from '../../helpers/composeClassNames';
+import { resolveFontColor, resolveFontScale, size as sizeToken } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
-import { Box, type BoxProps } from '../Box';
+import type { BoxProps } from '../Box';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
+
+export const IconFrame = styled(Text, {
+	render: 'i',
+	display: 'inline-block',
+	flexShrink: 0,
+	whiteSpace: 'inherit',
+	wordWrap: 'inherit',
+	userSelect: 'none',
+	verticalAlign: 'text-bottom',
+	letterSpacing: 0,
+	fontFamily: 'RocketChat',
+	fontSize: 'inherit',
+	fontWeight: '400',
+	fontStyle: 'normal',
+	fontVariant: 'normal',
+	lineHeight: '1',
+	textRendering: 'auto',
+});
 
 type FontColor<T> = T extends `font-${infer Color}` ? Color : never;
 
@@ -17,12 +39,18 @@ export type IconProps = ElementProps<HTMLElement> & {
 	color?: IconColor;
 };
 
-function Icon({ name, size, ...props }: IconProps) {
+function Icon({ name, size, color, className, ...props }: IconProps) {
 	return (
-		<Box is='i' rcx-icon rcx-icon--name={name} aria-hidden='true' fontSize={size} {...props}>
+		<IconFrame
+			aria-hidden
+			fontSize={resolveFontScale(size)?.fontSize ?? sizeToken(size)}
+			color={color && resolveFontColor(color)}
+			{...(props as GetProps<typeof IconFrame>)}
+			className={cx('rcx-icon', `rcx-icon--name-${name}`, className)}
+		>
 			{nameToCharacterMapping[name]}
-		</Box>
+		</IconFrame>
 	);
 }
 
-export default Icon;
+export default withFuselageProvider(Icon, { takesBoxTransforms: true });

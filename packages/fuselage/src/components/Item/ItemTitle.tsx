@@ -1,8 +1,20 @@
+import { styled, Text, type GetProps } from '@tamagui/web';
 import type { AllHTMLAttributes, ElementType, RefAttributes } from 'react';
-import { useEffect, useId } from 'react';
+import { useContext, useEffect, useId } from 'react';
 
-import { useItemContext } from './ItemContext';
+import { ItemHighlightContext, useItemContext } from './ItemContext';
+import { highlightVariant, toRender, truncatedTextStyle } from './itemStyles';
 import { cx } from '../../helpers/composeClassNames';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
+
+export const ItemTitleFrame = styled(Text, {
+	...truncatedTextStyle,
+	display: 'block',
+
+	variants: {
+		highlight: highlightVariant,
+	} as const,
+});
 
 export type ItemTitleProps = {
 	is?: ElementType;
@@ -16,10 +28,19 @@ const ItemTitle = ({ is: Tag = 'div', id: propId, className, ...props }: ItemTit
 	const generatedId = useId();
 	const id = propId ?? generatedId;
 	const { registerTitle } = useItemContext();
+	const highlight = useContext(ItemHighlightContext);
 
 	useEffect(() => registerTitle(id), [id, registerTitle]);
 
-	return <Tag {...props} id={id} className={cx('rcx-item__title', className)} />;
+	return (
+		<ItemTitleFrame
+			{...(props as GetProps<typeof ItemTitleFrame>)}
+			render={toRender(Tag)}
+			highlight={highlight}
+			id={id}
+			className={cx('rcx-item__title', className)}
+		/>
+	);
 };
 
-export default ItemTitle;
+export default withFuselageProvider(ItemTitle);

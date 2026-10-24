@@ -1,8 +1,18 @@
+import { styled } from '@tamagui/web';
+
+import { TableFootFrame } from './TableFrames';
+import { asPublicFrame } from '../../helpers/asPublicFrame';
+import { variantClass } from '../../helpers/variantClass';
 import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
 
 export type TableFootProps = ElementProps<HTMLTableSectionElement>;
 
-const TableFoot = (props: TableFootProps) => <Box is='tfoot' rcx-table__foot {...props} />;
+const TableFoot = styled(TableFootFrame, {
+	variants: {
+		rcx: { true: variantClass('rcx-table__foot') },
+	} as const,
 
-export default TableFoot;
+	defaultVariants: { rcx: true },
+});
+
+export default asPublicFrame<TableFootProps>(TableFoot);

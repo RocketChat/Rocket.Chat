@@ -1,7 +1,12 @@
+import type { GetProps } from '@tamagui/web';
 import type { CSSProperties, ReactNode } from 'react';
 
+import { CardText } from './CardFrames';
+import { cx } from '../../helpers/composeClassNames';
+import { fontScale, size } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
-import { Box, type BoxProps } from '../Box';
+import type { BoxProps } from '../Box';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 export type CardBodyProps = {
 	flexDirection?: CSSProperties['flexDirection'];
@@ -9,10 +14,17 @@ export type CardBodyProps = {
 	children: ReactNode;
 } & ElementProps<HTMLDivElement>;
 
-const CardBody = ({ children, flexDirection = 'row', height, ...props }: CardBodyProps) => (
-	<Box fontScale='p2m' display='flex' flexDirection={flexDirection} flexGrow={1} height={height} rcx-card__body {...props}>
+const CardBody = ({ children, flexDirection = 'row', height, className, ...props }: CardBodyProps) => (
+	<CardText
+		{...fontScale('p2m')}
+		flexDirection={flexDirection}
+		flexGrow={1}
+		height={size(height)}
+		{...(props as GetProps<typeof CardText>)}
+		className={cx('rcx-card__body', className)}
+	>
 		{children}
-	</Box>
+	</CardText>
 );
 
-export default CardBody;
+export default withFuselageProvider(CardBody);

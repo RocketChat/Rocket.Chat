@@ -64,7 +64,7 @@ export const surfaceColors = {
 	'surface-sidebar': new Var('surface-sidebar', surfaceTokens.sidebar),
 };
 
-type SurfaceColors = keyof typeof surfaceColors;
+export type SurfaceColors = keyof typeof surfaceColors;
 
 const strokeTokens = stroke.light;
 
@@ -80,7 +80,7 @@ export const strokeColors = {
 	'stroke-error': new Var('stroke-error', strokeTokens.error),
 };
 
-type StrokeColor = keyof typeof strokeColors;
+export type StrokeColor = keyof typeof strokeColors;
 
 const fontTokens = font.light;
 
@@ -98,7 +98,7 @@ export const textIconColors = {
 	'font-pure-white': new Var('font-pure-white', fontTokens.pureWhite),
 };
 
-type TextIconColors = keyof typeof textIconColors;
+export type TextIconColors = keyof typeof textIconColors;
 
 const statusTokens = status.light;
 
@@ -112,7 +112,7 @@ export const statusBackgroundColors = {
 	'status-background-service-2': new Var('status-background-service-2', statusTokens['service-2']),
 };
 
-type StatusBackgroundColors = keyof typeof statusBackgroundColors;
+export type StatusBackgroundColors = keyof typeof statusBackgroundColors;
 
 export const statusColors = {
 	'status-font-on-info': new Var('status-font-on-info', statusTokens['font-on-info']),
@@ -124,7 +124,7 @@ export const statusColors = {
 	'status-font-on-service-2': new Var('status-font-on-service-2', statusTokens['font-on-service-2']),
 };
 
-type StatusColors = keyof typeof statusColors;
+export type StatusColors = keyof typeof statusColors;
 
 const badgeTokens = badge.light;
 
@@ -136,7 +136,7 @@ export const badgeBackgroundColors = {
 	'badge-background-level-4': new Var('badge-background-level-4', badgeTokens['level-4']),
 };
 
-type BadgeBackgroundColors = keyof typeof badgeBackgroundColors;
+export type BadgeBackgroundColors = keyof typeof badgeBackgroundColors;
 
 const shadowTokens = shadow.light;
 

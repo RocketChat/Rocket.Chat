@@ -1,8 +1,28 @@
+import { styled, Text } from '@tamagui/web';
+
+import { modalBoxFont } from './Modal';
+import { textIconColors } from '../../Theme';
+import { asPublicFrame } from '../../helpers/asPublicFrame';
+import { variantClass } from '../../helpers/variantClass';
+import { fontScale } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
 
 export type ModalFooterAnnotationProps = ElementProps<HTMLDivElement>;
 
-const ModalFooterAnnotation = ({ children }: ModalFooterAnnotationProps) => <Box rcx-modal__footer-annotation>{children}</Box>;
+const ModalFooterAnnotationFrame = styled(Text, {
+	render: 'div',
+	display: 'block',
+	whiteSpace: 'inherit',
+	wordWrap: 'inherit',
+	color: String(textIconColors['font-secondary-info']),
+	...modalBoxFont,
+	...(fontScale('c1') as object),
 
-export default ModalFooterAnnotation;
+	variants: {
+		rcx: { true: variantClass('rcx-modal__footer-annotation') },
+	} as const,
+
+	defaultVariants: { rcx: true },
+});
+
+export default asPublicFrame<ModalFooterAnnotationProps>(ModalFooterAnnotationFrame);

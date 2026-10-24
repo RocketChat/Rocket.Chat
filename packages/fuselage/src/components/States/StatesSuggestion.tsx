@@ -1,13 +1,20 @@
+import { styled } from '@tamagui/web';
 import type { ReactNode, AllHTMLAttributes } from 'react';
+
+import { StatesBlockFrame } from './StatesSubtitle';
+import { asPublicFrame } from '../../helpers/asPublicFrame';
+import { variantClass } from '../../helpers/variantClass';
 
 export type StatesSuggestionProps = {
 	children?: ReactNode;
 } & AllHTMLAttributes<HTMLDivElement>;
 
-const StatesSuggestion = ({ children, ...props }: StatesSuggestionProps) => (
-	<div {...props} className='rcx-states__suggestion'>
-		{children}
-	</div>
-);
+const StatesSuggestion = styled(StatesBlockFrame, {
+	variants: {
+		rcx: { true: variantClass('rcx-states__suggestion') },
+	} as const,
 
-export default StatesSuggestion;
+	defaultVariants: { rcx: true },
+});
+
+export default asPublicFrame<StatesSuggestionProps>(StatesSuggestion);

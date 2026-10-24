@@ -1,6 +1,6 @@
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import type { AllHTMLAttributes, ChangeEvent, ReactNode } from 'react';
-import { useCallback, useLayoutEffect, useRef } from 'react';
+import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 
 import type { ElementProps } from '../../types/ElementProps';
 import { Icon } from '../Icon';
@@ -76,6 +76,7 @@ function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaE
 }: InputBoxProps<T>) {
 	const innerRef = useRef<T>(null);
 	const mergedRef = useMergedRefs(ref, innerRef);
+	const [invalid, setInvalid] = useState(false);
 	let defaultAddon = endAddon;
 
 	useLayoutEffect(() => {
@@ -85,15 +86,15 @@ function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaE
 	}, [error]);
 
 	useLayoutEffect(() => {
-		if (defaultAddon && innerRef.current && innerRef.current.parentElement) {
-			innerRef.current.parentElement.classList.toggle('invalid', !innerRef.current.checkValidity());
+		if (defaultAddon && innerRef.current) {
+			setInvalid(!innerRef.current.checkValidity());
 		}
 	}, [defaultAddon, error]);
 
 	const handleChange = useCallback(
 		(event: ChangeEvent<T>) => {
-			if (defaultAddon && innerRef.current && innerRef.current.parentElement) {
-				innerRef.current.parentElement.classList.toggle('invalid', !innerRef.current.checkValidity());
+			if (defaultAddon && innerRef.current) {
+				setInvalid(!innerRef.current.checkValidity());
 			}
 
 			onChange?.call(event.currentTarget, event);
@@ -134,10 +135,12 @@ function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaE
 
 	return (
 		<InputBoxWrapper
-			className={[props.disabled && 'disabled', className].filter(Boolean).join(' ')}
+			className={[props.disabled && 'disabled', invalid && 'invalid', className].filter(Boolean).join(' ')}
 			hidden={hidden}
 			invisible={invisible}
-			rcx-input-box__wrapper--end-addon-flush={endAddonFlush}
+			small={small}
+			textarea={type === 'textarea'}
+			endAddonFlush={endAddonFlush}
 		>
 			{startAddon && <InputBoxAddon>{startAddon}</InputBoxAddon>}
 			<Input

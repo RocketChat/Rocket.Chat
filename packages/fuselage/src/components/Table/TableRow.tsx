@@ -1,5 +1,8 @@
+import type { GetProps } from '@tamagui/web';
+
+import { TableRowFrame } from './TableFrames';
 import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 export type TableRowProps = ElementProps<HTMLTableRowElement> & {
 	selected?: boolean;
@@ -7,8 +10,20 @@ export type TableRowProps = ElementProps<HTMLTableRowElement> & {
 	hasAction?: boolean;
 };
 
-const TableRow = ({ action, selected, ...props }: TableRowProps) => (
-	<Box is='tr' rcx-table__row rcx-table__row--selected={selected} rcx-table__row--action={action} {...props} />
-);
+const TableRow = ({ action, selected, className, ...props }: TableRowProps) => {
+	const scheme = [selected && 'selected', action && 'action'].filter(Boolean).join('-') || undefined;
+	const disabled = action && className?.split(/\s+/).includes('disabled');
 
-export default TableRow;
+	return (
+		<TableRowFrame
+			{...{ scheme }}
+			{...(disabled && { cursor: { hover: 'not-allowed', focus: 'not-allowed' } })}
+			className={['rcx-table__row', selected && 'rcx-table__row--selected', action && 'rcx-table__row--action', className]
+				.filter(Boolean)
+				.join(' ')}
+			{...(props as GetProps<typeof TableRowFrame>)}
+		/>
+	);
+};
+
+export default withFuselageProvider(TableRow);

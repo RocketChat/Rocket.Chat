@@ -1,0 +1,4 @@
+/* Unlayered, so it beats the `Divider` frame's own border colour */
+.rcx-navbar-divider {
+	border-color: var(--rcx-color-stroke-medium, #9ea2a8);
+}

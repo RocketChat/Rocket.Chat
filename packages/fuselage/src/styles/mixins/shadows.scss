@@ -1,5 +1,0 @@
-@use '../lengths.scss';
-
-@mixin use-focus-shadow($outer-color) {
-	box-shadow: 0 0 0 #{lengths.border-width(medium)} $outer-color;
-}

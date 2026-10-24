@@ -1,12 +1,19 @@
+import type { GetProps } from '@tamagui/web';
+
 import type { ElementProps } from '../../../types/ElementProps';
 import { Box } from '../../Box';
+import { withFuselageProvider } from '../../FuselageProvider/FuselageProvider';
+import { TableSelectionFrame } from '../TableFrames';
 
 export type TableSelectionProps = ElementProps<HTMLDivElement> & {
 	text?: string;
 };
 
-const TableSelection = ({ children, text, ...props }: TableSelectionProps) => (
-	<Box rcx-table__selection display='flex' alignItems='center' justifyContent='space-between' paddingInline={24} elevation='2' {...props}>
+const TableSelection = ({ children, text, className, ...props }: TableSelectionProps) => (
+	<TableSelectionFrame
+		className={['rcx-table__selection', className].filter(Boolean).join(' ')}
+		{...(props as GetProps<typeof TableSelectionFrame>)}
+	>
 		<Box fontScale='p2b' marginBlock={16} flexShrink={1} withTruncatedText>
 			{text}
 		</Box>
@@ -15,7 +22,7 @@ const TableSelection = ({ children, text, ...props }: TableSelectionProps) => (
 				{children}
 			</Box>
 		)}
-	</Box>
+	</TableSelectionFrame>
 );
 
-export default TableSelection;
+export default withFuselageProvider(TableSelection);

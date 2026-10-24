@@ -1,7 +1,31 @@
 import type { Keys } from '@rocket.chat/icons';
+import nameToCharacterMapping from '@rocket.chat/icons';
+import { styled, type GetProps } from '@tamagui/web';
 import type { AllHTMLAttributes } from 'react';
 
-import { Icon } from '../Icon';
+import { statusColors, surfaceColors, textIconColors } from '../../Theme';
+import { cx } from '../../helpers/composeClassNames';
+import { toCSSValue } from '../../helpers/toCSSValue';
+import { borderRadius, spacing } from '../../styleTokens';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
+import { IconFrame } from '../Icon/Icon';
+
+const FramedIconFrame = styled(IconFrame, {
+	fontSize: 20,
+	padding: spacing('x4'),
+	color: String(textIconColors['font-secondary-info']),
+	borderRadius: toCSSValue('--rcx-border-radius-medium', borderRadius('medium')),
+	backgroundColor: String(surfaceColors['surface-tint']),
+
+	variants: {
+		status: {
+			info: { color: String(statusColors['status-font-on-info']) },
+			success: { color: String(statusColors['status-font-on-success']) },
+			warning: { color: String(statusColors['status-font-on-warning']) },
+			danger: { color: String(statusColors['status-font-on-danger']) },
+		},
+	} as const,
+});
 
 export type FramedIconProps = {
 	info?: boolean;
@@ -12,23 +36,30 @@ export type FramedIconProps = {
 	icon: Keys;
 } & Omit<AllHTMLAttributes<HTMLElement>, 'is' | 'color'>;
 
-const FramedIcon = ({ info, success, warning, danger, neutral, icon, className, ...props }: FramedIconProps) => (
-	<Icon
-		{...props}
-		className={[
-			className,
-			'rcx-framed-icon',
-			info && 'rcx-framed-icon--info',
-			success && 'rcx-framed-icon--success',
-			warning && 'rcx-framed-icon--warning',
-			danger && 'rcx-framed-icon--danger',
-			(neutral || (!info && !success && !warning && !danger)) && 'rcx-framed-icon--neutral',
-		]
-			.filter(Boolean)
-			.join(' ')}
-		name={icon}
-		size={20}
-	/>
-);
+const FramedIcon = ({ info, success, warning, danger, neutral, icon, className, ...props }: FramedIconProps) => {
+	// Same precedence as the stylesheet had, where the last rule declared won
+	const status = (danger && 'danger') || (warning && 'warning') || (success && 'success') || (info && 'info') || undefined;
 
-export default FramedIcon;
+	return (
+		<FramedIconFrame
+			aria-hidden
+			status={status}
+			{...(props as GetProps<typeof FramedIconFrame>)}
+			className={cx(
+				'rcx-icon',
+				`rcx-icon--name-${icon}`,
+				'rcx-framed-icon',
+				info && 'rcx-framed-icon--info',
+				success && 'rcx-framed-icon--success',
+				warning && 'rcx-framed-icon--warning',
+				danger && 'rcx-framed-icon--danger',
+				(neutral || (!info && !success && !warning && !danger)) && 'rcx-framed-icon--neutral',
+				className,
+			)}
+		>
+			{nameToCharacterMapping[icon]}
+		</FramedIconFrame>
+	);
+};
+
+export default withFuselageProvider(FramedIcon);

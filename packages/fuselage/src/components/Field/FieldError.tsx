@@ -1,12 +1,20 @@
+import type { GetProps } from '@tamagui/web';
+
+import { FieldContext } from './Field';
+import { FieldErrorFrame } from './FieldFrames';
 import WithErrorWrapper from '../../helpers/WithErrorWrapper';
 import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
-import { FieldContext } from './Field';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 export type FieldErrorProps = ElementProps<HTMLSpanElement>;
 
-const FieldError = (props: FieldErrorProps) => {
-	const component = <Box is='span' rcx-field__error {...props} />;
+const FieldError = ({ className, ...props }: FieldErrorProps) => {
+	const component = (
+		<FieldErrorFrame
+			className={['rcx-field__error', className].filter(Boolean).join(' ')}
+			{...(props as GetProps<typeof FieldErrorFrame>)}
+		/>
+	);
 
 	if (process.env.NODE_ENV === 'development') {
 		return (
@@ -19,4 +27,4 @@ const FieldError = (props: FieldErrorProps) => {
 	return component;
 };
 
-export default FieldError;
+export default withFuselageProvider(FieldError);

@@ -1,0 +1,7 @@
+/* Below the `fuselage` layer, so element selectors don't override Tamagui component styles */
+@import 'normalize.css/normalize.css' layer(reset);
+
+/* Collapsed `ItemGroup`s rely on normalize's `[hidden]` winning over their `display`, as it did unlayered */
+[hidden] {
+	display: none;
+}

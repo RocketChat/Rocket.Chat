@@ -2,7 +2,7 @@ import { composeStories } from '@storybook/react-webpack5';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
-import { createRef } from 'react';
+import { createRef, Profiler } from 'react';
 
 import {
 	Item,
@@ -17,6 +17,7 @@ import {
 	ItemLink,
 	ItemMedia,
 	ItemMeta,
+	ItemRow,
 	ItemSkeleton,
 	ItemTitle,
 } from '.';
@@ -114,6 +115,80 @@ describe('Item', () => {
 		expect(item).not.toHaveAttribute('role');
 		expect(item).not.toHaveAttribute('aria-selected');
 		expect(item).not.toHaveAttribute('aria-disabled');
+	});
+
+	it('is labelled by its titles as a menu item', () => {
+		render(
+			<Item role='menuitem' data-testid='item'>
+				<ItemContent>
+					<ItemTitle id='title'>Title</ItemTitle>
+				</ItemContent>
+			</Item>,
+		);
+
+		expect(screen.getByTestId('item')).toHaveAttribute('aria-labelledby', 'title');
+	});
+
+	it('renders once on mount when it declares what it would find out', () => {
+		const onRender = jest.fn();
+
+		render(
+			<Profiler id='item' onRender={onRender}>
+				<Item multiline interactive>
+					<ItemContent>
+						<ItemRow>
+							<ItemTitle>
+								<ItemLink href='#'>Title</ItemLink>
+							</ItemTitle>
+						</ItemRow>
+						<ItemRow>
+							<ItemDescription>Description</ItemDescription>
+						</ItemRow>
+					</ItemContent>
+				</Item>
+			</Profiler>,
+		);
+
+		expect(onRender).toHaveBeenCalledTimes(1);
+	});
+
+	it('finds out its lines and link after it mounts when it declares neither', () => {
+		const onRender = jest.fn();
+
+		render(
+			<Profiler id='item' onRender={onRender}>
+				<Item>
+					<ItemContent>
+						<ItemRow>
+							<ItemTitle>
+								<ItemLink href='#'>Title</ItemLink>
+							</ItemTitle>
+						</ItemRow>
+						<ItemRow>
+							<ItemDescription>Description</ItemDescription>
+						</ItemRow>
+					</ItemContent>
+				</Item>
+			</Profiler>,
+		);
+
+		expect(onRender.mock.calls.length).toBeGreaterThan(1);
+	});
+
+	it('renders once on mount when it is not a menu item', () => {
+		const onRender = jest.fn();
+
+		render(
+			<Profiler id='item' onRender={onRender}>
+				<Item>
+					<ItemContent>
+						<ItemTitle>Title</ItemTitle>
+					</ItemContent>
+				</Item>
+			</Profiler>,
+		);
+
+		expect(onRender).toHaveBeenCalledTimes(1);
 	});
 });
 

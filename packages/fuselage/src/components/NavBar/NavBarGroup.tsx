@@ -1,10 +1,18 @@
+import { styled } from '@tamagui/web';
+
+import { asPublicFrame } from '../../helpers/asPublicFrame';
+import { variantClass } from '../../helpers/variantClass';
 import type { ButtonGroupProps } from '../ButtonGroup';
-import { ButtonGroup } from '../ButtonGroup';
+import { ButtonGroupFrame } from '../ButtonGroup/ButtonGroup';
 
 export type NavBarGroupProps = ButtonGroupProps;
 
-function NavBarGroup(props: NavBarGroupProps) {
-	return <ButtonGroup className='rcx-navbar-group' {...props} />;
-}
+const NavBarGroup = styled(ButtonGroupFrame, {
+	variants: {
+		rcx: { true: variantClass('rcx-button-group rcx-navbar-group') },
+	} as const,
 
-export default NavBarGroup;
+	defaultVariants: { rcx: true },
+});
+
+export default asPublicFrame<NavBarGroupProps>(NavBarGroup);

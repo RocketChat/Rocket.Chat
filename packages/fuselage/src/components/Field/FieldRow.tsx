@@ -1,15 +1,24 @@
+import type { GetProps } from '@tamagui/web';
+
+import { FieldContext } from './Field';
+import { FieldRowFrame } from './FieldFrames';
 import WithErrorWrapper from '../../helpers/WithErrorWrapper';
 import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
-import { FieldContext } from './Field';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 export type FieldRowProps = ElementProps<HTMLSpanElement> & {
 	/** Packs the row's content at the end of the line. */
 	justify?: 'end';
 };
 
-const FieldRow = ({ justify, ...props }: FieldRowProps) => {
-	const component = <Box is='span' rcx-field__row rcx-field__row--justify-end={justify === 'end'} {...props} />;
+const FieldRow = ({ justify, className, ...props }: FieldRowProps) => {
+	const component = (
+		<FieldRowFrame
+			justify={justify}
+			className={['rcx-field__row', justify === 'end' && 'rcx-field__row--justify-end', className].filter(Boolean).join(' ')}
+			{...(props as GetProps<typeof FieldRowFrame>)}
+		/>
+	);
 
 	if (process.env.NODE_ENV === 'development') {
 		return (
@@ -22,4 +31,4 @@ const FieldRow = ({ justify, ...props }: FieldRowProps) => {
 	return component;
 };
 
-export default FieldRow;
+export default withFuselageProvider(FieldRow);

@@ -1,7 +1,20 @@
+import { styled } from '@tamagui/web';
 import type { HTMLAttributes } from 'react';
+
+import { CardBlock } from './CardFrames';
+import { asPublicFrame } from '../../helpers/asPublicFrame';
+import { variantClass } from '../../helpers/variantClass';
 
 export type CardControlsProps = HTMLAttributes<HTMLDivElement>;
 
-const CardControls = ({ ...props }: CardControlsProps) => <div className='rcx-card__controls' {...props} />;
+const CardControls = styled(CardBlock, {
+	row: true,
 
-export default CardControls;
+	variants: {
+		rcx: { true: variantClass('rcx-card__controls') },
+	} as const,
+
+	defaultVariants: { rcx: true },
+});
+
+export default asPublicFrame<CardControlsProps>(CardControls);

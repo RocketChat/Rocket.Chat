@@ -1,12 +1,17 @@
+import type { GetProps } from '@tamagui/web';
+
+import { FieldContext } from './Field';
+import { FieldHintFrame } from './FieldFrames';
 import WithErrorWrapper from '../../helpers/WithErrorWrapper';
 import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
-import { FieldContext } from './Field';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 export type FieldHintProps = ElementProps<HTMLSpanElement>;
 
-const FieldHint = (props: FieldHintProps) => {
-	const component = <Box is='span' rcx-field__hint {...props} />;
+const FieldHint = ({ className, ...props }: FieldHintProps) => {
+	const component = (
+		<FieldHintFrame className={['rcx-field__hint', className].filter(Boolean).join(' ')} {...(props as GetProps<typeof FieldHintFrame>)} />
+	);
 
 	if (process.env.NODE_ENV === 'development') {
 		return (
@@ -19,4 +24,4 @@ const FieldHint = (props: FieldHintProps) => {
 	return component;
 };
 
-export default FieldHint;
+export default withFuselageProvider(FieldHint);

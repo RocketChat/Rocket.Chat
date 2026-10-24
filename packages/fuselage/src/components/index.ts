@@ -24,6 +24,7 @@ export * from './EmailInput';
 export * from './Field';
 export * from './FieldGroup';
 export * from './Flex';
+export * from './FuselageProvider';
 export * from './FramedIcon';
 export * from './Grid';
 export * from './Icon';

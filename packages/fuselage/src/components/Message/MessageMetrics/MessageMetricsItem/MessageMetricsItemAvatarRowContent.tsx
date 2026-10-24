@@ -1,11 +1,22 @@
+import { styled, Text } from '@tamagui/web';
 import type { HTMLAttributes } from 'react';
 
-import { prependClassName } from '../../../../helpers/prependClassName';
+import { asPublicFrame } from '../../../../helpers/asPublicFrame';
+import { variantClass } from '../../../../helpers/variantClass';
+import { spacing } from '../../../../styleTokens';
+import { plainDiv } from '../../messageStyles';
+
+const MessageMetricsItemAvatarRowContentFrame = styled(Text, {
+	...plainDiv,
+	marginInline: spacing('x2'),
+
+	variants: {
+		rcx: { true: variantClass('rcx-message-metrics__avatar-row__content') },
+	} as const,
+
+	defaultVariants: { rcx: true },
+});
 
 export type MessageMetricsItemAvatarRowContentProps = HTMLAttributes<HTMLDivElement>;
 
-const MessageMetricsItemAvatarRowContent = ({ className, ...props }: MessageMetricsItemAvatarRowContentProps) => (
-	<div className={prependClassName(className, 'rcx-message-metrics__avatar-row__content')} {...props} />
-);
-
-export default MessageMetricsItemAvatarRowContent;
+export default asPublicFrame<MessageMetricsItemAvatarRowContentProps>(MessageMetricsItemAvatarRowContentFrame);

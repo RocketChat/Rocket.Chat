@@ -1,9 +1,33 @@
+import { styled, View, type GetProps } from '@tamagui/web';
 import type { HTMLAttributes, ReactNode, RefAttributes } from 'react';
 
 import { cx } from '../../helpers/composeClassNames';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 import { ItemGroup } from '../Item';
 import { SidebarGroupTitle } from './SidebarGroupTitle';
 import { useCollapse } from './hooks/useCollapse';
+import { boxFull, frameStyle } from './sidebarStyles';
+
+const SidebarCollapseGroupFrame = styled(View, {
+	...boxFull,
+	flexWrap: 'nowrap',
+});
+
+const panelStyle = {
+	visibility: 'hidden',
+	overflow: 'hidden',
+	height: 0,
+	margin: 0,
+	padding: 0,
+	listStyle: 'none',
+};
+
+const expandedPanelStyle = {
+	...panelStyle,
+	visibility: 'visible',
+	flexGrow: 1,
+	height: '100%',
+};
 
 type SidebarCollapseGroupProps = HTMLAttributes<HTMLDivElement> &
 	RefAttributes<HTMLDivElement> & {
@@ -17,7 +41,7 @@ type SidebarCollapseGroupProps = HTMLAttributes<HTMLDivElement> &
 		actions?: ReactNode;
 	};
 
-export function SidebarCollapseGroup({
+function SidebarCollapseGroupBase({
 	ref,
 	expanded: propExpanded,
 	defaultExpanded,
@@ -40,7 +64,12 @@ export function SidebarCollapseGroup({
 	const labelledBy = props['aria-label'] ? undefined : titleId;
 
 	return (
-		<div className='rcx-box rcx-box--full rcx-sidebar-collapse-group' role={role} aria-labelledby={labelledBy} {...props}>
+		<SidebarCollapseGroupFrame
+			className='rcx-sidebar-collapse-group'
+			role={role as GetProps<typeof SidebarCollapseGroupFrame>['role']}
+			aria-labelledby={labelledBy}
+			{...(props as GetProps<typeof SidebarCollapseGroupFrame>)}
+		>
 			<SidebarGroupTitle
 				expanded={expanded}
 				empty={empty}
@@ -55,6 +84,7 @@ export function SidebarCollapseGroup({
 				role='list'
 				aria-labelledby={titleId}
 				ref={ref}
+				{...frameStyle(panelExpanded ? expandedPanelStyle : panelStyle)}
 				className={cx(
 					'rcx-sidebar-collapse-group__panel rcx-box--animated',
 					panelExpanded && 'rcx-sidebar-collapse-group__panel--expanded',
@@ -63,6 +93,8 @@ export function SidebarCollapseGroup({
 			>
 				{children}
 			</ItemGroup>
-		</div>
+		</SidebarCollapseGroupFrame>
 	);
 }
+
+export const SidebarCollapseGroup = withFuselageProvider(SidebarCollapseGroupBase);

@@ -1,12 +1,14 @@
 import { composeStories } from '@storybook/react-webpack5';
-import { waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 import { useEffect, useState } from 'react';
 
+import InputBox from './InputBox';
 import * as stories from './InputBox.stories';
 import { render } from '../../testing';
 
-const { WithAddon, WithFlushEndAddon } = composeStories(stories);
+const { WithAddon } = composeStories(stories);
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
@@ -38,15 +40,14 @@ it('should update error class when error changes asynchronously', async () => {
 	});
 });
 
-it('should flush the end addon only when requested', () => {
-	const { getAllByRole } = render(
-		<>
-			<WithAddon />
-			<WithFlushEndAddon />
-		</>,
-	);
+it.each([
+	['bare', {}],
+	['with addon', { endAddon: 'x' }],
+])('calls onChange once per keystroke (%s)', async (_name, extraProps) => {
+	const onChange = jest.fn();
+	render(<InputBox type='text' aria-label='test-input' onChange={onChange} {...extraProps} />);
 
-	const [regular, flush] = getAllByRole('textbox').map((input) => input.parentElement);
-	expect(regular).not.toHaveClass('rcx-input-box__wrapper--end-addon-flush');
-	expect(flush).toHaveClass('rcx-input-box__wrapper--end-addon-flush');
+	await userEvent.type(screen.getByRole('textbox', { name: 'test-input' }), 'Hi');
+
+	expect(onChange).toHaveBeenCalledTimes(2);
 });

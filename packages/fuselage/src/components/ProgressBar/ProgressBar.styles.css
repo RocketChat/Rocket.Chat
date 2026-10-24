@@ -1,0 +1,17 @@
+@keyframes rcx-progress-bar__animation {
+	0% {
+		width: 0;
+
+		opacity: 0;
+	}
+
+	50% {
+		opacity: 0.5;
+	}
+
+	100% {
+		width: inherit;
+
+		opacity: 0;
+	}
+}

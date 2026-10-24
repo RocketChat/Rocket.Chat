@@ -1,9 +1,23 @@
+import { styled, View, type GetProps } from '@tamagui/web';
 import type { AllHTMLAttributes, ElementType, RefAttributes } from 'react';
 import { useMemo } from 'react';
 
 import { ItemGroupContext } from './ItemGroupContext';
+import { toRender } from './itemStyles';
 import { useIdRegistry } from './useIdRegistry';
 import { cx } from '../../helpers/composeClassNames';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
+
+// The narrow layout is a container query in `Item.styles.css`, since no breakpoint matches its width
+const ItemGroupFrame = styled(View, {
+	boxSizing: 'content-box',
+	flexShrink: 1,
+	minWidth: 'auto',
+	minHeight: 'auto',
+	margin: 0,
+	padding: 0,
+	listStyle: 'none',
+});
 
 export type ItemGroupProps = {
 	/**
@@ -26,11 +40,17 @@ const ItemGroup = ({ is: Tag = 'div', className, children, ...props }: ItemGroup
 
 	return (
 		<ItemGroupContext.Provider value={contextValue}>
-			<Tag aria-labelledby={ariaLabelledBy} {...props} className={cx('rcx-item-group', className)}>
+			<ItemGroupFrame
+				aria-labelledby={ariaLabelledBy}
+				{...(props as GetProps<typeof ItemGroupFrame>)}
+				render={toRender(Tag)}
+				container='rcx-item-group'
+				className={cx('rcx-item-group', className)}
+			>
 				{children}
-			</Tag>
+			</ItemGroupFrame>
 		</ItemGroupContext.Provider>
 	);
 };
 
-export default ItemGroup;
+export default withFuselageProvider(ItemGroup);

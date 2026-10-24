@@ -1,15 +1,40 @@
+import { styled, View, type GetProps } from '@tamagui/web';
+
+import { modalBoxFont, modalContainerMargin } from './Modal';
 import type { ElementProps } from '../../types/ElementProps';
-import { Box } from '../Box';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 import { Margins } from '../Margins';
 
 export type ModalHeaderProps = ElementProps<HTMLElement>;
 
-const ModalHeader = ({ children, ...props }: ModalHeaderProps) => (
-	<Box rcx-modal__header is='header' {...props}>
-		<Box rcx-modal__header-inner>
+const ModalHeaderFrame = styled(View, {
+	render: 'header',
+	display: 'block',
+	flexShrink: 1,
+	minWidth: 'auto',
+	minHeight: 'auto',
+	margin: modalContainerMargin,
+	...modalBoxFont,
+});
+
+const ModalHeaderInner = styled(View, {
+	flexDirection: 'row',
+	flexWrap: 'nowrap',
+	flexShrink: 1,
+	minWidth: 'auto',
+	minHeight: 'auto',
+	margin: -4,
+});
+
+const ModalHeader = ({ children, className, ...props }: ModalHeaderProps) => (
+	<ModalHeaderFrame
+		className={['rcx-modal__header', className].filter(Boolean).join(' ')}
+		{...(props as GetProps<typeof ModalHeaderFrame>)}
+	>
+		<ModalHeaderInner className='rcx-modal__header-inner'>
 			<Margins all='x4'>{children}</Margins>
-		</Box>
-	</Box>
+		</ModalHeaderInner>
+	</ModalHeaderFrame>
 );
 
-export default ModalHeader;
+export default withFuselageProvider(ModalHeader);

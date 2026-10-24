@@ -1,3 +1,4 @@
+import { FuselageProvider } from '@rocket.chat/fuselage';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 
@@ -21,6 +22,8 @@ const root = createRoot(container);
 
 root.render(
 	<StrictMode>
-		<AppRoot />
+		<FuselageProvider>
+			<AppRoot />
+		</FuselageProvider>
 	</StrictMode>,
 );

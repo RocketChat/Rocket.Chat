@@ -1,7 +1,168 @@
+import { styled, Text, View, type GetProps } from '@tamagui/web';
 import type { Dispatch, HTMLAttributes, SetStateAction } from 'react';
 import { useId, useMemo } from 'react';
 
+import { strokeColors, textIconColors } from '../../Theme';
+import { renderAs } from '../../helpers/renderAs';
+import { toCSSValue } from '../../helpers/toCSSValue';
+import { borderRadius, fontFamily, fontScale, spacing } from '../../styleTokens';
 import { Chevron } from '../Chevron';
+import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
+
+const toFontStyle = (name: 'c1' | 'c2') => {
+	const scale = fontScale(name);
+
+	return {
+		fontSize: scale.fontSize,
+		fontWeight: String(scale.fontWeight) as '400',
+		lineHeight: scale.lineHeight,
+		letterSpacing: scale.letterSpacing,
+	};
+};
+
+const c1Style = toFontStyle('c1');
+
+/** What `rcx-box rcx-box--full` used to give the nav, lists and buttons. */
+const boxStyle = {
+	flexShrink: 1,
+	minWidth: 'auto',
+	minHeight: 'auto',
+	outlineStyle: 'none',
+	fontFamily: fontFamily('sans'),
+	fontVariantNumeric: 'tabular-nums',
+	margin: 0,
+	padding: 0,
+	borderWidth: 0,
+	borderStyle: 'solid',
+	borderColor: 'currentColor',
+} as const;
+
+/** What a plain element keeps that Tamagui's base styles would change. */
+const plainStyle = {
+	boxSizing: 'content-box',
+	flexShrink: 1,
+	minWidth: 'auto',
+	minHeight: 'auto',
+} as const;
+
+const PaginationFrame = styled(View, {
+	render: 'nav',
+	...boxStyle,
+	flexDirection: { default: 'column-reverse', sm: 'column', md: 'row' },
+	flexWrap: 'nowrap',
+	alignItems: 'center',
+	paddingBlock: spacing('x12'),
+	paddingInline: spacing('x24'),
+
+	variants: {
+		divider: {
+			true: {
+				position: 'relative',
+			},
+		},
+	} as const,
+});
+
+const PaginationDivider = styled(View, {
+	position: 'absolute',
+	top: 0,
+	left: 0,
+	right: 0,
+	height: 1,
+	borderRadius: toCSSValue('--rcx-pagination-border-radius', toCSSValue('--rcx-border-radius-small', borderRadius('small'))),
+	backgroundColor: String(strokeColors['stroke-extra-light']),
+});
+
+const PaginationLeft = styled(View, {
+	...plainStyle,
+	flexDirection: 'row',
+	flexWrap: 'nowrap',
+	alignItems: 'center',
+	justifyContent: 'center',
+	marginInlineStart: { default: 0, sm: 'auto', md: 0 },
+	marginInlineEnd: { default: 0, md: 'auto' },
+});
+
+const PaginationRight = styled(View, {
+	...plainStyle,
+	flexDirection: { default: 'column', sm: 'row' },
+	flexWrap: 'nowrap',
+	alignItems: 'center',
+	marginInlineStart: { default: 0, sm: 'auto' },
+});
+
+const PaginationLabel = styled(Text, {
+	render: 'span',
+	whiteSpace: 'inherit',
+	wordWrap: 'inherit',
+	boxSizing: 'content-box',
+	...c1Style,
+	color: String(textIconColors['font-annotation']),
+});
+
+const PaginationList = styled(View, {
+	render: 'ol',
+	...boxStyle,
+	flexDirection: 'row',
+	flexWrap: 'nowrap',
+	alignItems: 'center',
+	marginInline: spacing('x4'),
+});
+
+const PaginationListItem = styled(Text, {
+	render: 'li',
+	...plainStyle,
+	display: 'flex',
+	whiteSpace: 'inherit',
+	wordWrap: 'inherit',
+	...c1Style,
+	marginInline: spacing('x2'),
+	padding: spacing('x4'),
+	color: String(textIconColors['font-secondary-info']),
+});
+
+const PaginationButton = styled(Text, {
+	render: 'button',
+	...boxStyle,
+	display: 'inline-flex',
+	whiteSpace: 'inherit',
+	wordWrap: 'inherit',
+	...c1Style,
+	cursor: 'pointer',
+	color: String(textIconColors['font-info']),
+	backgroundColor: 'transparent',
+
+	variants: {
+		scheme: {
+			'link': {
+				textDecorationLine: { hover: 'underline', focus: 'underline' },
+			},
+			'link-disabled': {
+				...toFontStyle('c2'),
+				cursor: 'default',
+				color: String(textIconColors['font-default']),
+			},
+			'arrow': {
+				color: String(textIconColors['font-secondary-info']),
+			},
+			'arrow-disabled': {
+				cursor: 'not-allowed',
+				color: String(textIconColors['font-secondary-info']),
+			},
+		},
+	} as const,
+});
+
+type PaginationButtonProps = Omit<GetProps<typeof PaginationButton>, 'disabled' | 'scheme'> & { arrow?: boolean; disabled?: boolean };
+
+// Given to the frame, `disabled` would also add an `aria-disabled` attribute the button never had
+const PaginationButtonElement = ({ arrow, disabled, ...props }: PaginationButtonProps) => (
+	<PaginationButton
+		{...props}
+		scheme={`${arrow ? 'arrow' : 'link'}${disabled ? '-disabled' : ''}`}
+		render={renderAs('button', { disabled })}
+	/>
+);
 
 export type ItemsPerPage = 25 | 50 | 100;
 
@@ -71,78 +232,82 @@ const Pagination = ({
 	};
 
 	return (
-		<nav
-			className={['rcx-box rcx-box--full rcx-pagination', divider && 'rcx-pagination--divider'].filter(Boolean).join(' ')}
+		<PaginationFrame
+			divider={divider}
+			className={['rcx-pagination', divider && 'rcx-pagination--divider'].filter(Boolean).join(' ')}
 			aria-label='Pagination Navigation'
-			{...props}
+			{...(props as GetProps<typeof PaginationFrame>)}
 		>
+			{divider && <PaginationDivider aria-hidden />}
 			{hasItemsPerPageSelection && (
-				<div className='rcx-pagination__left'>
-					<span className='rcx-pagination__label' id={itemsPerPageLabelId}>
+				<PaginationLeft className='rcx-pagination__left'>
+					<PaginationLabel className='rcx-pagination__label' id={itemsPerPageLabelId}>
 						{itemsPerPageLabel(renderingContext)}
-					</span>
-					<ol className='rcx-box rcx-box--full rcx-pagination__list' aria-labelledby={itemsPerPageLabelId}>
+					</PaginationLabel>
+					<PaginationList className='rcx-pagination__list' aria-labelledby={itemsPerPageLabelId}>
 						{itemsPerPageOptions.map((itemsPerPageOption) => (
-							<li key={itemsPerPageOption} className='rcx-pagination__list-item'>
-								<button
-									className='rcx-box rcx-box--full rcx-pagination__link'
+							<PaginationListItem key={itemsPerPageOption} className='rcx-pagination__list-item'>
+								<PaginationButtonElement
+									className='rcx-pagination__link'
 									tabIndex={itemsPerPage === itemsPerPageOption ? -1 : 0}
 									disabled={itemsPerPage === itemsPerPageOption}
 									aria-label={`Show ${itemsPerPageOption} items per page`}
 									onClick={handleSetItemsPerPageLinkClick(itemsPerPageOption)}
 								>
 									{itemsPerPageOption}
-								</button>
-							</li>
+								</PaginationButtonElement>
+							</PaginationListItem>
 						))}
-					</ol>
-				</div>
+					</PaginationList>
+				</PaginationLeft>
 			)}
-			<div className='rcx-pagination__right'>
-				<span className='rcx-pagination__label' id={paginationResultLabelId}>
+			<PaginationRight className='rcx-pagination__right'>
+				<PaginationLabel className='rcx-pagination__label' id={paginationResultLabelId}>
 					{showingResultsLabel(renderingContext)}
-				</span>
-				<ol className='rcx-box rcx-box--full rcx-pagination__list' aria-labelledby={paginationResultLabelId}>
-					<li className='rcx-pagination__list-item'>
-						<button
-							className='rcx-box rcx-box--full rcx-pagination__back'
+				</PaginationLabel>
+				<PaginationList className='rcx-pagination__list' aria-labelledby={paginationResultLabelId}>
+					<PaginationListItem className='rcx-pagination__list-item'>
+						<PaginationButtonElement
+							arrow
+							className='rcx-pagination__back'
 							disabled={currentPage === 0}
 							aria-label='Previous page'
 							onClick={handleSetPageLinkClick(currentPage - 1)}
 						>
 							<Chevron left size='x16' />
-						</button>
-					</li>
+						</PaginationButtonElement>
+					</PaginationListItem>
 					{displayedPages.map((page, i) => (
-						<li key={i} className='rcx-pagination__list-item'>
+						<PaginationListItem key={i} className='rcx-pagination__list-item'>
 							{page === '⋯' ? (
 								'⋯'
 							) : (
-								<button
-									className='rcx-box rcx-box--full rcx-pagination__link'
+								<PaginationButtonElement
+									className='rcx-pagination__link'
 									disabled={currentPage === page}
 									aria-label={`Page ${Number(page) + 1}`}
 									onClick={handleSetPageLinkClick(Number(page))}
 								>
 									{Number(page) + 1}
-								</button>
+								</PaginationButtonElement>
 							)}
-						</li>
+						</PaginationListItem>
 					))}
-					<li className='rcx-pagination__list-item'>
-						<button
-							className='rcx-box rcx-box--full rcx-pagination__forward'
+					<PaginationListItem className='rcx-pagination__list-item'>
+						<PaginationButtonElement
+							arrow
+							className='rcx-pagination__forward'
 							disabled={currentPage === pages - 1}
 							aria-label='Next page'
 							onClick={handleSetPageLinkClick(currentPage + 1)}
 						>
 							<Chevron right size='x16' />
-						</button>
-					</li>
-				</ol>
-			</div>
-		</nav>
+						</PaginationButtonElement>
+					</PaginationListItem>
+				</PaginationList>
+			</PaginationRight>
+		</PaginationFrame>
 	);
 };
 
-export default Pagination;
+export default withFuselageProvider(Pagination);
