@@ -3,6 +3,7 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
+import { Menu, MenuItem, MenuSubmenuTrigger } from '.';
 import * as stories from './Menu.stories';
 import { withResizeObserverMock } from '../../../mocks/withResizeObserverMock';
 import { render } from '../../testing';
@@ -343,5 +344,24 @@ describe('[Menu Component]', () => {
 			const button = screen.getByRole('button');
 			expect(button).toHaveClass('rcx-button--mini-square');
 		});
+	});
+});
+
+describe('[MenuSubmenuTrigger]', () => {
+	it('names a title-only MenuItem trigger by its title', async () => {
+		render(
+			<Menu title='Menu'>
+				<MenuSubmenuTrigger key='move-to'>
+					<MenuItem title='Move to'>{null}</MenuItem>
+					<MenuItem key='inbox'>Inbox</MenuItem>
+					<MenuItem key='archive'>Archive</MenuItem>
+				</MenuSubmenuTrigger>
+			</Menu>,
+		);
+
+		await userEvent.click(screen.getByRole('button'));
+
+		const trigger = await screen.findByRole('menuitem', { name: 'Move to' });
+		expect(trigger).toHaveTextContent('Move to');
 	});
 });
