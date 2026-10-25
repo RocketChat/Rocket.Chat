@@ -413,7 +413,7 @@
   "Accounts_ManuallyApproveNewUsers": "Manually approve new users",
   "Accounts_OAuth_Apple": "Sign in with Apple",
   "Accounts_OAuth_Apple_Description": "If you want Apple login enabled only on mobile, you can leave all fields empty.",
-  "Accounts_OAuth_Apple_id": "Apple id",
+  "Accounts_OAuth_Apple_id": "Apple ID",
   "Accounts_OAuth_Apple_iss": "Team ID (iss)",
   "Accounts_OAuth_Apple_kid": "Key ID (kid)",
   "Accounts_OAuth_Apple_secretKey": "Secret key",
