@@ -23,6 +23,7 @@ import { canSendMessageAsync } from '../../lib/authorization/canSendMessage';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { videoConfProviders } from '../../lib/videoConfProviders';
 import { API } from '../api';
+import { applyBreakingChanges } from '../ApiClass';
 import { getPaginationItems } from '../lib/getPaginationItems';
 
 const startResponseSchema = ajv.compile<{ data: VideoConferenceInstructions & { providerName: string } }>({
@@ -237,6 +238,7 @@ API.v1.post(
 			200: joinResponseSchema,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			404: validateNotFoundErrorResponse,
 		},
 	},
 	async function action() {
@@ -250,6 +252,9 @@ API.v1.post(
 		// published and clients depend on the status, so moving it belongs to the next major, with
 		// `applyBreakingChanges`.
 		if (!call) {
+			if (applyBreakingChanges) {
+				return API.v1.notFound();
+			}
 			return API.v1.failure('invalid-params');
 		}
 
@@ -261,6 +266,9 @@ API.v1.post(
 			: await canAccessRoomIdAsync(call.rid, userId);
 
 		if (!canAccessConference) {
+			if (applyBreakingChanges) {
+				return API.v1.notFound();
+			}
 			return API.v1.failure('invalid-params');
 		}
 
@@ -302,6 +310,7 @@ API.v1.post(
 			200: cancelResponseSchema,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			404: validateNotFoundErrorResponse,
 		},
 	},
 	async function action() {
@@ -315,10 +324,16 @@ API.v1.post(
 		// published and clients depend on the status, so moving it belongs to the next major, with
 		// `applyBreakingChanges`.
 		if (!call) {
+			if (applyBreakingChanges) {
+				return API.v1.notFound();
+			}
 			return API.v1.failure('invalid-params');
 		}
 
 		if (!(await canAccessRoomIdAsync(call.rid, userId))) {
+			if (applyBreakingChanges) {
+				return API.v1.notFound();
+			}
 			return API.v1.failure('invalid-params');
 		}
 
@@ -549,6 +564,7 @@ API.v1.get(
 			200: infoResponseSchema,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			404: validateNotFoundErrorResponse,
 		},
 	},
 	async function action() {
@@ -561,6 +577,9 @@ API.v1.get(
 		// published and clients depend on the status, so moving it belongs to the next major, with
 		// `applyBreakingChanges`.
 		if (!call) {
+			if (applyBreakingChanges) {
+				return API.v1.notFound();
+			}
 			return API.v1.failure('invalid-params');
 		}
 
@@ -609,6 +628,7 @@ API.v1.get(
 			200: listResponseSchema,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			404: validateNotFoundErrorResponse,
 		},
 	},
 	async function action() {
@@ -623,6 +643,9 @@ API.v1.get(
 		// published and clients depend on the status, so moving it belongs to the next major, with
 		// `applyBreakingChanges`.
 		if (!(await canAccessRoomIdAsync(roomId, userId))) {
+			if (applyBreakingChanges) {
+				return API.v1.notFound();
+			}
 			return API.v1.failure('invalid-params');
 		}
 
