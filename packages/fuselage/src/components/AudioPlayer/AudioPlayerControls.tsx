@@ -1,6 +1,6 @@
 import type { MouseEvent } from 'react';
 
-import { Box, Button, IconButton, Margins } from '../..';
+import { Box, Button, IconButton } from '../..';
 import { Slider } from '../Slider';
 
 const getMaskTime = (durationTime: number) => new Date(durationTime * 1000).toISOString().slice(durationTime > 60 * 60 ? 11 : 14, 19);
@@ -55,7 +55,7 @@ const AudioPlayerControls = ({
 			aria-label={isPlaying ? pauseLabel : playLabel}
 			icon={isPlaying ? 'pause-shape-filled' : 'play-shape-filled'}
 		/>
-		<Margins inline={8}>
+		<Box display='flex' alignItems='center' flexGrow={1} marginInline={8} gap={16}>
 			<Box fontScale='p2' color='secondary-info'>
 				{isPlaying || currentTime > 0 ? getMaskTime(currentTime) : getMaskTime(durationTime)}
 			</Box>
@@ -72,7 +72,7 @@ const AudioPlayerControls = ({
 			<Button secondary small onClick={onChangePlaybackSpeed} aria-label={changePlaybackSpeedLabel}>
 				{playbackSpeed}x
 			</Button>
-		</Margins>
+		</Box>
 		{download && (
 			<IconButton
 				primary

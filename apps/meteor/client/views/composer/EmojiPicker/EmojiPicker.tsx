@@ -1,4 +1,4 @@
-import { TextInput, Icon, Button, Divider } from '@rocket.chat/fuselage';
+import { Box, TextInput, Icon, Button, Divider } from '@rocket.chat/fuselage';
 import { useMediaQuery, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import {
 	EmojiPickerCategoryHeader,
@@ -153,6 +153,11 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 	const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
 		if (e.key === 'Escape') {
 			onClose();
+
+			// Escape hands the focus back to what opened the picker, while it is still on the page.
+			if (reference.isConnected && 'focus' in reference && typeof reference.focus === 'function') {
+				reference.focus();
+			}
 		}
 	};
 
@@ -215,7 +220,9 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 						/>
 					))}
 				</EmojiPickerCategoryHeader>
-				<Divider marginBlock={12} />
+				<Box paddingBlock={12}>
+					<Divider flush />
+				</Box>
 				<EmojiPickerListArea role='tabpanel'>
 					{searching && <SearchingResult searchResults={searchResults} handleSelectEmoji={handleSelectEmoji} />}
 					{!searching && (

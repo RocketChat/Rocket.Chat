@@ -76,7 +76,7 @@ export type TeamsEndpoints = {
 		GET: (params?: never) => { teams: ITeam[]; total: number; count: number; offset: number };
 	};
 	'/v1/teams.create': {
-		POST: (params: TeamsCreateProps) => { team: ITeam };
+		POST: (params: TeamsCreateProps) => { team: ITeam; skippedMembers?: string[] };
 	};
 
 	'/v1/teams.convertToChannel': {

@@ -255,7 +255,6 @@ const UserPresenceEditorForm = ({ user, defaultUsername, onClose }: UserPresence
 						<IconButton
 							icon={<Icon name='undo' size='x16' />}
 							secondary
-							flexGrow={0}
 							title={t('Remove_user_status_settings')}
 							onClick={handleResetClick}
 						/>

@@ -135,27 +135,18 @@ export const ImageGallery = ({
 					<div role='presentation' className='swiper-container image-gallery' onClick={onClose}>
 						<ButtonGroup role='toolbar' className='rcx-swiper-controls' onClick={preventPropagation}>
 							{zoomScale !== 1 && (
-								<IconButton
-									name='resize'
-									small
-									icon='arrow-collapse'
-									title={t('Resize')}
-									rcx-swiper-zoom-out
-									secondary
-									onClick={handleResize}
-								/>
+								<IconButton name='resize' small icon='arrow-collapse' title={t('Resize')} secondary onClick={handleResize} />
 							)}
 							<IconButton
 								name='zoom-out'
 								small
 								icon='h-bar'
 								title={t('Zoom_out')}
-								rcx-swiper-zoom-out
 								onClick={handleZoomOut}
 								secondary
 								disabled={zoomScale === 1}
 							/>
-							<IconButton name='zoom-in' small icon='plus' title={t('Zoom_in')} rcx-swiper-zoom-in secondary onClick={handleZoomIn} />
+							<IconButton name='zoom-in' small icon='plus' title={t('Zoom_in')} secondary onClick={handleZoomIn} />
 							<IconButton
 								name='close'
 								small

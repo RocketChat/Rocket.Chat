@@ -97,27 +97,29 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 	return (
 		<>
 			<ContextualbarScrollableContent>
-				<FieldGroup id={formId} is='form' onSubmit={handleSubmit(handleSave)}>
-					<Field>
-						<FieldLabel>{t('Name')}</FieldLabel>
-						<FieldRow>
-							<TextInput {...register('name', { required: t('Required_field', { field: t('Name') }) })} placeholder={t('Name')} />
-						</FieldRow>
-						{errors.name && <FieldError>{errors.name.message}</FieldError>}
-					</Field>
-					<Field>
-						<FieldLabel>{t('Presence')}</FieldLabel>
-						<FieldRow>
-							<Controller
-								name='statusType'
-								control={control}
-								rules={{ required: t('Required_field', { field: t('Presence') }) }}
-								render={({ field }) => <Select {...field} placeholder={t('Presence')} options={presenceOptions} />}
-							/>
-						</FieldRow>
-						{errors.statusType && <FieldError>{errors.statusType.message}</FieldError>}
-					</Field>
-				</FieldGroup>
+				<Box id={formId} is='form' onSubmit={handleSubmit(handleSave)}>
+					<FieldGroup>
+						<Field>
+							<FieldLabel>{t('Name')}</FieldLabel>
+							<FieldRow>
+								<TextInput {...register('name', { required: t('Required_field', { field: t('Name') }) })} placeholder={t('Name')} />
+							</FieldRow>
+							{errors.name && <FieldError>{errors.name.message}</FieldError>}
+						</Field>
+						<Field>
+							<FieldLabel>{t('Presence')}</FieldLabel>
+							<FieldRow>
+								<Controller
+									name='statusType'
+									control={control}
+									rules={{ required: t('Required_field', { field: t('Presence') }) }}
+									render={({ field }) => <Select {...field} placeholder={t('Presence')} options={presenceOptions} />}
+								/>
+							</FieldRow>
+							{errors.statusType && <FieldError>{errors.statusType.message}</FieldError>}
+						</Field>
+					</FieldGroup>
+				</Box>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>

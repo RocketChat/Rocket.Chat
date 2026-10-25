@@ -11,6 +11,8 @@ import {
 	StatesTitle,
 	StatesActions,
 	StatesAction,
+	Stack,
+	type TableColumnWidth,
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import {
@@ -112,6 +114,8 @@ const MonitorsTable = () => {
 		setModal(<GenericModal variant='danger' onConfirm={onDeleteMonitor} onCancel={() => setModal()} confirmText={t('Delete')} />);
 	};
 
+	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 40];
+
 	const headers = useMemo(
 		() => [
 			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort}>
@@ -123,7 +127,7 @@ const MonitorsTable = () => {
 			<GenericTableHeaderCell key='email' direction={sortDirection} active={sortBy === 'email'} onClick={setSort}>
 				{t('Email')}
 			</GenericTableHeaderCell>,
-			<GenericTableHeaderCell key='spacer' width={40} />,
+			<GenericTableHeaderCell key='spacer' />,
 		],
 		[setSort, sortBy, sortDirection, t],
 	);
@@ -134,10 +138,12 @@ const MonitorsTable = () => {
 				<Field>
 					<FieldLabel htmlFor={usernameFieldId}>{t('Username')}</FieldLabel>
 					<FieldRow>
-						<UserAutoComplete id={usernameFieldId} name='monitor' value={username} onChange={setUsername as () => void} />
-						<Button primary disabled={!username} loading={addMutation.isPending} onClick={() => handleAdd()} marginInlineStart={8}>
-							{t('Add_monitor')}
-						</Button>
+						<Stack direction='row' align='center' justify='space-between' grow gap={8}>
+							<UserAutoComplete id={usernameFieldId} name='monitor' value={username} onChange={setUsername as () => void} />
+							<Button primary disabled={!username} loading={addMutation.isPending} onClick={() => handleAdd()}>
+								{t('Add_monitor')}
+							</Button>
+						</Stack>
 					</FieldRow>
 				</Field>
 			</Box>
@@ -145,7 +151,7 @@ const MonitorsTable = () => {
 				<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			)}
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingTable headerCells={4} />
@@ -164,15 +170,15 @@ const MonitorsTable = () => {
 			)}
 			{isSuccess && data.monitors.length > 0 && (
 				<>
-					<GenericTable aria-busy={isLoading} aria-live='polite' aria-label={t('Monitors')}>
+					<GenericTable columns={columns} aria-busy={isLoading} aria-live='polite' aria-label={t('Monitors')}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.monitors?.map((monitor) => (
-								<GenericTableRow key={monitor._id} tabIndex={0} width='full'>
-									<GenericTableCell withTruncatedText>{monitor.name}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{monitor.username}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{monitor.email}</GenericTableCell>
-									<GenericTableCell withTruncatedText>
+								<GenericTableRow key={monitor._id} tabIndex={0}>
+									<GenericTableCell truncate>{monitor.name}</GenericTableCell>
+									<GenericTableCell truncate>{monitor.username}</GenericTableCell>
+									<GenericTableCell truncate>{monitor.email}</GenericTableCell>
+									<GenericTableCell truncate>
 										<IconButton icon='trash' small title={t('Remove')} onClick={() => handleRemove(monitor.username)} />
 									</GenericTableCell>
 								</GenericTableRow>

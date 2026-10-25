@@ -21,7 +21,7 @@ const PlanCardTrial = ({ licenseInformation }: PlanCardProps) => {
 	const { visualExpiration } = licenseInformation;
 
 	return (
-		<Card height='full'>
+		<Card>
 			<PlanCardHeader name={planName.data ?? ''} />
 			<CardBody flexDirection='column'>
 				{visualExpiration && (
@@ -54,15 +54,11 @@ const PlanCardTrial = ({ licenseInformation }: PlanCardProps) => {
 				<PlanCardLicenseDetails />
 			</CardBody>
 			<CardControls>
-				<UpgradeButton
-					target='plan_card_trial'
-					action={isSalesAssisted ? 'finish_purchase' : 'contact_sales'}
-					primary
-					marginBlockStart='auto'
-					width='full'
-				>
-					{isSalesAssisted ? t('Finish_purchase') : t('Contact_sales')}
-				</UpgradeButton>
+				<Box display='flex' flexDirection='column' marginBlockStart='auto' width='full'>
+					<UpgradeButton target='plan_card_trial' action={isSalesAssisted ? 'finish_purchase' : 'contact_sales'} primary>
+						{isSalesAssisted ? t('Finish_purchase') : t('Contact_sales')}
+					</UpgradeButton>
+				</Box>
 			</CardControls>
 		</Card>
 	);

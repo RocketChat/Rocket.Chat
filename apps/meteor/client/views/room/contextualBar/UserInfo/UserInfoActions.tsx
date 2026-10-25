@@ -46,7 +46,7 @@ const UserInfoActions = ({ user, rid, isInvited, backToList }: UserInfoActionsPr
 
 		return (
 			<GenericMenu
-				button={<IconButton icon='kebab' secondary flexGrow={0} flexShrink={0} />}
+				button={<IconButton icon='kebab' secondary />}
 				title={t('More')}
 				key='menu'
 				sections={menuOptions}

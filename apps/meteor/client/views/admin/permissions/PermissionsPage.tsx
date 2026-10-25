@@ -57,21 +57,19 @@ const PermissionsPage = ({ isEnterprise }: PermissionsPageProps) => {
 						{t('New_role')}
 					</Button>
 				</PageHeader>
-				<Margins blockEnd={16}>
-					<Tabs>
-						<TabsItem
-							selected={type === 'permissions'}
-							onClick={canViewPermission ? handlePermissionsTab : undefined}
-							disabled={!canViewPermission}
-						>
-							{t('Permissions')}
-						</TabsItem>
-						<TabsItem selected={type === 'settings'} onClick={handleSettingsTab} disabled={!canViewSettingPermission}>
-							{t('Settings')}
-						</TabsItem>
-					</Tabs>
-				</Margins>
-				<PageContent marginBlock='neg-x8'>
+				<Tabs>
+					<TabsItem
+						selected={type === 'permissions'}
+						onClick={canViewPermission ? handlePermissionsTab : undefined}
+						disabled={!canViewPermission}
+					>
+						{t('Permissions')}
+					</TabsItem>
+					<TabsItem selected={type === 'settings'} onClick={handleSettingsTab} disabled={!canViewSettingPermission}>
+						{t('Settings')}
+					</TabsItem>
+				</Tabs>
+				<PageContent marginBlockStart={8} marginBlockEnd='neg-x8'>
 					<Margins block={8}>
 						<PermissionsTable
 							roleList={roleList}

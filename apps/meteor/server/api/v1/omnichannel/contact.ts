@@ -1,3 +1,4 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { LivechatContacts, LivechatCustomField, LivechatVisitors } from '@rocket.chat/models';
 import {
 	isPOSTOmnichannelContactsProps,
@@ -16,7 +17,6 @@ import {
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp, removeEmpty } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import { API } from '../..';
 import { createContact } from '../../../lib/omnichannel/contacts/createContact';
@@ -86,11 +86,11 @@ API.v1.addRoute(
 			try {
 				customCF = custom && JSON.parse(custom);
 			} catch (e) {
-				throw new Meteor.Error('error-invalid-params-custom');
+				throw new ClientSafeError('error-invalid-params-custom');
 			}
 
 			if (!email && !phone && !Object.keys(customCF).length) {
-				throw new Meteor.Error('error-invalid-params');
+				throw new ClientSafeError('error-invalid-params');
 			}
 
 			const foundCF = await (async () => {

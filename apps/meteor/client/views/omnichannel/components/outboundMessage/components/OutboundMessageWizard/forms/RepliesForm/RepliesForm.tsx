@@ -118,24 +118,26 @@ const RepliesForm = (props: RepliesFormProps) => {
 	return (
 		<Form id={repliesFormId} onSubmit={handleSubmit(submit)} noValidate>
 			<Scrollable vertical>
-				<FieldGroup justifyContent='start' paddingInline={2}>
-					<DepartmentField
-						control={control}
-						onlyMyDepartments={!canAssignAllDepartments}
-						isError={isErrorDepartment}
-						isFetching={isFetchingDepartment}
-						onRefetch={refetchDepartment}
-						onChange={() => setValue('agentId', '')}
-					/>
+				<Box>
+					<FieldGroup>
+						<DepartmentField
+							control={control}
+							onlyMyDepartments={!canAssignAllDepartments}
+							isError={isErrorDepartment}
+							isFetching={isFetchingDepartment}
+							onRefetch={refetchDepartment}
+							onChange={() => setValue('agentId', '')}
+						/>
 
-					<AgentField
-						control={control}
-						agents={agents}
-						canAssignAgent={canAssignAnyAgent || canAssignSelfOnlyAgent}
-						disabled={!departmentId}
-						isLoading={isFetchingDepartment}
-					/>
-				</FieldGroup>
+						<AgentField
+							control={control}
+							agents={agents}
+							canAssignAgent={canAssignAnyAgent || canAssignSelfOnlyAgent}
+							disabled={!departmentId}
+							isLoading={isFetchingDepartment}
+						/>
+					</FieldGroup>
+				</Box>
 			</Scrollable>
 
 			{customActions ?? (

@@ -138,6 +138,7 @@ $message-generic-preview-icon-background-color: theme('message-generic-preview-i
 
 		margin-inline-start: lengths.margin(16);
 
+		color: colors.font(default);
 		border-radius: lengths.border-radius(medium);
 
 		background-color: $message-generic-preview-icon-background-color;

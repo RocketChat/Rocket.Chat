@@ -154,6 +154,13 @@ export interface IUserEmail {
 	verified?: boolean;
 }
 
+export interface IUserPhoneNumber {
+	number: string;
+	label?: string;
+}
+
+export const MAX_USER_PHONES = 10;
+
 export interface IUserCalendar {
 	outlook?: {
 		Enabled: boolean;
@@ -237,7 +244,7 @@ export interface IUser extends IRocketChatRecord {
 	sipExtension?: string;
 	inviteToken?: string;
 	canViewAllInfo?: boolean;
-	phone?: string;
+	phones?: IUserPhoneNumber[];
 	reason?: string;
 	// TODO: move this to a specific federation user type
 	federated?: boolean;
@@ -249,6 +256,7 @@ export interface IUser extends IRocketChatRecord {
 		avatarUrl?: string;
 		searchedServerNames?: string[];
 	};
+	xmppFederation?: IUserXMPPFederation;
 	banners?: {
 		[key: string]: {
 			id: string;
@@ -296,6 +304,21 @@ export interface IUserNativeFederated extends IUser {
 
 export const isUserNativeFederated = (user: Partial<IUser>): user is IUserNativeFederated =>
 	isUserFederated(user) && 'federation' in user && typeof user.federation?.version === 'number';
+
+/** A remote XMPP user. `jid` equals `username`: the bare JID, or `<nick>#<room JID>` when a remote room disclosed none. */
+export type IUserXMPPFederation = {
+	version: 1;
+	jid: string;
+	origin: string;
+};
+
+interface IUserXMPPFederated extends IUser {
+	federated: true;
+	xmppFederation: IUserXMPPFederation;
+}
+
+export const isUserXMPPFederated = (user: Partial<IUser>): user is IUserXMPPFederated =>
+	'xmppFederation' in user && (user as Partial<IUserXMPPFederated>).xmppFederation !== undefined;
 
 export type IUserDataEvent = {
 	id: unknown;

@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Button, Icon } from '@rocket.chat/fuselage';
+import { Box, Button, Icon, useStyle } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { ComponentProps } from 'react';
 import { forwardRef } from 'react';
@@ -46,6 +46,7 @@ const PreflightDeviceMenuButton = forwardRef<HTMLButtonElement, PreflightDeviceM
 	{ kind, label, current, pressed, icon: _icon, title: _title, className: _className, small: _small, ...menuProps },
 	ref,
 ) {
+	const triggerClassName = useStyle(triggerStyles);
 	// Spread because GenericMenu clones this trigger with the props that open the menu, which must reach the button.
 	return (
 		// Named with the device too: it is what the button shows, and what someone choosing one needs to hear.
@@ -53,13 +54,13 @@ const PreflightDeviceMenuButton = forwardRef<HTMLButtonElement, PreflightDeviceM
 			{...menuProps}
 			ref={ref}
 			size='small'
-			className={triggerStyles}
+			className={triggerClassName}
 			aria-label={current ? `${label}: ${current}` : label}
 			title={current || label}
 		>
-			<Icon name={icons[kind]} size='x16' flexShrink={0} />
+			<Icon name={icons[kind]} size='x16' />
 			<Box className={nameStyles}>{current || label}</Box>
-			<Icon name={pressed ? 'chevron-up' : 'chevron-down'} size='x16' flexShrink={0} />
+			<Icon name={pressed ? 'chevron-up' : 'chevron-down'} size='x16' />
 		</Button>
 	);
 });

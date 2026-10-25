@@ -1,4 +1,13 @@
-import { Box, Pagination, States, StatesActions, StatesAction, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
+import {
+	Box,
+	Pagination,
+	States,
+	StatesActions,
+	StatesAction,
+	StatesIcon,
+	StatesTitle,
+	type TableColumnWidth,
+} from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
@@ -44,14 +53,14 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 		500,
 	);
 
+	const columns: TableColumnWidth[] = ['x200', 'x200'];
+
 	const headers = useMemo(
 		() => [
-			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name' width='x200'>
+			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 				{t('Name')}
 			</GenericTableHeaderCell>,
-			<GenericTableHeaderCell key='aliases' width='x200'>
-				{t('Aliases')}
-			</GenericTableHeaderCell>,
+			<GenericTableHeaderCell key='aliases'>{t('Aliases')}</GenericTableHeaderCell>,
 		],
 		[setSort, sortDirection, sortBy, t],
 	);
@@ -70,7 +79,7 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 		<>
 			<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingTable headerCells={2} />
@@ -79,7 +88,7 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 			)}
 			{isSuccess && data && data.emojis.length > 0 && (
 				<>
-					<GenericTable aria-label={t('Emoji')}>
+					<GenericTable columns={columns} aria-label={t('Emoji')}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{isSuccess &&

@@ -20,6 +20,7 @@ export * from './usePrefersColorScheme';
 export * from './usePrefersReducedData';
 export * from './usePrefersReducedMotion';
 export * from './usePrevious';
+export * from './usePreventScrollOutside';
 export * from './useResizeObserver';
 export * from './useSafely';
 export * from './useStableArray';

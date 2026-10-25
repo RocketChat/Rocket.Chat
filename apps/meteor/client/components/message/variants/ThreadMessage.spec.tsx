@@ -75,3 +75,14 @@ it('should hide the message body when the user gets ignored without remounting',
 	expect(screen.queryByText('message body')).not.toBeInTheDocument();
 	expect(screen.getByRole('button', { name: 'Message_Ignored' })).toBeInTheDocument();
 });
+
+it('should show a placeholder instead of failing when the message content cannot be rendered', () => {
+	jest.spyOn(console, 'error').mockImplementation(() => undefined);
+	const malformed = { ...message, actionLinks: [null] } as unknown as IThreadMessage;
+
+	render(<ThreadMessage message={malformed} sequential={false} unread={false} ignoredUser={false} showUserAvatar={true} />, {
+		wrapper: mockAppRoot().build(),
+	});
+
+	expect(screen.getByText('Message_could_not_be_displayed')).toBeInTheDocument();
+});

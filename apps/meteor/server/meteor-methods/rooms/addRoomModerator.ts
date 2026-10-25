@@ -1,9 +1,8 @@
-import { api, Message, Team } from '@rocket.chat/core-services';
+import { api, Message, Team, ClientSafeError } from '@rocket.chat/core-services';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
 import { check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { beforeChangeRoomRole } from '../../lib/callbacks/beforeChangeRoomRole';
@@ -18,7 +17,7 @@ export const addRoomModerator = async (fromUserId: IUser['_id'], rid: IRoom['_id
 
 	const room = await Rooms.findOneById(rid, { projection: { t: 1, federated: 1, federation: 1 } });
 	if (!room) {
-		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+		throw new ClientSafeError('error-invalid-room', 'Invalid room', {
 			method: 'addRoomModerator',
 		});
 	}
@@ -26,7 +25,7 @@ export const addRoomModerator = async (fromUserId: IUser['_id'], rid: IRoom['_id
 	const isFederated = isRoomFederated(room);
 
 	if (!(await hasPermissionAsync(fromUserId, 'set-moderator', rid)) && !isFederated) {
-		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+		throw new ClientSafeError('error-not-allowed', 'Not allowed', {
 			method: 'addRoomModerator',
 		});
 	}
@@ -38,7 +37,7 @@ export const addRoomModerator = async (fromUserId: IUser['_id'], rid: IRoom['_id
 	const user = await Users.findOneById(userId);
 
 	if (!user?.username) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 			method: 'addRoomModerator',
 		});
 	}
@@ -46,13 +45,13 @@ export const addRoomModerator = async (fromUserId: IUser['_id'], rid: IRoom['_id
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
 
 	if (!subscription) {
-		throw new Meteor.Error('error-user-not-in-room', 'User is not in this room', {
+		throw new ClientSafeError('error-user-not-in-room', 'User is not in this room', {
 			method: 'addRoomModerator',
 		});
 	}
 
 	if (subscription.roles && Array.isArray(subscription.roles) === true && subscription.roles.includes('moderator') === true) {
-		throw new Meteor.Error('error-user-already-moderator', 'User is already a moderator', {
+		throw new ClientSafeError('error-user-already-moderator', 'User is already a moderator', {
 			method: 'addRoomModerator',
 		});
 	}
@@ -68,7 +67,7 @@ export const addRoomModerator = async (fromUserId: IUser['_id'], rid: IRoom['_id
 
 	const fromUser = await Users.findOneById(fromUserId);
 	if (!fromUser) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 			method: 'addRoomLeader',
 		});
 	}

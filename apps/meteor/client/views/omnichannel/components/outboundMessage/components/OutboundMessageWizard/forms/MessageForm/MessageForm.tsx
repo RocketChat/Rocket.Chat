@@ -80,15 +80,17 @@ const MessageForm = (props: MessageFormProps) => {
 	return (
 		<Form id={messageFormId} onSubmit={handleSubmit(submit)} noValidate>
 			<Scrollable vertical>
-				<FieldGroup justifyContent='start' paddingInline={2}>
-					<TemplateField control={control} templates={templates} onChange={() => setValue('templateParameters', {})} />
+				<Box>
+					<FieldGroup>
+						<TemplateField control={control} templates={templates} onChange={() => setValue('templateParameters', {})} />
 
-					{parametersMetadata.map((metadata) => (
-						<TemplatePlaceholderField key={metadata.id} control={control} metadata={metadata} contact={contact} />
-					))}
+						{parametersMetadata.map((metadata) => (
+							<TemplatePlaceholderField key={metadata.id} control={control} metadata={metadata} contact={contact} />
+						))}
 
-					{template ? <TemplatePreviewForm control={control} template={template} /> : null}
-				</FieldGroup>
+						{template ? <TemplatePreviewForm control={control} template={template} /> : null}
+					</FieldGroup>
+				</Box>
 			</Scrollable>
 
 			{customActions ?? (

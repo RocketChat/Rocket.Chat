@@ -43,11 +43,11 @@ const PrivateAppInstallModal = ({ onClose, onProceed }: PrivateAppInstallModalPr
 			</ModalHeader>
 
 			<ModalContent>
-				<Box marginBlockEnd={28}>{t('Private_app_install_modal_content')}</Box>
+				<Box marginBlockEnd='x24'>{t('Private_app_install_modal_content')}</Box>
 				{t('Upgrade_subscription_to_enable_private_apps')}
 			</ModalContent>
 
-			<ModalFooter justifyContent='space-between'>
+			<ModalFooter justify='space-between'>
 				<ModalFooterAnnotation>
 					<a target='_blank' rel='noopener noreferrer' href={PRICING_LINK}>
 						{t('Compare_plans')}

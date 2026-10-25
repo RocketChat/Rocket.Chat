@@ -451,6 +451,27 @@ export const Actions: Story = {
 					</Item>
 				</ItemGroup>
 			</SidebarSurface>
+			<Caption>reveal=&quot;always&quot;, inside an ItemRow</Caption>
+			<ItemGroup is='ul' aria-label='Always visible actions on the second line'>
+				<Item is='li' inset='md'>
+					<ItemContent>
+						<ItemRow>
+							<Icon name='video' size='x16' />
+							<ItemTitle>
+								<ItemLink href='#ada-lovelace'>Ada Lovelace</ItemLink>
+							</ItemTitle>
+							<ItemMeta>Ringing…</ItemMeta>
+						</ItemRow>
+						<ItemRow>
+							<ItemDescription>1 person joined</ItemDescription>
+							<ItemActions>
+								<IconButton mini secondary icon='bell-off' aria-label='Silence call from Ada Lovelace' />
+								<IconButton mini secondary icon='cross' aria-label='Decline call from Ada Lovelace' />
+							</ItemActions>
+						</ItemRow>
+					</ItemContent>
+				</Item>
+			</ItemGroup>
 			<Caption>reveal=&quot;hover&quot;, shown on hover and focus</Caption>
 			<SidebarSurface>
 				<ItemGroup is='ul' aria-label='Actions revealed on hover'>

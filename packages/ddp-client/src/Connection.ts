@@ -48,6 +48,12 @@ export interface Connection extends Emitter<{
 
 	ws?: WebSocket;
 
+	/** How many reconnection attempts were made since the last successful connection. */
+	retryCount: number;
+
+	/** When the next reconnection attempt is due (ms since epoch), while one is scheduled. */
+	nextRetryAt?: number;
+
 	connect(): Promise<boolean>;
 
 	reconnect(): Promise<boolean>;
@@ -87,6 +93,8 @@ export class ConnectionImpl
 	ws: WebSocket | undefined;
 
 	retryCount = 0;
+
+	nextRetryAt?: number;
 
 	private connectPromise?: Promise<boolean>;
 
@@ -178,6 +186,7 @@ export class ConnectionImpl
 		}
 
 		this.stopHandshake?.();
+		this.nextRetryAt = undefined;
 		this.status = 'connecting';
 
 		const ws = new this.WS(`${this.ssl ? 'wss://' : 'ws://'}${this.url}/websocket`);
@@ -293,6 +302,9 @@ export class ConnectionImpl
 				this.retryCount += 1;
 
 				const retryDelay = getRetryDelay(this.retryOptions.retryTime, this.retryCount);
+				this.nextRetryAt = Date.now() + retryDelay;
+				// Lets status readers pick up when the next attempt is due.
+				this.emitStatus();
 
 				this.retryOptions.retryTimer = setTimeout(() => {
 					// Re-check the status when the timer actually fires. If the

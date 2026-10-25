@@ -1,4 +1,5 @@
-import { Box } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Box, useStyle } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { ILivechatContactWithManagerData } from '@rocket.chat/rest-typings';
 import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
@@ -10,7 +11,17 @@ import { useTimeFromNow } from '../../../../hooks/useTimeFromNow';
 import { useOmnichannelSource } from '../../hooks/useOmnichannelSource';
 import { useOmnichannelDirectoryRouter } from '../hooks/useOmnichannelDirectoryRouter';
 
+/**
+ * TODO: We should have a variant for aligning row cell instead of using custom CSS
+ **/
+const customAlignTop = css`
+	td {
+		vertical-align: top;
+	}
+`;
+
 const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILivechatContactWithManagerData) => {
+	const customAlignTopClassName = useStyle(customAlignTop);
 	const { getSourceLabel } = useOmnichannelSource();
 	const getTimeFromNow = useTimeFromNow(true);
 	const formatDate = useFormatDate();
@@ -37,15 +48,14 @@ const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILiv
 			action
 			key={_id}
 			tabIndex={0}
-			height='40px'
 			rcx-show-call-button-on-hover
-			cellVerticalAlign='top'
+			className={customAlignTopClassName}
 			onClick={() => onRowClick(_id)}
 		>
-			<GenericTableCell fontScale='p2m' color='default' withTruncatedText>
+			<GenericTableCell strong color='default' truncate>
 				{name}
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText>
+			<GenericTableCell truncate>
 				{latestChannel?.details && (
 					<Box withTruncatedText display='flex' alignItems='center'>
 						<OmnichannelRoomIcon size='x20' source={latestChannel?.details} />
@@ -55,8 +65,8 @@ const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILiv
 					</Box>
 				)}
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText>{contactManager?.username}</GenericTableCell>
-			<GenericTableCell withTruncatedText>
+			<GenericTableCell truncate>{contactManager?.username}</GenericTableCell>
+			<GenericTableCell truncate>
 				{lastChat && (
 					<Box display='flex' flexDirection='column'>
 						<Box fontScale='p2m' withTruncatedText color='default'>

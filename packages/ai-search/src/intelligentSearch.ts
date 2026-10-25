@@ -10,6 +10,44 @@ import type {
 } from './types';
 import { getErrorType } from './utils';
 
+export const INTELLIGENT_SEARCH_ERROR_CODES = [
+	'error-ai-search-credentials-rejected',
+	'error-ai-search-pipeline-not-found',
+	'error-ai-search-timeout',
+	'error-ai-search-unreachable',
+	'error-ai-search-url-blocked',
+	'error-ai-search-unavailable',
+	'error-ai-search-request-failed',
+] as const;
+
+export type IntelligentSearchErrorCode = (typeof INTELLIGENT_SEARCH_ERROR_CODES)[number];
+
+export const isIntelligentSearchErrorCode = (value: unknown): value is IntelligentSearchErrorCode =>
+	INTELLIGENT_SEARCH_ERROR_CODES.includes(value as IntelligentSearchErrorCode);
+
+const getPipelineResponseErrorCode = (status: number): IntelligentSearchErrorCode => {
+	if (status === 401 || status === 403) {
+		return 'error-ai-search-credentials-rejected';
+	}
+	if (status === 404) {
+		return 'error-ai-search-pipeline-not-found';
+	}
+	if (status === 429 || status >= 500) {
+		return 'error-ai-search-unavailable';
+	}
+	return 'error-ai-search-request-failed';
+};
+
+const getPipelineFetchErrorCode = (error: unknown): IntelligentSearchErrorCode => {
+	if (error instanceof Error && error.name === 'AbortError') {
+		return 'error-ai-search-timeout';
+	}
+	if (error instanceof Error && error.message === 'error-ssrf-validation-failed') {
+		return 'error-ai-search-url-blocked';
+	}
+	return 'error-ai-search-unreachable';
+};
+
 const buildEndpointUrl = (baseUrl: string, path: string): string =>
 	new URL(path, baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`).toString();
 
@@ -323,13 +361,13 @@ export const searchIntelligentPipeline = async ({
 		});
 	} catch (fetchError: unknown) {
 		logger?.warn?.({ msg: 'Intelligent search fetch failed', url, errorType: getErrorType(fetchError) });
-		throw fetchError;
+		throw new Error(getPipelineFetchErrorCode(fetchError), { cause: fetchError });
 	}
 
 	if (!response.ok) {
 		const body = await response.text().catch(() => '');
 		logger?.warn?.({ msg: 'Intelligent search pipeline returned error', url, status: response.status, bodyLength: body.length });
-		throw new Error(`Intelligent search pipeline returned HTTP ${response.status}`);
+		throw new Error(getPipelineResponseErrorCode(response.status));
 	}
 
 	const json = await response.json();

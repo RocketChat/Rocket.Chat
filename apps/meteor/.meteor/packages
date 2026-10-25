@@ -3,50 +3,18 @@
 # 'meteor add' and 'meteor remove' will edit this file for you,
 # but you can also edit it by hand.
 
-rocketchat:mongo-config
+# Server-only runtime (DDP, accounts, mongo, webapp, ...); see packages/rocketchat-server-runtime.
+rocketchat:server-runtime
+
 rocketchat:livechat
 rocketchat:version
 
-accounts-base@3.3.1
-accounts-password@3.3.1
-
-check@1.5.0
-ddp-rate-limiter@1.3.0
-rate-limit@1.2.0
-email@3.2.0
-
-meteor-base@1.5.2
-ddp-common@1.4.5
-webapp@2.3.0
-
-mongo@2.5.1
-
-reload@1.3.2
-service-configuration@1.3.5
-session@1.2.3
-shell-server@0.7.0
-
-dispatch:run-as-user
-ostrio:cookies
-
-
-meteorhacks:inject-initial
-
-routepolicy@1.1.2
-
-webapp-hashing@1.1.2
-facts-base@1.0.2
-
-tracker@1.3.4
-reactive-dict@1.3.2
-reactive-var@1.0.13
+meteor@2.3.1
 
 standard-minifier-css@1.10.1
 dynamic-import@0.7.4
 ecmascript@0.19.1
 typescript@5.11.1
-
-autoupdate@2.0.1
 
 # photoswipe
 

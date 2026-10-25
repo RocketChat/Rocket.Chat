@@ -24,7 +24,7 @@ const EditDepartmentWithData = ({ id, title }: EditDepartmentWithDataProps) => {
 	});
 
 	if (isLoading) {
-		return <FormSkeleton padding='1.5rem 1rem' maxWidth='37.5rem' margin='0 auto' />;
+		return <FormSkeleton paddingBlock='x24' paddingInline='x16' maxWidth='37.5rem' margin='0 auto' />;
 	}
 
 	if (isError || (id && !data?.department)) {

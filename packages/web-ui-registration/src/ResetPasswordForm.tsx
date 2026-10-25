@@ -47,7 +47,7 @@ export const ResetPasswordForm = ({ setLoginRoute }: ResetPasswordFormProps) => 
 			<FormHeader>
 				<FormTitle id={formLabelId}>{t('registration.component.resetPassword')}</FormTitle>
 			</FormHeader>
-			<FormContainer>
+			<FormContainer display='flex' flexDirection='column' gap={24}>
 				<FieldGroup>
 					<Field>
 						<FieldLabel required htmlFor={emailId}>
@@ -79,7 +79,7 @@ export const ResetPasswordForm = ({ setLoginRoute }: ResetPasswordFormProps) => 
 				</FieldGroup>
 				{isSuccess && (
 					<FieldGroup>
-						<Callout aria-live='assertive' role='status' marginBlockStart={24} icon='mail'>
+						<Callout aria-live='assertive' role='status' icon='mail'>
 							{t('registration.page.resetPassword.sent')}
 						</Callout>
 					</FieldGroup>

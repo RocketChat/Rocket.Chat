@@ -1,19 +1,14 @@
-import { createContext } from 'react';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 
-import { Box, type BoxProps } from '../Box';
-
-export type TableRowProps = Omit<BoxProps, 'action'> & {
+export type TableRowProps = ElementProps<HTMLTableRowElement> & {
+	selected?: boolean;
 	action?: boolean;
 	hasAction?: boolean;
-	cellVerticalAlign?: 'top' | 'middle' | 'bottom' | 'baseline';
 };
 
-export const TableRowContext = createContext<TableRowProps['cellVerticalAlign']>(undefined);
-
-const TableRow = ({ action, selected, cellVerticalAlign, children, ...props }: TableRowProps) => (
-	<Box is='tr' rcx-table__row rcx-table__row--selected={selected} rcx-table__row--action={action} {...props}>
-		<TableRowContext.Provider value={cellVerticalAlign}>{children}</TableRowContext.Provider>
-	</Box>
+const TableRow = ({ action, selected, ...props }: TableRowProps) => (
+	<Box is='tr' rcx-table__row rcx-table__row--selected={selected} rcx-table__row--action={action} {...props} />
 );
 
 export default TableRow;

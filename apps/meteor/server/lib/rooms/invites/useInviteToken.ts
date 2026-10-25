@@ -1,6 +1,6 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { isBannedSubscription } from '@rocket.chat/core-typings';
 import { Invites, Subscriptions, Users } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { validateInviteToken } from './validateInviteToken';
 import { RoomMemberActions } from '../../../../definition/IRoomTypeConfig';
@@ -9,14 +9,14 @@ import { roomCoordinator } from '../roomCoordinator';
 
 export const useInviteToken = async (userId: string, token: string) => {
 	if (!userId) {
-		throw new Meteor.Error('error-invalid-user', 'The user is invalid', {
+		throw new ClientSafeError('error-invalid-user', 'The user is invalid', {
 			method: 'useInviteToken',
 			field: 'userId',
 		});
 	}
 
 	if (!token) {
-		throw new Meteor.Error('error-invalid-token', 'The invite token is invalid.', {
+		throw new ClientSafeError('error-invalid-token', 'The invite token is invalid.', {
 			method: 'useInviteToken',
 			field: 'token',
 		});
@@ -25,7 +25,7 @@ export const useInviteToken = async (userId: string, token: string) => {
 	const { inviteData, room } = await validateInviteToken(token);
 
 	if (!(await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.INVITE, userId))) {
-		throw new Meteor.Error('error-room-type-not-allowed', "Can't join room of this type via invite", {
+		throw new ClientSafeError('error-room-type-not-allowed', "Can't join room of this type via invite", {
 			method: 'useInviteToken',
 			field: 'token',
 		});
@@ -33,14 +33,14 @@ export const useInviteToken = async (userId: string, token: string) => {
 
 	const user = await Users.findOneById(userId);
 	if (!user) {
-		throw new Meteor.Error('error-invalid-user', 'The user is invalid', {
+		throw new ClientSafeError('error-invalid-user', 'The user is invalid', {
 			method: 'useInviteToken',
 			field: 'userId',
 		});
 	}
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id);
 	if (subscription && isBannedSubscription(subscription)) {
-		throw new Meteor.Error('error-user-is-banned', 'User is banned from this room', {
+		throw new ClientSafeError('error-user-is-banned', 'User is banned from this room', {
 			method: 'useInviteToken',
 		});
 	}

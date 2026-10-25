@@ -12,7 +12,10 @@ import {
 	Avatar,
 	Box,
 } from '@rocket.chat/fuselage';
+import { UserContext } from '@rocket.chat/ui-contexts';
 import type { Meta, StoryObj } from '@storybook/react';
+import type { ReactNode } from 'react';
+import { useContext } from 'react';
 
 import { VideoConfMessage, VideoConfMessageIcon, VideoConfMessageRow, VideoConfMessageText } from '.';
 import VideoConfMessageAction from './VideoConfMessageAction';
@@ -167,5 +170,34 @@ export const NoAvatars: StoryObj<typeof VideoConfMessage> = {
 				<VideoConfMessageFooterText>{fakeUsers.length} joined</VideoConfMessageFooterText>
 			</VideoConfMessageFooter>
 		</VideoConfMessage>
+	),
+};
+
+const WithAvatarsDisplayed = ({ children }: { children: ReactNode }) => {
+	const user = useContext(UserContext);
+	const queryPreference: typeof user.queryPreference = (key, defaultValue) => [
+		() => () => undefined,
+		() => (key === 'displayAvatars' ? true : defaultValue) as never,
+	];
+	return <UserContext.Provider value={{ ...user, queryPreference }}>{children}</UserContext.Provider>;
+};
+
+export const UserStackWithAvatars: StoryObj<typeof VideoConfMessage> = {
+	render: () => (
+		<WithAvatarsDisplayed>
+			<VideoConfMessage>
+				<VideoConfMessageRow>
+					<VideoConfMessageContent>
+						<VideoConfMessageIcon variant='outgoing' />
+						<VideoConfMessageText>Call ongoing</VideoConfMessageText>
+					</VideoConfMessageContent>
+				</VideoConfMessageRow>
+				<VideoConfMessageFooter>
+					<VideoConfMessageButton primary>Join</VideoConfMessageButton>
+					<VideoConfMessageUserStack users={fakeUsers} />
+					<VideoConfMessageFooterText>{fakeUsers.length} joined</VideoConfMessageFooterText>
+				</VideoConfMessageFooter>
+			</VideoConfMessage>
+		</WithAvatarsDisplayed>
 	),
 };

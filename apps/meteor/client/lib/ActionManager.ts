@@ -3,6 +3,7 @@ import { Emitter } from '@rocket.chat/emitter';
 import { Random } from '@rocket.chat/random';
 import { imperativeModal } from '@rocket.chat/ui-client';
 import type { RouterContext, IActionManager } from '@rocket.chat/ui-contexts';
+import { isValidAppId } from '@rocket.chat/ui-kit';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { t } from 'i18next';
 import type { ContextType } from 'react';
@@ -75,6 +76,10 @@ export class ActionManager implements IActionManager {
 	}
 
 	public async emitInteraction(appId: string, userInteraction: DistributiveOmit<UiKit.UserInteraction, 'triggerId'>) {
+		if (!isValidAppId(appId)) {
+			return;
+		}
+
 		const triggerId = this.generateTriggerId(appId);
 
 		return this.runWithTimeout(

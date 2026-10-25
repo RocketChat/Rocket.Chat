@@ -8,8 +8,8 @@ import {
 	type ISubscription,
 	isOmnichannelRoom,
 	isRoomWithJoinCode,
+	isUserNativeFederated,
 } from '@rocket.chat/core-typings';
-import { isUserNativeFederated } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
 import { getNameForDMs } from './getNameForDMs';
@@ -74,7 +74,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		return true;
 	}
 
-	async create(uid: string, params: ICreateRoomParams): Promise<IRoom> {
+	async create(uid: string, params: ICreateRoomParams): Promise<IRoom & { skippedMembers?: string[] }> {
 		const { type, name, members = [], readOnly, extraData, options } = params;
 
 		const hasPermission = await Authorization.hasPermission(uid, `create-${type}`);
@@ -88,7 +88,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		}
 
 		// TODO convert `createRoom` function to "raw" and move to here
-		return createRoom(type, name, user, members, false, readOnly, extraData, options) as unknown as IRoom;
+		return createRoom(type, name, user, members, false, readOnly, extraData, options);
 	}
 
 	async createDirectMessage({ to, from }: { to: string; from: string }): Promise<{ rid: string }> {
@@ -131,7 +131,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	async removeUserFromRoom(
 		roomId: string,
 		user: IUser,
-		options?: { byUser?: IUser; skipAppPreEvents?: boolean; customSystemMessage?: MessageTypesValues },
+		options?: { byUser?: IUser; skipAppPreEvents?: boolean; customSystemMessage?: MessageTypesValues; skipSystemMessage?: boolean },
 	): Promise<void> {
 		return removeUserFromRoom(roomId, user, options);
 	}

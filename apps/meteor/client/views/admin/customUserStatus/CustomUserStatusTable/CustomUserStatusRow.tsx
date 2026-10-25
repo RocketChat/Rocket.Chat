@@ -18,10 +18,10 @@ const CustomUserStatusRow = ({ status, onClick }: CustomUserStatusRowProps) => {
 
 	return (
 		<GenericTableRow key={_id} onKeyDown={() => onClick(_id)} onClick={() => onClick(_id)} tabIndex={0} action>
-			<GenericTableCell fontScale='p2' color='default' style={style}>
+			<GenericTableCell color='default' style={style}>
 				<MarkdownText content={name} parseEmoji={true} variant='inline' />
 			</GenericTableCell>
-			<GenericTableCell fontScale='p2' color='default' style={style}>
+			<GenericTableCell color='default' style={style}>
 				{t(statusType)}
 			</GenericTableCell>
 		</GenericTableRow>

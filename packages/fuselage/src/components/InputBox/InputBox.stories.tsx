@@ -3,6 +3,7 @@ import { action } from 'storybook/actions';
 
 import { Input, InputBox, InputBoxSkeleton } from '.';
 import { Box } from '../Box';
+import { Button } from '../Button';
 import { Icon } from '../Icon';
 
 export default {
@@ -53,6 +54,11 @@ export default {
 		endAddon: {
 			control: false,
 			description: 'Content rendered after the input, inside its border.',
+			table: { category: 'Content' },
+		},
+		endAddonFlush: {
+			control: 'boolean',
+			description: 'Reduces the end padding so a button in `endAddon` sits flush with the input edge.',
 			table: { category: 'Content' },
 		},
 		input: {
@@ -140,6 +146,18 @@ export const WithAddon: Story = {
 	args: {
 		'aria-label': 'Value',
 		'endAddon': <Icon name='send' size='x20' />,
+	},
+};
+
+export const WithFlushEndAddon: Story = {
+	args: {
+		'aria-label': 'Value',
+		'endAddonFlush': true,
+		'endAddon': (
+			<Button icon='upload' small primary>
+				Browse
+			</Button>
+		),
 	},
 };
 
