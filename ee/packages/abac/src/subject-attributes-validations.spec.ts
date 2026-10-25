@@ -12,8 +12,8 @@ jest.mock('@rocket.chat/core-services', () => ({
 	Room: {
 		removeUserFromRoom: jest.fn(),
 	},
-	MeteorError: class extends Error {},
-	isMeteorError: () => false,
+	ClientSafeError: class extends Error {},
+	isClientSafeError: () => false,
 }));
 
 const makeLdapEntry = (overrides: Partial<ILDAPEntry> = {}): ILDAPEntry => ({ ...overrides }) as ILDAPEntry;

@@ -1,5 +1,5 @@
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
-import { Callout } from '@rocket.chat/fuselage';
+import { Box, Callout } from '@rocket.chat/fuselage';
 import {
 	ContextualbarBack,
 	ContextualbarClose,
@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next';
 import UserInfoActions from './UserInfoActions';
 import { getUserEmailAddress } from '../../../../../lib/getUserEmailAddress';
 import { FormSkeleton } from '../../../../components/Skeleton';
+import UserInfoPhoneNumberList from '../../../../components/UserInfoPhoneNumberList';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import { ReactiveUserStatusText } from '../../../../components/UserStatusText';
 import { useUserRolesByScope } from '../../../../hooks/useUserRolesByScope';
@@ -62,11 +63,11 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			utcOffset,
 			lastLogin,
 			customFields,
-			phone,
+			phones,
 			nickname,
 			createdAt,
 			canViewAllInfo,
-			freeSwitchExtension,
+			sipExtension,
 			federated,
 		} = data.user;
 
@@ -82,7 +83,7 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			roomRoles: roomRoles.map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
 			bio,
 			canViewAllInfo,
-			phone,
+			phoneNumbers: phones?.length ? <UserInfoPhoneNumberList phones={phones} /> : undefined,
 			customFields,
 			verified: getUserEmailVerified(data.user),
 			email: getUserEmailAddress(data.user),
@@ -91,7 +92,7 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			status: <ReactiveUserStatus uid={_id} />,
 			customStatus: <ReactiveUserStatusText uid={_id} />,
 			nickname,
-			freeSwitchExtension,
+			sipExtension,
 			federated,
 		};
 	}, [data, workspaceRoles, roomRoles]);
@@ -111,8 +112,10 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			)}
 
 			{isError && !user && (
-				<ContextualbarContent paddingBlock={16}>
-					<Callout type='danger'>{t('User_not_found')}</Callout>
+				<ContextualbarContent>
+					<Box paddingBlock={16}>
+						<Callout type='danger'>{t('User_not_found')}</Callout>
+					</Box>
 				</ContextualbarContent>
 			)}
 

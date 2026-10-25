@@ -41,44 +41,48 @@ const AICenterOverview = (): ReactElement => {
 		<Page background='tint'>
 			<PageHeader title={t('AI_Center')} />
 			<PageScrollableContentWithShadow padding={24}>
-				<Box marginInline='auto' width='full'>
+				<Box display='flex' flexDirection='column' gap={24} marginInline='auto' width='full'>
 					{hasAILicense === false && (
-						<Callout type='info' icon='stars' title={t('AI_Center_license_required_title')} marginBlockEnd={24}>
+						<Callout type='info' icon='stars' title={t('AI_Center_license_required_title')}>
 							<Box>{t('AI_Center_license_required_description')}</Box>
-							<Button is='a' href={subscriptionHref} small marginBlockStart={12}>
-								{t('View_options')}
-							</Button>
+							<Box paddingBlockStart={12}>
+								<Button is='a' href={subscriptionHref} small>
+									{t('View_options')}
+								</Button>
+							</Box>
 						</Callout>
 					)}
-					<Box is='h2' fontScale='h3' marginBlockEnd={16}>
-						{t('Capabilities')}
+					<Box>
+						<Box is='h2' fontScale='h3' marginBlockEnd={16}>
+							{t('Capabilities')}
+						</Box>
+						<CardGrid breakpoints={{ xs: 4, sm: 4, md: 6, lg: 6, xl: 6 }}>
+							<AICenterCapabilityCard
+								icon='stars'
+								title={t('Intelligent_Search')}
+								description={t('AI_Center_Intelligent_Search_card_description')}
+								status={aiSearchStatus}
+								actionLabel={t('Configure')}
+								href={searchSettingsHref}
+							/>
+							<AICenterCapabilityCard
+								icon='smart'
+								title={t('AI_Center_LLM_Providers')}
+								description={t('AI_Center_LLM_Providers_card_description')}
+								status={llmProviderStatus}
+								actionLabel={t('Manage')}
+								href={llmSettingsHref}
+							/>
+							<AICenterCapabilityCard
+								icon='link'
+								title={t('MCP')}
+								description={t('AI_Center_MCP_card_description')}
+								status={mcpStatus}
+								actionLabel={t('Configure')}
+								href={mcpSettingsHref}
+							/>
+						</CardGrid>
 					</Box>
-					<CardGrid breakpoints={{ xs: 4, sm: 4, md: 6, lg: 6, xl: 6 }}>
-						<AICenterCapabilityCard
-							icon='stars'
-							title={t('Intelligent_Search')}
-							description={t('AI_Center_Intelligent_Search_card_description')}
-							status={aiSearchStatus}
-							actionLabel={t('Configure')}
-							href={searchSettingsHref}
-						/>
-						<AICenterCapabilityCard
-							icon='smart'
-							title={t('AI_Center_LLM_Providers')}
-							description={t('AI_Center_LLM_Providers_card_description')}
-							status={llmProviderStatus}
-							actionLabel={t('Manage')}
-							href={llmSettingsHref}
-						/>
-						<AICenterCapabilityCard
-							icon='link'
-							title={t('MCP')}
-							description={t('AI_Center_MCP_card_description')}
-							status={mcpStatus}
-							actionLabel={t('Configure')}
-							href={mcpSettingsHref}
-						/>
-					</CardGrid>
 				</Box>
 			</PageScrollableContentWithShadow>
 		</Page>

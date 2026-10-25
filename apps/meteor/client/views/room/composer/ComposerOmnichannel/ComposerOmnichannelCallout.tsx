@@ -40,7 +40,6 @@ const ComposerOmnichannelCallout = () => {
 		<Callout
 			role='status'
 			aria-labelledby={calloutDescriptionId}
-			marginBlockEnd={16}
 			actions={
 				<ButtonGroup>
 					<Button onClick={() => navigate(`/live/${_id}/contact-profile/edit`)} small>

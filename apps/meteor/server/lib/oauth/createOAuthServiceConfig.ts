@@ -19,27 +19,6 @@ export const createOAuthServiceConfig = (settings: ICachedSettings, services: st
 				return;
 			}
 
-			if (service === 'github_enterprise') {
-				const clientId = settings.get<string>('Accounts_OAuth_GitHub_Enterprise_id');
-				const clientSecret = settings.get<string>('Accounts_OAuth_GitHub_Enterprise_secret');
-				const serverUrl = settings.get<string>('API_GitHub_Enterprise_URL');
-
-				if (!clientId || !clientSecret || !serverUrl) {
-					return;
-				}
-
-				return {
-					provider: service,
-					clientId,
-					clientSecret,
-					authorizationURL: `${serverUrl}/login/oauth/authorize`,
-					tokenURL: `${serverUrl}/login/oauth/access_token`,
-					userProfileURL: `${serverUrl}/api/v3/user`,
-					strategy: OAuthConfigs.github_enterprise.strategy,
-					scope: OAuthConfigs.github_enterprise.scope,
-				};
-			}
-
 			const clientId = settings.get<string>(`Accounts_OAuth_${capitalize(service)}_id`);
 			const clientSecret = settings.get<string>(`Accounts_OAuth_${capitalize(service)}_secret`);
 

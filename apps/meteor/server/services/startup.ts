@@ -13,7 +13,6 @@ import { CallHistoryService } from './call-history/service';
 import { DeviceManagementService } from './device-management/service';
 import { MediaService } from './image/service';
 import { ImportService } from './import/service';
-import { LDAPService } from './ldap/service';
 import { MediaCallService } from './media-call/service';
 import { MessageService } from './messages/service';
 import { MeteorService } from './meteor/service';
@@ -42,7 +41,6 @@ export const registerServices = async (): Promise<void> => {
 	api.registerService(new AuthorizationLivechat());
 	api.registerService(new BannerService());
 	api.registerService(new CalendarService());
-	api.registerService(new LDAPService());
 	api.registerService(new MediaService());
 	api.registerService(new MeteorService());
 	api.registerService(new NPSService());

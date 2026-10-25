@@ -6,12 +6,10 @@ import { prevent } from '../../helpers/prevent';
 import { AnimatedVisibility } from '../AnimatedVisibility';
 import { Box } from '../Box';
 import { Icon } from '../Icon';
-import { Margins } from '../Margins';
 import { Option } from '../Option';
 import { useVisible } from '../Options/useVisible';
 import { OptionsPaginated } from '../OptionsPaginated';
 import { PositionAnimated } from '../PositionAnimated';
-import PaginatedSelectWrapper from './PaginatedSelectWrapper';
 import SelectAddon from '../Select/SelectAddon';
 import SelectFocus from '../Select/SelectFocus';
 
@@ -32,16 +30,20 @@ export const PaginatedSelect = ({
 	value,
 	withTitle,
 	filter,
-	setFilter: _setFilter,
+	'setFilter': _setFilter,
 	error,
 	disabled,
 	options = [],
-	anchor: Anchor = SelectFocus,
+	'anchor': Anchor = SelectFocus,
 	onChange = () => {},
 	placeholder,
-	renderOptions: _Options = OptionsPaginated,
+	'renderOptions': _Options = OptionsPaginated,
 	renderItem = Option,
 	endReached,
+	id,
+	'aria-labelledby': ariaLabelledBy,
+	'aria-describedby': ariaDescribedBy,
+	'aria-invalid': ariaInvalid,
 	...props
 }: PaginatedSelectProps) => {
 	const [internalValue, setInternalValue] = useState(value);
@@ -88,7 +90,7 @@ export const PaginatedSelect = ({
 			className={useMemo(() => [error && 'invalid', disabled && 'disabled'], [error, disabled])}
 			{...props}
 		>
-			<PaginatedSelectWrapper display='flex' marginInline='neg-x4' rcx-select__wrapper--hidden={!!visibleText}>
+			<Box is='div' rcx-select__wrapper display='flex' marginInline='neg-x4' rcx-select__wrapper--hidden={!!visibleText}>
 				{visibleText && (
 					<Box flexGrow={1} is='span' marginInline={4} rcx-select__item fontScale='p2m' color={valueLabel ? 'titles-labels' : 'hint'}>
 						{visibleText}
@@ -100,15 +102,17 @@ export const PaginatedSelect = ({
 					filter={filter}
 					ref={ref}
 					aria-haspopup='listbox'
+					id={id}
+					aria-labelledby={ariaLabelledBy}
+					aria-describedby={ariaDescribedBy}
+					aria-invalid={ariaInvalid}
 					onClick={show}
 					onBlur={hide}
 				/>
-				<Margins inline='x4'>
-					<SelectAddon>
-						<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : 'chevron-down'} size='x20' />
-					</SelectAddon>
-				</Margins>
-			</PaginatedSelectWrapper>
+				<SelectAddon>
+					<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : 'chevron-down'} size='x20' />
+				</SelectAddon>
+			</Box>
 			<PositionAnimated visible={visible} anchor={containerRef}>
 				<_Options
 					withTitle={withTitle}

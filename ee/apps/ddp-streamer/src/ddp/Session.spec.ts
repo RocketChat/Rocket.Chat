@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import type { IncomingMessage } from 'http';
 
-import { MeteorError } from '@rocket.chat/core-services';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import ejson from 'ejson';
 import WebSocket from 'ws';
 
@@ -124,7 +124,7 @@ describe('Session', () => {
 			receive(ws, { msg: 'connect' }, true);
 
 			expect(ws.close).toHaveBeenCalledWith(WS_ERRORS.UNSUPPORTED_DATA, WS_ERRORS_MESSAGES.UNSUPPORTED_DATA);
-			expect(consoleError).toHaveBeenCalledWith(expect.any(MeteorError));
+			expect(consoleError).toHaveBeenCalledWith(expect.any(ClientSafeError));
 		});
 
 		it('closes with a protocol error when the socket errors', () => {

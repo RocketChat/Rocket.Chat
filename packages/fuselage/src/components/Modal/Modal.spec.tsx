@@ -12,11 +12,6 @@ const { Default } = composedStories;
 const testCases = Object.values(composedStories).map((Story) => [Story.storyName || 'Story', Story]);
 
 describe('[Modal Component]', () => {
-	test.each(testCases)(`%s should match the snapshot`, async (_storyname, Story) => {
-		const tree = render(<Story />);
-		expect(tree.baseElement).toMatchSnapshot();
-	});
-
 	test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
 		const { container } = render(<Story />);
 

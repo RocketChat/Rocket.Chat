@@ -1,3 +1,4 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { UserStatus, type IUser } from '@rocket.chat/core-typings';
 import { Settings, Rooms, Users, Roles } from '@rocket.chat/models';
 import { validateEmail } from '@rocket.chat/tools';
@@ -231,11 +232,11 @@ Meteor.startup(async () => {
 		console.log(colors.green(`Password: ${adminUser._id}`));
 
 		if (await Users.findOneByEmailAddress(adminUser.emails![0].address)) {
-			throw new Meteor.Error(`Email ${adminUser.emails![0].address} already exists`, "Rocket.Chat can't run in test mode");
+			throw new ClientSafeError(`Email ${adminUser.emails![0].address} already exists`, "Rocket.Chat can't run in test mode");
 		}
 
 		if (!(await checkUsernameAvailability(adminUser.username!))) {
-			throw new Meteor.Error(`Username ${adminUser.username} already exists`, "Rocket.Chat can't run in test mode");
+			throw new ClientSafeError(`Username ${adminUser.username} already exists`, "Rocket.Chat can't run in test mode");
 		}
 
 		await Users.create(adminUser);

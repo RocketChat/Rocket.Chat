@@ -1,0 +1,421 @@
+import type { AbacMembershipGroup, AbacPreviewCursor, AbacRoomPreviewMember, IAbacRoomMembershipPreview } from '@rocket.chat/core-typings';
+import { mockAppRoot } from '@rocket.chat/mock-providers';
+import { render, screen, waitFor, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import { axe } from 'jest-axe';
+import type { ReactNode } from 'react';
+import { VirtuosoMockContext } from 'react-virtuoso';
+
+import AbacRoomMembershipPreview from './AbacRoomMembershipPreview';
+
+type PreviewBody = { group?: AbacMembershipGroup; filter?: string; after?: AbacPreviewCursor };
+
+const bob: AbacRoomPreviewMember = { _id: 'bob', username: 'bob', name: 'Bob', verdict: 'nonCompliant' };
+const carol: AbacRoomPreviewMember = { _id: 'carol', username: 'carol', name: 'Carol', verdict: 'inconclusive' };
+
+const page = (over: Partial<IAbacRoomMembershipPreview> = {}): IAbacRoomMembershipPreview => {
+	const members = over.members ?? [];
+	return { members, count: members.length, checked: 3, total: 3, ...over };
+};
+
+const renderPreview = (respond: (body: PreviewBody) => IAbacRoomMembershipPreview | Promise<IAbacRoomMembershipPreview>) => {
+	const endpoint = jest.fn(async (body: PreviewBody) => respond(body));
+	const onSave = jest.fn();
+	const onBack = jest.fn();
+	const AppRoot = mockAppRoot()
+		.withJohnDoe()
+		.withEndpoint('POST', '/v1/abac/rooms.evaluateMembership', (body) => endpoint('rid' in body ? body : {}))
+		.build();
+	const wrapper = ({ children }: { children: ReactNode }) => (
+		<AppRoot>
+			<VirtuosoMockContext.Provider value={{ viewportHeight: 600, itemHeight: 44 }}>{children}</VirtuosoMockContext.Provider>
+		</AppRoot>
+	);
+
+	const view = render(
+		<AbacRoomMembershipPreview
+			rid='rid'
+			roomName='alpha'
+			attributes={{ dept: ['eng'] }}
+			isSaving={false}
+			onBack={onBack}
+			onSave={onSave}
+		/>,
+		{ wrapper },
+	);
+
+	return { ...view, endpoint, onSave, onBack };
+};
+
+const saveButton = () => screen.getByRole('button', { name: 'Save' });
+
+const pressSave = async () => {
+	await waitFor(() => expect(saveButton()).toBeEnabled());
+	await userEvent.click(saveButton());
+	return screen.findByRole('dialog');
+};
+
+describe('AbacRoomMembershipPreview', () => {
+	it('should say nobody loses access once the list runs out empty, and confirm that no member will be removed', async () => {
+		const { onSave } = renderPreview(() => page({ editor: 'compliant' }));
+
+		expect(await screen.findByText('ABAC_Preview_No_members_lose_access')).toBeInTheDocument();
+		expect(screen.getByRole('status')).toHaveTextContent(/^ABAC_Preview_Progress_Removed$/);
+
+		const dialog = await pressSave();
+		expect(within(dialog).getByText('ABAC_Preview_Update_room')).toBeInTheDocument();
+		expect(within(dialog).getByText('ABAC_Preview_Update_room_none')).toBeInTheDocument();
+		expect(onSave).not.toHaveBeenCalled();
+
+		await userEvent.click(within(dialog).getByRole('button', { name: 'Save' }));
+
+		await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
+		expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+	});
+
+	it('should list who loses access and confirm how many members will be removed when the editor keeps access', async () => {
+		const { onSave } = renderPreview(() => page({ members: [bob], editor: 'compliant' }));
+
+		const list = await screen.findByRole('list', { name: 'ABAC_Preview_Loses_access' });
+		expect(within(list).getByText('Bob')).toBeInTheDocument();
+		expect(within(list).getByTitle('ABAC_Preview_Loses_access')).toBeInTheDocument();
+		expect(screen.queryByText('ABAC_Preview_No_members_lose_access')).not.toBeInTheDocument();
+
+		const dialog = await pressSave();
+		expect(within(dialog).getByText('ABAC_Preview_Progress_Removed')).toBeInTheDocument();
+
+		await userEvent.click(within(dialog).getByRole('button', { name: 'Save' }));
+
+		await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
+	});
+
+	it('should confirm without a count when not every member was checked', async () => {
+		const { onSave } = renderPreview(({ after }) =>
+			page({ editor: 'compliant', next: { _id: 'cursor', username: 'cursor' }, ...(after ? { total: undefined } : { total: 1000 }) }),
+		);
+
+		expect(await screen.findByText('ABAC_Preview_Partial_warning')).toBeInTheDocument();
+
+		const dialog = await pressSave();
+		expect(within(dialog).getByText('ABAC_Preview_Update_room_unknown')).toBeInTheDocument();
+		expect(within(dialog).queryByText('ABAC_Preview_Empty_room_content')).not.toBeInTheDocument();
+
+		await userEvent.click(within(dialog).getByRole('button', { name: 'Save' }));
+
+		await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
+	});
+
+	it('should warn and ask for a destructive confirmation when every member loses access', async () => {
+		const { onSave } = renderPreview(() => page({ members: [bob, carol], checked: 2, total: 2 }));
+
+		expect(await screen.findByText('ABAC_Preview_Empty_room_warning')).toBeInTheDocument();
+
+		const dialog = await pressSave();
+		expect(within(dialog).getByText('ABAC_Preview_Empty_room')).toBeInTheDocument();
+		expect(within(dialog).getByText('ABAC_Preview_Empty_room_content')).toBeInTheDocument();
+		expect(onSave).not.toHaveBeenCalled();
+
+		await userEvent.click(within(dialog).getByRole('button', { name: 'Proceed_with_caution' }));
+
+		await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
+		expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+	});
+
+	it('should show only the empty room confirmation when the editor is among everyone removed', async () => {
+		const johnDoe: AbacRoomPreviewMember = { _id: 'john.doe', username: 'john.doe', name: 'John Doe', verdict: 'nonCompliant' };
+		const { onSave } = renderPreview(() => page({ members: [bob, johnDoe], checked: 2, total: 2, editor: 'nonCompliant' }));
+
+		const dialog = await pressSave();
+		expect(within(dialog).getByText('ABAC_Preview_Empty_room_content')).toBeInTheDocument();
+		expect(screen.queryByText('ABAC_Preview_Self_lockout_warning')).not.toBeInTheDocument();
+		expect(screen.getAllByRole('dialog')).toHaveLength(1);
+
+		await userEvent.click(within(dialog).getByRole('button', { name: 'Proceed_with_caution' }));
+
+		await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
+	});
+
+	it('should ask for a destructive confirmation when nobody retains access, even if the removed list was not finished', async () => {
+		renderPreview(({ group, after }) => {
+			if (group === 'retains') {
+				return page({ checked: 1000, total: 1000 });
+			}
+			return after ? new Promise<never>(() => undefined) : page({ members: [bob], total: 1000, next: { _id: 'bob', username: 'bob' } });
+		});
+
+		await userEvent.click(await screen.findByRole('button', { name: 'ABAC_Preview_Loses_access' }));
+		await userEvent.click(screen.getByRole('option', { name: 'ABAC_Preview_Retains_access' }));
+
+		expect(await screen.findByText('ABAC_Preview_No_members_retain_access')).toBeInTheDocument();
+		expect(screen.getByText('ABAC_Preview_Empty_room_warning')).toBeInTheDocument();
+
+		const dialog = await pressSave();
+		expect(within(dialog).getByText('ABAC_Preview_Empty_room')).toBeInTheDocument();
+	});
+
+	it('should keep the destructive confirmation while a search narrows the list', async () => {
+		renderPreview(({ filter }) =>
+			filter ? page({ members: [bob], checked: 1, total: 1 }) : page({ members: [bob, carol], checked: 2, total: 2 }),
+		);
+
+		expect(await screen.findByText('Carol')).toBeInTheDocument();
+		await userEvent.type(screen.getByRole('textbox', { name: 'ABAC_Preview_Search_members' }), 'b');
+		await waitFor(() => expect(screen.queryByText('Carol')).not.toBeInTheDocument());
+
+		expect(screen.getByText('ABAC_Preview_Empty_room_warning')).toBeInTheDocument();
+		const dialog = await pressSave();
+		expect(within(dialog).getByText('ABAC_Preview_Empty_room')).toBeInTheDocument();
+	});
+
+	it('should keep the destructive confirmation after switching back to a group that is still loading', async () => {
+		renderPreview(({ group, after }) => {
+			if (group === 'retains') {
+				return page({ checked: 1000, total: 1000 });
+			}
+			return after ? new Promise<never>(() => undefined) : page({ members: [bob], total: 1000, next: { _id: 'bob', username: 'bob' } });
+		});
+
+		await userEvent.click(await screen.findByRole('button', { name: 'ABAC_Preview_Loses_access' }));
+		await userEvent.click(screen.getByRole('option', { name: 'ABAC_Preview_Retains_access' }));
+		expect(await screen.findByText('ABAC_Preview_No_members_retain_access')).toBeInTheDocument();
+
+		await userEvent.click(screen.getByRole('button', { name: 'ABAC_Preview_Retains_access' }));
+		await userEvent.click(screen.getByRole('option', { name: 'ABAC_Preview_Loses_access' }));
+		expect(await screen.findByText('Bob')).toBeInTheDocument();
+
+		const dialog = await pressSave();
+		expect(within(dialog).getByText('ABAC_Preview_Empty_room')).toBeInTheDocument();
+	});
+
+	it('should not save when the editor cancels the update confirmation', async () => {
+		const { onSave } = renderPreview(() => page({ members: [bob], editor: 'compliant' }));
+
+		const dialog = await pressSave();
+		await userEvent.click(within(dialog).getByRole('button', { name: 'Cancel' }));
+
+		expect(onSave).not.toHaveBeenCalled();
+		expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+	});
+
+	it.each(['nonCompliant', 'inconclusive'] as const)(
+		'should ask an editor whose verdict is %s to confirm losing access',
+		async (verdict) => {
+			const { onSave } = renderPreview(() => page({ members: [bob], editor: verdict }));
+
+			await waitFor(() => expect(saveButton()).toBeEnabled());
+			await userEvent.click(saveButton());
+
+			const dialog = await screen.findByRole('dialog');
+			expect(within(dialog).getByText('ABAC_Preview_Self_lockout_warning')).toBeInTheDocument();
+			expect(onSave).not.toHaveBeenCalled();
+
+			await userEvent.click(within(dialog).getByRole('button', { name: 'Save' }));
+
+			await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
+			expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+		},
+	);
+
+	it('should check a few sparse pages on its own, then wait for Load more', async () => {
+		const { endpoint } = renderPreview(({ after }) =>
+			page({ editor: 'compliant', next: { _id: 'cursor', username: 'cursor' }, ...(after ? { total: undefined } : { total: 5000 }) }),
+		);
+
+		expect(await screen.findByText('ABAC_Preview_Partial_warning')).toBeInTheDocument();
+		expect(endpoint).toHaveBeenCalledTimes(3);
+
+		await userEvent.click(screen.getByRole('button', { name: 'Load_more' }));
+
+		await waitFor(() => expect(endpoint).toHaveBeenCalledTimes(4));
+		expect(endpoint).toHaveBeenNthCalledWith(4, expect.objectContaining({ after: { _id: 'cursor', username: 'cursor' } }));
+	});
+
+	it('should not save when the editor cancels the confirmation', async () => {
+		const { onSave } = renderPreview(() => page({ members: [bob], editor: 'nonCompliant' }));
+
+		await waitFor(() => expect(saveButton()).toBeEnabled());
+		await userEvent.click(saveButton());
+		await userEvent.click(within(await screen.findByRole('dialog')).getByRole('button', { name: 'Cancel' }));
+
+		expect(onSave).not.toHaveBeenCalled();
+		expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+	});
+
+	it('should confirm the update without a lockout warning when the editor is not a member of the room', async () => {
+		const { onSave } = renderPreview(() => page({ members: [bob] }));
+
+		const dialog = await pressSave();
+		expect(within(dialog).getByText('ABAC_Preview_Update_room')).toBeInTheDocument();
+		expect(within(dialog).queryByText('ABAC_Preview_Self_lockout_warning')).not.toBeInTheDocument();
+
+		await userEvent.click(within(dialog).getByRole('button', { name: 'Save' }));
+
+		await waitFor(() => expect(onSave).toHaveBeenCalledTimes(1));
+	});
+
+	it('should never say nobody loses access when the list stopped before every member was checked', async () => {
+		renderPreview(({ after }) =>
+			page({ editor: 'compliant', next: { _id: 'cursor', username: 'cursor' }, ...(after ? { total: undefined } : { total: 1000 }) }),
+		);
+
+		expect(await screen.findByText('ABAC_Preview_Partial_warning')).toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Load_more' })).toBeInTheDocument();
+		expect(screen.getByRole('status')).toHaveTextContent(/^ABAC_Preview_Progress_Removed_so_far$/);
+		expect(screen.queryByText('ABAC_Preview_No_members_lose_access')).not.toBeInTheDocument();
+	});
+
+	it('should not say nobody loses access when only a search ran out empty', async () => {
+		renderPreview(({ filter }) => (filter ? page({ total: 0, checked: 0 }) : page({ members: [bob], editor: 'compliant' })));
+
+		expect(await screen.findByText('Bob')).toBeInTheDocument();
+		await userEvent.type(screen.getByRole('textbox', { name: 'ABAC_Preview_Search_members' }), 'zz');
+
+		expect(await screen.findByText('No_members_found')).toBeInTheDocument();
+		expect(screen.queryByText('ABAC_Preview_No_members_lose_access')).not.toBeInTheDocument();
+	});
+
+	it('should list the editor first, once, when they are in the selected group', async () => {
+		const johnDoe: AbacRoomPreviewMember = { _id: 'john.doe', username: 'john.doe', name: 'John Doe', verdict: 'nonCompliant' };
+		renderPreview(() => page({ members: [bob, johnDoe], editor: 'nonCompliant' }));
+
+		const list = await screen.findByRole('list', { name: 'ABAC_Preview_Loses_access' });
+		const rows = within(list).getAllByRole('listitem');
+
+		expect(rows).toHaveLength(2);
+		expect(rows[0]).toHaveTextContent('John Doe');
+		expect(rows[1]).toHaveTextContent('Bob');
+	});
+
+	it('should mark a member whose access could not be determined', async () => {
+		renderPreview(() => page({ members: [carol], editor: 'compliant' }));
+
+		const list = await screen.findByRole('list', { name: 'ABAC_Preview_Loses_access' });
+		expect(within(list).getByTitle('ABAC_Preview_Inconclusive_Removed')).toBeInTheDocument();
+	});
+
+	it('should mark a member who keeps access', async () => {
+		const dave: AbacRoomPreviewMember = { _id: 'dave', username: 'dave', name: 'Dave', verdict: 'compliant' };
+		renderPreview(({ group }) => page({ members: group === 'retains' ? [dave] : [], editor: 'compliant' }));
+
+		await userEvent.click(await screen.findByRole('button', { name: 'ABAC_Preview_Loses_access' }));
+		await userEvent.click(screen.getByRole('option', { name: 'ABAC_Preview_Retains_access' }));
+
+		const list = await screen.findByRole('list', { name: 'ABAC_Preview_Retains_access' });
+		const row = await within(list).findByRole('listitem');
+
+		expect(within(row).getByTitle('ABAC_Preview_Retains_access')).toBeInTheDocument();
+	});
+
+	it('should tag a member with their highest room role', async () => {
+		renderPreview(() => page({ members: [{ ...bob, roles: ['moderator', 'owner'] }], editor: 'compliant' }));
+
+		expect(await screen.findByText('ABAC_Preview_Role_Owner')).toBeInTheDocument();
+		expect(screen.queryByText('ABAC_Preview_Role_Moderator')).not.toBeInTheDocument();
+	});
+
+	it('should keep Save disabled and explain when the preview fails', async () => {
+		renderPreview(() => {
+			throw new Error('unavailable');
+		});
+
+		expect(await screen.findByText('ABAC_Preview_Unavailable')).toBeInTheDocument();
+		expect(saveButton()).toBeDisabled();
+	});
+
+	it('should load the preview again and enable Save when Retry is pressed after a failure', async () => {
+		let failing = true;
+		const { endpoint } = renderPreview(() => {
+			if (failing) {
+				throw new Error('unavailable');
+			}
+			return page({ members: [bob], editor: 'compliant' });
+		});
+
+		expect(await screen.findByText('ABAC_Preview_Unavailable')).toBeInTheDocument();
+		expect(saveButton()).toBeDisabled();
+
+		failing = false;
+		await userEvent.click(screen.getByRole('button', { name: 'Retry' }));
+
+		expect(await screen.findByText('Bob')).toBeInTheDocument();
+		expect(screen.queryByText('ABAC_Preview_Unavailable')).not.toBeInTheDocument();
+		await waitFor(() => expect(saveButton()).toBeEnabled());
+		expect(endpoint).toHaveBeenCalledTimes(2);
+	});
+
+	it('should fetch only the failed page again on Retry, and show Retry as busy meanwhile', async () => {
+		let failing = true;
+		const { endpoint } = renderPreview(({ after }) => {
+			if (!after) {
+				return page({ members: [bob], editor: 'compliant', total: 1000, next: { _id: 'bob', username: 'bob' } });
+			}
+			if (failing) {
+				throw new Error('unavailable');
+			}
+			return new Promise<never>(() => undefined);
+		});
+
+		expect(await screen.findByText('ABAC_Preview_Unavailable')).toBeInTheDocument();
+		const retryButton = screen.getByRole('button', { name: 'Retry' });
+
+		failing = false;
+		await userEvent.click(retryButton);
+
+		await waitFor(() => expect(endpoint).toHaveBeenCalledTimes(3));
+		expect(endpoint).toHaveBeenNthCalledWith(3, expect.objectContaining({ after: { _id: 'bob', username: 'bob' } }));
+		expect(retryButton).toBeDisabled();
+	});
+
+	it('should stop showing the error after switching away from a group whose later page failed', async () => {
+		const dave: AbacRoomPreviewMember = { _id: 'dave', username: 'dave', name: 'Dave', verdict: 'compliant' };
+		renderPreview(({ group, after }) => {
+			if (group === 'retains') {
+				return page({ members: [dave], editor: 'compliant' });
+			}
+			if (after) {
+				throw new Error('unavailable');
+			}
+			return page({ members: [bob], editor: 'compliant', total: 1000, next: { _id: 'bob', username: 'bob' } });
+		});
+
+		expect(await screen.findByText('ABAC_Preview_Unavailable')).toBeInTheDocument();
+
+		await userEvent.click(screen.getByRole('button', { name: 'ABAC_Preview_Loses_access' }));
+		await userEvent.click(screen.getByRole('option', { name: 'ABAC_Preview_Retains_access' }));
+
+		expect(await screen.findByText('Dave')).toBeInTheDocument();
+		expect(screen.queryByText('ABAC_Preview_Unavailable')).not.toBeInTheDocument();
+		expect(saveButton()).toBeEnabled();
+	});
+
+	it("should keep explaining a failed editor's verdict after switching group", async () => {
+		renderPreview(({ group, filter }) => {
+			if (group === 'loses' && !filter) {
+				throw new Error('unavailable');
+			}
+			return page({ editor: 'compliant' });
+		});
+
+		await userEvent.click(await screen.findByRole('button', { name: 'ABAC_Preview_Loses_access' }));
+		await userEvent.click(screen.getByRole('option', { name: 'ABAC_Preview_Retains_access' }));
+
+		expect(await screen.findByText('ABAC_Preview_Unavailable')).toBeInTheDocument();
+		expect(saveButton()).toBeDisabled();
+	});
+
+	it('should go back to the form', async () => {
+		const { onBack } = renderPreview(() => page({ editor: 'compliant' }));
+
+		await userEvent.click(screen.getByRole('button', { name: 'Back' }));
+
+		expect(onBack).toHaveBeenCalledTimes(1);
+	});
+
+	it('should have no accessibility violations', async () => {
+		const { container } = renderPreview(() => page({ members: [bob, carol], editor: 'compliant' }));
+
+		expect(await screen.findByText('Bob')).toBeInTheDocument();
+
+		expect(await axe(container)).toHaveNoViolations();
+	});
+});

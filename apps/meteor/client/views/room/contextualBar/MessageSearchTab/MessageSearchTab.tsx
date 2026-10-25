@@ -58,7 +58,7 @@ const MessageSearchTab = () => {
 					<MessageSearchForm provider={providerQuery.data} onSearch={handleSearch} searchListId={searchListId} isSuccess={isSuccess} />
 				</ContextualbarSection>
 			)}
-			<ContextualbarContent flexShrink={1} flexGrow={1} paddingInline={0}>
+			<ContextualbarContent flush>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
 				{providerQuery.isSuccess && (
 					<>
@@ -121,9 +121,9 @@ const MessageSearchTab = () => {
 					</>
 				)}
 				{providerQuery.isError && (
-					<Callout margin={24} type='danger'>
-						{t('Search_current_provider_not_active')}
-					</Callout>
+					<Box padding={24}>
+						<Callout type='danger'>{t('Search_current_provider_not_active')}</Callout>
+					</Box>
 				)}
 			</ContextualbarContent>
 		</ContextualbarDialog>

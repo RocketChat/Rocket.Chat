@@ -1,9 +1,7 @@
-import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { Integrations } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../../lib/authorization/hasPermission';
-import { methodDeprecationLogger } from '../../../lib/deprecationWarningLogger';
 import { notifyOnIntegrationChanged } from '../../../lib/notifyListener';
 
 declare module '@rocket.chat/ddp-client' {
@@ -19,7 +17,7 @@ export const deleteIncomingIntegration = async (integrationId: string, userId: s
 		!canManageAllIntegrations && !!userId && (await hasPermissionAsync(userId, 'manage-own-incoming-integrations'));
 
 	if (!canManageAllIntegrations && !canManageOwnIntegrations) {
-		throw new Meteor.Error('not_authorized', 'Unauthorized', {
+		throw new ClientSafeError('not_authorized', 'Unauthorized', {
 			method: 'deleteIncomingIntegration',
 		});
 	}
@@ -30,26 +28,10 @@ export const deleteIncomingIntegration = async (integrationId: string, userId: s
 	});
 
 	if (!integration) {
-		throw new Meteor.Error('error-invalid-integration', 'Invalid integration', {
+		throw new ClientSafeError('error-invalid-integration', 'Invalid integration', {
 			method: 'deleteIncomingIntegration',
 		});
 	}
 
 	void notifyOnIntegrationChanged(integration, 'removed');
 };
-
-Meteor.methods<ServerMethods>({
-	async deleteIncomingIntegration(integrationId) {
-		methodDeprecationLogger.method('deleteIncomingIntegration', '9.0.0', '/v1/integrations.remove');
-		const userId = Meteor.userId();
-		if (!userId) {
-			throw new Meteor.Error('not_authorized', 'Unauthorized', {
-				method: 'deleteIncomingIntegration',
-			});
-		}
-
-		await deleteIncomingIntegration(integrationId, userId);
-
-		return true;
-	},
-});

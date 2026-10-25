@@ -1,28 +1,29 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IImportProgress, IImporterSelection } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Imports } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { ProgressStep } from '../../../lib/importer/ImporterProgressStep';
-import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
-import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { Importers } from '../../lib/import';
 import { RocketChatImportFileInstance } from '../../lib/import/startup/store';
 
 export const executeGetImportFileData = async (): Promise<IImporterSelection | { waiting: true }> => {
 	const operation = await Imports.findLastImport();
 	if (!operation) {
-		throw new Meteor.Error('error-operation-not-found', 'Import Operation Not Found', 'getImportFileData');
+		throw new ClientSafeError('error-operation-not-found', 'Import Operation Not Found', 'getImportFileData');
 	}
 
 	const { importerKey } = operation;
 
 	const importer = Importers.get(importerKey);
 	if (!importer) {
-		throw new Meteor.Error('error-importer-not-defined', `The importer (${importerKey}) has no import class defined.`, 'getImportFileData');
+		throw new ClientSafeError(
+			'error-importer-not-defined',
+			`The importer (${importerKey}) has no import class defined.`,
+			'getImportFileData',
+		);
 	}
 
 	const instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
@@ -40,7 +41,7 @@ export const executeGetImportFileData = async (): Promise<IImporterSelection | {
 		if (instance.importRecord?.valid) {
 			return { waiting: true };
 		}
-		throw new Meteor.Error('error-import-operation-invalid', 'Invalid Import Operation', 'getImportFileData');
+		throw new ClientSafeError('error-import-operation-invalid', 'Invalid Import Operation', 'getImportFileData');
 	}
 
 	const readySteps: IImportProgress['step'][] = [
@@ -62,27 +63,3 @@ export const executeGetImportFileData = async (): Promise<IImporterSelection | {
 
 	return instance.buildSelection();
 };
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		getImportFileData(): IImporterSelection | { waiting: true };
-	}
-}
-
-Meteor.methods<ServerMethods>({
-	async getImportFileData() {
-		methodDeprecationLogger.method('getImportFileData', '9.0.0', '/v1/getImportFileData');
-		const userId = Meteor.userId();
-
-		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', 'getImportFileData');
-		}
-
-		if (!(await hasPermissionAsync(userId, 'run-import'))) {
-			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', 'getImportFileData');
-		}
-
-		return executeGetImportFileData();
-	},
-});

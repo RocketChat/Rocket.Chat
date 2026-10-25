@@ -28,12 +28,12 @@ const ActionsBlock = ({ className, block, surfaceRenderer }: ActionsBlockProps) 
 	);
 
 	return (
-		<Box className={className} display='flex' flexWrap='wrap' margin={-4}>
+		<Box className={className} display='flex' flexWrap='wrap' gap='x8'>
 			{actionElements.map((element, i) => (
 				<Action key={i} element={element} parser={surfaceRenderer} index={i} />
 			))}
 			{showMoreVisible && (
-				<Box display='flex' margin={4}>
+				<Box display='flex'>
 					<Button small onClick={handleShowMoreClick}>
 						{surfaceRenderer.renderTextObject({ type: 'plain_text', text: 'Show more...' }, 0, UiKit.BlockContext.NONE)}
 					</Button>

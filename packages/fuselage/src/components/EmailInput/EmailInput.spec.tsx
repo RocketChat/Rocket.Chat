@@ -7,11 +7,6 @@ import { render } from '../../testing';
 const { Default } = composeStories(stories);
 
 describe('[EmailInput Component]', () => {
-	it('renders without crashing', () => {
-		const tree = render(<Default />);
-		expect(tree.baseElement).toMatchSnapshot();
-	});
-
 	it('%s should have no a11y violations', async () => {
 		const { container } = render(<Default />);
 

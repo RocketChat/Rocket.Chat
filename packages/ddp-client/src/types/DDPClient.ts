@@ -60,8 +60,8 @@ export interface DDPClient {
 	connect(): void;
 
 	/**
-	 * Registers a callback to be called once after the subscription is ready or rejected.
-	 * @param id The id of the subscription.
+	 * Registers a callback to be called every time the server reports the subscription ready or stopped.
+	 * @param name The id of the subscription.
 	 * @param callback The callback to be called.
 	 * @returns A function to unregister the callback.
 	 */

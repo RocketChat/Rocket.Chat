@@ -22,7 +22,7 @@ import { ReactiveUserStatus } from '../../../../components/UserStatus';
 import { useUserStatusTooltip } from '../../../../hooks/useUserStatusTooltip';
 import type { RoomMember } from '../../../hooks/useMembersList';
 
-export type RoomMembersItemProps = Pick<RoomMember, 'federated' | 'username' | 'name' | '_id' | 'freeSwitchExtension' | 'subscription'> & {
+export type RoomMembersItemProps = Pick<RoomMember, 'federated' | 'username' | 'name' | '_id' | 'sipExtension' | 'subscription'> & {
 	rid: IRoom['_id'];
 	useRealName: boolean;
 	reload: () => void;
@@ -34,7 +34,7 @@ const RoomMembersItem = ({
 	name,
 	username,
 	federated,
-	freeSwitchExtension,
+	sipExtension,
 	onClickView,
 	rid,
 	subscription,
@@ -77,7 +77,7 @@ const RoomMembersItem = ({
 						name={name}
 						rid={rid}
 						_id={_id}
-						freeSwitchExtension={freeSwitchExtension}
+						sipExtension={sipExtension}
 						federated={federated}
 						isInvited={isInvited}
 						reload={reload}

@@ -57,7 +57,7 @@ const Overview = ({ type, dateRange, departmentId }: OverviewProps) => {
 	}, [start, end, loadData, params]);
 
 	return (
-		<Box paddingBlock={28} flexDirection='column'>
+		<Box paddingBlock='x24' flexDirection='column'>
 			{displayData.map((items = [], i) => (
 				<CounterRow key={i} border='0' paddingBlock='none'>
 					{items.map(({ title, value }, i) => (

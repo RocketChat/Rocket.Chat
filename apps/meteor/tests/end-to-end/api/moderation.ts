@@ -1,6 +1,7 @@
+import { after, before, beforeEach, describe, it } from 'node:test';
+
 import type { IMessage, IModerationAudit, IModerationReport, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
@@ -22,12 +23,13 @@ const makeModerationApiRequest = async (
 	return res.body;
 };
 
-const reportUser = (userId: string, reason: string) => makeModerationApiRequest('moderation.reportUser', 'post', { userId, reason });
+const reportUser = (userId: string, reason: string) =>
+	makeModerationApiRequest('moderation.reportUser', 'post', { userId, description: reason });
 
 const getUsersReports = (userId: string) => makeModerationApiRequest('moderation.user.reportsByUserId', 'get', { userId });
 
 describe('[Moderation]', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	describe('[/moderation.reportsByUsers]', () => {
 		it('should return an array of reports', async () => {
@@ -289,7 +291,7 @@ describe('[Moderation]', () => {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(200)
-				.expect(async (res: Response) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', true);
 					expect(res.body).to.have.property('reports').and.to.be.an('array').and.to.have.lengthOf(1);
 				});
@@ -306,10 +308,10 @@ describe('[Moderation]', () => {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
-				.expect(async (res: Response) => {
+				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.property('error');
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 	});

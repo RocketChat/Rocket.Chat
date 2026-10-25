@@ -1,9 +1,11 @@
 import { isRoomFederated } from '@rocket.chat/core-typings';
 import type { IRoom } from '@rocket.chat/core-typings';
+import { Stack } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useTranslation, useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
 
+import AbacAttributesRemovalWarning from '../../../../../../components/ABAC/AbacAttributesRemovalWarning';
 import { useCanEditRoom } from '../useCanEditRoom';
 
 export const useRoomConvertToTeam = (room: IRoom) => {
@@ -39,7 +41,10 @@ export const useRoomConvertToTeam = (room: IRoom) => {
 				onConfirm={onConfirm}
 				confirmText={t('Convert')}
 			>
-				{t('Converting_channel_to_a_team')}
+				<Stack gap={16}>
+					{t('Converting_channel_to_a_team')}
+					{!!room.abacAttributes?.length && <AbacAttributesRemovalWarning />}
+				</Stack>
 			</GenericModal>,
 		);
 	});

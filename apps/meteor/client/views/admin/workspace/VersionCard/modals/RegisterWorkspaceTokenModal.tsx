@@ -14,6 +14,7 @@ import {
 	ModalClose,
 	ModalContent,
 	ModalFooter,
+	Stack,
 } from '@rocket.chat/fuselage';
 import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
@@ -89,14 +90,16 @@ const RegisterWorkspaceTokenModal = ({ onClose, onStatusChange, ...props }: Regi
 						.
 					</Trans>
 				</Box>
-				<Box is='p' fontSize='p2'>{`2. ${t('RegisterWorkspace_Token_Step_Two')}`}</Box>
-				<Field paddingBlockStart={10}>
-					<FieldLabel>{t('Registration_Token')}</FieldLabel>
-					<FieldRow>
-						<TextInput onChange={handleTokenChange} value={token} />
-					</FieldRow>
-					{error && <FieldError>{t('Token_Not_Recognized')}</FieldError>}
-				</Field>
+				<Stack gap='x8'>
+					<Box is='p' fontSize='p2'>{`2. ${t('RegisterWorkspace_Token_Step_Two')}`}</Box>
+					<Field>
+						<FieldLabel>{t('Registration_Token')}</FieldLabel>
+						<FieldRow>
+							<TextInput onChange={handleTokenChange} value={token} />
+						</FieldRow>
+						{error && <FieldError>{t('Token_Not_Recognized')}</FieldError>}
+					</Field>
+				</Stack>
 			</ModalContent>
 			<ModalFooter>
 				<ButtonGroup align='end'>

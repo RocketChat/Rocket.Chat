@@ -19,6 +19,20 @@ describe('[Button Component]', () => {
 		const results = await axe(container);
 		expect(results).toHaveNoViolations();
 	});
+
+	it('should render a button of type button by default', () => {
+		render(<Button>Save</Button>);
+		expect(screen.getByRole('button', { name: 'Save' })).toHaveAttribute('type', 'button');
+	});
+
+	it('should render a link without a type when is is a', () => {
+		render(
+			<Button is='a' href='/somewhere'>
+				Go
+			</Button>,
+		);
+		expect(screen.getByRole('link', { name: 'Go' })).not.toHaveAttribute('type');
+	});
 });
 
 describe('[Button as a link]', () => {

@@ -49,6 +49,16 @@ APIClient.handleTwoFactorChallenge(invokeTwoFactorModal);
  */
 const isMutation = (method: string): boolean => method === 'POST' || method === 'PUT' || method === 'DELETE';
 
+// The answer when the stored token no longer identifies a user; endpoints also answer 401 for their own reasons,
+// such as a room the user can't access, and those say nothing about the session.
+const SESSION_REJECTED = 'You must be logged in to do this.';
+
+// REST routes answer it in `error`; the apps UI kit router answers it in `message` only.
+const isSessionRejected = (body: unknown): boolean => {
+	const { error, message } = (body ?? {}) as { error?: unknown; message?: unknown };
+	return error === SESSION_REJECTED || message === SESSION_REJECTED;
+};
+
 APIClient.use(async (request, next) => {
 	const [, method] = request;
 	const tokenAtSend = getStoredItem(STORAGE_KEYS.LOGIN_TOKEN);
@@ -57,13 +67,19 @@ APIClient.use(async (request, next) => {
 		return await next(...request);
 	} catch (error) {
 		if (error instanceof Response) {
+			const e = await error.json();
 			// Never 403 (authenticated but lacking permission) — that must not log the user out.
 			// The token comparison keeps a request that was in flight across a re-login from
 			// evicting the session it does not belong to.
-			if (error.status === 401 && isMutation(method) && tokenAtSend && tokenAtSend === getStoredItem(STORAGE_KEYS.LOGIN_TOKEN)) {
+			if (
+				error.status === 401 &&
+				isSessionRejected(e) &&
+				isMutation(method) &&
+				tokenAtSend &&
+				tokenAtSend === getStoredItem(STORAGE_KEYS.LOGIN_TOKEN)
+			) {
 				clearStoredCredentials();
 			}
-			const e = await error.json();
 			throw e;
 		}
 

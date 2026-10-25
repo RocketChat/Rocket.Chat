@@ -1,4 +1,5 @@
-import { MeteorError, Presence, Team } from '@rocket.chat/core-services';
+import { hashLoginToken } from '@rocket.chat/account-utils';
+import { ClientSafeError, Presence, Team, isClientSafeError } from '@rocket.chat/core-services';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Sessions, OAuthAccessTokens, OAuthRefreshTokens, OAuthAuthCodes } from '@rocket.chat/models';
 import {
@@ -32,10 +33,7 @@ import {
 } from '@rocket.chat/rest-typings';
 import { isHiddenFor } from '@rocket.chat/streamer';
 import { escapeRegExp, getLoginExpirationInMs } from '@rocket.chat/tools';
-import { Accounts } from 'meteor/accounts-base';
 import { Match, check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
-import type { Mongo } from 'meteor/mongo';
 import type { Filter } from 'mongodb';
 
 import { generatePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/generateToken';
@@ -62,7 +60,6 @@ import { deleteUser } from '../../lib/users/deleteUser';
 import { getAvatarSuggestionForUser } from '../../lib/users/getAvatarSuggestionForUser';
 import { getFullUserDataByUniqueSearchTerm, defaultFields, fullFields } from '../../lib/users/getFullUserData';
 import { generateUsernameSuggestion } from '../../lib/users/getUsernameSuggestion';
-import { runAfterVerifyEmail } from '../../lib/users/runAfterVerifyEmail';
 import { saveCustomFields } from '../../lib/users/saveCustomFields';
 import { saveCustomFieldsWithoutValidation } from '../../lib/users/saveCustomFieldsWithoutValidation';
 import { saveUser } from '../../lib/users/saveUser';
@@ -210,6 +207,7 @@ API.v1
 				statusType: this.bodyParams.data.statusType,
 				newPassword: this.bodyParams.data.newPassword,
 				typedPassword: this.bodyParams.data.currentPassword,
+				phones: this.bodyParams.data.phones,
 			};
 
 			if (userData.realname && !validateNameChars(userData.realname)) {
@@ -248,11 +246,11 @@ API.v1
 				this.bodyParams.userId !== this.userId &&
 				!(await hasPermissionAsync(this.user, 'edit-other-user-info'))
 			) {
-				throw new Meteor.Error('error-action-not-allowed', 'Editing user is not allowed');
+				throw new ClientSafeError('error-action-not-allowed', 'Editing user is not allowed');
 			}
 			const userId = this.bodyParams.userId ? this.bodyParams.userId : this.userId;
 			if (!(await Users.findOneById(userId))) {
-				throw new Meteor.Error('error-invalid-user', 'The optional "userId" param provided does not match any users');
+				throw new ClientSafeError('error-invalid-user', 'The optional "userId" param provided does not match any users');
 			}
 
 			const { statusVisibilityDenied: _ownBlockList, ...preferences } = this.bodyParams.data;
@@ -305,7 +303,7 @@ API.v1
 			const canEditOtherUserAvatar = await hasPermissionAsync(this.user, 'edit-other-user-avatar');
 
 			if (!settings.get('Accounts_AllowUserAvatarChange') && !canEditOtherUserAvatar) {
-				throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed', {
+				throw new ClientSafeError('error-not-allowed', 'Change avatar is not allowed', {
 					method: 'users.setAvatar',
 				});
 			}
@@ -352,12 +350,12 @@ API.v1
 				}
 
 				if (!user) {
-					throw new Meteor.Error('error-invalid-user', 'The optional "userId" or "username" param provided does not match any users');
+					throw new ClientSafeError('error-invalid-user', 'The optional "userId" or "username" param provided does not match any users');
 				}
 
 				const isAnotherUser = this.userId !== user._id;
 				if (isAnotherUser && !(await hasPermissionAsync(this.user, 'edit-other-user-avatar'))) {
-					throw new Meteor.Error('error-not-allowed', 'Not allowed');
+					throw new ClientSafeError('error-not-allowed', 'Not allowed');
 				}
 			}
 
@@ -399,7 +397,7 @@ API.v1
 				validateCustomFields(this.bodyParams.customFields);
 			}
 
-			if (this.bodyParams.freeSwitchExtension && !(await canEditExtension(this.bodyParams.freeSwitchExtension))) {
+			if (this.bodyParams.sipExtension && !(await canEditExtension(this.bodyParams.sipExtension))) {
 				return API.v1.failure('Setting user voice call extension is not allowed', 'error-action-not-allowed');
 			}
 
@@ -493,7 +491,7 @@ API.v1.post(
 	},
 	async function action() {
 		if (!settings.get('Accounts_AllowDeleteOwnAccount')) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed');
+			throw new ClientSafeError('error-not-allowed', 'Not allowed');
 		}
 
 		const { confirmRelinquish = false } = this.bodyParams;
@@ -613,13 +611,12 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		const searchTerms: [string, 'id' | 'username' | 'importId' | 'email' | 'freeSwitchExtension'] | false =
+		const searchTerms: [string, 'id' | 'username' | 'importId' | 'email' | 'sipExtension'] | false =
 			('userId' in this.queryParams && !!this.queryParams.userId && [this.queryParams.userId, 'id']) ||
 			('username' in this.queryParams && !!this.queryParams.username && [this.queryParams.username, 'username']) ||
 			('importId' in this.queryParams && !!this.queryParams.importId && [this.queryParams.importId, 'importId']) ||
 			('email' in this.queryParams && !!this.queryParams.email && [this.queryParams.email, 'email']) ||
-			('freeSwitchExtension' in this.queryParams &&
-				!!this.queryParams.freeSwitchExtension && [this.queryParams.freeSwitchExtension, 'freeSwitchExtension']);
+			('sipExtension' in this.queryParams && !!this.queryParams.sipExtension && [this.queryParams.sipExtension, 'sipExtension']);
 
 		if (!searchTerms) {
 			return API.v1.failure('Invalid search query.');
@@ -661,13 +658,10 @@ API.v1.get(
 	},
 );
 
-// users.list accepts arbitrary query filter fields (name, username, etc.)
-// that cannot be statically defined — keeping as addRoute until params are known
 API.v1.addRoute(
 	'users.list',
 	{
 		authRequired: true,
-		queryOperations: ['$or', '$and'],
 		permissionsRequired: ['view-d-room'],
 		query: isUsersListParamsGET,
 	},
@@ -687,15 +681,13 @@ API.v1.addRoute(
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await this.parseJsonQuery();
+			const { sort, fields } = await this.parseJsonQuery();
 
 			const nonEmptyFields = getNonEmptyFields(fields);
 
 			const inclusiveFields = getInclusiveFields(nonEmptyFields);
 
-			const inclusiveFieldsKeys = Object.keys(inclusiveFields);
-
-			const nonEmptyQuery = getNonEmptyQuery(query, canViewFullOtherUserInfo);
+			const nonEmptyQuery = getNonEmptyQuery(canViewFullOtherUserInfo);
 
 			if ('email' in this.queryParams && this.queryParams.email) {
 				if (!canViewFullOtherUserInfo) {
@@ -706,27 +698,6 @@ API.v1.addRoute(
 					$regex: `^${escapedEmail}$`,
 					$options: 'i',
 				};
-			}
-
-			// if user provided a query, validate it with their allowed operators
-			// otherwise we use the default query (with $regex and $options)
-			if (
-				!isValidQuery(
-					nonEmptyQuery,
-					[
-						...inclusiveFieldsKeys,
-						inclusiveFieldsKeys.includes('emails') && 'emails.address.*',
-						inclusiveFieldsKeys.includes('username') && 'username.*',
-						inclusiveFieldsKeys.includes('name') && 'name.*',
-						inclusiveFieldsKeys.includes('type') && 'type.*',
-						inclusiveFieldsKeys.includes('customFields') && 'customFields.*',
-					].filter(Boolean) as string[],
-					// At this point, we have already validated the user query not containing malicious fields
-					// On here we are using our own query so we can allow some extra fields
-					[...this.queryOperations, '$regex', '$options'],
-				)
-			) {
-				throw new Meteor.Error('error-invalid-query', isValidQuery.errors.join('\n'));
 			}
 
 			if (customFields) {
@@ -740,10 +711,6 @@ API.v1.addRoute(
 			}
 
 			const hidden = await getUsersHiddenFrom(this.userId);
-
-			if (queryFiltersStatus(query)) {
-				nonEmptyQuery.$and = [...(nonEmptyQuery.$and ?? []), excludingHiddenFilter(hidden) as Mongo.Query<IUser>];
-			}
 
 			const actualSort = sort ? { ...sort } : { username: 1 };
 
@@ -975,7 +942,7 @@ API.v1.post(
 		const { email } = this.bodyParams;
 
 		if (!isSMTPConfigured()) {
-			throw new MeteorError('error-email-send-failed', 'SMTP is not configured', {
+			throw new ClientSafeError('error-email-send-failed', 'SMTP is not configured', {
 				method: 'sendWelcomeEmail',
 			});
 		}
@@ -983,7 +950,7 @@ API.v1.post(
 		const user = await Users.findOneByEmailAddress(email.trim(), { projection: { name: 1 } });
 
 		if (!user) {
-			throw new MeteorError('error-invalid-user', 'Invalid user', {
+			throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 				method: 'sendWelcomeEmail',
 			});
 		}
@@ -1033,6 +1000,10 @@ API.v1.post(
 			try {
 				validateCustomFields(this.bodyParams.customFields);
 			} catch (e) {
+				if (isClientSafeError(e)) {
+					const { isClientSafe, errorType, error, reason, message, details } = e;
+					return API.v1.failure({ isClientSafe, errorType, error, reason, message, details });
+				}
 				return API.v1.failure(e);
 			}
 		}
@@ -1094,7 +1065,7 @@ API.v1.post(
 		) {
 			await resetAvatar(this.userId, user._id);
 		} else {
-			throw new Meteor.Error('error-not-allowed', 'Reset avatar is not allowed', {
+			throw new ClientSafeError('error-not-allowed', 'Reset avatar is not allowed', {
 				method: 'users.resetAvatar',
 			});
 		}
@@ -1510,7 +1481,7 @@ API.v1
 		async function action() {
 			const hasUnverifiedEmail = this.user.emails?.some((email) => !email.verified);
 			if (hasUnverifiedEmail) {
-				throw new MeteorError('error-invalid-user', 'You need to verify your emails before setting up 2FA');
+				throw new ClientSafeError('error-invalid-user', 'You need to verify your emails before setting up 2FA');
 			}
 
 			await Users.enableEmail2FAByUserId(this.userId);
@@ -1521,10 +1492,10 @@ API.v1
 				return API.v1.success();
 			}
 
-			const hashedToken = Accounts._hashLoginToken(xAuthToken);
+			const hashedToken = hashLoginToken(xAuthToken);
 
 			if (!(await Users.removeNonPATLoginTokensExcept(this.userId, hashedToken))) {
-				throw new MeteorError('error-logging-out-other-clients', 'Error logging out other clients');
+				throw new ClientSafeError('error-logging-out-other-clients', 'Error logging out other clients');
 			}
 
 			// TODO this can be optmized so places that care about loginTokens being removed are invoked directly
@@ -1587,6 +1558,10 @@ API.v1
 				required: ['emailOrUsername'],
 				additionalProperties: false,
 			}),
+			rateLimiterOptions: {
+				numRequestsAllowed: 5,
+				intervalTimeInMS: 60000,
+			},
 			response: {
 				200: voidSuccessResponse,
 				400: validateBadRequestErrorResponse,
@@ -1775,12 +1750,12 @@ API.v1
 			const xAuthToken = this.request.headers.get('x-auth-token') as string;
 
 			if (!xAuthToken) {
-				throw new Meteor.Error('error-parameter-required', 'x-auth-token is required');
+				throw new ClientSafeError('error-parameter-required', 'x-auth-token is required');
 			}
-			const hashedToken = Accounts._hashLoginToken(xAuthToken);
+			const hashedToken = hashLoginToken(xAuthToken);
 
 			if (!(await Users.removeNonPATLoginTokensExcept(this.userId, hashedToken))) {
-				throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
+				throw new ClientSafeError('error-invalid-user-id', 'Invalid user id');
 			}
 
 			const me = (await Users.findOneById(this.userId, { projection: { 'services.resume.loginTokens': 1 } })) as Pick<IUser, 'services'>;
@@ -1894,11 +1869,11 @@ API.v1
 			if ('userId' in this.bodyParams || 'username' in this.bodyParams || 'user' in this.bodyParams) {
 				const user = await getUserFromParams(this.bodyParams);
 				if (!user) {
-					throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
+					throw new ClientSafeError('error-invalid-user-id', 'Invalid user id');
 				}
 
 				if (!(await hasPermissionAsync(this.user, 'edit-other-user-e2ee'))) {
-					throw new Meteor.Error('error-not-allowed', 'Not allowed');
+					throw new ClientSafeError('error-not-allowed', 'Not allowed');
 				}
 
 				if (!(await resetUserE2EEncriptionKey(user._id, true))) {
@@ -1935,16 +1910,16 @@ API.v1
 		async function action() {
 			if ('userId' in this.bodyParams || 'username' in this.bodyParams || 'user' in this.bodyParams) {
 				if (!(await hasPermissionAsync(this.user, 'edit-other-user-totp'))) {
-					throw new Meteor.Error('error-not-allowed', 'Not allowed');
+					throw new ClientSafeError('error-not-allowed', 'Not allowed');
 				}
 
 				if (!settings.get('Accounts_TwoFactorAuthentication_Enabled')) {
-					throw new Meteor.Error('error-two-factor-not-enabled', 'Two factor authentication is not enabled');
+					throw new ClientSafeError('error-two-factor-not-enabled', 'Two factor authentication is not enabled');
 				}
 
 				const user = await getUserFromParams(this.bodyParams);
 				if (!user) {
-					throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
+					throw new ClientSafeError('error-invalid-user-id', 'Invalid user id');
 				}
 
 				await resetTOTP(user._id, true);
@@ -2027,7 +2002,7 @@ API.v1
 
 			// this method logs the user out automatically, if successful returns 1, otherwise 0
 			if (!(await Users.unsetLoginTokens(userId))) {
-				throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
+				throw new ClientSafeError('error-invalid-user-id', 'Invalid user id');
 			}
 
 			await Sessions.logoutAllByUserId(userId, this.userId);
@@ -2151,20 +2126,20 @@ API.v1
 			const { status, message, expiresAt } = this.bodyParams;
 
 			if (message && !settings.get('Accounts_AllowUserStatusMessageChange')) {
-				throw new Meteor.Error('error-not-allowed', 'Change status is not allowed', {
+				throw new ClientSafeError('error-not-allowed', 'Change status is not allowed', {
 					method: 'users.setStatus',
 				});
 			}
 
 			const statusExpiresAt = expiresAt ? new Date(expiresAt) : undefined;
 			if (statusExpiresAt && Number.isNaN(statusExpiresAt.getTime())) {
-				throw new Meteor.Error('error-invalid-date', 'Invalid expiresAt date string', {
+				throw new ClientSafeError('error-invalid-date', 'Invalid expiresAt date string', {
 					method: 'users.setStatus',
 				});
 			}
 
 			if (statusExpiresAt && statusExpiresAt.getTime() <= Date.now()) {
-				throw new Meteor.Error('error-invalid-date', 'expiresAt must be a future date', {
+				throw new ClientSafeError('error-invalid-date', 'expiresAt must be a future date', {
 					method: 'users.setStatus',
 				});
 			}
@@ -2174,7 +2149,7 @@ API.v1
 			const effectiveStatus = status || user.statusDefault || ('online' as UserStatus);
 
 			if (effectiveStatus === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
-				throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
+				throw new ClientSafeError('error-status-not-allowed', 'Invisible status is disabled', {
 					method: 'users.setStatus',
 				});
 			}
@@ -2258,8 +2233,6 @@ API.v1.post(
 		}
 
 		await verifyEmail(user, token);
-
-		await runAfterVerifyEmail(user._id);
 
 		return API.v1.success();
 	},

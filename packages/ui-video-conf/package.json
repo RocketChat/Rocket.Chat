@@ -10,8 +10,8 @@
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.build.json",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix .",
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
 		"storybook": "storybook dev -p 6006",
 		"test": "jest",
 		"testunit": "jest",
@@ -33,7 +33,7 @@
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@rocket.chat/ui-avatar": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",
-		"@storybook/react": "^9.1.20",
+		"@storybook/react": "^9.1.21",
 		"@tanstack/react-query": "~5.65.1",
 		"@types/jest-axe": "~3.5.9",
 		"@types/react": "~19.2.18",
@@ -44,8 +44,8 @@
 		"react": "~19.2.8",
 		"react-dom": "~19.2.8",
 		"react-virtuoso": "~4.18.16",
-		"storybook": "^9.1.20",
-		"typescript": "~5.9.3",
+		"storybook": "^9.1.21",
+		"typescript": "~7.0.2",
 		"webpack": "~5.104.1"
 	},
 	"peerDependencies": {

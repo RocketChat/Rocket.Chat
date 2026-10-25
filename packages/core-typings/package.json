@@ -1,7 +1,7 @@
 {
 	"$schema": "https://json.schemastore.org/package",
 	"name": "@rocket.chat/core-typings",
-	"version": "8.10.0-develop",
+	"version": "9.0.0-develop",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
@@ -14,26 +14,33 @@
 		"/dist"
 	],
 	"scripts": {
-		"build": "ts-patch install && typia patch && rm -rf dist && tsc -p tsconfig.json",
-		"dev": "tsc --watch --preserveWatchOutput -p tsconfig.json",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix .",
-		"typecheck": "tsc --noEmit"
+		".:build:build": "ttsc --binary \"$(node -e 'const p=require(`path`);process.stdout.write(p.join(p.dirname(require.resolve(`@typescript/native-preview/package.json`)),`bin`,`tsgo`))')\" -p tsconfig.json",
+		".:build:clean": "rimraf dist",
+		"build": "run-s .:build:clean .:build:build",
+		"dev": "ttsc --binary \"$(node -e 'const p=require(`path`);process.stdout.write(p.join(p.dirname(require.resolve(`@typescript/native-preview/package.json`)),`bin`,`tsgo`))')\" --watch --preserveWatchOutput -p tsconfig.json",
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
+		"testunit": "node --test --experimental-test-isolation=none --require tsx 'src/**/*.test.ts'",
+		"typecheck": "tsc --noEmit --module preserve"
 	},
 	"dependencies": {
 		"@rocket.chat/fuselage": "workspace:^",
 		"@rocket.chat/icons": "workspace:~",
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/ui-kit": "workspace:~",
-		"typia": "patch:typia@npm%3A9.7.2#~/.yarn/patches/typia-npm-9.7.2-5c5d9c80b4.patch",
+		"typia": "13.0.2",
 		"zod": "~4.3.6"
 	},
 	"devDependencies": {
 		"@rocket.chat/apps-engine": "workspace:^",
 		"@types/express": "^4.17.25",
+		"@typescript/native-preview": "7.0.0-dev.20260707.2",
 		"eslint": "~10.12.0",
 		"mongodb": "6.16.0",
-		"ts-patch": "^3.3.0",
+		"npm-run-all": "~4.1.5",
+		"rimraf": "^6.0.1",
+		"tsx": "~4.22.5",
+		"ttsc": "0.18.4",
 		"typescript": "~5.9.3"
 	},
 	"volta": {

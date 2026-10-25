@@ -46,12 +46,10 @@ const UsersTableRow = ({
 					</Box>
 				</FlexContainer>
 			</GenericTableCell>
-			{mediaQuery && canViewFullOtherUserInfo && (
-				<GenericTableCell withTruncatedText>{emails?.length && emails[0].address}</GenericTableCell>
-			)}
-			{federation && <GenericTableCell withTruncatedText>{domain}</GenericTableCell>}
+			{mediaQuery && canViewFullOtherUserInfo && <GenericTableCell truncate>{emails?.length && emails[0].address}</GenericTableCell>}
+			{federation && <GenericTableCell truncate>{domain}</GenericTableCell>}
 			{mediaQuery && (
-				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
+				<GenericTableCell color='hint' truncate>
 					{formatDate(createdAt)}
 				</GenericTableCell>
 			)}
