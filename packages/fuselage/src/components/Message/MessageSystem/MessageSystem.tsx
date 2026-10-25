@@ -2,7 +2,6 @@ import { styled, Text, type GetProps } from '@tamagui/web';
 import type { ReactNode, MouseEvent as ReactMouseEvent, AllHTMLAttributes } from 'react';
 
 import { surfaceColors, textIconColors } from '../../../Theme';
-import { getForcedState } from '../../../helpers/getForcedState';
 import { toCSSValue } from '../../../helpers/toCSSValue';
 import { spacing } from '../../../styleTokens';
 import { withFuselageProvider } from '../../FuselageProvider/FuselageProvider';
@@ -43,7 +42,6 @@ export type MessageSystemProps = {
 const MessageSystem = ({ children, title, isSelected, ...props }: MessageSystemProps) => (
 	<MessageSystemFrame
 		selected={isSelected}
-		forceStyle={getForcedState(props.className)}
 		className={['rcx-message-system', isSelected && 'rcx-message-system--selected'].filter(Boolean).join(' ')}
 		{...({ title, ...props } as GetProps<typeof MessageSystemFrame>)}
 	>

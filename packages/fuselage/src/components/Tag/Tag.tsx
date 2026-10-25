@@ -197,7 +197,6 @@ const Tag = ({ large, medium, pill, className, disabled, onClick, variant, child
 			render={href ? 'a' : 'span'}
 			className={cx('rcx-tag', modifiers, className)}
 			{...(clickable && hasClassName(className, 'disabled') && { cursor: 'not-allowed' })}
-			{...(hasClassName(className, 'focus-visible') && hasClassName(className, 'focus') && { forceStyle: 'focusVisible' as const })}
 		>
 			{icon}
 			<TagInner className='rcx-tag__inner'>{children}</TagInner>

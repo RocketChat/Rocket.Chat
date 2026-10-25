@@ -2,7 +2,7 @@ import type { Keys as IconName } from '@rocket.chat/icons';
 import { styled, Text, View, type GetProps } from '@tamagui/web';
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
-import { getForcedState, isForcedDisabled } from '../../helpers/getForcedState';
+import { isForcedDisabled } from '../../helpers/isForcedDisabled';
 import { prependClassName } from '../../helpers/prependClassName';
 import { toCSSValue } from '../../helpers/toCSSValue';
 import { borderRadius, fontFamily, fontScale, size, spacing } from '../../styleTokens';
@@ -99,7 +99,6 @@ export const BubbleButton = ({ secondary, small, segment, label, onClick, icon, 
 			small={small}
 			withIcon={Boolean(icon) && !segment}
 			segment={segment}
-			forceStyle={getForcedState(className)}
 		>
 			{icon && <Icon name={icon} size='x16' />}
 			{label && <BubbleLabel>{label}</BubbleLabel>}

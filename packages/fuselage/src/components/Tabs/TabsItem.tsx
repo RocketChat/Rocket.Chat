@@ -6,7 +6,6 @@ import { useContext } from 'react';
 import { TabsContext, tabsBoxStyle } from './Tabs';
 import { statusBackgroundColors, strokeColors, textIconColors } from '../../Theme';
 import { cx } from '../../helpers/composeClassNames';
-import { getForcedState } from '../../helpers/getForcedState';
 import { toCSSColorValue, toCSSValue } from '../../helpers/toCSSValue';
 import { borderRadius, borderWidth, fontScale, size, spacing } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
@@ -145,7 +144,6 @@ function TabsItem({ selected, disabled, className, ...props }: TabsItemProps) {
 			divider={divider}
 			stretch={stretch}
 			isDisabled={disabled}
-			forceStyle={getForcedState(className)}
 			{...(className?.split(/\s+/).includes('disabled') && { cursor: 'not-allowed' })}
 			{...({ 'aria-selected': selected ? 'true' : 'false', 'role': 'tab', ...props } as GetProps<typeof TabsItemFrame>)}
 			className={cx(

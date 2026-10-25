@@ -3,7 +3,6 @@ import { styled, Text, type GetProps } from '@tamagui/web';
 import type { HTMLAttributes } from 'react';
 
 import { textIconColors } from '../../../Theme';
-import { getForcedState } from '../../../helpers/getForcedState';
 import { toCSSValue } from '../../../helpers/toCSSValue';
 import { borderRadius, borderWidth, fontFamily, spacing } from '../../../styleTokens';
 import { withFuselageProvider } from '../../FuselageProvider/FuselageProvider';
@@ -54,7 +53,6 @@ const SidebarItemActionBase = ({ children, className, icon = 'plus-small', ...pr
 	<SidebarItemActionFrame
 		role='button'
 		tabIndex={0}
-		forceStyle={getForcedState(className)}
 		className={['rcx-sidebar-item rcx-sidebar-item__action', className].filter(Boolean).join(' ')}
 		{...(props as GetProps<typeof SidebarItemActionFrame>)}
 	>

@@ -3,7 +3,6 @@ import type { HTMLAttributes, RefAttributes } from 'react';
 
 import { boxText, focusState, truncatedText } from './messageStyles';
 import { textIconColors } from '../../Theme';
-import { getForcedState } from '../../helpers/getForcedState';
 import { spacing } from '../../styleTokens';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
@@ -33,7 +32,6 @@ function MessageNameContainer(props: MessageNameContainerProps) {
 	return (
 		<MessageNameContainerFrame
 			button={props.role === 'button'}
-			forceStyle={getForcedState(props.className)}
 			className='rcx-message-header__name-container'
 			{...(props as GetProps<typeof MessageNameContainerFrame>)}
 		/>

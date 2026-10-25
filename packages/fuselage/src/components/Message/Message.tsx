@@ -4,7 +4,6 @@ import type { AllHTMLAttributes, RefAttributes } from 'react';
 import { MessageContext } from './MessageContext';
 import { focusState, textScale, truncatedText } from './messageStyles';
 import { statusBackgroundColors, statusColors, surfaceColors, textIconColors } from '../../Theme';
-import { getForcedState } from '../../helpers/getForcedState';
 import { prependClassName } from '../../helpers/prependClassName';
 import { toCSSValue } from '../../helpers/toCSSValue';
 import { spacing } from '../../styleTokens';
@@ -100,7 +99,6 @@ const createMessage = (Frame: typeof MessageFrame) =>
 				highlight={highlight}
 				selected={isSelected}
 				editing={isEditing}
-				forceStyle={getForcedState(className)}
 				className={prependClassName(
 					className,
 					[

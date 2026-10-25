@@ -4,7 +4,6 @@ import type { HTMLAttributes, ReactNode, RefAttributes } from 'react';
 import MessageReactionCounter from './MessageReactionCounter';
 import MessageReactionEmoji from './MessageReactionEmoji';
 import { strokeColors, surfaceColors, textIconColors } from '../../../Theme';
-import { getForcedState } from '../../../helpers/getForcedState';
 import { toCSSValue } from '../../../helpers/toCSSValue';
 import { borderRadius, borderWidth, spacing } from '../../../styleTokens';
 import { withFuselageProvider } from '../../FuselageProvider/FuselageProvider';
@@ -64,7 +63,6 @@ function MessageReaction({ name, counter, mine, children, className, ...props }:
 	return (
 		<MessageReactionFrame
 			mine={mine}
-			forceStyle={getForcedState(className)}
 			className={[`rcx-message-reactions__reaction`, mine && 'rcx-message-reactions__reaction--mine', className].filter(Boolean).join(' ')}
 			role='button'
 			tabIndex={0}

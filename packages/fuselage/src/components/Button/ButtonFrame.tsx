@@ -11,7 +11,7 @@ import {
 	type ButtonKind,
 	type GhostKind,
 } from './buttonColors';
-import { getForcedState, isForcedDisabled } from '../../helpers/getForcedState';
+import { isForcedDisabled } from '../../helpers/isForcedDisabled';
 import { borderWidth, fontFamily, fontScale, size, spacing } from '../../styleTokens';
 import type { FontScaleName } from '../../styleTokens';
 
@@ -229,8 +229,8 @@ export const renderButtonElement = (is: ElementType, disabled: boolean | undefin
 	createElement(is, disabled === undefined ? {} : { disabled });
 
 /**
- * The color variants in the order they override each other, plus the state the `hover`, `active`, `focus`
- * and `disabled` class names pin the button to.
+ * The color variants in the order they override each other, plus the disabled look the `disabled` class
+ * name pins the button to.
  */
 export const getButtonStates = (
 	className: unknown,
@@ -247,6 +247,5 @@ export const getButtonStates = (
 		inactive: disabled || isForcedDisabled(classNames) ? kind : undefined,
 		segment: segment?.position,
 		ghost: segment?.ghost ? segment.variant : undefined,
-		forceStyle: getForcedState(classNames),
 	};
 };
