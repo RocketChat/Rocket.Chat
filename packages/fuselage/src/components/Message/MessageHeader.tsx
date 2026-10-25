@@ -1,11 +1,9 @@
 import type { HTMLAttributes } from 'react';
 
-export type MessageHeaderProps = HTMLAttributes<HTMLDivElement>;
+import ItemRow from '../Item/ItemRow';
 
-const MessageHeader = ({ children, ...props }: MessageHeaderProps) => (
-	<div className='rcx-box rcx-box--full rcx-message-header' {...props}>
-		<div className='rcx-box rcx-box--full rcx-message-header__wrapper'>{children}</div>
-	</div>
-);
+export type MessageHeaderProps = Omit<HTMLAttributes<HTMLDivElement>, 'is'>;
+
+const MessageHeader = (props: MessageHeaderProps) => <ItemRow className='rcx-box rcx-box--full rcx-message-header' {...props} />;
 
 export default MessageHeader;
