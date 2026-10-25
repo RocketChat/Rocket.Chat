@@ -20,6 +20,7 @@ const recorder = {
 };
 
 const settingsRegistry = {
+	add: recorder.add,
 	async addGroup(_name: string, ...args: unknown[]) {
 		await args.find((arg): arg is Register => typeof arg === 'function')?.call(recorder);
 	},
@@ -34,10 +35,16 @@ const { createFileUploadSettings } = p.noCallThru().load('./file-upload', {
 	'.': { settingsRegistry },
 });
 
+const { createSettings: createOmnichannelEnterpriseSettings } = p.noCallThru().load('../../ee/server/lib/omnichannel/settings', {
+	'../../../../server/settings': { settingsRegistry },
+	'@rocket.chat/models': { Settings: { addOptionValueById: async () => undefined } },
+});
+
 (
 	[
 		['Message', createMessageSettings],
 		['FileUpload', createFileUploadSettings],
+		['Omnichannel (Enterprise)', createOmnichannelEnterpriseSettings],
 	] as const
 ).forEach(([group, createSettings]) => {
 	describe(`${group} settings`, () => {
