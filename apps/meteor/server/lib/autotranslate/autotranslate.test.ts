@@ -145,6 +145,16 @@ describe('AutoTranslate.tokenizeMentions', () => {
 		expect(tokenTexts(message)).to.deep.equal(['@jo', '@joá']);
 	});
 
+	it('should skip mentions and channels without a name', () => {
+		const message = tokenize({
+			msg: 'hi @jo in #dev',
+			mentions: [{ _id: 'a' }, { _id: 'b', username: 'jo' }],
+			channels: [{ _id: 'c' }, { _id: 'd', name: 'dev' }],
+		});
+
+		expect(tokenTexts(message)).to.deep.equal(['#dev', '@jo']);
+	});
+
 	it('should protect each mention whole when the longer username continues with a combining mark', () => {
 		const message = tokenize({
 			msg: 'hi @jó and @jo',

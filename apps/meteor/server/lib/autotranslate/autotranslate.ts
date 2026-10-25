@@ -243,6 +243,9 @@ export abstract class AutoTranslate {
 
 		if (message.mentions && message.mentions.length > 0) {
 			message.mentions.forEach((mention) => {
+				if (!mention.username) {
+					return;
+				}
 				message.msg = message.msg.replace(wholeReferenceRegex('@', mention.username), (match) => {
 					const token = `<i class=notranslate>{${count++}}</i>`;
 					message.tokens?.push({
@@ -256,6 +259,9 @@ export abstract class AutoTranslate {
 
 		if (message.channels && message.channels.length > 0) {
 			message.channels.forEach((channel) => {
+				if (!channel.name) {
+					return;
+				}
 				message.msg = message.msg.replace(wholeReferenceRegex('#', channel.name), (match) => {
 					const token = `<i class=notranslate>{${count++}}</i>`;
 					message.tokens?.push({
