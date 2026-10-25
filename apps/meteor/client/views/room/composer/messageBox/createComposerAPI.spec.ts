@@ -87,6 +87,14 @@ describe('ChatMessages Composer API - wrapSelection', () => {
 		expect(input.value).toBe('This is\na test');
 	});
 
+	it('unwraps every line when only the text inside a per-line formatted block is selected', () => {
+		const { composer, input } = setupComposer('*foo*\n*bar*', { start: 1, end: 10 });
+
+		composer.wrapSelection('*{{text}}*');
+
+		expect(input.value).toBe('foo\nbar');
+	});
+
 	it('still wraps a multi-line selection as a whole with brackets', () => {
 		const { composer, input } = setupComposer('foo\nbar', { start: 0, end: 7 });
 

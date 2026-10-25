@@ -6,17 +6,31 @@ export const getLineMarker = (pattern: string): string | undefined => {
 	return start === end && INLINE_MARKERS.includes(start) ? start : undefined;
 };
 
-const LINE_PARTS = /^(\s*)(.*?)(\s*)$/;
+const LINE_PARTS = /^(\s*)([\s\S]*?)(\s*)$/;
 
-const isWrapped = (line: string, marker: string): boolean =>
-	line.length > marker.length * 2 && line.startsWith(marker) && line.endsWith(marker);
+const isWrapped = (line: string, marker: string): boolean => {
+	if (line.length <= marker.length * 2 || !line.startsWith(marker) || !line.endsWith(marker)) {
+		return false;
+	}
+
+	// Emphasis around nothing but whitespace is plain text, unlike a code span
+	return marker === '`' || line.slice(marker.length, -marker.length).trim() !== '';
+};
+
+export const isEachLineWrapped = (text: string, marker: string): boolean => {
+	const filled = text
+		.split('\n')
+		.map((line) => line.trim())
+		.filter((line) => line !== '');
+
+	return filled.length > 0 && filled.every((line) => isWrapped(line, marker));
+};
 
 export const toggleLineMarker = (text: string, marker: string): string => {
-	const lines = text.split('\n');
-	const filled = lines.filter((line) => line.trim() !== '').map((line) => line.trim());
-	const removing = filled.length > 0 && filled.every((line) => isWrapped(line, marker));
+	const removing = isEachLineWrapped(text, marker);
 
-	return lines
+	return text
+		.split('\n')
 		.map((line) => {
 			if (line.trim() === '') {
 				return line;

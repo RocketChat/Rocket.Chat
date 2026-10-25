@@ -7,7 +7,7 @@ import { createComposerAPICore, triggerEvent, type SetText } from './createCompo
 import { limitQuoteChain } from './limitQuoteChain';
 import { createComposerRenderer, renderComposerContent } from './messageStateHandler';
 import { getContentEndOffset, getSelectionRange, setSelectionRange } from './selectionRange';
-import { getLineMarker, toggleLineMarker } from './toggleLineMarker';
+import { getLineMarker, isEachLineWrapped, toggleLineMarker } from './toggleLineMarker';
 import { bareLinePrefixRange, continueLinePrefix } from './toggleLinePrefix';
 
 export const createRichTextComposerAPI = (
@@ -110,6 +110,32 @@ export const createRichTextComposerAPI = (
 			cleanedInitText.slice(selectionStart - startPattern.length, selectionStart) === startPattern;
 		const endPatternFound = endPattern.length > 0 && cleanedInitText.slice(selEnd, selEnd + endPattern.length) === endPattern;
 
+		const lineMarker = getLineMarker(pattern);
+		const wrapsEachLine = lineMarker !== undefined && selectedText.includes('\n');
+
+		if (wrapsEachLine && startPatternFound && endPatternFound) {
+			const blockStart = selectionStart - startPattern.length;
+			const blockEnd = selEnd + endPattern.length;
+			const block = cleanedInitText.slice(blockStart, blockEnd);
+
+			if (isEachLineWrapped(block, lineMarker)) {
+				const unwrapped = toggleLineMarker(block, lineMarker);
+				const unwrapEnd = blockStart + unwrapped.length;
+
+				input.innerText = cleanedInitText.slice(0, blockStart) + unwrapped + cleanedInitText.slice(blockEnd);
+				renderComposerContent(input, parseOptions, { selectionStart: blockStart, selectionEnd: unwrapEnd });
+
+				focus();
+
+				setSelectionRange(input, blockStart, unwrapEnd);
+
+				triggerEvent(input, 'input');
+				triggerEvent(input, 'change');
+
+				return { selectionStart: blockStart, selectionEnd: unwrapEnd, value: input.innerText };
+			}
+		}
+
 		if (startPatternFound && endPatternFound) {
 			const unwrapStart = selectionStart - startPattern.length;
 			const unwrapEnd = unwrapStart + selectedText.length;
@@ -136,9 +162,6 @@ export const createRichTextComposerAPI = (
 		// This ensures the execCommand works properly when pressing buttons instead of hotkeys
 		setSelectionRange(input, selectionStart, selEnd);
 		focus();
-
-		const lineMarker = getLineMarker(pattern);
-		const wrapsEachLine = lineMarker !== undefined && selectedText.includes('\n');
 
 		const replacement = wrapsEachLine ? toggleLineMarker(selectedText, lineMarker) : pattern.replace('{{text}}', selectedText);
 		const newStart = wrapsEachLine ? selectionStart : selectionStart + pattern.indexOf('{{text}}');

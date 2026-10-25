@@ -27,6 +27,14 @@ describe('toggleLineMarker', () => {
 		expect(toggleLineMarker('*This is*\n\n*a test*', '*')).toBe('This is\n\na test');
 	});
 
+	it.each(['\r', String.fromCharCode(0x2028)])('keeps a line that contains the separator %j', (separator) => {
+		expect(toggleLineMarker(`foo${separator}bar\nbaz`, '*')).toBe(`*foo${separator}bar*\n*baz*`);
+	});
+
+	it('does not treat whitespace-only emphasis as formatted', () => {
+		expect(toggleLineMarker('* *\nfoo', '*')).toBe('** **\n*foo*');
+	});
+
 	it('wraps every line when only some are wrapped', () => {
 		expect(toggleLineMarker('*This is*\na test', '*')).toBe('**This is**\n*a test*');
 	});
