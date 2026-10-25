@@ -18,10 +18,6 @@
 
 $message-background-color: theme('message-background-color', colors.surface(room));
 
-$message-background-color-hover: theme('message-background-color-hover', colors.surface(hover));
-
-$message-background-color-selected: theme('message-background-color-selected', colors.surface(selected));
-
 $message-background-color-editing: theme('message-background-color-editing', colors.status-background(warning-2));
 $message-color-editing: theme('message-background-color-editing', colors.status-font(on-warning-2));
 
@@ -63,7 +59,7 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 		}
 
 		&--left {
-			align-items: center;
+			justify-content: flex-start;
 			align-items: flex-end;
 			flex-grow: 0;
 			flex-shrink: 0;
@@ -73,33 +69,22 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 		}
 	}
 
-	position: relative;
-
-	display: flex;
-	flex-direction: row;
-	align-items: flex-start;
-
 	margin-inline: lengths.margin(2);
 
 	padding-block: lengths.padding(8) lengths.padding(4);
 
 	padding-inline: lengths.padding(20);
 
-	// background-color: $message-background-color;
+	gap: 0;
 
-	&:hover {
-		background-color: $message-background-color-hover;
+	> .rcx-message-container {
+		margin-inline: lengths.margin(4);
 	}
 
-	@include templates.focus-state;
-
-	&--selected {
-		background: $message-background-color-selected !important;
-	}
-
-	&--editing {
-		color: $message-color-editing !important;
-		background: $message-background-color-editing !important;
+	&.rcx-message--editing,
+	&.rcx-message--editing:hover {
+		color: $message-color-editing;
+		background: $message-background-color-editing;
 	}
 
 	&--highlight {
@@ -131,25 +116,14 @@ $message-block-width-fixed: theme('message-block-width-fixed', 368px);
 	}
 
 	&-header {
-		@extend %rcx-margins-block;
-		display: flex;
-		flex-direction: row;
 		flex-grow: 0;
 		flex-shrink: 1;
 
 		min-width: 1px;
+		margin-block: lengths.margin(-2);
+		margin-inline: lengths.margin(-2);
 
-		&__wrapper {
-			display: flex;
-			flex-direction: row;
-			align-items: center;
-			flex-grow: 1;
-			flex-shrink: 1;
-
-			min-width: 1px;
-			margin-block: lengths.margin(-4);
-			margin-inline: lengths.margin(-2);
-		}
+		gap: 0;
 
 		&__time {
 			@extend %rcx-margins-header;
