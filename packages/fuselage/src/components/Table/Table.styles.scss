@@ -147,5 +147,11 @@ $table-selected-border-radius: theme('table-selected-border-radius', lengths.bor
 				text-align: $align;
 			}
 		}
+
+		@each $vertical-align in (top, middle, bottom, baseline) {
+			&--vertical-align-#{$vertical-align} {
+				vertical-align: $vertical-align;
+			}
+		}
 	}
 }

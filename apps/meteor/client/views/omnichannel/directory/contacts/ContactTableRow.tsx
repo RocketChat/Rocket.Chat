@@ -1,5 +1,4 @@
-import { css } from '@rocket.chat/css-in-js';
-import { Box, useStyle } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { ILivechatContactWithManagerData } from '@rocket.chat/rest-typings';
 import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
@@ -11,17 +10,7 @@ import { useTimeFromNow } from '../../../../hooks/useTimeFromNow';
 import { useOmnichannelSource } from '../../hooks/useOmnichannelSource';
 import { useOmnichannelDirectoryRouter } from '../hooks/useOmnichannelDirectoryRouter';
 
-/**
- * TODO: We should have a variant for aligning row cell instead of using custom CSS
- **/
-const customAlignTop = css`
-	td {
-		vertical-align: top;
-	}
-`;
-
 const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILivechatContactWithManagerData) => {
-	const customAlignTopClassName = useStyle(customAlignTop);
 	const { getSourceLabel } = useOmnichannelSource();
 	const getTimeFromNow = useTimeFromNow(true);
 	const formatDate = useFormatDate();
@@ -44,14 +33,7 @@ const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILiv
 	);
 
 	return (
-		<GenericTableRow
-			action
-			key={_id}
-			tabIndex={0}
-			rcx-show-call-button-on-hover
-			className={customAlignTopClassName}
-			onClick={() => onRowClick(_id)}
-		>
+		<GenericTableRow action key={_id} tabIndex={0} rcx-show-call-button-on-hover cellVerticalAlign='top' onClick={() => onRowClick(_id)}>
 			<GenericTableCell strong color='default' truncate>
 				{name}
 			</GenericTableCell>

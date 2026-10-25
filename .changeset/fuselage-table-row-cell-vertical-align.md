@@ -1,5 +1,5 @@
 ---
-'@rocket.chat/fuselage': patch
+'@rocket.chat/fuselage': minor
 '@rocket.chat/meteor': patch
 ---
 
