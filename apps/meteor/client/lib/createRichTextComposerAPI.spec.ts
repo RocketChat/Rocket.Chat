@@ -456,8 +456,16 @@ describe('RichText Composer API - wrapSelection', () => {
 
 		composer.wrapSelection('*{{text}}*');
 
-		expect(input.textContent).toContain('*foo\nbar*');
+		expect(input.textContent).toContain('*foo*\n*bar*');
 		expect(input.textContent).not.toContain('bar*r');
+	});
+
+	it('still wraps a multi-line selection as a whole with brackets', () => {
+		const { composer, input } = setupComposer('foo\nbar', { start: 0, end: 7 });
+
+		composer.wrapSelection('({{text}})');
+
+		expect(input.textContent).toContain('(foo\nbar)');
 	});
 
 	it('unwraps a selection that is already wrapped with the given pattern', () => {
@@ -491,7 +499,7 @@ describe('RichText Composer API - wrapSelection', () => {
 
 		composer.wrapSelection('*{{text}}*');
 
-		expect(input.textContent).toContain('*123\n456\n\n789*');
+		expect(input.textContent).toContain('*123*\n*456*\n\n*789*');
 		expect(input.textContent).not.toContain('456\n789');
 	});
 });

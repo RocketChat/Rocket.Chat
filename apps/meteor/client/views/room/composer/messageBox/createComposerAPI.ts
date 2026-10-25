@@ -3,6 +3,7 @@ import type { RefObject } from 'react';
 import type { ComposerAPI } from '../../../../lib/chats/ChatAPI';
 import { createComposerAPICore, triggerEvent, type SetText } from '../../../../lib/createComposerAPICore';
 import { limitQuoteChain } from '../../../../lib/limitQuoteChain';
+import { getLineMarker, toggleLineMarker } from '../../../../lib/toggleLineMarker';
 
 export const createComposerAPI = (
 	input: HTMLTextAreaElement,
@@ -95,6 +96,29 @@ export const createComposerAPI = (
 					value: input.value,
 				};
 			}
+		}
+
+		const lineMarker = getLineMarker(pattern);
+
+		if (lineMarker && selectedText.includes('\n')) {
+			const toggledText = toggleLineMarker(selectedText, lineMarker);
+
+			if (!document.execCommand?.('insertText', false, toggledText)) {
+				input.value = initText + toggledText + finalText;
+			}
+
+			input.selectionStart = selectionStart;
+			input.selectionEnd = selectionStart + toggledText.length;
+			triggerEvent(input, 'input');
+			triggerEvent(input, 'change');
+
+			focus();
+
+			return {
+				selectionStart: input.selectionStart,
+				selectionEnd: input.selectionEnd,
+				value: input.value,
+			};
 		}
 
 		if (!document.execCommand?.('insertText', false, pattern.replace('{{text}}', selectedText))) {

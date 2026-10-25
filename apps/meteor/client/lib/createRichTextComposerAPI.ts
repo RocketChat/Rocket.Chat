@@ -7,6 +7,7 @@ import { createComposerAPICore, triggerEvent, type SetText } from './createCompo
 import { limitQuoteChain } from './limitQuoteChain';
 import { createComposerRenderer, renderComposerContent } from './messageStateHandler';
 import { getContentEndOffset, getSelectionRange, setSelectionRange } from './selectionRange';
+import { getLineMarker, toggleLineMarker } from './toggleLineMarker';
 import { bareLinePrefixRange, continueLinePrefix } from './toggleLinePrefix';
 
 export const createRichTextComposerAPI = (
@@ -136,9 +137,12 @@ export const createRichTextComposerAPI = (
 		setSelectionRange(input, selectionStart, selEnd);
 		focus();
 
-		const replacement = pattern.replace('{{text}}', selectedText);
-		const newStart = selectionStart + pattern.indexOf('{{text}}');
-		const newEnd = newStart + selectedText.length;
+		const lineMarker = getLineMarker(pattern);
+		const wrapsEachLine = lineMarker !== undefined && selectedText.includes('\n');
+
+		const replacement = wrapsEachLine ? toggleLineMarker(selectedText, lineMarker) : pattern.replace('{{text}}', selectedText);
+		const newStart = wrapsEachLine ? selectionStart : selectionStart + pattern.indexOf('{{text}}');
+		const newEnd = newStart + (wrapsEachLine ? replacement.length : selectedText.length);
 
 		// execCommand('insertText') mangles embedded newlines (drops them and duplicates the last
 		// character across the caret), so for multi-line selections rebuild the text directly and
