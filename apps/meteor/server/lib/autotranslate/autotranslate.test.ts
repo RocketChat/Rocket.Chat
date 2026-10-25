@@ -132,4 +132,16 @@ describe('AutoTranslate.tokenizeMentions', () => {
 		expect(tokenTexts(message)).to.deep.equal(['#dev', '#dev-ops']);
 		expect(message.msg).to.not.include('-ops');
 	});
+
+	it('should protect each mention whole when the longer username continues with non-ASCII letters', () => {
+		const message = tokenize({
+			msg: 'hi @joá and @jo',
+			mentions: [
+				{ _id: 'a', username: 'jo' },
+				{ _id: 'b', username: 'joá' },
+			],
+		});
+
+		expect(tokenTexts(message)).to.deep.equal(['@jo', '@joá']);
+	});
 });
