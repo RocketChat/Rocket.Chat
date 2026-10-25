@@ -6,7 +6,31 @@ import { Messages, Rooms } from '@rocket.chat/models';
 import { afterSaveMessage } from '../../hooks/messages/afterSaveMessage';
 import { settings } from '../../settings';
 import { validateCustomMessageFields } from '../messaging/validateCustomMessageFields';
-import { notifyOnRoomChangedById } from '../notifyListener';
+import { notifyOnMessageChange, notifyOnRoomChangedById } from '../notifyListener';
+
+/** Keeps the reply counters of both thread parents right when an update moves a message into, out of or between threads. */
+async function updateThreadParents(message: IMessage, originalMessage: IMessage): Promise<void> {
+	if (message.tmid === originalMessage.tmid) {
+		return;
+	}
+
+	if (originalMessage.tmid) {
+		await Messages.decreaseReplyCountById(originalMessage.tmid, -1);
+		void notifyOnMessageChange({ id: originalMessage.tmid });
+	}
+
+	if (!message.tmid) {
+		return;
+	}
+
+	const parentMessage = await Messages.findOneById(message.tmid, { projection: { u: 1, replies: 1 } });
+	if (!parentMessage) {
+		return;
+	}
+
+	const replies = parentMessage.replies?.length ? [message.u._id] : [parentMessage.u._id, message.u._id];
+	await Messages.addReplyByThreadId(message.tmid, [...new Set(replies)], message.ts);
+}
 
 export const updateMessage = async function (
 	{
@@ -85,6 +109,8 @@ export const updateMessage = async function (
 			...(!editedMessage.md && { $unset: { md: 1 } }),
 		},
 	);
+
+	await updateThreadParents(messageData, originalMessage);
 
 	if (Apps.self?.isLoaded()) {
 		// This returns a promise, but it won't mutate anything about the message
