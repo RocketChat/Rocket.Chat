@@ -27,10 +27,10 @@ const markdownLinkRegex = new RegExp(`(!?\\[)([^\\]]+)(\\]\\((?:${urlSchemes}):\
 const pipedLinkRegex = new RegExp(`((?:<|&lt;)(?:${urlSchemes}):\\/\\/[^\\|]+\\|)(.+?)(?=>|&gt;)((?:>|&gt;))`, 'gm');
 const wrappedParagraphRegex = new RegExp('^\\s*<p>|</p>\\s*$', 'gm');
 
-const nameChar = '[\\p{L}\\p{N}_-]';
+const nameChar = '[\\p{L}\\p{M}\\p{N}_-]';
 
 const wholeReferenceRegex = (prefix: '@' | '#', name: string) =>
-	new RegExp(`(?<![\\p{L}\\p{N}_.@#-])${prefix}${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?!${nameChar}|\\.${nameChar})`, 'gmu');
+	new RegExp(`(?<![\\p{L}\\p{M}\\p{N}_.@#-])${prefix}${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}(?!${nameChar}|\\.${nameChar})`, 'gmu');
 
 const Providers = Symbol('Providers');
 const Provider = Symbol('Provider');

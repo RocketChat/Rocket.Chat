@@ -144,4 +144,16 @@ describe('AutoTranslate.tokenizeMentions', () => {
 
 		expect(tokenTexts(message)).to.deep.equal(['@jo', '@joá']);
 	});
+
+	it('should protect each mention whole when the longer username continues with a combining mark', () => {
+		const message = tokenize({
+			msg: 'hi @jó and @jo',
+			mentions: [
+				{ _id: 'a', username: 'jo' },
+				{ _id: 'b', username: 'jó' },
+			],
+		});
+
+		expect(tokenTexts(message)).to.deep.equal(['@jo', '@jó']);
+	});
 });
