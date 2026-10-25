@@ -36,7 +36,7 @@ const NavBarSearchInputAddon = ({
 				<NavBarSearchFilterChips filters={filters} onRemove={onRemoveFilter} />
 			)}
 			{hasSearchText ? (
-				<IconButton mini icon='cross' title={t('Clear')} onClick={onClearText} />
+				<IconButton mini icon='cross' title={t('clear')} onClick={onClearText} />
 			) : (
 				<Icon name='magnifier' size='x20' title={t('Search')} />
 			)}

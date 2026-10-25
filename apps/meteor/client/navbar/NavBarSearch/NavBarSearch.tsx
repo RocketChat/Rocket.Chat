@@ -93,7 +93,7 @@ const NavBarSearch = () => {
 					small
 					endAddon={
 						isDirty ? (
-							<IconButton mini icon='cross' aria-label={t('Clear')} onClick={handleClearText} />
+							<IconButton mini icon='cross' aria-label={t('clear')} onClick={handleClearText} />
 						) : (
 							<Icon name='magnifier' size='x20' aria-label={t('Search')} />
 						)
