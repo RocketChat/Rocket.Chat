@@ -26,7 +26,6 @@ const { parseFileIntoMessageAttachments } = proxyquire.noCallThru().load('./send
 	},
 	'meteor/meteor': {
 		Meteor: {
-			Error: class Error extends global.Error {},
 			methods: sinon.stub(),
 		},
 	},

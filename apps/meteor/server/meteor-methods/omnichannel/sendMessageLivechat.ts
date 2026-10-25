@@ -1,7 +1,7 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
 import { LivechatVisitors } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import { getLivechatMessageCharacterLimit } from '../../lib/omnichannel/getLivechatMessageCharacterLimit';
 import type { ILivechatMessage } from '../../lib/omnichannel/localTypes';
@@ -41,12 +41,12 @@ export const sendMessageLivechat = async ({
 	const guest = await LivechatVisitors.getVisitorByToken(token);
 
 	if (!guest) {
-		throw new Meteor.Error('invalid-token');
+		throw new ClientSafeError('invalid-token');
 	}
 
 	const characterLimit = getLivechatMessageCharacterLimit();
 	if (characterLimit !== undefined && msg.length > characterLimit) {
-		throw new Meteor.Error('message-length-exceeds-character-limit');
+		throw new ClientSafeError('message-length-exceeds-character-limit');
 	}
 
 	return sendMessage({

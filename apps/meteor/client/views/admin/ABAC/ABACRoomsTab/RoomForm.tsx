@@ -88,7 +88,6 @@ const RoomForm = ({ onClose, onSave, roomInfo, hasAttributeChanges = false, setS
 				)}
 				<RoomFormAttributeFields fields={fields} remove={remove} disabled={redacted} />
 				<Button
-					width='full'
 					disabled={redacted || fields.length >= 10}
 					onClick={() => {
 						append({ key: '', values: [] });

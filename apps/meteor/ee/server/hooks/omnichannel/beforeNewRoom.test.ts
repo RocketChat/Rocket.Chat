@@ -7,11 +7,6 @@ import sinon from 'sinon';
 const findStub = sinon.stub();
 
 const { beforeNewRoomPatched } = proxyquire.noCallThru().load('./beforeNewRoom.ts', {
-	'meteor/meteor': {
-		Meteor: {
-			Error,
-		},
-	},
 	'@rocket.chat/models': {
 		OmnichannelServiceLevelAgreements: {
 			findOneByIdOrName: findStub,

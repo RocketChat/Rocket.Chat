@@ -32,8 +32,7 @@ const NavBarSearchFilterChips = ({ filters, onRemove, wrap = false }: NavBarSear
 				return (
 					<Chip
 						key={filter.id}
-						height='x20'
-						minHeight='x20'
+						small
 						value={label}
 						onClick={() => onRemove(filter.id)}
 						title={t(title, { value: filter.value })}

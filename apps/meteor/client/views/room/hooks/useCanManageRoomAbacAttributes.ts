@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { isDiscussion, isPrivateRoom, isRoomFederated } from '@rocket.chat/core-typings';
+import { isDiscussion, isPrivateRoom, isRoomFederated, isRoomXMPPFederated } from '@rocket.chat/core-typings';
 import { useAllPermissions, usePermission } from '@rocket.chat/ui-contexts';
 
 import { useIsRoomAbacLocked } from './useIsRoomAbacLocked';
@@ -18,7 +18,7 @@ export const useCanManageRoomAbacAttributes = (room: IRoom): boolean => {
 		return false;
 	}
 
-	if (!isPrivateRoom(room) || isDiscussion(room) || isRoomFederated(room)) {
+	if (!isPrivateRoom(room) || isDiscussion(room) || isRoomFederated(room) || isRoomXMPPFederated(room)) {
 		return false;
 	}
 

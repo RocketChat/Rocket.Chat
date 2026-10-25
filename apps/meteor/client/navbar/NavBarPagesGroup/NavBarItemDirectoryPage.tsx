@@ -3,7 +3,7 @@ import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRouter, useCurrentRoutePath } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes } from 'react';
 
-export type NavBarItemDirectoryPageProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
+export type NavBarItemDirectoryPageProps = Omit<HTMLAttributes<HTMLElement>, 'is' | 'color'>;
 
 const NavBarItemDirectoryPage = (props: NavBarItemDirectoryPageProps) => {
 	const router = useRouter();

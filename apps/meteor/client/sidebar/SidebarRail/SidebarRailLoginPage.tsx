@@ -3,7 +3,7 @@ import { useSessionDispatch } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type SidebarRailLoginPageProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
+type SidebarRailLoginPageProps = Omit<HTMLAttributes<HTMLElement>, 'is' | 'color'>;
 
 const SidebarRailLoginPage = (props: SidebarRailLoginPageProps) => {
 	const setForceLogin = useSessionDispatch('forceLogin');

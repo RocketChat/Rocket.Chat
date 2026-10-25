@@ -1,4 +1,4 @@
-import { Meteor } from 'meteor/meteor';
+import { ClientSafeError } from '@rocket.chat/core-services';
 
 import type { ITwoFactorOptions } from './code';
 import { checkCodeForUser } from './code';
@@ -22,7 +22,7 @@ export const twoFactorRequired = <TFunction extends (this: any, ...args: any) =>
 ) =>
 	async function (this, ...args) {
 		if (!this.userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'twoFactorRequired' });
+			throw new ClientSafeError('error-invalid-user', 'Invalid user', { method: 'twoFactorRequired' });
 		}
 
 		// get two factor options from last item of args and remove it

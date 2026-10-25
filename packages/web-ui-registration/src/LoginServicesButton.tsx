@@ -71,11 +71,7 @@ const LoginServicesButton = <T extends LoginService>({
 			onClick={handleOnClick}
 			title={buttonLabelText && buttonLabelText !== title ? title : undefined}
 			disabled={disabled}
-			alignItems='center'
-			display='flex'
-			justifyContent='center'
-			color={buttonLabelColor}
-			backgroundColor={buttonColor}
+			style={{ color: buttonLabelColor, backgroundColor: buttonColor }}
 		>
 			{buttonLabelText || t('Sign_in_with__provider__', { provider: title })}
 		</Button>

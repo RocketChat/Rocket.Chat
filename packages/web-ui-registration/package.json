@@ -17,7 +17,7 @@
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
-		"dompurify": "~3.4.16"
+		"dompurify": "~3.4.17"
 	},
 	"devDependencies": {
 		"@rocket.chat/core-typings": "workspace:~",
@@ -36,7 +36,7 @@
 		"@rocket.chat/tools": "workspace:~",
 		"@rocket.chat/ui-client": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",
-		"@storybook/react": "^9.1.20",
+		"@storybook/react": "^9.1.21",
 		"@tanstack/react-query": "~5.65.1",
 		"@testing-library/dom": "~10.4.2",
 		"@testing-library/react": "~16.3.3",
@@ -49,7 +49,7 @@
 		"react-hook-form": "~7.54.2",
 		"react-i18next": "~17.0.16",
 		"react-virtuoso": "~4.18.16",
-		"storybook": "^9.1.20",
+		"storybook": "^9.1.21",
 		"typescript": "~7.0.2"
 	},
 	"peerDependencies": {

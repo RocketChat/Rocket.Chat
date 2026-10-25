@@ -15,6 +15,11 @@ export class ClientSafeError extends Error {
 		super(`${reason ? `${reason} ` : ''}[${String(error)}]`);
 	}
 
+	/** Lets `EJSON.clone`, which Meteor Accounts applies to login attempts, copy the error instead of reducing it to a plain object. */
+	public clone(): ClientSafeError {
+		return new ClientSafeError(this.error, this.reason, this.details);
+	}
+
 	public toJSON(): any {
 		return {
 			isClientSafe: this.isClientSafe,

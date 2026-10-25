@@ -44,6 +44,12 @@ const SearchPage = (): ReactElement => {
 		[intelligent],
 	);
 
+	const showUpsell = hasIntelligentSearchLicense === false;
+	const showFeatureDisabled = Boolean(hasIntelligentSearchLicense && !aiSearchFeatureEnabled);
+	const showSearchDisabled = canUseAISearch && !intelligentSearchEnabled;
+	const showNotConfigured = Boolean(canUseAISearch && intelligentSearchEnabled && meta && !meta.intelligentSearchConfigured);
+	const showCallouts = showUpsell || showFeatureDisabled || showSearchDisabled || showNotConfigured || !!searchError;
+
 	const canGenerateAnswer = Boolean(meta?.answerGenerationConfigured && !isPlaceholderData && debouncedQuery && intelligent.length > 0);
 	const answerResult = useAISearchAnswer(debouncedQuery, answerMessages, canGenerateAnswer);
 	const answerEmptyReason = useMemo(() => {
@@ -75,26 +81,26 @@ const SearchPage = (): ReactElement => {
 			<PageScrollableContentWithShadow padding={24}>
 				<Box marginInline='auto' width='full' maxWidth='x800'>
 					<SearchResultsHeader query={debouncedQuery} filters={filters} />
-					{hasIntelligentSearchLicense === false && (
-						<Callout type='info' icon='stars' title={t('Intelligent_Search_upsell_title')} marginBlockEnd={16}>
-							{t('Intelligent_Search_upsell_description')}
-						</Callout>
-					)}
-					{hasIntelligentSearchLicense && !aiSearchFeatureEnabled && (
-						<Callout type='warning' icon='warning' title={t('AI_Search_feature_disabled_title')} marginBlockEnd={16}>
-							{t('AI_Search_feature_disabled_description')}
-						</Callout>
-					)}
-					{canUseAISearch && !intelligentSearchEnabled && (
-						<Callout type='warning' icon='warning' title={t('Intelligent_Search_disabled_title')} marginBlockEnd={16}>
-							{t('Intelligent_Search_disabled_description')}
-						</Callout>
-					)}
-					{canUseAISearch && intelligentSearchEnabled && meta && !meta.intelligentSearchConfigured && (
-						<AISearchErrorCallout role='alert' notConfigured marginBlockEnd={16} />
-					)}
-					{searchError && (
-						<AISearchErrorCallout role='alert' error={searchError} onRetry={() => void refetchResults()} marginBlockEnd={16} />
+					{showCallouts && (
+						<Box display='flex' flexDirection='column' gap={16} marginBlockEnd={16}>
+							{showUpsell && (
+								<Callout type='info' icon='stars' title={t('Intelligent_Search_upsell_title')}>
+									{t('Intelligent_Search_upsell_description')}
+								</Callout>
+							)}
+							{showFeatureDisabled && (
+								<Callout type='warning' icon='warning' title={t('AI_Search_feature_disabled_title')}>
+									{t('AI_Search_feature_disabled_description')}
+								</Callout>
+							)}
+							{showSearchDisabled && (
+								<Callout type='warning' icon='warning' title={t('Intelligent_Search_disabled_title')}>
+									{t('Intelligent_Search_disabled_description')}
+								</Callout>
+							)}
+							{showNotConfigured && <AISearchErrorCallout role='alert' notConfigured />}
+							{searchError && <AISearchErrorCallout role='alert' error={searchError} onRetry={() => void refetchResults()} />}
+						</Box>
 					)}
 					{debouncedQuery && (
 						<SearchAnswerPanel

@@ -1,9 +1,9 @@
-import type { RefAttributes } from 'react';
 import { memo } from 'react';
 
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 
-export type ContextualbarSectionProps = Omit<BoxProps, 'ref'> & RefAttributes<HTMLElement>;
+export type ContextualbarSectionProps = ElementProps<HTMLElement>;
 
 function ContextualbarSection(props: ContextualbarSectionProps) {
 	return (

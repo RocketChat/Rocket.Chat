@@ -52,9 +52,11 @@ const NavBarSearchIntelligentSection = ({ items, onSelect, onClose }: NavBarSear
 			{items.map((item) => (
 				<NavBarSearchMessageRow key={`intelligent-${item._id}`} item={item} onClick={onSelect} />
 			))}
-			<Button is='a' href={searchHref} marginInline={12} marginBlockStart={12} onClick={onClose}>
-				{t('View_all_results')}
-			</Button>
+			<Box display='flex' flexDirection='column' paddingInline={12} paddingBlockStart={12}>
+				<Button is='a' href={searchHref} onClick={onClose}>
+					{t('View_all_results')}
+				</Button>
+			</Box>
 		</Box>
 	);
 };

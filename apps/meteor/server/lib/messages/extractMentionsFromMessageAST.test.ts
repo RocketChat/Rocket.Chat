@@ -395,4 +395,59 @@ describe('extractMentionsFromMessageAST', () => {
 
 		expect(result.mentions).to.deep.equal(['hidden.user']);
 	});
+
+	it('should extract mentions from nested list items and tasks', () => {
+		const ast: Root = [
+			{
+				type: 'UNORDERED_LIST',
+				value: [
+					{
+						type: 'LIST_ITEM',
+						value: [{ type: 'PLAIN_TEXT', value: 'Nested case' }],
+						nested: [
+							{
+								type: 'UNORDERED_LIST',
+								value: [
+									{
+										type: 'LIST_ITEM',
+										value: [
+											{ type: 'MENTION_USER', value: { type: 'PLAIN_TEXT', value: 'alice' } },
+											{ type: 'MENTION_CHANNEL', value: { type: 'PLAIN_TEXT', value: 'general' } },
+										],
+									},
+								],
+							},
+						],
+					},
+				],
+			},
+			{
+				type: 'TASKS',
+				value: [
+					{
+						type: 'TASK',
+						status: false,
+						value: [{ type: 'PLAIN_TEXT', value: 'Parent task' }],
+						nested: [
+							{
+								type: 'TASKS',
+								value: [
+									{
+										type: 'TASK',
+										status: true,
+										value: [{ type: 'MENTION_USER', value: { type: 'PLAIN_TEXT', value: 'bob' } }],
+									},
+								],
+							},
+						],
+					},
+				],
+			},
+		];
+
+		const result = extractMentionsFromMessageAST(ast);
+
+		expect(result.mentions).to.deep.equal(['alice', 'bob']);
+		expect(result.channels).to.deep.equal(['general']);
+	});
 });

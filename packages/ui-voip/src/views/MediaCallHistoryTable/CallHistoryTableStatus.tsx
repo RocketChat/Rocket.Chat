@@ -61,8 +61,8 @@ const CallHistoryTableStatus = ({ status, duration }: CallHistoryTableStatusProp
 	const { t } = useTranslation();
 
 	return (
-		<Box display='flex' flexDirection='row' alignItems='center' color={variant}>
-			<Icon name={icon} color={variant} size={20} marginInlineEnd={8} />
+		<Box display='flex' flexDirection='row' alignItems='center' color={variant} gap={8}>
+			<Icon name={icon} size={20} />
 			{getCallStateText(status, t)}
 			{durationText && <> - {durationText}</>}
 		</Box>

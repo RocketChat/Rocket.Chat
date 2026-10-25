@@ -37,15 +37,15 @@ const IncomingCall = () => {
 			<WidgetFooter>
 				<ButtonGroup stretch>
 					{connecting ? (
-						<Button medium name='phone' icon='phone-off' danger flexGrow={1} onClick={onEndCall}>
+						<Button medium name='phone' icon='phone-off' danger onClick={onEndCall}>
 							{t('Cancel')}
 						</Button>
 					) : (
 						<>
-							<Button medium name='phone' icon='phone-off' danger flexGrow={1} onClick={onEndCall}>
+							<Button medium name='phone' icon='phone-off' danger onClick={onEndCall}>
 								{t('Reject')}
 							</Button>
-							<Button medium name='phone' icon='phone' success flexGrow={1} onClick={() => void onAccept()}>
+							<Button medium name='phone' icon='phone' success onClick={() => void onAccept()}>
 								{t('Accept')}
 							</Button>
 						</>

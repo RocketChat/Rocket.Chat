@@ -1,4 +1,5 @@
-import { isClientSafeError } from '@rocket.chat/core-services';
+import { hashLoginToken } from '@rocket.chat/account-utils';
+import { isClientSafeError, ClientSafeError } from '@rocket.chat/core-services';
 import type { IMethodConnection, IUser } from '@rocket.chat/core-typings';
 import type { Router } from '@rocket.chat/http-router';
 import { License } from '@rocket.chat/license';
@@ -116,7 +117,7 @@ interface IAPIProperties {
 interface IAPIDefaultFieldsToExclude {
 	avatarOrigin: number;
 	emails: number;
-	phone: number;
+	phones: number;
 	statusConnection: number;
 	createdAt: number;
 	lastLogin: number;
@@ -205,7 +206,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		this.defaultLimitedUserFieldsToExclude = {
 			avatarOrigin: 0,
 			emails: 0,
-			phone: 0,
+			phones: 0,
 			statusConnection: 0,
 			createdAt: 0,
 			lastLogin: 0,
@@ -446,7 +447,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		response.headers.set('X-RateLimit-Reset', String(new Date().getTime() + attemptResult.timeToReset));
 
 		if (!attemptResult.allowed) {
-			throw new Meteor.Error(
+			throw new ClientSafeError(
 				'error-too-many-requests',
 				`Error, too many requests. Please slow down. You must wait ${timeToResetAttempsInSeconds} seconds before trying this endpoint again.`,
 				{
@@ -517,13 +518,13 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		endpoints: Record<string, string> | string[];
 	}): void {
 		if (typeof rateLimiterOptions !== 'object') {
-			throw new Meteor.Error('"rateLimiterOptions" must be an object');
+			throw new ClientSafeError('"rateLimiterOptions" must be an object');
 		}
 		if (!rateLimiterOptions.numRequestsAllowed) {
-			throw new Meteor.Error(`You must set "numRequestsAllowed" property in rateLimiter for REST API endpoint: ${routes}`);
+			throw new ClientSafeError(`You must set "numRequestsAllowed" property in rateLimiter for REST API endpoint: ${routes}`);
 		}
 		if (!rateLimiterOptions.intervalTimeInMS) {
-			throw new Meteor.Error(`You must set "intervalTimeInMS" property in rateLimiter for REST API endpoint: ${routes}`);
+			throw new ClientSafeError(`You must set "intervalTimeInMS" property in rateLimiter for REST API endpoint: ${routes}`);
 		}
 		const addRateLimitRuleToEveryRoute = (routes: string[]) => {
 			routes.forEach((route) => {
@@ -767,7 +768,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 				const originalAction = (operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action;
 
 				if (options.deprecation && shouldBreakInVersion(options.deprecation.version)) {
-					throw new Meteor.Error('error-deprecated', `The endpoint ${route} should be removed`);
+					throw new ClientSafeError('error-deprecated', `The endpoint ${route} should be removed`);
 				}
 
 				// eslint-disable-next-line @typescript-eslint/no-this-alias
@@ -777,7 +778,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 						this.logger = logger;
 
 						const authToken = this.request.headers.get('x-auth-token');
-						this.token = Accounts._hashLoginToken(String(authToken))!;
+						this.token = hashLoginToken(String(authToken));
 
 						const objectForRateLimitMatch = {
 							IPAddr: this.requestIp,
@@ -802,7 +803,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 									typeof _options.validateParams === 'function' ? _options.validateParams : _options.validateParams[requestMethod];
 
 								if (validatorFunc && !validatorFunc(requestMethod === 'GET' ? this.queryParams : this.bodyParams)) {
-									throw new Meteor.Error('invalid-params', validatorFunc.errors?.map((error: any) => error.message).join('\n '));
+									throw new ClientSafeError('invalid-params', validatorFunc.errors?.map((error: any) => error.message).join('\n '));
 								}
 							}
 							if (
@@ -886,7 +887,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		if (userId && userToken) {
 			return Users.findOne(
 				{
-					'services.resume.loginTokens.hashedToken': Accounts._hashLoginToken(userToken),
+					'services.resume.loginTokens.hashedToken': hashLoginToken(userToken),
 					'_id': userId,
 				},
 				{

@@ -1,6 +1,7 @@
 import { beforeEach, describe, it } from 'node:test';
 import zlib from 'node:zlib';
 
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { isTruthy } from '@rocket.chat/tools';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
@@ -1204,10 +1205,11 @@ describe('SAML', () => {
 					Rooms: {},
 					Roles: {},
 				},
+				'@rocket.chat/core-services': { ClientSafeError },
 				'@rocket.chat/random': { Random: { id: () => '__credentialToken__' } },
 				'@rocket.chat/tools': { escapeRegExp: (s: string) => s, escapeHTML: (s: string) => s },
 				'meteor/accounts-base': { Accounts: { _generateStampedLoginToken: () => ({ token: 't' }) } },
-				'meteor/meteor': { Meteor: { absoluteUrl: (path = '') => `http://localhost:3000/${path}`, Error } },
+				'meteor/meteor': { Meteor: { absoluteUrl: (path = '') => `http://localhost:3000/${path}` } },
 				'./ServiceProvider': {
 					SAMLServiceProvider: class {
 						validateResponse(_envelope: unknown, cb: (err: Error | null, profile: any) => Promise<void>) {

@@ -1,4 +1,4 @@
-import { Box, Button, Icon, Margins, Pagination, TextInput } from '@rocket.chat/fuselage';
+import { Box, Button, Icon, Margins, Pagination, TextInput, Stack, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
@@ -55,20 +55,22 @@ const AttributesPage = () => {
 		queryFn: () => getAttributes(query),
 	});
 
+	const columns: TableColumnWidth[] = ['auto', 'auto', 40];
+
 	return (
 		<>
 			<Margins block={24}>
-				<Box display='flex'>
+				<Stack direction='row' gap={8}>
 					<TextInput
 						endAddon={<Icon name='magnifier' size='x20' />}
 						placeholder={t('ABAC_Search_attributes')}
 						value={text}
 						onChange={(e) => setText((e.target as HTMLInputElement).value)}
 					/>
-					<Button onClick={handleNewAttribute} primary marginInlineStart={8} disabled={!isABACAvailable}>
+					<Button onClick={handleNewAttribute} primary disabled={!isABACAvailable}>
 						{t('ABAC_New_attribute')}
 					</Button>
-				</Box>
+				</Stack>
 			</Margins>
 			{(!data || data.attributes?.length === 0) && !isLoading ? (
 				<Box display='flex' justifyContent='center' height='full'>
@@ -76,17 +78,17 @@ const AttributesPage = () => {
 				</Box>
 			) : (
 				<>
-					<GenericTable>
+					<GenericTable columns={columns}>
 						<GenericTableHeader>
 							<GenericTableHeaderCell>{t('Name')}</GenericTableHeaderCell>
 							<GenericTableHeaderCell>{t('Value')}</GenericTableHeaderCell>
-							<GenericTableHeaderCell key='spacer' width={40} />
+							<GenericTableHeaderCell key='spacer' />
 						</GenericTableHeader>
 						<GenericTableBody>
 							{data?.attributes?.map((attribute) => (
 								<GenericTableRow key={attribute._id}>
-									<GenericTableCell withTruncatedText>{attribute.key}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{attribute.values.join(', ')}</GenericTableCell>
+									<GenericTableCell truncate>{attribute.key}</GenericTableCell>
+									<GenericTableCell truncate>{attribute.values.join(', ')}</GenericTableCell>
 									<GenericTableCell>
 										<AttributeMenu attribute={attribute} />
 									</GenericTableCell>

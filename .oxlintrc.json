@@ -294,6 +294,22 @@
 			}
 		},
 		{
+			"files": ["apps/meteor/server/**/*.{ts,js}", "apps/meteor/ee/server/**/*.{ts,js}"],
+			"rules": {
+				"eslint-js/no-restricted-syntax": [
+					"error",
+					{
+						"selector": "MemberExpression[object.name='Meteor'][property.name='Error']",
+						"message": "Use ClientSafeError from '@rocket.chat/core-services' instead."
+					},
+					{
+						"selector": "TSQualifiedName[left.name='Meteor'][right.name='Error']",
+						"message": "Use ClientSafeError from '@rocket.chat/core-services' instead."
+					}
+				]
+			}
+		},
+		{
 			"files": ["packages/ui-account/src/**/logic/**/*.{ts,tsx}"],
 			"rules": {
 				"no-restricted-imports": [

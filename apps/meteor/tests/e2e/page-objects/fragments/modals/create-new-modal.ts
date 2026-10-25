@@ -27,8 +27,12 @@ export abstract class CreateNewModal extends Modal {
 		return this.root.locator('label', { hasText: 'Read-only' });
 	}
 
+	get toggleFederated(): Locator {
+		return this.root.getByRole('checkbox', { name: 'Federated', exact: true });
+	}
+
 	get checkboxFederated(): Locator {
-		return this.root.locator('label', { hasText: 'Federated' });
+		return this.root.locator('label', { has: this.root.page().getByRole('checkbox', { name: 'Federated', exact: true }) });
 	}
 
 	get btnCreate(): Locator {
@@ -67,10 +71,6 @@ export class CreateNewChannelModal extends CreateNewModal {
 
 	get toggleAbacManaged(): Locator {
 		return this.root.getByRole('checkbox', { name: 'ABAC managed' });
-	}
-
-	get toggleFederated(): Locator {
-		return this.root.getByRole('checkbox', { name: 'Federated' });
 	}
 
 	get btnNext(): Locator {

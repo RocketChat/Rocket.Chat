@@ -52,7 +52,7 @@ export function SelectAria({
 
 	return (
 		<>
-			<Box position='relative' size={0}>
+			<Box position='absolute' size={0}>
 				<HiddenSelect state={state} triggerRef={ref} label={props.label} name={props.name} isDisabled={isDisabled} />
 			</Box>
 			<SelectTrigger
@@ -66,7 +66,7 @@ export function SelectAria({
 				<Box is='span' color={state.selectedItem ? 'titles-labels' : 'hint'} {...valueProps} {...(small && { fontScale: 'c1' })}>
 					{state.selectedItem ? state.selectedItem.rendered : placeholder}
 				</Box>
-				<Icon color='titles-labels' name={state.isOpen ? 'chevron-up' : 'chevron-down'} size='x20' />
+				<Icon name={state.isOpen ? 'chevron-up' : 'chevron-down'} size='x20' />
 			</SelectTrigger>
 			{state.isOpen && (
 				<Popover state={state} triggerRef={ref} placement='bottom' offset={4} containerPadding={8}>
