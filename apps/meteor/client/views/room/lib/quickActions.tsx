@@ -17,7 +17,7 @@ export type QuickActionsActionConfig = {
 	featured?: boolean;
 	action?: (id?: QuickActionsActionConfig['id']) => void;
 	groups: Array<'live'>;
-	color?: string;
+	color?: 'danger';
 	options?: QuickActionsActionOptions;
 };
 

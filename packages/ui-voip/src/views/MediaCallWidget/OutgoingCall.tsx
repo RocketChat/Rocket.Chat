@@ -36,7 +36,7 @@ const OutgoingCall = () => {
 			<WidgetContent>{peerInfo && !isUnknownPeer(peerInfo) && <PeerInfo {...peerInfo} />}</WidgetContent>
 			<WidgetFooter>
 				<ButtonGroup stretch>
-					<Button medium name='phone' icon='phone-off' danger flexGrow={1} onClick={onEndCall}>
+					<Button medium name='phone' icon='phone-off' danger onClick={onEndCall}>
 						{t('Cancel')}
 					</Button>
 				</ButtonGroup>

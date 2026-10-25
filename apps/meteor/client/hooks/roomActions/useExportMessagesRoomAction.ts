@@ -23,7 +23,7 @@ export const useExportMessagesRoomAction = () => {
 			icon: 'mail',
 			tabComponent: ExportMessages,
 			full: true,
-			order: 12,
+			order: 13,
 			type: 'communication',
 		};
 	}, [permitted]);

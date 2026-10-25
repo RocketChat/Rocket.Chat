@@ -1,3 +1,4 @@
+import { isClientSafeError } from '@rocket.chat/core-services';
 import type { ICustomSound } from '@rocket.chat/core-typings';
 import { CustomSounds } from '@rocket.chat/models';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
@@ -16,7 +17,6 @@ import {
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
-import { Meteor } from 'meteor/meteor';
 
 import { MAX_CUSTOM_SOUND_SIZE_BYTES, CUSTOM_SOUND_ALLOWED_MIME_TYPES } from '../../../lib/constants';
 import { getExtension, getMimeTypeFromFileName } from '../../../lib/mimeTypes';
@@ -311,7 +311,7 @@ const customSoundsEndpoints = API.v1
 			} catch (error: unknown) {
 				this.logger.error({ error });
 
-				if (error instanceof Meteor.Error && error.error === 'Custom_Sound_Error_Invalid_Sound') {
+				if (isClientSafeError(error) && error.error === 'Custom_Sound_Error_Invalid_Sound') {
 					return API.v1.failure(error.error);
 				}
 

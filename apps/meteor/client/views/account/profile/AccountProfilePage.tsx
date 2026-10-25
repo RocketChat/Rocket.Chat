@@ -116,9 +116,9 @@ const AccountProfilePage = () => {
 					<FormProvider {...methods}>
 						<AccountProfileForm id={profileFormId} />
 					</FormProvider>
-					<Box marginBlock={12}>
-						<ButtonGroup stretch vertical={isMobile}>
-							<Button onClick={handleLogoutOtherLocations} flexGrow={0} loading={loggingOut}>
+					<Box marginBlock={12} marginBlockStart={24}>
+						<ButtonGroup stretch={isMobile} vertical={isMobile}>
+							<Button onClick={handleLogoutOtherLocations} loading={loggingOut}>
 								{t('Logout_Others')}
 							</Button>
 							{allowDeleteOwnAccount && (

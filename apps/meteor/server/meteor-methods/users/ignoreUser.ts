@@ -1,5 +1,5 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { Subscriptions } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { notifyOnSubscriptionChangedById } from '../../lib/notifyListener';
 
@@ -13,13 +13,13 @@ export const ignoreUser = async (
 	]);
 
 	if (!subscription) {
-		throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', {
+		throw new ClientSafeError('error-invalid-subscription', 'Invalid subscription', {
 			method: 'ignoreUser',
 		});
 	}
 
 	if (!subscriptionIgnoredUser) {
-		throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', {
+		throw new ClientSafeError('error-invalid-subscription', 'Invalid subscription', {
 			method: 'ignoreUser',
 		});
 	}

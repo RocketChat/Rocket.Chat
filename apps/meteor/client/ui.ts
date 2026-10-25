@@ -5,6 +5,7 @@ import { useCloseChatQuickAction } from './hooks/quickActions/useCloseChatQuickA
 import { useMoveQueueQuickAction } from './hooks/quickActions/useMoveQueueQuickAction';
 import { useOnHoldChatQuickAction } from './hooks/quickActions/useOnHoldChatQuickAction';
 import { useTranscriptQuickAction } from './hooks/quickActions/useTranscriptQuickAction';
+import { useAbacAttributesRoomAction } from './hooks/roomActions/useAbacAttributesRoomAction';
 import { useAppsRoomStarActions } from './hooks/roomActions/useAppsRoomStarActions';
 import { useAutotranslateRoomAction } from './hooks/roomActions/useAutotranslateRoomAction';
 import { useBannedUsersRoomAction } from './hooks/roomActions/useBannedUsersRoomAction';
@@ -53,6 +54,7 @@ export const roomActionHooks = [
 	useGameCenterRoomAction,
 	useBannedUsersRoomAction,
 	useMembersListRoomAction,
+	useAbacAttributesRoomAction,
 	useMentionsRoomAction,
 	useOmnichannelExternalFrameRoomAction,
 	useOutlookCalenderRoomAction,

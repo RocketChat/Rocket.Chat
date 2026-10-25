@@ -1,4 +1,4 @@
-import { Button } from '@rocket.chat/fuselage';
+import { Box, Button } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { HorizontalWizardLayoutCaption } from '@rocket.chat/layout';
 import { normalizeLanguage } from '@rocket.chat/tools';
@@ -60,20 +60,26 @@ const LoginSwitchLanguageFooter = ({
 
 	return (
 		<HorizontalWizardLayoutCaption>
-			{suggestions.map((suggestion) => {
-				// If suggestion is "Default", skip it
-				if (!suggestion.key) {
-					return;
-				}
+			<Box display='flex' flexWrap='wrap' justifyContent='center' columnGap={8}>
+				{suggestions.map((suggestion) => {
+					// If suggestion is "Default", skip it
+					if (!suggestion.key) {
+						return;
+					}
 
-				return (
-					<Button secondary small marginInlineEnd={8} key={suggestion.key} onClick={handleSwitchLanguageClick(suggestion)}>
-						<Trans i18nKey='registration.component.switchLanguage' tOptions={{ lng: suggestion.key }} values={{ name: suggestion.ogName }}>
-							Change to <strong>{suggestion.ogName}</strong>
-						</Trans>
-					</Button>
-				);
-			})}
+					return (
+						<Button secondary small key={suggestion.key} onClick={handleSwitchLanguageClick(suggestion)}>
+							<Trans
+								i18nKey='registration.component.switchLanguage'
+								tOptions={{ lng: suggestion.key }}
+								values={{ name: suggestion.ogName }}
+							>
+								Change to <strong>{suggestion.ogName}</strong>
+							</Trans>
+						</Button>
+					);
+				})}
+			</Box>
 		</HorizontalWizardLayoutCaption>
 	);
 };

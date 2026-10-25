@@ -33,7 +33,7 @@ const DeploymentCard = ({
 	});
 
 	return (
-		<Card height='full'>
+		<Card>
 			<CardBody flexDirection='column'>
 				<WorkspaceCardSection>
 					<WorkspaceCardSectionTitle title={t('Deployment')} variant='h4' />

@@ -65,6 +65,7 @@ class SubscriptionsCachedStore extends PrivateCachedStore<SubscriptionWithRoom, 
 			source: (room as IOmnichannelRoom | undefined)?.source,
 			queuedAt: (room as IOmnichannelRoom | undefined)?.queuedAt,
 			federated: room?.federated,
+			xmppFederation: room?.xmppFederation,
 
 			...(room &&
 				isRoomNativeFederated(room) && {

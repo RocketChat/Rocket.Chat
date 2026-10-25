@@ -65,14 +65,16 @@ const AdminInviteUsers = () => {
 				<Box fontScale='p2' marginBlock={8}>
 					{t('Send_invitation_email_info')}
 				</Box>
-				<TextAreaInput rows={5} flexGrow={0} onChange={(e: ChangeEvent<HTMLInputElement>): void => setText(e.currentTarget.value)} />
+				<TextAreaInput rows={5} onChange={(e: ChangeEvent<HTMLTextAreaElement>): void => setText(e.currentTarget.value)} />
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
-				<ButtonGroup stretch>
-					<Button icon='send' primary onClick={handleClick} disabled={!getEmails(text).length} alignItems='stretch' marginBlock={8}>
-						{t('Send')}
-					</Button>
-				</ButtonGroup>
+				<Box paddingBlock={8}>
+					<ButtonGroup stretch>
+						<Button icon='send' primary onClick={handleClick} disabled={!getEmails(text).length}>
+							{t('Send')}
+						</Button>
+					</ButtonGroup>
+				</Box>
 			</ContextualbarFooter>
 		</>
 	);

@@ -1,14 +1,13 @@
-import type { ClassificationBannerPayload, IRoom, RoomType } from '@rocket.chat/core-typings';
+import type { ClassificationBannerPayload, IRoom } from '@rocket.chat/core-typings';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import type { Meta, StoryObj } from '@storybook/react';
 
 import ClassificationBanner from './ClassificationBanner';
 import FakeRoomProvider from '../../../../tests/mocks/client/FakeRoomProvider';
-import { createFakeLicenseInfo } from '../../../../tests/mocks/data';
 
 const roomArgs: Partial<IRoom> = {
 	_id: 'classifiedRoom',
-	t: 'p' as RoomType,
+	t: 'p',
 	name: 'operation-nightingale',
 	fname: 'operation-nightingale',
 	abacAttributes: [{ key: 'clearance.level', values: ['TS'] }],
@@ -27,11 +26,7 @@ const createBanner = (text: string, backgroundColor: string, color: string): Cla
 const withBanner = (classificationBanner: ClassificationBannerPayload) =>
 	mockAppRoot()
 		.withJohnDoe()
-		.withSetting('ABAC_Enabled', true)
 		.withSetting('ABAC_Classification_Banners_Enabled', true)
-		.withEndpoint('GET', '/v1/licenses.info', () => ({
-			license: createFakeLicenseInfo({ activeModules: ['abac'] }),
-		}))
 		.withEndpoint('GET', '/v1/rooms.info', () => ({ room: null, classificationBanner }))
 		.wrap((children) => <FakeRoomProvider roomOverrides={roomArgs}>{children}</FakeRoomProvider>)
 		.buildStoryDecorator();

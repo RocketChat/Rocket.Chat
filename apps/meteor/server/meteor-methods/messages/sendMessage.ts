@@ -1,10 +1,9 @@
-import { api } from '@rocket.chat/core-services';
+import { api, ClientSafeError } from '@rocket.chat/core-services';
 import type { AtLeast, IMessage, IUser } from '@rocket.chat/core-typings';
 import type { RocketchatI18nKeys } from '@rocket.chat/i18n';
 import { Messages, Users } from '@rocket.chat/models';
 import type { TOptions } from 'i18next';
 import { check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 import moment from 'moment';
 
 import { canSendMessageAsync } from '../../lib/authorization/canSendMessage';
@@ -29,13 +28,13 @@ export async function executeSendMessage(
 	extraInfo?: { ts?: Date; previewUrls?: string[] },
 ) {
 	if (message.tshow && !message.tmid) {
-		throw new Meteor.Error('invalid-params', 'tshow provided but missing tmid', {
+		throw new ClientSafeError('invalid-params', 'tshow provided but missing tmid', {
 			method: 'sendMessage',
 		});
 	}
 
 	if (message.tmid && !settings.get('Threads_enabled')) {
-		throw new Meteor.Error('error-not-allowed', 'not-allowed', {
+		throw new ClientSafeError('error-not-allowed', 'not-allowed', {
 			method: 'sendMessage',
 		});
 	}
@@ -46,7 +45,7 @@ export async function executeSendMessage(
 	if (isTimestampFromClient) {
 		const tsDiff = Math.abs(moment(message.ts).diff(Date.now()));
 		if (tsDiff > 60000) {
-			throw new Meteor.Error('error-message-ts-out-of-sync', 'Message timestamp is out of sync', {
+			throw new ClientSafeError('error-message-ts-out-of-sync', 'Message timestamp is out of sync', {
 				method: 'sendMessage',
 				message_ts: message.ts,
 				server_ts: new Date().getTime(),
@@ -59,7 +58,7 @@ export async function executeSendMessage(
 
 	if (message.msg) {
 		if (message.msg.length > (settings.get<number>('Message_MaxAllowedSize') ?? 0)) {
-			throw new Meteor.Error('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', {
+			throw new ClientSafeError('error-message-size-exceeded', 'Message size exceeds Message_MaxAllowedSize', {
 				method: 'sendMessage',
 			});
 		}
@@ -67,7 +66,7 @@ export async function executeSendMessage(
 
 	const user = typeof uid === 'string' ? await Users.findOneById(uid) : uid;
 	if (!user?.username) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user');
+		throw new ClientSafeError('error-invalid-user', 'Invalid user');
 	}
 
 	let { rid } = message;
@@ -93,7 +92,7 @@ export async function executeSendMessage(
 
 		if (room.encrypted && settings.get<boolean>('E2E_Enable') && !settings.get<boolean>('E2E_Allow_Unencrypted_Messages')) {
 			if (message.t !== 'e2e') {
-				throw new Meteor.Error('error-not-allowed', 'Not allowed to send un-encrypted messages in an encrypted room', {
+				throw new ClientSafeError('error-not-allowed', 'Not allowed to send un-encrypted messages in an encrypted room', {
 					method: 'sendMessage',
 				});
 			}

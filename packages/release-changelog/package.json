@@ -5,7 +5,7 @@
 	"main": "dist/index.js",
 	"scripts": {
 		"build": "tsc",
-		"lint": "eslint .",
+		"lint": "yarn run -T oxlint",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {

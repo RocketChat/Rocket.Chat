@@ -74,10 +74,10 @@ const DeviceManagementAdminRow = ({
 			</GenericTableCell>
 			<GenericTableCell>{rcVersion}</GenericTableCell>
 			<GenericTableCell>{deviceOSName}</GenericTableCell>
-			<GenericTableCell withTruncatedText>{username}</GenericTableCell>
+			<GenericTableCell truncate>{username}</GenericTableCell>
 			{mediaQuery && <GenericTableCell>{formatDateAndTime(loginAt)}</GenericTableCell>}
-			{mediaQuery && <GenericTableCell withTruncatedText>{_id}</GenericTableCell>}
-			{mediaQuery && <GenericTableCell withTruncatedText>{ip}</GenericTableCell>}
+			{mediaQuery && <GenericTableCell truncate>{_id}</GenericTableCell>}
+			{mediaQuery && <GenericTableCell truncate>{ip}</GenericTableCell>}
 			<GenericTableCell onClick={(e) => e.stopPropagation()}>
 				<GenericMenu detached placement='bottom-end' title={t('Options')} items={menuItems} />
 			</GenericTableCell>

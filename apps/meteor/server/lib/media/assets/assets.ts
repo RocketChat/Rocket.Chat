@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 import type { ServerResponse, IncomingMessage } from 'node:http';
 
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IRocketChatAssets, IRocketChatAsset, ISetting } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 import type { NextHandleFunction } from 'connect';
@@ -229,14 +230,14 @@ class RocketChatAssetsClass {
 	}> {
 		const assetInstance = getAssetByKey(asset);
 		if (!assetInstance) {
-			throw new Meteor.Error('error-invalid-asset', 'Invalid asset', {
+			throw new ClientSafeError('error-invalid-asset', 'Invalid asset', {
 				function: 'RocketChat.Assets.setAsset',
 			});
 		}
 
 		const extension = getExtension(contentType);
 		if (assetInstance.constraints.extensions.includes(extension) === false) {
-			throw new Meteor.Error('error-invalid-file-type', `Invalid file type: ${contentType}`, {
+			throw new ClientSafeError('error-invalid-file-type', `Invalid file type: ${contentType}`, {
 				function: 'RocketChat.Assets.setAsset',
 			});
 		}
@@ -244,12 +245,12 @@ class RocketChatAssetsClass {
 		if (assetInstance.constraints.width || assetInstance.constraints.height) {
 			const dimensions = await sharp(file).metadata();
 			if (assetInstance.constraints.width && assetInstance.constraints.width !== dimensions.width) {
-				throw new Meteor.Error('error-invalid-file-width', 'Invalid file width', {
+				throw new ClientSafeError('error-invalid-file-width', 'Invalid file width', {
 					function: 'Invalid file width',
 				});
 			}
 			if (assetInstance.constraints.height && assetInstance.constraints.height !== dimensions.height) {
-				throw new Meteor.Error('error-invalid-file-height');
+				throw new ClientSafeError('error-invalid-file-height');
 			}
 		}
 
@@ -281,7 +282,7 @@ class RocketChatAssetsClass {
 
 	public async unsetAsset(asset: string) {
 		if (!getAssetByKey(asset)) {
-			throw new Meteor.Error('error-invalid-asset', 'Invalid asset', {
+			throw new ClientSafeError('error-invalid-asset', 'Invalid asset', {
 				function: 'RocketChat.Assets.unsetAsset',
 			});
 		}

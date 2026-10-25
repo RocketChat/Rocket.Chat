@@ -16,7 +16,7 @@ export const EeNumberInput = ({ label, ...props }: EeNumberInputProps) => {
 		<Field>
 			<FieldLabel>{label}</FieldLabel>
 			<FieldRow>
-				<NumberInput {...props} flexGrow={1} />
+				<NumberInput {...props} />
 			</FieldRow>
 		</Field>
 	);

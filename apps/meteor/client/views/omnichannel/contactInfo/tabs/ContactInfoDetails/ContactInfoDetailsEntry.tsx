@@ -9,8 +9,8 @@ export type ContactInfoDetailsEntryProps = Pick<ComponentProps<typeof Box>, 'is'
 };
 
 const ContactInfoDetailsEntry = ({ icon, value, actions, ...props }: ContactInfoDetailsEntryProps) => (
-	<Box display='flex' alignItems='center' {...props}>
-		<Icon size='x18' marginInlineEnd={4} name={icon} />
+	<Box display='flex' alignItems='center' gap={4} {...props}>
+		<Icon size='x18' name={icon} />
 		<Box withTruncatedText display='flex' flexGrow={1} alignItems='center' justifyContent='space-between'>
 			<Box is='p' fontScale='p2' withTruncatedText marginInline={4}>
 				{value}

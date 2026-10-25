@@ -252,7 +252,7 @@ const IncomingWebhookForm = ({ webhookData }: IncomingWebhookFormProps) => {
 											id={avatarField}
 											{...field}
 											aria-describedby={`${avatarField}-hint-1 ${avatarField}-hint-2`}
-											endAddon={<Icon name='user-rounded' size='x20' alignSelf='center' />}
+											endAddon={<Icon name='user-rounded' size='x20' />}
 										/>
 									)}
 								/>
@@ -271,7 +271,7 @@ const IncomingWebhookForm = ({ webhookData }: IncomingWebhookFormProps) => {
 											id={emojiField}
 											{...field}
 											aria-describedby={`${emojiField}-hint-1 ${emojiField}-hint-2`}
-											endAddon={<Icon name='emoji' size='x20' alignSelf='center' />}
+											endAddon={<Icon name='emoji' size='x20' />}
 										/>
 									)}
 								/>
@@ -327,9 +327,7 @@ const IncomingWebhookForm = ({ webhookData }: IncomingWebhookFormProps) => {
 								<Controller
 									name='script'
 									control={control}
-									render={({ field }) => (
-										<TextAreaInput id={scriptField} {...field} rows={10} endAddon={<Icon name='code' size='x20' alignSelf='center' />} />
-									)}
+									render={({ field }) => <TextAreaInput id={scriptField} {...field} rows={10} endAddon={<Icon name='code' size='x20' />} />}
 								/>
 							</FieldRow>
 						</Field>

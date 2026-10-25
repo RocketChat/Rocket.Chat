@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { action } from 'storybook/actions';
+import { userEvent, within } from 'storybook/test';
 
 import {
 	Modal,
@@ -171,7 +172,7 @@ export const _WithIconAndTagline: Story = {
 	render: () => (
 		<Modal>
 			<ModalHeader>
-				<ModalIcon alignItems='end' name='info' />
+				<ModalIcon align='end' name='info' />
 				<ModalHeaderText>
 					<ModalTagline>Tagline</ModalTagline>
 					<ModalTitle>Modal Header</ModalTitle>
@@ -191,6 +192,85 @@ export const _WithIconAndTagline: Story = {
 	),
 };
 
+export const _WithIconVariants: Story = {
+	render: () => (
+		<Box display='flex' flexDirection='column' gap={16}>
+			{(['danger', 'warning', 'info', 'success'] as const).map((variant) => (
+				<Modal key={variant}>
+					<ModalHeader>
+						<ModalIcon variant={variant} name='info' />
+						<ModalHeaderText>
+							<ModalTitle>Modal Header ({variant})</ModalTitle>
+						</ModalHeaderText>
+						<ModalClose />
+					</ModalHeader>
+					<ModalContent>Modal Body</ModalContent>
+				</Modal>
+			))}
+		</Box>
+	),
+};
+
+export const _WithSubtleTagline: Story = {
+	render: () => (
+		<Modal>
+			<ModalHeader>
+				<ModalHeaderText>
+					<ModalTagline subtle>Premium capability</ModalTagline>
+					<ModalTitle>Modal Header</ModalTitle>
+				</ModalHeaderText>
+				<ModalClose />
+			</ModalHeader>
+			<ModalContent>Modal Body</ModalContent>
+			<ModalFooter>
+				<ModalFooterControllers>
+					<Button>Cancel</Button>
+					<Button primary onClick={action('click')}>
+						Upgrade
+					</Button>
+				</ModalFooterControllers>
+			</ModalFooter>
+		</Modal>
+	),
+};
+
+export const _WithFixedSize: Story = {
+	render: () => (
+		<Modal width='x480' height='x360'>
+			<ModalHeader>
+				<ModalHeaderText>
+					<ModalTitle>Modal Header</ModalTitle>
+				</ModalHeaderText>
+				<ModalClose />
+			</ModalHeader>
+			<ModalContent>Modal Body</ModalContent>
+		</Modal>
+	),
+};
+
+export const _WithFillContent: Story = {
+	render: () => (
+		<Modal height='x360'>
+			<ModalHeader>
+				<ModalHeaderText>
+					<ModalTitle>Modal Header</ModalTitle>
+				</ModalHeaderText>
+				<ModalClose />
+			</ModalHeader>
+			<ModalContent fill>
+				<Box display='flex' flexDirection='column' justifyContent='space-between' height='100%'>
+					Content that brings its own footer
+					<Box display='flex' justifyContent='end'>
+						<Button primary onClick={action('click')}>
+							Next
+						</Button>
+					</Box>
+				</Box>
+			</ModalContent>
+		</Modal>
+	),
+};
+
 export const _WithAnnotation: Story = {
 	render: () => (
 		<Modal>
@@ -201,7 +281,7 @@ export const _WithAnnotation: Story = {
 				<ModalClose />
 			</ModalHeader>
 			<ModalContent>Modal Body</ModalContent>
-			<ModalFooter justifyContent='space-between'>
+			<ModalFooter justify='space-between'>
 				<ModalFooterAnnotation>Anototation</ModalFooterAnnotation>
 				<ModalFooterControllers>
 					<Button>Cancel</Button>
@@ -283,4 +363,11 @@ export const _WithForm: Story = {
 			</ModalFooter>
 		</Modal>
 	),
+};
+
+export const _WithFocusedField: Story = {
+	..._WithForm,
+	play: async ({ canvasElement }) => {
+		await userEvent.click(within(canvasElement.ownerDocument.body).getByPlaceholderText('Placeholder'));
+	},
 };

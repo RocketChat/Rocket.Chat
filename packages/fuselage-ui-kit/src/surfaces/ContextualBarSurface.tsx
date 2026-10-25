@@ -1,4 +1,3 @@
-import { Margins } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
 import { Surface } from './Surface';
@@ -7,10 +6,6 @@ export type ContextualBarSurfaceProps = {
 	children?: ReactNode;
 };
 
-const ContextualBarSurface = ({ children }: ContextualBarSurfaceProps) => (
-	<Surface type='contextualBar'>
-		<Margins blockEnd={16}>{children}</Margins>
-	</Surface>
-);
+const ContextualBarSurface = ({ children }: ContextualBarSurfaceProps) => <Surface type='contextualBar'>{children}</Surface>;
 
 export default ContextualBarSurface;

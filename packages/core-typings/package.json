@@ -18,8 +18,9 @@
 		".:build:clean": "rimraf dist",
 		"build": "run-s .:build:clean .:build:build",
 		"dev": "ttsc --binary \"$(node -e 'const p=require(`path`);process.stdout.write(p.join(p.dirname(require.resolve(`@typescript/native-preview/package.json`)),`bin`,`tsgo`))')\" --watch --preserveWatchOutput -p tsconfig.json",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix .",
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
+		"testunit": "node --test --experimental-test-isolation=none --require tsx 'src/**/*.test.ts'",
 		"typecheck": "tsc --noEmit --module preserve"
 	},
 	"dependencies": {
@@ -38,6 +39,7 @@
 		"mongodb": "6.16.0",
 		"npm-run-all": "~4.1.5",
 		"rimraf": "^6.0.1",
+		"tsx": "~4.22.5",
 		"ttsc": "0.18.4",
 		"typescript": "~5.9.3"
 	},

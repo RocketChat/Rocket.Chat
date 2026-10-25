@@ -15,7 +15,7 @@ export const BubbleItem = ({ secondary, label, icon, className, ...props }: Bubb
 		className={prependClassName(className, `rcx-bubble__item ${secondary ? 'rcx-bubble__item--secondary' : 'rcx-bubble__item--primary'}`)}
 		{...props}
 	>
-		{icon && <Icon name={icon} size='x16' marginInlineEnd={8} />}
+		{icon && <Icon name={icon} size='x16' />}
 		{label && <span>{label}</span>}
 	</span>
 );

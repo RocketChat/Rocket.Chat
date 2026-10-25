@@ -1,4 +1,6 @@
 import { ajv } from '../Ajv';
+import type { AbacCreationAttributes } from '../abacCreationAttributes';
+import { abacCreationAttributesSchema } from '../abacCreationAttributes';
 
 export type TeamsCreateProps = {
 	name: string;
@@ -6,6 +8,7 @@ export type TeamsCreateProps = {
 	members?: string[];
 	room?: Record<string, unknown> & { name?: string; id?: string };
 	owner?: string;
+	abacAttributes?: AbacCreationAttributes;
 };
 
 const teamsCreatePropsSchema = {
@@ -21,6 +24,7 @@ const teamsCreatePropsSchema = {
 			type: 'object',
 		},
 		owner: { type: 'string' },
+		abacAttributes: abacCreationAttributesSchema,
 	},
 	required: ['name', 'type'],
 	additionalProperties: false,

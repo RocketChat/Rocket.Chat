@@ -2,11 +2,11 @@ import fs from 'node:fs';
 import type * as http from 'node:http';
 import type stream from 'node:stream';
 
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUpload } from '@rocket.chat/core-typings';
 import type { IBaseUploadsModel } from '@rocket.chat/model-typings';
 import type createServer from 'connect';
 import { check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 import type { ClientSession, OptionalId } from 'mongodb';
 
 import { UploadFS } from '.';
@@ -112,7 +112,7 @@ export class Store {
 			// Get original file
 			const file = await this.getCollection().findOne({ _id: fileId });
 			if (!file) {
-				throw new Meteor.Error('file-not-found', 'File not found');
+				throw new ClientSafeError('file-not-found', 'File not found');
 			}
 			// Silently ignore the file if it does not match filter
 			const filter = store.getFilter();

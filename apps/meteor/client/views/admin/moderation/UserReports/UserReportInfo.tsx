@@ -85,10 +85,12 @@ const UserReportInfo = ({ userId }: UserReportInfoProps) => {
 								<Field>{userProfile}</Field>
 								<Field>
 									<FieldLabel>{t('Roles')}</FieldLabel>
-									<FieldRow justifyContent='flex-start' spacing={1}>
-										{report.user.roles.map((role, index) => (
-											<UserCardRole key={index}>{role}</UserCardRole>
-										))}
+									<FieldRow>
+										<Box display='flex' alignItems='center' minWidth={0}>
+											{report.user.roles.map((role, index) => (
+												<UserCardRole key={index}>{role}</UserCardRole>
+											))}
+										</Box>
 									</FieldRow>
 								</Field>
 								<Field>
@@ -101,9 +103,11 @@ const UserReportInfo = ({ userId }: UserReportInfoProps) => {
 								</Field>
 							</FieldGroup>
 						) : (
-							<Callout marginBlockStart={8} type='warning' icon='warning'>
-								{t('Moderation_User_deleted_warning')}
-							</Callout>
+							<Box paddingBlockStart={8}>
+								<Callout type='warning' icon='warning'>
+									{t('Moderation_User_deleted_warning')}
+								</Callout>
+							</Box>
 						)}
 						{report.reports.map((report, ind) => (
 							<ReportReason key={ind} ind={ind + 1} uinfo={report.reportedBy?.username} msg={report.description} ts={new Date(report.ts)} />

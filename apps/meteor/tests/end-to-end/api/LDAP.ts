@@ -1,12 +1,13 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { ISetting } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, after, describe, it } from 'mocha';
 import sharp from 'sharp';
 import type { Response } from 'supertest';
 
-import { retry } from './helpers/retry';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { getSettingValueById, updatePermission, updateSetting } from '../../data/permissions.helper';
+import { retry } from '../../data/retry';
 import { IS_EE } from '../../e2e/config/constants';
 
 const ldapLoginUsername = 'ldap.e2e';
@@ -63,7 +64,7 @@ const waitForLdapConnection = () =>
 	);
 
 (IS_EE ? describe : describe.skip)('LDAP', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	let originalSettings: Setting[] | undefined;
 

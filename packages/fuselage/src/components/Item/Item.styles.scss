@@ -470,8 +470,10 @@ $item-group-narrow-width: 320px;
 	margin-inline-start: calc(var(--rcx-item-gap) * -1);
 }
 
-// Actions inside an `ItemRow` overhang the line instead of growing it, so the row keeps its text height.
-.rcx-item__row > .rcx-item__actions {
+// Actions inside an `ItemRow` overhang the line instead of growing it when the row's height must not move:
+// hover-revealed ones anywhere, and any in a sidebar row, whose rows all share one height.
+.rcx-item__row > .rcx-item__actions--reveal-hover,
+.rcx-sidebar-item .rcx-item__row > .rcx-item__actions {
 	align-content: center;
 
 	block-size: 0;

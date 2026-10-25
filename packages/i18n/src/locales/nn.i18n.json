@@ -3559,7 +3559,6 @@
   "Mentions_default": "Mentjoner (standard)",
   "Mentions_online_room_members": "Omtaler alle påloggede medlemmer av rommet",
   "Mentions_only": "Kun mentene",
-  "Mentions_user": "Omtaler bruker",
   "Mentions_with_@_symbol": "Omtaler med @-symbol",
   "Mentions_with_@_symbol_description": "Omtaler varsler og fremhever meldinger for grupper eller spesifikke brukere, og letter målrettet kommunikasjon.\n\nSkjermleserfunksjonaliteten er optimalisert når \"@\"-symbolet brukes i nevnte funksjon. Dette sikrer at brukere som stoler på skjermlesere enkelt kan tolke og engasjere seg i disse omtalene.",
   "Mentions_you": "Omtaler deg",
