@@ -42,7 +42,7 @@ const ContextualbarDialog = ({ onClose, ...props }: ContextualbarDialogProps) =>
 	return (
 		<FocusScope autoFocus restoreFocus>
 			<ContextualbarResizable defaultWidth={contextualBar}>
-				<Contextualbar ref={callbackRef} width='100%' position={position} {...dialogProps} {...props} />
+				<Contextualbar ref={callbackRef} stretch position={position} {...dialogProps} {...props} />
 			</ContextualbarResizable>
 		</FocusScope>
 	);

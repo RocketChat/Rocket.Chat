@@ -1,6 +1,7 @@
-import { Box, type BoxProps } from '../../Box';
+import type { ElementProps } from '../../../types/ElementProps';
+import { Box } from '../../Box';
 
-export type TableSelectionProps = BoxProps & {
+export type TableSelectionProps = ElementProps<HTMLDivElement> & {
 	text?: string;
 };
 

@@ -1,7 +1,7 @@
 import { useLongPress, usePress } from '@react-aria/interactions';
 import { mergeProps } from '@react-aria/utils';
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Button } from '@rocket.chat/fuselage';
+import { Box, Button, useStyle } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 export type KeyProps = {
@@ -28,6 +28,7 @@ const dialPadButtonClass = css`
 
 const Key = ({ primaryKey, alternativeKey, longPressKey, onLongKeyPress, onKeyPress, large }: KeyProps) => {
 	const { t } = useTranslation();
+	const dialPadButtonClassName = useStyle(dialPadButtonClass);
 
 	const { longPressProps } = useLongPress({
 		accessibilityDescription: `${t(`Long_press_to_do_x`, { action: longPressKey })}`,
@@ -39,7 +40,7 @@ const Key = ({ primaryKey, alternativeKey, longPressKey, onLongKeyPress, onKeyPr
 	const buttonProps = longPressKey ? mergeProps(pressProps, longPressProps) : pressProps;
 
 	return (
-		<Button {...buttonProps} className={dialPadButtonClass}>
+		<Button {...buttonProps} className={dialPadButtonClassName}>
 			<Box is='span' fontScale={large ? 'h1' : 'p1'} fontWeight={large ? 300 : 400} marginBlock={-4}>
 				{primaryKey}
 			</Box>

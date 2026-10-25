@@ -111,7 +111,7 @@ const AddMatrixUsersModal = ({ onClose, matrixIdVerifiedStatus, onSave, complete
 					</Box>
 				)}
 			</ModalContent>
-			<ModalFooter justifyContent={bannedError ? 'space-between' : 'flex-end'}>
+			<ModalFooter justify={bannedError ? 'space-between' : 'end'}>
 				{bannedError && (
 					<ModalFooterAnnotation>
 						<Stack direction='row' align='center' gap={8}>

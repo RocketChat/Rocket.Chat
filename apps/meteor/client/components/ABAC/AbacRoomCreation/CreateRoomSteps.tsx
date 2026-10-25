@@ -61,7 +61,7 @@ const CreateRoomSteps = ({ abac, flow, details, security, onCancel, submitDisabl
 					/>
 				)}
 			</ModalContent>
-			<ModalFooter justifyContent={isStepped ? 'space-between' : undefined}>
+			<ModalFooter justify={isStepped ? 'space-between' : undefined}>
 				{isStepped && <ModalFooterAnnotation>{t('Step_of_total', { step: index + 1, total })}</ModalFooterAnnotation>}
 				<ModalFooterControllers>
 					{index === 0 ? (

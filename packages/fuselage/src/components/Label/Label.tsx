@@ -1,15 +1,17 @@
-import type { RefAttributes } from 'react';
+import type { ElementType, LabelHTMLAttributes } from 'react';
 import { createContext, useContext } from 'react';
 
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 
 const LabelContext = createContext(false);
 
-export type LabelProps = Omit<BoxProps, 'ref'> &
-	RefAttributes<HTMLElement> & {
-		disabled?: boolean;
-		required?: boolean;
-	};
+export type LabelProps = ElementProps<HTMLElement, LabelHTMLAttributes<HTMLElement>> & {
+	/** Renders another element, such as a `legend` or a `span`. */
+	is?: ElementType;
+	disabled?: boolean;
+	required?: boolean;
+};
 
 /**
  * A caption for an input component.

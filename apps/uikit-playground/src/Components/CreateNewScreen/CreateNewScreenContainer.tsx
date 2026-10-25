@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Button, Icon, Scrollable } from '@rocket.chat/fuselage';
+import { Box, Button, Icon, Scrollable, useStyle } from '@rocket.chat/fuselage';
 import { useOutsideClick, useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useContext, useRef } from 'react';
 
@@ -23,6 +23,15 @@ const CreateNewScreenContainer = () => {
 	const scrollRef = useHorizontalScroll();
 
 	const mergedRef = useMergedRefs(scrollRef, ref);
+	const plusIconClassName = useStyle(css`
+		cursor: pointer;
+		transition: var(--animation-default);
+		&:hover {
+			scale: 1.1;
+			transition: var(--animation-default);
+		}
+	`);
+
 	const createNewScreenhandler = () => {
 		dispatch(createNewScreenAction());
 	};
@@ -79,19 +88,7 @@ const CreateNewScreenContainer = () => {
 									disableDelete={projects[activeProject]?.screens.map((id) => screens[id]).length <= 1}
 								/>
 							))}
-						<Icon
-							onClick={createNewScreenhandler}
-							size='60px'
-							name='plus'
-							className={css`
-								cursor: pointer;
-								transition: var(--animation-default);
-								&:hover {
-									scale: 1.1;
-									transition: var(--animation-default);
-								}
-							`}
-						/>
+						<Icon onClick={createNewScreenhandler} size='60px' name='plus' className={plusIconClassName} />
 					</Box>
 				)}
 			</Box>

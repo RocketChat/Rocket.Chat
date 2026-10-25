@@ -52,9 +52,9 @@ const AgentsTableRow = ({
 					<Box marginInline={4} />
 				</GenericTableCell>
 			)}
-			<GenericTableCell withTruncatedText>{emails?.length && emails[0].address}</GenericTableCell>
-			<GenericTableCell withTruncatedText>{statusLivechat === 'available' ? t('Available') : t('Not_Available')}</GenericTableCell>
-			<GenericTableCell withTruncatedText>
+			<GenericTableCell truncate>{emails?.length && emails[0].address}</GenericTableCell>
+			<GenericTableCell truncate>{statusLivechat === 'available' ? t('Available') : t('Not_Available')}</GenericTableCell>
+			<GenericTableCell truncate>
 				<IconButton
 					icon='trash'
 					small

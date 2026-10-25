@@ -24,7 +24,7 @@ const AuditLogEntry = ({ value: { u, results, ts, _id, fields } }: AuditLogEntry
 
 	return (
 		<GenericTableRow key={_id} tabIndex={0} role='link'>
-			<GenericTableCell withTruncatedText>
+			<GenericTableCell truncate>
 				<Box display='flex' alignItems='center'>
 					{username && <UserAvatar size={mediaQuery ? 'x28' : 'x40'} title={username} username={username} etag={avatarETag} />}
 					<Box display='flex' withTruncatedText marginInline={8}>
@@ -42,12 +42,12 @@ const AuditLogEntry = ({ value: { u, results, ts, _id, fields } }: AuditLogEntry
 					</Box>
 				</Box>
 			</GenericTableCell>
-			<GenericTableCell fontScale='p2m' color='hint' withTruncatedText>
+			<GenericTableCell strong color='hint' truncate>
 				{type === 'room_member_list' ? t('Room_members_list') : msg}
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText>{when}</GenericTableCell>
-			<GenericTableCell withTruncatedText>{results}</GenericTableCell>
-			<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
+			<GenericTableCell truncate>{when}</GenericTableCell>
+			<GenericTableCell truncate>{results}</GenericTableCell>
+			<GenericTableCell color='hint' truncate>
 				<AuditFiltersDisplay users={users} room={room} startDate={startDate} endDate={endDate} filters={filters} />
 			</GenericTableCell>
 		</GenericTableRow>

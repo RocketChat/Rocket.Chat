@@ -1,6 +1,7 @@
 import { api, ClientSafeError } from '@rocket.chat/core-services';
-import { isBannedSubscription, isRoomNativeFederated, type IRoom, type IUser } from '@rocket.chat/core-typings';
+import { isBannedSubscription, isRoomNativeFederated, isRoomXMPPHostedMuc, type IRoom, type IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
+import { normalizeBareJid } from '@rocket.chat/tools';
 import { Match } from 'meteor/check';
 
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
@@ -77,10 +78,13 @@ export const addUsersToRoomMethod = async (userId: string, data: { rid: string; 
 		});
 	}
 
-	await beforeAddUsersToRoom.run({ usernames: data.users, inviter: user }, room);
+	// A typed JID names the user record of that XMPP account, however its domain was spelled
+	const usernames = isRoomXMPPHostedMuc(room) ? data.users.map((username) => normalizeBareJid(username) ?? username) : data.users;
+
+	await beforeAddUsersToRoom.run({ usernames, inviter: user }, room);
 
 	await Promise.all(
-		data.users.map(async (username) => {
+		usernames.map(async (username) => {
 			const sanitizedUsername = sanitizeUsername(username);
 
 			const newUser = await Users.findOneByUsernameIgnoringCase(sanitizedUsername);

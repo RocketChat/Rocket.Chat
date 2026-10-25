@@ -62,11 +62,7 @@ jest.mock(
 );
 jest.mock('meteor/webapp', () => ({ WebApp: { rawConnectHandlers: { use: jest.fn() } } }), { virtual: true });
 jest.mock('meteor/rate-limit', () => ({ RateLimiter: MockRateLimiter }), { virtual: true });
-jest.mock(
-	'meteor/accounts-base',
-	() => ({ Accounts: { _hashLoginToken: (token: string) => `hashed-${token}`, _accountData: {} as Record<string, unknown> } }),
-	{ virtual: true },
-);
+jest.mock('meteor/accounts-base', () => ({ Accounts: { _accountData: {} as Record<string, unknown> } }), { virtual: true });
 jest.mock('meteor/ddp', () => ({ DDP: {} }), { virtual: true });
 jest.mock('meteor/ddp-common', () => ({ DDPCommon: {} }), { virtual: true });
 

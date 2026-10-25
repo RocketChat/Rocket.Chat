@@ -1,6 +1,7 @@
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 
-export type TabsProps = BoxProps & {
+export type TabsProps = ElementProps<HTMLDivElement> & {
 	divider?: boolean;
 	/** Grows the items to fill the whole width. */
 	stretch?: boolean;

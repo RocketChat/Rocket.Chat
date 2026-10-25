@@ -1,4 +1,4 @@
-import { Pagination } from '@rocket.chat/fuselage';
+import { Pagination, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
@@ -38,19 +38,21 @@ const TriggersTable = () => {
 	const [defaultQuery] = useState(hashKey([query]));
 	const queryHasChanged = defaultQuery !== hashKey([query]);
 
+	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 'x60'];
+
 	const headers = (
 		<>
 			<GenericTableHeaderCell>{t('Name')}</GenericTableHeaderCell>
 			<GenericTableHeaderCell>{t('Description')}</GenericTableHeaderCell>
 			<GenericTableHeaderCell>{t('Enabled')}</GenericTableHeaderCell>
-			<GenericTableHeaderCell width='x60' />
+			<GenericTableHeaderCell />
 		</>
 	);
 
 	return (
 		<>
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingRow cols={4} />
@@ -71,7 +73,7 @@ const TriggersTable = () => {
 			)}
 			{isSuccess && data.triggers.length > 0 && (
 				<>
-					<GenericTable aria-label={t('Livechat_Triggers')}>
+					<GenericTable columns={columns} aria-label={t('Livechat_Triggers')}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.triggers.map(({ _id, name, description, enabled }) => (

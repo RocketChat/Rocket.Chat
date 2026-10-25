@@ -1,6 +1,7 @@
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 
-export type GridItemProps = BoxProps & {
+export type GridItemProps = ElementProps<HTMLDivElement> & {
 	xs?: 1 | 2 | 3 | 4;
 	sm?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 	md?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;

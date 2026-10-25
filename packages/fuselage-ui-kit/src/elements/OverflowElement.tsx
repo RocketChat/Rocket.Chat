@@ -56,7 +56,7 @@ const OverflowElement = ({ block, context }: OverflowElementProps) => {
 				disabled={loading}
 				icon='kebab'
 			/>
-			<PositionAnimated width='auto' visible={visible} anchor={ref} placement='bottom-start'>
+			<PositionAnimated visible={visible} anchor={ref} placement='bottom-start'>
 				<Options onSelect={handleSelection} options={options} cursor={cursor} />
 			</PositionAnimated>
 		</>

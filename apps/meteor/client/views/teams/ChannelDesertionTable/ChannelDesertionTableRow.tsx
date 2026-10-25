@@ -19,8 +19,8 @@ const ChannelDesertionTableRow = ({ room, onChange, selected, lastOwnerWarning }
 
 	return (
 		<GenericTableRow action>
-			<GenericTableCell maxWidth='x300' withTruncatedText>
-				<Box display='flex' alignItems='center'>
+			<GenericTableCell truncate>
+				<Box display='flex' alignItems='center' maxWidth='x284'>
 					<CheckBox id={checkboxId} checked={selected} onChange={handleChange} disabled={isLastOwner} />
 					<Box
 						is='label'
@@ -38,7 +38,7 @@ const ChannelDesertionTableRow = ({ room, onChange, selected, lastOwnerWarning }
 					</Box>
 				</Box>
 			</GenericTableCell>
-			<GenericTableCell align='end' withTruncatedText>
+			<GenericTableCell align='end' truncate>
 				{formatDate(ts)}
 			</GenericTableCell>
 		</GenericTableRow>

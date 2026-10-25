@@ -96,10 +96,10 @@ const TeamsChannels = ({
 					endAddon={<Icon name='magnifier' size='x20' />}
 				/>
 				<Box width='x144' marginInlineStart={8}>
-					<Select onChange={(val) => setType(val as 'all' | 'autoJoin')} value={type} options={options} />
+					<Select onChange={(val) => setType(val)} value={type} options={options} />
 				</Box>
 			</ContextualbarSection>
-			<ContextualbarContent padding={0} paddingBlock={12}>
+			<ContextualbarContent flush spaced>
 				{loading && (
 					<Box paddingInline={24} paddingBlock={12}>
 						<Throbber size='x12' />

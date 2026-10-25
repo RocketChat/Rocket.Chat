@@ -153,6 +153,11 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 	const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
 		if (e.key === 'Escape') {
 			onClose();
+
+			// Escape hands the focus back to what opened the picker, while it is still on the page.
+			if (reference.isConnected && 'focus' in reference && typeof reference.focus === 'function') {
+				reference.focus();
+			}
 		}
 	};
 

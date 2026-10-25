@@ -1,4 +1,4 @@
-import type { AvatarObject, IRole, IUser, Serialized } from '@rocket.chat/core-typings';
+import type { AvatarObject, IRole, IUser, IUserPhoneNumber, Serialized } from '@rocket.chat/core-typings';
 import {
 	Accordion,
 	AccordionItem,
@@ -19,6 +19,7 @@ import {
 	Callout,
 	Skeleton,
 	Stack,
+	Divider,
 } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
@@ -45,6 +46,7 @@ import PasswordFieldSkeleton from './PasswordFieldSkeleton';
 import { useSmtpQuery } from './hooks/useSmtpQuery';
 import { useShowVoipExtension } from './useShowVoipExtension';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
+import PhoneNumberFieldList, { getInitialPhones, getPersistedPhones } from '../../../components/PhoneNumberFieldList';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useCanManageUserStatus } from '../../../hooks/useCanManageUserStatus';
@@ -67,6 +69,7 @@ export type UserFormProps = UserCreateParamsPOST & {
 	passwordConfirmation: string;
 	sipExtension?: string;
 	statusVisibilityDeniedByAdmin?: string[];
+	phones?: IUserPhoneNumber[];
 };
 
 const getInitialValue = ({
@@ -97,6 +100,7 @@ const getInitialValue = ({
 	presenceDisabledByAdmin: data?.presenceDisabledByAdmin === true,
 	statusVisibilityDeniedByAdmin: data?.statusVisibilityDeniedByAdmin ?? [],
 	sipExtension: data?.sipExtension ?? '',
+	phones: getInitialPhones(data?.phones),
 	...(isNewUserPage && { joinDefaultChannels: true }),
 	sendWelcomeEmail: isSmtpEnabled,
 	avatar: '' as AvatarObject,
@@ -188,8 +192,12 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 	});
 
 	const handleSaveUser = useStableCallback(async (userFormPayload: UserFormProps) => {
-		const { avatar, passwordConfirmation, statusVisibilityDeniedByAdmin, presenceDisabledByAdmin, statusText, ...userFormData } =
+		const { avatar, passwordConfirmation, statusVisibilityDeniedByAdmin, presenceDisabledByAdmin, statusText, phones, ...rest } =
 			userFormPayload;
+		const userFormData = {
+			...rest,
+			...((isNewUserPage || dirtyFields.phones) && { phones: getPersistedPhones(phones) }),
+		};
 
 		if (!isNewUserPage && userData?._id) {
 			return handleUpdateUser.mutateAsync({
@@ -556,6 +564,10 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							<Controller control={control} name='nickname' render={({ field }) => <TextInput {...field} id={nicknameId} />} />
 						</FieldRow>
 					</Field>
+
+					<Divider flush />
+					<PhoneNumberFieldList control={control} />
+					<Divider flush />
 					{!!customFieldsMetadata.length && (
 						<>
 							<Box>

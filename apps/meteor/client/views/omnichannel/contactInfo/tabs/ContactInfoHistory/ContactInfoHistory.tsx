@@ -70,7 +70,7 @@ const ContactInfoHistory = ({ contact, setChatId }: ContactInfoHistoryProps) => 
 	);
 
 	return (
-		<ContextualbarContent paddingInline={0}>
+		<ContextualbarContent flush>
 			<Box
 				display='flex'
 				flexDirection='row'

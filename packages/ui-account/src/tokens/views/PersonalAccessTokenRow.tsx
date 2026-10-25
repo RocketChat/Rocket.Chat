@@ -22,13 +22,13 @@ const PersonalAccessTokenRow = ({
 
 	return (
 		<GenericTableRow tabIndex={0} role='link' qa-token-name={name}>
-			<GenericTableCell withTruncatedText color='default' fontScale='p2m'>
+			<GenericTableCell truncate color='default' strong>
 				{name}
 			</GenericTableCell>
-			{isMedium && <GenericTableCell withTruncatedText>{formatDateAndTime(createdAt)}</GenericTableCell>}
-			<GenericTableCell withTruncatedText>...{lastTokenPart}</GenericTableCell>
-			<GenericTableCell withTruncatedText>{bypassTwoFactor ? t('Ignore') : t('Require')}</GenericTableCell>
-			<GenericTableCell withTruncatedText>
+			{isMedium && <GenericTableCell truncate>{formatDateAndTime(createdAt)}</GenericTableCell>}
+			<GenericTableCell truncate>...{lastTokenPart}</GenericTableCell>
+			<GenericTableCell truncate>{bypassTwoFactor ? t('Ignore') : t('Require')}</GenericTableCell>
+			<GenericTableCell truncate>
 				<ButtonGroup>
 					<IconButton title={t('Refresh')} icon='refresh' small secondary onClick={() => onRegenerate(name)} />
 					<IconButton title={t('Remove')} icon='trash' small secondary onClick={() => onRemove(name)} />

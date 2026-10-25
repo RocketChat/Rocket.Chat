@@ -1,3 +1,4 @@
+import { hashLoginToken } from '@rocket.chat/account-utils';
 import { isClientSafeError, ClientSafeError } from '@rocket.chat/core-services';
 import type { IMethodConnection, IUser } from '@rocket.chat/core-typings';
 import type { Router } from '@rocket.chat/http-router';
@@ -116,7 +117,7 @@ interface IAPIProperties {
 interface IAPIDefaultFieldsToExclude {
 	avatarOrigin: number;
 	emails: number;
-	phone: number;
+	phones: number;
 	statusConnection: number;
 	createdAt: number;
 	lastLogin: number;
@@ -205,7 +206,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		this.defaultLimitedUserFieldsToExclude = {
 			avatarOrigin: 0,
 			emails: 0,
-			phone: 0,
+			phones: 0,
 			statusConnection: 0,
 			createdAt: 0,
 			lastLogin: 0,
@@ -777,7 +778,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 						this.logger = logger;
 
 						const authToken = this.request.headers.get('x-auth-token');
-						this.token = Accounts._hashLoginToken(String(authToken))!;
+						this.token = hashLoginToken(String(authToken));
 
 						const objectForRateLimitMatch = {
 							IPAddr: this.requestIp,
@@ -886,7 +887,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		if (userId && userToken) {
 			return Users.findOne(
 				{
-					'services.resume.loginTokens.hashedToken': Accounts._hashLoginToken(userToken),
+					'services.resume.loginTokens.hashedToken': hashLoginToken(userToken),
 					'_id': userId,
 				},
 				{

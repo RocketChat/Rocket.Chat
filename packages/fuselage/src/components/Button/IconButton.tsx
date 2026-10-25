@@ -1,8 +1,9 @@
 import type { Keys as IconName } from '@rocket.chat/icons';
-import type { ReactElement, ReactNode } from 'react';
+import type { AllHTMLAttributes, ReactElement, ReactNode, RefAttributes } from 'react';
 import { isValidElement, useMemo } from 'react';
 
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 import { Icon } from '../Icon';
 
 export type IconButtonSize = {
@@ -39,7 +40,8 @@ export type IconButtonProps = {
 	/** Paints the glyph with a font token, for icon-only actions on light surfaces. */
 	color?: 'default' | 'danger';
 } & IconButtonSize &
-	Omit<BoxProps, 'is' | 'color'>;
+	Omit<ElementProps<HTMLButtonElement | HTMLAnchorElement, AllHTMLAttributes<HTMLButtonElement | HTMLAnchorElement>>, 'ref'> &
+	RefAttributes<Element>;
 
 const getVariantClass = (variant: string) => {
 	if (variant) {

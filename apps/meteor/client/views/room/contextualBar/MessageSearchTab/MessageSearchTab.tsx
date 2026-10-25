@@ -58,7 +58,7 @@ const MessageSearchTab = () => {
 					<MessageSearchForm provider={providerQuery.data} onSearch={handleSearch} searchListId={searchListId} isSuccess={isSuccess} />
 				</ContextualbarSection>
 			)}
-			<ContextualbarContent flexShrink={1} flexGrow={1} paddingInline={0}>
+			<ContextualbarContent flush>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
 				{providerQuery.isSuccess && (
 					<>

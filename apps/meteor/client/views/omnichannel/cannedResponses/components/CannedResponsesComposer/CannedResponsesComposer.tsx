@@ -115,13 +115,14 @@ const CannedResponsesComposer = ({ onChange, ...props }: CannedResponsesComposer
 					<Button ref={ref} small onClick={openPlaceholderSelect}>
 						{t('Insert_Placeholder')}
 					</Button>
-					<Backdrop
-						display={visible ? 'block' : 'none'}
-						onClick={(): void => {
-							textAreaRef?.current && textAreaRef.current.focus();
-							setVisible(false);
-						}}
-					/>
+					{visible && (
+						<Backdrop
+							onClick={(): void => {
+								textAreaRef?.current && textAreaRef.current.focus();
+								setVisible(false);
+							}}
+						/>
+					)}
 					<PositionAnimated visible={visible ? 'visible' : 'hidden'} anchor={ref}>
 						<Box width='224px'>
 							<PopoverSurface elevation='1' flush>
