@@ -15,6 +15,14 @@ export type ItemProps = {
 	 * Adds space between the row edge and its first and last slots.
 	 */
 	inset?: ItemInset;
+	/**
+	 * Aligns the slots to the top edge, so a tall avatar sits above a multi-line body. Slots center by default.
+	 */
+	align?: 'center' | 'start';
+	/**
+	 * Shows the hover surface even when the row has no click target, as for rows whose content is interactive.
+	 */
+	hoverable?: boolean;
 	selected?: boolean;
 	/**
 	 * Emphasizes the title, icon, description and meta, as for unread rooms.
@@ -43,6 +51,8 @@ export type ItemProps = {
 const Item = ({
 	is: Tag = 'div',
 	inset = 'none',
+	align = 'center',
+	hoverable,
 	selected,
 	highlighted,
 	focused,
@@ -89,6 +99,8 @@ const Item = ({
 				className={cx(
 					cxx('rcx-item')({
 						[`inset-${inset}`]: inset !== 'none',
+						[`align-${align}`]: align !== 'center',
+						'hoverable': !!hoverable,
 						'clickable': !!onClick,
 						'selected': !!selected,
 						'highlighted': !!highlighted,

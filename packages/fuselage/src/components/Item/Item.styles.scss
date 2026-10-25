@@ -116,6 +116,14 @@ $item-group-narrow-width: 320px;
 		}
 	}
 
+	&--align-start {
+		align-items: flex-start;
+	}
+
+	&:where(.rcx-item--hoverable):hover {
+		background-color: $item-color-surface-hover;
+	}
+
 	&:focus-visible:not(.rcx-item--focus-managed),
 	&:has(.rcx-item__link:focus-visible),
 	&.rcx-item--focus-visible {

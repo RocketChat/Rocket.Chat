@@ -94,6 +94,12 @@ describe('Item', () => {
 		expect(screen.getByTestId('item')).toHaveClass('rcx-item--clickable');
 	});
 
+	it('aligns slots to the start and shows the hover surface on request', () => {
+		render(<Item align='start' hoverable data-testid='item' />);
+
+		expect(screen.getByTestId('item')).toHaveClass('rcx-item--align-start', 'rcx-item--hoverable');
+	});
+
 	it('ignores clicks while disabled', async () => {
 		const onClick = jest.fn();
 		render(
