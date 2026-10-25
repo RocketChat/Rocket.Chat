@@ -98,6 +98,29 @@ describe('buildVersionUpdateMessage', () => {
 		});
 	});
 
+	describe('with the update checker disabled', () => {
+		beforeEach(() => {
+			mockSettingsGet.mockImplementation((key: string) => (key === 'Update_EnableChecker' ? false : '7.0.0'));
+		});
+
+		it('should not notify admins about a new version', async () => {
+			mockFindUsersInRolesWithQuery.mockReturnValue([]);
+
+			await buildVersionUpdateMessage([{ version: '8.0.0', security: false, infoUrl: 'https://example.com/8.0.0' }]);
+
+			expect(sendMessagesToAdmins).not.toHaveBeenCalled();
+		});
+
+		it('should still remove outdated version banners', async () => {
+			const admin = { _id: 'admin1', banners: { 'versionUpdate-6_2_0': { id: 'versionUpdate-6_2_0' } } };
+			mockFindUsersInRolesWithQuery.mockReturnValue([admin]);
+
+			await buildVersionUpdateMessage([]);
+
+			expect(mockSetBannersInBulk).toHaveBeenCalledWith([{ userId: 'admin1', banners: {} }]);
+		});
+	});
+
 	describe('version sorting', () => {
 		it('should process versions in descending order (highest first)', async () => {
 			mockFindUsersInRolesWithQuery.mockReturnValue([]);
