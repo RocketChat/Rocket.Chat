@@ -1,10 +1,10 @@
+import { hashLoginToken } from '@rocket.chat/account-utils';
 import { AI_LICENSE_MODULE } from '@rocket.chat/ai-search';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
 import type { MiddlewareHandler } from 'hono';
 import type { StatusCode } from 'hono/utils/http-status';
-import { Accounts } from 'meteor/accounts-base';
 
 import { createMcpResponseBudget } from './dispatch';
 import { handleRpcMessage, isJsonRpcRequest, type JsonRpcResponse, type McpAuth } from './server';
@@ -247,7 +247,7 @@ router.post('/mcp', async (c) => {
 			bodyParams,
 			bodyParseError,
 			userId,
-			token: Accounts._hashLoginToken(rawToken) ?? '',
+			token: hashLoginToken(rawToken),
 			requestIp: c.get('remoteAddress'),
 			request,
 		}),

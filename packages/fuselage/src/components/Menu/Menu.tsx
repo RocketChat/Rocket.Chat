@@ -8,7 +8,6 @@ import type { MenuTriggerProps } from 'react-stately';
 import { useMenuTriggerState } from 'react-stately';
 
 import { useOwnerDocument } from '../../contexts';
-import type { BoxProps } from '../Box';
 import { IconButton } from '../Button';
 import MenuDropDown from './MenuDropdown';
 import MenuPopover from './MenuPopover';
@@ -30,7 +29,7 @@ export type MenuProps<T> = AriaMenuProps<T> &
 		 * A component that renders an IconButton
 		 */
 		is?: ElementType;
-		className?: BoxProps['className'];
+		className?: string;
 		pressed?: boolean;
 		maxWidth?: string;
 		button?: ReactElement<any>;

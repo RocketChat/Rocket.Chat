@@ -10,8 +10,8 @@ import {
 	sidePanelFiltersConfig,
 	useSidePanelFilter,
 	useSwitchSidePanelTab,
+	useUnreadGroupData,
 } from '../../contexts/RoomsNavigationContext';
-import { useUnreadGroupData } from '../../contexts/RoomsNavigationContext';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 export type RoomListFiltersItemProps = {

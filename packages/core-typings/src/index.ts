@@ -131,6 +131,7 @@ export type * from './mediaCalls';
 export type * from './ICallHistoryItem';
 export type * from './IAbacAttribute';
 export type * from './IClassificationBanner';
+export type * from './IAbacMembershipPreview';
 export * from './Abac';
 export type * from './ServerAudit/IAuditServerAbacAction';
 export type * from './ServerAudit/IAuditUserChangedEvent';

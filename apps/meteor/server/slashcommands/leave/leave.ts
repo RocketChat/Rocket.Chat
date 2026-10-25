@@ -1,7 +1,6 @@
-import { api } from '@rocket.chat/core-services';
+import { api, ClientSafeError } from '@rocket.chat/core-services';
 import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { i18n } from '../../lib/i18n';
 import { slashCommands } from '../../lib/utils/slashCommand';
@@ -27,7 +26,7 @@ const Leave = async function Leave({ message, userId }: SlashCommandCallbackPara
 		void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 			msg: i18n.t(error, { lng: user?.language || settings.get('Language') || 'en' }),
 		});
-		throw new Meteor.Error(error.error, error.message);
+		throw new ClientSafeError(error.error, error.message);
 	}
 };
 

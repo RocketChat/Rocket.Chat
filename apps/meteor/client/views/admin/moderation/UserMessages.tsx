@@ -40,14 +40,14 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 			<Box display='flex' flexDirection='column' width='full' height='full' overflowY='auto' overflowX='hidden'>
 				{isLoading && <Message>{t('Loading')}</Message>}
 				{isSuccess && (
-					<Box padding={24}>
+					<Box padding={24} display='flex' flexDirection='column' gap={8}>
 						{report.messages.length > 0 && (
 							<Callout title={t('Moderation_Duplicate_messages')} type='warning' icon='warning'>
 								{t('Moderation_Duplicate_messages_warning')}
 							</Callout>
 						)}
 						{!report.user && (
-							<Callout marginBlockStart={8} type='warning' icon='warning'>
+							<Callout type='warning' icon='warning'>
 								{t('Moderation_User_deleted_warning')}
 							</Callout>
 						)}

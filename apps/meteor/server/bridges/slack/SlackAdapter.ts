@@ -8,7 +8,7 @@ import http from 'node:http';
 import https from 'node:https';
 import url from 'node:url';
 
-import { Message } from '@rocket.chat/core-services';
+import { Message, ClientSafeError } from '@rocket.chat/core-services';
 import { Messages, Rooms, Users } from '@rocket.chat/models';
 import { App as SlackApp } from '@slack/bolt';
 import { RTMClient } from '@slack/rtm-api';
@@ -1445,9 +1445,9 @@ export default class SlackAdapter {
 				return this.importMessages(rid, callback);
 			}
 			slackLogger.error({ msg: 'Could not find Slack room with specified name', roomName: rocketchat_room.name });
-			return callback(new Meteor.Error('error-slack-room-not-found', 'Could not find Slack room with specified name'));
+			return callback(new ClientSafeError('error-slack-room-not-found', 'Could not find Slack room with specified name'));
 		}
 		slackLogger.error({ msg: 'Could not find Rocket.Chat room with specified id', rid });
-		return callback(new Meteor.Error('error-invalid-room', 'Invalid room'));
+		return callback(new ClientSafeError('error-invalid-room', 'Invalid room'));
 	}
 }

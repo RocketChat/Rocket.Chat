@@ -5,8 +5,8 @@
 	"main": "dist/index.js",
 	"scripts": {
 		"build": "tsc --noEmit && esbuild src/index.ts --bundle --platform=node --target=node24 --format=cjs --outfile=dist/index.js",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix src",
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {

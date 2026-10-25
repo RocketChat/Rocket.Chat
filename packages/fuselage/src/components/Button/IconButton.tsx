@@ -1,8 +1,9 @@
 import type { Keys as IconName } from '@rocket.chat/icons';
-import type { ReactElement, ReactNode } from 'react';
+import type { AllHTMLAttributes, ReactElement, ReactNode, RefAttributes } from 'react';
 import { isValidElement, useMemo } from 'react';
 
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 import { Icon } from '../Icon';
 
 export type IconButtonSize = {
@@ -23,6 +24,8 @@ export type IconButtonProps = {
 	 * instead, which is the caller's to write.
 	 */
 	badge?: ReactNode;
+	/** The corner the badge is pinned to. */
+	badgePosition?: 'top-end' | 'bottom-end';
 	primary?: boolean;
 	secondary?: boolean;
 	info?: boolean;
@@ -30,8 +33,15 @@ export type IconButtonProps = {
 	warning?: boolean;
 	success?: boolean;
 	pressed?: boolean;
+	/** Renders a link instead of a button, for actions that navigate or download. */
+	is?: 'button' | 'a';
+	/** Opens the link in a new tab, without giving it access to this page. */
+	external?: boolean;
+	/** Paints the glyph with a font token, for icon-only actions on light surfaces. */
+	color?: 'default' | 'danger';
 } & IconButtonSize &
-	BoxProps;
+	Omit<ElementProps<HTMLButtonElement | HTMLAnchorElement, AllHTMLAttributes<HTMLButtonElement | HTMLAnchorElement>>, 'ref'> &
+	RefAttributes<Element>;
 
 const getVariantClass = (variant: string) => {
 	if (variant) {
@@ -49,6 +59,7 @@ const getPressedClass = (variant: string) => {
 function IconButton({
 	icon,
 	badge,
+	badgePosition = 'top-end',
 	primary,
 	info,
 	secondary,
@@ -61,6 +72,9 @@ function IconButton({
 	small,
 	medium,
 	pressed,
+	is = 'button',
+	external,
+	color,
 	children,
 	...props
 }: IconButtonProps) {
@@ -102,8 +116,10 @@ function IconButton({
 
 	return (
 		<Box
-			is='button'
-			type='button'
+			is={is}
+			{...(is === 'a'
+				? { rel: external ? 'noopener noreferrer' : undefined, target: external ? '_blank' : undefined }
+				: { type: 'button' })}
 			rcx-button
 			rcx-button--icon
 			rcx-button--square
@@ -111,11 +127,12 @@ function IconButton({
 			{...getSizeClass()}
 			rcx-button--icon-pressed={pressed}
 			rcx-button--with-badge={Boolean(badge)}
+			color={color}
 			{...props}
 		>
 			{isValidElement<any>(icon) ? icon : <Icon name={icon} size={getIconSize()} />}
 			{Boolean(badge) && (
-				<span className='rcx-button__badge' aria-hidden='true'>
+				<span className={`rcx-button__badge rcx-button__badge--${badgePosition}`} aria-hidden='true'>
 					{badge}
 				</span>
 			)}

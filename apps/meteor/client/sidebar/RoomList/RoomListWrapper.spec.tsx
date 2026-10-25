@@ -6,7 +6,7 @@ jest.mock('react-i18next', () => ({
 	useTranslation: () => ({ t: (key: string) => key }),
 }));
 
-jest.mock('../../views/navigation/sidebar/RoomList/useSidebarListNavigation', () => ({
+jest.mock('./useSidebarListNavigation', () => ({
 	useSidebarListNavigation: () => () => undefined,
 }));
 

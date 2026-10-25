@@ -1,5 +1,5 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { IconButton } from '@rocket.chat/fuselage';
+import { Icon, IconButton } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetting, useTranslation } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
@@ -31,10 +31,8 @@ const Favorite = ({ room: { _id, f: favorite = false, t: type, name } }: Favorit
 	return (
 		<IconButton
 			small
-			marginInlineEnd={4}
-			icon={favorite ? 'star-filled' : 'star'}
+			icon={favorite ? <Icon name='star-filled' size='x20' color='status-font-on-warning' /> : 'star'}
 			title={favoriteLabel}
-			color={favorite ? 'status-font-on-warning' : undefined}
 			onClick={handleFavoriteClick}
 		/>
 	);

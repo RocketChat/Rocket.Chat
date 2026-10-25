@@ -137,7 +137,7 @@ export const MultipleCustomSelected: Story = {
 		value: ['1', '3'],
 		multiple: true,
 		renderSelected: ({ selected: { value, label }, onRemove }) => (
-			<Chip key={value} height='x20' value={value} onClick={onRemove} marginInlineEnd={4}>
+			<Chip key={value} value={value} onClick={onRemove}>
 				<Box is='span' margin='none' marginInlineStart={4}>
 					<Avatar size='x20' url={exampleAvatar} aria-hidden />
 					{'  '}

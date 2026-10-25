@@ -1,4 +1,4 @@
-import { Media } from '@rocket.chat/core-services';
+import { Media, ClientSafeError } from '@rocket.chat/core-services';
 import type { IEmojiCustom, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import { EmojiCustom } from '@rocket.chat/models';
 import type { PaginatedRequest } from '@rocket.chat/rest-typings';
@@ -11,7 +11,6 @@ import {
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
-import { Meteor } from 'meteor/meteor';
 import type { WithId } from 'mongodb';
 
 import type { EmojiData } from '../../lib/media/emoji-custom/lib/insertOrUpdateEmoji';
@@ -62,7 +61,7 @@ function validateDateParam(paramName: string, paramValue: string | undefined): D
 
 	const date = new Date(paramValue);
 	if (isNaN(date.getTime())) {
-		throw new Meteor.Error('error-roomId-param-invalid', `The "${paramName}" query parameter must be a valid date.`);
+		throw new ClientSafeError('error-roomId-param-invalid', `The "${paramName}" query parameter must be a valid date.`);
 	}
 
 	return date;
@@ -212,7 +211,7 @@ const emojiCustomCreateEndpoints = API.v1
 
 			const isUploadable = await Media.isImage(fileBuffer);
 			if (!isUploadable) {
-				throw new Meteor.Error('emoji-is-not-image', "Emoji file provided cannot be uploaded since it's not an image");
+				throw new ClientSafeError('emoji-is-not-image', "Emoji file provided cannot be uploaded since it's not an image");
 			}
 
 			const [, extension] = mimetype.split('/');
@@ -257,14 +256,14 @@ const emojiCustomCreateEndpoints = API.v1
 			const { fields, fileBuffer, mimetype } = emoji;
 
 			if (!fields._id) {
-				throw new Meteor.Error('The required "_id" query param is missing.');
+				throw new ClientSafeError('The required "_id" query param is missing.');
 			}
 
 			const emojiToUpdate = await EmojiCustom.findOneById<Pick<IEmojiCustom, 'name' | 'extension'>>(fields._id, {
 				projection: { name: 1, extension: 1 },
 			});
 			if (!emojiToUpdate) {
-				throw new Meteor.Error('Emoji not found.');
+				throw new ClientSafeError('Emoji not found.');
 			}
 
 			const emojiData: EmojiData = {
@@ -282,7 +281,7 @@ const emojiCustomCreateEndpoints = API.v1
 				emojiData.newFile = isNewFile;
 				const isUploadable = await Media.isImage(fileBuffer);
 				if (!isUploadable) {
-					throw new Meteor.Error('emoji-is-not-image', "Emoji file provided cannot be uploaded since it's not an image");
+					throw new ClientSafeError('emoji-is-not-image', "Emoji file provided cannot be uploaded since it's not an image");
 				}
 
 				const [, extension] = mimetype.split('/');

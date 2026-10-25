@@ -3,10 +3,8 @@ import type { SDK, ClientStream, StreamKeys, StreamNames, StreamerCallbackArgs, 
 import { Emitter } from '@rocket.chat/emitter';
 
 import { APIClient } from './RestApiClient';
-import { parseDDP } from './sdk/ddpProtocol';
 import { ensureConnectedAndAuthenticated, getDdpSdk } from './sdk/ddpSdk';
-import { isSdkTransportEnabled } from './sdk/sdkTransportEnabled';
-import { callMethod, callMethodWithoutResult, onRawMessage, subscribeRaw } from '../meteor/connection';
+import { callMethod } from '../meteor/connection';
 
 declare module '@rocket.chat/ddp-client' {
 	// eslint-disable-next-line @typescript-eslint/naming-convention
@@ -20,8 +18,6 @@ declare module '@rocket.chat/ddp-client' {
 		call<T extends keyof ServerMethods>(method: T, ...args: Parameters<ServerMethods[T]>): Promise<ReturnType<ServerMethods[T]>>;
 	}
 }
-
-const sdkTransportEnabled = isSdkTransportEnabled();
 
 const isChangedCollectionPayload = (
 	msg: any,
@@ -59,91 +55,6 @@ type StreamMapValue = {
 	ready: () => Promise<void>;
 	isReady: boolean;
 	unsubList: Set<() => void>;
-};
-
-const createNewMeteorStream = (streamName: StreamNames, key: StreamKeys<StreamNames>, args: unknown[]): StreamMapValue => {
-	const ee = new Emitter<{
-		ready: [error: any] | [undefined, any];
-		error: [error: any];
-		stop: undefined;
-	}>();
-	const meta = {
-		ready: false,
-	};
-
-	const sub = subscribeRaw(
-		`stream-${streamName}`,
-		key,
-		{ useCollection: false, args },
-		{
-			onReady: (args: any) => {
-				meta.ready = true;
-				ee.emit('ready', [undefined, args]);
-			},
-			onError: (err: any) => {
-				ee.emit('ready', [err]);
-				ee.emit('error', err);
-			},
-			onStop: () => {
-				ee.emit('stop');
-			},
-		},
-	);
-
-	const onChange: ReturnType<ClientStream['subscribe']>['onChange'] = (cb) => {
-		if (meta.ready) {
-			cb({
-				msg: 'ready',
-
-				subs: [],
-			});
-			return;
-		}
-		ee.once('ready', ([error, result]) => {
-			if (error) {
-				cb({
-					msg: 'nosub',
-
-					id: '',
-					error,
-				});
-				return;
-			}
-
-			cb(result);
-		});
-	};
-
-	const ready = () => {
-		if (meta.ready) {
-			return Promise.resolve();
-		}
-		return new Promise<void>((resolve, reject) => {
-			ee.once('ready', ([err]) => {
-				if (err) {
-					reject(err);
-					return;
-				}
-				resolve();
-			});
-		});
-	};
-
-	return {
-		stop: sub.stop,
-		onChange,
-		ready,
-		onError: (cb: (...args: any[]) => void) =>
-			ee.once('error', (error) => {
-				cb(error);
-			}),
-
-		onStop: (cb: () => void) => ee.once('stop', cb),
-		get isReady() {
-			return meta.ready;
-		},
-		unsubList: new Set(),
-	};
 };
 
 const createNewDdpSdkStream = (
@@ -271,21 +182,6 @@ const createStreamManager = () => {
 		});
 	});
 
-	if (!sdkTransportEnabled) {
-		// In legacy Meteor mode, stream frames arrive on Meteor.connection._stream
-		// as `changed` collection messages — bridge them into streamProxy so the
-		// per-stream callbacks fire. With SDK transport on, the frames arrive on
-		// the SDK socket and createNewDdpSdkStream registers its own onCollection
-		// listener instead.
-		onRawMessage((rawMsg: string) => {
-			const msg = parseDDP(rawMsg);
-			if (!isChangedCollectionPayload(msg)) {
-				return;
-			}
-			streamProxy.emit(`${msg.collection}/${msg.fields.eventName}` as any, msg.fields.args as any);
-		});
-	}
-
 	const stream: SDK['stream'] = <N extends StreamNames, K extends StreamKeys<N>>(
 		name: N,
 		data: [key: K, ...args: unknown[]],
@@ -307,9 +203,7 @@ const createStreamManager = () => {
 
 		streamProxy.on(eventLiteral, proxyCallback);
 
-		const stream =
-			streams.get(eventLiteral) ||
-			(sdkTransportEnabled ? createNewDdpSdkStream(streamProxy, name, key, args) : createNewMeteorStream(name, key, args));
+		const stream = streams.get(eventLiteral) || createNewDdpSdkStream(streamProxy, name, key, args);
 
 		const stop = (): void => {
 			streamProxy.off(eventLiteral, proxyCallback);
@@ -362,23 +256,8 @@ const createStreamManager = () => {
 	return { stream, stopAll };
 };
 
-// Per-stream wildcard emitters for `onAnyStreamEvent`. Each emitter is fed by
-// up to two sources (de-duplicated by the underlying bridges):
-//   1) `getDdpSdk().client.onCollection(...)` — the canonical bridge. Covers
-//      both transport-OFF (via `meteorBackedSdk.onCollection`, which listens
-//      on `Meteor.connection._stream`) and transport-ON (via the real DDPSDK
-//      socket).
-//   2) When SDK transport is ON, a direct `Meteor.connection._stream` bridge
-//      to catch frames that land on Meteor while the SDK socket is still
-//      authenticating — see `apps/meteor/client/lib/presence.ts`'s fallback
-//      to `Meteor.subscribe('stream-user-presence', ...)`. This is the
-//      "artificial trigger" and is TEMPORARY: it disappears once SDK
-//      transport rollout completes and the Meteor fallback is removed.
-//
-// Bridges are wired exactly once per stream name (singleton listeners on the
-// underlying Meteor stream — Meteor's `on()` has no `off()`, so we can't
-// detach them per subscription anyway). Consumers register/unregister on the
-// per-stream Emitter, which DOES support `off`, so unsubscription is clean.
+// Per-stream wildcard emitters for `onAnyStreamEvent`, fed by one `onCollection` listener per stream name. Consumers
+// register and unregister on the per-stream Emitter.
 const anyStreamEmitters = new Map<string, Emitter<Record<string, [eventName: string, args: unknown[]]>>>();
 const anyStreamBridged = new Set<string>();
 
@@ -396,31 +275,11 @@ const createOnAnyStreamEvent = () => {
 			anyStreamBridged.add(collectionId);
 			const bridgeEmitter = emitter;
 
-			// Primary bridge — works for both transport-OFF (meteorBackedSdk's
-			// onCollection listens on Meteor.connection._stream) and transport-ON
-			// (real DDPSDK socket).
 			getDdpSdk().client.onCollection(collectionId, (data: unknown) => {
 				if (!isChangedCollectionPayload(data)) return;
 				if (data.collection !== collectionId) return;
 				bridgeEmitter.emit('event', [data.fields.eventName, data.fields.args]);
 			});
-
-			// Temporary secondary bridge — see block comment above. Only needed
-			// while SDK transport is on AND Meteor.connection may still receive
-			// frames during the SDK socket's anonymous window.
-			if (sdkTransportEnabled) {
-				onRawMessage((rawMsg: string) => {
-					let msg: unknown;
-					try {
-						msg = parseDDP(rawMsg);
-					} catch {
-						return;
-					}
-					if (!isChangedCollectionPayload(msg)) return;
-					if (msg.collection !== collectionId) return;
-					bridgeEmitter.emit('event', [msg.fields.eventName, msg.fields.args]);
-				});
-			}
 		}
 
 		const handler = ([eventName, args]: [string, unknown[]]): void => {
@@ -440,15 +299,12 @@ export const createSDK = (rest: RestClientInterface) => {
 	const { stream, stopAll } = createStreamManager();
 	const onAnyStreamEvent = createOnAnyStreamEvent();
 
-	const publish = sdkTransportEnabled
-		? (name: string, args: unknown[]) => {
-				// DDPSDK queues outbound frames until the WebSocket handshake completes,
-				// so there's no need to gate on an isReady flag here.
-				void getDdpSdk().client.callAsync(`stream-${name}`, ...args);
-			}
-		: (name: string, args: unknown[]) => {
-				callMethodWithoutResult(`stream-${name}`, ...args);
-			};
+	// DDPSDK queues outbound frames until the WebSocket handshake completes, so there's no need to gate on readiness.
+	const publish = (name: string, args: unknown[]) => {
+		getDdpSdk()
+			.client.callAsync(`stream-${name}`, ...args)
+			.catch((error) => console.warn(`[sdk] publish to stream-${name} failed`, error));
+	};
 
 	const call = <T extends keyof ServerMethods>(method: T, ...args: Parameters<ServerMethods[T]>): Promise<ReturnType<ServerMethods[T]>> => {
 		return callMethod(method, ...args);

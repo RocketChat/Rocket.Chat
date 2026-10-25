@@ -34,11 +34,11 @@ const AppUpdateModal = ({ confirm, cancel, ...props }: AppUpdateModalProps) => {
 	return (
 		<Modal {...props}>
 			<ModalHeader>
-				<ModalIcon color='status-font-on-danger' name='info-circled' />
+				<ModalIcon variant='danger' name='info-circled' />
 				<ModalTitle>{t('Apps_Manual_Update_Modal_Title')}</ModalTitle>
 				<ModalClose onClick={handleCloseButtonClick} />
 			</ModalHeader>
-			<ModalContent fontScale='p2'>{t('Apps_Manual_Update_Modal_Body')}</ModalContent>
+			<ModalContent>{t('Apps_Manual_Update_Modal_Body')}</ModalContent>
 			<ModalFooter>
 				<ModalFooterControllers>
 					<Button secondary onClick={handleCancelButtonClick}>

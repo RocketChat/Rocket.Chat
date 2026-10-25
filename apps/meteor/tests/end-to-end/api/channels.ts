@@ -1,8 +1,9 @@
+import { after, before, beforeEach, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import { TeamType, type IIntegration, type IMessage, type IRoom, type ITeam, type IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect, assert } from 'chai';
-import { after, before, describe, it, beforeEach } from 'mocha';
 
 import { getCredentials, api, request, credentials, reservedWords } from '../../data/api-data';
 import { pinMessage, sendMessage, starMessage, updateMessage } from '../../data/chat.helper';
@@ -34,9 +35,9 @@ describe('[Channels]', () => {
 	let channel: Pick<IRoom, '_id' | 'name'>;
 	const apiPublicChannelName = `api-channel-test-${Date.now()}`;
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
-	before('Creating channel', (done) => {
+	before((_t, done) => {
 		void request
 			.post(api('channels.create'))
 			.set(credentials)
@@ -66,7 +67,7 @@ describe('[Channels]', () => {
 	it('/channels.invite', async () => {
 		const roomInfo = await getRoomInfo(channel._id);
 
-		return request
+		await request
 			.post(api('channels.invite'))
 			.set(credentials)
 			.send({
@@ -195,7 +196,7 @@ describe('[Channels]', () => {
 	it('/channels.kick', async () => {
 		const roomInfo = await getRoomInfo(channel._id);
 
-		return request
+		await request
 			.post(api('channels.kick'))
 			.set(credentials)
 			.send({
@@ -216,7 +217,7 @@ describe('[Channels]', () => {
 	it('/channels.invite', async () => {
 		const roomInfo = await getRoomInfo(channel._id);
 
-		return request
+		await request
 			.post(api('channels.invite'))
 			.set(credentials)
 			.send({
@@ -576,31 +577,31 @@ describe('[Channels]', () => {
 		});
 	});
 
+	function failRenameChannel(name: string) {
+		it(`should not rename a channel to the reserved name ${name}`, async () => {
+			const res = await request
+				.post(api('channels.rename'))
+				.set(credentials)
+				.send({
+					roomId: channel._id,
+					name,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', `${name} is not a valid room name. [error-invalid-room-name]`);
+		});
+	}
+
+	reservedWords.forEach((name) => {
+		failRenameChannel(name);
+	});
+
 	it('/channels.rename', async () => {
 		const roomInfo = await getRoomInfo(channel._id);
 
-		function failRenameChannel(name: string) {
-			it(`should not rename a channel to the reserved name ${name}`, async () => {
-				const res = await request
-					.post(api('channels.rename'))
-					.set(credentials)
-					.send({
-						roomId: channel._id,
-						name,
-					})
-					.expect('Content-Type', 'application/json')
-					.expect(400);
-
-				expect(res.body).to.have.property('success', false);
-				expect(res.body).to.have.property('error', `${name} is already in use :( [error-field-unavailable]`);
-			});
-		}
-
-		reservedWords.forEach((name) => {
-			failRenameChannel(name);
-		});
-
-		return request
+		await request
 			.post(api('channels.rename'))
 			.set(credentials)
 			.send({
@@ -664,7 +665,7 @@ describe('[Channels]', () => {
 	it('/channels.setJoinCode', async () => {
 		const roomInfo = await getRoomInfo(channel._id);
 
-		return request
+		await request
 			.post(api('channels.setJoinCode'))
 			.set(credentials)
 			.send({
@@ -685,7 +686,7 @@ describe('[Channels]', () => {
 	it('/channels.setReadOnly', async () => {
 		const roomInfo = await getRoomInfo(channel._id);
 
-		return request
+		await request
 			.post(api('channels.setReadOnly'))
 			.set(credentials)
 			.send({
@@ -705,7 +706,7 @@ describe('[Channels]', () => {
 	it('/channels.leave', async () => {
 		const roomInfo = await getRoomInfo(channel._id);
 
-		return request
+		await request
 			.post(api('channels.leave'))
 			.set(credentials)
 			.send({
@@ -768,13 +769,9 @@ describe('[Channels]', () => {
 				});
 		});
 
-		it('should not add guest users to more rooms than defined in the license', async function () {
-			// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
-			// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
-			if (!process.env.IS_EE) {
-				this.skip();
-			}
-
+		// TODO this is not the right way to do it. We're doing this way for now just because we have separate CI jobs for EE and CE,
+		// ideally we should have a single CI job that adds a license and runs both CE and EE tests.
+		it('should not add guest users to more rooms than defined in the license', { skip: !process.env.IS_EE }, async () => {
 			const promises = [];
 			for (let i = 0; i < maxRoomsPerGuest; i++) {
 				promises.push(
@@ -787,7 +784,7 @@ describe('[Channels]', () => {
 			}
 			const channelIds = (await Promise.all(promises)).map((r) => r.body.channel).map((channel) => channel._id);
 
-			void request
+			await request
 				.post(api('channels.create'))
 				.set(credentials)
 				.send({
@@ -798,25 +795,24 @@ describe('[Channels]', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					room = res.body.group;
-				})
-				.then(() => {
-					void request
-						.get(api('channels.members'))
-						.set(credentials)
-						.query({
-							roomId: room._id,
-						})
-						.expect('Content-Type', 'application/json')
-						.expect(200)
-						.expect((res) => {
-							expect(res.body).to.have.property('success', true);
-							expect(res.body).to.have.property('members').and.to.be.an('array');
-							expect(res.body.members).to.have.lengthOf(1);
-						});
+					room = res.body.channel;
 				});
 
-			await Promise.all(channelIds.map((id) => deleteRoom({ type: 'c', roomId: id })));
+			await request
+				.get(api('channels.members'))
+				.set(credentials)
+				.query({
+					roomId: room._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('members').and.to.be.an('array');
+					expect(res.body.members).to.have.lengthOf(1);
+				});
+
+			await Promise.all([...channelIds, room._id].map((id) => deleteRoom({ type: 'c', roomId: id })));
 		});
 
 		it('should successfully create a channel in a team', async () => {
@@ -1403,7 +1399,7 @@ describe('[Channels]', () => {
 		it("should reject the removed 'query' parameter even alongside a valid '_id'", async () => {
 			const { testUserCredentials, room } = await createUserAndChannel();
 
-			return request
+			await request
 				.get(api('channels.online'))
 				.set(testUserCredentials)
 				.query({ _id: room._id, query: '{}' })
@@ -1417,7 +1413,7 @@ describe('[Channels]', () => {
 		it('should return an array with online members', async () => {
 			const { testUser, testUserCredentials, room } = await createUserAndChannel();
 
-			return request
+			await request
 				.get(api('channels.online'))
 				.set(testUserCredentials)
 				.query({ _id: room._id })
@@ -1441,7 +1437,7 @@ describe('[Channels]', () => {
 
 			const { testUser, room } = await createUserAndChannel();
 
-			return request
+			await request
 				.get(api('channels.online'))
 				.set(outsiderCredentials)
 				.query({ _id: room._id })
@@ -1470,7 +1466,7 @@ describe('[Channels]', () => {
 		let testUser: TestUser<IUser>;
 		let testUserCredentials: Credentials;
 
-		before('Create test user', async () => {
+		before(async () => {
 			testUser = await createUser();
 			testUserCredentials = await login(testUser.username, password);
 			testChannelNoCode = (await createRoom({ type: 'c', credentials: testUserCredentials, name: `${apiPublicChannelName}-nojoincode` }))
@@ -1491,7 +1487,7 @@ describe('[Channels]', () => {
 			await deleteUser(testUser);
 		});
 
-		before('Set code for channel', (done) => {
+		before((_t, done) => {
 			void request
 				.post(api('channels.setJoinCode'))
 				.set(testUserCredentials)
@@ -1539,7 +1535,7 @@ describe('[Channels]', () => {
 
 		describe('code-needed channel', () => {
 			describe('without join-without-join-code permission', () => {
-				before('set join-without-join-code permission to false', async () => {
+				before(async () => {
 					await updatePermission('join-without-join-code', []);
 				});
 
@@ -1589,11 +1585,11 @@ describe('[Channels]', () => {
 			});
 
 			describe('with join-without-join-code permission', () => {
-				before('set join-without-join-code permission to true', async () => {
+				before(async () => {
 					await updatePermission('join-without-join-code', ['admin']);
 				});
 
-				before('leave channel', (done) => {
+				before((_t, done) => {
 					void request
 						.post(api('channels.leave'))
 						.set(credentials)
@@ -1878,6 +1874,55 @@ describe('[Channels]', () => {
 				expect(messageIds).to.not.include(oldestMessage._id, 'oldest message should be excluded by default');
 				expect(messageIds).to.not.include(latestMessage._id, 'latest message should be excluded by default');
 			});
+		});
+	});
+
+	describe('/channels.invite with multiple users', () => {
+		let room: IRoom;
+		let users: TestUser<IUser>[];
+
+		before(async () => {
+			room = (await createRoom({ type: 'c', name: `channel.invite.multiple.${Date.now()}` })).body.channel;
+			users = await Promise.all([createUser(), createUser(), createUser(), createUser()]);
+		});
+
+		after(() => Promise.all([deleteRoom({ type: 'c', roomId: room._id }), ...users.map((user) => deleteUser(user))]));
+
+		it('should invite every user listed in userIds', async () => {
+			await request
+				.post(api('channels.invite'))
+				.set(credentials)
+				.send({ roomId: room._id, userIds: [users[0]._id, users[1]._id] })
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			const res = await request.get(api('channels.members')).set(credentials).query({ roomId: room._id }).expect(200);
+
+			expect(res.body.members.map((member: IUser) => member._id)).to.include.members([users[0]._id, users[1]._id]);
+		});
+
+		it('should invite every user listed in usernames', async () => {
+			await request
+				.post(api('channels.invite'))
+				.set(credentials)
+				.send({ roomName: room.name, usernames: [users[2].username, users[3].username] })
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			const res = await request.get(api('channels.members')).set(credentials).query({ roomId: room._id }).expect(200);
+
+			expect(res.body.members.map((member: IUser) => member._id)).to.include.members([users[2]._id, users[3]._id]);
+		});
+
+		it('should reject a request that mixes user IDs and usernames', async () => {
+			const res = await request
+				.post(api('channels.invite'))
+				.set(credentials)
+				.send({ roomId: room._id, userId: users[0]._id, usernames: [users[1].username] })
+				.expect('Content-Type', 'application/json')
+				.expect(400);
+
+			expect(res.body).to.have.property('success', false);
 		});
 	});
 
@@ -2684,7 +2729,7 @@ describe('[Channels]', () => {
 			await deleteRoom({ type: 'c', roomId: withCFChannel._id });
 		});
 
-		it('create channel with customFields', (done) => {
+		it('create channel with customFields', (_t, done) => {
 			const customFields = { field0: 'value0' };
 			void request
 				.post(api('channels.create'))
@@ -2713,7 +2758,7 @@ describe('[Channels]', () => {
 		});
 		it('change customFields', async () => {
 			const customFields = { field9: 'value9' };
-			return request
+			await request
 				.post(api('channels.setCustomFields'))
 				.set(credentials)
 				.send({
@@ -2756,7 +2801,7 @@ describe('[Channels]', () => {
 
 			expect(res.body).to.have.property('success', true);
 		});
-		it('create channel without customFields', (done) => {
+		it('create channel without customFields', (_t, done) => {
 			void request
 				.post(api('channels.create'))
 				.set(credentials)
@@ -2770,7 +2815,7 @@ describe('[Channels]', () => {
 		});
 		it('set customFields with one nested field', async () => {
 			const customFields = { field1: 'value1' };
-			return request
+			await request
 				.post(api('channels.setCustomFields'))
 				.set(credentials)
 				.send({
@@ -2790,7 +2835,7 @@ describe('[Channels]', () => {
 		it('set customFields with multiple nested fields', async () => {
 			const customFields = { field2: 'value2', field3: 'value3', field4: 'value4' };
 
-			return request
+			await request
 				.post(api('channels.setCustomFields'))
 				.set(credentials)
 				.send({
@@ -2810,7 +2855,7 @@ describe('[Channels]', () => {
 					expect(res.body).to.have.not.nested.property('channel.customFields.field1', 'value1');
 				});
 		});
-		it('set customFields to empty object', (done) => {
+		it('set customFields to empty object', (_t, done) => {
 			const customFields = {};
 
 			void request
@@ -2833,7 +2878,7 @@ describe('[Channels]', () => {
 				})
 				.end(done);
 		});
-		it('set customFields as a string -> should return 400', (done) => {
+		it('set customFields as a string -> should return 400', (_t, done) => {
 			const customFields = '';
 
 			void request
@@ -2879,7 +2924,7 @@ describe('[Channels]', () => {
 		it('should set channel as default', async () => {
 			const roomInfo = await getRoomInfo(testChannel._id);
 
-			return request
+			await request
 				.post(api('channels.setDefault'))
 				.set(credentials)
 				.send({
@@ -2900,7 +2945,7 @@ describe('[Channels]', () => {
 		it('should unset channel as default', async () => {
 			const roomInfo = await getRoomInfo(testChannel._id);
 
-			return request
+			await request
 				.post(api('channels.setDefault'))
 				.set(credentials)
 				.send({
@@ -4048,7 +4093,7 @@ describe('[Channels]', () => {
 				});
 		});
 
-		it('should fail to convert channel without the required parameters', (done) => {
+		it('should fail to convert channel without the required parameters', (_t, done) => {
 			void request.post(api('channels.convertToTeam')).set(credentials).send({}).expect(400).end(done);
 		});
 

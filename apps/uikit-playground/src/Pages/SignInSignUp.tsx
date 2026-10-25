@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { FlexContainer, Box, InputBox, Button, Label } from '@rocket.chat/fuselage';
+import { FlexContainer, Box, InputBox, Button } from '@rocket.chat/fuselage';
 import { RocketChatLogo } from '@rocket.chat/logo';
 import { useNavigate } from 'react-router-dom';
 
@@ -37,19 +37,20 @@ const SignInSignUp = ({ route }: SignInSignUpProps) => {
 						<Box width='180px' height='40px' marginBlockStart='100px'>
 							<RocketChatLogo />
 						</Box>
-						<Label marginBlockStart='20px' fontScale='hero'>
+						<Box marginBlockStart='20px' fontScale='hero'>
 							{labels[route].header}
-						</Label>
-						<Label marginBlockStart='10px' fontScale='p2'>
+						</Box>
+						<Box marginBlockStart='x8' fontScale='p2'>
 							{labels[route].description}
-						</Label>
-						<InputBox marginBlockStart='20px' width='80%' maxHeight='50px' type='email' />
-						<Button marginBlockStart='20px' width='80%' primary>
-							{labels[route].button}
-						</Button>
-						<Label marginBlockStart='20px' fontScale='p2'>
+						</Box>
+						<Box display='flex' flexDirection='column' gap='20px' paddingBlockStart='20px' width='80%'>
+							<InputBox type='email' />
+							<Button primary>{labels[route].button}</Button>
+						</Box>
+						<Box marginBlockStart='20px' fontScale='p2'>
 							{`${labels[route].footer} `}
-							<Label
+							<Box
+								is='span'
 								fontScale='p2'
 								color='primary'
 								onClick={clickHandler}
@@ -58,8 +59,8 @@ const SignInSignUp = ({ route }: SignInSignUpProps) => {
 								`}
 							>
 								{labels[route].footerButton}
-							</Label>
-						</Label>
+							</Box>
+						</Box>
 					</Box>
 				</FlexContainer>
 			</Box>

@@ -36,6 +36,12 @@ export default {
 				'What to pin to the button’s corner, a `Badge` as a rule. It is hidden from assistive technology, so what it says belongs in `aria-label` too.',
 			table: { category: 'Content' },
 		},
+		badgePosition: {
+			control: 'inline-radio',
+			options: ['top-end', 'bottom-end'],
+			description: 'The corner the badge is pinned to.',
+			table: { category: 'Content', defaultValue: { summary: 'top-end' } },
+		},
 		primary: {
 			control: 'boolean',
 			description: 'Solid, high-emphasis color kind.',
@@ -331,6 +337,15 @@ export const _IconButtonSecondaryDanger: Story = {
 	},
 };
 
+export const Colors: Story = {
+	render: () => (
+		<ButtonGroup>
+			<IconButton icon='pencil' aria-label='pencil' small color='default' />
+			<IconButton icon='trash' aria-label='trash' small color='danger' />
+		</ButtonGroup>
+	),
+};
+
 export const _IconButtonWithBadge: Story = {
 	render: () => (
 		<ButtonGroup>
@@ -356,6 +371,20 @@ export const _IconButtonWithDot: Story = {
 	render: () => (
 		<ButtonGroup>
 			<IconButton icon='balloon' aria-label='balloon, unread messages' small badge={<Badge variant='danger' small />} />
+		</ButtonGroup>
+	),
+};
+
+export const _IconButtonWithBadgeAtBottom: Story = {
+	render: () => (
+		<ButtonGroup>
+			<IconButton
+				icon={<Avatar size='x28' url={avatarUrl} />}
+				aria-label='profile, online'
+				medium
+				badgePosition='bottom-end'
+				badge={<Badge variant='primary' small />}
+			/>
 		</ButtonGroup>
 	),
 };

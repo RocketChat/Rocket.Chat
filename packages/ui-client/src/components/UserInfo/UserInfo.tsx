@@ -1,5 +1,5 @@
 import type { IUser, Serialized } from '@rocket.chat/core-typings';
-import { Box, Margins, Tag } from '@rocket.chat/fuselage';
+import { Box, Tag } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 import { memo, useContext, useId } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -26,7 +26,6 @@ type UserInfoDataProps = Serialized<
 		| 'lastLogin'
 		| 'avatarETag'
 		| 'utcOffset'
-		| 'phone'
 		| 'createdAt'
 		| 'canViewAllInfo'
 		| 'customFields'
@@ -38,6 +37,7 @@ type UserInfoDataProps = Serialized<
 export type UserInfoProps = UserInfoDataProps & {
 	status: ReactNode;
 	customStatus?: ReactNode;
+	phoneNumbers?: ReactNode;
 	email?: string;
 	verified?: boolean;
 	actions: ReactNode;
@@ -57,7 +57,7 @@ const UserInfo = ({
 	roles,
 	roomRoles,
 	utcOffset,
-	phone,
+	phoneNumbers,
 	email,
 	verified,
 	createdAt,
@@ -159,14 +159,10 @@ const UserInfo = ({
 						</InfoPanelField>
 					)}
 
-					{phone && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Phone')}</InfoPanelLabel>
-							<UserInfoCopyableText text={phone} label={t('Phone')}>
-								<Box is='a' withTruncatedText href={`tel:${phone}`}>
-									{phone}
-								</Box>
-							</UserInfoCopyableText>
+					{phoneNumbers && (
+						<InfoPanelField is='dl'>
+							<InfoPanelLabel is='dt'>{t('Phone_Numbers')}</InfoPanelLabel>
+							<InfoPanelText is='dd'>{phoneNumbers}</InfoPanelText>
 						</InfoPanelField>
 					)}
 
@@ -174,12 +170,12 @@ const UserInfo = ({
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Email')}</InfoPanelLabel>
 							<UserInfoCopyableText text={email} label={t('Email')}>
-								<Box is='a' withTruncatedText href={`mailto:${email}`}>
-									{email}
-								</Box>
-								<Margins inline={4}>
+								<Box display='flex' alignItems='center' gap={4} paddingInlineEnd={4} minWidth={0}>
+									<Box is='a' withTruncatedText href={`mailto:${email}`}>
+										{email}
+									</Box>
 									<Tag>{verified ? t('Verified') : t('Not_verified')}</Tag>
-								</Margins>
+								</Box>
 							</UserInfoCopyableText>
 						</InfoPanelField>
 					)}

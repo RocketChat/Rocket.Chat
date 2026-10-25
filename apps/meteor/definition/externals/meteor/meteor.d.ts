@@ -181,7 +181,9 @@ declare module 'meteor/meteor' {
 			};
 		}
 	}
+}
 
+declare module 'meteor/meteor' {
 	// eslint-disable-next-line no-var
 	var Meteor: {
 		[key: `loginWith${string}`]: any;

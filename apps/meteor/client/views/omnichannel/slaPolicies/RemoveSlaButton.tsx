@@ -32,7 +32,7 @@ const RemoveSlaButton = ({ _id, reload }: { _id: string; reload: () => void }) =
 	});
 
 	return (
-		<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
+		<GenericTableCell color='hint' truncate>
 			<IconButton icon='trash' small title={t('Remove')} onClick={handleDelete} />
 		</GenericTableCell>
 	);

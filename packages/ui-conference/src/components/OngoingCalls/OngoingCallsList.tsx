@@ -61,8 +61,8 @@ const OngoingCallsList = () => {
 			    On `total`, not on `showAll`: a list that was expanded and has since shrunk to five or fewer has
 			    nothing left to collapse, and went on offering "Show fewer" anyway. */}
 			{total > MAX_VISIBLE && (
-				<Box paddingInline={16} paddingBlock={4}>
-					<Button small secondary width='100%' onClick={() => setShowAll((shown) => !shown)}>
+				<Box paddingInline={16} paddingBlock={4} display='flex' flexDirection='column'>
+					<Button small secondary onClick={() => setShowAll((shown) => !shown)}>
 						{showAll ? t('Show_fewer') : showAllLabel}
 					</Button>
 				</Box>

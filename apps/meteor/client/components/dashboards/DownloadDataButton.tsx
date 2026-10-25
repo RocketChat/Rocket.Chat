@@ -1,4 +1,3 @@
-import type { Box } from '@rocket.chat/fuselage';
 import { IconButton } from '@rocket.chat/fuselage';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
@@ -15,7 +14,7 @@ type DownloadDataButtonProps<THeaders extends readonly string[]> = {
 	headers: RowFor<THeaders>;
 	dataAvailable: boolean;
 	dataExtractor: () => Promise<RowFor<THeaders>[] | undefined> | RowFor<THeaders>[] | undefined;
-} & Omit<ComponentProps<typeof Box>, 'attachmentName' | 'headers' | 'data'>;
+} & Partial<Omit<ComponentProps<typeof IconButton>, 'attachmentName' | 'headers' | 'data'>>;
 
 const DownloadDataButton = <H extends readonly string[]>({
 	attachmentName,

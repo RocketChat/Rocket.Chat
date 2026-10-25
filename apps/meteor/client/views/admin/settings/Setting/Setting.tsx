@@ -1,6 +1,6 @@
 import type { ISettingColor, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
 import { isSettingColor, isSetting, isSettingCode } from '@rocket.chat/core-typings';
-import { Box, Button, Tag } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Tag } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useSettingStructure } from '@rocket.chat/ui-contexts';
 import { useEffect, useMemo, useState, useCallback } from 'react';
@@ -139,9 +139,11 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 	const showUpgradeButton = useMemo(
 		() =>
 			shouldDisableEnterprise ? (
-				<Button marginBlockStart={4} is='a' href={PRICING_URL} target='_blank'>
-					{t('See_Paid_Plan')}
-				</Button>
+				<ButtonGroup>
+					<Button is='a' href={PRICING_URL} target='_blank'>
+						{t('See_Paid_Plan')}
+					</Button>
+				</ButtonGroup>
 			) : undefined,
 		[shouldDisableEnterprise, t],
 	);
