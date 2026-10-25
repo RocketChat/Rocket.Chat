@@ -38,6 +38,10 @@ describe('replaceUsernameMentions', () => {
 		expect(replaceUsernameMentions('@joé and @jo', 'jo', 'joe')).to.equal('@joé and @joe');
 	});
 
+	it('should leave mentions of longer usernames that continue with a combining mark', () => {
+		expect(replaceUsernameMentions('@jó and @jo', 'jo', 'joe')).to.equal('@jó and @joe');
+	});
+
 	it('should replace mentions of a username with a hyphen', () => {
 		expect(replaceUsernameMentions('hi @john-doe', 'john-doe', 'jd')).to.equal('hi @jd');
 	});

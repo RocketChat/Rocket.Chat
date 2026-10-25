@@ -1,4 +1,4 @@
-const nameChar = '[\\p{L}\\p{N}_-]';
+const nameChar = '[\\p{L}\\p{M}\\p{N}_-]';
 
 const escapeName = (name: string) => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
@@ -7,6 +7,6 @@ const escapeName = (name: string) => name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
  */
 export const replaceUsernameMentions = (text: string, previousUsername: string, username: string): string =>
 	text.replace(
-		new RegExp(`(?<![\\p{L}\\p{N}_.@-])@${escapeName(previousUsername)}(?!${nameChar}|\\.${nameChar})`, 'giu'),
+		new RegExp(`(?<![\\p{L}\\p{M}\\p{N}_.@-])@${escapeName(previousUsername)}(?!${nameChar}|\\.${nameChar})`, 'giu'),
 		() => `@${username}`,
 	);
