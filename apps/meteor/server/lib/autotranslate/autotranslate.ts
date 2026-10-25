@@ -8,7 +8,7 @@ import type {
 } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { Messages, Subscriptions } from '@rocket.chat/models';
-import { escapeHTML, isTruthy } from '@rocket.chat/tools';
+import { escapeHTML, escapeRegExp, isTruthy } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
@@ -26,6 +26,9 @@ const urlSchemes = 'http,https';
 const markdownLinkRegex = new RegExp(`(!?\\[)([^\\]]+)(\\]\\((?:${urlSchemes}):\\/\\/[^\\)]+\\))`, 'gm');
 const pipedLinkRegex = new RegExp(`((?:<|&lt;)(?:${urlSchemes}):\\/\\/[^\\|]+\\|)(.+?)(?=>|&gt;)((?:>|&gt;))`, 'gm');
 const wrappedParagraphRegex = new RegExp('^\\s*<p>|</p>\\s*$', 'gm');
+
+const wholeReferenceRegex = (prefix: '@' | '#', name: string) =>
+	new RegExp(`(?<![\\w.@#-])${prefix}${escapeRegExp(name)}(?![\\w-]|\\.[\\w-])`, 'gm');
 
 const Providers = Symbol('Providers');
 const Provider = Symbol('Provider');
@@ -238,7 +241,7 @@ export abstract class AutoTranslate {
 
 		if (message.mentions && message.mentions.length > 0) {
 			message.mentions.forEach((mention) => {
-				message.msg = message.msg.replace(new RegExp(`(@${mention.username})`, 'gm'), (match) => {
+				message.msg = message.msg.replace(wholeReferenceRegex('@', mention.username), (match) => {
 					const token = `<i class=notranslate>{${count++}}</i>`;
 					message.tokens?.push({
 						token,
@@ -251,7 +254,7 @@ export abstract class AutoTranslate {
 
 		if (message.channels && message.channels.length > 0) {
 			message.channels.forEach((channel) => {
-				message.msg = message.msg.replace(new RegExp(`(#${channel.name})`, 'gm'), (match) => {
+				message.msg = message.msg.replace(wholeReferenceRegex('#', channel.name), (match) => {
 					const token = `<i class=notranslate>{${count++}}</i>`;
 					message.tokens?.push({
 						token,
