@@ -5,9 +5,9 @@ import { Settings } from '@rocket.chat/models';
 import { escapeHTML, validateEmail } from '@rocket.chat/tools';
 import juice from 'juice';
 import { Email } from 'meteor/email';
-import { stripHtml } from 'string-strip-html';
 import _ from 'underscore';
 
+import { htmlToPlainText } from './htmlToPlainText';
 import { replaceVariables } from './replaceVariables';
 import { strLeft, strRightBack } from '../../../../lib/utils/stringUtils';
 import { settings } from '../../../settings';
@@ -159,7 +159,7 @@ export const sendNoWrap = async ({
 	}
 
 	if (!text) {
-		text = html ? stripHtml(html).result : undefined;
+		text = html ? htmlToPlainText(html) : undefined;
 	}
 
 	if (settings.get('email_plain_text_only')) {
@@ -202,7 +202,7 @@ export const send = async ({
 		from,
 		replyTo,
 		subject: replace(subject, data),
-		text: (text && replace(text, data)) || (html && stripHtml(replace(html, data)).result) || undefined,
+		text: (text && replace(text, data)) || (html && htmlToPlainText(replace(html, data))) || undefined,
 		html: html ? wrap(html, data) : undefined,
 		headers,
 	});
