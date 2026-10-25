@@ -1,21 +1,20 @@
-import type { ReactNode, MouseEvent, AllHTMLAttributes, RefAttributes } from 'react';
+import type { ReactNode, MouseEvent, AllHTMLAttributes, ElementType, RefAttributes } from 'react';
 import { memo } from 'react';
 
 import { cx, cxx } from '../../helpers/composeClassNames';
 import { prevent } from '../../helpers/prevent';
 import { useArrayLikeClassNameProp } from '../../hooks/useArrayLikeClassNameProp';
-import type { BoxProps } from '../Box';
 import { Icon, type IconProps } from '../Icon';
 import { Item, ItemContent, ItemIcon, ItemMedia, ItemTitle } from '../Item';
 
 export type OptionProps<TLabel = ReactNode> = RefAttributes<Element> & {
-	is?: BoxProps['is'];
+	is?: ElementType;
 	id?: string;
 	children?: ReactNode;
 	label?: TLabel;
 	focus?: boolean;
 	selected?: boolean;
-	className?: BoxProps['className'];
+	className?: string;
 	icon?: IconProps['name'];
 	/** Names what the `icon` conveys, such as "Federated". Without it, the icon is decorative. */
 	iconLabel?: string;

@@ -26,21 +26,21 @@ export type ToggleButtonProps = {
 	onToggle?: () => void;
 } & Omit<ComponentProps<typeof IconButton>, 'icon' | 'title' | 'aria-label' | 'disabled' | 'onClick'>;
 
-const pressedGlyphColor = ({
+const pressedGlyphStatus = ({
 	pressed,
 	dangerWhenPressed,
 	danger,
 	info,
-}: Pick<ToggleButtonProps, 'pressed' | 'dangerWhenPressed' | 'danger' | 'info'>) => {
+}: Pick<ToggleButtonProps, 'pressed' | 'dangerWhenPressed' | 'danger' | 'info'>): 'info' | 'danger' | undefined => {
 	if (!pressed || dangerWhenPressed) {
 		return undefined;
 	}
 
 	if (info) {
-		return 'font-info';
+		return 'info';
 	}
 
-	return danger ? 'font-danger' : undefined;
+	return danger ? 'danger' : undefined;
 };
 
 const ToggleButton = ({
@@ -57,23 +57,27 @@ const ToggleButton = ({
 	large = false,
 	dangerWhenPressed = false,
 	...props
-}: ToggleButtonProps) => (
-	<IconButton
-		{...props}
-		label={label}
-		tiny={tiny}
-		large={large}
-		medium={!tiny && !large}
-		secondary={secondary}
-		danger={dangerWhenPressed && pressed}
-		icon={
-			<Icon size={large ? 20 : 16} color={pressedGlyphColor({ pressed, dangerWhenPressed, danger, info })} name={icons[pressed ? 1 : 0]} />
-		}
-		title={titles[pressed ? 1 : 0]}
-		aria-label={label}
-		disabled={disabled}
-		onClick={onToggle}
-	/>
-);
+}: ToggleButtonProps) => {
+	const glyphStatus = pressedGlyphStatus({ pressed, dangerWhenPressed, danger, info });
+	const glyphSize = large ? 20 : 16;
+	const glyphName = icons[pressed ? 1 : 0];
+
+	return (
+		<IconButton
+			{...props}
+			label={label}
+			tiny={tiny}
+			large={large}
+			medium={!tiny && !large}
+			secondary={secondary}
+			danger={dangerWhenPressed && pressed}
+			icon={<Icon size={glyphSize} color={glyphStatus} name={glyphName} />}
+			title={titles[pressed ? 1 : 0]}
+			aria-label={label}
+			disabled={disabled}
+			onClick={onToggle}
+		/>
+	);
+};
 
 export default ToggleButton;

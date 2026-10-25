@@ -2,6 +2,7 @@ import type { UserStatus } from '@rocket.chat/core-typings';
 import type { CallFeature } from '@rocket.chat/media-signaling';
 
 export type InternalPeerInfo = {
+	type: 'user';
 	displayName: string;
 	userId: string;
 	username?: string;
@@ -11,14 +12,20 @@ export type InternalPeerInfo = {
 };
 
 export type ExternalPeerInfo = {
+	type: 'sip';
 	number: string;
 	displayName?: string;
 	avatarUrl?: string;
 };
 
+export type UnknownPeerInfo = {
+	type: 'unknown';
+	displayName?: string;
+};
+
 export type ConnectionState = 'CONNECTED' | 'CONNECTING' | 'RECONNECTING';
 
-export type PeerInfo = InternalPeerInfo | ExternalPeerInfo;
+export type PeerInfo = InternalPeerInfo | ExternalPeerInfo | UnknownPeerInfo;
 
 export type State = 'none' | 'calling' | 'ringing' | 'ongoing';
 

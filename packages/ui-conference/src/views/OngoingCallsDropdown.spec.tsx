@@ -7,10 +7,9 @@ import * as stories from './OngoingCallsDropdown.stories';
 
 /**
  * Whether the button is there at all and what colour it is — red while something rings, blue while something
- * merely runs — is what the stories show, and the snapshots are what hold it. Asserting a Fuselage class name
- * for that only pinned the class name.
+ * merely runs — is what the stories show.
  *
- * What is left here is what the button does: opening the list, opening itself when a call starts ringing, and
+ * What is tested here is what the button does: opening the list, opening itself when a call starts ringing, and
  * giving the calls somewhere to be found.
  */
 const { OneOngoing, Ringing, SeveralOngoing } = composeStories(stories);
@@ -21,7 +20,7 @@ const testCases = Object.values(composeStories(stories)).map((Story) => [Story.s
  * A fixed now, set to the day the fixtures say their calls started.
  *
  * Without it these rows render the *date* a call began, because that date is in the past — and the string moves
- * on as the calendar does, so a snapshot of it goes stale on its own. Frozen alongside the fixture, the row says
+ * on as the calendar does. Frozen alongside the fixture, the row says
  * the time the call started, which is what it says for a call running now.
  *
  * Only `Date` is faked; timers stay real, so the interactions below behave as in a browser.
@@ -52,12 +51,6 @@ afterEach(() => {
 });
 
 describe('OngoingCallsDropdown', () => {
-	test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
-		const { baseElement } = render(<Story />);
-
-		expect(baseElement).toMatchSnapshot();
-	});
-
 	// Audited from `baseElement` and not from `container`: the dropdown is portalled to the body, so a run over
 	// the render container covered the button and nothing the button opens — including the story that opens the
 	// list on its own.

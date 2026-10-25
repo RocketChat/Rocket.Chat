@@ -9,4 +9,4 @@ export { default as HeaderSubtitle } from './HeaderSubtitle';
 export { HeaderTag, HeaderTagIcon, HeaderTagSkeleton } from './HeaderTag';
 export { default as HeaderTitle } from './HeaderTitle';
 export { default as HeaderTitleButton } from './HeaderTitleButton';
-export { HeaderToolbar, HeaderToolbarAction, HeaderToolbarActionBadge, HeaderToolbarDivider } from './HeaderToolbar';
+export { HeaderToolbar, HeaderToolbarAction, HeaderToolbarDivider } from './HeaderToolbar';

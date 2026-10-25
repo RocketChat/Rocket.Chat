@@ -25,6 +25,7 @@ type MeProjectedUserFields = Pick<
 	| 'username'
 	| 'nickname'
 	| 'emails'
+	| 'phones'
 	| 'status'
 	| 'statusDefault'
 	| 'statusText'

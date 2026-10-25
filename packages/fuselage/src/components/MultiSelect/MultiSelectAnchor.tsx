@@ -1,6 +1,6 @@
 import type { AriaAttributes, FocusEventHandler, KeyboardEventHandler, MouseEventHandler, ReactNode, RefAttributes } from 'react';
 
-import SelectFocus from '../Select/SelectFocus';
+import { Box } from '../Box';
 
 type MultiSelectAnchorProps = RefAttributes<Element> & {
 	children: ReactNode;
@@ -15,7 +15,7 @@ type MultiSelectAnchorProps = RefAttributes<Element> & {
 } & AriaAttributes;
 
 function MultiSelectAnchor(props: MultiSelectAnchorProps) {
-	return <SelectFocus rcx-input-box--undecorated order={1} {...props} />;
+	return <Box fontScale='p2m' color='hint' rcx-select__focus is='button' type='button' rcx-input-box--undecorated order={1} {...props} />;
 }
 
 export default MultiSelectAnchor;

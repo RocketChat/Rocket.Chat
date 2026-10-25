@@ -161,6 +161,12 @@ describe('AssetSettingInput', () => {
 		expect(label).toHaveTextContent('Site logo*');
 	});
 
+	it('labels the file input with the setting label', () => {
+		const { getFileInput } = setup();
+
+		expect(screen.getByLabelText('Site logo', { selector: 'input' })).toBe(getFileInput());
+	});
+
 	it('renders an optional label without a required marker', () => {
 		setup({ required: false });
 

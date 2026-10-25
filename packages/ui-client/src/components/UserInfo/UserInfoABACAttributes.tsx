@@ -1,5 +1,5 @@
 import type { IAbacAttributeDefinition } from '@rocket.chat/core-typings';
-import { Box, Margins } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 
 import UserInfoABACAttribute from './UserInfoABACAttribute';
 
@@ -9,16 +9,10 @@ export type UserInfoABACAttributesProps = {
 
 const UserInfoABACAttributes = ({ abacAttributes }: UserInfoABACAttributesProps) => {
 	return (
-		<Box margin='neg-x2'>
-			<Box flexWrap='wrap' display='flex' flexShrink={0} marginBlock={8}>
-				{abacAttributes.map((attribute, index) =>
-					attribute.values.map((value) => (
-						<Margins inline={2} blockEnd={4} key={`${attribute.key}-${value}-${index}`}>
-							<UserInfoABACAttribute attribute={value} />
-						</Margins>
-					)),
-				)}
-			</Box>
+		<Box flexWrap='wrap' display='flex' flexShrink={0} gap='x4' marginBlock='x8'>
+			{abacAttributes.map((attribute, index) =>
+				attribute.values.map((value) => <UserInfoABACAttribute key={`${attribute.key}-${value}-${index}`} attribute={value} />),
+			)}
 		</Box>
 	);
 };

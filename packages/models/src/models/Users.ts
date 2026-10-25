@@ -30,6 +30,7 @@ import type {
 	Document,
 	UpdateFilter,
 	UpdateOptions,
+	UpdateResult,
 	FindCursor,
 	SortDirection,
 	FindOneAndUpdateOptions,
@@ -84,7 +85,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			{ key: { 'services.saml.inResponseTo': 1 } },
 			{ key: { openBusinessHours: 1 }, sparse: true },
 			{ key: { statusLivechat: 1 }, sparse: true },
-			{ key: { freeSwitchExtension: 1 }, sparse: true, unique: true },
+			{ key: { sipExtension: 1 }, sparse: true, unique: true },
 			{ key: { language: 1 }, sparse: true },
 			{ key: { 'active': 1, 'services.email2fa.enabled': 1 }, sparse: true }, // used by statistics
 			{ key: { 'active': 1, 'services.totp.enabled': 1 }, sparse: true }, // used by statistics
@@ -165,6 +166,75 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>> {
 		return this.find<T, O>({ active: true, __rooms: { $in: roomIds } }, options);
+	}
+
+	private activeByRoomIdAfterUsernameQuery(
+		roomId: IRoom['_id'],
+		{
+			search,
+			after,
+			until,
+			match,
+		}: {
+			search?: string;
+			after?: Required<Pick<IUser, '_id' | 'username'>>;
+			until?: Required<Pick<IUser, '_id' | 'username'>>;
+			match?: Filter<IUser>;
+		},
+	): Filter<IUser> {
+		const conditions: Filter<IUser>[] = [];
+
+		if (search) {
+			const regex = new RegExp(escapeRegExp(search), 'i');
+			conditions.push({ $or: [{ username: regex }, { name: regex }] });
+		}
+
+		if (after) {
+			const { _id, username } = after;
+			conditions.push({ $or: [{ username: { $gt: username } }, { username, _id: { $gt: _id } }] });
+		}
+
+		if (until) {
+			const { _id, username } = until;
+			conditions.push({ $or: [{ username: { $lt: username } }, { username, _id: { $lte: _id } }] });
+		}
+
+		if (match) {
+			conditions.push(match);
+		}
+
+		return { active: true, __rooms: roomId, ...(conditions.length > 0 && { $and: conditions }) };
+	}
+
+	findActiveByRoomIdAfterUsername<T extends Document = IUser>(
+		roomId: IRoom['_id'],
+		{ limit, ...range }: { search?: string; after?: Required<Pick<IUser, '_id' | 'username'>>; match?: Filter<IUser>; limit: number },
+		options?: FindOptions<IUser>,
+	): FindCursor<T> {
+		return this.find<T>(this.activeByRoomIdAfterUsernameQuery(roomId, range), {
+			...options,
+			sort: { username: 1, _id: 1 },
+			limit,
+		});
+	}
+
+	countActiveByRoomIdAfterUsername(
+		roomId: IRoom['_id'],
+		range: {
+			search?: string;
+			after?: Required<Pick<IUser, '_id' | 'username'>>;
+			until?: Required<Pick<IUser, '_id' | 'username'>>;
+		} = {},
+	): Promise<number> {
+		return this.countDocuments(this.activeByRoomIdAfterUsernameQuery(roomId, range));
+	}
+
+	findOneByIdAndRoomId<T extends Document = IUser>(
+		userId: IUser['_id'],
+		roomId: IRoom['_id'],
+		options?: FindOptions<IUser>,
+	): Promise<T | null> {
+		return this.findOne<T>({ _id: userId, __rooms: roomId }, options);
 	}
 
 	setCasExternalIdByUsername(username: string): Promise<IUser | null> {
@@ -1658,6 +1728,38 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		});
 	}
 
+	upsertXMPPUser(jid: string, origin: string, name?: string): Promise<IUser | null> {
+		return this.findOneAndUpdate(
+			{ username: jid, xmppFederation: { $exists: true } },
+			{
+				$set: {
+					username: jid,
+					...(name && { name }),
+					type: 'user' as const,
+					active: true,
+					roles: ['federated-external'],
+					requirePasswordChange: false,
+					federated: true,
+					xmppFederation: { version: 1 as const, jid, origin },
+					_updatedAt: new Date(),
+				},
+				$setOnInsert: {
+					...(!name && { name: jid }),
+					status: UserStatus.OFFLINE,
+					createdAt: new Date(),
+				},
+			},
+			{
+				upsert: true,
+				returnDocument: 'after',
+			},
+		);
+	}
+
+	updateStatusAndStatusDefaultById(userId: IUser['_id'], status: UserStatus): Promise<UpdateResult> {
+		return this.updateOne({ _id: userId }, { $set: { status, statusDefault: status } });
+	}
+
 	findOnlineUserFromList<T extends Document = ILivechatAgent>(
 		userList: string | string[],
 		isLivechatEnabledWhenAgentIdle?: boolean,
@@ -2046,7 +2148,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	getAgentInfo(
 		agentId: IUser['_id'],
 		showAgentEmail = false,
-	): Promise<Pick<ILivechatAgent, '_id' | 'name' | 'username' | 'phone' | 'customFields' | 'status' | 'livechat' | 'emails'> | null> {
+	): Promise<Pick<ILivechatAgent, '_id' | 'name' | 'username' | 'phones' | 'customFields' | 'status' | 'livechat' | 'emails'> | null> {
 		// TODO: Create class Agent
 		const query = {
 			_id: agentId,
@@ -2056,7 +2158,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			projection: {
 				name: 1,
 				username: 1,
-				phone: 1,
+				phones: 1,
 				customFields: 1,
 				status: 1,
 				livechat: 1,
@@ -2276,15 +2378,16 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return !!result?._id;
 	}
 
-	addEmailCodeByUserId(userId: IUser['_id'], code: string, expire: Date) {
+	addEmailCodeByUserId(userId: IUser['_id'], code: string, expire: Date, notSentSince: Date) {
 		return this.updateOne(
-			{ _id: userId },
+			{ '_id': userId, 'services.emailCode.sentAt': { $not: { $gt: notSentSince } } },
 			{
 				$set: {
 					'services.emailCode': {
 						code,
 						expire,
 						attempts: 0,
+						sentAt: new Date(),
 					},
 				},
 			},
@@ -2634,14 +2737,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.countDocuments(query);
 	}
 
-	findCrowdUsers<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
-		options?: O,
-	): FindCursor<DocumentWithProjection<T, O>> {
-		const query = { crowd: true };
-
-		return this.find<T, O>(query, options);
-	}
-
 	async getLastLogin(options: FindOptions<IUser> = { projection: { _id: 0, lastLogin: 1 } }) {
 		options.sort = { lastLogin: -1 };
 		const user = await this.findOne({}, options);
@@ -2734,13 +2829,13 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		);
 	}
 
-	findOneByFreeSwitchExtension<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
-		freeSwitchExtension: string,
+	findOneBySipExtension<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		sipExtension: string,
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null> {
 		return this.findOne<T, O>(
 			{
-				freeSwitchExtension,
+				sipExtension,
 			},
 			options,
 		);
@@ -3036,6 +3131,11 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 						},
 					}),
 		};
+		return this.updateOne({ _id }, update);
+	}
+
+	setPhones(_id: IUser['_id'], phones: IUser['phones']) {
+		const update: UpdateFilter<IUser> = phones?.length ? { $set: { phones } } : { $unset: { phones: 1 } };
 		return this.updateOne({ _id }, update);
 	}
 

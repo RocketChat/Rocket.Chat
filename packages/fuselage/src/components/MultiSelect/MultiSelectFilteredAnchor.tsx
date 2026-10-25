@@ -11,14 +11,13 @@ function MultiSelectFilteredAnchor({ children: _children, ...props }: MultiSelec
 	const { placeholder, filter, setFilter } = use(MultiSelectFilteredContext);
 
 	return (
-		<FlexItem grow={1}>
+		<FlexItem grow={1} order={1}>
 			<Input
 				placeholder={placeholder}
 				value={filter}
 				onInput={(e: InputEvent<HTMLInputElement>) => setFilter?.(e.currentTarget.value)}
 				{...props}
-				rcx-input-box--undecorated
-				order={1}
+				className='rcx-input-box--undecorated'
 				autoComplete='off'
 			/>
 		</FlexItem>

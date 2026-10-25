@@ -230,10 +230,12 @@ const ConferencePreflight = ({
 					{action === 'start' && canChooseRinging && (
 						<Box marginBlockStart={16} width='100%'>
 							<Field>
-								<FieldRow justifyContent='center'>
-									<CheckBox id='conference-preflight-ring' checked={ring} onChange={toggleRing} />
-									<Box is='label' htmlFor='conference-preflight-ring' fontScale='p2' color='default' marginInlineStart={8}>
-										{t('Ring_people')}
+								<FieldRow>
+									<Box display='flex' alignItems='center' justifyContent='center' flexGrow={1}>
+										<CheckBox id='conference-preflight-ring' checked={ring} onChange={toggleRing} />
+										<Box is='label' htmlFor='conference-preflight-ring' fontScale='p2' color='default' marginInlineStart={8}>
+											{t('Ring_people')}
+										</Box>
 									</Box>
 								</FieldRow>
 							</Field>

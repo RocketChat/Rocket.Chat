@@ -4,11 +4,9 @@ import { paginationQueryProperties } from '../pagination';
 
 export type DmMessagesProps = PaginatedRequest<
 	({ roomId: string } | { username: string }) & {
-		query?: string;
 		mentionIds?: string;
 		starredIds?: string;
 		pinned?: string;
-		fields?: string;
 	}
 >;
 
@@ -27,12 +25,6 @@ export const isDmMessagesProps = ajvQuery.compile<DmMessagesProps>({
 					type: 'string',
 				},
 				pinned: {
-					type: 'string',
-				},
-				fields: {
-					type: 'string',
-				},
-				query: {
 					type: 'string',
 				},
 				sort: {
@@ -56,12 +48,6 @@ export const isDmMessagesProps = ajvQuery.compile<DmMessagesProps>({
 					type: 'string',
 				},
 				pinned: {
-					type: 'string',
-				},
-				query: {
-					type: 'string',
-				},
-				fields: {
 					type: 'string',
 				},
 				sort: {

@@ -8,8 +8,35 @@ import type { Subscription } from './types/Subscription';
 import type { MethodPayload } from './types/methodsPayloads';
 import type { PublicationPayloads } from './types/publicationPayloads';
 
+/**
+ * Rejection of a method call whose frame went out on a connection that dropped before the result arrived.
+ * The server may or may not have run the method.
+ */
+export class ConnectionLostError extends Error {
+	constructor() {
+		super('Connection lost before the method result arrived');
+		this.name = 'ConnectionLostError';
+	}
+}
+
+type PendingMethod = {
+	payload: MethodPayload;
+	options?: DDPDispatchOptions;
+	sent: boolean;
+	held: boolean;
+	// A call of the new session itself (its login): goes out while holding and is never resent.
+	session: boolean;
+	fail: (error: unknown) => void;
+};
+
 export class ClientStreamImpl extends Emitter implements ClientStream {
 	subscriptions = new Map<string, Subscription>();
+
+	private pending = new Map<string, PendingMethod>();
+
+	private holding = false;
+
+	private sessionCalls = false;
 
 	constructor(
 		private ddp: DDPClient,
@@ -21,6 +48,12 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 			}
 		});
 		super();
+
+		dispatcher.on('send', (payload) => {
+			if (payload.msg !== 'method') return;
+			const method = this.pending.get(payload.id);
+			if (method) method.sent = true;
+		});
 	}
 
 	private apply({
@@ -32,10 +65,14 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 		callback?: (...args: any[]) => void;
 		options?: DDPDispatchOptions;
 	}): string {
-		this.dispatcher.dispatch(ddpCallPayload, options);
-
-		this.ddp.onResult(ddpCallPayload.id, (payload) => {
+		const settle = () => {
+			stopListening();
+			this.pending.delete(ddpCallPayload.id);
 			this.dispatcher.removeItem(ddpCallPayload);
+		};
+
+		const stopListening = this.ddp.onResult(ddpCallPayload.id, (payload) => {
+			settle();
 			if (typeof callback === 'function') {
 				if ('error' in payload) {
 					callback(payload.error);
@@ -45,7 +82,80 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 			}
 		});
 
+		const held = this.holding && !this.sessionCalls;
+		this.pending.set(ddpCallPayload.id, {
+			payload: ddpCallPayload,
+			options,
+			sent: false,
+			held,
+			session: this.sessionCalls,
+			fail: (error) => {
+				settle();
+				callback?.(error);
+			},
+		});
+
+		if (!held) {
+			this.dispatcher.dispatch(ddpCallPayload, options);
+		}
+
 		return ddpCallPayload.id;
+	}
+
+	/**
+	 * Fails every method call already handed to the transport; calls still held behind a wait
+	 * method are released to the transport instead.
+	 */
+	rejectInFlight(error: unknown = new ConnectionLostError()): void {
+		[...this.pending.values()].filter(({ sent }) => sent).forEach(({ fail }) => fail(error));
+	}
+
+	/** Fails every pending method call, sent or not; none of them goes out afterwards. */
+	rejectAll(error: unknown = new ConnectionLostError()): void {
+		this.holding = false;
+		this.dispatcher.queue = [];
+		[...this.pending.values()].forEach(({ fail }) => fail(error));
+	}
+
+	/**
+	 * Keeps every unanswered method call, and every call made until `releaseHeld()`, aside so the calls of the
+	 * next session (its login, see `sendSessionCalls()`) go first. A lost session call is rejected instead.
+	 */
+	holdInFlight(): void {
+		this.holding = true;
+		this.dispatcher.queue = [];
+		[...this.pending.values()].forEach((method) => {
+			if (method.session) {
+				method.fail(new ConnectionLostError());
+				return;
+			}
+			method.sent = false;
+			method.held = true;
+		});
+	}
+
+	/** Runs `fn`, sending the calls it makes right away even while calls are held. */
+	sendSessionCalls<T>(fn: () => T): T {
+		this.sessionCalls = true;
+		try {
+			return fn();
+		} finally {
+			this.sessionCalls = false;
+		}
+	}
+
+	/**
+	 * Hands the calls kept by `holdInFlight()` to the transport again, in call order, as Meteor does after a
+	 * reconnection. A call whose frame did reach the server runs twice.
+	 */
+	releaseHeld(): void {
+		this.holding = false;
+		[...this.pending.values()]
+			.filter(({ held }) => held)
+			.forEach((method) => {
+				method.held = false;
+				this.dispatcher.dispatch(method.payload, method.options);
+			});
 	}
 
 	call(method: string, ...params: any[]): string {
@@ -54,12 +164,7 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 	}
 
 	callWithOptions(method: string, options: DDPDispatchOptions, ...params: any[]): string {
-		// get the last argument
-		const callback = params.pop();
-		// if it's not a function, then push it back
-		if (typeof callback !== 'function') {
-			params.push(callback);
-		}
+		const callback = typeof params[params.length - 1] === 'function' ? params.pop() : undefined;
 
 		const payload = this.ddp.call(method, params);
 
@@ -106,22 +211,31 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 		// eslint-disable-next-line @typescript-eslint/no-this-alias
 		const self = this;
 
-		const s = self.ddp.onPublish(id, (payload) => {
-			if ('error' in payload) {
-				result.error = payload.error;
-				this.subscriptions.delete(id);
+		// Kept for the whole subscription: a resubscription after a reconnect answers again.
+		const stopListening = self.ddp.onPublish(id, (payload) => {
+			if (payload.msg === 'ready') {
+				result.isReady = true;
 				return;
 			}
-			result.isReady = true;
-			this.subscriptions.set(id, {
-				...result,
-				isReady: true,
-			});
+			if (payload.msg !== 'nosub') {
+				return;
+			}
+			stopListening();
+			result.isReady = false;
+			result.error = payload.error ?? new Error(`Subscription ${name} was stopped by the server`);
+			this.subscriptions.delete(id);
+			stopListeners.forEach((listener) => listener(result.error));
 		});
 
+		const stopListeners = new Set<(error: unknown) => void>();
+
+		const changeListenerRemovers = new Set<() => void>();
+
 		const stop = () => {
-			s();
-			void self.unsubscribe(id);
+			stopListening();
+			changeListenerRemovers.forEach((remove) => remove());
+			self.subscriptions.delete(id);
+			self.ddp.unsubscribe(id);
 		};
 
 		const result: Subscription = {
@@ -129,28 +243,45 @@ export class ClientStreamImpl extends Emitter implements ClientStream {
 			name,
 			params,
 			async ready() {
-				const subscription = self.subscriptions.get(id);
-				if (!subscription) {
-					return Promise.reject(result.error);
+				if (result.isReady) {
+					return;
 				}
 
-				if (subscription.isReady) {
-					return Promise.resolve();
+				if (!self.subscriptions.has(id)) {
+					throw result.error ?? new Error(`Subscription ${name} was stopped`);
 				}
 
 				return new Promise((resolve, reject) => {
-					this.onChange((payload) => {
-						if ('error' in payload) {
-							reject(payload.error);
+					const stopWaiting = self.ddp.onPublish(id, (payload) => {
+						if (payload.msg !== 'ready' && payload.msg !== 'nosub') {
 							return;
 						}
-						resolve();
+						stopWaiting();
+						if (payload.msg === 'ready') {
+							resolve();
+							return;
+						}
+						reject(result.error);
 					});
 				});
 			},
 			isReady: false,
 			onChange: (cb) => {
-				self.ddp.onPublish(id, cb);
+				// Gone once the subscription ends: on stop(), or right after delivering the server's nosub.
+				const remove = self.ddp.onPublish(id, (payload) => {
+					cb(payload);
+					if (payload.msg === 'nosub') {
+						remove();
+						changeListenerRemovers.delete(remove);
+					}
+				});
+				changeListenerRemovers.add(remove);
+			},
+			onStop: (listener) => {
+				stopListeners.add(listener);
+				return () => {
+					stopListeners.delete(listener);
+				};
 			},
 
 			stop,

@@ -10,15 +10,15 @@
 	"scripts": {
 		"build": "rm -rf dist && tsc",
 		"dev": "tsc --watch --preserveWatchOutput",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix .",
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
 		"test": "jest",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/federation-sdk": "0.8.1",
+		"@rocket.chat/federation-sdk": "0.9.0",
 		"@rocket.chat/http-router": "workspace:^",
 		"@rocket.chat/icons": "workspace:~",
 		"@rocket.chat/media-signaling": "workspace:^",
@@ -35,7 +35,7 @@
 		"eslint": "~10.12.0",
 		"jest": "~30.5.2",
 		"mongodb": "6.16.0",
-		"typescript": "~5.9.3"
+		"typescript": "~7.0.2"
 	},
 	"volta": {
 		"extends": "../../package.json"

@@ -15,9 +15,11 @@ export type SettingFieldProps = {
 	className?: string;
 	settingId: string;
 	sectionChanged?: boolean;
+	disabled?: boolean;
+	onBeforeChange?: (value: SettingValue, proceed: () => void) => void;
 };
 
-function SettingField({ className = undefined, settingId, sectionChanged }: SettingFieldProps) {
+function SettingField({ className = undefined, settingId, sectionChanged, disabled: forceDisabled, onBeforeChange }: SettingFieldProps) {
 	const setting = useEditableSetting(settingId);
 	const persistedSetting = useSettingStructure(settingId);
 	const hasSettingModule = useHasSettingModule(setting);
@@ -67,10 +69,19 @@ function SettingField({ className = undefined, settingId, sectionChanged }: Sett
 
 	const onChangeValue = useCallback(
 		(value: SettingValue) => {
-			setValue(value);
-			update({ value });
+			const apply = () => {
+				setValue(value);
+				update({ value });
+			};
+
+			if (onBeforeChange) {
+				onBeforeChange(value, apply);
+				return;
+			}
+
+			apply();
 		},
-		[update],
+		[onBeforeChange, update],
 	);
 
 	const onChangeEditor = useCallback(
@@ -82,18 +93,27 @@ function SettingField({ className = undefined, settingId, sectionChanged }: Sett
 	);
 
 	const onResetButtonClick = useCallback(() => {
-		setValue(setting.value);
-		setEditor(isSettingColor(setting) ? setting.editor : undefined);
-		update({
-			value: persistedSetting.packageValue,
-			...(isSettingColor(persistedSetting) && { editor: persistedSetting.packageEditor }),
-		});
+		const apply = () => {
+			setValue(setting.value);
+			setEditor(isSettingColor(setting) ? setting.editor : undefined);
+			update({
+				value: persistedSetting.packageValue,
+				...(isSettingColor(persistedSetting) && { editor: persistedSetting.packageEditor }),
+			});
+		};
+
+		if (onBeforeChange) {
+			onBeforeChange(persistedSetting.packageValue, apply);
+			return;
+		}
+
+		apply();
 		// eslint-disable-next-line react-hooks/exhaustive-deps
-	}, [setting.value, (setting as ISettingColor).editor, update, persistedSetting]);
+	}, [setting.value, (setting as ISettingColor).editor, update, persistedSetting, onBeforeChange]);
 
 	const { _id, readonly, type, packageValue, i18nLabel, i18nDescription, alert } = setting;
 
-	const disabled = !useEditableSettingVisibilityQuery(persistedSetting.enableQuery);
+	const disabled = !useEditableSettingVisibilityQuery(persistedSetting.enableQuery) || Boolean(forceDisabled);
 	const invisible = !useEditableSettingVisibilityQuery(persistedSetting.displayQuery);
 
 	const labelText = (i18n.exists(i18nLabel) && t(i18nLabel)) || (i18n.exists(_id) && t(_id)) || i18nLabel || _id;

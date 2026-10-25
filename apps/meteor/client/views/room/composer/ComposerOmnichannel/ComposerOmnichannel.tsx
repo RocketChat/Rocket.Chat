@@ -6,9 +6,9 @@ import { useIsRoomOverMacLimit } from '../../../omnichannel/hooks/useIsRoomOverM
 import { useOmnichannelRoom, useUserIsSubscribed } from '../../contexts/RoomContext';
 import type { ComposerMessageProps } from '../ComposerMessage';
 import ComposerMessage from '../ComposerMessage';
-import ComposerOmnichannelCallout from './ComposerOmnichannelCallout';
 import { ComposerOmnichannelInquiry } from './ComposerOmnichannelInquiry';
 import { ComposerOmnichannelJoin } from './ComposerOmnichannelJoin';
+import { ComposerOmnichannelLayout } from './ComposerOmnichannelLayout';
 import { ComposerOmnichannelOnHold } from './ComposerOmnichannelOnHold';
 
 const ComposerOmnichannel = (props: ComposerMessageProps) => {
@@ -25,54 +25,48 @@ const ComposerOmnichannel = (props: ComposerMessageProps) => {
 
 	if (!open) {
 		return (
-			<>
-				<ComposerOmnichannelCallout />
+			<ComposerOmnichannelLayout>
 				<MessageFooterCallout color='default'>{t('This_conversation_is_already_closed')}</MessageFooterCallout>
-			</>
+			</ComposerOmnichannelLayout>
 		);
 	}
 
 	if (isRoomOverMacLimit) {
 		return (
-			<>
-				<ComposerOmnichannelCallout />
+			<ComposerOmnichannelLayout>
 				<MessageFooterCallout color='default'>{t('Workspace_exceeded_MAC_limit_disclaimer')}</MessageFooterCallout>
-			</>
+			</ComposerOmnichannelLayout>
 		);
 	}
 
 	if (onHold) {
 		return (
-			<>
-				<ComposerOmnichannelCallout />
+			<ComposerOmnichannelLayout>
 				<ComposerOmnichannelOnHold />
-			</>
+			</ComposerOmnichannelLayout>
 		);
 	}
 
 	if (isInquired) {
 		return (
-			<>
-				<ComposerOmnichannelCallout />
+			<ComposerOmnichannelLayout>
 				<ComposerOmnichannelInquiry />
-			</>
+			</ComposerOmnichannelLayout>
 		);
 	}
 
 	if (!isSubscribed && !isSameAgent) {
 		return (
-			<>
-				<ComposerOmnichannelCallout />
+			<ComposerOmnichannelLayout>
 				<ComposerOmnichannelJoin />
-			</>
+			</ComposerOmnichannelLayout>
 		);
 	}
 
 	return (
-		<>
-			<ComposerOmnichannelCallout />
+		<ComposerOmnichannelLayout>
 			<ComposerMessage {...props} />
-		</>
+		</ComposerOmnichannelLayout>
 	);
 };
 

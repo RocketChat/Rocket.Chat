@@ -1,6 +1,6 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
-import { Box, Margins, Throbber, States, StatesIcon, StatesTitle, Select } from '@rocket.chat/fuselage';
+import { Box, Throbber, States, StatesIcon, StatesTitle, Select } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { VirtualizedScrollbars, ContextualbarContent, ContextualbarEmptyContent } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
@@ -70,7 +70,7 @@ const ContactInfoHistory = ({ contact, setChatId }: ContactInfoHistoryProps) => 
 	);
 
 	return (
-		<ContextualbarContent paddingInline={0}>
+		<ContextualbarContent flush>
 			<Box
 				display='flex'
 				flexDirection='row'
@@ -80,16 +80,14 @@ const ContactInfoHistory = ({ contact, setChatId }: ContactInfoHistoryProps) => 
 				borderBlockEndColor='extra-light'
 				flexShrink={0}
 			>
-				<Box display='flex' flexDirection='row' flexGrow={1} marginInline='neg-x4'>
-					<Margins inline={4}>
-						<Select
-							value={type}
-							onChange={handleChangeFilter}
-							placeholder={t('Filter')}
-							options={historyFilterOptions}
-							disabled={type === 'all' && data?.history.length === 0}
-						/>
-					</Margins>
+				<Box display='flex' flexDirection='row' flexGrow={1}>
+					<Select
+						value={type}
+						onChange={handleChangeFilter}
+						placeholder={t('Filter')}
+						options={historyFilterOptions}
+						disabled={type === 'all' && data?.history.length === 0}
+					/>
 				</Box>
 			</Box>
 			{isLoading && (

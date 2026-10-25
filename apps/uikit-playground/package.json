@@ -7,7 +7,7 @@
 		".:build-preview-move": "mkdir -p ../../.preview/ && cp -r ./dist ../../.preview/uikit-playground",
 		"build-preview": "tsc && vite build",
 		"dev": "vite",
-		"lint": "eslint .",
+		"lint": "yarn run -T oxlint",
 		"preview": "vite preview",
 		"typecheck": "tsc --noEmit"
 	},
@@ -48,8 +48,8 @@
 		"@types/react-dom": "~19.2.7",
 		"@vitejs/plugin-react": "~6.0.5",
 		"eslint": "~10.12.0",
-		"typescript": "~5.9.3",
-		"vite": "^8.0.16"
+		"typescript": "~7.0.2",
+		"vite": "~8.2.2"
 	},
 	"volta": {
 		"extends": "../../package.json"

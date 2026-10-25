@@ -42,7 +42,7 @@ type Story = StoryObj<typeof Scrollable>;
 export const Default: Story = {
 	render: () => (
 		<Scrollable>
-			<Tile padding='none' maxWidth='full' height={100}>
+			<Tile flush style={{ maxWidth: '100%', height: 100 }}>
 				<Box width='200%' height='1000%' />
 			</Tile>
 		</Scrollable>
@@ -52,7 +52,7 @@ export const Default: Story = {
 export const HorizontalScrolling: Story = {
 	render: () => (
 		<Scrollable horizontal>
-			<Tile padding='none' maxWidth='full'>
+			<Tile flush style={{ maxWidth: '100%' }}>
 				<Box width='200%' height={100} />
 			</Tile>
 		</Scrollable>
@@ -62,7 +62,7 @@ export const HorizontalScrolling: Story = {
 export const VerticalScrolling: Story = {
 	render: () => (
 		<Scrollable vertical>
-			<Tile padding='none' height={100}>
+			<Tile flush style={{ height: 100 }}>
 				<Box height='1000%' />
 			</Tile>
 		</Scrollable>
@@ -72,7 +72,7 @@ export const VerticalScrolling: Story = {
 export const SmoothScrolling: Story = {
 	render: () => (
 		<Scrollable smooth>
-			<Tile padding='none' height={100}>
+			<Tile flush style={{ height: 100 }}>
 				<Box height='1000%' />
 			</Tile>
 		</Scrollable>
@@ -82,7 +82,7 @@ export const SmoothScrolling: Story = {
 export const OnScrollContentEvent: Story = {
 	render: () => (
 		<Scrollable onScrollContent={action('scrollContent')}>
-			<Tile padding='none' height={100}>
+			<Tile flush style={{ height: 100 }}>
 				<Box height='1000%' />
 			</Tile>
 		</Scrollable>

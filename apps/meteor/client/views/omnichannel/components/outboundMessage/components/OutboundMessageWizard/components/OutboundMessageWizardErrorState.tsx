@@ -10,7 +10,7 @@ type Props = {
 const OutboundMessageWizardErrorState = ({ title, description, onRetry }: Props) => {
 	const { t } = useTranslation();
 	return (
-		<States width='100%' height='100%'>
+		<States>
 			<StatesIcon name='circle-exclamation' />
 			<StatesTitle>{title ?? t('Something_went_wrong')}</StatesTitle>
 			{description ? <StatesSubtitle>{description}</StatesSubtitle> : null}

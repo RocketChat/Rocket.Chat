@@ -1,8 +1,9 @@
 import { memo } from 'react';
 
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 
-export type ContextualbarTitleProps = BoxProps;
+export type ContextualbarTitleProps = ElementProps<HTMLHeadingElement>;
 
 const ContextualbarTitle = (props: ContextualbarTitleProps) => (
 	<Box flexShrink={1} flexGrow={1} fontScale='h5' withTruncatedText is='h5' {...props} />

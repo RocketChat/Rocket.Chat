@@ -16,12 +16,14 @@ const OmnichannelFilters = () => {
 
 	return (
 		<>
-			<Box role='tablist' paddingInline={4} aria-label={t('Omnichannel_filters')} aria-orientation='vertical'>
+			<Box role='tablist' aria-label={t('Omnichannel_filters')} aria-orientation='vertical'>
 				<RoomListFiltersItem group='inProgress' icon={sidePanelFiltersConfig.inProgress.icon} />
 				{canViewOmnichannelQueue && <RoomListFiltersItem group='queue' icon={sidePanelFiltersConfig.queue.icon} />}
 				<RoomListFiltersItem group='onHold' icon={sidePanelFiltersConfig.onHold.icon} />
 			</Box>
-			<Divider borderColor='stroke-light' marginBlock={4} marginInline={16} />
+			<Box paddingBlock={4} paddingInline={12}>
+				<Divider variation='light' flush />
+			</Box>
 		</>
 	);
 };

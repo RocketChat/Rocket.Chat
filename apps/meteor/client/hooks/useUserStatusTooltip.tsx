@@ -11,7 +11,7 @@ const UserStatusTooltipContent = ({ uid }: UserStatusTooltipContentProps) => {
 	const presence = useUserPresence(uid);
 
 	if (!presence) {
-		return <Skeleton width='x200' variant='text' backgroundColor='surface-light' />;
+		return <Skeleton width='x200' variant='text' inverted />;
 	}
 
 	return <UserStatusText status={presence.status} statusText={presence.statusText} statusExpiresAt={presence.statusExpiresAt} />;

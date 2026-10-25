@@ -205,13 +205,7 @@ const WebhooksPage = ({ settings }: WebhooksPageProps) => {
 										control={control}
 										name='sendOn'
 										render={({ field: { onChange, value } }) => (
-											<MultiSelect
-												width='full'
-												value={value}
-												onChange={onChange}
-												options={sendOptions}
-												placeholder={t('Select_an_option')}
-											/>
+											<MultiSelect value={value} onChange={onChange} options={sendOptions} placeholder={t('Select_an_option')} />
 										)}
 									/>
 								</Box>

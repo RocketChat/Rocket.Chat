@@ -1,5 +1,5 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { notifyOnSubscriptionChangedById, notifyOnRoomChangedById } from '../../notifyListener';
 
@@ -10,17 +10,17 @@ export async function handleSuggestedGroupKey(
 	method: string,
 ): Promise<void> {
 	if (!userId) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method });
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', { method });
 	}
 
 	const sub = await Subscriptions.findOneByRoomIdAndUserId(rid, userId);
 	if (!sub) {
-		throw new Meteor.Error('error-subscription-not-found', 'Subscription not found', { method });
+		throw new ClientSafeError('error-subscription-not-found', 'Subscription not found', { method });
 	}
 
 	const suggestedKey = String(sub.E2ESuggestedKey ?? '').trim();
 	if (!suggestedKey) {
-		throw new Meteor.Error('error-no-suggested-key-available', 'No suggested key available', { method });
+		throw new ClientSafeError('error-no-suggested-key-available', 'No suggested key available', { method });
 	}
 
 	if (handle === 'accept') {

@@ -4,6 +4,7 @@ import { Subscriptions, Rooms } from '@rocket.chat/models';
 import { canAccessRoomAsync } from './canAccessRoom';
 import { hasPermissionAsync } from './hasPermission';
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
+import { beforeSendMessageToRoom } from '../../hooks/rooms/beforeSendMessageToRoom';
 import { roomCoordinator } from '../rooms/roomCoordinator';
 
 const subscriptionOptions = {
@@ -29,6 +30,8 @@ export async function validateRoomMessagePermissionsAsync(
 	if (args.type !== 'app' && !(await canAccessRoomAsync(room, 'uid' in args ? { _id: args.uid } : args, extraData))) {
 		throw new Error('error-not-allowed');
 	}
+
+	await beforeSendMessageToRoom(room);
 
 	if (
 		await roomCoordinator.getRoomDirectives(room.t).allowMemberAction(room, RoomMemberActions.BLOCK, 'uid' in args ? args.uid : args._id)

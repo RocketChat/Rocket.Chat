@@ -1,4 +1,4 @@
-import { Authorization, MeteorError, User } from '@rocket.chat/core-services';
+import { Authorization, ClientSafeError, User } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Accounts } from 'meteor/accounts-base';
 
@@ -13,11 +13,11 @@ const { CREATE_TOKENS_FOR_USERS_SECRET } = process.env;
 
 export async function generateAccessToken(userId: string, secret: string, caller: IUser) {
 	if (secret !== CREATE_TOKENS_FOR_USERS_SECRET) {
-		throw new MeteorError('error-not-authorized', 'Not authorized');
+		throw new ClientSafeError('error-not-authorized', 'Not authorized');
 	}
 
 	if (caller._id !== userId && !(await Authorization.hasPermission(caller, 'user-generate-access-token'))) {
-		throw new MeteorError('error-not-authorized', 'Not authorized');
+		throw new ClientSafeError('error-not-authorized', 'Not authorized');
 	}
 
 	const token = Accounts._generateStampedLoginToken();

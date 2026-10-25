@@ -16,7 +16,7 @@ const AICenterCapabilityCard = ({ icon, title, description, status, actionLabel,
 	const descriptionId = useId();
 
 	return (
-		<Card height='full' role='region' aria-labelledby={titleId} aria-describedby={descriptionId}>
+		<Card role='region' aria-labelledby={titleId} aria-describedby={descriptionId}>
 			<CardHeader>
 				<FramedIcon icon={icon} />
 				{status && <Box marginInlineStart='auto'>{status}</Box>}
