@@ -29,4 +29,20 @@ describe('replaceUsernameMentions', () => {
 	it('should leave email addresses alone', () => {
 		expect(replaceUsernameMentions('@jo write to x@jo', 'jo', 'joe')).to.equal('@joe write to x@jo');
 	});
+
+	it('should replace every mention of the previous username', () => {
+		expect(replaceUsernameMentions('@jo, @JO and @jo', 'jo', 'joe')).to.equal('@joe, @joe and @joe');
+	});
+
+	it('should leave mentions of longer usernames with non-ASCII letters', () => {
+		expect(replaceUsernameMentions('@joé and @jo', 'jo', 'joe')).to.equal('@joé and @joe');
+	});
+
+	it('should replace mentions of a username with a hyphen', () => {
+		expect(replaceUsernameMentions('hi @john-doe', 'john-doe', 'jd')).to.equal('hi @jd');
+	});
+
+	it('should insert the new username literally', () => {
+		expect(replaceUsernameMentions('hi @jo', 'jo', 'a$&b')).to.equal('hi @a$&b');
+	});
 });
