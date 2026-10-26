@@ -34,6 +34,14 @@ export type ItemProps = {
 	 */
 	disabled?: boolean;
 	variant?: 'danger';
+	/**
+	 * Declares that the content takes two lines, which widens the gap, without waiting for the browser to match the content.
+	 */
+	multiline?: boolean;
+	/**
+	 * Declares that the row reacts to the pointer, without waiting for the browser to find a link, button or option.
+	 */
+	interactive?: boolean;
 } & Omit<AllHTMLAttributes<HTMLElement>, 'is' | 'selected' | 'disabled'> &
 	RefAttributes<HTMLElement>;
 
@@ -51,6 +59,8 @@ const Item = ({
 	focusVisible,
 	disabled,
 	variant,
+	multiline,
+	interactive,
 	className,
 	onClick,
 	children,
@@ -103,6 +113,8 @@ const Item = ({
 					cxx('rcx-item')({
 						[`inset-${inset}`]: inset !== 'none',
 						'clickable': !!onClick,
+						'interactive': !!interactive,
+						'multiline': !!multiline,
 						'selected': !!selected,
 						'highlighted': !!highlighted,
 						'focused': !!focused,
