@@ -1,5 +1,4 @@
-import { css, keyframes } from '@rocket.chat/css-in-js';
-import { type ReactNode, type AllHTMLAttributes, useId } from 'react';
+import { type ReactNode, type AllHTMLAttributes, type CSSProperties, useId } from 'react';
 
 import { Box } from '../Box';
 import { IconButton } from '../Button';
@@ -32,51 +31,13 @@ function ToastBar({
 }: ToastBarProps) {
 	const iconName = (variant === 'success' && 'circle-check') || (variant === 'error' && 'ban') || 'info';
 
-	const sideOpen = keyframes`
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  `;
-
-	const progressBar = keyframes`
-    from {
-      width: 0%;
-    }
-
-    to {
-      width: 100%;
-    }
-  `;
-
-	const toastBarAnimation = css`
-		animation: ${sideOpen} 0.5s;
-	`;
-
-	const progressBarAnimation = css`
-		&::after {
-			width: 0%;
-			animation: ${progressBar} ${time}s;
-			animation-fill-mode: forwards;
-			animation-play-state: ${isPaused ? 'paused' : 'running'};
-		}
-	`;
-
 	const uniqueId = useId();
 	const toastId = id || uniqueId;
 
 	const role = variant === 'error' ? 'alert' : 'status';
 
 	return (
-		<Box
-			className={[`rcx-toastbar rcx-toastbar--${variant} ${className}`, toastBarAnimation]}
-			id={id}
-			elevation='2nb'
-			borderRadius='medium'
-			{...props}
-		>
+		<Box className={`rcx-toastbar rcx-toastbar--${variant} ${className}`} id={id} elevation='2nb' borderRadius='medium' {...props}>
 			<div className='rcx-toastbar_inner'>
 				<Icon className={`rcx-toastbar_icon--${variant}`} size='x20' name={iconName} />
 				<div role={role} className='rcx-toastbar_content'>
@@ -88,7 +49,10 @@ function ToastBar({
 					</div>
 				)}
 			</div>
-			<Box className={[progressBarAnimation, 'rcx-toastbar_progressbar']} />
+			<Box
+				className={`rcx-toastbar_progressbar${isPaused ? ' rcx-toastbar_progressbar--paused' : ''}`}
+				style={{ '--toast-time': `${time}s` } as CSSProperties}
+			/>
 		</Box>
 	);
 }
