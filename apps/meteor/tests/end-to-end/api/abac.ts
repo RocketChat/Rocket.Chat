@@ -2981,7 +2981,11 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			const localAttributes = [{ key: 'department', values: ['local'] }];
 			let ldapUser: IUser;
 			let ldapUserLdapId: string;
+			let ldapNamesake: IUser;
 			let localUser: IUser;
+
+			const setUsername = (userId: string, username: string) =>
+				request.post(api('users.update')).set(credentials).send({ userId, data: { username } }).expect(200);
 
 			const getDepartment = async (username: string) => {
 				const user = await getUserByUsername(username);
@@ -2994,7 +2998,8 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				expect(ldapUserDocument?.services?.ldap?.id).to.be.a('string');
 				ldapUserLdapId = ldapUserDocument?.services?.ldap?.id as string;
 
-				await deleteUser(await getUserByUsername('james.irwin'));
+				ldapNamesake = await getUserByUsername('james.irwin');
+				await setUsername(ldapNamesake._id, 'james.irwin.ldap');
 				localUser = await createUser({ username: 'james.irwin' });
 			});
 
@@ -3005,6 +3010,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 			after(async () => {
 				await deleteUser(localUser);
+				await setUsername(ldapNamesake._id, 'james.irwin');
 			});
 
 			it('should leave a non-LDAP account sharing an LDAP username unchanged', async () => {
