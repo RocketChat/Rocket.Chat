@@ -102,11 +102,21 @@ function AutoComplete<TLabel = ReactNode>({
 	const [selected, setSelected] = useState(() => getSelected(value, options) || []);
 
 	useEffect(() => {
-		// Validates if selected items are still valid after value changes
-		setSelected((selected) => {
-			return !selected.every(isSelectedValid(value)) ? selected.filter(isSelectedValid(value)) : selected;
+		setSelected((currentSelected) => {
+			const incoming = getSelected(value, options) || [];
+
+			const merged = [...currentSelected, ...incoming].filter(
+				(item, index, self) => index === self.findIndex((t) => t.value === item.value),
+			);
+
+			const validMerged = merged.filter(isSelectedValid(value));
+
+			if (validMerged.length !== currentSelected.length) {
+				return validMerged;
+			}
+			return currentSelected;
 		});
-	}, [value]);
+	}, [value, options]);
 
 	const handleSelect = useStableCallback(([newValue]: OptionType<string, TLabel>) => {
 		if (selected.some((item) => item.value === newValue)) {
@@ -184,9 +194,27 @@ function AutoComplete<TLabel = ReactNode>({
 					),
 				)}
 			</Box>
-			<Box rcx-autocomplete__addon color='titles-labels'>
-				<Icon name={optionsAreVisible === AnimatedVisibility.VISIBLE ? 'cross' : 'magnifier'} size='x20' />
-			</Box>
+			<Box
+            rcx-autocomplete__addon
+            color='titles-labels'
+            onMouseDown={useStableCallback((e: MouseEvent<HTMLElement>) => {
+                e.preventDefault();
+                e.stopPropagation();
+                
+                if (optionsAreVisible === AnimatedVisibility.VISIBLE) {
+                    hide();
+                    setFilter?.('');
+                } else {
+                    innerRef.current?.focus();
+                }
+            })}
+            onClick={useStableCallback((e: MouseEvent<HTMLElement>) => {
+                e.stopPropagation();
+            })}
+            style={{ cursor: optionsAreVisible === AnimatedVisibility.VISIBLE ? 'pointer' : 'default' }}
+        >
+            <Icon name={optionsAreVisible === AnimatedVisibility.VISIBLE ? 'cross' : 'magnifier'} size='x20' />
+        </Box>
 			<PositionAnimated visible={optionsAreVisible} anchor={containerRef}>
 				<Options
 					style={{ width: borderBoxSize.inlineSize }}
