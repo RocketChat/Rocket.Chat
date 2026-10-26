@@ -8,10 +8,9 @@ type SelectTriggerProps = AriaButtonProps &
 	RefAttributes<HTMLButtonElement> & {
 		small?: boolean;
 		error?: string;
-		focus?: boolean;
 	};
 
-export function SelectTrigger({ ref, small, error, isDisabled, focus, id, ...props }: SelectTriggerProps) {
+export function SelectTrigger({ ref, small, error, isDisabled, id, ...props }: SelectTriggerProps) {
 	const { buttonProps } = useButton(props, ref as RefObject<HTMLButtonElement | null>);
 
 	return (
@@ -27,7 +26,7 @@ export function SelectTrigger({ ref, small, error, isDisabled, focus, id, ...pro
 			fontScale='p2'
 			justifyContent='space-between'
 			rcx-input-box--small={small}
-			className={[error && 'invalid', isDisabled && 'disabled', focus && 'focus'].filter(Boolean).join(' ')}
+			className={[error && 'invalid', isDisabled && 'disabled'].filter(Boolean).join(' ')}
 		>
 			{props.children}
 		</Box>

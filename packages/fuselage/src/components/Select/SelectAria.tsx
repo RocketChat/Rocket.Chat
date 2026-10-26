@@ -1,7 +1,7 @@
 import type { AriaSelectProps } from '@react-types/select';
 import { useMergedRefs, useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import type { AllHTMLAttributes, Key, RefAttributes } from 'react';
-import { useSelect, HiddenSelect, mergeProps, useFocusRing } from 'react-aria';
+import { useSelect, HiddenSelect } from 'react-aria';
 import { useSelectState } from 'react-stately';
 
 import { Box } from '../Box';
@@ -48,21 +48,12 @@ export function SelectAria({
 
 	const { triggerProps, valueProps, menuProps } = useSelect({ isDisabled, ...props }, state, ref);
 
-	const { focusProps, isFocusVisible } = useFocusRing();
-
 	return (
 		<>
 			<Box position='absolute' size={0}>
 				<HiddenSelect state={state} triggerRef={ref} label={props.label} name={props.name} isDisabled={isDisabled} />
 			</Box>
-			<SelectTrigger
-				{...mergeProps(focusProps, triggerProps)}
-				ref={mergedRef}
-				small={small}
-				focus={isFocusVisible || state.isOpen}
-				error={error}
-				id={id}
-			>
+			<SelectTrigger {...triggerProps} ref={mergedRef} small={small} error={error} id={id}>
 				<Box is='span' color={state.selectedItem ? 'titles-labels' : 'hint'} {...valueProps} {...(small && { fontScale: 'c1' })}>
 					{state.selectedItem ? state.selectedItem.rendered : placeholder}
 				</Box>
