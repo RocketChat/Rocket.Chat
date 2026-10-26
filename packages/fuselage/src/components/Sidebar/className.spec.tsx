@@ -12,6 +12,7 @@ import OptionAvatar from '../Option/OptionAvatar';
 import OptionColumn from '../Option/OptionColumn';
 import OptionDescription from '../Option/OptionDescription';
 import OptionDescriptionBlock from '../Option/OptionDescriptionBlock';
+import OptionHeader from '../Option/OptionHeader';
 import OptionIcon from '../Option/OptionIcon';
 import OptionInput from '../Option/OptionInput';
 
@@ -27,6 +28,13 @@ const cases: [string, ReactElement, string][] = [
 	['OptionDescription', <OptionDescription data-testid='part' className='custom' />, 'rcx-option__description'],
 	['OptionDescriptionBlock', <OptionDescriptionBlock data-testid='part' className='custom' />, 'rcx-option__description-block'],
 	['OptionInput', <OptionInput data-testid='part' className='custom' />, 'rcx-option__input'],
+	[
+		'OptionHeader',
+		<OptionHeader data-testid='part' className='custom'>
+			Group
+		</OptionHeader>,
+		'rcx-option__header',
+	],
 	['OptionIcon', <OptionIcon data-testid='part' className='custom' name='bell' />, 'rcx-option__icon'],
 ];
 
