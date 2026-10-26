@@ -1,5 +1,5 @@
 import type { Keys as Icons } from '@rocket.chat/icons';
-import type { HTMLAttributes } from 'react';
+import type { HTMLAttributes, MouseEvent } from 'react';
 
 import { Icon } from '../../Icon';
 
@@ -9,7 +9,7 @@ export const SidebarItemAction = ({
 	icon = 'plus-small',
 	...props
 }: {
-	onClick: (e: Event) => void;
+	onClick: (e: MouseEvent<HTMLDivElement>) => void;
 	icon?: Icons;
 } & HTMLAttributes<HTMLDivElement>) => (
 	<div
