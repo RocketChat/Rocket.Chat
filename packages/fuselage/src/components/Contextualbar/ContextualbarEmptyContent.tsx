@@ -1,5 +1,3 @@
-import { memo } from 'react';
-
 import { Box } from '../Box';
 import { StatesIcon, States, StatesTitle, StatesSubtitle, type StatesIconProps } from '../States';
 import type { ContextualbarContentProps } from './ContextualbarContent';
@@ -25,4 +23,4 @@ function ContextualbarEmptyContent({ icon = 'magnifier', title = 'Nothing Found'
 	);
 }
 
-export default memo(ContextualbarEmptyContent);
+export default ContextualbarEmptyContent;
