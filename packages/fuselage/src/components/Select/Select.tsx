@@ -60,6 +60,7 @@ function Select<V extends Key = Key>({
 	disabled,
 	name,
 	id: idProp,
+	style,
 	onFocus,
 	onBlur,
 	onKeyDown,
@@ -309,6 +310,7 @@ function Select<V extends Key = Key>({
 				rcx-select--invalid={!!error}
 				rcx-select--disabled={disabled}
 				className={props.className}
+				style={style}
 				onMouseDown={handleMouseDown}
 				onClick={handleClick}
 				onKeyDown={handleKeyDown}
