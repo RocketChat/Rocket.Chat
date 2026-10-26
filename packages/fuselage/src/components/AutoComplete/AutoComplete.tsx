@@ -104,14 +104,23 @@ function AutoComplete<TLabel = ReactNode>({
 	useEffect(() => {
 		setSelected((currentSelected) => {
 			const incoming = getSelected(value, options) || [];
+			const incomingMap = new Map(incoming.map((item) => [item.value, item]));
 
-			const merged = [...currentSelected, ...incoming].filter(
-				(item, index, self) => index === self.findIndex((t) => t.value === item.value),
+			const retained = currentSelected.filter(
+				(item) => isSelectedValid(value)(item) && !incomingMap.has(item.value)
 			);
 
-			const validMerged = merged.filter(isSelectedValid(value));
+			const validMerged = [...retained, ...incoming];
 
-			if (validMerged.length !== currentSelected.length) {
+			const isDifferent =
+				validMerged.length !== currentSelected.length ||
+				validMerged.some(
+					(item, index) =>
+						item.value !== currentSelected[index]?.value ||
+						item.label !== currentSelected[index]?.label
+				);
+
+			if (isDifferent) {
 				return validMerged;
 			}
 			return currentSelected;
@@ -195,26 +204,43 @@ function AutoComplete<TLabel = ReactNode>({
 				)}
 			</Box>
 			<Box
-            rcx-autocomplete__addon
-            color='titles-labels'
-            onMouseDown={useStableCallback((e: MouseEvent<HTMLElement>) => {
-                e.preventDefault();
-                e.stopPropagation();
-                
-                if (optionsAreVisible === AnimatedVisibility.VISIBLE) {
-                    hide();
-                    setFilter?.('');
-                } else {
-                    innerRef.current?.focus();
-                }
-            })}
-            onClick={useStableCallback((e: MouseEvent<HTMLElement>) => {
-                e.stopPropagation();
-            })}
-            style={{ cursor: optionsAreVisible === AnimatedVisibility.VISIBLE ? 'pointer' : 'default' }}
-        >
-            <Icon name={optionsAreVisible === AnimatedVisibility.VISIBLE ? 'cross' : 'magnifier'} size='x20' />
-        </Box>
+				rcx-autocomplete__addon
+				color='titles-labels'
+				role='button'
+				tabIndex={0}
+				aria-label={optionsAreVisible === AnimatedVisibility.VISIBLE ? 'Clear selection' : 'Open options'}
+				onKeyDown={useStableCallback((e: React.KeyboardEvent<HTMLElement>) => {
+					if (e.key === 'Enter' || e.key === ' ') {
+						e.preventDefault();
+						e.stopPropagation();
+						if (optionsAreVisible === AnimatedVisibility.VISIBLE) {
+							hide();
+							setFilter?.('');
+						} else {
+							innerRef.current?.focus();
+							show();
+						}
+					}
+				})}
+				onMouseDown={useStableCallback((e: MouseEvent<HTMLElement>) => {
+					e.preventDefault();
+					e.stopPropagation();
+
+					if (optionsAreVisible === AnimatedVisibility.VISIBLE) {
+						hide();
+						setFilter?.('');
+					} else {
+						innerRef.current?.focus();
+						show();
+					}
+				})}
+				onClick={useStableCallback((e: MouseEvent<HTMLElement>) => {
+					e.stopPropagation();
+				})}
+				style={{ cursor: optionsAreVisible === AnimatedVisibility.VISIBLE ? 'pointer' : 'default' }}
+			>
+				<Icon name={optionsAreVisible === AnimatedVisibility.VISIBLE ? 'cross' : 'magnifier'} size='x20' />
+			</Box>
 			<PositionAnimated visible={optionsAreVisible} anchor={containerRef}>
 				<Options
 					style={{ width: borderBoxSize.inlineSize }}
