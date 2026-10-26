@@ -8,7 +8,7 @@ export type EmojiPickerCategoryItemProps = {
 	category: EmojiCategory;
 	active: boolean;
 	handleGoToCategory: () => void;
-} & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is' | 'color'>;
+} & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is' | 'color' | 'size'>;
 
 const mapCategoryIcon = (category: string) => {
 	switch (category) {
