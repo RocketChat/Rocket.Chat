@@ -1,4 +1,4 @@
-import { Box, Button, Callout, Chip, Margins } from '@rocket.chat/fuselage';
+import { Box, Button, Callout, Chip, Margins, Text } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import DOMPurify from 'dompurify';
 import { useTranslation } from 'react-i18next';
@@ -123,22 +123,22 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 						</Box>
 						<Box display='flex' flexDirection='row' flexGrow={1} justifyContent='space-around' flexWrap='wrap' marginBlockEnd={24}>
 							<Box display='flex' flexDirection='column' marginInlineEnd={12} flexGrow={1}>
-								<Box fontScale='h4' color='hint'>
+								<Text fontScale='h4' color='hint'>
 									{t('Author_Site')}
-								</Box>
+								</Text>
 								{normalizedHomepageUrl ? <ExternalLink to={normalizedHomepageUrl}>{homepage}</ExternalLink> : homepage}
 							</Box>
 							<Box display='flex' flexDirection='column' flexGrow={1}>
-								<Box fontScale='h4' color='hint'>
+								<Text fontScale='h4' color='hint'>
 									{t('Support')}
-								</Box>
+								</Text>
 								{normalizedSupportUrl ? <ExternalLink to={normalizedSupportUrl}>{support}</ExternalLink> : support}
 							</Box>
 						</Box>
 						<>
-							<Box fontScale='h4' color='hint'>
+							<Text fontScale='h4' color='hint'>
 								{t('Documentation')}
-							</Box>
+							</Text>
 							{normalizedDocumentationUrl ? <ExternalLink to={normalizedDocumentationUrl}>{documentation}</ExternalLink> : documentation}
 						</>
 					</Box>

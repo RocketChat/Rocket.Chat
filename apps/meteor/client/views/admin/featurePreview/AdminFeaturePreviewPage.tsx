@@ -1,16 +1,17 @@
 import {
-	ButtonGroup,
-	Button,
-	Box,
-	ToggleSwitch,
 	Accordion,
 	AccordionItem,
+	Box,
+	Button,
+	ButtonGroup,
+	Callout,
 	Field,
 	FieldGroup,
+	FieldHint,
 	FieldLabel,
 	FieldRow,
-	FieldHint,
-	Callout,
+	Text,
+	ToggleSwitch,
 } from '@rocket.chat/fuselage';
 import {
 	useDefaultSettingFeaturePreviewList,
@@ -82,7 +83,7 @@ const AdminFeaturePreviewPage = () => {
 			<PageScrollableContentWithShadow>
 				<Box maxWidth='x600' width='full' alignSelf='center'>
 					<Box display='flex' flexDirection='column' gap={24} paddingBlock={24}>
-						<Box fontScale='p1'>{t('Feature_preview_admin_page_description')}</Box>
+						<Text fontScale='p1'>{t('Feature_preview_admin_page_description')}</Text>
 						<Callout>{t('Feature_preview_page_callout')}</Callout>
 						<Callout>{t('Feature_preview_admin_page_callout')}</Callout>
 						<Setting settingId='Accounts_AllowFeaturePreview' sectionChanged={allowFeaturePreviewSetting.changed} />

@@ -1,4 +1,4 @@
-import { Box, Pagination, type TableColumnWidth } from '@rocket.chat/fuselage';
+import { Box, Pagination, type TableColumnWidth, Text } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import {
@@ -113,17 +113,17 @@ const ManagersTable = () => {
 											<UserAvatar size='x28' username={user.username || ''} etag={user.avatarETag} />
 											<Box display='flex' withTruncatedText marginInline={8}>
 												<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
-													<Box fontScale='p2m' withTruncatedText color='default'>
+													<Text fontScale='p2m' truncate color='default'>
 														{user.name || user.username}
-													</Box>
+													</Text>
 												</Box>
 											</Box>
 										</Box>
 									</GenericTableCell>
 									<GenericTableCell>
-										<Box fontScale='p2m' withTruncatedText color='hint'>
+										<Text fontScale='p2m' truncate color='hint'>
 											{user.username}
-										</Box>
+										</Text>
 										<Box marginInline={4} />
 									</GenericTableCell>
 									<GenericTableCell truncate>{user.emails?.length && user.emails[0].address}</GenericTableCell>

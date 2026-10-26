@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Box, Callout, States, StatesIcon, StatesSubtitle, StatesTitle, Tabs, TabsItem } from '@rocket.chat/fuselage';
+import { Box, Callout, States, StatesIcon, StatesSubtitle, StatesTitle, Tabs, TabsItem, Text } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -39,7 +39,7 @@ const AuditPage = () => {
 				{selectedRoom?.encrypted && type === '' ? (
 					<Box paddingBlock={16}>
 						<Callout type='warning' icon='circle-exclamation'>
-							<Box fontScale='p2b'>{t('Encrypted_content_cannot_be_searched_and_audited')}</Box>
+							<Text fontScale='p2b'>{t('Encrypted_content_cannot_be_searched_and_audited')}</Text>
 							{t('Encrypted_content_cannot_be_searched_and_audited_subtitle')}
 						</Callout>
 					</Box>
