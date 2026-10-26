@@ -9,7 +9,6 @@ export type ItemIconProps = {
 	/**
 	 * Names what the icon conveys, such as "Private channel" or "Away".
 	 * The label also describes the row's `ItemLink`, or the row itself when it is a menu item. Without it, the icon is decorative.
-	 * A row names one labelled icon this way; give each further labelled icon its own `id`.
 	 */
 	label?: string;
 } & Omit<AllHTMLAttributes<HTMLElement>, 'is' | 'label'> &
@@ -20,16 +19,16 @@ export type ItemIconProps = {
  */
 const ItemIcon = ({ is: Tag = 'div', label, id: propId, className, ...props }: ItemIconProps) => {
 	const generatedId = useId();
-	const { descriptionId, registerDescription } = useItemContext();
-	const id = propId ?? (label ? descriptionId : undefined) ?? generatedId;
+	const id = propId ?? generatedId;
+	const { registerDescription } = useItemContext();
 
 	useEffect(() => {
-		if (!label || !propId) {
+		if (!label) {
 			return undefined;
 		}
 
-		return registerDescription(propId);
-	}, [propId, label, registerDescription]);
+		return registerDescription(id);
+	}, [id, label, registerDescription]);
 
 	const a11yProps = label ? { 'role': 'img', 'aria-label': label } : { 'aria-hidden': true };
 

@@ -144,13 +144,13 @@ describe('Item', () => {
 		expect(onRender).toHaveBeenCalledTimes(1);
 	});
 
-	it('renders once on mount with a labelled icon, a title and a link', () => {
+	it('renders once on mount without a labelled icon', () => {
 		const onRender = jest.fn();
 
 		render(
 			<Profiler id='item' onRender={onRender}>
 				<Item>
-					<ItemIcon label='Away' />
+					<ItemIcon />
 					<ItemTitle>
 						<ItemLink href='#kenji'>Kenji Takahashi</ItemLink>
 					</ItemTitle>
@@ -161,23 +161,29 @@ describe('Item', () => {
 		expect(onRender).toHaveBeenCalledTimes(1);
 	});
 
-	it('renders once on mount as a menu item with a labelled icon and a title', () => {
-		const onRender = jest.fn();
-
-		render(
-			<Profiler id='item' onRender={onRender}>
-				<Item role='menuitem' data-testid='item'>
-					<ItemIcon label='Selected' />
-					<ItemContent>
-						<ItemTitle>Title</ItemTitle>
-					</ItemContent>
-				</Item>
-			</Profiler>,
+	it('references only ids that exist, and keeps ids unique, with two labelled icons', () => {
+		const { container } = render(
+			<Item role='menuitem'>
+				<ItemIcon label='Away' />
+				<ItemIcon label='Raised hand' />
+				<ItemContent>
+					<ItemTitle>Title</ItemTitle>
+					<ItemTitle>
+						<ItemLink href='#kenji'>Kenji</ItemLink>
+					</ItemTitle>
+				</ItemContent>
+			</Item>,
 		);
 
-		expect(onRender).toHaveBeenCalledTimes(1);
-		expect(screen.getByTestId('item')).toHaveAccessibleName('Title');
-		expect(screen.getByTestId('item')).toHaveAttribute('aria-describedby', screen.getByRole('img', { name: 'Selected' }).id);
+		const ids = Array.from(container.querySelectorAll('[id]')).map((element) => element.id);
+		expect(new Set(ids).size).toBe(ids.length);
+
+		container.querySelectorAll('[aria-describedby], [aria-labelledby]').forEach((element) => {
+			const refs = `${element.getAttribute('aria-describedby') ?? ''} ${element.getAttribute('aria-labelledby') ?? ''}`
+				.split(' ')
+				.filter(Boolean);
+			refs.forEach((id) => expect(container.querySelector(`[id="${CSS.escape(id)}"]`)).not.toBeNull());
+		});
 	});
 
 	it('describes a menu item by an icon that has its own id', () => {
@@ -188,7 +194,7 @@ describe('Item', () => {
 			</Item>,
 		);
 
-		expect(screen.getByTestId('item').getAttribute('aria-describedby')).toContain('own-icon');
+		expect(screen.getByTestId('item')).toHaveAttribute('aria-describedby', 'own-icon');
 	});
 
 	it.each([
@@ -270,7 +276,7 @@ describe('ItemLink', () => {
 			</Item>,
 		);
 
-		expect(screen.getByRole('link', { name: 'general' })).toHaveAccessibleDescription('');
+		expect(screen.getByRole('link', { name: 'general' })).not.toHaveAttribute('aria-describedby');
 	});
 });
 
