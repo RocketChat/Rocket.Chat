@@ -1,7 +1,7 @@
 import type { IMediaCall, MediaCallSignedContact } from '@rocket.chat/core-typings';
 import { isBusyState, type ClientMediaSignalBody, type CallHangupReason } from '@rocket.chat/media-signaling';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
-import type { SrfRequest } from 'drachtio-srf';
+import type { SrfRequest, SrfResponse } from 'drachtio-srf';
 
 import { BaseSipCall } from './BaseSipCall';
 import { SIP_CALL_FEATURES } from '../../constants';
@@ -11,9 +11,12 @@ import { BroadcastActorAgent } from '../../server/BroadcastAgent';
 import { mediaCallDirector } from '../../server/CallDirector';
 import type { SipServerSession } from '../Session';
 import { SipError, SipErrorCodes } from '../errorCodes';
+import { getCalleeNameFromResponse } from '../utils/getCalleeNameFromResponse';
 
 export class OutgoingSipCall extends BaseSipCall {
 	private sipDialogReq: SrfRequest | null;
+
+	private calleeNameResolved: boolean;
 
 	constructor(
 		session: SipServerSession,
@@ -22,6 +25,7 @@ export class OutgoingSipCall extends BaseSipCall {
 	) {
 		super(session, call, agent);
 		this.sipDialogReq = null;
+		this.calleeNameResolved = false;
 	}
 
 	public static async createCall(session: SipServerSession, params: InternalCallParams): Promise<IMediaCall> {
@@ -161,6 +165,14 @@ export class OutgoingSipCall extends BaseSipCall {
 									res: res && this.session.stripDrachtioServerDetails(res),
 									ack,
 								});
+
+								if (!res) {
+									return;
+								}
+
+								void this.identifyCalleeFromResponse(res).catch((err) => {
+									logger.error({ msg: 'OutgoingSipCall - failed to identify the callee', err, callId: call._id });
+								});
 							});
 						}
 					},
@@ -210,6 +222,29 @@ export class OutgoingSipCall extends BaseSipCall {
 			sipCallId: this.sipDialog.sip?.callId,
 			negotiationId: negotiation._id,
 		});
+	}
+
+	/**
+	 * Gives a callee that is only known by its number the name that the remote side reports on its 180 and 200 responses.
+	 */
+	protected async identifyCalleeFromResponse(res: SrfResponse): Promise<void> {
+		if (this.calleeNameResolved || !res.status || res.status < 180 || res.status >= 300) {
+			return;
+		}
+
+		const callee = this.agent.getMyCallActor(this.call);
+		if (callee.type !== 'sip' || (callee.displayName && callee.displayName !== callee.id)) {
+			this.calleeNameResolved = true;
+			return;
+		}
+
+		const displayName = getCalleeNameFromResponse(res);
+		if (!displayName) {
+			return;
+		}
+
+		this.calleeNameResolved = true;
+		await this.updateRemoteContact({ ...callee, displayName });
 	}
 
 	protected async processNegotiations(call: IMediaCall): Promise<void> {
