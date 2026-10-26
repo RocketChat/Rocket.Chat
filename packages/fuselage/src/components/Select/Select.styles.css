@@ -25,32 +25,20 @@
 }
 
 .rcx-select:hover,
-.rcx-autocomplete:hover,
-.rcx-select.hover,
-.rcx-autocomplete.hover,
-.rcx-select.is-hovered,
-.rcx-autocomplete.is-hovered {
+.rcx-autocomplete:hover {
 	border-color: var(--rcx-input-colors-hover-border-color, var(--rcx-color-stroke-dark, #6c737a));
 }
 
 .rcx-select:focus,
 .rcx-autocomplete:focus,
 .rcx-select:focus-within,
-.rcx-autocomplete:focus-within,
-.rcx-select.focus,
-.rcx-autocomplete.focus,
-.rcx-select.is-focused,
-.rcx-autocomplete.is-focused {
+.rcx-autocomplete:focus-within {
 	border-color: var(--rcx-input-colors-focus-border-color, var(--rcx-color-stroke-highlight, #156ff5));
 	box-shadow: 0 0 0 2px var(--rcx-input-colors-focus-shadow-color, var(--rcx-color-shadow-highlight, #d1ebfe));
 }
 
 .rcx-select:active,
-.rcx-autocomplete:active,
-.rcx-select.active,
-.rcx-autocomplete.active,
-.rcx-select.is-active,
-.rcx-autocomplete.is-active {
+.rcx-autocomplete:active {
 	border-color: var(--rcx-input-colors-active-border-color, var(--rcx-color-stroke-dark, #6c737a));
 	box-shadow: none;
 }
@@ -59,10 +47,8 @@
 *:disabled .rcx-autocomplete,
 .rcx-select:disabled,
 .rcx-autocomplete:disabled,
-.rcx-select.disabled,
-.rcx-autocomplete.disabled,
-.rcx-select.is-disabled,
-.rcx-autocomplete.is-disabled {
+.rcx-select.rcx-select--disabled,
+.rcx-autocomplete.rcx-select--disabled {
 	border-color: var(--rcx-input-colors-disabled-border-color, var(--rcx-color-stroke-light, #cbced1));
 	background-color: var(--rcx-input-colors-disabled-background-color, var(--rcx-color-surface-disabled, #f7f8fa));
 }
@@ -71,16 +57,16 @@
 *:disabled .rcx-autocomplete,
 .rcx-select:disabled,
 .rcx-autocomplete:disabled,
-.rcx-select.disabled,
-.rcx-autocomplete.disabled {
+.rcx-select.rcx-select--disabled,
+.rcx-autocomplete.rcx-select--disabled {
 	cursor: not-allowed;
 	pointer-events: none;
 }
 
 .rcx-select:invalid,
 .rcx-autocomplete:invalid,
-.rcx-select.invalid,
-.rcx-autocomplete.invalid {
+.rcx-select.rcx-select--invalid,
+.rcx-autocomplete.rcx-select--invalid {
 	color: var(--rcx-input-colors-invalid-color, var(--rcx-color-font-titles-labels, #1f2329));
 	border-color: var(--rcx-input-colors-invalid-border-color, var(--rcx-color-stroke-error, #ec0d2a));
 	background-color: var(--rcx-input-colors-invalid-background-color, var(--rcx-color-surface-light, #ffffff));
@@ -89,88 +75,69 @@
 
 .rcx-select:invalid:hover,
 .rcx-autocomplete:invalid:hover,
-.rcx-select.invalid:hover,
-.rcx-autocomplete.invalid:hover,
-.rcx-select:invalid.hover,
-.rcx-autocomplete:invalid.hover,
-.rcx-select.invalid.hover,
-.rcx-autocomplete.invalid.hover,
-.rcx-select:invalid.is-hovered,
-.rcx-autocomplete:invalid.is-hovered,
-.rcx-select.invalid.is-hovered,
-.rcx-autocomplete.invalid.is-hovered {
+.rcx-select.rcx-select--invalid:hover,
+.rcx-autocomplete.rcx-select--invalid:hover {
 	border-color: var(--rcx-input-colors-invalid-hover-border-color, var(--rcx-color-stroke-error, #ec0d2a));
 }
 
 .rcx-select:invalid:focus,
 .rcx-autocomplete:invalid:focus,
-.rcx-select.invalid:focus,
-.rcx-autocomplete.invalid:focus,
+.rcx-select.rcx-select--invalid:focus,
+.rcx-autocomplete.rcx-select--invalid:focus,
 .rcx-select:invalid:focus-within,
 .rcx-autocomplete:invalid:focus-within,
-.rcx-select.invalid:focus-within,
-.rcx-autocomplete.invalid:focus-within,
-.rcx-select:invalid.focus,
-.rcx-autocomplete:invalid.focus,
-.rcx-select.invalid.focus,
-.rcx-autocomplete.invalid.focus,
-.rcx-select:invalid.is-focused,
-.rcx-autocomplete:invalid.is-focused,
-.rcx-select.invalid.is-focused,
-.rcx-autocomplete.invalid.is-focused {
+.rcx-select.rcx-select--invalid:focus-within,
+.rcx-autocomplete.rcx-select--invalid:focus-within {
 	border-color: var(--rcx-input-colors-invalid-focus-border-color, var(--rcx-color-stroke-error, #ec0d2a));
 	box-shadow: 0 0 0 2px var(--rcx-input-colors-invalid-focus-shadow-color, var(--rcx-color-shadow-danger, #ffe9ec));
 }
 
 .rcx-select:invalid:active,
 .rcx-autocomplete:invalid:active,
-.rcx-select.invalid:active,
-.rcx-autocomplete.invalid:active,
-.rcx-select:invalid.active,
-.rcx-autocomplete:invalid.active,
-.rcx-select.invalid.active,
-.rcx-autocomplete.invalid.active,
-.rcx-select:invalid.is-active,
-.rcx-autocomplete:invalid.is-active,
-.rcx-select.invalid.is-active,
-.rcx-autocomplete.invalid.is-active {
+.rcx-select.rcx-select--invalid:active,
+.rcx-autocomplete.rcx-select--invalid:active {
 	border-color: var(--rcx-input-colors-invalid-active-border-color, var(--rcx-color-stroke-error, #ec0d2a));
 	box-shadow: none;
 }
 
 *:disabled .rcx-select:invalid,
 *:disabled .rcx-autocomplete:invalid,
-*:disabled .rcx-select.invalid,
-*:disabled .rcx-autocomplete.invalid,
+*:disabled .rcx-select.rcx-select--invalid,
+*:disabled .rcx-autocomplete.rcx-select--invalid,
 .rcx-select:invalid:disabled,
 .rcx-autocomplete:invalid:disabled,
-.rcx-select.invalid:disabled,
-.rcx-autocomplete.invalid:disabled,
-.rcx-select:invalid.disabled,
-.rcx-autocomplete:invalid.disabled,
-.rcx-select.invalid.disabled,
-.rcx-autocomplete.invalid.disabled,
-.rcx-select:invalid.is-disabled,
-.rcx-autocomplete:invalid.is-disabled,
-.rcx-select.invalid.is-disabled,
-.rcx-autocomplete.invalid.is-disabled {
+.rcx-select.rcx-select--invalid:disabled,
+.rcx-autocomplete.rcx-select--invalid:disabled,
+.rcx-select.rcx-select--invalid.rcx-select--disabled,
+.rcx-autocomplete.rcx-select--invalid.rcx-select--disabled {
 	border-color: var(--rcx-input-colors-invalid-disabled-border-color, var(--rcx-color-stroke-light, #cbced1));
 	background-color: var(--rcx-input-colors-invalid-disabled-background-color, var(--rcx-color-surface-disabled, #f7f8fa));
 }
 
 *:disabled .rcx-select:invalid,
 *:disabled .rcx-autocomplete:invalid,
-*:disabled .rcx-select.invalid,
-*:disabled .rcx-autocomplete.invalid,
+*:disabled .rcx-select.rcx-select--invalid,
+*:disabled .rcx-autocomplete.rcx-select--invalid,
 .rcx-select:invalid:disabled,
 .rcx-autocomplete:invalid:disabled,
-.rcx-select.invalid:disabled,
-.rcx-autocomplete.invalid:disabled,
-.rcx-select:invalid.disabled,
-.rcx-autocomplete:invalid.disabled,
-.rcx-select.invalid.disabled,
-.rcx-autocomplete.invalid.disabled {
+.rcx-select.rcx-select--invalid:disabled,
+.rcx-autocomplete.rcx-select--invalid:disabled,
+.rcx-select.rcx-select--invalid.rcx-select--disabled,
+.rcx-autocomplete.rcx-select--invalid.rcx-select--disabled {
 	color: var(--rcx-input-colors-invalid-disabled-color, var(--rcx-color-font-disabled, #cbced1));
+}
+
+/* An open select keeps the focus look while focus is in its listbox */
+.rcx-select[aria-expanded='true'],
+.rcx-autocomplete[aria-expanded='true'] {
+	border-color: var(--rcx-input-colors-focus-border-color, var(--rcx-color-stroke-highlight, #156ff5));
+	box-shadow: 0 0 0 2px var(--rcx-input-colors-focus-shadow-color, var(--rcx-color-shadow-highlight, #d1ebfe));
+}
+
+.rcx-select[aria-expanded='true'].rcx-select--invalid,
+.rcx-autocomplete[aria-expanded='true'].rcx-select--invalid {
+	border-color: var(--rcx-input-colors-invalid-focus-border-color, var(--rcx-color-stroke-error, #ec0d2a));
+	box-shadow: 0 0 0 2px var(--rcx-input-colors-invalid-focus-shadow-color, var(--rcx-color-shadow-danger, #ffe9ec));
 }
 
 .rcx-select__item {
@@ -199,11 +166,8 @@
 	appearance: none;
 }
 
-.rcx-select__focus.disabled,
 .rcx-select__focus:disabled,
-.rcx-select__placeholder.disabled,
 .rcx-select__placeholder:disabled,
-.rcx-select__addon.disabled,
 .rcx-select__addon:disabled {
 	cursor: not-allowed;
 }
@@ -228,14 +192,12 @@
 	color: var(--rcx-input-colors-color, var(--rcx-color-font-titles-labels, #1f2329));
 }
 
-.rcx-input-box:focus + .rcx-select__addon,
-.rcx-input-box.focus + .rcx-select__addon {
+.rcx-input-box:focus + .rcx-select__addon {
 	color: var(--rcx-input-colors-focus-icon-color, var(--rcx-color-font-titles-labels, #1f2329));
 }
 
 *:disabled .rcx-input-box + .rcx-select__addon,
-.rcx-input-box:disabled + .rcx-select__addon,
-.rcx-input-box.disabled + .rcx-select__addon {
+.rcx-input-box:disabled + .rcx-select__addon {
 	pointer-events: none;
 
 	color: var(--rcx-input-colors-disabled-color, var(--rcx-color-font-disabled, #cbced1));

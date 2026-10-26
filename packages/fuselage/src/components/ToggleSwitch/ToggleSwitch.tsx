@@ -6,12 +6,7 @@ import { cx } from '../../helpers/composeClassNames';
 import { toCSSColorValue, toCSSValue } from '../../helpers/toCSSValue';
 import { borderRadius, borderWidth, size } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
-import {
-	createSelectionButtonFake,
-	hasDisabledClassName,
-	SelectionButtonInput,
-	SelectionButtonLabel,
-} from '../CheckBox/SelectionButtonFrames';
+import { createSelectionButtonFake, SelectionButtonInput, SelectionButtonLabel } from '../CheckBox/SelectionButtonFrames';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 const toggleSwitchRadius = toCSSValue('--rcx-toggle-switch-border-radius', toCSSValue('--rcx-border-radius-full', borderRadius('full')));
@@ -48,7 +43,7 @@ export type ToggleSwitchProps = ElementProps<HTMLInputElement, InputHTMLAttribut
 
 function ToggleSwitch({ className, labelChildren, ...props }: ToggleSwitchProps) {
 	return (
-		<SelectionButtonLabel notAllowed={hasDisabledClassName(className)} className={cx('rcx-toggle-switch', className)}>
+		<SelectionButtonLabel className={cx('rcx-toggle-switch', className)}>
 			{labelChildren}
 
 			<SelectionButtonInput

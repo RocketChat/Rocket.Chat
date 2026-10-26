@@ -5,12 +5,7 @@ import { cx } from '../../helpers/composeClassNames';
 import { toCSSValue } from '../../helpers/toCSSValue';
 import { borderRadius, size } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
-import {
-	createSelectionButtonFake,
-	hasDisabledClassName,
-	SelectionButtonInput,
-	SelectionButtonLabel,
-} from '../CheckBox/SelectionButtonFrames';
+import { createSelectionButtonFake, SelectionButtonInput, SelectionButtonLabel } from '../CheckBox/SelectionButtonFrames';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 const RadioButtonFake = styled(createSelectionButtonFake('empty'), {
@@ -38,7 +33,7 @@ export type RadioButtonProps = ElementProps<HTMLInputElement, InputHTMLAttribute
 
 function RadioButton({ className, labelChildren, ...props }: RadioButtonProps) {
 	return (
-		<SelectionButtonLabel notAllowed={hasDisabledClassName(className)} className={cx('rcx-radio-button', className)}>
+		<SelectionButtonLabel className={cx('rcx-radio-button', className)}>
 			{labelChildren}
 			<SelectionButtonInput
 				{...({ type: 'radio', ...props } as GetProps<typeof SelectionButtonInput>)}

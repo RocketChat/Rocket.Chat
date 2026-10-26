@@ -2,7 +2,6 @@ import type { Keys as IconName } from '@rocket.chat/icons';
 import { styled, Text, View, type GetProps } from '@tamagui/web';
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
-import { isForcedDisabled } from '../../helpers/isForcedDisabled';
 import { prependClassName } from '../../helpers/prependClassName';
 import { toCSSValue } from '../../helpers/toCSSValue';
 import { borderRadius, fontFamily, fontScale, size, spacing } from '../../styleTokens';
@@ -95,7 +94,7 @@ export const BubbleButton = ({ secondary, small, segment, label, onClick, icon, 
 			onClick={onClick}
 			{...(props as GetProps<typeof BubbleButtonFrame>)}
 			secondary={secondary}
-			inactive={disabled || isForcedDisabled(className) ? kind : undefined}
+			inactive={disabled ? kind : undefined}
 			small={small}
 			withIcon={Boolean(icon) && !segment}
 			segment={segment}

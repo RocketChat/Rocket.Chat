@@ -132,7 +132,7 @@ function IconButton({
 				Boolean(badge) && 'rcx-button--with-badge',
 				className,
 			)}
-			{...getButtonStates(className, kindByVariant[variant] ?? 'icon', disabled, segment, pressed)}
+			{...getButtonStates(kindByVariant[variant] ?? 'icon', disabled, segment, pressed)}
 			{...(color && { color: resolveFontColor(color) })}
 		>
 			{isValidElement<any>(icon) ? icon : <Icon name={icon} size={getIconSize()} />}

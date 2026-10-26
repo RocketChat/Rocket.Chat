@@ -125,7 +125,7 @@ function Button({
 				loading && 'rcx-button--loading',
 				className,
 			)}
-			{...getButtonStates(className, kind ?? 'secondary', disabled || loading, segment)}
+			{...getButtonStates(kind ?? 'secondary', disabled || loading, segment)}
 		>
 			<ButtonContent className='rcx-button--content'>
 				{icon && !loading && <Icon className='rcx-button__icon' size='x16' name={icon} />}

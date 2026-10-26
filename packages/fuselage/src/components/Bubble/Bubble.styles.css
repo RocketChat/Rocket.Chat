@@ -1,6 +1,4 @@
-.rcx-bubble__button:active > *,
-.rcx-bubble__button.active > *,
-.rcx-bubble__button.is-active > * {
+.rcx-bubble__button:active > * {
 	transform: translateY(1px);
 }
 

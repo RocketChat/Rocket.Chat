@@ -7,9 +7,7 @@
 	font: inherit;
 }
 
-:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) a:focus-visible,
-:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) a.is-focused,
-:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) a.focus {
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) a:focus-visible {
 	text-decoration: none;
 
 	color: var(--rcx-link-focus-color, var(--rcx-color-font-info, #095ad2));
@@ -19,14 +17,11 @@
 	box-shadow: 0 0 0 2px var(--rcx-link-focus-box-shadow-color, var(--rcx-color-stroke-extra-light-highlight, #d1ebfe));
 }
 
-:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) a:where(:visited),
-:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) a:where(.is-visited) {
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) a:where(:visited) {
 	color: var(--rcx-link-visited-color, var(--rcx-color-font-info, #095ad2));
 }
 
-:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) a:where(:active),
-:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) a:where(.active),
-:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) a:where(.is-active) {
+:is(.rcx-field__description, .rcx-field__hint, .rcx-field__error, .rcx-field__link) a:where(:active) {
 	color: var(--rcx-link-active-color, var(--rcx-color-font-info, #095ad2));
 }
 

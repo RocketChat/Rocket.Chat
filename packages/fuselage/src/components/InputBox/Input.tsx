@@ -12,7 +12,7 @@ const inputColor = (name: string, fallback: unknown) => toCSSValue(`--rcx-input-
 
 export const inputTextColor = inputColor('color', textIconColors['font-titles-labels']);
 
-// The frame styles of an input in its resting and pointer states; forced, disabled and invalid states stay in `InputBox.styles.css`
+// The frame styles of an input in its resting and pointer states; disabled and invalid states stay in `InputBox.styles.css`
 export const inputChrome = {
 	borderWidth: borderWidth('default'),
 	borderStyle: 'solid',

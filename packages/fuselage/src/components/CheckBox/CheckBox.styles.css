@@ -1,28 +1,24 @@
 /* The native input's states, including the uncontrolled `:checked` and `:indeterminate` that React state never sees */
 
-.rcx-check-box__input:hover + .rcx-check-box__fake,
-.rcx-check-box.is-hovered .rcx-check-box__input + .rcx-check-box__fake {
+.rcx-check-box__input:hover + .rcx-check-box__fake {
 	border-color: var(--rcx-button-empty-hover-border-color, var(--rcx-color-stroke-extra-dark, #2f343d));
 	background-color: var(--rcx-button-empty-hover-background-color, var(--rcx-color-surface-light, #ffffff));
 	box-shadow: none;
 }
 
-.rcx-check-box__input:active + .rcx-check-box__fake,
-.rcx-check-box.is-active .rcx-check-box__input + .rcx-check-box__fake {
+.rcx-check-box__input:active + .rcx-check-box__fake {
 	border-color: var(--rcx-button-empty-active-border-color, var(--rcx-color-stroke-extra-dark, #2f343d));
 	background-color: var(--rcx-button-empty-active-background-color, var(--rcx-color-surface-light, #ffffff));
 	box-shadow: none;
 }
 
-.rcx-check-box__input:focus + .rcx-check-box__fake,
-.rcx-check-box.is-focused .rcx-check-box__input + .rcx-check-box__fake {
+.rcx-check-box__input:focus + .rcx-check-box__fake {
 	border-color: var(--rcx-button-empty-focus-border-color, var(--rcx-color-stroke-extra-dark, #2f343d));
 	background-color: var(--rcx-button-empty-focus-background-color, var(--rcx-color-surface-light, #ffffff));
 	box-shadow: 0 0 0 2px var(--rcx-input-colors-focus-shadow-color, var(--rcx-color-shadow-highlight, #d1ebfe));
 }
 
-.rcx-check-box__input:disabled + .rcx-check-box__fake,
-.rcx-check-box.is-disabled .rcx-check-box__input + .rcx-check-box__fake {
+.rcx-check-box__input:disabled + .rcx-check-box__fake {
 	cursor: not-allowed;
 
 	color: var(--rcx-button-empty-disabled-color, var(--rcx-color-font-white, #ffffff));
@@ -36,29 +32,25 @@
 	background-color: var(--rcx-button-primary-background-color, var(--rcx-color-button-background-primary-default, #156ff5));
 }
 
-.rcx-check-box__input:is(:checked, :indeterminate):hover + .rcx-check-box__fake,
-.rcx-check-box.is-hovered .rcx-check-box__input:is(:checked, :indeterminate) + .rcx-check-box__fake {
+.rcx-check-box__input:is(:checked, :indeterminate):hover + .rcx-check-box__fake {
 	border-color: var(--rcx-button-primary-hover-border-color, var(--rcx-color-button-background-primary-hover, #095ad2));
 	background-color: var(--rcx-button-primary-hover-background-color, var(--rcx-color-button-background-primary-hover, #095ad2));
 	box-shadow: none;
 }
 
-.rcx-check-box__input:is(:checked, :indeterminate):active + .rcx-check-box__fake,
-.rcx-check-box.is-active .rcx-check-box__input:is(:checked, :indeterminate) + .rcx-check-box__fake {
+.rcx-check-box__input:is(:checked, :indeterminate):active + .rcx-check-box__fake {
 	border-color: var(--rcx-button-primary-active-border-color, var(--rcx-color-button-background-primary-press, #10529e));
 	background-color: var(--rcx-button-primary-active-background-color, var(--rcx-color-button-background-primary-press, #10529e));
 	box-shadow: none;
 }
 
-.rcx-check-box__input:is(:checked, :indeterminate):focus + .rcx-check-box__fake,
-.rcx-check-box.is-focused .rcx-check-box__input:is(:checked, :indeterminate) + .rcx-check-box__fake {
+.rcx-check-box__input:is(:checked, :indeterminate):focus + .rcx-check-box__fake {
 	border-color: var(--rcx-button-primary-focus-border-color, var(--rcx-color-stroke-extra-dark, #2f343d));
 	background-color: var(--rcx-button-primary-focus-background-color, var(--rcx-color-button-background-primary-focus, #156ff5));
 	box-shadow: 0 0 0 2px var(--rcx-input-colors-focus-shadow-color, var(--rcx-color-shadow-highlight, #d1ebfe));
 }
 
-.rcx-check-box__input:is(:checked, :indeterminate):disabled + .rcx-check-box__fake,
-.rcx-check-box.is-disabled .rcx-check-box__input:is(:checked, :indeterminate) + .rcx-check-box__fake {
+.rcx-check-box__input:is(:checked, :indeterminate):disabled + .rcx-check-box__fake {
 	color: var(--rcx-button-primary-disabled-color, var(--rcx-color-button-font-on-primary-disabled, #ffffff));
 	border-color: var(--rcx-button-primary-disabled-border-color, var(--rcx-color-button-background-primary-disabled, #d1ebfe));
 	background-color: var(--rcx-button-primary-disabled-background-color, var(--rcx-color-button-background-primary-disabled, #d1ebfe));

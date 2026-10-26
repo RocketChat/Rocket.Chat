@@ -25,8 +25,6 @@ export type TableCellProps = Omit<
 	strong?: boolean;
 };
 
-const isDisabled = (className?: string) => !!className?.split(/\s+/).includes('disabled');
-
 const TableCell = ({ is, align, clickable, rowHeader, truncate, color, strong, className, children, ...props }: TableCellProps) => {
 	const isInsideHead = useContext(TableHeadContext);
 	const { sticky } = useContext(TableContext);
@@ -41,7 +39,6 @@ const TableCell = ({ is, align, clickable, rowHeader, truncate, color, strong, c
 			truncate={truncate}
 			tone={color}
 			strong={strong}
-			{...(clickable && isDisabled(className) && { cursor: 'not-allowed' })}
 			align={typeof align === 'string' ? align : undefined}
 			render={is ?? (isInsideHead || rowHeader ? 'th' : 'td')}
 			className={[

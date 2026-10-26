@@ -11,7 +11,6 @@ import {
 	type ButtonKind,
 	type GhostKind,
 } from './buttonColors';
-import { isForcedDisabled } from '../../helpers/isForcedDisabled';
 import { borderWidth, fontFamily, fontScale, size, spacing } from '../../styleTokens';
 import type { FontScaleName } from '../../styleTokens';
 
@@ -228,24 +227,16 @@ export const ButtonBadge = styled(View, {
 export const renderButtonElement = (is: ElementType, disabled: boolean | undefined) =>
 	createElement(is, disabled === undefined ? {} : { disabled });
 
-/**
- * The color variants in the order they override each other, plus the disabled look the `disabled` class
- * name pins the button to.
- */
+/** The color variants in the order they override each other, plus the disabled look. */
 export const getButtonStates = (
-	className: unknown,
 	kind: ButtonKind,
 	disabled: boolean | undefined,
 	segment: ButtonSegment | undefined,
 	pressed?: boolean,
-) => {
-	const classNames = typeof className === 'string' ? className : undefined;
-
-	return {
-		kind,
-		pressed: pressed ? pressableKinds.find((pressable) => pressable === kind) : undefined,
-		inactive: disabled || isForcedDisabled(classNames) ? kind : undefined,
-		segment: segment?.position,
-		ghost: segment?.ghost ? segment.variant : undefined,
-	};
-};
+) => ({
+	kind,
+	pressed: pressed ? pressableKinds.find((pressable) => pressable === kind) : undefined,
+	inactive: disabled ? kind : undefined,
+	segment: segment?.position,
+	ghost: segment?.ghost ? segment.variant : undefined,
+});

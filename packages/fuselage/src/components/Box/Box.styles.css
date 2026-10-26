@@ -7,9 +7,7 @@
 	font: inherit;
 }
 
-.rcx-box--with-inline-elements a:focus-visible,
-.rcx-box--with-inline-elements a.is-focused,
-.rcx-box--with-inline-elements a.focus {
+.rcx-box--with-inline-elements a:focus-visible {
 	text-decoration: none;
 
 	color: var(--rcx-link-focus-color, var(--rcx-color-font-info, #095ad2));
@@ -19,14 +17,11 @@
 	box-shadow: 0 0 0 2px var(--rcx-link-focus-box-shadow-color, var(--rcx-color-stroke-extra-light-highlight, #d1ebfe));
 }
 
-.rcx-box--with-inline-elements a:where(:visited),
-.rcx-box--with-inline-elements a:where(.is-visited) {
+.rcx-box--with-inline-elements a:where(:visited) {
 	color: var(--rcx-link-visited-color, var(--rcx-color-font-info, #095ad2));
 }
 
-.rcx-box--with-inline-elements a:where(:active),
-.rcx-box--with-inline-elements a:where(.active),
-.rcx-box--with-inline-elements a:where(.is-active) {
+.rcx-box--with-inline-elements a:where(:active) {
 	color: var(--rcx-link-active-color, var(--rcx-color-font-info, #095ad2));
 }
 
@@ -454,8 +449,7 @@
 	border-color: transparent;
 }
 
-.rcx-box--focusable:focus-visible,
-.rcx-box--focusable.focus.focus-visible {
+.rcx-box--focusable:focus-visible {
 	border-color: var(--rcx-color-stroke-highlight, #156ff5);
 	border-radius: var(--rcx-border-radius-medium, 0.25rem);
 	outline: 0;

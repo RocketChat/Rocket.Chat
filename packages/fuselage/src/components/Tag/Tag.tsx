@@ -84,8 +84,6 @@ const schemeStyle = (variant: Variant, clickable: boolean, disabled: boolean) =>
 	};
 };
 
-const hasClassName = (className: unknown, name: string) => typeof className === 'string' && className.split(/\s+/).includes(name);
-
 const variants = Object.keys(palette) as Variant[];
 
 const schemes = Object.fromEntries(
@@ -196,7 +194,6 @@ const Tag = ({ large, medium, pill, className, disabled, onClick, variant, child
 			{...({ onClick, href, ...props } as GetProps<typeof TagFrame>)}
 			render={href ? 'a' : 'span'}
 			className={cx('rcx-tag', modifiers, className)}
-			{...(clickable && hasClassName(className, 'disabled') && { cursor: 'not-allowed' })}
 		>
 			{icon}
 			<TagInner className='rcx-tag__inner'>{children}</TagInner>

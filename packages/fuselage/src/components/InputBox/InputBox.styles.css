@@ -84,13 +84,7 @@
 
 .rcx-input-box__wrapper:where(:not(.is_Text)):hover,
 .rcx-input-box:where(:not(.is_View)):hover:not(.rcx-input-box--undecorated),
-.rcx-input-box--small:hover:not(.rcx-input-box--undecorated),
-.hover.rcx-input-box__wrapper,
-.hover.rcx-input-box:not(.rcx-input-box--undecorated),
-.hover.rcx-input-box--small:not(.rcx-input-box--undecorated),
-.is-hovered.rcx-input-box__wrapper,
-.is-hovered.rcx-input-box:not(.rcx-input-box--undecorated),
-.is-hovered.rcx-input-box--small:not(.rcx-input-box--undecorated) {
+.rcx-input-box--small:hover:not(.rcx-input-box--undecorated) {
 	border-color: var(--rcx-input-colors-hover-border-color, var(--rcx-color-stroke-dark, #6c737a));
 }
 
@@ -99,26 +93,14 @@
 .rcx-input-box:where(:not(.is_View)):focus:not(.rcx-input-box--undecorated),
 .rcx-input-box:where(:not(.is_View)):focus-within:not(.rcx-input-box--undecorated),
 .rcx-input-box--small:focus:not(.rcx-input-box--undecorated),
-.rcx-input-box--small:focus-within:not(.rcx-input-box--undecorated),
-.focus.rcx-input-box__wrapper,
-.focus.rcx-input-box:not(.rcx-input-box--undecorated),
-.focus.rcx-input-box--small:not(.rcx-input-box--undecorated),
-.is-focused.rcx-input-box__wrapper,
-.is-focused.rcx-input-box:not(.rcx-input-box--undecorated),
-.is-focused.rcx-input-box--small:not(.rcx-input-box--undecorated) {
+.rcx-input-box--small:focus-within:not(.rcx-input-box--undecorated) {
 	border-color: var(--rcx-input-colors-focus-border-color, var(--rcx-color-stroke-highlight, #156ff5));
 	box-shadow: 0 0 0 2px var(--rcx-input-colors-focus-shadow-color, var(--rcx-color-shadow-highlight, #d1ebfe));
 }
 
 .rcx-input-box__wrapper:where(:not(.is_Text)):active,
 .rcx-input-box:where(:not(.is_View)):active:not(.rcx-input-box--undecorated),
-.rcx-input-box--small:active:not(.rcx-input-box--undecorated),
-.active.rcx-input-box__wrapper,
-.active.rcx-input-box:not(.rcx-input-box--undecorated),
-.active.rcx-input-box--small:not(.rcx-input-box--undecorated),
-.is-active.rcx-input-box__wrapper,
-.is-active.rcx-input-box:not(.rcx-input-box--undecorated),
-.is-active.rcx-input-box--small:not(.rcx-input-box--undecorated) {
+.rcx-input-box--small:active:not(.rcx-input-box--undecorated) {
 	border-color: var(--rcx-input-colors-active-border-color, var(--rcx-color-stroke-dark, #6c737a));
 	box-shadow: none;
 }
@@ -128,21 +110,14 @@
 *:disabled .rcx-input-box--small:not(.rcx-input-box--undecorated),
 .rcx-input-box:disabled:not(.rcx-input-box--undecorated),
 .rcx-input-box--small:disabled:not(.rcx-input-box--undecorated),
-.disabled.rcx-input-box__wrapper,
-.disabled.rcx-input-box:not(.rcx-input-box--undecorated),
-.disabled.rcx-input-box--small:not(.rcx-input-box--undecorated),
-.is-disabled.rcx-input-box__wrapper,
-.is-disabled.rcx-input-box:not(.rcx-input-box--undecorated),
-.is-disabled.rcx-input-box--small:not(.rcx-input-box--undecorated) {
+.rcx-input-box__wrapper:has(> .rcx-input-box:disabled) {
 	border-color: var(--rcx-input-colors-disabled-border-color, var(--rcx-color-stroke-light, #cbced1));
 	background-color: var(--rcx-input-colors-disabled-background-color, var(--rcx-color-surface-disabled, #f7f8fa));
 }
 
-.rcx-input-box__wrapper.invalid,
+.rcx-input-box__wrapper:has(> .rcx-input-box:invalid),
 .rcx-input-box:not(.rcx-input-box--undecorated):invalid,
-.rcx-input-box:not(.rcx-input-box--undecorated).invalid,
-.rcx-input-box--small:not(.rcx-input-box--undecorated):invalid,
-.rcx-input-box--small:not(.rcx-input-box--undecorated).invalid {
+.rcx-input-box--small:not(.rcx-input-box--undecorated):invalid {
 	border-width: 1px;
 	border-color: var(--rcx-input-colors-invalid-border-color, var(--rcx-color-stroke-error, #ec0d2a));
 	border-radius: var(--rcx-input-border-radius, var(--rcx-border-radius-medium, 0.25rem));
@@ -150,86 +125,34 @@
 	box-shadow: none;
 }
 
-.rcx-input-box__wrapper.invalid:hover,
+.rcx-input-box__wrapper:has(> .rcx-input-box:invalid):hover,
 .rcx-input-box:hover:not(.rcx-input-box--undecorated):invalid,
-.rcx-input-box.invalid:hover:not(.rcx-input-box--undecorated),
-.rcx-input-box--small:hover:not(.rcx-input-box--undecorated):invalid,
-.rcx-input-box--small.invalid:hover:not(.rcx-input-box--undecorated),
-.hover.rcx-input-box__wrapper.invalid,
-.hover.rcx-input-box:not(.rcx-input-box--undecorated):invalid,
-.hover.rcx-input-box.invalid:not(.rcx-input-box--undecorated),
-.hover.rcx-input-box--small:not(.rcx-input-box--undecorated):invalid,
-.hover.rcx-input-box--small.invalid:not(.rcx-input-box--undecorated),
-.is-hovered.rcx-input-box__wrapper.invalid,
-.is-hovered.rcx-input-box:not(.rcx-input-box--undecorated):invalid,
-.is-hovered.rcx-input-box.invalid:not(.rcx-input-box--undecorated),
-.is-hovered.rcx-input-box--small:not(.rcx-input-box--undecorated):invalid,
-.is-hovered.rcx-input-box--small.invalid:not(.rcx-input-box--undecorated) {
+.rcx-input-box--small:hover:not(.rcx-input-box--undecorated):invalid {
 	border-color: var(--rcx-input-colors-invalid-hover-border-color, var(--rcx-color-stroke-error, #ec0d2a));
 }
 
-.rcx-input-box__wrapper.invalid:focus,
+.rcx-input-box__wrapper:has(> .rcx-input-box:invalid):focus,
 .rcx-input-box:focus:not(.rcx-input-box--undecorated):invalid,
-.rcx-input-box.invalid:focus:not(.rcx-input-box--undecorated),
 .rcx-input-box--small:focus:not(.rcx-input-box--undecorated):invalid,
-.rcx-input-box--small.invalid:focus:not(.rcx-input-box--undecorated),
-.rcx-input-box__wrapper.invalid:focus-within,
+.rcx-input-box__wrapper:has(> .rcx-input-box:invalid):focus-within,
 .rcx-input-box:focus-within:not(.rcx-input-box--undecorated):invalid,
-.rcx-input-box.invalid:focus-within:not(.rcx-input-box--undecorated),
-.rcx-input-box--small:focus-within:not(.rcx-input-box--undecorated):invalid,
-.rcx-input-box--small.invalid:focus-within:not(.rcx-input-box--undecorated),
-.focus.rcx-input-box__wrapper.invalid,
-.focus.rcx-input-box:not(.rcx-input-box--undecorated):invalid,
-.focus.rcx-input-box.invalid:not(.rcx-input-box--undecorated),
-.focus.rcx-input-box--small:not(.rcx-input-box--undecorated):invalid,
-.focus.rcx-input-box--small.invalid:not(.rcx-input-box--undecorated),
-.is-focused.rcx-input-box__wrapper.invalid,
-.is-focused.rcx-input-box:not(.rcx-input-box--undecorated):invalid,
-.is-focused.rcx-input-box.invalid:not(.rcx-input-box--undecorated),
-.is-focused.rcx-input-box--small:not(.rcx-input-box--undecorated):invalid,
-.is-focused.rcx-input-box--small.invalid:not(.rcx-input-box--undecorated) {
+.rcx-input-box--small:focus-within:not(.rcx-input-box--undecorated):invalid {
 	border-color: var(--rcx-input-colors-invalid-focus-border-color, var(--rcx-color-stroke-error, #ec0d2a));
 	box-shadow: 0 0 0 2px var(--rcx-input-colors-invalid-focus-shadow-color, var(--rcx-color-shadow-danger, #ffe9ec));
 }
 
-.rcx-input-box__wrapper.invalid:active,
+.rcx-input-box__wrapper:has(> .rcx-input-box:invalid):active,
 .rcx-input-box:active:not(.rcx-input-box--undecorated):invalid,
-.rcx-input-box.invalid:active:not(.rcx-input-box--undecorated),
-.rcx-input-box--small:active:not(.rcx-input-box--undecorated):invalid,
-.rcx-input-box--small.invalid:active:not(.rcx-input-box--undecorated),
-.active.rcx-input-box__wrapper.invalid,
-.active.rcx-input-box:not(.rcx-input-box--undecorated):invalid,
-.active.rcx-input-box.invalid:not(.rcx-input-box--undecorated),
-.active.rcx-input-box--small:not(.rcx-input-box--undecorated):invalid,
-.active.rcx-input-box--small.invalid:not(.rcx-input-box--undecorated),
-.is-active.rcx-input-box__wrapper.invalid,
-.is-active.rcx-input-box:not(.rcx-input-box--undecorated):invalid,
-.is-active.rcx-input-box.invalid:not(.rcx-input-box--undecorated),
-.is-active.rcx-input-box--small:not(.rcx-input-box--undecorated):invalid,
-.is-active.rcx-input-box--small.invalid:not(.rcx-input-box--undecorated) {
+.rcx-input-box--small:active:not(.rcx-input-box--undecorated):invalid {
 	border-color: var(--rcx-input-colors-invalid-active-border-color, var(--rcx-color-stroke-error, #ec0d2a));
 	box-shadow: none;
 }
 
-*:disabled .rcx-input-box__wrapper.invalid,
+*:disabled .rcx-input-box__wrapper:has(> .rcx-input-box:invalid),
 *:disabled .rcx-input-box:not(.rcx-input-box--undecorated):invalid,
-*:disabled .rcx-input-box:not(.rcx-input-box--undecorated).invalid,
 *:disabled .rcx-input-box--small:not(.rcx-input-box--undecorated):invalid,
-*:disabled .rcx-input-box--small:not(.rcx-input-box--undecorated).invalid,
 .rcx-input-box:disabled:not(.rcx-input-box--undecorated):invalid,
-.rcx-input-box.invalid:disabled:not(.rcx-input-box--undecorated),
-.rcx-input-box--small:disabled:not(.rcx-input-box--undecorated):invalid,
-.rcx-input-box--small.invalid:disabled:not(.rcx-input-box--undecorated),
-.disabled.rcx-input-box__wrapper.invalid,
-.disabled.rcx-input-box:not(.rcx-input-box--undecorated):invalid,
-.disabled.rcx-input-box.invalid:not(.rcx-input-box--undecorated),
-.disabled.rcx-input-box--small:not(.rcx-input-box--undecorated):invalid,
-.disabled.rcx-input-box--small.invalid:not(.rcx-input-box--undecorated),
-.is-disabled.rcx-input-box__wrapper.invalid,
-.is-disabled.rcx-input-box:not(.rcx-input-box--undecorated):invalid,
-.is-disabled.rcx-input-box.invalid:not(.rcx-input-box--undecorated),
-.is-disabled.rcx-input-box--small:not(.rcx-input-box--undecorated):invalid,
-.is-disabled.rcx-input-box--small.invalid:not(.rcx-input-box--undecorated) {
+.rcx-input-box--small:disabled:not(.rcx-input-box--undecorated):invalid {
 	border-color: var(--rcx-input-colors-invalid-disabled-border-color, var(--rcx-color-stroke-light, #cbced1));
 	background-color: var(--rcx-input-colors-invalid-disabled-background-color, var(--rcx-color-surface-disabled, #f7f8fa));
 }
@@ -256,7 +179,7 @@
 }
 
 *:disabled .rcx-input-box__wrapper,
-.rcx-input-box__wrapper.disabled {
+.rcx-input-box__wrapper:has(> .rcx-input-box:disabled) {
 	cursor: not-allowed;
 	pointer-events: none;
 }
@@ -272,7 +195,6 @@
 	outline: 0;
 }
 
-.rcx-input-box__addon.disabled,
 .rcx-input-box__addon:disabled {
 	cursor: not-allowed;
 }
@@ -308,10 +230,8 @@
 
 *:disabled .rcx-input-box--type-date,
 .rcx-input-box--type-date:disabled,
-.rcx-input-box--type-date.disabled,
 *:disabled .rcx-input-box--type-time,
-.rcx-input-box--type-time:disabled,
-.rcx-input-box--type-time.disabled {
+.rcx-input-box--type-time:disabled {
 	-webkit-text-fill-color: var(--rcx-input-colors-disabled-color, var(--rcx-color-font-disabled, #cbced1));
 }
 
@@ -368,114 +288,61 @@
 	color: var(--rcx-input-colors-placeholder-color, var(--rcx-color-font-hint, #6c737a));
 }
 
-.rcx-input-box.focus {
-	caret-color: var(--rcx-input-colors-focus-caret-color, var(--rcx-color-font-titles-labels, #1f2329));
-}
-
-.rcx-input-box.active {
-	caret-color: var(--rcx-input-colors-active-caret-color, var(--rcx-color-font-titles-labels, #1f2329));
-}
-
 *:disabled .rcx-input-box,
-.rcx-input-box:disabled,
-.rcx-input-box.disabled {
+.rcx-input-box:disabled {
 	cursor: not-allowed;
 
 	color: var(--rcx-input-colors-disabled-color, var(--rcx-color-font-disabled, #cbced1));
 }
 
 *:disabled .rcx-input-box::placeholder,
-.rcx-input-box:disabled::placeholder,
-.rcx-input-box.disabled::placeholder {
+.rcx-input-box:disabled::placeholder {
 	color: var(--rcx-input-colors-disabled-color, var(--rcx-color-font-disabled, #cbced1));
 }
 
-.rcx-input-box:invalid,
-.rcx-input-box.invalid {
+.rcx-input-box:invalid {
 	color: var(--rcx-input-colors-invalid-color, var(--rcx-color-font-titles-labels, #1f2329));
 }
 
-.rcx-input-box:invalid::placeholder,
-.rcx-input-box.invalid::placeholder {
+.rcx-input-box:invalid::placeholder {
 	color: var(--rcx-input-colors-invalid-placeholder-color, var(--rcx-color-font-hint, #6c737a));
 }
 
-.rcx-input-box:invalid.rcx-input-box--placeholder-visible,
-.rcx-input-box.invalid.rcx-input-box--placeholder-visible {
+.rcx-input-box:invalid.rcx-input-box--placeholder-visible {
 	color: var(--rcx-input-colors-invalid-placeholder-color, var(--rcx-color-font-hint, #6c737a));
 }
 
-.rcx-input-box:invalid:focus,
-.rcx-input-box:invalid.focus,
-.rcx-input-box.invalid:focus,
-.rcx-input-box.invalid.focus {
+.rcx-input-box:invalid:focus {
 	caret-color: var(--rcx-input-colors-invalid-focus-caret-color, var(--rcx-color-font-titles-labels, #1f2329));
 }
 
-.rcx-input-box:invalid:active,
-.rcx-input-box:invalid.active,
-.rcx-input-box.invalid:active,
-.rcx-input-box.invalid.active {
+.rcx-input-box:invalid:active {
 	caret-color: var(--rcx-input-colors-invalid-active-caret-color, var(--rcx-color-font-titles-labels, #1f2329));
 }
 
 *:disabled .rcx-input-box:invalid,
-.rcx-input-box:invalid:disabled,
-.rcx-input-box:invalid.disabled,
-*:disabled .rcx-input-box.invalid,
-.rcx-input-box.invalid:disabled,
-.rcx-input-box.invalid.disabled {
+.rcx-input-box:invalid:disabled {
 	color: var(--rcx-input-colors-invalid-disabled-color, var(--rcx-color-font-disabled, #cbced1));
 }
 
 *:disabled .rcx-input-box:invalid::placeholder,
-.rcx-input-box:invalid:disabled::placeholder,
-.rcx-input-box:invalid.disabled::placeholder,
-*:disabled .rcx-input-box.invalid::placeholder,
-.rcx-input-box.invalid:disabled::placeholder,
-.rcx-input-box.invalid.disabled::placeholder {
+.rcx-input-box:invalid:disabled::placeholder {
 	color: var(--rcx-input-colors-invalid-disabled-color, var(--rcx-color-font-disabled, #cbced1));
 }
 
 .rcx-input-box:invalid + .rcx-input-box__addon,
-.rcx-input-box__addon:has(+ .rcx-input-box:invalid, + .rcx-input-box.invalid),
-.rcx-input-box.invalid + .rcx-input-box__addon {
+.rcx-input-box__addon:has(+ .rcx-input-box:invalid) {
 	color: var(--rcx-input-colors-invalid-color, var(--rcx-color-font-titles-labels, #1f2329));
 }
 
-.rcx-input-box__wrapper.focus > .rcx-input-box:invalid,
-.rcx-input-box__wrapper.focus > .rcx-input-box.invalid {
-	caret-color: var(--rcx-input-colors-invalid-focus-caret-color, var(--rcx-color-font-titles-labels, #1f2329));
-}
-
 .rcx-input-box:invalid:focus + .rcx-input-box__addon,
-.rcx-input-box:invalid.focus + .rcx-input-box__addon,
-.rcx-input-box__wrapper.focus > .rcx-input-box:invalid + .rcx-input-box__addon,
-.rcx-input-box__addon:has(+ .rcx-input-box:invalid:focus, + .rcx-input-box.invalid:focus),
-.rcx-input-box__addon:has(+ .rcx-input-box:invalid.focus, + .rcx-input-box.invalid.focus),
-.rcx-input-box__wrapper.focus > .rcx-input-box__addon:has(+ .rcx-input-box:invalid, + .rcx-input-box.invalid),
-.rcx-input-box.invalid:focus + .rcx-input-box__addon,
-.rcx-input-box.invalid.focus + .rcx-input-box__addon,
-.rcx-input-box__wrapper.focus > .rcx-input-box.invalid + .rcx-input-box__addon {
+.rcx-input-box__addon:has(+ .rcx-input-box:invalid:focus) {
 	color: var(--rcx-input-colors-invalid-focus-icon-color, var(--rcx-color-font-titles-labels, #1f2329));
-}
-
-.rcx-input-box__wrapper.disabled > .rcx-input-box:invalid,
-.rcx-input-box__wrapper.disabled > .rcx-input-box.invalid {
-	color: var(--rcx-input-colors-invalid-disabled-color, var(--rcx-color-font-disabled, #cbced1));
 }
 
 *:disabled .rcx-input-box:invalid + .rcx-input-box__addon,
 .rcx-input-box:invalid:disabled + .rcx-input-box__addon,
-.rcx-input-box:invalid.disabled + .rcx-input-box__addon,
-.rcx-input-box__wrapper.disabled > .rcx-input-box:invalid + .rcx-input-box__addon,
-.rcx-input-box__addon:has(+ .rcx-input-box:invalid:disabled, + .rcx-input-box.invalid:disabled),
-.rcx-input-box__addon:has(+ .rcx-input-box:invalid.disabled, + .rcx-input-box.invalid.disabled),
-.rcx-input-box__wrapper.disabled > .rcx-input-box__addon:has(+ .rcx-input-box:invalid, + .rcx-input-box.invalid),
-*:disabled .rcx-input-box.invalid + .rcx-input-box__addon,
-.rcx-input-box.invalid:disabled + .rcx-input-box__addon,
-.rcx-input-box.invalid.disabled + .rcx-input-box__addon,
-.rcx-input-box__wrapper.disabled > .rcx-input-box.invalid + .rcx-input-box__addon {
+.rcx-input-box__addon:has(+ .rcx-input-box:invalid:disabled) {
 	color: var(--rcx-input-colors-invalid-disabled-color, var(--rcx-color-font-disabled, #cbced1));
 }
 
@@ -484,36 +351,19 @@
 	color: var(--rcx-input-colors-color, var(--rcx-color-font-titles-labels, #1f2329));
 }
 
-.rcx-input-box__wrapper.focus > .rcx-input-box {
-	caret-color: var(--rcx-input-colors-focus-caret-color, var(--rcx-color-font-titles-labels, #1f2329));
-}
-
 .rcx-input-box:focus + .rcx-input-box__addon,
-.rcx-input-box.focus + .rcx-input-box__addon,
-.rcx-input-box__wrapper.focus > .rcx-input-box + .rcx-input-box__addon,
-.rcx-input-box__addon:has(+ .rcx-input-box:focus),
-.rcx-input-box__addon:has(+ .rcx-input-box.focus),
-.rcx-input-box__wrapper.focus > .rcx-input-box__addon:has(+ .rcx-input-box) {
+.rcx-input-box__addon:has(+ .rcx-input-box:focus) {
 	color: var(--rcx-input-colors-focus-icon-color, var(--rcx-color-font-titles-labels, #1f2329));
 }
 
-.rcx-input-box__wrapper.disabled > .rcx-input-box {
+*:disabled .rcx-input-box + .rcx-input-box__addon,
+.rcx-input-box:disabled + .rcx-input-box__addon,
+.rcx-input-box__addon:has(+ .rcx-input-box:disabled) {
 	color: var(--rcx-input-colors-disabled-color, var(--rcx-color-font-disabled, #cbced1));
 }
 
 *:disabled .rcx-input-box + .rcx-input-box__addon,
-.rcx-input-box:disabled + .rcx-input-box__addon,
-.rcx-input-box.disabled + .rcx-input-box__addon,
-.rcx-input-box__wrapper.disabled > .rcx-input-box + .rcx-input-box__addon,
-.rcx-input-box__addon:has(+ .rcx-input-box:disabled),
-.rcx-input-box__addon:has(+ .rcx-input-box.disabled),
-.rcx-input-box__wrapper.disabled > .rcx-input-box__addon:has(+ .rcx-input-box) {
-	color: var(--rcx-input-colors-disabled-color, var(--rcx-color-font-disabled, #cbced1));
-}
-
-*:disabled .rcx-input-box + .rcx-input-box__addon,
-.rcx-input-box:disabled + .rcx-input-box__addon,
-.rcx-input-box.disabled + .rcx-input-box__addon {
+.rcx-input-box:disabled + .rcx-input-box__addon {
 	pointer-events: none;
 }
 

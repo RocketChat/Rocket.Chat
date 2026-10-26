@@ -144,7 +144,6 @@ function TabsItem({ selected, disabled, className, ...props }: TabsItemProps) {
 			divider={divider}
 			stretch={stretch}
 			isDisabled={disabled}
-			{...(className?.split(/\s+/).includes('disabled') && { cursor: 'not-allowed' })}
 			{...({ 'aria-selected': selected ? 'true' : 'false', 'role': 'tab', ...props } as GetProps<typeof TabsItemFrame>)}
 			className={cx(
 				'rcx-tabs__item',

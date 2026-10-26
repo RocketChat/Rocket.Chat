@@ -3,7 +3,7 @@ import { styled, View, type GetProps } from '@tamagui/web';
 import type { ChangeEvent, InputHTMLAttributes, ReactNode } from 'react';
 import { useLayoutEffect, useRef, useCallback } from 'react';
 
-import { createSelectionButtonFake, hasDisabledClassName, SelectionButtonInput, SelectionButtonLabel } from './SelectionButtonFrames';
+import { createSelectionButtonFake, SelectionButtonInput, SelectionButtonLabel } from './SelectionButtonFrames';
 import { cx } from '../../helpers/composeClassNames';
 import { toCSSValue } from '../../helpers/toCSSValue';
 import { borderRadius, size } from '../../styleTokens';
@@ -67,7 +67,7 @@ function CheckBox({ ref, indeterminate, onChange, className, labelChildren, ...p
 	);
 
 	return (
-		<SelectionButtonLabel notAllowed={hasDisabledClassName(className)} className={cx('rcx-check-box', className)}>
+		<SelectionButtonLabel className={cx('rcx-check-box', className)}>
 			{labelChildren}
 			<SelectionButtonInput
 				{...({ type: 'checkbox', ref: mergedRef, onChange: handleChange, ...props } as GetProps<typeof SelectionButtonInput>)}

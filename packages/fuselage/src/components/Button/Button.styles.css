@@ -1,13 +1,9 @@
-.rcx-button:active > *:not([role='status']),
-.rcx-button.active > *:not([role='status']),
-.rcx-button.is-active > *:not([role='status']) {
+.rcx-button:active > *:not([role='status']) {
 	transform: translateY(1px);
 }
 
 *:disabled .rcx-button .rcx-button--content,
-.rcx-button:disabled .rcx-button--content,
-.rcx-button.disabled .rcx-button--content,
-.rcx-button.is-disabled .rcx-button--content {
+.rcx-button:disabled .rcx-button--content {
 	transform: none !important;
 }
 

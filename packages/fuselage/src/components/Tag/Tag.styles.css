@@ -42,28 +42,19 @@
 	color: var(--rcx-link-color, var(--rcx-tag-link-color));
 }
 
-.rcx-tag--clickable.rcx-tag--clickable:is(:focus, :focus-within, .focus, .is-focused) {
+.rcx-tag--clickable.rcx-tag--clickable:is(:focus, :focus-within) {
 	color: var(--rcx-link-focus-color, var(--rcx-tag-link-color));
 }
 
-.rcx-tag--clickable.rcx-tag--clickable:where(:visited, .is-visited) {
+.rcx-tag--clickable.rcx-tag--clickable:where(:visited) {
 	color: var(--rcx-link-visited-color, var(--rcx-tag-link-color));
 }
 
-.rcx-tag--clickable.rcx-tag--clickable:where(:active, .active, .is-active) {
+.rcx-tag--clickable.rcx-tag--clickable:where(:active) {
 	color: var(--rcx-link-active-color, var(--rcx-tag-link-color));
 }
 
-.rcx-tag--clickable:is(.is-focused, .focus) {
-	text-decoration: none;
-
-	border-radius: var(--rcx-border-radius-small, 0.125rem);
-	outline: var(--rcx-link-focus-outline-color, var(--rcx-color-stroke-highlight, #156ff5)) solid 1px;
-	outline-offset: 0;
-	box-shadow: 0 0 0 2px var(--rcx-link-focus-box-shadow-color, var(--rcx-color-stroke-extra-light-highlight, #d1ebfe));
-}
-
-.rcx-tag--clickable:is(:focus-visible, .focus.focus-visible) {
+.rcx-tag--clickable:focus-visible {
 	border-color: var(--rcx-color-stroke-highlight, #156ff5);
 	border-radius: var(--rcx-border-radius-medium, 0.25rem);
 	outline: 0;

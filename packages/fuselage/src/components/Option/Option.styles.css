@@ -27,7 +27,6 @@
 	line-height: 1.25rem;
 }
 
-.rcx-option:not(.rcx-item).disabled,
 .rcx-option:not(.rcx-item):disabled {
 	cursor: not-allowed;
 }

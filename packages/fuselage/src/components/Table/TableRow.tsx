@@ -11,12 +11,10 @@ export type TableRowProps = ElementProps<HTMLTableRowElement> & {
 
 const TableRow = ({ action, selected, className, ...props }: TableRowProps) => {
 	const scheme = [selected && 'selected', action && 'action'].filter(Boolean).join('-') || undefined;
-	const disabled = action && className?.split(/\s+/).includes('disabled');
 
 	return (
 		<TableRowFrame
 			{...{ scheme }}
-			{...(disabled && { cursor: { hover: 'not-allowed', focus: 'not-allowed' } })}
 			className={['rcx-table__row', selected && 'rcx-table__row--selected', action && 'rcx-table__row--action', className]
 				.filter(Boolean)
 				.join(' ')}

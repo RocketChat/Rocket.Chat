@@ -24,16 +24,7 @@ export const SelectionButtonLabel = styled(Text, {
 	verticalAlign: 'middle',
 	cursor: 'pointer',
 	outlineWidth: 0,
-
-	variants: {
-		// The `disabled` class name, which only ever changed the label's cursor
-		notAllowed: {
-			true: { cursor: 'not-allowed' },
-		},
-	} as const,
 });
-
-export const hasDisabledClassName = (className: unknown) => typeof className === 'string' && className.split(/\s+/).includes('disabled');
 
 const SelectionButtonInputFrame = styled(View, {
 	render: 'input',

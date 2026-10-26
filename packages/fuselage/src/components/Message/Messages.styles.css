@@ -29,11 +29,7 @@
 
 /* Link colors carry `:visited`, which has no Tamagui state, and the footer styles the links callers put in it */
 .rcx-message-generic-preview__title-link:focus-visible,
-.rcx-message-generic-preview__footer a:focus-visible,
-.rcx-message-generic-preview__title-link.is-focused,
-.rcx-message-generic-preview__footer a.is-focused,
-.rcx-message-generic-preview__title-link.focus,
-.rcx-message-generic-preview__footer a.focus {
+.rcx-message-generic-preview__footer a:focus-visible {
 	text-decoration: none;
 
 	color: var(--rcx-link-focus-color, var(--rcx-color-font-info, #095ad2));
@@ -48,20 +44,15 @@
 }
 
 .rcx-message-generic-preview__title-link:focus,
-.rcx-message-generic-preview__title-link:focus-within,
-.rcx-message-generic-preview__title-link.focus,
-.rcx-message-generic-preview__title-link.is-focused {
+.rcx-message-generic-preview__title-link:focus-within {
 	color: var(--rcx-link-focus-color, var(--rcx-color-font-info, #095ad2));
 }
 
-.rcx-message-generic-preview__title-link:where(:visited),
-.rcx-message-generic-preview__title-link:where(.is-visited) {
+.rcx-message-generic-preview__title-link:where(:visited) {
 	color: var(--rcx-link-visited-color, var(--rcx-color-font-info, #095ad2));
 }
 
-.rcx-message-generic-preview__title-link:where(:active),
-.rcx-message-generic-preview__title-link:where(.active),
-.rcx-message-generic-preview__title-link:where(.is-active) {
+.rcx-message-generic-preview__title-link:where(:active) {
 	color: var(--rcx-link-active-color, var(--rcx-color-font-info, #095ad2));
 }
 
@@ -70,20 +61,15 @@
 }
 
 .rcx-message-generic-preview__footer a:focus,
-.rcx-message-generic-preview__footer a:focus-within,
-.rcx-message-generic-preview__footer a.focus,
-.rcx-message-generic-preview__footer a.is-focused {
+.rcx-message-generic-preview__footer a:focus-within {
 	color: var(--rcx-link-focus-color, var(--rcx-color-font-secondary-info, #6c737a));
 }
 
-.rcx-message-generic-preview__footer a:where(:visited),
-.rcx-message-generic-preview__footer a:where(.is-visited) {
+.rcx-message-generic-preview__footer a:where(:visited) {
 	color: var(--rcx-link-visited-color, var(--rcx-color-font-secondary-info, #6c737a));
 }
 
-.rcx-message-generic-preview__footer a:where(:active),
-.rcx-message-generic-preview__footer a:where(.active),
-.rcx-message-generic-preview__footer a:where(.is-active) {
+.rcx-message-generic-preview__footer a:where(:active) {
 	color: var(--rcx-link-active-color, var(--rcx-color-font-secondary-info, #6c737a));
 }
 
@@ -321,8 +307,7 @@ code (composer mentions) renders the highlight classes on raw elements */
 	color: var(--rcx-message-highlight-colors-other-color, var(--rcx-color-status-font-on-warning, #895f00));
 }
 
-.rcx-message__highlight:focus-visible,
-.rcx-message__highlight.focus.focus-visible {
+.rcx-message__highlight:focus-visible {
 	border-radius: var(--rcx-border-radius-medium, 0.25rem);
 	outline: 1px solid var(--rcx-color-stroke-highlight, #156ff5);
 	box-shadow: 0 0 0 2px var(--rcx-color-stroke-extra-light-highlight, #d1ebfe);
