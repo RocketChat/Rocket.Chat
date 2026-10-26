@@ -71,7 +71,7 @@ export const createSidePanel =
 	<R extends object>(
 		ItemContentComponent: ComponentType<{ room: R; openedRoom: ReturnType<typeof useOpenedRoom>; isRoomFilter: boolean }>,
 	) =>
-	// eslint-disable-next-line react/no-multi-comp, react/display-name
+	// oxlint-disable-next-line react/display-name
 	({ title, currentTab, unreadOnly, toggleUnreadOnly, rooms }: Omit<SidePanelProps<R>, 'ItemContentComponent'>) => (
 		<SidePanelInternal
 			title={title}

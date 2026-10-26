@@ -201,7 +201,6 @@ const RoomMembers = ({
 										groupCounts={counts}
 										groupContent={(index) => titles[index]}
 										components={{
-											// eslint-disable-next-line react/no-multi-comp
 											Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} />,
 											List: RoomMembersListWrapper,
 										}}

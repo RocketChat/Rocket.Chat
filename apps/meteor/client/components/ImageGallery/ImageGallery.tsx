@@ -194,10 +194,7 @@ export const ImageGallery = ({
 							{[...images].reverse().map(({ _id, path, url, description }) => (
 								<SwiperSlide key={_id}>
 									<div className='swiper-zoom-container'>
-										{/* eslint-disable-next-line
-											jsx-a11y/no-noninteractive-element-interactions,
-											jsx-a11y/click-events-have-key-events
-										*/}
+										{/* oxlint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/click-events-have-key-events */}
 										<img
 											src={path || url}
 											loading='lazy'

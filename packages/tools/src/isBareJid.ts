@@ -1,5 +1,5 @@
 // XEP-0029 conforming-char: anything above #x20 except " & ' / : < > @, DEL, lone surrogates and the BOMs
-// eslint-disable-next-line no-control-regex
+// oxlint-disable-next-line no-control-regex
 const NODE = /^[^\x00-\x20"&'/:<>@\x7F\uD800-\uDFFF￾￿]+$/u;
 const ASCII_LABEL = /^[a-z0-9](?:[a-z0-9-]*[a-z0-9])?$/;
 // The URL parser would read these as a port, path, query, userinfo or IP literal instead of part of the host, and drops trailing controls

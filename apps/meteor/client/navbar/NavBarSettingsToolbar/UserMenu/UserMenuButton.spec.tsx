@@ -73,7 +73,7 @@ describe('UserMenuButton', () => {
 				.build(),
 		});
 
-		// eslint-disable-next-line testing-library/no-node-access
+		// oxlint-disable-next-line testing-library/no-node-access
 		expect(screen.getByRole('button').querySelector(`.rcx-button__badge .rcx-status-bullet--${expected}`)).toBeInTheDocument();
 	});
 

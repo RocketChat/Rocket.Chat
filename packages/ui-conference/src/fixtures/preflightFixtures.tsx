@@ -18,7 +18,7 @@ export type PreviewMediaFixture = {
 /** The preflight's opened media, told rather than opened: no camera or microphone is asked for, and choosing logs. */
 export const withPreviewMedia =
 	({ capabilities = embeddedCapabilities, devices = fakeDevices, selectedIds = {} }: PreviewMediaFixture = {}): Decorator =>
-	// eslint-disable-next-line react/display-name
+	// oxlint-disable-next-line react/display-name
 	(Story) => (
 		<PreviewMediaContextProvider value={{ capabilities, preview: { stream: null, devices } }}>
 			<DeviceSelectionProvider value={buildDeviceSelection({ devices, selectedIds })}>

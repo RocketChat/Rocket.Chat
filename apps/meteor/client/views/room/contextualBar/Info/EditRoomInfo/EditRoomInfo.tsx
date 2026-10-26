@@ -1,4 +1,4 @@
-/* eslint-disable complexity */
+/* oxlint-disable complexity */
 import type { IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
 import { isPrivateRoom, isPublicRoom, isRoomFederated } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
@@ -80,7 +80,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 	const setModal = useSetModal();
 	const isFederated = isRoomFederated(room);
 	const isAbacManaged = useIsABACManagedRoom(room);
-	// eslint-disable-next-line no-nested-ternary
+	// oxlint-disable-next-line no-nested-ternary
 	const roomType = 'prid' in room ? 'discussion' : room.teamMain ? 'team' : 'channel';
 
 	const retentionPolicy = useRetentionPolicy(room);

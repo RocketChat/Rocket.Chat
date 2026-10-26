@@ -39,17 +39,6 @@
 					// "completionProvider": true,
 				},
 			},
-			"LSP-eslint": {
-				"settings": {
-					// If node path is not automatically detected, you can specify it here (use the global eslint settings if you have a global node)
-					// "nodePath": null
-					"workingDirectories": [
-						{
-							"mode": "auto",
-						}
-					],
-				},
-			},
 		},
 	},
 }
