@@ -55,6 +55,7 @@ export const variationPseudoStates = {
 	hover: inVariation('hover'),
 	active: inVariation('active'),
 	focus: inVariation('focus'),
+	focusWithin: inVariation('focus'),
 };
 
 /** Like `variationPseudoStates`, with focus shown as keyboard focus. */
