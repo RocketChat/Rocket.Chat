@@ -23,8 +23,8 @@ type ItemListNavigationOptions = {
 	 */
 	isItem?: (node: Element) => boolean;
 	/**
-	 * Matches the element that bounds a row; every tabbable control inside it is one stop of the left and right arrows. Defaults to
-	 * `Item` rows and `ItemGroupHeader`s.
+	 * Matches the element that bounds a row; every tabbable control inside it is one stop of Tab. Defaults to `Item` rows and
+	 * `ItemGroupHeader`s.
 	 */
 	rowSelector?: string;
 	/**
@@ -40,9 +40,9 @@ type ItemListNavigationOptions = {
 
 /**
  * Makes a list a single tab stop: the up and down arrows move between rows, including rows a virtualized list has not
- * rendered yet; Tab, or the left and right arrows, walk the controls of the focused row, and Tab past its last control
- * leaves the list instead of entering the next row; Escape returns from a control to its row. Coming back to the list by
- * keyboard returns to the row focused last.
+ * rendered yet; Tab walks the controls of the focused row, and Tab past its last control leaves the list instead of entering
+ * the next row; Escape returns from a control to its row. The left and right arrows stay with the focused control. Coming
+ * back to the list by keyboard returns to the row focused last.
  *
  * Pass module-level functions as options to keep the ref stable.
  */
@@ -148,22 +148,6 @@ export const useItemListNavigation = ({
 				return index === -1 ? undefined : { stops, index };
 			};
 
-			const moveWithinRow = (e: KeyboardEvent, target: HTMLElement) => {
-				// Inside a toolbar, the arrows are the toolbar's
-				if (toolbarOf(target)) return;
-
-				const found = findRowStops(target);
-				if (!found) return;
-
-				const isRtl = getComputedStyle(target).direction === 'rtl';
-				const forwards = (e.key === 'ArrowRight') !== isRtl;
-				const next = found.stops[found.index + (forwards ? 1 : -1)];
-
-				e.preventDefault();
-				e.stopPropagation();
-				next?.element.focus();
-			};
-
 			// Tab walks the focused row only, then leaves the list instead of entering the next row
 			const tabThroughRow = (e: KeyboardEvent, target: HTMLElement) => {
 				const found = findRowStops(target);
@@ -204,11 +188,6 @@ export const useItemListNavigation = ({
 
 				if ((e.key === 'ArrowUp' || e.key === 'ArrowDown') && isItem(e.target)) {
 					moveBetweenRows(e, e.target);
-					return;
-				}
-
-				if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
-					moveWithinRow(e, e.target);
 				}
 			};
 
