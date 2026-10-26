@@ -1,4 +1,5 @@
 @import './Box/Box.styles.css';
+@import './AudioPlayer/AudioPlayer.styles.css';
 @import './Avatar/Avatar.styles.css';
 @import './Bubble/Bubble.styles.css';
 @import './Button/Button.styles.css';
@@ -23,9 +24,11 @@
 @import './Select/Select.styles.css';
 @import './Sidebar/Sidebar.styles.css';
 @import './Skeleton/Skeleton.styles.css';
+@import './Slider/Slider.styles.css';
 @import './Table/Table.styles.css';
 @import './Tabs/Tabs.styles.css';
 @import './Tag/Tag.styles.css';
 @import './Text/Text.styles.css';
 @import './Throbber/Throbber.styles.css';
+@import './ToastBar/ToastBar.styles.css';
 @import './ToggleSwitch/ToggleSwitch.styles.css';

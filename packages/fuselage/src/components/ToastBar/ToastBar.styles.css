@@ -1,0 +1,34 @@
+/* The animations run on static keyframes; the progress reads its duration from `--toast-time` */
+.rcx-toastbar {
+	animation: rcx-toastbar-side-open 0.5s;
+}
+
+.rcx-toastbar_progressbar-fill {
+	width: 0%;
+
+	animation: rcx-toastbar-progress var(--toast-time) forwards running;
+}
+
+.rcx-toastbar_progressbar--paused > .rcx-toastbar_progressbar-fill {
+	animation-play-state: paused;
+}
+
+@keyframes rcx-toastbar-side-open {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes rcx-toastbar-progress {
+	from {
+		width: 0%;
+	}
+
+	to {
+		width: 100%;
+	}
+}

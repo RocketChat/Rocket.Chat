@@ -6,9 +6,9 @@ import type { AllHTMLAttributes } from 'react';
 import { statusColors, surfaceColors, textIconColors } from '../../Theme';
 import { cx } from '../../helpers/composeClassNames';
 import { toCSSValue } from '../../helpers/toCSSValue';
-import { borderRadius, spacing } from '../../styleTokens';
+import { borderRadius, resolveFontScale, size as sizeToken, spacing } from '../../styleTokens';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
-import { IconFrame } from '../Icon/Icon';
+import { IconFrame, type IconProps } from '../Icon/Icon';
 
 const FramedIconFrame = styled(IconFrame, {
 	fontSize: 20,
@@ -34,9 +34,10 @@ export type FramedIconProps = {
 	danger?: boolean;
 	neutral?: boolean;
 	icon: Keys;
-} & Omit<AllHTMLAttributes<HTMLElement>, 'is' | 'color'>;
+	size?: IconProps['size'];
+} & Omit<AllHTMLAttributes<HTMLElement>, 'is' | 'color' | 'size'>;
 
-const FramedIcon = ({ info, success, warning, danger, neutral, icon, className, ...props }: FramedIconProps) => {
+const FramedIcon = ({ info, success, warning, danger, neutral, icon, size, className, ...props }: FramedIconProps) => {
 	// Same precedence as the stylesheet had, where the last rule declared won
 	const status = (danger && 'danger') || (warning && 'warning') || (success && 'success') || (info && 'info') || undefined;
 
@@ -44,6 +45,8 @@ const FramedIcon = ({ info, success, warning, danger, neutral, icon, className, 
 		<FramedIconFrame
 			aria-hidden
 			status={status}
+			// The frame's own 20px stays the default
+			{...(size !== undefined && { fontSize: resolveFontScale(size)?.fontSize ?? sizeToken(size) })}
 			{...(props as GetProps<typeof FramedIconFrame>)}
 			className={cx(
 				'rcx-icon',

@@ -3,6 +3,7 @@ import type { Keys as IconName } from '@rocket.chat/icons';
 import { styled, View, type GetProps } from '@tamagui/web';
 import type { HTMLAttributes, ReactNode } from 'react';
 
+import { prependClassName } from '../../helpers/prependClassName';
 import { toCSSColorValue, toCSSValue } from '../../helpers/toCSSValue';
 import { borderRadius, fontScale, size, spacing } from '../../styleTokens';
 import { Icon } from '../Icon';
@@ -64,11 +65,11 @@ type BubbleItemProps = {
 	segment?: 'first' | 'last';
 } & HTMLAttributes<HTMLSpanElement>;
 
-export const BubbleItem = ({ secondary = false, small, segment, label, icon, ...props }: BubbleItemProps) => (
+export const BubbleItem = ({ secondary = false, small, segment, label, icon, className, ...props }: BubbleItemProps) => (
 	<BubbleItemFrame
 		secondary={secondary}
 		small={small}
-		className={`rcx-bubble__item ${secondary ? 'rcx-bubble__item--secondary' : 'rcx-bubble__item--primary'}`}
+		className={prependClassName(className, `rcx-bubble__item ${secondary ? 'rcx-bubble__item--secondary' : 'rcx-bubble__item--primary'}`)}
 		{...(props as GetProps<typeof BubbleItemFrame>)}
 		withIcon={Boolean(icon) && !segment}
 		segment={segment}

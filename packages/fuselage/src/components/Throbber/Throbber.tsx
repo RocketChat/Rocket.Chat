@@ -1,10 +1,9 @@
-import { css } from '@rocket.chat/css-in-js';
 import button from '@rocket.chat/fuselage-tokens/dist/button.json';
 import { styled, View, type GetProps } from '@tamagui/web';
+import type { CSSProperties } from 'react';
 
 import { cx } from '../../helpers/composeClassNames';
 import { toCSSColorValue } from '../../helpers/toCSSValue';
-import { useStyle } from '../../hooks/useStyle';
 import { fontFamily, size as sizeToken, spacing } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
 import type { BoxProps } from '../Box';
@@ -58,13 +57,9 @@ type CircleProps = {
 } & Pick<BoxProps, 'size'>;
 
 function Circle({ disabled, circleCount, iteration, inheritColor, size }: CircleProps) {
-	const timingClassName = useStyle(css`
-		animation-duration: ${circleCount * 0.466}s;
-		animation-delay: ${iteration * 0.16}s;
-	`);
-
 	return (
 		<CircleFrame
+			style={{ '--throbber-duration': `${circleCount * 0.466}s`, '--throbber-delay': `${iteration * 0.16}s` } as CSSProperties}
 			disabled={disabled}
 			inheritColor={inheritColor}
 			width={sizeToken(size)}
@@ -73,7 +68,6 @@ function Circle({ disabled, circleCount, iteration, inheritColor, size }: Circle
 				'rcx-throbber__circle',
 				disabled && 'rcx-throbber__circle--disabled',
 				inheritColor && 'rcx-throbber__circle--inherit-color',
-				timingClassName,
 			)}
 		/>
 	);

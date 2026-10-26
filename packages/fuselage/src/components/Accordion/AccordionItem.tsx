@@ -1,9 +1,9 @@
-import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { styled, Text, View, type GetProps } from '@tamagui/web';
-import { useId, type KeyboardEvent, type MouseEvent, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 import { strokeColors, surfaceColors, textIconColors } from '../../Theme';
 import { cx, cxx } from '../../helpers/composeClassNames';
+import { useCollapse } from '../../hooks/useCollapse';
 import { borderWidth, fontScale, size, spacing } from '../../styleTokens';
 import { StylingBox } from '../Box';
 import { Chevron } from '../Chevron';
@@ -98,6 +98,7 @@ export type AccordionItemProps = {
 	tabIndex?: number;
 	title: ReactNode;
 	noncollapsible?: boolean;
+	onToggle?: (expanded: boolean) => void;
 };
 
 const AccordionItem = ({
@@ -108,57 +109,17 @@ const AccordionItem = ({
 	tabIndex = 0,
 	title,
 	noncollapsible = !title,
+	onToggle,
 	...props
 }: AccordionItemProps) => {
-	const [stateExpanded, toggleStateExpanded] = useToggle(defaultExpanded);
-	const expanded = propExpanded || stateExpanded;
-
-	const panelExpanded = noncollapsible || expanded;
-
-	const titleId = useId();
-	const panelId = useId();
-
-	const handleClick = (e: MouseEvent<HTMLElement>) => {
-		if (disabled) {
-			return;
-		}
-		e.currentTarget?.blur();
-		toggleStateExpanded();
-	};
-
-	const handleKeyDown = (event: KeyboardEvent) => {
-		if (disabled || event.currentTarget !== event.target) {
-			return;
-		}
-
-		if (![' ', 'Enter'].includes(event.key)) {
-			return;
-		}
-
-		event.preventDefault();
-
-		if (event.repeat) {
-			return;
-		}
-
-		toggleStateExpanded();
-	};
-
-	const collapsibleProps = {
-		'aria-controls': panelId,
-		'aria-expanded': expanded ? 'true' : 'false',
-		'tabIndex': !disabled ? tabIndex : undefined,
-		'onClick': handleClick,
-		'onKeyDown': handleKeyDown,
-	} as const;
-
-	const nonCollapsibleProps = {
-		'aria-disabled': 'true',
-		'aria-expanded': 'true',
-		'aria-labelledby': titleId,
-	} as const;
-
-	const barProps = noncollapsible ? nonCollapsibleProps : collapsibleProps;
+	const { barProps, titleId, panelId, panelExpanded, expanded } = useCollapse({
+		expanded: propExpanded,
+		defaultExpanded,
+		disabled,
+		noncollapsible,
+		tabIndex,
+		onToggle,
+	});
 
 	return (
 		<StylingBox {...props}>

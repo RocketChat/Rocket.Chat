@@ -1,0 +1,39 @@
+/* The audio player parts are `Box` elements, so their look lives on their classes */
+.rcx-audio-player {
+	display: flex;
+	align-items: center;
+	width: 100%;
+	max-width: 18.75rem;
+	padding-block: 12px;
+	padding-inline: 16px 8px;
+	border-width: 1px;
+	border-color: var(--rcx-color-stroke-extra-light, #ebecef);
+	border-radius: var(--rcx-border-radius-medium, 0.25rem);
+	background-color: var(--rcx-color-surface-tint, #f7f8fa);
+}
+
+.rcx-audio-player__controls {
+	display: flex;
+	align-items: center;
+	width: 100%;
+}
+
+.rcx-audio-player__track {
+	display: flex;
+	align-items: center;
+	flex-grow: 1;
+	margin-inline: 8px;
+	gap: 16px;
+}
+
+.rcx-audio-player__time {
+	letter-spacing: 0;
+	font-size: 0.875rem;
+	font-weight: 400;
+	line-height: 1.25rem;
+	color: var(--rcx-color-font-secondary-info, #6c737a);
+}
+
+.rcx-audio-player__range {
+	width: 100%;
+}

@@ -9,3 +9,9 @@
 		transform: scale(1);
 	}
 }
+
+/* Each circle's timing comes from custom properties instead of a stylesheet per circle */
+.rcx-throbber__circle {
+	animation-duration: var(--throbber-duration);
+	animation-delay: var(--throbber-delay);
+}

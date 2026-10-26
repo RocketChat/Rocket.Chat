@@ -1,0 +1,99 @@
+/* The slider parts are `Box` elements; the track fill reads the thumb positions from custom properties */
+.rcx-slider {
+	display: flex;
+}
+
+.rcx-slider--horizontal {
+	flex-direction: column;
+	width: 100%;
+}
+
+.rcx-slider--vertical {
+	flex-direction: row-reverse;
+	height: 100%;
+}
+
+.rcx-slider__head {
+	display: flex;
+	justify-content: space-between;
+}
+
+.rcx-slider__head--vertical {
+	flex-direction: column;
+}
+
+.rcx-slider__thumb {
+	width: 12px;
+	height: 12px;
+	cursor: pointer;
+	border-radius: 50%;
+	background: var(--rcx-color-stroke-highlight, #156ff5);
+}
+
+.rcx-slider__thumb--disabled {
+	cursor: not-allowed;
+}
+
+.rcx-slider__thumb--active {
+	background: var(--rcx-color-font-info, #095ad2);
+}
+
+.rcx-slider__thumb--horizontal {
+	top: 50%;
+}
+
+.rcx-slider__thumb--vertical {
+	left: 50%;
+}
+
+.rcx-slider__track::before {
+	position: absolute;
+	display: block;
+	content: '';
+	transform: translateX(-50%);
+	border-radius: 1rem;
+}
+
+.rcx-slider__track--horizontal {
+	width: 100%;
+	height: 30px;
+}
+
+.rcx-slider__track--horizontal::before {
+	top: 50%;
+	width: 100%;
+	height: 4px;
+	transform: translateY(-50%);
+}
+
+.rcx-slider__track--horizontal.rcx-slider__track--single::before {
+	background: linear-gradient(to right, var(--rcx-color-stroke-highlight, #156ff5) var(--slider-start), var(--rcx-color-stroke-light, #cbced1) 0%);
+}
+
+.rcx-slider__track--horizontal.rcx-slider__track--multi::before {
+	background: linear-gradient(to right, var(--rcx-color-stroke-light, #cbced1) var(--slider-start), var(--rcx-color-stroke-highlight, #156ff5) 0, var(--rcx-color-stroke-highlight, #156ff5) var(--slider-end), var(--rcx-color-stroke-light, #cbced1) 0);
+}
+
+.rcx-slider__track--vertical {
+	width: 30px;
+	height: 100%;
+}
+
+.rcx-slider__track--vertical::before {
+	left: 50%;
+	width: 4px;
+	height: 100%;
+}
+
+.rcx-slider__track--vertical.rcx-slider__track--single::before {
+	background: linear-gradient(to top, var(--rcx-color-stroke-highlight, #156ff5) var(--slider-start), var(--rcx-color-stroke-light, #cbced1) 0%);
+}
+
+.rcx-slider__track--vertical.rcx-slider__track--multi::before {
+	background: linear-gradient(to top, var(--rcx-color-stroke-light, #cbced1) var(--slider-start), var(--rcx-color-stroke-highlight, #156ff5) 0, var(--rcx-color-stroke-highlight, #156ff5) var(--slider-end), var(--rcx-color-stroke-light, #cbced1) 0);
+}
+
+.rcx-slider__track--disabled {
+	cursor: not-allowed;
+	opacity: 0.4;
+}

@@ -27,9 +27,9 @@ const BubbleFrame = styled(View, {
 	fontVariantNumeric: 'tabular-nums',
 });
 
-const Bubble = ({ secondary, children, onClick, icon, onDismiss, small, contentProps, dismissProps, ...props }: BubbleProps) => (
+const Bubble = ({ secondary, children, onClick, icon, onDismiss, small, contentProps, dismissProps, className, ...props }: BubbleProps) => (
 	<BubbleFrame
-		className={['rcx-bubble', onDismiss && 'rcx-bubble__group', small && 'rcx-bubble--small'].filter(Boolean).join(' ')}
+		className={['rcx-bubble', onDismiss && 'rcx-bubble__group', small && 'rcx-bubble--small', className].filter(Boolean).join(' ')}
 		{...(props as GetProps<typeof BubbleFrame>)}
 	>
 		{onClick ? (

@@ -1,6 +1,6 @@
-import { css, keyframes } from '@rocket.chat/css-in-js';
+import { css } from '@rocket.chat/css-in-js';
 import { styled, Text, View, type GetProps } from '@tamagui/web';
-import { type ReactNode, type AllHTMLAttributes, useId } from 'react';
+import { type CSSProperties, type ReactNode, type AllHTMLAttributes, useId } from 'react';
 
 import { shadowColors, statusColors, surfaceColors, textIconColors } from '../../Theme';
 import { cx } from '../../helpers/composeClassNames';
@@ -118,43 +118,11 @@ function ToastBar({
 }: ToastBarProps) {
 	const iconName = (variant === 'success' && 'circle-check') || (variant === 'error' && 'ban') || 'info';
 
-	const sideOpen = keyframes`
-    from {
-      opacity: 0;
-    }
-    to {
-      opacity: 1;
-    }
-  `;
-
-	const progressBar = keyframes`
-    from {
-      width: 0%;
-    }
-
-    to {
-      width: 100%;
-    }
-  `;
-
-	const toastBarAnimation = css`
-		animation: ${sideOpen} 0.5s;
-	`;
-
-	const progressBarAnimation = css`
-		width: 0%;
-		animation: ${progressBar} ${time}s;
-		animation-fill-mode: forwards;
-		animation-play-state: ${isPaused ? 'paused' : 'running'};
-	`;
-
 	const uniqueId = useId();
 	const toastId = id || uniqueId;
 
 	const role = variant === 'error' ? 'alert' : 'status';
 
-	const toastBarAnimationClassName = useStyle(toastBarAnimation);
-	const progressBarAnimationClassName = useStyle(progressBarAnimation);
 	const iconColorClassName = useStyle(
 		variant !== 'info'
 			? css`
@@ -165,8 +133,9 @@ function ToastBar({
 
 	return (
 		<ToastBarFrame
+			id={id}
 			{...(props as GetProps<typeof ToastBarFrame>)}
-			className={cx('rcx-toastbar', `rcx-toastbar--${variant}`, toastBarAnimationClassName, className)}
+			className={cx('rcx-toastbar', `rcx-toastbar--${variant}`, className)}
 		>
 			<ToastBarStatusLine aria-hidden variant={variant} />
 			<ToastBarInner className='rcx-toastbar_inner'>
@@ -180,8 +149,11 @@ function ToastBar({
 					</div>
 				)}
 			</ToastBarInner>
-			<ToastBarProgressBar className='rcx-toastbar_progressbar'>
-				<ToastBarProgressFill aria-hidden className={progressBarAnimationClassName} />
+			<ToastBarProgressBar
+				className={cx('rcx-toastbar_progressbar', isPaused && 'rcx-toastbar_progressbar--paused')}
+				style={{ '--toast-time': `${time}s` } as CSSProperties}
+			>
+				<ToastBarProgressFill aria-hidden className='rcx-toastbar_progressbar-fill' />
 			</ToastBarProgressBar>
 		</ToastBarFrame>
 	);

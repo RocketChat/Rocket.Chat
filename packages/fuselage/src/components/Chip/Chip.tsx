@@ -116,8 +116,8 @@ const Chip = (props: ChipProps) => {
 		label,
 		...rest
 	} = props;
-	const onDismiss = onClick || onMouseDown;
-	const disabled = 'disabled' in props ? disabledProp : !onDismiss;
+	const dismissable = Boolean(onClick || onMouseDown);
+	const disabled = 'disabled' in props ? disabledProp : !dismissable;
 
 	return (
 		<ChipFrame
@@ -126,12 +126,12 @@ const Chip = (props: ChipProps) => {
 			label={label}
 			inactive={!!disabled}
 			render={disabled ? <button disabled /> : 'button'}
-			{...({ type: 'button', onClick: onDismiss, ...rest } as GetProps<typeof ChipFrame>)}
+			{...({ type: 'button', onClick, onMouseDown, ...rest } as GetProps<typeof ChipFrame>)}
 		>
 			<Margins all='x4'>
 				{thumbUrl && renderThumb?.({ url: thumbUrl })}
 				{children && <ChipText className='rcx-box rcx-chip__text'>{children}</ChipText>}
-				{onDismiss && renderDismissSymbol?.()}
+				{dismissable && renderDismissSymbol?.()}
 			</Margins>
 		</ChipFrame>
 	);

@@ -144,6 +144,8 @@ function TabsItem({ selected, disabled, className, ...props }: TabsItemProps) {
 			divider={divider}
 			stretch={stretch}
 			isDisabled={disabled}
+			// A `disabled` prop would only become `aria-disabled` on a frame
+			render={disabled === undefined ? 'button' : <button disabled={disabled} />}
 			{...({ 'aria-selected': selected ? 'true' : 'false', 'role': 'tab', ...props } as GetProps<typeof TabsItemFrame>)}
 			className={cx(
 				'rcx-tabs__item',

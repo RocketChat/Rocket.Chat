@@ -1,3 +1,4 @@
+import { prependClassName } from '../../../helpers/prependClassName';
 import type { StatusBulletProps } from '../StatusBullet';
 import { StatusBulletFrame } from '../StatusBulletFrame';
 
@@ -5,7 +6,10 @@ const Away = ({ size, className, ...props }: StatusBulletProps) => (
 	<StatusBulletFrame
 		status='away'
 		small={size === 'small'}
-		className={`rcx-status-bullet rcx-status-bullet--away ${className} ${size === 'small' ? 'rcx-status-bullet--small' : ''}`}
+		className={prependClassName(
+			className,
+			`rcx-status-bullet rcx-status-bullet--away${size === 'small' ? ' rcx-status-bullet--small' : ''}`,
+		)}
 		render={<svg {...props} width='10' height='10' viewBox='0 0 10 10' aria-hidden='true' xmlns='http://www.w3.org/2000/svg' />}
 	>
 		<path
