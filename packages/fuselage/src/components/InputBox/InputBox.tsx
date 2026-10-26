@@ -1,6 +1,6 @@
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
-import type { AllHTMLAttributes, ChangeEvent, ReactNode } from 'react';
-import { useCallback, useLayoutEffect, useRef } from 'react';
+import type { AllHTMLAttributes, ReactNode } from 'react';
+import { useLayoutEffect, useRef } from 'react';
 
 import type { ElementProps } from '../../types/ElementProps';
 import { Icon } from '../Icon';
@@ -71,7 +71,6 @@ function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaE
 	placeholderVisible,
 	type = 'text',
 	small,
-	onChange,
 	...props
 }: InputBoxProps<T>) {
 	const innerRef = useRef<T>(null);
@@ -83,23 +82,6 @@ function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaE
 			innerRef.current.setCustomValidity(error || '');
 		}
 	}, [error]);
-
-	useLayoutEffect(() => {
-		if (defaultAddon && innerRef.current && innerRef.current.parentElement) {
-			innerRef.current.parentElement.classList.toggle('invalid', !innerRef.current.checkValidity());
-		}
-	}, [defaultAddon, error]);
-
-	const handleChange = useCallback(
-		(event: ChangeEvent<T>) => {
-			if (defaultAddon && innerRef.current && innerRef.current.parentElement) {
-				innerRef.current.parentElement.classList.toggle('invalid', !innerRef.current.checkValidity());
-			}
-
-			onChange?.call(event.currentTarget, event);
-		},
-		[defaultAddon, onChange],
-	);
 
 	const handleAddonClick = () => (innerRef.current as HTMLInputElement).showPicker();
 
@@ -122,7 +104,6 @@ function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaE
 				ref={mergedRef}
 				htmlSize={(type === 'textarea' && undefined) || (type === 'select' && 1) || 1}
 				type={type === 'textarea' || type === 'select' ? undefined : type}
-				onChange={handleChange}
 				rcx-input-box--multiple={multiple}
 				rcx-input-box--placeholder-visible={placeholderVisible}
 				rcx-input-box--type={type}
@@ -148,7 +129,6 @@ function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaE
 				ref={mergedRef}
 				htmlSize={(type === 'textarea' && undefined) || (type === 'select' && 1) || 1}
 				type={type === 'textarea' || type === 'select' ? undefined : type}
-				onChange={handleChange}
 				rcx-input-box--multiple={multiple}
 				rcx-input-box--placeholder-visible={placeholderVisible}
 				rcx-input-box--type={type}
