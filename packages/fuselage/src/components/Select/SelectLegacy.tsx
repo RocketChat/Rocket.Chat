@@ -129,7 +129,8 @@ function SelectLegacy({
 			disabled={disabled}
 			ref={containerRef}
 			onClick={handleClick}
-			className={useMemo(() => [error && 'invalid', disabled && 'disabled'], [error, disabled])}
+			rcx-select--invalid={!!error}
+			rcx-select--disabled={disabled}
 			{...props}
 		>
 			<Box is='div' rcx-select__wrapper display='flex' marginInline='neg-x4' rcx-select__wrapper--hidden={!!visibleText}>

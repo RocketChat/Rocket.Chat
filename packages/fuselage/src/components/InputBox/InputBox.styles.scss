@@ -35,17 +35,23 @@ $input-border-radius: theme('input-border-radius', lengths.border-radius(medium)
 	@extend %input;
 
 	&:invalid,
-	&.invalid,
 	&:has(> .rcx-input-box:invalid) {
 		@extend %input--invalid;
 	}
 
 	*:disabled &,
-	&:disabled,
-	&.disabled {
+	&:disabled {
 		cursor: not-allowed;
 		pointer-events: none;
 	}
+}
+
+.rcx-input-box__wrapper:has(> .rcx-input-box:disabled) {
+	cursor: not-allowed;
+	pointer-events: none;
+
+	border-color: $input-colors-disabled-border-color;
+	background-color: $input-colors-disabled-background-color;
 }
 
 .rcx-input-box__wrapper--end-addon-flush {
