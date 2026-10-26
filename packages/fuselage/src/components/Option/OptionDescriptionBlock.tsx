@@ -1,5 +1,5 @@
 import { styled, Text } from '@tamagui/web';
-import type { ReactNode } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
 
 import { textIconColors } from '../../Theme';
 import { asPublicFrame } from '../../helpers/asPublicFrame';
@@ -28,6 +28,6 @@ const OptionDescriptionBlockFrame = styled(Text, {
 
 export type OptionDescriptionBlockProps = {
 	children?: ReactNode;
-};
+} & HTMLAttributes<HTMLDivElement>;
 
 export default asPublicFrame<OptionDescriptionBlockProps>(OptionDescriptionBlockFrame);

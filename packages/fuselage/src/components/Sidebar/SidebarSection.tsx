@@ -3,6 +3,7 @@ import type { HTMLAttributes } from 'react';
 
 import { SidebarDivider } from './SidebarDivider';
 import { boxFull } from './sidebarStyles';
+import { prependClassName } from '../../helpers/prependClassName';
 import { size, spacing } from '../../styleTokens';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
@@ -15,9 +16,12 @@ const SidebarSectionFrame = styled(View, {
 	gap: spacing('x8'),
 });
 
-const SidebarSectionBase = (props: HTMLAttributes<HTMLDivElement>) => (
+const SidebarSectionBase = ({ className, ...props }: HTMLAttributes<HTMLDivElement>) => (
 	<div>
-		<SidebarSectionFrame className='rcx-sidebar-section' {...(props as GetProps<typeof SidebarSectionFrame>)} />
+		<SidebarSectionFrame
+			className={prependClassName(className, 'rcx-sidebar-section')}
+			{...(props as GetProps<typeof SidebarSectionFrame>)}
+		/>
 		<SidebarDivider />
 	</div>
 );

@@ -196,7 +196,8 @@ describe('Item', () => {
 
 		render(
 			<Profiler id='item' onRender={onRender}>
-				<Item>
+				{/* Declared, so the link's registration doesn't render the row again */}
+				<Item interactive>
 					<ItemIcon />
 					<ItemTitle>
 						<ItemLink href='#kenji'>Kenji Takahashi</ItemLink>

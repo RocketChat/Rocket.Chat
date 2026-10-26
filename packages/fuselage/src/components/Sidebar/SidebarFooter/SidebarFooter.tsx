@@ -2,6 +2,7 @@ import { styled, View, type GetProps } from '@tamagui/web';
 import { useContext, type HTMLAttributes } from 'react';
 
 import { surfaceColors, textIconColors } from '../../../Theme';
+import { prependClassName } from '../../../helpers/prependClassName';
 import { size, spacing } from '../../../styleTokens';
 import { withFuselageProvider } from '../../FuselageProvider/FuselageProvider';
 import { SidebarCollapsedContext } from '../Sidebar';
@@ -26,9 +27,9 @@ const SidebarFooterFrame = styled(View, {
 	} as const,
 });
 
-const SidebarFooterBase = ({ children, ...props }: HTMLAttributes<HTMLElement>) => (
+const SidebarFooterBase = ({ children, className, ...props }: HTMLAttributes<HTMLElement>) => (
 	<SidebarFooterFrame
-		className='rcx-sidebar-footer'
+		className={prependClassName(className, 'rcx-sidebar-footer')}
 		collapsed={useContext(SidebarCollapsedContext)}
 		{...(props as GetProps<typeof SidebarFooterFrame>)}
 	>

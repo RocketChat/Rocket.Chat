@@ -1,5 +1,5 @@
 import { styled, Text } from '@tamagui/web';
-import type { ReactNode } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
 
 import { textIconColors } from '../../../Theme';
 import { asPublicFrame } from '../../../helpers/asPublicFrame';
@@ -31,6 +31,6 @@ const ThreadMessageOriginFrame = styled(Text, {
 export type ThreadMessageOriginProps = {
 	children?: ReactNode;
 	system?: boolean;
-};
+} & HTMLAttributes<HTMLDivElement>;
 
 export default asPublicFrame<ThreadMessageOriginProps>(ThreadMessageOriginFrame);

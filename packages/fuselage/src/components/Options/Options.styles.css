@@ -1,4 +1,4 @@
-/* Hovering the list hands the hover surface from the cursor's row to the hovered one; the rows belong to `Option`, `MenuOption` and `Item`. */
+/* Hovering the list hands the hover surface from the cursor's row to the hovered one; the rows belong to `Option` and `Item`. */
 .rcx-options:hover .rcx-option--focus:not(.rcx-option--selected):not(:hover),
 .rcx-options:hover .rcx-item--focused:not(.rcx-item--selected):not(:hover) {
 	background: initial;

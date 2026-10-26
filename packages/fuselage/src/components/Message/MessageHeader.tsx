@@ -2,6 +2,7 @@ import { styled, View, type GetProps } from '@tamagui/web';
 import type { HTMLAttributes } from 'react';
 
 import { boxText } from './messageStyles';
+import { prependClassName } from '../../helpers/prependClassName';
 import { spacing } from '../../styleTokens';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
@@ -29,8 +30,8 @@ const MessageHeaderWrapper = styled(View, {
 
 export type MessageHeaderProps = HTMLAttributes<HTMLDivElement>;
 
-const MessageHeader = ({ children, ...props }: MessageHeaderProps) => (
-	<MessageHeaderFrame className='rcx-message-header' {...(props as GetProps<typeof MessageHeaderFrame>)}>
+const MessageHeader = ({ children, className, ...props }: MessageHeaderProps) => (
+	<MessageHeaderFrame className={prependClassName(className, 'rcx-message-header')} {...(props as GetProps<typeof MessageHeaderFrame>)}>
 		<MessageHeaderWrapper className='rcx-message-header__wrapper'>{children}</MessageHeaderWrapper>
 	</MessageHeaderFrame>
 );

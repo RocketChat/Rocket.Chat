@@ -2,6 +2,7 @@ import { styled, Text, type GetProps } from '@tamagui/web';
 import type { AnchorHTMLAttributes, HTMLAttributes } from 'react';
 
 import { previewTitleColor } from './MessageGenericPreview';
+import { prependClassName } from '../../../helpers/prependClassName';
 import { spacing } from '../../../styleTokens';
 import { withFuselageProvider } from '../../FuselageProvider/FuselageProvider';
 import { textScale, truncatedText } from '../messageStyles';
@@ -21,12 +22,12 @@ export type MessageGenericPreviewTitleProps = {
 } & HTMLAttributes<HTMLSpanElement> &
 	AnchorHTMLAttributes<HTMLAnchorElement>;
 
-const MessageGenericPreviewTitle = ({ externalUrl, children, ...props }: MessageGenericPreviewTitleProps) => {
+const MessageGenericPreviewTitle = ({ externalUrl, children, className, ...props }: MessageGenericPreviewTitleProps) => {
 	if (externalUrl) {
 		return (
 			<MessageGenericPreviewTitleFrame
 				render='a'
-				className='rcx-message-generic-preview__title rcx-message-generic-preview__title-link'
+				className={prependClassName(className, 'rcx-message-generic-preview__title rcx-message-generic-preview__title-link')}
 				{...({ href: externalUrl, target: '_blank', ...props } as GetProps<typeof MessageGenericPreviewTitleFrame>)}
 			>
 				{children}
@@ -36,7 +37,7 @@ const MessageGenericPreviewTitle = ({ externalUrl, children, ...props }: Message
 
 	return (
 		<MessageGenericPreviewTitleFrame
-			className='rcx-message-generic-preview__title'
+			className={prependClassName(className, 'rcx-message-generic-preview__title')}
 			{...(props as GetProps<typeof MessageGenericPreviewTitleFrame>)}
 		/>
 	);

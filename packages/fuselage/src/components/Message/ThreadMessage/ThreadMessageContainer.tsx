@@ -1,5 +1,5 @@
 import { styled, View } from '@tamagui/web';
-import type { ReactNode } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
 
 import { asPublicFrame } from '../../../helpers/asPublicFrame';
 import { variantClass } from '../../../helpers/variantClass';
@@ -24,6 +24,6 @@ const ThreadMessageContainerFrame = styled(View, {
 
 export type ThreadMessageContainerProps = {
 	children?: ReactNode;
-};
+} & HTMLAttributes<HTMLDivElement>;
 
 export default asPublicFrame<ThreadMessageContainerProps>(ThreadMessageContainerFrame);

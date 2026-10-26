@@ -211,6 +211,8 @@ const Item = ({
 							cxx('rcx-item')({
 								[`inset-${inset}`]: inset !== 'none',
 								'clickable': !!onClick,
+								'interactive': !!interactiveProp,
+								'multiline': !!multiline,
 								'selected': !!selected,
 								'highlighted': !!highlighted,
 								'focused': !!focused,

@@ -1,4 +1,4 @@
-/* These rules style `Item` parts, `Icon` and the bare `.rcx-option` that `MenuOption` renders, so no `Option` frame can hold them. */
+/* These rules style `Item` parts, `Icon` and a bare `.rcx-option`, so no `Option` frame can hold them. */
 .rcx-option__description:not(.rcx-item__description),
 .rcx-option__column:not(.rcx-item__icon, .rcx-item__media),
 .rcx-option__content:not(.rcx-item__content),

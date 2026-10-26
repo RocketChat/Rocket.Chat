@@ -1,5 +1,5 @@
 import { styled, Text } from '@tamagui/web';
-import type { ReactNode } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
 
 import { previewContextColor } from './MessageGenericPreview';
 import { asPublicFrame } from '../../../helpers/asPublicFrame';
@@ -26,6 +26,6 @@ const MessageGenericPreviewFooterFrame = styled(Text, {
 export type MessageGenericPreviewFooterProps = {
 	children?: ReactNode;
 	clamp?: boolean;
-};
+} & HTMLAttributes<HTMLDivElement>;
 
 export default asPublicFrame<MessageGenericPreviewFooterProps>(MessageGenericPreviewFooterFrame);

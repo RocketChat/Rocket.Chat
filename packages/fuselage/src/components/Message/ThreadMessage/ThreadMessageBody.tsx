@@ -1,5 +1,5 @@
 import { styled, Text } from '@tamagui/web';
-import type { ReactNode } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
 
 import { textIconColors } from '../../../Theme';
 import { asPublicFrame } from '../../../helpers/asPublicFrame';
@@ -23,6 +23,6 @@ const ThreadMessageBodyFrame = styled(Text, {
 
 export type ThreadMessageBodyProps = {
 	children?: ReactNode;
-};
+} & HTMLAttributes<HTMLDivElement>;
 
 export default asPublicFrame<ThreadMessageBodyProps>(ThreadMessageBodyFrame);

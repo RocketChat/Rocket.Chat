@@ -1,5 +1,5 @@
 import { styled, Text } from '@tamagui/web';
-import type { ReactNode } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
 
 import { textIconColors } from '../../../Theme';
 import { asPublicFrame } from '../../../helpers/asPublicFrame';
@@ -26,6 +26,6 @@ const MessageSystemTimestampFrame = styled(Text, {
 export type MessageSystemTimestampProps = {
 	children: ReactNode;
 	title?: string;
-};
+} & HTMLAttributes<HTMLSpanElement>;
 
 export default asPublicFrame<MessageSystemTimestampProps>(MessageSystemTimestampFrame);

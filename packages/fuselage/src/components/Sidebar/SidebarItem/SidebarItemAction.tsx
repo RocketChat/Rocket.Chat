@@ -1,6 +1,6 @@
 import type { Keys as Icons } from '@rocket.chat/icons';
 import { styled, Text, type GetProps } from '@tamagui/web';
-import type { HTMLAttributes } from 'react';
+import type { HTMLAttributes, MouseEvent } from 'react';
 
 import { textIconColors } from '../../../Theme';
 import { toCSSValue } from '../../../helpers/toCSSValue';
@@ -45,7 +45,7 @@ const SidebarItemActionFrame = styled(Text, {
 });
 
 export type SidebarItemActionProps = {
-	onClick: (e: Event) => void;
+	onClick: (e: MouseEvent<HTMLDivElement>) => void;
 	icon?: Icons;
 } & HTMLAttributes<HTMLDivElement>;
 

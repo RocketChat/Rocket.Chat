@@ -37,9 +37,9 @@ export type MessageGenericPreviewIconProps = Omit<IconProps, 'color'> & {
 	type: string;
 };
 
-const MessageGenericPreviewIcon = ({ name = 'attachment-file', size = 32, type = 'file' }: MessageGenericPreviewIconProps) => (
+const MessageGenericPreviewIcon = ({ name = 'attachment-file', size = 32, type = 'file', ...props }: MessageGenericPreviewIconProps) => (
 	<MessageGenericPreviewIconFrame className='rcx-message-generic-preview__icon'>
-		<Icon name={name} size={size} />
+		<Icon {...props} name={name} size={size} />
 		<MessageGenericPreviewIconTitle className='rcx-message-generic-preview__icon-title'>{type}</MessageGenericPreviewIconTitle>
 	</MessageGenericPreviewIconFrame>
 );

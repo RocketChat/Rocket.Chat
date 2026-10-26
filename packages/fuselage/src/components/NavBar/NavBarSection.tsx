@@ -5,6 +5,7 @@ import { isElement } from 'react-is';
 import flattenChildren from 'react-keyed-flatten-children';
 
 import NavBarDivider from './NavBarDivider';
+import { prependClassName } from '../../helpers/prependClassName';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 const NavBarSectionFrame = styled(View, {
@@ -19,11 +20,11 @@ const NavBarSectionFrame = styled(View, {
 
 export type NavbarSectionProps = HTMLAttributes<HTMLSpanElement>;
 
-const NavBarSection = ({ children, ...props }: NavbarSectionProps) => {
+const NavBarSection = ({ children, className, ...props }: NavbarSectionProps) => {
 	const groups = flattenChildren(children).filter(isElement);
 
 	return (
-		<NavBarSectionFrame className='rcx-navbar-section' {...(props as GetProps<typeof NavBarSectionFrame>)}>
+		<NavBarSectionFrame className={prependClassName(className, 'rcx-navbar-section')} {...(props as GetProps<typeof NavBarSectionFrame>)}>
 			{groups.map((child, index) => (
 				<Fragment key={index}>
 					{child}

@@ -1,6 +1,7 @@
 import { styled, Text } from '@tamagui/web';
 import type { AllHTMLAttributes, ReactNode } from 'react';
 
+import { prependClassName } from '../../helpers/prependClassName';
 import { spacing } from '../../styleTokens';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
@@ -16,8 +17,8 @@ const StatesSuggestionListItemWrapper = styled(Text, {
 	marginInlineStart: spacing('neg-x4'),
 });
 
-const StatesSuggestionListItem = ({ children, ...props }: StatesSuggestionListItemProps) => (
-	<li {...props} className='rcx-states__list-item'>
+const StatesSuggestionListItem = ({ children, className, ...props }: StatesSuggestionListItemProps) => (
+	<li {...props} className={prependClassName(className, 'rcx-states__list-item')}>
 		<StatesSuggestionListItemWrapper className='rcx-states__list-item-wrapper'>{children}</StatesSuggestionListItemWrapper>
 	</li>
 );

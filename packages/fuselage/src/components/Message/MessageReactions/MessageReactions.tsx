@@ -1,6 +1,7 @@
 import { styled, Text, type GetProps } from '@tamagui/web';
 import type { HTMLAttributes, RefAttributes } from 'react';
 
+import { prependClassName } from '../../../helpers/prependClassName';
 import { spacing } from '../../../styleTokens';
 import { withFuselageProvider } from '../../FuselageProvider/FuselageProvider';
 import MessageBlock from '../MessageBlock';
@@ -17,10 +18,13 @@ const MessageReactionsContainer = styled(Text, {
 
 export type MessageReactionsProps = HTMLAttributes<HTMLDivElement> & RefAttributes<HTMLDivElement>;
 
-function MessageReactions(props: MessageReactionsProps) {
+function MessageReactions({ className, ...props }: MessageReactionsProps) {
 	return (
 		<MessageBlock className='rcx-message-reactions'>
-			<MessageReactionsContainer className='rcx-message-reactions__container' {...(props as GetProps<typeof MessageReactionsContainer>)} />
+			<MessageReactionsContainer
+				className={prependClassName(className, 'rcx-message-reactions__container')}
+				{...(props as GetProps<typeof MessageReactionsContainer>)}
+			/>
 		</MessageBlock>
 	);
 }

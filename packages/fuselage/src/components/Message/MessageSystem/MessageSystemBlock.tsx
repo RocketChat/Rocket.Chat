@@ -1,5 +1,5 @@
 import { styled, View } from '@tamagui/web';
-import type { ReactNode } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
 
 import { asPublicFrame } from '../../../helpers/asPublicFrame';
 import { variantClass } from '../../../helpers/variantClass';
@@ -21,6 +21,6 @@ const MessageSystemBlockFrame = styled(View, {
 
 export type MessageSystemBlockProps = {
 	children?: ReactNode;
-};
+} & HTMLAttributes<HTMLDivElement>;
 
 export default asPublicFrame<MessageSystemBlockProps>(MessageSystemBlockFrame);

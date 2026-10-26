@@ -39,10 +39,10 @@ export type MessageSystemProps = {
 	onClick?: (e: ReactMouseEvent<HTMLDivElement, MouseEvent>) => void;
 } & AllHTMLAttributes<HTMLDivElement>;
 
-const MessageSystem = ({ children, title, isSelected, ...props }: MessageSystemProps) => (
+const MessageSystem = ({ children, title, isSelected, className, ...props }: MessageSystemProps) => (
 	<MessageSystemFrame
 		selected={isSelected}
-		className={['rcx-message-system', isSelected && 'rcx-message-system--selected'].filter(Boolean).join(' ')}
+		className={['rcx-message-system', isSelected && 'rcx-message-system--selected', className].filter(Boolean).join(' ')}
 		{...({ title, ...props } as GetProps<typeof MessageSystemFrame>)}
 	>
 		{children}

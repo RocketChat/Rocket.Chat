@@ -1,5 +1,5 @@
 import { styled, Text } from '@tamagui/web';
-import type { ReactNode } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
 
 import { textIconColors } from '../../../Theme';
 import { asPublicFrame } from '../../../helpers/asPublicFrame';
@@ -29,6 +29,6 @@ const MessageGenericPreviewDescriptionFrame = styled(Text, {
 export type MessageGenericPreviewDescriptionProps = {
 	children?: ReactNode;
 	clamp?: boolean;
-};
+} & HTMLAttributes<HTMLDivElement>;
 
 export default asPublicFrame<MessageGenericPreviewDescriptionProps>(MessageGenericPreviewDescriptionFrame);

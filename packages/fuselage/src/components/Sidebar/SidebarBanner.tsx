@@ -1,6 +1,7 @@
 import { styled, Text, View, type GetProps } from '@tamagui/web';
 import { useContext, type AllHTMLAttributes, type ReactNode } from 'react';
 
+import { prependClassName } from '../../helpers/prependClassName';
 import { borderWidth, spacing } from '../../styleTokens';
 import { IconButton } from '../Button';
 import { SidebarCollapsedContext } from './Sidebar';
@@ -77,13 +78,28 @@ export type SidebarBannerProps = {
 	onClose?: () => void;
 	children?: ReactNode;
 	addon?: ReactNode;
+	className?: string;
 };
 
-const SidebarBannerBase = ({ title, linkText, linkProps, variant = 'default', addon, onClose, children, ...props }: SidebarBannerProps) => {
+const SidebarBannerBase = ({
+	title,
+	linkText,
+	linkProps,
+	variant = 'default',
+	addon,
+	onClose,
+	children,
+	className,
+	...props
+}: SidebarBannerProps) => {
 	const collapsed = useContext(SidebarCollapsedContext);
 
 	return (
-		<SidebarBannerFrame variant={variant} className={`rcx-sidebar-banner rcx-sidebar-banner--${variant}`} {...props}>
+		<SidebarBannerFrame
+			variant={variant}
+			className={prependClassName(className, `rcx-sidebar-banner rcx-sidebar-banner--${variant}`)}
+			{...props}
+		>
 			<SidebarBannerContent className='rcx-sidebar-banner__content' collapsed={collapsed}>
 				{title && <SidebarBannerTitle className='rcx-sidebar-banner__title'>{title}</SidebarBannerTitle>}
 				{linkText && (

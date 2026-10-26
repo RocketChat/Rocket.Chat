@@ -31,9 +31,9 @@ const StatesIcon = ({ variation, className, ...props }: StatesIconProps) => {
 
 	return (
 		<Icon
+			size='x32'
 			{...props}
 			className={['rcx-states__icon', variation && `rcx-states__icon--${variation}`, iconClassName, className].filter(Boolean).join(' ')}
-			size='x32'
 		/>
 	);
 };

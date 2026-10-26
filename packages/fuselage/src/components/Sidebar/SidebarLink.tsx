@@ -1,5 +1,5 @@
 import type { Keys as Icons } from '@rocket.chat/icons';
-import { useContext, type LinkHTMLAttributes, type ReactNode } from 'react';
+import { useContext, type AnchorHTMLAttributes, type ReactNode } from 'react';
 
 import { appendClassName } from '../../helpers/appendClassName';
 import { cx } from '../../helpers/composeClassNames';
@@ -14,7 +14,7 @@ export type SidebarLinkProps = {
 	icon?: Icons;
 	badge?: ReactNode;
 	menu?: ReactNode;
-} & LinkHTMLAttributes<HTMLAnchorElement>;
+} & AnchorHTMLAttributes<HTMLAnchorElement>;
 
 // A collapsed sidebar shows only the icon until it is hovered
 const collapsedTitleStyle = frameStyle({ display: { 'default': 'none', 'group-hover/rcx-sidebar': 'block' } });

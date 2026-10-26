@@ -2,6 +2,7 @@ import { styled, Text, type GetProps } from '@tamagui/web';
 import type { HTMLAttributes } from 'react';
 
 import MessageMetricsContentItem from './MessageMetricsContentItem';
+import { prependClassName } from '../../../helpers/prependClassName';
 import { spacing } from '../../../styleTokens';
 import { withFuselageProvider } from '../../FuselageProvider/FuselageProvider';
 import { plainDiv } from '../messageStyles';
@@ -14,10 +15,10 @@ const MessageMetricsContentWrapper = styled(Text, {
 
 export type MessageMetricsProps = HTMLAttributes<HTMLDivElement>;
 
-const MessageMetrics = (props: MessageMetricsProps) => (
+const MessageMetrics = ({ className, ...props }: MessageMetricsProps) => (
 	<MessageMetricsContentItem>
 		<MessageMetricsContentWrapper
-			className='rcx-message-metrics__content-wrapper'
+			className={prependClassName(className, 'rcx-message-metrics__content-wrapper')}
 			{...(props as GetProps<typeof MessageMetricsContentWrapper>)}
 		/>
 	</MessageMetricsContentItem>

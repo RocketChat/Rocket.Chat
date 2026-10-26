@@ -38,7 +38,6 @@ type SidebarCollapseGroupProps = HTMLAttributes<HTMLDivElement> &
 		empty?: boolean;
 		badge?: ReactNode;
 		menu?: ReactNode;
-		actions?: ReactNode;
 	};
 
 function SidebarCollapseGroupBase({
@@ -49,10 +48,10 @@ function SidebarCollapseGroupBase({
 	children,
 	badge,
 	menu,
-	actions: _actions,
 	title,
 	empty,
 	role = 'group',
+	className,
 	...props
 }: SidebarCollapseGroupProps) {
 	const { barProps, expanded, panelExpanded, panelId, titleId } = useCollapse({
@@ -65,7 +64,7 @@ function SidebarCollapseGroupBase({
 
 	return (
 		<SidebarCollapseGroupFrame
-			className='rcx-sidebar-collapse-group'
+			className={cx('rcx-sidebar-collapse-group', className)}
 			role={role as GetProps<typeof SidebarCollapseGroupFrame>['role']}
 			aria-labelledby={labelledBy}
 			{...(props as GetProps<typeof SidebarCollapseGroupFrame>)}

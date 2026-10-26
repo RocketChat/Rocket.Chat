@@ -193,6 +193,7 @@ const Pagination = ({
 	onSetItemsPerPage,
 	onSetCurrent,
 	divider,
+	className,
 	...props
 }: PaginationProps) => {
 	const paginationResultLabelId = useId();
@@ -234,7 +235,7 @@ const Pagination = ({
 	return (
 		<PaginationFrame
 			divider={divider}
-			className={['rcx-pagination', divider && 'rcx-pagination--divider'].filter(Boolean).join(' ')}
+			className={['rcx-pagination', divider && 'rcx-pagination--divider', className].filter(Boolean).join(' ')}
 			aria-label='Pagination Navigation'
 			{...(props as GetProps<typeof PaginationFrame>)}
 		>

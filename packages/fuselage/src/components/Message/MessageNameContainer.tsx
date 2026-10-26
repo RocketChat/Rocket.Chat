@@ -3,6 +3,7 @@ import type { HTMLAttributes, RefAttributes } from 'react';
 
 import { boxText, focusState, truncatedText } from './messageStyles';
 import { textIconColors } from '../../Theme';
+import { prependClassName } from '../../helpers/prependClassName';
 import { spacing } from '../../styleTokens';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
@@ -28,11 +29,11 @@ const MessageNameContainerFrame = styled(Text, {
 
 export type MessageNameContainerProps = HTMLAttributes<HTMLSpanElement> & RefAttributes<HTMLSpanElement>;
 
-function MessageNameContainer(props: MessageNameContainerProps) {
+function MessageNameContainer({ className, ...props }: MessageNameContainerProps) {
 	return (
 		<MessageNameContainerFrame
 			button={props.role === 'button'}
-			className='rcx-message-header__name-container'
+			className={prependClassName(className, 'rcx-message-header__name-container')}
 			{...(props as GetProps<typeof MessageNameContainerFrame>)}
 		/>
 	);

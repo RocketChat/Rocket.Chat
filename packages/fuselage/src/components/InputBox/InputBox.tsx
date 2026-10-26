@@ -125,7 +125,6 @@ function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaE
 			{startAddon && <InputBoxAddon>{startAddon}</InputBoxAddon>}
 			<Input
 				is={(type === 'textarea' && 'textarea') || (type === 'select' && 'select') || 'input'}
-				className={className}
 				cols={(type === 'textarea' && 1) || (type === 'select' && 0) || 0}
 				multiple={multiple}
 				ref={mergedRef}
