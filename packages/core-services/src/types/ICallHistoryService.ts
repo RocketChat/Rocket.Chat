@@ -1,4 +1,4 @@
-import type { CallHistoryItem, IUser } from '@rocket.chat/core-typings';
+import type { MediaCallHistoryItem, CallHistoryItem, IUser } from '@rocket.chat/core-typings';
 
 export interface ICallHistoryService {
 	search(
@@ -14,4 +14,17 @@ export interface ICallHistoryService {
 			sort?: Record<string, 1 | -1>;
 		},
 	): Promise<{ items: CallHistoryItem[]; total: number }>;
+	searchMediaCalls(
+		uid: IUser['_id'],
+		filters: {
+			searchTerm?: string;
+			direction?: CallHistoryItem['direction'];
+			inStates?: CallHistoryItem['state'][];
+		},
+		pagination: {
+			count: number;
+			offset: number;
+			sort?: Record<string, 1 | -1>;
+		},
+	): Promise<{ items: MediaCallHistoryItem[]; total: number }>;
 }
