@@ -1,4 +1,4 @@
-import { Box, Button } from '@rocket.chat/fuselage';
+import { Button, Stack, Text } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import { useResetE2EPasswordMutation } from '../../hooks/useResetE2EPasswordMutation';
@@ -7,14 +7,14 @@ export const ResetPassphrase = () => {
 	const { t } = useTranslation();
 	const resetE2EPassword = useResetE2EPasswordMutation();
 	return (
-		<>
-			<Box is='h4' fontScale='h4' marginBlockEnd={12}>
+		<Stack align='start' gap='x12'>
+			<Text is='h4' fontScale='h4'>
 				{t('Reset_E2EE_password')}
-			</Box>
-			<Box is='p' fontScale='p1' marginBlockEnd={12}>
+			</Text>
+			<Text is='p' fontScale='p1'>
 				{t('Reset_E2EE_password_description')}
-			</Box>
+			</Text>
 			<Button onClick={() => resetE2EPassword.mutate()}>{t('Reset_E2EE_password')}</Button>
-		</>
+		</Stack>
 	);
 };

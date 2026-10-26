@@ -9,6 +9,7 @@ import {
 	FieldLabel,
 	FieldRow,
 	PasswordInput,
+	Stack,
 	Text,
 } from '@rocket.chat/fuselage';
 import { PasswordVerifierList } from '@rocket.chat/ui-client';
@@ -113,7 +114,7 @@ export const ChangePassphrase = () => {
 			<Text is='p' fontScale='p1' id={e2ePasswordExplanationId}>
 				<Trans i18nKey='E2E_Encryption_Password_Explanation' />
 			</Text>
-			<Box marginBlockStart='x32' width='full' display='flex' flexDirection='column' gap='x12'>
+			<Stack gap='x12'>
 				<Text is='h3' fontScale='h4'>
 					{t('Change_E2EE_password')}
 				</Text>
@@ -208,7 +209,7 @@ export const ChangePassphrase = () => {
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>
-			</Box>
+			</Stack>
 		</>
 	);
 };
