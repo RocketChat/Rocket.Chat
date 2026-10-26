@@ -1,0 +1,168 @@
+import type { E2EESearchDoc, ISearchIndexBackend } from '@rocket.chat/desktop-api';
+
+import { createFakeSearchIndexBackend } from './fakeSearchIndexBackend';
+
+const doc = (overrides: Partial<E2EESearchDoc> & Pick<E2EESearchDoc, 'id' | 'body'>): E2EESearchDoc => ({
+	rid: 'r1',
+	uid: 'u1',
+	username: 'alice',
+	ts: 1000,
+	updatedAt: 1000,
+	kind: 'text',
+	...overrides,
+});
+
+const ids = async (backend: ISearchIndexBackend, query: Parameters<ISearchIndexBackend['search']>[0]) =>
+	(await backend.search(query)).map((hit) => hit.id);
+
+const openBackend = async () => {
+	const backend = createFakeSearchIndexBackend();
+	await backend.open({ userId: 'u1' });
+	return backend;
+};
+
+describe('createFakeSearchIndexBackend', () => {
+	it('rejects every call before open', async () => {
+		const backend = createFakeSearchIndexBackend();
+
+		await expect(backend.upsert([doc({ id: 'm1', body: 'needle' })])).rejects.toThrow('E2EE search index is not open');
+		await expect(backend.remove(['m1'])).rejects.toThrow('E2EE search index is not open');
+		await expect(backend.removeRoom('r1')).rejects.toThrow('E2EE search index is not open');
+		await expect(backend.search({ text: 'needle' })).rejects.toThrow('E2EE search index is not open');
+		await expect(backend.getRoomState('r1')).rejects.toThrow('E2EE search index is not open');
+		await expect(backend.setRoomState('r1', { backfillDone: true })).rejects.toThrow('E2EE search index is not open');
+		await expect(backend.stats()).rejects.toThrow('E2EE search index is not open');
+	});
+
+	it('opens as a memory-only index', async () => {
+		await expect(createFakeSearchIndexBackend().open({ userId: 'u1' })).resolves.toEqual({ schemaVersion: 1, encryptedAtRest: false });
+	});
+
+	it('finds a message by a word prefix, with no case or diacritic difference', async () => {
+		const backend = await openBackend();
+		await backend.upsert([doc({ id: 'm1', body: 'Meet at the Café near the station' }), doc({ id: 'm2', body: 'cafe au lait' })]);
+
+		await expect(ids(backend, { text: 'stat' })).resolves.toEqual(['m1']);
+		await expect(ids(backend, { text: 'CAFÉ', order: 'recent' })).resolves.toEqual(expect.arrayContaining(['m1', 'm2']));
+		await expect(ids(backend, { text: 'cafe' })).resolves.toHaveLength(2);
+		await expect(ids(backend, { text: 'ação' })).resolves.toEqual([]);
+	});
+
+	it('matches only messages that have every word of the query', async () => {
+		const backend = await openBackend();
+		await backend.upsert([doc({ id: 'm1', body: 'red apple' }), doc({ id: 'm2', body: 'green apple' })]);
+
+		await expect(ids(backend, { text: 'apple red' })).resolves.toEqual(['m1']);
+	});
+
+	it('treats query operators and quotes as plain words', async () => {
+		const backend = await openBackend();
+		await backend.upsert([doc({ id: 'm1', body: 'needle' }), doc({ id: 'm2', body: 'haystack' })]);
+
+		await expect(ids(backend, { text: '"needle"* NOT' })).resolves.toEqual([]);
+		await expect(ids(backend, { text: '"needle"*' })).resolves.toEqual(['m1']);
+	});
+
+	it('returns no hits for a query with no words', async () => {
+		const backend = await openBackend();
+		await backend.upsert([doc({ id: 'm1', body: 'needle' })]);
+
+		await expect(backend.search({ text: '  ?!*  ' })).resolves.toEqual([]);
+	});
+
+	it('filters by room, sender and date range', async () => {
+		const backend = await openBackend();
+		await backend.upsert([
+			doc({ id: 'm1', body: 'needle', rid: 'r1', uid: 'u1', ts: 100 }),
+			doc({ id: 'm2', body: 'needle', rid: 'r2', uid: 'u1', ts: 200 }),
+			doc({ id: 'm3', body: 'needle', rid: 'r1', uid: 'u2', ts: 300 }),
+		]);
+
+		await expect(ids(backend, { text: 'needle', rid: 'r1', order: 'recent' })).resolves.toEqual(['m3', 'm1']);
+		await expect(ids(backend, { text: 'needle', uid: 'u1', order: 'recent' })).resolves.toEqual(['m2', 'm1']);
+		await expect(ids(backend, { text: 'needle', from: 150, to: 250 })).resolves.toEqual(['m2']);
+	});
+
+	it('orders recent hits newest first and caps the limit', async () => {
+		const backend = await openBackend();
+		await backend.upsert(Array.from({ length: 120 }, (_, index) => doc({ id: `m${index}`, body: 'needle', ts: index })));
+
+		const recent = await ids(backend, { text: 'needle', order: 'recent', limit: 3 });
+		expect(recent).toEqual(['m119', 'm118', 'm117']);
+		await expect(backend.search({ text: 'needle' })).resolves.toHaveLength(50);
+		await expect(backend.search({ text: 'needle', limit: 1000 })).resolves.toHaveLength(100);
+		await expect(backend.search({ text: 'needle', limit: 0 })).resolves.toHaveLength(1);
+	});
+
+	it('replaces an edited message and forgets removed ones', async () => {
+		const backend = await openBackend();
+		await backend.upsert([doc({ id: 'm1', body: 'first text', rid: 'r1' }), doc({ id: 'm2', body: 'needle', rid: 'r2' })]);
+		await backend.setRoomState('r2', { backfillDone: true });
+
+		await backend.upsert([doc({ id: 'm1', body: 'edited text' })]);
+		await expect(ids(backend, { text: 'first' })).resolves.toEqual([]);
+		await expect(ids(backend, { text: 'edited' })).resolves.toEqual(['m1']);
+
+		await backend.remove(['m1']);
+		await expect(ids(backend, { text: 'edited' })).resolves.toEqual([]);
+
+		await backend.removeRoom('r2');
+		await expect(ids(backend, { text: 'needle' })).resolves.toEqual([]);
+		await expect(backend.getRoomState('r2')).resolves.toBeUndefined();
+	});
+
+	it('returns an HTML snippet that escapes the text and marks only the matches', async () => {
+		const backend = await openBackend();
+		await backend.upsert([doc({ id: 'm1', body: '<img src=x onerror=alert(1)> Needles & "café"', tmid: 't1' })]);
+
+		const [hit] = await backend.search({ text: 'needle cafe' });
+
+		expect(hit).toEqual({
+			id: 'm1',
+			rid: 'r1',
+			tmid: 't1',
+			ts: 1000,
+			snippet: '&lt;img src=x onerror=alert(1)&gt; <mark>Needles</mark> &amp; &quot;<mark>café</mark>&quot;',
+		});
+	});
+
+	it('omits tmid for a message outside a thread', async () => {
+		const backend = await openBackend();
+		await backend.upsert([doc({ id: 'm1', body: 'needle' })]);
+
+		const [hit] = await backend.search({ text: 'needle' });
+
+		expect(hit).not.toHaveProperty('tmid');
+	});
+
+	it('keeps room state and counts docs, bytes and rooms', async () => {
+		const backend = await openBackend();
+		await backend.upsert([doc({ id: 'm1', body: 'café', rid: 'r1' }), doc({ id: 'm2', body: 'abc', rid: 'r2' })]);
+		await backend.setRoomState('r1', { lastUpdate: 5, backfillCursor: 'c1', backfillDone: false });
+
+		await expect(backend.getRoomState('r1')).resolves.toEqual({ lastUpdate: 5, backfillCursor: 'c1', backfillDone: false });
+		await expect(backend.getRoomState('r9')).resolves.toBeUndefined();
+		await expect(backend.stats()).resolves.toEqual({ docs: 2, bytes: 8, rooms: 2 });
+	});
+
+	it('wipes every message and room state', async () => {
+		const backend = await openBackend();
+		await backend.upsert([doc({ id: 'm1', body: 'needle' })]);
+		await backend.setRoomState('r1', { backfillDone: true });
+
+		await backend.wipe();
+		await backend.open({ userId: 'u1' });
+
+		await expect(backend.stats()).resolves.toEqual({ docs: 0, bytes: 0, rooms: 0 });
+		await expect(backend.getRoomState('r1')).resolves.toBeUndefined();
+	});
+
+	it('drops the index of another user on open', async () => {
+		const backend = await openBackend();
+		await backend.upsert([doc({ id: 'm1', body: 'needle' })]);
+
+		await backend.open({ userId: 'u2' });
+
+		await expect(ids(backend, { text: 'needle' })).resolves.toEqual([]);
+	});
+});
