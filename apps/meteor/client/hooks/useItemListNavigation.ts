@@ -23,8 +23,8 @@ type ItemListNavigationOptions = {
 	 */
 	isItem?: (node: Element) => boolean;
 	/**
-	 * Matches the element that bounds a row; every tabbable control inside it is one stop of Tab. Defaults to `Item` rows and
-	 * `ItemGroupHeader`s.
+	 * Matches the element that bounds a row; every tabbable control inside it is one stop of Tab, and a toolbar is a single
+	 * stop. Defaults to `Item` rows and `ItemGroupHeader`s.
 	 */
 	rowSelector?: string;
 	/**
