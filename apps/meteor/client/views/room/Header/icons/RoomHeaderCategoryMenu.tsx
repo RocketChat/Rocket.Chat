@@ -1,5 +1,5 @@
 import type { IRoom, ISubscription } from '@rocket.chat/core-typings';
-import { IconButton } from '@rocket.chat/fuselage';
+import { Icon, IconButton } from '@rocket.chat/fuselage';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
@@ -27,7 +27,8 @@ const RoomHeaderCategoryMenu = ({ room }: RoomHeaderCategoryMenuProps) => {
 	const isFavoritesEnabled = useSetting('Favorite_Rooms', true);
 	const favorite = Boolean(room.f);
 	const category = Boolean(room.category);
-	const groupingIcon = getGroupingIcon(favorite, category, isFavoritesEnabled);
+	const groupingIconName = getGroupingIcon(favorite, category, isFavoritesEnabled);
+	const groupingIcon = favorite ? <Icon name={groupingIconName} size='x20' color='status-font-on-warning' /> : groupingIconName;
 
 	const { targetItems, utilItems } = useCategoryMenuItems({
 		rid: room._id,
@@ -38,14 +39,7 @@ const RoomHeaderCategoryMenu = ({ room }: RoomHeaderCategoryMenuProps) => {
 
 	const sections = [{ items: targetItems }, ...(utilItems.length ? [{ items: utilItems }] : [])];
 
-	return (
-		<GenericMenu
-			button={<IconButton small color={favorite ? 'status-font-on-warning' : undefined} icon={groupingIcon} marginInlineEnd={4} />}
-			title={t('Move_to')}
-			icon={groupingIcon}
-			sections={sections}
-		/>
-	);
+	return <GenericMenu button={<IconButton small icon={groupingIcon} />} title={t('Move_to')} icon={groupingIcon} sections={sections} />;
 };
 
 export default RoomHeaderCategoryMenu;

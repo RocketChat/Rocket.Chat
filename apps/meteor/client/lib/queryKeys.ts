@@ -1,4 +1,5 @@
 import type {
+	AbacMembershipGroup,
 	ILivechatDepartment,
 	IMessage,
 	IRoom,
@@ -28,6 +29,7 @@ export const roomsQueryKeys = {
 		[...roomsQueryKeys.room(rid), 'threads', ...args] as const,
 	roles: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'roles'] as const,
 	info: (rid: IRoom['_id']) => [...roomsQueryKeys.room(rid), 'info'] as const,
+	abacInfo: (rid: IRoom['_id'], abacAttributes: IRoom['abacAttributes']) => [...roomsQueryKeys.info(rid), 'abac', abacAttributes] as const,
 	members: (rid: IRoom['_id'], roomType: RoomType, type?: 'all' | 'online', filter?: string) =>
 		!type && !filter
 			? ([...roomsQueryKeys.room(rid), 'members', roomType] as const)
@@ -122,8 +124,8 @@ export const usersQueryKeys = {
 	all: ['users'] as const,
 	userInfo: ({ uid, username }: { uid?: IUser['_id']; username?: IUser['username'] }) =>
 		[...usersQueryKeys.all, 'info', { uid, username }] as const,
-	userAutoComplete: (filter: string, federated: boolean, exceptions: string[] = []) =>
-		[...usersQueryKeys.all, 'autocomplete', filter, federated, exceptions] as const,
+	userAutoComplete: (filter: string, { federated, xmpp }: { federated: boolean; xmpp: boolean }, exceptions: string[] = []) =>
+		[...usersQueryKeys.all, 'autocomplete', filter, { federated, xmpp }, exceptions] as const,
 };
 
 export const teamsQueryKeys = {
@@ -153,9 +155,17 @@ export const ABACQueryKeys = {
 		list: (...args: [query?: PaginatedRequest]) => [...ABACQueryKeys.roomAttributes.all(), ...args] as const,
 		attribute: (attributeId: string) => [...ABACQueryKeys.roomAttributes.all(), attributeId] as const,
 	},
+	assignableAttributes: (rid?: string) => [...ABACQueryKeys.all, 'assignable-attributes', ...(rid ? [{ rid }] : [])] as const,
+	membershipPreview: (members: string[], attributes: Record<string, string[]>) =>
+		[...ABACQueryKeys.all, 'membership-preview', { members, attributes }] as const,
+	roomMembershipPreview: {
+		all: (rid: string) => [...ABACQueryKeys.all, 'room-membership-preview', rid] as const,
+		group: (rid: string, attributes: Record<string, string[]>, filter: string, group: AbacMembershipGroup) =>
+			[...ABACQueryKeys.roomMembershipPreview.all(rid), { attributes, filter, group }] as const,
+	},
 	rooms: {
 		all: () => [...ABACQueryKeys.all, 'rooms'] as const,
-		list: (...args: [query?: PaginatedRequest]) => [...ABACQueryKeys.rooms.all(), ...args] as const,
+		list: (...args: [query?: PaginatedRequest]) => [...ABACQueryKeys.rooms.all(), 'list', ...args] as const,
 		autocomplete: (...args: [query?: PaginatedRequest]) => [...ABACQueryKeys.rooms.all(), 'autocomplete', ...args] as const,
 		room: (roomId: string) => [...ABACQueryKeys.rooms.all(), roomId] as const,
 	},

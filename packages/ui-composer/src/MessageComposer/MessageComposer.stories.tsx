@@ -107,8 +107,8 @@ export const WithSubmit: StoryObj<typeof MessageComposer> = {
 			<MessageComposerToolbar>
 				<MessageToolbarActions />
 				<MessageComposerToolbarSubmit>
-					<Button small>Preview</Button>
-					<Button primary small>
+					<Button size='small'>Preview</Button>
+					<Button variant='primary' size='small'>
 						Send
 					</Button>
 				</MessageComposerToolbarSubmit>
@@ -148,8 +148,8 @@ export const WithFiles: StoryObj<typeof MessageComposer> = {
 			<MessageComposerToolbar>
 				<MessageToolbarActions />
 				<MessageComposerToolbarSubmit>
-					<Button small>Preview</Button>
-					<Button primary small>
+					<Button size='small'>Preview</Button>
+					<Button variant='primary' size='small'>
 						Send
 					</Button>
 				</MessageComposerToolbarSubmit>

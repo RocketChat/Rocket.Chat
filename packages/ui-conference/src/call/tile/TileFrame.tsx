@@ -183,7 +183,7 @@ const TileFrame = ({ displayName, muted, held, audioStream, handPosition, reacti
 			>
 				{handPosition !== undefined && (
 					<>
-						<Icon name='hand' size='x20' verticalAlign='text-bottom' />
+						<Icon name='hand' size='x20' />
 						<VisuallyHidden>{t('Raised_hand')}</VisuallyHidden> ({handPosition}){'  '}
 					</>
 				)}

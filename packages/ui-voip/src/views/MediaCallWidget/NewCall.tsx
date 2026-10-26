@@ -50,7 +50,7 @@ const NewCall = () => {
 			<WidgetFooter>
 				<ButtonGroup stretch>
 					<DevicePicker secondary />
-					<Button medium icon='phone' success flexGrow={1} onClick={onCall}>
+					<Button size='medium' icon='phone' variant='success' onClick={onCall}>
 						{t('Call')}
 					</Button>
 				</ButtonGroup>

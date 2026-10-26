@@ -77,7 +77,7 @@ export const CreateCloudWorkspaceForm = ({
 				<FormTitle>{t('form.createCloudWorkspace.title')}</FormTitle>
 			</FormHeader>
 
-			<FieldGroup marginBlockStart={16}>
+			<FieldGroup>
 				<Field>
 					<FieldLabel>{t('form.createCloudWorkspace.fields.orgEmaillabel')}</FieldLabel>
 					<FieldRow>
@@ -129,81 +129,87 @@ export const CreateCloudWorkspaceForm = ({
 					{errors?.workspaceURL && <FieldError>{errors.workspaceURL.message}</FieldError>}
 				</Field>
 
-				<Grid marginBlock={16}>
-					<Grid.Item>
-						<Field>
-							<FieldLabel>
-								<Box display='inline' marginInlineEnd={8}>
-									{t('form.createCloudWorkspace.fields.serverRegionlabel')}
-								</Box>
-								<Tooltip text={t('form.createCloudWorkspace.fields.serverRegion.tooltip')} />
-							</FieldLabel>
-							<FieldRow>
-								<Controller
-									name='serverRegion'
-									control={control}
-									rules={{ required: true }}
-									defaultValue={defaultValues?.serverRegion}
-									render={({ field }) => (
-										<Select
-											{...field}
-											options={serverRegionOptions}
-											placeholder={t('form.createCloudWorkspace.fields.serverRegionlabel')}
-										/>
-									)}
-								/>
-							</FieldRow>
-						</Field>
-					</Grid.Item>
+				<Box paddingBlock={16}>
+					<Grid>
+						<Grid.Item>
+							<Field>
+								<FieldLabel>
+									<Box display='inline' marginInlineEnd={8}>
+										{t('form.createCloudWorkspace.fields.serverRegionlabel')}
+									</Box>
+									<Tooltip text={t('form.createCloudWorkspace.fields.serverRegion.tooltip')} />
+								</FieldLabel>
+								<FieldRow>
+									<Controller
+										name='serverRegion'
+										control={control}
+										rules={{ required: true }}
+										defaultValue={defaultValues?.serverRegion}
+										render={({ field }) => (
+											<Select
+												{...field}
+												options={serverRegionOptions}
+												placeholder={t('form.createCloudWorkspace.fields.serverRegionlabel')}
+											/>
+										)}
+									/>
+								</FieldRow>
+							</Field>
+						</Grid.Item>
 
-					<Grid.Item>
-						<Field>
-							<FieldLabel>
-								<Box display='inline' marginInlineEnd={8}>
-									{t('form.createCloudWorkspace.fields.languagelabel')}
-								</Box>
-								<Tooltip text={t('form.createCloudWorkspace.fields.language.tooltip')} />
-							</FieldLabel>
-							<FieldRow>
-								<Controller
-									name='language'
-									control={control}
-									rules={{ required: true }}
-									defaultValue={defaultValues?.language}
-									render={({ field }) => (
-										<Select {...field} options={languageOptions} placeholder={t('form.createCloudWorkspace.fields.languagelabel')} />
-									)}
-								/>
-							</FieldRow>
-						</Field>
-					</Grid.Item>
-				</Grid>
+						<Grid.Item>
+							<Field>
+								<FieldLabel>
+									<Box display='inline' marginInlineEnd={8}>
+										{t('form.createCloudWorkspace.fields.languagelabel')}
+									</Box>
+									<Tooltip text={t('form.createCloudWorkspace.fields.language.tooltip')} />
+								</FieldLabel>
+								<FieldRow>
+									<Controller
+										name='language'
+										control={control}
+										rules={{ required: true }}
+										defaultValue={defaultValues?.language}
+										render={({ field }) => (
+											<Select {...field} options={languageOptions} placeholder={t('form.createCloudWorkspace.fields.languagelabel')} />
+										)}
+									/>
+								</FieldRow>
+							</Field>
+						</Grid.Item>
+					</Grid>
+				</Box>
 
-				<Divider marginBlock={0} />
+				<Divider flush />
 
 				<Field>
-					<FieldRow justifyContent='flex-start'>
-						<CheckBox {...register('agreement', { required: true })} marginInlineEnd={8} />
-						<Box is='label' htmlFor='agreement' withRichContent fontScale='c1'>
-							<Trans i18nKey='component.form.termsAndConditions'>
-								I agree with
-								<a href='https://rocket.chat/terms' target='_blank' rel='noopener noreferrer'>
-									Terms and Conditions
-								</a>
-								and
-								<a href='https://rocket.chat/privacy' target='_blank' rel='noopener noreferrer'>
-									Privacy Policy
-								</a>
-							</Trans>
+					<FieldRow>
+						<Box display='flex' alignItems='center' minWidth={0}>
+							<CheckBox {...register('agreement', { required: true })} />
+							<Box is='label' htmlFor='agreement' withRichContent fontScale='c1'>
+								<Trans i18nKey='component.form.termsAndConditions'>
+									I agree with
+									<a href='https://rocket.chat/terms' target='_blank' rel='noopener noreferrer'>
+										Terms and Conditions
+									</a>
+									and
+									<a href='https://rocket.chat/privacy' target='_blank' rel='noopener noreferrer'>
+										Privacy Policy
+									</a>
+								</Trans>
+							</Box>
 						</Box>
 					</FieldRow>
 					{errors.agreement?.type === 'required' && <FieldError>{t('component.form.requiredField')}</FieldError>}
 				</Field>
 
 				<Field>
-					<FieldRow justifyContent='flex-start'>
-						<CheckBox {...register('updates')} marginInlineEnd={8} />
-						<Box fontScale='c1'>{t('form.createCloudWorkspace.fields.keepMeInformed')}</Box>
+					<FieldRow>
+						<Box display='flex' alignItems='center' minWidth={0}>
+							<CheckBox {...register('updates')} />
+							<Box fontScale='c1'>{t('form.createCloudWorkspace.fields.keepMeInformed')}</Box>
+						</Box>
 					</FieldRow>
 				</Field>
 			</FieldGroup>
@@ -216,7 +222,7 @@ export const CreateCloudWorkspaceForm = ({
 						</Button>
 					)}
 
-					<Button type='submit' primary disabled={!isValid} loading={isSubmitting || isValidating}>
+					<Button type='submit' variant='primary' disabled={!isValid} loading={isSubmitting || isValidating}>
 						{t('component.form.action.next')}
 					</Button>
 				</ButtonGroup>

@@ -353,7 +353,7 @@ export class Router<
 	}
 
 	get router(): express.Router {
-		// eslint-disable-next-line new-cap
+		// oxlint-disable-next-line new-cap
 		const router = express.Router();
 		const hono = new Hono();
 		router.use(

@@ -17,9 +17,7 @@ const InviteLink = ({ linkText, captionText, onClickEdit }: InviteLinkProps) => 
 	return (
 		<>
 			<Field>
-				<FieldLabel htmlFor={inviteLinkId} flexGrow={0}>
-					{t('Invite_Link')}
-				</FieldLabel>
+				<FieldLabel htmlFor={inviteLinkId}>{t('Invite_Link')}</FieldLabel>
 				<FieldRow>
 					{!linkText && <InputBoxSkeleton />}
 					{linkText && (

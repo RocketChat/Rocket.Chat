@@ -7,7 +7,7 @@ import { callLoginMethod, registerLoginWithMethod } from '../accounts';
 type UserDescriptor = { username: string } | { email: string } | { id: string } | string;
 
 declare module 'meteor/meteor' {
-	// eslint-disable-next-line @typescript-eslint/no-namespace
+	// oxlint-disable-next-line @typescript-eslint/no-namespace
 	namespace Meteor {
 		function loginWithPassword(userDescriptor: UserDescriptor, password: string, callback?: LoginCallback): void;
 	}

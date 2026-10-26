@@ -9,14 +9,13 @@
 	],
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.build.json",
-		"lint": "eslint .",
+		"lint": "yarn run -T oxlint",
 		"test": "jest",
 		"testunit": "jest"
 	},
 	"devDependencies": {
 		"@rocket.chat/core-typings": "workspace:~",
 		"date-fns": "~4.1.0",
-		"eslint": "~10.12.0",
 		"i18next": "~26.4.2",
 		"jest": "~30.5.2",
 		"moment": "^2.31.0",

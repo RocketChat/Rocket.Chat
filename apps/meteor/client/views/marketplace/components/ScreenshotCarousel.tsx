@@ -53,28 +53,18 @@ const ScreenshotCarousel = ({
 
 	return (
 		<>
-			<Box position='fixed' width='100%' height='100vh' backgroundColor='font-pure-black' opacity='0.7' marginBlock='-0.75px' zIndex='2' />
+			<Box position='fixed' width='100%' height='100vh' backgroundColor='font-pure-black' opacity='0.7' marginBlock='0' zIndex='2' />
 
 			{!isFirstSlide && (
-				<IconButton
-					secondary
-					icon='chevron-right'
-					onClick={handlePrevSlide}
-					style={{ top: '50%', left: '10px', cursor: 'pointer', transform: 'translateY(-50%)' }}
-					position='absolute'
-					zIndex={3}
-				/>
+				<Box position='absolute' zIndex={3} style={{ top: '50%', left: '10px', transform: 'translateY(-50%)' }}>
+					<IconButton secondary icon='chevron-right' onClick={handlePrevSlide} />
+				</Box>
 			)}
 
 			{!isLastSlide && (
-				<IconButton
-					secondary
-					icon='chevron-left'
-					onClick={handleNextSlide}
-					style={{ top: '50%', right: '10px', cursor: 'pointer', transform: 'translateY(-50%)' }}
-					position='absolute'
-					zIndex={3}
-				/>
+				<Box position='absolute' zIndex={3} style={{ top: '50%', right: '10px', transform: 'translateY(-50%)' }}>
+					<IconButton secondary icon='chevron-left' onClick={handleNextSlide} />
+				</Box>
 			)}
 
 			<Box
@@ -86,7 +76,7 @@ const ScreenshotCarousel = ({
 				justifyContent='center'
 				alignItems='center'
 				zIndex='2'
-				marginInline={38}
+				marginInline='x40'
 			>
 				{handleScreenshotRender()}
 			</Box>

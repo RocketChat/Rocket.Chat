@@ -18,8 +18,8 @@ const Retry = ({ retry }: RetryProps) => {
 		}
 	`;
 	return (
-		<ImageBox className={clickable} onClick={retry} size='x160'>
-			<Icon name='refresh' color='hint' size='x64' />
+		<ImageBox className={clickable} onClick={retry} size='x160' color='hint'>
+			<Icon name='refresh' size='x64' />
 			<Box fontScale='h3' color='default' textAlign='center'>
 				{t('Retry')}
 			</Box>

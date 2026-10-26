@@ -10,7 +10,7 @@ const Option = ({ id, onClick }: { id: string; onClick?: () => void }) => {
 	const { focusVisible, onPointerMove, tabIndex, 'aria-selected': selected } = useSearchOptionProps(id);
 
 	return (
-		// eslint-disable-next-line jsx-a11y/click-events-have-key-events -- the combobox handles the keyboard for its options
+		// oxlint-disable-next-line jsx-a11y/click-events-have-key-events -- the combobox handles the keyboard for its options
 		<div
 			role='option'
 			id={id}

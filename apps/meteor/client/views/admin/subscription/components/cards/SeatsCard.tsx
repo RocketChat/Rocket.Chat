@@ -29,7 +29,7 @@ const SeatsCard = ({ value, max, hideManageSubscription }: SeatsCardProps) => {
 		...(!hideManageSubscription &&
 			nearLimit && {
 				upgradeButton: (
-					<UpgradeButton target='seats-card' action='buy_more' small>
+					<UpgradeButton target='seats-card' action='buy_more' size='small'>
 						{t('Buy_more')}
 					</UpgradeButton>
 				),

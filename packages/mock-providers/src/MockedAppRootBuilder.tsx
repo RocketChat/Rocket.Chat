@@ -933,7 +933,6 @@ export class MockedAppRootBuilder {
 	buildStoryDecorator(): Decorator {
 		const WrapperComponent = this.build();
 
-		// eslint-disable-next-line react/display-name, react/no-multi-comp
 		return (fn) => <WrapperComponent>{fn()}</WrapperComponent>;
 	}
 }

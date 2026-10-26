@@ -1,4 +1,4 @@
-/* eslint-disable new-cap */
+/* oxlint-disable new-cap */
 import {
 	AnimatedVisibility,
 	Button,
@@ -33,7 +33,7 @@ const DemoModal = ({ children, visible }: { children?: ReactNode; visible: boole
 			<ModalFooter>
 				<ButtonGroup align='end'>
 					<Button onClick={action('cancel')}>Cancel</Button>
-					<Button primary onClick={action('submit')}>
+					<Button variant='primary' onClick={action('submit')}>
 						Submit
 					</Button>
 				</ButtonGroup>
@@ -177,3 +177,7 @@ export const Conditional = createStory(payloads.conditional);
 export const Callout = createStory(payloads.callout);
 
 export const CalloutWithAction = createStory(payloads.calloutWithAction);
+
+export const Table = createStory(payloads.table);
+
+export const Video = createStory(payloads.video);

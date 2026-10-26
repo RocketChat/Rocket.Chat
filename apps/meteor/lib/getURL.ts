@@ -4,7 +4,6 @@ import { ltrim, rtrim, trim } from './utils/stringUtils';
 
 function getCloudUrl(
 	path: string,
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	_site_url: string,
 	cloudRoute: string,
 	cloudParams: Record<string, string> = {},

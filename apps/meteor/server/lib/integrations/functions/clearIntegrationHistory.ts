@@ -1,6 +1,6 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IOutgoingIntegration, IIntegration } from '@rocket.chat/core-typings';
 import { Integrations, IntegrationHistory } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../authorization/hasPermission';
 import notifications from '../../notifications/core/lib/Notifications';
@@ -17,11 +17,11 @@ export const clearIntegrationHistoryMethod = async (userId: string, integrationI
 			'_createdBy._id': userId,
 		});
 	} else {
-		throw new Meteor.Error('not_authorized', 'Unauthorized', { method: 'clearIntegrationHistory' });
+		throw new ClientSafeError('not_authorized', 'Unauthorized', { method: 'clearIntegrationHistory' });
 	}
 
 	if (!integration) {
-		throw new Meteor.Error('error-invalid-integration', 'Invalid integration', { method: 'clearIntegrationHistory' });
+		throw new ClientSafeError('error-invalid-integration', 'Invalid integration', { method: 'clearIntegrationHistory' });
 	}
 
 	await IntegrationHistory.removeByIntegrationId(integrationId);
@@ -49,13 +49,13 @@ export const replayOutgoingIntegrationMethod = async (
 	}
 
 	if (!integration) {
-		throw new Meteor.Error('error-invalid-integration', 'Invalid integration', { method: 'replayOutgoingIntegration' });
+		throw new ClientSafeError('error-invalid-integration', 'Invalid integration', { method: 'replayOutgoingIntegration' });
 	}
 
 	const history = await IntegrationHistory.findOneByIntegrationIdAndHistoryId(integration._id, historyId);
 
 	if (!history) {
-		throw new Meteor.Error('error-invalid-integration-history', 'Invalid Integration History', { method: 'replayOutgoingIntegration' });
+		throw new ClientSafeError('error-invalid-integration-history', 'Invalid Integration History', { method: 'replayOutgoingIntegration' });
 	}
 
 	await triggerHandler.replay(integration, history);

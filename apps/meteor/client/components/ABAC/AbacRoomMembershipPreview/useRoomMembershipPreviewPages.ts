@@ -1,0 +1,45 @@
+import type { AbacMembershipGroup, AbacPreviewCursor, IAbacRoomMembershipPreview } from '@rocket.chat/core-typings';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
+import type { InfiniteData } from '@tanstack/react-query';
+import { useInfiniteQuery } from '@tanstack/react-query';
+
+import { ABACQueryKeys } from '../../../lib/queryKeys';
+
+export const useRoomMembershipPreviewPages = (
+	rid: string,
+	attributes: Record<string, string[]>,
+	filter: string,
+	group: AbacMembershipGroup,
+	{ enabled = true }: { enabled?: boolean } = {},
+) => {
+	const previewMembership = useEndpoint('POST', '/v1/abac/rooms.evaluateMembership');
+
+	return useInfiniteQuery<
+		IAbacRoomMembershipPreview,
+		Error,
+		InfiniteData<IAbacRoomMembershipPreview, AbacPreviewCursor | undefined>,
+		ReturnType<typeof ABACQueryKeys.roomMembershipPreview.group>,
+		AbacPreviewCursor | undefined
+	>({
+		queryKey: ABACQueryKeys.roomMembershipPreview.group(rid, attributes, filter, group),
+		queryFn: async ({ pageParam }) => {
+			const response = await previewMembership({
+				rid,
+				attributes,
+				group,
+				...(filter && { filter }),
+				...(pageParam && { after: pageParam }),
+			});
+			if (!('members' in response)) {
+				throw new Error('error-invalid-room-membership-preview');
+			}
+			return response;
+		},
+		enabled,
+		initialPageParam: undefined,
+		getNextPageParam: (lastPage) => lastPage.next,
+		staleTime: Infinity,
+		refetchOnWindowFocus: false,
+		retry: false,
+	});
+};

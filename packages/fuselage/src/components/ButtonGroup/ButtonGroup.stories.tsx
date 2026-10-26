@@ -1,6 +1,6 @@
 import type { Meta, StoryFn, StoryObj } from '@storybook/react-webpack5';
 
-import { Button } from '../Button';
+import { Button, IconButton } from '../Button';
 import ButtonGroup from './ButtonGroup';
 
 export default {
@@ -14,8 +14,9 @@ export default {
 			table: { category: 'Layout', defaultValue: { summary: 'start' } },
 		},
 		stretch: {
-			control: 'boolean',
-			description: 'Stretches every button to share the available space.',
+			control: 'select',
+			options: [false, true, 'equal'],
+			description: 'Stretches every button to share the available space; `equal` also gives them the same width.',
 			table: { category: 'Layout' },
 		},
 		wrap: {
@@ -105,6 +106,19 @@ export const Stretch: Story = {
 	render: Template,
 	args: {
 		stretch: true,
+	},
+};
+
+export const StretchEqual: Story = {
+	render: (args) => (
+		<ButtonGroup {...args}>
+			<Button>Cancel</Button>
+			<Button variant='primary'>Add more users</Button>
+			<IconButton icon='kebab' secondary title='More' />
+		</ButtonGroup>
+	),
+	args: {
+		stretch: 'equal',
 	},
 };
 

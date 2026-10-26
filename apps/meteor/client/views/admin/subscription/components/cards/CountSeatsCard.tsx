@@ -17,8 +17,8 @@ const CountSeatsCard = ({ activeUsers }: CountSeatsCardProps) => {
 			}}
 		>
 			<FeatureUsageCardBody>
-				<Box fontScale='h1' display='flex' alignItems='center' justifyContent='center'>
-					<Icon color='font-annotation' name='user' size={40} marginInlineEnd={4} />
+				<Box fontScale='h1' display='flex' alignItems='center' justifyContent='center' gap={4}>
+					<Icon color='hint' name='user' size={40} />
 					{activeUsers}
 				</Box>
 			</FeatureUsageCardBody>

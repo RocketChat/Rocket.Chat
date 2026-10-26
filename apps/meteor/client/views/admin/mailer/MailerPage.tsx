@@ -185,7 +185,7 @@ const MailerPage = () => {
 			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset(initialData)}>{t('Cancel')}</Button>
-					<Button form={mailerFormId} primary type='submit'>
+					<Button form={mailerFormId} variant='primary' type='submit'>
 						{t('Send_email')}
 					</Button>
 				</ButtonGroup>

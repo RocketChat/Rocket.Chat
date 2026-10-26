@@ -107,7 +107,7 @@ const OutgoingWebhookHistoryPage = (props: ComponentProps<typeof Page>) => {
 				onClickBack={() => router.navigate(`/admin/integrations/edit/outgoing/${id}`)}
 			>
 				<ButtonGroup>
-					<Button icon='trash' danger onClick={handleClearHistory} disabled={total === 0}>
+					<Button icon='trash' variant='danger' onClick={handleClearHistory} disabled={total === 0}>
 						{t('clear_history')}
 					</Button>
 				</ButtonGroup>

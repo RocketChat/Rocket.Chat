@@ -28,7 +28,7 @@ const TimezoneSelector = ({ value, onChange }: TimezoneSelectorProps) => {
 				<FieldLabel>{t('Timezone')}</FieldLabel>
 				<FieldDescription>{t('Timezone_picker_description')}</FieldDescription>
 				<FieldRow>
-					<Select value={value} onChange={handleTimezoneChange} options={options} width='full' />
+					<Select value={value} onChange={handleTimezoneChange} options={options} />
 				</FieldRow>
 				<FieldHint>{t('Timezone_picker_hint')}</FieldHint>
 			</Field>

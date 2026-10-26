@@ -84,6 +84,13 @@ $inset-icon-large: lengths.padding(24) - lengths.padding(2); // 22px
 
 	&.rcx-button--with-icon {
 		@include with-leading-icon-inset($start: $inset-icon-default, $end: $inset-default);
+
+		// The gap only separates the icon from a label. On an icon-only button it
+		// has nothing to separate and just pushes the icon off centre by half its
+		// width, so it is scoped to this class rather than applied to every icon.
+		.rcx-button__icon {
+			margin-inline-end: lengths.margin(4);
+		}
 	}
 
 	@include button.kind-variant(colors.$secondary);
@@ -124,6 +131,10 @@ $inset-icon-large: lengths.padding(24) - lengths.padding(2); // 22px
 		}
 	}
 
+	&--compact {
+		min-width: 4ch;
+	}
+
 	&--square {
 		@include with-squared-size($size: 40);
 		display: flex;
@@ -145,10 +156,20 @@ $inset-icon-large: lengths.padding(24) - lengths.padding(2); // 22px
 
 		display: flex;
 
-		transform: translate(30%, -30%);
+		translate: 30% -30%;
 
 		&:dir(rtl) {
-			transform: translate(-30%, -30%);
+			translate: -30% -30%;
+		}
+
+		&--bottom-end {
+			inset-block: auto 0;
+
+			translate: 30% 30%;
+
+			&:dir(rtl) {
+				translate: -30% 30%;
+			}
 		}
 	}
 

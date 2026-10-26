@@ -65,9 +65,19 @@ import type {
 import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from './types/IUploadService';
 import type { IUserService } from './types/IUserService';
 import type { IVideoConfService, VideoConferenceJoinOptions } from './types/IVideoConfService';
+import type { IXMPPServerService } from './types/IXMPPServerService';
 
 export type { AppStatusReport } from './types/IAppsEngineService';
-export type { IAbacService, AbacActor } from './types/IAbacService';
+export type {
+	IAbacService,
+	AbacActor,
+	AbacCreationAttributesDenialReason,
+	AbacCreationAttributesResult,
+	AbacMembershipPreviewResult,
+	AbacRoomAttributesGrant,
+	AbacRoomMembershipPreviewPage,
+	AbacUsersAllowedInRoomResult,
+} from './types/IAbacService';
 export type { PresenceScope } from './types/IStatusVisibilityService';
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
 export { ClientSafeError, isClientSafeError } from './ClientSafeError';
@@ -82,6 +92,7 @@ export type { IServiceContext, IServiceClass } from './types/ServiceClass';
 export { ServiceClass, ServiceClassInternal } from './types/ServiceClass';
 
 export type { IFederationMatrixService } from './types/IFederationMatrixService';
+export type { IXMPPServerService } from './types/IXMPPServerService';
 
 export type {
 	ConversationData,
@@ -220,5 +231,6 @@ export const Push = proxify<IPushService>('push');
 export const EnterpriseSettings = proxify<IEnterpriseSettings>('ee-settings');
 
 export const FederationMatrix = proxify<IFederationMatrixService>('federation-matrix');
+export const XMPPServer = proxify<IXMPPServerService>('xmpp-server');
 export const Abac = proxify<IAbacService>('abac');
 export const AISearch = proxify<IAISearchService>('ai-search');

@@ -1,10 +1,13 @@
-import type { AllHTMLAttributes, RefAttributes } from 'react';
+import type { AllHTMLAttributes } from 'react';
 import { useMemo } from 'react';
 
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 import { Icon, type IconProps } from '../Icon';
 
-export type ButtonProps = Omit<BoxProps, 'ref'> & {
+export type ButtonProps = {
+	/** Renders a link instead of a button, for actions that navigate or download. */
+	is?: 'button' | 'a';
 	variant?: 'primary' | 'secondary' | 'danger' | 'warning' | 'success' | 'secondary-danger' | 'secondary-warning' | 'secondary-success';
 	size?: 'mini' | 'tiny' | 'small' | 'medium' | 'large';
 	/** @deprecated Use `variant="primary"` instead. */
@@ -30,15 +33,22 @@ export type ButtonProps = Omit<BoxProps, 'ref'> & {
 	/** @deprecated Use `size="large"` instead. */
 	large?: boolean;
 	square?: boolean;
+	/** Lowers the minimum width so a label of one or two characters fits. */
+	compact?: boolean;
 	external?: boolean;
 	icon?: IconProps['name'];
-} & Omit<AllHTMLAttributes<HTMLButtonElement | HTMLAnchorElement>, 'is' | 'className' | 'size'> &
-	RefAttributes<HTMLButtonElement | HTMLAnchorElement>;
+} & ElementProps<HTMLButtonElement | HTMLAnchorElement, AllHTMLAttributes<HTMLButtonElement | HTMLAnchorElement>>;
 
 /**
  * The 40px and 48px buttons pair with a 20px icon; the smaller sizes use 16px.
  */
 const resolveIconSize = (size: ButtonProps['size']): IconProps['size'] => (size === undefined || size === 'large' ? 'x20' : 'x16');
+
+/**
+ * A label counts as present whenever React would render something for it, which
+ * includes the numeric `0` a truthiness check would discard.
+ */
+const hasVisibleLabel = (children: ButtonProps['children']): boolean => children === 0 || Boolean(children);
 
 /**
  * Indicates an actionable user action.
@@ -62,6 +72,7 @@ function Button({
 	medium,
 	large,
 	square,
+	compact,
 	loading,
 	disabled,
 	children,
@@ -103,22 +114,19 @@ function Button({
 
 	const iconSize = resolveIconSize(effectiveSize);
 	const hasLeadingIcon = Boolean(icon || loading);
-
-	// The gap only separates the icon from a label. On an icon-only button it has
-	// nothing to separate and just pushes the icon off centre by half its width.
-	const iconGap = children ? 4 : undefined;
+	const hasLabel = hasVisibleLabel(children);
 
 	return (
 		<Box
 			is={is}
-			type='button'
 			rcx-button
 			{...kindAndVariantProps}
 			rcx-button--small={effectiveSize === 'small'}
 			rcx-button--medium={effectiveSize === 'medium'}
 			rcx-button--large={effectiveSize === 'large'}
 			rcx-button--square={square}
-			rcx-button--with-icon={hasLeadingIcon && !square && Boolean(children)}
+			rcx-button--compact={compact}
+			rcx-button--with-icon={hasLeadingIcon && !square && hasLabel}
 			rcx-button--tiny-square={effectiveSize === 'tiny' && square}
 			rcx-button--mini-square={effectiveSize === 'mini' && square}
 			rcx-button--small-square={effectiveSize === 'small' && square}
@@ -131,8 +139,8 @@ function Button({
 			{...props}
 		>
 			<span className='rcx-button--content'>
-				{icon && !loading && <Icon size={iconSize} name={icon} marginInlineEnd={iconGap} />}
-				{loading && <Icon size={iconSize} name='loading' marginInlineEnd={iconGap} />}
+				{icon && !loading && <Icon className='rcx-button__icon' size={iconSize} name={icon} />}
+				{loading && <Icon className='rcx-button__icon' size={iconSize} name='loading' />}
 				{children}
 			</span>
 		</Box>

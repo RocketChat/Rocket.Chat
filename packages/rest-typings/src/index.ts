@@ -47,7 +47,6 @@ import type { TwoFactorChallengesEndpoints } from './v1/twoFactorChallenges';
 import type { UsersEndpoints } from './v1/users';
 import type { VideoConferenceEndpoints } from './v1/videoConference';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 export interface Endpoints
 	extends
 		AISearchEndpoints,
@@ -219,6 +218,7 @@ export * from './v1/teams';
 export * from './v1/videoConference';
 export * from './v1/assets';
 export * from './v1/aiSearch';
+export { abacCreationAttributesSchema } from './v1/abacCreationAttributes';
 export * from './v1/channels';
 export * from './v1/customSounds';
 export type * from './v1/customUserStatus';

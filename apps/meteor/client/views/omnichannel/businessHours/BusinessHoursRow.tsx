@@ -27,11 +27,11 @@ const BusinessHoursRow = ({ _id, name, timezone, workHours, active, type }: Seri
 
 	return (
 		<GenericTableRow key={_id} action tabIndex={0} onClick={handleClick} onKeyDown={handleKeyDown}>
-			<GenericTableCell withTruncatedText>{name || t('Default')}</GenericTableCell>
-			<GenericTableCell withTruncatedText>{t(timezone.name)}</GenericTableCell>
-			<GenericTableCell withTruncatedText>{openDays.join(', ')}</GenericTableCell>
-			<GenericTableCell withTruncatedText>{active ? t('Yes') : t('No')}</GenericTableCell>
-			<GenericTableCell withTruncatedText>
+			<GenericTableCell truncate>{name || t('Default')}</GenericTableCell>
+			<GenericTableCell truncate>{t(timezone.name)}</GenericTableCell>
+			<GenericTableCell truncate>{openDays.join(', ')}</GenericTableCell>
+			<GenericTableCell truncate>{active ? t('Yes') : t('No')}</GenericTableCell>
+			<GenericTableCell truncate>
 				{name && (
 					<IconButton
 						icon='trash'

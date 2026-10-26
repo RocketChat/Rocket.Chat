@@ -1,6 +1,7 @@
 import type { ActionsBlock } from './layout/ActionsBlock';
 import type { CalloutBlock } from './layout/CalloutBlock';
 import type { ConditionalBlock } from './layout/ConditionalBlock';
+import type { ContextActionsBlock } from './layout/ContextActionsBlock';
 import type { ContextBlock } from './layout/ContextBlock';
 import type { DividerBlock } from './layout/DividerBlock';
 import type { ExperimentalTabNavigationBlock } from './layout/ExperimentalTabNavigationBlock';
@@ -11,6 +12,8 @@ import type { InputBlock } from './layout/InputBlock';
 import type { MarkdownBlock } from './layout/MarkdownBlock';
 import type { PreviewBlock } from './layout/PreviewBlock';
 import type { SectionBlock } from './layout/SectionBlock';
+import type { TableBlock } from './layout/TableBlock';
+import type { VideoBlock } from './layout/VideoBlock';
 import type { VideoConferenceBlock } from './layout/VideoConferenceBlock';
 
 export type LayoutBlock =
@@ -24,6 +27,9 @@ export type LayoutBlock =
 	| InputBlock
 	| MarkdownBlock
 	| SectionBlock
+	| ContextActionsBlock
+	| VideoBlock
+	| TableBlock
 	| VideoConferenceBlock
 	| CalloutBlock
 	| ExperimentalTabNavigationBlock

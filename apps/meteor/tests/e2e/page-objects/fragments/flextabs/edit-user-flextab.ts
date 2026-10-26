@@ -1,10 +1,14 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { PhoneNumberFieldList } from '../phone-number-field-list';
 import { FlexTab } from './flextab';
 
 export class EditUserFlexTab extends FlexTab {
+	readonly phoneNumber: PhoneNumberFieldList;
+
 	constructor(page: Page) {
 		super(page.getByRole('dialog'));
+		this.phoneNumber = new PhoneNumberFieldList(this.root);
 	}
 
 	get btnAddUser(): Locator {

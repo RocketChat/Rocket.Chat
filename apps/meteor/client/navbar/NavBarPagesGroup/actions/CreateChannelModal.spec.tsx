@@ -1,13 +1,321 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import CreateChannelModal from './CreateChannelModal';
+import CreateChannelModalWithData from './CreateChannelModalWithData';
+import { mockAbacRoomCreationRoot as abacRoot } from '../../../../tests/mocks/client/mockAbacRoomCreationRoot';
 import { createFakeLicenseInfo } from '../../../../tests/mocks/data';
 
 jest.mock('../../../lib/rooms/roomCoordinator', () => ({}));
 
+const goToAttributesStep = async () => {
+	await userEvent.type(await screen.findByRole('textbox', { name: 'Name' }), 'restricted');
+	await userEvent.click(screen.getByRole('button', { name: 'Next' }));
+	expect(await screen.findByText('ABAC_Room_Attributes')).toBeInTheDocument();
+};
+
+const selectAttributeValue = async (value: string) => {
+	const comboboxes = screen.getAllByRole('combobox');
+	await userEvent.click(comboboxes[comboboxes.length - 1]);
+
+	const listboxes = await screen.findAllByRole('listbox', { hidden: true });
+	const option = listboxes.map((element) => within(element).queryByText(value)).find(Boolean);
+	if (!option) {
+		throw new Error(`Could not find the option ${value}`);
+	}
+
+	await userEvent.click(option);
+};
+
 describe('CreateChannelModal', () => {
+	describe('ABAC', () => {
+		it('should keep the single-page modal when ABAC is disabled', () => {
+			render(<CreateChannelModalWithData onClose={() => null} />, { wrapper: mockAppRoot().build() });
+
+			expect(screen.queryByLabelText('ABAC_Managed')).not.toBeInTheDocument();
+			expect(screen.getByText('Advanced_settings')).toBeInTheDocument();
+			expect(screen.getByRole('button', { name: 'Create' })).toBeInTheDocument();
+		});
+
+		it('should take two steps for a room that is not ABAC-managed, with Federated on the first', async () => {
+			render(<CreateChannelModalWithData onClose={() => null} />, { wrapper: abacRoot() });
+
+			expect(await screen.findByLabelText('ABAC_Managed')).not.toBeChecked();
+			expect(screen.getByLabelText('Federation_Matrix_Federated')).toBeInTheDocument();
+			expect(screen.getByText('Step 1 of 2')).toBeInTheDocument();
+			expect(screen.queryByText('Advanced_settings')).not.toBeInTheDocument();
+
+			await userEvent.type(screen.getByRole('textbox', { name: 'Name' }), 'open');
+			await userEvent.click(screen.getByRole('button', { name: 'Next' }));
+
+			expect(await screen.findByText('Step 2 of 2')).toBeInTheDocument();
+			expect(screen.queryByLabelText('Federation_Matrix_Federated')).not.toBeInTheDocument();
+			expect(screen.getByRole('button', { name: 'Create' })).toBeInTheDocument();
+		});
+
+		it('should clear a step error as soon as the field is corrected', async () => {
+			render(<CreateChannelModalWithData onClose={() => null} />, { wrapper: abacRoot() });
+
+			await userEvent.click(await screen.findByRole('button', { name: 'Next' }));
+			expect(await screen.findByText('Required_field')).toBeInTheDocument();
+
+			await userEvent.type(screen.getByRole('textbox', { name: 'Name' }), 'fixed');
+
+			await waitFor(() => expect(screen.queryByText('Required_field')).not.toBeInTheDocument());
+			expect(screen.getByText('Step 1 of 2')).toBeInTheDocument();
+		});
+
+		it('should take four steps once ABAC-managed is on, forcing Private on', async () => {
+			render(<CreateChannelModalWithData onClose={() => null} />, { wrapper: abacRoot() });
+
+			await userEvent.click(await screen.findByLabelText('ABAC_Managed'));
+
+			expect(screen.getByText('Step 1 of 4')).toBeInTheDocument();
+			expect(screen.getByLabelText('Private')).toBeChecked();
+			expect(screen.getByLabelText('Private')).toBeDisabled();
+			expect(screen.getByLabelText('ABAC_Managed')).toHaveAccessibleDescription('ABAC_Managed_Hint');
+
+			await goToAttributesStep();
+			expect(screen.getByText('Step 2 of 4')).toBeInTheDocument();
+		});
+
+		it('should walk the four steps and create the private channel with its attributes', async () => {
+			const createGroup = jest.fn(() => ({ group: { _id: 'group-room' } }));
+			const createChannel = jest.fn(() => ({ channel: { _id: 'channel-room' } }));
+			render(<CreateChannelModalWithData onClose={() => null} />, {
+				wrapper: abacRoot({ requiredAttributes: ['dept'], createGroup, createChannel }),
+			});
+
+			await userEvent.click(await screen.findByLabelText('ABAC_Managed'));
+			await goToAttributesStep();
+
+			await selectAttributeValue('eng');
+			await userEvent.click(screen.getByRole('button', { name: 'Next' }));
+			expect(await screen.findByText('Step 3 of 4')).toBeInTheDocument();
+
+			await userEvent.click(screen.getByRole('button', { name: 'Next' }));
+			expect(await screen.findByText('Step 4 of 4')).toBeInTheDocument();
+
+			const create = await screen.findByRole('button', { name: 'Create' });
+			await waitFor(() => expect(create).toBeEnabled());
+			await userEvent.click(create);
+
+			await waitFor(() =>
+				expect(createGroup).toHaveBeenCalledWith(expect.objectContaining({ name: 'restricted', abacAttributes: { dept: ['eng'] } })),
+			);
+			expect(createChannel).not.toHaveBeenCalled();
+		});
+
+		it('should lock ABAC-managed on under enforcement and say why', async () => {
+			render(<CreateChannelModalWithData onClose={() => null} />, { wrapper: abacRoot({ enforced: true }) });
+
+			const managed = await screen.findByLabelText('ABAC_Managed');
+			expect(managed).toBeChecked();
+			expect(managed).toBeDisabled();
+			expect(managed).toHaveAccessibleDescription('ABAC_Managed_Enforced_Hint');
+			expect(screen.getByText('Step 1 of 4')).toBeInTheDocument();
+		});
+
+		it('should disable ABAC-managed with a reason for a creator without the permission', async () => {
+			render(<CreateChannelModalWithData onClose={() => null} />, { wrapper: abacRoot({ permissions: ['create-c', 'create-p'] }) });
+
+			const managed = await screen.findByLabelText('ABAC_Managed');
+			expect(managed).toBeDisabled();
+			expect(managed).toHaveAccessibleDescription('ABAC_Managed_Not_Allowed_Hint');
+		});
+
+		it('should disable ABAC-managed with a reason for a creator who can only create public channels', async () => {
+			render(<CreateChannelModalWithData onClose={() => null} />, {
+				wrapper: abacRoot({ permissions: ['create-abac-managed-room', 'create-c'] }),
+			});
+
+			const managed = await screen.findByLabelText('ABAC_Managed');
+			expect(managed).toBeDisabled();
+			expect(managed).toHaveAccessibleDescription('ABAC_Managed_Private_Only_Hint');
+		});
+
+		it('should stop a creator who cannot create an ABAC-managed room under enforcement at the first step', async () => {
+			render(<CreateChannelModalWithData onClose={() => null} />, {
+				wrapper: abacRoot({ enforced: true, permissions: ['create-c', 'create-p'] }),
+			});
+
+			expect(await screen.findByText('ABAC_Room_Creation_Not_Allowed')).toBeInTheDocument();
+			expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled();
+			expect(screen.getByText('Step 1 of 2')).toBeInTheDocument();
+		});
+
+		it('should release ABAC-managed and Private for a federated room under enforcement, and take them back when Federated is off', async () => {
+			render(<CreateChannelModalWithData onClose={() => null} />, { wrapper: abacRoot({ enforced: true, federation: true }) });
+
+			const managed = await screen.findByLabelText('ABAC_Managed');
+			const federated = screen.getByLabelText('Federation_Matrix_Federated');
+			await waitFor(() => expect(federated).toBeEnabled());
+
+			await userEvent.click(federated);
+
+			await waitFor(() => expect(managed).not.toBeChecked());
+			expect(managed).toBeDisabled();
+			expect(managed).toHaveAccessibleDescription('ABAC_Managed_Federated_Hint');
+			expect(screen.getByLabelText('Private')).toBeEnabled();
+			expect(screen.getByText('Step 1 of 2')).toBeInTheDocument();
+
+			await userEvent.click(federated);
+
+			await waitFor(() => expect(managed).toBeChecked());
+			expect(managed).toHaveAccessibleDescription('ABAC_Managed_Enforced_Hint');
+			expect(screen.getByLabelText('Private')).toBeDisabled();
+			expect(screen.getByText('Step 1 of 4')).toBeInTheDocument();
+		});
+
+		it('should let a creator who cannot create an ABAC-managed room under enforcement go ahead with a federated one', async () => {
+			render(<CreateChannelModalWithData onClose={() => null} />, {
+				wrapper: abacRoot({ enforced: true, federation: true, permissions: ['create-c', 'create-p'] }),
+			});
+
+			expect(await screen.findByText('ABAC_Room_Creation_Federated_Only')).toBeInTheDocument();
+			expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled();
+
+			await userEvent.click(screen.getByLabelText('Federation_Matrix_Federated'));
+
+			await waitFor(() => expect(screen.queryByText('ABAC_Room_Creation_Federated_Only')).not.toBeInTheDocument());
+			expect(screen.getByRole('button', { name: 'Next' })).toBeEnabled();
+		});
+
+		it('should release ABAC-managed and Private for an XMPP federated room under enforcement, and take them back when XMPP Federated is off', async () => {
+			render(<CreateChannelModalWithData onClose={() => null} />, { wrapper: abacRoot({ enforced: true, xmpp: true }) });
+
+			const managed = await screen.findByLabelText('ABAC_Managed');
+			const xmppFederated = screen.getByLabelText('XMPP_Federated');
+			await waitFor(() => expect(xmppFederated).toBeEnabled());
+
+			await userEvent.click(xmppFederated);
+
+			await waitFor(() => expect(managed).not.toBeChecked());
+			expect(managed).toBeDisabled();
+			expect(managed).toHaveAccessibleDescription('ABAC_Managed_Federated_Hint');
+			expect(screen.getByLabelText('Private')).toBeEnabled();
+			expect(screen.getByText('Step 1 of 2')).toBeInTheDocument();
+
+			await userEvent.click(xmppFederated);
+
+			await waitFor(() => expect(managed).toBeChecked());
+			expect(managed).toHaveAccessibleDescription('ABAC_Managed_Enforced_Hint');
+			expect(screen.getByLabelText('Private')).toBeDisabled();
+			expect(screen.getByText('Step 1 of 4')).toBeInTheDocument();
+		});
+
+		it('should let a creator who cannot create an ABAC-managed room under enforcement go ahead with an XMPP federated one', async () => {
+			render(<CreateChannelModalWithData onClose={() => null} />, {
+				wrapper: abacRoot({ enforced: true, xmpp: true, permissions: ['create-c', 'create-p'] }),
+			});
+
+			expect(await screen.findByText('ABAC_Room_Creation_Federated_Only')).toBeInTheDocument();
+			expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled();
+
+			const xmppFederated = screen.getByLabelText('XMPP_Federated');
+			await waitFor(() => expect(xmppFederated).toBeEnabled());
+			await userEvent.click(xmppFederated);
+
+			await waitFor(() => expect(screen.queryByText('ABAC_Room_Creation_Federated_Only')).not.toBeInTheDocument());
+			expect(screen.getByRole('button', { name: 'Next' })).toBeEnabled();
+		});
+
+		it('should create a federated room as a public channel for a creator who can only create public channels under enforcement', async () => {
+			const createChannel = jest.fn(() => ({ channel: { _id: 'channel-room' } }));
+			const createGroup = jest.fn(() => ({ group: { _id: 'group-room' } }));
+			render(<CreateChannelModalWithData onClose={() => null} />, {
+				wrapper: abacRoot({
+					enforced: true,
+					federation: true,
+					permissions: ['create-abac-managed-room', 'create-c'],
+					createChannel,
+					createGroup,
+				}),
+			});
+
+			const federated = await screen.findByLabelText('Federation_Matrix_Federated');
+			await waitFor(() => expect(federated).toBeEnabled());
+			await userEvent.type(screen.getByRole('textbox', { name: 'Name' }), 'open');
+			await userEvent.click(federated);
+
+			expect(screen.getByLabelText('Private')).not.toBeChecked();
+
+			await userEvent.click(screen.getByRole('button', { name: 'Next' }));
+			await userEvent.click(await screen.findByRole('button', { name: 'Create' }));
+
+			await waitFor(() => expect(createChannel).toHaveBeenCalled());
+			expect(createGroup).not.toHaveBeenCalled();
+		});
+
+		it('should pre-fill the required attributes without a Remove button, and let optional rows be added and removed', async () => {
+			render(<CreateChannelModalWithData onClose={() => null} />, {
+				wrapper: abacRoot({
+					enforced: true,
+					requiredAttributes: ['clearance', 'dept'],
+					assignable: [
+						{ key: 'clearance', values: ['secret'] },
+						{ key: 'dept', values: ['eng'] },
+					],
+				}),
+			});
+
+			await goToAttributesStep();
+
+			expect(screen.getAllByText('Attribute')).toHaveLength(2);
+			expect(screen.queryByRole('button', { name: 'Remove' })).not.toBeInTheDocument();
+
+			await userEvent.click(screen.getByRole('button', { name: 'ABAC_Add_Attribute' }));
+			expect(screen.getAllByText('Attribute')).toHaveLength(3);
+
+			await userEvent.click(screen.getByRole('button', { name: 'Remove' }));
+			expect(screen.getAllByText('Attribute')).toHaveLength(2);
+		});
+
+		it('should report missing values before the attributes step can be left', async () => {
+			render(<CreateChannelModalWithData onClose={() => null} />, { wrapper: abacRoot({ enforced: true, requiredAttributes: ['dept'] }) });
+
+			await goToAttributesStep();
+			await userEvent.click(screen.getByRole('button', { name: 'Next' }));
+
+			expect(await screen.findAllByText('Required_field')).not.toHaveLength(0);
+			expect(screen.getByText('Step 2 of 4')).toBeInTheDocument();
+		});
+
+		it('should stop a creator lacking a required attribute with an alert naming it', async () => {
+			render(<CreateChannelModalWithData onClose={() => null} />, {
+				wrapper: abacRoot({ enforced: true, requiredAttributes: ['clearance', 'dept'], assignable: [{ key: 'dept', values: ['eng'] }] }),
+			});
+
+			await goToAttributesStep();
+
+			expect(screen.getByRole('alert')).toHaveTextContent('ABAC_Required_Attributes_Not_Held');
+			expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled();
+		});
+
+		it('should wait for the required attributes rather than render the switches before they arrive', async () => {
+			let resolveAssignableAttributes: (value: unknown) => void = () => undefined;
+			const assignableAttributes = jest.fn(
+				() =>
+					new Promise((resolve) => {
+						resolveAssignableAttributes = resolve;
+					}),
+			);
+
+			render(<CreateChannelModalWithData onClose={() => null} />, { wrapper: abacRoot({ enforced: true, assignableAttributes }) });
+
+			await waitFor(() => expect(assignableAttributes).toHaveBeenCalled());
+			expect(screen.queryByLabelText('ABAC_Managed')).not.toBeInTheDocument();
+			expect(screen.queryByRole('button', { name: 'Create' })).not.toBeInTheDocument();
+
+			resolveAssignableAttributes({ attributes: [], requiredKeys: [] });
+
+			const managed = await screen.findByLabelText('ABAC_Managed');
+			expect(managed).toBeChecked();
+			expect(managed).toBeDisabled();
+		});
+	});
+
 	describe('Encryption', () => {
 		it('should render with encryption option disabled and set to off when E2E_Enable=false and E2E_Enabled_Default_PrivateRooms=false', async () => {
 			render(<CreateChannelModal onClose={() => null} />, {

@@ -26,7 +26,7 @@ const FormatSelector = ({ value, onChange }: FormatSelectorProps) => {
 			<Field>
 				<FieldLabel>{t('Format')}</FieldLabel>
 				<FieldRow>
-					<Select value={value} onChange={handleFormatChange} options={formatOptions} width='full' />
+					<Select value={value} onChange={handleFormatChange} options={formatOptions} />
 				</FieldRow>
 			</Field>
 		</Box>

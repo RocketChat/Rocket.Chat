@@ -51,7 +51,7 @@ const ChatAccessNotice = ({ access, onDismiss }: ChatAccessNoticeProps) => {
 				</Box>
 				<Box display='flex' alignItems='center' flexShrink={0} gap={4}>
 					<Button
-						small
+						size='small'
 						// Carried across because the app's modal region is mounted above this window: see
 						// `CallMembersPanel`, which opens its own modal the same way and for the same reason.
 						onClick={() =>

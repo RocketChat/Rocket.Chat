@@ -176,7 +176,11 @@ export const decorators: Decorator[] = [
 				</SidebarAccordion>
 				<SidebarFooter>
 					<SidebarFooterContent>Powered by Rocket.Chat</SidebarFooterContent>
-					<SidebarFooterContent color='titles-labels'>Free edition</SidebarFooterContent>
+					<SidebarFooterContent>
+						<Box is='span' color='titles-labels'>
+							Free edition
+						</Box>
+					</SidebarFooterContent>
 				</SidebarFooter>
 			</Sidebar>
 		</Box>

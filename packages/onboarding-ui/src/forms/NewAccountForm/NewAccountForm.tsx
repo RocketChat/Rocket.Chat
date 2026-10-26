@@ -100,19 +100,21 @@ const NewAccountForm = ({ validateEmail, validatePassword, validateConfirmationP
 						{errors.confirmPassword && <FieldError>{errors.confirmPassword.message}</FieldError>}
 					</Field>
 					<Field>
-						<FieldRow justifyContent='flex-start'>
-							<CheckBox {...register('agreement', { required: true })} marginInlineEnd={8} />
-							<Box is='label' htmlFor='agreement' withRichContent fontScale='c1'>
-								<Trans i18nKey='component.form.termsAndConditions'>
-									I agree with
-									<a href='https://rocket.chat/terms' target='_blank' rel='noopener noreferrer'>
-										Terms and Conditions
-									</a>
-									and
-									<a href='https://rocket.chat/privacy' target='_blank' rel='noopener noreferrer'>
-										Privacy Policy
-									</a>
-								</Trans>
+						<FieldRow>
+							<Box display='flex' alignItems='center' minWidth={0}>
+								<CheckBox {...register('agreement', { required: true })} />
+								<Box is='label' htmlFor='agreement' withRichContent fontScale='c1'>
+									<Trans i18nKey='component.form.termsAndConditions'>
+										I agree with
+										<a href='https://rocket.chat/terms' target='_blank' rel='noopener noreferrer'>
+											Terms and Conditions
+										</a>
+										and
+										<a href='https://rocket.chat/privacy' target='_blank' rel='noopener noreferrer'>
+											Privacy Policy
+										</a>
+									</Trans>
+								</Box>
 							</Box>
 						</FieldRow>
 						{errors.agreement?.type === 'required' && <FieldError>{t('component.form.requiredField')}</FieldError>}
@@ -121,7 +123,7 @@ const NewAccountForm = ({ validateEmail, validatePassword, validateConfirmationP
 			</FormContainer>
 			<FormFooter>
 				<ButtonGroup>
-					<Button type='submit' primary loading={isValidating || isSubmitting} disabled={!isValid}>
+					<Button type='submit' variant='primary' loading={isValidating || isSubmitting} disabled={!isValid}>
 						{t('component.form.action.next')}
 					</Button>
 				</ButtonGroup>

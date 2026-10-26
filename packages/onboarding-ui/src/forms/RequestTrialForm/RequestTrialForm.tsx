@@ -113,12 +113,7 @@ export const RequestTrialForm = ({
 							control={control}
 							rules={{ required: true }}
 							render={({ field }) => (
-								<SelectFiltered
-									{...field}
-									options={countryOptions}
-									width='full'
-									placeholder={t('form.requestTrialForm.fields.country.placeholder')}
-								/>
+								<SelectFiltered {...field} options={countryOptions} placeholder={t('form.requestTrialForm.fields.country.placeholder')} />
 							)}
 							defaultValue={defaultValues?.country}
 						/>
@@ -127,13 +122,13 @@ export const RequestTrialForm = ({
 				<Field>
 					<Box marginBlockStart={24}>
 						<Box marginBlockEnd={8} display='flex' flexDirection='row' alignItems='flex-start' fontScale='c1' lineHeight={20}>
-							<CheckBox marginInlineEnd={8} {...register('updates')} />{' '}
+							<CheckBox {...register('updates')} />{' '}
 							<Box is='label' htmlFor='updates'>
 								{t('form.registeredServerForm.keepInformed')}
 							</Box>
 						</Box>
 						<Box display='flex' flexDirection='row' alignItems='flex-start' color='default' fontScale='c1' lineHeight={20}>
-							<CheckBox marginInlineEnd={8} {...register('agreement', { required: true })} />{' '}
+							<CheckBox {...register('agreement', { required: true })} />{' '}
 							<Box is='label' htmlFor='agreement' withRichContent>
 								<Trans i18nKey='component.form.termsAndConditions'>
 									I agree with
@@ -156,7 +151,7 @@ export const RequestTrialForm = ({
 				</Field>
 			</FieldGroup>
 			<FormFooter>
-				<Button type='submit' primary loading={isValidating || isSubmitting} disabled={!isValid}>
+				<Button type='submit' variant='primary' loading={isValidating || isSubmitting} disabled={!isValid}>
 					{t('form.requestTrialForm.button.text')}
 				</Button>
 			</FormFooter>

@@ -151,4 +151,14 @@ $tabs-border-radius: theme('tabs-border-radius', lengths.border-radius(medium));
 			border-block-width: lengths.border-width(default);
 		}
 	}
+
+	&--stretch {
+		flex-direction: column;
+
+		.rcx-tabs__item {
+			flex-grow: 1;
+
+			text-align: center;
+		}
+	}
 }

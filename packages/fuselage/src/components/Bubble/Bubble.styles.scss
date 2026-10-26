@@ -27,6 +27,10 @@
 	}
 
 	&__item {
+		> .rcx-icon {
+			margin-inline-end: lengths.margin(8);
+		}
+
 		&--primary {
 			color: button-colors.$button-primary-color;
 			background-color: button-colors.$button-primary-background-color;

@@ -58,8 +58,8 @@ export const AppLogsFilter = ({ appId, expandAll, collapseAll, refetchLogs, isLo
 	const compactMode = useCompactMode();
 
 	return (
-		<Box display='flex' alignItems='flex-end' flexDirection='row' width='full' flexWrap='wrap' alignContent='flex-end'>
-			<Box display='flex' flexDirection='column' marginInlineEnd={10} flexGrow={1}>
+		<Box display='flex' alignItems='flex-end' flexDirection='row' width='full' flexWrap='wrap' alignContent='flex-end' columnGap='x8'>
+			<Box display='flex' flexDirection='column' flexGrow={1}>
 				<Label id='eventFilterLabel' htmlFor='eventFilter'>
 					{t('Event')}
 				</Label>
@@ -71,14 +71,14 @@ export const AppLogsFilter = ({ appId, expandAll, collapseAll, refetchLogs, isLo
 			</Box>
 			{!compactMode && (
 				<>
-					<Box display='flex' flexDirection='column' marginInlineEnd={10} flexGrow={1}>
+					<Box display='flex' flexDirection='column' flexGrow={1}>
 						<Label id='timeFilterLabel' htmlFor='timeFilter'>
 							{t('Time')}
 						</Label>
 						<TimeFilterSelect id='timeFilter' aria-labelledby='timeFilterLabel' />
 					</Box>
 
-					<Box display='flex' flexDirection='column' marginInlineEnd={10} flexGrow={1}>
+					<Box display='flex' flexDirection='column' flexGrow={1}>
 						<Label id='instanceFilterLabel' htmlFor='instanceFilter'>
 							{t('Instance')}
 						</Label>
@@ -91,7 +91,7 @@ export const AppLogsFilter = ({ appId, expandAll, collapseAll, refetchLogs, isLo
 						/>
 					</Box>
 
-					<Box display='flex' flexDirection='column' marginInlineEnd={10} flexGrow={1}>
+					<Box display='flex' flexDirection='column' flexGrow={1}>
 						<Label>{t('Severity')}</Label>
 						<Controller control={control} name='severity' render={({ field }) => <SeverityFilterSelect id='severityFilter' {...field} />} />
 					</Box>
@@ -101,7 +101,6 @@ export const AppLogsFilter = ({ appId, expandAll, collapseAll, refetchLogs, isLo
 						disabled={isLoading}
 						icon='refresh'
 						secondary
-						marginInlineEnd={10}
 						onClick={() => refreshLogs()}
 					/>
 
@@ -110,7 +109,6 @@ export const AppLogsFilter = ({ appId, expandAll, collapseAll, refetchLogs, isLo
 						icon='circle-arrow-down'
 						disabled={noResults}
 						secondary
-						marginInlineEnd={10}
 						onClick={() => openExportModal()}
 						aria-label={noResults ? t('No_data_to_export') : t('Export')}
 						aria-disabled={noResults}
@@ -122,7 +120,7 @@ export const AppLogsFilter = ({ appId, expandAll, collapseAll, refetchLogs, isLo
 
 			{compactMode && (
 				<>
-					<Button alignSelf='flex-end' icon='customize' secondary marginInlineEnd={10} onClick={() => openContextualBar()}>
+					<Button icon='customize' variant='secondary' onClick={() => openContextualBar()}>
 						{t('Filters')}
 					</Button>
 					<CompactFilterOptions

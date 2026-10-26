@@ -50,26 +50,28 @@ const MessageSearchForm = ({ provider, onSearch, searchListId, isSuccess }: Mess
 	const { t } = useTranslation();
 
 	return (
-		<Box is='form' onSubmit={submitHandler} width='full'>
-			<Field>
-				<TextInput
-					endAddon={<Icon name='magnifier' size='x20' />}
-					placeholder={t('Search_Messages')}
-					aria-label={t('Search_Messages')}
-					aria-controls={isSuccess ? searchListId : undefined}
-					autoComplete='off'
-					{...register('searchText')}
-				/>
-				{provider.description && <FieldHint dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t(provider.description)) }} />}
-			</Field>
-			{globalSearchEnabled && (
+		<Box is='form' onSubmit={submitHandler} width='full' display='flex' flexDirection='column' gap={12}>
+			<Box>
 				<Field>
-					<FieldLabel htmlFor={globalSearchToggleId}>{t('Global_Search')}</FieldLabel>
-					<ToggleSwitch id={globalSearchToggleId} {...register('globalSearch')} />
+					<TextInput
+						endAddon={<Icon name='magnifier' size='x20' />}
+						placeholder={t('Search_Messages')}
+						aria-label={t('Search_Messages')}
+						aria-controls={isSuccess ? searchListId : undefined}
+						autoComplete='off'
+						{...register('searchText')}
+					/>
+					{provider.description && <FieldHint dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t(provider.description)) }} />}
 				</Field>
-			)}
+				{globalSearchEnabled && (
+					<Field>
+						<FieldLabel htmlFor={globalSearchToggleId}>{t('Global_Search')}</FieldLabel>
+						<ToggleSwitch id={globalSearchToggleId} {...register('globalSearch')} />
+					</Field>
+				)}
+			</Box>
 			{room.encrypted && (
-				<Callout type='warning' marginBlockStart={12} icon='circle-exclamation'>
+				<Callout type='warning' icon='circle-exclamation'>
 					<Box fontScale='p2b'>{t('Encrypted_RoomType', { roomType: getRoomTypeTranslation(room).toLowerCase() })}</Box>
 					{t('Encrypted_content_cannot_be_searched')}
 				</Callout>

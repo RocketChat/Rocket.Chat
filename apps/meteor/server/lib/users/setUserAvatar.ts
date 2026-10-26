@@ -1,10 +1,9 @@
-import { api } from '@rocket.chat/core-services';
+import { api, ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
 import { Users } from '@rocket.chat/models';
 import type { Response } from '@rocket.chat/server-fetch';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 
 import { isRenderableImageType } from '../../../lib/renderableImageTypes';
@@ -23,19 +22,19 @@ export const setAvatarFromServiceWithValidation = async (
 	targetUserId?: string,
 ): Promise<void> => {
 	if (!dataURI) {
-		throw new Meteor.Error('error-invalid-data', 'Invalid dataURI', {
+		throw new ClientSafeError('error-invalid-data', 'Invalid dataURI', {
 			method: 'setAvatarFromService',
 		});
 	}
 
 	if (!userId) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 			method: 'setAvatarFromService',
 		});
 	}
 
 	if (!settings.get('Accounts_AllowUserAvatarChange')) {
-		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+		throw new ClientSafeError('error-not-allowed', 'Not allowed', {
 			method: 'setAvatarFromService',
 		});
 	}
@@ -44,7 +43,7 @@ export const setAvatarFromServiceWithValidation = async (
 
 	if (targetUserId && targetUserId !== userId) {
 		if (!(await hasPermissionAsync(userId, 'edit-other-user-avatar'))) {
-			throw new Meteor.Error('error-unauthorized', 'Unauthorized', {
+			throw new ClientSafeError('error-unauthorized', 'Unauthorized', {
 				method: 'setAvatarFromService',
 			});
 		}
@@ -55,7 +54,7 @@ export const setAvatarFromServiceWithValidation = async (
 	}
 
 	if (!user) {
-		throw new Meteor.Error('error-invalid-desired-user', 'Invalid desired user', {
+		throw new ClientSafeError('error-invalid-desired-user', 'Invalid desired user', {
 			method: 'setAvatarFromService',
 		});
 	}
@@ -114,7 +113,7 @@ export async function setUserAvatar(
 					url: dataURI,
 					err: e,
 				});
-				throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${dataURI}`, {
+				throw new ClientSafeError('error-avatar-invalid-url', `Invalid avatar URL: ${dataURI}`, {
 					function: 'setUserAvatar',
 					url: dataURI,
 				});
@@ -128,7 +127,7 @@ export async function setUserAvatar(
 						username: user.username,
 						status: response.status,
 					});
-					throw new Meteor.Error(
+					throw new ClientSafeError(
 						'error-avatar-url-handling',
 						`Error while handling avatar setting from a URL (${dataURI}) for ${user.username}`,
 						{ function: 'RocketChat.setUserAvatar', url: dataURI, username: user.username },
@@ -140,7 +139,7 @@ export async function setUserAvatar(
 					status: response.status,
 					url: dataURI,
 				});
-				throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${dataURI}`, {
+				throw new ClientSafeError('error-avatar-invalid-url', `Invalid avatar URL: ${dataURI}`, {
 					function: 'setUserAvatar',
 					url: dataURI,
 				});
@@ -153,7 +152,7 @@ export async function setUserAvatar(
 					contentType,
 					url: dataURI,
 				});
-				throw new Meteor.Error('error-avatar-invalid-url', `Invalid avatar URL: ${dataURI}`, {
+				throw new ClientSafeError('error-avatar-invalid-url', `Invalid avatar URL: ${dataURI}`, {
 					function: 'setUserAvatar',
 					url: dataURI,
 				});
@@ -167,7 +166,7 @@ export async function setUserAvatar(
 
 		if (service === 'rest') {
 			if (!contentType) {
-				throw new Meteor.Error('error-avatar-invalid-content-type', 'Invalid avatar content type', {
+				throw new ClientSafeError('error-avatar-invalid-content-type', 'Invalid avatar content type', {
 					function: 'setUserAvatar',
 				});
 			}

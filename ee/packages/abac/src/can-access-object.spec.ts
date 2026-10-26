@@ -140,6 +140,7 @@ describe('AbacService.canAccessObject (unit)', () => {
 				{
 					skipAppPreEvents: true,
 					customSystemMessage: 'abac-removed-user-from-room',
+					skipSystemMessage: false,
 				},
 			);
 			expect(mockSubscriptionsSetAbacLastTimeCheckedByUserIdAndRoomId).not.toHaveBeenCalled();

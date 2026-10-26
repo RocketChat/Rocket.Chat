@@ -12,7 +12,7 @@ import {
 	type UserStatus,
 } from '@rocket.chat/core-typings';
 import { Messages, Rooms, Users, Uploads, Subscriptions } from '@rocket.chat/models';
-import type { Notifications } from '@rocket.chat/rest-typings';
+import type { Notifications, RoomAvailableForTeams } from '@rocket.chat/rest-typings';
 import {
 	ajv,
 	ajvQuery,
@@ -48,11 +48,11 @@ import {
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { isTruthy } from '@rocket.chat/tools';
-import { Meteor } from 'meteor/meteor';
 
 import { adminFields } from '../../../lib/rooms/adminFields';
 import { omit } from '../../../lib/utils/omit';
 import { canAccessRoomAsync, canAccessRoomIdAsync, roomAccessAttributes } from '../../lib/authorization/canAccessRoom';
+import { getRoomAbacLockContext } from '../../lib/authorization/getRoomAbacLockContext';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { isABACManagedRoom, stripABACManagedFieldsForAdmin } from '../../lib/authorization/isABACManagedRoom';
 import { banUserFromRoomMethod } from '../../lib/banUserFromRoom';
@@ -118,7 +118,7 @@ export async function findRoomByIdOrName({
 		(!('roomId' in params) && !('roomName' in params)) ||
 		('roomId' in params && !(params as { roomId?: string }).roomId && 'roomName' in params && !(params as { roomName?: string }).roomName)
 	) {
-		throw new Meteor.Error('error-roomid-param-not-provided', 'The parameter "roomId" or "roomName" is required');
+		throw new ClientSafeError('error-roomid-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 	}
 
 	const projection = { ...API.v1.defaultFieldsToExclude };
@@ -131,10 +131,10 @@ export async function findRoomByIdOrName({
 	}
 
 	if (!room) {
-		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any channel');
+		throw new ClientSafeError('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any channel');
 	}
 	if (checkedArchived && room.archived) {
-		throw new Meteor.Error('error-room-archived', `The channel, ${room.name}, is archived`);
+		throw new ClientSafeError('error-room-archived', `The channel, ${room.name}, is archived`);
 	}
 
 	return room;
@@ -212,7 +212,7 @@ const roomDeleteEndpoint = API.v1.post(
 		}
 
 		if (room.teamMain) {
-			throw new Meteor.Error('error-cannot-delete-team-channel', 'Cannot delete a team channel', {
+			throw new ClientSafeError('error-cannot-delete-team-channel', 'Cannot delete a team channel', {
 				method: 'eraseRoom',
 			});
 		}
@@ -248,7 +248,7 @@ API.v1.get(
 		let updatedSinceDate;
 		if (updatedSince) {
 			if (isNaN(Date.parse(updatedSince))) {
-				throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
+				throw new ClientSafeError('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
 			} else {
 				updatedSinceDate = new Date(updatedSince);
 			}
@@ -285,7 +285,7 @@ API.v1.addRoute(
 			});
 
 			if (!file) {
-				throw new Meteor.Error('error-no-file-uploaded', 'No file was uploaded');
+				throw new ClientSafeError('error-no-file-uploaded', 'No file was uploaded');
 			}
 
 			const expiresAt = new Date();
@@ -298,7 +298,7 @@ API.v1.addRoute(
 					content = JSON.parse(fields.content);
 				} catch (e) {
 					console.error(e);
-					throw new Meteor.Error('invalid-field-content');
+					throw new ClientSafeError('invalid-field-content');
 				}
 			}
 
@@ -340,11 +340,11 @@ API.v1.addRoute(
 			const file = await Uploads.findOneByIdAndUserIdAndRoomId(this.urlParams.fileId, this.userId, this.urlParams.rid);
 
 			if (!file) {
-				throw new Meteor.Error('invalid-file');
+				throw new ClientSafeError('invalid-file');
 			}
 
 			if ((this.bodyParams.description?.length ?? 0) > settings.get<number>('Message_MaxAllowedSize')) {
-				throw new Meteor.Error('error-message-size-exceeded');
+				throw new ClientSafeError('error-message-size-exceeded');
 			}
 
 			file.description = this.bodyParams.description;
@@ -465,7 +465,7 @@ const roomsSaveDraftEndpoint = API.v1.post(
 
 		const subscription = await Subscriptions.updateDraftByRoomIdAndUserId(rid, this.userId, draft || undefined, tmid);
 		if (!subscription) {
-			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription');
+			throw new ClientSafeError('error-invalid-subscription', 'Invalid subscription');
 		}
 
 		void notifyOnSubscriptionChanged(subscription);
@@ -533,6 +533,7 @@ API.v1.get(
 					team: { type: 'object' },
 					parent: { type: 'object' },
 					classificationBanner: { type: 'object' },
+					abacRequiredAttributes: { type: 'array', items: { type: 'string' } },
 					success: { type: 'boolean', enum: [true] },
 				},
 				required: ['room', 'success'],
@@ -564,12 +565,14 @@ API.v1.get(
 		const { team, parentRoom } = await Team.getRoomInfo(room);
 		const parent = discussionParent || parentRoom;
 		const classificationBanner = await getRoomClassificationBanner(room);
+		const { enforcementOn, requiredAttributeKeys } = getRoomAbacLockContext();
 
 		return API.v1.success({
 			room: await Rooms.findOneByIdOrName(room._id, { projection: fields }),
 			...(team && { team }),
 			...(parent && { parent }),
 			...(classificationBanner && { classificationBanner }),
+			...(enforcementOn && { abacRequiredAttributes: requiredAttributeKeys }),
 		});
 	},
 );
@@ -910,7 +913,7 @@ API.v1.get(
 		authRequired: true,
 		query: isRoomsAutocompleteAvailableForTeamsProps,
 		response: {
-			200: ajv.compile<{ items: IRoom[] }>({
+			200: ajv.compile<{ items: RoomAvailableForTeams[] }>({
 				type: 'object',
 				properties: {
 					items: { type: 'array', items: { type: 'object' } }, // relaxed: IRoom autocomplete subset
@@ -1017,18 +1020,18 @@ API.v1.post(
 		const { rid, type } = this.bodyParams;
 
 		if (!(await hasPermissionAsync(this.user, 'mail-messages', rid))) {
-			throw new Meteor.Error('error-action-not-allowed', 'Mailing is not allowed');
+			throw new ClientSafeError('error-action-not-allowed', 'Mailing is not allowed');
 		}
 
 		const room = await Rooms.findOneById(rid);
 		if (!room) {
-			throw new Meteor.Error('error-invalid-room');
+			throw new ClientSafeError('error-invalid-room');
 		}
 
 		const user = await Users.findOneById(this.userId);
 
 		if (!user || !(await canAccessRoomAsync(room, user))) {
-			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
+			throw new ClientSafeError('error-not-allowed', 'Not Allowed');
 		}
 
 		if (type === 'file') {
@@ -1040,7 +1043,7 @@ API.v1.post(
 			convertedDateTo.setDate(convertedDateTo.getDate() + 1);
 
 			if (convertedDateFrom > convertedDateTo) {
-				throw new Meteor.Error('error-invalid-dates', 'From date cannot be after To date');
+				throw new ClientSafeError('error-invalid-dates', 'From date cannot be after To date');
 			}
 
 			void dataExport.sendFile(
@@ -1059,7 +1062,7 @@ API.v1.post(
 			const { toUsers, toEmails, subject, messages } = this.bodyParams;
 
 			if ((!toUsers || toUsers.length === 0) && (!toEmails || toEmails.length === 0)) {
-				throw new Meteor.Error('error-invalid-recipient');
+				throw new ClientSafeError('error-invalid-recipient');
 			}
 
 			const result = await dataExport.sendViaEmail(
@@ -1829,6 +1832,6 @@ type RoomEndpoints = ExtractRoutesFromAPI<typeof roomEndpoints> &
 	ExtractRoutesFromAPI<typeof roomsSaveDraftEndpoint>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends RoomEndpoints {}
 }

@@ -1,4 +1,4 @@
-import { Omnichannel } from '@rocket.chat/core-services';
+import { Omnichannel, isClientSafeError } from '@rocket.chat/core-services';
 import type {
 	ILivechatAgent,
 	IOmnichannelInquiryExtraData,
@@ -28,7 +28,6 @@ import {
 } from '@rocket.chat/rest-typings';
 import { isPOSTLivechatVisitorDepartmentTransferParams } from '@rocket.chat/rest-typings/src/v1/omnichannel';
 import { check, Match } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import { API } from '../..';
 import { findGuest, findRoom, settings, findAgent, onCheckRoomParams } from './lib/livechat';
@@ -395,7 +394,7 @@ const livechatVisitorDepartmentTransfer = API.v1.post(
 
 type LivechatAnalyticsEndpoints = ExtractRoutesFromAPI<typeof livechatVisitorDepartmentTransfer>;
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends LivechatAnalyticsEndpoints {}
 }
 
@@ -498,7 +497,7 @@ const livechatRoomsEndpoints = API.v1
 				await removeOmnichannelRoom(roomId);
 				return API.v1.success();
 			} catch (error: unknown) {
-				if (error instanceof Meteor.Error) {
+				if (isClientSafeError(error)) {
 					return API.v1.failure(error.reason);
 				}
 
@@ -536,6 +535,6 @@ const livechatRoomsEndpoints = API.v1
 type LivechatRoomsEndpoints = ExtractRoutesFromAPI<typeof livechatRoomsEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends LivechatRoomsEndpoints {}
 }

@@ -38,7 +38,7 @@ const ContactInfoChannels = ({ contact }: ContactInfoChannelsProps) => {
 
 	if (isError) {
 		return (
-			<ContextualbarContent paddingInline={0}>
+			<ContextualbarContent flush>
 				<States>
 					<StatesIcon name='warning' variation='danger' />
 					<StatesTitle>{t('Something_went_wrong')}</StatesTitle>
@@ -48,7 +48,7 @@ const ContactInfoChannels = ({ contact }: ContactInfoChannelsProps) => {
 	}
 
 	return (
-		<ContextualbarContent paddingInline={0}>
+		<ContextualbarContent flush>
 			{data.channels?.length === 0 && (
 				<ContextualbarEmptyContent icon='balloon' title={t('No_channels_yet')} subtitle={t('No_channels_yet_description')} />
 			)}
