@@ -1,25 +1,28 @@
 import type { UsePositionOptions } from '@rocket.chat/fuselage-hooks';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import type { ReactNode, RefAttributes, RefObject } from 'react';
+import type { HTMLAttributes, ReactNode, RefAttributes, RefObject } from 'react';
 
 import { DropdownDesktopWrapper } from './DropdownDesktopWrapper';
 import { DropdownMobile } from './DropdownMobile';
 
-export type DropdownProps<T extends HTMLElement> = RefAttributes<HTMLElement> & {
-	reference: RefObject<T | null>;
-	placement?: UsePositionOptions['placement'];
-	children: ReactNode;
-};
+export type DropdownProps<T extends HTMLElement> = Omit<HTMLAttributes<HTMLElement>, 'children' | 'style' | 'color'> &
+	RefAttributes<HTMLElement> & {
+		reference: RefObject<T | null>;
+		placement?: UsePositionOptions['placement'];
+		children: ReactNode;
+	};
 
-function Dropdown({ ref, children, reference, placement = 'bottom-start' }: DropdownProps<HTMLElement>) {
+function Dropdown({ ref, children, reference, placement = 'bottom-start', ...props }: DropdownProps<HTMLElement>) {
 	const notSmall = useMediaQuery('(min-width: 500px)');
 
 	return notSmall ? (
-		<DropdownDesktopWrapper reference={reference} placement={placement} ref={ref}>
+		<DropdownDesktopWrapper reference={reference} placement={placement} ref={ref} {...props}>
 			{children}
 		</DropdownDesktopWrapper>
 	) : (
-		<DropdownMobile ref={ref}>{children}</DropdownMobile>
+		<DropdownMobile ref={ref} {...props}>
+			{children}
+		</DropdownMobile>
 	);
 }
 
