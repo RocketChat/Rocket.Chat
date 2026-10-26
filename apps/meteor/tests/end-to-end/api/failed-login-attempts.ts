@@ -54,8 +54,8 @@ describe('[Failed Login Attempts]', () => {
 			.expect('Content-Type', 'application/json')
 			.expect(401)
 			.expect((res) => {
-				expect(res.body).to.have.property('status', 'error');
-				expect(res.body).to.have.property('message', 'Unauthorized');
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'unauthorized');
 			});
 	}
 
@@ -80,7 +80,7 @@ describe('[Failed Login Attempts]', () => {
 		await request.post(api('users.logout')).set(credentials).send({ userId: uid }).expect('Content-Type', 'application/json').expect(200);
 	}
 
-	async function shouldBlockLogin(username: string, password: string, reason: 'user' | 'ip') {
+	async function shouldBlockLogin(username: string, password: string) {
 		await request
 			.post(api('login'))
 			.send({
@@ -90,8 +90,8 @@ describe('[Failed Login Attempts]', () => {
 			.expect('Content-Type', 'application/json')
 			.expect(401)
 			.expect((res) => {
-				expect(res.body).to.have.property('status', 'error');
-				expect(res.body).to.have.property('error', `error-login-blocked-for-${reason}`);
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', 'unauthorized');
 			});
 	}
 
@@ -125,13 +125,13 @@ describe('[Failed Login Attempts]', () => {
 		it('should block by User when the limit amount of failed attempts is reached', async () => {
 			await failMaxAttempts(user.username, `${password}-incorrect`);
 
-			await shouldBlockLogin(user.username, password, 'user');
+			await shouldBlockLogin(user.username, password);
 		});
 
 		it('should unblock user after block time', async () => {
 			await failMaxAttempts(user.username, `${password}-incorrect`);
 
-			await shouldBlockLogin(user.username, password, 'user');
+			await shouldBlockLogin(user.username, password);
 			await sleep(userBlockSeconds * 1000);
 			await shouldSuccesfullyLoginWithUser(user.username, password);
 		});
@@ -139,7 +139,7 @@ describe('[Failed Login Attempts]', () => {
 		it('should reset counter of failed attempts after a successful login', async () => {
 			await failMaxAttempts(user.username, `${password}-incorrect`);
 
-			await shouldBlockLogin(user.username, password, 'user');
+			await shouldBlockLogin(user.username, password);
 			await sleep(userBlockSeconds * 1000);
 
 			await shouldFailLoginWithUser(user.username, `${password}-incorrect`);
@@ -182,21 +182,21 @@ describe('[Failed Login Attempts]', () => {
 			await sleep(userBlockSeconds * 1000);
 			await failMaxAttempts(user.username, `${password}-incorrect`);
 
-			await shouldBlockLogin(user.username, password, 'ip');
+			await shouldBlockLogin(user.username, password);
 		});
 
 		it('should block by IP when trying to login with multiple users and the limit amount of failed attempts is reached', async () => {
 			await failMaxAttempts(user.username, `${password}-incorrect`);
 			await failMaxAttempts(user2.username, `${password}-incorrect`);
 
-			await shouldBlockLogin(userLogin.username, password, 'ip');
+			await shouldBlockLogin(userLogin.username, password);
 		});
 
 		it('should unblock IP after block time', { timeout: 20000 }, async () => {
 			await failMaxAttempts(user.username, `${password}-incorrect`);
 			await failMaxAttempts(user2.username, `${password}-incorrect`);
 
-			await shouldBlockLogin(userLogin.username, password, 'ip');
+			await shouldBlockLogin(userLogin.username, password);
 			await sleep(ipBlockSeconds * 1000);
 			await shouldSuccesfullyLoginWithUser(userLogin.username, password);
 		});
@@ -212,7 +212,7 @@ describe('[Failed Login Attempts]', () => {
 
 			await failMaxAttempts(user.username, `${password}-incorrect`);
 			await failMaxAttempts(user2.username, `${password}-incorrect`);
-			await shouldBlockLogin(userLogin.username, password, 'ip');
+			await shouldBlockLogin(userLogin.username, password);
 		});
 	});
 });

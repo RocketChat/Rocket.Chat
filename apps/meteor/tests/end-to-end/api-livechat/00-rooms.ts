@@ -246,7 +246,7 @@ describe('LIVECHAT - rooms', () => {
 				.expect(403)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'unauthorized');
+					expect(res.body).to.have.property('error', 'forbidden');
 				});
 
 			await restorePermissionToRoles('view-livechat-rooms');
@@ -2883,7 +2883,7 @@ describe('LIVECHAT - rooms', () => {
 					.expect(403)
 					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.have.string('unauthorized');
+						expect(res.body.error).to.have.string('forbidden');
 					});
 			});
 

@@ -35,8 +35,8 @@ describe('Meteor.methods', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401);
 
-			expect(res.body).to.have.property('status', 'error');
-			expect(res.body).to.have.property('message');
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 		});
 
 		it('should return all permissions', async () => {
@@ -105,8 +105,8 @@ describe('Meteor.methods', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401);
 
-			expect(res.body).to.have.property('status', 'error');
-			expect(res.body).to.have.property('message');
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 		});
 
 		it('should return the list of public settings', async () => {
@@ -159,8 +159,8 @@ describe('Meteor.methods', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401);
 
-			expect(res.body).to.have.property('status', 'error');
-			expect(res.body).to.have.property('message');
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 		});
 
 		it('should return nothing when user doesnt have any permission', (_t, done) => {
@@ -270,8 +270,8 @@ describe('Meteor.methods', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401);
 
-			expect(res.body).to.have.property('status', 'error');
-			expect(res.body).to.have.property('message');
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 		});
 
 		it('should return all subscriptions', async () => {
@@ -412,9 +412,8 @@ describe('Meteor.methods', () => {
 					}),
 				})
 				.end((_err, res) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
-					expect(res.body.message).to.be.equal('You must be logged in to do this.');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 					done();
 				});
 		});

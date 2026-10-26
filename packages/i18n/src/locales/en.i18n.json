@@ -3135,6 +3135,7 @@
   "Footer_Direct_Reply": "Footer when direct reply is enabled",
   "For_more_details_please_check_our_docs": "For more details please check our docs.",
   "For_your_security_you_must_enter_your_current_password_to_continue": "For your security, you must enter your current password to continue",
+  "forbidden": "Not authorized",
   "Force_Disable_OpLog_For_Cache": "Force disable OpLog for cache",
   "Force_Disable_OpLog_For_Cache_Description": "Will not use OpLog to sync cache even when it's available",
   "Force_Encryption_For_Private_Rooms": "Force end-to-end encryption on private rooms",
