@@ -165,6 +165,46 @@ describe('CachedStore', () => {
 			expect(records[0].lastMessage).toBeUndefined();
 		});
 
+		it('rewrites a cache that an old client left on disk when the store starts, with no login and no server call', async () => {
+			const cache = {
+				version: 19,
+				token: 'token-of-an-old-session',
+				updatedAt: new Date(5),
+				records: [
+					{
+						...fresh,
+						lastMessage: { _id: 'msg-4', rid: 'GENERAL', t: 'e2e', e2e: 'done', content: encryptedContent, msg: 'the okapi plaintext' },
+					},
+					{ ...stale, lastMessage: { _id: 'msg-5', rid: 'GENERAL', t: 'e2e', e2e: 'done', msg: 'old format okapi' } },
+				],
+			};
+			mockGetItem.mockResolvedValue(cache);
+
+			new TestCachedStore();
+			const records = await savedRecords();
+
+			expect(mockSetItem.mock.calls[0][0]).toBe('subscriptions');
+			expect(JSON.stringify(records)).not.toContain('okapi');
+			expect(records[0].lastMessage).toMatchObject({ _id: 'msg-4', e2e: 'pending', content: encryptedContent });
+			expect(records[1].lastMessage).toBeUndefined();
+			expect(mockSetItem.mock.calls[0][1]).toMatchObject({ version: 19, token: 'token-of-an-old-session', updatedAt: new Date(5) });
+			expect(mockCall).not.toHaveBeenCalled();
+		});
+
+		it('does not write a cache that holds no decrypted text', async () => {
+			mockGetItem.mockResolvedValue({
+				version: 19,
+				token: 't',
+				updatedAt: new Date(5),
+				records: [{ ...fresh, lastMessage: { _id: 'msg-6', rid: 'GENERAL', t: 'e2e', e2e: 'pending', content: encryptedContent } }],
+			});
+
+			new TestCachedStore();
+			await new Promise((resolve) => setTimeout(resolve, 200));
+
+			expect(mockSetItem).not.toHaveBeenCalled();
+		});
+
 		it('keeps the last message of a room that is not encrypted', async () => {
 			const cachedStore = new TestCachedStore();
 			const lastMessage = { _id: 'msg-3', rid: 'GENERAL', msg: 'a public okapi' };
