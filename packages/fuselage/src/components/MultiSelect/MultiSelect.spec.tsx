@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
 import MultiSelect from './MultiSelect';
+import { Chip } from '../Chip';
 import * as stories from './MultiSelect.stories';
 import { withResizeObserverMock } from '../../../mocks/withResizeObserverMock';
 import { render } from '../../testing';
@@ -84,4 +85,29 @@ test('removes a default chip on click and keeps the list open', async () => {
 	expect(onChange).toHaveBeenCalledWith(['2']);
 	expect(screen.getByRole('combobox')).toHaveFocus();
 	expect(screen.getByRole('combobox')).toHaveAttribute('aria-expanded', 'true');
+});
+
+test.each(['{Enter}', ' '])('removes a custom chip from the keyboard with %s', async (key) => {
+	const onChange = jest.fn();
+	const options: [string, string][] = [
+		['1', 'Apple'],
+		['2', 'Banana'],
+	];
+	render(
+		<MultiSelect
+			options={options}
+			value={['1', '2']}
+			onChange={onChange}
+			renderSelected={({ label, onMouseDown, onClick }) => (
+				<Chip onMouseDown={onMouseDown} onClick={onClick}>
+					{label}
+				</Chip>
+			)}
+		/>,
+	);
+
+	screen.getByRole('button', { name: 'Apple' }).focus();
+	await userEvent.keyboard(key);
+
+	expect(onChange).toHaveBeenCalledWith(['2']);
 });
