@@ -1,9 +1,15 @@
 import type { ISearchIndexBackend } from '@rocket.chat/desktop-api';
-import { useTranslation } from '@rocket.chat/ui-contexts';
+import { useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 
 import { searchLocalIndex } from '../../../../../lib/e2eeSearch/searchLocalIndex';
+import { Messages, Users } from '../../../../../stores';
 import { useRoom } from '../../../contexts/RoomContext';
+
+// Looks only at data that the client already has, so a `from:` filter sends no request that names the author.
+const findLoadedUid = (rid: string, username: string) =>
+	Users.state.find((user) => user.username?.toLowerCase() === username)?._id ??
+	Messages.state.find((message) => message.rid === rid && message.u?.username?.toLowerCase() === username)?.u._id;
 
 export const useLocalMessageSearchQuery = ({
 	backend,
@@ -15,11 +21,21 @@ export const useLocalMessageSearchQuery = ({
 	limit: number;
 }) => {
 	const room = useRoom();
+	const user = useUser();
 	const t = useTranslation();
 
 	return useQuery({
-		queryKey: ['rooms', room._id, 'local-message-search', { searchText, limit }] as const,
-		queryFn: () => (backend ? searchLocalIndex(backend, { searchText, rid: room._id, limit }) : []),
+		queryKey: ['rooms', room._id, 'local-message-search', { searchText, limit, uid: user?._id }] as const,
+		queryFn: () =>
+			backend
+				? searchLocalIndex(backend, {
+						searchText,
+						rid: room._id,
+						limit,
+						self: user ? { uid: user._id } : undefined,
+						resolveUid: (username) => findLoadedUid(room._id, username),
+					})
+				: [],
 		enabled: !!backend,
 		placeholderData: keepPreviousData,
 		// The results are decrypted text: keep them only while the panel shows them.
