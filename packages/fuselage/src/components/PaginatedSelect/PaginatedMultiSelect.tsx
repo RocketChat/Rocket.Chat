@@ -137,7 +137,8 @@ const PaginatedMultiSelect = ({
 		<Box
 			is='div'
 			rcx-select
-			className={[error && 'invalid', disabled && 'disabled']}
+			rcx-select--invalid={!!error}
+			rcx-select--disabled={disabled}
 			onClick={handleClick}
 			disabled={disabled}
 			{...props}
