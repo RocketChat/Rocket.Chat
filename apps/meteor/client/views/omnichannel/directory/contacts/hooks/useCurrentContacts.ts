@@ -1,17 +1,20 @@
 import type { OperationResult, PaginatedRequest } from '@rocket.chat/rest-typings';
+import { usePaginatedQuery } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import type { UseQueryResult } from '@tanstack/react-query';
-import { useQuery } from '@tanstack/react-query';
 
-export const useCurrentContacts = (
-	query: PaginatedRequest<{
-		searchText: string;
-	}>,
-): UseQueryResult<OperationResult<'GET', '/v1/omnichannel/contacts.search'>> => {
+type CurrentContactsQuery = PaginatedRequest<{
+	searchText: string;
+}>;
+
+type CurrentContactsResult = OperationResult<'GET', '/v1/omnichannel/contacts.search'>;
+
+export const useCurrentContacts = (query: CurrentContactsQuery) => {
 	const currentContacts = useEndpoint('GET', '/v1/omnichannel/contacts.search');
 
-	return useQuery({
-		queryKey: ['current-contacts', query],
-		queryFn: () => currentContacts(query),
+	return usePaginatedQuery<CurrentContactsQuery, CurrentContactsResult>({
+		query,
+		getQueryKey: (query) => ['current-contacts', query],
+		queryFn: (query) => currentContacts(query) as unknown as Promise<CurrentContactsResult>,
+		itemsKey: 'contacts',
 	});
 };
