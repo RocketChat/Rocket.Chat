@@ -47,7 +47,7 @@ const AudioPlayerControls = ({
 	changePlaybackSpeedLabel = 'Change Playback Speed',
 	downloadAudioFileLabel = 'Download Audio File',
 }: AudioPlayerControlsProps) => (
-	<Box display='flex' alignItems='center' width='full'>
+	<Box className='rcx-audio-player__controls'>
 		<IconButton
 			variant='primary'
 			size='medium'
@@ -55,11 +55,9 @@ const AudioPlayerControls = ({
 			aria-label={isPlaying ? pauseLabel : playLabel}
 			icon={isPlaying ? 'pause-shape-filled' : 'play-shape-filled'}
 		/>
-		<Box display='flex' alignItems='center' flexGrow={1} marginInline={8} gap={16}>
-			<Box fontScale='p2' color='secondary-info'>
-				{isPlaying || currentTime > 0 ? getMaskTime(currentTime) : getMaskTime(durationTime)}
-			</Box>
-			<Box width='full'>
+		<Box className='rcx-audio-player__track'>
+			<Box className='rcx-audio-player__time'>{isPlaying || currentTime > 0 ? getMaskTime(currentTime) : getMaskTime(durationTime)}</Box>
+			<Box className='rcx-audio-player__range'>
 				<Slider
 					aria-label={audioPlaybackRangeLabel}
 					showOutput={false}
