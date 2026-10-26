@@ -1,4 +1,5 @@
-import type { IRocketChatRecord } from '@rocket.chat/core-typings';
+import type { EncryptedMessageContent, IMessage, IRocketChatRecord } from '@rocket.chat/core-typings';
+import { isEncryptedMessageContent } from '@rocket.chat/core-typings';
 import type { StreamNames } from '@rocket.chat/ddp-client';
 import { isTruthy } from '@rocket.chat/tools';
 import localforage from 'localforage';
@@ -34,6 +35,34 @@ const hasUnserializedUpdatedAt = <T>(record: T): record is T & { _updatedAt: Con
 	record !== null &&
 	'_updatedAt' in record &&
 	!((record as unknown as { _updatedAt: unknown })._updatedAt instanceof Date);
+
+// The cache is written to disk (IndexedDB), and the client decrypts end-to-end encrypted last messages in memory.
+// Keep only the ciphertext form of an encrypted last message, so the client decrypts it again after a reload.
+// An old-format message carried its ciphertext in `msg`, which the decryption replaced: drop it.
+const toCacheRecord = <T>(record: T): T => {
+	if (typeof record !== 'object' || record === null || !('lastMessage' in record)) {
+		return record;
+	}
+
+	const { lastMessage } = record;
+	if (typeof lastMessage !== 'object' || lastMessage === null || !('t' in lastMessage) || lastMessage.t !== 'e2e') {
+		return record;
+	}
+
+	if (!isEncryptedMessageContent(lastMessage)) {
+		if (!('e2e' in lastMessage) || lastMessage.e2e !== 'done') {
+			return record;
+		}
+		const { lastMessage: _decrypted, ...rest } = record;
+		return rest as T;
+	}
+
+	const { _id, rid, ts, u, _updatedAt, tmid, content } = lastMessage as Partial<IMessage> & EncryptedMessageContent;
+	return {
+		...record,
+		lastMessage: { _id, rid, ts, u, _updatedAt, ...(tmid && { tmid }), t: 'e2e', e2e: 'pending', content },
+	};
+};
 
 localforage.config({ name: baseURI });
 
@@ -198,7 +227,7 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 			updatedAt: this.updatedAt,
 			version: this.version,
 			token: this.getToken(),
-			records: Array.from(this.store.getState().records.values()),
+			records: Array.from(this.store.getState().records.values(), toCacheRecord),
 		});
 		this.log('saving cache (done)');
 	});
