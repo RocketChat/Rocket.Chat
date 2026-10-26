@@ -50,6 +50,12 @@ An application component built on a Fuselage one types its props from that compo
 type ResetSettingButtonProps = Omit<ComponentProps<typeof IconButton>, 'icon'>;
 ```
 
+### Where `className`, `style` and the rest land
+
+The root element receives `className`, `style`, `data-*` and `ref`. A component with more than one element gives the inner ones an explicit `xxxProps` prop (`Bubble.contentProps`, `AudioPlayer.trackProps`).
+
+Form controls and media are the exception: `CheckBox`, `RadioButton`, `ToggleSwitch` and `Avatar` put `className` on the outer `<label>` or `<figure>` and every other attribute on the inner `<input>` or `<img>`, because that is the element a form or a test targets. `InputBox` follows the same idea: `className` lands on the wrapper when there is an addon, and on the `<input>` otherwise.
+
 ## No outer spacing
 
 A component never sets its own outer margin, width or flex behavior. Those belong to the container (see [Layout in the app](layout.md)). A component that needs room for something it draws (a focus ring, a badge) makes that room inside its own box.
