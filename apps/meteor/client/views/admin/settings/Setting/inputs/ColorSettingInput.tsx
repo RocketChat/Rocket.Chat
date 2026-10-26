@@ -85,7 +85,7 @@ function ColorSettingInput({
 					<Select
 						type='color'
 						id={`${_id}_editor`}
-						aria-label={t('Editor')}
+						aria-label={t('Setting_color_editor', { setting: label })}
 						value={editor}
 						disabled={disabled}
 						readOnly={readonly}

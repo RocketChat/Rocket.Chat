@@ -1,4 +1,5 @@
 ---
+'@rocket.chat/i18n': patch
 '@rocket.chat/meteor': patch
 '@rocket.chat/onboarding-ui': patch
 ---
