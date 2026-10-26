@@ -20,7 +20,7 @@ const Header = ({ title, onClose, children, ...props }: HeaderProps) => {
 							{title}
 						</Box>
 					)}
-					{onClose && <IconButton small aria-label={t('Close')} icon='cross' onClick={onClose} />}
+					{onClose && <IconButton size='small' aria-label={t('Close')} icon='cross' onClick={onClose} />}
 				</Box>
 			)}
 			{children}

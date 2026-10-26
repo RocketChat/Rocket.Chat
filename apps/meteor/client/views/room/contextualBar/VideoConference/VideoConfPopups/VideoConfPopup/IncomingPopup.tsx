@@ -95,7 +95,7 @@ const IncomingPopup = ({ id, room, position, onClose, onMute, onConfirm }: Incom
 							{t('Decline')}
 						</VideoConfButton>
 					)}
-					<VideoConfController small={false} secondary title={t('Mute_and_dismiss')} icon='cross' onClick={(): void => onMute(id)} />
+					<VideoConfController size='large' secondary title={t('Mute_and_dismiss')} icon='cross' onClick={(): void => onMute(id)} />
 				</VideoConfPopupFooterButtons>
 			</VideoConfPopupFooter>
 		</VideoConfPopup>

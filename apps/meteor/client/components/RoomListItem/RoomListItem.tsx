@@ -96,7 +96,7 @@ const RoomListItem = ({
 
 	const itemMenu = menu && (
 		<SidebarItemMenu>
-			{menuVisibility ? menu : <IconButton tabIndex={-1} aria-hidden mini icon='kebab' onPointerDown={mountNow} />}
+			{menuVisibility ? menu : <IconButton tabIndex={-1} aria-hidden size='mini' icon='kebab' onPointerDown={mountNow} />}
 		</SidebarItemMenu>
 	);
 

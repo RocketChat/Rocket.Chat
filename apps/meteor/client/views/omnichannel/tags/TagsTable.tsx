@@ -113,7 +113,7 @@ const TagsTable = () => {
 									<GenericTableCell>
 										<IconButton
 											icon='trash'
-											small
+											size='small'
 											title={t('Remove')}
 											onClick={(e) => {
 												e.stopPropagation();

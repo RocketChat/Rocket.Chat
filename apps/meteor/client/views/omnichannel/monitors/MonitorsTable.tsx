@@ -179,7 +179,7 @@ const MonitorsTable = () => {
 									<GenericTableCell truncate>{monitor.username}</GenericTableCell>
 									<GenericTableCell truncate>{monitor.email}</GenericTableCell>
 									<GenericTableCell truncate>
-										<IconButton icon='trash' small title={t('Remove')} onClick={() => handleRemove(monitor.username)} />
+										<IconButton icon='trash' size='small' title={t('Remove')} onClick={() => handleRemove(monitor.username)} />
 									</GenericTableCell>
 								</GenericTableRow>
 							))}

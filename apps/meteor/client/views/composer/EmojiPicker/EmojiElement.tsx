@@ -9,7 +9,7 @@ import type { EmojiItem } from '../../../lib/emoji';
 
 export type EmojiElementProps = EmojiItem & { small?: boolean; onClick: (e: MouseEvent<HTMLElement>) => void } & Omit<
 		AllHTMLAttributes<HTMLButtonElement>,
-		'is' | 'color'
+		'is' | 'color' | 'size'
 	>;
 
 const smallEmojiClass = css`
@@ -31,8 +31,7 @@ const EmojiElement = ({ emoji, image, onClick, small = false, ...props }: EmojiE
 	return (
 		<IconButton
 			{...(small && { className: smallEmojiClassName })}
-			small={small}
-			medium={!small}
+			size={small ? 'small' : 'medium'}
 			onMouseEnter={() => handlePreview(image, emoji)}
 			onMouseLeave={handleRemovePreview}
 			onClick={onClick}

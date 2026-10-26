@@ -172,7 +172,7 @@ export const Horizontal: Story = {
 				</Button>
 				<Badge small variant='primary' />
 				<Tag>Tag</Tag>
-				<IconButton icon='menu' small aria-label='menu' />
+				<IconButton icon='menu' size='small' aria-label='menu' />
 			</CardControls>
 		</Card>
 	),
@@ -199,7 +199,7 @@ export const Clickable: Story = {
 				</Button>
 				<Badge small variant='primary' />
 				<Tag>Tag</Tag>
-				<IconButton icon='menu' small aria-label='menu' />
+				<IconButton icon='menu' size='small' aria-label='menu' />
 			</CardControls>
 		</Card>
 	),
@@ -217,7 +217,7 @@ export const HorizontalNoIcon: Story = {
 			<CardControls>
 				<Badge small variant='primary' />
 				<Tag>Card tag</Tag>
-				<IconButton icon='menu' small aria-label='menu' />
+				<IconButton icon='menu' size='small' aria-label='menu' />
 			</CardControls>
 		</Card>
 	),
@@ -286,7 +286,7 @@ export const HorizontalCustom: Story = {
 			<CardControls>
 				<Badge small variant='primary' />
 				<Tag>Card tag</Tag>
-				<IconButton icon='menu' small aria-label='menu' />
+				<IconButton icon='menu' size='small' aria-label='menu' />
 			</CardControls>
 		</Card>
 	),

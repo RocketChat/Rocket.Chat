@@ -236,7 +236,7 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 													<TextInput {...field} error={errors.emails?.[index]?.address?.message} aria-required='true' />
 												)}
 											/>
-											<IconButton title={t('Remove_email')} small onClick={() => removeEmail(index)} icon='trash' />
+											<IconButton title={t('Remove_email')} size='small' onClick={() => removeEmail(index)} icon='trash' />
 										</Stack>
 									</FieldRow>
 									{errors.emails?.[index]?.address && <FieldError>{errors.emails?.[index]?.address?.message}</FieldError>}
@@ -269,7 +269,7 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 													<TextInput {...field} error={errors.phones?.[index]?.phoneNumber?.message} aria-required='true' />
 												)}
 											/>
-											<IconButton title={t('Remove_phone')} small onClick={() => removePhone(index)} icon='trash' />
+											<IconButton title={t('Remove_phone')} size='small' onClick={() => removePhone(index)} icon='trash' />
 										</Stack>
 									</FieldRow>
 									{errors.phones?.[index]?.phoneNumber && <FieldError>{errors.phones?.[index]?.phoneNumber?.message}</FieldError>}

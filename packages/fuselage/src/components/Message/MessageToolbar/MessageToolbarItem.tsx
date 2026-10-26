@@ -6,7 +6,7 @@ import type { IconButtonProps } from '../../Button/IconButton';
 export type MessageToolbarItemProps = Omit<IconButtonProps, 'ref'> & RefAttributes<HTMLButtonElement>;
 
 function MessageToolbarItem(props: MessageToolbarItemProps) {
-	return <IconButton small {...props} />;
+	return <IconButton size='small' {...props} />;
 }
 
 export default MessageToolbarItem;
