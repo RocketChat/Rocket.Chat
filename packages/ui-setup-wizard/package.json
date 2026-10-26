@@ -53,6 +53,7 @@
 		"@rocket.chat/css-in-js": "workspace:^",
 		"@rocket.chat/fuselage": "*",
 		"@rocket.chat/fuselage-hooks": "*",
+		"@rocket.chat/layout": "*",
 		"@rocket.chat/ui-client": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",
 		"@tanstack/react-query": "~5.65.1",
