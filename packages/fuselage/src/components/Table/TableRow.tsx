@@ -4,7 +4,6 @@ import { Box } from '../Box';
 export type TableRowProps = ElementProps<HTMLTableRowElement> & {
 	selected?: boolean;
 	action?: boolean;
-	hasAction?: boolean;
 };
 
 const TableRow = ({ action, selected, ...props }: TableRowProps) => (
