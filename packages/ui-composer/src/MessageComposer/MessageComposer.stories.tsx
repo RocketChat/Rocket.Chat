@@ -92,7 +92,7 @@ export const WithHints: StoryObj<typeof MessageComposer> = {
 				<MessageComposerToolbar>
 					<MessageToolbarActions />
 					<MessageComposerToolbarSubmit>
-						<MessageComposerAction aria-label='Send' icon='send' disabled={false} secondary={true} info={true} />
+						<MessageComposerAction aria-label='Send' icon='send' disabled={false} variant='primary' />
 					</MessageComposerToolbarSubmit>
 				</MessageComposerToolbar>
 			</MessageComposer>
@@ -126,7 +126,7 @@ export const WithFiles: StoryObj<typeof MessageComposer> = {
 					fileTitle='antique-pocket-clock-500x500.zip'
 					fileSubtitle='58.33 KB - application/zip'
 					fileFormat='zip'
-					actionIcon={<IconButton aria-label='Close' icon='cross' mini />}
+					actionIcon={<IconButton aria-label='Close' icon='cross' size='mini' />}
 					onClick={action('click')}
 				/>
 				<MessageComposerFile
@@ -134,14 +134,14 @@ export const WithFiles: StoryObj<typeof MessageComposer> = {
 					fileTitle='file.png'
 					fileSubtitle='2 MB'
 					fileFormat='png'
-					actionIcon={<IconButton aria-label='Close' icon='cross' mini />}
+					actionIcon={<IconButton aria-label='Close' icon='cross' size='mini' />}
 					onClick={action('click')}
 				/>
 				<MessageComposerFileError
 					fileTitle='file.png'
 					fileFormat='png'
 					error={new Error('Something went wrong')}
-					actionIcon={<IconButton aria-label='Close' icon='cross' mini />}
+					actionIcon={<IconButton aria-label='Close' icon='cross' size='mini' />}
 					onClick={action('click')}
 				/>
 			</MessageComposerFileGroup>

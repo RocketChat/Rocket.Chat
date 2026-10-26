@@ -97,7 +97,7 @@ const CardHorizontal = (props: CardProps) => (
 		<CardControls>
 			<Badge small variant='primary' />
 			<Tag>Card tag</Tag>
-			<IconButton icon='menu' small aria-label='menu' />
+			<IconButton icon='menu' size='small' aria-label='menu' />
 		</CardControls>
 	</Card>
 );

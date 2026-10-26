@@ -48,7 +48,7 @@ export const Default: StoryObj<typeof RichTextComposerInput> = {
 				<MessageComposerToolbar>
 					<MessageToolbarActions />
 					<MessageComposerToolbarSubmit>
-						<MessageComposerAction aria-label='Send' icon='send' disabled={false} secondary={true} info={true} />
+						<MessageComposerAction aria-label='Send' icon='send' disabled={false} variant='primary' />
 					</MessageComposerToolbarSubmit>
 				</MessageComposerToolbar>
 			</MessageComposer>
@@ -67,7 +67,7 @@ export const WithHiddenPlaceholder: StoryObj<typeof RichTextComposerInput> = {
 				<MessageComposerToolbar>
 					<MessageToolbarActions />
 					<MessageComposerToolbarSubmit>
-						<MessageComposerAction aria-label='Send' icon='send' disabled={false} secondary={true} info={true} />
+						<MessageComposerAction aria-label='Send' icon='send' disabled={false} variant='primary' />
 					</MessageComposerToolbarSubmit>
 				</MessageComposerToolbar>
 			</MessageComposer>

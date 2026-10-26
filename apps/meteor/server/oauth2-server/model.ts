@@ -146,19 +146,12 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 			);
 		}
 
-		await OAuthAuthCodes.updateOne(
-			{ authCode: code.authorizationCode },
-			{
-				$set: {
-					authCode: code.authorizationCode,
-					clientId: client.id,
-					userId: user.id,
-					expires: code.expiresAt,
-					redirectUri: code.redirectUri,
-				},
-			},
-			{ upsert: true },
-		);
+		await OAuthAuthCodes.upsertByAuthCode(code.authorizationCode, {
+			clientId: client.id,
+			userId: user.id,
+			expires: code.expiresAt,
+			redirectUri: code.redirectUri,
+		});
 
 		const newCode = {
 			...code,

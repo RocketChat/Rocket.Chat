@@ -98,7 +98,7 @@ const VideoConfListItem = ({
 								</Button>
 								{discussionRid && (
 									<IconButton
-										small
+										size='small'
 										icon='discussion'
 										data-drid={discussionRid}
 										title={t('Join_discussion')}

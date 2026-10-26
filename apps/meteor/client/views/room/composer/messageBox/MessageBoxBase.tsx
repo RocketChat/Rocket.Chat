@@ -174,8 +174,7 @@ const MessageBoxBase = ({
 									icon='send'
 									disabled={!sendEnabled}
 									onClick={onSend}
-									secondary={sendActive}
-									info={sendActive}
+									variant={sendActive ? 'primary' : undefined}
 								/>
 							</>
 						)}

@@ -171,8 +171,8 @@ const ConferenceWindow = () => {
 	const panelToggles = (
 		<>
 			<IconButton
-				small
-				secondary
+				size='small'
+				variant='secondary'
 				// The same words in both, because they disagreed: the tooltip said "People" while the accessible
 				// name said how many, so anything looking for the button by the name it appeared to have never
 				// found it.
@@ -184,8 +184,8 @@ const ConferenceWindow = () => {
 				badge={presentCount > 0 ? <Badge>{presentCount}</Badge> : undefined}
 			/>
 			<IconButton
-				small
-				secondary
+				size='small'
+				variant='secondary'
 				aria-label={withBadgeCount(t('Chat'), unread, unreadTitle, unseenActivity)}
 				title={t('Chat')}
 				aria-pressed={chatVisible}

@@ -39,7 +39,9 @@ const RoomHeaderCategoryMenu = ({ room }: RoomHeaderCategoryMenuProps) => {
 
 	const sections = [{ items: targetItems }, ...(utilItems.length ? [{ items: utilItems }] : [])];
 
-	return <GenericMenu button={<IconButton small icon={groupingIcon} />} title={t('Move_to')} icon={groupingIcon} sections={sections} />;
+	return (
+		<GenericMenu button={<IconButton size='small' icon={groupingIcon} />} title={t('Move_to')} icon={groupingIcon} sections={sections} />
+	);
 };
 
 export default RoomHeaderCategoryMenu;

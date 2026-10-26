@@ -171,7 +171,7 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 					<Field>
 						<FieldRow>
 							<FieldLabel id={emojiLabelId}>{t('Custom_Emoji')}</FieldLabel>
-							<IconButton aria-labelledby={emojiLabelId} icon='upload' secondary onClick={clickUpload} />
+							<IconButton aria-labelledby={emojiLabelId} icon='upload' variant='secondary' onClick={clickUpload} />
 						</FieldRow>
 						{newEmojiPreview && (
 							<Box display='flex' flexDirection='row' marginBlockStart='none' justifyContent='center'>

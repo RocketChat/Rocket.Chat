@@ -52,7 +52,7 @@ const ToneSelector = ({ tone, setTone }: { tone: number; setTone: (tone: number)
 	return (
 		<>
 			<IconButton
-				medium
+				size='medium'
 				ref={ref}
 				onClick={onClick}
 				onBlur={hide}

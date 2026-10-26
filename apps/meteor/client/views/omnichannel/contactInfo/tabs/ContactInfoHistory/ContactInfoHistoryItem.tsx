@@ -76,7 +76,7 @@ const ContactInfoHistoryItem = ({ source, lastMessage, verified, onClick }: Cont
 						aria-label={t('Unverified')}
 						onClick={() => setModal(<AdvancedContactModal onCancel={() => setModal(null)} />)}
 						icon='question-mark'
-						small
+						size='small'
 					/>
 				</ItemActions>
 			)}

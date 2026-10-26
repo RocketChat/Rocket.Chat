@@ -8,7 +8,7 @@ export type MessageMetricsFollowingProps = {
 } & Omit<IconButtonProps, 'icon'>;
 
 const MessageMetricsFollowing = ({ name, badge, className, ...props }: MessageMetricsFollowingProps) => (
-	<IconButton {...props} className={['rcx-message-metrics__item__follow', className].filter(Boolean).join(' ')} small icon={name}>
+	<IconButton {...props} className={['rcx-message-metrics__item__follow', className].filter(Boolean).join(' ')} size='small' icon={name}>
 		{badge && <div className='rcx-message-metrics__item__follow-badge'>{badge}</div>}
 	</IconButton>
 );
