@@ -31,7 +31,7 @@ export const getAuthorizationServerMetadata = (issuer: string) => ({
 export const serveAuthorizationServerMetadata: RequestHandler = (req, res, next) => {
 	const issuer = getOAuthIssuer();
 	const { pathname } = new URL(req.originalUrl, 'http://localhost');
-	if (req.method !== 'GET' || pathname !== new URL(getWellKnownUrl(issuer, 'oauth-authorization-server')).pathname) {
+	if (!['GET', 'HEAD'].includes(req.method) || pathname !== new URL(getWellKnownUrl(issuer, 'oauth-authorization-server')).pathname) {
 		next();
 		return;
 	}

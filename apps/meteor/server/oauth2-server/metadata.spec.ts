@@ -86,9 +86,10 @@ describe('serveAuthorizationServerMetadata', () => {
 		expect((await request(app).get('/.well-known/oauth-authorization-server')).status).toBe(404);
 	});
 
-	it('answers GET only', async () => {
+	it('answers GET and HEAD only', async () => {
 		deploy('https://chat.example.com');
 
+		expect((await request(app).head('/.well-known/oauth-authorization-server')).status).toBe(200);
 		expect((await request(app).post('/.well-known/oauth-authorization-server')).status).toBe(404);
 	});
 });
