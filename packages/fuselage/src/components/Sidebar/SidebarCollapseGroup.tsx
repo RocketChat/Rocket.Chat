@@ -14,7 +14,6 @@ type SidebarCollapseGroupProps = HTMLAttributes<HTMLDivElement> &
 		empty?: boolean;
 		badge?: ReactNode;
 		menu?: ReactNode;
-		actions?: ReactNode;
 	};
 
 export function SidebarCollapseGroup({
@@ -25,7 +24,6 @@ export function SidebarCollapseGroup({
 	children,
 	badge,
 	menu,
-	actions: _actions,
 	title,
 	empty,
 	role = 'group',
