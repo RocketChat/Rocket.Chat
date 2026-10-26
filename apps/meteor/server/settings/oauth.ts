@@ -125,6 +125,11 @@ export const createOauthSettings = () =>
 				enableQuery,
 			});
 		});
+
+		await this.section('Third_party_login', async function () {
+			await this.add('OAuth2_Allow_Dynamic_Client_Registration', false, { type: 'boolean' });
+		});
+
 		await this.add('Accounts_OAuth_Session_Secret', Random.secret(), {
 			type: 'string',
 			secret: true,

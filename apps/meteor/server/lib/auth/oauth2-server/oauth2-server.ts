@@ -5,6 +5,7 @@ import type express from 'express';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
+import { registerOAuthClient } from './registerOAuthClient';
 import { isPlainObject } from '../../../../lib/utils/isPlainObject';
 import { API } from '../../../api';
 import { serveAuthorizationServerMetadata } from '../../../oauth2-server/metadata';
@@ -70,6 +71,12 @@ oauth2server.app.get('/oauth/userinfo', async (req: Request, res: Response) => {
 		updated_at: user._updatedAt,
 		picture: `${Meteor.absoluteUrl()}avatar/${user.username}`,
 	});
+});
+
+oauth2server.app.post('/oauth/register', async (req: Request, res: Response) => {
+	const { statusCode, body } = await registerOAuthClient(req.body);
+	res.set('Cache-Control', 'no-store');
+	res.status(statusCode).send(body);
 });
 
 API.v1.addAuthMethod((routeContext) => {
