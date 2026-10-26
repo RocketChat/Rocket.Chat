@@ -185,7 +185,7 @@ function MultiSelect({
 							<SelectedOptions
 								tabIndex={-1}
 								key={String(value)}
-								onMouseDown={(e) => {
+								onClick={(e) => {
 									prevent(e);
 									internalChanged(currentOption);
 								}}
