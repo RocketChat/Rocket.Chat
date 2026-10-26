@@ -1,5 +1,5 @@
 import type { Keys as Icons } from '@rocket.chat/icons';
-import type { LinkHTMLAttributes, ReactNode } from 'react';
+import type { AnchorHTMLAttributes, ReactNode } from 'react';
 
 import { appendClassName } from '../../helpers/appendClassName';
 import { cx } from '../../helpers/composeClassNames';
@@ -12,7 +12,7 @@ export type SidebarLinkProps = {
 	icon?: Icons;
 	badge?: ReactNode;
 	menu?: ReactNode;
-} & LinkHTMLAttributes<HTMLAnchorElement>;
+} & AnchorHTMLAttributes<HTMLAnchorElement>;
 
 const SidebarLink = ({ selected, icon, badge, menu, className, children, ...props }: SidebarLinkProps) => (
 	<Item
