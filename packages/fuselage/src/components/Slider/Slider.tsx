@@ -1,4 +1,4 @@
-import type { AriaAttributes, RefAttributes } from 'react';
+import type { AriaAttributes, CSSProperties, RefAttributes } from 'react';
 import { useRef } from 'react';
 import type { AriaSliderProps } from 'react-aria';
 import { useNumberFormatter, useSlider } from 'react-aria';
@@ -7,6 +7,7 @@ import { useSliderState } from 'react-stately';
 import { SliderHead } from './SliderHead';
 import { SliderThumb } from './SliderThumb';
 import { SliderTrack } from './SliderTrack';
+import { prependClassName } from '../../helpers/prependClassName';
 
 export type SliderProps<T extends number | number[]> = AriaAttributes &
 	RefAttributes<HTMLDivElement> & {
@@ -18,6 +19,8 @@ export type SliderProps<T extends number | number[]> = AriaAttributes &
 		 * The id of the slider input element, used to connect with an external label.
 		 */
 		id?: string;
+		className?: string;
+		style?: CSSProperties;
 		label?: string;
 		showOutput?: boolean;
 		/**
@@ -50,6 +53,8 @@ export type SliderProps<T extends number | number[]> = AriaAttributes &
 
 function Slider<T extends number | [min: number, max: number]>({
 	ref,
+	className,
+	style,
 	...props
 }: T extends number ? SliderProps<number> : SliderProps<[min: number, max: number]>) {
 	const { label, formatOptions, showOutput = true, multiThumb, maxValue, minValue } = props;
@@ -90,7 +95,12 @@ function Slider<T extends number | [min: number, max: number]>({
 	const { groupProps, trackProps, labelProps, outputProps } = useSlider(sliderProps, sliderState, trackRef);
 
 	return (
-		<div {...groupProps} ref={ref} className={`rcx-slider rcx-slider--${sliderState.orientation}`}>
+		<div
+			{...groupProps}
+			ref={ref}
+			className={prependClassName(className, `rcx-slider rcx-slider--${sliderState.orientation}`)}
+			style={{ ...groupProps.style, ...style }}
+		>
 			<SliderHead
 				labelProps={labelProps}
 				outputProps={outputProps}
