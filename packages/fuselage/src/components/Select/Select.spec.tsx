@@ -201,4 +201,12 @@ describe('[Select Component]', () => {
 		const results = await axe(document.body, { rules: { region: { enabled: false } } });
 		expect(results).toHaveNoViolations();
 	});
+
+	it('should forward className and style to the trigger', () => {
+		render(<Select aria-label='Time unit' options={units} className='custom' style={{ marginTop: 3 }} />);
+
+		const combobox = screen.getByRole('combobox');
+		expect(combobox).toHaveClass('custom', 'rcx-select');
+		expect(combobox).toHaveStyle({ marginTop: '3px' });
+	});
 });
