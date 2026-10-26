@@ -13,9 +13,7 @@ $link-active-color: theme('link-active-color', colors.font(info));
 %link {
 	color: $link-color;
 
-	&:focus-visible,
-	&.is-focused,
-	&.focus {
+	&:focus-visible {
 		text-decoration: none;
 
 		color: $link-focus-color;
@@ -25,14 +23,11 @@ $link-active-color: theme('link-active-color', colors.font(info));
 		@include use-focus-shadow($link-focus-box-shadow-color);
 	}
 
-	&:where(:visited),
-	&:where(.is-visited) {
+	&:where(:visited) {
 		color: $link-visited-color;
 	}
 
-	&:where(:active),
-	&:where(.active),
-	&:where(.is-active) {
+	&:where(:active) {
 		color: $link-active-color;
 	}
 }

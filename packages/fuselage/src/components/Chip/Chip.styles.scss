@@ -56,7 +56,6 @@ $chip-disabled-color: theme('chip-disabled-color', colors.font(disabled));
 
 	border-width: 0;
 
-	&.disabled,
 	&:disabled {
 		color: $button-secondary-color;
 		border-color: $button-secondary-border-color;
