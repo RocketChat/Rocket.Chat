@@ -22,6 +22,7 @@ function PopoverSurface({ maxHeight, flush, elevation = '2', ...props }: Popover
 		<Box
 			rcx-tile
 			rcx-tile--elevation={elevation}
+			rcx-tile--flush
 			display='flex'
 			flexDirection='column'
 			overflow='auto'
