@@ -136,7 +136,8 @@ function MultiSelect({
 			is='div'
 			animated
 			rcx-select
-			className={[error && 'invalid', disabled && 'disabled']}
+			rcx-select--invalid={!!error}
+			rcx-select--disabled={disabled}
 			ref={containerRef}
 			onClick={handleClick}
 			disabled={disabled}
