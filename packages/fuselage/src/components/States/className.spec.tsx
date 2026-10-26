@@ -35,3 +35,16 @@ describe('consumer className on States parts', () => {
 		expect(screen.getByTestId('part')).toHaveClass(ownClass, 'custom');
 	});
 });
+
+describe('StatesIcon size', () => {
+	it('lets the consumer set the size', () => {
+		render(
+			<>
+				<StatesIcon data-testid='default' name='circle-exclamation' />
+				<StatesIcon data-testid='custom' name='circle-exclamation' size='x16' />
+			</>,
+		);
+
+		expect(screen.getByTestId('custom').className).not.toEqual(screen.getByTestId('default').className);
+	});
+});
