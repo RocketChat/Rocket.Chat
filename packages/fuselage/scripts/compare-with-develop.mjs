@@ -6,7 +6,6 @@
  * Usage (from the repo root, after `yarn install` and building Fuselage's workspace dependencies):
  *   node packages/fuselage/scripts/compare-with-develop.mjs [--base origin/develop] [--stories <regex>] [--runs 5] [--skip-build]
  */
-/* global document -- read inside `page.evaluate`, which runs in the browser */
 import { execFileSync } from 'node:child_process';
 import { cpSync, createReadStream, existsSync, mkdirSync, readFileSync, rmSync, statSync, symlinkSync } from 'node:fs';
 import { createServer } from 'node:http';
@@ -104,14 +103,14 @@ const measure = async (browser, url, storyId) => {
 	await cdp.send('Performance.enable');
 	const start = performance.now();
 	await page.goto(`${url}/iframe.html?id=${storyId}&viewMode=story`, { waitUntil: 'load' });
-	await page.waitForFunction(() => (document.querySelector('#storybook-root')?.childElementCount ?? 0) > 0);
-	await page.evaluate(() => document.fonts.ready);
+	await page.waitForFunction(() => (globalThis.document.querySelector('#storybook-root')?.childElementCount ?? 0) > 0);
+	await page.evaluate(() => globalThis.document.fonts.ready);
 	const renderMs = performance.now() - start;
 	const metrics = Object.fromEntries((await cdp.send('Performance.getMetrics')).metrics.map(({ name, value }) => [name, value]));
 	const css = await page.evaluate(() => {
 		let rules = 0;
 		let bytes = 0;
-		for (const sheet of document.styleSheets) {
+		for (const sheet of globalThis.document.styleSheets) {
 			try {
 				for (const rule of sheet.cssRules) {
 					rules++;
