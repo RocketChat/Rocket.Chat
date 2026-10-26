@@ -104,7 +104,7 @@ function ComposerBoxPopup<
 	}, [focused]);
 
 	return (
-		<Box position='relative' marginBlockEnd={8}>
+		<Box display='flex' flexDirection='column' minHeight='x80' marginBlockEnd={8}>
 			<PopoverSurface elevation='1' flush ref={composerBoxPopupRef}>
 				{title && (
 					<Box backgroundColor='tint'>
@@ -113,7 +113,7 @@ function ComposerBoxPopup<
 						</ItemGroupHeader>
 					</Box>
 				)}
-				<CustomScrollbars>
+				<CustomScrollbars style={{ minHeight: 0 }}>
 					<Box paddingBlock={8} maxHeight='x320'>
 						{!isLoading && itemsFlat.length === 0 && (
 							<Item inset='md' role='status'>
