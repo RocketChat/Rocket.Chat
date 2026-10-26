@@ -23,9 +23,9 @@ const FeedbackButtonsElement = ({ block, context }: FeedbackButtonsElementProps)
 			{buttons.map(({ kind, button, emoji }) => (
 				<Button
 					key={kind}
-					small
+					size='small'
 					square
-					secondary={chosen === kind}
+					variant={chosen === kind ? 'secondary' : undefined}
 					disabled={loading}
 					aria-label={button.accessibility_label ?? fromTextObject(button.text)}
 					aria-pressed={chosen === kind}
