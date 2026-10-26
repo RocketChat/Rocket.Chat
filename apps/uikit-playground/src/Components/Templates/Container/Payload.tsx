@@ -55,7 +55,7 @@ const Payload = ({ blocks, surface }: PayloadProps) => {
 				</Box>
 			</Box>
 			<Box>
-				<Button onClick={clickHandler} primary>
+				<Button onClick={clickHandler} variant='primary'>
 					Use This Template
 				</Button>
 			</Box>

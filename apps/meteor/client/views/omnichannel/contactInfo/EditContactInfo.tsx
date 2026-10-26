@@ -301,7 +301,7 @@ const EditContactInfo = ({ contactData, onClose, onCancel }: ContactNewEditProps
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onCancel}>{t('Cancel')}</Button>
-					<Button type='submit' form={formId} loading={isSubmitting} primary>
+					<Button type='submit' form={formId} loading={isSubmitting} variant='primary'>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

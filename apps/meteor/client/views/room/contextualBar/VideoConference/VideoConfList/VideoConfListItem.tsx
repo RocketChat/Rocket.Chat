@@ -93,7 +93,7 @@ const VideoConfListItem = ({
 					<MessageBlock>
 						<Box display='flex' alignItems='center'>
 							<ButtonGroup>
-								<Button disabled={Boolean(endedAt)} small onClick={handleJoinConference}>
+								<Button disabled={Boolean(endedAt)} size='small' onClick={handleJoinConference}>
 									{endedAt ? t('Call_ended') : t('Join_call')}
 								</Button>
 								{discussionRid && (

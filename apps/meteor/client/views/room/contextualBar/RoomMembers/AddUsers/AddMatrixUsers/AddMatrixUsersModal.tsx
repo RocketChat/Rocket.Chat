@@ -123,7 +123,7 @@ const AddMatrixUsersModal = ({ onClose, matrixIdVerifiedStatus, onSave, complete
 				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button
-						primary
+						variant='primary'
 						onClick={handleSubmit(onSubmit)}
 						disabled={!(usersToInvite.length > 0) || (bannedError && !unbanConfirmed)}
 						loading={loading}

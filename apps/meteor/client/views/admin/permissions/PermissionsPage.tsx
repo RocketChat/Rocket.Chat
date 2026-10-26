@@ -53,7 +53,7 @@ const PermissionsPage = ({ isEnterprise }: PermissionsPageProps) => {
 		<Page flexDirection='row'>
 			<Page>
 				<PageHeader title={t('Permissions')}>
-					<Button primary onClick={handleAdd} aria-label={t('New')} name={t('New_role')}>
+					<Button variant='primary' onClick={handleAdd} aria-label={t('New')} name={t('New_role')}>
 						{t('New_role')}
 					</Button>
 				</PageHeader>

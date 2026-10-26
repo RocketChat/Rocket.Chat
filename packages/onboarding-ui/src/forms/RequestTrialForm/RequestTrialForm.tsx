@@ -151,7 +151,7 @@ export const RequestTrialForm = ({
 				</Field>
 			</FieldGroup>
 			<FormFooter>
-				<Button type='submit' primary loading={isValidating || isSubmitting} disabled={!isValid}>
+				<Button type='submit' variant='primary' loading={isValidating || isSubmitting} disabled={!isValid}>
 					{t('form.requestTrialForm.button.text')}
 				</Button>
 			</FormFooter>

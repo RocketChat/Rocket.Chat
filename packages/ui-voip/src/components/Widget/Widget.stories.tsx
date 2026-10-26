@@ -24,10 +24,10 @@ export const FullWidget: StoryObj<typeof Widget> = {
 			<WidgetContent>The content of the widget</WidgetContent>
 			<WidgetFooter>
 				<ButtonGroup stretch>
-					<Button medium name='phone-off' icon='phone-off' danger>
+					<Button size='medium' name='phone-off' icon='phone-off' variant='danger'>
 						Reject
 					</Button>
-					<Button medium name='phone' icon='phone' success>
+					<Button size='medium' name='phone' icon='phone' variant='success'>
 						Accept
 					</Button>
 				</ButtonGroup>

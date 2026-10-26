@@ -96,8 +96,8 @@ export const Default: Story = {
 				<ContextualbarContent />
 				<ContextualbarFooter>
 					<ButtonGroup stretch='equal'>
-						<ContextualbarButton secondary>Cancel</ContextualbarButton>
-						<Button primary>Save</Button>
+						<ContextualbarButton variant='secondary'>Cancel</ContextualbarButton>
+						<Button variant='primary'>Save</Button>
 						<IconButton title='More' icon='menu' secondary />
 					</ButtonGroup>
 				</ContextualbarFooter>
@@ -154,8 +154,8 @@ export const WithLongTitle: Story = {
 				<ContextualbarContent />
 				<ContextualbarFooter>
 					<ButtonGroup stretch='equal'>
-						<ContextualbarButton secondary>Cancel</ContextualbarButton>
-						<Button primary>Save</Button>
+						<ContextualbarButton variant='secondary'>Cancel</ContextualbarButton>
+						<Button variant='primary'>Save</Button>
 						<IconButton title='More' icon='menu' secondary />
 					</ButtonGroup>
 				</ContextualbarFooter>

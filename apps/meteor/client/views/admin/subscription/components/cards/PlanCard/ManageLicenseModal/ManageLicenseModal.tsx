@@ -165,11 +165,11 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 				</FieldRow>
 			</Field>
 			<ButtonGroup>
-				<Button icon='upload' small onClick={() => inputRef.current?.click()}>
+				<Button icon='upload' size='small' onClick={() => inputRef.current?.click()}>
 					{t('Upload_license_file')}
 				</Button>
 				{isCurrentLicense && (
-					<Button icon='trash' small secondary danger onClick={() => setIsConfirmingRemoval(true)}>
+					<Button icon='trash' size='small' variant='secondary-danger' onClick={() => setIsConfirmingRemoval(true)}>
 						{t('Remove_license')}
 					</Button>
 				)}

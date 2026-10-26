@@ -120,7 +120,7 @@ export const AppLogsFilter = ({ appId, expandAll, collapseAll, refetchLogs, isLo
 
 			{compactMode && (
 				<>
-					<Button icon='customize' secondary onClick={() => openContextualBar()}>
+					<Button icon='customize' variant='secondary' onClick={() => openContextualBar()}>
 						{t('Filters')}
 					</Button>
 					<CompactFilterOptions

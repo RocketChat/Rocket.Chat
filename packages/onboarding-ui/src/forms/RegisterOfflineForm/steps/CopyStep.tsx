@@ -58,7 +58,7 @@ const CopyStep = ({
 					</Scrollable>
 					<Button
 						icon='copy'
-						primary
+						variant='primary'
 						onClick={() => {
 							onCopySecurityCode();
 							void clipboard.copy();
@@ -72,7 +72,7 @@ const CopyStep = ({
 					<ButtonGroup vertical={isMobile}>
 						<Button
 							type='button'
-							primary
+							variant='primary'
 							disabled={!isValid}
 							onClick={() => {
 								setStep(Steps.PASTE);

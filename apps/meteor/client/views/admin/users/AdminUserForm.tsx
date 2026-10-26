@@ -571,7 +571,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 					{!!customFieldsMetadata.length && (
 						<>
 							<Box>
-								<Button small onClick={() => setShowCustomFields((prevState) => !prevState)}>
+								<Button size='small' onClick={() => setShowCustomFields((prevState) => !prevState)}>
 									{showCustomFields ? t('Hide_additional_fields') : t('Show_additional_fields')}
 								</Button>
 							</Box>
@@ -676,7 +676,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button primary disabled={!isDirty} onClick={handleSubmit(handleSaveUser)}>
+					<Button variant='primary' disabled={!isDirty} onClick={handleSubmit(handleSaveUser)}>
 						{isNewUserPage ? t('Add_user') : t('Save_user')}
 					</Button>
 				</ButtonGroup>

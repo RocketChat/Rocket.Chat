@@ -642,7 +642,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 					<Button type='reset' disabled={!isDirty || isSubmitting} onClick={() => reset(defaultValues)}>
 						{t('Reset')}
 					</Button>
-					<Button form={formId} type='submit' primary loading={isSubmitting} disabled={!isDirty}>
+					<Button form={formId} type='submit' variant='primary' loading={isSubmitting} disabled={!isDirty}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

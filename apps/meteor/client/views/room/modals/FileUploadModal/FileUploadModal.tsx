@@ -104,10 +104,10 @@ const FileUploadModal = ({ onClose, file, fileName, fileAltText = '', onSubmit }
 				</ModalContent>
 				<ModalFooter>
 					<ModalFooterControllers>
-						<Button secondary onClick={onClose}>
+						<Button variant='secondary' onClick={onClose}>
 							{t('Cancel')}
 						</Button>
-						<Button primary type='submit' disabled={!isDirty} loading={isSubmitting}>
+						<Button variant='primary' type='submit' disabled={!isDirty} loading={isSubmitting}>
 							{t('Update')}
 						</Button>
 					</ModalFooterControllers>

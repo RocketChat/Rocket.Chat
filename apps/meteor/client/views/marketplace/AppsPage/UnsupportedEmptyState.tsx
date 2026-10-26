@@ -19,7 +19,7 @@ const UnsupportedEmptyState = () => {
 				<StatesTitle>{title}</StatesTitle>
 				<StatesSubtitle>{description}</StatesSubtitle>
 				<StatesActions>
-					<Button secondary is='a' href={links.go.supportPrerequisites} external>
+					<Button variant='secondary' is='a' href={links.go.supportPrerequisites} external>
 						{t('Learn_more')}
 					</Button>
 					{isAdmin && <UpdateRocketChatButton />}

@@ -51,7 +51,7 @@ const LoginServices = ({ disabled, setError }: LoginServicesProps) => {
 						<LoginServicesButton disabled={disabled} key={service.service} {...service} setError={setError} />
 					))}
 					{isDesktopApp && (
-						<Button primary onClick={handleLoginOnWeb}>
+						<Button variant='primary' onClick={handleLoginOnWeb}>
 							{t('registration.component.login.onWeb')}
 						</Button>
 					)}

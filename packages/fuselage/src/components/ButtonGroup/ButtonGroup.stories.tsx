@@ -113,7 +113,7 @@ export const StretchEqual: Story = {
 	render: (args) => (
 		<ButtonGroup {...args}>
 			<Button>Cancel</Button>
-			<Button primary>Add more users</Button>
+			<Button variant='primary'>Add more users</Button>
 			<IconButton icon='kebab' secondary title='More' />
 		</ButtonGroup>
 	),

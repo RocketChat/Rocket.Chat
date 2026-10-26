@@ -232,7 +232,7 @@ const RoomMembers = ({
 								</Button>
 							)}
 							{onClickAdd && (
-								<Button icon='user-plus' onClick={onClickAdd} primary disabled={isAbacLocked}>
+								<Button icon='user-plus' onClick={onClickAdd} variant='primary' disabled={isAbacLocked}>
 									{t('Add')}
 								</Button>
 							)}

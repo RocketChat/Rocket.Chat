@@ -32,7 +32,7 @@ const SendTestButton = ({ id }: SendTestButtonProps) => {
 
 	return (
 		<GenericTableCell truncate>
-			<Button icon='send' small onClick={handleOnClick}>
+			<Button icon='send' size='small' onClick={handleOnClick}>
 				{t('Send_Test_Email')}
 			</Button>
 		</GenericTableCell>

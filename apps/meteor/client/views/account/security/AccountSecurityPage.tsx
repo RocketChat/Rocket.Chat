@@ -84,7 +84,7 @@ const AccountSecurityPage = () => {
 			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset(passwordDefaultValues)}>{t('Cancel')}</Button>
-					<Button form={passwordFormId} primary disabled={!isDirty} type='submit'>
+					<Button form={passwordFormId} variant='primary' disabled={!isDirty} type='submit'>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>

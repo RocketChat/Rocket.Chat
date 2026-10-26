@@ -78,10 +78,10 @@ export const Vertical: Story = {
 				In adipisci consequatur qui laudantium rem praesentium earum ut consectetur.
 			</CardBody>
 			<CardControls>
-				<Button medium primary>
+				<Button size='medium' variant='primary'>
 					Button
 				</Button>
-				<Button medium>Button</Button>
+				<Button size='medium'>Button</Button>
 			</CardControls>
 		</Card>
 	),
@@ -96,7 +96,7 @@ export const VerticalNoIcon: Story = {
 				In adipisci consequatur qui laudantium rem praesentium earum ut consectetur.
 			</CardBody>
 			<CardControls>
-				<Button medium>Button</Button>
+				<Button size='medium'>Button</Button>
 			</CardControls>
 		</Card>
 	),
@@ -111,7 +111,7 @@ export const Hero: Story = {
 				In adipisci consequatur qui laudantium rem praesentium earum ut consectetur.
 			</CardBody>
 			<CardControls>
-				<Button medium>Button</Button>
+				<Button size='medium'>Button</Button>
 			</CardControls>
 		</Card>
 	),
@@ -143,7 +143,7 @@ export const VerticalCustom: Story = {
 				</CardCol>
 			</CardBody>
 			<CardControls>
-				<Button medium>Button</Button>
+				<Button size='medium'>Button</Button>
 			</CardControls>
 		</Card>
 	),
@@ -166,8 +166,8 @@ export const Horizontal: Story = {
 				</CardCol>
 			</CardRow>
 			<CardControls>
-				<Button medium>Button</Button>
-				<Button medium primary>
+				<Button size='medium'>Button</Button>
+				<Button size='medium' variant='primary'>
 					Button
 				</Button>
 				<Badge small variant='primary' />
@@ -193,8 +193,8 @@ export const Clickable: Story = {
 				</CardCol>
 			</CardRow>
 			<CardControls>
-				<Button medium>Button</Button>
-				<Button medium primary>
+				<Button size='medium'>Button</Button>
+				<Button size='medium' variant='primary'>
 					Button
 				</Button>
 				<Badge small variant='primary' />

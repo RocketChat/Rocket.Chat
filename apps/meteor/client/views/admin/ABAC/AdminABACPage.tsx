@@ -63,7 +63,7 @@ const AdminABACPage = ({ shouldShowWarning }: AdminABACPageProps) => {
 						>
 							{t('LDAP_Sync_Now')}
 						</Button>
-						<Button icon='new-window' secondary onClick={() => learnMore(links.go.abacDocs)}>
+						<Button icon='new-window' variant='secondary' onClick={() => learnMore(links.go.abacDocs)}>
 							{t('ABAC_Learn_More')}
 						</Button>
 					</ButtonGroup>

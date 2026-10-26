@@ -54,7 +54,7 @@ const EditMenu = ({
 				setIsOpen(true);
 			}}
 		>
-			<Button ref={buttonRef} square mini>
+			<Button ref={buttonRef} square size='mini'>
 				<Icon name='cog' size='x16' />
 			</Button>
 			{isOpen && (

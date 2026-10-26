@@ -10,7 +10,7 @@ const NavBarItemLoginPage = (props: NavBarItemLoginPageProps) => {
 	const { t } = useTranslation();
 
 	return (
-		<Button primary small icon='login' onClick={(): void => setForceLogin(true)} {...props}>
+		<Button variant='primary' size='small' icon='login' onClick={(): void => setForceLogin(true)} {...props}>
 			{t('Login')}
 		</Button>
 	);

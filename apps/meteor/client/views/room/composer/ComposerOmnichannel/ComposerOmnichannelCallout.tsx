@@ -42,10 +42,10 @@ const ComposerOmnichannelCallout = () => {
 			aria-labelledby={calloutDescriptionId}
 			actions={
 				<ButtonGroup>
-					<Button onClick={() => navigate(`/live/${_id}/contact-profile/edit`)} small>
+					<Button onClick={() => navigate(`/live/${_id}/contact-profile/edit`)} size='small'>
 						{t('Add_contact')}
 					</Button>
-					<Button danger secondary small onClick={handleBlock}>
+					<Button variant='secondary-danger' size='small' onClick={handleBlock}>
 						{currentChannel?.blocked ? t('Unblock') : t('Block')}
 					</Button>
 					<IconButton icon='cross' secondary small title={t('Dismiss')} onClick={() => setDismissed(true)} />

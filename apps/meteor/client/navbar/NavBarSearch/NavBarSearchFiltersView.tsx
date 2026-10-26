@@ -36,7 +36,7 @@ const NavBarSearchFiltersView = ({ id, filters, onBack }: NavBarSearchFiltersVie
 						{t('Search_filters_with_count', { count: filters.length })}
 					</Box>
 				</Box>
-				<Button small secondary icon='cross' onClick={clearFilters}>
+				<Button size='small' variant='secondary' icon='cross' onClick={clearFilters}>
 					{t('Clear_all')}
 				</Button>
 			</Box>

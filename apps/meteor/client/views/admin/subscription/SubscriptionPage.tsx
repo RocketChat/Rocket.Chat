@@ -112,7 +112,7 @@ const SubscriptionPage = () => {
 							{t('Sync_license_update')}
 						</Button>
 					)}
-					<UpgradeButton target='subscription_header' action={isEnterprise ? 'manage_subscription' : 'upgrade'} primary>
+					<UpgradeButton target='subscription_header' action={isEnterprise ? 'manage_subscription' : 'upgrade'} variant='primary'>
 						{t(isEnterprise ? 'Manage_subscription' : 'Upgrade')}
 					</UpgradeButton>
 				</ButtonGroup>
@@ -192,7 +192,7 @@ const SubscriptionPage = () => {
 							</Box>
 							<UpgradeToGetMore activeModules={activeModules} isEnterprise={isEnterprise}>
 								{Boolean(licensesData?.license?.information.cancellable) && (
-									<Button loading={isCancelSubscriptionLoading} secondary danger onClick={openCancelSubscriptionModal}>
+									<Button loading={isCancelSubscriptionLoading} variant='secondary-danger' onClick={openCancelSubscriptionModal}>
 										{t('Cancel_subscription')}
 									</Button>
 								)}

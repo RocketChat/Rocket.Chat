@@ -300,7 +300,7 @@ export const RegisterForm = ({ setLoginRoute }: RegisterFormProps) => {
 			</FormContainer>
 			<FormFooter>
 				<ButtonGroup>
-					<Button type='submit' loading={registerUser.isPending} primary>
+					<Button type='submit' loading={registerUser.isPending} variant='primary'>
 						{t('registration.component.form.joinYourTeam')}
 					</Button>
 				</ButtonGroup>
