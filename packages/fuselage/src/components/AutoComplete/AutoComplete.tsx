@@ -159,7 +159,8 @@ function AutoComplete<TLabel = ReactNode>({
 			ref={containerRef}
 			onClick={useStableCallback(() => innerRef.current?.focus())}
 			flexGrow={1}
-			className={useMemo(() => [error && 'invalid', disabled && 'disabled'], [error, disabled])}
+			rcx-select--invalid={!!error}
+			rcx-select--disabled={disabled}
 		>
 			<Box display='flex' flexGrow={1} alignItems='center' flexWrap='wrap' gap={4} role='group'>
 				<Input
