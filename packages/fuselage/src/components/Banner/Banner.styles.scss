@@ -28,6 +28,7 @@ $banner-colors-danger-color: theme('banner-colors-danger-color', colors.status-f
 	flex: 0 1 auto;
 
 	box-sizing: border-box;
+	container-type: inline-size;
 
 	padding-block: 14px;
 	padding-inline: 16px;
@@ -132,5 +133,13 @@ $banner-colors-danger-color: theme('banner-colors-danger-color', colors.status-f
 
 	&__link {
 		padding-left: 10px;
+	}
+}
+
+// The icon needs more than 375px of border box, which is 343px of content box
+// once the 16px inline padding is taken out.
+@container (width <= 343px) {
+	.rcx-banner__icon {
+		display: none;
 	}
 }

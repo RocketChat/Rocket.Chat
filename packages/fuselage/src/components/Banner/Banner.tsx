@@ -1,6 +1,6 @@
-import { useBorderBoxSize, useButtonPattern } from '@rocket.chat/fuselage-hooks';
+import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode, AllHTMLAttributes, HTMLAttributeAnchorTarget, MouseEvent } from 'react';
-import { useRef, useCallback, useMemo } from 'react';
+import { useCallback } from 'react';
 
 import { composeClassNames as cx } from '../../helpers/composeClassNames';
 import { IconButton } from '../Button';
@@ -39,13 +39,6 @@ const Banner = ({
 	variant = 'neutral',
 	...props
 }: BannerProps) => {
-	const ref = useRef<HTMLDivElement>(null);
-	const { inlineSize } = useBorderBoxSize(ref, {
-		debounceDelay: 70,
-	});
-
-	const isIconVisible = useMemo(() => inlineSize > 375, [inlineSize]);
-
 	variant = variants.includes(variant) ? variant : variants[0];
 
 	const handleBannerClick = useCallback(() => {
@@ -70,11 +63,10 @@ const Banner = ({
 	return (
 		<div
 			className={cx('rcx-banner')({ [variant]: true, inline, actionable }, className)}
-			ref={ref}
 			{...(onAction ? { ...buttonProps } : { role: 'banner', tabIndex: -1 })}
 			{...props}
 		>
-			{icon && isIconVisible && (
+			{icon && (
 				<div
 					className={cx(`rcx-banner__icon rcx-banner__icon--${variant}`)({
 						inline,
