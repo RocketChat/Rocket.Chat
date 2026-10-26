@@ -1,8 +1,6 @@
-import { css } from '@rocket.chat/css-in-js';
 import type { LabelHTMLAttributes, OutputHTMLAttributes } from 'react';
 import type { SliderState } from 'react-stately';
 
-import { useStyle } from '../../hooks/useStyle';
 import { Label } from '../Label';
 
 type SliderHeadProps = {
@@ -14,19 +12,6 @@ type SliderHeadProps = {
 	multiThumb?: boolean;
 };
 export const SliderHead = ({ state, labelProps, outputProps, label, showOutput = true, multiThumb }: SliderHeadProps) => {
-	const labelContainer = useStyle(
-		css`
-			display: flex;
-			justify-content: space-between;
-			${
-				state.orientation === 'vertical' &&
-				css`
-					flex-direction: column;
-				`
-			}
-		`,
-		null,
-	);
 	const output = (
 		<Label {...(outputProps as any)}>
 			{multiThumb ? (
@@ -43,7 +28,7 @@ export const SliderHead = ({ state, labelProps, outputProps, label, showOutput =
 	return (
 		<>
 			{label ? (
-				<div className={labelContainer}>
+				<div className={`rcx-slider__head rcx-slider__head--${state.orientation}`}>
 					<Label {...labelProps}>{label}</Label>
 					{showOutput && output}
 				</div>
