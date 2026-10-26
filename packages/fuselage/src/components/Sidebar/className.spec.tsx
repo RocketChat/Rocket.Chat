@@ -15,6 +15,7 @@ import OptionDescriptionBlock from '../Option/OptionDescriptionBlock';
 import OptionHeader from '../Option/OptionHeader';
 import OptionIcon from '../Option/OptionIcon';
 import OptionInput from '../Option/OptionInput';
+import OptionTitle from '../Option/OptionTitle';
 
 const cases: [string, ReactElement, string][] = [
 	['SidebarSection', <SidebarSection data-testid='part' className='custom' />, 'rcx-sidebar-section'],
@@ -34,6 +35,13 @@ const cases: [string, ReactElement, string][] = [
 			Group
 		</OptionHeader>,
 		'rcx-option__header',
+	],
+	[
+		'OptionTitle',
+		<OptionTitle data-testid='part' className='custom'>
+			Title
+		</OptionTitle>,
+		'rcx-option__title',
 	],
 	['OptionIcon', <OptionIcon data-testid='part' className='custom' name='bell' />, 'rcx-option__icon'],
 ];
