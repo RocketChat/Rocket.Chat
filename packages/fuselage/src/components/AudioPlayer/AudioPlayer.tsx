@@ -1,4 +1,4 @@
-import { useMergedRefs, useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import type { RefAttributes, TrackHTMLAttributes } from 'react';
 import { useState, useRef } from 'react';
 
@@ -87,7 +87,6 @@ const AudioPlayer = ({
 	const [currentTime, setCurrentTime] = useState(0);
 	const [durationTime, setDurationTime] = useState(0);
 	const [playbackSpeed, setPlaybackSpeed] = useState(1);
-	const { ref: containerRef } = useResizeObserver();
 
 	const handlePlay = () => {
 		const isPlaying = audioRef.current?.paused;
@@ -130,7 +129,6 @@ const AudioPlayer = ({
 			borderRadius='medium'
 			width='100%'
 			maxWidth='x300'
-			ref={containerRef}
 			display='flex'
 			alignItems='center'
 		>
