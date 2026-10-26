@@ -14,6 +14,8 @@ export interface ICallHistoryService {
 			sort?: Record<string, 1 | -1>;
 		},
 	): Promise<{ items: CallHistoryItem[]; total: number }>;
+	/** Fetches the user's history from the external service, when there is one, giving up on it after the configured timeout. */
+	refreshExternalHistory(uid: IUser['_id']): Promise<void>;
 	/** Fetches the user's history from the external service, when there is one, and tells the user's clients about it. */
 	importExternalHistory(uid: IUser['_id']): Promise<void>;
 	searchMediaCalls(

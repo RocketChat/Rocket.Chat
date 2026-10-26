@@ -113,6 +113,35 @@ const callHistoryListEndpoints = API.v1.get(
 
 type CallHistoryListEndpoints = ExtractRoutesFromAPI<typeof callHistoryListEndpoints>;
 
+const callHistoryImportEndpoints = API.v1.post(
+	'call-history.import',
+	{
+		response: {
+			200: ajv.compile<void>({
+				additionalProperties: false,
+				type: 'object',
+				properties: {
+					success: {
+						type: 'boolean',
+						description: 'Indicates if the request was successful.',
+					},
+				},
+				required: ['success'],
+			}),
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+		authRequired: true,
+	},
+	async function action() {
+		await CallHistoryService.refreshExternalHistory(this.userId);
+
+		return API.v1.success();
+	},
+);
+
+type CallHistoryImportEndpoints = ExtractRoutesFromAPI<typeof callHistoryImportEndpoints>;
+
 type CallHistoryInfo = { historyId: string } | { callId: string };
 
 const CallHistoryInfoSchema = {
@@ -214,6 +243,9 @@ type CallHistoryInfoEndpoints = ExtractRoutesFromAPI<typeof callHistoryInfoEndpo
 declare module '@rocket.chat/rest-typings' {
 	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends CallHistoryListEndpoints {}
+
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
+	interface Endpoints extends CallHistoryImportEndpoints {}
 
 	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends CallHistoryInfoEndpoints {}
