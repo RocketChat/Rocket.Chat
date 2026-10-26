@@ -1224,7 +1224,7 @@ describe('LIVECHAT - rooms', () => {
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					expect(res.body).to.have.property('error').that.includes("must have required property 'roomId'");
 				});
 		});

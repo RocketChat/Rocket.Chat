@@ -122,7 +122,7 @@ describe('Invites', () => {
 			const res = await request.post(api('useInviteToken')).set(credentials).send({}).expect(400);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'invalid-params');
+			expect(res.body).to.have.property('errorType', 'error-invalid-params');
 		});
 
 		it('should use the existing invite for GENERAL', async () => {

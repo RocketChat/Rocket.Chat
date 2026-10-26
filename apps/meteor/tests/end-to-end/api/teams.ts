@@ -1103,7 +1103,7 @@ describe('/teams.removeMember', () => {
 			.expect((res) => {
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error');
-				expect(res.body.errorType).to.be.equal('invalid-params');
+				expect(res.body.errorType).to.be.equal('error-invalid-params');
 			})
 			.then(() => done())
 			.catch(done);
@@ -1256,7 +1256,7 @@ describe('/teams.leave', () => {
 			.expect((res) => {
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error');
-				expect(res.body.errorType).to.be.equal('invalid-params');
+				expect(res.body.errorType).to.be.equal('error-invalid-params');
 			})
 			.then(() => done())
 			.catch(done);

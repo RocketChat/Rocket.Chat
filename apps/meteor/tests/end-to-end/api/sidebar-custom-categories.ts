@@ -127,7 +127,7 @@ describe('[Sidebar Custom Categories]', () => {
 	describe('validation', () => {
 		const expectInvalid = (res: { body: { success: boolean; errorType: string } }) => {
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'invalid-params');
+			expect(res.body).to.have.property('errorType', 'error-invalid-params');
 		};
 
 		// NOTE: the shared ajv instance runs with `coerceTypes`, so a scalar type mismatch on a coercible
