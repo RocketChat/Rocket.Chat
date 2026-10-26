@@ -17,7 +17,7 @@ import type { CallHistoryTab } from '../mediaCallHistory/CallHistoryPageLayout';
 import CallHistoryPageLayout from '../mediaCallHistory/CallHistoryPageLayout';
 
 type ContactsTabProps = {
-	tab: CallHistoryTab;
+	tab: Exclude<CallHistoryTab, 'calls'>;
 	onChangeTab: (tab: CallHistoryTab) => void;
 };
 
@@ -28,16 +28,20 @@ const ContactsTab = ({ tab, onChangeTab }: ContactsTabProps) => {
 	const sortProps = useSort<ContactsColumnKey>('displayName', 'asc');
 	const { setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const columns = useContactsColumns();
-	// Every row ends with a menu cell that no setting hides, so it is not part of the visible count.
-	const loadingCols = columns.visibleCount + 1;
+	// The favorite and menu cells are on every row and no setting hides them, so they are not part of the visible count.
+	const loadingCols = columns.visibleCount + 2;
 
 	const router = useRouter();
 	const contactId = useRouteParameter('historyId');
 	const context = useRouteParameter('context');
 
-	const openList = useCallback(() => router.navigate('/call-history/contacts'), [router]);
-	const openInfo = useCallback((id: string) => router.navigate(`/call-history/contacts/${id}`), [router]);
-	const openEdit = useCallback((id: string) => router.navigate(`/call-history/contacts/${id}/edit`), [router]);
+	const favoritesOnly = tab === 'favorites';
+	const emptyTitle = favoritesOnly ? t('No_favorite_contacts') : t('No_contacts');
+	const emptyDescription = favoritesOnly ? t('No_favorite_contacts_description') : t('No_contacts_description');
+
+	const openList = useCallback(() => router.navigate(`/call-history/${tab}`), [router, tab]);
+	const openInfo = useCallback((id: string) => router.navigate(`/call-history/${tab}/${id}`), [router, tab]);
+	const openEdit = useCallback((id: string) => router.navigate(`/call-history/${tab}/${id}/edit`), [router, tab]);
 
 	const listContacts = useEndpoint('GET', '/v1/contacts.list');
 
@@ -55,6 +59,7 @@ const ContactsTab = ({ tab, onChangeTab }: ContactsTabProps) => {
 			offset: paginationProps.current,
 			count: paginationProps.itemsPerPage,
 			text: debouncedSearchText,
+			...(favoritesOnly && { favorite: true }),
 		}),
 		queryFn: () =>
 			listContacts({
@@ -62,6 +67,7 @@ const ContactsTab = ({ tab, onChangeTab }: ContactsTabProps) => {
 				offset: paginationProps.current,
 				sort: JSON.stringify({ [sortProps.sortBy]: sortProps.sortDirection === 'asc' ? 1 : -1 }),
 				...(debouncedSearchText && { text: debouncedSearchText }),
+				...(favoritesOnly && { favorite: true }),
 			}),
 	});
 
@@ -78,7 +84,8 @@ const ContactsTab = ({ tab, onChangeTab }: ContactsTabProps) => {
 		<ContactsPageFilters
 			searchText={searchText}
 			onChangeText={setSearchText}
-			onCreate={() => openInfo('new')}
+			onCreate={favoritesOnly ? undefined : () => openInfo('new')}
+			placeholder={favoritesOnly ? t('Search_favorites') : t('Search_contacts')}
 			total={data?.syncedTotal ?? 0}
 		/>
 	);
@@ -122,9 +129,9 @@ const ContactsTab = ({ tab, onChangeTab }: ContactsTabProps) => {
 		<CallHistoryPageLayout filters={contactFilters} contextualBar={contextualBar} tab={tab} onChangeTab={onChangeTab}>
 			{data.items.length === 0 && (
 				<GenericNoResults
-					icon='address-book'
-					title={debouncedSearchText ? t('No_results_found') : t('No_contacts')}
-					description={debouncedSearchText ? undefined : t('No_contacts_description')}
+					icon={favoritesOnly ? 'star' : 'address-book'}
+					title={debouncedSearchText ? t('No_results_found') : emptyTitle}
+					description={debouncedSearchText ? undefined : emptyDescription}
 				/>
 			)}
 			{data.items.length > 0 && (

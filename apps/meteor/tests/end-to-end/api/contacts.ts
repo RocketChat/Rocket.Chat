@@ -231,6 +231,50 @@ describe('[Contacts]', () => {
 			});
 		});
 
+		describe('[/contacts.favorite]', () => {
+			const listFavoriteIds = async () => {
+				const res = await listContacts({ favorite: true }).expect(200);
+				return res.body.items.map(({ _id }: IContact) => _id);
+			};
+
+			it('should mark a contact the caller owns as favorite, and list it among the favorites', async () => {
+				await request
+					.post(api('contacts.favorite'))
+					.set(credentials)
+					.send({ contactId: ownLocalContactId, favorite: true })
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(await contacts().findOne({ _id: ownLocalContactId })).to.include({ favorite: true });
+				expect(await listFavoriteIds()).to.include(ownLocalContactId);
+			});
+
+			it('should take it out of the favorites again, leaving no flag behind', async () => {
+				await request.post(api('contacts.favorite')).set(credentials).send({ contactId: ownLocalContactId, favorite: false }).expect(200);
+
+				expect(await contacts().findOne({ _id: ownLocalContactId })).to.not.have.property('favorite');
+				expect(await listFavoriteIds()).to.not.include(ownLocalContactId);
+			});
+
+			it('should answer 404 for a contact that belongs to someone else, and leave it as it was', async () => {
+				const res = await request
+					.post(api('contacts.favorite'))
+					.set(credentials)
+					.send({ contactId: otherContactId, favorite: true })
+					.expect(404);
+
+				expect(res.body).to.have.property('error', 'error-contact-not-found');
+				expect(await contacts().findOne({ _id: otherContactId })).to.not.have.property('favorite');
+			});
+
+			it('should answer 404 for a contact the Outlook sync owns, whose favorite state comes from Outlook', async () => {
+				const res = await request.post(api('contacts.favorite')).set(credentials).send({ contactId: syncedId, favorite: true }).expect(404);
+
+				expect(res.body).to.have.property('error', 'error-contact-not-found');
+				expect(await contacts().findOne({ _id: syncedId })).to.not.have.property('favorite');
+			});
+		});
+
 		describe('[/contacts.delete]', () => {
 			it('should answer 404 for a contact that belongs to someone else, and leave it where it is', async () => {
 				const res = await request.post(api('contacts.delete')).set(credentials).send({ contactId: otherContactId }).expect(404);

@@ -10,7 +10,7 @@ import type {
 	LocalContactUpdate,
 } from '@rocket.chat/model-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
-import type { Collection, Db, DeleteResult, Document, Filter, FindCursor, IndexDescription, UpdateFilter } from 'mongodb';
+import type { Collection, Db, DeleteResult, Document, Filter, FindCursor, IndexDescription, UpdateFilter, UpdateResult } from 'mongodb';
 import { ObjectId } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
@@ -52,8 +52,13 @@ export class ContactsRaw extends BaseRaw<IContact> implements IContactsModel {
 		text: string | undefined,
 		options: O,
 		source?: IContact['source'],
+		favorite?: boolean,
 	): FindPaginated<FindCursor<DocumentWithProjection<P, O>>> {
-		const query: Filter<IContact> = { uid, ...(source && { source }) };
+		const query: Filter<IContact> = {
+			uid,
+			...(source && { source }),
+			...(favorite !== undefined && { favorite: favorite ? true : { $ne: true } }),
+		};
 
 		if (text) {
 			const pattern = { $regex: escapeRegExp(text), $options: 'i' };
@@ -108,6 +113,10 @@ export class ContactsRaw extends BaseRaw<IContact> implements IContactsModel {
 
 	public deleteLocal(uid: IUser['_id'], contactId: IContact['_id']): Promise<DeleteResult> {
 		return this.deleteOne({ _id: contactId, uid, source: LOCAL });
+	}
+
+	public setLocalFavorite(uid: IUser['_id'], contactId: IContact['_id'], favorite: boolean): Promise<UpdateResult> {
+		return this.updateOne({ _id: contactId, uid, source: LOCAL }, favorite ? { $set: { favorite: true } } : { $unset: { favorite: 1 } });
 	}
 
 	public async bulkUpsertImported(contacts: ImportedContact[], lastSyncAt: Date): Promise<ContactBulkUpsertResult> {

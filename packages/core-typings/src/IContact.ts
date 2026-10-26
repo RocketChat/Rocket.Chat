@@ -29,6 +29,7 @@ export interface IContact extends IRocketChatRecord {
 	emails: IContactEmail[];
 	phones: IContactPhone[];
 	categories?: string[];
+	favorite?: boolean;
 	externalId?: string;
 	folderId?: string;
 	lastSyncAt?: Date;

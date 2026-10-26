@@ -24,8 +24,9 @@ const ContactsTable = ({ sort, columns, children }: ContactsTableProps) => {
 	const visibleColumns = CONTACT_COLUMNS.filter(({ key }) => columns.isVisible(key));
 
 	return (
-		<GenericTable columns={[...visibleColumns.map(() => 'auto' as const), 'x44']}>
+		<GenericTable columns={['x44', ...visibleColumns.map(() => 'auto' as const), 'x44']}>
 			<GenericTableHeader>
+				<GenericTableCell key='favorite' />
 				{visibleColumns.map(({ key, label }) => (
 					<GenericTableHeaderCell key={key} sort={key} onClick={onClickSort} active={sortBy === key} direction={sortDirection}>
 						{t(label)}
