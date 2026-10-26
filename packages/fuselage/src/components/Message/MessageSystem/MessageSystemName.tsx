@@ -1,7 +1,10 @@
+import { cx } from '../../../helpers/composeClassNames';
 import type { MessageNameProps } from '../MessageName';
 
 export type MessageSystemNameProps = MessageNameProps;
 
-const MessageSystemName = (props: MessageSystemNameProps) => <span className='rcx-box rcx-box--full rcx-message-system__name' {...props} />;
+const MessageSystemName = ({ className, ...props }: MessageSystemNameProps) => (
+	<span {...props} className={cx('rcx-box rcx-box--full rcx-message-system__name', className)} />
+);
 
 export default MessageSystemName;

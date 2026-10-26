@@ -1,11 +1,13 @@
-import type { ReactNode } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
+
+import { cx } from '../../../helpers/composeClassNames';
 
 export type MessageSystemContainerProps = {
 	children?: ReactNode;
-};
+} & HTMLAttributes<HTMLDivElement>;
 
-const MessageSystemContainer = (props: MessageSystemContainerProps) => (
-	<div className='rcx-box rcx-box--full rcx-message-system__container' {...props} />
+const MessageSystemContainer = ({ className, ...props }: MessageSystemContainerProps) => (
+	<div {...props} className={cx('rcx-box rcx-box--full rcx-message-system__container', className)} />
 );
 
 export default MessageSystemContainer;

@@ -1,12 +1,13 @@
 import type { HTMLAttributes } from 'react';
 
 import MessageMetricsContentItem from './MessageMetricsContentItem';
+import { cx } from '../../../helpers/composeClassNames';
 
 export type MessageMetricsProps = HTMLAttributes<HTMLDivElement>;
 
-const MessageMetrics = (props: MessageMetricsProps) => (
+const MessageMetrics = ({ className, ...props }: MessageMetricsProps) => (
 	<MessageMetricsContentItem>
-		<div className='rcx-message-metrics__content-wrapper' {...props} />
+		<div {...props} className={cx('rcx-message-metrics__content-wrapper', className)} />
 	</MessageMetricsContentItem>
 );
 

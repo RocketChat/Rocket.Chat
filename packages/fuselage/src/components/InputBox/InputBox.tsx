@@ -12,6 +12,8 @@ export type InputBoxProps<T extends HTMLInputElement | HTMLSelectElement | HTMLT
 	ElementProps<T, AllHTMLAttributes<T>>,
 	'type'
 > & {
+	/** Lands on the wrapper when there is an addon, and on the input otherwise. */
+	className?: string;
 	invisible?: boolean;
 	startAddon?: ReactNode;
 	endAddon?: ReactNode;
@@ -118,7 +120,6 @@ function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaE
 			{startAddon && <InputBoxAddon>{startAddon}</InputBoxAddon>}
 			<Input
 				is={(type === 'textarea' && 'textarea') || (type === 'select' && 'select') || 'input'}
-				className={className}
 				cols={(type === 'textarea' && 1) || (type === 'select' && 0) || 0}
 				multiple={multiple}
 				ref={mergedRef}
