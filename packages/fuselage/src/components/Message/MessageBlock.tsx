@@ -5,7 +5,7 @@ export type MessageBlockProps = ElementProps<HTMLDivElement> & {
 	fixedWidth?: boolean;
 };
 
-function MessageBlock({ className: _className, fixedWidth, ...props }: MessageBlockProps) {
+function MessageBlock({ fixedWidth, ...props }: MessageBlockProps) {
 	return <Box rcx-message-block rcx-message-block--width-fixed={fixedWidth} {...props} />;
 }
 
