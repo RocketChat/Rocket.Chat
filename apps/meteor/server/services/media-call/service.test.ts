@@ -41,6 +41,7 @@ const { MediaCallService } = proxyquire.noCallThru().load('./service', {
 		api: { broadcast: sandbox.stub() },
 		Presence: {},
 		Authorization: {},
+		CallHistory: { importExternalHistory: sandbox.stub().resolves() },
 	},
 	'@rocket.chat/media-calls': {
 		callServer: callServerMock,

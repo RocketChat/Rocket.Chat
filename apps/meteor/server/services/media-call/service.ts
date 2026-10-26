@@ -1,4 +1,12 @@
-import { api, Presence, ServiceClassInternal, type IMediaCallService, Authorization, VideoConf } from '@rocket.chat/core-services';
+import {
+	api,
+	Presence,
+	ServiceClassInternal,
+	type IMediaCallService,
+	Authorization,
+	CallHistory as CallHistoryService,
+	VideoConf,
+} from '@rocket.chat/core-services';
 import type {
 	IMediaCall,
 	IUser,
@@ -241,6 +249,15 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		});
 	}
 
+	private notifyCallHistoryChanged(uid: IUser['_id']): void {
+		// Only entries the user can see in their call history are worth telling them about
+		if (settings.get('VoIP_TeamCollab_ExternalCallHistory_Enabled')) {
+			return;
+		}
+
+		void api.broadcast('user.call-history', { userId: uid });
+	}
+
 	private async saveCallToHistory(callId: IMediaCall['_id']): Promise<void> {
 		logger.info({ msg: 'saving media call to history', callId });
 
@@ -297,6 +314,12 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		};
 
 		await CallHistory.insertOne(historyItem).catch((err: unknown) => logger.error({ msg: 'Failed to insert item into Call History', err }));
+		this.notifyCallHistoryChanged(uid);
+
+		// The external service keeps its own history, so it has to be asked again after every call that went through it
+		CallHistoryService.importExternalHistory(uid).catch((err: unknown) =>
+			logger.error({ msg: 'Failed to import external Call History after a call', err, callId: call._id }),
+		);
 	}
 
 	private getContactDataForInternalHistory(
@@ -354,6 +377,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		await CallHistory.insertMany(historyItems).catch((err: unknown) =>
 			logger.error({ msg: 'Failed to insert items into Call History', err }),
 		);
+		historyItems.forEach(({ uid }) => this.notifyCallHistoryChanged(uid));
 
 		if (room) {
 			return this.sendHistoryMessage(call, room);

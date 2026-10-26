@@ -2,11 +2,11 @@ import type { CallHistoryItem, Serialized } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useSort, usePagination, GenericTableLoadingRow, GenericNoResults } from '@rocket.chat/ui-client';
-import { useEndpoint, useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouteParameter, useRouter, useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { MediaCallHistoryTable, isCallHistoryUnknownContact, isCallHistoryInternalContact } from '@rocket.chat/ui-voip';
 import type { CallHistoryContact } from '@rocket.chat/ui-voip';
-import { useQuery } from '@tanstack/react-query';
-import { useCallback, useMemo, useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useCallHistoryPageFilters } from './CallHistoryPageFilters';
@@ -16,6 +16,7 @@ import CallHistoryRowInternalUser from './CallHistoryRowInternalUser';
 import CallHistoryRowUnknownUser from './CallHistoryRowUnknownUser';
 import MediaCallHistoryContextualbar from './MediaCallHistoryContextualbar';
 import { getExternalContact } from './MediaCallHistoryExternal';
+import { callHistoryQueryKeys } from '../../lib/queryKeys';
 import UserInfoWithData from '../room/contextualBar/UserInfo/UserInfoWithData';
 
 const getSort = (sortBy: 'contact' | 'type' | 'status' | 'timestamp', sortDirection: 'asc' | 'desc') => {
@@ -114,10 +115,23 @@ const CallHistoryPage = () => {
 		setTab(null);
 	}, [setTab, historyId, onClickRow, tab?.rid]);
 
+	const uid = useUserId();
+	const queryClient = useQueryClient();
+	const subscribeToNotifyUser = useStream('notify-user');
+
+	useEffect(() => {
+		if (!uid) {
+			return;
+		}
+
+		return subscribeToNotifyUser(`${uid}/call-history`, () => {
+			void queryClient.invalidateQueries({ queryKey: callHistoryQueryKeys.list() });
+		});
+	}, [uid, queryClient, subscribeToNotifyUser]);
+
 	const { data, isPending, error, refetch } = useQuery({
 		queryKey: [
-			'call-history',
-			'list',
+			...callHistoryQueryKeys.list(),
 			sortProps.sortBy,
 			sortProps.sortDirection,
 			paginationProps.current,
