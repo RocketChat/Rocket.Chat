@@ -75,6 +75,10 @@ oauth2server.app.get('/oauth/userinfo', async (req: Request, res: Response) => {
 	});
 });
 
+// The registration limiter keys on `req.ip`, which must be the client rather than a reverse proxy; the proxies are counted
+// the way the REST API counts them.
+oauth2server.app.set('trust proxy', parseInt(String(process.env.HTTP_FORWARDED_COUNT)) || 0);
+
 const registrationRateLimiter = rateLimit({
 	windowMs: 60_000,
 	max: () => settings.get<number>('API_Enable_Rate_Limiter_Limit_Calls_Default'),
