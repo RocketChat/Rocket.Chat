@@ -84,7 +84,9 @@ const MessageSearchTab = () => {
 						{searchText.trim() && localQuery.isSuccess && localQuery.data.length === 0 && (
 							<ContextualbarEmptyContent title={t('No_results_found')} />
 						)}
-						{localQuery.isSuccess && localQuery.data.length > 0 && <LocalMessageSearchResults id={searchListId} hits={localQuery.data} />}
+						{localQuery.isSuccess && localQuery.data.length > 0 && (
+							<LocalMessageSearchResults id={searchListId} hits={localQuery.data} showUserAvatar={showUserAvatar} />
+						)}
 					</>
 				)}
 				{providerQuery.isSuccess && !localSearch && (
