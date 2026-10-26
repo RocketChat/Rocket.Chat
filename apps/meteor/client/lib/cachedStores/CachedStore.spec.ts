@@ -4,11 +4,12 @@ import { STORAGE_KEYS } from '../sdk/storage';
 
 const mockCall = jest.fn();
 const mockGetItem = jest.fn();
+const mockSetItem = jest.fn();
 
 jest.mock('localforage', () => ({
 	config: jest.fn(),
 	getItem: (...args: unknown[]) => mockGetItem(...args),
-	setItem: jest.fn().mockResolvedValue(undefined),
+	setItem: (...args: unknown[]) => mockSetItem(...args),
 	removeItem: jest.fn().mockResolvedValue(undefined),
 }));
 
@@ -26,7 +27,7 @@ jest.mock('../sdk/ddpSdk', () => ({
 	}),
 }));
 
-type TestRecord = { _id: string; rid: string; _updatedAt: Date };
+type TestRecord = { _id: string; rid: string; _updatedAt: Date; lastMessage?: Record<string, unknown> };
 
 class TestCachedStore extends PrivateCachedStore<TestRecord> {
 	constructor() {
@@ -43,6 +44,7 @@ describe('CachedStore', () => {
 	beforeEach(() => {
 		mockCall.mockReset();
 		mockGetItem.mockReset().mockResolvedValue(null);
+		mockSetItem.mockReset().mockResolvedValue(undefined);
 		localStorage.clear();
 	});
 
@@ -107,5 +109,71 @@ describe('CachedStore', () => {
 		expect(recordsOf(cachedStore)).toEqual([stale]);
 		expect(consoleError).toHaveBeenCalledWith(error);
 		consoleError.mockRestore();
+	});
+
+	describe('end-to-end encrypted last messages', () => {
+		const savedRecords = async () => {
+			for (let i = 0; i < 40 && mockSetItem.mock.calls.length === 0; i++) {
+				await new Promise((resolve) => setTimeout(resolve, 100));
+			}
+			expect(mockSetItem).toHaveBeenCalled();
+			return (mockSetItem.mock.calls.at(-1)?.[1] as { records: TestRecord[] }).records;
+		};
+
+		const encryptedContent = { algorithm: 'rc.v2.aes-sha2', kid: 'kid-1', iv: 'iv-1', ciphertext: 'CIPHERTEXT' };
+
+		it('never writes the decrypted text of an encrypted last message to the persistent cache', async () => {
+			const cachedStore = new TestCachedStore();
+			mockCall.mockResolvedValue([
+				{
+					...fresh,
+					lastMessage: {
+						_id: 'msg-1',
+						rid: 'GENERAL',
+						ts: new Date(3),
+						u: { _id: 'user-1', username: 'alice' },
+						t: 'e2e',
+						e2e: 'done',
+						content: encryptedContent,
+						msg: 'the okapi plaintext',
+						attachments: [{ description: 'okapi attachment' }],
+						files: [{ name: 'okapi.png' }],
+						file: { name: 'okapi.png' },
+					},
+				},
+			]);
+
+			await cachedStore.init();
+			const records = await savedRecords();
+
+			expect(JSON.stringify(records)).not.toContain('okapi');
+			expect(records[0].lastMessage).toMatchObject({ _id: 'msg-1', t: 'e2e', e2e: 'pending', content: encryptedContent });
+			// The decrypted text stays in memory for the UI.
+			expect(recordsOf(cachedStore)[0].lastMessage).toMatchObject({ msg: 'the okapi plaintext', e2e: 'done' });
+		});
+
+		it('drops an old-format encrypted last message whose ciphertext the decryption replaced', async () => {
+			const cachedStore = new TestCachedStore();
+			mockCall.mockResolvedValue([
+				{ ...fresh, lastMessage: { _id: 'msg-2', rid: 'GENERAL', t: 'e2e', e2e: 'done', msg: 'the okapi plaintext' } },
+			]);
+
+			await cachedStore.init();
+			const records = await savedRecords();
+
+			expect(JSON.stringify(records)).not.toContain('okapi');
+			expect(records[0].lastMessage).toBeUndefined();
+		});
+
+		it('keeps the last message of a room that is not encrypted', async () => {
+			const cachedStore = new TestCachedStore();
+			const lastMessage = { _id: 'msg-3', rid: 'GENERAL', msg: 'a public okapi' };
+			mockCall.mockResolvedValue([{ ...fresh, lastMessage }]);
+
+			await cachedStore.init();
+			const records = await savedRecords();
+
+			expect(records[0].lastMessage).toEqual(lastMessage);
+		});
 	});
 });
