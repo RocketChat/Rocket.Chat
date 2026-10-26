@@ -41,3 +41,10 @@ describe('[ToastBar Roles]', () => {
 		expect(getByRole('status')).toHaveTextContent('Default message');
 	});
 });
+
+describe('[ToastBar id]', () => {
+	it('renders the id it receives on the root', () => {
+		const { container } = render(<ToastBar id='toast-1'>Message</ToastBar>);
+		expect(container.querySelector('#toast-1.rcx-toastbar')).toBeInTheDocument();
+	});
+});
