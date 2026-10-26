@@ -27,7 +27,7 @@ export const executeGetRoomRoles = async (rid: IRoom['_id'], fromUser?: IUser | 
 	}
 
 	if (fromUser && !(await canAccessRoomAsync(room, fromUser))) {
-		throw new ClientSafeError('error-invalid-user', 'Invalid user', { method: 'getRoomRoles' });
+		throw new ClientSafeError('error-not-authorized', 'Not authorized', { method: 'getRoomRoles' });
 	}
 
 	return getRoomRoles(rid);

@@ -831,18 +831,14 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 								switch (e.error) {
 									case 'error-too-many-requests':
 										return api.tooManyRequests(typeof e === 'string' ? e : e.message);
+									case 'error-unauthenticated':
+										return api.unauthorized(typeof e === 'string' ? e : e.message);
 									case 'unauthorized':
 									case 'error-unauthorized':
-										if (applyBreakingChanges) {
-											return api.unauthorized(typeof e === 'string' ? e : e.message);
-										}
-										return api.forbidden(typeof e === 'string' ? e : e.message);
+									case 'error-not-authorized':
 									case 'forbidden':
 									case 'error-forbidden':
-										if (applyBreakingChanges) {
-											return api.forbidden(typeof e === 'string' ? e : e.message);
-										}
-										return api.failure(typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
+										return api.forbidden(typeof e === 'string' ? e : e.message);
 									default:
 										return api.failure(typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
 								}

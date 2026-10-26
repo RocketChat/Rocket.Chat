@@ -2738,12 +2738,12 @@ describe('[Rooms]', () => {
 				void request
 					.get(api('rooms.adminRooms'))
 					.set(credentials)
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('error-not-authorized');
+						expect(res.body.error).to.be.equal('Not authorized [error-not-authorized]');
 					})
-					.end(() => updatePermission('view-room-administration', ['admin']).then(done));
+					.end((err) => updatePermission('view-room-administration', ['admin']).then(() => done(err)));
 			});
 		});
 		it('should return a list of admin rooms', async () => {
@@ -3041,7 +3041,7 @@ describe('[Rooms]', () => {
 		it('should return an error for users without view-room-administration permission', async () => {
 			await updatePermission('view-room-administration', []);
 
-			const res = await request.get(api('rooms.adminRooms.getRoom')).set(credentials).query({ rid: privateRoom._id }).expect(400);
+			const res = await request.get(api('rooms.adminRooms.getRoom')).set(credentials).query({ rid: privateRoom._id }).expect(403);
 
 			expect(res.body).to.have.property('success', false);
 
@@ -4960,7 +4960,7 @@ describe('[Rooms]', () => {
 				.set(nonMemberCredentials)
 				.send({ roomId: roomB._id })
 				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 				});
