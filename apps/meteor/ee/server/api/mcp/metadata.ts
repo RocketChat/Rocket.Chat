@@ -2,7 +2,7 @@ import type { RequestHandler } from 'express';
 import type express from 'express';
 import { WebApp } from 'meteor/webapp';
 
-import { getOAuthIssuer, getWellKnownUrl } from '../../../../server/oauth2-server/metadata';
+import { getOAuthIssuer, getWellKnownUrl, isWellKnownRequest } from '../../../../server/oauth2-server/metadata';
 import { settings } from '../../../../server/settings/cached';
 
 const MCP_PATH = '/api/v1/mcp';
@@ -24,11 +24,7 @@ export const getProtectedResourceMetadata = (issuer: string) => ({
  * path, so this must see requests before the path prefix is stripped.
  */
 export const serveProtectedResourceMetadata: RequestHandler = (req, res, next) => {
-	const { pathname } = new URL(req.originalUrl, 'http://localhost');
-	if (
-		!['GET', 'HEAD'].includes(req.method) ||
-		![new URL(getProtectedResourceMetadataUrl()).pathname, BARE_METADATA_PATH].includes(pathname)
-	) {
+	if (!isWellKnownRequest(req, [getProtectedResourceMetadataUrl(), BARE_METADATA_PATH])) {
 		next();
 		return;
 	}

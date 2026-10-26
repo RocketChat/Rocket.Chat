@@ -14,8 +14,8 @@ It is **enterprise (protected) code** under `apps/meteor/ee/`. The design goal i
 | ------ | ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
 | POST   | `/api/v1/mcp`                                          | JSON-RPC 2.0 message. The `2025-03-26` revision also accepts batch arrays. Response is `application/json`. |
 | GET    | `/api/v1/mcp`                                          | `405` with `Allow: POST` — this transport does not offer a server-initiated SSE stream.                    |
-| GET    | `/.well-known/oauth-protected-resource/api/v1/mcp`     | Protected resource metadata (RFC 9728): names the workspace as the authorization server of the endpoint. Under a path prefix, the prefix goes after `oauth-protected-resource`. |
-| GET    | `/.well-known/oauth-protected-resource`                | The same document, for clients that look it up at the bare path.                                          |
+| GET, HEAD | `/.well-known/oauth-protected-resource/api/v1/mcp`  | Protected resource metadata (RFC 9728): names the workspace as the authorization server of the endpoint. Under a path prefix, the prefix goes after `oauth-protected-resource`. |
+| GET, HEAD | `/.well-known/oauth-protected-resource`             | The same document, for clients that look it up at the bare path.                                          |
 
 The endpoint is attached directly to the existing `/api/v1` Hono router because its JSON-RPC envelopes are defined by the MCP specification rather than Rocket.Chat's REST response contract. It still uses the standard authentication, `access-mcp` permission, and AI license middleware. When `MCP_Enabled` is off the endpoint and the metadata return `404` before MCP checks credentials or sends a challenge, so a disabled endpoint does not advertise OAuth.
 

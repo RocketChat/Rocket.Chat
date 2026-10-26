@@ -61,6 +61,10 @@ describe('MCP protected resource metadata', () => {
 		});
 	});
 
+	it('accepts a trailing slash', async () => {
+		expect((await request(app).get('/.well-known/oauth-protected-resource/api/v1/mcp/')).status).toBe(200);
+	});
+
 	it('answers GET and HEAD only', async () => {
 		expect((await request(app).head('/.well-known/oauth-protected-resource/api/v1/mcp')).status).toBe(200);
 		expect((await request(app).post('/.well-known/oauth-protected-resource/api/v1/mcp')).status).toBe(404);
