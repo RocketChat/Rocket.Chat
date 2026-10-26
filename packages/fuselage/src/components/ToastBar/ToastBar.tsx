@@ -72,6 +72,7 @@ function ToastBar({
 	return (
 		<Box
 			className={[`rcx-toastbar rcx-toastbar--${variant} ${className}`, toastBarAnimation]}
+			id={id}
 			elevation='2nb'
 			borderRadius='medium'
 			{...props}
