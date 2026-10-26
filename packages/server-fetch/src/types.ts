@@ -1,7 +1,7 @@
-import type { BodyInit } from 'node-fetch';
+import type { BodyInit, RequestInit } from 'node-fetch';
 
-export type OriginalFetchOptions = Parameters<typeof fetch>[1];
-export type FetchOptions = NonNullable<Parameters<typeof fetch>[1]>;
+export type OriginalFetchOptions = RequestInit | undefined;
+export type FetchOptions = RequestInit;
 export type FetchOptionsWithoutBody = Omit<FetchOptions, 'body'>;
 
 type BaseExtendedOptions = FetchOptionsWithoutBody & {

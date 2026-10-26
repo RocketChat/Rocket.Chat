@@ -4,7 +4,6 @@ import type { Readable } from 'node:stream';
 
 import { Logger } from '@rocket.chat/logger';
 import { censorUrl } from '@rocket.chat/tools';
-import { AbortController } from 'abort-controller';
 import { HttpProxyAgent } from 'http-proxy-agent';
 import { HttpsProxyAgent } from 'https-proxy-agent';
 import fetch, { FetchError, Response } from 'node-fetch';
@@ -162,7 +161,6 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 			}
 
 			const response = await fetch(url.toString(), {
-				// @ts-expect-error - This complained when types were moved to file :/
 				signal: controller.signal,
 				...parsedOptions,
 				redirect: 'manual',
