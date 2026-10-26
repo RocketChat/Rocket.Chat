@@ -1,4 +1,4 @@
-import { useMergedRefs, useStableCallback, useResizeObserver, useOutsideClick } from '@rocket.chat/fuselage-hooks';
+import { useMergedRefs, useStableCallback, useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import type { DependencyList, ElementType, RefAttributes } from 'react';
 import { useState, useRef, useEffect, useMemo } from 'react';
 
@@ -98,19 +98,15 @@ function SelectLegacy({
 	const innerRef = useRef<HTMLInputElement | null>(null);
 	const anchorRef = useMergedRefs(ref, innerRef);
 
-	const removeFocusClass = () => innerRef.current?.classList.remove('focus-visible');
-
 	const internalChangedByClick = useStableCallback(([value]: OptionType) => {
 		setInternalValue(value);
 		onChange(value as SelectOption[0]); // FIXME
-		removeFocusClass();
 		hide();
 	});
 
 	const { ref: containerRef, borderBoxSize } = useResizeObserver();
 
 	useDidUpdate(reset, [filter, internalValue]);
-	useOutsideClick([containerRef], removeFocusClass);
 
 	const valueLabel = getLabel(option);
 
@@ -118,12 +114,10 @@ function SelectLegacy({
 		(filter === undefined || visible === AnimatedVisibility.HIDDEN) && (valueLabel || placeholder || typeof placeholder === 'string');
 
 	const handleClick = useStableCallback(() => {
-		if (innerRef.current?.classList.contains('focus-visible')) {
-			removeFocusClass();
+		if (visible === AnimatedVisibility.VISIBLE) {
 			return hide();
 		}
 
-		innerRef.current?.classList.add('focus-visible');
 		innerRef.current?.focus();
 		return show();
 	});
