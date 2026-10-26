@@ -64,6 +64,21 @@ const toCacheRecord = <T>(record: T): T => {
 	};
 };
 
+const hasDecryptedLastMessage = (record: unknown): boolean => {
+	if (typeof record !== 'object' || record === null || !('lastMessage' in record)) {
+		return false;
+	}
+	const { lastMessage } = record;
+	return (
+		typeof lastMessage === 'object' &&
+		lastMessage !== null &&
+		't' in lastMessage &&
+		lastMessage.t === 'e2e' &&
+		'e2e' in lastMessage &&
+		lastMessage.e2e === 'done'
+	);
+};
+
 localforage.config({ name: baseURI });
 
 export interface IWithManageableCache {
@@ -93,6 +108,8 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 
 	readonly useReady = create(() => false);
 
+	private readonly scrubbedCache: Promise<void>;
+
 	constructor({ name, eventType, store }: { name: Name; eventType: StreamNames; store: UseBoundStore<StoreApi<IDocumentMapStore<T>>> }) {
 		this.name = name;
 		this.eventType = eventType;
@@ -103,6 +120,28 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 			: () => undefined;
 
 		CachedStoresManager.register(this);
+
+		this.scrubbedCache = this.scrubPersistedCache();
+	}
+
+	// Older clients wrote decrypted last messages of encrypted rooms to the cache.
+	// Rewrite such a cache in place when the store starts, also with no login, and keep the rest of it.
+	private async scrubPersistedCache() {
+		try {
+			const data = await localforage.getItem<{ records?: unknown }>(this.name);
+			if (!data || !Array.isArray(data.records)) {
+				return;
+			}
+
+			if (!data.records.some(hasDecryptedLastMessage)) {
+				return;
+			}
+
+			await localforage.setItem(this.name, { ...data, records: data.records.map(toCacheRecord) });
+			this.log('scrubbed decrypted messages from the cache');
+		} catch (error) {
+			console.error(`CachedCollection ${this.name}: could not scrub the cache`, error);
+		}
 	}
 
 	protected get eventName(): `${Name}-changed` | `${string}/${Name}-changed` {
@@ -115,6 +154,7 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 	protected abstract getToken(): unknown;
 
 	private async loadFromCache() {
+		await this.scrubbedCache;
 		const data = await localforage.getItem<{ version: number; token: unknown; records: unknown[]; updatedAt: Date | string }>(this.name);
 
 		if (!data) {
@@ -222,6 +262,7 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 	}
 
 	private save = withDebouncing({ wait: 1000 })(async () => {
+		await this.scrubbedCache;
 		this.log('saving cache');
 		await localforage.setItem(this.name, {
 			updatedAt: this.updatedAt,
