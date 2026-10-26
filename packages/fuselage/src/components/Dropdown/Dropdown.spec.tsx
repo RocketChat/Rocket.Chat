@@ -2,6 +2,7 @@ import { composeStories } from '@storybook/react-webpack5';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
+import Dropdown from './Dropdown';
 import * as stories from './Dropdown.stories';
 import { render } from '../../testing';
 
@@ -27,5 +28,17 @@ describe('[Dropdown Component]', () => {
 		await userEvent.click(anchor);
 		await userEvent.click(anchor);
 		expect(dropdownOption).toBeNull();
+	});
+
+	it('should forward id and aria attributes to the surface', () => {
+		const reference = { current: document.body };
+		render(
+			<Dropdown reference={reference} id='menu' aria-label='Menu'>
+				content
+			</Dropdown>,
+		);
+
+		expect(screen.getByTestId('dropdown')).toHaveAttribute('id', 'menu');
+		expect(screen.getByTestId('dropdown')).toHaveAttribute('aria-label', 'Menu');
 	});
 });
