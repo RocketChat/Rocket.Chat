@@ -69,8 +69,11 @@ function MultiSelect({
 	...props
 }: MultiSelectProps) {
 	const [internalValue, setInternalValue] = useState<SelectOption[0][]>(value || []);
-
-	useEffect((): void => setInternalValue(value || []), [value]);
+	const [syncedValue, setSyncedValue] = useState(value);
+	if (value !== syncedValue) {
+		setSyncedValue(value);
+		setInternalValue(value || []);
+	}
 
 	const [currentOptionValue, setCurrentOption] = useState<SelectOption[0]>();
 
