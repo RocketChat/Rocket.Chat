@@ -2,7 +2,7 @@ export { Sidebar, type SidebarProps } from './Sidebar';
 export { default as SidebarAccordion, type SidebarAccordionProps } from './SidebarAccordion';
 export { default as SidebarAccordionItem, type SidebarAccordionItemProps } from './SidebarAccordionItem';
 export { default as SidebarAction, type SidebarActionProps } from './SidebarAction';
-export { default as SidebarActions, type SidebarActionsProps } from './SidebarActions';
+export { ButtonGroup as SidebarActions, type ButtonGroupProps as SidebarActionsProps } from '../ButtonGroup';
 export { default as SidebarLink, type SidebarLinkProps } from './SidebarLink';
 export * from './SidebarItem';
 export { SidebarCollapseGroup } from './SidebarCollapseGroup';
