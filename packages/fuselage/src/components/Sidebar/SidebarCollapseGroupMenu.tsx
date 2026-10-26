@@ -5,12 +5,8 @@ import { cx } from '../../helpers/composeClassNames';
 import { patchChildren } from '../../helpers/patchChildren';
 import { ItemActions } from '../Item';
 
-export const SidebarCollapseGroupMenu = ({ children, className, ...props }: HTMLAttributes<HTMLDivElement>) => (
-	<ItemActions
-		{...(props as Omit<HTMLAttributes<HTMLDivElement>, 'is'>)}
-		reveal='hover'
-		className={cx('rcx-sidebar-collapse-group__menu-wrapper', className)}
-	>
+export const SidebarCollapseGroupMenu = ({ children, className, ...props }: Omit<HTMLAttributes<HTMLDivElement>, 'is'>) => (
+	<ItemActions {...props} reveal='hover' className={cx('rcx-sidebar-collapse-group__menu-wrapper', className)}>
 		{patchChildren(
 			<span className='rcx-box rcx-box--full rcx-sidebar-collapse-group__menu'>{children}</span>,
 			(childProps: { className: string | string[] }) => ({
