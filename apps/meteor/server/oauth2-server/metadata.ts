@@ -1,9 +1,19 @@
-import { settings } from '../settings/cached';
+import type { RequestHandler } from 'express';
+
+import { getURL } from '../lib/utils/getURL';
 
 /** The issuer identifier (RFC 8414) of this workspace's authorization server, which is also the base of its endpoints. */
-export const getOAuthIssuer = (): string => settings.get<string>('Site_Url').replace(/\/+$/, '');
+export const getOAuthIssuer = (): string => getURL('', { full: true, cdn: false });
 
-/** The authorization server metadata (RFC 8414) served at `/.well-known/oauth-authorization-server`. */
+/**
+ * Where the metadata of `identifier` is published: the well-known segment goes between the host and the path
+ * (RFC 8414 §3.1, RFC 9728 §3.1).
+ */
+export const getWellKnownUrl = (identifier: string, name: string): string => {
+	const { origin, pathname } = new URL(identifier);
+	return `${origin}/.well-known/${name}${pathname === '/' ? '' : pathname}`;
+};
+
 export const getAuthorizationServerMetadata = (issuer: string) => ({
 	issuer,
 	authorization_endpoint: `${issuer}/oauth/authorize`,
@@ -13,3 +23,18 @@ export const getAuthorizationServerMetadata = (issuer: string) => ({
 	token_endpoint_auth_methods_supported: ['client_secret_basic', 'client_secret_post'],
 	code_challenge_methods_supported: ['S256'],
 });
+
+/**
+ * Serves the authorization server metadata at its RFC 8414 location. For a workspace served under a path, that location
+ * is outside the path, so this must see requests before the path prefix is stripped.
+ */
+export const serveAuthorizationServerMetadata: RequestHandler = (req, res, next) => {
+	const issuer = getOAuthIssuer();
+	const { pathname } = new URL(req.originalUrl, 'http://localhost');
+	if (req.method !== 'GET' || pathname !== new URL(getWellKnownUrl(issuer, 'oauth-authorization-server')).pathname) {
+		next();
+		return;
+	}
+
+	res.send(getAuthorizationServerMetadata(issuer));
+};
