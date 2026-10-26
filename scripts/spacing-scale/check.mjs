@@ -61,7 +61,7 @@ if (process.argv.includes('--prune')) {
 				.filter(([, count]) => count > 0),
 		),
 	);
-	console.log(`Pruned ${fixed.length} files from the baseline.`);
+	console.log(`Lowered the baseline for ${fixed.length} files.`);
 } else if (fixed.length) {
 	console.error(`Fewer spacing-scale violations than the baseline records in:\n${fixed.map((file) => `  ${file}`).join('\n')}`);
 	console.error(`Run \`${command} --prune\` and commit scripts/spacing-scale/baseline.json.\n`);
