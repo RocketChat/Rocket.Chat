@@ -5,7 +5,7 @@ export { default as OptionColumn, type OptionColumnProps } from './OptionColumn'
 export { default as OptionContent, type OptionContentProps } from './OptionContent';
 export { default as OptionDescription, type OptionDescriptionProps } from './OptionDescription';
 export { default as OptionDescriptionBlock, type OptionDescriptionBlockProps } from './OptionDescriptionBlock';
-export { default as OptionDivider, type OptionDividerProps } from './OptionDivider';
+export { Divider as OptionDivider, type DividerProps as OptionDividerProps } from '../Divider';
 export { default as OptionIcon, type OptionIconProps } from './OptionIcon';
 export { default as OptionInput, type OptionInputProps } from './OptionInput';
 export { default as OptionMenu, type OptionMenuProps } from './OptionMenu';

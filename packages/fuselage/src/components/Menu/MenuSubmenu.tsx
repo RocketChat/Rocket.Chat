@@ -8,12 +8,12 @@ import { useSubmenuTriggerState } from 'react-stately';
 import { Icon } from '../Icon';
 import { Item, ItemIcon } from '../Item';
 import MenuDropDown from './MenuDropdown';
-import type { MenuOptionProps } from './MenuOption';
+import type { OptionProps } from '../Option';
 import MenuPopover from './MenuPopover';
 
 type MenuSubmenuProps = {
 	item: Node<{
-		variant?: MenuOptionProps['variant'];
+		variant?: OptionProps['variant'];
 	}>;
 	state: TreeState<unknown>;
 	rootMenuTriggerState: RootMenuTriggerState;
