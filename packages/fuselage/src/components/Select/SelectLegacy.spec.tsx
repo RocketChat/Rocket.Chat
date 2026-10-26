@@ -51,3 +51,18 @@ describe.each<[string, ComponentType<any>, string]>([
 		expect(control).toHaveFocus();
 	});
 });
+
+describe('[SelectLegacy Component] controlled value', () => {
+	it('should show the new option when the value changes after mount', () => {
+		const twoOptions: SelectOption[] = [
+			['1', 'Apple'],
+			['2', 'Banana'],
+		];
+		const { rerender } = render(<SelectLegacy value='1' options={twoOptions} onChange={jest.fn()} />);
+		expect(screen.getByText('Apple')).toBeInTheDocument();
+
+		rerender(<SelectLegacy value='2' options={twoOptions} onChange={jest.fn()} />);
+		expect(screen.getByText('Banana')).toBeInTheDocument();
+		expect(screen.queryByText('Apple')).not.toBeInTheDocument();
+	});
+});
