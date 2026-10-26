@@ -27,6 +27,8 @@ $toastbar-progressbar-background-color: theme('toastbar-progressbar-background-c
 
 	background-color: $toastbar-background-color;
 
+	animation: rcx-toastbar-side-open 0.5s;
+
 	@include use-font-scale(p2);
 
 	&::before {
@@ -97,5 +99,35 @@ $toastbar-progressbar-background-color: theme('toastbar-progressbar-background-c
 
 			background-color: $toastbar-progressbar-background-color;
 		}
+
+		&::after {
+			width: 0%;
+
+			animation: rcx-toastbar-progress var(--toast-time) forwards running;
+		}
+
+		&--paused::after {
+			animation-play-state: paused;
+		}
+	}
+}
+
+@keyframes rcx-toastbar-side-open {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes rcx-toastbar-progress {
+	from {
+		width: 0%;
+	}
+
+	to {
+		width: 100%;
 	}
 }
