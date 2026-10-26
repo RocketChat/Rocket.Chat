@@ -25,7 +25,10 @@ export const getProtectedResourceMetadata = (issuer: string) => ({
  */
 export const serveProtectedResourceMetadata: RequestHandler = (req, res, next) => {
 	const { pathname } = new URL(req.originalUrl, 'http://localhost');
-	if (req.method !== 'GET' || ![new URL(getProtectedResourceMetadataUrl()).pathname, BARE_METADATA_PATH].includes(pathname)) {
+	if (
+		!['GET', 'HEAD'].includes(req.method) ||
+		![new URL(getProtectedResourceMetadataUrl()).pathname, BARE_METADATA_PATH].includes(pathname)
+	) {
 		next();
 		return;
 	}

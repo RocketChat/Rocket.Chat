@@ -61,6 +61,11 @@ describe('MCP protected resource metadata', () => {
 		});
 	});
 
+	it('answers GET and HEAD only', async () => {
+		expect((await request(app).head('/.well-known/oauth-protected-resource/api/v1/mcp')).status).toBe(200);
+		expect((await request(app).post('/.well-known/oauth-protected-resource/api/v1/mcp')).status).toBe(404);
+	});
+
 	it('does not describe other resources', async () => {
 		const response = await request(app).get('/.well-known/oauth-protected-resource/api/v1/chat.postMessage');
 
