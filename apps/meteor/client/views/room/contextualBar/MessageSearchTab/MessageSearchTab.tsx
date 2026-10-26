@@ -16,7 +16,10 @@ import { useState, memo, Fragment, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
+import LocalMessageSearchResults from './components/LocalMessageSearchResults';
 import MessageSearchForm from './components/MessageSearchForm';
+import { useLocalMessageSearchQuery } from './hooks/useLocalMessageSearchQuery';
+import { useLocalSearchIndexBackend } from './hooks/useLocalSearchIndexBackend';
 import { useMessageSearchProviderQuery } from './hooks/useMessageSearchProviderQuery';
 import { useMessageSearchQuery } from './hooks/useMessageSearchQuery';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
@@ -26,7 +29,7 @@ import { useFormatDate } from '../../../../hooks/useFormatDate';
 import MessageListErrorBoundary from '../../MessageList/MessageListErrorBoundary';
 import { isMessageNewDay } from '../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../MessageList/providers/MessageListProvider';
-import { useRoomSubscription } from '../../contexts/RoomContext';
+import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 
 // TODO: Refactor this component to isolate the data from the visual
 const MessageSearchTab = () => {
@@ -37,14 +40,23 @@ const MessageSearchTab = () => {
 	const pageSize = useSetting('PageSize', 10);
 
 	const [limit, setLimit] = useState(pageSize);
+	const room = useRoom();
 	const subscription = useRoomSubscription();
 	const showUserAvatar = !!useUserPreference<boolean>('displayAvatars');
 
 	const providerQuery = useMessageSearchProviderQuery();
 
 	const [{ searchText, globalSearch }, handleSearch] = useState({ searchText: '', globalSearch: false });
-	const { isSuccess, data: messageSearchData, isPending } = useMessageSearchQuery({ searchText, limit, globalSearch });
-	const itemCount = messageSearchData?.length ?? 0;
+	const indexBackend = useLocalSearchIndexBackend();
+	const localBackend = room.encrypted ? indexBackend : undefined;
+	const localSearch = !!localBackend;
+	const localQuery = useLocalMessageSearchQuery({ backend: localBackend, searchText, limit });
+	const {
+		isSuccess,
+		data: messageSearchData,
+		isPending,
+	} = useMessageSearchQuery({ searchText, limit, globalSearch, enabled: !localSearch });
+	const itemCount = (localSearch ? localQuery.data?.length : messageSearchData?.length) ?? 0;
 
 	return (
 		<ContextualbarDialog>
@@ -55,12 +67,27 @@ const MessageSearchTab = () => {
 			</ContextualbarHeader>
 			{providerQuery.data && (
 				<ContextualbarSection>
-					<MessageSearchForm provider={providerQuery.data} onSearch={handleSearch} searchListId={searchListId} isSuccess={isSuccess} />
+					<MessageSearchForm
+						provider={providerQuery.data}
+						onSearch={handleSearch}
+						searchListId={searchListId}
+						isSuccess={localSearch ? localQuery.isSuccess : isSuccess}
+						localSearch={localSearch}
+					/>
 				</ContextualbarSection>
 			)}
 			<ContextualbarContent flush>
-				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
-				{providerQuery.isSuccess && (
+				<ResultsLiveRegion shouldAnnounce={localSearch ? localQuery.isSuccess : isSuccess} itemCount={itemCount} />
+				{providerQuery.isSuccess && localSearch && (
+					<>
+						{searchText && localQuery.isPending && <Throbber />}
+						{searchText.trim() && localQuery.isSuccess && localQuery.data.length === 0 && (
+							<ContextualbarEmptyContent title={t('No_results_found')} />
+						)}
+						{localQuery.isSuccess && localQuery.data.length > 0 && <LocalMessageSearchResults id={searchListId} hits={localQuery.data} />}
+					</>
+				)}
+				{providerQuery.isSuccess && !localSearch && (
 					<>
 						{searchText && isPending && <Throbber />}
 						{isSuccess && (

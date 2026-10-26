@@ -48,6 +48,8 @@ type SearchIndexSessionOptions = {
 export type SearchIndexSession = {
 	/** The backend after its `open` resolved for the current user, or `undefined` before that and after a logout. */
 	getActiveBackend(): ISearchIndexBackend | undefined;
+	/** Calls the listener each time `getActiveBackend` changes. Returns the function that removes it. */
+	subscribe(listener: () => void): () => void;
 	/** Resolves when the open that runs now (if any) has settled. */
 	whenSettled(): Promise<void>;
 	dispose(): void;
@@ -71,11 +73,18 @@ export const createSearchIndexSession = (
 	let openedFor: string | undefined;
 	let active: ISearchIndexBackend | undefined;
 	let pending: Promise<void> = Promise.resolve();
+	const listeners = new Set<() => void>();
+
+	const setActive = (backend: ISearchIndexBackend | undefined) => {
+		if (active === backend) return;
+		active = backend;
+		for (const listener of [...listeners]) listener();
+	};
 
 	const stop = () => {
 		generation++;
 		openedFor = undefined;
-		active = undefined;
+		setActive(undefined);
 	};
 
 	const start = async (run: number) => {
@@ -95,7 +104,7 @@ export const createSearchIndexSession = (
 			await backend.open({ userId, wrapKey });
 			if (run !== generation) return;
 
-			active = backend;
+			setActive(backend);
 		} catch (error) {
 			if (run === generation) openedFor = undefined;
 			onError(error);
@@ -113,6 +122,12 @@ export const createSearchIndexSession = (
 
 	return {
 		getActiveBackend: () => active,
+		subscribe: (listener) => {
+			listeners.add(listener);
+			return () => {
+				listeners.delete(listener);
+			};
+		},
 		whenSettled: () => pending,
 		dispose: () => {
 			off();

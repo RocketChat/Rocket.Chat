@@ -286,4 +286,49 @@ describe('createSearchIndexSession', () => {
 
 		expect(backend.open).not.toHaveBeenCalled();
 	});
+
+	it('tells the subscribers when the active backend changes, at the open and at the logout', async () => {
+		const backend = createBackend();
+		const { source, setState } = createSource(privateKey);
+		const session = createSearchIndexSession(source, { getBackend: () => backend });
+		const seen: Array<ISearchIndexBackend | undefined> = [];
+		session.subscribe(() => seen.push(session.getActiveBackend()));
+
+		setState('READY');
+		await session.whenSettled();
+		setState('READY');
+		await session.whenSettled();
+		setState('DISABLED');
+
+		expect(seen).toEqual([backend, undefined]);
+	});
+
+	it('does not tell a subscriber that unsubscribed', async () => {
+		const backend = createBackend();
+		const { source, setState } = createSource(privateKey);
+		const session = createSearchIndexSession(source, { getBackend: () => backend });
+		const listener = jest.fn();
+		const unsubscribe = session.subscribe(listener);
+
+		unsubscribe();
+		setState('READY');
+		await session.whenSettled();
+
+		expect(session.getActiveBackend()).toBe(backend);
+		expect(listener).not.toHaveBeenCalled();
+	});
+
+	it('tells the subscribers nothing when an open fails', async () => {
+		const backend = createBackend();
+		backend.open.mockRejectedValueOnce(new Error('index locked'));
+		const { source, setState } = createSource(privateKey);
+		const session = createSearchIndexSession(source, { getBackend: () => backend, onError: () => undefined });
+		const listener = jest.fn();
+		session.subscribe(listener);
+
+		setState('READY');
+		await session.whenSettled();
+
+		expect(listener).not.toHaveBeenCalled();
+	});
 });
