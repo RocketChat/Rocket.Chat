@@ -16,16 +16,18 @@ class MeteorErrorMock extends Error {
 	}
 }
 
-const broadcast = sinon.stub();
-const Users = { findOneById: sinon.stub(), resetE2EKey: sinon.stub(), unsetLoginTokens: sinon.stub() };
-const Subscriptions = { resetUserE2EKey: sinon.stub() };
-const Rooms = { removeUserFromE2EEQueue: sinon.stub() };
-const isUserIdFederated = sinon.stub();
-const sendEmail = sinon.stub();
-const notifyOnUserChange = sinon.stub();
-const notifyOnSubscriptionChangedByUserId = sinon.stub();
-const settingsGet = sinon.stub();
-const getFixedT = sinon.stub();
+const sandbox = sinon.createSandbox();
+
+const broadcast = sandbox.stub();
+const Users = { findOneById: sandbox.stub(), resetE2EKey: sandbox.stub(), unsetLoginTokens: sandbox.stub() };
+const Subscriptions = { resetUserE2EKey: sandbox.stub() };
+const Rooms = { removeUserFromE2EEQueue: sandbox.stub() };
+const isUserIdFederated = sandbox.stub();
+const sendEmail = sandbox.stub();
+const notifyOnUserChange = sandbox.stub();
+const notifyOnSubscriptionChangedByUserId = sandbox.stub();
+const settingsGet = sandbox.stub();
+const getFixedT = sandbox.stub();
 
 const { resetUserE2EEncriptionKey } = proxyquire.noCallThru().load('./resetUserE2EKey', {
 	'@rocket.chat/core-services': { api: { broadcast } },
@@ -57,22 +59,7 @@ const expectNoKeyOrSessionCleanup = () => {
 
 describe('resetUserE2EEncriptionKey', () => {
 	beforeEach(() => {
-		for (const stub of [
-			broadcast,
-			Users.findOneById,
-			Users.resetE2EKey,
-			Users.unsetLoginTokens,
-			Subscriptions.resetUserE2EKey,
-			Rooms.removeUserFromE2EEQueue,
-			isUserIdFederated,
-			sendEmail,
-			notifyOnUserChange,
-			notifyOnSubscriptionChangedByUserId,
-			settingsGet,
-			getFixedT,
-		]) {
-			stub.reset();
-		}
+		sandbox.reset();
 
 		broadcast.resolves();
 		Users.findOneById.resolves(userWith());
