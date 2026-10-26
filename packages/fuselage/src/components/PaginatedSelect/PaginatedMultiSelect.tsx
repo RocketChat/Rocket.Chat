@@ -1,4 +1,4 @@
-import { useStableCallback, useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback, useResizeObserver, useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { useState, useRef, type ComponentType, type ReactNode, type MouseEvent, type CSSProperties } from 'react';
 
 import { prevent } from '../../helpers/prevent';
@@ -67,6 +67,7 @@ export type PaginatedMultiSelectProps = Omit<ElementProps<HTMLDivElement>, 'onCh
 };
 
 const PaginatedMultiSelect = ({
+	ref: outerRef,
 	withTitle,
 	value,
 	filter,
@@ -95,6 +96,7 @@ const PaginatedMultiSelect = ({
 
 	const ref = useRef<HTMLInputElement>(null);
 	const { ref: containerRef, borderBoxSize } = useResizeObserver();
+	const containerMergedRef = useMergedRefs(outerRef, containerRef);
 
 	const handleClick = useStableCallback(() => {
 		if (visible === AnimatedVisibility.VISIBLE) {
@@ -142,7 +144,7 @@ const PaginatedMultiSelect = ({
 			onClick={handleClick}
 			disabled={disabled}
 			{...props}
-			ref={containerRef}
+			ref={containerMergedRef}
 		>
 			<FlexItem grow={1}>
 				<Margins inline='x4'>
