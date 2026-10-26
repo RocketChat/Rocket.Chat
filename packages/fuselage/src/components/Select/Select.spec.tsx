@@ -42,4 +42,14 @@ describe('[Select Component]', () => {
 		const results = await axe(group);
 		expect(results).toHaveNoViolations();
 	});
+
+	it('should disable the trigger when the select is disabled', () => {
+		render(
+			<SelectAria aria-label='Fruit' placeholder='Fruit' isDisabled>
+				<Item key='lemon'>Lemon</Item>
+			</SelectAria>,
+		);
+
+		expect(screen.getByRole('button')).toBeDisabled();
+	});
 });

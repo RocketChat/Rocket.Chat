@@ -11,7 +11,7 @@ type SelectTriggerProps = AriaButtonProps &
 	};
 
 export function SelectTrigger({ ref, small, error, isDisabled, id, ...props }: SelectTriggerProps) {
-	const { buttonProps } = useButton(props, ref as RefObject<HTMLButtonElement | null>);
+	const { buttonProps } = useButton({ ...props, isDisabled }, ref as RefObject<HTMLButtonElement | null>);
 
 	return (
 		<Box
