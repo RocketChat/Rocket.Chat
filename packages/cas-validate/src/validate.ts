@@ -85,7 +85,7 @@ function parseRubyCasAttributes(elemSuccess: Cheerio<any>, cheerio: CheerioAPI):
 			case '#text':
 				// these are not CAS attributes
 				break;
-			default:
+			default: {
 				const attrName = tagName;
 				const attrValue = cheerio(node).text();
 				if (attrValue !== '') {
@@ -96,6 +96,7 @@ function parseRubyCasAttributes(elemSuccess: Cheerio<any>, cheerio: CheerioAPI):
 					}
 				}
 				break;
+			}
 		}
 	}
 
