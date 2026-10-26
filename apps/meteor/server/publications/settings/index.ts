@@ -9,7 +9,6 @@ import { hasPermissionAsync, hasAtLeastOnePermissionAsync } from '../../lib/auth
 import { SettingsEvents } from '../../settings';
 
 declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		'public-settings/get'(
 			updatedSince?: Date,

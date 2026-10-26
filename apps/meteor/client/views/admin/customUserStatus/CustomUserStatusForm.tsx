@@ -124,14 +124,14 @@ const CustomUserStatusForm = ({ onClose, onReload, status }: CustomUserStatusFor
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button form={formId} primary type='submit'>
+					<Button form={formId} variant='primary' type='submit'>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
 				{_id && (
 					<Box marginBlockStart={8}>
 						<ButtonGroup stretch>
-							<Button icon='trash' danger onClick={handleDeleteStatus}>
+							<Button icon='trash' variant='danger' onClick={handleDeleteStatus}>
 								{t('Delete')}
 							</Button>
 						</ButtonGroup>

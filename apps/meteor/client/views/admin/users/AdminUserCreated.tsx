@@ -17,7 +17,7 @@ const AdminUserCreated = ({ uid }: AdminUserCreatedProps) => {
 					<Button type='reset' onClick={() => router.navigate(`/admin/users/new`)}>
 						{t('Add_more_users')}
 					</Button>
-					<Button primary onClick={() => router.navigate(`/admin/users/info/${uid}`)}>
+					<Button variant='primary' onClick={() => router.navigate(`/admin/users/info/${uid}`)}>
 						{t('Done')}
 					</Button>
 				</ButtonGroup>

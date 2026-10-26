@@ -48,7 +48,7 @@ const WizardNextButton = ({ children, disabled = false, manual, onClick, ...prop
 	};
 
 	return (
-		<Button primary {...props} disabled={!currentStep?.next || disabled} onClick={handleClick}>
+		<Button variant='primary' {...props} disabled={!currentStep?.next || disabled} onClick={handleClick}>
 			{children || t('Next')}
 		</Button>
 	);

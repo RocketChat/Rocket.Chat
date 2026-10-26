@@ -27,7 +27,7 @@ const VersionCardActionButton = (item: VersionCardActionButtonProps) => {
 	});
 
 	return (
-		<Button primary onClick={() => handleActionButton()}>
+		<Button variant='primary' onClick={() => handleActionButton()}>
 			{item.label}
 		</Button>
 	);

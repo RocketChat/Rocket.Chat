@@ -237,7 +237,7 @@ const AbacRoomMembershipPreview = ({ rid, roomName, attributes, isSaving, onBack
 					<Button onClick={onBack} disabled={isSaving}>
 						{t('Back')}
 					</Button>
-					<Button primary onClick={handleSave} disabled={!editor} loading={isSaving}>
+					<Button variant='primary' onClick={handleSave} disabled={!editor} loading={isSaving}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

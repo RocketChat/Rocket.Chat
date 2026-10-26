@@ -118,7 +118,7 @@ const AdminFeaturePreviewPage = () => {
 			<PageFooter isDirty={isDirty || allowFeaturePreviewSetting.changed}>
 				<ButtonGroup>
 					<Button onClick={() => reset({ featuresPreview: features })}>{t('Cancel')}</Button>
-					<Button primary disabled={!(isDirty || allowFeaturePreviewSetting.changed)} onClick={handleSubmit(handleSave)}>
+					<Button variant='primary' disabled={!(isDirty || allowFeaturePreviewSetting.changed)} onClick={handleSubmit(handleSave)}>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>

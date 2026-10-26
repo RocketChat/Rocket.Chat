@@ -54,7 +54,7 @@ const GenericMenu = ({ title, icon = 'menu', disabled, onAction, callbackAction,
 			return cloneElement(button, { small: true, icon, disabled, title, className } as any);
 		}
 
-		return <IconButton small icon={icon} className={className} title={title} disabled />;
+		return <IconButton size='small' icon={icon} className={className} title={title} disabled />;
 	}
 
 	return (

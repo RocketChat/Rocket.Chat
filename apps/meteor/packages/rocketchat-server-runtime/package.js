@@ -32,7 +32,6 @@ const serverPackages = [
 	'reactive-var@1.0.13',
 	'autoupdate@2.0.1',
 	'dispatch:run-as-user',
-	'ostrio:cookies',
 	'meteorhacks:inject-initial',
 ];
 

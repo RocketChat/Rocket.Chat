@@ -245,7 +245,7 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 				<ModalFooter>
 					<ModalFooterControllers>
 						<Button onClick={onCancel}>{t('Cancel')}</Button>
-						<Button type='submit' disabled={cannotSubmit} primary>
+						<Button type='submit' disabled={cannotSubmit} variant='primary'>
 							{t('Confirm')}
 						</Button>
 					</ModalFooterControllers>

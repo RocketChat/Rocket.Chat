@@ -26,7 +26,7 @@ const AbacErrorCallout = ({ error, fallback, onRetry, retrying = false }: AbacEr
 			role='alert'
 			actions={
 				onRetry && (
-					<Button small loading={retrying} onClick={onRetry}>
+					<Button size='small' loading={retrying} onClick={onRetry}>
 						{t('Retry')}
 					</Button>
 				)

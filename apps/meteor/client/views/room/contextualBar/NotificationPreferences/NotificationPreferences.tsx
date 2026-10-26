@@ -45,7 +45,7 @@ const NotificationPreferences = ({ handleClose, handleSave, notificationOptions,
 					<Button type='reset' disabled={!isDirty || isSubmitting} onClick={() => reset()}>
 						{t('Reset')}
 					</Button>
-					<Button primary disabled={!isDirty} loading={isSubmitting} onClick={handleSave}>
+					<Button variant='primary' disabled={!isDirty} loading={isSubmitting} onClick={handleSave}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

@@ -66,7 +66,7 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 						<IconButton
 							disabled={!canEditContact || hasConflicts}
 							title={canEditContact ? t('Edit') : t('Not_authorized')}
-							small
+							size='small'
 							icon='pencil'
 							onClick={() => handleNavigate({ context: 'edit' })}
 						/>
@@ -78,7 +78,7 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 						icon='members'
 						actions={
 							<ButtonGroup>
-								<Button onClick={() => setModal(<ReviewContactModal onCancel={() => setModal(null)} contact={contact} />)} small>
+								<Button onClick={() => setModal(<ReviewContactModal onCancel={() => setModal(null)} contact={contact} />)} size='small'>
 									{t('See_conflicts')}
 								</Button>
 							</ButtonGroup>

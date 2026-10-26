@@ -6,7 +6,6 @@ import { createTargetChannelAndReturnFullRoom, deleteRoom, setUserPreferences } 
 import { test, expect } from './utils/test';
 
 declare global {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Window {
 		__audioCalls: { src?: string; played?: boolean };
 	}

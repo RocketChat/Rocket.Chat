@@ -64,7 +64,7 @@ function SettingField({ className = undefined, settingId, sectionChanged, disabl
 
 	useEffect(() => {
 		setEditor(isSettingColor(setting) ? setting.editor : undefined);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 	}, [(setting as ISettingColor).editor]);
 
 	const onChangeValue = useCallback(
@@ -108,7 +108,7 @@ function SettingField({ className = undefined, settingId, sectionChanged, disabl
 		}
 
 		apply();
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 	}, [setting.value, (setting as ISettingColor).editor, update, persistedSetting, onBeforeChange]);
 
 	const { _id, readonly, type, packageValue, i18nLabel, i18nDescription, alert } = setting;

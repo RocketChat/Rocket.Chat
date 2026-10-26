@@ -16,7 +16,6 @@ import { cachedFunction } from './cachedFunction';
 import { mappedDecodeAsync, type AsyncFieldMap } from './codecs/mappedData';
 import { convertMessageFiles } from './convertMessageFiles';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 interface Orchestrator {
 	rooms: () => {
 		convertById: IAppRoomsConverter['convertById'];

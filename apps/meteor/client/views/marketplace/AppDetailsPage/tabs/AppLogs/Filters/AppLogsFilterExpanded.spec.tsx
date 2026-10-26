@@ -40,10 +40,10 @@ it('Instance select should have correct options', async () => {
 
 	await userEvent.click(select);
 
-	expect(screen.getByRole('option', { name: 'All' })).toBeVisible();
-	expect(screen.getByRole('option', { name: 'instance-1' })).toBeVisible();
-	expect(screen.getByRole('option', { name: 'instance-2' })).toBeVisible();
-	expect(screen.getByRole('option', { name: 'instance-3' })).toBeVisible();
+	expect(await screen.findByRole('option', { name: 'All' })).toBeVisible();
+	expect(await screen.findByRole('option', { name: 'instance-1' })).toBeVisible();
+	expect(await screen.findByRole('option', { name: 'instance-2' })).toBeVisible();
+	expect(await screen.findByRole('option', { name: 'instance-3' })).toBeVisible();
 });
 
 it('Time select should open modal when custom time range is selected', async () => {
@@ -57,8 +57,8 @@ it('Time select should open modal when custom time range is selected', async () 
 
 	await userEvent.click(select);
 
-	expect(screen.getByRole('option', { name: 'Custom_time_range' })).toBeVisible();
-	await userEvent.click(screen.getByRole('option', { name: 'Custom_time_range' }));
+	expect(await screen.findByRole('option', { name: 'Custom_time_range' })).toBeVisible();
+	await userEvent.click(await screen.findByRole('option', { name: 'Custom_time_range' }));
 
 	expect(screen.getByRole('dialog')).toBeVisible();
 });

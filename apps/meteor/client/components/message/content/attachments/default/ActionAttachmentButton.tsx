@@ -25,7 +25,7 @@ const ActionAttachmentButton = ({ children, processingType, msg, mid }: ActionAt
 
 	return (
 		<Button
-			small
+			size='small'
 			value={msg}
 			id={mid}
 			disabled={performActionMutation.isPending}

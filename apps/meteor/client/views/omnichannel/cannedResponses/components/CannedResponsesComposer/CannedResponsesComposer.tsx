@@ -112,7 +112,7 @@ const CannedResponsesComposer = ({ onChange, ...props }: CannedResponsesComposer
 					<MessageComposerAction icon='strike' onClick={useMarkdownSyntax('~')} title={t('Strikethrough')} />
 					<MessageComposerAction icon='link' onClick={useMarkdownSyntax('[]()')} title={t('Link')} />
 					<MessageComposerActionsDivider />
-					<Button ref={ref} small onClick={openPlaceholderSelect}>
+					<Button ref={ref} size='small' onClick={openPlaceholderSelect}>
 						{t('Insert_Placeholder')}
 					</Button>
 					{visible && (

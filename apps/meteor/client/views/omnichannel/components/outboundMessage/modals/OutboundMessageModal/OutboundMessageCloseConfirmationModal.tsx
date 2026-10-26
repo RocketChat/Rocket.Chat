@@ -39,12 +39,12 @@ const OutboundMessageCloseConfirmationModal = ({ onConfirm, onCancel }: Outbound
 						ref={(el) => {
 							el?.focus();
 						}}
-						secondary
+						variant='secondary'
 						onClick={onCancel}
 					>
 						{t('Keep_editing')}
 					</Button>
-					<Button danger onClick={onConfirm}>
+					<Button variant='danger' onClick={onConfirm}>
 						{t('Discard')}
 					</Button>
 				</ModalFooterControllers>

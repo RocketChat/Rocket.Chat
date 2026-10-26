@@ -8,7 +8,6 @@ import { logger } from './logger';
 let apnConnection: apn.Provider | undefined;
 
 declare module '@parse/node-apn' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Notification {
 		setContentAvailable: (value: boolean | 1 | 0) => void;
 		set category(_value: string | undefined);

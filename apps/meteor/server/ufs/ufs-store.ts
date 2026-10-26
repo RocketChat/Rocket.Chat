@@ -244,7 +244,7 @@ export class Store {
 	}
 
 	getCollection() {
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		// oxlint-disable-next-line @typescript-eslint/no-non-null-assertion
 		return this.options.collection!;
 	}
 

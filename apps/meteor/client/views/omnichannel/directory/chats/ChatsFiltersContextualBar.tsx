@@ -201,7 +201,7 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 					<Button disabled={!hasAppliedFilters} onClick={handleResetFilters}>
 						{t('Clear_filters')}
 					</Button>
-					<Button type='submit' form={formId} primary>
+					<Button type='submit' form={formId} variant='primary'>
 						{t('Apply')}
 					</Button>
 				</ButtonGroup>

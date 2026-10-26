@@ -51,7 +51,7 @@ const RemoveManagerButton = ({ _id }: RemoveManagerButtonProps) => {
 
 	return (
 		<GenericTableCell color='hint' truncate>
-			<IconButton small icon='trash' title={t('Remove')} onClick={handleDelete} />
+			<IconButton size='small' icon='trash' title={t('Remove')} onClick={handleDelete} />
 		</GenericTableCell>
 	);
 };

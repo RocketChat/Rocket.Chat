@@ -116,17 +116,17 @@ const TranscriptModal = ({ email: emailDefault = '', room, onRequest, onSend, on
 				<ModalFooterControllers>
 					<Button onClick={onCancel}>{t('Cancel')}</Button>
 					{roomOpen && transcriptRequest && (
-						<Button danger onClick={handleDiscard}>
+						<Button variant='danger' onClick={handleDiscard}>
 							{t('Undo_request')}
 						</Button>
 					)}
 					{roomOpen && !transcriptRequest && (
-						<Button disabled={isSubmitting} loading={isSubmitting} primary type='submit'>
+						<Button disabled={isSubmitting} loading={isSubmitting} variant='primary' type='submit'>
 							{t('Request')}
 						</Button>
 					)}
 					{!roomOpen && (
-						<Button disabled={isSubmitting} loading={isSubmitting} primary type='submit'>
+						<Button disabled={isSubmitting} loading={isSubmitting} variant='primary' type='submit'>
 							{t('Send')}
 						</Button>
 					)}

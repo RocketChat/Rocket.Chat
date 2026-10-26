@@ -343,5 +343,25 @@ describe('[Menu Component]', () => {
 			const button = screen.getByRole('button');
 			expect(button).toHaveClass('rcx-button--mini-square');
 		});
+
+		it.each(['large', 'medium', 'small', 'tiny', 'mini'] as const)('should size the trigger %s', (size) => {
+			render(<Simple {...Simple.args} size={size} />);
+
+			expect(screen.getByRole('button')).toHaveClass(`rcx-button--${size}-square`);
+		});
+
+		it('should prefer size over the deprecated size props', () => {
+			render(<Simple {...Simple.args} size='large' mini />);
+
+			expect(screen.getByRole('button')).toHaveClass('rcx-button--large-square');
+		});
+
+		it('should pass the size to a custom trigger', () => {
+			const trigger = jest.fn((_props: Record<string, unknown>) => <button type='button' aria-label='trigger' />);
+			render(<Simple {...Simple.args} is={trigger} size='tiny' />);
+
+			expect(trigger.mock.calls[0][0]).toMatchObject({ size: 'tiny' });
+			expect(trigger.mock.calls[0][0]).not.toHaveProperty('small');
+		});
 	});
 });

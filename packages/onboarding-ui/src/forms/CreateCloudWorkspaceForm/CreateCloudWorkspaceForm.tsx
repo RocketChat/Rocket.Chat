@@ -222,7 +222,7 @@ export const CreateCloudWorkspaceForm = ({
 						</Button>
 					)}
 
-					<Button type='submit' primary disabled={!isValid} loading={isSubmitting || isValidating}>
+					<Button type='submit' variant='primary' disabled={!isValid} loading={isSubmitting || isValidating}>
 						{t('component.form.action.next')}
 					</Button>
 				</ButtonGroup>

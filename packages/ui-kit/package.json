@@ -38,7 +38,6 @@
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@typescript/native-preview": "7.0.0-dev.20260707.2",
-		"eslint": "~10.12.0",
 		"jest": "~30.5.2",
 		"npm-run-all": "~4.1.5",
 		"rimraf": "~6.0.1",

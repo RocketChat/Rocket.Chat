@@ -165,7 +165,7 @@ const SettingsGroupPage = ({
 							{t('Cancel')}
 						</Button>
 					)}
-					<Button className='save' disabled={isSaveDisabled} primary type='submit' onClick={handleSaveClick}>
+					<Button className='save' disabled={isSaveDisabled} variant='primary' type='submit' onClick={handleSaveClick}>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>
