@@ -10,13 +10,15 @@ type SelectTriggerProps = AriaButtonProps &
 		error?: string;
 	};
 
-export function SelectTrigger({ ref, small, error, isDisabled, id, ...props }: SelectTriggerProps) {
+export function SelectTrigger({ ref, small, error, isDisabled, id, className, style, ...props }: SelectTriggerProps) {
 	const { buttonProps } = useButton({ ...props, isDisabled }, ref as RefObject<HTMLButtonElement | null>);
 
 	return (
 		<Box
 			{...buttonProps}
 			id={id}
+			className={className}
+			style={style}
 			animated
 			rcx-select
 			ref={ref}

@@ -52,4 +52,16 @@ describe('[Select Component]', () => {
 
 		expect(screen.getByRole('button')).toBeDisabled();
 	});
+
+	it('should forward className and style to the trigger', () => {
+		render(
+			<SelectAria aria-label='Fruit' placeholder='Fruit' className='custom' style={{ marginTop: 3 }}>
+				<Item key='lemon'>Lemon</Item>
+			</SelectAria>,
+		);
+
+		const trigger = screen.getByRole('button');
+		expect(trigger).toHaveClass('custom', 'rcx-select');
+		expect(trigger).toHaveStyle({ marginTop: '3px' });
+	});
 });

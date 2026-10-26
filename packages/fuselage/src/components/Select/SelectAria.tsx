@@ -32,6 +32,8 @@ export function SelectAria({
 	isDisabled: isDisabledProps,
 	disabled,
 	id,
+	className,
+	style,
 	...props
 }: SelectAriaProps<object>) {
 	const isDisabled = isDisabledProps || disabled;
@@ -53,7 +55,7 @@ export function SelectAria({
 			<Box position='absolute' size={0}>
 				<HiddenSelect state={state} triggerRef={ref} label={props.label} name={props.name} isDisabled={isDisabled} />
 			</Box>
-			<SelectTrigger {...triggerProps} ref={mergedRef} small={small} error={error} id={id}>
+			<SelectTrigger {...triggerProps} ref={mergedRef} small={small} error={error} id={id} className={className} style={style}>
 				<Box is='span' color={state.selectedItem ? 'titles-labels' : 'hint'} {...valueProps} {...(small && { fontScale: 'c1' })}>
 					{state.selectedItem ? state.selectedItem.rendered : placeholder}
 				</Box>
