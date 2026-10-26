@@ -1,3 +1,4 @@
+import { objectMap } from '@rocket.chat/tools';
 import type { AnySchema, ValidateFunction } from 'ajv';
 
 export type OpenAPIParameter = {
@@ -202,10 +203,9 @@ const toOpenAPI31 = <T>(schema: T): T => {
 		return schema;
 	}
 
-	const { nullable, ...rest } = Object.fromEntries(Object.entries(schema).map(([key, value]) => [key, toOpenAPI31(value)])) as Record<
-		string,
-		unknown
-	> & { nullable?: unknown };
+	const { nullable, ...rest } = objectMap(schema, ({ key, value }) => ({ key, value: toOpenAPI31(value) })) as Record<string, unknown> & {
+		nullable?: unknown;
+	};
 
 	if (nullable !== true) {
 		return rest as T;

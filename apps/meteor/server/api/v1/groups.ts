@@ -1307,7 +1307,7 @@ API.v1.get(
 		);
 
 		return API.v1.success({
-			online: onlineInRoom.filter(Boolean) as IUser[],
+			online: onlineInRoom.filter(isTruthy),
 		});
 	},
 );

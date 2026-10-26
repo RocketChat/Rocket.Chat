@@ -1,8 +1,8 @@
 import { Room, ClientSafeError } from '@rocket.chat/core-services';
 import type { IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { isObject } from '@rocket.chat/tools';
 
-import { isObject } from '../../../lib/utils/isObject';
 import { createDirectMessage } from '../../meteor-methods/messages/createDirectMessage';
 
 export const getRoomByNameOrIdWithOptionToJoin = async ({

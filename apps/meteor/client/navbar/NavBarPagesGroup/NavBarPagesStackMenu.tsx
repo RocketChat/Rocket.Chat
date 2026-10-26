@@ -1,6 +1,6 @@
 import { NavBarItem } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
+import { isTruthy } from '@rocket.chat/tools';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import { useCurrentRoutePath, useLayout, useRouter, useSetting } from '@rocket.chat/ui-contexts';
 import type { HTMLAttributes } from 'react';
@@ -26,17 +26,17 @@ const NavBarPagesStackMenu = (props: NavBarPagesStackMenuProps) => {
 	const items = [
 		showHome && {
 			id: 'home',
-			icon: 'home',
+			icon: 'home' as const,
 			content: t('Home'),
 			onClick: handleGoToHome,
 		},
 		{
 			id: 'directory',
-			icon: 'notebook-hashtag',
+			icon: 'notebook-hashtag' as const,
 			content: t('Directory'),
 			onClick: () => router.navigate('/directory'),
 		},
-	].filter(Boolean) as GenericMenuItemProps[];
+	].filter(isTruthy);
 
 	return (
 		<GenericMenu items={items} title={t('Pages')} is={NavBarItem} placement='bottom-start' icon='stack' pressed={pressed} {...props} />

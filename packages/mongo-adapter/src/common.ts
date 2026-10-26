@@ -1,3 +1,5 @@
+import { objectMap } from '@rocket.chat/tools';
+
 import { getBSONType } from './bson';
 import { BSONType } from './types';
 
@@ -71,7 +73,7 @@ export const clone: <T>(v: T) => T = (v: unknown) => {
 		return v.clone();
 	}
 
-	return Object.fromEntries(Object.entries(v).map(([key, value]) => [key, clone(value)]));
+	return objectMap(v, ({ key, value }) => ({ key, value: clone(value) }));
 };
 
 export const isNumericKey = (s: string) => /^\d+$/.test(s);

@@ -1130,7 +1130,7 @@ API.v1.post(
 			}
 
 			const membersToAdd = new Set([...teamMembers, ...(bodyParams.members || [])]);
-			bodyParams.members = [...membersToAdd].filter(Boolean) as string[];
+			bodyParams.members = [...membersToAdd].filter(isTruthy);
 		}
 
 		const result = await API.channels?.create.execute(userId, bodyParams);

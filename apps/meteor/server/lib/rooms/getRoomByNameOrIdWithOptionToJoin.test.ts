@@ -70,7 +70,7 @@ const {
 		Room: RoomServiceStub,
 		ClientSafeError,
 	},
-	'../../../lib/utils/isObject': isObjectMock,
+	'@rocket.chat/tools': isObjectMock,
 	'../../meteor-methods/messages/createDirectMessage': {
 		createDirectMessage: createDirectMessageStub,
 	},

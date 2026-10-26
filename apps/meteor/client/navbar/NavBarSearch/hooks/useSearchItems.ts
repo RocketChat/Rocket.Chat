@@ -1,5 +1,5 @@
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { escapeRegExp } from '@rocket.chat/tools';
+import { escapeRegExp, isTruthy } from '@rocket.chat/tools';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useEndpoint, useUserSubscriptions } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -38,7 +38,7 @@ export const useSearchItems = (filterText = ''): { items: SubscriptionWithRoom[]
 	// Only the server spotlight call is debounced — the local results above stay instant.
 	const debouncedName = useDebouncedValue(name, 500);
 
-	const usernamesFromClient = [...localRooms?.map(({ t, name }) => (t === 'd' ? name : null))].filter(Boolean) as string[];
+	const usernamesFromClient = [...localRooms?.map(({ t, name }) => (t === 'd' ? name : null))].filter(isTruthy);
 
 	const searchForChannels = mention === '#';
 	const searchForDMs = mention === '@';

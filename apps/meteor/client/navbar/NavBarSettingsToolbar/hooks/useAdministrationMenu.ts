@@ -1,3 +1,4 @@
+import { isTruthy } from '@rocket.chat/tools';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useAtLeastOnePermission, usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
@@ -50,6 +51,6 @@ export const useAdministrationMenu = () => {
 
 	return {
 		title: t('Manage'),
-		items: [isAdmin && workspace, isOmnichannel && omnichannel].filter(Boolean) as GenericMenuItemProps[],
+		items: [isAdmin && workspace, isOmnichannel && omnichannel].filter(isTruthy),
 	};
 };

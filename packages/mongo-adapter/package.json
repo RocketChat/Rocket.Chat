@@ -15,6 +15,9 @@
 		"test": "jest",
 		"testunit": "jest"
 	},
+	"dependencies": {
+		"@rocket.chat/tools": "workspace:^"
+	},
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
 		"jest": "~30.5.2",
