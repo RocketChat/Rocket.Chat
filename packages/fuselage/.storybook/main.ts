@@ -9,6 +9,7 @@ const config: StorybookConfig = {
 	addons: [
 		getAbsolutePath('@storybook/addon-a11y'),
 		getAbsolutePath('@storybook/addon-docs'),
+		getAbsolutePath('storybook-addon-pseudo-states'),
 	],
 
 	stories: ['../src/**/*.stories.{mdx,js,tsx}', '../src/**/*.mdx'],
