@@ -1,0 +1,194 @@
+/* Text is a plain element, so its scales, colors and truncation live on its classes */
+.rcx-text {
+	flex: 0 1 auto;
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	font-family: var(--rcx-font-family-sans, Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI", Arial, sans-serif);
+	font-variant-numeric: tabular-nums;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.rcx-text--font-scale-hero {
+	letter-spacing: 0;
+	font-size: 3rem;
+	font-weight: 800;
+	line-height: 4rem;
+}
+
+.rcx-text--font-scale-h1 {
+	letter-spacing: 0;
+	font-size: 2rem;
+	font-weight: 700;
+	line-height: 2.5rem;
+}
+
+.rcx-text--font-scale-h2 {
+	letter-spacing: 0;
+	font-size: 1.5rem;
+	font-weight: 700;
+	line-height: 2rem;
+}
+
+.rcx-text--font-scale-h3 {
+	letter-spacing: 0;
+	font-size: 1.25rem;
+	font-weight: 700;
+	line-height: 1.75rem;
+}
+
+.rcx-text--font-scale-h4 {
+	letter-spacing: 0;
+	font-size: 1rem;
+	font-weight: 700;
+	line-height: 1.5rem;
+}
+
+.rcx-text--font-scale-h5 {
+	letter-spacing: 0;
+	font-size: 0.875rem;
+	font-weight: 700;
+	line-height: 1.25rem;
+}
+
+.rcx-text--font-scale-p1 {
+	letter-spacing: 0;
+	font-size: 1rem;
+	font-weight: 400;
+	line-height: 1.5rem;
+}
+
+.rcx-text--font-scale-p1m {
+	letter-spacing: 0;
+	font-size: 1rem;
+	font-weight: 500;
+	line-height: 1.5rem;
+}
+
+.rcx-text--font-scale-p1b {
+	letter-spacing: 0;
+	font-size: 1rem;
+	font-weight: 700;
+	line-height: 1.5rem;
+}
+
+.rcx-text--font-scale-p2 {
+	letter-spacing: 0;
+	font-size: 0.875rem;
+	font-weight: 400;
+	line-height: 1.25rem;
+}
+
+.rcx-text--font-scale-p2m {
+	letter-spacing: 0;
+	font-size: 0.875rem;
+	font-weight: 500;
+	line-height: 1.25rem;
+}
+
+.rcx-text--font-scale-p2b {
+	letter-spacing: 0;
+	font-size: 0.875rem;
+	font-weight: 700;
+	line-height: 1.25rem;
+}
+
+.rcx-text--font-scale-c1 {
+	letter-spacing: 0;
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 1rem;
+}
+
+.rcx-text--font-scale-c2 {
+	letter-spacing: 0;
+	font-size: 0.75rem;
+	font-weight: 700;
+	line-height: 1rem;
+}
+
+.rcx-text--font-scale-micro {
+	letter-spacing: 0;
+	font-size: 0.625rem;
+	font-weight: 700;
+	line-height: 0.75rem;
+}
+
+.rcx-text--color-white {
+	color: var(--rcx-color-font-white, #ffffff);
+}
+
+.rcx-text--color-disabled {
+	color: var(--rcx-color-font-disabled, #cbced1);
+}
+
+.rcx-text--color-annotation {
+	color: var(--rcx-color-font-annotation, #9ea2a8);
+}
+
+.rcx-text--color-hint {
+	color: var(--rcx-color-font-hint, #6c737a);
+}
+
+.rcx-text--color-secondary-info {
+	color: var(--rcx-color-font-secondary-info, #6c737a);
+}
+
+.rcx-text--color-default {
+	color: var(--rcx-color-font-default, #2f343d);
+}
+
+.rcx-text--color-titles-labels {
+	color: var(--rcx-color-font-titles-labels, #1f2329);
+}
+
+.rcx-text--color-info {
+	color: var(--rcx-color-font-info, #095ad2);
+}
+
+.rcx-text--color-danger {
+	color: var(--rcx-color-font-danger, #d40c26);
+}
+
+.rcx-text--color-pure-black {
+	color: var(--rcx-color-font-pure-black, #2f343d);
+}
+
+.rcx-text--color-pure-white {
+	color: var(--rcx-color-font-pure-white, #ffffff);
+}
+
+.rcx-text--color-status-font-on-info {
+	color: var(--rcx-color-status-font-on-info, #095ad2);
+}
+
+.rcx-text--color-status-font-on-success {
+	color: var(--rcx-color-status-font-on-success, #148660);
+}
+
+.rcx-text--color-status-font-on-warning {
+	color: var(--rcx-color-status-font-on-warning, #895f00);
+}
+
+.rcx-text--color-status-font-on-warning-2 {
+	color: var(--rcx-color-status-font-on-warning-2, #2f343d);
+}
+
+.rcx-text--color-status-font-on-danger {
+	color: var(--rcx-color-status-font-on-danger, #9b1325);
+}
+
+.rcx-text--color-status-font-on-service-1 {
+	color: var(--rcx-color-status-font-on-service-1, #974809);
+}
+
+.rcx-text--color-status-font-on-service-2 {
+	color: var(--rcx-color-status-font-on-service-2, #7f1b9f);
+}
+
+.rcx-text--truncate {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
