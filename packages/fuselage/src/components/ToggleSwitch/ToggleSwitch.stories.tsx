@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { action } from 'storybook/actions';
 
 import ToggleSwitch from './ToggleSwitch';
-import { DECORATOR_LABEL, PropsVariationSection } from '../../../.storybook/helpers';
+import { DECORATOR_LABEL, PropsVariationSection, variationPseudoStates } from '../../../.storybook/helpers';
 
 export default {
 	title: 'Inputs/ToggleSwitch',
@@ -64,6 +64,7 @@ export const Disabled: Story = {
 };
 
 export const States: Story = {
+	parameters: { pseudo: variationPseudoStates },
 	render: () => (
 		<PropsVariationSection
 			component={ToggleSwitch}
@@ -74,9 +75,9 @@ export const States: Story = {
 			}}
 			yAxis={{
 				default: {},
-				hover: { className: 'is-hovered' },
-				active: { className: 'is-active' },
-				focus: { className: 'is-focused' },
+				hover: {},
+				active: {},
+				focus: {},
 				disabled: { disabled: true },
 			}}
 		/>

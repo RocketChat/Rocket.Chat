@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite';
 import { action } from 'storybook/actions';
 
 import RadioButton from './RadioButton';
-import { PropsVariationSection, DECORATOR_LABEL } from '../../../.storybook/helpers';
+import { DECORATOR_LABEL, PropsVariationSection, variationPseudoStates } from '../../../.storybook/helpers';
 
 export default {
 	title: 'Inputs/RadioButton',
@@ -69,6 +69,7 @@ export const Disabled: Story = {
 };
 
 export const States: Story = {
+	parameters: { pseudo: variationPseudoStates },
 	render: () => (
 		<PropsVariationSection
 			component={RadioButton}
@@ -79,9 +80,9 @@ export const States: Story = {
 			}}
 			yAxis={{
 				default: {},
-				hover: { className: 'is-hovered' },
-				active: { className: 'is-active' },
-				focus: { className: 'is-focused' },
+				hover: {},
+				active: {},
+				focus: {},
 				disabled: { disabled: true },
 			}}
 		/>
