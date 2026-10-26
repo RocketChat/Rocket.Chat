@@ -688,6 +688,21 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.find<T, O>(query, options);
 	}
 
+	findActiveLDAPUsersByIds<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userIds: IUser['_id'][],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		const query = {
+			ldap: true,
+			active: true,
+			_id: {
+				$in: userIds,
+			},
+		};
+
+		return this.find<T, O>(query, options);
+	}
+
 	findConnectedLDAPUsers<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>> {
