@@ -17,7 +17,9 @@ export type BubbleProps = {
 
 const Bubble = ({ secondary, children, onClick, icon, onDismiss, small, contentProps, dismissProps, ...props }: BubbleProps) => (
 	<div
-		className={['rcx-bubble', 'rcx-box', 'rcx-box--full', onDismiss && 'rcx-bubble__group', small && 'rcx-bubble--small'].join(' ')}
+		className={['rcx-bubble', 'rcx-box', 'rcx-box--full', onDismiss && 'rcx-bubble__group', small && 'rcx-bubble--small']
+			.filter(Boolean)
+			.join(' ')}
 		{...props}
 	>
 		{onClick ? (
