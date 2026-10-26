@@ -23,10 +23,7 @@ export function SelectTrigger({ ref, small, error, isDisabled, id, className, st
 			rcx-select
 			ref={ref}
 			is='button'
-			display='flex'
-			flexDirection='row'
-			fontScale='p2'
-			justifyContent='space-between'
+			rcx-select--trigger
 			rcx-input-box--small={small}
 			rcx-select--invalid={!!error}
 			rcx-select--disabled={isDisabled}

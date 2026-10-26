@@ -52,11 +52,17 @@ export function SelectAria({
 
 	return (
 		<>
-			<Box position='absolute' size={0}>
+			<Box rcx-select__hidden>
 				<HiddenSelect state={state} triggerRef={ref} label={props.label} name={props.name} isDisabled={isDisabled} />
 			</Box>
 			<SelectTrigger {...triggerProps} ref={mergedRef} small={small} error={error} id={id} className={className} style={style}>
-				<Box is='span' color={state.selectedItem ? 'titles-labels' : 'hint'} {...valueProps} {...(small && { fontScale: 'c1' })}>
+				<Box
+					is='span'
+					rcx-select__value
+					rcx-select__value--placeholder={!state.selectedItem}
+					rcx-select__value--small={small}
+					{...valueProps}
+				>
 					{state.selectedItem ? state.selectedItem.rendered : placeholder}
 				</Box>
 				<Icon name={state.isOpen ? 'chevron-up' : 'chevron-down'} size='x20' />

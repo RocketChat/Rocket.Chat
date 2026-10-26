@@ -19,7 +19,63 @@
 
 	// TODO move to .rcx-input-box
 	&__item {
+		flex-grow: 1;
+
+		margin-inline: lengths.margin(4);
+
+		color: colors.font(titles-labels);
+
+		@include use-font-scale(p2);
 		@include use-text-ellipsis;
+
+		&--placeholder {
+			color: colors.font(hint);
+		}
+	}
+
+	&__value {
+		color: colors.font(titles-labels);
+
+		&--placeholder {
+			color: colors.font(hint);
+		}
+
+		&--small {
+			@include use-font-scale(c1);
+		}
+	}
+
+	&__hidden {
+		position: absolute;
+
+		width: 0;
+		height: 0;
+	}
+
+	&__field {
+		display: flex;
+		flex-grow: 1;
+
+		margin-inline: to-rem(4);
+	}
+
+	&__values {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+
+		margin: to-rem(-4);
+		gap: to-rem(4);
+
+		&--spacious {
+			gap: to-rem(8);
+		}
+	}
+
+	&__focus--button {
+		@include use-font-scale(p2m);
+
+		color: colors.font(hint);
 	}
 
 	&__focus,
@@ -60,6 +116,10 @@
 	}
 
 	&__wrapper {
+		display: flex;
+
+		margin-inline: to-rem(-4);
+
 		align-items: center;
 		flex-grow: 1;
 		flex-shrink: 1;
@@ -119,6 +179,14 @@
 		border-color: $input-colors-invalid-disabled-border-color;
 		background-color: $input-colors-invalid-disabled-background-color;
 	}
+}
+
+.rcx-select--trigger {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+
+	@include use-font-scale(p2);
 }
 
 // an open select keeps the focus look while focus is in its listbox
