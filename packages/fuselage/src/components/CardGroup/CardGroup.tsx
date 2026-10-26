@@ -1,7 +1,5 @@
 import type { AllHTMLAttributes, ReactNode } from 'react';
 
-import { appendClassName } from '../../helpers/appendClassName';
-import { patchChildren } from '../../helpers/patchChildren';
 import { Box } from '../Box';
 
 export type CardGroupProps = {
@@ -12,7 +10,7 @@ export type CardGroupProps = {
 	children?: ReactNode;
 } & Omit<AllHTMLAttributes<HTMLElement>, 'is' | 'wrap'>;
 
-const CardGroup = ({ align = 'start', children, stretch, vertical, wrap, ...props }: CardGroupProps) => (
+const CardGroup = ({ align = 'start', stretch, vertical, wrap, ...props }: CardGroupProps) => (
 	<Box
 		rcx-card-group
 		rcx-card-group--align={align}
@@ -21,11 +19,7 @@ const CardGroup = ({ align = 'start', children, stretch, vertical, wrap, ...prop
 		rcx-card-group--wrap={wrap}
 		role='group'
 		{...props}
-	>
-		{patchChildren(children, (childProps: { className: string | string[] }) => ({
-			className: appendClassName(childProps.className, 'rcx-card-group__item'),
-		}))}
-	</Box>
+	/>
 );
 
 export default CardGroup;

@@ -9,14 +9,13 @@
 	min-width: lengths.size(none);
 }
 
-.rcx-field-group__item {
-	.rcx-field-group > & {
-		flex: 0 0 auto;
+// The repeated class keeps the group's layout ahead of the children's own width and margins.
+.rcx-field-group.rcx-field-group > * {
+	flex: 0 0 auto;
 
-		width: lengths.size(full);
-	}
+	width: lengths.size(full);
+}
 
-	& + & {
-		margin-block-start: lengths.margin(24);
-	}
+.rcx-field-group.rcx-field-group > * + * {
+	margin-block-start: lengths.margin(24);
 }
