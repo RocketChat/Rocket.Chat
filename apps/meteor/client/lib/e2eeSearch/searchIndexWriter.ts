@@ -75,7 +75,6 @@ export const createSearchIndexWriter = ({
 		for (const call of toCalls(docs)) {
 			if (getBackend() !== backend) return;
 			try {
-				// eslint-disable-next-line no-await-in-loop
 				await backend.upsert(call);
 			} catch (error) {
 				onError(error);

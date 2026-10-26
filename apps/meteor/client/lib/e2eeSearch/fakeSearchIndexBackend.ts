@@ -124,15 +124,13 @@ export const createFakeSearchIndexBackend = (): ISearchIndexBackend => {
 
 			scored.sort((a, b) => (query.order === 'recent' ? 0 : b.score - a.score) || b.doc.ts - a.doc.ts);
 
-			return scored.slice(0, clampLimit(query.limit)).map(
-				({ doc }): E2EESearchHit => ({
-					id: doc.id,
-					rid: doc.rid,
-					...(doc.tmid !== undefined && { tmid: doc.tmid }),
-					ts: doc.ts,
-					snippet: toSnippet(doc.body, tokens),
-				}),
-			);
+			return scored.slice(0, clampLimit(query.limit)).map(({ doc }): E2EESearchHit => ({
+				id: doc.id,
+				rid: doc.rid,
+				...(doc.tmid !== undefined && { tmid: doc.tmid }),
+				ts: doc.ts,
+				snippet: toSnippet(doc.body, tokens),
+			}));
 		},
 
 		async getRoomState(rid) {

@@ -1,8 +1,8 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import type { ISearchIndexBackend } from '@rocket.chat/desktop-api';
 
-import { MAX_SEARCH_DOC_BODY_LENGTH } from './toSearchDoc';
 import { createSearchIndexWriter } from './searchIndexWriter';
+import { MAX_SEARCH_DOC_BODY_LENGTH } from './toSearchDoc';
 
 const methods = ['open', 'upsert', 'remove', 'removeRoom', 'search', 'getRoomState', 'setRoomState', 'stats', 'wipe'] as const;
 

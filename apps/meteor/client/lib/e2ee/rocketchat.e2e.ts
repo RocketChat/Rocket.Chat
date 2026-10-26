@@ -92,10 +92,6 @@ class E2E extends Emitter {
 		return this.state;
 	}
 
-	getUserId(): string | undefined {
-		return this.userId || undefined;
-	}
-
 	isEnabled(): boolean {
 		return this.state !== 'DISABLED';
 	}
@@ -892,7 +888,13 @@ export const e2e = new E2E();
 export const e2eSearchIndexSession = createSearchIndexSession(
 	{
 		on: (type, handler) => e2e.on(type, handler),
-		getUserId: () => e2e.getUserId(),
+		getUserId: () => {
+			try {
+				return e2e.getUserId();
+			} catch {
+				return undefined;
+			}
+		},
 		getPrivateKey: () => e2e.privateKey,
 	},
 	{

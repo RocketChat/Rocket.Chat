@@ -39,7 +39,9 @@ const createSource = (privateKey: CryptoKey | undefined, userId: string | undefi
 const holdOpen = (backend: jest.Mocked<ISearchIndexBackend>) => {
 	let resolveOpen: (value: { schemaVersion: number; encryptedAtRest: boolean }) => void = () => undefined;
 	let markOpened: () => void = () => undefined;
-	const opened = new Promise<void>((resolve) => (markOpened = resolve));
+	const opened = new Promise<void>((resolve) => {
+		markOpened = resolve;
+	});
 	backend.open.mockImplementation(
 		() =>
 			new Promise((resolve) => {
