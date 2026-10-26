@@ -1,7 +1,7 @@
 import type { ISearchIndexBackend } from '@rocket.chat/desktop-api';
 
 import { generate } from './crypto/rsa';
-import { e2e, e2eSearchIndexSession } from './rocketchat.e2e';
+import { e2e, e2eSearchIndexSession, e2eSearchIndexWriter } from './rocketchat.e2e';
 import { deriveSearchIndexWrapKey } from '../e2eeSearch/searchIndexSession';
 
 jest.mock('@rocket.chat/ui-client', () => ({
@@ -63,5 +63,38 @@ describe('E2E client and the local search index', () => {
 		await e2e.stopClient();
 
 		expect(e2eSearchIndexSession.getActiveBackend()).toBeUndefined();
+	});
+
+	it('indexes a message that decryptMessage decrypts while the index is open, and nothing after logout', async () => {
+		const { privateKey } = await generate();
+		(e2e as unknown as { userId: string }).userId = 'u1';
+		e2e.privateKey = privateKey;
+		const encrypted = {
+			_id: 'm1',
+			rid: 'r1',
+			t: 'e2e',
+			e2e: 'pending',
+			msg: '',
+			u: { _id: 'u2', username: 'bob' },
+			ts: new Date(),
+			_updatedAt: new Date(),
+		};
+		const decrypted = { ...encrypted, e2e: 'done', msg: 'budget review on friday' };
+		jest.spyOn(e2e, 'getInstanceByRoomId').mockResolvedValue({ decryptMessage: jest.fn(async () => decrypted) } as never);
+		jest.spyOn(e2e, 'parseQuoteAttachment').mockImplementation(async (message) => message);
+
+		e2e.setState('READY');
+		await e2eSearchIndexSession.whenSettled();
+		await e2e.decryptMessage(encrypted as never);
+		await e2eSearchIndexWriter.flush();
+
+		expect(bridge.upsert).toHaveBeenCalledTimes(1);
+		expect(bridge.upsert.mock.calls[0][0]).toEqual([expect.objectContaining({ id: 'm1', rid: 'r1', body: 'budget review on friday' })]);
+
+		await e2e.stopClient();
+		await e2e.decryptMessage(encrypted as never);
+		await e2eSearchIndexWriter.flush();
+
+		expect(bridge.upsert).toHaveBeenCalledTimes(1);
 	});
 });

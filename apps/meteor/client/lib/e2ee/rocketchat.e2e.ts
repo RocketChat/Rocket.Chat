@@ -23,6 +23,7 @@ import * as banners from '../banners';
 import type { LegacyBannerPayload } from '../banners';
 import { getSearchIndexBackend } from '../e2eeSearch/getSearchIndexBackend';
 import { createSearchIndexSession } from '../e2eeSearch/searchIndexSession';
+import { createSearchIndexWriter } from '../e2eeSearch/searchIndexWriter';
 import { getUserAvatarURL } from '../getUserAvatarURL';
 import { limitQuoteChain } from '../limitQuoteChain';
 import { getDdpSdk } from '../sdk/ddpSdk';
@@ -652,6 +653,8 @@ class E2E extends Emitter {
 
 		const decryptedMessageWithQuote = await this.parseQuoteAttachment(decryptedMessage);
 
+		e2eSearchIndexWriter.index(decryptedMessageWithQuote);
+
 		return decryptedMessageWithQuote;
 	}
 
@@ -897,6 +900,12 @@ export const e2eSearchIndexSession = createSearchIndexSession(
 		onError: (error) => log.span('searchIndexSession').error('Error opening the local search index', error),
 	},
 );
+
+/** Sends the decrypted messages to the local search index in batches, only while that index is open. */
+export const e2eSearchIndexWriter = createSearchIndexWriter({
+	getBackend: () => e2eSearchIndexSession.getActiveBackend(),
+	onError: (error) => log.span('searchIndexWriter').error('Error indexing decrypted messages', error),
+});
 
 getDdpSdk().account.onLogout(() => {
 	void e2e.stopClient();
