@@ -1,8 +1,9 @@
-import { AccordionItem, Box, Tag } from '@rocket.chat/fuselage';
+import { AccordionItem, Tag } from '@rocket.chat/fuselage';
 import { Field, FieldGroup, FieldLabel, FieldRow, FieldHint, ToggleSwitch } from '@rocket.chat/fuselage-forms';
 import { useTranslation, usePermission, useSetting } from '@rocket.chat/ui-contexts';
 import { Controller, useFormContext } from 'react-hook-form';
 
+import LabelWithTag from './layout/LabelWithTag';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
 const PreferencesConversationTranscript = () => {
@@ -22,11 +23,11 @@ const PreferencesConversationTranscript = () => {
 				<Field>
 					<FieldRow>
 						<FieldLabel>
-							<Box is='span' display='flex' gap={4} paddingInlineEnd={4}>
+							<LabelWithTag>
 								{t('Omnichannel_transcript_pdf')}
 								{!hasLicense && <Tag variant='featured'>{t('Premium')}</Tag>}
 								{!canSendTranscriptPDF && hasLicense && <Tag>{t('No_permission')}</Tag>}
-							</Box>
+							</LabelWithTag>
 						</FieldLabel>
 						<Controller
 							control={control}
@@ -39,10 +40,10 @@ const PreferencesConversationTranscript = () => {
 				<Field>
 					<FieldRow>
 						<FieldLabel>
-							<Box is='span' display='flex' gap={4} paddingInlineEnd={4}>
+							<LabelWithTag>
 								{t('Omnichannel_transcript_email')}
 								{!canSendTranscriptEmailPermission && <Tag>{t('No_permission')}</Tag>}
-							</Box>
+							</LabelWithTag>
 						</FieldLabel>
 						<Controller
 							control={control}

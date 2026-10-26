@@ -1,4 +1,4 @@
-import { Box, Button, Field, FieldLabel, FieldRow, Stack, Text, TextInput, ToggleSwitch } from '@rocket.chat/fuselage';
+import { Button, Field, FieldLabel, FieldRow, Stack, Text, TextInput, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useStableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useUser, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ComponentPropsWithoutRef, ChangeEvent } from 'react';
@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import qrcode from 'yaqrcode';
 
 import BackupCodesModal from './BackupCodesModal';
+import TotpQrCode from './layout/TotpQrCode';
 import TextCopy from '../../../components/TextCopy';
 import TwoFactorTotpModal from '../../../components/TwoFactorModal/TwoFactorTotpModal';
 
@@ -15,7 +16,7 @@ type TwoFactorTOTPFormData = {
 	authCode: string;
 };
 
-export type TwoFactorTOTPProps = ComponentPropsWithoutRef<typeof Box>;
+export type TwoFactorTOTPProps = Omit<ComponentPropsWithoutRef<typeof Stack>, 'children'>;
 
 const isInvalidTotpError = (error: unknown): boolean => {
 	const { error: errorCode, errorType } = (error ?? {}) as { error?: string; errorType?: string };
@@ -145,7 +146,7 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps) => {
 	}, [closeModal, dispatchToastMessage, setModal, regenerateCodesFn, t]);
 
 	return (
-		<Box display='flex' flexDirection='column' alignItems='flex-start' gap={8} paddingBlockEnd={8} {...props}>
+		<Stack align='start' gap='x8' {...props}>
 			<Field>
 				<FieldRow>
 					<FieldLabel htmlFor={totpId}>{t('Two-factor_authentication_via_TOTP')}</FieldLabel>
@@ -154,14 +155,14 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps) => {
 			</Field>
 			{!totpEnabled && registeringTotp && (
 				<>
-					<Box>{t('Scan_QR_code')}</Box>
-					<Box>{t('Scan_QR_code_alternative_s')}</Box>
+					<Text>{t('Scan_QR_code')}</Text>
+					<Text>{t('Scan_QR_code_alternative_s')}</Text>
 					<TextCopy text={totpSecret || ''} />
-					<Box marginInlineStart='-16px' marginBlockStart='-16px' is='img' size='x200' src={qrCode} aria-hidden='true' />
+					<TotpQrCode src={qrCode} />
 					<Field>
 						<FieldLabel htmlFor={totpCodeId}>{t('Enter_code_provided_by_authentication_app')}</FieldLabel>
 						<FieldRow>
-							<Stack direction='row' align='center' grow gap={8}>
+							<Stack direction='row' align='center' grow gap='x8'>
 								<TextInput id={totpCodeId} {...register('authCode')} />
 								<Button variant='primary' onClick={handleSubmit(handleVerifyCode)}>
 									{t('Verify')}
@@ -173,14 +174,12 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps) => {
 			)}
 			{totpEnabled && (
 				<>
-					<Box fontScale='p2m' marginBlockStart={8}>
-						{t('Backup_codes')}
-					</Box>
+					<Text fontScale='p2m'>{t('Backup_codes')}</Text>
 					<Text color='secondary-info'>{t('You_have_n_codes_remaining', { number: codesRemaining })}</Text>
 					<Button onClick={handleRegenerateCodes}>{t('Regenerate_codes')}</Button>
 				</>
 			)}
-		</Box>
+		</Stack>
 	);
 };
 
