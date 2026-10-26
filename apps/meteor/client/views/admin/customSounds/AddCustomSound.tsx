@@ -94,7 +94,7 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 				<Field>
 					<FieldLabel>{t('Sound File')}</FieldLabel>
 					<Box display='flex' flexDirection='row' marginBlockStart='none' alignItems='center' gap={4} paddingInlineStart={4}>
-						<IconButton secondary small icon='upload' onClick={clickUpload} />
+						<IconButton variant='secondary' size='small' icon='upload' onClick={clickUpload} />
 						{sound?.name || t('None')}
 					</Box>
 				</Field>

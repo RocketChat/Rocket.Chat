@@ -30,7 +30,7 @@ const Favorite = ({ room: { _id, f: favorite = false, t: type, name } }: Favorit
 
 	return (
 		<IconButton
-			small
+			size='small'
 			icon={favorite ? <Icon name='star-filled' size='x20' color='status-font-on-warning' /> : 'star'}
 			title={favoriteLabel}
 			onClick={handleFavoriteClick}

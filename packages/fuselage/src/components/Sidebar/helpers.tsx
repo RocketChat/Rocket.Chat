@@ -68,8 +68,8 @@ export const GenericCondensedItem = ({ i = 0 }: { i: number }) => (
 			{i % 2 !== 0 && <SidebarItemBadge title='unread messages'>{5}</SidebarItemBadge>}
 			{i === 0 && (
 				<SidebarActions>
-					<IconButton aria-label='phone' tiny secondary success icon='phone' />
-					<IconButton aria-label='phone-off' tiny secondary danger icon='phone-off' />
+					<IconButton aria-label='phone' size='tiny' variant='secondary-success' icon='phone' />
+					<IconButton aria-label='phone-off' size='tiny' variant='secondary-danger' icon='phone-off' />
 				</SidebarActions>
 			)}
 			<SidebarItemMenu>
@@ -147,8 +147,8 @@ export const GenericCallItem = ({ i = 0, ...props }: { i?: number } & SidebarIte
 
 		<SidebarItemRow>
 			<SidebarButtonGroup>
-				<IconButton small icon='phone-off' secondary danger aria-label='phone-off' />
-				<IconButton small icon='phone' secondary success aria-label='phone' />
+				<IconButton size='small' icon='phone-off' variant='secondary-danger' aria-label='phone-off' />
+				<IconButton size='small' icon='phone' variant='secondary-success' aria-label='phone' />
 			</SidebarButtonGroup>
 		</SidebarItemRow>
 	</SidebarItem>

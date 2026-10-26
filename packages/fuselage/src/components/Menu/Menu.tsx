@@ -17,10 +17,17 @@ import { getPlacement } from './helpers/helpers';
 export type MenuProps<T> = AriaMenuProps<T> &
 	MenuTriggerProps & {
 		icon?: IconButtonProps['icon'];
+		/** The size of the trigger. */
+		size?: IconButtonProps['size'];
+		/** @deprecated Use `size="large"` instead. */
 		large?: boolean;
+		/** @deprecated Use `size="medium"` instead. */
 		medium?: boolean;
+		/** @deprecated `small` is the default size. */
 		small?: boolean;
+		/** @deprecated Use `size="tiny"` instead. */
 		tiny?: boolean;
+		/** @deprecated Use `size="mini"` instead. */
 		mini?: boolean;
 		placement?: UsePositionOptions['placement'];
 		title?: string;
@@ -61,9 +68,8 @@ const Menu = <T extends object>({
 		ref,
 	);
 
-	const { large, medium, tiny, mini } = props;
-	const sizes = { large, medium, tiny, mini };
-	const defaultSmall = !large && !medium && !tiny && !mini;
+	const { size, large, medium, tiny, mini } = props;
+	const triggerSize = size || (mini && 'mini') || (tiny && 'tiny') || (medium && 'medium') || (large && 'large') || 'small';
 
 	const { document: ownerDocument } = useOwnerDocument();
 
@@ -92,8 +98,7 @@ const Menu = <T extends object>({
 					className={className}
 					title={title}
 					pressed={pressed || state.isOpen}
-					small={defaultSmall}
-					{...sizes}
+					size={triggerSize}
 				/>
 			)}
 			{detached ? createPortal(popover, ownerDocument?.body || document.body) : popover}
