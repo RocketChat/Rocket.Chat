@@ -204,7 +204,8 @@
 		"uuid@npm:13": "13.0.1",
 		"moment-timezone/moment": "^2.31.0",
 		"@types/chart.js/moment": "^2.31.0",
-		"@react-pdf/layout@npm:^4.6.1": "patch:@react-pdf/layout@npm%3A4.6.1#~/.yarn/patches/@react-pdf-layout-npm-4.6.1-b12fdb71f4.patch"
+		"@react-pdf/layout@npm:^4.6.1": "patch:@react-pdf/layout@npm%3A4.6.1#~/.yarn/patches/@react-pdf-layout-npm-4.6.1-b12fdb71f4.patch",
+		"cookie@npm:^2.0.1": "patch:cookie@npm%3A2.0.1#~/.yarn/patches/cookie-npm-2.0.1-2aea16e44e.patch"
 	},
 	"dependencies": {
 		"@types/stream-buffers": "^3.0.8",
