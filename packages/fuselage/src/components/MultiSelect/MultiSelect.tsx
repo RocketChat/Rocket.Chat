@@ -37,6 +37,7 @@ export type MultiSelectProps = Omit<ElementProps<HTMLDivElement>, 'ref' | 'onCha
 			value: SelectOption[0];
 			label: SelectOption[1];
 			onMouseDown: MouseEventHandler;
+			onClick: MouseEventHandler;
 			children: ReactNode;
 		}>;
 		addonIcon?: IconProps['name'];
@@ -174,7 +175,8 @@ function MultiSelect({
 								value={value}
 								key={value}
 								label={getLabel(currentOption)}
-								onMouseDown={(e) => {
+								onMouseDown={prevent}
+								onClick={(e) => {
 									prevent(e);
 									internalChanged(currentOption);
 								}}
