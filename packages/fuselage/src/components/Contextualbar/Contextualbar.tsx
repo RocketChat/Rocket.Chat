@@ -15,24 +15,7 @@ export type ContextualbarProps = ElementProps<HTMLElement> & {
  */
 function Contextualbar({ stretch, position, ...props }: ContextualbarProps) {
 	return (
-		<Box
-			rcx-vertical-bar
-			backgroundColor='room'
-			color='default'
-			display='flex'
-			flexDirection='column'
-			flexShrink={0}
-			width={stretch ? '100%' : undefined}
-			borderInlineStartWidth='default'
-			borderInlineStartColor='extra-light'
-			borderInlineStartStyle='solid'
-			height='full'
-			position={position}
-			insetInlineEnd='none'
-			insetBlockStart='none'
-			zIndex={10}
-			{...props}
-		/>
+		<Box rcx-vertical-bar rcx-vertical-bar--stretch={stretch} rcx-vertical-bar--position={position} {...props} />
 	);
 }
 

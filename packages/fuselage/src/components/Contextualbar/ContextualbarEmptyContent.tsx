@@ -14,7 +14,7 @@ export type ContextualbarEmptyContentProps = ContextualbarContentProps & {
 function ContextualbarEmptyContent({ icon = 'magnifier', title = 'Nothing Found', subtitle, ...props }: ContextualbarEmptyContentProps) {
 	return (
 		<ContextualbarContent {...props}>
-			<Box display='flex' flexDirection='column' justifyContent='center' flexGrow={1}>
+			<Box rcx-vertical-bar__empty>
 				<States>
 					<StatesIcon name={icon} />
 					<StatesTitle>{title}</StatesTitle>
