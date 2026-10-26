@@ -21,6 +21,16 @@ describe('[IconButton Component]', () => {
 		});
 	});
 
+	it('should render a button of type button by default', () => {
+		render(<IconButton icon='balloon' aria-label='balloon' />);
+		expect(screen.getByRole('button', { name: 'balloon' })).toHaveAttribute('type', 'button');
+	});
+
+	it('should render a link without a type when is is a', () => {
+		render(<IconButton is='a' href='/somewhere' icon='balloon' aria-label='balloon' />);
+		expect(screen.getByRole('link', { name: 'balloon' })).not.toHaveAttribute('type');
+	});
+
 	it('should display the badge', () => {
 		render(<IconButton icon='balloon' aria-label='balloon' badge={<Badge>2</Badge>} />);
 		screen.getByText('2');
