@@ -62,6 +62,7 @@ export * from './StatusBullet';
 export * from './Table';
 export * from './Tabs';
 export * from './Tag';
+export * from './Text';
 export * from './TextAreaInput';
 export * from './TextInput';
 export * from './Throbber';
