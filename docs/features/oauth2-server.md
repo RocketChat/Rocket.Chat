@@ -2,7 +2,7 @@
 
 ## Overview
 
-A workspace is an OAuth 2.0 authorization server for third-party applications. An application is registered as an **OAuth app** (Administration → Third-party login), a user signs in to the workspace and approves it, and the application exchanges the resulting authorization code for an access token. The access token is a Bearer credential for the REST API (`Authorization: Bearer <token>`).
+A workspace is an OAuth 2.0 authorization server for third-party applications. An application is registered as an **OAuth app** (Administration → Third-party login), a user signs in to the workspace and approves it, and the application exchanges the resulting authorization code for an access token. The access token is a Bearer credential for the REST API (`Authorization: Bearer <token>`) and for the [MCP endpoint](mcp-server.md#authentication).
 
 The protocol work is done by `@node-oauth/oauth2-server`; the workspace supplies its storage model and the HTTP routes around it.
 

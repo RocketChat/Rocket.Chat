@@ -1,5 +1,6 @@
 import { hashLoginToken } from '@rocket.chat/account-utils';
 import { AI_LICENSE_MODULE } from '@rocket.chat/ai-search';
+import type { IUser } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { Users } from '@rocket.chat/models';
@@ -7,10 +8,12 @@ import type { MiddlewareHandler } from 'hono';
 import type { StatusCode } from 'hono/utils/http-status';
 
 import { createMcpResponseBudget } from './dispatch';
+import { getProtectedResourceMetadataUrl } from './metadata';
 import { handleRpcMessage, isJsonRpcRequest, type JsonRpcResponse, type McpAuth } from './server';
 import { isMcpOriginAllowed, isMcpProtocolVersionSupported, supportsMcpBatching } from './transport';
 import { API } from '../../../../server/api';
 import type { TypedOptions } from '../../../../server/api/definition';
+import type { HonoContext } from '../../../../server/api/router';
 import { authenticationMiddlewareForHono } from '../../../../server/api/v1/middlewares/authenticationHono';
 import { permissionsMiddleware } from '../../../../server/api/v1/middlewares/permissions';
 import { settings } from '../../../../server/settings/cached';
@@ -32,11 +35,12 @@ const disabledResponse: McpHttpResponse = {
 type McpActionContext = {
 	bodyParams: unknown;
 	bodyParseError?: boolean;
-	userId: string;
-	token: string;
+	auth: McpAuth;
 	requestIp: string;
 	request: Request;
 };
+
+type McpCredentials = { authToken: string } | { accessToken: string };
 
 const MAX_BATCH_SIZE = 20;
 const MAX_BATCH_CONCURRENCY = 4;
@@ -44,10 +48,14 @@ const MAX_MCP_RESPONSE_BYTES = 5 * 1024 * 1024;
 const MCP_ROUTE = 'mcp';
 const MCP_RATE_LIMIT_OPTIONS = { numRequestsAllowed: 60, intervalTimeInMS: 60_000 };
 
-const personalAccessTokenRequiredResponse: McpHttpResponse = {
+// The challenge is how MCP clients discover the authorization server (MCP authorization, RFC 9728 §5.1).
+const unauthorizedResponse = (message: string, error?: 'invalid_token'): McpHttpResponse => ({
 	statusCode: 401,
-	body: { jsonrpc: '2.0', id: null, error: { code: -32001, message: 'Personal Access Token required' } },
-};
+	headers: {
+		'WWW-Authenticate': `Bearer resource_metadata="${getProtectedResourceMetadataUrl()}"${error ? `, error="${error}"` : ''}`,
+	},
+	body: { jsonrpc: '2.0', id: null, error: { code: -32001, message } },
+});
 
 const invalidRequestResponse: McpHttpResponse = {
 	statusCode: 400,
@@ -59,8 +67,42 @@ const parseErrorResponse: McpHttpResponse = {
 	body: { jsonrpc: '2.0', id: null, error: { code: -32700, message: 'Parse error' } },
 };
 
-const hasPersonalAccessToken = async ({ userId, token }: Pick<McpActionContext, 'userId' | 'token'>): Promise<boolean> =>
-	Boolean(await Users.findPersonalAccessTokenByHashedTokenAndUserId({ userId, hashedToken: token }));
+const BEARER_TOKEN = /^Bearer\s+(\S+)$/i;
+
+/**
+ * The credentials an MCP request authenticates with, picked in the order the REST authentication tries them, so they
+ * belong to the user it resolved.
+ */
+const readCredentials = (request: Request): McpCredentials | undefined => {
+	const authToken = request.headers.get('x-auth-token');
+	if (request.headers.get('x-user-id') && authToken) {
+		return { authToken };
+	}
+
+	const accessToken = BEARER_TOKEN.exec(request.headers.get('authorization') ?? '')?.[1];
+	return accessToken ? { accessToken } : undefined;
+};
+
+const hasPersonalAccessToken = async (userId: string, authToken: string): Promise<boolean> =>
+	Boolean(await Users.findPersonalAccessTokenByHashedTokenAndUserId({ userId, hashedToken: hashLoginToken(authToken) }));
+
+/**
+ * Accepts a Personal Access Token or an OAuth access token sent in the `Authorization` header, for the user the REST
+ * authentication resolved from it. Login session tokens, and tokens sent in the query string, are refused.
+ */
+export const checkMcpCredentials = async (request: Request, user: IUser | null | undefined): Promise<McpHttpResponse | undefined> => {
+	const credentials = readCredentials(request);
+	if (!credentials) {
+		return unauthorizedResponse('Authentication required');
+	}
+	if (!user) {
+		return unauthorizedResponse('Invalid or expired credentials', 'invalid_token');
+	}
+	if ('authToken' in credentials && !(await hasPersonalAccessToken(user._id, credentials.authToken))) {
+		return unauthorizedResponse('Personal Access Token required', 'invalid_token');
+	}
+	return undefined;
+};
 
 const jsonResponse = (body: JsonRpcResponse | JsonRpcResponse[]): McpHttpResponse => {
 	if (Buffer.byteLength(JSON.stringify(body), 'utf8') > MAX_MCP_RESPONSE_BYTES) {
@@ -114,18 +156,12 @@ export const handleMcpPost = async (context: McpActionContext): Promise<McpHttpR
 	if (transportError) {
 		return transportError;
 	}
-	if (!(await hasPersonalAccessToken(context))) {
-		return personalAccessTokenRequiredResponse;
-	}
 	if (context.bodyParseError) {
 		return parseErrorResponse;
 	}
 
 	const message = context.bodyParams;
-	const auth: McpAuth = {
-		userId: context.userId,
-		authToken: String(context.request.headers.get('x-auth-token') ?? ''),
-	};
+	const { auth } = context;
 	const clientIp = context.requestIp;
 
 	if (Array.isArray(message)) {
@@ -186,7 +222,16 @@ const sendResponse = (response: McpHttpResponse): Response => {
 const isRateLimitError = (error: unknown): error is { error: 'error-too-many-requests'; reason?: string } =>
 	typeof error === 'object' && error !== null && 'error' in error && error.error === 'error-too-many-requests';
 
-const rateLimitMiddleware: MiddlewareHandler = async (c, next) => {
+const mcpAuthenticationMiddleware: MiddlewareHandler = async (c: HonoContext, next) => {
+	if (!settings.get<boolean>('MCP_Enabled')) {
+		return sendResponse(disabledResponse);
+	}
+
+	const rejection = await checkMcpCredentials(c.req.raw, c.get('user'));
+	return rejection ? sendResponse(rejection) : next();
+};
+
+const rateLimitMiddleware: MiddlewareHandler = async (c: HonoContext, next) => {
 	try {
 		await API.v1.enforceRateLimitForRoute({
 			route: MCP_ROUTE,
@@ -194,7 +239,7 @@ const rateLimitMiddleware: MiddlewareHandler = async (c, next) => {
 			request: c.req.raw,
 			response: c.res,
 			requestIp: c.get('remoteAddress'),
-			userId: c.req.header('x-user-id'),
+			userId: c.get('user')?._id,
 		});
 	} catch (error) {
 		if (!isRateLimitError(error)) {
@@ -219,18 +264,19 @@ const router = API.v1.router.getHonoRouter();
 API.v1.registerRateLimiterForRoute({ route: MCP_ROUTE, rateLimiterOptions: MCP_RATE_LIMIT_OPTIONS, methods: ['post'] });
 router.use(
 	'/mcp',
-	authenticationMiddlewareForHono(API.v1, { authRequired: true, logger }),
+	authenticationMiddlewareForHono(API.v1, { authRequired: false, logger }),
+	mcpAuthenticationMiddleware,
 	rateLimitMiddleware,
 	permissionsMiddleware(routeOptions),
 	license(routeOptions, License),
 );
-router.post('/mcp', async (c) => {
+router.post('/mcp', async (c: HonoContext) => {
 	const request = c.req.raw;
-	const rawToken = request.headers.get('x-auth-token') ?? '';
-	const userId = request.headers.get('x-user-id');
+	const userId = c.get('user')?._id;
+	const credentials = readCredentials(request);
 
-	if (!userId) {
-		return sendResponse(personalAccessTokenRequiredResponse);
+	if (!userId || !credentials) {
+		return sendResponse(unauthorizedResponse('Authentication required'));
 	}
 
 	let bodyParams: unknown;
@@ -246,8 +292,7 @@ router.post('/mcp', async (c) => {
 		await handleMcpPost({
 			bodyParams,
 			bodyParseError,
-			userId,
-			token: hashLoginToken(rawToken),
+			auth: { userId, ...credentials },
 			requestIp: c.get('remoteAddress'),
 			request,
 		}),
