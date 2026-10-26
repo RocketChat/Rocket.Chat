@@ -1,11 +1,13 @@
 import type { AllHTMLAttributes, ReactNode } from 'react';
 
+import { cx } from '../../helpers/composeClassNames';
+
 export type CardHeaderProps = {
 	children: ReactNode;
 } & AllHTMLAttributes<HTMLElement>;
 
-const CardHeader = ({ children, ...props }: CardHeaderProps) => (
-	<div className='rcx-card__header' {...props}>
+const CardHeader = ({ children, className, ...props }: CardHeaderProps) => (
+	<div {...props} className={cx('rcx-card__header', className)}>
 		{children}
 	</div>
 );
