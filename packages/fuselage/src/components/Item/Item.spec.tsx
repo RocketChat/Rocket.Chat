@@ -143,6 +143,15 @@ describe('Item', () => {
 
 		expect(onRender).toHaveBeenCalledTimes(1);
 	});
+
+	it.each([
+		[{ multiline: true }, 'rcx-item--multiline'],
+		[{ interactive: true }, 'rcx-item--interactive'],
+	])('maps %o to the %s modifier', (props, className) => {
+		render(<Item {...props} data-testid='item' />);
+
+		expect(screen.getByTestId('item')).toHaveClass(className);
+	});
 });
 
 describe('ItemLink', () => {
