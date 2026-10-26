@@ -86,6 +86,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			{ key: { openBusinessHours: 1 }, sparse: true },
 			{ key: { statusLivechat: 1 }, sparse: true },
 			{ key: { sipExtension: 1 }, sparse: true, unique: true },
+			{ key: { 'phones.number': 1 }, sparse: true },
 			{ key: { language: 1 }, sparse: true },
 			{ key: { 'active': 1, 'services.email2fa.enabled': 1 }, sparse: true }, // used by statistics
 			{ key: { 'active': 1, 'services.totp.enabled': 1 }, sparse: true }, // used by statistics
@@ -2835,6 +2836,18 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne<T, O>(
 			{
 				sipExtension,
+			},
+			options,
+		);
+	}
+
+	findByPhone<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		phoneNumber: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>(
+			{
+				'phones.number': phoneNumber,
 			},
 			options,
 		);
