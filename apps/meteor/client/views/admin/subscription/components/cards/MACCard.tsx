@@ -29,14 +29,14 @@ const MACCard = ({ value = 0, max, hideManageSubscription }: MACCardProps) => {
 		infoText: t('MAC_InfoText'),
 		...(shouldShowBuyMore && {
 			upgradeButton: (
-				<UpgradeButton target='mac-card' action='buy_more' small>
+				<UpgradeButton target='mac-card' action='buy_more' size='small'>
 					{t('Buy_more')}
 				</UpgradeButton>
 			),
 
 			...(shouldShowUpgrade && {
 				upgradeButton: (
-					<UpgradeButton target='mac-card' action='upgrade' small>
+					<UpgradeButton target='mac-card' action='upgrade' size='small'>
 						{t('Upgrade')}
 					</UpgradeButton>
 				),

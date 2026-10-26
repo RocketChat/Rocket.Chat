@@ -140,7 +140,7 @@ const MonitorsTable = () => {
 					<FieldRow>
 						<Stack direction='row' align='center' justify='space-between' grow gap={8}>
 							<UserAutoComplete id={usernameFieldId} name='monitor' value={username} onChange={setUsername as () => void} />
-							<Button primary disabled={!username} loading={addMutation.isPending} onClick={() => handleAdd()}>
+							<Button variant='primary' disabled={!username} loading={addMutation.isPending} onClick={() => handleAdd()}>
 								{t('Add_monitor')}
 							</Button>
 						</Stack>

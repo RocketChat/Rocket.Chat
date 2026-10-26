@@ -117,7 +117,7 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps) => {
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={close}>{t('Cancel')}</Button>
-					<Button primary onClick={handleSave}>
+					<Button variant='primary' onClick={handleSave}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

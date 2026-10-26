@@ -233,7 +233,7 @@ export const CallControls: Story = {
 					<MenuItem key='settings'>Settings</MenuItem>
 					<MenuItem key='report'>Report a problem</MenuItem>
 				</Menu>
-				<Button danger small square icon='phone-off' aria-label='Leave call' />
+				<Button variant='danger' size='small' square icon='phone-off' aria-label='Leave call' />
 			</ButtonGroup>
 		);
 	},

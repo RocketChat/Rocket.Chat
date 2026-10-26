@@ -60,7 +60,7 @@ const UsersUploadsCard = ({ statistics }: UsersUploadsCardProps) => {
 			</CardBody>
 
 			<CardControls>
-				<Button disabled={!canViewEngagement} medium onClick={handleEngagement}>
+				<Button disabled={!canViewEngagement} size='medium' onClick={handleEngagement}>
 					{t('See_on_Engagement_Dashboard')}
 				</Button>
 			</CardControls>

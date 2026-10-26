@@ -98,7 +98,7 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps) => 
 				{hasOutlookMethods && (
 					<Box marginBlockStart={8}>
 						<ButtonGroup stretch>
-							<Button primary loading={syncOutlookCalendar.isPending} onClick={() => syncOutlookCalendar.mutate()}>
+							<Button variant='primary' loading={syncOutlookCalendar.isPending} onClick={() => syncOutlookCalendar.mutate()}>
 								{authEnabled ? t('Sync') : t('Log_in_to_sync')}
 							</Button>
 						</ButtonGroup>

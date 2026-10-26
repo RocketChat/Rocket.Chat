@@ -126,7 +126,7 @@ function OAuthGroupPage({ _id, onClickBack, ...group }: OAuthGroupPageProps) {
 							solo={solo}
 						>
 							<div className='submit'>
-								<Button secondary danger onClick={handleRemoveCustomOAuthButtonClick}>
+								<Button variant='secondary-danger' onClick={handleRemoveCustomOAuthButtonClick}>
 									{t('Remove_custom_oauth')}
 								</Button>
 							</div>

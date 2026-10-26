@@ -91,7 +91,7 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user }:
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button primary onClick={() => handleDeviceLogout()}>
+					<Button variant='primary' onClick={() => handleDeviceLogout()}>
 						{t('Logout_Device')}
 					</Button>
 				</ButtonGroup>

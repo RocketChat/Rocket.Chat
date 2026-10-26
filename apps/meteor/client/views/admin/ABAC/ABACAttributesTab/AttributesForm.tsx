@@ -208,7 +208,7 @@ const AttributesForm = ({ onSave, onCancel, description }: AttributesFormProps) 
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={() => onCancel()}>{t('Cancel')}</Button>
-					<Button type='submit' form={formId} disabled={hasValuesErrors || !!errors.name || !isDirty} primary>
+					<Button type='submit' form={formId} disabled={hasValuesErrors || !!errors.name || !isDirty} variant='primary'>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

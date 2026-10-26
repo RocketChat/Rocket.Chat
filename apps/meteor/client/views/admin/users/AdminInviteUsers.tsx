@@ -70,7 +70,7 @@ const AdminInviteUsers = () => {
 			<ContextualbarFooter>
 				<Box paddingBlock={8}>
 					<ButtonGroup stretch>
-						<Button icon='send' primary onClick={handleClick} disabled={!getEmails(text).length}>
+						<Button icon='send' variant='primary' onClick={handleClick} disabled={!getEmails(text).length}>
 							{t('Send')}
 						</Button>
 					</ButtonGroup>

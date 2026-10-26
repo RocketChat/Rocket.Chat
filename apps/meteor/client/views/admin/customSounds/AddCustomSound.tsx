@@ -102,7 +102,7 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={close}>{t('Cancel')}</Button>
-					<Button primary onClick={handleSave}>
+					<Button variant='primary' onClick={handleSave}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

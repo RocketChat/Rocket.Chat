@@ -142,7 +142,7 @@ const RepliesForm = (props: RepliesFormProps) => {
 
 			{customActions ?? (
 				<Box marginBlockStart={24} display='flex' justifyContent='end'>
-					<Button type='submit' primary loading={isSubmitting}>
+					<Button type='submit' variant='primary' loading={isSubmitting}>
 						{t('Submit')}
 					</Button>
 				</Box>

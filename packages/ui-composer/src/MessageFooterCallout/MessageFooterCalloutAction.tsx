@@ -8,7 +8,7 @@ const MessageFooterCalloutAction = forwardRef<HTMLButtonElement, MessageFooterCa
 	function MessageFooterCalloutAction(props, ref) {
 		return (
 			<Box display='flex' flexShrink={0}>
-				<Button ref={ref} primary small {...props} />
+				<Button ref={ref} variant='primary' size='small' {...props} />
 			</Box>
 		);
 	},

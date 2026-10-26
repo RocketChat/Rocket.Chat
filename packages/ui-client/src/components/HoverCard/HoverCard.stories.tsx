@@ -30,10 +30,10 @@ const Card = ({ header, band }: { header: ComponentProps<typeof HoverCardHeader>
 		</HoverCardSection>
 		<HoverCardSection tinted>
 			<HoverCardActions aria-label='Actions'>
-				<Button small primary>
+				<Button size='small' variant='primary'>
 					Open
 				</Button>
-				<Button small>Mark as read</Button>
+				<Button size='small'>Mark as read</Button>
 			</HoverCardActions>
 		</HoverCardSection>
 	</HoverCard>

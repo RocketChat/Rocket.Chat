@@ -74,7 +74,7 @@ export const AppLogsFilterContextualBar = ({ appId, onClose = () => undefined }:
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button secondary aria-label={t('Clear_filters')} onClick={() => reset()}>
+					<Button variant='secondary' aria-label={t('Clear_filters')} onClick={() => reset()}>
 						{t('Clear_filters')}
 					</Button>
 				</ButtonGroup>

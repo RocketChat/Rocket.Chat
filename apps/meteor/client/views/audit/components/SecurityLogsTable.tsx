@@ -119,10 +119,10 @@ const SecurityLogsTable = () => {
 					</Field>
 				</Box>
 				<Box role='group' display='flex' alignItems='center' gap='x20' paddingInline='x4' paddingBlockStart='x12'>
-					<Button secondary onClick={handleClearFilters}>
+					<Button variant='secondary' onClick={handleClearFilters}>
 						{t('Clear_filters')}
 					</Button>
-					<Button primary onClick={handleApplyFilters}>
+					<Button variant='primary' onClick={handleApplyFilters}>
 						{t('Apply_filters')}
 					</Button>
 				</Box>

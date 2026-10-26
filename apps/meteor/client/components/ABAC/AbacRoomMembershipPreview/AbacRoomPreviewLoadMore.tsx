@@ -11,7 +11,7 @@ const AbacRoomPreviewLoadMore = ({ context }: { context?: AbacRoomPreviewLoadMor
 
 	return (
 		<Box paddingInline={24} paddingBlock={12} display='flex' flexDirection='column'>
-			<Button small secondary disabled={!context?.canLoadMore} onClick={context?.onLoadMore}>
+			<Button size='small' variant='secondary' disabled={!context?.canLoadMore} onClick={context?.onLoadMore}>
 				{t('Load_more')}
 			</Button>
 		</Box>

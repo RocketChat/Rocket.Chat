@@ -50,10 +50,10 @@ const CardItem = (props: CardProps) => (
 			In adipisci consequatur qui laudantium rem praesentium earum ut consectetur.
 		</CardBody>
 		<CardControls>
-			<Button medium primary>
+			<Button size='medium' variant='primary'>
 				Button
 			</Button>
-			<Button medium>Button</Button>
+			<Button size='medium'>Button</Button>
 		</CardControls>
 	</Card>
 );

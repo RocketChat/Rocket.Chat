@@ -52,12 +52,12 @@ const iconMap: Record<string, IconName> = {
 const getButtonProps = (variant: VariantType): ComponentPropsWithoutRef<typeof Button> => {
 	switch (variant) {
 		case 'danger':
-			return { danger: true };
+			return { variant: 'danger' };
 		case 'secondary-danger':
-			return { secondary: true, danger: true };
+			return { variant: 'secondary-danger' };
 		case 'warning':
 		case 'upsell':
-			return { primary: true };
+			return { variant: 'primary' };
 		default:
 			return {};
 	}
@@ -155,7 +155,7 @@ const GenericModal = ({
 				{annotation && !dontAskAgain && <ModalFooterAnnotation>{annotation}</ModalFooterAnnotation>}
 				<ModalFooterControllers>
 					{onCancel && (
-						<Button secondary disabled={cancelDisabled} onClick={handleCancel}>
+						<Button variant='secondary' disabled={cancelDisabled} onClick={handleCancel}>
 							{cancelText ?? t('Cancel')}
 						</Button>
 					)}

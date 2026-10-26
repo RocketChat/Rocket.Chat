@@ -91,7 +91,7 @@ const RoomsPage = () => {
 							onChange={(value) => setFilterType(value)}
 						/>
 					</Box>
-					<Button onClick={handleNewAttribute} primary disabled={isABACAvailable !== true}>
+					<Button onClick={handleNewAttribute} variant='primary' disabled={isABACAvailable !== true}>
 						{t('Add_room')}
 					</Button>
 				</Stack>

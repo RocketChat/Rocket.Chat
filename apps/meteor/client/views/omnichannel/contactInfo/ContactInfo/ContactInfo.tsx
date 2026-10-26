@@ -78,7 +78,7 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 						icon='members'
 						actions={
 							<ButtonGroup>
-								<Button onClick={() => setModal(<ReviewContactModal onCancel={() => setModal(null)} contact={contact} />)} small>
+								<Button onClick={() => setModal(<ReviewContactModal onCancel={() => setModal(null)} contact={contact} />)} size='small'>
 									{t('See_conflicts')}
 								</Button>
 							</ButtonGroup>

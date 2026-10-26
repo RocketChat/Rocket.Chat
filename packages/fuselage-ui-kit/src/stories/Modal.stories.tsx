@@ -33,7 +33,7 @@ const DemoModal = ({ children, visible }: { children?: ReactNode; visible: boole
 			<ModalFooter>
 				<ButtonGroup align='end'>
 					<Button onClick={action('cancel')}>Cancel</Button>
-					<Button primary onClick={action('submit')}>
+					<Button variant='primary' onClick={action('submit')}>
 						Submit
 					</Button>
 				</ButtonGroup>

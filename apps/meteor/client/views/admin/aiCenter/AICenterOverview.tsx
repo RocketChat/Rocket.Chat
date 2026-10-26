@@ -46,7 +46,7 @@ const AICenterOverview = (): ReactElement => {
 						<Callout type='info' icon='stars' title={t('AI_Center_license_required_title')}>
 							<Box>{t('AI_Center_license_required_description')}</Box>
 							<Box paddingBlockStart={12}>
-								<Button is='a' href={subscriptionHref} small>
+								<Button is='a' href={subscriptionHref} size='small'>
 									{t('View_options')}
 								</Button>
 							</Box>

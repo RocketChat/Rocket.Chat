@@ -67,7 +67,7 @@ const SearchAnswerPanel = ({
 					{t(getAnswerErrorMessage(error, canManageAISettings))}
 				</Box>
 				<CardControls>
-					<Button small onClick={onRetry}>
+					<Button size='small' onClick={onRetry}>
 						{t('Try_again')}
 					</Button>
 				</CardControls>

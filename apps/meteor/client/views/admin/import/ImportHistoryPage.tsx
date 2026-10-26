@@ -107,7 +107,7 @@ function ImportHistoryPage() {
 		<Page>
 			<PageHeader title={t('Import')}>
 				<ButtonGroup>
-					<Button primary disabled={isLoading} onClick={handleNewImportClick}>
+					<Button variant='primary' disabled={isLoading} onClick={handleNewImportClick}>
 						{t('Import_New_File')}
 					</Button>
 					{hasAnySuccessfulImport && (
