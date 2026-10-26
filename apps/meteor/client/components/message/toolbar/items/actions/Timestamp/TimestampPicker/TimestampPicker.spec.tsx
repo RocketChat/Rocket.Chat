@@ -75,7 +75,7 @@ describe('TimestampPicker', () => {
 		expect(formatSelect).toHaveTextContent(/timestamps\.fullDateTime/i);
 		await userEvent.click(formatSelect);
 
-		const formatOption = screen.getByRole('option', {
+		const formatOption = await screen.findByRole('option', {
 			name: /timestamps\.fullDateTime \(timestamps\.fullDateTimeDescription\)/,
 		});
 		await userEvent.click(formatOption);
@@ -84,7 +84,7 @@ describe('TimestampPicker', () => {
 		expect(timezoneSelect).toHaveTextContent(/Local_Time/);
 		await userEvent.click(timezoneSelect);
 
-		const timezoneOption = screen.getByRole('option', { name: /UTC\+8/ });
+		const timezoneOption = await screen.findByRole('option', { name: /UTC\+8/ });
 		await userEvent.click(timezoneOption);
 
 		// 5. Submit
