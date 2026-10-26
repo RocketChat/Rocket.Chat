@@ -103,7 +103,7 @@ function TimespanSettingInput({
 				/>
 			</FieldRow>
 			<FieldRow>
-				<Select value={timeUnit} disabled={disabled} options={timeUnitOptions} onChange={handleChangeTimeUnit} />
+				<Select aria-label={t('Unit')} value={timeUnit} disabled={disabled} options={timeUnitOptions} onChange={handleChangeTimeUnit} />
 			</FieldRow>
 			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>

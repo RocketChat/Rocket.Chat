@@ -159,13 +159,7 @@ const RoomMembers = ({
 					endAddon={<Icon name='magnifier' size='x20' />}
 				/>
 				<Box width='x144' marginInlineStart={8}>
-					<Select
-						aria-label={t('Status')}
-						aria-controls={isSuccess ? membersListId : undefined}
-						options={options}
-						value={type}
-						onChange={(value): void => setType(value as 'online' | 'all')}
-					/>
+					<Select aria-label={t('Status')} options={options} value={type} onChange={(value): void => setType(value as 'online' | 'all')} />
 				</Box>
 			</ContextualbarSection>
 			<ContextualbarContent flush spaced>

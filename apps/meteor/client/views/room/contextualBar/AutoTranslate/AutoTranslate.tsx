@@ -56,7 +56,7 @@ const AutoTranslate = ({ language, languages, handleSwitch, translateEnable, han
 							<FieldLabel htmlFor='translate-to'>{t('Translate_to')}</FieldLabel>
 							<FieldRow>
 								<Select
-									id='language'
+									id='translate-to'
 									value={language}
 									disabled={!translateEnable}
 									onChange={(value) => handleChangeLanguage(String(value))}
