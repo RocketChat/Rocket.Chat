@@ -54,7 +54,7 @@ What a registration may ask for:
 
 Registered apps appear in Administration → Third-party login with the creator `oauth-dynamic-client-registration`, where an administrator can deactivate or delete them.
 
-When enabled, anyone who can reach the workspace can create OAuth apps. Each user still signs in and approves an app before it gets a token, but the app's name on the consent page is whatever the client registered. Registrations are rate limited like the rest of the API (`API_Enable_Rate_Limiter`), at `API_Enable_Rate_Limiter_Limit_Calls_Default` per minute for each client address. Behind a reverse proxy, the client address is found with `HTTP_FORWARDED_COUNT`, as for the REST API; without it, every registration counts against the proxy's address.
+When enabled, anyone who can reach the workspace can create OAuth apps. Each user still signs in and approves an app before it gets a token, but the app's name on the consent page is whatever the client registered. Registrations are rate limited like the rest of the API (`API_Enable_Rate_Limiter`), at `API_Enable_Rate_Limiter_Limit_Calls_Default` per minute for each client address. The client address is resolved with `HTTP_FORWARDED_COUNT`, as for the REST API. It defaults to `1`, one reverse proxy; set it to the actual number of proxies, and to `0` when clients reach the workspace directly, since otherwise each client can pick its own address with `X-Forwarded-For` and get a fresh limit.
 
 ## Limitations
 
