@@ -130,8 +130,7 @@ $input-border-radius: theme('input-border-radius', lengths.border-radius(medium)
 		-webkit-text-fill-color: $input-colors-color;
 
 		*:disabled &,
-		&:disabled,
-		&.disabled {
+		&:disabled {
 			-webkit-text-fill-color: $input-colors-disabled-color;
 		}
 	}
@@ -183,8 +182,7 @@ $input-border-radius: theme('input-border-radius', lengths.border-radius(medium)
 
 		@extend %input;
 
-		&:invalid,
-		&.invalid {
+		&:invalid {
 			@extend %input--invalid;
 		}
 	}
@@ -218,8 +216,7 @@ $input-border-radius: theme('input-border-radius', lengths.border-radius(medium)
 			min-height: lengths.size(28);
 			padding: lengths.padding(4) lengths.padding(8);
 
-			&:invalid,
-			&.invalid {
+			&:invalid {
 				@extend %input--invalid;
 			}
 		}
@@ -233,8 +230,7 @@ $input-border-radius: theme('input-border-radius', lengths.border-radius(medium)
 		$disabled-color: $input-colors-disabled-color
 	);
 
-	&:invalid,
-	&.invalid {
+	&:invalid {
 		@include with-colors(
 			$color: $input-colors-invalid-color,
 			$placeholder-color: $input-colors-invalid-placeholder-color,
@@ -252,8 +248,7 @@ $input-border-radius: theme('input-border-radius', lengths.border-radius(medium)
 	}
 
 	*:disabled &,
-	&:disabled,
-	&.disabled {
+	&:disabled {
 		cursor: not-allowed;
 	}
 
@@ -265,8 +260,7 @@ $input-border-radius: theme('input-border-radius', lengths.border-radius(medium)
 	);
 
 	*:disabled & + .rcx-input-box__addon,
-	&:disabled + .rcx-input-box__addon,
-	&.disabled + .rcx-input-box__addon {
+	&:disabled + .rcx-input-box__addon {
 		pointer-events: none;
 	}
 
