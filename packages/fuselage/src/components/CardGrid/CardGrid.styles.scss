@@ -1,11 +1,15 @@
 @use '../../styles/lengths.scss';
 
 .rcx-grid.rcx-card-grid {
+	--rcx-card-grid-min-row-height: auto;
+
 	margin: lengths.margin(-8);
 }
 
 .rcx-card-grid__item {
 	display: grid;
+
+	min-height: var(--rcx-card-grid-min-row-height, auto);
 	grid-template-columns: minmax(0, 1fr);
 }
 

@@ -2,6 +2,7 @@
 @use '../../styles/functions' as *;
 @use '../../styles/lengths.scss';
 @use '../../styles/mixins/breakpoints.scss' as *;
+@use '../../styles/typography.scss' as *;
 
 $card-spacing: lengths.margin(8);
 $card-vertical-padding: lengths.padding(20);
@@ -40,6 +41,13 @@ $card-background-color: theme('card-background-color', colors.surface(light));
 		gap: $card-spacing;
 	}
 
+	&__body {
+		display: flex;
+		flex-grow: 1;
+
+		@include use-font-scale(p2m);
+	}
+
 	&__col {
 		display: flex;
 		flex-direction: column;
@@ -51,12 +59,11 @@ $card-background-color: theme('card-background-color', colors.surface(light));
 	}
 
 	&__horizontal {
+		flex-wrap: wrap;
 		align-items: center;
 
 		padding: $card-horizontal-padding;
 		gap: $card-horizontal-gap;
-
-		flex-wrap: wrap;
 
 		@include on-breakpoint(sm) {
 			flex-wrap: nowrap;
