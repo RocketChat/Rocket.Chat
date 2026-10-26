@@ -1,9 +1,9 @@
 import type { IRole, IRoom } from '@rocket.chat/core-typings';
 import { Box, Field, FieldLabel, FieldRow, ButtonGroup, Button, Callout, FieldError, Stack } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { usePagination, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
+import { usePaginatedQuery, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from '@tanstack/react-query';
 import { useId, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -60,22 +60,19 @@ const UsersInRolePage = ({ role }: UsersInRolePageProps) => {
 
 	const getUsersInRoleEndpoint = useEndpoint('GET', '/v1/roles.getUsersInRole');
 
-	const paginationData = usePagination();
-	const { itemsPerPage, current } = paginationData;
-
 	const query = useMemo(
 		() => ({
 			role: _id,
 			...(rid && { roomId: rid }),
-			...(itemsPerPage && { count: itemsPerPage }),
-			...(current && { offset: current }),
 		}),
-		[itemsPerPage, current, rid, _id],
+		[rid, _id],
 	);
 
-	const { data, isLoading, isSuccess, refetch, isError } = useQuery({
-		queryKey: ['getUsersInRole', _id, query],
-		queryFn: async () => getUsersInRoleEndpoint(query),
+	const { data, isLoading, isSuccess, refetch, isError, paginationProps } = usePaginatedQuery({
+		query,
+		getQueryKey: (query) => ['getUsersInRole', _id, query],
+		queryFn: getUsersInRoleEndpoint,
+		itemsKey: 'users',
 	});
 
 	const handleRemove = useRemoveUserFromRole({ rid, roleId: _id, roleName: name, roleDescription: description });
