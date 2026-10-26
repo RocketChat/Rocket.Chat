@@ -1,20 +1,20 @@
 import { AppSourceStorage } from '@rocket.chat/apps/dist/server/storage/AppSourceStorage';
 import type { IAppStorageItem } from '@rocket.chat/apps/dist/server/storage/IAppStorageItem';
 import { streamToBuffer } from '@rocket.chat/tools';
-import { NpmModuleMongodb } from 'meteor/npm-mongo';
 import { ObjectId } from 'mongodb';
+import type { GridFSBucketWriteStream } from 'mongodb';
 
-import { db } from '../../../../../server/database/utils';
+import { db, GridFSBucket } from '../../../../../server/database/utils';
 
 export class AppGridFSSourceStorage extends AppSourceStorage {
 	private pathPrefix = 'GridFS:/';
 
-	private bucket: NpmModuleMongodb.GridFSBucket;
+	private bucket: GridFSBucket;
 
 	constructor() {
 		super();
 
-		this.bucket = new NpmModuleMongodb.GridFSBucket(db as any, {
+		this.bucket = new GridFSBucket(db, {
 			bucketName: 'rocketchat_apps_packages',
 			chunkSizeBytes: 1024 * 255,
 		});
@@ -23,7 +23,7 @@ export class AppGridFSSourceStorage extends AppSourceStorage {
 	public async store(item: IAppStorageItem, zip: Buffer): Promise<string> {
 		return new Promise((resolve, reject) => {
 			const filename = this.itemToFilename(item);
-			const writeStream: NpmModuleMongodb.GridFSBucketWriteStream = this.bucket
+			const writeStream: GridFSBucketWriteStream = this.bucket
 				.openUploadStream(filename)
 				.on('finish', () => resolve(this.idToPath(writeStream.id)))
 				.on('error', (error: any) => reject(error));
@@ -40,7 +40,7 @@ export class AppGridFSSourceStorage extends AppSourceStorage {
 	public async update(item: IAppStorageItem, zip: Buffer): Promise<string> {
 		return new Promise((resolve, reject) => {
 			const fileId = this.itemToFilename(item);
-			const writeStream: NpmModuleMongodb.GridFSBucketWriteStream = this.bucket
+			const writeStream: GridFSBucketWriteStream = this.bucket
 				.openUploadStream(fileId)
 				.on('finish', () => {
 					resolve(this.idToPath(writeStream.id));
@@ -74,7 +74,7 @@ export class AppGridFSSourceStorage extends AppSourceStorage {
 		return `${item.info.nameSlug}-${item.info.version}.package`;
 	}
 
-	private idToPath(id: NpmModuleMongodb.GridFSBucketWriteStream['id']): string {
+	private idToPath(id: GridFSBucketWriteStream['id']): string {
 		return this.pathPrefix + id;
 	}
 
