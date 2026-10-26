@@ -101,8 +101,7 @@ describe('XMPP federation: presence', () => {
 		}
 	});
 
-	// Known defect: ../../docs/specs/presence.md#d2-rocketchat-status-changes-do-not-reach-xmpp-contacts
-	it.skip('relays a Rocket.Chat status change to subscribed contacts (D2)', async () => {
+	it('relays a Rocket.Chat status change to subscribed contacts (R1)', async () => {
 		const after = alice.cursor();
 		await setStatus(local, 'away');
 		await alice.waitFor((stanza) => isPresenceFrom(local.jid)(stanza) && stanza.getChildText('show') === 'away', 'presence show=away', {

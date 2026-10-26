@@ -6,11 +6,12 @@ PACKAGE_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 REPO_ROOT="$(cd "$PACKAGE_ROOT/../../.." && pwd)"
 COMPOSE=(docker compose -f "$PACKAGE_ROOT/docker-compose.test.yml")
 CERTS_DIR="$PACKAGE_ROOT/docker-compose/certs/generated"
-SERVICES=(authorization-service presence-service xmpp-server-service)
+SERVICES=(account-service authorization-service presence-service ddp-streamer xmpp-server-service)
 MAX_WAIT_SECONDS=300
 
 export XMPP_STACK_RC_PORT="${XMPP_STACK_RC_PORT:-3000}"
 export XMPP_STACK_SERVICE_PORT="${XMPP_STACK_SERVICE_PORT:-3039}"
+export XMPP_STACK_DDP_PORT="${XMPP_STACK_DDP_PORT:-4000}"
 export XMPP_STACK_OPENFIRE_C2S_PORT="${XMPP_STACK_OPENFIRE_C2S_PORT:-5222}"
 export XMPP_STACK_OPENFIRE_ADMIN_PORT="${XMPP_STACK_OPENFIRE_ADMIN_PORT:-9090}"
 
@@ -23,8 +24,9 @@ usage() {
 	cat <<EOF
 Usage: $(basename "$0") [options] [-- <node --test arguments>]
 
-Builds Rocket.Chat, authorization-service, presence-service and xmpp-server-service from the
-working tree, starts them with Openfire, runs the end-to-end suite, and tears everything down.
+Builds Rocket.Chat, account-service, authorization-service, presence-service, ddp-streamer and
+xmpp-server-service from the working tree, starts them with Openfire, runs the end-to-end suite,
+and tears everything down.
 
   --image-tag TAG   use the images CI published to ghcr.io/rocketchat/rocket.chat/* under TAG
                     (for example pr-12345 or develop) instead of building
@@ -179,6 +181,7 @@ finish() {
 	if [[ "$KEEP_RUNNING" == true ]]; then
 		log "Stack left running:"
 		log "  Rocket.Chat          http://localhost:$XMPP_STACK_RC_PORT (rocketchat.internal.admin.test / rocketchat.internal.admin.test), XMPP domain rc.test"
+		log "  DDP streamer         http://localhost:$XMPP_STACK_DDP_PORT"
 		log "  xmpp-server-service  http://localhost:$XMPP_STACK_SERVICE_PORT/stats"
 		log "  Openfire             xmpp://localhost:$XMPP_STACK_OPENFIRE_C2S_PORT, domain openfire.test; admin console http://localhost:$XMPP_STACK_OPENFIRE_ADMIN_PORT (admin / admin)"
 		log "  CA certificate       $CERTS_DIR/ca.pem"
@@ -205,6 +208,7 @@ log "Starting the stack"
 "${COMPOSE[@]}" up -d --no-build
 
 wait_for rocketchat "http://localhost:$XMPP_STACK_RC_PORT/api/info"
+wait_for ddp-streamer "http://localhost:$XMPP_STACK_DDP_PORT/health"
 wait_for xmpp-server-service "http://localhost:$XMPP_STACK_SERVICE_PORT/health"
 wait_for openfire "http://localhost:$XMPP_STACK_OPENFIRE_ADMIN_PORT/login.jsp"
 
@@ -216,6 +220,7 @@ if [[ "$RUN_TESTS" == true ]]; then
 	export XMPP_E2E_XMPP_SERVICE="xmpp://localhost:$XMPP_STACK_OPENFIRE_C2S_PORT"
 	export XMPP_E2E_SERVICE_URL="http://localhost:$XMPP_STACK_SERVICE_PORT"
 	export TEST_API_URL="http://localhost:$XMPP_STACK_RC_PORT"
+	export XMPP_E2E_RC_DDP_URL="http://localhost:$XMPP_STACK_DDP_PORT"
 	if [[ ${#TEST_ARGS[@]} -gt 0 ]]; then
 		node --import tsx --test --test-concurrency=1 --test-force-exit "${TEST_ARGS[@]}"
 	else
