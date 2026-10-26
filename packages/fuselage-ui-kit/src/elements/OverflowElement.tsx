@@ -48,7 +48,7 @@ const OverflowElement = ({ block, context }: OverflowElementProps) => {
 		<>
 			<IconButton
 				ref={ref}
-				small
+				size='small'
 				onClick={onClick}
 				onBlur={hide}
 				onKeyUp={handleKeyUp}

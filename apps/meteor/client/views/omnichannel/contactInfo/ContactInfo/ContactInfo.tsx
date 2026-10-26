@@ -66,7 +66,7 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 						<IconButton
 							disabled={!canEditContact || hasConflicts}
 							title={canEditContact ? t('Edit') : t('Not_authorized')}
-							small
+							size='small'
 							icon='pencil'
 							onClick={() => handleNavigate({ context: 'edit' })}
 						/>

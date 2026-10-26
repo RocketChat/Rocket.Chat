@@ -100,7 +100,7 @@ export const AppLogsFilter = ({ appId, expandAll, collapseAll, refetchLogs, isLo
 						title={isLoading ? t('Loading') : t('Refresh_logs')}
 						disabled={isLoading}
 						icon='refresh'
-						secondary
+						variant='secondary'
 						onClick={() => refreshLogs()}
 					/>
 
@@ -108,7 +108,7 @@ export const AppLogsFilter = ({ appId, expandAll, collapseAll, refetchLogs, isLo
 						title={noResults ? t('No_data_to_export') : t('Export')}
 						icon='circle-arrow-down'
 						disabled={noResults}
-						secondary
+						variant='secondary'
 						onClick={() => openExportModal()}
 						aria-label={noResults ? t('No_data_to_export') : t('Export')}
 						aria-disabled={noResults}

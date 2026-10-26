@@ -381,11 +381,11 @@ export const Sizes = () => (
 	</ButtonGroup>
 );
 
-const CustomButton = (props: IconButtonProps) => <IconButton {...props} icon='kebab' secondary small={false} />;
+const CustomButton = (props: IconButtonProps) => <IconButton {...props} icon='kebab' variant='secondary' size='large' />;
 
 export const WithCustomButton = () => (
 	<ButtonGroup>
-		<Menu title='using prop customButton' button={<IconButton icon='kebab' secondary />}>
+		<Menu title='using prop customButton' button={<IconButton icon='kebab' variant='secondary' />}>
 			<MenuItem key='1'>Profile</MenuItem>
 			<MenuItem key='2'>Chats</MenuItem>
 			<MenuItem key='3'>Settings</MenuItem>

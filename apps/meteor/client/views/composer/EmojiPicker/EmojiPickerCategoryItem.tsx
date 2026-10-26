@@ -56,7 +56,7 @@ const EmojiPickerCategoryItem = ({ category, active, handleGoToCategory, ...prop
 			aria-selected={active}
 			title={t(category.i18n)}
 			className={category.key}
-			small
+			size='small'
 			aria-label={t(category.i18n)}
 			onClick={handleGoToCategory}
 			icon={icon}

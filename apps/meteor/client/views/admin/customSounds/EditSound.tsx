@@ -125,7 +125,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps) {
 				<Field>
 					<FieldLabel>{t('Sound File')}</FieldLabel>
 					<Box display='flex' flexDirection='row' marginBlockStart='none' alignItems='center' gap={4} paddingInlineStart={4}>
-						<IconButton secondary small icon='upload' onClick={clickUpload} />
+						<IconButton variant='secondary' size='small' icon='upload' onClick={clickUpload} />
 						{file?.name || (data?.name && data?.extension && `${data.name}.${data.extension}`) || t('None')}
 					</Box>
 				</Field>

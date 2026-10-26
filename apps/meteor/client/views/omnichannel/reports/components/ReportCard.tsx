@@ -39,7 +39,7 @@ export const ReportCard = forwardRef<HTMLElement, ReportCardProps>(function Repo
 					<CardCol>
 						<CardRow>
 							<PeriodSelector name='periodSelector' {...periodSelectorProps} />
-							<DownloadDataButton {...downloadProps} title='Download CSV' small={false} medium icon={<Icon name='download' size='x20' />} />
+							<DownloadDataButton {...downloadProps} title='Download CSV' size='medium' icon={<Icon name='download' size='x20' />} />
 						</CardRow>
 					</CardCol>
 				</Box>
