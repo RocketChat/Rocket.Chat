@@ -24,7 +24,7 @@ const compareVersions = (version: string, message: string) => {
 	}
 };
 
-export type DeprecationLoggerNextPlannedVersion = '9.0.0';
+export type DeprecationLoggerNextPlannedVersion = '11.0.0';
 
 // `TEST_MODE=true` makes the logger throw so accidental usage of a deprecated
 // method/endpoint surfaces immediately in the test run. The API end-to-end
