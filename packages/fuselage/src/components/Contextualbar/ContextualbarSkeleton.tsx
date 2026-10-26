@@ -1,5 +1,3 @@
-import { memo } from 'react';
-
 import { Box } from '../Box';
 import { Skeleton } from '../Skeleton';
 import Contextualbar, { type ContextualbarProps } from './Contextualbar';
@@ -25,4 +23,4 @@ const ContextualbarSkeleton = (props: ContextualbarSkeletonProps) => (
 	</Contextualbar>
 );
 
-export default memo(ContextualbarSkeleton);
+export default ContextualbarSkeleton;
