@@ -1,6 +1,7 @@
 @use '../../styles/colors.scss';
 @use '../../styles/functions' as *;
 @use '../../styles/lengths.scss';
+@use '../../styles/mixins/breakpoints.scss' as *;
 
 $card-spacing: lengths.margin(8);
 $card-vertical-padding: lengths.padding(20);
@@ -55,8 +56,10 @@ $card-background-color: theme('card-background-color', colors.surface(light));
 		padding: $card-horizontal-padding;
 		gap: $card-horizontal-gap;
 
-		&--wrap {
-			flex-wrap: wrap;
+		flex-wrap: wrap;
+
+		@include on-breakpoint(sm) {
+			flex-wrap: nowrap;
 		}
 	}
 
