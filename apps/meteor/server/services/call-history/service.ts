@@ -1,4 +1,4 @@
-import { ServiceClassInternal, type ICallHistoryService } from '@rocket.chat/core-services';
+import { api, ServiceClassInternal, type ICallHistoryService } from '@rocket.chat/core-services';
 import type { IUser, CallHistoryItem, MediaCallHistoryItem } from '@rocket.chat/core-typings';
 import { CallHistory } from '@rocket.chat/models';
 
@@ -31,6 +31,17 @@ export class CallHistoryService extends ServiceClassInternal implements ICallHis
 		const type = externalHistoryConfig ? 'mitel' : 'media-call';
 
 		return this.doSearch(type, uid, filters, pagination);
+	}
+
+	public async importExternalHistory(uid: IUser['_id']): Promise<void> {
+		const externalHistoryConfig = this.getExternalCallHistorySettings();
+		if (!externalHistoryConfig?.host || !externalHistoryConfig.username) {
+			return;
+		}
+
+		// No timeout: nobody is waiting on this request, and the clients are only told once everything was imported
+		await importHistoryForUser(uid, { ...externalHistoryConfig, timeout: undefined });
+		void api.broadcast('user.call-history', { userId: uid });
 	}
 
 	public async searchMediaCalls(

@@ -173,6 +173,7 @@ export const ABACQueryKeys = {
 
 export const callHistoryQueryKeys = {
 	all: ['call-history'] as const,
+	list: () => [...callHistoryQueryKeys.all, 'list'] as const,
 	info: (callId?: string) => [...callHistoryQueryKeys.all, 'info', callId] as const,
 };
 

@@ -164,6 +164,10 @@ export class ListenersModule {
 			notifications.notifyUserInThisInstance(userId, 'media-signal', signal);
 		});
 
+		service.onEvent('user.call-history', ({ userId }: { userId: string }) => {
+			notifications.notifyUserInThisInstance(userId, 'call-history', {});
+		});
+
 		service.onEvent('user.media-call-devices', ({ userId }: { userId: string }) => {
 			notifications.notifyUserInThisInstance(userId, 'media-call-devices', {});
 		});

@@ -14,6 +14,8 @@ export interface ICallHistoryService {
 			sort?: Record<string, 1 | -1>;
 		},
 	): Promise<{ items: CallHistoryItem[]; total: number }>;
+	/** Fetches the user's history from the external service, when there is one, and tells the user's clients about it. */
+	importExternalHistory(uid: IUser['_id']): Promise<void>;
 	searchMediaCalls(
 		uid: IUser['_id'],
 		filters: {
