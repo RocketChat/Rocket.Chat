@@ -119,19 +119,7 @@ const AudioPlayer = ({
 	const { document: ownerDocument } = useOwnerDocument();
 
 	return (
-		<Box
-			borderWidth='default'
-			backgroundColor='tint'
-			borderColor='extra-light'
-			paddingBlock={12}
-			paddingInlineEnd={8}
-			paddingInlineStart={16}
-			borderRadius='medium'
-			width='100%'
-			maxWidth='x300'
-			display='flex'
-			alignItems='center'
-		>
+		<Box className='rcx-audio-player'>
 			<AudioPlayerControls
 				isPlaying={isPlaying}
 				currentTime={currentTime}
