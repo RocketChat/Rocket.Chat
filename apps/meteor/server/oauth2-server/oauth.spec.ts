@@ -150,6 +150,19 @@ describe('OAuth2Server', () => {
 			expect(OAuthAuthCodes.findOneByAuthCode).not.toHaveBeenCalled();
 		});
 
+		it.each([
+			['a malformed Basic header', (test: request.Test) => test.set('Authorization', 'Basic !!!')],
+			['Basic credentials with an empty secret', (test: request.Test) => test.auth(client.clientId, '')],
+		])('does not take %s for the client secret', async (_case, withHeader) => {
+			jest.mocked(OAuthAuthCodes.findOneByAuthCode).mockResolvedValue(storedCode({ codeChallenge, codeChallengeMethod: 'S256' }) as never);
+
+			const response = await withHeader(exchange({ code_verifier: codeVerifier }));
+
+			expect(response.status).toBe(400);
+			expect(response.body).toEqual({ error: 'invalid_request', error_description: 'Missing parameter: `client_secret`' });
+			expect(OAuthAccessTokens.insertOne).not.toHaveBeenCalled();
+		});
+
 		it('accepts the client secret through HTTP Basic authentication', async () => {
 			jest.mocked(OAuthAuthCodes.findOneByAuthCode).mockResolvedValue(storedCode({ codeChallenge, codeChallengeMethod: 'S256' }) as never);
 
