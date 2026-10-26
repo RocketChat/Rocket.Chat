@@ -1019,18 +1019,17 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 
 						const result = self.unauthorized();
 
-						if (!applyBreakingChanges) {
-							Object.assign(result.body, {
-								status: 'error',
-								error: error.error,
-								details: error.details,
-								message: error.reason || error.message,
-								...(error.reason === 'User not found' && {
-									error: 'Unauthorized',
-									message: 'Unauthorized',
-								}),
-							});
-						}
+						// Clients read these to drive 2FA prompts and explain refused logins
+						Object.assign(result.body, {
+							...(!applyBreakingChanges && { status: 'error' }),
+							error: error.error,
+							details: error.details,
+							message: error.reason || error.message,
+							...(error.reason === 'User not found' && {
+								error: 'Unauthorized',
+								message: 'Unauthorized',
+							}),
+						});
 						return result;
 					}
 				},
