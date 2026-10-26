@@ -67,3 +67,21 @@ test('shows the selection of a controlled value changed after mount', () => {
 	expect(screen.getByText('Banana')).toBeInTheDocument();
 	expect(screen.queryByText('Apple')).not.toBeInTheDocument();
 });
+
+test('removes a default chip on click and keeps the list open', async () => {
+	const onChange = jest.fn();
+	const options: [string, string][] = [
+		['1', 'Apple'],
+		['2', 'Banana'],
+	];
+	render(<MultiSelect options={options} value={['1', '2']} onChange={onChange} />);
+
+	await userEvent.click(screen.getByRole('combobox'));
+	expect(await screen.findByRole('listbox')).toBeInTheDocument();
+
+	await userEvent.click(screen.getByRole('button', { name: 'Apple' }));
+
+	expect(onChange).toHaveBeenCalledWith(['2']);
+	expect(screen.getByRole('combobox')).toHaveFocus();
+	expect(screen.getByRole('combobox')).toHaveAttribute('aria-expanded', 'true');
+});
