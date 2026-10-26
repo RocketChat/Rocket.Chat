@@ -9,8 +9,6 @@ export type CardGroupProps = {
 	stretch?: boolean;
 	wrap?: boolean;
 	vertical?: boolean;
-	small?: boolean;
-	large?: boolean;
 	children?: ReactNode;
 } & Omit<AllHTMLAttributes<HTMLElement>, 'is' | 'wrap'>;
 
