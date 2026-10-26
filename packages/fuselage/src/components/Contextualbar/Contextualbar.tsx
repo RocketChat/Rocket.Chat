@@ -1,5 +1,3 @@
-import { memo } from 'react';
-
 import type { ElementProps } from '../../types/ElementProps';
 import { Box } from '../Box';
 
@@ -19,4 +17,4 @@ function Contextualbar({ stretch, position, ...props }: ContextualbarProps) {
 	);
 }
 
-export default memo(Contextualbar);
+export default Contextualbar;

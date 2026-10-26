@@ -1,5 +1,3 @@
-import { memo } from 'react';
-
 import { IconButton, type IconButtonProps } from '../Button';
 
 export type ContextualbarActionProps = {
@@ -8,4 +6,4 @@ export type ContextualbarActionProps = {
 
 const ContextualbarAction = ({ name, ...props }: ContextualbarActionProps) => <IconButton small icon={name} {...props} />;
 
-export default memo(ContextualbarAction);
+export default ContextualbarAction;

@@ -1,5 +1,3 @@
-import { memo } from 'react';
-
 import type { ElementProps } from '../../types/ElementProps';
 import { Box } from '../Box';
 
@@ -11,4 +9,4 @@ function ContextualbarSection(props: ContextualbarSectionProps) {
 	);
 }
 
-export default memo(ContextualbarSection);
+export default ContextualbarSection;
