@@ -105,7 +105,7 @@ jobs:
 
       - name: Raw layout elements in screens
         if: matrix.check == 'lint'
-        run: node scripts/scan-raw-layout.mjs --max 1146 "$RUNNER_TEMP/raw-layout-findings.json"
+        run: node scripts/scan-raw-layout.mjs --max 1142 "$RUNNER_TEMP/raw-layout-findings.json"
 
       - name: Spacing scale
         if: matrix.check == 'lint'
