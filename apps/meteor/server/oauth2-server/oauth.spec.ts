@@ -95,6 +95,18 @@ describe('OAuth2Server', () => {
 				expect.not.objectContaining({ codeChallenge: expect.anything() }),
 			);
 		});
+
+		it('refuses the plain challenge method', async () => {
+			const query = new URLSearchParams(authorizeQuery);
+			query.set('code_challenge', codeVerifier);
+			query.set('code_challenge_method', 'plain');
+
+			const response = await approve(query);
+
+			expect(response.status).toBe(400);
+			expect(response.body).toMatchObject({ error: 'invalid_request' });
+			expect(OAuthAuthCodes.upsertByAuthCode).not.toHaveBeenCalled();
+		});
 	});
 
 	describe('POST /oauth/token', () => {
@@ -115,6 +127,7 @@ describe('OAuth2Server', () => {
 			expect(response.status).toBe(400);
 			expect(response.body).toMatchObject({ error: 'invalid_grant' });
 			expect(OAuthAccessTokens.insertOne).not.toHaveBeenCalled();
+			expect(OAuthAuthCodes.deleteOne).toHaveBeenCalledWith({ authCode: 'auth-code' });
 		});
 
 		it('rejects a code issued with a challenge when the request carries no verifier', async () => {
