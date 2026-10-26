@@ -12,16 +12,7 @@ export type ContextualbarContentProps = ElementProps<HTMLElement> & {
 
 function ContextualbarContent({ flush, spaced, ...props }: ContextualbarContentProps) {
 	return (
-		<Box
-			rcx-vertical-bar__content
-			paddingInline={flush ? 0 : 24}
-			paddingBlock={spaced ? 12 : undefined}
-			display='flex'
-			flexDirection='column'
-			overflowY='hidden'
-			height='full'
-			{...props}
-		/>
+		<Box rcx-vertical-bar__content rcx-vertical-bar__content--flush={flush} rcx-vertical-bar__content--spaced={spaced} {...props} />
 	);
 }
 
