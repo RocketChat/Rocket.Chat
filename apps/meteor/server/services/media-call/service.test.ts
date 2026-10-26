@@ -22,6 +22,7 @@ const MediaCalls = { findOneById: sandbox.stub() };
 const Rooms = { findOneDirectRoomContainingAllUserIDs: sandbox.stub() };
 const Users = { findOneById: sandbox.stub(), findByIds: sandbox.stub() };
 
+const importExternalHistory = sandbox.stub();
 const sendMessage = sandbox.stub();
 const callStateToTranslationKey = sandbox.stub();
 const getHistoryMessagePayload = sandbox.stub();
@@ -41,7 +42,7 @@ const { MediaCallService } = proxyquire.noCallThru().load('./service', {
 		api: { broadcast: sandbox.stub() },
 		Presence: {},
 		Authorization: {},
-		CallHistory: { importExternalHistory: sandbox.stub().resolves() },
+		CallHistory: { importExternalHistory },
 	},
 	'@rocket.chat/media-calls': {
 		callServer: callServerMock,
@@ -92,6 +93,7 @@ describe('media call history pipeline', () => {
 
 	beforeEach(() => {
 		sandbox.reset();
+		importExternalHistory.resolves();
 		Rooms.findOneDirectRoomContainingAllUserIDs.resolves({ _id: 'rid' });
 		Users.findOneById.resolves({ _id: 'caller-id', language: 'en' });
 		callStateToTranslationKey.returns({ type: 'mrkdwn', i18n: { key: 'Call_failed_bold' }, text: 'Call failed' });

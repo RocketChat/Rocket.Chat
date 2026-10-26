@@ -76,6 +76,7 @@ const CallHistoryPage = () => {
 	const sortProps = useSort<'contact' | 'type' | 'status' | 'timestamp'>('timestamp', 'desc');
 
 	const getCallHistory = useEndpoint('GET', '/v1/call-history.list');
+	const importCallHistory = useEndpoint('POST', '/v1/call-history.import');
 	const { setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 
 	const router = useRouter();
@@ -129,7 +130,20 @@ const CallHistoryPage = () => {
 		});
 	}, [uid, queryClient, subscribeToNotifyUser]);
 
+	// The list only reads what the server already has, so the external history is fetched once, before the first list
+	const { isSuccess: importSettled } = useQuery({
+		queryKey: callHistoryQueryKeys.import(),
+		queryFn: () =>
+			importCallHistory().then(
+				() => true,
+				() => false,
+			),
+		staleTime: Infinity,
+		gcTime: Infinity,
+	});
+
 	const { data, isPending, error, refetch } = useQuery({
+		enabled: importSettled,
 		queryKey: [
 			...callHistoryQueryKeys.list(),
 			sortProps.sortBy,

@@ -23,14 +23,20 @@ export class CallHistoryService extends ServiceClassInternal implements ICallHis
 		},
 	): Promise<{ items: CallHistoryItem[]; total: number }> {
 		const externalHistoryConfig = this.getExternalCallHistorySettings();
-		if (externalHistoryConfig?.host && externalHistoryConfig.username) {
-			await importHistoryForUser(uid, externalHistoryConfig);
-		}
 
 		// If external history is toggled on, only external entries may be listed
 		const type = externalHistoryConfig ? 'mitel' : 'media-call';
 
 		return this.doSearch(type, uid, filters, pagination);
+	}
+
+	public async refreshExternalHistory(uid: IUser['_id']): Promise<void> {
+		const externalHistoryConfig = this.getExternalCallHistorySettings();
+		if (!externalHistoryConfig?.host || !externalHistoryConfig.username) {
+			return;
+		}
+
+		await importHistoryForUser(uid, externalHistoryConfig);
 	}
 
 	public async importExternalHistory(uid: IUser['_id']): Promise<void> {
