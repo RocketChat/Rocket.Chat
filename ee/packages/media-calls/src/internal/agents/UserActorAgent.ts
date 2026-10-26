@@ -182,7 +182,7 @@ export class UserActorAgent extends BaseMediaCallAgent {
 	public async onCallUpdated(callId: string): Promise<void> {
 		const call = await MediaCalls.findOneById(callId);
 
-		if (!call?.acceptedAt || call.ended) {
+		if (!call || call.ended) {
 			return;
 		}
 
