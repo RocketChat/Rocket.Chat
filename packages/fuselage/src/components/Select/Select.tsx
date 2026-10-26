@@ -84,7 +84,6 @@ function Select<V extends Key = Key>({
 	const mergedRef = useMergedRefs(outerRef, triggerRef, resizeRef);
 
 	const [listboxName, setListboxName] = useState<string>();
-	const [triggerFocusVisible, setTriggerFocusVisible] = useState(false);
 
 	const open = (index: number, byKeyboard: boolean) => {
 		if (disabled || options.length === 0) {
@@ -243,13 +242,7 @@ function Select<V extends Key = Key>({
 		}
 	});
 
-	const handleFocus = (event: FocusEvent<HTMLButtonElement>) => {
-		setTriggerFocusVisible(event.currentTarget.matches?.(':focus-visible') ?? false);
-		onFocus?.(event);
-	};
-
 	const handleBlur = (event: FocusEvent<HTMLButtonElement>) => {
-		setTriggerFocusVisible(false);
 		close();
 		onBlur?.(event);
 	};
@@ -313,13 +306,11 @@ function Select<V extends Key = Key>({
 				fontScale='p2'
 				justifyContent='space-between'
 				rcx-input-box--small={small}
-				className={[error && 'invalid', disabled && 'disabled', (triggerFocusVisible || isOpen) && 'focus', props.className]
-					.filter(Boolean)
-					.join(' ')}
+				className={[error && 'invalid', disabled && 'disabled', props.className].filter(Boolean).join(' ')}
 				onMouseDown={handleMouseDown}
 				onClick={handleClick}
 				onKeyDown={handleKeyDown}
-				onFocus={handleFocus}
+				onFocus={onFocus}
 				onBlur={handleBlur}
 			>
 				<Box is='span' color={selectedOption ? 'titles-labels' : 'hint'} {...(small && { fontScale: 'c1' })}>

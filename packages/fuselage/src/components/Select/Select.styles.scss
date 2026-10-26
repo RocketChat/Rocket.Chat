@@ -4,6 +4,7 @@
 @use '../../styles/typography.scss' as *;
 @use '../../styles/variables/input-colors.scss' as *;
 @use '../../styles/mixins/interactivity.scss' as *;
+@use '../../styles/mixins/shadows.scss' as *;
 @use '../InputBox/mixins.scss' as *;
 @use '../InputBox/InputBox.styles.scss' as *;
 
@@ -100,6 +101,17 @@
 			$focus-icon-color: $input-colors-invalid-focus-icon-color,
 			$disabled-color: $input-colors-invalid-disabled-color
 		);
+	}
+}
+
+// an open select keeps the focus look while focus is in its listbox
+.rcx-select[aria-expanded='true'] {
+	border-color: $input-colors-focus-border-color;
+	@include use-focus-shadow($input-colors-focus-shadow-color);
+
+	&.invalid {
+		border-color: $input-colors-invalid-focus-border-color;
+		@include use-focus-shadow($input-colors-invalid-focus-shadow-color);
 	}
 }
 
