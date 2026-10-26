@@ -1,3 +1,18 @@
+@use '../../styles/lengths.scss';
+
+.rcx-dropdown__bottom-sheet {
+	position: fixed;
+	z-index: 2;
+	bottom: 0;
+	left: 0;
+
+	width: 100vw;
+}
+
+.rcx-dropdown__bottom-sheet-content {
+	padding-block: lengths.padding(16);
+}
+
 .rcx-dropdown-enter {
 	transform: translate3d(0, -1rem, 0);
 
