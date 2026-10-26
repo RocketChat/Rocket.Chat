@@ -14,10 +14,10 @@ It is **enterprise (protected) code** under `apps/meteor/ee/`. The design goal i
 | ------ | ------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------- |
 | POST   | `/api/v1/mcp`                                          | JSON-RPC 2.0 message. The `2025-03-26` revision also accepts batch arrays. Response is `application/json`. |
 | GET    | `/api/v1/mcp`                                          | `405` with `Allow: POST` — this transport does not offer a server-initiated SSE stream.                    |
-| GET    | `/.well-known/oauth-protected-resource/api/v1/mcp`     | Protected resource metadata (RFC 9728): names the workspace as the authorization server of the endpoint.   |
+| GET    | `/.well-known/oauth-protected-resource/api/v1/mcp`     | Protected resource metadata (RFC 9728): names the workspace as the authorization server of the endpoint. Under a path prefix, the prefix goes after `oauth-protected-resource`. |
 | GET    | `/.well-known/oauth-protected-resource`                | The same document, for clients that look it up at the bare path.                                          |
 
-The endpoint is attached directly to the existing `/api/v1` Hono router because its JSON-RPC envelopes are defined by the MCP specification rather than Rocket.Chat's REST response contract. It still uses the standard authentication, `access-mcp` permission, and AI license middleware. When `MCP_Enabled` is off the endpoint and the metadata return `404`, before any authentication, so a disabled endpoint does not advertise OAuth.
+The endpoint is attached directly to the existing `/api/v1` Hono router because its JSON-RPC envelopes are defined by the MCP specification rather than Rocket.Chat's REST response contract. It still uses the standard authentication, `access-mcp` permission, and AI license middleware. When `MCP_Enabled` is off the endpoint and the metadata return `404` before MCP checks credentials or sends a challenge, so a disabled endpoint does not advertise OAuth.
 
 ## Request lifecycle
 
@@ -34,16 +34,16 @@ The shared CORS middleware advertises this request header only while MCP is enab
 
 ## Authentication
 
-Authentication is **reused from the REST layer** — no MCP-specific credential type. Every request (including `initialize`) carries one of:
+Authentication is **reused from the REST layer** — no MCP-specific credential type. A request without a credential, usually a client's first `initialize`, gets the challenge described below; every other request carries one of:
 
 - a **Personal Access Token**, as `X-User-Id` + `X-Auth-Token` headers;
 - an **OAuth access token** issued by the workspace's own [OAuth2 server](oauth2-server.md), as `Authorization: Bearer <token>`.
 
 The standard auth middleware resolves the user, and the MCP middleware then checks which credential it came from:
 
-- Without either credential, the request gets `401` with `WWW-Authenticate: Bearer resource_metadata="<Site_Url>/.well-known/oauth-protected-resource/api/v1/mcp"`. That challenge is how MCP clients discover that the endpoint uses OAuth and where to get a token (MCP authorization, RFC 9728).
+- Without either credential, the request gets `401` with `WWW-Authenticate: Bearer resource_metadata="https://<host>/.well-known/oauth-protected-resource<path>/api/v1/mcp"`, where `<path>` is the workspace's path prefix, if any. That challenge is how MCP clients discover that the endpoint uses OAuth and where to get a token (MCP authorization, RFC 9728). For a workspace under a prefix, that location is outside the prefix, so a reverse proxy in front of it must forward it to the workspace.
 - A credential that does not resolve to a user gets the same challenge with `error="invalid_token"`.
-- `X-Auth-Token` must belong to a Personal Access Token. A login session token is refused with `401`.
+- On POST, the only method that runs tools, `X-Auth-Token` must belong to a Personal Access Token: a login session token is refused with `401`. GET answers `405` without that lookup.
 - An access token passed as an `access_token` query parameter, which the REST API accepts, is ignored: MCP only reads it from the `Authorization` header.
 
 Every MCP request additionally requires the **`access-mcp`** permission (`permissionsRequired: ['access-mcp']`), enforced by the standard permissions middleware. Without it the request is rejected with `403`. The permission is granted to `admin` by default; admins can grant it to other roles from the Permissions admin page. OAuth does not change who may use MCP.

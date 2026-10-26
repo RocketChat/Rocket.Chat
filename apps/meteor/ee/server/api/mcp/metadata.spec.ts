@@ -1,22 +1,32 @@
 import express from 'express';
 import request from 'supertest';
 
-import { getProtectedResourceMetadataUrl, protectedResourceMetadataRouter } from './metadata';
-import { settings } from '../../../../server/settings/cached';
+import { getProtectedResourceMetadataUrl, serveProtectedResourceMetadata } from './metadata';
 
-jest.mock('meteor/webapp', () => ({ WebApp: { connectHandlers: { use: jest.fn() } } }), { virtual: true });
+const settingValues: Record<string, unknown> = {};
 
-jest.mock('../../../../server/settings/cached', () => ({
-	settings: { get: jest.fn() },
+jest.mock('meteor/webapp', () => ({ WebApp: { rawConnectHandlers: { use: jest.fn() } } }), { virtual: true });
+
+jest.mock('../../../../server/settings', () => ({
+	settings: { get: (id: string) => settingValues[id] },
 }));
 
-const app = express().use(protectedResourceMetadataRouter);
+jest.mock('../../../../server/settings/cached', () => ({
+	settings: { get: (id: string) => settingValues[id] },
+}));
 
-const mockSettings = (values: Record<string, unknown>) => jest.mocked(settings.get).mockImplementation((id) => values[id] as never);
+const runtimeGlobal = globalThis as typeof globalThis & { __meteor_runtime_config__?: { ROOT_URL_PATH_PREFIX?: string } };
+
+const deploy = (siteUrl: string, { pathPrefix = '', mcpEnabled = true } = {}) => {
+	Object.assign(settingValues, { Site_Url: siteUrl, MCP_Enabled: mcpEnabled });
+	runtimeGlobal.__meteor_runtime_config__ = { ROOT_URL_PATH_PREFIX: pathPrefix };
+};
+
+const app = express().use('/.well-known/oauth-protected-resource', serveProtectedResourceMetadata);
 
 describe('MCP protected resource metadata', () => {
 	beforeEach(() => {
-		mockSettings({ MCP_Enabled: true, Site_Url: 'https://chat.example.com/' });
+		deploy('https://chat.example.com/');
 	});
 
 	it('is located at the path-aware well-known URL of the MCP endpoint', () => {
@@ -37,6 +47,20 @@ describe('MCP protected resource metadata', () => {
 		},
 	);
 
+	it('places the path of a workspace under a prefix after the well-known segment', async () => {
+		deploy('https://example.com/chat', { pathPrefix: '/chat' });
+
+		expect(getProtectedResourceMetadataUrl()).toBe('https://example.com/.well-known/oauth-protected-resource/chat/api/v1/mcp');
+
+		const response = await request(app).get('/.well-known/oauth-protected-resource/chat/api/v1/mcp');
+
+		expect(response.status).toBe(200);
+		expect(response.body).toMatchObject({
+			resource: 'https://example.com/chat/api/v1/mcp',
+			authorization_servers: ['https://example.com/chat'],
+		});
+	});
+
 	it('does not describe other resources', async () => {
 		const response = await request(app).get('/.well-known/oauth-protected-resource/api/v1/chat.postMessage');
 
@@ -45,7 +69,7 @@ describe('MCP protected resource metadata', () => {
 	});
 
 	it('is not found while MCP is disabled', async () => {
-		mockSettings({ MCP_Enabled: false, Site_Url: 'https://chat.example.com' });
+		deploy('https://chat.example.com', { mcpEnabled: false });
 
 		const response = await request(app).get('/.well-known/oauth-protected-resource/api/v1/mcp');
 

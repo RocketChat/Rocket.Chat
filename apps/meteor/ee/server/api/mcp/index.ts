@@ -88,7 +88,8 @@ const hasPersonalAccessToken = async (userId: string, authToken: string): Promis
 
 /**
  * Accepts a Personal Access Token or an OAuth access token sent in the `Authorization` header, for the user the REST
- * authentication resolved from it. Login session tokens, and tokens sent in the query string, are refused.
+ * authentication resolved from it. Tokens sent in the query string are refused, and so are login session tokens on POST,
+ * the only method that runs tools.
  */
 export const checkMcpCredentials = async (request: Request, user: IUser | null | undefined): Promise<McpHttpResponse | undefined> => {
 	const credentials = readCredentials(request);
@@ -98,7 +99,7 @@ export const checkMcpCredentials = async (request: Request, user: IUser | null |
 	if (!user) {
 		return unauthorizedResponse('Invalid or expired credentials', 'invalid_token');
 	}
-	if ('authToken' in credentials && !(await hasPersonalAccessToken(user._id, credentials.authToken))) {
+	if ('authToken' in credentials && request.method === 'POST' && !(await hasPersonalAccessToken(user._id, credentials.authToken))) {
 		return unauthorizedResponse('Personal Access Token required', 'invalid_token');
 	}
 	return undefined;

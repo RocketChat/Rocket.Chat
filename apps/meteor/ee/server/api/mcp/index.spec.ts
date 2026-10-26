@@ -430,6 +430,13 @@ describe('MCP credentials', () => {
 		);
 	});
 
+	it('skips the token type lookup for GET, which runs no tools', async () => {
+		const request = new Request('http://localhost/api/v1/mcp', { headers: { 'x-user-id': 'user-id', 'x-auth-token': 'session-token' } });
+
+		await expect(checkMcpCredentials(request, user)).resolves.toBeUndefined();
+		expect(Users.findPersonalAccessTokenByHashedTokenAndUserId).not.toHaveBeenCalled();
+	});
+
 	it('accepts an OAuth access token sent as a Bearer credential', async () => {
 		await expect(checkMcpCredentials(mcpRequest({ authorization: 'Bearer access-token' }), user)).resolves.toBeUndefined();
 		expect(Users.findPersonalAccessTokenByHashedTokenAndUserId).not.toHaveBeenCalled();
