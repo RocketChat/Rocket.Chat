@@ -34,6 +34,7 @@ const createSchedulerStub = (): jest.Mocked<SearchIndexScheduler> => ({
 	stop: jest.fn(),
 	requestCatchUp: jest.fn(),
 	retryPendingDecrypt: jest.fn(),
+	removeRoom: jest.fn(),
 	getProgress: jest.fn(),
 	subscribe: jest.fn(),
 });

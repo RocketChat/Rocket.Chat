@@ -3,6 +3,7 @@ import { useStream } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
 import { RoomHistoryManager } from '../../../lib/RoomHistoryManager';
+import { e2eSearchIndexRuntime } from '../../../lib/e2ee/rocketchat.e2e';
 
 export const useClearRemovedRoomsHistory = (userId: IUser['_id'] | undefined) => {
 	const subscribeToNotifyUser = useStream('notify-user');
@@ -14,6 +15,8 @@ export const useClearRemovedRoomsHistory = (userId: IUser['_id'] | undefined) =>
 		return subscribeToNotifyUser(`${userId}/subscriptions-changed`, (event, data) => {
 			if (data.t !== 'l' && event === 'removed' && data.rid) {
 				RoomHistoryManager.clear(data.rid);
+				// The user left the room or was removed from it: the local search index must not keep its messages.
+				void e2eSearchIndexRuntime.onRoomRemoved(data.rid);
 			}
 		});
 	}, [userId, subscribeToNotifyUser]);

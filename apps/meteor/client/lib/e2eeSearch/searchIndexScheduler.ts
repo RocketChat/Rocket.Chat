@@ -72,12 +72,17 @@ type SearchIndexSchedulerOptions = {
 export type SearchIndexScheduler = {
 	/** Starts indexing: a catch-up of every room, then the history backfill, one request at a time while the user is idle. */
 	start(): void;
-	/** Stops after the request in flight, if any. */
-	stop(): void;
+	/** Stops after the request in flight, if any. Resolves when that request has ended. */
+	stop(): Promise<void>;
 	/** Catches up every room again, for example after a reconnect. */
 	requestCatchUp(): void;
 	/** Indexes the messages of the room that waited for its room key. */
 	retryPendingDecrypt(rid: string): void;
+	/**
+	 * Stops indexing the room and removes its rows from the index, after the request in flight (if any) has written its
+	 * page, so no page of the room lands after the remove.
+	 */
+	removeRoom(rid: string): Promise<void>;
 	getProgress(): SearchIndexProgress;
 	/** Calls the listener each time `getProgress` changes. Returns the function that removes it. */
 	subscribe(listener: () => void): () => void;
@@ -172,6 +177,13 @@ export const createSearchIndexScheduler = ({
 	let started = false;
 	let generation = 0;
 	let loop: Promise<void> = Promise.resolve();
+	/** The crawler call that runs now, if any. */
+	let inFlight: Promise<unknown> = Promise.resolve();
+
+	const track = <T>(call: Promise<T>): Promise<T> => {
+		inFlight = call.catch(() => undefined);
+		return call;
+	};
 	let status: SearchIndexProgress['status'] = 'stopped';
 	let indexed = 0;
 	let consecutiveFailures = 0;
@@ -287,6 +299,8 @@ export const createSearchIndexScheduler = ({
 	};
 
 	const runJob = async ({ kind, rid }: Job) => {
+		// A job picked before `removeRoom` must not index the removed room again.
+		if (removedRooms.has(rid)) return;
 		if (kind === 'catch-up') {
 			const result = await crawler.catchUpRoomPage(rid);
 			indexed += result.indexed;
@@ -318,7 +332,7 @@ export const createSearchIndexScheduler = ({
 	/** Runs the job and returns how long to wait before the next request. */
 	const attempt = async (run: number, job: Job): Promise<number> => {
 		try {
-			await runJob(job);
+			await track(runJob(job));
 			consecutiveFailures = 0;
 			jobAttempts = 0;
 			publish();
@@ -350,7 +364,7 @@ export const createSearchIndexScheduler = ({
 			keyArrived.delete(rid);
 			if (removedRooms.has(rid)) continue;
 			try {
-				indexed += (await crawler.retryPendingDecrypt(rid)).indexed;
+				indexed += (await track(crawler.retryPendingDecrypt(rid))).indexed;
 			} catch (error) {
 				onError(error);
 			}
@@ -426,7 +440,7 @@ export const createSearchIndexScheduler = ({
 		},
 
 		stop() {
-			if (!started) return;
+			if (!started) return loop;
 			started = false;
 			generation++;
 			retryJob = undefined;
@@ -436,6 +450,7 @@ export const createSearchIndexScheduler = ({
 			wake();
 			status = 'stopped';
 			publish();
+			return loop;
 		},
 
 		requestCatchUp,
@@ -443,6 +458,15 @@ export const createSearchIndexScheduler = ({
 		retryPendingDecrypt(rid) {
 			keyArrived.add(rid);
 			wake();
+		},
+
+		async removeRoom(rid) {
+			removedRooms.add(rid);
+			keyArrived.delete(rid);
+			if (retryJob?.rid === rid) retryJob = undefined;
+			await inFlight;
+			await removeRoom(rid);
+			publish();
 		},
 
 		getProgress: () => progress,

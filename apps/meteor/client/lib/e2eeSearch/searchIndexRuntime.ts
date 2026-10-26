@@ -87,6 +87,13 @@ export type SearchIndexRuntime = {
 	onReconnect(): void;
 	/** Indexes the messages that waited for the room key, after the key arrived. */
 	onRoomKeyReady(rid: string): void;
+	/** Removes the rows of a room whose subscription was removed (the user left the room or was removed from it). */
+	onRoomRemoved(rid: string): Promise<void>;
+	/**
+	 * Empties the open index, after the user reset the own E2E key: the old messages are not readable with the new key,
+	 * and the index must not keep them. The crawler stops until the next login. Resolves `false` when no index is open.
+	 */
+	wipe(): Promise<boolean>;
 	dispose(): void;
 };
 
@@ -136,6 +143,34 @@ export const createSearchIndexRuntime = ({
 		getScheduler: () => scheduler,
 		onReconnect: () => scheduler?.requestCatchUp(),
 		onRoomKeyReady: (rid) => scheduler?.retryPendingDecrypt(rid),
+		async onRoomRemoved(rid) {
+			const current = backend;
+			if (!current) return;
+
+			// Sends the queued documents first, so the remove also takes the ones of this room.
+			await writer.flush();
+			if (scheduler) {
+				await scheduler.removeRoom(rid);
+				return;
+			}
+			try {
+				await current.removeRoom(rid);
+			} catch (error) {
+				onError(error);
+			}
+		},
+		async wipe() {
+			const current = backend;
+			if (!current) return false;
+
+			const stopping = scheduler?.stop();
+			scheduler = undefined;
+			await stopping;
+			// Sends the queued documents first, so the wipe also takes them.
+			await writer.flush();
+			await current.wipe();
+			return true;
+		},
 		dispose() {
 			unsubscribe();
 			scheduler?.stop();

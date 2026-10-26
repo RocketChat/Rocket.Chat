@@ -373,6 +373,28 @@ describe('createSearchIndexScheduler', () => {
 			expect(removeRoom).toHaveBeenCalledWith('recent');
 		});
 
+		it('removes a room that the user left after the page in flight, and sends no more requests for it', async () => {
+			const { scheduler, removeRoom, roomsOf, backend } = await setup({ rooms: twoRooms });
+
+			scheduler.start();
+			await jest.advanceTimersByTimeAsync(REQUEST_MS / 2);
+			expect(roomsOf()).toEqual(['recent']);
+
+			const removed = scheduler.removeRoom('recent');
+			await jest.advanceTimersByTimeAsync(0);
+			expect(removeRoom).not.toHaveBeenCalled();
+
+			await jest.advanceTimersByTimeAsync(REQUEST_MS);
+			await removed;
+			await jest.advanceTimersByTimeAsync(30_000);
+			await scheduler.stop();
+
+			expect(removeRoom).toHaveBeenCalledWith('recent');
+			expect(await backend.getRoomState('recent')).toBeUndefined();
+			expect(roomsOf().filter((rid) => rid === 'recent')).toHaveLength(1);
+			expect(roomsOf()).toContain('old');
+		});
+
 		it('reports another error, skips that room and goes on with the next one', async () => {
 			const { scheduler, failures, removeRoom, onError, roomsOf } = await setup({ rooms: twoRooms });
 			const error = httpError(400, {}, { success: false, errorType: 'error-invalid-params' });
