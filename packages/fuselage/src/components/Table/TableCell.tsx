@@ -25,7 +25,7 @@ export type TableCellProps = Omit<
 const TableCell = ({ align, clickable, rowHeader, truncate, color, strong, children, ...props }: TableCellProps) => {
 	const isInsideHead = useContext(TableHeadContext);
 
-	const innerElement = children ?? (!isInsideHead ? <Box display='inline-block' is='hr' width='x14' borderWidth='default' /> : undefined);
+	const innerElement = children ?? (!isInsideHead ? <Box rcx-table__cell-placeholder is='hr' /> : undefined);
 
 	return (
 		<Box
