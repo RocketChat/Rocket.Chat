@@ -7,6 +7,15 @@ import type { Express, NextFunction, Request, Response } from 'express';
 import type { ModelConfig } from './model';
 import { Model } from './model';
 
+// Same grammar as `basic-auth`, which the library reads the header with: a header it ignores must not count as a secret.
+const BASIC_CREDENTIALS = /^ *(?:[Bb][Aa][Ss][Ii][Cc]) +([A-Za-z0-9._~+/-]+=*) *$/;
+const USER_PASS = /^([^:]*):(.*)$/;
+
+const hasBasicClientSecret = (authorization: string | undefined): boolean => {
+	const encoded = BASIC_CREDENTIALS.exec(authorization ?? '')?.[1];
+	return encoded !== undefined && Boolean(USER_PASS.exec(Buffer.from(encoded, 'base64').toString())?.[2]);
+};
+
 export class OAuth2Server {
 	public app: Express;
 
@@ -98,7 +107,7 @@ export class OAuth2Server {
 		// The library lets a PKCE verifier stand in for the client secret, as only a public client may;
 		// every client of this server is confidential.
 		const requireClientSecret = function (req: Request, res: Response, next: NextFunction) {
-			if (req.body?.client_secret || /^Basic\s/i.test(req.headers.authorization ?? '')) {
+			if (req.body?.client_secret || hasBasicClientSecret(req.headers.authorization)) {
 				return next();
 			}
 
