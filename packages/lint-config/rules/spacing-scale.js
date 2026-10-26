@@ -28,12 +28,7 @@ const literalValues = (node) => {
 	}
 };
 
-const KEYWORDS = new Set([0, '0', 'none', 'auto']);
-
-const isToken = (value) => {
-	const token = /^(?:neg-|-)?x(\d+)$/.exec(value);
-	return token !== null && SCALE.includes(Number(token[1]));
-};
+const ALLOWED = new Set([0, '0', 'none', 'auto', ...SCALE.flatMap((step) => [`x${step}`, `neg-x${step}`, `-x${step}`])]);
 
 const toPixels = (value) => {
 	if (typeof value === 'number') return value;
@@ -75,7 +70,7 @@ export default {
 
 		const check = (expression) => {
 			for (const { node, value } of literalValues(expression)) {
-				if (KEYWORDS.has(value) || isToken(value)) continue;
+				if (ALLOWED.has(value)) continue;
 				const pixels = toPixels(value);
 				const token = pixels === null ? null : tokenFor(pixels);
 				const data = { value: JSON.stringify(value), token };
