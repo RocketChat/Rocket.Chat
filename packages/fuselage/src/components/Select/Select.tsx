@@ -302,10 +302,7 @@ function Select<V extends Key = Key>({
 				disabled={disabled}
 				animated
 				rcx-select
-				display='flex'
-				flexDirection='row'
-				fontScale='p2'
-				justifyContent='space-between'
+				rcx-select--trigger
 				rcx-input-box--small={small}
 				rcx-select--invalid={!!error}
 				rcx-select--disabled={disabled}
@@ -317,7 +314,7 @@ function Select<V extends Key = Key>({
 				onFocus={onFocus}
 				onBlur={handleBlur}
 			>
-				<Box is='span' color={selectedOption ? 'titles-labels' : 'hint'} {...(small && { fontScale: 'c1' })}>
+				<Box is='span' rcx-select__value rcx-select__value--placeholder={!selectedOption} rcx-select__value--small={small}>
 					{selectedOption ? (selectedOption[1] ?? selectedOption[0]) : placeholder}
 				</Box>
 				<Icon name={isOpen ? 'chevron-up' : 'chevron-down'} size='x20' />
