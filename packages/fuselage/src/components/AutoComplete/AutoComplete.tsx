@@ -100,13 +100,11 @@ function AutoComplete<TLabel = ReactNode>({
 	const { ref: containerRef, borderBoxSize } = useResizeObserver();
 
 	const [selected, setSelected] = useState(() => getSelected(value, options) || []);
-
-	useEffect(() => {
-		// Validates if selected items are still valid after value changes
-		setSelected((selected) => {
-			return !selected.every(isSelectedValid(value)) ? selected.filter(isSelectedValid(value)) : selected;
-		});
-	}, [value]);
+	const [syncedValue, setSyncedValue] = useState(value);
+	if (value !== syncedValue) {
+		setSyncedValue(value);
+		setSelected(selected.filter(isSelectedValid(value)));
+	}
 
 	const handleSelect = useStableCallback(([newValue]: OptionType<string, TLabel>) => {
 		if (selected.some((item) => item.value === newValue)) {
