@@ -1,0 +1,45 @@
+@use '../../styles/colors.scss';
+@use '../../styles/lengths.scss';
+@use '../../styles/typography.scss' as *;
+
+.rcx-audio-player {
+	display: flex;
+	align-items: center;
+
+	width: lengths.size(full);
+	max-width: lengths.size(300);
+
+	padding-block: lengths.padding(12);
+	padding-inline: lengths.padding(16) lengths.padding(8);
+
+	border-width: lengths.border-width(default);
+	border-radius: lengths.border-radius(medium);
+	border-color: colors.stroke(extra-light);
+	background-color: colors.surface(tint);
+
+	&__controls {
+		display: flex;
+		align-items: center;
+
+		width: lengths.size(full);
+	}
+
+	&__track {
+		display: flex;
+		flex-grow: 1;
+		align-items: center;
+
+		margin-inline: lengths.margin(8);
+		gap: lengths.padding(16);
+	}
+
+	&__time {
+		@include use-font-scale(p2);
+
+		color: colors.font(secondary-info);
+	}
+
+	&__range {
+		width: lengths.size(full);
+	}
+}
