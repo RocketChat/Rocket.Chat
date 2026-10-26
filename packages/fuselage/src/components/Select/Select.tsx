@@ -3,11 +3,12 @@ import type { AllHTMLAttributes, FocusEvent, KeyboardEvent, Key, MouseEvent, Poi
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { useOverlayTriggerState } from 'react-stately';
 
+import { AnimatedVisibility } from '../AnimatedVisibility';
 import { Box } from '../Box';
 import { Icon } from '../Icon';
 import { Listbox, ListboxOption } from '../Listbox';
 import { OptionContainer } from '../Options';
-import { Popover } from '../Popover';
+import { PositionAnimated } from '../PositionAnimated';
 import type { SelectOption } from './SelectLegacy';
 import { useTypeahead } from './useTypeahead';
 
@@ -253,6 +254,13 @@ function Select<V extends Key = Key>({
 		onBlur?.(event);
 	};
 
+	// Safari takes the focus off a pressed button, which would close the list before the click that toggles it.
+	const handleMouseDown = (event: MouseEvent<HTMLButtonElement>) => {
+		if (overlayState.isOpen) {
+			event.preventDefault();
+		}
+	};
+
 	const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
 		// Safari does not focus a button on click, and the keyboard and the closing on blur need the focus here.
 		event.currentTarget.focus();
@@ -308,6 +316,7 @@ function Select<V extends Key = Key>({
 				className={[error && 'invalid', disabled && 'disabled', (triggerFocusVisible || isOpen) && 'focus', props.className]
 					.filter(Boolean)
 					.join(' ')}
+				onMouseDown={handleMouseDown}
 				onClick={handleClick}
 				onKeyDown={handleKeyDown}
 				onFocus={handleFocus}
@@ -318,33 +327,37 @@ function Select<V extends Key = Key>({
 				</Box>
 				<Icon name={isOpen ? 'chevron-up' : 'chevron-down'} size='x20' />
 			</Box>
-			{isOpen && (
-				<Popover state={overlayState} triggerRef={triggerRef} placement='bottom' offset={4} containerPadding={8} isNonModal>
-					<Box onPointerDown={(event: PointerEvent) => event.preventDefault()}>
-						<OptionContainer style={{ width: borderBoxSize?.inlineSize }}>
-							<Listbox
-								id={listboxId}
-								aria-labelledby={props['aria-labelledby']}
-								aria-label={props['aria-labelledby'] ? undefined : (props['aria-label'] ?? listboxName)}
-							>
-								{options.map(([key, label], index) => (
-									<ListboxOption
-										key={key}
-										id={getOptionId(index)}
-										selected={index === selectedIndex}
-										active={index === active}
-										focusVisible={focusVisible}
-										onActivate={() => moveByPointer(index)}
-										onSelect={() => select(index)}
-									>
-										{label ?? key}
-									</ListboxOption>
-								))}
-							</Listbox>
-						</OptionContainer>
-					</Box>
-				</Popover>
-			)}
+			<PositionAnimated
+				visible={isOpen ? AnimatedVisibility.VISIBLE : AnimatedVisibility.HIDDEN}
+				anchor={triggerRef}
+				placement='bottom-start'
+				margin={4}
+				preventScroll={isOpen}
+			>
+				<Box aria-hidden={!isOpen || undefined} onPointerDown={(event: PointerEvent) => event.preventDefault()}>
+					<OptionContainer style={{ width: borderBoxSize?.inlineSize }}>
+						<Listbox
+							id={listboxId}
+							aria-labelledby={props['aria-labelledby']}
+							aria-label={props['aria-labelledby'] ? undefined : (props['aria-label'] ?? listboxName)}
+						>
+							{options.map(([key, label], index) => (
+								<ListboxOption
+									key={key}
+									id={getOptionId(index)}
+									selected={index === selectedIndex}
+									active={index === active}
+									focusVisible={focusVisible}
+									onActivate={() => moveByPointer(index)}
+									onSelect={() => select(index)}
+								>
+									{label ?? key}
+								</ListboxOption>
+							))}
+						</Listbox>
+					</OptionContainer>
+				</Box>
+			</PositionAnimated>
 		</>
 	);
 }

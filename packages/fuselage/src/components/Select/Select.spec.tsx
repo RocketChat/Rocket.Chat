@@ -68,7 +68,7 @@ describe('[Select Component]', () => {
 		combobox.focus();
 		await userEvent.keyboard('{ArrowDown}');
 
-		const listbox = screen.getByRole('listbox', { name: 'Time unit' });
+		const listbox = await screen.findByRole('listbox', { name: 'Time unit' });
 		expect(combobox).toHaveAttribute('aria-expanded', 'true');
 		expect(combobox).toHaveAttribute('aria-controls', listbox.id);
 		expect(combobox).toHaveAttribute('aria-activedescendant', screen.getByRole('option', { name: 'Hours' }).id);
@@ -81,7 +81,7 @@ describe('[Select Component]', () => {
 
 		combobox.focus();
 		await userEvent.keyboard('{ArrowDown}{ArrowDown}');
-		expect(combobox).toHaveAttribute('aria-activedescendant', screen.getByRole('option', { name: 'Days' }).id);
+		expect(combobox).toHaveAttribute('aria-activedescendant', (await screen.findByRole('option', { name: 'Days' })).id);
 
 		await userEvent.keyboard('{Home}');
 		expect(combobox).toHaveAttribute('aria-activedescendant', screen.getByRole('option', { name: 'Minutes' }).id);
@@ -124,7 +124,7 @@ describe('[Select Component]', () => {
 		combobox.focus();
 		await userEvent.keyboard('d');
 
-		expect(combobox).toHaveAttribute('aria-activedescendant', screen.getByRole('option', { name: 'Days' }).id);
+		expect(combobox).toHaveAttribute('aria-activedescendant', (await screen.findByRole('option', { name: 'Days' })).id);
 	});
 
 	it('should keep a space typed within a search in the search, instead of selecting', async () => {
@@ -146,14 +146,14 @@ describe('[Select Component]', () => {
 		await userEvent.keyboard('{ArrowDown}a test 2');
 
 		expect(onChange).not.toHaveBeenCalled();
-		expect(combobox).toHaveAttribute('aria-activedescendant', screen.getByRole('option', { name: 'a test 2' }).id);
+		expect(combobox).toHaveAttribute('aria-activedescendant', (await screen.findByRole('option', { name: 'a test 2' })).id);
 	});
 
 	it('should select an option with the pointer and keep the focus on the select', async () => {
 		const { combobox, onChange } = renderUnitSelect();
 
 		await userEvent.click(combobox);
-		await userEvent.click(screen.getByRole('option', { name: 'Days' }));
+		await userEvent.click(await screen.findByRole('option', { name: 'Days' }));
 
 		expect(onChange).toHaveBeenCalledWith('days');
 		expect(screen.queryByRole('listbox')).not.toBeInTheDocument();
@@ -184,6 +184,7 @@ describe('[Select Component]', () => {
 		const { combobox } = renderUnitSelect();
 
 		await userEvent.click(combobox);
+		expect(await screen.findByRole('listbox')).toBeInTheDocument();
 
 		// The popup renders in a portal, so the scan covers the page, whose bare test markup has no landmarks.
 		const results = await axe(document.body, { rules: { region: { enabled: false } } });
