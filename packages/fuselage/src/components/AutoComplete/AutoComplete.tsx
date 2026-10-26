@@ -97,6 +97,7 @@ function AutoComplete<TLabel = ReactNode>({
 }: AutoCompleteProps<TLabel>) {
 	const innerRef = useRef<HTMLInputElement>(null);
 	const mergedRefs = useMergedRefs(ref, innerRef);
+	const mouseHandled = useRef(false);
 	const { ref: containerRef, borderBoxSize } = useResizeObserver();
 
 	const [selected, setSelected] = useState(() => getSelected(value, options) || []);
@@ -230,6 +231,7 @@ function AutoComplete<TLabel = ReactNode>({
 					if (disabled) return;
 					e.preventDefault();
 					e.stopPropagation();
+					mouseHandled.current = true;
 
 					if (optionsAreVisible === AnimatedVisibility.VISIBLE) {
 						hide();
@@ -241,6 +243,20 @@ function AutoComplete<TLabel = ReactNode>({
 				})}
 				onClick={useStableCallback((e: MouseEvent<HTMLElement>) => {
 					e.stopPropagation();
+					if (disabled) return;
+					
+					if (mouseHandled.current) {
+						mouseHandled.current = false; // Reset for the next interaction
+						return;
+					}
+
+					if (optionsAreVisible === AnimatedVisibility.VISIBLE) {
+						hide();
+						setFilter?.('');
+					} else {
+						innerRef.current?.focus();
+						show();
+					}
 				})}
 				style={{ cursor: disabled ? 'not-allowed' : optionsAreVisible === AnimatedVisibility.VISIBLE ? 'pointer' : 'default' }}
 			>
