@@ -35,7 +35,8 @@ $input-border-radius: theme('input-border-radius', lengths.border-radius(medium)
 	@extend %input;
 
 	&:invalid,
-	&.invalid {
+	&.invalid,
+	&:has(> .rcx-input-box:invalid) {
 		@extend %input--invalid;
 	}
 
