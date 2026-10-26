@@ -106,6 +106,7 @@ Registered under **Admin → AI Center → MCP** (`server/settings/ai.ts`):
 | ------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `MCP_Enabled`             | `false` | Enables the `/api/v1/mcp` endpoint. Flagged **alpha** via an admin warning callout (`MCP_Alpha_Alert`).                                           |
 | `MCP_Expose_Extended_API` | `false` | When on, exposes the extended allow-listed toolset instead of the minimal curated one. Gated behind `MCP_Enabled`. The full API is never exposed. |
+| `OAuth2_Allow_Dynamic_Client_Registration` | `false` | Lets MCP clients register themselves as OAuth clients at `/oauth/register` ([Dynamic Client Registration](oauth2-server.md#dynamic-client-registration)). Gated behind `MCP_Enabled`. |
 
 ## Connecting a client
 

@@ -1,7 +1,12 @@
+import { License } from '@rocket.chat/license';
 import { OAuthApps } from '@rocket.chat/models';
 
 import { registerOAuthClient } from './registerOAuthClient';
 import { settings } from '../../../settings/cached';
+
+jest.mock('@rocket.chat/license', () => ({
+	License: { hasModule: jest.fn() },
+}));
 
 jest.mock('@rocket.chat/models', () => ({
 	OAuthApps: { insertOne: jest.fn() },
@@ -22,20 +27,31 @@ const claude = {
 describe('registerOAuthClient', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
-		jest.mocked(settings.get).mockImplementation((id) => id === 'OAuth2_Allow_Dynamic_Client_Registration');
+		jest.mocked(License.hasModule).mockReturnValue(true);
+		jest.mocked(settings.get).mockImplementation((id) => ['MCP_Enabled', 'OAuth2_Allow_Dynamic_Client_Registration'].includes(id));
 		jest.mocked(OAuthApps.insertOne).mockResolvedValue({ acknowledged: true, insertedId: 'app-id' });
 	});
 
-	it('refuses to register while the workspace does not allow it, and says why', async () => {
-		jest.mocked(settings.get).mockReturnValue(false);
+	it.each([
+		['the setting is off', () => jest.mocked(settings.get).mockImplementation((id) => id === 'MCP_Enabled')],
+		['MCP is disabled', () => jest.mocked(settings.get).mockImplementation((id) => id === 'OAuth2_Allow_Dynamic_Client_Registration')],
+		['the workspace lacks the AI add-on', () => jest.mocked(License.hasModule).mockReturnValue(false)],
+	])('refuses to register while %s, and says why', async (_case, arrange) => {
+		arrange();
 
 		const result = await registerOAuthClient(claude);
 
 		expect(result).toMatchObject({
 			statusCode: 403,
-			body: { error: 'access_denied', error_description: expect.stringContaining('disabled') },
+			body: { error: 'access_denied', error_description: expect.stringContaining('not enabled') },
 		});
 		expect(OAuthApps.insertOne).not.toHaveBeenCalled();
+	});
+
+	it('checks the AI license module', async () => {
+		await registerOAuthClient(claude);
+
+		expect(License.hasModule).toHaveBeenCalledWith('chat.rocket.rc-ai');
 	});
 
 	it('creates an active OAuth app and returns its credentials', async () => {

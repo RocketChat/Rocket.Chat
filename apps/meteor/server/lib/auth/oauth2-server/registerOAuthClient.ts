@@ -1,3 +1,5 @@
+import { AI_LICENSE_MODULE } from '@rocket.chat/ai-search';
+import { License } from '@rocket.chat/license';
 import { OAuthApps } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 
@@ -59,6 +61,12 @@ export type ClientRegistrationResult =
 	  }
 	| { statusCode: 400; body: ClientMetadataError }
 	| { statusCode: 403; body: { error: 'access_denied'; error_description: string } };
+
+// Self-registration exists for MCP clients, so it follows MCP's license and switch as well as its own setting.
+const isRegistrationAllowed = (): boolean =>
+	License.hasModule(AI_LICENSE_MODULE) &&
+	settings.get<boolean>('MCP_Enabled') === true &&
+	settings.get<boolean>('OAuth2_Allow_Dynamic_Client_Registration') === true;
 
 const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null && !Array.isArray(value);
 
@@ -123,13 +131,13 @@ const parseClientMetadata = (body: unknown): ClientMetadata | ClientMetadataErro
 
 /** Registers an OAuth client on the caller's own request (RFC 7591), when the workspace allows it. */
 export const registerOAuthClient = async (body: unknown): Promise<ClientRegistrationResult> => {
-	if (!settings.get<boolean>('OAuth2_Allow_Dynamic_Client_Registration')) {
+	if (!isRegistrationAllowed()) {
 		return {
 			statusCode: 403,
 			body: {
 				error: 'access_denied',
 				error_description:
-					'Dynamic Client Registration is disabled on this workspace. An administrator can enable it, or create an OAuth app and give its client ID and secret to the client.',
+					'Dynamic Client Registration is not enabled on this workspace. It needs the Rocket.Chat AI add-on with MCP enabled; an administrator can turn it on in the MCP settings, or create an OAuth app and give its client ID and secret to the client.',
 			},
 		};
 	}
