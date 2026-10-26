@@ -46,16 +46,6 @@ export default {
 			description: 'Stacks the cards in a column instead of a row.',
 			table: { category: 'Layout' },
 		},
-		small: {
-			control: 'boolean',
-			description: 'Small size scale for the card group.',
-			table: { category: 'Size' },
-		},
-		large: {
-			control: 'boolean',
-			description: 'Large size scale for the card group.',
-			table: { category: 'Size' },
-		},
 		children: {
 			control: false,
 			description: 'Card items rendered inside the group.',
