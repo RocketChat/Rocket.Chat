@@ -353,27 +353,27 @@ export const ItemVariants = () => (
 
 export const Sizes = () => (
 	<ButtonGroup>
-		<Menu large title='Large Menu'>
+		<Menu size='large' title='Large Menu'>
 			<MenuItem key='1'>Profile</MenuItem>
 			<MenuItem key='2'>Chats</MenuItem>
 			<MenuItem key='3'>Settings</MenuItem>
 		</Menu>
-		<Menu medium title='Medium Menu'>
+		<Menu size='medium' title='Medium Menu'>
 			<MenuItem key='1'>Profile</MenuItem>
 			<MenuItem key='2'>Chats</MenuItem>
 			<MenuItem key='3'>Settings</MenuItem>
 		</Menu>
-		<Menu small title='Small Menu'>
+		<Menu size='small' title='Small Menu'>
 			<MenuItem key='1'>Profile</MenuItem>
 			<MenuItem key='2'>Chats</MenuItem>
 			<MenuItem key='3'>Settings</MenuItem>
 		</Menu>
-		<Menu tiny title='Tiny Menu'>
+		<Menu size='tiny' title='Tiny Menu'>
 			<MenuItem key='1'>Profile</MenuItem>
 			<MenuItem key='2'>Chats</MenuItem>
 			<MenuItem key='3'>Settings</MenuItem>
 		</Menu>
-		<Menu mini title='Mini Menu'>
+		<Menu size='mini' title='Mini Menu'>
 			<MenuItem key='1'>Profile</MenuItem>
 			<MenuItem key='2'>Chats</MenuItem>
 			<MenuItem key='3'>Settings</MenuItem>
