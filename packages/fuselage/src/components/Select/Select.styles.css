@@ -127,6 +127,19 @@
 	color: var(--rcx-input-colors-invalid-disabled-color, var(--rcx-color-font-disabled, #cbced1));
 }
 
+/* The `Select` trigger lays out its value and chevron itself */
+.rcx-select--trigger {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+
+	letter-spacing: 0;
+
+	font-size: 0.875rem;
+	font-weight: 400;
+	line-height: 1.25rem;
+}
+
 /* An open select keeps the focus look while focus is in its listbox */
 .rcx-select[aria-expanded='true'],
 .rcx-autocomplete[aria-expanded='true'] {
@@ -142,8 +155,68 @@
 
 .rcx-select__item {
 	overflow: hidden;
+	flex-grow: 1;
 
+	margin-inline: 4px;
+
+	letter-spacing: 0;
 	text-overflow: ellipsis;
+
+	color: var(--rcx-color-font-titles-labels, #1f2329);
+
+	font-size: 0.875rem;
+	font-weight: 400;
+	line-height: 1.25rem;
+}
+
+.rcx-select__item--placeholder {
+	color: var(--rcx-color-font-hint, #6c737a);
+}
+
+.rcx-select__value {
+	color: var(--rcx-color-font-titles-labels, #1f2329);
+}
+
+.rcx-select__value--placeholder {
+	color: var(--rcx-color-font-hint, #6c737a);
+}
+
+.rcx-select__value--small {
+	letter-spacing: 0;
+
+	font-size: 0.75rem;
+	font-weight: 400;
+	line-height: 1rem;
+}
+
+.rcx-select__field {
+	display: flex;
+	flex-grow: 1;
+
+	margin-inline: 0.25rem;
+}
+
+.rcx-select__values {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+
+	margin: -0.25rem;
+	gap: 0.25rem;
+}
+
+.rcx-select__values--spacious {
+	gap: 0.5rem;
+}
+
+.rcx-select__focus--button {
+	letter-spacing: 0;
+
+	color: var(--rcx-color-font-hint, #6c737a);
+
+	font-size: 0.875rem;
+	font-weight: 500;
+	line-height: 1.25rem;
 }
 
 .rcx-select__focus,
@@ -217,11 +290,13 @@
 }
 
 .rcx-select__wrapper {
+	display: flex;
 	align-items: center;
 	flex-grow: 1;
 	flex-shrink: 1;
 
 	min-width: 0;
+	margin-inline: -0.25rem;
 
 	user-select: none;
 	white-space: nowrap;

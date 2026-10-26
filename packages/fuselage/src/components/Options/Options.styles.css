@@ -3,3 +3,14 @@
 .rcx-options:hover .rcx-item--focused:not(.rcx-item--selected):not(:hover) {
 	background: initial;
 }
+
+.rcx-options__list {
+	max-height: 9rem;
+
+	border-radius: var(--rcx-border-radius-medium, 0.25rem);
+	background-color: var(--rcx-color-surface-light, #ffffff);
+}
+
+.rcx-options__list--container {
+	max-height: 15rem;
+}

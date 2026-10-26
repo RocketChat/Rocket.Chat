@@ -7,6 +7,7 @@
 @import './CardGroup/CardGroup.styles.css';
 @import './CheckBox/CheckBox.styles.css';
 @import './Chevron/Chevron.styles.css';
+@import './Dropdown/Dropdown.styles.css';
 @import './Field/Field.styles.css';
 @import './FieldGroup/FieldGroup.styles.css';
 @import './InputBox/InputBox.styles.css';
