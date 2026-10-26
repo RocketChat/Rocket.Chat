@@ -44,10 +44,7 @@ test.describe('export-messages', () => {
 		await poHomeChannel.roomToolbar.openMoreOptions();
 		await poHomeChannel.roomToolbar.menuItemExportMessages.click();
 
-		// TODO: Fix the base component to have a disabled statement and not only a class attribute
-		// Here we are checking for a button because the internal select element is not accessible
-		// and the higher component that is a button doesn't appear as disabled.
-		await expect(poHomeChannel.tabs.exportMessages.outputFormat).toContainClass('disabled');
+		await expect(poHomeChannel.tabs.exportMessages.outputFormat).toBeDisabled();
 
 		await poHomeChannel.tabs.exportMessages.setMethod('Send file via email');
 
