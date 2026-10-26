@@ -14,6 +14,7 @@ $callout-border-radius: theme('callout-border-radius', lengths.border-radius(med
 
 .rcx-callout {
 	display: flex;
+	container-type: inline-size;
 
 	padding: lengths.padding(12);
 
@@ -71,18 +72,6 @@ $callout-border-radius: theme('callout-border-radius', lengths.border-radius(med
 		> :nth-child(2) {
 			margin-block-start: lengths.margin(12);
 		}
-
-		&--large {
-			display: flex;
-
-			overflow: hidden;
-			flex-direction: row;
-			align-items: center;
-
-			> :nth-child(2) {
-				margin-block-start: lengths.margin(0);
-			}
-		}
 	}
 
 	&__wrapper-content {
@@ -107,5 +96,21 @@ $callout-border-radius: theme('callout-border-radius', lengths.border-radius(med
 		display: block;
 
 		@include use-font-scale(p2);
+	}
+}
+
+// The large layout starts at 420px of border box, which is 394px of content
+// box once the 12px padding and 1px border on each side are taken out.
+@container (width >= 394px) {
+	.rcx-callout__wrapper {
+		display: flex;
+
+		overflow: hidden;
+		flex-direction: row;
+		align-items: center;
+
+		> :nth-child(2) {
+			margin-block-start: lengths.margin(0);
+		}
 	}
 }

@@ -1,4 +1,3 @@
-import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode } from 'react';
 
 import type { ElementProps } from '../../types/ElementProps';
@@ -13,15 +12,10 @@ export type CalloutProps = ElementProps<HTMLElement> & {
 	actions?: ReactNode;
 };
 
-const WRAPPER_LIMIT_SIZE = 420;
-
 /**
  * The `Callout` is used to get the user's attention explaining something important in the content of the current page.
  */
 const Callout = ({ type, title, children, icon, className, actions, ...props }: CalloutProps) => {
-	const { ref, borderBoxSize } = useResizeObserver();
-	const isLarge = borderBoxSize.inlineSize && borderBoxSize.inlineSize >= WRAPPER_LIMIT_SIZE;
-
 	const defaultIcon =
 		(type === 'info' && 'info-circled') ||
 		(type === 'success' && 'checkmark-circled') ||
@@ -30,9 +24,9 @@ const Callout = ({ type, title, children, icon, className, actions, ...props }: 
 		'info-circled';
 
 	return (
-		<Box ref={ref} is='section' className={['rcx-callout', type && `rcx-callout--${type}`, className].filter(Boolean).join(' ')} {...props}>
+		<Box is='section' className={['rcx-callout', type && `rcx-callout--${type}`, className].filter(Boolean).join(' ')} {...props}>
 			<Icon className='rcx-callout__icon' name={icon || defaultIcon} size='x20' />
-			<Box rcx-callout__wrapper rcx-callout__wrapper--large={isLarge}>
+			<Box rcx-callout__wrapper>
 				<Box rcx-callout__wrapper-content>
 					{title && <Box rcx-callout__title>{title}</Box>}
 					{children && <Box rcx-callout__content>{children}</Box>}
