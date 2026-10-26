@@ -2984,14 +2984,6 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			let ldapNamesake: IUser;
 			let localUser: IUser;
 
-			const setUsername = (userId: string, username: string) =>
-				request.post(api('users.update')).set(credentials).send({ userId, data: { username } }).expect(200);
-
-			const getDepartment = async (username: string) => {
-				const user = await getUserByUsername(username);
-				return user.abacAttributes?.find((attr) => attr.key === 'department')?.values;
-			};
-
 			before(async () => {
 				ldapUser = await getUserByUsername('alan.bean');
 				const ldapUserDocument = await connection.db().collection<IUser>('users').findOne({ _id: ldapUser._id });
@@ -2999,7 +2991,11 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				ldapUserLdapId = ldapUserDocument?.services?.ldap?.id as string;
 
 				ldapNamesake = await getUserByUsername('james.irwin');
-				await setUsername(ldapNamesake._id, 'james.irwin.ldap');
+				await request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({ userId: ldapNamesake._id, data: { username: 'james.irwin.ldap' } })
+					.expect(200);
 				localUser = await createUser({ username: 'james.irwin' });
 			});
 
@@ -3010,7 +3006,11 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 			after(async () => {
 				await deleteUser(localUser);
-				await setUsername(ldapNamesake._id, 'james.irwin');
+				await request
+					.post(api('users.update'))
+					.set(credentials)
+					.send({ userId: ldapNamesake._id, data: { username: 'james.irwin' } })
+					.expect(200);
 			});
 
 			it('should leave a non-LDAP account sharing an LDAP username unchanged', async () => {
@@ -3020,7 +3020,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 					.send({ usernames: ['james.irwin'] })
 					.expect(200);
 
-				expect(await getDepartment('james.irwin')).to.deep.equal(['local']);
+				expect((await getUserByUsername('james.irwin')).abacAttributes).to.deep.equal(localAttributes);
 			});
 
 			it('should refresh an LDAP-linked user named by username', async () => {
@@ -3030,7 +3030,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 					.send({ usernames: ['alan.bean'] })
 					.expect(200);
 
-				expect(await getDepartment('alan.bean')).to.deep.equal(['navControl']);
+				expect((await getUserByUsername('alan.bean')).abacAttributes).to.deep.equal([{ key: 'department', values: ['navControl'] }]);
 			});
 
 			it('should refresh an LDAP-linked user named by id', async () => {
@@ -3040,7 +3040,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 					.send({ ids: [ldapUser._id] })
 					.expect(200);
 
-				expect(await getDepartment('alan.bean')).to.deep.equal(['navControl']);
+				expect((await getUserByUsername('alan.bean')).abacAttributes).to.deep.equal([{ key: 'department', values: ['navControl'] }]);
 			});
 
 			it('should refresh an LDAP-linked user named by email', async () => {
@@ -3050,7 +3050,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 					.send({ emails: ['alan.bean@space.air'] })
 					.expect(200);
 
-				expect(await getDepartment('alan.bean')).to.deep.equal(['navControl']);
+				expect((await getUserByUsername('alan.bean')).abacAttributes).to.deep.equal([{ key: 'department', values: ['navControl'] }]);
 			});
 
 			it('should refresh an LDAP-linked user named by LDAP id', async () => {
@@ -3060,7 +3060,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 					.send({ ldapIds: [ldapUserLdapId] })
 					.expect(200);
 
-				expect(await getDepartment('alan.bean')).to.deep.equal(['navControl']);
+				expect((await getUserByUsername('alan.bean')).abacAttributes).to.deep.equal([{ key: 'department', values: ['navControl'] }]);
 			});
 
 			it('should refresh only the LDAP-linked user in a mixed request', async () => {
@@ -3070,8 +3070,8 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 					.send({ usernames: ['alan.bean', 'james.irwin'] })
 					.expect(200);
 
-				expect(await getDepartment('alan.bean')).to.deep.equal(['navControl']);
-				expect(await getDepartment('james.irwin')).to.deep.equal(['local']);
+				expect((await getUserByUsername('alan.bean')).abacAttributes).to.deep.equal([{ key: 'department', values: ['navControl'] }]);
+				expect((await getUserByUsername('james.irwin')).abacAttributes).to.deep.equal(localAttributes);
 			});
 		});
 
