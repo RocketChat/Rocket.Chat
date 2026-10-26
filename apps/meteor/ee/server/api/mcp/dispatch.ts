@@ -1,5 +1,8 @@
+import type { IncomingMessage } from 'node:http';
+
 import type { McpTool } from './catalog';
 import type { McpAuth } from './server';
+import { API } from '../../../../server/api';
 
 export type DispatchResult = {
 	ok: boolean;
@@ -73,18 +76,28 @@ const readResponseText = async (response: Response, responseBudget?: McpResponse
 	return chunks.join('');
 };
 
+const withTimeout = async <T>(promise: Promise<T>, timeoutMs: number): Promise<T> => {
+	let timer: ReturnType<typeof setTimeout> | undefined;
+	const timeout = new Promise<never>((_, reject) => {
+		timer = setTimeout(() => reject(new Error(`MCP tool call timed out after ${timeoutMs} ms`)), timeoutMs);
+	});
+
+	try {
+		return await Promise.race([promise, timeout]);
+	} finally {
+		clearTimeout(timer);
+	}
+};
+
 /**
  * Execute the REST endpoint a tool maps to, as the authenticated user.
  *
- * Dispatch is done via a loopback HTTP call to the local REST API, forwarding the
- * caller's PAT headers. This guarantees identical behaviour to a real REST client —
- * the same auth, permission checks, parameter validation and response shape — with
- * zero duplicated business logic. (An in-process Hono dispatch is a possible future
- * optimisation to avoid the loopback hop.)
+ * The call goes through the same HTTP router a real REST client reaches, so the auth,
+ * permission checks, parameter validation, rate limit and response shape are identical,
+ * with zero duplicated business logic.
  *
- * `clientIp` (resolved server-side from the MCP connection) is forwarded as `X-Real-IP`
- * so the REST per-route rate limiter keys on the real client rather than the loopback
- * address — otherwise every MCP caller would share a single `127.0.0.1` bucket.
+ * `clientIp` (resolved server-side from the MCP connection) becomes the address of the
+ * synthetic request, so the REST per-route rate limiter keys on the real client.
  */
 export const dispatchTool = async (
 	tool: McpTool,
@@ -93,46 +106,30 @@ export const dispatchTool = async (
 	clientIp?: string,
 	responseBudget?: McpResponseBudget,
 ): Promise<DispatchResult> => {
-	const port = process.env.PORT || '3000';
-	const runtimeConfig = (
-		globalThis as typeof globalThis & {
-			__meteor_runtime_config__?: { ROOT_URL_PATH_PREFIX?: string };
-		}
-	).__meteor_runtime_config__;
-	const base = `http://127.0.0.1:${port}${runtimeConfig?.ROOT_URL_PATH_PREFIX ?? ''}`;
-
-	const headers: Record<string, string> = {
-		'Content-Type': 'application/json',
-		'X-User-Id': auth.userId,
-		'X-Auth-Token': auth.authToken,
-		...(clientIp && { 'X-Real-IP': clientIp }),
-	};
-
-	let url = base + tool.path;
+	const url = new URL(tool.path, 'http://localhost');
 	const init: RequestInit = {
 		method: tool.method.toUpperCase(),
-		headers,
-		redirect: 'error',
-		signal: AbortSignal.timeout(TOOL_CALL_TIMEOUT_MS),
+		headers: {
+			'Content-Type': 'application/json',
+			'X-User-Id': auth.userId,
+			'X-Auth-Token': auth.authToken,
+		},
 	};
 
 	if (tool.method === 'get' || tool.method === 'delete') {
-		const qs = new URLSearchParams();
 		for (const [key, value] of Object.entries(args ?? {})) {
 			if (value === undefined) {
 				continue;
 			}
-			qs.append(key, typeof value === 'string' ? value : JSON.stringify(value));
-		}
-		const query = qs.toString();
-		if (query) {
-			url += `?${query}`;
+			url.searchParams.append(key, typeof value === 'string' ? value : JSON.stringify(value));
 		}
 	} else {
 		init.body = JSON.stringify(args ?? {});
 	}
 
-	const res = await fetch(url, init);
+	const incoming = { socket: { remoteAddress: clientIp }, connection: { remoteAddress: clientIp } } as unknown as IncomingMessage;
+
+	const res = await withTimeout(API.api.dispatch(new Request(url, init), { incoming }), TOOL_CALL_TIMEOUT_MS);
 	const responseText = await readResponseText(res, responseBudget);
 	let body: unknown = responseText;
 	if (responseText) {
