@@ -18,7 +18,7 @@ export const executeGetRoomRoles = async (rid: IRoom['_id'], fromUser?: IUser | 
 	check(rid, String);
 
 	if (!fromUser && settings.get('Accounts_AllowAnonymousRead') === false) {
-		throw new ClientSafeError('error-invalid-user', 'Invalid user', { method: 'getRoomRoles' });
+		throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', { method: 'getRoomRoles' });
 	}
 
 	const room = await Rooms.findOneById(rid);

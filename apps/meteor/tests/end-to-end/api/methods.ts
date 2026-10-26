@@ -395,7 +395,7 @@ describe('Meteor.methods', () => {
 
 			expect(parsedMessage).to.have.property('error');
 			expect(parsedMessage.error).to.have.property('error');
-			expect(parsedMessage.error.error).to.equal('error-invalid-user');
+			expect(parsedMessage.error.error).to.equal('error-unauthenticated');
 
 			await updateSetting('Accounts_AllowAnonymousRead', false);
 		});

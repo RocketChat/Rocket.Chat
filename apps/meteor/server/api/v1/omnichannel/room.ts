@@ -408,7 +408,7 @@ API.v1.addRoute(
 			const { user } = this;
 
 			if (!user) {
-				throw new Error('error-invalid-user');
+				throw new Error('error-unauthenticated');
 			}
 
 			const room = await LivechatRooms.findOneById(roomId);
