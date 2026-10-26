@@ -95,11 +95,22 @@ export class OAuth2Server {
 			return next();
 		};
 
+		// The library lets a PKCE verifier stand in for the client secret, as only a public client may;
+		// every client of this server is confidential.
+		const requireClientSecret = function (req: Request, res: Response, next: NextFunction) {
+			if (req.body?.client_secret || /^Basic\s/i.test(req.headers.authorization ?? '')) {
+				return next();
+			}
+
+			return res.status(400).send({ error: 'invalid_request', error_description: 'Missing parameter: `client_secret`' });
+		};
+
 		this.app.all(
 			'/oauth/token',
 			debugMiddleware,
 			transformRequestsNotUsingFormUrlencodedType,
 			validateTokenPayload,
+			requireClientSecret,
 			async (req, res, next) => {
 				const request = new OAuthServer.Request(req);
 				const response = new OAuthServer.Response(res);

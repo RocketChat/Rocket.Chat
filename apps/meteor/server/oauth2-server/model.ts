@@ -121,13 +121,14 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 				grants: client.grants,
 			},
 			redirectUri: code.redirectUri,
+			...(code.codeChallenge && { codeChallenge: code.codeChallenge, codeChallengeMethod: code.codeChallengeMethod }),
 		};
 
 		return authCode;
 	}
 
 	async saveAuthorizationCode(
-		code: Pick<AuthorizationCode, 'authorizationCode' | 'expiresAt' | 'redirectUri' | 'scope'>,
+		code: Pick<AuthorizationCode, 'authorizationCode' | 'expiresAt' | 'redirectUri' | 'scope' | 'codeChallenge' | 'codeChallengeMethod'>,
 		client: Client,
 		user: User,
 	): Promise<AuthorizationCode | Falsey> {
@@ -151,6 +152,7 @@ export class Model implements AuthorizationCodeModel, RefreshTokenModel {
 			userId: user.id,
 			expires: code.expiresAt,
 			redirectUri: code.redirectUri,
+			...(code.codeChallenge && { codeChallenge: code.codeChallenge, codeChallengeMethod: code.codeChallengeMethod }),
 		});
 
 		const newCode = {
