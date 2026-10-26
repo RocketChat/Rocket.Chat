@@ -160,6 +160,17 @@ describe('[Select Component]', () => {
 		expect(combobox).toHaveFocus();
 	});
 
+	it('should not select from the list while it closes', async () => {
+		const { combobox, onChange } = renderUnitSelect();
+
+		await userEvent.click(combobox);
+		const days = await screen.findByRole('option', { name: 'Days' });
+		await userEvent.keyboard('{Escape}');
+
+		await expect(userEvent.click(days)).rejects.toThrow(/pointer-events: none/);
+		expect(onChange).not.toHaveBeenCalled();
+	});
+
 	it('should not open when disabled', async () => {
 		const { combobox } = renderUnitSelect({ disabled: true });
 

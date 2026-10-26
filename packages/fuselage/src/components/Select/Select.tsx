@@ -334,7 +334,11 @@ function Select<V extends Key = Key>({
 				margin={4}
 				preventScroll={isOpen}
 			>
-				<Box aria-hidden={!isOpen || undefined} onPointerDown={(event: PointerEvent) => event.preventDefault()}>
+				<Box
+					aria-hidden={!isOpen || undefined}
+					style={isOpen ? undefined : { pointerEvents: 'none' }}
+					onPointerDown={(event: PointerEvent) => event.preventDefault()}
+				>
 					<OptionContainer style={{ width: borderBoxSize?.inlineSize }}>
 						<Listbox
 							id={listboxId}
