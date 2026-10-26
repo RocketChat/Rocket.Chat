@@ -110,7 +110,7 @@ function Options<TValue extends string | number = string | number, TLabel = Reac
 						onMouseDown={prevent}
 						onClick={prevent}
 						is='ol'
-						aria-multiselectable={multiple || true}
+						aria-multiselectable={!!multiple}
 						role='listbox'
 						id={id}
 						aria-activedescendant={options?.[cursor]?.[0] ? String(options?.[cursor]?.[0]) : undefined}
