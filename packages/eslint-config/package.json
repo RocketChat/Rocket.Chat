@@ -37,7 +37,6 @@
 		"eslint-plugin-react-hooks": "~7.1.1",
 		"eslint-plugin-storybook": "patch:eslint-plugin-storybook@npm%3A9.1.20#~/.yarn/patches/eslint-plugin-storybook-npm-9.1.20-b86b9c5e4d.patch",
 		"eslint-plugin-testing-library": "~7.16.2",
-		"globals": "~17.13.0",
 		"prettier": "~3.9.9",
 		"typescript-eslint": "~8.71.1"
 	},
