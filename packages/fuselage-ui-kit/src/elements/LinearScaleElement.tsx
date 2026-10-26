@@ -31,7 +31,7 @@ const LinearScaleElement = ({ className, block, context, surfaceRenderer }: Line
 					{points.map((point, i) => (
 						<Button
 							key={i}
-							className={point === String(value) ? 'active' : undefined}
+							primary={point === String(value)}
 							disabled={loading}
 							danger={!!error}
 							compact
