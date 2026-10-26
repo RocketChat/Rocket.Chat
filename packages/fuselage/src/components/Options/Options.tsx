@@ -57,7 +57,8 @@ function Options<TValue extends string | number = string | number, TLabel = Reac
 			return;
 		}
 		const { current } = liRef;
-		const li = current?.querySelector<HTMLLIElement>('.rcx-option--focus, .rcx-item--focused');
+		// each option renders one element, in the order of `options`
+		const li = current.children[cursor] as HTMLElement | undefined;
 		if (!li) {
 			return;
 		}
