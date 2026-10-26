@@ -29,6 +29,7 @@ export function SidebarCollapseGroup({
 	title,
 	empty,
 	role = 'group',
+	className,
 	...props
 }: SidebarCollapseGroupProps) {
 	const { barProps, expanded, panelExpanded, panelId, titleId } = useCollapse({
@@ -40,7 +41,7 @@ export function SidebarCollapseGroup({
 	const labelledBy = props['aria-label'] ? undefined : titleId;
 
 	return (
-		<div className='rcx-box rcx-box--full rcx-sidebar-collapse-group' role={role} aria-labelledby={labelledBy} {...props}>
+		<div role={role} aria-labelledby={labelledBy} {...props} className={cx('rcx-box rcx-box--full rcx-sidebar-collapse-group', className)}>
 			<SidebarGroupTitle
 				expanded={expanded}
 				empty={empty}
