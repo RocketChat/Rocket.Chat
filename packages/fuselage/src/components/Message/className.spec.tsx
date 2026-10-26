@@ -6,6 +6,8 @@ import MessageContainer from './MessageContainer';
 import MessageContainerFixed from './MessageContainerFixed';
 import MessageDivider from './MessageDivider/MessageDivider';
 import MessageGenericPreview from './MessageGenericPreview/MessageGenericPreview';
+import MessageGenericPreviewDescription from './MessageGenericPreview/MessageGenericPreviewDescription';
+import MessageGenericPreviewFooter from './MessageGenericPreview/MessageGenericPreviewFooter';
 import MessageGenericPreviewThumb from './MessageGenericPreview/MessageGenericPreviewThumb';
 import MessageGenericPreviewTitle from './MessageGenericPreview/MessageGenericPreviewTitle';
 import MessageHeader from './MessageHeader';
@@ -20,6 +22,8 @@ import MessageRole from './MessageRole';
 import MessageRoles from './MessageRoles';
 import MessageStatusIndicator from './MessageStatusIndicator/MessageStatusIndicator';
 import MessageStatusIndicatorItem from './MessageStatusIndicator/MessageStatusIndicatorItem';
+import MessageStatusIndicatorText from './MessageStatusIndicator/MessageStatusIndicatorText';
+import MessageStatusPrivateIndicator from './MessageStatusIndicator/MessageStatusPrivateIndicator';
 import MessageSystem from './MessageSystem/MessageSystem';
 import MessageSystemBlock from './MessageSystem/MessageSystemBlock';
 import MessageSystemBody from './MessageSystem/MessageSystemBody';
@@ -33,6 +37,7 @@ import ThreadMessageBody from './ThreadMessage/ThreadMessageBody';
 import ThreadMessageContainer from './ThreadMessage/ThreadMessageContainer';
 import ThreadMessageIcon from './ThreadMessage/ThreadMessageIcon';
 import ThreadMessageLeftContainer from './ThreadMessage/ThreadMessageLeftContainer';
+import ThreadMessageOrigin from './ThreadMessage/ThreadMessageOrigin';
 import ThreadMessageRow from './ThreadMessage/ThreadMessageRow';
 import { render } from '../../testing';
 
@@ -87,6 +92,29 @@ const cases: [string, ReactElement, string][] = [
 	['ThreadMessageContainer', <ThreadMessageContainer data-testid='part' className='custom' />, 'rcx-message-thread__container'],
 	['ThreadMessageIcon', <ThreadMessageIcon data-testid='part' className='custom' name='bell' />, 'rcx-message-thread__icon'],
 	['ThreadMessageLeftContainer', <ThreadMessageLeftContainer data-testid='part' className='custom' />, 'rcx-message-container--left'],
+	[
+		'MessageGenericPreviewDescription',
+		<MessageGenericPreviewDescription data-testid='part' className='custom' />,
+		'rcx-message-generic-preview__description',
+	],
+	[
+		'MessageGenericPreviewFooter',
+		<MessageGenericPreviewFooter data-testid='part' className='custom' />,
+		'rcx-message-generic-preview__footer',
+	],
+	[
+		'MessageStatusIndicatorText',
+		<MessageStatusIndicatorText data-testid='part' className='custom'>
+			Status
+		</MessageStatusIndicatorText>,
+		'rcx-message-status-indicator__text',
+	],
+	[
+		'MessageStatusPrivateIndicator',
+		<MessageStatusPrivateIndicator data-testid='part' className='custom' />,
+		'rcx-message-status-indicator__item--private',
+	],
+	['ThreadMessageOrigin', <ThreadMessageOrigin data-testid='part' className='custom' />, 'rcx-message-thread__origin'],
 	['ThreadMessageRow', <ThreadMessageRow data-testid='part' className='custom' />, 'rcx-message-thread__row'],
 ];
 
