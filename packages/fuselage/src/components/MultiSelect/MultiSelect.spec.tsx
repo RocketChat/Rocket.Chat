@@ -3,6 +3,7 @@ import { screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
+import MultiSelect from './MultiSelect';
 import * as stories from './MultiSelect.stories';
 import { withResizeObserverMock } from '../../../mocks/withResizeObserverMock';
 import { render } from '../../testing';
@@ -52,4 +53,17 @@ test('unchecks the option checkbox on deselect', async () => {
 
 	expect(option).toHaveAttribute('aria-selected', 'false');
 	expect(checkbox).not.toBeChecked();
+});
+
+test('shows the selection of a controlled value changed after mount', () => {
+	const options: [string, string][] = [
+		['1', 'Apple'],
+		['2', 'Banana'],
+	];
+	const { rerender } = render(<MultiSelect options={options} value={['1']} onChange={jest.fn()} />);
+	expect(screen.getByText('Apple')).toBeInTheDocument();
+
+	rerender(<MultiSelect options={options} value={['2']} onChange={jest.fn()} />);
+	expect(screen.getByText('Banana')).toBeInTheDocument();
+	expect(screen.queryByText('Apple')).not.toBeInTheDocument();
 });
