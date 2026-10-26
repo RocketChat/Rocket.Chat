@@ -144,6 +144,59 @@ describe('Item', () => {
 		expect(onRender).toHaveBeenCalledTimes(1);
 	});
 
+	it('renders once on mount without a labelled icon', () => {
+		const onRender = jest.fn();
+
+		render(
+			<Profiler id='item' onRender={onRender}>
+				<Item>
+					<ItemIcon />
+					<ItemTitle>
+						<ItemLink href='#kenji'>Kenji Takahashi</ItemLink>
+					</ItemTitle>
+				</Item>
+			</Profiler>,
+		);
+
+		expect(onRender).toHaveBeenCalledTimes(1);
+	});
+
+	it('references only ids that exist, and keeps ids unique, with two labelled icons', () => {
+		const { container } = render(
+			<Item role='menuitem'>
+				<ItemIcon label='Away' />
+				<ItemIcon label='Raised hand' />
+				<ItemContent>
+					<ItemTitle>Title</ItemTitle>
+					<ItemTitle>
+						<ItemLink href='#kenji'>Kenji</ItemLink>
+					</ItemTitle>
+				</ItemContent>
+			</Item>,
+		);
+
+		const ids = Array.from(container.querySelectorAll('[id]')).map((element) => element.id);
+		expect(new Set(ids).size).toBe(ids.length);
+
+		container.querySelectorAll('[aria-describedby], [aria-labelledby]').forEach((element) => {
+			const refs = `${element.getAttribute('aria-describedby') ?? ''} ${element.getAttribute('aria-labelledby') ?? ''}`
+				.split(' ')
+				.filter(Boolean);
+			refs.forEach((id) => expect(container.querySelector(`[id="${CSS.escape(id)}"]`)).not.toBeNull());
+		});
+	});
+
+	it('describes a menu item by an icon that has its own id', () => {
+		render(
+			<Item role='menuitem' data-testid='item'>
+				<ItemIcon id='own-icon' label='Selected' />
+				<ItemTitle>Title</ItemTitle>
+			</Item>,
+		);
+
+		expect(screen.getByTestId('item')).toHaveAttribute('aria-describedby', 'own-icon');
+	});
+
 	it.each([
 		[{ multiline: true }, 'rcx-item--multiline'],
 		[{ interactive: true }, 'rcx-item--interactive'],
