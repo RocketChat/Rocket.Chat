@@ -18,12 +18,16 @@ import { t } from '../../../lib/i18n';
 import { Messages, Rooms, Subscriptions } from '../../stores';
 import EnterE2EPasswordModal from '../../views/e2e/EnterE2EPasswordModal';
 import SaveE2EPasswordModal from '../../views/e2e/SaveE2EPasswordModal';
+import { APIClient } from '../RestApiClient';
 import { sdk } from '../SDKClient';
 import * as banners from '../banners';
 import type { LegacyBannerPayload } from '../banners';
+import { baseURI } from '../baseURI';
 import { getSearchIndexBackend } from '../e2eeSearch/getSearchIndexBackend';
 import { roomMessageDeletes } from '../e2eeSearch/roomMessageDeletes';
 import { applyDeleteMessageBulkToSearchIndex } from '../e2eeSearch/searchIndexDeletes';
+import { createSearchIndexRuntime, createSyncMessagesFetcher, toSearchIndexRooms } from '../e2eeSearch/searchIndexRuntime';
+import { createDocumentIdleSignal } from '../e2eeSearch/searchIndexScheduler';
 import { createSearchIndexSession } from '../e2eeSearch/searchIndexSession';
 import { createSearchIndexWriter } from '../e2eeSearch/searchIndexWriter';
 import { getUserAvatarURL } from '../getUserAvatarURL';
@@ -261,7 +265,9 @@ class E2E extends Emitter {
 		}
 
 		if (!this.instancesByRoomId[rid] && this.userId) {
-			this.instancesByRoomId[rid] = new E2ERoom(this.userId, room);
+			const e2eRoom = new E2ERoom(this.userId, room);
+			e2eRoom.on('READY', () => this.emit('E2E_ROOM_READY', rid));
+			this.instancesByRoomId[rid] = e2eRoom;
 		}
 
 		// When the key was already set and is changed via an update, we update the room instance
@@ -921,6 +927,41 @@ roomMessageDeletes.on('deleteMessageBulk', (event) => {
 		findMessage: (id) => Messages.state.get(id),
 	});
 });
+
+/**
+ * Indexes the history of the encrypted rooms (catch-up and backfill) while the local search index is open, one request
+ * at a time and only while the user is idle (`useIdleConnection` announces `useLoginPresence` after 60 s without input).
+ */
+export const e2eSearchIndexRuntime = createSearchIndexRuntime({
+	session: e2eSearchIndexSession,
+	writer: e2eSearchIndexWriter,
+	syncMessages: createSyncMessagesFetcher({
+		baseUrl: baseURI.replace(/\/$/, ''),
+		getCredentials: () => APIClient.getCredentials(),
+	}),
+	decryptMessage: (message) => e2e.decryptMessage(message),
+	getRooms: () => toSearchIndexRooms(Subscriptions.state.records.values()),
+	idle: createDocumentIdleSignal('useLoginPresence'),
+	onError: (error) => log.span('searchIndexCrawler').error('Error indexing the history of encrypted rooms', error),
+});
+
+e2e.on('E2E_ROOM_READY', (rid: string) => {
+	e2eSearchIndexRuntime.onRoomKeyReady(rid);
+});
+
+{
+	const { connection } = getDdpSdk();
+	let wentOffline = connection.status !== 'connected';
+	connection.on('connection', () => {
+		if (connection.status !== 'connected') {
+			wentOffline = true;
+			return;
+		}
+		if (!wentOffline) return;
+		wentOffline = false;
+		e2eSearchIndexRuntime.onReconnect();
+	});
+}
 
 getDdpSdk().account.onLogout(() => {
 	void e2e.stopClient();
