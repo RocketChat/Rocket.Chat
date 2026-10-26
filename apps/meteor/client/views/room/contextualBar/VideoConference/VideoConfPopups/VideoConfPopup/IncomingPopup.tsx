@@ -87,11 +87,11 @@ const IncomingPopup = ({ id, room, position, onClose, onMute, onConfirm }: Incom
 			</VideoConfPopupContent>
 			<VideoConfPopupFooter>
 				<VideoConfPopupFooterButtons>
-					<VideoConfButton primary onClick={handleJoinCall}>
+					<VideoConfButton variant='primary' onClick={handleJoinCall}>
 						{t('Accept')}
 					</VideoConfButton>
 					{onClose && (
-						<VideoConfButton danger secondary onClick={(): void => onClose(id)}>
+						<VideoConfButton variant='secondary-danger' onClick={(): void => onClose(id)}>
 							{t('Decline')}
 						</VideoConfButton>
 					)}
