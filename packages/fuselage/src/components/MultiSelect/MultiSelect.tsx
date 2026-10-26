@@ -1,4 +1,4 @@
-import { useMergedRefs, useStableCallback, useResizeObserver, useOutsideClick } from '@rocket.chat/fuselage-hooks';
+import { useMergedRefs, useStableCallback, useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import type { ElementType, MouseEventHandler, ReactNode, RefAttributes } from 'react';
 import { useState, useRef, useEffect } from 'react';
 
@@ -76,8 +76,6 @@ function MultiSelect({
 
 	const index = options.findIndex((option) => getValue(option) === currentOptionValue);
 
-	const removeFocusClass = () => innerRef.current?.classList.remove('focus-visible');
-
 	const internalChanged = ([value]: SelectOption) => {
 		if (internalValue.includes(value)) {
 			setCurrentOption(undefined);
@@ -111,7 +109,6 @@ function MultiSelect({
 	const anchorRef = useMergedRefs(ref, innerRef);
 
 	const { ref: containerRef, borderBoxSize } = useResizeObserver();
-	useOutsideClick([containerRef], removeFocusClass);
 
 	const handleClick = useStableCallback(() => {
 		if (visible === AnimatedVisibility.VISIBLE) {
@@ -181,7 +178,6 @@ function MultiSelect({
 											onMouseDown={(e) => {
 												prevent(e);
 												internalChanged(currentOption);
-												removeFocusClass();
 											}}
 										>
 											{getLabel(currentOption)}
@@ -193,7 +189,6 @@ function MultiSelect({
 											onMouseDown={(e) => {
 												prevent(e);
 												internalChanged(currentOption);
-												removeFocusClass();
 											}}
 										>
 											{getLabel(currentOption)}
