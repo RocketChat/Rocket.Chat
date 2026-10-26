@@ -31,6 +31,7 @@ A fix belongs to phase 0 when it moves `develop` toward that target without Tama
 | — | Use-sites migrated off styling props on components | #42974 (merged) |
 | — | The spacing scale is declared and spacing resolves to px | #43021, #43047 (merged) |
 | 1.8 (part) | The stray backtick in `MessageStatusPrivateIndicator`; the `undefined` class in `MessageReactionCounter` | The first two commits of the pilot, ready to extract into their own PR |
+| 6.1–6.5 | Visual state no longer forced or carried by class names: `Select` open state from `aria-expanded`; `InputBox` invalid and disabled wrapper from `:has()`; `rcx-select--invalid`/`--disabled` modifiers; `Options` finds the active option by position; state showcases through `storybook-addon-pseudo-states`; every forced-state class removed. Also fixed on the way: a disabled `Select` trigger that was still enabled, and the close chat modal's subject field that never showed a focus ring | Commits at the base of the pilot, after the develop-ready ones; ported to the frames in its last commit |
 
 ### Corrections to the findings below
 
