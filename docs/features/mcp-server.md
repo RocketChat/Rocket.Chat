@@ -129,7 +129,7 @@ Registered under **Admin → AI Center → MCP** (`server/settings/ai.ts`):
 
 ## Connecting a client
 
-With OAuth, a client needs only the endpoint URL, `https://<host>/api/v1/mcp`. Either enable `OAuth2_Allow_Dynamic_Client_Registration`, on the same MCP settings page, so the client registers itself, or create an OAuth app (Administration → Third-party login) with the client's redirect URI and enter its client ID and secret in the client. `Site_Url` must be the address the client uses to reach the workspace, since every discovery URL is built from it.
+With OAuth, a client starts from the endpoint URL, `https://<host>/api/v1/mcp`, and discovers the rest. It also needs to be registered as an OAuth client, in one of two ways: enable `OAuth2_Allow_Dynamic_Client_Registration` (off by default) on the same MCP settings page so the client registers itself, or create an OAuth app (Administration → Third-party login) with the client's redirect URI and enter its client ID and secret in the client. `Site_Url` must be the address the client uses to reach the workspace, since every discovery URL is built from it.
 
 With a Personal Access Token:
 
