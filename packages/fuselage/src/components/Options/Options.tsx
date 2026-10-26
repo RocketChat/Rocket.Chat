@@ -40,7 +40,7 @@ export type OptionsProps<TValue extends string | number = string | number, TLabe
  * An input for selection of options.
  */
 function Options<TValue extends string | number = string | number, TLabel = ReactNode>({
-	maxHeight = 'x144',
+	maxHeight,
 	multiple,
 	renderEmpty: EmptyComponent = OptionsEmpty,
 	options,
@@ -106,8 +106,7 @@ function Options<TValue extends string | number = string | number, TLabel = Reac
 				<Scrollable vertical smooth>
 					<Box
 						ref={liRef}
-						borderRadius='medium'
-						backgroundColor='light'
+						rcx-options__list
 						maxHeight={maxHeight}
 						onMouseDown={prevent}
 						onClick={prevent}
