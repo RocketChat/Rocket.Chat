@@ -76,7 +76,7 @@ export const Default: Story = {};
 
 export const FontScales: Story = {
 	render: (args) => (
-		<Stack gap={8}>
+		<Stack gap='x8'>
 			{fontScales.map((fontScale) => (
 				<Text key={fontScale} {...args} fontScale={fontScale}>
 					{fontScale}: {args.children}
@@ -88,7 +88,7 @@ export const FontScales: Story = {
 
 export const Colors: Story = {
 	render: (args) => (
-		<Stack gap={8}>
+		<Stack gap='x8'>
 			{colors.map((color) => (
 				<Text key={color} {...args} fontScale='p2' color={color}>
 					{color}: {args.children}
@@ -108,7 +108,7 @@ export const Truncate: Story = {
 
 export const Semantic: Story = {
 	render: () => (
-		<Stack gap={8}>
+		<Stack gap='x8'>
 			<Text is='h2' fontScale='h4' color='titles-labels'>
 				Section title
 			</Text>
