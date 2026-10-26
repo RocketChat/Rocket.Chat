@@ -106,11 +106,14 @@ function AutoComplete<TLabel = ReactNode>({
 			const incoming = getSelected(value, options) || [];
 			const incomingMap = new Map(incoming.map((item) => [item.value, item]));
 
-			const retained = currentSelected.filter(
-				(item) => isSelectedValid(value)(item) && !incomingMap.has(item.value)
-			);
+			const mappedCurrent = currentSelected
+				.map((item) => incomingMap.get(item.value) || item)
+				.filter(isSelectedValid(value));
 
-			const validMerged = [...retained, ...incoming];
+			const currentValues = new Set(mappedCurrent.map((item) => item.value));
+			const newIncoming = incoming.filter((item) => !currentValues.has(item.value));
+
+			const validMerged = [...mappedCurrent, ...newIncoming];
 
 			const isDifferent =
 				validMerged.length !== currentSelected.length ||
@@ -207,9 +210,10 @@ function AutoComplete<TLabel = ReactNode>({
 				rcx-autocomplete__addon
 				color='titles-labels'
 				role='button'
-				tabIndex={0}
-				aria-label={optionsAreVisible === AnimatedVisibility.VISIBLE ? 'Clear selection' : 'Open options'}
+				tabIndex={disabled ? -1 : 0}
+				aria-label={optionsAreVisible === AnimatedVisibility.VISIBLE ? 'Clear filter' : 'Open options'}
 				onKeyDown={useStableCallback((e: React.KeyboardEvent<HTMLElement>) => {
+					if (disabled) return;
 					if (e.key === 'Enter' || e.key === ' ') {
 						e.preventDefault();
 						e.stopPropagation();
@@ -223,6 +227,7 @@ function AutoComplete<TLabel = ReactNode>({
 					}
 				})}
 				onMouseDown={useStableCallback((e: MouseEvent<HTMLElement>) => {
+					if (disabled) return;
 					e.preventDefault();
 					e.stopPropagation();
 
@@ -237,7 +242,7 @@ function AutoComplete<TLabel = ReactNode>({
 				onClick={useStableCallback((e: MouseEvent<HTMLElement>) => {
 					e.stopPropagation();
 				})}
-				style={{ cursor: optionsAreVisible === AnimatedVisibility.VISIBLE ? 'pointer' : 'default' }}
+				style={{ cursor: disabled ? 'not-allowed' : optionsAreVisible === AnimatedVisibility.VISIBLE ? 'pointer' : 'default' }}
 			>
 				<Icon name={optionsAreVisible === AnimatedVisibility.VISIBLE ? 'cross' : 'magnifier'} size='x20' />
 			</Box>
