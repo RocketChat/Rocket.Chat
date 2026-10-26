@@ -1,4 +1,4 @@
-import type { RequestHandler } from 'express';
+import type { Request, RequestHandler } from 'express';
 
 import { getURL } from '../lib/utils/getURL';
 
@@ -24,14 +24,19 @@ export const getAuthorizationServerMetadata = (issuer: string) => ({
 	code_challenge_methods_supported: ['S256'],
 });
 
+/** Whether `req` asks for the document published at one of `urls`, matched the way an express GET route would match it. */
+export const isWellKnownRequest = (req: Request, urls: string[]): boolean => {
+	const pathname = new URL(req.originalUrl, 'http://localhost').pathname.replace(/(.)\/$/, '$1');
+	return ['GET', 'HEAD'].includes(req.method) && urls.some((url) => new URL(url, 'http://localhost').pathname === pathname);
+};
+
 /**
  * Serves the authorization server metadata at its RFC 8414 location. For a workspace served under a path, that location
  * is outside the path, so this must see requests before the path prefix is stripped.
  */
 export const serveAuthorizationServerMetadata: RequestHandler = (req, res, next) => {
 	const issuer = getOAuthIssuer();
-	const { pathname } = new URL(req.originalUrl, 'http://localhost');
-	if (!['GET', 'HEAD'].includes(req.method) || pathname !== new URL(getWellKnownUrl(issuer, 'oauth-authorization-server')).pathname) {
+	if (!isWellKnownRequest(req, [getWellKnownUrl(issuer, 'oauth-authorization-server')])) {
 		next();
 		return;
 	}

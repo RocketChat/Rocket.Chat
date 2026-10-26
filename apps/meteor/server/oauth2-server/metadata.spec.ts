@@ -86,6 +86,12 @@ describe('serveAuthorizationServerMetadata', () => {
 		expect((await request(app).get('/.well-known/oauth-authorization-server')).status).toBe(404);
 	});
 
+	it('accepts a trailing slash', async () => {
+		deploy('https://chat.example.com');
+
+		expect((await request(app).get('/.well-known/oauth-authorization-server/')).status).toBe(200);
+	});
+
 	it('answers GET and HEAD only', async () => {
 		deploy('https://chat.example.com');
 

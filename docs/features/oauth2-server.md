@@ -14,7 +14,7 @@ The protocol work is done by `@node-oauth/oauth2-server`; the workspace supplies
 | POST   | `/oauth/authorize`                        | The consent page's form. Issues an authorization code and redirects to the client.                       |
 | POST   | `/oauth/token`                            | `authorization_code` and `refresh_token` grants.                                                          |
 | GET    | `/oauth/userinfo`                         | Profile of the token's user.                                                                              |
-| GET    | `/.well-known/oauth-authorization-server` | Authorization server metadata (RFC 8414). Under a path prefix, followed by that path (see below).        |
+| GET, HEAD | `/.well-known/oauth-authorization-server` | Authorization server metadata (RFC 8414). Under a path prefix, followed by that path (see below).      |
 
 The consent form posts back to the authorize URL itself, so the parameters the client put in that URL (`state`, `scope`, `code_challenge`, `code_challenge_method`) reach the server with the form.
 
