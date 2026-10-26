@@ -40,8 +40,12 @@ export type SearchIndexCrawler = {
 	 * deleted ones. `lastUpdate` moves only after the last page, so an interrupted catch-up starts again from it.
 	 */
 	catchUpRoomPage(rid: string): Promise<{ done: boolean; indexed: number; removed: number }>;
+	/** Decrypts the pending messages of the room again, after its room key arrived. */
+	retryPendingDecrypt(rid: string): Promise<{ indexed: number }>;
 	/** The messages of the room that the crawler could not decrypt (room key missing), to retry when the key arrives. */
 	getPendingDecrypt(rid: string): IMessage[];
+	/** Drops what the crawler holds in memory for the room, after the room left the index. */
+	forgetRoom(rid: string): void;
 };
 
 type CatchUp = { type: 'UPDATED' | 'DELETED'; from: number; cursor: string; newestUpdate: number };
@@ -164,8 +168,19 @@ export const createSearchIndexCrawler = ({
 			return { done: true, ...result };
 		},
 
+		async retryPendingDecrypt(rid) {
+			const pending = pendingDecrypt.get(rid);
+			if (!pending?.size) return { indexed: 0 };
+			return { indexed: await decryptAll(rid, [...pending.values()]) };
+		},
+
 		getPendingDecrypt(rid) {
 			return [...(pendingDecrypt.get(rid)?.values() ?? [])];
+		},
+
+		forgetRoom(rid) {
+			pendingDecrypt.delete(rid);
+			catchUps.delete(rid);
 		},
 	};
 };

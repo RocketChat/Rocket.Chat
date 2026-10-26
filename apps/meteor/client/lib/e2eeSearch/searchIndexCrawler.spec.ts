@@ -303,6 +303,58 @@ describe('createSearchIndexCrawler', () => {
 		});
 	});
 
+	describe('retryPendingDecrypt', () => {
+		it('indexes the pending messages of the room when its key arrives, with no server call', async () => {
+			const undecryptable = new Set(['m2']);
+			const { crawler, calls, decryptMessage, writer } = await setup({
+				undecryptable,
+				pages: [
+					{
+						updated: [encrypted('m3', NOW - 1000), encrypted('m2', NOW - 2000)],
+						deleted: [],
+						cursor: { next: null, previous: `${NOW - 2000}` },
+					},
+				],
+			});
+			await crawler.backfillRoomPage('room1');
+			undecryptable.clear();
+			decryptMessage.mockClear();
+			writer.flush.mockClear();
+
+			expect(await crawler.retryPendingDecrypt('room1')).toEqual({ indexed: 1 });
+
+			expect(calls).toHaveLength(1);
+			expect(decryptMessage.mock.calls.map(([message]) => message._id)).toEqual(['m2']);
+			expect(writer.flush).toHaveBeenCalledTimes(1);
+			expect(crawler.getPendingDecrypt('room1')).toEqual([]);
+		});
+
+		it('keeps a message pending while its key is still missing', async () => {
+			const { crawler } = await setup({
+				undecryptable: new Set(['m2']),
+				pages: [{ updated: [encrypted('m2', NOW - 2000)], deleted: [], cursor: { next: null, previous: null } }],
+			});
+			await crawler.backfillRoomPage('room1');
+
+			expect(await crawler.retryPendingDecrypt('room1')).toEqual({ indexed: 0 });
+			expect(crawler.getPendingDecrypt('room1').map((message) => message._id)).toEqual(['m2']);
+		});
+	});
+
+	describe('forgetRoom', () => {
+		it('drops the pending messages of the room', async () => {
+			const { crawler } = await setup({
+				undecryptable: new Set(['m2']),
+				pages: [{ updated: [encrypted('m2', NOW - 2000)], deleted: [], cursor: { next: null, previous: null } }],
+			});
+			await crawler.backfillRoomPage('room1');
+
+			crawler.forgetRoom('room1');
+
+			expect(crawler.getPendingDecrypt('room1')).toEqual([]);
+		});
+	});
+
 	describe('against the chat.syncMessages paging rules of the server', () => {
 		const MINUTE = 60 * 1000;
 		const ROOM = 'room1';
