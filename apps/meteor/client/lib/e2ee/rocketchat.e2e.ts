@@ -21,6 +21,8 @@ import SaveE2EPasswordModal from '../../views/e2e/SaveE2EPasswordModal';
 import { sdk } from '../SDKClient';
 import * as banners from '../banners';
 import type { LegacyBannerPayload } from '../banners';
+import { getSearchIndexBackend } from '../e2eeSearch/getSearchIndexBackend';
+import { createSearchIndexSession } from '../e2eeSearch/searchIndexSession';
 import { getUserAvatarURL } from '../getUserAvatarURL';
 import { limitQuoteChain } from '../limitQuoteChain';
 import { getDdpSdk } from '../sdk/ddpSdk';
@@ -87,6 +89,10 @@ class E2E extends Emitter {
 
 	getState() {
 		return this.state;
+	}
+
+	getUserId(): string | undefined {
+		return this.userId || undefined;
 	}
 
 	isEnabled(): boolean {
@@ -878,6 +884,19 @@ class E2E extends Emitter {
 }
 
 export const e2e = new E2E();
+
+/** The local search index of decrypted E2EE messages: open while E2EE is unlocked, unused after a logout. */
+export const e2eSearchIndexSession = createSearchIndexSession(
+	{
+		on: (type, handler) => e2e.on(type, handler),
+		getUserId: () => e2e.getUserId(),
+		getPrivateKey: () => e2e.privateKey,
+	},
+	{
+		getBackend: getSearchIndexBackend,
+		onError: (error) => log.span('searchIndexSession').error('Error opening the local search index', error),
+	},
+);
 
 getDdpSdk().account.onLogout(() => {
 	void e2e.stopClient();
