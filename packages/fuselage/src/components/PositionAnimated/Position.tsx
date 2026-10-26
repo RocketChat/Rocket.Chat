@@ -46,11 +46,12 @@ const Position = ({ anchor, children, placement, margin, preventScroll = false, 
 
 	useEffect(
 		() => () => {
-			if (portalContainer.childNodes.length === 0) {
-				ownerDocument.body.removeChild(portalContainer);
+			// Another positioned element leaving in the same commit may have removed the shared container already.
+			if (!portalContainer.hasChildNodes()) {
+				portalContainer.remove();
 			}
 		},
-		[portalContainer, ownerDocument],
+		[portalContainer],
 	);
 
 	return createPortal(
