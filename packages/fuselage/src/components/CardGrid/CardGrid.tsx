@@ -3,21 +3,23 @@ import type { ReactNode } from 'react';
 import { Children, isValidElement } from 'react';
 
 import CardGridItem from './CardGridItem';
+import type { ElementProps } from '../../types/ElementProps';
 import { Box } from '../Box';
 import type { GridItemProps } from '../Grid';
 import { GridItem } from '../Grid';
 
-export type CardGridProps = {
+export type CardGridProps = Omit<ElementProps<HTMLDivElement>, 'children'> & {
 	children: ReactNode;
 	breakpoints?: GridItemProps;
 	/** Minimum height of each row in pixels, gutters included. */
 	minRowHeight?: number;
 };
 
-const CardGrid = ({ children, breakpoints, minRowHeight }: CardGridProps) => (
+const CardGrid = ({ children, breakpoints, minRowHeight, className, ...props }: CardGridProps) => (
 	<Box rcx-grid__wrapper>
 		<Box
 			rcx-grid
+			{...props}
 			className={[
 				'rcx-card-grid',
 				minRowHeight !== undefined &&
@@ -26,6 +28,7 @@ const CardGrid = ({ children, breakpoints, minRowHeight }: CardGridProps) => (
 							min-height: ${minRowHeight}px;
 						}
 					`,
+				className,
 			]}
 		>
 			{Children.map(children, (child) => {
