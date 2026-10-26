@@ -56,15 +56,7 @@ const mockLogger = {
 const mocks = {
 	'@rocket.chat/agenda': { Agenda: MockAgendaClass },
 	'meteor/meteor': { Meteor: { startup: mockMeteorStartup } },
-	'meteor/mongo': {
-		MongoInternals: {
-			defaultRemoteCollectionDriver: () => {
-				return {
-					mongo: { client: { db: sinon.stub() } },
-				};
-			},
-		},
-	},
+	'../../../../server/database/utils': { client: { db: sinon.stub() } },
 	'../../../../server/lib/omnichannel/closeRoom': { closeRoom: mockLivechatCloseRoom },
 	'./logger': { schedulerLogger: mockLogger },
 	'@rocket.chat/models': {

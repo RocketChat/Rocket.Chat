@@ -62,15 +62,7 @@ const getNextAgent = sinon.stub();
 const mocks = {
 	'@rocket.chat/agenda': { Agenda: MockAgendaClass },
 	'meteor/meteor': { Meteor: { startup: mockMeteorStartup } },
-	'meteor/mongo': {
-		MongoInternals: {
-			defaultRemoteCollectionDriver: () => {
-				return {
-					mongo: { client: { db: sinon.stub() } },
-				};
-			},
-		},
-	},
+	'../../../../server/database/utils': { client: { db: sinon.stub() } },
 	'../../../../server/lib/omnichannel/RoutingManager': { RoutingManager: { getConfig: routingConfigMock, getNextAgent } },
 	'../../../../server/lib/omnichannel/Helper': { forwardRoomToAgent },
 	'../../../../server/lib/omnichannel/rooms': { returnRoomAsInquiry: returnRoomAsInquiryMock },
