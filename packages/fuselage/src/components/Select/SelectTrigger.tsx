@@ -26,7 +26,8 @@ export function SelectTrigger({ ref, small, error, isDisabled, id, ...props }: S
 			fontScale='p2'
 			justifyContent='space-between'
 			rcx-input-box--small={small}
-			className={[error && 'invalid', isDisabled && 'disabled'].filter(Boolean).join(' ')}
+			rcx-select--invalid={!!error}
+			rcx-select--disabled={isDisabled}
 		>
 			{props.children}
 		</Box>
