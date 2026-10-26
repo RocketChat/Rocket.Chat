@@ -7,12 +7,10 @@ export type DropdownMobileProps = RefAttributes<HTMLElement> & {
 	children: ReactNode;
 };
 
-const bottomSheet = { position: 'fixed', bottom: 0, left: 0, zIndex: 2, width: '100vw' } as const;
-
 export function DropdownMobile({ children, ...props }: DropdownMobileProps) {
 	return (
-		<PopoverSurface flush maxHeight='most-of-screen' style={bottomSheet} data-testid='dropdown' {...props}>
-			<Box paddingBlock={16}>{children}</Box>
+		<PopoverSurface flush maxHeight='most-of-screen' data-testid='dropdown' className='rcx-dropdown__bottom-sheet' {...props}>
+			<Box rcx-dropdown__bottom-sheet-content>{children}</Box>
 		</PopoverSurface>
 	);
 }
