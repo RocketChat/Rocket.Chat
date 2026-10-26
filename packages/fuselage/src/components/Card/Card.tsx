@@ -1,4 +1,3 @@
-import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import { styled, View, type GetProps } from '@tamagui/web';
 import type { AllHTMLAttributes } from 'react';
 
@@ -28,6 +27,8 @@ const CardFrame = styled(View, {
 	variants: {
 		horizontal: {
 			true: {
+				// Wraps on small screens without measuring the viewport
+				flexWrap: { default: 'wrap', sm: 'nowrap' },
 				alignItems: 'center',
 				padding: spacing('x12'),
 				gap: spacing('x16'),
@@ -36,11 +37,6 @@ const CardFrame = styled(View, {
 				flexDirection: 'column',
 				padding: spacing('x20'),
 				gap: spacing('x24'),
-			},
-		},
-		wrap: {
-			true: {
-				flexWrap: 'wrap',
 			},
 		},
 		hero: {
@@ -66,13 +62,9 @@ export type CardProps = {
 
 // `width` and `height` are HTML attributes too, so the type still lets callers size the card with a size token
 const Card = ({ horizontal, hero, clickable, className, width, height, ...props }: CardProps) => {
-	const breakpoints = useBreakpoints();
-	const isMobile = !breakpoints.includes('sm');
-
 	return (
 		<CardFrame
 			horizontal={!!horizontal}
-			wrap={!!horizontal && isMobile}
 			hero={hero}
 			clickable={clickable}
 			width={size(width)}
@@ -82,7 +74,6 @@ const Card = ({ horizontal, hero, clickable, className, width, height, ...props 
 				'rcx-card',
 				horizontal ? 'rcx-card__horizontal' : 'rcx-card__vertical',
 				hero && 'rcx-card__hero',
-				horizontal && isMobile && 'rcx-card__horizontal--wrap',
 				clickable && 'rcx-card__clickable',
 				className,
 			)}

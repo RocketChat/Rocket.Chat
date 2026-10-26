@@ -1,0 +1,36 @@
+/* `ModalContent` and `ModalIcon` are `Box` elements, so their look lives on their classes */
+.rcx-modal__content-wrapper {
+	margin-inline: 24px;
+}
+
+.rcx-modal__content-wrapper--fill {
+	height: 100%;
+	padding-block-end: 16px;
+}
+
+.rcx-modal__icon {
+	display: flex;
+	align-items: center;
+
+	padding-block: 4px;
+}
+
+.rcx-modal__icon--align-end {
+	align-items: end;
+}
+
+.rcx-modal__icon--variant-danger {
+	color: var(--rcx-color-font-danger, #d40c26);
+}
+
+.rcx-modal__icon--variant-warning {
+	color: var(--rcx-color-status-font-on-warning, #895f00);
+}
+
+.rcx-modal__icon--variant-info {
+	color: var(--rcx-color-font-info, #095ad2);
+}
+
+.rcx-modal__icon--variant-success {
+	color: var(--rcx-color-status-font-on-success, #148660);
+}

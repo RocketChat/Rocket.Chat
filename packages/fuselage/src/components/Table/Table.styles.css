@@ -9,6 +9,43 @@
 	background-color: var(--rcx-color-surface-hover, #f2f3f5);
 }
 
+/* The selection bar's text and actions are `Box` elements */
+.rcx-table__selection-text {
+	overflow: hidden;
+	flex-shrink: 1;
+
+	margin-block: 16px;
+
+	white-space: nowrap;
+	letter-spacing: 0;
+	text-overflow: ellipsis;
+
+	font-size: 0.875rem;
+	font-weight: 700;
+	line-height: 1.25rem;
+}
+
+.rcx-table__selection-actions {
+	flex-shrink: 0;
+
+	margin-inline: -8px;
+
+	letter-spacing: 0;
+
+	font-size: 0.875rem;
+	font-weight: 500;
+	line-height: 1.25rem;
+}
+
+/* The dash an empty body cell shows */
+.rcx-table__cell-placeholder {
+	display: inline-block;
+
+	width: 0.875rem;
+
+	border-width: 1px;
+}
+
 /* Reaches into Button, which keeps its own shrinking */
 .rcx-table__selection-button {
 	flex-shrink: 0;

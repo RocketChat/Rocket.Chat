@@ -1,0 +1,113 @@
+/* The contextual bar parts are `Box` elements, so their look lives on their classes */
+.rcx-vertical-bar {
+	position: static;
+	z-index: 10;
+	inset-block-start: 0;
+	inset-inline-end: 0;
+	display: flex;
+	flex-direction: column;
+	flex-shrink: 0;
+	height: 100%;
+	color: var(--rcx-color-font-default, #2f343d);
+	background-color: var(--rcx-color-surface-room, #ffffff);
+	border-inline-start-color: var(--rcx-color-stroke-extra-light, #ebecef);
+	border-inline-start-width: 1px;
+}
+
+.rcx-vertical-bar--stretch {
+	width: 100%;
+}
+
+.rcx-vertical-bar--position-static {
+	position: static;
+}
+
+.rcx-vertical-bar--position-relative {
+	position: relative;
+}
+
+.rcx-vertical-bar--position-absolute {
+	position: absolute;
+}
+
+.rcx-vertical-bar--position-fixed {
+	position: fixed;
+}
+
+.rcx-vertical-bar__header {
+	display: flex;
+	align-items: center;
+	flex-shrink: 0;
+	height: 2.75rem;
+	padding-inline: 16px;
+	border-block-end-color: var(--rcx-color-stroke-extra-light, #ebecef);
+	border-block-end-width: 1px;
+}
+
+.rcx-vertical-bar__header-inner {
+	display: flex;
+	overflow: hidden;
+	justify-content: space-between;
+	align-items: center;
+	flex-grow: 1;
+	height: 100%;
+	margin-inline: -4px;
+	padding-inline: 4px;
+	gap: 8px;
+}
+
+.rcx-vertical-bar__content {
+	display: flex;
+	overflow-y: hidden;
+	flex-direction: column;
+	height: 100%;
+	padding-inline: 24px;
+}
+
+.rcx-vertical-bar__content--flush {
+	padding-inline: 0;
+}
+
+.rcx-vertical-bar__content--spaced {
+	padding-block: 12px;
+}
+
+.rcx-vertical-bar__empty {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	flex-grow: 1;
+}
+
+.rcx-vertical-bar__section {
+	display: flex;
+	align-items: center;
+	flex-grow: 1;
+	padding: 16px;
+	border-block-end-color: var(--rcx-color-stroke-extra-light, #ebecef);
+	border-block-end-width: 1px;
+}
+
+.rcx-vertical-bar__footer {
+	padding-block: 20px;
+	padding-inline: 16px;
+}
+
+.rcx-vertical-bar__title {
+	flex-grow: 1;
+	flex-shrink: 1;
+	letter-spacing: 0;
+	font-size: 0.875rem;
+	font-weight: 700;
+	line-height: 1.25rem;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.rcx-vertical-bar__skeleton {
+	display: flex;
+	flex-direction: column;
+	padding: 24px;
+	gap: 4px;
+}

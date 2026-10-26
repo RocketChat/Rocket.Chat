@@ -7,12 +7,14 @@
 @import './CardGroup/CardGroup.styles.css';
 @import './CheckBox/CheckBox.styles.css';
 @import './Chevron/Chevron.styles.css';
+@import './Contextualbar/Contextualbar.styles.css';
 @import './Dropdown/Dropdown.styles.css';
 @import './Field/Field.styles.css';
 @import './FieldGroup/FieldGroup.styles.css';
 @import './InputBox/InputBox.styles.css';
 @import './Item/Item.styles.css';
 @import './Message/Messages.styles.css';
+@import './Modal/Modal.styles.css';
 @import './NavBar/NavBar.styles.css';
 @import './Option/Option.styles.css';
 @import './Options/Options.styles.css';

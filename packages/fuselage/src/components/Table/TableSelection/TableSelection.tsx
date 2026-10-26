@@ -14,14 +14,8 @@ const TableSelection = ({ children, text, className, ...props }: TableSelectionP
 		className={['rcx-table__selection', className].filter(Boolean).join(' ')}
 		{...(props as GetProps<typeof TableSelectionFrame>)}
 	>
-		<Box fontScale='p2b' marginBlock={16} flexShrink={1} withTruncatedText>
-			{text}
-		</Box>
-		{children && (
-			<Box marginInline='neg-x8' fontScale='p2m' flexShrink={0}>
-				{children}
-			</Box>
-		)}
+		<Box rcx-table__selection-text>{text}</Box>
+		{children && <Box rcx-table__selection-actions>{children}</Box>}
 	</TableSelectionFrame>
 );
 
