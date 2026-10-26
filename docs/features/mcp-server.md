@@ -51,7 +51,7 @@ Tool dispatch is restricted to server-generated, allow-listed REST paths on `127
 The feature is gated behind the **Rocket.Chat AI add-on** (`chat.rocket.rc-ai`):
 
 - The route is registered with `license: [AI_LICENSE_MODULE]`, so requests are rejected unless the workspace license includes the module.
-- The `MCP_*` settings use the same module and an `invalidValue` of `false`, so without the add-on they fall back to **off** and the feature cannot be enabled.
+- The `MCP_*` settings and `OAuth2_Allow_Dynamic_Client_Registration` use the same module and an `invalidValue` of `false`, so without the add-on they fall back to **off** and the feature cannot be enabled.
 
 ## Tool catalog
 
@@ -106,7 +106,7 @@ Registered under **Admin → AI Center → MCP** (`server/settings/ai.ts`):
 | ------------------------- | ------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `MCP_Enabled`             | `false` | Enables the `/api/v1/mcp` endpoint. Flagged **alpha** via an admin warning callout (`MCP_Alpha_Alert`).                                           |
 | `MCP_Expose_Extended_API` | `false` | When on, exposes the extended allow-listed toolset instead of the minimal curated one. Gated behind `MCP_Enabled`. The full API is never exposed. |
-| `OAuth2_Allow_Dynamic_Client_Registration` | `false` | Lets MCP clients register themselves as OAuth clients at `/oauth/register` ([Dynamic Client Registration](oauth2-server.md#dynamic-client-registration)). Gated behind `MCP_Enabled`. |
+| `OAuth2_Allow_Dynamic_Client_Registration` | `false` | Lets MCP clients register themselves as OAuth clients at `/oauth/register` ([Dynamic Client Registration](oauth2-server.md#dynamic-client-registration)). Requires the AI add-on and is gated behind `MCP_Enabled`. |
 
 ## Connecting a client
 
