@@ -1,6 +1,5 @@
 import { Box, Callout, FieldGroup, Field, FieldLabel, FieldRow, ToggleSwitch, Select } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { useId } from 'react';
 import {
 	ContextualbarClose,
 	ContextualbarTitle,
@@ -9,6 +8,7 @@ import {
 	ContextualbarContent,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
+import { useId } from 'react';
 import type { ChangeEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
