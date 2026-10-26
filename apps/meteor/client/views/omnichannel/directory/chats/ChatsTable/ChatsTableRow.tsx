@@ -1,6 +1,6 @@
 import type { IOmnichannelRoomWithDepartment } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Tag, Box } from '@rocket.chat/fuselage';
+import { Tag, Box, useStyle } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
@@ -27,6 +27,7 @@ const customAlignTop = css`
 `;
 
 const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
+	const customAlignTopClassName = useStyle(customAlignTop);
 	const { t } = useTranslation();
 	const { _id, fname, tags, servedBy, ts, department, open, priorityWeight, lm, onHold, source, verified } = room;
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
@@ -58,8 +59,8 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 	);
 
 	return (
-		<GenericTableRow className={customAlignTop} key={_id} tabIndex={0} onClick={() => onRowClick(_id)} action>
-			<GenericTableCell withTruncatedText>
+		<GenericTableRow className={customAlignTopClassName} key={_id} tabIndex={0} onClick={() => onRowClick(_id)} action>
+			<GenericTableCell truncate>
 				<Box display='flex' flexDirection='column'>
 					<Box withTruncatedText fontScale='p2m' color='default'>
 						{fname}
@@ -82,20 +83,20 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 					<PriorityIcon level={priorityWeight} />
 				</GenericTableCell>
 			)}
-			<GenericTableCell withTruncatedText>
+			<GenericTableCell truncate>
 				<Box display='flex' alignItems='center'>
 					<OmnichannelRoomIcon size='x20' source={source} />
 					<Box marginInlineStart={8}>{getSourceLabel(source)}</Box>
 				</Box>
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText>{servedBy?.username}</GenericTableCell>
+			<GenericTableCell truncate>{servedBy?.username}</GenericTableCell>
 			<GenericTableCell>
 				<Box display='flex'>
 					<OmnichannelVerificationTag verified={verified} />
 				</Box>
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText>{department?.name}</GenericTableCell>
-			<GenericTableCell withTruncatedText>
+			<GenericTableCell truncate>{department?.name}</GenericTableCell>
+			<GenericTableCell truncate>
 				<Box display='flex' flexDirection='column'>
 					<Box fontScale='p2m' withTruncatedText color='default'>
 						{formatDate(ts)}
@@ -103,7 +104,7 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 					<Box withTruncatedText>{getTimeFromNow(ts)}</Box>
 				</Box>
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText>
+			<GenericTableCell truncate>
 				{lm && (
 					<Box display='flex' flexDirection='column'>
 						<Box fontScale='p2m' withTruncatedText color='default'>
@@ -113,7 +114,7 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 					</Box>
 				)}
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText>
+			<GenericTableCell truncate>
 				<Box display='flex' alignItems='center'>
 					<RoomActivityIcon room={room} />
 					{getStatusText(open, onHold)}

@@ -134,7 +134,9 @@ export const MenuDisplayExample = (args: Omit<MenuProps<object>, 'children'>) =>
 					<MenuItemIcon name='user-rounded' />
 					<MenuItemContent>Avatars</MenuItemContent>
 					<MenuItemInput>
-						<ToggleSwitch marginInlineEnd={16} onChange={() => setAvatarDisplay(!avatarDisplay)} checked={avatarDisplay} />
+						<Box display='flex' marginInlineEnd={16}>
+							<ToggleSwitch onChange={() => setAvatarDisplay(!avatarDisplay)} checked={avatarDisplay} />
+						</Box>
 					</MenuItemInput>
 				</MenuItem>
 			</MenuSection>
@@ -206,30 +208,50 @@ export const MenuMapGenericItem = () => {
 		{
 			name: 'Unread',
 			icon: 'flag',
-			input: <CheckBox marginInline={16} checked={groupByUnread} onChange={() => setGroupByUnread(!groupByUnread)} />,
+			input: (
+				<Box display='flex' marginInline={16}>
+					<CheckBox checked={groupByUnread} onChange={() => setGroupByUnread(!groupByUnread)} />
+				</Box>
+			),
 		},
 		{
 			name: 'favorites',
 			icon: 'star',
 			description: 'Group by favorites and unread bla bla balaisudhf ioioasdhoaisdf asdifh oaisdhf aosidhf aisdhf aosdihf',
-			input: <CheckBox marginInline={16} checked={groupByFav} onChange={() => setGroupByFav(!groupByFav)} />,
+			input: (
+				<Box display='flex' marginInline={16}>
+					<CheckBox checked={groupByFav} onChange={() => setGroupByFav(!groupByFav)} />
+				</Box>
+			),
 		},
 		{
 			name: 'Types',
 			icon: 'group-by-type',
-			input: <CheckBox marginInline={16} checked={groupByTypes} onChange={() => setGroupByTypes(!groupByTypes)} />,
+			input: (
+				<Box display='flex' marginInline={16}>
+					<CheckBox checked={groupByTypes} onChange={() => setGroupByTypes(!groupByTypes)} />
+				</Box>
+			),
 		},
 	];
 	const sortByItems: Item[] = [
 		{
 			name: 'Activities',
 			icon: 'clock',
-			input: <CheckBox marginInline={16} onChange={() => setSortBy('activity')} checked={sortBy === 'activity'} />,
+			input: (
+				<Box display='flex' marginInline={16}>
+					<CheckBox onChange={() => setSortBy('activity')} checked={sortBy === 'activity'} />
+				</Box>
+			),
 		},
 		{
 			name: 'Name',
 			icon: 'sort-az',
-			input: <CheckBox marginInline={16} onChange={() => setSortBy('alphabetical')} checked={sortBy === 'alphabetical'} />,
+			input: (
+				<Box display='flex' marginInline={16}>
+					<CheckBox onChange={() => setSortBy('alphabetical')} checked={sortBy === 'alphabetical'} />
+				</Box>
+			),
 		},
 	];
 

@@ -180,7 +180,7 @@ const AbacRoomMembershipPreview = ({ rid, roomName, attributes, isSaving, onBack
 					/>
 				</Box>
 			</ContextualbarSection>
-			<ContextualbarContent paddingInline={0}>
+			<ContextualbarContent flush>
 				{isError && (
 					<Box paddingInline={24} paddingBlock={12}>
 						<AbacErrorCallout

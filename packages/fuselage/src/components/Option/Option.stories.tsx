@@ -30,18 +30,21 @@ export default {
 	},
 	decorators: [
 		(Story, { parameters }) => (
-			<Tile
-				is='ul'
-				role='listbox'
-				aria-label='Options'
-				aria-busy={parameters.busy || undefined}
-				position='relative'
-				maxWidth={250}
-				margin='none'
-				paddingInline='0'
-			>
-				<Story />
-			</Tile>
+			<Box position='relative' maxWidth={250}>
+				<Tile flush>
+					<Box
+						is='ul'
+						role='listbox'
+						aria-label='Options'
+						aria-busy={parameters.busy || undefined}
+						margin='none'
+						paddingInline={0}
+						paddingBlock={16}
+					>
+						<Story />
+					</Box>
+				</Tile>
+			</Box>
 		),
 	],
 	argTypes: {

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { action } from 'storybook/actions';
+import { userEvent, within } from 'storybook/test';
 
 import {
 	Modal,
@@ -171,7 +172,7 @@ export const _WithIconAndTagline: Story = {
 	render: () => (
 		<Modal>
 			<ModalHeader>
-				<ModalIcon alignItems='end' name='info' />
+				<ModalIcon align='end' name='info' />
 				<ModalHeaderText>
 					<ModalTagline>Tagline</ModalTagline>
 					<ModalTitle>Modal Header</ModalTitle>
@@ -280,7 +281,7 @@ export const _WithAnnotation: Story = {
 				<ModalClose />
 			</ModalHeader>
 			<ModalContent>Modal Body</ModalContent>
-			<ModalFooter justifyContent='space-between'>
+			<ModalFooter justify='space-between'>
 				<ModalFooterAnnotation>Anototation</ModalFooterAnnotation>
 				<ModalFooterControllers>
 					<Button>Cancel</Button>
@@ -362,4 +363,11 @@ export const _WithForm: Story = {
 			</ModalFooter>
 		</Modal>
 	),
+};
+
+export const _WithFocusedField: Story = {
+	..._WithForm,
+	play: async ({ canvasElement }) => {
+		await userEvent.click(within(canvasElement.ownerDocument.body).getByPlaceholderText('Placeholder'));
+	},
 };

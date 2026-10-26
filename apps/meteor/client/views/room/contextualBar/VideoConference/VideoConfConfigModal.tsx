@@ -65,7 +65,7 @@ const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigMo
 					</Callout>
 				</Box>
 			</ModalContent>
-			<ModalFooter justifyContent='space-between'>
+			<ModalFooter justify='space-between'>
 				<ModalFooterAnnotation>
 					{isAdmin
 						? t('Configure_video_conference_to_make_it_available_on_this_workspace')

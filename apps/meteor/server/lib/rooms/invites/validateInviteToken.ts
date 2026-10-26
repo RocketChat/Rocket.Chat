@@ -1,11 +1,11 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { Invites, Rooms } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings';
 
 export const validateInviteToken = async (token: string) => {
 	if (!token || typeof token !== 'string') {
-		throw new Meteor.Error('error-invalid-token', 'The invite token is invalid.', {
+		throw new ClientSafeError('error-invalid-token', 'The invite token is invalid.', {
 			method: 'validateInviteToken',
 			field: 'token',
 		});
@@ -13,7 +13,7 @@ export const validateInviteToken = async (token: string) => {
 
 	const inviteData = await Invites.findOneById(token);
 	if (!inviteData) {
-		throw new Meteor.Error('error-invalid-token', 'The invite token is invalid.', {
+		throw new ClientSafeError('error-invalid-token', 'The invite token is invalid.', {
 			method: 'validateInviteToken',
 			field: 'token',
 		});
@@ -21,28 +21,28 @@ export const validateInviteToken = async (token: string) => {
 
 	const room = await Rooms.findOneById(inviteData.rid);
 	if (!room) {
-		throw new Meteor.Error('error-invalid-room', 'The invite token is invalid.', {
+		throw new ClientSafeError('error-invalid-room', 'The invite token is invalid.', {
 			method: 'validateInviteToken',
 			field: 'rid',
 		});
 	}
 
 	if (settings.get('ABAC_Enabled') && room?.abacAttributes?.length) {
-		throw new Meteor.Error('error-invalid-room', 'Room is ABAC managed', {
+		throw new ClientSafeError('error-invalid-room', 'Room is ABAC managed', {
 			method: 'validateInviteToken',
 			field: 'rid',
 		});
 	}
 
 	if (inviteData.expires && new Date(inviteData.expires).getTime() <= Date.now()) {
-		throw new Meteor.Error('error-invite-expired', 'The invite token has expired.', {
+		throw new ClientSafeError('error-invite-expired', 'The invite token has expired.', {
 			method: 'validateInviteToken',
 			field: 'expires',
 		});
 	}
 
 	if (inviteData.maxUses > 0 && inviteData.uses >= inviteData.maxUses) {
-		throw new Meteor.Error('error-invite-expired', 'The invite token has expired.', {
+		throw new ClientSafeError('error-invite-expired', 'The invite token has expired.', {
 			method: 'validateInviteToken',
 			field: 'maxUses',
 		});

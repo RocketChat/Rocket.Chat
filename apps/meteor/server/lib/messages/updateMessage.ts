@@ -1,8 +1,7 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
-import { Message } from '@rocket.chat/core-services';
+import { Message, ClientSafeError } from '@rocket.chat/core-services';
 import type { IMessage, IUser, AtLeast } from '@rocket.chat/core-typings';
 import { Messages, Rooms } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { afterSaveMessage } from '../../hooks/messages/afterSaveMessage';
 import { settings } from '../../settings';
@@ -31,7 +30,7 @@ export const updateMessage = async function (
 	if (message && Apps.self && Apps.isLoaded()) {
 		const prevent = await Apps.self?.triggerEvent(AppEvents.IPreMessageUpdatedPrevent, messageData);
 		if (prevent) {
-			throw new Meteor.Error('error-app-prevented-updating', 'A Rocket.Chat App prevented the message updating.');
+			throw new ClientSafeError('error-app-prevented-updating', 'A Rocket.Chat App prevented the message updating.');
 		}
 
 		let result = await Apps.self?.triggerEvent(AppEvents.IPreMessageUpdatedExtend, messageData);

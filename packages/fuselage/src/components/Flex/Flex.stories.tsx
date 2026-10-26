@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 
+import { Box } from '../Box';
 import { Tile } from '../Tile';
 import FlexContainer from './FlexContainer';
 import FlexItem from './FlexItem';
@@ -179,7 +180,9 @@ export const Shrink: Story = {
 					<Tile>#1</Tile>
 				</FlexItem>
 				<FlexItem shrink={1}>
-					<Tile width='full'>#2</Tile>
+					<Box width='full'>
+						<Tile>#2</Tile>
+					</Box>
 				</FlexItem>
 				<FlexItem>
 					<Tile>#3</Tile>

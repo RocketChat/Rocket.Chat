@@ -424,6 +424,22 @@ export default [
 			],
 		},
 	},
+	{
+		files: ['apps/meteor/server/**/*.@(ts|js)', 'apps/meteor/ee/server/**/*.@(ts|js)'],
+		rules: {
+			'no-restricted-syntax': [
+				'error',
+				{
+					selector: "MemberExpression[object.name='Meteor'][property.name='Error']",
+					message: "Use ClientSafeError from '@rocket.chat/core-services' instead.",
+				},
+				{
+					selector: "TSQualifiedName[left.name='Meteor'][right.name='Error']",
+					message: "Use ClientSafeError from '@rocket.chat/core-services' instead.",
+				},
+			],
+		},
+	},
 	// View-agnostic logic: must stay reusable by clients that do not render with Fuselage (e.g. mobile).
 	{
 		files: ['packages/ui-account/src/**/logic/**/*.@(ts|tsx)'],
@@ -506,6 +522,8 @@ export default [
 			'ee/packages/federation-matrix/tests/end-to-end/@(ban|dms|first-contact|messaging|permissions|presence|room|typing).spec.ts',
 			'ee/packages/federation-matrix/tests/helper/ddp-listener.ts',
 			'ee/packages/pdf-worker/.storybook/preview.tsx',
+			'ee/packages/xmpp-server/tests/end-to-end/@(connectivity|hosted-muc|presence|remote-muc).spec.ts',
+			'ee/packages/xmpp-server/tests/end-to-end/helper/@(config|rocketchat).ts',
 			'packages/gazzodown/.storybook/preview.tsx',
 		],
 		rules: {

@@ -186,7 +186,7 @@ const RecipientForm = (props: RecipientFormProps) => {
 	return (
 		<Form id={recipientFormId} onSubmit={handleSubmit(submit)} noValidate>
 			<Scrollable vertical>
-				<Box paddingInline={2}>
+				<Box>
 					<FieldGroup>
 						<ContactField
 							control={control}

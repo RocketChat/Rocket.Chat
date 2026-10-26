@@ -112,7 +112,7 @@ export const ChangePassphrase = () => {
 			<Box is='p' fontScale='p1' id={e2ePasswordExplanationId}>
 				<Trans i18nKey='E2E_Encryption_Password_Explanation' />
 			</Box>
-			<Box marginBlockStart={36} width='full' display='flex' flexDirection='column' gap={12}>
+			<Box marginBlockStart='x32' width='full' display='flex' flexDirection='column' gap='x12'>
 				<Box is='h3' fontScale='h4'>
 					{t('Change_E2EE_password')}
 				</Box>

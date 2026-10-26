@@ -19,7 +19,7 @@ const DeviceMenuButton = forwardRef<HTMLButtonElement, DeviceMenuButtonProps>(fu
 ) {
 	// Spread because GenericMenu clones this trigger with the props that open the menu, which must reach the button.
 	// Named and drawn after the spread, which carries the menu's own name and icon.
-	return <ActionButton flexShrink={1} flexGrow={0} {...menuProps} label={label} aria-label={label} icon={menuIcon} ref={ref} />;
+	return <ActionButton {...menuProps} label={label} aria-label={label} icon={menuIcon} ref={ref} />;
 });
 
 export default DeviceMenuButton;

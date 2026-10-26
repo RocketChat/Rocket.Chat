@@ -60,7 +60,7 @@ const ToneSelector = ({ tone, setTone }: { tone: number; setTone: (tone: number)
 				onKeyDown={handleKeyDown}
 				icon={<ToneItem tone={tone} />}
 			/>
-			<PositionAnimated width='auto' visible={visible} anchor={ref} placement='left-middle'>
+			<PositionAnimated visible={visible} anchor={ref} placement='left-middle'>
 				<Options onSelect={handleSelection} options={options} cursor={cursor} />
 			</PositionAnimated>
 		</>

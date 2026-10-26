@@ -1,6 +1,4 @@
-import { Box, Skeleton } from '@rocket.chat/fuselage';
-
-import ContextualbarHeader from './ContextualbarHeader';
+import { Box, ContextualbarHeader, Skeleton } from '@rocket.chat/fuselage';
 
 const ContextualbarSkeletonBody = () => (
 	<>

@@ -93,6 +93,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 	}
 
 	async saveMessageFromFederation({
+		_id,
 		fromId,
 		rid,
 		federation_event_id,
@@ -104,6 +105,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		thread,
 		ts,
 	}: {
+		_id?: string;
 		fromId: string;
 		rid: string;
 		federation_event_id: string;
@@ -121,6 +123,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		return executeSendMessage(
 			fromId,
 			{
+				...(_id && { _id }),
 				rid,
 				msg,
 				...thread,

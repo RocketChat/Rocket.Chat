@@ -1,3 +1,4 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { Settings } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
@@ -17,19 +18,19 @@ Meteor.startup(() => {
 export const sendInvitationEmail = async (userId: string, emails: string[]) => {
 	check(emails, [String]);
 	if (!userId) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 			method: 'sendInvitationEmail',
 		});
 	}
 	if (!(await hasPermissionAsync(userId, 'bulk-register-user'))) {
-		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+		throw new ClientSafeError('error-not-allowed', 'Not allowed', {
 			method: 'sendInvitationEmail',
 		});
 	}
 	const validEmails = emails.filter(Mailer.checkAddressFormat);
 
 	if (!validEmails || validEmails.length === 0) {
-		throw new Meteor.Error('error-email-send-failed', 'No valid email addresses', {
+		throw new ClientSafeError('error-email-send-failed', 'No valid email addresses', {
 			method: 'sendInvitationEmail',
 		});
 	}
@@ -37,7 +38,7 @@ export const sendInvitationEmail = async (userId: string, emails: string[]) => {
 	const subject = settings.get<string>('Invitation_Subject');
 
 	if (!subject) {
-		throw new Meteor.Error('error-email-send-failed', 'No subject', {
+		throw new ClientSafeError('error-email-send-failed', 'No subject', {
 			method: 'sendInvitationEmail',
 		});
 	}
@@ -61,7 +62,7 @@ export const sendInvitationEmail = async (userId: string, emails: string[]) => {
 
 			continue;
 		} catch ({ message }: any) {
-			throw new Meteor.Error('error-email-send-failed', `Error trying to send email: ${message}`, {
+			throw new ClientSafeError('error-email-send-failed', `Error trying to send email: ${message}`, {
 				method: 'sendInvitationEmail',
 				message,
 			});

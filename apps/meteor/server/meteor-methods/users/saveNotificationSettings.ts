@@ -1,6 +1,6 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ISubscription } from '@rocket.chat/core-typings';
 import { Subscriptions } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { notifyOnSubscriptionChangedById } from '../../lib/notifyListener';
 import { getUserNotificationPreference } from '../../lib/utils/getUserNotificationPreference';
@@ -28,7 +28,7 @@ export const saveNotificationSettingsMethod = async (
 	const getNotificationPrefValue = async (field: string, value: unknown) => {
 		if (value === 'default') {
 			if (!userId) {
-				throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 					method: 'saveNotificationSettings',
 				});
 			}
@@ -95,20 +95,20 @@ export const saveNotificationSettingsMethod = async (
 	const fieldsMustHaveBasicValues = ['emailNotifications', 'mobilePushNotifications', 'desktopNotifications'];
 
 	if (isInvalidNotification) {
-		throw new Meteor.Error('error-invalid-settings', 'Invalid settings field', {
+		throw new ClientSafeError('error-invalid-settings', 'Invalid settings field', {
 			method: 'saveNotificationSettings',
 		});
 	}
 
 	if (fieldsMustHaveBasicValues.includes(field) && !basicValuesForNotifications.includes(value)) {
-		throw new Meteor.Error('error-invalid-settings', 'Invalid settings value', {
+		throw new ClientSafeError('error-invalid-settings', 'Invalid settings value', {
 			method: 'saveNotificationSettings',
 		});
 	}
 
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, userId);
 	if (!subscription) {
-		throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', {
+		throw new ClientSafeError('error-invalid-subscription', 'Invalid subscription', {
 			method: 'saveNotificationSettings',
 		});
 	}

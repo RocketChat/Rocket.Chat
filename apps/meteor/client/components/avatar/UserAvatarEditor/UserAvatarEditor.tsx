@@ -121,26 +121,30 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 						<IconButton icon='upload' secondary disabled={disabled} title={t('Upload')} onClick={clickUpload} />
 						<UserAvatarSuggestions disabled={disabled} onSelectOne={handleSelectSuggestion} />
 					</Box>
-					<Field paddingInlineStart={4} marginBlockStart={12}>
-						<FieldLabel>{t('Use_url_for_avatar')}</FieldLabel>
-						<FieldRow>
-							<TextInput
-								placeholder={t('Use_url_for_avatar')}
-								endAddonFlush
-								endAddon={<IconButton icon='permalink' secondary small disabled={!canAddUrl} title={t('Add_URL')} onClick={handleAddUrl} />}
-								disabled={disabled}
-								value={avatarFromUrl}
-								onChange={handleAvatarFromUrlChange}
-								error={avatarUrlError}
-								onKeyDown={(event): void => {
-									if (event.key === 'Enter') {
-										handleAddUrl();
+					<Box paddingInlineStart={4} marginBlockStart={12}>
+						<Field>
+							<FieldLabel>{t('Use_url_for_avatar')}</FieldLabel>
+							<FieldRow>
+								<TextInput
+									placeholder={t('Use_url_for_avatar')}
+									endAddonFlush
+									endAddon={
+										<IconButton icon='permalink' secondary small disabled={!canAddUrl} title={t('Add_URL')} onClick={handleAddUrl} />
 									}
-								}}
-							/>
-						</FieldRow>
-						{avatarUrlError && <FieldError>{avatarUrlError}</FieldError>}
-					</Field>
+									disabled={disabled}
+									value={avatarFromUrl}
+									onChange={handleAvatarFromUrlChange}
+									error={avatarUrlError}
+									onKeyDown={(event): void => {
+										if (event.key === 'Enter') {
+											handleAddUrl();
+										}
+									}}
+								/>
+							</FieldRow>
+							{avatarUrlError && <FieldError>{avatarUrlError}</FieldError>}
+						</Field>
+					</Box>
 				</Box>
 			</Box>
 		</Box>

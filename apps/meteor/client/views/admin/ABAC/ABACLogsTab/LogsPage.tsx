@@ -202,7 +202,7 @@ const LogsPage = () => {
 								}
 								return (
 									<GenericTableRow key={eventInfo.id}>
-										<GenericTableCell withTruncatedText title={eventInfo.user}>
+										<GenericTableCell truncate title={eventInfo.user}>
 											{eventInfo.userAvatar && (
 												<Box is='span' marginInlineEnd={4}>
 													{eventInfo.userAvatar}
@@ -210,13 +210,13 @@ const LogsPage = () => {
 											)}
 											{eventInfo.user}
 										</GenericTableCell>
-										<GenericTableCell withTruncatedText>{eventInfo.action}</GenericTableCell>
-										<GenericTableCell withTruncatedText>{eventInfo.room}</GenericTableCell>
-										<GenericTableCell withTruncatedText>{eventInfo.element}</GenericTableCell>
-										<GenericTableCell withTruncatedText title={eventInfo.name}>
+										<GenericTableCell truncate>{eventInfo.action}</GenericTableCell>
+										<GenericTableCell truncate>{eventInfo.room}</GenericTableCell>
+										<GenericTableCell truncate>{eventInfo.element}</GenericTableCell>
+										<GenericTableCell truncate title={eventInfo.name}>
 											{eventInfo.name}
 										</GenericTableCell>
-										<GenericTableCell withTruncatedText>{formatDate(eventInfo.timestamp)}</GenericTableCell>
+										<GenericTableCell truncate>{formatDate(eventInfo.timestamp)}</GenericTableCell>
 									</GenericTableRow>
 								);
 							})}

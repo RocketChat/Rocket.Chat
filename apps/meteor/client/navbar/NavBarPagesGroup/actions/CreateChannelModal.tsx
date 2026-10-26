@@ -47,6 +47,7 @@ type CreateChannelModalPayload = {
 	encrypted: boolean;
 	broadcast: boolean;
 	federated: boolean;
+	xmppFederated: boolean;
 	isAbacManaged: boolean;
 	attributes: IAbacAttributeDefinition[];
 };
@@ -96,6 +97,9 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 	const canUseFederation = federationModule && federationEnabled && federationAccessPermission;
 	const federationFieldHint = getFederationHintKey(federationModule, federationEnabled, federationAccessPermission);
 
+	const xmppServerEnabled = useSetting('XMPP_Server_Enabled', false);
+	const canUseXmpp = federationModule && xmppServerEnabled && federationAccessPermission;
+
 	const channelNameExists = useEndpoint('GET', '/v1/rooms.nameExists');
 	const createChannel = useEndpoint('POST', '/v1/channels.create');
 	const createPrivateChannel = useEndpoint('POST', '/v1/groups.create');
@@ -115,6 +119,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 			encrypted: Boolean(e2eEnforcedForPrivate || e2eEnabledForPrivateByDefault),
 			broadcast: false,
 			federated: false,
+			xmppFederated: false,
 			isAbacManaged: Boolean(abac?.enforced),
 			attributes: getInitialAbacAttributes(abac),
 		},
@@ -128,9 +133,9 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 		watch,
 	} = methods;
 
-	const { isPrivate, broadcast, readOnly, federated, encrypted, isAbacManaged, members, attributes } = watch();
+	const { isPrivate, broadcast, readOnly, federated, xmppFederated, encrypted, isAbacManaged, members, attributes } = watch();
 
-	const creationBlocked = isAbacCreationBlocked(abac, canCreatePrivate, federated);
+	const creationBlocked = isAbacCreationBlocked(abac, canCreatePrivate, federated || xmppFederated);
 	const abacFlow = useAbacCreationFlow({ abac, isAbacManaged, members, attributes });
 
 	useEffect(() => {
@@ -142,21 +147,33 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 	}, [isAbacManaged, canOnlyCreateOneType, setValue]);
 
 	useEffect(() => {
-		if (federated) {
+		if (federated || xmppFederated) {
 			setValue('isAbacManaged', false);
 		} else if (abac?.enforced) {
 			setValue('isAbacManaged', true);
 		}
-	}, [federated, abac?.enforced, setValue]);
+	}, [federated, xmppFederated, abac?.enforced, setValue]);
 
 	useEffect(() => {
-		if (federated) {
-			// if room is federated, it cannot be encrypted or broadcast or readOnly
+		if (federated || xmppFederated) {
 			setValue('encrypted', false);
 			setValue('broadcast', false);
 			setValue('readOnly', false);
 		}
+	}, [federated, xmppFederated, setValue]);
+
+	// Matrix and XMPP federation are mutually exclusive on a single room
+	useEffect(() => {
+		if (federated) {
+			setValue('xmppFederated', false);
+		}
 	}, [federated, setValue]);
+
+	useEffect(() => {
+		if (xmppFederated) {
+			setValue('federated', false);
+		}
+	}, [xmppFederated, setValue]);
 
 	useEffect(() => {
 		if (!isPrivate) {
@@ -165,10 +182,10 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 	}, [isPrivate, setValue]);
 
 	useEffect(() => {
-		if (isPrivate && e2eEnforcedForPrivate && !federated) {
+		if (isPrivate && e2eEnforcedForPrivate && !federated && !xmppFederated) {
 			setValue('encrypted', true);
 		}
-	}, [isPrivate, e2eEnforcedForPrivate, federated, setValue]);
+	}, [isPrivate, e2eEnforcedForPrivate, federated, xmppFederated, setValue]);
 
 	useEffect(() => {
 		setValue('readOnly', broadcast);
@@ -191,7 +208,16 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 
 	const goToRoom = useGoToRoom();
 
-	const handleCreateChannel = async ({ name, members, readOnly, topic, broadcast, encrypted, federated }: CreateChannelModalPayload) => {
+	const handleCreateChannel = async ({
+		name,
+		members,
+		readOnly,
+		topic,
+		broadcast,
+		encrypted,
+		federated,
+		xmppFederated,
+	}: CreateChannelModalPayload) => {
 		let roomData;
 		const params = {
 			name,
@@ -202,6 +228,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 				broadcast,
 				encrypted,
 				...(federated && { federated }),
+				...(xmppFederated && { xmppFederated }),
 				...(teamId && { teamId }),
 			},
 		};
@@ -233,8 +260,8 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 	const handleStepSubmit = handleSubmit((data) => abacFlow.submitStep(() => handleCreateChannel(data)));
 
 	const e2eDisabled = useMemo<boolean>(
-		() => !isPrivate || Boolean(!e2eEnabled) || federated || (e2eEnforcedForPrivate && isPrivate),
-		[e2eEnabled, federated, isPrivate, e2eEnforcedForPrivate],
+		() => !isPrivate || Boolean(!e2eEnabled) || federated || xmppFederated || (e2eEnforcedForPrivate && isPrivate),
+		[e2eEnabled, federated, xmppFederated, isPrivate, e2eEnforcedForPrivate],
 	);
 
 	const createChannelFormId = useId();
@@ -246,10 +273,26 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 				<Controller
 					control={control}
 					name='federated'
-					render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} disabled={!canUseFederation} />}
+					render={({ field: { value, ...field } }) => (
+						<ToggleSwitch {...field} checked={value} disabled={!canUseFederation || xmppFederated} />
+					)}
 				/>
 			</FieldRow>
 			<FieldHint>{t(federationFieldHint)}</FieldHint>
+		</Field>
+	);
+
+	const xmppFederatedField = (
+		<Field>
+			<FieldRow>
+				<FieldLabel>{t('XMPP_Federated')}</FieldLabel>
+				<Controller
+					control={control}
+					name='xmppFederated'
+					render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} disabled={!canUseXmpp || federated} />}
+				/>
+			</FieldRow>
+			<FieldHint>{t('XMPP_Federated_Description')}</FieldHint>
 		</Field>
 	);
 
@@ -259,6 +302,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 				{t('Security_and_permissions')}
 			</Box>
 			{!abac && federatedField}
+			{!abac && xmppFederatedField}
 			<Field>
 				<FieldRow>
 					<FieldLabel>{t('Encrypted')}</FieldLabel>
@@ -277,7 +321,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 						control={control}
 						name='readOnly'
 						render={({ field: { value, ...field } }) => (
-							<ToggleSwitch {...field} checked={value} disabled={!canSetReadOnly || broadcast || federated} />
+							<ToggleSwitch {...field} checked={value} disabled={!canSetReadOnly || broadcast || federated || xmppFederated} />
 						)}
 					/>
 				</FieldRow>
@@ -289,7 +333,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 					<Controller
 						control={control}
 						name='broadcast'
-						render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} disabled={!!federated} />}
+						render={({ field: { value, ...field } }) => <ToggleSwitch {...field} checked={value} disabled={federated || xmppFederated} />}
 					/>
 				</FieldRow>
 				{broadcast && <FieldHint>{t('Broadcast_hint_enabled', { roomType: 'channel' })}</FieldHint>}
@@ -320,7 +364,7 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 						<Box display='flex' flexDirection='column' gap={16} marginBlockEnd={24}>
 							{creationBlocked && (
 								<Callout type='danger'>
-									{t(canUseFederation ? 'ABAC_Room_Creation_Federated_Only' : 'ABAC_Room_Creation_Not_Allowed')}
+									{t(canUseFederation || canUseXmpp ? 'ABAC_Room_Creation_Federated_Only' : 'ABAC_Room_Creation_Not_Allowed')}
 								</Callout>
 							)}
 							<FieldGroup>
@@ -363,12 +407,15 @@ const CreateChannelModal = ({ teamId = '', mainRoom, onClose, reload, onSuccess,
 											validate: (members) =>
 												!federated && hasExternalMembers(members) ? t('You_cannot_add_external_users_to_non_federated_room') : true,
 										}}
-										render={({ field }) => <UserAutoCompleteMultiple {...field} federated={federated} placeholder={t('Add_people')} />}
+										render={({ field }) => (
+											<UserAutoCompleteMultiple {...field} federated={federated} xmpp={xmppFederated} placeholder={t('Add_people')} />
+										)}
 									/>
 									{errors.members && <FieldError>{errors.members.message}</FieldError>}
 								</Field>
-								{abac && <AbacManagedField abac={abac} canCreatePrivate={canCreatePrivate} federated={federated} />}
+								{abac && <AbacManagedField abac={abac} canCreatePrivate={canCreatePrivate} federated={federated || xmppFederated} />}
 								{abac && federatedField}
+								{abac && xmppFederatedField}
 								<Field>
 									<FieldRow>
 										<FieldLabel>{t('Private')}</FieldLabel>

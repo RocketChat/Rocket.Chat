@@ -49,7 +49,7 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 	const licenseErrors = Object.keys(app.licenseValidation?.errors ?? {});
 
 	return (
-		<Box marginBlockStart='36px' maxWidth='x640' width='full' marginInline='auto' color='default'>
+		<Box marginBlockStart='x32' maxWidth='x640' width='full' marginInline='auto' color='default'>
 			{(showAddonCallout || licenseWarnings.length > 0 || licenseErrors.length > 0) && (
 				<Box display='flex' flexDirection='column' gap={16} marginBlock={16}>
 					{showAddonCallout && (

@@ -112,7 +112,6 @@ const EditStatusModal = ({ onClose }: EditStatusModalProps) => {
 									{...field}
 									error={errors.statusText?.message}
 									disabled={!allowUserStatusMessageChange}
-									flexGrow={1}
 									placeholder={t(statusType)}
 									startAddon={
 										<Controller

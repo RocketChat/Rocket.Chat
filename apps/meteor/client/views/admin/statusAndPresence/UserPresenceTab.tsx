@@ -1,4 +1,4 @@
-import { Button, Pagination } from '@rocket.chat/fuselage';
+import { Button, Pagination, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
@@ -38,12 +38,14 @@ const UserPresenceTab = ({ onEdit }: UserPresenceTabProps) => {
 
 	const { data, isLoading, isSuccess, isError, refetch } = useManagedPresenceUsers(query);
 
+	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 'x48'];
+
 	const headers = (
 		<>
 			<GenericTableHeaderCell key='name'>{t('Name')}</GenericTableHeaderCell>
 			<GenericTableHeaderCell key='presence'>{t('Status')}</GenericTableHeaderCell>
 			<GenericTableHeaderCell key='hiddenFrom'>{t('Hidden_from')}</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='actions' width='x48' />
+			<GenericTableHeaderCell key='actions' />
 		</>
 	);
 
@@ -58,7 +60,7 @@ const UserPresenceTab = ({ onEdit }: UserPresenceTabProps) => {
 			)}
 			{(isLoading || (isSuccess && data.users.length > 0)) && (
 				<>
-					<GenericTable>
+					<GenericTable columns={columns}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{isLoading && <GenericTableLoadingTable headerCells={4} />}

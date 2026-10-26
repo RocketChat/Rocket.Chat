@@ -1,7 +1,14 @@
 import { AbacContractError, AbacErrorCode } from '@rocket.chat/abac';
 import { Abac } from '@rocket.chat/core-services';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
-import { isDiscussion, isOmnichannelRoom, isPublicRoom, isRoomFederated, isPrivateRoom } from '@rocket.chat/core-typings';
+import {
+	isDiscussion,
+	isOmnichannelRoom,
+	isPublicRoom,
+	isRoomFederated,
+	isRoomXMPPFederated,
+	isPrivateRoom,
+} from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 
 import { isRoomAbacLocked } from '../../../../lib/rooms/isRoomAbacLocked';
@@ -25,7 +32,7 @@ const assignCreationAttributes = async (owner: IUser, room: RoomToCreate, member
 	}
 
 	// Remote members cannot be evaluated by the PDP.
-	if (isRoomFederated(room)) {
+	if (isRoomFederated(room) || isRoomXMPPFederated(room)) {
 		throw new AbacContractError(AbacErrorCode.FederatedRoomAttributes);
 	}
 
@@ -55,7 +62,7 @@ const assignCreationAttributes = async (owner: IUser, room: RoomToCreate, member
 const refuseRoomsEnforcementWouldLock = (room: RoomToCreate): void => {
 	const lockContext = getRoomAbacLockContext();
 
-	if (!lockContext.enforcementOn || isRoomFederated(room) || isOmnichannelRoom(room)) {
+	if (!lockContext.enforcementOn || isRoomFederated(room) || isRoomXMPPFederated(room) || isOmnichannelRoom(room)) {
 		return;
 	}
 

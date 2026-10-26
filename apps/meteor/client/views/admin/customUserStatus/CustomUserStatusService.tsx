@@ -56,8 +56,8 @@ const CustomUserStatusService = () => {
 
 	return (
 		<>
-			<ContextualbarContent display='flex' flexDirection='column' justifyContent='space-between' color='default'>
-				<Box display='flex' flexDirection='column' gap={16} paddingBlock={16}>
+			<ContextualbarContent>
+				<Box display='flex' flexDirection='column' gap={16} paddingBlock={16} flexGrow={1}>
 					<Box display='flex' justifyContent='space-between'>
 						<Box fontScale='p1'>{t('Service_status')}</Box>
 						<ToggleSwitch
@@ -106,13 +106,15 @@ const CustomUserStatusService = () => {
 				</Box>
 			</ContextualbarContent>
 			{!license?.isEnterprise && (
-				<ContextualbarFooter borderBlockStartWidth='default' borderBlockColor='extra-light'>
-					<ButtonGroup stretch vertical>
-						<Button primary is='a' href={links.enterprise} target='_blank'>
-							{t('More_about_Premium_plans')}
-						</Button>
-					</ButtonGroup>
-				</ContextualbarFooter>
+				<Box borderBlockStartWidth='default' borderBlockColor='extra-light'>
+					<ContextualbarFooter>
+						<ButtonGroup stretch vertical>
+							<Button primary is='a' href={links.enterprise} target='_blank'>
+								{t('More_about_Premium_plans')}
+							</Button>
+						</ButtonGroup>
+					</ContextualbarFooter>
+				</Box>
 			)}
 		</>
 	);

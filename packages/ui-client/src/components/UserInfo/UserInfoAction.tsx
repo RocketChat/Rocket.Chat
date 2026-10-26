@@ -1,4 +1,4 @@
-import { Button, IconButton } from '@rocket.chat/fuselage';
+import { Button, Icon, IconButton } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { ComponentProps } from 'react';
 
@@ -8,7 +8,7 @@ export type UserInfoActionProps = {
 
 const UserInfoAction = ({ icon, label, title, ...props }: UserInfoActionProps) => {
 	if (!label && icon && title) {
-		return <IconButton small secondary icon={icon} title={title} aria-label={title} {...props} size={40} />;
+		return <IconButton large secondary icon={<Icon name={icon} size='x20' />} title={title} aria-label={title} {...props} />;
 	}
 
 	return (

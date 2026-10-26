@@ -90,7 +90,7 @@ const RegisterWorkspaceTokenModal = ({ onClose, onStatusChange, ...props }: Regi
 						.
 					</Trans>
 				</Box>
-				<Stack gap={10}>
+				<Stack gap='x8'>
 					<Box is='p' fontSize='p2'>{`2. ${t('RegisterWorkspace_Token_Step_Two')}`}</Box>
 					<Field>
 						<FieldLabel>{t('Registration_Token')}</FieldLabel>

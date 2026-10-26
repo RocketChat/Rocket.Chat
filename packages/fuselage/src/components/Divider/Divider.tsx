@@ -1,8 +1,9 @@
 import type { ReactNode } from 'react';
 
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 
-export type DividerProps = BoxProps & {
+export type DividerProps = ElementProps<HTMLElement> & {
 	variation?: 'danger' | 'light';
 	children?: ReactNode;
 	vertical?: boolean;

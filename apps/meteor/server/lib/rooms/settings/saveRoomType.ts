@@ -1,9 +1,8 @@
-import { Message } from '@rocket.chat/core-services';
+import { Message, ClientSafeError } from '@rocket.chat/core-services';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isPublicRoom } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
 import { Match } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 import type { UpdateResult, Document } from 'mongodb';
 
 import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
@@ -16,7 +15,7 @@ import { roomCoordinator } from '../roomCoordinator';
 
 export const assertAbacRoomStaysPrivate = (room: Pick<IRoom, 't' | 'abacAttributes'>, roomType: IRoom['t']): void => {
 	if (isPublicRoom({ t: roomType }) && isABACManagedRoom(room)) {
-		throw new Meteor.Error('error-action-not-allowed', 'Changing an ABAC managed private room to public is not allowed', {
+		throw new ClientSafeError('error-action-not-allowed', 'Changing an ABAC managed private room to public is not allowed', {
 			function: 'RocketChat.saveRoomType',
 			action: 'Change_Room_Type',
 		});
@@ -30,26 +29,26 @@ export const saveRoomType = async function (
 	sendMessage = true,
 ): Promise<UpdateResult | Document> {
 	if (!Match.test(rid, String)) {
-		throw new Meteor.Error('invalid-room', 'Invalid room', {
+		throw new ClientSafeError('invalid-room', 'Invalid room', {
 			function: 'RocketChat.saveRoomType',
 		});
 	}
 	if (roomType !== 'c' && roomType !== 'p') {
-		throw new Meteor.Error('error-invalid-room-type', 'error-invalid-room-type', {
+		throw new ClientSafeError('error-invalid-room-type', 'error-invalid-room-type', {
 			function: 'RocketChat.saveRoomType',
 			type: roomType,
 		});
 	}
 	const room = await Rooms.findOneById(rid);
 	if (room == null) {
-		throw new Meteor.Error('error-invalid-room', 'error-invalid-room', {
+		throw new ClientSafeError('error-invalid-room', 'error-invalid-room', {
 			function: 'RocketChat.saveRoomType',
 			_id: rid,
 		});
 	}
 
 	if (!(await roomCoordinator.getRoomDirectives(room.t)?.allowRoomSettingChange(room, RoomSettingsEnum.TYPE))) {
-		throw new Meteor.Error('error-direct-room', "Can't change type of direct rooms", {
+		throw new ClientSafeError('error-direct-room', "Can't change type of direct rooms", {
 			function: 'RocketChat.saveRoomType',
 		});
 	}

@@ -58,7 +58,7 @@ export const AppLogsFilter = ({ appId, expandAll, collapseAll, refetchLogs, isLo
 	const compactMode = useCompactMode();
 
 	return (
-		<Box display='flex' alignItems='flex-end' flexDirection='row' width='full' flexWrap='wrap' alignContent='flex-end' columnGap={10}>
+		<Box display='flex' alignItems='flex-end' flexDirection='row' width='full' flexWrap='wrap' alignContent='flex-end' columnGap='x8'>
 			<Box display='flex' flexDirection='column' flexGrow={1}>
 				<Label id='eventFilterLabel' htmlFor='eventFilter'>
 					{t('Event')}

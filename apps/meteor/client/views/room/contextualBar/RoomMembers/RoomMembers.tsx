@@ -168,7 +168,7 @@ const RoomMembers = ({
 					/>
 				</Box>
 			</ContextualbarSection>
-			<ContextualbarContent padding={0} paddingBlock={12}>
+			<ContextualbarContent flush spaced>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={members.length} />
 				{isPending && (
 					<Box paddingInline={24} paddingBlock={12}>

@@ -1,10 +1,9 @@
-import { api } from '@rocket.chat/core-services';
+import { api, ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { isUserNativeFederated } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
 import { Invites, Users, Subscriptions } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
-import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 import _ from 'underscore';
 
@@ -30,23 +29,23 @@ const isUserInFederatedRooms = async (userId: string): Promise<boolean> => {
 
 export const setUsernameWithValidation = async (userId: string, username: string): Promise<void> => {
 	if (!username) {
-		throw new Meteor.Error('error-invalid-username', 'Invalid username', { method: 'setUsername' });
+		throw new ClientSafeError('error-invalid-username', 'Invalid username', { method: 'setUsername' });
 	}
 
 	const user = await Users.findOneById(userId);
 
 	if (!user) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setUsername' });
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', { method: 'setUsername' });
 	}
 
 	if (isUserNativeFederated(user) || (await isUserInFederatedRooms(userId))) {
-		throw new Meteor.Error('error-not-allowed', 'Cannot change username for federated users or users in federated rooms', {
+		throw new ClientSafeError('error-not-allowed', 'Cannot change username for federated users or users in federated rooms', {
 			method: 'setUsername',
 		});
 	}
 
 	if (user.username && !settings.get('Accounts_AllowUsernameChange')) {
-		throw new Meteor.Error('error-not-allowed', 'Not allowed');
+		throw new ClientSafeError('error-not-allowed', 'Not allowed');
 	}
 
 	if (user.username === username || (user.username && user.username.toLowerCase() === username.toLowerCase())) {
@@ -54,21 +53,21 @@ export const setUsernameWithValidation = async (userId: string, username: string
 	}
 
 	if (!validateUsername(username)) {
-		throw new Meteor.Error(
+		throw new ClientSafeError(
 			'username-invalid',
 			`${_.escape(username)} is not a valid username, use only letters, numbers, dots, hyphens and underscores`,
 		);
 	}
 
 	if (!(await checkUsernameAvailability(username))) {
-		throw new Meteor.Error('error-field-unavailable', `<strong>${_.escape(username)}</strong> is already in use :(`, {
+		throw new ClientSafeError('error-field-unavailable', `<strong>${_.escape(username)}</strong> is already in use :(`, {
 			method: 'setUsername',
 			field: username,
 		});
 	}
 
 	if (!(await saveUserIdentity({ _id: user._id, username }))) {
-		throw new Meteor.Error('error-could-not-change-username', 'Could not change username', {
+		throw new ClientSafeError('error-could-not-change-username', 'Could not change username', {
 			method: 'setUsername',
 		});
 	}
@@ -94,7 +93,7 @@ export const _setUsername = async function (
 	}
 
 	if (isUserNativeFederated(fullUser) || (await isUserInFederatedRooms(userId))) {
-		throw new Meteor.Error('error-not-allowed', 'Cannot change username for federated users or users in federated rooms', {
+		throw new ClientSafeError('error-not-allowed', 'Cannot change username for federated users or users in federated rooms', {
 			method: 'setUsername',
 		});
 	}

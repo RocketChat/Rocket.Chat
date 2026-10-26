@@ -1,8 +1,7 @@
-import { Message } from '@rocket.chat/core-services';
+import { Message, ClientSafeError } from '@rocket.chat/core-services';
 import type { IRoom } from '@rocket.chat/core-typings';
 import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
 import { check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import { beforeAddUserToRoom } from '../../hooks/rooms/beforeAddUserToRoom';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
@@ -17,7 +16,7 @@ export const addAllUserToRoomFn = async (userId: string, rid: IRoom['_id'], acti
 	check(activeUsersOnly, Boolean);
 
 	if (!(await hasPermissionAsync(userId, 'add-all-to-room'))) {
-		throw new Meteor.Error(403, 'Access to Method Forbidden', {
+		throw new ClientSafeError(403, 'Access to Method Forbidden', {
 			method: 'addAllToRoom',
 		});
 	}
@@ -31,14 +30,14 @@ export const addAllUserToRoomFn = async (userId: string, rid: IRoom['_id'], acti
 
 	const users = await Users.find(userFilter).toArray();
 	if (users.length > settings.get<number>('API_User_Limit')) {
-		throw new Meteor.Error('error-user-limit-exceeded', 'User Limit Exceeded', {
+		throw new ClientSafeError('error-user-limit-exceeded', 'User Limit Exceeded', {
 			method: 'addAllToRoom',
 		});
 	}
 
 	const room = await Rooms.findOneById(rid);
 	if (!room) {
-		throw new Meteor.Error('error-invalid-room', 'Invalid room', {
+		throw new ClientSafeError('error-invalid-room', 'Invalid room', {
 			method: 'addAllToRoom',
 		});
 	}

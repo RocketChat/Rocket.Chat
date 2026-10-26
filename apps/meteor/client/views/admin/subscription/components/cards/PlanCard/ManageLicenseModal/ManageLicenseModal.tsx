@@ -1,4 +1,5 @@
-import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Box, Button, ButtonGroup, backgroundColor, strokeColor, useStyle } from '@rocket.chat/fuselage';
 import { FieldLabel, Field, FieldRow, TextAreaInput } from '@rocket.chat/fuselage-forms';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { GenericModal, useInvalidateLicense } from '@rocket.chat/ui-client';
@@ -40,6 +41,15 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 		handleDragOver,
 		handleTextChange,
 	} = useLicenseFileInput(enterpriseLicense);
+
+	// The field turns into a drop target while a file is dragged over it
+	const licenseInputClassName = useStyle(css`
+		margin-block-end: 8px !important;
+		width: 100% !important;
+		border-style: ${isDragOver ? 'dashed' : 'solid'} !important;
+		border-color: ${strokeColor(isDragOver ? 'stroke-highlight' : 'stroke-light')} !important;
+		${isDragOver ? `background-color: ${backgroundColor('tint')} !important;` : ''}
+	`);
 
 	const trimmedLicense = license.trim();
 	const debouncedLicense = useDebouncedValue(trimmedLicense, 500);
@@ -141,12 +151,7 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 				<FieldLabel>{t('License_key')}</FieldLabel>
 				<FieldRow>
 					<TextAreaInput
-						withRichContent
-						marginBlockEnd={8}
-						width='100%'
-						backgroundColor={isDragOver ? 'tint' : undefined}
-						borderStyle={isDragOver ? 'dashed' : 'solid'}
-						borderColor={isDragOver ? 'stroke-highlight' : 'stroke-light'}
+						className={licenseInputClassName}
 						style={{ fontFamily: 'monospace' }}
 						rows={4}
 						placeholder={t('Drag_and_drop_license_placeholder')}

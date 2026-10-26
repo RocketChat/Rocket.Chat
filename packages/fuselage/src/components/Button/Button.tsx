@@ -1,10 +1,11 @@
-import type { AllHTMLAttributes, RefAttributes } from 'react';
+import type { AllHTMLAttributes } from 'react';
 import { useMemo } from 'react';
 
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 import { Icon, type IconProps } from '../Icon';
 
-export type ButtonProps = Omit<BoxProps, 'ref' | 'is'> & {
+export type ButtonProps = {
 	/** Renders a link instead of a button, for actions that navigate or download. */
 	is?: 'button' | 'a';
 	variant?: 'primary' | 'secondary' | 'danger' | 'warning' | 'success' | 'secondary-danger' | 'secondary-warning' | 'secondary-success';
@@ -36,8 +37,7 @@ export type ButtonProps = Omit<BoxProps, 'ref' | 'is'> & {
 	compact?: boolean;
 	external?: boolean;
 	icon?: IconProps['name'];
-} & Omit<AllHTMLAttributes<HTMLButtonElement | HTMLAnchorElement>, 'is' | 'className' | 'size'> &
-	RefAttributes<HTMLButtonElement | HTMLAnchorElement>;
+} & ElementProps<HTMLButtonElement | HTMLAnchorElement, AllHTMLAttributes<HTMLButtonElement | HTMLAnchorElement>>;
 
 /**
  * Indicates an actionable user action.

@@ -15,7 +15,7 @@ const AnalyticsReports = () => {
 			<Callout title={t('Server_logs_access_has_changed_callout_title')}>
 				<MarkdownText variant='inline' content={t('Server_logs_access_has_changed_callout_description', { docsUrl: links.go.logsDocs })} />
 			</Callout>
-			<Box backgroundColor='light' padding={20} paddingBlockEnd={28} borderRadius='medium'>
+			<Box backgroundColor='light' padding='x20' paddingBlockEnd='x24' borderRadius='medium'>
 				<Box display='flex' flexDirection='row' alignItems='center' marginBlockEnd={20}>
 					<Box
 						display='flex'

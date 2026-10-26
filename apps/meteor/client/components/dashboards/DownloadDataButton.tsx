@@ -14,7 +14,7 @@ type DownloadDataButtonProps<THeaders extends readonly string[]> = {
 	headers: RowFor<THeaders>;
 	dataAvailable: boolean;
 	dataExtractor: () => Promise<RowFor<THeaders>[] | undefined> | RowFor<THeaders>[] | undefined;
-} & Omit<ComponentProps<typeof IconButton>, 'icon' | 'attachmentName' | 'headers' | 'data'>;
+} & Partial<Omit<ComponentProps<typeof IconButton>, 'attachmentName' | 'headers' | 'data'>>;
 
 const DownloadDataButton = <H extends readonly string[]>({
 	attachmentName,
