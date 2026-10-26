@@ -26,7 +26,7 @@ export default {
 		},
 		size: {
 			control: 'select',
-			options: ['small', 'large'],
+			options: ['small'],
 			description: 'Size of the bullet icon.',
 		},
 	},
