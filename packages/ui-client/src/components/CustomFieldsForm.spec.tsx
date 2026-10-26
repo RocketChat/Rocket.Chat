@@ -50,7 +50,7 @@ describe('CustomFieldsForm', () => {
 		render(<TestComponent metadata={metadata} formName='testForm' onSubmit={jest.fn()} />);
 
 		expect(screen.getByRole('textbox', { name: 'Field 1' })).toBeInTheDocument();
-		expect(screen.getByRole('button', { name: /Field 2/ })).toBeInTheDocument();
+		expect(screen.getByRole('combobox', { name: /Field 2/ })).toBeInTheDocument();
 	});
 
 	it('should render a text input', () => {
@@ -80,7 +80,7 @@ describe('CustomFieldsForm', () => {
 
 		render(<TestComponent metadata={metadata} formName='testForm' onSubmit={jest.fn()} />, { wrapper: appRoot });
 
-		expect(screen.getByRole('button', { name: /Field 2/ })).toBeInTheDocument();
+		expect(screen.getByRole('combobox', { name: /Field 2/ })).toBeInTheDocument();
 	});
 
 	it('should show required error message', async () => {

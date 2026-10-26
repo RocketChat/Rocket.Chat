@@ -32,13 +32,13 @@ const NabBar = () => {
 				`}
 			>
 				<Box display='inline-flex' alignItems='center' gap='12px' paddingInlineStart='20px'>
-					<Button primary onClick={() => navigate(routes.home)} small square>
+					<Button variant='primary' onClick={() => navigate(routes.home)} size='small' square>
 						<Icon name='home' size='x24' />
 					</Button>
 					{!isMobile && (
 						<Button
-							small
-							success
+							size='small'
+							variant='success'
 							onClick={() => {
 								dispatch(openCreateNewScreenAction(true));
 							}}
@@ -52,9 +52,8 @@ const NabBar = () => {
 						{!isMobile && (
 							<ButtonGroup>
 								<Button
-									secondary
-									success
-									small
+									variant='secondary-success'
+									size='small'
 									onClick={async () => {
 										await navigator.clipboard.writeText(JSON.stringify(screens[activeScreen]?.payload));
 										toast({
@@ -66,8 +65,8 @@ const NabBar = () => {
 									Copy Payload
 								</Button>
 								<Button
-									small
-									danger
+									size='small'
+									variant='danger'
 									onClick={() => {
 										dispatch(
 											updatePayloadAction({

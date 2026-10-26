@@ -25,7 +25,7 @@ const AccessibilityShortcut = () => {
 	const customButtonClassName = useStyle(customButtonClass);
 
 	return (
-		<Button className={customButtonClassName} is='a' href={`${currentRoutePath}#main-content`} primary>
+		<Button className={customButtonClassName} is='a' href={`${currentRoutePath}#main-content`} variant='primary'>
 			{t('Skip_to_main_content')}
 		</Button>
 	);

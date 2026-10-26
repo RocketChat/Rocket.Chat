@@ -36,9 +36,9 @@ const PlanCardLicenseDetails = () => {
 				<Box display='flex'>
 					<Box marginInlineEnd={4}>{t('Site_Url')}</Box>
 					{hasCopiedSiteURL ? (
-						<IconButton success icon='check' mini />
+						<IconButton variant='success' icon='check' size='mini' />
 					) : (
-						<IconButton title={t('Copy')} icon='clipboard' mini onClick={() => !hasCopiedSiteURL && copySiteURL()} />
+						<IconButton title={t('Copy')} icon='clipboard' size='mini' onClick={() => !hasCopiedSiteURL && copySiteURL()} />
 					)}
 				</Box>
 				<Box withTruncatedText fontScale='p2'>
@@ -49,9 +49,9 @@ const PlanCardLicenseDetails = () => {
 				<Box display='flex'>
 					<Box marginInlineEnd={4}>{t('Hashed_Site_Url')}</Box>
 					{hasCopiedHashed ? (
-						<IconButton success icon='check' mini />
+						<IconButton variant='success' icon='check' size='mini' />
 					) : (
-						<IconButton title={t('Copy')} icon='clipboard' mini onClick={() => !hasCopiedHashed && copyHashed()} />
+						<IconButton title={t('Copy')} icon='clipboard' size='mini' onClick={() => !hasCopiedHashed && copyHashed()} />
 					)}
 				</Box>
 				<Box withTruncatedText fontScale='p2'>

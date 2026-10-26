@@ -104,7 +104,7 @@ const RegisterWorkspaceTokenModal = ({ onClose, onStatusChange, ...props }: Regi
 			<ModalFooter>
 				<ButtonGroup align='end'>
 					<Button onClick={handleBackAction}>{t('Back')}</Button>
-					<Button primary disabled={!isToken} loading={processing} onClick={handleConnectButtonClick}>
+					<Button variant='primary' disabled={!isToken} loading={processing} onClick={handleConnectButtonClick}>
 						{t('Next')}
 					</Button>
 				</ButtonGroup>

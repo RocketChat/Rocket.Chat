@@ -113,7 +113,7 @@ describe('[OAuth Server]', () => {
 					const location = new URL(res.headers.location);
 					expect(location.origin).to.be.equal(redirectUri);
 					expect(location.searchParams.get('code')).to.be.string;
-					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+					// oxlint-disable-next-line @typescript-eslint/no-non-null-assertion
 					code = location.searchParams.get('code')!;
 				});
 		});

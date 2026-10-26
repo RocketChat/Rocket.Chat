@@ -160,6 +160,7 @@ const RoomMembers = ({
 				/>
 				<Box width='x144' marginInlineStart={8}>
 					<Select
+						aria-label={t('Status')}
 						aria-controls={isSuccess ? membersListId : undefined}
 						options={options}
 						value={type}
@@ -201,7 +202,6 @@ const RoomMembers = ({
 										groupCounts={counts}
 										groupContent={(index) => titles[index]}
 										components={{
-											// eslint-disable-next-line react/no-multi-comp
 											Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} />,
 											List: RoomMembersListWrapper,
 										}}
@@ -232,7 +232,7 @@ const RoomMembers = ({
 								</Button>
 							)}
 							{onClickAdd && (
-								<Button icon='user-plus' onClick={onClickAdd} primary disabled={isAbacLocked}>
+								<Button icon='user-plus' onClick={onClickAdd} variant='primary' disabled={isAbacLocked}>
 									{t('Add')}
 								</Button>
 							)}

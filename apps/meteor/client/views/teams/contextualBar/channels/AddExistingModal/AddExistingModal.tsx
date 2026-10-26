@@ -120,7 +120,7 @@ const AddExistingModal = ({ teamId, onClose, reload }: AddExistingModalProps) =>
 			<ModalFooter>
 				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button disabled={!isDirty} type='submit' primary>
+					<Button disabled={!isDirty} type='submit' variant='primary'>
 						{t('Add')}
 					</Button>
 				</ModalFooterControllers>

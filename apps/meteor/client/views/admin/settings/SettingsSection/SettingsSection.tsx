@@ -91,7 +91,7 @@ function SettingsSection({ groupId, hasReset = true, sectionTitle, sectionName, 
 				</FieldGroup>
 				{hasReset && canReset && (
 					<ButtonGroup>
-						<Button secondary danger data-section={sectionName} onClick={handleResetSectionClick}>
+						<Button variant='secondary-danger' data-section={sectionName} onClick={handleResetSectionClick}>
 							{t('Reset_section_settings')}
 						</Button>
 					</ButtonGroup>

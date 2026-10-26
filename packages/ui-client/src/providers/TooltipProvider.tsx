@@ -97,7 +97,6 @@ const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipP
 				return;
 			}
 
-			// eslint-disable-next-line react/no-multi-comp
 			const Handler = () => {
 				const [state, setState] = useState(title);
 				useEffect(() => {

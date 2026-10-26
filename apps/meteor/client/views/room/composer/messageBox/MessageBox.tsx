@@ -1,4 +1,4 @@
-/* eslint-disable complexity */
+/* oxlint-disable complexity */
 import { isRoomFederated, isRoomNativeFederated, type IMessage, type ISubscription } from '@rocket.chat/core-typings';
 import { useContentBoxSize, useStableCallback, useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useFormatDateAndTime } from '@rocket.chat/ui-client';

@@ -51,7 +51,7 @@ const ReactionMessageAction = ({ message, room, subscription, onChangeMenuVisibi
 
 			return true;
 		},
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 		[chat, room, subscription, message.private, user, isFederationBlocked, postReadOnly],
 	);
 

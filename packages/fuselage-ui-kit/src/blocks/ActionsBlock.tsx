@@ -34,7 +34,7 @@ const ActionsBlock = ({ className, block, surfaceRenderer }: ActionsBlockProps) 
 			))}
 			{showMoreVisible && (
 				<Box display='flex'>
-					<Button small onClick={handleShowMoreClick}>
+					<Button size='small' onClick={handleShowMoreClick}>
 						{surfaceRenderer.renderTextObject({ type: 'plain_text', text: 'Show more...' }, 0, UiKit.BlockContext.NONE)}
 					</Button>
 				</Box>

@@ -19,3 +19,22 @@ test('keeps the style of the positioned element', () => {
 	expect(positioned?.style.width).toBe('120px');
 	expect(positioned?.style.position).toBe('fixed');
 });
+
+test('unmounts together with another positioned element', () => {
+	const anchor = createRef<HTMLDivElement>();
+
+	const { unmount } = render(
+		<>
+			<div ref={anchor} />
+			<Position anchor={anchor}>
+				<div />
+			</Position>
+			<Position anchor={anchor}>
+				<div />
+			</Position>
+		</>,
+	);
+
+	expect(unmount).not.toThrow();
+	expect(document.getElementById('position-container')).toBeNull();
+});

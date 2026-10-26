@@ -71,7 +71,7 @@ export async function createDirectRoom(
 
 	const roomMembers = await Users.findUsersByUsernames(membersUsernames).toArray();
 
-	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+	// oxlint-disable-next-line @typescript-eslint/no-non-null-assertion
 	const sortedMembers = roomMembers.sort((u1, u2) => (u1.name! || u1.username!).localeCompare(u2.name! || u2.username!));
 
 	const usernames: string[] = sortedMembers.map(({ username }) => username as string).filter(Boolean);
@@ -138,7 +138,7 @@ export async function createDirectRoom(
 			{ rid, 'u._id': roomMembers[0]._id },
 			{
 				$set: { open: true },
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				// oxlint-disable-next-line @typescript-eslint/no-non-null-assertion
 				$setOnInsert: generateSubscription(roomMembers[0].name! || roomMembers[0].username!, roomMembers[0].username!, roomMembers[0], {
 					...options?.subscriptionExtra,
 				}),
@@ -212,7 +212,7 @@ export async function createDirectRoom(
 	}
 
 	return {
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		// oxlint-disable-next-line @typescript-eslint/no-non-null-assertion
 		...room!,
 		_id: String(rid),
 		usernames,

@@ -150,8 +150,8 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 				>
 					<Button
 						icon={button.icon}
-						primary
-						small
+						variant='primary'
+						size='small'
 						loading={loading}
 						disabled={action === 'request' && (app?.requestedEndUser || endUserRequested)}
 						onClick={handleAcquireApp}

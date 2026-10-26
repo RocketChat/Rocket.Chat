@@ -43,7 +43,7 @@ describe('LDAPConnection', () => {
 		it('should route the error to endCallback on paged searchAllUsers instead of leaking the throw', async () => {
 			const endCallback = sinon.stub();
 			await connection.searchAllUsers({ endCallback });
-			// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+			// oxlint-disable-next-line @typescript-eslint/no-unused-expressions
 			expect(endCallback.calledOnceWithExactly(parseError)).to.be.true;
 		});
 
@@ -51,7 +51,7 @@ describe('LDAPConnection', () => {
 			connection.options.searchPageSize = 0;
 			const endCallback = sinon.stub();
 			await connection.searchAllUsers({ endCallback });
-			// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+			// oxlint-disable-next-line @typescript-eslint/no-unused-expressions
 			expect(endCallback.calledOnceWithExactly(parseError)).to.be.true;
 		});
 	});
@@ -103,7 +103,7 @@ describe('LDAPConnection', () => {
 				(e: unknown) => e,
 			);
 			expect(error).to.be.an('error').with.property('message', 'LDAP User Search Field is not configured');
-			// eslint-disable-next-line @typescript-eslint/no-unused-expressions
+			// oxlint-disable-next-line @typescript-eslint/no-unused-expressions
 			expect(connection.client.search.called).to.be.false;
 		});
 	});

@@ -102,7 +102,7 @@ const CreateDirectMessage = ({ onClose, onSuccess }: CreateDirectMessageProps) =
 			<ModalFooter>
 				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button loading={isSubmitting || isValidating} type='submit' primary>
+					<Button loading={isSubmitting || isValidating} type='submit' variant='primary'>
 						{t('Create')}
 					</Button>
 				</ModalFooterControllers>

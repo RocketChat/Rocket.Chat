@@ -106,7 +106,7 @@ const FeaturePreviewView = ({ vm: { features, save } }: FeaturePreviewViewProps)
 			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset({ featuresPreview: features })}>{t('Cancel')}</Button>
-					<Button primary disabled={!isDirty} onClick={handleSubmit(handleSave)}>
+					<Button variant='primary' disabled={!isDirty} onClick={handleSubmit(handleSave)}>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>

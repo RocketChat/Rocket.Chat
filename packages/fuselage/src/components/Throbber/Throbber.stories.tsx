@@ -57,10 +57,10 @@ export const InsideButton: Story = {
 export const InsideButtonInheritColor: Story = {
 	render: () => (
 		<Box display='flex' gap={4}>
-			<Button primary danger>
+			<Button variant='primary'>
 				<Throbber size='x12' inheritColor />
 			</Button>
-			<Button primary>
+			<Button variant='primary'>
 				<Throbber size='x12' inheritColor />
 			</Button>
 		</Box>

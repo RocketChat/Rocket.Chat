@@ -1662,7 +1662,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 					expect(pendingInvitation).not.toBeUndefined();
 
-					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+					// oxlint-disable-next-line @typescript-eslint/no-non-null-assertion
 					rid = pendingInvitation!.rid!;
 
 					await acceptRoomInvite(rid, rc1AdminRequestConfig);
@@ -1706,7 +1706,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 				expect(pendingInvitation).not.toBeUndefined();
 
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				// oxlint-disable-next-line @typescript-eslint/no-non-null-assertion
 				rid = pendingInvitation!.rid!;
 			}, 15000);
 
@@ -1739,7 +1739,7 @@ import { SynapseClient } from '../helper/synapse-client';
 
 					expect(pendingInvitation).not.toBeUndefined();
 
-					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+					// oxlint-disable-next-line @typescript-eslint/no-non-null-assertion
 					rid = pendingInvitation!.rid!;
 
 					// hs1 revokes the invitation by kicking the invited user

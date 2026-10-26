@@ -203,7 +203,7 @@ export const ChangePassphrase = () => {
 					)}
 				</FieldGroup>
 				<ButtonGroup>
-					<Button primary disabled={!(keysExist && valid && isValid)} onClick={handleSubmit(handleSave)}>
+					<Button variant='primary' disabled={!(keysExist && valid && isValid)} onClick={handleSubmit(handleSave)}>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>

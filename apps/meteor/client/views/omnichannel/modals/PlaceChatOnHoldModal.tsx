@@ -32,7 +32,7 @@ const PlaceChatOnHoldModal = ({ onCancel, onOnHoldChat, confirm = onOnHoldChat, 
 			<ModalFooter>
 				<ModalFooterControllers>
 					<Button onClick={onCancel}>{t('Cancel')}</Button>
-					<Button primary onClick={confirm}>
+					<Button variant='primary' onClick={confirm}>
 						{t('Omnichannel_onHold_Chat')}
 					</Button>
 				</ModalFooterControllers>

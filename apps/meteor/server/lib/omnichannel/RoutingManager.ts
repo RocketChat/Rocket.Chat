@@ -77,7 +77,6 @@ export const RoutingManager: Routing = {
 		return settings.get<string>('Livechat_Routing_Method') !== '';
 	},
 
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	registerMethod(name, Method) {
 		this.methods[name] = new Method();
 	},

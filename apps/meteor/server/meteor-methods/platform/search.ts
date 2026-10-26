@@ -7,7 +7,6 @@ import type { IRawSearchResult, ISearchResult } from '../../lib/search/model/ISe
 import { searchProviderService, validationService } from '../../lib/search/service';
 
 declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		'rocketchatSearch.getProvider'(): IMessageSearchProvider | undefined;
 		'rocketchatSearch.search'(text: string, context: { uid?: IUser['_id']; rid: IRoom['_id'] }, payload: unknown): Promise<ISearchResult>;

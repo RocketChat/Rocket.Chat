@@ -143,7 +143,7 @@ function EditDepartment({ data, id, title, allowedToForwardData }: EditDepartmen
 			<Page>
 				<PageHeader title={title} onClickBack={() => router.navigate('/omnichannel/departments')}>
 					<ButtonGroup>
-						<Button type='submit' form={formId} primary loading={isSubmitting}>
+						<Button type='submit' form={formId} variant='primary' loading={isSubmitting}>
 							{t('Save')}
 						</Button>
 					</ButtonGroup>

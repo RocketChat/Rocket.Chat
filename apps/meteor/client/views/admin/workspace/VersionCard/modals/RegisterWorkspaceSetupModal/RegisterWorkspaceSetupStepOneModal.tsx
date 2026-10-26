@@ -130,7 +130,7 @@ const RegisterWorkspaceSetupStepOneModal = ({
 			<ModalFooter>
 				<ButtonGroup align='end'>
 					<Button onClick={handleBack}>{t('Back')}</Button>
-					<Button primary onClick={handleRegisterWorkspace} disabled={!validInfo}>
+					<Button variant='primary' onClick={handleRegisterWorkspace} disabled={!validInfo}>
 						{t('Next')}
 					</Button>
 				</ButtonGroup>

@@ -82,12 +82,12 @@ const PreferencesNotificationsSection = ({
 					<FieldRow>
 						{notificationsPermission === 'denied' && t('Desktop_Notifications_Disabled')}
 						{notificationsPermission === 'granted' && (
-							<Button primary onClick={onSendNotification} aria-labelledby={desktopNotificationsLabelId}>
+							<Button variant='primary' onClick={onSendNotification} aria-labelledby={desktopNotificationsLabelId}>
 								{t('Test_Desktop_Notifications')}
 							</Button>
 						)}
 						{notificationsPermission !== 'denied' && notificationsPermission !== 'granted' && (
-							<Button primary onClick={onAskNotificationPermission} aria-labelledby={desktopNotificationsLabelId}>
+							<Button variant='primary' onClick={onAskNotificationPermission} aria-labelledby={desktopNotificationsLabelId}>
 								{t('Enable_Desktop_Notifications')}
 							</Button>
 						)}

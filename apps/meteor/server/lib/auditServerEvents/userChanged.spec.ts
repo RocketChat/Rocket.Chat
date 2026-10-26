@@ -49,7 +49,7 @@ const createObfuscatedFields = (_2faEnabled = true): Pick<IUser, 'services' | 'e
 		services: {
 			password: {
 				bcrypt: faker.string.uuid(),
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// oxlint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore this field is not in IUser, but is present in DB
 				enroll: {
 					token: faker.string.uuid(),
