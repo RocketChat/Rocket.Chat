@@ -1,21 +1,22 @@
 import type { HTMLAttributes, RefAttributes } from 'react';
 
 import { appendClassName } from '../../helpers/appendClassName';
+import { cx } from '../../helpers/composeClassNames';
 import { patchChildren } from '../../helpers/patchChildren';
 import { IconButton } from '../Button';
 import type { IconButtonProps } from '../Button/IconButton';
 
 export type NavbarItemProps = HTMLAttributes<HTMLElement> & Partial<Omit<IconButtonProps, 'ref'>> & RefAttributes<HTMLElement>;
 
-function NavBarItem({ children, icon, ...props }: NavbarItemProps) {
+function NavBarItem({ children, icon, className, ...props }: NavbarItemProps) {
 	return (
 		<>
 			{icon ? (
-				<IconButton icon={icon} small {...props} className={['rcx-navbar-item', props.className].filter(Boolean).join(' ')} />
+				<IconButton icon={icon} small {...props} className={cx('rcx-navbar-item', className)} />
 			) : (
 				patchChildren(children, (childProps: { className: string | string[] }) => ({
-					className: appendClassName(childProps.className, 'rcx-navbar-item'),
 					...props,
+					className: appendClassName(childProps.className, cx('rcx-navbar-item', className)),
 				}))
 			)}
 		</>
