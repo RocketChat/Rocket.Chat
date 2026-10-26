@@ -1,12 +1,15 @@
-import type { ReactNode } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
+
+import { cx } from '../../../helpers/composeClassNames';
 
 export type MessageGenericPreviewFooterProps = {
 	children?: ReactNode;
-	clamp?: boolean;
-};
+} & HTMLAttributes<HTMLDivElement>;
 
-const MessageGenericPreviewFooter = ({ children }: MessageGenericPreviewFooterProps) => (
-	<div className='rcx-message-generic-preview__footer'>{children}</div>
+const MessageGenericPreviewFooter = ({ children, className, ...props }: MessageGenericPreviewFooterProps) => (
+	<div {...props} className={cx('rcx-message-generic-preview__footer', className)}>
+		{children}
+	</div>
 );
 
 export default MessageGenericPreviewFooter;
