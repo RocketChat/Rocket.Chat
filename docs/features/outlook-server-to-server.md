@@ -126,6 +126,9 @@ left as an intention.
 - **Only the user's default calendar is read.** A secondary calendar they created, or a subscribed one, is
   out of scope. Contacts, by contrast, are read from every address book the user has.
 - **Past events are kept on purpose** and are not removed when they fall out of the sync window.
+- **Contact favorites are not synced from Exchange Online.** Microsoft Graph does not expose whether a
+  contact is a favorite in Outlook, so with that provider synced contacts never show as favorites. Local
+  contacts can be marked as favorites either way.
 
 ## Where the decisions are written down
 
