@@ -143,6 +143,53 @@ describe('Item', () => {
 
 		expect(onRender).toHaveBeenCalledTimes(1);
 	});
+
+	it('renders once on mount with a labelled icon, a title and a link', () => {
+		const onRender = jest.fn();
+
+		render(
+			<Profiler id='item' onRender={onRender}>
+				<Item>
+					<ItemIcon label='Away' />
+					<ItemTitle>
+						<ItemLink href='#kenji'>Kenji Takahashi</ItemLink>
+					</ItemTitle>
+				</Item>
+			</Profiler>,
+		);
+
+		expect(onRender).toHaveBeenCalledTimes(1);
+	});
+
+	it('renders once on mount as a menu item with a labelled icon and a title', () => {
+		const onRender = jest.fn();
+
+		render(
+			<Profiler id='item' onRender={onRender}>
+				<Item role='menuitem' data-testid='item'>
+					<ItemIcon label='Selected' />
+					<ItemContent>
+						<ItemTitle>Title</ItemTitle>
+					</ItemContent>
+				</Item>
+			</Profiler>,
+		);
+
+		expect(onRender).toHaveBeenCalledTimes(1);
+		expect(screen.getByTestId('item')).toHaveAccessibleName('Title');
+		expect(screen.getByTestId('item')).toHaveAttribute('aria-describedby', screen.getByRole('img', { name: 'Selected' }).id);
+	});
+
+	it('describes a menu item by an icon that has its own id', () => {
+		render(
+			<Item role='menuitem' data-testid='item'>
+				<ItemIcon id='own-icon' label='Selected' />
+				<ItemTitle>Title</ItemTitle>
+			</Item>,
+		);
+
+		expect(screen.getByTestId('item').getAttribute('aria-describedby')).toContain('own-icon');
+	});
 });
 
 describe('ItemLink', () => {
@@ -214,7 +261,7 @@ describe('ItemLink', () => {
 			</Item>,
 		);
 
-		expect(screen.getByRole('link', { name: 'general' })).not.toHaveAttribute('aria-describedby');
+		expect(screen.getByRole('link', { name: 'general' })).toHaveAccessibleDescription('');
 	});
 });
 

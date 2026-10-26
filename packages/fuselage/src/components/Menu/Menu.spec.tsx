@@ -145,7 +145,7 @@ describe('[Menu Component]', () => {
 			const online = await screen.findByRole('menuitem', { name: 'Online' });
 			const icon = screen.getByRole('img', { name: 'Selected' });
 			expect(online).toHaveAttribute('aria-describedby', icon.id);
-			expect(screen.getByRole('menuitem', { name: 'Away' })).not.toHaveAttribute('aria-describedby');
+			expect(screen.getByRole('menuitem', { name: 'Away' })).toHaveAccessibleDescription('');
 		});
 
 		it('should show the focus ring only for keyboard focus', async () => {

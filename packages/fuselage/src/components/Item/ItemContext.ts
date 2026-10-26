@@ -1,6 +1,8 @@
 import { createContext, useContext } from 'react';
 
 export type ItemContextValue = {
+	titleId?: string;
+	descriptionId?: string;
 	descriptionIds: string[];
 	registerDescription: (id: string) => () => void;
 	registerTitle: (id: string) => () => void;

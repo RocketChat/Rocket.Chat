@@ -1,5 +1,5 @@
 import type { AllHTMLAttributes, ElementType, MouseEvent, RefAttributes } from 'react';
-import { useMemo } from 'react';
+import { useId, useMemo } from 'react';
 
 import { ItemContext } from './ItemContext';
 import type { ItemInset } from './types';
@@ -56,22 +56,32 @@ const Item = ({
 	children,
 	...props
 }: ItemProps) => {
+	const baseId = useId();
 	const [descriptionIds, registerDescription] = useIdRegistry();
 	const [titleIds, registerTitle] = useIdRegistry();
 
 	// A menu item is named by its titles and described by its labelled icons, as an `ItemLink` is.
 	const isMenuItem = !!props.role?.startsWith('menuitem');
 
-	// Only a menu item reads its titles' ids, so any other row skips the render a title's registration causes on mount
+	const titleId = `${baseId}-title`;
+	const descriptionId = `${baseId}-description`;
+
+	// Parts take their ids from the row; only a part given its own id registers it, and only a menu item reads titles.
 	const contextValue = useMemo(
-		() => ({ descriptionIds, registerDescription, registerTitle: isMenuItem ? registerTitle : skipRegistration }),
-		[descriptionIds, registerDescription, registerTitle, isMenuItem],
+		() => ({
+			titleId: isMenuItem ? titleId : undefined,
+			descriptionId,
+			descriptionIds,
+			registerDescription,
+			registerTitle: isMenuItem ? registerTitle : skipRegistration,
+		}),
+		[titleId, descriptionId, descriptionIds, registerDescription, registerTitle, isMenuItem],
 	);
 
-	const ariaLabelledBy = isMenuItem ? (props['aria-labelledby'] ?? (titleIds.join(' ') || undefined)) : props['aria-labelledby'];
+	const ariaLabelledBy = isMenuItem ? (props['aria-labelledby'] ?? (titleIds.join(' ') || titleId)) : props['aria-labelledby'];
 
 	const ariaDescribedBy = isMenuItem
-		? [props['aria-describedby'], ...descriptionIds].filter(Boolean).join(' ') || undefined
+		? [props['aria-describedby'], descriptionId, ...descriptionIds].filter(Boolean).join(' ')
 		: props['aria-describedby'];
 
 	const handleClick = onClick

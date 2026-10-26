@@ -20,9 +20,9 @@ export type ItemLinkProps = ItemLinkAnchorProps | ItemLinkButtonProps;
  * The primary target of an `Item`. It covers the whole row, so actions sit beside it instead of inside it.
  */
 const ItemLink = (props: ItemLinkProps) => {
-	const { descriptionIds } = useItemContext();
+	const { descriptionId, descriptionIds } = useItemContext();
 
-	const ariaDescribedBy = [props['aria-describedby'], ...descriptionIds].filter(Boolean).join(' ') || undefined;
+	const ariaDescribedBy = [props['aria-describedby'], descriptionId, ...descriptionIds].filter(Boolean).join(' ') || undefined;
 
 	if (props.is === 'button') {
 		const { is: _is, className, type = 'button', ...rest } = props;
