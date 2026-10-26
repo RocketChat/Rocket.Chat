@@ -1,6 +1,5 @@
-import { css } from '@rocket.chat/css-in-js';
 import type { AriaAttributes, RefAttributes } from 'react';
-import { useMemo, useRef } from 'react';
+import { useRef } from 'react';
 import type { AriaSliderProps } from 'react-aria';
 import { useNumberFormatter, useSlider } from 'react-aria';
 import { useSliderState } from 'react-stately';
@@ -8,7 +7,6 @@ import { useSliderState } from 'react-stately';
 import { SliderHead } from './SliderHead';
 import { SliderThumb } from './SliderThumb';
 import { SliderTrack } from './SliderTrack';
-import { useStyle } from '../../hooks/useStyle';
 
 export type SliderProps<T extends number | number[]> = AriaAttributes &
 	RefAttributes<HTMLDivElement> & {
@@ -91,32 +89,8 @@ function Slider<T extends number | [min: number, max: number]>({
 
 	const { groupProps, trackProps, labelProps, outputProps } = useSlider(sliderProps, sliderState, trackRef);
 
-	const isHorizontal = useMemo(() => sliderState.orientation === 'horizontal', [sliderState.orientation]);
-	const isVertical = useMemo(() => sliderState.orientation === 'vertical', [sliderState.orientation]);
-
-	const slider = useStyle(
-		css`
-			display: flex;
-			${
-				isHorizontal &&
-				css`
-					flex-direction: column;
-					width: 100%;
-				`
-			};
-			${
-				isVertical &&
-				css`
-					flex-direction: row-reverse;
-					height: 100%;
-				`
-			}
-		`,
-		sliderState,
-	);
-
 	return (
-		<div {...groupProps} ref={ref} className={slider}>
+		<div {...groupProps} ref={ref} className={`rcx-slider rcx-slider--${sliderState.orientation}`}>
 			<SliderHead
 				labelProps={labelProps}
 				outputProps={outputProps}
