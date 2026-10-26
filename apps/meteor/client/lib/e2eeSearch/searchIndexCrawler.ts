@@ -4,8 +4,13 @@ import type { E2EESearchRoomState, ISearchIndexBackend } from '@rocket.chat/desk
 
 import type { SearchIndexWriter } from './searchIndexWriter';
 
-/** The `chat.syncMessages` query params that the crawler sends: a catch-up (`lastUpdate`) or a backfill page (`previous`). */
-export type SyncMessagesParams = { roomId: string; lastUpdate?: string; type?: 'UPDATED'; count?: number; previous?: string };
+/**
+ * The `chat.syncMessages` query params that the crawler sends: always one paging cursor, because a call without one has
+ * no page-size limit on the server.
+ */
+export type SyncMessagesParams = { roomId: string; type: 'UPDATED' | 'DELETED'; count: number } & (
+	{ next: string; previous?: never } | { previous: string; next?: never }
+);
 
 /** A `chat.syncMessages` result, with the messages already mapped from the API shape (dates as `Date`). */
 export type SyncMessagesPage = {
@@ -21,20 +26,25 @@ type SearchIndexCrawlerOptions = {
 	decryptMessage: (message: IMessage) => Promise<IMessage>;
 	writer: Pick<SearchIndexWriter, 'remove' | 'flush'>;
 	now?: () => number;
-	/** Messages per backfill page. */
+	/** Messages per backfill or catch-up page. */
 	pageSize?: number;
-	/** The depth limit: the backfill stops at the first page that reaches a message older than this. */
+	/** The depth limit: the backfill indexes no message sent before it, and stops at the first page that reaches it. */
 	maxAgeMs?: number;
 };
 
 export type SearchIndexCrawler = {
 	/** Indexes the next older page of the room and saves the cursor, so a restart continues from there. */
 	backfillRoomPage(rid: string): Promise<{ done: boolean; indexed: number }>;
-	/** Applies the changes since the room's `lastUpdate`: removes deleted messages and indexes new and edited ones. */
-	catchUpRoom(rid: string): Promise<{ indexed: number; removed: number }>;
+	/**
+	 * Applies the next page of the changes since the room's `lastUpdate`: indexes new and edited messages, then removes
+	 * deleted ones. `lastUpdate` moves only after the last page, so an interrupted catch-up starts again from it.
+	 */
+	catchUpRoomPage(rid: string): Promise<{ done: boolean; indexed: number; removed: number }>;
 	/** The messages of the room that the crawler could not decrypt (room key missing), to retry when the key arrives. */
 	getPendingDecrypt(rid: string): IMessage[];
 };
+
+type CatchUp = { type: 'UPDATED' | 'DELETED'; from: number; cursor: string; newestUpdate: number };
 
 const updatedAtOf = (message: IMessage): number => new Date(message._updatedAt).getTime();
 
@@ -53,6 +63,7 @@ export const createSearchIndexCrawler = ({
 	maxAgeMs,
 }: SearchIndexCrawlerOptions): SearchIndexCrawler => {
 	const pendingDecrypt = new Map<string, Map<string, IMessage>>();
+	const catchUps = new Map<string, CatchUp>();
 
 	const decryptAll = async (rid: string, messages: IMessage[]): Promise<number> => {
 		let indexed = 0;
@@ -86,15 +97,20 @@ export const createSearchIndexCrawler = ({
 				previous: state.backfillCursor ?? `${startedAt}`,
 			});
 
-			const indexed = await decryptAll(rid, page.updated);
+			const oldestSendTime = maxAgeMs === undefined ? undefined : startedAt - maxAgeMs;
+			const inDepth =
+				oldestSendTime === undefined ? page.updated : page.updated.filter((message) => new Date(message.ts).getTime() >= oldestSendTime);
+			const indexed = await decryptAll(rid, inDepth);
 
 			const updatedAts = page.updated.map(updatedAtOf);
 			const oldest = updatedAts.length ? Math.min(...updatedAts) : undefined;
 			const cursor = page.cursor?.previous ?? undefined;
-			const reachedDepth = maxAgeMs !== undefined && oldest !== undefined && oldest < now() - maxAgeMs;
+			// A message is never sent after its last update, so no older page holds a message inside the depth limit.
+			const reachedDepth = oldestSendTime !== undefined && oldest !== undefined && oldest < oldestSendTime;
 			const done = !cursor || page.updated.length === 0 || reachedDepth;
 
-			const lastUpdate = state.lastUpdate ?? (updatedAts.length ? Math.max(...updatedAts) : startedAt);
+			// An empty room starts its catch-up at 0, not at the client clock, which can be ahead of the server's.
+			const lastUpdate = state.lastUpdate ?? (updatedAts.length ? Math.max(...updatedAts) : 0);
 
 			await backend.setRoomState(rid, {
 				lastUpdate,
@@ -105,29 +121,47 @@ export const createSearchIndexCrawler = ({
 			return { done, indexed };
 		},
 
-		async catchUpRoom(rid) {
+		async catchUpRoomPage(rid) {
 			const state = await backend.getRoomState(rid);
-			if (state?.lastUpdate === undefined) return { indexed: 0, removed: 0 };
+			if (state?.lastUpdate === undefined) return { done: true, indexed: 0, removed: 0 };
 
-			const page = await syncMessages({ roomId: rid, lastUpdate: new Date(state.lastUpdate).toISOString() });
+			const catchUp: CatchUp = catchUps.get(rid) ?? {
+				type: 'UPDATED',
+				from: state.lastUpdate,
+				cursor: `${state.lastUpdate}`,
+				newestUpdate: state.lastUpdate,
+			};
+			const page = await syncMessages({ roomId: rid, type: catchUp.type, count: pageSize, next: catchUp.cursor });
 
+			let indexed = 0;
+			let { newestUpdate } = catchUp;
 			const deletedIds = page.deleted.map(({ _id }) => _id);
-			if (deletedIds.length) {
+			if (catchUp.type === 'UPDATED') {
+				indexed = await decryptAll(rid, page.updated);
+				newestUpdate = Math.max(newestUpdate, ...page.updated.map(updatedAtOf));
+			} else if (deletedIds.length) {
 				await writer.remove(deletedIds);
 				const pending = pendingDecrypt.get(rid);
 				for (const id of deletedIds) pending?.delete(id);
 			}
+			const result = { indexed, removed: catchUp.type === 'DELETED' ? deletedIds.length : 0 };
 
-			const indexed = await decryptAll(rid, page.updated);
+			const next = page.cursor?.next;
+			if (next) {
+				catchUps.set(rid, { ...catchUp, cursor: next, newestUpdate });
+				return { done: false, ...result };
+			}
+			if (catchUp.type === 'UPDATED') {
+				catchUps.set(rid, { ...catchUp, type: 'DELETED', cursor: `${catchUp.from}`, newestUpdate });
+				return { done: false, ...result };
+			}
 
-			const lastUpdate = Math.max(
-				state.lastUpdate,
-				...page.updated.map(updatedAtOf),
-				...page.deleted.map(({ _deletedAt }) => new Date(_deletedAt).getTime()),
-			);
-			await backend.setRoomState(rid, { ...state, lastUpdate });
-
-			return { indexed, removed: deletedIds.length };
+			// The deletes are read after the updates, so a delete can be newer than an update that landed between the two reads.
+			// A lastUpdate that counted the deletes would skip that update.
+			catchUps.delete(rid);
+			const latest = (await backend.getRoomState(rid)) ?? state;
+			await backend.setRoomState(rid, { ...latest, lastUpdate: newestUpdate });
+			return { done: true, ...result };
 		},
 
 		getPendingDecrypt(rid) {
