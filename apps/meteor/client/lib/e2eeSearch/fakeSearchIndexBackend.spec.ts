@@ -111,7 +111,7 @@ describe('createFakeSearchIndexBackend', () => {
 		await expect(backend.getRoomState('r2')).resolves.toBeUndefined();
 	});
 
-	it('returns an HTML snippet that escapes the text and marks only the matches', async () => {
+	it('returns the author and an HTML snippet that escapes the text and marks only the matches', async () => {
 		const backend = await openBackend();
 		await backend.upsert([doc({ id: 'm1', body: '<img src=x onerror=alert(1)> Needles & "café"', tmid: 't1' })]);
 
@@ -121,6 +121,8 @@ describe('createFakeSearchIndexBackend', () => {
 			id: 'm1',
 			rid: 'r1',
 			tmid: 't1',
+			uid: 'u1',
+			username: 'alice',
 			ts: 1000,
 			snippet: '&lt;img src=x onerror=alert(1)&gt; <mark>Needles</mark> &amp; &quot;<mark>café</mark>&quot;',
 		});

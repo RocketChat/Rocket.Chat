@@ -128,6 +128,8 @@ export const createFakeSearchIndexBackend = (): ISearchIndexBackend => {
 				id: doc.id,
 				rid: doc.rid,
 				...(doc.tmid !== undefined && { tmid: doc.tmid }),
+				uid: doc.uid,
+				username: doc.username,
 				ts: doc.ts,
 				snippet: toSnippet(doc.body, tokens),
 			}));

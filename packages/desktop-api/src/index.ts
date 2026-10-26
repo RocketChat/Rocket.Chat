@@ -78,6 +78,9 @@ export type E2EESearchHit = {
 	id: string;
 	rid: string;
 	tmid?: string;
+	/** The author, as the indexed document stores it. A desktop app older than this field sends no author. */
+	uid?: string;
+	username?: string;
 	ts: number;
 	/** HTML: the message text is escaped, and only `<mark>` tags are added. */
 	snippet: string;
