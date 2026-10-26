@@ -16,7 +16,6 @@ import {
 	GenericTableBody,
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
-	usePagination,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
@@ -36,7 +35,6 @@ function ContactTable() {
 	const [term, setTerm] = useState('');
 	const omnichannelDirectoryRouter = useOmnichannelDirectoryRouter();
 
-	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'channels.lastChat.ts' | 'contactManager.username' | 'lastChat.ts'>('name');
 
 	const query = useDebouncedValue(
@@ -44,10 +42,8 @@ function ContactTable() {
 			() => ({
 				searchText: term,
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
-				...(itemsPerPage && { count: itemsPerPage }),
-				...(current && { offset: current }),
 			}),
-			[itemsPerPage, current, sortBy, sortDirection, term],
+			[sortBy, sortDirection, term],
 		),
 		500,
 	);
@@ -59,10 +55,10 @@ function ContactTable() {
 		}),
 	);
 
-	const { data, isLoading, isError, isSuccess, refetch } = useCurrentContacts(query);
+	const { data, isLoading, isError, isSuccess, refetch, paginatedQuery, paginationProps } = useCurrentContacts(query);
 
-	const [defaultQuery] = useState(hashKey([query]));
-	const queryHasChanged = defaultQuery !== hashKey([query]);
+	const [defaultQuery] = useState(hashKey([paginatedQuery]));
+	const queryHasChanged = defaultQuery !== hashKey([paginatedQuery]);
 
 	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 'auto', 40];
 
@@ -141,15 +137,7 @@ function ContactTable() {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						count={data?.total}
-						onSetItemsPerPage={setItemsPerPage}
-						onSetCurrent={setCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 			{isError && (

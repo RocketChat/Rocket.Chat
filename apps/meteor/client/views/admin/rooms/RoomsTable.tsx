@@ -7,14 +7,13 @@ import {
 	GenericTableHeader,
 	GenericTableHeaderCell,
 	GenericTableLoadingTable,
-	usePagination,
+	usePaginatedQuery,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 import type { MutableRefObject } from 'react';
-import { useRef, useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RoomRow from './RoomRow';
@@ -33,44 +32,35 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 
 	const [roomFilters, setRoomFilters] = useState<RoomFilters>({ searchText: '', types: [] });
 
-	const prevRoomFilterText = useRef<string>(roomFilters.searchText);
-
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 't' | 'usersCount' | 'msgs' | 'default' | 'featured' | 'ts'>('name');
-	const { current, itemsPerPage, setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const searchText = useDebouncedValue(roomFilters.searchText, 500);
 
 	const query = useDebouncedValue(
-		useMemo(() => {
-			if (searchText !== prevRoomFilterText.current) {
-				setCurrent(0);
-			}
-			return {
+		useMemo(
+			() => ({
 				filter: searchText || '',
 				sort: `{ "${sortBy}": ${sortDirection === 'asc' ? 1 : -1} }`,
-				count: itemsPerPage,
-				offset: searchText === prevRoomFilterText.current ? current : 0,
 				types: (roomFilters.types.length ? [...roomFilters.types.map((roomType) => roomType.id)] : DEFAULT_TYPES) as unknown as (
 					'c' | 'd' | 'p' | 'l' | 'discussions' | 'teams'
 				)[],
-			};
-		}, [searchText, sortBy, sortDirection, itemsPerPage, current, roomFilters.types, setCurrent]),
+			}),
+			[searchText, sortBy, sortDirection, roomFilters.types],
+		),
 		500,
 	);
 
 	const getAdminRooms = useEndpoint('GET', '/v1/rooms.adminRooms');
 
-	const { data, refetch, isSuccess, isLoading, isError } = useQuery({
-		queryKey: ['rooms', query, 'admin'],
-		queryFn: async () => getAdminRooms(query),
+	const { data, refetch, isSuccess, isLoading, isError, paginationProps } = usePaginatedQuery({
+		query,
+		getQueryKey: (query) => ['rooms', query, 'admin'],
+		queryFn: getAdminRooms,
+		itemsKey: 'rooms',
 	});
 
 	useEffect(() => {
 		reload.current = refetch;
 	}, [reload, refetch]);
-
-	useEffect(() => {
-		prevRoomFilterText.current = searchText;
-	}, [searchText]);
 
 	const columns: TableColumnWidth[] = ['x200', 'x100', 'x80', ...(mediaQuery ? (['x80', 'x80', 'x80', 'x120'] as const) : [])];
 
@@ -126,15 +116,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 							))}
 						</GenericTableBody>
 					</GenericTable>
-					<Pagination
-						divider
-						current={current}
-						itemsPerPage={itemsPerPage}
-						count={data?.total || 0}
-						onSetItemsPerPage={setItemsPerPage}
-						onSetCurrent={setCurrent}
-						{...paginationProps}
-					/>
+					<Pagination divider {...paginationProps} />
 				</>
 			)}
 			{isError && (

@@ -1,9 +1,8 @@
 import type { DeviceManagementPopulatedSession, DeviceManagementSession, Serialized } from '@rocket.chat/core-typings';
 import type { TableColumnWidth } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useMediaQuery } from '@rocket.chat/fuselage-hooks';
-import { GenericTableHeaderCell, usePagination, useSort } from '@rocket.chat/ui-client';
+import { GenericTableHeaderCell, usePaginatedQuery, useSort } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
 import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -26,7 +25,6 @@ const isSessionPopulatedSession = (
 const DeviceManagementAdminTable = () => {
 	const { t } = useTranslation();
 	const [text, setText] = useState('');
-	const { current, itemsPerPage, setCurrent, setItemsPerPage, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'client' | 'os' | 'username' | 'loginAt'>('username');
 
 	const query = useDebouncedValue(
@@ -34,18 +32,18 @@ const DeviceManagementAdminTable = () => {
 			() => ({
 				filter: text,
 				sort: JSON.stringify({ [sortMapping[sortBy]]: sortDirection === 'asc' ? 1 : -1 }),
-				count: itemsPerPage,
-				offset: text ? undefined : current,
 			}),
-			[text, itemsPerPage, current, sortBy, sortDirection],
+			[text, sortBy, sortDirection],
 		),
 		500,
 	);
 
 	const listAllSessions = useEndpoint('GET', '/v1/sessions/list.all');
-	const queryResult = useQuery({
-		queryKey: deviceManagementQueryKeys.sessions(query),
-		queryFn: () => listAllSessions(query),
+	const queryResult = usePaginatedQuery({
+		query,
+		getQueryKey: (query) => deviceManagementQueryKeys.sessions(query),
+		queryFn: listAllSessions,
+		itemsKey: 'sessions',
 	});
 
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
@@ -96,11 +94,6 @@ const DeviceManagementAdminTable = () => {
 						loginAt={session.loginAt}
 					/>
 				)}
-				current={current}
-				itemsPerPage={itemsPerPage}
-				setCurrent={setCurrent}
-				setItemsPerPage={setItemsPerPage}
-				paginationProps={paginationProps}
 			/>
 		</>
 	);
