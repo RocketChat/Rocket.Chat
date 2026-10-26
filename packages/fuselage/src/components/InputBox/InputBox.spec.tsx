@@ -17,7 +17,7 @@ test.each(testCases)('%s should have no a11y violations', async (_storyname, Sto
 	expect(results).toHaveNoViolations();
 });
 
-it('should update error class when error changes asynchronously', async () => {
+it('should mark the input invalid when error changes asynchronously', async () => {
 	const TestComponent = () => {
 		const [error, setError] = useState<string | undefined>(undefined);
 
@@ -33,8 +33,7 @@ it('should update error class when error changes asynchronously', async () => {
 	const { getByRole } = render(<TestComponent />);
 
 	await waitFor(() => {
-		const input = getByRole('textbox', { name: /test-input/i }).parentElement as HTMLElement;
-		expect(input).toHaveClass('invalid');
+		expect(getByRole('textbox', { name: /test-input/i })).toBeInvalid();
 	});
 });
 
