@@ -27,6 +27,7 @@ jest.mock('../context/usePeekMediaSessionPeerInfo', () => ({
 
 const createWrapper = () =>
 	mockAppRoot()
+		.withUser({ _id: 'own-id', sipExtension: '1000' })
 		.withTranslations('en', 'core', {
 			Voice_call__user__hangup: 'Hang up call with {{user}}',
 			Voice_call__user__cancel: 'Cancel call with {{user}}',

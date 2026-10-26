@@ -21,6 +21,7 @@ jest.mock('@rocket.chat/ui-voip', () => ({
 
 describe('useUserMediaCallAction', () => {
 	const fakeUser = createFakeUser({ _id: 'own-uid' });
+	const ownUserWithExtension = createFakeUser({ _id: 'own-user-id', sipExtension: '1000' });
 	const mockRid = 'room-id';
 
 	afterEach(() => {
@@ -85,7 +86,7 @@ describe('useUserMediaCallAction', () => {
 		const fakeUser = createFakeUser();
 		const { result } = renderHook(() => useUserMediaCallAction(fakeUser, mockRid), {
 			wrapper: mockAppRoot()
-				.withJohnDoe()
+				.withUser(ownUserWithExtension)
 				.withRoom(createFakeRoom())
 				.withSubscription(createFakeSubscription())
 				.withTranslations('en', 'core', {
@@ -107,7 +108,9 @@ describe('useUserMediaCallAction', () => {
 	it('should call onClick handler correctly', () => {
 		usePeekMediaSessionStateMock.mockReturnValueOnce('available');
 
-		const { result } = renderHook(() => useUserMediaCallAction(fakeUser, mockRid));
+		const { result } = renderHook(() => useUserMediaCallAction(fakeUser, mockRid), {
+			wrapper: mockAppRoot().withUser(ownUserWithExtension).build(),
+		});
 
 		act(() => result.current?.onClick());
 
@@ -121,7 +124,9 @@ describe('useUserMediaCallAction', () => {
 	it('should be disabled if state is not closed, new, or unlicensed', () => {
 		usePeekMediaSessionStateMock.mockReturnValueOnce('calling');
 
-		const { result } = renderHook(() => useUserMediaCallAction(fakeUser, mockRid));
+		const { result } = renderHook(() => useUserMediaCallAction(fakeUser, mockRid), {
+			wrapper: mockAppRoot().withUser(ownUserWithExtension).build(),
+		});
 
 		expect(result.current?.disabled).toBe(true);
 	});
