@@ -36,5 +36,6 @@ export const getBaseUserFields = (allowServiceKeys = false): UserFields => ({
 	'openBusinessHours': 1,
 	'abacAttributes': 1,
 	'mediaCallDevice': 1,
+	'sipExtension': 1,
 	...(allowServiceKeys && { 'services.totp.enabled': 1, 'services.email2fa.enabled': 1 }),
 });
