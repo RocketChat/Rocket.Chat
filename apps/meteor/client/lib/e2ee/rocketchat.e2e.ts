@@ -15,13 +15,15 @@ import { E2ERoom } from './rocketchat.e2e.room';
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 import { getMessageUrlRegex } from '../../../lib/getMessageUrlRegex';
 import { t } from '../../../lib/i18n';
-import { Rooms, Subscriptions } from '../../stores';
+import { Messages, Rooms, Subscriptions } from '../../stores';
 import EnterE2EPasswordModal from '../../views/e2e/EnterE2EPasswordModal';
 import SaveE2EPasswordModal from '../../views/e2e/SaveE2EPasswordModal';
 import { sdk } from '../SDKClient';
 import * as banners from '../banners';
 import type { LegacyBannerPayload } from '../banners';
 import { getSearchIndexBackend } from '../e2eeSearch/getSearchIndexBackend';
+import { roomMessageDeletes } from '../e2eeSearch/roomMessageDeletes';
+import { applyDeleteMessageBulkToSearchIndex } from '../e2eeSearch/searchIndexDeletes';
 import { createSearchIndexSession } from '../e2eeSearch/searchIndexSession';
 import { createSearchIndexWriter } from '../e2eeSearch/searchIndexWriter';
 import { getUserAvatarURL } from '../getUserAvatarURL';
@@ -907,6 +909,17 @@ export const e2eSearchIndexSession = createSearchIndexSession(
 export const e2eSearchIndexWriter = createSearchIndexWriter({
 	getBackend: () => e2eSearchIndexSession.getActiveBackend(),
 	onError: (error) => log.span('searchIndexWriter').error('Error indexing decrypted messages', error),
+});
+
+roomMessageDeletes.on('deleteMessage', ({ _id }) => {
+	void e2eSearchIndexWriter.remove([_id]);
+});
+
+roomMessageDeletes.on('deleteMessageBulk', (event) => {
+	void applyDeleteMessageBulkToSearchIndex(event, {
+		writer: e2eSearchIndexWriter,
+		findMessage: (id) => Messages.state.get(id),
+	});
 });
 
 getDdpSdk().account.onLogout(() => {

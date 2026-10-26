@@ -172,3 +172,115 @@ describe('createSearchIndexWriter', () => {
 		expect(backend.upsert).toHaveBeenCalledTimes(1);
 	});
 });
+
+describe('createSearchIndexWriter remove', () => {
+	beforeEach(() => {
+		jest.useFakeTimers();
+	});
+
+	afterEach(() => {
+		jest.useRealTimers();
+	});
+
+	it('removes a deleted message from the index', async () => {
+		const backend = createBackend();
+		const writer = createSearchIndexWriter({ getBackend: () => backend, delayMs: DELAY });
+
+		await writer.remove(['m1']);
+
+		expect(backend.remove).toHaveBeenCalledWith(['m1']);
+	});
+
+	it('drops a queued document of a message that is deleted before the flush', async () => {
+		const backend = createBackend();
+		const writer = createSearchIndexWriter({ getBackend: () => backend, delayMs: DELAY });
+
+		writer.index(message('m1'));
+		writer.index(message('m2'));
+		await writer.remove(['m1']);
+		await jest.advanceTimersByTimeAsync(DELAY);
+
+		expect(backend.upsert.mock.calls.flatMap(([docs]) => docs.map((doc) => doc.id))).toEqual(['m2']);
+		expect(backend.remove).toHaveBeenCalledWith(['m1']);
+	});
+
+	it('sends the remove after an upsert of the same message that is in flight', async () => {
+		const backend = createBackend();
+		const order: string[] = [];
+		let finishUpsert: () => void = () => undefined;
+		backend.upsert.mockImplementationOnce(
+			() =>
+				new Promise<void>((resolve) => {
+					finishUpsert = () => {
+						order.push('upsert');
+						resolve();
+					};
+				}),
+		);
+		backend.remove.mockImplementation(async () => {
+			order.push('remove');
+		});
+		const writer = createSearchIndexWriter({ getBackend: () => backend, delayMs: DELAY });
+
+		writer.index(message('m1'));
+		await jest.advanceTimersByTimeAsync(DELAY);
+		const removed = writer.remove(['m1']);
+		await jest.advanceTimersByTimeAsync(0);
+		finishUpsert();
+		await removed;
+
+		expect(order).toEqual(['upsert', 'remove']);
+	});
+
+	it('does not index again a message that was deleted (a decrypt that ends after the delete)', async () => {
+		const backend = createBackend();
+		const writer = createSearchIndexWriter({ getBackend: () => backend, delayMs: DELAY });
+
+		await writer.remove(['m1']);
+		writer.index(message('m1'));
+		await jest.advanceTimersByTimeAsync(DELAY);
+
+		expect(backend.upsert).not.toHaveBeenCalled();
+	});
+
+	it('indexes again a message whose document was only dropped (not deleted)', async () => {
+		const backend = createBackend();
+		const writer = createSearchIndexWriter({ getBackend: () => backend, delayMs: DELAY });
+
+		await writer.remove(['m1'], { deleted: false });
+		writer.index(message('m1'));
+		await jest.advanceTimersByTimeAsync(DELAY);
+
+		expect(backend.remove).toHaveBeenCalledWith(['m1']);
+		expect(backend.upsert.mock.calls.flatMap(([docs]) => docs.map((doc) => doc.id))).toEqual(['m1']);
+	});
+
+	it('sends no remove when no index is open', async () => {
+		const backend = createBackend();
+		const writer = createSearchIndexWriter({ getBackend: () => undefined, delayMs: DELAY });
+
+		await writer.remove(['m1']);
+
+		expect(backend.remove).not.toHaveBeenCalled();
+	});
+
+	it('splits a large remove into calls of at most 500 ids', async () => {
+		const backend = createBackend();
+		const writer = createSearchIndexWriter({ getBackend: () => backend, delayMs: DELAY });
+
+		await writer.remove(Array.from({ length: 1201 }, (_, i) => `m${i}`));
+
+		expect(backend.remove.mock.calls.map(([ids]) => ids.length)).toEqual([500, 500, 201]);
+	});
+
+	it('reports a failed remove', async () => {
+		const backend = createBackend();
+		const onError = jest.fn();
+		backend.remove.mockRejectedValueOnce(new Error('closed'));
+		const writer = createSearchIndexWriter({ getBackend: () => backend, delayMs: DELAY, onError });
+
+		await writer.remove(['m1']);
+
+		expect(onError).toHaveBeenCalledTimes(1);
+	});
+});
