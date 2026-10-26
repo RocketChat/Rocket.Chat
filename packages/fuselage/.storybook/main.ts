@@ -13,6 +13,7 @@ const config: StorybookConfig = {
 		getAbsolutePath('@rocket.chat/storybook-dark-mode'),
 		// The docs addon aliases `react` to a path, which the Tamagui compiler then cannot load when it evaluates the config.
 		...(zeroRuntime ? [] : [getAbsolutePath('@storybook/addon-docs')]),
+		getAbsolutePath('storybook-addon-pseudo-states'),
 	],
 
 	stories: zeroRuntime ? ['../src/**/*.stories.tsx'] : ['../src/**/*.stories.{mdx,js,tsx}', '../src/**/*.mdx'],
