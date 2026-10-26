@@ -7,6 +7,7 @@ import { WebApp } from 'meteor/webapp';
 
 import { isPlainObject } from '../../../../lib/utils/isPlainObject';
 import { API } from '../../../api';
+import { getAuthorizationServerMetadata, getOAuthIssuer } from '../../../oauth2-server/metadata';
 import { OAuth2Server } from '../../../oauth2-server/oauth';
 
 const oauth2server = new OAuth2Server({
@@ -69,6 +70,10 @@ oauth2server.app.get('/oauth/userinfo', async (req: Request, res: Response) => {
 		updated_at: user._updatedAt,
 		picture: `${Meteor.absoluteUrl()}avatar/${user.username}`,
 	});
+});
+
+oauth2server.app.get('/.well-known/oauth-authorization-server', (_req: Request, res: Response) => {
+	res.send(getAuthorizationServerMetadata(getOAuthIssuer()));
 });
 
 API.v1.addAuthMethod((routeContext) => {
