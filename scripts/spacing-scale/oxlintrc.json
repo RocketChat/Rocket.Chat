@@ -1,0 +1,9 @@
+{
+	"$schema": "../../node_modules/oxlint/configuration_schema.json",
+	"plugins": [],
+	"categories": { "correctness": "off" },
+	"jsPlugins": [{ "name": "rocket.chat", "specifier": "../../packages/lint-config/rules/index.js" }],
+	"rules": {
+		"rocket.chat/spacing-scale": ["error", { "ignoreComponents": ["ResponsiveBar"] }]
+	}
+}
