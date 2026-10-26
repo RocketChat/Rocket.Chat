@@ -9,7 +9,21 @@ const SECRET_AUTH_METHODS = ['client_secret_basic', 'client_secret_post'];
 const DEFAULT_AUTH_METHOD = 'client_secret_basic';
 
 const LOOPBACK_HOSTS = new Set(['localhost', '127.0.0.1', '[::1]']);
-const UNSAFE_REDIRECT_SCHEMES = new Set(['javascript:', 'data:', 'vbscript:', 'file:', 'blob:', 'about:']);
+// Schemes the browser or the system handles itself, so a code sent to them never reaches a native app (RFC 8252 §7.1).
+const NON_APP_SCHEMES = new Set([
+	'ftp:',
+	'file:',
+	'ws:',
+	'wss:',
+	'javascript:',
+	'data:',
+	'vbscript:',
+	'blob:',
+	'about:',
+	'mailto:',
+	'tel:',
+	'sms:',
+]);
 
 const MAX_REDIRECT_URIS = 10;
 const MAX_REDIRECT_URI_LENGTH = 2048;
@@ -51,18 +65,22 @@ const isRecord = (value: unknown): value is Record<string, unknown> => typeof va
 const isListOf = (value: unknown, allowed: string[]): boolean =>
 	value === undefined || (Array.isArray(value) && value.every((item) => typeof item === 'string' && allowed.includes(item)));
 
-// Redirect URIs are stored as one comma-separated string, and native clients may use loopback or private-use schemes (RFC 8252).
+// Redirect URIs are stored verbatim as one comma-separated string and compared verbatim, and native clients may use
+// loopback or private-use schemes (RFC 8252).
 const isAcceptableRedirectUri = (uri: unknown): uri is string => {
-	if (typeof uri !== 'string' || uri.length > MAX_REDIRECT_URI_LENGTH || uri.includes(',') || uri.includes('#') || !URL.canParse(uri)) {
+	if (typeof uri !== 'string' || uri.length > MAX_REDIRECT_URI_LENGTH || /[\s,#]/.test(uri) || !URL.canParse(uri)) {
 		return false;
 	}
 
 	const { protocol, hostname } = new URL(uri);
+	if (protocol === 'https:') {
+		return true;
+	}
 	if (protocol === 'http:') {
 		return LOOPBACK_HOSTS.has(hostname);
 	}
 
-	return !UNSAFE_REDIRECT_SCHEMES.has(protocol);
+	return !NON_APP_SCHEMES.has(protocol);
 };
 
 const parseClientMetadata = (body: unknown): ClientMetadata | ClientMetadataError => {
@@ -77,7 +95,7 @@ const parseClientMetadata = (body: unknown): ClientMetadata | ClientMetadataErro
 		return {
 			error: 'invalid_redirect_uri',
 			error_description:
-				'Each redirect URI must be an absolute https URI, an http loopback URI, or a private-use scheme URI without a fragment',
+				'Each redirect URI must be an https URI, an http loopback URI or a native app URI, without whitespace, a comma or a fragment',
 		};
 	}
 
@@ -97,7 +115,7 @@ const parseClientMetadata = (body: unknown): ClientMetadata | ClientMetadataErro
 
 	return {
 		redirectUris,
-		clientName: clientName || new URL(redirectUris[0]).host || redirectUris[0],
+		clientName: (clientName || new URL(redirectUris[0]).host || redirectUris[0]).slice(0, MAX_CLIENT_NAME_LENGTH),
 		// Every client of this server is confidential, so one that asks to be public gets a secret instead (RFC 7591 §3.2.1).
 		tokenEndpointAuthMethod: authMethod === 'none' ? DEFAULT_AUTH_METHOD : authMethod,
 	};

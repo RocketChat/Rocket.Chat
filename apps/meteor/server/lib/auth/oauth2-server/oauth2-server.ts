@@ -1,7 +1,8 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import { OAuthAccessTokens, Users } from '@rocket.chat/models';
-import type { Request, Response } from 'express';
+import type { NextFunction, Request, Response } from 'express';
 import type express from 'express';
+import rateLimit from 'express-rate-limit';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
 
@@ -10,6 +11,7 @@ import { isPlainObject } from '../../../../lib/utils/isPlainObject';
 import { API } from '../../../api';
 import { serveAuthorizationServerMetadata } from '../../../oauth2-server/metadata';
 import { OAuth2Server } from '../../../oauth2-server/oauth';
+import { settings } from '../../../settings/cached';
 
 const oauth2server = new OAuth2Server({
 	// If you're developing something related to oauth servers, you should change this to true
@@ -73,10 +75,27 @@ oauth2server.app.get('/oauth/userinfo', async (req: Request, res: Response) => {
 	});
 });
 
-oauth2server.app.post('/oauth/register', async (req: Request, res: Response) => {
-	const { statusCode, body } = await registerOAuthClient(req.body);
-	res.set('Cache-Control', 'no-store');
-	res.status(statusCode).send(body);
+const registrationRateLimiter = rateLimit({
+	windowMs: 60_000,
+	max: () => settings.get<number>('API_Enable_Rate_Limiter_Limit_Calls_Default'),
+	skip: () =>
+		process.env.TEST_MODE === 'true' ||
+		process.env.TEST_MODE === 'api' ||
+		settings.get<boolean>('API_Enable_Rate_Limiter') !== true ||
+		(process.env.NODE_ENV === 'development' && settings.get<boolean>('API_Enable_Rate_Limiter_Dev') !== true),
+	handler: (_req, res) => {
+		res.status(429).send({ error: 'too_many_requests', error_description: 'Too many registrations. Please try again later.' });
+	},
+});
+
+oauth2server.app.post('/oauth/register', registrationRateLimiter, async (req: Request, res: Response, next: NextFunction) => {
+	try {
+		const { statusCode, body } = await registerOAuthClient(req.body);
+		res.set('Cache-Control', 'no-store');
+		res.status(statusCode).send(body);
+	} catch (error) {
+		next(error);
+	}
 });
 
 API.v1.addAuthMethod((routeContext) => {

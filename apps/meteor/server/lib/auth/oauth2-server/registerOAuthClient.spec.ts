@@ -93,6 +93,21 @@ describe('registerOAuthClient', () => {
 		await expect(registerOAuthClient(metadata)).resolves.toMatchObject({ body: { token_endpoint_auth_method: 'client_secret_basic' } });
 	});
 
+	it('accepts the private-use scheme of a native app', async () => {
+		await expect(registerOAuthClient({ ...claude, redirect_uris: ['com.example.app:/oauth/callback'] })).resolves.toMatchObject({
+			statusCode: 201,
+		});
+	});
+
+	it('names an unnamed native client after its redirect URI, within the name length limit', async () => {
+		const { client_name: _, ...metadata } = claude;
+		const redirectUri = `com.example.app:/${'x'.repeat(200)}`;
+
+		const result = await registerOAuthClient({ ...metadata, redirect_uris: [redirectUri] });
+
+		expect(result).toMatchObject({ statusCode: 201, body: { client_name: redirectUri.slice(0, 100) } });
+	});
+
 	it('names an unnamed client after its redirect host', async () => {
 		const { client_name: _, ...metadata } = claude;
 
@@ -107,6 +122,11 @@ describe('registerOAuthClient', () => {
 		['a redirect URI with a fragment', { redirect_uris: ['https://client.example/callback#done'] }],
 		['a redirect URI containing a comma', { redirect_uris: ['https://client.example/callback?a=1,2'] }],
 		['a javascript redirect URI', { redirect_uris: ['javascript:alert(1)'] }],
+		['an ftp redirect URI', { redirect_uris: ['ftp://client.example/callback'] }],
+		['a mailto redirect URI', { redirect_uris: ['mailto:someone@client.example'] }],
+		['a websocket redirect URI', { redirect_uris: ['wss://client.example/callback'] }],
+		['a redirect URI containing whitespace', { redirect_uris: ['https://client.example/call back'] }],
+		['a redirect URI with a trailing newline', { redirect_uris: ['https://client.example/callback\n'] }],
 		['too many redirect URIs', { redirect_uris: Array.from({ length: 11 }, (_, i) => `https://client.example/${i}`) }],
 	])('rejects %s', async (_case, metadata) => {
 		await expect(registerOAuthClient({ ...claude, ...metadata })).resolves.toMatchObject({

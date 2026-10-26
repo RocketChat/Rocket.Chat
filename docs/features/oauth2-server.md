@@ -46,15 +46,15 @@ What a registration may ask for:
 
 | Field                        | Accepted                                                                                                                                                       |
 | ---------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `redirect_uris`              | 1 to 10 absolute URIs without a fragment or a comma: `https`, `http` on a loopback host, or a private-use scheme of a native app. `javascript:`, `data:` and similar schemes are refused. |
+| `redirect_uris`              | 1 to 10 absolute URIs of up to 2048 characters, without whitespace, a comma or a fragment: `https`, `http` on a loopback host, or the private-use scheme of a native app. Schemes the browser or system handles itself (`ftp:`, `file:`, `ws:`, `mailto:`, `javascript:`, `data:` and the like) are refused. |
 | `grant_types`                | A subset of `authorization_code`, `refresh_token`.                                                                                                           |
 | `response_types`             | `code`.                                                                                                                                                        |
 | `token_endpoint_auth_method` | `client_secret_basic` (default) or `client_secret_post`. A client asking for `none` is registered with `client_secret_basic` and gets a secret anyway.          |
-| `client_name`                | Up to 100 characters. Without one, the app is named after the host of its first redirect URI.                                                                  |
+| `client_name`                | Up to 100 characters. Without one, the app is named after the host of its first redirect URI, or after the URI itself when it has no host (a native app's scheme), cut to 100 characters. |
 
 Registered apps appear in Administration → Third-party login with the creator `oauth-dynamic-client-registration`, where an administrator can deactivate or delete them.
 
-When enabled, anyone who can reach the workspace can create OAuth apps. Each user still signs in and approves an app before it gets a token, but the app's name on the consent page is whatever the client registered. The endpoint has no rate limit of its own.
+When enabled, anyone who can reach the workspace can create OAuth apps. Each user still signs in and approves an app before it gets a token, but the app's name on the consent page is whatever the client registered. Registrations are rate limited like the rest of the API (`API_Enable_Rate_Limiter`), at `API_Enable_Rate_Limiter_Limit_Calls_Default` per minute.
 
 ## Limitations
 
