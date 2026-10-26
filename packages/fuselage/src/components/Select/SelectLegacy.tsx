@@ -70,6 +70,11 @@ function SelectLegacy({
 	...props
 }: SelectProps) {
 	const [internalValue, setInternalValue] = useState(value || '');
+	const [syncedValue, setSyncedValue] = useState(value);
+	if (value !== syncedValue) {
+		setSyncedValue(value);
+		setInternalValue(value || '');
+	}
 
 	const internalChangedByKeyboard = useStableCallback(([value]: OptionType) => {
 		setInternalValue(value);
