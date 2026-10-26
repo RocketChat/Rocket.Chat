@@ -21,6 +21,8 @@ $toastbar-progressbar-background-color: theme('toastbar-progressbar-background-c
 	min-width: lengths.size(232);
 	max-width: lengths.size(416);
 
+	animation: rcx-toastbar-side-open 0.5s;
+
 	color: $toastbar-color;
 
 	border-radius: $toastbar-border-radius;
@@ -91,11 +93,38 @@ $toastbar-progressbar-background-color: theme('toastbar-progressbar-background-c
 		&::after {
 			display: block;
 
+			width: 0%;
 			height: 100%;
 
 			content: '';
 
+			animation: rcx-toastbar-progress var(--toast-time) forwards running;
+
 			background-color: $toastbar-progressbar-background-color;
 		}
+
+		&--paused::after {
+			animation-play-state: paused;
+		}
+	}
+}
+
+@keyframes rcx-toastbar-side-open {
+	from {
+		opacity: 0;
+	}
+
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes rcx-toastbar-progress {
+	from {
+		width: 0%;
+	}
+
+	to {
+		width: 100%;
 	}
 }
