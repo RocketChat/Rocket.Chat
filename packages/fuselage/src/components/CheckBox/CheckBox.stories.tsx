@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { action } from 'storybook/actions';
 
 import CheckBox from './CheckBox';
-import { DECORATOR_LABEL, PropsVariationSection } from '../../../.storybook/helpers';
+import { DECORATOR_LABEL, PropsVariationSection, variationPseudoStates } from '../../../.storybook/helpers';
 
 export default {
 	title: 'Inputs/CheckBox',
@@ -94,6 +94,7 @@ export const DefaultChecked: Story = {
 };
 
 export const States: Story = {
+	parameters: { pseudo: variationPseudoStates },
 	render: () => (
 		<PropsVariationSection
 			component={CheckBox}
@@ -104,9 +105,9 @@ export const States: Story = {
 			}}
 			yAxis={{
 				default: {},
-				hover: { className: 'is-hovered' },
-				active: { className: 'is-active' },
-				focus: { className: 'is-focused' },
+				hover: {},
+				active: {},
+				focus: {},
 				disabled: { disabled: true },
 			}}
 		/>

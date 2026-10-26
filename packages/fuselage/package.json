@@ -90,6 +90,7 @@
 		"sass": "~1.102.0",
 		"sass-loader": "~17.0.1",
 		"storybook": "~9.1.21",
+		"storybook-addon-pseudo-states": "~9.1.21",
 		"stylelint": "~17.14.1",
 		"stylelint-order": "~8.1.1",
 		"stylelint-prettier": "~5.0.3",
