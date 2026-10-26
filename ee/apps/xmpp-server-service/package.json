@@ -38,6 +38,7 @@
 		"@types/polka": "^0.5.8",
 		"eslint": "~10.12.0",
 		"ts-node": "^10.9.2",
+		"tsx": "~4.22.5",
 		"typescript": "~7.0.2"
 	},
 	"volta": {
