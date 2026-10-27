@@ -33,13 +33,17 @@ export const useElementIsVisible = <T extends Element>(): [ref: RefObject<T | nu
 
 	const ref = useCallback(
 		(node: T | null) => {
+			if (innerRef.current) {
+				observer.unobserve(innerRef.current);
+			}
+			innerRef.current = node ?? undefined;
+
 			if (node === null) {
 				setMenuVisibility(false);
 				return;
 			}
-			innerRef.current = node;
 
-			observer.observe(innerRef.current);
+			observer.observe(node);
 		},
 		[observer, setMenuVisibility],
 	) as unknown as RefObject<T | null>;
