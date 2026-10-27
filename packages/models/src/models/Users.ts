@@ -2643,6 +2643,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
+			active: true,
 			__rooms: roomId,
 			statusConnection: {
 				$in: [UserStatus.ONLINE, UserStatus.AWAY, UserStatus.BUSY],
