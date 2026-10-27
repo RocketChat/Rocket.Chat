@@ -1,5 +1,5 @@
 import type { IAuditServerAppActor, IAuditServerSystemActor, IAuditServerUserActor } from '@rocket.chat/core-typings';
-import { Box, Button, Field, FieldLabel, Pagination } from '@rocket.chat/fuselage';
+import { Box, Button, Field, FieldLabel, Pagination, Text } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import {
 	GenericTable,
@@ -187,9 +187,9 @@ const SecurityLogsTable = () => {
 													<UserAvatar size='x24' userId={item.actor._id} />
 												</Box>
 											)}
-											<Box fontScale='p2m' withTruncatedText color='default'>
+											<Text fontScale='p2m' truncate color='default'>
 												{item.actor.type === 'user' ? item.actor.username : t(getTypeTranslation(item.actor.type))}
-											</Box>
+											</Text>
 										</Box>
 									</GenericTableCell>
 									<GenericTableCell truncate>{format(new Date(item.ts), 'MMMM d yyyy, h:mm:ss a')}</GenericTableCell>

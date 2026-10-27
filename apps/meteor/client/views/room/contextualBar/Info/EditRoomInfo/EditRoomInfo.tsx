@@ -21,6 +21,7 @@ import {
 	Box,
 	TextAreaInput,
 	AccordionItem,
+	Text,
 } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
@@ -396,9 +397,9 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 							{showAdvancedSettings && (
 								<AccordionItem title={t('Advanced_settings')}>
 									<FieldGroup>
-										<Box is='h5' fontScale='h5' color='titles-labels'>
+										<Text is='h5' fontScale='h5' color='titles-labels'>
 											{t('Security_and_permissions')}
-										</Box>
+										</Text>
 										{canViewReadOnly && (
 											<Field>
 												<FieldRow>

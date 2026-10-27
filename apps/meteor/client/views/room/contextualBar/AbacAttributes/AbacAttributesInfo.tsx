@@ -1,5 +1,5 @@
 import type { IAbacAttributeDefinition } from '@rocket.chat/core-typings';
-import { Box, Button, ButtonGroup, Tag } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Tag, Text } from '@rocket.chat/fuselage';
 import {
 	ContextualbarClose,
 	ContextualbarEmptyContent,
@@ -47,9 +47,9 @@ const AbacAttributesInfo = ({ attributes, requiredKeys, isTeam, onManage, onClos
 				/>
 			) : (
 				<ContextualbarScrollableContent>
-					<Box is='h4' fontScale='h4' color='titles-labels'>
+					<Text is='h4' fontScale='h4' color='titles-labels'>
 						{t('ABAC_Room_Attributes')}
-					</Box>
+					</Text>
 					<Box fontScale='p2' color='hint' marginBlockStart={8}>
 						{t('ABAC_Room_attributes_description')}
 					</Box>
