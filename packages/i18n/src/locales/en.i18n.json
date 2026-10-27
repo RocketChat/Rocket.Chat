@@ -2369,6 +2369,7 @@
   "E2E_Local_Search_Backfill_Months": "Local search history depth (months)",
   "E2E_Local_Search_Backfill_Months_Description": "How far back the desktop app indexes old encrypted messages. 0 indexes only new messages.",
   "E2E_Local_Search_Indexing_Progress": "Indexing encrypted history: {{done}} of {{total}} rooms",
+  "E2E_Local_Search_Memory_Only": "On this device, the app keeps the search index in memory only and builds it again after a restart.",
   "E2E_Local_Search_Opt_In": "Index my encrypted messages on this device",
   "E2E_Local_Search_Opt_In_Description": "Keep an encrypted index of your decrypted messages on this device, so you can search encrypted rooms here. The server never receives the index or your search terms. Turn it off to delete the index from this device.",
   "E2E_message_encrypted_placeholder": "This message is end-to-end encrypted. To view it, you must enter your encryption key in your account settings.",

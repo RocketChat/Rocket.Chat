@@ -1,7 +1,8 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Callout } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import type { SearchIndexProgress } from '../../../../../lib/e2eeSearch/searchIndexScheduler';
+import { useLocalSearchIndexEncryptedAtRest } from '../hooks/useLocalSearchIndexEncryptedAtRest';
 import { useLocalSearchIndexProgress } from '../hooks/useLocalSearchIndexProgress';
 
 // The scheduler waits while the user is active, so `waiting-for-idle` also counts as indexing: the history is not complete.
@@ -12,12 +13,19 @@ const isIndexing = (progress: SearchIndexProgress | undefined): progress is Sear
 const LocalSearchIndexStatus = () => {
 	const { t } = useTranslation();
 	const progress = useLocalSearchIndexProgress();
+	const memoryOnly = useLocalSearchIndexEncryptedAtRest() === false;
+	const indexing = isIndexing(progress);
 
-	if (!isIndexing(progress)) return null;
+	if (!indexing && !memoryOnly) return null;
 
 	return (
-		<Box paddingInline={16} paddingBlockStart={12} fontScale='c1' color='hint' data-qa='local-search-index-progress'>
-			{t('E2E_Local_Search_Indexing_Progress', { done: progress.roomsDone, total: progress.rooms })}
+		<Box paddingInline={16} paddingBlockStart={12} display='flex' flexDirection='column' gap={8}>
+			{memoryOnly && <Callout type='info'>{t('E2E_Local_Search_Memory_Only')}</Callout>}
+			{indexing && (
+				<Box fontScale='c1' color='hint' data-qa='local-search-index-progress'>
+					{t('E2E_Local_Search_Indexing_Progress', { done: progress.roomsDone, total: progress.rooms })}
+				</Box>
+			)}
 		</Box>
 	);
 };

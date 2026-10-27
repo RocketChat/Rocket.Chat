@@ -1,4 +1,4 @@
-import type { ISearchIndexBackend } from '@rocket.chat/desktop-api';
+import type { E2EESearchOpenResult, ISearchIndexBackend } from '@rocket.chat/desktop-api';
 
 /** Changes this label only with a new index schema: a new label makes every sealed index unreadable. */
 const WRAP_KEY_LABEL = 'Rocket.Chat E2EE search index wrap key v1';
@@ -54,6 +54,11 @@ type SearchIndexSessionOptions = {
 export type SearchIndexSession = {
 	/** The backend after its `open` resolved for the current user, or `undefined` before that and after a logout. */
 	getActiveBackend(): ISearchIndexBackend | undefined;
+	/**
+	 * Whether the active index is encrypted on disk, as its `open` reported. `false` when the desktop app keeps the index in
+	 * memory only (Linux with no key store). `undefined` while no index is active.
+	 */
+	isEncryptedAtRest(): boolean | undefined;
 	/** Calls the listener each time `getActiveBackend` changes. Returns the function that removes it. */
 	subscribe(listener: () => void): () => void;
 	/**
@@ -89,12 +94,14 @@ export const createSearchIndexSession = (
 	let ready = false;
 	let openedFor: string | undefined;
 	let active: ISearchIndexBackend | undefined;
+	let encryptedAtRest: boolean | undefined;
 	let pending: Promise<void> = Promise.resolve();
 	const listeners = new Set<() => void>();
 
-	const setActive = (backend: ISearchIndexBackend | undefined) => {
+	const setActive = (backend: ISearchIndexBackend | undefined, atRest?: boolean) => {
 		if (active === backend) return;
 		active = backend;
+		encryptedAtRest = backend ? atRest : undefined;
 		for (const listener of [...listeners]) listener();
 	};
 
@@ -132,7 +139,8 @@ export const createSearchIndexSession = (
 			const wrapKey = await deriveSearchIndexWrapKey(privateKey, userId);
 			if (run !== generation) return;
 
-			await backend.open({ userId, wrapKey });
+			// A backend that resolves with no result reports nothing about the storage.
+			const opened: Partial<E2EESearchOpenResult> | undefined = await backend.open({ userId, wrapKey });
 			if (run !== generation) return;
 
 			if (!isAllowed()) {
@@ -142,7 +150,7 @@ export const createSearchIndexSession = (
 				return;
 			}
 
-			setActive(backend);
+			setActive(backend, typeof opened?.encryptedAtRest === 'boolean' ? opened.encryptedAtRest : undefined);
 		} catch (error) {
 			if (run === generation) openedFor = undefined;
 			onError(error);
@@ -173,6 +181,7 @@ export const createSearchIndexSession = (
 
 	return {
 		getActiveBackend: () => active,
+		isEncryptedAtRest: () => encryptedAtRest,
 		subscribe: (listener) => {
 			listeners.add(listener);
 			return () => {

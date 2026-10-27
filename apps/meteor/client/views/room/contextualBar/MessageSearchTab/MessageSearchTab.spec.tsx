@@ -10,6 +10,7 @@ import type { SearchIndexProgress } from '../../../../lib/e2eeSearch/searchIndex
 
 let mockBackend: ISearchIndexBackend | undefined;
 let mockProgress: SearchIndexProgress | undefined;
+let mockEncryptedAtRest: boolean | undefined;
 
 const provider: IMessageSearchProvider = {
 	key: 'defaultProvider',
@@ -29,6 +30,10 @@ jest.mock('./hooks/useLocalSearchIndexBackend', () => ({
 
 jest.mock('./hooks/useLocalSearchIndexProgress', () => ({
 	useLocalSearchIndexProgress: () => mockProgress,
+}));
+
+jest.mock('./hooks/useLocalSearchIndexEncryptedAtRest', () => ({
+	useLocalSearchIndexEncryptedAtRest: () => mockEncryptedAtRest,
 }));
 
 jest.mock('../../contexts/RoomContext', () => ({
@@ -80,6 +85,7 @@ const renderTab = () =>
 			.withTranslations('en', 'core', {
 				Encrypted_content_cannot_be_searched: 'Encrypted content cannot be searched.',
 				E2E_Local_Search_Indexing_Progress: 'Indexing encrypted history: {{done}} of {{total}} rooms',
+				E2E_Local_Search_Memory_Only: 'On this device, the app keeps the search index in memory only and builds it again after a restart.',
 			})
 			.build(),
 	});
@@ -109,6 +115,7 @@ describe('MessageSearchTab local search', () => {
 	afterEach(() => {
 		mockBackend = undefined;
 		mockProgress = undefined;
+		mockEncryptedAtRest = undefined;
 		jest.restoreAllMocks();
 	});
 
@@ -163,16 +170,39 @@ describe('MessageSearchTab local search', () => {
 		expect(await screen.findByRole('textbox', { name: 'Search_Messages' })).toBeInTheDocument();
 		expect(screen.queryByText(/Indexing encrypted history/)).not.toBeInTheDocument();
 	});
+
+	it('shows a note when the index is kept in memory only (encryptedAtRest false, LSE2EE-51)', async () => {
+		mockEncryptedAtRest = false;
+		renderTab();
+
+		expect(await screen.findByText(/in memory only/)).toHaveTextContent(
+			'On this device, the app keeps the search index in memory only and builds it again after a restart.',
+		);
+	});
+
+	it.each([
+		['the index is encrypted at rest', true],
+		['the open result is not known', undefined],
+	])('shows no memory-only note when %s', async (_case, value) => {
+		mockEncryptedAtRest = value;
+		renderTab();
+
+		expect(await screen.findByRole('textbox', { name: 'Search_Messages' })).toBeInTheDocument();
+		expect(screen.queryByText(/in memory only/)).not.toBeInTheDocument();
+	});
 });
 
 describe('MessageSearchTab without a local search backend', () => {
 	it('shows the callout of today and no state of the local index (LSE2EE-51)', async () => {
 		mockBackend = undefined;
 		mockProgress = progress('indexing', 12);
+		mockEncryptedAtRest = false;
 		renderTab();
 
 		expect(await screen.findByText('Encrypted content cannot be searched.')).toBeInTheDocument();
 		expect(screen.queryByText(/Indexing encrypted history/)).not.toBeInTheDocument();
+		expect(screen.queryByText(/in memory only/)).not.toBeInTheDocument();
 		mockProgress = undefined;
+		mockEncryptedAtRest = undefined;
 	});
 });
