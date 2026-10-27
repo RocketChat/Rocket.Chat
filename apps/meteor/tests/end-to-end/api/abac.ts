@@ -2021,7 +2021,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 						email: `${username}@example.com`,
 						name: username,
 						username,
-						password: 'pass@123',
+						password,
 					})
 					.expect(200);
 

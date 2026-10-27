@@ -1,7 +1,7 @@
 import { faker } from '@faker-js/faker';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users';
 
-import { IS_EE } from './config/constants';
+import { DEFAULT_USER_CREDENTIALS, IS_EE } from './config/constants';
 import { Users } from './fixtures/userStates';
 import {
 	AdminUsers,
@@ -135,7 +135,7 @@ test.describe.parallel('administration', () => {
 				const createUserResponse = await api.post('/users.create', {
 					email: faker.internet.email(),
 					name: faker.person.fullName(),
-					password: faker.internet.password(),
+					password: DEFAULT_USER_CREDENTIALS.password,
 					username: faker.internet.username(),
 				});
 
@@ -144,7 +144,7 @@ test.describe.parallel('administration', () => {
 				const createOwnerUserResponse = await api.post('/users.create', {
 					email: faker.internet.email(),
 					name: faker.person.fullName(),
-					password: faker.internet.password(),
+					password: DEFAULT_USER_CREDENTIALS.password,
 					username: faker.internet.username(),
 				});
 

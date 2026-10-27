@@ -375,6 +375,24 @@ describe('[Users]', () => {
 			failCreateUser(name);
 		});
 
+		it('should not create a user whose password does not meet the password policy', async () => {
+			await request
+				.post(api('users.create'))
+				.set(credentials)
+				.send({
+					email: `weak_password_${apiEmail}`,
+					name: `weak_password_${apiUsername}`,
+					username: `weak_password_${apiUsername}`,
+					password: 'abc',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-password-policy-not-met');
+				});
+		});
+
 		describe('users default roles configuration', () => {
 			const users: IUser[] = [];
 

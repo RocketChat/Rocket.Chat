@@ -1,6 +1,6 @@
 import type { Page } from 'playwright-core';
 
-import { IS_EE } from './config/constants';
+import { DEFAULT_USER_CREDENTIALS, IS_EE } from './config/constants';
 import { createAuxContext } from './fixtures/createAuxContext';
 import injectInitialData from './fixtures/inject-initial-data';
 import { Users } from './fixtures/userStates';
@@ -49,7 +49,7 @@ test.describe('Account Manage Devices Page', () => {
 
 		await test.step('should login same user in another session', async () => {
 			await loginPage2.goto(AccountSectionsHref.manageDevices);
-			await loginPage2.login('user1', 'password');
+			await loginPage2.login('user1', DEFAULT_USER_CREDENTIALS.password);
 			await expect(accountDevices2.pageContent).toBeVisible();
 		});
 

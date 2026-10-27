@@ -7,6 +7,7 @@ import type { SaveUserData } from './saveUser';
 import { isUpdateUserData } from './saveUser';
 import { trim } from '../../../../lib/utils/stringUtils';
 import { settings } from '../../../settings';
+import { passwordPolicy } from '../../auth/passwordPolicy';
 import { getRoleIds } from '../../authorization/getRoles';
 import { hasPermissionAsync } from '../../authorization/hasPermission';
 import { isAdminHidingAllowed } from '../../statusVisibility/settings';
@@ -103,6 +104,10 @@ export const validateUserData = makeFunction(async (userId: IUser['_id'], userDa
 	}
 
 	if (!isUpdateUserData(userData)) {
+		if (userData.password && !userData.setRandomPassword) {
+			passwordPolicy.validate(userData.password);
+		}
+
 		if (userData.username && !(await checkUsernameAvailability(userData.username))) {
 			throw new ClientSafeError('error-field-unavailable', `${escape(userData.username)} is already in use :(`, {
 				method: 'insertOrUpdateUser',
