@@ -6,9 +6,16 @@ import { settings } from '../../../../server/settings/cached';
 
 export type McpAuth = {
 	userId: string;
-	/** The raw (unhashed) Personal Access Token, forwarded to the REST layer on dispatch. */
-	authToken: string;
-};
+} & (
+	| {
+			/** The raw (unhashed) Personal Access Token, forwarded to the REST layer on dispatch. */
+			authToken: string;
+	  }
+	| {
+			/** The OAuth access token, forwarded to the REST layer on dispatch. */
+			accessToken: string;
+	  }
+);
 
 const DEFAULT_PROTOCOL_VERSION = '2025-11-25';
 
