@@ -17,7 +17,7 @@ jest.mock('@rocket.chat/fuselage-hooks', () => {
 
 jest.mock('../../lib/emoji', () => ({
 	emoji: { packages: { base: { emojisByCategory: { recent: [] } } } },
-	getFrequentEmoji: jest.fn(() => []),
+	getQuickReactions: jest.fn(() => []),
 	createEmojiListByCategorySubscription: jest.fn(() => {
 		const snapshot = [[], {}];
 		return [() => () => undefined, () => snapshot];
