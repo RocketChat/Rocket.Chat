@@ -1,0 +1,29 @@
+apps/meteor/server/lib/getMomentLocale.test.ts
+  s_0cb38b25974acb::t_040202b1b88bf2 1-53
+apps/meteor/server/lib/getMomentLocale.ts
+  s_0cb38b25974acb::t_66d5705aafa29e 3-4,10-11,14-17,25
+apps/meteor/server/lib/omnichannel/livechat.ts
+  s_0cb38b25974acb::t_7ed572904d12e0 9,11,46,56-57,74
+apps/meteor/server/lib/privateAssets.test.ts
+  s_0cb38b25974acb::t_c6d1ff7bb5f61f 1-31
+apps/meteor/server/lib/privateAssets.ts
+  s_0cb38b25974acb::t_47d65525be027d 1-27
+apps/meteor/server/startup/initialData.ts
+  s_0cb38b25974acb::t_b3e33896a858f8 12,146,148-149,151-155,157-158
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2c25a520a2f60b5043baf5a5aca4814a39309a3a",
+  "prompts": {},
+  "sessions": {
+    "s_0cb38b25974acb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "54d9c941-dbdb-4ccc-bacb-f58cdfd0833d",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
