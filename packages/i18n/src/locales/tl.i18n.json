@@ -1,1 +1,10 @@
-{ }
+{
+  "E2E_Enable_Local_Search": "Lokal na paghahanap sa mga naka-encrypt na mensahe",
+  "E2E_Enable_Local_Search_Description": "Payagan ang desktop app na magtago ng naka-encrypt na index ng mga na-decrypt na mensahe sa device ng user, para makapaghanap ang mga user sa mga naka-encrypt na room. Hindi kailanman natatanggap ng server ang index o ang mga termino sa paghahanap. Kapag naka-off ang setting na ito, binubura ng desktop app ang index sa susunod na pag-login.",
+  "E2E_Local_Search_Backfill_Months": "Lalim ng history ng lokal na paghahanap (buwan)",
+  "E2E_Local_Search_Backfill_Months_Description": "Gaano kalayo pabalik ini-index ng desktop app ang mga lumang naka-encrypt na mensahe. Ang 0 ay nag-i-index lamang ng mga bagong mensahe.",
+  "E2E_Local_Search_Indexing_Progress": "Ini-index ang naka-encrypt na history: {{done}} sa {{total}} na room",
+  "E2E_Local_Search_Memory_Only": "Sa device na ito, itinatago lamang ng app ang search index sa memory at binubuo itong muli pagkatapos ng restart.",
+  "E2E_Local_Search_Opt_In": "I-index ang aking mga naka-encrypt na mensahe sa device na ito",
+  "E2E_Local_Search_Opt_In_Description": "Magtago ng naka-encrypt na index ng iyong mga na-decrypt na mensahe sa device na ito, para makapaghanap ka sa mga naka-encrypt na room dito. Hindi kailanman natatanggap ng server ang index o ang iyong mga termino sa paghahanap. I-off ito para burahin ang index sa device na ito."
+}

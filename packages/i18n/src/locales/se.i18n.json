@@ -1,1 +1,10 @@
-{ }
+{
+  "E2E_Enable_Local_Search": "Krypterejuvvon dieđáhusaid báikkálaš ohcan",
+  "E2E_Enable_Local_Search_Description": "Divtte čállinbeavdeprográmma vurket geavaheaddji ovttadagas krypterejuvvon indeavssa dekrypterejuvvon dieđáhusain, vai geavaheaddjit sáhttet ohcat krypterejuvvon lanjain. Bálvá ii goassege oaččo indeavssa iige ohcansániid. Go dát heivehus lea čadnojuvvon eret, čállinbeavdeprográmma sihku indeavssa boahtte sisačálihettiin.",
+  "E2E_Local_Search_Backfill_Months": "Báikkálaš ohcama historjjá čiekŋalasvuohta (mánut)",
+  "E2E_Local_Search_Backfill_Months_Description": "Man guhkás maŋos čállinbeavdeprográmma indekse boares krypterejuvvon dieđáhusaid. 0 indekse dušše ođđa dieđáhusaid.",
+  "E2E_Local_Search_Indexing_Progress": "Indekseremin krypterejuvvon historjjá: {{done}}/{{total}} lanja",
+  "E2E_Local_Search_Memory_Only": "Dán ovttadagas prográmma vurke ohcanindeavssa dušše muittus ja ráhkada dan ođđasit go álggahuvvo ođđasit.",
+  "E2E_Local_Search_Opt_In": "Indekse mu krypterejuvvon dieđáhusaid dán ovttadagas",
+  "E2E_Local_Search_Opt_In_Description": "Vurke krypterejuvvon indeavssa du dekrypterejuvvon dieđáhusain dán ovttadagas, vai sáhtát ohcat krypterejuvvon lanjain dáppe. Bálvá ii goassege oaččo indeavssa iige du ohcansániid. Čatna dan eret jus háliidat sihkkut indeavssa dán ovttadagas."
+}
