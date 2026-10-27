@@ -136,6 +136,21 @@ test.each([
 	expect(parse(input)).toEqual(output);
 });
 
+describe('autoLink with parentheses', () => {
+	const wikipedia = 'https://en.wikipedia.org/wiki/Mercury_(planet)';
+
+	test.each([
+		[wikipedia, [paragraph([link(wikipedia)])]],
+		[`see ${wikipedia} now`, [paragraph([plain('see '), link(wikipedia), plain(' now')])]],
+		[`${wikipedia}.`, [paragraph([link(wikipedia), plain('.')])]],
+		[`(${wikipedia})`, [paragraph([plain('('), link(wikipedia), plain(')')])]],
+		['(https://example.com/page)', [paragraph([plain('('), link('https://example.com/page'), plain(')')])]],
+		['https://example.com/path)', [paragraph([link('https://example.com/path'), plain(')')])]],
+	])('parses %p', (input, output) => {
+		expect(parse(input)).toEqual(output);
+	});
+});
+
 describe('autoLink with custom hosts settings comming from Rocket.Chat', () => {
 	test.each([
 		['http://gitlab.local', [paragraph([link('http://gitlab.local', [plain('http://gitlab.local')])])]],

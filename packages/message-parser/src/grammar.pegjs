@@ -552,8 +552,11 @@ AutoLinkURL
   = head:($(URLScheme URLAuthority) / $(URLAuthorityHost)) tail:$(AutoLinkURLBody*) { return head + tail; }
 
 AutoLinkURLBody
-  = [^ \t\r\n.,!%~*\"':;()=~]
+  = "(" AutoLinkURLBodyParen* ")" // keeps balanced parentheses in the URL, e.g. /wiki/Mercury_(planet)
+  / [^ \t\r\n.,!%~*\"':;()=~]
   / !(Extra* (Whitespace / EndOfLine / !.)) .
+
+AutoLinkURLBodyParen = [^ \t\r\n()]
 
 /**
  *
