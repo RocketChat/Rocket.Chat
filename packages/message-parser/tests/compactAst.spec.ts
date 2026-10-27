@@ -20,7 +20,6 @@ import {
 	code,
 	codeLine,
 	quote,
-	blockquote,
 	spoilerBlock,
 	orderedList,
 	unorderedList,
@@ -212,6 +211,41 @@ describe('Compact AST format for message-parser', () => {
 			];
 
 			expect(validateRoundtrip(ast, msg)).toBe(true);
+		});
+
+		it('handles timestamps with Plain node fallback', () => {
+			const msg = 'Meeting at <t:1708551317:R>';
+			const ast: Root = [
+				paragraph([
+					plain('Meeting at '),
+					{
+						type: 'TIMESTAMP',
+						value: {
+							timestamp: '1708551317',
+							format: 'R',
+						},
+						fallback: plain('<t:1708551317:R>'),
+					},
+				]),
+			];
+
+			expect(validateRoundtrip(ast, msg)).toBe(true);
+			const compact = compactify(ast, msg);
+			expect(compact).toEqual([
+				{
+					t: 'p',
+					c: [
+						[0, 11],
+						{
+							t: 'ts',
+							ts: '1708551317',
+							f: 'R',
+							fb: '<t:1708551317:R>',
+						},
+					],
+				},
+			]);
+			expect(expand(compact, msg)).toEqual(ast);
 		});
 	});
 

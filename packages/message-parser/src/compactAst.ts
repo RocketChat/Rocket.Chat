@@ -420,7 +420,7 @@ function compactInline(node: Inlines, msg: string, state: CompactionState): Comp
 				t: 'ts',
 				ts: node.value.timestamp,
 				f: node.value.format,
-				...(node.fallback !== undefined && { fb: compactFallback(node.fallback, msg, state) }),
+				...(node.fallback !== undefined && { fb: compactFallback(node.fallback) }),
 			};
 		case 'COLOR':
 			return {
@@ -735,15 +735,13 @@ function expandTableRow(row: CompactTableRow, msg: string): TableRow {
 }
 
 function compactFallback(
-	fb: SourceRange | Plain | undefined,
-	msg: string,
-	state: CompactionState
+	fb: SourceRange | Plain | undefined
 ): CompactSpan | string | undefined {
 	if (!fb) return undefined;
 	if (Array.isArray(fb)) {
 		return fb;
 	}
-	return compactPlain(fb, msg, state);
+	return fb.value;
 }
 
 function expandFallback(
@@ -813,12 +811,12 @@ function compactBlockOrParagraph(
 				t: 'table',
 				h: node.value.header.map((cell) => compactTableCell(cell, msg, state)),
 				r: node.value.rows.map((row) => compactTableRow(row, msg, state)),
-				...(node.fallback !== undefined && { fb: compactFallback(node.fallback, msg, state) }),
+				...(node.fallback !== undefined && { fb: compactFallback(node.fallback) }),
 			};
 		case 'HORIZONTAL_RULE':
 			return {
 				t: 'hr',
-				...(node.fallback !== undefined && { fb: compactFallback(node.fallback, msg, state) }),
+				...(node.fallback !== undefined && { fb: compactFallback(node.fallback) }),
 			};
 		case 'KATEX':
 			return {
@@ -912,7 +910,7 @@ function expandBlockOrParagraph(
 	}
 }
 
-export function deepEqual(a: unknown, b: unknown): boolean {
+function deepEqual(a: unknown, b: unknown): boolean {
 	if (a === b) return true;
 	if (a === null || b === null || typeof a !== 'object' || typeof b !== 'object') {
 		return false;
