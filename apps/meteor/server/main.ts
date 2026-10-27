@@ -1,4 +1,5 @@
 import './tracing';
+import './lib/http/httpServer';
 import './models';
 
 /**
