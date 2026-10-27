@@ -479,6 +479,20 @@ describe('ExchangeEwsProvider', () => {
 			expect(page.items[0]).toMatchObject({ categories: CATEGORIES });
 		});
 
+		it('reads the Outlook favorite, which EWS only carries as an extended property', async () => {
+			const favoriteProperty = (value: string) =>
+				`<t:DisplayName>${CONTACT_NAME}</t:DisplayName><t:ExtendedProperty><t:ExtendedFieldURI DistinguishedPropertySetId="Address" PropertyName="IsFavorite" PropertyType="Boolean"/><t:Value>${value}</t:Value></t:ExtendedProperty>`;
+
+			const { page, transport } = await listContactsAnswering([
+				changes(created(CONTACT_ID, OTHER_CONTACT_ID)),
+				contactItems(contact(CONTACT_ID, favoriteProperty('true')), contact(OTHER_CONTACT_ID, favoriteProperty('false'))),
+			]);
+
+			expect(transport.sent[1]).toContain('PropertyName="IsFavorite"');
+			expect(page.items[0]).toMatchObject({ favorite: true });
+			expect(page.items[1]).not.toHaveProperty('favorite');
+		});
+
 		it('names a contact by its parts, then by an address, when EWS sends no display name', async () => {
 			const ONLY_EMAIL = 'only@corp.example';
 			const { page } = await listContactsAnswering([

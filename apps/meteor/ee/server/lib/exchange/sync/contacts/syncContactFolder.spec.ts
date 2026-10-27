@@ -242,6 +242,7 @@ describe('syncContactFolder', () => {
 			expect(imported).toHaveProperty('surname', undefined);
 			expect(imported).toHaveProperty('companyName', undefined);
 			expect(imported).toHaveProperty('officeLocation', undefined);
+			expect(imported).toHaveProperty('favorite', undefined);
 		});
 
 		it('leaves a number it cannot resolve without a e164 key, so it never matches the wrong contact', async () => {

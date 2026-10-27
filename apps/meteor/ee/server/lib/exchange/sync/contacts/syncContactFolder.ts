@@ -36,6 +36,7 @@ const toContact = (uid: IUser['_id'], contact: ExchangeContactUpsert, defaultReg
 	officeLocation: contact.officeLocation,
 	emails: contact.emails,
 	categories: contact.categories,
+	favorite: contact.favorite,
 	phones: contact.phones.map(({ raw, label }) => {
 		const e164 = normalizeE164(raw, defaultRegion);
 

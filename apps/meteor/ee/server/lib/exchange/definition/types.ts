@@ -74,6 +74,8 @@ export type ExchangeContactUpsert = {
 	emails: ExchangeContactEmail[];
 	phones: ExchangeContactPhone[];
 	categories: string[];
+	/** Only EWS can read it; Graph exposes no such field. */
+	favorite?: boolean;
 };
 
 export type ExchangeContactDeletion = {

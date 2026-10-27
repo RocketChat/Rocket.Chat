@@ -82,6 +82,9 @@ Nothing to set up, which is the point.
 - **An unknown number resolves to a name.** When a call comes in from a number saved in their Outlook
   contacts, the caller shows as that person, and the call history shows names instead of digits.
 - **Their Outlook contacts are searchable in Rocket.Chat**, alongside contacts they create by hand here.
+- **Their Outlook favorites carry over, on Exchange on-premises.** A contact they marked as a favorite in
+  Outlook on the web shows with a star and in the Favorites tab. Like the rest of a synced contact, it is
+  changed in Outlook, not here.
 
 Contacts are **private to each user**. A person's Outlook contacts are visible only to them: nothing is
 shared across the workspace, and no administrator view of them exists.

@@ -210,6 +210,7 @@ The integration stores users' calendar events and their personal contacts, with 
 | Recurrence          | Expanded, but occurrences arrive as stubs of their master | Expanded in full by `CalendarView`                         |
 | Contact scope       | `default` plus each `contactFolder`                       | Each `IPF.Contact` folder under the contacts root          |
 | Contact photos      | `photo/$value` per contact                                | `GetAttachment` on the `IsContactPhoto` file attachment    |
+| Contact favorite    | Not available                                             | `IsFavorite` named property in `PSETID_Address`            |
 | Per-mailbox scoping | `ApplicationAccessPolicy`, configured on Microsoft's side | `ExchangeImpersonation` SOAP header                        |
 | Credential          | Client secret, tenant-wide, reachable from the internet   | Service account, usually network restricted                |
 

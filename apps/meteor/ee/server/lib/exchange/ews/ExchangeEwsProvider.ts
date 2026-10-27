@@ -12,6 +12,7 @@ import {
 } from './parseResponse';
 import {
 	DEFAULT_CONTACT_FOLDER_ID,
+	FAVORITE_PROPERTY_NAME,
 	findContactFoldersRequest,
 	findItemCalendarViewRequest,
 	getAttachmentsRequest,
@@ -347,6 +348,12 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 					.filter((category): category is string => Boolean(category))
 			: [];
 
+		const favorite = allByTag(node, TYPES_NS, 'ExtendedProperty').some(
+			(property) =>
+				attributeOf(property, 'ExtendedFieldURI', 'PropertyName') === FAVORITE_PROPERTY_NAME &&
+				textOf(firstByTag(property, TYPES_NS, 'Value')) === 'true',
+		);
+
 		const emails: ExchangeContactEmail[] = dictionaryEntries(node, 'EmailAddresses').map(({ value }) => ({ address: value }));
 
 		const phones: ExchangeContactPhone[] = dictionaryEntries(node, 'PhoneNumbers').map(({ key, value }) => ({
@@ -374,6 +381,7 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 			emails,
 			phones,
 			categories,
+			...(favorite && { favorite }),
 		};
 	}
 
