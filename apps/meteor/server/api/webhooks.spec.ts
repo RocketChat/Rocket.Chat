@@ -789,5 +789,15 @@ describe('Webhooks API', () => {
 			expect(firstOnLegacy.statusCode).toBe(200);
 			expect(secondOnA.statusCode).toBe(429);
 		});
+
+		it('counts a webhook url against one budget whatever host it is called on', async () => {
+			enableRateLimiter();
+
+			const first = await request(app).post(HOOK_URL).set('Host', 'chat.example.com').send({ text: 'a' });
+			const second = await request(app).post(HOOK_URL).set('Host', 'internal.example.com:3000').send({ text: 'b' });
+
+			expect(first.statusCode).toBe(200);
+			expect(second.statusCode).toBe(429);
+		});
 	});
 });
