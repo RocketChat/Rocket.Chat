@@ -27,7 +27,7 @@ import type { SignalProcessingOptions } from '../../definition/common';
 import { logger } from '../../logger';
 import { mediaCallDirector } from '../../server/CallDirector';
 import { getCallRoleForUser } from '../../server/getCallRoleForUser';
-import { getMediaCallServer } from '../../server/injection';
+import { getMediaCallAppGateway, getMediaCallServer } from '../../server/injection';
 import { stripSensitiveDataFromSignal } from '../../server/stripSensitiveData';
 
 export class UserActorSignalProcessor {
@@ -308,7 +308,7 @@ export class UserActorSignalProcessor {
 
 	private async processAttendedTransfer(to: ClientMediaSignalAttendedTransfer['to'], requestedCallId: string): Promise<void> {
 		logger.debug({ msg: 'UserActorSignalProcessor.processAttendedTransfer', to, requestedCallId });
-		if (!isBusyState(this.call.state) || this.call.service !== 'webrtc') {
+		if (!isBusyState(this.call.state)) {
 			return;
 		}
 
@@ -358,6 +358,12 @@ export class UserActorSignalProcessor {
 
 		const heldRole = getCallRoleForUser(heldCall, this.actor.id);
 		if (!heldRole || !heldCall[heldRole].contractId) {
+			return;
+		}
+
+		// The device bridges the two calls itself; the app reports them ended once it has
+		if (heldCall.service === 'cti' && this.call.service === 'cti') {
+			await getMediaCallAppGateway()?.completeAttendedTransfer(heldCall._id, this.call._id);
 			return;
 		}
 

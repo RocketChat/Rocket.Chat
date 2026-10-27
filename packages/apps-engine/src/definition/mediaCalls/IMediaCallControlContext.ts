@@ -44,6 +44,17 @@ export interface IMediaCallTransferContext {
 	to: IMediaCallContact;
 }
 
+/**
+ * Complete an attended transfer: connect the party on the held call with the party of the consultation
+ * call. The app reports both calls as ended once the gateway has done it.
+ */
+export interface IMediaCallCompleteTransferContext {
+	/** The call that was put on hold to consult before transferring it. */
+	heldCall: IMediaCall;
+	/** The call placed to the transfer target while `heldCall` waits. */
+	consultationCall: IMediaCall;
+}
+
 export interface IMediaCallDtmfContext {
 	call: IMediaCall;
 	tone: string;

@@ -42,5 +42,7 @@ export interface IMediaCallAppGateway {
 	mute(callId: string, muted: boolean): Promise<void>;
 	hold(callId: string, held: boolean): Promise<void>;
 	transfer(callId: string, to: MediaCallContact): Promise<void>;
+	/** Connect the party of the held call with the party of the consultation call, ending both. */
+	completeAttendedTransfer(heldCallId: string, consultationCallId: string): Promise<void>;
 	sendDTMF(callId: string, dtmf: string, duration: number): Promise<void>;
 }

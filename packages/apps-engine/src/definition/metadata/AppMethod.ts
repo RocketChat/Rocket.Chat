@@ -23,6 +23,7 @@ export enum AppMethod {
 	EXECUTE_MEDIA_CALL_MUTE = 'executeMediaCallMute',
 	EXECUTE_MEDIA_CALL_HOLD = 'executeMediaCallHold',
 	EXECUTE_MEDIA_CALL_TRANSFER = 'executeMediaCallTransfer',
+	EXECUTE_MEDIA_CALL_COMPLETE_TRANSFER = 'executeMediaCallCompleteTransfer',
 	EXECUTE_MEDIA_CALL_DTMF = 'executeMediaCallDtmf',
 
 	INITIALIZE = 'initialize',

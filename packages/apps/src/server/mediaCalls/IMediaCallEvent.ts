@@ -3,6 +3,7 @@ import type {
 	IMediaCallDevice,
 	IMediaCallDevicesContext,
 	IMediaCallDialContext,
+	IMediaCallCompleteTransferContext,
 	IMediaCallDtmfContext,
 	IMediaCallEndedContext,
 	IMediaCallHangupContext,
@@ -40,6 +41,7 @@ export type MediaCallControlEvent =
 	| { method: AppMethod.EXECUTE_MEDIA_CALL_MUTE; context: IMediaCallMuteContext }
 	| { method: AppMethod.EXECUTE_MEDIA_CALL_HOLD; context: IMediaCallHoldContext }
 	| { method: AppMethod.EXECUTE_MEDIA_CALL_TRANSFER; context: IMediaCallTransferContext }
+	| { method: AppMethod.EXECUTE_MEDIA_CALL_COMPLETE_TRANSFER; context: IMediaCallCompleteTransferContext }
 	| { method: AppMethod.EXECUTE_MEDIA_CALL_DTMF; context: IMediaCallDtmfContext };
 
 /** Query dispatched to every cti-capable app to list a user's devices; the results are aggregated. */
