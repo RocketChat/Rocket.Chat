@@ -55,15 +55,16 @@ cleared — only the gateway does — so the widget moves when the app reports i
 ## Choosing the widget's buttons
 
 The `features` an app reports for a call — on `createIncomingCall`, on `reportAnswered`, or patched in by the
-pre-create event — decide which buttons the widget shows. `hold`, `transfer`, `screen-share` and
-`conference-escalation` already worked this way; these control features cover the rest:
+pre-create event — decide which buttons the widget shows. `hold`, `transfer`, `screen-share`,
+`conference-escalation` and `dialpad` already worked this way; these control features cover the rest:
 
 | Feature | Button |
 | --- | --- |
 | `mute` | Mute / unmute |
-| `dialpad` | DTMF dialpad |
 | `direct-message` | Open the direct message with the peer |
 | `device-picker` | Audio device picker |
+
+`dialpad` opens the DTMF dialpad. It is a regular feature, so it is shown only when the call lists it, and a call between two Rocket.Chat users never does.
 
 Hangup is always shown. Switch call and complete transfer follow the state of the call rather than a
 capability, so they are not listed.

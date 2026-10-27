@@ -2,9 +2,10 @@ import type { MediaCallHangupReason } from './MediaCallHangupReason';
 
 /** A media-call capability, e.g. `'audio'`, `'video'`, `'screen-share'`. */
 /**
- * Known values: `audio`, `screen-share`, `transfer`, `hold`, `conference-escalation`, and the widget
- * controls `mute`, `dialpad`, `direct-message` and `device-picker`. On a `cti` call the widget shows
- * a control only if it is listed; on other calls the controls are always shown.
+ * Known values: `audio`, `screen-share`, `transfer`, `hold`, `conference-escalation`, `dialpad`, and the
+ * widget controls `mute`, `direct-message` and `device-picker`. On a `cti` call the widget shows a
+ * control only if it is listed; on other calls those controls are always shown. `dialpad` is a regular
+ * feature: calls between two Rocket.Chat users never carry it.
  */
 export type MediaCallFeature = string;
 

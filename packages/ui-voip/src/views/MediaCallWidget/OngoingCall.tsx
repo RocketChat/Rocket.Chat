@@ -76,8 +76,6 @@ const OngoingCall = () => {
 
 	const appActions = useVisibleAppActions();
 
-	const isSip = peerInfo?.type === 'sip';
-
 	return (
 		<Widget>
 			<WidgetHandle />
@@ -89,7 +87,7 @@ const OngoingCall = () => {
 			</WidgetHeader>
 			<WidgetContent>
 				{peerInfo && !isUnknownPeer(peerInfo) && <PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />}
-				{dialpadAvailable && isInline && isSip && <Dialpad autoFocus={false} />}
+				{dialpadAvailable && isInline && <Dialpad autoFocus={false} />}
 				{videoConfAvailable && <VideoCallWidgetAction escalated={escalated} loading={isRequestingVideoCall} onClick={onRequestVideoCall} />}
 			</WidgetContent>
 			<WidgetInfo slots={slots} />
