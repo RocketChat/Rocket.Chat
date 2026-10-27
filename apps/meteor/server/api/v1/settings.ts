@@ -394,7 +394,7 @@ API.v1.post(
 		}
 
 		if (disableCustomScripts() && /^Custom_Script_/.test(_id)) {
-			return API.v1.forbidden();
+			return API.v1.forbidden('Custom scripts are disabled');
 		}
 
 		const setting = await Settings.findOneNotHiddenById(_id);

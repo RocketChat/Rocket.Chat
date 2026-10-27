@@ -2232,7 +2232,7 @@ API.v1.post(
 
 		const user = await Users.findOneByEmailVerificationToken<Pick<IUser, '_id' | 'services' | 'emails'>>(token);
 		if (!user) {
-			return API.v1.forbidden();
+			return API.v1.forbidden('Verify email link expired');
 		}
 
 		await verifyEmail(user, token);

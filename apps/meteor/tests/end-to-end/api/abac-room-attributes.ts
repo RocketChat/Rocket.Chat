@@ -155,7 +155,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 			await writeAttributes(otherRoomId, { [dept]: ['eng'] }, ownerCredentials)
 				.expect(403)
 				.expect((res) => {
-					expect(res.body).to.have.property('error', 'error-forbidden');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 

@@ -371,7 +371,7 @@ describe('LIVECHAT - inquiries', () => {
 				.expect(403);
 
 			expect(body).to.have.property('success', false);
-			expect(body.error).to.have.equal('error-forbidden');
+			expect(body.errorType).to.be.equal('error-forbidden');
 		});
 		it('should fail if provided room doesnt exists', async () => {
 			await restorePermissionToRoles('view-l-room');

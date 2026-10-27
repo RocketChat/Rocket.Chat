@@ -300,7 +300,7 @@ API.v1.post(
 		}
 
 		if (!(await hasPermissionAsync(this.user, 'move-room-to-team', team.roomId))) {
-			return API.v1.forbidden();
+			return API.v1.forbidden('User does not have the permissions required for this action');
 		}
 
 		const { rooms } = this.bodyParams;

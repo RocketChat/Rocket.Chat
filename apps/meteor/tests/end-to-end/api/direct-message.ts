@@ -398,7 +398,7 @@ describe('[Direct Messages]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'error-forbidden');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 	});
@@ -739,7 +739,7 @@ describe('[Direct Messages]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'error-forbidden');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 
@@ -930,7 +930,7 @@ describe('[Direct Messages]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'error-forbidden');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 		it('should fail when the endpoint is enabled but the user doesnt have permission', async () => {
@@ -946,7 +946,7 @@ describe('[Direct Messages]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'error-forbidden');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 		it('should succeed when the endpoint is enabled and user has permission', async () => {
@@ -1475,7 +1475,7 @@ describe('[Direct Messages]', () => {
 				.expect('Content-Type', 'application/json');
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('error', 'error-forbidden');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 
 		describe('when authenticated as a non-admin user', () => {

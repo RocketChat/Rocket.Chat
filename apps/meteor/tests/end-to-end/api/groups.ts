@@ -1771,7 +1771,7 @@ describe('[Groups]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'error-forbidden');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 	});
@@ -1995,7 +1995,7 @@ describe('[Groups]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'error-forbidden');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 	});

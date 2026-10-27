@@ -3975,7 +3975,6 @@ describe('[Chat]', () => {
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body.errorType).to.be.equal('error-forbidden');
-			expect(res.body.error).to.be.equal('error-forbidden');
 		});
 
 		it('should return an error when the "type" parameter is not supported', async () => {
@@ -4409,7 +4408,6 @@ describe('Threads', () => {
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('errorType', 'error-forbidden');
-			expect(res.body).to.have.property('error', 'error-forbidden');
 		});
 
 		it('should return an error when the user is not allowed access the room', (_t, done) => {
@@ -4429,7 +4427,6 @@ describe('Threads', () => {
 								.expect((res) => {
 									expect(res.body).to.have.property('success', false);
 									expect(res.body).to.have.property('errorType', 'error-forbidden');
-									expect(res.body).to.have.property('error', 'error-forbidden');
 								})
 								.end(done);
 						});
@@ -4645,7 +4642,6 @@ describe('Threads', () => {
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('errorType', 'error-forbidden');
-			expect(res.body).to.have.property('error', 'error-forbidden');
 		});
 
 		it('should return an error when the required param "rid" is missing', async () => {
@@ -4712,7 +4708,6 @@ describe('Threads', () => {
 							.expect((res) => {
 								expect(res.body).to.have.property('success', false);
 								expect(res.body).to.have.property('errorType', 'error-forbidden');
-								expect(res.body).to.have.property('error', 'error-forbidden');
 							})
 							.end(done);
 					});
@@ -4790,7 +4785,6 @@ describe('Threads', () => {
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('errorType', 'error-forbidden');
-			expect(res.body).to.have.property('error', 'error-forbidden');
 		});
 
 		it('should return an error when the user is not allowed access the room', (_t, done) => {
@@ -4810,7 +4804,6 @@ describe('Threads', () => {
 								.expect((res) => {
 									expect(res.body).to.have.property('success', false);
 									expect(res.body).to.have.property('errorType', 'error-forbidden');
-									expect(res.body).to.have.property('error', 'error-forbidden');
 								})
 								.end(done);
 						});
@@ -5037,7 +5030,6 @@ describe('Threads', () => {
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('errorType', 'error-forbidden');
-			expect(res.body).to.have.property('error', 'error-forbidden');
 		});
 
 		it('should return an error when the required param "tmid" is missing', async () => {
@@ -5104,7 +5096,6 @@ describe('Threads', () => {
 							.expect((res) => {
 								expect(res.body).to.have.property('success', false);
 								expect(res.body).to.have.property('errorType', 'error-forbidden');
-								expect(res.body).to.have.property('error', 'error-forbidden');
 							})
 							.end(done);
 					});
@@ -5179,7 +5170,6 @@ describe('Threads', () => {
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('errorType', 'error-forbidden');
-			expect(res.body).to.have.property('error', 'error-forbidden');
 		});
 
 		it('should return an error when the message does not exist', async () => {
@@ -5215,7 +5205,6 @@ describe('Threads', () => {
 							.expect((res) => {
 								expect(res.body).to.have.property('success', false);
 								expect(res.body).to.have.property('errorType', 'error-forbidden');
-								expect(res.body).to.have.property('error', 'error-forbidden');
 							})
 							.end(done);
 					});
@@ -5282,7 +5271,6 @@ describe('Threads', () => {
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('errorType', 'error-forbidden');
-			expect(res.body).to.have.property('error', 'error-forbidden');
 		});
 
 		it('should return an error when the message does not exist', async () => {
@@ -5318,7 +5306,6 @@ describe('Threads', () => {
 							.expect((res) => {
 								expect(res.body).to.have.property('success', false);
 								expect(res.body).to.have.property('errorType', 'error-forbidden');
-								expect(res.body).to.have.property('error', 'error-forbidden');
 							})
 							.end(done);
 					});

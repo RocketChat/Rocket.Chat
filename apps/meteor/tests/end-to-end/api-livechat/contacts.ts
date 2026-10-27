@@ -86,7 +86,7 @@ describe('LIVECHAT - contacts', () => {
 				});
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('error-forbidden');
+			expect(res.body.errorType).to.be.equal('error-forbidden');
 
 			await restorePermissionToRoles('create-livechat-contact');
 		});
@@ -565,7 +565,7 @@ describe('LIVECHAT - contacts', () => {
 
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error');
-				expect(res.body.error).to.be.equal('error-forbidden');
+				expect(res.body.errorType).to.be.equal('error-forbidden');
 			});
 		});
 
@@ -1029,7 +1029,7 @@ describe('LIVECHAT - contacts', () => {
 			const res = await request.get(api(`omnichannel/contacts.get`)).set(credentials).query({ contactId });
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('error-forbidden');
+			expect(res.body.errorType).to.be.equal('error-forbidden');
 
 			await restorePermissionToRoles('view-livechat-contact');
 		});
@@ -1200,7 +1200,7 @@ describe('LIVECHAT - contacts', () => {
 
 				expect(response.status).to.be.equal(403);
 				expect(response.body).to.have.property('success', false);
-				expect(response.body.error).to.be.equal('error-forbidden');
+				expect(response.body.errorType).to.be.equal('error-forbidden');
 			});
 		});
 
@@ -1324,7 +1324,7 @@ describe('LIVECHAT - contacts', () => {
 			const res = await request.get(api(`omnichannel/contacts.checkExistence`)).set(credentials).query({ contactId });
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('error-forbidden');
+			expect(res.body.errorType).to.be.equal('error-forbidden');
 
 			await restorePermissionToRoles('view-livechat-contact');
 		});
@@ -1465,7 +1465,7 @@ describe('LIVECHAT - contacts', () => {
 				const res = await request.get(api(`omnichannel/contacts.search`)).set(credentials);
 
 				expect(res.body).to.have.property('success', false);
-				expect(res.body.error).to.be.equal('error-forbidden');
+				expect(res.body.errorType).to.be.equal('error-forbidden');
 			});
 		});
 	});
@@ -1629,7 +1629,7 @@ describe('LIVECHAT - contacts', () => {
 			const res = await request.get(api(`omnichannel/contacts.channels`)).set(credentials).query({ contactId });
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('error-forbidden');
+			expect(res.body.errorType).to.be.equal('error-forbidden');
 
 			await restorePermissionToRoles('view-livechat-contact');
 		});
@@ -1778,7 +1778,7 @@ describe('LIVECHAT - contacts', () => {
 				const res = await request.post(api('omnichannel/contacts.block')).set(credentials).send({ visitor: association });
 
 				expect(res.body).to.have.property('success', false);
-				expect(res.body.error).to.be.equal('error-forbidden');
+				expect(res.body.errorType).to.be.equal('error-forbidden');
 			});
 		});
 	});
@@ -1896,7 +1896,7 @@ describe('LIVECHAT - contacts', () => {
 				const res = await request.post(api('omnichannel/contacts.unblock')).set(credentials).send({ visitor: association });
 
 				expect(res.body).to.have.property('success', false);
-				expect(res.body.error).to.be.equal('error-forbidden');
+				expect(res.body.errorType).to.be.equal('error-forbidden');
 			});
 		});
 	});

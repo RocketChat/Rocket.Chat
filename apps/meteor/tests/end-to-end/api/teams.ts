@@ -242,7 +242,7 @@ describe('[Teams]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'error-forbidden');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 	});
@@ -876,7 +876,7 @@ describe('/teams.listAll', () => {
 			.expect(403)
 			.expect((res) => {
 				expect(res.body).to.have.property('success', false);
-				expect(res.body).to.have.property('error', 'error-forbidden');
+				expect(res.body).to.have.property('errorType', 'error-forbidden');
 			});
 	});
 });
@@ -1342,7 +1342,7 @@ describe('/teams.info', () => {
 			.expect(403)
 			.expect((response) => {
 				expect(response.body).to.have.property('success', false);
-				expect(response.body).to.have.property('error', 'error-forbidden');
+				expect(response.body).to.have.property('errorType', 'error-forbidden');
 			})
 			.then(() => done())
 			.catch(done);
@@ -2435,7 +2435,7 @@ describe('/teams.updateRoom', () => {
 
 		expect(res.body).to.have.property('success', false);
 		expect(res.body).to.have.property('error');
-		expect(res.body.error).to.be.equal('error-forbidden');
+		expect(res.body.errorType).to.be.equal('error-forbidden');
 	});
 
 	it('should set room to team default', async () => {
@@ -2817,7 +2817,7 @@ describe('/teams.removeRoom', () => {
 
 		expect(res.body).to.have.property('success', false);
 		expect(res.body).to.have.property('error');
-		expect(res.body.error).to.be.equal('error-forbidden');
+		expect(res.body.errorType).to.be.equal('error-forbidden');
 	});
 
 	it('should remove room from team', async () => {

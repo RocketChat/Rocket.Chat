@@ -1302,7 +1302,6 @@ describe('[Rooms]', () => {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('errorType', 'error-forbidden');
-						expect(res.body).to.have.property('error', 'error-forbidden');
 					});
 			});
 		});
@@ -2742,7 +2741,7 @@ describe('[Rooms]', () => {
 					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('error-forbidden');
+						expect(res.body.errorType).to.be.equal('error-forbidden');
 					})
 					.end((err) => updatePermission('view-room-administration', ['admin']).then(() => done(err)));
 			});
@@ -4177,7 +4176,7 @@ describe('[Rooms]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'error-forbidden');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 
@@ -4237,7 +4236,7 @@ describe('[Rooms]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'error-forbidden');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 	});

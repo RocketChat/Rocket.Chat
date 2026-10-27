@@ -457,7 +457,7 @@ import { generateRandomSLAData } from '../../e2e/utils/omnichannel/sla';
 			const response = await request.get(api('livechat/priorities/123')).set(credentials).expect(403);
 			expect(response.body).to.have.property('success', false);
 			expect(response.body).to.have.property('error');
-			expect(response.body?.error).to.contain('error-forbidden');
+			expect(response.body?.errorType).to.be.equal('error-forbidden');
 		});
 		it('should return a priority by id', async () => {
 			await addPermissions({
@@ -667,7 +667,7 @@ import { generateRandomSLAData } from '../../e2e/utils/omnichannel/sla';
 			const response = await request.post(api('livechat/priorities.reset')).set(credentials).expect(403);
 			expect(response.body).to.have.property('success', false);
 			expect(response.body).to.have.property('error');
-			expect(response.body?.error).to.contain('error-forbidden');
+			expect(response.body?.errorType).to.be.equal('error-forbidden');
 		});
 		it('should respond reset:true when a priority has been changed', async () => {
 			await updatePermission('manage-livechat-priorities', ['admin', 'livechat-manager']);
@@ -742,7 +742,7 @@ import { generateRandomSLAData } from '../../e2e/utils/omnichannel/sla';
 			const response = await request.post(api('livechat/priorities.reset')).set(credentials).expect(403);
 			expect(response.body).to.have.property('success', false);
 			expect(response.body).to.have.property('error');
-			expect(response.body?.error).to.contain('error-forbidden');
+			expect(response.body?.errorType).to.be.equal('error-forbidden');
 		});
 	});
 

@@ -54,7 +54,7 @@ export type ForbiddenResult = {
 	statusCode: 403;
 	body: {
 		success: false;
-		error: 'error-forbidden';
+		error: string;
 		errorType: 'error-forbidden';
 	};
 };

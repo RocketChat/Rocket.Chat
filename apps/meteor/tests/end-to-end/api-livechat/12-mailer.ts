@@ -84,7 +84,7 @@ describe('Mailer', () => {
 				.expect(403)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'error-forbidden');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 	});

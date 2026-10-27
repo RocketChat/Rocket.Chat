@@ -385,12 +385,12 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		};
 	}
 
-	public forbidden(): ForbiddenResult {
+	public forbidden(message = 'You are not allowed to do this'): ForbiddenResult {
 		return {
 			statusCode: 403,
 			body: {
 				success: false,
-				error: 'error-forbidden',
+				error: message,
 				errorType: 'error-forbidden',
 			},
 		};
@@ -839,7 +839,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 									case 'error-not-allowed':
 									case 'forbidden':
 									case 'error-forbidden':
-										return api.forbidden();
+										return api.forbidden(typeof e === 'string' ? e : e.message);
 									default:
 										return api.failure(typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
 								}
