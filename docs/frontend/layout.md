@@ -71,4 +71,4 @@ Create one, named for what it is, and grow it as it gets reused:
 
 Name it for its role (`SettingsSection`, `ChatsFilterBar`, `EmptyState`), not its shape (`FlexRow`, `Wrapper`, `Container`). A container that only renames `Stack` isn't one; use `Stack`.
 
-Text that only sets a font scale, a text colour or truncation is a `Text`, not a `Box`. `Text` is a plain element: it takes no outer spacing, and it ignores a surrounding `Margins`, which only reaches `Box`es. The space around it comes from its container, usually a `Stack` with a `gap`.
+Text that only sets a font scale, a text colour or truncation is a `Text`, not a `Box`. `Text` is a plain element: it takes no outer spacing. The space around it comes from its container, usually a `Stack` with a `gap`.

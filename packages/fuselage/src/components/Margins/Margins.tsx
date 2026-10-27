@@ -22,6 +22,8 @@ export type MarginsProps = PropsWithChildren<{
 
 /**
  * Add margins to the wrapped component.
+ *
+ * @deprecated It only reaches the first `Box` in each child. Space siblings with `gap` on their container, or with `Stack`.
  */
 const Margins = (props: MarginsProps) => {
 	const { children, className, all, block, blockStart, blockEnd, inline, inlineStart, inlineEnd } = props;

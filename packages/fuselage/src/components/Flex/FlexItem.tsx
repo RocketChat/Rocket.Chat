@@ -12,6 +12,9 @@ export type FlexItemProps = {
 	align?: 'auto' | 'start' | 'end' | 'center' | 'stretch';
 };
 
+/**
+ * @deprecated It only reaches the first `Box` in its child. Set the flex item props on the `Box` itself, or `grow` on a `Stack`.
+ */
 function FlexItem({ children, order, grow, shrink, basis, align }: FlexItemProps) {
 	const transformFn = useCallback(
 		(props: any) => {
