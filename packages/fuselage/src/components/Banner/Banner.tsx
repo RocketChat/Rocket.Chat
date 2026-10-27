@@ -240,7 +240,7 @@ const Banner = ({
 			</BannerContent>
 			{closeable && (
 				<BannerCloseButton inline={inline} className={cx('rcx-banner__close-button')({ inline })}>
-					<IconButton small onClick={handleCloseButtonClick} icon='cross' />
+					<IconButton size='small' onClick={handleCloseButtonClick} icon='cross' />
 				</BannerCloseButton>
 			)}
 		</BannerFrame>

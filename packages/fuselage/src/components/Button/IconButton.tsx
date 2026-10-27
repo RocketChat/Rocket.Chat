@@ -13,10 +13,15 @@ import { ButtonSegmentContext } from './ButtonSegmentContext';
 import type { ButtonKind } from './buttonColors';
 
 export type IconButtonSize = {
+	/** @deprecated Use `size="large"` instead. */
 	large?: boolean;
+	/** @deprecated Use `size="medium"` instead. */
 	medium?: boolean;
+	/** @deprecated Use `size="small"` instead. */
 	small?: boolean;
+	/** @deprecated Use `size="tiny"` instead. */
 	tiny?: boolean;
+	/** @deprecated Use `size="mini"` instead. */
 	mini?: boolean;
 };
 
@@ -32,11 +37,20 @@ export type IconButtonProps = {
 	badge?: ReactNode;
 	/** The corner the badge is pinned to. */
 	badgePosition?: 'top-end' | 'bottom-end';
+	variant?:
+		'primary' | 'secondary' | 'info' | 'danger' | 'warning' | 'success' | 'secondary-danger' | 'secondary-warning' | 'secondary-success';
+	size?: 'mini' | 'tiny' | 'small' | 'medium' | 'large';
+	/** @deprecated Use `variant="primary"` instead. */
 	primary?: boolean;
+	/** @deprecated Use `variant="secondary"` instead. */
 	secondary?: boolean;
+	/** @deprecated Use `variant="info"` instead. */
 	info?: boolean;
+	/** @deprecated Use `variant="danger"` instead. */
 	danger?: boolean;
+	/** @deprecated Use `variant="warning"` instead. */
 	warning?: boolean;
+	/** @deprecated Use `variant="success"` instead. */
 	success?: boolean;
 	pressed?: boolean;
 	/** Renders a link instead of a button, for actions that navigate or download. */
@@ -48,6 +62,14 @@ export type IconButtonProps = {
 } & IconButtonSize &
 	Omit<ElementProps<HTMLButtonElement | HTMLAnchorElement, AllHTMLAttributes<HTMLButtonElement | HTMLAnchorElement>>, 'ref'> &
 	RefAttributes<Element>;
+
+const iconSizes = {
+	mini: 'x12',
+	tiny: 'x16',
+	small: 'x20',
+	medium: 'x24',
+	large: 'x28',
+} as const;
 
 const kindByVariant: Record<string, ButtonKind> = {
 	'secondary': 'secondary',
@@ -65,6 +87,8 @@ function IconButton({
 	icon,
 	badge,
 	badgePosition = 'top-end',
+	variant: variantProp,
+	size: sizeProp,
 	primary,
 	info,
 	secondary,
@@ -87,6 +111,7 @@ function IconButton({
 }: IconButtonProps) {
 	const variant = useMemo(
 		() =>
+			(variantProp === 'primary' ? 'secondary-info' : variantProp) ||
 			(secondary && danger && 'secondary-danger') ||
 			(secondary && warning && 'secondary-warning') ||
 			(secondary && success && 'secondary-success') ||
@@ -98,15 +123,22 @@ function IconButton({
 			(primary && 'secondary-info') ||
 			(secondary && 'secondary') ||
 			'',
-		[danger, info, primary, secondary, success, warning],
+		[variantProp, danger, info, primary, secondary, success, warning],
 	);
 
 	const size = useMemo(
-		() => (mini && 'mini') || (tiny && 'tiny') || (small && 'small') || (medium && 'medium') || (large && 'large') || 'large',
-		[medium, mini, small, tiny, large],
+		() => sizeProp || (mini && 'mini') || (tiny && 'tiny') || (small && 'small') || (medium && 'medium') || (large && 'large') || 'large',
+		[sizeProp, medium, mini, small, tiny, large],
 	);
 
-	const getIconSize = () => (large && 'x28') || (medium && 'x24') || (small && 'x20') || (tiny && 'x16') || (mini && 'x12') || 'x28';
+	const getIconSize = () =>
+		(sizeProp && iconSizes[sizeProp]) ||
+		(large && 'x28') ||
+		(medium && 'x24') ||
+		(small && 'x20') ||
+		(tiny && 'x16') ||
+		(mini && 'x12') ||
+		'x28';
 
 	const segment = useContext(ButtonSegmentContext);
 

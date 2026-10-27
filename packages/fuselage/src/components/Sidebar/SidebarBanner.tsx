@@ -114,7 +114,7 @@ const SidebarBannerBase = ({
 			</SidebarBannerContent>
 			<SidebarBannerAddon className='rcx-sidebar-banner__addon'>
 				{addon}
-				{onClose && <IconButton onClick={onClose} tiny icon='cross' />}
+				{onClose && <IconButton onClick={onClose} size='tiny' icon='cross' />}
 			</SidebarBannerAddon>
 		</SidebarBannerFrame>
 	);
