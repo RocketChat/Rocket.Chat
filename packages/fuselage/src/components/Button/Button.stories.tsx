@@ -41,12 +41,17 @@ export default {
 		},
 		size: {
 			control: 'select',
+			// `mini` and `tiny` are valid `size` values but have no rectangular
+			// styles, so they silently fall back to the default box. They are left
+			// out of Storybook entirely rather than presented as a working choice.
 			options: ['small', 'medium', 'large'],
 			description: 'Size scale of the button.',
+			table: { defaultValue: { summary: 'default (40px)' } },
 		},
 		square: {
 			control: 'boolean',
-			description: 'Renders as a square icon-only footprint instead of the default pill shape.',
+			description:
+				'Renders the button as a square footprint sized to match neighbouring buttons and inputs; omit the label for icon-only use.',
 			table: { category: 'Shape' },
 		},
 		compact: {
@@ -305,5 +310,52 @@ export const States: Story = {
 				}}
 			/>
 		</>
+	),
+};
+
+const canvasProbeStyles = `
+	.rcx-icon-canvas-probe .rcx-button .rcx-icon {
+		outline: 1px dashed rgba(236, 13, 42, 0.9);
+		outline-offset: 0;
+		background: rgba(236, 13, 42, 0.18);
+	}
+	/* The label is a text node, so the gap is tinted with an offset shadow. */
+	.rcx-icon-canvas-probe .rcx-button--with-icon .rcx-icon {
+		box-shadow: 4px 0 0 0 rgba(255, 255, 255, 0.55);
+	}
+`;
+
+export const IconAndLabel: Story = {
+	name: 'Icon and label',
+	parameters: {
+		docs: {
+			description: {
+				story:
+					'How a leading icon pairs with a label at every size.\n\n' +
+					'**The rule.** The icon canvas is sized to the label\u2019s line-height, so it scales with the button: 20px on the 40px and 48px buttons, 16px on the 32px and 28px ones. The gap between icon and label is a constant 4px and does **not** scale. The inset on the icon side is 2px tighter than the inset on the label side, so the icon reads as optically centred.\n\n' +
+					'**Reading the overlay.** The dashed red box is the icon canvas \u2014 note it is the canvas, not the glyph, which sits inside it. The pale band to its right is the 4px gap.\n\n' +
+					'`mini` and `tiny` are not shown: they accept a `size` value but have no rectangular styles, so they fall back to the default box. They are only defined as squares.',
+			},
+		},
+	},
+	render: () => (
+		<div className='rcx-icon-canvas-probe'>
+			<style>{canvasProbeStyles}</style>
+			<PropsVariationSection
+				component={Button}
+				common={{ variant: 'primary', children: 'Button' }}
+				xAxis={{
+					'icon + label': { icon: 'baloon-text' },
+					'label only': {},
+					'icon only': { 'icon': 'baloon-text', 'square': true, 'children': undefined, 'aria-label': 'Example icon-only button' },
+				}}
+				yAxis={{
+					small: { size: 'small' },
+					medium: { size: 'medium' },
+					default: {},
+					large: { size: 'large' },
+				}}
+			/>
+		</div>
 	),
 };

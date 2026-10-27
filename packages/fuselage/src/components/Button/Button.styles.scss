@@ -1,3 +1,4 @@
+@use '../../styles/functions.scss' as *;
 @use '../../styles/lengths.scss';
 @use '../../styles/typography.scss' as *;
 @use '../../styles/variables/buttons.scss' as colors;
@@ -6,14 +7,33 @@
 @use '../../styles/mixins/interactivity.scss' as *;
 @use '../../styles/mixins/states.scss' as *;
 
+// Rendered inset = border + padding. Mixins below subtract this from the
+// total inset to get the padding value.
+$border-width: theme('button-border-width', lengths.border-width('default'));
+
+// Inline insets, composed from the 4px padding scale
+// (`lengths.padding()` accepts 1, 2, or a multiple of 4).
+$inset-default: lengths.padding(16) - lengths.padding(2); // 14px
+$inset-small: lengths.padding(8); // 8px
+$inset-large: lengths.padding(24); // 24px
+
+// Icon-side inset, 2px tighter than the label-side inset.
+$inset-icon-default: lengths.padding(12); // 12px
+$inset-icon-small: lengths.padding(8); // 8px
+$inset-label-small: lengths.padding(8) + lengths.padding(2); // 10px
+$inset-icon-large: lengths.padding(24) - lengths.padding(2); // 22px
+
 .rcx-button {
-	@mixin with-rectangular-size($height, $padding-x, $line-height) {
+	@mixin with-rectangular-size($height, $inline-inset, $line-height) {
 		min-width: calc(lengths.size($height) * 2);
 		height: lengths.size($height);
-		padding: calc((lengths.size($height) - $line-height) / 2 - 2px) calc(lengths.padding($padding-x) - 2px);
-		padding-block: calc((lengths.size($height) - $line-height) / 2 - 2px);
 
-		padding-inline: calc(lengths.padding($padding-x) - 2px);
+		padding-block: calc((lengths.size($height) - $line-height) / 2 - $border-width);
+		padding-inline: calc($inline-inset - $border-width);
+	}
+
+	@mixin with-leading-icon-inset($start, $end) {
+		padding-inline: calc($start - $border-width) calc($end - $border-width);
 	}
 
 	@mixin with-squared-size($size) {
@@ -48,17 +68,30 @@
 		vertical-align: top;
 
 		@include use-with-truncated-text();
-	}
 
-	.rcx-button__icon {
-		margin-inline-end: lengths.margin(4);
+		// Icon is sized to the label's line-height, so top-aligning it keeps
+		// both centred (default `vertical-align: text-bottom` would not).
+		.rcx-icon {
+			vertical-align: top;
+		}
 	}
 
 	@include clickable;
 	@include use-font-scale(p2m);
 	@include use-text-ellipsis;
 
-	@include with-rectangular-size($height: 40, $padding-x: 16, $line-height: line-height(p2));
+	@include with-rectangular-size($height: 40, $inline-inset: $inset-default, $line-height: line-height(p2));
+
+	&.rcx-button--with-icon {
+		@include with-leading-icon-inset($start: $inset-icon-default, $end: $inset-default);
+
+		// The gap only separates the icon from a label. On an icon-only button it
+		// has nothing to separate and just pushes the icon off centre by half its
+		// width, so it is scoped to this class rather than applied to every icon.
+		.rcx-button__icon {
+			margin-inline-end: lengths.margin(4);
+		}
+	}
 
 	@include button.kind-variant(colors.$secondary);
 
@@ -71,19 +104,31 @@
 	&--small {
 		@include use-font-scale(c2);
 
-		@include with-rectangular-size($height: 28, $padding-x: 8, $line-height: line-height(c1));
+		@include with-rectangular-size($height: 28, $inline-inset: $inset-small, $line-height: line-height(c1));
+
+		&.rcx-button--with-icon {
+			@include with-leading-icon-inset($start: $inset-icon-small, $end: $inset-label-small);
+		}
 	}
 
 	&--medium {
 		@include use-font-scale(c2);
 
-		@include with-rectangular-size($height: 32, $padding-x: 12, $line-height: line-height(c1));
+		@include with-rectangular-size($height: 32, $inline-inset: $inset-default, $line-height: line-height(c1));
+
+		&.rcx-button--with-icon {
+			@include with-leading-icon-inset($start: $inset-icon-default, $end: $inset-default);
+		}
 	}
 
 	&--large {
 		@include use-font-scale(p2);
 
-		@include with-rectangular-size($height: 48, $padding-x: 24, $line-height: line-height(p2));
+		@include with-rectangular-size($height: 48, $inline-inset: $inset-large, $line-height: line-height(p2));
+
+		&.rcx-button--with-icon {
+			@include with-leading-icon-inset($start: $inset-icon-large, $end: $inset-large);
+		}
 	}
 
 	&--compact {
