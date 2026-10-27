@@ -7,6 +7,7 @@ import { WebApp } from 'meteor/webapp';
 
 import { isPlainObject } from '../../../../lib/utils/isPlainObject';
 import { API } from '../../../api';
+import { serveAuthorizationServerMetadata } from '../../../oauth2-server/metadata';
 import { OAuth2Server } from '../../../oauth2-server/oauth';
 
 const oauth2server = new OAuth2Server({
@@ -83,3 +84,7 @@ API.v1.addAuthMethod((routeContext) => {
 });
 
 (WebApp.connectHandlers as unknown as ReturnType<typeof express>).use(oauth2server.app);
+(WebApp.rawConnectHandlers as unknown as ReturnType<typeof express>).use(
+	'/.well-known/oauth-authorization-server',
+	serveAuthorizationServerMetadata,
+);
