@@ -1,0 +1,29 @@
+apps/meteor/client/views/scheduledMessages/ScheduledMessagesRoomGroup.tsx
+  ai_agent 1,3-6,8-29,35-36,39-52,54-57
+  s_478a7742cf0448::t_7044a37e439404 2,30-33,37-38,53
+  s_478a7742cf0448::t_da1687606da715 7
+apps/meteor/client/views/scheduledMessages/layout/RoomSection.tsx
+  s_478a7742cf0448::t_29706eac9cceee 1-15,19-25,27-34
+apps/meteor/client/views/room/contextualBar/ScheduledMessagesTab.tsx
+  ai_agent 1-33,35-60
+  s_478a7742cf0448::t_7044a37e439404 34
+apps/meteor/client/views/scheduledMessages/ScheduledMessagesPage.tsx
+  ai_agent 1,3-28,37-50
+  s_478a7742cf0448::t_7044a37e439404 2,29-36
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "6d24bffeb9c5b6b59f64dd5f6ac9f4ad609f6547",
+  "prompts": {},
+  "sessions": {
+    "s_478a7742cf0448": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "78511215-04eb-4d9d-beb9-8d0ec0460bb1",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
