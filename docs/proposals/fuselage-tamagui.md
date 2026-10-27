@@ -266,12 +266,13 @@ This is the one list to track removing Tamagui's runtime from Fuselage's web bui
 **3. Remove what needs the runtime inside frames**
 - [x] `forceStyle`: no frame forces a state any more; state classes are gone.
 - [x] `group`: Message and Item reveal their parts with parent rules in the `fuselage` layer.
-- [ ] Dynamic style values (17 frames): a finite variant, or a CSS custom property through `style`.
+- [ ] Style props computed at render rather than chosen from a variant (`TooltipArrow`'s `inset`, the `Modal` and `ModalHeroImage` sizes, and whatever else the lowering report lists): a finite variant, or a CSS custom property through `style`.
 - [ ] `context:` and `createStyledContext` (6 / 4: Message, MessageToolbar, Card…): a React context read by the lowered component, or a `data-*` attribute on the parent with a descendant selector.
 - [x] `animation:` (Skeleton, the ProgressBar shine, Throbber): the frames take their `@keyframes` from plain CSS classes.
-- [ ] Spreads the compiler can't prove style-free (8: BannerLink, Chevron, Icon, ItemContent, ItemGroup, ItemLink, ModalHeroImage, NavBarSection): explicit props.
 - [x] `getTokens` in PaletteStyleTag: already a local function over `fuselage-tokens`' JSON, it never reads Tamagui's config.
 - [ ] `isTamaguiComponent`: a marker the lowered component sets.
+
+A computed `className` or a `{...props}` spread at a frame's use-site doesn't need the runtime once definitions are lowered: the lowered component takes them at runtime like any element. They only stop the compiler from flattening that use-site, so they belong to the optional list below.
 
 **4. Make the lowering plugin production-ready**
 - [ ] Compact class-table encoding.
@@ -298,6 +299,10 @@ Each batch gets the Storybook A/B over every story, `story-computed` on its stor
 **7. Check the budgets against `develop`**
 - [ ] `packages/fuselage/scripts/compare-with-develop.mjs`: JS at most +10 kB gzip; list mount and update (messages, sidebar, members) at most +10%; CSS free while total bytes don't regress.
 - [ ] Real-app A/B against `develop`.
+
+**Flatten more use-sites (optional, performance only)**
+- [ ] A computed `className` on a frame (16 frames: Banner parts, ButtonBadge, CalloutWrapper, SkeletonFrame, ProgressBarFill, ToastBarProgressFill…): a compiler patch that passes it through to the flattened element.
+- [ ] `{...props}` spreads onto frames (8: BannerLink, Chevron, Icon, ItemContent, ItemGroup, ItemLink, ModalHeroImage, NavBarSection). Tamagui's rule is to pass props explicitly, since the compiler can't prove a spread is style-free; hiding the spread from the compiler (for example behind `cloneElement`) is not the fix.
 
 **Upstream, in parallel (optional)**
 - [ ] Propose to Tamagui: a `resolveStaticDefinition` that returns a definition's class tables and CSS; each class's slot in the static-resolve result; ungrouped per-state atomic classes.
