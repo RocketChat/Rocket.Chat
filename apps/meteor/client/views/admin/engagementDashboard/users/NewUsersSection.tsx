@@ -1,5 +1,5 @@
 import { ResponsiveBar } from '@nivo/bar';
-import { Box, FlexContainer, FlexItem, Skeleton, Tooltip } from '@rocket.chat/fuselage';
+import { Box, Skeleton, Tooltip } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
 import { addDays } from 'date-fns/addDays';
 import { differenceInDays } from 'date-fns/differenceInDays';
@@ -79,87 +79,83 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps) => {
 					},
 				]}
 			/>
-			<FlexContainer>
-				{values ? (
-					<Box style={{ height: 300 }}>
-						<FlexItem align='stretch' grow={1} shrink={0}>
-							<Box style={{ position: 'relative' }}>
-								<Box
-									style={{
-										position: 'absolute',
-										width: '100%',
-										height: '100%',
-									}}
-								>
-									<ResponsiveBar
-										data={values}
-										indexBy='date'
-										keys={['newUsers']}
-										groupMode='grouped'
-										padding={0.25}
-										margin={{
-											// TODO: Get it from theme
-											bottom: 50,
-											left: 20,
-											top: 20,
-										}}
-										colors={[
-											// TODO: Get it from theme
-											colors.p500,
-										]}
-										enableLabel={false}
-										enableGridY={false}
-										axisTop={null}
-										axisRight={null}
-										axisBottom={{
-											tickSize: values.length > 31 ? 4 : 0,
-											// TODO: Get it from theme
-											tickPadding: 8,
-											tickRotation: values.length > 31 ? 90 : 0,
-											truncateTickAt: 0,
-											format: (date): string => format(new Date(date), 'dd/MM'),
-										}}
-										axisLeft={{
-											tickSize: 0,
-											// TODO: Get it from theme
-											tickPadding: 4,
-											tickRotation: 0,
-										}}
-										animate={true}
-										motionConfig='stiff'
-										theme={{
-											// TODO: Get it from theme
-											axis: {
-												ticks: {
-													text: {
-														fill: colors.n600,
-														fontFamily:
-															'Inter, -apple-system, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI", Arial, sans-serif',
-														fontSize: '10px',
-														fontStyle: 'normal',
-														fontWeight: 600,
-														letterSpacing: '0.2px',
-														lineHeight: '12px',
-													},
-												},
+			{values ? (
+				<Box display='flex' style={{ height: 300 }}>
+					<Box alignSelf='stretch' flexGrow={1} flexShrink={0} style={{ position: 'relative' }}>
+						<Box
+							style={{
+								position: 'absolute',
+								width: '100%',
+								height: '100%',
+							}}
+						>
+							<ResponsiveBar
+								data={values}
+								indexBy='date'
+								keys={['newUsers']}
+								groupMode='grouped'
+								padding={0.25}
+								margin={{
+									// TODO: Get it from theme
+									bottom: 50,
+									left: 20,
+									top: 20,
+								}}
+								colors={[
+									// TODO: Get it from theme
+									colors.p500,
+								]}
+								enableLabel={false}
+								enableGridY={false}
+								axisTop={null}
+								axisRight={null}
+								axisBottom={{
+									tickSize: values.length > 31 ? 4 : 0,
+									// TODO: Get it from theme
+									tickPadding: 8,
+									tickRotation: values.length > 31 ? 90 : 0,
+									truncateTickAt: 0,
+									format: (date): string => format(new Date(date), 'dd/MM'),
+								}}
+								axisLeft={{
+									tickSize: 0,
+									// TODO: Get it from theme
+									tickPadding: 4,
+									tickRotation: 0,
+								}}
+								animate={true}
+								motionConfig='stiff'
+								theme={{
+									// TODO: Get it from theme
+									axis: {
+										ticks: {
+											text: {
+												fill: colors.n600,
+												fontFamily:
+													'Inter, -apple-system, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI", Arial, sans-serif',
+												fontSize: '10px',
+												fontStyle: 'normal',
+												fontWeight: 600,
+												letterSpacing: '0.2px',
+												lineHeight: '12px',
 											},
-										}}
-										tooltip={({ value, indexValue }) => (
-											<Tooltip>
-												{t('Value_users', { value })}, {formatDate(indexValue)}
-											</Tooltip>
-										)}
-									/>
-								</Box>
-							</Box>
-						</FlexItem>
+										},
+									},
+								}}
+								tooltip={({ value, indexValue }) => (
+									<Tooltip>
+										{t('Value_users', { value })}, {formatDate(indexValue)}
+									</Tooltip>
+								)}
+							/>
+						</Box>
 					</Box>
-				) : (
-					<Box>
-						<Skeleton variant='rect' height={240} />
-					</Box>
-				)}
-			</FlexContainer>
+				</Box>
+			) : (
+				<Box display='flex'>
+					<Skeleton variant='rect' height={240} />
+				</Box>
+			)}
 		</>
 	);
 };

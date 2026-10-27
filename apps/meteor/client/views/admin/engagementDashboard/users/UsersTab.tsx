@@ -1,4 +1,5 @@
-import { Box, FlexItem } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Box } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from 'react-i18next';
 
@@ -25,17 +26,22 @@ const UsersTab = ({ timezone }: UsersTabProps) => {
 			<EngagementDashboardCard title={t('Active_users')}>
 				<ActiveUsersSection timezone={timezone} />
 			</EngagementDashboardCard>
-			<Box display='flex' flexWrap='wrap' style={{ columnGap: '16px' }}>
-				<FlexItem grow={1} shrink={0} basis={isXxlScreen ? '0' : '100%'}>
-					<EngagementDashboardCard title={t('Users_by_time_of_day')}>
-						<UsersByTimeOfTheDaySection timezone={timezone} />
-					</EngagementDashboardCard>
-				</FlexItem>
-				<Box flexGrow={1} flexShrink={0} flexBasis={isXxlScreen ? '0' : '100%'}>
-					<EngagementDashboardCard title={t('When_is_the_chat_busier?')}>
-						<BusiestChatTimesSection timezone={timezone} />
-					</EngagementDashboardCard>
-				</Box>
+			<Box
+				display='flex'
+				flexWrap='wrap'
+				style={{ columnGap: '16px' }}
+				className={css`
+					& > * {
+						flex: 1 0 ${isXxlScreen ? '0' : '100%'};
+					}
+				`}
+			>
+				<EngagementDashboardCard title={t('Users_by_time_of_day')}>
+					<UsersByTimeOfTheDaySection timezone={timezone} />
+				</EngagementDashboardCard>
+				<EngagementDashboardCard title={t('When_is_the_chat_busier?')}>
+					<BusiestChatTimesSection timezone={timezone} />
+				</EngagementDashboardCard>
 			</Box>
 		</>
 	);
