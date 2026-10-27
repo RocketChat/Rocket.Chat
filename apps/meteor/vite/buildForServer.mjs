@@ -11,8 +11,6 @@ const appRoot = join(here, '..');
 const dist = join(here, 'dist');
 
 process.env.RC_CLIENT_TARGET = 'server';
-// Like the server, read workspace packages from their build, whose dependencies the app installs.
-process.env.RC_WORKSPACE_DIST = '1';
 
 await build({ configFile: join(here, 'vite.config.mts') });
 
