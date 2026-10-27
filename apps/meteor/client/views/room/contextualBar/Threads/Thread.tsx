@@ -1,6 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Box, ModalBackdrop, Skeleton, useStyle } from '@rocket.chat/fuselage';
+import { Box, Button, ModalBackdrop, Skeleton, useStyle } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import {
 	ContextualbarHeader,
@@ -25,6 +25,8 @@ import ThreadSkeleton from './components/ThreadSkeleton';
 import ThreadTitle from './components/ThreadTitle';
 import { useThreadMainMessageQuery } from './hooks/useThreadMainMessageQuery';
 import { useToggleFollowingThreadMutation } from './hooks/useToggleFollowingThreadMutation';
+import { useGoToThreadsTab } from '../../RoomTabs/hooks/useGoToThreadsTab';
+import { useRoomTabsEnabled } from '../../RoomTabs/hooks/useRoomTabsEnabled';
 import { useGoToThreadList } from '../../hooks/useGoToThreadList';
 import ChatProvider from '../../providers/ChatProvider';
 
@@ -35,6 +37,8 @@ export type ThreadProps = {
 const Thread = ({ tmid }: ThreadProps) => {
 	const goToThreadList = useGoToThreadList({ replace: true });
 	const { closeTab } = useRoomToolbox();
+	const roomTabsEnabled = useRoomTabsEnabled();
+	const goToThreadsTab = useGoToThreadsTab();
 
 	const mainMessageQueryResult = useThreadMainMessageQuery(tmid, {
 		onDelete: () => {
@@ -63,7 +67,13 @@ const Thread = ({ tmid }: ThreadProps) => {
 		closeTab();
 	};
 
+	// With room tabs the list of threads is the Threads tab, and going back to it leaves this thread behind.
 	const handleGoBack = () => {
+		if (roomTabsEnabled) {
+			goToThreadsTab({ closeContextualBar: true });
+			return;
+		}
+
 		goToThreadList();
 	};
 
@@ -122,6 +132,11 @@ const Thread = ({ tmid }: ThreadProps) => {
 					(mainMessageQueryResult.isSuccess && <ThreadTitle mainMessage={mainMessageQueryResult.data} />) ||
 					null}
 				<ContextualbarActions>
+					{roomTabsEnabled && (
+						<Button size='small' variant='secondary' onClick={() => goToThreadsTab({ tmid })}>
+							{t('View_in_threads')}
+						</Button>
+					)}
 					{canExpand && (
 						<ContextualbarAction
 							name={expanded ? 'arrow-collapse' : 'arrow-expand'}
