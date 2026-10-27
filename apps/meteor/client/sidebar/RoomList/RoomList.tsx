@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
-import { useMemo, useRef } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { VirtualizerHandle } from 'virtua';
 
@@ -11,6 +11,7 @@ import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
 import { useMergedRefsV2 } from '../../hooks/useMergedRefsV2';
 import { useOpenedRoom } from '../../lib/RoomManager';
+import RoomHoverCardProvider from '../RoomHoverCard';
 import { useMoveCategoryPosition } from '../categories/hooks/useMoveCategoryPosition';
 import SidebarVirtualList from '../components/SidebarVirtualList';
 import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../hooks/useCategoryList';
@@ -42,7 +43,13 @@ const RoomList = () => {
 	const isAnonymous = !userId;
 
 	const { collapsedGroups, handleClick } = useCollapsedGroups();
-	const { groups } = useRoomList({ collapsedGroups });
+	// Lifting a group's activity filter from its chip lasts for this session only.
+	const [groupsShowingInactive, setGroupsShowingInactive] = useState<string[]>([]);
+	const toggleShowingInactive = useCallback(
+		(key: string) => setGroupsShowingInactive((keys) => (keys.includes(key) ? keys.filter((k) => k !== key) : [...keys, key])),
+		[],
+	);
+	const { groups } = useRoomList({ collapsedGroups, groupsShowingInactive });
 	const moveCategory = useMoveCategoryPosition();
 	const virtualizerRef = useRef<VirtualizerHandle>(null);
 	const { previousUnread, nextUnread, handleRangeChange } = useOffscreenUnreads({ groups });
@@ -84,35 +91,38 @@ const RoomList = () => {
 	const ref = useMergedRefsV2(preventDefaultRef, shortcutOpenMenuRef);
 
 	return (
-		<Box position='relative' overflow='hidden' height='full' ref={ref}>
-			<SidebarVirtualList
-				ref={virtualizerRef}
-				groups={virtualGroups}
-				as={RoomListWrapper}
-				bufferSize={bufferSize}
-				onRangeChange={handleRangeChange}
-				getItemKey={(item) => item._id}
-				renderGroup={(group, index) => (
-					<RoomListCollapser
-						group={group}
-						canMoveUp={canMoveGroup(groups, index, 'up')}
-						canMoveDown={canMoveGroup(groups, index, 'down')}
-						onMoveUp={() => moveCategory(allGroupKeys, group.key, 'up')}
-						onMoveDown={() => moveCategory(allGroupKeys, group.key, 'down')}
-						onClick={() => handleClick(group.key)}
-					/>
+		<RoomHoverCardProvider>
+			<Box position='relative' overflow='hidden' height='full' ref={ref}>
+				<SidebarVirtualList
+					ref={virtualizerRef}
+					groups={virtualGroups}
+					as={RoomListWrapper}
+					bufferSize={bufferSize}
+					onRangeChange={handleRangeChange}
+					getItemKey={(item) => item._id}
+					renderGroup={(group, index) => (
+						<RoomListCollapser
+							group={group}
+							canMoveUp={canMoveGroup(groups, index, 'up')}
+							canMoveDown={canMoveGroup(groups, index, 'down')}
+							onMoveUp={() => moveCategory(allGroupKeys, group.key, 'up')}
+							onMoveDown={() => moveCategory(allGroupKeys, group.key, 'down')}
+							onToggleInactive={() => toggleShowingInactive(group.key)}
+							onClick={() => handleClick(group.key)}
+						/>
+					)}
+					renderItem={(item, _itemIndex, _group, _groupIndex, rowIndex) => (
+						<RoomListRowWrapper data-index={rowIndex}>
+							<RoomListRow data={itemData} item={item} />
+						</RoomListRowWrapper>
+					)}
+				/>
+				{previousUnread && (
+					<MoreUnreadsBubble direction='up' mention={previousUnread.mention} onClick={() => scrollToUnread(previousUnread.index)} />
 				)}
-				renderItem={(item, _itemIndex, _group, _groupIndex, rowIndex) => (
-					<RoomListRowWrapper data-index={rowIndex}>
-						<RoomListRow data={itemData} item={item} />
-					</RoomListRowWrapper>
-				)}
-			/>
-			{previousUnread && (
-				<MoreUnreadsBubble direction='up' mention={previousUnread.mention} onClick={() => scrollToUnread(previousUnread.index)} />
-			)}
-			{nextUnread && <MoreUnreadsBubble direction='down' mention={nextUnread.mention} onClick={() => scrollToUnread(nextUnread.index)} />}
-		</Box>
+				{nextUnread && <MoreUnreadsBubble direction='down' mention={nextUnread.mention} onClick={() => scrollToUnread(nextUnread.index)} />}
+			</Box>
+		</RoomHoverCardProvider>
 	);
 };
 

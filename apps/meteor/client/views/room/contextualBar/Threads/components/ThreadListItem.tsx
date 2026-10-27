@@ -1,4 +1,6 @@
 import type { IThreadMainMessage } from '@rocket.chat/core-typings';
+import { css } from '@rocket.chat/css-in-js';
+import { Palette } from '@rocket.chat/fuselage';
 import { useSetting, useUserId } from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
 import { useCallback, memo } from 'react';
@@ -11,16 +13,24 @@ import { useDecryptedMessage } from '../hooks/useDecryptedMessage';
 
 const ClickableThreadListMessage = clickableItem(ThreadListMessage);
 
+// The thread open beside the list keeps its highlight while pointed at or focused.
+const selectedStyle = css`
+	cursor: pointer;
+	background: ${Palette.surface['surface-selected']};
+	border-bottom: 1px solid ${Palette.stroke['stroke-extra-light']} !important;
+`;
+
 export type ThreadListItemProps = {
 	thread: IThreadMainMessage;
 	unread: string[];
 	unreadUser: string[];
 	unreadGroup: string[];
 	hasDraft?: boolean;
+	selected?: boolean;
 	onClick: (tmid: IThreadMainMessage['_id']) => void;
 };
 
-const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, hasDraft, onClick }: ThreadListItemProps) => {
+const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, hasDraft, selected = false, onClick }: ThreadListItemProps) => {
 	const { t } = useTranslation();
 	const uid = useUserId();
 	const decryptedMsg = useDecryptedMessage(thread);
@@ -43,6 +53,8 @@ const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, hasDraft, onC
 
 	return (
 		<ClickableThreadListMessage
+			{...(selected ? { className: selectedStyle } : {})}
+			aria-current={selected || undefined}
 			_id={thread._id}
 			replies={thread.tcount ?? 0}
 			tlm={thread.tlm}

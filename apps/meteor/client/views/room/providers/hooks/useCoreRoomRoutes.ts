@@ -1,7 +1,11 @@
 import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
+import { lazy } from 'react';
 
 import { MemberListRouter } from '../..';
 import MediaCallHistoryContextualbarRoom from '../../../mediaCallHistory/MediaCallHistoryContextualbarRoom';
+import { useRoomTabsEnabled } from '../../RoomTabs/hooks/useRoomTabsEnabled';
+
+const Threads = lazy(() => import('../../contextualBar/Threads'));
 
 const mediaCallHistoryRoute: RoomToolboxActionConfig = {
 	id: 'media-call-history',
@@ -20,10 +24,23 @@ const userInfoRoute: RoomToolboxActionConfig = {
 	groups: ['channel', 'group', 'team'],
 };
 
-const coreRoomRoutes = [mediaCallHistoryRoute, userInfoRoute];
+const threadRoute: RoomToolboxActionConfig = {
+	id: 'thread',
+	title: 'Threads',
+	tabComponent: Threads,
+	icon: 'thread',
+	groups: ['channel', 'group', 'direct', 'direct_multiple', 'team'],
+};
 
-// This isn't really a proper hook, but it could be extended in the future
-// So we're maitaning the same pattern as `useCoreRoomActions`
+const coreRoomRoutes = [mediaCallHistoryRoute, userInfoRoute];
+const coreRoomRoutesWithThread = [mediaCallHistoryRoute, userInfoRoute, threadRoute];
+
+/**
+ * Contextual bars the room opens from a link rather than from a header button. With room tabs, threads are one
+ * of them: the header's Threads button gives way to the tab, but a thread opened from a message still opens here.
+ */
 export const useCoreRoomRoutes = (): Array<RoomToolboxActionConfig> => {
-	return coreRoomRoutes;
+	const roomTabsEnabled = useRoomTabsEnabled();
+
+	return roomTabsEnabled ? coreRoomRoutesWithThread : coreRoomRoutes;
 };

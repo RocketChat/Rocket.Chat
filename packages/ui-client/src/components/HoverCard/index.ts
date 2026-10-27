@@ -7,3 +7,4 @@ export { default as HoverCardInfoList, type HoverCardInfoListProps } from './Hov
 export { default as HoverCardPopover, type HoverCardPopoverProps } from './HoverCardPopover';
 export { default as HoverCardSection, type HoverCardSectionProps } from './HoverCardSection';
 export { useHoverCard, type HoverCardController, type UseHoverCardOptions } from './useHoverCard';
+export { useHoverCardDismissal } from './useHoverCardDismissal';
