@@ -54,6 +54,12 @@
 	grid-template-columns: 1fr;
 }
 
+/* Content that carries its own tooltip, such as an unread badge, still shows it on hover in a linked row */
+.rcx-item:has(.rcx-item__link) [title]:not(.rcx-item__link) {
+	position: relative;
+	z-index: 1;
+}
+
 /* Sidebar rows all share one height, so even always-visible actions overhang their line there */
 .rcx-sidebar-item .rcx-item__row > .rcx-item__actions {
 	align-content: center;
