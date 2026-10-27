@@ -1040,7 +1040,7 @@ const pureRooms = [
  */
 export const PureParts: Story = {
 	render: () => (
-		<Box width='x320' backgroundColor='light' paddingBlock={8}>
+		<Box width='x320' backgroundColor='light' paddingBlock='x8'>
 			<ItemGroup>
 				{pureRooms.map(({ name, time, preview, avatar, selected, unread }) => (
 					<PureItem
