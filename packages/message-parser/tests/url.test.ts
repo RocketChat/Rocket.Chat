@@ -146,6 +146,8 @@ describe('autoLink with parentheses', () => {
 		[`(${wikipedia})`, [paragraph([plain('('), link(wikipedia), plain(')')])]],
 		['(https://example.com/page)', [paragraph([plain('('), link('https://example.com/page'), plain(')')])]],
 		['https://example.com/path)', [paragraph([link('https://example.com/path'), plain(')')])]],
+		['https://example.com/a_(b_(c))', [paragraph([link('https://example.com/a_(b_(c))')])]],
+		['https://example.com/(W(601))/Main', [paragraph([link('https://example.com/(W(601))/Main')])]],
 	])('parses %p', (input, output) => {
 		expect(parse(input)).toEqual(output);
 	});
