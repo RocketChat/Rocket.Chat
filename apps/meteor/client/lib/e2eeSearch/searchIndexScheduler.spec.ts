@@ -453,6 +453,40 @@ describe('createSearchIndexScheduler', () => {
 
 			scheduler.stop();
 		});
+
+		it('counts a live message that failed to decrypt as pending, and indexes it when the key of its room arrives', async () => {
+			const { scheduler, missingKeys, indexed } = await setup({
+				rooms: [{ rid: 'recent', lastActivityAt: NOW }],
+				messagesPerRoom: 0,
+			});
+			const live = {
+				_id: 'live1',
+				rid: 'recent',
+				t: 'e2e',
+				e2e: 'pending',
+				msg: 'ciphertext',
+				ts: new Date(NOW),
+				_updatedAt: new Date(NOW),
+			};
+
+			scheduler.addPendingDecrypt(live as unknown as IMessage);
+			expect(scheduler.getProgress().pendingDecrypt).toBe(0);
+
+			scheduler.start();
+			await jest.advanceTimersByTimeAsync(10_000);
+			missingKeys.add('recent');
+			scheduler.addPendingDecrypt(live as unknown as IMessage);
+			expect(scheduler.getProgress().pendingDecrypt).toBe(1);
+
+			missingKeys.clear();
+			scheduler.retryPendingDecrypt('recent');
+			await jest.advanceTimersByTimeAsync(0);
+
+			expect(indexed.has('live1')).toBe(true);
+			expect(scheduler.getProgress().pendingDecrypt).toBe(0);
+
+			scheduler.stop();
+		});
 	});
 
 	describe('progress', () => {

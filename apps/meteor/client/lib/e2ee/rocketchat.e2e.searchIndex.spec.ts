@@ -1,4 +1,5 @@
 import type { ISearchIndexBackend } from '@rocket.chat/desktop-api';
+import { waitFor } from '@testing-library/react';
 
 import { generate } from './crypto/rsa';
 import { e2e, e2eSearchIndexSession, e2eSearchIndexWriter } from './rocketchat.e2e';
@@ -106,6 +107,43 @@ describe('E2E client and the local search index', () => {
 		await e2eSearchIndexWriter.flush();
 
 		expect(bridge.upsert).toHaveBeenCalledTimes(1);
+	});
+
+	it('indexes a live message that failed to decrypt (room key missing) after the room key arrives', async () => {
+		const { privateKey } = await generate();
+		(e2e as unknown as { userId: string }).userId = 'u1';
+		e2e.privateKey = privateKey;
+		const encrypted = {
+			_id: 'm1',
+			rid: 'r1',
+			t: 'e2e',
+			e2e: 'pending',
+			msg: 'ciphertext',
+			u: { _id: 'u2', username: 'bob' },
+			ts: new Date(),
+			_updatedAt: new Date(),
+		};
+		const roomDecrypt = jest
+			.fn()
+			.mockResolvedValueOnce({ ...encrypted, e2e: 'done', msg: 'E2E_Key_Error', decryptFailed: true })
+			.mockResolvedValue({ ...encrypted, e2e: 'done', msg: 'budget review on friday' });
+		jest.spyOn(e2e, 'getInstanceByRoomId').mockResolvedValue({ decryptMessage: roomDecrypt } as never);
+		jest.spyOn(e2e, 'parseQuoteAttachment').mockImplementation(async (message) => message);
+
+		e2e.setState('READY');
+		await e2eSearchIndexSession.whenSettled();
+		await e2e.decryptMessage(encrypted as never);
+		await e2eSearchIndexWriter.flush();
+
+		expect(bridge.upsert).not.toHaveBeenCalled();
+
+		e2e.emit('E2E_ROOM_READY', 'r1');
+
+		await waitFor(() => expect(bridge.upsert).toHaveBeenCalledTimes(1));
+		expect(bridge.upsert.mock.calls[0][0]).toEqual([expect.objectContaining({ id: 'm1', rid: 'r1', body: 'budget review on friday' })]);
+		expect(roomDecrypt).toHaveBeenLastCalledWith(expect.objectContaining({ _id: 'm1', e2e: 'pending', msg: 'ciphertext' }));
+
+		await e2e.stopClient();
 	});
 
 	it('wipes the desktop index at login without an open and indexes nothing when the admin setting is off (the default)', async () => {

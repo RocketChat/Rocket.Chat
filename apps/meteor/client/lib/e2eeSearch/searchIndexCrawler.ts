@@ -43,6 +43,11 @@ export type SearchIndexCrawler = {
 	catchUpRoomPage(rid: string): Promise<{ done: boolean; indexed: number; removed: number }>;
 	/** Decrypts the pending messages of the room again, after its room key arrived. */
 	retryPendingDecrypt(rid: string): Promise<{ indexed: number }>;
+	/**
+	 * Keeps a message that the live client could not decrypt (room key missing) pending in its room, so the retry after the
+	 * key arrives indexes it. Pass the encrypted message, not the result of the failed decrypt.
+	 */
+	addPendingDecrypt(message: IMessage): void;
 	/** The messages of the room that the crawler could not decrypt (room key missing), to retry when the key arrives. */
 	getPendingDecrypt(rid: string): IMessage[];
 	/** Drops what the crawler holds in memory for the room, after the room left the index. */
@@ -70,19 +75,23 @@ export const createSearchIndexCrawler = ({
 	const pendingDecrypt = new Map<string, Map<string, IMessage>>();
 	const catchUps = new Map<string, CatchUp>();
 
+	const keepPending = (rid: string, message: IMessage) => {
+		const pending = pendingDecrypt.get(rid);
+		if (pending) pending.set(message._id, message);
+		else pendingDecrypt.set(rid, new Map([[message._id, message]]));
+	};
+
 	const decryptAll = async (rid: string, messages: IMessage[]): Promise<number> => {
 		let indexed = 0;
 		for (const message of messages) {
 			const decrypted = await decryptMessage(message);
 			if (!isE2EEMessage(decrypted)) continue;
 
-			const pending = pendingDecrypt.get(rid);
 			if (decrypted.e2e !== 'done' || isDecryptFailed(decrypted)) {
-				if (pending) pending.set(message._id, message);
-				else pendingDecrypt.set(rid, new Map([[message._id, message]]));
+				keepPending(rid, message);
 				continue;
 			}
-			pending?.delete(message._id);
+			pendingDecrypt.get(rid)?.delete(message._id);
 			indexed++;
 		}
 		await writer.flush();
@@ -173,6 +182,10 @@ export const createSearchIndexCrawler = ({
 			const pending = pendingDecrypt.get(rid);
 			if (!pending?.size) return { indexed: 0 };
 			return { indexed: await decryptAll(rid, [...pending.values()]) };
+		},
+
+		addPendingDecrypt(message) {
+			keepPending(message.rid, message);
 		},
 
 		getPendingDecrypt(rid) {

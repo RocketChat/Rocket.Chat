@@ -38,6 +38,7 @@ import { createDocumentIdleSignal } from '../e2eeSearch/searchIndexScheduler';
 import { createSearchIndexSession } from '../e2eeSearch/searchIndexSession';
 import { createSearchIndexWriter } from '../e2eeSearch/searchIndexWriter';
 import { subscriptionRemovals } from '../e2eeSearch/subscriptionRemovals';
+import { isDecryptFailed } from '../e2eeSearch/toSearchDoc';
 import { getUserAvatarURL } from '../getUserAvatarURL';
 import { limitQuoteChain } from '../limitQuoteChain';
 import { getDdpSdk } from '../sdk/ddpSdk';
@@ -666,6 +667,8 @@ class E2E extends Emitter {
 		const decryptedMessageWithQuote = await this.parseQuoteAttachment(decryptedMessage);
 
 		e2eSearchIndexWriter.index(decryptedMessageWithQuote);
+		// The room key is missing: the retry after E2E_ROOM_READY indexes the message. Only the crawler kept it before.
+		if (isDecryptFailed(decryptedMessageWithQuote)) e2eSearchIndexRuntime.onDecryptFailed(message);
 
 		return decryptedMessageWithQuote;
 	}

@@ -1,3 +1,4 @@
+import type { IMessage } from '@rocket.chat/core-typings';
 import type { ISearchIndexBackend } from '@rocket.chat/desktop-api';
 
 import type { SearchIndexCrawler } from './searchIndexCrawler';
@@ -57,7 +58,10 @@ export type SearchIndexProgress = {
 };
 
 type SearchIndexSchedulerOptions = {
-	crawler: Pick<SearchIndexCrawler, 'backfillRoomPage' | 'catchUpRoomPage' | 'retryPendingDecrypt' | 'getPendingDecrypt' | 'forgetRoom'>;
+	crawler: Pick<
+		SearchIndexCrawler,
+		'backfillRoomPage' | 'catchUpRoomPage' | 'retryPendingDecrypt' | 'addPendingDecrypt' | 'getPendingDecrypt' | 'forgetRoom'
+	>;
 	backend: Pick<ISearchIndexBackend, 'getRoomState' | 'removeRoom'>;
 	getRooms: () => SearchIndexRoom[];
 	idle: IdleSignal;
@@ -78,6 +82,8 @@ export type SearchIndexScheduler = {
 	requestCatchUp(): void;
 	/** Indexes the messages of the room that waited for its room key. */
 	retryPendingDecrypt(rid: string): void;
+	/** Keeps a live message that failed to decrypt (room key missing) for the retry of its room. */
+	addPendingDecrypt(message: IMessage): void;
 	/**
 	 * Stops indexing the room and removes its rows from the index, after the request in flight (if any) has written its
 	 * page, so no page of the room lands after the remove.
@@ -458,6 +464,12 @@ export const createSearchIndexScheduler = ({
 		retryPendingDecrypt(rid) {
 			keyArrived.add(rid);
 			wake();
+		},
+
+		addPendingDecrypt(message) {
+			if (!started || removedRooms.has(message.rid)) return;
+			crawler.addPendingDecrypt(message);
+			publish();
 		},
 
 		async removeRoom(rid) {

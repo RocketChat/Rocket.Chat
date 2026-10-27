@@ -104,6 +104,8 @@ export type SearchIndexRuntime = {
 	onReconnect(): void;
 	/** Indexes the messages that waited for the room key, after the key arrived. */
 	onRoomKeyReady(rid: string): void;
+	/** Keeps a live message that failed to decrypt (room key missing), so `onRoomKeyReady` indexes it. Pass the encrypted message. */
+	onDecryptFailed(message: IMessage): void;
 	/** Removes the rows of a room whose subscription was removed (the user left the room or was removed from it). */
 	onRoomRemoved(rid: string): Promise<void>;
 	/** Resolves when the removal of the left rooms after the last open is done. Specs use it. */
@@ -211,6 +213,7 @@ export const createSearchIndexRuntime = ({
 		whenSettled: () => pruning,
 		onReconnect: () => scheduler?.requestCatchUp(),
 		onRoomKeyReady: (rid) => scheduler?.retryPendingDecrypt(rid),
+		onDecryptFailed: (message) => scheduler?.addPendingDecrypt(message),
 		async onRoomRemoved(rid) {
 			const current = backend;
 			if (!current) return;

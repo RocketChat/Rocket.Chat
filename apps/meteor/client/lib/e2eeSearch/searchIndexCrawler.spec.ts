@@ -357,6 +357,20 @@ describe('createSearchIndexCrawler', () => {
 		});
 	});
 
+	describe('addPendingDecrypt', () => {
+		it('keeps a live message that failed to decrypt pending in its room, and indexes it when the key arrives', async () => {
+			const { crawler, calls, decryptMessage } = await setup();
+
+			crawler.addPendingDecrypt(encrypted('m5', NOW - 1000));
+
+			expect(crawler.getPendingDecrypt('room1').map((message) => message._id)).toEqual(['m5']);
+			expect(await crawler.retryPendingDecrypt('room1')).toEqual({ indexed: 1 });
+			expect(decryptMessage.mock.calls.map(([message]) => message._id)).toEqual(['m5']);
+			expect(calls).toHaveLength(0);
+			expect(crawler.getPendingDecrypt('room1')).toEqual([]);
+		});
+	});
+
 	describe('forgetRoom', () => {
 		it('drops the pending messages of the room', async () => {
 			const { crawler } = await setup({

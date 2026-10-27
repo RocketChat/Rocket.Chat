@@ -34,6 +34,7 @@ const createSchedulerStub = (): jest.Mocked<SearchIndexScheduler> => ({
 	stop: jest.fn(),
 	requestCatchUp: jest.fn(),
 	retryPendingDecrypt: jest.fn(),
+	addPendingDecrypt: jest.fn(),
 	removeRoom: jest.fn(),
 	getProgress: jest.fn(),
 	subscribe: jest.fn((_listener: () => void) => jest.fn()),
@@ -132,6 +133,15 @@ describe('createSearchIndexRuntime', () => {
 
 		expect(schedulers[0].scheduler.requestCatchUp).toHaveBeenCalledTimes(1);
 		expect(schedulers[0].scheduler.retryPendingDecrypt).toHaveBeenCalledWith('r1');
+	});
+
+	it('keeps a live message that failed to decrypt for the retry of its room', () => {
+		const { schedulers, runtime } = stubRuntime(backendA);
+		const message = { _id: 'm1', rid: 'r1', t: 'e2e', e2e: 'pending', msg: 'ciphertext' } as IMessage;
+
+		runtime.onDecryptFailed(message);
+
+		expect(schedulers[0].scheduler.addPendingDecrypt).toHaveBeenCalledWith(message);
 	});
 
 	it('backfills a one-year-old message into the index with the real crawler and scheduler', async () => {
