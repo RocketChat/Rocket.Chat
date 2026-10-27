@@ -6,7 +6,7 @@ class IntersectionObserverMock {
 
 	readonly observed = new Set<Element>();
 
-	constructor() {
+	constructor(readonly callback: (entries: Pick<IntersectionObserverEntry, 'target' | 'isIntersecting'>[]) => void) {
 		IntersectionObserverMock.instances.push(this);
 	}
 
@@ -25,8 +25,18 @@ class IntersectionObserverMock {
 
 const isObserved = (element: Element) => IntersectionObserverMock.instances.some(({ observed }) => observed.has(element));
 
+const reportIntersection = (target: Element, isIntersecting: boolean) => {
+	IntersectionObserverMock.instances.forEach(({ callback }) => callback([{ target, isIntersecting }]));
+	jest.advanceTimersByTime(100);
+};
+
 beforeAll(() => {
 	Object.assign(window, { IntersectionObserver: IntersectionObserverMock });
+	jest.useFakeTimers();
+});
+
+afterAll(() => {
+	jest.useRealTimers();
 });
 
 afterEach(() => {
@@ -67,4 +77,28 @@ it('stops observing the element when the ref is detached', () => {
 	act(() => ref(null));
 
 	expect(isObserved(element)).toBe(false);
+});
+
+it('reports the visibility of the current element', () => {
+	const { result } = renderHook(() => useElementIsVisible<HTMLDivElement>());
+	const ref = result.current[0] as unknown as (node: HTMLDivElement | null) => void;
+	const element = document.createElement('div');
+
+	act(() => ref(element));
+	act(() => reportIntersection(element, true));
+
+	expect(result.current[1]).toBe(true);
+});
+
+it('ignores entries still queued for the previous element', () => {
+	const { result } = renderHook(() => useElementIsVisible<HTMLDivElement>());
+	const ref = result.current[0] as unknown as (node: HTMLDivElement | null) => void;
+	const previous = document.createElement('div');
+	const next = document.createElement('div');
+
+	act(() => ref(previous));
+	act(() => ref(next));
+	act(() => reportIntersection(previous, true));
+
+	expect(result.current[1]).toBe(false);
 });

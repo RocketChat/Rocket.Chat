@@ -19,6 +19,9 @@ export const useElementIsVisible = <T extends Element>(): [ref: RefObject<T | nu
 		() =>
 			new IntersectionObserver((entries) => {
 				entries.forEach((entry) => {
+					if (entry.target !== innerRef.current) {
+						return;
+					}
 					setMenuVisibility(entry.isIntersecting);
 				});
 			}),
