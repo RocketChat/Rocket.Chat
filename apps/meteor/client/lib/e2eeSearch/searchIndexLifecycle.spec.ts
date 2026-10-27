@@ -220,17 +220,4 @@ describe('search index lifecycle (LSE2EE-19)', () => {
 		expect(removeRoom).not.toHaveBeenCalled();
 		expect(await searchIds('serval')).toEqual(['m1']);
 	});
-
-	it('keeps every room at open when the desktop app cannot list the indexed rooms', async () => {
-		const { backend, setState, login, index, searchIds, subscriptions, removeRoom } = await setup([{ rid: 'r1', encrypted: true }]);
-		await index(message('m1', 'r1', 'caracal old desktop'));
-		setState('DISABLED');
-		delete (backend as { listRooms?: unknown }).listRooms;
-
-		subscriptions.splice(0, 1);
-		await login();
-
-		expect(removeRoom).not.toHaveBeenCalled();
-		expect(await searchIds('caracal')).toEqual(['m1']);
-	});
 });

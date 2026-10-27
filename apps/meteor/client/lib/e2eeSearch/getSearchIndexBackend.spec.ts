@@ -2,7 +2,7 @@ import type { ISearchIndexBackend } from '@rocket.chat/desktop-api';
 
 import { FAKE_BACKEND_STORAGE_KEY, getSearchIndexBackend } from './getSearchIndexBackend';
 
-const methods = ['open', 'upsert', 'remove', 'removeRoom', 'search', 'getRoomState', 'setRoomState', 'stats', 'wipe'] as const;
+const methods = ['open', 'upsert', 'remove', 'removeRoom', 'listRooms', 'search', 'getRoomState', 'setRoomState', 'stats', 'wipe'] as const;
 
 const createBridge = () =>
 	Object.fromEntries(

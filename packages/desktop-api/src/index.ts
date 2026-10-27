@@ -78,7 +78,7 @@ export type E2EESearchHit = {
 	id: string;
 	rid: string;
 	tmid?: string;
-	/** The author, as the indexed document stores it. A desktop app older than this field sends no author. */
+	/** The author, as the indexed document stores it. */
 	uid?: string;
 	username?: string;
 	ts: number;
@@ -116,9 +116,9 @@ export interface ISearchIndexBackend {
 	removeRoom(rid: string): Promise<void>;
 	/**
 	 * The rooms that have rows in the index, sorted. The web client removes the rooms that the user left while the index was
-	 * closed. Desktop versions before this method do not have it.
+	 * closed.
 	 */
-	listRooms?(): Promise<string[]>;
+	listRooms(): Promise<string[]>;
 	search(query: E2EESearchQuery): Promise<E2EESearchHit[]>;
 	getRoomState(rid: string): Promise<E2EESearchRoomState | undefined>;
 	setRoomState(rid: string, state: E2EESearchRoomState): Promise<void>;

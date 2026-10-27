@@ -7,8 +7,8 @@ const isNonEmptyString = (value: unknown): value is string => typeof value === '
 
 /**
  * Returns the author to show for a local search hit, with no server request: the author of the message when the client
- * already has it (it carries the real name), else the author that the local index stores with the hit. A hit from a
- * desktop app that sends no author, for a message that the client does not have, has no author.
+ * already has it (it carries the real name), else the author that the local index stores with the hit. A hit without a
+ * stored author, for a message that the client does not have, has no author.
  */
 export const getSearchHitAuthor = (hit: E2EESearchHit, loadedMessage?: Pick<IMessage, 'u'>): SearchHitAuthor | undefined => {
 	const { username: loadedUsername, name } = loadedMessage?.u ?? {};

@@ -1,4 +1,4 @@
-import type { E2EESearchOpenResult, ISearchIndexBackend } from '@rocket.chat/desktop-api';
+import type { ISearchIndexBackend } from '@rocket.chat/desktop-api';
 
 /** Changes this label only with a new index schema: a new label makes every sealed index unreadable. */
 const WRAP_KEY_LABEL = 'Rocket.Chat E2EE search index wrap key v1';
@@ -139,8 +139,7 @@ export const createSearchIndexSession = (
 			const wrapKey = await deriveSearchIndexWrapKey(privateKey, userId);
 			if (run !== generation) return;
 
-			// A backend that resolves with no result reports nothing about the storage.
-			const opened: Partial<E2EESearchOpenResult> | undefined = await backend.open({ userId, wrapKey });
+			const opened = await backend.open({ userId, wrapKey });
 			if (run !== generation) return;
 
 			if (!isAllowed()) {
@@ -150,7 +149,7 @@ export const createSearchIndexSession = (
 				return;
 			}
 
-			setActive(backend, typeof opened?.encryptedAtRest === 'boolean' ? opened.encryptedAtRest : undefined);
+			setActive(backend, opened.encryptedAtRest);
 		} catch (error) {
 			if (run === generation) openedFor = undefined;
 			onError(error);

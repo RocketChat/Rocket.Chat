@@ -170,7 +170,7 @@ export const createSearchIndexRuntime = ({
 
 	// Removes the rows of the rooms that the user left while the index was closed: no removal event reached it then.
 	const pruneLeftRooms = async (opened: ISearchIndexBackend) => {
-		if (!getSubscribedRids || typeof opened.listRooms !== 'function') return;
+		if (!getSubscribedRids) return;
 
 		await whenRoomsReady();
 		if (backend !== opened) return;

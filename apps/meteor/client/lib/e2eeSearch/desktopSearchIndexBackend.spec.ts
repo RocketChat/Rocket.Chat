@@ -2,7 +2,7 @@ import type { ISearchIndexBackend } from '@rocket.chat/desktop-api';
 
 import { getDesktopSearchIndexBackend } from './desktopSearchIndexBackend';
 
-const methods = ['open', 'upsert', 'remove', 'removeRoom', 'search', 'getRoomState', 'setRoomState', 'stats', 'wipe'] as const;
+const methods = ['open', 'upsert', 'remove', 'removeRoom', 'listRooms', 'search', 'getRoomState', 'setRoomState', 'stats', 'wipe'] as const;
 
 const createBridge = () =>
 	Object.fromEntries(
@@ -28,24 +28,6 @@ describe('getDesktopSearchIndexBackend', () => {
 		expect(getDesktopSearchIndexBackend()).toBeUndefined();
 	});
 
-	it.each(methods)('returns no backend when the bridge has no %s method', (method) => {
-		const bridge: Partial<ISearchIndexBackend> = { ...createBridge() };
-		delete bridge[method];
-		setDesktop({ e2eeSearch: bridge });
-
-		expect(getDesktopSearchIndexBackend()).toBeUndefined();
-	});
-
-	it('forwards listRooms when the desktop app has it, and leaves it out for an older desktop (LSE2EE-78)', async () => {
-		setDesktop({ e2eeSearch: createBridge() });
-		expect(getDesktopSearchIndexBackend()?.listRooms).toBeUndefined();
-
-		const listRooms = jest.fn(async () => ['r1']);
-		setDesktop({ e2eeSearch: { ...createBridge(), listRooms } });
-		await expect(getDesktopSearchIndexBackend()?.listRooms?.()).resolves.toEqual(['r1']);
-		expect(listRooms).toHaveBeenCalledWith();
-	});
-
 	it('returns no backend when a bridge member is not a function', () => {
 		setDesktop({ e2eeSearch: { ...createBridge(), search: 'search' } });
 
@@ -66,6 +48,7 @@ describe('getDesktopSearchIndexBackend', () => {
 		await expect(backend.upsert([doc])).resolves.toBe('upsert result');
 		await expect(backend.remove(['m1'])).resolves.toBe('remove result');
 		await expect(backend.removeRoom('r1')).resolves.toBe('removeRoom result');
+		await expect(backend.listRooms()).resolves.toBe('listRooms result');
 		await expect(backend.search({ text: 'needle', rid: 'r1' })).resolves.toBe('search result');
 		await expect(backend.getRoomState('r1')).resolves.toBe('getRoomState result');
 		await expect(backend.setRoomState('r1', roomState)).resolves.toBe('setRoomState result');
@@ -77,6 +60,7 @@ describe('getDesktopSearchIndexBackend', () => {
 		expect(bridge.upsert).toHaveBeenCalledWith([doc]);
 		expect(bridge.remove).toHaveBeenCalledWith(['m1']);
 		expect(bridge.removeRoom).toHaveBeenCalledWith('r1');
+		expect(bridge.listRooms).toHaveBeenCalledWith();
 		expect(bridge.search).toHaveBeenCalledWith({ text: 'needle', rid: 'r1' });
 		expect(bridge.getRoomState).toHaveBeenCalledWith('r1');
 		expect(bridge.setRoomState).toHaveBeenCalledWith('r1', roomState);

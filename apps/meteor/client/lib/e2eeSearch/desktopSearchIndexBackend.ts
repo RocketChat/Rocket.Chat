@@ -5,6 +5,7 @@ const backendMethods = [
 	'upsert',
 	'remove',
 	'removeRoom',
+	'listRooms',
 	'search',
 	'getRoomState',
 	'setRoomState',
@@ -30,11 +31,11 @@ export const getDesktopSearchIndexBackend = (): ISearchIndexBackend | undefined 
 		upsert: (docs) => bridge.upsert(docs),
 		remove: (ids) => bridge.remove(ids),
 		removeRoom: (rid) => bridge.removeRoom(rid),
+		listRooms: () => bridge.listRooms(),
 		search: (query) => bridge.search(query),
 		getRoomState: (rid) => bridge.getRoomState(rid),
 		setRoomState: (rid, state) => bridge.setRoomState(rid, state),
 		stats: () => bridge.stats(),
 		wipe: (scope) => (scope ? bridge.wipe(scope) : bridge.wipe()),
-		...(typeof bridge.listRooms === 'function' && { listRooms: () => bridge.listRooms?.() ?? Promise.resolve([]) }),
 	};
 };

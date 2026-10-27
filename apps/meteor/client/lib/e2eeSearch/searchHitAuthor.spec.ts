@@ -25,11 +25,11 @@ describe('getSearchHitAuthor', () => {
 		});
 	});
 
-	it('finds the author of a hit from an older desktop app in the loaded message', () => {
+	it('finds the author of a hit without a stored author in the loaded message', () => {
 		expect(getSearchHitAuthor(hit(), loaded({ username: 'bob', name: 'Bob' }))).toEqual({ username: 'bob', name: 'Bob' });
 	});
 
-	it('has no author for a hit from an older desktop app when the client does not have the message', () => {
+	it('has no author for a hit without a stored author when the client does not have the message', () => {
 		expect(getSearchHitAuthor(hit())).toBeUndefined();
 	});
 
