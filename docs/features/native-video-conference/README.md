@@ -75,6 +75,26 @@ The camera menu offers *Auto / 1080p / 720p / 360p / 180p*, and the local tile s
 Choosing restarts the camera at the new preset, and the choice is remembered only once the restart succeeded. Chosen
 with the camera off, it is remembered straight away and applied when the camera comes back on.
 
+## Noise cancellation
+
+The microphone menu offers *Off / Standard / Advanced*: no filter, the browser's `noiseSuppression`, or RNNoise
+(`@sapphi-red/web-noise-suppressor`) in an AudioWorklet. The browser's filter is the default, since it is what calls
+had before there was a choice.
+
+- **RNNoise never runs on top of the browser's filter.** Two suppressors in a row eat into the voice, so choosing it
+  first restarts the microphone with `noiseSuppression: false`, and the room's audio capture defaults follow the
+  choice so a microphone opened later starts that way. The restart passes every constraint the track has: the ones
+  passed replace them all, and without the device the restart opens the browser's default microphone.
+- **RNNoise gets its own 48 kHz `AudioContext`.** It was trained at that rate, and the room's context runs at the
+  output device's, often 44.1 kHz.
+- **It fails rather than sends silence.** A context the browser keeps suspended (no user gesture yet in this window), or
+  one the browser cannot feed a microphone into at another rate (Firefox), would publish a silent track. The processor
+  throws instead and the call falls back to the browser's filter. A failure at the start of the call keeps the choice
+  on offer, since choosing it from the menu is the gesture it lacked; a failure the reader asked for hides it.
+- **The workspace serves the files** at `/video-conference/rnnoise/` from the installed package, by its package exports,
+  so clients never reach a third party. About 125 KB gzipped, fetched the first time it is chosen; the WebAssembly is
+  kept for the page.
+
 ## Data-channel messages
 
 | Type | Reliable | Payload | Meaning |
@@ -111,4 +131,4 @@ The preflight's **Ring participants** switch lets the caller decide, and is reme
 - The resolution picker restarts the camera with a capture preset, which is a hint to the camera rather than a cap on
   the encoder. Publish options would be the right tool.
 - No e2e coverage for the native flow yet.
-- Background blur and noise suppression ship in a follow-up.
+- Background blur ships in a follow-up.

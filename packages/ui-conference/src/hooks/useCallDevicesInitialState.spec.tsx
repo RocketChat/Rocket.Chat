@@ -1,7 +1,12 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook } from '@testing-library/react';
 
-import { callPreferencesStorageKey, useCallDevicesInitialState, useVideoQualityPreference } from './useCallDevicesInitialState';
+import {
+	callPreferencesStorageKey,
+	useCallDevicesInitialState,
+	useNoiseSuppressionPreference,
+	useVideoQualityPreference,
+} from './useCallDevicesInitialState';
 import { embeddedCapabilities } from '../fixtures/storyFixtures';
 
 const preferencesKey = callPreferencesStorageKey('john.doe');
@@ -26,4 +31,14 @@ it('falls back to auto for a stored quality that is not one', () => {
 	const { result } = renderHook(() => useVideoQualityPreference(), { wrapper: mockAppRoot().withJohnDoe().build() });
 
 	expect(result.current.videoQuality).toBe('auto');
+});
+
+// What every call had before there was a choice, so nobody's voice changes until they ask; and the same for a method
+// this version no longer offers.
+it.each([undefined, 'krisp'])('falls back to the browser filter for a stored noise method of %p', (noiseMethod) => {
+	localStorage.setItem(preferencesKey, JSON.stringify({ noiseMethod }));
+
+	const { result } = renderHook(() => useNoiseSuppressionPreference(), { wrapper: mockAppRoot().withJohnDoe().build() });
+
+	expect(result.current.noiseMethod).toBe('browser');
 });

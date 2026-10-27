@@ -6,13 +6,17 @@ import { Suspense, useMemo } from 'react';
 
 import { PreviewMediaContextProvider } from './PreviewMediaContext';
 import { useCallDevicePreview } from './useCallDevicePreview';
-import { VIDEO_QUALITY_LABELS, choicesOf } from '../call/lib/mediaChoiceLabels';
+import { NOISE_METHOD_LABELS, VIDEO_QUALITY_LABELS, choicesOf } from '../call/lib/mediaChoiceLabels';
 import type { PreflightMedia } from '../context/definitions';
+import type { NoiseSuppressionSelection } from '../devices/NoiseSuppressionContext';
+import { NoiseSuppressionProvider, supportsRnnoise } from '../devices/NoiseSuppressionContext';
 import type { VideoQualitySelection } from '../devices/VideoQualityContext';
 import { VideoQualityProvider } from '../devices/VideoQualityContext';
-import { useCallDevicesInitialState, useVideoQualityPreference } from '../hooks/useCallDevicesInitialState';
+import { useCallDevicesInitialState, useNoiseSuppressionPreference, useVideoQualityPreference } from '../hooks/useCallDevicesInitialState';
 
 const QUALITIES = choicesOf(VIDEO_QUALITY_LABELS);
+
+const NOISE_METHODS = choicesOf(NOISE_METHOD_LABELS).filter((method) => method !== 'rnnoise' || supportsRnnoise());
 
 export type PreviewMediaProviderProps = {
 	capabilities: VideoConferenceCapabilities;
@@ -28,6 +32,7 @@ export type PreviewMediaProviderProps = {
 const PreviewMediaProvider = ({ capabilities, media, children }: PreviewMediaProviderProps) => {
 	const { preferences, devices, selectDevice } = useCallDevicesInitialState(capabilities);
 	const { videoQuality, selectVideoQuality } = useVideoQualityPreference();
+	const { noiseMethod, selectNoiseMethod } = useNoiseSuppressionPreference();
 
 	const preview = useCallDevicePreview(preferences, devices);
 
@@ -47,16 +52,24 @@ const PreviewMediaProvider = ({ capabilities, media, children }: PreviewMediaPro
 		[videoQuality, selectVideoQuality],
 	);
 
+	// Only recorded here: the preview's microphone is not sent anywhere, so the call is where the choice is applied.
+	const noiseSuppression = useMemo(
+		(): NoiseSuppressionSelection => ({ method: noiseMethod, methods: NOISE_METHODS, pending: false, select: selectNoiseMethod }),
+		[noiseMethod, selectNoiseMethod],
+	);
+
 	return (
 		<PreviewMediaContextProvider value={value}>
 			<DeviceSelectionProvider value={deviceSelection}>
 				<VideoQualityProvider value={videoQualitySelection}>
-					{/* The preflight is shown without a camera while a lazy provider loads, rather than held back for it. */}
-					<Suspense fallback={children}>
-						<media.PreviewVideoProvider enabled={preferences.cam} deviceId={devices.camId} quality={videoQuality}>
-							{children}
-						</media.PreviewVideoProvider>
-					</Suspense>
+					<NoiseSuppressionProvider value={noiseSuppression}>
+						{/* The preflight is shown without a camera while a lazy provider loads, rather than held back for it. */}
+						<Suspense fallback={children}>
+							<media.PreviewVideoProvider enabled={preferences.cam} deviceId={devices.camId} quality={videoQuality}>
+								{children}
+							</media.PreviewVideoProvider>
+						</Suspense>
+					</NoiseSuppressionProvider>
 				</VideoQualityProvider>
 			</DeviceSelectionProvider>
 		</PreviewMediaContextProvider>
