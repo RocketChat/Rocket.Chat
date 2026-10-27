@@ -1,7 +1,7 @@
 import { Button, ButtonGroup, States, StatesAction, StatesActions, StatesSubtitle, Stack, StatesTitle, Text } from '@rocket.chat/fuselage';
 import { Field, FieldError, FieldHint, FieldLabel, FieldRow, TextAreaInput } from '@rocket.chat/fuselage-forms';
 import { validateEmail } from '@rocket.chat/tools';
-import { ContextualbarScrollableContent, ContextualbarFooter, ContextualbarContent } from '@rocket.chat/ui-client';
+import { ContextualbarScrollableContent, ContextualbarFooter, ContextualbarContent, FormSkeleton } from '@rocket.chat/ui-client';
 import { useRoute } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -9,7 +9,6 @@ import { useTranslation } from 'react-i18next';
 
 import { useSendInvitationEmailMutation } from './hooks/useSendInvitationEmailMutation';
 import { useSmtpQuery } from './hooks/useSmtpQuery';
-import { FormSkeleton } from '../../../components/Skeleton';
 
 type AdminInviteUsersFormValues = {
 	emails: string;
