@@ -113,7 +113,7 @@ function ComposerBoxPopup<
 						</ItemGroupHeader>
 					</Box>
 				)}
-				<CustomScrollbars style={{ minHeight: 0 }}>
+				<CustomScrollbars>
 					<Box paddingBlock={8} maxHeight='x320'>
 						{!isLoading && itemsFlat.length === 0 && (
 							<Item inset='md' role='status'>
