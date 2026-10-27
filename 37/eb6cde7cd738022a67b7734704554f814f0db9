@@ -1,0 +1,25 @@
+apps/meteor/server/bridges/irc/methods/resetIrcConnection.ts
+  s_0cb38b25974acb::t_81edc1f1be3715 10,59
+apps/meteor/server/bridges/irc/startIrcBridge.test.ts
+  s_0cb38b25974acb::t_00d502dcff8168 1-78
+apps/meteor/server/bridges/irc/startIrcBridge.ts
+  s_0cb38b25974acb::t_6991169c8ab5a4 1-23
+apps/meteor/server/configuration/configureIRC.ts
+  s_0cb38b25974acb::t_d6eb756d080202 1,9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "37eb6cde7cd738022a67b7734704554f814f0db9",
+  "prompts": {},
+  "sessions": {
+    "s_0cb38b25974acb": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "54d9c941-dbdb-4ccc-bacb-f58cdfd0833d",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
