@@ -9,9 +9,12 @@ import { WebApp } from 'meteor/webapp';
 
 import { SystemLogger } from '../lib/logger/system';
 
+declare const __meteor_bootstrap__: { serverDir: string };
+
 // Meteor's `require.resolve` answers with module ids rather than paths, so resolve the way Node does from the
-// directory the server's npm packages are installed in.
-const nodeRequire = createRequire(path.join(process.cwd(), 'npm', 'index.js'));
+// directory the server's npm packages are installed in. The server's own directory, not the working one: a bundle is
+// started from its root, with the packages under `programs/server`.
+const nodeRequire = createRequire(path.join(__meteor_bootstrap__.serverDir, 'npm', 'index.js'));
 
 /** Each file the route serves, by the package export it is published under: nothing else in the package is reachable. */
 const FILES = new Map(
