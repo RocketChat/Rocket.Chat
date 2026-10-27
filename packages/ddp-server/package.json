@@ -23,6 +23,7 @@
 	"dependencies": {
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
+		"@rocket.chat/ddp-client": "workspace:~",
 		"@rocket.chat/emitter": "workspace:~",
 		"@rocket.chat/logger": "workspace:^",
 		"@rocket.chat/streamer": "workspace:^",
@@ -32,7 +33,6 @@
 		"ws": "~8.21.3"
 	},
 	"devDependencies": {
-		"@rocket.chat/ddp-client": "workspace:~",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@types/ejson": "^2.2.2",
 		"@types/node": "~24.13.6",
