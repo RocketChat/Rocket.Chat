@@ -59,6 +59,14 @@ describe('updateMessage', () => {
 		expect(modelsMock.Messages.addReplyByThreadId.calledOnceWith('parent', ['author'], ts)).to.be.true;
 	});
 
+	it('should uncount a message moved out of a thread into the main channel', async () => {
+		await updateMessage({ _id: 'msg', rid: 'room', msg: 'hello', tmid: undefined }, user, { ...original, tmid: 'parent' });
+
+		expect(modelsMock.Messages.decreaseReplyCountById.calledOnceWith('parent', -1)).to.be.true;
+		expect(notifyOnMessageChange.calledWith({ id: 'parent' })).to.be.true;
+		expect(modelsMock.Messages.addReplyByThreadId.called).to.be.false;
+	});
+
 	it('should uncount a message moved to another thread from its previous thread parent', async () => {
 		modelsMock.Messages.findOneById.withArgs('parent').resolves({ _id: 'parent', u: { _id: 'parentAuthor' }, replies: ['parentAuthor'] });
 
