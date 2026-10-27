@@ -199,7 +199,7 @@ it('keeps the context value stable when a card opens and closes', async () => {
 
 it.each([
 	['the member list when it is available', [{ id: 'members-list' }], 'members-list'],
-	['the profile on its own when the member list is hidden', [], 'user-info'],
+	['the profile on its own when the member list is hidden', [{ id: 'thread' }], 'user-info'],
 ])('opens a channel member info through %s', (_, actions, expectedTab) => {
 	mockActions = actions;
 	mockOpenTab.mockClear();
