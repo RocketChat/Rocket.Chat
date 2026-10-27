@@ -99,3 +99,15 @@ it('lingers after the pointer leaves, then closes', async () => {
 	await advance(1);
 	expect(screen.queryByTestId('card')).not.toBeInTheDocument();
 });
+
+it('closes a card opened by click once the pointer leaves its trigger', async () => {
+	render(<Harness keys={['a']} />);
+	const trigger = screen.getByText('trigger a');
+
+	fireEvent.click(trigger);
+	await advance(0);
+	fireEvent.mouseLeave(trigger);
+	await advance(300);
+
+	expect(screen.queryByTestId('card')).not.toBeInTheDocument();
+});

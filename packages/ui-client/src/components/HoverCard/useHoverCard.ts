@@ -85,9 +85,7 @@ export const useHoverCard = <TKey>({ openDelay = 500, closeDelay = 300 }: UseHov
 		}
 
 		lastTriggerRef.current = trigger;
-		if (!viaClick) {
-			trigger?.addEventListener('mouseleave', handleTriggerLeave, { once: true });
-		}
+		trigger?.addEventListener('mouseleave', handleTriggerLeave, { once: true });
 
 		// Another trigger for what is already shown (an avatar next to a name): keep the card where it is.
 		if (shownKey !== undefined && Object.is(shownKey, key)) {
