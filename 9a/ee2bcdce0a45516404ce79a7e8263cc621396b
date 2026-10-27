@@ -1,0 +1,22 @@
+apps/meteor/server/lib/getMomentLocale.ts
+  s_a3b684bd1f2e06::t_a4df325267e222 10
+apps/meteor/server/lib/getMomentLocale.test.ts
+  s_a3b684bd1f2e06::t_a4df325267e222 38-42
+  s_a3b684bd1f2e06::t_afe57ba3e0c812 43-44
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "9aee2bcdce0a45516404ce79a7e8263cc621396b",
+  "prompts": {},
+  "sessions": {
+    "s_a3b684bd1f2e06": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c4653ac5-b341-40c4-b83e-d827f4afa7dc",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
