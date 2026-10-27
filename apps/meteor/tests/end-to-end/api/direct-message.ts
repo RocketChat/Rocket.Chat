@@ -475,7 +475,8 @@ describe('[Direct Messages]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 		it('should require a roomId', async () => {
@@ -631,12 +632,10 @@ describe('[Direct Messages]', () => {
 				{
 					rid: testUserDMRoom._id,
 					msg: `@${adminUsername} youre being mentioned`,
-					mentions: [{ username: adminUsername, _id: adminUsername, name: adminUsername }],
 				},
 				{
 					rid: testUserDMRoom._id,
 					msg: `@${testUser.username} youre being mentioned`,
-					mentions: [{ username: testUser.username, _id: testUser._id, name: testUser.name }],
 				},
 				{
 					rid: testUserDMRoom._id,
@@ -740,7 +739,7 @@ describe('[Direct Messages]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'unauthorized');
+					expect(res.body).to.have.property('error', 'forbidden');
 				});
 		});
 
@@ -1476,7 +1475,7 @@ describe('[Direct Messages]', () => {
 				.expect('Content-Type', 'application/json');
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('error', 'unauthorized');
+			expect(res.body).to.have.property('error', 'forbidden');
 		});
 
 		describe('when authenticated as a non-admin user', () => {

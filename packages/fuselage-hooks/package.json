@@ -56,7 +56,6 @@
 		"@types/react": "~19.2.18",
 		"@types/react-dom": "~19.2.7",
 		"css-mediaquery": "~0.1.2",
-		"eslint": "~10.12.0",
 		"jest": "~30.5.2",
 		"react": "~19.2.8",
 		"react-dom": "~19.2.8",

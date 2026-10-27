@@ -7,7 +7,6 @@ import * as Mailer from '../../lib/notifications/email/api';
 import { settings } from '../../settings';
 
 declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		sendSMTPTestEmail(): {
 			message: string;
@@ -19,7 +18,7 @@ declare module '@rocket.chat/ddp-client' {
 Meteor.methods<ServerMethods>({
 	async sendSMTPTestEmail() {
 		if (!Meteor.userId()) {
-			throw new ClientSafeError('error-invalid-user', 'Invalid user', {
+			throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', {
 				method: 'sendSMTPTestEmail',
 			});
 		}

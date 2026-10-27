@@ -68,7 +68,7 @@ const LoginSwitchLanguageFooter = ({
 					}
 
 					return (
-						<Button secondary small key={suggestion.key} onClick={handleSwitchLanguageClick(suggestion)}>
+						<Button variant='secondary' size='small' key={suggestion.key} onClick={handleSwitchLanguageClick(suggestion)}>
 							<Trans
 								i18nKey='registration.component.switchLanguage'
 								tOptions={{ lng: suggestion.key }}

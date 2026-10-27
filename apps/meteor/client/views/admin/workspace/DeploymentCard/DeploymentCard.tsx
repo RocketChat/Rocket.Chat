@@ -100,7 +100,7 @@ const DeploymentCard = ({
 
 			{!!instances.length && (
 				<CardControls>
-					<Button medium onClick={handleInstancesModal}>
+					<Button size='medium' onClick={handleInstancesModal}>
 						{t('Instances')}
 					</Button>
 				</CardControls>

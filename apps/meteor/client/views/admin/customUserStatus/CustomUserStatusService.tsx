@@ -109,7 +109,7 @@ const CustomUserStatusService = () => {
 				<Box borderBlockStartWidth='default' borderBlockColor='extra-light'>
 					<ContextualbarFooter>
 						<ButtonGroup stretch vertical>
-							<Button primary is='a' href={links.enterprise} target='_blank'>
+							<Button variant='primary' is='a' href={links.enterprise} target='_blank'>
 								{t('More_about_Premium_plans')}
 							</Button>
 						</ButtonGroup>

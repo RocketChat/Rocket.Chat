@@ -32,8 +32,8 @@ describe('licenses', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401);
 
-			expect(res.body).to.have.property('status', 'error');
-			expect(res.body).to.have.property('message');
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 		});
 
 		it('should fail if user is unauthorized', async () => {
@@ -69,8 +69,8 @@ describe('licenses', () => {
 		it('should fail if not logged in', async () => {
 			const res = await request.get(api('licenses.info')).expect('Content-Type', 'application/json').expect(401);
 
-			expect(res.body).to.have.property('status', 'error');
-			expect(res.body).to.have.property('message');
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 		});
 
 		it('should return limited information if user is unauthorized', async () => {

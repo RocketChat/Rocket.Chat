@@ -73,7 +73,6 @@ const roleUpdatePropsSchema = {
 export const isRoleUpdateProps = ajv.compile<RoleUpdateProps>(roleUpdatePropsSchema);
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
 		'/v1/roles.create': {
 			POST: (params: RoleCreateProps) => {

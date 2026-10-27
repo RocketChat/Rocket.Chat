@@ -57,7 +57,7 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 							title={t('Subscription_add-on_required')}
 							type='info'
 							actions={
-								<Button small onClick={() => openExternalLink(GET_ADDONS_LINK)}>
+								<Button size='small' onClick={() => openExternalLink(GET_ADDONS_LINK)}>
 									{t('Contact_sales')}
 								</Button>
 							}

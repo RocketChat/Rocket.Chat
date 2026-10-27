@@ -196,7 +196,7 @@ function PrepareImportPage() {
 		<Page>
 			<PageHeader title={t('Importing_Data')} onClickBack={() => router.navigate('/admin/import')}>
 				<ButtonGroup>
-					<Button primary disabled={isImporting || handleMinimumImportData} onClick={handleStartButtonClick}>
+					<Button variant='primary' disabled={isImporting || handleMinimumImportData} onClick={handleStartButtonClick}>
 						{t('Importer_Prepare_Start_Import')}
 					</Button>
 				</ButtonGroup>

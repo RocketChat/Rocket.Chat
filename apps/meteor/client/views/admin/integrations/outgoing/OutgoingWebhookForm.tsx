@@ -128,7 +128,7 @@ const OutgoingWebhookForm = () => {
 									name='event'
 									control={control}
 									render={({ field }) => (
-										<Select id={eventField} {...field} options={eventOptions} aria-description={`${eventField}-hint`} />
+										<Select id={eventField} {...field} options={eventOptions} aria-describedby={`${eventField}-hint`} />
 									)}
 								/>
 							</FieldRow>

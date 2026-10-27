@@ -29,7 +29,7 @@ describe('Apple OAuth loginHandler', () => {
 	let loginHandlerCallback: Parameters<typeof Accounts.registerLoginHandler>[1];
 
 	beforeAll(() => {
-		// eslint-disable-next-line @typescript-eslint/no-require-imports
+		// oxlint-disable-next-line @typescript-eslint/no-require-imports
 		require('./loginHandler');
 		loginHandlerCallback = jest.mocked(Accounts.registerLoginHandler).mock.calls[0][1];
 	});

@@ -159,12 +159,7 @@ const RoomMembers = ({
 					endAddon={<Icon name='magnifier' size='x20' />}
 				/>
 				<Box width='x144' marginInlineStart={8}>
-					<Select
-						aria-controls={isSuccess ? membersListId : undefined}
-						options={options}
-						value={type}
-						onChange={(value): void => setType(value as 'online' | 'all')}
-					/>
+					<Select aria-label={t('Status')} options={options} value={type} onChange={(value): void => setType(value as 'online' | 'all')} />
 				</Box>
 			</ContextualbarSection>
 			<ContextualbarContent flush spaced>
@@ -201,7 +196,6 @@ const RoomMembers = ({
 										groupCounts={counts}
 										groupContent={(index) => titles[index]}
 										components={{
-											// eslint-disable-next-line react/no-multi-comp
 											Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} />,
 											List: RoomMembersListWrapper,
 										}}
@@ -232,7 +226,7 @@ const RoomMembers = ({
 								</Button>
 							)}
 							{onClickAdd && (
-								<Button icon='user-plus' onClick={onClickAdd} primary disabled={isAbacLocked}>
+								<Button icon='user-plus' onClick={onClickAdd} variant='primary' disabled={isAbacLocked}>
 									{t('Add')}
 								</Button>
 							)}

@@ -76,7 +76,7 @@ const AbacAttributesInfo = ({ attributes, requiredKeys, isTeam, onManage, onClos
 			)}
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button primary onClick={onManage}>
+					<Button variant='primary' onClick={onManage}>
 						{t('ABAC_Manage_attributes')}
 					</Button>
 				</ButtonGroup>

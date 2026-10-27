@@ -531,7 +531,8 @@ describe('[Channels]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -842,7 +843,7 @@ describe('[Channels]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'unauthorized');
+					expect(res.body).to.have.property('error', 'forbidden');
 				});
 		});
 
@@ -4216,12 +4217,10 @@ describe('[Channels]', () => {
 				{
 					rid: testChannel._id,
 					msg: `@${firstUser.username} youre being mentioned`,
-					mentions: [{ username: firstUser.username, _id: firstUser._id, name: firstUser.name }],
 				},
 				{
 					rid: testChannel._id,
 					msg: `@${secondUser.username} youre being mentioned`,
-					mentions: [{ username: secondUser.username, _id: secondUser._id, name: secondUser.name }],
 				},
 				{
 					rid: testChannel._id,

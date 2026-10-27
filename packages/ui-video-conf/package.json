@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-video-conf",
-	"version": "35.0.0-rc.0",
+	"version": "35.0.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -38,7 +38,6 @@
 		"@types/jest-axe": "~3.5.9",
 		"@types/react": "~19.2.18",
 		"@types/react-dom": "~19.2.7",
-		"eslint": "~10.12.0",
 		"jest": "~30.5.2",
 		"jest-axe": "~11.0.0",
 		"react": "~19.2.8",

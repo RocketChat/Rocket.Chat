@@ -45,7 +45,7 @@ const SignInSignUp = ({ route }: SignInSignUpProps) => {
 						</Box>
 						<Box display='flex' flexDirection='column' gap='20px' paddingBlockStart='20px' width='80%'>
 							<InputBox type='email' />
-							<Button primary>{labels[route].button}</Button>
+							<Button variant='primary'>{labels[route].button}</Button>
 						</Box>
 						<Box marginBlockStart='20px' fontScale='p2'>
 							{`${labels[route].footer} `}

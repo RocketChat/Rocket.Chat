@@ -17,7 +17,7 @@ import type { ReactNode } from 'react';
 import { useEffect, memo, useMemo, useRef, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { getActiveDescendantOptionProps } from '../../../hooks/useActiveDescendant';
+import { getActiveDescendantOptionProps } from '../../../hooks/getActiveDescendantOptionProps';
 
 export type ComposerBoxPopupProps<
 	T extends {

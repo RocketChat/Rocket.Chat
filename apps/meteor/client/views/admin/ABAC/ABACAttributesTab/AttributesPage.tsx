@@ -67,7 +67,7 @@ const AttributesPage = () => {
 						value={text}
 						onChange={(e) => setText((e.target as HTMLInputElement).value)}
 					/>
-					<Button onClick={handleNewAttribute} primary disabled={!isABACAvailable}>
+					<Button onClick={handleNewAttribute} variant='primary' disabled={!isABACAvailable}>
 						{t('ABAC_New_attribute')}
 					</Button>
 				</Stack>

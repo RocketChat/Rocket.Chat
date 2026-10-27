@@ -1103,7 +1103,7 @@ describe('/teams.removeMember', () => {
 			.expect((res) => {
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error');
-				expect(res.body.errorType).to.be.equal('invalid-params');
+				expect(res.body.errorType).to.be.equal('error-invalid-params');
 			})
 			.then(() => done())
 			.catch(done);
@@ -1256,7 +1256,7 @@ describe('/teams.leave', () => {
 			.expect((res) => {
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error');
-				expect(res.body.errorType).to.be.equal('invalid-params');
+				expect(res.body.errorType).to.be.equal('error-invalid-params');
 			})
 			.then(() => done())
 			.catch(done);
@@ -1342,7 +1342,7 @@ describe('/teams.info', () => {
 			.expect(403)
 			.expect((response) => {
 				expect(response.body).to.have.property('success', false);
-				expect(response.body).to.have.property('error', 'unauthorized');
+				expect(response.body).to.have.property('error', 'forbidden');
 			})
 			.then(() => done())
 			.catch(done);
@@ -2435,7 +2435,7 @@ describe('/teams.updateRoom', () => {
 
 		expect(res.body).to.have.property('success', false);
 		expect(res.body).to.have.property('error');
-		expect(res.body.error).to.be.equal('unauthorized');
+		expect(res.body.error).to.be.equal('forbidden');
 	});
 
 	it('should set room to team default', async () => {
@@ -2817,7 +2817,7 @@ describe('/teams.removeRoom', () => {
 
 		expect(res.body).to.have.property('success', false);
 		expect(res.body).to.have.property('error');
-		expect(res.body.error).to.be.equal('unauthorized');
+		expect(res.body.error).to.be.equal('forbidden');
 	});
 
 	it('should remove room from team', async () => {

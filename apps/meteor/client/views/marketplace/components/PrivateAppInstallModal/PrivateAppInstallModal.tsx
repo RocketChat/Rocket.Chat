@@ -55,7 +55,7 @@ const PrivateAppInstallModal = ({ onClose, onProceed }: PrivateAppInstallModalPr
 				</ModalFooterAnnotation>
 				<ModalFooterControllers>
 					<Button onClick={onProceed}>{t('Upload_anyway')}</Button>
-					<Button onClick={goToManageSubscriptionPage} primary>
+					<Button onClick={goToManageSubscriptionPage} variant='primary'>
 						{t('Upgrade')}
 					</Button>
 				</ModalFooterControllers>

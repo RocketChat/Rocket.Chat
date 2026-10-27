@@ -9,7 +9,6 @@ import { notifyOnRoomChangedById } from '../../lib/notifyListener';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 
 declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		unmuteUserInRoom(data: { rid: IRoom['_id']; username: string }): boolean;
 	}

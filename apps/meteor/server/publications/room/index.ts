@@ -15,7 +15,6 @@ type PublicRoomField = keyof typeof roomFields;
 type PublicRoom = Pick<IRoom, PublicRoomField & keyof IRoom> & Pick<IOmnichannelRoom, PublicRoomField & keyof IOmnichannelRoom>;
 
 declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		'rooms/get'(updatedAt?: Date): IRoom[] | { update: IRoom[]; remove: IRoom[] };
 		'getRoomByTypeAndName': (type: RoomType, name: string) => PublicRoom;
@@ -64,7 +63,7 @@ Meteor.methods<ServerMethods>({
 		if (isAnonymous) {
 			const allowAnon = settings.get('Accounts_AllowAnonymousRead');
 			if (!allowAnon || type !== 'c') {
-				throw new ClientSafeError('error-invalid-user', 'Invalid user', {
+				throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', {
 					method: 'getRoomByTypeAndName',
 				});
 			}

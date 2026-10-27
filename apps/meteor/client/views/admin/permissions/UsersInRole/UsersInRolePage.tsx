@@ -138,7 +138,7 @@ const UsersInRolePage = ({ role }: UsersInRolePageProps) => {
 										/>
 									)}
 								/>
-								<Button primary onClick={handleSubmit(handleAdd)} disabled={!isDirty}>
+								<Button variant='primary' onClick={handleSubmit(handleAdd)} disabled={!isDirty}>
 									{t('Add')}
 								</Button>
 							</Stack>

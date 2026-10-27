@@ -122,7 +122,7 @@ const AccountProfilePage = () => {
 								{t('Logout_Others')}
 							</Button>
 							{allowDeleteOwnAccount && (
-								<Button icon='trash' danger onClick={handleDeleteOwnAccount}>
+								<Button icon='trash' variant='danger' onClick={handleDeleteOwnAccount}>
 									{t('Delete_my_account')}
 								</Button>
 							)}
@@ -135,7 +135,7 @@ const AccountProfilePage = () => {
 					<Button disabled={!isDirty} onClick={() => reset(getProfileInitialValues(user))}>
 						{t('Cancel')}
 					</Button>
-					<Button form={profileFormId} primary disabled={!isDirty || loggingOut} loading={isSubmitting} type='submit'>
+					<Button form={profileFormId} variant='primary' disabled={!isDirty || loggingOut} loading={isSubmitting} type='submit'>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>

@@ -13,6 +13,8 @@ export const modalSurfaceLayoutBlockTypes = [
 	'markdown',
 	'preview',
 	'section',
+	'table',
+	'video',
 ] as const satisfies readonly RenderableLayoutBlock['type'][];
 
 type ModalSurfaceLayoutBlock = Extract<RenderableLayoutBlock, { type: (typeof modalSurfaceLayoutBlockTypes)[number] }>;

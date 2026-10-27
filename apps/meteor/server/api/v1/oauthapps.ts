@@ -291,6 +291,6 @@ const oauthAppsEndpoints = API.v1
 export type OauthAppsEndpoints = ExtractRoutesFromAPI<typeof oauthAppsEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends OauthAppsEndpoints {}
 }

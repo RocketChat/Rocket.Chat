@@ -1,5 +1,6 @@
 import { composeStories } from '@storybook/react-webpack5';
 import { screen } from '@testing-library/react';
+import type { ComponentProps } from 'react';
 
 import { render } from '../../testing';
 import { Badge } from '../Badge';
@@ -19,6 +20,34 @@ describe('[IconButton Component]', () => {
 		it('_IconButtonWithDot', () => {
 			render(<_IconButtonWithDot />);
 		});
+	});
+
+	const renderMarkup = (props: Partial<ComponentProps<typeof IconButton>>) =>
+		render(<IconButton icon='balloon' aria-label='balloon' {...props} />).container.innerHTML;
+
+	it.each([
+		['primary', { primary: true }],
+		['secondary', { secondary: true }],
+		['info', { info: true }],
+		['danger', { danger: true }],
+		['warning', { warning: true }],
+		['success', { success: true }],
+		['secondary-danger', { secondary: true, danger: true }],
+		['secondary-warning', { secondary: true, warning: true }],
+		['secondary-success', { secondary: true, success: true }],
+	] as const)('should render variant %s as its deprecated boolean props did', (variant, booleans) => {
+		expect(renderMarkup({ variant })).toBe(renderMarkup(booleans));
+		expect(renderMarkup({ variant, pressed: true })).toBe(renderMarkup({ ...booleans, pressed: true }));
+	});
+
+	it.each(['mini', 'tiny', 'small', 'medium', 'large'] as const)('should render size %s as its deprecated boolean prop did', (size) => {
+		expect(renderMarkup({ size })).toBe(renderMarkup({ [size]: true }));
+	});
+
+	it('should prefer variant and size over the deprecated boolean props', () => {
+		expect(renderMarkup({ variant: 'danger', secondary: true, size: 'small', large: true })).toBe(
+			renderMarkup({ danger: true, small: true }),
+		);
 	});
 
 	it('should display the badge', () => {

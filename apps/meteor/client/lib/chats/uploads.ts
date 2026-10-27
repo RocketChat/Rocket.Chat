@@ -185,7 +185,7 @@ class UploadsStore extends Emitter<{ update: void; [x: `cancelling-${Upload['id'
 							return;
 						}
 
-						if (xhr.status === 400) {
+						if (xhr.status === 400 || xhr.status === 403) {
 							const error = JSON.parse(xhr.responseText);
 							this.updateUpload(id, { percentage: 0, error: new Error(error.error) });
 							return;

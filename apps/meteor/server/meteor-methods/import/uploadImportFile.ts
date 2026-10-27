@@ -24,7 +24,7 @@ export const executeUploadImportFile = async (
 
 	const operation = await Import.newOperation(userId, importer.name, importer.key);
 
-	const instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
+	const instance = new importer.importer(importer, operation); // oxlint-disable-line new-cap
 
 	const date = new Date();
 	const dateStr = `${date.getUTCFullYear()}${date.getUTCMonth()}${date.getUTCDate()}${date.getUTCHours()}${date.getUTCMinutes()}${date.getUTCSeconds()}`;

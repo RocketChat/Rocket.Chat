@@ -7,7 +7,6 @@ import { RateLimiterClass as RateLimiter } from '../../lib/RateLimiter';
 import { settings } from '../../settings';
 
 declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		setUserStatus(statusType: IUser['status'], statusText: IUser['statusText']): void;
 	}
@@ -39,7 +38,7 @@ Meteor.methods<ServerMethods>({
 	setUserStatus: async (statusType, statusText) => {
 		const user = (await Meteor.userAsync()) as IUser;
 		if (!user) {
-			throw new ClientSafeError('error-invalid-user', 'Invalid user', { method: 'setUserStatus' });
+			throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', { method: 'setUserStatus' });
 		}
 
 		await setUserStatusMethod(user, statusType, statusText);

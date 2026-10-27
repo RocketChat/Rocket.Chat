@@ -151,7 +151,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps) => {
 					{roomIsFederated ? (
 						!isFederationBlocked && (
 							<Button
-								primary
+								variant='primary'
 								disabled={addClickHandler.isPending || !isDirty}
 								onClick={() =>
 									addClickHandler.mutate({
@@ -164,7 +164,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps) => {
 							</Button>
 						)
 					) : (
-						<Button primary loading={isSubmitting} disabled={!isDirty} onClick={handleSubmit(handleSaveWithBannedCheck)}>
+						<Button variant='primary' loading={isSubmitting} disabled={!isDirty} onClick={handleSubmit(handleSaveWithBannedCheck)}>
 							{t('Add_users')}
 						</Button>
 					)}

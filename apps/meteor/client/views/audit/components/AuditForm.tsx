@@ -66,10 +66,10 @@ const AuditForm = ({ type, onSubmit, setSelectedRoom }: AuditFormProps) => {
 				{type === 'l' && <OmnichannelTab form={form} />}
 				<Box flexShrink={0} marginBlockStart='x24'>
 					<ButtonGroup align='end'>
-						<Button secondary onClick={() => window.print()}>
+						<Button variant='secondary' onClick={() => window.print()}>
 							{t('Export')} {t('PDF')}
 						</Button>
-						<Button primary type='submit'>
+						<Button variant='primary' type='submit'>
 							{t('Apply')}
 						</Button>
 					</ButtonGroup>

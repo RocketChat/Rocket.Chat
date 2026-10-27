@@ -47,7 +47,7 @@ async function saveUserProfile(
 	}
 
 	if (!this.userId) {
-		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', {
 			method: 'saveUserProfile',
 		});
 	}
@@ -206,7 +206,6 @@ const saveUserProfileWithTwoFactor = twoFactorRequired(saveUserProfile, {
 });
 
 declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		saveUserProfile(
 			settings: {

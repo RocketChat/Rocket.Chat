@@ -1,8 +1,8 @@
 import { api } from '@rocket.chat/core-services';
 import { Logger } from '@rocket.chat/logger';
 import { OmnichannelTranscript, QueueWorker } from '@rocket.chat/omnichannel-services';
-import { MongoInternals } from 'meteor/mongo';
 
+import { db } from '../database/utils';
 import { isRunningMs } from '../lib/isRunningMs';
 import { AISearchService } from './ai-search/service';
 import { AnalyticsService } from './analytics/service';
@@ -34,8 +34,6 @@ import { i18n } from '../lib/i18n';
 import { AuthorizationLivechat } from '../lib/omnichannel/roomAccessValidator.internalService';
 
 export const registerServices = async (): Promise<void> => {
-	const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
-
 	api.registerService(new AppsEngineService());
 	api.registerService(new AnalyticsService());
 	api.registerService(new AuthorizationLivechat());

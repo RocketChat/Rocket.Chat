@@ -225,7 +225,7 @@ export const createDiscussion = async (
 	}
 
 	if (!userId) {
-		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', {
 			method: 'DiscussionCreation',
 		});
 	}
