@@ -1276,7 +1276,7 @@ describe('[Rooms]', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'error-not-allowed');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 		describe('test user is not part of room', async () => {
 			beforeEach(async () => {
@@ -1301,7 +1301,7 @@ describe('[Rooms]', () => {
 					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-not-allowed');
+						expect(res.body).to.have.property('errorType', 'error-forbidden');
 						expect(res.body).to.have.property('error', 'error-forbidden');
 					});
 			});
@@ -1604,7 +1604,7 @@ describe('[Rooms]', () => {
 					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-not-allowed');
+						expect(res.body).to.have.property('errorType', 'error-forbidden');
 					});
 			});
 		});
@@ -1725,7 +1725,7 @@ describe('[Rooms]', () => {
 					.expect('Content-Type', 'application/json')
 					.expect(403);
 
-				expect(res.body).to.have.property('errorType', 'error-not-allowed');
+				expect(res.body).to.have.property('errorType', 'error-forbidden');
 			});
 
 			it('should not return a private group to a user without view-room-administration', async () => {
@@ -1736,7 +1736,7 @@ describe('[Rooms]', () => {
 					.expect('Content-Type', 'application/json')
 					.expect(403);
 
-				expect(res.body).to.have.property('errorType', 'error-not-allowed');
+				expect(res.body).to.have.property('errorType', 'error-forbidden');
 			});
 
 			it('should not return a private group to an admin once view-room-administration is revoked', async () => {
@@ -1750,7 +1750,7 @@ describe('[Rooms]', () => {
 						.expect('Content-Type', 'application/json')
 						.expect(403);
 
-					expect(res.body).to.have.property('errorType', 'error-not-allowed');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				} finally {
 					await restorePermissionToRoles('view-room-administration');
 				}
@@ -1797,7 +1797,7 @@ describe('[Rooms]', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'error-not-allowed');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 		it('should return an Error when trying to leave a public channel and you are the last owner', async () => {
 			const res = await request
@@ -1835,7 +1835,7 @@ describe('[Rooms]', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'error-not-allowed');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 		it('should return an Error when trying to leave a private group and not have the necessary permission(leave-p)', async () => {
 			await updatePermission('leave-p', []);
@@ -1849,7 +1849,7 @@ describe('[Rooms]', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'error-not-allowed');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 		it('should leave the public channel when the room has at least another owner and the user has the necessary permission(leave-c)', async () => {
 			await updatePermission('leave-c', ['admin']);
@@ -2484,7 +2484,7 @@ describe('[Rooms]', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'error-not-allowed');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 
 		describe('with a join code', () => {

@@ -1782,7 +1782,7 @@ describe('/teams.addRooms', () => {
 
 		expect(res.body).to.have.property('success', false);
 		expect(res.body).to.have.property('error');
-		expect(res.body.errorType).to.be.equal('error-no-permission-team-channel');
+		expect(res.body.errorType).to.be.equal('error-forbidden');
 	});
 
 	it('should add public and private rooms to team', async () => {

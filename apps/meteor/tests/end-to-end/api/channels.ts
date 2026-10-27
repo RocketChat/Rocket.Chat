@@ -3305,7 +3305,7 @@ describe('[Channels]', () => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.a.property('error');
 					expect(res.body).to.have.a.property('errorType');
-					expect(res.body.errorType).to.be.equal('error-not-allowed');
+					expect(res.body.errorType).to.be.equal('error-forbidden');
 				});
 		});
 		it(`should fail deleting a team's channel when member has the necessary permission in the team, but not in the deleted room`, async () => {
@@ -3321,7 +3321,7 @@ describe('[Channels]', () => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.a.property('error');
 					expect(res.body).to.have.a.property('errorType');
-					expect(res.body.errorType).to.be.equal('error-not-allowed');
+					expect(res.body.errorType).to.be.equal('error-forbidden');
 				});
 		});
 		it(`should successfully delete a team's channel when member has both team and channel permissions`, async () => {

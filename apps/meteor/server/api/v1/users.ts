@@ -2232,7 +2232,7 @@ API.v1.post(
 
 		const user = await Users.findOneByEmailVerificationToken<Pick<IUser, '_id' | 'services' | 'emails'>>(token);
 		if (!user) {
-			return API.v1.forbidden('error-invalid-token');
+			return API.v1.forbidden();
 		}
 
 		await verifyEmail(user, token);

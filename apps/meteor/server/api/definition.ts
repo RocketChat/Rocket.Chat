@@ -55,7 +55,7 @@ export type ForbiddenResult = {
 	body: {
 		success: false;
 		error: 'error-forbidden';
-		errorType: string;
+		errorType: 'error-forbidden';
 	};
 };
 

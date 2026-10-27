@@ -657,7 +657,7 @@ const chatEndpoints = API.v1
 			}
 
 			if (this.bodyParams.asUser && msg.u._id !== this.userId && !(await hasPermissionAsync(this.user, 'force-delete-message', msg.rid))) {
-				return API.v1.forbidden('error-not-authorized');
+				return API.v1.forbidden();
 			}
 
 			const userId = this.bodyParams.asUser ? msg.u._id : this.userId;

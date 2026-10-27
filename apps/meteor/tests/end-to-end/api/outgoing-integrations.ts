@@ -374,7 +374,7 @@ describe('[Outgoing Integrations]', () => {
 					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'not-authorized');
+						expect(res.body).to.have.property('errorType', 'error-forbidden');
 					})
 					.end(done);
 			});
@@ -390,7 +390,7 @@ describe('[Outgoing Integrations]', () => {
 					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'not-authorized');
+						expect(res.body).to.have.property('errorType', 'error-forbidden');
 					})
 					.end(done);
 			});

@@ -78,7 +78,7 @@ const abacEndpoints = API.v1
 
 			const grant = await getRoomAttributesGrant(this.userId, rid);
 			if (!grant) {
-				return API.v1.forbidden('error-not-authorized');
+				return API.v1.forbidden();
 			}
 
 			if (!settings.get('ABAC_Enabled')) {
@@ -528,7 +528,7 @@ const abacEndpoints = API.v1
 			if (rid) {
 				const grant = await getRoomAttributesGrant(this.userId, rid);
 				if (!grant) {
-					return API.v1.forbidden('error-not-authorized');
+					return API.v1.forbidden();
 				}
 
 				return API.v1.success({
@@ -538,7 +538,7 @@ const abacEndpoints = API.v1
 			}
 
 			if (!(await hasPermissionAsync(this.userId, 'create-abac-managed-room'))) {
-				return API.v1.forbidden('error-not-authorized');
+				return API.v1.forbidden();
 			}
 
 			return API.v1.success({
@@ -574,14 +574,14 @@ const abacEndpoints = API.v1
 				const { rid, attributes, filter, after, group } = this.bodyParams;
 				const grant = await getRoomAttributesGrant(this.userId, rid);
 				if (!grant) {
-					return API.v1.forbidden('error-not-authorized');
+					return API.v1.forbidden();
 				}
 
 				return API.v1.success(await Abac.previewRoomMembers(rid, attributes, toAbacActor(this.user), { filter, after, group }, grant));
 			}
 
 			if (!(await hasPermissionAsync(this.userId, 'create-abac-managed-room'))) {
-				return API.v1.forbidden('error-not-authorized');
+				return API.v1.forbidden();
 			}
 
 			const { members, attributes, excludeSelf = false } = this.bodyParams;

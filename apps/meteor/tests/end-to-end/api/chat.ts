@@ -3723,7 +3723,7 @@ describe('[Chat]', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.errorType).to.be.equal('error-not-allowed');
+			expect(res.body.errorType).to.be.equal('error-forbidden');
 		});
 
 		it('should return the mentioned messages', async () => {
@@ -3772,7 +3772,7 @@ describe('[Chat]', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.errorType).to.be.equal('error-not-allowed');
+			expect(res.body.errorType).to.be.equal('error-forbidden');
 		});
 
 		it('should return the starred messages', async () => {
@@ -3837,7 +3837,7 @@ describe('[Chat]', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.errorType).to.be.equal('error-not-allowed');
+			expect(res.body.errorType).to.be.equal('error-forbidden');
 		});
 
 		it('should return the discussions of a room', async () => {
@@ -3974,7 +3974,7 @@ describe('[Chat]', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.errorType).to.be.equal('error-not-allowed');
+			expect(res.body.errorType).to.be.equal('error-forbidden');
 			expect(res.body.error).to.be.equal('error-forbidden');
 		});
 
@@ -4408,7 +4408,7 @@ describe('Threads', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'error-not-allowed');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 			expect(res.body).to.have.property('error', 'error-forbidden');
 		});
 
@@ -4428,7 +4428,7 @@ describe('Threads', () => {
 								.expect(403)
 								.expect((res) => {
 									expect(res.body).to.have.property('success', false);
-									expect(res.body).to.have.property('errorType', 'error-not-allowed');
+									expect(res.body).to.have.property('errorType', 'error-forbidden');
 									expect(res.body).to.have.property('error', 'error-forbidden');
 								})
 								.end(done);
@@ -4644,7 +4644,7 @@ describe('Threads', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'error-not-allowed');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 			expect(res.body).to.have.property('error', 'error-forbidden');
 		});
 
@@ -4711,7 +4711,7 @@ describe('Threads', () => {
 							.expect(403)
 							.expect((res) => {
 								expect(res.body).to.have.property('success', false);
-								expect(res.body).to.have.property('errorType', 'error-not-allowed');
+								expect(res.body).to.have.property('errorType', 'error-forbidden');
 								expect(res.body).to.have.property('error', 'error-forbidden');
 							})
 							.end(done);
@@ -4789,7 +4789,7 @@ describe('Threads', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'error-not-allowed');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 			expect(res.body).to.have.property('error', 'error-forbidden');
 		});
 
@@ -4809,7 +4809,7 @@ describe('Threads', () => {
 								.expect(403)
 								.expect((res) => {
 									expect(res.body).to.have.property('success', false);
-									expect(res.body).to.have.property('errorType', 'error-not-allowed');
+									expect(res.body).to.have.property('errorType', 'error-forbidden');
 									expect(res.body).to.have.property('error', 'error-forbidden');
 								})
 								.end(done);
@@ -4928,7 +4928,7 @@ describe('Threads', () => {
 					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'error-not-allowed');
+						expect(res.body).to.have.property('errorType', 'error-forbidden');
 					});
 			} finally {
 				await updateSetting('Threads_enabled', true);
@@ -5036,7 +5036,7 @@ describe('Threads', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'error-not-allowed');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 			expect(res.body).to.have.property('error', 'error-forbidden');
 		});
 
@@ -5103,7 +5103,7 @@ describe('Threads', () => {
 							.expect(403)
 							.expect((res) => {
 								expect(res.body).to.have.property('success', false);
-								expect(res.body).to.have.property('errorType', 'error-not-allowed');
+								expect(res.body).to.have.property('errorType', 'error-forbidden');
 								expect(res.body).to.have.property('error', 'error-forbidden');
 							})
 							.end(done);
@@ -5178,7 +5178,7 @@ describe('Threads', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'error-not-allowed');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 			expect(res.body).to.have.property('error', 'error-forbidden');
 		});
 
@@ -5214,7 +5214,7 @@ describe('Threads', () => {
 							.expect(403)
 							.expect((res) => {
 								expect(res.body).to.have.property('success', false);
-								expect(res.body).to.have.property('errorType', 'error-not-allowed');
+								expect(res.body).to.have.property('errorType', 'error-forbidden');
 								expect(res.body).to.have.property('error', 'error-forbidden');
 							})
 							.end(done);
@@ -5281,7 +5281,7 @@ describe('Threads', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'error-not-allowed');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 			expect(res.body).to.have.property('error', 'error-forbidden');
 		});
 
@@ -5317,7 +5317,7 @@ describe('Threads', () => {
 							.expect(403)
 							.expect((res) => {
 								expect(res.body).to.have.property('success', false);
-								expect(res.body).to.have.property('errorType', 'error-not-allowed');
+								expect(res.body).to.have.property('errorType', 'error-forbidden');
 								expect(res.body).to.have.property('error', 'error-forbidden');
 							})
 							.end(done);
@@ -5401,7 +5401,7 @@ describe('Threads', () => {
 					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.errorType).to.be.equal('error-not-allowed');
+						expect(res.body.errorType).to.be.equal('error-forbidden');
 					});
 			});
 		});

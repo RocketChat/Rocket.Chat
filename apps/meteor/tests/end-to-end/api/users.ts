@@ -5305,7 +5305,7 @@ describe('[Users]', () => {
 						.expect(403);
 
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('not-authorized');
+					expect(res.body.errorType).to.be.equal('error-forbidden');
 				});
 				it('/users.regeneratePersonalAccessToken', async () => {
 					const res = await request
@@ -5318,7 +5318,7 @@ describe('[Users]', () => {
 						.expect(403);
 
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('not-authorized');
+					expect(res.body.errorType).to.be.equal('error-forbidden');
 				});
 				it('/users.getPersonalAccessTokens', async () => {
 					const res = await request
@@ -5341,7 +5341,7 @@ describe('[Users]', () => {
 						.expect(403);
 
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('not-authorized');
+					expect(res.body.errorType).to.be.equal('error-forbidden');
 				});
 				it('should throw an error when user tries remove a token that does not exist', async () => {
 					const res = await request
@@ -5354,7 +5354,7 @@ describe('[Users]', () => {
 						.expect(403);
 
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('not-authorized');
+					expect(res.body.errorType).to.be.equal('error-forbidden');
 				});
 			});
 		});
@@ -6240,7 +6240,7 @@ describe('[Users]', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.errorType).to.be.equal('error-not-allowed');
+			expect(res.body.errorType).to.be.equal('error-forbidden');
 			expect(res.body.error).to.be.equal('error-forbidden');
 		});
 		it('should update my own status', async () => {

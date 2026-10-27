@@ -1213,7 +1213,7 @@ describe('[Direct Messages]', () => {
 				.expect('Content-Type', 'application/json');
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'error-not-allowed');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 
 		it('rejects users with view-room-administration but without create-d-other-users', async () => {
@@ -1231,7 +1231,7 @@ describe('[Direct Messages]', () => {
 					.expect('Content-Type', 'application/json');
 
 				expect(res.body).to.have.property('success', false);
-				expect(res.body).to.have.property('errorType', 'error-not-allowed');
+				expect(res.body).to.have.property('errorType', 'error-forbidden');
 			} finally {
 				await updatePermission('view-room-administration', ['admin']);
 			}

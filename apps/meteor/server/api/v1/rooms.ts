@@ -555,7 +555,7 @@ API.v1.get(
 				(await hasPermissionAsync(this.userId, 'view-room-administration')));
 
 		if (!canAccess) {
-			return API.v1.forbidden('error-not-allowed');
+			return API.v1.forbidden();
 		}
 
 		const discussionParent =
@@ -642,7 +642,7 @@ API.v1.get(
 		const { sort, fields } = await this.parseJsonQuery();
 
 		if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
-			return API.v1.forbidden('error-not-allowed');
+			return API.v1.forbidden();
 		}
 
 		const ourQuery = { prid: room._id };
@@ -836,7 +836,7 @@ API.v1.get(
 		});
 
 		if (!room) {
-			return API.v1.forbidden('error-not-allowed');
+			return API.v1.forbidden();
 		}
 		return API.v1.success(room);
 	},

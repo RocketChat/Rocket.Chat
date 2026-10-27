@@ -756,7 +756,7 @@ describe('[Incoming Integrations]', () => {
 					.expect(403);
 
 				expect(res.body).to.have.property('success', false);
-				expect(res.body).to.have.property('errorType', 'not-authorized');
+				expect(res.body).to.have.property('errorType', 'error-forbidden');
 			});
 
 			it('should return an error when the user DOES NOT have the permission "manage-incoming-integrations" to get an incoming integration created by another user', async () => {
@@ -768,7 +768,7 @@ describe('[Incoming Integrations]', () => {
 					.expect(403);
 
 				expect(res.body).to.have.property('success', false);
-				expect(res.body).to.have.property('errorType', 'not-authorized');
+				expect(res.body).to.have.property('errorType', 'error-forbidden');
 			});
 		});
 
@@ -1304,7 +1304,7 @@ describe('[Incoming Integrations]', () => {
 				})
 				.expect(403)
 				.expect((res) => {
-					expect(res.body).to.have.property('errorType', 'error-not-allowed');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 			await request
 				.get(api('groups.messages'))
@@ -1330,7 +1330,7 @@ describe('[Incoming Integrations]', () => {
 				})
 				.expect(403)
 				.expect((res) => {
-					expect(res.body).to.have.property('errorType', 'error-not-allowed');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 			await request
 				.get(api('groups.members'))
@@ -1356,7 +1356,7 @@ describe('[Incoming Integrations]', () => {
 				})
 				.expect(403)
 				.expect((res) => {
-					expect(res.body).to.have.property('errorType', 'error-not-allowed');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 			await request
 				.get(api('channels.messages'))
@@ -1382,7 +1382,7 @@ describe('[Incoming Integrations]', () => {
 				})
 				.expect(403)
 				.expect((res) => {
-					expect(res.body).to.have.property('errorType', 'error-not-allowed');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 			await request
 				.get(api('channels.members'))

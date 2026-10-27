@@ -300,7 +300,7 @@ API.v1.post(
 		}
 
 		if (!(await hasPermissionAsync(this.user, 'move-room-to-team', team.roomId))) {
-			return API.v1.forbidden('error-no-permission-team-channel');
+			return API.v1.forbidden();
 		}
 
 		const { rooms } = this.bodyParams;

@@ -192,7 +192,7 @@ API.v1.post(
 		const { userId } = this;
 
 		if (!(await hasPermissionAsync(this.user, 'call-management', roomId))) {
-			return API.v1.forbidden('error-not-authorized');
+			return API.v1.forbidden();
 		}
 
 		try {
@@ -202,7 +202,7 @@ API.v1.post(
 				type: this.user.type ?? 'user',
 			});
 		} catch {
-			return API.v1.forbidden('error-not-allowed');
+			return API.v1.forbidden();
 		}
 
 		try {
