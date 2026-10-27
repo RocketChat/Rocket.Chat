@@ -1,0 +1,32 @@
+apps/meteor/server/lib/notifications/email/transport.ts
+  s_dc3c20dfdb4eca::t_1048e4dff8b848 9
+  s_dc3c20dfdb4eca::t_7a9a8bde222bf6 11
+  s_dc3c20dfdb4eca::t_831a138676d9a7 8
+apps/meteor/packages/rocketchat-mongo-config/package.js
+  s_dc3c20dfdb4eca::t_11a34c3d2cc30b 9
+.changeset/app-email-pooled-smtp.md
+  s_dc3c20dfdb4eca::t_918d4a1cfb55dc 5
+apps/meteor/server/configuration/configureSMTP.ts
+  s_dc3c20dfdb4eca::t_831a138676d9a7 1-3,5,8-11,13-14,18,29,35,37
+  s_dc3c20dfdb4eca::t_7a9a8bde222bf6 22
+apps/meteor/server/lib/utils/functions/isSMTPConfigured.ts
+  s_dc3c20dfdb4eca::t_11a34c3d2cc30b 3
+apps/meteor/server/configuration/configureSMTP.test.ts
+  s_dc3c20dfdb4eca::t_fd2d4d978fd6cf 8-9,12,14,27-34,48-59,61,64-65,67,70-105,108-116
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "6542773c95649749393d92b371ba1644d533dd47",
+  "prompts": {},
+  "sessions": {
+    "s_dc3c20dfdb4eca": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "d817402a-07f3-4d6f-bdd3-86887151a398",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

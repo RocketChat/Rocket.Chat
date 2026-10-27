@@ -1,0 +1,19 @@
+packages/http-router/src/server.spec.ts
+  s_f3e7af0b0e6bc5::t_4a152e12498dc6 12,14-15,17,19,21-25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ed175cf47e32db0a9c22281279e798e3a6920252",
+  "prompts": {},
+  "sessions": {
+    "s_f3e7af0b0e6bc5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b8028d69-1c86-4683-80b4-6ab4042b0851",
+        "model": "unknown"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

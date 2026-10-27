@@ -1,0 +1,21 @@
+apps/meteor/server/api/webhooks.spec.ts
+  s_f3e7af0b0e6bc5::t_4fbde57e74da3d 792-801
+apps/meteor/server/api/webhooks.ts
+  s_f3e7af0b0e6bc5::t_3d6541789a285d 411-413
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "03ae5e26909440baf25b5a013d2d956bb6c08250",
+  "prompts": {},
+  "sessions": {
+    "s_f3e7af0b0e6bc5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b8028d69-1c86-4683-80b4-6ab4042b0851",
+        "model": "unknown"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
