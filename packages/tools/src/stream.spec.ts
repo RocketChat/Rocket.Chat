@@ -1,4 +1,4 @@
-import { Readable } from 'node:stream';
+import { Duplex, Readable } from 'node:stream';
 
 import { streamToBuffer } from './stream';
 
@@ -19,6 +19,20 @@ describe('streamToBuffer', () => {
 		stream.pause();
 
 		await expect(streamToBuffer(stream)).resolves.toEqual(Buffer.concat(chunks));
+	});
+
+	it('resolves when a duplex readable ends while its writable side remains open', async () => {
+		const stream = new Duplex({
+			read() {
+				this.push(Buffer.from('readable'));
+				this.push(null);
+			},
+			write(_chunk, _encoding, callback) {
+				callback();
+			},
+		});
+
+		await expect(streamToBuffer(stream)).resolves.toEqual(Buffer.from('readable'));
 	});
 
 	it('returns an empty buffer for an empty stream', async () => {

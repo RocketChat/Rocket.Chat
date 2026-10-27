@@ -6,7 +6,7 @@ export const streamToBuffer = async (stream: Readable): Promise<Buffer> => {
 	const onData = (chunk: Buffer): void => {
 		chunks.push(chunk);
 	};
-	const completion = finished(stream, { cleanup: true });
+	const completion = finished(stream, { readable: true, writable: false, cleanup: true });
 
 	stream.on('data', onData).resume();
 
