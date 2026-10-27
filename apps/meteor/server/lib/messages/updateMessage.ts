@@ -94,8 +94,8 @@ export const updateMessage = async function (
 	}
 
 	const { _id, ...editedMessage } = messageData;
-	// A message taken out of a thread loses `tmid` entirely; a stored null would still mark it as a thread reply.
-	const shouldUnsetTmid = Boolean(originalMessage.tmid && !messageData.tmid);
+	// A message without a thread loses `tmid` entirely; a stored null would still mark it as a thread reply.
+	const shouldUnsetTmid = 'tmid' in editedMessage && !editedMessage.tmid;
 	if (shouldUnsetTmid) {
 		delete editedMessage.tmid;
 	}

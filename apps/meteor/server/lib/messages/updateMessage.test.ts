@@ -71,6 +71,15 @@ describe('updateMessage', () => {
 		expect(update.$unset).to.include({ tmid: 1 });
 	});
 
+	it('should not store an empty tmid on a main channel message', async () => {
+		await updateMessage({ _id: 'msg', rid: 'room', msg: 'edited', tmid: null as unknown as undefined }, user, original);
+
+		const [, update] = modelsMock.Messages.updateOne.firstCall.args;
+		expect(update.$set).to.not.have.property('tmid');
+		expect(update.$unset).to.include({ tmid: 1 });
+		expect(modelsMock.Messages.decreaseReplyCountById.called).to.be.false;
+	});
+
 	it('should uncount a message moved to another thread from its previous thread parent', async () => {
 		modelsMock.Messages.findOneById.withArgs('parent').resolves({ _id: 'parent', u: { _id: 'parentAuthor' }, replies: ['parentAuthor'] });
 
