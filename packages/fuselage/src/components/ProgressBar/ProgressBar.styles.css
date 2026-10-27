@@ -15,3 +15,7 @@
 		opacity: 0;
 	}
 }
+
+.rcx-progress-bar__shine {
+	animation: rcx-progress-bar__animation 2s ease-out infinite;
+}

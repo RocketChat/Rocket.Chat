@@ -38,7 +38,6 @@ const ProgressBarShine = styled(View, {
 	position: 'absolute',
 	inset: 0,
 	width: 'inherit',
-	animation: 'rcx-progress-bar__animation 2s ease-out infinite',
 	opacity: 0,
 	borderRadius: progressBarBorderRadius,
 	background: toCSSValue('--rcx-progress-bar-color-shine', `${surfaceColors['surface-light']}`),
@@ -88,7 +87,7 @@ function ProgressBar({ percentage, variant = 'info', error, animated, light = fa
 				width={getWidth(percentage)}
 				className={cx('rcx-progress-bar__fill', animated && 'rcx-progress-bar__fill--animated')}
 			>
-				{animated && <ProgressBarShine aria-hidden />}
+				{animated && <ProgressBarShine aria-hidden className='rcx-progress-bar__shine' />}
 			</ProgressBarFill>
 		</ProgressBarFrame>
 	);

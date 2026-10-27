@@ -19,7 +19,6 @@ const SkeletonFrame = styled(View, {
 	outline: 'none',
 	fontVariantNumeric: 'tabular-nums',
 	height: '1.2em',
-	animation: 'rcx-skeleton__animation 1s linear 0s infinite running',
 	opacity: 0.1,
 	borderRadius: toCSSValue('--rcx-border-radius-medium', borderRadius('medium')),
 	background: skeletonBackground,

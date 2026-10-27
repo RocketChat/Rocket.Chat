@@ -268,9 +268,9 @@ This is the one list to track removing Tamagui's runtime from Fuselage's web bui
 - [x] `group`: Message and Item reveal their parts with parent rules in the `fuselage` layer.
 - [ ] Dynamic style values (17 frames): a finite variant, or a CSS custom property through `style`.
 - [ ] `context:` and `createStyledContext` (6 / 4: Message, MessageToolbar, Card…): a React context read by the lowered component, or a `data-*` attribute on the parent with a descendant selector.
-- [ ] `animation:` (5: ToastBar, Skeleton, ProgressBar…): CSS `@keyframes`.
+- [x] `animation:` (Skeleton, the ProgressBar shine, Throbber): the frames take their `@keyframes` from plain CSS classes.
 - [ ] Spreads the compiler can't prove style-free (8: BannerLink, Chevron, Icon, ItemContent, ItemGroup, ItemLink, ModalHeroImage, NavBarSection): explicit props.
-- [ ] `getTokens` in PaletteStyleTag: a token module.
+- [x] `getTokens` in PaletteStyleTag: already a local function over `fuselage-tokens`' JSON, it never reads Tamagui's config.
 - [ ] `isTamaguiComponent`: a marker the lowered component sets.
 
 **4. Make the lowering plugin production-ready**

@@ -12,6 +12,10 @@
 
 /* Each circle's timing comes from custom properties instead of a stylesheet per circle */
 .rcx-throbber__circle {
+	animation-name: bounce;
 	animation-duration: var(--throbber-duration);
+	animation-timing-function: ease-in-out;
 	animation-delay: var(--throbber-delay);
+	animation-iteration-count: infinite;
+	animation-fill-mode: both;
 }

@@ -31,7 +31,6 @@ const CircleFrame = styled(View, {
 	...resetBox,
 	render: 'span',
 	marginInline: spacing('x1'),
-	animation: 'bounce 1.4s infinite ease-in-out both',
 	borderRadius: '100%',
 	backgroundColor: toCSSColorValue('button-background-primary-default', button.light.backgroundPrimaryDefault),
 

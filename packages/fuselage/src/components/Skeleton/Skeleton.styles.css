@@ -7,3 +7,7 @@
 		background-position: 100vw 0;
 	}
 }
+
+.rcx-skeleton {
+	animation: rcx-skeleton__animation 1s linear 0s infinite running;
+}
