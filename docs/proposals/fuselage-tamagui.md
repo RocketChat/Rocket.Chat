@@ -250,32 +250,59 @@ css-in-js is external. Its closure costs consumers another 6.2 kB, plus a render
 - Every component then costs about what a plain element does, at any use-site, in apps that don't run the compiler too.
 - The web build replaces `@tamagui/web` with a stub. The same `styled()` sources still compile for React Native through Tamagui, from a separate `react-native` entry.
 
-### Phases
+### Checklist to zero Tamagui runtime
 
-0. **Lock and measure.** A CI ratchet on the web bundle (count of `@tamagui/*` modules, gzip size). The computed-style A/B over every story already exists (`perf/story-ab.mjs`, `perf/story-computed.mjs`), and so does the mount and update bench.
-1. **Prototype on three definitions:** `MessageName` (plain), `ButtonGroup` (variants) and `ButtonFrame` (states, `render`).
-   - It must reach computed-style parity.
-   - It must measure JS and CSS size. The open question is how much CSS grows when every variant value is emitted ahead of time instead of inserted on demand.
-   - This phase decides whether the plan goes on.
-2. **Remove what needs the runtime:**
+This is the one list to track removing Tamagui's runtime from Fuselage's web build. Tamagui stays the authoring tool and the compiler: the `styled()` sources and the native build keep it. Tick an item in the same commit that completes it, and add new items here rather than anywhere else.
 
-   | Runtime need | Uses | Replacement |
-   |---|---|---|
-   | dynamic style values | 17 frames | a finite variant, or a CSS custom property through `style` |
-   | `context:` / `createStyledContext` | 6 / 4 | a React context read by the recipe, or a `data-*` attribute on the parent with a descendant selector |
-   | `group` | 2 | a parent rule in the `fuselage` layer, as Message and Item already do |
-   | `animation:` | 5 | CSS `@keyframes` |
-   | computed `render` | 35 | the recipe takes a tag or an element |
-   | `getTokens` | 1 (PaletteStyleTag) | a token module |
-   | `isTamaguiComponent` | 2 | a marker the recipe sets |
+**1. Prototype and go/no-go**
+- [x] Lower three definitions at build time (`MessageName`, `ButtonGroup`, `ButtonFrame`) with Tamagui's own resolver; computed styles identical, render 70–76% faster (branch `proto/fuselage-lowered-styled`, `docs/proposals/fuselage-lowered-styled.md`).
+- [ ] Rebase the prototype onto the current pilot and re-measure the three definitions now that `forceStyle` is gone and `Button` takes a single `variant`.
+- [ ] Gate: `ButtonFrame`'s ahead-of-time CSS close to what the runtime inserts for its stories (56 kB raw). If not, stop and rethink before step 3.
 
-3. **Convert all 249 definitions with the plugin.**
-   - A definition the plugin can't lower is reported and keeps the runtime for now.
-   - The CI ratchet drives that count to zero.
-4. **Drop the runtime from the web build.**
-   - Alias `@tamagui/web` to the stub, so `tamagui.config.ts` only exists in the native build. The base stylesheet is already static (`tamagui-base.css`).
-   - CI then requires zero `@tamagui/*` modules in the web bundle.
-5. **In parallel, the second runtime.** css-in-js leaves when `Box` loses its styling props in favor of layout primitives such as `Stack`. That continues #42974 and #43100.
+**2. Fewer variant combinations**
+- [ ] `ButtonFrame` and `IconButton`: fold `kind`, `pressed`, `inactive` and `ghost` into one combined variant, or make the ordered resolution the default.
+- [ ] Re-measure the lowered CSS for every definition (`scripts/measure-lowered.mts`).
+
+**3. Remove what needs the runtime inside frames**
+- [x] `forceStyle`: no frame forces a state any more; state classes are gone.
+- [x] `group`: Message and Item reveal their parts with parent rules in the `fuselage` layer.
+- [ ] Dynamic style values (17 frames): a finite variant, or a CSS custom property through `style`.
+- [ ] `context:` and `createStyledContext` (6 / 4: Message, MessageToolbar, Card…): a React context read by the lowered component, or a `data-*` attribute on the parent with a descendant selector.
+- [ ] `animation:` (5: ToastBar, Skeleton, ProgressBar…): CSS `@keyframes`.
+- [ ] Spreads the compiler can't prove style-free (8: BannerLink, Chevron, Icon, ItemContent, ItemGroup, ItemLink, ModalHeroImage, NavBarSection): explicit props.
+- [ ] `getTokens` in PaletteStyleTag: a token module.
+- [ ] `isTamaguiComponent`: a marker the lowered component sets.
+
+**4. Make the lowering plugin production-ready**
+- [ ] Compact class-table encoding.
+- [ ] Emit the lowered CSS once per bundle, not once per module.
+- [ ] Cache resolutions (about 10 s per build today).
+- [ ] Keep the build-time self-check that compares every lowered definition with Tamagui and fails on any difference.
+
+**5. Convert all definitions, in batches**
+- [ ] CI ratchets: definitions not lowered, and `@tamagui/*` modules in the web bundle. Both only go down.
+- [ ] Message family.
+- [ ] Item and Sidebar family.
+- [ ] Button family.
+- [ ] Inputs and selects.
+- [ ] Containers (Modal, Contextualbar, Card, Table, Tile…).
+- [ ] Everything else, until both ratchets reach zero.
+
+Each batch gets the Storybook A/B over every story, `story-computed` on its stories, and the bench.
+
+**6. Drop the runtime from the web build**
+- [ ] Alias `@tamagui/web` to a stub in the web build; `tamagui.config.ts` only feeds the native build.
+- [ ] CI requires zero `@tamagui/*` modules in Fuselage's web `dist`.
+- [ ] Remove the runtime-only patches (React 19 refs, frames without a provider) once nothing loads that code.
+
+**7. Check the budgets against `develop`**
+- [ ] `packages/fuselage/scripts/compare-with-develop.mjs`: JS at most +10 kB gzip; list mount and update (messages, sidebar, members) at most +10%; CSS free while total bytes don't regress.
+- [ ] Real-app A/B against `develop`.
+
+**Upstream, in parallel (optional)**
+- [ ] Propose to Tamagui: a `resolveStaticDefinition` that returns a definition's class tables and CSS; each class's slot in the static-resolve result; ungrouped per-state atomic classes.
+
+**Not on this list:** `Box` and `@rocket.chat/css-in-js` are a separate runtime with their own track (layout primitives such as `Stack`, `Text` for typography, the `scan-raw-layout` ratchet).
 
 **Expected result:**
 - **JS:** about −31 kB gzip of runtime and part of the 20.5 kB of definitions, against 1 to 2 kB of recipe runtime.
