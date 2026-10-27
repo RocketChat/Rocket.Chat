@@ -118,7 +118,11 @@ export interface ISearchIndexBackend {
 	getRoomState(rid: string): Promise<E2EESearchRoomState | undefined>;
 	setRoomState(rid: string, state: E2EESearchRoomState): Promise<void>;
 	stats(): Promise<E2EESearchStats>;
-	wipe(): Promise<void>;
+	/**
+	 * Deletes the open index. With a scope and no open index (E2EE locked), deletes the index of that user, whom the
+	 * desktop app checks against the login session. Desktop versions before this scope reject the call.
+	 */
+	wipe(scope?: { userId: string }): Promise<void>;
 }
 
 /**

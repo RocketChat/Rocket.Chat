@@ -34,6 +34,6 @@ export const getDesktopSearchIndexBackend = (): ISearchIndexBackend | undefined 
 		getRoomState: (rid) => bridge.getRoomState(rid),
 		setRoomState: (rid, state) => bridge.setRoomState(rid, state),
 		stats: () => bridge.stats(),
-		wipe: () => bridge.wipe(),
+		wipe: (scope) => (scope ? bridge.wipe(scope) : bridge.wipe()),
 	};
 };

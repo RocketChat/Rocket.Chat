@@ -31,7 +31,7 @@ beforeAll(async () => {
 	privateKey = (await generate()).privateKey;
 });
 
-const setup = async (subscriptions: Subscription[] = [{ rid: 'r1', encrypted: true }]) => {
+const setup = async (subscriptions: Subscription[] = [{ rid: 'r1', encrypted: true }], { userId = 'u1' }: { userId?: string } = {}) => {
 	const backend = createFakeSearchIndexBackend();
 	// The desktop index stays open after a wipe (it empties the tables); the FakeBackend closes. Keep it open like the desktop.
 	const fakeWipe = backend.wipe.bind(backend);
@@ -47,7 +47,7 @@ const setup = async (subscriptions: Subscription[] = [{ rid: 'r1', encrypted: tr
 	const session = createSearchIndexSession(
 		{
 			on: (type, handler) => emitter.on(type, handler),
-			getUserId: () => 'u1',
+			getUserId: () => userId,
 			getPrivateKey: () => privateKey,
 		},
 		{ getBackend: () => backend },
@@ -112,9 +112,23 @@ describe('search index lifecycle (LSE2EE-19)', () => {
 		expect(await searchIds('walrus')).toEqual([]);
 	});
 
-	it('reports that nothing was wiped when no index is open', async () => {
-		const { wipe, runtime, setState } = await setup();
+	// LSE2EE-77: a user who forgot the E2E password resets the key while E2EE is locked, so no index is open. The new key
+	// cannot open the old index, and no file of it must stay: the backend deletes the index of the logged-in user.
+	it('deletes the closed index of the user when the key is reset while E2EE is locked', async () => {
+		const { wipe, runtime, setState, index, searchIds, backend } = await setup();
+		await index(message('m1', 'r1', 'locked narwhal'));
 		setState('DISABLED');
+
+		await expect(runtime.wipe()).resolves.toBe(true);
+
+		expect(wipe).toHaveBeenCalledTimes(1);
+		expect(wipe).toHaveBeenCalledWith({ userId: 'u1' });
+		await backend.open({ userId: 'u1' });
+		expect(await searchIds('narwhal')).toEqual([]);
+	});
+
+	it('reports that nothing was wiped when no index is open and no user is logged in', async () => {
+		const { wipe, runtime } = await setup(undefined, { userId: '' });
 
 		await expect(runtime.wipe()).resolves.toBe(false);
 		expect(wipe).not.toHaveBeenCalled();
