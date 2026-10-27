@@ -1,3 +1,6 @@
+import type { IncomingMessage } from 'node:http';
+import type { Duplex } from 'node:stream';
+
 import { RESPONSE_ALREADY_SENT, createMiddlewareSlot, createNodeServer, createRootApp } from '@rocket.chat/http-router';
 import { WebApp } from 'meteor/webapp';
 
@@ -41,7 +44,21 @@ httpServer.on('clientError', (err: NodeJS.ErrnoException, socket) => {
 	socket.destroy(err);
 });
 
+type UpgradeHandler = (req: IncomingMessage, socket: Duplex, head: Buffer) => boolean;
+
+const upgradeHandlers: UpgradeHandler[] = [];
+
+/**
+ * Lets `handler` take over protocol upgrades: it returns `true` for the ones it serves. The rest go to Meteor.
+ */
+export const addUpgradeHandler = (handler: UpgradeHandler): void => {
+	upgradeHandlers.push(handler);
+};
+
 httpServer.on('upgrade', (req, socket, head) => {
+	if (upgradeHandlers.some((handler) => handler(req, socket, head))) {
+		return;
+	}
 	WebApp.httpServer.emit('upgrade', req, socket, head);
 });
 
