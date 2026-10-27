@@ -134,6 +134,21 @@ export function isPreRelease(cwd: string) {
 	return false;
 }
 
+// GitHub rejects pull request bodies over 65536 characters; leave room for the rest of the description
+const MAX_RELEASE_NOTES_PREVIEW_LENGTH = 60000;
+
+function truncateReleaseNotes(releaseBody: string) {
+	if (releaseBody.length <= MAX_RELEASE_NOTES_PREVIEW_LENGTH) {
+		return releaseBody;
+	}
+
+	const head = releaseBody.slice(0, MAX_RELEASE_NOTES_PREVIEW_LENGTH);
+	// cut between top-level blocks so no list item or <details> is left open
+	const cut = [...head.matchAll(/\n\n(?=\S)/g)].at(-1)?.index ?? head.length;
+
+	return `${head.slice(0, cut)}\n\n_The preview was truncated. See the full change log in \`CHANGELOG.md\`._\n`;
+}
+
 export function createTempReleaseNotes(version: string, releaseBody: string) {
 	return `
 <!-- release-notes-start -->
@@ -143,7 +158,7 @@ _You can see below a preview of the release change log:_
 
 # ${version}
 
-${releaseBody}
+${truncateReleaseNotes(releaseBody)}
 <!-- release-notes-end -->`;
 }
 
