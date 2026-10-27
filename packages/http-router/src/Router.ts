@@ -352,18 +352,19 @@ export class Router<
 		return this as any;
 	}
 
+	/**
+	 * An app answering every request under the router's base, with the routes the router has when it is called.
+	 */
+	toHono(): Hono {
+		return new Hono().route(this.base, this.innerRouter).options('*', (c) => {
+			return c.body('OK');
+		});
+	}
+
 	get router(): express.Router {
 		// oxlint-disable-next-line new-cap
 		const router = express.Router();
-		const hono = new Hono();
-		router.use(
-			this.base,
-			honoAdapterForExpress(
-				hono.route(this.base, this.innerRouter).options('*', (c) => {
-					return c.body('OK');
-				}),
-			),
-		);
+		router.use(this.base, honoAdapterForExpress(this.toHono()));
 		return router;
 	}
 
