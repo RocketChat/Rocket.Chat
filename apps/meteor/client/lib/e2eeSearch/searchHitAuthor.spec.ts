@@ -8,6 +8,8 @@ const hit = (author: Partial<Pick<E2EESearchHit, 'uid' | 'username'>> = {}): E2E
 	rid: 'r1',
 	ts: 1,
 	snippet: 'text',
+	uid: 'u1',
+	username: 'alice',
 	...author,
 });
 
@@ -15,27 +17,21 @@ const loaded = (u: Partial<IMessage['u']>): Pick<IMessage, 'u'> => ({ u: { _id: 
 
 describe('getSearchHitAuthor', () => {
 	it('uses the author that the index stores with the hit', () => {
-		expect(getSearchHitAuthor(hit({ uid: 'u1', username: 'alice' }))).toEqual({ username: 'alice' });
+		expect(getSearchHitAuthor(hit())).toEqual({ username: 'alice' });
 	});
 
 	it('uses the author of the loaded message, with the real name, when the client has the message', () => {
-		expect(getSearchHitAuthor(hit({ uid: 'u1', username: 'alice' }), loaded({ name: 'Alice Doe' }))).toEqual({
+		expect(getSearchHitAuthor(hit(), loaded({ name: 'Alice Doe' }))).toEqual({
 			username: 'alice',
 			name: 'Alice Doe',
 		});
 	});
 
-	it('finds the author of a hit without a stored author in the loaded message', () => {
+	it('prefers the author of the loaded message to the author that the index stores with the hit', () => {
 		expect(getSearchHitAuthor(hit(), loaded({ username: 'bob', name: 'Bob' }))).toEqual({ username: 'bob', name: 'Bob' });
 	});
 
-	it('has no author for a hit without a stored author when the client does not have the message', () => {
-		expect(getSearchHitAuthor(hit())).toBeUndefined();
-	});
-
-	it('ignores an empty or malformed author from the bridge', () => {
-		expect(getSearchHitAuthor(hit({ uid: 'u1', username: '' }))).toBeUndefined();
-		expect(getSearchHitAuthor({ ...hit(), username: 42 } as unknown as E2EESearchHit)).toBeUndefined();
-		expect(getSearchHitAuthor(hit(), { u: { _id: 'u1' } } as Pick<IMessage, 'u'>)).toBeUndefined();
+	it('falls back to the author that the index stores when the loaded message has no username', () => {
+		expect(getSearchHitAuthor(hit(), { u: { _id: 'u1' } } as Pick<IMessage, 'u'>)).toEqual({ username: 'alice' });
 	});
 });

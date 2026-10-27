@@ -7,7 +7,7 @@ const createBackend = (hits: E2EESearchHit[] = []) =>
 		search: jest.fn(async () => hits),
 	}) as unknown as jest.Mocked<ISearchIndexBackend>;
 
-const hit = (id: string, rid: string): E2EESearchHit => ({ id, rid, ts: 1, snippet: `<mark>${id}</mark>` });
+const hit = (id: string, rid: string): E2EESearchHit => ({ id, rid, ts: 1, snippet: `<mark>${id}</mark>`, uid: 'u1', username: 'alice' });
 
 describe('searchLocalIndex', () => {
 	it('searches the room newest first with the trimmed text and the limit', async () => {

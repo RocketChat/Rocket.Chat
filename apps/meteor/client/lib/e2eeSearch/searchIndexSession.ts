@@ -123,14 +123,11 @@ export const createSearchIndexSession = (
 		openedFor = userId;
 		try {
 			// No index and no key file of this user stays on the device while the local search is off, and none is created
-			// for it. A desktop that cannot wipe a closed index gets the open and the wipe below.
+			// for it.
 			if (!isAllowed()) {
-				const wiped = await backend.wipe({ userId }).then(
-					() => true,
-					() => false,
-				);
+				await backend.wipe({ userId });
 				if (run !== generation) return;
-				if (wiped && !isAllowed()) {
+				if (!isAllowed()) {
 					openedFor = undefined;
 					return;
 				}

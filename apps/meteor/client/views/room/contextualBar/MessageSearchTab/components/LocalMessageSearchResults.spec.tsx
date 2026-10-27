@@ -23,6 +23,8 @@ const hit = (overrides: Partial<E2EESearchHit> = {}): E2EESearchHit => ({
 	rid: 'r1',
 	ts: Date.UTC(2026, 9, 26, 12),
 	snippet: 'the <mark>needle</mark>',
+	uid: 'u1',
+	username: 'alice',
 	...overrides,
 });
 
@@ -67,14 +69,6 @@ describe('LocalMessageSearchResults', () => {
 
 		expect(screen.getByText('alice')).toBeInTheDocument();
 		expect(screen.queryByRole('img', { hidden: true })).not.toBeInTheDocument();
-	});
-
-	it('shows a hit from an older desktop app without an author', () => {
-		renderResults([hit()]);
-
-		expect(screen.getByText('needle')).toBeInTheDocument();
-		expect(screen.queryByRole('img', { hidden: true })).not.toBeInTheDocument();
-		expect(screen.queryByText('alice')).not.toBeInTheDocument();
 	});
 
 	it('shows the caption and the file name of a file hit on separate lines, as the server result does', () => {

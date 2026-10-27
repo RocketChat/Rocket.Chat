@@ -373,25 +373,6 @@ describe('createSearchIndexSession with the admin setting', () => {
 		expect(listener).not.toHaveBeenCalled();
 	});
 
-	it('opens and wipes the index as before when the desktop rejects the wipe without an open (older desktop)', async () => {
-		const backend = createBackend();
-		backend.wipe.mockImplementation(async (scope) => {
-			if (scope) throw new Error('E2EE search index is not open');
-		});
-		const onError = jest.fn();
-		const { source, setState } = createSource(privateKey);
-		const session = createSearchIndexSession(source, { getBackend: () => backend, isAllowed: () => false, onError });
-
-		setState('READY');
-		await session.whenSettled();
-
-		expect(backend.wipe.mock.calls).toEqual([[{ userId: 'u1' }], []]);
-		expect(backend.open).toHaveBeenCalledTimes(1);
-		expect(backend.open.mock.invocationCallOrder[0]).toBeLessThan(backend.wipe.mock.invocationCallOrder[1]);
-		expect(session.getActiveBackend()).toBeUndefined();
-		expect(onError).not.toHaveBeenCalled();
-	});
-
 	it('opens the index when the user turns the local search on while the wipe without an open runs', async () => {
 		const backend = createBackend();
 		let allowed = false;

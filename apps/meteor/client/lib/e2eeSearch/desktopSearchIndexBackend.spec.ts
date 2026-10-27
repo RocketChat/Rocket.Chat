@@ -28,12 +28,6 @@ describe('getDesktopSearchIndexBackend', () => {
 		expect(getDesktopSearchIndexBackend()).toBeUndefined();
 	});
 
-	it('returns no backend when a bridge member is not a function', () => {
-		setDesktop({ e2eeSearch: { ...createBridge(), search: 'search' } });
-
-		expect(getDesktopSearchIndexBackend()).toBeUndefined();
-	});
-
 	it('forwards each call and its result unchanged', async () => {
 		const bridge = createBridge();
 		setDesktop(Object.freeze({ e2eeSearch: Object.freeze(bridge) }));

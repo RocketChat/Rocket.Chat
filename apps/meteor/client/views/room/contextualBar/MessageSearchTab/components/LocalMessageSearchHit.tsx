@@ -35,7 +35,7 @@ const LocalMessageSearchHit = ({ hit, showUserAvatar }: LocalMessageSearchHitPro
 	const goToThread = useGoToThread();
 	const loadedMessage = Messages.use((state) => state.get(hit.id));
 	const author = getSearchHitAuthor(hit, loadedMessage);
-	const displayName = useUserDisplayName({ name: author?.name, username: author?.username });
+	const displayName = useUserDisplayName({ name: author.name, username: author.username });
 
 	const openMessage = () => {
 		if (hit.tmid) {
@@ -48,15 +48,13 @@ const LocalMessageSearchHit = ({ hit, showUserAvatar }: LocalMessageSearchHitPro
 	return (
 		<ClickableMessage role='button' title={t('Jump_to_message')} onClick={openMessage} data-qa='local-message-search-hit'>
 			<MessageLeftContainer>
-				{author && showUserAvatar && <MessageAvatar username={author.username} title='' size='x36' aria-hidden='true' />}
+				{showUserAvatar && <MessageAvatar username={author.username} title='' size='x36' aria-hidden='true' />}
 			</MessageLeftContainer>
 			<MessageContainer>
 				<MessageHeader>
-					{author && (
-						<MessageNameContainer>
-							<MessageName title={author.username}>{displayName}</MessageName>
-						</MessageNameContainer>
-					)}
+					<MessageNameContainer>
+						<MessageName title={author.username}>{displayName}</MessageName>
+					</MessageNameContainer>
 					<MessageTimestamp title={formatDateAndTime(hit.ts)}>{formatTime(hit.ts)}</MessageTimestamp>
 				</MessageHeader>
 				<MessageBody>

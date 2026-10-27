@@ -79,8 +79,8 @@ export type E2EESearchHit = {
 	rid: string;
 	tmid?: string;
 	/** The author, as the indexed document stores it. */
-	uid?: string;
-	username?: string;
+	uid: string;
+	username: string;
 	ts: number;
 	/** HTML: the message text is escaped, and only `<mark>` tags are added. */
 	snippet: string;
@@ -125,7 +125,7 @@ export interface ISearchIndexBackend {
 	stats(): Promise<E2EESearchStats>;
 	/**
 	 * Deletes the open index. With a scope and no open index (E2EE locked), deletes the index of that user, whom the
-	 * desktop app checks against the login session. Desktop versions before this scope reject the call.
+	 * desktop app checks against the login session.
 	 */
 	wipe(scope?: { userId: string }): Promise<void>;
 }
