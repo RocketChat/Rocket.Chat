@@ -142,6 +142,9 @@ describe('autoLink inside double quotes', () => {
 		['say "https://example.com" ok', [paragraph([plain('say "'), link('https://example.com'), plain('" ok')])]],
 		['"www.example.com"', [paragraph([plain('"'), link('//www.example.com', [plain('www.example.com')]), plain('"')])]],
 		['he said "hello" to me', [paragraph([plain('he said "hello" to me')])]],
+		['say "@john"', [paragraph([plain('say "@john"')])]],
+		['"#general"', [paragraph([plain('"#general"')])]],
+		['"joe@example.com"', [paragraph([plain('"joe@example.com"')])]],
 	])('parses %p', (input, output) => {
 		expect(parse(input)).toEqual(output);
 	});
