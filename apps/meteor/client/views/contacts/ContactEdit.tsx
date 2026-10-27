@@ -1,5 +1,5 @@
 import type { IContactPublic, Serialized } from '@rocket.chat/core-typings';
-import { Box, Button, ButtonGroup, Divider, Icon, IconButton, Stack } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Divider, Icon, IconButton, Stack, Text } from '@rocket.chat/fuselage';
 import { Field, FieldError, FieldGroup, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage-forms';
 import {
 	ContextualbarClose,
@@ -171,7 +171,7 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 						</Field>
 					))}
 					<Field>
-						<Box display='flex'>
+						<ButtonGroup>
 							<Button
 								size='small'
 								icon='plus'
@@ -181,7 +181,7 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 							>
 								{t('Add_email')}
 							</Button>
-						</Box>
+						</ButtonGroup>
 					</Field>
 					<Divider />
 					{phoneFields.fields.map((field, index) => (
@@ -208,7 +208,7 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 						</Field>
 					))}
 					<Field>
-						<Box display='flex'>
+						<ButtonGroup>
 							<Button
 								size='small'
 								icon='plus'
@@ -218,7 +218,7 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 							>
 								{t('Add_phone')}
 							</Button>
-						</Box>
+						</ButtonGroup>
 					</Field>
 					<Divider />
 					<Field>
@@ -228,9 +228,9 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 						</FieldRow>
 					</Field>
 					{!contact && (
-						<Box fontScale='c1' color='hint'>
+						<Text is='p' fontScale='c1' color='hint'>
 							{t('Information_can_be_edited_later')}
-						</Box>
+						</Text>
 					)}
 				</FieldGroup>
 			</ContextualbarScrollableContent>

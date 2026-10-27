@@ -1,11 +1,12 @@
 import type { IContactPublic, Serialized } from '@rocket.chat/core-typings';
-import { Box, Icon, Tag } from '@rocket.chat/fuselage';
+import { Icon, Stack, Tag, Text } from '@rocket.chat/fuselage';
 import { BaseAvatar } from '@rocket.chat/ui-avatar';
 import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
 import type { KeyboardEvent } from 'react';
 
 import ContactMenu from './ContactMenu';
 import type { ContactsColumns } from './hooks/useContactsColumns';
+import ContactsTableTags from './layout/ContactsTableTags';
 import { getAvatarURL } from '../../lib/getAvatarURL';
 
 export type ContactsTableRowProps = {
@@ -32,12 +33,12 @@ const ContactsTableRow = ({ contact, columns, onClick, onEdit, onDeleted }: Cont
 		<GenericTableRow key={_id} tabIndex={0} role='link' action onClick={onClick} onKeyDown={handleKeyDown}>
 			{columns.isVisible('displayName') && (
 				<GenericTableCell truncate>
-					<Box display='flex' alignItems='center'>
+					<Stack direction='row' align='center' gap='x8'>
 						<BaseAvatar size='x28' url={getAvatarURL({ contactId: _id, cache: _updatedAt }) ?? ''} />
-						<Box marginInlineStart='x8' fontScale='p2' flexGrow={1} flexShrink={1} flexBasis='0%' withTruncatedText>
+						<Text fontScale='p2' truncate>
 							{displayName}
-						</Box>
-					</Box>
+						</Text>
+					</Stack>
 				</GenericTableCell>
 			)}
 			{columns.isVisible('emails.address') && <GenericTableCell truncate>{emails[0]?.address}</GenericTableCell>}
@@ -45,19 +46,19 @@ const ContactsTableRow = ({ contact, columns, onClick, onEdit, onDeleted }: Cont
 			{columns.isVisible('categories') && (
 				<GenericTableCell>
 					{source === 'local' ? (
-						<Box display='flex'>
+						<Stack direction='row'>
 							<Tag variant='secondary' medium icon={<Icon name='address-book' size='x18' />}>
 								Rocket.Chat
 							</Tag>
-						</Box>
+						</Stack>
 					) : (
-						<Box display='flex' flexWrap='wrap' gap='x4' maxHeight='x20' overflow='hidden'>
+						<ContactsTableTags>
 							{categories?.map((category) => (
 								<Tag medium key={category} variant='secondary'>
 									{category}
 								</Tag>
 							))}
-						</Box>
+						</ContactsTableTags>
 					)}
 				</GenericTableCell>
 			)}

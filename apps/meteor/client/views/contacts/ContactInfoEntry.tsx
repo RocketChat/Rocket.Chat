@@ -1,4 +1,4 @@
-import { Box, IconButton } from '@rocket.chat/fuselage';
+import { ButtonGroup, IconButton, Stack, Text } from '@rocket.chat/fuselage';
 import { useClipboardWithToast } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -15,15 +15,15 @@ const ContactInfoEntry = ({ text, actionIcon, actionLabel, onAction }: ContactIn
 	const { copy, hasCopied } = useClipboardWithToast(text);
 
 	return (
-		<Box display='flex' alignItems='center' justifyContent='space-between'>
-			<Box fontScale='p2' color='default' withTruncatedText>
+		<Stack direction='row' align='center' justify='space-between'>
+			<Text fontScale='p2' color='default' truncate>
 				{text}
-			</Box>
-			<Box display='flex' flexShrink={0}>
+			</Text>
+			<ButtonGroup small>
 				<IconButton size='tiny' icon={actionIcon} title={actionLabel} aria-label={actionLabel} disabled={!onAction} onClick={onAction} />
 				<IconButton size='tiny' icon='copy' title={t('Copy')} aria-label={t('Copy')} disabled={hasCopied} onClick={() => copy()} />
-			</Box>
-		</Box>
+			</ButtonGroup>
+		</Stack>
 	);
 };
 

@@ -1,5 +1,5 @@
 import type { IContactPublic, Serialized } from '@rocket.chat/core-typings';
-import { Box, Chip, Divider } from '@rocket.chat/fuselage';
+import { Chip, Divider, Stack } from '@rocket.chat/fuselage';
 import { BaseAvatar } from '@rocket.chat/ui-avatar';
 import {
 	ContextualbarClose,
@@ -108,11 +108,11 @@ const ContactInfo = ({ contact, onEdit, onClose }: ContactInfoProps) => {
 								<Divider />
 								<InfoPanelField>
 									<InfoPanelLabel>{t('Category')}</InfoPanelLabel>
-									<Box display='flex' flexWrap='wrap' style={{ gap: 4 }}>
+									<Stack direction='row' wrap gap='x4'>
 										{categories.map((category) => (
 											<Chip key={category}>{category}</Chip>
 										))}
-									</Box>
+									</Stack>
 								</InfoPanelField>
 							</>
 						)}

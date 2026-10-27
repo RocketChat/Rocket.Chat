@@ -1,5 +1,5 @@
 import type { IContactPublic, Serialized } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
+import { Text } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { GenericMenu, GenericModal } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
@@ -102,7 +102,11 @@ const ContactMenu = ({ contact, onEdit, onDeleted }: ContactMenuProps) => {
 					id: 'delete',
 					icon: 'trash',
 					iconColor: 'danger',
-					content: <Box color='danger'>{t('Delete')}</Box>,
+					content: (
+						<Text is='span' color='danger'>
+							{t('Delete')}
+						</Text>
+					),
 					textValue: t('Delete'),
 					onClick: handleDelete,
 				},
