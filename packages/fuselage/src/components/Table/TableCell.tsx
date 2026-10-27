@@ -4,6 +4,8 @@ import { useContext } from 'react';
 import type { ElementProps } from '../../types/ElementProps';
 import { Box } from '../Box';
 import { TableHeadContext } from './TableHead';
+import type { TableCellVerticalAlign } from './TableRow';
+import { TableRowContext } from './TableRow';
 
 export type TableCellProps = Omit<
 	ElementProps<HTMLTableCellElement, TdHTMLAttributes<HTMLTableCellElement> & ThHTMLAttributes<HTMLTableCellElement>>,
@@ -20,10 +22,13 @@ export type TableCellProps = Omit<
 	color?: 'default' | 'hint';
 	/** Renders the text in the medium weight, for the cell that names the row. */
 	strong?: boolean;
+	/** The vertical alignment of the content, overriding the row's `cellVerticalAlign`. */
+	verticalAlign?: TableCellVerticalAlign;
 };
 
-const TableCell = ({ align, clickable, rowHeader, truncate, color, strong, children, ...props }: TableCellProps) => {
+const TableCell = ({ align, clickable, rowHeader, truncate, color, strong, verticalAlign, children, ...props }: TableCellProps) => {
 	const isInsideHead = useContext(TableHeadContext);
+	const rowVerticalAlign = useContext(TableRowContext);
 
 	const innerElement = children ?? (!isInsideHead ? <Box display='inline-block' is='hr' width='x14' borderWidth='default' /> : undefined);
 
@@ -39,6 +44,7 @@ const TableCell = ({ align, clickable, rowHeader, truncate, color, strong, child
 			rcx-table__cell--truncate={truncate}
 			rcx-table__cell--color={color}
 			rcx-table__cell--strong={strong}
+			rcx-table__cell--vertical-align={verticalAlign ?? rowVerticalAlign}
 			{...props}
 		>
 			{innerElement}
