@@ -1,5 +1,5 @@
 import type { AbacAttributeDefinitionChangeType, AbacActionPerformed } from '@rocket.chat/core-typings';
-import { Box, InputBox, Margins, Pagination, Stack } from '@rocket.chat/fuselage';
+import { Box, InputBox, Pagination } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import {
 	GenericTable,
@@ -19,6 +19,7 @@ import { useTranslation } from 'react-i18next';
 
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 import DateRangePicker from '../../moderation/helpers/DateRangePicker';
+import ABACFilterBar from '../layout/ABACFilterBar';
 
 const LogsPage = () => {
 	const { t } = useTranslation();
@@ -157,29 +158,27 @@ const LogsPage = () => {
 
 	return (
 		<>
-			<Margins block={24}>
-				<Stack direction='row' gap={8}>
-					<InputBox
-						type='date'
-						placeholder={t('Start_date')}
-						value={startDate}
-						onChange={(e) => setStartDate((e.target as HTMLInputElement).value)}
-					/>
-					<InputBox
-						type='date'
-						placeholder={t('End_date')}
-						value={endDate}
-						onChange={(e) => setEndDate((e.target as HTMLInputElement).value)}
-					/>
-					<DateRangePicker
-						defaultSelectedKey='today'
-						onChange={(range) => {
-							setStartDate(range.start);
-							setEndDate(range.end);
-						}}
-					/>
-				</Stack>
-			</Margins>
+			<ABACFilterBar>
+				<InputBox
+					type='date'
+					placeholder={t('Start_date')}
+					value={startDate}
+					onChange={(e) => setStartDate((e.target as HTMLInputElement).value)}
+				/>
+				<InputBox
+					type='date'
+					placeholder={t('End_date')}
+					value={endDate}
+					onChange={(e) => setEndDate((e.target as HTMLInputElement).value)}
+				/>
+				<DateRangePicker
+					defaultSelectedKey='today'
+					onChange={(range) => {
+						setStartDate(range.start);
+						setEndDate(range.end);
+					}}
+				/>
+			</ABACFilterBar>
 			{(!data || data.events?.length === 0) && !isLoading ? (
 				<Box display='flex' justifyContent='center' height='full'>
 					<GenericNoResults icon='extended-view' title={t('ABAC_No_logs')} description={t('ABAC_No_logs_description')} />

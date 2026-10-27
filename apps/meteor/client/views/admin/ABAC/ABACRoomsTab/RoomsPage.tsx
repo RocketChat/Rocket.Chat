@@ -1,4 +1,4 @@
-import { Box, Button, Icon, Margins, Pagination, Select, TextInput, Stack, type TableColumnWidth } from '@rocket.chat/fuselage';
+import { Box, Button, Icon, Pagination, Select, TextInput, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
@@ -20,6 +20,8 @@ import { RoomIcon } from '../../../../components/RoomIcon';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 import { useIsABACAvailable } from '../hooks/useIsABACAvailable';
 import { useIsExternalAttributeStore } from '../hooks/useIsExternalAttributeStore';
+import ABACFilterBar from '../layout/ABACFilterBar';
+import ABACRoomNameIcon from '../layout/ABACRoomNameIcon';
 
 const RoomsPage = () => {
 	const { t } = useTranslation();
@@ -71,32 +73,30 @@ const RoomsPage = () => {
 
 	return (
 		<>
-			<Margins block={24}>
-				<Stack direction='row' gap={8}>
-					<TextInput
-						endAddon={<Icon name='magnifier' size='x20' />}
-						placeholder={t('ABAC_Search_rooms')}
-						value={text}
-						onChange={(e) => setText((e.target as HTMLInputElement).value)}
+			<ABACFilterBar>
+				<TextInput
+					endAddon={<Icon name='magnifier' size='x20' />}
+					placeholder={t('ABAC_Search_rooms')}
+					value={text}
+					onChange={(e) => setText((e.target as HTMLInputElement).value)}
+				/>
+				<Box maxWidth={192}>
+					<Select
+						aria-label={t('Filter')}
+						options={[
+							['all', t('All'), true],
+							['roomName', t('Rooms'), false],
+							['attribute', t('Attributes'), false],
+							['value', t('Values'), false],
+						]}
+						value={filterType}
+						onChange={(value) => setFilterType(value)}
 					/>
-					<Box maxWidth={192}>
-						<Select
-							aria-label={t('Filter')}
-							options={[
-								['all', t('All'), true],
-								['roomName', t('Rooms'), false],
-								['attribute', t('Attributes'), false],
-								['value', t('Values'), false],
-							]}
-							value={filterType}
-							onChange={(value) => setFilterType(value)}
-						/>
-					</Box>
-					<Button onClick={handleNewAttribute} variant='primary' disabled={isABACAvailable !== true}>
-						{t('Add_room')}
-					</Button>
-				</Stack>
-			</Margins>
+				</Box>
+				<Button onClick={handleNewAttribute} variant='primary' disabled={isABACAvailable !== true}>
+					{t('Add_room')}
+				</Button>
+			</ABACFilterBar>
 			{(!data || data.rooms?.length === 0) && !isLoading ? (
 				<Box display='flex' justifyContent='center' height='full'>
 					<GenericNoResults icon='list-alt' title={t('ABAC_No_rooms')} description={t('ABAC_No_rooms_description')} />
@@ -115,9 +115,9 @@ const RoomsPage = () => {
 							{data?.rooms?.map((room) => (
 								<GenericTableRow key={room._id}>
 									<GenericTableCell truncate>
-										<Margins inline={8}>
+										<ABACRoomNameIcon>
 											<RoomIcon room={room} size='x20' />
-										</Margins>
+										</ABACRoomNameIcon>
 										{room.fname || room.name}
 									</GenericTableCell>
 									<GenericTableCell>{room.usersCount}</GenericTableCell>

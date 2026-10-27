@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Margins } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
@@ -32,9 +32,7 @@ const UsersPageHeaderContent = ({ isSeatsCapExceeded, seatsCap }: UsersPageHeade
 	return (
 		<>
 			{seatsCap && seatsCap.maxActiveUsers < Number.POSITIVE_INFINITY && (
-				<Margins inline={16}>
-					<SeatsCapUsage members={seatsCap.activeUsers} limit={seatsCap.maxActiveUsers} />
-				</Margins>
+				<SeatsCapUsage members={seatsCap.activeUsers} limit={seatsCap.maxActiveUsers} />
 			)}
 			<ButtonGroup>
 				{canBulkCreateUser && (

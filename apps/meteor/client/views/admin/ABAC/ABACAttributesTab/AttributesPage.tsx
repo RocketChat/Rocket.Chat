@@ -1,4 +1,4 @@
-import { Box, Button, Icon, Margins, Pagination, TextInput, Stack, type TableColumnWidth } from '@rocket.chat/fuselage';
+import { Box, Button, Icon, Pagination, TextInput, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
@@ -18,6 +18,7 @@ import { useTranslation } from 'react-i18next';
 import AttributeMenu from './AttributeMenu';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 import { useIsABACAvailable } from '../hooks/useIsABACAvailable';
+import ABACFilterBar from '../layout/ABACFilterBar';
 
 const AttributesPage = () => {
 	const { t } = useTranslation();
@@ -59,19 +60,17 @@ const AttributesPage = () => {
 
 	return (
 		<>
-			<Margins block={24}>
-				<Stack direction='row' gap={8}>
-					<TextInput
-						endAddon={<Icon name='magnifier' size='x20' />}
-						placeholder={t('ABAC_Search_attributes')}
-						value={text}
-						onChange={(e) => setText((e.target as HTMLInputElement).value)}
-					/>
-					<Button onClick={handleNewAttribute} variant='primary' disabled={!isABACAvailable}>
-						{t('ABAC_New_attribute')}
-					</Button>
-				</Stack>
-			</Margins>
+			<ABACFilterBar>
+				<TextInput
+					endAddon={<Icon name='magnifier' size='x20' />}
+					placeholder={t('ABAC_Search_attributes')}
+					value={text}
+					onChange={(e) => setText((e.target as HTMLInputElement).value)}
+				/>
+				<Button onClick={handleNewAttribute} variant='primary' disabled={!isABACAvailable}>
+					{t('ABAC_New_attribute')}
+				</Button>
+			</ABACFilterBar>
 			{(!data || data.attributes?.length === 0) && !isLoading ? (
 				<Box display='flex' justifyContent='center' height='full'>
 					<GenericNoResults icon='list-alt' title={t('ABAC_No_attributes')} description={t('ABAC_No_attributes_description')} />

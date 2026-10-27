@@ -2,7 +2,6 @@ import {
 	Box,
 	Button,
 	ButtonGroup,
-	Margins,
 	TextInput,
 	Field,
 	FieldGroup,
@@ -175,9 +174,7 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 						</FieldRow>
 						{newEmojiPreview && (
 							<Box display='flex' flexDirection='row' marginBlockStart='none' justifyContent='center'>
-								<Margins inline={4}>
-									<Box is='img' objectFit='contain' width='x120' height='x120' src={newEmojiPreview} />
-								</Margins>
+								<Box is='img' marginInline={4} objectFit='contain' width='x120' height='x120' src={newEmojiPreview} />
 							</Box>
 						)}
 					</Field>
