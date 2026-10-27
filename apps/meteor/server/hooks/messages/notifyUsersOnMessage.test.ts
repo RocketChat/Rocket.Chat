@@ -101,6 +101,16 @@ describe('notifyUsersOnMessage', () => {
 		expect(notifyOnSubscriptionChangedMock.called).to.be.false;
 	});
 
+	it('should notify only the connected members of a private room', async () => {
+		const privateRoom = createFakeRoom({ t: 'p' });
+
+		await notifyUsersOnMessage(createFakeMessage({ rid: privateRoom._id, u: sender, ts: new Date() }), privateRoom, {});
+
+		expect(modelsMock.Subscriptions.findByRoomIdAndUserIds.calledOnceWith(privateRoom._id, [member._id])).to.be.true;
+		expect(notifyOnSubscriptionChangedMock.calledOnce).to.be.true;
+		expect(modelsMock.Subscriptions.incUnreadForRoomIdExcludingUserIds.calledOnceWith(privateRoom._id, [sender._id], 1)).to.be.true;
+	});
+
 	for (const t of ['d', 'l'] as const) {
 		it(`should notify every member of a room of type ${t}, connected or not`, async () => {
 			const directOrOmnichannelRoom = createFakeRoom({ t });
