@@ -15,7 +15,13 @@ const AppActions = ({ actions, vertical }: AppActionsProps) => {
 	return (
 		<ButtonGroup vertical={vertical} stretch={vertical}>
 			{actions.map((action) => (
-				<Button medium key={action.key} danger={action.variant === 'danger'} disabled={action.disabled} onClick={action.onClick}>
+				<Button
+					size='medium'
+					key={action.key}
+					variant={action.variant === 'danger' ? 'danger' : undefined}
+					disabled={action.disabled}
+					onClick={action.onClick}
+				>
 					{action.label}
 				</Button>
 			))}
