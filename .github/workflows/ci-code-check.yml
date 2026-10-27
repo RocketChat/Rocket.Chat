@@ -103,6 +103,10 @@ jobs:
         if: matrix.check == 'lint'
         run: node scripts/scan-style-props.mjs --max 0 "$RUNNER_TEMP/style-props-findings.json"
 
+      - name: Margins, FlexContainer and FlexItem
+        if: matrix.check == 'lint'
+        run: node scripts/scan-layout-wrappers.mjs --max 0 "$RUNNER_TEMP/layout-wrappers-findings.json"
+
       - name: Raw layout elements in screens
         if: matrix.check == 'lint'
         run: node scripts/scan-raw-layout.mjs --max 1268 "$RUNNER_TEMP/raw-layout-findings.json"

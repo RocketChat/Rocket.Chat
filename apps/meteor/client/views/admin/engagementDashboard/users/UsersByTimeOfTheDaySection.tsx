@@ -1,6 +1,6 @@
 import type { ComputedCell, DefaultHeatMapDatum } from '@nivo/heatmap';
 import { ResponsiveHeatMapCanvas } from '@nivo/heatmap';
-import { Box, FlexItem, Skeleton, Tooltip } from '@rocket.chat/fuselage';
+import { Box, Skeleton, Tooltip } from '@rocket.chat/fuselage';
 import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
 import { addDays } from 'date-fns/addDays';
 import { differenceInDays } from 'date-fns/differenceInDays';
@@ -114,87 +114,85 @@ const UsersByTimeOfTheDaySection = ({ timezone }: UsersByTimeOfTheDaySectionProp
 
 			{!isPending && values && dates ? (
 				<Box display='flex' style={{ height: 696 }}>
-					<FlexItem align='stretch' grow={1} shrink={0}>
-						<Box style={{ position: 'relative' }}>
-							<Box
-								style={{
-									position: 'absolute',
-									width: '100%',
-									height: '100%',
+					<Box alignSelf='stretch' flexGrow={1} flexShrink={0} style={{ position: 'relative' }}>
+						<Box
+							style={{
+								position: 'absolute',
+								width: '100%',
+								height: '100%',
+							}}
+						>
+							<ResponsiveHeatMapCanvas
+								data={values}
+								xInnerPadding={0.1}
+								yInnerPadding={0.25}
+								margin={{
+									// TODO: Get it from theme
+									left: 60,
+									bottom: 20,
 								}}
-							>
-								<ResponsiveHeatMapCanvas
-									data={values}
-									xInnerPadding={0.1}
-									yInnerPadding={0.25}
-									margin={{
+								colors={{
+									type: 'quantize',
+									colors: [
 										// TODO: Get it from theme
-										left: 60,
-										bottom: 20,
-									}}
-									colors={{
-										type: 'quantize',
-										colors: [
-											// TODO: Get it from theme
-											colors.b100,
-											colors.b200,
-											colors.b300,
-											colors.b400,
-											colors.b500,
-											colors.b600,
-											colors.b700,
-										],
-									}}
-									emptyColor='transparent'
-									enableLabels={false}
-									axisTop={null}
-									axisRight={null}
-									axisBottom={{
-										// TODO: Get it from theme
-										tickSize: 0,
-										tickPadding: 8,
-										tickRotation: 0,
-										format: (isoString): string => (dates?.length === 8 ? format(new Date(isoString), 'EEE') : ''),
-									}}
-									axisLeft={{
-										// TODO: Get it from theme
-										tickSize: 0,
-										tickPadding: 8,
-										tickRotation: 0,
-										format: (hour): string => format(new Date(2000, 0, 1, parseInt(hour, 10), 0, 0), 'p'),
-									}}
-									hoverTarget='cell'
-									animate={dates && dates.length <= 7}
-									motionConfig='stiff'
-									theme={{
-										// TODO: Get it from theme
-										axis: {
-											ticks: {
-												text: {
-													fill: colors.n600,
-													fontFamily:
-														'Inter, -apple-system, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI", Arial, sans-serif',
-													fontSize: 10,
-													fontStyle: 'normal',
-													fontWeight: 600,
-													letterSpacing: '0.2px',
-													lineHeight: '12px',
-												},
+										colors.b100,
+										colors.b200,
+										colors.b300,
+										colors.b400,
+										colors.b500,
+										colors.b600,
+										colors.b700,
+									],
+								}}
+								emptyColor='transparent'
+								enableLabels={false}
+								axisTop={null}
+								axisRight={null}
+								axisBottom={{
+									// TODO: Get it from theme
+									tickSize: 0,
+									tickPadding: 8,
+									tickRotation: 0,
+									format: (isoString): string => (dates?.length === 8 ? format(new Date(isoString), 'EEE') : ''),
+								}}
+								axisLeft={{
+									// TODO: Get it from theme
+									tickSize: 0,
+									tickPadding: 8,
+									tickRotation: 0,
+									format: (hour): string => format(new Date(2000, 0, 1, parseInt(hour, 10), 0, 0), 'p'),
+								}}
+								hoverTarget='cell'
+								animate={dates && dates.length <= 7}
+								motionConfig='stiff'
+								theme={{
+									// TODO: Get it from theme
+									axis: {
+										ticks: {
+											text: {
+												fill: colors.n600,
+												fontFamily:
+													'Inter, -apple-system, system-ui, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Meiryo UI", Arial, sans-serif',
+												fontSize: 10,
+												fontStyle: 'normal',
+												fontWeight: 600,
+												letterSpacing: '0.2px',
+												lineHeight: '12px',
 											},
 										},
-										tooltip: {
-											container: {
-												backgroundColor: colors.n900,
-												boxShadow: '0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
-												borderRadius: 2,
-											},
+									},
+									tooltip: {
+										container: {
+											backgroundColor: colors.n900,
+											boxShadow: '0px 0px 12px rgba(47, 52, 61, 0.12), 0px 0px 2px rgba(47, 52, 61, 0.08)',
+											borderRadius: 2,
 										},
-									}}
-									tooltip={tooltip}
-								/>
-							</Box>
+									},
+								}}
+								tooltip={tooltip}
+							/>
 						</Box>
-					</FlexItem>
+					</Box>
 				</Box>
 			) : (
 				<Skeleton variant='rect' height={696} />

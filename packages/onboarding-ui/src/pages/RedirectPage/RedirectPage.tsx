@@ -1,4 +1,4 @@
-import { Box, Margins } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { ActionLink, LayoutLogo, BackgroundLayer } from '@rocket.chat/layout';
 import { useEffect, useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
@@ -39,25 +39,25 @@ const RedirectPage = ({ title, countDownSeconds, onRedirect }: RedirectPageProps
 				flexDirection='column'
 				alignItems='center'
 				textAlign='center'
+				gap='x32'
 				width='100%'
 				maxWidth={768}
-				paddingBlock={32}
-				paddingInline={16}
+				paddingBlock='x32'
+				marginBlockEnd='x32'
+				paddingInline='x16'
 			>
-				<Margins blockEnd={32}>
-					<LayoutLogo />
+				<LayoutLogo />
 
-					<Box fontScale='hero'>{title}</Box>
+				<Box fontScale='hero'>{title}</Box>
 
-					<Box fontScale='p1b'>{t('page.redirect.subtitle', { seconds })}</Box>
+				<Box fontScale='p1b'>{t('page.redirect.subtitle', { seconds })}</Box>
 
-					<Box fontScale='c1'>
-						<Trans i18nKey='page.redirect.redirectNotWorking'>
-							Redirect not working?
-							<ActionLink onClick={onRedirect}>Open workspace</ActionLink>
-						</Trans>
-					</Box>
-				</Margins>
+				<Box fontScale='c1'>
+					<Trans i18nKey='page.redirect.redirectNotWorking'>
+						Redirect not working?
+						<ActionLink onClick={onRedirect}>Open workspace</ActionLink>
+					</Trans>
+				</Box>
 			</Box>
 		</BackgroundLayer>
 	);

@@ -1,6 +1,6 @@
 import type { IMessage, MessageQuoteAttachment } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { IconButton, Box, Margins } from '@rocket.chat/fuselage';
+import { IconButton, Box } from '@rocket.chat/fuselage';
 import { useUserDisplayName } from '@rocket.chat/ui-client';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -24,34 +24,32 @@ const MessageBoxReply = ({ reply }: MessageBoxReplyProps) => {
 	`;
 
 	return (
-		<Margins block={4}>
-			<Box display='flex' position='relative'>
-				<AttachmentProvider>
-					<QuoteAttachment
-						attachment={
-							{
-								text: reply.msg,
-								md: reply.md,
-								author_name: reply.alias || displayName,
-								author_icon: `/avatar/${reply.u.username}`,
-								ts: reply.ts,
-								attachments: reply?.attachments?.map((obj) => ({ ...obj, collapsed: true })),
-								collapsed: true,
-							} as MessageQuoteAttachment
-						}
-					/>
-				</AttachmentProvider>
-				<Box
-					className={closeWrapperStyle}
-					data-mid={reply._id}
-					onClick={(): void => {
-						chat?.composer?.dismissQuotedMessage(reply._id);
-					}}
-				>
-					<IconButton size='mini' icon='cross' aria-label={t('Dismiss_quoted_message')} />
-				</Box>
+		<Box display='flex' position='relative' marginBlock={4}>
+			<AttachmentProvider>
+				<QuoteAttachment
+					attachment={
+						{
+							text: reply.msg,
+							md: reply.md,
+							author_name: reply.alias || displayName,
+							author_icon: `/avatar/${reply.u.username}`,
+							ts: reply.ts,
+							attachments: reply?.attachments?.map((obj) => ({ ...obj, collapsed: true })),
+							collapsed: true,
+						} as MessageQuoteAttachment
+					}
+				/>
+			</AttachmentProvider>
+			<Box
+				className={closeWrapperStyle}
+				data-mid={reply._id}
+				onClick={(): void => {
+					chat?.composer?.dismissQuotedMessage(reply._id);
+				}}
+			>
+				<IconButton size='mini' icon='cross' aria-label={t('Dismiss_quoted_message')} />
 			</Box>
-		</Margins>
+		</Box>
 	);
 };
 

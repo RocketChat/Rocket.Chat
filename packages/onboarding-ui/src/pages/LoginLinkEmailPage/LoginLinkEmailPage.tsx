@@ -1,4 +1,4 @@
-import { Box, Margins } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { BackgroundLayer, LayoutLogo } from '@rocket.chat/layout';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -19,24 +19,24 @@ const LoginLinkEmailPage = ({ onResendEmailRequest, onChangeEmailRequest }: Logi
 				flexDirection='column'
 				alignItems='center'
 				textAlign='center'
+				gap='x32'
 				width='100%'
 				maxWidth={800}
-				paddingBlock={32}
-				paddingInline={16}
+				paddingBlock='x32'
+				marginBlockEnd='x32'
+				paddingInline='x16'
 			>
-				<Margins blockEnd={32}>
-					<LayoutLogo />
+				<LayoutLogo />
 
-					<Box fontScale='hero' width='100%'>
-						{t('page.magicLinkEmail.title')}
-					</Box>
+				<Box fontScale='hero' width='100%'>
+					{t('page.magicLinkEmail.title')}
+				</Box>
 
-					<Box fontScale='p1' maxWidth={570}>
-						<Trans i18nKey='page.magicLinkEmail.subtitle' />
-					</Box>
+				<Box fontScale='p1' maxWidth={570}>
+					<Trans i18nKey='page.magicLinkEmail.subtitle' />
+				</Box>
 
-					<EmailCodeFallback onResendEmailRequest={onResendEmailRequest} onChangeEmailRequest={onChangeEmailRequest} />
-				</Margins>
+				<EmailCodeFallback onResendEmailRequest={onResendEmailRequest} onChangeEmailRequest={onChangeEmailRequest} />
 			</Box>
 		</BackgroundLayer>
 	);

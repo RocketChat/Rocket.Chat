@@ -5,7 +5,6 @@ import { Avatar } from '../Avatar';
 import { Box } from '../Box';
 import { withBoxStyling } from '../Box/withBoxStyling';
 import { Icon } from '../Icon';
-import { Margins } from '../Margins';
 
 export type ChipProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'type'> & {
 	thumbUrl?: string;
@@ -46,11 +45,9 @@ const Chip = ({
 			onClick={onDismiss}
 			{...rest}
 		>
-			<Margins all='x4'>
-				{thumbUrl && renderThumb?.({ url: thumbUrl })}
-				{children && <span className='rcx-box rcx-chip__text'>{children}</span>}
-				{onDismiss && renderDismissSymbol?.()}
-			</Margins>
+			{thumbUrl && renderThumb?.({ url: thumbUrl })}
+			{children && <span className='rcx-box rcx-chip__text'>{children}</span>}
+			{onDismiss && renderDismissSymbol?.()}
 		</button>
 	);
 };

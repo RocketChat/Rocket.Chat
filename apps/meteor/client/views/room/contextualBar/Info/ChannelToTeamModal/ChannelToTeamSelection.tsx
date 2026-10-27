@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Box, Margins } from '@rocket.chat/fuselage';
+import { Box, Stack } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
@@ -26,16 +26,15 @@ const ChannelToTeamSelection = ({ teamId, onCancel, onChange, onConfirm }: Chann
 			onConfirm={onConfirm}
 			confirmDisabled={!teamId}
 		>
-			<Margins blockEnd={20}>
+			<Stack gap={20}>
 				<Box>{t('Teams_move_channel_to_team_description_first')}</Box>
 				<Box>{t('Teams_move_channel_to_team_description_second')}</Box>
 				<Box>{t('Teams_move_channel_to_team_description_third')}</Box>
 				<Box>{t('Teams_move_channel_to_team_description_fourth')}</Box>
-			</Margins>
-
-			<Box display='flex' width='100%'>
-				<TeamAutocomplete onChange={onChange} value={teamId} />
-			</Box>
+				<Box display='flex' width='100%'>
+					<TeamAutocomplete onChange={onChange} value={teamId} />
+				</Box>
+			</Stack>
 		</GenericModal>
 	);
 };

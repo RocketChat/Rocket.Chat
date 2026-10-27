@@ -1,5 +1,5 @@
 import type { IWorkspaceInfo, IStats } from '@rocket.chat/core-typings';
-import { Button, Card, CardBody, CardControls, Margins } from '@rocket.chat/fuselage';
+import { Button, Card, CardBody, CardControls } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { IInstance } from '@rocket.chat/rest-typings';
 import { useFormatDateAndTime } from '@rocket.chat/ui-client';
@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import WorkspaceCardSection from '../components/WorkspaceCardSection';
 import InstancesModal from './components/InstancesModal';
 import WorkspaceCardSectionTitle from '../components/WorkspaceCardSectionTitle';
+import WorkspaceCardSections from '../layout/WorkspaceCardSections';
 
 export type DeploymentCardProps = {
 	serverInfo: IWorkspaceInfo;
@@ -38,7 +39,7 @@ const DeploymentCard = ({
 				<WorkspaceCardSection>
 					<WorkspaceCardSectionTitle title={t('Deployment')} variant='h4' />
 				</WorkspaceCardSection>
-				<Margins blockEnd={8}>
+				<WorkspaceCardSections spacing={8}>
 					<WorkspaceCardSection>
 						<WorkspaceCardSectionTitle title={t('Version')} />
 						{statistics.version}
@@ -95,7 +96,7 @@ const DeploymentCard = ({
 						<WorkspaceCardSectionTitle title={t('PID')} />
 						{statistics.process.pid}
 					</WorkspaceCardSection>
-				</Margins>
+				</WorkspaceCardSections>
 			</CardBody>
 
 			{!!instances.length && (

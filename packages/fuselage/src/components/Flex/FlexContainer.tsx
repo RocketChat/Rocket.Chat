@@ -13,6 +13,9 @@ export type FlexContainerProps = {
 	justifyContent?: 'start' | 'center' | 'end' | 'space-between' | 'space-around';
 };
 
+/**
+ * @deprecated It only reaches the first `Box` in its child. Use `Stack`, or `display='flex'` on the `Box` itself.
+ */
 function FlexContainer({ inline = false, children, direction, wrap, alignItems, alignContent, justifyContent }: FlexContainerProps) {
 	const transformFn = useCallback(
 		(props: any) => {

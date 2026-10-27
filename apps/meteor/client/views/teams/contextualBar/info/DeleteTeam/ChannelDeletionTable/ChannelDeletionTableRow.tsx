@@ -1,5 +1,5 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
-import { CheckBox, Margins } from '@rocket.chat/fuselage';
+import { Box, CheckBox } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
 
@@ -19,10 +19,10 @@ const ChannelDeletionTableRow = ({ room, onChange, selected }: ChannelDeletionTa
 		<GenericTableRow action>
 			<GenericTableCell truncate>
 				<CheckBox checked={selected} onChange={handleChange} />
-				<Margins inline='x8'>
+				<Box is='span' marginInline='x8'>
 					<RoomIcon room={room} />
-					{fname ?? name}
-				</Margins>
+				</Box>
+				{fname ?? name}
 			</GenericTableCell>
 			<GenericTableCell align='end' truncate>
 				{usersCount}

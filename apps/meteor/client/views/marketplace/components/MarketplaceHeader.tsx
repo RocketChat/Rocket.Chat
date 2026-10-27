@@ -1,4 +1,4 @@
-import { Button, ButtonGroup, Margins } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { PageHeader } from '@rocket.chat/ui-client';
 import { usePermission, useRoute, useRouteParameter, useSetModal } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
@@ -47,13 +47,11 @@ const MarketplaceHeader = ({ title, unsupportedVersion }: MarketplaceHeaderProps
 			{result.isLoading && <GenericResourceUsageSkeleton marginInline={16} />}
 
 			{!unsupportedVersion && result.isSuccess && !result.data.hasUnlimitedApps && (
-				<Margins inline={16}>
-					<EnabledAppsCount
-						{...result.data}
-						tooltip={context === 'private' && !privateAppsEnabled ? t('Private_apps_premium_message') : undefined}
-						context={context}
-					/>
-				</Margins>
+				<EnabledAppsCount
+					{...result.data}
+					tooltip={context === 'private' && !privateAppsEnabled ? t('Private_apps_premium_message') : undefined}
+					context={context}
+				/>
 			)}
 
 			<ButtonGroup wrap align='end'>

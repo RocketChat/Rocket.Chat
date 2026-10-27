@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Margins, TextInput, Field, FieldLabel, FieldRow, FieldError, IconButton } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, TextInput, Field, FieldLabel, FieldRow, FieldError, IconButton } from '@rocket.chat/fuselage';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -107,9 +107,7 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps) => {
 					{errors.emoji && <FieldError>{t('Required_field', { field: t('Custom_Emoji') })}</FieldError>}
 					{newEmojiPreview && (
 						<Box display='flex' flexDirection='row' marginInline='neg-x4' justifyContent='center'>
-							<Margins inline={4}>
-								<Box is='img' objectFit='contain' width='x120' height='x120' src={newEmojiPreview} />
-							</Margins>
+							<Box is='img' marginInline={4} objectFit='contain' width='x120' height='x120' src={newEmojiPreview} />
 						</Box>
 					)}
 				</Field>

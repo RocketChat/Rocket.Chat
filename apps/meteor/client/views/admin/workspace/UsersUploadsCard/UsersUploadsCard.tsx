@@ -1,5 +1,5 @@
 import type { IStats } from '@rocket.chat/core-typings';
-import { Button, Card, CardBody, CardControls, Margins } from '@rocket.chat/fuselage';
+import { Button, Card, CardBody, CardControls } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
@@ -10,6 +10,7 @@ import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
 import WorkspaceCardSection from '../components/WorkspaceCardSection';
 import WorkspaceCardSectionTitle from '../components/WorkspaceCardSectionTitle';
 import WorkspaceCardTextSeparator from '../components/WorkspaceCardTextSeparator';
+import WorkspaceCardSections from '../layout/WorkspaceCardSections';
 
 export type UsersUploadsCardProps = {
 	statistics: IStats;
@@ -30,7 +31,7 @@ const UsersUploadsCard = ({ statistics }: UsersUploadsCardProps) => {
 	return (
 		<Card>
 			<CardBody flexDirection='column'>
-				<Margins blockEnd={24}>
+				<WorkspaceCardSections spacing={24}>
 					<WorkspaceCardSection>
 						<WorkspaceCardSectionTitle title={t('Users')} variant='h4' />
 
@@ -56,7 +57,7 @@ const UsersUploadsCard = ({ statistics }: UsersUploadsCardProps) => {
 						<WorkspaceCardTextSeparator label={t('Stats_Total_Uploads')} value={statistics.uploadsTotal} />
 						<WorkspaceCardTextSeparator label={t('Stats_Total_Uploads_Size')} value={formatMemorySize(statistics.uploadsTotalSize)} />
 					</WorkspaceCardSection>
-				</Margins>
+				</WorkspaceCardSections>
 			</CardBody>
 
 			<CardControls>

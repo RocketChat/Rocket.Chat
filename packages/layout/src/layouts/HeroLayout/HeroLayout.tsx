@@ -1,4 +1,4 @@
-import { Box, Margins } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
 import DarkModeProvider from '../../DarkModeProvider';
@@ -22,15 +22,15 @@ const HeroLayout = ({
 					flexDirection='column'
 					alignItems='center'
 					textAlign='center'
+					gap='x32'
 					width='100%'
 					maxWidth={576}
-					paddingBlock={32}
-					paddingInline={16}
+					paddingBlock='x32'
+					marginBlockEnd='x32'
+					paddingInline='x16'
 				>
-					<Margins blockEnd={32}>
-						<LayoutLogo />
-						{children}
-					</Margins>
+					<LayoutLogo />
+					{children}
 				</Box>
 			</BackgroundLayer>
 		</LayoutContext.Provider>

@@ -1,4 +1,4 @@
-import { Margins, Tabs, TabsItem, Button } from '@rocket.chat/fuselage';
+import { Tabs, TabsItem, Button } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { usePagination, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useRoute, usePermission, useSetModal } from '@rocket.chat/ui-contexts';
@@ -69,16 +69,14 @@ const PermissionsPage = ({ isEnterprise }: PermissionsPageProps) => {
 						{t('Settings')}
 					</TabsItem>
 				</Tabs>
-				<PageContent marginBlockStart={8} marginBlockEnd='neg-x8'>
-					<Margins block={8}>
-						<PermissionsTable
-							roleList={roleList}
-							permissions={permissions}
-							total={total}
-							setFilter={setFilter}
-							paginationData={paginationData}
-						/>
-					</Margins>
+				<PageContent marginBlockStart='x8' marginBlockEnd='neg-x8' paddingBlock='x8' gap='x16'>
+					<PermissionsTable
+						roleList={roleList}
+						permissions={permissions}
+						total={total}
+						setFilter={setFilter}
+						paginationData={paginationData}
+					/>
 				</PageContent>
 			</Page>
 			<PermissionsContextBar />
