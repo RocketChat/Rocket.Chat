@@ -16,8 +16,6 @@ type Flat = Record<string, unknown>;
 type StaticConfig = Record<string, any>;
 
 type Options = {
-	/** Inline style per `forceStyle` state, as Tamagui renders a forced frame. */
-	forced?: boolean;
 	/** Style props a use-site sets directly; they go inline. */
 	inline?: string[];
 	/**
@@ -33,12 +31,11 @@ type Options = {
 export const allowlist: Record<string, Record<string, Options>> = {
 	'src/components/Message/MessageName.tsx': { MessageNameFrame: {} },
 	'src/components/ButtonGroup/ButtonGroup.tsx': { ButtonGroupFrame: {} },
-	'src/components/Button/ButtonFrame.tsx': { ButtonFrame: { forced: true, inline: ['color'], ordered: true }, ButtonContent: {} },
+	'src/components/Button/ButtonFrame.tsx': { ButtonFrame: { inline: ['color'], ordered: true }, ButtonContent: {} },
 };
 
 const root = import.meta.dirname;
 const require = createRequire(join(root, 'package.json'));
-const FORCED_STATES = ['hover', 'press', 'focus', 'focusVisible'];
 
 const walk = (node: unknown, visit: (n: Node, parent: Node | undefined) => void, parent?: Node) => {
 	if (!node || typeof node !== 'object') return;
@@ -77,16 +74,9 @@ const unflatten = (flat: Flat) => {
 };
 
 const permutations = <T>(items: T[]): T[][] =>
-	items.length <= 1 ? [items] : items.flatMap((item, i) => permutations([...items.slice(0, i), ...items.slice(i + 1)]).map((rest) => [item, ...rest]));
-
-// Tamagui's `styleSlot` (getSplitStyles): which atomic class group a CSS property lands in
-const styleSlot = (property: string) => {
-	if (property.startsWith('border')) return property.includes('Radius') ? 'borderRadius' : 'border';
-	for (const prefix of ['margin', 'padding', 'background', 'textDecoration', 'transition', 'overflow']) if (property.startsWith(prefix)) return prefix;
-	if (property.includes('flex')) return 'flex';
-	if (['top', 'right', 'bottom', 'left'].includes(property) || property.startsWith('inset')) return 'inset';
-	return property;
-};
+	items.length <= 1
+		? [items]
+		: items.flatMap((item, i) => permutations([...items.slice(0, i), ...items.slice(i + 1)]).map((rest) => [item, ...rest]));
 
 /**
  * Computes the recipe of one evaluated frame and the atomic CSS its classes need. Every class and rule comes from
@@ -100,15 +90,10 @@ export const computeRecipe = (name: string, sc: StaticConfig, options: Options =
 	const fail = (message: string): never => {
 		throw new Error(`lowerStyled: ${name}: ${message}`);
 	};
-	const resolve = (props: Record<string, unknown>, state?: string, staticConfig = sc) => {
-		const result = resolveStaticElement({
-			id: name,
-			staticConfig,
-			props,
-			...(state && { options: { noClass: true }, componentState: { [state]: true } }),
-		});
+	const resolve = (props: Record<string, unknown>, staticConfig = sc) => {
+		const result = resolveStaticElement({ id: name, staticConfig, props });
 		if (!result.ok) fail(`${result.bailout.reason}: ${result.bailout.message}`);
-		if (!state) for (const rule of result.rules ?? []) rules.set(rule.identifier, rule.rules);
+		for (const rule of result.rules ?? []) rules.set(rule.identifier, rule.rules);
 		return result;
 	};
 	const isStyleKey = (key: string) => key in (sc.validStyles ?? {}) || key.startsWith('$') || /Style$/.test(key);
@@ -163,7 +148,7 @@ export const computeRecipe = (name: string, sc: StaticConfig, options: Options =
 	for (const [set] of entries) for (const [k, v] of Object.entries(set)) sample[k] ??= v;
 	const groupOf = new Map<string, string[]>();
 	for (const [key, value] of Object.entries(sample)) {
-		const groups = Object.keys(resolve(unflatten({ [key]: value }), undefined, bare).classNames ?? {});
+		const groups = Object.keys(resolve(unflatten({ [key]: value }), bare).classNames ?? {});
 		if (!groups.length) fail(`\`${key}\` resolves to no class`);
 		groupOf.set(key, groups);
 	}
@@ -185,21 +170,23 @@ export const computeRecipe = (name: string, sc: StaticConfig, options: Options =
 		name: sc.displayName ?? name,
 		tag,
 		defaults,
-		base: Object.fromEntries(Object.entries(baseFlat).filter(([key]) => key in slotOf).map(([key, value]) => [key, valueIndex(value)])),
+		base: Object.fromEntries(
+			Object.entries(baseFlat)
+				.filter(([key]) => key in slotOf)
+				.map(([key, value]) => [key, valueIndex(value)]),
+		),
 		baseClass: '',
 		variants,
-		entries: entries.map(([set, className]) => [Object.fromEntries(Object.entries(set).map(([key, value]) => [key, valueIndex(value)])), className]),
+		entries: entries.map(([set, className]) => [
+			Object.fromEntries(Object.entries(set).map(([key, value]) => [key, valueIndex(value)])),
+			className,
+		]),
 		slotOf,
 		slots: slotGroups.map(() => ({})),
 		...(options.inline && { inline: options.inline }),
 		...(options.ordered && { ordered: true }),
 		...(dropped.length && { dropped }),
 	};
-	const states = options.forced ? FORCED_STATES : [];
-	const forcedSlots: Record<string, Record<string, Record<string, unknown>>[]> = Object.fromEntries(
-		states.map((state) => [state, slotGroups.map(() => ({}))]),
-	);
-	const slotOfStyle = (property: string) => slotGroups.findIndex((slot) => slot.includes(styleSlot(property)));
 
 	// The base: host class and every slot no variant touches
 	const plain = resolve({});
@@ -209,9 +196,6 @@ export const computeRecipe = (name: string, sc: StaticConfig, options: Options =
 		.split(' ')
 		.filter((c) => c && !variantClassNames.has(c) && !touchedClassNames.has(c))
 		.join(' ');
-	const forcedBase = Object.fromEntries(
-		states.map((state) => [state, Object.fromEntries(Object.entries(resolve({}, state).style ?? {}).filter(([p]) => slotOfStyle(p) === -1))]),
-	);
 
 	// Variants touching the same slot form a cluster; one resolution serves every slot of a cluster
 	const variantNames = Object.keys(variants);
@@ -222,7 +206,10 @@ export const computeRecipe = (name: string, sc: StaticConfig, options: Options =
 		const own = variantNames.filter((v) => touches(v, slot));
 		const merged = clusters.filter((c) => c.variants.some((v) => own.includes(v)));
 		for (const m of merged) clusters.splice(clusters.indexOf(m), 1);
-		clusters.push({ variants: [...new Set([...merged.flatMap((c) => c.variants), ...own])], slots: [...merged.flatMap((c) => c.slots), slot] });
+		clusters.push({
+			variants: [...new Set([...merged.flatMap((c) => c.variants), ...own])],
+			slots: [...merged.flatMap((c) => c.slots), slot],
+		});
 	});
 
 	let resolutions = 0;
@@ -233,16 +220,14 @@ export const computeRecipe = (name: string, sc: StaticConfig, options: Options =
 			const result = resolve(props);
 			if (++resolutions > (options.limit ?? Infinity)) fail(`more than ${options.limit} resolutions`);
 			for (const slot of cluster.slots) {
-				const classes = slotGroups[slot].map((g) => result.classNames?.[g]).filter(Boolean).join(' ');
+				const classes = slotGroups[slot]
+					.map((g) => result.classNames?.[g])
+					.filter(Boolean)
+					.join(' ');
 				const seen = recipe.slots[slot][tuples[slot]];
-				if (seen !== undefined && seen !== classes) fail(`key ${tuples[slot]} maps to "${seen}" and "${classes}" (${JSON.stringify(props)})`);
+				if (seen !== undefined && seen !== classes)
+					fail(`key ${tuples[slot]} maps to "${seen}" and "${classes}" (${JSON.stringify(props)})`);
 				recipe.slots[slot][tuples[slot]] = classes;
-			}
-			for (const state of states) {
-				const style = resolve(props, state).style ?? {};
-				for (const slot of cluster.slots) {
-					forcedSlots[state][slot][tuples[slot]] = Object.fromEntries(Object.entries(style).filter(([p]) => slotOfStyle(p) === slot));
-				}
 			}
 		};
 		// A default keeps its place in the props; a caller's own variants follow, in any order
@@ -250,7 +235,10 @@ export const computeRecipe = (name: string, sc: StaticConfig, options: Options =
 		const free = cluster.variants.filter((v) => !defaultNames.has(v));
 		const pickFree = (i: number, props: Record<string, unknown>, chosen: [string, unknown][]) => {
 			if (i === free.length) {
-				for (const order of options.ordered ? [chosen.sort((x, y) => variantNames.indexOf(x[0]) - variantNames.indexOf(y[0]))] : permutations(chosen)) visit({ ...props, ...Object.fromEntries(order) });
+				for (const order of options.ordered
+					? [chosen.sort((x, y) => variantNames.indexOf(x[0]) - variantNames.indexOf(y[0]))]
+					: permutations(chosen))
+					visit({ ...props, ...Object.fromEntries(order) });
 				return;
 			}
 			pickFree(i + 1, props, chosen);
@@ -263,30 +251,13 @@ export const computeRecipe = (name: string, sc: StaticConfig, options: Options =
 		pickFixed(0, {});
 	}
 
-	if (options.forced) {
-		// Declarations are shared: most forced styles repeat the same long `var()` values
-		const declarations: string[] = [];
-		const intern = (style: Record<string, unknown>) =>
-			Object.entries(style).map(([property, value]) => {
-				const json = JSON.stringify([property, value]);
-				const found = declarations.indexOf(json);
-				return found === -1 ? declarations.push(json) - 1 : found;
-			});
-		recipe.forced = Object.fromEntries(
-			states.map((state) => [
-				state,
-				[intern(forcedBase[state]), forcedSlots[state].map((table) => Object.fromEntries(Object.entries(table).map(([tuple, style]) => [tuple, intern(style)])))],
-			]),
-		) as Recipe['forced'];
-		recipe.declarations = declarations.map((json) => JSON.parse(json));
-	}
 	const used = new Set([recipe.baseClass, ...recipe.slots.flatMap((table) => Object.values(table))].flatMap((c) => c.split(' ')));
 	for (const c of used) if (c.startsWith('_') && !rules.has(c)) fail(`no rules for ${c}`);
 	const css = [...rules].filter(([identifier]) => used.has(identifier)).flatMap(([, list]) => list);
 	return { recipe, css, resolutions };
 };
 
-/** Renders random prop combinations through the recipe and through Tamagui, and throws on the first difference. */
+/** Renders random prop combinations through the recipe and through Tamagui, and throws on the first class difference. */
 export const checkRecipe = (name: string, sc: StaticConfig, recipe: Recipe, runs = 300) => {
 	const { resolveStaticElement } = require('@tamagui/web/static-resolve');
 	let seed = 1;
@@ -297,7 +268,10 @@ export const checkRecipe = (name: string, sc: StaticConfig, recipe: Recipe, runs
 		const key = keys[Math.floor(random() * keys.length)];
 		return key === 'true' ? true : key === 'false' ? false : key;
 	};
-	const cases: Record<string, unknown>[] = [{}, ...names.flatMap((variant) => Object.keys(sc.variants[variant]).map(() => ({ [variant]: pick(variant) })))];
+	const cases: Record<string, unknown>[] = [
+		{},
+		...names.flatMap((variant) => Object.keys(sc.variants[variant]).map(() => ({ [variant]: pick(variant) }))),
+	];
 	for (let i = 0; i < runs; i++) {
 		const shuffled = [...names].sort(() => (recipe.ordered ? 0 : random() - 0.5)).filter(() => random() < 0.5);
 		cases.push(Object.fromEntries(shuffled.map((variant) => [variant, pick(variant)])));
@@ -307,16 +281,9 @@ export const checkRecipe = (name: string, sc: StaticConfig, recipe: Recipe, runs
 		const expected = resolveStaticElement({ id: name, staticConfig: sc, props });
 		const actual = resolveRecipe(recipe, props);
 		if (sorted(expected.className ?? '') !== sorted(actual.className)) {
-			throw new Error(`lowerStyled: ${name} ${JSON.stringify(props)}\n  tamagui ${sorted(expected.className)}\n  recipe  ${sorted(actual.className)}`);
-		}
-		if (!recipe.forced) continue;
-		for (const state of FORCED_STATES) {
-			const forced = resolveStaticElement({ id: name, staticConfig: sc, props, options: { noClass: true }, componentState: { [state]: true } });
-			const style = resolveRecipe(recipe, { ...props, forceStyle: state }).style ?? {};
-			const norm = (s: object) => JSON.stringify(Object.entries(s).sort());
-			if (norm(forced.style ?? {}) !== norm(style)) {
-				throw new Error(`lowerStyled: ${name} forced ${state} ${JSON.stringify(props)}\n  tamagui ${norm(forced.style ?? {})}\n  recipe  ${norm(style)}`);
-			}
+			throw new Error(
+				`lowerStyled: ${name} ${JSON.stringify(props)}\n  tamagui ${sorted(expected.className)}\n  recipe  ${sorted(actual.className)}`,
+			);
 		}
 	}
 	return cases.length;
@@ -367,14 +334,19 @@ export const recipes: Record<string, Recipe> = {};
 /** Replaces each allowlisted `styled()` definition in a module with a recipe component and an import of its CSS. */
 export const lowerModule = async (code: string, id: string) => {
 	const allowed = allowlist[relative(root, id)];
-	if (!allowed) return null;
+	// `LOWER_STYLED=0` builds the Tamagui frames as they are, for A/B measurements
+	if (!allowed || process.env.LOWER_STYLED === '0') return null;
 
 	const ast = parseAst(code, { lang: 'tsx' });
 	const calls = new Map<string, { call: Node; statement: Node }>();
 	for (const statement of (ast as unknown as { body: Node[] }).body) {
 		walk(statement, (n) => {
-			if (n.type === 'VariableDeclarator' && (n.id as Node).type === 'Identifier' && (n.init as Node | undefined)?.type === 'CallExpression') {
-				const name = (n.id as unknown as { name: string }).name;
+			if (
+				n.type === 'VariableDeclarator' &&
+				(n.id as Node).type === 'Identifier' &&
+				(n.init as Node | undefined)?.type === 'CallExpression'
+			) {
+				const {name} = (n.id as unknown as { name: string });
 				const callee = (n.init as Node).callee as Node;
 				if (name in allowed && callee.type === 'Identifier' && (callee as unknown as { name: string }).name === 'styled') {
 					calls.set(name, { call: n.init as Node, statement });
@@ -421,7 +393,10 @@ export const lowerModule = async (code: string, id: string) => {
 	const cssText = `@layer fuselage {\n${[...css].join('\n')}\n}\n`;
 	const cssDir = join(root, '.lowered');
 	mkdirSync(cssDir, { recursive: true });
-	const cssFile = join(cssDir, `${id.slice(id.lastIndexOf('/') + 1, -4)}-${createHash('sha1').update(cssText).digest('hex').slice(0, 8)}.css`);
+	const cssFile = join(
+		cssDir,
+		`${id.slice(id.lastIndexOf('/') + 1, -4)}-${createHash('sha1').update(cssText).digest('hex').slice(0, 8)}.css`,
+	);
 	writeFileSync(cssFile, cssText);
 
 	let out = code;

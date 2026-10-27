@@ -16,8 +16,6 @@ if (process.argv.includes('--tables')) {
 		console.log(
 			name,
 			recipe.slots.map((table, i) => `${slots[i]}:${Object.keys(table).length}/${new Set(Object.values(table)).size}`).join(' '),
-			'forced bytes',
-			JSON.stringify(recipe.forced ?? {}).length,
 		);
 	}
 }

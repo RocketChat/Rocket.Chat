@@ -20,9 +20,6 @@ export type Recipe = {
 	entries: [set: Record<string, number>, className: string][];
 	slotOf: Record<string, number>;
 	slots: Record<string, string>[];
-	/** Inline style per `forceStyle` state, as Tamagui renders a forced frame (`noClass`). */
-	forced?: Record<string, [base: number[], slots: Record<string, number[]>[]]>;
-	declarations?: [string, string | number][];
 	/** Style props a use-site may set directly; they go inline. */
 	inline?: string[];
 	/** A caller's variants apply in declaration order, not prop order. */
@@ -51,7 +48,7 @@ export const slotTuples = (recipe: Recipe, props: Props) => {
 		merged[key] = value;
 	}
 
-	const { render = recipe.tag, className, style, forceStyle, ...rest } = merged;
+	const { render = recipe.tag, className, style, ...rest } = merged;
 	const values: Record<string, string> = {};
 	for (const key in recipe.base) values[key] = String(recipe.base[key]);
 	const dom: Props = {};
@@ -88,30 +85,19 @@ export const slotTuples = (recipe: Recipe, props: Props) => {
 	const tuples = recipe.slots.map(() => '');
 	const ids = idsOf(recipe);
 	for (const key in values) tuples[recipe.slotOf[key]] += `${ids[key]}=${values[key]};`;
-	return { tuples, render, className, style, forceStyle, inline, variantClass, dom };
+	return { tuples, render, className, style, inline, variantClass, dom };
 };
 
 /** The class names and inline style Tamagui gives the frame for these props, without running Tamagui. */
 export const resolveRecipe = (recipe: Recipe, props: Props) => {
-	const { tuples, render, className, style, forceStyle, inline, variantClass, dom } = slotTuples(recipe, props);
-	const forced = typeof forceStyle === 'string' ? recipe.forced?.[forceStyle] : undefined;
+	const { tuples, render, className, style, inline, variantClass, dom } = slotTuples(recipe, props);
 	let classes = recipe.baseClass;
-	let forcedStyle: StyleObject | undefined;
-	if (forced) {
-		classes = classes.split(' ')[0];
-		forcedStyle = {};
-		for (const index of [...forced[0], ...tuples.flatMap((tuple, i) => forced[1][i][tuple] ?? [])]) {
-			const [property, value] = recipe.declarations![index];
-			forcedStyle[property] = value;
-		}
-	} else {
-		for (let i = 0; i < tuples.length; i++) if (recipe.slots[i][tuples[i]]) classes += ` ${recipe.slots[i][tuples[i]]}`;
-	}
+	for (let i = 0; i < tuples.length; i++) if (recipe.slots[i][tuples[i]]) classes += ` ${recipe.slots[i][tuples[i]]}`;
 
 	return {
 		render: render as string | ReactElement,
 		className: `${classes}${variantClass}${className ? ` ${className}` : ''}`,
-		style: forcedStyle || inline || style ? { ...forcedStyle, ...inline, ...(style as object) } : undefined,
+		style: inline || style ? { ...inline, ...(style as object) } : undefined,
 		dom,
 	};
 };
