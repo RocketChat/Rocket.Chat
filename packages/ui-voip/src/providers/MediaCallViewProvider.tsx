@@ -191,9 +191,9 @@ const MediaCallViewProvider = ({ children }: MediaCallViewProviderProps) => {
 		};
 
 		const instanceState = instance?.getState();
-		const canHold = instanceState?.confirmed && instanceState.features.includes('hold');
+		const canConsult = instanceState?.confirmed && instanceState.features.includes('attended-transfer');
 
-		setModal(<TransferModal onCancel={onCancel} onConfirm={onConfirm} onConsult={canHold ? onConsult : undefined} />);
+		setModal(<TransferModal onCancel={onCancel} onConfirm={onConfirm} onConsult={canConsult ? onConsult : undefined} />);
 	};
 
 	const onSwapCalls = () => {

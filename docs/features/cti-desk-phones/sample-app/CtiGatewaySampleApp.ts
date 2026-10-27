@@ -31,7 +31,7 @@ const RING_SECONDS = 3;
 
 // What the widget offers for these calls: the capabilities this gateway supports plus the control
 // buttons it wants shown. Hangup is always shown. There is no local audio, so no device picker.
-const SAMPLE_FEATURES = ['audio', 'hold', 'transfer', 'mute', 'dialpad', 'direct-message'];
+const SAMPLE_FEATURES = ['audio', 'hold', 'transfer', 'attended-transfer', 'mute', 'dialpad', 'direct-message'];
 
 /**
  * Where a user's phone number is kept. A real integration has no equivalent of this: it asks the

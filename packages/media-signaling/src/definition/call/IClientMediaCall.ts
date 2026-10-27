@@ -21,6 +21,7 @@ export const callFeatureList = [
 	'audio',
 	'screen-share',
 	'transfer',
+	'attended-transfer',
 	'hold',
 	'conference-escalation',
 	'dialpad',
