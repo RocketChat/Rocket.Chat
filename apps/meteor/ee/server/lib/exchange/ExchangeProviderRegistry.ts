@@ -9,6 +9,7 @@ import { MicrosoftGraphProvider } from './graph/MicrosoftGraphProvider';
 import { logger } from './logger';
 import { scrubForLog } from './scrub';
 import { settings } from '../../../../server/settings';
+import { getCalendarSyncWindowDays } from '../../../lib/exchange/calendarSyncSchedule';
 
 const WATCHED_SETTINGS = [
 	'Outlook_Calendar_Enabled',
@@ -75,10 +76,6 @@ export const getExchangeProvider = (): IExchangeProvider => {
 
 const DAY_IN_MS = 24 * 60 * 60 * 1000;
 
-const DEFAULT_SYNC_WINDOW_DAYS = 2;
-const MIN_SYNC_WINDOW_DAYS = 1;
-const MAX_SYNC_WINDOW_DAYS = 7;
-
 /**
  * Starts at the mailbox owner's own midnight, the same day `calendar-events.list` reports on, so an event
  * that already happened today is still refreshed rather than left behind. Both bounds land on a day
@@ -86,8 +83,7 @@ const MAX_SYNC_WINDOW_DAYS = 7;
  * link reusable.
  */
 export const getCalendarSyncWindow = (from: Date = new Date(), utcOffset?: number): DateRange => {
-	const configured = Math.trunc(settings.get<number>('Exchange_Calendar_Sync_Window_Days')) || DEFAULT_SYNC_WINDOW_DAYS;
-	const days = Math.min(Math.max(configured, MIN_SYNC_WINDOW_DAYS), MAX_SYNC_WINDOW_DAYS);
+	const days = getCalendarSyncWindowDays(settings.get<number>('Exchange_Calendar_Sync_Window_Days'));
 
 	const start = startOfDayAt(from, utcOffset);
 

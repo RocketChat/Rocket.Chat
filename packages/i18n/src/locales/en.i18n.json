@@ -4849,6 +4849,7 @@
   "No_discussions_yet": "No discussions yet",
   "No_emojis_found": "No emojis found",
   "No_Encryption": "No encryption",
+  "No_events": "No events",
   "No_favorite_rooms": "No favorite rooms",
   "No_favorite_rooms_description": "Your favorite rooms will appear here.",
   "No_feature_to_preview": "No feature to preview",
@@ -5263,6 +5264,15 @@
   "Outlook_Calendar_Outlook_Url": "Outlook URL",
   "Outlook_Calendar_Outlook_Url_Description": "Default URL used to launch the Outlook web app.",
   "Outlook_calendar_settings": "Outlook calendar settings",
+  "Outlook_calendar_sync_interval_hours": {
+    "one": "{{count}} hour",
+    "other": "{{count}} hours"
+  },
+  "Outlook_calendar_sync_schedule": "Syncing occurs every {{interval}} and syncs events {{window}} into the future.",
+  "Outlook_calendar_sync_window_days": {
+    "one": "{{count}} day",
+    "other": "{{count}} days"
+  },
   "Outlook_Calendar_Url_Mapping": "Domain to Outlook URL mapping",
   "Outlook_Calendar_Url_Mapping_Description": "Map the domain of the calendar to the Outlook URL. This is useful if you have multiple domains and want to use different Outlook URLs for each.",
   "Outlook_Sync_Failed": "Failed to load outlook events.",
