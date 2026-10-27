@@ -65,6 +65,12 @@ export const toSearchIndexRooms = (subscriptions: Iterable<RoomLike>): SearchInd
 		.filter((sub) => sub.encrypted === true)
 		.map((sub) => ({ rid: sub.rid, lastActivityAt: timeOf(sub.lm ?? sub.lastMessage?.ts ?? sub.ts) }));
 
+const AVERAGE_MONTH_MS = (365.25 / 12) * 24 * 60 * 60 * 1000;
+
+/** The backfill depth for the admin setting in months. 0, a negative or an invalid value gives 0: no backfill. */
+export const backfillMonthsToMaxAgeMs = (months: number | undefined): number =>
+	typeof months === 'number' && Number.isFinite(months) && months > 0 ? months * AVERAGE_MONTH_MS : 0;
+
 type SearchIndexRuntimeOptions = {
 	session: Pick<SearchIndexSession, 'getActiveBackend' | 'subscribe'>;
 	writer: Pick<SearchIndexWriter, 'remove' | 'flush'>;
@@ -73,8 +79,8 @@ type SearchIndexRuntimeOptions = {
 	decryptMessage: (message: IMessage) => Promise<IMessage>;
 	getRooms: () => SearchIndexRoom[];
 	idle: IdleSignal;
-	/** The depth limit of the backfill. */
-	maxAgeMs?: number;
+	/** The depth limit of the backfill, read each time the index opens. `undefined` indexes the whole history. */
+	getMaxAgeMs?: () => number | undefined;
 	onError?: (error: unknown) => void;
 	/** Builds the crawler and its scheduler for an open index. Specs replace it. */
 	createScheduler?: (backend: ISearchIndexBackend) => SearchIndexScheduler;
@@ -109,14 +115,20 @@ export const createSearchIndexRuntime = ({
 	decryptMessage,
 	getRooms,
 	idle,
-	maxAgeMs,
+	getMaxAgeMs = () => undefined,
 	onError = () => undefined,
 	createScheduler,
 }: SearchIndexRuntimeOptions): SearchIndexRuntime => {
 	const buildScheduler =
 		createScheduler ??
 		((backend: ISearchIndexBackend) => {
-			const crawler: SearchIndexCrawler = createSearchIndexCrawler({ backend, syncMessages, decryptMessage, writer, maxAgeMs });
+			const crawler: SearchIndexCrawler = createSearchIndexCrawler({
+				backend,
+				syncMessages,
+				decryptMessage,
+				writer,
+				maxAgeMs: getMaxAgeMs(),
+			});
 			return createSearchIndexScheduler({ crawler, backend, getRooms, idle, onError });
 		});
 

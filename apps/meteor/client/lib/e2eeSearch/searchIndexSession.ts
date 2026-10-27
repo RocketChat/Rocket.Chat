@@ -42,6 +42,11 @@ export type SearchIndexSessionSource = {
 
 type SearchIndexSessionOptions = {
 	getBackend: () => ISearchIndexBackend | undefined;
+	/**
+	 * Whether the workspace admin allows the local search of encrypted messages, read at each login. When it does not,
+	 * the session wipes the index of the user and does not use it.
+	 */
+	isAllowed?: () => boolean;
 	onError?: (error: unknown) => void;
 };
 
@@ -62,12 +67,12 @@ const stoppedStates = new Set(['DISABLED', 'NOT_STARTED', 'ERROR']);
 
 /**
  * Opens the local search index for the logged-in user when E2EE is unlocked, with the wrap key derived from the
- * private key, and stops using it when E2EE stops (logout, E2EE disabled, key error). An open that resolves after
+ * private key, or wipes it when the workspace does not allow the local search, and stops using it when E2EE stops (logout, E2EE disabled, key error). An open that resolves after
  * the session stopped does not activate the backend.
  */
 export const createSearchIndexSession = (
 	source: SearchIndexSessionSource,
-	{ getBackend, onError = () => undefined }: SearchIndexSessionOptions,
+	{ getBackend, isAllowed = () => true, onError = () => undefined }: SearchIndexSessionOptions,
 ): SearchIndexSession => {
 	let generation = 0;
 	let openedFor: string | undefined;
@@ -103,6 +108,13 @@ export const createSearchIndexSession = (
 
 			await backend.open({ userId, wrapKey });
 			if (run !== generation) return;
+
+			if (!isAllowed()) {
+				// The admin turned the local search off: no index of this user stays on the device.
+				openedFor = undefined;
+				await backend.wipe();
+				return;
+			}
 
 			setActive(backend);
 		} catch (error) {

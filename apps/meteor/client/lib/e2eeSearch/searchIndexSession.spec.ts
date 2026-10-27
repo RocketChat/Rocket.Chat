@@ -332,3 +332,55 @@ describe('createSearchIndexSession', () => {
 		expect(listener).not.toHaveBeenCalled();
 	});
 });
+
+describe('createSearchIndexSession with the admin setting', () => {
+	it('wipes the index and never activates it when the workspace does not allow local search', async () => {
+		const backend = createBackend();
+		const { source, setState } = createSource(privateKey);
+		const listener = jest.fn();
+		const session = createSearchIndexSession(source, { getBackend: () => backend, isAllowed: () => false });
+		session.subscribe(listener);
+
+		setState('READY');
+		await session.whenSettled();
+
+		expect(backend.open).toHaveBeenCalledTimes(1);
+		expect(backend.wipe).toHaveBeenCalledTimes(1);
+		expect(backend.upsert).not.toHaveBeenCalled();
+		expect(session.getActiveBackend()).toBeUndefined();
+		expect(listener).not.toHaveBeenCalled();
+	});
+
+	it('reads the setting at each login: off wipes, on opens and activates', async () => {
+		const backend = createBackend();
+		const { source, setState } = createSource(privateKey);
+		let allowed = false;
+		const session = createSearchIndexSession(source, { getBackend: () => backend, isAllowed: () => allowed });
+
+		setState('READY');
+		await session.whenSettled();
+		expect(session.getActiveBackend()).toBeUndefined();
+
+		setState('DISABLED');
+		allowed = true;
+		setState('READY');
+		await session.whenSettled();
+
+		expect(backend.wipe).toHaveBeenCalledTimes(1);
+		expect(session.getActiveBackend()).toBe(backend);
+	});
+
+	it('reports a failed wipe and stays inactive', async () => {
+		const backend = createBackend();
+		backend.wipe.mockRejectedValue(new Error('wipe failed'));
+		const onError = jest.fn();
+		const { source, setState } = createSource(privateKey);
+		const session = createSearchIndexSession(source, { getBackend: () => backend, isAllowed: () => false, onError });
+
+		setState('READY');
+		await session.whenSettled();
+
+		expect(onError).toHaveBeenCalledWith(expect.objectContaining({ message: 'wipe failed' }));
+		expect(session.getActiveBackend()).toBeUndefined();
+	});
+});

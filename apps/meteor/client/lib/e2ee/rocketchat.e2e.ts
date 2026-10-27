@@ -26,7 +26,12 @@ import { baseURI } from '../baseURI';
 import { getSearchIndexBackend } from '../e2eeSearch/getSearchIndexBackend';
 import { roomMessageDeletes } from '../e2eeSearch/roomMessageDeletes';
 import { applyDeleteMessageBulkToSearchIndex } from '../e2eeSearch/searchIndexDeletes';
-import { createSearchIndexRuntime, createSyncMessagesFetcher, toSearchIndexRooms } from '../e2eeSearch/searchIndexRuntime';
+import {
+	backfillMonthsToMaxAgeMs,
+	createSearchIndexRuntime,
+	createSyncMessagesFetcher,
+	toSearchIndexRooms,
+} from '../e2eeSearch/searchIndexRuntime';
 import { createDocumentIdleSignal } from '../e2eeSearch/searchIndexScheduler';
 import { createSearchIndexSession } from '../e2eeSearch/searchIndexSession';
 import { createSearchIndexWriter } from '../e2eeSearch/searchIndexWriter';
@@ -907,6 +912,7 @@ export const e2eSearchIndexSession = createSearchIndexSession(
 	},
 	{
 		getBackend: getSearchIndexBackend,
+		isAllowed: () => settings.peek<boolean>('E2E_Enable_Local_Search') === true,
 		onError: (error) => log.span('searchIndexSession').error('Error opening the local search index', error),
 	},
 );
@@ -942,6 +948,7 @@ export const e2eSearchIndexRuntime = createSearchIndexRuntime({
 	decryptMessage: (message) => e2e.decryptMessage(message),
 	getRooms: () => toSearchIndexRooms(Subscriptions.state.records.values()),
 	idle: createDocumentIdleSignal('useLoginPresence'),
+	getMaxAgeMs: () => backfillMonthsToMaxAgeMs(settings.peek<number>('E2E_Local_Search_Backfill_Months')),
 	onError: (error) => log.span('searchIndexCrawler').error('Error indexing the history of encrypted rooms', error),
 });
 

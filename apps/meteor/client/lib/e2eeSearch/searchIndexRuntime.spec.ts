@@ -2,7 +2,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import type { ISearchIndexBackend } from '@rocket.chat/desktop-api';
 
 import { createFakeSearchIndexBackend } from './fakeSearchIndexBackend';
-import { createSearchIndexRuntime, createSyncMessagesFetcher, toSearchIndexRooms } from './searchIndexRuntime';
+import { backfillMonthsToMaxAgeMs, createSearchIndexRuntime, createSyncMessagesFetcher, toSearchIndexRooms } from './searchIndexRuntime';
 import type { IdleSignal, SearchIndexScheduler } from './searchIndexScheduler';
 import { createSyncMessagesServerMock } from '../../../tests/mocks/client/syncMessagesServerMock';
 
@@ -153,6 +153,86 @@ describe('createSearchIndexRuntime', () => {
 		} finally {
 			jest.useRealTimers();
 		}
+	});
+});
+
+describe('createSearchIndexRuntime with the admin depth limit', () => {
+	const MONTH = YEAR / 12;
+
+	const backfill = async (getMaxAgeMs: (() => number | undefined) | undefined) => {
+		jest.useFakeTimers({ now: NOW });
+		try {
+			const server = createSyncMessagesServerMock({ startAt: NOW });
+			server.addHistory('old', 'r1', NOW - YEAR);
+			server.addHistory('recent', 'r1', NOW - 2 * MONTH);
+			for (let i = 0; i < 5; i++) server.addHistory(`m${i}`, 'r1', NOW - 1000 * (i + 1));
+
+			const backend = createFakeSearchIndexBackend();
+			await backend.open({ userId: 'u1' });
+			const session = createSessionStub();
+			const queued: IMessage[] = [];
+
+			const runtime = createSearchIndexRuntime({
+				session,
+				writer: {
+					remove: async () => undefined,
+					flush: async () => {
+						await backend.upsert(
+							queued.splice(0).map((message) => ({
+								id: message._id,
+								rid: message.rid,
+								uid: message.u._id,
+								username: message.u.username,
+								ts: new Date(message.ts).getTime(),
+								updatedAt: new Date(message._updatedAt).getTime(),
+								kind: 'text' as const,
+								body: `plain ${message._id}`,
+							})),
+						);
+					},
+				},
+				syncMessages: (params) => server.syncMessages(params),
+				decryptMessage: async (message) => {
+					const decrypted = { ...message, e2e: 'done' } as IMessage;
+					queued.push(decrypted);
+					return decrypted;
+				},
+				getRooms: () => [{ rid: 'r1', lastActivityAt: NOW }],
+				idle: idleAlways,
+				getMaxAgeMs,
+			});
+
+			session.set(backend);
+			await jest.advanceTimersByTimeAsync(5 * 60_000);
+			const found = async (id: string) => (await backend.search({ text: `plain ${id}` })).some((hit) => hit.id === id);
+			const result = { old: await found('old'), recent: await found('recent'), m0: await found('m0') };
+			runtime.dispose();
+			return result;
+		} finally {
+			jest.useRealTimers();
+		}
+	};
+
+	it('does not index messages older than the depth that the admin set', async () => {
+		expect(await backfill(() => 6 * MONTH)).toEqual({ old: false, recent: true, m0: true });
+	});
+
+	it('indexes the whole history when no depth is set', async () => {
+		expect(await backfill(undefined)).toEqual({ old: true, recent: true, m0: true });
+	});
+
+	it('indexes only new messages with a depth of 0 months', async () => {
+		expect(await backfill(() => 0)).toEqual({ old: false, recent: false, m0: false });
+	});
+});
+
+describe('backfillMonthsToMaxAgeMs', () => {
+	it('turns months into milliseconds, and 0, negative or invalid values into 0 (no backfill)', () => {
+		expect(backfillMonthsToMaxAgeMs(12)).toBe(YEAR + 6 * 60 * 60 * 1000);
+		expect(backfillMonthsToMaxAgeMs(0)).toBe(0);
+		expect(backfillMonthsToMaxAgeMs(-3)).toBe(0);
+		expect(backfillMonthsToMaxAgeMs(Number.NaN)).toBe(0);
+		expect(backfillMonthsToMaxAgeMs(undefined)).toBe(0);
 	});
 });
 

@@ -48,4 +48,19 @@ export const createE2ESettings = () =>
 			public: true,
 			enableQuery: { _id: 'E2E_Enable', value: true },
 		});
+
+		await this.add('E2E_Enable_Local_Search', false, {
+			type: 'boolean',
+			public: true,
+			enableQuery: { _id: 'E2E_Enable', value: true },
+		});
+
+		await this.add('E2E_Local_Search_Backfill_Months', 12, {
+			type: 'int',
+			public: true,
+			enableQuery: [
+				{ _id: 'E2E_Enable', value: true },
+				{ _id: 'E2E_Enable_Local_Search', value: true },
+			],
+		});
 	});

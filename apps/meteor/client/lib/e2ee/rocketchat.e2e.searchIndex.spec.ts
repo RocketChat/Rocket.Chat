@@ -3,6 +3,7 @@ import type { ISearchIndexBackend } from '@rocket.chat/desktop-api';
 import { generate } from './crypto/rsa';
 import { e2e, e2eSearchIndexSession, e2eSearchIndexWriter } from './rocketchat.e2e';
 import { deriveSearchIndexWrapKey } from '../e2eeSearch/searchIndexSession';
+import { settings } from '../settings';
 
 jest.mock('@rocket.chat/ui-client', () => ({
 	imperativeModal: { open: jest.fn(), close: jest.fn() },
@@ -31,8 +32,14 @@ const toHex = (bytes: Uint8Array) => Array.from(bytes, (byte) => byte.toString(1
 
 describe('E2E client and the local search index', () => {
 	let bridge: jest.Mocked<ISearchIndexBackend>;
+	let localSearchAllowed: boolean;
 
 	beforeEach(() => {
+		localSearchAllowed = true;
+		const peek = settings.peek.bind(settings);
+		jest
+			.spyOn(settings, 'peek')
+			.mockImplementation((id: string) => (id === 'E2E_Enable_Local_Search' ? localSearchAllowed : peek(id)) as never);
 		bridge = Object.fromEntries(
 			methods.map((method) => [method, jest.fn(async () => undefined)]),
 		) as unknown as jest.Mocked<ISearchIndexBackend>;
@@ -96,5 +103,37 @@ describe('E2E client and the local search index', () => {
 		await e2eSearchIndexWriter.flush();
 
 		expect(bridge.upsert).toHaveBeenCalledTimes(1);
+	});
+
+	it('wipes the desktop index at login and indexes nothing when the admin setting is off (the default)', async () => {
+		localSearchAllowed = false;
+		const { privateKey } = await generate();
+		(e2e as unknown as { userId: string }).userId = 'u1';
+		e2e.privateKey = privateKey;
+		const encrypted = {
+			_id: 'm1',
+			rid: 'r1',
+			t: 'e2e',
+			e2e: 'pending',
+			msg: '',
+			u: { _id: 'u2', username: 'bob' },
+			ts: new Date(),
+			_updatedAt: new Date(),
+		};
+		jest
+			.spyOn(e2e, 'getInstanceByRoomId')
+			.mockResolvedValue({ decryptMessage: jest.fn(async () => ({ ...encrypted, e2e: 'done', msg: 'budget review' })) } as never);
+		jest.spyOn(e2e, 'parseQuoteAttachment').mockImplementation(async (message) => message);
+
+		e2e.setState('READY');
+		await e2eSearchIndexSession.whenSettled();
+		await e2e.decryptMessage(encrypted as never);
+		await e2eSearchIndexWriter.flush();
+
+		expect(bridge.wipe).toHaveBeenCalledTimes(1);
+		expect(e2eSearchIndexSession.getActiveBackend()).toBeUndefined();
+		expect(bridge.upsert).not.toHaveBeenCalled();
+
+		await e2e.stopClient();
 	});
 });
