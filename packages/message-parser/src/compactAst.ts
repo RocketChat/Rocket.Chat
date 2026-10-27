@@ -771,7 +771,7 @@ function expandTableRow(row: CompactTableRow, msg: string): TableRow {
 function compactFallback(
 	fb: SourceRange | Plain | undefined
 ): CompactSpan | string | undefined {
-	if (!fb) return undefined;
+	if (fb === undefined) return undefined;
 	if (Array.isArray(fb)) {
 		return fb;
 	}
@@ -783,7 +783,7 @@ function expandFallback(
 	fb: CompactSpan | string | undefined,
 	msg: string
 ): SourceRange | Plain | undefined {
-	if (!fb) return undefined;
+	if (fb === undefined) return undefined;
 	if (Array.isArray(fb)) {
 		return fb;
 	}

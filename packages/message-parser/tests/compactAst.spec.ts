@@ -247,6 +247,41 @@ describe('Compact AST format for message-parser', () => {
 			]);
 			expect(expand(compact, msg)).toEqual(ast);
 		});
+
+		it('handles timestamps with empty Plain node fallback', () => {
+			const msg = 'Meeting at <t:1708551317:R>';
+			const ast: Root = [
+				paragraph([
+					plain('Meeting at '),
+					{
+						type: 'TIMESTAMP',
+						value: {
+							timestamp: '1708551317',
+							format: 'R',
+						},
+						fallback: plain(''),
+					},
+				]),
+			];
+
+			expect(validateRoundtrip(ast, msg)).toBe(true);
+			const compact = compactify(ast, msg);
+			expect(compact).toEqual([
+				{
+					t: 'p',
+					c: [
+						[0, 11],
+						{
+							t: 'ts',
+							ts: '1708551317',
+							f: 'R',
+							fb: '',
+						},
+					],
+				},
+			]);
+			expect(expand(compact, msg)).toEqual(ast);
+		});
 	});
 
 	describe('Block Elements', () => {
