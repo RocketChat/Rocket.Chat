@@ -13,6 +13,7 @@ const files = (readdirSync(join(root, 'src/components'), { recursive: true }) as
 
 const rows: Record<string, unknown>[] = [];
 const allRules = new Set<string>();
+const rulesWithoutButton = new Set<string>();
 const allRecipes: string[] = [];
 for (const file of files) {
 	const id = join(root, 'src/components', file);
@@ -31,6 +32,7 @@ for (const file of files) {
 			const { recipe, css, resolutions } = computeRecipe(name, frames[name].staticConfig, { ordered: true, limit: 50000 });
 			const json = JSON.stringify(recipe);
 			css.forEach((rule) => allRules.add(rule));
+			if (name !== 'ButtonFrame') css.forEach((rule) => rulesWithoutButton.add(rule));
 			allRecipes.push(json);
 			rows.push({
 				name: `${file}#${name}`,
@@ -52,12 +54,19 @@ const sum = (key: string) => ok.reduce((total, row) => total + (row[key] as numb
 console.log(`definitions ${rows.length}, lowered ${ok.length}, blocked ${rows.length - ok.length}`);
 console.log(`css ${sum('css')} B raw (${sum('rules')} rules), recipes ${sum('recipe')} B raw`);
 const dedupedCss = `@layer fuselage{${[...allRules].join('')}}`;
-console.log(`css deduped ${dedupedCss.length} B raw (${allRules.size} rules), gzip ${gzipSync(dedupedCss, { level: 9 }).length}; recipes together gzip ${gzipSync(allRecipes.join(','), { level: 9 }).length}`);
-const noButton = new Set(ok.filter((row) => !String(row.name).includes('ButtonFrame#ButtonFrame')).map((row) => row.name));
-console.log(`without ButtonFrame: css ${ok.filter((row) => noButton.has(row.name)).reduce((t, r) => t + (r.css as number), 0)} B raw summed`);
+console.log(
+	`css deduped ${dedupedCss.length} B raw (${allRules.size} rules), gzip ${gzipSync(dedupedCss, { level: 9 }).length}; recipes together gzip ${gzipSync(allRecipes.join(','), { level: 9 }).length}`,
+);
+const withoutButton = `@layer fuselage{${[...rulesWithoutButton].join('')}}`;
+console.log(
+	`without ButtonFrame: css deduped ${withoutButton.length} B raw (${rulesWithoutButton.size} rules), gzip ${gzipSync(withoutButton, { level: 9 }).length}`,
+);
 const byReason = new Map<string, number>();
 for (const row of rows.filter((r) => r.error)) {
-	const reason = String(row.error).replace(/`[^`]*`/g, '`…`').replace(/\{.*$/, '').slice(0, 90);
+	const reason = String(row.error)
+		.replace(/`[^`]*`/g, '`…`')
+		.replace(/\{.*$/, '')
+		.slice(0, 90);
 	byReason.set(reason, (byReason.get(reason) ?? 0) + 1);
 }
 console.table([...byReason].sort((a, b) => b[1] - a[1]).map(([reason, count]) => ({ reason, count })));
