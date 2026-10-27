@@ -353,7 +353,8 @@ class MediaCallDirector {
 			throw new CallRejectedError('prevented', hookResult.reason);
 		}
 
-		const requestedFeatures = getFeaturesSupportedByTransport(service, caller, callee, hookResult.features || features);
+		const featureSetAfterHook = hookResult.features || features;
+		const requestedFeatures = getFeaturesSupportedByTransport(service, caller, callee, featureSetAfterHook);
 
 		const forbiddenFeatures: CallFeature[] = [];
 		if (parentCallId) {
@@ -378,7 +379,7 @@ class MediaCallDirector {
 			...(params.device && { device: params.device }),
 		};
 
-		logger.debug({ msg: 'creating call', call });
+		logger.debug({ msg: 'creating call', call, initialFeatureSet: features, featureSetAfterHook, requestedFeatures, allowedFeatures });
 
 		const insertResult = await MediaCalls.insertOne(call);
 		if (!insertResult.insertedId) {
