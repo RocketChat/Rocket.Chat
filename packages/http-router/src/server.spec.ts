@@ -2,7 +2,7 @@ import express from 'express';
 import request from 'supertest';
 
 import { nodeHandler } from './middlewares/nodeHandler';
-import { RESPONSE_ALREADY_SENT, createNodeServer, createRootApp } from './server';
+import { RESPONSE_ALREADY_SENT, createMiddlewareSlot, createNodeServer, createRootApp } from './server';
 
 describe('createRootApp', () => {
 	it('serves a route added after it has answered a request', async () => {
@@ -87,5 +87,42 @@ describe('nodeHandler', () => {
 		const response = await request(createServer(expressApp)).get('/broken');
 
 		expect(response.status).toBe(500);
+	});
+});
+
+describe('createMiddlewareSlot', () => {
+	it('runs middlewares added after a route ahead of that route', async () => {
+		const app = createRootApp();
+		const slot = createMiddlewareSlot();
+		app.use(slot.middleware);
+		app.get('/route', (c) => c.text('route'));
+
+		slot.add(async (c, next) => {
+			await next();
+			c.res.headers.set('x-first', '1');
+		});
+		slot.add(async (c, next) => {
+			await next();
+			c.res.headers.set('x-second', c.res.headers.get('x-first') ?? 'not yet');
+		});
+
+		const response = await request(createNodeServer(app)).get('/route');
+
+		expect(response.text).toBe('route');
+		expect(response.headers['x-first']).toBe('1');
+		expect(response.headers['x-second']).toBe('not yet');
+	});
+
+	it('lets a middleware answer instead of the route', async () => {
+		const app = createRootApp();
+		const slot = createMiddlewareSlot();
+		app.use(slot.middleware);
+		app.get('/route', (c) => c.text('route'));
+		slot.add((c) => Promise.resolve(c.text('redirected', 302)));
+
+		const response = await request(createNodeServer(app)).get('/route');
+
+		expect(response.status).toBe(302);
+		expect(response.text).toBe('redirected');
 	});
 });
