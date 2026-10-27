@@ -136,6 +136,17 @@ test.each([
 	expect(parse(input)).toEqual(output);
 });
 
+describe('autoLink inside double quotes', () => {
+	test.each([
+		['"https://example.com/quoted"', [paragraph([plain('"'), link('https://example.com/quoted'), plain('"')])]],
+		['say "https://example.com" ok', [paragraph([plain('say "'), link('https://example.com'), plain('" ok')])]],
+		['"www.example.com"', [paragraph([plain('"'), link('//www.example.com', [plain('www.example.com')]), plain('"')])]],
+		['he said "hello" to me', [paragraph([plain('he said "hello" to me')])]],
+	])('parses %p', (input, output) => {
+		expect(parse(input)).toEqual(output);
+	});
+});
+
 describe('autoLink with custom hosts settings comming from Rocket.Chat', () => {
 	test.each([
 		['http://gitlab.local', [paragraph([link('http://gitlab.local', [plain('http://gitlab.local')])])]],

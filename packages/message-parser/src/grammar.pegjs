@@ -346,7 +346,8 @@ InlineEmoticon = emo:Emoticon & (EmoticonNeighbor / InlineItemPattern) { return 
 // Match "-" only when "-_-" is followed by more (so "-_-italic" → plain+italic); don't match when "-_-" is the full emoticon
 PlainRunBeforeEmoticon = "-" &("_" "-" .) { return plain('-'); }
 
-PlainRun = run:$[^*_~`:\n<\[\]! \t()\\|]+ { return plain(run); }
+// stops before `"` so a URL right after a quote, as in "https://example.com", is still auto-linked
+PlainRun = run:$[^*_~`:\n<\[\]! \t()\\|"]+ { return plain(run); }
 
 EscapedTimestampRules
   = "\\" "<t:" rawDate:$(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ":" format:TimestampType ">" {
