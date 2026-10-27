@@ -30,7 +30,7 @@ const ContactsTable = ({ sort, columns, children }: ContactsTableProps) => {
 						{t(label)}
 					</GenericTableHeaderCell>
 				))}
-				<GenericTableCell key='menu' width={44}>
+				<GenericTableCell key='menu'>
 					<ContactsColumnsMenu columns={columns} />
 				</GenericTableCell>
 			</GenericTableHeader>

@@ -31,7 +31,7 @@ const ContactsTableRow = ({ contact, columns, onClick, onEdit, onDeleted }: Cont
 	return (
 		<GenericTableRow key={_id} tabIndex={0} role='link' action onClick={onClick} onKeyDown={handleKeyDown}>
 			{columns.isVisible('displayName') && (
-				<GenericTableCell withTruncatedText>
+				<GenericTableCell truncate>
 					<Box display='flex' alignItems='center'>
 						<BaseAvatar size='x28' url={getAvatarURL({ contactId: _id, cache: _updatedAt }) ?? ''} />
 						<Box marginInlineStart={8} fontScale='p2' flexGrow={1} flexShrink={1} flexBasis='0%' withTruncatedText>
@@ -40,20 +40,20 @@ const ContactsTableRow = ({ contact, columns, onClick, onEdit, onDeleted }: Cont
 					</Box>
 				</GenericTableCell>
 			)}
-			{columns.isVisible('emails.address') && <GenericTableCell withTruncatedText>{emails[0]?.address}</GenericTableCell>}
-			{columns.isVisible('phones.raw') && <GenericTableCell withTruncatedText>{phones[0]?.raw}</GenericTableCell>}
+			{columns.isVisible('emails.address') && <GenericTableCell truncate>{emails[0]?.address}</GenericTableCell>}
+			{columns.isVisible('phones.raw') && <GenericTableCell truncate>{phones[0]?.raw}</GenericTableCell>}
 			{columns.isVisible('categories') && (
 				<GenericTableCell>
 					{source === 'local' ? (
 						<Box display='flex'>
-							<Tag variant='secondary' fontScale='c1' fontWeight='bold' icon={<Icon marginInlineEnd={2} name='address-book' size='x18' />}>
+							<Tag variant='secondary' icon={<Icon name='address-book' size='x18' />}>
 								Rocket.Chat
 							</Tag>
 						</Box>
 					) : (
 						<Box display='flex' flexWrap='wrap' gap={4} maxHeight='x20' overflow='hidden'>
 							{categories?.map((category) => (
-								<Tag fontScale='c1' fontWeight='bold' key={category} variant='secondary'>
+								<Tag key={category} variant='secondary'>
 									{category}
 								</Tag>
 							))}
@@ -61,8 +61,8 @@ const ContactsTableRow = ({ contact, columns, onClick, onEdit, onDeleted }: Cont
 					)}
 				</GenericTableCell>
 			)}
-			{columns.isVisible('companyName') && <GenericTableCell withTruncatedText>{companyName}</GenericTableCell>}
-			{columns.isVisible('officeLocation') && <GenericTableCell withTruncatedText>{officeLocation}</GenericTableCell>}
+			{columns.isVisible('companyName') && <GenericTableCell truncate>{companyName}</GenericTableCell>}
+			{columns.isVisible('officeLocation') && <GenericTableCell truncate>{officeLocation}</GenericTableCell>}
 			<GenericTableCell>
 				<ContactMenu contact={contact} onEdit={onEdit} onDeleted={onDeleted} />
 			</GenericTableCell>
