@@ -1,9 +1,6 @@
-import { useCallback, useRef, useSyncExternalStore } from 'react';
+import { useCallback, useMemo, useRef, useSyncExternalStore } from 'react';
 
 import { useStableArray } from './useStableArray';
-
-const matchQueries = (queries: string[]) =>
-	queries.map((query) => (typeof window === 'undefined' || typeof window.matchMedia !== 'function' ? false : matchMedia(query).matches));
 
 /**
  * Hook to listen to a set of media queries.
@@ -15,51 +12,56 @@ const matchQueries = (queries: string[]) =>
 export const useMediaQueries = (...queries: string[]) => {
 	const stableQueries = useStableArray(queries);
 
-	const snapshotRef = useRef<{ queries: string[]; matches: boolean[] }>(undefined);
+	const mediaQueryLists = useMemo(
+		() =>
+			typeof window === 'undefined' || typeof window.matchMedia !== 'function'
+				? undefined
+				: stableQueries.map((query) => matchMedia(query)),
+		[stableQueries],
+	);
+
+	const snapshotRef = useRef<boolean[]>([]);
 
 	const subscribe = useCallback(
 		(onStoreChange: () => void) => {
-			if (typeof window === 'undefined' || typeof window.matchMedia !== 'function') {
+			if (!mediaQueryLists) {
 				return () => undefined;
 			}
 
-			const mediaQueryLists = stableQueries.map((query) => matchMedia(query));
-
-			const callback = () => {
-				snapshotRef.current = { queries: stableQueries, matches: mediaQueryLists.map((mediaQueryList) => mediaQueryList.matches) };
-				onStoreChange();
-			};
-
 			for (const mediaQueryList of mediaQueryLists) {
 				if (typeof mediaQueryList.addEventListener === 'function') {
-					mediaQueryList.addEventListener('change', callback);
+					mediaQueryList.addEventListener('change', onStoreChange);
 					continue;
 				}
 
-				mediaQueryList.addListener(callback);
+				mediaQueryList.addListener(onStoreChange);
 			}
 
 			return () => {
 				for (const mediaQueryList of mediaQueryLists) {
 					if (typeof mediaQueryList.removeEventListener === 'function') {
-						mediaQueryList.removeEventListener('change', callback);
+						mediaQueryList.removeEventListener('change', onStoreChange);
 						continue;
 					}
 
-					mediaQueryList.removeListener(callback);
+					mediaQueryList.removeListener(onStoreChange);
 				}
 			};
 		},
-		[stableQueries],
+		[mediaQueryLists],
 	);
 
 	const getSnapshot = useCallback(() => {
-		if (snapshotRef.current?.queries !== stableQueries) {
-			snapshotRef.current = { queries: stableQueries, matches: matchQueries(stableQueries) };
+		const matches = mediaQueryLists ? mediaQueryLists.map((mediaQueryList) => mediaQueryList.matches) : stableQueries.map(() => false);
+		const cached = snapshotRef.current;
+
+		if (cached.length === matches.length && cached.every((value, index) => value === matches[index])) {
+			return cached;
 		}
 
-		return snapshotRef.current.matches;
-	}, [stableQueries]);
+		snapshotRef.current = matches;
+		return matches;
+	}, [mediaQueryLists, stableQueries]);
 
 	return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 };
