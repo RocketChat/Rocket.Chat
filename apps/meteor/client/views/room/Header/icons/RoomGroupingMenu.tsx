@@ -1,24 +1,17 @@
-import { isOmnichannelRoom, type IRoom, type ISubscription } from '@rocket.chat/core-typings';
 import { memo } from 'react';
 
-import Favorite from './Favorite';
-import RoomHeaderCategoryMenu from './RoomHeaderCategoryMenu';
-import { useIsEnterprise } from '../../../../hooks/useIsEnterprise';
+import type { RoomGroupingButtonProps } from './RoomGroupingButton';
+import RoomGroupingButton from './RoomGroupingButton';
 import { useUserIsSubscribed } from '../../contexts/RoomContext';
 
-const RoomGroupingMenu = ({ room }: { room: IRoom & { f?: ISubscription['f']; category?: ISubscription['category'] } }) => {
+const RoomGroupingMenu = ({ room }: RoomGroupingButtonProps) => {
 	const subscribed = useUserIsSubscribed();
-	const { data: { isEnterprise = false } = {} } = useIsEnterprise();
 
 	if (!subscribed) {
 		return null;
 	}
 
-	if (isEnterprise && !isOmnichannelRoom(room)) {
-		return <RoomHeaderCategoryMenu room={room} />;
-	}
-
-	return <Favorite room={room} />;
+	return <RoomGroupingButton room={room} />;
 };
 
 export default memo(RoomGroupingMenu);

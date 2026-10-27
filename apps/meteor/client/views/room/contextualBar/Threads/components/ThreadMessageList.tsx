@@ -5,7 +5,6 @@ import { MessageTypes } from '@rocket.chat/message-types';
 import { isTruthy } from '@rocket.chat/tools';
 import { clientCallbacks, CustomVirtuaScrollbars } from '@rocket.chat/ui-client';
 import { useSearchParameter, useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
-import { differenceInSeconds } from 'date-fns/differenceInSeconds';
 import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { VirtualizerHandle } from 'virtua';
@@ -27,30 +26,8 @@ import { useDateScroll } from '../../../hooks/useDateScroll';
 import { useFirstUnreadMessageId } from '../../../hooks/useFirstUnreadMessageId';
 import { useMessageListNavigation } from '../../../hooks/useMessageListNavigation';
 import { useThreadMessagesQuery } from '../hooks/useThreadMessagesQuery';
+import { isThreadMessageSequential } from '../lib/isThreadMessageSequential';
 import './threads.css';
-
-const isMessageSequential = (current: IMessage, previous: IMessage | undefined, groupingRange: number): boolean => {
-	if (!previous) {
-		return false;
-	}
-
-	if (MessageTypes.isSystemMessage(current) || MessageTypes.isSystemMessage(previous)) {
-		return false;
-	}
-
-	if (current.groupable === false) {
-		return false;
-	}
-
-	if (current.u._id !== previous.u._id) {
-		return false;
-	}
-
-	if (current.alias !== previous.alias) {
-		return false;
-	}
-	return differenceInSeconds(current.ts, previous.ts) < groupingRange && !isMessageNewDay(current, previous);
-};
 
 export type ThreadMessageListProps = {
 	mainMessage: IThreadMainMessage;
@@ -423,7 +400,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 						) : null}
 						{!loading &&
 							items.map((message, index, { [index - 1]: previous }) => {
-								const sequential = isMessageSequential(message, previous, messageGroupingPeriod);
+								const sequential = isThreadMessageSequential(message, previous, messageGroupingPeriod);
 								const newDay = isMessageNewDay(message, previous);
 								const shouldShowAsSequential = sequential && !newDay;
 								const firstUnread = firstUnreadMessageId === message._id;
