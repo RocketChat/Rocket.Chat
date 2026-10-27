@@ -6254,6 +6254,8 @@
   "set-readonly_description": "Permission to set a channel to read-only channel",
   "Setting": "Setting",
   "Setting_change": "Setting change",
+  "Setting_color_editor": "{{setting}} editor",
+  "Setting_time_unit": "{{setting}} time unit",
   "Settings": "Settings",
   "Settings_updated": "Settings updated",
   "Setup_SMTP": "Set up SMTP",

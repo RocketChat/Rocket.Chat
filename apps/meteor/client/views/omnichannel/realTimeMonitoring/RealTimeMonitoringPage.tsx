@@ -29,7 +29,7 @@ const RealTimeMonitoringPage = () => {
 	const [reloadFrequency, setReloadFrequency] = useState(5);
 	const [departmentId, setDepartment] = useState('');
 	const departmentsLabelId = useId();
-	const updateEveryLabelId = useId();
+	const updateEveryField = useId();
 
 	const queryClient = useQueryClient();
 
@@ -81,10 +81,10 @@ const RealTimeMonitoringPage = () => {
 						</Box>
 						<Box maxWidth='50%' flexGrow={1}>
 							<Field>
-								<FieldLabel id={updateEveryLabelId}>{t('Update_every')}</FieldLabel>
+								<FieldLabel htmlFor={updateEveryField}>{t('Update_every')}</FieldLabel>
 								<FieldRow>
 									<Select
-										aria-labelledby={updateEveryLabelId}
+										id={updateEveryField}
 										options={reloadOptions}
 										onChange={useStableCallback((val: Key) => setReloadFrequency(val as number))}
 										value={reloadFrequency}

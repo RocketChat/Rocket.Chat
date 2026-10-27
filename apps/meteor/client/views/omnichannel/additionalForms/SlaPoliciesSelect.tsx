@@ -23,9 +23,9 @@ export const SlaPoliciesSelect = ({ value, label, options, onChange }: SlaPolici
 
 	return (
 		<Field>
-			<FieldLabel id={fieldId}>{label}</FieldLabel>
+			<FieldLabel htmlFor={fieldId}>{label}</FieldLabel>
 			<FieldRow>
-				<Select aria-labelledby={fieldId} value={value} options={optionsSelect} onChange={(value) => onChange(String(value))} />
+				<Select id={fieldId} value={value} options={optionsSelect} onChange={(value) => onChange(String(value))} />
 			</FieldRow>
 		</Field>
 	);

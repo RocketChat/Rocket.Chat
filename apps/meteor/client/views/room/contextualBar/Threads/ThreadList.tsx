@@ -139,12 +139,7 @@ const ThreadList = () => {
 					onChange={handleSearchTextChange}
 				/>
 				<Box width='x144' marginInlineStart={8}>
-					<Select
-						aria-controls={isSuccess ? threadListId : undefined}
-						options={typeOptions}
-						value={type}
-						onChange={(value) => handleTypeChange(String(value))}
-					/>
+					<Select aria-label={t('Filter')} options={typeOptions} value={type} onChange={(value) => handleTypeChange(String(value))} />
 				</Box>
 			</ContextualbarSection>
 			<ContextualbarContent flush ref={ref}>
