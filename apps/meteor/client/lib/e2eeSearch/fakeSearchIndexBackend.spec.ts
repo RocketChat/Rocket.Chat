@@ -70,6 +70,34 @@ describe('createFakeSearchIndexBackend', () => {
 		await expect(backend.search({ text: '  ?!*  ' })).resolves.toEqual([]);
 	});
 
+	it('lists the newest messages of the filters for an empty text, like the desktop index (LSE2EE-74)', async () => {
+		const backend = await openBackend();
+		await backend.upsert([
+			doc({ id: 'm1', body: 'one', rid: 'r1', uid: 'u1', ts: 100 }),
+			doc({ id: 'm2', body: 'two', rid: 'r2', uid: 'u1', ts: 200 }),
+			doc({ id: 'm3', body: 'three', rid: 'r1', uid: 'u2', ts: 300 }),
+			doc({ id: 'm4', body: 'four', rid: 'r1', uid: 'u1', ts: 400 }),
+		]);
+
+		await expect(ids(backend, { text: '', rid: 'r1', uid: 'u1' })).resolves.toEqual(['m4', 'm1']);
+		await expect(ids(backend, { text: ' ', from: 150, to: 350, limit: 1 })).resolves.toEqual(['m3']);
+		await expect(backend.search({ text: '' })).resolves.toEqual([]);
+		await expect(backend.search({ text: '?!', rid: 'r1' })).resolves.toEqual([]);
+	});
+
+	it('gives a filter-only hit the escaped start of the body, with no marks', async () => {
+		const backend = await openBackend();
+		const long = `<b>"Tom" & 'Ana'</b> ${'word '.repeat(30)}`;
+		await backend.upsert([doc({ id: 'm1', body: long }), doc({ id: 'm2', body: 'short <i>', ts: 2000 })]);
+
+		const [short, first] = await backend.search({ text: '', rid: 'r1' });
+
+		expect(short.snippet).toBe('short &lt;i&gt;');
+		expect(first.snippet).toMatch(/^&lt;b&gt;&quot;Tom&quot; &amp; &#39;Ana&#39;&lt;\/b&gt; word /);
+		expect(first.snippet.endsWith('…')).toBe(true);
+		expect(first.snippet).not.toContain('<mark>');
+	});
+
 	it('filters by room, sender and date range', async () => {
 		const backend = await openBackend();
 		await backend.upsert([

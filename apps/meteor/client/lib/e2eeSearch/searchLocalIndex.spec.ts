@@ -112,10 +112,27 @@ describe('searchLocalIndex filters', () => {
 		expect(hits).toEqual([authorHit('m1', 'u-bob', 'bob')]);
 	});
 
-	it('does not search when the text has only filters', async () => {
+	it('searches the room with an empty text when the text has only filters (LSE2EE-74)', async () => {
+		const backend = createBackend([authorHit('m2', 'u-self', 'me'), hit('m1', 'r2')]);
+
+		await expect(
+			searchLocalIndex(backend, { searchText: ' from:me after:01-01-2025 ', rid: 'r1', limit: 10, self: { uid: 'u-self' } }),
+		).resolves.toEqual([authorHit('m2', 'u-self', 'me')]);
+		expect(backend.search).toHaveBeenCalledWith({
+			text: '',
+			rid: 'r1',
+			order: 'recent',
+			limit: 10,
+			uid: 'u-self',
+			from: new Date(2025, 0, 2).getTime(),
+		});
+	});
+
+	it('searches with an empty text for a date filter alone', async () => {
 		const backend = createBackend();
 
-		await expect(searchLocalIndex(backend, { searchText: 'from:me after:01-01-2025', rid: 'r1', limit: 10 })).resolves.toEqual([]);
-		expect(backend.search).not.toHaveBeenCalled();
+		await searchLocalIndex(backend, { searchText: 'before:01-01-2025', rid: 'r1', limit: 10 });
+
+		expect(backend.search).toHaveBeenCalledWith({ text: '', rid: 'r1', order: 'recent', limit: 10, to: new Date(2025, 0, 1).getTime() });
 	});
 });

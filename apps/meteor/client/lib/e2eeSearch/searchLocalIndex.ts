@@ -19,14 +19,15 @@ const clampLimit = (limit: number) => Math.min(Math.max(1, limit), MAX_LOCAL_SEA
 /**
  * Searches the local index of decrypted messages in one room, newest first. The query never goes to the server. Hits of
  * other rooms are dropped, so a result list shows only the room that the user searches. The text can carry the
- * `from:`, `before:`, `after:` and `on:` filters of the server search.
+ * `from:`, `before:`, `after:` and `on:` filters of the server search, also with no words.
  */
 export const searchLocalIndex = async (
 	backend: ISearchIndexBackend,
 	{ searchText, rid, limit, self, resolveUid }: LocalSearchParams,
 ): Promise<E2EESearchHit[]> => {
 	const { text, usernames, from, to } = parseLocalSearchQuery(searchText);
-	if (!text) return [];
+	// A text with only filters goes to the index with an empty text, and the index lists the newest messages of the filters.
+	if (!text && usernames.length === 0 && from === undefined && to === undefined) return [];
 
 	const uids = new Set<string>();
 	const unresolved = new Set<string>();

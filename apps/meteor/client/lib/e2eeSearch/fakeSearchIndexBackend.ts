@@ -59,6 +59,15 @@ const toSnippet = (body: string, tokens: string[]): string => {
 	return html + escapeHtml(body.slice(last));
 };
 
+// A hit of a query with no words has no match: the snippet is the escaped start of the body, as in the desktop index.
+const FILTER_ONLY_SNIPPET_LENGTH = 80;
+
+const toFilterOnlySnippet = (body: string): string => {
+	const chars = [...body];
+	if (chars.length <= FILTER_ONLY_SNIPPET_LENGTH) return escapeHtml(body);
+	return `${escapeHtml(chars.slice(0, FILTER_ONLY_SNIPPET_LENGTH).join(''))}…`;
+};
+
 /**
  * A memory-only search index with the same contract as the desktop index. Development builds use it to work on E2EE
  * search in a browser. It never writes to disk, and a reload loses it.
@@ -112,7 +121,10 @@ export const createFakeSearchIndexBackend = (): ISearchIndexBackend => {
 		async search(query) {
 			assertOpen();
 			const tokens = queryTokens(query.text);
-			if (tokens.length === 0) return [];
+			// An empty text with filters lists the newest messages of the filters. No filter at all finds nothing.
+			const filtered = query.rid !== undefined || query.uid !== undefined || query.from !== undefined || query.to !== undefined;
+			const filtersOnly = query.text.trim() === '' && filtered;
+			if (tokens.length === 0 && !filtersOnly) return [];
 
 			const from = query.from ?? 0;
 			const to = query.to ?? Number.MAX_SAFE_INTEGER;
@@ -136,7 +148,7 @@ export const createFakeSearchIndexBackend = (): ISearchIndexBackend => {
 				uid: doc.uid,
 				username: doc.username,
 				ts: doc.ts,
-				snippet: toSnippet(doc.body, tokens),
+				snippet: tokens.length === 0 ? toFilterOnlySnippet(doc.body) : toSnippet(doc.body, tokens),
 			}));
 		},
 
