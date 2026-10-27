@@ -250,7 +250,7 @@ describe('[Commands]', () => {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 
-						expect(res.body.error).to.include('error-forbidden');
+						expect(res.body.error).to.include('error-not-authorized');
 					});
 			});
 		});
@@ -327,7 +327,7 @@ describe('[Commands]', () => {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 
-						expect(res.body.error).to.include('error-forbidden');
+						expect(res.body.error).to.include('error-not-authorized');
 					});
 			});
 		});
@@ -384,7 +384,7 @@ describe('[Commands]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 
-					expect(res.body.error).to.include('error-forbidden');
+					expect(res.body.error).to.include('error-not-authorized');
 				});
 		});
 	});

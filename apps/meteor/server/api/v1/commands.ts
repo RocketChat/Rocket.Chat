@@ -370,10 +370,7 @@ const commandsPreviewPostResponseSchema = ajv.compile<void>({
 	additionalProperties: false,
 });
 
-const forbiddenErrors = ['error-not-authorized', 'error-not-allowed'];
-
-const isForbiddenError = (error: unknown): error is ClientSafeError =>
-	isClientSafeError(error) && forbiddenErrors.includes(String(error.error));
+const isForbiddenError = (error: unknown): error is ClientSafeError => isClientSafeError(error) && error.error === 'error-not-allowed';
 
 // Expects a body of: { command: 'gimme', params: 'any string value', roomId: 'value', triggerId: 'value' }
 API.v1.post(
