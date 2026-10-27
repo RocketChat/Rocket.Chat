@@ -48,7 +48,7 @@ const ScheduleMessageModal = ({ initialDate, onConfirm, onClose }: ScheduleMessa
 			confirmDisabled={!inRange}
 			confirmLoading={isSubmitting}
 		>
-			<Box display='flex' gap={8}>
+			<Box display='flex' gap='x8'>
 				<Box flexGrow={1}>
 					<InputBox
 						aria-label={t('Date')}
@@ -67,7 +67,7 @@ const ScheduleMessageModal = ({ initialDate, onConfirm, onClose }: ScheduleMessa
 					/>
 				</Box>
 			</Box>
-			<Box marginBlockStart={8} fontScale='c1' color={inRange ? 'hint' : 'danger'}>
+			<Box marginBlockStart='x8' fontScale='c1' color={inRange ? 'hint' : 'danger'}>
 				{inRange
 					? t('Schedule_sends_at', { date: formatDateAndTime(scheduledAt), timeZone: new Intl.DateTimeFormat().resolvedOptions().timeZone })
 					: t('error-scheduled-message-time-out-of-range')}

@@ -61,7 +61,7 @@ const ScheduledMessageRow = ({
 	const sendLabel = failed ? t(interrupted ? 'Send_anyway' : 'Retry_now') : t('Send_now');
 
 	return (
-		<Box is={Message} paddingBlockStart={16} paddingBlockEnd={8}>
+		<Box is={Message} paddingBlockStart='x16' paddingBlockEnd='x8'>
 			<MessageLeftContainer>
 				<MessageAvatar username={u.username ?? ''} size='x36' />
 			</MessageLeftContainer>
@@ -69,7 +69,7 @@ const ScheduledMessageRow = ({
 				<MessageHeader>
 					<MessageName title={u.username}>{u.name || u.username}</MessageName>
 					<MessageTimestamp>
-						<Box is='span' display='inline-flex' alignItems='center' gap={2} marginInlineStart={4}>
+						<Box is='span' display='inline-flex' alignItems='center' gap='x4' marginInlineStart='x4'>
 							<Icon name='clock' size='x12' />
 							{formatDateAndTime(new Date(scheduledAt))}
 						</Box>
@@ -110,7 +110,7 @@ const ScheduledMessageRow = ({
 						<Box display='flex' alignItems='center' fontScale='c1' color='danger'>
 							<Tag variant='danger'>{t('Failed')}</Tag>
 							{error && (
-								<Box is='span' marginInlineStart={8}>
+								<Box is='span' marginInlineStart='x8'>
 									{t(error)}
 								</Box>
 							)}
@@ -118,7 +118,7 @@ const ScheduledMessageRow = ({
 					</MessageBlock>
 				)}
 			</MessageContainer>
-			<Box is={MessageContainerFixed} marginBlockStart={-6}>
+			<Box is={MessageContainerFixed} marginBlockStart='neg-x4'>
 				<GenericMenu
 					icon='kebab'
 					detached

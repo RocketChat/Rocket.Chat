@@ -31,7 +31,7 @@ const ScheduledMessagesRoomGroup = ({
 			avatar={roomType && <RoomAvatar size='x28' room={{ _id: rid, type: roomType }} />}
 			title={subscription?.fname || subscription?.name || scheduledMessages[0]?.roomName || rid}
 			action={
-				<Button small secondary icon='arrow-forward' onClick={() => goToRoom(rid)}>
+				<Button size='small' variant='secondary' icon='arrow-forward' onClick={() => goToRoom(rid)}>
 					{t('Open_room')}
 				</Button>
 			}

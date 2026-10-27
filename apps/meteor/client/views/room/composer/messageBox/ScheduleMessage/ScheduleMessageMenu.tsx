@@ -92,7 +92,7 @@ const ScheduleMessageMenu = ({ rid, tmid, tshow, composer, disabled }: ScheduleM
 			detached
 			disabled={disabled || isPending || quotes.length > 0}
 			title={t('Schedule_message')}
-			button={<SplitButtonTrigger small icon='chevron-up' />}
+			button={<SplitButtonTrigger size='small' icon='chevron-up' />}
 			sections={[
 				{
 					title: t('Schedule_message'),

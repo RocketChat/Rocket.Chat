@@ -13,9 +13,9 @@ const RoomSection = ({ avatar, title, action, children }: RoomSectionProps) => {
 	const headingId = useId();
 
 	return (
-		<Box is='section' aria-labelledby={headingId} marginBlockEnd={24}>
-			<Box display='flex' alignItems='center' justifyContent='space-between' paddingBlock={8} paddingInline={24}>
-				<Box display='flex' alignItems='center' gap={8} minWidth={0}>
+		<Box is='section' aria-labelledby={headingId} marginBlockEnd='x24'>
+			<Box display='flex' alignItems='center' justifyContent='space-between' paddingBlock='x8' paddingInline='x24'>
+				<Box display='flex' alignItems='center' gap='x8' minWidth={0}>
 					{avatar}
 					<Box is='h3' id={headingId} fontScale='h4' color='default' withTruncatedText>
 						{title}
@@ -23,7 +23,7 @@ const RoomSection = ({ avatar, title, action, children }: RoomSectionProps) => {
 				</Box>
 				{action}
 			</Box>
-			<Box marginInline={24}>
+			<Box marginInline='x24'>
 				<Divider flush />
 			</Box>
 			{children}

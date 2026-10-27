@@ -57,7 +57,7 @@ export default {
 			isPending: false,
 		},
 	},
-	decorators: [(fn) => <Box padding={24}>{fn()}</Box>],
+	decorators: [(fn) => <Box padding='x24'>{fn()}</Box>],
 } satisfies Meta<typeof ScheduledMessagesRoomGroup>;
 
 export const Default: StoryFn<typeof ScheduledMessagesRoomGroup> = (args) => <ScheduledMessagesRoomGroup {...args} />;
