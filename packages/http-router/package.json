@@ -23,7 +23,7 @@
 		"ajv": "^8.20.0",
 		"express": "^4.21.2",
 		"hono": "4.13.13",
-		"qs": "^6.15.3"
+		"qs": "^6.16.1"
 	},
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:^",
