@@ -1,8 +1,8 @@
+import { FormSkeleton } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 
 import SlaEdit from './SlaEdit';
-import { FormSkeleton } from '../../../components/Skeleton';
 import NotAvailableCallout from '../components/NotAvailableCallout';
 
 type SlaEditProps = {

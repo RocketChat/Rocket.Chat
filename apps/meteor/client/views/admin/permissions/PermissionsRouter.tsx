@@ -1,9 +1,8 @@
-import { useIsEnterprise } from '@rocket.chat/ui-client';
+import { PageSkeleton, useIsEnterprise } from '@rocket.chat/ui-client';
 import { useRouteParameter, usePermission } from '@rocket.chat/ui-contexts';
 
 import PermissionsPage from './PermissionsPage';
 import UsersInRole from './UsersInRole';
-import PageSkeleton from '../../../components/PageSkeleton';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 
 const PermissionsRouter = () => {
