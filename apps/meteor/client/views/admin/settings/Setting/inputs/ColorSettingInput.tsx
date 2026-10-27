@@ -1,5 +1,6 @@
 import type { SettingEditor } from '@rocket.chat/core-typings';
-import { Box, FieldLabel, FieldRow, FieldHint, FlexItem, InputBox, TextInput, Select, Field } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Box, FieldLabel, FieldRow, FieldHint, InputBox, TextInput, Select, Field } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, Key } from 'react';
 import { useCallback } from 'react';
@@ -13,6 +14,13 @@ export type ColorSettingInputProps = SettingInputProps & {
 	editor: string;
 	allowedTypes?: TranslationKey[];
 };
+
+// The value input takes twice the space the editor type select does
+const editorInputClassName = css`
+	& > :not(:last-child) {
+		flex-grow: 2;
+	}
+`;
 
 function ColorSettingInput({
 	_id,
@@ -56,32 +64,30 @@ function ColorSettingInput({
 				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
 			<FieldRow>
-				<Box display='flex' flexGrow={1} gap={8}>
-					<FlexItem grow={2}>
-						{editor === 'color' && (
-							<InputBox
-								type='color'
-								id={_id}
-								value={value}
-								placeholder={placeholder}
-								disabled={disabled}
-								readOnly={readonly}
-								autoComplete={autocomplete === false ? 'off' : undefined}
-								onChange={handleChange}
-							/>
-						)}
-						{editor === 'expression' && (
-							<TextInput
-								id={_id}
-								value={value}
-								placeholder={placeholder}
-								disabled={disabled}
-								readOnly={readonly}
-								autoComplete={autocomplete === false ? 'off' : undefined}
-								onChange={handleChange}
-							/>
-						)}
-					</FlexItem>
+				<Box display='flex' flexGrow={1} gap={8} className={editorInputClassName}>
+					{editor === 'color' && (
+						<InputBox
+							type='color'
+							id={_id}
+							value={value}
+							placeholder={placeholder}
+							disabled={disabled}
+							readOnly={readonly}
+							autoComplete={autocomplete === false ? 'off' : undefined}
+							onChange={handleChange}
+						/>
+					)}
+					{editor === 'expression' && (
+						<TextInput
+							id={_id}
+							value={value}
+							placeholder={placeholder}
+							disabled={disabled}
+							readOnly={readonly}
+							autoComplete={autocomplete === false ? 'off' : undefined}
+							onChange={handleChange}
+						/>
+					)}
 					<Select
 						type='color'
 						id={`${_id}_editor`}

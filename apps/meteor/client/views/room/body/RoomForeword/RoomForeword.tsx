@@ -1,6 +1,6 @@
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isDirectMessageRoom } from '@rocket.chat/core-typings';
-import { FlexItem, Box } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation } from 'react-i18next';
 
@@ -27,15 +27,13 @@ const RoomForeword = ({ user, room }: RoomForewordProps) => {
 
 	return (
 		<Box is='div' flexGrow={1} display='flex' justifyContent='center' flexDirection='column' marginBlock={8}>
-			<FlexItem grow={1}>
-				<Box display='flex' alignItems='center' justifyContent='center'>
-					{usernames.map((username, index) => (
-						<Box is='span' marginInline={4} key={index}>
-							<UserAvatar size='x48' username={username} />
-						</Box>
-					))}
-				</Box>
-			</FlexItem>
+			<Box display='flex' flexGrow={1} alignItems='center' justifyContent='center'>
+				{usernames.map((username, index) => (
+					<Box is='span' marginInline={4} key={index}>
+						<UserAvatar size='x48' username={username} />
+					</Box>
+				))}
+			</Box>
 			<Box display='flex' color='default' fontScale='h4' flexGrow={1} justifyContent='center' marginBlock={16}>
 				{t('Direct_message_you_have_joined')}
 			</Box>

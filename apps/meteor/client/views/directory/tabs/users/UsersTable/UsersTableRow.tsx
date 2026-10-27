@@ -1,5 +1,5 @@
 import type { IDirectoryUserResult, IUser, Serialized } from '@rocket.chat/core-typings';
-import { Box, FlexContainer, FlexItem } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
 import type { KeyboardEvent, MouseEvent } from 'react';
@@ -27,24 +27,22 @@ const UsersTableRow = ({
 	return (
 		<GenericTableRow key={_id} onKeyDown={onClick(username)} onClick={onClick(username)} tabIndex={0} role='link' action>
 			<GenericTableCell>
-				<FlexContainer>
-					<Box>
-						<FlexItem>{username && <UserAvatar size='x40' title={username} username={username} etag={avatarETag} />}</FlexItem>
-						<Box withTruncatedText marginInline={8}>
-							<Box display='flex'>
-								<Box fontScale='p2m' withTruncatedText>
-									{name || username}
-									{nickname && ` (${nickname})`}
-								</Box>{' '}
-								<Box marginInline={4} />{' '}
-								<Box fontScale='p2' color='hint' withTruncatedText>
-									{username}
-								</Box>
+				<Box display='flex'>
+					{username && <UserAvatar size='x40' title={username} username={username} etag={avatarETag} />}
+					<Box withTruncatedText marginInline={8}>
+						<Box display='flex'>
+							<Box fontScale='p2m' withTruncatedText>
+								{name || username}
+								{nickname && ` (${nickname})`}
+							</Box>{' '}
+							<Box marginInline={4} />{' '}
+							<Box fontScale='p2' color='hint' withTruncatedText>
+								{username}
 							</Box>
-							<MarkdownText variant='inline' fontScale='p2' color='hint' content={bio} />
 						</Box>
+						<MarkdownText variant='inline' fontScale='p2' color='hint' content={bio} />
 					</Box>
-				</FlexContainer>
+				</Box>
 			</GenericTableCell>
 			{mediaQuery && canViewFullOtherUserInfo && <GenericTableCell truncate>{emails?.length && emails[0].address}</GenericTableCell>}
 			{federation && <GenericTableCell truncate>{domain}</GenericTableCell>}
