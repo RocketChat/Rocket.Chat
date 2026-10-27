@@ -58,10 +58,18 @@ describe('getAuthorizationServerMetadata', () => {
 			issuer: 'https://chat.example.com',
 			authorization_endpoint: 'https://chat.example.com/oauth/authorize',
 			token_endpoint: 'https://chat.example.com/oauth/token',
+			registration_endpoint: 'https://chat.example.com/oauth/register',
 			response_types_supported: ['code'],
 			grant_types_supported: ['authorization_code', 'refresh_token'],
 			token_endpoint_auth_methods_supported: ['client_secret_basic', 'client_secret_post'],
 			code_challenge_methods_supported: ['S256'],
+		});
+	});
+
+	// A client that finds no registration endpoint guesses one, and gets an empty 405 from the workspace.
+	it('advertises the registration endpoint', () => {
+		expect(getAuthorizationServerMetadata('https://chat.example.com')).toMatchObject({
+			registration_endpoint: 'https://chat.example.com/oauth/register',
 		});
 	});
 });
