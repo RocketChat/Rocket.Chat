@@ -99,7 +99,7 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps) => 
 			<ContextualbarFooter>
 				{isServerManaged ? (
 					<>
-						<Box marginBlockEnd={8}>
+						<Box marginBlockEnd='x8'>
 							<Callout>
 								{t('Outlook_calendar_sync_schedule', {
 									interval: t('Outlook_calendar_sync_interval_hours', { count: syncIntervalHours }),
