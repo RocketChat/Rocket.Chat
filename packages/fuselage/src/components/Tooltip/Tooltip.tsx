@@ -58,16 +58,18 @@ const TooltipArrow = styled(View, {
 	borderBottomLeftRadius: 2,
 
 	variants: {
-		side: {
-			top: { bottom: -4, transform: 'rotate(-45deg)' },
-			bottom: { top: -4, transform: 'rotate(135deg)' },
-			left: { top: '50%', right: -4, marginTop: -4, transform: 'rotate(-135deg)' },
-			right: { top: '50%', left: -4, marginTop: -4, transform: 'rotate(45deg)' },
-		},
-		align: {
-			middle: { left: '50%', marginLeft: -4 },
-			start: { left: 8, margin: 0 },
-			end: { left: 'initial', right: 8, margin: 0 },
+		// One variant for side and alignment, so each placement resolves to a single class set
+		placement: {
+			'top': { bottom: -4, transform: 'rotate(-45deg)' },
+			'top-middle': { bottom: -4, transform: 'rotate(-45deg)', left: '50%', marginLeft: -4 },
+			'top-start': { bottom: -4, transform: 'rotate(-45deg)', left: 8, margin: 0 },
+			'top-end': { bottom: -4, transform: 'rotate(-45deg)', left: 'initial', right: 8, margin: 0 },
+			'bottom': { top: -4, transform: 'rotate(135deg)' },
+			'bottom-middle': { top: -4, transform: 'rotate(135deg)', left: '50%', marginLeft: -4 },
+			'bottom-start': { top: -4, transform: 'rotate(135deg)', left: 8, margin: 0 },
+			'bottom-end': { top: -4, transform: 'rotate(135deg)', left: 'initial', right: 8, margin: 0 },
+			'left': { top: '50%', right: -4, marginTop: -4, transform: 'rotate(-135deg)' },
+			'right': { top: '50%', left: -4, marginTop: -4, transform: 'rotate(45deg)' },
 		},
 	} as const,
 });
@@ -112,7 +114,7 @@ function Tooltip({ variation = 'dark', placement, children, className, ...props 
 		>
 			{children}
 			{isArrowDirection(direction) && (
-				<TooltipArrow aria-hidden side={direction} align={isArrowPosition(position) ? position : undefined} />
+				<TooltipArrow aria-hidden placement={isArrowPosition(position) ? `${direction}-${position}` : direction} />
 			)}
 		</TooltipFrame>
 	);

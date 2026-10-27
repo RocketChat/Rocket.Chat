@@ -266,7 +266,8 @@ This is the one list to track removing Tamagui's runtime from Fuselage's web bui
 **3. Remove what needs the runtime inside frames**
 - [x] `forceStyle`: no frame forces a state any more; state classes are gone.
 - [x] `group`: Message and Item reveal their parts with parent rules in the `fuselage` layer.
-- [ ] Style props computed at render rather than chosen from a variant (`TooltipArrow`'s `inset`, the `Modal` and `ModalHeroImage` sizes, and whatever else the lowering report lists): a finite variant, or a CSS custom property through `style`.
+- [x] `TooltipArrow`: its side and align, which set `inset` together, are one `placement` variant.
+- [ ] Other style props computed at render rather than chosen from a variant (the `Modal` and `ModalHeroImage` sizes, and whatever else the lowering report lists): a finite variant, or a CSS custom property through `style`.
 - [ ] `context:` and `createStyledContext` (6 / 4: Message, MessageToolbar, Card…): a React context read by the lowered component, or a `data-*` attribute on the parent with a descendant selector.
 - [x] `animation:` (Skeleton, the ProgressBar shine, Throbber): the frames take their `@keyframes` from plain CSS classes.
 - [x] `getTokens` in PaletteStyleTag: already a local function over `fuselage-tokens`' JSON, it never reads Tamagui's config.
