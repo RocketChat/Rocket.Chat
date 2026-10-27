@@ -47,6 +47,21 @@
 		padding: initial;
 	}
 
+	&__values {
+		display: flex;
+		flex-grow: 1;
+
+		margin-inline: lengths.margin(4);
+	}
+
+	&__filter-input {
+		flex-grow: 1;
+
+		&--after-values {
+			order: 1;
+		}
+	}
+
 	&__filter {
 		margin-inline: lengths.margin(4);
 	}

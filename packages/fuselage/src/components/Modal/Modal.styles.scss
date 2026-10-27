@@ -56,6 +56,10 @@ $modal-border-radius: theme('modal-border-radius', lengths.border-radius(large))
 		flex-wrap: nowrap;
 
 		margin: -4px;
+
+		& > * {
+			margin: lengths.margin(4);
+		}
 	}
 
 	&__title {

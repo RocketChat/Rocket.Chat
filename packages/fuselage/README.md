@@ -98,15 +98,15 @@ import { Box, Icon } from '@rocket.chat/fuselage';
 </Box>;
 ```
 
-Use `Margins` to space a group of children without wrapping each one:
+Use `Stack` to space a group of children without wrapping each one:
 
 ```tsx
-import { Button, Margins } from '@rocket.chat/fuselage';
+import { Button, Stack } from '@rocket.chat/fuselage';
 
-<Margins inline='x4'>
+<Stack direction='row' gap='x8'>
 	<Button>Cancel</Button>
 	<Button variant='primary'>Confirm</Button>
-</Margins>;
+</Stack>;
 ```
 
 ### Themes

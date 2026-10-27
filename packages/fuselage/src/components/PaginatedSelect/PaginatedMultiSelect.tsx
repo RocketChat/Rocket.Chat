@@ -6,9 +6,7 @@ import type { ElementProps } from '../../types/ElementProps';
 import { AnimatedVisibility } from '../AnimatedVisibility';
 import { Box } from '../Box';
 import { Chip } from '../Chip';
-import { FlexContainer, FlexItem } from '../Flex';
 import { Icon } from '../Icon';
-import { Margins } from '../Margins';
 import { Option } from '../Option';
 import { useVisible } from '../Options/useVisible';
 import { OptionsPaginated } from '../OptionsPaginated';
@@ -143,52 +141,44 @@ const PaginatedMultiSelect = ({
 			{...props}
 			ref={containerRef}
 		>
-			<FlexItem grow={1}>
-				<Margins inline='x4'>
-					<FlexContainer>
-						<Box is='div'>
-							<Box is='div' display='flex' alignItems='center' flexWrap='wrap' margin='neg-x4' gap={8} role='listbox'>
-								<Anchor
-									disabled={disabled}
-									ref={ref}
-									aria-haspopup='listbox'
-									id={id}
-									aria-labelledby={ariaLabelledBy}
-									aria-describedby={ariaDescribedBy}
-									aria-invalid={ariaInvalid}
-									onClick={show}
-									onBlur={hide}
-									order={1}
-									rcx-input-box--undecorated
-								>
-									{placeholder ?? null}
-								</Anchor>
+			<Box is='div' rcx-select__values>
+				<Box is='div' display='flex' alignItems='center' flexWrap='wrap' margin='neg-x4' gap={8} role='listbox'>
+					<Anchor
+						disabled={disabled}
+						ref={ref}
+						aria-haspopup='listbox'
+						id={id}
+						aria-labelledby={ariaLabelledBy}
+						aria-describedby={ariaDescribedBy}
+						aria-invalid={ariaInvalid}
+						onClick={show}
+						onBlur={hide}
+						order={1}
+						rcx-input-box--undecorated
+					>
+						{placeholder ?? null}
+					</Anchor>
 
-								{selectedOptions.map(({ value, label }, index) => (
-									<Chip
-										key={value ?? index}
-										className='rcx-select__chip'
-										title={withTitle ? label : undefined}
-										tabIndex={-1}
-										role='option'
-										onClick={(e) => {
-											prevent(e);
-											removeOption(value);
-										}}
-									>
-										{label}
-									</Chip>
-								))}
-							</Box>
-						</Box>
-					</FlexContainer>
-				</Margins>
-			</FlexItem>
-			<FlexItem grow={0} shrink={0}>
-				<SelectAddon>
-					<Icon name={visible === AnimatedVisibility.VISIBLE ? 'cross' : 'chevron-down'} size='x20' />
-				</SelectAddon>
-			</FlexItem>
+					{selectedOptions.map(({ value, label }, index) => (
+						<Chip
+							key={value ?? index}
+							className='rcx-select__chip'
+							title={withTitle ? label : undefined}
+							tabIndex={-1}
+							role='option'
+							onClick={(e) => {
+								prevent(e);
+								removeOption(value);
+							}}
+						>
+							{label}
+						</Chip>
+					))}
+				</Box>
+			</Box>
+			<SelectAddon>
+				<Icon name={visible === AnimatedVisibility.VISIBLE ? 'cross' : 'chevron-down'} size='x20' />
+			</SelectAddon>
 			<PositionAnimated visible={visible} anchor={containerRef}>
 				<OptionsComponent
 					width={borderBoxSize.inlineSize}
