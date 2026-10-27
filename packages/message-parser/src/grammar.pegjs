@@ -694,7 +694,7 @@ UserMention
 
 // a `#` inside a word is plain text, together with the whole name after it, so the rest of that name is never parsed as a link
 ChannelMention
-  = t:Text "#" channel:$(AlphaNumericChar+ ([.-] AlphaNumericChar+)*) {
+  = t:Text "#" channel:$(AlphaNumericChar+ ([.#-] AlphaNumericChar+)*) {
       return reducePlainTexts([t, plain('#' + channel)])[0];
     }
   / "#" channel:UTF8NamesValidation { return mentionChannel(channel); }

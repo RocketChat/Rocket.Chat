@@ -26,6 +26,7 @@ describe('a # inside a word', () => {
 		['x#general', [paragraph([plain('x#general')])]],
 		['x#general.com', [paragraph([plain('x#general.com')])]],
 		['file#v2.pdf', [paragraph([plain('file#v2.pdf')])]],
+		['x#foo#bar', [paragraph([plain('x#foo#bar')])]],
 		['"#team.dev"', [paragraph([plain('"#team.dev"')])]],
 		['see #general.com', [paragraph([plain('see '), mentionChannel('general.com')])]],
 	])('parses %p', (input, output) => {
