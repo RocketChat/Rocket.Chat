@@ -17,6 +17,7 @@ import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import LocalMessageSearchResults from './components/LocalMessageSearchResults';
+import LocalSearchIndexStatus from './components/LocalSearchIndexStatus';
 import MessageSearchForm from './components/MessageSearchForm';
 import { useLocalMessageSearchQuery } from './hooks/useLocalMessageSearchQuery';
 import { useLocalSearchIndexBackend } from './hooks/useLocalSearchIndexBackend';
@@ -80,6 +81,7 @@ const MessageSearchTab = () => {
 				<ResultsLiveRegion shouldAnnounce={localSearch ? localQuery.isSuccess : isSuccess} itemCount={itemCount} />
 				{providerQuery.isSuccess && localSearch && (
 					<>
+						<LocalSearchIndexStatus />
 						{searchText && localQuery.isPending && <Throbber />}
 						{searchText.trim() && localQuery.isSuccess && localQuery.data.length === 0 && (
 							<ContextualbarEmptyContent title={t('No_results_found')} />

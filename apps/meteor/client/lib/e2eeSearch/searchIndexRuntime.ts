@@ -4,7 +4,7 @@ import type { ISearchIndexBackend } from '@rocket.chat/desktop-api';
 import { createSearchIndexCrawler } from './searchIndexCrawler';
 import type { SearchIndexCrawler, SyncMessagesPage, SyncMessagesParams } from './searchIndexCrawler';
 import { createSearchIndexScheduler } from './searchIndexScheduler';
-import type { IdleSignal, SearchIndexRoom, SearchIndexScheduler } from './searchIndexScheduler';
+import type { IdleSignal, SearchIndexProgress, SearchIndexRoom, SearchIndexScheduler } from './searchIndexScheduler';
 import type { SearchIndexSession } from './searchIndexSession';
 import type { SearchIndexWriter } from './searchIndexWriter';
 import { mapMessageFromApi } from '../utils/mapMessageFromApi';
@@ -96,6 +96,10 @@ type SearchIndexRuntimeOptions = {
 export type SearchIndexRuntime = {
 	/** The scheduler of the open index, or `undefined` while no index is open. */
 	getScheduler(): SearchIndexScheduler | undefined;
+	/** The indexing progress of the open index, or `undefined` while no index is open. */
+	getProgress(): SearchIndexProgress | undefined;
+	/** Calls the listener each time `getProgress` changes. Returns the function that removes it. */
+	subscribe(listener: () => void): () => void;
 	/** Catches up every room, after the connection to the server came back. */
 	onReconnect(): void;
 	/** Indexes the messages that waited for the room key, after the key arrived. */
@@ -147,6 +151,20 @@ export const createSearchIndexRuntime = ({
 	let backend: ISearchIndexBackend | undefined;
 	let scheduler: SearchIndexScheduler | undefined;
 	let pruning: Promise<void> = Promise.resolve();
+	let unsubscribeScheduler: (() => void) | undefined;
+	const listeners = new Set<() => void>();
+
+	const notify = () => {
+		for (const listener of [...listeners]) listener();
+	};
+
+	const setScheduler = (next: SearchIndexScheduler | undefined) => {
+		unsubscribeScheduler?.();
+		unsubscribeScheduler = undefined;
+		scheduler = next;
+		if (next) unsubscribeScheduler = next.subscribe(notify);
+		notify();
+	};
 
 	// Removes the rows of the rooms that the user left while the index was closed: no removal event reached it then.
 	const pruneLeftRooms = async (opened: ISearchIndexBackend) => {
@@ -168,12 +186,13 @@ export const createSearchIndexRuntime = ({
 		if (next === backend) return;
 
 		scheduler?.stop();
-		scheduler = undefined;
+		setScheduler(undefined);
 		backend = next;
 		if (!next) return;
 
-		scheduler = buildScheduler(next);
-		scheduler.start();
+		const created = buildScheduler(next);
+		setScheduler(created);
+		created.start();
 		pruning = pruneLeftRooms(next).catch(onError);
 	};
 
@@ -182,6 +201,13 @@ export const createSearchIndexRuntime = ({
 
 	return {
 		getScheduler: () => scheduler,
+		getProgress: () => scheduler?.getProgress(),
+		subscribe(listener) {
+			listeners.add(listener);
+			return () => {
+				listeners.delete(listener);
+			};
+		},
 		whenSettled: () => pruning,
 		onReconnect: () => scheduler?.requestCatchUp(),
 		onRoomKeyReady: (rid) => scheduler?.retryPendingDecrypt(rid),
@@ -206,7 +232,7 @@ export const createSearchIndexRuntime = ({
 			if (!current) return (await session.wipeClosed?.()) ?? false;
 
 			const stopping = scheduler?.stop();
-			scheduler = undefined;
+			setScheduler(undefined);
 			await stopping;
 			// Sends the queued documents first, so the wipe also takes them.
 			await writer.flush();
@@ -216,7 +242,7 @@ export const createSearchIndexRuntime = ({
 		dispose() {
 			unsubscribe();
 			scheduler?.stop();
-			scheduler = undefined;
+			setScheduler(undefined);
 			backend = undefined;
 		},
 	};

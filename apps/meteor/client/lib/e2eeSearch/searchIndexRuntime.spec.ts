@@ -36,7 +36,7 @@ const createSchedulerStub = (): jest.Mocked<SearchIndexScheduler> => ({
 	retryPendingDecrypt: jest.fn(),
 	removeRoom: jest.fn(),
 	getProgress: jest.fn(),
-	subscribe: jest.fn(),
+	subscribe: jest.fn((_listener: () => void) => jest.fn()),
 });
 
 const stubRuntime = (initial?: ISearchIndexBackend) => {
@@ -91,6 +91,37 @@ describe('createSearchIndexRuntime', () => {
 		expect(schedulers[0].scheduler.stop).toHaveBeenCalledTimes(1);
 		expect(schedulers[1].backend).toBe(backendB);
 		expect(schedulers[1].scheduler.start).toHaveBeenCalledTimes(1);
+	});
+
+	it('reports the indexing progress of the open index, and tells the subscribers when it changes (LSE2EE-51)', async () => {
+		const { session, schedulers, runtime } = stubRuntime();
+		const listener = jest.fn();
+		runtime.subscribe(listener);
+		expect(runtime.getProgress()).toBeUndefined();
+
+		session.set(backendA);
+		const { scheduler } = schedulers[0];
+		const progress = { status: 'indexing', rooms: 40, roomsDone: 12, indexed: 300, pendingDecrypt: 0 } as const;
+		scheduler.getProgress.mockReturnValue(progress);
+		const [[onSchedulerChange]] = scheduler.subscribe.mock.calls;
+		listener.mockClear();
+		onSchedulerChange();
+
+		expect(listener).toHaveBeenCalledTimes(1);
+		expect(runtime.getProgress()).toBe(progress);
+
+		listener.mockClear();
+		session.set(undefined);
+
+		expect(listener).toHaveBeenCalled();
+		expect(runtime.getProgress()).toBeUndefined();
+		expect(scheduler.subscribe.mock.results[0].value).toHaveBeenCalledTimes(1);
+
+		session.set(createFakeSearchIndexBackend());
+		await runtime.wipe();
+
+		expect(runtime.getProgress()).toBeUndefined();
+		expect(schedulers[1].scheduler.subscribe.mock.results[0].value).toHaveBeenCalledTimes(1);
 	});
 
 	it('catches up every room after a reconnect, and retries pending messages when a room key arrives', () => {

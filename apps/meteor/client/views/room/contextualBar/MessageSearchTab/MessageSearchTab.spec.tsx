@@ -6,8 +6,10 @@ import userEvent from '@testing-library/user-event';
 
 import MessageSearchTab from './MessageSearchTab';
 import { createFakeSearchIndexBackend } from '../../../../lib/e2eeSearch/fakeSearchIndexBackend';
+import type { SearchIndexProgress } from '../../../../lib/e2eeSearch/searchIndexScheduler';
 
 let mockBackend: ISearchIndexBackend | undefined;
+let mockProgress: SearchIndexProgress | undefined;
 
 const provider: IMessageSearchProvider = {
 	key: 'defaultProvider',
@@ -25,6 +27,10 @@ jest.mock('./hooks/useLocalSearchIndexBackend', () => ({
 	useLocalSearchIndexBackend: () => mockBackend,
 }));
 
+jest.mock('./hooks/useLocalSearchIndexProgress', () => ({
+	useLocalSearchIndexProgress: () => mockProgress,
+}));
+
 jest.mock('../../contexts/RoomContext', () => ({
 	useRoom: () => ({ _id: 'r1', t: 'p', name: 'secret', encrypted: true }),
 	useRoomSubscription: () => undefined,
@@ -36,6 +42,10 @@ jest.mock('../../../../stores', () => ({
 		state: { find: () => undefined },
 		use: (selector: (state: { get: (id: string) => unknown }) => unknown) => selector({ get: () => undefined }),
 	},
+}));
+
+jest.mock('../../../../lib/getRoomTypeTranslation', () => ({
+	getRoomTypeTranslation: () => 'Private group',
 }));
 
 jest.mock('../../../../lib/utils/setMessageJumpQueryStringParameter', () => ({
@@ -63,8 +73,24 @@ const message = (id: string, uid: string, date: Date, body: string): E2EESearchD
 
 const renderTab = () =>
 	render(<MessageSearchTab />, {
-		wrapper: mockAppRoot().withUser(self).withSetting('PageSize', 10).build(),
+		wrapper: mockAppRoot()
+			.withUser(self)
+			.withSetting('PageSize', 10)
+			.withMethod('rocketchatSearch.search', () => ({ message: { docs: [] } }))
+			.withTranslations('en', 'core', {
+				Encrypted_content_cannot_be_searched: 'Encrypted content cannot be searched.',
+				E2E_Local_Search_Indexing_Progress: 'Indexing encrypted history: {{done}} of {{total}} rooms',
+			})
+			.build(),
 	});
+
+const progress = (status: SearchIndexProgress['status'], roomsDone: number, rooms = 40): SearchIndexProgress => ({
+	status,
+	rooms,
+	roomsDone,
+	indexed: 300,
+	pendingDecrypt: 0,
+});
 
 describe('MessageSearchTab local search', () => {
 	beforeEach(async () => {
@@ -82,6 +108,7 @@ describe('MessageSearchTab local search', () => {
 
 	afterEach(() => {
 		mockBackend = undefined;
+		mockProgress = undefined;
 		jest.restoreAllMocks();
 	});
 
@@ -112,5 +139,40 @@ describe('MessageSearchTab local search', () => {
 		await new Promise((resolve) => setTimeout(resolve, 400));
 		expect(mockBackend?.search).not.toHaveBeenCalled();
 		expect(screen.queryByRole('button', { name: /note/ })).not.toBeInTheDocument();
+	});
+
+	it.each(['indexing', 'waiting-for-idle', 'backing-off'] as const)(
+		'shows the indexing progress while the history is not complete (%s, LSE2EE-51)',
+		async (status) => {
+			mockProgress = progress(status, 12);
+			renderTab();
+
+			expect(await screen.findByText('Indexing encrypted history: 12 of 40 rooms')).toBeInTheDocument();
+		},
+	);
+
+	it.each([
+		['done', progress('done', 40)],
+		['stopped', progress('stopped', 12)],
+		['every room backfilled, catch-up running', progress('indexing', 40)],
+		['no open index', undefined],
+	])('shows no indexing progress when %s', async (_case, value) => {
+		mockProgress = value;
+		renderTab();
+
+		expect(await screen.findByRole('textbox', { name: 'Search_Messages' })).toBeInTheDocument();
+		expect(screen.queryByText(/Indexing encrypted history/)).not.toBeInTheDocument();
+	});
+});
+
+describe('MessageSearchTab without a local search backend', () => {
+	it('shows the callout of today and no state of the local index (LSE2EE-51)', async () => {
+		mockBackend = undefined;
+		mockProgress = progress('indexing', 12);
+		renderTab();
+
+		expect(await screen.findByText('Encrypted content cannot be searched.')).toBeInTheDocument();
+		expect(screen.queryByText(/Indexing encrypted history/)).not.toBeInTheDocument();
+		mockProgress = undefined;
 	});
 });
