@@ -334,7 +334,7 @@ describe('createSearchIndexSession', () => {
 });
 
 describe('createSearchIndexSession with the admin setting', () => {
-	it('wipes the index and never activates it when the workspace does not allow local search', async () => {
+	it('wipes the index of the user without an open and never activates it when the workspace does not allow local search', async () => {
 		const backend = createBackend();
 		const { source, setState } = createSource(privateKey);
 		const listener = jest.fn();
@@ -344,11 +344,61 @@ describe('createSearchIndexSession with the admin setting', () => {
 		setState('READY');
 		await session.whenSettled();
 
-		expect(backend.open).toHaveBeenCalledTimes(1);
+		expect(backend.open).not.toHaveBeenCalled();
 		expect(backend.wipe).toHaveBeenCalledTimes(1);
+		expect(backend.wipe).toHaveBeenCalledWith({ userId: 'u1' });
 		expect(backend.upsert).not.toHaveBeenCalled();
 		expect(session.getActiveBackend()).toBeUndefined();
 		expect(listener).not.toHaveBeenCalled();
+	});
+
+	it('opens and wipes the index as before when the desktop rejects the wipe without an open (older desktop)', async () => {
+		const backend = createBackend();
+		backend.wipe.mockImplementation(async (scope) => {
+			if (scope) throw new Error('E2EE search index is not open');
+		});
+		const onError = jest.fn();
+		const { source, setState } = createSource(privateKey);
+		const session = createSearchIndexSession(source, { getBackend: () => backend, isAllowed: () => false, onError });
+
+		setState('READY');
+		await session.whenSettled();
+
+		expect(backend.wipe.mock.calls).toEqual([[{ userId: 'u1' }], []]);
+		expect(backend.open).toHaveBeenCalledTimes(1);
+		expect(backend.open.mock.invocationCallOrder[0]).toBeLessThan(backend.wipe.mock.invocationCallOrder[1]);
+		expect(session.getActiveBackend()).toBeUndefined();
+		expect(onError).not.toHaveBeenCalled();
+	});
+
+	it('opens the index when the user turns the local search on while the wipe without an open runs', async () => {
+		const backend = createBackend();
+		let allowed = false;
+		backend.wipe.mockImplementation(async () => {
+			allowed = true;
+		});
+		const { source, setState } = createSource(privateKey);
+		const session = createSearchIndexSession(source, { getBackend: () => backend, isAllowed: () => allowed });
+
+		setState('READY');
+		await session.whenSettled();
+
+		expect(backend.wipe).toHaveBeenCalledWith({ userId: 'u1' });
+		expect(backend.open).toHaveBeenCalledTimes(1);
+		expect(session.getActiveBackend()).toBe(backend);
+	});
+
+	it('opens the index and wipes nothing when the local search is allowed', async () => {
+		const backend = createBackend();
+		const { source, setState } = createSource(privateKey);
+		const session = createSearchIndexSession(source, { getBackend: () => backend, isAllowed: () => true });
+
+		setState('READY');
+		await session.whenSettled();
+
+		expect(backend.open).toHaveBeenCalledTimes(1);
+		expect(backend.wipe).not.toHaveBeenCalled();
+		expect(session.getActiveBackend()).toBe(backend);
 	});
 
 	it('reads the setting at each login: off wipes, on opens and activates', async () => {
@@ -405,7 +455,7 @@ describe('createSearchIndexSession with the admin setting', () => {
 		session.recheck();
 		await session.whenSettled();
 
-		expect(backend.open).toHaveBeenCalledTimes(2);
+		expect(backend.open).toHaveBeenCalledTimes(1);
 		expect(session.getActiveBackend()).toBe(backend);
 	});
 

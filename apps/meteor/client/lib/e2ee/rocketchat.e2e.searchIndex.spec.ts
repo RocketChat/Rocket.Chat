@@ -108,7 +108,7 @@ describe('E2E client and the local search index', () => {
 		expect(bridge.upsert).toHaveBeenCalledTimes(1);
 	});
 
-	it('wipes the desktop index at login and indexes nothing when the admin setting is off (the default)', async () => {
+	it('wipes the desktop index at login without an open and indexes nothing when the admin setting is off (the default)', async () => {
 		localSearchAllowed = false;
 		const { privateKey } = await generate();
 		(e2e as unknown as { userId: string }).userId = 'u1';
@@ -134,13 +134,15 @@ describe('E2E client and the local search index', () => {
 		await e2eSearchIndexWriter.flush();
 
 		expect(bridge.wipe).toHaveBeenCalledTimes(1);
+		expect(bridge.wipe).toHaveBeenCalledWith({ userId: 'u1' });
+		expect(bridge.open).not.toHaveBeenCalled();
 		expect(e2eSearchIndexSession.getActiveBackend()).toBeUndefined();
 		expect(bridge.upsert).not.toHaveBeenCalled();
 
 		await e2e.stopClient();
 	});
 
-	it('wipes the desktop index at login when the admin allows local search but the user did not opt in on this device', async () => {
+	it('wipes the desktop index at login without an open when the admin allows local search but the user did not opt in on this device', async () => {
 		setSearchIndexOptIn('u1', false);
 		const { privateKey } = await generate();
 		(e2e as unknown as { userId: string }).userId = 'u1';
@@ -150,6 +152,8 @@ describe('E2E client and the local search index', () => {
 		await e2eSearchIndexSession.whenSettled();
 
 		expect(bridge.wipe).toHaveBeenCalledTimes(1);
+		expect(bridge.wipe).toHaveBeenCalledWith({ userId: 'u1' });
+		expect(bridge.open).not.toHaveBeenCalled();
 		expect(e2eSearchIndexSession.getActiveBackend()).toBeUndefined();
 
 		await e2e.stopClient();

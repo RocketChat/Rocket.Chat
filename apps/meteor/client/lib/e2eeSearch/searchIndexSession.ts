@@ -45,7 +45,7 @@ type SearchIndexSessionOptions = {
 	/**
 	 * Whether the local search of encrypted messages is allowed (the workspace admin's setting and the user's opt-in on
 	 * this device), read at each login and at each `recheck`. When it is not, the session wipes the index of the user
-	 * and does not use it.
+	 * without opening it, and does not use it.
 	 */
 	isAllowed?: () => boolean;
 	onError?: (error: unknown) => void;
@@ -115,6 +115,20 @@ export const createSearchIndexSession = (
 
 		openedFor = userId;
 		try {
+			// No index and no key file of this user stays on the device while the local search is off, and none is created
+			// for it. A desktop that cannot wipe a closed index gets the open and the wipe below.
+			if (!isAllowed()) {
+				const wiped = await backend.wipe({ userId }).then(
+					() => true,
+					() => false,
+				);
+				if (run !== generation) return;
+				if (wiped && !isAllowed()) {
+					openedFor = undefined;
+					return;
+				}
+			}
+
 			const wrapKey = await deriveSearchIndexWrapKey(privateKey, userId);
 			if (run !== generation) return;
 
