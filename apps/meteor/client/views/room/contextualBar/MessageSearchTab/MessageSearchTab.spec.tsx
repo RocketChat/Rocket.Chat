@@ -1,12 +1,13 @@
-import type { IMessageSearchProvider, IUser } from '@rocket.chat/core-typings';
+import type { IMessage, IMessageSearchProvider, IUser } from '@rocket.chat/core-typings';
 import type { E2EESearchDoc, ISearchIndexBackend } from '@rocket.chat/desktop-api';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import MessageSearchTab from './MessageSearchTab';
 import { createFakeSearchIndexBackend } from '../../../../lib/e2eeSearch/fakeSearchIndexBackend';
 import type { SearchIndexProgress } from '../../../../lib/e2eeSearch/searchIndexScheduler';
+import { toSearchDoc } from '../../../../lib/e2eeSearch/toSearchDoc';
 
 let mockBackend: ISearchIndexBackend | undefined;
 let mockProgress: SearchIndexProgress | undefined;
@@ -189,6 +190,57 @@ describe('MessageSearchTab local search', () => {
 
 		expect(await screen.findByRole('textbox', { name: 'Search_Messages' })).toBeInTheDocument();
 		expect(screen.queryByText(/in memory only/)).not.toBeInTheDocument();
+	});
+});
+
+describe('MessageSearchTab local search of file messages', () => {
+	// A decrypted image upload from a mobile or older web client: the caption is the attachment description, with no message text.
+	const fileName = 'Screenshot 2026-10-01 at 13.45.02 from the quarterly planning call.png';
+	const fileMessage = {
+		_id: 'file1',
+		rid: 'r1',
+		u: { _id: 'u-self', username: 'jean' },
+		ts: new Date(2025, 4, 1),
+		_updatedAt: new Date(2025, 4, 1),
+		t: 'e2e',
+		e2e: 'done',
+		msg: '',
+		file: { _id: 'f1', name: fileName, type: 'image/png', size: 10, format: 'png' },
+		files: [{ _id: 'f1', name: fileName, type: 'image/png', size: 10, format: 'png' }],
+		attachments: [
+			{ type: 'file', title: fileName, description: 'budget numbers for the board', image_url: '/file-upload/f1', fileId: 'f1' },
+		],
+	} as unknown as IMessage;
+
+	beforeEach(async () => {
+		const backend = createFakeSearchIndexBackend();
+		await backend.open({ userId: self._id });
+		const doc = toSearchDoc(fileMessage);
+		await backend.upsert(doc ? [doc] : []);
+		mockBackend = backend;
+	});
+
+	afterEach(() => {
+		mockBackend = undefined;
+	});
+
+	it('shows the caption of a file message in a filter-only hit, not only the file name (PROD-642)', async () => {
+		renderTab();
+
+		await userEvent.type(screen.getByRole('textbox', { name: 'Search_Messages' }), 'from:me');
+
+		const [hit] = await screen.findAllByRole('button', { name: /budget|Screenshot/ });
+		expect(hit).toHaveTextContent('budget numbers for the board');
+	});
+
+	it('shows the matched caption of a file message (PROD-642)', async () => {
+		renderTab();
+
+		await userEvent.type(screen.getByRole('textbox', { name: 'Search_Messages' }), 'board');
+
+		const [hit] = await screen.findAllByRole('button', { name: /board/ });
+		expect(within(hit).getByText('board', { selector: 'mark' })).toBeInTheDocument();
+		expect(hit).toHaveTextContent('budget numbers for the board');
 	});
 });
 

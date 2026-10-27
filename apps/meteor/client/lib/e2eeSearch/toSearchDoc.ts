@@ -45,8 +45,13 @@ const attachmentTexts = (attachment: MessageAttachment): string[] => {
 	}
 	const { title, description, text } = attachment as { title?: unknown; description?: unknown; text?: unknown };
 	const imageAlt = (attachment as { image_alt?: unknown }).image_alt;
-	return [title, description, text, imageAlt].filter((value): value is string => typeof value === 'string');
+	// The title of a file attachment is the file name: it goes to the end of the body, with the other file names.
+	const texts = isFileAttachment(attachment) ? [description, text, imageAlt] : [title, description, text, imageAlt];
+	return texts.filter((value): value is string => typeof value === 'string');
 };
+
+const fileTitle = (attachment: MessageAttachment): string | undefined =>
+	isFileAttachment(attachment) && typeof attachment.title === 'string' ? attachment.title : undefined;
 
 /**
  * Turns a decrypted end-to-end encrypted message into the document that the local search index stores.
@@ -75,9 +80,12 @@ export const toSearchDoc = (message: IMessage): E2EESearchDoc | undefined => {
 		}
 	};
 
+	// A hit shows the start of the body, or some words around the match: the text that people wrote comes first, and
+	// the file names come last, so a long file name does not push a caption out of the hit (PROD-642).
 	add(message.msg);
 	const textParts = parts.length;
 	attachments.flatMap(attachmentTexts).forEach(add);
+	attachments.map(fileTitle).forEach(add);
 	fileNames.forEach(add);
 	const hasAttachmentText = parts.length > textParts;
 
