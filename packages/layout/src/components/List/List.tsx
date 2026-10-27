@@ -1,5 +1,6 @@
-import { Margins, Palette } from '@rocket.chat/fuselage';
-import type { ReactNode, ComponentProps, CSSProperties } from 'react';
+import type { BoxProps } from '@rocket.chat/fuselage';
+import { Palette } from '@rocket.chat/fuselage';
+import type { ReactNode, CSSProperties } from 'react';
 
 import { ListComponent } from './List.styles';
 
@@ -11,13 +12,13 @@ const List = ({
 	color = Palette.text['font-default'].toString(),
 }: {
 	children: ReactNode;
-	spacing?: ComponentProps<typeof Margins>['block'];
+	spacing?: BoxProps['marginBlock'];
 	listStyleType?: CSSProperties['listStyleType'];
 	color?: CSSProperties['color'];
 	icon?: string;
 }) => (
-	<ListComponent icon={icon} listStyleType={listStyleType} color={color}>
-		<Margins block={spacing}>{children}</Margins>
+	<ListComponent icon={icon} listStyleType={listStyleType} color={color} spacing={spacing}>
+		{children}
 	</ListComponent>
 );
 
