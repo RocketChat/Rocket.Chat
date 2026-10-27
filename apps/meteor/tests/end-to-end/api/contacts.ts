@@ -209,28 +209,40 @@ describe('[Contacts]', () => {
 			});
 
 			it('should answer 404 for a contact that belongs to someone else, and leave it as it was', async () => {
-				await request.post(api('contacts.update')).set(credentials).send({ contactId: otherContactId, givenName: 'Hijacked' }).expect(404);
+				const res = await request
+					.post(api('contacts.update'))
+					.set(credentials)
+					.send({ contactId: otherContactId, givenName: 'Hijacked' })
+					.expect(404);
 
+				expect(res.body).to.have.property('error', 'error-contact-not-found');
 				expect(await contacts().findOne({ _id: otherContactId })).to.include({ displayName: `Other${stamp} Contact` });
 			});
 
 			it('should answer 404 for a contact the Outlook sync owns, which the next run would overwrite anyway', async () => {
-				await request.post(api('contacts.update')).set(credentials).send({ contactId: syncedId, givenName: 'Edited' }).expect(404);
+				const res = await request
+					.post(api('contacts.update'))
+					.set(credentials)
+					.send({ contactId: syncedId, givenName: 'Edited' })
+					.expect(404);
 
+				expect(res.body).to.have.property('error', 'error-contact-not-found');
 				expect(await contacts().findOne({ _id: syncedId })).to.include({ displayName: syncedName });
 			});
 		});
 
 		describe('[/contacts.delete]', () => {
 			it('should answer 404 for a contact that belongs to someone else, and leave it where it is', async () => {
-				await request.post(api('contacts.delete')).set(credentials).send({ contactId: otherContactId }).expect(404);
+				const res = await request.post(api('contacts.delete')).set(credentials).send({ contactId: otherContactId }).expect(404);
 
+				expect(res.body).to.have.property('error', 'error-contact-not-found');
 				expect(await contacts().findOne({ _id: otherContactId })).to.not.be.null;
 			});
 
 			it('should answer 404 for a contact the Outlook sync owns, which only the sync may remove', async () => {
-				await request.post(api('contacts.delete')).set(credentials).send({ contactId: syncedId }).expect(404);
+				const res = await request.post(api('contacts.delete')).set(credentials).send({ contactId: syncedId }).expect(404);
 
+				expect(res.body).to.have.property('error', 'error-contact-not-found');
 				expect(await contacts().findOne({ _id: syncedId })).to.not.be.null;
 			});
 

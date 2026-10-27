@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useContactCall } from './hooks/useContactCall';
 import { useContactLabel } from './hooks/useContactLabel';
+import { isContactNotFoundError } from './lib/isContactNotFoundError';
 import { getErrorMessage } from '../../lib/errorHandling';
 import { contactsQueryKeys } from '../../lib/queryKeys';
 
@@ -33,7 +34,15 @@ const ContactMenu = ({ contact, onEdit, onDeleted }: ContactMenuProps) => {
 			dispatchToastMessage({ type: 'success', message: t('Contact_deleted') });
 			onDeleted?.();
 		},
-		onError: (error) => dispatchToastMessage({ type: 'error', message: getErrorMessage(error, 'Contact_delete_failed') }),
+		onError: (error) => {
+			if (!isContactNotFoundError(error)) {
+				dispatchToastMessage({ type: 'error', message: getErrorMessage(error, 'Contact_delete_failed') });
+				return;
+			}
+
+			dispatchToastMessage({ type: 'error', message: t('Contact_not_found') });
+			onDeleted?.();
+		},
 		onSettled: async () => {
 			await queryClient.invalidateQueries({ queryKey: contactsQueryKeys.all });
 
