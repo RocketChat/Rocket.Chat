@@ -1,5 +1,5 @@
 import type { IOmnichannelRoom, IVisitor } from '@rocket.chat/core-typings';
-import { Box, Margins, Tag, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, Tag, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	ContextualbarScrollableContent,
@@ -97,83 +97,81 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 	return (
 		<>
 			<ContextualbarScrollableContent padding={24}>
-				<Margins block='x4'>
-					{source && <SourceField room={room as unknown as IOmnichannelRoom} />}
-					{room && v && <ContactField contact={v as IVisitor} room={room as unknown as IOmnichannelRoom} />}
-					{visitorId && <VisitorClientInfo uid={visitorId} />}
-					{servedBy && <AgentField agent={servedBy as unknown as IOmnichannelRoom['servedBy']} />}
-					{departmentId && <DepartmentField departmentId={departmentId} />}
-					{tags && tags.length > 0 && (
-						<InfoPanelField>
-							<InfoPanelLabel id={`${roomId}-tags`}>{t('Tags')}</InfoPanelLabel>
-							<InfoPanelText>
-								<ul aria-labelledby={`${roomId}-tags`}>
-									{tags.map((tag) => (
-										<Box is='li' key={tag} marginInlineEnd={4} display='inline'>
-											<Tag style={{ display: 'inline' }} disabled>
-												{tag}
-											</Tag>
-										</Box>
-									))}
-								</ul>
-							</InfoPanelText>
-						</InfoPanelField>
-					)}
-					{topic && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Topic')}</InfoPanelLabel>
-							<InfoPanelText withTruncatedText={false}>
-								<MarkdownText variant='inline' content={topic} />
-							</InfoPanelText>
-						</InfoPanelField>
-					)}
-					{queueStartedAt && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Queue_Time')}</InfoPanelLabel>
-							<InfoPanelText>{queueTime}</InfoPanelText>
-						</InfoPanelField>
-					)}
-					{closedAt && ts && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Chat_Duration')}</InfoPanelLabel>
-							<InfoPanelText>{formatDuration((new Date(closedAt).getTime() - new Date(ts).getTime()) / 1000)}</InfoPanelText>
-						</InfoPanelField>
-					)}
-					{ts && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Created_at')}</InfoPanelLabel>
-							<InfoPanelText>{formatDateAndTime(ts)}</InfoPanelText>
-						</InfoPanelField>
-					)}
-					{closedAt && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Closed_At')}</InfoPanelLabel>
-							<InfoPanelText>{formatDateAndTime(closedAt)}</InfoPanelText>
-						</InfoPanelField>
-					)}
-					{servedBy?.ts && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Taken_at')}</InfoPanelLabel>
-							<InfoPanelText>{formatDateAndTime(servedBy.ts)}</InfoPanelText>
-						</InfoPanelField>
-					)}
-					{metrics?.response?.avg && formatDuration(metrics.response.avg) && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Avg_response_time')}</InfoPanelLabel>
-							<InfoPanelText>{formatDuration(metrics.response.avg)}</InfoPanelText>
-						</InfoPanelField>
-					)}
-					{!waitingResponse && responseBy?.lastMessageTs && (
-						<InfoPanelField>
-							<InfoPanelLabel>{t('Inactivity_Time')}</InfoPanelLabel>
-							<InfoPanelText>{inactivityTime}</InfoPanelText>
-						</InfoPanelField>
-					)}
-					{customFieldEntries?.length > 0 &&
-						customFieldEntries.map(([key, value]) => <CustomField key={key} id={key} value={value as string} />)}
-					{slaId && <SlaField id={slaId} />}
-					{priorityId && <PriorityField id={priorityId} />}
-				</Margins>
+				{source && <SourceField room={room as unknown as IOmnichannelRoom} />}
+				{room && v && <ContactField contact={v as IVisitor} room={room as unknown as IOmnichannelRoom} />}
+				{visitorId && <VisitorClientInfo uid={visitorId} />}
+				{servedBy && <AgentField agent={servedBy as unknown as IOmnichannelRoom['servedBy']} />}
+				{departmentId && <DepartmentField departmentId={departmentId} />}
+				{tags && tags.length > 0 && (
+					<InfoPanelField>
+						<InfoPanelLabel id={`${roomId}-tags`}>{t('Tags')}</InfoPanelLabel>
+						<InfoPanelText>
+							<ul aria-labelledby={`${roomId}-tags`}>
+								{tags.map((tag) => (
+									<Box is='li' key={tag} marginInlineEnd={4} display='inline'>
+										<Tag style={{ display: 'inline' }} disabled>
+											{tag}
+										</Tag>
+									</Box>
+								))}
+							</ul>
+						</InfoPanelText>
+					</InfoPanelField>
+				)}
+				{topic && (
+					<InfoPanelField>
+						<InfoPanelLabel>{t('Topic')}</InfoPanelLabel>
+						<InfoPanelText withTruncatedText={false}>
+							<MarkdownText variant='inline' content={topic} />
+						</InfoPanelText>
+					</InfoPanelField>
+				)}
+				{queueStartedAt && (
+					<InfoPanelField>
+						<InfoPanelLabel>{t('Queue_Time')}</InfoPanelLabel>
+						<InfoPanelText>{queueTime}</InfoPanelText>
+					</InfoPanelField>
+				)}
+				{closedAt && ts && (
+					<InfoPanelField>
+						<InfoPanelLabel>{t('Chat_Duration')}</InfoPanelLabel>
+						<InfoPanelText>{formatDuration((new Date(closedAt).getTime() - new Date(ts).getTime()) / 1000)}</InfoPanelText>
+					</InfoPanelField>
+				)}
+				{ts && (
+					<InfoPanelField>
+						<InfoPanelLabel>{t('Created_at')}</InfoPanelLabel>
+						<InfoPanelText>{formatDateAndTime(ts)}</InfoPanelText>
+					</InfoPanelField>
+				)}
+				{closedAt && (
+					<InfoPanelField>
+						<InfoPanelLabel>{t('Closed_At')}</InfoPanelLabel>
+						<InfoPanelText>{formatDateAndTime(closedAt)}</InfoPanelText>
+					</InfoPanelField>
+				)}
+				{servedBy?.ts && (
+					<InfoPanelField>
+						<InfoPanelLabel>{t('Taken_at')}</InfoPanelLabel>
+						<InfoPanelText>{formatDateAndTime(servedBy.ts)}</InfoPanelText>
+					</InfoPanelField>
+				)}
+				{metrics?.response?.avg && formatDuration(metrics.response.avg) && (
+					<InfoPanelField>
+						<InfoPanelLabel>{t('Avg_response_time')}</InfoPanelLabel>
+						<InfoPanelText>{formatDuration(metrics.response.avg)}</InfoPanelText>
+					</InfoPanelField>
+				)}
+				{!waitingResponse && responseBy?.lastMessageTs && (
+					<InfoPanelField>
+						<InfoPanelLabel>{t('Inactivity_Time')}</InfoPanelLabel>
+						<InfoPanelText>{inactivityTime}</InfoPanelText>
+					</InfoPanelField>
+				)}
+				{customFieldEntries?.length > 0 &&
+					customFieldEntries.map(([key, value]) => <CustomField key={key} id={key} value={value as string} />)}
+				{slaId && <SlaField id={slaId} />}
+				{priorityId && <PriorityField id={priorityId} />}
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>

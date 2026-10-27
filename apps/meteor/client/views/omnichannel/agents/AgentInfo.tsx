@@ -1,4 +1,4 @@
-import { Box, Margins, ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, ButtonGroup } from '@rocket.chat/fuselage';
 import {
 	ContextualbarClose,
 	ContextualbarHeader,
@@ -68,18 +68,16 @@ const AgentInfo = ({ uid }: AgentInfoProps) => {
 					/>
 					<AgentInfoAction key={t('Remove')} title={t('Remove')} label={t('Remove')} onClick={handleDelete} icon='trash' />
 				</ButtonGroup>
-				<Margins block={4}>
-					<Box marginBlock='x4'>
-						<UserInfoUsername username={username} status={<UserStatus status={userStatus} />} />
-					</Box>
-					{statusLivechat && (
-						<>
-							<InfoPanelLabel>{t('Livechat_status')}</InfoPanelLabel>
-							<InfoPanelText>{statusLivechat === 'available' ? t('Available') : t('Not_Available')}</InfoPanelText>
-						</>
-					)}
-					{MaxChatsPerAgentDisplay && <MaxChatsPerAgentDisplay maxNumberSimultaneousChat={data.user.livechat?.maxNumberSimultaneousChat} />}
-				</Margins>
+				<Box marginBlock='x4'>
+					<UserInfoUsername username={username} status={<UserStatus status={userStatus} />} />
+				</Box>
+				{statusLivechat && (
+					<>
+						<InfoPanelLabel>{t('Livechat_status')}</InfoPanelLabel>
+						<InfoPanelText>{statusLivechat === 'available' ? t('Available') : t('Not_Available')}</InfoPanelText>
+					</>
+				)}
+				{MaxChatsPerAgentDisplay && <MaxChatsPerAgentDisplay maxNumberSimultaneousChat={data.user.livechat?.maxNumberSimultaneousChat} />}
 			</ContextualbarScrollableContent>
 		</>
 	);

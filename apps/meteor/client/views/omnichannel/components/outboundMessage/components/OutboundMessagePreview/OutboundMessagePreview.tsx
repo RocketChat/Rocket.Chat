@@ -5,7 +5,7 @@ import type {
 	IOutboundProviderTemplate,
 	ILivechatContact,
 } from '@rocket.chat/core-typings';
-import { Box, Margins } from '@rocket.chat/fuselage';
+import { Box } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -72,28 +72,26 @@ const OutboundMessagePreview = ({
 	return (
 		<Box {...props} is='section'>
 			<ul>
-				<Margins blockStart={24}>
-					<Box is='li' marginBlockStart={0}>
-						<PreviewItem icon='doc' label={t('Template')}>
-							{template?.name}
-						</PreviewItem>
-					</Box>
-					<Box is='li'>
-						<PreviewItem icon='user' label={t('To')}>
-							{contactName && `${contactName} ${recipient ? `(${recipient})` : ''}`}
-						</PreviewItem>
-					</Box>
-					<Box is='li'>
-						<PreviewItem icon='send' label={t('From')}>
-							{providerName && `${providerName} ${sender ? `(${sender})` : ''}`}
-						</PreviewItem>
-					</Box>
-					<Box is='li'>
-						<PreviewItem icon='reply' label={t('Replies')}>
-							{replies}
-						</PreviewItem>
-					</Box>
-				</Margins>
+				<Box is='li'>
+					<PreviewItem icon='doc' label={t('Template')}>
+						{template?.name}
+					</PreviewItem>
+				</Box>
+				<Box is='li' marginBlockStart='x24'>
+					<PreviewItem icon='user' label={t('To')}>
+						{contactName && `${contactName} ${recipient ? `(${recipient})` : ''}`}
+					</PreviewItem>
+				</Box>
+				<Box is='li' marginBlockStart='x24'>
+					<PreviewItem icon='send' label={t('From')}>
+						{providerName && `${providerName} ${sender ? `(${sender})` : ''}`}
+					</PreviewItem>
+				</Box>
+				<Box is='li' marginBlockStart='x24'>
+					<PreviewItem icon='reply' label={t('Replies')}>
+						{replies}
+					</PreviewItem>
+				</Box>
 			</ul>
 
 			{template ? (
