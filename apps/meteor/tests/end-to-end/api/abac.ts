@@ -1,9 +1,11 @@
+import { after, before, beforeEach, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IAbacAttributeDefinition, IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, after, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';
 
+import { addAbacAttributesToUserDirectly } from '../../data/abac.helper';
 import { api, getCredentials, request, credentials } from '../../data/api-data';
 import { sleep } from '../../data/livechat/utils';
 import {
@@ -23,25 +25,11 @@ import { adminEmail, adminUsername, password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
-// NOTE: This manipulates the DB directly to add ABAC attributes to a user
-// The idea is to avoid having to go through LDAP to add info to the user
-let connection: MongoClient;
-const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: IAbacAttributeDefinition[]) => {
-	await connection.db().collection('users').updateOne(
-		{
-			// @ts-expect-error - collection types for _id
-			_id: userId,
-		},
-		{ $set: { abacAttributes } },
-	);
-};
-
-(IS_EE ? describe : describe.skip)('[ABAC] (Enterprise Only)', function () {
-	this.retries(0);
-
+(IS_EE ? describe : describe.skip)('[ABAC] (Enterprise Only)', () => {
 	let testRoom: IRoom;
 	let unauthorizedUser: IUser;
 	let unauthorizedCredentials: Credentials;
+	let connection: MongoClient;
 
 	const initialKey = `attr_${Date.now()}`;
 	const updatedKey = `${initialKey}_renamed`;
@@ -49,7 +37,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 	let attributeId: string;
 	let page1AttributeIds: string[] = [];
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		connection = await MongoClient.connect(URL_MONGODB);
@@ -73,11 +61,18 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		await deleteRoom({ type: 'p', roomId: testRoom._id });
 		await deleteUser(unauthorizedUser);
 		await updateSetting('ABAC_Enabled', false);
-
 		await connection.close();
 	});
 
 	const v1 = '/api/v1';
+
+	const clearDefaultFlag = async (roomIds: string[]): Promise<void> => {
+		await Promise.all(
+			roomIds
+				.filter(Boolean)
+				.map((rid) => request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid, default: false }).expect(200)),
+		);
+	};
 
 	describe('Permission & Authentication', () => {
 		it('GET /api/v1/abac/attributes should return 401 when not authenticated', async () => {
@@ -118,8 +113,18 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					await updatePermission('manage-abac-admin-rooms', ['admin']);
 				});
 
-				it('POST /abac/rooms/:rid/attributes should return 403', async () => {
-					await request.post(`${v1}/abac/rooms/${testRoom._id}/attributes`).set(credentials).send({ attributes: {} }).expect(403);
+				it('POST /abac/rooms/:rid/attributes should return 403 when edit-room-abac-attributes is withdrawn too', async () => {
+					await updatePermission('edit-room-abac-attributes', []);
+
+					try {
+						await request
+							.post(`${v1}/abac/rooms/${testRoom._id}/attributes`)
+							.set(credentials)
+							.send({ attributes: { [dummyKey]: ['v1'] } })
+							.expect(403);
+					} finally {
+						await updatePermission('edit-room-abac-attributes', ['admin', 'owner']);
+					}
 				});
 
 				it('DELETE /abac/rooms/:rid/attributes should return 403', async () => {
@@ -208,6 +213,10 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 				it('GET /abac/pdp/health should return 403', async () => {
 					await request.get(`${v1}/abac/pdp/health`).set(credentials).expect(403);
+				});
+
+				it('GET /abac/attributes.listKeys should return 403', async () => {
+					await request.get(`${v1}/abac/attributes.listKeys`).set(credentials).expect(403);
 				});
 			});
 
@@ -539,8 +548,8 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					.send({ key: auditAttrKey, values: ['v1'] })
 					.expect(200);
 
-				await addAbacAttributesToUserDirectly(auditUser._id, [{ key: auditAttrKey, values: ['v1'] }]);
-				await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: auditAttrKey, values: ['v1'] }]);
+				await addAbacAttributesToUserDirectly(connection, auditUser._id, [{ key: auditAttrKey, values: ['v1'] }]);
+				await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [{ key: auditAttrKey, values: ['v1'] }]);
 
 				const roomRes = await createRoom({ type: 'p', name: `abac-audit-user-room-${Date.now()}`, members: [auditUser.username!] });
 				auditRoom = roomRes.body.group as IRoom;
@@ -696,7 +705,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					.send({ key: key2, values: ['value2'] })
 					.expect(200);
 
-				await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [
+				await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [
 					{ key: key1, values: ['value1'] },
 					{ key: key2, values: ['value2'] },
 				]);
@@ -720,6 +729,76 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				const abacAttrs = roomRes.body.room?.abacAttributes || [];
 				expect(abacAttrs).to.be.an('array').that.has.lengthOf(1);
 				expect(abacAttrs[0]).to.have.property('key', key2);
+			});
+		});
+
+		describe('rooms that cannot carry attributes', () => {
+			let parentRoomId: IRoom['_id'];
+			let federatedRoomId: IRoom['_id'];
+			let discussionId: IRoom['_id'];
+
+			const rooms = () => connection.db().collection<Pick<IRoom, '_id' | 'federated' | 'abacAttributes'>>('rocketchat_room');
+
+			before(async () => {
+				parentRoomId = (await createRoom({ type: 'p', name: `abac-parent-${Date.now()}` })).body.group._id;
+				federatedRoomId = (await createRoom({ type: 'p', name: `abac-federated-${Date.now()}` })).body.group._id;
+				await rooms().updateOne({ _id: federatedRoomId }, { $set: { federated: true } });
+				discussionId = (
+					await request
+						.post(`${v1}/rooms.createDiscussion`)
+						.set(credentials)
+						.send({ prid: parentRoomId, t_name: `abac-discussion-${Date.now()}` })
+						.expect(200)
+				).body.discussion._id;
+			});
+
+			after(async () => {
+				await rooms().updateOne({ _id: federatedRoomId }, { $unset: { federated: 1 } });
+				await deleteRoom({ type: 'p', roomId: federatedRoomId });
+				await deleteRoom({ type: 'p', roomId: discussionId });
+				await deleteRoom({ type: 'p', roomId: parentRoomId });
+			});
+
+			[
+				{ label: 'a federated room', roomId: () => federatedRoomId, code: 'error-abac-federated-room-attributes' },
+				{ label: 'a discussion', roomId: () => discussionId, code: 'error-abac-discussion-room-attributes' },
+			].forEach(({ label, roomId, code }) => {
+				describe(label, () => {
+					const expectRefused = (res: { body: Record<string, unknown> }) => {
+						expect(res.body).to.include({ success: false, errorType: code });
+					};
+
+					it('refuses POST /abac/rooms/:rid/attributes/:key', async () => {
+						await request
+							.post(`${v1}/abac/rooms/${roomId()}/attributes/${updatedKey}`)
+							.set(credentials)
+							.send({ values: ['cyan'] })
+							.expect(400)
+							.expect(expectRefused);
+					});
+
+					it('refuses PUT /abac/rooms/:rid/attributes/:key', async () => {
+						await request
+							.put(`${v1}/abac/rooms/${roomId()}/attributes/${updatedKey}`)
+							.set(credentials)
+							.send({ values: ['cyan'] })
+							.expect(400)
+							.expect(expectRefused);
+					});
+
+					it('refuses POST /abac/rooms/:rid/attributes', async () => {
+						await request
+							.post(`${v1}/abac/rooms/${roomId()}/attributes`)
+							.set(credentials)
+							.send({ attributes: { [updatedKey]: ['cyan'] } })
+							.expect(400)
+							.expect(expectRefused);
+					});
+
+					it('leaves the room without attributes', async () => {
+						expect(await rooms().findOne({ _id: roomId() })).to.not.have.property('abacAttributes');
+					});
+				});
 			});
 		});
 
@@ -756,7 +835,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 	});
 
-	describe('Default and Team Default Room Restrictions', () => {
+	describe('Default and Team Default Room ABAC Attributes', () => {
 		let privateDefaultRoomId: string;
 		let teamId: string;
 		let teamPrivateRoomId: string;
@@ -766,7 +845,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		const teamName = `abac-team-${Date.now()}`;
 		const teamNameMainRoom = `abac-team-main-save-settings-${Date.now()}`;
 
-		before('create team main room for rooms.saveRoomSettings default restriction test', async () => {
+		before(async () => {
 			const createTeamMain = await request
 				.post(`${v1}/teams.create`)
 				.set(credentials)
@@ -778,7 +857,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid: mainRoomIdSaveSettings, default: true }).expect(200);
 		});
 
-		before('create local ABAC attribute definition for tests', async () => {
+		before(async () => {
 			await request
 				.post(`${v1}/abac/attributes`)
 				.set(credentials)
@@ -786,7 +865,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				.expect(200);
 		});
 
-		before('create private room and try to set it as default', async () => {
+		before(async () => {
 			const res = await createRoom({
 				type: 'p',
 				name: `abac-default-room-${Date.now()}`,
@@ -796,7 +875,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid: privateDefaultRoomId, default: true }).expect(200);
 		});
 
-		before('create private team, private room inside it and set as team default', async () => {
+		before(async () => {
 			const createTeamRes = await request.post(`${v1}/teams.create`).set(credentials).send({ name: teamName, type: 0 }).expect(200);
 			teamId = createTeamRes.body.team._id;
 
@@ -819,33 +898,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			}
 		});
 
-		it('should fail adding ABAC attribute to private default room', async () => {
-			await request
-				.post(`${v1}/abac/rooms/${privateDefaultRoomId}/attributes/${localAbacKey}`)
-				.set(credentials)
-				.send({ values: ['red'] })
-				.expect(400)
-				.expect((res) => {
-					expect(res.body.success).to.be.false;
-					expect(res.body.error).to.include('error-cannot-convert-default-room-to-abac');
-				});
-		});
-
-		it('should fail adding ABAC attribute to team default private room', async () => {
-			await request
-				.post(`${v1}/abac/rooms/${teamDefaultRoomId}/attributes/${localAbacKey}`)
-				.set(credentials)
-				.send({ values: ['red'] })
-				.expect(400)
-				.expect((res) => {
-					expect(res.body.success).to.be.false;
-					expect(res.body.error).to.include('error-cannot-convert-default-room-to-abac');
-				});
-		});
-
-		it('should allow adding ABAC attribute after removing default flag from private room', async () => {
-			await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid: privateDefaultRoomId, default: false }).expect(200);
-
+		it('should allow adding ABAC attribute to private default room', async () => {
 			await request
 				.post(`${v1}/abac/rooms/${privateDefaultRoomId}/attributes/${localAbacKey}`)
 				.set(credentials)
@@ -856,37 +909,18 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				});
 		});
 
-		it('should allow adding ABAC attribute after removing team default flag', async () => {
-			await request
-				.post(`${v1}/teams.updateRoom`)
-				.set(credentials)
-				// TODO: teamId is accepted but never used by the endpoint handler — callers should stop sending it
-				.send({ teamId, roomId: teamDefaultRoomId, isDefault: false })
-				.expect(200);
-
+		it('should allow adding ABAC attribute to team default private room', async () => {
 			await request
 				.post(`${v1}/abac/rooms/${teamDefaultRoomId}/attributes/${localAbacKey}`)
 				.set(credentials)
-				.send({ values: ['green'] })
+				.send({ values: ['red'] })
 				.expect(200)
 				.expect((res) => {
 					expect(res.body.success).to.be.true;
 				});
 		});
 
-		it('should enforce restriction on team main room when default using rooms.saveRoomSettings', async () => {
-			await request
-				.post(`${v1}/abac/rooms/${mainRoomIdSaveSettings}/attributes/${localAbacKey}`)
-				.set(credentials)
-				.send({ values: ['red'] })
-				.expect(400)
-				.expect((res) => {
-					expect(res.body.success).to.be.false;
-					expect(res.body.error).to.include('error-cannot-convert-default-room-to-abac');
-				});
-
-			await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid: mainRoomIdSaveSettings, default: false }).expect(200);
-
+		it('should allow adding ABAC attribute to a team main room that is default', async () => {
 			await request
 				.post(`${v1}/abac/rooms/${mainRoomIdSaveSettings}/attributes/${localAbacKey}`)
 				.set(credentials)
@@ -929,6 +963,8 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		after(async () => {
+			await clearDefaultFlag([privateDefaultRoomId, mainRoomIdSaveSettings]);
+
 			await deleteRoom({ type: 'p', roomId: privateDefaultRoomId });
 			await deleteTeam(credentials, teamName);
 			await deleteTeam(credentials, teamNameMainRoom);
@@ -986,14 +1022,17 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 	});
 
-	describe('ABAC Managed Room Default Conversion Restrictions', () => {
+	describe('ABAC Managed Room Default Conversion', () => {
 		const conversionAttrKey = `conversion_test_${Date.now()}`;
 		const teamName = `abac-conversion-team-${Date.now()}`;
 		let abacRoomId: string;
 		let teamIdForConversion: string;
 		let teamRoomId: string;
+		let skippedRoomId: string;
+		let noAttrUser: IUser;
+		let lateNoAttrUser: IUser;
 
-		before('create attribute definition and ABAC-managed private room', async () => {
+		before(async () => {
 			await request
 				.post(`${v1}/abac/attributes`)
 				.set(credentials)
@@ -1013,7 +1052,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				.expect(200);
 		});
 
-		before('create team, private room inside, add ABAC attribute', async () => {
+		before(async () => {
 			// Public team
 			const teamRes = await request.post(`${v1}/teams.create`).set(credentials).send({ name: teamName, type: 0 }).expect(200);
 			teamIdForConversion = teamRes.body.team._id;
@@ -1033,31 +1072,87 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		after(async () => {
+			await clearDefaultFlag([abacRoomId]);
+
+			if (skippedRoomId) {
+				await deleteRoom({ type: 'p', roomId: skippedRoomId });
+			}
+			if (noAttrUser) {
+				await deleteUser(noAttrUser);
+			}
+			if (lateNoAttrUser) {
+				await deleteUser(lateNoAttrUser);
+			}
 			await Promise.all([deleteTeam(credentials, teamName), deleteRoom({ type: 'p', roomId: abacRoomId })]);
 		});
 
-		it('should fail converting ABAC-managed private room into default room', async () => {
+		it('should allow converting ABAC-managed private room into default room', async () => {
 			await request
 				.post(`${v1}/rooms.saveRoomSettings`)
 				.set(credentials)
 				.send({ rid: abacRoomId, default: true })
-				.expect(400)
+				.expect(200)
 				.expect((res) => {
-					expect(res.body.success).to.be.false;
-					expect(res.body.error).to.include('Setting an ABAC managed room as default is not allowed [error-action-not-allowed]');
+					expect(res.body.success).to.be.true;
 				});
 		});
 
-		it('should fail converting ABAC-managed team room into team default room', async () => {
+		it('should allow converting ABAC-managed team room into team default room', async () => {
 			await request
 				.post(`${v1}/teams.updateRoom`)
 				.set(credentials)
 				// TODO: teamId is accepted but never used by the endpoint handler — callers should stop sending it
 				.send({ teamId: teamIdForConversion, roomId: teamRoomId, isDefault: true })
-				.expect(400)
+				.expect(200)
 				.expect((res) => {
-					expect(res.body.success).to.be.false;
-					expect(res.body.error).to.include('error-room-is-abac-managed');
+					expect(res.body.success).to.be.true;
+					expect(res.body.room).to.have.property('teamDefault', true);
+				});
+		});
+
+		it('should skip team members that do not carry the room attributes instead of failing the conversion', async () => {
+			noAttrUser = await createUser();
+
+			await request
+				.post(`${v1}/teams.addMembers`)
+				.set(credentials)
+				.send({ teamId: teamIdForConversion, members: [{ userId: noAttrUser._id, roles: ['member'] }] })
+				.expect(200);
+
+			const skippedRoom = await createRoom({
+				type: 'p',
+				name: `abac-skipped-member-room-${Date.now()}`,
+				extraData: { teamId: teamIdForConversion },
+			});
+			skippedRoomId = skippedRoom.body.group._id;
+
+			await request
+				.post(`${v1}/abac/rooms/${skippedRoomId}/attributes/${conversionAttrKey}`)
+				.set(credentials)
+				.send({ values: ['alpha'] })
+				.expect(200);
+
+			await request
+				.post(`${v1}/teams.updateRoom`)
+				.set(credentials)
+				.send({ roomId: skippedRoomId, isDefault: true })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.success).to.be.true;
+					expect(res.body.room).to.have.property('teamDefault', true);
+				});
+		});
+
+		it('should add a member to the team even when a team default room refuses them', async () => {
+			lateNoAttrUser = await createUser();
+
+			await request
+				.post(`${v1}/teams.addMembers`)
+				.set(credentials)
+				.send({ teamId: teamIdForConversion, members: [{ userId: lateNoAttrUser._id, roles: ['member'] }] })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.success).to.be.true;
 				});
 		});
 	});
@@ -1707,7 +1802,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 						expect(res.body).to.have.property('success', true);
 					});
 
-				await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: validateAttrKey, values: ['one'] }]);
+				await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [{ key: validateAttrKey, values: ['one'] }]);
 
 				await request
 					.post(`${v1}/abac/rooms/${plainRoomId}/attributes/${validateAttrKey}`)
@@ -1756,7 +1851,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 						expect(res.body).to.have.property('success', true);
 					});
 
-				await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: inviteAttrKey, values: ['one'] }]);
+				await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [{ key: inviteAttrKey, values: ['one'] }]);
 
 				await request
 					.post(`${v1}/abac/rooms/${managedRoomId}/attributes/${inviteAttrKey}`)
@@ -1839,7 +1934,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				.expect(200);
 
 			// We have to add them directly cause otherwise the abac engine would kick the user from the room after the attribute is added
-			await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: accessAttrKey, values: ['v1'] }]);
+			await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [{ key: accessAttrKey, values: ['v1'] }]);
 
 			// Create two private rooms: one will stay without attributes, the other will get the attribute
 			roomWithoutAttr = (await createRoom({ type: 'p', name: `abac-access-noattr-${Date.now()}` })).body.group;
@@ -1908,7 +2003,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					.send({ key: enabledAccessAttrKey, values: ['v1'] })
 					.expect(200);
 
-				await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: enabledAccessAttrKey, values: ['v1'] }]);
+				await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [{ key: enabledAccessAttrKey, values: ['v1'] }]);
 
 				managedRoom = (await createRoom({ type: 'p', name: `abac-access-disabled-${Date.now()}` })).body.group;
 
@@ -1931,7 +2026,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					.expect(200);
 
 				enabledUser = createUserRes.body.user;
-				await addAbacAttributesToUserDirectly(enabledUser._id, [{ key: enabledAccessAttrKey, values: ['v1'] }]);
+				await addAbacAttributesToUserDirectly(connection, enabledUser._id, [{ key: enabledAccessAttrKey, values: ['v1'] }]);
 
 				await updateSetting('ABAC_Enabled', false);
 			});
@@ -1956,7 +2051,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			});
 
 			it('INVITE: should still fail after user loses attributes when ABAC is disabled', async () => {
-				await addAbacAttributesToUserDirectly(enabledUser._id, [{ key: enabledAccessAttrKey, values: [] }]);
+				await addAbacAttributesToUserDirectly(connection, enabledUser._id, [{ key: enabledAccessAttrKey, values: [] }]);
 
 				await request
 					.post(`${v1}/groups.invite`)
@@ -1978,42 +2073,43 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		let cacheUserCreds: Credentials;
 		const ttlSeconds = 5;
 
-		before(async function () {
-			this.timeout(10000);
+		before(
+			async () => {
+				await request
+					.post(`${v1}/abac/attributes`)
+					.set(credentials)
+					.send({ key: cacheAttrKey, values: ['on'] })
+					.expect(200);
 
-			await request
-				.post(`${v1}/abac/attributes`)
-				.set(credentials)
-				.send({ key: cacheAttrKey, values: ['on'] })
-				.expect(200);
+				cacheRoom = (await createRoom({ type: 'p', name: `abac-cache-room-${Date.now()}` })).body.group;
 
-			cacheRoom = (await createRoom({ type: 'p', name: `abac-cache-room-${Date.now()}` })).body.group;
+				cacheUser = await createUser();
+				cacheUserCreds = await login(cacheUser.username, password);
+				await addAbacAttributesToUserDirectly(connection, cacheUser._id, [{ key: cacheAttrKey, values: ['on'] }]);
+				await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [{ key: cacheAttrKey, values: ['on'] }]);
 
-			cacheUser = await createUser();
-			cacheUserCreds = await login(cacheUser.username, password);
-			await addAbacAttributesToUserDirectly(cacheUser._id, [{ key: cacheAttrKey, values: ['on'] }]);
-			await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: cacheAttrKey, values: ['on'] }]);
+				await request
+					.post(`${v1}/abac/rooms/${cacheRoom._id}/attributes/${cacheAttrKey}`)
+					.set(credentials)
+					.send({ values: ['on'] })
+					.expect(200);
 
-			await request
-				.post(`${v1}/abac/rooms/${cacheRoom._id}/attributes/${cacheAttrKey}`)
-				.set(credentials)
-				.send({ values: ['on'] })
-				.expect(200);
+				await request
+					.post(`${v1}/groups.invite`)
+					.set(credentials)
+					.send({ roomId: cacheRoom._id, usernames: [cacheUser.username] })
+					.expect(200);
 
-			await request
-				.post(`${v1}/groups.invite`)
-				.set(credentials)
-				.send({ roomId: cacheRoom._id, usernames: [cacheUser.username] })
-				.expect(200);
+				await updateSetting('Abac_Cache_Decision_Time_Seconds', ttlSeconds);
 
-			await updateSetting('Abac_Cache_Decision_Time_Seconds', ttlSeconds);
-
-			await request
-				.post(`${v1}/chat.sendMessage`)
-				.set(credentials)
-				.send({ message: { rid: cacheRoom._id, msg: 'Seed message for cache access test' } })
-				.expect(200);
-		});
+				await request
+					.post(`${v1}/chat.sendMessage`)
+					.set(credentials)
+					.send({ message: { rid: cacheRoom._id, msg: 'Seed message for cache access test' } })
+					.expect(200);
+			},
+			{ timeout: 10000 },
+		);
 
 		after(async () => {
 			await deleteRoom({ type: 'p', roomId: cacheRoom._id });
@@ -2034,7 +2130,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		it('ACCESS: user retains access within cache after losing attributes', async () => {
-			await addAbacAttributesToUserDirectly(cacheUser._id, []);
+			await addAbacAttributesToUserDirectly(connection, cacheUser._id, []);
 
 			await request
 				.get(`/api/v1/groups.history`)
@@ -2072,7 +2168,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		it('ACCESS: user can be re invited to the room and access history', async () => {
-			await addAbacAttributesToUserDirectly(cacheUser._id, [{ key: cacheAttrKey, values: ['on'] }]);
+			await addAbacAttributesToUserDirectly(connection, cacheUser._id, [{ key: cacheAttrKey, values: ['on'] }]);
 			await request
 				.post(`${v1}/groups.invite`)
 				.set(credentials)
@@ -2113,43 +2209,44 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		let projUser: IUser;
 		let projUserCreds: Credentials;
 
-		before(async function () {
-			this.timeout(10000);
+		before(
+			async () => {
+				await request
+					.post(`${v1}/abac/attributes`)
+					.set(credentials)
+					.send({ key: projAttrKey, values: ['on'] })
+					.expect(200);
 
-			await request
-				.post(`${v1}/abac/attributes`)
-				.set(credentials)
-				.send({ key: projAttrKey, values: ['on'] })
-				.expect(200);
+				projRoom = (await createRoom({ type: 'p', name: `abac-proj-room-${Date.now()}` })).body.group;
 
-			projRoom = (await createRoom({ type: 'p', name: `abac-proj-room-${Date.now()}` })).body.group;
+				projUser = await createUser();
+				projUserCreds = await login(projUser.username, password);
+				await addAbacAttributesToUserDirectly(connection, projUser._id, [{ key: projAttrKey, values: ['on'] }]);
+				await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [{ key: projAttrKey, values: ['on'] }]);
 
-			projUser = await createUser();
-			projUserCreds = await login(projUser.username, password);
-			await addAbacAttributesToUserDirectly(projUser._id, [{ key: projAttrKey, values: ['on'] }]);
-			await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: projAttrKey, values: ['on'] }]);
+				await request
+					.post(`${v1}/abac/rooms/${projRoom._id}/attributes/${projAttrKey}`)
+					.set(credentials)
+					.send({ values: ['on'] })
+					.expect(200);
 
-			await request
-				.post(`${v1}/abac/rooms/${projRoom._id}/attributes/${projAttrKey}`)
-				.set(credentials)
-				.send({ values: ['on'] })
-				.expect(200);
+				await request
+					.post(`${v1}/groups.invite`)
+					.set(credentials)
+					.send({ roomId: projRoom._id, usernames: [projUser.username] })
+					.expect(200);
 
-			await request
-				.post(`${v1}/groups.invite`)
-				.set(credentials)
-				.send({ roomId: projRoom._id, usernames: [projUser.username] })
-				.expect(200);
+				await request
+					.post(`${v1}/chat.sendMessage`)
+					.set(credentials)
+					.send({ message: { rid: projRoom._id, msg: 'Seed message for projection access test' } })
+					.expect(200);
 
-			await request
-				.post(`${v1}/chat.sendMessage`)
-				.set(credentials)
-				.send({ message: { rid: projRoom._id, msg: 'Seed message for projection access test' } })
-				.expect(200);
-
-			// Evaluate every access check against the PDP, no cached decisions
-			await updateSetting('Abac_Cache_Decision_Time_Seconds', 0);
-		});
+				// Evaluate every access check against the PDP, no cached decisions
+				await updateSetting('Abac_Cache_Decision_Time_Seconds', 0);
+			},
+			{ timeout: 10000 },
+		);
 
 		after(async () => {
 			await deleteRoom({ type: 'p', roomId: projRoom._id });
@@ -2170,7 +2267,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 
 		it('PROJECTION: member that lost its attributes is denied while still subscribed', async () => {
-			await addAbacAttributesToUserDirectly(projUser._id, []);
+			await addAbacAttributesToUserDirectly(connection, projUser._id, []);
 
 			await request
 				.get(`${v1}/groups.messages`)
@@ -2228,7 +2325,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				.set(credentials)
 				.send({ key: bannerAttrKey, values: ['TS', 'U'] })
 				.expect(200);
-			await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: bannerAttrKey, values: ['TS'] }]);
+			await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [{ key: bannerAttrKey, values: ['TS'] }]);
 
 			bannerRoom = (await createRoom({ type: 'p', name: `abac-banner-room-${Date.now()}` })).body.group;
 			plainRoom = (await createRoom({ type: 'p', name: `abac-plain-room-${Date.now()}` })).body.group;
@@ -2281,6 +2378,110 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 			expect(await getRoomInfo(bannerRoom._id)).to.not.have.property('classificationBanner');
 		});
+
+		describe('with a nonAbacBanner configured', () => {
+			const nonAbacBanner = [{ enabled: true, text: 'UNCLASSIFIED', color: '#007a33' }];
+			const expectedNonAbacBanner = {
+				style: 'classic',
+				uppercase: true,
+				monospace: false,
+				text: 'UNCLASSIFIED',
+				segments: [],
+				backgroundColor: '#007a33',
+				color: '#FFFFFF',
+			};
+			let dmUser: IUser;
+			let groupDmUser: IUser;
+			let dmRoomId: IRoom['_id'];
+			let groupDmRoomId: IRoom['_id'];
+			let discussionId: IRoom['_id'];
+
+			before(async () => {
+				[dmUser, groupDmUser] = await Promise.all([createUser(), createUser()]);
+
+				dmRoomId = (await createRoom({ type: 'd', username: dmUser.username })).body.room._id;
+				groupDmRoomId = (
+					await request
+						.post(`${v1}/im.create`)
+						.set(credentials)
+						.send({ usernames: `${dmUser.username},${groupDmUser.username}` })
+						.expect(200)
+				).body.room._id;
+				discussionId = (
+					await request
+						.post(`${v1}/rooms.createDiscussion`)
+						.set(credentials)
+						.send({ prid: plainRoom._id, t_name: `abac-banner-discussion-${Date.now()}` })
+						.expect(200)
+				).body.discussion._id;
+
+				await updateSetting('ABAC_Classification_Banners_Enabled', true);
+				await updateSetting('ABAC_Classification_Banners_Config', JSON.stringify({ ...bannersConfig, nonAbacBanner }));
+			});
+
+			after(async () => {
+				await deleteRoom({ type: 'p', roomId: discussionId });
+				await deleteRoom({ type: 'd', roomId: dmRoomId });
+				await deleteRoom({ type: 'd', roomId: groupDmRoomId });
+				await Promise.all([deleteUser(dmUser), deleteUser(groupDmUser)]);
+				await updateSetting('ABAC_Classification_Banners_Enabled', false);
+			});
+
+			it('should keep the attribute banner for an ABAC managed room', async () => {
+				expect((await getRoomInfo(bannerRoom._id)).classificationBanner).to.have.property('text', 'TOP SECRET');
+			});
+
+			(
+				[
+					['a private room without attributes', () => plainRoom._id],
+					['a DM', () => dmRoomId],
+					['a group DM', () => groupDmRoomId],
+					['a discussion', () => discussionId],
+				] as const
+			).forEach(([name, getRoomId]) => {
+				it(`should return the nonAbacBanner for ${name}`, async () => {
+					expect((await getRoomInfo(getRoomId())).classificationBanner).to.deep.equal(expectedNonAbacBanner);
+				});
+			});
+
+			it('should return the first enabled entry of a nonAbacBanner list that matches each room', async () => {
+				await updateSetting(
+					'ABAC_Classification_Banners_Config',
+					JSON.stringify({
+						...bannersConfig,
+						nonAbacBanner: [
+							{ enabled: false, text: 'SKIPPED', color: '#6C727A', match: { type: ['direct'] } },
+							{ enabled: true, text: 'PERSONAL', color: '#502b85', match: { type: ['direct'] } },
+							{ enabled: true, text: 'DISCUSSION', color: '#0033a0', match: { discussion: true } },
+							{ enabled: true, text: 'UNCLASSIFIED', color: '#007a33', match: { type: ['public', 'private'] } },
+							{ enabled: true, text: 'DEFAULT', color: '#6C727A' },
+						],
+					}),
+				);
+
+				try {
+					expect((await getRoomInfo(dmRoomId)).classificationBanner).to.have.property('text', 'PERSONAL');
+					expect((await getRoomInfo(groupDmRoomId)).classificationBanner).to.have.property('text', 'PERSONAL');
+					expect((await getRoomInfo(discussionId)).classificationBanner).to.have.property('text', 'DISCUSSION');
+					expect((await getRoomInfo(plainRoom._id)).classificationBanner).to.have.property('text', 'UNCLASSIFIED');
+					expect((await getRoomInfo(bannerRoom._id)).classificationBanner).to.have.property('text', 'TOP SECRET');
+				} finally {
+					await updateSetting('ABAC_Classification_Banners_Config', JSON.stringify({ ...bannersConfig, nonAbacBanner }));
+				}
+			});
+
+			it('should not return a banner in any room while ABAC is disabled', async () => {
+				await updateSetting('ABAC_Enabled', false);
+
+				try {
+					expect(await getRoomInfo(dmRoomId)).to.not.have.property('classificationBanner');
+					expect(await getRoomInfo(plainRoom._id)).to.not.have.property('classificationBanner');
+					expect(await getRoomInfo(bannerRoom._id)).to.not.have.property('classificationBanner');
+				} finally {
+					await updateSetting('ABAC_Enabled', true);
+				}
+			});
+		});
 	});
 
 	describe('list abac rooms', () => {
@@ -2294,7 +2495,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		let listRoomId2: string;
 		let listRoomNoAttrId: string;
 
-		before('ensure ABAC enabled and create attribute definitions & rooms', async () => {
+		before(async () => {
 			await updateSetting('ABAC_Enabled', true);
 
 			// Create attribute definitions
@@ -2404,7 +2605,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				.expect(200);
 		});
 
-		it('should NOT list a default private room even if attempt to add attribute fails', async () => {
+		it('should list a default private room that carries attributes', async () => {
 			const defaultRoomId = (await createRoom({ type: 'p', name: `abac-list-default-${Date.now()}` })).body.group._id;
 			await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid: defaultRoomId, default: true }).expect(200);
 			const defKey = `list_def_attr_${Date.now()}`;
@@ -2417,10 +2618,10 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				.post(`${v1}/abac/rooms/${defaultRoomId}/attributes/${defKey}`)
 				.set(credentials)
 				.send({ values: ['one'] })
-				.expect(400);
+				.expect(200);
 			const res = await request.get(`${v1}/abac/rooms`).set(credentials).expect(200);
 			const ids = res.body.rooms.map((r: any) => r._id);
-			expect(ids).to.not.include(defaultRoomId);
+			expect(ids).to.include(defaultRoomId);
 			await request.post(`${v1}/rooms.saveRoomSettings`).set(credentials).send({ rid: defaultRoomId, default: false }).expect(200);
 			await deleteRoom({ type: 'p', roomId: defaultRoomId });
 		});
@@ -2530,7 +2731,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			const teamListName = `abac-list-team-${Date.now()}`;
 			let teamListMainRoomId: string;
 
-			before('create private team (no attributes yet) and attribute definition', async () => {
+			before(async () => {
 				const teamRes = await request.post(`${v1}/teams.create`).set(credentials).send({ name: teamListName, type: 1 }).expect(200);
 
 				teamListMainRoomId = teamRes.body.team.roomId;
@@ -2651,12 +2852,14 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			]);
 		});
 
-		before(async function () {
-			this.timeout(10000);
-			// ldap.syncNow now also syncs ABAC attributes for all users
-			await request.post(`${v1}/ldap.syncNow`).set(credentials);
-			await sleep(5000);
-		});
+		before(
+			async () => {
+				// ldap.syncNow now also syncs ABAC attributes for all users
+				await request.post(`${v1}/ldap.syncNow`).set(credentials);
+				await sleep(5000);
+			},
+			{ timeout: 10000 },
+		);
 
 		it('should sync LDAP user john.young with mapped ABAC attributes', async () => {
 			const res = await request.get(`${v1}/users.info`).set(credentials).query({ username: 'john.young' }).expect(200);
@@ -2804,9 +3007,9 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				const davidUser = await request.get(`${v1}/users.info`).set(credentials).query({ username: 'david.scott' }).expect(200);
 				const sergeiUser = await request.get(`${v1}/users.info`).set(credentials).query({ username: 'sergei.krikalev' }).expect(200);
 
-				await addAbacAttributesToUserDirectly(davidUser.body.user._id, [{ key: 'department', values: ['navControl'] }]);
-				await addAbacAttributesToUserDirectly(sergeiUser.body.user._id, [{ key: 'department', values: ['navControl'] }]);
-				await addAbacAttributesToUserDirectly(credentials['X-User-Id'], [{ key: 'department', values: ['navControl'] }]);
+				await addAbacAttributesToUserDirectly(connection, davidUser.body.user._id, [{ key: 'department', values: ['navControl'] }]);
+				await addAbacAttributesToUserDirectly(connection, sergeiUser.body.user._id, [{ key: 'department', values: ['navControl'] }]);
+				await addAbacAttributesToUserDirectly(connection, credentials['X-User-Id'], [{ key: 'department', values: ['navControl'] }]);
 
 				await request
 					.post(`${v1}/abac/rooms/${roomIdWithAbac}/attributes/department`)
@@ -3213,90 +3416,148 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			expect(res.body).to.have.property('error', 'not-allowed');
 		});
 	});
+
+	describe('[GET] /abac/attributes.listKeys', () => {
+		const keyPrefix = `keys_${Date.now()}`;
+		const createdKeys = [`${keyPrefix}_zulu`, `${keyPrefix}_alpha`];
+		const createdIds: string[] = [];
+
+		const findAttributeId = async (key: string): Promise<string> => {
+			const res = await request.get(`${v1}/abac/attributes`).set(credentials).query({ key }).expect(200);
+			const found = res.body.attributes.find((attribute: any) => attribute.key === key);
+			expect(found, `attribute ${key} was created but is not listed`).to.exist;
+			return found._id;
+		};
+
+		before(async () => {
+			await updateSetting('ABAC_Enabled', true);
+
+			for (const key of createdKeys) {
+				await request
+					.post(`${v1}/abac/attributes`)
+					.set(credentials)
+					.send({ key, values: ['v1'] })
+					.expect(200);
+				createdIds.push(await findAttributeId(key));
+			}
+		});
+
+		after(async () => {
+			for (const _id of createdIds) {
+				await request.delete(`${v1}/abac/attributes/${_id}`).set(credentials).expect(200);
+			}
+			await updateSetting('ABAC_Enabled', false);
+		});
+
+		it('should return 401 when not authenticated', async () => {
+			await request.get(`${v1}/abac/attributes.listKeys`).expect(401);
+		});
+
+		it('should return every registered key as a { key, label } option', async () => {
+			const res = await request.get(`${v1}/abac/attributes.listKeys`).set(credentials).expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('data').that.is.an('array');
+
+			const keys = res.body.data.map(({ key }: { key: string }) => key);
+			expect(keys).to.include.members(createdKeys);
+
+			res.body.data.forEach(({ key, label }: { key: string; label: string }) => expect(label).to.equal(key));
+		});
+
+		it('should return the keys sorted', async () => {
+			const res = await request.get(`${v1}/abac/attributes.listKeys`).set(credentials).expect(200);
+
+			const keys: string[] = res.body.data.map(({ key }: { key: string }) => key);
+
+			expect(keys).to.deep.equal([...keys].sort((a, b) => a.localeCompare(b)));
+		});
+	});
 });
 
-(IS_EE ? describe : describe.skip)('[ABAC] External PDP (mock-server)', function () {
-	this.retries(0);
-
+(IS_EE ? describe : describe.skip)('[ABAC] External PDP (mock-server)', () => {
 	const attrKey = `ext_pdp_attr_${Date.now()}`;
+	let connection: MongoClient;
 
-	before((done) => {
+	before((_t, done) => {
 		getCredentials(done);
 	});
 
-	before(async function () {
-		this.timeout(15000);
+	before(
+		async () => {
+			connection = await MongoClient.connect(URL_MONGODB);
 
-		connection = await MongoClient.connect(URL_MONGODB);
+			const healthy = await mockServerHealthy();
+			expect(healthy, 'mock-server is not reachable — ensure it is running').to.be.true;
 
-		const healthy = await mockServerHealthy();
-		expect(healthy, 'mock-server is not reachable — ensure it is running').to.be.true;
+			await Promise.all([
+				updatePermission('abac-management', ['admin']),
+				updatePermission('manage-abac-admin-settings', ['admin']),
+				updatePermission('manage-abac-admin-room-attributes', ['admin']),
+				updatePermission('manage-abac-admin-rooms', ['admin']),
+				updatePermission('view-abac-admin-audit', ['admin']),
+			]);
+			await updateSetting('ABAC_Enabled', true);
+			await updateSetting('ABAC_PDP_Type', 'virtru');
+			await Promise.all([
+				updateSetting('ABAC_Virtru_Base_URL', 'http://mock-server:8080'),
+				updateSetting('ABAC_Virtru_OIDC_Endpoint', 'http://mock-server:8080/auth/realms/mock'),
+				updateSetting('ABAC_Virtru_Client_ID', 'mock-client'),
+				updateSetting('ABAC_Virtru_Client_Secret', 'mock-secret'),
+				updateSetting('ABAC_Virtru_Default_Entity_Key', 'emailAddress'),
+				updateSetting('ABAC_Virtru_Attribute_Namespace', 'example.com'),
+				updateSetting('Abac_Cache_Decision_Time_Seconds', 0),
+			]);
 
-		await Promise.all([
-			updatePermission('abac-management', ['admin']),
-			updatePermission('manage-abac-admin-settings', ['admin']),
-			updatePermission('manage-abac-admin-room-attributes', ['admin']),
-			updatePermission('manage-abac-admin-rooms', ['admin']),
-			updatePermission('view-abac-admin-audit', ['admin']),
-		]);
-		await updateSetting('ABAC_Enabled', true);
-		await updateSetting('ABAC_PDP_Type', 'virtru');
-		await Promise.all([
-			updateSetting('ABAC_Virtru_Base_URL', 'http://mock-server:8080'),
-			updateSetting('ABAC_Virtru_OIDC_Endpoint', 'http://mock-server:8080/auth/realms/mock'),
-			updateSetting('ABAC_Virtru_Client_ID', 'mock-client'),
-			updateSetting('ABAC_Virtru_Client_Secret', 'mock-secret'),
-			updateSetting('ABAC_Virtru_Default_Entity_Key', 'emailAddress'),
-			updateSetting('ABAC_Virtru_Attribute_Namespace', 'example.com'),
-			updateSetting('Abac_Cache_Decision_Time_Seconds', 0),
-		]);
+			await request
+				.post('/api/v1/abac/attributes')
+				.set(credentials)
+				.send({ key: attrKey, values: ['alpha', 'beta', 'gamma'] })
+				.expect(200);
+		},
+		{ timeout: 15000 },
+	);
 
-		await request
-			.post('/api/v1/abac/attributes')
-			.set(credentials)
-			.send({ key: attrKey, values: ['alpha', 'beta', 'gamma'] })
-			.expect(200);
-	});
-
-	after(async function () {
-		this.timeout(10000);
-
-		await mockServerReset();
-		await updateSetting('ABAC_PDP_Type', 'local');
-		await updateSetting('ABAC_Enabled', false);
-
-		await connection.close();
-	});
+	after(
+		async () => {
+			await mockServerReset();
+			await updateSetting('ABAC_PDP_Type', 'local');
+			await updateSetting('ABAC_Enabled', false);
+			await connection.close();
+		},
+		{ timeout: 10000 },
+	);
 
 	describe('PERMIT all: users remain when PDP permits everyone', () => {
 		let room: IRoom;
 		let user: IUser;
 		let userCreds: Credentials;
 
-		before(async function () {
-			this.timeout(15000);
+		before(
+			async () => {
+				user = await createUser({ verified: true });
+				userCreds = await login(user.username, password);
 
-			user = await createUser({ verified: true });
-			userCreds = await login(user.username, password);
+				room = (await createRoom({ type: 'p', name: `extpdp-permit-${Date.now()}` })).body.group;
 
-			room = (await createRoom({ type: 'p', name: `extpdp-permit-${Date.now()}` })).body.group;
+				await request
+					.post('/api/v1/groups.invite')
+					.set(credentials)
+					.send({ roomId: room._id, usernames: [user.username] })
+					.expect(200);
 
-			await request
-				.post('/api/v1/groups.invite')
-				.set(credentials)
-				.send({ roomId: room._id, usernames: [user.username] })
-				.expect(200);
+				await mockServerReset();
+				await seedDefaultMocks();
+				await seedBulkDecisionByEntity([], 'DECISION_PERMIT');
 
-			await mockServerReset();
-			await seedDefaultMocks();
-			await seedBulkDecisionByEntity([], 'DECISION_PERMIT');
-
-			await request
-				.post(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`)
-				.set(credentials)
-				.send({ values: ['alpha'] })
-				.expect(200);
-		});
+				await request
+					.post(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`)
+					.set(credentials)
+					.send({ values: ['alpha'] })
+					.expect(200);
+			},
+			{ timeout: 15000 },
+		);
 
 		after(async () => {
 			await Promise.all([deleteRoom({ type: 'p', roomId: room._id }), deleteUser(user)]);
@@ -3338,33 +3599,34 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		let user: IUser;
 		let userCreds: Credentials;
 
-		before(async function () {
-			this.timeout(15000);
+		before(
+			async () => {
+				user = await createUser({ verified: true });
+				userCreds = await login(user.username, password);
 
-			user = await createUser({ verified: true });
-			userCreds = await login(user.username, password);
+				room = (await createRoom({ type: 'p', name: `extpdp-access-${Date.now()}` })).body.group;
 
-			room = (await createRoom({ type: 'p', name: `extpdp-access-${Date.now()}` })).body.group;
+				await request
+					.post('/api/v1/groups.invite')
+					.set(credentials)
+					.send({ roomId: room._id, usernames: [user.username] })
+					.expect(200);
 
-			await request
-				.post('/api/v1/groups.invite')
-				.set(credentials)
-				.send({ roomId: room._id, usernames: [user.username] })
-				.expect(200);
+				await mockServerReset();
+				await seedDefaultMocks();
+				await seedGetDecisionBulk([
+					{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
+					{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
+				]);
 
-			await mockServerReset();
-			await seedDefaultMocks();
-			await seedGetDecisionBulk([
-				{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
-				{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
-			]);
-
-			await request
-				.post(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`)
-				.set(credentials)
-				.send({ values: ['alpha'] })
-				.expect(200);
-		});
+				await request
+					.post(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`)
+					.set(credentials)
+					.send({ values: ['alpha'] })
+					.expect(200);
+			},
+			{ timeout: 15000 },
+		);
 
 		after(async () => {
 			await Promise.all([deleteRoom({ type: 'p', roomId: room._id }), deleteUser(user)]);
@@ -3403,22 +3665,23 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		let permitUser: IUser;
 		let denyUser: IUser;
 
-		before(async function () {
-			this.timeout(10000);
+		before(
+			async () => {
+				permitUser = await createUser({ verified: true });
+				denyUser = await createUser({ verified: true });
 
-			permitUser = await createUser({ verified: true });
-			denyUser = await createUser({ verified: true });
-
-			room = (await createRoom({ type: 'p', name: `extpdp-invite-${Date.now()}` })).body.group;
-			await mockServerReset();
-			await seedDefaultMocks();
-			await seedGetDecisionBulk([{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] }]);
-			await request
-				.post(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`)
-				.set(credentials)
-				.send({ values: ['alpha'] })
-				.expect(200);
-		});
+				room = (await createRoom({ type: 'p', name: `extpdp-invite-${Date.now()}` })).body.group;
+				await mockServerReset();
+				await seedDefaultMocks();
+				await seedGetDecisionBulk([{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] }]);
+				await request
+					.post(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`)
+					.set(credentials)
+					.send({ values: ['alpha'] })
+					.expect(200);
+			},
+			{ timeout: 10000 },
+		);
 
 		after(async () => {
 			await Promise.all([deleteRoom({ type: 'p', roomId: room._id }), deleteUser(permitUser), deleteUser(denyUser)]);
@@ -3486,31 +3749,32 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		let user: IUser;
 		let userCredentials: Credentials;
 
-		before(async function () {
-			this.timeout(10000);
+		before(
+			async () => {
+				user = await createUser({ verified: true });
+				userCredentials = await login(user.username, password);
 
-			user = await createUser({ verified: true });
-			userCredentials = await login(user.username, password);
+				room = (await createRoom({ type: 'p', name: `extpdp-failclose-${Date.now()}` })).body.group;
+				await request
+					.post('/api/v1/groups.invite')
+					.set(credentials)
+					.send({ roomId: room._id, usernames: [user.username] })
+					.expect(200);
 
-			room = (await createRoom({ type: 'p', name: `extpdp-failclose-${Date.now()}` })).body.group;
-			await request
-				.post('/api/v1/groups.invite')
-				.set(credentials)
-				.send({ roomId: room._id, usernames: [user.username] })
-				.expect(200);
-
-			await mockServerReset();
-			await seedDefaultMocks();
-			await seedGetDecisionBulk([
-				{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
-				{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
-			]);
-			await request
-				.post(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`)
-				.set(credentials)
-				.send({ values: ['alpha'] })
-				.expect(200);
-		});
+				await mockServerReset();
+				await seedDefaultMocks();
+				await seedGetDecisionBulk([
+					{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
+					{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
+				]);
+				await request
+					.post(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`)
+					.set(credentials)
+					.send({ values: ['alpha'] })
+					.expect(200);
+			},
+			{ timeout: 10000 },
+		);
 
 		after(async () => {
 			await mockServerReset();
@@ -3571,27 +3835,28 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		let room: IRoom;
 		let user: IUser;
 
-		before(async function () {
-			this.timeout(15000);
+		before(
+			async () => {
+				user = await createUser({ verified: true });
+				room = (await createRoom({ type: 'p', name: `extpdp-selective-${Date.now()}` })).body.group;
+				await request
+					.post('/api/v1/groups.invite')
+					.set(credentials)
+					.send({ roomId: room._id, usernames: [user.username] })
+					.expect(200);
 
-			user = await createUser({ verified: true });
-			room = (await createRoom({ type: 'p', name: `extpdp-selective-${Date.now()}` })).body.group;
-			await request
-				.post('/api/v1/groups.invite')
-				.set(credentials)
-				.send({ roomId: room._id, usernames: [user.username] })
-				.expect(200);
+				await mockServerReset();
+				await seedDefaultMocks();
+				await seedBulkDecisionByEntity([adminEmail], 'DECISION_DENY');
 
-			await mockServerReset();
-			await seedDefaultMocks();
-			await seedBulkDecisionByEntity([adminEmail], 'DECISION_DENY');
-
-			await request
-				.post(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`)
-				.set(credentials)
-				.send({ values: ['alpha'] })
-				.expect(200);
-		});
+				await request
+					.post(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`)
+					.set(credentials)
+					.send({ values: ['alpha'] })
+					.expect(200);
+			},
+			{ timeout: 15000 },
+		);
 
 		after(async () => {
 			await Promise.all([deleteRoom({ type: 'p', roomId: room._id }), deleteUser(user)]);
@@ -3614,37 +3879,36 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		let room: IRoom;
 		let user: IUser;
 
-		before(async function () {
-			this.timeout(15000);
+		before(
+			async () => {
+				user = await createUser({ verified: true });
+				room = (await createRoom({ type: 'p', name: `extpdp-tighten-${Date.now()}` })).body.group;
+				await request
+					.post('/api/v1/groups.invite')
+					.set(credentials)
+					.send({ roomId: room._id, usernames: [user.username] })
+					.expect(200);
 
-			user = await createUser({ verified: true });
-			room = (await createRoom({ type: 'p', name: `extpdp-tighten-${Date.now()}` })).body.group;
-			await request
-				.post('/api/v1/groups.invite')
-				.set(credentials)
-				.send({ roomId: room._id, usernames: [user.username] })
-				.expect(200);
-
-			await mockServerReset();
-			await seedDefaultMocks();
-			await seedGetDecisionBulk([
-				{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
-				{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
-			]);
-			await request
-				.post(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`)
-				.set(credentials)
-				.send({ values: ['alpha'] })
-				.expect(200);
-		});
+				await mockServerReset();
+				await seedDefaultMocks();
+				await seedGetDecisionBulk([
+					{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
+					{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: room._id }] },
+				]);
+				await request
+					.post(`/api/v1/abac/rooms/${room._id}/attributes/${attrKey}`)
+					.set(credentials)
+					.send({ values: ['alpha'] })
+					.expect(200);
+			},
+			{ timeout: 15000 },
+		);
 
 		after(async () => {
 			await Promise.all([deleteRoom({ type: 'p', roomId: room._id }), deleteUser(user)]);
 		});
 
-		it('user is removed when attributes are tightened and PDP denies them', async function () {
-			this.timeout(10000);
-
+		it('user is removed when attributes are tightened and PDP denies them', { timeout: 10000 }, async () => {
 			await mockServerReset();
 			await seedDefaultMocks();
 			await seedBulkDecisionByEntity([adminEmail], 'DECISION_DENY');
@@ -3674,27 +3938,28 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			const username = `abac-sync-deny-${Date.now()}`;
 			const email = `${username}@rocket.chat`;
 
-			before(async function () {
-				this.timeout(15000);
+			before(
+				async () => {
+					user = await createUser({ username, email, verified: true });
+					room = (await createRoom({ type: 'p', name: `extpdp-sync-deny-${Date.now()}` })).body.group;
+					await request
+						.post(api('groups.invite'))
+						.set(credentials)
+						.send({ roomId: room._id, usernames: [user.username] })
+						.expect(200);
 
-				user = await createUser({ username, email, verified: true });
-				room = (await createRoom({ type: 'p', name: `extpdp-sync-deny-${Date.now()}` })).body.group;
-				await request
-					.post(api('groups.invite'))
-					.set(credentials)
-					.send({ roomId: room._id, usernames: [user.username] })
-					.expect(200);
+					await mockServerReset();
+					await seedDefaultMocks();
+					await seedBulkDecisionByEntity([adminEmail, email], 'DECISION_DENY');
 
-				await mockServerReset();
-				await seedDefaultMocks();
-				await seedBulkDecisionByEntity([adminEmail, email], 'DECISION_DENY');
-
-				await request
-					.post(api(`abac/rooms/${room._id}/attributes/${attrKey}`))
-					.set(credentials)
-					.send({ values: ['alpha'] })
-					.expect(200);
-			});
+					await request
+						.post(api(`abac/rooms/${room._id}/attributes/${attrKey}`))
+						.set(credentials)
+						.send({ values: ['alpha'] })
+						.expect(200);
+				},
+				{ timeout: 15000 },
+			);
 
 			after(async () => {
 				await Promise.all([deleteRoom({ type: 'p', roomId: room._id }), deleteUser(user)]);
@@ -3735,27 +4000,28 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			const username = `abac-sync-permit-${Date.now()}`;
 			const email = `${username}@rocket.chat`;
 
-			before(async function () {
-				this.timeout(15000);
+			before(
+				async () => {
+					user = await createUser({ username, email, verified: true });
+					room = (await createRoom({ type: 'p', name: `extpdp-sync-permit-${Date.now()}` })).body.group;
+					await request
+						.post(api('groups.invite'))
+						.set(credentials)
+						.send({ roomId: room._id, usernames: [user.username] })
+						.expect(200);
 
-				user = await createUser({ username, email, verified: true });
-				room = (await createRoom({ type: 'p', name: `extpdp-sync-permit-${Date.now()}` })).body.group;
-				await request
-					.post(api('groups.invite'))
-					.set(credentials)
-					.send({ roomId: room._id, usernames: [user.username] })
-					.expect(200);
+					await mockServerReset();
+					await seedDefaultMocks();
+					await seedBulkDecisionByEntity([adminEmail, email], 'DECISION_DENY');
 
-				await mockServerReset();
-				await seedDefaultMocks();
-				await seedBulkDecisionByEntity([adminEmail, email], 'DECISION_DENY');
-
-				await request
-					.post(api(`abac/rooms/${room._id}/attributes/${attrKey}`))
-					.set(credentials)
-					.send({ values: ['alpha'] })
-					.expect(200);
-			});
+					await request
+						.post(api(`abac/rooms/${room._id}/attributes/${attrKey}`))
+						.set(credentials)
+						.send({ values: ['alpha'] })
+						.expect(200);
+				},
+				{ timeout: 15000 },
+			);
 
 			after(async () => {
 				await Promise.all([deleteRoom({ type: 'p', roomId: room._id }), deleteUser(user)]);
@@ -3846,7 +4112,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 
 		before(async () => {
 			userWithAttrs = await createUser({ verified: true });
-			await addAbacAttributesToUserDirectly(userWithAttrs._id, [{ key: attrKey, values: ['alpha'] }]);
+			await addAbacAttributesToUserDirectly(connection, userWithAttrs._id, [{ key: attrKey, values: ['alpha'] }]);
 		});
 
 		after(async () => {
@@ -3862,9 +4128,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		});
 	});
 
-	(IS_EE ? describe : describe.skip)('[ABAC] virtru-attribute-store (mock-server)', function () {
-		this.retries(0);
-
+	(IS_EE ? describe : describe.skip)('[ABAC] virtru-attribute-store (mock-server)', () => {
 		const v1 = '/api/v1';
 		const NS = 'example.com';
 		const fqn = (key: string, value: string) => `https://${NS}/attr/${key}/value/${value}`;
@@ -3880,72 +4144,75 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			return { user: u, creds };
 		};
 
-		before((done) => getCredentials(done));
+		before((_t, done) => getCredentials(done));
 
-		before(async function () {
-			this.timeout(20000);
+		before(
+			async () => {
+				const healthy = await mockServerHealthy();
+				expect(healthy, 'mock-server is not reachable — ensure it is running').to.be.true;
 
-			const healthy = await mockServerHealthy();
-			expect(healthy, 'mock-server is not reachable — ensure it is running').to.be.true;
+				storeConnection = await MongoClient.connect(URL_MONGODB);
 
-			storeConnection = await MongoClient.connect(URL_MONGODB);
+				await Promise.all([
+					updatePermission('abac-management', ['admin']),
+					updatePermission('manage-abac-admin-settings', ['admin']),
+					updatePermission('manage-abac-admin-room-attributes', ['admin']),
+					updatePermission('manage-abac-admin-rooms', ['admin']),
+					updatePermission('view-abac-admin-audit', ['admin']),
+				]);
 
-			await Promise.all([
-				updatePermission('abac-management', ['admin']),
-				updatePermission('manage-abac-admin-settings', ['admin']),
-				updatePermission('manage-abac-admin-room-attributes', ['admin']),
-				updatePermission('manage-abac-admin-rooms', ['admin']),
-				updatePermission('view-abac-admin-audit', ['admin']),
-			]);
+				await Promise.all([
+					updateSetting('ABAC_Virtru_Base_URL', 'http://mock-server:8080'),
+					updateSetting('ABAC_Virtru_OIDC_Endpoint', 'http://mock-server:8080/auth/realms/mock'),
+					updateSetting('ABAC_Virtru_Client_ID', 'mock-client'),
+					updateSetting('ABAC_Virtru_Client_Secret', 'mock-secret'),
+					updateSetting('ABAC_Virtru_Default_Entity_Key', 'emailAddress'),
+					updateSetting('ABAC_Virtru_Attribute_Namespace', NS),
+					updateSetting('Abac_Cache_Decision_Time_Seconds', 0),
+				]);
 
-			await Promise.all([
-				updateSetting('ABAC_Virtru_Base_URL', 'http://mock-server:8080'),
-				updateSetting('ABAC_Virtru_OIDC_Endpoint', 'http://mock-server:8080/auth/realms/mock'),
-				updateSetting('ABAC_Virtru_Client_ID', 'mock-client'),
-				updateSetting('ABAC_Virtru_Client_Secret', 'mock-secret'),
-				updateSetting('ABAC_Virtru_Default_Entity_Key', 'emailAddress'),
-				updateSetting('ABAC_Virtru_Attribute_Namespace', NS),
-				updateSetting('Abac_Cache_Decision_Time_Seconds', 0),
-			]);
+				await updateSetting('ABAC_Enabled', true);
+				await updateSetting('ABAC_PDP_Type', 'virtru');
+				await updateSetting('ABAC_Attribute_Store', 'virtru');
+			},
+			{ timeout: 20000 },
+		);
 
-			await updateSetting('ABAC_Enabled', true);
-			await updateSetting('ABAC_PDP_Type', 'virtru');
-			await updateSetting('ABAC_Attribute_Store', 'virtru');
-		});
-
-		after(async function () {
-			this.timeout(15000);
-
-			await mockServerReset();
-			await updateSetting('ABAC_Attribute_Store', 'local');
-			await updateSetting('ABAC_PDP_Type', 'local');
-			await updateSetting('ABAC_Enabled', false);
-			await storeConnection.close();
-		});
+		after(
+			async () => {
+				await mockServerReset();
+				await updateSetting('ABAC_Attribute_Store', 'local');
+				await updateSetting('ABAC_PDP_Type', 'local');
+				await updateSetting('ABAC_Enabled', false);
+				await storeConnection.close();
+			},
+			{ timeout: 15000 },
+		);
 
 		describe('redactor / single-room (spec §5.0/§5.0a)', () => {
 			let room: IRoom;
 			let adminA: { user: IUser; creds: Credentials };
 			let adminB: { user: IUser; creds: Credentials };
 
-			before(async function () {
-				this.timeout(20000);
+			before(
+				async () => {
+					adminA = await makeAdmin('redA');
+					adminB = await makeAdmin('redB');
 
-				adminA = await makeAdmin('redA');
-				adminB = await makeAdmin('redB');
+					await mockServerReset();
+					await seedDefaultMocks();
+					await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
+					await seedGetDecisionBulk([{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: '__seed__' }] }]);
 
-				await mockServerReset();
-				await seedDefaultMocks();
-				await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
-				await seedGetDecisionBulk([{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: '__seed__' }] }]);
+					room = (await createRoom({ type: 'p', name: `vstore-red-${Date.now()}` })).body.group;
 
-				room = (await createRoom({ type: 'p', name: `vstore-red-${Date.now()}` })).body.group;
-
-				await storeConnection
-					.db()
-					.collection('rocketchat_room')
-					.updateOne({ _id: room._id as any }, { $set: { abacAttributes: [{ key: 'clearance', values: ['secret'] }] } });
-			});
+					await storeConnection
+						.db()
+						.collection('rocketchat_room')
+						.updateOne({ _id: room._id as any }, { $set: { abacAttributes: [{ key: 'clearance', values: ['secret'] }] } });
+				},
+				{ timeout: 20000 },
+			);
 
 			after(async () => {
 				await mockServerReset();
@@ -4067,11 +4334,13 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			let room: IRoom;
 			let adminWG: { user: IUser; creds: Credentials };
 
-			before(async function () {
-				this.timeout(15000);
-				adminWG = await makeAdmin('wg');
-				room = (await createRoom({ type: 'p', name: `vstore-wg-${Date.now()}` })).body.group;
-			});
+			before(
+				async () => {
+					adminWG = await makeAdmin('wg');
+					room = (await createRoom({ type: 'p', name: `vstore-wg-${Date.now()}` })).body.group;
+				},
+				{ timeout: 15000 },
+			);
 
 			after(async () => {
 				await mockServerReset();
@@ -4116,19 +4385,150 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			});
 		});
 
-		describe('bypass-abac-store-validation permission (spec §4.2)', () => {
-			let adminBypass: { user: IUser; creds: Credentials };
+		describe('room creation with attributes: creator authority', () => {
+			let creatorV: { user: IUser; creds: Credentials };
+			const createdRoomIds: string[] = [];
 
-			before(async function () {
-				this.timeout(15000);
-				adminBypass = await makeAdmin('bypass');
-				await updatePermission('bypass-abac-store-validation', ['admin']);
-			});
+			// excludeSelf keeps the member filter, and so GetDecisionBulk, out of these cases:
+			// only the creator's entitlements are asked about.
+			const createGroup = (abacAttributes: Record<string, string[]>) =>
+				request
+					.post(api('groups.create'))
+					.set(creatorV.creds)
+					.send({ name: `vstore-create-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`, excludeSelf: true, abacAttributes });
+
+			before(
+				async () => {
+					creatorV = await makeAdmin('create');
+				},
+				{ timeout: 15000 },
+			);
 
 			after(async () => {
 				await mockServerReset();
+				for (const roomId of createdRoomIds) {
+					await request.post(api('rooms.delete')).set(credentials).send({ roomId }).expect(200);
+				}
+				await deleteUser(creatorV.user);
+			});
+
+			it('creates the room with a value the creator is entitled to', async () => {
+				await mockServerReset();
+				await seedDefaultMocks();
+				await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
+
+				const res = await createGroup({ clearance: ['secret'] }).expect(200);
+				createdRoomIds.push(res.body.group._id);
+				expect(res.body.group.abacAttributes).to.deep.equal([{ key: 'clearance', values: ['secret'] }]);
+			});
+
+			it('refuses a value the creator is not entitled to, naming the attribute', async () => {
+				await mockServerReset();
+				await seedDefaultMocks();
+				await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
+
+				const res = await createGroup({ clearance: ['topsecret'] }).expect(400);
+				expect(res.body).to.include({ error: 'error-abac-attribute-not-assignable', errorType: 'error-abac-attribute-not-assignable' });
+				expect(res.body.details.attributes).to.deep.equal([{ key: 'clearance', values: ['topsecret'] }]);
+			});
+
+			it('refuses the creation, saying decisions are unavailable, when Virtru is unreachable', async () => {
+				await mockServerReset();
+				await mockServerSet('GET', '/healthz', { status: 'NOT_SERVING' }, 503);
+
+				const res = await createGroup({ clearance: ['secret'] }).expect(400);
+				expect(res.body).to.include({ error: 'error-abac-decision-unavailable', errorType: 'error-abac-decision-unavailable' });
+			});
+
+			describe('membership preview', () => {
+				const preview = (attributes: Record<string, string[]> = { clearance: ['secret'] }, excludeSelf = false) =>
+					request.post(`${v1}/abac/rooms.evaluateMembership`).set(creatorV.creds).send({ members: [], attributes, excludeSelf });
+
+				it('reports the creator as compliant on PERMIT', async () => {
+					await mockServerReset();
+					await seedDefaultMocks();
+					await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
+					await seedGetDecisionBulk([{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: 'room-creation' }] }]);
+
+					const res = await preview().expect(200);
+					expect(res.body.compliant.map(({ _id }: IUser) => _id)).to.deep.equal([creatorV.user._id]);
+					expect(res.body.creator).to.equal('compliant');
+				});
+
+				it('refuses a value the creator is not entitled to, as creation does', async () => {
+					await mockServerReset();
+					await seedDefaultMocks();
+					await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
+
+					const res = await preview({ clearance: ['topsecret'] }).expect(400);
+					expect(res.body).to.include({ error: 'error-abac-attribute-not-assignable', errorType: 'error-abac-attribute-not-assignable' });
+					expect(res.body.details.attributes).to.deep.equal([{ key: 'clearance', values: ['topsecret'] }]);
+				});
+
+				it('refuses a joining creator whose decision is unanswered, as creation does', async () => {
+					await mockServerReset();
+					await seedDefaultMocks();
+					await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
+					await seedGetDecisionBulk([{ resourceDecisions: [{ decision: 'DECISION_UNSPECIFIED', ephemeralResourceId: 'room-creation' }] }]);
+
+					const res = await preview().expect(400);
+					expect(res.body).to.include({ error: 'error-abac-creator-not-admitted', errorType: 'error-abac-creator-not-admitted' });
+				});
+
+				it('reports an unanswered decision as inconclusive, not compliant', async () => {
+					await mockServerReset();
+					await seedDefaultMocks();
+					await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
+					await seedGetDecisionBulk([{ resourceDecisions: [{ decision: 'DECISION_UNSPECIFIED', ephemeralResourceId: 'room-creation' }] }]);
+
+					const res = await preview(undefined, true).expect(200);
+					expect(res.body.compliant).to.deep.equal([]);
+					expect(res.body.inconclusive).to.deep.equal([]);
+					expect(res.body.creator).to.equal('inconclusive');
+				});
+
+				it('says decisions are unavailable when Virtru is unreachable', async () => {
+					await mockServerReset();
+					await mockServerSet('GET', '/healthz', { status: 'NOT_SERVING' }, 503);
+
+					const res = await preview().expect(400);
+					expect(res.body).to.include({ error: 'error-abac-decision-unavailable', errorType: 'error-abac-decision-unavailable' });
+				});
+			});
+		});
+
+		describe('bypass-abac-store-validation permission (spec §4.2)', () => {
+			let adminBypass: { user: IUser; creds: Credentials };
+			const createdRoomIds: string[] = [];
+
+			before(
+				async () => {
+					adminBypass = await makeAdmin('bypass');
+					await updatePermission('bypass-abac-store-validation', ['admin']);
+				},
+				{ timeout: 15000 },
+			);
+
+			after(async () => {
+				await mockServerReset();
+				await Promise.all(createdRoomIds.map((roomId) => request.post(api('rooms.delete')).set(credentials).send({ roomId }).expect(200)));
 				await updatePermission('bypass-abac-store-validation', []);
 				await deleteUser(adminBypass.user);
+			});
+
+			it('skips the creator authority check at creation: creates a room with a value the creator is not entitled to', async () => {
+				await mockServerReset();
+				await seedDefaultMocks();
+				await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
+
+				const res = await request
+					.post(api('groups.create'))
+					.set(adminBypass.creds)
+					.send({ name: `vstore-bypass-create-${Date.now()}`, excludeSelf: true, abacAttributes: { team: ['blue'] } })
+					.expect(200);
+				createdRoomIds.push(res.body.group._id);
+
+				expect(res.body.group.abacAttributes).to.deep.equal([{ key: 'team', values: ['blue'] }]);
 			});
 
 			it('skips validateAssignable: assigns a value the admin is not entitled to → 200', async () => {
@@ -4179,16 +4579,18 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			let room: IRoom;
 			let adminH: { user: IUser; creds: Credentials };
 
-			before(async function () {
-				this.timeout(15000);
-				adminH = await makeAdmin('hier');
-				room = (await createRoom({ type: 'p', name: `vstore-hier-${Date.now()}` })).body.group;
+			before(
+				async () => {
+					adminH = await makeAdmin('hier');
+					room = (await createRoom({ type: 'p', name: `vstore-hier-${Date.now()}` })).body.group;
 
-				await storeConnection
-					.db()
-					.collection('rocketchat_room')
-					.updateOne({ _id: room._id as any }, { $set: { abacAttributes: [{ key: 'clearance', values: ['secret'] }] } });
-			});
+					await storeConnection
+						.db()
+						.collection('rocketchat_room')
+						.updateOne({ _id: room._id as any }, { $set: { abacAttributes: [{ key: 'clearance', values: ['secret'] }] } });
+				},
+				{ timeout: 15000 },
+			);
 
 			after(async () => {
 				await mockServerReset();
@@ -4239,13 +4641,15 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 		describe('catalog-400 in virtru store (spec §5.1, corrected to 400)', () => {
 			let adminC: { user: IUser; creds: Credentials };
 
-			before(async function () {
-				this.timeout(15000);
-				adminC = await makeAdmin('cat');
-				await mockServerReset();
-				await seedDefaultMocks();
-				await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
-			});
+			before(
+				async () => {
+					adminC = await makeAdmin('cat');
+					await mockServerReset();
+					await seedDefaultMocks();
+					await seedGetEntitlements({ [fqn('clearance', 'secret')]: {} });
+				},
+				{ timeout: 15000 },
+			);
 
 			after(async () => {
 				await mockServerReset();
@@ -4315,16 +4719,18 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			let room: IRoom;
 			let adminU: { user: IUser; creds: Credentials };
 
-			before(async function () {
-				this.timeout(15000);
-				adminU = await makeAdmin('unr');
-				room = (await createRoom({ type: 'p', name: `vstore-unr-${Date.now()}` })).body.group;
+			before(
+				async () => {
+					adminU = await makeAdmin('unr');
+					room = (await createRoom({ type: 'p', name: `vstore-unr-${Date.now()}` })).body.group;
 
-				await storeConnection
-					.db()
-					.collection('rocketchat_room')
-					.updateOne({ _id: room._id as any }, { $set: { abacAttributes: [{ key: 'clearance', values: ['secret'] }] } });
-			});
+					await storeConnection
+						.db()
+						.collection('rocketchat_room')
+						.updateOne({ _id: room._id as any }, { $set: { abacAttributes: [{ key: 'clearance', values: ['secret'] }] } });
+				},
+				{ timeout: 15000 },
+			);
 
 			after(async () => {
 				await mockServerReset();
@@ -4384,44 +4790,45 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			let wipeRoom2: IRoom;
 			let memberUser: IUser;
 
-			before(async function () {
-				this.timeout(20000);
+			before(
+				async () => {
+					await updateSetting('ABAC_Attribute_Store', 'local');
 
-				await updateSetting('ABAC_Attribute_Store', 'local');
+					const wipeAttrKey = `vstore_wipe_attr_${Date.now()}`;
 
-				const wipeAttrKey = `vstore_wipe_attr_${Date.now()}`;
+					await mockServerReset();
+					await seedDefaultMocks();
+					await seedGetEntitlements({ [fqn(wipeAttrKey, 'v1')]: {} });
 
-				await mockServerReset();
-				await seedDefaultMocks();
-				await seedGetEntitlements({ [fqn(wipeAttrKey, 'v1')]: {} });
+					wipeRoom1 = (await createRoom({ type: 'p', name: `vstore-wipe-1-${Date.now()}` })).body.group;
+					wipeRoom2 = (await createRoom({ type: 'p', name: `vstore-wipe-2-${Date.now()}` })).body.group;
 
-				wipeRoom1 = (await createRoom({ type: 'p', name: `vstore-wipe-1-${Date.now()}` })).body.group;
-				wipeRoom2 = (await createRoom({ type: 'p', name: `vstore-wipe-2-${Date.now()}` })).body.group;
+					memberUser = await createUser({ verified: true });
+					await request
+						.post(`${v1}/groups.invite`)
+						.set(credentials)
+						.send({ roomId: wipeRoom1._id, usernames: [memberUser.username] })
+						.expect(200);
 
-				memberUser = await createUser({ verified: true });
-				await request
-					.post(`${v1}/groups.invite`)
-					.set(credentials)
-					.send({ roomId: wipeRoom1._id, usernames: [memberUser.username] })
-					.expect(200);
+					await request
+						.post(`${v1}/abac/attributes`)
+						.set(credentials)
+						.send({ key: wipeAttrKey, values: ['v1'] })
+						.expect(200);
 
-				await request
-					.post(`${v1}/abac/attributes`)
-					.set(credentials)
-					.send({ key: wipeAttrKey, values: ['v1'] })
-					.expect(200);
-
-				await request
-					.post(`${v1}/abac/rooms/${wipeRoom1._id}/attributes/${wipeAttrKey}`)
-					.set(credentials)
-					.send({ values: ['v1'] })
-					.expect(200);
-				await request
-					.post(`${v1}/abac/rooms/${wipeRoom2._id}/attributes/${wipeAttrKey}`)
-					.set(credentials)
-					.send({ values: ['v1'] })
-					.expect(200);
-			});
+					await request
+						.post(`${v1}/abac/rooms/${wipeRoom1._id}/attributes/${wipeAttrKey}`)
+						.set(credentials)
+						.send({ values: ['v1'] })
+						.expect(200);
+					await request
+						.post(`${v1}/abac/rooms/${wipeRoom2._id}/attributes/${wipeAttrKey}`)
+						.set(credentials)
+						.send({ values: ['v1'] })
+						.expect(200);
+				},
+				{ timeout: 20000 },
+			);
 
 			after(async () => {
 				await updateSetting('ABAC_Attribute_Store', 'virtru');
@@ -4430,9 +4837,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				await deleteUser(memberUser);
 			});
 
-			it('switching ABAC_Attribute_Store local → virtru wipes abacAttributes from existing rooms', async function () {
-				this.timeout(20000);
-
+			it('switching ABAC_Attribute_Store local → virtru wipes abacAttributes from existing rooms', { timeout: 20000 }, async () => {
 				await updateSetting('ABAC_Attribute_Store', 'virtru');
 
 				const rooms = storeConnection.db().collection('rocketchat_room');
@@ -4450,27 +4855,29 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 				expect(r2?.abacAttributes, 'room2 abacAttributes must be unset after transition').to.be.undefined;
 			});
 
-			it('emits at-least-one abac.attribute.store.switched audit event with from=local, to=virtru, roomsAffected>=1', async function () {
-				this.timeout(15000);
-
-				let switched: Array<{ data: Array<{ key: string; value: unknown }> }> = [];
-				for (let i = 0; i < 30; i++) {
-					const res = await request.get(`${v1}/abac/audit`).set(credentials).query({ count: 100 }).expect(200);
-					switched = (res.body.events as Array<{ t: string; data: Array<{ key: string; value: unknown }> }>).filter(
-						(e) => e.t === 'abac.attribute.store.switched',
-					);
-					if (switched.length) {
-						break;
+			it(
+				'emits at-least-one abac.attribute.store.switched audit event with from=local, to=virtru, roomsAffected>=1',
+				{ timeout: 15000 },
+				async () => {
+					let switched: Array<{ data: Array<{ key: string; value: unknown }> }> = [];
+					for (let i = 0; i < 30; i++) {
+						const res = await request.get(`${v1}/abac/audit`).set(credentials).query({ count: 100 }).expect(200);
+						switched = (res.body.events as Array<{ t: string; data: Array<{ key: string; value: unknown }> }>).filter(
+							(e) => e.t === 'abac.attribute.store.switched',
+						);
+						if (switched.length) {
+							break;
+						}
+						await sleep(200);
 					}
-					await sleep(200);
-				}
-				expect(switched.length, 'at least one switched audit event').to.be.at.least(1);
-				const ev = switched[0];
-				const pick = (k: string) => ev.data.find((d) => d.key === k)?.value;
-				expect(pick('from')).to.equal('local');
-				expect(pick('to')).to.equal('virtru');
-				expect(pick('roomsAffected')).to.be.a('number').and.to.be.at.least(1);
-			});
+					expect(switched.length, 'at least one switched audit event').to.be.at.least(1);
+					const ev = switched[0];
+					const pick = (k: string) => ev.data.find((d) => d.key === k)?.value;
+					expect(pick('from')).to.equal('local');
+					expect(pick('to')).to.equal('virtru');
+					expect(pick('roomsAffected')).to.be.a('number').and.to.be.at.least(1);
+				},
+			);
 
 			it('members of pre-existing ABAC rooms are NOT evicted by the wipe', async () => {
 				const res = await request.get(`${v1}/groups.members`).set(credentials).query({ roomId: wipeRoom1._id }).expect(200);
@@ -4483,18 +4890,20 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			let auditRoom: IRoom;
 			const auditAttrKey = `vstore_audit_${Date.now()}`;
 
-			before(async function () {
-				this.timeout(15000);
-				await mockServerReset();
-				await seedDefaultMocks();
-				await seedGetEntitlements({ [fqn(auditAttrKey, 'v1')]: {} });
-				await seedGetDecisionBulk([
-					{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: '__seed__' }] },
-					{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: '__seed__' }] },
-				]);
+			before(
+				async () => {
+					await mockServerReset();
+					await seedDefaultMocks();
+					await seedGetEntitlements({ [fqn(auditAttrKey, 'v1')]: {} });
+					await seedGetDecisionBulk([
+						{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: '__seed__' }] },
+						{ resourceDecisions: [{ decision: 'DECISION_PERMIT', ephemeralResourceId: '__seed__' }] },
+					]);
 
-				auditRoom = (await createRoom({ type: 'p', name: `vstore-audit-${Date.now()}` })).body.group;
-			});
+					auditRoom = (await createRoom({ type: 'p', name: `vstore-audit-${Date.now()}` })).body.group;
+				},
+				{ timeout: 15000 },
+			);
 
 			after(async () => {
 				await mockServerReset();
@@ -4562,36 +4971,37 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 			let localRoom: IRoom;
 			let localAttrId: string;
 
-			before(async function () {
-				this.timeout(20000);
+			before(
+				async () => {
+					await updateSetting('ABAC_Attribute_Store', 'local');
 
-				await updateSetting('ABAC_Attribute_Store', 'local');
+					await mockServerReset();
+					await seedDefaultMocks();
 
-				await mockServerReset();
-				await seedDefaultMocks();
+					const createRes = await request
+						.post(`${v1}/abac/attributes`)
+						.set(credentials)
+						.send({ key: localKey, values: ['v1', 'v2'] })
+						.expect(200);
+					expect(createRes.body).to.have.property('success', true);
 
-				const createRes = await request
-					.post(`${v1}/abac/attributes`)
-					.set(credentials)
-					.send({ key: localKey, values: ['v1', 'v2'] })
-					.expect(200);
-				expect(createRes.body).to.have.property('success', true);
+					const listRes = await request.get(`${v1}/abac/attributes`).query({ key: localKey }).set(credentials).expect(200);
+					const attr = (listRes.body.attributes as Array<{ _id: string; key: string }>).find((a) => a.key === localKey);
+					expect(attr, 'created local attribute should be retrievable via picker').to.exist;
+					if (!attr) {
+						throw new Error('local attribute not found');
+					}
+					localAttrId = attr._id;
 
-				const listRes = await request.get(`${v1}/abac/attributes`).query({ key: localKey }).set(credentials).expect(200);
-				const attr = (listRes.body.attributes as Array<{ _id: string; key: string }>).find((a) => a.key === localKey);
-				expect(attr, 'created local attribute should be retrievable via picker').to.exist;
-				if (!attr) {
-					throw new Error('local attribute not found');
-				}
-				localAttrId = attr._id;
-
-				localRoom = (await createRoom({ type: 'p', name: `vstore-local-${Date.now()}` })).body.group;
-				await request
-					.post(`${v1}/abac/rooms/${localRoom._id}/attributes/${localKey}`)
-					.set(credentials)
-					.send({ values: ['v1'] })
-					.expect(200);
-			});
+					localRoom = (await createRoom({ type: 'p', name: `vstore-local-${Date.now()}` })).body.group;
+					await request
+						.post(`${v1}/abac/rooms/${localRoom._id}/attributes/${localKey}`)
+						.set(credentials)
+						.send({ values: ['v1'] })
+						.expect(200);
+				},
+				{ timeout: 20000 },
+			);
 
 			after(async () => {
 				await request.delete(`${v1}/abac/rooms/${localRoom._id}/attributes`).set(credentials).expect(200);
@@ -4637,9 +5047,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 					.expect(200);
 			});
 
-			it('local→local no-op setting write does NOT run the wipe (no new switched audit event)', async function () {
-				this.timeout(10000);
-
+			it('local→local no-op setting write does NOT run the wipe (no new switched audit event)', { timeout: 10000 }, async () => {
 				const before = await request.get(`${v1}/abac/audit`).set(credentials).query({ count: 200 }).expect(200);
 				const beforeCount = (before.body.events as Array<{ t: string }>).filter((e) => e.t === 'abac.attribute.store.switched').length;
 
@@ -4696,7 +5104,7 @@ const addAbacAttributesToUserDirectly = async (userId: string, abacAttributes: I
 	const saveBannersConfig = (value: string) =>
 		request.post(api('settings/ABAC_Classification_Banners_Config')).set(credentials).send({ value });
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	after(() => updateSetting('ABAC_Classification_Banners_Config', ''));
 

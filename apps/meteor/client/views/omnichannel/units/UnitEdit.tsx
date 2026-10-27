@@ -265,14 +265,14 @@ const UnitEdit = ({ unitData, unitMonitors, unitDepartments, onUpdate, onDelete,
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button form={formId} type='submit' primary>
+					<Button form={formId} type='submit' variant='primary'>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
 				{_id && (
 					<Box marginBlockStart={8}>
 						<ButtonGroup stretch>
-							<Button icon='trash' danger onClick={() => onDelete?.()}>
+							<Button icon='trash' variant='danger' onClick={() => onDelete?.()}>
 								{t('Delete')}
 							</Button>
 						</ButtonGroup>

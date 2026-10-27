@@ -39,7 +39,7 @@ const DirectoryPage = () => {
 	return (
 		<Page background='room'>
 			<PageHeader title={t('Directory')} />
-			<Tabs flexShrink={0}>
+			<Tabs>
 				<TabsItem selected={tab === 'channels'} onClick={handleTabClick('channels')}>
 					{t('Channels')}
 				</TabsItem>

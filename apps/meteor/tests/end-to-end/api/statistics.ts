@@ -1,11 +1,12 @@
+import { after, before, describe, it } from 'node:test';
+
 import { expect } from 'chai';
-import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updatePermission } from '../../data/permissions.helper';
 
 describe('[Statistics]', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	after(() => updatePermission('view-statistics', ['admin']));
 

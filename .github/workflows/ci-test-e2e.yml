@@ -81,7 +81,7 @@ jobs:
     env:
       # if building for production on develop branch or release, add suffix for coverage images
       DOCKER_TAG_SUFFIX_ROCKETCHAT: ${{ inputs.coverage == matrix.mongodb-version && (github.event_name == 'release' || github.ref == 'refs/heads/develop') && '-cov' || '' }}
-      MONGODB_VERSION: ${{ matrix.mongodb-version }}
+      MONGODB_VERSION: ${{ matrix.mongodb-version == '8.0' && '8.0.19-ubi9' || matrix.mongodb-version }}
       COVERAGE_DIR: '/tmp/coverage/${{ startsWith(inputs.type, ''api'') && ''api'' || inputs.type }}'
       COVERAGE_FILE_NAME: '${{ inputs.type }}-${{ matrix.shard }}.json'
       COVERAGE_REPORTER: ${{ inputs.coverage == matrix.mongodb-version && 'json' || '' }}
@@ -95,14 +95,6 @@ jobs:
     name: MongoDB ${{ matrix.mongodb-version }}${{ inputs.coverage == matrix.mongodb-version && ' coverage' || '' }} (${{ matrix.shard }}/${{ inputs.total-shard }})
 
     steps:
-      - name: Collect Workflow Telemetry
-        if: inputs.type == 'perf'
-        uses: catchpoint/workflow-telemetry-action@94c3c3d9567a0205de6da68a76c428ce4e769af1 # v2.0.0
-        with:
-          theme: dark
-          job_summary: true
-          comment_on_pr: false
-
       - name: Setup kernel limits
         run: |
           echo "500 65535" > sudo tee -a /proc/sys/net/ipv4/ip_local_port_range
@@ -229,7 +221,7 @@ jobs:
         if: inputs.type == 'api'
         working-directory: ./apps/meteor
         env:
-          WEBHOOK_TEST_URL: 'http://httpbin'
+          WEBHOOK_TEST_URL: 'http://httpbin.dev'
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
         run: |
           set -o xtrace
@@ -245,7 +237,7 @@ jobs:
         if: inputs.type == 'api-livechat'
         working-directory: ./apps/meteor
         env:
-          WEBHOOK_TEST_URL: 'http://httpbin'
+          WEBHOOK_TEST_URL: 'http://httpbin.dev'
           IS_EE: ${{ inputs.release == 'ee' && 'true' || '' }}
         run: |
           set -o xtrace
@@ -303,7 +295,7 @@ jobs:
 
       - name: Show server logs if E2E test failed
         if: failure()
-        run: docker compose -f docker-compose-ci.yml logs rocketchat authorization-service queue-worker-service ddp-streamer-service account-service presence-service omnichannel-transcript-service
+        run: docker compose -f docker-compose-ci.yml logs rocketchat authorization-service queue-worker-service ddp-streamer-service account-service presence-service omnichannel-transcript-service xmpp-server-service
 
       - name: Show mongo logs if E2E test failed
         if: failure()

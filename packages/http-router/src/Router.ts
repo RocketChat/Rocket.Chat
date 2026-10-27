@@ -173,7 +173,7 @@ export class Router<
 					return c.json(
 						{
 							success: false,
-							errorType: 'invalid-params',
+							errorType: 'error-invalid-params',
 							error: validatorFn.errors?.map((error: any) => error.message).join('\n '),
 						},
 						400,
@@ -353,7 +353,7 @@ export class Router<
 	}
 
 	get router(): express.Router {
-		// eslint-disable-next-line new-cap
+		// oxlint-disable-next-line new-cap
 		const router = express.Router();
 		const hono = new Hono();
 		router.use(

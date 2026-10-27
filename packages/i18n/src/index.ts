@@ -6,7 +6,6 @@ import type { RocketchatI18nKeys } from './resources.ts';
 export type { RocketchatI18nKeys };
 
 declare module 'i18next' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface TFunction {
 		(key: RocketchatI18nKeys): string;
 		(key: RocketchatI18nKeys, options: TOptions): string;

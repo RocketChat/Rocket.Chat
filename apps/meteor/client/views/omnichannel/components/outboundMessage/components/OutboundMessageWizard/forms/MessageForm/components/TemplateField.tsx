@@ -48,12 +48,12 @@ const TemplateField = ({ control, templates, onChange: onChangeExternal, ...prop
 
 	return (
 		<Field {...props}>
-			<FieldLabel is='span' required id={templateFieldId}>
+			<FieldLabel required htmlFor={templateFieldId}>
 				{t('Template')}
 			</FieldLabel>
 			<FieldRow>
 				<TemplateSelect
-					aria-labelledby={templateFieldId}
+					id={templateFieldId}
 					aria-invalid={!!templateFieldError}
 					aria-describedby={cxp(templateFieldId, {
 						error: !!templateFieldError,

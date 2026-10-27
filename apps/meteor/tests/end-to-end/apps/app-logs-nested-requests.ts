@@ -1,7 +1,8 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { ILoggerStorageEntry } from '@rocket.chat/apps/dist/server/logging/ILoggerStorageEntry';
 import type { IMessage } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 
 import { api, assertSuccess, getCredentials, request, credentials } from '../../data/api-data';
 import { appCausingNestedRequests } from '../../data/apps/app-packages';
@@ -11,7 +12,7 @@ import { executeAppSlashCommand } from '../../data/slashcommands.helpers';
 import { IS_EE } from '../../e2e/config/constants';
 
 (IS_EE ? describe : describe.skip)('Apps - Logs Nested Requests', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	after(() => cleanupApps());
 
@@ -32,7 +33,7 @@ import { IS_EE } from '../../e2e/config/constants';
 
 		expect(targetMessage, 'Target message from nested request not found').to.exist;
 
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion -- we're checking existence above
+		// oxlint-disable-next-line @typescript-eslint/no-non-null-assertion -- we're checking existence above
 		const { _id: messageId } = targetMessage!;
 
 		const logsRes = await request.get(apps(`/${app.id}/logs`)).set(credentials);

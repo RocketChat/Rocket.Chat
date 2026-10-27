@@ -1,8 +1,8 @@
 import { randomBytes } from 'crypto';
+import { after, before, describe, it } from 'node:test';
 
 import type { ILoginCode, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 import { MongoClient } from 'mongodb';
 
 import { api, request, getCredentials } from '../../data/api-data';
@@ -35,7 +35,7 @@ async function insertLoginCode(connection: MongoClient, userId: string, insertEx
 describe('[Login Codes]', () => {
 	let connection: MongoClient;
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		connection = await MongoClient.connect(URL_MONGODB);
@@ -73,7 +73,7 @@ describe('[Login Codes]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 

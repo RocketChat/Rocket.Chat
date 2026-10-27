@@ -1,6 +1,5 @@
-import type { RefAttributes } from 'react';
-
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 
 const parsePlacement = (placement: string | null | undefined) => {
 	const [direction, position] = placement ? placement.split('-') : [undefined, undefined];
@@ -12,12 +11,11 @@ const parsePlacement = (placement: string | null | undefined) => {
 	return [direction, position];
 };
 
-export type TooltipProps = Omit<BoxProps, 'ref'> &
-	RefAttributes<HTMLElement> & {
-		variation?: 'dark' | 'light';
-		placement?:
-			'top-start' | 'top-middle' | 'top-end' | 'bottom-start' | 'bottom-middle' | 'bottom-end' | 'top' | 'left' | 'bottom' | 'right' | null;
-	};
+export type TooltipProps = ElementProps<HTMLElement> & {
+	variation?: 'dark' | 'light';
+	placement?:
+		'top-start' | 'top-middle' | 'top-end' | 'bottom-start' | 'bottom-middle' | 'bottom-end' | 'top' | 'left' | 'bottom' | 'right' | null;
+};
 
 function Tooltip({ variation = 'dark', placement, ...props }: TooltipProps) {
 	const [direction, position] = parsePlacement(placement);

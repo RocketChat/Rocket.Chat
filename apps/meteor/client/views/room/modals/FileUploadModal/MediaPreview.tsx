@@ -24,8 +24,8 @@ const MediaPreview = ({ file, fileType, altText }: MediaPreviewProps) => {
 
 	if (typeof url !== 'string') {
 		return (
-			<Box display='flex' alignItems='center' width='full'>
-				<Icon name='image' size='x24' marginInlineEnd={4} />
+			<Box display='flex' alignItems='center' width='full' gap={4}>
+				<Icon name='image' size='x24' />
 				{t('FileUpload_Cannot_preview_file')}
 			</Box>
 		);

@@ -5,6 +5,7 @@ import { isRunningMs } from '../../../server/lib/isRunningMs';
 import { localBroker } from '../../../server/startup/localBroker';
 import { LicenseService } from '../lib/license/license.internalService';
 import { InstanceService } from '../local-services/instance/service';
+import { LDAPService } from '../local-services/ldap/coreService';
 import { LDAPEEService } from '../local-services/ldap/service';
 import { MessageReadsService } from '../local-services/message-reads/service';
 import { OmnichannelEE } from '../local-services/omnichannel.internalService';
@@ -12,6 +13,7 @@ import { EnterpriseSettings } from '../settings/settings.internalService';
 
 // TODO consider registering these services only after a valid license is added
 api.registerService(new EnterpriseSettings());
+api.registerService(new LDAPService());
 api.registerService(new LDAPEEService());
 api.registerService(new LicenseService());
 api.registerService(new MessageReadsService());

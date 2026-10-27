@@ -46,15 +46,12 @@ const AutoCompleteUnit = ({
 			aria-label={t('Unit')} // FIXME: remove this when PaginatedSelectFiltered properly associates the input with the label htmlFor
 			error={error}
 			filter={unitsFilter}
-			flexGrow={0}
-			flexShrink={0}
 			disabled={disabled}
 			onChange={onChange}
 			options={unitsList}
 			placeholder={placeholder || t('Select_an_option')}
 			setFilter={setUnitsFilter as (value: string | number | undefined) => void}
 			value={value}
-			width='100%'
 			endReached={() => fetchNextPage()}
 		/>
 	);

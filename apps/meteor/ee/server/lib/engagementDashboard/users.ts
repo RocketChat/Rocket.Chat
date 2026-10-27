@@ -5,10 +5,6 @@ import moment from 'moment';
 import { convertDateToInt, diffBetweenDaysInclusive, getTotalOfWeekItems, convertIntToDate } from './date';
 
 export const handleUserCreated = async (user: IUser): Promise<IUser> => {
-	if (user.roles?.includes('anonymous')) {
-		return user;
-	}
-
 	await Analytics.saveUserData({
 		date: convertDateToInt(user.createdAt),
 	});

@@ -9,7 +9,6 @@ import AppErrorPage from './AppErrorPage';
 import { Info } from '../../../rocketchat.info';
 
 declare global {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Window {
 		__BUGSNAG_KEY__: string;
 	}

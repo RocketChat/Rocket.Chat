@@ -17,10 +17,11 @@ import {
 	useDraggableWidget,
 	CardWidgetContainer,
 	StreamCard,
+	getPeerDisplayName,
 } from '../../components';
 import { useMediaCallInstance } from '../../context';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
-import { isExternalPeer } from '../../utils/isExternalPeer';
+import { isUnknownPeer } from '../../utils/isUnknownPeer';
 
 const OngoingCall = () => {
 	const { t } = useTranslation();
@@ -55,19 +56,14 @@ const OngoingCall = () => {
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
 
-	// TODO: Figure out how to ensure this always exist before rendering the component
-	if (!peerInfo) {
-		throw new Error('Peer info is required');
-	}
-
-	const isSip = isExternalPeer(peerInfo);
+	const isSip = peerInfo?.type === 'sip';
 
 	return (
 		<Widget>
 			<WidgetHandle />
 			<WidgetHeader title={connecting ? t('meteor_status_connecting') : <Timer startAt={startedAt} />}>
 				{onClickDirectMessage && (
-					<ActionButton tiny secondary={false} label={t('Direct_Message')} icon='balloon' onClick={onClickDirectMessage} />
+					<ActionButton size='tiny' secondary={false} label={t('Direct_Message')} icon='balloon' onClick={onClickDirectMessage} />
 				)}
 
 				<ToggleButton
@@ -78,20 +74,20 @@ const OngoingCall = () => {
 					onToggle={isPopout ? onClosePopout : onOpenPopout}
 					danger={false}
 					secondary={false}
-					tiny
+					size='tiny'
 				/>
 
 				<DevicePicker />
 			</WidgetHeader>
 			<WidgetContent>
 				<CardWidgetContainer>
-					<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
+					{peerInfo && !isUnknownPeer(peerInfo) && <PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />}
 
 					{isInline && isSip && !localScreen?.active && <Dialpad autoFocus={false} />}
 
 					{isPopout && (
 						<Box display='flex' flexDirection='column' gap={4}>
-							<Button onClick={onClosePopout} icon='arrow-from-cross-box' medium width='full'>
+							<Button onClick={onClosePopout} icon='arrow-from-cross-box' size='medium'>
 								{t('Show_call_here')}
 							</Button>
 							{localScreen?.active && (
@@ -147,7 +143,7 @@ const OngoingCall = () => {
 					)}
 					<ActionButton
 						label={t('Voice_call__user__hangup', {
-							user: isExternalPeer(peerInfo) ? peerInfo.displayName || peerInfo.number : peerInfo.displayName,
+							user: getPeerDisplayName(t, peerInfo),
 						})}
 						icon='phone-off'
 						danger

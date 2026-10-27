@@ -96,7 +96,7 @@ const ChatAccessModal = ({ access, onClose }: ChatAccessModalProps) => {
 				</ModalHeaderText>
 				<ModalClose tabIndex={-1} aria-label={t('Close')} onClick={onClose} />
 			</ModalHeader>
-			<ModalContent fontScale='p2'>
+			<ModalContent>
 				<Box id={membersDescriptionId} color='default'>
 					{t('These_participants_cannot_see_the_chat')}
 				</Box>
@@ -144,7 +144,7 @@ const ChatAccessModal = ({ access, onClose }: ChatAccessModalProps) => {
 			</ModalContent>
 			<ModalFooter>
 				<ModalFooterControllers>
-					<Button secondary onClick={onClose}>
+					<Button variant='secondary' onClick={onClose}>
 						{t('Cancel')}
 					</Button>
 					{/* The leading action sits last, where the primary action is expected. */}

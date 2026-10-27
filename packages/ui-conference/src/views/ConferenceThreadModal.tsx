@@ -32,8 +32,8 @@ const ConferenceThreadModal = ({ children, onClose }: ConferenceThreadModalProps
 				</ModalHeaderText>
 				<ModalClose tabIndex={-1} aria-label={t('Close')} onClick={onClose} />
 			</ModalHeader>
-			<ModalContent padding={0} overflow='hidden' display='flex' flexDirection='column' height='60vh'>
-				<Box className={narrowRoomStyle} display='flex' flexDirection='column' height='full'>
+			<ModalContent>
+				<Box className={narrowRoomStyle} display='flex' flexDirection='column' height='60vh' overflow='hidden'>
 					{children}
 				</Box>
 			</ModalContent>

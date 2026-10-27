@@ -1,10 +1,10 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ISetting } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 import { escapeHTML, validateEmail } from '@rocket.chat/tools';
 import juice from 'juice';
 import { Email } from 'meteor/email';
-import { Meteor } from 'meteor/meteor';
 import { stripHtml } from 'string-strip-html';
 import _ from 'underscore';
 
@@ -155,7 +155,7 @@ export const sendNoWrap = async ({
 	headers?: string;
 }) => {
 	if (!checkAddressFormat(to)) {
-		throw new Meteor.Error('invalid email');
+		throw new ClientSafeError('invalid email');
 	}
 
 	if (!text) {
@@ -214,7 +214,7 @@ export const checkAddressFormatAndThrow: Assert = (from: string, func: string): 
 		return;
 	}
 
-	throw new Meteor.Error('error-invalid-from-address', 'Invalid from address', {
+	throw new ClientSafeError('error-invalid-from-address', 'Invalid from address', {
 		function: func,
 	});
 };

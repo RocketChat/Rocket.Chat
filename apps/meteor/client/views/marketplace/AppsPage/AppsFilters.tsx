@@ -59,13 +59,21 @@ const AppsFilters = ({
 		<Box paddingInline={24}>
 			<FilterByText value={text} onChange={(event) => setText(event.target.value)} placeholder={appsSearchPlaceholders[context]}>
 				{!isPrivateAppsPage && (
-					<RadioDropDown group={freePaidFilterStructure} onSelected={freePaidFilterOnSelected} flexGrow={1} {...fixFiltersSize} />
+					<Box display='flex' flexDirection='column' flexGrow={1} {...fixFiltersSize}>
+						<RadioDropDown group={freePaidFilterStructure} onSelected={freePaidFilterOnSelected} />
+					</Box>
 				)}
-				<RadioDropDown group={statusFilterStructure} onSelected={statusFilterOnSelected} flexGrow={1} {...fixFiltersSize} />
+				<Box display='flex' flexDirection='column' flexGrow={1} {...fixFiltersSize}>
+					<RadioDropDown group={statusFilterStructure} onSelected={statusFilterOnSelected} />
+				</Box>
 				{!isPrivateAppsPage && (
-					<CategoryDropDown categories={categories} selectedCategories={selectedCategories} onSelected={onSelected} flexGrow={1} />
+					<Box display='flex' flexDirection='column' flexGrow={1}>
+						<CategoryDropDown categories={categories} selectedCategories={selectedCategories} onSelected={onSelected} />
+					</Box>
 				)}
-				<RadioDropDown group={sortFilterStructure} onSelected={sortFilterOnSelected} flexGrow={1} {...fixFiltersSize} />
+				<Box display='flex' flexDirection='column' flexGrow={1} {...fixFiltersSize}>
+					<RadioDropDown group={sortFilterStructure} onSelected={sortFilterOnSelected} />
+				</Box>
 			</FilterByText>
 			<TagList categories={categoryTagList} onClick={onSelected} />
 		</Box>

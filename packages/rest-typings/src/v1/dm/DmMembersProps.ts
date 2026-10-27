@@ -33,9 +33,6 @@ export const isDmMemberProps = ajvQuery.compile<DmMemberProps>({
 				filter: {
 					type: 'string',
 				},
-				query: {
-					type: 'string',
-				},
 				sort: {
 					type: 'string',
 				},
@@ -57,9 +54,6 @@ export const isDmMemberProps = ajvQuery.compile<DmMemberProps>({
 					},
 				},
 				filter: {
-					type: 'string',
-				},
-				query: {
 					type: 'string',
 				},
 				sort: {

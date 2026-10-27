@@ -22,14 +22,14 @@ export async function notifyMarketplace(action: MarketplaceNotificationType, app
 		const token = await getWorkspaceAccessToken();
 		headers.Authorization = `Bearer ${token}`;
 
-		// eslint-disable-next-line no-empty
+		// oxlint-disable-next-line no-empty
 	} catch {}
 
 	let siteUrl = '';
 	try {
 		siteUrl = settings.get<string>('Site_Url');
 
-		// eslint-disable-next-line no-empty
+		// oxlint-disable-next-line no-empty
 	} catch {}
 
 	const data = {
@@ -53,6 +53,6 @@ export async function notifyMarketplace(action: MarketplaceNotificationType, app
 			ignoreSsrfValidation: true,
 		});
 
-		// eslint-disable-next-line no-empty
+		// oxlint-disable-next-line no-empty
 	} catch {}
 }

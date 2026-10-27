@@ -1,5 +1,6 @@
+import { after, before, describe, it } from 'node:test';
+
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, request, credentials, api } from '../../data/api-data';
 import { APP_URL, APP_NAME, apps } from '../../data/apps/apps-data';
@@ -11,7 +12,7 @@ import { IS_EE } from '../../e2e/config/constants';
 const APP_USERNAME = 'appsrocketchattester.bot';
 
 describe('Apps - Installation', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => cleanupApps());
 
@@ -20,7 +21,7 @@ describe('Apps - Installation', () => {
 	let app: any;
 
 	describe('[Installation]', () => {
-		it('should throw an error when trying to install an app and the apps framework is enabled but the user does not have the permission', (done) => {
+		it('should throw an error when trying to install an app and the apps framework is enabled but the user does not have the permission', (_t, done) => {
 			void updatePermission('manage-apps', []).then(() => {
 				void request
 					.post(apps())
@@ -37,7 +38,7 @@ describe('Apps - Installation', () => {
 					.end(done);
 			});
 		});
-		(IS_EE ? it : it.skip)('should succesfully install an app from a URL in EE, which should be auto-enabled', (done) => {
+		(IS_EE ? it : it.skip)('should succesfully install an app from a URL in EE, which should be auto-enabled', (_t, done) => {
 			void updatePermission('manage-apps', ['admin']).then(() => {
 				void request
 					.post(apps())
@@ -59,7 +60,7 @@ describe('Apps - Installation', () => {
 					.end(done);
 			});
 		});
-		(!IS_EE ? it : it.skip)('should succesfully install an app from a URL in CE, which should not be enabled', (done) => {
+		(!IS_EE ? it : it.skip)('should succesfully install an app from a URL in CE, which should not be enabled', (_t, done) => {
 			void updatePermission('manage-apps', ['admin']).then(() => {
 				void request
 					.post(apps())
@@ -81,14 +82,14 @@ describe('Apps - Installation', () => {
 					.end(done);
 			});
 		});
-		it('should have created the app user successfully', (done) => {
+		it('should have created the app user successfully', (_t, done) => {
 			void getUserByUsername(APP_USERNAME)
 				.then((user) => {
 					expect(user.username).to.be.equal(APP_USERNAME);
 				})
 				.then(done, done);
 		});
-		it('should successfully get app details by id', (done) => {
+		it('should successfully get app details by id', (_t, done) => {
 			void request
 				.get(apps(`/${app.id}`))
 				.set(credentials)
@@ -103,7 +104,7 @@ describe('Apps - Installation', () => {
 				})
 				.end(done);
 		});
-		it('should successfully get app status by id', (done) => {
+		it('should successfully get app status by id', (_t, done) => {
 			void request
 				.get(apps(`/${app.id}/status`))
 				.set(credentials)
@@ -117,7 +118,7 @@ describe('Apps - Installation', () => {
 				.end(done);
 		});
 		(IS_EE ? describe : describe.skip)('Slash commands registration', () => {
-			it('should have created the "test-simple" slash command successfully', (done) => {
+			it('should have created the "test-simple" slash command successfully', (_t, done) => {
 				void request
 					.get(api('commands.get'))
 					.query({ command: 'test-simple' })
@@ -131,7 +132,7 @@ describe('Apps - Installation', () => {
 					})
 					.end(done);
 			});
-			it('should have created the "test-with-arguments" slash command successfully', (done) => {
+			it('should have created the "test-with-arguments" slash command successfully', (_t, done) => {
 				void request
 					.get(api('commands.get'))
 					.query({ command: 'test-with-arguments' })
@@ -147,7 +148,7 @@ describe('Apps - Installation', () => {
 			});
 		});
 		(IS_EE ? describe : describe.skip)('Video Conf Provider registration', () => {
-			it('should have created two video conf provider successfully', (done) => {
+			it('should have created two video conf provider successfully', (_t, done) => {
 				void request
 					.get(api('video-conference.providers'))
 					.set(credentials)

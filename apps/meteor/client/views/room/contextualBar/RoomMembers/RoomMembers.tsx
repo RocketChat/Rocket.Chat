@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button, Callout } from '@rocket.chat/fuselage';
+import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button, Callout, Stack } from '@rocket.chat/fuselage';
 import { useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
@@ -48,6 +48,7 @@ export type RoomMembersProps = {
 	renderRow?: ElementType<ComponentProps<typeof RoomMembersRow>>;
 	reload: () => void;
 	isABACRoom?: boolean;
+	isAbacLocked?: boolean;
 };
 
 const RoomMembers = ({
@@ -71,6 +72,7 @@ const RoomMembers = ({
 	isDirect,
 	reload,
 	isABACRoom = false,
+	isAbacLocked = false,
 }: RoomMembersProps) => {
 	const { t } = useTranslation();
 	const membersListId = useId();
@@ -157,15 +159,10 @@ const RoomMembers = ({
 					endAddon={<Icon name='magnifier' size='x20' />}
 				/>
 				<Box width='x144' marginInlineStart={8}>
-					<Select
-						aria-controls={isSuccess ? membersListId : undefined}
-						options={options}
-						value={type}
-						onChange={(value): void => setType(value as 'online' | 'all')}
-					/>
+					<Select aria-label={t('Status')} options={options} value={type} onChange={(value): void => setType(value as 'online' | 'all')} />
 				</Box>
 			</ContextualbarSection>
-			<ContextualbarContent padding={0} paddingBlock={12}>
+			<ContextualbarContent flush spaced>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={members.length} />
 				{isPending && (
 					<Box paddingInline={24} paddingBlock={12}>
@@ -199,7 +196,6 @@ const RoomMembers = ({
 										groupCounts={counts}
 										groupContent={(index) => titles[index]}
 										components={{
-											// eslint-disable-next-line react/no-multi-comp
 											Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} />,
 											List: RoomMembersListWrapper,
 										}}
@@ -215,25 +211,27 @@ const RoomMembers = ({
 			</ContextualbarContent>
 			{!isDirect && (onClickInvite || onClickAdd) && (
 				<ContextualbarFooter>
-					<ButtonGroup stretch>
-						{onClickInvite && (
-							<Button
-								icon='link'
-								onClick={onClickInvite}
-								width='50%'
-								disabled={isABACRoom}
-								title={isABACRoom ? t('Not_available_for_ABAC_enabled_rooms') : undefined}
-								aria-label={t('Invite_Link')}
-							>
-								{t('Invite_Link')}
-							</Button>
-						)}
-						{onClickAdd && (
-							<Button icon='user-plus' onClick={onClickAdd} width='50%' primary>
-								{t('Add')}
-							</Button>
-						)}
-					</ButtonGroup>
+					<Stack gap={16}>
+						{isAbacLocked && <Callout type='danger'>{t('ABAC_Cannot_add_members_to_locked_room')}</Callout>}
+						<ButtonGroup stretch='equal'>
+							{onClickInvite && (
+								<Button
+									icon='link'
+									onClick={onClickInvite}
+									disabled={isABACRoom || isAbacLocked}
+									title={isABACRoom ? t('Not_available_for_ABAC_enabled_rooms') : undefined}
+									aria-label={t('Invite_Link')}
+								>
+									{t('Invite_Link')}
+								</Button>
+							)}
+							{onClickAdd && (
+								<Button icon='user-plus' onClick={onClickAdd} variant='primary' disabled={isAbacLocked}>
+									{t('Add')}
+								</Button>
+							)}
+						</ButtonGroup>
+					</Stack>
 				</ContextualbarFooter>
 			)}
 		</ContextualbarDialog>

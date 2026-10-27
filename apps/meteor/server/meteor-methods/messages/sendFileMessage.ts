@@ -1,3 +1,4 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type {
 	MessageAttachment,
 	FileAttachmentProps,
@@ -8,16 +9,13 @@ import type {
 	IMessage,
 	FileProp,
 } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Uploads, Users } from '@rocket.chat/models';
 import { Match, check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import { executeSendMessage } from './sendMessage';
 import { getFileExtension } from '../../../lib/utils/getFileExtension';
 import { canAccessRoomAsync } from '../../lib/authorization/canAccessRoom';
 import { callbacks } from '../../lib/callbacks';
-import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { SystemLogger } from '../../lib/logger/system';
 import { isImagePreviewSupported } from '../../lib/media/file-upload/isImagePreviewSupported';
 import { FileUpload } from '../../lib/media/file-upload/lib/FileUpload';
@@ -26,7 +24,7 @@ function validateFileRequiredFields(file: Partial<IUpload>): asserts file is AtL
 	const requiredFields = ['_id', 'name', 'type', 'size'];
 	requiredFields.forEach((field) => {
 		if (!Object.keys(file).includes(field)) {
-			throw new Meteor.Error('error-invalid-file', 'Invalid file');
+			throw new ClientSafeError('error-invalid-file', 'Invalid file');
 		}
 	});
 }
@@ -40,7 +38,7 @@ export const parseFileIntoMessageAttachments = async (
 
 	const upload = await Uploads.findOneByIdAndUserIdAndRoomId(file._id, user._id, roomId, { projection: { _id: 1 } });
 	if (!upload) {
-		throw new Meteor.Error('error-invalid-file', 'Invalid file', {
+		throw new ClientSafeError('error-invalid-file', 'Invalid file', {
 			method: 'sendFileMessage',
 		});
 	}
@@ -163,13 +161,6 @@ export const parseFileIntoMessageAttachments = async (
 	return { files, attachments };
 };
 
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		sendFileMessage: (roomId: string, _store: string, file: Partial<IUpload>, msgData?: Record<string, any>) => boolean;
-	}
-}
-
 export const sendFileMessage = async (
 	userId: string,
 	{
@@ -185,7 +176,7 @@ export const sendFileMessage = async (
 	const user = await Users.findOneById(userId, { projection: { services: 0 } });
 
 	if (!user) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 			method: 'sendFileMessage',
 		} as any);
 	}
@@ -239,17 +230,3 @@ export const sendFileMessage = async (
 
 	return msg;
 };
-
-Meteor.methods<ServerMethods>({
-	async sendFileMessage(roomId, _store, file, msgData = {}) {
-		methodDeprecationLogger.method('sendFileMessage', '9.0.0', '/v1/rooms.mediaConfirm/:rid/:fileId');
-		const userId = Meteor.userId();
-		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'sendFileMessage',
-			} as any);
-		}
-
-		return sendFileMessage(userId, { roomId, file, msgData });
-	},
-});

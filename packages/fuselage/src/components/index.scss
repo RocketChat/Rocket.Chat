@@ -10,6 +10,7 @@
 @use './ButtonGroup/ButtonGroup.styles.scss';
 @use './Callout/Callout.styles.scss';
 @use './Card/Card.styles.scss';
+@use './CardGrid/CardGrid.styles.scss';
 @use './CardGroup/CardGroup.styles.scss';
 @use './CheckBox/CheckBox.styles.scss';
 @use './Chevron/Chevron.styles.scss';
@@ -44,6 +45,7 @@
 @use './Table/Table.styles.scss';
 @use './Tabs/Tabs.styles.scss';
 @use './Tag/Tag.styles.scss';
+@use './Text/Text.styles.scss';
 @use './Throbber/Throbber.styles.scss';
 @use './Tile/Tile.styles.scss';
 @use './ToastBar/ToastBar.styles.scss';

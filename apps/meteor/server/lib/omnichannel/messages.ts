@@ -1,10 +1,10 @@
 import dns from 'node:dns';
 import * as util from 'node:util';
 
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ILivechatVisitor, AtLeast, IMessage, IUser, IOmnichannelRoomInfo, SelectedAgent } from '@rocket.chat/core-typings';
 import { LivechatDepartment, Messages } from '@rocket.chat/models';
 import { check, Match } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import type { ILivechatMessage } from './localTypes';
 import { getRoom } from './rooms';
@@ -63,7 +63,7 @@ export async function sendOfflineMessage(data: OfflineMessageData) {
 		try {
 			await dnsResolveMx(emailDomain);
 		} catch (e) {
-			throw new Meteor.Error('error-invalid-email-address');
+			throw new ClientSafeError('error-invalid-email-address');
 		}
 	}
 

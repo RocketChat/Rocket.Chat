@@ -1,6 +1,5 @@
 import type { Serialized } from '@rocket.chat/core-typings';
 import {
-	Icon,
 	IconButton,
 	Item,
 	ItemActions,
@@ -15,6 +14,7 @@ import {
 	MessageGenericPreviewContent,
 	MessageGenericPreviewDescription,
 	MessageGenericPreviewTitle,
+	Icon,
 } from '@rocket.chat/fuselage';
 import type { ContactSearchChatsResult } from '@rocket.chat/rest-typings';
 import { useSetModal } from '@rocket.chat/ui-contexts';
@@ -56,7 +56,7 @@ const ContactInfoHistoryItem = ({ source, lastMessage, verified, onClick }: Cont
 					{lastMessage && <ItemMeta>{getTimeFromNow(lastMessage.ts)}</ItemMeta>}
 					{isVerified && (
 						<ItemIcon label={t('Verified')} title={t('Verified')}>
-							<Icon size='x16' name='success-circle' color='stroke-highlight' />
+							<Icon size='x16' name='success-circle' color='info' />
 						</ItemIcon>
 					)}
 				</ItemRow>
@@ -76,7 +76,7 @@ const ContactInfoHistoryItem = ({ source, lastMessage, verified, onClick }: Cont
 						aria-label={t('Unverified')}
 						onClick={() => setModal(<AdvancedContactModal onCancel={() => setModal(null)} />)}
 						icon='question-mark'
-						small
+						size='small'
 					/>
 				</ItemActions>
 			)}

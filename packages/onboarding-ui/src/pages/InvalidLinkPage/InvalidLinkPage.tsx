@@ -1,4 +1,4 @@
-import { Box, Margins, Button } from '@rocket.chat/fuselage';
+import { Box, Button } from '@rocket.chat/fuselage';
 import { BackgroundLayer, LayoutLogo } from '@rocket.chat/layout';
 import { useTranslation } from 'react-i18next';
 
@@ -18,20 +18,20 @@ const InvalidLinkPage = ({ onRequestNewLink }: InvalidLinkPageProps) => {
 				textAlign='center'
 				width='100%'
 				maxWidth={576}
-				paddingBlock={32}
+				paddingBlockStart={32}
+				paddingBlockEnd={64}
 				paddingInline={16}
+				gap={32}
 			>
-				<Margins blockEnd={32}>
-					<LayoutLogo />
+				<LayoutLogo />
 
-					<Box fontScale='hero'>{t('page.invalidLink.title')}</Box>
+				<Box fontScale='hero'>{t('page.invalidLink.title')}</Box>
 
-					<Box fontScale='p1'>{t('page.invalidLink.content')}</Box>
+				<Box fontScale='p1'>{t('page.invalidLink.content')}</Box>
 
-					<Button onClick={onRequestNewLink} primary>
-						{t('page.invalidLink.button.text')}
-					</Button>
-				</Margins>
+				<Button onClick={onRequestNewLink} variant='primary'>
+					{t('page.invalidLink.button.text')}
+				</Button>
 			</Box>
 		</BackgroundLayer>
 	);

@@ -34,7 +34,9 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
   - [typescript-conventions.md](docs/frontend/typescript-conventions.md) — ES modules, `import type`, `type` vs `interface`, `any` vs `unknown`
   - [migrating-from-javascript.md](docs/frontend/migrating-from-javascript.md) — gradual JS → TS migration
   - [react.md](docs/frontend/react.md) — component structure, naming, exports, explicit and generic props types
-  - [building-components.md](docs/frontend/building-components.md) — application vs Fuselage components, styling rules, Storybook-first
+  - [layout.md](docs/frontend/layout.md) — screens compose named layout containers, never raw `Box` or styling props on Fuselage components; where a new container lives and when it gets promoted
+  - [building-components.md](docs/frontend/building-components.md) — application vs Fuselage components, the props a component accepts, layout containers, adding a variation, Storybook-first
+  - [list-keyboard-navigation.md](docs/frontend/list-keyboard-navigation.md) — the three keyboard models for lists (combobox, menu, composite list), the implementation of each, and how to test them
   - [dom-hooks.md](docs/frontend/dom-hooks.md) — hooks that attach listeners or observers return a callback ref instead of taking a `RefObject`
   - [i18n.md](docs/frontend/i18n.md) — client side only: `useTranslation`, `Trans`, runtime keys, escaping (shared rules in [docs/i18n.md](docs/i18n.md))
   - [adding-icons.md](docs/frontend/adding-icons.md) — adding an icon to `@rocket.chat/icons`: SVG cleanup, shape-based naming, directional icons, glyph mapping, changeset
@@ -58,6 +60,7 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
 - [docs/meteor-modern-stack.md](docs/meteor-modern-stack.md) — Meteor modern build stack, file-watching caveats
 - [docs/coverage.md](docs/coverage.md) — coverage instrumentation in build and CI
 - [docs/npm-publishing.md](docs/npm-publishing.md) — how the public packages reach npm: `release.yml`, changesets, OIDC trusted publishing, provenance
+- [docs/typescript-7-migration.md](docs/typescript-7-migration.md) — TS7 (native compiler) migration: remaining work — packages pinned to TS5.9, deferred UI packages, constraints, follow-ups
 
 ### Testing
 
@@ -66,6 +69,7 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
 ### Other
 
 - [docs/adr/](docs/adr/) — architecture decision records
+- [ee/packages/xmpp-server/docs/](ee/packages/xmpp-server/docs/README.md) — the XMPP server is developed spec-first; its specs, ADRs, plans and compliance matrix live in the package, not here; `/xmpp-intent`, `/xmpp-spec` and `/xmpp-plan` drive its authoring stages from any directory
 - [docs/features/](docs/features/) — per-feature notes
   - [uikit/](docs/features/uikit/README.md) — UiKit blocks, surfaces, rendering, interactions; field reference and per-surface support matrix
 - [docs/proposals/](docs/proposals/) — design proposals, not yet implemented

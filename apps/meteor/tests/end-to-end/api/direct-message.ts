@@ -1,8 +1,9 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials, apiUsername, apiEmail } from '../../data/api-data';
 import { pinMessage, sendMessage, starMessage, updateMessage } from '../../data/chat.helper';
@@ -18,7 +19,7 @@ describe('[Direct Messages]', () => {
 	let user: TestUser<IUser>;
 	let directMessage: { _id: IRoom['_id'] };
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		user = await createUser();
@@ -37,7 +38,7 @@ describe('[Direct Messages]', () => {
 			});
 	});
 
-	before('/chat.postMessage', (done) => {
+	before((_t, done) => {
 		void request
 			.post(api('chat.postMessage'))
 			.set(credentials)
@@ -474,7 +475,8 @@ describe('[Direct Messages]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 		it('should require a roomId', async () => {
@@ -630,12 +632,10 @@ describe('[Direct Messages]', () => {
 				{
 					rid: testUserDMRoom._id,
 					msg: `@${adminUsername} youre being mentioned`,
-					mentions: [{ username: adminUsername, _id: adminUsername, name: adminUsername }],
 				},
 				{
 					rid: testUserDMRoom._id,
 					msg: `@${testUser.username} youre being mentioned`,
-					mentions: [{ username: testUser.username, _id: testUser._id, name: testUser.name }],
 				},
 				{
 					rid: testUserDMRoom._id,
@@ -739,7 +739,7 @@ describe('[Direct Messages]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'unauthorized');
+					expect(res.body).to.have.property('error', 'forbidden');
 				});
 		});
 
@@ -992,7 +992,7 @@ describe('[Direct Messages]', () => {
 		let directMessageId: IMessage['_id'];
 		let user: TestUser<IUser>;
 
-		before((done) => {
+		before((_t, done) => {
 			void request
 				.post(api('users.create'))
 				.set(credentials)
@@ -1013,7 +1013,7 @@ describe('[Direct Messages]', () => {
 				.end(done);
 		});
 
-		before((done) => {
+		before((_t, done) => {
 			void request
 				.post(api('chat.postMessage'))
 				.set(credentials)
@@ -1184,7 +1184,7 @@ describe('[Direct Messages]', () => {
 			roomIds = { ...roomIds, multipleDm: res.body.room._id };
 		});
 
-		it('creates a DM between two other parties (excluding self)', async () => {
+		it('allows users with create-d-other-users to create a DM between two other parties', async () => {
 			const res = await request
 				.post(api('im.create'))
 				.set(credentials)
@@ -1199,6 +1199,77 @@ describe('[Direct Messages]', () => {
 			expect(res.body).to.have.property('room').and.to.be.an('object');
 			expect(res.body.room).to.have.property('usernames').and.to.have.members([user.username, otherUser.username]);
 			roomIds = { ...roomIds, dm: res.body.room._id };
+		});
+
+		it('rejects users without create-d-other-users creating a DM between two other parties', async () => {
+			const res = await request
+				.post(api('im.create'))
+				.set(thirdUserCredentials)
+				.send({
+					usernames: [user.username, otherUser.username].join(','),
+					excludeSelf: true,
+				})
+				.expect(400)
+				.expect('Content-Type', 'application/json');
+
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('errorType', 'error-not-allowed');
+		});
+
+		it('rejects users with view-room-administration but without create-d-other-users', async () => {
+			await updatePermission('view-room-administration', ['admin', 'user']);
+
+			try {
+				const res = await request
+					.post(api('im.create'))
+					.set(thirdUserCredentials)
+					.send({
+						usernames: [user.username, otherUser.username].join(','),
+						excludeSelf: true,
+					})
+					.expect(400)
+					.expect('Content-Type', 'application/json');
+
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('errorType', 'error-not-allowed');
+			} finally {
+				await updatePermission('view-room-administration', ['admin']);
+			}
+		});
+
+		it('allows users with create-d-other-users but without view-room-administration', async () => {
+			await updatePermission('create-d-other-users', ['admin', 'user']);
+
+			try {
+				const res = await request
+					.post(api('im.create'))
+					.set(thirdUserCredentials)
+					.send({
+						usernames: [user.username, otherUser.username].join(','),
+						excludeSelf: true,
+					})
+					.expect(200)
+					.expect('Content-Type', 'application/json');
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body.room).to.have.property('usernames').and.to.have.members([user.username, otherUser.username]);
+			} finally {
+				await updatePermission('create-d-other-users', ['admin', 'bot', 'app']);
+			}
+		});
+
+		it('returns only creation metadata for an existing DM', async () => {
+			const res = await request
+				.post(api('im.create'))
+				.set(credentials)
+				.send({
+					usernames: [user.username, otherUser.username].join(','),
+					excludeSelf: true,
+				})
+				.expect(200)
+				.expect('Content-Type', 'application/json');
+
+			expect(res.body.room).to.have.all.keys('_id', 'rid', 't', 'usernames');
 		});
 
 		it('should create a self-DM', async () => {
@@ -1404,7 +1475,7 @@ describe('[Direct Messages]', () => {
 				.expect('Content-Type', 'application/json');
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('error', 'unauthorized');
+			expect(res.body).to.have.property('error', 'forbidden');
 		});
 
 		describe('when authenticated as a non-admin user', () => {

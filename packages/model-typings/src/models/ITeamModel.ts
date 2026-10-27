@@ -25,7 +25,6 @@ export interface ITeamModel extends IBaseModel<ITeam> {
 	findByIdsPaginated<T extends Document = ITeam, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		ids: Array<string>,
 		options?: O,
-		query?: Filter<ITeam>,
 	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
 
 	findByIdsAndType(ids: Array<string>, type: TeamType): FindCursor<ITeam>;

@@ -7,14 +7,14 @@ import type { AllHTMLAttributes } from 'react';
 import { memo, useMemo } from 'react';
 
 import { RoomIcon, useRoomIconLabel } from '../../components/RoomIcon';
+import RoomListItem from '../../components/RoomListItem/RoomListItem';
+import type { RoomListItemViewMode } from '../../components/RoomListItem/RoomListItem';
 import { useUserStatusTooltip } from '../../hooks/useUserStatusTooltip';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { getSubscriptionDraft } from '../../lib/utils/getSubscriptionDraft';
 import { getUidDirectMessage } from '../../lib/utils/getUidDirectMessage';
 import { isIOsDevice } from '../../lib/utils/isIOsDevice';
 import { getMessagePreview } from '../../lib/utils/normalizeMessagePreview/getMessagePreview';
-import RoomListItem from '../../views/navigation/sidebar/RoomList/RoomListItem';
-import type { RoomListItemViewMode } from '../../views/navigation/sidebar/RoomList/RoomListItem';
 import { useOmnichannelPriorities } from '../../views/omnichannel/hooks/useOmnichannelPriorities';
 import RoomMenu from '../RoomMenu';
 import SidebarItemBadges from '../badges/SidebarItemBadges';
@@ -75,8 +75,20 @@ const SidebarItemTemplateWithData = ({
 		() =>
 			videoConfActions && (
 				<SidebarItemActions>
-					<IconButton onClick={videoConfActions.acceptCall} mini secondary success icon='phone' aria-label={t('Accept_Call')} />
-					<IconButton onClick={videoConfActions.rejectCall} mini secondary danger icon='phone-off' aria-label={t('Reject_call')} />
+					<IconButton
+						onClick={videoConfActions.acceptCall}
+						size='mini'
+						variant='secondary-success'
+						icon='phone'
+						aria-label={t('Accept_Call')}
+					/>
+					<IconButton
+						onClick={videoConfActions.rejectCall}
+						size='mini'
+						variant='secondary-danger'
+						icon='phone-off'
+						aria-label={t('Reject_call')}
+					/>
 				</SidebarItemActions>
 			),
 		[t, videoConfActions],

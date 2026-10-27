@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { InputBox, Field, MultiSelect, FieldGroup, Box, Select, FieldLabel, FieldRow, Callout } from '@rocket.chat/fuselage';
+import { InputBox, Field, MultiSelect, FieldGroup, Box, Select, FieldLabel, FieldRow, Callout, Stack } from '@rocket.chat/fuselage';
 import { useId, useMemo } from 'react';
 import { useFormContext, Controller, useFieldArray } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -63,16 +63,18 @@ const BusinessHoursForm = ({ type }: BusinessHoursFormProps) => {
 			{type === 'custom' && <BusinessHoursMultiple />}
 			<Field>
 				<FieldLabel htmlFor={timezoneField}>{t('Timezone')}</FieldLabel>
-				<FieldRow>
-					<Controller
-						name='timezoneName'
-						control={control}
-						render={({ field }) => <Select id={timezoneField} {...field} options={timeZonesOptions} />}
-					/>
-				</FieldRow>
-				<Callout title={t('Daylight_savings_time')} type='info' marginBlockStart='x8'>
-					{t('Business_hours_will_update_automatically')}
-				</Callout>
+				<Stack gap={8}>
+					<FieldRow>
+						<Controller
+							name='timezoneName'
+							control={control}
+							render={({ field }) => <Select id={timezoneField} {...field} options={timeZonesOptions} />}
+						/>
+					</FieldRow>
+					<Callout title={t('Daylight_savings_time')} type='info'>
+						{t('Business_hours_will_update_automatically')}
+					</Callout>
+				</Stack>
 			</Field>
 			<Field>
 				<FieldLabel htmlFor={daysOpenField}>{t('Open_days_of_the_week')}</FieldLabel>
@@ -92,7 +94,6 @@ const BusinessHoursForm = ({ type }: BusinessHoursFormProps) => {
 								options={daysOptions}
 								value={value}
 								placeholder={t('Select_an_option')}
-								width='full'
 							/>
 						)}
 					/>
@@ -102,19 +103,21 @@ const BusinessHoursForm = ({ type }: BusinessHoursFormProps) => {
 				<Field key={dayTime.id}>
 					<FieldLabel>{t(dayTime.day)}</FieldLabel>
 					<FieldRow>
-						<Box display='flex' flexDirection='column' flexGrow={1} marginInlineEnd={2}>
-							<FieldLabel htmlFor={`${daysTimeField + index}-start`}>{t('Open')}</FieldLabel>
-							<Controller
-								name={`daysTime.${index}.start.time`}
-								render={({ field }) => <InputBox id={`${daysTimeField + index}-start`} type='time' {...field} />}
-							/>
-						</Box>
-						<Box display='flex' flexDirection='column' flexGrow={1} marginInlineStart={2}>
-							<FieldLabel htmlFor={`${daysTimeField + index}-finish`}>{t('Close')}</FieldLabel>
-							<Controller
-								name={`daysTime.${index}.finish.time`}
-								render={({ field }) => <InputBox id={`${daysTimeField + index}-finish`} type='time' {...field} />}
-							/>
+						<Box display='flex' alignItems='center' flexGrow={1} gap='x4'>
+							<Box display='flex' flexDirection='column' flexGrow={1}>
+								<FieldLabel htmlFor={`${daysTimeField + index}-start`}>{t('Open')}</FieldLabel>
+								<Controller
+									name={`daysTime.${index}.start.time`}
+									render={({ field }) => <InputBox id={`${daysTimeField + index}-start`} type='time' {...field} />}
+								/>
+							</Box>
+							<Box display='flex' flexDirection='column' flexGrow={1}>
+								<FieldLabel htmlFor={`${daysTimeField + index}-finish`}>{t('Close')}</FieldLabel>
+								<Controller
+									name={`daysTime.${index}.finish.time`}
+									render={({ field }) => <InputBox id={`${daysTimeField + index}-finish`} type='time' {...field} />}
+								/>
+							</Box>
 						</Box>
 					</FieldRow>
 				</Field>

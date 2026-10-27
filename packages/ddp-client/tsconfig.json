@@ -6,5 +6,7 @@
 		"esModuleInterop": true,
 		"sourceMap": true,
 	},
-	"include": ["./src/**/*", "__examples__/**/*", "__mocks__/**/*"],
+	"include": ["./src/**/*", "__examples__/**/*", "__mocks__/**/*", "__tests__/**/*"],
+	// The shared client config excludes specs; these are typechecked too.
+	"exclude": ["node_modules"],
 }

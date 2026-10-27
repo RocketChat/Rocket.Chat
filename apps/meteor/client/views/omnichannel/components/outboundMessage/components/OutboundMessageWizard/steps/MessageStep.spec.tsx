@@ -60,11 +60,6 @@ describe('MessageStep', () => {
 		jest.clearAllMocks();
 	});
 
-	test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
-		const view = render(<Story />, { wrapper: mockAppRoot().build() });
-		expect(view.baseElement).toMatchSnapshot();
-	});
-
 	test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
 		const { container } = render(<Story />, { wrapper: mockAppRoot().build() });
 

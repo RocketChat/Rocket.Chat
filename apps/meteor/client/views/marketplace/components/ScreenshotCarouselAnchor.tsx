@@ -104,8 +104,8 @@ const ScreenshotCarouselAnchor = ({ screenshots }: ScreenshotCarouselAnchorProps
 					]}
 				/>
 
-				<Box display='flex' flexDirection='row' backgroundColor='tint' paddingInline={16} paddingBlock={10} alignItems='center'>
-					<Icon name='image' size='x24' marginInlineEnd={8} />{' '}
+				<Box display='flex' flexDirection='row' backgroundColor='tint' paddingInline='x16' paddingBlock='x8' alignItems='center' gap='x8'>
+					<Icon name='image' size='x24' />{' '}
 					<Box is='span' fontScale='p2m' color='default'>
 						{currentPreviewIndex + 1} of {screenshots.length}
 					</Box>

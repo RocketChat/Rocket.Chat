@@ -1,7 +1,8 @@
+import { AbacContractError, AbacErrorCode } from '@rocket.chat/abac';
 import { Team } from '@rocket.chat/core-services';
-import type { ITeamAutocompleteResult } from '@rocket.chat/core-services';
-import type { ITeam, UserStatus } from '@rocket.chat/core-typings';
-import { Users, Rooms } from '@rocket.chat/models';
+import type { ITeamAutocompleteResult, ITeamMemberInfo } from '@rocket.chat/core-services';
+import type { IRoom, ITeam, IUser, UserStatus } from '@rocket.chat/core-typings';
+import { Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
 	ajv,
 	isTeamsAddMembersProps,
@@ -32,7 +33,9 @@ import { escapeRegExp } from '@rocket.chat/tools';
 import { canAccessRoomAsync } from '../../lib/authorization';
 import { hasPermissionAsync, hasAtLeastOnePermissionAsync, hasAllPermissionAsync } from '../../lib/authorization/hasPermission';
 import { eraseRoom } from '../../lib/eraseRoom';
+import { assertCanRemoveRoomAbacAttributes, removeRoomAbacAttributes } from '../../lib/rooms/removeRoomAbacAttributes';
 import { removeUserFromRoom } from '../../lib/rooms/removeUserFromRoom';
+import { toAbacAttributeDefinitions } from '../../lib/rooms/toAbacAttributeDefinitions';
 import { effectiveStatusFilter } from '../../lib/statusVisibility/effectiveStatus';
 import { getUsersHiddenFrom, redactHiddenMembers } from '../../lib/statusVisibility/hiddenUsers';
 import { settings } from '../../settings';
@@ -59,6 +62,36 @@ const successResponseSchema = ajv.compile<void>({
 	additionalProperties: false,
 });
 
+const roomRoleAssignmentPermissions = new Map([
+	['owner', 'set-owner'],
+	['moderator', 'set-moderator'],
+	['leader', 'set-leader'],
+]);
+
+const canChangeTeamRoles = async (user: IUser, roomId: IRoom['_id'], roles: Iterable<string>): Promise<boolean> => {
+	const roomPermissions = new Set<string>();
+	const globalPermissions = new Set<string>();
+
+	for (const role of roles) {
+		if (role === 'member') {
+			continue;
+		}
+
+		const roomPermission = roomRoleAssignmentPermissions.get(role);
+		if (roomPermission) {
+			roomPermissions.add(roomPermission);
+			continue;
+		}
+
+		globalPermissions.add('access-permissions');
+		if (role === 'admin') {
+			globalPermissions.add('assign-admin-role');
+		}
+	}
+
+	return (await hasAllPermissionAsync(user, [...roomPermissions], roomId)) && hasAllPermissionAsync(user, [...globalPermissions]);
+};
+
 const teamsEndpoints = API.v1
 	.get(
 		'teams.list',
@@ -72,9 +105,9 @@ const teamsEndpoints = API.v1
 		},
 		async function action() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, query } = await this.parseJsonQuery();
+			const { sort } = await this.parseJsonQuery();
 
-			const { records, total } = await Team.list(this.userId, { offset, count }, { sort, query });
+			const { records, total } = await Team.list(this.userId, { offset, count }, { sort });
 
 			return API.v1.success({
 				teams: records,
@@ -115,10 +148,11 @@ const teamsEndpoints = API.v1
 			permissionsRequired: ['create-team'],
 			body: isTeamsCreateProps,
 			response: {
-				200: ajv.compile<{ team: ITeam }>({
+				200: ajv.compile<{ team: ITeam; skippedMembers?: string[] }>({
 					type: 'object',
 					properties: {
 						team: { type: 'object' },
+						skippedMembers: { type: 'array', items: { type: 'string' } },
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['team', 'success'],
@@ -130,13 +164,25 @@ const teamsEndpoints = API.v1
 			},
 		},
 		async function action() {
-			const { name, type, members, room, owner } = this.bodyParams;
+			const { name, type, members, room, owner, abacAttributes } = this.bodyParams;
 
 			if (room?.id && !(await hasAllPermissionAsync(this.user, ['create-team', 'edit-room'], room.id))) {
 				return API.v1.forbidden();
 			}
 
-			const team = await Team.create(this.userId, {
+			if (abacAttributes) {
+				if (!settings.get('ABAC_Enabled')) {
+					throw new AbacContractError(AbacErrorCode.NotEnabled);
+				}
+				if (room?.id) {
+					throw new AbacContractError(AbacErrorCode.AttributesRoomConversion);
+				}
+				if (owner && owner !== this.userId) {
+					throw new AbacContractError(AbacErrorCode.AttributesOwnerMustBeCaller);
+				}
+			}
+
+			const { skippedMembers, ...team } = await Team.create(this.userId, {
 				team: {
 					name,
 					type,
@@ -144,9 +190,10 @@ const teamsEndpoints = API.v1
 				room: room as Parameters<typeof Team.create>[1]['room'],
 				members,
 				owner,
+				abacAttributes: toAbacAttributeDefinitions(abacAttributes),
 			});
 
-			return API.v1.success({ team });
+			return API.v1.success({ team, ...(skippedMembers && { skippedMembers }) });
 		},
 	);
 
@@ -187,6 +234,13 @@ API.v1.post(
 			return API.v1.forbidden();
 		}
 
+		const teamRoom = await Rooms.findOneById<Pick<IRoom, '_id' | 'name' | 'abacAttributes'>>(team.roomId, {
+			projection: { name: 1, abacAttributes: 1 },
+		});
+		if (teamRoom) {
+			await assertCanRemoveRoomAbacAttributes(teamRoom, this.user);
+		}
+
 		const rooms = await Team.getMatchingTeamRooms(team._id, roomsToRemove);
 
 		if (rooms.length) {
@@ -197,13 +251,17 @@ API.v1.post(
 
 		await Promise.all([Team.unsetTeamIdOfRooms(this.user, team), Team.removeAllMembersFromTeam(team._id)]);
 
+		if (teamRoom) {
+			await removeRoomAbacAttributes(teamRoom, this.user);
+		}
+
 		await Team.deleteById(team._id);
 
 		return API.v1.success();
 	},
 );
 
-const roomResponseSchema = ajv.compile<{ room: object }>({
+const roomResponseSchema = ajv.compile<{ room: IRoom }>({
 	type: 'object',
 	properties: {
 		room: { type: 'object' },
@@ -213,7 +271,7 @@ const roomResponseSchema = ajv.compile<{ room: object }>({
 	additionalProperties: false,
 });
 
-const roomsResponseSchema = ajv.compile<{ rooms: object[] }>({
+const roomsResponseSchema = ajv.compile<{ rooms: IRoom[] }>({
 	type: 'object',
 	properties: {
 		rooms: { type: 'array', items: { type: 'object' } },
@@ -310,20 +368,13 @@ API.v1.post(
 		}
 		const canUpdateAny = !!(await hasPermissionAsync(this.user, 'view-all-team-channels', team.roomId));
 
-		if (settings.get('ABAC_Enabled') && isDefault) {
-			const room = await Rooms.findOneByIdAndType(roomId, 'p', { projection: { abacAttributes: 1 } });
-			if (room?.abacAttributes?.length) {
-				return API.v1.failure('error-room-is-abac-managed');
-			}
-		}
-
 		const room = await Team.updateRoom(this.userId, roomId, isDefault, canUpdateAny);
 
 		return API.v1.success({ room });
 	},
 );
 
-const paginatedRoomsResponseSchema = ajv.compile<{ rooms: object[]; total: number; count: number; offset: number }>({
+const paginatedRoomsResponseSchema = ajv.compile<{ rooms: IRoom[]; total: number; count: number; offset: number }>({
 	type: 'object',
 	properties: {
 		rooms: { type: 'array', items: { type: 'object' } },
@@ -445,7 +496,7 @@ API.v1.get(
 		authRequired: true,
 		query: isTeamsListChildrenProps,
 		response: {
-			200: ajv.compile<{ data: object[]; total: number; offset: number; count: number }>({
+			200: ajv.compile<{ data: IRoom[]; total: number; offset: number; count: number }>({
 				type: 'object',
 				properties: {
 					data: { type: 'array', items: { type: 'object' } },
@@ -482,7 +533,7 @@ API.v1.get(
 		authRequired: true,
 		query: isTeamsMembersProps,
 		response: {
-			200: ajv.compile<{ members: object[]; total: number; count: number; offset: number }>({
+			200: ajv.compile<{ members: ITeamMemberInfo[]; total: number; count: number; offset: number }>({
 				type: 'object',
 				properties: {
 					members: { type: 'array', items: { type: 'object' } },
@@ -557,6 +608,11 @@ API.v1.post(
 			return API.v1.forbidden();
 		}
 
+		const requestedRoles = members.flatMap(({ roles }) => roles ?? []);
+		if (!(await canChangeTeamRoles(this.user, team.roomId, requestedRoles))) {
+			return API.v1.forbidden();
+		}
+
 		await Team.addMembers(this.userId, team._id, members);
 
 		return API.v1.success();
@@ -585,6 +641,12 @@ API.v1.post(
 		}
 
 		if (!(await hasAtLeastOnePermissionAsync(this.user, ['edit-team-member'], team.roomId))) {
+			return API.v1.forbidden();
+		}
+
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(team.roomId, member.userId, { projection: { roles: 1 } });
+		const changedRoles = new Set(subscription?.roles).symmetricDifference(new Set(member.roles));
+		if (!(await canChangeTeamRoles(this.user, team.roomId, changedRoles))) {
 			return API.v1.forbidden();
 		}
 
@@ -811,6 +873,6 @@ API.v1.post(
 export type TeamsEndpoints = ExtractRoutesFromAPI<typeof teamsEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends TeamsEndpoints {}
 }

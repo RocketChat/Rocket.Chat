@@ -26,9 +26,10 @@ const PreflightCameraPlaceholder = ({ cam, note }: PreflightCameraPlaceholderPro
 			width='100%'
 			height='100%'
 			paddingBlockEnd={TOGGLES_ZONE}
+			color='pure-white'
 		>
-			<Icon name={cam ? 'video' : 'video-off'} size='x32' color='pure-white' />
-			<Box fontScale='p2b' color='pure-white' marginBlockStart={8} textAlign='center' paddingInline={24}>
+			<Icon name={cam ? 'video' : 'video-off'} size='x32' />
+			<Box fontScale='p2b' marginBlockStart={8} textAlign='center' paddingInline={24}>
 				{cam ? t('Your_camera_will_be_on') : t('Your_camera_will_be_off')}
 			</Box>
 			{note && (

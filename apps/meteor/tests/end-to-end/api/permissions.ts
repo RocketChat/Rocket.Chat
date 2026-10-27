@@ -1,7 +1,8 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updatePermission } from '../../data/permissions.helper';
@@ -10,7 +11,7 @@ import { createUser, deleteUser, login } from '../../data/users.helper';
 import type { TestUser } from '../../data/users.helper.js';
 
 describe('[Permissions]', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	after(() => updatePermission('add-oauth-service', ['admin']));
 
@@ -172,32 +173,36 @@ describe('[Permissions]', () => {
 			await updatePermission('access-permissions', ['admin']);
 		});
 
-		it('should fail when unauthenticated', () =>
-			request.post(api('permissions.addRole')).send({ permissionId: testPermission, role: testRole }).expect(401));
+		it('should fail when unauthenticated', async () => {
+			await request.post(api('permissions.addRole')).send({ permissionId: testPermission, role: testRole }).expect(401);
+		});
 
-		it('should fail with 400 when the permission does not exist', () =>
-			request
+		it('should fail with 400 when the permission does not exist', async () => {
+			await request
 				.post(api('permissions.addRole'))
 				.set(credentials)
 				.send({ permissionId: 'this-permission-does-not-exist', role: testRole })
 				.expect(400)
-				.expect((res) => expect(res.body).to.have.property('success', false)));
+				.expect((res) => expect(res.body).to.have.property('success', false));
+		});
 
-		it('should fail with 400 when the role does not exist', () =>
-			request
+		it('should fail with 400 when the role does not exist', async () => {
+			await request
 				.post(api('permissions.addRole'))
 				.set(credentials)
 				.send({ permissionId: testPermission, role: 'this-role-does-not-exist' })
 				.expect(400)
-				.expect((res) => expect(res.body).to.have.property('success', false)));
+				.expect((res) => expect(res.body).to.have.property('success', false));
+		});
 
-		it('should fail with 403 when the user lacks the access-permissions permission', () =>
-			request
+		it('should fail with 403 when the user lacks the access-permissions permission', async () => {
+			await request
 				.post(api('permissions.addRole'))
 				.set(testUserCredentials)
 				.send({ permissionId: testPermission, role: testRole })
 				.expect(403)
-				.expect((res) => expect(res.body).to.have.property('success', false)));
+				.expect((res) => expect(res.body).to.have.property('success', false));
+		});
 
 		it('should add the role to the permission', async () => {
 			await request
@@ -237,16 +242,18 @@ describe('[Permissions]', () => {
 			await updatePermission('access-permissions', ['admin']);
 		});
 
-		it('should fail when unauthenticated', () =>
-			request.post(api('permissions.removeRole')).send({ permissionId: testPermission, role: testRole }).expect(401));
+		it('should fail when unauthenticated', async () => {
+			await request.post(api('permissions.removeRole')).send({ permissionId: testPermission, role: testRole }).expect(401);
+		});
 
-		it('should fail with 403 when the user lacks the access-permissions permission', () =>
-			request
+		it('should fail with 403 when the user lacks the access-permissions permission', async () => {
+			await request
 				.post(api('permissions.removeRole'))
 				.set(testUserCredentials)
 				.send({ permissionId: testPermission, role: testRole })
 				.expect(403)
-				.expect((res) => expect(res.body).to.have.property('success', false)));
+				.expect((res) => expect(res.body).to.have.property('success', false));
+		});
 
 		it('should remove the role from the permission', async () => {
 			await request

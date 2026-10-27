@@ -1,7 +1,6 @@
-import { Team } from '@rocket.chat/core-services';
+import { Team, ClientSafeError } from '@rocket.chat/core-services';
 import { Users } from '@rocket.chat/models';
 import { escapeRegExp } from '@rocket.chat/tools';
-import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { settings } from '../../settings';
@@ -22,17 +21,17 @@ const usernameIsBlocked = (username: string, usernameBlackList: RegExp[]): boole
 
 export const checkUsernameAvailabilityWithValidation = async function (userId: string, username: string): Promise<boolean> {
 	if (!username) {
-		throw new Meteor.Error('error-invalid-username', 'Invalid username', { method: 'setUsername' });
+		throw new ClientSafeError('error-invalid-username', 'Invalid username', { method: 'setUsername' });
 	}
 
 	const user = await Users.findOneById(userId, { projection: { username: 1 } });
 
 	if (!user) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'setUsername' });
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', { method: 'setUsername' });
 	}
 
 	if (user.username && !settings.get('Accounts_AllowUsernameChange')) {
-		throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'setUsername' });
+		throw new ClientSafeError('error-not-allowed', 'Not allowed', { method: 'setUsername' });
 	}
 
 	if (user.username === username) {
@@ -43,7 +42,7 @@ export const checkUsernameAvailabilityWithValidation = async function (userId: s
 
 export const checkUsernameAvailability = async function (username: string, type: UsernameAvailabilityCheckType = 'user'): Promise<boolean> {
 	if (usernameIsBlocked(username, usernameBlackList) || !validateName(username)) {
-		throw new Meteor.Error('error-blocked-username', `${_.escape(username)} is blocked and can't be used!`, {
+		throw new ClientSafeError('error-blocked-username', `${_.escape(username)} is blocked and can't be used!`, {
 			method: 'checkUsernameAvailability',
 			field: username,
 		});

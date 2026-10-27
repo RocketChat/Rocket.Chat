@@ -7,6 +7,10 @@ import { SystemLogger } from '../lib/logger/system';
 
 export const { db, client } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
+// Must be the driver copy that created `db`: GridFS recognizes the driver's own errors with `instanceof`.
+export const { GridFSBucket } = MongoInternals.NpmModules.mongodb.module;
+export type GridFSBucket = InstanceType<typeof GridFSBucket>;
+
 /**
  * In MongoDB, errors like UnknownTransactionCommitResult and TransientTransactionError occur primarily in the context of distributed transactions
  * and are often due to temporary network issues, server failures, or timeouts. Here’s what each error means and some common causes:

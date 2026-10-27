@@ -16,7 +16,7 @@ const RoomListWrapper = forwardRef(function RoomListWrapper(
 	ref: ForwardedRef<HTMLDivElement>,
 ) {
 	const { t } = useTranslation();
-	const { sidebarListRef } = useSidebarListNavigation();
+	const sidebarListRef = useSidebarListNavigation();
 	const mergedRefs = useMergedRefsV2(ref, sidebarListRef);
 
 	return (

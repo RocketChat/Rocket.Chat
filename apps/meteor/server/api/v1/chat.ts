@@ -1,5 +1,5 @@
-import { Message } from '@rocket.chat/core-services';
-import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
+import { Message, ClientSafeError } from '@rocket.chat/core-services';
+import type { IMessage, IThreadMainMessage, MessageUrl } from '@rocket.chat/core-typings';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Messages, Users, Rooms, Subscriptions } from '@rocket.chat/models';
 import {
@@ -32,13 +32,13 @@ import {
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
-import { Meteor } from 'meteor/meteor';
 
 import { roomAccessAttributes } from '../../lib/authorization';
 import { canAccessRoomAsync, canAccessRoomIdAsync, canAccessRoomIdsAsync } from '../../lib/authorization/canAccessRoom';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { callbacks } from '../../lib/callbacks';
 import { applyAirGappedRestrictionsValidation } from '../../lib/cloud/license/airGappedRestrictionsWrapper';
+import { apiDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { deleteMessageValidatingPermission } from '../../lib/messages/deleteMessage';
 import { processWebhookMessage } from '../../lib/messages/processWebhookMessage';
 import { pinMessage, unpinMessage } from '../../lib/messaging/pins/pinMessage';
@@ -56,10 +56,16 @@ import { executeUpdateMessage } from '../../meteor-methods/messages/updateMessag
 import { ignoreUser } from '../../meteor-methods/users/ignoreUser';
 import { getMessageHistory } from '../../publications/messages';
 import { settings } from '../../settings';
-import type { ExtractRoutesFromAPI } from '../ApiClass';
+import { applyBreakingChanges, type ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
+import { assertValidMessageBlocks } from '../lib/assertValidMessageBlocks';
 import { getPaginationItems } from '../lib/getPaginationItems';
 import { findDiscussionsFromRoom, findMentionedMessages, findStarredMessages } from '../lib/messages';
+import { removeAttachmentMarkdown } from '../lib/removeAttachmentMarkdown';
+import { splitSendMessageFields } from '../lib/splitSendMessageFields';
+
+const MAX_REPORTED_UNSUPPORTED_FIELDS = 10;
+const MAX_REPORTED_FIELD_NAME_LENGTH = 64;
 
 type ChatStarMessageLocal = {
 	messageId: IMessage['_id'];
@@ -214,7 +220,7 @@ const chatEndpoints = API.v1
 			const msg = await Messages.findOneById(this.bodyParams.messageId);
 
 			if (!msg) {
-				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
+				throw new ClientSafeError('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
 			const pinnedMessage = await pinMessage(msg, this.userId);
@@ -252,7 +258,7 @@ const chatEndpoints = API.v1
 			const msg = await Messages.findOneById(this.bodyParams.messageId);
 
 			if (!msg) {
-				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
+				throw new ClientSafeError('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
 			await unpinMessage(this.userId, msg);
@@ -284,14 +290,14 @@ const chatEndpoints = API.v1
 		},
 		async function action() {
 			if (!settings.get<boolean>('Threads_enabled')) {
-				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
+				throw new ClientSafeError('error-not-allowed', 'Threads Disabled');
 			}
 
 			const { tmid } = this.bodyParams;
 
 			const thread = await Messages.findOneById(tmid, { projection: { rid: 1 } });
 			if (!thread?.rid) {
-				throw new Meteor.Error('error-invalid-message', 'Invalid Message');
+				throw new ClientSafeError('error-invalid-message', 'Invalid Message');
 			}
 
 			const [user, room] = await Promise.all([
@@ -300,11 +306,11 @@ const chatEndpoints = API.v1
 			]);
 
 			if (!room) {
-				throw new Meteor.Error('error-room-does-not-exist', 'This room does not exist');
+				throw new ClientSafeError('error-room-does-not-exist', 'This room does not exist');
 			}
 
 			if (!user || !(await canAccessRoomAsync(room, user))) {
-				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
+				throw new ClientSafeError('error-not-allowed', 'Not Allowed');
 			}
 
 			await callbacks.run('beforeReadMessages', room._id, user._id);
@@ -409,7 +415,7 @@ const chatEndpoints = API.v1
 			const msg = await Messages.findOneById(this.bodyParams.messageId);
 
 			if (!msg) {
-				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
+				throw new ClientSafeError('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
 			await starMessage(this.user, {
@@ -446,7 +452,7 @@ const chatEndpoints = API.v1
 			const msg = await Messages.findOneById(this.bodyParams.messageId);
 
 			if (!msg) {
-				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
+				throw new ClientSafeError('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
 			await starMessage(this.user, {
@@ -484,7 +490,7 @@ const chatEndpoints = API.v1
 			const { mid } = this.bodyParams;
 
 			if (!mid) {
-				throw new Meteor.Error('The required "mid" body param is missing.');
+				throw new ClientSafeError('The required "mid" body param is missing.');
 			}
 
 			await followMessage(this.user, { mid });
@@ -518,7 +524,7 @@ const chatEndpoints = API.v1
 			const { mid } = this.bodyParams;
 
 			if (!mid) {
-				throw new Meteor.Error('The required "mid" body param is missing.');
+				throw new ClientSafeError('The required "mid" body param is missing.');
 			}
 
 			await unfollowMessage(this.user, { mid });
@@ -551,13 +557,13 @@ const chatEndpoints = API.v1
 			const msg = await Messages.findOneById(this.bodyParams.messageId);
 
 			if (!msg) {
-				throw new Meteor.Error('error-message-not-found', 'The provided "messageId" does not match any existing message.');
+				throw new ClientSafeError('error-message-not-found', 'The provided "messageId" does not match any existing message.');
 			}
 
 			const emoji = 'emoji' in this.bodyParams ? this.bodyParams.emoji : (this.bodyParams as { reaction: string }).reaction;
 
 			if (!emoji) {
-				throw new Meteor.Error('error-emoji-param-not-provided', 'The required "emoji" param is missing.');
+				throw new ClientSafeError('error-emoji-param-not-provided', 'The required "emoji" param is missing.');
 			}
 
 			await executeSetReaction(this.userId, emoji, msg, this.bodyParams.shouldReact);
@@ -719,15 +725,15 @@ const chatEndpoints = API.v1
 			const { roomId, lastUpdate, fromTs, count, next, previous, type } = this.queryParams;
 
 			if (!roomId) {
-				throw new Meteor.Error('error-param-required', 'The required "roomId" query param is missing');
+				throw new ClientSafeError('error-param-required', 'The required "roomId" query param is missing');
 			}
 
 			if (!lastUpdate && !type) {
-				throw new Meteor.Error('error-param-required', 'The "type" or "lastUpdate" parameters must be provided');
+				throw new ClientSafeError('error-param-required', 'The "type" or "lastUpdate" parameters must be provided');
 			}
 
 			if (lastUpdate && isNaN(Date.parse(lastUpdate))) {
-				throw new Meteor.Error('error-lastUpdate-param-invalid', 'The "lastUpdate" query parameter must be a valid date');
+				throw new ClientSafeError('error-lastUpdate-param-invalid', 'The "lastUpdate" query parameter must be a valid date');
 			}
 
 			const getMessagesQuery = {
@@ -835,7 +841,16 @@ const chatEndpoints = API.v1
 				}
 			}
 
-			const messageReturn = (await applyAirGappedRestrictionsValidation(() => processWebhookMessage(this.bodyParams, this.user)))[0];
+			const messageReturn = (
+				await applyAirGappedRestrictionsValidation(() =>
+					processWebhookMessage(
+						attachments
+							? { ...this.bodyParams, attachments: removeAttachmentMarkdown(attachments) as typeof attachments }
+							: this.bodyParams,
+						this.user,
+					),
+				)
+			)[0];
 
 			if (!messageReturn?.message) {
 				return API.v1.failure('unknown-error');
@@ -874,11 +889,11 @@ const chatEndpoints = API.v1
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			if (!roomId) {
-				throw new Meteor.Error('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
+				throw new ClientSafeError('error-roomId-param-not-provided', 'The required "roomId" query param is missing.');
 			}
 
 			if (!searchText) {
-				throw new Meteor.Error('error-searchText-param-not-provided', 'The required "searchText" query param is missing.');
+				throw new ClientSafeError('error-searchText-param-not-provided', 'The required "searchText" query param is missing.');
 			}
 
 			const searchResult = await messageSearch(this.userId, searchText, roomId, count, offset);
@@ -919,12 +934,39 @@ const chatEndpoints = API.v1
 			},
 		},
 		async function action() {
-			if (MessageTypes.isSystemMessage(this.bodyParams.message)) {
+			const { supported: messageFields, unsupportedNames } = splitSendMessageFields(this.bodyParams.message);
+
+			if (unsupportedNames.length) {
+				const names = unsupportedNames
+					.slice(0, MAX_REPORTED_UNSUPPORTED_FIELDS)
+					.map((name) => name.slice(0, MAX_REPORTED_FIELD_NAME_LENGTH).replace(/[^\x20-\x7e]/g, '?'));
+
+				if (applyBreakingChanges) {
+					throw new Error(`The message fields cannot be set through 'chat.sendMessage': ${names.join(', ')}`);
+				}
+
+				apiDeprecationLogger.parameter(
+					this.route,
+					'message.<unsupported fields>',
+					'9.0.0',
+					this.response,
+					({ endpoint, version }) =>
+						`The message fields [${names.join(', ')}] sent to "${endpoint}" are ignored and will be rejected from version ${version}.`,
+				);
+			}
+
+			assertValidMessageBlocks(messageFields.blocks);
+
+			if (messageFields.attachments) {
+				messageFields.attachments = removeAttachmentMarkdown(messageFields.attachments);
+			}
+
+			if (MessageTypes.isSystemMessage(messageFields)) {
 				throw new Error("Cannot send system messages using 'chat.sendMessage'");
 			}
 
 			const sent = await applyAirGappedRestrictionsValidation(() =>
-				executeSendMessage(this.user, this.bodyParams.message as Pick<IMessage, 'rid'>, { previewUrls: this.bodyParams.previewUrls }),
+				executeSendMessage(this.user, messageFields as Pick<IMessage, 'rid'>, { previewUrls: this.bodyParams.previewUrls }),
 			);
 			const [message] = await normalizeMessagesForUser([sent], this.userId);
 
@@ -958,11 +1000,11 @@ const chatEndpoints = API.v1
 			ignore = typeof ignore === 'string' ? /true|1/.test(ignore) : ignore;
 
 			if (!rid?.trim()) {
-				throw new Meteor.Error('error-room-id-param-not-provided', 'The required "rid" param is missing.');
+				throw new ClientSafeError('error-room-id-param-not-provided', 'The required "rid" param is missing.');
 			}
 
 			if (!userId?.trim()) {
-				throw new Meteor.Error('error-user-id-param-not-provided', 'The required "userId" param is missing.');
+				throw new ClientSafeError('error-user-id-param-not-provided', 'The required "userId" param is missing.');
 			}
 
 			await ignoreUser(this.userId, { rid, userId, ignore });
@@ -1039,7 +1081,7 @@ const chatEndpoints = API.v1
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
-				throw new Meteor.Error('error-not-allowed', 'Not allowed');
+				throw new ClientSafeError('error-not-allowed', 'Not allowed');
 			}
 
 			const { cursor, totalCount } = Messages.findPaginatedPinnedByRoom(roomId, {
@@ -1082,16 +1124,16 @@ const chatEndpoints = API.v1
 			const { rid, type, text } = this.queryParams;
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await this.parseJsonQuery();
+			const { sort, fields } = await this.parseJsonQuery();
 
 			if (!settings.get<boolean>('Threads_enabled')) {
-				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
+				throw new ClientSafeError('error-not-allowed', 'Threads Disabled');
 			}
 			const user = await Users.findOneById(this.userId, { projection: { _id: 1 } });
 			const room = await Rooms.findOneById(rid, { projection: { ...roomAccessAttributes, t: 1, _id: 1 } });
 
 			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
-				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
+				throw new ClientSafeError('error-not-allowed', 'Not Allowed');
 			}
 
 			const typeThread = {
@@ -1101,7 +1143,7 @@ const chatEndpoints = API.v1
 				msg: new RegExp(escapeRegExp(text || ''), 'i'),
 			};
 
-			const threadQuery = { ...query, ...typeThread, rid: room._id, tcount: { $exists: true } };
+			const threadQuery = { ...typeThread, rid: room._id, tcount: { $exists: true } };
 			const { cursor, totalCount } = await Messages.findPaginated<IThreadMainMessage>(threadQuery, {
 				sort: sort || { tlm: -1 },
 				skip: offset,
@@ -1148,15 +1190,15 @@ const chatEndpoints = API.v1
 		},
 		async function action() {
 			const { rid } = this.queryParams;
-			const { query, fields, sort } = await this.parseJsonQuery();
+			const { fields, sort } = await this.parseJsonQuery();
 			const { updatedSince } = this.queryParams;
 			let updatedSinceDate;
 			if (!settings.get<boolean>('Threads_enabled')) {
-				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
+				throw new ClientSafeError('error-not-allowed', 'Threads Disabled');
 			}
 
 			if (isNaN(Date.parse(updatedSince))) {
-				throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
+				throw new ClientSafeError('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
 			} else {
 				updatedSinceDate = new Date(updatedSince);
 			}
@@ -1164,9 +1206,9 @@ const chatEndpoints = API.v1
 			const room = await Rooms.findOneById(rid, { projection: { ...roomAccessAttributes, t: 1, _id: 1 } });
 
 			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
-				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
+				throw new ClientSafeError('error-not-allowed', 'Not Allowed');
 			}
-			const threadQuery = Object.assign({}, query, { rid, tcount: { $exists: true } });
+			const threadQuery = { rid, tcount: { $exists: true } };
 			return API.v1.success({
 				threads: {
 					update: await Messages.find(
@@ -1207,22 +1249,22 @@ const chatEndpoints = API.v1
 		},
 		async function action() {
 			const { tmid, aroundId } = this.queryParams;
-			const { query, fields, sort } = await this.parseJsonQuery();
+			const { fields, sort } = await this.parseJsonQuery();
 			const { offset, count } = await getPaginationItems(this.queryParams);
 
 			if (!settings.get('Threads_enabled')) {
-				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
+				throw new ClientSafeError('error-not-allowed', 'Threads Disabled');
 			}
 
 			const thread = await Messages.findOneById(tmid, { projection: { rid: 1 } });
 			if (!thread?.rid) {
-				throw new Meteor.Error('error-invalid-message', 'Invalid Message');
+				throw new ClientSafeError('error-invalid-message', 'Invalid Message');
 			}
 			const user = await Users.findOneById(this.userId, { projection: { _id: 1 } });
 			const room = await Rooms.findOneById(thread.rid, { projection: { ...roomAccessAttributes, t: 1, _id: 1 } });
 
 			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
-				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
+				throw new ClientSafeError('error-not-allowed', 'Not Allowed');
 			}
 
 			let resolvedOffset = offset;
@@ -1234,15 +1276,15 @@ const chatEndpoints = API.v1
 				} else {
 					const target = await Messages.findOneById(aroundId, { projection: { ts: 1, tmid: 1 } });
 					if (target?.tmid !== tmid || !target.ts) {
-						throw new Meteor.Error('error-invalid-message', 'The provided "aroundId" does not belong to the thread');
+						throw new ClientSafeError('error-invalid-message', 'The provided "aroundId" does not belong to the thread');
 					}
-					const before = await Messages.countDocuments({ ...query, tmid, _hidden: { $ne: true }, ts: { $lt: target.ts } });
+					const before = await Messages.countDocuments({ tmid, _hidden: { $ne: true }, ts: { $lt: target.ts } });
 					resolvedOffset = Math.max(0, before - Math.floor(count / 2));
 				}
 			}
 
 			const { cursor, totalCount } = Messages.findPaginated(
-				{ ...query, tmid, _hidden: { $ne: true } },
+				{ tmid, _hidden: { $ne: true } },
 				{
 					sort: resolvedSort,
 					skip: resolvedOffset,
@@ -1290,33 +1332,33 @@ const chatEndpoints = API.v1
 		},
 		async function action() {
 			const { tmid } = this.queryParams;
-			const { query, fields, sort } = await this.parseJsonQuery();
+			const { fields, sort } = await this.parseJsonQuery();
 			const { updatedSince } = this.queryParams;
 			let updatedSinceDate;
 			if (!settings.get<boolean>('Threads_enabled')) {
-				throw new Meteor.Error('error-not-allowed', 'Threads Disabled');
+				throw new ClientSafeError('error-not-allowed', 'Threads Disabled');
 			}
 
 			if (isNaN(Date.parse(updatedSince))) {
-				throw new Meteor.Error('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
+				throw new ClientSafeError('error-updatedSince-param-invalid', 'The "updatedSince" query parameter must be a valid date.');
 			} else {
 				updatedSinceDate = new Date(updatedSince);
 			}
 			const thread = await Messages.findOneById(tmid, { projection: { rid: 1 } });
 			if (!thread?.rid) {
-				throw new Meteor.Error('error-invalid-message', 'Invalid Message');
+				throw new ClientSafeError('error-invalid-message', 'Invalid Message');
 			}
 			// TODO: promise.all? this.user?
 			const user = await Users.findOneById(this.userId, { projection: { _id: 1 } });
 			const room = await Rooms.findOneById(thread.rid, { projection: { ...roomAccessAttributes, t: 1, _id: 1 } });
 
 			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
-				throw new Meteor.Error('error-not-allowed', 'Not Allowed');
+				throw new ClientSafeError('error-not-allowed', 'Not Allowed');
 			}
 			return API.v1.success({
 				messages: {
-					update: await Messages.find({ ...query, tmid, _updatedAt: { $gt: updatedSinceDate } }, { projection: fields, sort }).toArray(),
-					remove: await Messages.trashFindDeletedAfter(updatedSinceDate, { ...query, tmid }, { projection: fields, sort }).toArray(),
+					update: await Messages.find({ tmid, _updatedAt: { $gt: updatedSinceDate } }, { projection: fields, sort }).toArray(),
+					remove: await Messages.trashFindDeletedAfter(updatedSinceDate, { tmid }, { projection: fields, sort }).toArray(),
 				},
 			});
 		},
@@ -1443,10 +1485,10 @@ const chatEndpoints = API.v1
 			authRequired: true,
 			query: isChatGetURLPreviewProps,
 			response: {
-				200: ajv.compile<{ urlPreview: object }>({
+				200: ajv.compile<{ urlPreview: MessageUrl }>({
 					type: 'object',
 					properties: {
-						urlPreview: { type: 'object' }, // relaxed: opaque preview shape,
+						urlPreview: { type: 'object' }, // schema stays permissive; the handler always returns a MessageUrl,
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['urlPreview', 'success'],
@@ -1460,7 +1502,7 @@ const chatEndpoints = API.v1
 			const { roomId, url } = this.queryParams;
 
 			if (!(await canAccessRoomIdAsync(roomId, this.userId))) {
-				throw new Meteor.Error('error-not-allowed', 'Not allowed');
+				throw new ClientSafeError('error-not-allowed', 'Not allowed');
 			}
 
 			const { urlPreview } = await Message.parseOEmbedUrl(url);
@@ -1512,6 +1554,6 @@ const chatEndpoints = API.v1
 export type ChatEndpoints = ExtractRoutesFromAPI<typeof chatEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends ChatEndpoints {}
 }

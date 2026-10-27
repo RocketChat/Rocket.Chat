@@ -1,6 +1,7 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { IEmojiCustom } from '@rocket.chat/core-typings';
 import { assert, expect } from 'chai';
-import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { imgURL } from '../../data/interactions';
@@ -11,7 +12,7 @@ describe('[EmojiCustom]', () => {
 
 	let withoutAliases: IEmojiCustom;
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	after(() =>
 		request.post(api('emoji-custom.delete')).set(credentials).send({
@@ -67,7 +68,7 @@ describe('[EmojiCustom]', () => {
 	let createdCustomEmoji: IEmojiCustom;
 
 	describe('[/emoji-custom.update]', () => {
-		before((done) => {
+		before((_t, done) => {
 			void request
 				.get(api('emoji-custom.list'))
 				.set(credentials)

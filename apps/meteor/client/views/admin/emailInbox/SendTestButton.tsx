@@ -31,8 +31,8 @@ const SendTestButton = ({ id }: SendTestButtonProps) => {
 	};
 
 	return (
-		<GenericTableCell withTruncatedText>
-			<Button icon='send' small onClick={handleOnClick}>
+		<GenericTableCell truncate>
+			<Button icon='send' size='small' onClick={handleOnClick}>
 				{t('Send_Test_Email')}
 			</Button>
 		</GenericTableCell>

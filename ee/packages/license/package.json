@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/license",
-	"version": "1.2.1-rc.0",
+	"version": "1.2.1",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -10,8 +10,8 @@
 	"scripts": {
 		"build": "tsc",
 		"dev": "tsc --watch --preserveWatchOutput",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix .",
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
 		"test": "jest",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit"
@@ -27,10 +27,9 @@
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/bcrypt": "^6.0.0",
 		"@types/ws": "^8.18.2",
-		"eslint": "~10.12.0",
 		"jest": "~30.5.2",
 		"jest-websocket-mock": "~2.5.0",
-		"typescript": "~5.9.3"
+		"typescript": "~7.0.2"
 	},
 	"volta": {
 		"extends": "../../../package.json"

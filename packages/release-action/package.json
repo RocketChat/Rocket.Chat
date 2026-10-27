@@ -5,8 +5,8 @@
 	"main": "dist/index.js",
 	"scripts": {
 		"build": "tsc --noEmit && esbuild src/index.ts --bundle --platform=node --target=node24 --format=cjs --outfile=dist/index.js",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix src",
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
@@ -24,8 +24,7 @@
 	"devDependencies": {
 		"@types/node": "~24.13.6",
 		"esbuild": "~0.28.2",
-		"eslint": "~10.12.0",
-		"typescript": "~5.9.3"
+		"typescript": "~7.0.2"
 	},
 	"volta": {
 		"extends": "../../package.json"
