@@ -759,10 +759,14 @@ export class E2ERoom extends Emitter {
 			...message,
 			msg: typeof data.msg === 'string' ? data.msg : message.msg,
 			e2e: 'done' as const,
+			...(data.decryptFailed && { decryptFailed: true as const }),
 		};
 	}
 
-	async decrypt(message: string | EncryptedContent): Promise<Pick<Partial<IMessage>, 'attachments' | 'files' | 'file' | 'msg'>> {
+	/** `decryptFailed` is set when the key is missing or wrong: `msg` is then the placeholder text, not the message. */
+	async decrypt(
+		message: string | EncryptedContent,
+	): Promise<Pick<Partial<IMessage>, 'attachments' | 'files' | 'file' | 'msg'> & { decryptFailed?: true }> {
 		const span = log.span('decrypt').set('rid', this.roomId);
 		const payload = decodeEncryptedContent(message);
 		span.set('payload', payload);
@@ -772,7 +776,7 @@ export class E2ERoom extends Emitter {
 
 		if (!key) {
 			span.error('No decryption key found.');
-			return { msg: t('E2E_indecipherable') };
+			return { msg: t('E2E_indecipherable'), decryptFailed: true };
 		}
 		span.set('algorithm', key.algorithm.name);
 		span.set('extractable', key.extractable);
@@ -783,7 +787,7 @@ export class E2ERoom extends Emitter {
 			const ret: unknown = EJSON.parse(result);
 			if (typeof ret !== 'object' || ret === null) {
 				span.error('Decrypted message is not an object');
-				return { msg: t('E2E_indecipherable') };
+				return { msg: t('E2E_indecipherable'), decryptFailed: true };
 			}
 
 			if ('text' in ret && typeof ret.text === 'string' && !('msg' in ret)) {
@@ -799,7 +803,7 @@ export class E2ERoom extends Emitter {
 			return { ...ret };
 		} catch (error) {
 			span.set('error', error).error('Error decrypting message');
-			return { msg: t('E2E_Key_Error') };
+			return { msg: t('E2E_Key_Error'), decryptFailed: true };
 		}
 	}
 

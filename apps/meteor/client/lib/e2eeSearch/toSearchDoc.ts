@@ -54,11 +54,17 @@ const fileTitle = (attachment: MessageAttachment): string | undefined =>
 	isFileAttachment(attachment) && typeof attachment.title === 'string' ? attachment.title : undefined;
 
 /**
+ * True when the E2EE decrypt could not read the message (the room key is missing or wrong). The decrypt still sets
+ * `e2e` to `done`, so this flag is the only sign that `msg` is a placeholder and the file names are the stored ones.
+ */
+export const isDecryptFailed = (message: IMessage): boolean => (message as IMessage & { decryptFailed?: true }).decryptFailed === true;
+
+/**
  * Turns a decrypted end-to-end encrypted message into the document that the local search index stores.
  * It returns `undefined` for a message that has nothing to index. It does not change the message.
  */
 export const toSearchDoc = (message: IMessage): E2EESearchDoc | undefined => {
-	if (message.t !== 'e2e' || message.e2e !== 'done') {
+	if (message.t !== 'e2e' || message.e2e !== 'done' || isDecryptFailed(message)) {
 		return undefined;
 	}
 

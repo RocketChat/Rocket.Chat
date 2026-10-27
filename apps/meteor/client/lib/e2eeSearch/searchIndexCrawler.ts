@@ -3,6 +3,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import type { E2EESearchRoomState, ISearchIndexBackend } from '@rocket.chat/desktop-api';
 
 import type { SearchIndexWriter } from './searchIndexWriter';
+import { isDecryptFailed } from './toSearchDoc';
 
 /**
  * The `chat.syncMessages` query params that the crawler sends: always one paging cursor, because a call without one has
@@ -76,7 +77,7 @@ export const createSearchIndexCrawler = ({
 			if (!isE2EEMessage(decrypted)) continue;
 
 			const pending = pendingDecrypt.get(rid);
-			if (decrypted.e2e !== 'done') {
+			if (decrypted.e2e !== 'done' || isDecryptFailed(decrypted)) {
 				if (pending) pending.set(message._id, message);
 				else pendingDecrypt.set(rid, new Map([[message._id, message]]));
 				continue;

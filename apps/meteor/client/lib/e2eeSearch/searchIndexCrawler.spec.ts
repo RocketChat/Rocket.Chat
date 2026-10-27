@@ -339,6 +339,22 @@ describe('createSearchIndexCrawler', () => {
 			expect(await crawler.retryPendingDecrypt('room1')).toEqual({ indexed: 0 });
 			expect(crawler.getPendingDecrypt('room1').map((message) => message._id)).toEqual(['m2']);
 		});
+
+		it('keeps a message pending when the client decrypt reports a missing room key, and indexes it when the key arrives', async () => {
+			const { crawler, decryptMessage } = await setup({
+				pages: [{ updated: [encrypted('m2', NOW - 2000)], deleted: [], cursor: { next: null, previous: null } }],
+			});
+			// The client decrypt sets e2e 'done' even when the key is missing; the flag tells the two cases apart.
+			decryptMessage.mockImplementation(
+				async (message: IMessage) => ({ ...message, msg: 'placeholder', e2e: 'done', decryptFailed: true }) as IMessage,
+			);
+			await crawler.backfillRoomPage('room1');
+			expect(crawler.getPendingDecrypt('room1').map((message) => message._id)).toEqual(['m2']);
+
+			decryptMessage.mockImplementation(async (message: IMessage) => ({ ...message, e2e: 'done' }) as IMessage);
+			expect(await crawler.retryPendingDecrypt('room1')).toEqual({ indexed: 1 });
+			expect(crawler.getPendingDecrypt('room1')).toEqual([]);
+		});
 	});
 
 	describe('forgetRoom', () => {
