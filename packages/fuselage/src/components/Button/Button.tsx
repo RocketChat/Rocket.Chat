@@ -40,8 +40,11 @@ function Button({
 	disabled,
 	children,
 	className: rawClassName,
-	...props
+	...rest
 }: ButtonProps) {
+	// `Menu` hands `pressed` to whatever trigger it clones; a `Button` has no pressed look, so it stays off the DOM
+	const { pressed: _pressed, ...props } = rest as typeof rest & { pressed?: boolean };
+
 	const extraProps =
 		(is === 'a' && {
 			rel: rel ?? (external ? 'noopener noreferrer' : undefined),

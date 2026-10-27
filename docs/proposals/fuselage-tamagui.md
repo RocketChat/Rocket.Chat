@@ -257,11 +257,11 @@ This is the one list to track removing Tamagui's runtime from Fuselage's web bui
 **1. Prototype and go/no-go**
 - [x] Lower three definitions at build time (`MessageName`, `ButtonGroup`, `ButtonFrame`) with Tamagui's own resolver; computed styles identical, render 70–76% faster (branch `proto/fuselage-lowered-styled`, `docs/proposals/fuselage-lowered-styled.md`).
 - [x] Rebase the prototype onto the current pilot and re-measure the three definitions now that `forceStyle` is gone and `Button` takes a single `variant` (branch `proto/fuselage-lowered-styled-v2`: JS +7.4 kB gzip, CSS +10.0 kB gzip, pixel-identical stories).
-- [ ] Gate: `ButtonFrame`'s ahead-of-time CSS close to what the runtime inserts for its stories (56 kB raw). If not, stop and rethink before step 3. Not met yet: 160.5 kB emitted, but only 57.4 kB of it is reachable from what `getButtonStates` produces. The rest is `kind`/`pressed`/`inactive` combinations no caller can make, which step 2 removes.
+- [x] Gate: `ButtonFrame`'s ahead-of-time CSS close to what the runtime inserts for its stories (56 kB raw). Met after step 2: 58.9 kB emitted against 55.8 kB inserted, down from 160.5 kB.
 
 **2. Fewer variant combinations**
-- [ ] `ButtonFrame` and `IconButton`: fold `kind`, `pressed`, `inactive` and `ghost` into one combined variant, or make the ordered resolution the default.
-- [ ] Re-measure the lowered CSS for every definition (`scripts/measure-lowered.mts`).
+- [x] `ButtonFrame` and `IconButton`: fold `kind`, `pressed` and `inactive` into one `look` variant whose values are only the combinations `getButtonStates` produces; `ghost` stays a separate variant after it.
+- [x] Re-measure the lowered CSS for every definition (`scripts/measure-lowered.mts`): 1,749 rules, 136 kB raw, 19.8 kB gzip, down from 23.9 kB; 226 of 230 definitions lower, the other 4 use a styled `context`.
 
 **3. Remove what needs the runtime inside frames**
 - [x] `forceStyle`: no frame forces a state any more; state classes are gone.

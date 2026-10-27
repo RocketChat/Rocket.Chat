@@ -71,8 +71,33 @@ export const disabledStyle = (colors: ButtonColors) => ({
 	},
 });
 
-const byKind = <T,>(style: (colors: ButtonColors) => T) =>
-	Object.fromEntries(Object.entries(buttonColors).map(([kind, colors]) => [kind, style(colors)])) as Record<ButtonKind, T>;
+// Only the default colors: hover, press and focus still show over a pressed button
+const pressedStyle = (colors: ButtonColors) => {
+	const style = kindStyle(colors);
+	return {
+		...style,
+		borderColor: { ...style.borderColor, default: colors.pressedBorderColor },
+		backgroundColor: { ...style.backgroundColor, default: colors.pressedBackgroundColor },
+	};
+};
+
+export const pressableKinds = ['icon', 'icon-info', 'icon-success', 'icon-warning', 'icon-danger'] as const;
+
+type PressableKind = (typeof pressableKinds)[number];
+
+type ButtonLook = ButtonKind | `${PressableKind}-pressed` | `${ButtonKind}-disabled`;
+
+/**
+ * Every color combination `getButtonStates` can produce, as one variant: a kind, a pressable kind pressed, or a kind
+ * disabled. Separate kind, pressed and disabled variants would also allow combinations no button can reach.
+ */
+const looks = Object.fromEntries(
+	Object.entries(buttonColors).flatMap(([kind, colors]) => [
+		[kind, kindStyle(colors)],
+		...(pressableKinds.some((pressable) => pressable === kind) ? [[`${kind}-pressed`, pressedStyle(colors)]] : []),
+		[`${kind}-disabled`, { ...kindStyle(colors), ...disabledStyle(colors) }],
+	]),
+) as Record<ButtonLook, ReturnType<typeof kindStyle>>;
 
 const segmentCorners = (start: string | 0, end: string | 0) => ({
 	borderStartStartRadius: start,
@@ -105,8 +130,6 @@ const ghostStyle = (colors: (typeof ghostButtonColors)[GhostKind]) => ({
 	},
 });
 
-export const pressableKinds = ['icon', 'icon-info', 'icon-success', 'icon-warning', 'icon-danger'] as const;
-
 /** Layout, typography and colors of `rcx-button`. */
 export const ButtonFrame = styled(View, {
 	render: 'button',
@@ -131,21 +154,10 @@ export const ButtonFrame = styled(View, {
 	borderRadius: buttonBorderRadius,
 	...kindStyle(buttonColors.secondary),
 
-	// Prop order decides which variant wins: `kind`, then `pressed`, then `inactive`
+	// Prop order decides which variant wins: `look`, then `ghost`
 	variants: {
-		kind: byKind(kindStyle),
-		// Only the default colors: hover, press and focus still show over a pressed button
-		pressed: Object.fromEntries(
-			pressableKinds.map((kind) => [
-				kind,
-				{
-					borderColor: { default: buttonColors[kind].pressedBorderColor },
-					backgroundColor: { default: buttonColors[kind].pressedBackgroundColor },
-				},
-			]),
-		) as Record<(typeof pressableKinds)[number], object>,
-		// Not `disabled`: Tamagui would add `aria-disabled`; the value is the kind whose disabled colors apply
-		inactive: byKind(disabledStyle),
+		// Not a `disabled` variant: Tamagui would add `aria-disabled`
+		look: looks,
 		size: {
 			small: { ...font('c2'), ...rectangularSize(28, 8, 'c1') },
 			medium: { ...font('c2'), ...rectangularSize(32, 12, 'c1') },
@@ -227,16 +239,20 @@ export const ButtonBadge = styled(View, {
 export const renderButtonElement = (is: ElementType, disabled: boolean | undefined) =>
 	createElement(is, disabled === undefined ? {} : { disabled });
 
-/** The color variants in the order they override each other, plus the disabled look. */
+const getLook = (kind: ButtonKind, disabled: boolean | undefined, pressed: boolean | undefined): ButtonLook => {
+	if (disabled) return `${kind}-disabled`;
+	const pressable = pressed ? pressableKinds.find((candidate) => candidate === kind) : undefined;
+	return pressable ? `${pressable}-pressed` : kind;
+};
+
+/** The color variants in the order they override each other. */
 export const getButtonStates = (
 	kind: ButtonKind,
 	disabled: boolean | undefined,
 	segment: ButtonSegment | undefined,
 	pressed?: boolean,
 ) => ({
-	kind,
-	pressed: pressed ? pressableKinds.find((pressable) => pressable === kind) : undefined,
-	inactive: disabled ? kind : undefined,
+	look: getLook(kind, disabled, pressed),
 	segment: segment?.position,
 	ghost: segment?.ghost ? segment.variant : undefined,
 });
