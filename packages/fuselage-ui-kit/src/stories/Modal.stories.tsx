@@ -1,4 +1,4 @@
-/* eslint-disable new-cap */
+/* oxlint-disable new-cap */
 import {
 	AnimatedVisibility,
 	Button,
@@ -33,7 +33,7 @@ const DemoModal = ({ children, visible }: { children?: ReactNode; visible: boole
 			<ModalFooter>
 				<ButtonGroup align='end'>
 					<Button onClick={action('cancel')}>Cancel</Button>
-					<Button primary onClick={action('submit')}>
+					<Button variant='primary' onClick={action('submit')}>
 						Submit
 					</Button>
 				</ButtonGroup>
@@ -82,6 +82,10 @@ const createStory = (blocks: readonly UiKit.LayoutBlock[], errors: Record<string
 
 export const Divider = createStory(payloads.divider);
 
+export const Header = createStory(payloads.header);
+
+export const Markdown = createStory(payloads.markdown);
+
 export const SectionWithPlainText = createStory(payloads.sectionWithPlainText);
 
 export const SectionWithMrkdwn = createStory(payloads.sectionWithMrkdwn);
@@ -95,6 +99,8 @@ export const SectionWithImageAccessory = createStory(payloads.sectionWithImageAc
 export const SectionWithOverflowMenuAccessory = createStory(payloads.sectionWithOverflowMenuAccessory);
 
 export const SectionWithDatePickerAccessory = createStory(payloads.sectionWithDatePickerAccessory);
+
+export const SectionWithRadioButtonAccessory = createStory(payloads.sectionWithRadioButtonAccessory);
 
 export const ImageWithTitle = createStory(payloads.imageWithTitle);
 
@@ -126,7 +132,27 @@ export const InputWithPlainTextInput = createStory(payloads.inputWithPlainTextIn
 	'input-0': 'Error',
 });
 
+export const InputWithNumberInput = createStory(payloads.inputWithNumberInput, {
+	'input-0': 'Error',
+});
+
+export const InputWithEmailTextInput = createStory(payloads.inputWithEmailTextInput, {
+	'input-0': 'Error',
+});
+
+export const InputWithUrlTextInput = createStory(payloads.inputWithUrlTextInput, {
+	'input-0': 'Error',
+});
+
 export const InputWithMultiUsersSelect = createStory(payloads.inputWithMultiUsersSelect, {
+	'input-0': 'Error',
+});
+
+export const InputWithConversationsSelect = createStory(payloads.inputWithConversationsSelect, {
+	'input-0': 'Error',
+});
+
+export const InputWithMultiConversationsSelect = createStory(payloads.inputWithMultiConversationsSelect, {
 	'input-0': 'Error',
 });
 
@@ -135,6 +161,10 @@ export const InputWithStaticSelect = createStory(payloads.inputWithStaticSelect,
 });
 
 export const InputWithDatePicker = createStory(payloads.inputWithDatePicker, {
+	'input-0': 'Error',
+});
+
+export const InputWithDateTimePicker = createStory(payloads.inputWithDateTimePicker, {
 	'input-0': 'Error',
 });
 
@@ -147,3 +177,7 @@ export const Conditional = createStory(payloads.conditional);
 export const Callout = createStory(payloads.callout);
 
 export const CalloutWithAction = createStory(payloads.calloutWithAction);
+
+export const Table = createStory(payloads.table);
+
+export const Video = createStory(payloads.video);

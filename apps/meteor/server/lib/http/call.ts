@@ -25,7 +25,6 @@ type HttpCallOptions = {
 	integrity?: string;
 };
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 interface HTTPResponse {
 	statusCode?: number;
 	headers?: { [id: string]: string };

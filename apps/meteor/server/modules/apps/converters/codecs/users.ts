@@ -45,7 +45,7 @@ export const UserCodec = z.codec(z.custom<IUser>(), z.custom<IAppsUser>(), {
 			customFields: user.customFields,
 			isFederated: user.federated,
 			federation: user.federation,
-			sipExtension: user.freeSwitchExtension,
+			sipExtension: user.sipExtension,
 			settings: {
 				preferences: {
 					...(user?.settings?.preferences?.language && { language: user.settings.preferences.language }),
@@ -72,6 +72,6 @@ export const UserCodec = z.codec(z.custom<IUser>(), z.custom<IAppsUser>(), {
 			appId: user.appId,
 			federated: user.isFederated,
 			federation: user.federation,
-			freeSwitchExtension: user.sipExtension,
+			sipExtension: user.sipExtension,
 		}) as unknown as IUser,
 });

@@ -1,5 +1,5 @@
 import { FocusScope } from '@react-aria/focus';
-import { Badge, Box, Dropdown, IconButton } from '@rocket.chat/fuselage';
+import { Badge, Box, Dropdown, IconButton, type IconButtonProps } from '@rocket.chat/fuselage';
 import { useDropdownVisibility } from '@rocket.chat/ui-client';
 import { useEffect, useId, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -13,6 +13,14 @@ import { useOngoingCalls } from '../context/OngoingCallsContext';
  * It is the whole disclosure and not just the list, because the two answer each other: the button's mark is the
  * count the list would show, and a call that starts ringing opens the list by itself.
  */
+const getVariant = (isOffering: boolean, isRinging: boolean): IconButtonProps['variant'] => {
+	if (isOffering) {
+		return isRinging ? 'secondary-danger' : 'primary';
+	}
+
+	return isRinging ? 'danger' : undefined;
+};
+
 const OngoingCallsDropdown = () => {
 	const { t } = useTranslation();
 	const { ringing, ongoing, declined } = useOngoingCalls();
@@ -57,10 +65,8 @@ const OngoingCallsDropdown = () => {
 			<Box display='inline-flex'>
 				<IconButton
 					ref={reference}
-					small
-					secondary={isOffering}
-					danger={isRinging}
-					info={isOffering && !isRinging}
+					size='small'
+					variant={getVariant(isOffering, isRinging)}
 					onClick={() => {
 						setOpenedByUser(!isVisible);
 						toggle();

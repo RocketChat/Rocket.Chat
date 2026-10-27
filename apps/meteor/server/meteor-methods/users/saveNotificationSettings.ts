@@ -1,10 +1,7 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ISubscription } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Subscriptions } from '@rocket.chat/models';
-import { check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { notifyOnSubscriptionChangedById } from '../../lib/notifyListener';
 import { getUserNotificationPreference } from '../../lib/utils/getUserNotificationPreference';
 
@@ -21,13 +18,6 @@ export type NotificationFieldType =
 	| 'hideMentionStatus'
 	| 'muteGroupMentions'
 	| 'audioNotificationValue';
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		saveNotificationSettings(roomId: string, field: NotificationFieldType, value: string): boolean;
-		saveAudioNotificationValue(subId: string, value: string): boolean;
-	}
-}
 
 export const saveNotificationSettingsMethod = async (
 	userId: string,
@@ -38,7 +28,7 @@ export const saveNotificationSettingsMethod = async (
 	const getNotificationPrefValue = async (field: string, value: unknown) => {
 		if (value === 'default') {
 			if (!userId) {
-				throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+				throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 					method: 'saveNotificationSettings',
 				});
 			}
@@ -105,20 +95,20 @@ export const saveNotificationSettingsMethod = async (
 	const fieldsMustHaveBasicValues = ['emailNotifications', 'mobilePushNotifications', 'desktopNotifications'];
 
 	if (isInvalidNotification) {
-		throw new Meteor.Error('error-invalid-settings', 'Invalid settings field', {
+		throw new ClientSafeError('error-invalid-settings', 'Invalid settings field', {
 			method: 'saveNotificationSettings',
 		});
 	}
 
 	if (fieldsMustHaveBasicValues.includes(field) && !basicValuesForNotifications.includes(value)) {
-		throw new Meteor.Error('error-invalid-settings', 'Invalid settings value', {
+		throw new ClientSafeError('error-invalid-settings', 'Invalid settings value', {
 			method: 'saveNotificationSettings',
 		});
 	}
 
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId(roomId, userId);
 	if (!subscription) {
-		throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', {
+		throw new ClientSafeError('error-invalid-subscription', 'Invalid subscription', {
 			method: 'saveNotificationSettings',
 		});
 	}
@@ -130,43 +120,3 @@ export const saveNotificationSettingsMethod = async (
 
 	return true;
 };
-
-Meteor.methods<ServerMethods>({
-	async saveNotificationSettings(roomId, field, value) {
-		methodDeprecationLogger.method('saveNotificationSettings', '9.0.0', '/v1/rooms.saveNotification');
-		const userId = Meteor.userId();
-		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'saveNotificationSettings',
-			});
-		}
-		check(roomId, String);
-		check(field, String);
-		check(value, String);
-
-		return saveNotificationSettingsMethod(userId, roomId, field, value);
-	},
-
-	async saveAudioNotificationValue(rid, value) {
-		const userId = Meteor.userId();
-		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
-				method: 'saveAudioNotificationValue',
-			});
-		}
-
-		const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userId);
-		if (!subscription) {
-			throw new Meteor.Error('error-invalid-subscription', 'Invalid subscription', {
-				method: 'saveAudioNotificationValue',
-			});
-		}
-
-		const saveAudioNotificationResponse = await saveAudioNotificationValue(subscription._id, value);
-		if (saveAudioNotificationResponse.modifiedCount) {
-			void notifyOnSubscriptionChangedById(subscription._id);
-		}
-
-		return true;
-	},
-});

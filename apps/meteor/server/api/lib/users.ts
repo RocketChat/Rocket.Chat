@@ -28,7 +28,7 @@ export async function findUsersToAutocomplete({
 			nickname: 1,
 			status: 1,
 			avatarETag: 1,
-			freeSwitchExtension: 1,
+			sipExtension: 1,
 		},
 		sort: {
 			username: 1,
@@ -102,10 +102,9 @@ export function getNonEmptyFields(fields: Record<string, 1 | 0>): Record<string,
 }
 
 /**
- * get the default query if **query** is empty (`{}`) or `undefined`/`null`
- * @param query the query from parsed jsonQuery
+ * get the default query
  */
-export function getNonEmptyQuery<T extends IUser>(query: Mongo.Query<T> | undefined | null, canSeeAllUserInfo?: boolean): Mongo.Query<T> {
+export function getNonEmptyQuery(canSeeAllUserInfo?: boolean): Mongo.Query<IUser> {
 	const defaultQuery: Mongo.Query<IUser> = {
 		$or: [{ username: { $regex: '', $options: 'i' } }, { name: { $regex: '', $options: 'i' } }],
 	};
@@ -114,11 +113,7 @@ export function getNonEmptyQuery<T extends IUser>(query: Mongo.Query<T> | undefi
 		defaultQuery.$or?.push({ 'emails.address': { $regex: '', $options: 'i' } });
 	}
 
-	if (!query || Object.keys(query).length === 0) {
-		return defaultQuery;
-	}
-
-	return { ...defaultQuery, ...query };
+	return defaultQuery;
 }
 
 type FindPaginatedUsersByStatusProps = {
@@ -185,7 +180,7 @@ export async function findPaginatedUsersByStatus({
 		type: 1,
 		reason: 1,
 		federated: 1,
-		freeSwitchExtension: 1,
+		sipExtension: 1,
 	};
 
 	if (searchTerm?.trim()) {

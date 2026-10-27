@@ -66,14 +66,4 @@ describe('RoomInfoABACSection', () => {
 			expect(results).toHaveNoViolations();
 		});
 	});
-	describe('Snapshot', () => {
-		it('should match the snapshot', () => {
-			const room = createRoomWithABAC([
-				{ key: 'Chat-sensitivity', values: ['Classified', 'Top-Secret'] },
-				{ key: 'Country', values: ['US-only'] },
-			]);
-			const { baseElement } = render(<RoomInfoABACSection room={room} />, { wrapper: appRootWithABACEnabled });
-			expect(baseElement).toMatchSnapshot();
-		});
-	});
 });

@@ -19,7 +19,7 @@ const Item = ({ block: element, surfaceRenderer: parser, index }: ItemProps) => 
 		case UiKit.TextObjectType.PLAIN_TEXT:
 		case UiKit.TextObjectType.MRKDWN:
 			return (
-				<Box is='span' fontScale='c1' color='hint' margin={4}>
+				<Box is='span' fontScale='c1' color='hint'>
 					{renderedElement}
 				</Box>
 			);

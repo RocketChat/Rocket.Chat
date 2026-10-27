@@ -1,5 +1,6 @@
+import { after, before, describe, it } from 'node:test';
+
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 import type { Response } from 'supertest';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
@@ -48,7 +49,7 @@ describe('[OAuth Server]', () => {
 	let refreshedAccessToken: string;
 	const redirectUri = 'http://asd.com';
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	after(async () => {
 		await request
@@ -112,7 +113,7 @@ describe('[OAuth Server]', () => {
 					const location = new URL(res.headers.location);
 					expect(location.origin).to.be.equal(redirectUri);
 					expect(location.searchParams.get('code')).to.be.string;
-					// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+					// oxlint-disable-next-line @typescript-eslint/no-non-null-assertion
 					code = location.searchParams.get('code')!;
 				});
 		});

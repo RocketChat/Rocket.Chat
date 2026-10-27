@@ -1,19 +1,23 @@
 import { AI_LICENSE_MODULE, MAX_SEARCH_ANSWER_MESSAGES } from '@rocket.chat/ai-search';
-import { Box, Button, Callout, Icon } from '@rocket.chat/fuselage';
-import { Page, PageHeader, PageScrollableContentWithShadow, useFeaturePreview } from '@rocket.chat/ui-client';
+import { Box, Button, Callout, Skeleton } from '@rocket.chat/fuselage';
+import { Page, PageScrollableContentWithShadow, useDocumentTitle, useFeaturePreview } from '@rocket.chat/ui-client';
 import { useSearchParameter, useSetting } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import SearchAnswerPanel from './SearchAnswerPanel';
+import SearchResultsHeader from './SearchResultsHeader';
 import SearchSourceResult from './SearchSourceResult';
 import { useAISearchAnswer } from './hooks/useAISearchAnswer';
 import { useAISearchResults } from './hooks/useAISearchResults';
+import AISearchErrorCallout from '../../components/AISearchErrorCallout';
+import ResultsLiveRegion from '../../components/ResultsLiveRegion';
 import { useHasLicenseModule } from '../../hooks/useHasLicenseModule';
 
 const SearchPage = (): ReactElement => {
 	const { t } = useTranslation();
+	useDocumentTitle(t('Intelligent_Search'));
 	const queryParam = useSearchParameter('q') ?? '';
 	const aiSearchFeatureEnabled = useFeaturePreview('aiSearch');
 	const intelligentSearchEnabled = useSetting('AI_Intelligent_Search_Enabled', false);
@@ -21,6 +25,7 @@ const SearchPage = (): ReactElement => {
 	const canUseAISearch = Boolean(hasIntelligentSearchLicense && aiSearchFeatureEnabled);
 	const {
 		query: debouncedQuery,
+		filters,
 		intelligent,
 		meta,
 		hasMoreResults,
@@ -28,6 +33,7 @@ const SearchPage = (): ReactElement => {
 		isLoading,
 		isPlaceholderData,
 		error: searchError,
+		refetch: refetchResults,
 	} = useAISearchResults(queryParam, canUseAISearch && intelligentSearchEnabled);
 	const answerMessages = useMemo(
 		() =>
@@ -37,6 +43,12 @@ const SearchPage = (): ReactElement => {
 			})),
 		[intelligent],
 	);
+
+	const showUpsell = hasIntelligentSearchLicense === false;
+	const showFeatureDisabled = Boolean(hasIntelligentSearchLicense && !aiSearchFeatureEnabled);
+	const showSearchDisabled = canUseAISearch && !intelligentSearchEnabled;
+	const showNotConfigured = Boolean(canUseAISearch && intelligentSearchEnabled && meta && !meta.intelligentSearchConfigured);
+	const showCallouts = showUpsell || showFeatureDisabled || showSearchDisabled || showNotConfigured || !!searchError;
 
 	const canGenerateAnswer = Boolean(meta?.answerGenerationConfigured && !isPlaceholderData && debouncedQuery && intelligent.length > 0);
 	const answerResult = useAISearchAnswer(debouncedQuery, answerMessages, canGenerateAnswer);
@@ -66,54 +78,29 @@ const SearchPage = (): ReactElement => {
 
 	return (
 		<Page background='tint'>
-			<PageHeader title={t('Intelligent_Search')} />
 			<PageScrollableContentWithShadow padding={24}>
 				<Box marginInline='auto' width='full' maxWidth='x800'>
-					<Box display='flex' flexDirection='column' marginBlockEnd={16} gap={8}>
-						{debouncedQuery ? (
-							<Box display='flex' alignItems='center' fontScale='h4' gap={8} minWidth={0}>
-								<Icon name='magnifier' size='x18' />
-								<Box display='flex' alignItems='baseline' gap={8} minWidth={0}>
-									<Box flexShrink={0}>{t('Results')}</Box>
-									<Box color='hint' withTruncatedText>
-										{debouncedQuery}
-									</Box>
-								</Box>
-							</Box>
-						) : (
-							<Box color='hint' fontScale='p2'>
-								{t('Intelligent_Search_page_empty_state')}
-							</Box>
-						)}
-						<Box display='flex' alignItems='center' color='hint' fontScale='p2' gap={8}>
-							<Icon name='stars' size='x14' />
-							{t('Intelligent_Search_scope_all_rooms')}
+					<SearchResultsHeader query={debouncedQuery} filters={filters} />
+					{showCallouts && (
+						<Box display='flex' flexDirection='column' gap={16} marginBlockEnd={16}>
+							{showUpsell && (
+								<Callout type='info' icon='stars' title={t('Intelligent_Search_upsell_title')}>
+									{t('Intelligent_Search_upsell_description')}
+								</Callout>
+							)}
+							{showFeatureDisabled && (
+								<Callout type='warning' icon='warning' title={t('AI_Search_feature_disabled_title')}>
+									{t('AI_Search_feature_disabled_description')}
+								</Callout>
+							)}
+							{showSearchDisabled && (
+								<Callout type='warning' icon='warning' title={t('Intelligent_Search_disabled_title')}>
+									{t('Intelligent_Search_disabled_description')}
+								</Callout>
+							)}
+							{showNotConfigured && <AISearchErrorCallout role='alert' notConfigured />}
+							{searchError && <AISearchErrorCallout role='alert' error={searchError} onRetry={() => void refetchResults()} />}
 						</Box>
-					</Box>
-					{hasIntelligentSearchLicense === false && (
-						<Callout type='info' icon='stars' title={t('Intelligent_Search_upsell_title')} marginBlockEnd={16}>
-							{t('Intelligent_Search_upsell_description')}
-						</Callout>
-					)}
-					{hasIntelligentSearchLicense && !aiSearchFeatureEnabled && (
-						<Callout type='warning' icon='warning' title={t('AI_Search_feature_disabled_title')} marginBlockEnd={16}>
-							{t('AI_Search_feature_disabled_description')}
-						</Callout>
-					)}
-					{canUseAISearch && !intelligentSearchEnabled && (
-						<Callout type='warning' icon='warning' title={t('Intelligent_Search_disabled_title')} marginBlockEnd={16}>
-							{t('Intelligent_Search_disabled_description')}
-						</Callout>
-					)}
-					{canUseAISearch && intelligentSearchEnabled && meta && !meta.intelligentSearchConfigured && (
-						<Callout type='warning' icon='warning' title={t('Intelligent_Search_missing_configuration_title')} marginBlockEnd={16}>
-							{t('Intelligent_Search_missing_configuration_description')}
-						</Callout>
-					)}
-					{searchError && (
-						<Callout type='danger' icon='warning' marginBlockEnd={16}>
-							{t('AI_Search_request_failed')}
-						</Callout>
 					)}
 					{debouncedQuery && (
 						<SearchAnswerPanel
@@ -123,27 +110,15 @@ const SearchPage = (): ReactElement => {
 							error={answerResult.error}
 							disabled={!canGenerateAnswer}
 							emptyReason={answerEmptyReason}
-							onGenerate={() => void answerResult.refetch()}
+							onRetry={() => void answerResult.refetch()}
 						/>
 					)}
-					<Box display='flex' alignItems='center' justifyContent='space-between' marginBlockEnd={12}>
-						<Box is='h2' fontScale='h4'>
-							{t('Sources')} · {intelligent.length} {t('Messages')}
-						</Box>
-						{hasMoreResults && (
-							<Button small onClick={loadMore}>
-								{t('Show_more')}
-							</Button>
-						)}
-					</Box>
-					{!debouncedQuery && (
-						<Box display='flex' justifyContent='center' color='hint' padding={24}>
-							{t('Intelligent_Search_start_from_top_bar')}
-						</Box>
-					)}
+					<ResultsLiveRegion shouldAnnounce={false} itemCount={intelligent.length} isLoading={isLoading} />
 					{isLoading && (
-						<Box display='flex' justifyContent='center' color='hint' padding={24}>
-							{t('Loading')}
+						<Box aria-busy={isLoading} display='flex' flexDirection='column' justifyContent='center'>
+							<Skeleton width='100%' />
+							<Skeleton width='100%' />
+							<Skeleton width='100%' />
 						</Box>
 					)}
 					{debouncedQuery && !isLoading && !searchError && intelligent.length === 0 && (
@@ -151,11 +126,16 @@ const SearchPage = (): ReactElement => {
 							{t('No_results_found')}
 						</Box>
 					)}
-					<Box role='list'>
+					<Box role='list' aria-label={t('Sources')}>
 						{intelligent.map((item) => (
 							<SearchSourceResult key={item._id} item={item} />
 						))}
 					</Box>
+					{hasMoreResults && (
+						<Box marginBlockStart={20}>
+							<Button onClick={loadMore}>{t('Show_more_messages')}</Button>
+						</Box>
+					)}
 				</Box>
 			</PageScrollableContentWithShadow>
 		</Page>

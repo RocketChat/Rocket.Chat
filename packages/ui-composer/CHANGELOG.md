@@ -1,5 +1,18 @@
 # @rocket.chat/ui-composer
 
+## 6.0.0
+
+### Minor Changes
+
+- ([#41020](https://github.com/RocketChat/Rocket.Chat/pull/41020)) Adds a **Realtime Message Composer**, available as an opt-in **Feature Preview** (My Account → Feature Preview → Message → **Realtime message composer**). While the feature preview is off, the message composer keeps its current plain-text behavior.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [eeca122b913518d2231f9d9568a10873705845ee, 4be043d9356fd50d2e3e1b585008368f90e95505, 71cb69992cf9f6a85fff7278dbf5481b64b5c735, 6843a962e18a7c37986bc08e8a7cc9bbd8072b77, 37faaa89ad1b4b721d6054e40a91327bd8140525, e61b41d340e2722037de67551982fd70773d0617]:</summary>
+  - @rocket.chat/ui-client@35.0.0
+
+  </details>
+
 ## 6.0.0-rc.0
 
 ### Minor Changes

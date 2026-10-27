@@ -1,7 +1,6 @@
 import { t } from '../../../../lib/i18n';
 import { dispatchToastMessage } from '../../../lib/toast';
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 interface ApiError {
 	xhr: {
 		responseJSON: {

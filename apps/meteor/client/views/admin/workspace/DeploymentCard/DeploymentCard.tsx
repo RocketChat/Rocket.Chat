@@ -33,7 +33,7 @@ const DeploymentCard = ({
 	});
 
 	return (
-		<Card height='full'>
+		<Card>
 			<CardBody flexDirection='column'>
 				<WorkspaceCardSection>
 					<WorkspaceCardSectionTitle title={t('Deployment')} variant='h4' />
@@ -100,7 +100,7 @@ const DeploymentCard = ({
 
 			{!!instances.length && (
 				<CardControls>
-					<Button medium onClick={handleInstancesModal}>
+					<Button size='medium' onClick={handleInstancesModal}>
 						{t('Instances')}
 					</Button>
 				</CardControls>

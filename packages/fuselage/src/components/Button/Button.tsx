@@ -1,10 +1,13 @@
-import type { AllHTMLAttributes, RefAttributes } from 'react';
+import type { AllHTMLAttributes } from 'react';
 import { useMemo } from 'react';
 
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 import { Icon, type IconProps } from '../Icon';
 
-export type ButtonProps = Omit<BoxProps, 'ref'> & {
+export type ButtonProps = {
+	/** Renders a link instead of a button, for actions that navigate or download. */
+	is?: 'button' | 'a';
 	variant?: 'primary' | 'secondary' | 'danger' | 'warning' | 'success' | 'secondary-danger' | 'secondary-warning' | 'secondary-success';
 	size?: 'mini' | 'tiny' | 'small' | 'medium' | 'large';
 	/** @deprecated Use `variant="primary"` instead. */
@@ -30,10 +33,11 @@ export type ButtonProps = Omit<BoxProps, 'ref'> & {
 	/** @deprecated Use `size="large"` instead. */
 	large?: boolean;
 	square?: boolean;
+	/** Lowers the minimum width so a label of one or two characters fits. */
+	compact?: boolean;
 	external?: boolean;
 	icon?: IconProps['name'];
-} & Omit<AllHTMLAttributes<HTMLButtonElement | HTMLAnchorElement>, 'is' | 'className' | 'size'> &
-	RefAttributes<HTMLButtonElement | HTMLAnchorElement>;
+} & ElementProps<HTMLButtonElement | HTMLAnchorElement, AllHTMLAttributes<HTMLButtonElement | HTMLAnchorElement>>;
 
 /**
  * Indicates an actionable user action.
@@ -57,6 +61,7 @@ function Button({
 	medium,
 	large,
 	square,
+	compact,
 	loading,
 	disabled,
 	children,
@@ -99,13 +104,13 @@ function Button({
 	return (
 		<Box
 			is={is}
-			type='button'
 			rcx-button
 			{...kindAndVariantProps}
 			rcx-button--small={effectiveSize === 'small'}
 			rcx-button--medium={effectiveSize === 'medium'}
 			rcx-button--large={effectiveSize === 'large'}
 			rcx-button--square={square}
+			rcx-button--compact={compact}
 			rcx-button--tiny-square={effectiveSize === 'tiny' && square}
 			rcx-button--mini-square={effectiveSize === 'mini' && square}
 			rcx-button--small-square={effectiveSize === 'small' && square}
@@ -118,8 +123,8 @@ function Button({
 			{...props}
 		>
 			<span className='rcx-button--content'>
-				{icon && !loading && <Icon size='x16' name={icon} marginInlineEnd={4} />}
-				{loading && <Icon size='x16' name='loading' marginInlineEnd={4} />}
+				{icon && !loading && <Icon className='rcx-button__icon' size='x16' name={icon} />}
+				{loading && <Icon className='rcx-button__icon' size='x16' name='loading' />}
 				{children}
 			</span>
 		</Box>

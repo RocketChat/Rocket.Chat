@@ -31,8 +31,10 @@ services:
       # the proxy always closes pooled conns first and never reuses a dead one
       - HTTP_SOCKET_TIMEOUT_MS=120000
     depends_on:
-      - traefik
-      - mongo
+      traefik:
+        condition: service_started
+      mongo:
+        condition: service_healthy
     labels:
       traefik.enable: true
       traefik.http.services.rocketchat.loadbalancer.server.port: 3000
@@ -189,11 +191,32 @@ services:
     depends_on:
       - nats
 
+  xmpp-server-service:
+    build:
+      dockerfile: ${GITHUB_WORKSPACE:-}/ee/apps/Dockerfile
+      context: out/xmpp-server-service
+      target: release-standard
+      x-bake:
+        platforms:
+          - linux/amd64
+          - linux/arm64
+      args:
+        SERVICE: xmpp-server-service
+    image: ghcr.io/${LOWERCASE_REPOSITORY}/xmpp-server-service:${DOCKER_TAG}
+    environment:
+      - MONGO_URL=mongodb://mongo:27017/rocketchat?replicaSet=rs0
+      - 'TRANSPORTER=${TRANSPORTER:-}'
+      - MOLECULER_LOG_LEVEL=info
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    depends_on:
+      - nats
+
   nats:
     image: nats:2.6-alpine
 
   mongo:
-    image: mongodb/mongodb-community-server:${MONGODB_VERSION:-8.0}-ubi8
+    image: mongodb/mongodb-community-server:${MONGODB_VERSION:-8.0-ubi9}
     container_name: mongo
     restart: on-failure
     ports:
@@ -204,24 +227,44 @@ services:
       MONGODB_INITIAL_PRIMARY_HOST: ${MONGODB_INITIAL_PRIMARY_HOST:-mongo}
     entrypoint: |
       bash -c
-        "mongod --replSet $$MONGODB_REPLICA_SET_NAME --bind_ip_all &
+        "mongod --replSet \"$$MONGODB_REPLICA_SET_NAME\" --bind_ip_all &
+          mongo_pid=$$!;
           sleep 2;
           until mongosh --eval \"db.adminCommand('ping')\"; do
+            if ! kill -0 $$mongo_pid 2>/dev/null; then
+              echo '=====> MongoDB exited before becoming ready';
+              wait $$mongo_pid;
+              exit 1;
+            fi;
             echo '=====> Waiting for Mongo...';
             sleep 1;
           done;
           echo \"=====> Initiating ReplSet $$MONGODB_REPLICA_SET_NAME at $$MONGODB_INITIAL_PRIMARY_HOST:$$MONGODB_PORT_NUMBER...\";
           mongosh --eval \"rs.initiate({_id: '$$MONGODB_REPLICA_SET_NAME', members: [{ _id: 0, host: '$$MONGODB_INITIAL_PRIMARY_HOST:$$MONGODB_PORT_NUMBER' }]})\";
           echo '=====> Initiating ReplSet done...';
-        wait"
+        wait $$mongo_pid"
+    healthcheck:
+      # Ready only once the replica set has an elected primary — the app connects
+      # with ?replicaSet=rs0 and a too-early connect closes the topology.
+      test:
+        ['CMD', 'mongosh', '--quiet', '--eval', 'try { rs.status().myState === 1 ? quit(0) : quit(1) } catch (e) { quit(1) }']
+      interval: 2s
+      timeout: 5s
+      retries: 60
+      start_period: 5s
 
   httpbin:
     image: kong/httpbin
+    networks:
+      default:
+        aliases:
+          - httpbin.dev
 
   mock-server:
     image: ghcr.io/rocketchat/mockserver@sha256:aa4de5e0dd07ad4ab8849fbb2c67eedfcc98b27f9ddd6b54809409e6f9e8f53f
     profiles:
       - api
+      - ui
     ports:
       - 4000:8080
     networks:

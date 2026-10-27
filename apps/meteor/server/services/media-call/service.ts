@@ -8,7 +8,7 @@ import type {
 	IExternalMediaCallHistoryItem,
 } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
-import { callServer, type IMediaCallServerSettings, getSignalsForExistingCall } from '@rocket.chat/media-calls';
+import { callServer, type IceServerConfig, type IMediaCallServerSettings, getSignalsForExistingCall } from '@rocket.chat/media-calls';
 import type {
 	CallFeature,
 	ClientMediaSignal,
@@ -19,6 +19,7 @@ import type {
 import { isClientMediaSignal } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { CallHistory, MediaCalls, Rooms, Users } from '@rocket.chat/models';
+import { ajv } from '@rocket.chat/rest-typings';
 import { callStateToTranslationKey, getHistoryMessagePayload } from '@rocket.chat/ui-voip/dist/ui-kit/getHistoryMessagePayload';
 
 import {
@@ -29,10 +30,13 @@ import {
 } from './appEvents';
 import { logger } from './logger';
 import { sendVoipPushNotification } from './push/sendVoipPushNotification';
+import { turnServersSchema } from '../../../ee/server/settings/turnServersSchema';
 import { i18n } from '../../lib/i18n';
 import { sendMessage } from '../../lib/messages/sendMessage';
 import { createDirectMessage } from '../../meteor-methods/messages/createDirectMessage';
 import { settings } from '../../settings';
+
+const isValidTurnServers = ajv.compile<IceServerConfig[]>(turnServersSchema);
 
 export class MediaCallService extends ServiceClassInternal implements IMediaCallService {
 	protected name = 'media-call';
@@ -456,9 +460,28 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 				},
 			},
 			mobileRinging,
+			iceServers: this.getIceServerConfigs(),
 			permissionCheck: (uid, callType) => this.userHasMediaCallPermission(uid, callType),
 			isFeatureAvailableForUser: (uid, feature) => this.userHasFeaturePermission(uid, feature),
 		};
+	}
+
+	private getIceServerConfigs(): IceServerConfig[] {
+		const config = settings.get<string>('VoIP_TeamCollab_TURN_Servers');
+		if (!config) {
+			return [];
+		}
+
+		try {
+			const servers: unknown = JSON.parse(config);
+			if (!isValidTurnServers(servers)) {
+				throw new Error('TURN servers do not match the setting schema');
+			}
+			return servers;
+		} catch (err) {
+			logger.error({ msg: 'Ignoring invalid TURN servers configuration', err });
+			return [];
+		}
 	}
 
 	private userHasFeaturePermission(_uid: IUser['_id'], feature: CallFeature): boolean {

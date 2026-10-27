@@ -1,5 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { ServerContext } from '@rocket.chat/ui-contexts';
+import { ConnectionStatusContext } from '@rocket.chat/ui-contexts';
 import { render } from '@testing-library/react';
 import type { ReactNode } from 'react';
 import { useContext } from 'react';
@@ -21,7 +21,9 @@ jest.mock('../lib/userPresence', () => ({
 }));
 
 const Connection = ({ connected, children }: { connected: boolean; children: ReactNode }) => (
-	<ServerContext.Provider value={{ ...useContext(ServerContext), connected }}>{children}</ServerContext.Provider>
+	<ConnectionStatusContext.Provider value={{ ...useContext(ConnectionStatusContext), connected }}>
+		{children}
+	</ConnectionStatusContext.Provider>
 );
 
 it('should resync presence once the connection is re-established', () => {

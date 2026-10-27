@@ -17,10 +17,10 @@ const PrioritiesTableRow = ({ id, name, i18n, sortItem, dirty, onClick }: Priori
 	const { t } = useTranslation();
 	return (
 		<GenericTableRow tabIndex={0} onClick={onClick} action qa-row-id={id}>
-			<GenericTableCell withTruncatedText>
+			<GenericTableCell truncate>
 				<PriorityIcon level={sortItem} />
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText>{dirty ? name : t(i18n)}</GenericTableCell>
+			<GenericTableCell truncate>{dirty ? name : t(i18n)}</GenericTableCell>
 		</GenericTableRow>
 	);
 };

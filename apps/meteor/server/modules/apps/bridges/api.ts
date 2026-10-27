@@ -59,7 +59,7 @@ export class AppApisBridge extends ApiBridge {
 		let router = this.appRouters.get(appId);
 
 		if (!router) {
-			router = express.Router(); // eslint-disable-line new-cap
+			router = express.Router(); // oxlint-disable-line new-cap
 			this.appRouters.set(appId, router);
 		}
 

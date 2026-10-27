@@ -1,9 +1,8 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
-import { MeteorError, Presence, StatusVisibility } from '@rocket.chat/core-services';
+import { ClientSafeError, Presence, StatusVisibility } from '@rocket.chat/core-services';
 import { isUserFederated, UserStatus } from '@rocket.chat/core-typings';
 import type { IUser, IRole, IUserSettings, RequiredField } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 import type { ClientSession } from 'mongodb';
 
 import { handleBio } from './handleBio';
@@ -25,6 +24,8 @@ import { resolveUsersByUsernames } from '../../statusVisibility/resolveUsers';
 import { saveCustomFields } from '../saveCustomFields';
 import { saveUserIdentity } from '../saveUserIdentity';
 import { setEmail } from '../setEmail';
+
+const isBroken = shouldBreakInVersion('9.0.0');
 
 export type SaveUserData = {
 	_id?: IUser['_id'];
@@ -55,7 +56,8 @@ export type SaveUserData = {
 	presenceDisabledByAdmin?: boolean;
 	statusVisibilityDeniedByAdmin?: string[];
 
-	freeSwitchExtension?: string;
+	sipExtension?: string;
+	phones?: IUser['phones'];
 };
 export type UpdateUserData = RequiredField<SaveUserData, '_id'>;
 export const isUpdateUserData = (params: SaveUserData): params is UpdateUserData => '_id' in params && !!params._id;
@@ -67,7 +69,7 @@ type SaveUserOptions = {
 const findUserById = async (uid: IUser['_id']): Promise<IUser> => {
 	const user = await Users.findOneById(uid);
 	if (!user) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user');
+		throw new ClientSafeError('error-invalid-user', 'Invalid user');
 	}
 
 	return user;
@@ -108,7 +110,7 @@ const _saveUser = (session?: ClientSession) =>
 
 		const oldUserData = userData._id && (await Users.findOneById(userData._id));
 		if (oldUserData && isUserFederated(oldUserData)) {
-			throw new Meteor.Error('Edit_Federated_User_Not_Allowed', 'Not possible to edit a federated user');
+			throw new ClientSafeError('Edit_Federated_User_Not_Allowed', 'Not possible to edit a federated user');
 		}
 
 		await validateUserData(userId, userData);
@@ -136,7 +138,7 @@ const _saveUser = (session?: ClientSession) =>
 		}
 
 		if (!oldUserData) {
-			throw new MeteorError('error-user-not-found', 'User not found', {
+			throw new ClientSafeError('error-user-not-found', 'User not found', {
 				method: 'saveUser',
 			});
 		}
@@ -159,7 +161,7 @@ const _saveUser = (session?: ClientSession) =>
 					session,
 				}))
 			) {
-				throw new Meteor.Error('error-could-not-save-identity', 'Could not save user identity', {
+				throw new ClientSafeError('error-could-not-save-identity', 'Could not save user identity', {
 					method: 'saveUser',
 				});
 			}
@@ -207,11 +209,23 @@ const _saveUser = (session?: ClientSession) =>
 			}
 		}
 
-		if (typeof userData.freeSwitchExtension === 'string' && userData.freeSwitchExtension !== (oldUserData?.freeSwitchExtension ?? '')) {
-			if (userData.freeSwitchExtension.trim() === '') {
-				updater.unset('freeSwitchExtension');
+		if (typeof userData.sipExtension === 'string' && userData.sipExtension !== (oldUserData?.sipExtension ?? '')) {
+			if (userData.sipExtension.trim() === '') {
+				updater.unset('sipExtension');
 			} else {
-				updater.set('freeSwitchExtension', userData.freeSwitchExtension);
+				updater.set('sipExtension', userData.sipExtension);
+			}
+		}
+
+		const unset: Record<string, number> = {};
+
+		if (Array.isArray(userData.phones)) {
+			if (userData.phones.length === 0) {
+				updater.unset('phones');
+				delete userData.phones;
+				unset.phones = 1;
+			} else {
+				updater.set('phones', userData.phones);
 			}
 		}
 
@@ -311,6 +325,7 @@ const _saveUser = (session?: ClientSession) =>
 			if (typeof userData.verified === 'boolean') {
 				delete userData.verified;
 			}
+
 			const { statusVisibilityDeniedByAdmin: _adminOnly, statusText: _presenceOwned, ...notifiableUserData } = userData;
 
 			void notifyOnUserChange({
@@ -320,13 +335,13 @@ const _saveUser = (session?: ClientSession) =>
 					...notifiableUserData,
 					emails: userUpdated?.emails,
 				},
+				unset,
 			});
 		}, session);
 
 		return true;
 	};
 
-const isBroken = shouldBreakInVersion('9.0.0');
 export const saveUser = (() => {
 	if (!process.env.DEBUG_DISABLE_USER_AUDIT) {
 		return wrapInSessionTransaction(_saveUser);

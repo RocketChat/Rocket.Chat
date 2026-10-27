@@ -1,4 +1,4 @@
-import { Box, InputBox, Margins } from '@rocket.chat/fuselage';
+import { Box, InputBox } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import { endOfDay } from 'date-fns/endOfDay';
@@ -200,12 +200,10 @@ const DateRangePicker = ({ value, onChange, ...props }: DateRangePickerProps) =>
 	);
 
 	return (
-		<Box marginInline={-4} alignItems='center' {...props}>
-			<Margins inline={4}>
-				<InputBox type='date' value={startDate} max={maxStartDate} flexGrow={1} height={20} onChange={handleChangeStart} />
-				<InputBox type='date' min={minEndDate} value={endDate} max={maxEndDate} flexGrow={1} height={20} onChange={handleChangeEnd} />
-				<GenericMenu title={t('Date_range_presets')} items={presets} small />
-			</Margins>
+		<Box display='flex' gap={8} alignItems='center' {...props}>
+			<InputBox type='date' value={startDate} max={maxStartDate} onChange={handleChangeStart} />
+			<InputBox type='date' min={minEndDate} value={endDate} max={maxEndDate} onChange={handleChangeEnd} />
+			<GenericMenu title={t('Date_range_presets')} items={presets} small />
 		</Box>
 	);
 };

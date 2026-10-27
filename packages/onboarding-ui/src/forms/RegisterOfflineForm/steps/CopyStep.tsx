@@ -39,8 +39,8 @@ const CopyStep = ({
 
 	return (
 		<>
-			<FormContainer>
-				<Box marginBlockEnd='24px' fontScale='p2'>
+			<FormContainer display='flex' flexDirection='column' gap={24}>
+				<Box fontScale='p2'>
 					<Trans key='form.registerOfflineForm.copyStep.description'>
 						If for any reason your workspace can’t be connected to the internet, follow these steps:
 						<Box marginBlockEnd='24px' />
@@ -58,7 +58,7 @@ const CopyStep = ({
 					</Scrollable>
 					<Button
 						icon='copy'
-						primary
+						variant='primary'
 						onClick={() => {
 							onCopySecurityCode();
 							void clipboard.copy();
@@ -72,7 +72,7 @@ const CopyStep = ({
 					<ButtonGroup vertical={isMobile}>
 						<Button
 							type='button'
-							primary
+							variant='primary'
 							disabled={!isValid}
 							onClick={() => {
 								setStep(Steps.PASTE);

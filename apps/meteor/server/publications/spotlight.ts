@@ -1,8 +1,3 @@
-import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import { Meteor } from 'meteor/meteor';
-
-import { methodDeprecationLogger } from '../lib/deprecationWarningLogger';
 import { Spotlight } from '../lib/spotlight';
 import { getUsersHiddenFrom, redactHiddenUsers } from '../lib/statusVisibility/hiddenUsers';
 
@@ -12,29 +7,6 @@ type SpotlightType = {
 	mentions?: boolean;
 	includeFederatedRooms?: boolean;
 };
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		spotlight(
-			text: string,
-			usernames?: string[],
-			type?: SpotlightType,
-			rid?: string,
-		): {
-			rooms: { _id: string; name: string; t: string; uids?: string[] }[];
-			users: {
-				_id: string;
-				status: 'offline' | 'online' | 'busy' | 'away';
-				name: string;
-				username: string;
-				outside: boolean;
-				avatarETag?: string;
-				nickname?: string;
-			}[];
-		};
-	}
-}
 
 export const spotlightMethod = async ({
 	text,
@@ -71,22 +43,3 @@ export const spotlightMethod = async ({
 
 	return { users: redactHiddenUsers(users, hidden), rooms };
 };
-
-Meteor.methods<ServerMethods>({
-	async spotlight(text, usernames = [], type = { users: true, rooms: true, mentions: false, includeFederatedRooms: false }, rid) {
-		methodDeprecationLogger.method('spotlight', '9.0.0', '/v1/spotlight');
-		return spotlightMethod({ text, usernames, type, rid, userId: this.userId });
-	},
-});
-
-DDPRateLimiter.addRule(
-	{
-		type: 'method',
-		name: 'spotlight',
-		userId(/* userId*/) {
-			return true;
-		},
-	},
-	100,
-	100000,
-);

@@ -24,7 +24,7 @@
 	"scripts": {
 		"build": "tsc",
 		"clean": "rm -rf ./dist",
-		"lint": "eslint .",
+		"lint": "yarn run -T oxlint",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
@@ -43,9 +43,8 @@
 	"devDependencies": {
 		"@types/identity-obj-proxy": "^3.0.2",
 		"@types/uuid": "^10.0.0",
-		"eslint": "~10.12.0",
 		"jest": "~30.5.2",
-		"typescript": "~5.9.3"
+		"typescript": "~7.0.2"
 	},
 	"volta": {
 		"extends": "../../package.json"

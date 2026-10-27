@@ -10,8 +10,8 @@
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.build.json",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix .",
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit"
 	},
@@ -21,12 +21,11 @@
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/react": "~19.2.18",
 		"@types/react-dom": "~19.2.7",
-		"eslint": "~10.12.0",
 		"fast-check": "~4.6.0",
 		"jest": "~30.5.2",
 		"react": "~19.2.8",
 		"react-dom": "~19.2.8",
-		"typescript": "~5.9.3"
+		"typescript": "~7.0.2"
 	},
 	"peerDependencies": {
 		"@rocket.chat/message-parser": "workspace:^",

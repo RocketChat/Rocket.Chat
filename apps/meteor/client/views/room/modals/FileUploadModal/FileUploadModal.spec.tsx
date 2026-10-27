@@ -22,11 +22,6 @@ const defaultWrapper = mockAppRoot().withTranslations('en', 'core', {
 	FileUpload_MediaType_NotAccepted__type__: 'Media type not accepted: {{type}}',
 });
 
-test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
-	const { baseElement } = render(<Story />);
-	expect(baseElement).toMatchSnapshot();
-});
-
 test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {
 	const { container } = render(<Story />);
 

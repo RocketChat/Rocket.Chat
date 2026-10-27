@@ -17,13 +17,10 @@
 		"bin"
 	],
 	"scripts": {
-		"lint": "eslint ."
+		"lint": "yarn run -T oxlint"
 	},
 	"dependencies": {
-		"vite": "^8.0.16"
-	},
-	"devDependencies": {
-		"eslint": "~10.12.0"
+		"vite": "~8.2.2"
 	},
 	"engines": {
 		"node": ">=22.12.0"

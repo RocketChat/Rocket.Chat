@@ -1,21 +1,22 @@
+import { isClientSafeError } from '@rocket.chat/core-services';
 import type { ICustomSound } from '@rocket.chat/core-typings';
 import { CustomSounds } from '@rocket.chat/models';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import {
-	isCustomSoundsGetOneProps,
-	isCustomSoundsListProps,
+	ajv,
 	isCustomSoundsCreateProps,
 	isCustomSoundsDeleteProps,
+	isCustomSoundsGetOneProps,
+	isCustomSoundsListProps,
 	isCustomSoundsUpdateProps,
-	ajv,
+	paginatedResponseProperties,
 	validateBadRequestErrorResponse,
-	validateNotFoundErrorResponse,
 	validateForbiddenErrorResponse,
-	validateUnauthorizedErrorResponse,
 	validateInternalErrorResponse,
+	validateNotFoundErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { escapeRegExp } from '@rocket.chat/tools';
-import { Meteor } from 'meteor/meteor';
 
 import { MAX_CUSTOM_SOUND_SIZE_BYTES, CUSTOM_SOUND_ALLOWED_MIME_TYPES } from '../../../lib/constants';
 import { getExtension, getMimeTypeFromFileName } from '../../../lib/mimeTypes';
@@ -90,18 +91,7 @@ const customSoundsEndpoints = API.v1
 					additionalProperties: false,
 					type: 'object',
 					properties: {
-						count: {
-							type: 'number',
-							description: 'The number of sounds returned in this response.',
-						},
-						offset: {
-							type: 'number',
-							description: 'The number of sounds that were skipped in this response.',
-						},
-						total: {
-							type: 'number',
-							description: 'The total number of sounds that match the query.',
-						},
+						...paginatedResponseProperties,
 						success: {
 							type: 'boolean',
 							description: 'Indicates if the request was successful.',
@@ -121,12 +111,11 @@ const customSoundsEndpoints = API.v1
 		},
 		async function action() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, query } = await this.parseJsonQuery();
+			const { sort } = await this.parseJsonQuery();
 
 			const { name } = this.queryParams;
 
 			const filter = {
-				...query,
 				...(name ? { name: { $regex: escapeRegExp(name), $options: 'i' } } : {}),
 			};
 
@@ -322,7 +311,7 @@ const customSoundsEndpoints = API.v1
 			} catch (error: unknown) {
 				this.logger.error({ error });
 
-				if (error instanceof Meteor.Error && error.error === 'Custom_Sound_Error_Invalid_Sound') {
+				if (isClientSafeError(error) && error.error === 'Custom_Sound_Error_Invalid_Sound') {
 					return API.v1.failure(error.error);
 				}
 
@@ -334,6 +323,6 @@ const customSoundsEndpoints = API.v1
 export type CustomSoundEndpoints = ExtractRoutesFromAPI<typeof customSoundsEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends CustomSoundEndpoints {}
 }

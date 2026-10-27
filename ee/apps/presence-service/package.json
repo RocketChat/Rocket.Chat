@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/presence-service",
-	"version": "0.6.2-rc.0",
+	"version": "0.6.2",
 	"private": true,
 	"description": "Rocket.Chat Presence service",
 	"keywords": [
@@ -13,8 +13,8 @@
 	],
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
-		"lint": "eslint .",
-		"ms": "TRANSPORTER=${TRANSPORTER:-TCP} MONGO_URL=${MONGO_URL:-mongodb://localhost:3001/meteor} ts-node --files src/service.ts",
+		"lint": "yarn run -T oxlint",
+		"ms": "TRANSPORTER=${TRANSPORTER:-TCP} MONGO_URL=${MONGO_URL:-mongodb://localhost:3001/meteor} tsx src/service.ts",
 		"typecheck": "tsc --noEmit --skipLibCheck -p tsconfig.json"
 	},
 	"dependencies": {
@@ -44,9 +44,8 @@
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/polka": "^0.5.8",
 		"@types/prometheus-gc-stats": "^0.6.4",
-		"eslint": "~10.12.0",
 		"ts-node": "^10.9.2",
-		"typescript": "~5.9.3"
+		"typescript": "~7.0.2"
 	},
 	"volta": {
 		"extends": "../../../package.json"

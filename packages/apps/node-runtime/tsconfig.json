@@ -3,7 +3,6 @@
 	"compilerOptions": {
 		"rootDir": "./src",
 		"outDir": "./dist",
-		"baseUrl": ".",
 		"types": ["node"],
 		"lib": ["es2023"],
 		"module": "nodenext",

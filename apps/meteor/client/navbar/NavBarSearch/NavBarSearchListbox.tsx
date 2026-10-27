@@ -1,6 +1,6 @@
 import type { OverlayTriggerAria } from '@react-aria/overlays';
 import type { OverlayTriggerState } from '@react-stately/overlays';
-import { ItemGroupHeader, ItemGroupTitle, Tile } from '@rocket.chat/fuselage';
+import { Box, ItemGroupHeader, ItemGroupTitle, PopoverSurface } from '@rocket.chat/fuselage';
 import { useStableCallback, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import { CustomScrollbars } from '@rocket.chat/ui-client';
 import { useRef } from 'react';
@@ -37,42 +37,32 @@ const NavBarSearchListBox = ({ state, overlayProps }: NavBarSearchListBoxProps) 
 	useSyncSearchOptions(items);
 
 	return (
-		<Tile
-			ref={containerRef}
-			position='absolute'
-			zIndex={99}
-			padding={0}
-			paddingBlock={16}
-			marginBlockStart={4}
-			minHeight='x52'
-			maxHeight='50vh'
-			display='flex'
-			width='100%'
-			flexDirection='column'
-		>
-			<ResultsLiveRegion shouldAnnounce={!isLoading} itemCount={items.length} isLoading={isLoading} />
-			<CustomScrollbars>
-				<div
-					{...overlayProps}
-					role='listbox'
-					aria-label={t('Channels')}
-					aria-busy={isLoading}
-					tabIndex={-1}
-					onMouseDown={(event) => event.preventDefault()}
-				>
-					{items.length === 0 && !isLoading && <NavBarSearchNoResults />}
-					{items.length > 0 && (
-						<ItemGroupHeader inset='md' aria-hidden>
-							<ItemGroupTitle>{filterText ? t('Results') : t('Recent')}</ItemGroupTitle>
-						</ItemGroupHeader>
-					)}
-					{items.map((item) => (
-						<NavBarSearchRow key={item._id} room={item} onClick={handleSelect} />
-					))}
-					{isLoading && Array.from({ length: 4 }, (_, index) => <NavBarSearchItemSkeleton key={`skeleton-${index}`} />)}
-				</div>
-			</CustomScrollbars>
-		</Tile>
+		<Box ref={containerRef} position='absolute' zIndex={99} marginBlockStart={4} width='100%'>
+			<PopoverSurface elevation='1' maxHeight='half-screen'>
+				<ResultsLiveRegion shouldAnnounce={!isLoading} itemCount={items.length} isLoading={isLoading} />
+				<CustomScrollbars>
+					<div
+						{...overlayProps}
+						role='listbox'
+						aria-label={t('Channels')}
+						aria-busy={isLoading}
+						tabIndex={-1}
+						onMouseDown={(event) => event.preventDefault()}
+					>
+						{items.length === 0 && !isLoading && <NavBarSearchNoResults />}
+						{items.length > 0 && (
+							<ItemGroupHeader inset='md' aria-hidden>
+								<ItemGroupTitle>{filterText ? t('Results') : t('Recent')}</ItemGroupTitle>
+							</ItemGroupHeader>
+						)}
+						{items.map((item) => (
+							<NavBarSearchRow key={item._id} room={item} onClick={handleSelect} />
+						))}
+						{isLoading && Array.from({ length: 4 }, (_, index) => <NavBarSearchItemSkeleton key={`skeleton-${index}`} />)}
+					</div>
+				</CustomScrollbars>
+			</PopoverSurface>
+		</Box>
 	);
 };
 

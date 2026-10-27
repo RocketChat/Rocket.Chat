@@ -33,7 +33,6 @@ import type { CloseRoomParams } from './omnichannel/localTypes';
  *
  * TODO: move those to event-based systems
  */
-// eslint-disable-next-line @typescript-eslint/naming-convention
 interface EventLikeCallbackSignatures {
 	'afterActivateUser': (user: IUser) => void;
 	'afterCreateChannel': (owner: IUser, room: IRoom) => void;
@@ -80,7 +79,7 @@ interface EventLikeCallbackSignatures {
 		},
 	) => void;
 	'beforeCreateDirectRoom': (members: string[], room: IRoom) => void;
-	'federation.beforeCreateDirectMessage': (members: IUser[], extraData: Record<string, unknown>) => void;
+	'federation.beforeCreateDirectMessage': (members: (IUser | string)[], extraData: Record<string, unknown>) => void;
 	'afterSetReaction': (message: IMessage, params: { user: IUser; reaction: string; shouldReact: boolean; room: IRoom }) => void;
 	'afterUnsetReaction': (
 		message: IMessage,

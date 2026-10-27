@@ -10,6 +10,7 @@ import type {
 
 import { mediaCallDirector } from './CallDirector';
 import { getDefaultSettings } from './getDefaultSettings';
+import { getIceServer } from './getIceServer';
 import { stripSensitiveDataFromSignal } from './stripSensitiveData';
 import type {
 	IMediaCallServer,
@@ -166,6 +167,10 @@ export class MediaCallServer implements IMediaCallServer {
 
 	public isFeatureAvailableForUser(uid: IUser['_id'], feature: CallFeature): boolean {
 		return this.settings.isFeatureAvailableForUser(uid, feature);
+	}
+
+	public getIceServersForUser(uid: IUser['_id']): RTCIceServer[] {
+		return this.settings.iceServers.map((server) => getIceServer(server, uid));
 	}
 
 	/**

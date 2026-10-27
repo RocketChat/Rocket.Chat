@@ -24,34 +24,25 @@ const iconset = req.keys().map((filename) => ({
 
 export const All: StoryFn<{ color: string }> = ({ color }) => (
 	<>
-		{iconset.map(
-			(
-				{
-					// eslint-disable-next-line @typescript-eslint/naming-convention
-					component: Icon,
-					name,
-				},
-				i,
-			) => (
-				<div
-					key={i}
-					style={{
-						width: 130,
-						height: 130,
-						margin: 10,
-						display: 'flex',
-						flexDirection: 'column',
-						alignItems: 'center',
-						justifyContent: 'stretch',
-					}}
-				>
-					<div style={{ flex: 1, display: 'flex', alignItems: 'center', color }}>
-						<Icon width={48} height={48} />
-					</div>
-					<div style={{ flex: 0 }}>{name}</div>
+		{iconset.map(({ component: Icon, name }, i) => (
+			<div
+				key={i}
+				style={{
+					width: 130,
+					height: 130,
+					margin: 10,
+					display: 'flex',
+					flexDirection: 'column',
+					alignItems: 'center',
+					justifyContent: 'stretch',
+				}}
+			>
+				<div style={{ flex: 1, display: 'flex', alignItems: 'center', color }}>
+					<Icon width={48} height={48} />
 				</div>
-			),
-		)}
+				<div style={{ flex: 0 }}>{name}</div>
+			</div>
+		))}
 	</>
 );
 All.storyName = 'all';

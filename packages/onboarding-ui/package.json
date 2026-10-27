@@ -28,8 +28,8 @@
   "scripts": {
     "build": "rm -rf dist && tsc -p tsconfig.esm.json && tsc -p tsconfig.cjs.json",
     "build-storybook": "storybook build",
-    "lint": "eslint .",
-    "lint:fix": "eslint --fix .",
+    "lint": "yarn run -T oxlint",
+    "lint:fix": "yarn run -T oxlint --fix",
     "storybook": "storybook dev -p 6006 --no-version-updates",
     "test": "jest",
     "testunit": "jest",
@@ -56,13 +56,12 @@
     "@types/react": "~19.2.18",
     "@types/react-dom": "~19.2.7",
     "countries-list": "^3.4.1",
-    "eslint": "~10.12.0",
     "jest": "~30.5.2",
     "react": "~19.2.8",
     "react-dom": "~19.2.8",
     "react-i18next": "~17.0.16",
-    "storybook": "~9.1.20",
-    "typescript": "~5.9.3"
+    "storybook": "~9.1.21",
+    "typescript": "~7.0.2"
   },
   "peerDependencies": {
     "@rocket.chat/fuselage": "*",
