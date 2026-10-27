@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { FieldGroup, IconButton, Margins } from '@rocket.chat/fuselage';
+import { FieldGroup, IconButton, Stack } from '@rocket.chat/fuselage';
 import { useFormContext, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -59,20 +59,20 @@ const NotificationPreferencesForm = ({ notificationOptions, handlePlaySound }: N
 			)}
 			<FieldGroup>
 				<NotificationByDevice device={t('Desktop')} icon='desktop'>
-					<Controller
-						control={control}
-						name='desktopAlert'
-						render={({ field: { value, onChange } }) => (
-							<NotificationPreference
-								id='DesktopAlert'
-								name={t('Alerts')}
-								options={notificationOptions.alerts}
-								optionValue={value}
-								onChange={onChange}
-							/>
-						)}
-					/>
-					<Margins blockStart={16}>
+					<Stack gap={16}>
+						<Controller
+							control={control}
+							name='desktopAlert'
+							render={({ field: { value, onChange } }) => (
+								<NotificationPreference
+									id='DesktopAlert'
+									name={t('Alerts')}
+									options={notificationOptions.alerts}
+									optionValue={value}
+									onChange={onChange}
+								/>
+							)}
+						/>
 						<Controller
 							control={control}
 							name='desktopSound'
@@ -88,7 +88,7 @@ const NotificationPreferencesForm = ({ notificationOptions, handlePlaySound }: N
 								</NotificationPreference>
 							)}
 						/>
-					</Margins>
+					</Stack>
 				</NotificationByDevice>
 				<NotificationByDevice device={t('Mobile')} icon='mobile'>
 					<Controller
