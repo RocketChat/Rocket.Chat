@@ -22,7 +22,7 @@ describe('OutlookEventsList', () => {
 				.build(),
 		});
 
-		expect(await screen.findByText('No_history')).toBeInTheDocument();
+		expect(await screen.findByText('No_events')).toBeInTheDocument();
 		expect(screen.queryByText('Something_went_wrong')).not.toBeInTheDocument();
 	});
 });
