@@ -5302,10 +5302,10 @@ describe('[Users]', () => {
 							tokenName,
 						})
 						.expect('Content-Type', 'application/json')
-						.expect(400);
+						.expect(403);
 
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('not-authorized');
+					expect(res.body.error).to.be.equal('Not Authorized [not-authorized]');
 				});
 				it('/users.regeneratePersonalAccessToken', async () => {
 					const res = await request
@@ -5315,10 +5315,10 @@ describe('[Users]', () => {
 							tokenName,
 						})
 						.expect('Content-Type', 'application/json')
-						.expect(400);
+						.expect(403);
 
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('not-authorized');
+					expect(res.body.error).to.be.equal('Not Authorized [not-authorized]');
 				});
 				it('/users.getPersonalAccessTokens', async () => {
 					const res = await request
@@ -5338,10 +5338,10 @@ describe('[Users]', () => {
 							tokenName,
 						})
 						.expect('Content-Type', 'application/json')
-						.expect(400);
+						.expect(403);
 
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('not-authorized');
+					expect(res.body.error).to.be.equal('Not Authorized [not-authorized]');
 				});
 				it('should throw an error when user tries remove a token that does not exist', async () => {
 					const res = await request
@@ -5351,10 +5351,10 @@ describe('[Users]', () => {
 							tokenName: 'tokenthatdoesnotexist',
 						})
 						.expect('Content-Type', 'application/json')
-						.expect(400);
+						.expect(403);
 
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.errorType).to.be.equal('not-authorized');
+					expect(res.body.error).to.be.equal('Not Authorized [not-authorized]');
 				});
 			});
 		});

@@ -202,6 +202,7 @@ const chatEndpoints = API.v1
 			response: {
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 				200: ajv.compile<{ message: IMessage }>({
 					type: 'object',
 					properties: {
@@ -240,6 +241,7 @@ const chatEndpoints = API.v1
 			response: {
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 				200: ajv.compile<void>({
 					type: 'object',
 					properties: {
@@ -398,6 +400,7 @@ const chatEndpoints = API.v1
 			response: {
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 				200: ajv.compile<void>({
 					type: 'object',
 					properties: {
@@ -435,6 +438,7 @@ const chatEndpoints = API.v1
 			response: {
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 				200: ajv.compile<void>({
 					type: 'object',
 					properties: {
@@ -551,6 +555,7 @@ const chatEndpoints = API.v1
 				}),
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {

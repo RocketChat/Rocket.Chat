@@ -835,6 +835,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 										return api.unauthorized(typeof e === 'string' ? e : e.message);
 									case 'unauthorized':
 									case 'error-unauthorized':
+									case 'not-authorized':
 									case 'error-not-authorized':
 									case 'forbidden':
 									case 'error-forbidden':
