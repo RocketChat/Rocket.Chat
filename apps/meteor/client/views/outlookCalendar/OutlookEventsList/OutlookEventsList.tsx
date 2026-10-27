@@ -99,12 +99,14 @@ const OutlookEventsList = ({ onClose, changeRoute }: OutlookEventsListProps) => 
 			<ContextualbarFooter>
 				{isServerManaged ? (
 					<>
-						<Callout marginBlockEnd={8}>
-							{t('Outlook_calendar_sync_schedule', {
-								interval: t('Outlook_calendar_sync_interval_hours', { count: syncIntervalHours }),
-								window: t('Outlook_calendar_sync_window_days', { count: syncWindowDays }),
-							})}
-						</Callout>
+						<Box marginBlockEnd={8}>
+							<Callout>
+								{t('Outlook_calendar_sync_schedule', {
+									interval: t('Outlook_calendar_sync_interval_hours', { count: syncIntervalHours }),
+									window: t('Outlook_calendar_sync_window_days', { count: syncWindowDays }),
+								})}
+							</Callout>
+						</Box>
 						<ButtonGroup stretch>
 							<Button onClick={changeRoute}>{t('Settings')}</Button>
 							<Button icon='refresh' loading={syncOutlookCalendar.isPending} onClick={() => syncOutlookCalendar.mutate()}>
