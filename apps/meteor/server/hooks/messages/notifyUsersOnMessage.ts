@@ -84,7 +84,8 @@ const getUnreadSettingCount = (roomType: RoomType): UnreadCountType => {
 	return settings.get(unreadSetting);
 };
 
-// members without a connection load their subscriptions again when they reconnect
+const roomTypesTrackedInUserRooms: RoomType[] = ['c', 'p'];
+
 async function findSubscriptionsOfConnectedMembers(rid: IRoom['_id'], senderId: IUser['_id']): Promise<ISubscription[]> {
 	const connected = await Users.findConnectedByRoomId<Pick<IUser, '_id'>>(rid, { projection: { _id: 1 } }).toArray();
 	const userIds = connected.map(({ _id }) => _id).filter((uid) => uid !== senderId);
@@ -111,8 +112,7 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 	const groupMentionInc = getGroupMentions(room.t, unreadCount as Exclude<UnreadCountType, 'user_mentions_only'>);
 
 	const onlyRead = !toAll && !toHere && !unreadAllMessages;
-	// users.__rooms only holds public and private rooms
-	const notifyConnectedMembersOnly = !onlyRead && (room.t === 'c' || room.t === 'p');
+	const notifyConnectedMembersOnly = !onlyRead && roomTypesTrackedInUserRooms.includes(room.t);
 
 	// find all subscriptions that will need to be notified after the update.
 	// we need to use toArray() here and keep results in memory because we'll update the them later
