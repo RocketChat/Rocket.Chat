@@ -3,7 +3,7 @@ import crypto from 'crypto';
 import type { AutoUpdateRecord } from '@rocket.chat/core-services';
 import { MeteorService, Presence, ServiceClass } from '@rocket.chat/core-services';
 import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
-import type { ConnectionLifecycle, ConnectionRegistry, MeteorCollection, Server } from '@rocket.chat/ddp-server';
+import type { ClientVersion, ConnectionLifecycle, ConnectionRegistry, MeteorCollection, Server } from '@rocket.chat/ddp-server';
 import { Session, encodeAdded } from '@rocket.chat/ddp-server';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { Users } from '@rocket.chat/models';
@@ -14,7 +14,6 @@ import { throttle } from 'underscore';
 import WebSocket from 'ws';
 
 import { proxy } from './http/proxy';
-import type { ClientVersion } from './publications/autoupdate';
 
 const { PORT = 4000 } = process.env;
 

@@ -1,6 +1,8 @@
 import type { AutoUpdateRecord } from '@rocket.chat/core-services';
-import type { Server } from '@rocket.chat/ddp-server';
-import { MeteorCollection, publishMeteorCollection } from '@rocket.chat/ddp-server';
+
+import { publishMeteorCollection } from './meteorCollection';
+import type { Server } from '../Server';
+import { MeteorCollection } from '../lib/MeteorCollection';
 
 export type ClientVersion = Omit<AutoUpdateRecord, '_id'>;
 

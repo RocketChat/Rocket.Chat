@@ -1,6 +1,5 @@
-import { Server } from '@rocket.chat/ddp-server';
-
 import { registerLoginServiceConfigurationPublication } from './loginServiceConfiguration';
+import { Server } from '../Server';
 import { makeSession, makeSubscription, sentPackets } from '../__tests__/helpers';
 
 jest.mock('@rocket.chat/logger', () => ({

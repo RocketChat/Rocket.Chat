@@ -1,6 +1,8 @@
 import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
-import type { Server } from '@rocket.chat/ddp-server';
-import { MeteorCollection, publishMeteorCollection } from '@rocket.chat/ddp-server';
+
+import { publishMeteorCollection } from './meteorCollection';
+import type { Server } from '../Server';
+import { MeteorCollection } from '../lib/MeteorCollection';
 
 export function registerLoginServiceConfigurationPublication(server: Server): MeteorCollection<Partial<LoginServiceConfiguration>> {
 	const collection = new MeteorCollection<Partial<LoginServiceConfiguration>>();
