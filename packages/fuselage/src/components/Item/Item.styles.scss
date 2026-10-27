@@ -284,6 +284,12 @@ $item-group-narrow-width: 320px;
 		}
 	}
 
+	// Content that carries its own tooltip, such as an unread badge, still shows it on hover in a linked row.
+	&:has(.rcx-item__link) [title]:not(.rcx-item__link) {
+		position: relative;
+		z-index: 1;
+	}
+
 	&__actions {
 		position: relative;
 		z-index: 1;
