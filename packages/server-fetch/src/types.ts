@@ -1,7 +1,7 @@
 import type { BodyInit, RequestInit } from 'node-fetch';
 
 export type OriginalFetchOptions = RequestInit | undefined;
-export type FetchOptions = RequestInit;
+export type FetchOptions = Omit<RequestInit, 'agent'>;
 export type FetchOptionsWithoutBody = Omit<FetchOptions, 'body'>;
 
 type BaseExtendedOptions = FetchOptionsWithoutBody & {
