@@ -1,5 +1,64 @@
 # @rocket.chat/rest-typings
 
+## 9.0.0-rc.0
+
+### Major Changes
+
+- ([#41948](https://github.com/RocketChat/Rocket.Chat/pull/41948)) Removes the deprecated `query` and `fields` REST API parameters, along with the `ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS` environment variable that re-enabled them. Deprecated in 6.3.0 and disabled by default since 7.0.0, they let callers run raw MongoDB queries and projections against the database.
+
+  Endpoints that validate their query string now reject both with `400 error-invalid-params` instead of ignoring them; the few without validation keep accepting and ignoring them. `users.create` likewise rejects a `fields` property in its body. `channels.online` and `groups.online` now require `_id`. On `users.list`, fields outside the default projection — `customFields`, `utcOffset`, `nickname`, `bio`, `statusText`, `federated` and `freeSwitchExtension` — are no longer reachable in bulk; use `users.info` instead. Callers should move to the dedicated filter parameters each endpoint exposes, such as `name`, `type`, `_id` and `text`.
+
+- ([#41977](https://github.com/RocketChat/Rocket.Chat/pull/41977)) Removes the deprecated `DELETE /v1/canned-responses` endpoint, which received the canned response id in the request body. Use `DELETE /v1/canned-responses/:_id` instead.
+
+- ([#41940](https://github.com/RocketChat/Rocket.Chat/pull/41940)) Removes dead code left behind by the old Matrix bridge federation: the `Federation`/`FederationEE` service proxies and `IFederationService`/`IFederationServiceEE` interfaces (no service implemented them anymore), the never-implemented `/v1/federation/*` REST endpoint typings (`searchPublicRooms`, `joinExternalPublicRoom`, `listServersByUser`, `addServerByUser`, `removeServerByUser`), the listener-less `federation.userRoleChanged` event, unused federation v1 statistics fields and types, the old two-server federation E2E test suite, and orphaned translation keys.
+
+- ([#42568](https://github.com/RocketChat/Rocket.Chat/pull/42568)) Renames the user `freeSwitchExtension` attribute to `sipExtension`, since the VoIP extension is no longer tied to FreeSWITCH and works with any SIP router. Existing users are migrated automatically on upgrade. REST API integrations must switch to the new name: the `users.create` and `users.update` parameters, the `users.info` query parameter, and the `sipExtension` field returned on user objects.
+
+### Minor Changes
+
+- ([#42677](https://github.com/RocketChat/Rocket.Chat/pull/42677)) Stops exposing the ABAC classification banner configuration publicly; `rooms.info` now returns, as `classificationBanner`, only the banner that applies to the requested ABAC room
+
+- ([#42850](https://github.com/RocketChat/Rocket.Chat/pull/42850)) Adds workspace-wide ABAC enforcement. Turning on **Enforce ABAC across all workspace rooms** locks every public channel and discussion, and every private channel and team that has no ABAC attributes or is missing one listed in **Attributes required in all ABAC rooms**. Nobody can post in a locked room or be added to one, and a callout in place of the composer explains why. Direct messages, Omnichannel conversations and federated rooms are never locked.
+
+  While enforcement is on, new non-federated public channels, discussions, and private rooms without the required attributes cannot be created, and **Discussion > Enable** is switched off, then restored to its earlier value when enforcement ends. Removing the ABAC license turns enforcement off, and switching the attribute store clears the required attributes. `GET /v1/abac/attributes.listKeys` lists the keys available for the required attributes, and `GET /v1/rooms.info` returns `abacRequiredAttributes` while enforcement is on.
+
+- ([#42850](https://github.com/RocketChat/Rocket.Chat/pull/42850)) Allows private rooms and teams to be created with ABAC attributes. **Create channel** and **Create team** get an **ABAC managed** option that walks the user through choosing attributes and previewing which members will be added, and `groups.create` and `teams.create` accept an `abacAttributes` map. This requires the new **Create ABAC-managed rooms** permission, granted to users by default, and every such room is recorded in the ABAC audit log.
+
+  Users can only assign values they hold, or, with Virtru, values Virtru entitles them to. Members who do not qualify are not added and are listed in `skippedMembers`. While enforcement is on, new private channels and teams must be ABAC-managed and carry the workspace's required attributes.
+
+  Adds `GET /v1/abac/attributes.listAssignable` and `POST /v1/abac/rooms.evaluateMembership`. Apps with room write access and the new `abac.write` permission can create attributed private rooms under the same rules, and the audit log names the app.
+
+- ([#42050](https://github.com/RocketChat/Rocket.Chat/pull/42050)) Adds admin control over user status (Enterprise only): from **Administration > Status and presence**, or while editing a user, an admin can turn someone's status off or hide it from chosen people, and a **Show status** setting turns status off for the whole workspace. A user whose status is turned off always appears offline and can no longer change it; a user who is only hidden from chosen people keeps control of their own status. The feature is off by default, behind the new **Manage user status** setting.
+
+- ([#40697](https://github.com/RocketChat/Rocket.Chat/pull/40697) by [@aleksandernsilva](https://github.com/aleksandernsilva)) Adds support for registering multiple phone numbers with labels per user. **Breaking:** the `phone` user field is replaced by the `phones` array (`{ number, label? }[]`); existing numbers are migrated automatically on upgrade.
+
+- ([#42439](https://github.com/RocketChat/Rocket.Chat/pull/42439)) Adds LiveKit as a built-in video conference provider (alpha, off by default), configurable under Video Conference settings with a server URL, API key and secret. It is offered only while the conference window is enabled, since its calls run there, and only with the new `video-conference-native` license add-on.
+
+- ([#42501](https://github.com/RocketChat/Rocket.Chat/pull/42501)) Adds a native XMPP server (Enterprise, federation module) that federates directly with other XMPP servers over server-to-server connections. Rocket.Chat users can message any XMPP address, exchange presence with remote contacts, and join rooms on remote servers; remote XMPP users can join dedicated XMPP rooms hosted by Rocket.Chat. It runs as the `xmpp-server-service` microservice and is configured under **Administration → Settings → Federation → XMPP Server (Native)**.
+
+- ([#42172](https://github.com/RocketChat/Rocket.Chat/pull/42172)) Adds a `username` parameter to the `users.list` endpoint, matching any part of the username without regard to case
+
+- ([#42078](https://github.com/RocketChat/Rocket.Chat/pull/42078)) Adds `customFields[key]=value` and `includeCustomFields` parameters to the `users.list` endpoint, filtering users by exact custom field values and returning the fields the caller may read
+
+- ([#43005](https://github.com/RocketChat/Rocket.Chat/pull/43005)) Allows `channels.invite` to accept `userIds` and `usernames` arrays, so multiple users can be invited to a channel in a single request, like `groups.invite`. A request must identify users either by ID (`userId`, `userIds`) or by username (`username`, `user`, `usernames`), not both.
+
+### Patch Changes
+
+- ([#42975](https://github.com/RocketChat/Rocket.Chat/pull/42975)) Fixes `chat.sendMessage` accepting message fields that only the server may set, and malformed message blocks that made a room unreadable
+
+- ([#41638](https://github.com/RocketChat/Rocket.Chat/pull/41638)) Improves the generated OpenAPI document: path parameters are now templated and described, query parameters are documented one by one instead of as a single opaque object, responses always carry a description, and endpoints can declare a summary, a description, examples and a deprecation notice
+
+- ([#42863](https://github.com/RocketChat/Rocket.Chat/pull/42863)) Reconciles REST endpoint types so the published `@rocket.chat/rest-typings` contract matches the implementation. Each migrated route is declared twice — hand-written in `rest-typings` (the contract SDK and external consumers see) and derived from the handler via `ExtractRoutesFromAPI` in `apps/meteor` — and the two had drifted: the hand-written side was missing routes and carried stale/inaccurate shapes. The hand-written declarations are now completed and made identical to the implementation-derived types, and the implementation's `ajv.compile<T>` generics were strengthened at the source where they were weak (never loosened to `object`/`any`/`unknown`). Inaccurate public shapes were corrected to the truthful type (e.g. `chat.postMessage` `channel: string`, `chat.getDeletedMessages` returns only `_id`s, `roles.list` has no `_updatedAt`, `roles.sync` `remove` carries `_deletedAt`, `teams.create` `type: 0 | 1`, `chat.getURLPreview` `urlPreview: MessageUrl`, `im.history` typed messages). Covers chat, dm/im, e2e, emoji-custom, invites, push, roles, rooms, teams, and the omnichannel visitor department-transfer route. No runtime behavior change.
+
+- ([#42181](https://github.com/RocketChat/Rocket.Chat/pull/42181)) Describes the REST API's pagination in one place instead of restating it at every endpoint. `count` and `offset` now come from a shared schema across every offset-paginated endpoint, which also states in the generated API docs what the server does with `count`: for a positive `count`, a page holds at most `min(count, API_Upper_Count_Limit)` items, so a response can be smaller than requested and callers should page by what came back; a `count` of zero returns every item when `API_Allow_Infinite_Count` is enabled. Where an endpoint validates its query, `count` and `offset` are now checked as non-negative integers, so a negative or fractional value — previously accepted, then silently coerced — is rejected.
+
+- <details><summary>Updated dependencies [4f350b4ffb76024d9bf44c02f3322c8f9071f1cf, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 6bb0d3bca9b5da401050697d51bc99e89871bbb7, 6be3614cd2660ab4024635802fdf9cd7dd7b502f, 588311c49bfce08e7106e7c0bb32741334fa5321, 10b4e00e08951ace8f9c27d83fc0c48be010bdc7, c9aa43916295df79a799e53b8e09c58011991a97, 5e82e67eaa4c998870d3eb0597f485b30c244f02, a9b2bb76d88e4d2743e0817b15e6447e7c9c46eb, c9aa43916295df79a799e53b8e09c58011991a97, cdd948cb67ecf282f6cc8f411615c3de0db0b9f1, 6b3ec3e667c99015e381a4e8ea43146accb5f7f7, 9e401e55fbd71b95dc7c4b273024219ce2564856, a11ffff8acb74fd016e9ddb972da6eebda0c3e5e, f3fa7abd6b9d311f76619d0fe27793ac68f6d208, daa677895dad92d6aab1e84a09f190efd2755ef9, 642d9e528a8572208e2f0bb51f45ea78400bcea3, bd92e8abc5a8f0161f3de5308979a0f88d09f351, 39a6e6e1397e1e89bc631fe4ab1cc10fa93b59e8, a39b03fe5c248079365162e31994e1dece63e7c2, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, 9dfedc72439d12f5d2985b9dd54daccd97e11e74, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, 9dfedc72439d12f5d2985b9dd54daccd97e11e74, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, bb586dc723b3dccdf725d28f530b28cfa857020a, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, 23698f9d08d34d3c145f116b5303b542e8342f9e, 9dfedc72439d12f5d2985b9dd54daccd97e11e74, e1070288debfecc5e49e118c3dc535f95936281f, 9dfedc72439d12f5d2985b9dd54daccd97e11e74]:</summary>
+  - @rocket.chat/core-typings@9.0.0-rc.0
+  - @rocket.chat/message-parser@0.33.0-rc.0
+  - @rocket.chat/ui-kit@2.0.0-rc.0
+
+  </details>
+
 ## 8.9.0
 
 ### Minor Changes

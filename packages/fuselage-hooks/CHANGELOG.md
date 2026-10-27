@@ -1,5 +1,25 @@
 # Change Log
 
+## 0.44.0-rc.0
+
+### Minor Changes
+
+- ([#43061](https://github.com/RocketChat/Rocket.Chat/pull/43061)) Adds `useActiveDescendant`, which tracks the active option of a listbox whose focus stays on its combobox, and whether that option shows its focus ring
+
+- ([#43087](https://github.com/RocketChat/Rocket.Chat/pull/43087)) Adds `usePreventScrollOutside`, which holds the page still while an element is shown, and the `preventScroll` prop of `Position` and `PositionAnimated`, which uses it so a popup cannot drift away from its anchor
+
+### Patch Changes
+
+- ([#42682](https://github.com/RocketChat/Rocket.Chat/pull/42682)) Moved `@rocket.chat/fuselage-hooks` into the Rocket.Chat monorepo, continuing from the frozen Fuselage 0.43.1 release. The exported hooks keep the same API; `@rocket.chat/emitter` and `@rocket.chat/fuselage-tokens` are now regular dependencies instead of bundled peers.
+
+- ([#43087](https://github.com/RocketChat/Rocket.Chat/pull/43087)) Fixes positioned popups, such as menus, tooltips and the lists of `AutoComplete` and `MultiSelect`, staying behind when the page scrolls and lagging behind their anchor when a scroll container scrolls
+
+- <details><summary>Updated dependencies [dd082311778ac467d36a72589bc675f1ab2b2cbe, ec381cf4a88002601fd2b83b7eed734a2e8165b6, 25fd477c2c38f71e9a16b7e2896d39efd43bfc61, ec381cf4a88002601fd2b83b7eed734a2e8165b6]:</summary>
+  - @rocket.chat/emitter@0.33.1-rc.0
+  - @rocket.chat/fuselage-tokens@0.36.0-rc.0
+
+  </details>
+
 ## 0.43.1
 
 ### Patch Changes

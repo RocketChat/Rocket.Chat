@@ -1,5 +1,17 @@
 # @rocket.chat/desktop-api
 
+## 1.5.0-rc.0
+
+### Minor Changes
+
+- ([#42968](https://github.com/RocketChat/Rocket.Chat/pull/42968)) Adds the web client's side of the desktop bridge contract: `setWebClientBridgeVersion(1)`, which a web client calls to announce that it pushes the server info, URL resolver, title, favicon, user roles, badge, login state, unread alert preference, git commit hash and Outlook credentials itself (presence is not part of version 1), `setUnreadAlertEnabled`, and the `DesktopWindowEvent` names the web client fires on `window`
+
+- ([#42916](https://github.com/RocketChat/Rocket.Chat/pull/42916)) Adds a presence contract for the desktop app. Through `setUserPresenceState`, the web client sends the status, custom status text, expiration, connection and login state of the user. It also sends the statuses that the user can select and the custom statuses of the workspace. Through `setUserStatusChangeHandler`, the desktop tray changes the status with the same flow as the user menu.
+
+### Patch Changes
+
+- ([#42692](https://github.com/RocketChat/Rocket.Chat/pull/42692)) Types the desktop app's video call window bridge where desktop 4.18 exposes it, `RocketChatDesktop.videoCall`, and marks `getAuthCredentials`, which the desktop app removed, as deprecated and optional
+
 ## 1.4.0
 
 ### Minor Changes

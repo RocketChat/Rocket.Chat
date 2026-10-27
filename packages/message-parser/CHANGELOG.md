@@ -1,5 +1,13 @@
 # Change Log
 
+## 0.33.0-rc.0
+
+### Minor Changes
+
+- ([#42686](https://github.com/RocketChat/Rocket.Chat/pull/42686)) Adds support for code blocks fenced by four or more backticks, so a message can show a code block that itself contains a ``` fence
+
+- ([#42686](https://github.com/RocketChat/Rocket.Chat/pull/42686)) Fixes indented list items being rendered as plain text instead of nested lists in messages
+
 ## 0.32.0
 
 ### Minor Changes

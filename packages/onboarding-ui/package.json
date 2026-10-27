@@ -1,6 +1,6 @@
 {
   "name": "@rocket.chat/onboarding-ui",
-  "version": "0.37.3",
+  "version": "1.0.0-rc.0",
   "description": "Set of components and functions for the onboarding experience on Rocket.Chat",
   "keywords": [
     "rocketchat"
@@ -64,12 +64,12 @@
     "typescript": "~7.0.2"
   },
   "peerDependencies": {
-    "@rocket.chat/fuselage": "*",
-    "@rocket.chat/fuselage-hooks": "*",
-    "@rocket.chat/icons": "*",
-    "@rocket.chat/layout": "*",
-    "@rocket.chat/logo": "*",
-    "@rocket.chat/styled": "*",
+    "@rocket.chat/fuselage": "1.0.0-rc.0",
+    "@rocket.chat/fuselage-hooks": "0.44.0-rc.0",
+    "@rocket.chat/icons": "0.52.0-rc.0",
+    "@rocket.chat/layout": "1.0.0-rc.0",
+    "@rocket.chat/logo": "0.33.3-rc.0",
+    "@rocket.chat/styled": "0.34.2-rc.0",
     "react": "*",
     "react-dom": "*",
     "react-i18next": "*"

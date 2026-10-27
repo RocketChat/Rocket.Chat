@@ -1,5 +1,14 @@
 # @rocket.chat/css-supports
 
+## 0.31.27-rc.0
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [a9e0d93eb3c6e17476f5bf6081199a3ed8b253ec, a9e0d93eb3c6e17476f5bf6081199a3ed8b253ec, a9e0d93eb3c6e17476f5bf6081199a3ed8b253ec]:</summary>
+  - @rocket.chat/memo@0.31.26-rc.0
+
+  </details>
+
 ## 0.31.26
 
 ### Patch Changes

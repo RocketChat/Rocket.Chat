@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/icons",
-	"version": "0.51.0",
+	"version": "0.52.0-rc.0",
 	"description": "Rocket.Chat's Icons",
 	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
 	"bugs": {

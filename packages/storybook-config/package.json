@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/storybook-config",
-	"version": "0.0.4",
+	"version": "1.0.0-rc.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -43,8 +43,8 @@
 		"typescript": "~7.0.2"
 	},
 	"peerDependencies": {
-		"@rocket.chat/fuselage": "*",
-		"@rocket.chat/icons": "*",
+		"@rocket.chat/fuselage": "1.0.0-rc.0",
+		"@rocket.chat/icons": "0.52.0-rc.0",
 		"@storybook/react": "*",
 		"react": "*"
 	},

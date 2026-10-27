@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/fuselage-hooks",
-	"version": "0.43.1",
+	"version": "0.44.0-rc.0",
 	"description": "React hooks for Fuselage, Rocket.Chat's design system and UI toolkit",
 	"keywords": [
 		"react",

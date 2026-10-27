@@ -1,5 +1,17 @@
 # Change Log
 
+## 0.36.0-rc.0
+
+### Minor Changes
+
+- ([#43021](https://github.com/RocketChat/Rocket.Chat/pull/43021)) Adds the spacing scale (`x4` to `x40`) as `spacing.json` and a `$spacing` SCSS map
+
+- ([#42755](https://github.com/RocketChat/Rocket.Chat/pull/42755)) Synced the status font tokens with the Figma color system: added the `y950` color, and updated `font-on-warning` (light and dark) and `font-on-info` (high-contrast and dark).
+
+### Patch Changes
+
+- ([#42755](https://github.com/RocketChat/Rocket.Chat/pull/42755)) Moved `@rocket.chat/fuselage-tokens` into the Rocket.Chat monorepo, continuing from the frozen Fuselage 0.35.0 release. The published token files are unchanged.
+
 ## 0.35.0
 
 ### Minor Changes

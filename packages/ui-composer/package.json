@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-composer",
-	"version": "6.0.0",
+	"version": "7.0.0-rc.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -48,8 +48,8 @@
 	},
 	"peerDependencies": {
 		"@react-aria/toolbar": "*",
-		"@rocket.chat/fuselage": "*",
-		"@rocket.chat/icons": "*",
+		"@rocket.chat/fuselage": "1.0.0-rc.0",
+		"@rocket.chat/icons": "0.52.0-rc.0",
 		"@rocket.chat/ui-client": "workspace:^",
 		"react": "*",
 		"react-dom": "*"

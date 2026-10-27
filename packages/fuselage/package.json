@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/fuselage",
-	"version": "0.96.0",
+	"version": "1.0.0-rc.0",
 	"description": "Rocket.Chat's React Components Library",
 	"keywords": [
 		"react",
@@ -98,8 +98,8 @@
 		"vite": "~8.2.2"
 	},
 	"peerDependencies": {
-		"@rocket.chat/fuselage-hooks": "*",
-		"@rocket.chat/icons": "*",
+		"@rocket.chat/fuselage-hooks": "0.44.0-rc.0",
+		"@rocket.chat/icons": "0.52.0-rc.0",
 		"react": "*",
 		"react-dom": "*",
 		"react-virtuoso": "*"

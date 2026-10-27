@@ -1,5 +1,120 @@
 # @rocket.chat/i18n
 
+## 5.0.0-rc.0
+
+### Major Changes
+
+- ([#41828](https://github.com/RocketChat/Rocket.Chat/pull/41828)) Removes the "Allow Anonymous Write" setting (`Accounts_AllowAnonymousWrite`), the "Or talk as anonymous" composer action, and the anonymous branch of the `registerUser` method. Anonymous read remains available. The `anonymous` role is removed along with its default permissions and the `afterVerifyEmail` method. On upgrade the setting and role are deleted from the database and any existing users holding the `anonymous` role are deactivated and logged out.
+
+- ([#41986](https://github.com/RocketChat/Rocket.Chat/pull/41986)) Removes the Atlassian Crowd integration. Atlassian has announced the end-of-life of Crowd, and workspaces that need directory-backed authentication can use the LDAP integration instead — Crowd itself exposes an LDAP interface. All `CROWD_*` settings, the Crowd login handler, the background user-sync job, and the Admin > Settings > Atlassian Crowd section are removed; on upgrade the settings and any scheduled sync job are deleted from the database. Users previously provisioned through Crowd keep their accounts, profile data, roles, and room memberships, but must sign in through another authentication method (such as LDAP or local password, using the "Forgot password" flow if needed).
+
+- ([#41940](https://github.com/RocketChat/Rocket.Chat/pull/41940)) Removes dead code left behind by the old Matrix bridge federation: the `Federation`/`FederationEE` service proxies and `IFederationService`/`IFederationServiceEE` interfaces (no service implemented them anymore), the never-implemented `/v1/federation/*` REST endpoint typings (`searchPublicRooms`, `joinExternalPublicRoom`, `listServersByUser`, `addServerByUser`, `removeServerByUser`), the listener-less `federation.userRoleChanged` event, unused federation v1 statistics fields and types, the old two-server federation E2E test suite, and orphaned translation keys.
+
+- ([#42011](https://github.com/RocketChat/Rocket.Chat/pull/42011)) Removes the built-in Gravatar integration. New users and users setting their username for the first time no longer get an avatar silently fetched from gravatar.com based on their email address — a default-on outbound request that conflicted with privacy expectations on clean workspaces. Avatar resolution is now deterministic: an uploaded or OAuth-provided avatar is used when available, otherwise the initials avatar is shown. Users whose current avatar came from Gravatar keep their already-stored avatar image. Workspaces that still want Gravatar-based avatars can install the Gravatar app from the Marketplace as a replacement.
+
+- ([#41908](https://github.com/RocketChat/Rocket.Chat/pull/41908)) Removes the deprecated legacy (non-native) federation and Matrix bridge settings: `FEDERATION_Enabled`, `FEDERATION_Status`, `FEDERATION_Domain`, `FEDERATION_Public_Key`, `FEDERATION_Discovery_Method`, `FEDERATION_Test_Setup`, `Federation_Matrix_enabled`, `Federation_Matrix_serve_well_known`, `Federation_Matrix_enable_ephemeral_events`, `Federation_Matrix_id`, `Federation_Matrix_hs_token`, `Federation_Matrix_as_token`, `Federation_Matrix_homeserver_url`, `Federation_Matrix_homeserver_domain`, `Federation_Matrix_bridge_url`, `Federation_Matrix_bridge_localpart`, `Federation_Matrix_registration_file`, `Federation_Matrix_max_size_of_public_rooms_users`, `Federation_Matrix_configuration_status` and `Federation_Matrix_check_configuration_button`. They belonged to federation implementations that are no longer supported; the current alternative is Native Federation. On upgrade the removed settings are deleted from the database.
+
+- ([#42369](https://github.com/RocketChat/Rocket.Chat/pull/42369)) Removes the legacy Meteor OAuth login flow and the `Accounts_OAuth_Use_Modern_Flow` setting. OAuth logins (Apple, GitHub, GitLab, Google, Nextcloud and custom OAuth) now always use the server-side Passport flow, with PKCE/state validation.
+
+  Also removes `Accounts_OAuth_Proxy_host` and `Accounts_OAuth_Proxy_services` settings and support for OAuth login through proxies.
+
+- ([#41899](https://github.com/RocketChat/Rocket.Chat/pull/41899)) Removes the `Push_UseLegacy`, `Push_gcm_project_number` and `Push_gcm_api_key` settings. The legacy GCM push notification provider they configured was shut down by Google on June 20, 2024, so these settings no longer had any effect. Android push notifications continue to work through the push gateway or the FCM credentials configured in `Push_google_api_credentials`. On upgrade the removed settings are deleted from the database.
+
+- ([#41992](https://github.com/RocketChat/Rocket.Chat/pull/41992)) Removes the built-in Drupal, Facebook, GitHub Enterprise, LinkedIn, Meteor, Twitter, WordPress and Dolphin OAuth login providers. Apple, GitHub, GitLab, Google, Nextcloud, custom OAuth, SAML, CAS and LDAP remain available. Workspaces relying on a removed provider can recreate it as a custom OAuth service where the provider supports standard OAuth2. Users who signed up through a removed provider keep their accounts and can regain access through another authentication method.
+
+- ([#42979](https://github.com/RocketChat/Rocket.Chat/pull/42979)) Removes the `Use_RC_SDK` setting (General → Use Rocket.Chat SDK) and the `rc-sdk-transport-enabled` meta tag it controlled. The web client always talks to the server through the DDP SDK now, so the setting no longer had any effect. On upgrade the setting is deleted from the database.
+
+### Minor Changes
+
+- ([#42850](https://github.com/RocketChat/Rocket.Chat/pull/42850)) Adds an optional `nonAbacBanner` list to the ABAC classification banners configuration, so rooms that are not ABAC managed, such as DMs, discussions and federated rooms, can show a configured banner. The list must include an enabled default entry that applies to any room. Omnichannel rooms never show a banner.
+
+- ([#42850](https://github.com/RocketChat/Rocket.Chat/pull/42850)) Adds workspace-wide ABAC enforcement. Turning on **Enforce ABAC across all workspace rooms** locks every public channel and discussion, and every private channel and team that has no ABAC attributes or is missing one listed in **Attributes required in all ABAC rooms**. Nobody can post in a locked room or be added to one, and a callout in place of the composer explains why. Direct messages, Omnichannel conversations and federated rooms are never locked.
+
+  While enforcement is on, new non-federated public channels, discussions, and private rooms without the required attributes cannot be created, and **Discussion > Enable** is switched off, then restored to its earlier value when enforcement ends. Removing the ABAC license turns enforcement off, and switching the attribute store clears the required attributes. `GET /v1/abac/attributes.listKeys` lists the keys available for the required attributes, and `GET /v1/rooms.info` returns `abacRequiredAttributes` while enforcement is on.
+
+- ([#42850](https://github.com/RocketChat/Rocket.Chat/pull/42850)) Blocks assigning ABAC attributes to federated rooms and discussions through the room attribute endpoints.
+
+- ([#42850](https://github.com/RocketChat/Rocket.Chat/pull/42850)) Adds the **Edit room ABAC attributes** permission, scoped to a room and held by administrators and room owners by default. In private channels and teams that carry attributes or are locked by enforcement, its holders and ABAC administrators get an **Attribute-based access control** panel to view and change the room's attributes, and a locked room offers them **Manage attributes** in place of the composer. Before anything is saved, this panel and editing a room in **Administration > ABAC > Rooms** preview which members lose or keep access.
+
+  With the local Policy Decision Point and **Restrict room creators and editors to attributes they hold** on, the default, holders can only add values they hold. While enforcement is on and attributes are required, they cannot remove a required attribute or every attribute. ABAC administrators are not restricted by either rule. `POST /v1/abac/rooms/:rid/attributes` accepts an empty set to clear a room, and `attributes.listAssignable` and `rooms.evaluateMembership` accept a room id. With Virtru, an attribute change by a user also removes members whose access cannot be decided.
+
+- ([#42850](https://github.com/RocketChat/Rocket.Chat/pull/42850)) Allows private rooms and teams to be created with ABAC attributes. **Create channel** and **Create team** get an **ABAC managed** option that walks the user through choosing attributes and previewing which members will be added, and `groups.create` and `teams.create` accept an `abacAttributes` map. This requires the new **Create ABAC-managed rooms** permission, granted to users by default, and every such room is recorded in the ABAC audit log.
+
+  Users can only assign values they hold, or, with Virtru, values Virtru entitles them to. Members who do not qualify are not added and are listed in `skippedMembers`. While enforcement is on, new private channels and teams must be ABAC-managed and carry the workspace's required attributes.
+
+  Adds `GET /v1/abac/attributes.listAssignable` and `POST /v1/abac/rooms.evaluateMembership`. Apps with room write access and the new `abac.write` permission can create attributed private rooms under the same rules, and the audit log names the app.
+
+- ([#42850](https://github.com/RocketChat/Rocket.Chat/pull/42850)) Removes a room's ABAC attributes when it is converted to a team, when a team is converted to a channel (the team's own room only), and when it is moved into a team; moving a room out of a team keeps them. The removal applies whether ABAC is enabled or not, is recorded in the audit log, and leaves the room locked while ABAC enforcement is on. The UI warns before each of these actions, and before making an ABAC-managed room or team public while ABAC is disabled.
+
+  While ABAC is enabled, `POST /v1/teams.update` now refuses to make an ABAC-managed team public with `error-action-not-allowed`, as **Edit team** does, and the **Private** toggle is disabled for ABAC-managed rooms.
+
+- ([#42850](https://github.com/RocketChat/Rocket.Chat/pull/42850)) Allows default and team default rooms to carry ABAC attributes. Assigning attributes to a default room, making an ABAC room a default and making an attributed team channel a team default no longer return `error-cannot-convert-default-room-to-abac`, `error-action-not-allowed` or `error-room-is-abac-managed`. With ABAC enabled, new users, team joins and new team defaults only add members to the attributed rooms they qualify for, and skip rooms locked by enforcement.
+
+  `/invite-all-to` and `/invite-all-from` likewise add only the members an ABAC-managed room allows and name the ones they skipped, instead of failing on the first refusal. A locked target room, or one whose access cannot be decided, is refused and nobody is added.
+
+- ([#42720](https://github.com/RocketChat/Rocket.Chat/pull/42720)) Shows why AI search failed instead of an empty result list: the top bar and the results page now tell users when AI search is unavailable or not configured, and tell admins whether the pipeline rejected the credentials, could not be found, or did not respond, with a link to AI center
+
+- ([#42050](https://github.com/RocketChat/Rocket.Chat/pull/42050)) Adds admin control over user status (Enterprise only): from **Administration > Status and presence**, or while editing a user, an admin can turn someone's status off or hide it from chosen people, and a **Show status** setting turns status off for the whole workspace. A user whose status is turned off always appears offline and can no longer change it; a user who is only hidden from chosen people keeps control of their own status. The feature is off by default, behind the new **Manage user status** setting.
+
+- ([#41946](https://github.com/RocketChat/Rocket.Chat/pull/41946)) Adds a new permission "Share screen during voice calls" which controls access to the feature. Users without this permission will still be able to see other participants screens during a voice call, but won't be able to share theirs.
+
+- ([#40697](https://github.com/RocketChat/Rocket.Chat/pull/40697) by [@aleksandernsilva](https://github.com/aleksandernsilva)) Adds support for registering multiple phone numbers with labels per user. **Breaking:** the `phone` user field is replaced by the `phones` array (`{ number, label? }[]`); existing numbers are migrated automatically on upgrade.
+
+- ([#42439](https://github.com/RocketChat/Rocket.Chat/pull/42439)) Adds LiveKit as a built-in video conference provider (alpha, off by default), configurable under Video Conference settings with a server URL, API key and secret. It is offered only while the conference window is enabled, since its calls run there, and only with the new `video-conference-native` license add-on.
+
+- ([#42646](https://github.com/RocketChat/Rocket.Chat/pull/42646)) Shows a user's roles by scope, workspace and room. In a message header, each scope collapses into one tag named after the first role with a count of the rest (`Admin +2`); hovering a tag lists them all and clicking it opens the user card. The `@username` next to the author's name is no longer shown, bots get their tag even without any role, and users created for apps are tagged `App`. The user card shows the workspace roles in a band at the top and the room roles in its list, and the full profile lists them as separate fields.
+
+- ([#42572](https://github.com/RocketChat/Rocket.Chat/pull/42572)) Adds a bubble to the sidebar room list, shown when an unread conversation is scrolled out of view. It reads "Unread mentions" when a conversation in that direction mentions you, and "More unreads" otherwise. Clicking it scrolls to the nearest mention in that direction, or to the nearest unread room if there is no mention.
+
+- ([#42443](https://github.com/RocketChat/Rocket.Chat/pull/42443)) Adds optional call features to LiveKit video conference calls:
+  - A notice and a reminder tone when speaking while muted, a chime when someone joins a small call, and live voice activity on the microphone button, the members list and each tile
+  - A video quality choice (Auto, 1080p, 720p, 360p, 180p) in the preflight and in-call camera menus
+  - Spotlight and sidebar layouts, active-speaker detection, and shared screens featured on the stage
+  - A "Connection info" panel with connection, bandwidth and per-participant stats
+  - Reactions, raised hands, and requests to mute other participants
+- ([#42501](https://github.com/RocketChat/Rocket.Chat/pull/42501)) Adds a native XMPP server (Enterprise, federation module) that federates directly with other XMPP servers over server-to-server connections. Rocket.Chat users can message any XMPP address, exchange presence with remote contacts, and join rooms on remote servers; remote XMPP users can join dedicated XMPP rooms hosted by Rocket.Chat. It runs as the `xmpp-server-service` microservice and is configured under **Administration → Settings → Federation → XMPP Server (Native)**.
+
+- ([#43151](https://github.com/RocketChat/Rocket.Chat/pull/43151)) Adds Dynamic Client Registration (RFC 7591) to the OAuth2 server at `/oauth/register`, for MCP clients. It is behind the new "Allow dynamic client registration" setting on the MCP settings page, off by default, and like MCP it requires the Rocket.Chat AI add-on and MCP to be enabled. While it is off, registration requests get an error that explains what it needs.
+
+- ([#42720](https://github.com/RocketChat/Rocket.Chat/pull/42720)) Adds Room, From, Before and After filters to the AI search to narrow down the search radius, available behind the AI search feature preview.
+
+- ([#42744](https://github.com/RocketChat/Rocket.Chat/pull/42744)) Adds a private **TURN servers** setting for voice calls. TURN servers and their credentials configured there are only handed to users on a call, instead of being readable by anyone through the public ICE servers setting. Each server can use fixed credentials or a shared secret, in which case the workspace issues each user time-limited credentials for every call and the secret never leaves the server (TURN REST API, as supported by coturn's `use-auth-secret`).
+
+- ([#42735](https://github.com/RocketChat/Rocket.Chat/pull/42735)) Limits two-factor authentication email codes to one for each user each minute. A password login that needs an email code now returns a `challengeId`, which clients can use to resend the code through `twoFactorChallenges.sendEmailCode`.
+
+- ([#42509](https://github.com/RocketChat/Rocket.Chat/pull/42509)) Groups the user actions menu by purpose: messaging actions and "Reported messages" first, then mute and ignore, then the room role changes under a "Manage room roles" title, then the moderation actions
+
+- ([#42628](https://github.com/RocketChat/Rocket.Chat/pull/42628)) Redesigns the user card. It shows the user's username, roles and local time as a labelled list, a "Full profile" link and the actions; the bio is left to the full profile. The local time reads as the time and its offset (`10:41 PM (UTC +1)`), with a sign on positive and zero offsets.
+
+- ([#42628](https://github.com/RocketChat/Rocket.Chat/pull/42628)) Redesigns the user information panel. The contextual bar is renamed "Full profile", shows a smaller avatar next to the name and status, lets each field be copied, and opens the avatar in the image gallery when clicked.
+
+### Patch Changes
+
+- ([#42975](https://github.com/RocketChat/Rocket.Chat/pull/42975)) Fixes `chat.sendMessage` accepting message fields that only the server may set, and malformed message blocks that made a room unreadable
+
+- ([#43011](https://github.com/RocketChat/Rocket.Chat/pull/43011)) Fixes `/invite` showing the raw error when the invited user is banned from the room or not found, and shows the app's own reason when an app prevents the user from joining.
+
+- ([#42618](https://github.com/RocketChat/Rocket.Chat/pull/42618)) Fixes LDAP "Sync now" reporting success when the sync did not run or failed: it now reports when nothing is enabled to sync, and shows the error that stopped the sync
+
+- ([#42590](https://github.com/RocketChat/Rocket.Chat/pull/42590)) Fixes LDAP "Test Connection" and "Test LDAP Search" hiding a wrong authentication password: both now report the bind failure with the LDAP server's error, and the search test tells apart "no user found" from "more than one user found"
+
+- ([#42529](https://github.com/RocketChat/Rocket.Chat/pull/42529)) Fixes LDAP **Test Connection** hiding why the server could not be reached: when the connection itself fails (for example, `connect ECONNREFUSED`), the error now shows the reason instead of a generic "LDAP connection failed".
+
+  `POST /v1/ldap.testConnection` now fails with `error: 'LDAP_Connection_failed_reason'`, `errorType: 'error-ldap-connection-failed'` and the error in `details.reason` for failures other than the bind, instead of `error: 'Connection_failed'`. The `Connection_failed` translation key was removed.
+
+  LDAP **Sync Now** shows the actual connection error in its toast.
+
+- ([#43162](https://github.com/RocketChat/Rocket.Chat/pull/43162)) Fixes selects that screen readers announced without a name, such as the Threads, Team channels and timestamp picker selects, and the outgoing webhook event trigger, whose hint was never announced
+
+- ([#42697](https://github.com/RocketChat/Rocket.Chat/pull/42697)) Disables a room's video call button, saying "Join this room to start a call", while the room is only being previewed (a channel or team room the user hasn't joined), instead of offering a call that can't be started
+
+- ([#43198](https://github.com/RocketChat/Rocket.Chat/pull/43198)) Fixes the email field in the admin "Invite members" panel not filling the panel's width
+
+- <details><summary>Updated dependencies [a9b2bb76d88e4d2743e0817b15e6447e7c9c46eb, 01204df7088b1362f14438d99c44bc4f6d6e840e]:</summary>
+  - @rocket.chat/tools@0.5.0-rc.0
+
+  </details>
+
 ## 4.1.0
 
 ### Minor Changes
