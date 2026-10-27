@@ -25,9 +25,9 @@ Pilot allowlist:
 
 - **Text frames inherit Tamagui's own `numberOfLines`**, a computed variant. The recipe drops that prop. No Fuselage caller sets it.
 - **`ButtonGroupFrame` is extended by `styled()` elsewhere** (`NavBarGroup`, `SidebarButtonGroup`, `ModalFooterControllers`). The plugin keeps the Tamagui frame under the exported name, so those definitions still extend it, and points the module's own uses (the public `ButtonGroup`) at the recipe. Once a definition's children are lowered too, its frame can go: they read its `staticConfig` at build time.
-- **`ButtonFrame`, variant order.** Tamagui resolves conflicting variants (`kind`, `pressed`, `inactive`, `ghost`) by prop order, and the class depends on that order. Covering every order needs about 116k resolutions.
-  - The allowlist marks the frame `ordered`: a caller's variants apply in declaration order. `Button` and `IconButton` already pass them in that order, and the frame's own comments document it.
-  - That brings the frame down to 7,258 resolutions, which take 1.4 s with the check (8.7 s in the first prototype, which also resolved every forced state).
+- **`ButtonFrame`, variant order.** Tamagui resolves conflicting variants by prop order, and the class depends on that order.
+  - Before step 2 the frame had four conflicting color variants (`kind`, `pressed`, `inactive`, `ghost`). Covering every order needed about 116k resolutions, and 7,258 with the allowlist's `ordered` (a caller's variants apply in declaration order).
+  - Step 2 (`refactor(fuselage): fold the Button colors into one variant of reachable combinations`, branch `pilot-button-color-variant`) leaves two: `look` and `ghost`. `ordered` now gives 394 resolutions (169 ms with the check); without it, 3,949 resolutions (845 ms) emit the same CSS byte for byte. `ordered` only saves build time now.
   - Without `ordered`, all orders are enumerated. That is fine for small frames: `ButtonGroup` takes 36 resolutions.
 - **`forceStyle` is gone from the pilot**, and so are the recipe's forced-state inline tables (74 kB raw of `ButtonFrame`'s recipe in the first prototype). The recipe now only maps props to classes.
 - **`color` at the `IconButton` use site** is a dynamic value. It goes inline. The difference: inline style beats unlayered consumer CSS, where Tamagui's class in the `fuselage` layer did not. No story or app rule relies on it.
@@ -61,63 +61,64 @@ The first prototype's bench-page comparison (`perf/computed-ab.mjs`, at rest, ho
 
 ## Size
 
+All with step 2's single `look` variant in `ButtonFrame`. The figures before step 2 are in brackets.
+
 `dist`, `LOWER_STYLED=0` against lowered (3 definitions plus `ButtonContent`), gzip level 9:
 
 | | raw | gzip |
 |---|---|---|
-| `fuselage.production.js` | 354,493 → 382,709 (+28,216) | 100,139 → 107,549 (**+7,410**) |
-| `fuselage.css` | 94,197 → 246,228 (+152,031) | 12,889 → 22,856 (**+9,967**) |
+| `fuselage.production.js` | 354,657 → 378,331 (+23,674) [+28,216] | 100,194 → 106,333 (**+6,139**) [+7,410] |
+| `fuselage.css` | 94,197 → 151,610 (+57,413) [+152,031] | 12,889 → 18,953 (**+6,064**) [+9,967] |
 
-The first prototype added 14.4 kB gzip of JS, 6.8 kB of it the forced-state tables. Those are gone; the CSS is byte for byte the same as before, because `forceStyle` never produced any.
+The first prototype also added 6.8 kB gzip of forced-state tables to the JS; those are gone with `forceStyle`. Step 2 itself costs the unlowered build +59 B gzip of JS and no CSS.
 
-Lowering adds about 1 s to the library build (3.4 s → 4.4 s), against about 10 s before.
+Lowering adds about 0.3 s to the library build (2.4 s → 2.7 s) [about 1 s; about 10 s in the first prototype].
 
-CSS emitted per definition, against what the runtime inserts for the same stories (`perf/runtime-css.mjs`, union over the stories):
+CSS emitted per definition, against what the runtime inserts for the same stories (`perf/runtime-css.mjs`, union over the stories; the runtime figure is the same before and after step 2):
 
 | Definition | Emitted ahead of time | Runtime, over its stories | Recipe |
 |---|---|---|---|
 | MessageName | 763 B, 15 rules | 694 B, 11 rules (34 stories) | 693 B |
 | ButtonGroup | 2,605 B, 70 rules | 1,104 B, 28 rules (13 stories) | 1,854 B |
-| ButtonFrame | 160,499 B, 1,082 rules (9.7 kB gzip) | 55,834 B, 427 rules (49 stories) | 26,520 B (5.6 kB gzip) |
+| ButtonFrame | **58,924 B, 462 rules (5.8 kB gzip)** [160,499 B, 1,082 rules, 9.7 kB gzip] | 55,834 B, 427 rules (49 stories) | 21,734 B [26,520 B] |
 | ButtonContent | 367 B, 11 rules | — | 574 B |
 
 **What `ButtonFrame`'s CSS is made of** (`node scripts/measure-button-reachable.mts`):
 
 | Slot | Classes emitted | Bytes | Reachable from `getButtonStates` | Bytes |
 |---|---|---|---|---|
-| `borderColor` (`border` group) | 94 | 77,337 | 28 | 22,735 |
-| `backgroundColor` | 98 | 71,210 | 32 | 22,891 |
+| `backgroundColor` | 33 [98] | 23,539 [71,210] | 32 | 22,891 |
+| `borderColor` (`border` group) | 29 [94] | 23,433 [77,337] | 28 | 22,735 |
 | `color` | 32 | 4,015 | 31 | 3,908 |
 | `boxShadow` | 14 | 3,994 | 13 | 3,727 |
-| everything else | | 3,943 | all | |
-| **Total** | 1,082 rules | **160,499 B, 9.7 kB gzip** | 440 rules | **57,405 B, 5.7 kB gzip** |
+| **Total** | 462 rules [1,082] | **58,924 B, 5.8 kB gzip** | 440 rules | **57,405 B, 5.7 kB gzip** |
 
-"Reachable" resolves every prop set `Button` and `IconButton` can produce through `getButtonStates` (each kind, disabled or not, pressed or not, every segment position with and without each ghost variant, every size, `square`, `icon`, `compact`, `withBadge`, `squareSize`): 31,200 prop sets, 163 distinct classes, each checked against `resolveStaticElement`. Those 57.4 kB match what the runtime inserts over all 49 button stories (55.8 kB).
+"Reachable" resolves every prop set `Button` and `IconButton` can produce through `getButtonStates` (each kind, disabled or not, pressed or not, every segment position with and without each ghost variant, every size, `square`, `icon`, `compact`, `withBadge`, `squareSize`): 31,200 prop sets, 163 distinct classes, each checked against `resolveStaticElement`.
 
-**Why `ButtonFrame` is so large:**
+**What was driving the size before step 2:**
 - Tamagui groups each property's states into one class. `border` holds the width, the style and four state colors; `background` holds four state colors. Each class carries about 6 rules of long `var()` fallbacks.
-- The plugin enumerates `kind` (13 values), `pressed` (5), `inactive` (13) and `ghost` (5) as independent variants, each also unset.
-- Callers only produce a small part of that space. `getButtonStates` always sets `inactive` to the same kind as `kind`, and `pressed` only to that kind when it is pressable. Combinations such as `kind: primary, inactive: danger` or `kind: secondary, pressed: icon-info` cannot happen, yet each gives a distinct `border` and `background` class.
-- 66 of the 94 `border` classes and 66 of the 98 `background` classes (103 kB raw) are unreachable.
+- The plugin enumerated `kind` (13 values), `pressed` (5), `inactive` (13) and `ghost` (5) as independent variants. `getButtonStates` always set `inactive` to the same kind as `kind`, and `pressed` only to that kind when pressable, so 66 `border` and 66 `background` classes (103 kB raw) were mixes such as `kind: primary, inactive: danger` that no button could reach.
+- `look` lists only each kind, each pressable kind pressed, and each kind disabled (31 values). `ghost` still follows it, but replaces every color it sets, so `look` × `ghost` adds a single class per slot.
+- What is left above the reachable set (one class in each of the 4 color slots, 1.5 kB) is the frame's base colors, for a `ButtonFrame` rendered without a `look`; no public component does that.
 
 **Extrapolation to the whole library** (`node scripts/measure-lowered.mts`, every definition matched by `const X = styled(`, `ordered`):
 - **Lowerable: 226 of 230.** The 4 failures are frames with a styled `context`: `AvatarElementFrame`, `AvatarStackFrame`, `CardFrame`, `CardCol`.
   - This only covers what the definition needs. Use-site needs (dynamic values, `context:`, `animation:`) are the checklist's step 3.
-- **CSS:** 2,369 distinct rules, 237 kB raw, **23.9 kB gzip**. Without `ButtonFrame`: 1,356 rules, 83 kB raw, **15.2 kB gzip**. The next largest after `ButtonFrame` are `Tag` (10 kB raw), `BubbleButton` (8.4 kB) and `TabsItem` (8.3 kB).
-- **Recipes:** 26.9 kB gzip together, with `ButtonFrame` at 5.6 kB.
+- **CSS:** 1,749 distinct rules, 136 kB raw, **19.8 kB gzip** [2,369 rules, 237 kB, 23.9 kB]. Without `ButtonFrame`: 1,356 rules, 83 kB raw, 15.2 kB gzip. `ButtonFrame` is still the largest; the next are `Tag` (10 kB raw), `BubbleButton` (8.4 kB) and `TabsItem` (8.3 kB).
+- **Recipes:** 25.7 kB gzip together [26.9 kB].
 - **Estimated net, full conversion:**
-  - JS: about −31 kB of runtime, minus part of the 20.5 kB of definitions, plus 27 kB of recipes, plus 1 kB of recipe runtime. Roughly **−15 to −20 kB gzip**.
-  - CSS: **+20 to +24 kB gzip** as emitted today; about **+19 to +21 kB** if `ButtonFrame` emitted only its reachable classes. Less what `fuselage.css` already holds from the compiler.
+  - JS: about −31 kB of runtime, minus part of the 20.5 kB of definitions, plus 26 kB of recipes, plus 1 kB of recipe runtime. Roughly **−15 to −20 kB gzip**.
+  - CSS: about **+20 kB gzip**, less what `fuselage.css` already holds from the compiler.
   - Total bytes are roughly a wash. The gain is render cost.
 - **The recipe format is not tuned.** Its tables are keyed by strings such as `3=12^;4=12^;`, and an integer encoding would roughly halve it.
 
 ## Gate: `ButtonFrame`'s ahead-of-time CSS against the runtime's
 
-**No-go as it stands, and the fix is known.** `ButtonFrame` emits 160.5 kB raw (9.7 kB gzip) ahead of time against the 55.8 kB the runtime inserts over its 49 stories: 2.9 times as much, the same as in the first prototype. Removing `forceStyle` only removed the JS tables; it never touched the CSS.
+**Go after step 2.** `ButtonFrame` now emits 58.9 kB raw (5.8 kB gzip) ahead of time against the 55.8 kB the runtime inserts over its 49 stories: 5.5% more, against 2.9 times as much before. The excess is the frame's base colors (no `look`) and the reachable states the stories don't render.
 
-The excess is not inherent to lowering. The classes callers can reach come to 57.4 kB raw (5.7 kB gzip), within 3% of the runtime's figure. The other 103 kB are `border` and `background` classes for `kind`/`pressed`/`inactive`/`ghost` combinations that `getButtonStates` never produces. Step 2 of the checklist targets exactly that:
-- One combined color variant (for example `look: 'primary' | 'primary-disabled' | 'icon-info-pressed' | …`, with ghost per segment) whose values are only the combinations `getButtonStates` produces. That should bring `ButtonFrame` to about 57 kB raw, close to the runtime, with no change to the plugin.
-- Or keep the four variants and let the allowlist declare the reachable combinations; this is weaker, since nothing then stops a caller from passing an unlisted one.
+Step 2 changed no public prop, and on the pilot it is pixel-identical (`story-ab`: button 49/49, message 34/34, sidebar 9/9, modal 13/13, menu 15/15, bubble 8/8) with no computed-style differences on the 45 Button, IconButton, SplitButton and ButtonGroup stories. The compiler still flattens the same 70 use-sites.
+
+One combination was reachable without being visible in `getButtonStates`: `Menu` hands `pressed` to whatever trigger it clones, a plain `Button` included. The frame's `pressed` variant used to swallow it; `Button` now drops it itself.
 
 ## Runtime cost
 
@@ -172,11 +173,11 @@ From the first prototype, not rerun on this rebase.
 **Conditions before phase 3:**
 1. **Variant interactions must stay small, or be declared `ordered`.**
    - Frames like `ButtonFrame`, with four interacting color variants, multiply build time and ahead-of-time CSS.
-   - Restructure them: one `look` variant listing the combinations callers use, or `ordered` by default.
+   - Restructure them: one `look` variant listing the combinations callers use. Done for `ButtonFrame` (CSS 160 kB → 59 kB raw); `IconButton` renders the same frame.
    - Or get ungrouped state classes upstream (item 4).
 2. ~~Replace `forceStyle`~~: done on the pilot; the forced tables are gone from the recipe.
 3. **Compact the recipe encoding** (integer keys), and emit the CSS once for the bundle. Today each module writes its own stylesheet, so a rule two definitions share appears twice.
-4. **Cache resolutions by `staticConfig` hash.** Lowering adds about 1 s to the library build without the forced states, almost all of it `ButtonFrame`; a full conversion will need the cache.
+4. **Cache resolutions by `staticConfig` hash.** Lowering adds about 0.3 s to the library build since step 2; a full conversion will still need the cache.
 
 ## Reproduce
 

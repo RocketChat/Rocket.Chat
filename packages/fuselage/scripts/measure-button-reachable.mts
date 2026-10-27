@@ -26,7 +26,7 @@ const rows = recipe.slots.map((table, i) => {
 });
 
 // The props Button and IconButton can actually produce
-const kinds = Object.keys(sc.variants.kind);
+const kinds = Object.keys(sc.variants.look).filter((look) => !/-(pressed|disabled)$/.test(look));
 const segments = [
 	undefined,
 	...['first', 'middle', 'last', 'only'].flatMap((position) => [
