@@ -163,7 +163,7 @@ export async function cleanRoomHistory({
 				break;
 			}
 
-			count += await Messages.removeByIdPinnedTimestampLimitAndUsers(
+			const { count: batchCount, deletedIds } = await Messages.removeByIdPinnedTimestampLimitAndUsers(
 				rid,
 				excludePinned,
 				ignoreDiscussion,
@@ -173,16 +173,17 @@ export async function cleanRoomHistory({
 				ignoreThreads,
 				batch,
 			);
+			count += batchCount;
 			void api.broadcast('notify.deleteMessageBulk', rid, {
 				rid,
 				excludePinned,
 				ignoreDiscussion,
 				ts,
 				users: fromUsers,
-				ids: batch,
+				ids: deletedIds,
 			});
-			await ReadReceipts.removeByMessageIds(batch);
-			await ReadReceiptsArchive.removeByMessageIds(batch);
+			await ReadReceipts.removeByMessageIds(deletedIds);
+			await ReadReceiptsArchive.removeByMessageIds(deletedIds);
 
 			remaining -= batch.length;
 			if (batch.length < FILE_CLEANUP_BATCH_SIZE) {
