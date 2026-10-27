@@ -1,11 +1,13 @@
 import { createServer } from 'node:http';
-import type { Server } from 'node:http';
+import type { IncomingMessage, Server } from 'node:http';
 
 import { getRequestListener } from '@hono/node-server';
 import type { HttpBindings } from '@hono/node-server';
 import { Hono } from 'hono';
 import type { MiddlewareHandler } from 'hono';
 import { TrieRouter } from 'hono/router/trie-router';
+
+import type { Router } from './Router';
 
 export type { HttpBindings } from '@hono/node-server';
 export { RESPONSE_ALREADY_SENT } from '@hono/node-server/utils/response';
@@ -51,3 +53,23 @@ export const createMiddlewareSlot = (): { middleware: RootMiddleware; add: (...m
  * process relies on Node's own.
  */
 export const createNodeServer = (app: RootApp): Server => createServer(getRequestListener(app.fetch, { overrideGlobalObjects: false }));
+
+/**
+ * A request whose body is read from the incoming message only as it is consumed, so cloning it reads nothing and a
+ * route may still stream the body from the incoming message itself.
+ */
+const lazyBodyRequest = (raw: Request, incoming: IncomingMessage): Request =>
+	new Request(raw.url, {
+		method: raw.method,
+		headers: raw.headers,
+		signal: raw.signal,
+		...(!['GET', 'HEAD'].includes(raw.method) && { body: incoming as unknown as ReadableStream, duplex: 'half' }),
+	});
+
+/**
+ * Answers every request under the router's base with the routes the router has when it is mounted.
+ */
+export const mountRouter = (app: RootApp, router: Pick<Router<string>, 'base' | 'toHono'>): void => {
+	const routed = router.toHono();
+	app.all(`${router.base}/*`, (c) => routed.fetch(lazyBodyRequest(c.req.raw, c.env.incoming), c.env));
+};
