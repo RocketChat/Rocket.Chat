@@ -20,8 +20,8 @@ const ContactInfoEntry = ({ text, actionIcon, actionLabel, onAction }: ContactIn
 				{text}
 			</Box>
 			<Box display='flex' flexShrink={0}>
-				<IconButton tiny icon={actionIcon} title={actionLabel} aria-label={actionLabel} disabled={!onAction} onClick={onAction} />
-				<IconButton tiny icon='copy' title={t('Copy')} aria-label={t('Copy')} disabled={hasCopied} onClick={() => copy()} />
+				<IconButton size='tiny' icon={actionIcon} title={actionLabel} aria-label={actionLabel} disabled={!onAction} onClick={onAction} />
+				<IconButton size='tiny' icon='copy' title={t('Copy')} aria-label={t('Copy')} disabled={hasCopied} onClick={() => copy()} />
 			</Box>
 		</Box>
 	);

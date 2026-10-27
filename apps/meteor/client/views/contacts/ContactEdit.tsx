@@ -1,5 +1,5 @@
 import type { IContactPublic, Serialized } from '@rocket.chat/core-typings';
-import { Box, Button, ButtonGroup, Divider, Icon, IconButton } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Divider, Icon, IconButton, Stack } from '@rocket.chat/fuselage';
 import { Field, FieldError, FieldGroup, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage-forms';
 import {
 	ContextualbarClose,
@@ -151,17 +151,18 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 						<Field key={field.id}>
 							<FieldLabel>{t('Email')}</FieldLabel>
 							<FieldRow>
-								<TextInput {...register(`emails.${index}.address`)} />
-								{emailFields.fields.length > 1 && (
-									<IconButton
-										secondary
-										marginInlineStart={4}
-										icon={<Icon name='trash' size='x20' />}
-										aria-label={t('Remove_email')}
-										title={t('Remove_email')}
-										onClick={() => emailFields.remove(index)}
-									/>
-								)}
+								<Stack direction='row' align='center' grow gap='x4'>
+									<TextInput {...register(`emails.${index}.address`)} />
+									{emailFields.fields.length > 1 && (
+										<IconButton
+											variant='secondary'
+											icon={<Icon name='trash' size='x20' />}
+											aria-label={t('Remove_email')}
+											title={t('Remove_email')}
+											onClick={() => emailFields.remove(index)}
+										/>
+									)}
+								</Stack>
 							</FieldRow>
 							<FieldLabel>{t('Label')}</FieldLabel>
 							<FieldRow>
@@ -172,7 +173,7 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 					<Field>
 						<Box display='flex'>
 							<Button
-								small
+								size='small'
 								icon='plus'
 								type='button'
 								disabled={emailFields.fields.length >= MAX_ENTRIES}
@@ -187,17 +188,18 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 						<Field key={field.id}>
 							<FieldLabel>{t('Phone')}</FieldLabel>
 							<FieldRow>
-								<TextInput {...register(`phones.${index}.raw`)} />
-								{phoneFields.fields.length > 1 && (
-									<IconButton
-										secondary
-										marginInlineStart={4}
-										icon={<Icon name='trash' size='x20' />}
-										aria-label={t('Remove_phone')}
-										title={t('Remove_phone')}
-										onClick={() => phoneFields.remove(index)}
-									/>
-								)}
+								<Stack direction='row' align='center' grow gap='x4'>
+									<TextInput {...register(`phones.${index}.raw`)} />
+									{phoneFields.fields.length > 1 && (
+										<IconButton
+											variant='secondary'
+											icon={<Icon name='trash' size='x20' />}
+											aria-label={t('Remove_phone')}
+											title={t('Remove_phone')}
+											onClick={() => phoneFields.remove(index)}
+										/>
+									)}
+								</Stack>
 							</FieldRow>
 							<FieldLabel>{t('Label')}</FieldLabel>
 							<FieldRow>
@@ -208,7 +210,7 @@ const ContactEdit = ({ contact, onSaved, onClose }: ContactEditProps) => {
 					<Field>
 						<Box display='flex'>
 							<Button
-								small
+								size='small'
 								icon='plus'
 								type='button'
 								disabled={phoneFields.fields.length >= MAX_ENTRIES}

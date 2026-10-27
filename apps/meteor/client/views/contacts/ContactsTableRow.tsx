@@ -34,7 +34,7 @@ const ContactsTableRow = ({ contact, columns, onClick, onEdit, onDeleted }: Cont
 				<GenericTableCell truncate>
 					<Box display='flex' alignItems='center'>
 						<BaseAvatar size='x28' url={getAvatarURL({ contactId: _id, cache: _updatedAt }) ?? ''} />
-						<Box marginInlineStart={8} fontScale='p2' flexGrow={1} flexShrink={1} flexBasis='0%' withTruncatedText>
+						<Box marginInlineStart='x8' fontScale='p2' flexGrow={1} flexShrink={1} flexBasis='0%' withTruncatedText>
 							{displayName}
 						</Box>
 					</Box>
@@ -46,14 +46,14 @@ const ContactsTableRow = ({ contact, columns, onClick, onEdit, onDeleted }: Cont
 				<GenericTableCell>
 					{source === 'local' ? (
 						<Box display='flex'>
-							<Tag variant='secondary' icon={<Icon name='address-book' size='x18' />}>
+							<Tag variant='secondary' medium icon={<Icon name='address-book' size='x18' />}>
 								Rocket.Chat
 							</Tag>
 						</Box>
 					) : (
-						<Box display='flex' flexWrap='wrap' gap={4} maxHeight='x20' overflow='hidden'>
+						<Box display='flex' flexWrap='wrap' gap='x4' maxHeight='x20' overflow='hidden'>
 							{categories?.map((category) => (
-								<Tag key={category} variant='secondary'>
+								<Tag medium key={category} variant='secondary'>
 									{category}
 								</Tag>
 							))}

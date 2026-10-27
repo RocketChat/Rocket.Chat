@@ -21,11 +21,12 @@ export type ContactsTableProps = {
 const ContactsTable = ({ sort, columns, children }: ContactsTableProps) => {
 	const { t } = useTranslation();
 	const { sortBy, sortDirection, setSort: onClickSort } = sort;
+	const visibleColumns = CONTACT_COLUMNS.filter(({ key }) => columns.isVisible(key));
 
 	return (
-		<GenericTable>
+		<GenericTable columns={[...visibleColumns.map(() => 'auto' as const), 'x44']}>
 			<GenericTableHeader>
-				{CONTACT_COLUMNS.filter(({ key }) => columns.isVisible(key)).map(({ key, label }) => (
+				{visibleColumns.map(({ key, label }) => (
 					<GenericTableHeaderCell key={key} sort={key} onClick={onClickSort} active={sortBy === key} direction={sortDirection}>
 						{t(label)}
 					</GenericTableHeaderCell>

@@ -23,7 +23,6 @@ const ContactsPageFilters = ({ onChangeText, onCreate, searchText, total }: Cont
 		<Box marginBlock='x16' display='flex' flexWrap='wrap' alignItems='center' justifyContent='center'>
 			<Box minWidth='x224' display='flex' flexGrow={1} flexShrink={0}>
 				<TextInput
-					alignItems='center'
 					placeholder={t('Search_contacts')}
 					endAddon={<Icon name='magnifier' size='x20' />}
 					onChange={(e: ChangeEvent<HTMLInputElement>) => onChangeText(e.currentTarget.value)}
