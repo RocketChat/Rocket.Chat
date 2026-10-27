@@ -8,13 +8,13 @@ type ActionButtonProps = ComponentProps<typeof ActionButton>;
 export type DeviceMenuButtonProps = {
 	/** Separate from `icon`, which GenericMenu overwrites on a disabled trigger. */
 	menuIcon: ActionButtonProps['icon'];
-	/** Stamped by GenericMenu on a disabled trigger; dropped, since it would shrink the button. */
-	small?: boolean;
-} & Omit<ActionButtonProps, 'icon'>;
+	/** Required, since GenericMenu sizes a disabled trigger that has no size of its own `small`, which would shrink it. */
+	size: NonNullable<ActionButtonProps['size']>;
+} & Omit<ActionButtonProps, 'icon' | 'size'>;
 
 /** The trigger of a device menu, for `DeviceMenu`'s `button`. */
 const DeviceMenuButton = forwardRef<HTMLButtonElement, DeviceMenuButtonProps>(function DeviceMenuButton(
-	{ small: _small, label, menuIcon, ...menuProps },
+	{ label, menuIcon, ...menuProps },
 	ref,
 ) {
 	// Spread because GenericMenu clones this trigger with the props that open the menu, which must reach the button.
