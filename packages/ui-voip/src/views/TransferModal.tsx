@@ -1,9 +1,6 @@
 import {
 	Box,
 	Button,
-	Field,
-	FieldLabel,
-	FieldRow,
 	Modal,
 	ModalClose,
 	ModalContent,
@@ -11,7 +8,6 @@ import {
 	ModalFooterControllers,
 	ModalHeader,
 	ModalTitle,
-	ToggleSwitch,
 } from '@rocket.chat/fuselage';
 import { useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -36,8 +32,6 @@ const TransferModal = ({ onCancel, onConfirm, onConsult }: TransferModalProps) =
 
 	const [peer, setPeer] = useState<PeerInfoType | undefined>(undefined);
 	const [error, setError] = useState<string | undefined>(undefined);
-	const [askFirst, setAskFirst] = useState(false);
-	const askFirstId = useId();
 
 	const autocomplete = usePeerAutocomplete(setPeer, peer);
 
@@ -82,29 +76,15 @@ const TransferModal = ({ onCancel, onConfirm, onConsult }: TransferModalProps) =
 						<PeerInfo {...peer} />
 					</Box>
 				)}
-				{onConsult && (
-					<Box marginBlockStart={16}>
-						<Field>
-							<FieldRow>
-								<FieldLabel htmlFor={askFirstId}>{t('Ask_first')}</FieldLabel>
-								<ToggleSwitch id={askFirstId} checked={askFirst} onChange={() => setAskFirst((value) => !value)} />
-							</FieldRow>
-						</Field>
-					</Box>
-				)}
 			</ModalContent>
 			<ModalFooter>
 				<ModalFooterControllers>
-					<Button variant='secondary' onClick={onCancel}>
-						{t('Cancel')}
+					<Button variant='secondary-danger' onClick={submitWith(onConfirm)} icon='phone-off'>
+						{t('Transfer_and_hang_up')}
 					</Button>
-					{onConsult && askFirst ? (
-						<Button primary onClick={submitWith(onConsult)} icon='pause-shape-unfilled'>
-							{t('Hold_and_consult_before_transferring')}
-						</Button>
-					) : (
-						<Button variant='danger' onClick={submitWith(onConfirm)} icon='phone-off'>
-							{t('Hang_up_and_transfer_call')}
+					{onConsult && (
+						<Button variant='success' onClick={submitWith(onConsult)} icon='pause-shape-unfilled'>
+							{t('Call_first')}
 						</Button>
 					)}
 				</ModalFooterControllers>
