@@ -1,3 +1,4 @@
+import { validateEmail } from '@rocket.chat/tools';
 import { useContext, useEffect, useMemo, useRef } from 'preact/hooks';
 import { route } from 'preact-router';
 import type { FieldValues, SubmitHandler } from 'react-hook-form';
@@ -13,7 +14,6 @@ import { Screen, ScreenContent, ScreenFooter } from '../../components/Screen';
 import { createClassName } from '../../helpers/createClassName';
 import { sortArrayByColumn } from '../../helpers/sortArrayByColumn';
 import CustomFields from '../../lib/customFields';
-import { validateEmail } from '../../lib/email';
 import { parentCall } from '../../lib/parentCall';
 import Triggers from '../../lib/triggers';
 import { StoreContext } from '../../store';

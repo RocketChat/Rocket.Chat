@@ -10421,6 +10421,7 @@ __metadata:
     "@rocket.chat/jest-presets": "workspace:^"
     "@rocket.chat/logger": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
+    "@rocket.chat/tools": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
     "@types/express": "npm:^4.17.25"
     "@types/supertest": "npm:~6.0.3"
@@ -10597,6 +10598,7 @@ __metadata:
     "@rocket.chat/message-parser": "workspace:^"
     "@rocket.chat/random": "workspace:~"
     "@rocket.chat/storybook-dark-mode": "workspace:~"
+    "@rocket.chat/tools": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
     "@rocket.chat/ui-kit": "workspace:~"
     "@storybook/addon-docs": "npm:^9.1.21"
@@ -11256,6 +11258,7 @@ __metadata:
   resolution: "@rocket.chat/mongo-adapter@workspace:packages/mongo-adapter"
   dependencies:
     "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/tools": "workspace:^"
     jest: "npm:~30.5.2"
     mongodb: "npm:6.16.0"
     typescript: "npm:~7.0.2"

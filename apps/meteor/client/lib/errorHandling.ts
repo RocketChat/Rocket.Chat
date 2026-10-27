@@ -1,6 +1,6 @@
-import { t } from '../../lib/i18n';
+import { isObject, objectMap } from '@rocket.chat/tools';
 
-const isObject = (obj: unknown): obj is object => (typeof obj === 'object' || typeof obj === 'function') && obj !== null;
+import { t } from '../../lib/i18n';
 
 const hasProperty = <TProperty extends number | string | symbol>(
 	obj: unknown,
@@ -42,7 +42,11 @@ export function getErrorMessage(error: unknown, defaultMessage?: string): string
 		defaultMessage;
 	const details = hasProperty(error, 'details') && isObject(error.details) ? error.details : undefined;
 
-	if (message) return t(message, Object.fromEntries(Object.entries(details ?? {}).map(([key, value]) => [key, t(value)])));
+	if (message)
+		return t(
+			message,
+			objectMap(details ?? {}, ({ key, value }) => ({ key, value: t(value) })),
+		);
 
 	return getErrorMessage(defaultMessage);
 }

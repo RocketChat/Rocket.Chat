@@ -2,7 +2,7 @@ import type { ISetting, SettingValidationRule } from '@rocket.chat/core-typings'
 import { isSettingCode } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
-import { isRecord } from '@rocket.chat/tools';
+import { isRecord, objectMap } from '@rocket.chat/tools';
 
 import { settings } from '../settings';
 import { getSettingSchemaValidator } from '../settings/functions/settingSchemas';
@@ -85,7 +85,7 @@ const evaluateSettingValidationRule = (
 	// replaces every `{ $setting: '<id>' }` in the filter with that setting's value,
 	// recording each in `references`
 	const resolveObject = (filter: Record<string, unknown>): Record<string, unknown> =>
-		Object.fromEntries(Object.entries(filter).map(([key, value]) => [key, resolveNode(value)]));
+		objectMap(filter, ({ key, value }) => ({ key, value: resolveNode(value) }));
 
 	const resolveNode = (node: unknown): unknown => {
 		if (isSettingReference(node)) {

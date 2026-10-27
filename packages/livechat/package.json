@@ -31,6 +31,7 @@
 		"@rocket.chat/gazzodown": "workspace:^",
 		"@rocket.chat/message-parser": "workspace:^",
 		"@rocket.chat/random": "workspace:~",
+		"@rocket.chat/tools": "workspace:^",
 		"@rocket.chat/ui-kit": "workspace:~",
 		"ajv": "^8.20.0",
 		"ajv-formats": "^3.0.1",

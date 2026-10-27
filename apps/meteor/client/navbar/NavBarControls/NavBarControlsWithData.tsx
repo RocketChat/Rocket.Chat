@@ -1,4 +1,4 @@
-import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
+import { isTruthy } from '@rocket.chat/tools';
 import { useRouter } from '@rocket.chat/ui-contexts';
 import { useMediaCallAction } from '@rocket.chat/ui-voip';
 import { useCallback, type HTMLAttributes } from 'react';
@@ -78,7 +78,7 @@ const NavBarControlsWithData = (props: NavBarControlsMenuProps) => {
 			content: omnichannelLivechatTogglerTitle,
 			onClick: handleAvailableStatusChange,
 		},
-	].filter(Boolean) as GenericMenuItemProps[];
+	].filter(isTruthy);
 
 	const isPressed = isQueuePressed || isContactPressed;
 

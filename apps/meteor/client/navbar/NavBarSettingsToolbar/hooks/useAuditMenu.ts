@@ -1,3 +1,4 @@
+import { isTruthy } from '@rocket.chat/tools';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { usePermission, useRouter } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
@@ -37,6 +38,6 @@ export const useAuditMenu = () => {
 			hasAuditPermission && auditMessageItem,
 			hasAuditLogPermission && auditLogItem,
 			hasAuditPermission && auditSecurityLogsItem,
-		].filter(Boolean) as GenericMenuItemProps[],
+		].filter(isTruthy),
 	};
 };

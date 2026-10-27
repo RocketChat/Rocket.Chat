@@ -1,4 +1,4 @@
-import { isObject } from '../../../../lib/utils/isObject';
+import { isObject } from '@rocket.chat/tools';
 
 export const normalizers = {
 	// Set 'id' to '_id' for any sources that provide it
