@@ -1,6 +1,6 @@
 import { publishMeteorCollection } from './meteorCollection';
+import { Server } from '../Server';
 import { makeSession, makeSubscription, sentPackets } from '../__tests__/helpers';
-import { Server } from '../ddp/Server';
 import { MeteorCollection } from '../lib/MeteorCollection';
 
 jest.mock('@rocket.chat/logger', () => ({

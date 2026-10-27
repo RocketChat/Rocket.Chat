@@ -1,14 +1,16 @@
 import type { StreamNames } from '@rocket.chat/ddp-client';
 import { Streamer } from '@rocket.chat/streamer';
-import type { DDPSubscription, Connection, TransformMessage } from '@rocket.chat/streamer';
+import type { DDPSubscription, Connection, StreamerOptions, TransformMessage } from '@rocket.chat/streamer';
 import WebSocket from 'ws';
 
-import type { Server } from '../ddp/Server';
-import type { Session } from '../ddp/Session';
-import { encodeChanged, preframe } from '../ddp/codec';
+import type { Server } from '../Server';
+import type { Session } from '../Session';
+import { encodeChanged, preframe } from '../codec';
 import { isEmpty } from '../lib/utils';
 
-export const createStreamAdapter = (server: Server) =>
+type StreamConstructor = new <N extends StreamNames>(name: N, options?: StreamerOptions) => Streamer<N>;
+
+export const createStreamAdapter = (server: Server): StreamConstructor =>
 	class Stream<N extends StreamNames> extends Streamer<N> {
 		registerPublication(name: string, fn: (eventName: string, options: boolean | { useCollection?: boolean; args?: any }) => void): void {
 			server.publish(name, fn);

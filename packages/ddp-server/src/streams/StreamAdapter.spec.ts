@@ -2,8 +2,8 @@ import type { DDPSubscription } from '@rocket.chat/streamer';
 import WebSocket from 'ws';
 
 import { createStreamAdapter } from './StreamAdapter';
-import { Server } from '../ddp/Server';
-import { preframe } from '../ddp/codec';
+import { Server } from '../Server';
+import { preframe } from '../codec';
 
 jest.mock('@rocket.chat/logger', () => ({
 	Logger: jest.fn().mockReturnValue({

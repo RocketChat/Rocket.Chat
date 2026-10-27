@@ -1,6 +1,7 @@
 import os from 'os';
 
 import { api, getConnection, getTrashCollection } from '@rocket.chat/core-services';
+import { ConnectionLifecycle, ConnectionRegistry, Server, createStreamAdapter } from '@rocket.chat/ddp-server';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { registerServiceModels } from '@rocket.chat/models';
 import { startBroker } from '@rocket.chat/network-broker';
@@ -8,15 +9,11 @@ import { NotificationsModule } from '@rocket.chat/streamer';
 import { startTracing } from '@rocket.chat/tracing';
 
 import { DDPStreamer } from './DDPStreamer';
-import { ConnectionRegistry } from './ddp/ConnectionRegistry';
-import { Server } from './ddp/Server';
-import { ConnectionLifecycle } from './ddp/lifecycle';
 import { registerAccountMethods } from './methods/accounts';
 import { callMeteorMethod } from './methods/meteorFallback';
 import { registerPresenceMethods } from './methods/presence';
 import { registerAutoupdatePublication } from './publications/autoupdate';
 import { registerLoginServiceConfigurationPublication } from './publications/loginServiceConfiguration';
-import { createStreamAdapter } from './streams/StreamAdapter';
 
 void (async () => {
 	const { db, client } = await getConnection();

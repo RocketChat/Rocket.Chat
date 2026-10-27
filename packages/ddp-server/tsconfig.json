@@ -1,0 +1,13 @@
+{
+	"extends": "@rocket.chat/tsconfig/server.json",
+	"compilerOptions": {
+		"strictPropertyInitialization": false,
+		"declaration": true,
+		"rootDir": "./src",
+		"outDir": "./dist"
+	},
+	"include": ["./src/**/*", "./definition"],
+	// a child `exclude` replaces the parent's rather than adding to it; keeping only `node_modules`
+	// lets oxlint and `yarn typecheck` cover the specs, while the build config drops them.
+	"exclude": ["node_modules"]
+}

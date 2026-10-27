@@ -1,11 +1,8 @@
 import { EventEmitter } from 'events';
 
+import type { IPacket, Publication, Session } from '@rocket.chat/ddp-server';
 import ejson from 'ejson';
 import WebSocket from 'ws';
-
-import type { IPacket } from '../ddp/IPacket';
-import type { Publication } from '../ddp/Publication';
-import type { Session } from '../ddp/Session';
 
 export function makeSession(readyState: number = WebSocket.OPEN) {
 	const session = Object.assign(new EventEmitter(), {

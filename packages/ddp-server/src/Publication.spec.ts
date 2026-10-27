@@ -1,5 +1,5 @@
 import { Publication } from './Publication';
-import { makeSession, makeSubscription, sentPackets } from '../__tests__/helpers';
+import { makeSession, makeSubscription, sentPackets } from './__tests__/helpers';
 
 describe('Publication', () => {
 	let session: ReturnType<typeof makeSession>;
