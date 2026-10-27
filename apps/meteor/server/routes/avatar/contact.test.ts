@@ -11,7 +11,6 @@ const mocks = {
 	findOneContactAvatar: sandbox.stub(),
 	findOneByIdAndLoginToken: sandbox.stub(),
 	hashLoginToken: sandbox.stub(),
-	cookieGet: sandbox.stub(),
 	utils: {
 		serveSvgAvatarInRequestedFormat: sandbox.spy(),
 		wasFallbackModified: sandbox.stub(),
@@ -26,11 +25,6 @@ const { contactAvatar } = proxyquire.noCallThru().load('./contact', {
 		Contacts: { findOneById: mocks.contactFindOneById },
 		Avatars: { findOneContactAvatar: mocks.findOneContactAvatar },
 		Users: { findOneByIdAndLoginToken: mocks.findOneByIdAndLoginToken },
-	},
-	'meteor/ostrio:cookies': {
-		Cookies: class {
-			public get = mocks.cookieGet;
-		},
 	},
 	'./utils': mocks.utils,
 });
@@ -56,7 +50,6 @@ describe('#contactAvatar()', () => {
 		mocks.contactFindOneById.resolves(CONTACT);
 		mocks.hashLoginToken.returns('hashed-token');
 		mocks.findOneByIdAndLoginToken.resolves({ _id: OWNER });
-		mocks.cookieGet.returns(undefined);
 		mocks.findOneContactAvatar.resolves(null);
 		mocks.utils.wasFallbackModified.returns(true);
 	});
@@ -116,9 +109,6 @@ describe('#contactAvatar()', () => {
 		});
 
 		it('accepts the session cookies when the url carries no credentials', async () => {
-			mocks.cookieGet.withArgs('rc_uid').returns(OWNER);
-			mocks.cookieGet.withArgs('rc_token').returns('raw-token');
-
 			await contactAvatar(byCookie(), response, next);
 
 			expect(mocks.utils.serveSvgAvatarInRequestedFormat.called).to.be.true;

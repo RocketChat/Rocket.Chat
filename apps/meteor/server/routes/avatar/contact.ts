@@ -4,11 +4,9 @@ import { hashLoginToken } from '@rocket.chat/account-utils';
 import type { IContact, IIncomingMessage, IUser } from '@rocket.chat/core-typings';
 import { Avatars, Contacts, Users } from '@rocket.chat/models';
 import type { NextFunction } from 'connect';
-import { Cookies } from 'meteor/ostrio:cookies';
+import { parseCookie } from 'cookie';
 
 import { serveSvgAvatarInRequestedFormat, wasFallbackModified, setCacheAndDispositionHeaders, serveAvatarFile } from './utils';
-
-const cookies = new Cookies();
 
 const isRequestFromOwner = async (req: IIncomingMessage, ownerUID: IUser['_id']): Promise<boolean> => {
 	const matchesOwner = async (uid?: string, token?: string): Promise<boolean> =>
@@ -20,9 +18,13 @@ const isRequestFromOwner = async (req: IIncomingMessage, ownerUID: IUser['_id'])
 		return true;
 	}
 
-	return Boolean(
-		req.headers.cookie && (await matchesOwner(cookies.get('rc_uid', req.headers.cookie), cookies.get('rc_token', req.headers.cookie))),
-	);
+	if (!req.headers.cookie) {
+		return false;
+	}
+
+	const { rc_uid: uid, rc_token: token } = parseCookie(req.headers.cookie);
+
+	return matchesOwner(uid, token);
 };
 
 export const contactAvatar = async function (request: IncomingMessage, res: ServerResponse, next: NextFunction) {
