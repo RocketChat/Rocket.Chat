@@ -22,9 +22,9 @@ const encrypted = (id: string, updatedAt: number, overrides: Partial<IMessage> =
 		...overrides,
 	}) as IMessage;
 
-type SetupOptions = { pages?: SyncMessagesPage[]; maxAgeMs?: number; undecryptable?: Set<string> };
+type SetupOptions = { pages?: SyncMessagesPage[]; maxAgeMs?: number; undecryptable?: Set<string>; maxPending?: number };
 
-const setup = async ({ pages = [], maxAgeMs, undecryptable = new Set<string>() }: SetupOptions = {}) => {
+const setup = async ({ pages = [], maxAgeMs, undecryptable = new Set<string>(), maxPending }: SetupOptions = {}) => {
 	const backend = createFakeSearchIndexBackend();
 	await backend.open({ userId: 'u1' });
 
@@ -48,9 +48,10 @@ const setup = async ({ pages = [], maxAgeMs, undecryptable = new Set<string>() }
 		now: () => NOW,
 		pageSize: 2,
 		maxAgeMs,
+		maxPending,
 	});
 
-	return { backend, crawler, calls, decryptMessage, writer };
+	return { backend, crawler, calls, decryptMessage, writer, undecryptable };
 };
 
 describe('createSearchIndexCrawler', () => {
@@ -358,6 +359,33 @@ describe('createSearchIndexCrawler', () => {
 	});
 
 	describe('addPendingDecrypt', () => {
+		it('caps the pending set and drops the oldest entries first, so messages that never decrypt cannot grow memory without limit', async () => {
+			const { crawler } = await setup({ maxPending: 3 });
+
+			for (let i = 1; i <= 5; i++) crawler.addPendingDecrypt(encrypted(`m${i}`, NOW - 1000));
+
+			expect(crawler.getPendingDecrypt('room1').map((message) => message._id)).toEqual(['m3', 'm4', 'm5']);
+		});
+
+		it('counts the cap across rooms', async () => {
+			const { crawler } = await setup({ maxPending: 2 });
+
+			crawler.addPendingDecrypt(encrypted('a1', NOW - 1000, { rid: 'roomA' }));
+			crawler.addPendingDecrypt(encrypted('b1', NOW - 1000, { rid: 'roomB' }));
+			crawler.addPendingDecrypt(encrypted('b2', NOW - 1000, { rid: 'roomB' }));
+
+			expect(crawler.getPendingDecrypt('roomA')).toEqual([]);
+			expect(crawler.getPendingDecrypt('roomB').map((message) => message._id)).toEqual(['b1', 'b2']);
+		});
+
+		it('indexes a message added after the drop when its key arrives', async () => {
+			const { crawler } = await setup({ maxPending: 2 });
+			for (let i = 1; i <= 4; i++) crawler.addPendingDecrypt(encrypted(`m${i}`, NOW - 1000));
+
+			expect(await crawler.retryPendingDecrypt('room1')).toEqual({ indexed: 2 });
+			expect(crawler.getPendingDecrypt('room1')).toEqual([]);
+		});
+
 		it('keeps a live message that failed to decrypt pending in its room, and indexes it when the key arrives', async () => {
 			const { crawler, calls, decryptMessage } = await setup();
 

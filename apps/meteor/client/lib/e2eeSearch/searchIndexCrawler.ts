@@ -31,7 +31,11 @@ type SearchIndexCrawlerOptions = {
 	pageSize?: number;
 	/** The depth limit: the backfill indexes no message sent before it, and stops at the first page that reaches it. */
 	maxAgeMs?: number;
+	/** The most messages that the crawler keeps pending (across rooms). A new one past the limit drops the oldest. */
+	maxPending?: number;
 };
+
+const DEFAULT_MAX_PENDING = 5000;
 
 export type SearchIndexCrawler = {
 	/** Indexes the next older page of the room and saves the cursor, so a restart continues from there. */
@@ -71,27 +75,33 @@ export const createSearchIndexCrawler = ({
 	now = Date.now,
 	pageSize = 100,
 	maxAgeMs,
+	maxPending = DEFAULT_MAX_PENDING,
 }: SearchIndexCrawlerOptions): SearchIndexCrawler => {
-	const pendingDecrypt = new Map<string, Map<string, IMessage>>();
+	// One map for all rooms: its insertion order is the age order that the cap drops from.
+	const pendingDecrypt = new Map<string, IMessage>();
 	const catchUps = new Map<string, CatchUp>();
 
-	const keepPending = (rid: string, message: IMessage) => {
-		const pending = pendingDecrypt.get(rid);
-		if (pending) pending.set(message._id, message);
-		else pendingDecrypt.set(rid, new Map([[message._id, message]]));
+	const keepPending = (message: IMessage) => {
+		pendingDecrypt.set(message._id, message);
+		for (const oldest of pendingDecrypt.keys()) {
+			if (pendingDecrypt.size <= maxPending) break;
+			pendingDecrypt.delete(oldest);
+		}
 	};
 
-	const decryptAll = async (rid: string, messages: IMessage[]): Promise<number> => {
+	const pendingOf = (rid: string): IMessage[] => [...pendingDecrypt.values()].filter((message) => message.rid === rid);
+
+	const decryptAll = async (messages: IMessage[]): Promise<number> => {
 		let indexed = 0;
 		for (const message of messages) {
 			const decrypted = await decryptMessage(message);
 			if (!isE2EEMessage(decrypted)) continue;
 
 			if (decrypted.e2e !== 'done' || isDecryptFailed(decrypted)) {
-				keepPending(rid, message);
+				keepPending(message);
 				continue;
 			}
-			pendingDecrypt.get(rid)?.delete(message._id);
+			pendingDecrypt.delete(message._id);
 			indexed++;
 		}
 		await writer.flush();
@@ -114,7 +124,7 @@ export const createSearchIndexCrawler = ({
 			const oldestSendTime = maxAgeMs === undefined ? undefined : startedAt - maxAgeMs;
 			const inDepth =
 				oldestSendTime === undefined ? page.updated : page.updated.filter((message) => new Date(message.ts).getTime() >= oldestSendTime);
-			const indexed = await decryptAll(rid, inDepth);
+			const indexed = await decryptAll(inDepth);
 
 			const updatedAts = page.updated.map(updatedAtOf);
 			const oldest = updatedAts.length ? Math.min(...updatedAts) : undefined;
@@ -151,12 +161,11 @@ export const createSearchIndexCrawler = ({
 			let { newestUpdate } = catchUp;
 			const deletedIds = page.deleted.map(({ _id }) => _id);
 			if (catchUp.type === 'UPDATED') {
-				indexed = await decryptAll(rid, page.updated);
+				indexed = await decryptAll(page.updated);
 				newestUpdate = Math.max(newestUpdate, ...page.updated.map(updatedAtOf));
 			} else if (deletedIds.length) {
 				await writer.remove(deletedIds);
-				const pending = pendingDecrypt.get(rid);
-				for (const id of deletedIds) pending?.delete(id);
+				for (const id of deletedIds) pendingDecrypt.delete(id);
 			}
 			const result = { indexed, removed: catchUp.type === 'DELETED' ? deletedIds.length : 0 };
 
@@ -179,21 +188,21 @@ export const createSearchIndexCrawler = ({
 		},
 
 		async retryPendingDecrypt(rid) {
-			const pending = pendingDecrypt.get(rid);
-			if (!pending?.size) return { indexed: 0 };
-			return { indexed: await decryptAll(rid, [...pending.values()]) };
+			const pending = pendingOf(rid);
+			if (!pending.length) return { indexed: 0 };
+			return { indexed: await decryptAll(pending) };
 		},
 
 		addPendingDecrypt(message) {
-			keepPending(message.rid, message);
+			keepPending(message);
 		},
 
 		getPendingDecrypt(rid) {
-			return [...(pendingDecrypt.get(rid)?.values() ?? [])];
+			return pendingOf(rid);
 		},
 
 		forgetRoom(rid) {
-			pendingDecrypt.delete(rid);
+			for (const message of pendingOf(rid)) pendingDecrypt.delete(message._id);
 			catchUps.delete(rid);
 		},
 	};
