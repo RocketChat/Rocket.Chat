@@ -134,23 +134,26 @@ export function isPreRelease(cwd: string) {
 	return false;
 }
 
-// GitHub rejects pull request bodies over 65536 characters; leave room for the rest of the description
-const MAX_RELEASE_NOTES_PREVIEW_LENGTH = 60000;
+// GitHub rejects bodies over these lengths in characters, and JS string length never undercounts them
+export const MAX_PULL_REQUEST_BODY_LENGTH = 65536;
+export const MAX_RELEASE_BODY_LENGTH = 125000;
 
-function truncateReleaseNotes(releaseBody: string) {
-	if (releaseBody.length <= MAX_RELEASE_NOTES_PREVIEW_LENGTH) {
+const TRUNCATION_NOTICE = '\n\n_The change log was truncated. See the full change log in `CHANGELOG.md`._\n';
+
+export function truncateReleaseNotes(releaseBody: string, maxLength: number) {
+	if (releaseBody.length <= maxLength) {
 		return releaseBody;
 	}
 
-	const head = releaseBody.slice(0, MAX_RELEASE_NOTES_PREVIEW_LENGTH);
+	const head = releaseBody.slice(0, Math.max(0, maxLength - TRUNCATION_NOTICE.length));
 	// cut between top-level blocks so no list item or <details> is left open
 	const cut = [...head.matchAll(/\n\n(?=\S)/g)].at(-1)?.index ?? head.length;
 
-	return `${head.slice(0, cut)}\n\n_The preview was truncated. See the full change log in \`CHANGELOG.md\`._\n`;
+	return `${head.slice(0, cut)}${TRUNCATION_NOTICE}`;
 }
 
-export function createTempReleaseNotes(version: string, releaseBody: string) {
-	return `
+export function createTempReleaseNotes(version: string, releaseBody: string, maxLength = MAX_PULL_REQUEST_BODY_LENGTH) {
+	const wrap = (notes: string) => `
 <!-- release-notes-start -->
 <!-- This content is automatically generated. Changing this will not reflect on the final release log -->
 
@@ -158,8 +161,10 @@ _You can see below a preview of the release change log:_
 
 # ${version}
 
-${truncateReleaseNotes(releaseBody)}
+${notes}
 <!-- release-notes-end -->`;
+
+	return wrap(truncateReleaseNotes(releaseBody, maxLength - wrap('').length));
 }
 
 export function getReleaseName(version: string, ltsVersions: string[]) {
