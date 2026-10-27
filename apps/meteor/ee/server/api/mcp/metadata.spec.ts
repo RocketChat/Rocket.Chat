@@ -5,7 +5,7 @@ import { getProtectedResourceMetadataUrl, serveProtectedResourceMetadata } from 
 
 const settingValues: Record<string, unknown> = {};
 
-jest.mock('meteor/webapp', () => ({ WebApp: { rawConnectHandlers: { use: jest.fn() } } }), { virtual: true });
+jest.mock('../../../../server/lib/http/httpServer', () => ({ httpApp: { use: jest.fn() } }));
 
 jest.mock('../../../../server/settings', () => ({
 	settings: { get: (id: string) => settingValues[id] },

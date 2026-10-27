@@ -1,7 +1,8 @@
 import type { IUser } from '@rocket.chat/core-typings';
+import { nodeHandler } from '@rocket.chat/http-router';
 import { OAuthAccessTokens, Users } from '@rocket.chat/models';
 import type { NextFunction, Request, Response } from 'express';
-import type express from 'express';
+import express from 'express';
 import rateLimit from 'express-rate-limit';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
@@ -12,6 +13,7 @@ import { API } from '../../../api';
 import { serveAuthorizationServerMetadata } from '../../../oauth2-server/metadata';
 import { OAuth2Server } from '../../../oauth2-server/oauth';
 import { settings } from '../../../settings/cached';
+import { httpApp } from '../../http/httpServer';
 
 const oauth2server = new OAuth2Server({
 	// If you're developing something related to oauth servers, you should change this to true
@@ -114,7 +116,6 @@ API.v1.addAuthMethod((routeContext) => {
 });
 
 (WebApp.connectHandlers as unknown as ReturnType<typeof express>).use(oauth2server.app);
-(WebApp.rawConnectHandlers as unknown as ReturnType<typeof express>).use(
-	'/.well-known/oauth-authorization-server',
-	serveAuthorizationServerMetadata,
+httpApp.use(
+	nodeHandler(express().disable('x-powered-by').use('/.well-known/oauth-authorization-server', serveAuthorizationServerMetadata)),
 );

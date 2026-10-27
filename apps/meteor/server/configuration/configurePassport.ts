@@ -1,13 +1,14 @@
+import { nodeHandler } from '@rocket.chat/http-router';
 import { Users } from '@rocket.chat/models';
 import bodyParser from 'body-parser';
 import MongoStore from 'connect-mongo';
 import express from 'express';
 import rateLimit from 'express-rate-limit';
 import session from 'express-session';
-import { WebApp } from 'meteor/webapp';
 import passport from 'passport';
 
 import { client } from '../database/utils';
+import { httpApp } from '../lib/http/httpServer';
 import { configureOAuthServices } from '../lib/oauth/configureOAuthServices';
 import { createOAuthServiceConfig } from '../lib/oauth/createOAuthServiceConfig';
 import { getOAuthServices } from '../lib/oauth/getOAuthServices';
@@ -94,5 +95,5 @@ export const configurePassport = (settings: ICachedSettings) => {
 		configureOAuthServices(oauthServiceConfigs, settings);
 	});
 
-	WebApp.rawConnectHandlers.use(oAuthApp);
+	httpApp.use(nodeHandler(oAuthApp));
 };

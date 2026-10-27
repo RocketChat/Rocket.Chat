@@ -1,5 +1,6 @@
 import { AppEvents, type IAppServerOrchestrator } from '@rocket.chat/apps';
 import { UiKitCoreApp } from '@rocket.chat/core-services';
+import { nodeHandler } from '@rocket.chat/http-router';
 import type { OperationParams, OperationResult, UrlParams } from '@rocket.chat/rest-typings';
 import bodyParser from 'body-parser';
 import cors from 'cors';
@@ -7,9 +8,9 @@ import type { Request, Response } from 'express';
 import express from 'express';
 import rateLimit from 'express-rate-limit';
 import { Meteor } from 'meteor/meteor';
-import { WebApp } from 'meteor/webapp';
 
 import { authenticationMiddleware } from '../../../../server/api/v1/middlewares/authentication';
+import { httpApp } from '../../../../server/lib/http/httpServer';
 import { settings } from '../../../../server/settings';
 import { Apps } from '../../lib/apps/orchestrator';
 
@@ -33,7 +34,7 @@ settings.watch('API_CORS_Origin', (value: string) => {
 		: [];
 });
 
-WebApp.rawConnectHandlers.use(apiServer);
+httpApp.use(nodeHandler(apiServer));
 
 // oxlint-disable-next-line new-cap
 const router = express.Router();
