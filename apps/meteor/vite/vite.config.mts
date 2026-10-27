@@ -83,6 +83,36 @@ const coverage = (): Plugin => {
 	};
 };
 
+// A production install has the peer and dev dependencies of workspace packages only in the app, so an import a
+// package compiled from source cannot resolve from its own folder is resolved from the app, as Meteor's build does.
+const appFallbackResolve = (): Plugin => ({
+	name: 'rocketchat-app-fallback-resolve',
+	enforce: 'pre',
+	async resolveId(source, importer, options) {
+		if (!importer || source.startsWith('.') || source.startsWith('/') || source.startsWith('\0')) return null;
+
+		const resolved = await this.resolve(source, importer, { ...options, skipSelf: true });
+		return resolved ?? this.resolve(source, join(appRoot, 'package.json'), { ...options, skipSelf: true });
+	},
+});
+
+// A package reached through both `import` and `require` (Fuselage ships CommonJS only) would otherwise be bundled
+// twice, once per format, and the two copies don't share React contexts (react-aria's overlays, for one). Resolving
+// `require` like `import` loads each package once, as Meteor's build does.
+const singlePackageFormat = (): Plugin => ({
+	name: 'rocketchat-single-package-format',
+	apply: 'build',
+	enforce: 'pre',
+	async resolveId(source, importer, options) {
+		const { kind } = options as { kind?: string };
+		if (kind !== 'require-call' || !importer || source.startsWith('.') || source.startsWith('/') || source.startsWith('\0')) {
+			return null;
+		}
+
+		return this.resolve(source, importer, { ...options, kind: 'import-statement', skipSelf: true } as typeof options);
+	},
+});
+
 // Swaps the modules whose behaviour behind a proxy differs for their implementations in vite/native.
 const nativeModules = (): Plugin => {
 	const replacements = new Map(
@@ -264,6 +294,8 @@ export default defineConfig({
 	base: './',
 	plugins: [
 		react(),
+		appFallbackResolve(),
+		singlePackageFormat(),
 		rocketchatInfo(),
 		...(servedByServer ? [] : [nativeModules()]),
 		...(servedByServer && process.env.BABEL_ENV === 'coverage' ? [coverage()] : []),
@@ -280,9 +312,6 @@ export default defineConfig({
 			...workspaceSourceAliases,
 		],
 		dedupe: ['react', 'react-dom', 'i18next', 'react-i18next', '@tanstack/react-query', '@rocket.chat/fuselage'],
-		// A production install has the dependencies of workspace packages only in the app's node_modules, so their
-		// imports resolve from the link the app sees, as in Meteor's build, not from the package's own folder.
-		preserveSymlinks: servedByServer,
 	},
 	define: {
 		'process.env.TEST_MODE': JSON.stringify(process.env.TEST_MODE),
