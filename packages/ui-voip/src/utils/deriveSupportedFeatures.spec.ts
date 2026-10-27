@@ -7,8 +7,12 @@ describe('deriveSupportedFeatures', () => {
 
 	it('adds every control feature to a webrtc call', () => {
 		expect(deriveSupportedFeatures('webrtc', ['audio', 'hold'])).toEqual(
-			expect.arrayContaining(['audio', 'hold', 'mute', 'dialpad', 'direct-message', 'device-picker']),
+			expect.arrayContaining(['audio', 'hold', 'mute', 'direct-message', 'device-picker']),
 		);
+	});
+
+	it('does not add the dialpad to a webrtc call that does not list it', () => {
+		expect(deriveSupportedFeatures('webrtc', ['audio'])).not.toContain('dialpad');
 	});
 
 	it('does not duplicate a control feature the call already lists', () => {
@@ -18,6 +22,6 @@ describe('deriveSupportedFeatures', () => {
 	});
 
 	it('treats a call with no service yet like a webrtc call', () => {
-		expect(deriveSupportedFeatures(null, [])).toEqual(expect.arrayContaining(['mute', 'dialpad']));
+		expect(deriveSupportedFeatures(null, [])).toEqual(expect.arrayContaining(['mute']));
 	});
 });

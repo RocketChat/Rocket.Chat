@@ -81,8 +81,6 @@ const OngoingCall = () => {
 
 	const appActions = useVisibleAppActions();
 
-	const isSip = peerInfo?.type === 'sip';
-
 	return (
 		<Widget>
 			<WidgetHandle />
@@ -108,7 +106,7 @@ const OngoingCall = () => {
 				<CardWidgetContainer>
 					{peerInfo && !isUnknownPeer(peerInfo) && <PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />}
 
-					{dialpadAvailable && isInline && isSip && !localScreen?.active && <Dialpad autoFocus={false} />}
+					{dialpadAvailable && isInline && !localScreen?.active && <Dialpad autoFocus={false} />}
 
 					{isPopout && (
 						<Box display='flex' flexDirection='column' gap={4}>

@@ -51,7 +51,7 @@ export const defaultSessionState: SessionState = {
 	callId: undefined,
 	startedAt: undefined,
 	escalated: false,
-	supportedFeatures: ['audio', 'transfer', 'hold', ...callControlFeatureList],
+	supportedFeatures: ['audio', 'transfer', 'hold', 'dialpad', ...callControlFeatureList],
 	confirmed: false,
 	hasAlternateCall: false,
 	canCompleteTransfer: false,

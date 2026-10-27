@@ -15,9 +15,17 @@ export const callServiceList = [
 
 export type CallService = (typeof callServiceList)[number];
 
-export const callControlFeatureList = ['mute', 'dialpad', 'direct-message', 'device-picker'] as const;
+export const callControlFeatureList = ['mute', 'direct-message', 'device-picker'] as const;
 
-export const callFeatureList = ['audio', 'screen-share', 'transfer', 'hold', 'conference-escalation', ...callControlFeatureList] as const;
+export const callFeatureList = [
+	'audio',
+	'screen-share',
+	'transfer',
+	'hold',
+	'conference-escalation',
+	'dialpad',
+	...callControlFeatureList,
+] as const;
 
 export type CallFeature = (typeof callFeatureList)[number];
 

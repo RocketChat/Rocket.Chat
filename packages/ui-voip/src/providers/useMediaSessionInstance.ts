@@ -219,7 +219,7 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 			iceServers: this.iceServers,
 			oldSessionId: this.getOldSessionId(userId),
 			logger: this.logger,
-			features: ['audio', 'screen-share', 'transfer', 'hold', 'conference-escalation'],
+			features: ['audio', 'screen-share', 'transfer', 'hold', 'conference-escalation', 'dialpad'],
 			autoSync: true,
 		});
 
