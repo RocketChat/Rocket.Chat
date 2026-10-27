@@ -1,20 +1,5 @@
-import {
-	Button,
-	ButtonGroup,
-	Field,
-	FieldError,
-	FieldHint,
-	FieldLabel,
-	FieldRow,
-	States,
-	StatesAction,
-	StatesActions,
-	StatesSubtitle,
-	Stack,
-	StatesTitle,
-	Text,
-	TextAreaInput,
-} from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, States, StatesAction, StatesActions, StatesSubtitle, Stack, StatesTitle, Text } from '@rocket.chat/fuselage';
+import { Field, FieldError, FieldHint, FieldLabel, FieldRow, TextAreaInput } from '@rocket.chat/fuselage-forms';
 import { validateEmail } from '@rocket.chat/tools';
 import { ContextualbarScrollableContent, ContextualbarFooter, ContextualbarContent } from '@rocket.chat/ui-client';
 import { useRoute } from '@rocket.chat/ui-contexts';
@@ -35,7 +20,6 @@ const getEmails = (text: string) => text.split(/[ ,;]+/i).filter((val: string) =
 const AdminInviteUsers = () => {
 	const { t } = useTranslation();
 	const formId = useId();
-	const emailsFieldId = useId();
 	const adminRouter = useRoute('admin-settings');
 	const sendInvitationMutation = useSendInvitationEmailMutation();
 	const { data, isLoading } = useSmtpQuery();
@@ -79,12 +63,12 @@ const AdminInviteUsers = () => {
 			<ContextualbarScrollableContent is='form' onSubmit={handleSubmit(handleSend)} id={formId}>
 				<Field>
 					<Stack gap={8}>
-						<FieldLabel htmlFor={emailsFieldId} required>
+						<FieldLabel required>
 							<Text is='span' fontScale='h2'>
 								{t('Send_invitation_email')}
 							</Text>
 						</FieldLabel>
-						<FieldHint id={`${emailsFieldId}-hint`}>
+						<FieldHint>
 							<Text is='span' fontScale='p2'>
 								{t('Send_invitation_email_info')}
 							</Text>
@@ -98,22 +82,15 @@ const AdminInviteUsers = () => {
 							render={({ field }) => (
 								<TextAreaInput
 									{...field}
-									id={emailsFieldId}
 									rows={5}
 									aria-required='true'
 									placeholder={t('Send_invitation_email_placeholder')}
 									error={errors.emails?.message}
-									aria-invalid={errors.emails ? 'true' : 'false'}
-									aria-describedby={`${emailsFieldId}-hint ${emailsFieldId}-error`}
 								/>
 							)}
 						/>
 					</FieldRow>
-					{errors.emails && (
-						<FieldError role='alert' id={`${emailsFieldId}-error`}>
-							{errors.emails.message}
-						</FieldError>
-					)}
+					{errors.emails && <FieldError>{errors.emails.message}</FieldError>}
 				</Field>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
