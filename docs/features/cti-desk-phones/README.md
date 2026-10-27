@@ -72,6 +72,14 @@ capability, so they are not listed.
 On a `cti` call an unlisted control is hidden, so an app that wants the full layout lists all of them. On a
 `webrtc` call the client treats them as always listed, which leaves those calls unchanged.
 
+## Attended transfer
+
+"Call first" holds the call, places a second `cti` call to the transfer target through the usual `dial`, and
+shows "Complete transfer" once that call is active. Completing it dispatches `executeMediaCallCompleteTransfer`
+with the held call and the consultation call. The app asks the gateway to connect the two parties and then
+reports both calls as ended. The consultation call's callee is always dialed through the app, like any other
+`cti` callee, even when the target is a Rocket.Chat user.
+
 ## Enabling it
 
 - **Setting:** `VoIP_TeamCollab_CTI_Enabled` (Admin → Voice Calls (VoIP) → Desk phones), off by default.

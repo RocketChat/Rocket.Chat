@@ -30,6 +30,7 @@ export type {
 	IMediaCallMuteContext,
 	IMediaCallHoldContext,
 	IMediaCallTransferContext,
+	IMediaCallCompleteTransferContext,
 	IMediaCallDtmfContext,
 } from './IMediaCallControlContext';
 export { mediaCallHangupReasonList, isKnownMediaCallHangupReason } from './MediaCallHangupReason';

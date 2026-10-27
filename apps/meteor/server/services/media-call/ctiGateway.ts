@@ -76,6 +76,17 @@ export const ctiGateway: IMediaCallAppGateway = {
 		await dispatchMediaCallControl({ method: AppMethod.EXECUTE_MEDIA_CALL_TRANSFER, context: { call, to: toAppContact(to) } });
 	},
 
+	async completeAttendedTransfer(heldCallId: string, consultationCallId: string): Promise<void> {
+		const [heldCall, consultationCall] = await Promise.all([loadAppCall(heldCallId), loadAppCall(consultationCallId)]);
+		if (!heldCall || !consultationCall) {
+			return;
+		}
+		await dispatchMediaCallControl({
+			method: AppMethod.EXECUTE_MEDIA_CALL_COMPLETE_TRANSFER,
+			context: { heldCall, consultationCall },
+		});
+	},
+
 	async sendDTMF(callId: string, tone: string, duration: number): Promise<void> {
 		const call = await loadAppCall(callId);
 		if (!call) {

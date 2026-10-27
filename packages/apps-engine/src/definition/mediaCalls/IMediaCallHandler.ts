@@ -2,6 +2,7 @@ import type {
 	IMediaCallAnswerContext,
 	IMediaCallDevicesContext,
 	IMediaCallDialContext,
+	IMediaCallCompleteTransferContext,
 	IMediaCallDtmfContext,
 	IMediaCallHangupContext,
 	IMediaCallHoldContext,
@@ -134,6 +135,14 @@ export interface IMediaCallHandler {
 
 	[AppMethod.EXECUTE_MEDIA_CALL_TRANSFER]?(
 		context: IMediaCallTransferContext,
+		read: IRead,
+		http: IHttp,
+		persistence: IPersistence,
+		modify: IModify,
+	): Promise<void>;
+
+	[AppMethod.EXECUTE_MEDIA_CALL_COMPLETE_TRANSFER]?(
+		context: IMediaCallCompleteTransferContext,
 		read: IRead,
 		http: IHttp,
 		persistence: IPersistence,

@@ -12,6 +12,7 @@ import type { IApiEndpointInfo, IApiRequest, IApiResponse } from '@rocket.chat/a
 import { ApiEndpoint, ApiSecurity, ApiVisibility } from '@rocket.chat/apps-engine/definition/api';
 import type {
 	IMediaCallAnswerContext,
+	IMediaCallCompleteTransferContext,
 	IMediaCallDevice,
 	IMediaCallDevicesContext,
 	IMediaCallDialContext,
@@ -335,6 +336,27 @@ export class CtiGatewaySampleApp extends App implements IMediaCallHandler {
 		this.getLogger().info('transferring', { callId: context.call.id, to: context.to.id });
 
 		// e.g. await http.post(`${gateway}/calls/${handle}/transfer`, { data: { to: context.to.id } });
+	}
+
+	/**
+	 * Connects the party of the held call with the consultation call's party. The gateway performs it,
+	 * so both Rocket.Chat calls end once the gateway confirms the line moved.
+	 */
+	public async [AppMethod.EXECUTE_MEDIA_CALL_COMPLETE_TRANSFER](
+		context: IMediaCallCompleteTransferContext,
+		read: IRead,
+		_http: IHttp,
+		_persistence: IPersistence,
+		modify: IModify,
+	): Promise<void> {
+		if (!(await this.owns(read, context.heldCall.id))) {
+			return;
+		}
+
+		// e.g. await http.post(`${gateway}/calls/${held}/complete-transfer`, { data: { consultation: consult } });
+		const mediaCalls = modify.getMediaCallModifier();
+		await mediaCalls.reportEnded(context.consultationCall.id, 'transfer');
+		await mediaCalls.reportEnded(context.heldCall.id, 'transfer');
 	}
 
 	/** Digits typed on the Rocket.Chat keypad, to be played onto the line by the gateway. */
