@@ -1,6 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { Pagination } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMediaQuery, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { Pagination, type TableColumnWidth } from '@rocket.chat/fuselage';
+import { useDebouncedValue, useMediaQuery, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
 	GenericTableLoadingTable,
@@ -9,6 +9,7 @@ import {
 	GenericTableHeader,
 	usePagination,
 	useSort,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
@@ -17,7 +18,6 @@ import { useTranslation } from 'react-i18next';
 
 import ModerationConsoleTableRow from './ModerationConsoleTableRow';
 import ModerationFilter from './helpers/ModerationFilter';
-import GenericNoResults from '../../../components/GenericNoResults';
 
 // TODO: Missing error state
 const ModerationConsoleTable = () => {
@@ -63,7 +63,7 @@ const ModerationConsoleTable = () => {
 		placeholderData: keepPreviousData,
 	});
 
-	const handleClick = useEffectEvent((id: IUser['_id']): void => {
+	const handleClick = useStableCallback((id: IUser['_id']): void => {
 		router.navigate({
 			pattern: '/admin/moderation/:tab?/:context?/:id?',
 			params: {
@@ -73,6 +73,8 @@ const ModerationConsoleTable = () => {
 			},
 		});
 	});
+
+	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 'auto', 'x48'];
 
 	const headers = useMemo(
 		() => [
@@ -94,7 +96,7 @@ const ModerationConsoleTable = () => {
 			<GenericTableHeaderCell key='reports' direction={sortDirection} active={sortBy === 'count'} onClick={setSort} sort='count'>
 				{t('Moderation_Reports')}
 			</GenericTableHeaderCell>,
-			<GenericTableHeaderCell key='actions' width='x48' />,
+			<GenericTableHeaderCell key='actions' />,
 		],
 		[sortDirection, sortBy, setSort, t],
 	);
@@ -103,14 +105,14 @@ const ModerationConsoleTable = () => {
 		<>
 			<ModerationFilter text={text} setText={setText} setDateRange={setDateRange} />
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>{isLoading && <GenericTableLoadingTable headerCells={headers.length} />}</GenericTableBody>
 				</GenericTable>
 			)}
 			{isSuccess && data.reports.length > 0 && (
 				<>
-					<GenericTable>
+					<GenericTable columns={columns}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.reports.map((report) => (

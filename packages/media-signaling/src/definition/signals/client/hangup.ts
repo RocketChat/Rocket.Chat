@@ -1,6 +1,6 @@
 import type { JSONSchemaType } from 'ajv';
 
-import type { CallHangupReason } from '../../call';
+import { callHangupReasonList, type CallHangupReason } from '../../call';
 
 /** Client is saying they hanged up from a call. The reason specifies if its a clean hangup or an error */
 export type ClientMediaSignalHangup = {
@@ -30,25 +30,7 @@ export const clientMediaSignalHangupSchema: JSONSchemaType<ClientMediaSignalHang
 		},
 		reason: {
 			type: 'string',
-			enum: [
-				'normal',
-				'remote',
-				'rejected',
-				'unavailable',
-				'transfer',
-				'timeout',
-				'not-answered',
-				'timeout-remote-sdp',
-				'timeout-local-sdp',
-				'timeout-activation',
-				'signaling-error',
-				'service-error',
-				'media-error',
-				'input-error',
-				'error',
-				'unknown',
-				'another-client',
-			],
+			enum: callHangupReasonList,
 			nullable: false,
 		},
 	},

@@ -1,5 +1,5 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useConnectionStatus, useSetting } from '@rocket.chat/ui-contexts';
 
 import { useIdleActiveEvents } from './useIdleActiveEvents';
@@ -9,7 +9,7 @@ export const useIdleConnection = (uid: IUser['_id'] | undefined) => {
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead');
 	const { disconnect: disconnectServer, reconnect: reconnectServer } = useConnectionStatus();
 
-	const disconnect = useEffectEvent(() => {
+	const disconnect = useStableCallback(() => {
 		if (status !== 'offline') {
 			if (!uid && allowAnonymousRead !== true) {
 				disconnectServer();
@@ -17,7 +17,7 @@ export const useIdleConnection = (uid: IUser['_id'] | undefined) => {
 		}
 	});
 
-	const reconnect = useEffectEvent(() => {
+	const reconnect = useStableCallback(() => {
 		if (status === 'offline') {
 			reconnectServer();
 		}

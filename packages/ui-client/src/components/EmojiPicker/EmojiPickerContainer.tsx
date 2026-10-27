@@ -10,11 +10,11 @@ const EmojiPickerContainer = forwardRef<HTMLElement, Omit<AllHTMLAttributes<HTML
 				color='default'
 				ref={ref}
 				height='x480'
-				bg='light'
-				borderRadius={4}
+				backgroundColor='light'
+				borderRadius='medium'
 				display='flex'
 				flexDirection='column'
-				mb='neg-x12'
+				marginBlock='neg-x12'
 			/>
 		);
 	},

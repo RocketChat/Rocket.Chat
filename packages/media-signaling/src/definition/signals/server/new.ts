@@ -20,4 +20,7 @@ export type ServerMediaSignalNewCall = {
 
 	// A list of flags that may be sent to the client to toggle custom behaviors
 	flags?: CallFlag[];
+
+	/** ICE servers issued by the server for this actor only, added to the ones the client is configured with */
+	iceServers?: RTCIceServer[];
 };

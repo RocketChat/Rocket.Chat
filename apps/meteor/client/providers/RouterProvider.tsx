@@ -8,7 +8,7 @@ import { Router } from '../router';
 /** @deprecated consume it from the `RouterContext` instead */
 export const router: RouterContextValue = new Router();
 
-type RouterProviderProps = {
+export type RouterProviderProps = {
 	children?: ReactNode;
 };
 

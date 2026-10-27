@@ -1,11 +1,10 @@
 import { MessageFooterCallout, MessageFooterCalloutAction, MessageFooterCalloutContent } from '@rocket.chat/ui-composer';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useOmnichannelRoom } from '../../contexts/RoomContext';
 
-export const ComposerOmnichannelJoin = (): ReactElement => {
+export const ComposerOmnichannelJoin = () => {
 	const room = useOmnichannelRoom();
 	const join = useEndpoint('GET', `/v1/livechat/room.join`);
 

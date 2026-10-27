@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { Box } from '@rocket.chat/fuselage';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { WizardContext, StepsLinkedList } from '@rocket.chat/ui-client';
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryObj } from '@storybook/react';
+import { action } from 'storybook/actions';
+import { userEvent } from 'storybook/test';
 
 import RecipientStep from './RecipientStep';
 import { createFakeContact, createFakeContactChannel, createFakeContactWithManagerData } from '../../../../../../../../tests/mocks/data';
@@ -94,5 +94,12 @@ export const WithDefaultValues: Story = {
 			recipient: recipientPhone.raw,
 			sender: senderPhone.raw,
 		},
+	},
+};
+
+export const WithFocusedField: Story = {
+	...WithDefaultValues,
+	play: async () => {
+		await userEvent.tab();
 	},
 };

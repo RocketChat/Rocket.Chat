@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useWizardContext } from './useWizardContext';
 
-type WizardNextButtonProps = Omit<ComponentPropsWithoutRef<typeof Button>, 'primary' | 'onClick'> & {
+export type WizardNextButtonProps = Omit<ComponentPropsWithoutRef<typeof Button>, 'primary' | 'onClick'> & {
 	manual?: boolean;
 	onClick?(event?: MouseEvent<HTMLElement>): unknown | Promise<unknown>;
 };
@@ -48,7 +48,7 @@ const WizardNextButton = ({ children, disabled = false, manual, onClick, ...prop
 	};
 
 	return (
-		<Button primary {...props} disabled={!currentStep?.next || disabled} onClick={handleClick}>
+		<Button variant='primary' {...props} disabled={!currentStep?.next || disabled} onClick={handleClick}>
 			{children || t('Next')}
 		</Button>
 	);

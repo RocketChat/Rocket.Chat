@@ -16,7 +16,7 @@ const styles = StyleSheet.create({
 	},
 });
 
-type UnorderedListBlockProps = {
+export type UnorderedListBlockProps = {
 	items: MessageParser.ListItem[];
 };
 const UnorderedListBlock = ({ items }: UnorderedListBlockProps) => (

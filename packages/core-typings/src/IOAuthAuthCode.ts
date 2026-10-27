@@ -1,8 +1,11 @@
-export interface IOAuthAuthCode {
-	_id: string;
+import type { IRocketChatRecord } from './IRocketChatRecord';
+
+export interface IOAuthAuthCode extends IRocketChatRecord {
 	authCode: string;
 	clientId: string;
 	userId: string;
 	expires: Date;
 	redirectUri: string;
+	codeChallenge?: string;
+	codeChallengeMethod?: string;
 }

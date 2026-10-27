@@ -1,16 +1,16 @@
-import type { ReactElement } from 'react';
+import type { ReactNode } from 'react';
 
 import { ReportCardEmptyState } from './ReportCardEmptyState';
 import { ReportCardErrorState } from './ReportCardErrorState';
 import { ReportCardLoadingState } from './ReportCardLoadingState';
 
-type ReportCardContentProps = {
+export type ReportCardContentProps = {
 	isPending?: boolean;
 	isError?: boolean;
 	isDataFound?: boolean;
 	subtitle?: string;
 	onRetry?: () => void;
-	children: ReactElement;
+	children: ReactNode;
 };
 export const ReportCardContent = ({ isPending, isError, isDataFound, subtitle, onRetry, children }: ReportCardContentProps) => {
 	if (isPending) {

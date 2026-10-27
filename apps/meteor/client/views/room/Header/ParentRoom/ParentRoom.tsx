@@ -3,7 +3,9 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import ParentDiscussion from './ParentDiscussion';
 import ParentTeam from './ParentTeam';
 
-const ParentRoom = ({ room }: { room: IRoom }) => {
+export type ParentRoomProps = { room: IRoom };
+
+const ParentRoom = ({ room }: ParentRoomProps) => {
 	if (room.prid) {
 		return <ParentDiscussion room={room} />;
 	}

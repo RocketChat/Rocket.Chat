@@ -7,7 +7,7 @@ import EmojiPickerDesktopDropdown from './EmojiPickerDesktopDropdown';
 
 type EmojiPickerDropdownProps<R> = {
 	children: ReactNode;
-	reference: RefObject<R>;
+	reference: RefObject<R | null>;
 };
 
 const EmojiPickerDropdown = forwardRef(function EmojiPickerDropdown<TReferenceElement extends HTMLElement>(
@@ -19,7 +19,7 @@ const EmojiPickerDropdown = forwardRef(function EmojiPickerDropdown<TReferenceEl
 	const Dropdown = isMobile ? DropdownMobile : EmojiPickerDesktopDropdown;
 
 	return (
-		<Dropdown ref={ref} reference={reference}>
+		<Dropdown ref={ref} reference={reference as RefObject<TReferenceElement>}>
 			{children}
 		</Dropdown>
 	);

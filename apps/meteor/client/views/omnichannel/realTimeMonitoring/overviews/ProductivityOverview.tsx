@@ -11,7 +11,7 @@ const defaultValue = { title: '', value: '00:00:00' };
 
 const initialData = [defaultValue, defaultValue, defaultValue, defaultValue];
 
-type ProductivityOverviewProps = {
+export type ProductivityOverviewProps = {
 	departmentId: ILivechatDepartment['_id'];
 	dateRange: { start: string; end: string };
 } & ComponentPropsWithoutRef<typeof Box>;

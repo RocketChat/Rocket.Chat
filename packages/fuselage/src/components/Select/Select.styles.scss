@@ -1,0 +1,114 @@
+@use '../../styles/colors.scss';
+@use '../../styles/lengths.scss';
+@use '../../styles/functions.scss' as *;
+@use '../../styles/typography.scss' as *;
+@use '../../styles/variables/input-colors.scss' as *;
+@use '../../styles/mixins/interactivity.scss' as *;
+@use '../InputBox/mixins.scss' as *;
+@use '../InputBox/InputBox.styles.scss' as *;
+
+.rcx-select {
+	@extend %rcx-input-box;
+	position: relative;
+
+	align-items: center;
+
+	min-height: lengths.size(40);
+
+	// TODO move to .rcx-input-box
+	&__item {
+		@include use-text-ellipsis;
+	}
+
+	&__focus,
+	&__placeholder {
+		display: inline-block;
+
+		min-width: auto;
+
+		user-select: none;
+
+		text-align: start;
+		vertical-align: middle;
+		white-space: nowrap;
+		text-decoration: none;
+
+		background: inherit;
+
+		appearance: none;
+
+		@include clickable;
+		@include use-text-ellipsis;
+	}
+
+	&__addon {
+		@extend .rcx-input-box__addon;
+		@include clickable;
+		padding: initial;
+	}
+
+	&__filter {
+		margin-inline: lengths.margin(4);
+	}
+
+	&__chip {
+		max-width: to-rem(150);
+
+		@include use-with-truncated-text;
+	}
+
+	&__wrapper {
+		align-items: center;
+		flex-grow: 1;
+		flex-shrink: 1;
+
+		min-width: 0;
+
+		user-select: none;
+		white-space: nowrap;
+
+		opacity: 1;
+
+		& > .rcx-select__focus {
+			flex-shrink: 1;
+		}
+
+		&--hidden {
+			& > .rcx-select__focus {
+				width: 0;
+
+				transition: none;
+
+				opacity: 0;
+			}
+		}
+	}
+
+	&:invalid,
+	&.invalid {
+		@include with-colors(
+			$color: $input-colors-invalid-color,
+			$placeholder-color: $input-colors-invalid-placeholder-color,
+			$focus-caret-color: $input-colors-invalid-focus-caret-color,
+			$active-caret-color: $input-colors-invalid-active-caret-color,
+			$disabled-color: $input-colors-invalid-disabled-color
+		);
+
+		@include with-icon-addon-colors(
+			$color: $input-colors-invalid-color,
+			$focus-caret-color: $input-colors-invalid-focus-caret-color,
+			$focus-icon-color: $input-colors-invalid-focus-icon-color,
+			$disabled-color: $input-colors-invalid-disabled-color
+		);
+	}
+}
+
+// the trigger's chevron, which keeps the label colour whatever the value shows
+.rcx-select > .rcx-icon {
+	color: colors.font(titles-labels);
+}
+
+// beats the spacing .rcx-input-box__addon gets next to an input
+.rcx-select .rcx-select__addon {
+	margin-inline: lengths.margin(4);
+}

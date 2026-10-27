@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import TeamAutocomplete from '../../../../teams/contextualBar/TeamAutocomplete';
 
-type ChannelToTeamSelectionProps = {
+export type ChannelToTeamSelectionProps = {
 	teamId: IRoom['teamId'];
 	onChange: (value: string | string[]) => void;
 	onCancel: () => void;

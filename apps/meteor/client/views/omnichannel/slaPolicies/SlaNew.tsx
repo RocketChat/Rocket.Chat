@@ -1,8 +1,6 @@
-import type { ReactElement } from 'react';
-
 import SlaEdit from './SlaEdit';
 
-function SlaNew({ reload }: { reload: () => void }): ReactElement {
+function SlaNew({ reload }: { reload: () => void }) {
 	return <SlaEdit isNew reload={reload} />;
 }
 

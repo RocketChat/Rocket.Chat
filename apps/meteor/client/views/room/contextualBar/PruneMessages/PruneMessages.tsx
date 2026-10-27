@@ -8,14 +8,14 @@ import {
 	ContextualbarClose,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
-import { useId, type ReactElement } from 'react';
+import { useId } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import PruneMessagesDateTimeRow from './PruneMessagesDateTimeRow';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 
-type PruneMessagesProps = {
+export type PruneMessagesProps = {
 	callOutText?: string;
 	validateText?: string;
 	users: string[];
@@ -23,7 +23,7 @@ type PruneMessagesProps = {
 	onClickPrune: () => void;
 };
 
-const PruneMessages = ({ callOutText, validateText, onClickClose, onClickPrune }: PruneMessagesProps): ReactElement => {
+const PruneMessages = ({ callOutText, validateText, onClickClose, onClickPrune }: PruneMessagesProps) => {
 	const { t } = useTranslation();
 	const { control } = useFormContext();
 
@@ -44,7 +44,7 @@ const PruneMessages = ({ callOutText, validateText, onClickClose, onClickPrune }
 				<PruneMessagesDateTimeRow label={t('Newer_than')} field='newer' />
 				<PruneMessagesDateTimeRow label={t('Older_than')} field='older' />
 				<Field>
-					<FieldLabel flexGrow={0}>{t('Only_from_users')}</FieldLabel>
+					<FieldLabel>{t('Only_from_users')}</FieldLabel>
 					<Controller
 						control={control}
 						name='users'
@@ -108,7 +108,7 @@ const PruneMessages = ({ callOutText, validateText, onClickClose, onClickPrune }
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button danger disabled={Boolean(validateText)} onClick={onClickPrune}>
+					<Button variant='danger' disabled={Boolean(validateText)} onClick={onClickPrune}>
 						{t('Prune')}
 					</Button>
 				</ButtonGroup>

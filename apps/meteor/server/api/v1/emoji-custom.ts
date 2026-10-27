@@ -1,0 +1,330 @@
+import { Media, ClientSafeError } from '@rocket.chat/core-services';
+import type { IEmojiCustom, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
+import { EmojiCustom } from '@rocket.chat/models';
+import type { PaginatedRequest } from '@rocket.chat/rest-typings';
+import {
+	ajv,
+	ajvQuery,
+	isEmojiCustomList,
+	paginatedResponseProperties,
+	validateBadRequestErrorResponse,
+	validateUnauthorizedErrorResponse,
+} from '@rocket.chat/rest-typings';
+import { escapeRegExp } from '@rocket.chat/tools';
+import type { WithId } from 'mongodb';
+
+import type { EmojiData } from '../../lib/media/emoji-custom/lib/insertOrUpdateEmoji';
+import { insertOrUpdateEmoji } from '../../lib/media/emoji-custom/lib/insertOrUpdateEmoji';
+import { uploadEmojiCustomWithBuffer } from '../../lib/media/emoji-custom/lib/uploadEmojiCustom';
+import { deleteEmojiCustom } from '../../meteor-methods/media/deleteEmojiCustom';
+import { settings } from '../../settings';
+import type { ExtractRoutesFromAPI } from '../ApiClass';
+import { API } from '../api';
+import { findEmojisCustom } from '../lib/emoji-custom';
+import { getPaginationItems } from '../lib/getPaginationItems';
+import { getUploadFormData } from '../lib/getUploadFormData';
+
+const emojiDeleteBodySchema = ajv.compile<{ emojiId: string }>({
+	type: 'object',
+	properties: { emojiId: { type: 'string', minLength: 1 } },
+	required: ['emojiId'],
+	additionalProperties: false,
+});
+
+const emojiCustomAllResponseSchema = ajv.compile<{ emojis: IEmojiCustom[]; count: number; offset: number; total: number }>({
+	type: 'object',
+	properties: {
+		emojis: {
+			type: 'array',
+			items: { $ref: '#/components/schemas/IEmojiCustom' },
+		},
+		...paginatedResponseProperties,
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['emojis', 'count', 'offset', 'total', 'success'],
+	additionalProperties: false,
+});
+
+const emojiCustomDeleteResponseSchema = ajv.compile<void>({
+	type: 'object',
+	properties: {
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['success'],
+	additionalProperties: false,
+});
+
+function validateDateParam(paramName: string, paramValue: string | undefined): Date | undefined {
+	if (!paramValue) {
+		return undefined;
+	}
+
+	const date = new Date(paramValue);
+	if (isNaN(date.getTime())) {
+		throw new ClientSafeError('error-roomId-param-invalid', `The "${paramName}" query parameter must be a valid date.`);
+	}
+
+	return date;
+}
+
+const emojiCustomListResponseSchema = ajv.compile<{
+	emojis: { update: IEmojiCustom[]; remove: WithId<RocketChatRecordDeleted<IEmojiCustom>>[] };
+}>({
+	type: 'object',
+	properties: {
+		emojis: {
+			type: 'object',
+			properties: {
+				update: { type: 'array', items: { type: 'object' } },
+				remove: { type: 'array', items: { type: 'object' } },
+			},
+			required: ['update', 'remove'],
+		},
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['emojis', 'success'],
+	additionalProperties: false,
+});
+
+const emojiCustomCreateEndpoints = API.v1
+	.get(
+		'emoji-custom.list',
+		{
+			authRequired: true,
+			query: isEmojiCustomList,
+			response: {
+				200: emojiCustomListResponseSchema,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { updatedSince, _updatedAt, _id } = this.queryParams;
+
+			const updatedSinceDate = validateDateParam('updatedSince', updatedSince);
+			const _updatedAtDate = validateDateParam('_updatedAt', _updatedAt);
+
+			if (updatedSinceDate) {
+				const [update, remove] = await Promise.all([
+					EmojiCustom.find({
+						...(_id ? { _id } : {}),
+						...(_updatedAtDate ? { _updatedAt: { $gt: _updatedAtDate } } : {}),
+						_updatedAt: { $gt: updatedSinceDate },
+					}).toArray(),
+					EmojiCustom.trashFindDeletedAfter(updatedSinceDate).toArray(),
+				]);
+
+				return API.v1.success({
+					emojis: {
+						update,
+						remove,
+					},
+				});
+			}
+
+			return API.v1.success({
+				emojis: {
+					update: await EmojiCustom.find({
+						...(_id ? { _id } : {}),
+						...(_updatedAtDate ? { _updatedAt: { $gt: _updatedAtDate } } : {}),
+					}).toArray(),
+					remove: [],
+				},
+			});
+		},
+	)
+	.get(
+		'emoji-custom.all',
+		{
+			authRequired: true,
+			// open schema (no additionalProperties: false): pagination/query helpers travel alongside `name`
+			query: ajvQuery.compile<PaginatedRequest<{ name?: string }, 'name'>>({
+				type: 'object',
+				properties: {
+					name: { type: 'string' },
+					count: { type: 'number' },
+					offset: { type: 'number' },
+					sort: { type: 'string' },
+				},
+			}),
+			response: {
+				200: emojiCustomAllResponseSchema,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
+			const { name } = this.queryParams;
+
+			return API.v1.success(
+				await findEmojisCustom({
+					query: name
+						? {
+								name: {
+									$regex: escapeRegExp(name),
+									$options: 'i',
+								},
+							}
+						: {},
+					pagination: {
+						offset,
+						count,
+						sort,
+					},
+				}),
+			);
+		},
+	)
+	.post(
+		'emoji-custom.create',
+		{
+			authRequired: true,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: {
+						success: {
+							type: 'boolean',
+							enum: [true],
+						},
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const emoji = await getUploadFormData(
+				{
+					request: this.request,
+				},
+				{
+					field: 'emoji',
+					sizeLimit: settings.get('FileUpload_MaxFileSize'),
+				},
+			);
+
+			const { fields, fileBuffer, mimetype } = emoji;
+
+			const isUploadable = await Media.isImage(fileBuffer);
+			if (!isUploadable) {
+				throw new ClientSafeError('emoji-is-not-image', "Emoji file provided cannot be uploaded since it's not an image");
+			}
+
+			const [, extension] = mimetype.split('/');
+			fields.extension = extension;
+
+			const emojiData = await insertOrUpdateEmoji(this.userId, {
+				...fields,
+				newFile: true,
+				aliases: fields.aliases || '',
+				name: fields.name,
+				extension: fields.extension,
+			});
+
+			await uploadEmojiCustomWithBuffer(this.userId, fileBuffer, mimetype, emojiData);
+
+			return API.v1.success();
+		},
+	)
+	.post(
+		'emoji-custom.update',
+		{
+			authRequired: true,
+			response: {
+				200: ajv.compile<void>({
+					type: 'object',
+					properties: { success: { type: 'boolean', enum: [true] } },
+					required: ['success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const emoji = await getUploadFormData(
+				{
+					request: this.request,
+				},
+				{ field: 'emoji', sizeLimit: settings.get('FileUpload_MaxFileSize'), fileOptional: true },
+			);
+
+			const { fields, fileBuffer, mimetype } = emoji;
+
+			if (!fields._id) {
+				throw new ClientSafeError('The required "_id" query param is missing.');
+			}
+
+			const emojiToUpdate = await EmojiCustom.findOneById<Pick<IEmojiCustom, 'name' | 'extension'>>(fields._id, {
+				projection: { name: 1, extension: 1 },
+			});
+			if (!emojiToUpdate) {
+				throw new ClientSafeError('Emoji not found.');
+			}
+
+			const emojiData: EmojiData = {
+				previousName: emojiToUpdate.name,
+				previousExtension: emojiToUpdate.extension,
+				aliases: fields.aliases || '',
+				name: fields.name,
+				extension: fields.extension,
+				_id: fields._id,
+				newFile: false,
+			};
+
+			const isNewFile = fileBuffer?.length && !!mimetype;
+			if (isNewFile) {
+				emojiData.newFile = isNewFile;
+				const isUploadable = await Media.isImage(fileBuffer);
+				if (!isUploadable) {
+					throw new ClientSafeError('emoji-is-not-image', "Emoji file provided cannot be uploaded since it's not an image");
+				}
+
+				const [, extension] = mimetype.split('/');
+				emojiData.extension = extension;
+			} else {
+				emojiData.extension = emojiToUpdate.extension;
+			}
+
+			const updatedEmojiData = await insertOrUpdateEmoji(this.userId, emojiData);
+			if (isNewFile) {
+				await uploadEmojiCustomWithBuffer(this.userId, fileBuffer, mimetype, updatedEmojiData);
+			}
+			return API.v1.success();
+		},
+	)
+	.post(
+		'emoji-custom.delete',
+		{
+			authRequired: true,
+			body: emojiDeleteBodySchema,
+			response: {
+				200: emojiCustomDeleteResponseSchema,
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const { emojiId } = this.bodyParams;
+			if (!emojiId) {
+				return API.v1.failure('The "emojiId" params is required!');
+			}
+
+			await deleteEmojiCustom(this.userId, emojiId);
+
+			return API.v1.success();
+		},
+	);
+
+type EmojiCustomCreateEndpoints = ExtractRoutesFromAPI<typeof emojiCustomCreateEndpoints>;
+
+export type EmojiCustomEndpoints = EmojiCustomCreateEndpoints;
+
+declare module '@rocket.chat/rest-typings' {
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
+	interface Endpoints extends EmojiCustomCreateEndpoints {}
+}

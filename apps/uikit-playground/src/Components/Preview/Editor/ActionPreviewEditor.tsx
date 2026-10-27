@@ -10,7 +10,7 @@ const ActionPreviewEditor = () => (
 			height='100%'
 			width='100%'
 			zIndex={1}
-			bg='#f6f9fc'
+			backgroundColor='#f6f9fc'
 			display='flex'
 			borderInlineStart='var(--default-border)'
 			overflow='auto'

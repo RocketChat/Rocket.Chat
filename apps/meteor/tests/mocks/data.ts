@@ -1,5 +1,6 @@
 import { faker } from '@faker-js/faker';
-import type { IExternalComponentRoomInfo, IExternalComponentUserInfo } from '@rocket.chat/apps-engine/client/definition';
+import type { IExternalComponentRoomInfo } from '@rocket.chat/apps/dist/client/definition/IExternalComponentRoomInfo';
+import type { IExternalComponentUserInfo } from '@rocket.chat/apps/dist/client/definition/IExternalComponentUserInfo';
 import type { ILivechatContact } from '@rocket.chat/apps-engine/definition/livechat';
 import {
 	AppSubscriptionStatus,
@@ -34,7 +35,7 @@ export function createFakeUser(overrides?: Partial<IUser>): IUser {
 	return {
 		_id: faker.database.mongodbObjectId(),
 		_updatedAt: faker.date.recent(),
-		username: faker.internet.userName(),
+		username: faker.internet.username(),
 		name: faker.person.fullName(),
 		createdAt: faker.date.recent(),
 		roles: ['user'],
@@ -52,7 +53,7 @@ export const createFakeRoom = <T extends IRoom = IRoom>(overrides?: Partial<T & 
 		msgs: faker.number.int({ min: 0 }),
 		u: {
 			_id: faker.database.mongodbObjectId(),
-			username: faker.internet.userName(),
+			username: faker.internet.username(),
 			name: faker.person.fullName(),
 			...overrides?.u,
 		},
@@ -69,13 +70,13 @@ export const createFakeOmnichannelRoom = (overrides?: Partial<IOmnichannelRoom>)
 	ts: faker.date.recent(),
 	u: {
 		_id: faker.database.mongodbObjectId(),
-		username: faker.internet.userName(),
+		username: faker.internet.username(),
 		name: faker.person.fullName(),
 		...overrides?.u,
 	},
 	v: {
 		_id: faker.database.mongodbObjectId(),
-		username: faker.internet.userName(),
+		username: faker.internet.username(),
 		name: faker.person.fullName(),
 		status: UserStatus.ONLINE,
 		token: faker.string.uuid(),
@@ -99,7 +100,7 @@ export const createFakeSubscription = (overrides?: Partial<SubscriptionWithRoom>
 	_updatedAt: faker.date.recent(),
 	u: {
 		_id: faker.database.mongodbObjectId(),
-		username: faker.internet.userName(),
+		username: faker.internet.username(),
 		name: faker.person.fullName(),
 		...overrides?.u,
 	},
@@ -133,7 +134,7 @@ export function createFakeMessage(overrides?: Partial<IMessage>): IMessage {
 		ts: faker.date.recent(),
 		u: {
 			_id: faker.database.mongodbObjectId(),
-			username: faker.internet.userName(),
+			username: faker.internet.username(),
 			name: faker.person.fullName(),
 			...overrides?.u,
 		},
@@ -232,14 +233,14 @@ export function createFakeApp(partialApp: Partial<App> = {}): App {
 
 export const createFakeExternalComponentUserInfo = (partial: Partial<IExternalComponentUserInfo> = {}): IExternalComponentUserInfo => ({
 	id: faker.database.mongodbObjectId(),
-	username: faker.internet.userName(),
+	username: faker.internet.username(),
 	avatarUrl: faker.image.avatar(),
 	...partial,
 });
 
 export const createFakeExternalComponentRoomInfo = (partial: Partial<IExternalComponentRoomInfo> = {}): IExternalComponentRoomInfo => ({
 	id: faker.database.mongodbObjectId(),
-	members: faker.helpers.multiple(createFakeExternalComponentUserInfo),
+	members: faker.helpers.multiple(() => createFakeExternalComponentUserInfo()),
 	slugifiedName: faker.lorem.slug(),
 	...partial,
 });
@@ -268,6 +269,7 @@ export const createFakeLicenseInfo = (partial: Partial<Omit<LicenseInfo, 'licens
 		'accessibility-certification',
 		'outbound-messaging',
 		'abac',
+		'video-conference-native',
 	]),
 	externalModules: [],
 	preventedActions: {
@@ -288,7 +290,7 @@ export const createFakeLicenseInfo = (partial: Partial<Omit<LicenseInfo, 'licens
 	},
 	tags: faker.helpers.multiple(() => ({
 		name: faker.commerce.productAdjective(),
-		color: faker.internet.color(),
+		color: faker.color.rgb(),
 	})),
 	trial: faker.datatype.boolean(),
 	hasValidLicense: faker.datatype.boolean(),
@@ -395,7 +397,7 @@ export function createFakeContactWithManagerData(
 		contactManager: {
 			_id: faker.string.uuid(),
 			name: faker.person.fullName(),
-			username: faker.internet.userName(),
+			username: faker.internet.username(),
 			...contactManagerOverwrites,
 		},
 	};
@@ -405,7 +407,7 @@ export function createFakeAgent(overrides?: Partial<Serialized<ILivechatAgent>>)
 	const email = faker.internet.email();
 	const firstName = faker.person.firstName();
 	const lastName = faker.person.lastName();
-	const username = faker.internet.userName({ firstName, lastName });
+	const username = faker.internet.username({ firstName, lastName });
 
 	return {
 		_id: faker.string.uuid(),
@@ -440,6 +442,7 @@ export function createFakeTag(overrides?: Partial<Serialized<ILivechatTag>>): Se
 		description: 'description',
 		numDepartments: 0,
 		departments: [],
+		_updatedAt: new Date().toISOString(),
 		...overrides,
 	};
 }
@@ -476,7 +479,7 @@ export const createFakeDepartment = (overrides: Partial<Serialized<ILivechatDepa
 export function createFakeMonitor(overrides?: Partial<Serialized<ILivechatMonitor>>): Serialized<ILivechatMonitor> {
 	const firstName = faker.person.firstName();
 	const lastName = faker.person.lastName();
-	const username = faker.internet.userName({ firstName, lastName });
+	const username = faker.internet.username({ firstName, lastName });
 
 	return {
 		_id: faker.string.uuid(),

@@ -1,14 +1,13 @@
-import type { ReactElement } from 'react';
 import { Fragment, memo, useContext, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
 
-type PlainSpanProps = {
+export type PlainSpanProps = {
 	text: string;
 };
 
-const PlainSpan = ({ text }: PlainSpanProps): ReactElement => {
+const PlainSpan = ({ text }: PlainSpanProps) => {
 	const { t } = useTranslation();
 	const { highlightRegex, markRegex } = useContext(MarkupInteractionContext);
 

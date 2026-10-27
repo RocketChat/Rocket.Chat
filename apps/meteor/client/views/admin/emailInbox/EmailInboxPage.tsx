@@ -1,14 +1,13 @@
 import { Button } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import EmailInboxForm from './EmailInboxForm';
 import EmailInboxFormWithData from './EmailInboxFormWithData';
 import EmailInboxTable from './EmailInboxTable';
 
-const EmailInboxPage = (): ReactElement => {
+const EmailInboxPage = () => {
 	const { t } = useTranslation();
 	const router = useRouter();
 
@@ -20,7 +19,7 @@ const EmailInboxPage = (): ReactElement => {
 			<Page>
 				<PageHeader title={t('Email_Inboxes')} onClickBack={context ? () => router.navigate('/admin/email-inboxes') : undefined}>
 					{!context && (
-						<Button primary onClick={() => router.navigate('/admin/email-inboxes/new')}>
+						<Button variant='primary' onClick={() => router.navigate('/admin/email-inboxes/new')}>
 							{t('New_Email_Inbox')}
 						</Button>
 					)}

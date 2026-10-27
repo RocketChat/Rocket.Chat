@@ -12,7 +12,10 @@ import {
 	Avatar,
 	Box,
 } from '@rocket.chat/fuselage';
-import type { Meta, StoryFn } from '@storybook/react';
+import { UserContext } from '@rocket.chat/ui-contexts';
+import type { Meta, StoryObj } from '@storybook/react';
+import type { ReactNode } from 'react';
+import { useContext } from 'react';
 
 import { VideoConfMessage, VideoConfMessageIcon, VideoConfMessageRow, VideoConfMessageText } from '.';
 import VideoConfMessageAction from './VideoConfMessageAction';
@@ -25,7 +28,6 @@ import VideoConfMessageSkeleton from './VideoConfMessageSkeleton';
 import VideoConfMessageUserStack from './VideoConfMessageUserStack';
 
 export default {
-	title: 'Components/VideoConfMessage',
 	component: VideoConfMessage,
 	decorators: [
 		(Story) => (
@@ -65,96 +67,137 @@ const fakeUsers = Array.from({ length: 10 }).map((_, i) => ({
 	avatarETag: '',
 }));
 
-export const CallingDM: StoryFn<typeof VideoConfMessage> = () => (
-	<VideoConfMessage>
-		<VideoConfMessageRow>
-			<VideoConfMessageContent>
-				<VideoConfMessageIcon variant='incoming' />
-				<VideoConfMessageText>Calling...</VideoConfMessageText>
-			</VideoConfMessageContent>
-			<VideoConfMessageActions>
-				<VideoConfMessageAction aria-label='info' icon='info' />
-			</VideoConfMessageActions>
-		</VideoConfMessageRow>
-		<VideoConfMessageFooter>
-			<VideoConfMessageButton primary>Join</VideoConfMessageButton>
-			<VideoConfMessageFooterText>Waiting for answer</VideoConfMessageFooterText>
-		</VideoConfMessageFooter>
-	</VideoConfMessage>
-);
+export const CallingDM: StoryObj<typeof VideoConfMessage> = {
+	render: () => (
+		<VideoConfMessage>
+			<VideoConfMessageRow>
+				<VideoConfMessageContent>
+					<VideoConfMessageIcon variant='incoming' />
+					<VideoConfMessageText>Calling...</VideoConfMessageText>
+				</VideoConfMessageContent>
+				<VideoConfMessageActions>
+					<VideoConfMessageAction aria-label='info' icon='info' />
+				</VideoConfMessageActions>
+			</VideoConfMessageRow>
+			<VideoConfMessageFooter>
+				<VideoConfMessageButton variant='primary'>Join</VideoConfMessageButton>
+				<VideoConfMessageFooterText>Waiting for answer</VideoConfMessageFooterText>
+			</VideoConfMessageFooter>
+		</VideoConfMessage>
+	),
+};
 
-export const CallEndedDM: StoryFn<typeof VideoConfMessage> = () => (
-	<VideoConfMessage>
-		<VideoConfMessageRow>
-			<VideoConfMessageContent>
-				<VideoConfMessageIcon />
-				<VideoConfMessageText>Call ended</VideoConfMessageText>
-			</VideoConfMessageContent>
-			<VideoConfMessageActions>
-				<VideoConfMessageAction aria-label='info' icon='info' />
-			</VideoConfMessageActions>
-		</VideoConfMessageRow>
-		<VideoConfMessageFooter>
-			<VideoConfMessageButton>Call Back</VideoConfMessageButton>
-			<VideoConfMessageFooterText>Call was not answered</VideoConfMessageFooterText>
-		</VideoConfMessageFooter>
-	</VideoConfMessage>
-);
+export const CallEndedDM: StoryObj<typeof VideoConfMessage> = {
+	render: () => (
+		<VideoConfMessage>
+			<VideoConfMessageRow>
+				<VideoConfMessageContent>
+					<VideoConfMessageIcon />
+					<VideoConfMessageText>Call ended</VideoConfMessageText>
+				</VideoConfMessageContent>
+				<VideoConfMessageActions>
+					<VideoConfMessageAction aria-label='info' icon='info' />
+				</VideoConfMessageActions>
+			</VideoConfMessageRow>
+			<VideoConfMessageFooter>
+				<VideoConfMessageButton>Call Back</VideoConfMessageButton>
+				<VideoConfMessageFooterText>Call was not answered</VideoConfMessageFooterText>
+			</VideoConfMessageFooter>
+		</VideoConfMessage>
+	),
+};
 
-export const CallOngoing: StoryFn<typeof VideoConfMessage> = () => (
-	<VideoConfMessage>
-		<VideoConfMessageRow>
-			<VideoConfMessageContent>
-				<VideoConfMessageIcon variant='outgoing' />
-				<VideoConfMessageText>Call ongoing</VideoConfMessageText>
-			</VideoConfMessageContent>
-			<VideoConfMessageActions>
-				<VideoConfMessageAction aria-label='info' icon='info' />
-			</VideoConfMessageActions>
-		</VideoConfMessageRow>
-		<VideoConfMessageFooter>
-			<VideoConfMessageButton primary>Join</VideoConfMessageButton>
-			<VideoConfMessageUserStack users={fakeUsers} />
-			<VideoConfMessageFooterText>joined</VideoConfMessageFooterText>
-		</VideoConfMessageFooter>
-	</VideoConfMessage>
-);
+export const CallOngoing: StoryObj<typeof VideoConfMessage> = {
+	render: () => (
+		<VideoConfMessage>
+			<VideoConfMessageRow>
+				<VideoConfMessageContent>
+					<VideoConfMessageIcon variant='outgoing' />
+					<VideoConfMessageText>Call ongoing</VideoConfMessageText>
+				</VideoConfMessageContent>
+				<VideoConfMessageActions>
+					<VideoConfMessageAction aria-label='info' icon='info' />
+				</VideoConfMessageActions>
+			</VideoConfMessageRow>
+			<VideoConfMessageFooter>
+				<VideoConfMessageButton variant='primary'>Join</VideoConfMessageButton>
+				<VideoConfMessageUserStack users={fakeUsers} />
+				<VideoConfMessageFooterText>joined</VideoConfMessageFooterText>
+			</VideoConfMessageFooter>
+		</VideoConfMessage>
+	),
+};
 
-export const CallEnded: StoryFn<typeof VideoConfMessage> = () => (
-	<VideoConfMessage>
-		<VideoConfMessageRow>
-			<VideoConfMessageContent>
-				<VideoConfMessageIcon />
-				<VideoConfMessageText>Call ended</VideoConfMessageText>
-			</VideoConfMessageContent>
-			<VideoConfMessageActions>
-				<VideoConfMessageAction aria-label='info' icon='info' />
-			</VideoConfMessageActions>
-		</VideoConfMessageRow>
-		<VideoConfMessageFooter>
-			<VideoConfMessageUserStack users={fakeUsers} />
-			<VideoConfMessageFooterText>joined</VideoConfMessageFooterText>
-		</VideoConfMessageFooter>
-	</VideoConfMessage>
-);
+export const CallEnded: StoryObj<typeof VideoConfMessage> = {
+	render: () => (
+		<VideoConfMessage>
+			<VideoConfMessageRow>
+				<VideoConfMessageContent>
+					<VideoConfMessageIcon />
+					<VideoConfMessageText>Call ended</VideoConfMessageText>
+				</VideoConfMessageContent>
+				<VideoConfMessageActions>
+					<VideoConfMessageAction aria-label='info' icon='info' />
+				</VideoConfMessageActions>
+			</VideoConfMessageRow>
+			<VideoConfMessageFooter>
+				<VideoConfMessageUserStack users={fakeUsers} />
+				<VideoConfMessageFooterText>joined</VideoConfMessageFooterText>
+			</VideoConfMessageFooter>
+		</VideoConfMessage>
+	),
+};
 
-export const Loading: StoryFn<typeof VideoConfMessage> = () => <VideoConfMessageSkeleton />;
+export const Loading: StoryObj<typeof VideoConfMessage> = {
+	render: () => <VideoConfMessageSkeleton />,
+};
 
-export const NoAvatars: StoryFn<typeof VideoConfMessage> = () => (
-	<VideoConfMessage>
-		<VideoConfMessageRow>
-			<VideoConfMessageContent>
-				<VideoConfMessageIcon variant='outgoing' />
-				<VideoConfMessageText>Call ongoing</VideoConfMessageText>
-			</VideoConfMessageContent>
-			<VideoConfMessageActions>
-				<VideoConfMessageAction aria-label='info' icon='info' />
-			</VideoConfMessageActions>
-		</VideoConfMessageRow>
-		<VideoConfMessageFooter>
-			<VideoConfMessageButton primary>Join</VideoConfMessageButton>
-			<VideoConfMessageUserStack users={fakeUsers} />
-			<VideoConfMessageFooterText>{fakeUsers.length} joined</VideoConfMessageFooterText>
-		</VideoConfMessageFooter>
-	</VideoConfMessage>
-);
+export const NoAvatars: StoryObj<typeof VideoConfMessage> = {
+	render: () => (
+		<VideoConfMessage>
+			<VideoConfMessageRow>
+				<VideoConfMessageContent>
+					<VideoConfMessageIcon variant='outgoing' />
+					<VideoConfMessageText>Call ongoing</VideoConfMessageText>
+				</VideoConfMessageContent>
+				<VideoConfMessageActions>
+					<VideoConfMessageAction aria-label='info' icon='info' />
+				</VideoConfMessageActions>
+			</VideoConfMessageRow>
+			<VideoConfMessageFooter>
+				<VideoConfMessageButton variant='primary'>Join</VideoConfMessageButton>
+				<VideoConfMessageUserStack users={fakeUsers} />
+				<VideoConfMessageFooterText>{fakeUsers.length} joined</VideoConfMessageFooterText>
+			</VideoConfMessageFooter>
+		</VideoConfMessage>
+	),
+};
+
+const WithAvatarsDisplayed = ({ children }: { children: ReactNode }) => {
+	const user = useContext(UserContext);
+	const queryPreference: typeof user.queryPreference = (key, defaultValue) => [
+		() => () => undefined,
+		() => (key === 'displayAvatars' ? true : defaultValue) as never,
+	];
+	return <UserContext.Provider value={{ ...user, queryPreference }}>{children}</UserContext.Provider>;
+};
+
+export const UserStackWithAvatars: StoryObj<typeof VideoConfMessage> = {
+	render: () => (
+		<WithAvatarsDisplayed>
+			<VideoConfMessage>
+				<VideoConfMessageRow>
+					<VideoConfMessageContent>
+						<VideoConfMessageIcon variant='outgoing' />
+						<VideoConfMessageText>Call ongoing</VideoConfMessageText>
+					</VideoConfMessageContent>
+				</VideoConfMessageRow>
+				<VideoConfMessageFooter>
+					<VideoConfMessageButton variant='primary'>Join</VideoConfMessageButton>
+					<VideoConfMessageUserStack users={fakeUsers} />
+					<VideoConfMessageFooterText>{fakeUsers.length} joined</VideoConfMessageFooterText>
+				</VideoConfMessageFooter>
+			</VideoConfMessage>
+		</WithAvatarsDisplayed>
+	),
+};

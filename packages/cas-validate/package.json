@@ -11,17 +11,16 @@
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.json",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix .",
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
 		"testunit": "jest"
 	},
 	"dependencies": {
 		"cheerio": "1.0.0"
 	},
 	"devDependencies": {
-		"eslint": "~9.39.4",
-		"jest": "~30.2.0",
-		"typescript": "~5.9.3"
+		"jest": "~30.5.2",
+		"typescript": "~7.0.2"
 	},
 	"volta": {
 		"extends": "../../package.json"

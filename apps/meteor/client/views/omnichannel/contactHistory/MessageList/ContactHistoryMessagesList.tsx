@@ -3,7 +3,6 @@ import {
 	Button,
 	ButtonGroup,
 	Icon,
-	Margins,
 	States,
 	StatesIcon,
 	StatesSubtitle,
@@ -34,7 +33,7 @@ import { useHistoryMessageList } from './useHistoryMessageList';
 import { isMessageNewDay } from '../../../room/MessageList/lib/isMessageNewDay';
 import { isMessageSequential } from '../../../room/MessageList/lib/isMessageSequential';
 
-type ContactHistoryMessagesListProps = {
+export type ContactHistoryMessagesListProps = {
 	chatId: string;
 	onClose: () => void;
 	onOpenRoom?: () => void;
@@ -79,29 +78,27 @@ const ContactHistoryMessagesList = ({ chatId, onClose, onOpenRoom }: ContactHist
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 
-			<ContextualbarContent paddingInline={0}>
+			<ContextualbarContent flush>
 				<Box
 					display='flex'
 					flexDirection='row'
-					p={24}
+					padding={24}
 					borderBlockEndWidth='default'
 					borderBlockEndStyle='solid'
 					borderBlockEndColor='extra-light'
 					flexShrink={0}
 				>
-					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
-						<Margins inline={4}>
-							<TextInput
-								placeholder={t('Search')}
-								value={text}
-								onChange={handleSearchChange}
-								addon={<Icon name='magnifier' size='x20' />}
-							/>
-						</Margins>
+					<Box display='flex' flexDirection='row' flexGrow={1}>
+						<TextInput
+							placeholder={t('Search')}
+							value={text}
+							onChange={handleSearchChange}
+							endAddon={<Icon name='magnifier' size='x20' />}
+						/>
 					</Box>
 				</Box>
 				{isPending && (
-					<Box pi={24} pb={12}>
+					<Box paddingInline={24} paddingBlock={12}>
 						<Throbber size='x12' />
 					</Box>
 				)}

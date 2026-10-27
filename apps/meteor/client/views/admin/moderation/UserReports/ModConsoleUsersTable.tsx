@@ -1,6 +1,6 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
-import { useDebouncedValue, useMediaQuery, useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { Pagination, States, StatesAction, StatesActions, StatesIcon, StatesTitle, type TableColumnWidth } from '@rocket.chat/fuselage';
+import { useDebouncedValue, useMediaQuery, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
 	GenericTableLoadingTable,
@@ -9,6 +9,7 @@ import {
 	GenericTableHeader,
 	usePagination,
 	useSort,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
@@ -16,7 +17,6 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ModConsoleUserTableRow from './ModConsoleUserTableRow';
-import GenericNoResults from '../../../../components/GenericNoResults';
 import ModerationFilter from '../helpers/ModerationFilter';
 
 const ModConsoleUsersTable = () => {
@@ -59,12 +59,14 @@ const ModConsoleUsersTable = () => {
 		placeholderData: keepPreviousData,
 	});
 
-	const handleClick = useEffectEvent((id: IUser['_id']): void => {
+	const handleClick = useStableCallback((id: IUser['_id']): void => {
 		router.navigate({
 			pattern: '/admin/moderation/:tab?/:context?/:id?',
 			params: { tab: 'users', context: 'info', id },
 		});
 	});
+
+	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 'auto', 'auto', 'x48'];
 
 	const headers = (
 		<>
@@ -95,7 +97,7 @@ const ModConsoleUsersTable = () => {
 			<GenericTableHeaderCell key='reports' direction={sortDirection} active={sortBy === 'count'} onClick={setSort} sort='count'>
 				{t('Moderation_Reports')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='actions' width='x48' />
+			<GenericTableHeaderCell key='actions' />
 		</>
 	);
 
@@ -103,14 +105,14 @@ const ModConsoleUsersTable = () => {
 		<>
 			<ModerationFilter text={text} setText={setText} setDateRange={setDateRange} />
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>{isLoading && <GenericTableLoadingTable headerCells={6} />}</GenericTableBody>
 				</GenericTable>
 			)}
 			{isSuccess && data.reports.length > 0 && (
 				<>
-					<GenericTable>
+					<GenericTable columns={columns}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.reports.map((report) => (

@@ -23,7 +23,6 @@ const Connection = {
 
 	async connect() {
 		try {
-			await import('../i18next');
 			this.clearListeners();
 			await loadConfig();
 			this.addListeners();
@@ -33,23 +32,6 @@ const Connection = {
 			console.error('Connecting error: ', e);
 		}
 	},
-
-	// reconnect() {
-	// 	if (timer) {
-	// 		return;
-	// 	}
-	// 	timer = setTimeout(async () => {
-	// 		try {
-	// 			clearTimeout(timer);
-	// 			timer = false;
-	// 			await this.connect();
-	// 			await loadMessages();
-	// 		} catch (e) {
-	// 			console.error('Reconecting error: ', e);
-	// 			this.reconnect();
-	// 		}
-	// 	}, 5000);
-	// },
 
 	async clearAlerts() {
 		const { alerts } = store.state;

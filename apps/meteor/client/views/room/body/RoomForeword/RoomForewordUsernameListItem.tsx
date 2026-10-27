@@ -4,7 +4,7 @@ import { useUserDisplayName } from '@rocket.chat/ui-client';
 
 import { useUserInfoQuery } from '../../../../hooks/useUserInfoQuery';
 
-type RoomForewordUsernameListItemProps = {
+export type RoomForewordUsernameListItemProps = {
 	href: string | undefined;
 	username: NonNullable<IUser['username']>;
 };

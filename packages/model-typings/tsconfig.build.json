@@ -1,0 +1,5 @@
+{
+	"extends": "./tsconfig.json",
+	// `*.typetest.ts` holds compile-time assertions only — `yarn typecheck` covers them, the build must not emit them.
+	"exclude": ["node_modules", "${configDir}/**/*.spec.ts", "${configDir}/**/*.typetest.ts"]
+}

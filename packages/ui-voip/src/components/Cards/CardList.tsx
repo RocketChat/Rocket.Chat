@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
-type CardListProps = {
+export type CardListProps = {
 	children: ReactNode;
 	shouldWrapCards?: boolean;
 	direction?: 'row' | 'column';
@@ -23,8 +23,8 @@ const CardList = ({
 	return (
 		<Box
 			display='flex'
-			mb={autoMargin ? 'auto' : undefined}
-			mi={marginInline}
+			marginBlock={autoMargin ? 'auto' : undefined}
+			marginInline={marginInline}
 			flexDirection={direction}
 			flexWrap={shouldWrapCards ? 'wrap' : 'nowrap'}
 			flexGrow={1}

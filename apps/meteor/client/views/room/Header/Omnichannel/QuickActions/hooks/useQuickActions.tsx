@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	useSetModal,
 	useToastMessageDispatch,
@@ -14,16 +14,16 @@ import { useCallback, useState, useEffect } from 'react';
 
 import { usePutChatOnHoldMutation } from './usePutChatOnHoldMutation';
 import { useReturnChatToQueueMutation } from './useReturnChatToQueueMutation';
-import PlaceChatOnHoldModal from '../../../../../../../app/livechat-enterprise/client/components/modals/PlaceChatOnHoldModal';
-import { LegacyRoomManager } from '../../../../../../../app/ui-utils/client';
 import { useHasLicenseModule } from '../../../../../../hooks/useHasLicenseModule';
 import { useLivechatInquiryStore } from '../../../../../../hooks/useLivechatInquiryStore';
+import { LegacyRoomManager } from '../../../../../../lib/LegacyRoomManager';
 import { quickActionHooks } from '../../../../../../ui';
 import { useIsRoomOverMacLimit } from '../../../../../omnichannel/hooks/useIsRoomOverMacLimit';
 import { useOmnichannelRouteConfig } from '../../../../../omnichannel/hooks/useOmnichannelRouteConfig';
 import CloseChatModal from '../../../../../omnichannel/modals/CloseChatModal';
 import CloseChatModalData from '../../../../../omnichannel/modals/CloseChatModalData';
 import ForwardChatModal from '../../../../../omnichannel/modals/ForwardChatModal';
+import PlaceChatOnHoldModal from '../../../../../omnichannel/modals/PlaceChatOnHoldModal';
 import ReturnChatQueueModal from '../../../../../omnichannel/modals/ReturnChatQueueModal';
 import TranscriptModal from '../../../../../omnichannel/modals/TranscriptModal';
 import { useOmnichannelRoom } from '../../../../contexts/RoomContext';
@@ -50,7 +50,7 @@ export const useQuickActions = (): {
 
 	const getVisitorInfo = useEndpoint('GET', '/v1/livechat/visitors.info');
 
-	const getVisitorEmail = useEffectEvent(async () => {
+	const getVisitorEmail = useStableCallback(async () => {
 		if (!visitorRoomId) {
 			return;
 		}
@@ -194,7 +194,7 @@ export const useQuickActions = (): {
 		},
 	});
 
-	const handleAction = useEffectEvent(async (id: string) => {
+	const handleAction = useStableCallback(async (id: string) => {
 		switch (id) {
 			case QuickActionsEnum.MoveQueue:
 				setModal(
@@ -314,7 +314,7 @@ export const useQuickActions = (): {
 		})
 		.sort((a, b) => (a.order ?? 0) - (b.order ?? 0));
 
-	const actionDefault = useEffectEvent((actionId: string) => {
+	const actionDefault = useStableCallback((actionId: string) => {
 		handleAction(actionId);
 	});
 

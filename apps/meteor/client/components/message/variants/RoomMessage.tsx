@@ -2,11 +2,13 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import { Message, MessageLeftContainer, MessageContainer, CheckBox } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
-import { useTranslation, useUserId, useUserCard } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, ReactElement } from 'react';
+import { useUserId, useUserCard } from '@rocket.chat/ui-contexts';
+import type { ComponentProps, KeyboardEvent } from 'react';
 import { memo } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
+import { useTranslation } from 'react-i18next';
 
-import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
+import type { MessageActionContext } from '../../../lib/MessageAction';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
 import {
 	useIsSelecting,
@@ -14,16 +16,17 @@ import {
 	useIsSelectedMessage,
 	useCountSelected,
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
-import { useJumpToMessage } from '../../../views/room/MessageList/hooks/useJumpToMessage';
 import Emoji from '../../Emoji';
 import IgnoredContent from '../IgnoredContent';
+import MessageContentFallback from '../MessageContentFallback';
 import MessageHeader from '../MessageHeader';
 import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
 import RoomMessageContent from './room/RoomMessageContent';
+import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
 import { useMessageListReadReceipts } from '../list/MessageListContext';
 
-type RoomMessageProps = {
+export type RoomMessageProps = {
 	message: IMessage & { ignored?: boolean };
 	showUserAvatar: boolean;
 	sequential: boolean;
@@ -70,13 +73,13 @@ const RoomMessage = ({
 	ignoredUser,
 	searchText,
 	...props
-}: RoomMessageProps): ReactElement => {
-	const t = useTranslation();
+}: RoomMessageProps) => {
+	const { t } = useTranslation();
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
 	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
 	const ignored = (ignoredUser || message.ignored) && !displayIgnoredMessage;
-	const { openUserCard, triggerProps } = useUserCard();
+	const { openUserCard, openUserInfo } = useUserCard();
 
 	const selecting = useIsSelecting();
 
@@ -86,17 +89,27 @@ const RoomMessage = ({
 	const { enabled: readReceiptEnabled } = useMessageListReadReceipts();
 
 	useCountSelected();
-	const messageRef = useJumpToMessage(message._id);
+
+	const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
+		if (!selecting) return;
+
+		if (!(e.code === 'Space' || e.code === 'Enter')) return;
+
+		e.preventDefault();
+		toggleSelected();
+	};
+
+	const checkboxLabel = getCheckboxLabel(message, t);
 
 	return (
 		<Message
-			ref={messageRef}
 			id={message._id}
 			role='listitem'
-			aria-roledescription={t('message')}
 			tabIndex={0}
+			aria-roledescription={t('message')}
 			aria-labelledby={getAriaLabelledBy({ readReceiptEnabled, messageId: message._id, sequential })}
 			onClick={selecting ? toggleSelected : undefined}
+			onKeyDown={handleKeyDown}
 			isSelected={selected}
 			isEditing={editing}
 			isPending={message.temp}
@@ -115,14 +128,16 @@ const RoomMessage = ({
 						emoji={message.emoji ? <Emoji emojiHandle={message.emoji} fillContainer /> : undefined}
 						avatarUrl={message.avatar}
 						username={message.u.username}
+						title=''
 						size='x36'
-						onClick={(e) => openUserCard(e, message.u.username)}
+						onMouseEnter={(e) => openUserCard(e, message.u.username)}
+						onClick={() => openUserInfo(message.u.username)}
 						style={{ cursor: 'pointer' }}
-						role='button'
-						{...triggerProps}
+						// Redundant pointer-only shortcut for the accessible name button next to it
+						aria-hidden='true'
 					/>
 				)}
-				{selecting && <CheckBox checked={selected} onChange={toggleSelected} />}
+				{selecting && <CheckBox checked={selected} onChange={toggleSelected} aria-label={checkboxLabel} />}
 				{sequential && <StatusIndicators message={message} />}
 			</MessageLeftContainer>
 			<MessageContainer>
@@ -130,7 +145,9 @@ const RoomMessage = ({
 				{ignored ? (
 					<IgnoredContent messageId={message._id} onShowMessageIgnored={toggleDisplayIgnoredMessage} />
 				) : (
-					<RoomMessageContent message={message} unread={unread} mention={mention} all={all} searchText={searchText} />
+					<ErrorBoundary fallback={<MessageContentFallback id={`${message._id}-content`} />} resetKeys={[message]}>
+						<RoomMessageContent message={message} unread={unread} mention={mention} all={all} searchText={searchText} />
+					</ErrorBoundary>
 				)}
 			</MessageContainer>
 			{!message.private && message?.e2e !== 'pending' && !selecting && <MessageToolbarHolder message={message} context={context} />}

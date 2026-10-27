@@ -1,6 +1,7 @@
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import { endOfDay, subWeeks } from 'date-fns';
+import { endOfDay } from 'date-fns/endOfDay';
+import { subWeeks } from 'date-fns/subWeeks';
 
 type UseWeeklyChatActivityOptions = {
 	displacement: number;

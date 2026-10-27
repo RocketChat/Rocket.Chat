@@ -1,9 +1,9 @@
 import { SHA256 } from '@rocket.chat/sha256';
 import { imperativeModal } from '@rocket.chat/ui-client';
-import { Meteor } from 'meteor/meteor';
 import { lazy } from 'react';
 
 import type { LoginCallback } from './overrideLoginMethod';
+import type { MeteorErrorLike } from './types';
 import { isTotpInvalidError, isTotpRequiredError } from './utils';
 import { getUser } from '../user';
 
@@ -16,9 +16,9 @@ type TwoFactorMethod = (typeof twoFactorMethods)[number];
 const isTwoFactorMethod = (method: string): method is TwoFactorMethod => twoFactorMethods.includes(method as TwoFactorMethod);
 
 const hasRequiredTwoFactorMethod = (
-	error: Meteor.Error,
-): error is Meteor.Error & { details: { method: TwoFactorMethod; emailOrUsername?: string } } => {
-	const details = error.details as unknown;
+	error: MeteorErrorLike,
+): error is MeteorErrorLike & { details: { method: TwoFactorMethod; emailOrUsername?: string; challengeId?: string } } => {
+	const { details } = error;
 
 	return (
 		typeof details === 'object' &&
@@ -31,8 +31,12 @@ const hasRequiredTwoFactorMethod = (
 function assertModalProps(props: {
 	method: TwoFactorMethod;
 	emailOrUsername?: string;
-}): asserts props is { method: 'totp' } | { method: 'password' } | { method: 'email'; emailOrUsername: string } {
-	if (props.method === 'email' && typeof props.emailOrUsername !== 'string') {
+	challengeId?: string;
+}): asserts props is
+	| { method: 'totp' | 'password'; invalidAttempt?: boolean }
+	| { method: 'email'; emailOrUsername: string; invalidAttempt?: boolean }
+	| { method: 'email'; challengeId: string; invalidAttempt?: boolean } {
+	if (props.method === 'email' && typeof props.emailOrUsername !== 'string' && typeof props.challengeId !== 'string') {
 		throw new Error('Invalid Two Factor method');
 	}
 }
@@ -40,6 +44,7 @@ function assertModalProps(props: {
 const getProps = (
 	method: 'totp' | 'email' | 'password',
 	emailOrUsername?: { username: string } | { email: string } | { id: string } | string,
+	challengeId?: string,
 ) => {
 	switch (method) {
 		case 'totp':
@@ -47,7 +52,9 @@ const getProps = (
 		case 'email':
 			return {
 				method,
-				emailOrUsername: typeof emailOrUsername === 'string' ? emailOrUsername : getUser()?.username,
+				...(challengeId
+					? { challengeId }
+					: { emailOrUsername: typeof emailOrUsername === 'string' ? emailOrUsername : getUser()?.username }),
 			};
 		case 'password':
 			return { method };
@@ -61,7 +68,7 @@ export async function process2faReturn({
 	onCode,
 	emailOrUsername,
 }: {
-	error: globalThis.Error | Meteor.Error | Meteor.TypedError | undefined;
+	error: MeteorErrorLike | undefined;
 	result: unknown;
 	originalCallback: LoginCallback | undefined;
 	onCode: (code: string, method: string) => void | Promise<void>;
@@ -73,7 +80,7 @@ export async function process2faReturn({
 	}
 
 	const props = {
-		...getProps(error.details.method, emailOrUsername || error.details.emailOrUsername),
+		...getProps(error.details.method, emailOrUsername || error.details.emailOrUsername, error.details.challengeId),
 	};
 
 	const validateCode = async (code: string, method: string): Promise<void> => {
@@ -100,7 +107,9 @@ export async function process2faAsyncReturn<TResult>({
 
 	const props = {
 		method: error.details.method,
-		emailOrUsername: emailOrUsername || error.details.emailOrUsername || getUser()?.username,
+		...(error.details.challengeId
+			? { challengeId: error.details.challengeId }
+			: { emailOrUsername: emailOrUsername || error.details.emailOrUsername || getUser()?.username }),
 	};
 
 	assertModalProps(props);
@@ -124,10 +133,13 @@ export const invokeTwoFactorModal = async (
 	props: {
 		method: 'totp' | 'email' | 'password';
 		emailOrUsername?: string | undefined;
+		challengeId?: string;
+		invalidAttempt?: boolean;
 	},
 	validateCode?: (code: string, method: string) => Promise<void>,
 ) => {
-	assertModalProps(props);
+	const { invalidAttempt, ...restProps } = props;
+	assertModalProps(restProps);
 
 	return new Promise<string>((resolve, reject) => {
 		let isResolved = false;
@@ -136,14 +148,15 @@ export const invokeTwoFactorModal = async (
 		imperativeModal.open({
 			component: TwoFactorModal,
 			props: {
-				...props,
+				...restProps,
 				onConfirm: async (code: string, method: string): Promise<void> => {
+					const actualCode = method === 'password' ? SHA256(code) : code;
 					if (validateCode) {
-						await validateCode(code, method);
+						await validateCode(actualCode, method);
 					}
 					isResolved = true;
 					imperativeModal.close();
-					resolve(method === 'password' ? SHA256(code) : code);
+					resolve(actualCode);
 				},
 				onClose: (): void => {
 					if (isClosed) {
@@ -152,15 +165,16 @@ export const invokeTwoFactorModal = async (
 					isClosed = true;
 					imperativeModal.close();
 					if (!isResolved) {
-						Promise.all([import('../../../app/utils/lib/i18n'), import('../toast')]).then(([{ t }, { dispatchToastMessage }]) => {
+						Promise.all([import('../../../lib/i18n'), import('../toast')]).then(([{ t }, { dispatchToastMessage }]) => {
 							dispatchToastMessage({
 								type: 'error',
 								message: t('Two-factor_authentication_cancelled'),
 							});
 						});
-						reject(new Meteor.Error('totp-canceled'));
+						reject(new Error('totp-canceled'));
 					}
 				},
+				...(invalidAttempt && { invalidAttempt }),
 			},
 		});
 	});

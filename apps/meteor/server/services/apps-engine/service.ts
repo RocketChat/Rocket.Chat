@@ -1,11 +1,12 @@
 import { Apps, AppEvents } from '@rocket.chat/apps';
+import type { IGetAppsFilter } from '@rocket.chat/apps/dist/server/IGetAppsFilter';
+import type { IAppStorageItem } from '@rocket.chat/apps/dist/server/storage/IAppStorageItem';
 import type { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import { AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { IAppInfo } from '@rocket.chat/apps-engine/definition/metadata';
-import type { IGetAppsFilter } from '@rocket.chat/apps-engine/server/IGetAppsFilter';
-import type { IAppStorageItem } from '@rocket.chat/apps-engine/server/storage';
 import type { AppStatusReport, IAppsEngineService } from '@rocket.chat/core-services';
 import { ServiceClassInternal } from '@rocket.chat/core-services';
+import { InstanceStatus } from '@rocket.chat/instance-status';
 
 import { isRunningMs } from '../../lib/isRunningMs';
 import { SystemLogger } from '../../lib/logger/system';
@@ -66,11 +67,20 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 			await Apps.self?.getManager()?.removeLocal(appId);
 		});
 
-		this.onEvent('apps.updated', async (appId: string): Promise<void> => {
+		this.onEvent('apps.updated', async (appId: string, originInstanceId?: string): Promise<void> => {
 			Apps.self?.getRocketChatLogger().debug({
 				msg: '"apps.updated" event received for app',
 				appId,
 			});
+
+			if (originInstanceId && originInstanceId === InstanceStatus.id()) {
+				Apps.self?.getRocketChatLogger().debug({
+					msg: '"apps.updated" event ignored: originated from this instance',
+					appId,
+				});
+				return;
+			}
+
 			const storageItem = await Apps.self?.getStorage()?.retrieveOne(appId);
 			if (!storageItem) {
 				Apps.self?.getRocketChatLogger().info({
@@ -198,7 +208,7 @@ export class AppsEngineService extends ServiceClassInternal implements IAppsEngi
 		}
 
 		// If we are running MS AND this.api is defined, we KNOW there is a local node
-		/* eslint-disable-next-line @typescript-eslint/no-non-null-assertion */
+		/* oxlint-disable-next-line @typescript-eslint/no-non-null-assertion */
 		const { id: localNodeId } = (await this.api.nodeList()).find((node) => node.local)!;
 
 		const services: { name: string; nodes: string[] }[] = await this.api?.call('$node.services', { onlyActive: true });

@@ -1,49 +1,83 @@
-import { Room, ServiceClass, Settings } from '@rocket.chat/core-services';
-import type { AbacActor, IAbacService } from '@rocket.chat/core-services';
-import { AbacAccessOperation, AbacObjectType } from '@rocket.chat/core-typings';
+import { api, Authorization, License, Message, Room, ServiceClass, Settings } from '@rocket.chat/core-services';
+import type {
+	AbacActor,
+	AbacCreationAttributesResult,
+	AbacMembershipPreviewResult,
+	AbacRoomAttributesGrant,
+	AbacRoomMembershipPreviewPage,
+	AbacUsersAllowedInRoomResult,
+	IAbacService,
+} from '@rocket.chat/core-services';
+import { AbacAccessOperation, AbacObjectType, isAbacPdpType, isAbacAttributeStoreType } from '@rocket.chat/core-typings';
 import type {
 	IAbacAttribute,
 	IAbacAttributeDefinition,
+	IAbacRoomMembershipPreview,
 	IRoom,
+	IRoomAbacRedaction,
 	AtLeast,
 	IUser,
 	ILDAPEntry,
 	AbacAuditReason,
+	AbacAttributeStoreType,
+	AbacPdpType,
+	AbacUserIdentifiers,
+	MinimalApp,
 } from '@rocket.chat/core-typings';
 import { Rooms, AbacAttributes, Users, Subscriptions } from '@rocket.chat/models';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { isTruthy } from '@rocket.chat/tools';
+import { escapeRegExp, isTruthy } from '@rocket.chat/tools';
 import type { Document, UpdateFilter } from 'mongodb';
 import pLimit from 'p-limit';
 
 import { Audit } from './audit';
+import { VirtruClient } from './clients/virtru/VirtruClient';
 import {
+	AbacError,
+	AbacErrorCode,
 	AbacAttributeInUseError,
 	AbacAttributeNotFoundError,
 	AbacDuplicateAttributeKeyError,
 	AbacInvalidAttributeValuesError,
 	AbacUnsupportedObjectTypeError,
 	AbacUnsupportedOperationError,
+	OnlyCompliantCanBeAddedToRoomError,
 	PdpUnavailableError,
 	PdpHealthCheckError,
+	AbacContractError,
 } from './errors';
 import {
 	getAbacRoom,
+	assertRoomAcceptsAttributes,
 	diffAttributes,
 	extractAttribute,
 	diffAttributeSets,
 	validateAndNormalizeAttributes,
 	ensureAttributeDefinitionsExist,
+	sortByKey,
+	toCreationDenial,
+	toAttributeDefinitions,
+	listAttributeDefinitions,
+	verdictOf,
+	previewRetainingEveryone,
+	withRoomRoles,
+	PREVIEW_READ_OPTIONS,
+	PREVIEW_SCAN_LIMIT,
+	type PreviewSubject,
 	MAX_ABAC_ATTRIBUTE_KEYS,
+	stripTrailingSlashes,
 } from './helper';
 import { logger } from './logger';
-import type { IPolicyDecisionPoint, VirtruPDPConfig } from './pdp';
+import type { Evaluation, IPolicyDecisionPoint, VirtruPDPConfig } from './pdp';
 import { LocalPDP, VirtruPDP } from './pdp';
+import { LocalAttributeStore, VirtruAttributeStore } from './store';
+import type { AttributeStoreDescriptor, AttributeStoreSelectionContext, IAttributeStore } from './store';
 
 // Limit concurrent user removals to avoid overloading the server with too many operations at once
 const limit = pLimit(20);
 
-const stripTrailingSlashes = (value: string): string => value.replace(/\/+$/, '');
+const MASS_REMOVAL_SUMMARY_THRESHOLD = 50;
+
+type CreationDenial = Extract<AbacCreationAttributesResult, { allowed: false }>;
 
 export class AbacService extends ServiceClass implements IAbacService {
 	protected name = 'abac';
@@ -59,6 +93,28 @@ export class AbacService extends ServiceClass implements IAbacService {
 		attributeNamespace: 'example.com',
 	};
 
+	private virtruClient = new VirtruClient(this.virtruPdpConfig);
+
+	private abacEnabled?: boolean;
+
+	private pdpTypeSetting?: AbacPdpType;
+
+	private attributeStoreSetting?: AbacAttributeStoreType;
+
+	private enforceAllRooms = false;
+
+	private requiredAttributeKeys = new Set<string>();
+
+	private readonly attributeStores: Record<AbacAttributeStoreType, AttributeStoreDescriptor> = {
+		local: { store: new LocalAttributeStore(), isEligible: () => true },
+		virtru: {
+			store: new VirtruAttributeStore(this.virtruClient),
+			isEligible: (ctx) => ctx.abacEnabled && ctx.pdpType === 'virtru' && ctx.licensed,
+		},
+	};
+
+	private lastSelectedStore?: IAttributeStore;
+
 	decisionCacheTimeout = 60; // seconds
 
 	constructor() {
@@ -66,7 +122,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		this.onSettingChanged('ABAC_PDP_Type', async ({ setting }): Promise<void> => {
 			const { value } = setting;
-			if (value !== 'local' && value !== 'virtru') {
+			if (!isAbacPdpType(value)) {
 				return;
 			}
 
@@ -74,7 +130,51 @@ export class AbacService extends ServiceClass implements IAbacService {
 				await this.loadVirtruPdpConfig();
 			}
 
-			this.setPdpStrategy(value);
+			const restrictToOwnedAttributes = await Settings.get<boolean>('ABAC_Restrict_To_Owned_Attributes');
+			const prevEffective = await this.computeEffectiveStoreType();
+			this.pdpTypeSetting = value;
+			this.setPdpStrategy(value, restrictToOwnedAttributes);
+			await this.fireEffectiveStoreTransitionIfChanged(prevEffective);
+			if (value === 'local' && this.attributeStoreSetting === 'virtru') {
+				try {
+					await Settings.set('ABAC_Attribute_Store', 'local');
+				} catch (err) {
+					logger.error({ msg: 'Failed to cascade ABAC_Attribute_Store=local on PDP change to local', err });
+				}
+			}
+		});
+
+		this.onSettingChanged('ABAC_Enabled', async ({ setting }): Promise<void> => {
+			this.abacEnabled = setting.value as boolean;
+		});
+
+		this.onSettingChanged('ABAC_Attribute_Store', async ({ setting }): Promise<void> => {
+			const { value } = setting;
+			if (!isAbacAttributeStoreType(value)) {
+				return;
+			}
+
+			const prevSetting = this.attributeStoreSetting;
+			const prevEffective = await this.computeEffectiveStoreType();
+			this.attributeStoreSetting = value;
+			if (prevSetting !== undefined) {
+				await this.fireEffectiveStoreTransitionIfChanged(prevEffective);
+			}
+		});
+
+		this.onSettingChanged('ABAC_Restrict_To_Owned_Attributes', async ({ setting }): Promise<void> => {
+			const { value } = setting;
+			if (typeof value === 'boolean' && this.pdp instanceof LocalPDP) {
+				this.pdp.setRestrictToOwnedAttributes(value);
+			}
+		});
+
+		this.onSettingChanged('ABAC_Enforce_All_Rooms', async ({ setting }): Promise<void> => {
+			this.enforceAllRooms = setting.value as boolean;
+		});
+
+		this.onSettingChanged('ABAC_Required_Attributes', async ({ setting }): Promise<void> => {
+			this.requiredAttributeKeys = new Set(setting.value as string[]);
 		});
 
 		this.onSettingChanged('Abac_Cache_Decision_Time_Seconds', async ({ setting }): Promise<void> => {
@@ -137,22 +237,74 @@ export class AbacService extends ServiceClass implements IAbacService {
 	}
 
 	private syncVirtruPdpConfig(): void {
-		if (this.pdp instanceof VirtruPDP) {
-			this.pdp.updateConfig({ ...this.virtruPdpConfig });
+		this.virtruClient.updateConfig({ ...this.virtruPdpConfig });
+		this.lastSelectedStore = undefined;
+	}
+
+	private async computeEffectiveStoreType(): Promise<AbacAttributeStoreType> {
+		const ctx: AttributeStoreSelectionContext = {
+			abacEnabled: this.abacEnabled === true,
+			pdpType: this.pdpTypeSetting,
+			licensed: await License.hasModule('abac'),
+		};
+		const selected = this.attributeStoreSetting ?? 'local';
+		return this.attributeStores[selected].isEligible(ctx) ? selected : 'local';
+	}
+
+	private async fireEffectiveStoreTransitionIfChanged(prevEffective: AbacAttributeStoreType): Promise<void> {
+		const nextEffective = await this.computeEffectiveStoreType();
+		if (prevEffective === nextEffective) {
+			return;
+		}
+		void this.onAttributeStoreTransition(prevEffective, nextEffective).catch((err) =>
+			logger.error({ msg: 'ABAC attribute-store switch handler failed', err }),
+		);
+	}
+
+	private async resolveAttributeStore(): Promise<IAttributeStore> {
+		const effective = await this.computeEffectiveStoreType();
+		const { store } = this.attributeStores[effective];
+
+		if (store !== this.lastSelectedStore) {
+			this.lastSelectedStore = store;
+			store.onStoreSelected?.();
+		}
+		return store;
+	}
+
+	async isExternalAttributeStore(): Promise<boolean> {
+		return (await this.resolveAttributeStore()) !== this.attributeStores.local.store;
+	}
+
+	private async onAttributeStoreTransition(from: AbacAttributeStoreType, to: AbacAttributeStoreType): Promise<void> {
+		if (!(await License.hasModule('abac'))) {
+			return;
+		}
+
+		try {
+			await Settings.set('ABAC_Required_Attributes', []);
+		} catch (err) {
+			logger.error({ msg: 'Failed to clear ABAC_Required_Attributes on attribute store switch', err });
+		}
+
+		const { modifiedCount } = await Rooms.unsetAllAbacAttributes();
+		if (modifiedCount > 0) {
+			void Audit.attributeStoreSwitched(from, to, modifiedCount);
 		}
 	}
 
-	setPdpStrategy(strategy: 'local' | 'virtru'): void {
+	setPdpStrategy(strategy: AbacPdpType, restrictToOwnedAttributes = false): void {
 		const previousPdp = this.pdp ? this.pdp.constructor.name : 'none';
 
 		switch (strategy) {
 			case 'virtru':
-				this.pdp = new VirtruPDP({ ...this.virtruPdpConfig });
+				this.virtruClient.updateConfig({ ...this.virtruPdpConfig });
+				this.pdp = new VirtruPDP(this.virtruClient);
 				this.pdpType = 'virtru';
 				break;
 			case 'local':
 			default:
-				this.pdp = new LocalPDP();
+				this.pdp = new LocalPDP(restrictToOwnedAttributes);
 				this.pdpType = 'local';
 				break;
 		}
@@ -168,9 +320,23 @@ export class AbacService extends ServiceClass implements IAbacService {
 	override async started(): Promise<void> {
 		this.decisionCacheTimeout = await Settings.get<number>('Abac_Cache_Decision_Time_Seconds');
 
-		const pdpType = await Settings.get<string>('ABAC_PDP_Type');
+		const [abacEnabled, pdpType, attributeStore, restrictToOwnedAttributes, enforceAllRooms, requiredAttributes] = await Promise.all([
+			Settings.get<boolean>('ABAC_Enabled'),
+			Settings.get<string>('ABAC_PDP_Type'),
+			Settings.get<string>('ABAC_Attribute_Store'),
+			Settings.get<boolean>('ABAC_Restrict_To_Owned_Attributes'),
+			Settings.get<boolean>('ABAC_Enforce_All_Rooms'),
+			Settings.get<string[]>('ABAC_Required_Attributes'),
+		]);
+
+		this.abacEnabled = abacEnabled;
+		this.pdpTypeSetting = isAbacPdpType(pdpType) ? pdpType : undefined;
+		this.attributeStoreSetting = isAbacAttributeStoreType(attributeStore) ? attributeStore : undefined;
+		this.enforceAllRooms = enforceAllRooms;
+		this.requiredAttributeKeys = new Set(requiredAttributes);
+
 		if (pdpType !== 'virtru') {
-			this.setPdpStrategy('local');
+			this.setPdpStrategy('local', restrictToOwnedAttributes);
 			return;
 		}
 
@@ -242,49 +408,32 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 	}
 
-	async listAbacAttributes(filters?: { key?: string; values?: string; offset?: number; count?: number }): Promise<{
-		attributes: IAbacAttribute[];
+	async listAbacAttributes(
+		filters?: { key?: string; values?: string; offset?: number; count?: number },
+		actor?: AbacActor,
+	): Promise<{
+		attributes: Pick<IAbacAttribute, '_id' | 'key' | 'values'>[];
 		offset: number;
 		count: number;
 		total: number;
 	}> {
-		const query: Document[] = [];
-		if (filters?.key) {
-			query.push({ key: new RegExp(escapeRegExp(filters.key), 'i') });
-		}
-		if (filters?.values?.length) {
-			query.push({ values: new RegExp(escapeRegExp(filters.values), 'i') });
-		}
-
-		const offset = filters?.offset ?? 0;
-		const limit = filters?.count ?? 25;
-
-		const { cursor, totalCount } = AbacAttributes.findPaginated(
-			{ ...(query.length && { $or: query }) },
-			{
-				projection: { key: 1, values: 1 },
-				skip: offset,
-				limit,
-			},
-		);
-
-		const attributes = await cursor.toArray();
-
-		return {
-			attributes,
-			offset,
-			count: attributes.length,
-			total: await totalCount,
-		};
+		return (await this.resolveAttributeStore()).list(actor, filters);
 	}
 
-	async listAbacRooms(filters?: {
-		offset?: number;
-		count?: number;
-		filter?: string;
-		filterType?: 'all' | 'roomName' | 'attribute' | 'value';
-	}): Promise<{
-		rooms: IRoom[];
+	async listAbacAttributeKeys(actor?: AbacActor): Promise<string[]> {
+		return (await this.resolveAttributeStore()).listAttributeKeys(actor);
+	}
+
+	async listAbacRooms(
+		filters?: {
+			offset?: number;
+			count?: number;
+			filter?: string;
+			filterType?: 'all' | 'roomName' | 'attribute' | 'value';
+		},
+		actor?: AbacActor,
+	): Promise<{
+		rooms: Array<IRoom & IRoomAbacRedaction>;
 		offset: number;
 		count: number;
 		total: number;
@@ -332,13 +481,21 @@ export class AbacService extends ServiceClass implements IAbacService {
 		});
 
 		const rooms = await cursor.toArray();
+		const scoped = actor ? await (await this.resolveAttributeStore()).scopeRoomsPage(rooms, actor) : rooms;
 
 		return {
-			rooms,
+			rooms: scoped,
 			offset,
-			count: rooms.length,
+			count: scoped.length,
 			total: await totalCount,
 		};
+	}
+
+	async scopeRoomsForAdmin<T extends Pick<IRoom, '_id' | 'abacAttributes'>>(
+		rooms: T[],
+		actor: AbacActor,
+	): Promise<Array<T & IRoomAbacRedaction>> {
+		return (await this.resolveAttributeStore()).scopeRoomsPage(rooms, actor);
 	}
 
 	async updateAbacAttributeById(_id: string, update: { key?: string; values?: string[] }, actor: AbacActor): Promise<void> {
@@ -428,32 +585,391 @@ export class AbacService extends ServiceClass implements IAbacService {
 		return Rooms.isAbacAttributeInUse(key, attribute.values || []);
 	}
 
-	async setRoomAbacAttributes(rid: string, attributes: Record<string, string[]>, actor: AbacActor): Promise<void> {
-		await this.ensurePdpAvailable();
-		const room = await getAbacRoom(rid);
+	private broadcastRoomUpdate(room: IRoom): void {
+		void api.broadcast('watch.rooms', { clientAction: 'updated', room });
+	}
 
-		if (!Object.keys(attributes).length && room.abacAttributes?.length) {
-			await Rooms.unsetAbacAttributesById(rid);
-			void Audit.objectAttributesRemoved({ _id: room._id, name: room.name }, room.abacAttributes, actor);
+	private async enforceCanModifyRoom(store: IAttributeStore, room: Pick<IRoom, '_id' | 'abacAttributes'>, actor: AbacActor): Promise<void> {
+		if (await Authorization.hasPermission(actor._id, 'bypass-abac-store-validation')) {
+			return;
+		}
+		await store.assertCanModifyRoom(room, actor);
+	}
+
+	private async enforceStoreValidation(store: IAttributeStore, attrs: IAbacAttributeDefinition[], actor: AbacActor): Promise<void> {
+		if (await Authorization.hasPermission(actor._id, 'bypass-abac-store-validation')) {
+			return;
+		}
+		await store.validateAssignable(attrs, actor);
+	}
+
+	async validateCreationAttributes(
+		attributes: Record<string, string[]>,
+		actor: AbacActor,
+		{ creatorJoins }: { creatorJoins: boolean },
+	): Promise<AbacCreationAttributesResult> {
+		let normalized: IAbacAttributeDefinition[];
+		let store: IAttributeStore;
+		let bypassed: boolean;
+
+		try {
+			normalized = validateAndNormalizeAttributes(attributes);
+			if (!normalized.length) {
+				throw new AbacInvalidAttributeValuesError();
+			}
+
+			await this.ensurePdpAvailable();
+			store = await this.resolveAttributeStore();
+			bypassed = await Authorization.hasPermission(actor._id, 'bypass-abac-store-validation');
+		} catch (err) {
+			return toCreationDenial(err, 'invalid');
+		}
+
+		const authorityFirst = this.pdpType === 'local';
+
+		// Local PDP: a creator who does not hold a value must not learn whether it is defined.
+		let authority = !bypassed && authorityFirst ? await this.checkCreatorAuthority(normalized, actor, store) : undefined;
+		if (authority && !authority.allowed) {
+			return authority;
+		}
+
+		if (store === this.attributeStores.local.store) {
+			try {
+				await ensureAttributeDefinitionsExist(normalized);
+			} catch (err) {
+				return toCreationDenial(err, 'invalid');
+			}
+		}
+
+		// Virtru PDP: asked only after the existence check, so undefined attributes never reach Virtru.
+		if (!bypassed && !authorityFirst) {
+			authority = await this.checkCreatorAuthority(normalized, actor, store);
+			if (!authority.allowed) {
+				return authority;
+			}
+		}
+
+		if (creatorJoins && !authority?.creatorAdmitted) {
+			try {
+				await this.assertPdpPermitsCreator(normalized, actor);
+			} catch (err) {
+				return this.toCheckDenial(err, 'creator-not-admitted', 'ABAC creator admission check failed');
+			}
+		}
+
+		return { allowed: true, attributes: normalized };
+	}
+
+	private toCheckDenial(err: unknown, reason: 'not-entitled' | 'creator-not-admitted', msg: string): CreationDenial {
+		if (!(err instanceof AbacError)) {
+			logger.error({ msg, err });
+			return { allowed: false, reason: 'unavailable', code: AbacErrorCode.PdpUnavailable };
+		}
+
+		return toCreationDenial(err, reason);
+	}
+
+	private async checkCreatorAuthority(
+		attributes: IAbacAttributeDefinition[],
+		actor: AbacActor,
+		store: IAttributeStore,
+	): Promise<{ allowed: true; creatorAdmitted: boolean } | CreationDenial> {
+		try {
+			if (store !== this.attributeStores.local.store) {
+				await store.validateAssignable(attributes, actor);
+				return { allowed: true, creatorAdmitted: false };
+			}
+
+			const authority = await this.pdp?.assertCreatorMayAssign(attributes, actor);
+			if (!authority) {
+				throw new PdpUnavailableError();
+			}
+
+			return { allowed: true, ...authority };
+		} catch (err) {
+			return this.toCheckDenial(err, 'not-entitled', 'ABAC creator authority check failed');
+		}
+	}
+
+	private async assertPdpPermitsCreator(attributes: IAbacAttributeDefinition[], actor: AbacActor): Promise<void> {
+		if (!actor.username) {
+			throw new OnlyCompliantCanBeAddedToRoomError();
+		}
+
+		if (!this.pdp) {
+			throw new PdpUnavailableError();
+		}
+
+		await this.pdp.checkUsernamesMatchAttributes([actor.username], attributes, { _id: 'room-creation' });
+	}
+
+	async listAssignableAttributes(actor: AbacActor): Promise<IAbacAttributeDefinition[]> {
+		const store = await this.resolveAttributeStore();
+		if (store !== this.attributeStores.local.store) {
+			return sortByKey(toAttributeDefinitions(await store.entitlementsOf(actor)));
+		}
+
+		const definitions = await listAttributeDefinitions();
+		if (await Authorization.hasPermission(actor._id, 'bypass-abac-store-validation')) {
+			return sortByKey(definitions);
+		}
+
+		if (!this.pdp) {
+			throw new PdpUnavailableError();
+		}
+
+		return sortByKey((await this.pdp.filterAssignableAttributes?.(definitions, actor)) ?? definitions);
+	}
+
+	async auditRoomAttributesAtCreation(
+		room: Pick<IRoom, '_id' | 'name'> & Required<Pick<IRoom, 'abacAttributes'>>,
+		actor: AbacActor,
+		app?: MinimalApp,
+	): Promise<void> {
+		const bypassed = await Authorization.hasPermission(actor._id, 'bypass-abac-store-validation');
+		await Audit.objectAttributeChanged(
+			{ _id: room._id, name: room.name },
+			[],
+			room.abacAttributes,
+			'created',
+			actor,
+			bypassed ? 'store-validation-bypassed' : 'api',
+			app,
+		);
+	}
+
+	async auditRoomAttributesRemoved(room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>, actor: AbacActor): Promise<void> {
+		if (!room.abacAttributes?.length) {
 			return;
 		}
 
+		await Audit.objectAttributesRemoved({ _id: room._id, name: room.name }, room.abacAttributes, actor);
+	}
+
+	async previewCreationMembers(
+		usernames: string[],
+		attributes: Record<string, string[]>,
+		actor: AbacActor,
+		{ creatorJoins }: { creatorJoins: boolean },
+	): Promise<AbacMembershipPreviewResult> {
+		const validation = await this.validateCreationAttributes(attributes, actor, { creatorJoins });
+		if (!validation.allowed) {
+			return validation;
+		}
+
+		const projection = { _id: 1, username: 1, name: 1, emails: 1 };
+		const [creator, named] = await Promise.all([
+			Users.findOneById(actor._id, { projection }),
+			Users.findUsersByUsernames(usernames, { projection }).toArray(),
+		]);
+		const others = named.filter(({ _id }) => _id !== actor._id);
+		const subjects = creator ? [creator, ...others] : others;
+
+		let evaluation: Evaluation;
+		try {
+			if (!this.pdp) {
+				throw new PdpUnavailableError();
+			}
+			evaluation = await this.pdp.evaluateSubjectsAgainstAttributes(subjects, validation.attributes, { _id: 'room-creation' });
+		} catch (err) {
+			logger.error({ msg: 'ABAC membership preview failed', err });
+			return { allowed: false, reason: 'unavailable', code: AbacErrorCode.PdpUnavailable };
+		}
+
+		void Audit.membershipEvaluated(
+			validation.attributes,
+			others.map(({ _id, username }) => ({ _id, username })),
+			actor,
+		);
+
+		const members = new Map(
+			subjects.filter(({ _id }) => creatorJoins || _id !== actor._id).map(({ _id, username, name }) => [_id, { _id, username, name }]),
+		);
+		const toMembers = (ids: string[]) => ids.flatMap((id) => members.get(id) ?? []);
+
+		return {
+			allowed: true,
+			preview: {
+				compliant: toMembers(evaluation.compliant),
+				nonCompliant: toMembers(evaluation.nonCompliant),
+				inconclusive: toMembers(evaluation.inconclusive),
+				creator: verdictOf(evaluation, actor._id),
+			},
+		};
+	}
+
+	private async limitsToAssignableValues(grant: AbacRoomAttributesGrant, actor: AbacActor): Promise<boolean> {
+		return grant === 'edit-room-abac-attributes' && !(await Authorization.hasPermission(actor._id, 'bypass-abac-store-validation'));
+	}
+
+	async listRoomAssignableAttributes(rid: string, actor: AbacActor, grant: AbacRoomAttributesGrant): Promise<IAbacAttributeDefinition[]> {
+		const store = await this.resolveAttributeStore();
+		if (store !== this.attributeStores.local.store) {
+			return sortByKey(toAttributeDefinitions(await store.entitlementsOf(actor)));
+		}
+
+		const definitions = await listAttributeDefinitions();
+		if (!(await this.limitsToAssignableValues(grant, actor))) {
+			return sortByKey(definitions);
+		}
+
+		if (!this.pdp) {
+			throw new PdpUnavailableError();
+		}
+
+		const room = await getAbacRoom(rid);
+		return sortByKey((await this.pdp.filterAssignableAttributes?.(definitions, actor, room.abacAttributes)) ?? definitions);
+	}
+
+	private async assertRoomAttributesAssignable(
+		store: IAttributeStore,
+		room: IRoom,
+		attributes: Record<string, string[]>,
+		actor: AbacActor,
+		grant: AbacRoomAttributesGrant,
+	): Promise<IAbacAttributeDefinition[]> {
+		await this.enforceCanModifyRoom(store, room, actor);
+
 		const normalized = validateAndNormalizeAttributes(attributes);
 
-		await ensureAttributeDefinitionsExist(normalized);
+		if (grant === 'edit-room-abac-attributes') {
+			await this.assertKeepsRequiredAttributes(room, normalized);
+		}
+
+		await this.enforceStoreValidation(store, normalized, actor);
+
+		if (await this.limitsToAssignableValues(grant, actor)) {
+			if (!this.pdp) {
+				throw new PdpUnavailableError();
+			}
+			const unassignable = (await this.pdp.findUnassignableValues?.(normalized, actor, room.abacAttributes)) ?? [];
+			if (unassignable.length) {
+				throw new AbacContractError(AbacErrorCode.AttributeNotAssignable, { attributes: unassignable });
+			}
+		}
+
+		return normalized;
+	}
+
+	private async assertKeepsRequiredAttributes(room: IRoom, next: IAbacAttributeDefinition[]): Promise<void> {
+		if (!this.enforceAllRooms || !this.requiredAttributeKeys.size) {
+			return;
+		}
+
+		if (!next.length) {
+			if (room.abacAttributes?.length) {
+				throw new AbacContractError(AbacErrorCode.RoomAttributesCleared);
+			}
+			return;
+		}
+
+		const kept = new Set(next.map(({ key }) => key));
+
+		const removed = (room.abacAttributes ?? [])
+			.filter(({ key, values }) => this.requiredAttributeKeys.has(key) && values.length && !kept.has(key))
+			.map(({ key }) => key);
+
+		if (removed.length) {
+			throw new AbacContractError(AbacErrorCode.RequiredAttributesRemoved, { keys: removed });
+		}
+	}
+
+	private changeNeedsEvaluation(previous: IAbacAttributeDefinition[], next: IAbacAttributeDefinition[]): boolean {
+		return this.pdp?.needsEvaluation(diffAttributeSets(previous, next)) ?? false;
+	}
+
+	async previewRoomMembers(
+		rid: string,
+		attributes: Record<string, string[]>,
+		actor: AbacActor,
+		page: AbacRoomMembershipPreviewPage,
+		grant: AbacRoomAttributesGrant,
+	): Promise<IAbacRoomMembershipPreview> {
+		await this.ensurePdpAvailable();
+		const room = await getAbacRoom(rid);
+		assertRoomAcceptsAttributes(room);
+		const store = await this.resolveAttributeStore();
+		const normalized = await this.assertRoomAttributesAssignable(store, room, attributes, actor, grant);
+
+		const evaluatedAgainst = this.changeNeedsEvaluation(room.abacAttributes || [], normalized) ? normalized : [];
+		const firstPage = !page.after && !page.filter;
+
+		let preview: IAbacRoomMembershipPreview;
+		try {
+			const evaluated = evaluatedAgainst.length
+				? await this.pdp?.previewRoomMembers(room, evaluatedAgainst, page)
+				: await previewRetainingEveryone(rid, { ...page, count: PREVIEW_SCAN_LIMIT });
+			if (!evaluated) {
+				throw new PdpUnavailableError();
+			}
+
+			const editor = firstPage && (await Users.findOneByIdAndRoomId<PreviewSubject>(actor._id, rid, PREVIEW_READ_OPTIONS));
+			const editorEvaluation = editor && (await this.pdp?.evaluateSubjectsAgainstAttributes([editor], evaluatedAgainst, room));
+			if (editor && !editorEvaluation) {
+				throw new PdpUnavailableError();
+			}
+
+			preview = {
+				...evaluated,
+				count: evaluated.members.length,
+				...(editor && editorEvaluation && { editor: verdictOf(editorEvaluation, editor._id) }),
+			};
+		} catch (err) {
+			logger.error({ msg: 'ABAC room membership preview failed', rid, err });
+			throw new PdpUnavailableError();
+		}
+
+		return { ...preview, members: await withRoomRoles(rid, preview.members) };
+	}
+
+	async setRoomAbacAttributes(
+		rid: string,
+		attributes: Record<string, string[]>,
+		actor: AbacActor,
+		grant: AbacRoomAttributesGrant,
+	): Promise<void> {
+		await this.ensurePdpAvailable();
+		const room = await getAbacRoom(rid);
+		const store = await this.resolveAttributeStore();
+
+		if (!Object.keys(attributes).length) {
+			if (!room.abacAttributes?.length) {
+				return;
+			}
+
+			if (grant === 'edit-room-abac-attributes') {
+				await this.assertRoomAttributesAssignable(store, room, attributes, actor, grant);
+			}
+
+			await Rooms.unsetAbacAttributesById(rid);
+			void Audit.objectAttributesRemoved({ _id: room._id, name: room.name }, room.abacAttributes, actor);
+			this.broadcastRoomUpdate({ ...room, abacAttributes: undefined });
+			return;
+		}
+
+		assertRoomAcceptsAttributes(room);
+		const normalized = await this.assertRoomAttributesAssignable(store, room, attributes, actor, grant);
 
 		const updated = await Rooms.setAbacAttributesById(rid, normalized);
 		void Audit.objectAttributeChanged({ _id: room._id, name: room.name }, room.abacAttributes || [], normalized, 'updated', actor);
 
+		if (updated) {
+			this.broadcastRoomUpdate(updated);
+		}
+
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
-		if (diffAttributeSets(previous, normalized).added) {
-			await this.onRoomAttributesChanged(room, updated?.abacAttributes ?? normalized);
+		if (this.changeNeedsEvaluation(previous, normalized)) {
+			await this.onRoomAttributesChanged(room, updated?.abacAttributes ?? normalized, actor);
 		}
 	}
 
 	async updateRoomAbacAttributeValues(rid: string, key: string, values: string[], actor: AbacActor): Promise<void> {
 		await this.ensurePdpAvailable();
 		const room = await getAbacRoom(rid);
+		assertRoomAcceptsAttributes(room);
+		const store = await this.resolveAttributeStore();
+
+		await this.enforceCanModifyRoom(store, room, actor);
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
 
@@ -463,7 +979,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			throw new AbacInvalidAttributeValuesError();
 		}
 
-		await ensureAttributeDefinitionsExist([{ key, values }]);
+		await this.enforceStoreValidation(store, [{ key, values }], actor);
 
 		if (isNewKey) {
 			await Rooms.updateSingleAbacAttributeValuesById(rid, key, values);
@@ -476,7 +992,9 @@ export class AbacService extends ServiceClass implements IAbacService {
 			);
 			const next = [...previous, { key, values }];
 
-			await this.onRoomAttributesChanged(room, next);
+			this.broadcastRoomUpdate({ ...room, abacAttributes: next });
+
+			await this.onRoomAttributesChanged(room, next, actor);
 			return;
 		}
 
@@ -486,7 +1004,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 			return;
 		}
 
-		await Rooms.updateAbacAttributeValuesArrayFilteredById(rid, key, values);
+		const updated = await Rooms.updateAbacAttributeValuesArrayFilteredById(rid, key, values);
 		void Audit.objectAttributeChanged(
 			{ _id: room._id, name: room.name },
 			room.abacAttributes || [],
@@ -495,15 +1013,23 @@ export class AbacService extends ServiceClass implements IAbacService {
 			actor,
 		);
 
-		if (diffAttributeSets([previous[existingIndex]], [{ key, values }]).added) {
+		if (updated) {
+			this.broadcastRoomUpdate(updated);
+		}
+
+		if (this.changeNeedsEvaluation([previous[existingIndex]], [{ key, values }])) {
 			const next = previous.map((a, i) => (i === existingIndex ? { key, values } : a));
-			await this.onRoomAttributesChanged(room, next);
+			await this.onRoomAttributesChanged(room, next, actor);
 		}
 	}
 
 	async removeRoomAbacAttribute(rid: string, key: string, actor: AbacActor): Promise<void> {
 		await this.ensurePdpAvailable();
+
 		const room = await getAbacRoom(rid);
+		const store = await this.resolveAttributeStore();
+
+		await this.enforceCanModifyRoom(store, room, actor);
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
 		const exists = previous.some((a) => a.key === key);
@@ -514,26 +1040,34 @@ export class AbacService extends ServiceClass implements IAbacService {
 		// if is the last attribute, just remove all
 		if (previous.length === 1) {
 			await Rooms.unsetAbacAttributesById(rid);
-			void Audit.objectAttributesRemoved({ _id: room._id }, previous, actor);
+			void Audit.objectAttributesRemoved({ _id: room._id, name: room.name }, previous, actor);
+
+			this.broadcastRoomUpdate({ ...room, abacAttributes: undefined });
 
 			return;
 		}
 
 		await Rooms.removeAbacAttributeByRoomIdAndKey(rid, key);
-		void Audit.objectAttributeRemoved(
-			{ _id: room._id, name: room.name },
-			previous,
-			previous.filter((a) => a.key !== key),
-			'key-removed',
-			actor,
-		);
+		const next = previous.filter((a) => a.key !== key);
+		void Audit.objectAttributeRemoved({ _id: room._id, name: room.name }, previous, next, 'key-removed', actor);
+
+		this.broadcastRoomUpdate({ ...room, abacAttributes: next });
+
+		if (this.changeNeedsEvaluation(previous, next)) {
+			await this.onRoomAttributesChanged(room, next, actor);
+		}
 	}
 
 	async addRoomAbacAttributeByKey(rid: string, key: string, values: string[], actor: AbacActor): Promise<void> {
 		await this.ensurePdpAvailable();
-		await ensureAttributeDefinitionsExist([{ key, values }]);
 
 		const room = await getAbacRoom(rid);
+		assertRoomAcceptsAttributes(room);
+		const store = await this.resolveAttributeStore();
+
+		await this.enforceCanModifyRoom(store, room, actor);
+
+		await this.enforceStoreValidation(store, [{ key, values }], actor);
 
 		const previous: IAbacAttributeDefinition[] = room.abacAttributes || [];
 		if (previous.some((a) => a.key === key)) {
@@ -549,14 +1083,21 @@ export class AbacService extends ServiceClass implements IAbacService {
 
 		void Audit.objectAttributeChanged({ _id: room._id, name: room.name }, previous, next, 'key-added', actor);
 
-		await this.onRoomAttributesChanged(room, next);
+		this.broadcastRoomUpdate({ ...room, abacAttributes: next });
+
+		await this.onRoomAttributesChanged(room, next, actor);
 	}
 
 	async replaceRoomAbacAttributeByKey(rid: string, key: string, values: string[], actor: AbacActor): Promise<void> {
 		await this.ensurePdpAvailable();
-		await ensureAttributeDefinitionsExist([{ key, values }]);
 
 		const room = await getAbacRoom(rid);
+		assertRoomAcceptsAttributes(room);
+		const store = await this.resolveAttributeStore();
+
+		await this.enforceCanModifyRoom(store, room, actor);
+
+		await this.enforceStoreValidation(store, [{ key, values }], actor);
 
 		const exists = room?.abacAttributes?.find((a) => a.key === key);
 
@@ -570,8 +1111,13 @@ export class AbacService extends ServiceClass implements IAbacService {
 				'key-updated',
 				actor,
 			);
-			if (diffAttributeSets([exists], [{ key, values }]).added) {
-				await this.onRoomAttributesChanged(room, updated?.abacAttributes || []);
+
+			if (updated) {
+				this.broadcastRoomUpdate(updated);
+			}
+
+			if (this.changeNeedsEvaluation([exists], [{ key, values }])) {
+				await this.onRoomAttributesChanged(room, updated?.abacAttributes || [], actor);
 			}
 
 			return;
@@ -582,15 +1128,12 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 
 		const updated = await Rooms.insertAbacAttributeIfNotExistsById(rid, key, values);
-		void Audit.objectAttributeChanged(
-			{ _id: room._id, name: room.name },
-			room.abacAttributes || [],
-			updated?.abacAttributes || [],
-			'key-added',
-			actor,
-		);
+		const nextAttributes = updated?.abacAttributes || [...(room.abacAttributes || []), { key, values }];
+		void Audit.objectAttributeChanged({ _id: room._id, name: room.name }, room.abacAttributes || [], nextAttributes, 'key-added', actor);
 
-		await this.onRoomAttributesChanged(room, updated?.abacAttributes || []);
+		this.broadcastRoomUpdate({ ...room, abacAttributes: nextAttributes });
+
+		await this.onRoomAttributesChanged(room, updated?.abacAttributes || [], actor);
 	}
 
 	private shouldUseCache(userSub: { abacLastTimeChecked?: Date }): boolean {
@@ -665,12 +1208,107 @@ export class AbacService extends ServiceClass implements IAbacService {
 		await this.ensurePdpAvailable();
 		await this.pdp.checkUsernamesMatchAttributes(usernames, attributes, object);
 
-		usernames.forEach((username) => {
-			void Audit.actionPerformed({ username }, { _id: object._id, name: object.name }, 'system', 'granted-object-access');
-		});
+		void Audit.objectAccessGranted(
+			usernames.map((username) => ({ subject: { username }, object: { _id: object._id, name: object.name } })),
+		);
 	}
 
-	private pdpType: 'local' | 'virtru' = 'local';
+	async filterUsersAllowedInRoom(
+		userIds: string[],
+		room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>,
+		options?: { audit?: boolean },
+	): Promise<string[]> {
+		const result = await this.evaluateUsersAllowedInRoom(userIds, room, options);
+
+		return result.allowed ? result.userIds : [];
+	}
+
+	async evaluateUsersAllowedInRoom(
+		userIds: string[],
+		room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>,
+		options?: { audit?: boolean },
+	): Promise<AbacUsersAllowedInRoomResult> {
+		const attributes = room.abacAttributes ?? [];
+		if (!userIds.length || !attributes.length) {
+			return { allowed: true, userIds };
+		}
+
+		if (!(await this.pdp?.isAvailable())) {
+			logger.warn({ msg: 'PDP unavailable, no user admitted to the ABAC room', rid: room._id });
+			return { allowed: false, reason: 'unavailable', code: AbacErrorCode.PdpUnavailable };
+		}
+
+		try {
+			const subjects = await Users.findByIds(userIds, { projection: { _id: 1, username: 1, emails: 1 } }).toArray();
+			const evaluation = await this.pdp?.evaluateSubjectsAgainstAttributes(subjects, attributes, room);
+			const allowed = new Set(evaluation?.compliant);
+
+			if (options?.audit !== false) {
+				void Audit.objectAccessGranted(
+					subjects
+						.filter(({ _id }) => allowed.has(_id))
+						.map(({ _id, username }) => ({ subject: { _id, username }, object: { _id: room._id, name: room.name } })),
+				);
+			}
+
+			return { allowed: true, userIds: userIds.filter((id) => allowed.has(id)) };
+		} catch (err) {
+			logger.error({ msg: 'Failed to evaluate users against the ABAC room', rid: room._id, err });
+			return { allowed: false, reason: 'unavailable', code: AbacErrorCode.PdpUnavailable };
+		}
+	}
+
+	async filterRoomsAllowedForUser(
+		userId: string,
+		rooms: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>[],
+		options?: { refreshAttributes?: boolean; audit?: boolean },
+	): Promise<string[]> {
+		if (!rooms.length) {
+			return [];
+		}
+
+		if (!(await this.pdp?.isAvailable())) {
+			logger.warn({ msg: 'PDP unavailable, no ABAC room admits the user', uid: userId });
+			return [];
+		}
+
+		if (options?.refreshAttributes) {
+			try {
+				await this.pdp?.refreshSubjectAttributes([userId]);
+			} catch (err) {
+				logger.error({ msg: 'Failed to refresh the user attributes before evaluating the ABAC rooms', uid: userId, err });
+			}
+		}
+
+		try {
+			const subject = await Users.findOneById<Pick<IUser, '_id' | 'username' | 'emails' | 'abacAttributes'>>(userId, {
+				projection: { _id: 1, username: 1, emails: 1, abacAttributes: 1 },
+			});
+			if (!subject) {
+				return [];
+			}
+
+			const evaluation = await this.pdp?.evaluateSubjectAgainstRooms(subject, rooms);
+			const permitted = new Set(evaluation?.compliant);
+			const granted = rooms.filter(({ _id }) => permitted.has(_id));
+
+			if (options?.audit !== false) {
+				void Audit.objectAccessGranted(
+					granted.map((room) => ({
+						subject: { _id: subject._id, username: subject.username },
+						object: { _id: room._id, name: room.name },
+					})),
+				);
+			}
+
+			return granted.map(({ _id }) => _id);
+		} catch (err) {
+			logger.error({ msg: 'Failed to evaluate the ABAC rooms for the user', uid: userId, err });
+			return [];
+		}
+	}
+
+	private pdpType: AbacPdpType = 'local';
 
 	private async ensurePdpAvailable(): Promise<void> {
 		if (!(await this.pdp?.isAvailable())) {
@@ -678,34 +1316,43 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 	}
 
-	private async removeUserFromRoom(room: AtLeast<IRoom, '_id'>, user: IUser, reason: AbacAuditReason): Promise<void> {
+	private async removeUserFromRoom(
+		room: AtLeast<IRoom, '_id'>,
+		user: IUser,
+		reason: AbacAuditReason,
+		skipSystemMessage = false,
+	): Promise<boolean> {
 		return Room.removeUserFromRoom(room._id, user, {
 			skipAppPreEvents: true,
 			customSystemMessage: 'abac-removed-user-from-room' as const,
+			skipSystemMessage,
 		})
-			.then(
-				() =>
-					void Audit.actionPerformed(
-						{ _id: user._id, username: user.username },
-						{ _id: room._id, name: room.name },
-						reason,
-						'revoked-object-access',
-						this.pdpType,
-					),
-			)
+			.then(() => {
+				void Audit.actionPerformed(
+					{ _id: user._id, username: user.username },
+					{ _id: room._id, name: room.name },
+					reason,
+					'revoked-object-access',
+					this.pdpType,
+				);
+				return true;
+			})
 			.catch((err) => {
 				logger.error({
 					msg: 'Failed to remove user from ABAC room',
 					rid: room._id,
+					userId: user._id,
 					err,
 					reason,
 				});
+				return false;
 			});
 	}
 
 	protected async onRoomAttributesChanged(
 		room: AtLeast<IRoom, '_id' | 't' | 'teamMain' | 'abacAttributes'>,
 		newAttributes: IAbacAttributeDefinition[],
+		actor?: AbacActor,
 	): Promise<void> {
 		const rid = room._id;
 		if (!newAttributes?.length) {
@@ -729,7 +1376,20 @@ export class AbacService extends ServiceClass implements IAbacService {
 				return;
 			}
 
-			await Promise.all(nonCompliantUsers.map((user) => limit(() => this.removeUserFromRoom(room, user, 'room-attributes-change'))));
+			const summarizedBy = actor && nonCompliantUsers.length >= MASS_REMOVAL_SUMMARY_THRESHOLD ? actor : undefined;
+
+			const removed = await Promise.all(
+				nonCompliantUsers.map((user) => limit(() => this.removeUserFromRoom(room, user, 'room-attributes-change', !!summarizedBy))),
+			);
+
+			const removedCount = removed.filter(Boolean).length;
+			if (summarizedBy && removedCount) {
+				try {
+					await Message.saveSystemMessage('abac-removed-users-from-room', rid, String(removedCount), summarizedBy);
+				} catch (err) {
+					logger.error({ msg: 'Failed to save ABAC mass-removal summary message', rid, removedCount, err });
+				}
+			}
 		} catch (err) {
 			logger.error({
 				msg: 'Failed to re-evaluate room subscriptions after ABAC attributes changed',
@@ -779,7 +1439,7 @@ export class AbacService extends ServiceClass implements IAbacService {
 		}
 
 		const abacRooms = await Rooms.findAllPrivateRoomsWithAbacAttributes({
-			projection: { _id: 1, t: 1, teamMain: 1, abacAttributes: 1 },
+			projection: { _id: 1, name: 1, t: 1, teamMain: 1, abacAttributes: 1 },
 		}).toArray();
 
 		if (!abacRooms.length) {
@@ -815,10 +1475,36 @@ export class AbacService extends ServiceClass implements IAbacService {
 			logger.error({ msg: 'Failed to evaluate room membership', err });
 		}
 	}
+
+	async reevaluateUsers(identifiers: AbacUserIdentifiers): Promise<void> {
+		if (!this.pdp || !(await this.pdp.isAvailable())) {
+			return;
+		}
+
+		const users = await Users.findUsersByIdentifiers(identifiers, {
+			projection: { _id: 1, emails: 1, username: 1, __rooms: 1 },
+		}).toArray();
+
+		if (!users.length) {
+			return;
+		}
+
+		try {
+			const nonCompliant = await this.pdp.reevaluateUsers(users);
+			if (Array.isArray(nonCompliant) && nonCompliant.length) {
+				await Promise.all(nonCompliant.map(({ user, room }) => limit(() => this.removeUserFromRoom(room, user as IUser, 'api'))));
+			}
+		} catch (err) {
+			logger.error({ msg: 'Failed to reevaluate users', err });
+			throw err;
+		}
+	}
 }
 
 export { LocalPDP, VirtruPDP } from './pdp';
 export type { IPolicyDecisionPoint, VirtruPDPConfig } from './pdp';
-export { PdpHealthCheckError, getPdpHealthErrorCode } from './errors';
+export { PdpHealthCheckError, getPdpHealthErrorCode, AbacAttributeStoreExternalError, AbacErrorCode, AbacContractError } from './errors';
+export { buildRoomClassificationBanner, parseClassificationBannersConfig } from './classification-banner/engine';
+export type { ClassificationBannersConfig } from './classification-banner/types';
 
 export default AbacService;

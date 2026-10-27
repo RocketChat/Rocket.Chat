@@ -112,7 +112,7 @@ export default (instance: MessageTypes) => {
 	instance.registerType({
 		id: 'rm',
 		system: true,
-		text: (t) => t('Message_is_removed'),
+		text: (t, _, options) => (options?.capitalize ? t('Message_removed') : t('message_removed')),
 	});
 
 	instance.registerType({
@@ -229,5 +229,11 @@ export default (instance: MessageTypes) => {
 		id: 'abac-removed-user-from-room',
 		system: true,
 		text: (t) => t('abac_removed_user_from_the_room'),
+	});
+
+	instance.registerType({
+		id: 'abac-removed-users-from-room',
+		system: true,
+		text: (t, message) => t('abac_removed_users_from_the_room', { count: Number(message.msg) }),
 	});
 };

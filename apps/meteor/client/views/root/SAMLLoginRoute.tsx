@@ -1,18 +1,37 @@
-import { useRouter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { Meteor } from 'meteor/meteor';
-import { useEffect } from 'react';
+import { useRouter, useToastMessageDispatch, useSearchParameter } from '@rocket.chat/ui-contexts';
+import { useEffect, useRef } from 'react';
 
+import { buildSamlDeepLinkURL } from '../../lib/buildAuthDeeplinkURL';
+import { loginWithSamlToken } from '../../meteor/login/saml';
 import { useSamlInviteToken } from '../invite/hooks/useSamlInviteToken';
 
 const SAMLLoginRoute = () => {
 	const router = useRouter();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const [inviteToken] = useSamlInviteToken();
+	const loginClient = useSearchParameter('loginClient');
+
+	// The credential token is single-use, so the login handoff must fire only once
+	const sentLoginRequest = useRef(false);
 
 	useEffect(() => {
+		if (sentLoginRequest.current) {
+			return;
+		}
+		sentLoginRequest.current = true;
+
 		const { token } = router.getRouteParameters();
 
-		Meteor.loginWithSamlToken(token, (error?: unknown) => {
+		//SAML token handoff to the native client (mobile/desktop)
+		if (loginClient === 'desktop' || loginClient === 'mobile') {
+			window.location.href = buildSamlDeepLinkURL(token);
+			const timeout = setTimeout(() => {
+				router.navigate('/home', { replace: true });
+			}, 0);
+			return () => clearTimeout(timeout);
+		}
+
+		void loginWithSamlToken(token, (error?: unknown) => {
 			if (error) {
 				dispatchToastMessage({ type: 'error', message: error });
 			}
@@ -33,7 +52,7 @@ const SAMLLoginRoute = () => {
 				);
 			}
 		});
-	}, [dispatchToastMessage, inviteToken, router]);
+	}, [dispatchToastMessage, inviteToken, loginClient, router]);
 
 	return null;
 };

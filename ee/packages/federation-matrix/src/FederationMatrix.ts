@@ -1,4 +1,12 @@
-import { Authorization, type IFederationMatrixService, Room, ServiceClass, Settings } from '@rocket.chat/core-services';
+import {
+	Authorization,
+	type IFederationMatrixService,
+	Message,
+	MeteorService,
+	Room,
+	ServiceClass,
+	Settings,
+} from '@rocket.chat/core-services';
 import {
 	isDeletedMessage,
 	isMessageFromMatrixFederation,
@@ -9,16 +17,23 @@ import {
 } from '@rocket.chat/core-typings';
 import type { MessageQuoteAttachment, IMessage, IRoom, IUser, IRoomNativeFederated, ISubscription } from '@rocket.chat/core-typings';
 import { eventIdSchema, roomIdSchema, userIdSchema, federationSDK, FederationRequestError } from '@rocket.chat/federation-sdk';
-import type { EventID, FileMessageType, PresenceState } from '@rocket.chat/federation-sdk';
+import type { EventID, FileMessageType, PduForType, PresenceState } from '@rocket.chat/federation-sdk';
 import { Logger } from '@rocket.chat/logger';
 import { Users, Subscriptions, Messages, Rooms } from '@rocket.chat/models';
-import emojione from 'emojione';
 
 import { createOrUpdateFederatedUser } from './helpers/createOrUpdateFederatedUser';
 import { extractDomainFromMatrixUserId } from './helpers/extractDomainFromMatrixUserId';
-import { toExternalMessageFormat, toExternalQuoteMessageFormat } from './helpers/message.parsers';
+import { getThreadMessageId } from './helpers/getThreadMessageId';
+import { handleMediaMessage } from './helpers/handleMediaMessage';
+import {
+	toExternalMessageFormat,
+	toExternalQuoteMessageFormat,
+	toInternalMessageFormat,
+	toInternalQuoteMessageFormat,
+} from './helpers/message.parsers';
 import { validateFederatedUsername } from './helpers/validateFederatedUsername';
 import { MatrixMediaService } from './services/MatrixMediaService';
+import { shortnameToUnicode } from './utils/emojiConverter';
 
 export const fileTypes: Record<string, FileMessageType> = {
 	image: 'm.image',
@@ -31,6 +46,8 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 	protected name = 'federation-matrix';
 
 	private serverName: string;
+
+	private serviceEnabled: boolean;
 
 	private processEDUTyping: boolean;
 
@@ -47,6 +64,13 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 			const { value } = setting;
 			if (typeof value === 'string') {
 				this.serverName = value;
+			}
+		});
+
+		this.onSettingChanged('Federation_Service_Enabled', async ({ setting }): Promise<void> => {
+			const { value } = setting;
+			if (typeof value === 'boolean') {
+				this.serviceEnabled = value;
 			}
 		});
 
@@ -88,12 +112,10 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				if (!user.username || !user.status || user.username.includes(':')) {
 					return;
 				}
-				const localUser = await Users.findOneByUsername(user.username, { projection: { _id: 1, federated: 1, federation: 1 } });
-				if (!localUser) {
-					return;
-				}
-
-				if (!isUserNativeFederated(localUser)) {
+				const localUser = await Users.findOneByUsername(user.username, {
+					projection: { _id: 1, username: 1, federated: 1, federation: 1 },
+				});
+				if (!localUser?.username) {
 					return;
 				}
 
@@ -106,10 +128,12 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 					[UserStatus.BUSY]: 'unavailable',
 					[UserStatus.DISABLED]: 'offline',
 				};
+				const userMui = isUserNativeFederated(localUser) ? localUser.federation.mui : `@${localUser.username}:${this.serverName}`;
+
 				void federationSDK.sendPresenceUpdateToRooms(
 					[
 						{
-							user_id: localUser.federation.mui,
+							user_id: userMui,
 							presence: statusMap[user.status] || 'offline',
 						},
 					],
@@ -117,6 +141,14 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				);
 			},
 		);
+
+		this.onEvent('room.user-activity', async ({ rid, uid, activities }): Promise<void> => {
+			try {
+				await this.notifyUserTyping(rid, uid, activities.includes('user-typing'));
+			} catch (err) {
+				this.logger.error({ msg: 'Failed to forward typing activity to federation', rid, err });
+			}
+		});
 
 		this.onEvent('user.avatarUpdate', async ({ username, avatarETag }): Promise<void> => {
 			if (!username || username.includes(':')) {
@@ -166,6 +198,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 	override async started(): Promise<void> {
 		this.serverName = (await Settings.get<string>('Federation_Service_Domain')) || '';
+		this.serviceEnabled = (await Settings.get<boolean>('Federation_Service_Enabled')) || false;
 		this.processEDUTyping = (await Settings.get<boolean>('Federation_Service_EDU_Process_Typing')) || false;
 		this.processEDUPresence = (await Settings.get<boolean>('Federation_Service_EDU_Process_Presence')) || false;
 		this.processEDUReceipt = (await Settings.get<boolean>('Federation_Service_EDU_Process_Receipt')) || false;
@@ -519,7 +552,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				throw new Error(`No Matrix event ID mapping found for message ${messageId}`);
 			}
 
-			const reactionKey = emojione.shortnameToUnicode(reaction);
+			const reactionKey = shortnameToUnicode(reaction);
 
 			const userMui = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
 
@@ -559,7 +592,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				return;
 			}
 
-			const reactionKey = emojione.shortnameToUnicode(reaction);
+			const reactionKey = shortnameToUnicode(reaction);
 
 			const userMui = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
 
@@ -723,6 +756,11 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				return;
 			}
 
+			if (isUserNativeFederated(user)) {
+				this.logger.debug('Edit originated from a federated user; not re-sending to Matrix');
+				return;
+			}
+
 			const userMui = isUserNativeFederated(user) ? user.federation.mui : `@${user.username}:${this.serverName}`;
 
 			const parsedMessage = await toExternalMessageFormat({
@@ -818,19 +856,20 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 		);
 	}
 
-	async notifyUserTyping(rid: string, user: string, isTyping: boolean) {
-		if (!this.processEDUTyping) {
+	private async notifyUserTyping(rid: string, uid: IUser['_id'], isTyping: boolean) {
+		if (!this.serviceEnabled || !this.processEDUTyping) {
 			return;
 		}
 
-		if (!rid || !user) {
+		if (!rid || !uid) {
 			return;
 		}
 		const room = await Rooms.findOneById(rid, { projection: { _id: 1, federation: 1, federated: 1 } });
 		if (!room || !isRoomNativeFederated(room)) {
 			return;
 		}
-		const localUser = await Users.findOneByUsername<Pick<IUser, '_id' | 'username' | 'federation' | 'federated'>>(user, {
+
+		const localUser = await Users.findOneById(uid, {
 			projection: { _id: 1, username: 1, federation: 1, federated: 1 },
 		});
 
@@ -845,7 +884,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 
 		const userMui = isUserNativeFederated(localUser) ? localUser.federation.mui : `@${localUser.username}:${this.serverName}`;
 
-		void federationSDK.sendTypingNotification(room.federation.mrid, userMui, isTyping);
+		await federationSDK.sendTypingNotification(room.federation.mrid, userMui, isTyping);
 	}
 
 	async verifyMatrixIds(matrixIds: string[]): Promise<{ [key: string]: string }> {
@@ -936,7 +975,7 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 	}
 
 	async canUserAccessFederation(user: IUser): Promise<boolean> {
-		if (!(await Authorization.hasPermission(user._id, 'access-federation'))) {
+		if (!(await Authorization.hasPermission({ _id: user._id, roles: user.roles }, 'access-federation'))) {
 			return false;
 		}
 
@@ -1021,5 +1060,176 @@ export class FederationMatrix extends ServiceClass implements IFederationMatrixS
 				}
 			}),
 		);
+	}
+
+	async joinAppServiceRoom(roomAlias: string, user: IUser): Promise<boolean> {
+		try {
+			if (isUserNativeFederated(user)) {
+				throw new Error('Federated users cannot join App Service rooms');
+			}
+
+			await federationSDK.joinAppServiceRoom(roomAlias, userIdSchema.parse(`@${user.username}:${this.serverName}`));
+
+			return true;
+		} catch (err) {
+			this.logger.error({ msg: 'Failed to join App Service room', err, username: user.username, roomAlias });
+
+			return false;
+		}
+	}
+
+	async saveFederationMessage({ event, event_id: eventId }: { event: PduForType<'m.room.message'>; event_id: EventID }): Promise<void> {
+		const { msgtype, body } = event.content;
+		// body is typed as required, but events from untrusted homeservers may omit it
+		const messageBody = String(body ?? '');
+
+		if (!messageBody && !msgtype) {
+			this.logger.debug('Received message event with empty body and no msgtype, skipping processing');
+			return;
+		}
+
+		// at this point we know for sure the user already exists
+		const user = await Users.findOneByUsername(event.sender);
+		if (!user) {
+			throw new Error(`User not found for sender: ${event.sender}`);
+		}
+
+		const room = await Rooms.findOne({ 'federation.mrid': event.room_id });
+		if (!room) {
+			throw new Error(`No mapped room found for room_id: ${event.room_id}`);
+		}
+
+		const serverName = federationSDK.getConfig('serverName');
+
+		const relation = event.content['m.relates_to'];
+
+		// SPEC: For example, an m.thread relationship type denotes that the event is part of a “thread” of messages and should be rendered as such.
+		const hasRelation = relation && 'rel_type' in relation;
+
+		const isThreadMessage = hasRelation && relation.rel_type === 'm.thread';
+
+		const threadRootEventId = isThreadMessage && relation.event_id;
+
+		// SPEC: Though rich replies form a relationship to another event, they do not use rel_type to create this relationship.
+		// Instead, a subkey named m.in_reply_to is used to describe the reply’s relationship,
+		const isRichReply = relation && !('rel_type' in relation) && 'm.in_reply_to' in relation;
+
+		const quoteMessageEventId = isRichReply && relation['m.in_reply_to']?.event_id;
+
+		const thread = threadRootEventId ? await getThreadMessageId(threadRootEventId) : undefined;
+
+		const isEditedMessage = hasRelation && relation.rel_type === 'm.replace';
+		if (isEditedMessage && relation.event_id && event.content['m.new_content']) {
+			this.logger.debug('Received edited message from Matrix, updating existing message');
+			const originalMessage = await Messages.findOneByFederationId(relation.event_id);
+			if (!originalMessage) {
+				this.logger.error({ event_id: relation.event_id, msg: 'Original message not found for edit' });
+				return;
+			}
+			if (originalMessage.federation?.eventId !== relation.event_id) {
+				return;
+			}
+			if (originalMessage.msg === event.content['m.new_content'].body) {
+				this.logger.debug('No changes in message content, skipping update');
+				return;
+			}
+
+			if (quoteMessageEventId) {
+				const messageToReplyToUrl = await MeteorService.getMessageURLToReplyTo(room.t as string, room._id, originalMessage._id);
+				const formatted = await toInternalQuoteMessageFormat({
+					messageToReplyToUrl,
+					formattedMessage: event.content.formatted_body || '',
+					rawMessage: messageBody,
+					homeServerDomain: serverName,
+					senderExternalId: event.sender,
+				});
+				await Message.updateMessage(
+					{
+						...originalMessage,
+						msg: formatted,
+					},
+					user,
+					originalMessage,
+				);
+				return;
+			}
+
+			const formatted = toInternalMessageFormat({
+				rawMessage: event.content['m.new_content'].body,
+				formattedMessage: event.content.formatted_body || '',
+				homeServerDomain: serverName,
+				senderExternalId: event.sender,
+			});
+
+			await Message.updateMessage(
+				{
+					...originalMessage,
+					msg: formatted,
+				},
+				user,
+				originalMessage,
+			);
+			return;
+		}
+
+		// Media must be handled before quote replies: a rich reply is valid on any msgtype,
+		// and letting the quote path win would save just the filename and drop the attachment.
+		const isMediaMessage = Object.values(fileTypes).includes(msgtype as FileMessageType);
+		if (isMediaMessage && 'url' in event.content) {
+			const result = await handleMediaMessage(
+				event.content.url,
+				event.content.info,
+				msgtype,
+				messageBody,
+				user,
+				room,
+				event.room_id,
+				eventId,
+				thread,
+			);
+			await Message.saveMessageFromFederation({ ...result, ts: new Date(event.origin_server_ts) });
+			return;
+		}
+
+		if (quoteMessageEventId) {
+			const originalMessage = await Messages.findOneByFederationId(quoteMessageEventId);
+			if (!originalMessage) {
+				this.logger.error({ quoteMessageEventId, msg: 'Original message not found for quote' });
+				return;
+			}
+			const messageToReplyToUrl = await MeteorService.getMessageURLToReplyTo(room.t as string, room._id, originalMessage._id);
+			const formatted = await toInternalQuoteMessageFormat({
+				messageToReplyToUrl,
+				formattedMessage: event.content.formatted_body || '',
+				rawMessage: messageBody,
+				homeServerDomain: serverName,
+				senderExternalId: event.sender,
+			});
+			await Message.saveMessageFromFederation({
+				fromId: user._id,
+				rid: room._id,
+				msg: formatted,
+				federation_event_id: eventId,
+				thread,
+				ts: new Date(event.origin_server_ts),
+			});
+			return;
+		}
+
+		const formatted = toInternalMessageFormat({
+			rawMessage: messageBody,
+			formattedMessage: event.content.formatted_body || '',
+			homeServerDomain: serverName,
+			senderExternalId: event.sender,
+		});
+
+		await Message.saveMessageFromFederation({
+			fromId: user._id,
+			rid: room._id,
+			msg: formatted,
+			federation_event_id: eventId,
+			thread,
+			ts: new Date(event.origin_server_ts),
+		});
 	}
 }

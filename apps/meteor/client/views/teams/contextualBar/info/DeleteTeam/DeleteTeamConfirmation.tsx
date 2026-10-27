@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import RoomLinkList from './RoomLinkList';
 
-type DeleteTeamConfirmationProps = {
+export type DeleteTeamConfirmationProps = {
 	deletedRooms: { [key: string]: Serialized<IRoom> };
 	keptRooms: { [key: string]: Serialized<IRoom> };
 	onConfirm: (roomsToDelete: IRoom['_id'][]) => void;

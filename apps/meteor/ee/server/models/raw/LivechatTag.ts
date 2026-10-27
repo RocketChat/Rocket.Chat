@@ -1,7 +1,7 @@
 import type { ILivechatTag } from '@rocket.chat/core-typings';
 import type { ILivechatTagModel } from '@rocket.chat/model-typings';
 import { BaseRaw } from '@rocket.chat/models';
-import type { Db, DeleteResult, FindCursor, FindOptions, IndexDescription } from 'mongodb';
+import type { Db, DeleteResult, IndexDescription } from 'mongodb';
 
 export class LivechatTagRaw extends BaseRaw<ILivechatTag> implements ILivechatTagModel {
 	constructor(db: Db) {
@@ -19,17 +19,11 @@ export class LivechatTagRaw extends BaseRaw<ILivechatTag> implements ILivechatTa
 		];
 	}
 
-	findInIds(ids: string[], options?: FindOptions<ILivechatTag>): FindCursor<ILivechatTag> {
-		const query = { _id: { $in: ids } };
-
-		return this.find(query, options);
-	}
-
 	async createOrUpdateTag(
 		_id: string | undefined,
 		{ name, description }: { name: string; description?: string },
 		departments: string[] = [],
-	): Promise<ILivechatTag> {
+	): Promise<Omit<ILivechatTag, '_updatedAt'>> {
 		const record = {
 			name,
 			description,
@@ -43,7 +37,8 @@ export class LivechatTagRaw extends BaseRaw<ILivechatTag> implements ILivechatTa
 			_id = (await this.insertOne(record)).insertedId;
 		}
 
-		return Object.assign(record, { _id });
+		// updateOne/insertOne mutate `record` by injecting `_updatedAt` (setUpdatedAt), so rebuild the declared shape
+		return { _id, name, description, numDepartments: departments.length, departments };
 	}
 
 	// REMOVE

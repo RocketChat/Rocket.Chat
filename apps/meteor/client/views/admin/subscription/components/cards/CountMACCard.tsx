@@ -1,11 +1,12 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import FeatureUsageCard from '../FeatureUsageCard';
 import FeatureUsageCardBody from '../FeatureUsageCardBody';
 
-const CountMACCard = ({ macsCount }: { macsCount: number }): ReactElement => {
+export type CountMACCardProps = { macsCount: number };
+
+const CountMACCard = ({ macsCount }: CountMACCardProps) => {
 	const { t } = useTranslation();
 
 	return (
@@ -16,8 +17,8 @@ const CountMACCard = ({ macsCount }: { macsCount: number }): ReactElement => {
 			}}
 		>
 			<FeatureUsageCardBody>
-				<Box fontScale='h1'>
-					<Icon color='font-annotation' name='headset' size={40} mie={4} />
+				<Box fontScale='h1' display='flex' alignItems='center' justifyContent='center' gap={4}>
+					<Icon color='hint' name='headset' size={40} />
 					{macsCount}
 				</Box>
 			</FeatureUsageCardBody>

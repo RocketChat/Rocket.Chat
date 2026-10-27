@@ -6,10 +6,9 @@ import * as React from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 
 import AppErrorPage from './AppErrorPage';
-import { Info } from '../../../app/utils/rocketchat.info';
+import { Info } from '../../../rocketchat.info';
 
 declare global {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Window {
 		__BUGSNAG_KEY__: string;
 	}
@@ -22,12 +21,20 @@ if (window.__BUGSNAG_KEY__) {
 		apiKey: window.__BUGSNAG_KEY__,
 		appVersion: Info.version,
 		plugins: [new BugsnagPluginReact()],
+		onError(event) {
+			// Skip the benign "ResizeObserver loop" browser warning (not a crash; emitted in bulk by
+			// virtua during message-list scroll). See CORE-2209.
+			const errorMessage = event.errors?.[0]?.errorMessage;
+			if (typeof errorMessage === 'string' && errorMessage.startsWith('ResizeObserver loop')) {
+				return false;
+			}
+		},
 	});
 
 	BugsnagErrorBoundary = Bugsnag.getPlugin('react')?.createErrorBoundary(React);
 }
 
-type OutermostErrorBoundaryProps = {
+export type OutermostErrorBoundaryProps = {
 	children: ReactNode;
 };
 
@@ -36,11 +43,7 @@ const OutermostErrorBoundary = ({ children }: OutermostErrorBoundaryProps) => {
 		return <BugsnagErrorBoundary FallbackComponent={AppErrorPage}>{children}</BugsnagErrorBoundary>;
 	}
 
-	return (
-		<ErrorBoundary fallbackRender={({ error, resetErrorBoundary }) => <AppErrorPage error={error} clearError={resetErrorBoundary} />}>
-			{children}
-		</ErrorBoundary>
-	);
+	return <ErrorBoundary fallbackRender={() => <AppErrorPage />}>{children}</ErrorBoundary>;
 };
 
 export default OutermostErrorBoundary;

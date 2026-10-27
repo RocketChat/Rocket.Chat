@@ -40,7 +40,7 @@ const getInitialValue = (webhookData: Serialized<IIncomingIntegration> | undefin
 
 const INCOMING_TYPE = 'webhook-incoming';
 
-type EditIncomingWebhookProps = {
+export type EditIncomingWebhookProps = {
 	webhookData?: Serialized<IIncomingIntegration>;
 };
 
@@ -96,7 +96,7 @@ const EditIncomingWebhook = ({ webhookData }: EditIncomingWebhookProps) => {
 			<PageHeader title={t('Integration_Incoming_WebHook')} onClickBack={() => router.navigate('/admin/integrations/webhook-incoming')}>
 				<ButtonGroup>
 					{webhookData?._id && (
-						<Button danger onClick={handleDeleteIntegration}>
+						<Button variant='danger' onClick={handleDeleteIntegration}>
 							{t('Delete')}
 						</Button>
 					)}
@@ -122,7 +122,7 @@ const EditIncomingWebhook = ({ webhookData }: EditIncomingWebhookProps) => {
 					<Button type='reset' onClick={() => reset()}>
 						{t('Cancel')}
 					</Button>
-					<Button form={formId} primary type='submit'>
+					<Button form={formId} variant='primary' type='submit'>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

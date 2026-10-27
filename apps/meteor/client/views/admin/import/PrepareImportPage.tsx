@@ -1,10 +1,10 @@
 import type { IImport, IImporterSelection, IImporterSelectionContact, Serialized } from '@rocket.chat/core-typings';
-import { Badge, Box, Button, ButtonGroup, Margins, ProgressBar, Throbber, Tabs } from '@rocket.chat/fuselage';
+import { Badge, Box, Button, ButtonGroup, ProgressBar, Tabs, TabsItem, Text, Throbber } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useSafely } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useEndpoint, useTranslation, useStream, useRouter } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useStream, useRouter } from '@rocket.chat/ui-contexts';
 import { useEffect, useState, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { ChannelDescriptor } from './ChannelDescriptor';
 import PrepareChannels from './PrepareChannels';
@@ -19,7 +19,7 @@ import {
 	ImportPreparingStartedStates,
 	ImportingStartedStates,
 	ImportingErrorStates,
-} from '../../../../app/importer/lib/ImporterProgressStep';
+} from '../../../../lib/importer/ImporterProgressStep';
 import { numberFormat } from '../../../../lib/utils/stringUtils';
 
 const waitFor = <T, U extends T>(fn: () => Promise<T>, predicate: (arg: T) => arg is U) =>
@@ -40,7 +40,7 @@ const waitFor = <T, U extends T>(fn: () => Promise<T>, predicate: (arg: T) => ar
 
 // TODO: review inner logic
 function PrepareImportPage() {
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const handleError = useErrorHandler();
 
 	const [isPreparing, setPreparing] = useSafely(useState(true));
@@ -196,56 +196,65 @@ function PrepareImportPage() {
 		<Page>
 			<PageHeader title={t('Importing_Data')} onClickBack={() => router.navigate('/admin/import')}>
 				<ButtonGroup>
-					<Button primary disabled={isImporting || handleMinimumImportData} onClick={handleStartButtonClick}>
+					<Button variant='primary' disabled={isImporting || handleMinimumImportData} onClick={handleStartButtonClick}>
 						{t('Importer_Prepare_Start_Import')}
 					</Button>
 				</ButtonGroup>
 			</PageHeader>
 			<PageScrollableContentWithShadow>
-				<Box marginInline='auto' marginBlock='x24' width='full' maxWidth='590px'>
-					<Box is='h2' fontScale='p2m'>
-						{statusDebounced && t(statusDebounced.replace('importer_', 'importer_status_') as TranslationKey)}
+				<Box
+					marginInline='auto'
+					marginBlock='x24'
+					width='full'
+					maxWidth='590px'
+					display='flex'
+					flexDirection='column'
+					gap={24}
+					paddingBlockEnd={24}
+				>
+					<Box>
+						<Text is='h2' fontScale='p2m'>
+							{statusDebounced && t(statusDebounced.replace('importer_', 'importer_status_'))}
+						</Text>
+						{!isPreparing && (
+							<Tabs>
+								<TabsItem selected={tab === 'users'} onClick={handleTabClick('users')}>
+									{t('Users')} <Badge>{usersCount}</Badge>
+								</TabsItem>
+								<TabsItem selected={tab === 'contacts'} onClick={handleTabClick('contacts')}>
+									{t('Contacts')} <Badge>{contactsCount}</Badge>
+								</TabsItem>
+								<TabsItem selected={tab === 'channels'} onClick={handleTabClick('channels')}>
+									{t('Channels')} <Badge>{channelsCount}</Badge>
+								</TabsItem>
+								<TabsItem disabled>
+									{t('Messages')}
+									<Badge>{messageCount}</Badge>
+								</TabsItem>
+							</Tabs>
+						)}
 					</Box>
-					{!isPreparing && (
-						<Tabs flexShrink={0}>
-							<Tabs.Item selected={tab === 'users'} onClick={handleTabClick('users')}>
-								{t('Users')} <Badge>{usersCount}</Badge>
-							</Tabs.Item>
-							<Tabs.Item selected={tab === 'contacts'} onClick={handleTabClick('contacts')}>
-								{t('Contacts')} <Badge>{contactsCount}</Badge>
-							</Tabs.Item>
-							<Tabs.Item selected={tab === 'channels'} onClick={handleTabClick('channels')}>
-								{t('Channels')} <Badge>{channelsCount}</Badge>
-							</Tabs.Item>
-							<Tabs.Item disabled>
-								{t('Messages')}
-								<Badge>{messageCount}</Badge>
-							</Tabs.Item>
-						</Tabs>
-					)}
-					<Margins block='x24'>
-						{isPreparing && (
-							<>
-								{progressRate ? (
-									<Box display='flex' justifyContent='center' fontScale='p2'>
-										<ProgressBar percentage={Math.floor(progressRate)} />
-										<Box is='span' mis='x24'>
-											{numberFormat(progressRate, 0)}%
-										</Box>
+					{isPreparing && (
+						<>
+							{progressRate ? (
+								<Box display='flex' justifyContent='center' fontScale='p2'>
+									<ProgressBar percentage={Math.floor(progressRate)} />
+									<Box is='span' marginInlineStart='x24'>
+										{numberFormat(progressRate, 0)}%
 									</Box>
-								) : (
-									<Throbber justifyContent='center' />
-								)}
-							</>
-						)}
-						{!isPreparing && tab === 'users' && <PrepareUsers usersCount={usersCount} users={users} setUsers={setUsers} />}
-						{!isPreparing && tab === 'contacts' && (
-							<PrepareContacts contactsCount={contactsCount} contacts={contacts} setContacts={setContacts} />
-						)}
-						{!isPreparing && tab === 'channels' && (
-							<PrepareChannels channels={channels} channelsCount={channelsCount} setChannels={setChannels} />
-						)}
-					</Margins>
+								</Box>
+							) : (
+								<Throbber />
+							)}
+						</>
+					)}
+					{!isPreparing && tab === 'users' && <PrepareUsers usersCount={usersCount} users={users} setUsers={setUsers} />}
+					{!isPreparing && tab === 'contacts' && (
+						<PrepareContacts contactsCount={contactsCount} contacts={contacts} setContacts={setContacts} />
+					)}
+					{!isPreparing && tab === 'channels' && (
+						<PrepareChannels channels={channels} channelsCount={channelsCount} setChannels={setChannels} />
+					)}
 				</Box>
 			</PageScrollableContentWithShadow>
 		</Page>

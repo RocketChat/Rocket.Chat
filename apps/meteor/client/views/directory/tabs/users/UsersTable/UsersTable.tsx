@@ -1,5 +1,5 @@
 import type { IDirectoryUserResult, IUser, Serialized } from '@rocket.chat/core-typings';
-import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
+import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
@@ -9,18 +9,22 @@ import {
 	GenericTableLoadingTable,
 	usePagination,
 	useSort,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { usePermission, useRoute, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { KeyboardEvent, MouseEvent, ReactElement } from 'react';
+import type { KeyboardEvent, MouseEvent } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 
 import UsersTableRow from './UsersTableRow';
 import FilterByText from '../../../../../components/FilterByText';
-import GenericNoResults from '../../../../../components/GenericNoResults';
 import { useDirectoryQuery } from '../../../hooks/useDirectoryQuery';
 
-const UsersTable = ({ workspace = 'local' }): ReactElement => {
+export type UsersTableProps = {
+	workspace?: 'external' | 'local';
+};
+
+const UsersTable = ({ workspace = 'local' }: UsersTableProps) => {
 	const t = useTranslation();
 	const mediaQuery = useMediaQuery('(min-width: 1024px)');
 
@@ -32,6 +36,13 @@ const UsersTable = ({ workspace = 'local' }): ReactElement => {
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'email' | 'origin' | 'createdAt'>('name');
 
+	const columns: TableColumnWidth[] = [
+		'auto',
+		...(mediaQuery && canViewFullOtherUserInfo ? (['x200'] as const) : []),
+		...(federation ? (['x200'] as const) : []),
+		...(mediaQuery ? (['x200'] as const) : []),
+	];
+
 	const headers = useMemo(
 		() =>
 			[
@@ -39,26 +50,12 @@ const UsersTable = ({ workspace = 'local' }): ReactElement => {
 					{t('Name')}
 				</GenericTableHeaderCell>,
 				mediaQuery && canViewFullOtherUserInfo && (
-					<GenericTableHeaderCell
-						key='email'
-						direction={sortDirection}
-						active={sortBy === 'email'}
-						onClick={setSort}
-						sort='email'
-						width='x200'
-					>
+					<GenericTableHeaderCell key='email' direction={sortDirection} active={sortBy === 'email'} onClick={setSort} sort='email'>
 						{t('Email')}
 					</GenericTableHeaderCell>
 				),
 				federation && (
-					<GenericTableHeaderCell
-						key='origin'
-						direction={sortDirection}
-						active={sortBy === 'origin'}
-						onClick={setSort}
-						sort='origin'
-						width='x200'
-					>
+					<GenericTableHeaderCell key='origin' direction={sortDirection} active={sortBy === 'origin'} onClick={setSort} sort='origin'>
 						{t('Domain')}
 					</GenericTableHeaderCell>
 				),
@@ -69,7 +66,6 @@ const UsersTable = ({ workspace = 'local' }): ReactElement => {
 						active={sortBy === 'createdAt'}
 						onClick={setSort}
 						sort='createdAt'
-						width='x200'
 					>
 						{t('Joined_at')}
 					</GenericTableHeaderCell>
@@ -100,7 +96,7 @@ const UsersTable = ({ workspace = 'local' }): ReactElement => {
 		<>
 			<FilterByText placeholder={t('Search_Users')} value={text} onChange={(event) => setText(event.target.value)} />
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingTable headerCells={5} />
@@ -109,7 +105,7 @@ const UsersTable = ({ workspace = 'local' }): ReactElement => {
 			)}
 			{data?.result && data.result.length > 0 && isFetched && (
 				<>
-					<GenericTable>
+					<GenericTable columns={columns}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data?.result.map((user) => (

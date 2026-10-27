@@ -13,7 +13,9 @@ import EditMenu from '../ScreenThumbnail/EditMenu/EditMenu';
 import ScreenThumbnailWrapper from '../ScreenThumbnail/ScreenThumbnailWrapper';
 import Thumbnail from '../ScreenThumbnail/Thumbnail';
 
-const ScreenThumbnail = ({ screen, disableDelete }: { screen: ScreenType; disableDelete: boolean }) => {
+export type ScreenThumbnailProps = { screen: ScreenType; disableDelete: boolean };
+
+const ScreenThumbnail = ({ screen, disableDelete }: ScreenThumbnailProps) => {
 	const { dispatch } = useContext(context);
 	const [name, setName] = useState<string>(screen?.name);
 	const toast = useToastBarDispatch();

@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useRouter, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -12,7 +12,7 @@ export const useRemoveTag = () => {
 	const queryClient = useQueryClient();
 	const router = useRouter();
 
-	const handleDeleteTag = useEffectEvent((tagId: string) => {
+	const handleDeleteTag = useStableCallback((tagId: string) => {
 		const handleDelete = async () => {
 			try {
 				await removeTag({ id: tagId });

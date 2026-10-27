@@ -22,7 +22,7 @@ const ReportsPage = () => {
 	return (
 		<Page background='tint'>
 			<PageHeader title={t('Reports')} />
-			<Box is='p' color='hint' fontScale='p2' mi={24}>
+			<Box is='p' color='hint' fontScale='p2' marginInline={24}>
 				{t('Omnichannel_Reports_Summary')}
 			</Box>
 			<PageScrollableContentWithShadow alignItems='center'>

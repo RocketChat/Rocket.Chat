@@ -3,7 +3,7 @@ import type { Control } from 'react-hook-form';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-type DateTimeFilterProps = {
+export type DateTimeFilterProps = {
 	type: 'start' | 'end';
 	id?: string;
 	control: Control<{ startDate?: string; startTime?: string; endDate?: string; endTime?: string }>;

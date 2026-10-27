@@ -5,8 +5,8 @@ import { ajv, ajvQuery } from '@rocket.chat/rest-typings';
 import type express from 'express';
 import { WebApp } from 'meteor/webapp';
 
-import { API } from '../../../app/api/server';
-import { getTrimmedServerVersion } from '../../../app/api/server/lib/getTrimmedServerVersion';
+import { API } from '../../../server/api';
+import { getTrimmedServerVersion } from '../../../server/api/lib/getTrimmedServerVersion';
 
 const logger = new Logger('FederationRoutes');
 

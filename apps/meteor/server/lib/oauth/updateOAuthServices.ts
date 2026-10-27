@@ -1,19 +1,10 @@
-import type {
-	FacebookOAuthConfiguration,
-	ILoginServiceConfiguration,
-	LinkedinOAuthConfiguration,
-	OAuthConfiguration,
-	TwitterOAuthConfiguration,
-} from '@rocket.chat/core-typings';
+import type { ILoginServiceConfiguration, OAuthConfiguration } from '@rocket.chat/core-typings';
 import { LoginServiceConfiguration } from '@rocket.chat/models';
 
+import { addPassportCustomOAuth } from './addPassportCustomOAuth';
 import { logger } from './logger';
-import { CustomOAuth } from '../../../app/custom-oauth/server/custom_oauth_server';
-import {
-	notifyOnLoginServiceConfigurationChanged,
-	notifyOnLoginServiceConfigurationChangedByService,
-} from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server/cached';
+import { settings } from '../../settings/cached';
+import { notifyOnLoginServiceConfigurationChanged, notifyOnLoginServiceConfigurationChangedByService } from '../notifyListener';
 
 export async function updateOAuthServices(): Promise<void> {
 	const services = settings.getByRegexp(/^(Accounts_OAuth_|Accounts_OAuth_Custom-)[a-z0-9_]+$/i);
@@ -21,9 +12,6 @@ export async function updateOAuthServices(): Promise<void> {
 	for await (const [key, value] of filteredServices) {
 		logger.debug({ oauth_updated: key });
 		let serviceName = key.replace('Accounts_OAuth_', '');
-		if (serviceName === 'Meteor') {
-			serviceName = 'meteor-developer';
-		}
 		if (/Accounts_OAuth_Custom-/.test(key)) {
 			serviceName = key.replace('Accounts_OAuth_Custom-', '');
 		}
@@ -68,7 +56,7 @@ export async function updateOAuthServices(): Promise<void> {
 				data.rolesToSync = settings.get(`${key}-roles_to_sync`);
 				data.showButton = settings.get(`${key}-show_button`);
 
-				new CustomOAuth(serviceKey, {
+				const config = {
 					serverURL: data.serverURL,
 					tokenPath: data.tokenPath,
 					identityPath: data.identityPath,
@@ -93,23 +81,12 @@ export async function updateOAuthServices(): Promise<void> {
 					rolesToSync: data.rolesToSync,
 					accessTokenParam: data.accessTokenParam,
 					showButton: data.showButton,
-				});
-			}
-			if (serviceName === 'Facebook') {
-				(data as FacebookOAuthConfiguration).appId = data.clientId as string;
-				delete data.clientId;
-			}
-			if (serviceName === 'Twitter') {
-				(data as TwitterOAuthConfiguration).consumerKey = data.clientId as string;
-				delete data.clientId;
-			}
-
-			if (serviceName === 'Linkedin') {
-				(data as LinkedinOAuthConfiguration).clientConfig = {
-					requestPermissions: ['openid', 'email', 'profile'],
+					clientSecret: data.secret,
+					clientId: data.clientId,
 				};
-			}
 
+				addPassportCustomOAuth(serviceKey, config, true);
+			}
 			if (serviceName === 'Nextcloud') {
 				data.buttonLabelText = settings.get('Accounts_OAuth_Nextcloud_button_label_text');
 				data.buttonLabelColor = settings.get('Accounts_OAuth_Nextcloud_button_label_color');
@@ -119,12 +96,9 @@ export async function updateOAuthServices(): Promise<void> {
 			await LoginServiceConfiguration.createOrUpdateService(serviceKey, data);
 			void notifyOnLoginServiceConfigurationChangedByService(serviceKey);
 		} else {
-			const service = await LoginServiceConfiguration.findOneByService(serviceName, { projection: { _id: 1 } });
-			if (service?._id) {
-				const { deletedCount } = await LoginServiceConfiguration.removeService(service._id);
-				if (deletedCount > 0) {
-					void notifyOnLoginServiceConfigurationChanged({ _id: service._id }, 'removed');
-				}
+			const service = await LoginServiceConfiguration.removeByService(serviceName);
+			if (service) {
+				void notifyOnLoginServiceConfigurationChanged({ _id: service._id }, 'removed');
 			}
 		}
 	}

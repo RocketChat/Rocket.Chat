@@ -1,26 +1,30 @@
 import type { IThreadMainMessage } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
-import { Palette } from '@rocket.chat/fuselage';
 import { useSetting, useUserId } from '@rocket.chat/ui-contexts';
-import type { MouseEvent, ReactElement } from 'react';
+import type { MouseEvent } from 'react';
 import { useCallback, memo } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import ThreadListMessage from './ThreadListMessage';
-import { useDecryptedMessage } from '../../../../../hooks/useDecryptedMessage';
+import { clickableItem } from '../../../../../lib/clickableItem';
 import { normalizeThreadMessage } from '../../../../../lib/normalizeThreadMessage';
+import { useDecryptedMessage } from '../hooks/useDecryptedMessage';
 
-type ThreadListItemProps = {
+const ClickableThreadListMessage = clickableItem(ThreadListMessage);
+
+export type ThreadListItemProps = {
 	thread: IThreadMainMessage;
 	unread: string[];
 	unreadUser: string[];
 	unreadGroup: string[];
+	hasDraft?: boolean;
 	onClick: (tmid: IThreadMainMessage['_id']) => void;
 };
 
-const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, onClick }: ThreadListItemProps): ReactElement => {
+const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, hasDraft, onClick }: ThreadListItemProps) => {
+	const { t } = useTranslation();
 	const uid = useUserId();
 	const decryptedMsg = useDecryptedMessage(thread);
-	const msg = normalizeThreadMessage({ ...thread, msg: decryptedMsg });
+	const msg = normalizeThreadMessage({ ...thread, msg: decryptedMsg }, t);
 
 	const { name = thread.u.username } = thread.u;
 
@@ -38,16 +42,7 @@ const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, onClick }: Th
 	);
 
 	return (
-		<ThreadListMessage
-			className={css`
-				cursor: pointer;
-				&:hover,
-				&:focus {
-					background: ${Palette.surface['surface-hover']};
-				}
-				border-bottom: 1px solid ${Palette.stroke['stroke-extra-light']} !important;
-			`}
-			tabIndex={0}
+		<ClickableThreadListMessage
 			_id={thread._id}
 			replies={thread.tcount ?? 0}
 			tlm={thread.tlm}
@@ -59,6 +54,7 @@ const ThreadListItem = ({ thread, unread, unreadUser, unreadGroup, onClick }: Th
 			mention={unreadUser.includes(thread._id)}
 			all={unreadGroup.includes(thread._id)}
 			following={following}
+			hasDraft={hasDraft}
 			data-id={thread._id}
 			msg={msg ?? ''}
 			rid={thread.rid}

@@ -3,8 +3,8 @@
  * This file provides validated federation configuration for federation tests.
  */
 
-import * as fs from 'fs';
-import * as path from 'path';
+import * as fs from 'node:fs';
+import * as path from 'node:path';
 
 import { createClient, type MatrixClient, KnownMembership, type Room, type RoomMember, Visibility } from 'matrix-js-sdk';
 import { logger } from 'matrix-js-sdk/lib/logger';
@@ -92,15 +92,15 @@ export class SynapseClient {
 	 */
 	private async createClient(username: string, password: string, url: string): Promise<MatrixClient> {
 		const silentLogger = {
-			// eslint-disable-next-line @typescript-eslint/no-empty-function
+			// oxlint-disable-next-line @typescript-eslint/no-empty-function
 			trace: () => {},
-			// eslint-disable-next-line @typescript-eslint/no-empty-function
+			// oxlint-disable-next-line @typescript-eslint/no-empty-function
 			debug: () => {},
-			// eslint-disable-next-line @typescript-eslint/no-empty-function
+			// oxlint-disable-next-line @typescript-eslint/no-empty-function
 			info: () => {},
-			// eslint-disable-next-line @typescript-eslint/no-empty-function
+			// oxlint-disable-next-line @typescript-eslint/no-empty-function
 			warn: () => {},
-			// eslint-disable-next-line @typescript-eslint/no-empty-function
+			// oxlint-disable-next-line @typescript-eslint/no-empty-function
 			error: () => {},
 			getChild: () => silentLogger,
 		};

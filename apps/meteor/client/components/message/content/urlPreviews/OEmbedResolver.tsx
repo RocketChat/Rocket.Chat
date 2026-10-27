@@ -1,15 +1,13 @@
-import type { ReactElement } from 'react';
-
 import OEmbedHtmlPreview from './OEmbedHtmlPreview';
 import OEmbedImagePreview from './OEmbedImagePreview';
 import OEmbedLinkPreview from './OEmbedLinkPreview';
 import type { OEmbedPreviewMetadata } from './OEmbedPreviewMetadata';
 
-type OEmbedResolverProps = {
+export type OEmbedResolverProps = {
 	meta: OEmbedPreviewMetadata;
 };
 
-const OEmbedResolver = ({ meta }: OEmbedResolverProps): ReactElement | null => {
+const OEmbedResolver = ({ meta }: OEmbedResolverProps) => {
 	switch (meta.type) {
 		case 'rich':
 		case 'video':

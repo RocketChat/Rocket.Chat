@@ -1,6 +1,3 @@
-import QueryString from 'querystring';
-import URL from 'url';
-
 import type { IE2EEMessage, IMessage, IRoom, IUser, IUploadWithUser, Serialized, IE2EEPinnedMessage } from '@rocket.chat/core-typings';
 import { isE2EEMessage, isEncryptedMessageContent } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
@@ -8,7 +5,6 @@ import { isTruthy } from '@rocket.chat/tools';
 import { imperativeModal } from '@rocket.chat/ui-client';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import sampleSize from 'lodash/sampleSize';
-import { Accounts } from 'meteor/accounts-base';
 
 import type { E2EEState } from './E2EEState';
 import * as Rsa from './crypto/rsa';
@@ -16,17 +12,19 @@ import { generatePassphrase } from './helper';
 import { Keychain } from './keychain';
 import { createLogger } from './logger';
 import { E2ERoom } from './rocketchat.e2e.room';
-import { limitQuoteChain } from '../../../app/ui-message/client/messageBox/limitQuoteChain';
-import { getUserAvatarURL } from '../../../app/utils/client';
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
-import { t } from '../../../app/utils/lib/i18n';
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 import { getMessageUrlRegex } from '../../../lib/getMessageUrlRegex';
+import { t } from '../../../lib/i18n';
 import { Rooms, Subscriptions } from '../../stores';
 import EnterE2EPasswordModal from '../../views/e2e/EnterE2EPasswordModal';
 import SaveE2EPasswordModal from '../../views/e2e/SaveE2EPasswordModal';
+import { sdk } from '../SDKClient';
 import * as banners from '../banners';
 import type { LegacyBannerPayload } from '../banners';
+import { getUserAvatarURL } from '../getUserAvatarURL';
+import { limitQuoteChain } from '../limitQuoteChain';
+import { getDdpSdk } from '../sdk/ddpSdk';
+import { STORAGE_KEYS, getStoredItem, removeStoredItem, setStoredItem } from '../sdk/storage';
 import { settings } from '../settings';
 import { dispatchToastMessage } from '../toast';
 import { mapMessageFromApi } from '../utils/mapMessageFromApi';
@@ -314,8 +312,8 @@ class E2E extends Emitter {
 
 	getKeysFromLocalStorage(): KeyPair {
 		return {
-			public_key: Accounts.storageLocation.getItem('public_key'),
-			private_key: Accounts.storageLocation.getItem('private_key'),
+			public_key: getStoredItem(STORAGE_KEYS.E2EE_PUBLIC_KEY),
+			private_key: getStoredItem(STORAGE_KEYS.E2EE_PRIVATE_KEY),
 		};
 	}
 
@@ -334,7 +332,7 @@ class E2E extends Emitter {
 					imperativeModal.close();
 				},
 				onConfirm: () => {
-					Accounts.storageLocation.removeItem('e2e.randomPassword');
+					removeStoredItem(STORAGE_KEYS.E2EE_RANDOM_PASSWORD);
 					this.setState('READY');
 					dispatchToastMessage({ type: 'success', message: t('E2E_encryption_enabled') });
 					this.closeAlert();
@@ -402,7 +400,7 @@ class E2E extends Emitter {
 			await this.persistKeys(this.getKeysFromLocalStorage(), await this.createRandomPassword());
 		}
 
-		const randomPassword = Accounts.storageLocation.getItem('e2e.randomPassword');
+		const randomPassword = getStoredItem(STORAGE_KEYS.E2EE_RANDOM_PASSWORD);
 		if (randomPassword) {
 			this.setState('SAVE_PASSWORD');
 			this.openAlert({
@@ -421,8 +419,8 @@ class E2E extends Emitter {
 		span.info(this.state);
 		this.closeAlert();
 
-		Accounts.storageLocation.removeItem('public_key');
-		Accounts.storageLocation.removeItem('private_key');
+		removeStoredItem(STORAGE_KEYS.E2EE_PUBLIC_KEY);
+		removeStoredItem(STORAGE_KEYS.E2EE_PRIVATE_KEY);
 		this.instancesByRoomId = {};
 		this.privateKey = undefined;
 		this.publicKey = undefined;
@@ -437,8 +435,8 @@ class E2E extends Emitter {
 	async changePassword(newPassword: string): Promise<void> {
 		await this.persistKeys(this.getKeysFromLocalStorage(), newPassword, { force: true });
 
-		if (Accounts.storageLocation.getItem('e2e.randomPassword')) {
-			Accounts.storageLocation.setItem('e2e.randomPassword', newPassword);
+		if (getStoredItem(STORAGE_KEYS.E2EE_RANDOM_PASSWORD)) {
+			setStoredItem(STORAGE_KEYS.E2EE_RANDOM_PASSWORD, newPassword);
 		}
 	}
 
@@ -463,13 +461,13 @@ class E2E extends Emitter {
 
 	async loadKeys({ public_key, private_key }: { public_key: string; private_key: string }): Promise<void> {
 		const span = log.span('loadKeys');
-		Accounts.storageLocation.setItem('public_key', public_key);
+		setStoredItem(STORAGE_KEYS.E2EE_PUBLIC_KEY, public_key);
 		this.publicKey = public_key;
 
 		try {
 			this.privateKey = await Rsa.importPrivateKey(JSON.parse(private_key));
 
-			Accounts.storageLocation.setItem('private_key', private_key);
+			setStoredItem(STORAGE_KEYS.E2EE_PRIVATE_KEY, private_key);
 		} catch (error) {
 			this.setState('ERROR');
 			return span.error('Error importing private key: ', error);
@@ -493,7 +491,7 @@ class E2E extends Emitter {
 			const publicKey = await Rsa.exportPublicKey(keyPair.publicKey);
 
 			this.publicKey = JSON.stringify(publicKey);
-			Accounts.storageLocation.setItem('public_key', JSON.stringify(publicKey));
+			setStoredItem(STORAGE_KEYS.E2EE_PUBLIC_KEY, JSON.stringify(publicKey));
 		} catch (error) {
 			this.setState('ERROR');
 			return span.set('error', error).error('Error exporting public key');
@@ -502,7 +500,7 @@ class E2E extends Emitter {
 		try {
 			const privateKey = await Rsa.exportPrivateKey(keyPair.privateKey);
 
-			Accounts.storageLocation.setItem('private_key', JSON.stringify(privateKey));
+			setStoredItem(STORAGE_KEYS.E2EE_PRIVATE_KEY, JSON.stringify(privateKey));
 		} catch (error) {
 			this.setState('ERROR');
 			return span.set('error', error).error('Error exporting private key');
@@ -512,17 +510,20 @@ class E2E extends Emitter {
 	}
 
 	async requestSubscriptionKeys(): Promise<void> {
-		await sdk.call('e2e.requestSubscriptionKeys');
+		await sdk.rest.post('/v1/e2e.requestSubscriptionKeys');
 	}
 
 	async createRandomPassword(): Promise<string> {
 		const randomPassword = await generatePassphrase();
-		Accounts.storageLocation.setItem('e2e.randomPassword', randomPassword);
+		setStoredItem(STORAGE_KEYS.E2EE_RANDOM_PASSWORD, randomPassword);
 		return randomPassword;
 	}
 
 	openEnterE2EEPasswordModal(onEnterE2EEPassword: (password: string) => Promise<void>) {
 		const close = () => {
+			imperativeModal.close();
+		};
+		const dismiss = () => {
 			this.closeAlert();
 			imperativeModal.close();
 		};
@@ -533,12 +534,12 @@ class E2E extends Emitter {
 				onCancel: () => {
 					failedToDecodeKey = false;
 					dispatchToastMessage({ type: 'info', message: t('End_To_End_Encryption_Not_Enabled') });
-					close();
+					dismiss();
 				},
 				onConfirm: async (password) => {
 					await onEnterE2EEPassword(password);
 					dispatchToastMessage({ type: 'success', message: t('E2E_encryption_enabled') });
-					close();
+					dismiss();
 				},
 			},
 		});
@@ -727,15 +728,18 @@ class E2E extends Emitter {
 					return;
 				}
 
-				const urlObj = URL.parse(url);
-				// if the URL doesn't have query params (doesn't reference message) skip
-				if (!urlObj.query) {
+				// URLs come from regex-matched message content, so they may be malformed; skip those instead of throwing
+				let urlObj: URL;
+				try {
+					urlObj = new URL(url);
+				} catch (error) {
 					return;
 				}
 
-				const { msg: msgId } = QueryString.parse(urlObj.query);
+				const [msgId, ...extraMsgIds] = urlObj.searchParams.getAll('msg');
 
-				if (!msgId || Array.isArray(msgId)) {
+				// skip if the msg param is missing, empty, or duplicated
+				if (!msgId || extraMsgIds.length) {
 					return;
 				}
 
@@ -875,6 +879,6 @@ class E2E extends Emitter {
 
 export const e2e = new E2E();
 
-Accounts.onLogout(() => {
+getDdpSdk().account.onLogout(() => {
 	void e2e.stopClient();
 });

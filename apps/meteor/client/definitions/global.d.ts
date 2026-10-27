@@ -1,57 +1,40 @@
-import type { IRocketChatDesktop } from '@rocket.chat/desktop-api';
+import type { IRocketChatDesktop, IVideoCallWindow } from '@rocket.chat/desktop-api';
 
 declare global {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Window {
 		RocketChatDesktop?: IRocketChatDesktop;
-
-		/** @deprecated use `window.RTCPeerConnection` */
-		mozRTCPeerConnection?: RTCPeerConnection;
-		/** @deprecated use `window.RTCPeerConnection` */
-		webkitRTCPeerConnection?: RTCPeerConnection;
-
-		/** @deprecated use `window.RTCSessionDescription` */
-		mozRTCSessionDescription?: RTCSessionDescription;
-		/** @deprecated use `window.RTCSessionDescription` */
-		webkitRTCSessionDescription?: RTCSessionDescription;
-		/** @deprecated use `window.RTCIceCandidate` */
-		mozRTCIceCandidate?: RTCIceCandidate;
-		/** @deprecated use `window.RTCIceCandidate` */
-		webkitRTCIceCandidate?: RTCIceCandidate;
-		/** @deprecated use `window.RTCSessionDescription` */
-		mozRTCSessionDescription?: RTCSessionDescription;
-		/** @deprecated use `window.RTCSessionDescription` */
-		webkitRTCSessionDescription?: RTCSessionDescription;
-		/** @deprecated use `window.AudioContext` */
-		mozAudioContext?: AudioContext;
-		/** @deprecated use `window.AudioContext` */
-		webkitAudioContext?: AudioContext;
+		/** @deprecated Desktop 4.15–4.17 only; 4.18 and later expose it as `RocketChatDesktop.videoCall`. */
+		videoCallWindow?: IVideoCallWindow;
 		opera?: string;
+		/** Logs in with a resume token through the same path as a page load; end-to-end specs use it. */
+		__rocketChatLoginWithToken?: (token: string) => Promise<void>;
+		/** Calls a server method through the same path as the UI; end-to-end specs use it. */
+		__rocketChatCallMethod?: (method: string, ...args: unknown[]) => Promise<unknown>;
 	}
 
 	interface Navigator {
-		/** @deprecated */
+		/** @deprecated use the newer `navigator.mediaDevices.getUserMedia()` instead */
 		getUserMedia?: (
 			this: Navigator,
 			constraints?: MediaStreamConstraints | undefined,
 			onSuccess?: (stream: MediaStream) => void,
 			onError?: (error: any) => void,
 		) => void;
-		/** @deprecated */
+		/** @deprecated use the newer `navigator.mediaDevices.getUserMedia()` instead */
 		webkitGetUserMedia?: (
 			this: Navigator,
 			constraints?: MediaStreamConstraints | undefined,
 			onSuccess?: (stream: MediaStream) => void,
 			onError?: (error: any) => void,
 		) => void;
-		/** @deprecated */
+		/** @deprecated use the newer `navigator.mediaDevices.getUserMedia()` instead */
 		mozGetUserMedia?: (
 			this: Navigator,
 			constraints?: MediaStreamConstraints | undefined,
 			onSuccess?: (stream: MediaStream) => void,
 			onError?: (error: any) => void,
 		) => void;
-		/** @deprecated */
+		/** @deprecated use the newer `navigator.mediaDevices.getUserMedia()` instead */
 		msGetUserMedia?: (
 			this: Navigator,
 			constraints?: MediaStreamConstraints | undefined,
@@ -63,29 +46,9 @@ declare global {
 		};
 	}
 
-	interface RTCPeerConnection {
-		/** @deprecated use `getReceivers() */
-		getRemoteStreams(): MediaStream[];
-		/** @deprecated */
-		addStream(stream: MediaStream): void;
-	}
-
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface MediaTrackConstraints {
-		/** @deprecated */
-		mozMediaSource?: string;
-		/**	@deprecated */
-		mediaSource?: string;
-		/**	@deprecated */
-		mandatory?: {
-			chromeMediaSource: string;
-			chromeMediaSourceId: string;
-			maxWidth: number;
-			maxHeight: number;
-		};
-	}
-
 	interface NotificationEventMap {
 		reply: { response: string };
+		/** Fired by the desktop app when one of a notification's action buttons is pressed. */
+		action: { action: string };
 	}
 }

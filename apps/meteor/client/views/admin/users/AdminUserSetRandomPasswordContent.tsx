@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { UserFormProps } from './AdminUserForm';
 
-type AdminUserSetRandomPasswordContentProps = {
+export type AdminUserSetRandomPasswordContentProps = {
 	control: Control<UserFormProps, any>;
 	setRandomPassword: boolean | undefined;
 	isNewUserPage: boolean;
@@ -39,7 +39,15 @@ const AdminUserSetRandomPasswordContent = ({
 
 	return (
 		<>
-			<Box display='flex' flexDirection='row' alignItems='center' justifyContent='space-between' flexGrow={1} mbe={8} mbs={12}>
+			<Box
+				display='flex'
+				flexDirection='row'
+				alignItems='center'
+				justifyContent='space-between'
+				flexGrow={1}
+				marginBlockEnd={8}
+				marginBlockStart={12}
+			>
 				<FieldLabel htmlFor={requirePasswordChangeId}>{t('Require_password_change')}</FieldLabel>
 				<FieldRow>
 					<Controller
@@ -66,7 +74,6 @@ const AdminUserSetRandomPasswordContent = ({
 							aria-invalid={errors.password ? 'true' : 'false'}
 							aria-describedby={`${passwordId}-error`}
 							error={errors.password?.message}
-							flexGrow={1}
 							placeholder={passwordPlaceholder || t('Password')}
 						/>
 					)}
@@ -94,7 +101,6 @@ const AdminUserSetRandomPasswordContent = ({
 								aria-invalid={errors.passwordConfirmation ? 'true' : 'false'}
 								aria-describedby={`${passwordConfirmationId}-error`}
 								error={errors.passwordConfirmation?.message}
-								flexGrow={1}
 								placeholder={passwordConfirmationPlaceholder || t('Confirm_password')}
 							/>
 						)}

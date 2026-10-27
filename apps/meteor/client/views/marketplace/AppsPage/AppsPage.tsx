@@ -1,9 +1,8 @@
 import { Page } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 
 import AppsPageContent from './AppsPageContent';
 
-const AppsPage = (): ReactElement => {
+const AppsPage = () => {
 	return (
 		<Page background='tint'>
 			<AppsPageContent />

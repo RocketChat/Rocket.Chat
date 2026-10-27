@@ -72,6 +72,34 @@ it('should send outstanding blocks if there is no block waiting and item is adde
 	expect(fn).toHaveBeenCalledTimes(1);
 });
 
+it('emits non-method payloads immediately, even when a wait block is at the head', () => {
+	// Regression: a connect frame dispatched while a wait `login` method is
+	// queued must still reach the server. Otherwise the DDP handshake never
+	// completes and the socket wedges open but unconnected.
+	const fn = jest.fn();
+	const ddpDispatcher = new DDPDispatcher();
+	ddpDispatcher.on('send', fn);
+
+	const login = ddp.call('login');
+	ddpDispatcher.dispatch(login, { wait: true });
+	expect(fn).toHaveBeenCalledTimes(1);
+	expect(fn).toHaveBeenNthCalledWith(1, login);
+
+	const connectPayload = { msg: 'connect' as const, version: '1', support: ['1'] };
+	ddpDispatcher.dispatch(connectPayload);
+	expect(fn).toHaveBeenCalledTimes(2);
+	expect(fn).toHaveBeenNthCalledWith(2, connectPayload);
+
+	const subPayload = { msg: 'sub' as const, id: 'a', name: 'foo', params: [] };
+	ddpDispatcher.dispatch(subPayload);
+	expect(fn).toHaveBeenCalledTimes(3);
+	expect(fn).toHaveBeenNthCalledWith(3, subPayload);
+
+	// Wait block remains pending — only the wait method is queued, the
+	// non-method frames bypassed it.
+	expect(ddpDispatcher.queue).toEqual([{ wait: true, items: [login] }]);
+});
+
 it('should send the next blocks if the outstanding block was completed', () => {
 	const fn = jest.fn();
 

@@ -1,48 +1,23 @@
-import { RestClient } from '@rocket.chat/api-client';
 import type { IOmnichannelRoom, Serialized } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type { OperationParams, OperationResult } from '@rocket.chat/rest-typings';
+import { isValidAppId } from '@rocket.chat/ui-kit';
 
-import { ClientStreamImpl } from '../ClientStream';
-import { ConnectionImpl } from '../Connection';
-import { DDPDispatcher } from '../DDPDispatcher';
 import { DDPSDK } from '../DDPSDK';
-import { TimeoutControl } from '../TimeoutControl';
-import { AccountImpl } from '../types/Account';
-import type { ClientStream } from '../types/ClientStream';
-import type { DDPDispatchOptions } from '../types/DDPClient';
-import type { ServerMethodReturn, ServerMethods } from '../types/methods';
-import type { StreamKeys, StreamNames, StreamerCallbackArgs } from '../types/streams';
+import type { StreamerCallbackArgs } from '../types/streams';
 import type { LivechatEndpoints, LivechatRoomEvents, LivechatStream } from './types/LivechatSDK';
 
-declare module '../ClientStream' {
-	interface ClientStream {
-		callAsync<MethodName extends keyof ServerMethods>(
-			methodName: MethodName,
-			...params: Parameters<ServerMethods[MethodName]>
-		): Promise<ServerMethodReturn<MethodName>>;
-		callAsyncWithOptions<MethodName extends keyof ServerMethods>(
-			methodName: MethodName,
-			options: DDPDispatchOptions,
-			...params: Parameters<ServerMethods[MethodName]>
-		): Promise<ServerMethodReturn<MethodName>>;
-	}
-}
-
-declare module '../DDPSDK' {
-	interface DDPSDK {
-		stream<N extends StreamNames, K extends StreamKeys<N>>(
-			streamName: N,
-			data: K | [K, unknown],
-			callback: (...args: StreamerCallbackArgs<N, K>) => void,
-		): ReturnType<ClientStream['subscribe']>;
-	}
-}
-
 export class LivechatClientImpl extends DDPSDK implements LivechatStream, LivechatEndpoints {
-	private token?: string;
+	public token?: string;
 
-	public readonly credentials: { token?: string } = { token: this.token };
+	/** Another handle on `token`: setting `credentials.token` sets the visitor token the client sends. */
+	public readonly credentials: { token?: string } = Object.defineProperty({}, 'token', {
+		enumerable: true,
+		get: () => this.token,
+		set: (token?: string) => {
+			this.token = token;
+		},
+	});
 
 	private ev = new Emitter<{
 		userActivity: StreamerCallbackArgs<'notify-room', `${string}/user-activity`>;
@@ -95,7 +70,7 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 	}
 
 	onQueuePositionChange(rid: string, cb: (data: LivechatRoomEvents<'queueData' | 'agentData'>) => void): () => void {
-		return this.stream('livechat-room', rid, (data) => {
+		return this.stream('livechat-room', [rid, { token: this.token, visitorToken: this.token }], (data) => {
 			if (data.type === 'queueData') {
 				cb(data.data);
 			}
@@ -148,7 +123,7 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 		return result;
 	}
 
-	visitor(
+	async visitor(
 		params: OperationParams<'GET', '/v1/livechat/visitor'>,
 	): Promise<Serialized<OperationResult<'GET', '/v1/livechat/visitor'>['visitor']>> {
 		if (!this.token) {
@@ -158,7 +133,7 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 		return this.rest.get(endpoint as '/v1/livechat/visitor/:token', params);
 	}
 
-	nextAgent(
+	async nextAgent(
 		params: OperationParams<'GET', '/v1/livechat/agent.next/:token'>,
 	): Promise<Serialized<OperationResult<'GET', '/v1/livechat/agent.next/:token'>>> {
 		if (!this.token) {
@@ -175,7 +150,7 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 		return agent;
 	}
 
-	message(
+	async message(
 		id: string,
 		params: OperationParams<'GET', '/v1/livechat/message/:_id'>,
 	): Promise<Serialized<OperationResult<'GET', '/v1/livechat/message/:_id'>>> {
@@ -198,7 +173,7 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 
 	// API POST
 
-	transferChat({
+	async transferChat({
 		rid,
 		department,
 	}: {
@@ -223,14 +198,14 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 		return this.grantVisitor(guest);
 	}
 
-	closeChat({ rid }: { rid: string }): Promise<Serialized<OperationResult<'POST', '/v1/livechat/room.close'>>> {
+	async closeChat({ rid }: { rid: string }): Promise<Serialized<OperationResult<'POST', '/v1/livechat/room.close'>>> {
 		if (!this.token) {
 			throw new Error('Invalid token');
 		}
 		return this.rest.post('/v1/livechat/room.close', { rid, token: this.token });
 	}
 
-	chatSurvey(
+	async chatSurvey(
 		params: OperationParams<'POST', '/v1/livechat/room.survey'>,
 	): Promise<Serialized<OperationResult<'POST', '/v1/livechat/room.survey'>>> {
 		if (!this.token) {
@@ -239,7 +214,7 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 		return this.rest.post('/v1/livechat/room.survey', { rid: params.rid, token: this.token, data: params.data });
 	}
 
-	sendMessage(
+	async sendMessage(
 		params: OperationParams<'POST', '/v1/livechat/message'>,
 	): Promise<Serialized<OperationResult<'POST', '/v1/livechat/message'>>> {
 		if (!this.token) {
@@ -260,7 +235,10 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 		return this.rest.post('/v1/livechat/page.visited', params);
 	}
 
-	requestTranscript(email: string, { rid }: { rid: string }): Promise<Serialized<OperationResult<'POST', '/v1/livechat/transcript'>>> {
+	async requestTranscript(
+		email: string,
+		{ rid }: { rid: string },
+	): Promise<Serialized<OperationResult<'POST', '/v1/livechat/transcript'>>> {
 		if (!this.token) {
 			throw new Error('Invalid token');
 		}
@@ -287,7 +265,7 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 		return status;
 	}
 
-	uploadFile(rid: string, file: File): Promise<ProgressEvent<EventTarget>> {
+	async uploadFile(rid: string, file: File): Promise<ProgressEvent<EventTarget>> {
 		if (!this.token) {
 			throw new Error('Invalid token');
 		}
@@ -320,19 +298,22 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 		if (!this.token) {
 			throw new Error('Invalid token');
 		}
+		if (!isValidAppId(appId)) {
+			throw new Error('Invalid app id');
+		}
 		return this.rest.post(`/apps/ui.interaction/${appId}`, payload, { headers: { 'x-visitor-token': this.token } });
 	}
 
 	// API DELETE
 
-	deleteMessage(id: string, { rid }: { rid: string }): Promise<Serialized<OperationResult<'DELETE', '/v1/livechat/message/:_id'>>> {
+	async deleteMessage(id: string, { rid }: { rid: string }): Promise<Serialized<OperationResult<'DELETE', '/v1/livechat/message/:_id'>>> {
 		if (!this.token) {
 			throw new Error('Invalid token');
 		}
 		return this.rest.delete(`/v1/livechat/message/${id}`, { rid, token: this.token });
 	}
 
-	deleteVisitor(): Promise<Serialized<OperationResult<'DELETE', '/v1/livechat/visitor'>>> {
+	async deleteVisitor(): Promise<Serialized<OperationResult<'DELETE', '/v1/livechat/visitor'>>> {
 		if (!this.token) {
 			throw new Error('Invalid token');
 		}
@@ -353,28 +334,5 @@ export class LivechatClientImpl extends DDPSDK implements LivechatStream, Livech
 		return Promise.all(subscriptions.map((subscription) => this.client.unsubscribe(subscription)));
 	}
 
-	static override create(url: string, retryOptions = { retryCount: 3, retryTime: 10000 }): LivechatClientImpl {
-		// TODO: Decide what to do with the EJSON objects
-		const ddp = new DDPDispatcher();
-
-		const connection = ConnectionImpl.create(url, WebSocket, ddp, retryOptions);
-
-		const stream = new ClientStreamImpl(ddp, ddp);
-
-		const account = new AccountImpl(stream);
-
-		const timeoutControl = TimeoutControl.create(ddp, connection);
-
-		const rest = new RestClient({ baseUrl: url.replace(/^ws/, 'http') });
-
-		const sdk = new LivechatClientImpl(connection, stream, account, timeoutControl, rest);
-
-		connection.on('connected', () => {
-			for (const [, sub] of stream.subscriptions.entries()) {
-				ddp.subscribeWithId(sub.id, sub.name, sub.params);
-			}
-		});
-
-		return sdk;
-	}
+	protected static override defaultOptions = { retryCount: 3, retryTime: 10000 };
 }

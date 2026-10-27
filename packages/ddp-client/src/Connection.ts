@@ -18,21 +18,27 @@ import type { DDPClient } from './types/DDPClient';
 
 type RetryOptions = {
 	retryCount: number;
-	retryTimer?: NodeJS.Timeout;
+	retryTimer?: ReturnType<typeof setTimeout>;
 	retryTime: number;
 };
 
-type ConnectionStatus = 'idle' | 'connecting' | 'connected' | 'failed' | 'closed' | 'disconnected' | 'reconnecting';
+// Caps the backoff so an unlimited retryCount keeps polling a server that is down for a long time.
+const MAX_RETRY_DELAY = 30_000;
 
-export interface Connection
-	extends Emitter<{
-		connection: ConnectionStatus;
-		connecting: void;
-		connected: string;
-		disconnected: void;
-		reconnecting: void;
-		close: void;
-	}> {
+// Exponential, with jitter so the clients a server restart dropped don't all come back on the same tick.
+export const getRetryDelay = (retryTime: number, attempt: number): number =>
+	Math.min(retryTime * 2 ** (attempt - 1), MAX_RETRY_DELAY) * (0.5 + Math.random() / 2);
+
+export type ConnectionStatus = 'idle' | 'connecting' | 'connected' | 'failed' | 'closed' | 'disconnected' | 'reconnecting';
+
+export interface Connection extends Emitter<{
+	connection: ConnectionStatus;
+	connecting: void;
+	connected: string;
+	disconnected: void;
+	reconnecting: void;
+	close: void;
+}> {
 	url: string;
 	ssl: boolean;
 
@@ -40,14 +46,28 @@ export interface Connection
 
 	status: ConnectionStatus;
 
+	ws?: WebSocket;
+
+	/** How many reconnection attempts were made since the last successful connection. */
+	retryCount: number;
+
+	/** When the next reconnection attempt is due (ms since epoch), while one is scheduled. */
+	nextRetryAt?: number;
+
 	connect(): Promise<boolean>;
 
 	reconnect(): Promise<boolean>;
 
+	/**
+	 * Resolves once the connection is established, right away if it already is; rejects if `close()` is called first.
+	 * Doesn't start connecting.
+	 */
+	whenConnected(): Promise<void>;
+
 	close(): void;
 }
 
-interface WebSocketConstructor {
+export interface WebSocketConstructor {
 	new (url: string | URL, protocols?: string | string[]): WebSocket;
 }
 
@@ -74,6 +94,10 @@ export class ConnectionImpl
 
 	retryCount = 0;
 
+	nextRetryAt?: number;
+
+	private connectPromise?: Promise<boolean>;
+
 	public queue = new Set<string>();
 
 	constructor(
@@ -84,24 +108,33 @@ export class ConnectionImpl
 	) {
 		super();
 		this.ssl = url.startsWith('https') || url.startsWith('wss');
-		this.url = url.replace(/^https?:\/\//, '').replace(/^wss?:\/\//, '');
+		this.url = url
+			.replace(/^https?:\/\//, '')
+			.replace(/^wss?:\/\//, '')
+			.replace(/\/websocket\/?$/, '')
+			.replace(/\/$/, '');
 
 		this.client.onDispatchMessage((message: string) => {
-			if (this.ws && this.ws.readyState === this.ws.OPEN) {
-				this.ws.send(message);
+			if (this.ws?.readyState === this.ws?.OPEN && (this.status === 'connected' || this.handshaking)) {
+				this.ws?.send(message);
 				return;
 			}
 
 			this.queue.add(message);
 		});
+	}
 
-		this.on('connected', () => {
-			this.queue.forEach((message) => {
-				this.ws?.send(message);
-			});
+	private handshaking = false;
 
-			this.queue.clear();
+	// The handshake listener of the current socket, dropped as soon as the socket is replaced or closed.
+	private stopHandshake?: () => void;
+
+	private flushQueue() {
+		this.queue.forEach((message) => {
+			this.ws?.send(message);
 		});
+
+		this.queue.clear();
 	}
 
 	private emitStatus() {
@@ -109,8 +142,23 @@ export class ConnectionImpl
 	}
 
 	reconnect(): Promise<boolean> {
-		if (this.status === 'connecting' || this.status === 'connected') {
-			return Promise.reject(new Error('Connection in progress'));
+		// Idempotent — if another caller already started (or finished) a connection
+		// since this reconnect was scheduled, we don't need to do anything. The
+		// retry timer enqueued by `ws.onclose` runs with no awareness of any
+		// concurrent `connect()` (e.g. the consumer's own bootstrap or
+		// resume-on-userId-change path), so without this guard a late timer
+		// rejected with "Connection in progress" — and because the timer fires
+		// from `void this.reconnect()` the rejection became an unhandled
+		// rejection at the page level.
+		if (this.status === 'connected') {
+			clearTimeout(this.retryOptions.retryTimer);
+			return Promise.resolve(true);
+		}
+		if (this.status === 'connecting') {
+			// Share the in-flight handshake promise so a `failed` payload
+			// later in the same attempt isn't masked by a synthesized success.
+			clearTimeout(this.retryOptions.retryTimer);
+			return this.connectPromise as Promise<boolean>;
 		}
 
 		clearTimeout(this.retryOptions.retryTimer);
@@ -123,19 +171,35 @@ export class ConnectionImpl
 	}
 
 	connect() {
-		if (this.status === 'connecting' || this.status === 'connected') {
-			return Promise.reject(new Error('Connection in progress'));
+		// Same idempotency guard as `reconnect()` — multiple call sites
+		// (`reconnect()`, ws.onclose retry timer, external `startConnect`) can
+		// race; rejecting forced every caller to wrap in `.catch(() => {})`
+		// just to silence noise, and the internal timer's `void this.reconnect()`
+		// path didn't have a catch at all.
+		if (this.status === 'connected') {
+			clearTimeout(this.retryOptions.retryTimer);
+			return Promise.resolve(true);
+		}
+		if (this.status === 'connecting') {
+			clearTimeout(this.retryOptions.retryTimer);
+			return this.connectPromise as Promise<boolean>;
 		}
 
+		this.stopHandshake?.();
+		this.nextRetryAt = undefined;
 		this.status = 'connecting';
-		this.emit('connecting');
-		this.emitStatus();
 
 		const ws = new this.WS(`${this.ssl ? 'wss://' : 'ws://'}${this.url}/websocket`);
 
 		this.ws = ws;
 
-		return new Promise<boolean>((resolve, reject) => {
+		// Build the in-flight promise and publish it on `this.connectPromise`
+		// before emitting any status change, so a synchronous re-entrant
+		// caller (an event listener that calls `connect()`/`reconnect()`)
+		// hits the `'connecting'` guard and gets this same promise.
+		const connectPromise = new Promise<boolean>((resolve, reject) => {
+			let stopHandshake: (() => void) | undefined;
+
 			ws.onopen = () => {
 				ws.onmessage = (event) => {
 					this.client.handleMessage(String(event.data));
@@ -158,17 +222,34 @@ export class ConnectionImpl
 
 				// The client sends a connect message.
 
-				this.client.connect();
+				// Every other frame waits for `connected`, so frames sent before a failed handshake are never lost.
+				this.handshaking = true;
+				try {
+					this.client.connect();
+				} finally {
+					this.handshaking = false;
+				}
 
 				// If the server is willing to speak the version of the protocol specified in the connect message, it sends back a connected message.
 				// Otherwise the server sends back a failed message with a version of DDP it would rather speak, informed by the connect message's support field, and closes the underlying transport.
 
-				this.client.onConnection((payload) => {
+				stopHandshake = this.client.onConnection((payload) => {
 					if (payload.msg === 'connected') {
 						this.status = 'connected';
+						// Reset the retry budget on successful connection so a future
+						// disconnect can schedule reconnects again. Without this,
+						// long-lived connections that recover once would burn through
+						// `retryCount` permanently and stop reconnecting on subsequent
+						// drops — observed when a server-side ws.close (logout, force-
+						// logout) chained with a reconnect cycle saturated the
+						// budget; the next disconnect left frames stuck in the
+						// dispatcher queue forever because the socket never came back.
+						this.retryCount = 0;
 						this.emitStatus();
-						this.emit('connected', payload.session);
 						this.session = payload.session;
+						// Listeners run first so frames they send (a re-login) precede the queued ones.
+						this.emit('connected', payload.session);
+						this.flushQueue();
 						return resolve(true);
 					}
 					if (payload.msg === 'failed') {
@@ -180,12 +261,35 @@ export class ConnectionImpl
 					/* istanbul ignore next */
 					reject(new Error('Unknown message type'));
 				});
+				this.stopHandshake = stopHandshake;
 			};
 
+			// The close event that always follows carries the handling; a listener must exist so
+			// EventEmitter-based implementations (the `ws` package) don't throw on errors.
+			ws.onerror = () => undefined;
+
 			ws.onclose = () => {
+				// The handshake listener belongs to this socket; a later attempt registers its own.
+				stopHandshake?.();
+				// A no-op once the handshake settled the promise.
+				reject(new Error('Connection closed before the DDP handshake completed'));
+
+				// If a newer ws has already taken over (this socket was closed
+				// after `connect()` opened a replacement), ignore the late
+				// onclose. Otherwise its handler would clobber `this.status` and
+				// `retryCount`, and could even schedule a redundant retry timer
+				// that fires while the new socket is healthy — observed as the
+				// "Connection in progress" pageError racing on every reconnect.
+				if (this.ws !== ws) {
+					return;
+				}
 				clearTimeout(this.retryOptions.retryTimer);
 				if (this.status === 'closed') {
 					return;
+				}
+				// Frames queued while a live socket was dying belong to calls that are reported as lost.
+				if (this.status === 'connected') {
+					this.queue.clear();
 				}
 				this.status = 'disconnected';
 				this.emitStatus();
@@ -197,17 +301,61 @@ export class ConnectionImpl
 
 				this.retryCount += 1;
 
+				const retryDelay = getRetryDelay(this.retryOptions.retryTime, this.retryCount);
+				this.nextRetryAt = Date.now() + retryDelay;
+				// Lets status readers pick up when the next attempt is due.
+				this.emitStatus();
+
 				this.retryOptions.retryTimer = setTimeout(() => {
-					void this.reconnect();
-				}, this.retryOptions.retryTime * this.retryCount);
+					// Re-check the status when the timer actually fires. If the
+					// consumer bootstrapped a fresh `connect()` in the meantime
+					// (status flipped from 'disconnected' to 'connecting' or
+					// 'connected'), there's nothing for us to do. Without this
+					// the timer would call `this.reconnect()`, which (pre-this
+					// patch) rejected with "Connection in progress" and surfaced
+					// as an unhandled rejection.
+					if (this.status === 'connecting' || this.status === 'connected' || this.status === 'closed') {
+						return;
+					}
+					// A failed attempt schedules its own retry from its onclose.
+					this.reconnect().catch(() => undefined);
+				}, retryDelay);
 			};
+		});
+
+		this.connectPromise = connectPromise;
+
+		this.emit('connecting');
+		this.emitStatus();
+
+		return connectPromise;
+	}
+
+	whenConnected(): Promise<void> {
+		if (this.status === 'connected') {
+			return Promise.resolve();
+		}
+		return new Promise((resolve, reject) => {
+			const stopWaitingForClose = this.once('close', () => {
+				stopWaitingForConnected();
+				reject(new Error('Connection closed before it was established'));
+			});
+			const stopWaitingForConnected = this.once('connected', () => {
+				stopWaitingForClose();
+				resolve();
+			});
 		});
 	}
 
 	close() {
+		clearTimeout(this.retryOptions.retryTimer);
 		this.status = 'closed';
+		this.stopHandshake?.();
+		// Their calls are rejected on close, so they must not go out on a later connect().
+		this.queue.clear();
 		this.ws?.close();
 		this.emitStatus();
+		this.emit('close');
 	}
 
 	static create(

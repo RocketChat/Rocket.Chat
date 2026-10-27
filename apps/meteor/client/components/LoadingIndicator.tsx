@@ -1,4 +1,6 @@
-const LoadingIndicator = ({ variation }: { variation?: 'medium' | 'large' }) => {
+export type LoadingIndicatorProps = { variation?: 'medium' | 'large' };
+
+const LoadingIndicator = ({ variation }: LoadingIndicatorProps) => {
 	return (
 		<div className='loading__animation'>
 			<div className={['loading__animation__bounce', variation && `loading__animation__bounce--${variation}`].filter(Boolean).join(' ')} />

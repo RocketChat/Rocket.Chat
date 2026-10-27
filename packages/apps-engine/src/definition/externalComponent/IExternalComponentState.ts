@@ -1,4 +1,5 @@
-import type { IExternalComponentRoomInfo, IExternalComponentUserInfo } from '../../client/definition';
+import type { IExternalComponentRoomInfo } from './IExternalComponentRoomInfo';
+import type { IExternalComponentUserInfo } from './IExternalComponentUserInfo';
 
 /**
  * The state of an external component, which contains the

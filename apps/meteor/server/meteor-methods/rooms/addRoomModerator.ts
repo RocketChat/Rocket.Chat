@@ -1,0 +1,98 @@
+import { api, Message, Team, ClientSafeError } from '@rocket.chat/core-services';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
+import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
+import { check } from 'meteor/check';
+
+import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { beforeChangeRoomRole } from '../../lib/callbacks/beforeChangeRoomRole';
+import { notifyOnSubscriptionChangedById } from '../../lib/notifyListener';
+import { syncRoomRolePriorityForUserAndRoom } from '../../lib/roles/syncRoomRolePriority';
+import { isFederationEnabled, FederationMatrixInvalidConfigurationError } from '../../services/federation/utils';
+import { settings } from '../../settings';
+
+export const addRoomModerator = async (fromUserId: IUser['_id'], rid: IRoom['_id'], userId: IUser['_id']): Promise<boolean> => {
+	check(rid, String);
+	check(userId, String);
+
+	const room = await Rooms.findOneById(rid, { projection: { t: 1, federated: 1, federation: 1 } });
+	if (!room) {
+		throw new ClientSafeError('error-invalid-room', 'Invalid room', {
+			method: 'addRoomModerator',
+		});
+	}
+
+	const isFederated = isRoomFederated(room);
+
+	if (!(await hasPermissionAsync(fromUserId, 'set-moderator', rid)) && !isFederated) {
+		throw new ClientSafeError('error-not-allowed', 'Not allowed', {
+			method: 'addRoomModerator',
+		});
+	}
+
+	if (isFederated && !isFederationEnabled()) {
+		throw new FederationMatrixInvalidConfigurationError('unable to change room owners');
+	}
+
+	const user = await Users.findOneById(userId);
+
+	if (!user?.username) {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
+			method: 'addRoomModerator',
+		});
+	}
+
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
+
+	if (!subscription) {
+		throw new ClientSafeError('error-user-not-in-room', 'User is not in this room', {
+			method: 'addRoomModerator',
+		});
+	}
+
+	if (subscription.roles && Array.isArray(subscription.roles) === true && subscription.roles.includes('moderator') === true) {
+		throw new ClientSafeError('error-user-already-moderator', 'User is already a moderator', {
+			method: 'addRoomModerator',
+		});
+	}
+
+	await beforeChangeRoomRole.run({ fromUserId, userId, room, role: 'moderator' });
+
+	const addRoleResponse = await Subscriptions.addRoleById(subscription._id, 'moderator');
+	await syncRoomRolePriorityForUserAndRoom(userId, rid, subscription.roles?.concat(['moderator']) || ['moderator']);
+
+	if (addRoleResponse.modifiedCount) {
+		void notifyOnSubscriptionChangedById(subscription._id);
+	}
+
+	const fromUser = await Users.findOneById(fromUserId);
+	if (!fromUser) {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
+			method: 'addRoomLeader',
+		});
+	}
+
+	await Message.saveSystemMessage('subscription-role-added', rid, user.username, fromUser, { role: 'moderator' });
+
+	const team = await Team.getOneByMainRoomId(rid);
+	if (team) {
+		await Team.addRolesToMember(team._id, userId, ['moderator']);
+	}
+
+	const event = {
+		type: 'added',
+		_id: 'moderator',
+		u: {
+			_id: user._id,
+			username: user.username,
+			name: fromUser.name,
+		},
+		scope: rid,
+	} as const;
+
+	if (settings.get<boolean>('UI_DisplayRoles')) {
+		void api.broadcast('user.roleUpdate', event);
+	}
+
+	return true;
+};

@@ -1,6 +1,5 @@
-import { Box, Button, Callout, Chip, Margins } from '@rocket.chat/fuselage';
+import { Box, Button, Callout, Chip, Margins, Text } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import DOMPurify from 'dompurify';
 import { useTranslation } from 'react-i18next';
 
@@ -13,7 +12,7 @@ import ScreenshotCarouselAnchor from '../../../components/ScreenshotCarouselAnch
 import type { AppInfo } from '../../../definitions/AppInfo';
 import { purifyOptions } from '../../../lib/purifyOptions';
 
-type AppDetailsProps = {
+export type AppDetailsProps = {
 	app: AppInfo;
 };
 
@@ -45,36 +44,38 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 
 	const openExternalLink = useExternalLink();
 
-	return (
-		<Box mbs='36px' maxWidth='x640' w='full' marginInline='auto' color='default'>
-			{appAddon && !workspaceHasAddon && (
-				<Callout
-					mb={16}
-					title={t('Subscription_add-on_required')}
-					type='info'
-					actions={
-						<Button small onClick={() => openExternalLink(GET_ADDONS_LINK)}>
-							{t('Contact_sales')}
-						</Button>
-					}
-				>
-					{t('App_cannot_be_enabled_without_add-on')}
-				</Callout>
-			)}
-			{app.licenseValidation && (
-				<>
-					{Object.entries(app.licenseValidation.warnings).map(([key]) => (
-						<Callout key={key} type='warning' mb={16}>
-							{t(`Apps_License_Message_${key}` as TranslationKey)}
-						</Callout>
-					))}
+	const showAddonCallout = !!appAddon && !workspaceHasAddon;
+	const licenseWarnings = Object.keys(app.licenseValidation?.warnings ?? {});
+	const licenseErrors = Object.keys(app.licenseValidation?.errors ?? {});
 
-					{Object.entries(app.licenseValidation.errors).map(([key]) => (
-						<Callout key={key} type='danger' mb={16}>
-							{t(`Apps_License_Message_${key}` as TranslationKey)}
+	return (
+		<Box marginBlockStart='x32' maxWidth='x640' width='full' marginInline='auto' color='default'>
+			{(showAddonCallout || licenseWarnings.length > 0 || licenseErrors.length > 0) && (
+				<Box display='flex' flexDirection='column' gap={16} marginBlock={16}>
+					{showAddonCallout && (
+						<Callout
+							title={t('Subscription_add-on_required')}
+							type='info'
+							actions={
+								<Button size='small' onClick={() => openExternalLink(GET_ADDONS_LINK)}>
+									{t('Contact_sales')}
+								</Button>
+							}
+						>
+							{t('App_cannot_be_enabled_without_add-on')}
+						</Callout>
+					)}
+					{licenseWarnings.map((key) => (
+						<Callout key={key} type='warning'>
+							{t(`Apps_License_Message_${key}`)}
 						</Callout>
 					))}
-				</>
+					{licenseErrors.map((key) => (
+						<Callout key={key} type='danger'>
+							{t(`Apps_License_Message_${key}`)}
+						</Callout>
+					))}
+				</Box>
 			)}
 
 			<Box display='flex' flexDirection='column'>
@@ -82,7 +83,7 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 					{isCarouselVisible && <ScreenshotCarouselAnchor screenshots={screenshots} />}
 
 					<Box is='section'>
-						<Box fontScale='h4' mbe={8} color='titles-labels'>
+						<Box fontScale='h4' marginBlockEnd={8} color='titles-labels'>
 							{t('Description')}
 						</Box>
 						<Box
@@ -96,12 +97,20 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 					</Box>
 
 					<Box is='section'>
-						<Box fontScale='h4' mbe={8} color='titles-labels'>
+						<Box fontScale='h4' marginBlockEnd={8} color='titles-labels'>
 							{t('Categories')}
 						</Box>
-						<Box display='flex' flexDirection='row' flexWrap='wrap' justifyContent='start' alignItems='center'>
-							{categories?.map((current) => (
-								<Chip key={current} textTransform='uppercase' m={4}>
+						<Box
+							display='flex'
+							flexDirection='row'
+							flexWrap='wrap'
+							justifyContent='start'
+							alignItems='center'
+							gap={8}
+							padding={categories.length > 0 ? 4 : undefined}
+						>
+							{categories.map((current) => (
+								<Chip key={current} label>
 									{current}
 								</Chip>
 							))}
@@ -109,27 +118,27 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 					</Box>
 
 					<Box is='section'>
-						<Box fontScale='h4' mbe={8}>
+						<Box fontScale='h4' marginBlockEnd={8}>
 							{t('Contact')}
 						</Box>
-						<Box display='flex' flexDirection='row' flexGrow={1} justifyContent='space-around' flexWrap='wrap' mbe={24}>
-							<Box display='flex' flexDirection='column' mie={12} flexGrow={1}>
-								<Box fontScale='h4' color='hint'>
+						<Box display='flex' flexDirection='row' flexGrow={1} justifyContent='space-around' flexWrap='wrap' marginBlockEnd={24}>
+							<Box display='flex' flexDirection='column' marginInlineEnd={12} flexGrow={1}>
+								<Text fontScale='h4' color='hint'>
 									{t('Author_Site')}
-								</Box>
+								</Text>
 								{normalizedHomepageUrl ? <ExternalLink to={normalizedHomepageUrl}>{homepage}</ExternalLink> : homepage}
 							</Box>
 							<Box display='flex' flexDirection='column' flexGrow={1}>
-								<Box fontScale='h4' color='hint'>
+								<Text fontScale='h4' color='hint'>
 									{t('Support')}
-								</Box>
+								</Text>
 								{normalizedSupportUrl ? <ExternalLink to={normalizedSupportUrl}>{support}</ExternalLink> : support}
 							</Box>
 						</Box>
 						<>
-							<Box fontScale='h4' color='hint'>
+							<Text fontScale='h4' color='hint'>
 								{t('Documentation')}
-							</Box>
+							</Text>
 							{normalizedDocumentationUrl ? <ExternalLink to={normalizedDocumentationUrl}>{documentation}</ExternalLink> : documentation}
 						</>
 					</Box>

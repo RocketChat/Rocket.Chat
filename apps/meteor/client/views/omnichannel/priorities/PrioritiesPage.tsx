@@ -1,9 +1,8 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useEndpoint, useRoute, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -13,12 +12,12 @@ import type { PriorityFormData } from './PriorityEditForm';
 import PriorityList from './PriorityList';
 import { useOmnichannelPriorities } from '../hooks/useOmnichannelPriorities';
 
-type PrioritiesPageProps = {
+export type PrioritiesPageProps = {
 	priorityId: string;
 	context: 'edit' | undefined;
 };
 
-export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): ReactElement => {
+export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps) => {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const prioritiesRoute = useRoute('omnichannel-priorities');
@@ -59,7 +58,7 @@ export const PrioritiesPage = ({ priorityId, context }: PrioritiesPageProps): Re
 		setModal(<PrioritiesResetModal onReset={onReset} onCancel={(): void => setModal(null)} />);
 	};
 
-	const onRowClick = useEffectEvent((id: string): void => {
+	const onRowClick = useStableCallback((id: string): void => {
 		prioritiesRoute.push({ context: 'edit', id });
 	});
 

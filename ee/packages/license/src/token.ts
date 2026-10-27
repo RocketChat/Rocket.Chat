@@ -1,4 +1,4 @@
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 
 import type { ILicenseV3 } from '@rocket.chat/core-typings';
 import { verify, sign, getPairs } from '@rocket.chat/jwt';

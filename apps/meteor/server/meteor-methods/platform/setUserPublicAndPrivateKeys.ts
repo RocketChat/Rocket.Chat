@@ -1,0 +1,33 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
+import { Rooms, Users } from '@rocket.chat/models';
+
+import { notifyOnRoomChangedById } from '../../lib/notifyListener';
+
+const isKeysResult = (result: any): result is { public_key: string; private_key: string } => {
+	return result.private_key && result.public_key;
+};
+
+export const setUserPublicAndPrivateKeysMethod = async (
+	userId: string,
+	keyPair: { public_key: string; private_key: string; force?: boolean },
+): Promise<void> => {
+	if (!keyPair.force) {
+		const keys = await Users.fetchKeysByUserId(userId);
+
+		if (isKeysResult(keys)) {
+			throw new ClientSafeError('error-keys-already-set', 'Keys already set', {
+				method: 'e2e.setUserPublicAndPrivateKeys',
+			});
+		}
+	}
+
+	await Users.setE2EPublicAndPrivateKeysByUserId(userId, {
+		private_key: keyPair.private_key,
+		public_key: keyPair.public_key,
+	});
+
+	const subscribedRoomIds = await Rooms.getSubscribedRoomIdsWithoutE2EKeys(userId);
+	await Rooms.addUserIdToE2EEQueueByRoomIds(subscribedRoomIds, userId);
+
+	void notifyOnRoomChangedById(subscribedRoomIds);
+};

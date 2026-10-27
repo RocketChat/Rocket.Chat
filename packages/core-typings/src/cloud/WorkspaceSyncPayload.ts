@@ -29,7 +29,10 @@ export const WorkspaceSyncPayloadSchema = z.object({
 	/** @deprecated */
 	nps: NpsSurveyAnnouncementSchema.optional().meta({ deprecated: true }),
 	/** @deprecated */
-	banners: z.array(IBannerSchema).optional().meta({ deprecated: true }),
+	banners: z
+		.array(IBannerSchema.extend({ _updatedAt: TimestampSchema.optional() }))
+		.optional()
+		.meta({ deprecated: true }),
 });
 
 export type WorkspaceSyncPayload = z.infer<typeof WorkspaceSyncPayloadSchema>;

@@ -6,7 +6,7 @@ import { createClassName } from '../../helpers/createClassName';
 
 const escapeForRegExp = (string: string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-type FilesDropTargetProps = {
+export type FilesDropTargetProps = {
 	overlayed?: boolean;
 	overlayText?: string;
 	accept?: string;
@@ -93,7 +93,7 @@ export const FilesDropTarget = ({
 			filteredFiles = filteredFiles.slice(0, 1);
 		}
 
-		filteredFiles.length && onUpload(filteredFiles);
+		if (filteredFiles.length) onUpload(filteredFiles);
 	};
 
 	return (

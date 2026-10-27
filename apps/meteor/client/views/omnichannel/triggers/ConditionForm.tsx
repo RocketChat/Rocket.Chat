@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { TriggersPayload } from './EditTrigger';
 
-type ConditionFormType = ComponentProps<typeof Field> & {
+type ConditionFormType = ComponentProps<typeof FieldGroup> & {
 	index: number;
 	control: Control<TriggersPayload>;
 };

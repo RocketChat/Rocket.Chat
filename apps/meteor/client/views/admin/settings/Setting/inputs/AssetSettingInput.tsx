@@ -2,17 +2,19 @@ import { css } from '@rocket.chat/css-in-js';
 import { Box, Button, Field, FieldHint, FieldLabel, FieldRow, Icon, Palette } from '@rocket.chat/fuselage';
 import { Random } from '@rocket.chat/random';
 import { useToastMessageDispatch, useEndpoint, useTranslation, useUpload } from '@rocket.chat/ui-contexts';
-import type { ChangeEventHandler, DragEvent, ReactElement, SyntheticEvent } from 'react';
+import type { ChangeEventHandler, DragEvent, SyntheticEvent } from 'react';
+import { useId } from 'react';
 
 import type { SettingInputProps } from './types';
 
-type AssetSettingInputProps = Omit<SettingInputProps<{ url: string }>, 'onChangeValue'> & {
+export type AssetSettingInputProps = Omit<SettingInputProps<{ url: string }>, 'onChangeValue'> & {
 	asset?: any;
 	fileConstraints?: { extensions: string[] };
 };
 
-function AssetSettingInput({ _id, label, value, hint, asset, required, disabled, fileConstraints }: AssetSettingInputProps): ReactElement {
+function AssetSettingInput({ _id, label, value, hint, asset, required, disabled, fileConstraints }: AssetSettingInputProps) {
 	const t = useTranslation();
+	const labelId = useId();
 
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setAsset = useUpload('/v1/assets.setAsset');
@@ -94,11 +96,13 @@ function AssetSettingInput({ _id, label, value, hint, asset, required, disabled,
 
 	return (
 		<Field>
-			<FieldLabel htmlFor={_id} title={_id} required={required}>
-				{label}
-			</FieldLabel>
 			<FieldRow>
-				<Box className={settingsFilePreview}>
+				<FieldLabel id={labelId} htmlFor={_id} title={_id} required={required}>
+					{label}
+				</FieldLabel>
+			</FieldRow>
+			<FieldRow>
+				<Box role='group' aria-labelledby={labelId} className={settingsFilePreview}>
 					{value?.url ? (
 						<div
 							className='preview'
@@ -119,7 +123,13 @@ function AssetSettingInput({ _id, label, value, hint, asset, required, disabled,
 						) : (
 							<Box position='relative' className={`rcx-button rcx-button--primary ${disabled ? 'is-disabled' : ''}`}>
 								{t('Select_file')}
-								<input type='file' accept={`.${fileConstraints?.extensions?.join(', .')}`} onChange={handleUpload} disabled={disabled} />
+								<input
+									id={_id}
+									type='file'
+									accept={`.${fileConstraints?.extensions?.join(', .')}`}
+									onChange={handleUpload}
+									disabled={disabled}
+								/>
 							</Box>
 						)}
 					</div>

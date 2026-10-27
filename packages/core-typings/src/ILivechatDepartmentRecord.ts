@@ -2,7 +2,6 @@ import type { IRocketChatRecord } from './IRocketChatRecord';
 
 /** @deprecated */
 export interface ILivechatDepartmentRecord extends IRocketChatRecord {
-	_id: string;
 	name: string;
 	enabled: boolean;
 	description?: string;

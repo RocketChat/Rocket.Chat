@@ -1,47 +1,32 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { SidebarV2Action, SidebarV2Actions, SidebarV2ItemIcon } from '@rocket.chat/fuselage';
+import { Icon, IconButton, SidebarItemActions } from '@rocket.chat/fuselage';
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { useLayout } from '@rocket.chat/ui-contexts';
 import type { TFunction } from 'i18next';
-import type { AllHTMLAttributes, ComponentType, ReactElement, ReactNode } from 'react';
+import type { AllHTMLAttributes } from 'react';
 import { memo, useMemo } from 'react';
 
-import { RoomIcon } from '../../components/RoomIcon';
+import { RoomIcon, useRoomIconLabel } from '../../components/RoomIcon';
+import RoomListItem from '../../components/RoomListItem/RoomListItem';
+import type { RoomListItemViewMode } from '../../components/RoomListItem/RoomListItem';
+import { useUserStatusTooltip } from '../../hooks/useUserStatusTooltip';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
+import { getSubscriptionDraft } from '../../lib/utils/getSubscriptionDraft';
+import { getUidDirectMessage } from '../../lib/utils/getUidDirectMessage';
 import { isIOsDevice } from '../../lib/utils/isIOsDevice';
 import { getMessagePreview } from '../../lib/utils/normalizeMessagePreview/getMessagePreview';
 import { useOmnichannelPriorities } from '../../views/omnichannel/hooks/useOmnichannelPriorities';
 import RoomMenu from '../RoomMenu';
 import SidebarItemBadges from '../badges/SidebarItemBadges';
-import type { useAvatarTemplate } from '../hooks/useAvatarTemplate';
 import { useUnreadDisplay } from '../hooks/useUnreadDisplay';
 
 type RoomListRowProps = {
-	extended: boolean;
 	t: TFunction;
-	SidebarItemTemplate: ComponentType<
-		{
-			icon: ReactNode;
-			title: ReactNode;
-			avatar: ReactNode;
-			actions: ReactNode;
-			href: string;
-			time?: Date;
-			menu?: () => ReactNode;
-			menuOptions?: unknown;
-			subtitle?: ReactNode;
-			titleIcon?: ReactNode;
-			badges?: ReactNode;
-			threadUnread?: boolean;
-			unread?: boolean;
-			selected?: boolean;
-			is?: string;
-		} & AllHTMLAttributes<HTMLElement>
-	>;
-	AvatarTemplate: ReturnType<typeof useAvatarTemplate>;
+	viewMode: RoomListItemViewMode;
+	showAvatar: boolean;
 	openedRoom?: string;
-	// sidebarViewMode: 'extended';
 	isAnonymous?: boolean;
+	userId?: string;
 
 	room: SubscriptionWithRoom;
 	id?: string;
@@ -50,7 +35,6 @@ type RoomListRowProps = {
 
 	selected?: boolean;
 
-	sidebarViewMode?: unknown;
 	videoConfActions?: {
 		[action: string]: () => void;
 	};
@@ -61,84 +45,101 @@ const SidebarItemTemplateWithData = ({
 	id,
 	selected,
 	style,
-	extended,
-	SidebarItemTemplate,
-	AvatarTemplate,
+	viewMode,
+	showAvatar,
 	t,
 	isAnonymous,
 	videoConfActions,
+	userId,
 }: RoomListRowProps) => {
 	const { sidebar } = useLayout();
 
 	const href = roomCoordinator.getRouteLink(room.t, room) || '';
 	const title = roomCoordinator.getRoomName(room.t, room) || '';
 
+	const dmUserId = getUidDirectMessage(room, userId);
+	const dmStatusTooltipHandlers = useUserStatusTooltip(dmUserId, title);
+
 	const { unreadTitle, showUnread, unreadCount, highlightUnread: highlighted } = useUnreadDisplay(room);
 
 	const { lastMessage, unread = 0, alert, rid, t: type, cl } = room;
 
-	const icon = (
-		<SidebarV2ItemIcon
-			highlighted={highlighted}
-			icon={<RoomIcon room={room} placement='sidebar' size='x20' isIncomingCall={Boolean(videoConfActions)} />}
-		/>
-	);
+	const isIncomingCall = Boolean(videoConfActions);
+	const iconLabel = useRoomIconLabel(room, isIncomingCall);
+
+	const titleIcon = getSubscriptionDraft(room) ? (
+		<Icon name='pencil' size='x12' title={room.draft ? t('Draft') : t('Thread_draft')} />
+	) : undefined;
 
 	const actions = useMemo(
 		() =>
 			videoConfActions && (
-				<SidebarV2Actions>
-					<SidebarV2Action onClick={videoConfActions.acceptCall} mini secondary success icon='phone' />
-					<SidebarV2Action onClick={videoConfActions.rejectCall} mini secondary danger icon='phone-off' />
-				</SidebarV2Actions>
+				<SidebarItemActions>
+					<IconButton
+						onClick={videoConfActions.acceptCall}
+						size='mini'
+						variant='secondary-success'
+						icon='phone'
+						aria-label={t('Accept_Call')}
+					/>
+					<IconButton
+						onClick={videoConfActions.rejectCall}
+						size='mini'
+						variant='secondary-danger'
+						icon='phone-off'
+						aria-label={t('Reject_call')}
+					/>
+				</SidebarItemActions>
 			),
-		[videoConfActions],
+		[t, videoConfActions],
 	);
 
 	const isQueued = isOmnichannelRoom(room) && room.status === 'queued';
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
 
-	const message = extended && getMessagePreview(room, lastMessage, t);
+	const message = viewMode === 'extended' && getMessagePreview(room, lastMessage, t);
 	const subtitle = message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null;
 
 	return (
-		<SidebarItemTemplate
-			is='a'
+		<RoomListItem
 			id={id}
+			room={room}
+			viewMode={viewMode}
+			showAvatar={showAvatar}
 			data-unread={highlighted}
-			unread={highlighted}
+			highlighted={highlighted}
 			selected={selected}
 			aria-current={selected ? 'page' : undefined}
 			href={href}
-			onClick={(): void => {
-				!selected && sidebar.toggle();
+			onClick={() => {
+				if (!selected) sidebar.toggle();
 			}}
 			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title }) : title}
 			title={title}
 			time={lastMessage?.ts}
 			subtitle={subtitle}
-			icon={icon}
+			icon={<RoomIcon room={room} placement='sidebar' size='x20' isIncomingCall={isIncomingCall} />}
+			iconLabel={iconLabel}
+			titleIcon={titleIcon}
 			style={style}
 			badges={<SidebarItemBadges room={room} roomTitle={title} />}
-			avatar={AvatarTemplate && <AvatarTemplate {...room} />}
 			actions={actions}
 			menu={
-				!isIOsDevice && !isAnonymous && (!isQueued || (isQueued && isPriorityEnabled))
-					? (): ReactElement => (
-							<RoomMenu
-								alert={alert}
-								threadUnread={unreadCount.threads > 0}
-								rid={rid}
-								unread={!!unread}
-								roomOpen={selected}
-								type={type}
-								cl={cl}
-								name={title}
-								hideDefaultOptions={isQueued}
-							/>
-						)
-					: undefined
+				!isIOsDevice && !isAnonymous && (!isQueued || (isQueued && isPriorityEnabled)) ? (
+					<RoomMenu
+						alert={alert}
+						threadUnread={unreadCount.threads > 0}
+						rid={rid}
+						unread={!!unread}
+						roomOpen={selected}
+						type={type}
+						cl={cl}
+						name={title}
+						hideDefaultOptions={isQueued}
+					/>
+				) : undefined
 			}
+			{...dmStatusTooltipHandlers}
 		/>
 	);
 };
@@ -150,19 +151,8 @@ function safeDateNotEqualCheck(a: Date | string | undefined, b: Date | string | 
 	return new Date(a).toISOString() !== new Date(b).toISOString();
 }
 
-const keys: (keyof RoomListRowProps)[] = [
-	'id',
-	'style',
-	'extended',
-	'selected',
-	'SidebarItemTemplate',
-	'AvatarTemplate',
-	't',
-	'sidebarViewMode',
-	'videoConfActions',
-];
+const keys: (keyof RoomListRowProps)[] = ['id', 'style', 'viewMode', 'showAvatar', 'selected', 't', 'videoConfActions'];
 
-// eslint-disable-next-line react/no-multi-comp
 export default memo(SidebarItemTemplateWithData, (prevProps, nextProps) => {
 	if (keys.some((key) => prevProps[key] !== nextProps[key])) {
 		return false;
@@ -185,6 +175,12 @@ export default memo(SidebarItemTemplateWithData, (prevProps, nextProps) => {
 		return false;
 	}
 	if (prevProps.room.alert !== nextProps.room.alert) {
+		return false;
+	}
+	if (prevProps.room.draft !== nextProps.room.draft) {
+		return false;
+	}
+	if (prevProps.room.threadDrafts !== nextProps.room.threadDrafts) {
 		return false;
 	}
 	if (isOmnichannelRoom(prevProps.room) && isOmnichannelRoom(nextProps.room) && prevProps.room?.v?.status !== nextProps.room?.v?.status) {

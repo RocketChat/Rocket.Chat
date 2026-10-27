@@ -1,15 +1,14 @@
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import EngagementDashboardCard from '../EngagementDashboardCard';
 import MessagesPerChannelSection from './MessagesPerChannelSection';
 import MessagesSentSection from './MessagesSentSection';
 
-type MessagesTabProps = {
+export type MessagesTabProps = {
 	timezone: 'utc' | 'local';
 };
 
-const MessagesTab = ({ timezone }: MessagesTabProps): ReactElement => {
+const MessagesTab = ({ timezone }: MessagesTabProps) => {
 	const { t } = useTranslation();
 
 	return (

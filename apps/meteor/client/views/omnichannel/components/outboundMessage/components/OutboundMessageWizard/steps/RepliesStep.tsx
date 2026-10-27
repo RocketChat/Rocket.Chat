@@ -1,10 +1,10 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useWizardContext, WizardActions, WizardBackButton, WizardNextButton } from '@rocket.chat/ui-client';
 
 import type { RepliesFormData, RepliesFormSubmitPayload } from '../forms/RepliesForm';
 import RepliesForm from '../forms/RepliesForm';
 
-type RepliesStepProps = {
+export type RepliesStepProps = {
 	defaultValues?: Partial<RepliesFormData>;
 	onSubmit(values: RepliesFormSubmitPayload): void;
 };
@@ -12,7 +12,7 @@ type RepliesStepProps = {
 const RepliesStep = ({ defaultValues, onSubmit }: RepliesStepProps) => {
 	const { next } = useWizardContext();
 
-	const handleSubmit = useEffectEvent(async (values: RepliesFormSubmitPayload) => {
+	const handleSubmit = useStableCallback(async (values: RepliesFormSubmitPayload) => {
 		onSubmit(values);
 		next();
 	});

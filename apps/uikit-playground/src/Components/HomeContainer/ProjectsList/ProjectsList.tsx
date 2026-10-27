@@ -17,7 +17,7 @@ const ProjectsList = () => {
 				grid-template-columns: repeat(auto-fill, 200px);
 				gap: 30px;
 			`}
-			pbe='30px'
+			paddingBlockEnd='x32'
 		>
 			{Object.values(projects).map((project) => (
 				<ProjectsThumbnail

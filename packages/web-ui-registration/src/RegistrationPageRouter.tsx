@@ -1,5 +1,5 @@
 import { useSession } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import GuestForm from './GuestForm';
@@ -10,13 +10,9 @@ import ResetPasswordForm from './ResetPasswordForm';
 import { useLoginRouter } from './hooks/useLoginRouter';
 import type { LoginRoutes } from './hooks/useLoginRouter';
 
-export const RegistrationPageRouter = ({
-	defaultRoute = 'login',
-	children,
-}: {
-	defaultRoute?: LoginRoutes;
-	children?: ReactNode;
-}): ReactElement | null => {
+export type RegistrationPageRouterProps = { defaultRoute?: LoginRoutes; children?: ReactNode };
+
+export const RegistrationPageRouter = ({ defaultRoute = 'login', children }: RegistrationPageRouterProps) => {
 	const { t } = useTranslation();
 	const defaultRouteSession = useSession('loginDefaultState') as LoginRoutes | undefined;
 	const [route, setLoginRoute] = useLoginRouter(defaultRouteSession || defaultRoute);

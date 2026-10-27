@@ -1,9 +1,7 @@
-import type { ReactElement } from 'react';
-
 import InviteLink from './InviteLink';
 import InviteUsersWrapper from './InviteUsersWrapper';
 
-type InviteUsersProps = {
+export type InviteUsersProps = {
 	onClickBackMembers?: () => void;
 	onClose: () => void;
 	onClickEdit: () => void;
@@ -11,7 +9,7 @@ type InviteUsersProps = {
 	linkText: string;
 };
 
-const InviteUsers = ({ onClickBackMembers, onClose, onClickEdit, captionText, linkText }: InviteUsersProps): ReactElement => (
+const InviteUsers = ({ onClickBackMembers, onClose, onClickEdit, captionText, linkText }: InviteUsersProps) => (
 	<InviteUsersWrapper onClickBack={onClickBackMembers} onClose={onClose}>
 		<InviteLink captionText={captionText} onClickEdit={onClickEdit} linkText={linkText} />
 	</InviteUsersWrapper>

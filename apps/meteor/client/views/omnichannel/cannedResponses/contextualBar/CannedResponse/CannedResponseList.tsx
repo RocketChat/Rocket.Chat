@@ -1,5 +1,5 @@
 import type { ILivechatDepartment, IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
-import { Box, Button, ButtonGroup, ContextualbarEmptyContent, Icon, Margins, Select, TextInput } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, ContextualbarSection, Icon, Select, TextInput } from '@rocket.chat/fuselage';
 import { useAutoFocus, useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
@@ -7,27 +7,29 @@ import {
 	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarContent,
+	ContextualbarEmptyContent,
 	ContextualbarFooter,
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
 import { useRoomToolbox } from '@rocket.chat/ui-contexts';
-import type { Dispatch, FormEventHandler, MouseEvent, ReactElement, SetStateAction } from 'react';
+import type { Dispatch, ChangeEventHandler, MouseEvent, SetStateAction } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
 import Item from './Item';
 import WrapCannedResponse from './WrapCannedResponse';
+import { useItemListNavigation } from '../../../../../hooks/useItemListNavigation';
 import { useCanCreateCannedResponse } from '../../hooks/useCanCreateCannedResponse';
 
-type CannedResponseListProps = {
+export type CannedResponseListProps = {
 	loadMoreItems: () => void;
 	cannedItems: (IOmnichannelCannedResponse & { departmentName?: ILivechatDepartment['name'] })[];
 	itemCount: number;
 	onClose: () => void;
 	options: [string, string][];
 	text: string;
-	setText: FormEventHandler<HTMLInputElement>;
+	setText: ChangeEventHandler<HTMLInputElement>;
 	type: string;
 	setType: Dispatch<SetStateAction<string>>;
 	isRoomOverMacLimit: boolean;
@@ -59,6 +61,7 @@ const CannedResponseList = ({
 	const { context: cannedId } = useRoomToolbox();
 	const canCreateCannedResponse = useCanCreateCannedResponse();
 
+	const cannedListRef = useItemListNavigation();
 	const { ref, contentBoxSize: { inlineSize = 378 } = {} } = useResizeObserver<HTMLElement>({
 		debounceDelay: 200,
 	});
@@ -84,26 +87,22 @@ const CannedResponseList = ({
 				<ContextualbarTitle>{t('Canned_Responses')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
-			<ContextualbarContent paddingInline={0} ref={ref}>
-				<Box display='flex' flexDirection='row' p={24} flexShrink={0}>
-					<Box display='flex' flexDirection='row' flexGrow={1} mi='neg-x4'>
-						<Margins inline={4}>
-							<TextInput
-								placeholder={t('Search')}
-								value={text}
-								onChange={setText}
-								addon={<Icon name='magnifier' size='x20' />}
-								ref={inputRef}
-							/>
-							<Box w='x144'>
-								<Select aria-label={t('Type')} onChange={(value) => setType(String(value))} value={type} options={options} />
-							</Box>
-						</Margins>
-					</Box>
+			<ContextualbarSection>
+				<TextInput
+					placeholder={t('Search')}
+					value={text}
+					onChange={setText}
+					endAddon={<Icon name='magnifier' size='x20' />}
+					ref={inputRef}
+				/>
+				<Box width='x144' marginInlineStart={8}>
+					<Select aria-label={t('Type')} onChange={(value) => setType(String(value))} value={type} options={options} />
 				</Box>
+			</ContextualbarSection>
+			<ContextualbarContent flush ref={ref}>
 				{itemCount === 0 && <ContextualbarEmptyContent title={t('No_Canned_Responses')} />}
 				{itemCount > 0 && cannedItems.length > 0 && (
-					<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex'>
+					<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex' ref={cannedListRef}>
 						<VirtualizedScrollbars>
 							<Virtuoso
 								style={{ width: inlineSize }}
@@ -111,7 +110,7 @@ const CannedResponseList = ({
 								endReached={loadMoreItems}
 								overscan={25}
 								data={cannedItems}
-								itemContent={(_index, data): ReactElement => (
+								itemContent={(_index, data) => (
 									<Item
 										data={data}
 										allowUse={!isRoomOverMacLimit}

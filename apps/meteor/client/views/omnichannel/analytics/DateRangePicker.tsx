@@ -1,12 +1,16 @@
 import { Box, InputBox, Field, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu } from '@rocket.chat/ui-client';
-import { subDays, subMonths, startOfMonth, endOfMonth, format } from 'date-fns';
-import type { ComponentProps, FormEvent } from 'react';
+import { endOfMonth } from 'date-fns/endOfMonth';
+import { format } from 'date-fns/format';
+import { startOfMonth } from 'date-fns/startOfMonth';
+import { subDays } from 'date-fns/subDays';
+import { subMonths } from 'date-fns/subMonths';
+import type { ComponentProps, ChangeEvent } from 'react';
 import { useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type DateRangePickerProps = Omit<ComponentProps<typeof Box>, 'onChange'> & {
+export type DateRangePickerProps = Omit<ComponentProps<typeof Box>, 'onChange'> & {
 	onChange(range: { start: string; end: string }): void;
 };
 
@@ -39,7 +43,7 @@ const DateRangePicker = ({ onChange = () => undefined, ...props }: DateRangePick
 
 	const { start, end } = range;
 
-	const handleStart = useEffectEvent(({ currentTarget }: FormEvent<HTMLInputElement>) => {
+	const handleStart = useStableCallback(({ currentTarget }: ChangeEvent<HTMLInputElement>) => {
 		const rangeObj = {
 			start: currentTarget.value,
 			end: range.end,
@@ -48,7 +52,7 @@ const DateRangePicker = ({ onChange = () => undefined, ...props }: DateRangePick
 		onChange(rangeObj);
 	});
 
-	const handleEnd = useEffectEvent(({ currentTarget }: FormEvent<HTMLInputElement>) => {
+	const handleEnd = useStableCallback(({ currentTarget }: ChangeEvent<HTMLInputElement>) => {
 		const rangeObj = {
 			end: currentTarget.value,
 			start: range.start,
@@ -57,7 +61,7 @@ const DateRangePicker = ({ onChange = () => undefined, ...props }: DateRangePick
 		onChange(rangeObj);
 	});
 
-	const handleRange = useEffectEvent((range: { start: string; end: string }) => {
+	const handleRange = useStableCallback((range: { start: string; end: string }) => {
 		setRange(range);
 		onChange(range);
 	});
@@ -125,26 +129,26 @@ const DateRangePicker = ({ onChange = () => undefined, ...props }: DateRangePick
 
 	return (
 		<Box {...props}>
-			<Box mi='neg-x4' height='full' display='flex' flexDirection='row'>
-				<Field mi={4} flexShrink={1} flexGrow={1}>
-					<FieldLabel>{t('Start')}</FieldLabel>
-					<FieldRow>
-						<Box height='x40' display='flex' width='full'>
+			<Box height='full' display='flex' flexDirection='row' gap={8}>
+				<Box flexGrow={1} width='full'>
+					<Field>
+						<FieldLabel>{t('Start')}</FieldLabel>
+						<FieldRow>
 							<InputBox type='date' onChange={handleStart} max={todayDate} value={start} />
-						</Box>
-					</FieldRow>
-				</Field>
-				<Field mi={4} flexShrink={1} flexGrow={1}>
-					<FieldLabel>{t('End')}</FieldLabel>
-					<FieldRow>
-						<Box height='x40' display='flex' width='full'>
+						</FieldRow>
+					</Field>
+				</Box>
+				<Box flexGrow={1} width='full'>
+					<Field>
+						<FieldLabel>{t('End')}</FieldLabel>
+						<FieldRow>
 							<InputBox type='date' onChange={handleEnd} min={start} max={todayDate} value={end} />
-						</Box>
-						<Box mis={8}>
-							<GenericMenu title={t('Date_range_presets')} items={options} small />
-						</Box>
-					</FieldRow>
-				</Field>
+							<Box marginInlineStart={8}>
+								<GenericMenu title={t('Date_range_presets')} items={options} size='small' />
+							</Box>
+						</FieldRow>
+					</Field>
+				</Box>
 			</Box>
 		</Box>
 	);

@@ -8,7 +8,9 @@ export class ExportMessagesFlexTab extends FlexTab {
 	}
 
 	async exposeMethods() {
-		await this.method.click();
+		if ((await this.method.getAttribute('aria-expanded')) !== 'true') {
+			await this.method.click();
+		}
 	}
 
 	async setMethod(optionName: string) {
@@ -17,7 +19,9 @@ export class ExportMessagesFlexTab extends FlexTab {
 	}
 
 	async exposeOutputFormats() {
-		await this.outputFormat.click();
+		if ((await this.outputFormat.getAttribute('aria-expanded')) !== 'true') {
+			await this.outputFormat.click();
+		}
 	}
 
 	async setOutputFormat(optionName: string) {
@@ -58,7 +62,7 @@ export class ExportMessagesFlexTab extends FlexTab {
 	}
 
 	get inputUsers() {
-		return this.root.getByLabel('To users');
+		return this.root.getByRole('combobox', { name: 'To users' });
 	}
 
 	get inputAdditionalEmails() {

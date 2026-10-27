@@ -1,4 +1,4 @@
-import { OAuth2Client } from '../../server/oauth2/OAuth2Client';
+import { OAuth2Client } from './OAuth2Client';
 import type { App } from '../App';
 import type { IOAuth2ClientOptions } from './IOAuth2';
 

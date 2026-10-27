@@ -14,4 +14,8 @@ export class ThreadsFlexTab extends FlexTab {
 	get lastThreadMessage(): Locator {
 		return this.listThreadMessages.locator('[data-qa-type="message"]').last().locator('[data-qa-type="message-body"]');
 	}
+
+	getThreadMessageByText(messageText: string): Locator {
+		return this.listThreadMessages.getByRole('listitem').getByText(messageText);
+	}
 }

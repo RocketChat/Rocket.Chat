@@ -1,0 +1,28 @@
+import type { AppManager } from '@rocket.chat/apps/dist/server/AppManager';
+import { License } from '@rocket.chat/license';
+
+import { getInstallationSourceFromAppStorageItem } from '../../../../../lib/apps/getInstallationSourceFromAppStorageItem';
+import { API } from '../../../../../server/api';
+import type { AppsRestApi } from '../rest';
+
+export const registerAppsCountHandler = ({ api, _manager }: AppsRestApi) =>
+	void api.addRoute(
+		'count',
+		{ authRequired: false },
+		{
+			async get() {
+				const manager = _manager as AppManager;
+
+				const apps = await manager.get({ enabled: true });
+				const { maxMarketplaceApps, maxPrivateApps } = License.getAppsConfig();
+
+				return API.v1.success({
+					totalMarketplaceEnabled: apps.filter((app) => getInstallationSourceFromAppStorageItem(app.getStorageItem()) === 'marketplace')
+						.length,
+					totalPrivateEnabled: apps.filter((app) => getInstallationSourceFromAppStorageItem(app.getStorageItem()) === 'private').length,
+					maxMarketplaceApps,
+					maxPrivateApps,
+				});
+			},
+		},
+	);

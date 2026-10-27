@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/omnichannel-services",
-	"version": "0.3.53",
+	"version": "0.3.58",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -10,8 +10,8 @@
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.build.json",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix .",
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
 		"test": "jest",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit --skipLibCheck"
@@ -19,7 +19,7 @@
 	"dependencies": {
 		"@rocket.chat/core-services": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:^",
-		"@rocket.chat/emitter": "^0.32.0",
+		"@rocket.chat/emitter": "workspace:~",
 		"@rocket.chat/i18n": "workspace:^",
 		"@rocket.chat/logger": "workspace:^",
 		"@rocket.chat/message-types": "workspace:~",
@@ -27,14 +27,12 @@
 		"@rocket.chat/models": "workspace:^",
 		"@rocket.chat/pdf-worker": "workspace:^",
 		"@rocket.chat/rest-typings": "workspace:^",
-		"@rocket.chat/string-helpers": "~0.32.0",
 		"@rocket.chat/tools": "workspace:^",
-		"@types/node": "~22.19.17",
+		"@types/node": "~24.13.6",
 		"date-fns": "~4.1.0",
 		"ejson": "^2.2.3",
-		"emoji-toolkit": "^7.0.1",
 		"eventemitter3": "^5.0.4",
-		"i18next": "~23.4.9",
+		"i18next": "~26.4.2",
 		"mem": "^8.1.1",
 		"moment-timezone": "^0.5.48",
 		"mongo-message-queue": "^1.1.0",
@@ -44,10 +42,8 @@
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
-		"@types/jest": "~30.0.0",
-		"eslint": "~9.39.4",
-		"jest": "~30.2.0",
-		"typescript": "~5.9.3"
+		"jest": "~30.5.2",
+		"typescript": "~7.0.2"
 	},
 	"volta": {
 		"extends": "../../../package.json"

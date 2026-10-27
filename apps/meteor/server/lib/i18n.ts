@@ -1,10 +1,10 @@
 import { availableTranslationNamespaces, defaultTranslationNamespace, extractTranslationNamespaces } from '@rocket.chat/i18n';
 import languages from '@rocket.chat/i18n/dist/languages';
 
-import { i18n } from '../../app/utils/lib/i18n';
+import { i18n } from '../../lib/i18n';
 
 // Meteor bundler is incredible (derogatory)
-// eslint-disable-next-line no-constant-condition
+// oxlint-disable-next-line no-constant-condition
 if (false) {
 	// @ts-expect-error unreachable code
 	import('@rocket.chat/i18n/dist/resources/af.i18n.json');
@@ -67,6 +67,7 @@ if (false) {
 	import('@rocket.chat/i18n/dist/resources/sv.i18n.json');
 	import('@rocket.chat/i18n/dist/resources/ta-IN.i18n.json');
 	import('@rocket.chat/i18n/dist/resources/th-TH.i18n.json');
+	import('@rocket.chat/i18n/dist/resources/tl.i18n.json');
 	import('@rocket.chat/i18n/dist/resources/tr.i18n.json');
 	import('@rocket.chat/i18n/dist/resources/ug.i18n.json');
 	import('@rocket.chat/i18n/dist/resources/uk.i18n.json');
@@ -87,12 +88,11 @@ void i18n.init({
 			language,
 			extractTranslationNamespaces(
 				// TODO: commonjs is terrible but we don't have esm build yet
-				// eslint-disable-next-line @typescript-eslint/no-var-requires, import/no-dynamic-require
+				// oxlint-disable-next-line import-x/no-dynamic-require
 				require(`@rocket.chat/i18n/dist/resources/${language}.i18n.json`) as unknown as Record<string, string>,
 			),
 		]),
 	),
-	initImmediate: false,
 });
 
 export { i18n };

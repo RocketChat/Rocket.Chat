@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useLoginWithIframe, useLoginWithToken, useSetting } from '@rocket.chat/ui-contexts';
 import { useCallback, useEffect, useState } from 'react';
 
@@ -34,7 +34,7 @@ export const useIframe = () => {
 		[iframeLogin, tokenLogin],
 	);
 
-	const tryLogin = useEffectEvent(async (callback?: (error: Error | null | undefined, result: unknown) => void) => {
+	const tryLogin = useStableCallback(async (callback?: (error: Error | null | undefined, result: unknown) => void) => {
 		if (!enabled) {
 			return;
 		}

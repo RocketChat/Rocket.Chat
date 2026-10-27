@@ -1,16 +1,15 @@
-import type { ReactElement } from 'react';
 import { memo } from 'react';
 
 const toHexByte = (value: number): string => value.toString(16).padStart(2, '0');
 
-type PreviewColorElementProps = {
+export type PreviewColorElementProps = {
 	r: number;
 	g: number;
 	b: number;
 	a: number;
 };
 
-const PreviewColorElement = ({ r, g, b, a }: PreviewColorElementProps): ReactElement => {
+const PreviewColorElement = ({ r, g, b, a }: PreviewColorElementProps) => {
 	if (a === 255) {
 		return (
 			<>

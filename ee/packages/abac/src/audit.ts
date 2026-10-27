@@ -7,12 +7,16 @@ import type {
 	AbacAuditServerEventKey,
 	AbacAttributeDefinitionChangeType,
 	AbacAuditReason,
+	AbacAttributeStoreType,
 	AbacPdpType,
+	MinimalApp,
 	MinimalRoom,
 	MinimalUser,
 	AbacActionPerformed,
 } from '@rocket.chat/core-typings';
 import { ServerEvents } from '@rocket.chat/models';
+
+import { logger } from './logger';
 
 type EventParamsMap = {
 	[K in AbacAuditServerEventKey]: ExtractDataToParams<IServerEvents[K]>;
@@ -25,7 +29,9 @@ export type AbacAuditEventName = AbacAuditServerEventKey;
 export type AbacAuditEventPayload<K extends AbacAuditEventName = AbacAuditEventName> = EventPayload<K>;
 
 async function audit<K extends AbacAuditServerEventKey>(event: K, payload: EventPayload<K>, actor: IAuditServerActor): Promise<void> {
-	return ServerEvents.createAuditServerEvent(event, payload, actor);
+	return ServerEvents.createAuditServerEvent(event, payload, actor).catch((err) =>
+		logger.error({ msg: 'Failed to write ABAC audit event', event, err }),
+	);
 }
 
 export const Audit = {
@@ -73,15 +79,18 @@ export const Audit = {
 		current: IAbacAttributeDefinition[],
 		change: AbacAttributeDefinitionChangeType,
 		actor: AbacActor,
+		reason: AbacAuditReason = 'api',
+		app?: MinimalApp,
 	) => {
 		return audit(
 			'abac.object.attribute.changed',
 			{
 				room: minimalRoom,
-				reason: 'api',
+				reason,
 				change,
 				previous,
 				current,
+				app: app ?? null,
 			},
 			{ type: 'user', _id: actor._id, username: actor.username!, ip: '0.0.0.0', useragent: '' },
 		);
@@ -101,6 +110,7 @@ export const Audit = {
 				change,
 				previous,
 				current,
+				app: null,
 			},
 			{ type: 'user', _id: actor._id, username: actor.username!, ip: '0.0.0.0', useragent: '' },
 		);
@@ -137,6 +147,21 @@ export const Audit = {
 			{ type: 'system' },
 		);
 	},
+	objectAccessGranted: async (entries: Array<{ subject: MinimalUser; object: MinimalRoom }>) => {
+		if (!entries.length) {
+			return;
+		}
+
+		return ServerEvents.createAuditServerEvents(
+			entries.map(({ subject, object }) => ({
+				key: 'abac.action.performed' as const,
+				data: { action: 'granted-object-access' as const, reason: 'system' as const, subject, object, pdp: undefined },
+				actor: { type: 'system' as const },
+			})),
+		).catch((err) =>
+			logger.error({ msg: 'Failed to write ABAC audit events', event: 'abac.action.performed', count: entries.length, err }),
+		);
+	},
 	subjectAttributeChanged: async (diff: IAbacAttributeDefinition[], subject: MinimalUser) => {
 		return audit(
 			'abac.subject.attribute.changed',
@@ -146,6 +171,16 @@ export const Audit = {
 				diff,
 			},
 			{ type: 'system' },
+		);
+	},
+	attributeStoreSwitched: async (from: AbacAttributeStoreType, to: AbacAttributeStoreType, roomsAffected: number) => {
+		return audit('abac.attribute.store.switched', { from, to, reason: 'attribute-store-switch', roomsAffected }, { type: 'system' });
+	},
+	membershipEvaluated: async (attributes: IAbacAttributeDefinition[], subjects: MinimalUser[], actor: AbacActor) => {
+		return audit(
+			'abac.membership.evaluated',
+			{ reason: 'api', attributes, subjects },
+			{ type: 'user', _id: actor._id, username: actor.username!, ip: '0.0.0.0', useragent: '' },
 		);
 	},
 };

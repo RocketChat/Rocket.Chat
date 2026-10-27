@@ -1,5 +1,5 @@
-import { Box } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { Box, Text } from '@rocket.chat/fuselage';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useRouter, useSetModal, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
@@ -21,7 +21,7 @@ export const useAttributeOptions = (attribute: { _id: string; key: string }): Ge
 	const isABACAvailable = useIsABACAvailable();
 	const viewRoomsAction = useViewRoomsAction();
 
-	const editAction = useEffectEvent(() => {
+	const editAction = useStableCallback(() => {
 		return router.navigate(
 			{
 				name: 'admin-ABAC',
@@ -49,7 +49,7 @@ export const useAttributeOptions = (attribute: { _id: string; key: string }): Ge
 		},
 	});
 
-	const deleteAction = useEffectEvent(async () => {
+	const deleteAction = useStableCallback(async () => {
 		const isUsed = await isAttributeUsed();
 		if (isUsed.inUse) {
 			return setModal(
@@ -98,7 +98,7 @@ export const useAttributeOptions = (attribute: { _id: string; key: string }): Ge
 			id: 'delete',
 			iconColor: 'danger',
 			icon: 'trash' as const,
-			content: <Box color='danger'>{t('Delete')}</Box>,
+			content: <Text color='danger'>{t('Delete')}</Text>,
 			onClick: () => deleteAction(),
 		},
 	];

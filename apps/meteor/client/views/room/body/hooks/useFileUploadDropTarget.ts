@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useSetting, useTranslation, useUser } from '@rocket.chat/ui-contexts';
 import type { DragEvent, ReactNode } from 'react';
 import { useMemo, useSyncExternalStore } from 'react';
@@ -32,7 +32,7 @@ export const useFileUploadDropTarget = (): readonly [
 	const postReadOnly = usePermission('post-readonly', room._id);
 	const fileUploadAllowedForUser = useMemo(
 		() => !roomCoordinator.readOnly(room, { username: user?.username }),
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 		[room, user?.username, postReadOnly],
 	);
 
@@ -44,8 +44,8 @@ export const useFileUploadDropTarget = (): readonly [
 		chat?.composer?.editing.get ?? (() => false),
 	);
 
-	const onFileDrop = useEffectEvent(async (files: File[]) => {
-		const { getMimeType } = await import('../../../../../app/utils/lib/mimeTypes');
+	const onFileDrop = useStableCallback(async (files: File[]) => {
+		const { getMimeType } = await import('../../../../../lib/mimeTypes');
 		const getUniqueFiles = () => {
 			const uniqueFiles: File[] = [];
 			const st: Set<string> = new Set();

@@ -1,4 +1,4 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import type { IUser, MediaCallContact, MediaCallSignedContact } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type {
 	CallFeature,
@@ -10,11 +10,15 @@ import type {
 
 import { mediaCallDirector } from './CallDirector';
 import { getDefaultSettings } from './getDefaultSettings';
+import { getIceServer } from './getIceServer';
 import { stripSensitiveDataFromSignal } from './stripSensitiveData';
 import type {
 	IMediaCallServer,
 	IMediaCallServerSettings,
+	MediaCallHooks,
 	MediaCallServerEvents,
+	PreCallCreatedHookParams,
+	PreCallCreatedHookResult,
 	VoipPushNotificationEventType,
 } from '../definition/IMediaCallServer';
 import { CallRejectedError } from '../definition/common';
@@ -34,6 +38,8 @@ export class MediaCallServer implements IMediaCallServer {
 	private signalProcessor: GlobalSignalProcessor;
 
 	private settings: IMediaCallServerSettings;
+
+	private hooks: MediaCallHooks = {};
 
 	public emitter: Emitter<MediaCallServerEvents>;
 
@@ -90,6 +96,7 @@ export class MediaCallServer implements IMediaCallServer {
 			await this.createCall(fullParams);
 		} catch (error) {
 			let rejectionReason: CallRejectedReason = 'unsupported';
+
 			if (error && typeof error === 'object' && error instanceof CallRejectedError) {
 				rejectionReason = error.callRejectedReason;
 			} else {
@@ -142,12 +149,28 @@ export class MediaCallServer implements IMediaCallServer {
 		this.settings = settings;
 	}
 
+	public setHooks(hooks: MediaCallHooks): void {
+		this.hooks = hooks;
+	}
+
+	public async runPreCallCreatedHook(params: PreCallCreatedHookParams): Promise<PreCallCreatedHookResult> {
+		if (!this.hooks.onPreCallCreated) {
+			return { prevented: false };
+		}
+
+		return this.hooks.onPreCallCreated(params);
+	}
+
 	public async permissionCheck(uid: IUser['_id'], callType: 'internal' | 'external' | 'any'): Promise<boolean> {
 		return this.settings.permissionCheck(uid, callType);
 	}
 
 	public isFeatureAvailableForUser(uid: IUser['_id'], feature: CallFeature): boolean {
 		return this.settings.isFeatureAvailableForUser(uid, feature);
+	}
+
+	public getIceServersForUser(uid: IUser['_id']): RTCIceServer[] {
+		return this.settings.iceServers.map((server) => getIceServer(server, uid));
 	}
 
 	/**
@@ -221,6 +244,8 @@ export class MediaCallServer implements IMediaCallServer {
 			}
 		}
 
+		const requestedBy = params.requestedBy && (await this.parseRequesterContact(params.requestedBy, caller));
+
 		return {
 			...params,
 			caller: {
@@ -228,7 +253,20 @@ export class MediaCallServer implements IMediaCallServer {
 				contractId: params.caller.contractId,
 			},
 			callee,
+			...(requestedBy && { requestedBy }),
 		};
+	}
+
+	private async parseRequesterContact(requestedBy: MediaCallSignedContact, caller: MediaCallContact): Promise<MediaCallSignedContact> {
+		// On anything that isn't a transfer, the requester is the caller themselves, whose
+		// contact information was just loaded
+		if (requestedBy.type === caller.type && requestedBy.id === caller.id) {
+			return { ...caller, ...requestedBy };
+		}
+
+		const contact = await mediaCallDirector.cast.getContactForActor(requestedBy, { requiredType: requestedBy.type });
+
+		return contact ? { ...contact, ...requestedBy } : requestedBy;
 	}
 
 	private getCalleeContactOptions(): GetActorContactOptions {

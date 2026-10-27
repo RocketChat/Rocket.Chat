@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import SenderSelect from '../../../../SenderSelect';
 import type { RecipientFormData } from '../RecipientForm';
 
-type SenderFieldProps = ComponentProps<typeof Field> & {
+export type SenderFieldProps = ComponentProps<typeof Field> & {
 	control: Control<RecipientFormData>;
 	provider?: Serialized<IOutboundProviderMetadata>;
 	disabled?: boolean;
@@ -37,7 +37,7 @@ const SenderField = ({ control, provider, disabled = false, isLoading = false, .
 
 	return (
 		<Field {...props}>
-			<FieldLabel is='span' required id={senderFieldId}>
+			<FieldLabel required id={senderFieldId}>
 				{t('From')}
 			</FieldLabel>
 			<FieldRow>
