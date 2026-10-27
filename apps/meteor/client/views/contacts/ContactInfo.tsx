@@ -32,7 +32,7 @@ export type ContactInfoProps = {
 const ContactInfo = ({ contact, onEdit, onClose }: ContactInfoProps) => {
 	const { t } = useTranslation();
 	const labelOf = useContactLabel();
-	const { canCall, call } = useContactCall();
+	const { canCall, isCallInProgress, call } = useContactCall();
 	const { _id, source, displayName, emails, phones, categories, companyName, officeLocation, _updatedAt } = contact;
 
 	// A labelled address says something an unlabelled one does not, so it gets its own field to say it in.
@@ -96,7 +96,7 @@ const ContactInfo = ({ contact, onEdit, onClose }: ContactInfoProps) => {
 									<ContactInfoEntry
 										text={raw}
 										actionIcon='phone'
-										actionLabel={t('Call')}
+										actionLabel={isCallInProgress ? t('Call_in_progress') : t('Call')}
 										onAction={canCall ? () => call(raw) : undefined}
 									/>
 								</InfoPanelField>

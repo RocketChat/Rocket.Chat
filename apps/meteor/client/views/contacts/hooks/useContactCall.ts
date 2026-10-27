@@ -7,5 +7,5 @@ export const useContactCall = () => {
 
 	const call = useCallback((number: string) => toggleWidget({ number }), [toggleWidget]);
 
-	return { canCall: state !== 'unavailable', call };
+	return { canCall: state === 'available', isCallInProgress: state !== 'available' && state !== 'unavailable', call };
 };
