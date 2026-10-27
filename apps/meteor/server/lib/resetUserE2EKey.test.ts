@@ -1,20 +1,9 @@
 import { beforeEach, describe, it } from 'node:test';
 
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
-
-class MeteorErrorMock extends Error {
-	error: string;
-
-	details: unknown;
-
-	constructor(error: string, reason?: string, details?: unknown) {
-		super(reason ?? error);
-		this.error = error;
-		this.details = details;
-	}
-}
 
 const sandbox = sinon.createSandbox();
 
@@ -30,9 +19,8 @@ const settingsGet = sandbox.stub();
 const getFixedT = sandbox.stub();
 
 const { resetUserE2EEncriptionKey } = proxyquire.noCallThru().load('./resetUserE2EKey', {
-	'@rocket.chat/core-services': { api: { broadcast } },
+	'@rocket.chat/core-services': { api: { broadcast }, ClientSafeError },
 	'@rocket.chat/models': { Users, Subscriptions, Rooms },
-	'meteor/meteor': { Meteor: { Error: MeteorErrorMock } },
 	'./i18n': { i18n: { getFixedT } },
 	'./isUserIdFederated': { isUserIdFederated },
 	'./notifications/email/api': { send: sendEmail },
@@ -181,7 +169,7 @@ describe('resetUserE2EEncriptionKey', () => {
 			Users.findOneById.resolves(null);
 
 			await expect(resetUserE2EEncriptionKey(UID, true))
-				.to.be.rejectedWith(MeteorErrorMock)
+				.to.be.rejectedWith(ClientSafeError)
 				.and.eventually.have.property('error', 'invalid-user');
 			expect(sendEmail.called).to.be.equal(false);
 			expectNoKeyOrSessionCleanup();
@@ -191,7 +179,7 @@ describe('resetUserE2EEncriptionKey', () => {
 			isUserIdFederated.resolves(true);
 
 			await expect(resetUserE2EEncriptionKey(UID, false))
-				.to.be.rejectedWith(MeteorErrorMock)
+				.to.be.rejectedWith(ClientSafeError)
 				.and.eventually.have.property('error', 'error-not-allowed');
 			expect(isUserIdFederated.calledOnceWithExactly(UID)).to.be.equal(true);
 			expectNoKeyOrSessionCleanup();
@@ -200,11 +188,11 @@ describe('resetUserE2EEncriptionKey', () => {
 		it('should report a failed email as error-email-send-failed and leave keys and sessions untouched', async () => {
 			sendEmail.rejects(new Error('SMTP connection refused'));
 
-			const error = await resetUserE2EEncriptionKey(UID, true).catch((e: MeteorErrorMock) => e);
+			const error = await resetUserE2EEncriptionKey(UID, true).catch((e: ClientSafeError) => e);
 
-			expect(error).to.be.instanceOf(MeteorErrorMock);
+			expect(error).to.be.instanceOf(ClientSafeError);
 			expect(error.error).to.be.equal('error-email-send-failed');
-			expect(error.message).to.be.equal('Error trying to send email: SMTP connection refused');
+			expect(error.reason).to.be.equal('Error trying to send email: SMTP connection refused');
 			expect(error.details).to.deep.equal({ function: 'resetUserE2EEncriptionKey', message: 'SMTP connection refused' });
 			expectNoKeyOrSessionCleanup();
 		});
@@ -221,9 +209,9 @@ describe('resetUserE2EEncriptionKey', () => {
 			);
 			sendEmail.onSecondCall().callsFake(() => Promise.reject('mailbox full'));
 
-			const error = await resetUserE2EEncriptionKey(UID, true).catch((e: MeteorErrorMock) => e);
+			const error = await resetUserE2EEncriptionKey(UID, true).catch((e: ClientSafeError) => e);
 
-			expect(error.message).to.be.equal('Error trying to send email: mailbox full');
+			expect(error.reason).to.be.equal('Error trying to send email: mailbox full');
 			expect(error.details).to.deep.equal({ function: 'resetUserE2EEncriptionKey', message: 'mailbox full' });
 			expect(sendEmail.callCount).to.be.equal(2);
 			expectNoKeyOrSessionCleanup();
