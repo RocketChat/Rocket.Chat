@@ -47,7 +47,7 @@ async function saveUserProfile(
 	}
 
 	if (!this.userId) {
-		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', {
 			method: 'saveUserProfile',
 		});
 	}

@@ -910,7 +910,7 @@ describe('LIVECHAT - visitors', () => {
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal("must have required property 'selector' [invalid-params]");
+					expect(res.body.error).to.be.equal("must have required property 'selector' [error-invalid-params]");
 				});
 		});
 

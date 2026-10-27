@@ -655,8 +655,8 @@ describe('miscellaneous', () => {
 		it('should fail if not logged in', async () => {
 			const res = await request.get(api('instances.get')).expect('Content-Type', 'application/json').expect(401);
 
-			expect(res.body).to.have.property('status', 'error');
-			expect(res.body).to.have.property('message');
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 		});
 
 		it('should return instances if user is logged in and is authorized', async () => {
@@ -764,7 +764,8 @@ describe('miscellaneous', () => {
 			const res = await request.post(api('fingerprint')).send({ setDeploymentAs: 'updated-configuration' });
 
 			expect(res.status).to.equal(401);
-			expect(res.body).to.have.property('status', 'error');
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 		});
 
 		it('should return 403 when a user without the manage-cloud permission tries to acknowledge a deployment configuration change', async () => {

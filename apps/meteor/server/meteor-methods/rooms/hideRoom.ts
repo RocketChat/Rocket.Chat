@@ -8,7 +8,7 @@ export const hideRoomMethod = async (userId: string, rid: string): Promise<numbe
 	check(rid, String);
 
 	if (!userId) {
-		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', {
 			method: 'hideRoom',
 		});
 	}

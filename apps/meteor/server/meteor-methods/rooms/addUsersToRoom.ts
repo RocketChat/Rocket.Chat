@@ -50,7 +50,7 @@ export const assertCanAddUsersToRoom = async (userId: string, room: IRoom): Prom
 
 export const addUsersToRoomMethod = async (userId: string, data: { rid: string; users: string[] }, user?: IUser): Promise<boolean> => {
 	if (!userId) {
-		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', {
 			method: 'addUsersToRoom',
 		});
 	}

@@ -801,7 +801,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 									typeof _options.validateParams === 'function' ? _options.validateParams : _options.validateParams[requestMethod];
 
 								if (validatorFunc && !validatorFunc(requestMethod === 'GET' ? this.queryParams : this.bodyParams)) {
-									throw new ClientSafeError('invalid-params', validatorFunc.errors?.map((error: any) => error.message).join('\n '));
+									throw new ClientSafeError('error-invalid-params', validatorFunc.errors?.map((error: any) => error.message).join('\n '));
 								}
 							}
 							if (
@@ -831,18 +831,14 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 								switch (e.error) {
 									case 'error-too-many-requests':
 										return api.tooManyRequests(typeof e === 'string' ? e : e.message);
+									case 'error-unauthenticated':
+										return api.unauthorized(typeof e === 'string' ? e : e.message);
 									case 'unauthorized':
 									case 'error-unauthorized':
-										if (applyBreakingChanges) {
-											return api.unauthorized(typeof e === 'string' ? e : e.message);
-										}
-										return api.forbidden(typeof e === 'string' ? e : e.message);
+									case 'error-not-authorized':
 									case 'forbidden':
 									case 'error-forbidden':
-										if (applyBreakingChanges) {
-											return api.forbidden(typeof e === 'string' ? e : e.message);
-										}
-										return api.failure(typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
+										return api.forbidden(typeof e === 'string' ? e : e.message);
 									default:
 										return api.failure(typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
 								}
@@ -1023,18 +1019,17 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 
 						const result = self.unauthorized();
 
-						if (!applyBreakingChanges) {
-							Object.assign(result.body, {
-								status: 'error',
-								error: error.error,
-								details: error.details,
-								message: error.reason || error.message,
-								...(error.reason === 'User not found' && {
-									error: 'Unauthorized',
-									message: 'Unauthorized',
-								}),
-							});
-						}
+						// Clients read these to drive 2FA prompts and explain refused logins
+						Object.assign(result.body, {
+							...(!applyBreakingChanges && { status: 'error' }),
+							error: error.error,
+							details: error.details,
+							message: error.reason || error.message,
+							...(error.reason === 'User not found' && {
+								error: 'Unauthorized',
+								message: 'Unauthorized',
+							}),
+						});
 						return result;
 					}
 				},
