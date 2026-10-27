@@ -48,7 +48,7 @@ const isSelectedValid =
  */
 export type AutoCompleteProps<TLabel = ReactNode> = Omit<AllHTMLAttributes<HTMLInputElement>, 'value' | 'onChange' | 'is'> & {
 	filter: string;
-	setFilter?: (filter: string) => void;
+	setFilter: (filter: string) => void;
 	options?: AutoCompleteOption<TLabel>[];
 	renderSelected?: ComponentType<{
 		selected: AutoCompleteOption<TLabel>;
@@ -113,7 +113,13 @@ function AutoComplete<TLabel = ReactNode>({
 			const currentValues = new Set(mappedCurrent.map((item) => item.value));
 			const newIncoming = incoming.filter((item) => !currentValues.has(item.value));
 
-			const validMerged = [...mappedCurrent, ...newIncoming];
+			const valueOrder = Array.isArray(value) ? new Map(value.map((item, index) => [item, index])) : undefined;
+			const validMerged = [...mappedCurrent, ...newIncoming].sort((a, b) => {
+				if (!valueOrder) {
+					return 0;
+				}
+				return (valueOrder.get(a.value) ?? 0) - (valueOrder.get(b.value) ?? 0);
+			});
 
 			const isDifferent =
 				validMerged.length !== currentSelected.length ||
