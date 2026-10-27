@@ -31,14 +31,13 @@ beforeAll(async () => {
 	privateKey = (await generate()).privateKey;
 });
 
-const setup = async (subscriptions: Subscription[] = [{ rid: 'r1', encrypted: true }], { userId = 'u1' }: { userId?: string } = {}) => {
+const setup = async (
+	subscriptions: Subscription[] = [{ rid: 'r1', encrypted: true }],
+	{ userId = 'u1', whenRoomsReady }: { userId?: string; whenRoomsReady?: () => Promise<void> } = {},
+) => {
 	const backend = createFakeSearchIndexBackend();
-	// The desktop index stays open after a wipe (it empties the tables); the FakeBackend closes. Keep it open like the desktop.
-	const fakeWipe = backend.wipe.bind(backend);
-	const wipe = jest.spyOn(backend, 'wipe').mockImplementation(async () => {
-		await fakeWipe();
-		await backend.open({ userId: 'u1' });
-	});
+	// A wipe closes the index, in the FakeBackend and in the desktop app (the bridge wipe ends the session).
+	const wipe = jest.spyOn(backend, 'wipe');
 	const removeRoom = jest.spyOn(backend, 'removeRoom');
 
 	const emitter = new Emitter<{ E2E_STATE_CHANGED: { prevState: string; nextState: string } }>();
@@ -59,12 +58,15 @@ const setup = async (subscriptions: Subscription[] = [{ rid: 'r1', encrypted: tr
 		syncMessages: jest.fn(async () => ({ updated: [], deleted: [] })),
 		decryptMessage: async (decrypted) => decrypted,
 		getRooms: () => toSearchIndexRooms(subscriptions),
+		getSubscribedRids: () => new Set(subscriptions.map((sub) => sub.rid)),
+		...(whenRoomsReady && { whenRoomsReady }),
 		idle: neverIdle,
 	});
 
 	const login = async () => {
 		setState('READY');
 		await session.whenSettled();
+		await runtime.whenSettled();
 	};
 
 	const index = async (...messages: IMessage[]) => {
@@ -93,21 +95,25 @@ describe('search index lifecycle (LSE2EE-19)', () => {
 	});
 
 	it('wipes the open index when the user resets the own E2E key', async () => {
-		const { wipe, index, searchIds, runtime } = await setup();
+		const { wipe, index, searchIds, runtime, backend } = await setup();
 		await index(message('m1', 'r1', 'narwhal reset'));
 
 		await expect(runtime.wipe()).resolves.toBe(true);
 
 		expect(wipe).toHaveBeenCalledTimes(1);
+		// The wipe closes the index, like the desktop app: the next login opens an empty one.
+		await expect(backend.stats()).rejects.toThrow('not open');
+		await backend.open({ userId: 'u1' });
 		expect(await searchIds('narwhal')).toEqual([]);
 	});
 
 	it('sends a document that was queued before the key reset to no index', async () => {
-		const { writer, runtime, searchIds } = await setup();
+		const { writer, runtime, searchIds, backend } = await setup();
 		writer.index(message('m1', 'r1', 'queued walrus'));
 
 		await runtime.wipe();
 		await writer.flush();
+		await backend.open({ userId: 'u1' });
 
 		expect(await searchIds('walrus')).toEqual([]);
 	});
@@ -168,5 +174,63 @@ describe('search index lifecycle (LSE2EE-19)', () => {
 		expect(removeRoom).not.toHaveBeenCalled();
 		expect(wipe).not.toHaveBeenCalled();
 		expect(await searchIds('tapir')).toEqual(['m1']);
+	});
+
+	// LSE2EE-78: the user left a room while the index was closed (app closed, logged out, E2EE locked). No removal event
+	// reaches the index, so the open removes each indexed room that has no subscription.
+	it('removes at open the rooms that the user left while the index was closed', async () => {
+		const { setState, login, index, searchIds, subscriptions, removeRoom } = await setup([
+			{ rid: 'r1', encrypted: true },
+			{ rid: 'r2', encrypted: true },
+			{ rid: 'r3', encrypted: true },
+		]);
+		await index(message('m1', 'r1', 'margay left'), message('m2', 'r2', 'margay stays'), message('m3', 'r3', 'margay unencrypted'));
+		setState('DISABLED');
+
+		subscriptions.splice(0, 1);
+		subscriptions[1].encrypted = false;
+		await login();
+
+		expect(removeRoom.mock.calls).toEqual([['r1']]);
+		expect(await searchIds('margay')).toEqual(['m2', 'm3']);
+	});
+
+	it('waits for the subscription list before it removes rooms at open', async () => {
+		let ready: Promise<void> = Promise.resolve();
+		const subscriptions: Subscription[] = [{ rid: 'r1', encrypted: true }];
+		const { setState, session, runtime, index, searchIds, removeRoom } = await setup(subscriptions, { whenRoomsReady: () => ready });
+		await index(message('m1', 'r1', 'serval kept'));
+		setState('DISABLED');
+
+		// After a reload the subscription store starts empty and fills from the cache or the server.
+		let markReady = (): void => undefined;
+		ready = new Promise((resolve) => {
+			markReady = resolve;
+		});
+		subscriptions.splice(0, 1);
+		setState('READY');
+		await session.whenSettled();
+		await Promise.resolve();
+		expect(removeRoom).not.toHaveBeenCalled();
+
+		subscriptions.push({ rid: 'r1', encrypted: true });
+		markReady();
+		await runtime.whenSettled();
+
+		expect(removeRoom).not.toHaveBeenCalled();
+		expect(await searchIds('serval')).toEqual(['m1']);
+	});
+
+	it('keeps every room at open when the desktop app cannot list the indexed rooms', async () => {
+		const { backend, setState, login, index, searchIds, subscriptions, removeRoom } = await setup([{ rid: 'r1', encrypted: true }]);
+		await index(message('m1', 'r1', 'caracal old desktop'));
+		setState('DISABLED');
+		delete (backend as { listRooms?: unknown }).listRooms;
+
+		subscriptions.splice(0, 1);
+		await login();
+
+		expect(removeRoom).not.toHaveBeenCalled();
+		expect(await searchIds('caracal')).toEqual(['m1']);
 	});
 });

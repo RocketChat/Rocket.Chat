@@ -15,6 +15,7 @@ import { E2ERoom } from './rocketchat.e2e.room';
 import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 import { getMessageUrlRegex } from '../../../lib/getMessageUrlRegex';
 import { t } from '../../../lib/i18n';
+import { SubscriptionsCachedStore } from '../../cachedStores/SubscriptionsCachedStore';
 import { Messages, Rooms, Subscriptions } from '../../stores';
 import EnterE2EPasswordModal from '../../views/e2e/EnterE2EPasswordModal';
 import SaveE2EPasswordModal from '../../views/e2e/SaveE2EPasswordModal';
@@ -34,6 +35,7 @@ import {
 } from '../e2eeSearch/searchIndexRuntime';
 import { createDocumentIdleSignal } from '../e2eeSearch/searchIndexScheduler';
 import { isSearchIndexOptedIn, subscribeToSearchIndexOptIn } from '../e2eeSearch/searchIndexOptIn';
+import { subscriptionRemovals } from '../e2eeSearch/subscriptionRemovals';
 import { createSearchIndexSession } from '../e2eeSearch/searchIndexSession';
 import { createSearchIndexWriter } from '../e2eeSearch/searchIndexWriter';
 import { getUserAvatarURL } from '../getUserAvatarURL';
@@ -955,9 +957,25 @@ export const e2eSearchIndexRuntime = createSearchIndexRuntime({
 	}),
 	decryptMessage: (message) => e2e.decryptMessage(message),
 	getRooms: () => toSearchIndexRooms(Subscriptions.state.records.values()),
+	getSubscribedRids: () => new Set(Array.from(Subscriptions.state.records.values(), (sub) => sub.rid)),
+	whenRoomsReady: () =>
+		new Promise<void>((resolve) => {
+			if (SubscriptionsCachedStore.useReady.getState()) return resolve();
+			const unsubscribe = SubscriptionsCachedStore.useReady.subscribe((ready) => {
+				if (!ready) return;
+				unsubscribe();
+				resolve();
+			});
+		}),
 	idle: createDocumentIdleSignal('useLoginPresence'),
 	getMaxAgeMs: () => backfillMonthsToMaxAgeMs(settings.peek<number>('E2E_Local_Search_Backfill_Months')),
 	onError: (error) => log.span('searchIndexCrawler').error('Error indexing the history of encrypted rooms', error),
+});
+
+// A sync after a reload reports the rooms that the user left while this client was closed. Rooms that the user left
+// before the index opened are removed at open (LSE2EE-78).
+subscriptionRemovals.on('removed', ({ rid }) => {
+	void e2eSearchIndexRuntime.onRoomRemoved(rid);
 });
 
 e2e.on('E2E_ROOM_READY', (rid: string) => {

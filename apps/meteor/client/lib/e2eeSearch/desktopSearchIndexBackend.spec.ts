@@ -36,6 +36,16 @@ describe('getDesktopSearchIndexBackend', () => {
 		expect(getDesktopSearchIndexBackend()).toBeUndefined();
 	});
 
+	it('forwards listRooms when the desktop app has it, and leaves it out for an older desktop (LSE2EE-78)', async () => {
+		setDesktop({ e2eeSearch: createBridge() });
+		expect(getDesktopSearchIndexBackend()?.listRooms).toBeUndefined();
+
+		const listRooms = jest.fn(async () => ['r1']);
+		setDesktop({ e2eeSearch: { ...createBridge(), listRooms } });
+		await expect(getDesktopSearchIndexBackend()?.listRooms?.()).resolves.toEqual(['r1']);
+		expect(listRooms).toHaveBeenCalledWith();
+	});
+
 	it('returns no backend when a bridge member is not a function', () => {
 		setDesktop({ e2eeSearch: { ...createBridge(), search: 'search' } });
 

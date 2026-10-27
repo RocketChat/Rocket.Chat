@@ -104,6 +104,11 @@ export const createFakeSearchIndexBackend = (): ISearchIndexBackend => {
 			roomStates.delete(rid);
 		},
 
+		async listRooms() {
+			assertOpen();
+			return [...new Set([...[...docs.values()].map((doc) => doc.rid), ...roomStates.keys()])].sort();
+		},
+
 		async search(query) {
 			assertOpen();
 			const tokens = queryTokens(query.text);

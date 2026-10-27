@@ -78,6 +78,13 @@ type SearchIndexRuntimeOptions = {
 	/** The client's E2E decrypt path, which also queues the decrypted message for the writer. */
 	decryptMessage: (message: IMessage) => Promise<IMessage>;
 	getRooms: () => SearchIndexRoom[];
+	/**
+	 * The rooms of every subscription of the user, encrypted or not. When the index opens, the rows of the other rooms are
+	 * removed: the user left them while the index was closed (LSE2EE-78).
+	 */
+	getSubscribedRids?: () => ReadonlySet<string>;
+	/** Resolves when the subscription list is loaded, so an empty list at startup does not remove every room. */
+	whenRoomsReady?: () => Promise<void>;
 	idle: IdleSignal;
 	/** The depth limit of the backfill, read each time the index opens. `undefined` indexes the whole history. */
 	getMaxAgeMs?: () => number | undefined;
@@ -95,6 +102,8 @@ export type SearchIndexRuntime = {
 	onRoomKeyReady(rid: string): void;
 	/** Removes the rows of a room whose subscription was removed (the user left the room or was removed from it). */
 	onRoomRemoved(rid: string): Promise<void>;
+	/** Resolves when the removal of the left rooms after the last open is done. Specs use it. */
+	whenSettled(): Promise<void>;
 	/**
 	 * Empties the open index, after the user reset the own E2E key: the old messages are not readable with the new key,
 	 * and the index must not keep them. The crawler stops until the next login. While E2EE is locked no index is open,
@@ -115,6 +124,8 @@ export const createSearchIndexRuntime = ({
 	syncMessages,
 	decryptMessage,
 	getRooms,
+	getSubscribedRids,
+	whenRoomsReady = () => Promise.resolve(),
 	idle,
 	getMaxAgeMs = () => undefined,
 	onError = () => undefined,
@@ -135,6 +146,22 @@ export const createSearchIndexRuntime = ({
 
 	let backend: ISearchIndexBackend | undefined;
 	let scheduler: SearchIndexScheduler | undefined;
+	let pruning: Promise<void> = Promise.resolve();
+
+	// Removes the rows of the rooms that the user left while the index was closed: no removal event reached it then.
+	const pruneLeftRooms = async (opened: ISearchIndexBackend) => {
+		if (!getSubscribedRids || typeof opened.listRooms !== 'function') return;
+
+		await whenRoomsReady();
+		if (backend !== opened) return;
+
+		const subscribed = getSubscribedRids();
+		const left = (await opened.listRooms()).filter((rid) => !subscribed.has(rid));
+		for (const rid of left) {
+			if (backend !== opened) return;
+			await (scheduler ? scheduler.removeRoom(rid) : opened.removeRoom(rid));
+		}
+	};
 
 	const sync = () => {
 		const next = session.getActiveBackend();
@@ -147,6 +174,7 @@ export const createSearchIndexRuntime = ({
 
 		scheduler = buildScheduler(next);
 		scheduler.start();
+		pruning = pruneLeftRooms(next).catch(onError);
 	};
 
 	const unsubscribe = session.subscribe(sync);
@@ -154,6 +182,7 @@ export const createSearchIndexRuntime = ({
 
 	return {
 		getScheduler: () => scheduler,
+		whenSettled: () => pruning,
 		onReconnect: () => scheduler?.requestCatchUp(),
 		onRoomKeyReady: (rid) => scheduler?.retryPendingDecrypt(rid),
 		async onRoomRemoved(rid) {

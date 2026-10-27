@@ -114,6 +114,11 @@ export interface ISearchIndexBackend {
 	upsert(docs: E2EESearchDoc[]): Promise<void>;
 	remove(ids: string[]): Promise<void>;
 	removeRoom(rid: string): Promise<void>;
+	/**
+	 * The rooms that have rows in the index, sorted. The web client removes the rooms that the user left while the index was
+	 * closed. Desktop versions before this method do not have it.
+	 */
+	listRooms?(): Promise<string[]>;
 	search(query: E2EESearchQuery): Promise<E2EESearchHit[]>;
 	getRoomState(rid: string): Promise<E2EESearchRoomState | undefined>;
 	setRoomState(rid: string, state: E2EESearchRoomState): Promise<void>;

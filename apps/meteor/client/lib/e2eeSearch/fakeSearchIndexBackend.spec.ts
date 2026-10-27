@@ -159,6 +159,29 @@ describe('createFakeSearchIndexBackend', () => {
 		await expect(backend.getRoomState('r1')).resolves.toBeUndefined();
 	});
 
+	it('closes the index on a wipe, like the desktop app ends its session', async () => {
+		const backend = await openBackend();
+
+		await backend.wipe();
+
+		await expect(backend.stats()).rejects.toThrow('E2EE search index is not open');
+	});
+
+	it('lists each room that has documents or a room state, once', async () => {
+		const backend = await openBackend();
+		await backend.upsert([
+			doc({ id: 'm1', rid: 'r2', body: 'a' }),
+			doc({ id: 'm2', rid: 'r1', body: 'b' }),
+			doc({ id: 'm3', rid: 'r1', body: 'c' }),
+		]);
+		await backend.setRoomState('r3', { backfillDone: true });
+
+		await expect(backend.listRooms?.()).resolves.toEqual(['r1', 'r2', 'r3']);
+
+		await backend.removeRoom('r3');
+		await expect(backend.listRooms?.()).resolves.toEqual(['r1', 'r2']);
+	});
+
 	it('drops the index of another user on open', async () => {
 		const backend = await openBackend();
 		await backend.upsert([doc({ id: 'm1', body: 'needle' })]);
