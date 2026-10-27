@@ -51,7 +51,6 @@ describe('getMomentLocale', () => {
 	// The locale ends up in a file path, so anything but a language tag must not reach the file system.
 	it('should reject a locale that is not a language tag without reading any file', async () => {
 		for (const locale of ['../../../../main', 'pt/../../x', 'en\0', 'e', 'en-', 'en-toolongsubtag', '']) {
-			// eslint-disable-next-line no-await-in-loop
 			await expect(getMomentLocale(locale)).to.be.rejectedWith('Moment locale not found');
 		}
 
