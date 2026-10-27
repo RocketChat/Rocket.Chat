@@ -349,7 +349,7 @@ PlainRunBeforeEmoticon = "-" &("_" "-" .) { return plain('-'); }
 PlainRun = run:$[^*_~`:\n<\[\]! \t()\\|]+ { return plain(run); }
 
 // a `"` opening a URL, as in "https://example.com", is emitted on its own so the URL that follows is still auto-linked
-QuoteBeforeURL = "\"" &([^ \t\r\n:./@"]* ("://" / ".")) { return plain('"'); }
+QuoteBeforeURL = "\"" &([A-Za-z0-9] [^ \t\r\n:./@"]* ("://" / ".")) { return plain('"'); }
 
 EscapedTimestampRules
   = "\\" "<t:" rawDate:$(Unixtime / ISO8601Date / ISO8601DateWithoutMilliseconds / Timestamp) ":" format:TimestampType ">" {
