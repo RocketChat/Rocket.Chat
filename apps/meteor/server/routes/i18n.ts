@@ -25,7 +25,7 @@ const i18nHandler = async function (req: IncomingMessage, res: ServerResponse) {
 		}
 
 		res.setHeader('Content-Type', 'application/json');
-		res.setHeader('Content-Length', data.length);
+		res.setHeader('Content-Length', Buffer.byteLength(data));
 		res.writeHead(200);
 		res.end(data);
 	} catch (e) {
