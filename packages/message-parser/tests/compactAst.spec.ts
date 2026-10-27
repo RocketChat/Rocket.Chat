@@ -206,7 +206,7 @@ describe('Compact AST format for message-parser', () => {
 							timestamp: '1708551317',
 							format: 'R',
 						},
-						fallback: [11, 26],
+						fallback: [11, 27],
 					},
 				]),
 			];
@@ -319,6 +319,19 @@ describe('Compact AST format for message-parser', () => {
 			const restored = expand(compact, msg);
 			expect(restored).toEqual(ast);
 		});
+
+		it('preserves explicitly empty nested arrays losslessly', () => {
+			const msg = '1. Item with empty nested';
+			const ast: Root = [
+				orderedList([
+					listItem([plain('Item with empty nested')], 1, []),
+				]),
+			];
+
+			expect(validateRoundtrip(ast, msg)).toBe(true);
+			const compact = compactify(ast, msg);
+			expect(expand(compact, msg)).toEqual(ast);
+		});
 	});
 
 	describe('Tables', () => {
@@ -336,7 +349,7 @@ describe('Compact AST format for message-parser', () => {
 							tableCell([plain('30')], 'center'),
 						]),
 					],
-					[0, 48]
+					[0, msg.length]
 				),
 			];
 

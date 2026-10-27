@@ -660,7 +660,7 @@ function compactNestedLists(
 	msg: string,
 	state: CompactionState
 ): CompactNestedList[] | undefined {
-	if (!lists || lists.length === 0) return undefined;
+	if (!lists) return undefined;
 	return lists.map((list) => {
 		switch (list.type) {
 			case 'ORDERED_LIST':
@@ -981,8 +981,9 @@ export function validateRoundtrip(ast: Root, msg: string): boolean {
 export function calculateCompressionRatio(ast: Root, compactAst: CompactRoot): CompressionRatio {
 	const originalJson = JSON.stringify(ast);
 	const compactJson = JSON.stringify(compactAst);
-	const originalBytes = Buffer.byteLength(originalJson, 'utf8');
-	const compactBytes = Buffer.byteLength(compactJson, 'utf8');
+	const encoder = new TextEncoder();
+	const originalBytes = encoder.encode(originalJson).byteLength;
+	const compactBytes = encoder.encode(compactJson).byteLength;
 	const ratio = originalBytes === 0 ? 1 : compactBytes / originalBytes;
 	const percentReduction = (1 - ratio) * 100;
 
