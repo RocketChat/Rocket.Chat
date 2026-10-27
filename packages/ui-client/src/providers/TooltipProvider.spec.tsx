@@ -25,6 +25,22 @@ const setup = () => {
 	};
 };
 
+it('should remove the body click listener with the capture flag it was added with', () => {
+	const addEventListener = jest.spyOn(document.body, 'addEventListener');
+	const removeEventListener = jest.spyOn(document.body, 'removeEventListener');
+
+	const { unmount } = render(<TooltipProvider />);
+	const clickListener = addEventListener.mock.calls.find(([type]) => type === 'click')?.[1];
+	unmount();
+
+	const removeCalls = [...removeEventListener.mock.calls];
+	addEventListener.mockRestore();
+	removeEventListener.mockRestore();
+
+	expect(clickListener).toBeDefined();
+	expect(removeCalls).toContainEqual(['click', clickListener, { capture: true }]);
+});
+
 const waitForTooltipDebounce = () => {
 	act(() => {
 		jest.advanceTimersByTime(300);

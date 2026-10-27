@@ -147,7 +147,7 @@ const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipP
 		return (): void => {
 			contextValue.close();
 			ownerDocument.body.removeEventListener('mouseover', handleMouseOver);
-			ownerDocument.body.removeEventListener('click', dismissOnClick);
+			ownerDocument.body.removeEventListener('click', dismissOnClick, { capture: true });
 		};
 	}, [contextValue, setTooltip, hasHover, ownerDocument]);
 
