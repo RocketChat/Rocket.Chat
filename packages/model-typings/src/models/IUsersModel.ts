@@ -507,6 +507,10 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>>;
 	countUsersNotOffline(options?: FindOptions<IUser>): Promise<number>;
+	findConnectedByRoomId<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roomId: IRoom['_id'],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	findNotIdUpdatedFrom<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		userId: string,
 		updatedFrom: Date,
