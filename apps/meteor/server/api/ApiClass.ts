@@ -386,9 +386,9 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 
 	public forbidden(): ForbiddenResult<string>;
 
-	public forbidden<T>(msg: T): ForbiddenResult<T>;
+	public forbidden<T>(msg: T, errorType?: string): ForbiddenResult<T>;
 
-	public forbidden<T>(msg?: T): ForbiddenResult<T> {
+	public forbidden<T>(msg?: T, errorType?: string): ForbiddenResult<T> {
 		return {
 			statusCode: 403,
 			body: {
@@ -397,6 +397,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 				// because of reasons beyond my control we were used to send `unauthorized` to 403 cases, to avoid a breaking change we just adapted here
 				// but thanks to the semver check tests should break as soon we bump to a new version
 				error: msg || (applyBreakingChanges ? 'forbidden' : 'unauthorized'),
+				...(errorType && { errorType }),
 			},
 		};
 	}
@@ -839,7 +840,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 									case 'error-not-authorized':
 									case 'forbidden':
 									case 'error-forbidden':
-										return api.forbidden(typeof e === 'string' ? e : e.message);
+										return api.forbidden(typeof e === 'string' ? e : e.message, e.error);
 									default:
 										return api.failure(typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
 								}

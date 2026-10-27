@@ -56,6 +56,7 @@ export type ForbiddenResult<T> = {
 		success: false;
 		// TODO: MAJOR remove 'unauthorized'
 		error: T | 'forbidden' | 'unauthorized';
+		errorType?: string;
 	};
 };
 
