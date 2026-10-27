@@ -5256,7 +5256,7 @@
   "Outlook_Calendar_Enabled": "Enabled",
   "Outlook_calendar_event": "Outlook calendar event",
   "Outlook_Calendar_Exchange_Url": "Exchange URL",
-  "Outlook_Calendar_Exchange_Url_Description": "Default Host URL for the EWS api.",
+  "Outlook_Calendar_Exchange_Url_Description": "Default host URL for the EWS api.",
   "Outlook_Calendar_Outlook_Url": "Outlook URL",
   "Outlook_Calendar_Outlook_Url_Description": "Default URL used to launch the Outlook web app.",
   "Outlook_calendar_settings": "Outlook calendar settings",
