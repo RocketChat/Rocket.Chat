@@ -248,6 +248,7 @@ interface CompactionState {
 	cursor: number;
 }
 
+/** Checks if a value is a two-number tuple representing a source range span. */
 function isSpan(value: unknown): value is SourceRange {
 	return (
 		Array.isArray(value) &&
@@ -257,6 +258,7 @@ function isSpan(value: unknown): value is SourceRange {
 	);
 }
 
+/** Converts a text string into a [start, end] span tuple or returns string fallback. */
 function compactText(str: string, msg: string, state: CompactionState): CompactText {
 	if (str === '') {
 		return [state.cursor, state.cursor];
@@ -281,6 +283,7 @@ function compactText(str: string, msg: string, state: CompactionState): CompactT
 	return str;
 }
 
+/** Extracts a text string from a [start, end] span reference or string literal. */
 function expandText(spanOrStr: CompactText, msg: string): string {
 	if (isSpan(spanOrStr)) {
 		return msg.slice(spanOrStr[0], spanOrStr[1]);
@@ -288,10 +291,12 @@ function expandText(spanOrStr: CompactText, msg: string): string {
 	return String(spanOrStr);
 }
 
+/** Compacts a PLAIN_TEXT AST node into a span reference or string. */
 function compactPlain(node: Plain, msg: string, state: CompactionState): CompactText {
 	return compactText(node.value, msg, state);
 }
 
+/** Expands a span reference or string back into a PLAIN_TEXT AST node. */
 function expandPlain(spanOrStr: CompactText, msg: string): Plain {
 	return {
 		type: 'PLAIN_TEXT',
@@ -299,6 +304,7 @@ function expandPlain(spanOrStr: CompactText, msg: string): Plain {
 	};
 }
 
+/** Compacts markup nodes (Bold, Italic, Strike, MentionChannel) into compact markup representations. */
 function compactMarkup(node: Markup, msg: string, state: CompactionState): CompactMarkup {
 	switch (node.type) {
 		case 'PLAIN_TEXT':
@@ -326,6 +332,7 @@ function compactMarkup(node: Markup, msg: string, state: CompactionState): Compa
 	}
 }
 
+/** Expands compact markup representations back into verbose Markup AST nodes. */
 function expandMarkup(node: CompactMarkup, msg: string): Markup {
 	if (isSpan(node) || typeof node === 'string') {
 		return expandPlain(node, msg);
@@ -355,6 +362,7 @@ function expandMarkup(node: CompactMarkup, msg: string): Markup {
 	}
 }
 
+/** Converts an inline AST node into its compact representation. */
 function compactInline(node: Inlines, msg: string, state: CompactionState): CompactInline {
 	switch (node.type) {
 		case 'PLAIN_TEXT':
@@ -430,6 +438,7 @@ function compactInline(node: Inlines, msg: string, state: CompactionState): Comp
 	}
 }
 
+/** Reconstructs a verbose inline AST node from its compact representation. */
 function expandInline(node: CompactInline, msg: string): Inlines {
 	if (isSpan(node) || typeof node === 'string') {
 		return expandPlain(node, msg);
@@ -522,14 +531,17 @@ function expandInline(node: CompactInline, msg: string): Inlines {
 	}
 }
 
+/** Converts an array of inline AST nodes into compact inline nodes. */
 function compactInlines(inlines: Inlines[], msg: string, state: CompactionState): CompactInline[] {
 	return inlines.map((item) => compactInline(item, msg, state));
 }
 
+/** Reconstructs an array of inline AST nodes from compact inline representations. */
 function expandInlines(compactInlines: CompactInline[], msg: string): Inlines[] {
 	return compactInlines.map((item) => expandInline(item, msg));
 }
 
+/** Converts an Emoji node into its compact representation. */
 function compactEmoji(node: Emoji, msg: string, state: CompactionState): CompactEmoji {
 	if (node.value !== undefined) {
 		return {
@@ -544,6 +556,7 @@ function compactEmoji(node: Emoji, msg: string, state: CompactionState): Compact
 	};
 }
 
+/** Reconstructs an Emoji node from its compact representation. */
 function expandEmoji(node: CompactEmoji, msg: string): Emoji {
 	if ('sc' in node) {
 		return {
@@ -559,6 +572,7 @@ function expandEmoji(node: CompactEmoji, msg: string): Emoji {
 	};
 }
 
+/** Converts a BigEmoji root node into a compact BigEmoji node. */
 function compactBigEmoji(node: BigEmoji, msg: string, state: CompactionState): CompactBigEmoji {
 	return {
 		t: 'E',
@@ -566,6 +580,7 @@ function compactBigEmoji(node: BigEmoji, msg: string, state: CompactionState): C
 	};
 }
 
+/** Reconstructs a BigEmoji node from its compact representation. */
 function expandBigEmoji(node: CompactBigEmoji, msg: string): BigEmoji {
 	return {
 		type: 'BIG_EMOJI',
@@ -573,6 +588,7 @@ function expandBigEmoji(node: CompactBigEmoji, msg: string): BigEmoji {
 	};
 }
 
+/** Converts a Paragraph node into its compact representation. */
 function compactParagraph(node: Paragraph, msg: string, state: CompactionState): CompactParagraph {
 	return {
 		t: 'p',
@@ -580,6 +596,7 @@ function compactParagraph(node: Paragraph, msg: string, state: CompactionState):
 	};
 }
 
+/** Reconstructs a Paragraph node from its compact representation. */
 function expandParagraph(node: CompactParagraph, msg: string): Paragraph {
 	return {
 		type: 'PARAGRAPH',
@@ -587,6 +604,7 @@ function expandParagraph(node: CompactParagraph, msg: string): Paragraph {
 	};
 }
 
+/** Compacts an array of Paragraph nodes. */
 function compactParagraphs(
 	nodes: Paragraph[],
 	msg: string,
@@ -595,10 +613,12 @@ function compactParagraphs(
 	return nodes.map((p) => compactParagraph(p, msg, state));
 }
 
+/** Expands an array of compact Paragraph nodes. */
 function expandParagraphs(nodes: CompactParagraph[], msg: string): Paragraph[] {
 	return nodes.map((p) => expandParagraph(p, msg));
 }
 
+/** Compacts a ListItem node into its compact representation. */
 function compactListItem(node: ListItem, msg: string, state: CompactionState): CompactListItem {
 	return {
 		t: 'li',
@@ -608,6 +628,7 @@ function compactListItem(node: ListItem, msg: string, state: CompactionState): C
 	};
 }
 
+/** Reconstructs a ListItem node from its compact representation. */
 function expandListItem(node: CompactListItem, msg: string): ListItem {
 	return {
 		type: 'LIST_ITEM',
@@ -617,6 +638,7 @@ function expandListItem(node: CompactListItem, msg: string): ListItem {
 	};
 }
 
+/** Compacts an array of ListItem nodes. */
 function compactListItems(
 	items: ListItem[],
 	msg: string,
@@ -625,10 +647,12 @@ function compactListItems(
 	return items.map((item) => compactListItem(item, msg, state));
 }
 
+/** Expands an array of compact ListItem nodes. */
 function expandListItems(items: CompactListItem[], msg: string): ListItem[] {
 	return items.map((item) => expandListItem(item, msg));
 }
 
+/** Compacts a Task node into its compact representation. */
 function compactTask(node: Task, msg: string, state: CompactionState): CompactTask {
 	return {
 		t: 'task',
@@ -638,6 +662,7 @@ function compactTask(node: Task, msg: string, state: CompactionState): CompactTa
 	};
 }
 
+/** Reconstructs a Task node from its compact representation. */
 function expandTask(node: CompactTask, msg: string): Task {
 	return {
 		type: 'TASK',
@@ -647,14 +672,17 @@ function expandTask(node: CompactTask, msg: string): Task {
 	};
 }
 
+/** Compacts an array of Task nodes. */
 function compactTasks(tasks: Task[], msg: string, state: CompactionState): CompactTask[] {
 	return tasks.map((task) => compactTask(task, msg, state));
 }
 
+/** Expands an array of compact Task nodes. */
 function expandTasks(tasks: CompactTask[], msg: string): Task[] {
 	return tasks.map((task) => expandTask(task, msg));
 }
 
+/** Compacts an array of nested lists (ordered, unordered, tasks). */
 function compactNestedLists(
 	lists: NestedList[] | undefined,
 	msg: string,
@@ -682,6 +710,7 @@ function compactNestedLists(
 	});
 }
 
+/** Reconstructs nested list nodes from compact nested list representations. */
 function expandNestedLists(lists: CompactNestedList[], msg: string): NestedList[] {
 	return lists.map((list) => {
 		switch (list.t) {
@@ -704,6 +733,7 @@ function expandNestedLists(lists: CompactNestedList[], msg: string): NestedList[
 	});
 }
 
+/** Compacts a TableCell node into its compact representation. */
 function compactTableCell(cell: TableCell, msg: string, state: CompactionState): CompactTableCell {
 	return {
 		t: 'td',
@@ -712,6 +742,7 @@ function compactTableCell(cell: TableCell, msg: string, state: CompactionState):
 	};
 }
 
+/** Reconstructs a TableCell node from its compact representation. */
 function expandTableCell(cell: CompactTableCell, msg: string): TableCell {
 	return {
 		type: 'TABLE_CELL',
@@ -720,6 +751,7 @@ function expandTableCell(cell: CompactTableCell, msg: string): TableCell {
 	};
 }
 
+/** Compacts a TableRow node into its compact representation. */
 function compactTableRow(row: TableRow, msg: string, state: CompactionState): CompactTableRow {
 	return {
 		t: 'tr',
@@ -727,6 +759,7 @@ function compactTableRow(row: TableRow, msg: string, state: CompactionState): Co
 	};
 }
 
+/** Reconstructs a TableRow node from its compact representation. */
 function expandTableRow(row: CompactTableRow, msg: string): TableRow {
 	return {
 		type: 'TABLE_ROW',
@@ -734,6 +767,7 @@ function expandTableRow(row: CompactTableRow, msg: string): TableRow {
 	};
 }
 
+/** Preserves table, rule, or timestamp fallback values during compaction. */
 function compactFallback(
 	fb: SourceRange | Plain | undefined
 ): CompactSpan | string | undefined {
@@ -744,6 +778,7 @@ function compactFallback(
 	return fb.value;
 }
 
+/** Reconstructs a fallback value (SourceRange or Plain) during expansion. */
 function expandFallback(
 	fb: CompactSpan | string | undefined,
 	msg: string
@@ -758,6 +793,7 @@ function expandFallback(
 	};
 }
 
+/** Compacts a block or paragraph AST node into its compact representation. */
 function compactBlockOrParagraph(
 	node: Paragraph | Blocks,
 	msg: string,
@@ -832,6 +868,7 @@ function compactBlockOrParagraph(
 	}
 }
 
+/** Reconstructs a block or paragraph AST node from its compact representation. */
 function expandBlockOrParagraph(
 	cnode: CompactParagraph | CompactBlock,
 	msg: string
@@ -910,6 +947,7 @@ function expandBlockOrParagraph(
 	}
 }
 
+/** Recursively compares two values for structural deep equality. */
 function deepEqual(a: unknown, b: unknown): boolean {
 	if (a === b) return true;
 	if (a === null || b === null || typeof a !== 'object' || typeof b !== 'object') {
