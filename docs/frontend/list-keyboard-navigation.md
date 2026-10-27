@@ -66,6 +66,6 @@ A list without a story gets one first: the story is the fixture the test renders
 
 ## Combobox
 
-The composer popup (`useComposerBoxPopup`) and the navbar search (`useSearchActiveOption`) keep the focus in the text field, both on top of `useActiveDescendant` from `@rocket.chat/fuselage-hooks`. The arrows move a highlighted option, written to the field's `aria-activedescendant`, and Enter picks it. Options carry an `id` and never receive focus.
+The composer popup (`useComposerBoxPopup`) and the navbar search (`useSearchActiveOption`) keep the focus in the text field, both on top of `useActiveDescendant` from `@rocket.chat/fuselage-hooks`. The arrows move a highlighted option, written to the field's `aria-activedescendant`, and Enter picks it. Options carry an `id` and never receive focus. When an option is a link, Enter clicks it with the modifier keys that were held, so Cmd+Enter or Ctrl+Enter opens it in a new tab, as a modified click on the link does.
 
 Fuselage's `Select` is the same model without a text field, the [select-only combobox](https://www.w3.org/WAI/ARIA/apg/patterns/combobox/examples/combobox-select-only/): the focus stays on its button, and typing jumps to the option whose label starts with what was typed. Its button is a labelable element, so a `label` pointing at its `id` names it, as it names any other input.
