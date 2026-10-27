@@ -94,7 +94,7 @@ export const useHoverCard = <TKey>({ openDelay = 500, closeDelay = 300 }: UseHov
 		}
 
 		if (viaClick) {
-			openLater.cancel();
+			keepOpen();
 			show(trigger, key);
 			return;
 		}

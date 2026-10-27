@@ -111,3 +111,15 @@ it('closes a card opened by click once the pointer leaves its trigger', async ()
 
 	expect(screen.queryByTestId('card')).not.toBeInTheDocument();
 });
+
+it('keeps a card opened by click when the pointer just left the previous card', async () => {
+	render(<Harness keys={['a', 'b']} />);
+
+	fireEvent.click(screen.getByText('trigger a'));
+	await advance(0);
+	fireEvent.mouseLeave(screen.getByText('trigger a'));
+	fireEvent.click(screen.getByText('trigger b'));
+	await advance(300);
+
+	expect(screen.getByTestId('card')).toHaveTextContent('b');
+});
