@@ -7,7 +7,7 @@ const mapLocaleToMomentLocale: Record<string, string> = {
 	zh: 'zh-cn',
 };
 
-const localePattern = /^[a-z]{2,3}(-[a-z0-9]{2,8})?$/;
+const localePattern = /^[a-z]{2,3}(-[a-z0-9]{2,8})*$/;
 
 export async function getMomentLocale(locale: string): Promise<string | undefined> {
 	const localeLower = locale.toLowerCase();

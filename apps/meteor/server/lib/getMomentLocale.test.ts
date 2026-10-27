@@ -28,6 +28,13 @@ describe('getMomentLocale', () => {
 		expect(await getMomentLocale('de-IN')).to.equal('de locale');
 	});
 
+	it('should fall back to the base language of a tag with script and region subtags', async () => {
+		readPrivateAssetText.rejects(new Error('ENOENT'));
+		readPrivateAssetText.withArgs('moment-locales/de.js').resolves('de locale');
+
+		expect(await getMomentLocale('de-Latn-DE')).to.equal('de locale');
+	});
+
 	it('should fall back to the mapped moment locale', async () => {
 		readPrivateAssetText.rejects(new Error('ENOENT'));
 		readPrivateAssetText.withArgs('moment-locales/zh-cn.js').resolves('zh-cn locale');
