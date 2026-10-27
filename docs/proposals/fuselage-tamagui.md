@@ -256,8 +256,9 @@ This is the one list to track removing Tamagui's runtime from Fuselage's web bui
 
 **1. Prototype and go/no-go**
 - [x] Lower three definitions at build time (`MessageName`, `ButtonGroup`, `ButtonFrame`) with Tamagui's own resolver; computed styles identical, render 70–76% faster (branch `proto/fuselage-lowered-styled`, `docs/proposals/fuselage-lowered-styled.md`).
-- [ ] Rebase the prototype onto the current pilot and re-measure the three definitions now that `forceStyle` is gone and `Button` takes a single `variant`.
+- [x] Rebase the prototype onto the current pilot and re-measure the three definitions now that `forceStyle` is gone and `Button` takes a single `variant` (branch `proto/fuselage-lowered-styled-v2`): JS +7.4 kB gzip instead of +14.4 kB, CSS unchanged, parity identical.
 - [ ] Gate: `ButtonFrame`'s ahead-of-time CSS close to what the runtime inserts for its stories (56 kB raw). If not, stop and rethink before step 3.
+  - Not met yet: 160 kB raw emitted against 56 kB. The classes callers can reach through `getButtonStates` come to 57 kB; the rest are `kind`/`pressed`/`inactive`/`ghost` combinations no caller produces, which step 2 removes.
 
 **2. Fewer variant combinations**
 - [ ] `ButtonFrame` and `IconButton`: fold `kind`, `pressed`, `inactive` and `ghost` into one combined variant, or make the ordered resolution the default.
