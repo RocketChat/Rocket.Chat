@@ -65,6 +65,10 @@ describe('updateMessage', () => {
 		expect(modelsMock.Messages.decreaseReplyCountById.calledOnceWith('parent', -1)).to.be.true;
 		expect(notifyOnMessageChange.calledWith({ id: 'parent' })).to.be.true;
 		expect(modelsMock.Messages.addReplyByThreadId.called).to.be.false;
+
+		const [, update] = modelsMock.Messages.updateOne.firstCall.args;
+		expect(update.$set).to.not.have.property('tmid');
+		expect(update.$unset).to.include({ tmid: 1 });
 	});
 
 	it('should uncount a message moved to another thread from its previous thread parent', async () => {
