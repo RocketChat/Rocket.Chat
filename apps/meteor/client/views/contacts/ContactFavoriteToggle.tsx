@@ -1,5 +1,5 @@
 import type { IContactPublic, Serialized } from '@rocket.chat/core-typings';
-import { Box, Icon, IconButton } from '@rocket.chat/fuselage';
+import { Icon, IconButton, Stack } from '@rocket.chat/fuselage';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { MouseEvent } from 'react';
@@ -37,9 +37,9 @@ const ContactFavoriteToggle = ({ contact, revealed }: ContactFavoriteToggleProps
 	if (contact.source !== 'local') {
 		return (
 			favorite && (
-				<Box display='flex' alignItems='center' justifyContent='center' size='x28' title={t('Favorite')}>
-					<Icon name='star-filled' size='x20' />
-				</Box>
+				<Stack direction='row' justify='center'>
+					<Icon name='star-filled' size='x20' title={t('Favorite')} />
+				</Stack>
 			)
 		);
 	}
@@ -55,7 +55,7 @@ const ContactFavoriteToggle = ({ contact, revealed }: ContactFavoriteToggleProps
 
 	return (
 		<IconButton
-			small
+			size='small'
 			icon={favorite ? 'star-filled' : 'star'}
 			title={favorite ? t('Remove_from_favorites') : t('Add_to_favorites')}
 			aria-pressed={favorite}
