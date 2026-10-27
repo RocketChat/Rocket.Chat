@@ -28,12 +28,12 @@ slashCommands.add({
 		}
 
 		if (!userId) {
-			throw new ClientSafeError('error-invalid-user', 'Invalid user', { method: 'archiveRoom' });
+			throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', { method: 'unarchiveRoom' });
 		}
 
 		const user = await Users.findOneById(userId, { projection: { username: 1, name: 1 } });
 		if (!user || !isRegisterUser(user)) {
-			throw new ClientSafeError('error-invalid-user', 'Invalid user', { method: 'archiveRoom' });
+			throw new ClientSafeError('error-invalid-user', 'Invalid user', { method: 'unarchiveRoom' });
 		}
 
 		if (!room) {

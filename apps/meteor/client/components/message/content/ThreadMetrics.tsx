@@ -40,7 +40,12 @@ const ThreadMetrics = ({ unread, mention, all, rid, mid, counter, participants, 
 	return (
 		<MessageBlock ref={ref}>
 			<MessageMetrics>
-				<MessageMetricsReply data-rid={rid} data-mid={mid} onClick={() => goToThread({ rid, tmid: mid })} primary={!!unread}>
+				<MessageMetricsReply
+					data-rid={rid}
+					data-mid={mid}
+					onClick={() => goToThread({ rid, tmid: mid })}
+					variant={unread ? 'primary' : 'secondary'}
+				>
 					{t('View_thread')}
 				</MessageMetricsReply>
 				<ThreadMetricsFollow unread={unread} mention={mention} all={all} mid={mid} rid={rid} following={following} />

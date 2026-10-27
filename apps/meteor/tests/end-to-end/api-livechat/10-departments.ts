@@ -879,7 +879,7 @@ import { IS_EE } from '../../e2e/config/constants';
 				.set(credentials)
 				.expect(400);
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('error', "must have required property 'upsert' [invalid-params]");
+			expect(res.body).to.have.property('error', "must have required property 'upsert' [error-invalid-params]");
 			await deleteDepartment(dep._id);
 		});
 
@@ -893,7 +893,7 @@ import { IS_EE } from '../../e2e/config/constants';
 				.send({ upsert: [{}], remove: [] })
 				.expect(400);
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('error', "must have required property 'agentId' [invalid-params]");
+			expect(res.body).to.have.property('error', "must have required property 'agentId' [error-invalid-params]");
 			await deleteDepartment(dep._id);
 		});
 

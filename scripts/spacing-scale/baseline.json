@@ -174,7 +174,7 @@
 	"apps/meteor/client/views/admin/subscription/SubscriptionCalloutLimits.tsx": 2,
 	"apps/meteor/client/views/admin/subscription/SubscriptionPage.tsx": 3,
 	"apps/meteor/client/views/admin/subscription/SubscriptionPageSkeleton.tsx": 1,
-	"apps/meteor/client/views/admin/users/AdminInviteUsers.tsx": 3,
+	"apps/meteor/client/views/admin/users/AdminInviteUsers.tsx": 1,
 	"apps/meteor/client/views/admin/users/AdminUserForm.tsx": 3,
 	"apps/meteor/client/views/admin/users/AdminUserFormWithData.tsx": 3,
 	"apps/meteor/client/views/admin/users/AdminUserInfoWithData.tsx": 1,

@@ -54,7 +54,7 @@ const ConferenceThreadChat = ({ tmid, onEscape }: ConferenceThreadChatProps) => 
 	return (
 		// Positioned so the drop-target overlay covers the thread and not the panel around it, which is what it would find
 		// to anchor to otherwise.
-		<Box position='relative' display='flex' flexDirection='column' height='full' overflow='hidden'>
+		<Box position='relative' display='flex' flexDirection='column' width='full' height='full' overflow='hidden'>
 			<ThreadChat mainMessage={data} onEscape={onEscape} />
 		</Box>
 	);

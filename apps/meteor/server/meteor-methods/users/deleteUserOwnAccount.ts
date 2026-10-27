@@ -17,7 +17,7 @@ export const deleteUserOwnAccount = async (fromUserId: string, password: string,
 	}
 
 	if (!fromUserId) {
-		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', {
 			method: 'deleteUserOwnAccount',
 		});
 	}
