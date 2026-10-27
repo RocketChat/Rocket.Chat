@@ -79,7 +79,7 @@ const AdminInviteUsers = () => {
 			<ContextualbarScrollableContent is='form' onSubmit={handleSubmit(handleSend)} id={formId}>
 				<Field>
 					<Stack gap={8}>
-						<FieldLabel htmlFor={emailsFieldId}>
+						<FieldLabel htmlFor={emailsFieldId} required>
 							<Text is='span' fontScale='h2'>
 								{t('Send_invitation_email')}
 							</Text>
@@ -100,6 +100,7 @@ const AdminInviteUsers = () => {
 									{...field}
 									id={emailsFieldId}
 									rows={5}
+									aria-required='true'
 									placeholder={t('Send_invitation_email_placeholder')}
 									error={errors.emails?.message}
 									aria-invalid={errors.emails ? 'true' : 'false'}
