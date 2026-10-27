@@ -1,0 +1,19 @@
+docs/frontend/list-keyboard-navigation.md
+  s_00f256cd916a10::t_5c4b36df535a60 69
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "ef2c9e092b651fb9b3a306dcc8b5125a3909fe09",
+  "prompts": {},
+  "sessions": {
+    "s_00f256cd916a10": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6bf64fad-fa55-4630-a5dc-68ba611550dd",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
