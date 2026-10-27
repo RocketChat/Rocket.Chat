@@ -1,0 +1,23 @@
+apps/meteor/client/navbar/NavBarSearch/hooks/useSearchActiveOption.spec.tsx
+  s_00f256cd916a10::t_4a1ad95257c841 142-157
+apps/meteor/client/navbar/NavBarSearch/hooks/useSearchActiveOption.ts
+  s_00f256cd916a10::t_ade6ebb6b33504 77-78
+docs/frontend/list-keyboard-navigation.md
+  s_00f256cd916a10::t_546628b0b3fd5b 69
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "22bf0b8c7765fd88e84aa5ffa302bfa0ebdbd044",
+  "prompts": {},
+  "sessions": {
+    "s_00f256cd916a10": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "6bf64fad-fa55-4630-a5dc-68ba611550dd",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
