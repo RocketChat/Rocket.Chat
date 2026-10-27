@@ -20,6 +20,7 @@ import { startupApp } from '../ee/server';
 import { startRocketChat } from '../startRocketChat';
 
 import './routes';
+import './lib/realtime/routes';
 import './startup/rateLimiter';
 import './startup/robots';
 import './importPackages';

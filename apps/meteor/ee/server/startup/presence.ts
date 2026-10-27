@@ -4,9 +4,11 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { throttle } from 'underscore';
 
+import { lifecycle, sessions } from '../../../server/lib/realtime/sessions';
+
 // update connections count every 30 seconds
 const updateConns = throttle(function _updateConns() {
-	void InstanceStatus.updateConnections(Meteor.server.sessions.size);
+	void InstanceStatus.updateConnections(Meteor.server.sessions.size + sessions.size);
 }, 30000);
 
 Meteor.startup(() => {
@@ -54,6 +56,31 @@ Meteor.startup(() => {
 			await Presence.newConnection(login.user._id, login.connection.id, nodeId);
 			updateConns();
 		})();
+	});
+
+	// the sessions of our own DDP server, which Meteor's session map and heartbeat know nothing about
+	lifecycle.on('loggedIn', ({ userId, connection }) => {
+		if (!userId) {
+			return;
+		}
+		void Presence.newConnection(userId, connection.id, nodeId).then(updateConns);
+	});
+
+	lifecycle.on('activity', ({ userId, connection }) => {
+		if (!userId) {
+			return;
+		}
+		void Presence.updateConnection(userId, connection.id).catch((err) => {
+			console.error('Error updating connection presence:', err);
+		});
+	});
+
+	lifecycle.on('disconnected', ({ userId, connection }) => {
+		updateConns();
+		if (!userId) {
+			return;
+		}
+		void Presence.removeConnection(userId, connection.id, nodeId);
 	});
 
 	Accounts.onLogout((login): void => {
