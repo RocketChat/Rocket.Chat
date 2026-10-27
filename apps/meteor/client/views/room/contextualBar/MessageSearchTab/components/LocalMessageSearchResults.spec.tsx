@@ -77,6 +77,16 @@ describe('LocalMessageSearchResults', () => {
 		expect(screen.queryByText('alice')).not.toBeInTheDocument();
 	});
 
+	it('shows the caption and the file name of a file hit on separate lines, as the server result does', () => {
+		renderResults([hit({ username: 'alice', snippet: 'Q3 <mark>budget</mark> draft\nbudget-2026.pdf' })]);
+
+		const line = (text: string) => screen.getByText((_content, element) => element?.tagName === 'DIV' && element.textContent === text);
+
+		expect(line('Q3 budget draft')).toBeInTheDocument();
+		expect(line('budget-2026.pdf')).toBeInTheDocument();
+		expect(screen.getByText('budget').tagName).toBe('MARK');
+	});
+
 	it('opens the thread of a thread reply and jumps to the reply', async () => {
 		renderResults([hit({ id: 'reply1', tmid: 'main1', username: 'alice' })]);
 

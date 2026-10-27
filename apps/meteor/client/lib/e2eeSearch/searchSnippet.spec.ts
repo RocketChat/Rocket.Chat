@@ -1,4 +1,4 @@
-import { parseSearchSnippet } from './searchSnippet';
+import { parseSearchSnippet, parseSearchSnippetLines } from './searchSnippet';
 
 describe('parseSearchSnippet', () => {
 	it('turns the <mark> tags into highlighted parts', () => {
@@ -45,5 +45,27 @@ describe('parseSearchSnippet', () => {
 	it('joins neighbor highlights and gives no empty parts', () => {
 		expect(parseSearchSnippet('<mark>a</mark><mark>b</mark>')).toEqual([{ text: 'ab', marked: true }]);
 		expect(parseSearchSnippet('')).toEqual([]);
+	});
+});
+
+describe('parseSearchSnippetLines', () => {
+	it('splits the parts at each line break, so the caption and the file name of a file hit are separate lines', () => {
+		expect(parseSearchSnippetLines('Q3 <mark>budget</mark> draft\nbudget-2026.pdf')).toEqual([
+			[
+				{ text: 'Q3 ', marked: false },
+				{ text: 'budget', marked: true },
+				{ text: ' draft', marked: false },
+			],
+			[{ text: 'budget-2026.pdf', marked: false }],
+		]);
+	});
+
+	it('splits a highlight that holds a line break, and gives no empty lines', () => {
+		expect(parseSearchSnippetLines('<mark>one\r\ntwo</mark>\n\n \nthree\n')).toEqual([
+			[{ text: 'one', marked: true }],
+			[{ text: 'two', marked: true }],
+			[{ text: 'three', marked: false }],
+		]);
+		expect(parseSearchSnippetLines('')).toEqual([]);
 	});
 });
