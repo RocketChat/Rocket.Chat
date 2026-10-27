@@ -7,6 +7,7 @@ import './models';
  * and the startup should be done in parallel
  */
 import './settings/definitions';
+import './lib/http/baseMiddlewares';
 
 import { startRestAPI } from './api/api';
 import { configureServer } from './configuration';

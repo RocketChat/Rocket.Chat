@@ -1,4 +1,4 @@
-import { RESPONSE_ALREADY_SENT, createNodeServer, createRootApp } from '@rocket.chat/http-router';
+import { RESPONSE_ALREADY_SENT, createMiddlewareSlot, createNodeServer, createRootApp } from '@rocket.chat/http-router';
 import { WebApp } from 'meteor/webapp';
 
 const IDLE_SOCKET_TIMEOUT_MS = 5_000;
@@ -7,6 +7,14 @@ const IDLE_SOCKET_TIMEOUT_MS = 5_000;
  * The root of every HTTP route the server answers. Requests no route claims are handed, untouched, to Meteor's webapp.
  */
 export const httpApp = createRootApp();
+
+const baseMiddlewares = createMiddlewareSlot();
+httpApp.use(baseMiddlewares.middleware);
+
+/**
+ * Adds middlewares that run ahead of every route, including the routes registered before them.
+ */
+export const addBaseMiddlewares = baseMiddlewares.add;
 
 httpApp.notFound((c) => {
 	WebApp.httpServer.emit('request', c.env.incoming, c.env.outgoing);
