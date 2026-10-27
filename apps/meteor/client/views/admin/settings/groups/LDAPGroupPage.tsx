@@ -13,7 +13,7 @@ import { useLdapSync } from '../../../../hooks/useLdapSync';
 import { links } from '../../../../lib/links';
 import { useEditableSettings } from '../../EditableSettingsContext';
 
-type LDAPGroupPageProps = ISetting & {
+export type LDAPGroupPageProps = ISetting & {
 	onClickBack?: () => void;
 };
 
@@ -45,7 +45,7 @@ function LDAPGroupPage({ _id, i18nLabel, onClickBack, ...group }: LDAPGroupPageP
 			const { message } = await testConnection();
 			dispatchToastMessage({ type: 'success', message: t(message as Parameters<typeof t>[0]) });
 		} catch (error) {
-			error instanceof Error && dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	};
 
@@ -62,7 +62,7 @@ function LDAPGroupPage({ _id, i18nLabel, onClickBack, ...group }: LDAPGroupPageP
 					const { message } = await testSearch({ username });
 					dispatchToastMessage({ type: 'success', message: t(message as Parameters<typeof t>[0]) });
 				} catch (error) {
-					error instanceof Error && dispatchToastMessage({ type: 'error', message: error });
+					dispatchToastMessage({ type: 'error', message: error });
 				}
 			};
 
@@ -96,7 +96,7 @@ function LDAPGroupPage({ _id, i18nLabel, onClickBack, ...group }: LDAPGroupPageP
 				</GenericModal>,
 			);
 		} catch (error) {
-			error instanceof Error && dispatchToastMessage({ type: 'error', message: error });
+			dispatchToastMessage({ type: 'error', message: error });
 		}
 	};
 

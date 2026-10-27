@@ -5,7 +5,7 @@ import { useTimezoneNameList } from '../../../../../hooks/useTimezoneNameList';
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
-type SelectTimezoneSettingInputProps = SettingInputProps;
+export type SelectTimezoneSettingInputProps = SettingInputProps;
 
 function SelectTimezoneSettingInput({
 	_id,

@@ -1,15 +1,15 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Settings } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermissionAsync } from '../../../../app/authorization/server/functions/hasPermission';
-import { notifyOnSettingChangedById } from '../../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../../app/settings/server';
+import { hasPermissionAsync } from '../../../lib/authorization/hasPermission';
+import { notifyOnSettingChangedById } from '../../../lib/notifyListener';
+import { settings } from '../../../settings';
 import { updateAuditedByUser } from '../../../settings/lib/auditedSettingUpdates';
 import Bridge from '../irc-bridge';
 
 declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		resetIrcConnection(): { message: string; params: unknown[] };
 	}
@@ -21,11 +21,11 @@ Meteor.methods<ServerMethods>({
 		const uid = Meteor.userId();
 
 		if (!uid) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'resetIrcConnection' });
+			throw new ClientSafeError('error-invalid-user', 'Invalid user', { method: 'resetIrcConnection' });
 		}
 
 		if (!(await hasPermissionAsync(uid, 'edit-privileged-setting'))) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed', { method: 'resetIrcConnection' });
+			throw new ClientSafeError('error-not-allowed', 'Not allowed', { method: 'resetIrcConnection' });
 		}
 
 		const auditSettingOperation = updateAuditedByUser({
@@ -84,8 +84,8 @@ Meteor.methods<ServerMethods>({
 });
 
 declare module 'meteor/meteor' {
-	// eslint-disable-next-line @typescript-eslint/no-namespace
+	// oxlint-disable-next-line @typescript-eslint/no-namespace
 	namespace Meteor {
-		let ircBridge: Bridge;
+		export let ircBridge: Bridge;
 	}
 }

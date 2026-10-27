@@ -1,12 +1,12 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
 import type { ComponentPropsWithoutRef } from 'react';
 
-type InfoPanelLabelProps = ComponentPropsWithoutRef<typeof Box>;
+export type InfoPanelLabelProps = ComponentPropsWithoutRef<typeof Box>;
 
 const InfoPanelLabel = ({ title, children, ...props }: InfoPanelLabelProps) => (
-	<Box mb={8} fontScale='p2m' color='default' {...props}>
+	<Box marginBlock={8} fontScale='p2m' color='default' display='flex' alignItems='center' columnGap={4} {...props}>
 		{children}
-		{title && <Icon name='info' color='secondary-info' mi={4} size='x16' title={title} />}
+		{title && <Icon name='info' color='hint' size='x16' title={title} />}
 	</Box>
 );
 

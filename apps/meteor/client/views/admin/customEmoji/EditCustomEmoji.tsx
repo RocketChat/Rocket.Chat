@@ -13,15 +13,16 @@ import {
 } from '@rocket.chat/fuselage';
 import { GenericModal, ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import { useSetModal, useAbsoluteUrl, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useQueryClient } from '@tanstack/react-query';
 import type { ChangeEvent } from 'react';
-import { useCallback, useState, useMemo, useEffect } from 'react';
+import { useCallback, useId, useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
 import { useEndpointUploadMutation } from '../../../hooks/useEndpointUploadMutation';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
-type EditCustomEmojiProps = {
+export type EditCustomEmojiProps = {
 	close: () => void;
 	onChange: () => void;
 	data: {
@@ -35,8 +36,10 @@ type EditCustomEmojiProps = {
 
 const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiProps) => {
 	const { t } = useTranslation();
+	const emojiLabelId = useId();
 	const setModal = useSetModal();
 	const absoluteUrl = useAbsoluteUrl();
+	const queryClient = useQueryClient();
 	const [errors, setErrors] = useState({ name: false, aliases: false });
 
 	const { _id, name: previousName, aliases: previousAliases } = data || {};
@@ -69,6 +72,7 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 	const { mutateAsync: saveAction } = useEndpointUploadMutation('/v1/emoji-custom.update', {
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Custom_Emoji_Updated_Successfully') });
+			queryClient.invalidateQueries({ queryKey: ['emoji-custom.list'] });
 			onChange();
 			close();
 		},
@@ -100,6 +104,7 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 	const { mutateAsync: deleteAction } = useEndpointMutation('POST', '/v1/emoji-custom.delete', {
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Custom_Emoji_Has_Been_Deleted') });
+			queryClient.invalidateQueries({ queryKey: ['emoji-custom.list'] });
 		},
 		onSettled: () => {
 			onChange();
@@ -164,14 +169,14 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 						{errors.aliases && <FieldError>{t('Custom_Emoji_Error_Same_Name_And_Alias')}</FieldError>}
 					</Field>
 					<Field>
-						<FieldLabel alignSelf='stretch' display='flex' justifyContent='space-between' alignItems='center'>
-							{t('Custom_Emoji')}
-							<IconButton icon='upload' secondary onClick={clickUpload} />
-						</FieldLabel>
+						<FieldRow>
+							<FieldLabel id={emojiLabelId}>{t('Custom_Emoji')}</FieldLabel>
+							<IconButton aria-labelledby={emojiLabelId} icon='upload' variant='secondary' onClick={clickUpload} />
+						</FieldRow>
 						{newEmojiPreview && (
-							<Box display='flex' flexDirection='row' mbs='none' justifyContent='center'>
+							<Box display='flex' flexDirection='row' marginBlockStart='none' justifyContent='center'>
 								<Margins inline={4}>
-									<Box is='img' objectFit='contain' w='x120' h='x120' src={newEmojiPreview} />
+									<Box is='img' objectFit='contain' width='x120' height='x120' src={newEmojiPreview} />
 								</Margins>
 							</Box>
 						)}
@@ -181,13 +186,13 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={close}>{t('Cancel')}</Button>
-					<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>
+					<Button variant='primary' onClick={handleSave} disabled={!hasUnsavedChanges}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-				<Box mbs={8}>
+				<Box marginBlockStart={8}>
 					<ButtonGroup stretch>
-						<Button icon='trash' danger onClick={handleDeleteButtonClick}>
+						<Button icon='trash' variant='danger' onClick={handleDeleteButtonClick}>
 							{t('Delete')}
 						</Button>
 					</ButtonGroup>

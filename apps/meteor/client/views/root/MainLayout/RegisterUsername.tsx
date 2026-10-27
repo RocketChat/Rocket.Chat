@@ -84,7 +84,7 @@ const RegisterUsername = () => {
 			}
 
 			if ([error.errorType].includes('')) {
-				return setError('username', { type: 'username-invalid', message: t('Username_invalid') });
+				return setError('username', { type: 'username-invalid', message: t('Username_invalid', { username }) });
 			}
 
 			dispatchToastMessage({ type: 'error', message: error });
@@ -94,7 +94,7 @@ const RegisterUsername = () => {
 	return (
 		<VerticalWizardLayout
 			background={customBackground}
-			logo={!hideLogo && customLogo ? <Box is='img' maxHeight='x40' mi='neg-x8' src={customLogo} alt='Logo' /> : <></>}
+			logo={!hideLogo && customLogo ? <Box is='img' maxHeight='x40' marginInline='neg-x8' src={customLogo} alt='Logo' /> : <></>}
 		>
 			<Form aria-labelledby={formLabelId} onSubmit={handleSubmit((data) => registerUsernameMutation.mutate(data))}>
 				<FormHeader>
@@ -125,7 +125,7 @@ const RegisterUsername = () => {
 				</FormContainer>
 				<FormFooter>
 					<ButtonGroup stretch vertical>
-						<Button disabled={isLoading} type='submit' primary>
+						<Button disabled={isLoading} type='submit' variant='primary'>
 							{t('Use_this_username')}
 						</Button>
 						<Button onClick={logout}>{t('Logout')}</Button>

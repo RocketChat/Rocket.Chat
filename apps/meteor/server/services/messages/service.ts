@@ -6,16 +6,6 @@ import type { MessageUrl, IMessage, MessageTypesValues, IUser, IRoom, AtLeast } 
 import { Messages, Rooms } from '@rocket.chat/models';
 
 import { OEmbed } from './hooks/AfterSaveOEmbed';
-import { deleteMessage } from '../../../app/lib/server/functions/deleteMessage';
-import { parseUrlsInMessage } from '../../../app/lib/server/functions/parseUrlsInMessage';
-import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
-import { updateMessage } from '../../../app/lib/server/functions/updateMessage';
-import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
-import { notifyUsersOnSystemMessage } from '../../../app/lib/server/lib/notifyUsersOnMessage';
-import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage';
-import { executeSetReaction } from '../../../app/reactions/server/setReaction';
-import { settings } from '../../../app/settings/server';
-import { getUserAvatarURL } from '../../../app/utils/server/getUserAvatarURL';
 import { BeforeSaveCannedResponse } from '../../../ee/server/hooks/messages/BeforeSaveCannedResponse';
 import { FederationMatrixInvalidConfigurationError } from '../federation/utils';
 import { FederationActions } from './hooks/BeforeFederationActions';
@@ -27,7 +17,19 @@ import { mentionServer } from './hooks/BeforeSaveMentions';
 import { BeforeSavePreventMention } from './hooks/BeforeSavePreventMention';
 import { BeforeSaveSpotify } from './hooks/BeforeSaveSpotify';
 import { closeUnclosedCodeBlock } from '../../../lib/utils/closeUnclosedCodeBlock';
+import { notifyUsersOnSystemMessage } from '../../hooks/messages/notifyUsersOnMessage';
+import { SystemLogger } from '../../lib/logger/system';
+import { deleteMessage } from '../../lib/messages/deleteMessage';
+import { parseUrlsInMessage } from '../../lib/messages/parseUrlsInMessage';
+import { sendMessage } from '../../lib/messages/sendMessage';
+import { updateMessage } from '../../lib/messages/updateMessage';
+import { incrementAndNotifyParentRoomWithParentMessage } from '../../lib/messaging/discussions/updateAndNotifyParentRoomWithParentMessage';
+import { executeSetReaction } from '../../lib/messaging/reactions/setReaction';
+import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../lib/notifyListener';
 import { shouldBreakInVersion } from '../../lib/shouldBreakInVersion';
+import { getUserAvatarURL } from '../../lib/utils/getUserAvatarURL';
+import { executeSendMessage } from '../../meteor-methods/messages/sendMessage';
+import { settings } from '../../settings';
 
 const disableMarkdownParser = ['yes', 'true'].includes(String(process.env.DISABLE_MESSAGE_PARSER).toLowerCase());
 
@@ -91,6 +93,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 	}
 
 	async saveMessageFromFederation({
+		_id,
 		fromId,
 		rid,
 		federation_event_id,
@@ -102,6 +105,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		thread,
 		ts,
 	}: {
+		_id?: string;
 		fromId: string;
 		rid: string;
 		federation_event_id: string;
@@ -119,6 +123,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 		return executeSendMessage(
 			fromId,
 			{
+				...(_id && { _id }),
 				rid,
 				msg,
 				...thread,
@@ -185,7 +190,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 			throw new Error('The username cannot be empty.');
 		}
 
-		const [{ insertedId }] = await Promise.all([
+		const [{ insertedId }, room] = await Promise.all([
 			Messages.createWithTypeRoomIdMessageUserAndUnread(
 				type,
 				rid,
@@ -194,7 +199,7 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 				settings.get('Message_Read_Receipt_Enabled'),
 				extraData,
 			),
-			Rooms.incMsgCountById(rid, 1),
+			Rooms.findOneAndIncMsgCountById(rid, 1, { projection: { prid: 1, lm: 1, sysMes: 1 } }),
 		]);
 
 		if (!insertedId) {
@@ -212,6 +217,14 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 
 		void notifyOnMessageChange({ id: createdMessage._id, data: createdMessage });
 		void notifyOnRoomChangedById(rid);
+
+		if (room?.prid) {
+			try {
+				await incrementAndNotifyParentRoomWithParentMessage(room, type, 1);
+			} catch (err) {
+				SystemLogger.error({ msg: 'Failed to propagate discussion metadata', err, rid });
+			}
+		}
 
 		return createdMessage;
 	}
@@ -282,12 +295,8 @@ export class MessageService extends ServiceClassInternal implements IMessageServ
 	}
 
 	private getMarkdownConfig() {
-		const customDomains = settings.get<string>('Message_CustomDomain_AutoLink')
-			? settings
-					.get<string>('Message_CustomDomain_AutoLink')
-					.split(',')
-					.map((domain) => domain.trim())
-			: [];
+		const customDomainAutoLink = settings.get<string>('Message_CustomDomain_AutoLink');
+		const customDomains = customDomainAutoLink ? customDomainAutoLink.split(',').map((domain) => domain.trim()) : [];
 
 		return {
 			colors: settings.get<boolean>('HexColorPreview_Enabled'),

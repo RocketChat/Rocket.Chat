@@ -13,38 +13,55 @@ test.describe('Preview public channel', () => {
 	let targetChannel: string;
 	let targetChannelMessage: string;
 
+	// Each test navigates to /home by itself after its API setup is done, otherwise the API mutations
+	// can race the client boot (initial cached stores sync) and leave the UI stuck on the loading screen
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 		poDirectory = new Directory(page);
-
-		await page.goto('/home');
 	});
 
 	test.beforeAll(async ({ api }) => {
 		targetChannel = await createTargetChannel(api);
 		targetChannelMessage = await sendTargetChannelMessage(api, targetChannel, { msg: 'This message' });
 
-		await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin', 'user', 'anonymous'] }] });
+		await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin', 'user'] }] });
 	});
 
 	test.afterAll(async ({ api }) => {
 		await api.post('/channels.delete', { roomName: targetChannel });
-		await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin', 'user', 'anonymous'] }] });
+		await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin', 'user'] }] });
 	});
 
 	test.describe('User', () => {
 		test.use({ storageState: Users.user1.state });
 
 		test('should let user preview public rooms messages', async () => {
-			await poHomeChannel.navbar.btnDirectory.click();
+			await poDirectory.goto();
 			await poDirectory.openChannel(targetChannel);
 
 			await expect(poHomeChannel.content.lastUserMessageBody).toContainText(targetChannelMessage);
 		});
 
+		test('should disable all composer toolbar actions during channel preview', async () => {
+			await poDirectory.goto();
+			await poDirectory.openChannel(targetChannel);
+			await poHomeChannel.content.waitForChannel();
+
+			await expect(poHomeChannel.composer.btnJoinRoom).toBeVisible();
+
+			const actions = await poHomeChannel.composer.allPrimaryActions.all();
+			await Promise.all(
+				actions.map(async (action) => {
+					await expect(action).toBeDisabled();
+				}),
+			);
+		});
+
 		test('should let user view direct rooms', async ({ api }) => {
 			await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin'] }] });
 			await createDirectMessage(api);
+
+			await poHomeChannel.goto();
 
 			await poHomeChannel.navbar.openChat(Users.user2.data.username);
 
@@ -55,7 +72,7 @@ test.describe('Preview public channel', () => {
 		test('should not let user role preview public rooms', async ({ api }) => {
 			await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin'] }] });
 
-			await poHomeChannel.navbar.btnDirectory.click();
+			await poDirectory.goto();
 			await poDirectory.openChannel(targetChannel);
 
 			await expect(poHomeChannel.btnJoinChannel).toBeVisible();
@@ -68,8 +85,9 @@ test.describe('Preview public channel', () => {
 		test.use({ storageState: Users.userNotAllowedByApp.state });
 
 		test('should prevent user from join the room', async ({ api, page }) => {
-			await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin', 'user', 'anonymous'] }] });
-			await poHomeChannel.navbar.btnDirectory.click();
+			await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin', 'user'] }] });
+
+			await poDirectory.goto();
 			await poDirectory.openChannel(targetChannel);
 
 			await expect(poHomeChannel.content.lastUserMessageBody).toContainText(targetChannelMessage);
@@ -86,7 +104,7 @@ test.describe('Preview public channel', () => {
 		test('should prevent user from join the room without preview permission', async ({ api, page }) => {
 			await api.post('/permissions.update', { permissions: [{ _id: 'preview-c-room', roles: ['admin'] }] });
 
-			await poHomeChannel.navbar.btnDirectory.click();
+			await poDirectory.goto();
 			await poDirectory.openChannel(targetChannel);
 			await expect(poHomeChannel.content.lastUserMessageBody).not.toBeVisible();
 

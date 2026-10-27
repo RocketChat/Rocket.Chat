@@ -17,7 +17,7 @@ import { links } from '../../../lib/links';
 
 const DOCS_URL = links.go.e2eeGuide;
 
-type RoomE2EENotAllowedProps = {
+export type RoomE2EENotAllowedProps = {
 	title: string;
 	subTitle: string;
 	action?: () => void;
@@ -40,10 +40,10 @@ const RoomE2EENotAllowed = ({ title, subTitle, action, btnText, icon }: RoomE2EE
 				<StatesSubtitle>{subTitle}</StatesSubtitle>
 				{action && (
 					<StatesActions>
-						<Button secondary={true} role='link' onClick={handleGoHomeClick}>
+						<Button variant='secondary' role='link' onClick={handleGoHomeClick}>
 							{t('Back_to_home')}
 						</Button>
-						<StatesAction primary onClick={action} role='button'>
+						<StatesAction variant='primary' onClick={action} role='button'>
 							{btnText}
 						</StatesAction>
 					</StatesActions>

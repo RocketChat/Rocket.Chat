@@ -6,19 +6,10 @@ The `@rocket.chat/rest-typings` package uses two [AJV](https://ajv.js.org/) inst
 
 ## Instance definitions
 
-Both are created in `packages/rest-typings/src/v1/Ajv.ts` with the same configuration except for one option:
+Both are created in `packages/rest-typings/src/v1/Ajv.ts` with the same configuration except for `coerceTypes`:
 
-| Option            | `ajv`   | `ajvQuery` |
-|-------------------|---------|------------|
-| `coerceTypes`     | `false` | `true`    |
-| `allowUnionTypes` | `true`  | `true`    |
-| `code.source`     | `true`  | `true`    |
-| `discriminator`   | `true`  | `true`    |
-
-In short:
-
-- **`ajv`**: does not change data types; values must already match the types expected by the schema.
-- **`ajvQuery`**: attempts to **coerce** types when the schema expects `number`, `integer`, or `boolean` (e.g. the string `"50"` becomes the number `50`).
+- **`ajv`** (`true`): coerces scalars, so the string `"50"` satisfies a `number` and `"true"` a `boolean`.
+- **`ajvQuery`** (`'array'`): does that too, and additionally coerces between a scalar and a one-item array, so `?types=c` satisfies an `array` of strings.
 
 Custom formats (`addFormats`) and keywords (e.g. `isNotEmpty`) are registered on both instances.
 
@@ -38,9 +29,15 @@ If the schema expects `count` as `number` or `open` as `boolean`, a validator th
 - `"25"` is not of type `number` → error like "must be number" / "invalid-params".
 - `"true"` is not of type `boolean` → validation error.
 
+### A query param can also be repeated, or not
+
+`?types=c&types=p` arrives as an array and `?types=c` as a bare string, for the same parameter. Only
+`ajvQuery` reconciles the two, which is what `coerceTypes: 'array'` buys over plain `coerceTypes: true`.
+
 ### Body can already be typed
 
-For the **body** (JSON in POST/PUT/PATCH etc.), the client sends JSON. Parsing (e.g. `JSON.parse`) already yields numbers and booleans. In that case we do not want the validator to mutate values; we use the instance **without** coercion (`ajv`).
+For the **body** (JSON in POST/PUT/PATCH etc.), the client sends JSON, and parsing already yields
+numbers and booleans, so there is usually nothing to coerce. `ajv` is the instance for it.
 
 ---
 
@@ -50,7 +47,7 @@ For the **body** (JSON in POST/PUT/PATCH etc.), the client sends JSON. Parsing (
 
 - The validator is used for **query parameters** (query string).
 - **GET** routes (or any method that only reads query params).
-- The schema has properties of type `number`, `integer`, or `boolean` that come from the URL.
+- The schema has properties of type `array` that come from the URL, since a single `?types=c` must still satisfy them.
 
 Examples of validators that should use `ajvQuery`:
 
@@ -84,23 +81,23 @@ export const isPOSTLivechatRoomCloseParams = ajv.compile<POSTLivechatRoomClosePa
 
 | Data source                    | Instance   | Reason |
 |--------------------------------|------------|--------|
-| **Query string** (GET, query params) | `ajvQuery` | Query values are strings; `coerceTypes: true` converts to number/boolean when the schema expects it. |
-| **Body** (JSON in POST/PUT/PATCH)    | `ajv`      | JSON already has types; strict validation without mutating values. |
+| **Query string** (GET, query params) | `ajvQuery` | Query values are strings, and a param may arrive once or repeated; `coerceTypes: 'array'` handles both. |
+| **Body** (JSON in POST/PUT/PATCH)    | `ajv`      | JSON already has types, so there is usually nothing to coerce. |
 
 ---
 
 ## Response schemas and `nullable`
 
-Response schemas also use `ajv` (coerceTypes: false). In **test mode**, the Router validates every response against its declared schema (`options.response[statusCode]`). If validation fails, the Router returns a **400** with `errorType: "error-invalid-body"` instead of the original response.
+Response schemas also use `ajv`. In **test mode**, the Router validates every response against its declared schema (`options.response[statusCode]`). If validation fails, the Router returns a **400** with `errorType: "error-invalid-body"` instead of the original response.
 
-With `coerceTypes: true` (old behavior), `null` values were silently coerced (e.g. `null` → `""` for strings). With `coerceTypes: false`, any field that can be `null` **must** declare `nullable: true` in the schema — otherwise the response validator rejects it.
+Because `ajv` coerces, a `null` in a field declared only as `string` or `number` does not fail validation: it is silently coerced to `""` or `0`. Any field that can be `null` should declare `nullable: true`, so the schema states the real shape and the value is kept as `null`.
 
 ### Example
 
 A video conference user object may have `avatarETag: null`. The response schema must account for this:
 
 ```ts
-// WRONG — fails when avatarETag is null
+// WRONG — passes validation silently, so the schema hides that the field can be null
 { type: 'string' }
 
 // CORRECT
@@ -109,24 +106,23 @@ A video conference user object may have `avatarETag: null`. The response schema 
 
 ### `oneOf` / discriminator schemas
 
-Schemas using `oneOf` with strict enum discriminators (e.g. `type: { enum: ['direct'] }`) also become stricter without coercion. If the actual data has a `type` value not listed in any branch, the `oneOf` fails. Ensure all possible discriminator values are covered, or relax the items schema (e.g. `{ type: 'object' }`) when full type-level validation is not needed at runtime.
+Schemas using `oneOf` with strict enum discriminators (e.g. `type: { enum: ['direct'] }`) are not rescued by coercion. If the actual data has a `type` value not listed in any branch, the `oneOf` fails. Ensure all possible discriminator values are covered, or relax the items schema (e.g. `{ type: 'object' }`) when full type-level validation is not needed at runtime.
 
 ---
 
 ## Common mistakes
 
-1. **Using `ajv` for query params** when the schema expects `number` or `boolean`:
-   - Client sends `?count=25`.
-   - Validator expects `number` but receives the string `"25"`.
-   - Result: "must be number" / "invalid-params" error.
+1. **Using `ajv` for query params** when the schema expects an `array`:
+   - Client sends `?types=c`.
+   - Validator expects an array but receives the string `"c"`; only `ajvQuery` wraps it.
+   - Result: "must be array" / "invalid-params" error.
 
 2. **Using `ajvQuery` for body**:
-   - Usually works, but coercion can hide incorrect types (e.g. string where a number was expected). For body, the standard is to use `ajv` and require the client to send the correct types in the JSON.
+   - Usually works, but `ajvQuery` also wraps a scalar into a one-item array, which can hide a client sending one value where a list was expected. For body, the standard is to use `ajv`.
 
-3. **Response schemas with `null` fields** (test mode only):
-   - With `coerceTypes: false`, `null` is no longer coerced to `""` or `0`.
-   - Fields that can be `null` must use `nullable: true`.
-   - Symptom: tests get 400 with `errorType: "error-invalid-body"` even though the endpoint logic succeeds.
+3. **Response schemas with `null` fields**:
+   - Without `nullable: true`, `null` is coerced to `""` or `0` and validation passes anyway.
+   - Fields that can be `null` should use `nullable: true` so the schema matches the data.
 
 ---
 

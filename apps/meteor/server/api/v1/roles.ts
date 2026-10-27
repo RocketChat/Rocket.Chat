@@ -1,5 +1,5 @@
-import { api, Authorization } from '@rocket.chat/core-services';
-import type { IRole, IUserInRole } from '@rocket.chat/core-typings';
+import { api, Authorization, ClientSafeError } from '@rocket.chat/core-services';
+import type { IRole, IUserInRole, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
 import { Roles, Users } from '@rocket.chat/models';
 import {
 	ajv,
@@ -12,15 +12,14 @@ import {
 	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
-import { Meteor } from 'meteor/meteor';
 
-import { getUsersInRolePaginated } from '../../../app/authorization/server/functions/getUsersInRole';
-import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
-import { hasRoleAsync, hasAnyRoleAsync } from '../../../app/authorization/server/functions/hasRole';
-import { addUserToRole } from '../../../app/authorization/server/methods/addUserToRole';
-import { notifyOnRoleChanged } from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
+import { getUsersInRolePaginated } from '../../lib/authorization/getUsersInRole';
+import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { hasRoleAsync, hasAnyRoleAsync } from '../../lib/authorization/hasRole';
+import { notifyOnRoleChanged } from '../../lib/notifyListener';
 import { removeUserFromRolesAsync } from '../../lib/roles/removeUserFromRoles';
+import { addUserToRole } from '../../meteor-methods/auth/addUserToRole';
+import { settings } from '../../settings';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
@@ -76,7 +75,7 @@ const rolesRoutes = API.v1
 			authRequired: true,
 			query: rolesSyncQuerySchema,
 			response: {
-				200: ajv.compile<{ roles: { update: IRole[]; remove: IRole[] } }>({
+				200: ajv.compile<{ roles: { update: IRole[]; remove: RocketChatRecordDeleted<IRole>[] } }>({
 					type: 'object',
 					properties: {
 						roles: {
@@ -100,7 +99,7 @@ const rolesRoutes = API.v1
 			const { updatedSince } = this.queryParams;
 
 			if (updatedSince && Number.isNaN(Date.parse(updatedSince))) {
-				throw new Meteor.Error('error-invalid-param', 'updatedSince must be a valid date string');
+				throw new ClientSafeError('error-invalid-param', 'updatedSince must be a valid date string');
 			}
 
 			return API.v1.success({
@@ -141,7 +140,7 @@ const rolesRoutes = API.v1
 			}
 
 			if (await hasRoleAsync(user._id, role._id, roomId)) {
-				throw new Meteor.Error('error-user-already-in-role', 'User already in role');
+				throw new ClientSafeError('error-user-already-in-role', 'User already in role');
 			}
 
 			await addUserToRole(this.userId, role._id, user.username, roomId);
@@ -187,17 +186,17 @@ const rolesRoutes = API.v1
 			};
 
 			if (!role) {
-				throw new Meteor.Error('error-param-not-provided', 'Query param "role" is required');
+				throw new ClientSafeError('error-param-not-provided', 'Query param "role" is required');
 			}
-			if (roomId && !(await hasPermissionAsync(this.userId, 'view-other-user-channels'))) {
-				throw new Meteor.Error('error-not-allowed', 'Not allowed');
+			if (roomId && !(await hasPermissionAsync(this.user, 'view-other-user-channels'))) {
+				throw new ClientSafeError('error-not-allowed', 'Not allowed');
 			}
 
 			const options = { projection: { _id: 1 } };
 			const roleData = await Roles.findOneById<Pick<IRole, '_id'>>(role, options);
 
 			if (!roleData) {
-				throw new Meteor.Error('error-invalid-roleId');
+				throw new ClientSafeError('error-invalid-roleId');
 			}
 
 			const { cursor, totalCount } = await getUsersInRolePaginated(roleData._id, roomId, {
@@ -236,15 +235,15 @@ const rolesRoutes = API.v1
 			const role = await Roles.findOneByIdOrName(bodyParams.roleId);
 
 			if (!role) {
-				throw new Meteor.Error('error-invalid-roleId', 'This role does not exist');
+				throw new ClientSafeError('error-invalid-roleId', 'This role does not exist');
 			}
 
 			if (role.protected) {
-				throw new Meteor.Error('error-role-protected', 'Cannot delete a protected role');
+				throw new ClientSafeError('error-role-protected', 'Cannot delete a protected role');
 			}
 
 			if ((await Roles.countUsersInRole(role._id)) > 0) {
-				throw new Meteor.Error('error-role-in-use', "Cannot delete role because it's in use");
+				throw new ClientSafeError('error-role-in-use', "Cannot delete role because it's in use");
 			}
 
 			await Roles.removeById(role._id);
@@ -284,23 +283,23 @@ const rolesRoutes = API.v1
 			const user = await Users.findOneByUsername(username);
 
 			if (!user) {
-				throw new Meteor.Error('error-invalid-user', 'There is no user with this username');
+				throw new ClientSafeError('error-invalid-user', 'There is no user with this username');
 			}
 
 			const role = await Roles.findOneById(roleId);
 
 			if (!role) {
-				throw new Meteor.Error('error-invalid-roleId', 'This role does not exist');
+				throw new ClientSafeError('error-invalid-roleId', 'This role does not exist');
 			}
 
 			if (!(await hasAnyRoleAsync(user._id, [role._id], scope))) {
-				throw new Meteor.Error('error-user-not-in-role', 'User is not in this role');
+				throw new ClientSafeError('error-user-not-in-role', 'User is not in this role');
 			}
 
 			if (role._id === 'admin') {
 				const adminCount = await Roles.countUsersInRole('admin');
 				if (adminCount === 1) {
-					throw new Meteor.Error('error-admin-required', 'You need to have at least one admin');
+					throw new ClientSafeError('error-admin-required', 'You need to have at least one admin');
 				}
 			}
 
@@ -365,6 +364,6 @@ const rolesRoutes = API.v1
 type RolesEndpoints = ExtractRoutesFromAPI<typeof rolesRoutes>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends RolesEndpoints {}
 }

@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 
-import { normalizeMessagesForUser } from '../../../app/utils/server/lib/normalizeMessagesForUser';
+import { normalizeMessagesForUser } from '../../lib/utils/lib/normalizeMessagesForUser';
 
 export async function composeRoomWithLastMessage(room: IRoom, userId: string) {
 	if (room.lastMessage) {

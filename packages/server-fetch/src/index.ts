@@ -1,12 +1,13 @@
 import http from 'node:http';
 import https from 'node:https';
+import type { Readable } from 'node:stream';
 
 import { Logger } from '@rocket.chat/logger';
 import { censorUrl } from '@rocket.chat/tools';
 import { AbortController } from 'abort-controller';
 import { HttpProxyAgent } from 'http-proxy-agent';
 import { HttpsProxyAgent } from 'https-proxy-agent';
-import fetch, { Response } from 'node-fetch';
+import fetch, { FetchError, Response } from 'node-fetch';
 import { getProxyForUrl } from 'proxy-from-env';
 
 import { checkForSsrfWithIp, parseSsrfAllowlist } from './checkForSsrf';
@@ -89,13 +90,6 @@ async function getFetchAgentWithValidation<U extends string>(
 	return { agent: getFetchAgent(pinnedUrl, allowSelfSignedCerts, originalHostname), pinnedUrl, originalHostname, resolvedIp };
 }
 
-function getTimeout(timeout?: number) {
-	const controller = new AbortController();
-	const timeoutId = setTimeout(() => controller.abort(), timeout ?? 20000);
-
-	return { controller, timeoutId };
-}
-
 function followRedirect(response: fetch.Response, redirectCount = 0) {
 	const location = response.headers.get('location');
 
@@ -115,7 +109,8 @@ function followRedirect(response: fetch.Response, redirectCount = 0) {
 
 export async function serverFetch(input: string, options?: ExtendedFetchOptions, allowSelfSignedCerts?: boolean): Promise<Response> {
 	let currentUrl = input;
-	const { controller, timeoutId } = getTimeout(options?.timeout);
+	let controller = new AbortController();
+	const timeoutId = setTimeout(() => controller.abort(), options?.timeout ?? 20000);
 
 	try {
 		for (let redirectCount = 0; redirectCount <= MAX_REDIRECTS; redirectCount += 1) {
@@ -176,23 +171,23 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 			});
 
 			if (!redirectStatus.has(response.status)) {
+				// node-fetch v2 only closes the socket through the abort signal, so destroying the body alone leaves it open
+				(response.body as Readable).once('close', controller.abort.bind(controller));
 				return response;
 			}
 
-			currentUrl = new URL(followRedirect(response, redirectCount), currentUrl).toString();
+			controller.abort();
+			controller = new AbortController();
 
-			// https://github.com/node-fetch/node-fetch/issues/1673 - body not consumed == open socket
-			response.body.resume();
+			currentUrl = new URL(followRedirect(response, redirectCount), currentUrl).toString();
 		}
 	} finally {
-		if (timeoutId) {
-			clearTimeout(timeoutId);
-		}
+		clearTimeout(timeoutId);
 	}
 
 	throw new Error('error-processing-request');
 }
 
-export { Response };
+export { FetchError, Response };
 export type { ExtendedFetchOptions };
 export { parseSsrfAllowlist };

@@ -1,5 +1,5 @@
-import { Icon, Margins, Pagination, Skeleton, Table, TableBody, TableCell, TableHead, TableRow, Tile } from '@rocket.chat/fuselage';
-import { format } from 'date-fns';
+import { Box, Icon, Pagination, Skeleton, Table, TableBody, TableCell, TableHead, TableRow, Tile } from '@rocket.chat/fuselage';
+import { format } from 'date-fns/format';
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -60,8 +60,10 @@ const ChannelsOverview = () => {
 			</EngagementDashboardCardFilter>
 			<div>
 				{channels && !channels.length && (
-					<Tile fontScale='p1' color='hint' style={{ textAlign: 'center' }}>
-						{t('No_data_found')}
+					<Tile>
+						<Box fontScale='p1' color='hint' textAlign='center'>
+							{t('No_data_found')}
+						</Box>
 					</Tile>
 				)}
 				{(!channels || channels.length) && (
@@ -80,10 +82,10 @@ const ChannelsOverview = () => {
 								<TableRow key={i}>
 									<TableCell>{i + 1}.</TableCell>
 									<TableCell>
-										<Margins inlineEnd={4}>
+										<Box display='flex' alignItems='center' gap={4}>
 											{(t === 'd' && <Icon name='at' />) || (t === 'p' && <Icon name='lock' />) || (t === 'c' && <Icon name='hashtag' />)}
-										</Margins>
-										{name}
+											{name}
+										</Box>
 									</TableCell>
 									<TableCell>{format(new Date(createdAt ?? new Date()), 'P')}</TableCell>
 									<TableCell>{format(new Date(updatedAt ?? new Date()), 'P')}</TableCell>
@@ -120,7 +122,7 @@ const ChannelsOverview = () => {
 					itemsPerPage={itemsPerPage}
 					itemsPerPageLabel={(): string => t('Items_per_page:')}
 					showingResultsLabel={({ count, current, itemsPerPage }): string =>
-						t('Showing_results_of', { postProcess: 'sprintf', sprintf: [current + 1, Math.min(current + itemsPerPage, count), count] })
+						t('Showing_results_of', { from: current + 1, to: Math.min(current + itemsPerPage, count), total: count })
 					}
 					count={data?.total || 0}
 					onSetItemsPerPage={setItemsPerPage}

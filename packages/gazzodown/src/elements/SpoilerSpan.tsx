@@ -19,7 +19,7 @@ import UserMentionElement from '../mentions/UserMentionElement';
 
 const KatexElement = lazy(() => import('../katex/KatexElement'));
 
-type SpoilerSpanProps = {
+export type SpoilerSpanProps = {
 	children: MessageParser.Spoiler['value'];
 };
 

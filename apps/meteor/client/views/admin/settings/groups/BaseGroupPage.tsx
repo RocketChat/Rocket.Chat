@@ -4,7 +4,7 @@ import GenericGroupPage from './GenericGroupPage';
 import TabbedGroupPage from './TabbedGroupPage';
 import { useEditableSettingsGroupSections, useEditableSettingsGroupTabs } from '../../EditableSettingsContext';
 
-type BaseGroupPageProps = {
+export type BaseGroupPageProps = {
 	_id: string;
 	i18nLabel: string;
 	headerButtons?: ReactNode;

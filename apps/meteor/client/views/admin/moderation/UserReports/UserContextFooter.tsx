@@ -6,7 +6,7 @@ import useDeactivateUserAction from '../hooks/useDeactivateUserAction';
 import useDismissUserAction from '../hooks/useDismissUserAction';
 import useResetAvatarAction from '../hooks/useResetAvatarAction';
 
-type UserContextFooterProps = { userId: string; deleted: boolean };
+export type UserContextFooterProps = { userId: string; deleted: boolean };
 
 const UserContextFooter = ({ userId, deleted }: UserContextFooterProps) => {
 	const { t } = useTranslation();
@@ -17,7 +17,7 @@ const UserContextFooter = ({ userId, deleted }: UserContextFooterProps) => {
 	return (
 		<ButtonGroup stretch>
 			<Button onClick={dismissUserAction.onClick}>{t('Moderation_Dismiss_all_reports')}</Button>
-			<Button disabled={deleted} onClick={deactivateUserAction.onClick} secondary danger>
+			<Button disabled={deleted} onClick={deactivateUserAction.onClick} variant='secondary-danger'>
 				{t('Moderation_Deactivate_User')}
 			</Button>
 			<Box display='flex' flexGrow={0} marginInlineStart={8}>

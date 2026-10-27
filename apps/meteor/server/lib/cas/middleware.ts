@@ -8,7 +8,7 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { logger } from './logger';
-import { settings } from '../../../app/settings/server';
+import { settings } from '../../settings';
 
 const closePopup = function (res: ServerResponse): void {
 	res.writeHead(200, { 'Content-Type': 'text/html' });

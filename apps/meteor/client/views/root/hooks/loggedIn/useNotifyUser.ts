@@ -4,8 +4,8 @@ import { useEmbeddedLayout } from '@rocket.chat/ui-client';
 import { useCustomSound, useRouter, useStream, useUserPreference } from '@rocket.chat/ui-contexts';
 import { useEffect } from 'react';
 
-import { useDesktopNotification } from '../../../../hooks/notification/useDesktopNotification';
-import { useNewMessageNotification } from '../../../../hooks/notification/useNewMessageNotification';
+import { useDesktopNotification } from './useDesktopNotification';
+import { useNewMessageNotification } from './useNewMessageNotification';
 import { RoomManager } from '../../../../lib/RoomManager';
 import { fireGlobalEvent } from '../../../../lib/utils/fireGlobalEvent';
 

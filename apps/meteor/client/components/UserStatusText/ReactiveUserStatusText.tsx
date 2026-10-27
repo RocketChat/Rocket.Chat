@@ -4,7 +4,7 @@ import { memo } from 'react';
 
 import UserStatusText from './UserStatusText';
 
-type ReactiveUserStatusTextProps = {
+export type ReactiveUserStatusTextProps = {
 	uid: IUser['_id'];
 };
 

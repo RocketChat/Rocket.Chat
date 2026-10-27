@@ -1,6 +1,7 @@
-import { Push } from '@rocket.chat/core-services';
+import { hashLoginToken } from '@rocket.chat/account-utils';
+import { Push, ClientSafeError } from '@rocket.chat/core-services';
 import { pushTokenTypes } from '@rocket.chat/core-typings';
-import type { IMessage, IPushNotificationConfig, IPushToken, IPushTokenTypes } from '@rocket.chat/core-typings';
+import type { IMessage, IPushNotificationConfig, IPushToken, IPushTokenTypes, PushTokenTarget } from '@rocket.chat/core-typings';
 import { Messages, PushToken, Users, Rooms, Settings } from '@rocket.chat/models';
 import {
 	ajv,
@@ -11,13 +12,11 @@ import {
 	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
 import type { JSONSchemaType } from 'ajv';
-import { Accounts } from 'meteor/accounts-base';
-import { Meteor } from 'meteor/meteor';
 
-import { canAccessRoomAsync } from '../../../app/authorization/server/functions/canAccessRoom';
-import PushNotification from '../../../app/push-notifications/server/lib/PushNotification';
-import { settings } from '../../../app/settings/server';
+import { canAccessRoomAsync } from '../../lib/authorization/canAccessRoom';
+import PushNotification from '../../lib/notifications/push-config/lib/PushNotification';
 import { executePushTest } from '../../lib/pushConfig';
+import { settings } from '../../settings';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import type { SuccessResult } from '../definition';
@@ -78,23 +77,23 @@ const PushTokenDELETESchema: JSONSchemaType<PushTokenDELETE> = {
 
 export const isPushTokenDELETEProps = ajv.compile<PushTokenDELETE>(PushTokenDELETESchema);
 
-type PushTokenResult = Pick<IPushToken, '_id' | 'token' | 'appName' | 'userId' | 'enabled' | 'createdAt' | '_updatedAt' | 'voipToken'>;
+type PushTokenResult = Pick<IPushToken, '_id' | 'tokenType' | 'tokenValue' | 'appName' | 'userId' | 'enabled' | 'createdAt' | '_updatedAt'>;
 
 /**
  * Pick only the attributes we actually want to return on the endpoint, ensuring nothing from older schemas get mixed in
  */
 function cleanTokenResult(result: Omit<IPushToken, 'authToken'>): PushTokenResult {
-	const { _id, token, appName, userId, enabled, createdAt, _updatedAt, voipToken } = result;
+	const { _id, tokenType, tokenValue, appName, userId, enabled, createdAt, _updatedAt } = result;
 
 	return {
 		_id,
-		token,
+		tokenType,
+		tokenValue,
 		appName,
 		userId,
 		enabled,
 		createdAt,
 		_updatedAt,
-		voipToken,
 	};
 }
 
@@ -118,18 +117,12 @@ const pushTokenEndpoints = API.v1
 								_id: {
 									type: 'string',
 								},
-								token: {
-									type: 'object',
-									properties: {
-										apn: {
-											type: 'string',
-										},
-										gcm: {
-											type: 'string',
-										},
-									},
-									required: [],
-									additionalProperties: false,
+								tokenType: {
+									type: 'string',
+									enum: [...pushTokenTypes, 'voip'],
+								},
+								tokenValue: {
+									type: 'string',
 								},
 								appName: {
 									type: 'string',
@@ -147,10 +140,6 @@ const pushTokenEndpoints = API.v1
 								_updatedAt: {
 									type: 'string',
 								},
-								voipToken: {
-									type: 'string',
-									nullable: true,
-								},
 							},
 							additionalProperties: false,
 						},
@@ -167,19 +156,15 @@ const pushTokenEndpoints = API.v1
 		async function action() {
 			const { id, type, value, appName, voipToken } = this.bodyParams;
 
-			if (voipToken && !id) {
-				return API.v1.failure('voip-tokens-must-specify-device-id');
-			}
-
 			const rawToken = this.request.headers.get('x-auth-token');
 			if (!rawToken) {
-				throw new Meteor.Error('error-authToken-param-not-valid', 'The required "authToken" header param is missing or invalid.');
+				throw new ClientSafeError('error-authToken-param-not-valid', 'The required "authToken" header param is missing or invalid.');
 			}
-			const authToken = Accounts._hashLoginToken(rawToken);
+			const authToken = hashLoginToken(rawToken);
 
 			const result = await Push.registerPushToken({
 				...(id && { _id: id }),
-				token: { [type]: value } as IPushToken['token'],
+				token: { [type]: value } as PushTokenTarget,
 				authToken,
 				appName,
 				userId: this.userId,
@@ -214,10 +199,15 @@ const pushTokenEndpoints = API.v1
 		async function action() {
 			const { token } = this.bodyParams;
 
-			const removeResult = await PushToken.removeAllByTokenStringAndUserId(token, this.userId);
-
-			if (removeResult.deletedCount === 0) {
+			const doc = await PushToken.findOneByTokenAndUserId(token, this.userId, { projection: { tokenType: 1, authToken: 1 } });
+			if (!doc) {
 				return API.v1.notFound();
+			}
+
+			await PushToken.removeAllByTokenStringAndUserId(token, this.userId);
+
+			if (doc.tokenType !== 'voip') {
+				await PushToken.removeVoipTokensByUserIdAndAuthToken(this.userId, doc.authToken);
 			}
 
 			return API.v1.success();
@@ -357,16 +347,20 @@ const pushTestEndpoints = API.v1.post(
 		response: {
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
-			200: ajv.compile<{ tokensCount: number }>({
+			200: ajv.compile<{ tokensCount: number; message: string; params: number[] }>({
 				type: 'object',
 				properties: {
 					tokensCount: { type: 'integer' },
+					// The admin "send a test push" setting renders the outcome straight from this
+					// response, so it carries the i18n key and its interpolation values.
+					message: { type: 'string' },
+					params: { type: 'array', items: { type: 'integer' } },
 					success: {
 						type: 'boolean',
 						enum: [true],
 					},
 				},
-				required: ['tokensCount', 'success'],
+				required: ['tokensCount', 'message', 'params', 'success'],
 				additionalProperties: false,
 			}),
 		},
@@ -374,13 +368,13 @@ const pushTestEndpoints = API.v1.post(
 
 	async function action() {
 		if (settings.get('Push_enable') !== true) {
-			throw new Meteor.Error('error-push-disabled', 'Push is disabled', {
+			throw new ClientSafeError('error-push-disabled', 'Push is disabled', {
 				method: 'push_test',
 			});
 		}
 
 		const tokensCount = await executePushTest(this.userId, this.user.username);
-		return API.v1.success({ tokensCount });
+		return API.v1.success({ tokensCount, message: 'Your_push_was_sent_to_s_devices', params: [tokensCount] });
 	},
 );
 
@@ -393,6 +387,6 @@ type PushGetInfoEndpoints = ExtractRoutesFromAPI<typeof pushGetInfoEndpoints>;
 type PushEndpoints = PushTestEndpoints & PushTokenEndpoints & PushGetInfoEndpoints;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends PushEndpoints {}
 }

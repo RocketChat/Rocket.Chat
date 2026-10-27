@@ -47,9 +47,20 @@ test.describe('E2EE File Encryption', () => {
 
 		encryptedRoomId = group._id;
 
-		await page.goto(`/group/${group.name}`);
-		await page.locator('#main-content').waitFor();
+		await poHomeChannel.gotoGroup(group.name as string);
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+		await expect
+			.poll(
+				() =>
+					page.evaluate(async (rid) => {
+						// oxlint-disable-next-line import-x/no-absolute-path
+						const { e2e } = require('/client/lib/e2ee/rocketchat.e2e.ts') as typeof import('../../../client/lib/e2ee/rocketchat.e2e');
+						const room = await e2e.getInstanceByRoomId(rid);
+						return room?.getState();
+					}, group._id),
+				{ message: 'expect room encryption key to be ready before sending messages' },
+			)
+			.toBe('READY');
 	});
 
 	test.afterEach(async ({ api }) => {

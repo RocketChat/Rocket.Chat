@@ -1,11 +1,12 @@
 import type { IRoom, IRoomAbacRedaction, ISubscription, RoomAdminFieldsType, RoomType } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
+import type { RoomAvailableForTeams } from '@rocket.chat/rest-typings';
 import type { FindOptions, Sort } from 'mongodb';
 
 import { scopeAdminRoomsForAbac } from './scopeAdminRoomsForAbac';
-import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
-import { stripABACManagedFieldsForAdmin } from '../../../app/authorization/server/lib/isABACManagedRoom';
 import { adminFields } from '../../../lib/rooms/adminFields';
+import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { stripABACManagedFieldsForAdmin } from '../../lib/authorization/isABACManagedRoom';
 
 export async function findAdminRooms({
 	uid,
@@ -174,7 +175,7 @@ export async function findChannelAndPrivateAutocompleteWithPagination({
 }
 
 export async function findRoomsAvailableForTeams({ uid, name }: { uid: string; name?: string }): Promise<{
-	items: IRoom[];
+	items: RoomAvailableForTeams[];
 }> {
 	const options: FindOptions<IRoom> = {
 		projection: {
@@ -183,6 +184,7 @@ export async function findRoomsAvailableForTeams({ uid, name }: { uid: string; n
 			name: 1,
 			t: 1,
 			avatarETag: 1,
+			abacAttributes: 1,
 		},
 		limit: 10,
 		sort: {
@@ -197,6 +199,6 @@ export async function findRoomsAvailableForTeams({ uid, name }: { uid: string; n
 	const rooms = await Rooms.findChannelAndGroupListWithoutTeamsByNameStartingByOwner(name, userRooms, options).toArray();
 
 	return {
-		items: rooms,
+		items: rooms.map(({ abacAttributes, ...room }) => ({ ...room, hasAbacAttributes: !!abacAttributes?.length })),
 	};
 }

@@ -1,38 +1,37 @@
-import type {
-	FacebookOAuthConfiguration,
-	ISetting,
-	ISettingColor,
-	LoginServiceConfiguration,
-	TwitterOAuthConfiguration,
-	OAuthConfiguration,
-} from '@rocket.chat/core-typings';
+import { ClientSafeError } from '@rocket.chat/core-services';
+import type { ISetting, ISettingColor, LoginServiceConfiguration, OAuthConfiguration } from '@rocket.chat/core-typings';
 import { isActionSettingWithEndpoint, isSettingAction, isSettingColor } from '@rocket.chat/core-typings';
 import { LoginServiceConfiguration as LoginServiceConfigurationModel, Settings } from '@rocket.chat/models';
 import {
 	ajv,
+	isSettingsBulkProps,
+	isSettingsGetParams,
+	isSettingsPublicWithPaginationProps,
 	isSettingsUpdatePropDefault,
 	isSettingsUpdatePropsActions,
 	isSettingsUpdatePropsColor,
-	isSettingsPublicWithPaginationProps,
-	isSettingsGetParams,
-	isSettingsBulkProps,
+	paginatedResponseProperties,
+	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
-	validateBadRequestErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { Meteor } from 'meteor/meteor';
 import type { FindOptions } from 'mongodb';
 import _ from 'underscore';
 
-import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
-import { disableCustomScripts } from '../../../app/lib/server/functions/disableCustomScripts';
-import { saveSettingsBulk } from '../../../app/lib/server/functions/saveSettingsBulk';
-import { checkSettingValueBounds } from '../../../app/lib/server/lib/checkSettingValueBonds';
-import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../../app/lib/server/lib/notifyListener';
-import { addOAuthServiceMethod } from '../../../app/lib/server/methods/addOAuthService';
-import { SettingsEvents, settings } from '../../../app/settings/server';
-import { setValue } from '../../../app/settings/server/raw';
+import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { notifyOnSettingChanged, notifyOnSettingChangedById } from '../../lib/notifyListener';
+import { refreshLoginServices } from '../../lib/refreshLoginServices';
+import { SettingValidationError, validateSettingRules } from '../../lib/settingValidationRules';
+import { disableCustomScripts } from '../../lib/shared/disableCustomScripts';
+import { addOAuthServiceMethod } from '../../meteor-methods/auth/addOAuthService';
+import { removeCustomOAuthSettings } from '../../meteor-methods/auth/removeOAuthService';
+import { SettingsEvents, settings } from '../../settings';
+import type { FetchedSetting } from '../../settings/SettingsRegistry';
+import { checkSettingValueBounds } from '../../settings/checkSettingValueBonds';
 import { updateAuditedByUser } from '../../settings/lib/auditedSettingUpdates';
+import { saveSettingsBulk } from '../../settings/lib/saveSettingsBulk';
+import { setValue } from '../../settings/raw';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
 
@@ -42,7 +41,7 @@ async function fetchSettings(
 	offset: FindOptions<ISetting>['skip'],
 	count: FindOptions<ISetting>['limit'],
 	fields: FindOptions<ISetting>['projection'],
-): Promise<{ settings: ISetting[]; totalCount: number }> {
+): Promise<{ settings: FetchedSetting[]; totalCount: number }> {
 	const { cursor, totalCount } = Settings.findPaginated(query || {}, {
 		sort: sort || { _id: 1 },
 		skip: offset,
@@ -56,13 +55,11 @@ async function fetchSettings(
 	return { settings: settingsList, totalCount: total };
 }
 
-const settingsPublicResponseSchema = ajv.compile<{ settings: ISetting[]; count: number; offset: number; total: number }>({
+const settingsPublicResponseSchema = ajv.compile<{ settings: FetchedSetting[]; count: number; offset: number; total: number }>({
 	type: 'object',
 	properties: {
 		settings: { type: 'array', items: { type: 'object' } },
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['settings', 'count', 'offset', 'total', 'success'],
@@ -86,13 +83,11 @@ const addCustomOAuthBodySchema = ajv.compile<{ name: string }>({
 	additionalProperties: false,
 });
 
-const settingsListResponseSchema = ajv.compile<{ settings: ISetting[]; count: number; offset: number; total: number }>({
+const settingsListResponseSchema = ajv.compile<{ settings: FetchedSetting[]; count: number; offset: number; total: number }>({
 	type: 'object',
 	properties: {
 		settings: { type: 'array', items: { type: 'object' } },
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['settings', 'count', 'offset', 'total', 'success'],
@@ -148,13 +143,12 @@ API.v1.get(
 	},
 	async function action() {
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields, query } = await this.parseJsonQuery();
+		const { sort, fields } = await this.parseJsonQuery();
 		const { _id } = this.queryParams;
 
 		const parsedQueryId = typeof _id === 'string' && _id ? { _id: { $in: _id.split(',').map((id) => id.trim()) } } : {};
 
 		const ourQuery = {
-			...query,
 			...parsedQueryId,
 			hidden: { $ne: true },
 			public: true,
@@ -188,21 +182,29 @@ API.v1.get(
 					return service;
 				}
 
-				if ((service as OAuthConfiguration).custom || (service.service && ['saml', 'cas', 'wordpress'].includes(service.service))) {
-					return { ...service };
+				//	CAUTION: Never hide sign-in with apple button from mobile app.
+				if (service.service && ['apple'].includes(service.service)) {
+					return { ...service, hideButtonOnMobile: false };
+				}
+
+				if (service.service && ['cas', 'ldap'].includes(service.service)) {
+					return { ...service, hideButtonOnMobile: false };
+				}
+
+				//	Older mobile app versions only support the legacy Meteor OAuth flow, so they must hide these buttons.
+				if ((service as OAuthConfiguration).custom || service.service === 'saml') {
+					return { ...service, hideButtonOnMobile: true };
 				}
 
 				return {
 					_id: service._id,
 					name: service.service,
-					clientId:
-						(service as FacebookOAuthConfiguration).appId ||
-						(service as OAuthConfiguration).clientId ||
-						(service as TwitterOAuthConfiguration).consumerKey,
+					clientId: (service as OAuthConfiguration).clientId,
 					buttonLabelText: service.buttonLabelText || '',
 					buttonColor: service.buttonColor || '',
 					buttonLabelColor: service.buttonLabelColor || '',
 					custom: false,
+					hideButtonOnMobile: true,
 				};
 			}),
 		});
@@ -214,6 +216,10 @@ API.v1.post(
 	{
 		authRequired: true,
 		twoFactorRequired: true,
+		license: ['oauth-enterprise'],
+		permissionsRequired: {
+			POST: { permissions: ['add-oauth-service'], operation: 'hasAll' },
+		},
 		body: addCustomOAuthBodySchema,
 		response: {
 			200: ajv.compile<void>({
@@ -222,23 +228,78 @@ API.v1.post(
 				required: ['success'],
 				additionalProperties: false,
 			}),
-			400: ajv.compile({
-				type: 'object',
-				properties: { success: { type: 'boolean', enum: [false] }, error: { type: 'string' } },
-				required: ['success'],
-				additionalProperties: false,
-			}),
+			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
 	},
 	async function action() {
 		const { name } = this.bodyParams;
 		if (!name?.trim()) {
-			throw new Meteor.Error('error-name-param-not-provided', 'The parameter "name" is required');
+			throw new ClientSafeError('error-name-param-not-provided', 'The parameter "name" is required');
 		}
 
 		await addOAuthServiceMethod(this.userId, name);
 
+		return API.v1.success();
+	},
+);
+
+API.v1.post(
+	'settings.removeCustomOAuth',
+	{
+		authRequired: true,
+		twoFactorRequired: true,
+		permissionsRequired: {
+			POST: { permissions: ['add-oauth-service'], operation: 'hasAll' },
+		},
+		body: addCustomOAuthBodySchema,
+		response: {
+			200: ajv.compile<void>({
+				type: 'object',
+				properties: { success: { type: 'boolean', enum: [true] } },
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		const { name } = this.bodyParams;
+		if (!name?.trim()) {
+			throw new ClientSafeError('error-name-param-not-provided', 'The parameter "name" is required');
+		}
+
+		await removeCustomOAuthSettings(name);
+
+		return API.v1.success();
+	},
+);
+
+API.v1.post(
+	'settings.refreshOAuthServices',
+	{
+		authRequired: true,
+		twoFactorRequired: true,
+		permissionsRequired: {
+			POST: { permissions: ['add-oauth-service'], operation: 'hasAll' },
+		},
+		response: {
+			200: ajv.compile<void>({
+				type: 'object',
+				properties: { success: { type: 'boolean', enum: [true] } },
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		await refreshLoginServices();
 		return API.v1.success();
 	},
 );
@@ -256,17 +317,15 @@ API.v1.get(
 	async function action() {
 		const { includeDefaults } = this.queryParams;
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, fields, query } = await this.parseJsonQuery();
+		const { sort, fields } = await this.parseJsonQuery();
 
-		let ourQuery: Parameters<typeof Settings.find>[0] = {
+		const ourQuery: Parameters<typeof Settings.find>[0] = {
 			hidden: { $ne: true },
 		};
 
-		if (!(await hasPermissionAsync(this.userId, 'view-privileged-setting'))) {
+		if (!(await hasPermissionAsync(this.user, 'view-privileged-setting'))) {
 			ourQuery.public = true;
 		}
-
-		ourQuery = Object.assign({}, query, ourQuery);
 
 		if (includeDefaults) {
 			fields.packageValue = 1;
@@ -323,12 +382,7 @@ API.v1.post(
 		body: settingsUpdateBodySchema,
 		response: {
 			200: settingByIdPostResponseSchema,
-			400: ajv.compile({
-				type: 'object',
-				properties: { success: { type: 'boolean', enum: [false] } },
-				required: ['success'],
-				additionalProperties: true,
-			}),
+			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 			403: validateForbiddenErrorResponse,
 		},
@@ -336,7 +390,7 @@ API.v1.post(
 	async function action() {
 		const { _id } = this.urlParams;
 		if (typeof _id !== 'string') {
-			throw new Meteor.Error('error-id-param-not-provided', 'The parameter "id" is required');
+			throw new ClientSafeError('error-id-param-not-provided', 'The parameter "id" is required');
 		}
 
 		if (disableCustomScripts() && /^Custom_Script_/.test(_id)) {
@@ -382,7 +436,17 @@ API.v1.post(
 		}
 
 		if (isSettingsUpdatePropDefault(bodyParams)) {
+			// TODO(next major): unify both validations into one function with a common API error response
 			checkSettingValueBounds(setting, bodyParams.value);
+
+			try {
+				validateSettingRules([{ _id, value: bodyParams.value }]);
+			} catch (error) {
+				if (error instanceof SettingValidationError) {
+					return API.v1.failure(error.message, 'error-setting-validation-failed');
+				}
+				throw error;
+			}
 
 			const { matchedCount } = await auditSettingOperation(Settings.updateValueNotHiddenById, _id, bodyParams.value);
 
@@ -422,11 +486,18 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		await saveSettingsBulk(this.userId, this.bodyParams.settings, {
-			username: this.user.username ?? '',
-			ip: this.requestIp ?? '',
-			useragent: this.request.headers.get('user-agent') ?? '',
-		});
+		try {
+			await saveSettingsBulk(this.userId, this.bodyParams.settings, {
+				username: this.user.username ?? '',
+				ip: this.requestIp ?? '',
+				useragent: this.request.headers.get('user-agent') ?? '',
+			});
+		} catch (error) {
+			if (error instanceof SettingValidationError) {
+				return API.v1.failure(error.message, 'error-setting-validation-failed');
+			}
+			throw error;
+		}
 
 		return API.v1.success();
 	},

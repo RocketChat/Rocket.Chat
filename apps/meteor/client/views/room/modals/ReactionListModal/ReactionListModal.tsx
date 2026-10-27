@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import Reactions from './Reactions';
 
-type ReactionListModalProps = {
+export type ReactionListModalProps = {
 	reactions: Required<IMessage>['reactions'];
 	onClose: () => void;
 };

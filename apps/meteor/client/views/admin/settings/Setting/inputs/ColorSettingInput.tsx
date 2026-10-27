@@ -1,5 +1,5 @@
 import type { SettingEditor } from '@rocket.chat/core-typings';
-import { FieldLabel, FieldRow, FieldHint, FlexItem, InputBox, Margins, TextInput, Select, Field } from '@rocket.chat/fuselage';
+import { Box, FieldLabel, FieldRow, FieldHint, FlexItem, InputBox, TextInput, Select, Field } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, Key } from 'react';
 import { useCallback } from 'react';
@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
-type ColorSettingInputProps = SettingInputProps & {
+export type ColorSettingInputProps = SettingInputProps & {
 	value: string;
 	editor: string;
 	allowedTypes?: TranslationKey[];
@@ -55,47 +55,46 @@ function ColorSettingInput({
 				</FieldLabel>
 				{hasResetButton && <ResetSettingButton onClick={onResetButtonClick} />}
 			</FieldRow>
-			<Margins inline={4}>
-				<FieldRow>
-					<Margins inline={4}>
-						<FlexItem grow={2}>
-							{editor === 'color' && (
-								<InputBox
-									type='color'
-									id={_id}
-									value={value}
-									placeholder={placeholder}
-									disabled={disabled}
-									readOnly={readonly}
-									autoComplete={autocomplete === false ? 'off' : undefined}
-									onChange={handleChange}
-								/>
-							)}
-							{editor === 'expression' && (
-								<TextInput
-									id={_id}
-									value={value}
-									placeholder={placeholder}
-									disabled={disabled}
-									readOnly={readonly}
-									autoComplete={autocomplete === false ? 'off' : undefined}
-									onChange={handleChange}
-								/>
-							)}
-						</FlexItem>
-						<Select
-							type='color'
-							id={`${_id}_editor`}
-							value={editor}
-							disabled={disabled}
-							readOnly={readonly}
-							autoComplete={autocomplete === false ? 'off' : undefined}
-							onChange={handleEditorTypeChange}
-							options={allowedTypes.map((type) => [type, t(type)])}
-						/>
-					</Margins>
-				</FieldRow>
-			</Margins>
+			<FieldRow>
+				<Box display='flex' flexGrow={1} gap={8}>
+					<FlexItem grow={2}>
+						{editor === 'color' && (
+							<InputBox
+								type='color'
+								id={_id}
+								value={value}
+								placeholder={placeholder}
+								disabled={disabled}
+								readOnly={readonly}
+								autoComplete={autocomplete === false ? 'off' : undefined}
+								onChange={handleChange}
+							/>
+						)}
+						{editor === 'expression' && (
+							<TextInput
+								id={_id}
+								value={value}
+								placeholder={placeholder}
+								disabled={disabled}
+								readOnly={readonly}
+								autoComplete={autocomplete === false ? 'off' : undefined}
+								onChange={handleChange}
+							/>
+						)}
+					</FlexItem>
+					<Select
+						type='color'
+						id={`${_id}_editor`}
+						aria-label={t('Setting_color_editor', { setting: label })}
+						value={editor}
+						disabled={disabled}
+						readOnly={readonly}
+						autoComplete={autocomplete === false ? 'off' : undefined}
+						onChange={handleEditorTypeChange}
+						options={allowedTypes.map((type) => [type, t(type)])}
+					/>
+				</Box>
+			</FieldRow>
 			<FieldHint>Variable name: {_id.replace(/theme-color-/, '@')}</FieldHint>
 			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>

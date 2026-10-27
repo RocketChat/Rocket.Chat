@@ -7,7 +7,7 @@ import { TIMEUNIT, timeUnitToMs, msToTimeUnit } from '../../../../../lib/convert
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
-type TimespanSettingInputProps = SettingInputProps<string, string | number> & {
+export type TimespanSettingInputProps = SettingInputProps<string, string | number> & {
 	value: string;
 };
 
@@ -103,7 +103,13 @@ function TimespanSettingInput({
 				/>
 			</FieldRow>
 			<FieldRow>
-				<Select value={timeUnit} disabled={disabled} options={timeUnitOptions} onChange={handleChangeTimeUnit} />
+				<Select
+					aria-label={t('Setting_time_unit', { setting: label })}
+					value={timeUnit}
+					disabled={disabled}
+					options={timeUnitOptions}
+					onChange={handleChangeTimeUnit}
+				/>
 			</FieldRow>
 			{hint && <FieldHint>{hint}</FieldHint>}
 		</Field>

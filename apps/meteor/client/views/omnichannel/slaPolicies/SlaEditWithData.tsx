@@ -1,10 +1,9 @@
-import { Callout } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import { useTranslation } from 'react-i18next';
 
 import SlaEdit from './SlaEdit';
 import { FormSkeleton } from '../../../components/Skeleton';
+import NotAvailableCallout from '../components/NotAvailableCallout';
 
 type SlaEditProps = {
 	slaId: string;
@@ -17,18 +16,13 @@ function SlaEditWithData({ slaId, reload }: SlaEditProps) {
 		queryKey: ['/v1/livechat/sla', slaId],
 		queryFn: () => getSLA(),
 	});
-	const { t } = useTranslation();
 
 	if (isPending) {
 		return <FormSkeleton />;
 	}
 
 	if (isError || !data) {
-		return (
-			<Callout m={16} type='danger'>
-				{t('Not_Available')}
-			</Callout>
-		);
+		return <NotAvailableCallout />;
 	}
 
 	return <SlaEdit slaId={slaId} data={data} reload={reload} />;

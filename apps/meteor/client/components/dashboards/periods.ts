@@ -1,5 +1,11 @@
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { startOfDay, startOfWeek, startOfMonth, startOfYear, endOfDay, subDays, subMonths } from 'date-fns';
+import { endOfDay } from 'date-fns/endOfDay';
+import { startOfDay } from 'date-fns/startOfDay';
+import { startOfMonth } from 'date-fns/startOfMonth';
+import { startOfWeek } from 'date-fns/startOfWeek';
+import { startOfYear } from 'date-fns/startOfYear';
+import { subDays } from 'date-fns/subDays';
+import { subMonths } from 'date-fns/subMonths';
 
 const label = (translationKey: TranslationKey): readonly [translationKey: TranslationKey] => [translationKey];
 

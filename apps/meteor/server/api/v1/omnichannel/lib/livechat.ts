@@ -4,9 +4,9 @@ import { EmojiCustom, LivechatTrigger, LivechatVisitors, LivechatRooms, Livechat
 import { makeFunction } from '@rocket.chat/patch-injection';
 import { Meteor } from 'meteor/meteor';
 
-import { normalizeAgent } from '../../../../../app/livechat/server/lib/Helper';
-import { getInitSettings } from '../../../../../app/livechat/server/lib/settings';
 import { callbacks } from '../../../../lib/callbacks';
+import { normalizeAgent } from '../../../../lib/omnichannel/Helper';
+import { getInitSettings } from '../../../../lib/omnichannel/settings';
 
 async function findTriggers(): Promise<Pick<ILivechatTrigger, '_id' | 'actions' | 'conditions' | 'runOnce'>[]> {
 	const triggers = await LivechatTrigger.findEnabled().toArray();
@@ -52,7 +52,9 @@ export function findGuest(token: string): Promise<ILivechatVisitor | null> {
 	return LivechatVisitors.getVisitorByToken(token);
 }
 
-export function findGuestWithoutActivity(token: string): Promise<ILivechatVisitor | null> {
+export function findGuestWithoutActivity(
+	token: string,
+): Promise<Pick<ILivechatVisitor, '_id' | 'name' | 'username' | 'token' | 'visitorEmails' | 'department'> | null> {
 	return LivechatVisitors.getVisitorByToken(token, { projection: { name: 1, username: 1, token: 1, visitorEmails: 1, department: 1 } });
 }
 

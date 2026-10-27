@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "commonjs",
+    "esModuleInterop": true,
+    "rootDir": "./src",
+    "outDir": "./dist/cjs"
+  },
+  "include": ["./src"],
+  "exclude": ["**/*.spec.*", "**/*.stories.tsx", "jest.config.*"]
+}

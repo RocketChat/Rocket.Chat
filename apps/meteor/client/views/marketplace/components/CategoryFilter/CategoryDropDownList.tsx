@@ -1,15 +1,15 @@
-import { Box, CheckBox, Option, Tile } from '@rocket.chat/fuselage';
+import { Box, CheckBox, Option, PopoverSurface } from '@rocket.chat/fuselage';
 import { Fragment } from 'react';
 
 import type { CategoryDropDownListProps } from '../../definitions/CategoryDropdownDefinitions';
 
 const CategoryDropDownList = ({ categories, onSelected }: CategoryDropDownListProps) => {
 	return (
-		<Tile overflow='auto' pb={12} pi={0} elevation='2' w='full' bg='light' borderRadius={2}>
+		<PopoverSurface>
 			{categories.map((category, index) => (
 				<Fragment key={index}>
 					{category.label && (
-						<Box pi={16} pbs={8} pbe={4} fontScale='micro' textTransform='uppercase' color='default'>
+						<Box paddingInline={16} paddingBlockStart={8} paddingBlockEnd={4} fontScale='micro' textTransform='uppercase' color='default'>
 							{category.label}
 						</Box>
 					)}
@@ -20,7 +20,7 @@ const CategoryDropDownList = ({ categories, onSelected }: CategoryDropDownListPr
 					))}
 				</Fragment>
 			))}
-		</Tile>
+		</PopoverSurface>
 	);
 };
 

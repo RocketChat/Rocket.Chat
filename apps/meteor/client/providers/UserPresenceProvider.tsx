@@ -1,5 +1,5 @@
 import type { UserPresenceContextValue } from '@rocket.chat/ui-contexts';
-import { useSetting, UserPresenceContext } from '@rocket.chat/ui-contexts';
+import { useConnectionStatus, useSetting, UserPresenceContext } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useMemo, useEffect } from 'react';
 
@@ -9,7 +9,7 @@ import { UserPresence } from '../lib/userPresence';
 
 export const userPresence = new UserPresence();
 
-type UserPresenceProviderProps = {
+export type UserPresenceProviderProps = {
 	children?: ReactNode;
 };
 
@@ -23,6 +23,14 @@ const UserPresenceProvider = ({ children }: UserPresenceProviderProps) => {
 	useEffect(() => {
 		Presence.setStatus(usePresenceDisabled ? 'disabled' : 'enabled');
 	}, [usePresenceDisabled]);
+
+	const { connected } = useConnectionStatus();
+
+	useEffect(() => {
+		if (connected) {
+			Presence.resync();
+		}
+	}, [connected]);
 
 	const contextValue: UserPresenceContextValue = useMemo(
 		() => ({

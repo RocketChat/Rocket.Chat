@@ -1,7 +1,7 @@
 import { GenericMenu } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
-type AppsLogsFilterOptionsProps = {
+export type AppsLogsFilterOptionsProps = {
 	onExpandAll: () => void;
 	onCollapseAll: () => void;
 };

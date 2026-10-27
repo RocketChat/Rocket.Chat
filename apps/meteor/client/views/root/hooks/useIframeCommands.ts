@@ -1,14 +1,14 @@
-import type { UserStatus } from '@rocket.chat/core-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { type LocationPathname, UserContext, useLoginWithCustomOauth, useLoginWithToken, useSetting } from '@rocket.chat/ui-contexts';
-import { useContext, useEffect } from 'react';
+import type { OAuthConfiguration, UserStatus } from '@rocket.chat/core-typings';
+import { escapeRegExp } from '@rocket.chat/tools';
+import { type LocationPathname, UserContext, useLoginWithToken, useSetting, useUserId } from '@rocket.chat/ui-contexts';
+import { useContext, useEffect, useRef } from 'react';
 
-import { AccountBox } from '../../../../app/ui-utils/client/lib/AccountBox';
-import { capitalize, ltrim, rtrim } from '../../../../lib/utils/stringUtils';
+import { ltrim, rtrim } from '../../../../lib/utils/stringUtils';
+import { useLoginWithCustomOauth } from '../../../hooks/useLoginWithCustomOauth';
+import { AccountBox } from '../../../lib/AccountBox';
 import { baseURI } from '../../../lib/baseURI';
 import { loginServices } from '../../../lib/loginServices';
 import { getRootUrlPathPrefix } from '../../../lib/meteorRuntimeConfig';
-import { settings } from '../../../lib/settings';
 import { router } from '../../../providers/RouterProvider';
 
 export const useIframeCommands = () => {
@@ -17,6 +17,17 @@ export const useIframeCommands = () => {
 	const loginWithToken = useLoginWithToken();
 	const loginWithCustomOauth = useLoginWithCustomOauth();
 	const { logout } = useContext(UserContext);
+	const userId = useUserId();
+	const replyOnLoginRef = useRef<(() => void) | undefined>(undefined);
+
+	useEffect(() => {
+		if (!userId || !replyOnLoginRef.current) {
+			return;
+		}
+
+		replyOnLoginRef.current();
+		replyOnLoginRef.current = undefined;
+	}, [userId]);
 
 	useEffect(() => {
 		if (!iframeReceiveEnabled) {
@@ -49,30 +60,35 @@ export const useIframeCommands = () => {
 				AccountBox.setStatus(data.status);
 			},
 
-			'call-custom-oauth-login'(data: { service: string; redirectUrl?: string | null }, event: MessageEvent) {
-				const customOAuthCallback = (response: unknown) => {
-					event.source?.postMessage(
-						{
-							event: 'custom-oauth-callback',
-							response,
-						},
-						{ targetOrigin: event.origin },
-					);
+			'call-custom-oauth-login'(data: { service: string }, event: MessageEvent) {
+				const replyToParent = (response?: Error) => {
+					event.source?.postMessage({ event: 'custom-oauth-callback', response }, { targetOrigin: event.origin });
 				};
 
-				const siteUrl = `${settings.peek('Site_Url') ?? ''}/`;
-				if (typeof data.redirectUrl !== 'string' || !data.redirectUrl.startsWith(siteUrl)) {
-					data.redirectUrl = null;
+				if (typeof data.service !== 'string' || data.service.trim().length === 0) {
+					return console.error('`service` not defined');
 				}
 
-				if (typeof data.service === 'string' && window.ServiceConfiguration) {
-					const customOauth = loginServices.getLoginService(data.service);
+				loginServices
+					.loadLoginService<OAuthConfiguration>(data.service)
+					.then((config) => {
+						if (!config) {
+							replyToParent(new Error(`OAuth service not found: ${data.service}`));
+							return;
+						}
+						const loginWindow = loginWithCustomOauth(data.service, { loginStyle: config.loginStyle });
+						if (!loginWindow) {
+							replyToParent(new Error('OAuth login popup was blocked'));
+							return;
+						}
 
-					if (customOauth) {
-						const customRedirectUri = data.redirectUrl || siteUrl;
-						loginWithCustomOauth(capitalize(customOauth.service, true), { redirectUrl: customRedirectUri }, customOAuthCallback);
-					}
-				}
+						if (config.loginStyle === 'popup' && !userId) {
+							replyOnLoginRef.current = replyToParent;
+						} else {
+							replyOnLoginRef.current = undefined;
+						}
+					})
+					.catch(replyToParent);
 			},
 
 			'login-with-token'(data: { token: string }) {
@@ -117,5 +133,5 @@ export const useIframeCommands = () => {
 		return () => {
 			window.removeEventListener('message', messageListener);
 		};
-	}, [iframeReceiveEnabled, iframeReceiveOrigin, loginWithToken, loginWithCustomOauth, logout]);
+	}, [iframeReceiveEnabled, iframeReceiveOrigin, loginWithToken, loginWithCustomOauth, logout, userId]);
 };

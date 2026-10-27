@@ -1,16 +1,15 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Users } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 import type { Filter, FindCursor } from 'mongodb';
 
-import { hasRoleAsync } from '../../../app/authorization/server/functions/hasRole';
-import { addUserToRole } from '../../../app/authorization/server/methods/addUserToRole';
-import { removeUserFromRole } from '../../../app/authorization/server/methods/removeUserFromRole';
-import { addUsersToRoomMethod } from '../../../app/lib/server/methods/addUsersToRoom';
-import { settings } from '../../../app/settings/server';
-import { removeUserFromRoomMethod } from '../../methods/removeUserFromRoom';
+import { addUserToRole } from '../../meteor-methods/auth/addUserToRole';
+import { removeUserFromRole } from '../../meteor-methods/auth/removeUserFromRole';
+import { addUsersToRoomMethod } from '../../meteor-methods/rooms/addUsersToRoom';
+import { removeUserFromRoomMethod } from '../../meteor-methods/rooms/removeUserFromRoom';
+import { settings } from '../../settings';
 
 /**
  * BotHelpers helps bots
@@ -75,12 +74,12 @@ class BotHelpers {
 		const foundRoom = await Rooms.findOneByIdOrName(room);
 
 		if (!foundRoom) {
-			throw new Meteor.Error('invalid-channel');
+			throw new ClientSafeError('invalid-channel');
 		}
 
 		const userId = Meteor.userId();
 		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'addUserToRoom' });
+			throw new ClientSafeError('error-invalid-user', 'Invalid user', { method: 'addUserToRoom' });
 		}
 		await addUsersToRoomMethod(userId, {
 			rid: foundRoom._id,
@@ -92,18 +91,18 @@ class BotHelpers {
 		const foundRoom = await Rooms.findOneByIdOrName(room);
 
 		if (!foundRoom) {
-			throw new Meteor.Error('invalid-channel');
+			throw new ClientSafeError('invalid-channel');
 		}
 		const userId = Meteor.userId();
 		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user');
+			throw new ClientSafeError('error-invalid-user', 'Invalid user');
 		}
 		await removeUserFromRoomMethod(userId, { rid: foundRoom._id, username: userName });
 	}
 
 	// generic error whenever property access insufficient to fill request
 	requestError() {
-		throw new Meteor.Error('error-not-allowed', 'Bot request not allowed', {
+		throw new ClientSafeError('error-not-allowed', 'Bot request not allowed', {
 			method: 'botRequest',
 			action: 'bot_request',
 		});
@@ -194,21 +193,4 @@ const botHelpers = new BotHelpers();
 // init cursors with fields setting and update on setting change
 settings.watch<string>('BotHelpers_userFields', (value) => {
 	botHelpers.setupCursors(value);
-});
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		botRequest: (prop: keyof BotHelpers, ...params: unknown[]) => Promise<unknown>;
-	}
-}
-
-Meteor.methods<ServerMethods>({
-	async botRequest(...args) {
-		const userID = Meteor.userId();
-		if (userID && (await hasRoleAsync(userID, 'bot'))) {
-			return botHelpers.request(...args, userID);
-		}
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'botRequest' });
-	},
 });

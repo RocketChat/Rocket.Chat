@@ -1,41 +1,35 @@
 import type { Meta, StoryFn } from '@storybook/preact';
-import type { ComponentProps } from 'preact';
-import { action } from 'storybook/actions';
 
-import SwitchDepartment from './index';
-import { screenDecorator } from '../../../.storybook/helpers';
+import SwitchDepartment, { type SwitchDepartmentProps } from './index';
+import { screenDecorator, storeDecorator } from '../../../.storybook/helpers';
+import type { Department } from '../../definitions/departments';
+import store, { type StoreState } from '../../store';
+
+type StoryArgs = SwitchDepartmentProps & Partial<StoreState>;
+
+const departments: Department[] = [
+	{ _id: '1', name: 'Department #1', showOnRegistration: true },
+	{ _id: '2', name: 'Department #2', showOnRegistration: true },
+	{ _id: '3', name: 'Department #3', showOnRegistration: true },
+];
 
 export default {
 	title: 'Routes/SwitchDepartment',
 	component: SwitchDepartment,
 	args: {
-		title: '',
-		message: '',
-		departments: [
-			{
-				_id: 1,
-				name: 'Department #1',
-			},
-			{
-				_id: 2,
-				name: 'Department #2',
-			},
-			{
-				_id: 3,
-				name: 'Department #3',
-			},
-		],
+		config: {
+			...store.state.config,
+			departments,
+		},
 		loading: false,
-		onSubmit: action('submit'),
-		onCancel: action('cancel'),
 	},
-	decorators: [screenDecorator],
+	decorators: [storeDecorator, screenDecorator],
 	parameters: {
 		layout: 'centered',
 	},
-} as Meta<ComponentProps<typeof SwitchDepartment>>;
+} satisfies Meta<StoryArgs>;
 
-const Template: StoryFn<ComponentProps<typeof SwitchDepartment>> = (args) => <SwitchDepartment {...args} />;
+const Template: StoryFn<StoryArgs> = (args) => <SwitchDepartment {...args} />;
 
 export const Normal = Template.bind({});
 Normal.storyName = 'normal';

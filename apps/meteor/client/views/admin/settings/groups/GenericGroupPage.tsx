@@ -4,7 +4,7 @@ import { memo } from 'react';
 import SettingsGroupPage from '../SettingsGroupPage';
 import Section from '../SettingsSection';
 
-type GenericGroupPageProps = {
+export type GenericGroupPageProps = {
 	_id: string;
 	i18nLabel: string;
 	tabs?: ReactNode;

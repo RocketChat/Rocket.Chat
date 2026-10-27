@@ -1,0 +1,61 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
+import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
+import { Meteor } from 'meteor/meteor';
+
+import * as Mailer from '../../lib/notifications/email/api';
+import { settings } from '../../settings';
+
+declare module '@rocket.chat/ddp-client' {
+	interface ServerMethods {
+		sendSMTPTestEmail(): {
+			message: string;
+			params: string[];
+		};
+	}
+}
+
+Meteor.methods<ServerMethods>({
+	async sendSMTPTestEmail() {
+		if (!Meteor.userId()) {
+			throw new ClientSafeError('error-invalid-user', 'Invalid user', {
+				method: 'sendSMTPTestEmail',
+			});
+		}
+		const user = await Meteor.userAsync();
+		if (!user?.emails?.[0]?.address) {
+			throw new ClientSafeError('error-invalid-email', 'Invalid email', {
+				method: 'sendSMTPTestEmail',
+			});
+		}
+		try {
+			await Mailer.send({
+				to: user.emails[0].address,
+				from: settings.get('From_Email'),
+				subject: 'SMTP Test Email',
+				html: '<p>You have successfully sent an email</p>',
+			});
+		} catch ({ message }: any) {
+			throw new ClientSafeError('error-email-send-failed', `Error trying to send email: ${message}`, {
+				method: 'sendSMTPTestEmail',
+				message,
+			});
+		}
+		return {
+			message: 'Sending_your_mail_to_s',
+			params: [user.emails[0].address],
+		};
+	},
+});
+
+DDPRateLimiter.addRule(
+	{
+		type: 'method',
+		name: 'sendSMTPTestEmail',
+		userId() {
+			return true;
+		},
+	},
+	1,
+	1000,
+);

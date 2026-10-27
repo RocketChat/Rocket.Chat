@@ -13,7 +13,7 @@ import {
 } from '@rocket.chat/fuselage-forms';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
-import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useTranslation, useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation } from '@tanstack/react-query';
 import { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
@@ -33,16 +33,18 @@ type CreateDiscussionFormValues = {
 	topic: string;
 };
 
-type CreateDiscussionProps = {
+export type CreateDiscussionProps = {
 	parentMessageId?: IMessage['_id'];
 	encryptedParentRoom?: boolean;
 	onClose: () => void;
+	onSuccess?: (rid: string) => void | Promise<void>;
 	defaultParentRoom?: IRoom['_id'];
 	nameSuggestion?: string;
 };
 
 const CreateDiscussion = ({
 	onClose,
+	onSuccess,
 	defaultParentRoom,
 	parentMessageId,
 	nameSuggestion,
@@ -82,12 +84,17 @@ const CreateDiscussion = ({
 	const createDiscussion = useEndpoint('POST', '/v1/rooms.createDiscussion');
 
 	const goToRoom = useGoToRoom();
+	const dispatchToastMessage = useToastMessageDispatch();
 
 	const createDiscussionMutation = useMutation({
 		mutationFn: createDiscussion,
 		onSuccess: ({ discussion }) => {
 			goToRoom(discussion._id);
+			void onSuccess?.(discussion._id);
 			onClose();
+		},
+		onError: (error) => {
+			dispatchToastMessage({ type: 'error', message: error });
 		},
 	});
 
@@ -115,7 +122,7 @@ const CreateDiscussion = ({
 			cancelText={t('Cancel')}
 			confirmLoading={createDiscussionMutation.isPending}
 		>
-			<Box mbe={24}>{t('Discussion_description')}</Box>
+			<Box marginBlockEnd={24}>{t('Discussion_description')}</Box>
 			<FieldGroup>
 				<Field>
 					<FieldLabel required>{t('Discussion_target_channel')}</FieldLabel>
@@ -156,7 +163,7 @@ const CreateDiscussion = ({
 							control={control}
 							rules={{ required: t('Required_field', { field: t('Name') }) }}
 							render={({ field }) => (
-								<TextInput {...field} aria-required='true' addon={<Icon name='baloons' size='x20' />} error={errors.name?.message} />
+								<TextInput {...field} aria-required='true' endAddon={<Icon name='baloons' size='x20' />} error={errors.name?.message} />
 							)}
 						/>
 					</FieldRow>

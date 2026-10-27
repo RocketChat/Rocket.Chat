@@ -5,7 +5,7 @@ import { memo, useState } from 'react';
 import { TabElement } from '../elements/TabElement';
 import type { BlockProps } from '../utils/BlockProps';
 
-type TabNavigationBlockProps = BlockProps<ExperimentalTabNavigationBlock>;
+export type TabNavigationBlockProps = BlockProps<ExperimentalTabNavigationBlock>;
 
 const TabNavigationBlock = (blockProps: TabNavigationBlockProps) => {
 	const {
@@ -17,7 +17,7 @@ const TabNavigationBlock = (blockProps: TabNavigationBlockProps) => {
 	const [selected, select] = useState<number>();
 
 	return (
-		<Tabs marginBlock={24}>
+		<Tabs>
 			{tabs.map((innerBlock, idx) => {
 				if (selected !== undefined) {
 					innerBlock.selected = idx === selected;

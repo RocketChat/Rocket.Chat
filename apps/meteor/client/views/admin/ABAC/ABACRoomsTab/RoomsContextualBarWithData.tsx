@@ -5,7 +5,7 @@ import { useQuery } from '@tanstack/react-query';
 import RoomsContextualBar from './RoomsContextualBar';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 
-type RoomsContextualBarWithDataProps = {
+export type RoomsContextualBarWithDataProps = {
 	id: string;
 	onClose: () => void;
 };

@@ -1,4 +1,4 @@
-import { Pagination } from '@rocket.chat/fuselage';
+import { Pagination, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { GenericTable, GenericTableBody, GenericTableHeader, GenericTableHeaderCell, usePagination } from '@rocket.chat/ui-client';
 import type { AriaAttributes } from 'react';
 import { useMemo } from 'react';
@@ -10,7 +10,7 @@ import type { EditDepartmentFormData } from '../definitions';
 import AddAgent from './AddAgent';
 import AgentRow from './AgentRow';
 
-type DepartmentAgentsTableProps = Pick<AriaAttributes, 'aria-labelledby'> & {
+export type DepartmentAgentsTableProps = Pick<AriaAttributes, 'aria-labelledby'> & {
 	control: Control<EditDepartmentFormData>;
 	register: UseFormRegister<EditDepartmentFormData>;
 };
@@ -23,15 +23,17 @@ function DepartmentAgentsTable({ control, register, 'aria-labelledby': ariaLabel
 	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const page = useMemo(() => fields.slice(current, current + itemsPerPage), [current, fields, itemsPerPage]);
 
+	const columns: TableColumnWidth[] = ['x200', 'x140', 'x120', 'x40'];
+
 	return (
 		<>
 			<AddAgent aria-labelledby={ariaLabelledBy} agentList={agentList} onAdd={append} />
-			<GenericTable aria-label={t('Agents')}>
+			<GenericTable columns={columns} aria-label={t('Agents')}>
 				<GenericTableHeader>
-					<GenericTableHeaderCell w='x200'>{t('Name')}</GenericTableHeaderCell>
-					<GenericTableHeaderCell w='x140'>{t('Count')}</GenericTableHeaderCell>
-					<GenericTableHeaderCell w='x120'>{t('Order')}</GenericTableHeaderCell>
-					<GenericTableHeaderCell w='x40'>{t('Remove')}</GenericTableHeaderCell>
+					<GenericTableHeaderCell>{t('Name')}</GenericTableHeaderCell>
+					<GenericTableHeaderCell>{t('Count')}</GenericTableHeaderCell>
+					<GenericTableHeaderCell>{t('Order')}</GenericTableHeaderCell>
+					<GenericTableHeaderCell>{t('Remove')}</GenericTableHeaderCell>
 				</GenericTableHeader>
 				<GenericTableBody>
 					{page.map((agent, index) => (

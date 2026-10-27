@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useMonitorsList } from '../hooks/useMonitorsList';
 
-type AutoCompleteMonitorsProps = Omit<
+export type AutoCompleteMonitorsProps = Omit<
 	ComponentProps<typeof PaginatedMultiSelectFiltered>,
 	'options' | 'setFilter' | 'endReached' | 'filter' | 'renderItem'
 >;

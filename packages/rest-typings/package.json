@@ -1,6 +1,12 @@
 {
 	"name": "@rocket.chat/rest-typings",
-	"version": "8.7.0-develop",
+	"version": "9.0.0-develop",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
+		"directory": "packages/rest-typings"
+	},
+	"license": "MIT",
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
@@ -9,8 +15,9 @@
 	"scripts": {
 		"build": "rm -rf dist && tsc",
 		"dev": "tsc --watch --preserveWatchOutput",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix .",
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
+		"testunit": "node --test --experimental-test-isolation=none --require tsx 'src/**/*.test.ts'",
 		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
@@ -22,10 +29,9 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/apps-engine": "workspace:^",
-		"@types/jest": "~30.0.0",
-		"eslint": "~9.39.4",
 		"mongodb": "6.16.0",
-		"typescript": "~5.9.3"
+		"tsx": "~4.22.5",
+		"typescript": "~7.0.2"
 	},
 	"volta": {
 		"extends": "../../package.json"

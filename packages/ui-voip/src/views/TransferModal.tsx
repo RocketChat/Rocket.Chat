@@ -14,8 +14,11 @@ import { useTranslation } from 'react-i18next';
 
 import { PeerAutocomplete, PeerInfo } from '../components';
 import { usePeerAutocomplete, type PeerInfo as PeerInfoType } from '../context';
+import { isExternalPeer } from '../utils/isExternalPeer';
+import { isInternalPeer } from '../utils/isInternalPeer';
+import { isUnknownPeer } from '../utils/isUnknownPeer';
 
-type TransferModalProps = {
+export type TransferModalProps = {
 	onCancel(): void;
 	onConfirm(kind: 'user' | 'sip', peer: { displayName: string; id: string }): void;
 };
@@ -45,12 +48,12 @@ const TransferModal = ({ onCancel, onConfirm }: TransferModalProps) => {
 
 		setError(undefined);
 
-		if ('userId' in peer) {
+		if (isInternalPeer(peer)) {
 			onConfirm('user', { id: peer.userId, displayName: peer.displayName });
 			return;
 		}
 
-		if ('number' in peer) {
+		if (isExternalPeer(peer)) {
 			onConfirm('sip', { id: peer.number, displayName: peer.number });
 			return;
 		}
@@ -66,18 +69,18 @@ const TransferModal = ({ onCancel, onConfirm }: TransferModalProps) => {
 			</ModalHeader>
 			<ModalContent>
 				<PeerAutocomplete {...autocomplete} error={error} onChangeValue={onChangeValue} />
-				{peer && (
-					<Box mb={8}>
+				{peer && !isUnknownPeer(peer) && (
+					<Box marginBlock={8}>
 						<PeerInfo {...peer} />
 					</Box>
 				)}
 			</ModalContent>
 			<ModalFooter>
 				<ModalFooterControllers>
-					<Button secondary onClick={onCancel}>
+					<Button variant='secondary' onClick={onCancel}>
 						{t('Cancel')}
 					</Button>
-					<Button danger onClick={confirm} icon='phone-off'>
+					<Button variant='danger' onClick={confirm} icon='phone-off'>
 						{t('Hang_up_and_transfer_call')}
 					</Button>
 				</ModalFooterControllers>

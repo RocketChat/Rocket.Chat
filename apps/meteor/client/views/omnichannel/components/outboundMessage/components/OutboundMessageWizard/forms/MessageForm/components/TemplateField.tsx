@@ -12,7 +12,7 @@ import TemplateSelect from '../../../../TemplateSelect';
 import { cxp } from '../../../utils/cx';
 import type { MessageFormData } from '../MessageForm';
 
-type TemplateFieldProps = ComponentProps<typeof Field> & {
+export type TemplateFieldProps = ComponentProps<typeof Field> & {
 	control: Control<MessageFormData>;
 	templates: Serialized<IOutboundProviderTemplate>[] | undefined;
 	onChange?: (templateId: string) => void;
@@ -48,12 +48,12 @@ const TemplateField = ({ control, templates, onChange: onChangeExternal, ...prop
 
 	return (
 		<Field {...props}>
-			<FieldLabel is='span' required id={templateFieldId}>
+			<FieldLabel required htmlFor={templateFieldId}>
 				{t('Template')}
 			</FieldLabel>
 			<FieldRow>
 				<TemplateSelect
-					aria-labelledby={templateFieldId}
+					id={templateFieldId}
 					aria-invalid={!!templateFieldError}
 					aria-describedby={cxp(templateFieldId, {
 						error: !!templateFieldError,

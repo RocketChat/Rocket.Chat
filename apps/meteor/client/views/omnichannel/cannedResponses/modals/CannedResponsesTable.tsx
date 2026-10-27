@@ -1,4 +1,4 @@
-import { Box, Pagination } from '@rocket.chat/fuselage';
+import { Box, Pagination, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import {
@@ -11,14 +11,14 @@ import {
 	GenericTableCell,
 	usePagination,
 	useSort,
+	GenericNoResults,
+	useFormatDateAndTime,
 } from '@rocket.chat/ui-client';
 import { useTranslation, usePermission, useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { hashKey, useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
 import CannedResponseFilter from './CannedResponseFilter';
-import GenericNoResults from '../../../../components/GenericNoResults';
-import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { links } from '../../../../lib/links';
 import RemoveCannedResponseButton from '../RemoveCannedResponseButton';
 
@@ -85,6 +85,8 @@ const CannedResponsesTable = () => {
 		[t],
 	);
 
+	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 'auto', 'auto', 'x60'];
+
 	const headers = (
 		<>
 			<GenericTableHeaderCell key='shortcut' direction={sortDirection} active={sortBy === 'shortcut'} onClick={setSort} sort='shortcut'>
@@ -108,9 +110,7 @@ const CannedResponsesTable = () => {
 			<GenericTableHeaderCell key='tags' direction={sortDirection} active={sortBy === 'tags'} onClick={setSort} sort='tags'>
 				{t('Tags')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='remove' w='x60'>
-				{t('Remove')}
-			</GenericTableHeaderCell>
+			<GenericTableHeaderCell key='remove'>{t('Remove')}</GenericTableHeaderCell>
 		</>
 	);
 
@@ -127,7 +127,7 @@ const CannedResponsesTable = () => {
 				/>
 			)}
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingRow cols={6} />
@@ -148,17 +148,17 @@ const CannedResponsesTable = () => {
 			)}
 			{isSuccess && data?.cannedResponses.length > 0 && (
 				<>
-					<GenericTable aria-busy={text !== debouncedText}>
+					<GenericTable columns={columns} aria-label={t('Canned_Responses')} aria-busy={text !== debouncedText}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data?.cannedResponses.map(({ _id, shortcut, scope, createdBy, _createdAt, tags = [] }) => (
 								<GenericTableRow key={_id} tabIndex={0} role='link' onClick={onRowClick(_id, scope)} action>
-									<GenericTableCell withTruncatedText>{shortcut}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{defaultOptions[scope as Scope]}</GenericTableCell>
-									<GenericTableCell withTruncatedText>
+									<GenericTableCell truncate>{shortcut}</GenericTableCell>
+									<GenericTableCell truncate>{defaultOptions[scope as Scope]}</GenericTableCell>
+									<GenericTableCell truncate>
 										<Box display='flex' alignItems='center'>
 											<UserAvatar size='x24' username={createdBy.username} />
-											<Box display='flex' withTruncatedText mi={8}>
+											<Box display='flex' withTruncatedText marginInline={8}>
 												<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
 													<Box fontScale='p2m' withTruncatedText color='default'>
 														{createdBy.username}
@@ -167,8 +167,8 @@ const CannedResponsesTable = () => {
 											</Box>
 										</Box>
 									</GenericTableCell>
-									<GenericTableCell withTruncatedText>{getTime(_createdAt)}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{tags.join(', ')}</GenericTableCell>
+									<GenericTableCell truncate>{getTime(_createdAt)}</GenericTableCell>
+									<GenericTableCell truncate>{tags.join(', ')}</GenericTableCell>
 									{!(scope === 'global' && isMonitor && !isManager) && <RemoveCannedResponseButton id={_id} />}
 								</GenericTableRow>
 							))}

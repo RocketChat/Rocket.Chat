@@ -2,7 +2,7 @@ import { Box } from '@rocket.chat/fuselage';
 import * as UiKit from '@rocket.chat/ui-kit';
 import type { ReactElement } from 'react';
 
-type ItemProps = {
+export type ItemProps = {
 	block: UiKit.ContextBlock['elements'][number];
 	surfaceRenderer: UiKit.SurfaceRenderer<ReactElement<any>>;
 	index: number;
@@ -19,7 +19,7 @@ const Item = ({ block: element, surfaceRenderer: parser, index }: ItemProps) => 
 		case UiKit.TextObjectType.PLAIN_TEXT:
 		case UiKit.TextObjectType.MRKDWN:
 			return (
-				<Box is='span' fontScale='c1' color='hint' margin={4}>
+				<Box is='span' fontScale='c1' color='hint'>
 					{renderedElement}
 				</Box>
 			);

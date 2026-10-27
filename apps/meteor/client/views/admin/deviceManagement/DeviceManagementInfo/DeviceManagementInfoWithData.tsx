@@ -24,7 +24,9 @@ const convertSessionFromAPI = ({
 	...rest,
 });
 
-const DeviceInfoWithData = ({ deviceId }: { deviceId: string }) => {
+export type DeviceInfoWithDataProps = { deviceId: string };
+
+const DeviceInfoWithData = ({ deviceId }: DeviceInfoWithDataProps) => {
 	const { t } = useTranslation();
 
 	const getSessionInfo = useEndpoint('GET', '/v1/sessions/info.admin');

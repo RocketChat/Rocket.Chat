@@ -1,4 +1,4 @@
-import { Box, Button, Icon, Margins, Pagination, Select, TextInput } from '@rocket.chat/fuselage';
+import { Box, Button, Icon, Margins, Pagination, Select, TextInput, Stack, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
@@ -8,6 +8,7 @@ import {
 	GenericTableHeaderCell,
 	GenericTableRow,
 	usePagination,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouter, useSearchParameter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -15,7 +16,6 @@ import { useMemo, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import RoomMenu from './RoomMenu';
-import GenericNoResults from '../../../../components/GenericNoResults';
 import { RoomIcon } from '../../../../components/RoomIcon';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 import { useIsABACAvailable } from '../hooks/useIsABACAvailable';
@@ -67,18 +67,21 @@ const RoomsPage = () => {
 		...(isExternalStore && { staleTime: 0, gcTime: 0 }),
 	});
 
+	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 'auto', 40];
+
 	return (
 		<>
 			<Margins block={24}>
-				<Box display='flex'>
+				<Stack direction='row' gap={8}>
 					<TextInput
-						addon={<Icon name='magnifier' size='x20' />}
+						endAddon={<Icon name='magnifier' size='x20' />}
 						placeholder={t('ABAC_Search_rooms')}
 						value={text}
 						onChange={(e) => setText((e.target as HTMLInputElement).value)}
 					/>
-					<Box pis={8} maxWidth={200}>
+					<Box maxWidth={192}>
 						<Select
+							aria-label={t('Filter')}
 							options={[
 								['all', t('All'), true],
 								['roomName', t('Rooms'), false],
@@ -86,13 +89,13 @@ const RoomsPage = () => {
 								['value', t('Values'), false],
 							]}
 							value={filterType}
-							onChange={(value) => setFilterType(value as 'all' | 'roomName' | 'attribute' | 'value')}
+							onChange={(value) => setFilterType(value)}
 						/>
 					</Box>
-					<Button onClick={handleNewAttribute} primary mis={8} disabled={isABACAvailable !== true}>
+					<Button onClick={handleNewAttribute} variant='primary' disabled={isABACAvailable !== true}>
 						{t('Add_room')}
 					</Button>
-				</Box>
+				</Stack>
 			</Margins>
 			{(!data || data.rooms?.length === 0) && !isLoading ? (
 				<Box display='flex' justifyContent='center' height='full'>
@@ -100,30 +103,30 @@ const RoomsPage = () => {
 				</Box>
 			) : (
 				<>
-					<GenericTable>
+					<GenericTable columns={columns}>
 						<GenericTableHeader>
 							<GenericTableHeaderCell>{t('Room')}</GenericTableHeaderCell>
 							<GenericTableHeaderCell>{t('Members')}</GenericTableHeaderCell>
 							<GenericTableHeaderCell>{t('ABAC_Attributes')}</GenericTableHeaderCell>
 							<GenericTableHeaderCell>{t('ABAC_Attribute_Values')}</GenericTableHeaderCell>
-							<GenericTableHeaderCell key='spacer' w={40} />
+							<GenericTableHeaderCell key='spacer' />
 						</GenericTableHeader>
 						<GenericTableBody>
 							{data?.rooms?.map((room) => (
 								<GenericTableRow key={room._id}>
-									<GenericTableCell withTruncatedText>
+									<GenericTableCell truncate>
 										<Margins inline={8}>
 											<RoomIcon room={room} size='x20' />
 										</Margins>
 										{room.fname || room.name}
 									</GenericTableCell>
 									<GenericTableCell>{room.usersCount}</GenericTableCell>
-									<GenericTableCell withTruncatedText>
+									<GenericTableCell truncate>
 										{room.abacAttributesRedacted
 											? t('ABAC_Redacted_Placeholder')
 											: room.abacAttributes?.flatMap((attribute) => attribute.key ?? []).join(', ')}
 									</GenericTableCell>
-									<GenericTableCell withTruncatedText>
+									<GenericTableCell truncate>
 										{room.abacAttributesRedacted
 											? t('ABAC_Redacted_Placeholder')
 											: room.abacAttributes?.flatMap((attribute) => attribute.values ?? []).join(', ')}

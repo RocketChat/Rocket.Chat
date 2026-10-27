@@ -3,4 +3,5 @@ export * from './licenseImp';
 export * from './license';
 export * from './MockedLicenseBuilder';
 export * from './applyLicense';
+export * from './getLicenseCreatedAt';
 export * from './AirGappedRestriction';

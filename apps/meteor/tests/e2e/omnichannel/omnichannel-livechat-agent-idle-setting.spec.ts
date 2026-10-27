@@ -44,8 +44,7 @@ test.describe('OC - Routing to Idle Agents', () => {
 		await expect(await makeAgentAvailable(api, agent.data._id)).toBeOK();
 
 		poHomeOmnichannel = new HomeOmnichannel(page);
-		await poHomeOmnichannel.page.goto('/');
-		await poHomeOmnichannel.waitForHome();
+		await poHomeOmnichannel.goto();
 		await expect(poHomeOmnichannel.navbar.getUserStatusBadge('online')).toBeVisible();
 
 		({ page: livechatPage } = await createAuxContext(browser, Users.user1, '/livechat', false));

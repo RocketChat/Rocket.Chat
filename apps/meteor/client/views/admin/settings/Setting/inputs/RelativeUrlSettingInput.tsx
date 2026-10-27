@@ -5,7 +5,7 @@ import type { ChangeEventHandler } from 'react';
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
-type RelativeUrlSettingInputProps = SettingInputProps;
+export type RelativeUrlSettingInputProps = SettingInputProps;
 
 function RelativeUrlSettingInput({
 	_id,

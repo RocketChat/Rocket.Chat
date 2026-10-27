@@ -1,10 +1,9 @@
 import type { LivechatPriorityWeight } from '@rocket.chat/core-typings';
-import { Icon } from '@rocket.chat/fuselage';
-import type { ComponentProps } from 'react';
+import { Icon, type IconProps } from '@rocket.chat/fuselage';
 
 import { useOmnichannelPrioritiesConfig } from '../hooks/useOmnichannelPrioritiesConfig';
 
-type PriorityIconProps = Omit<ComponentProps<typeof Icon>, 'name' | 'color'> & {
+export type PriorityIconProps = Omit<IconProps, 'name' | 'color'> & {
 	level: LivechatPriorityWeight;
 	showUnprioritized?: boolean;
 };

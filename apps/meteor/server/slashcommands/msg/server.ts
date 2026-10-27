@@ -3,11 +3,11 @@ import type { SlashCommandCallbackParams } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 
-import { executeSendMessage } from '../../../app/lib/server/methods/sendMessage';
-import { settings } from '../../../app/settings/server';
-import { slashCommands } from '../../../app/utils/server/slashCommand';
 import { i18n } from '../../lib/i18n';
-import { createDirectMessage } from '../../methods/createDirectMessage';
+import { slashCommands } from '../../lib/utils/slashCommand';
+import { createDirectMessage } from '../../meteor-methods/messages/createDirectMessage';
+import { executeSendMessage } from '../../meteor-methods/messages/sendMessage';
+import { settings } from '../../settings';
 
 /*
  * Msg is a named function that will replace /msg commands
@@ -32,8 +32,8 @@ slashCommands.add({
 			const user = await Users.findOneById(userId, { projection: { language: 1 } });
 			void api.broadcast('notify.ephemeralMessage', userId, item.rid, {
 				msg: i18n.t('Username_doesnt_exist', {
-					postProcess: 'sprintf',
-					sprintf: [targetUsernameOrig],
+					interpolation: { escapeValue: false },
+					username: targetUsernameOrig,
 					lng: user?.language || settings.get('Language') || 'en',
 				}),
 			});

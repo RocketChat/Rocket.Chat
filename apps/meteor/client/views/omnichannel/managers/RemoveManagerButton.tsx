@@ -9,7 +9,9 @@ import { useTranslation } from 'react-i18next';
 import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
 import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 
-const RemoveManagerButton = ({ _id }: { _id: string }) => {
+export type RemoveManagerButtonProps = { _id: string };
+
+const RemoveManagerButton = ({ _id }: RemoveManagerButtonProps) => {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 	const { mutateAsync: deleteAction } = useEndpointMutation('DELETE', '/v1/livechat/users/manager/:_id', {
@@ -48,8 +50,8 @@ const RemoveManagerButton = ({ _id }: { _id: string }) => {
 	});
 
 	return (
-		<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
-			<IconButton small icon='trash' title={t('Remove')} onClick={handleDelete} />
+		<GenericTableCell color='hint' truncate>
+			<IconButton size='small' icon='trash' title={t('Remove')} onClick={handleDelete} />
 		</GenericTableCell>
 	);
 };

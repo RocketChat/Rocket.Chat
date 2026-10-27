@@ -1,49 +1,25 @@
 import * as child_process from 'node:child_process';
 import * as path from 'node:path';
-import { type Readable, EventEmitter } from 'node:stream';
+import { EventEmitter } from 'node:stream';
 import { inspect as utilInspect } from 'node:util';
 
 import { AppStatus, AppStatusUtils } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { AppMethod } from '@rocket.chat/apps-engine/definition/metadata';
 import debugFactory from 'debug';
-import * as jsonrpc from 'jsonrpc-lite';
 
 import { LivenessManager } from './LivenessManager';
 import { ProcessMessenger } from './ProcessMessenger';
 import { bundleLegacyApp } from './bundler';
-import { newDecoder } from './codec';
+import * as jsonrpc from '../../../lib/jsonrpc';
 import type { AppManager } from '../../AppManager';
 import type { AppBridges } from '../../bridges';
+import { AppResourceBridge } from '../../bridges/AppResourceBridge';
 import type { IParseAppPackageResult } from '../../compiler';
 import { AppConsole, type ILoggerStorageEntry } from '../../logging';
-import type { AppAccessorManager, AppApiManager } from '../../managers';
 import type { AppLogStorage, IAppStorageItem } from '../../storage';
 import type { IRuntimeController } from '../IRuntimeController';
 
 const inspect = (value: unknown) => utilInspect(value, { depth: 10, compact: true, breakLength: Infinity });
-
-export const ALLOWED_ACCESSOR_METHODS = [
-	'getConfigurationExtend',
-	'getEnvironmentRead',
-	'getEnvironmentWrite',
-	'getConfigurationModify',
-	'getReader',
-	'getPersistence',
-	'getHttp',
-	'getModifier',
-] as Array<
-	keyof Pick<
-		AppAccessorManager,
-		| 'getConfigurationExtend'
-		| 'getEnvironmentRead'
-		| 'getEnvironmentWrite'
-		| 'getConfigurationModify'
-		| 'getReader'
-		| 'getPersistence'
-		| 'getHttp'
-		| 'getModifier'
-	>
->;
 
 const COMMAND_PONG = '_zPONG';
 
@@ -61,10 +37,6 @@ function getRuntimeTimeout() {
 	}
 
 	return envValue;
-}
-
-function isValidOrigin(accessor: string): accessor is (typeof ALLOWED_ACCESSOR_METHODS)[number] {
-	return ALLOWED_ACCESSOR_METHODS.includes(accessor as any);
 }
 
 /**
@@ -89,8 +61,8 @@ export type ProcessConfiguration = {
 
 /**
  * Holds the platform-agnostic logic for controlling an app subprocess: spawning,
- * killing, restarting, liveness, and the full JSON-RPC message loop (accessor,
- * bridge, result and error handling).
+ * killing, restarting, liveness, and the full JSON-RPC message loop (bridge,
+ * result and error handling).
  *
  * The only platform-specific concern - how to actually launch the subprocess for
  * a given runtime (Deno, Node, ...) - is delegated to {@link buildProcessConfiguration},
@@ -114,13 +86,11 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 		timeout: getRuntimeTimeout(),
 	};
 
-	private readonly accessors: AppAccessorManager;
-
-	private readonly api: AppApiManager;
-
 	private readonly logStorage: AppLogStorage;
 
 	private readonly bridges: AppBridges;
+
+	private readonly appResourceBridge: AppResourceBridge;
 
 	private readonly messenger: ProcessMessenger;
 
@@ -153,10 +123,11 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 
 		this.state = 'uninitialized';
 
-		this.accessors = manager.getAccessorManager();
-		this.api = manager.getApiManager();
 		this.logStorage = manager.getLogStorage();
 		this.bridges = manager.getBridges();
+		// Shared, engine-owned instance (stateless, keyed by appId per call) - one AppResourceBridge
+		// serves every subprocess controller rather than each controller owning its own.
+		this.appResourceBridge = manager.getAppResourceBridge();
 	}
 
 	/**
@@ -172,7 +143,13 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 		try {
 			const { command, args, options } = this.buildProcessConfiguration();
 
-			this.process = child_process.spawn(command, args, options);
+			this.process = child_process.spawn(command, args, {
+				...options,
+				// The subprocess is controlled exclusively through the IPC channel;
+				// stdout and stderr are piped so the host can surface subprocess logs
+				stdio: ['ignore', 'pipe', 'pipe', 'ipc'],
+				serialization: 'advanced',
+			});
 			this.messenger.setReceiver(this.process);
 			this.livenessManager.attach(this.process);
 
@@ -314,21 +291,17 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 		return this.appPackage.info.id;
 	}
 
-	public async sendRequest(message: Pick<jsonrpc.RequestObject, 'method' | 'params'>, options = this.options): Promise<unknown> {
+	public async sendRequest(message: Pick<jsonrpc.RequestObject, 'method' | 'params' | 'meta'>, options = this.options): Promise<unknown> {
 		const id = String(Math.random().toString(36)).substring(2);
 
 		const start = Date.now();
 
-		const request = jsonrpc.request(id, message.method, message.params);
+		const request = jsonrpc.request(id, message.method, message.params, message.meta);
 
 		const { promise, abort } = this.waitForResponse(request, options);
 
-		try {
-			this.debug('Sending message to subprocess %s', inspect(message));
-			this.messenger.send(request);
-		} catch (e) {
-			abort(e);
-		}
+		this.debug('Sending message to subprocess %s', inspect(message));
+		this.messenger.send(request).catch(abort);
 
 		return promise.finally(() => {
 			this.debug('Request %s for method %s took %dms', id, message.method, Date.now() - start);
@@ -366,7 +339,7 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 			promise: new Promise((resolve, reject) => {
 				const eventName = `result:${req.id}`;
 
-				const responseCallback = (result: unknown, error: jsonrpc.IParsedObjectError['payload']['error'] | Error) => {
+				const responseCallback = (result: unknown, error: jsonrpc.SerializedJsonRpcError | Error) => {
 					this.off(eventName, responseCallback);
 					clearTimeout(timeoutId);
 
@@ -408,7 +381,9 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 			return;
 		}
 
+		this.process.stdout.on('data', this.parseOutput.bind(this));
 		this.process.stderr.on('data', this.parseError.bind(this));
+		this.process.on('message', this.parseSubprocessMessage.bind(this));
 		this.process.on('error', (err) => {
 			this.state = 'invalid';
 			console.error(`Failed to startup ${this.runtimeName} subprocess for app ${this.getAppId()}`, err);
@@ -417,123 +392,39 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 		this.process.once('exit', (code) => this.emit('processExit', code));
 
 		this.once('ready', this.onReady.bind(this));
-
-		void this.parseStdout(this.process.stdout);
 	}
 
-	// Probable should extract this to a separate file
-	private async handleAccessorMessage({ payload: { method, id, params } }: jsonrpc.IParsedObjectRequest): Promise<jsonrpc.SuccessObject> {
-		const accessorMethods = method.substring(9).split(':'); // First 9 characters are always 'accessor:'
-
-		this.debug('Handling accessor message %s with params %s', inspect(accessorMethods), inspect(params));
-
-		const managerOrigin = accessorMethods.shift();
-		const tailMethodName = accessorMethods.pop();
-
-		// If we're restarting the app, we can't register resources again, so we
-		// hijack requests for the `ConfigurationExtend` accessor and don't let them through
-		// This needs to be refactored ASAP
-		if (this.state === 'restarting' && managerOrigin === 'getConfigurationExtend') {
-			return jsonrpc.success(id, null);
-		}
-
-		if (managerOrigin === 'api' && tailMethodName === 'listApis') {
-			const result = this.api.listApis(this.appPackage.info.id);
-
-			return jsonrpc.success(id, result);
-		}
-
-		/**
-		 * At this point, the accessorMethods array will contain the path to the accessor from the origin (AppAccessorManager)
-		 * The accessor is the one that contains the actual method the app wants to call
-		 *
-		 * Most of the times, it will take one step from origin to accessor
-		 * For example, for the call AppAccessorManager.getEnvironmentRead().getServerSettings().getValueById() we'll have
-		 * the following:
-		 *
-		 * ```
-		 * const managerOrigin = 'getEnvironmentRead'
-		 * const tailMethod = 'getValueById'
-		 * const accessorMethods = ['getServerSettings']
-		 * ```
-		 *
-		 * But sometimes there can be more steps, like in the following example:
-		 * AppAccessorManager.getReader().getEnvironmentReader().getEnvironmentVariables().getValueByName()
-		 * In this case, we'll have:
-		 *
-		 * ```
-		 * const managerOrigin = 'getReader'
-		 * const tailMethod = 'getValueByName'
-		 * const accessorMethods = ['getEnvironmentReader', 'getEnvironmentVariables']
-		 * ```
-		 **/
-		// Prevent app from trying to get properties from the manager that
-		// are not intended for public access
-		if (!isValidOrigin(managerOrigin)) {
-			throw new Error(`Invalid accessor namespace "${managerOrigin}"`);
-		}
-
-		// Need to fix typing of return value
-		const getAccessorForOrigin = (
-			accessorMethods: string[],
-			managerOrigin: (typeof ALLOWED_ACCESSOR_METHODS)[number],
-			accessorManager: AppAccessorManager,
-		) => {
-			const origin = accessorManager[managerOrigin](this.appPackage.info.id);
-
-			if (managerOrigin === 'getHttp' || managerOrigin === 'getPersistence') {
-				return origin;
-			}
-
-			if (managerOrigin === 'getConfigurationExtend' || managerOrigin === 'getConfigurationModify') {
-				return origin[accessorMethods[0] as keyof typeof origin];
-			}
-
-			let accessor = origin;
-
-			// Call all intermediary objects to "resolve" the accessor
-			accessorMethods.forEach((methodName) => {
-				const method = accessor[methodName as keyof typeof accessor] as unknown;
-
-				if (typeof method !== 'function') {
-					throw new Error(`Invalid accessor method "${methodName}"`);
-				}
-
-				accessor = method.apply(accessor);
-			});
-
-			return accessor;
-		};
-
-		const accessor = getAccessorForOrigin(accessorMethods, managerOrigin, this.accessors);
-
-		const tailMethod = accessor[tailMethodName as keyof typeof accessor] as unknown;
-
-		if (typeof tailMethod !== 'function') {
-			throw new Error(`Invalid accessor method "${tailMethodName}"`);
-		}
-
-		const result = await tailMethod.apply(accessor, params);
-
-		return jsonrpc.success(id, typeof result === 'undefined' ? null : result);
-	}
-
-	private async handleBridgeMessage({
-		payload: { method, id, params },
-	}: jsonrpc.IParsedObjectRequest): Promise<jsonrpc.SuccessObject | jsonrpc.ErrorObject> {
+	private async handleBridgeMessage({ method, id, params }: jsonrpc.RequestObject): Promise<jsonrpc.SuccessObject | jsonrpc.ErrorObject> {
 		const [bridgeName, bridgeMethod] = method.substring(8).split(':');
 
 		this.debug('Handling bridge message %s().%s() with params %s', bridgeName, bridgeMethod, inspect(params));
 
-		const bridge = this.bridges[bridgeName as keyof typeof this.bridges];
-
-		if (!bridgeMethod.startsWith('do') || typeof bridge !== 'function' || !Array.isArray(params)) {
+		if (!bridgeMethod.startsWith('do') || !Array.isArray(params)) {
 			throw new Error('Invalid bridge request');
 		}
 
-		const bridgeInstance = bridge.call(this.bridges);
+		let bridgeInstance: unknown;
 
-		const methodRef = bridgeInstance[bridgeMethod as keyof typeof bridge] as unknown;
+		// The internal AppResourceBridge is not part of the app-facing `AppBridges` surface; it is
+		// resolved through its own reference. Registration methods are suppressed while the process
+		// is restarting so that re-running `app:initialize` does not re-register host resources.
+		if (bridgeName === 'getAppResourceBridge') {
+			if (this.state === 'restarting' && AppResourceBridge.REGISTRATION_METHODS.has(bridgeMethod)) {
+				return jsonrpc.success(id, null);
+			}
+
+			bridgeInstance = this.appResourceBridge;
+		} else {
+			const bridge = this.bridges[bridgeName as keyof typeof this.bridges];
+
+			if (typeof bridge !== 'function') {
+				throw new Error('Invalid bridge request');
+			}
+
+			bridgeInstance = bridge.call(this.bridges);
+		}
+
+		const methodRef = (bridgeInstance as Record<string, unknown>)[bridgeMethod] as unknown;
 
 		if (typeof methodRef !== 'function') {
 			throw new Error('Invalid bridge request');
@@ -549,40 +440,28 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 			);
 		} catch (error) {
 			this.debug('Error executing bridge method %s().%s() %s', bridgeName, bridgeMethod, inspect(error.message));
-			const jsonRpcError = new jsonrpc.JsonRpcError(error.message, -32000, error);
+			const jsonRpcError = new jsonrpc.JsonRpcError(error.message, jsonrpc.SERVER_ERROR, error);
 			return jsonrpc.error(id, jsonRpcError);
 		}
 
 		return jsonrpc.success(id, typeof result === 'undefined' ? null : result);
 	}
 
-	private async handleIncomingMessage(message: jsonrpc.IParsedObjectNotification | jsonrpc.IParsedObjectRequest): Promise<void> {
-		const { method } = message.payload;
-
-		if (method.startsWith('accessor:')) {
-			let result: jsonrpc.SuccessObject | jsonrpc.ErrorObject;
-
-			try {
-				result = await this.handleAccessorMessage(message as jsonrpc.IParsedObjectRequest);
-			} catch (e) {
-				result = jsonrpc.error((message.payload as jsonrpc.RequestObject).id, new jsonrpc.JsonRpcError(e.message, 1000));
-			}
-
-			this.messenger.send(result);
-
-			return;
-		}
+	private async handleIncomingMessage(message: jsonrpc.NotificationObject | jsonrpc.RequestObject): Promise<void> {
+		const { method } = message;
 
 		if (method.startsWith('bridges:')) {
 			let result: jsonrpc.SuccessObject | jsonrpc.ErrorObject;
 
 			try {
-				result = await this.handleBridgeMessage(message as jsonrpc.IParsedObjectRequest);
+				result = await this.handleBridgeMessage(message as jsonrpc.RequestObject);
 			} catch (e) {
-				result = jsonrpc.error((message.payload as jsonrpc.RequestObject).id, new jsonrpc.JsonRpcError(e.message, 1000));
+				result = jsonrpc.error((message as jsonrpc.RequestObject).id, new jsonrpc.JsonRpcError(e.message, 1000));
 			}
 
-			this.messenger.send(result);
+			this.messenger.send(result).catch((error) => {
+				console.error(`[${this.getAppId()}] Failed to send the result of "${method}" to the subprocess`, error);
+			});
 
 			return;
 		}
@@ -606,30 +485,30 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 
 	private async logUnhandledError(
 		method: `${AppMethod.RUNTIME_UNCAUGHT_EXCEPTION | AppMethod.RUNTIME_UNHANDLED_REJECTION}`,
-		message: jsonrpc.IParsedObjectRequest | jsonrpc.IParsedObjectNotification,
+		message: jsonrpc.RequestObject | jsonrpc.NotificationObject,
 	) {
 		this.debug('Unhandled error of type "%s" caught in subprocess', method);
 
 		const logger = new AppConsole(method);
-		logger.error(message.payload);
+		logger.error(message);
 
 		await this.logStorage.storeEntries(AppConsole.toStorageEntry(this.getAppId(), logger));
 	}
 
-	private async handleResultMessage(message: jsonrpc.IParsedObjectError | jsonrpc.IParsedObjectSuccess): Promise<void> {
-		const { id } = message.payload;
+	private async handleResultMessage(message: jsonrpc.ErrorObject | jsonrpc.SuccessObject): Promise<void> {
+		const { id } = message;
 
 		let result: unknown;
-		let error: jsonrpc.IParsedObjectError['payload']['error'] | undefined;
+		let error: jsonrpc.SerializedJsonRpcError | undefined;
 		let logs: ILoggerStorageEntry;
 
-		if (message.type === 'success') {
-			const params = message.payload.result as { value: unknown; logs?: ILoggerStorageEntry };
+		if (jsonrpc.isSuccessObject(message)) {
+			const params = message.result as { value: unknown; logs?: ILoggerStorageEntry };
 			result = params.value;
 			logs = params.logs;
 		} else {
-			error = message.payload.error;
-			logs = message.payload.error.data?.logs as ILoggerStorageEntry;
+			error = message.error;
+			logs = message.error.data?.logs as ILoggerStorageEntry;
 		}
 
 		// Should we try to make sure all result messages have logs?
@@ -640,63 +519,41 @@ export abstract class BaseRuntimeSubprocessController extends EventEmitter imple
 		this.emit(`result:${id}`, result, error);
 	}
 
-	private async parseStdout(stream: Readable): Promise<void> {
+	private parseSubprocessMessage(message: unknown): void {
+		this.debug('Received message from subprocess %s', inspect(message));
+
 		try {
-			for await (const message of newDecoder().decodeStream(stream)) {
-				this.debug('Received message from subprocess %s', inspect(message));
-				try {
-					// Process PONG resonse first as it is not JSON RPC
-					if (message === COMMAND_PONG) {
-						this.emit('pong');
-						continue;
-					}
-
-					const JSONRPCMessage = jsonrpc.parseObject(message);
-
-					if (Array.isArray(JSONRPCMessage)) {
-						throw new Error('Invalid message format');
-					}
-
-					this.emit('heartbeat');
-
-					if (JSONRPCMessage.type === 'request' || JSONRPCMessage.type === 'notification') {
-						this.handleIncomingMessage(JSONRPCMessage).catch((reason) =>
-							console.error(`[${this.getAppId()}] Error executing handler`, reason, message),
-						);
-						continue;
-					}
-
-					if (JSONRPCMessage.type === 'success' || JSONRPCMessage.type === 'error') {
-						this.handleResultMessage(JSONRPCMessage).catch((reason) =>
-							console.error(`[${this.getAppId()}] Error executing handler`, reason, message),
-						);
-						continue;
-					}
-
-					console.error('Unrecognized message type', JSONRPCMessage);
-				} catch (e) {
-					// SyntaxError is thrown when the message is not a valid JSON
-					if (e instanceof SyntaxError) {
-						console.error(`[${this.getAppId()}] Failed to parse message`);
-						continue;
-					}
-
-					console.error(`[${this.getAppId()}] Error executing handler`, e, message);
-				}
+			// Process PONG resonse first as it is not JSON RPC
+			if (message === COMMAND_PONG) {
+				this.emit('pong');
+				return;
 			}
+
+			this.emit('heartbeat');
+
+			if (jsonrpc.isRequestObject(message) || jsonrpc.isNotificationObject(message)) {
+				this.handleIncomingMessage(message).catch((reason) =>
+					console.error(`[${this.getAppId()}] Error executing handler`, reason, message),
+				);
+				return;
+			}
+
+			if (jsonrpc.isSuccessObject(message) || jsonrpc.isErrorObject(message)) {
+				this.handleResultMessage(message).catch((reason) => console.error(`[${this.getAppId()}] Error executing handler`, reason, message));
+				return;
+			}
+
+			console.error('Unrecognized message type', message);
 		} catch (e) {
-			console.error(`[${this.getAppId()}]`, e);
-			this.emit('error', new Error('DECODE_ERROR'));
+			console.error(`[${this.getAppId()}] Error executing handler`, e, message);
 		}
 	}
 
-	private async parseError(chunk: Buffer): Promise<void> {
-		try {
-			const data = JSON.parse(chunk.toString());
+	private parseOutput(chunk: Buffer): void {
+		console.log(`[${this.getAppId()}] Subprocess stdout`, chunk.toString());
+	}
 
-			this.debug('Metrics received from subprocess (via stderr): %s', inspect(data));
-		} catch {
-			console.error('Subprocess stderr', chunk.toString());
-		}
+	private parseError(chunk: Buffer): void {
+		console.error(`[${this.getAppId()}] Subprocess stderr`, chunk.toString());
 	}
 }

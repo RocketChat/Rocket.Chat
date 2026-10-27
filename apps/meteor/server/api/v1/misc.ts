@@ -1,43 +1,45 @@
 import crypto from 'node:crypto';
 
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IDirectoryChannelResult, IDirectoryUserResult, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Settings, Users, WorkspaceCredentials } from '@rocket.chat/models';
 import {
 	ajv,
-	isShieldSvgProps,
-	isSpotlightProps,
-	parseSpotlightUsernames,
-	parseSpotlightType,
 	isDirectoryProps,
 	isFingerprintProps,
 	isMeteorCall,
+	isShieldSvgProps,
+	isSpotlightProps,
 	meSuccessResponseSchema,
-	validateUnauthorizedErrorResponse,
-	validateForbiddenErrorResponse,
+	paginatedResponseProperties,
+	parseSpotlightType,
+	parseSpotlightUsernames,
 	validateBadRequestErrorResponse,
+	validateForbiddenErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import type { MeApiSuccessResponse } from '@rocket.chat/rest-typings';
-import { escapeHTML } from '@rocket.chat/string-helpers';
+import { escapeHTML } from '@rocket.chat/tools';
 import EJSON from 'ejson';
 import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
-import { passwordPolicy } from '../../../app/lib/server';
-import { notifyOnSettingChangedById } from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
-import { getBaseUserFields } from '../../../app/utils/server/functions/getBaseUserFields';
-import { isSMTPConfigured } from '../../../app/utils/server/functions/isSMTPConfigured';
-import { getURL } from '../../../app/utils/server/getURL';
+import { passwordPolicy } from '../../lib/auth/passwordPolicy';
 import { i18n } from '../../lib/i18n';
-import { SystemLogger } from '../../lib/logger/system';
-import { browseChannelsMethod } from '../../methods/browseChannels';
+import { notifyOnSettingChangedById } from '../../lib/notifyListener';
+import { getBaseUserFields } from '../../lib/utils/functions/getBaseUserFields';
+import { isSMTPConfigured } from '../../lib/utils/functions/isSMTPConfigured';
+import { getURL } from '../../lib/utils/getURL';
+import { browseChannelsMethod } from '../../meteor-methods/rooms/browseChannels';
 import { spotlightMethod } from '../../publications/spotlight';
+import { settings } from '../../settings';
 import { resetAuditedSettingByUser, updateAuditedByUser } from '../../settings/lib/auditedSettingUpdates';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
 import { getUserFromParams } from '../lib/getUserFromParams';
 import { getUserInfo } from '../lib/getUserInfo';
+import { logMethodCallError } from '../lib/logMethodCallError';
 
 /**
  * @openapi
@@ -220,7 +222,7 @@ API.v1.get(
 		const { type, icon } = this.queryParams;
 		let { channel, name } = this.queryParams;
 		if (!settings.get('API_Enable_Shields')) {
-			throw new Meteor.Error('error-endpoint-disabled', 'This endpoint is disabled', {
+			throw new ClientSafeError('error-endpoint-disabled', 'This endpoint is disabled', {
 				route: '/api/v1/shield.svg',
 			});
 		}
@@ -234,7 +236,7 @@ API.v1.get(
 				.map((t: string) => t.trim())
 				.includes(type)
 		) {
-			throw new Meteor.Error('error-shield-disabled', 'This shield type is disabled', {
+			throw new ClientSafeError('error-shield-disabled', 'This shield type is disabled', {
 				route: '/api/v1/shield.svg',
 			});
 		}
@@ -393,6 +395,7 @@ API.v1.get(
 		// Keep parity so anonymous-user / embedded-layout flows can still
 		// resolve a public channel through the navbar search.
 		authRequired: false,
+		rateLimiterOptions: { numRequestsAllowed: 100, intervalTimeInMS: 100000 },
 		query: isSpotlightProps,
 		response: {
 			200: spotlightResponseSchema,
@@ -429,9 +432,7 @@ const directoryResponseSchema = ajv.compile<{
 				oneOf: [{ $ref: '#/components/schemas/IDirectoryUserResult' }, { $ref: '#/components/schemas/IDirectoryChannelResult' }],
 			},
 		},
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['result', 'count', 'offset', 'total', 'success'],
@@ -442,6 +443,7 @@ API.v1.get(
 	'directory',
 	{
 		authRequired: true,
+		rateLimiterOptions: { numRequestsAllowed: 100, intervalTimeInMS: 100000 },
 		query: isDirectoryProps,
 		response: {
 			200: directoryResponseSchema,
@@ -451,11 +453,10 @@ API.v1.get(
 	},
 	async function action() {
 		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort, query } = await this.parseJsonQuery();
+		const { sort } = await this.parseJsonQuery();
 		const { text, type, workspace = 'local' } = this.queryParams;
 
 		const filter = {
-			...(query ? { ...query } : {}),
 			...(text ? { text } : {}),
 			...(type ? { type } : {}),
 			...(workspace ? { workspace } : {}),
@@ -467,7 +468,7 @@ API.v1.get(
 		const sortBy = sort ? Object.keys(sort)[0] : undefined;
 		const sortDirection = sort && Object.values(sort)[0] === 1 ? 'asc' : 'desc';
 
-		const user = await Users.findOneById(this.userId, { projection: { __rooms: 1 } });
+		const user = await Users.findOneById(this.userId, { projection: { __rooms: 1, roles: 1 } });
 		const result = await browseChannelsMethod(
 			{
 				...filter,
@@ -495,7 +496,7 @@ const pwGetPolicyResponseSchema = ajv.compile<{ enabled: boolean; policy: [strin
 	type: 'object',
 	properties: {
 		enabled: { type: 'boolean' },
-		policy: { type: 'array', items: { type: 'array' } },
+		policy: { type: 'array', items: { type: 'array', items: {} } },
 	},
 	additionalProperties: true,
 });
@@ -551,7 +552,6 @@ API.v1.get(
  */
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
 		'method.call/:method': {
 			POST: (params: { method: string; args: any[] }) => any;
@@ -647,7 +647,7 @@ API.v1.post(
 		const connectionId =
 			this.token ||
 			crypto
-				.createHash('md5')
+				.createHash('sha256')
 				.update((this.requestIp ?? '') + this.user._id)
 				.digest('hex');
 
@@ -663,20 +663,14 @@ API.v1.post(
 			DDPRateLimiter._increment(rateLimiterInput);
 			const rateLimitResult = DDPRateLimiter._check(rateLimiterInput);
 			if (!rateLimitResult.allowed) {
-				throw new Meteor.Error('too-many-requests', DDPRateLimiter.getErrorMessage(rateLimitResult), {
+				throw new ClientSafeError('too-many-requests', DDPRateLimiter.getErrorMessage(rateLimitResult), {
 					timeToReset: rateLimitResult.timeToReset,
 				});
 			}
 
 			return API.v1.success(mountResult({ id, result: await Meteor.callAsync(method, ...params) }));
 		} catch (err) {
-			if (!(err as any).isClientSafe && !(err as any).meteorError) {
-				SystemLogger.error({ msg: 'Exception while invoking method', err, method });
-			}
-
-			if (settings.get('Log_Level') === '2') {
-				Meteor._debug(`Exception while invoking method ${method}`, err);
-			}
+			logMethodCallError(method, err);
 
 			return API.v1.failure(mountResult({ id, error: err }));
 		}
@@ -708,7 +702,7 @@ API.v1.post(
 		const connectionId =
 			this.token ||
 			crypto
-				.createHash('md5')
+				.createHash('sha256')
 				.update(this.requestIp ?? '')
 				.digest('hex');
 
@@ -725,19 +719,15 @@ API.v1.post(
 
 			const rateLimitResult = DDPRateLimiter._check(rateLimiterInput);
 			if (!rateLimitResult.allowed) {
-				throw new Meteor.Error('too-many-requests', DDPRateLimiter.getErrorMessage(rateLimitResult), {
+				throw new ClientSafeError('too-many-requests', DDPRateLimiter.getErrorMessage(rateLimitResult), {
 					timeToReset: rateLimitResult.timeToReset,
 				});
 			}
 
 			return API.v1.success(mountResult({ id, result: await Meteor.callAsync(method, ...params) }));
 		} catch (err) {
-			if (!(err as any).isClientSafe && !(err as any).meteorError) {
-				SystemLogger.error({ msg: 'Exception while invoking method', err, method });
-			}
-			if (settings.get('Log_Level') === '2') {
-				Meteor._debug(`Exception while invoking method ${method}`, err);
-			}
+			logMethodCallError(method, err);
+
 			return API.v1.failure(mountResult({ id, error: err }));
 		}
 	},

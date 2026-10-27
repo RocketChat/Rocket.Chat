@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
 
-type PlainSpanProps = {
+export type PlainSpanProps = {
 	text: string;
 };
 

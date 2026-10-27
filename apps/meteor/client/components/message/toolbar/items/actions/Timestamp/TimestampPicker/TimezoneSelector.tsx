@@ -1,17 +1,19 @@
 import { Box, Field, FieldHint, FieldDescription, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import type { Key } from 'react';
+import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { UTCOffsets } from '../../../../../../../lib/utils/timestamp/types';
 import type { TimezoneKey } from '../../../../../../../lib/utils/timestamp/types';
 
-type TimezoneSelectorProps = {
+export type TimezoneSelectorProps = {
 	value: TimezoneKey;
 	onChange: (timezone: TimezoneKey) => void;
 };
 
 const TimezoneSelector = ({ value, onChange }: TimezoneSelectorProps) => {
 	const { t } = useTranslation();
+	const timezoneField = useId();
 
 	const handleTimezoneChange = (key: Key): void => {
 		onChange(key as TimezoneKey);
@@ -23,12 +25,12 @@ const TimezoneSelector = ({ value, onChange }: TimezoneSelectorProps) => {
 	];
 
 	return (
-		<Box mb='x16'>
+		<Box marginBlock='x16'>
 			<Field>
-				<FieldLabel>{t('Timezone')}</FieldLabel>
+				<FieldLabel htmlFor={timezoneField}>{t('Timezone')}</FieldLabel>
 				<FieldDescription>{t('Timezone_picker_description')}</FieldDescription>
 				<FieldRow>
-					<Select value={value} onChange={handleTimezoneChange} options={options} width='full' />
+					<Select id={timezoneField} value={value} onChange={handleTimezoneChange} options={options} />
 				</FieldRow>
 				<FieldHint>{t('Timezone_picker_hint')}</FieldHint>
 			</Field>

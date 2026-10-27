@@ -1,3 +1,4 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { LivechatContacts, LivechatCustomField, LivechatVisitors } from '@rocket.chat/models';
 import {
 	isPOSTOmnichannelContactsProps,
@@ -14,20 +15,18 @@ import {
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { removeEmpty } from '@rocket.chat/tools';
+import { escapeRegExp, removeEmpty } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import { API } from '../..';
-import { createContact } from '../../../../app/livechat/server/lib/contacts/createContact';
-import { disableContactById } from '../../../../app/livechat/server/lib/contacts/disableContact';
-import { getContactChannelsGrouped } from '../../../../app/livechat/server/lib/contacts/getContactChannelsGrouped';
-import { getContactHistory } from '../../../../app/livechat/server/lib/contacts/getContactHistory';
-import { getContacts } from '../../../../app/livechat/server/lib/contacts/getContacts';
-import { registerContact } from '../../../../app/livechat/server/lib/contacts/registerContact';
-import { resolveContactConflicts } from '../../../../app/livechat/server/lib/contacts/resolveContactConflicts';
-import { updateContact } from '../../../../app/livechat/server/lib/contacts/updateContact';
+import { createContact } from '../../../lib/omnichannel/contacts/createContact';
+import { disableContactById } from '../../../lib/omnichannel/contacts/disableContact';
+import { getContactChannelsGrouped } from '../../../lib/omnichannel/contacts/getContactChannelsGrouped';
+import { getContactHistory } from '../../../lib/omnichannel/contacts/getContactHistory';
+import { getContacts } from '../../../lib/omnichannel/contacts/getContacts';
+import { registerContact } from '../../../lib/omnichannel/contacts/registerContact';
+import { resolveContactConflicts } from '../../../lib/omnichannel/contacts/resolveContactConflicts';
+import { updateContact } from '../../../lib/omnichannel/contacts/updateContact';
 import type { ExtractRoutesFromAPI } from '../../ApiClass';
 import { getPaginationItems } from '../../lib/getPaginationItems';
 
@@ -61,7 +60,7 @@ API.v1.addRoute(
 				contactId: String,
 			});
 
-			const contact = await LivechatVisitors.findOneEnabledById(this.queryParams.contactId);
+			const contact = await LivechatVisitors.findOneEnabledById(this.queryParams.contactId, { projection: { token: 0 } });
 
 			return API.v1.success({ contact });
 		},
@@ -87,11 +86,11 @@ API.v1.addRoute(
 			try {
 				customCF = custom && JSON.parse(custom);
 			} catch (e) {
-				throw new Meteor.Error('error-invalid-params-custom');
+				throw new ClientSafeError('error-invalid-params-custom');
 			}
 
 			if (!email && !phone && !Object.keys(customCF).length) {
-				throw new Meteor.Error('error-invalid-params');
+				throw new ClientSafeError('error-invalid-params');
 			}
 
 			const foundCF = await (async () => {
@@ -108,7 +107,7 @@ API.v1.addRoute(
 				return Object.fromEntries(customFields.map(({ _id }) => [`livechatData.${_id}`, new RegExp(escapeRegExp(customCF[_id]), 'i')]));
 			})();
 
-			const contact = await LivechatVisitors.findOneByEmailAndPhoneAndCustomField(email, phone, foundCF);
+			const contact = await LivechatVisitors.findOneByEmailAndPhoneAndCustomField(email, phone, foundCF, { projection: { token: 0 } });
 			return API.v1.success({ contact });
 		},
 	},
@@ -264,6 +263,6 @@ const omnichannelContactsEndpoints = API.v1.post(
 type OmnichannelContactsEndpoints = ExtractRoutesFromAPI<typeof omnichannelContactsEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends OmnichannelContactsEndpoints {}
 }

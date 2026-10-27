@@ -4,7 +4,7 @@ import { ReportCardEmptyState } from './ReportCardEmptyState';
 import { ReportCardErrorState } from './ReportCardErrorState';
 import { ReportCardLoadingState } from './ReportCardLoadingState';
 
-type ReportCardContentProps = {
+export type ReportCardContentProps = {
 	isPending?: boolean;
 	isError?: boolean;
 	isDataFound?: boolean;

@@ -1,14 +1,16 @@
-import { SidebarV2Banner } from '@rocket.chat/fuselage';
+import { SidebarBanner } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import AirGappedRestrictionWarning from './AirGappedRestrictionWarning';
 import { links } from '../../../lib/links';
 
-const AirGappedRestrictionSection = ({ isRestricted, remainingDays }: { isRestricted: boolean; remainingDays: number }) => {
+export type AirGappedRestrictionSectionProps = { isRestricted: boolean; remainingDays: number };
+
+const AirGappedRestrictionSection = ({ isRestricted, remainingDays }: AirGappedRestrictionSectionProps) => {
 	const { t } = useTranslation();
 
 	return (
-		<SidebarV2Banner
+		<SidebarBanner
 			title={<AirGappedRestrictionWarning isRestricted={isRestricted} remainingDays={remainingDays} />}
 			linkText={t('Learn_more')}
 			linkProps={{

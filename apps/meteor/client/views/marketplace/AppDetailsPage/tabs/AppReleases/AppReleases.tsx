@@ -7,7 +7,9 @@ import { useTranslation } from 'react-i18next';
 import AppReleasesItem from './AppReleasesItem';
 import AccordionLoading from '../../../components/AccordionLoading';
 
-const AppReleases = ({ id }: { id: App['id'] }) => {
+export type AppReleasesProps = { id: App['id'] };
+
+const AppReleases = ({ id }: AppReleasesProps) => {
 	const getVersions = useEndpoint('GET', '/apps/:id/versions', { id });
 	const { t } = useTranslation();
 
@@ -28,9 +30,15 @@ const AppReleases = ({ id }: { id: App['id'] }) => {
 
 	return (
 		<>
-			<Accordion width='100%' alignSelf='center'>
+			<Accordion>
 				{isLoading && <AccordionLoading />}
-				{isFetched && <>{data?.map((release) => <AppReleasesItem release={release} key={release.version} />)}</>}
+				{isFetched && (
+					<>
+						{data?.map((release) => (
+							<AppReleasesItem release={release} key={release.version} />
+						))}
+					</>
+				)}
 			</Accordion>
 		</>
 	);

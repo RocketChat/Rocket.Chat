@@ -6,7 +6,7 @@ import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
 export type valuesOption = { key: string; i18nLabel: TranslationKey };
-type MultiSelectSettingInputProps = SettingInputProps<[string, string], string[]> & {
+export type MultiSelectSettingInputProps = SettingInputProps<[string, string], string[]> & {
 	values: valuesOption[];
 };
 
@@ -16,7 +16,7 @@ function MultiSelectSettingInput({
 	value,
 	hint,
 	placeholder,
-	readonly,
+	readonly: _readonly,
 	disabled,
 	required,
 	values = [],
@@ -47,7 +47,6 @@ function MultiSelectSettingInput({
 					value={value}
 					placeholder={placeholder}
 					disabled={disabled}
-					readOnly={readonly}
 					// autoComplete={autocomplete === false ? 'off' : undefined}
 					onChange={handleChange}
 					options={values.map(({ key, i18nLabel }) => [key, t(i18nLabel)])}

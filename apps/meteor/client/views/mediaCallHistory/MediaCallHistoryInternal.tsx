@@ -9,7 +9,7 @@ type InternalCallEndpointData = Serialized<{
 	call: IMediaCall;
 }>;
 
-type MediaCallHistoryInternalProps = {
+export type MediaCallHistoryInternalProps = {
 	data: InternalCallEndpointData;
 	onClose: () => void;
 	openUserInfo?: (userId: string, rid: string) => void;
@@ -44,6 +44,7 @@ const MediaCallHistoryInternal = ({ data, onClose, openUserInfo, openRoomId, mes
 			duration: data.item.duration,
 			startedAt: new Date(data.item.ts),
 			state: data.item.state,
+			preventedBy: data.call.preventedBy,
 		};
 	}, [data]);
 

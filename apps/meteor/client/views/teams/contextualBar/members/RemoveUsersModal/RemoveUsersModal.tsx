@@ -6,7 +6,7 @@ import { useQuery } from '@tanstack/react-query';
 import BaseRemoveUsersModal from './BaseRemoveUsersModal';
 import { teamsQueryKeys, usersQueryKeys } from '../../../../../lib/queryKeys';
 
-type RemoveUsersModalProps = {
+export type RemoveUsersModalProps = {
 	onClose: () => void;
 	onCancel: () => void;
 	onConfirm: (deletedRooms: { [key: string]: Serialized<IRoom> }) => void;

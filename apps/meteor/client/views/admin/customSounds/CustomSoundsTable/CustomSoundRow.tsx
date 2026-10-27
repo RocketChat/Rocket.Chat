@@ -5,7 +5,7 @@ import { useCustomSound } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type CustomSoundRowProps = {
+export type CustomSoundRowProps = {
 	onClick: (soundId: ICustomSound['_id']) => () => void;
 	sound: {
 		name: string;
@@ -46,7 +46,7 @@ const CustomSoundRow = ({ onClick, sound }: CustomSoundRowProps) => {
 			<GenericTableCell>
 				<IconButton
 					icon={!isPlay ? 'play' : 'pause'}
-					small
+					size='small'
 					aria-label={!isPlay ? t('Play') : t('Pause')}
 					onClick={(e): void => {
 						e.preventDefault();

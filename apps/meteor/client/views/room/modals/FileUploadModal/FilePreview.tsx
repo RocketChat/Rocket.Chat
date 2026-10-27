@@ -37,7 +37,7 @@ const shouldShowMediaPreview = (file: File, fileType: FilePreviewType | undefine
 	return true;
 };
 
-type FilePreviewProps = {
+export type FilePreviewProps = {
 	file: File;
 	altText?: string;
 };

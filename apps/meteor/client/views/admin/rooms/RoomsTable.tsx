@@ -1,4 +1,4 @@
-import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
+import { Pagination, States, StatesIcon, StatesTitle, StatesActions, StatesAction, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useMediaQuery, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { OptionProp } from '@rocket.chat/ui-client';
 import {
@@ -9,6 +9,7 @@ import {
 	GenericTableLoadingTable,
 	usePagination,
 	useSort,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -18,7 +19,6 @@ import { useTranslation } from 'react-i18next';
 
 import RoomRow from './RoomRow';
 import RoomsTableFilters from './RoomsTableFilters';
-import GenericNoResults from '../../../components/GenericNoResults';
 
 type RoomFilters = {
 	searchText: string;
@@ -50,12 +50,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 				count: itemsPerPage,
 				offset: searchText === prevRoomFilterText.current ? current : 0,
 				types: (roomFilters.types.length ? [...roomFilters.types.map((roomType) => roomType.id)] : DEFAULT_TYPES) as unknown as (
-					| 'c'
-					| 'd'
-					| 'p'
-					| 'l'
-					| 'discussions'
-					| 'teams'
+					'c' | 'd' | 'p' | 'l' | 'discussions' | 'teams'
 				)[],
 			};
 		}, [searchText, sortBy, sortDirection, itemsPerPage, current, roomFilters.types, setCurrent]),
@@ -77,50 +72,31 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 		prevRoomFilterText.current = searchText;
 	}, [searchText]);
 
+	const columns: TableColumnWidth[] = ['x200', 'x100', 'x80', ...(mediaQuery ? (['x80', 'x80', 'x80', 'x120'] as const) : [])];
+
 	const headers = (
 		<>
-			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name' w='x200'>
+			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 				{t('Name')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='type' direction={sortDirection} active={sortBy === 't'} onClick={setSort} sort='t' w='x100'>
+			<GenericTableHeaderCell key='type' direction={sortDirection} active={sortBy === 't'} onClick={setSort} sort='t'>
 				{t('Type')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell
-				key='users'
-				direction={sortDirection}
-				active={sortBy === 'usersCount'}
-				onClick={setSort}
-				sort='usersCount'
-				w='x80'
-			>
+			<GenericTableHeaderCell key='users' direction={sortDirection} active={sortBy === 'usersCount'} onClick={setSort} sort='usersCount'>
 				{t('Users')}
 			</GenericTableHeaderCell>
 			{mediaQuery && (
 				<>
-					<GenericTableHeaderCell key='messages' direction={sortDirection} active={sortBy === 'msgs'} onClick={setSort} sort='msgs' w='x80'>
+					<GenericTableHeaderCell key='messages' direction={sortDirection} active={sortBy === 'msgs'} onClick={setSort} sort='msgs'>
 						{t('Msgs')}
 					</GenericTableHeaderCell>
-					<GenericTableHeaderCell
-						key='default'
-						direction={sortDirection}
-						active={sortBy === 'default'}
-						onClick={setSort}
-						sort='default'
-						w='x80'
-					>
+					<GenericTableHeaderCell key='default' direction={sortDirection} active={sortBy === 'default'} onClick={setSort} sort='default'>
 						{t('Default')}
 					</GenericTableHeaderCell>
-					<GenericTableHeaderCell
-						key='featured'
-						direction={sortDirection}
-						active={sortBy === 'featured'}
-						onClick={setSort}
-						sort='featured'
-						w='x80'
-					>
+					<GenericTableHeaderCell key='featured' direction={sortDirection} active={sortBy === 'featured'} onClick={setSort} sort='featured'>
 						{t('Featured')}
 					</GenericTableHeaderCell>
-					<GenericTableHeaderCell key='ts' direction={sortDirection} active={sortBy === 'ts'} onClick={setSort} sort='ts' w='x120'>
+					<GenericTableHeaderCell key='ts' direction={sortDirection} active={sortBy === 'ts'} onClick={setSort} sort='ts'>
 						{t('Created_at')}
 					</GenericTableHeaderCell>
 				</>
@@ -132,7 +108,7 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 		<>
 			<RoomsTableFilters setFilters={setRoomFilters} />
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingTable headerCells={mediaQuery ? 7 : 4} />
@@ -142,9 +118,13 @@ const RoomsTable = ({ reload }: { reload: MutableRefObject<() => void> }) => {
 			{isSuccess && data.rooms.length === 0 && <GenericNoResults />}
 			{isSuccess && data.rooms.length > 0 && (
 				<>
-					<GenericTable>
+					<GenericTable columns={columns}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
-						<GenericTableBody>{data.rooms?.map((room) => <RoomRow key={room._id} room={room} />)}</GenericTableBody>
+						<GenericTableBody>
+							{data.rooms?.map((room) => (
+								<RoomRow key={room._id} room={room} />
+							))}
+						</GenericTableBody>
 					</GenericTable>
 					<Pagination
 						divider

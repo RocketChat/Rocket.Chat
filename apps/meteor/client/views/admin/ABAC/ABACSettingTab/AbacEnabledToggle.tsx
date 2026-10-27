@@ -9,7 +9,7 @@ import { useEditableSetting } from '../../EditableSettingsContext';
 import MemoizedSetting from '../../settings/Setting/MemoizedSetting';
 import SettingSkeleton from '../../settings/Setting/SettingSkeleton';
 
-type ABACEnabledToggleProps = {
+export type ABACEnabledToggleProps = {
 	hasABAC: 'loading' | boolean;
 	className?: string;
 };

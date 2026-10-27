@@ -1,7 +1,12 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Select } from '@rocket.chat/fuselage';
 import { useSetModal } from '@rocket.chat/ui-contexts';
-import { endOfDay, endOfWeek, startOfDay, startOfWeek, subMinutes, format } from 'date-fns';
+import { endOfDay } from 'date-fns/endOfDay';
+import { endOfWeek } from 'date-fns/endOfWeek';
+import { format } from 'date-fns/format';
+import { startOfDay } from 'date-fns/startOfDay';
+import { startOfWeek } from 'date-fns/startOfWeek';
+import { subMinutes } from 'date-fns/subMinutes';
 import { useState, type ComponentProps } from 'react';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -17,7 +22,7 @@ type DateRange = {
 
 type DateRangeAction = 'all' | 'today' | 'last5Minutes' | 'last15Minutes' | 'last30Minutes' | 'last1Hour' | 'thisWeek' | 'custom';
 
-type TimeFilterSelectProps = { compactView?: boolean } & Omit<ComponentProps<typeof Select>, 'onChange' | 'options'>;
+export type TimeFilterSelectProps = { compactView?: boolean } & Omit<ComponentProps<typeof Select>, 'onChange' | 'options'>;
 
 export const TimeFilterSelect = ({ compactView = false, ...props }: TimeFilterSelectProps) => {
 	const { setValue, control, getValues } = useAppLogsFilterFormContext();

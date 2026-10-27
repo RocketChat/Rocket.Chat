@@ -12,11 +12,11 @@ const HeaderTagIcon = ({ icon }: HeaderIconProps) => {
 	}
 
 	return isValidElement<any>(icon) ? (
-		<Box marginInlineEnd={4} display='inline-block' verticalAlign='middle'>
+		<Box display='inline-block' verticalAlign='middle'>
 			{icon}
 		</Box>
 	) : (
-		<Icon size='x12' mie={4} {...icon} />
+		<Icon size='x12' {...icon} />
 	);
 };
 

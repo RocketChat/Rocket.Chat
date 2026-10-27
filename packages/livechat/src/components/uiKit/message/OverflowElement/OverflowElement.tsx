@@ -8,7 +8,7 @@ import { usePerformAction } from '../Block';
 import OverflowOption from './OverflowOption';
 import OverflowTrigger from './OverflowTrigger';
 
-type OverflowElementProps = uikit.OverflowElement & {
+export type OverflowElementProps = uikit.OverflowElement & {
 	parser: uikit.SurfaceRenderer<ComponentChild>;
 };
 

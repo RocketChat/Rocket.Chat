@@ -5,15 +5,15 @@ import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { useMemo } from 'react';
 
+import { useBannerContextValue } from './hooks/useBannerContextValue';
 import MarkdownText from '../../components/MarkdownText';
-import { useBannerContextValue } from '../../uikit/hooks/useBannerContextValue';
-import { useUiKitActionManager } from '../../uikit/hooks/useUiKitActionManager';
-import { useUiKitView } from '../../uikit/hooks/useUiKitView';
+import { useUiKitActionManager } from '../../hooks/uikit/useUiKitActionManager';
+import { useUiKitView } from '../../hooks/uikit/useUiKitView';
 
 // TODO: move this to fuselage-ui-kit itself
 bannerParser.mrkdwn = ({ text }) => <MarkdownText variant='inline' content={text} />;
 
-type UiKitBannerProps = {
+export type UiKitBannerProps = {
 	key: UiKit.BannerView['viewId']; // force re-mount when viewId changes
 	initialView: UiKit.BannerView;
 };

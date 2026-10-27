@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useRemoveCurrentChatMutation } from './hooks/useRemoveCurrentChatMutation';
 
-type RemoveChatButtonProps = { _id: string };
+export type RemoveChatButtonProps = { _id: string };
 
 const RemoveChatButton = ({ _id }: RemoveChatButtonProps) => {
 	const removeCurrentChatMutation = useRemoveCurrentChatMutation();
@@ -34,7 +34,16 @@ const RemoveChatButton = ({ _id }: RemoveChatButtonProps) => {
 		setModal(<GenericModal variant='danger' onConfirm={onDeleteAgent} onCancel={() => setModal(null)} confirmText={t('Delete')} />);
 	});
 
-	return <IconButton danger small icon='trash' title={t('Remove')} disabled={removeCurrentChatMutation.isPending} onClick={handleDelete} />;
+	return (
+		<IconButton
+			variant='danger'
+			size='small'
+			icon='trash'
+			title={t('Remove')}
+			disabled={removeCurrentChatMutation.isPending}
+			onClick={handleDelete}
+		/>
+	);
 };
 
 export default RemoveChatButton;

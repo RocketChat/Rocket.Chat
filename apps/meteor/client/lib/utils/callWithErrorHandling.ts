@@ -1,6 +1,6 @@
 import type { ServerMethodName, ServerMethodParameters, ServerMethodReturn } from '@rocket.chat/ddp-client';
 
-import { sdk } from '../../../app/utils/client/lib/SDKClient';
+import { sdk } from '../SDKClient';
 import { dispatchToastMessage } from '../toast';
 
 export const callWithErrorHandling = async <M extends ServerMethodName>(

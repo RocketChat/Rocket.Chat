@@ -1,24 +1,17 @@
 import { Box, ButtonGroup } from '@rocket.chat/fuselage';
+import { ActionButton, ToggleButton } from '@rocket.chat/ui-media';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import {
-	ToggleButton,
-	Timer,
-	DevicePicker,
-	ActionButton,
-	useShouldWrapCards,
-	CARD_LIST_SECTION_MAX_HEIGHT,
-	ActionStrip,
-	ActionToggleChat,
-} from '../../components';
+import { Timer, DevicePicker, useShouldWrapCards, CARD_LIST_SECTION_MAX_HEIGHT, ActionStrip, ActionToggleChat } from '../../components';
 import { useMediaCallInstance } from '../../context/MediaCallInstanceContext';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
 import useRegisterView from '../../context/useRegisterView';
+import { isInternalPeer } from '../../utils/isInternalPeer';
 import MediaCallCardList from '../MediaCallCardList';
 import PopoutDockPrompt from '../PopoutDockPrompt';
 
-type MediaCallRoomSectionProps = {
+export type MediaCallRoomSectionProps = {
 	showChat: boolean;
 	onToggleChat: () => void;
 	user: {
@@ -47,6 +40,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 
 	const {
 		sessionState,
+		allowedFeatures,
 		onMute,
 		onHold,
 		onForward,
@@ -58,7 +52,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 	} = useMediaCallView();
 	const { currentViews } = useMediaCallInstance();
 
-	const isPopout = currentViews.includes('popout');
+	const isPopout = currentViews.has('popout');
 
 	const { muted, held, peerInfo, connectionState, startedAt } = sessionState;
 
@@ -69,15 +63,19 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 
 	useRegisterView('room');
 
-	if (!peerInfo || 'number' in peerInfo) {
+	const screenShareAvailable = allowedFeatures.includes('screen-share');
+	const holdAvailable = allowedFeatures.includes('hold');
+	const transferAvailable = allowedFeatures.includes('transfer');
+
+	if (!peerInfo || !isInternalPeer(peerInfo)) {
 		return null;
 	}
 
 	return (
 		<Box
 			id='outer-element'
-			w='full'
-			bg='surface-tint'
+			width='full'
+			backgroundColor='surface-tint'
 			overflow='hidden'
 			display='flex'
 			flexDirection='column'
@@ -88,7 +86,7 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 			{isPopout ? <PopoutDockPrompt onClosePopout={onClosePopout} /> : <MediaCallCardList user={user} shouldWrapCards={shouldWrapCards} />}
 			<ActionStrip
 				leftSlot={
-					<Box color='default' alignContent='center' pis={16}>
+					<Box color='default' alignContent='center' paddingInlineStart={16}>
 						<Timer startAt={startedAt} />
 					</Box>
 				}
@@ -108,21 +106,27 @@ const MediaCallRoomSection = ({ showChat, onToggleChat, user, containerHeight }:
 				}
 			>
 				<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
-				<ToggleButton
-					label={t('Hold')}
-					icons={['pause-shape-unfilled', 'pause-shape-unfilled']}
-					titles={[t('Hold'), t('Resume')]}
-					pressed={held}
-					onToggle={onHold}
-				/>
-				<ToggleButton
-					label={t('Share_screen')}
-					icons={['desktop-arrow-up', 'desktop-cross']}
-					titles={[t('Share_screen'), t('Stop_sharing_screen')]}
-					pressed={localScreen?.active ?? false}
-					onToggle={onToggleScreenSharing}
-				/>
-				<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
+				{holdAvailable && (
+					<ToggleButton
+						label={t('Hold')}
+						icons={['pause-shape-unfilled', 'pause-shape-unfilled']}
+						titles={[t('Hold'), t('Resume')]}
+						pressed={held}
+						onToggle={onHold}
+					/>
+				)}
+				{screenShareAvailable && (
+					<ToggleButton
+						label={t('Share_screen')}
+						icons={['desktop-arrow-up', 'desktop-cross']}
+						titles={[t('Share_screen'), t('Stop_sharing_screen')]}
+						pressed={localScreen?.active ?? false}
+						onToggle={onToggleScreenSharing}
+					/>
+				)}
+				{transferAvailable && (
+					<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
+				)}
 				<ActionButton label={t('Voice_call__user__hangup', { user: peerInfo.displayName })} icon='phone-off' danger onClick={onEndCall} />
 			</ActionStrip>
 		</Box>

@@ -1,14 +1,15 @@
+import { AuthorizationUtils } from '@rocket.chat/authorization/dist/AuthorizationUtils';
 import type { IRole } from '@rocket.chat/core-typings';
-import { Margins, Box, CheckBox, Throbber } from '@rocket.chat/fuselage';
+import { Box, CheckBox, Throbber } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal, GenericTableCell } from '@rocket.chat/ui-client';
 import { useSetModal } from '@rocket.chat/ui-contexts';
 import { useState, memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { AuthorizationUtils, confirmationRequiredPermissions } from '../../../../../app/authorization/lib';
+import { confirmationRequiredPermissions } from '../../../../../lib/authorization';
 
-type RoleCellProps = {
+export type RoleCellProps = {
 	_id: IRole['_id'];
 	name: IRole['name'];
 	description: IRole['description'];
@@ -55,16 +56,16 @@ const RoleCell = ({ _id, name, description, onChange, permissionId, permissionNa
 	const checkboxLabel = `${permissionName} - ${description || name}`;
 
 	return (
-		<GenericTableCell withTruncatedText>
-			<Margins inline={2}>
+		<GenericTableCell truncate>
+			<Box display='flex' alignItems='center' gap='x4'>
 				<CheckBox aria-label={checkboxLabel} checked={granted} onChange={handleChange} disabled={isDisabled} />
 				{!loading && (
 					<Box display='inline' color='hint' invisible>
 						{description || name}
 					</Box>
 				)}
-				{loading && <Throbber size='x12' display='inline-block' />}
-			</Margins>
+				{loading && <Throbber size='x12' />}
+			</Box>
 		</GenericTableCell>
 	);
 };

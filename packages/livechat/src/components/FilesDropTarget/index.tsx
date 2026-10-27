@@ -6,7 +6,7 @@ import { createClassName } from '../../helpers/createClassName';
 
 const escapeForRegExp = (string: string) => string.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-type FilesDropTargetProps = {
+export type FilesDropTargetProps = {
 	overlayed?: boolean;
 	overlayText?: string;
 	accept?: string;

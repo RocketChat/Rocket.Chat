@@ -6,7 +6,7 @@ import { memo } from 'react';
 
 const MAX_USERS = 3;
 
-type VideoConfMessageUserStackProps = {
+export type VideoConfMessageUserStackProps = {
 	users: Serialized<IVideoConferenceUser>[];
 };
 
@@ -16,18 +16,17 @@ const VideoConfMessageUserStack = ({ users }: VideoConfMessageUserStackProps) =>
 	const getUserAvatarPath = useUserAvatarPath();
 
 	return (
-		<Box mi={4}>
+		<Box>
 			{displayAvatars && (
-				<Box display='flex' alignItems='center' mi='neg-x2'>
+				<Box display='flex' alignItems='center' gap='x4'>
 					{users.slice(0, MAX_USERS).map(({ name, username }, index) => (
-						<Box mi={2} key={index}>
-							<Avatar
-								size='x28'
-								alt={username || ''}
-								title={getUserDisplayName(name, username, showRealName)}
-								url={getUserAvatarPath(username)}
-							/>
-						</Box>
+						<Avatar
+							key={index}
+							size='x28'
+							alt={username || ''}
+							title={getUserDisplayName(name, username, showRealName)}
+							url={getUserAvatarPath(username)}
+						/>
 					))}
 				</Box>
 			)}

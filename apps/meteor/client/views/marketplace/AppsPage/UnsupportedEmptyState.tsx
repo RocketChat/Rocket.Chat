@@ -13,13 +13,13 @@ const UnsupportedEmptyState = () => {
 	const description = isAdmin ? t('Update_to_access_marketplace_description') : t('Marketplace_unavailable_description');
 
 	return (
-		<Box mbs={64}>
+		<Box marginBlockStart={64}>
 			<States>
 				<StatesIcon name='warning' />
 				<StatesTitle>{title}</StatesTitle>
 				<StatesSubtitle>{description}</StatesSubtitle>
 				<StatesActions>
-					<Button secondary is='a' href={links.go.supportPrerequisites} external>
+					<Button variant='secondary' is='a' href={links.go.supportPrerequisites} external>
 						{t('Learn_more')}
 					</Button>
 					{isAdmin && <UpdateRocketChatButton />}

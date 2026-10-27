@@ -7,7 +7,7 @@ import type { KeyboardEvent, MouseEvent } from 'react';
 import MarkdownText from '../../../../../components/MarkdownText';
 import { useFormatDate } from '../../../../../hooks/useFormatDate';
 
-type UsersTableRowProps = {
+export type UsersTableRowProps = {
 	user: Serialized<IDirectoryUserResult> & { domain?: string };
 	onClick: (username: IUser['username']) => (e: KeyboardEvent | MouseEvent) => void;
 	mediaQuery: boolean;
@@ -30,13 +30,13 @@ const UsersTableRow = ({
 				<FlexContainer>
 					<Box>
 						<FlexItem>{username && <UserAvatar size='x40' title={username} username={username} etag={avatarETag} />}</FlexItem>
-						<Box withTruncatedText mi={8}>
+						<Box withTruncatedText marginInline={8}>
 							<Box display='flex'>
 								<Box fontScale='p2m' withTruncatedText>
 									{name || username}
 									{nickname && ` (${nickname})`}
 								</Box>{' '}
-								<Box mi={4} />{' '}
+								<Box marginInline={4} />{' '}
 								<Box fontScale='p2' color='hint' withTruncatedText>
 									{username}
 								</Box>
@@ -46,12 +46,10 @@ const UsersTableRow = ({
 					</Box>
 				</FlexContainer>
 			</GenericTableCell>
-			{mediaQuery && canViewFullOtherUserInfo && (
-				<GenericTableCell withTruncatedText>{emails?.length && emails[0].address}</GenericTableCell>
-			)}
-			{federation && <GenericTableCell withTruncatedText>{domain}</GenericTableCell>}
+			{mediaQuery && canViewFullOtherUserInfo && <GenericTableCell truncate>{emails?.length && emails[0].address}</GenericTableCell>}
+			{federation && <GenericTableCell truncate>{domain}</GenericTableCell>}
 			{mediaQuery && (
-				<GenericTableCell fontScale='p2' color='hint' withTruncatedText>
+				<GenericTableCell color='hint' truncate>
 					{formatDate(createdAt)}
 				</GenericTableCell>
 			)}

@@ -22,7 +22,7 @@ import { useTranslation } from 'react-i18next';
 import Emoji from '../../../../../components/Emoji';
 import { clickableItem } from '../../../../../lib/clickableItem';
 
-type DiscussionListItemProps = {
+export type DiscussionListItemProps = {
 	_id: IDiscussionMessage['_id'];
 	msg: ReactNode;
 	dcount: number;
@@ -49,7 +49,7 @@ const DiscussionListItem = ({
 }: DiscussionListItemProps) => {
 	const { t } = useTranslation();
 	return (
-		<Box is={Message} {...props} className={className} pbs={16} pbe={8}>
+		<Box is={Message} {...props} className={className} paddingBlockStart={16} paddingBlockEnd={8}>
 			<MessageLeftContainer>
 				<MessageAvatar emoji={emoji ? <Emoji emojiHandle={emoji} fillContainer /> : undefined} username={username} size='x36' />
 			</MessageLeftContainer>

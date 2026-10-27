@@ -19,11 +19,12 @@ import { useForm, Controller } from 'react-hook-form';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import { useGoToRoom } from '../../../views/room/hooks/useGoToRoom';
 
-type CreateDirectMessageProps = { onClose: () => void };
+export type CreateDirectMessageProps = { onClose: () => void; onSuccess?: (rid: string) => void | Promise<void> };
 
-const CreateDirectMessage = ({ onClose }: CreateDirectMessageProps) => {
+const CreateDirectMessage = ({ onClose, onSuccess }: CreateDirectMessageProps) => {
 	const t = useTranslation();
 	const directMaxUsers = useSetting('DirectMesssage_maxUsers', 1);
+	const xmppEnabled = useSetting('XMPP_Server_Enabled', false);
 	const createDMFormId = useId();
 	const dispatchToastMessage = useToastMessageDispatch();
 
@@ -39,8 +40,9 @@ const CreateDirectMessage = ({ onClose }: CreateDirectMessageProps) => {
 
 	const mutateDirectMessage = useMutation({
 		mutationFn: createDirectAction,
-		onSuccess: ({ room: { rid } }) => {
-			goToRoom(rid);
+		onSuccess: ({ room }) => {
+			goToRoom(room.rid);
+			void onSuccess?.(room.rid);
 		},
 		onError: (error) => {
 			dispatchToastMessage({ type: 'error', message: error });
@@ -63,7 +65,7 @@ const CreateDirectMessage = ({ onClose }: CreateDirectMessageProps) => {
 				<ModalTitle id={`${createDMFormId}-title`}>{t('Create_direct_message')}</ModalTitle>
 				<ModalClose tabIndex={-1} onClick={onClose} />
 			</ModalHeader>
-			<ModalContent mbe={2}>
+			<ModalContent>
 				<FieldGroup>
 					<Field>
 						<FieldLabel>{t('Direct_message_creation_description')}</FieldLabel>
@@ -85,6 +87,7 @@ const CreateDirectMessage = ({ onClose }: CreateDirectMessageProps) => {
 										value={value}
 										onBlur={onBlur}
 										federated
+										xmpp={xmppEnabled}
 										aria-required='true'
 										error={errors.users?.message}
 									/>
@@ -99,7 +102,7 @@ const CreateDirectMessage = ({ onClose }: CreateDirectMessageProps) => {
 			<ModalFooter>
 				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button loading={isSubmitting || isValidating} type='submit' primary>
+					<Button loading={isSubmitting || isValidating} type='submit' variant='primary'>
 						{t('Create')}
 					</Button>
 				</ModalFooterControllers>

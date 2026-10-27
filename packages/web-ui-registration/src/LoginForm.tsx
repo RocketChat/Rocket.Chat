@@ -54,7 +54,9 @@ export type LoginErrors = keyof typeof LOGIN_SUBMIT_ERRORS | 'totp-canceled' | s
 
 export type LoginErrorState = [error: LoginErrors, message?: string] | undefined;
 
-export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }) => {
+export type LoginFormProps = { setLoginRoute: DispatchLoginRouter };
+
+export const LoginForm = ({ setLoginRoute }: LoginFormProps) => {
 	const {
 		register,
 		handleSubmit,
@@ -180,6 +182,8 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 										{...register('usernameOrEmail', {
 											required: t('Required_field', { field: t('registration.component.form.emailOrUsername') }),
 										})}
+										autoCapitalize='none'
+										autoCorrect='off'
 										placeholder={usernameOrEmailPlaceholder || t('registration.component.form.emailPlaceholder')}
 										error={errors.usernameOrEmail?.message || (hasAuthError ? errors.password?.message : undefined)}
 										aria-invalid={errors.usernameOrEmail || hasAuthError || errorOnSubmit ? 'true' : 'false'}
@@ -215,7 +219,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 									</FieldError>
 								)}
 								{isResetPasswordAllowed && (
-									<FieldRow justifyContent='end'>
+									<FieldRow justify='end'>
 										<FieldLink
 											href='#'
 											onClick={(e): void => {
@@ -233,7 +237,7 @@ export const LoginForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRoute
 					</FormContainer>
 					<FormFooter>
 						<ButtonGroup>
-							<Button loading={loginMutation.isPending} type='submit' primary>
+							<Button loading={loginMutation.isPending} type='submit' variant='primary'>
 								{t('registration.component.login')}
 							</Button>
 						</ButtonGroup>

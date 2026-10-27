@@ -4,7 +4,7 @@ import { useWizardContext, WizardActions, WizardBackButton, WizardNextButton } f
 import type { RepliesFormData, RepliesFormSubmitPayload } from '../forms/RepliesForm';
 import RepliesForm from '../forms/RepliesForm';
 
-type RepliesStepProps = {
+export type RepliesStepProps = {
 	defaultValues?: Partial<RepliesFormData>;
 	onSubmit(values: RepliesFormSubmitPayload): void;
 };

@@ -4,7 +4,7 @@ import DOMPurify from 'dompurify';
 
 import { useHighlightedCode } from '../../../../../hooks/useHighlightedCode';
 
-type AppLogsItemEntryProps = {
+export type AppLogsItemEntryProps = {
 	fullLog: ILogItem;
 };
 

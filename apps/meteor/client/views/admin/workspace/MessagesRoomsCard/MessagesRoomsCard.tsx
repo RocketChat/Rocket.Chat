@@ -7,7 +7,7 @@ import WorkspaceCardSection from '../components/WorkspaceCardSection';
 import WorkspaceCardSectionTitle from '../components/WorkspaceCardSectionTitle';
 import WorkspaceCardTextSeparator from '../components/WorkspaceCardTextSeparator';
 
-type MessagesRoomsCardProps = {
+export type MessagesRoomsCardProps = {
 	statistics: IStats;
 };
 
@@ -15,7 +15,7 @@ const MessagesRoomsCard = ({ statistics }: MessagesRoomsCardProps) => {
 	const { t } = useTranslation();
 
 	return (
-		<Card height='full'>
+		<Card>
 			<WorkspaceCardSection>
 				<WorkspaceCardSectionTitle title={t('Total_rooms')} variant='h4' />
 

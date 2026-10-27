@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import UserMenuButton from './UserMenuButton';
 import { useUserMenu } from './hooks/useUserMenu';
 
-type UserMenuProps = { user: IUser } & Omit<ComponentProps<typeof GenericMenu>, 'sections' | 'items' | 'title'>;
+export type UserMenuProps = { user: IUser } & Omit<ComponentProps<typeof GenericMenu>, 'sections' | 'items' | 'title'>;
 
 const UserMenu = function UserMenu({ user, ...props }: UserMenuProps) {
 	const { t } = useTranslation();

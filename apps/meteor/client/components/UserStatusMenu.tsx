@@ -8,19 +8,13 @@ import { useTranslation } from 'react-i18next';
 
 import { UserStatus } from './UserStatus';
 
-type UserStatusMenuProps = {
+export type UserStatusMenuProps = {
 	onChange: (type: UserStatusType) => void;
 	initialStatus?: UserStatusType;
-	optionWidth?: ComponentProps<typeof Box>['width'];
 	placement?: ComponentProps<typeof PositionAnimated>['placement'];
 };
 
-const UserStatusMenu = ({
-	onChange,
-	initialStatus = UserStatusType.OFFLINE,
-	optionWidth = undefined,
-	placement = 'bottom-start',
-}: UserStatusMenuProps) => {
+const UserStatusMenu = ({ onChange, initialStatus = UserStatusType.OFFLINE, placement = 'bottom-start' }: UserStatusMenuProps) => {
 	const { t } = useTranslation();
 	const [status, setStatus] = useState(initialStatus);
 	const allowInvisibleStatus = useSetting('Accounts_AllowInvisibleStatusOption', true);
@@ -37,21 +31,16 @@ const UserStatusMenu = ({
 
 		const statuses: Array<[value: UserStatusType, label: ReactNode]> = [
 			[UserStatusType.ONLINE, renderOption(UserStatusType.ONLINE, t('Online'))],
+			[UserStatusType.AWAY, renderOption(UserStatusType.AWAY, t('Away'))],
 			[UserStatusType.BUSY, renderOption(UserStatusType.BUSY, t('Busy'))],
 		];
-
-		// Away is no longer manually selectable, but surface it if the user is currently on it
-		// (e.g., set in a previous version or auto-applied by the server) so they can switch off.
-		if (status === UserStatusType.AWAY) {
-			statuses.push([UserStatusType.AWAY, renderOption(UserStatusType.AWAY, t('Away'))]);
-		}
 
 		if (allowInvisibleStatus) {
 			statuses.push([UserStatusType.OFFLINE, renderOption(UserStatusType.OFFLINE, t('Offline'))]);
 		}
 
 		return statuses;
-	}, [t, allowInvisibleStatus, status]);
+	}, [t, allowInvisibleStatus]);
 
 	const [cursor, handleKeyDown, handleKeyUp, reset, [visible, hide, show]] = useCursor(-1, options, ([selected], [, hide]) => {
 		setStatus(selected);
@@ -85,9 +74,9 @@ const UserStatusMenu = ({
 		<>
 			<Button
 				ref={ref}
-				mini
+				size='mini'
 				square
-				secondary
+				variant='secondary'
 				onClick={onClick}
 				onBlur={hide}
 				onKeyUp={handleKeyUp}
@@ -96,8 +85,8 @@ const UserStatusMenu = ({
 			>
 				<UserStatus status={status} />
 			</Button>
-			<PositionAnimated width='auto' visible={visible} anchor={ref} placement={placement}>
-				<Options width={optionWidth} onSelect={handleSelection} options={options} cursor={cursor} />
+			<PositionAnimated visible={visible} anchor={ref} placement={placement}>
+				<Options onSelect={handleSelection} options={options} cursor={cursor} />
 			</PositionAnimated>
 		</>
 	);

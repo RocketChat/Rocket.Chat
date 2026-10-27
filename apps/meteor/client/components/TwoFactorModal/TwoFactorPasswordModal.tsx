@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import type { OnConfirm } from './TwoFactorModal';
 import { Method } from './TwoFactorModal';
 
-type TwoFactorPasswordModalProps = {
+export type TwoFactorPasswordModalProps = {
 	onConfirm: OnConfirm;
 	onClose: () => void;
 	invalidAttempt?: boolean;
@@ -66,7 +66,7 @@ const TwoFactorPasswordModal = ({ onConfirm, onClose, invalidAttempt }: TwoFacto
 		>
 			<FieldGroup>
 				<Field>
-					<FieldLabel alignSelf='stretch'>{t('For_your_security_you_must_enter_your_current_password_to_continue')}</FieldLabel>
+					<FieldLabel>{t('For_your_security_you_must_enter_your_current_password_to_continue')}</FieldLabel>
 					<FieldRow>
 						<Controller
 							name='password'

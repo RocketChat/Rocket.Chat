@@ -20,9 +20,10 @@ import { useTranslation } from 'react-i18next';
 import DiscussionsListRow from './DiscussionsListRow';
 import { PaginatedVirtualList } from '../../../../components/PaginatedVirtualList';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
+import { useMessageRowListNavigation } from '../../../../hooks/useMessageRowListNavigation';
 import { useGoToRoom } from '../../hooks/useGoToRoom';
 
-type DiscussionsListProps = {
+export type DiscussionsListProps = {
 	itemCount: number;
 	discussions: Array<IDiscussionMessage>;
 	loadMoreItems: UseInfiniteQueryResult['fetchNextPage'];
@@ -47,6 +48,7 @@ function DiscussionsList({
 }: DiscussionsListProps) {
 	const { t } = useTranslation();
 	const discussionListId = useId();
+	const discussionListRef = useMessageRowListNavigation();
 
 	const showRealNames = useSetting('UI_Use_Real_Name', false);
 	const inputRef = useAutoFocus(true);
@@ -76,26 +78,26 @@ function DiscussionsList({
 					value={text}
 					onChange={onChangeFilter}
 					ref={inputRef as RefObject<HTMLInputElement>}
-					addon={<Icon name='magnifier' size='x20' />}
+					endAddon={<Icon name='magnifier' size='x20' />}
 				/>
 			</ContextualbarSection>
-			<ContextualbarContent paddingInline={0}>
+			<ContextualbarContent flush>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
 				{isPending && (
-					<Box pi={24} pb={12}>
+					<Box paddingInline={24} paddingBlock={12}>
 						<Throbber size='x12' />
 					</Box>
 				)}
 				{error instanceof Error && (
-					<Callout mi={24} type='danger'>
-						{error.toString()}
-					</Callout>
+					<Box paddingInline={24}>
+						<Callout type='danger'>{error.toString()}</Callout>
+					</Box>
 				)}
 				{isSuccess && (
-					<Box id={discussionListId} w='full' h='full' overflow='hidden' flexShrink={1}>
+					<Box id={discussionListId} ref={discussionListRef} width='full' height='full' overflow='hidden' flexShrink={1}>
 						{discussions.length === 0 && <ContextualbarEmptyContent title={t('No_Discussions_found')} />}
 						{discussions.length > 0 && (
-							<Box h='full' w='full' style={{ minHeight: 0 }}>
+							<Box height='full' width='full' style={{ minHeight: 0 }}>
 								<PaginatedVirtualList
 									items={discussions}
 									totalCount={itemCount}

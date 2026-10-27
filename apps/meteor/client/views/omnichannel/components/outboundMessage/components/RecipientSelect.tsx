@@ -5,7 +5,7 @@ import { useMemo } from 'react';
 
 import { formatPhoneNumber } from '../../../../../lib/formatPhoneNumber';
 
-type RecipientSelectProps = Omit<ComponentProps<typeof Select>, 'options' | 'onChange' | 'value'> & {
+export type RecipientSelectProps = Omit<ComponentProps<typeof Select>, 'options' | 'onChange' | 'value'> & {
 	type: 'phone' | 'email';
 	contact: Serialized<ILivechatContact> | undefined;
 	value: string;

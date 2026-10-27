@@ -7,7 +7,6 @@ import type { Cheerio, CheerioAPI } from 'cheerio';
 import { load } from 'cheerio';
 
 export type CasOptions = {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	base_url: string;
 	service?: string;
 	version: 1.0 | 2.0;
@@ -16,7 +15,7 @@ export type CasOptions = {
 export type CasCallbackExtendedData = {
 	username?: string;
 	attributes?: Record<string, string[]>;
-	// eslint-disable-next-line @typescript-eslint/naming-convention
+
 	PGTIOU?: string;
 	ticket?: string;
 	proxies?: string[];
@@ -268,7 +267,7 @@ export function validate(options: CasOptions, ticket: string, callback: CasCallb
 					callback(undefined, true, username, {
 						username,
 						attributes,
-						// eslint-disable-next-line @typescript-eslint/naming-convention
+
 						PGTIOU: pgtIOU,
 						ticket,
 						proxies,

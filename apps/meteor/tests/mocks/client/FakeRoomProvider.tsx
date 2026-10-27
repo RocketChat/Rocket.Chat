@@ -6,7 +6,7 @@ import { useMemo } from 'react';
 import { RoomContext } from '../../../client/views/room/contexts/RoomContext';
 import { createFakeRoom, createFakeSubscription } from '../data';
 
-type FakeRoomProviderProps = {
+export type FakeRoomProviderProps = {
 	children?: ReactNode;
 	roomOverrides?: Partial<IRoom>;
 	subscriptionOverrides?: Partial<ISubscription>;

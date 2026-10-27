@@ -6,7 +6,7 @@ import { useCurrentRoutePath, useLayout, useRouter, useSetting } from '@rocket.c
 import type { HTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type NavBarPagesStackMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
+export type NavBarPagesStackMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
 const NavBarPagesStackMenu = (props: NavBarPagesStackMenuProps) => {
 	const { t } = useTranslation();

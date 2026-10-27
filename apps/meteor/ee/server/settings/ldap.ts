@@ -1,4 +1,4 @@
-import { settingsRegistry } from '../../../app/settings/server';
+import { settingsRegistry } from '../../../server/settings';
 
 export const ldapIntervalValuesToCronMap: Record<string, string> = {
 	every_1_hour: '0 * * * *',

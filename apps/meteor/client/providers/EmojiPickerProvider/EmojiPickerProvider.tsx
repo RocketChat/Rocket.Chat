@@ -1,10 +1,10 @@
 import { useDebouncedState, useStableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode, ContextType } from 'react';
-import { useState, useCallback, useMemo, useSyncExternalStore } from 'react';
+import { useState, useCallback, useMemo, useRef, useSyncExternalStore } from 'react';
 
 import { useUpdateCustomEmoji } from './useUpdateCustomEmoji';
-import { emoji, getFrequentEmoji, createEmojiListByCategorySubscription } from '../../../app/emoji/client';
 import { EmojiPickerContext } from '../../contexts/EmojiPickerContext';
+import { emoji, getFrequentEmoji, createEmojiListByCategorySubscription } from '../../lib/emoji';
 import EmojiPicker from '../../views/composer/EmojiPicker';
 
 const DEFAULT_ITEMS_LIMIT = 90;
@@ -12,7 +12,9 @@ const DEFAULT_ITEMS_LIMIT = 90;
 // limit recent emojis to 27 (3 rows of 9)
 const RECENT_EMOJIS_LIMIT = 27;
 
-const EmojiPickerProvider = ({ children }: { children: ReactNode }) => {
+export type EmojiPickerProviderProps = { children: ReactNode };
+
+const EmojiPickerProvider = ({ children }: EmojiPickerProviderProps) => {
 	const [emojiPicker, setEmojiPicker] = useState<ReactNode>(null);
 	const [emojiToPreview, setEmojiToPreview] = useDebouncedState<{ emoji: string; name: string } | null>(null, 100);
 	const [recentEmojis, setRecentEmojis] = useLocalStorage<string[]>('emoji.recent', []);
@@ -42,7 +44,9 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }) => {
 
 			const sortedFrequent = [...empty, ...frequentEmojis]
 				.map(([emojiName, count]) => {
-					return (emojiName === emoji ? [emojiName, Math.min(count + 5, 100)] : [emojiName, Math.max(count - 1, 0)]) as [string, number];
+					return emojiName === emoji
+						? ([emojiName, Math.min(count + 5, 100)] as [string, number])
+						: ([emojiName, Math.max(count - 1, 0)] as [string, number]);
 				})
 				.sort(([, frequentA], [, frequentB]) => frequentB - frequentA);
 
@@ -57,7 +61,7 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }) => {
 			addFrequentEmojis(_emoji);
 
 			const recent = recentEmojis || [];
-			const pos = recent.indexOf(_emoji as never);
+			const pos = recent.indexOf(_emoji);
 
 			if (pos !== -1) {
 				recent.splice(pos, 1);
@@ -74,18 +78,45 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }) => {
 		[recentEmojis, setRecentEmojis, addFrequentEmojis],
 	);
 
-	const open = useCallback((ref: Element, callback: (emoji: string) => void) => {
-		return setEmojiPicker(<EmojiPicker reference={ref} onClose={() => setEmojiPicker(null)} onPickEmoji={(emoji) => callback(emoji)} />);
+	const onCloseRef = useRef<() => void>(undefined);
+
+	const close = useCallback(() => {
+		setEmojiPicker(null);
+
+		const onClose = onCloseRef.current;
+		onCloseRef.current = undefined;
+		onClose?.();
 	}, []);
 
-	const handlePreview = useCallback((emoji: string, name: string) => setEmojiToPreview({ emoji, name }), [setEmojiToPreview]);
+	const open = useCallback(
+		(ref: Element, callback: (emoji: string) => void, onClose?: () => void) => {
+			// A picker opened in place of another closes that one for whoever opened it.
+			const previousOnClose = onCloseRef.current;
+			onCloseRef.current = onClose;
+			previousOnClose?.();
+
+			setEmojiPicker(<EmojiPicker reference={ref} onClose={close} onPickEmoji={(emoji) => callback(emoji)} />);
+		},
+		[close],
+	);
+
+	const handlePreview = useCallback(
+		(emoji: string, name: string) =>
+			setEmojiToPreview((preview) => {
+				if (preview?.emoji === emoji && preview?.name === name) {
+					return preview;
+				}
+				return { emoji, name };
+			}),
+		[setEmojiToPreview],
+	);
 
 	const handleRemovePreview = useCallback(() => setEmojiToPreview(null), [setEmojiToPreview]);
 
 	const contextValue = useMemo(
 		(): ContextType<typeof EmojiPickerContext> => ({
 			isOpen: emojiPicker !== null,
-			close: () => setEmojiPicker(null),
+			close,
 			open,
 			emojiToPreview,
 			handlePreview,
@@ -106,6 +137,7 @@ const EmojiPickerProvider = ({ children }: { children: ReactNode }) => {
 		[
 			emojiPicker,
 			open,
+			close,
 			emojiToPreview,
 			addRecentEmoji,
 			emojiListByCategory,

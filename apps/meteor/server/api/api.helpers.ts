@@ -1,9 +1,9 @@
 import type { IUser } from '@rocket.chat/core-typings';
 
 import type { ActionThis } from './definition';
-import { hasAllPermissionAsync, hasAtLeastOnePermissionAsync } from '../../app/authorization/server/functions/hasPermission';
-import type { DeprecationLoggerNextPlannedVersion } from '../../app/lib/server/lib/deprecationWarningLogger';
-import { apiDeprecationLogger } from '../../app/lib/server/lib/deprecationWarningLogger';
+import { hasAllPermissionAsync, hasAtLeastOnePermissionAsync } from '../lib/authorization/hasPermission';
+import type { DeprecationLoggerNextPlannedVersion } from '../lib/deprecationWarningLogger';
+import { apiDeprecationLogger } from '../lib/deprecationWarningLogger';
 
 type RequestMethod = 'GET' | 'POST' | 'PUT' | 'DELETE' | '*';
 export type PermissionsPayload = {
@@ -38,6 +38,10 @@ const isPermissionsPayload = (permissionsPayload: PermissionsRequiredKey): permi
 		Object.values(permissionsPayload).every((value) => typeof value === 'object' && value.operation && value.permissions)
 	);
 };
+
+export async function canBypassRateLimit(userId: IUser['_id'], bypassPermissions: string[] = []): Promise<boolean> {
+	return hasAtLeastOnePermissionAsync(userId, ['api-bypass-rate-limit', ...bypassPermissions]);
+}
 
 export async function checkPermissionsForInvocation(
 	userId: IUser['_id'],

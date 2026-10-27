@@ -1,0 +1,11 @@
+{
+	"extends": "@rocket.chat/tsconfig/base.json",
+	"compilerOptions": {
+		"module": "preserve",
+		"target": "es2024",
+		"lib": ["ES2024"],
+
+		"rootDirs": ["./src", "./"],
+		"outDir": "./dist"
+	}
+}

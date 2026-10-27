@@ -4,7 +4,7 @@ import { useWizardContext, WizardActions, WizardNextButton } from '@rocket.chat/
 import type { RecipientFormData, RecipientFormSubmitPayload } from '../forms/RecipientForm';
 import RecipientForm from '../forms/RecipientForm';
 
-type RecipientStepProps = {
+export type RecipientStepProps = {
 	defaultValues?: Partial<RecipientFormData>;
 	onDirty?: () => void;
 	onSubmit(values: RecipientFormSubmitPayload): void;

@@ -6,7 +6,7 @@ import { memo, useState } from 'react';
 
 import { useAgentsList } from '../hooks/useAgentsList';
 
-type AutoCompleteMultipleAgentProps = Omit<
+export type AutoCompleteMultipleAgentProps = Omit<
 	ComponentProps<typeof PaginatedMultiSelectFiltered>,
 	'options' | 'renderItem' | 'setFilter' | 'filter' | 'endReached' | 'value' | 'onChange'
 > & {
@@ -47,9 +47,6 @@ const AutoCompleteMultipleAgent = ({
 			error={error}
 			placeholder={placeholder}
 			onChange={onChange}
-			width='100%'
-			flexShrink={0}
-			flexGrow={0}
 			filter={agentsFilter}
 			setFilter={setAgentsFilter as (value: string | number | undefined) => void}
 			options={agentsItems}

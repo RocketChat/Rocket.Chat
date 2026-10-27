@@ -7,7 +7,7 @@ import ChannelsTab from './channels/ChannelsTab';
 import MessagesTab from './messages/MessagesTab';
 import UsersTab from './users/UsersTab';
 
-type EngagementDashboardPageProps = {
+export type EngagementDashboardPageProps = {
 	tab: 'users' | 'messages' | 'channels';
 	onSelectTab?: (tab: 'users' | 'messages' | 'channels') => void;
 };
@@ -53,7 +53,7 @@ const EngagementDashboardPage = ({ tab = 'users', onSelectTab }: EngagementDashb
 				</TabsItem>
 			</Tabs>
 			<PageScrollableContent padding={0}>
-				<Box m={24}>
+				<Box margin={24}>
 					{(tab === 'users' && <UsersTab timezone={timezoneId} />) ||
 						(tab === 'messages' && <MessagesTab timezone={timezoneId} />) ||
 						(tab === 'channels' && <ChannelsTab />)}

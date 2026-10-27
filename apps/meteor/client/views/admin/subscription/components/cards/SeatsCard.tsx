@@ -7,7 +7,7 @@ import FeatureUsageCardBody from '../FeatureUsageCardBody';
 import UpgradeButton from '../UpgradeButton';
 import UsagePieGraph from '../UsagePieGraph';
 
-type SeatsCardProps = {
+export type SeatsCardProps = {
 	value: number;
 	max: number;
 	hideManageSubscription?: boolean;
@@ -29,7 +29,7 @@ const SeatsCard = ({ value, max, hideManageSubscription }: SeatsCardProps) => {
 		...(!hideManageSubscription &&
 			nearLimit && {
 				upgradeButton: (
-					<UpgradeButton target='seats-card' action='buy_more' small>
+					<UpgradeButton target='seats-card' action='buy_more' size='small'>
 						{t('Buy_more')}
 					</UpgradeButton>
 				),

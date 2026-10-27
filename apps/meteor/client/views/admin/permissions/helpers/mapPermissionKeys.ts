@@ -1,5 +1,5 @@
 import type { IPermission } from '@rocket.chat/core-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import type { TFunction } from 'i18next';
 
 export const mapPermissionKeys = ({ t, permissions }: { t: TFunction; permissions: IPermission[] }) =>

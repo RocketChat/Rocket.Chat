@@ -5,7 +5,7 @@ import type { ComponentProps } from 'react';
 import type { MessageFormSubmitPayload } from '../forms/MessageForm';
 import MessageForm from '../forms/MessageForm';
 
-type MessageStepProps = Omit<ComponentProps<typeof MessageForm>, 'onSubmit'> & {
+export type MessageStepProps = Omit<ComponentProps<typeof MessageForm>, 'onSubmit'> & {
 	onSubmit(values: MessageFormSubmitPayload): void;
 };
 

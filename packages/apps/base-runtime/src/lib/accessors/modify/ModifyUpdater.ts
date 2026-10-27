@@ -1,4 +1,3 @@
-import { UIHelper } from '@rocket.chat/apps/dist/server/misc/UIHelper';
 import type { ILivechatUpdater } from '@rocket.chat/apps-engine/definition/accessors/ILivechatUpdater';
 import type { IMessageBuilder } from '@rocket.chat/apps-engine/definition/accessors/IMessageBuilder';
 import type { IMessageUpdater } from '@rocket.chat/apps-engine/definition/accessors/IMessageUpdater';
@@ -11,11 +10,15 @@ import type { IRoom } from '@rocket.chat/apps-engine/definition/rooms/IRoom';
 import { RoomType } from '@rocket.chat/apps-engine/definition/rooms/RoomType.js';
 import type { IUser } from '@rocket.chat/apps-engine/definition/users/IUser';
 
+import { LivechatUpdater } from './LivechatUpdater';
+import { MessageUpdater } from './MessageUpdater';
+import { UserUpdater } from './UserUpdater';
 import { AppObjectRegistry } from '../../../AppObjectRegistry';
+import { UIHelper } from '../../UIHelper';
+import { bridgeCall } from '../../bridges/bridgeCall';
 import type * as Messenger from '../../messenger';
 import { MessageBuilder } from '../builders/MessageBuilder';
 import { RoomBuilder } from '../builders/RoomBuilder';
-import { formatErrorResponse } from '../formatResponseErrorHandler';
 
 export class ModifyUpdater implements IModifyUpdater {
 	private readonly livechatUpdater: ILivechatUpdater;
@@ -25,32 +28,11 @@ export class ModifyUpdater implements IModifyUpdater {
 	private readonly messageUpdater: IMessageUpdater;
 
 	constructor(private readonly senderFn: typeof Messenger.sendRequest) {
-		this.livechatUpdater = this.proxify('getLivechatUpdater');
-		this.userUpdater = this.proxify('getUserUpdater');
-		this.messageUpdater = this.proxify('getMessageUpdater');
-	}
-
-	private proxify<T extends ILivechatUpdater | IUserUpdater | IMessageUpdater>(
-		target: 'getLivechatUpdater' | 'getUserUpdater' | 'getMessageUpdater',
-	): T {
-		return new Proxy(
-			{ __kind: target },
-			{
-				get:
-					(_target: unknown, prop: string) =>
-					(...params: unknown[]) =>
-						prop === 'toJSON'
-							? {}
-							: this.senderFn({
-									method: `accessor:getModifier:getUpdater:${target}:${prop}`,
-									params,
-								})
-									.then((response) => response.result)
-									.catch((err) => {
-										throw formatErrorResponse(err);
-									}),
-			},
-		) as T;
+		// Thunks, not `this.senderFn` directly: these sub-accessors are built eagerly, so capturing
+		// the function here would pin them to it before a test could swap it out.
+		this.livechatUpdater = new LivechatUpdater((request) => this.senderFn(request));
+		this.userUpdater = new UserUpdater((request) => this.senderFn(request));
+		this.messageUpdater = new MessageUpdater((request) => this.senderFn(request));
 	}
 
 	public getLivechatUpdater(): ILivechatUpdater {
@@ -66,14 +48,9 @@ export class ModifyUpdater implements IModifyUpdater {
 	}
 
 	public async message(messageId: string, editor: IUser): Promise<IMessageBuilder> {
-		const response = await this.senderFn({
-			method: 'bridges:getMessageBridge:doGetById',
-			params: [messageId, AppObjectRegistry.get('id')],
-		}).catch((err) => {
-			throw formatErrorResponse(err);
-		});
+		const message = (await bridgeCall(this.senderFn, 'getMessageBridge', 'doGetById', messageId, 'APP_ID')) as IMessage;
 
-		const builder = new MessageBuilder(response.result as IMessage);
+		const builder = new MessageBuilder(message);
 
 		builder.setEditor(editor);
 
@@ -81,14 +58,9 @@ export class ModifyUpdater implements IModifyUpdater {
 	}
 
 	public async room(roomId: string, _updater: IUser): Promise<IRoomBuilder> {
-		const response = await this.senderFn({
-			method: 'bridges:getRoomBridge:doGetById',
-			params: [roomId, AppObjectRegistry.get('id')],
-		}).catch((err) => {
-			throw formatErrorResponse(err);
-		});
+		const room = (await bridgeCall(this.senderFn, 'getRoomBridge', 'doGetById', roomId, 'APP_ID')) as IRoom;
 
-		return new RoomBuilder(response.result as IRoom);
+		return new RoomBuilder(room);
 	}
 
 	public finish(builder: IMessageBuilder | IRoomBuilder): Promise<void> {
@@ -119,12 +91,7 @@ export class ModifyUpdater implements IModifyUpdater {
 
 		const changes = { id: result.id, ...builder.getChanges() };
 
-		await this.senderFn({
-			method: 'bridges:getMessageBridge:doUpdate',
-			params: [changes, AppObjectRegistry.get('id')],
-		}).catch((err) => {
-			throw formatErrorResponse(err);
-		});
+		await bridgeCall(this.senderFn, 'getMessageBridge', 'doUpdate', changes, 'APP_ID');
 	}
 
 	private async _finishRoom(builder: RoomBuilder): Promise<void> {
@@ -154,11 +121,6 @@ export class ModifyUpdater implements IModifyUpdater {
 
 		const changes = { id: room.id, ...builder.getChanges() };
 
-		await this.senderFn({
-			method: 'bridges:getRoomBridge:doUpdate',
-			params: [changes, builder.getMembersToBeAddedUsernames(), AppObjectRegistry.get('id')],
-		}).catch((err) => {
-			throw formatErrorResponse(err);
-		});
+		await bridgeCall(this.senderFn, 'getRoomBridge', 'doUpdate', changes, builder.getMembersToBeAddedUsernames(), 'APP_ID');
 	}
 }

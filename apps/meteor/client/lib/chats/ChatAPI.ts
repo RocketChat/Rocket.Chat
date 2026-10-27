@@ -4,7 +4,7 @@ import type { RefObject } from 'react';
 
 import type { Upload, EncryptedFile } from './Upload';
 import type { ReadStateManager } from './readStateManager';
-import type { FormattingButton } from '../../../app/ui-message/client/messageBox/messageBoxFormatting';
+import type { FormattingButton } from '../messageBoxFormatting';
 
 type Subscribable<T> = {
 	get(): T;
@@ -148,7 +148,7 @@ export type ChatAPI = {
 	};
 
 	readonly emojiPicker: {
-		open(el: Element, cb: (emoji: string) => void): void;
+		open(el: Element, cb: (emoji: string) => void, onClose?: () => void): void;
 		close(): void;
 	};
 

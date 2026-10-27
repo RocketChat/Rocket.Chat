@@ -11,7 +11,7 @@ import WorkspaceCardSection from '../components/WorkspaceCardSection';
 import WorkspaceCardSectionTitle from '../components/WorkspaceCardSectionTitle';
 import WorkspaceCardTextSeparator from '../components/WorkspaceCardTextSeparator';
 
-type UsersUploadsCardProps = {
+export type UsersUploadsCardProps = {
 	statistics: IStats;
 };
 
@@ -28,7 +28,7 @@ const UsersUploadsCard = ({ statistics }: UsersUploadsCardProps) => {
 	const { data: canViewEngagement = false } = useHasLicenseModule('engagement-dashboard');
 
 	return (
-		<Card height='full'>
+		<Card>
 			<CardBody flexDirection='column'>
 				<Margins blockEnd={24}>
 					<WorkspaceCardSection>
@@ -60,7 +60,7 @@ const UsersUploadsCard = ({ statistics }: UsersUploadsCardProps) => {
 			</CardBody>
 
 			<CardControls>
-				<Button disabled={!canViewEngagement} medium onClick={handleEngagement}>
+				<Button disabled={!canViewEngagement} size='medium' onClick={handleEngagement}>
 					{t('See_on_Engagement_Dashboard')}
 				</Button>
 			</CardControls>

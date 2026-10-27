@@ -1,7 +1,7 @@
 import type { CallFeature } from '@rocket.chat/media-signaling';
-import { useCallback, useRef, useSyncExternalStore } from 'react';
 
 import { useMediaCallInstance } from './MediaCallInstanceContext';
+import { useInstanceSnapshot } from './useInstanceSnapshot';
 
 export type PeekMediaSessionFeaturesReturn = readonly CallFeature[];
 
@@ -16,36 +16,13 @@ const emptyFeatures: PeekMediaSessionFeaturesReturn = [];
 
 export const usePeekMediaSessionFeatures = (): PeekMediaSessionFeaturesReturn => {
 	const { instance } = useMediaCallInstance();
-	const cache = useRef<PeekMediaSessionFeaturesReturn>([]);
 
-	const subscribe = useCallback(
-		(onStoreChange: () => void): (() => void) => {
-			if (!instance) {
-				return () => undefined;
-			}
-			return instance?.on('sessionStateChange', onStoreChange);
+	return useInstanceSnapshot(
+		instance,
+		(instance) => {
+			const instanceState = instance?.getState();
+			return instanceState?.confirmed ? instanceState.features : emptyFeatures;
 		},
-		[instance],
+		areEqual,
 	);
-
-	const getSnapshot = useCallback(() => {
-		if (!instance) {
-			return emptyFeatures;
-		}
-
-		const instanceState = instance.getState();
-		if (!instanceState?.confirmed) {
-			return emptyFeatures;
-		}
-
-		const { features } = instanceState;
-
-		if (!cache.current || !areEqual(features, cache.current)) {
-			cache.current = features;
-			return features;
-		}
-		return cache.current;
-	}, [instance]);
-
-	return useSyncExternalStore(subscribe, getSnapshot);
 };

@@ -4,16 +4,17 @@ import QuoteMessageAction from './actions/QuoteMessageAction';
 import ReactionMessageAction from './actions/ReactionMessageAction';
 import ReplyInThreadMessageAction from './actions/ReplyInThreadMessageAction';
 
-type FederatedItemsProps = {
+export type FederatedItemsProps = {
 	message: IMessage;
 	room: IRoom;
 	subscription: ISubscription | undefined;
+	onChangeMenuVisibility?: (visible: boolean) => void;
 };
 
-const FederatedItems = ({ message, room, subscription }: FederatedItemsProps) => {
+const FederatedItems = ({ message, room, subscription, onChangeMenuVisibility }: FederatedItemsProps) => {
 	return (
 		<>
-			<ReactionMessageAction message={message} room={room} subscription={subscription} />
+			<ReactionMessageAction message={message} room={room} subscription={subscription} onChangeMenuVisibility={onChangeMenuVisibility} />
 			<QuoteMessageAction message={message} subscription={subscription} />
 			<ReplyInThreadMessageAction message={message} room={room} subscription={subscription} />
 		</>

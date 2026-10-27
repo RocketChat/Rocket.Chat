@@ -1,5 +1,4 @@
 import { readFile } from 'node:fs/promises';
-import { EOL } from 'node:os';
 import path from 'node:path';
 
 import { readPackageJson } from './utils';
@@ -31,23 +30,6 @@ export async function getAppsEngineVersion(cwd: string) {
 		const result = await readPackageJson(path.join(cwd, 'packages/apps-engine'));
 
 		return result.version ?? 'Not Available';
-	} catch (e) {
-		console.error(e);
-	}
-}
-
-export async function getDenoVersion(cwd: string) {
-	try {
-		const toolVersionsContent = await readFile(path.join(cwd, '.tool-versions'));
-		const data = toolVersionsContent.toString().replace(EOL, ' ').split(' ');
-
-		for (let i = 0; i < data.length; i++) {
-			if (data[i] === 'deno') {
-				return data[i + 1];
-			}
-		}
-
-		return 'Not available';
 	} catch (e) {
 		console.error(e);
 	}

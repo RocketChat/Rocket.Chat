@@ -1,8 +1,9 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 
+import NestedListsBlock from './NestedListsBlock';
 import InlineElements from '../elements/InlineElements';
 
-type UnorderedListBlockProps = {
+export type UnorderedListBlockProps = {
 	items: MessageParser.ListItem[];
 };
 
@@ -11,6 +12,7 @@ const UnorderedListBlock = ({ items }: UnorderedListBlockProps) => (
 		{items.map((item, index) => (
 			<li key={index}>
 				<InlineElements>{item.value}</InlineElements>
+				{item.nested && <NestedListsBlock lists={item.nested} />}
 			</li>
 		))}
 	</ul>

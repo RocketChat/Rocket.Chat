@@ -16,7 +16,9 @@ export type EditRolePageFormData = {
 	mandatory2fa: boolean;
 };
 
-const EditRolePage = ({ role, isEnterprise }: { role?: IRole; isEnterprise: boolean }) => {
+export type EditRolePageProps = { role?: IRole; isEnterprise: boolean };
+
+const EditRolePage = ({ role, isEnterprise }: EditRolePageProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
@@ -98,7 +100,7 @@ const EditRolePage = ({ role, isEnterprise }: { role?: IRole; isEnterprise: bool
 	return (
 		<>
 			<ContextualbarScrollableContent>
-				<Box w='full' alignSelf='center' mb='neg-x8'>
+				<Box width='full' alignSelf='center' marginBlock='neg-x8'>
 					<Margins block={8}>
 						<FormProvider {...methods}>
 							<RoleForm editing={Boolean(role?._id)} isProtected={role?.protected} isDisabled={!isEnterprise} />
@@ -108,11 +110,11 @@ const EditRolePage = ({ role, isEnterprise }: { role?: IRole; isEnterprise: bool
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup vertical stretch>
-					<Button primary disabled={!methods.formState.isDirty || !isEnterprise} onClick={methods.handleSubmit(handleSave)}>
+					<Button variant='primary' disabled={!methods.formState.isDirty || !isEnterprise} onClick={methods.handleSubmit(handleSave)}>
 						{t('Save')}
 					</Button>
 					{!role?.protected && role?._id && (
-						<Button secondary danger onClick={handleDelete}>
+						<Button variant='secondary-danger' onClick={handleDelete}>
 							{t('Delete')}
 						</Button>
 					)}

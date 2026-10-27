@@ -21,11 +21,11 @@ import AppRequests from './tabs/AppRequests/AppRequests';
 import AppSecurity from './tabs/AppSecurity/AppSecurity';
 import AppSettings from './tabs/AppSettings';
 import { useCompactMode } from './useCompactMode';
-import { AppClientOrchestratorInstance } from '../../../apps/orchestrator';
+import { AppClientOrchestratorInstance } from '../../../lib/apps/orchestrator';
 
 type AppDetailsPageFormData = Record<string, SettingValue>;
 
-type AppDetailsPageProps = {
+export type AppDetailsPageProps = {
 	id: App['id'];
 };
 
@@ -106,10 +106,10 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps) => {
 
 	return (
 		<Page flexDirection='row'>
-			<Page flexDirection='column' h='full'>
+			<Page flexDirection='column' height='full'>
 				<PageHeader title={t('App_Info')} onClickBack={handleReturn} />
-				<PageScrollableContentWithShadow pi={24} pbs={24} pbe={0} h='full'>
-					<Box w='full' alignSelf='center' h='full' display='flex' flexDirection='column'>
+				<PageScrollableContentWithShadow paddingInline={24} paddingBlockStart={24} paddingBlockEnd={0} height='full'>
+					<Box width='full' alignSelf='center' height='full' display='flex' flexDirection='column'>
 						{!appData && <AppDetailsPageLoading />}
 						{appData && (
 							<>
@@ -152,7 +152,7 @@ const AppDetailsPage = ({ id }: AppDetailsPageProps) => {
 					<ButtonGroup>
 						<Button onClick={() => reset()}>{t('Cancel')}</Button>
 						{installed && isAdminUser && (
-							<Button primary loading={isSubmitting} onClick={handleSubmit(saveAppSettings)}>
+							<Button variant='primary' loading={isSubmitting} onClick={handleSubmit(saveAppSettings)}>
 								{t('Save_changes')}
 							</Button>
 						)}

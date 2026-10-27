@@ -6,7 +6,9 @@ import { useTranslation } from 'react-i18next';
 
 import { useRemoveUnit } from './useRemoveUnit';
 
-const UnitsTableRow = ({ _id, name, visibility }: { _id: string; name: string; visibility: string }) => {
+export type UnitsTableRowProps = { _id: string; name: string; visibility: string };
+
+const UnitsTableRow = ({ _id, name, visibility }: UnitsTableRowProps) => {
 	const { t } = useTranslation();
 	const router = useRouter();
 
@@ -15,12 +17,12 @@ const UnitsTableRow = ({ _id, name, visibility }: { _id: string; name: string; v
 
 	return (
 		<GenericTableRow key={_id} tabIndex={0} onClick={onRowClick(_id)} action>
-			<GenericTableCell withTruncatedText>{name}</GenericTableCell>
-			<GenericTableCell withTruncatedText>{visibility}</GenericTableCell>
+			<GenericTableCell truncate>{name}</GenericTableCell>
+			<GenericTableCell truncate>{visibility}</GenericTableCell>
 			<GenericTableCell>
 				<IconButton
 					icon='trash'
-					small
+					size='small'
 					title={t('Remove')}
 					onClick={(e) => {
 						e.stopPropagation();

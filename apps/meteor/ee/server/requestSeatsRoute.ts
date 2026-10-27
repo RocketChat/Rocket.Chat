@@ -2,15 +2,15 @@ import { Analytics } from '@rocket.chat/core-services';
 import express, { type Request } from 'express';
 import { WebApp } from 'meteor/webapp';
 
-import { getCheckoutUrl, fallback } from '../../app/cloud/server/functions/getCheckoutUrl';
+import { getSeatsRequestLink } from './lib/license/getSeatsRequestLink';
 import { authenticationMiddleware, hasPermissionMiddleware } from '../../server/api/v1/middlewares/authentication';
-import { getSeatsRequestLink } from '../app/license/server/getSeatsRequestLink';
+import { getCheckoutUrl, fallback } from '../../server/lib/cloud/getCheckoutUrl';
 
 const apiServer = express();
 
 WebApp.connectHandlers.use(apiServer);
 
-// eslint-disable-next-line new-cap
+// oxlint-disable-next-line new-cap
 const router = express.Router();
 
 apiServer.use('/requestSeats', router);

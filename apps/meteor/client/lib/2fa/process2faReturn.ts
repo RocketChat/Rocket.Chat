@@ -17,7 +17,7 @@ const isTwoFactorMethod = (method: string): method is TwoFactorMethod => twoFact
 
 const hasRequiredTwoFactorMethod = (
 	error: MeteorErrorLike,
-): error is MeteorErrorLike & { details: { method: TwoFactorMethod; emailOrUsername?: string } } => {
+): error is MeteorErrorLike & { details: { method: TwoFactorMethod; emailOrUsername?: string; challengeId?: string } } => {
 	const { details } = error;
 
 	return (
@@ -31,8 +31,12 @@ const hasRequiredTwoFactorMethod = (
 function assertModalProps(props: {
 	method: TwoFactorMethod;
 	emailOrUsername?: string;
-}): asserts props is { method: 'totp' } | { method: 'password' } | { method: 'email'; emailOrUsername: string } {
-	if (props.method === 'email' && typeof props.emailOrUsername !== 'string') {
+	challengeId?: string;
+}): asserts props is
+	| { method: 'totp' | 'password'; invalidAttempt?: boolean }
+	| { method: 'email'; emailOrUsername: string; invalidAttempt?: boolean }
+	| { method: 'email'; challengeId: string; invalidAttempt?: boolean } {
+	if (props.method === 'email' && typeof props.emailOrUsername !== 'string' && typeof props.challengeId !== 'string') {
 		throw new Error('Invalid Two Factor method');
 	}
 }
@@ -40,6 +44,7 @@ function assertModalProps(props: {
 const getProps = (
 	method: 'totp' | 'email' | 'password',
 	emailOrUsername?: { username: string } | { email: string } | { id: string } | string,
+	challengeId?: string,
 ) => {
 	switch (method) {
 		case 'totp':
@@ -47,7 +52,9 @@ const getProps = (
 		case 'email':
 			return {
 				method,
-				emailOrUsername: typeof emailOrUsername === 'string' ? emailOrUsername : getUser()?.username,
+				...(challengeId
+					? { challengeId }
+					: { emailOrUsername: typeof emailOrUsername === 'string' ? emailOrUsername : getUser()?.username }),
 			};
 		case 'password':
 			return { method };
@@ -73,7 +80,7 @@ export async function process2faReturn({
 	}
 
 	const props = {
-		...getProps(error.details.method, emailOrUsername || error.details.emailOrUsername),
+		...getProps(error.details.method, emailOrUsername || error.details.emailOrUsername, error.details.challengeId),
 	};
 
 	const validateCode = async (code: string, method: string): Promise<void> => {
@@ -100,7 +107,9 @@ export async function process2faAsyncReturn<TResult>({
 
 	const props = {
 		method: error.details.method,
-		emailOrUsername: emailOrUsername || error.details.emailOrUsername || getUser()?.username,
+		...(error.details.challengeId
+			? { challengeId: error.details.challengeId }
+			: { emailOrUsername: emailOrUsername || error.details.emailOrUsername || getUser()?.username }),
 	};
 
 	assertModalProps(props);
@@ -124,6 +133,7 @@ export const invokeTwoFactorModal = async (
 	props: {
 		method: 'totp' | 'email' | 'password';
 		emailOrUsername?: string | undefined;
+		challengeId?: string;
 		invalidAttempt?: boolean;
 	},
 	validateCode?: (code: string, method: string) => Promise<void>,
@@ -155,7 +165,7 @@ export const invokeTwoFactorModal = async (
 					isClosed = true;
 					imperativeModal.close();
 					if (!isResolved) {
-						Promise.all([import('../../../app/utils/lib/i18n'), import('../toast')]).then(([{ t }, { dispatchToastMessage }]) => {
+						Promise.all([import('../../../lib/i18n'), import('../toast')]).then(([{ t }, { dispatchToastMessage }]) => {
 							dispatchToastMessage({
 								type: 'error',
 								message: t('Two-factor_authentication_cancelled'),

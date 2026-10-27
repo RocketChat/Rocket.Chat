@@ -5,7 +5,9 @@ import { useTranslation } from 'react-i18next';
 
 import type { DispatchLoginRouter } from './hooks/useLoginRouter';
 
-const GuestForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }) => {
+export type GuestFormProps = { setLoginRoute: DispatchLoginRouter };
+
+const GuestForm = ({ setLoginRoute }: GuestFormProps) => {
 	const { t } = useTranslation();
 	useDocumentTitle(t('registration.component.login'), false);
 
@@ -16,7 +18,7 @@ const GuestForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }) =>
 			</FormHeader>
 			<FormContainer>
 				<ButtonGroup large stretch vertical>
-					<Button primary onClick={() => setLoginRoute('login')}>
+					<Button variant='primary' onClick={() => setLoginRoute('login')}>
 						{t('registration.page.guest.loginWithRocketChat')}
 					</Button>
 					<Button onClick={() => setLoginRoute('anonymous')}>{t('registration.page.guest.continueAsGuest')}</Button>

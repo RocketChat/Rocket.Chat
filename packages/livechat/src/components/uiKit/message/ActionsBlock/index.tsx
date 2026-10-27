@@ -8,7 +8,7 @@ import { Button } from '../../../Button';
 import Block from '../Block';
 import styles from './styles.scss';
 
-type ActionsBlockProps = uikit.ActionsBlock & {
+export type ActionsBlockProps = uikit.ActionsBlock & {
 	parser: MessageParser;
 };
 

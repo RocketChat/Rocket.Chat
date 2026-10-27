@@ -6,11 +6,11 @@ import { GenericMenu } from '@rocket.chat/ui-client';
 import { useTranslation, useUserId } from '@rocket.chat/ui-contexts';
 import { memo, useEffect, useId } from 'react';
 
-import { getURL } from '../../../../../../app/utils/client';
 import { download, downloadAs } from '../../../../../lib/download';
+import { getURL } from '../../../../../lib/getURL';
 import { useMessageDeletionIsAllowed } from '../hooks/useMessageDeletionIsAllowed';
 
-type FileItemMenuProps = {
+export type FileItemMenuProps = {
 	rid: IRoom['_id'];
 	fileData: IUpload;
 	onClickDelete: (id: IUpload['_id']) => void;
@@ -65,11 +65,11 @@ const FileItemMenu = ({ rid, fileData, onClickDelete }: FileItemMenuProps) => {
 					return;
 				}
 
-				if (fileData.url && fileData.name) {
+				if (fileData.name) {
 					const URL = window.webkitURL ?? window.URL;
-					const href = getURL(fileData.url);
+					const href = getURL(`/file-upload/${fileData._id}/${encodeURIComponent(fileData.name)}`);
 					download(href, fileData.name);
-					URL.revokeObjectURL(fileData.url);
+					URL.revokeObjectURL(href);
 				}
 			},
 			disabled: !canDownloadFile,

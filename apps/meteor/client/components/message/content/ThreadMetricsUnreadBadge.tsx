@@ -23,7 +23,9 @@ const getBadgeVariantAndTitle = (
 	return ['primary', 'Unread'];
 };
 
-const ThreadMetricsUnreadBadge = ({ unread, mention, all }: { unread: boolean; mention: boolean; all: boolean }) => {
+export type ThreadMetricsUnreadBadgeProps = { unread: boolean; mention: boolean; all: boolean };
+
+const ThreadMetricsUnreadBadge = ({ unread, mention, all }: ThreadMetricsUnreadBadgeProps) => {
 	const t = useTranslation();
 	const result = getBadgeVariantAndTitle(unread, mention, all);
 

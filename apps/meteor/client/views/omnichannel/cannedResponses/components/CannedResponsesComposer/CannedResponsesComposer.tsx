@@ -1,4 +1,4 @@
-import { Button, PositionAnimated, Tile } from '@rocket.chat/fuselage';
+import { Box, Button, PopoverSurface, PositionAnimated } from '@rocket.chat/fuselage';
 import {
 	MessageComposerAction,
 	MessageComposerToolbarActions,
@@ -15,8 +15,9 @@ import { useTranslation } from 'react-i18next';
 import InsertPlaceholderDropdown from './InsertPlaceholderDropdown';
 import { Backdrop } from '../../../../../components/Backdrop';
 import { useEmojiPicker } from '../../../../../contexts/EmojiPickerContext';
+import { emoji } from '../../../../../lib/emoji';
 
-type CannedResponsesComposerProps = Omit<ComponentProps<typeof MessageComposerInput>, 'onChange'> & {
+export type CannedResponsesComposerProps = Omit<ComponentProps<typeof MessageComposerInput>, 'onChange'> & {
 	onChange: (value: string) => void;
 };
 
@@ -61,11 +62,12 @@ const CannedResponsesComposer = ({ onChange, ...props }: CannedResponsesComposer
 			}
 		}, [char]);
 
-	const onClickEmoji = (emoji: string): void => {
+	const onClickEmoji = (emojiName: string): void => {
 		if (textAreaRef?.current) {
 			const text = textAreaRef.current.value;
 			const startPos = textAreaRef.current.selectionStart;
-			const emojiValue = `:${emoji}: `;
+			const emojiEntry = emoji.list[`:${emojiName}:`];
+			const emojiValue = emojiEntry && 'unicode' in emojiEntry && emojiEntry.unicode ? `${emojiEntry.unicode} ` : `:${emojiName}: `;
 
 			textAreaRef.current.value = text.slice(0, startPos) + emojiValue + text.slice(startPos);
 
@@ -85,7 +87,7 @@ const CannedResponsesComposer = ({ onChange, ...props }: CannedResponsesComposer
 			throw new Error('Missing textAreaRef');
 		}
 
-		openEmojiPicker(textAreaRef.current, (emoji: string) => onClickEmoji(emoji));
+		openEmojiPicker(textAreaRef.current, (emojiName: string) => onClickEmoji(emojiName));
 	};
 
 	const openPlaceholderSelect = (): void => {
@@ -110,20 +112,25 @@ const CannedResponsesComposer = ({ onChange, ...props }: CannedResponsesComposer
 					<MessageComposerAction icon='strike' onClick={useMarkdownSyntax('~')} title={t('Strikethrough')} />
 					<MessageComposerAction icon='link' onClick={useMarkdownSyntax('[]()')} title={t('Link')} />
 					<MessageComposerActionsDivider />
-					<Button ref={ref} small onClick={openPlaceholderSelect}>
+					<Button ref={ref} size='small' onClick={openPlaceholderSelect}>
 						{t('Insert_Placeholder')}
 					</Button>
-					<Backdrop
-						display={visible ? 'block' : 'none'}
-						onClick={(): void => {
-							textAreaRef?.current && textAreaRef.current.focus();
-							setVisible(false);
-						}}
-					/>
+					{visible && (
+						<Backdrop
+							onClick={(): void => {
+								textAreaRef?.current && textAreaRef.current.focus();
+								setVisible(false);
+							}}
+						/>
+					)}
 					<PositionAnimated visible={visible ? 'visible' : 'hidden'} anchor={ref}>
-						<Tile elevation='1' w='224px'>
-							<InsertPlaceholderDropdown onChange={onChange} textAreaRef={textAreaRef} setVisible={setVisible} />
-						</Tile>
+						<Box width='224px'>
+							<PopoverSurface elevation='1' flush>
+								<Box padding={16}>
+									<InsertPlaceholderDropdown onChange={onChange} textAreaRef={textAreaRef} setVisible={setVisible} />
+								</Box>
+							</PopoverSurface>
+						</Box>
 					</PositionAnimated>
 				</MessageComposerToolbarActions>
 			</MessageComposerToolbar>

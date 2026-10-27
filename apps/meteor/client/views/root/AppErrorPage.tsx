@@ -2,7 +2,7 @@ import { Box, PaletteStyleTag, States, StatesAction, StatesActions, StatesIcon, 
 import { useThemeMode } from '@rocket.chat/ui-client';
 
 const AppErrorPage = () => {
-	const [, , theme] = useThemeMode();
+	const theme = useThemeMode();
 
 	return (
 		<>
@@ -17,12 +17,12 @@ const AppErrorPage = () => {
 						<StatesAction
 							onClick={() => {
 								const result = indexedDB.deleteDatabase('MeteorDynamicImportCache');
-								result.onsuccess = () => {
+								const reload = () => {
 									window.location.reload();
 								};
-								result.onerror = () => {
-									window.location.reload();
-								};
+								result.onsuccess = reload;
+								result.onerror = reload;
+								result.onblocked = reload;
 							}}
 						>
 							Reload Application

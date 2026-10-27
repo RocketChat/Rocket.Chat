@@ -10,7 +10,9 @@ import ResetPasswordForm from './ResetPasswordForm';
 import { useLoginRouter } from './hooks/useLoginRouter';
 import type { LoginRoutes } from './hooks/useLoginRouter';
 
-export const RegistrationPageRouter = ({ defaultRoute = 'login', children }: { defaultRoute?: LoginRoutes; children?: ReactNode }) => {
+export type RegistrationPageRouterProps = { defaultRoute?: LoginRoutes; children?: ReactNode };
+
+export const RegistrationPageRouter = ({ defaultRoute = 'login', children }: RegistrationPageRouterProps) => {
 	const { t } = useTranslation();
 	const defaultRouteSession = useSession('loginDefaultState') as LoginRoutes | undefined;
 	const [route, setLoginRoute] = useLoginRouter(defaultRouteSession || defaultRoute);

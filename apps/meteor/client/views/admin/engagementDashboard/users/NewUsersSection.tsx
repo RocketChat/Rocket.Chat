@@ -1,7 +1,9 @@
 import { ResponsiveBar } from '@nivo/bar';
 import { Box, FlexContainer, FlexItem, Skeleton, Tooltip } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors.json';
-import { differenceInDays, addDays, format } from 'date-fns';
+import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
+import { addDays } from 'date-fns/addDays';
+import { differenceInDays } from 'date-fns/differenceInDays';
+import { format } from 'date-fns/format';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -14,7 +16,7 @@ import { useFormatDate } from '../../../../hooks/useFormatDate';
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
 import { useNewUsers } from './useNewUsers';
 
-type NewUsersSectionProps = {
+export type NewUsersSectionProps = {
 	timezone: 'utc' | 'local';
 };
 
@@ -38,7 +40,7 @@ const NewUsersSection = ({ timezone }: NewUsersSectionProps) => {
 		const endDate = new Date(data.end);
 		const daysCount = differenceInDays(endDate, startDate) + 1;
 		const values = Array.from({ length: daysCount }, (_, i) => ({
-			date: format(addDays(startDate, i), 'yyyy-MM-dd'),
+			date: addDays(startDate, i).toISOString(),
 			newUsers: 0,
 		}));
 		for (const { day, users } of data.days) {

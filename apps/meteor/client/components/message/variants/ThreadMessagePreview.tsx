@@ -33,7 +33,7 @@ import { useShowTranslated } from '../list/MessageListContext';
 import ThreadMessagePreviewBody from './threadPreview/ThreadMessagePreviewBody';
 import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
 
-type ThreadMessagePreviewProps = {
+export type ThreadMessagePreviewProps = {
 	message: IThreadMessage;
 	showUserAvatar: boolean;
 	sequential: boolean;

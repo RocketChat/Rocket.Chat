@@ -5,7 +5,7 @@ import { useEffect, useRef, forwardRef, memo } from 'react';
 import type { OverlayScrollbars } from '.';
 import BaseScrollbars, { getScrollbarsOptions } from './BaseScrollbars';
 
-type CustomScrollbarsProps = {
+export type CustomScrollbarsProps = {
 	children: ReactNode;
 	overflowX?: boolean;
 	onScroll?: (args: OverlayScrollbars) => void;

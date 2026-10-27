@@ -12,7 +12,7 @@ import RoomTitle from './RoomTitle';
 import RoomToolbox from './RoomToolbox';
 import RoomTopic from './RoomTopic';
 import Encrypted from './icons/Encrypted';
-import Favorite from './icons/Favorite';
+import RoomGroupingMenu from './icons/RoomGroupingMenu';
 import Translate from './icons/Translate';
 
 export type RoomHeaderProps = {
@@ -42,8 +42,8 @@ const RoomHeader = ({ room, slots = {} }: RoomHeaderProps) => {
 			{slots?.preContent}
 			<HeaderContent>
 				<HeaderContentRow>
+					<RoomGroupingMenu room={room} />
 					<RoomTitle room={room} />
-					<Favorite room={room} />
 					{isRoomFederated(room) && <FederatedRoomOriginServer room={room} />}
 					<Encrypted room={room} />
 					<Translate room={room} />

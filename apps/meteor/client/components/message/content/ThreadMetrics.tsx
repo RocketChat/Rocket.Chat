@@ -7,14 +7,14 @@ import {
 	MessageMetricsItemLabel,
 } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
+import { useTimeAgo } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 import ThreadMetricsFollow from './ThreadMetricsFollow';
 import ThreadMetricsParticipants from './ThreadMetricsParticipants';
-import { useTimeAgo } from '../../../hooks/useTimeAgo';
 import { useGoToThread } from '../../../views/room/hooks/useGoToThread';
 
-type ThreadMetricsProps = {
+export type ThreadMetricsProps = {
 	unread: boolean;
 	mention: boolean;
 	all: boolean;
@@ -40,14 +40,7 @@ const ThreadMetrics = ({ unread, mention, all, rid, mid, counter, participants, 
 	return (
 		<MessageBlock ref={ref}>
 			<MessageMetrics>
-				<MessageMetricsReply
-					data-rid={rid}
-					data-mid={mid}
-					onClick={() => goToThread({ rid, tmid: mid })}
-					primary={!!unread}
-					position='relative'
-					overflow='visible'
-				>
+				<MessageMetricsReply data-rid={rid} data-mid={mid} onClick={() => goToThread({ rid, tmid: mid })} primary={!!unread}>
 					{t('View_thread')}
 				</MessageMetricsReply>
 				<ThreadMetricsFollow unread={unread} mention={mention} all={all} mid={mid} rid={rid} following={following} />

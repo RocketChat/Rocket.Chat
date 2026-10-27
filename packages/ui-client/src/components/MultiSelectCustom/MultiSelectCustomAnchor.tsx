@@ -5,7 +5,7 @@ import type { ComponentPropsWithoutRef } from 'react';
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type MultiSelectCustomAnchorProps = {
+export type MultiSelectCustomAnchorProps = {
 	collapsed: boolean;
 	defaultTitle: string;
 	selectedOptionsTitle: string;
@@ -33,12 +33,12 @@ const MultiSelectCustomAnchor = forwardRef<HTMLElement, MultiSelectCustomAnchorP
 			display='flex'
 			justifyContent='space-between'
 			alignItems='center'
-			h='x40'
+			height='x40'
 			className={['rcx-input-box__wrapper', customStyle, ...(Array.isArray(className) ? className : [className])].filter(Boolean)}
 			{...props}
 		>
 			{isDirty ? `${t(selectedOptionsTitle as TranslationKey)} (${selectedOptionsCount})` : t(defaultTitle as TranslationKey)}
-			<Icon name={collapsed ? 'chevron-up' : 'chevron-down'} fontSize='x20' color='hint' />
+			<Icon name={collapsed ? 'chevron-up' : 'chevron-down'} size='x20' color='hint' />
 		</Box>
 	);
 });

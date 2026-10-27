@@ -52,16 +52,15 @@ const ToneSelector = ({ tone, setTone }: { tone: number; setTone: (tone: number)
 	return (
 		<>
 			<IconButton
-				medium
+				size='medium'
 				ref={ref}
 				onClick={onClick}
 				onBlur={hide}
 				onKeyUp={handleKeyUp}
 				onKeyDown={handleKeyDown}
-				mis={4}
 				icon={<ToneItem tone={tone} />}
 			/>
-			<PositionAnimated width='auto' visible={visible} anchor={ref} placement='left-middle'>
+			<PositionAnimated visible={visible} anchor={ref} placement='left-middle'>
 				<Options onSelect={handleSelection} options={options} cursor={cursor} />
 			</PositionAnimated>
 		</>

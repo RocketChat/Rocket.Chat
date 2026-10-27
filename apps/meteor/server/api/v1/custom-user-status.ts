@@ -1,35 +1,30 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ICustomUserStatus } from '@rocket.chat/core-typings';
 import { CustomUserStatus } from '@rocket.chat/models';
 import {
 	ajv,
 	ajvQuery,
-	validateUnauthorizedErrorResponse,
+	paginatedResponseProperties,
+	paginationQueryProperties,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { Meteor } from 'meteor/meteor';
+import { escapeRegExp } from '@rocket.chat/tools';
 
-import { deleteCustomUserStatus } from '../../../app/user-status/server/methods/deleteCustomUserStatus';
-import { insertOrUpdateUserStatus } from '../../../app/user-status/server/methods/insertOrUpdateUserStatus';
+import { deleteCustomUserStatus } from '../../meteor-methods/users/deleteCustomUserStatus';
+import { insertOrUpdateUserStatus } from '../../meteor-methods/users/insertOrUpdateUserStatus';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
 
-type CustomUserStatusListProps = PaginatedRequest<{ name?: string; _id?: string; query?: string }>;
+type CustomUserStatusListProps = PaginatedRequest<{ name?: string; _id?: string }>;
 
 const CustomUserStatusListSchema = {
 	type: 'object',
 	properties: {
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
@@ -39,10 +34,6 @@ const CustomUserStatusListSchema = {
 			nullable: true,
 		},
 		_id: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
 			type: 'string',
 			nullable: true,
 		},
@@ -72,18 +63,7 @@ const customUserStatusEndpoints = API.v1.get(
 							$ref: '#/components/schemas/ICustomUserStatus',
 						},
 					},
-					count: {
-						type: 'number',
-						description: 'The number of custom user statuses returned in this response.',
-					},
-					offset: {
-						type: 'number',
-						description: 'The number of custom user statuses that were skipped in this response.',
-					},
-					total: {
-						type: 'number',
-						description: 'The total number of custom user statuses that match the query.',
-					},
+					...paginatedResponseProperties,
 					success: {
 						type: 'boolean',
 						enum: [true],
@@ -98,13 +78,12 @@ const customUserStatusEndpoints = API.v1.get(
 		},
 	},
 	async function action() {
-		const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | number | null | undefined>);
-		const { sort, query } = await this.parseJsonQuery();
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort } = await this.parseJsonQuery();
 
 		const { name, _id } = this.queryParams;
 
 		const filter = {
-			...query,
 			...(name ? { name: { $regex: escapeRegExp(name), $options: 'i' } } : {}),
 			...(_id ? { _id } : {}),
 		};
@@ -168,7 +147,7 @@ API.v1.post(
 
 		const customUserStatus = await CustomUserStatus.findOneByName(userStatusData.name);
 		if (!customUserStatus) {
-			throw new Meteor.Error('error-creating-custom-user-status', 'Error creating custom user status');
+			throw new ClientSafeError('error-creating-custom-user-status', 'Error creating custom user status');
 		}
 
 		return API.v1.success({
@@ -266,7 +245,7 @@ API.v1.post(
 		const customUserStatus = await CustomUserStatus.findOneById(userStatusData._id);
 
 		if (!customUserStatus) {
-			throw new Meteor.Error('error-updating-custom-user-status', 'Error updating custom user status');
+			throw new ClientSafeError('error-updating-custom-user-status', 'Error updating custom user status');
 		}
 
 		return API.v1.success({
@@ -278,6 +257,6 @@ API.v1.post(
 export type CustomUserStatusEndpoints = ExtractRoutesFromAPI<typeof customUserStatusEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends CustomUserStatusEndpoints {}
 }

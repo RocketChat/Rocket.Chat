@@ -1,9 +1,9 @@
 import type { IOmnichannelRoom } from '@rocket.chat/core-typings';
 import { LivechatRooms } from '@rocket.chat/models';
 
-import { canAccessRoomAsync } from '../../../../../app/authorization/server/functions/canAccessRoom';
 import { API } from '../../../../../server/api';
-import { requestPdfTranscript } from '../../../../app/livechat-enterprise/server/lib/requestPdfTranscript';
+import { canAccessRoomAsync } from '../../../../../server/lib/authorization/canAccessRoom';
+import { requestPdfTranscript } from '../../../lib/omnichannel/requestPdfTranscript';
 
 API.v1.addRoute(
 	'omnichannel/:rid/request-transcript',

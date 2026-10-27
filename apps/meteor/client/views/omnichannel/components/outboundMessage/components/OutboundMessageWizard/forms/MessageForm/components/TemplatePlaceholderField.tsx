@@ -9,7 +9,7 @@ import type { TemplateParameter, TemplateParameterMetadata } from '../../../../.
 import TemplatePlaceholderInput from '../../../../TemplatePlaceholderSelector';
 import type { MessageFormData } from '../MessageForm';
 
-type TemplatePlaceholderFieldProps = ComponentProps<typeof Field> & {
+export type TemplatePlaceholderFieldProps = ComponentProps<typeof Field> & {
 	control: Control<MessageFormData>;
 	metadata: TemplateParameterMetadata;
 	contact?: Omit<Serialized<ILivechatContact>, 'contactManager'>;

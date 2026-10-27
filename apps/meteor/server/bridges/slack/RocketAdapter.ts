@@ -1,7 +1,6 @@
 // This is a JS File that was renamed to TS so it won't lose its git history when converted to TS
 // TODO: Remove the following lint/ts instructions when the file gets properly converted
-/* eslint-disable @typescript-eslint/naming-convention */
-/* eslint-disable-next-line @typescript-eslint/ban-ts-comment */
+/* oxlint-disable-next-line @typescript-eslint/ban-ts-comment */
 // @ts-nocheck
 import util from 'node:util';
 
@@ -12,12 +11,12 @@ import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
 import { rocketLogger } from './logger';
-import { createRoom } from '../../../app/lib/server/functions/createRoom';
-import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
-import { setUserAvatar } from '../../../app/lib/server/functions/setUserAvatar';
-import { settings } from '../../../app/settings/server';
 import { sleep } from '../../../lib/utils/sleep';
 import { callbacks } from '../../lib/callbacks';
+import { sendMessage } from '../../lib/messages/sendMessage';
+import { createRoom } from '../../lib/rooms/createRoom';
+import { setUserAvatar } from '../../lib/users/setUserAvatar';
+import { settings } from '../../settings';
 
 export default class RocketAdapter {
 	constructor(slackBridge) {

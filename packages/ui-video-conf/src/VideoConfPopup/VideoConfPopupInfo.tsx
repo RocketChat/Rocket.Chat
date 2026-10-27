@@ -1,7 +1,7 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
-type VideoConfPopupInfoProps = {
+export type VideoConfPopupInfoProps = {
 	avatar?: ReactNode;
 	icon?: ReactNode;
 	children: ReactNode;
@@ -11,9 +11,9 @@ const VideoConfPopupInfo = ({ avatar, icon, children }: VideoConfPopupInfoProps)
 	<Box display='flex' alignItems='center'>
 		{avatar}
 		{(icon || children) && (
-			<Box display='flex' flexGrow={1} flexShrink={1} flexBasis='0%' alignItems='center' mis={8} withTruncatedText>
+			<Box display='flex' flexGrow={1} flexShrink={1} flexBasis='0%' alignItems='center' marginInlineStart={8} withTruncatedText>
 				{icon}
-				<Box mis={8} fontScale='h4' withTruncatedText>
+				<Box marginInlineStart={8} fontScale='h4' withTruncatedText>
 					{children}
 				</Box>
 			</Box>

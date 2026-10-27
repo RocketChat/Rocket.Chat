@@ -5,7 +5,6 @@ import type {
 	ProviderMetadata,
 } from '@rocket.chat/apps-engine/definition/outboundCommunication';
 
-import type { AppAccessorManager } from '.';
 import type { ProxiedApp } from '../ProxiedApp';
 import { AppOutboundProcessError } from '../errors/AppOutboundProcessError';
 import type { AppLogStorage } from '../storage';
@@ -20,18 +19,17 @@ export class OutboundMessageProvider {
 		this.isRegistered = false;
 	}
 
-	public async runGetProviderMetadata(logStorage: AppLogStorage, accessors: AppAccessorManager): Promise<ProviderMetadata> {
-		return this.runTheCode<ProviderMetadata>(AppMethod._OUTBOUND_GET_PROVIDER_METADATA, logStorage, accessors, []);
+	public async runGetProviderMetadata(logStorage: AppLogStorage): Promise<ProviderMetadata> {
+		return this.runTheCode<ProviderMetadata>(AppMethod._OUTBOUND_GET_PROVIDER_METADATA, logStorage, []);
 	}
 
-	public async runSendOutboundMessage(logStorage: AppLogStorage, accessors: AppAccessorManager, body: IOutboundMessage): Promise<void> {
-		await this.runTheCode(AppMethod._OUTBOUND_SEND_MESSAGE, logStorage, accessors, [body]);
+	public async runSendOutboundMessage(logStorage: AppLogStorage, body: IOutboundMessage): Promise<void> {
+		await this.runTheCode(AppMethod._OUTBOUND_SEND_MESSAGE, logStorage, [body]);
 	}
 
 	private async runTheCode<T = unknown>(
 		method: AppMethod._OUTBOUND_GET_PROVIDER_METADATA | AppMethod._OUTBOUND_SEND_MESSAGE,
 		_logStorage: AppLogStorage,
-		_accessors: AppAccessorManager,
 		runContextArgs: Array<any>,
 	): Promise<T> {
 		const provider = `${this.provider.name}-${this.provider.type}`;

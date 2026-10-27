@@ -24,7 +24,7 @@ import { isOverLicenseLimits } from '../../../../lib/utils/isOverLicenseLimits';
 const SUPPORT_EXTERNAL_LINK = links.go.versionSupport;
 const RELEASES_EXTERNAL_LINK = links.go.updateProduct;
 
-type VersionCardProps = {
+export type VersionCardProps = {
 	serverInfo: IWorkspaceInfo;
 };
 

@@ -9,7 +9,7 @@ import { FormSkeleton } from '../../../components/Skeleton';
 
 const params = { onlyMyDepartments: 'true' } as const;
 
-type EditDepartmentWithDataProps = {
+export type EditDepartmentWithDataProps = {
 	id?: string;
 	title: string;
 };
@@ -24,15 +24,15 @@ const EditDepartmentWithData = ({ id, title }: EditDepartmentWithDataProps) => {
 	});
 
 	if (isLoading) {
-		return <FormSkeleton padding='1.5rem 1rem' maxWidth='37.5rem' margin='0 auto' />;
+		return <FormSkeleton paddingBlock='x24' paddingInline='x16' maxWidth='37.5rem' margin='0 auto' />;
 	}
 
 	if (isError || (id && !data?.department)) {
-		return <Box mbs={16}>{t('Department_not_found')}</Box>;
+		return <Box marginBlockStart={16}>{t('Department_not_found')}</Box>;
 	}
 
 	if (data?.department?.archived === true) {
-		return <Box mbs={16}>{t('Department_archived')}</Box>;
+		return <Box marginBlockStart={16}>{t('Department_archived')}</Box>;
 	}
 
 	return (

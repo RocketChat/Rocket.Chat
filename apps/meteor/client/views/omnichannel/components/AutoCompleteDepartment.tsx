@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useDepartmentsList } from '../hooks/useDepartmentsList';
 
-type AutoCompleteDepartmentProps = {
+export type AutoCompleteDepartmentProps = {
 	value?: string;
 	onChange: (value: string) => void;
 	excludeId?: string;

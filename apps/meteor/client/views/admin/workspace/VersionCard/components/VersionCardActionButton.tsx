@@ -5,7 +5,7 @@ import { useRouter } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { memo } from 'react';
 
-type VersionCardActionButtonProps =
+export type VersionCardActionButtonProps =
 	| {
 			path: LocationPathname;
 			label: ReactNode;
@@ -27,7 +27,7 @@ const VersionCardActionButton = (item: VersionCardActionButtonProps) => {
 	});
 
 	return (
-		<Button primary onClick={() => handleActionButton()}>
+		<Button variant='primary' onClick={() => handleActionButton()}>
 			{item.label}
 		</Button>
 	);

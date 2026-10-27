@@ -3,9 +3,8 @@ import type { CallRole, CallState } from '@rocket.chat/media-signaling';
 import { renderHook, act } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
-import type { Signals } from './MediaCallInstanceContext';
-import { MediaCallInstanceContext } from './MediaCallInstanceContext';
 import { usePeekMediaSessionState } from './usePeekMediaSessionState';
+import MockedInstanceProvider from '../providers/MockedInstanceProvider';
 
 type MockInstance = {
 	getState: () => { state: CallState; localParticipant: { role: CallRole } } | null;
@@ -14,21 +13,7 @@ type MockInstance = {
 
 const createWrapper = (instance: MockInstance | undefined) => {
 	const wrapper = ({ children }: { children?: ReactNode }) => (
-		<MediaCallInstanceContext.Provider
-			value={{
-				currentViews: [],
-				registerView: () => undefined,
-				unregisterView: () => undefined,
-				instance: instance as any,
-				signalEmitter: new Emitter<Signals>(),
-				audioElement: undefined,
-				openRoomId: undefined,
-				setOpenRoomId: () => undefined,
-				getAutocompleteOptions: () => Promise.resolve([]),
-			}}
-		>
-			{children}
-		</MediaCallInstanceContext.Provider>
+		<MockedInstanceProvider instance={instance as any}>{children}</MockedInstanceProvider>
 	);
 	return wrapper;
 };
@@ -72,8 +57,8 @@ describe('usePeekMediaSessionState', () => {
 		it.each([
 			['active', 'caller', 'ongoing'] as const,
 			['active', 'callee', 'ongoing'] as const,
-			['accepted', 'caller', 'ongoing'] as const,
 			['renegotiating', 'callee', 'ongoing'] as const,
+			['renegotiating', 'caller', 'ongoing'] as const,
 		])('returns "ongoing" for state "%s" and role "%s"', (callState, role, expected) => {
 			const instance: MockInstance = {
 				getState: () => ({ state: callState, localParticipant: { role } }),
@@ -87,7 +72,7 @@ describe('usePeekMediaSessionState', () => {
 			expect(result.current).toBe(expected);
 		});
 
-		it.each(['ringing', 'none'] as const)('returns "ringing" for callee when state is "%s"', (state) => {
+		it.each(['ringing', 'none', 'accepted'] as const)('returns "ringing" for callee when state is "%s"', (state) => {
 			const instance: MockInstance = {
 				getState: () => ({ state, localParticipant: { role: 'callee' } }),
 				on: () => () => undefined,
@@ -100,7 +85,7 @@ describe('usePeekMediaSessionState', () => {
 			expect(result.current).toBe('ringing');
 		});
 
-		it.each(['ringing', 'none'] as const)('returns "calling" for caller when state is "%s"', (state) => {
+		it.each(['ringing', 'none', 'accepted'] as const)('returns "calling" for caller when state is "%s"', (state) => {
 			const instance: MockInstance = {
 				getState: () => ({ state, localParticipant: { role: 'caller' } }),
 				on: () => () => undefined,

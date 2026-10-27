@@ -1,4 +1,4 @@
-type PreviewCodeElementProps = {
+export type PreviewCodeElementProps = {
 	code: string;
 };
 

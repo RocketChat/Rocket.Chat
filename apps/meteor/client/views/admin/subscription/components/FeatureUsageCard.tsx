@@ -4,7 +4,7 @@ import { memo } from 'react';
 
 import InfoTextIconModal from './InfoTextIconModal';
 
-type FeatureUsageCardProps = {
+export type FeatureUsageCardProps = {
 	children?: ReactNode;
 	card: CardProps;
 };
@@ -19,7 +19,7 @@ const FeatureUsageCard = ({ children, card }: FeatureUsageCardProps) => {
 	const { title, infoText, upgradeButton } = card;
 
 	return (
-		<Card height='full'>
+		<Card>
 			<CardTitle>
 				{title} {infoText && <InfoTextIconModal title={title} infoText={infoText} />}
 			</CardTitle>

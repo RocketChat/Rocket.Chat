@@ -5,7 +5,9 @@ import { useTranslation } from 'react-i18next';
 
 import { useRoom } from '../contexts/RoomContext';
 
-const MessageListErrorBoundary = ({ children }: { children: ReactNode }) => {
+export type MessageListErrorBoundaryProps = { children: ReactNode };
+
+const MessageListErrorBoundary = ({ children }: MessageListErrorBoundaryProps) => {
 	const { t } = useTranslation();
 	const room = useRoom();
 

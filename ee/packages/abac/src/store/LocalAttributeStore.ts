@@ -1,7 +1,7 @@
 import type { AbacActor } from '@rocket.chat/core-services';
 import type { IAbacAttributeDefinition, IRoom, IRoomAbacRedaction } from '@rocket.chat/core-typings';
 import { AbacAttributes } from '@rocket.chat/models';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import type { Document } from 'mongodb';
 
 import { ensureAttributeDefinitionsExist } from '../helper';
@@ -35,6 +35,10 @@ export class LocalAttributeStore implements IAttributeStore {
 			count: attributes.length,
 			total: await totalCount,
 		};
+	}
+
+	async listAttributeKeys(_actor: AbacActor | undefined): Promise<string[]> {
+		return AbacAttributes.findAllKeys();
 	}
 
 	async validateAssignable(attrs: IAbacAttributeDefinition[], _actor: AbacActor): Promise<void> {

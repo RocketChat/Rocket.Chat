@@ -7,7 +7,7 @@ import useDeleteMessagesAction from './hooks/useDeleteMessagesAction';
 import useDismissUserAction from './hooks/useDismissUserAction';
 import useResetAvatarAction from './hooks/useResetAvatarAction';
 
-type MessageContextFooterProps = { userId: string; deleted: boolean };
+export type MessageContextFooterProps = { userId: string; deleted: boolean };
 
 const MessageContextFooter = ({ userId, deleted }: MessageContextFooterProps) => {
 	const { t } = useTranslation();
@@ -18,7 +18,7 @@ const MessageContextFooter = ({ userId, deleted }: MessageContextFooterProps) =>
 	return (
 		<ButtonGroup stretch>
 			<Button onClick={dismissUserAction.onClick}>{t('Moderation_Dismiss_all_reports')}</Button>
-			<Button onClick={deleteMessagesAction.onClick} secondary danger>
+			<Button onClick={deleteMessagesAction.onClick} variant='secondary-danger'>
 				{t('Moderation_Delete_all_messages')}
 			</Button>
 

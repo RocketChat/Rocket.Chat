@@ -1,5 +1,5 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
-import { Option, OptionDescription, PaginatedSelectFiltered } from '@rocket.chat/fuselage';
+import { Box, Option, OptionDescription, PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,7 +8,7 @@ import { useTimeFromNow } from '../../../../../hooks/useTimeFromNow';
 import useOutboundProvidersList from '../hooks/useOutboundProvidersList';
 import { findLastChatFromChannel } from '../utils/findLastChatFromChannel';
 
-type AutoCompleteOutboundProviderProps = Omit<
+export type AutoCompleteOutboundProviderProps = Omit<
 	ComponentProps<typeof PaginatedSelectFiltered>,
 	'filter' | 'setFilter' | 'options' | 'endReached' | 'renderItem'
 > & {
@@ -32,30 +32,31 @@ const AutoCompleteOutboundProvider = ({ contact, disabled, value, placeholder, o
 	});
 
 	return (
-		<PaginatedSelectFiltered
-			{...props}
-			aria-busy={isPending}
-			placeholder={isPending ? t('Loading...') : placeholder}
-			aria-disabled={isPending || disabled}
-			disabled={isPending || disabled}
-			value={value}
-			flexShrink={0}
-			filter={channelsFilter}
-			setFilter={setChannelsFilter as (value: string | number | undefined) => void}
-			options={options}
-			onChange={onChange}
-			renderItem={({ label, value, ...props }) => {
-				const lastChat = findLastChatFromChannel(contact?.channels, value);
+		<Box display='flex' flexGrow={1} flexShrink={0}>
+			<PaginatedSelectFiltered
+				{...props}
+				aria-busy={isPending}
+				placeholder={isPending ? t('Loading...') : placeholder}
+				aria-disabled={isPending || disabled}
+				disabled={isPending || disabled}
+				value={value}
+				filter={channelsFilter}
+				setFilter={setChannelsFilter as (value: string | number | undefined) => void}
+				options={options}
+				onChange={onChange}
+				renderItem={({ label, value, ...props }) => {
+					const lastChat = findLastChatFromChannel(contact?.channels, value);
 
-				return (
-					<Option {...props} label={label} value={value}>
-						{lastChat ? (
-							<OptionDescription>{t('Last_message_received__time__', { time: getTimeFromNow(lastChat) })}</OptionDescription>
-						) : null}
-					</Option>
-				);
-			}}
-		/>
+					return (
+						<Option {...props} label={label} value={value}>
+							{lastChat ? (
+								<OptionDescription>{t('Last_message_received__time__', { time: getTimeFromNow(lastChat) })}</OptionDescription>
+							) : null}
+						</Option>
+					);
+				}}
+			/>
+		</Box>
 	);
 };
 

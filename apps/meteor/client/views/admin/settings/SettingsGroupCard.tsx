@@ -15,7 +15,7 @@ const clampStyle = css`
 	-webkit-box-orient: vertical;
 `;
 
-type SettingsGroupCardProps = {
+export type SettingsGroupCardProps = {
 	id: ISetting['_id'];
 	title: TranslationKey;
 	description?: TranslationKey;
@@ -28,11 +28,11 @@ const SettingsGroupCard = ({ id, title, description, ...props }: SettingsGroupCa
 	const descriptionId = useId();
 
 	return (
-		<Card data-qa-id={id} aria-labelledby={cardId} aria-describedby={descriptionId} {...props} height='full' role='region'>
+		<Card data-qa-id={id} aria-labelledby={cardId} aria-describedby={descriptionId} {...props} role='region'>
 			<CardTitle id={cardId}>{t(title)}</CardTitle>
 			<CardBody>
 				<Box className={clampStyle} id={descriptionId}>
-					{description && i18n.exists(description) && <MarkdownText variant='inlineWithoutBreaks' content={t(description)} />}
+					{description && i18n.exists(description as string) && <MarkdownText variant='inlineWithoutBreaks' content={t(description)} />}
 				</Box>
 			</CardBody>
 			<CardControls>
@@ -42,7 +42,7 @@ const SettingsGroupCard = ({ id, title, description, ...props }: SettingsGroupCa
 						pattern: '/admin/settings/:group?',
 						params: { group: id },
 					})}
-					medium
+					size='medium'
 				>
 					{t('Open')}
 				</Button>

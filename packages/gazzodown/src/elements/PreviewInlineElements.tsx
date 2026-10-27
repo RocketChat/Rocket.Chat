@@ -12,7 +12,7 @@ import PreviewKatexElement from '../katex/PreviewKatexElement';
 import PreviewChannelMentionElement from '../mentions/PreviewChannelMentionElement';
 import PreviewUserMentionElement from '../mentions/PreviewUserMentionElement';
 
-type PreviewInlineElementsProps = {
+export type PreviewInlineElementsProps = {
 	children: MessageParser.Inlines[];
 };
 

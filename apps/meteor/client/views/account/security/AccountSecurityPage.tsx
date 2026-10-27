@@ -44,7 +44,7 @@ const AccountSecurityPage = () => {
 		<Page>
 			<PageHeader title={t('Security')} />
 			<PageScrollableContentWithShadow>
-				<Box maxWidth='x600' w='full' alignSelf='center' color='default'>
+				<Box maxWidth='x600' width='full' alignSelf='center' color='default'>
 					{allowPasswordChange && (
 						<FormProvider {...methods}>
 							<Accordion>
@@ -58,9 +58,11 @@ const AccountSecurityPage = () => {
 						{(twoFactorTOTP || showEmailTwoFactor) && twoFactorEnabled && (
 							<AccordionItem defaultExpanded={require2faSetup} title={t('Two Factor Authentication')}>
 								{require2faSetup && (
-									<Callout type='warning' title={t('Enable_two-factor_authentication')} mbe='24px'>
-										{t('Enable_two-factor_authentication_callout_description')}
-									</Callout>
+									<Box marginBlockEnd={24}>
+										<Callout type='warning' title={t('Enable_two-factor_authentication')}>
+											{t('Enable_two-factor_authentication_callout_description')}
+										</Callout>
+									</Box>
 								)}
 								{twoFactorTOTP && <TwoFactorTOTP />}
 								{showEmailTwoFactor && <TwoFactorEmail />}
@@ -82,7 +84,7 @@ const AccountSecurityPage = () => {
 			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset(passwordDefaultValues)}>{t('Cancel')}</Button>
-					<Button form={passwordFormId} primary disabled={!isDirty} type='submit'>
+					<Button form={passwordFormId} variant='primary' disabled={!isDirty} type='submit'>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>

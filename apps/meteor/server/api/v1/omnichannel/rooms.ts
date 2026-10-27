@@ -3,7 +3,7 @@ import { isGETLivechatRoomsParams } from '@rocket.chat/rest-typings';
 
 import { API } from '../..';
 import { findRooms } from './lib/rooms';
-import { hasPermissionAsync } from '../../../../app/authorization/server/functions/hasPermission';
+import { hasPermissionAsync } from '../../../lib/authorization/hasPermission';
 import { getPaginationItems } from '../../lib/getPaginationItems';
 
 const validateDateParams = (property: string, date?: string) => {
@@ -29,16 +29,15 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await this.parseJsonQuery();
+			const { sort, fields } = await this.parseJsonQuery();
 			const { agents, departmentId, open, tags, roomName, onhold, queued, units } = this.queryParams;
 			const { createdAt, customFields, closedAt } = this.queryParams;
 
 			const createdAtParam = validateDateParams('createdAt', createdAt);
 			const closedAtParam = validateDateParams('closedAt', closedAt);
 
-			const hasAdminAccess = await hasPermissionAsync(this.userId, 'view-livechat-rooms');
-			const hasAgentAccess =
-				(await hasPermissionAsync(this.userId, 'view-l-room')) && agents?.includes(this.userId) && agents?.length === 1;
+			const hasAdminAccess = await hasPermissionAsync(this.user, 'view-livechat-rooms');
+			const hasAgentAccess = (await hasPermissionAsync(this.user, 'view-l-room')) && agents?.includes(this.userId) && agents?.length === 1;
 			if (!hasAdminAccess && !hasAgentAccess) {
 				return API.v1.forbidden();
 			}
@@ -71,7 +70,6 @@ API.v1.addRoute(
 					onhold,
 					queued,
 					units,
-					query,
 					options: { offset, count, sort, fields },
 					callerId: this.userId,
 				}),

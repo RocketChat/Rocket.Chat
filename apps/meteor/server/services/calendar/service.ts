@@ -9,9 +9,9 @@ import { CalendarEvent, Users } from '@rocket.chat/models';
 import type { UpdateResult, DeleteResult } from 'mongodb';
 
 import { getShiftedTime } from './utils/getShiftedTime';
-import { settings } from '../../../app/settings/server';
-import { getUserPreference } from '../../../app/utils/server/lib/getUserPreference';
 import { i18n } from '../../lib/i18n';
+import { getUserPreference } from '../../lib/utils/lib/getUserPreference';
+import { settings } from '../../settings';
 
 const logger = new Logger('Calendar');
 
@@ -236,9 +236,6 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		try {
 			const eventsStartingNow = await CalendarEvent.findEventsStartingNow({ now: processTime, offset: 5000 }).toArray();
 			for await (const event of eventsStartingNow) {
-				if (event.busy === false) {
-					continue;
-				}
 				await this.processEventStart(event);
 			}
 		} catch (err) {
@@ -248,7 +245,7 @@ export class CalendarService extends ServiceClassInternal implements ICalendarSe
 		await this.doSetupNextStatusChange();
 	}
 
-	private async processEventStart(event: ICalendarEvent): Promise<void> {
+	private async processEventStart(event: Pick<ICalendarEvent, '_id' | 'uid' | 'endTime'>): Promise<void> {
 		// no endTime → no expiry to set, so the claim could never auto-clear
 		if (!event.endTime) {
 			return;

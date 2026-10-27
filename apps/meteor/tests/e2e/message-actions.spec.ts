@@ -66,8 +66,10 @@ test.describe.serial('message-actions', () => {
 			await expect(poHomeChannel.content.lastUserThreadMessage).toHaveText('this is a reply message');
 		});
 
-		// close thread before testing because the behavior changes
-		await page.getByRole('dialog').getByRole('button', { name: 'Close', exact: true }).click();
+		await test.step('close thread before testing closed-thread behavior', async () => {
+			await poHomeChannel.btnContextualbarClose.click();
+			await expect(poHomeChannel.btnContextualbarClose).toBeHidden();
+		});
 
 		await test.step('unfollow thread', async () => {
 			const unFollowButton = poHomeChannel.content.lastUserMessage.getByRole('button', { name: 'Following' });
@@ -120,7 +122,7 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.content.sendMessage(message);
 		await poHomeChannel.content.openLastMessageMenu();
-		await page.locator('role=menuitem[name="Start a Discussion"]').click();
+		await page.locator('role=menuitem[name="Start a discussion"]').click();
 		const createDiscussionModal = new CreateNewDiscussionModal(page);
 		const createButton = createDiscussionModal.btnCreate;
 		// Name should be prefilled thus making the create button enabled

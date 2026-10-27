@@ -1,16 +1,16 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Box, Icon, Throbber } from '@rocket.chat/fuselage';
+import { Box, Throbber, Icon } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { MessageComposerAction } from '@rocket.chat/ui-composer';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { AudioRecorder } from '../../../../app/ui/client/lib/recorderjs/AudioRecorder';
+import { AudioRecorder } from '../../../lib/AudioRecorder';
 import { useChat } from '../../room/contexts/ChatContext';
 
 const audioRecorder = new AudioRecorder();
 
-type AudioMessageRecorderProps = {
+export type AudioMessageRecorderProps = {
 	rid: IRoom['_id'];
 	isMicrophoneDenied?: boolean;
 };
@@ -104,13 +104,21 @@ const AudioMessageRecorder = ({ rid, isMicrophoneDenied }: AudioMessageRecorderP
 	}
 
 	return (
-		<Box display='flex' position='absolute' color='default' pi={4} pb={12} role='group' aria-label={t('Audio_recorder')}>
+		<Box
+			display='flex'
+			position='absolute'
+			color='default'
+			paddingInline={4}
+			paddingBlock={12}
+			role='group'
+			aria-label={t('Audio_recorder')}
+		>
 			{state === 'recording' && (
 				<>
 					<MessageComposerAction icon='circle-cross' title={t('Cancel_recording')} onClick={handleCancelButtonClick} />
-					<Box display='flex' alignItems='center' mi={4} justifyContent='center'>
-						<Icon name='rec' color='red' />
-						<Box fontScale='p2' mis={4} is='span' minWidth='x40'>
+					<Box display='flex' alignItems='center' marginInline={4} justifyContent='center'>
+						<Icon name='rec' color='danger' />
+						<Box fontScale='p2' marginInlineStart={4} is='span' minWidth='x40'>
 							{time}
 						</Box>
 					</Box>
