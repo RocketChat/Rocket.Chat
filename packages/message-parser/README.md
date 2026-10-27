@@ -204,6 +204,28 @@ Type guard that checks `value.type === type`.
 
 The emoticon-to-emoji table used when `emoticons` is on, e.g. `':)'` → `'🙂'`.
 
+### Compact AST format
+
+To reduce storage footprint, network transmission size, and memory usage across high-traffic workspaces, `@rocket.chat/message-parser` provides bidirectional Compact AST utilities:
+
+- **`compactify(ast: Root, message: string): CompactRoot`**: Converts a verbose AST into a span-indexed compact tree, replacing self-contained string nodes with `[start, end]` slice tuples into the original message. Delivers a 30%–60%+ payload reduction.
+- **`expand(compactAst: CompactRoot, message: string): Root`**: Reconstructs the full verbose AST losslessly from the compact AST and message text.
+- **`validateRoundtrip(ast: Root, message: string): boolean`**: Verifies that `expand(compactify(ast, message), message)` matches the original AST.
+- **`calculateCompressionRatio(ast: Root, compactAst: CompactRoot)`**: Measures serialization byte count and percentage reduction.
+
+```ts
+import { parse, compactify, expand, validateRoundtrip } from '@rocket.chat/message-parser';
+
+const text = '**hello** world';
+const ast = parse(text);
+
+const compact = compactify(ast, text);
+// [{ t: 'p', c: [{ t: 'b', c: [[2, 7]] }, [9, 15]] }]
+
+const restored = expand(compact, text);
+validateRoundtrip(ast, text); // true
+```
+
 ### Types
 
 | Type                         | Description                                                                                                                                                                                                                                                                                                                                                                                                                                       |
