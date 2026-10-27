@@ -1,4 +1,4 @@
-import { Box, Button, TextInput, Field, FieldRow, FieldLabel, ToggleSwitch, Stack } from '@rocket.chat/fuselage';
+import { Box, Button, Field, FieldLabel, FieldRow, Stack, Text, TextInput, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useStableCallback, useSafely } from '@rocket.chat/fuselage-hooks';
 import { useSetModal, useToastMessageDispatch, useUser, useEndpoint } from '@rocket.chat/ui-contexts';
 import type { ComponentPropsWithoutRef, ChangeEvent } from 'react';
@@ -176,7 +176,7 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps) => {
 					<Box fontScale='p2m' marginBlockStart={8}>
 						{t('Backup_codes')}
 					</Box>
-					<Box color='font-secondary-info'>{t('You_have_n_codes_remaining', { number: codesRemaining })}</Box>
+					<Text color='secondary-info'>{t('You_have_n_codes_remaining', { number: codesRemaining })}</Text>
 					<Button onClick={handleRegenerateCodes}>{t('Regenerate_codes')}</Button>
 				</>
 			)}

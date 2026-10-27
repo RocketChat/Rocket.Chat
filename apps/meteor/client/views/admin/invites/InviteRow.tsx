@@ -1,5 +1,5 @@
 import type { IInvite } from '@rocket.chat/core-typings';
-import { Box, IconButton } from '@rocket.chat/fuselage';
+import { IconButton, Text } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { GenericTableCell, GenericTableRow, useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
@@ -64,9 +64,9 @@ const InviteRow = ({ _id, createdAt, expires, uses, maxUses, onRemove }: InviteR
 	return (
 		<GenericTableRow>
 			<GenericTableCell>
-				<Box color='hint' fontScale='p2'>
+				<Text color='hint' fontScale='p2'>
 					{_id}
-				</Box>
+				</Text>
 			</GenericTableCell>
 			{notSmall && (
 				<>

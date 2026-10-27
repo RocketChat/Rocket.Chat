@@ -1,26 +1,27 @@
 import type { ILivechatDepartment, Serialized } from '@rocket.chat/core-typings';
 import {
-	Field,
-	FieldGroup,
-	Button,
-	TextInput,
-	Modal,
 	Box,
+	Button,
 	CheckBox,
 	Divider,
 	EmailInput,
+	Field,
+	FieldError,
+	FieldGroup,
+	FieldHint,
 	FieldLabel,
 	FieldRow,
-	FieldError,
-	FieldHint,
+	Modal,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
 	ModalHeader,
 	ModalIcon,
 	ModalTitle,
-	ModalClose,
-	ModalFooter,
-	ModalFooterControllers,
-	ModalContent,
 	Stack,
+	Text,
+	TextInput,
 } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { usePermission, useSetting, useUserPreference, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
@@ -165,7 +166,7 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 					<ModalClose onClick={onCancel} />
 				</ModalHeader>
 				<ModalContent>
-					<Box color='annotation'>{t('Close_room_description')}</Box>
+					<Text color='annotation'>{t('Close_room_description')}</Text>
 					<FieldGroup>
 						<Field>
 							<FieldLabel required={commentRequired}>{t('Comment')}</FieldLabel>

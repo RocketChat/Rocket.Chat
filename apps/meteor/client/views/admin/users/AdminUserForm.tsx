@@ -2,24 +2,25 @@ import type { AvatarObject, IRole, IUser, IUserPhoneNumber, Serialized } from '@
 import {
 	Accordion,
 	AccordionItem,
-	Field,
-	FieldLabel,
-	FieldRow,
-	FieldError,
-	FieldHint,
-	TextInput,
-	TextAreaInput,
-	MultiSelectFiltered,
 	Box,
-	ToggleSwitch,
-	Icon,
-	FieldGroup,
 	Button,
 	ButtonGroup,
 	Callout,
+	Divider,
+	Field,
+	FieldError,
+	FieldGroup,
+	FieldHint,
+	FieldLabel,
+	FieldRow,
+	Icon,
+	MultiSelectFiltered,
 	Skeleton,
 	Stack,
-	Divider,
+	Text,
+	TextAreaInput,
+	TextInput,
+	ToggleSwitch,
 } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
@@ -263,7 +264,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							/>
 						</Field>
 					)}
-					{isNewUserPage && <Box color='hint'>{t('Manually_created_users_briefing')}</Box>}
+					{isNewUserPage && <Text color='hint'>{t('Manually_created_users_briefing')}</Text>}
 					<Field>
 						<FieldLabel htmlFor={emailId}>{t('Email')}</FieldLabel>
 						<FieldRow>

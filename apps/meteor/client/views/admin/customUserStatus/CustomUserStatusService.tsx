@@ -8,6 +8,7 @@ import {
 	StatesAction,
 	StatesIcon,
 	StatesSubtitle,
+	Text,
 	ToggleSwitch,
 } from '@rocket.chat/fuselage';
 import { ContextualbarContent, ContextualbarFooter } from '@rocket.chat/ui-client';
@@ -59,7 +60,7 @@ const CustomUserStatusService = () => {
 			<ContextualbarContent>
 				<Box display='flex' flexDirection='column' gap={16} paddingBlock={16} flexGrow={1}>
 					<Box display='flex' justifyContent='space-between'>
-						<Box fontScale='p1'>{t('Service_status')}</Box>
+						<Text fontScale='p1'>{t('Service_status')}</Text>
 						<ToggleSwitch
 							disabled={disablePresenceService.isPending || !presenceDisabled || percentage === 100}
 							checked={!presenceDisabled}

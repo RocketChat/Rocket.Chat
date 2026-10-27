@@ -1,4 +1,4 @@
-import { Box, Icon, Skeleton, Scrollable, Callout } from '@rocket.chat/fuselage';
+import { Box, Callout, Icon, Scrollable, Skeleton, Text } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../../components/MarkdownText';
@@ -29,12 +29,12 @@ const AnalyticsReports = () => {
 					>
 						<Icon name='info' size={20} />
 					</Box>
-					<Box fontScale='h4'>{t('How_and_why_we_collect_usage_data')}</Box>
+					<Text fontScale='h4'>{t('How_and_why_we_collect_usage_data')}</Text>
 				</Box>
 				<Box fontScale='p1' marginBlockEnd={16}>
 					{t('Analytics_page_briefing_first_paragraph')}
 				</Box>
-				<Box fontScale='p1'>{t('Analytics_page_briefing_second_paragraph')}</Box>
+				<Text fontScale='p1'>{t('Analytics_page_briefing_second_paragraph')}</Text>
 			</Box>
 			<Scrollable vertical>
 				<Box marginBlockEnd={8} padding={8} backgroundColor='neutral' borderRadius='medium' height='100%'>
