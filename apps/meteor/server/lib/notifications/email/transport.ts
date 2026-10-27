@@ -5,10 +5,10 @@ import { SystemLogger } from '../../logger/system';
 
 let transport: Transporter | undefined;
 
-/** Replaces the SMTP transport app email is sent through; `undefined` leaves email unsent until SMTP is configured again. */
-export const configureMailTransport = (options: SMTPTransportOptions | SMTPPoolOptions | undefined): void => {
+/** Replaces the SMTP transport all server email is sent through; `undefined` leaves email unsent until SMTP is configured again. */
+export const configureMailTransport = (options: SMTPTransportOptions | SMTPPoolOptions | string | undefined): void => {
 	transport?.close();
-	transport = options && nodemailer.createTransport(options);
+	transport = options ? nodemailer.createTransport(options) : undefined;
 };
 
 export const sendMail = async (mail: SendMailOptions): Promise<void> => {

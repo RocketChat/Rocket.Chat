@@ -1,15 +1,17 @@
 import { afterEach, describe, it } from 'node:test';
 
 import { expect } from 'chai';
-import nodemailer from 'nodemailer';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
 const configureMailTransport = sinon.stub();
+const sendMail = sinon.stub().resolves();
+const Email: { customTransport?: (mail: Record<string, unknown>) => Promise<void> } = {};
 
 const { configureSMTP } = proxyquire.noCallThru().load('./configureSMTP', {
+	'meteor/email': { Email },
 	'../lib/logger/system': { SystemLogger: { info: sinon.stub() } },
-	'../lib/notifications/email/transport': { configureMailTransport },
+	'../lib/notifications/email/transport': { configureMailTransport, sendMail },
 });
 
 const applySettings = (values: Record<string, unknown>) => {
@@ -22,16 +24,15 @@ const applySettings = (values: Record<string, unknown>) => {
 	return configureMailTransport.firstCall.args[0];
 };
 
-// accounts-password still sends through Meteor, which hands MAIL_URL to createTransport;
-// the app transport has to connect to the same server the same way.
-const optionsParsedFromMailUrl = () => {
-	const transport = nodemailer.createTransport(process.env.MAIL_URL);
-	transport.close();
-	return transport.options;
+const smtpSettings = {
+	SMTP_Host: 'smtp.example.com',
+	SMTP_Protocol: 'smtp',
+	SMTP_Port: '',
+	SMTP_Username: '',
+	SMTP_Password: '',
+	SMTP_Pool: true,
+	SMTP_IgnoreTLS: false,
 };
-
-const product = <T>(...lists: T[][]): T[][] =>
-	lists.reduce<T[][]>((combos, list) => combos.flatMap((combo) => list.map((item) => [...combo, item])), [[]]);
 
 describe('configureSMTP', () => {
 	const originalMailUrl = process.env.MAIL_URL;
@@ -44,45 +45,75 @@ describe('configureSMTP', () => {
 		}
 	});
 
-	it('should drop MAIL_URL and the app transport when there is no SMTP host', () => {
-		process.env.MAIL_URL = 'smtp://previous.example.com';
+	it('should send Meteor email through the app transport, without Meteor package settings', async () => {
+		sendMail.resetHistory();
+		applySettings(smtpSettings);
 
-		expect(applySettings({ SMTP_Host: '', SMTP_Protocol: 'smtp', SMTP_Pool: true })).to.be.undefined;
-		expect(process.env.MAIL_URL).to.be.undefined;
+		const mail = { to: 'someone@example.com', from: 'rocket.chat@example.com', subject: 'Reset your password', html: '<p>link</p>' };
+		await Email.customTransport?.({ packageSettings: {}, ...mail });
+
+		expect(sendMail.calledOnceWithExactly(mail)).to.be.true;
 	});
 
-	it('should leave the port to nodemailer when SMTP_Port is not a number, where MAIL_URL is unparseable', () => {
-		const options = applySettings({ SMTP_Host: 'smtp.example.com', SMTP_Protocol: 'smtp', SMTP_Port: 'not-a-port', SMTP_Pool: true });
+	it('should leave email unsent when there is neither an SMTP host nor MAIL_URL', () => {
+		delete process.env.MAIL_URL;
 
-		expect(options).to.deep.equal({ host: 'smtp.example.com', secure: false, pool: true });
-		expect(optionsParsedFromMailUrl).to.throw('Invalid URL');
+		expect(applySettings({ ...smtpSettings, SMTP_Host: '' })).to.be.undefined;
 	});
 
-	const protocols = ['smtp', 'smtps'];
-	const credentials = [
-		{ SMTP_Username: '', SMTP_Password: '' },
+	it('should configure the transport from MAIL_URL when there is no SMTP host', () => {
+		process.env.MAIL_URL = 'smtps://user:secret@mail.example.com:465?pool=true';
+
+		expect(applySettings({ ...smtpSettings, SMTP_Host: '' })).to.equal('smtps://user:secret@mail.example.com:465?pool=true');
+	});
+
+	it('should prefer the SMTP settings over MAIL_URL', () => {
+		process.env.MAIL_URL = 'smtps://user:secret@mail.example.com:465';
+
+		expect(applySettings(smtpSettings)).to.deep.equal({ host: 'smtp.example.com', secure: false, pool: true });
+	});
+
+	it('should connect securely, with credentials and port, over smtps', () => {
+		const options = applySettings({
+			...smtpSettings,
+			SMTP_Protocol: 'smtps',
+			SMTP_Port: '465',
+			SMTP_Username: 'user@example.com',
+			SMTP_Password: 'p@ss:w/rd',
+			SMTP_Pool: false,
+			SMTP_IgnoreTLS: true,
+		});
+
+		expect(options).to.deep.equal({
+			host: 'smtp.example.com',
+			secure: true,
+			pool: false,
+			port: 465,
+			auth: { user: 'user@example.com', pass: 'p@ss:w/rd' },
+		});
+	});
+
+	it('should ignore TLS only over plain smtp', () => {
+		expect(applySettings({ ...smtpSettings, SMTP_IgnoreTLS: true })).to.deep.equal({
+			host: 'smtp.example.com',
+			secure: false,
+			pool: true,
+			ignoreTLS: true,
+		});
+	});
+
+	for (const credentials of [
 		{ SMTP_Username: 'user', SMTP_Password: '' },
 		{ SMTP_Username: '', SMTP_Password: 'secret' },
-		{ SMTP_Username: 'user', SMTP_Password: 'secret' },
-		{ SMTP_Username: 'user@example.com', SMTP_Password: 'p@ss:w/rd?#%& é' },
-	];
-	const ports = ['', '25', '465', '587', ' 2525 ', '0'];
-	const toggles = [true, false];
+	]) {
+		it(`should not authenticate with partial credentials ${JSON.stringify(credentials)}`, () => {
+			expect(applySettings({ ...smtpSettings, ...credentials })).to.not.have.property('auth');
+		});
+	}
 
-	for (const [protocol, credential, port, pool, ignoreTLS] of product<unknown>(protocols, credentials, ports, toggles, toggles)) {
-		const values = {
-			SMTP_Host: 'smtp.example.com',
-			SMTP_Protocol: protocol,
-			SMTP_Port: port,
-			SMTP_Pool: pool,
-			SMTP_IgnoreTLS: ignoreTLS,
-			...(credential as Record<string, string>),
-		};
-
-		it(`should configure the transport MAIL_URL describes for ${JSON.stringify(values)}`, () => {
-			const options = applySettings(values);
-
-			expect(options).to.deep.equal(optionsParsedFromMailUrl());
+	for (const port of ['not-a-port', '0']) {
+		it(`should leave the port to nodemailer when SMTP_Port is ${JSON.stringify(port)}`, () => {
+			expect(applySettings({ ...smtpSettings, SMTP_Port: port })).to.not.have.property('port');
 		});
 	}
 });
