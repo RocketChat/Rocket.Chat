@@ -1,6 +1,7 @@
-import express from 'express';
-import { WebApp } from 'meteor/webapp';
+import { createNodeServer } from '@rocket.chat/http-router';
 import request from 'supertest';
+
+import { httpApp } from '../lib/http/httpServer';
 
 const mockIntegrations = {
 	findOneByIdAndToken: jest.fn(),
@@ -60,7 +61,7 @@ jest.mock(
 	}),
 	{ virtual: true },
 );
-jest.mock('meteor/webapp', () => ({ WebApp: { rawConnectHandlers: { use: jest.fn() } } }), { virtual: true });
+jest.mock('../lib/http/httpServer', () => ({ httpApp: jest.requireActual('@rocket.chat/http-router').createRootApp() }));
 jest.mock('meteor/rate-limit', () => ({ RateLimiter: MockRateLimiter }), { virtual: true });
 jest.mock('meteor/accounts-base', () => ({ Accounts: { _accountData: {} as Record<string, unknown> } }), { virtual: true });
 jest.mock('meteor/ddp', () => ({ DDP: {} }), { virtual: true });
@@ -117,7 +118,11 @@ const LEGACY_HOOK_URL = '/hooks/integration-id/legacy-user-id/the-token';
 jest.requireActual('./api');
 jest.requireActual('./webhooks');
 
-const app = express().use(jest.mocked(WebApp.rawConnectHandlers.use).mock.calls[0][0] as unknown as express.RequestHandler);
+const app = createNodeServer(httpApp).listen(0);
+
+afterAll(() => {
+	app.close();
+});
 
 describe('Webhooks API', () => {
 	beforeEach(() => {
