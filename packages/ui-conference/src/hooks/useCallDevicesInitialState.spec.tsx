@@ -33,8 +33,8 @@ it('falls back to auto for a stored quality that is not one', () => {
 	expect(result.current.videoQuality).toBe('auto');
 });
 
-// What every call had before there was a choice, so nobody's voice changes until they ask; and the same for a method
-// this version no longer offers.
+// What every call had before there was a choice, so nobody's voice changes until they ask; and the same for a value
+// that is not a method.
 it.each([undefined, 'krisp'])('falls back to the browser filter for a stored noise method of %p', (noiseMethod) => {
 	localStorage.setItem(preferencesKey, JSON.stringify({ noiseMethod }));
 

@@ -65,6 +65,13 @@ export class RnnoiseProcessor implements TrackProcessor<Track.Kind.Audio, AudioP
 			this.worklet = new RnnoiseWorkletNode(context, { maxChannels: 1, wasmBinary });
 			const destination = context.createMediaStreamDestination();
 			source.connect(this.worklet).connect(destination);
+			// A context the system suspends mid-call (the device taken by another app, the machine sleeping) would leave
+			// the call silent.
+			context.onstatechange = () => {
+				if (context.state === 'suspended') {
+					void context.resume().catch(() => undefined);
+				}
+			};
 
 			this.processedTrack = destination.stream.getAudioTracks()[0];
 		} catch (err) {

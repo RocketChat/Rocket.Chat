@@ -54,7 +54,13 @@ const PreviewMediaProvider = ({ capabilities, media, children }: PreviewMediaPro
 
 	// Only recorded here: the preview's microphone is not sent anywhere, so the call is where the choice is applied.
 	const noiseSuppression = useMemo(
-		(): NoiseSuppressionSelection => ({ method: noiseMethod, methods: NOISE_METHODS, pending: false, select: selectNoiseMethod }),
+		(): NoiseSuppressionSelection => ({
+			// A remembered method this browser cannot run is what the call will fall back to.
+			method: NOISE_METHODS.includes(noiseMethod) ? noiseMethod : 'browser',
+			methods: NOISE_METHODS,
+			pending: false,
+			select: selectNoiseMethod,
+		}),
 		[noiseMethod, selectNoiseMethod],
 	);
 

@@ -93,7 +93,10 @@ had before there was a choice.
   on offer, since choosing it from the menu is the gesture it lacked; a failure the reader asked for hides it.
 - **The workspace serves the files** at `/video-conference/rnnoise/` from the installed package, by its package exports,
   so clients never reach a third party. About 125 KB gzipped, fetched the first time it is chosen; the WebAssembly is
-  kept for the page.
+  kept for the page. The URLs carry no version, so the files are revalidated (`Last-Modified`) rather than cached for
+  a while: an upgrade would otherwise pair a new client with an old worklet.
+- **A browser that cannot run RNNoise** (no AudioWorklet) never tries: a remembered *Advanced* runs, and shows, as
+  *Standard*.
 
 ## Data-channel messages
 

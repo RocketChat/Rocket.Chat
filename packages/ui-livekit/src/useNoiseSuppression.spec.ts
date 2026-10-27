@@ -8,9 +8,10 @@ import { useNoiseSuppression } from './useNoiseSuppression';
 
 const persisted = jest.fn();
 let remembered: NoiseMethod = 'browser';
+let rnnoiseSupported = true;
 
 jest.mock('@rocket.chat/ui-conference', () => ({
-	supportsRnnoise: () => true,
+	supportsRnnoise: () => rnnoiseSupported,
 	useNoiseSuppressionPreference: () => {
 		const [noiseMethod, setNoiseMethod] = useState<NoiseMethod>(remembered);
 		return {
@@ -56,6 +57,7 @@ const settled = (result: { current: { pending: boolean } }) => waitFor(() => exp
 beforeEach(() => {
 	jest.clearAllMocks();
 	remembered = 'browser';
+	rnnoiseSupported = true;
 	jest.spyOn(console, 'warn').mockImplementation(() => undefined);
 });
 
@@ -78,9 +80,23 @@ it('turns the browser filter off, on the same microphone, before RNNoise runs', 
 
 	expect(track.restartTrack).toHaveBeenCalledWith({ deviceId: { exact: 'yeti' }, echoCancellation: true, noiseSuppression: false });
 	expect(RnnoiseProcessor).toHaveBeenCalledWith('/rnnoise');
-	expect(track.setProcessor).toHaveBeenCalled();
+	expect(track.restartTrack.mock.invocationCallOrder[0]).toBeLessThan(track.setProcessor.mock.invocationCallOrder[0]);
 	expect(result.current.method).toBe('rnnoise');
 	expect(persisted).toHaveBeenCalledWith('rnnoise');
+});
+
+it('runs the browser filter where RNNoise is remembered but this browser cannot run it', async () => {
+	remembered = 'rnnoise';
+	rnnoiseSupported = false;
+	const room = makeRoom();
+	const track = makeTrack();
+	const { result } = renderHook(() => useNoiseSuppression(room, track, '/rnnoise'));
+	await settled(result);
+
+	expect(track.setProcessor).not.toHaveBeenCalled();
+	expect(room.options.audioCaptureDefaults).toEqual({ deviceId: 'yeti', noiseSuppression: true });
+	expect(result.current.method).toBe('browser');
+	expect(result.current.methods).toEqual(['none', 'browser']);
 });
 
 it('falls back to the browser filter when RNNoise cannot start, and stops offering it', async () => {
@@ -120,4 +136,27 @@ it('takes RNNoise out when another method is chosen', async () => {
 	expect(track.stopProcessor).toHaveBeenCalled();
 	expect(track.restartTrack).not.toHaveBeenCalled();
 	expect(result.current.method).toBe('none');
+});
+
+// The old microphone finishing late must not re-enable the menu while the new one is still being set up.
+it('stays pending for a replacement microphone when the old one finishes late', async () => {
+	remembered = 'rnnoise';
+	const finish = { old: () => undefined, replacement: () => undefined };
+	const oldTrack = makeTrack({ filtering: false });
+	oldTrack.setProcessor.mockImplementation(() => new Promise<void>((resolve) => (finish.old = resolve)));
+	const replacement = makeTrack({ filtering: false });
+	replacement.setProcessor.mockImplementation(() => new Promise<void>((resolve) => (finish.replacement = resolve)));
+
+	const { result, rerender } = renderHook(({ track }) => useNoiseSuppression(makeRoom(), track, '/rnnoise'), {
+		initialProps: { track: oldTrack },
+	});
+	await waitFor(() => expect(oldTrack.setProcessor).toHaveBeenCalled());
+	rerender({ track: replacement });
+	await waitFor(() => expect(replacement.setProcessor).toHaveBeenCalled());
+
+	await act(async () => finish.old());
+	expect(result.current.pending).toBe(true);
+
+	await act(async () => finish.replacement());
+	expect(result.current.pending).toBe(false);
 });

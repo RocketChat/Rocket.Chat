@@ -2,12 +2,15 @@ import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { NoiseMethod, NoiseSuppressionSelection } from '@rocket.chat/ui-conference';
 import { supportsRnnoise, useNoiseSuppressionPreference } from '@rocket.chat/ui-conference';
 import type { AudioCaptureOptions, LocalAudioTrack, Room } from 'livekit-client';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { RnnoiseProcessor } from './rnnoiseProcessor';
 
 /** Weakest first, the order the microphone menu offers them in. */
 const ORDER: NoiseMethod[] = ['none', 'browser', 'rnnoise'];
+
+/** A remembered RNNoise this browser cannot run is the browser's filter, rather than a failed start on every microphone. */
+const runnable = (method: NoiseMethod): NoiseMethod => (method === 'rnnoise' && !supportsRnnoise() ? 'browser' : method);
 
 const warn = (err: unknown) => console.warn('the microphone would not change noise cancellation', err);
 
@@ -47,7 +50,7 @@ export const useNoiseSuppression = (
 	rnnoiseBaseUrl: string,
 ): NoiseSuppressionSelection => {
 	const { noiseMethod: preferred, selectNoiseMethod } = useNoiseSuppressionPreference();
-	const [method, setMethod] = useState(preferred);
+	const [method, setMethod] = useState(() => runnable(preferred));
 	const [pending, setPending] = useState(false);
 	// Only a failure the reader asked for hides it: one at the start of the call may be the browser holding audio back
 	// until a click, which choosing it from the menu is.
@@ -55,41 +58,53 @@ export const useNoiseSuppression = (
 
 	// The room opens every new microphone with its capture defaults, so one opened for RNNoise is not filtered twice.
 	useEffect(() => {
-		room.options.audioCaptureDefaults = { ...room.options.audioCaptureDefaults, noiseSuppression: preferred === 'browser' };
+		room.options.audioCaptureDefaults = { ...room.options.audioCaptureDefaults, noiseSuppression: runnable(preferred) === 'browser' };
 	}, [room, preferred]);
 
-	const apply = useStableCallback(async (track: LocalAudioTrack, next: NoiseMethod): Promise<NoiseMethod> => {
+	// Only the latest change reports back: one still finishing on a microphone since replaced must not settle the menu.
+	const latest = useRef(0);
+
+	const apply = useStableCallback(async (track: LocalAudioTrack, next: NoiseMethod) => {
+		const request = ++latest.current;
 		setPending(true);
 		try {
-			await applyMethod(track, next, rnnoiseBaseUrl);
-			return next;
-		} catch (err) {
-			if (next !== 'rnnoise') {
-				throw err;
+			let running = next;
+			try {
+				await applyMethod(track, next, rnnoiseBaseUrl);
+			} catch (err) {
+				if (next !== 'rnnoise') {
+					throw err;
+				}
+				warn(err);
+				await applyMethod(track, 'browser', rnnoiseBaseUrl);
+				running = 'browser';
 			}
-			warn(err);
-			await applyMethod(track, 'browser', rnnoiseBaseUrl);
-			return 'browser';
+			return { running, current: request === latest.current };
 		} finally {
-			setPending(false);
+			if (request === latest.current) {
+				setPending(false);
+			}
 		}
 	});
 
 	// A new microphone gets the remembered choice; a change of choice is `select`'s to apply.
-	const start = useStableCallback((track: LocalAudioTrack) => apply(track, preferred));
+	const start = useStableCallback((track: LocalAudioTrack) => apply(track, runnable(preferred)));
+
+	// A microphone being replaced has its change outrun by the next one's.
+	const abandon = useStableCallback(() => {
+		latest.current++;
+		setPending(false);
+	});
 
 	useEffect(() => {
 		if (!audioTrack) {
 			return;
 		}
 
-		let cancelled = false;
-		start(audioTrack).then((running) => !cancelled && setMethod(running), warn);
+		start(audioTrack).then(({ running, current }) => current && setMethod(running), warn);
 
-		return () => {
-			cancelled = true;
-		};
-	}, [audioTrack, start]);
+		return abandon;
+	}, [audioTrack, start, abandon]);
 
 	const select = useStableCallback((next: NoiseMethod) => {
 		if (pending || next === method) {
@@ -100,7 +115,10 @@ export const useNoiseSuppression = (
 			selectNoiseMethod(next);
 			return;
 		}
-		apply(audioTrack, next).then((running) => {
+		apply(audioTrack, next).then(({ running, current }) => {
+			if (!current) {
+				return;
+			}
 			setMethod(running);
 			if (running === next) {
 				selectNoiseMethod(next);

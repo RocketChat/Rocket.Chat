@@ -170,6 +170,7 @@ export const withCall =
 			state={fixture.state}
 			deviceSelection={fixture.deviceSelection}
 			videoQuality={fixture.videoQuality}
+			noiseSuppression={fixture.noiseSuppression}
 			diagnostics={fixture.diagnostics}
 		>
 			<Story />
