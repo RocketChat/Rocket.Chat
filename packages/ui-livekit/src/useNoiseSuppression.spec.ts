@@ -141,11 +141,21 @@ it('takes RNNoise out when another method is chosen', async () => {
 // The old microphone finishing late must not re-enable the menu while the new one is still being set up.
 it('stays pending for a replacement microphone when the old one finishes late', async () => {
 	remembered = 'rnnoise';
-	const finish = { old: () => undefined, replacement: () => undefined };
+	const finish: Record<'old' | 'replacement', () => void> = { old: () => undefined, replacement: () => undefined };
 	const oldTrack = makeTrack({ filtering: false });
-	oldTrack.setProcessor.mockImplementation(() => new Promise<void>((resolve) => (finish.old = resolve)));
+	oldTrack.setProcessor.mockImplementation(
+		() =>
+			new Promise<void>((resolve) => {
+				finish.old = resolve;
+			}),
+	);
 	const replacement = makeTrack({ filtering: false });
-	replacement.setProcessor.mockImplementation(() => new Promise<void>((resolve) => (finish.replacement = resolve)));
+	replacement.setProcessor.mockImplementation(
+		() =>
+			new Promise<void>((resolve) => {
+				finish.replacement = resolve;
+			}),
+	);
 
 	const { result, rerender } = renderHook(({ track }) => useNoiseSuppression(makeRoom(), track, '/rnnoise'), {
 		initialProps: { track: oldTrack },
