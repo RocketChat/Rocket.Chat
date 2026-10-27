@@ -60,6 +60,18 @@ Check the source style before committing:
 yarn workspace @rocket.chat/icons lint
 ```
 
+### Holes in the font glyph
+
+A path with `fill-rule="evenodd"` can cut a hole whose subpath runs in the same direction as the shape around it. The SVG shows the hole, but a font glyph keeps no fill rule: it fills every subpath of every path with the nonzero rule, so the font fills the hole in. The fix is to reverse the direction of the hole's subpath, which keeps the hole under either rule and leaves the SVG unchanged.
+
+Check every `evenodd` icon before committing:
+
+```sh
+yarn workspace @rocket.chat/icons check:fill
+```
+
+It rasterizes each icon as the SVG fills it and as the font glyph does, and flags as `BROKEN` any icon where the two differ by more than 0.1% of the view box. It reads only `<path>` elements with absolute `M`, `L`, `H`, `V`, `C` and `Z` commands, and stops on anything else.
+
 ## Releasing
 
 `@rocket.chat/icons` is published to npm, so a new icon needs a changeset with a minor bump:
