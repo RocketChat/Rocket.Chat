@@ -17,7 +17,7 @@ export const executeStartImport = async ({ input }: StartImportParamsPOST, start
 		throw new ClientSafeError('error-importer-not-defined', `The importer (${importerKey}) has no import class defined.`, 'startImport');
 	}
 
-	const instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
+	const instance = new importer.importer(importer, operation); // oxlint-disable-line new-cap
 
 	await instance.startImport(input, startedByUserId);
 };

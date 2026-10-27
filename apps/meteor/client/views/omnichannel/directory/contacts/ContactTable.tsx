@@ -106,7 +106,7 @@ function ContactTable() {
 		<>
 			{((isSuccess && data?.contacts.length > 0) || queryHasChanged) && (
 				<FilterByText value={term} onChange={(event) => setTerm(event.target.value)}>
-					<Button onClick={onButtonNewClick} primary>
+					<Button onClick={onButtonNewClick} variant='primary'>
 						{t('New_contact')}
 					</Button>
 				</FilterByText>

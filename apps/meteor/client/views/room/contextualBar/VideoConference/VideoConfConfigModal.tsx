@@ -74,7 +74,7 @@ const VideoConfConfigModal = ({ onClose, onConfirm, isAdmin }: VideoConfConfigMo
 				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Close')}</Button>
 					{onConfirm && isAdmin && (
-						<Button primary onClick={onConfirm}>
+						<Button variant='primary' onClick={onConfirm}>
 							{t('Open_settings')}
 						</Button>
 					)}

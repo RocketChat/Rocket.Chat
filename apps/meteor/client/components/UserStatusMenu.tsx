@@ -74,9 +74,9 @@ const UserStatusMenu = ({ onChange, initialStatus = UserStatusType.OFFLINE, plac
 		<>
 			<Button
 				ref={ref}
-				mini
+				size='mini'
 				square
-				secondary
+				variant='secondary'
 				onClick={onClick}
 				onBlur={hide}
 				onKeyUp={handleKeyUp}

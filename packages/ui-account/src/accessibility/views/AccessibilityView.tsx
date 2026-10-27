@@ -207,7 +207,7 @@ const AccessibilityView = ({ vm: { values: preferencesValues, displayRolesEnable
 			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset(preferencesValues)}>{t('Cancel')}</Button>
-					<Button primary disabled={!isDirty} loading={isSubmitting} form={pageFormId} type='submit'>
+					<Button variant='primary' disabled={!isDirty} loading={isSubmitting} form={pageFormId} type='submit'>
 						{t('Save_changes')}
 					</Button>
 				</ButtonGroup>

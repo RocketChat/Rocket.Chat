@@ -140,7 +140,7 @@ const MonitorsTable = () => {
 					<FieldRow>
 						<Stack direction='row' align='center' justify='space-between' grow gap={8}>
 							<UserAutoComplete id={usernameFieldId} name='monitor' value={username} onChange={setUsername as () => void} />
-							<Button primary disabled={!username} loading={addMutation.isPending} onClick={() => handleAdd()}>
+							<Button variant='primary' disabled={!username} loading={addMutation.isPending} onClick={() => handleAdd()}>
 								{t('Add_monitor')}
 							</Button>
 						</Stack>
@@ -179,7 +179,7 @@ const MonitorsTable = () => {
 									<GenericTableCell truncate>{monitor.username}</GenericTableCell>
 									<GenericTableCell truncate>{monitor.email}</GenericTableCell>
 									<GenericTableCell truncate>
-										<IconButton icon='trash' small title={t('Remove')} onClick={() => handleRemove(monitor.username)} />
+										<IconButton icon='trash' size='small' title={t('Remove')} onClick={() => handleRemove(monitor.username)} />
 									</GenericTableCell>
 								</GenericTableRow>
 							))}

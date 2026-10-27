@@ -82,6 +82,7 @@ const ContactInfoHistory = ({ contact, setChatId }: ContactInfoHistoryProps) => 
 			>
 				<Box display='flex' flexDirection='row' flexGrow={1}>
 					<Select
+						aria-label={t('Filter')}
 						value={type}
 						onChange={handleChangeFilter}
 						placeholder={t('Filter')}

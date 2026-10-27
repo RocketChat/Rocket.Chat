@@ -71,7 +71,7 @@ const CreateRoomSteps = ({ abac, flow, details, security, onCancel, submitDisabl
 							{t('Back')}
 						</Button>
 					)}
-					<Button type='submit' primary disabled={submitDisabled || flow.isStepBlocked} loading={isSubmitting}>
+					<Button type='submit' variant='primary' disabled={submitDisabled || flow.isStepBlocked} loading={isSubmitting}>
 						{index === total - 1 ? t('Create') : t('Next')}
 					</Button>
 				</ModalFooterControllers>

@@ -26,7 +26,7 @@ export const executeGetImportFileData = async (): Promise<IImporterSelection | {
 		);
 	}
 
-	const instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
+	const instance = new importer.importer(importer, operation); // oxlint-disable-line new-cap
 
 	const waitingSteps: IImportProgress['step'][] = [
 		ProgressStep.DOWNLOADING_FILE,

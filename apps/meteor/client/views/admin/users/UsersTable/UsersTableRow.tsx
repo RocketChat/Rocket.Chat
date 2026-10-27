@@ -176,11 +176,11 @@ const UsersTableRow = ({ user, tab, isMobile, isLaptop, isSeatsCapExceeded, show
 					{tab === 'pending' && (
 						<>
 							{active ? (
-								<Button small secondary onClick={handleResendWelcomeEmail}>
+								<Button size='small' variant='secondary' onClick={handleResendWelcomeEmail}>
 									{t('Resend_welcome_email')}
 								</Button>
 							) : (
-								<Button small primary onClick={changeUserStatusAction?.onClick} disabled={isSeatsCapExceeded}>
+								<Button size='small' variant='primary' onClick={changeUserStatusAction?.onClick} disabled={isSeatsCapExceeded}>
 									{t('Activate')}
 								</Button>
 							)}

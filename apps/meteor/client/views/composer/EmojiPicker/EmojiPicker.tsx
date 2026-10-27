@@ -240,7 +240,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 					<div>
 						{emojiToPreview && <EmojiPickerPreview emoji={emojiToPreview.emoji} name={emojiToPreview.name} />}
 						{canManageEmoji && emojiToPreview === null && (
-							<Button small onClick={handleGoToAddCustom}>
+							<Button size='small' onClick={handleGoToAddCustom}>
 								{t('Add_emoji')}
 							</Button>
 						)}

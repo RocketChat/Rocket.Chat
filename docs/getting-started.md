@@ -236,7 +236,7 @@ export MONGO_URL='mongodb://localhost:27017/rocketchat?replicaSet=rs0'
 | `yarn testunit` | unit (definition + jest + mocha server, with coverage) |
 | `yarn testapi` | API tests (mocha, needs a running server) |
 | `yarn test:e2e` | end-to-end (Playwright) |
-| `yarn lint` | stylelint + meteor lint + eslint |
+| `yarn lint` | stylelint + oxlint |
 | `yarn typecheck` | `meteor lint` + `tsc --noEmit` |
 
 From the root, `yarn testunit` and `yarn lint` run via Turbo across all

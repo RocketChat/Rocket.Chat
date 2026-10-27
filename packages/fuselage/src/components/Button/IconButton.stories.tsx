@@ -129,7 +129,7 @@ export const States: Story = {
 				component={IconButton}
 				common={{
 					'icon': 'doner',
-					'medium': true,
+					'size': 'medium',
 					'aria-label': 'balloon',
 				}}
 				xAxis={{
@@ -143,10 +143,10 @@ export const States: Story = {
 				yAxis={{
 					default: {},
 					info: {
-						info: true,
+						variant: 'info',
 					},
 					danger: {
-						danger: true,
+						variant: 'danger',
 					},
 					emoji: {
 						icon: EmojiElement,
@@ -193,7 +193,7 @@ export const Variants: Story = {
 				component={IconButton}
 				common={{
 					'icon': 'doner',
-					'medium': true,
+					'size': 'medium',
 					'aria-label': 'balloon',
 				}}
 				xAxis={{
@@ -206,35 +206,31 @@ export const Variants: Story = {
 				yAxis={{
 					'default': {},
 					'info': {
-						info: true,
+						variant: 'info',
 					},
 					'danger': {
-						danger: true,
+						variant: 'danger',
 					},
 					'success': {
-						success: true,
+						variant: 'success',
 					},
 					'warning': {
-						warning: true,
+						variant: 'warning',
 					},
 					'secondary': {
-						secondary: true,
+						variant: 'secondary',
 					},
 					'secondary-info | primary': {
-						info: true,
-						secondary: true,
+						variant: 'primary',
 					},
 					'secondary-danger': {
-						danger: true,
-						secondary: true,
+						variant: 'secondary-danger',
 					},
 					'secondary-success': {
-						success: true,
-						secondary: true,
+						variant: 'secondary-success',
 					},
 					'secondary-warning': {
-						warning: true,
-						secondary: true,
+						variant: 'secondary-warning',
 					},
 				}}
 			/>
@@ -245,11 +241,11 @@ export const Variants: Story = {
 export const Sizes: Story = {
 	render: () => (
 		<ButtonGroup>
-			<IconButton icon='balloon' aria-label='balloon' secondary />
-			<IconButton icon='balloon' aria-label='balloon' secondary medium />
-			<IconButton icon='balloon' aria-label='balloon' secondary small />
-			<IconButton icon='balloon' aria-label='balloon' secondary tiny />
-			<IconButton icon='balloon' aria-label='balloon' secondary mini />
+			<IconButton icon='balloon' aria-label='balloon' variant='secondary' />
+			<IconButton icon='balloon' aria-label='balloon' variant='secondary' size='medium' />
+			<IconButton icon='balloon' aria-label='balloon' variant='secondary' size='small' />
+			<IconButton icon='balloon' aria-label='balloon' variant='secondary' size='tiny' />
+			<IconButton icon='balloon' aria-label='balloon' variant='secondary' size='mini' />
 		</ButtonGroup>
 	),
 };
@@ -273,7 +269,7 @@ export const _IconButtonInfo: Story = {
 	args: {
 		'icon': 'balloon',
 		'aria-label': 'balloon',
-		'info': true,
+		'variant': 'info',
 	},
 };
 
@@ -281,8 +277,7 @@ export const _IconButtonSecondaryInfo: Story = {
 	args: {
 		'icon': 'balloon',
 		'aria-label': 'balloon',
-		'secondary': true,
-		'info': true,
+		'variant': 'primary',
 	},
 };
 
@@ -290,7 +285,7 @@ export const _IconButtonSuccess: Story = {
 	args: {
 		'icon': 'balloon',
 		'aria-label': 'balloon',
-		'success': true,
+		'variant': 'success',
 	},
 };
 
@@ -298,8 +293,7 @@ export const _IconButtonSecondarySuccess: Story = {
 	args: {
 		'icon': 'balloon',
 		'aria-label': 'balloon',
-		'secondary': true,
-		'success': true,
+		'variant': 'secondary-success',
 	},
 };
 
@@ -307,7 +301,7 @@ export const _IconButtonWarning: Story = {
 	args: {
 		'icon': 'balloon',
 		'aria-label': 'balloon',
-		'warning': true,
+		'variant': 'warning',
 	},
 };
 
@@ -315,8 +309,7 @@ export const _IconButtonSecondaryWarning: Story = {
 	args: {
 		'icon': 'balloon',
 		'aria-label': 'balloon',
-		'secondary': true,
-		'warning': true,
+		'variant': 'secondary-warning',
 	},
 };
 
@@ -324,7 +317,7 @@ export const _IconButtonDanger: Story = {
 	args: {
 		'icon': 'balloon',
 		'aria-label': 'balloon',
-		'danger': true,
+		'variant': 'danger',
 	},
 };
 
@@ -332,16 +325,15 @@ export const _IconButtonSecondaryDanger: Story = {
 	args: {
 		'icon': 'balloon',
 		'aria-label': 'balloon',
-		'secondary': true,
-		'danger': true,
+		'variant': 'secondary-danger',
 	},
 };
 
 export const Colors: Story = {
 	render: () => (
 		<ButtonGroup>
-			<IconButton icon='pencil' aria-label='pencil' small color='default' />
-			<IconButton icon='trash' aria-label='trash' small color='danger' />
+			<IconButton icon='pencil' aria-label='pencil' size='small' color='default' />
+			<IconButton icon='trash' aria-label='trash' size='small' color='danger' />
 		</ButtonGroup>
 	),
 };
@@ -349,7 +341,7 @@ export const Colors: Story = {
 export const _IconButtonWithBadge: Story = {
 	render: () => (
 		<ButtonGroup>
-			<IconButton icon='balloon' aria-label='balloon, 2 unread messages' small badge={<Badge variant='danger'>2</Badge>} />
+			<IconButton icon='balloon' aria-label='balloon, 2 unread messages' size='small' badge={<Badge variant='danger'>2</Badge>} />
 		</ButtonGroup>
 	),
 };
@@ -360,7 +352,7 @@ export const _IconButtonAvatarWithBadge: Story = {
 			<IconButton
 				icon={<Avatar size='x28' url={avatarUrl} />}
 				aria-label='profile, 2 unread messages'
-				small
+				size='small'
 				badge={<Badge variant='danger'>2</Badge>}
 			/>
 		</ButtonGroup>
@@ -370,7 +362,7 @@ export const _IconButtonAvatarWithBadge: Story = {
 export const _IconButtonWithDot: Story = {
 	render: () => (
 		<ButtonGroup>
-			<IconButton icon='balloon' aria-label='balloon, unread messages' small badge={<Badge variant='danger' small />} />
+			<IconButton icon='balloon' aria-label='balloon, unread messages' size='small' badge={<Badge variant='danger' small />} />
 		</ButtonGroup>
 	),
 };
@@ -381,7 +373,7 @@ export const _IconButtonWithBadgeAtBottom: Story = {
 			<IconButton
 				icon={<Avatar size='x28' url={avatarUrl} />}
 				aria-label='profile, online'
-				medium
+				size='medium'
 				badgePosition='bottom-end'
 				badge={<Badge variant='primary' small />}
 			/>

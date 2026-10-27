@@ -1,5 +1,5 @@
-/* eslint-disable testing-library/no-container */
-/* eslint-disable testing-library/no-node-access */
+/* oxlint-disable testing-library/no-container */
+/* oxlint-disable testing-library/no-node-access */
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { render, waitFor } from '@testing-library/react';
 

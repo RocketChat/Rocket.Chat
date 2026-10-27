@@ -219,7 +219,7 @@ const RecipientForm = (props: RecipientFormProps) => {
 
 			{customActions ?? (
 				<Box marginBlockStart={24} display='flex' justifyContent='end' flexGrow={0} flexShrink={0}>
-					<Button type='submit' primary loading={isSubmitting}>
+					<Button type='submit' variant='primary' loading={isSubmitting}>
 						{t('Submit')}
 					</Button>
 				</Box>

@@ -118,7 +118,7 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 						<Button square disabled={disabled} title={t('Accounts_SetDefaultAvatar')} onClick={clickReset}>
 							<Avatar url={`/avatar/%40${useFullNameForDefaultAvatar ? name : username}`} />
 						</Button>
-						<IconButton icon='upload' secondary disabled={disabled} title={t('Upload')} onClick={clickUpload} />
+						<IconButton icon='upload' variant='secondary' disabled={disabled} title={t('Upload')} onClick={clickUpload} />
 						<UserAvatarSuggestions disabled={disabled} onSelectOne={handleSelectSuggestion} />
 					</Box>
 					<Box paddingInlineStart={4} marginBlockStart={12}>
@@ -129,7 +129,14 @@ function UserAvatarEditor({ currentUsername, username, setAvatarObj, name, disab
 									placeholder={t('Use_url_for_avatar')}
 									endAddonFlush
 									endAddon={
-										<IconButton icon='permalink' secondary small disabled={!canAddUrl} title={t('Add_URL')} onClick={handleAddUrl} />
+										<IconButton
+											icon='permalink'
+											variant='secondary'
+											size='small'
+											disabled={!canAddUrl}
+											title={t('Add_URL')}
+											onClick={handleAddUrl}
+										/>
 									}
 									disabled={disabled}
 									value={avatarFromUrl}

@@ -40,7 +40,7 @@ const SidePanelInternal = ({ title, currentTab, unreadOnly, toggleUnreadOnly, ro
 		<Sidepanel role='tabpanel' aria-label={t('Side_panel')}>
 			<SidepanelHeader role='heading' aria-label={title}>
 				<Box withTruncatedText display='flex' alignItems='center' gap={8}>
-					{isTablet && <IconButton icon='arrow-back' title={t('Back')} small onClick={closeSidePanel} />}
+					{isTablet && <IconButton icon='arrow-back' title={t('Back')} size='small' onClick={closeSidePanel} />}
 					<SidepanelHeaderTitle>{title}</SidepanelHeaderTitle>
 				</Box>
 				<Box display='flex' alignItems='center'>
@@ -71,7 +71,7 @@ export const createSidePanel =
 	<R extends object>(
 		ItemContentComponent: ComponentType<{ room: R; openedRoom: ReturnType<typeof useOpenedRoom>; isRoomFilter: boolean }>,
 	) =>
-	// eslint-disable-next-line react/no-multi-comp, react/display-name
+	// oxlint-disable-next-line react/display-name
 	({ title, currentTab, unreadOnly, toggleUnreadOnly, rooms }: Omit<SidePanelProps<R>, 'ItemContentComponent'>) => (
 		<SidePanelInternal
 			title={title}

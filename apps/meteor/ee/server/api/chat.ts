@@ -16,7 +16,6 @@ type GetMessageReadReceiptsProps = {
 };
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
 		'/v1/chat.getMessageReadReceipts': {
 			GET: (params: GetMessageReadReceiptsProps) => {

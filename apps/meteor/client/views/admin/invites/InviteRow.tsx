@@ -77,7 +77,7 @@ const InviteRow = ({ _id, createdAt, expires, uses, maxUses, onRemove }: InviteR
 				</>
 			)}
 			<GenericTableCell>
-				<IconButton icon='cross' danger small onClick={handleRemoveButtonClick} />
+				<IconButton icon='cross' variant='danger' size='small' onClick={handleRemoveButtonClick} />
 			</GenericTableCell>
 		</GenericTableRow>
 	);

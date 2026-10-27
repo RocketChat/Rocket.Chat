@@ -41,7 +41,7 @@ const UsersInRoleTableRow = ({ user, onRemove }: UsersInRoleTableRowProps) => {
 			</GenericTableCell>
 			<GenericTableCell truncate>{email}</GenericTableCell>
 			<GenericTableCell>
-				<IconButton small icon='trash' title={t('Remove')} danger onClick={handleRemove} />
+				<IconButton size='small' icon='trash' title={t('Remove')} variant='danger' onClick={handleRemove} />
 			</GenericTableCell>
 		</GenericTableRow>
 	);

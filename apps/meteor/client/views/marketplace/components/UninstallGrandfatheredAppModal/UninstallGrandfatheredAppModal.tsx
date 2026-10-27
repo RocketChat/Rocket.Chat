@@ -53,7 +53,7 @@ const UninstallGrandfatheredAppModal = ({ context, limit, appName, handleUninsta
 				</ModalFooterAnnotation>
 				<ModalFooterControllers>
 					<Button onClick={handleClose}>{t('Cancel')}</Button>
-					<Button danger onClick={handleUninstall}>
+					<Button variant='danger' onClick={handleUninstall}>
 						{t('Uninstall')}
 					</Button>
 				</ModalFooterControllers>

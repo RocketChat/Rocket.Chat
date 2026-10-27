@@ -61,7 +61,7 @@ const EnterpriseDepartmentsModal = ({ closeModal }: { closeModal: () => void }) 
 			<ModalFooter>
 				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button onClick={goToManageSubscriptionPage} primary>
+					<Button onClick={goToManageSubscriptionPage} variant='primary'>
 						{t('Upgrade')}
 					</Button>
 				</ModalFooterControllers>

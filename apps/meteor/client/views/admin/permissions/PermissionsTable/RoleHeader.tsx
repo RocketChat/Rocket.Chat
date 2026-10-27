@@ -24,7 +24,7 @@ const RoleHeader = ({ _id, name, description }: RoleHeaderProps) => {
 	return (
 		<GenericTableHeaderCell>
 			<Box marginInline='neg-x4'>
-				<Button small icon='edit' secondary onClick={handleEditRole}>
+				<Button size='small' icon='edit' variant='secondary' onClick={handleEditRole}>
 					{description || name}
 				</Button>
 			</Box>

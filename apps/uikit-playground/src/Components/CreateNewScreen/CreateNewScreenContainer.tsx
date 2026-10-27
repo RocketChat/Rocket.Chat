@@ -66,7 +66,7 @@ const CreateNewScreenContainer = () => {
 						right: 20px;
 					`}
 				>
-					<Button square tiny onClick={onClosehandler}>
+					<Button square size='tiny' onClick={onClosehandler}>
 						<Icon name='cross' size='x15' />
 					</Button>
 				</Box>

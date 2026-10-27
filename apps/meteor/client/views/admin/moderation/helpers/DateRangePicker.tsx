@@ -86,7 +86,7 @@ const DateRangePicker = ({ onChange, defaultSelectedKey = 'alldates' }: DateRang
 
 	return (
 		<Box flexGrow={0}>
-			<Select defaultSelectedKey={defaultSelectedKey} options={timeOptions} onChange={handleOptionClick} />
+			<Select aria-label={t('Select_period')} defaultSelectedKey={defaultSelectedKey} options={timeOptions} onChange={handleOptionClick} />
 		</Box>
 	);
 };

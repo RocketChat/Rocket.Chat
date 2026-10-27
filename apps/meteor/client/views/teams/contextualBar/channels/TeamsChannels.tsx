@@ -96,7 +96,7 @@ const TeamsChannels = ({
 					endAddon={<Icon name='magnifier' size='x20' />}
 				/>
 				<Box width='x144' marginInlineStart={8}>
-					<Select onChange={(val) => setType(val)} value={type} options={options} />
+					<Select aria-label={t('Filter')} onChange={(val) => setType(val)} value={type} options={options} />
 				</Box>
 			</ContextualbarSection>
 			<ContextualbarContent flush spaced>
@@ -118,7 +118,6 @@ const TeamsChannels = ({
 								<Virtuoso
 									totalCount={total}
 									data={channels}
-									// eslint-disable-next-line react/no-multi-comp
 									components={{ Footer: () => <InfiniteListAnchor loadMore={loadMoreChannels} /> }}
 									itemContent={(index, data) => (
 										<TeamsChannelItem onClickView={onClickView} room={data} mainRoom={mainRoom} reload={reload} key={index} />

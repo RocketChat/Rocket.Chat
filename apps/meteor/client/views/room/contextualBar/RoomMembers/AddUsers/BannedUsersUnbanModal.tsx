@@ -66,7 +66,7 @@ const BannedUsersUnbanModal = ({ onClose, onConfirm }: BannedUsersUnbanModalProp
 				</ModalFooterAnnotation>
 				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button primary onClick={handleConfirm} disabled={!unbanConfirmed} loading={loading}>
+					<Button variant='primary' onClick={handleConfirm} disabled={!unbanConfirmed} loading={loading}>
 						{t('Add_users')}
 					</Button>
 				</ModalFooterControllers>

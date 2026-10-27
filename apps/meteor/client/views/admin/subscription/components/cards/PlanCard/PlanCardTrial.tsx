@@ -55,7 +55,7 @@ const PlanCardTrial = ({ licenseInformation }: PlanCardProps) => {
 			</CardBody>
 			<CardControls>
 				<Box display='flex' flexDirection='column' marginBlockStart='auto' width='full'>
-					<UpgradeButton target='plan_card_trial' action={isSalesAssisted ? 'finish_purchase' : 'contact_sales'} primary>
+					<UpgradeButton target='plan_card_trial' action={isSalesAssisted ? 'finish_purchase' : 'contact_sales'} variant='primary'>
 						{isSalesAssisted ? t('Finish_purchase') : t('Contact_sales')}
 					</UpgradeButton>
 				</Box>

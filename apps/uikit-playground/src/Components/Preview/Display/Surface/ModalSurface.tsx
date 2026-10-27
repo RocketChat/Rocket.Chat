@@ -31,7 +31,7 @@ const ModalSurface = ({ children }: ModalSurfaceProps) => {
 			<ModalFooter>
 				<ButtonGroup align='end'>
 					<Button>Cancel</Button>
-					<Button primary>Submit</Button>
+					<Button variant='primary'>Submit</Button>
 				</ButtonGroup>
 			</ModalFooter>
 		</Modal>

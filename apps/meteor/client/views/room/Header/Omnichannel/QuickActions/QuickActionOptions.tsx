@@ -25,7 +25,7 @@ const QuickActionOptions = ({ options, room, action, icon, ...props }: QuickActi
 
 	return (
 		<>
-			<HeaderToolbarAction ref={reference} icon={icon} onClick={() => toggle()} secondary={isVisible} {...props} />
+			<HeaderToolbarAction ref={reference} icon={icon} onClick={() => toggle()} variant={isVisible ? 'secondary' : undefined} {...props} />
 			{isVisible && (
 				<Dropdown reference={reference} ref={target}>
 					{options.map(({ id, label, validate }) => {

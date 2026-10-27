@@ -39,7 +39,7 @@ const OutlookEventItem = ({ subject, description, startTime, meetingUrl }: Outlo
 			</ItemContent>
 			{meetingUrl && (
 				<ItemActions>
-					<Button onClick={openCall} small>
+					<Button onClick={openCall} size='small'>
 						{t('Join')}
 					</Button>
 				</ItemActions>

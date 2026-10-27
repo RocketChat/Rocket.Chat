@@ -163,7 +163,7 @@ const TwoFactorTOTP = (props: TwoFactorTOTPProps) => {
 						<FieldRow>
 							<Stack direction='row' align='center' grow gap={8}>
 								<TextInput id={totpCodeId} {...register('authCode')} />
-								<Button primary onClick={handleSubmit(handleVerifyCode)}>
+								<Button variant='primary' onClick={handleSubmit(handleVerifyCode)}>
 									{t('Verify')}
 								</Button>
 							</Stack>

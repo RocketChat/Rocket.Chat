@@ -200,7 +200,7 @@ export const ExportLogsModal = ({ onClose, filterValues, onConfirm }: ExportLogs
 			<ModalFooter>
 				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button primary disabled={!isValid} onClick={handleConfirm}>
+					<Button variant='primary' disabled={!isValid} onClick={handleConfirm}>
 						{t('Download')}
 					</Button>
 				</ModalFooterControllers>

@@ -31,7 +31,7 @@ const ConferenceIframe = ({ url, ref }: ConferenceIframeProps) => {
 		<Box position='relative' display='flex' flexDirection='column' flexGrow={1} minHeight={0} style={{ backgroundColor: '#000' }}>
 			{/* `aria-label` names the frame instead of `title`. A `title` on a full-viewport iframe also renders
 			    as a hover tooltip, floating a label over the call for as long as the pointer is inside it. */}
-			{/* eslint-disable-next-line jsx-a11y/iframe-has-title */}
+			{/* oxlint-disable-next-line jsx-a11y/iframe-has-title */}
 			<iframe
 				ref={ref}
 				// An iframe's UA default is `2px inset`, a pale line around the whole picture.

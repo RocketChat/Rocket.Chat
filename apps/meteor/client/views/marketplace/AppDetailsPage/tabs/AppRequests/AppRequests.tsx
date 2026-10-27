@@ -52,7 +52,7 @@ const AppRequests = ({ id, isAdminUser }: AppRequestsProps) => {
 				}
 			}
 		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 	}, [isAdminUser, isSuccess, paginatedAppRequests?.data, reloadApps]);
 
 	if (isLoading) {

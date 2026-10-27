@@ -93,7 +93,7 @@ const IncomingWebhookForm = ({ webhookData }: IncomingWebhookFormProps) => {
 									value={webhookData?._id ? url : t('Will_be_available_here_after_saving')}
 									readOnly
 									endAddon={
-										webhookData?._id ? <IconButton mini onClick={() => copyWebhookUrl()} title={t('Copy')} icon='copy' /> : undefined
+										webhookData?._id ? <IconButton size='mini' onClick={() => copyWebhookUrl()} title={t('Copy')} icon='copy' /> : undefined
 									}
 									aria-describedby={`${webhookUrlField}-hint`}
 								/>
@@ -107,7 +107,9 @@ const IncomingWebhookForm = ({ webhookData }: IncomingWebhookFormProps) => {
 									id={tokenField}
 									value={webhookData?._id ? `${webhookData?._id}/${webhookData?.token}` : t('Will_be_available_here_after_saving')}
 									readOnly
-									endAddon={webhookData?._id ? <IconButton mini onClick={() => copyToken()} title={t('Copy')} icon='copy' /> : undefined}
+									endAddon={
+										webhookData?._id ? <IconButton size='mini' onClick={() => copyToken()} title={t('Copy')} icon='copy' /> : undefined
+									}
 								/>
 							</FieldRow>
 						</Field>
@@ -130,7 +132,7 @@ const IncomingWebhookForm = ({ webhookData }: IncomingWebhookFormProps) => {
 										value={curlData}
 										readOnly
 										endAddon={
-											webhookData?._id ? <IconButton mini onClick={() => copyCurlData()} title={t('Copy')} icon='copy' /> : undefined
+											webhookData?._id ? <IconButton size='mini' onClick={() => copyCurlData()} title={t('Copy')} icon='copy' /> : undefined
 										}
 									/>
 								</FieldRow>

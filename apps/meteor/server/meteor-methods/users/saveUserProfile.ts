@@ -206,7 +206,6 @@ const saveUserProfileWithTwoFactor = twoFactorRequired(saveUserProfile, {
 });
 
 declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		saveUserProfile(
 			settings: {
