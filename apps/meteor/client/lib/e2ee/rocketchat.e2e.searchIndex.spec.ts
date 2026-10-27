@@ -2,6 +2,7 @@ import type { ISearchIndexBackend } from '@rocket.chat/desktop-api';
 
 import { generate } from './crypto/rsa';
 import { e2e, e2eSearchIndexSession, e2eSearchIndexWriter } from './rocketchat.e2e';
+import { setSearchIndexOptIn } from '../e2eeSearch/searchIndexOptIn';
 import { deriveSearchIndexWrapKey } from '../e2eeSearch/searchIndexSession';
 import { settings } from '../settings';
 
@@ -36,6 +37,8 @@ describe('E2E client and the local search index', () => {
 
 	beforeEach(() => {
 		localSearchAllowed = true;
+		window.localStorage.clear();
+		setSearchIndexOptIn('u1', true);
 		const peek = settings.peek.bind(settings);
 		jest
 			.spyOn(settings, 'peek')
@@ -133,6 +136,44 @@ describe('E2E client and the local search index', () => {
 		expect(bridge.wipe).toHaveBeenCalledTimes(1);
 		expect(e2eSearchIndexSession.getActiveBackend()).toBeUndefined();
 		expect(bridge.upsert).not.toHaveBeenCalled();
+
+		await e2e.stopClient();
+	});
+
+	it('wipes the desktop index at login when the admin allows local search but the user did not opt in on this device', async () => {
+		setSearchIndexOptIn('u1', false);
+		const { privateKey } = await generate();
+		(e2e as unknown as { userId: string }).userId = 'u1';
+		e2e.privateKey = privateKey;
+
+		e2e.setState('READY');
+		await e2eSearchIndexSession.whenSettled();
+
+		expect(bridge.wipe).toHaveBeenCalledTimes(1);
+		expect(e2eSearchIndexSession.getActiveBackend()).toBeUndefined();
+
+		await e2e.stopClient();
+	});
+
+	it('wipes the open index at once when the user turns the opt-in off, and opens it again when the user turns it on', async () => {
+		const { privateKey } = await generate();
+		(e2e as unknown as { userId: string }).userId = 'u1';
+		e2e.privateKey = privateKey;
+
+		e2e.setState('READY');
+		await e2eSearchIndexSession.whenSettled();
+		expect(e2eSearchIndexSession.getActiveBackend()).toBeDefined();
+
+		setSearchIndexOptIn('u1', false);
+		await e2eSearchIndexSession.whenSettled();
+
+		expect(bridge.wipe).toHaveBeenCalledTimes(1);
+		expect(e2eSearchIndexSession.getActiveBackend()).toBeUndefined();
+
+		setSearchIndexOptIn('u1', true);
+		await e2eSearchIndexSession.whenSettled();
+
+		expect(e2eSearchIndexSession.getActiveBackend()).toBeDefined();
 
 		await e2e.stopClient();
 	});

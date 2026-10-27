@@ -43,8 +43,9 @@ export type SearchIndexSessionSource = {
 type SearchIndexSessionOptions = {
 	getBackend: () => ISearchIndexBackend | undefined;
 	/**
-	 * Whether the workspace admin allows the local search of encrypted messages, read at each login. When it does not,
-	 * the session wipes the index of the user and does not use it.
+	 * Whether the local search of encrypted messages is allowed (the workspace admin's setting and the user's opt-in on
+	 * this device), read at each login and at each `recheck`. When it is not, the session wipes the index of the user
+	 * and does not use it.
 	 */
 	isAllowed?: () => boolean;
 	onError?: (error: unknown) => void;
@@ -55,7 +56,12 @@ export type SearchIndexSession = {
 	getActiveBackend(): ISearchIndexBackend | undefined;
 	/** Calls the listener each time `getActiveBackend` changes. Returns the function that removes it. */
 	subscribe(listener: () => void): () => void;
-	/** Resolves when the open that runs now (if any) has settled. */
+	/**
+	 * Reads `isAllowed` again now, without a new login: wipes and stops using the open index when it is not allowed any
+	 * more, or opens the index when it became allowed while E2EE is ready.
+	 */
+	recheck(): void;
+	/** Resolves when the open or wipe that runs now (if any) has settled. */
 	whenSettled(): Promise<void>;
 	dispose(): void;
 };
@@ -75,6 +81,7 @@ export const createSearchIndexSession = (
 	{ getBackend, isAllowed = () => true, onError = () => undefined }: SearchIndexSessionOptions,
 ): SearchIndexSession => {
 	let generation = 0;
+	let ready = false;
 	let openedFor: string | undefined;
 	let active: ISearchIndexBackend | undefined;
 	let pending: Promise<void> = Promise.resolve();
@@ -125,12 +132,25 @@ export const createSearchIndexSession = (
 
 	const off = source.on('E2E_STATE_CHANGED', ({ nextState }) => {
 		if (readyStates.has(nextState)) {
+			ready = true;
 			pending = start(generation);
 			return;
 		}
 
-		if (stoppedStates.has(nextState)) stop();
+		if (stoppedStates.has(nextState)) {
+			ready = false;
+			stop();
+		}
 	});
+
+	const withdraw = async (backend: ISearchIndexBackend) => {
+		stop();
+		try {
+			await backend.wipe();
+		} catch (error) {
+			onError(error);
+		}
+	};
 
 	return {
 		getActiveBackend: () => active,
@@ -139,6 +159,15 @@ export const createSearchIndexSession = (
 			return () => {
 				listeners.delete(listener);
 			};
+		},
+		recheck: () => {
+			if (active) {
+				if (!isAllowed()) pending = withdraw(active);
+				return;
+			}
+
+			// An open in flight reads `isAllowed` itself when it resolves.
+			if (ready && !openedFor) pending = start(generation);
 		},
 		whenSettled: () => pending,
 		dispose: () => {

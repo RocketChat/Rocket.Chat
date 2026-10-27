@@ -2368,6 +2368,8 @@
   "E2E_key_reset_email": "E2E key reset notification",
   "E2E_Local_Search_Backfill_Months": "Local search history depth (months)",
   "E2E_Local_Search_Backfill_Months_Description": "How far back the desktop app indexes old encrypted messages. 0 indexes only new messages.",
+  "E2E_Local_Search_Opt_In": "Index my encrypted messages on this device",
+  "E2E_Local_Search_Opt_In_Description": "Keep an encrypted index of your decrypted messages on this device, so you can search encrypted rooms here. The server never receives the index or your search terms. Turn it off to delete the index from this device.",
   "E2E_message_encrypted_placeholder": "This message is end-to-end encrypted. To view it, you must enter your encryption key in your account settings.",
   "E2E_password_request_text": "To access your encrypted channels and direct messages, enter your encryption password. This is not stored on the server, so you’ll need to use it on every device.",
   "E2E_password_reveal_text": "Create secure private rooms and direct messages with end-to-end encryption. This password won’t be stored on the server. You can use it on all your devices.",

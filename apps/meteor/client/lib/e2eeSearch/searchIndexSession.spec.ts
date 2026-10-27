@@ -370,6 +370,64 @@ describe('createSearchIndexSession with the admin setting', () => {
 		expect(session.getActiveBackend()).toBe(backend);
 	});
 
+	it('wipes and stops using the open index when a recheck finds that it is not allowed any more', async () => {
+		const backend = createBackend();
+		const { source, setState } = createSource(privateKey);
+		let allowed = true;
+		const listener = jest.fn();
+		const session = createSearchIndexSession(source, { getBackend: () => backend, isAllowed: () => allowed });
+		session.subscribe(listener);
+
+		setState('READY');
+		await session.whenSettled();
+		expect(session.getActiveBackend()).toBe(backend);
+
+		allowed = false;
+		session.recheck();
+		await session.whenSettled();
+
+		expect(backend.wipe).toHaveBeenCalledTimes(1);
+		expect(session.getActiveBackend()).toBeUndefined();
+		expect(listener).toHaveBeenCalledTimes(2);
+	});
+
+	it('opens and activates the index when a recheck finds that it is allowed while E2EE is ready', async () => {
+		const backend = createBackend();
+		const { source, setState } = createSource(privateKey);
+		let allowed = false;
+		const session = createSearchIndexSession(source, { getBackend: () => backend, isAllowed: () => allowed });
+
+		setState('READY');
+		await session.whenSettled();
+		expect(session.getActiveBackend()).toBeUndefined();
+
+		allowed = true;
+		session.recheck();
+		await session.whenSettled();
+
+		expect(backend.open).toHaveBeenCalledTimes(2);
+		expect(session.getActiveBackend()).toBe(backend);
+	});
+
+	it('does not open on a recheck while E2EE is not ready', async () => {
+		const backend = createBackend();
+		const { source, setState } = createSource(privateKey);
+		const session = createSearchIndexSession(source, { getBackend: () => backend, isAllowed: () => true });
+
+		session.recheck();
+		await session.whenSettled();
+		expect(backend.open).not.toHaveBeenCalled();
+
+		setState('READY');
+		await session.whenSettled();
+		setState('DISABLED');
+		session.recheck();
+		await session.whenSettled();
+
+		expect(backend.open).toHaveBeenCalledTimes(1);
+		expect(session.getActiveBackend()).toBeUndefined();
+	});
+
 	it('reports a failed wipe and stays inactive', async () => {
 		const backend = createBackend();
 		backend.wipe.mockRejectedValue(new Error('wipe failed'));

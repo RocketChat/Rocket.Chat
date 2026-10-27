@@ -33,6 +33,7 @@ import {
 	toSearchIndexRooms,
 } from '../e2eeSearch/searchIndexRuntime';
 import { createDocumentIdleSignal } from '../e2eeSearch/searchIndexScheduler';
+import { isSearchIndexOptedIn, subscribeToSearchIndexOptIn } from '../e2eeSearch/searchIndexOptIn';
 import { createSearchIndexSession } from '../e2eeSearch/searchIndexSession';
 import { createSearchIndexWriter } from '../e2eeSearch/searchIndexWriter';
 import { getUserAvatarURL } from '../getUserAvatarURL';
@@ -897,25 +898,32 @@ class E2E extends Emitter {
 
 export const e2e = new E2E();
 
-/** The local search index of decrypted E2EE messages: open while E2EE is unlocked, unused after a logout. */
+const getE2EUserId = () => {
+	try {
+		return e2e.getUserId();
+	} catch {
+		return undefined;
+	}
+};
+
+/**
+ * The local search index of decrypted E2EE messages: open while E2EE is unlocked, unused after a logout. It is used only
+ * when the workspace admin allows local search and the user opted in on this device. Otherwise it is wiped.
+ */
 export const e2eSearchIndexSession = createSearchIndexSession(
 	{
 		on: (type, handler) => e2e.on(type, handler),
-		getUserId: () => {
-			try {
-				return e2e.getUserId();
-			} catch {
-				return undefined;
-			}
-		},
+		getUserId: getE2EUserId,
 		getPrivateKey: () => e2e.privateKey,
 	},
 	{
 		getBackend: getSearchIndexBackend,
-		isAllowed: () => settings.peek<boolean>('E2E_Enable_Local_Search') === true,
+		isAllowed: () => settings.peek<boolean>('E2E_Enable_Local_Search') === true && isSearchIndexOptedIn(getE2EUserId()),
 		onError: (error) => log.span('searchIndexSession').error('Error opening the local search index', error),
 	},
 );
+
+subscribeToSearchIndexOptIn(() => e2eSearchIndexSession.recheck());
 
 /** Sends the decrypted messages to the local search index in batches, only while that index is open. */
 export const e2eSearchIndexWriter = createSearchIndexWriter({
