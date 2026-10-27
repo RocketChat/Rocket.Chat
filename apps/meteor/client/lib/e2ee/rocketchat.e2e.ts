@@ -27,6 +27,7 @@ import { baseURI } from '../baseURI';
 import { getSearchIndexBackend } from '../e2eeSearch/getSearchIndexBackend';
 import { roomMessageDeletes } from '../e2eeSearch/roomMessageDeletes';
 import { applyDeleteMessageBulkToSearchIndex } from '../e2eeSearch/searchIndexDeletes';
+import { isSearchIndexOptedIn, subscribeToSearchIndexOptIn } from '../e2eeSearch/searchIndexOptIn';
 import {
 	backfillMonthsToMaxAgeMs,
 	createSearchIndexRuntime,
@@ -34,10 +35,9 @@ import {
 	toSearchIndexRooms,
 } from '../e2eeSearch/searchIndexRuntime';
 import { createDocumentIdleSignal } from '../e2eeSearch/searchIndexScheduler';
-import { isSearchIndexOptedIn, subscribeToSearchIndexOptIn } from '../e2eeSearch/searchIndexOptIn';
-import { subscriptionRemovals } from '../e2eeSearch/subscriptionRemovals';
 import { createSearchIndexSession } from '../e2eeSearch/searchIndexSession';
 import { createSearchIndexWriter } from '../e2eeSearch/searchIndexWriter';
+import { subscriptionRemovals } from '../e2eeSearch/subscriptionRemovals';
 import { getUserAvatarURL } from '../getUserAvatarURL';
 import { limitQuoteChain } from '../limitQuoteChain';
 import { getDdpSdk } from '../sdk/ddpSdk';
