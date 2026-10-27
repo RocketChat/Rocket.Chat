@@ -96,8 +96,7 @@ const Banner = ({
 			</div>
 			{closeable && (
 				<div className={cx('rcx-banner__close-button')({ inline })}>
-					<IconButton small onClick={handleCloseButtonClick} icon='cross' aria-label={closeButtonLabel} />
-					<IconButton size='small' onClick={handleCloseButtonClick} icon='cross' />
+					<IconButton size='small' onClick={handleCloseButtonClick} icon='cross' aria-label={closeButtonLabel} />
 				</div>
 			)}
 		</div>
