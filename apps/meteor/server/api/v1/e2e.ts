@@ -245,13 +245,13 @@ const e2eEndpoints = API.v1
 			query: undefined,
 			response: {
 				401: validateUnauthorizedErrorResponse,
-				200: ajv.compile<{ public_key?: string }>({
+				200: ajv.compile<{ public_key: string | null }>({
 					type: 'object',
 					properties: {
-						public_key: { type: 'string' },
+						public_key: { type: ['string', 'null'] },
 						success: { type: 'boolean', enum: [true] },
 					},
-					required: ['success'],
+					required: ['public_key', 'success'],
 					additionalProperties: false,
 				}),
 			},
@@ -260,7 +260,9 @@ const e2eEndpoints = API.v1
 			const user = await Users.findOneById<Pick<IUser, 'e2e'>>(this.userId, { projection: { 'e2e.public_key': 1 } });
 			const publicKey = user?.e2e?.public_key;
 
-			return API.v1.success(publicKey ? { public_key: publicKey } : {});
+			// An explicit null tells a client that the server holds no key, which is
+			// different from an answer that does not say.
+			return API.v1.success({ public_key: publicKey || null });
 		},
 	)
 	.get(

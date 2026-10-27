@@ -298,7 +298,7 @@ describe('[Users]', () => {
 				});
 		});
 
-		it('should return no public key for a user without keys', async () => {
+		it('should return a null public key for a user without keys', async () => {
 			await request
 				.get(api('e2e.fetchMyPublicKey'))
 				.set(userWithoutKeysCredentials)
@@ -306,7 +306,7 @@ describe('[Users]', () => {
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.not.have.property('public_key');
+					expect(res.body).to.have.property('public_key', null);
 					expect(res.body).to.not.have.property('private_key');
 				});
 		});
