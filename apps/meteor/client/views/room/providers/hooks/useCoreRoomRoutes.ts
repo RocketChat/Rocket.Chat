@@ -1,7 +1,7 @@
 import type { RoomToolboxActionConfig } from '@rocket.chat/ui-contexts';
 
-import MediaCallHistoryContextualbarRoom from '../../../mediaCallHistory/MediaCallHistoryContextualbarRoom';
 import { MemberListRouter } from '../..';
+import MediaCallHistoryContextualbarRoom from '../../../mediaCallHistory/MediaCallHistoryContextualbarRoom';
 
 const mediaCallHistoryRoute: RoomToolboxActionConfig = {
 	id: 'media-call-history',
