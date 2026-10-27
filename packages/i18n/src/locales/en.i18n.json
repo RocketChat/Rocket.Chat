@@ -6177,6 +6177,7 @@
   "Send_invitation_email": "Send invitation email",
   "Send_invitation_email_error": "You haven't provided any valid email address.",
   "Send_invitation_email_info": "You can send multiple email invitations at once.",
+  "Send_invitation_email_placeholder": "user1@example.com, user2@example.com",
   "Send_invitation_email_success": "You have successfully sent an invitation email to the following addresses:",
   "Send_it_as_attachment_instead_question": "Send it as attachment instead?",
   "Send_me_the_code_again": "Send me the code again",
