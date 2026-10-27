@@ -6,7 +6,6 @@ import type {
 	IMediaCallNegotiation,
 	MediaCallContact,
 	MediaCallSignedContact,
-	ServerActor,
 	MediaCallNegotiationStream,
 } from '@rocket.chat/core-typings';
 import type { CallFeature, CallHangupReason, CallRole } from '@rocket.chat/media-signaling';
@@ -519,7 +518,7 @@ class MediaCallDirector {
 		logger.debug({ msg: 'MediaCallDirector.hangupDetachedCall', callId: call._id, params });
 		let modified = false;
 		try {
-			const endedBy = params?.endedBy || ({ type: 'server', id: 'server' } as ServerActor);
+			const endedBy = params?.endedBy || { type: 'server', id: 'server' };
 
 			modified = await this.hangupCallById(call._id, { ...params, endedBy });
 			if (!modified) {
