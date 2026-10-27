@@ -1,0 +1,33 @@
+packages/ddp-server/src/methods/presence.ts
+  s_1c3cc11389595f::t_f8a6f870b6de74 1-30
+packages/ddp-server/src/publications/loginServiceConfiguration.spec.ts
+  s_1c3cc11389595f::t_f8a6f870b6de74 1-30
+ee/apps/ddp-streamer/src/service.ts
+  s_1c3cc11389595f::t_617aff5fe5657c 4-12
+ee/apps/ddp-streamer/src/DDPStreamer.ts
+  s_1c3cc11389595f::t_617aff5fe5657c 6
+packages/ddp-server/src/publications/autoupdate.ts
+  s_1c3cc11389595f::t_f8a6f870b6de74 1-15
+packages/ddp-server/src/index.ts
+  s_1c3cc11389595f::t_f8a6f870b6de74 12-15
+packages/ddp-server/src/publications/loginServiceConfiguration.ts
+  s_1c3cc11389595f::t_f8a6f870b6de74 1-11
+packages/ddp-server/src/publications/autoupdate.spec.ts
+  s_1c3cc11389595f::t_f8a6f870b6de74 1-30
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "bca7c40f1324f4c0565ef5dabad64414095d0be5",
+  "prompts": {},
+  "sessions": {
+    "s_1c3cc11389595f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f60f0262-8306-4144-8fa6-f0a04054447e",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
