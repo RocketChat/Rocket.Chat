@@ -239,6 +239,31 @@ const e2eEndpoints = API.v1
 		},
 	)
 	.get(
+		'e2e.fetchMyPublicKey',
+		{
+			authRequired: true,
+			query: undefined,
+			response: {
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<{ public_key?: string }>({
+					type: 'object',
+					properties: {
+						public_key: { type: 'string' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const user = await Users.findOneById<Pick<IUser, 'e2e'>>(this.userId, { projection: { 'e2e.public_key': 1 } });
+			const publicKey = user?.e2e?.public_key;
+
+			return API.v1.success(publicKey ? { public_key: publicKey } : {});
+		},
+	)
+	.get(
 		'e2e.getUsersOfRoomWithoutKey',
 		{
 			authRequired: true,
