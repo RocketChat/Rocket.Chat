@@ -8,7 +8,7 @@ type ActionButtonProps = ComponentProps<typeof ActionButton>;
 export type DeviceMenuButtonProps = {
 	/** Separate from `icon`, which GenericMenu overwrites on a disabled trigger. */
 	menuIcon: ActionButtonProps['icon'];
-	/** Required, since GenericMenu sizes a disabled trigger that has no size of its own `small`, which would shrink it. */
+	/** Required: without it, GenericMenu falls back to `small` on a disabled trigger, which would shrink the button. */
 	size: NonNullable<ActionButtonProps['size']>;
 } & Omit<ActionButtonProps, 'icon' | 'size'>;
 
