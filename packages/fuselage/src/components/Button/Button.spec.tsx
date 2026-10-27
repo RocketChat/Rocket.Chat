@@ -1,5 +1,5 @@
 import { composeStories } from '@storybook/react-webpack5';
-import { screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
 import Button from './Button';
@@ -32,5 +32,45 @@ describe('[Button Component]', () => {
 			</Button>,
 		);
 		expect(screen.getByRole('link', { name: 'Go' })).not.toHaveAttribute('type');
+	});
+});
+
+describe('[Button as a link]', () => {
+	it.each([
+		['disabled', { disabled: true }],
+		['loading', { loading: true }],
+	])('does not navigate or call click handlers while %s', (_state, stateProps) => {
+		const onClick = jest.fn();
+		const onClickCapture = jest.fn();
+		render(
+			<Button is='a' href='https://rocket.chat' onClick={onClick} onClickCapture={onClickCapture} {...stateProps}>
+				Link
+			</Button>,
+		);
+
+		const link = screen.getByRole('link', { name: 'Link' });
+		expect(link).not.toHaveAttribute('href');
+		expect(link).toHaveAttribute('aria-disabled', 'true');
+		expect(link).toHaveAttribute('tabindex', '-1');
+
+		fireEvent.click(link);
+		expect(onClick).not.toHaveBeenCalled();
+		expect(onClickCapture).not.toHaveBeenCalled();
+	});
+
+	it('navigates and calls onClick when enabled', () => {
+		const onClick = jest.fn();
+		render(
+			<Button is='a' href='https://rocket.chat' onClick={onClick}>
+				Link
+			</Button>,
+		);
+
+		const link = screen.getByRole('link', { name: 'Link' });
+		expect(link).toHaveAttribute('href', 'https://rocket.chat');
+		expect(link).not.toHaveAttribute('aria-disabled');
+
+		fireEvent.click(link);
+		expect(onClick).toHaveBeenCalledTimes(1);
 	});
 });
