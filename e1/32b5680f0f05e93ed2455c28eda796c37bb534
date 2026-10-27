@@ -1,0 +1,21 @@
+apps/meteor/client/views/scheduledMessages/ScheduledMessagesRoomGroup.stories.tsx
+  ai_agent 60
+apps/meteor/server/api/v1/scheduledMessages.ts
+  ai_agent 170
+apps/meteor/client/views/scheduledMessages/ScheduledMessagesRoomGroup.tsx
+  ai_agent 34
+apps/meteor/client/views/room/composer/messageBox/ScheduleMessage/ScheduleMessageMenu.tsx
+  ai_agent 95
+apps/meteor/client/views/scheduledMessages/layout/RoomSection.tsx
+  ai_agent 16-18,26
+apps/meteor/client/components/ScheduledMessages/ScheduleMessageModal.tsx
+  ai_agent 51,70
+apps/meteor/client/components/ScheduledMessages/ScheduledMessageRow.tsx
+  ai_agent 64,72,113,121
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "e132b5680f0f05e93ed2455c28eda796c37bb534",
+  "prompts": {}
+}
