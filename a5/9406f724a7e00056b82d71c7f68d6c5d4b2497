@@ -1,0 +1,23 @@
+ee/packages/abac/src/pdp/VirtruPDP.spec.ts
+  s_8232fe67fa9b24::t_b2146acdd8cf4b 530-531
+apps/meteor/server/services/team/service.test.ts
+  s_8232fe67fa9b24::t_0e2f71a7bc681e 162-163,173-174
+ee/packages/abac/src/service.spec.ts
+  s_8232fe67fa9b24::t_b2146acdd8cf4b 1444-1445,1448-1449,2576-2577,2580-2581
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "a59406f724a7e00056b82d71c7f68d6c5d4b2497",
+  "prompts": {},
+  "sessions": {
+    "s_8232fe67fa9b24": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "67584a8c-029e-4ca3-9a90-7290d449a77d",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
