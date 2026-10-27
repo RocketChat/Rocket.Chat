@@ -837,6 +837,9 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 									case 'not-authorized':
 									case 'error-not-authorized':
 									case 'error-not-allowed':
+									case 'not-allowed':
+									case 'no-permission':
+									case 'error-not-authorized-federation':
 									case 'forbidden':
 									case 'error-forbidden':
 										return api.forbidden(typeof e === 'string' ? e : e.message);
