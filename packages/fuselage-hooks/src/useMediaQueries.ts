@@ -2,6 +2,9 @@ import { useCallback, useRef, useSyncExternalStore } from 'react';
 
 import { useStableArray } from './useStableArray';
 
+const matchQueries = (queries: string[]) =>
+	queries.map((query) => (typeof window === 'undefined' || typeof window.matchMedia !== 'function' ? false : matchMedia(query).matches));
+
 /**
  * Hook to listen to a set of media queries.
  *
@@ -12,11 +15,7 @@ import { useStableArray } from './useStableArray';
 export const useMediaQueries = (...queries: string[]) => {
 	const stableQueries = useStableArray(queries);
 
-	const snapshotRef = useRef<boolean[]>(
-		stableQueries.map((query) =>
-			typeof window === 'undefined' || typeof window.matchMedia !== 'function' ? false : matchMedia(query).matches,
-		),
-	);
+	const snapshotRef = useRef<{ queries: string[]; matches: boolean[] }>(undefined);
 
 	const subscribe = useCallback(
 		(onStoreChange: () => void) => {
@@ -27,7 +26,7 @@ export const useMediaQueries = (...queries: string[]) => {
 			const mediaQueryLists = stableQueries.map((query) => matchMedia(query));
 
 			const callback = () => {
-				snapshotRef.current = mediaQueryLists.map((mediaQueryList) => mediaQueryList.matches);
+				snapshotRef.current = { queries: stableQueries, matches: mediaQueryLists.map((mediaQueryList) => mediaQueryList.matches) };
 				onStoreChange();
 			};
 
@@ -54,9 +53,13 @@ export const useMediaQueries = (...queries: string[]) => {
 		[stableQueries],
 	);
 
-	const getSnapshot = useCallback(() => snapshotRef.current, []);
+	const getSnapshot = useCallback(() => {
+		if (snapshotRef.current?.queries !== stableQueries) {
+			snapshotRef.current = { queries: stableQueries, matches: matchQueries(stableQueries) };
+		}
 
-	const getServerSnapshot = useCallback(() => snapshotRef.current, []);
+		return snapshotRef.current.matches;
+	}, [stableQueries]);
 
-	return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+	return useSyncExternalStore(subscribe, getSnapshot, getSnapshot);
 };

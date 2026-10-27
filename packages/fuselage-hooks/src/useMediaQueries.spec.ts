@@ -41,3 +41,19 @@ it('mutates its value to true if the media query matches', async () => {
 
 	expect(result.current).toEqual([true, false]);
 });
+
+it('returns the matches of the new queries when the queries change', () => {
+	const { result, rerender } = renderHook(({ queries }) => useMediaQueries(...queries), {
+		initialProps: { queries: ['(max-width: 968px)'] },
+	});
+
+	expect(result.current).toEqual([false]);
+
+	rerender({ queries: ['(max-width: 1024px)'] });
+
+	expect(result.current).toEqual([true]);
+
+	rerender({ queries: ['(max-width: 1024px)', '(max-width: 968px)'] });
+
+	expect(result.current).toEqual([true, false]);
+});
