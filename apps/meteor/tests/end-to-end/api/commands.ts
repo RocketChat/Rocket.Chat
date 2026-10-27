@@ -250,7 +250,7 @@ describe('[Commands]', () => {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 
-						expect(res.body.error).to.include('error-not-authorized');
+						expect(res.body.error).to.include('error-forbidden');
 					});
 			});
 		});
@@ -327,7 +327,7 @@ describe('[Commands]', () => {
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 
-						expect(res.body.error).to.include('error-not-authorized');
+						expect(res.body.error).to.include('error-forbidden');
 					});
 			});
 		});
@@ -384,7 +384,7 @@ describe('[Commands]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 
-					expect(res.body.error).to.include('error-not-authorized');
+					expect(res.body.error).to.include('error-forbidden');
 				});
 		});
 	});
@@ -463,7 +463,7 @@ describe('[Commands]', () => {
 				})
 				.expect(403)
 				.expect((res) => {
-					expect(res.body).to.have.a.property('error', 'forbidden');
+					expect(res.body).to.have.a.property('error', 'error-forbidden');
 				});
 		});
 
@@ -605,7 +605,7 @@ describe('[Commands]', () => {
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('error').that.is.a('string');
-			expect(res.body.error).to.equal('forbidden');
+			expect(res.body.error).to.equal('error-forbidden');
 		});
 	});
 });

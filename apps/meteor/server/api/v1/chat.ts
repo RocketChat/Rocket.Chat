@@ -633,6 +633,7 @@ const chatEndpoints = API.v1
 				}),
 				400: validateBadRequestErrorResponse,
 				401: validateUnauthorizedErrorResponse,
+				403: validateForbiddenErrorResponse,
 			},
 		},
 		async function action() {
@@ -656,7 +657,7 @@ const chatEndpoints = API.v1
 			}
 
 			if (this.bodyParams.asUser && msg.u._id !== this.userId && !(await hasPermissionAsync(this.user, 'force-delete-message', msg.rid))) {
-				return API.v1.failure('Unauthorized. You must have the permission "force-delete-message" to delete other\'s message as them.');
+				return API.v1.forbidden('error-not-authorized');
 			}
 
 			const userId = this.bodyParams.asUser ? msg.u._id : this.userId;

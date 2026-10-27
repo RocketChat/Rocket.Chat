@@ -50,13 +50,12 @@ export type UnauthorizedResult<T> = {
 	};
 };
 
-export type ForbiddenResult<T> = {
+export type ForbiddenResult = {
 	statusCode: 403;
 	body: {
 		success: false;
-		// TODO: MAJOR remove 'unauthorized'
-		error: T | 'forbidden' | 'unauthorized';
-		errorType?: string;
+		error: 'error-forbidden';
+		errorType: string;
 	};
 };
 
@@ -334,7 +333,7 @@ type Results<TResponse extends TypedOptions['response']> = {
 				: K extends 401
 					? UnauthorizedResult<InferNon200Result<TResponse[401]>>
 					: K extends 403
-						? ForbiddenResult<InferNon200Result<TResponse[403]>>
+						? ForbiddenResult
 						: K extends 404
 							? NotFoundResult<InferNon200Result<TResponse[404]>>
 							: K extends ErrorStatusCodes

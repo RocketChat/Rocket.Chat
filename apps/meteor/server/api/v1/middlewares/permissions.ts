@@ -37,7 +37,7 @@ export const permissionsMiddleware =
 		}
 
 		if (!hasPermission) {
-			const forbidden = API.v1.forbidden('User does not have the permissions required for this action [error-unauthorized]');
+			const forbidden = API.v1.forbidden('error-not-authorized');
 			return c.json(forbidden.body, forbidden.statusCode);
 		}
 

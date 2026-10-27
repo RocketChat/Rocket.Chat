@@ -15,10 +15,10 @@ describe('[Statistics]', () => {
 		it('should return an error when the user does not have the necessary permission', async () => {
 			await updatePermission('view-statistics', []);
 
-			const res = await request.get(api('statistics')).set(credentials).expect(400);
+			const res = await request.get(api('statistics')).set(credentials).expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('error-not-allowed');
+			expect(res.body.errorType).to.be.equal('error-not-allowed');
 		});
 
 		it('should return an object with the statistics', async () => {
@@ -47,10 +47,10 @@ describe('[Statistics]', () => {
 		it('should return an error when the user does not have the necessary permission', async () => {
 			await updatePermission('view-statistics', []);
 
-			const res = await request.get(api('statistics.list')).set(credentials).expect(400);
+			const res = await request.get(api('statistics.list')).set(credentials).expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('error-not-allowed');
+			expect(res.body.errorType).to.be.equal('error-not-allowed');
 		});
 
 		it('should return an array with the statistics', async () => {

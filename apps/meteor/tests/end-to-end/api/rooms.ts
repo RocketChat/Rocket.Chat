@@ -1273,7 +1273,7 @@ describe('[Rooms]', () => {
 					oldest: '2016-08-30T13:42:25.304Z',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('errorType', 'error-not-allowed');
@@ -1298,11 +1298,11 @@ describe('[Rooms]', () => {
 						limit: 2000,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('errorType', 'error-not-allowed');
-						expect(res.body).to.have.property('error', 'User does not have access to the room [error-not-allowed]');
+						expect(res.body).to.have.property('error', 'error-forbidden');
 					});
 			});
 		});
@@ -1601,10 +1601,10 @@ describe('[Rooms]', () => {
 					.set(nonMemberCredentials)
 					.query({ roomId: privateArchivedGroup._id })
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'not-allowed');
+						expect(res.body).to.have.property('errorType', 'error-not-allowed');
 					});
 			});
 		});
@@ -1723,9 +1723,9 @@ describe('[Rooms]', () => {
 					.set(credentials)
 					.query({ roomId: ownerDM._id })
 					.expect('Content-Type', 'application/json')
-					.expect(400);
+					.expect(403);
 
-				expect(res.body).to.have.property('error', 'not-allowed');
+				expect(res.body).to.have.property('errorType', 'error-not-allowed');
 			});
 
 			it('should not return a private group to a user without view-room-administration', async () => {
@@ -1734,9 +1734,9 @@ describe('[Rooms]', () => {
 					.set(outsiderCredentials)
 					.query({ roomId: ownerGroup._id })
 					.expect('Content-Type', 'application/json')
-					.expect(400);
+					.expect(403);
 
-				expect(res.body).to.have.property('error', 'not-allowed');
+				expect(res.body).to.have.property('errorType', 'error-not-allowed');
 			});
 
 			it('should not return a private group to an admin once view-room-administration is revoked', async () => {
@@ -1748,9 +1748,9 @@ describe('[Rooms]', () => {
 						.set(credentials)
 						.query({ roomId: ownerGroup._id })
 						.expect('Content-Type', 'application/json')
-						.expect(400);
+						.expect(403);
 
-					expect(res.body).to.have.property('error', 'not-allowed');
+					expect(res.body).to.have.property('errorType', 'error-not-allowed');
 				} finally {
 					await restorePermissionToRoles('view-room-administration');
 				}
@@ -1794,7 +1794,7 @@ describe('[Rooms]', () => {
 				.send({
 					roomId: testDM._id,
 				})
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('errorType', 'error-not-allowed');
@@ -1832,7 +1832,7 @@ describe('[Rooms]', () => {
 				.send({
 					roomId: testChannel._id,
 				})
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('errorType', 'error-not-allowed');
@@ -1846,7 +1846,7 @@ describe('[Rooms]', () => {
 				.send({
 					roomId: testGroup._id,
 				})
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('errorType', 'error-not-allowed');
@@ -2481,7 +2481,7 @@ describe('[Rooms]', () => {
 				.set(testUserCredentials)
 				.send({ roomId: testGroup._id })
 				.expect('Content-Type', 'application/json')
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('errorType', 'error-not-allowed');
@@ -2742,7 +2742,7 @@ describe('[Rooms]', () => {
 					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('Not authorized [error-not-authorized]');
+						expect(res.body.error).to.be.equal('error-forbidden');
 					})
 					.end((err) => updatePermission('view-room-administration', ['admin']).then(() => done(err)));
 			});
@@ -4177,7 +4177,7 @@ describe('[Rooms]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'forbidden');
+					expect(res.body).to.have.property('error', 'error-forbidden');
 				});
 		});
 
@@ -4237,7 +4237,7 @@ describe('[Rooms]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'forbidden');
+					expect(res.body).to.have.property('error', 'error-forbidden');
 				});
 		});
 	});

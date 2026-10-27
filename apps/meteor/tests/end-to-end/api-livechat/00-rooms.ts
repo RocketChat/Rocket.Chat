@@ -246,7 +246,7 @@ describe('LIVECHAT - rooms', () => {
 				.expect(403)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'forbidden');
+					expect(res.body).to.have.property('error', 'error-forbidden');
 				});
 
 			await restorePermissionToRoles('view-livechat-rooms');
@@ -1290,7 +1290,7 @@ describe('LIVECHAT - rooms', () => {
 					.expect(403)
 					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+						expect(res.body).to.have.property('error', 'error-forbidden');
 					});
 			});
 		});
@@ -1311,7 +1311,7 @@ describe('LIVECHAT - rooms', () => {
 				.expect(403)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.have.string('unauthorized');
+					expect(res.body.error).to.have.string('error-forbidden');
 				});
 		});
 
@@ -1329,7 +1329,7 @@ describe('LIVECHAT - rooms', () => {
 				.expect(403)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.have.string('unauthorized');
+					expect(res.body.error).to.have.string('error-forbidden');
 				});
 
 			await restorePermissionToRoles('transfer-livechat-guest');
@@ -2845,7 +2845,7 @@ describe('LIVECHAT - rooms', () => {
 					.expect(403)
 					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.have.string('unauthorized');
+						expect(res.body.error).to.have.string('error-forbidden');
 					});
 			});
 		});

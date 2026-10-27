@@ -2669,6 +2669,7 @@
   "error-failed-to-delete-department": "Failed to delete department",
   "error-field-unavailable": "<strong>{{field}}</strong> is already in use :(",
   "error-file-too-large": "File is too large",
+  "error-forbidden": "You are not allowed to do this",
   "error-forwarding-chat": "Something went wrong while forwarding the chat, please try again later.",
   "error-forwarding-chat-same-department": "The selected department and the current room department are the same",
   "error-forwarding-department-target-not-allowed": "The forwarding to the target department is not allowed.",

@@ -73,7 +73,7 @@ describe('Imports', () => {
 				.expect(403)
 				.expect((res: Response) => {
 					expect(res.body.success).to.be.false;
-					expect(res.body.error).to.equal('User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body.error).to.equal('error-forbidden');
 				});
 		});
 
@@ -210,7 +210,7 @@ describe('Imports', () => {
 				.expect(403)
 				.expect((res: Response) => {
 					expect(res.body.success).to.be.false;
-					expect(res.body.error).to.equal('User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body.error).to.equal('error-forbidden');
 				});
 		});
 	});

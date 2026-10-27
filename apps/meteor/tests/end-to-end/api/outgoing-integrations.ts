@@ -305,7 +305,7 @@ describe('[Outgoing Integrations]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body).to.have.property('error', 'error-forbidden');
 				});
 		});
 	});
@@ -324,7 +324,7 @@ describe('[Outgoing Integrations]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body).to.have.property('error', 'error-forbidden');
 				});
 		});
 
@@ -371,10 +371,10 @@ describe('[Outgoing Integrations]', () => {
 					.query({ integrationId: integration._id })
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'not-authorized');
+						expect(res.body).to.have.property('errorType', 'not-authorized');
 					})
 					.end(done);
 			});
@@ -387,10 +387,10 @@ describe('[Outgoing Integrations]', () => {
 					.query({ integrationId: integrationCreatedByAnUser._id })
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'not-authorized');
+						expect(res.body).to.have.property('errorType', 'not-authorized');
 					})
 					.end(done);
 			});
@@ -463,7 +463,7 @@ describe('[Outgoing Integrations]', () => {
 					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+						expect(res.body).to.have.property('error', 'error-forbidden');
 					})
 					.end(done);
 			});
@@ -482,7 +482,7 @@ describe('[Outgoing Integrations]', () => {
 					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+						expect(res.body).to.have.property('error', 'error-forbidden');
 					})
 					.end(done);
 			});

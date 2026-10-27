@@ -370,7 +370,7 @@ describe('[Channels]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body).to.have.property('error', 'error-forbidden');
 				});
 		});
 
@@ -843,7 +843,7 @@ describe('[Channels]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'forbidden');
+					expect(res.body).to.have.property('error', 'error-forbidden');
 				});
 		});
 
@@ -2414,7 +2414,7 @@ describe('[Channels]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body).to.have.property('error', 'error-forbidden');
 				});
 		});
 
@@ -3300,7 +3300,7 @@ describe('[Channels]', () => {
 					roomName: testTeamChannel.name,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
+				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.a.property('error');
@@ -3316,7 +3316,7 @@ describe('[Channels]', () => {
 					roomName: testTeamChannel.name,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
+				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.a.property('error');
@@ -4295,7 +4295,7 @@ describe('[Channels]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body).to.have.property('error', 'error-forbidden');
 				});
 			await updatePermission('view-c-room', ['admin', 'user', 'bot', 'app']);
 		});

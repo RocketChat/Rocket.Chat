@@ -2474,7 +2474,7 @@ describe('[Users]', () => {
 						.expect(403)
 						.expect((res) => {
 							expect(res.body).to.have.property('success', false);
-							expect(res.body).to.have.property('error', 'forbidden');
+							expect(res.body).to.have.property('error', 'error-forbidden');
 						});
 				});
 			});
@@ -4975,7 +4975,7 @@ describe('[Users]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body).to.have.property('error', 'error-forbidden');
 				});
 		});
 
@@ -5328,7 +5328,7 @@ describe('[Users]', () => {
 						.expect(403);
 
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body.error).to.be.equal('error-forbidden');
 				});
 				it('/users.removePersonalAccessToken', async () => {
 					const res = await request
@@ -5440,7 +5440,7 @@ describe('[Users]', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+			expect(res.body).to.have.property('error', 'error-forbidden');
 		});
 		it('should return an error when trying to set user own active status and has not the necessary permission(edit-other-user-active-status)', async () => {
 			const res = await request
@@ -5454,7 +5454,7 @@ describe('[Users]', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+			expect(res.body).to.have.property('error', 'error-forbidden');
 		});
 		it('should set user own active status to false when the user has the necessary permission(edit-other-user-active-status)', async () => {
 			await updatePermission('edit-other-user-active-status', ['admin']);
@@ -5470,7 +5470,7 @@ describe('[Users]', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+			expect(res.body).to.have.property('error', 'error-forbidden');
 		});
 		it('users should retain their roles when they are deactivated', async () => {
 			const testUser = await createUser({ roles: ['user', 'livechat-agent'] });
@@ -5695,7 +5695,7 @@ describe('[Users]', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+			expect(res.body).to.have.property('error', 'error-forbidden');
 		});
 		it('should deactivate no users when no users in time range', async () => {
 			await updatePermission('edit-other-user-active-status', ['admin']);
@@ -6237,11 +6237,11 @@ describe('[Users]', () => {
 					message: 'test',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body.errorType).to.be.equal('error-not-allowed');
-			expect(res.body.error).to.be.equal('Change status is not allowed [error-not-allowed]');
+			expect(res.body.error).to.be.equal('error-forbidden');
 		});
 		it('should update my own status', async () => {
 			await updateSetting('Accounts_AllowUserStatusMessageChange', true);
@@ -6276,7 +6276,7 @@ describe('[Users]', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('forbidden');
+			expect(res.body.error).to.be.equal('error-forbidden');
 		});
 		it('should update another user status succesfully', async () => {
 			await updatePermission('edit-other-user-info', ['admin']);
@@ -6880,7 +6880,7 @@ describe('[Users]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body.error).to.be.equal('error-forbidden');
 				});
 		});
 
@@ -6894,7 +6894,7 @@ describe('[Users]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body.error).to.be.equal('error-forbidden');
 				});
 		});
 	});

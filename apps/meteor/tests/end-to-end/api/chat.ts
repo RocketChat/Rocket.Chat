@@ -3720,10 +3720,10 @@ describe('[Chat]', () => {
 				.query({ roomId: 'invalid-room' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('error-not-allowed');
+			expect(res.body.errorType).to.be.equal('error-not-allowed');
 		});
 
 		it('should return the mentioned messages', async () => {
@@ -3769,10 +3769,10 @@ describe('[Chat]', () => {
 				.query({ roomId: 'invalid-room' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('error-not-allowed');
+			expect(res.body.errorType).to.be.equal('error-not-allowed');
 		});
 
 		it('should return the starred messages', async () => {
@@ -3834,10 +3834,10 @@ describe('[Chat]', () => {
 				.query({ roomId: 'invalid-room' })
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('error-not-allowed');
+			expect(res.body.errorType).to.be.equal('error-not-allowed');
 		});
 
 		it('should return the discussions of a room', async () => {
@@ -3971,11 +3971,11 @@ describe('[Chat]', () => {
 				.set(credentials)
 				.query({ roomId: 'invalid-room', lastUpdate: new Date().toISOString() })
 				.expect('Content-Type', 'application/json')
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body.errorType).to.be.equal('error-not-allowed');
-			expect(res.body.error).to.include('Not allowed');
+			expect(res.body.error).to.be.equal('error-forbidden');
 		});
 
 		it('should return an error when the "type" parameter is not supported', async () => {
@@ -4405,11 +4405,11 @@ describe('Threads', () => {
 					rid: testChannel._id,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('errorType', 'error-not-allowed');
-			expect(res.body).to.have.property('error', 'Threads Disabled [error-not-allowed]');
+			expect(res.body).to.have.property('error', 'error-forbidden');
 		});
 
 		it('should return an error when the user is not allowed access the room', (_t, done) => {
@@ -4425,11 +4425,11 @@ describe('Threads', () => {
 									rid: testChannel._id,
 								})
 								.expect('Content-Type', 'application/json')
-								.expect(400)
+								.expect(403)
 								.expect((res) => {
 									expect(res.body).to.have.property('success', false);
 									expect(res.body).to.have.property('errorType', 'error-not-allowed');
-									expect(res.body).to.have.property('error', 'Not Allowed [error-not-allowed]');
+									expect(res.body).to.have.property('error', 'error-forbidden');
 								})
 								.end(done);
 						});
@@ -4641,11 +4641,11 @@ describe('Threads', () => {
 					rid: testChannel._id,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('errorType', 'error-not-allowed');
-			expect(res.body).to.have.property('error', 'Threads Disabled [error-not-allowed]');
+			expect(res.body).to.have.property('error', 'error-forbidden');
 		});
 
 		it('should return an error when the required param "rid" is missing', async () => {
@@ -4708,11 +4708,11 @@ describe('Threads', () => {
 								updatedSince: new Date().toISOString(),
 							})
 							.expect('Content-Type', 'application/json')
-							.expect(400)
+							.expect(403)
 							.expect((res) => {
 								expect(res.body).to.have.property('success', false);
 								expect(res.body).to.have.property('errorType', 'error-not-allowed');
-								expect(res.body).to.have.property('error', 'Not Allowed [error-not-allowed]');
+								expect(res.body).to.have.property('error', 'error-forbidden');
 							})
 							.end(done);
 					});
@@ -4786,11 +4786,11 @@ describe('Threads', () => {
 					tmid: threadMessage.tmid,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('errorType', 'error-not-allowed');
-			expect(res.body).to.have.property('error', 'Threads Disabled [error-not-allowed]');
+			expect(res.body).to.have.property('error', 'error-forbidden');
 		});
 
 		it('should return an error when the user is not allowed access the room', (_t, done) => {
@@ -4806,11 +4806,11 @@ describe('Threads', () => {
 									tmid: threadMessage.tmid,
 								})
 								.expect('Content-Type', 'application/json')
-								.expect(400)
+								.expect(403)
 								.expect((res) => {
 									expect(res.body).to.have.property('success', false);
 									expect(res.body).to.have.property('errorType', 'error-not-allowed');
-									expect(res.body).to.have.property('error', 'Not Allowed [error-not-allowed]');
+									expect(res.body).to.have.property('error', 'error-forbidden');
 								})
 								.end(done);
 						});
@@ -4925,7 +4925,7 @@ describe('Threads', () => {
 					.set(credentials)
 					.send({ tmid: parentMessage._id })
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('errorType', 'error-not-allowed');
@@ -5033,11 +5033,11 @@ describe('Threads', () => {
 					updatedSince: new Date().toISOString(),
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('errorType', 'error-not-allowed');
-			expect(res.body).to.have.property('error', 'Threads Disabled [error-not-allowed]');
+			expect(res.body).to.have.property('error', 'error-forbidden');
 		});
 
 		it('should return an error when the required param "tmid" is missing', async () => {
@@ -5100,11 +5100,11 @@ describe('Threads', () => {
 								updatedSince: new Date().toISOString(),
 							})
 							.expect('Content-Type', 'application/json')
-							.expect(400)
+							.expect(403)
 							.expect((res) => {
 								expect(res.body).to.have.property('success', false);
 								expect(res.body).to.have.property('errorType', 'error-not-allowed');
-								expect(res.body).to.have.property('error', 'Not Allowed [error-not-allowed]');
+								expect(res.body).to.have.property('error', 'error-forbidden');
 							})
 							.end(done);
 					});
@@ -5175,11 +5175,11 @@ describe('Threads', () => {
 					mid: threadMessage.tmid,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('errorType', 'error-not-allowed');
-			expect(res.body).to.have.property('error', 'not-allowed [error-not-allowed]');
+			expect(res.body).to.have.property('error', 'error-forbidden');
 		});
 
 		it('should return an error when the message does not exist', async () => {
@@ -5211,11 +5211,11 @@ describe('Threads', () => {
 								mid: threadMessage.tmid,
 							})
 							.expect('Content-Type', 'application/json')
-							.expect(400)
+							.expect(403)
 							.expect((res) => {
 								expect(res.body).to.have.property('success', false);
 								expect(res.body).to.have.property('errorType', 'error-not-allowed');
-								expect(res.body).to.have.property('error', 'not-allowed [error-not-allowed]');
+								expect(res.body).to.have.property('error', 'error-forbidden');
 							})
 							.end(done);
 					});
@@ -5278,11 +5278,11 @@ describe('Threads', () => {
 					mid: threadMessage.tmid,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400);
+				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
 			expect(res.body).to.have.property('errorType', 'error-not-allowed');
-			expect(res.body).to.have.property('error', 'not-allowed [error-not-allowed]');
+			expect(res.body).to.have.property('error', 'error-forbidden');
 		});
 
 		it('should return an error when the message does not exist', async () => {
@@ -5314,11 +5314,11 @@ describe('Threads', () => {
 								mid: threadMessage.tmid,
 							})
 							.expect('Content-Type', 'application/json')
-							.expect(400)
+							.expect(403)
 							.expect((res) => {
 								expect(res.body).to.have.property('success', false);
 								expect(res.body).to.have.property('errorType', 'error-not-allowed');
-								expect(res.body).to.have.property('error', 'not-allowed [error-not-allowed]');
+								expect(res.body).to.have.property('error', 'error-forbidden');
 							})
 							.end(done);
 					});
@@ -5398,7 +5398,7 @@ describe('Threads', () => {
 						url,
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body.errorType).to.be.equal('error-not-allowed');
