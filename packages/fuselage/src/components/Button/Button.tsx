@@ -14,28 +14,8 @@ export type ButtonProps = {
 	is?: 'button' | 'a';
 	variant?: 'primary' | 'secondary' | 'danger' | 'warning' | 'success' | 'secondary-danger' | 'secondary-warning' | 'secondary-success';
 	size?: 'mini' | 'tiny' | 'small' | 'medium' | 'large';
-	/** @deprecated Use `variant="primary"` instead. */
-	primary?: boolean;
-	/** @deprecated Use `variant="secondary"` instead. */
-	secondary?: boolean;
-	/** @deprecated Use `variant="danger"` instead. */
-	danger?: boolean;
-	/** @deprecated Use `variant="warning"` instead. */
-	warning?: boolean;
-	/** @deprecated Use `variant="success"` instead. */
-	success?: boolean;
 	disabled?: boolean;
 	loading?: boolean;
-	/** @deprecated Use `size="mini"` instead. */
-	mini?: boolean;
-	/** @deprecated Use `size="tiny"` instead. */
-	tiny?: boolean;
-	/** @deprecated Use `size="small"` instead. */
-	small?: boolean;
-	/** @deprecated Use `size="medium"` instead. */
-	medium?: boolean;
-	/** @deprecated Use `size="large"` instead. */
-	large?: boolean;
 	square?: boolean;
 	/** Lowers the minimum width so a label of one or two characters fits. */
 	compact?: boolean;
@@ -49,21 +29,11 @@ export type ButtonProps = {
 function Button({
 	ref,
 	variant,
-	primary,
-	secondary,
-	danger,
-	warning,
-	success,
 	external,
 	icon,
 	is = 'button',
 	rel,
 	size,
-	tiny,
-	mini,
-	small,
-	medium,
-	large,
 	square,
 	compact,
 	loading,
@@ -82,31 +52,16 @@ function Button({
 		}) ||
 		{};
 
-	const kind =
-		variant ||
-		(primary && 'primary') ||
-		(secondary && success && 'secondary-success') ||
-		(secondary && warning && 'secondary-warning') ||
-		(secondary && danger && 'secondary-danger') ||
-		(success && 'success') ||
-		(warning && 'warning') ||
-		(danger && 'danger') ||
-		(secondary && 'secondary') ||
-		undefined;
-
-	const effectiveSize =
-		size || (mini && 'mini') || (tiny && 'tiny') || (small && 'small') || (medium && 'medium') || (large && 'large') || undefined;
-
 	const segment = useContext(ButtonSegmentContext);
 
 	// `<Box is={Button}>` hands over `rcx-box--full`, whose unlayered reset would beat the frame's padding
 	const className = rawClassName?.replace(/(^|\s)rcx-box--full(?=\s|$)/g, '');
 
-	const squareSize = square && effectiveSize && effectiveSize !== 'large' ? effectiveSize : undefined;
+	const squareSize = square && size && size !== 'large' ? size : undefined;
 
 	return (
 		<ButtonFrame
-			size={effectiveSize === 'small' || effectiveSize === 'medium' || effectiveSize === 'large' ? effectiveSize : undefined}
+			size={size === 'small' || size === 'medium' || size === 'large' ? size : undefined}
 			compact={compact}
 			square={square}
 			squareSize={squareSize}
@@ -115,17 +70,17 @@ function Button({
 			{...({ ...extraProps, ...props } as GetProps<typeof ButtonFrame>)}
 			className={cx(
 				'rcx-button',
-				kind && `rcx-button--${kind}`,
-				effectiveSize === 'small' && 'rcx-button--small',
-				effectiveSize === 'medium' && 'rcx-button--medium',
-				effectiveSize === 'large' && 'rcx-button--large',
+				variant && `rcx-button--${variant}`,
+				size === 'small' && 'rcx-button--small',
+				size === 'medium' && 'rcx-button--medium',
+				size === 'large' && 'rcx-button--large',
 				square && 'rcx-button--square',
 				compact && 'rcx-button--compact',
-				square && effectiveSize && `rcx-button--${effectiveSize}-square`,
+				square && size && `rcx-button--${size}-square`,
 				loading && 'rcx-button--loading',
 				className,
 			)}
-			{...getButtonStates(kind ?? 'secondary', disabled || loading, segment)}
+			{...getButtonStates(variant ?? 'secondary', disabled || loading, segment)}
 		>
 			<ButtonContent className='rcx-button--content'>
 				{icon && !loading && <Icon className='rcx-button__icon' size='x16' name={icon} />}
