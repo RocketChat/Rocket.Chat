@@ -471,10 +471,6 @@ export class ListenersModule {
 			notifications.notifyUserInThisInstance(uid, 'updateInvites', data);
 		});
 
-		service.onEvent('notify.e2e.keyRequest', (rid, data): void => {
-			notifications.notifyRoomInThisInstance(rid, 'e2e.keyRequest', data);
-		});
-
 		service.onEvent('notify.deleteMessage', (rid, data): void => {
 			notifications.notifyRoomInThisInstance(rid, 'deleteMessage', data);
 		});
