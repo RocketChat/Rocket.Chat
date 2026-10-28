@@ -176,8 +176,31 @@ From the first prototype, not rerun on this rebase.
    - Restructure them: one `look` variant listing the combinations callers use. Done for `ButtonFrame` (CSS 160 kB → 59 kB raw); `IconButton` renders the same frame.
    - Or get ungrouped state classes upstream (item 4).
 2. ~~Replace `forceStyle`~~: done on the pilot; the forced tables are gone from the recipe.
-3. **Compact the recipe encoding** (integer keys), and emit the CSS once for the bundle. Today each module writes its own stylesheet, so a rule two definitions share appears twice.
-4. **Cache resolutions by `staticConfig` hash.** Lowering adds about 0.3 s to the library build since step 2; a full conversion will still need the cache.
+3. ~~Compact the recipe encoding, and emit the CSS once for the bundle~~: done in phase 4, below.
+4. ~~Cache resolutions~~: done in phase 4, below.
+
+## Phase 4: the plugin in the pilot
+
+Branch `pilot-lowered-styled`: the prototype ported onto the pilot after phase 3, with the same four definitions.
+
+- **Self-check.** Each lowered definition is compared with `resolveStaticElement` on classes, inline style and the attributes that reach the element, over no props, every variant value, every pair of values (both orders unless `ordered`) and 300 random combinations: 305 cases for `MessageName`, 393 for `ButtonGroup`, 1,291 for `ButtonFrame`, 302 for `ButtonContent`. Any difference, or an allowlisted definition missing from its module, fails the library and Storybook builds. CI runs it uncached (`yarn workspace @rocket.chat/fuselage run check-lowered`, Code Lint job).
+- **Cache.** `node_modules/.cache/fuselage-lowered`, one entry per module, keyed on the module's esbuild bundle (its source, the Fuselage config, the tokens and every local import), `NODE_ENV`, `lowerStyled.ts`, `recipe.ts`, and the lockfile entries of every `@tamagui/*` package, which carry each patch's hash. Tamagui's own compiler cache doesn't see patch changes; this one does.
+- **One stylesheet.** Every lowered module imports `.lowered/lowered.css`, which holds the rules of all allowlisted modules once. The bundler reads it at the first import, so the first lowered module lowers the others from disk (a cache read) before writing it.
+- **Encoding.** Style keys are numbered and each value indexes its key's own values; a style is a flat list of pairs. The runtime keeps Tamagui's order model with a `Map`. `ButtonFrame`'s recipe: 21.8 kB → 10.7 kB raw.
+- **`isTamaguiComponent`** recognizes the recipe component's `isLoweredFrame` marker; `Box.spec.tsx` covers `Box is={…}` with a lowered frame.
+
+`dist`, production build, gzip level 9:
+
+| | `LOWER_STYLED=0` | lowered, before cache/one stylesheet/encoding | lowered, after |
+|---|---|---|---|
+| `fuselage.production.js` | 357,573 B, 100,500 gzip | 381,173 B, 106,606 gzip | 369,825 B, **105,362 gzip** (+4,862) |
+| `fuselage.css` | 96,905 B, 13,509 gzip | 154,434 B, 19,615 gzip | 153,833 B, **19,611 gzip** (+6,102) |
+
+Parity, `LOWER_STYLED=0` against lowered Storybooks from the same checkout:
+- `STORY_AB_WAIT=2000 perf/story-ab.mjs` over all 567 stories: 557 identical after the port, 558 at the end of phase 4. Every difference is in the known flaky stories (Tooltip arrow positioning, Dropdown, PositionAnimated), and they change from run to run.
+- `perf/story-computed.mjs` (20 elements at most) on all 56 Button, IconButton, ButtonGroup and Message stories: no difference.
+
+Library build (`vite build --mode production`, Vite's "built in", 3 runs): 2.2–2.4 s unlowered; 2.9–3.0 s lowered before the cache; 2.35–2.45 s lowered with a warm cache, 3.1 s cold. The compiler still flattens 70 use-sites (`TAMAGUI_COMPILER_STATS=1`).
 
 ## Reproduce
 
