@@ -38,12 +38,13 @@ describe('[Contacts]', () => {
 	before(async () => {
 		connection = await MongoClient.connect(URL_MONGODB);
 
-		// No route accepts `source`, on purpose, so the contact the server sync owns is the one that goes in by hand.
+		// No route accepts `source` or `syncProvider`, on purpose, so the contact the server sync owns is the one that goes in by hand.
 		await contacts().insertOne({
 			_id: syncedId,
 			_updatedAt: new Date(),
 			uid: credentials['X-User-Id'],
 			source: 'outlook',
+			syncProvider: 'ews',
 			externalId: `contacts.external-${stamp}`,
 			folderId: 'default',
 			displayName: syncedName,
@@ -228,6 +229,86 @@ describe('[Contacts]', () => {
 
 				expect(res.body).to.have.property('error', 'error-contact-not-found');
 				expect(await contacts().findOne({ _id: syncedId })).to.include({ displayName: syncedName });
+			});
+		});
+
+		describe('[/contacts.favorite]', () => {
+			const graphContactId = `contacts.graph-${stamp}`;
+			let favoriteId: string;
+
+			const listFavoriteIds = async () => {
+				const res = await listContacts({ favorite: true }).expect(200);
+				return res.body.items.map(({ _id }: IContact) => _id);
+			};
+
+			before(async () => {
+				favoriteId = await createContact(credentials, { givenName: `zFavorite${stamp}` });
+				await request.post(api('contacts.favorite')).set(credentials).send({ contactId: favoriteId, favorite: true }).expect(200);
+				await contacts().insertOne({
+					_id: graphContactId,
+					_updatedAt: new Date(),
+					uid: credentials['X-User-Id'],
+					source: 'outlook',
+					syncProvider: 'graph',
+					externalId: `contacts.graph-external-${stamp}`,
+					folderId: 'default',
+					displayName: `Graph ${stamp}`,
+					emails: [],
+					phones: [],
+				});
+			});
+
+			after(async () => {
+				await contacts().deleteMany({ _id: { $in: [favoriteId, graphContactId] } });
+				await request.post(api('contacts.favorite')).set(credentials).send({ contactId: ownLocalContactId, favorite: false }).expect(200);
+			});
+
+			it('should list the favorites first when sorting by them, ahead of contacts named before them', async () => {
+				const byName = await listContacts().expect(200);
+				const byFavorite = await listContacts({ sort: JSON.stringify({ favorite: -1 }) }).expect(200);
+
+				expect(byName.body.items[0]._id).to.not.equal(favoriteId);
+				expect(byFavorite.body.items[0]).to.have.property('_id', favoriteId);
+			});
+
+			it('should mark a contact the caller owns as favorite, and list it among the favorites and the opposite when unfavorited', async () => {
+				await request.post(api('contacts.favorite')).set(credentials).send({ contactId: ownLocalContactId, favorite: true }).expect(200);
+
+				expect(await contacts().findOne({ _id: ownLocalContactId })).to.include({ favorite: true });
+				expect(await listFavoriteIds()).to.include(ownLocalContactId);
+
+				await request.post(api('contacts.favorite')).set(credentials).send({ contactId: ownLocalContactId, favorite: false }).expect(200);
+
+				expect(await contacts().findOne({ _id: ownLocalContactId })).to.not.have.property('favorite');
+				expect(await listFavoriteIds()).to.not.include(ownLocalContactId);
+			});
+
+			it('should answer 404 for a contact that belongs to someone else, and leave it as it was', async () => {
+				const res = await request
+					.post(api('contacts.favorite'))
+					.set(credentials)
+					.send({ contactId: otherContactId, favorite: true })
+					.expect(404);
+
+				expect(res.body).to.have.property('error', 'error-contact-not-found');
+				expect(await contacts().findOne({ _id: otherContactId })).to.not.have.property('favorite');
+			});
+
+			it('should let the caller mark a contact synced from Graph, which cannot read the favorite in Outlook', async () => {
+				await request.post(api('contacts.favorite')).set(credentials).send({ contactId: graphContactId, favorite: true }).expect(200);
+
+				expect(await contacts().findOne({ _id: graphContactId })).to.include({ favorite: true });
+
+				await request.post(api('contacts.favorite')).set(credentials).send({ contactId: graphContactId, favorite: false }).expect(200);
+
+				expect(await contacts().findOne({ _id: graphContactId })).to.not.have.property('favorite');
+			});
+
+			it('should answer 404 for a contact synced from EWS, whose favorite state comes from Outlook', async () => {
+				const res = await request.post(api('contacts.favorite')).set(credentials).send({ contactId: syncedId, favorite: true }).expect(404);
+
+				expect(res.body).to.have.property('error', 'error-contact-not-found');
+				expect(await contacts().findOne({ _id: syncedId })).to.not.have.property('favorite');
 			});
 		});
 

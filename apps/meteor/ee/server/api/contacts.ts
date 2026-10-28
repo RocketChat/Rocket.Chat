@@ -5,6 +5,7 @@ import type { LocalContactPayload, PaginatedResult } from '@rocket.chat/rest-typ
 import {
 	isContactsCreateProps,
 	isContactsDeleteProps,
+	isContactsFavoriteProps,
 	isContactsInfoProps,
 	isContactsListProps,
 	isContactsUpdateProps,
@@ -16,6 +17,7 @@ import {
 	CONTACTS_SORTABLE_FIELDS,
 } from '@rocket.chat/rest-typings';
 
+import { isContactFavoriteEditable } from '../../../lib/isContactFavoriteEditable';
 import { API } from '../../../server/api/api';
 import { getPaginationItems } from '../../../server/api/lib/getPaginationItems';
 import { normalizeE164 } from '../lib/exchange/sync/contacts/normalizeE164';
@@ -77,7 +79,7 @@ API.v1.get(
 	},
 	async function action() {
 		const { userId } = this;
-		const { text } = this.queryParams;
+		const { text, favorite } = this.queryParams;
 
 		const { offset, count } = await getPaginationItems(this.queryParams);
 		const { sort } = await this.parseJsonQuery();
@@ -92,12 +94,13 @@ API.v1.get(
 			userId,
 			text,
 			{
-				sort: sort ?? { displayName: 1 },
+				sort: { ...sort, displayName: sort?.displayName ?? 1 },
 				skip: offset,
 				limit: count,
 				projection: { uid: 0, externalId: 0, folderId: 0, lastSyncAt: 0 },
 			},
 			licensed ? undefined : 'local',
+			favorite,
 		);
 
 		const [items, total] = await Promise.all([cursor.toArray(), totalCount]);
@@ -238,6 +241,49 @@ API.v1.post(
 		const { deletedCount } = await Contacts.deleteLocal(this.userId, this.bodyParams.contactId);
 
 		if (!deletedCount) {
+			return API.v1.notFound('error-contact-not-found');
+		}
+
+		return API.v1.success({});
+	},
+);
+
+API.v1.post(
+	'contacts.favorite',
+	{
+		authRequired: true,
+		body: isContactsFavoriteProps,
+		response: {
+			200: ajv.compile<{ success: true }>({
+				type: 'object',
+				properties: {
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+			404: validateNotFoundErrorResponse,
+		},
+	},
+	async function action() {
+		const { contactId, favorite } = this.bodyParams;
+
+		const contact = await Contacts.findOneOwnedByUserId(
+			this.userId,
+			contactId,
+			License.hasModule('outlook-calendar') ? undefined : 'local',
+		);
+
+		if (!contact || !isContactFavoriteEditable(contact)) {
+			return API.v1.notFound('error-contact-not-found');
+		}
+
+		const { matchedCount } = await Contacts.setFavorite(this.userId, contactId, favorite);
+
+		if (!matchedCount) {
 			return API.v1.notFound('error-contact-not-found');
 		}
 

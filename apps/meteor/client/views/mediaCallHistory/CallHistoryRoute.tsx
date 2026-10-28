@@ -8,15 +8,16 @@ import ContactsTab from '../contacts/ContactsTab';
 const CallHistoryRoute = () => {
 	const router = useRouter();
 
-	const tab: CallHistoryTab = useRouteParameter('tab') === 'contacts' ? 'contacts' : 'calls';
+	const tabParam = useRouteParameter('tab');
+	const tab: CallHistoryTab = tabParam === 'contacts' || tabParam === 'favorites' ? tabParam : 'calls';
 
 	const handleChangeTab = useCallback(
-		(next: CallHistoryTab) => router.navigate(next === 'contacts' ? '/call-history/contacts' : '/call-history'),
+		(next: CallHistoryTab) => router.navigate(next === 'calls' ? '/call-history' : `/call-history/${next}`),
 		[router],
 	);
 
-	if (tab === 'contacts') {
-		return <ContactsTab tab={tab} onChangeTab={handleChangeTab} />;
+	if (tab !== 'calls') {
+		return <ContactsTab key={tab} tab={tab} onChangeTab={handleChangeTab} />;
 	}
 
 	return <CallHistoryPage tab={tab} onChangeTab={handleChangeTab} />;

@@ -118,6 +118,7 @@ export function addSettings(): Promise<void> {
 					await this.add('Exchange_Contacts_Sync_Enabled', false, {
 						type: 'boolean',
 						public: true,
+						alert: 'Exchange_Contacts_Favorites_Graph_Alert',
 						enableQuery: serverOnly,
 						invalidValue: false,
 					});

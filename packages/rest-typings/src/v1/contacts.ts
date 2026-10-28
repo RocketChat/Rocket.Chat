@@ -12,16 +12,18 @@ export const CONTACTS_SORTABLE_FIELDS = [
 	'categories',
 	'companyName',
 	'officeLocation',
+	'favorite',
 ] as const;
 
 export type ContactsSortableField = (typeof CONTACTS_SORTABLE_FIELDS)[number];
 
-export type ContactsListProps = PaginatedRequest<{ text?: string }, ContactsSortableField>;
+export type ContactsListProps = PaginatedRequest<{ text?: string; favorite?: boolean }, ContactsSortableField>;
 
 const ContactsListPropsSchema = {
 	type: 'object',
 	properties: {
 		text: { type: 'string', nullable: true },
+		favorite: { type: 'boolean', nullable: true },
 		count: { type: 'integer', nullable: true },
 		offset: { type: 'integer', nullable: true },
 		sort: { type: 'string', nullable: true },
@@ -148,6 +150,25 @@ const contactsDeletePropsSchema: JSONSchemaType<ContactsDeleteProps> = {
 
 export const isContactsDeleteProps = ajv.compile(contactsDeletePropsSchema);
 
+export type ContactsFavoriteProps = { contactId: string; favorite: boolean };
+
+const contactsFavoritePropsSchema: JSONSchemaType<ContactsFavoriteProps> = {
+	type: 'object',
+	properties: {
+		contactId: {
+			type: 'string',
+			minLength: 1,
+		},
+		favorite: {
+			type: 'boolean',
+		},
+	},
+	required: ['contactId', 'favorite'],
+	additionalProperties: false,
+};
+
+export const isContactsFavoriteProps = ajv.compile(contactsFavoritePropsSchema);
+
 export type ContactsEndpoints = {
 	'/v1/contacts.list': {
 		GET: (params: ContactsListProps) => PaginatedResult<{ items: IContactPublic[]; syncedTotal: number }>;
@@ -163,5 +184,8 @@ export type ContactsEndpoints = {
 	};
 	'/v1/contacts.delete': {
 		POST: (params: ContactsDeleteProps) => void;
+	};
+	'/v1/contacts.favorite': {
+		POST: (params: ContactsFavoriteProps) => void;
 	};
 };

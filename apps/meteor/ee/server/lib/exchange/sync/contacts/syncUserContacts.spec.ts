@@ -37,7 +37,7 @@ const outcome = (over: Record<string, unknown> = {}) => ({
 const providerListing = (id: 'graph' | 'ews', folders: ContactFolder[], complete = true): IExchangeProvider =>
 	({
 		id,
-		capabilities: { supportsWebhooks: false },
+		capabilities: { supportsWebhooks: false, syncsFavorites: id === 'ews' },
 		testConnection: jest.fn(),
 		listContactFolders: jest.fn(async () => ({ folders, complete })),
 	}) as unknown as IExchangeProvider;

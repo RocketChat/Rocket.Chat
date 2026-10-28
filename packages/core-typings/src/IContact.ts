@@ -3,6 +3,8 @@ import type { IUser } from './IUser';
 
 export type ContactSource = 'outlook' | 'local';
 
+export type ContactSyncProvider = 'graph' | 'ews';
+
 export interface IContactPhone {
 	// As it came from the source, kept for display.
 	raw: string;
@@ -29,6 +31,8 @@ export interface IContact extends IRocketChatRecord {
 	emails: IContactEmail[];
 	phones: IContactPhone[];
 	categories?: string[];
+	favorite?: boolean;
+	syncProvider?: ContactSyncProvider;
 	externalId?: string;
 	folderId?: string;
 	lastSyncAt?: Date;

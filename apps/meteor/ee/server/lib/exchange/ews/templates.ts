@@ -176,6 +176,9 @@ const PHONE_KEYS = [
 
 const EMAIL_KEYS = ['EmailAddress1', 'EmailAddress2', 'EmailAddress3'];
 
+/** Where Outlook on the web keeps a People favorite. EWS has no named field for it. */
+export const FAVORITE_PROPERTY_NAME = 'IsFavorite';
+
 export const getContactItemsRequest = (mailbox: string, itemIds: string[]): string =>
 	envelope(
 		[
@@ -189,6 +192,7 @@ export const getContactItemsRequest = (mailbox: string, itemIds: string[]): stri
 			'<t:FieldURI FieldURI="contacts:CompanyName"/>',
 			'<t:FieldURI FieldURI="contacts:OfficeLocation"/>',
 			'<t:FieldURI FieldURI="item:Categories"/>',
+			`<t:ExtendedFieldURI DistinguishedPropertySetId="Address" PropertyName="${FAVORITE_PROPERTY_NAME}" PropertyType="Boolean"/>`,
 			EMAIL_KEYS.map((key) => `<t:IndexedFieldURI FieldURI="contacts:EmailAddress" FieldIndex="${key}"/>`).join(''),
 			PHONE_KEYS.map((key) => `<t:IndexedFieldURI FieldURI="contacts:PhoneNumber" FieldIndex="${key}"/>`).join(''),
 			'</t:AdditionalProperties>',
