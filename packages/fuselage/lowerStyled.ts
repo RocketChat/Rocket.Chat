@@ -126,9 +126,23 @@ export const allowlist: Record<string, Record<string, Options>> = {
 	'src/components/Sidepanel/SidepanelHeader.tsx': { SidepanelHeaderFrame: {} },
 	'src/components/Sidepanel/SidepanelHeaderTitle.tsx': { SidepanelHeaderTitleFrame: {} },
 	'src/components/Sidepanel/SidepanelSection.tsx': { SidepanelSectionFrame: {}, SidepanelSection: {} },
-	'src/components/ToastBar/ToastBar.tsx': { ToastBarFrame: {}, ToastBarStatusLine: {}, ToastBarInner: {}, ToastBarContent: {}, ToastBarProgressBar: {}, ToastBarProgressFill: {} },
+	'src/components/ToastBar/ToastBar.tsx': {
+		ToastBarFrame: {},
+		ToastBarStatusLine: {},
+		ToastBarInner: {},
+		ToastBarContent: {},
+		ToastBarProgressBar: {},
+		ToastBarProgressFill: {},
+	},
 	'src/components/Tooltip/Tooltip.tsx': { TooltipFrame: {}, TooltipArrow: {} },
-	'src/components/Callout/Callout.tsx': { CalloutFrame: {}, CalloutWrapper: {}, CalloutWrapperContent: {}, CalloutTitle: {}, CalloutContent: {}, CalloutActions: {} },
+	'src/components/Callout/Callout.tsx': {
+		CalloutFrame: {},
+		CalloutWrapper: {},
+		CalloutWrapperContent: {},
+		CalloutTitle: {},
+		CalloutContent: {},
+		CalloutActions: {},
+	},
 	'src/components/Card/Card.tsx': { CardFrame: {} },
 	'src/components/Card/CardBody.tsx': { CardBodyFrame: {} },
 	'src/components/Card/CardCol.tsx': { CardCol: {} },
@@ -140,10 +154,25 @@ export const allowlist: Record<string, Record<string, Options>> = {
 	'src/components/CardGroup/CardGroup.tsx': { CardGroupFrame: {} },
 	'src/components/Table/TableBody.tsx': { TableBody: {} },
 	'src/components/Table/TableFoot.tsx': { TableFoot: {} },
-	'src/components/Table/TableFrames.ts': { TableWrapper: {}, TableFrame: {}, TableHeadFrame: {}, TableBodyFrame: {}, TableFootFrame: {}, TableRowFrame: {}, TableCellFrame: {}, TableCellDivider: {}, TableSelectionFrame: {} },
+	'src/components/Table/TableFrames.ts': {
+		TableWrapper: {},
+		TableFrame: {},
+		TableHeadFrame: {},
+		TableBodyFrame: {},
+		TableFootFrame: {},
+		TableRowFrame: {},
+		TableCellFrame: {},
+		TableCellDivider: {},
+		TableSelectionFrame: {},
+	},
 	'src/components/Tile/Tile.tsx': { TileFrame: {} },
 	'src/components/Accordion/Accordion.tsx': { AccordionFrame: {} },
-	'src/components/Accordion/AccordionItem.tsx': { AccordionItemFrame: {}, AccordionItemBar: {}, AccordionItemTitle: {}, AccordionItemPanel: {} },
+	'src/components/Accordion/AccordionItem.tsx': {
+		AccordionItemFrame: {},
+		AccordionItemBar: {},
+		AccordionItemTitle: {},
+		AccordionItemPanel: {},
+	},
 	'src/components/Divider/Divider.tsx': { DividerLine: {}, DividerBar: {}, DividerWrapper: {} },
 	'src/components/States/States.tsx': { StatesFrame: {} },
 	'src/components/States/StatesLink.tsx': { StatesLinkFrame: {} },
@@ -627,7 +656,9 @@ const extendedFrames = () => {
 	const lowered = new Set(Object.values(allowlist).flatMap((bindings) => Object.keys(bindings)));
 	for (const file of readdirSync(join(root, 'src'), { recursive: true }) as string[]) {
 		if (!/\.tsx?$/.test(file)) continue;
-		for (const match of readFileSync(join(root, 'src', file), 'utf8').matchAll(/(?:(?:const|let)\s+(\w+)\s*=[^;\n]*?)?\b(?:styled|part)\((\w+)/g)) {
+		for (const match of readFileSync(join(root, 'src', file), 'utf8').matchAll(
+			/(?:(?:const|let)\s+(\w+)\s*=[^;\n]*?)?\b(?:styled|part)\((\w+)/g,
+		)) {
 			// An extender that is lowered itself no longer needs the frame
 			if (!match[1] || !lowered.has(match[1])) extended.add(match[2]);
 		}
