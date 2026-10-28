@@ -116,7 +116,10 @@ export class ContactsRaw extends BaseRaw<IContact> implements IContactsModel {
 	}
 
 	public setFavorite(uid: IUser['_id'], contactId: IContact['_id'], favorite: boolean): Promise<UpdateResult> {
-		return this.updateOne({ _id: contactId, uid }, favorite ? { $set: { favorite: true } } : { $unset: { favorite: 1 } });
+		return this.updateOne(
+			{ _id: contactId, uid, $or: [{ source: LOCAL }, { syncProvider: 'graph' }] },
+			favorite ? { $set: { favorite: true } } : { $unset: { favorite: 1 } },
+		);
 	}
 
 	public async bulkUpsertImported(contacts: ImportedContact[], lastSyncAt: Date): Promise<ContactBulkUpsertResult> {
