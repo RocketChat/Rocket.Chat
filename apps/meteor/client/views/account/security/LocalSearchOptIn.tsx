@@ -1,9 +1,10 @@
-import { Box, Field, FieldDescription, FieldLabel, FieldRow, ToggleSwitch } from '@rocket.chat/fuselage';
+import { Field, FieldDescription, FieldLabel, FieldRow, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useSetting, useUserId } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent } from 'react';
 import { useCallback, useId, useSyncExternalStore } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import EndToEndSettingsSection from './layout/EndToEndSettingsSection';
 import { getSearchIndexBackend } from '../../../lib/e2eeSearch/getSearchIndexBackend';
 import { isSearchIndexOptedIn, setSearchIndexOptIn, subscribeToSearchIndexOptIn } from '../../../lib/e2eeSearch/searchIndexOptIn';
 
@@ -33,7 +34,7 @@ const LocalSearchOptIn = () => {
 	}
 
 	return (
-		<Box alignSelf='stretch' paddingBlockStart={32}>
+		<EndToEndSettingsSection>
 			<Field>
 				<FieldRow>
 					<FieldLabel htmlFor={toggleId}>{t('E2E_Local_Search_Opt_In')}</FieldLabel>
@@ -41,7 +42,7 @@ const LocalSearchOptIn = () => {
 				</FieldRow>
 				<FieldDescription id={descriptionId}>{t('E2E_Local_Search_Opt_In_Description')}</FieldDescription>
 			</Field>
-		</Box>
+		</EndToEndSettingsSection>
 	);
 };
 
