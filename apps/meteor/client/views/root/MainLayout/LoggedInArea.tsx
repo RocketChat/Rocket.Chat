@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 
 import MediaPlayerProvider from '../../../providers/MediaPlayerProvider';
 import { useCustomEmoji } from '../hooks/loggedIn/useCustomEmoji';
+import { useCodeHighlight } from '../hooks/useCodeHighlight';
 import { useDesktopUnreadAlert } from '../hooks/loggedIn/useDesktopUnreadAlert';
 import { useE2EEncryption } from '../hooks/loggedIn/useE2EEncryption';
 import { useFingerprintChange } from '../hooks/loggedIn/useFingerprintChange';
@@ -36,6 +37,7 @@ const LoggedInArea = ({ children }: LoggedInAreaProps) => {
 	useForceLogout(user._id);
 	useStoreCookiesOnLogin(user._id);
 	useCustomEmoji();
+	useCodeHighlight();
 	useRestrictedRoles();
 	// These 3 hooks below need to be called in this order due to the way our `setModal` works.
 	// TODO: reevaluate `useSetModal`

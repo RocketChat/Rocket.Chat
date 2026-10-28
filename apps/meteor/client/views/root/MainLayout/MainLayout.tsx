@@ -1,13 +1,14 @@
 import { useEmbeddedLayout } from '@rocket.chat/ui-client';
 import type { ReactNode } from 'react';
-import { Suspense } from 'react';
+import { lazy, Suspense } from 'react';
 
 import AuthenticationCheck from './AuthenticationCheck';
 import EmbeddedPreload from './EmbeddedPreload';
-import LayoutWithSidebar from './LayoutWithSidebar';
 import Preload from './Preload';
 import { useCustomScript } from './useCustomScript';
 import HomeSkeleton from '../../home/HomeSkeleton';
+
+const LayoutWithSidebar = lazy(() => import('./LayoutWithSidebar'));
 
 export type MainLayoutProps = {
 	children?: ReactNode;
@@ -24,9 +25,11 @@ const MainLayout = ({ children = null }: MainLayoutProps) => {
 	return (
 		<Layout>
 			<AuthenticationCheck loadingElement={<HomeSkeleton />}>
-				<LayoutWithSidebar>
-					<Suspense fallback={null}>{children}</Suspense>
-				</LayoutWithSidebar>
+				<Suspense fallback={<HomeSkeleton />}>
+					<LayoutWithSidebar>
+						<Suspense fallback={null}>{children}</Suspense>
+					</LayoutWithSidebar>
+				</Suspense>
 			</AuthenticationCheck>
 		</Layout>
 	);

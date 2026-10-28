@@ -23,10 +23,10 @@ afterEach(() => {
 	localStorage.clear();
 });
 
-it('renders the route for a user who is logged in', () => {
+it('renders the route for a user who is logged in', async () => {
 	renderGate(mockAppRoot().withJohnDoe());
 
-	expect(screen.getByText('conference')).toBeInTheDocument();
+	expect(await screen.findByText('conference')).toBeInTheDocument();
 });
 
 it('shows the login page to a visitor with no session', () => {
@@ -146,7 +146,7 @@ const MaybeSessionEnded = ({ ended, children }: { ended: boolean; children: Reac
 // Deleting your own account ends the session server-side but clears nothing locally: the stored token stays put,
 // and reading it alone the gate answered "a resume is in flight" and held the skeleton up for good. A user that
 // has already been seen going away is an ended session, whatever storage still says.
-it('shows the login page when the user goes away with a token still stored', () => {
+it('shows the login page when the user goes away with a token still stored', async () => {
 	localStorage.setItem(STORAGE_KEYS.LOGIN_TOKEN, 'a-token-nobody-cleared');
 
 	const Root = mockAppRoot().withJohnDoe().build();
@@ -159,7 +159,7 @@ it('shows the login page when the user goes away with a token still stored', () 
 		</Root>,
 	);
 
-	expect(screen.getByText('conference')).toBeInTheDocument();
+	expect(await screen.findByText('conference')).toBeInTheDocument();
 
 	rerender(
 		<Root>

@@ -6,7 +6,6 @@ import PageLoading from './PageLoading';
 import { useAnalytics } from './hooks/useAnalytics';
 import { useAnalyticsEventTracking } from './hooks/useAnalyticsEventTracking';
 import { useAutoupdate } from './hooks/useAutoupdate';
-import { useCodeHighlight } from './hooks/useCodeHighlight';
 import { useCorsSSLConfig } from './hooks/useCorsSSLConfig';
 import { useDesktopBridgeContract } from './hooks/useDesktopBridgeContract';
 import { useDesktopFavicon } from './hooks/useDesktopFavicon';
@@ -59,7 +58,6 @@ const AppLayout = () => {
 	useLivechatEnterprise();
 	useCorsSSLConfig();
 	useAutoupdate();
-	useCodeHighlight();
 	useLoginViaQuery();
 	useLoginOtherClients();
 	useOAuthLogin();

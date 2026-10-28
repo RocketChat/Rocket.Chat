@@ -1,13 +1,14 @@
 import { useConnectionStatus, useSession, useUser, useSetting } from '@rocket.chat/ui-contexts';
 import RegistrationRoute from '@rocket.chat/web-ui-registration';
 import type { ReactNode } from 'react';
-import { useEffect, useRef, useState } from 'react';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
 
-import LoggedInArea from './LoggedInArea';
 import LoginPage from './LoginPage';
 import UsernameCheck from './UsernameCheck';
 import { useStoredItem } from '../../../hooks/useStoredItem';
 import { STORAGE_KEYS } from '../../../lib/sdk/storage';
+
+const LoggedInArea = lazy(() => import('./LoggedInArea'));
 
 /*
  * Anonymous and guest are similar in some way
@@ -102,9 +103,11 @@ const AuthenticationCheck = ({ children, guest, loadingElement }: Authentication
 
 	if (user) {
 		return (
-			<LoggedInArea>
-				<UsernameCheck loadingElement={loadingElement}>{children}</UsernameCheck>
-			</LoggedInArea>
+			<Suspense fallback={loadingElement}>
+				<LoggedInArea>
+					<UsernameCheck loadingElement={loadingElement}>{children}</UsernameCheck>
+				</LoggedInArea>
+			</Suspense>
 		);
 	}
 
