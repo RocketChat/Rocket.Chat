@@ -18,7 +18,7 @@ const ContactFavoriteToggle = ({ contact, revealed }: ContactFavoriteToggleProps
 	if (!isContactFavoriteEditable(contact)) {
 		return (
 			favorite && (
-				<Stack direction='row' justify='center'>
+				<Stack direction='row' justify='center' role='img' aria-label={t('Favorite_Outlook')}>
 					<Icon name='star' size='x20' title={t('Favorite_Outlook')} />
 				</Stack>
 			)
