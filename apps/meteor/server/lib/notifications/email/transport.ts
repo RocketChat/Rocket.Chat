@@ -49,7 +49,9 @@ export const configureMailTransport = (options: SMTPTransportOptions | SMTPPoolO
 
 const printMail = async (mail: SendMailOptions): Promise<void> => {
 	const { message } = await nodemailer.createTransport({ streamTransport: true, buffer: true }).sendMail(mail);
-	process.stdout.write(`====== BEGIN MAIL ======\n(Mail not sent; to enable sending, configure SMTP.)\n${message}\n====== END MAIL ======\n`);
+	process.stdout.write(
+		`====== BEGIN MAIL ======\n(Mail not sent; to enable sending, configure SMTP.)\n${message}\n====== END MAIL ======\n`,
+	);
 };
 
 /** Without SMTP, email is printed in development, rejected in production and dropped otherwise. */
