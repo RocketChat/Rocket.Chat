@@ -62,13 +62,12 @@ renders the page, and the entry, chunks and stylesheets load from the CDN. Nothi
 `yarn build:vite` (without `RC_CLIENT_TARGET=server`) builds a standalone client into `apps/meteor/vite/dist`:
 `index.html`, `bundle/` and a copy of `public/`. To serve it yourself, in front of a Rocket.Chat server:
 
-1. Serve `vite/dist` as static files and answer every unknown path with `index.html`, since the client routes on the
-   browser side.
-2. Proxy the server routes to the Rocket.Chat server, WebSockets included. The list is `serverRoutes` in
-   `apps/meteor/vite/vite.config.mts`: `/api`, `/websocket`, `/sockjs`, `/_oauth`, `/_saml`, `/_cas`, `/_timesync`,
-   `/i18n`, `/avatar`, `/emoji-custom`, `/custom-sounds`, `/file-upload`, `/file-decrypt`, `/data-export`, `/assets`,
-   `/livechat`, `/theme.css`, `/css-theme_*` and `/scripts_*`. Rewrite the cookie domain to your host, so `rc_token`
-   reaches avatars and downloads.
+1. Serve `vite/dist` as static files. Answer page navigations (`GET` requests that accept `text/html`) with
+   `index.html`, since the client routes on the browser side, except under the server's own pages: `/api`, `/oauth`,
+   `/_oauth`, `/_saml`, `/_cas`, `/file-upload`, `/file-decrypt`, `/data-export` and `/livechat`. Of those, only
+   `/oauth/authorize` and `/oauth/error` are client pages.
+2. Proxy every other path to the Rocket.Chat server, and the `/websocket` and `/sockjs` WebSockets. Rewrite the cookie
+   domain to your host, so `rc_token` reaches avatars and downloads.
 3. Define `window.__meteor_runtime_config__` before the entry runs, with at least `ROOT_URL` (your host) and
    `ROOT_URL_PATH_PREFIX`. Use an external script if your host sends a Content-Security-Policy.
 
