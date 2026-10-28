@@ -204,6 +204,14 @@ export const allowlist: Record<string, Record<string, Options>> = {
 	'src/components/Sidebar/SidebarMedia/SidebarMedia.tsx': { SidebarMediaFrame: {} },
 	'src/components/Sidebar/SidebarMedia/SidebarMediaController.tsx': { SidebarMediaControllerFrame: {}, SidebarMediaControllerLabel: {} },
 	'src/components/Sidebar/SidebarMedia/SidebarMediaTitle.tsx': { SidebarMediaTitleFrame: {} },
+	'src/components/Grid/Grid.tsx': { GridWrapper: {}, GridFrame: {} },
+	'src/components/Grid/GridItem.tsx': { GridItemFrame: {} },
+	'src/components/Avatar/Avatar.tsx': { AvatarElementFrame: {} },
+	'src/components/Avatar/AvatarContainer.tsx': { AvatarContainerFrame: {} },
+	'src/components/Avatar/AvatarStack.tsx': { AvatarStackFrame: {} },
+	'src/components/FramedIcon/FramedIcon.tsx': { FramedIconFrame: {} },
+	'src/components/Icon/Icon.tsx': { IconFrame: {} },
+	'src/components/StatusBullet/StatusBulletFrame.tsx': { StatusBulletFrame: {} },
 };
 
 const root = import.meta.dirname;
