@@ -46,7 +46,8 @@ the product's, not the component's. Take them as a [slot](#slots-for-what-belong
 
 In this repo: `packages/ui-conference` keeps its provider in the application
 (`apps/meteor/client/views/conference/providers/ConferenceProvider.tsx`) and its components
-read only the contract. `packages/ui-voip` follows the same split in `providers/` and
+read the contract for settings, permissions and the route; the toasts, modals, sounds and
+`useUserId` some of them still read are leftovers to move, not precedent. `packages/ui-voip` follows the same split in `providers/` and
 `components/`; `DevicePicker.tsx` and `CallHistoryInternalUser.tsx` still read application
 contexts and are the exception, not the shape to copy.
 
