@@ -64,10 +64,15 @@ describe('getSearchIndexBackend', () => {
 		}
 	});
 
-	it('returns no backend on a desktop version with no E2EE search bridge', () => {
+	it('returns no backend on a desktop version with no E2EE search bridge, also when the browser index could run', () => {
 		setDesktop({ setBadge: jest.fn() });
+		(window as { Worker?: unknown }).Worker = jest.fn();
 
-		expect(getSearchIndexBackend()).toBeUndefined();
+		try {
+			expect(getSearchIndexBackend()).toBeUndefined();
+		} finally {
+			delete (window as { Worker?: unknown }).Worker;
+		}
 	});
 
 	it('returns the desktop backend when the desktop app has one, also with the dev flag set', async () => {

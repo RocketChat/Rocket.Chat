@@ -24,13 +24,17 @@ const isFakeBackendEnabled = (): boolean => {
 };
 
 /**
- * Returns the local search index for end-to-end encrypted messages: the desktop app's index when it has one, a
- * memory-only fake in a development build with the dev flag set, the browser's SQLite index when the browser can run
- * it, or `undefined`. Without a backend, encrypted rooms keep today's behavior: they cannot be searched.
+ * Returns the local search index for end-to-end encrypted messages: the desktop app's index when it has one, nothing in
+ * a desktop app without one, a memory-only fake in a development build with the dev flag set, the browser's SQLite
+ * index when the browser can run it, or `undefined`. Without a backend, encrypted rooms keep today's behavior: they cannot be searched.
  */
 export const getSearchIndexBackend = (): ISearchIndexBackend | undefined => {
 	const desktopBackend = getDesktopSearchIndexBackend();
 	if (desktopBackend) return desktopBackend;
+
+	// A desktop version without the search bridge gets no index. The browser index would stay in the app's profile,
+	// where the desktop app cannot wipe it, also after an update brings the desktop index.
+	if (window.RocketChatDesktop) return undefined;
 
 	if (isFakeBackendEnabled()) {
 		fakeBackend ??= createFakeSearchIndexBackend();
