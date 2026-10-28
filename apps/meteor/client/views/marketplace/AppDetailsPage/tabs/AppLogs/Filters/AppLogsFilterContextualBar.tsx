@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup, Label } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Label } from '@rocket.chat/fuselage';
 import {
 	ContextualbarHeader,
 	ContextualbarIcon,
@@ -16,6 +16,7 @@ import { InstanceFilterSelect } from './InstanceFilterSelect';
 import { SeverityFilterSelect } from './SeverityFilterSelect';
 import { TimeFilterSelect } from './TimeFilterSelect';
 import { useAppLogsFilterFormContext } from '../useAppLogsFilterForm';
+import FilterField from './layout/FilterField';
 
 export type AppLogsFilterContextualBarProps = {
 	appId: string;
@@ -35,21 +36,21 @@ export const AppLogsFilterContextualBar = ({ appId, onClose = () => undefined }:
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent is='form'>
-				<Box display='flex' flexDirection='column' marginInlineEnd='x8' flexGrow={1}>
+				<FilterField inset>
 					<Label id='timeFilterLabel' htmlFor='timeFilter'>
 						{t('Time')}
 					</Label>
 					<TimeFilterSelect aria-labelledby='timeFilterLabel' id='timeFilter' compactView={true} />
-				</Box>
-				<Box display='flex' flexDirection='column' marginInlineEnd='x8' flexGrow={1}>
+				</FilterField>
+				<FilterField inset>
 					<Label htmlFor='timeFilter'>{t('Logs_from')}</Label>
 					<DateTimeFilter control={control} type='start' />
-				</Box>
-				<Box display='flex' flexDirection='column' marginInlineEnd='x8' flexGrow={1}>
+				</FilterField>
+				<FilterField inset>
 					<Label htmlFor='timeFilter'>{t('Until')}</Label>
 					<DateTimeFilter control={control} type='end' />
-				</Box>
-				<Box display='flex' flexDirection='column' marginInlineEnd='x8' flexGrow={1}>
+				</FilterField>
+				<FilterField inset>
 					<Label id='instanceFilterLabel' htmlFor='instanceFilter'>
 						{t('Instance')}
 					</Label>
@@ -60,8 +61,8 @@ export const AppLogsFilterContextualBar = ({ appId, onClose = () => undefined }:
 							<InstanceFilterSelect appId={appId} aria-labelledby='instanceFilterLabel' id='instanceFilter' {...field} />
 						)}
 					/>
-				</Box>
-				<Box display='flex' flexDirection='column' marginInlineEnd='x8' flexGrow={1}>
+				</FilterField>
+				<FilterField inset>
 					<Label id='severityFilterLabel' htmlFor='severityFilter'>
 						{t('Severity')}
 					</Label>
@@ -70,7 +71,7 @@ export const AppLogsFilterContextualBar = ({ appId, onClose = () => undefined }:
 						name='severity'
 						render={({ field }) => <SeverityFilterSelect aria-labelledby='severityFilterLabel' id='severityFilter' {...field} />}
 					/>
-				</Box>
+				</FilterField>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
