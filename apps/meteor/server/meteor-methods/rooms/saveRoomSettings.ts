@@ -444,8 +444,8 @@ export async function saveRoomSettings(
 	value?: RoomSettings[keyof RoomSettings],
 ): Promise<{ result: true; rid: IRoom['_id'] }> {
 	if (!userId) {
-		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
-			function: 'RocketChat.saveRoomName',
+		throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', {
+			method: 'saveRoomSettings',
 		});
 	}
 	if (!Match.test(rid, String)) {

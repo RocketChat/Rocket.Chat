@@ -1,10 +1,8 @@
 import { Account, ClientSafeError } from '@rocket.chat/core-services';
+import { ConnectionLifecycle, Server, WS_ERRORS } from '@rocket.chat/ddp-server';
 
 import { registerAccountMethods } from './accounts';
 import { makeSession, makePacket, sentPackets } from '../__tests__/helpers';
-import { Server } from '../ddp/Server';
-import { WS_ERRORS } from '../ddp/constants';
-import { ConnectionLifecycle } from '../ddp/lifecycle';
 
 jest.mock('@rocket.chat/core-services', () => ({
 	...jest.requireActual('@rocket.chat/core-services'),

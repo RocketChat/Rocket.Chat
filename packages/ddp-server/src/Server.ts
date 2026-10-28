@@ -29,8 +29,7 @@ const handleInternalException = (err: unknown, msg: string): ClientSafeError => 
 		return err;
 	}
 
-	// default errors are logged to the console and redacted from the client
-	// TODO switch to using the logger (ideally broker.logger)
+	// an unexpected error's details stay in the log; the client only gets a generic 500
 	logger.error({ msg, err });
 
 	return new ClientSafeError(500, 'Internal server error');
@@ -52,7 +51,6 @@ export class Server {
 	}
 
 	async call(session: Session, packet: IPacket): Promise<void> {
-		// if client is not connected we don't need to do anything
 		if (session.ws.readyState !== WebSocket.OPEN) {
 			return;
 		}
@@ -83,7 +81,6 @@ export class Server {
 	}
 
 	async subscribe(session: Session, packet: IPacket): Promise<void> {
-		// if client is not connected we don't need to do anything
 		if (session.ws.readyState !== WebSocket.OPEN) {
 			return;
 		}

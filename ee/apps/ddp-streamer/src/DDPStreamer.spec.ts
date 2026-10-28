@@ -1,16 +1,12 @@
 import type { IApiService, IBroker, IServiceMetrics } from '@rocket.chat/core-services';
 import { Presence, asyncLocalStorage } from '@rocket.chat/core-services';
+import { ConnectionLifecycle, ConnectionRegistry, MeteorCollection, Server, createStreamAdapter } from '@rocket.chat/ddp-server';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { Users } from '@rocket.chat/models';
 import { NotificationsModule } from '@rocket.chat/streamer';
 
 import { DDPStreamer } from './DDPStreamer';
 import { makeSession, sentPackets } from './__tests__/helpers';
-import { ConnectionRegistry } from './ddp/ConnectionRegistry';
-import { Server } from './ddp/Server';
-import { ConnectionLifecycle } from './ddp/lifecycle';
-import { MeteorCollection } from './lib/MeteorCollection';
-import { createStreamAdapter } from './streams/StreamAdapter';
 
 jest.mock('@rocket.chat/core-services', () => ({
 	...jest.requireActual('@rocket.chat/core-services'),

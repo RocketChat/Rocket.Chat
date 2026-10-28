@@ -22,7 +22,7 @@ export async function createDirectMessage(
 	check(excludeSelf, Match.Optional(Boolean));
 
 	if (!userId) {
-		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', {
 			method: 'createDirectMessage',
 		});
 	}

@@ -18,7 +18,7 @@ Meteor.startup(() => {
 export const sendInvitationEmail = async (userId: string, emails: string[]) => {
 	check(emails, [String]);
 	if (!userId) {
-		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', {
 			method: 'sendInvitationEmail',
 		});
 	}

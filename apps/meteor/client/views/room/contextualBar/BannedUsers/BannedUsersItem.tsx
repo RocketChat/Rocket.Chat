@@ -1,4 +1,4 @@
-import { Box, Icon, Item, ItemActions, ItemContent, ItemDescription, ItemIcon, ItemMedia, ItemTitle } from '@rocket.chat/fuselage';
+import { Icon, Item, ItemActions, ItemContent, ItemDescription, ItemIcon, ItemMedia, ItemTitle, Text } from '@rocket.chat/fuselage';
 import { ITEM_MEDIA_SIZE, UserAvatar } from '@rocket.chat/ui-avatar';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import { useUserPresence } from '@rocket.chat/ui-contexts';
@@ -29,7 +29,7 @@ const BannedUsersItem = ({ user, useRealName, onClickUnban }: BannedUsersItemPro
 		() => [
 			{
 				id: 'unban-user',
-				content: <Box color='status-font-on-danger'>{t('Unban_user_from_room')}</Box>,
+				content: <Text color='status-font-on-danger'>{t('Unban_user_from_room')}</Text>,
 				icon: 'ban' as const,
 				iconColor: 'status-font-on-danger' as const,
 				onClick: () => onClickUnban(user.username),

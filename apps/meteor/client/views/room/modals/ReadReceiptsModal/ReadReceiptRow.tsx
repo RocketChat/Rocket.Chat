@@ -1,5 +1,5 @@
 import type { IReadReceiptWithUser } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Text } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useUserDisplayName, useFormatDateAndTime } from '@rocket.chat/ui-client';
 
@@ -15,9 +15,9 @@ const ReadReceiptRow = ({ user, ts }: IReadReceiptWithUser) => {
 					{displayName}
 				</Box>
 			</Box>
-			<Box is='span' fontScale='c1' color='hint'>
+			<Text is='span' fontScale='c1' color='hint'>
 				{formatDateAndTime(ts)}
-			</Box>
+			</Text>
 		</Box>
 	);
 };

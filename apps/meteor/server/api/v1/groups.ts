@@ -1723,6 +1723,7 @@ API.v1.get(
 			200: groupsRolesResponseSchema,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
 	},
 	async function action() {

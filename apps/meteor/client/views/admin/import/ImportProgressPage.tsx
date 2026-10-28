@@ -1,5 +1,5 @@
 import type { ProgressStep } from '@rocket.chat/core-typings';
-import { Box, ProgressBar, Throbber } from '@rocket.chat/fuselage';
+import { Box, ProgressBar, Text, Throbber } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint, useStream, useRouter } from '@rocket.chat/ui-contexts';
@@ -166,9 +166,9 @@ const ImportProgressPage = function ImportProgressPage() {
 					{(currentOperation.isError || progress.isError) && <Box is='p'>{t('Failed_To_Load_Import_Data')}</Box>}
 					{progress.isSuccess && (
 						<>
-							<Box is='p' fontScale='p2'>
+							<Text is='p' fontScale='p2'>
 								{t((progress.data.step[0].toUpperCase() + progress.data.step.slice(1)) as any)}
-							</Box>
+							</Text>
 							<Box display='flex' justifyContent='center'>
 								<ProgressBar percentage={(progress.data.completed / progress.data.total) * 100} />
 								<Box is='span' fontScale='p2' marginInlineStart={24}>

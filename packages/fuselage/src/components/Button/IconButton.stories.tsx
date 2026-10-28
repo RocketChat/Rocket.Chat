@@ -42,34 +42,20 @@ export default {
 			description: 'The corner the badge is pinned to.',
 			table: { category: 'Content', defaultValue: { summary: 'top-end' } },
 		},
-		primary: {
-			control: 'boolean',
-			description: 'Solid, high-emphasis color kind.',
-			table: { category: 'Kind' },
-		},
-		secondary: {
-			control: 'boolean',
-			description: 'Outlined, lower-emphasis style. Combines with `info`/`danger`/`warning`/`success` for their secondary variants.',
-			table: { category: 'Kind' },
-		},
-		info: {
-			control: 'boolean',
-			description: 'Informational color kind.',
-			table: { category: 'Kind' },
-		},
-		danger: {
-			control: 'boolean',
-			description: 'Destructive-action color kind.',
-			table: { category: 'Kind' },
-		},
-		warning: {
-			control: 'boolean',
-			description: 'Warning color kind.',
-			table: { category: 'Kind' },
-		},
-		success: {
-			control: 'boolean',
-			description: 'Success color kind.',
+		variant: {
+			control: 'select',
+			options: [
+				'primary',
+				'secondary',
+				'info',
+				'danger',
+				'secondary-danger',
+				'warning',
+				'secondary-warning',
+				'success',
+				'secondary-success',
+			],
+			description: 'Visual style of the button.',
 			table: { category: 'Kind' },
 		},
 		pressed: {
@@ -77,30 +63,11 @@ export default {
 			description: 'Marks the button as pressed/toggled on.',
 			table: { category: 'State' },
 		},
-		large: {
-			control: 'boolean',
-			description: 'Large size scale.',
-			table: { category: 'Size' },
-		},
-		medium: {
-			control: 'boolean',
-			description: 'Medium size scale.',
-			table: { category: 'Size' },
-		},
-		small: {
-			control: 'boolean',
-			description: 'Small size scale.',
-			table: { category: 'Size' },
-		},
-		tiny: {
-			control: 'boolean',
-			description: 'Tiny size scale.',
-			table: { category: 'Size' },
-		},
-		mini: {
-			control: 'boolean',
-			description: 'Mini size scale.',
-			table: { category: 'Size' },
+		size: {
+			control: 'select',
+			options: ['mini', 'tiny', 'small', 'medium', 'large'],
+			description: 'Size scale of the button.',
+			table: { category: 'Size', defaultValue: { summary: 'large' } },
 		},
 	},
 } satisfies Meta<typeof IconButton>;

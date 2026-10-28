@@ -1,9 +1,9 @@
 import { composeStories } from '@storybook/react-webpack5';
 import { screen } from '@testing-library/react';
-import type { ComponentProps } from 'react';
 
 import { render } from '../../testing';
 import { Badge } from '../Badge';
+import { Icon } from '../Icon';
 import IconButton from './IconButton';
 import * as stories from './IconButton.stories';
 
@@ -22,32 +22,41 @@ describe('[IconButton Component]', () => {
 		});
 	});
 
-	const renderMarkup = (props: Partial<ComponentProps<typeof IconButton>>) =>
-		render(<IconButton icon='balloon' aria-label='balloon' {...props} />).container.innerHTML;
+	it.each([
+		['primary', 'secondary-info'],
+		['secondary', 'secondary'],
+		['info', 'info'],
+		['danger', 'danger'],
+		['warning', 'warning'],
+		['success', 'success'],
+		['secondary-danger', 'secondary-danger'],
+		['secondary-warning', 'secondary-warning'],
+		['secondary-success', 'secondary-success'],
+	] as const)('should paint variant %s with the %s style', (variant, style) => {
+		const { rerender } = render(<IconButton icon='balloon' aria-label='balloon' variant={variant} />);
+		expect(screen.getByRole('button')).toHaveClass(`rcx-button--icon-${style}`);
+
+		rerender(<IconButton icon='balloon' aria-label='balloon' variant={variant} pressed />);
+		expect(screen.getByRole('button')).toHaveClass(`rcx-button--icon-${style}-pressed`);
+	});
 
 	it.each([
-		['primary', { primary: true }],
-		['secondary', { secondary: true }],
-		['info', { info: true }],
-		['danger', { danger: true }],
-		['warning', { warning: true }],
-		['success', { success: true }],
-		['secondary-danger', { secondary: true, danger: true }],
-		['secondary-warning', { secondary: true, warning: true }],
-		['secondary-success', { secondary: true, success: true }],
-	] as const)('should render variant %s as its deprecated boolean props did', (variant, booleans) => {
-		expect(renderMarkup({ variant })).toBe(renderMarkup(booleans));
-		expect(renderMarkup({ variant, pressed: true })).toBe(renderMarkup({ ...booleans, pressed: true }));
+		['mini', 'x12'],
+		['tiny', 'x16'],
+		['small', 'x20'],
+		['medium', 'x24'],
+		['large', 'x28'],
+	] as const)('should size %s with a %s glyph', (size, glyph) => {
+		render(<IconButton icon='balloon' aria-label='balloon' size={size} />);
+		const { container } = render(<Icon name='balloon' size={glyph} />);
+
+		expect(screen.getByRole('button')).toHaveClass(`rcx-button--${size}-square`);
+		expect(screen.getByRole('button').firstElementChild?.className).toBe(container.firstElementChild?.className);
 	});
 
-	it.each(['mini', 'tiny', 'small', 'medium', 'large'] as const)('should render size %s as its deprecated boolean prop did', (size) => {
-		expect(renderMarkup({ size })).toBe(renderMarkup({ [size]: true }));
-	});
-
-	it('should prefer variant and size over the deprecated boolean props', () => {
-		expect(renderMarkup({ variant: 'danger', secondary: true, size: 'small', large: true })).toBe(
-			renderMarkup({ danger: true, small: true }),
-		);
+	it('should be large by default', () => {
+		render(<IconButton icon='balloon' aria-label='balloon' />);
+		expect(screen.getByRole('button')).toHaveClass('rcx-button--large-square');
 	});
 
 	it('should display the badge', () => {

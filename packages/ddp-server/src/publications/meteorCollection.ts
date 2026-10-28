@@ -1,4 +1,4 @@
-import type { Server } from '../ddp/Server';
+import type { Server } from '../Server';
 import type { MeteorCollection } from '../lib/MeteorCollection';
 
 /** Publishes a Meteor collection copy to DDP clients: replays what it holds, then forwards its changes until the subscription stops. */

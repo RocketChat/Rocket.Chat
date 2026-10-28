@@ -316,44 +316,10 @@ describe('[Menu Component]', () => {
 			expect(button).toHaveClass('rcx-button--small-square');
 		});
 
-		it('should accept large size prop', () => {
-			render(<Simple {...Simple.args} large />);
-
-			const button = screen.getByRole('button');
-			expect(button).toHaveClass('rcx-button--large-square');
-		});
-
-		it('should accept medium size prop', () => {
-			render(<Simple {...Simple.args} medium />);
-
-			const button = screen.getByRole('button');
-			expect(button).toHaveClass('rcx-button--medium-square');
-		});
-
-		it('should accept tiny size prop', () => {
-			render(<Simple {...Simple.args} tiny />);
-
-			const button = screen.getByRole('button');
-			expect(button).toHaveClass('rcx-button--tiny-square');
-		});
-
-		it('should accept mini size prop', () => {
-			render(<Simple {...Simple.args} mini />);
-
-			const button = screen.getByRole('button');
-			expect(button).toHaveClass('rcx-button--mini-square');
-		});
-
 		it.each(['large', 'medium', 'small', 'tiny', 'mini'] as const)('should size the trigger %s', (size) => {
 			render(<Simple {...Simple.args} size={size} />);
 
 			expect(screen.getByRole('button')).toHaveClass(`rcx-button--${size}-square`);
-		});
-
-		it('should prefer size over the deprecated size props', () => {
-			render(<Simple {...Simple.args} size='large' mini />);
-
-			expect(screen.getByRole('button')).toHaveClass('rcx-button--large-square');
 		});
 
 		it('should pass the size to a custom trigger', () => {
