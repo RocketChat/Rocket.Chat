@@ -1,0 +1,6 @@
+/* A horizontal card packs the lines of its columns closer */
+@layer fuselage {
+	.rcx-card__horizontal .rcx-card__col {
+		row-gap: 4px;
+	}
+}
