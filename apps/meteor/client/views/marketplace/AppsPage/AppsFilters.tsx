@@ -1,4 +1,3 @@
-import { Box } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import { FilterBar, FilterBarFilters, FilterBarSearch } from '../../../components/FilterBar';
@@ -7,6 +6,7 @@ import TagList from '../components/CategoryFilter/TagList';
 import RadioDropDown from '../components/RadioDropDown/RadioDropDown';
 import type { CategoryDropDownListProps, CategoryOnSelected, selectedCategoriesList } from '../definitions/CategoryDropdownDefinitions';
 import type { RadioDropDownGroup, RadioDropDownOnSelected } from '../definitions/RadioDropDownDefinitions';
+import AppsPageInset from './layout/AppsPageInset';
 
 export type AppsFiltersProps = {
 	text: string;
@@ -52,7 +52,7 @@ const AppsFilters = ({
 	};
 
 	return (
-		<Box paddingInline={24}>
+		<AppsPageInset>
 			<FilterBar>
 				<FilterBarSearch value={text} onChange={(event) => setText(event.target.value)} placeholder={appsSearchPlaceholders[context]} />
 				<FilterBarFilters>
@@ -65,7 +65,7 @@ const AppsFilters = ({
 				</FilterBarFilters>
 			</FilterBar>
 			<TagList categories={categoryTagList} onClick={onSelected} />
-		</Box>
+		</AppsPageInset>
 	);
 };
 

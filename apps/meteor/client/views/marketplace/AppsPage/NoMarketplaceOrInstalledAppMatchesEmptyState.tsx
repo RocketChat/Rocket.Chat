@@ -1,5 +1,4 @@
 import {
-	Box,
 	States,
 	StatesIcon,
 	StatesSubtitle,
@@ -11,6 +10,8 @@ import {
 } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
+import AppsPageEmptyState from './layout/AppsPageEmptyState';
+
 export type NoMarketplaceOrInstalledAppMatchesEmptyStateProps = { shouldShowSearchText: boolean; text: string };
 
 const NoMarketplaceOrInstalledAppMatchesEmptyState = ({
@@ -20,7 +21,7 @@ const NoMarketplaceOrInstalledAppMatchesEmptyState = ({
 	const { t } = useTranslation();
 
 	return (
-		<Box marginBlockStart={20}>
+		<AppsPageEmptyState offset='x20'>
 			<States>
 				<StatesIcon name='magnifier' />
 				<StatesTitle>{t('No_app_matches')}</StatesTitle>
@@ -39,7 +40,7 @@ const NoMarketplaceOrInstalledAppMatchesEmptyState = ({
 					</StatesSuggestionList>
 				</StatesSuggestion>
 			</States>
-		</Box>
+		</AppsPageEmptyState>
 	);
 };
 

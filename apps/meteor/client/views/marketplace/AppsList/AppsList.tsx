@@ -1,7 +1,8 @@
 import type { App } from '@rocket.chat/core-typings';
-import { Box, CardGroup } from '@rocket.chat/fuselage';
+import { CardGroup, Text } from '@rocket.chat/fuselage';
 
 import AppRow from './AppRow';
+import AppsListSection from './layout/AppsListSection';
 
 export type AppsListProps = {
 	apps: App[];
@@ -11,18 +12,18 @@ export type AppsListProps = {
 
 const AppsList = ({ apps, title, appsListId }: AppsListProps) => {
 	return (
-		<Box marginBlockEnd={16}>
+		<AppsListSection>
 			{title && (
-				<Box is='h2' id={appsListId} fontScale='h3' color='default' marginBlockEnd={20}>
+				<Text is='h2' id={appsListId} fontScale='h3' color='default'>
 					{title}
-				</Box>
+				</Text>
 			)}
 			<CardGroup vertical stretch aria-labelledby={appsListId} role='list'>
 				{apps.map((app) => (
 					<AppRow key={app.id} {...app} />
 				))}
 			</CardGroup>
-		</Box>
+		</AppsListSection>
 	);
 };
 
