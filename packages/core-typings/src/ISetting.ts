@@ -31,12 +31,14 @@ export type ISetting = ISettingBase | ISettingEnterprise | ISettingColor | ISett
 
 type EnableQuery = string | { _id: string; value: any } | { _id: string; value: any }[];
 
-export type SettingValidationRule = {
-	query: Record<string, unknown>;
-	format?: 'cron';
-	appliesWhen?: { _id: string; value: unknown } | { _id: string; value: unknown }[];
-	referencesMayBeAbsent?: boolean;
-};
+export type SettingValidationRule =
+	| { type: 'cron' }
+	| {
+			type?: 'query';
+			query: Record<string, unknown>;
+			appliesWhen?: { _id: string; value: unknown } | { _id: string; value: unknown }[];
+			referencesMayBeAbsent?: boolean;
+	  };
 
 type SettingValidation = SettingValidationRule[] | string;
 

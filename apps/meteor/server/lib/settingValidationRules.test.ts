@@ -47,7 +47,7 @@ describe('validateSettingRules', () => {
 		settingsGetSettingMock.withArgs('Cron_Setting').returns({
 			_id: 'Cron_Setting',
 			type: 'string',
-			validation: JSON.stringify([{ query: {}, format: 'cron' }]),
+			validation: JSON.stringify([{ type: 'cron' }]),
 		});
 
 		for (const value of ['0 0 * * *', '*/5 1-5 * * 1,3']) {
@@ -72,6 +72,17 @@ describe('validateSettingRules', () => {
 
 		expect(error).to.be.instanceOf(SettingValidationError);
 		expect(error?.message).to.equal('Accounts_Password_Policy_MinLength_Invalid');
+	});
+
+	it('evaluates explicitly typed query rules', () => {
+		settingsGetSettingMock.withArgs('Query_Setting').returns({
+			_id: 'Query_Setting',
+			type: 'int',
+			validation: JSON.stringify([{ type: 'query', query: { value: { $gte: 1 } } }]),
+		});
+
+		expect(() => validateSettingRules([{ _id: 'Query_Setting', value: 1 }])).to.not.throw();
+		expect(() => validateSettingRules([{ _id: 'Query_Setting', value: 0 }])).to.throw('Query_Setting_Invalid');
 	});
 
 	it('resolves values batch-first, not from the stale cached value', () => {

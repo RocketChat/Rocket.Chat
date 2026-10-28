@@ -17,12 +17,13 @@ const isAppliesWhenCondition = (value: unknown): value is { _id: ISetting['_id']
 
 const isValidationRule = (rule: unknown): rule is SettingValidationRule =>
 	isRecord(rule) &&
-	isRecord(rule.query) &&
-	(rule.format === undefined || rule.format === 'cron') &&
-	(rule.referencesMayBeAbsent === undefined || typeof rule.referencesMayBeAbsent === 'boolean') &&
-	(rule.appliesWhen === undefined ||
-		isAppliesWhenCondition(rule.appliesWhen) ||
-		(Array.isArray(rule.appliesWhen) && rule.appliesWhen.length > 0 && rule.appliesWhen.every(isAppliesWhenCondition)));
+	(rule.type === 'cron' ||
+		((rule.type === undefined || rule.type === 'query') &&
+			isRecord(rule.query) &&
+			(rule.referencesMayBeAbsent === undefined || typeof rule.referencesMayBeAbsent === 'boolean') &&
+			(rule.appliesWhen === undefined ||
+				isAppliesWhenCondition(rule.appliesWhen) ||
+				(Array.isArray(rule.appliesWhen) && rule.appliesWhen.length > 0 && rule.appliesWhen.every(isAppliesWhenCondition)))));
 
 const isValidationRuleArray = (value: unknown): value is SettingValidationRule[] => Array.isArray(value) && value.every(isValidationRule);
 
@@ -78,6 +79,11 @@ const evaluateSettingValidationRule = (
 	rule: SettingValidationRule,
 	get: (id: ISetting['_id']) => unknown,
 ): boolean => {
+	if (rule.type === 'cron') {
+		const value = get(settingId);
+		return typeof value === 'string' && isValidCron(value);
+	}
+
 	const references: Record<string, unknown> = {};
 
 	// true when `filter` matches the current value of the setting `id`
@@ -126,8 +132,7 @@ const evaluateSettingValidationRule = (
 		return true;
 	}
 
-	const value = get(settingId);
-	return matches(query, settingId) && (rule.format !== 'cron' || (typeof value === 'string' && isValidCron(value)));
+	return matches(query, settingId);
 };
 
 export const validateSettingRules = (changes: { _id: ISetting['_id']; value: ISetting['value'] }[]): void => {

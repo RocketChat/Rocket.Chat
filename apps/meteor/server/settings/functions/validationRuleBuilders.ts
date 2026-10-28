@@ -1,6 +1,6 @@
 import type { ISetting, SettingValidationRule } from '@rocket.chat/core-typings';
 
-export const validCron = (): SettingValidationRule => ({ query: {}, format: 'cron' });
+export const validCron = (): SettingValidationRule => ({ type: 'cron' });
 
 export const positiveOrDisabled = (): SettingValidationRule => ({
 	query: { $or: [{ value: -1 }, { value: { $gte: 1 } }] },
