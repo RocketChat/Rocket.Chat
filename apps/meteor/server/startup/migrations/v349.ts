@@ -9,11 +9,11 @@ addMigration({
 	version: 349,
 	name: 'Remove the stale Drafts sidebar group from the default sections order and from user sidebar categories',
 	async up() {
-		await Settings.updateOne({ _id: 'Accounts_Default_User_Preferences_sidebarSectionsOrder', value: { $type: 'array' } }, {
-			$pull: { value: 'Drafts' },
-		} as unknown as UpdateFilter<ISetting>);
-
-		const sectionsOrder = await Settings.findOneById('Accounts_Default_User_Preferences_sidebarSectionsOrder');
+		const sectionsOrder = await Settings.findOneAndUpdate(
+			{ _id: 'Accounts_Default_User_Preferences_sidebarSectionsOrder', value: { $type: 'array' } },
+			{ $pull: { value: 'Drafts' } } as unknown as UpdateFilter<ISetting>,
+			{ returnDocument: 'after' },
+		);
 		if (sectionsOrder) {
 			settings.set(sectionsOrder);
 		}
