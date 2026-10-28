@@ -5,8 +5,8 @@ import autoprefixer from 'autoprefixer';
 import cssnanoPlugin from 'cssnano';
 import { defineConfig, type Plugin } from 'vite';
 
-import pkg from './package.json' with { type: 'json' };
 import { lowerStyled } from './lowerStyled';
+import pkg from './package.json' with { type: 'json' };
 import { prevalStyled } from './prevalStyled';
 
 /**

@@ -71,6 +71,9 @@ const unflatten = (flat: Flat) => {
 	return out;
 };
 
+/** A variant's value as a caller passes it: `true` and `false` are booleans. */
+const variantValue = (key: string) => (key === 'true' || key === 'false' ? key === 'true' : key);
+
 const permutations = <T>(items: T[]): T[][] =>
 	items.length <= 1
 		? [items]
@@ -99,7 +102,8 @@ export const computeRecipe = (name: string, sc: StaticConfig, options: Options =
 	const values: Record<string, string[]> = {};
 	const valueIndex = (key: string, value: unknown) => {
 		const json = JSON.stringify(value);
-		const own = (values[key] ??= []);
+		values[key] ??= [];
+		const own = values[key];
 		const found = own.indexOf(json);
 		return found === -1 ? own.push(json) - 1 : found;
 	};
@@ -134,10 +138,10 @@ export const computeRecipe = (name: string, sc: StaticConfig, options: Options =
 		for (const [key, style] of Object.entries(domain)) {
 			if (key.startsWith(':') || key === '...') fail(`variant \`${variant}\` has a computed value \`${key}\``);
 			if (!isPlainObject(style)) return fail(`variant \`${variant}.${key}\` is not a style object`);
-			const { className, ...rest } = style as Record<string, unknown>;
+			const { className, ...rest } = style;
 			for (const k of Object.keys(rest)) if (!isStyleKey(k)) fail(`variant \`${variant}.${key}\` sets the non-style prop \`${k}\``);
 			variants[variant][key] = entries.push([flatten(rest), typeof className === 'string' ? className : '']) - 1;
-			domains[variant].push(key === 'true' ? true : key === 'false' ? false : key);
+			domains[variant].push(variantValue(key));
 		}
 	}
 
@@ -210,22 +214,21 @@ export const computeRecipe = (name: string, sc: StaticConfig, options: Options =
 
 	let resolutions = 0;
 	const defaultNames = new Set(defaults.map(([key]) => key));
+	const visit = (slots: number[], props: Record<string, unknown>) => {
+		const { tuples } = slotTuples(recipe, props);
+		const result = resolve(props);
+		if (++resolutions > (options.limit ?? Infinity)) fail(`more than ${options.limit} resolutions`);
+		for (const slot of slots) {
+			const classes = slotGroups[slot]
+				.map((g) => result.classNames?.[g])
+				.filter(Boolean)
+				.join(' ');
+			const seen = recipe.slots[slot][tuples[slot]];
+			if (seen !== undefined && seen !== classes) fail(`key ${tuples[slot]} maps to "${seen}" and "${classes}" (${JSON.stringify(props)})`);
+			recipe.slots[slot][tuples[slot]] = classes;
+		}
+	};
 	for (const cluster of clusters) {
-		const visit = (props: Record<string, unknown>) => {
-			const { tuples } = slotTuples(recipe, props);
-			const result = resolve(props);
-			if (++resolutions > (options.limit ?? Infinity)) fail(`more than ${options.limit} resolutions`);
-			for (const slot of cluster.slots) {
-				const classes = slotGroups[slot]
-					.map((g) => result.classNames?.[g])
-					.filter(Boolean)
-					.join(' ');
-				const seen = recipe.slots[slot][tuples[slot]];
-				if (seen !== undefined && seen !== classes)
-					fail(`key ${tuples[slot]} maps to "${seen}" and "${classes}" (${JSON.stringify(props)})`);
-				recipe.slots[slot][tuples[slot]] = classes;
-			}
-		};
 		// A default keeps its place in the props; a caller's own variants follow, in any order
 		const fixed = cluster.variants.filter((v) => defaultNames.has(v));
 		const free = cluster.variants.filter((v) => !defaultNames.has(v));
@@ -234,7 +237,7 @@ export const computeRecipe = (name: string, sc: StaticConfig, options: Options =
 				for (const order of options.ordered
 					? [chosen.sort((x, y) => variantNames.indexOf(x[0]) - variantNames.indexOf(y[0]))]
 					: permutations(chosen))
-					visit({ ...props, ...Object.fromEntries(order) });
+					visit(cluster.slots, { ...props, ...Object.fromEntries(order) });
 				return;
 			}
 			pickFree(i + 1, props, chosen);
@@ -261,10 +264,12 @@ export const computeRecipe = (name: string, sc: StaticConfig, options: Options =
 export const checkRecipe = (name: string, sc: StaticConfig, recipe: Recipe, runs = 300) => {
 	const { resolveStaticElement } = require('@tamagui/web/static-resolve');
 	let seed = 1;
-	const random = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
+	const random = () => {
+		seed = (seed * 16807) % 2147483647;
+		return (seed - 1) / 2147483646;
+	};
 	const names = Object.keys(recipe.variants);
-	const valuesOf = (variant: string) =>
-		Object.keys(sc.variants[variant]).map((key) => (key === 'true' ? true : key === 'false' ? false : key));
+	const valuesOf = (variant: string) => Object.keys(sc.variants[variant]).map(variantValue);
 	const pick = (variant: string) => {
 		const values = valuesOf(variant);
 		return values[Math.floor(random() * values.length)];
@@ -348,8 +353,8 @@ let toolchain: string | undefined;
  * of every `@tamagui/*` package, read from the lockfile because Tamagui's own cache in `node_modules/.cache/tamagui`
  * survives a patch change.
  */
-const toolchainHash = () =>
-	(toolchain ??= createHash('sha1')
+const toolchainHash = () => {
+	toolchain ??= createHash('sha1')
 		.update(readFileSync(join(root, 'lowerStyled.ts')))
 		.update(readFileSync(join(root, 'src/lowered/recipe.ts')))
 		.update(
@@ -358,7 +363,9 @@ const toolchainHash = () =>
 				.filter((block) => block.startsWith('"@tamagui/'))
 				.join('\n\n'),
 		)
-		.digest('hex'));
+		.digest('hex');
+	return toolchain;
+};
 
 /**
  * Resolves and checks the named definitions of a module, or reads them from the cache. The key is the module's bundle
@@ -463,7 +470,7 @@ export const lowerModule = async (code: string, id: string) => {
 				(n.id as Node).type === 'Identifier' &&
 				(n.init as Node | undefined)?.type === 'CallExpression'
 			) {
-				const { name } = n.id as unknown as { name: string };
+				const { name } = n.id as { name: string };
 				const callee = (n.init as Node).callee as Node;
 				if (name in allowed && callee.type === 'Identifier' && (callee as unknown as { name: string }).name === 'styled') {
 					calls.set(name, { call: n.init as Node, statement });

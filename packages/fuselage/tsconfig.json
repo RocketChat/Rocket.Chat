@@ -5,6 +5,7 @@
 		"moduleResolution": "bundler",
 		"stripInternal": true,
 		"allowImportingTsExtensions": true,
+		"noEmit": true,
 		"outDir": "./dist"
 	},
 	"include": ["src", "mocks", ".storybook", "jest.config.ts", "jest-setup.ts", "vite.config.mts", "prevalStyled.ts", "lowerStyled.ts", "scripts/*.mts"],

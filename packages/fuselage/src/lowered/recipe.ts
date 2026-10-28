@@ -32,7 +32,7 @@ type Props = Record<string, unknown> & { children?: ReactNode };
 export const slotTuples = (recipe: Recipe, props: Props) => {
 	const merged: Props = {};
 	for (const [key, value] of recipe.defaults) merged[key] = value;
-	for (const key in props) {
+	for (const key of Object.keys(props)) {
 		const value = props[key];
 		if (value === undefined && key in merged) continue;
 		merged[key] = value;
