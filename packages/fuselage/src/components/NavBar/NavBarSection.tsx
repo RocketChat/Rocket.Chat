@@ -1,4 +1,4 @@
-import { styled, View, type GetProps } from '@tamagui/web';
+import { styled, View } from '@tamagui/web';
 import type { HTMLAttributes } from 'react';
 import { Fragment } from 'react';
 import { isElement } from 'react-is';
@@ -24,7 +24,7 @@ const NavBarSection = ({ children, className, ...props }: NavbarSectionProps) =>
 	const groups = flattenChildren(children).filter(isElement);
 
 	return (
-		<NavBarSectionFrame className={prependClassName(className, 'rcx-navbar-section')} {...(props as GetProps<typeof NavBarSectionFrame>)}>
+		<NavBarSectionFrame className={prependClassName(className, 'rcx-navbar-section')} render={<span {...props} />}>
 			{groups.map((child, index) => (
 				<Fragment key={index}>
 					{child}
