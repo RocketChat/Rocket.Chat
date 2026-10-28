@@ -8,6 +8,14 @@ import { getChannelHistory } from '../meteor-methods/messages/getChannelHistory'
 
 type CursorPaginationType = 'UPDATED' | 'DELETED';
 
+type IdTieBreaker = { $gt: string } | { $lt: string };
+
+// A cursor is either a bare timestamp (`<ms>`) or a compound `<ms>_<_id>`.
+// The compound form orders messages that share one timestamp by `_id`, so a page boundary inside one
+// millisecond does not skip messages. A request with a bare timestamp keeps the original behavior and
+// gets bare timestamp cursors back, so existing clients see no change.
+const COMPOUND_CURSOR_SEPARATOR = '_';
+
 export function extractTimestampFromCursor(cursor: string): Date {
 	const timestamp = parseInt(cursor, 10);
 
@@ -18,8 +26,28 @@ export function extractTimestampFromCursor(cursor: string): Date {
 	return new Date(timestamp);
 }
 
+export function parseCursor(cursor: string): { timestamp: Date; id?: string } {
+	const separatorIndex = cursor.indexOf(COMPOUND_CURSOR_SEPARATOR);
+
+	if (separatorIndex === -1) {
+		return { timestamp: extractTimestampFromCursor(cursor) };
+	}
+
+	const timestampPart = cursor.slice(0, separatorIndex);
+	if (!/^\d+$/.test(timestampPart)) {
+		throw new Error('Invalid Date');
+	}
+
+	return { timestamp: extractTimestampFromCursor(timestampPart), id: cursor.slice(separatorIndex + 1) };
+}
+
+export function isCompoundCursor(cursor?: string): boolean {
+	return !!cursor && cursor.includes(COMPOUND_CURSOR_SEPARATOR);
+}
+
 export function mountCursorQuery({ next, previous, count }: { next?: string; previous?: string; count: number }): {
 	query: { $gt: Date } | { $lt: Date };
+	idTieBreaker?: IdTieBreaker;
 	options: FindOptions<IMessage>;
 } {
 	const options: FindOptions<IMessage> = {
@@ -28,26 +56,32 @@ export function mountCursorQuery({ next, previous, count }: { next?: string; pre
 	};
 
 	if (next) {
-		return { query: { $gt: extractTimestampFromCursor(next) }, options };
+		const { timestamp, id } = parseCursor(next);
+		if (id !== undefined) {
+			return { query: { $gt: timestamp }, idTieBreaker: { $gt: id }, options: { ...options, sort: { _updatedAt: 1, _id: 1 } } };
+		}
+		return { query: { $gt: timestamp }, options };
 	}
 
 	if (previous) {
-		return { query: { $lt: extractTimestampFromCursor(previous) }, options: { ...options, sort: { _updatedAt: -1 } } };
+		const { timestamp, id } = parseCursor(previous);
+		if (id !== undefined) {
+			return { query: { $lt: timestamp }, idTieBreaker: { $lt: id }, options: { ...options, sort: { _updatedAt: -1, _id: -1 } } };
+		}
+		return { query: { $lt: timestamp }, options: { ...options, sort: { _updatedAt: -1 } } };
 	}
 
 	return { query: { $gt: new Date(0) }, options };
 }
 
-export function mountCursorFromMessage(message: IMessage & { _deletedAt?: Date }, type: 'UPDATED' | 'DELETED'): string {
-	if (type === 'UPDATED' && message._updatedAt) {
-		return `${message._updatedAt.getTime()}`;
+export function mountCursorFromMessage(message: IMessage & { _deletedAt?: Date }, type: 'UPDATED' | 'DELETED', compound = false): string {
+	const date = type === 'UPDATED' ? message._updatedAt : message._deletedAt;
+
+	if (!date) {
+		throw new ClientSafeError('error-cursor-not-found', 'Cursor not found', { method: 'messages/get' });
 	}
 
-	if (type === 'DELETED' && message._deletedAt) {
-		return `${message._deletedAt.getTime()}`;
-	}
-
-	throw new ClientSafeError('error-cursor-not-found', 'Cursor not found', { method: 'messages/get' });
+	return compound ? `${date.getTime()}${COMPOUND_CURSOR_SEPARATOR}${message._id}` : `${date.getTime()}`;
 }
 
 export function mountNextCursor(
@@ -56,13 +90,14 @@ export function mountNextCursor(
 	type: CursorPaginationType,
 	next?: string,
 	previous?: string,
+	compound = false,
 ): string | null {
 	if (messages.length === 0) {
 		return null;
 	}
 
 	if (previous) {
-		return mountCursorFromMessage(messages[0], type);
+		return mountCursorFromMessage(messages[0], type, compound);
 	}
 
 	if (messages.length <= count && next) {
@@ -70,10 +105,10 @@ export function mountNextCursor(
 	}
 
 	if (messages.length > count && next) {
-		return mountCursorFromMessage(messages[messages.length - 2], type);
+		return mountCursorFromMessage(messages[messages.length - 2], type, compound);
 	}
 
-	return mountCursorFromMessage(messages[messages.length - 1], type);
+	return mountCursorFromMessage(messages[messages.length - 1], type, compound);
 }
 
 export function mountPreviousCursor(
@@ -82,17 +117,18 @@ export function mountPreviousCursor(
 	type: CursorPaginationType,
 	next?: string,
 	previous?: string,
+	compound = false,
 ): string | null {
 	if (messages.length === 0) {
 		return null;
 	}
 
 	if (messages.length <= count && next) {
-		return mountCursorFromMessage(messages[0], type);
+		return mountCursorFromMessage(messages[0], type, compound);
 	}
 
 	if (messages.length > count && next) {
-		return mountCursorFromMessage(messages[0], type);
+		return mountCursorFromMessage(messages[0], type, compound);
 	}
 
 	if (messages.length <= count && previous) {
@@ -100,10 +136,10 @@ export function mountPreviousCursor(
 	}
 
 	if (messages.length > count && previous) {
-		return mountCursorFromMessage(messages[messages.length - 2], type);
+		return mountCursorFromMessage(messages[messages.length - 2], type, compound);
 	}
 
-	return mountCursorFromMessage(messages[0], type);
+	return mountCursorFromMessage(messages[0], type, compound);
 }
 
 export async function handleWithoutPagination(rid: IRoom['_id'], lastUpdate: Date, fromTs?: Date) {
@@ -138,19 +174,24 @@ export async function handleCursorPagination(
 		previous: string | null;
 	};
 }> {
-	const { query, options } = mountCursorQuery({ next, previous, count });
+	const { query, idTieBreaker, options } = mountCursorQuery({ next, previous, count });
+	const compound = isCompoundCursor(next ?? previous);
+	const boundary = '$gt' in query ? query.$gt : query.$lt;
 
 	const response =
 		type === 'UPDATED'
-			? await Messages.findForUpdates(rid, { updatedAt: query }, options).toArray()
+			? await Messages.findForUpdates(rid, { updatedAt: query, ...(idTieBreaker && { idTieBreaker }) }, options).toArray()
 			: ((await Messages.trashFind(
-					{ rid, _deletedAt: query },
+					{
+						rid,
+						...(idTieBreaker ? { $or: [{ _deletedAt: query }, { _deletedAt: boundary, _id: idTieBreaker }] } : { _deletedAt: query }),
+					},
 					{ projection: { _id: 1, _deletedAt: 1 }, ...options },
 				)!.toArray()) as IMessage[]);
 
 	const cursor = {
-		next: mountNextCursor(response, count, type, next, previous),
-		previous: mountPreviousCursor(response, count, type, next, previous),
+		next: mountNextCursor(response, count, type, next, previous, compound),
+		previous: mountPreviousCursor(response, count, type, next, previous, compound),
 	};
 
 	if (response.length > count) {
