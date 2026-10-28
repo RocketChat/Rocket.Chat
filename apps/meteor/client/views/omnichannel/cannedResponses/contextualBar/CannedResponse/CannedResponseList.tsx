@@ -19,6 +19,7 @@ import { Virtuoso } from 'react-virtuoso';
 
 import Item from './Item';
 import WrapCannedResponse from './WrapCannedResponse';
+import { virtuosoListComponents } from '../../../../../components/VirtuosoList';
 import { useItemListNavigation } from '../../../../../hooks/useItemListNavigation';
 import { useCanCreateCannedResponse } from '../../hooks/useCanCreateCannedResponse';
 
@@ -90,6 +91,7 @@ const CannedResponseList = ({
 			<ContextualbarSection>
 				<TextInput
 					placeholder={t('Search')}
+					aria-label={t('Search')}
 					value={text}
 					onChange={setText}
 					endAddon={<Icon name='magnifier' size='x20' />}
@@ -107,6 +109,8 @@ const CannedResponseList = ({
 							<Virtuoso
 								style={{ width: inlineSize }}
 								totalCount={itemCount}
+								components={virtuosoListComponents}
+								context={{ 'aria-label': t('Canned_Responses') }}
 								endReached={loadMoreItems}
 								overscan={25}
 								data={cannedItems}

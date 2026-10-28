@@ -1,9 +1,9 @@
 import { composeStories } from '@storybook/react';
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
 import * as stories from './RoomMembers.stories';
-import { expectListKeyboard, listWrapper } from '../../../../../tests/mocks/utils/listContract';
+import { expectListKeyboard, expectListSemantics, listWrapper } from '../../../../../tests/mocks/utils/listContract';
 import { useUserInfoActions } from '../../hooks/useUserInfoActions';
 
 jest.mock('../../hooks/useUserInfoActions', () => ({
@@ -20,7 +20,7 @@ test.each(testCases)('%s should have no a11y violations', async (_storyname, Sto
 	expect(results).toHaveNoViolations();
 });
 
-test('follows the keyboard model of a list of rows', async () => {
+it('follows the semantics and keyboard model of a composite list', async () => {
 	jest.mocked(useUserInfoActions).mockReturnValue({
 		menuActions: [{ id: 'actions', items: [{ id: 'remove', content: 'Remove' }] }],
 	} as unknown as ReturnType<typeof useUserInfoActions>);
@@ -30,5 +30,6 @@ test('follows the keyboard model of a list of rows', async () => {
 		wrapper: listWrapper(),
 	});
 
-	await expectListKeyboard(screen.getAllByTestId('virtuoso-item-list')[0]);
+	const list = await expectListSemantics('Members');
+	await expectListKeyboard(list);
 });

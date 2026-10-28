@@ -57,6 +57,7 @@ const SidePanelInternal = ({ title, currentTab, unreadOnly, toggleUnreadOnly, ro
 						totalCount={rooms.length}
 						data={rooms}
 						components={{ Item: SidepanelListItem, List: SidepanelListWrapper }}
+						context={{ 'aria-label': title }}
 						itemContent={(_, room) => {
 							return <ItemContentComponent room={room} openedRoom={openedRoom} isRoomFilter={isRoomFilter} />;
 						}}

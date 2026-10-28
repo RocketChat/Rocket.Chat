@@ -9,7 +9,7 @@ import RoomMenu from './RoomMenu';
 import RoomSidePanelItemBadges from './RoomSidePanelItemBadges';
 import SidePanelParent from './SidePanelParent';
 import SidePanelItem from './SidepanelItem';
-import { RoomIcon } from '../../../../components/RoomIcon';
+import { RoomIcon, useRoomIconLabel } from '../../../../components/RoomIcon';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { getSubscriptionDraft } from '../../../../lib/utils/getSubscriptionDraft';
 import { isIOsDevice } from '../../../../lib/utils/isIOsDevice';
@@ -27,7 +27,8 @@ const RoomSidePanelItem = ({ room, openedRoom, isRoomFilter, ...props }: RoomSid
 	const { t } = useTranslation();
 	const isAnonymous = !useUserId();
 
-	const { highlightUnread: highlighted, unreadCount } = useUnreadDisplay(room);
+	const { highlightUnread: highlighted, unreadCount, unreadTitle, showUnread } = useUnreadDisplay(room);
+	const iconLabel = useRoomIconLabel(room);
 	const { unread = 0, alert, rid, t: type, cl } = room;
 
 	const time = 'lastMessage' in room ? room.lastMessage?.ts : undefined;
@@ -65,9 +66,10 @@ const RoomSidePanelItem = ({ room, openedRoom, isRoomFilter, ...props }: RoomSid
 			href={href}
 			selected={rid === openedRoom}
 			title={title}
+			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title }) : title}
 			titleIcon={titleIcon}
 			avatar={<RoomAvatar size='x20' room={{ ...room, _id: room.rid || room._id, type: room.t }} />}
-			icon={<SidebarItemIcon highlighted={highlighted} icon={<RoomIcon room={room} placement='sidebar' size='x20' />} />}
+			icon={<SidebarItemIcon highlighted={highlighted} icon={<RoomIcon room={room} placement='sidebar' size='x20' />} label={iconLabel} />}
 			unread={highlighted}
 			time={time}
 			subtitle={message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null}

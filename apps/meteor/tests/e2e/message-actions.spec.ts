@@ -42,17 +42,17 @@ test.describe.serial('message-actions', () => {
 		});
 
 		await test.step('unfollow thread', async () => {
-			const unFollowButton = poHomeChannel.content.lastUserMessage.getByRole('button', { name: 'Following' });
+			const unFollowButton = poHomeChannel.content.lastUserMessage.getByRole('button', { name: 'Follow message', pressed: true });
 			await expect(unFollowButton).toBeVisible();
 
 			await unFollowButton.click();
 		});
 
 		await test.step('follow thread', async () => {
-			const followButton = poHomeChannel.content.lastUserMessage.getByRole('button', { name: 'Not following' });
+			const followButton = poHomeChannel.content.lastUserMessage.getByRole('button', { name: 'Follow message', pressed: false });
 			await expect(followButton).toBeVisible();
 			await followButton.click();
-			await expect(poHomeChannel.content.lastUserMessage.getByRole('button', { name: 'Following' })).toBeVisible();
+			await expect(poHomeChannel.content.lastUserMessage.getByRole('button', { name: 'Follow message', pressed: true })).toBeVisible();
 		});
 	});
 
@@ -72,16 +72,16 @@ test.describe.serial('message-actions', () => {
 		});
 
 		await test.step('unfollow thread', async () => {
-			const unFollowButton = poHomeChannel.content.lastUserMessage.getByRole('button', { name: 'Following' });
+			const unFollowButton = poHomeChannel.content.lastUserMessage.getByRole('button', { name: 'Follow message', pressed: true });
 			await expect(unFollowButton).toBeVisible();
 			await unFollowButton.click();
 		});
 
 		await test.step('follow thread', async () => {
-			const followButton = poHomeChannel.content.lastUserMessage.getByRole('button', { name: 'Not following' });
+			const followButton = poHomeChannel.content.lastUserMessage.getByRole('button', { name: 'Follow message', pressed: false });
 			await expect(followButton).toBeVisible();
 			await followButton.click();
-			await expect(poHomeChannel.content.lastUserMessage.getByRole('button', { name: 'Following' })).toBeVisible();
+			await expect(poHomeChannel.content.lastUserMessage.getByRole('button', { name: 'Follow message', pressed: true })).toBeVisible();
 		});
 	});
 

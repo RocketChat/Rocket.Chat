@@ -6,7 +6,7 @@ import { useCallback, useLayoutEffect, useRef } from 'react';
 import type { VirtualizerHandle } from 'virtua';
 import { Virtualizer } from 'virtua';
 
-import { VirtuaListContainer } from './VirtuaListContainer';
+import { VirtuaPresentation } from './VirtuaPresentation';
 
 const NEAR_BOTTOM_THRESHOLD = -20;
 
@@ -17,11 +17,12 @@ const scrollViewportStyle = {
 } as const;
 
 type PaginatedVirtualListProps<T extends { _id: string }> = {
-	items: T[];
-	totalCount: number;
-	renderItem: (item: T, index: number) => ReactNode;
-	overscan?: number;
-	onEndReached?: UseInfiniteQueryResult['fetchNextPage'];
+	'items': T[];
+	'totalCount': number;
+	'renderItem': (item: T, index: number) => ReactNode;
+	'overscan'?: number;
+	'onEndReached'?: UseInfiniteQueryResult['fetchNextPage'];
+	'aria-label': string;
 };
 
 function PaginatedVirtualList<T extends { _id: string }>({
@@ -30,6 +31,7 @@ function PaginatedVirtualList<T extends { _id: string }>({
 	renderItem,
 	overscan,
 	onEndReached,
+	'aria-label': ariaLabel,
 }: PaginatedVirtualListProps<T>) {
 	const virtualizerRef = useRef<VirtualizerHandle | null>(null);
 	const isEndReachedLockedRef = useRef(false);
@@ -89,10 +91,12 @@ function PaginatedVirtualList<T extends { _id: string }>({
 
 	return (
 		<CustomVirtuaScrollbars>
-			<div style={scrollViewportStyle}>
-				<Virtualizer ref={virtualizerRef} as={VirtuaListContainer} item='li' bufferSize={overscan} onScroll={handleScroll}>
+			<div role='list' aria-label={ariaLabel} style={scrollViewportStyle}>
+				<Virtualizer ref={virtualizerRef} as={VirtuaPresentation} item={VirtuaPresentation} bufferSize={overscan} onScroll={handleScroll}>
 					{items.map((item, index) => (
-						<div key={item._id}>{renderItem(item, index)}</div>
+						<div key={item._id} role='listitem' aria-posinset={index + 1} aria-setsize={totalCount}>
+							{renderItem(item, index)}
+						</div>
 					))}
 				</Virtualizer>
 			</div>

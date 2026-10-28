@@ -44,22 +44,25 @@ The room and thread message lists (`useMessageListNavigation`) add two options o
 
 The composer keeps its own keys: Up at the start of the text edits your previous message, and Shift+Tab returns to the message list.
 
+The keyboard model only works for assistive technology when the markup says the same thing: every list of rows also follows [list-semantics.md](list-semantics.md).
+
 ## Testing a composite list
 
-Check the keyboard model in the list's unit test, not in end-to-end tests:
+Check the keyboard model in the list's unit test, next to its semantics, not in end-to-end tests:
 
 ```tsx
-import { expectListKeyboard, listWrapper } from '<path to>/tests/mocks/utils/listContract';
+import { expectListKeyboard, expectListSemantics, listWrapper } from '<path to>/tests/mocks/utils/listContract';
 
-it('follows the keyboard model of a list of rows', async () => {
+it('follows the semantics and keyboard model of a composite list', async () => {
 	const { Default } = composeStories(stories);
 	render(<Default />, { wrapper: listWrapper() });
 
-	await expectListKeyboard(screen.getByTestId('virtuoso-item-list'));
+	const list = await expectListSemantics('Files_list');
+	await expectListKeyboard(list);
 });
 ```
 
-- `listWrapper` renders the story in an app root where Virtuoso renders its rows, which it cannot measure in jsdom.
+- `listWrapper` and `expectListSemantics` are described in [list-semantics.md](list-semantics.md#testing).
 - `expectListKeyboard` checks that Down and Up move between rows and that Tab walks the first row, then leaves the list without entering the next row. It starts on the first `ItemLink`; pass the focus target as a second argument when the rows use another one, such as messages. The story needs at least two rows.
 
 A list without a story gets one first: the story is the fixture the test renders. Keep end-to-end tests for a smoke check that the list is wired into the page, not for the key-by-key behavior.

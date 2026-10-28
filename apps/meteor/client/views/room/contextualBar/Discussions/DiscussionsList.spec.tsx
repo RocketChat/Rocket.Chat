@@ -6,7 +6,7 @@ import * as React from 'react';
 import { Children, forwardRef, isValidElement } from 'react';
 
 import * as stories from './DiscussionsList.stories';
-import { expectListKeyboard, listWrapper } from '../../../../../tests/mocks/utils/listContract';
+import { expectListKeyboard, expectListSemantics, listWrapper } from '../../../../../tests/mocks/utils/listContract';
 
 jest.mock('../../../../lib/rooms/roomCoordinator', () => ({
 	roomCoordinator: {
@@ -69,12 +69,9 @@ jest.mock('@rocket.chat/ui-client', () => ({
 		{ children, ...props },
 		ref,
 	) {
-		// oxlint-disable-next-line testing-library/no-node-access
-		const content = isValidElement<{ children?: ReactNode }>(children) && children.type === 'div' ? children.props.children : children;
-
 		return (
 			<div ref={ref} {...props}>
-				{content}
+				{children}
 			</div>
 		);
 	}),
@@ -88,9 +85,7 @@ describe('DiscussionsList', () => {
 		const { Default } = composed;
 		render(<Default />);
 
-		const list = screen.getByTestId('discussions-virtual-list');
-		expect(list).toBeInTheDocument();
-		expect(list.tagName.toLowerCase()).toBe('ul');
+		const list = screen.getByRole('list', { name: 'Discussions' });
 		expect(within(list).getAllByRole('listitem')).toHaveLength(10);
 		expect(within(list).getAllByText('user.name')).toHaveLength(10);
 	});
@@ -118,9 +113,9 @@ test.each(testCases)('%s should have no a11y violations', async (_storyname, Sto
 	expect(results).toHaveNoViolations();
 });
 
-it('follows the keyboard model of a list of rows', async () => {
+it('follows the semantics and keyboard model of a composite list', async () => {
 	render(<composed.Default />, { wrapper: listWrapper() });
 
-	const list = screen.getByTestId('discussions-virtual-list');
-	await expectListKeyboard(list, list.querySelector<HTMLElement>('.rcx-message[tabindex="0"]') ?? undefined);
+	const list = await expectListSemantics('Discussions');
+	await expectListKeyboard(list);
 });

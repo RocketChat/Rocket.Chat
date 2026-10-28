@@ -13,12 +13,15 @@ import {
 } from '@rocket.chat/fuselage';
 import { ITEM_MEDIA_SIZE, UserAvatar } from '@rocket.chat/ui-avatar';
 import { useDeferredMenuMount } from '@rocket.chat/ui-client';
+import { useUserPresence } from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import UserActions from './RoomMembersActions';
 import { getUserDisplayNames } from '../../../../../lib/getUserDisplayNames';
 import InvitationBadge from '../../../../components/InvitationBadge';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
+import { STATUS_LABEL_KEYS } from '../../../../components/UserStatusText';
 import { useUserStatusTooltip } from '../../../../hooks/useUserStatusTooltip';
 import type { RoomMember } from '../../../hooks/useMembersList';
 
@@ -41,7 +44,10 @@ const RoomMembersItem = ({
 	reload,
 	useRealName,
 }: RoomMembersItemProps) => {
+	const { t } = useTranslation();
 	const { mounted: menuVisibility, requestMount, mountNow } = useDeferredMenuMount();
+	const status = useUserPresence(_id)?.status;
+	const statusLabel = federated ? t('Federated') : status && t(STATUS_LABEL_KEYS[status]);
 	const isInvited = subscription?.status === 'INVITED';
 	const invitationDate = isInvited ? subscription?.ts : undefined;
 	const [nameOrUsername, displayUsername] = getUserDisplayNames(name, username, useRealName);
@@ -61,7 +67,7 @@ const RoomMembersItem = ({
 			<ItemMedia>
 				<UserAvatar username={username || ''} size={ITEM_MEDIA_SIZE.medium} />
 			</ItemMedia>
-			<ItemIcon>{federated ? <Icon name='globe' size='x16' /> : <ReactiveUserStatus uid={_id} />}</ItemIcon>
+			<ItemIcon label={statusLabel}>{federated ? <Icon name='globe' size='x16' /> : <ReactiveUserStatus uid={_id} />}</ItemIcon>
 			<ItemContent data-qa={`MemberItem-${username}`}>
 				<ItemTitle>
 					<ItemLink is='button' data-userid={_id} data-invitationdate={invitationDate} onClick={onClickView}>

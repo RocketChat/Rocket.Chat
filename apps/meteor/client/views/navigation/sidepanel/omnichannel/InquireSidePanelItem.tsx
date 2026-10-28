@@ -13,6 +13,7 @@ import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
 import { isIOsDevice } from '../../../../lib/utils/isIOsDevice';
 import { normalizeMessagePreview } from '../../../../lib/utils/normalizeMessagePreview/normalizeMessagePreview';
 import { useOmnichannelPriorities } from '../../../omnichannel/hooks/useOmnichannelPriorities';
+import { useOmnichannelSource } from '../../../omnichannel/hooks/useOmnichannelSource';
 import SidePanelItem from '../SidepanelItem';
 import RoomMenu from '../SidepanelItem/RoomMenu';
 
@@ -24,6 +25,7 @@ export type InquireSidePanelItemProps = {
 const InquireSidePanelItem = ({ room, openedRoom, ...props }: InquireSidePanelItemProps) => {
 	const { t } = useTranslation();
 	const isAnonymous = !useUserId();
+	const { getSourceName } = useOmnichannelSource();
 
 	const highlighted = Boolean(room.alert);
 	const { alert, rid, t: type } = room;
@@ -64,6 +66,7 @@ const InquireSidePanelItem = ({ room, openedRoom, ...props }: InquireSidePanelIt
 					<SidebarItemIcon
 						highlighted={highlighted}
 						icon={<OmnichannelRoomIcon placement='sidebar' source={room.source} status={room.v.status} size='x20' />}
+						label={getSourceName(room.source)}
 					/>
 				)
 			}

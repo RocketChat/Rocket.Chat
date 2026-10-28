@@ -26,6 +26,13 @@ describe('[Sidebar Default story]', () => {
 });
 
 describe('[SidebarCollapseGroup]', () => {
+	it('renders no list panel and no `aria-controls` when its rows live elsewhere', () => {
+		render(<SidebarCollapseGroup title='Favorites'>{[]}</SidebarCollapseGroup>);
+
+		expect(screen.queryByRole('list')).not.toBeInTheDocument();
+		expect(screen.getByRole('button', { name: 'Favorites' })).not.toHaveAttribute('aria-controls');
+	});
+
 	it('should not pass `actions` to the DOM', () => {
 		const { container } = render(
 			<SidebarCollapseGroup title='Favorites' actions={<span />}>

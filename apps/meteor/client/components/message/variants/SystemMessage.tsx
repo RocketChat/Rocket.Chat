@@ -26,6 +26,7 @@ import {
 } from '../../../views/room/MessageList/contexts/SelectedMessagesContext';
 import MessageContentFallback from '../MessageContentFallback';
 import { getCheckboxLabel } from '../helpers/getCheckboxLabel';
+import { getMessageLabelledBy } from '../helpers/getMessageLabelledBy';
 import { useMessageListFormatDateAndTime, useMessageListFormatTime } from '../list/MessageListContext';
 import SystemMessageBody from './system/SystemMessageBody';
 import SystemMessageContent from './system/SystemMessageContent';
@@ -66,6 +67,7 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 		<MessageSystem
 			role='listitem'
 			aria-roledescription={t('system_message')}
+			aria-labelledby={getMessageLabelledBy({ messageId: message._id })}
 			tabIndex={0}
 			onClick={isSelecting ? toggleSelected : undefined}
 			onKeyDown={handleKeyDown}
@@ -97,12 +99,14 @@ const SystemMessage = ({ message, showUserAvatar, ...props }: SystemMessageProps
 							onMouseEnter: openUserCardOnHover,
 						})}
 					>
-						<MessageSystemName>{displayName}</MessageSystemName>
+						<MessageSystemName id={`${message._id}-displayName`}>{displayName}</MessageSystemName>
 					</MessageNameContainer>
 					<ErrorBoundary fallback={<MessageContentFallback />} resetKeys={[message]}>
 						<SystemMessageBody message={message} />
 					</ErrorBoundary>
-					<MessageSystemTimestamp title={formatDateAndTime(message.ts)}>{formatTime(message.ts)}</MessageSystemTimestamp>
+					<MessageSystemTimestamp title={formatDateAndTime(message.ts)}>
+						<span id={`${message._id}-time`}>{formatTime(message.ts)}</span>
+					</MessageSystemTimestamp>
 				</MessageSystemBlock>
 				<ErrorBoundary fallback={<MessageContentFallback />} resetKeys={[message]}>
 					<SystemMessageContent message={message} />

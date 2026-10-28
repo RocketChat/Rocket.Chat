@@ -8,8 +8,6 @@ import RoomListCollapser from './RoomListCollapser';
 const appRoot = mockAppRoot()
 	.withTranslations('en', 'core', {
 		Channels: 'Channels',
-		Collapse_group: 'Collapse {{group}}',
-		Expand_group: 'Expand {{group}}',
 		unread_messages_counter_one: '{{count}} unread message',
 		unread_messages_counter_other: '{{count}} unread messages',
 	})
@@ -28,20 +26,17 @@ const renderCollapser = ({ collapsed = false, unread = 0, onClick = jest.fn() } 
 	);
 
 describe('RoomListCollapser', () => {
-	it('names the group after the action the toggle performs', () => {
-		const { rerender } = renderCollapser();
-		expect(screen.getByRole('group', { name: 'Collapse Channels' })).toBeInTheDocument();
+	it('names the group after its title, leaving the state to the toggle', () => {
+		renderCollapser();
 
-		rerender(
-			<RoomListCollapser
-				group='channels'
-				groupTitle='Channels'
-				collapsedGroups={['channels']}
-				onClick={jest.fn()}
-				unreadCount={{ userMentions: 0, groupMentions: 0, unread: 0, tunread: [], tunreadUser: [], tunreadGroup: [] }}
-			/>,
-		);
-		expect(screen.getByRole('group', { name: 'Expand Channels' })).toBeInTheDocument();
+		expect(screen.getByRole('group', { name: 'Channels' })).toBeInTheDocument();
+	});
+
+	it('does not point the toggle at a panel it does not render', () => {
+		renderCollapser();
+
+		expect(screen.getByRole('button', { name: 'Channels' })).not.toHaveAttribute('aria-controls');
+		expect(screen.queryByRole('list')).not.toBeInTheDocument();
 	});
 
 	it('exposes the expanded state on the toggle button', () => {

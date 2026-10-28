@@ -1,5 +1,5 @@
 import type { IDiscussionMessage } from '@rocket.chat/core-typings';
-import { Box, Icon, TextInput, Callout, Throbber } from '@rocket.chat/fuselage';
+import { Box, Icon, ItemDivider, TextInput, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useAutoFocus } from '@rocket.chat/fuselage-hooks';
 import {
 	ContextualbarHeader,
@@ -20,7 +20,8 @@ import { useTranslation } from 'react-i18next';
 import DiscussionsListRow from './DiscussionsListRow';
 import { PaginatedVirtualList } from '../../../../components/PaginatedVirtualList';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
-import { useMessageRowListNavigation } from '../../../../hooks/useMessageRowListNavigation';
+import { useItemListNavigation } from '../../../../hooks/useItemListNavigation';
+import { getErrorMessage } from '../../../../lib/errorHandling';
 import { useGoToRoom } from '../../hooks/useGoToRoom';
 
 export type DiscussionsListProps = {
@@ -48,7 +49,7 @@ function DiscussionsList({
 }: DiscussionsListProps) {
 	const { t } = useTranslation();
 	const discussionListId = useId();
-	const discussionListRef = useMessageRowListNavigation();
+	const discussionListRef = useItemListNavigation();
 
 	const showRealNames = useSetting('UI_Use_Real_Name', false);
 	const inputRef = useAutoFocus(true);
@@ -72,8 +73,8 @@ function DiscussionsList({
 			</ContextualbarHeader>
 			<ContextualbarSection>
 				<TextInput
-					placeholder={t('Search_Messages')}
-					aria-label={t('Search_Messages')}
+					placeholder={t('Search_discussions')}
+					aria-label={t('Search_discussions')}
 					aria-controls={isSuccess ? discussionListId : undefined}
 					value={text}
 					onChange={onChangeFilter}
@@ -82,15 +83,17 @@ function DiscussionsList({
 				/>
 			</ContextualbarSection>
 			<ContextualbarContent flush>
-				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
+				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} isLoading={isPending} />
 				{isPending && (
 					<Box paddingInline={24} paddingBlock={12}>
 						<Throbber size='x12' />
 					</Box>
 				)}
-				{error instanceof Error && (
+				{!!error && (
 					<Box paddingInline={24}>
-						<Callout type='danger'>{error.toString()}</Callout>
+						<Callout role='alert' type='danger'>
+							{getErrorMessage(error, t('Something_went_wrong'))}
+						</Callout>
 					</Box>
 				)}
 				{isSuccess && (
@@ -99,12 +102,16 @@ function DiscussionsList({
 						{discussions.length > 0 && (
 							<Box height='full' width='full' style={{ minHeight: 0 }}>
 								<PaginatedVirtualList
+									aria-label={t('Discussions')}
 									items={discussions}
 									totalCount={itemCount}
 									overscan={25}
 									onEndReached={isPending ? undefined : loadMoreItems}
-									renderItem={(discussion) => (
-										<DiscussionsListRow discussion={discussion} showRealNames={showRealNames} onClick={onClick} />
+									renderItem={(discussion, index) => (
+										<>
+											{index > 0 && <ItemDivider aria-hidden />}
+											<DiscussionsListRow discussion={discussion} showRealNames={showRealNames} onClick={onClick} />
+										</>
 									)}
 								/>
 							</Box>

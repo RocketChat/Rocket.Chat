@@ -232,6 +232,22 @@ $item-group-narrow-width: 320px;
 
 			margin-inline-start: lengths.margin(4);
 		}
+
+		&--clamp {
+			display: -webkit-box;
+
+			white-space: normal;
+			word-break: break-word;
+			-webkit-box-orient: vertical;
+		}
+
+		&--clamp-2 {
+			-webkit-line-clamp: 2;
+		}
+
+		&--clamp-3 {
+			-webkit-line-clamp: 3;
+		}
 	}
 
 	&__meta {

@@ -1,4 +1,5 @@
 import type { HTMLAttributes, ReactNode, RefAttributes } from 'react';
+import { Children } from 'react';
 
 import { cx } from '../../helpers/composeClassNames';
 import { ItemGroup } from '../Item';
@@ -39,6 +40,10 @@ export function SidebarCollapseGroup({
 
 	const labelledBy = props['aria-label'] ? undefined : titleId;
 
+	// A header whose rows live elsewhere, as in a virtualized list, has no panel to control
+	const hasPanel = Children.toArray(children).length > 0;
+	const titleBarProps = hasPanel ? barProps : { ...barProps, 'aria-controls': undefined };
+
 	return (
 		<div className='rcx-box rcx-box--full rcx-sidebar-collapse-group' role={role} aria-labelledby={labelledBy} {...props}>
 			<SidebarGroupTitle
@@ -48,21 +53,23 @@ export function SidebarCollapseGroup({
 				titleId={titleId}
 				badge={badge}
 				menu={menu}
-				barProps={barProps}
+				barProps={titleBarProps}
 				role='button'
 			/>
-			<ItemGroup
-				role='list'
-				aria-labelledby={titleId}
-				ref={ref}
-				className={cx(
-					'rcx-sidebar-collapse-group__panel rcx-box--animated',
-					panelExpanded && 'rcx-sidebar-collapse-group__panel--expanded',
-				)}
-				id={panelId}
-			>
-				{children}
-			</ItemGroup>
+			{hasPanel && (
+				<ItemGroup
+					role='list'
+					aria-labelledby={titleId}
+					ref={ref}
+					className={cx(
+						'rcx-sidebar-collapse-group__panel rcx-box--animated',
+						panelExpanded && 'rcx-sidebar-collapse-group__panel--expanded',
+					)}
+					id={panelId}
+				>
+					{children}
+				</ItemGroup>
+			)}
 		</div>
 	);
 }

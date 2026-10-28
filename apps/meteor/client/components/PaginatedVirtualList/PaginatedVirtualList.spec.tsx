@@ -63,12 +63,9 @@ jest.mock('@rocket.chat/ui-client', () => ({
 		{ children, ...props },
 		ref,
 	) {
-		// oxlint-disable-next-line testing-library/no-node-access
-		const content = isValidElement<{ children?: ReactNode }>(children) && children.type === 'div' ? children.props.children : children;
-
 		return (
 			<div ref={ref} {...props}>
-				{content}
+				{children}
 			</div>
 		);
 	}),
@@ -86,7 +83,8 @@ const renderVirtualList = (
 		overscan?: number;
 		onEndReached?: UseInfiniteQueryResult['fetchNextPage'];
 	}> = {},
-) => render(<PaginatedVirtualList items={items} totalCount={20} renderItem={(item) => <div>{item._id}</div>} {...props} />);
+) =>
+	render(<PaginatedVirtualList aria-label='List' items={items} totalCount={20} renderItem={(item) => <div>{item._id}</div>} {...props} />);
 
 const advanceDebouncedScroll = async () => {
 	await act(async () => {
@@ -157,7 +155,13 @@ describe('PaginatedVirtualList', () => {
 
 		const resetItems = Array.from({ length: 10 }, (_, index) => ({ _id: `reset-${index}` }));
 		rerender(
-			<PaginatedVirtualList items={resetItems} totalCount={20} renderItem={(item) => <div>{item._id}</div>} onEndReached={onEndReached} />,
+			<PaginatedVirtualList
+				aria-label='List'
+				items={resetItems}
+				totalCount={20}
+				renderItem={(item) => <div>{item._id}</div>}
+				onEndReached={onEndReached}
+			/>,
 		);
 		fireEvent.scroll(screen.getByTestId('virtual-list'));
 		await advanceDebouncedScroll();

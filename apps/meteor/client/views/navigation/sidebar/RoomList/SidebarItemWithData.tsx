@@ -80,7 +80,7 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListR
 			data-unread={highlighted}
 			highlighted={highlighted}
 			selected={selected}
-			aria-current={selected || undefined}
+			aria-current={selected ? 'page' : undefined}
 			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title }) : title}
 			href={href}
 			onClick={() => redirectToFilter(room)}

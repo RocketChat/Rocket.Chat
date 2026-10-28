@@ -340,6 +340,35 @@ export const Default: Story = {
 	),
 };
 
+export const ClampedDescription: Story = {
+	render: () => (
+		<SidebarSurface>
+			<ItemGroup is='ul' aria-label='Threads'>
+				{[2, 3].map((clamp) => (
+					<Item is='li' inset='lg' key={clamp}>
+						<ItemMedia>
+							<Avatar size='x36' url={leterAvatarUrls[2]} alt='' />
+						</ItemMedia>
+						<ItemContent>
+							<ItemRow>
+								<ItemTitle>
+									<ItemLink is='button'>Júlia</ItemLink>
+								</ItemTitle>
+								<ItemMeta>10:42</ItemMeta>
+							</ItemRow>
+							<ItemDescription clamp={clamp as 2 | 3}>
+								A long message preview wraps up to {clamp} lines before an ellipsis cuts it, so a thread or discussion list shows enough of
+								the message to recognize it without letting one long message take the whole list. Lorem ipsum dolor sit amet, consectetur
+								adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore.
+							</ItemDescription>
+						</ItemContent>
+					</Item>
+				))}
+			</ItemGroup>
+		</SidebarSurface>
+	),
+};
+
 export const Heights: Story = {
 	render: () => (
 		<Box display='flex' flexDirection='column'>

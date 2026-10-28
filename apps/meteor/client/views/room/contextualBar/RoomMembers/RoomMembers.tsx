@@ -25,6 +25,7 @@ import RoomMembersListWrapper from './RoomMembersListWrapper';
 import RoomMembersRow from './RoomMembersRow';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
+import { VirtuosoHiddenTopItemList, VirtuosoListGroup } from '../../../../components/VirtuosoList';
 import type { RoomMember } from '../../../hooks/useMembersList';
 
 export type RoomMembersProps = {
@@ -198,6 +199,8 @@ const RoomMembers = ({
 										components={{
 											Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} />,
 											List: RoomMembersListWrapper,
+											Group: VirtuosoListGroup,
+											TopItemList: VirtuosoHiddenTopItemList,
 										}}
 										itemContent={(index) => (
 											<RowComponent useRealName={useRealName} data={itemData} user={members[index]} index={index} reload={reload} />
