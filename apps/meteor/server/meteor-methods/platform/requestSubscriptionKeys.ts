@@ -1,23 +1,45 @@
-import { api } from '@rocket.chat/core-services';
-import { Subscriptions, Rooms } from '@rocket.chat/models';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
 
+import { notifyOnRoomChangedById } from '../../lib/notifyListener';
+import { settings } from '../../settings';
+
+// Adds the caller to the key queue (usersWaitingForE2EKeys) of every encrypted room
+// where the caller is a member without a room key. Members that hold the key react
+// to the room change and encrypt the key for the caller.
 export const requestSubscriptionKeysMethod = async (userId: string): Promise<void> => {
-	// Get all encrypted rooms that the user is subscribed to and has no E2E key yet
-	const subscriptions = await Subscriptions.findByUserIdWithoutE2E(userId).toArray();
-	const roomIds = subscriptions.map((subscription) => subscription.rid);
+	if (!settings.get<boolean>('E2E_Enable')) {
+		return;
+	}
 
-	// For all subscriptions without E2E key, get the rooms that have encryption enabled
-	const query = {
-		e2eKeyId: {
-			$exists: true,
-		},
-		_id: {
-			$in: roomIds,
-		},
-	};
+	// A member without a public key cannot receive a room key
+	const user = await Users.findOneById<Pick<IUser, '_id' | 'e2e'>>(userId, { projection: { 'e2e.public_key': 1 } });
+	if (!user?.e2e?.public_key) {
+		return;
+	}
 
-	const rooms = Rooms.find(query);
-	await rooms.forEach((room) => {
-		void api.broadcast('notify.e2e.keyRequest', room._id, room.e2eKeyId);
-	});
+	const subscriptions = await Subscriptions.findByUserIdWithoutE2E(userId, { projection: { rid: 1 } }).toArray();
+	if (!subscriptions.length) {
+		return;
+	}
+
+	const rooms = await Rooms.find<Pick<IRoom, '_id'>>(
+		{
+			'_id': { $in: subscriptions.map(({ rid }) => rid) },
+			'encrypted': true,
+			'e2eKeyId': { $exists: true },
+			'usersWaitingForE2EKeys.userId': { $ne: userId },
+		},
+		{ projection: { _id: 1 } },
+	).toArray();
+
+	const roomIds = rooms.map(({ _id }) => _id);
+	if (!roomIds.length) {
+		return;
+	}
+
+	const { modifiedCount } = await Rooms.addUserIdToE2EEQueueByRoomIds(roomIds, userId);
+	if (modifiedCount) {
+		void notifyOnRoomChangedById(roomIds);
+	}
 };

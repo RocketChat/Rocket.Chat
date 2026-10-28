@@ -1,5 +1,7 @@
 import * as Aes from './crypto/aes';
+import { e2e } from './rocketchat.e2e';
 import { E2ERoom } from './rocketchat.e2e.room';
+import { Rooms, Subscriptions } from '../../stores';
 import { sdk } from '../SDKClient';
 
 jest.mock('./crypto/aes');
@@ -77,5 +79,38 @@ describe('E2ERoom.createGroupKey', () => {
 
 		expect(encryptForOthersSpy).toHaveBeenCalledTimes(1);
 		expect(sdk.rest.post).toHaveBeenCalledTimes(2); // both setRoomKeyID and updateGroupKey are called
+	});
+});
+
+describe('E2ERoom.handshake', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+		jest.spyOn(e2e, 'isReady').mockReturnValue(true);
+		jest.spyOn(Subscriptions.state, 'find').mockReturnValue(undefined);
+		jest.spyOn(Rooms.state, 'get').mockReturnValue({ _id: 'room-1', t: 'p', encrypted: true, e2eKeyId: 'key-1' } as any);
+	});
+
+	afterEach(() => {
+		jest.restoreAllMocks();
+	});
+
+	it('should ask the server to queue the user when the room has a key that the user does not hold', async () => {
+		const requestSpy = jest.spyOn(e2e, 'requestSubscriptionKeys').mockResolvedValue(undefined);
+
+		const e2eRoom = makeRoom();
+		await e2eRoom.handshake();
+
+		expect(requestSpy).toHaveBeenCalledTimes(1);
+		expect(e2eRoom.getState()).toBe('WAITING_KEYS');
+	});
+
+	it('should stay in WAITING_KEYS when the request fails', async () => {
+		jest.spyOn(e2e, 'requestSubscriptionKeys').mockRejectedValue(new Error('network'));
+
+		const e2eRoom = makeRoom();
+		await e2eRoom.handshake();
+		await Promise.resolve();
+
+		expect(e2eRoom.getState()).toBe('WAITING_KEYS');
 	});
 });
