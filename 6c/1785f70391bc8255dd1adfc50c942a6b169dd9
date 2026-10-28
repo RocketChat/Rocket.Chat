@@ -1,0 +1,14 @@
+apps/meteor/server/lib/metrics/lib/collectMetrics.ts
+  h_4c386397e672f4 16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "6c1785f70391bc8255dd1adfc50c942a6b169dd9",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
