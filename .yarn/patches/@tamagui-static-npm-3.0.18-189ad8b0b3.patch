@@ -1,5 +1,5 @@
 diff --git a/dist/cjs/compilerHost.cjs b/dist/cjs/compilerHost.cjs
-index 53270b93d46417dc87519c0edc9b50a5559f0ce7..dcb6bee5bb3b76d63189d218e143e537af233641 100644
+index 53270b93d46417dc87519c0edc9b50a5559f0ce7..e98f76ef18a63d1b8ad0db5497fa77d052d3adfa 100644
 --- a/dist/cjs/compilerHost.cjs
 +++ b/dist/cjs/compilerHost.cjs
 @@ -1220,6 +1220,17 @@ function createTamaguiCompilerHost(options) {
@@ -20,7 +20,15 @@ index 53270b93d46417dc87519c0edc9b50a5559f0ce7..dcb6bee5bb3b76d63189d218e143e537
  		if (entry.kind !== "prop" || entry.value.kind !== "bailout" || !isFrontendClassName(entry.name, component)) {
  			return null;
  		}
-@@ -1388,6 +1399,8 @@ function createTamaguiCompilerHost(options) {
+@@ -1382,12 +1393,16 @@ function createTamaguiCompilerHost(options) {
+ 		resolveComponent: resolve,
+ 		isStyleProp,
+ 		canLowerDynamicStyleProp(name, component, valueKind, dynamic) {
++			// Rocket.Chat: a `render` element is checked in lowerCandidate, where its source is at hand
++			if (!options.disablePartialExtraction && platform === "web" && name === "render") return true;
+ 			if (!options.disablePartialExtraction && valueKind === "conditional" && canLowerConditionalStyleProp(name, component)) {
+ 				return true;
+ 			}
  			if (component.staticConfig.resolvers?.length) {
  				return false;
  			}
@@ -29,7 +37,55 @@ index 53270b93d46417dc87519c0edc9b50a5559f0ce7..dcb6bee5bb3b76d63189d218e143e537
  			if (!options.disablePartialExtraction && platform === "web" && isFrontendClassName(name, component)) {
  				return true;
  			}
-@@ -1884,6 +1897,14 @@ function createTamaguiCompilerHost(options) {
+@@ -1421,6 +1436,24 @@ function createTamaguiCompilerHost(options) {
+ 					props[entry.name] = entry.value.value;
+ 				}
+ 			}
++			// Rocket.Chat: `render={<X …/>}` flattens to X with the element's attributes first and the frame's after, which is
++			// how the runtime merges them, except for what it combines: className, style, ref and event handlers
++			const renderEntry = input.element.entries.find((entry) => entry.kind === "prop" && entry.name === "render" && entry.value.kind !== "static");
++			let renderElement = null;
++			if (renderEntry) {
++				const parsed = platform === "web" && input.element.form === "jsx" ? /^<([A-Za-z_$][\w$.]*)(\s[^]*?)?\s*\/>$/.exec(input.source.slice(renderEntry.value.span.start, renderEntry.value.span.end).trim()) : null;
++				if (!parsed) {
++					return bailout(input, "local/dynamic-style-value", "Style prop render could not be evaluated", renderEntry.span, void 0, "render");
++				}
++				if (/(^|\s)(className|style)\s*=/.test(parsed[2] ?? "")) {
++					return bailout(input, "local/unsupported-target", "A render element's className or style is merged with the frame's at runtime", renderEntry.span);
++				}
++				const combined = input.element.entries.find((entry) => entry.kind === "prop" && (/^on[A-Z]/.test(entry.name) || entry.name === "ref" || entry.name === "style"));
++				if (combined) {
++					return bailout(input, "local/unsupported-target", `${combined.name} on a frame with a render element is combined with the element's at runtime`, combined.span);
++				}
++				renderElement = { tag: parsed[1], attributes: parsed[2] ?? "" };
++			}
+ 			if (component.staticConfig.resolvers?.length) {
+ 				const unresolvedProps = input.element.entries.filter((entry) => entry.kind === "prop" && entry.value.kind !== "static");
+ 				const onlyStaticBranchConditional = unresolvedProps.length === 1 && unresolvedProps[0]?.kind === "prop" && unresolvedProps[0].value.kind === "conditional" && canLowerConditionalStyleProp(unresolvedProps[0].name, component);
+@@ -1485,6 +1518,8 @@ function createTamaguiCompilerHost(options) {
+ 			}
+ 			if (styleObjectStatic) props.style = styleObjectStatic;
+ 			const dynamicStyleEntries = [...input.element.entries.filter((entry) => entry.kind === "prop" && (entry.value.kind === "bailout" || entry.value.kind === "conditional") && isStyleProp(entry.name, component)), ...styleMemberEntries];
++			// Rocket.Chat: the render element is flattened instead (see renderElement)
++			if (dynamicStyleEntries.includes(renderEntry)) dynamicStyleEntries.splice(dynamicStyleEntries.indexOf(renderEntry), 1);
+ 			{
+ 				const needsRuntimeMapping = (name) => runtimeEventProps.has(name) || platform === "web" && name === "onLayout" || platform === "native" && !component.domTag && nativePointerEventProps.has(name);
+ 				const directRuntimeEvent = input.element.entries.find((entry) => entry.kind === "prop" && needsRuntimeMapping(entry.name));
+@@ -1816,11 +1851,11 @@ function createTamaguiCompilerHost(options) {
+ 					message: (0, import_compiler_core.zeroRuleMessage)(5, { detail: `an enter or exit style program on ${input.element.component.name}` })
+ 				});
+ 			}
+-			const flatTag = component.domTag ?? (typeof props.render === "string" ? props.render : typeof defaultProps.render === "string" ? defaultProps.render : component.staticConfig.isText ? "span" : "div");
++			const flatTag = renderElement?.tag ?? component.domTag ?? (typeof props.render === "string" ? props.render : typeof defaultProps.render === "string" ? defaultProps.render : component.staticConfig.isText ? "span" : "div");
+ 			const tagEdits = [input.element.component.span, input.element.component.closingSpan].filter((span) => !!span).map((span) => ({
+ 				start: span.start,
+ 				end: span.end,
+-				content: input.element.form === "jsx" ? flatTag : JSON.stringify(flatTag),
++				content: input.element.form === "jsx" ? `${flatTag}${renderElement && span === input.element.component.span ? renderElement.attributes : ""}` : JSON.stringify(flatTag),
+ 				origin: span
+ 			}));
+ 			const isPropIgnored = (name) => isStyleProp(name, component) || isInvalidHostStyleProp(name, component) || componentOnlyProps.has(name);
+@@ -1884,6 +1919,14 @@ function createTamaguiCompilerHost(options) {
  				additions: []
  			};
  			webPropEdits.push(...webDOMResult.edits);
@@ -45,7 +101,7 @@ index 53270b93d46417dc87519c0edc9b50a5559f0ce7..dcb6bee5bb3b76d63189d218e143e537
  				const nativeStyleResolved = split.viewProps?.style;
  				let themedStyleKeys = null;
 diff --git a/dist/esm/compilerHost.mjs b/dist/esm/compilerHost.mjs
-index 6caef09479c8534cf2b3040a7af14777e909e2b3..6ac8c09a38338d9cf6c399f1283c706ca34aabad 100644
+index 6caef09479c8534cf2b3040a7af14777e909e2b3..799630f645b2fd5fdd098c6fc881de53678cfef9 100644
 --- a/dist/esm/compilerHost.mjs
 +++ b/dist/esm/compilerHost.mjs
 @@ -1195,6 +1195,17 @@ function createTamaguiCompilerHost(options) {
@@ -66,7 +122,15 @@ index 6caef09479c8534cf2b3040a7af14777e909e2b3..6ac8c09a38338d9cf6c399f1283c706c
  		if (entry.kind !== "prop" || entry.value.kind !== "bailout" || !isFrontendClassName(entry.name, component)) {
  			return null;
  		}
-@@ -1363,6 +1374,8 @@ function createTamaguiCompilerHost(options) {
+@@ -1357,12 +1368,16 @@ function createTamaguiCompilerHost(options) {
+ 		resolveComponent: resolve,
+ 		isStyleProp,
+ 		canLowerDynamicStyleProp(name, component, valueKind, dynamic) {
++			// Rocket.Chat: a `render` element is checked in lowerCandidate, where its source is at hand
++			if (!options.disablePartialExtraction && platform === "web" && name === "render") return true;
+ 			if (!options.disablePartialExtraction && valueKind === "conditional" && canLowerConditionalStyleProp(name, component)) {
+ 				return true;
+ 			}
  			if (component.staticConfig.resolvers?.length) {
  				return false;
  			}
@@ -75,7 +139,55 @@ index 6caef09479c8534cf2b3040a7af14777e909e2b3..6ac8c09a38338d9cf6c399f1283c706c
  			if (!options.disablePartialExtraction && platform === "web" && isFrontendClassName(name, component)) {
  				return true;
  			}
-@@ -1859,6 +1872,14 @@ function createTamaguiCompilerHost(options) {
+@@ -1396,6 +1411,24 @@ function createTamaguiCompilerHost(options) {
+ 					props[entry.name] = entry.value.value;
+ 				}
+ 			}
++			// Rocket.Chat: `render={<X …/>}` flattens to X with the element's attributes first and the frame's after, which is
++			// how the runtime merges them, except for what it combines: className, style, ref and event handlers
++			const renderEntry = input.element.entries.find((entry) => entry.kind === "prop" && entry.name === "render" && entry.value.kind !== "static");
++			let renderElement = null;
++			if (renderEntry) {
++				const parsed = platform === "web" && input.element.form === "jsx" ? /^<([A-Za-z_$][\w$.]*)(\s[^]*?)?\s*\/>$/.exec(input.source.slice(renderEntry.value.span.start, renderEntry.value.span.end).trim()) : null;
++				if (!parsed) {
++					return bailout(input, "local/dynamic-style-value", "Style prop render could not be evaluated", renderEntry.span, void 0, "render");
++				}
++				if (/(^|\s)(className|style)\s*=/.test(parsed[2] ?? "")) {
++					return bailout(input, "local/unsupported-target", "A render element's className or style is merged with the frame's at runtime", renderEntry.span);
++				}
++				const combined = input.element.entries.find((entry) => entry.kind === "prop" && (/^on[A-Z]/.test(entry.name) || entry.name === "ref" || entry.name === "style"));
++				if (combined) {
++					return bailout(input, "local/unsupported-target", `${combined.name} on a frame with a render element is combined with the element's at runtime`, combined.span);
++				}
++				renderElement = { tag: parsed[1], attributes: parsed[2] ?? "" };
++			}
+ 			if (component.staticConfig.resolvers?.length) {
+ 				const unresolvedProps = input.element.entries.filter((entry) => entry.kind === "prop" && entry.value.kind !== "static");
+ 				const onlyStaticBranchConditional = unresolvedProps.length === 1 && unresolvedProps[0]?.kind === "prop" && unresolvedProps[0].value.kind === "conditional" && canLowerConditionalStyleProp(unresolvedProps[0].name, component);
+@@ -1460,6 +1493,8 @@ function createTamaguiCompilerHost(options) {
+ 			}
+ 			if (styleObjectStatic) props.style = styleObjectStatic;
+ 			const dynamicStyleEntries = [...input.element.entries.filter((entry) => entry.kind === "prop" && (entry.value.kind === "bailout" || entry.value.kind === "conditional") && isStyleProp(entry.name, component)), ...styleMemberEntries];
++			// Rocket.Chat: the render element is flattened instead (see renderElement)
++			if (dynamicStyleEntries.includes(renderEntry)) dynamicStyleEntries.splice(dynamicStyleEntries.indexOf(renderEntry), 1);
+ 			{
+ 				const needsRuntimeMapping = (name) => runtimeEventProps.has(name) || platform === "web" && name === "onLayout" || platform === "native" && !component.domTag && nativePointerEventProps.has(name);
+ 				const directRuntimeEvent = input.element.entries.find((entry) => entry.kind === "prop" && needsRuntimeMapping(entry.name));
+@@ -1791,11 +1826,11 @@ function createTamaguiCompilerHost(options) {
+ 					message: zeroRuleMessage(5, { detail: `an enter or exit style program on ${input.element.component.name}` })
+ 				});
+ 			}
+-			const flatTag = component.domTag ?? (typeof props.render === "string" ? props.render : typeof defaultProps.render === "string" ? defaultProps.render : component.staticConfig.isText ? "span" : "div");
++			const flatTag = renderElement?.tag ?? component.domTag ?? (typeof props.render === "string" ? props.render : typeof defaultProps.render === "string" ? defaultProps.render : component.staticConfig.isText ? "span" : "div");
+ 			const tagEdits = [input.element.component.span, input.element.component.closingSpan].filter((span) => !!span).map((span) => ({
+ 				start: span.start,
+ 				end: span.end,
+-				content: input.element.form === "jsx" ? flatTag : JSON.stringify(flatTag),
++				content: input.element.form === "jsx" ? `${flatTag}${renderElement && span === input.element.component.span ? renderElement.attributes : ""}` : JSON.stringify(flatTag),
+ 				origin: span
+ 			}));
+ 			const isPropIgnored = (name) => isStyleProp(name, component) || isInvalidHostStyleProp(name, component) || componentOnlyProps.has(name);
+@@ -1859,6 +1894,14 @@ function createTamaguiCompilerHost(options) {
  				additions: []
  			};
  			webPropEdits.push(...webDOMResult.edits);
