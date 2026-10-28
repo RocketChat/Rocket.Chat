@@ -1,4 +1,4 @@
-import { composeStories } from '@storybook/react-webpack5';
+import { composeStories } from '@storybook/react-vite';
 
 import * as stories from './Tooltip.stories';
 import { render } from '../../testing';

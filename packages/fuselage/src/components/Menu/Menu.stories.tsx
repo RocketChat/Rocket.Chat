@@ -1,4 +1,4 @@
-import type { StoryFn, Meta } from '@storybook/react-webpack5';
+import type { StoryFn, Meta } from '@storybook/react-vite';
 import type { ReactNode } from 'react';
 import { useState } from 'react';
 import { action } from 'storybook/actions';

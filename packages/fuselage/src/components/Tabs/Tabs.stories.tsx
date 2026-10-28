@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import Tabs, { type TabsProps } from './Tabs';
 import TabsItem, { type TabsItemProps } from './TabsItem';
