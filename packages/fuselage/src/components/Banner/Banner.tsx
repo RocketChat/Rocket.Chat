@@ -230,10 +230,7 @@ const Banner = ({
 				)}
 				{children}
 				{link && (
-					<BannerLink
-						{...({ href: link, target: linkTarget } as GetProps<typeof BannerLink>)}
-						className={cx('rcx-banner__link')({ [variant]: true })}
-					>
+					<BannerLink render={<a href={link} target={linkTarget} />} className={cx('rcx-banner__link')({ [variant]: true })}>
 						{linkText}
 					</BannerLink>
 				)}
