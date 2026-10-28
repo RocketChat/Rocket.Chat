@@ -1,6 +1,7 @@
-import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { useCallback, useEffect, useState } from 'react';
 
+import { useUpsertGroupEntry } from './useUpsertGroupEntry';
+import { useUserSidebarCategories } from './useUserSidebarCategories';
 import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../../hooks/useCategoryList';
 
 export const HOUR = 60 * 60 * 1000;
@@ -11,28 +12,21 @@ const CLOCK_INTERVAL = 5 * 60 * 1000;
 // them may be hidden for being quiet.
 export const isActivityFilterable = (groupKey: string): boolean => !SIDEBAR_DYNAMIC_GROUP_KEYS.includes(groupKey);
 
-const isValidHours = (hours: unknown): hours is number => typeof hours === 'number' && Number.isInteger(hours) && hours > 0;
-
 export const useActivityFilter = () => {
-	// Kept in this browser for now, not on the user's preferences, so the UI also runs against servers that do
-	// not accept `activityFilterHours` yet.
-	const [filters, setFilters] = useLocalStorage<Record<string, number>>('sidebarActivityFilters', {});
+	const { rawCategories } = useUserSidebarCategories();
+	const upsertGroupEntry = useUpsertGroupEntry();
 
 	const getActivityFilterHours = useCallback(
-		(id: string): number | undefined => (isValidHours(filters[id]) ? filters[id] : undefined),
-		[filters],
+		(id: string): number | undefined => rawCategories.find((entry) => entry._id === id)?.activityFilterHours,
+		[rawCategories],
 	);
 
 	const setActivityFilterHours = useCallback(
-		(id: string, activityFilterHours: number | undefined) =>
-			setFilters((current) => {
-				const { [id]: _previous, ...others } = current;
-				return isValidHours(activityFilterHours) ? { ...others, [id]: activityFilterHours } : others;
-			}),
-		[setFilters],
+		(id: string, activityFilterHours: number | undefined) => upsertGroupEntry(id, { activityFilterHours }),
+		[upsertGroupEntry],
 	);
 
-	const hasActivityFilters = Object.values(filters).some(isValidHours);
+	const hasActivityFilters = rawCategories.some((entry) => entry.activityFilterHours);
 
 	return { getActivityFilterHours, setActivityFilterHours, hasActivityFilters };
 };

@@ -100,6 +100,7 @@ const getWrapperSettings = ({
 		default?: boolean;
 		showUnreads?: boolean;
 		keepUnreadsOnTop?: boolean;
+		activityFilterHours?: number;
 	}[];
 }) => {
 	const root = mockAppRoot()
@@ -474,17 +475,15 @@ describe('the activity filter', () => {
 		collapsedGroups?: string[];
 		groupsShowingInactive?: string[];
 		isEnterprise?: boolean;
-	}) => {
-		localStorage.setItem('fuselage-localStorage-sidebarActivityFilters', JSON.stringify({ Channels: activityFilterHours }));
-
-		return renderHook(() => useRoomList({ collapsedGroups, groupsShowingInactive }), {
-			wrapper: getWrapperSettings({ rooms: channels, sidebarGroupByType: true, isEnterprise }).build(),
+	}) =>
+		renderHook(() => useRoomList({ collapsedGroups, groupsShowingInactive }), {
+			wrapper: getWrapperSettings({
+				rooms: channels,
+				sidebarGroupByType: true,
+				isEnterprise,
+				sidebarCategories: [{ _id: 'Channels', name: 'Channels', default: true, activityFilterHours }],
+			}).build(),
 		});
-	};
-
-	afterEach(() => {
-		localStorage.clear();
-	});
 
 	const channelsGroupOf = (groups: SidebarRoomListGroup[]) => groups.find((group) => group.key === 'Channels');
 	// Sorted, so the assertions do not depend on the sidebar sort preference.
@@ -551,9 +550,13 @@ describe('the activity filter', () => {
 			undated('no-dates-at-all', {}),
 		];
 
-		localStorage.setItem('fuselage-localStorage-sidebarActivityFilters', JSON.stringify({ Direct_Messages: 24 * 30 }));
 		const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
-			wrapper: getWrapperSettings({ rooms, sidebarGroupByType: true, isEnterprise: true }).build(),
+			wrapper: getWrapperSettings({
+				rooms,
+				sidebarGroupByType: true,
+				isEnterprise: true,
+				sidebarCategories: [{ _id: 'Direct_Messages', name: 'Direct_Messages', default: true, activityFilterHours: 24 * 30 }],
+			}).build(),
 		});
 
 		const directGroupOf = () => result.current.groups.find((group) => group.key === 'Direct_Messages');

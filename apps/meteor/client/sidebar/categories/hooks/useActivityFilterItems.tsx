@@ -44,7 +44,7 @@ export const useActivityFilterItems = (
 				content: t(label),
 				onClick: () => {
 					onSelect?.();
-					setActivityFilterHours(groupId, hours);
+					void setActivityFilterHours(groupId, hours);
 				},
 				addon: hours === activityFilterHours ? <Icon name='check' size='x16' /> : undefined,
 			})),
