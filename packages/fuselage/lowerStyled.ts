@@ -46,6 +46,20 @@ export const allowlist: Record<string, Record<string, Options>> = {
 	'src/components/Sidepanel/SidepanelSection.tsx': { SidepanelSectionFrame: {}, SidepanelSection: {} },
 	'src/components/ToastBar/ToastBar.tsx': { ToastBarFrame: {}, ToastBarStatusLine: {}, ToastBarInner: {}, ToastBarContent: {}, ToastBarProgressBar: {}, ToastBarProgressFill: {} },
 	'src/components/Tooltip/Tooltip.tsx': { TooltipFrame: {}, TooltipArrow: {} },
+	'src/components/Callout/Callout.tsx': { CalloutFrame: {}, CalloutWrapper: {}, CalloutWrapperContent: {}, CalloutTitle: {}, CalloutContent: {}, CalloutActions: {} },
+	'src/components/Card/Card.tsx': { CardFrame: {} },
+	'src/components/Card/CardBody.tsx': { CardBodyFrame: {} },
+	'src/components/Card/CardCol.tsx': { CardCol: {} },
+	'src/components/Card/CardControls.tsx': { CardControls: {} },
+	'src/components/Card/CardFrames.ts': { CardText: {}, CardBlock: {} },
+	'src/components/Card/CardHeader.tsx': { CardHeader: {} },
+	'src/components/Card/CardRow.tsx': { CardRow: {} },
+	'src/components/Card/CardTitle.tsx': { CardTitleFrame: {} },
+	'src/components/CardGroup/CardGroup.tsx': { CardGroupFrame: {} },
+	'src/components/Table/TableBody.tsx': { TableBody: {} },
+	'src/components/Table/TableFoot.tsx': { TableFoot: {} },
+	'src/components/Table/TableFrames.ts': { TableWrapper: {}, TableFrame: {}, TableHeadFrame: {}, TableBodyFrame: {}, TableFootFrame: {}, TableRowFrame: {}, TableCellFrame: {}, TableCellDivider: {}, TableSelectionFrame: {} },
+	'src/components/Tile/Tile.tsx': { TileFrame: {} },
 };
 
 const root = import.meta.dirname;
