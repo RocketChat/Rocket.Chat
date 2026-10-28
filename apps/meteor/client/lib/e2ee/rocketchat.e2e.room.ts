@@ -534,7 +534,7 @@ export class E2ERoom extends Emitter {
 				const encryptedGroupKey = await this.encryptGroupKeyForParticipant(user.e2e!.public_key);
 				if (!encryptedGroupKey) {
 					span.warn(`Could not encrypt group key for user ${user._id}`);
-					return;
+					continue;
 				}
 				if (decryptedOldGroupKeys) {
 					const oldKeys = await this.encryptOldKeysForParticipant(user.e2e!.public_key, decryptedOldGroupKeys);
@@ -544,6 +544,11 @@ export class E2ERoom extends Emitter {
 					}
 				}
 				usersSuggestedGroupKeys[this.roomId].push({ _id: user._id, key: encryptedGroupKey, oldKeys: undefined });
+			}
+
+			if (!usersSuggestedGroupKeys[this.roomId].length) {
+				span.warn('Could not encrypt the key for any user');
+				return;
 			}
 
 			await sdk.rest.post('/v1/e2e.provideUsersSuggestedGroupKeys', { usersSuggestedGroupKeys });
