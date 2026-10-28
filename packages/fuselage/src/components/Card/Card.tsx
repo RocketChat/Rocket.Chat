@@ -1,5 +1,5 @@
 import { styled, View, type GetProps } from '@tamagui/web';
-import type { AllHTMLAttributes } from 'react';
+import type { AllHTMLAttributes, CSSProperties } from 'react';
 
 import { surfaceColors, textIconColors } from '../../Theme';
 import { cx } from '../../helpers/composeClassNames';
@@ -21,6 +21,9 @@ const CardFrame = styled(View, {
 	color: toCSSValue('--rcx-card-color', textIconColors['font-default']),
 	borderRadius: toCSSValue('--rcx-border-radius-large', borderRadius('large')),
 	backgroundColor: cardBackgroundColor,
+	// A caller's size travels as a custom property, so the frame's styles stay static and app CSS can still override them
+	width: 'var(--rcx-card-width, auto)',
+	height: 'var(--rcx-card-height, auto)',
 
 	variants: {
 		horizontal: {
@@ -59,14 +62,13 @@ export type CardProps = {
 } & Omit<AllHTMLAttributes<HTMLElement>, 'is'>;
 
 // `width` and `height` are HTML attributes too, so the type still lets callers size the card with a size token
-const Card = ({ horizontal, hero, clickable, className, width, height, ...props }: CardProps) => {
+const Card = ({ horizontal, hero, clickable, className, width, height, style, ...props }: CardProps) => {
 	return (
 		<CardFrame
 			horizontal={!!horizontal}
 			hero={hero}
 			clickable={clickable}
-			width={size(width)}
-			height={size(height)}
+			style={{ ...style, '--rcx-card-width': size(width), '--rcx-card-height': size(height) } as CSSProperties}
 			{...(props as GetProps<typeof CardFrame>)}
 			className={cx(
 				'rcx-card',
