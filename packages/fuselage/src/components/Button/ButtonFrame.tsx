@@ -160,6 +160,50 @@ const glyphColors = {
 	danger: { color: String(textIconColors['font-danger']) },
 };
 
+const paintStates = ['default', 'hover', 'focus-visible', 'press'] as const;
+
+type PaintLayer = 'glyph' | 'ghost' | 'look';
+
+/** The custom property a paint layer sets for one property in one state. */
+export const paintVar = (layer: PaintLayer, property: string, state: string) =>
+	`--rcx-button-${layer}-${property.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)}${state === 'default' ? '' : `-${state}`}`;
+
+const stateValue = (value: unknown, state: string) =>
+	typeof value === 'object' && value !== null ? (value as Record<string, unknown>)[state] : state === 'default' ? value : undefined;
+
+const setsState = (styles: object[], property: string, state: string) =>
+	styles.some((style) => stateValue((style as Record<string, unknown>)[property], state) !== undefined);
+
+/**
+ * The frame's colors as `var()` chains, the glyph layer over the ghost layer over the look, falling back to `base`:
+ * each layer sets only its own custom properties, so no two variants set the same CSS property.
+ */
+const paintFromLayers = (base: Record<string, unknown>, layers: Record<PaintLayer, object[]>) => {
+	const properties = new Set(Object.values(layers).flatMap((styles) => styles.flatMap((style) => Object.keys(style))));
+	return Object.fromEntries(
+		[...properties].map((property) => [
+			property,
+			Object.fromEntries(
+				paintStates.flatMap((state) => {
+					const chain = (['glyph', 'ghost', 'look'] as const).filter((layer) => setsState(layers[layer], property, state));
+					if (!chain.length) return [];
+					const fallback = stateValue(base[property], state);
+					const value = chain.reduceRight<string | undefined>(
+						(inner, layer) => `var(${paintVar(layer, property, state)}${inner === undefined ? '' : `, ${inner}`})`,
+						fallback === undefined ? undefined : String(fallback),
+					);
+					return [[state, value]];
+				}),
+			),
+		]),
+	);
+};
+
+const framePaint = paintFromLayers(
+	{ ...kindStyle(buttonColors.secondary), cursor: 'pointer' },
+	{ look: Object.values(looks), ghost: Object.values(ghosts), glyph: Object.values(glyphColors) },
+);
+
 const frameBase = {
 	render: 'button',
 	display: 'inline-block',
@@ -181,7 +225,7 @@ const frameBase = {
 	borderWidth: buttonBorderWidth,
 	borderStyle: 'solid',
 	borderRadius: buttonBorderRadius,
-	...kindStyle(buttonColors.secondary),
+	...framePaint,
 };
 
 /** Layout, typography and the secondary colors of `rcx-button`; the other variants are plain CSS, see `Button.variants.css`. */
@@ -198,8 +242,8 @@ export const iconButtonFrameStyle = {
 	variants: { segment: segments },
 } as const;
 
-/** How `Button.variants.css` selects the colors: by the `data-look`, `data-ghost` and `data-glyph` attributes. */
-export const paintStrategy = 'data';
+/** How `Button.variants.css` selects the colors: the data attributes set custom properties the frame reads. */
+export const paintStrategy = 'vars';
 
 /** What `scripts/build-button-css.mjs` writes to `Button.variants.css`, in the order the variants override each other. */
 export const buttonVariantStyles = {
@@ -211,6 +255,7 @@ export const buttonVariantStyles = {
 	looks,
 	ghosts,
 	glyphColors,
+	paintVar,
 };
 
 export const buttonContentStyle = {
