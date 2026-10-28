@@ -30,6 +30,7 @@
 		"build:ci": "yarn build:client && METEOR_DEBUG_BUILD=1 METEOR_DISABLE_OPTIMISTIC_CACHING=1 meteor build --verbose --server-only --directory /tmp/dist",
 		"build:client": "node vite/buildForServer.mjs",
 		"build:vite": "vite build --config vite/vite.config.mts",
+		"size:client": "node vite/sizeReport.mjs",
 		"coverage": "nyc -r html yarn .testunit:server",
 		"debug": "meteor run --inspect",
 		"debug-brk": "meteor run --inspect-brk",
