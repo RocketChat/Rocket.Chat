@@ -139,6 +139,12 @@ export const createSearchIndexSession = (
 			const opened = await backend.open({ userId, wrapKey });
 			if (run !== generation) return;
 
+			// The desktop app did not take the wrap key: no index is open, so the session does not use it.
+			if (opened.locked) {
+				openedFor = undefined;
+				return;
+			}
+
 			if (!isAllowed()) {
 				// The admin turned the local search off: no index of this user stays on the device.
 				openedFor = undefined;

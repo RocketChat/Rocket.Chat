@@ -97,6 +97,11 @@ export type E2EESearchStats = { docs: number; bytes: number; rooms: number };
 export type E2EESearchOpenResult = {
 	schemaVersion: number;
 	encryptedAtRest: boolean;
+	/**
+	 * True when the open had no wrap key and the server holds an E2EE key for the user (or cannot tell): the desktop app
+	 * opened no index and wrote nothing. Each index call fails until an open with the wrap key (after E2EE unlock).
+	 */
+	locked?: true;
 };
 
 export type E2EESearchScope = {

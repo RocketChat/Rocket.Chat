@@ -275,6 +275,26 @@ describe('createSearchIndexSession', () => {
 		expect(session.getActiveBackend()).toBe(backend);
 	});
 
+	it('does not use an index that the desktop app reports as locked, and opens it again on the next ready state (LSE2EE-110)', async () => {
+		const backend = createBackend();
+		backend.open.mockResolvedValueOnce({ schemaVersion: 1, encryptedAtRest: false, locked: true });
+		const onError = jest.fn();
+		const { source, setState } = createSource(privateKey);
+		const session = createSearchIndexSession(source, { getBackend: () => backend, onError });
+
+		setState('READY');
+		await session.whenSettled();
+
+		expect(session.getActiveBackend()).toBeUndefined();
+		expect(onError).not.toHaveBeenCalled();
+
+		setState('SAVE_PASSWORD');
+		await session.whenSettled();
+
+		expect(backend.open).toHaveBeenCalledTimes(2);
+		expect(session.getActiveBackend()).toBe(backend);
+	});
+
 	it('stops listening after dispose', async () => {
 		const backend = createBackend();
 		const { source, setState } = createSource(privateKey);
