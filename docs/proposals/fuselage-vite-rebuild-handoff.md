@@ -12,10 +12,10 @@ This is a plan for restarting the Fuselage → Tamagui migration from `develop`.
 
 ## Where things stand
 
-| | `develop` | Pilot, lowering off | Pilot, lowering on |
-|---|---|---|---|
-| `fuselage.production.js` (gzip) | 34.4 kB | 102.6 kB | 112.3 kB |
-| `fuselage.css` (gzip) | 26.7 kB | 16.0 kB | 31.1 kB |
+|                                 | `develop` | Pilot, lowering off | Pilot, lowering on |
+| ------------------------------- | --------- | ------------------- | ------------------ |
+| `fuselage.production.js` (gzip) | 34.4 kB   | 102.6 kB            | 112.3 kB           |
+| `fuselage.css` (gzip)           | 26.7 kB   | 16.0 kB             | 31.1 kB            |
 
 - The pilot lowers all 239 definitions (`count-unlowered` is 0). It still bundles the Tamagui runtime, about 31 kB gzip across 99 `@tamagui/*` modules, because the frames are still imported from `@tamagui/web`.
 - The JS budget is the open risk. Without the runtime, the pilot would still be around +45 kB over `develop`: component code plus the lowered recipes, which are about 26 kB gzip together. The restart must find out where that weight comes from on the first component, not the last.
@@ -85,16 +85,16 @@ Each component PR:
 
 ## Verification, per pull request
 
-| Check | What it catches |
-|---|---|
-| `check-lowered` (CI) | A lowered definition that differs from Tamagui's own resolution: classes, inline style, attributes; every variant value, every pair, 300 random combinations |
-| Call-site guard (build) | A lowered definition given a runtime-only prop at a JSX call site |
-| `count-unlowered --max N --max-modules 0` (CI) | Definitions not lowered; any `@tamagui/*` module in the web bundle |
-| Storybook pixel A/B against `develop`, `STORY_AB_WAIT=2000` | Visual changes; the pseudo-states addon needs the wait |
-| `story-computed` over every story, against `develop` | Style changes the screenshot doesn't show (order, grow, hidden states) |
-| Bench, list components | Mount and update cost; a `group` clause or a context subscription shows up here first |
-| Size report (CI) | The component's JS and CSS cost and the running total against the budget |
-| Real-app A/B, per family | Consumer classes, layer order, the app's own CSS |
+| Check                                                       | What it catches                                                                                                                                              |
+| ----------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `check-lowered` (CI)                                        | A lowered definition that differs from Tamagui's own resolution: classes, inline style, attributes; every variant value, every pair, 300 random combinations |
+| Call-site guard (build)                                     | A lowered definition given a runtime-only prop at a JSX call site                                                                                            |
+| `count-unlowered --max N --max-modules 0` (CI)              | Definitions not lowered; any `@tamagui/*` module in the web bundle                                                                                           |
+| Storybook pixel A/B against `develop`, `STORY_AB_WAIT=2000` | Visual changes; the pseudo-states addon needs the wait                                                                                                       |
+| `story-computed` over every story, against `develop`        | Style changes the screenshot doesn't show (order, grow, hidden states)                                                                                       |
+| Bench, list components                                      | Mount and update cost; a `group` clause or a context subscription shows up here first                                                                        |
+| Size report (CI)                                            | The component's JS and CSS cost and the running total against the budget                                                                                     |
+| Real-app A/B, per family                                    | Consumer classes, layer order, the app's own CSS                                                                                                             |
 
 Known flaky stories that differ between two captures of the same build: `PositionAnimated`, `Tooltip` arrow positioning, `Dropdown`, `OptionsPaginated`, and animated values (spinner, skeleton shine, progress bar).
 
