@@ -42,7 +42,9 @@ export type SearchIndexCrawler = {
 	backfillRoomPage(rid: string): Promise<{ done: boolean; indexed: number }>;
 	/**
 	 * Applies the next page of the changes since the room's `lastUpdate`: indexes new and edited messages, then removes
-	 * deleted ones. `lastUpdate` moves only after the last page, so an interrupted catch-up starts again from it.
+	 * deleted ones. `lastUpdate` moves only after the last page, so an interrupted catch-up starts again from it. The
+	 * millisecond of `lastUpdate` is read again, so a message written in it after the last read is not skipped. Its messages
+	 * are indexed again (the upsert by `_id` changes nothing) and `indexed` does not count them.
 	 */
 	catchUpRoomPage(rid: string): Promise<{ done: boolean; indexed: number; removed: number }>;
 	/** Decrypts the pending messages of the room again, after its room key arrived. */
@@ -68,14 +70,15 @@ type CatchUp = { type: 'UPDATED' | 'DELETED'; from: number; cursor: string; newe
  */
 const COMPOUND_CURSOR_SEPARATOR = '_';
 
-/** Sorts after every real `_id`, so `<ms>_<this>` as a `next` cursor excludes the messages of that millisecond. */
-const AFTER_EVERY_ID = '\uffff';
-
 /** A `previous` cursor before the messages of `ms`: no `_id` sorts before the empty one. */
 const previousCursorAt = (ms: number | string): string => `${ms}${COMPOUND_CURSOR_SEPARATOR}`;
 
-/** A `next` cursor after the messages of `ms`, like the time-only cursor `<ms>`. */
-const nextCursorAt = (ms: number): string => `${ms}${COMPOUND_CURSOR_SEPARATOR}${AFTER_EVERY_ID}`;
+/**
+ * A `next` cursor at the start of `ms`: the messages of `ms` are read again. The catch-up starts here, because a message
+ * can be written in the millisecond of `lastUpdate` after the read that set it. An older server reads `<ms>` and starts
+ * after the millisecond, as before.
+ */
+const nextCursorFrom = (ms: number): string => `${ms}${COMPOUND_CURSOR_SEPARATOR}`;
 
 /** A saved backfill cursor from before compound cursors is a bare `<ms>` (or a number). `<ms>_` excludes the same messages. */
 const toCompoundPreviousCursor = (cursor: string | number): string => {
@@ -114,7 +117,13 @@ export const createSearchIndexCrawler = ({
 
 	const pendingOf = (rid: string): IMessage[] => [...pendingDecrypt.values()].filter((message) => message.rid === rid);
 
-	const decryptAll = async (messages: IMessage[]): Promise<number> => {
+	const oldestSendTimeAt = (time: number): number | undefined => (maxAgeMs === undefined ? undefined : time - maxAgeMs);
+
+	const isInDepth = (message: IMessage, oldestSendTime: number | undefined) =>
+		oldestSendTime === undefined || new Date(message.ts).getTime() >= oldestSendTime;
+
+	/** Decrypts the messages, so the client indexes them, and returns how many of them were indexed and `counts` accepts. */
+	const decryptAll = async (messages: IMessage[], counts: (message: IMessage) => boolean = () => true): Promise<number> => {
 		let indexed = 0;
 		for (const message of messages) {
 			const decrypted = await decryptMessage(message);
@@ -125,7 +134,7 @@ export const createSearchIndexCrawler = ({
 				continue;
 			}
 			pendingDecrypt.delete(message._id);
-			indexed++;
+			if (counts(message)) indexed++;
 		}
 		await writer.flush();
 		return indexed;
@@ -144,9 +153,8 @@ export const createSearchIndexCrawler = ({
 				previous: state.backfillCursor === undefined ? previousCursorAt(startedAt) : toCompoundPreviousCursor(state.backfillCursor),
 			});
 
-			const oldestSendTime = maxAgeMs === undefined ? undefined : startedAt - maxAgeMs;
-			const inDepth =
-				oldestSendTime === undefined ? page.updated : page.updated.filter((message) => new Date(message.ts).getTime() >= oldestSendTime);
+			const oldestSendTime = oldestSendTimeAt(startedAt);
+			const inDepth = page.updated.filter((message) => isInDepth(message, oldestSendTime));
 			const indexed = await decryptAll(inDepth);
 
 			const updatedAts = page.updated.map(updatedAtOf);
@@ -175,7 +183,7 @@ export const createSearchIndexCrawler = ({
 			const catchUp: CatchUp = catchUps.get(rid) ?? {
 				type: 'UPDATED',
 				from: state.lastUpdate,
-				cursor: nextCursorAt(state.lastUpdate),
+				cursor: nextCursorFrom(state.lastUpdate),
 				newestUpdate: state.lastUpdate,
 			};
 			const page = await syncMessages({ roomId: rid, type: catchUp.type, count: pageSize, next: catchUp.cursor });
@@ -184,7 +192,19 @@ export const createSearchIndexCrawler = ({
 			let { newestUpdate } = catchUp;
 			const deletedIds = page.deleted.map(({ _id }) => _id);
 			if (catchUp.type === 'UPDATED') {
-				indexed = await decryptAll(page.updated);
+				const oldestSendTime = oldestSendTimeAt(now());
+				const outOfDepth = page.updated.filter((message) => !isInDepth(message, oldestSendTime)).map(({ _id }) => _id);
+				if (outOfDepth.length) {
+					// Sent before the depth limit: not indexed, and an older version of it leaves the index, so its old text is not found.
+					await writer.remove(outOfDepth, { deleted: false });
+					for (const id of outOfDepth) pendingDecrypt.delete(id);
+				}
+				// The messages of the `from` millisecond were indexed by the read that set `lastUpdate`, so they are not new.
+				const isNew = (message: IMessage) => updatedAtOf(message) !== catchUp.from;
+				indexed = await decryptAll(
+					page.updated.filter((message) => isInDepth(message, oldestSendTime)),
+					isNew,
+				);
 				newestUpdate = Math.max(newestUpdate, ...page.updated.map(updatedAtOf));
 			} else if (deletedIds.length) {
 				await writer.remove(deletedIds);
@@ -198,7 +218,7 @@ export const createSearchIndexCrawler = ({
 				return { done: false, ...result };
 			}
 			if (catchUp.type === 'UPDATED') {
-				catchUps.set(rid, { ...catchUp, type: 'DELETED', cursor: nextCursorAt(catchUp.from), newestUpdate });
+				catchUps.set(rid, { ...catchUp, type: 'DELETED', cursor: nextCursorFrom(catchUp.from), newestUpdate });
 				return { done: false, ...result };
 			}
 

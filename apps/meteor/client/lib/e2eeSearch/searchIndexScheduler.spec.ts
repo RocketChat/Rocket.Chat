@@ -189,7 +189,7 @@ describe('createSearchIndexScheduler', () => {
 			await jest.advanceTimersByTimeAsync(REQUEST_MS);
 			scheduler.stop();
 
-			expect(requests[0].params).toMatchObject({ roomId: 'old', type: 'UPDATED', next: `${NOW - 50 * HOUR}_\uffff` });
+			expect(requests[0].params).toMatchObject({ roomId: 'old', type: 'UPDATED', next: `${NOW - 50 * HOUR}_` });
 		});
 
 		it('indexes every message of every room, and never sends a sync call without a cursor', async () => {

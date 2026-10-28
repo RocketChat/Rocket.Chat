@@ -253,7 +253,7 @@ describe('createSearchIndexCrawler', () => {
 			expect(calls).toHaveLength(0);
 		});
 
-		it('pages the updated messages from lastUpdate with a compound next cursor, then the deleted ones', async () => {
+		it('pages the updated messages from the start of the lastUpdate millisecond, then the deleted ones', async () => {
 			const { crawler, calls, backend, writer, decryptMessage } = await setup({
 				pages: [
 					{ updated: [encrypted('m4', NOW + 5000)], deleted: [], cursor: noMore },
@@ -266,8 +266,8 @@ describe('createSearchIndexCrawler', () => {
 			expect(await crawler.catchUpRoomPage('room1')).toEqual({ done: true, indexed: 0, removed: 1 });
 
 			expect(calls).toEqual([
-				{ roomId: 'room1', type: 'UPDATED', count: 2, next: `${NOW}_\uffff` },
-				{ roomId: 'room1', type: 'DELETED', count: 2, next: `${NOW}_\uffff` },
+				{ roomId: 'room1', type: 'UPDATED', count: 2, next: `${NOW}_` },
+				{ roomId: 'room1', type: 'DELETED', count: 2, next: `${NOW}_` },
 			]);
 			expect(decryptMessage.mock.calls.map(([message]) => message._id)).toEqual(['m4']);
 			expect(writer.flush).toHaveBeenCalled();
@@ -574,11 +574,22 @@ describe('createSearchIndexCrawler', () => {
 			throw new Error('the crawler did not finish');
 		};
 
-		const crawlAgainst = async (server: SyncMessagesServerMock) => {
+		const untilDoneCounting = async (step: () => Promise<{ done: boolean; indexed: number }>) => {
+			let indexed = 0;
+			for (let i = 0; i < 100; i++) {
+				const result = await step();
+				indexed += result.indexed;
+				if (result.done) return indexed;
+			}
+			throw new Error('the crawler did not finish');
+		};
+
+		const crawlAgainst = async (server: SyncMessagesServerMock, { maxAgeMs }: { maxAgeMs?: number } = {}) => {
 			const backend = createFakeSearchIndexBackend();
 			await backend.open({ userId: 'u1' });
 
 			const indexed = new Map<string, number>();
+			const removedFromIndex: { ids: string[]; options?: { deleted?: boolean } }[] = [];
 			const crawler = createSearchIndexCrawler({
 				backend,
 				syncMessages: (params) => server.syncMessages(params),
@@ -587,16 +598,18 @@ describe('createSearchIndexCrawler', () => {
 					return { ...message, e2e: 'done' } as IMessage;
 				},
 				writer: {
-					remove: async (ids) => {
+					remove: async (ids, options) => {
+						removedFromIndex.push({ ids, ...(options && { options }) });
 						ids.forEach((id) => indexed.delete(id));
 					},
 					flush: async () => undefined,
 				},
 				now: () => server.now(),
 				pageSize: 100,
+				maxAgeMs,
 			});
 
-			return { backend, crawler, indexed };
+			return { backend, crawler, indexed, removedFromIndex };
 		};
 
 		it('loses 0 messages when a page boundary falls inside one millisecond', async () => {
@@ -614,23 +627,76 @@ describe('createSearchIndexCrawler', () => {
 			expect(server.calls.slice(1).every((call) => (call.next ?? call.previous)?.includes('_'))).toBe(true);
 		});
 
-		it('starts the catch-up after the messages of lastUpdate, as the time-only cursor did', async () => {
+		it('starts the catch-up at the start of the lastUpdate millisecond, and does not count its messages as new', async () => {
 			const server = createSyncMessagesServerMock({ startAt: NOW });
 			server.addHistory('a', ROOM, NOW - DAY);
 			server.addHistory('b', ROOM, NOW - DAY);
-			const { crawler } = await crawlAgainst(server);
+			const { crawler, indexed } = await crawlAgainst(server);
 			await untilDone(() => crawler.backfillRoomPage(ROOM));
+
+			server.advance(1000);
+			const first = await untilDoneCounting(() => crawler.catchUpRoomPage(ROOM));
+			const second = await untilDoneCounting(() => crawler.catchUpRoomPage(ROOM));
+
+			const catchUpCalls = server.calls.filter((call) => call.next);
+			expect(catchUpCalls.slice(0, 2).map(({ type, next }) => ({ type, next }))).toEqual([
+				{ type: 'UPDATED', next: `${NOW - DAY}_` },
+				{ type: 'DELETED', next: `${NOW - DAY}_` },
+			]);
+			expect([first, second]).toEqual([0, 0]);
+			expect(indexed).toEqual(server.liveVersions(ROOM));
+		});
+
+		for (const [order, id] of [
+			['before', 'a0'],
+			['after', 'zz'],
+		] as const) {
+			it(`indexes a message written in the lastUpdate millisecond after the catch-up read it, when its _id sorts ${order} the read one`, async () => {
+				const server = createSyncMessagesServerMock({ startAt: NOW });
+				server.addHistory('h1', ROOM, NOW - DAY);
+				const { crawler, indexed } = await crawlAgainst(server);
+				await untilDone(() => crawler.backfillRoomPage(ROOM));
+
+				server.advance(1000);
+				server.send('m1', ROOM);
+				await untilDone(() => crawler.catchUpRoomPage(ROOM));
+				server.sendInSameMillisecond(id, ROOM);
+				await untilDone(() => crawler.catchUpRoomPage(ROOM));
+
+				expect(indexed.get(id)).toBe(server.now());
+				expect(indexed).toEqual(server.liveVersions(ROOM));
+			});
+		}
+
+		it('does not index an old message whose edit is lastUpdate when the depth limit excludes it', async () => {
+			const server = createSyncMessagesServerMock({ startAt: NOW });
+			server.addHistory('old', ROOM, NOW - 10 * DAY);
+			server.addHistory('recent', ROOM, NOW - DAY);
+			server.edit('old');
+			server.advance(1000);
+			const { backend, crawler, indexed } = await crawlAgainst(server, { maxAgeMs: 5 * DAY });
+			await untilDone(() => crawler.backfillRoomPage(ROOM));
+			expect((await backend.getRoomState(ROOM))?.lastUpdate).toBe(server.liveVersions(ROOM).get('old'));
 
 			server.advance(1000);
 			await untilDone(() => crawler.catchUpRoomPage(ROOM));
 
-			const catchUpCalls = server.calls.filter((call) => call.next);
-			expect(catchUpCalls).toHaveLength(2);
-			for (const call of catchUpCalls) expect(call.next).toBe(`${NOW - DAY}_\uffff`);
-			expect(await Promise.all(catchUpCalls.map((call) => server.syncMessages(call)))).toEqual([
-				{ updated: [], deleted: [], cursor: { next: null, previous: null } },
-				{ updated: [], deleted: [], cursor: { next: null, previous: null } },
-			]);
+			expect([...indexed.keys()]).toEqual(['recent']);
+		});
+
+		it('removes a message from the index when its edit arrives after the message passed the depth limit', async () => {
+			const server = createSyncMessagesServerMock({ startAt: NOW });
+			server.addHistory('aging', ROOM, NOW - DAY);
+			const { crawler, indexed, removedFromIndex } = await crawlAgainst(server, { maxAgeMs: 5 * DAY });
+			await untilDone(() => crawler.backfillRoomPage(ROOM));
+			expect(indexed.has('aging')).toBe(true);
+
+			server.advance(10 * DAY);
+			server.edit('aging');
+			await untilDone(() => crawler.catchUpRoomPage(ROOM));
+
+			expect(indexed.has('aging')).toBe(false);
+			expect(removedFromIndex).toEqual([{ ids: ['aging'], options: { deleted: false } }]);
 		});
 
 		it('continues a backfill from a saved cursor of the old format and loses 0 messages', async () => {
