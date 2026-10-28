@@ -1,7 +1,7 @@
 import type { Keys } from '@rocket.chat/icons';
 import nameToCharacterMapping from '@rocket.chat/icons';
 import { styled, type GetProps } from '@tamagui/web';
-import type { AllHTMLAttributes } from 'react';
+import type { AllHTMLAttributes, CSSProperties } from 'react';
 
 import { statusColors, surfaceColors, textIconColors } from '../../Theme';
 import { cx } from '../../helpers/composeClassNames';
@@ -11,7 +11,7 @@ import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 import { IconFrame, type IconProps } from '../Icon/Icon';
 
 const FramedIconFrame = styled(IconFrame, {
-	fontSize: 20,
+	fontSize: 'var(--rcx-icon-size, 20px)',
 	padding: spacing('x4'),
 	color: String(textIconColors['font-secondary-info']),
 	borderRadius: toCSSValue('--rcx-border-radius-medium', borderRadius('medium')),
@@ -37,7 +37,7 @@ export type FramedIconProps = {
 	size?: IconProps['size'];
 } & Omit<AllHTMLAttributes<HTMLElement>, 'is' | 'color' | 'size'>;
 
-const FramedIcon = ({ info, success, warning, danger, neutral, icon, size, className, ...props }: FramedIconProps) => {
+const FramedIcon = ({ info, success, warning, danger, neutral, icon, size, className, style, ...props }: FramedIconProps) => {
 	// Same precedence as the stylesheet had, where the last rule declared won
 	const status = (danger && 'danger') || (warning && 'warning') || (success && 'success') || (info && 'info') || undefined;
 
@@ -45,8 +45,7 @@ const FramedIcon = ({ info, success, warning, danger, neutral, icon, size, class
 		<FramedIconFrame
 			aria-hidden
 			status={status}
-			// The frame's own 20px stays the default
-			{...(size !== undefined && { fontSize: resolveFontScale(size)?.fontSize ?? sizeToken(size) })}
+			style={{ ...style, '--rcx-icon-size': resolveFontScale(size)?.fontSize ?? sizeToken(size) } as CSSProperties}
 			{...(props as GetProps<typeof FramedIconFrame>)}
 			className={cx(
 				'rcx-icon',
