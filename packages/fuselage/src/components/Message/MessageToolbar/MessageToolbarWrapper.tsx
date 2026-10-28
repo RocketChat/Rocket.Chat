@@ -1,7 +1,6 @@
 import { styled, View, type GetProps } from '@tamagui/web';
 import type { HTMLAttributes, RefAttributes } from 'react';
 
-import { MessageToolbarContext } from './MessageToolbarContext';
 import { withFuselageProvider } from '../../FuselageProvider/FuselageProvider';
 import { boxText } from '../messageStyles';
 
@@ -34,7 +33,7 @@ function MessageToolbarWrapper({ className, visible, children, ...props }: Messa
 			className={['rcx-message-toolbar__wrapper', visible && 'rcx-message-toolbar__wrapper--visible', className].filter(Boolean).join(' ')}
 			{...(props as GetProps<typeof MessageToolbarWrapperFrame>)}
 		>
-			<MessageToolbarContext.Provider visible={!!visible}>{children}</MessageToolbarContext.Provider>
+			{children}
 		</MessageToolbarWrapperFrame>
 	);
 }

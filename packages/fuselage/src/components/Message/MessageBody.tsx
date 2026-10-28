@@ -1,7 +1,6 @@
 import { styled, Text, type GetProps } from '@tamagui/web';
 import type { HTMLAttributes } from 'react';
 
-import { MessageContext } from './MessageContext';
 import { lineClamp, textScale } from './messageStyles';
 import { textIconColors } from '../../Theme';
 import { prependClassName } from '../../helpers/prependClassName';
@@ -22,11 +21,6 @@ const MessageBodyFrame = styled(Text, {
 	color: String(textIconColors['font-default']),
 
 	variants: {
-		pending: {
-			true: {
-				opacity: 0.4,
-			},
-		},
 		clamp: {
 			2: lineClamp(2),
 			3: lineClamp(3),
@@ -41,11 +35,8 @@ export type MessageBodyProps = HTMLAttributes<HTMLDivElement> & {
 };
 
 function MessageBody({ clamp, className, ...props }: MessageBodyProps) {
-	const { pending } = MessageContext.useStyledContext();
-
 	return (
 		<MessageBodyFrame
-			pending={pending}
 			clamp={clamp}
 			className={prependClassName(
 				className,

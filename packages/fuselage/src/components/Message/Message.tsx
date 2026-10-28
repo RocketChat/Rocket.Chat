@@ -1,7 +1,6 @@
 import { styled, View, type GetProps } from '@tamagui/web';
 import type { AllHTMLAttributes, RefAttributes } from 'react';
 
-import { MessageContext } from './MessageContext';
 import { focusState, textScale, truncatedText } from './messageStyles';
 import { statusBackgroundColors, statusColors, surfaceColors, textIconColors } from '../../Theme';
 import { prependClassName } from '../../helpers/prependClassName';
@@ -115,9 +114,7 @@ const createMessage = (Frame: typeof MessageFrame) =>
 				)}
 				{...(props as GetProps<typeof MessageFrame>)}
 			>
-				<MessageContext.Provider inMessage pending={!!isPending}>
-					{children}
-				</MessageContext.Provider>
+				{children}
 			</Frame>
 		);
 	};
