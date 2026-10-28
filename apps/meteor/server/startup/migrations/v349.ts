@@ -3,6 +3,7 @@ import { Settings, Users } from '@rocket.chat/models';
 import type { UpdateFilter } from 'mongodb';
 
 import { addMigration } from '../../lib/migrations';
+import { settings } from '../../settings';
 
 addMigration({
 	version: 349,
@@ -11,6 +12,11 @@ addMigration({
 		await Settings.updateOne({ _id: 'Accounts_Default_User_Preferences_sidebarSectionsOrder', value: { $type: 'array' } }, {
 			$pull: { value: 'Drafts' },
 		} as unknown as UpdateFilter<ISetting>);
+
+		const sectionsOrder = await Settings.findOneById('Accounts_Default_User_Preferences_sidebarSectionsOrder');
+		if (sectionsOrder) {
+			settings.set(sectionsOrder);
+		}
 
 		await Users.updateMany(
 			{ 'settings.preferences.sidebarCategories': { $elemMatch: { _id: 'Drafts', default: true } } },
