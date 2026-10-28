@@ -47,8 +47,10 @@ if (build.status !== 0) {
 }
 
 // A client built for production (`yarn build:client`) would make the local server add it to the page next to Vite's.
-rmSync(join(appRoot, 'public/bundle'), { recursive: true, force: true });
-rmSync(join(appRoot, 'private/vite-manifest.json'), { force: true });
+if (!remoteServerUrl) {
+	rmSync(join(appRoot, 'public/bundle'), { recursive: true, force: true });
+	rmSync(join(appRoot, 'private/vite-manifest.json'), { force: true });
+}
 
 const children = [
 	!remoteServerUrl &&
