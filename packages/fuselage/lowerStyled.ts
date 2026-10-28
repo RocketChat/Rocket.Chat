@@ -541,16 +541,16 @@ const lowerDefinitions = async (code: string, id: string, names: string[]): Prom
 };
 
 let extended: Set<string> | undefined;
-/** Frames some `styled()` call that isn't lowered extends; they stay Tamagui frames until those are lowered too. */
+/** Frames some `styled()` call, or Item's `part()` wrapper of one, extends while not lowered itself; they stay Tamagui frames until those are lowered too. */
 const extendedFrames = () => {
 	if (extended) return extended;
 	extended = new Set();
 	const lowered = new Set(Object.values(allowlist).flatMap((bindings) => Object.keys(bindings)));
 	for (const file of readdirSync(join(root, 'src'), { recursive: true }) as string[]) {
 		if (!/\.tsx?$/.test(file)) continue;
-		for (const match of readFileSync(join(root, 'src', file), 'utf8').matchAll(/(?:const|let)\s+(\w+)\s*=\s*styled\((\w+)/g)) {
+		for (const match of readFileSync(join(root, 'src', file), 'utf8').matchAll(/(?:(?:const|let)\s+(\w+)\s*=[^;\n]*?)?\b(?:styled|part)\((\w+)/g)) {
 			// An extender that is lowered itself no longer needs the frame
-			if (!lowered.has(match[1])) extended.add(match[2]);
+			if (!match[1] || !lowered.has(match[1])) extended.add(match[2]);
 		}
 	}
 	return extended;
