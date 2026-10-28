@@ -1,9 +1,8 @@
-import { styled, View, type GetProps } from '@tamagui/web';
+import { styled, View } from '@tamagui/web';
 import type { AllHTMLAttributes, ElementType, RefAttributes } from 'react';
 import { useContext } from 'react';
 
 import { ItemParentContext } from './ItemContext';
-import { toRender } from './itemStyles';
 import { cx, cxx } from '../../helpers/composeClassNames';
 import { spacing } from '../../styleTokens';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
@@ -84,8 +83,7 @@ const ItemActions = ({ is: Tag = 'div', reveal = 'always', className, children, 
 
 	return (
 		<ItemActionsFrame
-			{...(props as GetProps<typeof ItemActionsFrame>)}
-			render={toRender(Tag)}
+			render={<Tag {...props} />}
 			reveal={reveal}
 			gapOffset={reveal === 'hover' && parent ? parent.gap : 'none'}
 			overhang={reveal === 'hover' && parent?.kind === 'row'}

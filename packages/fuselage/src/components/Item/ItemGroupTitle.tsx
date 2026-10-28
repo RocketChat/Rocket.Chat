@@ -1,10 +1,10 @@
-import { styled, Text, View, type GetProps } from '@tamagui/web';
+import { styled, Text, View } from '@tamagui/web';
 import type { AllHTMLAttributes, ElementType, RefAttributes } from 'react';
 import { useContext, useEffect, useId } from 'react';
 
 import { ItemGroupHeaderContext } from './ItemContext';
 import { useItemGroupContext } from './ItemGroupContext';
-import { overlayStyle, toRender } from './itemStyles';
+import { overlayStyle } from './itemStyles';
 import { cx } from '../../helpers/composeClassNames';
 import { spacing } from '../../styleTokens';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
@@ -75,9 +75,7 @@ const ItemGroupTitle = ({ is: Tag = 'div', id: propId, className, type, children
 
 	return (
 		<ItemGroupTitleFrame
-			{...(props as GetProps<typeof ItemGroupTitleFrame>)}
-			{...((isButton || type) && ({ type: isButton ? (type ?? 'button') : type } as GetProps<typeof ItemGroupTitleFrame>))}
-			render={toRender(Tag)}
+			render={<Tag {...props} type={isButton ? (type ?? 'button') : type} />}
 			button={isButton}
 			id={id}
 			className={cx('rcx-item-group-title', className)}

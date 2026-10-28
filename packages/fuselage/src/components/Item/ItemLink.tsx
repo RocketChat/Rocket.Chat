@@ -1,5 +1,5 @@
-import { styled, Text, View, type GetProps } from '@tamagui/web';
-import type { AnchorHTMLAttributes, ButtonHTMLAttributes, RefAttributes } from 'react';
+import { styled, Text, View } from '@tamagui/web';
+import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ElementType, RefAttributes } from 'react';
 import { useEffect, useId } from 'react';
 
 import { useItemContext } from './ItemContext';
@@ -61,13 +61,12 @@ const ItemLink = (props: ItemLinkProps) => {
 	const ariaDescribedBy = [props['aria-describedby'], ...descriptionIds].filter(Boolean).join(' ') || undefined;
 
 	const { is: Tag = 'a', className, children, ...rest } = props;
+	const Element = Tag as ElementType;
 	const type = Tag === 'button' ? ((rest as ButtonHTMLAttributes<HTMLButtonElement>).type ?? 'button') : undefined;
 
 	return (
 		<ItemLinkFrame
-			{...(rest as GetProps<typeof ItemLinkFrame>)}
-			{...(type && ({ type } as GetProps<typeof ItemLinkFrame>))}
-			render={Tag}
+			render={<Element {...rest} {...(type && { type })} />}
 			aria-describedby={ariaDescribedBy}
 			className={cx('rcx-item__link', className)}
 		>

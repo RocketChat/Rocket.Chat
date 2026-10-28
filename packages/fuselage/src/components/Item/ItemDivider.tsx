@@ -1,7 +1,7 @@
-import { styled, View, type GetProps } from '@tamagui/web';
+import { styled, View } from '@tamagui/web';
 import type { AllHTMLAttributes, ElementType, RefAttributes } from 'react';
 
-import { itemColorStrokeDivider, toRender } from './itemStyles';
+import { itemColorStrokeDivider } from './itemStyles';
 import type { ItemInset } from './types';
 import { cx, cxx } from '../../helpers/composeClassNames';
 import { borderWidth, spacing } from '../../styleTokens';
@@ -58,8 +58,7 @@ export type ItemDividerProps = {
  */
 const ItemDivider = ({ is: Tag = 'div', inset = 'none', className, children, ...props }: ItemDividerProps) => (
 	<ItemDividerFrame
-		{...(props as GetProps<typeof ItemDividerFrame>)}
-		render={toRender(Tag)}
+		render={<Tag {...props} />}
 		inset={inset}
 		className={cx(
 			cxx('rcx-item-divider')({
