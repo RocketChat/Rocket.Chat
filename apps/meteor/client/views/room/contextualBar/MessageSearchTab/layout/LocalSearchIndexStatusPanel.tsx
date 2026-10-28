@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 
 /** The notes about the local search index, above the local search results. */
 const LocalSearchIndexStatusPanel = ({ children }: { children: ReactNode }) => (
-	<Box paddingInline={16} paddingBlockStart={12} display='flex' flexDirection='column' gap={8}>
+	<Box paddingInline='x16' paddingBlockStart='x12' display='flex' flexDirection='column' gap='x8'>
 		{children}
 	</Box>
 );
