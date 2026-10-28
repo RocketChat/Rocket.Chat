@@ -38,7 +38,8 @@ const CircleFrame = styled(View, {
 	backgroundColor: toCSSColorValue('button-background-primary-default', button.light.backgroundPrimaryDefault),
 
 	variants: {
-		disabled: {
+		// Not `disabled`: Tamagui turns that prop into `aria-disabled`, which the recipe would drop
+		muted: {
 			true: {
 				backgroundColor: toCSSColorValue('button-background-secondary-default', button.light.backgroundSecondaryDefault),
 			},
@@ -68,7 +69,8 @@ function Circle({ disabled, circleCount, iteration, inheritColor, size }: Circle
 					'--rcx-throbber-size': sizeToken(size),
 				} as CSSProperties
 			}
-			disabled={disabled}
+			muted={disabled}
+			aria-disabled={disabled || undefined}
 			inheritColor={inheritColor}
 			className={cx(
 				'rcx-throbber__circle',
