@@ -8,13 +8,12 @@ Comments state the **intent** of a function, never the mechanism, and never expl
 code that lives in another file — that belongs in `docs/features/`. Full rules:
 [docs/code-comments.md](docs/code-comments.md).
 
-A provider reads; a component is told. A setting, a permission, the logged-in user or the
-current route belongs in a provider — in a component each one is another dependency a
-caller has to stand up before it can render. What the provider hands down is the answer:
-actions and derived facts, not the raw material to work one out from. A rule is a function,
-not an effect, and a component reports what happened rather than deciding where the app
-goes next. Build the screen against a shape you invent, with its stories, and wire it
-afterwards. Full rules:
+Screens follow presentational components with dependency injection through context: settings,
+permissions, the current user, the route, endpoints and toasts are read once in a provider or
+the route-level view; components take props and callbacks (translation, theme and layout are
+fine anywhere). Pass derived values, not raw data to derive from; derive in a function instead
+of syncing state in an effect; data down, actions up — a component never navigates or toasts
+on its own. A small component just takes props and needs no provider. Full rules:
 [docs/frontend/building-components.md](docs/frontend/building-components.md).
 
 ## Documentation index

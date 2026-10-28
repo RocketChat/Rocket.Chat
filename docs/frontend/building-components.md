@@ -14,145 +14,109 @@ A component is a reusable piece of code that represents a single UI element. Com
 | Simple & Logical | ❌             | ❌                |
 | Complex & Logical| ❌             | ✅                |
 
-## A provider reads, a component is told
+## Where a component gets its data
 
-> Scale this to the change. A three-prop dropdown needs no context of its own — passing
-> the value in is the whole of it. What follows matters for a screen, or for a set of
-> components that share a situation.
+This is the hooks-era form of **container/presentational components**: application state is
+read at one assembly point — a provider, or the route-level view — and handed to
+presentational components through props or [context][react-context]. Dan Abramov, who
+popularised the container split, [no longer recommends it as a rigid rule][abramov]; what
+survives is the boundary, not the folder layout. Logic lives in hooks and providers,
+components receive values and callbacks.
+
+> **Scope.** This is for a screen, or a set of components sharing a situation. A small
+> component just takes props — it needs no provider of its own.
 
 The line is the provider, not the package. `useSetting` in a package's provider is fine;
-the same call in one of its components is not.
+the same call in one of its components is not. The reason is dependencies: every context a
+component reads is one more thing a story has to mock, a test has to stand up, and a move
+has to carry along. A provider pays that cost once, for the whole screen.
 
-The reason is dependencies. Every context a component reads is one more thing standing
-between it and being rendered: a story has to mock it, a test has to stand it up, and
-moving the component means carrying that context along. A provider pays that cost once,
-for a whole screen.
+### What a component may read
 
-`packages/ui-voip` is the precedent — its providers reach endpoints, streams and settings,
-and its `components/` read almost no application context; `DevicePicker.tsx` and
-`CallHistoryInternalUser.tsx` are the two that still do, and they are the exception rather
-than the shape to copy.
+| Read in the provider (or route-level view) | Fine inside any component |
+| --- | --- |
+| settings, user preferences, permissions | translation (`useTranslation`) |
+| the current user | theme, layout, breakpoints |
+| route, router, navigation | the screen's own context, which the provider fills |
+| endpoints, streams, queries, mutations | local UI state (`useState`, open/closed, hover) |
+| toasts, modals, other app-wide side effects | |
 
-`packages/ui-video-conf` is the stricter one: after its user stack was given `showAvatars`
-and `showRealName`, no component in that package reads a setting, a preference, a
-permission, the viewer or the route at all.
+Live per-entity services — presence, user cards, autocompletes that query the server — are
+the product's, not the component's. Take them as a [slot](#slots-for-what-belongs-to-the-product).
 
-### Settings, permissions and the viewer
+In this repo: `packages/ui-conference` keeps its provider in the application
+(`apps/meteor/client/views/conference/providers/ConferenceProvider.tsx`) and its components
+read only the contract. `packages/ui-voip` follows the same split in `providers/` and
+`components/`; `DevicePicker.tsx` and `CallHistoryInternalUser.tsx` still read application
+contexts and are the exception, not the shape to copy.
 
-`useSetting`, `usePermission`, `useUserId`, `useUser`, `useUserPreference`.
+### 1. Read application state once, at the assembly point
 
 ❌
 
 ```tsx
-const CallMemberItem = ({ member }: CallMemberItemProps) => {
-	const canRing = usePermission('videoconf-ring-users');
+const UserRow = ({ user }: UserRowProps) => {
 	const useRealName = useSetting('UI_Use_Real_Name', false);
+	const canRemove = usePermission('remove-user');
+	const inAdmin = useCurrentRoutePath()?.startsWith('/admin/');
 ```
 
 ✅ — a prop when one component needs it; one group on the provider when a screenful do:
 
-```ts
-export type ConferenceViewer = {
+```tsx
+type UserRowProps = {
+	user: UserSummary;
 	useRealName: boolean;
-	displayAvatars: boolean;
-	canRingUsers: boolean;
+	canRemove: boolean;
 };
 ```
 
-Asked once, where the screen is assembled. A story then states the workspace instead of
-mocking one.
+Route and mount location are circumstances too: the provider recognises them and hands
+down the consequence (`joinDisabled`), never the path to inspect.
 
-Every field there is already an answer. Note what is *not* in it: the viewer's id. See
-below.
+In this repo: `VideoConferenceBlock` reads `joinDisabled` from `VideoConfContext`, and
+`VideoConfProvider` is the only place that looks at the route. `ConferenceViewer` in
+`packages/ui-conference` groups the settings and permissions a conference screen needs.
 
-### Where it is mounted
+### 2. Pass derived values, not raw data
 
-Routes and the surrounding screen are circumstances the provider recognises.
+Known as [selectors][redux-selectors] in Redux, a **view model** in MVVM, and the
+[Law of Demeter][demeter] in general: a component asks for the fact it needs, not for a
+collection to search or an identity to derive from. Raw material leaves the deriving in
+the component, where the next component that needs it will write it again — differently.
 
 ❌
 
 ```tsx
-const joinDisabled = useCurrentRoutePath()?.startsWith('/conference/');
+const { selectedIds } = useSelection();
+const selected = selectedIds.includes(item.id);
+const canEdit = item.ownerId === currentUserId || isAdmin;
 ```
 
 ✅
 
 ```tsx
-const joinDisabled = useContext(VideoConfContext)?.joinDisabled ?? false;
+const { selected, canEdit, toggle } = itemState(item.id);
 ```
 
-The provider knows the circumstance; the block only knows how to dim a button. Deciding
-it in the block means the block has to know what a call window's address looks like.
+Pass an identity only when the component needs who someone *is* — it shows their name, or
+keys storage by them — and say so in the prop name.
 
-### Hand over the answer, not the material
+In this repo: `CallListItem` asks `callRing(call.callId)` for `{ audible, silenced, silence }`.
+Target shape, not yet merged: `ConferenceViewer` still carries `uid`, which `CallMemberItem`
+and `ChatAccessNotice` derive from; the provider should answer those questions instead.
 
-Two shapes of one mistake: giving a component a collection to search, or an identity to
-derive from. Both leave the deriving in the component, which is where it will be written
-again by the next component that needs it.
+### 3. Derive, don't sync
 
-**A collection to search.** If a row needs one fact about its own item, give it that fact.
+React's own guidance is [You Might Not Need an Effect][no-effect]: an effect that only reads
+state and writes state is a derivation in disguise. It cannot be tested without rendering,
+the rule is scattered across dependency arrays, and the next screen re-implements it. Put
+the rule in a plain function — [functional core, imperative shell][fcis] — and keep effects
+for reaching outside React.
 
 ❌
 
 ```tsx
-const { silencedCalls } = useOngoingCalls();
-const incoming = useVideoConfIncomingCalls();
-const silenced = silencedCalls.includes(call.callId);
-const audible = incoming.some(({ callId, dismissed }) => callId === call.callId && !dismissed);
-```
-
-✅
-
-```tsx
-const { audible, silenced, silence } = callRing(call.callId);
-```
-
-Handing over the collection couples the row to how the set is stored, and here it dragged
-in a second context to search alongside the first.
-
-**An identity to derive from.** Passing the viewer's id is the same move: raw material
-plus a rule the component now has to carry.
-
-❌
-
-```tsx
-const { uid } = useConferenceViewer();
-const present = access.members.filter(isInVideoConference);
-
-if (!present.length || !hasConferenceChatAccess(access, uid)) {
-	return null;
-}
-```
-
-✅
-
-```tsx
-const { present, canShare } = access;
-
-if (!present.length || !canShare) {
-	return null;
-}
-```
-
-If who the viewer *is* genuinely matters — the component shows their name, or keys
-storage by them — then pass the id and say so in its name. Otherwise the provider should
-answer the question the id was going to be used to ask, and expose the actions and the
-derived facts rather than the identity behind them.
-
-### A rule is a function, not an effect
-
-❌ — what a room may be, decided across four effects that each fire on their own
-dependency and write back into form state:
-
-```tsx
-useEffect(() => {
-	if (federated) {
-		setValue('encrypted', false);
-		setValue('broadcast', false);
-		setValue('readOnly', false);
-	}
-}, [federated, setValue]);
-
 useEffect(() => {
 	if (!isPrivate) {
 		setValue('encrypted', false);
@@ -160,28 +124,28 @@ useEffect(() => {
 }, [isPrivate, setValue]);
 ```
 
-✅ — one function that answers both questions the screen has:
+✅
 
 ```ts
-const { room, editable } = resolveRoomCreation(draft, policy);
+const { values, editable } = resolveForm(draft, policy);
 ```
 
-An effect that only reads state and writes state is a derivation in an effect's clothes.
-It cannot be tested without rendering the component, it is invisible as a rule because it
-is spread across several dependency arrays, and the next screen that needs the same rule
-writes it again — differently. Effects are for reaching outside React.
-
-What remains after hoisting is still an effect, and that is fine: writing the answer into
-a form library's store *is* reaching outside React. Keep it, and keep it branchless. The
-deciding already happened.
+Writing the result into a form library's store is still an effect — that *is* reaching
+outside React. Keep it, and keep it branchless; the deciding already happened.
 
 **Check the transition before you delete it.** A rule that clears a field is not always a
-mask. Making a room public does not hide the encryption choice, it drops it — turn the
-room private again and the toggle is off, not restored. Rewriting that as a pure "derive
-the effective value" loses a decision someone made on purpose. The tests pinning it are
-the ones to run first.
+mask. Making a room public drops the encryption choice — turn it private again and the
+toggle is off, not restored. Rewriting that as a pure "derive the effective value" loses a
+decision someone made on purpose. Run the tests that pin it first.
 
-### A component reports, it does not route
+In this repo: `CreateChannelModal` and `CreateTeamModal` still decide room options across
+several effects; `resolveForm` above is the target shape.
+
+### 4. Data down, actions up
+
+The name comes from Ember ([DDAU][ddau]); in React it is [callbacks as props][react-events].
+A component calls the action it was given and reports what happened. Where to go next, what
+to close and what to announce belong to the caller — the only place that knows.
 
 ❌
 
@@ -195,56 +159,73 @@ router.navigate('/home');
 
 ```tsx
 await onForward({ department, username, comment });
-onCancel();
+onClose();
 ```
 
-A modal for handing a chat to someone else should not know the workspace's home address.
-It calls the action it was given and says what happened; what that means for the screen
-around it — where to go, what to close, what to announce — belongs to the caller, the
-only place that knows.
+A toast is the same decision in smaller print: a component that announces its own success
+has decided, for every caller it will ever have, that succeeding is worth announcing.
 
-The toast is the same decision in smaller print: a component that dispatches its own
-success message has decided, on behalf of every caller it will ever have, that succeeding
-is worth announcing.
+In this repo: `useQuickActions` hands `TranscriptModal` its `onRequest`, `onSend` and
+`onDiscard`. `ForwardChatModal` is the ❌ above.
 
-`useQuickActions` already hands `TranscriptModal` its `onRequest`, `onSend` and
-`onDiscard`. A screen whose actions arrive as values is one a story can drive with spies
-and a spec can assert without a server.
+### 5. The test: render it from a plain object
 
-### The question that settles it
+Can this component render from a plain object — no workspace, no router, no server? If not,
+whatever stands in the way belongs on the provider. This is the [Humble Object][humble]
+pattern: the part that is hard to test (the UI) is kept so thin it needs no test of its
+logic, because it has none.
 
-Can this component be rendered from a plain object — no workspace, no router, no server?
-If not, whatever stands in the way belongs on the provider.
+### Slots for what belongs to the product
+
+Some parts are genuinely the product's: a whole room with its composer, live presence, a
+people picker that queries the server. Take them as [slots][ioc] — `ReactNode` props or
+render props — instead of reimplementing them or reading their contexts.
+
+```ts
+type Slots = {
+	chat?: ReactNode;
+	renderUserStatus?: (uid: string) => ReactNode;
+	renderUserPicker?: (props: UserPickerProps) => ReactNode;
+};
+```
 
 ### When the point is a second UI
 
-Everything above buys testability. Swapping the UI asks for more: the provider has to carry
-the *whole* screen, or the alternative reimplements whatever was left out.
+Everything above buys testability. Swapping the UI asks for more: a **headless** contract,
+in the sense of [React Aria's hooks][react-aria] or [TanStack][tanstack] — the provider
+carries the *whole* screen, or the alternative UI reimplements whatever was left out.
 
-`packages/ui-conference` is the shape to copy. Its contract is grouped by kind of thing —
-the entity, the session, `actions`, `slots`, `viewer` — with a full default value so any
-corner renders from a fixture, and the provider itself lives in the application rather than
-the package.
+- **Group the contract by kind of thing**: the entity, the session, `actions`, `slots`,
+  `viewer` (the settled settings and permissions).
+- **Give it a default value that renders** — not one that throws, which makes every story
+  supply the whole contract; not one that fetches, which is the coupling the split removes.
+- **Keep the provider in the application**, not in the package that holds the UI.
 
-Three parts of it are what make a second UI possible:
-
-- **One `viewer` bag.** Every `useSetting`/`usePermission`/`useUserPreference` the screen
-  needs, read once and handed down as settled answers, instead of scattered through the tree.
-- **Slots for what is genuinely the product's.** A whole room with its composer, a people
-  picker that has to read the room: `chat?: ReactNode`, `renderUserPicker?: (props) =>
-  ReactNode`. They arrive through the context, so the alternative UI inherits them.
-- **A default value that renders.** Not one that throws, which would make every story supply
-  the whole contract; not one that fetches, which is the coupling the split exists to remove.
-
-The leaks to watch for, all of them real ones found in this codebase:
+Leaks to watch for:
 
 - a provider that **renders its own UI**, so mounting the logic hands you the shipped screen
-- an action that opens a **specific modal** — deciding to transfer a call is logic, the modal
-  is not
-- **UI vocabulary in the contract**: drag coordinates, or a union naming the three surfaces
-  that happen to exist today
+- an action that opens a **specific modal** — deciding to transfer is logic, the modal is not
+- **UI vocabulary in the contract**: drag coordinates, or a union naming the surfaces that
+  happen to exist today
 - a hook in the logic layer returning **icon names or copy**
-- a **state→screen mapping that exists only as JSX**, so it cannot be reused or tested
+- a **state → screen mapping that exists only as JSX**, so it cannot be reused or tested
+
+In this repo: `packages/ui-conference` is the shape to copy.
+
+[react-context]: https://react.dev/learn/passing-data-deeply-with-context
+[abramov]: https://medium.com/@dan_abramov/smart-and-dumb-components-7ca2f9a7c7d0
+[redux-selectors]: https://redux.js.org/usage/deriving-data-selectors
+[demeter]: https://en.wikipedia.org/wiki/Law_of_Demeter
+[no-effect]: https://react.dev/learn/you-might-not-need-an-effect
+[fcis]: https://www.destroyallsoftware.com/screencasts/catalog/functional-core-imperative-shell
+[ddau]: https://guides.emberjs.com/release/components/component-state-and-actions/
+[react-events]: https://react.dev/learn/responding-to-events#passing-event-handlers-as-props
+[humble]: https://martinfowler.com/bliki/HumbleObject.html
+[ioc]: https://kentcdodds.com/blog/inversion-of-control
+[react-aria]: https://react-spectrum.adobe.com/react-aria/hooks.html
+[tanstack]: https://tanstack.com/table/latest/docs/introduction
+[cdd]: https://www.componentdriven.org/
+[sb-args]: https://storybook.js.org/docs/writing-stories/args
 
 ## Simple components
 
@@ -340,7 +321,7 @@ Complex components combine multiple simple components for sophisticated UI eleme
 Concentrate solely on the user interface design, ensuring it is poised to incorporate the required logic seamlessly.
 
 What counts as logic, and where it goes instead, is
-[A provider reads, a component is told](#a-provider-reads-a-component-is-told).
+[Where a component gets its data](#where-a-component-gets-its-data).
 
 ```jsx
 export const Default = () => (
@@ -370,54 +351,41 @@ Structure components into understandable, logical segments.
 
 ### Develop with Storybook first
 
-Start by inventing the shape the screen needs, and build against it. Not the endpoint's
-shape — the screen's. None of it has to exist yet.
+This is [Component-Driven Development][cdd]: build the screen bottom-up in isolation,
+against a shape you invent — not the endpoint's shape, the screen's. None of it has to
+exist yet.
 
 ```ts
-type ConferenceCall = {
-	members: ConferenceMember[];
+type CallScreen = {
+	members: Member[];
 	canRing: boolean;
 	ended: boolean;
 	name: string;
-	capabilities: VideoConferenceCapabilities;
 };
 ```
 
-Every story then **states a situation** rather than arranging one:
+Every story then **states a situation** through [args][sb-args] rather than arranging one
+by mocking transport:
 
 ```tsx
-withLiveConference({
-	call: { members, name: 'Weekly sync', createdAt, capabilities },
-	room: { rid: 'room-id', name: 'general', type: 'c', loading: false },
-	session: { joined: true, url: 'about:blank' },
-});
-```
-
-That story used to seed a query client with a join result and mock six endpoints to reach
-the same frame. The gain is not convenience: a story that mocks transport documents the
-transport, and breaks when the transport changes.
-
-**Actions are values too.** `join`, `leave`, `ringMember` and `shareChat` arrive as
-functions the screen calls — a story logs them, a spec asserts a spy. `ChatAccessModal`
-asserted `shareChat({ callId, mode })` against a mocked endpoint; it now asserts
-`shareChat(mode)` against a spy, and the modal has no idea a server exists.
-
-**What cannot be built this way, take as a slot.** Some parts are genuinely the product's:
-a whole room with its composer, a live presence store, an autocomplete that has to read
-the room. Those arrive as nodes or render props rather than being reimplemented.
-
-```ts
-type ConferenceSlots = {
-	chat?: ReactNode;
-	renderMemberStatus?: (uid: string) => ReactNode;
-	renderUserPicker?: (props: UserPickerProps) => ReactNode;
+export const Ended: Story = {
+	args: { members, name: 'Weekly sync', ended: true, canRing: false },
 };
 ```
 
+A story that mocks endpoints documents the transport, and breaks when the transport
+changes. A story that states the situation documents the screen.
+
+**Actions are values too.** `join`, `leave` and `ring` arrive as functions — a story logs
+them, a spec asserts a spy, and the component has no idea a server exists.
+
 **Wiring is a separate step**, and can be a separate pull request: the screens land with
-their stories and no way to reach them, then a second change supplies the reads, the
-actions and the routes. The first carries no risk by construction; the second is where
-the risk is, and it is small enough to read.
+their stories, then a second change supplies the reads, the actions and the routes. Land
+the wiring right after, so the screens do not sit unreachable on `develop`.
+
+In this repo: the `packages/ui-conference` stories use `withLiveConference({ call, room,
+session })`; `ChatAccessModal` asserts `shareChat(mode)` against a spy instead of a mocked
+endpoint.
 
 ### Child components must remain scoped
 

@@ -19,7 +19,7 @@
   - I have added tests that prove my fix is effective or that my feature works (if applicable)
   - I have added necessary documentation (if applicable)
   - Comments state intent, not mechanism, and none explains code in another file - https://github.com/RocketChat/Rocket.Chat/blob/develop/docs/code-comments.md
-  - A provider reads, a component is told — no setting, permission, user or route read inside a component - https://github.com/RocketChat/Rocket.Chat/blob/develop/docs/frontend/building-components.md
+  - Components get settings, permissions, user and route from a provider, and report actions instead of navigating - https://github.com/RocketChat/Rocket.Chat/blob/develop/docs/frontend/building-components.md#where-a-component-gets-its-data
   - Any dependent changes have been merged and published in downstream modules
 -->
 
