@@ -1,0 +1,39 @@
+diff --git a/dist/cjs/zero/transform.cjs b/dist/cjs/zero/transform.cjs
+index 26c2b84b6c555b48e7b0909dc2b159948bea0ff2..408a82e756e015a31a1ad8dae3d6a1346c02a2b6 100644
+--- a/dist/cjs/zero/transform.cjs
++++ b/dist/cjs/zero/transform.cjs
+@@ -78,7 +78,7 @@ function transformZeroModule(input) {
+ 	});
+ 	const themeElements = elements.filter((element) => {
+ 		const name = jsxNameOf(element);
+-		return name === themeLocal || name === themeUpdateLocal;
++		return !!name && (name === themeLocal || name === themeUpdateLocal);
+ 	});
+ 	const themeNodes = /* @__PURE__ */ new Map();
+ 	for (const element of themeElements) {
+diff --git a/dist/esm/zero/transform.mjs b/dist/esm/zero/transform.mjs
+index c90f1c3a722763b30e0cf4a059e5899d76545f16..81c69bec3c8f43ad803abb01968103a56af665af 100644
+--- a/dist/esm/zero/transform.mjs
++++ b/dist/esm/zero/transform.mjs
+@@ -50,7 +50,7 @@ function transformZeroModule(input) {
+ 	});
+ 	const themeElements = elements.filter((element) => {
+ 		const name = jsxNameOf(element);
+-		return name === themeLocal || name === themeUpdateLocal;
++		return !!name && (name === themeLocal || name === themeUpdateLocal);
+ 	});
+ 	const themeNodes = /* @__PURE__ */ new Map();
+ 	for (const element of themeElements) {
+diff --git a/src/zero/transform.ts b/src/zero/transform.ts
+index cfad468d46ee618c33624c22d9cc9199a7003259..52efefe1b206a2851ad520a4cfa1f862dbc005db 100644
+--- a/src/zero/transform.ts
++++ b/src/zero/transform.ts
+@@ -141,7 +141,7 @@ export function transformZeroModule(
+ 
+   const themeElements = elements.filter((element) => {
+     const name = jsxNameOf(element)
+-    return name === themeLocal || name === themeUpdateLocal
++    return !!name && (name === themeLocal || name === themeUpdateLocal)
+   })
+ 
+   // Each <Theme> is read once, then lowered against its own ancestry, so a
