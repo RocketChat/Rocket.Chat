@@ -58,6 +58,21 @@ describe('validateSettingRules', () => {
 		}
 	});
 
+	it('rejects an invalid cron when a batch contains the same setting twice', () => {
+		settingsGetSettingMock.withArgs('Cron_Setting').returns({
+			_id: 'Cron_Setting',
+			type: 'string',
+			validation: JSON.stringify([{ type: 'cron' }]),
+		});
+
+		expect(() =>
+			validateSettingRules([
+				{ _id: 'Cron_Setting', value: '0 0 * * *' },
+				{ _id: 'Cron_Setting', value: 'invalid' },
+			]),
+		).to.throw('Cron_Setting_Invalid');
+	});
+
 	it('rejects an incoherent batch with the failed rule i18n key as the error message', () => {
 		const error = (() => {
 			try {
@@ -83,6 +98,12 @@ describe('validateSettingRules', () => {
 
 		expect(() => validateSettingRules([{ _id: 'Query_Setting', value: 1 }])).to.not.throw();
 		expect(() => validateSettingRules([{ _id: 'Query_Setting', value: 0 }])).to.throw('Query_Setting_Invalid');
+		expect(() =>
+			validateSettingRules([
+				{ _id: 'Query_Setting', value: 1 },
+				{ _id: 'Query_Setting', value: 0 },
+			]),
+		).to.throw('Query_Setting_Invalid');
 	});
 
 	it('resolves values batch-first, not from the stale cached value', () => {

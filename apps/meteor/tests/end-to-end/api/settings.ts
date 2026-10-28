@@ -327,7 +327,15 @@ describe('[Settings]', () => {
 	describe('[Cron settings]', () => {
 		const settingIds = [
 			'RetentionPolicy_Advanced_Precision_Cron',
-			...(IS_EE ? ['LDAP_Background_Sync_Avatars_Interval', 'LDAP_Sync_AutoLogout_Interval'] : []),
+			...(IS_EE
+				? [
+						'LDAP_Background_Sync_Avatars_Interval',
+						'LDAP_Sync_AutoLogout_Interval',
+						'LDAP_Background_Sync_ABAC_Attributes_Interval',
+						'ABAC_Virtru_Sync_Interval',
+						'Message_Read_Receipt_Archive_Cron',
+					]
+				: []),
 		];
 		const originalValues = new Map<string, Awaited<ReturnType<typeof getSettingValueById>>>();
 
@@ -404,6 +412,27 @@ describe('[Settings]', () => {
 				});
 			expect(await getSettingValueById(id)).to.equal(cronBefore);
 			expect(await getSettingValueById(otherId)).to.equal(volumeBefore);
+		});
+
+		it('rejects a bulk update with a valid and an invalid value for the same cron setting', async () => {
+			const id = 'RetentionPolicy_Advanced_Precision_Cron';
+			const previous = await getSettingValueById(id);
+
+			await request
+				.post(api('settings'))
+				.set(credentials)
+				.send({
+					settings: [
+						{ _id: id, value: '0 0 * * *' },
+						{ _id: id, value: 'invalid' },
+					],
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('error', `${id}_Invalid`);
+					expect(res.body).to.have.property('errorType', 'error-setting-validation-failed');
+				});
+			expect(await getSettingValueById(id)).to.equal(previous);
 		});
 	});
 

@@ -158,7 +158,7 @@ export const validateSettingRules = (changes: { _id: ISetting['_id']; value: ISe
 		}
 
 		for (const rule of parseValidationRules(setting._id, setting.validation)) {
-			if (evaluateSettingValidationRule(setting._id, rule, getValueOf)) {
+			if (evaluateSettingValidationRule(setting._id, rule, (id) => (id === _id ? value : getValueOf(id)))) {
 				continue;
 			}
 
