@@ -107,6 +107,11 @@ jobs:
         if: matrix.check == 'lint'
         run: node scripts/scan-raw-layout.mjs --max 1142 "$RUNNER_TEMP/raw-layout-findings.json"
 
+      # The library build runs the same check, but turbo and the lowering cache can skip it
+      - name: Lowered Fuselage frames match Tamagui
+        if: matrix.check == 'lint'
+        run: yarn workspace @rocket.chat/fuselage run check-lowered
+
       - name: Spacing scale
         if: matrix.check == 'lint'
         run: yarn lint:spacing

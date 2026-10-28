@@ -32,6 +32,7 @@
 	"scripts": {
 		"build": "rm -rf dist && vite build --mode development && vite build --mode production && tsc -p tsconfig.build.json --emitDeclarationOnly",
 		"build-storybook": "NODE_ENV=production storybook build",
+		"check-lowered": "node scripts/check-lowered.mts",
 		"lint": "yarn run -T oxlint && yarn run stylelint && yarn run tamagui-css --check",
 		"lint:fix": "yarn run -T oxlint --fix && stylelint --fix '**/*.scss'",
 		"stylelint": "stylelint --allow-empty-input '**/*.scss'",
