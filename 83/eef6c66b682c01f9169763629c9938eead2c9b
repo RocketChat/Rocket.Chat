@@ -1,0 +1,21 @@
+.changeset/ddp-websocket-page-origin.md
+  s_3f4bf1f94d3f96::t_c37e6a2f1232bb 1-5
+apps/meteor/client/lib/sdk/ddpSdk.ts
+  s_3f4bf1f94d3f96::t_c931a48a8b19ef 18-19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "83eef6c66b682c01f9169763629c9938eead2c9b",
+  "prompts": {},
+  "sessions": {
+    "s_3f4bf1f94d3f96": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "9754deca-5cb9-40a1-88cf-9041e3009043",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
