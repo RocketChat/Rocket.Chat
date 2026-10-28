@@ -101,7 +101,9 @@ Tamagui's [zero-runtime rules](https://tamagui.dev/docs/guides/zero-runtime) com
 - **No spread on a frame.** Zero rejects it, and the use-site is skipped without a message: the error only shows later, as an unerased definition. Debug with `TAMAGUI_COMPILER_STATS_FILE`. Caller attributes go on an inline render element, `render={<Tag {...attributes} ref={ref} />}`, which compiles to `jsx(Tag, { ...attributes, className })`. The render element must be written inline, not held in a variable, and the `ref` goes on it rather than on the frame.
 - **No `style` on a frame or on its render element, and no runtime value in a style prop.** A component that needs either is a plain element styled by its `.styles.css`, as `Icon` became in the spike (an `<i>` with `.rcx-icon`).
 - **Declare a frame in the module that renders it.** Zero erases a `styled()` declaration only when every reference is in its own module, so a frame exported to another module is never erased. Shared style data (the variant objects) can live in another module; the `styled()` call can't. A frame another frame extends (as `FramedIcon` extends `IconFrame`) needs its own module and every importer transformed.
-- **One runtime-chosen variant per CSS property.** Zero rejects two conditionals that set the same property on an element ("Multiple conditionals contribute minWidth…"). Variants that used to overlap and resolve by prop order become one precomputed combined variant per group of properties (the spike's `sizing`, `layer` and `paint`), merged state by state. Keep each combination set small: IconButton's `paint` has about 450 keys, and each key is a string in the JS lookup map.
+- **One runtime-chosen variant per CSS property.** Zero rejects two conditionals that set the same property on an element ("Multiple conditionals contribute minWidth…"). Variants that used to overlap and resolve by prop order become one precomputed combined variant per group of properties (the spike's `sizing`, `layer` and `paint`), merged state by state.
+  - **Decision: these stay `styled()` variants.** One frame definition serves web and React Native, even though the combined variants cost bundle size on web. The web-only optimization below is documented, not applied.
+  - Keep each combination set as small as the callers allow: IconButton's `paint` has about 450 keys, and each key is a string in the JS lookup map.
 - **No `ThemeProvider` or `tamagui.config` import in a module the app reaches.** The spike moved `withFuselageProvider` into its own module with no Tamagui import.
 - **No runtime-only features in a frame:**
   - no `context`/`createStyledContext`: use descendant rules or a plain React context ([docs](https://tamagui.dev/docs/core/create-styled-context));
@@ -117,6 +119,43 @@ Tamagui's [zero-runtime rules](https://tamagui.dev/docs/guides/zero-runtime) com
   - Code outside Fuselage styles its own elements with `rcx-*` classes. Keep those rules in `styles/consumer-classes.css`, and check for them before moving a component's CSS.
 - **Use cascade layers.** Tamagui's generated CSS goes in `@layer fuselage`, through `TAMAGUI_CSS_LAYER='fuselage'`. Unlayered element rules beat it, which is why the reset and the global element rules sit in `@layer reset`.
 - **No Tamagui tokens or themes for colors and sizes.** Values stay on the `--rcx-*` custom properties. Tamagui names its variables by hash or path, and would declare them in competition with the app's palettes, dark mode, high contrast and admin custom themes.
+
+## Optimization strategy for the variant maps (documented, not applied)
+
+The combined variants are kept as `styled()` variants so one frame definition serves web and React Native. This is the strategy to shrink them on web if the bundle budget demands it. It was measured on branch `spike/fuselage-zero-variants`.
+
+**Why the maps grow.** Zero emits one lookup table per runtime-chosen variant: each key maps to a string of atomic classes, one class per CSS property and covering all its pseudo-states (`compilerHost.ts:4180-4190` in `@tamagui/static` 3.0.18). A CSS property may be set by only one conditional (`compilerHost.ts:4072-4078`), so variants that overlap must be pre-combined. Their sizes multiply: Button's `look` (31) × `ghost` (6) × `glyphColor` (3) gives IconButton's `paint` 469 keys. Neither 3.0.18 nor 3.1.6 has a way around it: no precedence between conditionals, no compact encoding, no build option, and custom properties set inside a `styled()` variant are dropped without a diagnostic.
+
+**The optimization: overlapping variants as generated CSS, selected by data attributes.**
+
+- Keep the variant style objects in TypeScript, one object per dimension (`look`, `ghost`, `glyphColor`, size), not pre-combined. They stay the single source.
+- On web, a script (the spike's `scripts/build-button-css.mjs`) turns them into `Button.variants.css`:
+  - in `@layer fuselage`, at specificity (0,2,0) so it beats the frame's atomic classes;
+  - one rule per value, selected by `data-look`, `data-ghost` and `data-glyph`, which the component already computes;
+  - order in the file gives precedence: look, then ghost, then glyph.
+
+  Lint runs the script with `--check` so the CSS can't drift from the objects.
+
+- The frame keeps `styled()` for its static base and for variants that don't overlap (such as `segment`).
+- On React Native, the same objects feed `styled()` variants in a `.native.tsx` frame. The runtime, which native always has, resolves overlap by prop order, so native needs no combining.
+
+**Measured on the spike page** (Button and IconButton, 35 instances, identical DOM and computed styles to the runtime in every state, apart from the new `data-*` attributes):
+
+|                               | Combined variants (kept) | Data-attribute CSS |
+| ----------------------------- | ------------------------ | ------------------ |
+| Button + IconButton JS (gzip) | 8.9 kB                   | 2.5 kB             |
+| Keys in lookup maps           | 694                      | 13                 |
+| CSS (gzip)                    | 20.2 kB                  | 16.3 kB            |
+
+**What it costs:**
+
+- **Two frame files.** The web and native frames are separate files reading the same objects, instead of one frame for both.
+- **A second place to keep in sync.** The generator's selectors must follow the states `getButtonStates` produces.
+- **Alternatives tried and rejected:**
+  - Plain classes per value: same size, but needs a specificity ladder.
+  - CSS custom properties per dimension: same size, but React Native has no `var()`.
+
+**When to apply it:** only when the size report shows the running total over the +10 kB JS budget. Start with the components whose combined variants are largest (`IconButton`, `Button`, then whichever the report ranks next).
 
 ## Verification, per pull request
 
@@ -160,7 +199,5 @@ Known flaky stories that differ between two captures of the same build: `Positio
 
 ## Open questions
 
-- **How large the variant maps get.** Zero allows one runtime-chosen variant per CSS property, so overlapping variants become combined ones, and each combination is a string in the JS lookup map (IconButton's `paint` has about 450). Find, on `Button` and `IconButton`, the split that keeps the maps small: fewer combinations, a CSS custom property for a colour instead of a variant per colour, or plain CSS for the states.
-
-- **Where the JS goes.** The pilot was about +45 kB JS over `develop` without the runtime. In the spike, zero-runtime `Button` and `IconButton` still carry about 12.6 kB gzip, mostly variant maps, against near zero for `develop`'s SCSS buttons. The budget depends on bringing that down.
+- **Where the JS goes.** The pilot was about +45 kB JS over `develop` without the runtime. In the spike, zero-runtime `Button` and `IconButton` still carry about 12.6 kB gzip against near zero for `develop`'s SCSS buttons. About 5.9 kB of it is the combined variant maps, which stay by decision (see the optimization strategy below), and 2.9 kB is Icon's inline colour data. Track the running total per component; if it passes the +10 kB budget, apply the optimization below to the components with the largest maps first.
 - **What happens to the pilot.** Keep #42942 open as the reference while the component PRs land, then close it. #43167, the develop-compatible preparation, can merge independently.
