@@ -149,15 +149,12 @@ describe('MessageSearchTab local search', () => {
 		expect(screen.queryByRole('button', { name: /note/ })).not.toBeInTheDocument();
 	});
 
-	it.each(['indexing', 'waiting-for-idle', 'backing-off'] as const)(
-		'shows the indexing progress while the history is not complete (%s)',
-		async (status) => {
-			mockProgress = progress(status, 12);
-			renderTab();
+	it.each(['indexing', 'backing-off'] as const)('shows the indexing progress while the history is not complete (%s)', async (status) => {
+		mockProgress = progress(status, 12);
+		renderTab();
 
-			expect(await screen.findByText('Indexing encrypted history: 12 of 40 rooms')).toBeInTheDocument();
-		},
-	);
+		expect(await screen.findByText('Indexing encrypted history: 12 of 40 rooms')).toBeInTheDocument();
+	});
 
 	it.each([
 		['done', progress('done', 40)],

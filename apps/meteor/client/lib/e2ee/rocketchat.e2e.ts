@@ -34,7 +34,6 @@ import {
 	createSyncMessagesFetcher,
 	toSearchIndexRooms,
 } from '../e2eeSearch/searchIndexRuntime';
-import { createDocumentIdleSignal } from '../e2eeSearch/searchIndexScheduler';
 import { createSearchIndexSession } from '../e2eeSearch/searchIndexSession';
 import { createSearchIndexWriter } from '../e2eeSearch/searchIndexWriter';
 import { subscriptionRemovals } from '../e2eeSearch/subscriptionRemovals';
@@ -954,7 +953,7 @@ roomMessageDeletes.on('deleteMessageBulk', (event) => {
 
 /**
  * Indexes the history of the encrypted rooms (catch-up and backfill) while the local search index is open, one request
- * at a time and only while the user is idle (`useIdleConnection` announces `useLoginPresence` after 60 s without input).
+ * at a time with a pause between two requests, also while the user is active.
  */
 export const e2eSearchIndexRuntime = createSearchIndexRuntime({
 	session: e2eSearchIndexSession,
@@ -975,7 +974,6 @@ export const e2eSearchIndexRuntime = createSearchIndexRuntime({
 				resolve();
 			});
 		}),
-	idle: createDocumentIdleSignal('useLoginPresence'),
 	getMaxAgeMs: () => backfillMonthsToMaxAgeMs(settings.peek<number>('E2E_Local_Search_Backfill_Months')),
 	onError: (error) => log.span('searchIndexCrawler').error('Error indexing the history of encrypted rooms', error),
 });

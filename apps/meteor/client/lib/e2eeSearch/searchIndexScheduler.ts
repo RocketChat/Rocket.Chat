@@ -6,48 +6,8 @@ import type { SearchIndexCrawler } from './searchIndexCrawler';
 /** An encrypted room to index, with the time of its last message: the most recent rooms are indexed first. */
 export type SearchIndexRoom = { rid: string; lastActivityAt: number };
 
-export type IdleSignal = {
-	isIdle(): boolean;
-	/** Calls the listener each time `isIdle` changes. Returns the function that removes it. */
-	subscribe(listener: () => void): () => void;
-};
-
-/**
- * The idle state that `useIdleDetection` (`client/hooks/useIdleDetection.ts`) announces on the document for `id`. The user
- * counts as active until the first announcement.
- */
-export const createDocumentIdleSignal = (
-	id: string,
-	target: Pick<Document, 'addEventListener' | 'removeEventListener'> = document,
-): IdleSignal & { dispose(): void } => {
-	let idle = false;
-	const listeners = new Set<() => void>();
-
-	const onChange = (event: Event) => {
-		const next = (event as CustomEvent<{ isIdle?: boolean } | undefined>).detail?.isIdle === true;
-		if (next === idle) return;
-		idle = next;
-		for (const listener of [...listeners]) listener();
-	};
-	target.addEventListener(`${id}_change`, onChange);
-
-	return {
-		isIdle: () => idle,
-		subscribe(listener) {
-			listeners.add(listener);
-			return () => {
-				listeners.delete(listener);
-			};
-		},
-		dispose() {
-			target.removeEventListener(`${id}_change`, onChange);
-			listeners.clear();
-		},
-	};
-};
-
 export type SearchIndexProgress = {
-	status: 'stopped' | 'waiting-for-idle' | 'indexing' | 'backing-off' | 'done';
+	status: 'stopped' | 'indexing' | 'backing-off' | 'done';
 	rooms: number;
 	/** Rooms whose history backfill is complete. */
 	roomsDone: number;
@@ -64,7 +24,6 @@ type SearchIndexSchedulerOptions = {
 	>;
 	backend: Pick<ISearchIndexBackend, 'getRoomState' | 'removeRoom'>;
 	getRooms: () => SearchIndexRoom[];
-	idle: IdleSignal;
 	pauseMs?: number;
 	backoffBaseMs?: number;
 	backoffMaxMs?: number;
@@ -74,7 +33,7 @@ type SearchIndexSchedulerOptions = {
 };
 
 export type SearchIndexScheduler = {
-	/** Starts indexing: a catch-up of every room, then the history backfill, one request at a time while the user is idle. */
+	/** Starts indexing: a catch-up of every room, then the history backfill, one request at a time. */
 	start(): void;
 	/** Stops after the request in flight, if any. Resolves when that request has ended. */
 	stop(): Promise<void>;
@@ -164,7 +123,7 @@ const classify = async (error: unknown, now: number): Promise<Failure> => {
 
 /**
  * Drives the search index crawler in the background: catch-up first, then the history backfill one page per room in
- * turn, the most recently active rooms first. It sends one request at a time, only while the user is idle, and waits
+ * turn, the most recently active rooms first. It sends one request at a time, also while the user is active, and waits
  * between two requests. It backs off on rate limits and server errors, and removes a room the user can no longer read
  * from the index.
  */
@@ -172,7 +131,6 @@ export const createSearchIndexScheduler = ({
 	crawler,
 	backend,
 	getRooms,
-	idle,
 	pauseMs = DEFAULT_PAUSE_MS,
 	backoffBaseMs = 10_000,
 	backoffMaxMs = 10 * 60_000,
@@ -207,7 +165,6 @@ export const createSearchIndexScheduler = ({
 	const listeners = new Set<() => void>();
 	let wakeUp: (() => void) | undefined;
 	let cancelSleep: (() => void) | undefined;
-	let unsubscribeIdle: (() => void) | undefined;
 
 	const rooms = () =>
 		getRooms()
@@ -401,13 +358,6 @@ export const createSearchIndexScheduler = ({
 					continue;
 				}
 
-				if (!idle.isIdle()) {
-					retryJob = job;
-					setStatus(run, 'waiting-for-idle');
-					await waitForSignal();
-					continue;
-				}
-
 				setStatus(run, 'indexing');
 				const delay = await attempt(run, job);
 				if (run !== generation) return;
@@ -441,7 +391,6 @@ export const createSearchIndexScheduler = ({
 			skippedRooms.clear();
 			visitedThisPass = new Set();
 			for (const { rid } of rooms()) catchUpPending.add(rid);
-			unsubscribeIdle = idle.subscribe(wake);
 			loop = loop.then(() => runLoop(run));
 		},
 
@@ -450,8 +399,6 @@ export const createSearchIndexScheduler = ({
 			started = false;
 			generation++;
 			retryJob = undefined;
-			unsubscribeIdle?.();
-			unsubscribeIdle = undefined;
 			cancelSleep?.();
 			wake();
 			status = 'stopped';

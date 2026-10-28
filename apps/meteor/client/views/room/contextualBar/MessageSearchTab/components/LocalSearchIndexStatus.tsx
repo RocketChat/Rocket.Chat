@@ -6,7 +6,6 @@ import { useLocalSearchIndexEncryptedAtRest } from '../hooks/useLocalSearchIndex
 import { useLocalSearchIndexProgress } from '../hooks/useLocalSearchIndexProgress';
 import LocalSearchIndexStatusPanel from '../layout/LocalSearchIndexStatusPanel';
 
-// The scheduler waits while the user is active, so `waiting-for-idle` also counts as indexing: the history is not complete.
 const isIndexing = (progress: SearchIndexProgress | undefined): progress is SearchIndexProgress =>
 	!!progress && progress.status !== 'done' && progress.status !== 'stopped' && progress.roomsDone < progress.rooms;
 

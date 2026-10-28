@@ -3,7 +3,6 @@ import { Emitter } from '@rocket.chat/emitter';
 
 import { createFakeSearchIndexBackend } from './fakeSearchIndexBackend';
 import { createSearchIndexRuntime, toSearchIndexRooms } from './searchIndexRuntime';
-import type { IdleSignal } from './searchIndexScheduler';
 import { createSearchIndexSession } from './searchIndexSession';
 import { createSearchIndexWriter } from './searchIndexWriter';
 import { generate } from '../e2ee/crypto/rsa';
@@ -11,8 +10,6 @@ import { generate } from '../e2ee/crypto/rsa';
 // The lifecycle rules, with the real session, writer and runtime over the FakeBackend.
 
 type Subscription = { rid: string; encrypted?: boolean; lm?: Date };
-
-const neverIdle: IdleSignal = { isIdle: () => false, subscribe: () => () => undefined };
 
 const message = (id: string, rid: string, text: string, encrypted = true): IMessage =>
 	({
@@ -60,7 +57,6 @@ const setup = async (
 		getRooms: () => toSearchIndexRooms(subscriptions),
 		getSubscribedRids: () => new Set(subscriptions.map((sub) => sub.rid)),
 		...(whenRoomsReady && { whenRoomsReady }),
-		idle: neverIdle,
 	});
 
 	const login = async () => {

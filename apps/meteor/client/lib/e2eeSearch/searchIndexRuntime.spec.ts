@@ -3,7 +3,7 @@ import type { ISearchIndexBackend } from '@rocket.chat/desktop-api';
 
 import { createFakeSearchIndexBackend } from './fakeSearchIndexBackend';
 import { backfillMonthsToMaxAgeMs, createSearchIndexRuntime, createSyncMessagesFetcher, toSearchIndexRooms } from './searchIndexRuntime';
-import type { IdleSignal, SearchIndexScheduler } from './searchIndexScheduler';
+import type { SearchIndexScheduler } from './searchIndexScheduler';
 import { createSyncMessagesServerMock } from '../../../tests/mocks/client/syncMessagesServerMock';
 
 const NOW = Date.parse('2026-10-26T12:00:00Z');
@@ -27,8 +27,6 @@ const createSessionStub = (initial?: ISearchIndexBackend) => {
 	};
 };
 
-const idleAlways: IdleSignal = { isIdle: () => true, subscribe: () => () => undefined };
-
 const createSchedulerStub = (): jest.Mocked<SearchIndexScheduler> => ({
 	start: jest.fn(),
 	stop: jest.fn(),
@@ -49,7 +47,6 @@ const stubRuntime = (initial?: ISearchIndexBackend) => {
 		syncMessages: jest.fn(),
 		decryptMessage: async (message) => message,
 		getRooms: () => [],
-		idle: idleAlways,
 		createScheduler: (backend) => {
 			const scheduler = createSchedulerStub();
 			schedulers.push({ backend, scheduler });
@@ -182,7 +179,6 @@ describe('createSearchIndexRuntime', () => {
 					return decrypted;
 				},
 				getRooms: () => [{ rid: 'r1', lastActivityAt: NOW }],
-				idle: idleAlways,
 			});
 
 			session.set(backend);
@@ -239,7 +235,6 @@ describe('createSearchIndexRuntime with the admin depth limit', () => {
 					return decrypted;
 				},
 				getRooms: () => [{ rid: 'r1', lastActivityAt: NOW }],
-				idle: idleAlways,
 				getMaxAgeMs,
 			});
 

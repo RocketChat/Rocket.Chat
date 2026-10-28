@@ -2,8 +2,8 @@ import type { IMessage } from '@rocket.chat/core-typings';
 
 import { createFakeSearchIndexBackend } from './fakeSearchIndexBackend';
 import { createSearchIndexCrawler } from './searchIndexCrawler';
-import { createDocumentIdleSignal, createSearchIndexScheduler } from './searchIndexScheduler';
-import type { IdleSignal, SearchIndexRoom } from './searchIndexScheduler';
+import { createSearchIndexScheduler } from './searchIndexScheduler';
+import type { SearchIndexRoom } from './searchIndexScheduler';
 import { createSyncMessagesServerMock } from '../../../tests/mocks/client/syncMessagesServerMock';
 import type { AnySyncMessagesParams } from '../../../tests/mocks/client/syncMessagesServerMock';
 
@@ -12,23 +12,6 @@ const HOUR = 60 * 60 * 1000;
 const REQUEST_MS = 50;
 const PAUSE_MS = 1000;
 const PAGE_SIZE = 10;
-
-const createIdleStub = (initial: boolean) => {
-	let idle = initial;
-	const listeners = new Set<() => void>();
-	const signal: IdleSignal & { set(value: boolean): void } = {
-		isIdle: () => idle,
-		subscribe(listener) {
-			listeners.add(listener);
-			return () => listeners.delete(listener);
-		},
-		set(value) {
-			idle = value;
-			listeners.forEach((listener) => listener());
-		},
-	};
-	return signal;
-};
 
 /** An HTTP error as `fetch` reports it: the `Response`, with its status, headers and JSON body. */
 const httpError = (status: number, headers: Record<string, string> = {}, body: unknown = { success: false }) => {
@@ -44,11 +27,12 @@ const httpError = (status: number, headers: Record<string, string> = {}, body: u
 type SetupOptions = {
 	rooms: SearchIndexRoom[];
 	messagesPerRoom?: number;
-	idle?: boolean;
 	random?: () => number;
+	/** Uses the scheduler's own pause between requests instead of the short one of these specs. */
+	defaultPause?: boolean;
 };
 
-const setup = async ({ rooms, messagesPerRoom = 25, idle = true, random = () => 0.5 }: SetupOptions) => {
+const setup = async ({ rooms, messagesPerRoom = 25, random = () => 0.5, defaultPause = false }: SetupOptions) => {
 	const server = createSyncMessagesServerMock({ startAt: NOW });
 	for (const { rid } of rooms) {
 		for (let i = 0; i < messagesPerRoom; i++) server.addHistory(`${rid}-m${i}`, rid, NOW - 100 * HOUR + i * HOUR);
@@ -96,14 +80,12 @@ const setup = async ({ rooms, messagesPerRoom = 25, idle = true, random = () => 
 		pageSize: PAGE_SIZE,
 	});
 
-	const idleSignal = createIdleStub(idle);
 	const onError = jest.fn();
 	const scheduler = createSearchIndexScheduler({
 		crawler,
 		backend,
 		getRooms: () => rooms,
-		idle: idleSignal,
-		pauseMs: PAUSE_MS,
+		...(!defaultPause && { pauseMs: PAUSE_MS }),
 		backoffBaseMs: 1000,
 		backoffMaxMs: 60_000,
 		random,
@@ -122,7 +104,6 @@ const setup = async ({ rooms, messagesPerRoom = 25, idle = true, random = () => 
 		syncMessages,
 		missingKeys,
 		indexed,
-		idleSignal,
 		onError,
 		scheduler,
 		roomsOf,
@@ -136,36 +117,6 @@ const twoRooms: SearchIndexRoom[] = [
 	{ rid: 'recent', lastActivityAt: NOW - HOUR },
 ];
 
-describe('createDocumentIdleSignal', () => {
-	const announce = (id: string, isIdle: boolean) => document.dispatchEvent(new CustomEvent(`${id}_change`, { detail: { isIdle } }));
-
-	it('is active until useIdleDetection announces idle, and tells the listener of each change', () => {
-		const signal = createDocumentIdleSignal('e2eeSearch');
-		const listener = jest.fn();
-		signal.subscribe(listener);
-
-		expect(signal.isIdle()).toBe(false);
-		announce('e2eeSearch', true);
-		expect(signal.isIdle()).toBe(true);
-		announce('e2eeSearch', false);
-		expect(signal.isIdle()).toBe(false);
-		expect(listener).toHaveBeenCalledTimes(2);
-
-		signal.dispose();
-	});
-
-	it('reads only the announcements of its own id, and none after dispose', () => {
-		const signal = createDocumentIdleSignal('e2eeSearch');
-
-		announce('autoupdate', true);
-		expect(signal.isIdle()).toBe(false);
-
-		signal.dispose();
-		announce('e2eeSearch', true);
-		expect(signal.isIdle()).toBe(false);
-	});
-});
-
 describe('createSearchIndexScheduler', () => {
 	beforeEach(() => {
 		jest.useFakeTimers({ now: NOW });
@@ -175,35 +126,30 @@ describe('createSearchIndexScheduler', () => {
 		jest.useRealTimers();
 	});
 
-	describe('idle', () => {
-		it('sends no request while the user is active, and starts when the user is idle', async () => {
-			const { scheduler, requests, idleSignal } = await setup({ rooms: twoRooms, idle: false });
+	describe('activity', () => {
+		it('sends the first request at once and keeps indexing while the user is active', async () => {
+			const { scheduler, requests } = await setup({ rooms: twoRooms });
 
 			scheduler.start();
-			await jest.advanceTimersByTimeAsync(60_000);
-			expect(requests).toHaveLength(0);
-
-			idleSignal.set(true);
 			await jest.advanceTimersByTimeAsync(REQUEST_MS);
 			expect(requests).toHaveLength(1);
+
+			await jest.advanceTimersByTimeAsync(PAUSE_MS + REQUEST_MS);
+			expect(requests).toHaveLength(2);
+			expect(scheduler.getProgress().status).toBe('indexing');
 
 			scheduler.stop();
 		});
 
-		it('sends no new request after the user becomes active, and resumes when the user is idle again', async () => {
-			const { scheduler, requests, idleSignal } = await setup({ rooms: twoRooms });
+		it('waits 12 seconds between two requests by default', async () => {
+			const { scheduler, requests, gaps } = await setup({ rooms: twoRooms, defaultPause: true });
 
 			scheduler.start();
-			await jest.advanceTimersByTimeAsync(REQUEST_MS);
-			idleSignal.set(false);
-			await jest.advanceTimersByTimeAsync(60_000);
-			expect(requests).toHaveLength(1);
-
-			idleSignal.set(true);
-			await jest.advanceTimersByTimeAsync(REQUEST_MS);
-			expect(requests).toHaveLength(2);
-
+			await jest.advanceTimersByTimeAsync(3 * (REQUEST_MS + 12_000) - 1);
 			scheduler.stop();
+
+			expect(requests).toHaveLength(3);
+			for (const gap of gaps()) expect(gap).toBe(REQUEST_MS + 12_000);
 		});
 	});
 
@@ -507,16 +453,6 @@ describe('createSearchIndexScheduler', () => {
 
 			scheduler.stop();
 			expect(scheduler.getProgress().status).toBe('stopped');
-		});
-
-		it('shows that it waits for the user to be idle', async () => {
-			const { scheduler } = await setup({ rooms: twoRooms, idle: false });
-
-			scheduler.start();
-			await jest.advanceTimersByTimeAsync(0);
-
-			expect(scheduler.getProgress().status).toBe('waiting-for-idle');
-			scheduler.stop();
 		});
 	});
 });

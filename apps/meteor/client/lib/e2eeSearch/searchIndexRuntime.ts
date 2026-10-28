@@ -4,7 +4,7 @@ import type { ISearchIndexBackend } from '@rocket.chat/desktop-api';
 import { createSearchIndexCrawler } from './searchIndexCrawler';
 import type { SearchIndexCrawler, SyncMessagesPage, SyncMessagesParams } from './searchIndexCrawler';
 import { createSearchIndexScheduler } from './searchIndexScheduler';
-import type { IdleSignal, SearchIndexProgress, SearchIndexRoom, SearchIndexScheduler } from './searchIndexScheduler';
+import type { SearchIndexProgress, SearchIndexRoom, SearchIndexScheduler } from './searchIndexScheduler';
 import type { SearchIndexSession } from './searchIndexSession';
 import type { SearchIndexWriter } from './searchIndexWriter';
 import { mapMessageFromApi } from '../utils/mapMessageFromApi';
@@ -85,7 +85,6 @@ type SearchIndexRuntimeOptions = {
 	getSubscribedRids?: () => ReadonlySet<string>;
 	/** Resolves when the subscription list is loaded, so an empty list at startup does not remove every room. */
 	whenRoomsReady?: () => Promise<void>;
-	idle: IdleSignal;
 	/** The depth limit of the backfill, read each time the index opens. `undefined` indexes the whole history. */
 	getMaxAgeMs?: () => number | undefined;
 	onError?: (error: unknown) => void;
@@ -132,7 +131,6 @@ export const createSearchIndexRuntime = ({
 	getRooms,
 	getSubscribedRids,
 	whenRoomsReady = () => Promise.resolve(),
-	idle,
 	getMaxAgeMs = () => undefined,
 	onError = () => undefined,
 	createScheduler,
@@ -147,7 +145,7 @@ export const createSearchIndexRuntime = ({
 				writer,
 				maxAgeMs: getMaxAgeMs(),
 			});
-			return createSearchIndexScheduler({ crawler, backend, getRooms, idle, onError });
+			return createSearchIndexScheduler({ crawler, backend, getRooms, onError });
 		});
 
 	let backend: ISearchIndexBackend | undefined;
