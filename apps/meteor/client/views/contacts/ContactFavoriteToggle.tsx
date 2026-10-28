@@ -39,7 +39,6 @@ const ContactFavoriteToggle = ({ contact, revealed }: ContactFavoriteToggleProps
 			size='small'
 			icon={favorite ? 'star-filled' : 'star'}
 			title={favorite ? t('Remove_from_favorites') : t('Add_to_favorites')}
-			aria-pressed={favorite}
 			onClick={handleClick}
 		/>
 	);
