@@ -114,7 +114,7 @@ jobs:
 
       - name: Fuselage definitions not lowered, Tamagui modules in the web bundle
         if: matrix.check == 'lint'
-        run: yarn workspace @rocket.chat/fuselage run count-unlowered --max 239 --max-modules 100
+        run: yarn workspace @rocket.chat/fuselage run count-unlowered --max 185 --max-modules 100
 
       - name: Spacing scale
         if: matrix.check == 'lint'
