@@ -41,12 +41,14 @@ Each item is its own develop-compatible pull request.
 - **Verification scripts in the repo.** Commit `story-ab.mjs`, `story-computed.mjs`, `computed-ab.mjs` and `pseudo-check.mjs` (they live untracked in the pilot worktree's `perf/` today) under `packages/fuselage/scripts/verify/`. `story-computed` must be able to run over every story; the pilot showed that the pixel A/B misses real bugs, such as a dropped `order` or the `PureItem` frames losing their styles.
 - **Bench pages.** Commit the bench (`perf/bench`) with fixed scenarios: 150 messages, 200 sidebar rows, 300 button groups and the members list. Mount and update times are measured against `develop` in the same script.
 
-### Step 1: Tamagui, the compiler and the lowering, still no component changed
+### Step 1: Tamagui and the lowering, still no component changed
 
-- Add `@tamagui/web`, `@tamagui/vite-plugin` and `@tamagui/static` 3.0.18 with the pilot's yarn patches. Only the compiler patches matter here: default attributes, dynamic variant to class table, the `render` element, and computed `className`. The runtime patches (React 19 refs, frames without a provider) stay out, because the runtime never loads.
-- Bring `lowerStyled.ts`, `src/lowered/recipe.ts`, `check-lowered`, `count-unlowered` and `measure-lowered` from the pilot as they are now, including the extended-frame scan (`styled(` and `part(` calls), the call-site guard for runtime-only props, the cache keyed on the `yarn.lock` entries, and the single stylesheet per bundle.
+- Add `@tamagui/web`, pinned to one exact version: the lowering calls `resolveStaticElement` from `@tamagui/web/static-resolve`, which is not public API, and 3.1.0 to 3.1.6 shipped within days.
+- Don't run the Tamagui compiler (`@tamagui/vite-plugin`) in the library build. Once every definition is lowered, flattening a use-site only saves a recipe call. Without the compiler, `prevalStyled.ts` and all four `@tamagui/static` patches go away (see "Pilot workarounds against Tamagui's recommended path"). Confirm this with the pilot first: build its `dist` with and without the compiler and compare.
+- Bring `lowerStyled.ts`, `src/lowered/recipe.ts`, `check-lowered`, `count-unlowered` and `measure-lowered` from the pilot as they are now, including the extended-frame scan (`styled(` and `part(` calls), the call-site guard for runtime-only props, the cache keyed on the `yarn.lock` entries, and the single stylesheet per bundle. The lowering wraps that stylesheet in `@layer fuselage` itself.
 - Alias `@tamagui/web` to a stub in the web build. The stub exports only what lowered output still imports (markers and types). CI fails if any `@tamagui/*` module reaches the web `dist`.
-- `tamagui.config.ts` keeps the tokens and media for the resolver and the native build only.
+- Run Jest and Storybook on lowered output too, so no `@tamagui/web` runtime patch is needed. Where something still runs the runtime on `src`, its patches (React 19 ref cleanups, frames without a provider) are test-only.
+- `tamagui.config.ts` has no tokens and one empty theme; it feeds the resolver and a future native build only.
 - Check: the empty pipeline adds nothing to `dist` (0 bytes of Tamagui), and `check-lowered` runs green with no definitions.
 
 ### Step 2: the first component, chosen to answer the budget question
@@ -66,7 +68,7 @@ Order by dependency, leaves first: `Icon`, `Button`/`IconButton`, `ButtonGroup`,
 
 Each component PR:
 
-1. Writes the frames with `styled()`, static styles and variants only. Behavior stays in a plain React component that composes the frames. Values come only through the typed token helpers.
+1. Writes the frames with `styled()`, static styles and variants only. Behavior, the `rcx-*` class names and the consumer `className` stay in a plain React component that composes the frames. Values are literal `'var(--rcx-…, fallback)'` strings from `as const` maps rather than helper calls, so a definition stays statically readable for a future app compile or native build.
 2. Follows the per-component rules below, so the definition lowers on the first try.
 3. Adds the definitions to the lowering allowlist and lowers the `count-unlowered` ratchet in the same commit.
 4. Moves the component's SCSS out; anything Tamagui can't express stays plain CSS in the component's `.styles.css`.
@@ -74,13 +76,13 @@ Each component PR:
 
 ## Per-component rules (what the pilot learned the hard way)
 
-- **No runtime-only features in a frame:** no `group` (use parent rules in the `fuselage` layer), no `context`/`createStyledContext` (descendant rules or a plain React context), no `animation:` (plain `@keyframes`), no `forceStyle`, no `container`/`componentName`/`$` props at call sites.
+- **No runtime-only features in a frame:** no `context`/`createStyledContext` (descendant rules or a plain React context; Tamagui documents that it skips compiler flattening), no `animation:` for keyframes or loops (plain `@keyframes`; CSS `transition` is fine), no `forceStyle`, no `container`/`componentName`/`$` props at call sites. `group` compiles to CSS on web, so it may lower; allow it only once `check-lowered` proves it on one component, and use parent rules in the `fuselage` layer until then.
 - **No value computed at render in a style prop.** A closed set is a variant; an open value is a custom property passed through `style`, read by a static style, and registered with `@property { syntax: '*'; inherits: false; }` so it doesn't reach nested components.
-- **No style props through a spread.** A lowered frame drops a style prop it gets through `{...props}`, silently; the call-site guard does not see spreads. HTML attributes go on a `render={<Tag {...domProps} />}` element; style decisions become variants.
+- **No style props through a spread.** A lowered frame drops a style prop it gets through `{...props}`, silently; the call-site guard does not see spreads. A typed spread of DOM props is fine. Pick the element with a string `render` (`render='a'`); a JSX element in `render` deopts in Tamagui and is not needed once nothing is flattened. Style decisions become variants.
 - **Fold variants that only combine one way.** `ButtonFrame`'s CSS went from 160.5 kB to 58.9 kB once `kind`, `pressed` and `inactive` became one `look` variant holding only the combinations callers produce. Check `measure-lowered` for any definition far above what the runtime would insert.
 - **Don't rely on `BoxTransforms`.** `FlexItem` and `Margins` hand props to `Box` through a context; Tamagui frames never read it. Style the child from the parent's stylesheet instead.
 - **A prop named `disabled` on a frame becomes `aria-disabled`.** Name internal variants otherwise (`muted`).
-- **Keep `rcx-*` classes as always-on variants**, so a consumer `className` adds to them. Code outside Fuselage styles its own elements with `rcx-*` classes: keep those rules in `styles/consumer-classes.css` and check for them before moving a component's CSS.
+- **The wrapper owns the `rcx-*` classes**, joining them with the consumer `className`, and no bare frame is exported. That removes `variantClass` and `asPublicFrame`, which only existed so exported frames could be flattened by an app compiler Rocket.Chat doesn't run. Code outside Fuselage styles its own elements with `rcx-*` classes: keep those rules in `styles/consumer-classes.css` and check for them before moving a component's CSS.
 - **Use cascade layers.** Tamagui rules live in `@layer fuselage`; unlayered element rules beat them, which is why the reset and the global element rules sit in `@layer reset`.
 
 ## Verification, per pull request
@@ -101,11 +103,40 @@ Known flaky stories that differ between two captures of the same build: `Positio
 ## What to reuse from the pilot
 
 - `packages/fuselage/lowerStyled.ts`, `src/lowered/recipe.ts`, `scripts/check-lowered.mts`, `scripts/count-unlowered.mts`, `scripts/measure-lowered.mts`, `scripts/measure-button-reachable.mts`.
-- `.yarn/patches/@tamagui-static-npm-3.0.18-*.patch` (compiler hunks only).
-- `prevalStyled.ts` and the `@tamagui/vite-plugin` setup in `vite.config.mts`.
-- `styles/consumer-classes.css`, the layer order prelude, `helpers/variantClass`, `helpers/asPublicFrame`, the typed token helpers in `styleTokens`.
+- `styles/consumer-classes.css`, the layer order prelude, and the token lists in `styleTokens` (as literal maps, not helper functions).
+- Not reused: `prevalStyled.ts`, the `@tamagui/vite-plugin` setup, the `@tamagui/static` and `@tamagui/web` patches, `helpers/variantClass` and `helpers/asPublicFrame`.
 - Each component's pilot version as a reference, with its phase 3 and phase 5 fixes: the Button `look` variant, the Sidebar parent rules, the `@property` sizes, the ItemGroup container styles, the multi-select filter input rule.
 - Untracked verification scripts in the pilot worktree's `perf/` (`story-ab.mjs`, `story-computed.mjs`, `computed-ab.mjs`, `pseudo-check.mjs`, `bench/`): commit them in step 0.
+
+## Pilot workarounds against Tamagui's recommended path
+
+Checked against the v3 docs and the source of `@tamagui/*` 3.0.18 and 3.1.6.
+
+- **Tamagui's path for a design system keeps the runtime.** The [design systems guide](https://tamagui.dev/docs/guides/design-systems) ships source and lets the app compile it. In that tier, per the [compiler tiers page](https://tamagui.dev/docs/core/compiler-tiers), the provider, style engine and component runtime remain.
+- **Zero-runtime doesn't fit Rocket.Chat.** The [zero-runtime guide](https://tamagui.dev/docs/guides/zero-runtime) describes a mode that is still `experimental.zeroRuntime` in 3.1.6, and it is built for apps:
+  - it supports only Vite, Next with webpack, and Metro;
+  - it needs an HTML entry;
+  - it transforms only `.tsx` files inside the app's Vite root;
+  - it fails the build if any `@tamagui/*` module stays reachable.
+  - Rocket.Chat's production build is Meteor and rspack, and the `dev:next` Vite client keeps `packages/fuselage/src` outside its root.
+
+So the library-level lowering is the one piece Tamagui has no answer for. Most of what the pilot built around it only existed because the pilot also ran the compiler in the library and shipped the runtime.
+
+| Pilot workaround                                                                                         | Verdict                 | Why                                                                                                                                                                                                                                  |
+| -------------------------------------------------------------------------------------------------------- | ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Build-time lowering (`lowerStyled.ts`, recipes, `check-lowered`)                                         | Necessary               | No documented runtime-free output for a library; zero-runtime can't run in the production build                                                                                                                                      |
+| `prevalStyled.ts`                                                                                        | Avoidable               | Only feeds the compiler's use-site flattening; the lowering evaluates modules itself. Literal value maps keep definitions readable anyway                                                                                            |
+| `@tamagui/static` patches (default attributes, dynamic variants, `render` element, computed `className`) | Avoidable               | They only serve use-site flattening. None is fixed in 3.1.6. The default attributes one looks like an upstream bug worth filing; a JSX element in `render` is documented as a deopt ([styled](https://tamagui.dev/docs/core/styled)) |
+| `@tamagui/web` patches (React 19 refs, `forceStyle`/`onLayout` leaks, frames without a provider)         | Avoidable in production | No runtime ships. Test-only where Jest or Storybook still run unlowered `src`. The `stopPropagation` is intentional upstream ("matches RN pressable behavior")                                                                       |
+| No Tamagui tokens or themes, values as `var(--rcx-*)`                                                    | Necessary               | Tamagui names its variables by hash or path, and would declare them in competition with the app's palettes, dark mode, high contrast and custom themes                                                                               |
+| Cascade layers                                                                                           | Partly                  | The layers are needed for the cascade; the lowering can wrap its own stylesheet instead of `TAMAGUI_CSS_LAYER` or `pinTamaguiEnv`                                                                                                    |
+| `variantClass`, `asPublicFrame`                                                                          | Avoidable               | The wrapper component owns the `rcx-*` classes; exported frames only paid off with an app compiler                                                                                                                                   |
+| Replacing `group`                                                                                        | Possibly avoidable      | `group` compiles to CSS on web; prove it lowers before relying on it                                                                                                                                                                 |
+| Replacing `createStyledContext`, keyframe `animation:`                                                   | Necessary               | Styled context skips flattening ([docs](https://tamagui.dev/docs/core/create-styled-context)); keyframe and infinite animations are not documented ([animations](https://tamagui.dev/docs/core/animations))                          |
+| `render={<Tag {...domProps} />}`                                                                         | Avoidable               | A string `render` plus a typed DOM-prop spread is enough once nothing is flattened                                                                                                                                                   |
+| `isLoweredFrame` marker                                                                                  | Fuselage's own          | Needed only while `Box is={Frame}` is supported                                                                                                                                                                                      |
+
+Revisit the decision to lower in the library only if the app's production build becomes Vite with an HTML entry and Fuselage's `src` sits inside its transformed root.
 
 ## Traps in the workflow
 
