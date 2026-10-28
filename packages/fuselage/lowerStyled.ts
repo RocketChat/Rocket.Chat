@@ -142,6 +142,18 @@ export const allowlist: Record<string, Record<string, Options>> = {
 	'src/components/Table/TableFoot.tsx': { TableFoot: {} },
 	'src/components/Table/TableFrames.ts': { TableWrapper: {}, TableFrame: {}, TableHeadFrame: {}, TableBodyFrame: {}, TableFootFrame: {}, TableRowFrame: {}, TableCellFrame: {}, TableCellDivider: {}, TableSelectionFrame: {} },
 	'src/components/Tile/Tile.tsx': { TileFrame: {} },
+	'src/components/Accordion/Accordion.tsx': { AccordionFrame: {} },
+	'src/components/Accordion/AccordionItem.tsx': { AccordionItemFrame: {}, AccordionItemBar: {}, AccordionItemTitle: {}, AccordionItemPanel: {} },
+	'src/components/Divider/Divider.tsx': { DividerLine: {}, DividerBar: {}, DividerWrapper: {} },
+	'src/components/States/States.tsx': { StatesFrame: {} },
+	'src/components/States/StatesLink.tsx': { StatesLinkFrame: {} },
+	'src/components/States/StatesSubtitle.tsx': { StatesBlockFrame: {}, StatesSubtitleFrame: {} },
+	'src/components/States/StatesSuggestion.tsx': { StatesSuggestion: {} },
+	'src/components/States/StatesSuggestionList.tsx': { StatesSuggestionListFrame: {} },
+	'src/components/States/StatesSuggestionListItem.tsx': { StatesSuggestionListItemWrapper: {} },
+	'src/components/States/StatesTitle.tsx': { StatesTitleFrame: {} },
+	'src/components/Tabs/Tabs.tsx': { TabsFrame: {}, TabsScrollBox: {}, TabsWrapper: {} },
+	'src/components/Tabs/TabsItem.tsx': { TabsItemFrame: {} },
 };
 
 const root = import.meta.dirname;
