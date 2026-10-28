@@ -15275,6 +15275,29 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tamagui/vite-plugin@patch:@tamagui/vite-plugin@npm%3A3.0.18#~/.yarn/patches/@tamagui-vite-plugin-npm-3.0.18-97da028e24.patch":
+  version: 3.0.18
+  resolution: "@tamagui/vite-plugin@patch:@tamagui/vite-plugin@npm%3A3.0.18#~/.yarn/patches/@tamagui-vite-plugin-npm-3.0.18-97da028e24.patch::version=3.0.18&hash=18546b"
+  dependencies:
+    "@tamagui/fake-react-native": "npm:3.0.18"
+    "@tamagui/proxy-worm": "npm:3.0.18"
+    "@tamagui/react-native-svg": "npm:3.0.18"
+    "@tamagui/react-native-web-lite": "npm:3.0.18"
+    "@tamagui/static": "npm:3.0.18"
+    "@tamagui/types": "npm:3.0.18"
+    esm-resolve: "npm:^1.0.8"
+    fs-extra: "npm:^11.2.0"
+    outdent: "npm:^0.8.0"
+    react-native-web: "npm:~0.21.0"
+  peerDependencies:
+    vite: ^8.0.3
+  peerDependenciesMeta:
+    vite:
+      optional: true
+  checksum: 10/ef727618e7a354ed850a725dab59d7f1e052b7b03b06eb597438c8bde15005d816075203ee3b68a6e7bfa25184b14269e14ace44b1a4b198421a7f4dc3256440
+  languageName: node
+  linkType: hard
+
 "@tamagui/web@npm:3.0.18":
   version: 3.0.18
   resolution: "@tamagui/web@npm:3.0.18"

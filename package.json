@@ -206,7 +206,8 @@
 		"@react-pdf/layout@npm:^4.6.1": "patch:@react-pdf/layout@npm%3A4.6.1#~/.yarn/patches/@react-pdf-layout-npm-4.6.1-b12fdb71f4.patch",
 		"cookie@npm:^2.0.1": "patch:cookie@npm%3A2.0.1#~/.yarn/patches/cookie-npm-2.0.1-2aea16e44e.patch",
 		"playwright-core": "patch:playwright-core@npm%3A1.52.0#~/.yarn/patches/playwright-core-npm-1.52.0-keep-cache.patch",
-		"@tamagui/static@npm:3.0.18": "patch:@tamagui/static@npm%3A3.0.18#~/.yarn/patches/@tamagui-static-npm-3.0.18-189ad8b0b3.patch"
+		"@tamagui/static@npm:3.0.18": "patch:@tamagui/static@npm%3A3.0.18#~/.yarn/patches/@tamagui-static-npm-3.0.18-189ad8b0b3.patch",
+		"@tamagui/vite-plugin@npm:3.0.18": "patch:@tamagui/vite-plugin@npm%3A3.0.18#~/.yarn/patches/@tamagui-vite-plugin-npm-3.0.18-97da028e24.patch"
 	},
 	"dependencies": {
 		"@types/stream-buffers": "^3.0.8",
