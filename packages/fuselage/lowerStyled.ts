@@ -500,6 +500,10 @@ export const lowerModule = async (code: string, id: string) => {
 		walk(ast, (n, parent) => {
 			if (n.type !== 'Identifier' || (n as unknown as { name: string }).name !== name) return;
 			if (n.start >= statement.start && n.end <= statement.end) return;
+			// A lowered definition that extends this frame is replaced whole, its argument included
+			for (const [other, { call }] of calls) {
+				if (other !== name && !extendedFrames().has(other) && n.start >= call.start && n.end <= call.end) return;
+			}
 			if (parent?.type === 'ExportSpecifier' || parent?.type?.startsWith('TS')) return;
 			edits.push([n.start, n.end, `${name}__lowered`]);
 		});
