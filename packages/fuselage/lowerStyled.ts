@@ -72,6 +72,12 @@ export const allowlist: Record<string, Record<string, Options>> = {
 	'src/components/States/StatesTitle.tsx': { StatesTitleFrame: {} },
 	'src/components/Tabs/Tabs.tsx': { TabsFrame: {}, TabsScrollBox: {}, TabsWrapper: {} },
 	'src/components/Tabs/TabsItem.tsx': { TabsItemFrame: {} },
+	'src/components/Badge/Badge.tsx': { BadgeFrame: {} },
+	'src/components/Chip/Chip.tsx': { ChipFrame: {}, ChipText: {} },
+	'src/components/ProgressBar/ProgressBar.tsx': { ProgressBarFrame: {}, ProgressBarFill: {}, ProgressBarShine: {} },
+	'src/components/Skeleton/Skeleton.tsx': { SkeletonFrame: {} },
+	'src/components/Tag/Tag.tsx': { TagFrame: {}, TagInner: {} },
+	'src/components/Throbber/Throbber.tsx': { ThrobberFrame: {}, CircleFrame: {} },
 };
 
 const root = import.meta.dirname;
