@@ -302,6 +302,16 @@ describe('Presence', () => {
 			await expect(presence.updateConnection('alice', 'alice-desktop')).resolves.toEqual({ uid: 'alice', connectionId: 'alice-desktop' });
 		});
 
+		it('should neither write nor broadcast a heartbeat that leaves the status unchanged', async () => {
+			aliceIsConnected();
+			sessionsModel.updateOne.mockResolvedValueOnce({ modifiedCount: 1 });
+
+			await presence.updateConnection('alice', 'alice-desktop');
+
+			expect(usersModel.updatePresenceAndStatus).not.toHaveBeenCalled();
+			expect(listener.received).toEqual([]);
+		});
+
 		it('should mark the user away when their connection reports away', async () => {
 			aliceIsConnected(UserStatus.AWAY);
 			sessionsModel.updateConnectionStatusById.mockResolvedValueOnce({ modifiedCount: 1 }).mockResolvedValueOnce({ modifiedCount: 0 });
