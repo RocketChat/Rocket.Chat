@@ -61,7 +61,8 @@ const evaluateValue = (value: unknown, args: readonly unknown[]): string => {
 		return value.map((innerValue) => evaluateValue(innerValue, args)).join('');
 	}
 
-	return (value as { toString(): string }).toString();
+	// oxlint-disable-next-line typescript/no-base-to-string -- interpolated objects may define their own string coercion
+	return String(value);
 };
 
 const containsEvaluable = (value: unknown): boolean =>
