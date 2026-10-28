@@ -1,6 +1,6 @@
 import type { IRoom, IUpload, IUploadWithUser } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Icon, TextInput, Select, Throbber } from '@rocket.chat/fuselage';
+import { Icon, TextInput, Select, Throbber } from '@rocket.chat/fuselage';
 import {
 	VirtualizedScrollbars,
 	ContextualbarHeader,
@@ -20,7 +20,10 @@ import { Virtuoso } from 'react-virtuoso';
 import RoomFileItemWrapper from './RoomFileItemWrapper';
 import RoomFilesListWrapper from './RoomFilesListWrapper';
 import FileItem from './components/FileItem';
+import RoomFilesListArea from './layout/RoomFilesListArea';
+import ContextualbarListFilter from '../../../../components/ContextualbarList/ContextualbarListFilter';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
+import ContextualbarInset from '../layout/ContextualbarInset';
 
 export type RoomFilesProps = {
 	rid: IRoom['_id'];
@@ -83,19 +86,19 @@ const RoomFiles = ({
 					onChange={setText}
 					endAddon={<Icon name='magnifier' size='x20' />}
 				/>
-				<Box width='x144' marginInlineStart={8}>
+				<ContextualbarListFilter>
 					<Select aria-label={t('File_Type')} onChange={setType} value={type} options={options} />
-				</Box>
+				</ContextualbarListFilter>
 			</ContextualbarSection>
 			<ContextualbarContent flush>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={total} />
 				{isPending && (
-					<Box padding={24}>
+					<ContextualbarInset>
 						<Throbber size='x12' />
-					</Box>
+					</ContextualbarInset>
 				)}
 				{isSuccess && (
-					<Box width='full' height='full' id={filesListId} flexShrink={1} overflow='hidden' marginBlock={8}>
+					<RoomFilesListArea id={filesListId}>
 						{filesItems.length === 0 && <ContextualbarEmptyContent title={t('No_files_found')} />}
 						{filesItems.length > 0 && (
 							<VirtualizedScrollbars>
@@ -116,7 +119,7 @@ const RoomFiles = ({
 								/>
 							</VirtualizedScrollbars>
 						)}
-					</Box>
+					</RoomFilesListArea>
 				)}
 			</ContextualbarContent>
 		</ContextualbarDialog>

@@ -1,4 +1,4 @@
-import { Avatar, Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Avatar, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	UiKitComponent,
@@ -99,9 +99,9 @@ const UiKitContextualBar = ({ initialView }: UiKitContextualBarProps) => {
 					{handleClose && <ContextualbarClose onClick={handleClose} />}
 				</ContextualbarHeader>
 				<ContextualbarScrollableContent>
-					<Box is='form' method='post' action='#' onSubmit={handleSubmit}>
+					<form method='post' action='#' onSubmit={handleSubmit}>
 						<UiKitComponent render={UiKitContextualBarSurfaceRender} blocks={view.blocks} />
-					</Box>
+					</form>
 				</ContextualbarScrollableContent>
 				<ContextualbarFooter>
 					<ButtonGroup stretch>

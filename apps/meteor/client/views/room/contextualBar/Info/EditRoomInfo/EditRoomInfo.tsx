@@ -18,7 +18,7 @@ import {
 	FieldGroup,
 	Button,
 	ButtonGroup,
-	Box,
+	Stack,
 	TextAreaInput,
 	AccordionItem,
 	Text,
@@ -48,6 +48,7 @@ import { useEditRoomInitialValues } from './useEditRoomInitialValues';
 import { useEditRoomPermissions } from './useEditRoomPermissions';
 import { MessageTypesValues } from '../../../../../../lib/MessageTypes';
 import AbacAttributesRemovalWarning from '../../../../../components/ABAC/AbacAttributesRemovalWarning';
+import ModalCalloutContent from '../../../../../components/ModalCalloutContent';
 import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
 import { msToTimeUnit, TIMEUNIT } from '../../../../../lib/convertTimeUnit';
 import { links } from '../../../../../lib/links';
@@ -212,9 +213,9 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 				onCancel={() => setModal(null)}
 				onClose={() => setModal(null)}
 			>
-				<Box paddingBlockStart={16}>
+				<ModalCalloutContent>
 					<AbacAttributesRemovalWarning />
-				</Box>
+				</ModalCalloutContent>
 			</GenericModal>,
 		);
 	});
@@ -275,13 +276,13 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent padding={24}>
 				<form id={formId} onSubmit={handleSubmit(handleSave)}>
-					<Box display='flex' justifyContent='center'>
+					<Stack direction='row' justify='center'>
 						<Controller
 							control={control}
 							name='roomAvatar'
 							render={({ field: { onChange, value } }) => <RoomAvatarEditor room={room} roomAvatar={value} onChangeAvatar={onChange} />}
 						/>
-					</Box>
+					</Stack>
 					<FieldGroup>
 						<Field>
 							<FieldLabel htmlFor={roomNameField} required>

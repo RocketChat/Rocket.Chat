@@ -1,5 +1,4 @@
 import { hasJoinedVideoConference, type VideoConference } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
 import {
 	Button,
 	Message,
@@ -10,11 +9,11 @@ import {
 	MessageTimestamp,
 	MessageBody,
 	MessageBlock,
-	Box,
-	Palette,
 	IconButton,
 	ButtonGroup,
 	AvatarStack,
+	Stack,
+	Text,
 } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
@@ -22,6 +21,7 @@ import { useTimeAgo, useUserDisplayName } from '@rocket.chat/ui-client';
 import { useTranslation } from '@rocket.chat/ui-contexts';
 import { useVideoConfJoinCall } from '@rocket.chat/ui-video-conf';
 
+import CallHistoryItem from './layout/CallHistoryItem';
 import { VIDEOCONF_STACK_MAX_USERS } from '../../../../../lib/constants';
 import { useGoToRoom } from '../../../hooks/useGoToRoom';
 
@@ -55,16 +55,6 @@ const VideoConfListItem = ({
 	// while still counting towards the total underneath.
 	const joinedUsers = users.filter((user) => user._id !== _id && !!user.username && hasJoinedVideoConference(user));
 
-	const hovered = css`
-		&:hover,
-		&:focus {
-			background: ${Palette.surface['surface-tint']};
-			.rcx-message {
-				background: ${Palette.surface['surface-tint']};
-			}
-		}
-	`;
-
 	const handleJoinConference = useStableCallback((): void => {
 		joinCall(callId);
 		return reload();
@@ -73,14 +63,7 @@ const VideoConfListItem = ({
 	const goToRoom = useGoToRoom();
 
 	return (
-		<Box
-			color='default'
-			borderBlockEndWidth='default'
-			borderBlockEndColor='stroke-extra-light'
-			borderBlockEndStyle='solid'
-			className={[...className, hovered].filter(Boolean)}
-			paddingBlock={8}
-		>
+		<CallHistoryItem className={className}>
 			<Message {...props}>
 				<MessageLeftContainer>{username && <UserAvatar username={username} size='x36' />}</MessageLeftContainer>
 				<MessageContainer>
@@ -89,9 +72,8 @@ const VideoConfListItem = ({
 						<MessageTimestamp>{formatDate(createdAt)}</MessageTimestamp>
 					</MessageHeader>
 					<MessageBody clamp={2} />
-					<Box display='flex'></Box>
 					<MessageBlock>
-						<Box display='flex' alignItems='center'>
+						<Stack direction='row' align='center' gap='x8'>
 							<ButtonGroup>
 								<Button disabled={Boolean(endedAt)} size='small' onClick={handleJoinConference}>
 									{endedAt ? t('Call_ended') : t('Join_call')}
@@ -107,7 +89,7 @@ const VideoConfListItem = ({
 								)}
 							</ButtonGroup>
 							{joinedUsers.length > 0 && (
-								<Box marginInlineStart={8} fontScale='c1' display='flex' alignItems='center'>
+								<Stack direction='row' align='center' gap='x4'>
 									<AvatarStack>
 										{joinedUsers.map(
 											(user, index) =>
@@ -123,23 +105,19 @@ const VideoConfListItem = ({
 												),
 										)}
 									</AvatarStack>
-									<Box marginInlineStart={4}>
+									<Text fontScale='c1'>
 										{joinedUsers.length > VIDEOCONF_STACK_MAX_USERS
 											? t('__usersCount__joined', { count: joinedUsers.length - VIDEOCONF_STACK_MAX_USERS })
 											: t('joined')}
-									</Box>
-								</Box>
+									</Text>
+								</Stack>
 							)}
-							{joinedUsers.length === 0 && !endedAt && (
-								<Box marginInlineStart={8} fontScale='c1'>
-									{t('Be_the_first_to_join')}
-								</Box>
-							)}
-						</Box>
+							{joinedUsers.length === 0 && !endedAt && <Text fontScale='c1'>{t('Be_the_first_to_join')}</Text>}
+						</Stack>
 					</MessageBlock>
 				</MessageContainer>
 			</Message>
-		</Box>
+		</CallHistoryItem>
 	);
 };
 

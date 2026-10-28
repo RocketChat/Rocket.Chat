@@ -1,5 +1,5 @@
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
-import { Box, Callout } from '@rocket.chat/fuselage';
+import { Callout } from '@rocket.chat/fuselage';
 import {
 	ContextualbarBack,
 	ContextualbarClose,
@@ -17,6 +17,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import UserInfoActions from './UserInfoActions';
+import UserInfoNotice from './layout/UserInfoNotice';
 import { getUserEmailAddress } from '../../../../../lib/getUserEmailAddress';
 import { FormSkeleton } from '../../../../components/Skeleton';
 import UserInfoPhoneNumberList from '../../../../components/UserInfoPhoneNumberList';
@@ -113,9 +114,9 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 
 			{isError && !user && (
 				<ContextualbarContent>
-					<Box paddingBlock={16}>
+					<UserInfoNotice>
 						<Callout type='danger'>{t('User_not_found')}</Callout>
-					</Box>
+					</UserInfoNotice>
 				</ContextualbarContent>
 			)}
 

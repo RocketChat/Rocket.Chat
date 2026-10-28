@@ -1,5 +1,5 @@
 import type { IMessage, IThreadMainMessage } from '@rocket.chat/core-typings';
-import { Box, Icon, TextInput, Select, Callout, Throbber } from '@rocket.chat/fuselage';
+import { Icon, TextInput, Select, Callout, Throbber } from '@rocket.chat/fuselage';
 import { useResizeObserver, useAutoFocus, useLocalStorage, useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
@@ -19,6 +19,9 @@ import { Virtuoso } from 'react-virtuoso';
 
 import ThreadListItem from './components/ThreadListItem';
 import { useThreadsList } from './hooks/useThreadsList';
+import ContextualbarListArea from '../../../../components/ContextualbarList/ContextualbarListArea';
+import ContextualbarListFilter from '../../../../components/ContextualbarList/ContextualbarListFilter';
+import ContextualbarListStatus from '../../../../components/ContextualbarList/ContextualbarListStatus';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import { useMessageRowListNavigation } from '../../../../hooks/useMessageRowListNavigation';
 import { getErrorMessage } from '../../../../lib/errorHandling';
@@ -138,24 +141,24 @@ const ThreadList = () => {
 					value={searchText}
 					onChange={handleSearchTextChange}
 				/>
-				<Box width='x144' marginInlineStart={8}>
+				<ContextualbarListFilter>
 					<Select aria-label={t('Filter')} options={typeOptions} value={type} onChange={(value) => handleTypeChange(String(value))} />
-				</Box>
+				</ContextualbarListFilter>
 			</ContextualbarSection>
 			<ContextualbarContent flush ref={ref}>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
 				{isPending && (
-					<Box paddingInline={24} paddingBlock={12}>
+					<ContextualbarListStatus spaced>
 						<Throbber size='x12' />
-					</Box>
+					</ContextualbarListStatus>
 				)}
 				{error && (
-					<Box paddingInline={24}>
+					<ContextualbarListStatus>
 						<Callout type='danger'>{getErrorMessage(error, t('Something_went_wrong'))}</Callout>
-					</Box>
+					</ContextualbarListStatus>
 				)}
 				{isSuccess && (
-					<Box id={threadListId} ref={threadListRef} width='full' height='full' overflow='hidden' flexShrink={1}>
+					<ContextualbarListArea id={threadListId} ref={threadListRef}>
 						{items.length === 0 && <ContextualbarEmptyContent title={t('No_Threads')} />}
 						{items.length > 0 && (
 							<VirtualizedScrollbars>
@@ -181,7 +184,7 @@ const ThreadList = () => {
 								/>
 							</VirtualizedScrollbars>
 						)}
-					</Box>
+					</ContextualbarListArea>
 				)}
 			</ContextualbarContent>
 		</ContextualbarDialog>

@@ -1,5 +1,5 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Field, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, Select, Stack } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 import { useId } from 'react';
 
@@ -19,10 +19,10 @@ const NotificationPreference = ({ name, options, onChange, optionValue, children
 		<Field {...props}>
 			<FieldLabel htmlFor={selectId}>{name}</FieldLabel>
 			<FieldRow>
-				<Box display='flex' flexGrow={1} alignItems='center' gap={children ? 4 : undefined}>
+				<Stack direction='row' grow align='center' gap={children ? 'x4' : undefined}>
 					<Select id={selectId} onChange={onChange} options={options} value={optionValue} />
 					{children}
-				</Box>
+				</Stack>
 			</FieldRow>
 		</Field>
 	);

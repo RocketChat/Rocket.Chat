@@ -1,5 +1,5 @@
 import type { IAbacAttributeDefinition, IAbacRoomMembershipPreview, IRoom } from '@rocket.chat/core-typings';
-import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Stack, Text } from '@rocket.chat/fuselage';
 import {
 	ContextualbarBack,
 	ContextualbarClose,
@@ -128,16 +128,18 @@ const AbacAttributesManage = ({ room, requiredKeys, onBack, onClose, onSaved }: 
 					id={formId}
 					onSubmit={handleSubmit((values) => setPreviewAttributes(toAttributeMap(values.attributes)))}
 				>
-					<Box fontScale='p2' color='hint' marginBlockEnd={16}>
-						{t('ABAC_Manage_attributes_description')}
-					</Box>
-					<AbacAttributesStep
-						requiredKeys={requiredKeys}
-						assignable={assignable.data}
-						isPending={assignable.isPending}
-						error={assignable.error}
-						showTitle={false}
-					/>
+					<Stack gap='x16'>
+						<Text fontScale='p2' color='hint'>
+							{t('ABAC_Manage_attributes_description')}
+						</Text>
+						<AbacAttributesStep
+							requiredKeys={requiredKeys}
+							assignable={assignable.data}
+							isPending={assignable.isPending}
+							error={assignable.error}
+							showTitle={false}
+						/>
+					</Stack>
 				</ContextualbarScrollableContent>
 			</FormProvider>
 			<ContextualbarFooter>
