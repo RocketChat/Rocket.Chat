@@ -1,4 +1,4 @@
-import { Box, Button, IconButton, Label } from '@rocket.chat/fuselage';
+import { Button, IconButton, Label } from '@rocket.chat/fuselage';
 import { useRouter, useSetModal } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import { Controller } from 'react-hook-form';
@@ -10,6 +10,8 @@ import { EventFilterSelect } from './EventFilterSelect';
 import { InstanceFilterSelect } from './InstanceFilterSelect';
 import { SeverityFilterSelect } from './SeverityFilterSelect';
 import { TimeFilterSelect } from './TimeFilterSelect';
+import AppLogsFilterBar from './layout/AppLogsFilterBar';
+import FilterField from './layout/FilterField';
 import { useCompactMode } from '../../../useCompactMode';
 import { useAppLogsFilterFormContext } from '../useAppLogsFilterForm';
 import { ExportLogsModal } from './ExportLogsModal';
@@ -63,29 +65,29 @@ export const AppLogsFilter = ({ appId, expandAll, collapseAll, refetchLogs, isLo
 	const severityField = useId();
 
 	return (
-		<Box display='flex' alignItems='flex-end' flexDirection='row' width='full' flexWrap='wrap' alignContent='flex-end' columnGap='x8'>
-			<Box display='flex' flexDirection='column' flexGrow={1}>
+		<AppLogsFilterBar>
+			<FilterField>
 				<Label htmlFor={eventField}>{t('Event')}</Label>
 				<Controller control={control} name='event' render={({ field }) => <EventFilterSelect {...field} appId={appId} id={eventField} />} />
-			</Box>
+			</FilterField>
 			{!compactMode && (
 				<>
-					<Box display='flex' flexDirection='column' flexGrow={1}>
+					<FilterField>
 						<Label htmlFor={timeField}>{t('Time')}</Label>
 						<TimeFilterSelect id={timeField} />
-					</Box>
-					<Box display='flex' flexDirection='column' flexGrow={1}>
+					</FilterField>
+					<FilterField>
 						<Label htmlFor={instanceField}>{t('Instance')}</Label>
 						<Controller
 							control={control}
 							name='instance'
 							render={({ field }) => <InstanceFilterSelect appId={appId} id={instanceField} {...field} />}
 						/>
-					</Box>
-					<Box display='flex' flexDirection='column' flexGrow={1}>
+					</FilterField>
+					<FilterField>
 						<Label htmlFor={severityField}>{t('Severity')}</Label>
 						<Controller control={control} name='severity' render={({ field }) => <SeverityFilterSelect id={severityField} {...field} />} />
-					</Box>
+					</FilterField>
 					<IconButton
 						title={isLoading ? t('Loading') : t('Refresh_logs')}
 						disabled={isLoading}
@@ -119,6 +121,6 @@ export const AppLogsFilter = ({ appId, expandAll, collapseAll, refetchLogs, isLo
 					/>
 				</>
 			)}
-		</Box>
+		</AppLogsFilterBar>
 	);
 };

@@ -1,5 +1,4 @@
 import {
-	Box,
 	Button,
 	Field,
 	FieldLabel,
@@ -20,6 +19,8 @@ import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import type { AppLogsFilterFormData } from '../useAppLogsFilterForm';
+import ExportLogsOptions from './layout/ExportLogsOptions';
+import FilterField from './layout/FilterField';
 
 export type ExportLogsModalProps = {
 	onClose: () => void;
@@ -101,101 +102,103 @@ export const ExportLogsModal = ({ onClose, filterValues, onConfirm }: ExportLogs
 				<ModalClose onClick={onClose} />
 			</ModalHeader>
 			<ModalContent>
-				<Box display='flex' flexDirection='column' marginInlineEnd='x8' marginBlockEnd='x24' flexGrow={1}>
-					<Label>{t('Format')}</Label>
-					<Field>
-						<FieldRow>
-							<FieldLabel htmlFor='JSONField'>{t('JSON')}</FieldLabel>
-							<Controller
-								name='type'
-								control={control}
-								render={({ field: { value, onChange, ...field } }) => (
-									<RadioButton
-										id='json'
-										{...field}
-										onChange={() => onChange('json')}
-										aria-describedby='JSONField'
-										checked={value === 'json'}
-									/>
-								)}
-							/>
-						</FieldRow>
-					</Field>
-					<Field>
-						<FieldRow>
-							<FieldLabel htmlFor='plainTextField'>{t('CSV')}</FieldLabel>
-							<Controller
-								name='type'
-								control={control}
-								render={({ field: { value, onChange, ...field } }) => (
-									<RadioButton
-										id='csv'
-										{...field}
-										onChange={() => onChange('csv')}
-										aria-describedby='plainTextField'
-										checked={value === 'csv'}
-									/>
-								)}
-							/>
-						</FieldRow>
-					</Field>
-				</Box>
-				<Box display='flex' flexDirection='column' marginInlineEnd='x8' marginBlockEnd='x24' flexGrow={1}>
-					<Label>{t('Export_most_recent_logs')}</Label>
-					<Field>
-						<FieldRow>
-							<FieldLabel htmlFor='maxLogsExport'>{t('Max_logs_export')}</FieldLabel>
-							<Controller
-								name='count'
-								control={control}
-								render={({ field: { value, onChange, ...field } }) => (
-									<RadioButton
-										id='max'
-										{...field}
-										onChange={() => onChange('max')}
-										aria-describedby='maxLogsExport'
-										checked={value === 'max'}
-									/>
-								)}
-							/>
-						</FieldRow>
-					</Field>
-					<Field>
-						<FieldRow>
-							<FieldLabel htmlFor='customMaxLogs'>{t('Limit_number_of_logs')}</FieldLabel>
-							<Controller
-								name='count'
-								control={control}
-								render={({ field: { value, onChange, ...field } }) => (
-									<RadioButton
-										id='custom'
-										{...field}
-										onChange={() => onChange('custom')}
-										aria-describedby='customMaxLogs'
-										checked={value === 'custom'}
-									/>
-								)}
-							/>
-						</FieldRow>
-						<Controller
-							name='customExportAmount'
-							control={control}
-							rules={{ required: count === 'custom', min: 1, max: 2000 }}
-							render={({ field }) => (
-								<NumberInput
-									id='limit'
-									min={1}
-									max={2000}
-									required={count === 'custom'}
-									disabled={count !== 'custom'}
-									placeholder='100'
-									{...field}
-									aria-describedby='limitNumber'
+				<ExportLogsOptions>
+					<FilterField inset>
+						<Label>{t('Format')}</Label>
+						<Field>
+							<FieldRow>
+								<FieldLabel htmlFor='JSONField'>{t('JSON')}</FieldLabel>
+								<Controller
+									name='type'
+									control={control}
+									render={({ field: { value, onChange, ...field } }) => (
+										<RadioButton
+											id='json'
+											{...field}
+											onChange={() => onChange('json')}
+											aria-describedby='JSONField'
+											checked={value === 'json'}
+										/>
+									)}
 								/>
-							)}
-						/>
-					</Field>
-				</Box>
+							</FieldRow>
+						</Field>
+						<Field>
+							<FieldRow>
+								<FieldLabel htmlFor='plainTextField'>{t('CSV')}</FieldLabel>
+								<Controller
+									name='type'
+									control={control}
+									render={({ field: { value, onChange, ...field } }) => (
+										<RadioButton
+											id='csv'
+											{...field}
+											onChange={() => onChange('csv')}
+											aria-describedby='plainTextField'
+											checked={value === 'csv'}
+										/>
+									)}
+								/>
+							</FieldRow>
+						</Field>
+					</FilterField>
+					<FilterField inset>
+						<Label>{t('Export_most_recent_logs')}</Label>
+						<Field>
+							<FieldRow>
+								<FieldLabel htmlFor='maxLogsExport'>{t('Max_logs_export')}</FieldLabel>
+								<Controller
+									name='count'
+									control={control}
+									render={({ field: { value, onChange, ...field } }) => (
+										<RadioButton
+											id='max'
+											{...field}
+											onChange={() => onChange('max')}
+											aria-describedby='maxLogsExport'
+											checked={value === 'max'}
+										/>
+									)}
+								/>
+							</FieldRow>
+						</Field>
+						<Field>
+							<FieldRow>
+								<FieldLabel htmlFor='customMaxLogs'>{t('Limit_number_of_logs')}</FieldLabel>
+								<Controller
+									name='count'
+									control={control}
+									render={({ field: { value, onChange, ...field } }) => (
+										<RadioButton
+											id='custom'
+											{...field}
+											onChange={() => onChange('custom')}
+											aria-describedby='customMaxLogs'
+											checked={value === 'custom'}
+										/>
+									)}
+								/>
+							</FieldRow>
+							<Controller
+								name='customExportAmount'
+								control={control}
+								rules={{ required: count === 'custom', min: 1, max: 2000 }}
+								render={({ field }) => (
+									<NumberInput
+										id='limit'
+										min={1}
+										max={2000}
+										required={count === 'custom'}
+										disabled={count !== 'custom'}
+										placeholder='100'
+										{...field}
+										aria-describedby='limitNumber'
+									/>
+								)}
+							/>
+						</Field>
+					</FilterField>
+				</ExportLogsOptions>
 			</ModalContent>
 			<ModalFooter>
 				<ModalFooterControllers>

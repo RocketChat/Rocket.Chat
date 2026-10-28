@@ -2,7 +2,7 @@ import type { StoryObj, Meta } from '@storybook/react';
 import type { ComponentProps } from 'react';
 
 import AppLogsItem from './AppLogsItem';
-import { CollapsiblePanel } from './Components/CollapsiblePanel';
+import { CollapsiblePanel } from './layout/CollapsiblePanel';
 
 export default {
 	component: AppLogsItem,
