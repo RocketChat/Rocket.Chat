@@ -120,7 +120,7 @@ describe('MessageSearchTab local search', () => {
 		jest.restoreAllMocks();
 	});
 
-	it('sends a text with only filters to the local index and shows the hits, newest first (LSE2EE-74)', async () => {
+	it('sends a text with only filters to the local index and shows the hits, newest first', async () => {
 		renderTab();
 
 		await userEvent.type(screen.getByRole('textbox', { name: 'Search_Messages' }), 'from:me after:01-01-2025');
@@ -150,7 +150,7 @@ describe('MessageSearchTab local search', () => {
 	});
 
 	it.each(['indexing', 'waiting-for-idle', 'backing-off'] as const)(
-		'shows the indexing progress while the history is not complete (%s, LSE2EE-51)',
+		'shows the indexing progress while the history is not complete (%s)',
 		async (status) => {
 			mockProgress = progress(status, 12);
 			renderTab();
@@ -172,7 +172,7 @@ describe('MessageSearchTab local search', () => {
 		expect(screen.queryByText(/Indexing encrypted history/)).not.toBeInTheDocument();
 	});
 
-	it('shows a note when the index is kept in memory only (encryptedAtRest false, LSE2EE-51)', async () => {
+	it('shows a note when the index is kept in memory only (encryptedAtRest false)', async () => {
 		mockEncryptedAtRest = false;
 		renderTab();
 
@@ -224,7 +224,7 @@ describe('MessageSearchTab local search of file messages', () => {
 		mockBackend = undefined;
 	});
 
-	it('shows the caption of a file message in a filter-only hit, not only the file name (PROD-642)', async () => {
+	it('shows the caption of a file message in a filter-only hit, not only the file name', async () => {
 		renderTab();
 
 		await userEvent.type(screen.getByRole('textbox', { name: 'Search_Messages' }), 'from:me');
@@ -233,7 +233,7 @@ describe('MessageSearchTab local search of file messages', () => {
 		expect(hit).toHaveTextContent('budget numbers for the board');
 	});
 
-	it('shows the matched caption of a file message (PROD-642)', async () => {
+	it('shows the matched caption of a file message', async () => {
 		renderTab();
 
 		await userEvent.type(screen.getByRole('textbox', { name: 'Search_Messages' }), 'board');
@@ -245,7 +245,7 @@ describe('MessageSearchTab local search of file messages', () => {
 });
 
 describe('MessageSearchTab without a local search backend', () => {
-	it('shows the callout of today and no state of the local index (LSE2EE-51)', async () => {
+	it('shows the callout of today and no state of the local index', async () => {
 		mockBackend = undefined;
 		mockProgress = progress('indexing', 12);
 		mockEncryptedAtRest = false;

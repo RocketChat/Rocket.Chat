@@ -52,7 +52,7 @@ describe('toSearchDoc', () => {
 			expect(toSearchDoc(message)).toMatchObject({ kind: 'text', body: 'legacy text' });
 		});
 
-		it('file upload: msg, attachment description and image alt, then the file names (PROD-642)', () => {
+		it('file upload: msg, attachment description and image alt, then the file names', () => {
 			const doc = toSearchDoc(
 				decrypted({
 					msg: 'see the report',
@@ -72,7 +72,7 @@ describe('toSearchDoc', () => {
 			expect(doc?.body.split('\n')).toEqual(['see the report', 'quarterly numbers', 'revenue chart', 'q3-report.pdf', 'chart.png']);
 		});
 
-		it('file upload with a caption and no message text (mobile and older web clients): the caption comes first (PROD-642)', () => {
+		it('file upload with a caption and no message text (mobile and older web clients): the caption comes first', () => {
 			const file = { _id: 'f1', name: 'Screenshot 2026-10-01 at 13.45.02.png', type: 'image/png', size: 10, format: 'png' };
 			const doc = toSearchDoc(
 				decrypted({

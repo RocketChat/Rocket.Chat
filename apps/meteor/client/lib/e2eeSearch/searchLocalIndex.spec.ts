@@ -112,7 +112,7 @@ describe('searchLocalIndex filters', () => {
 		expect(hits).toEqual([authorHit('m1', 'u-bob', 'bob')]);
 	});
 
-	it('searches the room with an empty text when the text has only filters (LSE2EE-74)', async () => {
+	it('searches the room with an empty text when the text has only filters', async () => {
 		const backend = createBackend([authorHit('m2', 'u-self', 'me'), hit('m1', 'r2')]);
 
 		await expect(

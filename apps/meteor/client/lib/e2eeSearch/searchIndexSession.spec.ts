@@ -332,7 +332,7 @@ describe('createSearchIndexSession', () => {
 		expect(listener).not.toHaveBeenCalled();
 	});
 
-	it('reports whether the open index is encrypted at rest, as the open reported it, and nothing while no index is open (LSE2EE-51)', async () => {
+	it('reports whether the open index is encrypted at rest, as the open reported it, and nothing while no index is open', async () => {
 		const backend = createBackend();
 		backend.open.mockResolvedValue({ schemaVersion: 1, encryptedAtRest: false });
 		const { source, setState } = createSource(privateKey);

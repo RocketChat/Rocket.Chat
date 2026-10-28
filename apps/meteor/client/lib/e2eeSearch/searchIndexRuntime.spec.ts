@@ -94,7 +94,7 @@ describe('createSearchIndexRuntime', () => {
 		expect(schedulers[1].scheduler.start).toHaveBeenCalledTimes(1);
 	});
 
-	it('reports the indexing progress of the open index, and tells the subscribers when it changes (LSE2EE-51)', async () => {
+	it('reports the indexing progress of the open index, and tells the subscribers when it changes', async () => {
 		const { session, schedulers, runtime } = stubRuntime();
 		const listener = jest.fn();
 		runtime.subscribe(listener);

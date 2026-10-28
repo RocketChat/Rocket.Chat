@@ -26,7 +26,7 @@ const renderReset = (endpoint: () => Promise<null>) => {
 	return { result, logout };
 };
 
-// LSE2EE-86 / LSE2EE-87: the desktop app replaces the index of an old E2E key at the next open, so the key reset does not
+// The desktop app replaces the index of an old E2E key at the next open, so the key reset does not
 // wipe the local search index. A cancelled reset keeps the index.
 describe('useResetE2EPasswordMutation and the local search index', () => {
 	it('keeps the local search index when the key reset is cancelled', async () => {

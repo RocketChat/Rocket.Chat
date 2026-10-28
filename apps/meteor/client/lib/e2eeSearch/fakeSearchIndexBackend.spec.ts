@@ -70,7 +70,7 @@ describe('createFakeSearchIndexBackend', () => {
 		await expect(backend.search({ text: '  ?!*  ' })).resolves.toEqual([]);
 	});
 
-	it('lists the newest messages of the filters for an empty text, like the desktop index (LSE2EE-74)', async () => {
+	it('lists the newest messages of the filters for an empty text, like the desktop index', async () => {
 		const backend = await openBackend();
 		await backend.upsert([
 			doc({ id: 'm1', body: 'one', rid: 'r1', uid: 'u1', ts: 100 }),

@@ -87,7 +87,7 @@ export const toSearchDoc = (message: IMessage): E2EESearchDoc | undefined => {
 	};
 
 	// A hit shows the start of the body, or some words around the match: the text that people wrote comes first, and
-	// the file names come last, so a long file name does not push a caption out of the hit (PROD-642).
+	// the file names come last, so a long file name does not push a caption out of the hit.
 	add(message.msg);
 	const textParts = parts.length;
 	attachments.flatMap(attachmentTexts).forEach(add);

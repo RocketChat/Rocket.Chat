@@ -80,7 +80,7 @@ type SearchIndexRuntimeOptions = {
 	getRooms: () => SearchIndexRoom[];
 	/**
 	 * The rooms of every subscription of the user, encrypted or not. When the index opens, the rows of the other rooms are
-	 * removed: the user left them while the index was closed (LSE2EE-78).
+	 * removed: the user left them while the index was closed.
 	 */
 	getSubscribedRids?: () => ReadonlySet<string>;
 	/** Resolves when the subscription list is loaded, so an empty list at startup does not remove every room. */

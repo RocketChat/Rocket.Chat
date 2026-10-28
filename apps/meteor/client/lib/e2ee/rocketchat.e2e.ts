@@ -976,7 +976,7 @@ export const e2eSearchIndexRuntime = createSearchIndexRuntime({
 });
 
 // A sync after a reload reports the rooms that the user left while this client was closed. Rooms that the user left
-// before the index opened are removed at open (LSE2EE-78).
+// before the index opened are removed at open.
 subscriptionRemovals.on('removed', ({ rid }) => {
 	void e2eSearchIndexRuntime.onRoomRemoved(rid);
 });

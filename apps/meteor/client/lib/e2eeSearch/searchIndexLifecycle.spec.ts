@@ -8,7 +8,7 @@ import { createSearchIndexSession } from './searchIndexSession';
 import { createSearchIndexWriter } from './searchIndexWriter';
 import { generate } from '../e2ee/crypto/rsa';
 
-// The LSE2EE-19 (C7) lifecycle rules, with the real session, writer and runtime over the FakeBackend.
+// The lifecycle rules, with the real session, writer and runtime over the FakeBackend.
 
 type Subscription = { rid: string; encrypted?: boolean; lm?: Date };
 
@@ -81,8 +81,8 @@ const setup = async (
 	return { backend, wipe, removeRoom, session, writer, runtime, setState, login, index, searchIds, subscriptions };
 };
 
-describe('search index lifecycle (LSE2EE-19)', () => {
-	it('keeps the sealed index on logout, so the next login finds the old messages (D8)', async () => {
+describe('search index lifecycle', () => {
+	it('keeps the sealed index on logout, so the next login finds the old messages', async () => {
 		const { wipe, setState, login, index, searchIds, session } = await setup();
 		await index(message('m1', 'r1', 'quokka sealed'));
 
@@ -118,7 +118,7 @@ describe('search index lifecycle (LSE2EE-19)', () => {
 		expect(await searchIds('walrus')).toEqual([]);
 	});
 
-	// LSE2EE-77: a user who forgot the E2E password resets the key while E2EE is locked, so no index is open. The new key
+	// A user who forgot the E2E password resets the key while E2EE is locked, so no index is open. The new key
 	// cannot open the old index, and no file of it must stay: the backend deletes the index of the logged-in user.
 	it('deletes the closed index of the user when the key is reset while E2EE is locked', async () => {
 		const { wipe, runtime, setState, index, searchIds, backend } = await setup();
@@ -176,7 +176,7 @@ describe('search index lifecycle (LSE2EE-19)', () => {
 		expect(await searchIds('tapir')).toEqual(['m1']);
 	});
 
-	// LSE2EE-78: the user left a room while the index was closed (app closed, logged out, E2EE locked). No removal event
+	// The user left a room while the index was closed (app closed, logged out, E2EE locked). No removal event
 	// reaches the index, so the open removes each indexed room that has no subscription.
 	it('removes at open the rooms that the user left while the index was closed', async () => {
 		const { setState, login, index, searchIds, subscriptions, removeRoom } = await setup([
