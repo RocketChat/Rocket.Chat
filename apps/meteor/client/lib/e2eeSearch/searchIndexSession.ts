@@ -167,10 +167,26 @@ export const createSearchIndexSession = (
 		}
 	};
 
+	/** Another user logged in on the same page with no logout (`loginWithToken`), so the index is not of the current user. */
+	const isOtherUser = () => openedFor !== undefined && source.getUserId() !== openedFor;
+
 	const off = source.on('E2E_STATE_CHANGED', ({ nextState }) => {
+		// The index of the previous user closes, like at a logout, before the index of the new user opens.
+		let closingPrevious: Promise<void> | undefined;
+		if (isOtherUser()) {
+			ready = false;
+			const closing = active;
+			stop();
+			if (closing?.close) {
+				closingPrevious = close(closing);
+				pending = closingPrevious;
+			}
+		}
+
 		if (readyStates.has(nextState)) {
 			ready = true;
-			pending = start(generation);
+			const run = generation;
+			pending = closingPrevious ? closingPrevious.then(() => start(run)) : start(run);
 			return;
 		}
 
@@ -192,8 +208,9 @@ export const createSearchIndexSession = (
 	};
 
 	return {
-		getActiveBackend: () => active,
-		isEncryptedAtRest: () => encryptedAtRest,
+		// From the user switch until the next E2EE state change, the index of the previous user is not used.
+		getActiveBackend: () => (isOtherUser() ? undefined : active),
+		isEncryptedAtRest: () => (isOtherUser() ? undefined : encryptedAtRest),
 		subscribe: (listener) => {
 			listeners.add(listener);
 			return () => {

@@ -207,6 +207,76 @@ describe('createSearchIndexSession', () => {
 		expect(toHex(scope.wrapKey as Uint8Array)).toBe(toHex(await deriveSearchIndexWrapKey(otherPrivateKey, 'u2')));
 	});
 
+	it('closes the index of the previous user and opens the index of the new user after a login as another user with no logout', async () => {
+		const backend = createBackend();
+		const close = jest.fn(async () => undefined);
+		backend.close = close;
+		const { source, state, setState } = createSource(privateKey);
+		const session = createSearchIndexSession(source, { getBackend: () => backend });
+
+		setState('READY');
+		await session.whenSettled();
+		// `loginWithToken` on the same page: the user changes, and E2EE starts again for the new user with no logout.
+		state.userId = 'u2';
+		state.privateKey = otherPrivateKey;
+
+		expect(session.getActiveBackend()).toBeUndefined();
+		expect(session.isEncryptedAtRest()).toBeUndefined();
+
+		setState('READY');
+		await session.whenSettled();
+
+		expect(close).toHaveBeenCalledTimes(1);
+		expect(backend.open).toHaveBeenCalledTimes(2);
+		expect(close.mock.invocationCallOrder[0]).toBeLessThan(backend.open.mock.invocationCallOrder[1]);
+		const [scope] = backend.open.mock.calls[1];
+		expect(scope.userId).toBe('u2');
+		expect(toHex(scope.wrapKey as Uint8Array)).toBe(toHex(await deriveSearchIndexWrapKey(otherPrivateKey, 'u2')));
+		expect(session.getActiveBackend()).toBe(backend);
+	});
+
+	it('closes the index of the previous user when another user logs in with no logout, before E2EE of the new user is ready', async () => {
+		const backend = createBackend();
+		backend.close = jest.fn(async () => undefined);
+		const listener = jest.fn();
+		const { source, state, setState } = createSource(privateKey);
+		const session = createSearchIndexSession(source, { getBackend: () => backend });
+
+		setState('READY');
+		await session.whenSettled();
+		session.subscribe(listener);
+		state.userId = 'u2';
+		state.privateKey = undefined;
+		setState('ENTER_PASSWORD');
+		await session.whenSettled();
+
+		expect(backend.close).toHaveBeenCalledTimes(1);
+		expect(backend.open).toHaveBeenCalledTimes(1);
+		expect(listener).toHaveBeenCalledTimes(1);
+		expect(session.getActiveBackend()).toBeUndefined();
+
+		session.recheck();
+		await session.whenSettled();
+
+		expect(backend.open).toHaveBeenCalledTimes(1);
+	});
+
+	it('does not activate an open of the previous user that resolves after a login as another user', async () => {
+		const backend = createBackend();
+		const { opened, resolveOpen } = holdOpen(backend);
+		const { source, state, setState } = createSource(privateKey);
+		const session = createSearchIndexSession(source, { getBackend: () => backend });
+
+		setState('READY');
+		await opened;
+		state.userId = 'u2';
+		setState('ENTER_PASSWORD');
+		resolveOpen({ schemaVersion: 1, encryptedAtRest: true });
+		await session.whenSettled();
+
+		expect(session.getActiveBackend()).toBeUndefined();
+	});
+
 	it('does not activate an open that resolves after the logout', async () => {
 		const backend = createBackend();
 		const { opened, resolveOpen } = holdOpen(backend);
