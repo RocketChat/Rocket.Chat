@@ -518,6 +518,7 @@ export const evaluate = async (code: string, id: string, names: string[]) => run
 
 type Lowered = { recipe: Recipe; keys: string[]; css: string[]; stats: Record<string, number> };
 
+const variantsOf: Record<string, string[]> = {};
 const cacheDir = join(root, 'node_modules/.cache/fuselage-lowered');
 let toolchain: string | undefined;
 /**
@@ -545,6 +546,12 @@ const toolchainHash = () => {
  * always resolves.
  */
 const lowerDefinitions = async (code: string, id: string, names: string[]): Promise<Record<string, Lowered>> => {
+	const lowered = await resolveDefinitions(code, id, names);
+	for (const [name, { recipe }] of Object.entries(lowered)) variantsOf[name] = Object.keys(recipe.variants);
+	return lowered;
+};
+
+const resolveDefinitions = async (code: string, id: string, names: string[]): Promise<Record<string, Lowered>> => {
 	const bundled = await bundle(code, id, names);
 	const file = join(
 		cacheDir,
@@ -693,14 +700,74 @@ export const lowerModule = async (code: string, id: string) => {
 	return { code: out, map: null };
 };
 
+/** Props only Tamagui's runtime acts on: a lowered definition has no runtime to read them. */
+const runtimeOnlyProps = new Set([
+	'container',
+	'group',
+	'animation',
+	'animateOnly',
+	'context',
+	'forceStyle',
+	'componentName',
+	'theme',
+	'themeShallow',
+	'unstyled',
+]);
+
+/**
+ * Fails the build when a lowered definition is used with a prop its recipe can't honour: one only Tamagui's runtime
+ * reads (`container`, `group`, `animation`...), a pseudo or media style, or a style prop that isn't one of its variants.
+ * The recipe would drop it silently.
+ */
+export const checkCallSites = async (code: string, id: string) => {
+	const lowered = new Map<string, string>();
+	for (const [file, bindings] of Object.entries(allowlist)) for (const name of Object.keys(bindings)) lowered.set(name, file);
+	const used = [...lowered.keys()].filter((name) => code.includes(`<${name}`));
+	if (!used.length) return;
+
+	const { validStyles } = require('@tamagui/web');
+	const ast = parseAst(code, { lang: 'tsx' });
+	const problems: string[] = [];
+	const opening: Node[] = [];
+	walk(ast, (n) => {
+		if (n.type === 'JSXOpeningElement') opening.push(n);
+	});
+	for (const element of opening) {
+		const tag = element.name as { type: string; name?: string };
+		if (tag.type !== 'JSXIdentifier' || !tag.name || !used.includes(tag.name)) continue;
+		const { name } = tag;
+		if (!variantsOf[name]) {
+			const file = lowered.get(name)!;
+			const path = join(root, file);
+			if (path !== id) await lowerDefinitions(readFileSync(path, 'utf8'), path, Object.keys(allowlist[file]));
+		}
+		for (const attribute of element.attributes as Node[]) {
+			const prop = (attribute.name as { name?: string } | undefined)?.name;
+			if (attribute.type !== 'JSXAttribute' || typeof prop !== 'string' || variantsOf[name]?.includes(prop)) continue;
+			if (runtimeOnlyProps.has(prop) || prop.startsWith('$') || /Style$/.test(prop) || prop in validStyles) {
+				problems.push(`<${name} ${prop}=…> in ${relative(root, id)}`);
+			}
+		}
+	}
+	if (problems.length) {
+		throw new Error(
+			`lowerStyled: a lowered definition is used with props only Tamagui's runtime can apply, which its recipe would drop:\n  ${problems.join('\n  ')}\nMove the style into the definition (a static style or a variant), or take the definition off the allowlist.`,
+		);
+	}
+};
+
 /** Compiles allowlisted `styled()` definitions into runtime-free recipes (see `lowerModule`). */
 export const lowerStyled = (): Plugin => ({
 	name: 'fuselage-lower-styled',
 	enforce: 'pre',
 	transform: {
 		order: 'pre',
-		handler(code, id) {
-			return lowerModule(code, id.split('?')[0]);
+		async handler(code, id) {
+			const file = id.split('?')[0];
+			const lowered = await lowerModule(code, file);
+			// After the module's own definitions are lowered, so their variants are known
+			if (file.startsWith(join(root, 'src/')) && process.env.LOWER_STYLED !== '0') await checkCallSites(code, file);
+			return lowered;
 		},
 	},
 	buildEnd() {

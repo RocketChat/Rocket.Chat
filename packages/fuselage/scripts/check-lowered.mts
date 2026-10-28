@@ -1,8 +1,8 @@
 // Lowers every allowlisted definition and checks each recipe against Tamagui: node scripts/check-lowered.mts [--tables]
-import { readFileSync } from 'node:fs';
+import { readdirSync, readFileSync } from 'node:fs';
 import { join } from 'node:path';
 
-import { allowlist, lowerModule, stats, recipes } from '../lowerStyled.ts';
+import { allowlist, checkCallSites, lowerModule, stats, recipes } from '../lowerStyled.ts';
 
 const root = join(import.meta.dirname, '..');
 // The check is the point here, so a cached resolution doesn't count
@@ -10,6 +10,9 @@ process.env.LOWER_STYLED_CACHE = '0';
 for (const file of Object.keys(allowlist)) {
 	const id = join(root, file);
 	await lowerModule(readFileSync(id, 'utf8'), id);
+}
+for (const file of readdirSync(join(root, 'src'), { recursive: true }) as string[]) {
+	if (/\.tsx?$/.test(file)) await checkCallSites(readFileSync(join(root, 'src', file), 'utf8'), join(root, 'src', file));
 }
 console.table(stats);
 if (process.argv.includes('--tables')) {
