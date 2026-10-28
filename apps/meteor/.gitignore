@@ -91,3 +91,6 @@ tsconfig.typecheck.tsbuildinfo
 # The web client the server serves, built by `yarn build:client`
 /public/bundle
 /private/vite-manifest.json
+
+# Tamagui compiler output: the zero-runtime stylesheet and its graph receipts
+/vite/.tamagui
