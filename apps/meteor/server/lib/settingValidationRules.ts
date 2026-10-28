@@ -3,6 +3,7 @@ import { isSettingCode } from '@rocket.chat/core-typings';
 import { Logger } from '@rocket.chat/logger';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import { isRecord } from '@rocket.chat/tools';
+import { isValidCron } from 'cron-validator';
 
 import { settings } from '../settings';
 import { getSettingSchemaValidator } from '../settings/functions/settingSchemas';
@@ -17,6 +18,7 @@ const isAppliesWhenCondition = (value: unknown): value is { _id: ISetting['_id']
 const isValidationRule = (rule: unknown): rule is SettingValidationRule =>
 	isRecord(rule) &&
 	isRecord(rule.query) &&
+	(rule.format === undefined || rule.format === 'cron') &&
 	(rule.referencesMayBeAbsent === undefined || typeof rule.referencesMayBeAbsent === 'boolean') &&
 	(rule.appliesWhen === undefined ||
 		isAppliesWhenCondition(rule.appliesWhen) ||
@@ -124,7 +126,8 @@ const evaluateSettingValidationRule = (
 		return true;
 	}
 
-	return matches(query, settingId);
+	const value = get(settingId);
+	return matches(query, settingId) && (rule.format !== 'cron' || (typeof value === 'string' && isValidCron(value)));
 };
 
 export const validateSettingRules = (changes: { _id: ISetting['_id']; value: ISetting['value'] }[]): void => {

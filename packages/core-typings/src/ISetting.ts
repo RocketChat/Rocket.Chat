@@ -33,6 +33,7 @@ type EnableQuery = string | { _id: string; value: any } | { _id: string; value: 
 
 export type SettingValidationRule = {
 	query: Record<string, unknown>;
+	format?: 'cron';
 	appliesWhen?: { _id: string; value: unknown } | { _id: string; value: unknown }[];
 	referencesMayBeAbsent?: boolean;
 };

@@ -43,6 +43,21 @@ describe('validateSettingRules', () => {
 		}));
 	});
 
+	it('accepts valid cron expressions and rejects invalid expressions for cron rules', () => {
+		settingsGetSettingMock.withArgs('Cron_Setting').returns({
+			_id: 'Cron_Setting',
+			type: 'string',
+			validation: JSON.stringify([{ query: {}, format: 'cron' }]),
+		});
+
+		for (const value of ['0 0 * * *', '*/5 1-5 * * 1,3']) {
+			expect(() => validateSettingRules([{ _id: 'Cron_Setting', value }])).to.not.throw();
+		}
+		for (const value of ['', 'invalid', '60 * * * *', '* * * * * *']) {
+			expect(() => validateSettingRules([{ _id: 'Cron_Setting', value }])).to.throw('Cron_Setting_Invalid');
+		}
+	});
+
 	it('rejects an incoherent batch with the failed rule i18n key as the error message', () => {
 		const error = (() => {
 			try {

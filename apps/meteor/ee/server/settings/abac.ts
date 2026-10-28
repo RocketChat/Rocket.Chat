@@ -1,6 +1,7 @@
 import bannersConfigSchema from '@rocket.chat/abac/docs/classification-banners.schema.json';
 
 import { settingsRegistry } from '../../../server/settings';
+import { validCron } from '../../../server/settings/functions/validationRuleBuilders';
 
 const abacEnabledQuery = { _id: 'ABAC_Enabled', value: true };
 const enforceAllRoomsQuery = [abacEnabledQuery, { _id: 'ABAC_Enforce_All_Rooms', value: true }];
@@ -165,6 +166,7 @@ export function addSettings(): Promise<void> {
 				});
 				await this.add('ABAC_Virtru_Sync_Interval', '*/5 * * * *', {
 					type: 'string',
+					validation: [validCron()],
 					public: false,
 					invalidValue: '*/5 * * * *',
 					section: 'ABAC_Virtru_PDP_Configuration',
