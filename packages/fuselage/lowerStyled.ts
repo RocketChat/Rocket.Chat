@@ -411,13 +411,13 @@ const lowerDefinitions = async (code: string, id: string, names: string[]): Prom
 };
 
 let extended: Set<string> | undefined;
-/** Frames some `styled()` call extends; they stay Tamagui frames until those are lowered too. */
+/** Frames some `styled()` call, or Item's `part()` wrapper of one, extends; they stay Tamagui frames until those are lowered too. */
 const extendedFrames = () => {
 	if (extended) return extended;
 	extended = new Set();
 	for (const file of readdirSync(join(root, 'src'), { recursive: true }) as string[]) {
 		if (!file.endsWith('.tsx')) continue;
-		for (const match of readFileSync(join(root, 'src', file), 'utf8').matchAll(/styled\((\w+)/g)) extended.add(match[1]);
+		for (const match of readFileSync(join(root, 'src', file), 'utf8').matchAll(/(?:styled|part)\((\w+)/g)) extended.add(match[1]);
 	}
 	return extended;
 };
