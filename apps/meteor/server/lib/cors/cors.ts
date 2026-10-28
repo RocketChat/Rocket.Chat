@@ -126,6 +126,12 @@ WebAppInternals.staticFilesMiddleware = function (
 	return _staticFilesMiddleware(staticFiles, req, res, next);
 };
 
+// A chunk missing from the build must fail to load, not be cached for good as the page.
+WebApp.connectHandlers.use('/bundle/', (_req: http.IncomingMessage, res: http.ServerResponse) => {
+	res.writeHead(404, { 'Cache-Control': 'no-cache' });
+	res.end();
+});
+
 const oldHttpServerListeners = WebApp.httpServer.listeners('request').slice(0);
 
 WebApp.httpServer.removeAllListeners('request');
