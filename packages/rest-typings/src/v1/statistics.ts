@@ -37,7 +37,7 @@ const StatisticsSchema = {
 
 export const isStatisticsProps = ajv.compile<StatisticsProps>(StatisticsSchema);
 
-type StatisticsListProps = PaginatedRequest<{}>;
+type StatisticsListProps = PaginatedRequest<Record<never, never>>;
 
 const StatisticsListSchema = {
 	type: 'object',
