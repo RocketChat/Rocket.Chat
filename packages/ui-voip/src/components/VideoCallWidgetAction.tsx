@@ -12,9 +12,9 @@ type VideoCallWidgetActionProps = {
 const VideoCallWidgetAction = ({ escalated, loading, onClick }: VideoCallWidgetActionProps) => {
 	const { t } = useTranslation();
 	return (
-		<Box marginBlockStart={8}>
+		<Box marginBlockStart='x8'>
 			{escalated && (
-				<Box role='status' aria-atomic='true' fontScale='p2' marginBlockEnd={8}>
+				<Box role='status' aria-atomic='true' fontScale='p2' marginBlockEnd='x8'>
 					{t('Switched_to_video_call')}
 				</Box>
 			)}

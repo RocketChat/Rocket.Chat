@@ -19,9 +19,9 @@ const EscalatedCallPrompt = () => {
 			flexShrink={1}
 			maxHeight='full'
 			minHeight={180}
-			padding={16}
+			padding='x16'
 		>
-			<Box is='h3' fontScale='h3' marginBlockEnd={30} color='default'>
+			<Box is='h3' fontScale='h3' marginBlockEnd='x32' color='default'>
 				{t('Switched_to_video_call')}
 			</Box>
 			<VideoCallButton escalated loading={isRequestingVideoCall} onClick={onRequestVideoCall} />
