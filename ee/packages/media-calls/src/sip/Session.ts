@@ -166,7 +166,7 @@ export class SipServerSession {
 
 		this.srf.use((req, _res, next) => {
 			logger.debug({ msg: 'Incoming message from Drachtio', method: req.method, source: req.source_address });
-			next();
+			(next as () => void)();
 		});
 
 		this.srf.invite((req, res) => {
