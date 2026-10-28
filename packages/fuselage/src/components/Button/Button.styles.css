@@ -1,0 +1,40 @@
+.rcx-button {
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.rcx-button:active > *:not([role='status']) {
+	transform: translateY(1px);
+}
+
+*:disabled .rcx-button .rcx-button--content,
+.rcx-button:disabled .rcx-button--content {
+	transform: none !important;
+}
+
+.rcx-button--loading .rcx-icon--name-loading {
+	animation: spin-animation 0.8s linear infinite;
+}
+
+.rcx-button .rcx-button__icon {
+	margin-inline-end: 4px;
+}
+
+.rcx-button--square::before,
+.rcx-button--square::after {
+	display: inline-block;
+
+	height: 100%;
+
+	content: '';
+}
+
+@keyframes spin-animation {
+	from {
+		transform: rotate(0deg);
+	}
+
+	to {
+		transform: rotate(360deg);
+	}
+}
