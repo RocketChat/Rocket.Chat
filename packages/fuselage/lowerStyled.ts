@@ -160,6 +160,19 @@ export const allowlist: Record<string, Record<string, Options>> = {
 	'src/components/Skeleton/Skeleton.tsx': { SkeletonFrame: {} },
 	'src/components/Tag/Tag.tsx': { TagFrame: {}, TagInner: {} },
 	'src/components/Throbber/Throbber.tsx': { ThrobberFrame: {}, CircleFrame: {} },
+	'src/components/Item/Item.tsx': { ItemFrame: {} },
+	'src/components/Item/ItemActions.tsx': { ItemActionsFrame: {}, ItemActionsInner: {} },
+	'src/components/Item/ItemContent.tsx': { ItemContentFrame: {} },
+	'src/components/Item/ItemDescription.tsx': { ItemDescriptionFrame: {} },
+	'src/components/Item/ItemDivider.tsx': { ItemDividerFrame: {}, ItemDividerLine: {} },
+	'src/components/Item/ItemGroupHeader.tsx': { ItemGroupHeaderFrame: {} },
+	'src/components/Item/ItemGroupTitle.tsx': { ItemGroupTitleFrame: {}, ItemGroupTitleOverlay: {} },
+	'src/components/Item/ItemIcon.tsx': { ItemIconFrame: {} },
+	'src/components/Item/ItemLink.tsx': { ItemLinkFrame: {}, ItemLinkOverlay: {} },
+	'src/components/Item/ItemMedia.tsx': { ItemMediaFrame: {} },
+	'src/components/Item/ItemMeta.tsx': { ItemMetaFrame: {} },
+	'src/components/Item/ItemRow.tsx': { ItemRowFrame: {} },
+	'src/components/Item/ItemTitle.tsx': { ItemTitleFrame: {} },
 };
 
 const root = import.meta.dirname;
