@@ -21,14 +21,17 @@ export class CurrentEditingMessage {
 			if (!this.chat.composer || !this.mid) {
 				return false;
 			}
-
 			const message = await this.chat.data.findMessageByID(this.mid);
-
-			if (this.chat.composer.text !== message?.msg) {
-				this.chat.composer.setText(message?.msg ?? '');
+			if (!message) {
+				this.chat.composer.setEditingMode(false);
+				this.mid = undefined;
+				clearHighlightMessage();
+				return false;
+			}
+			if (this.chat.composer.text !== message.msg) {
+				this.chat.composer.setText(message.msg ?? '');
 				return true;
 			}
-
 			return false;
 		});
 	};
@@ -38,19 +41,19 @@ export class CurrentEditingMessage {
 			if (!this.chat.composer || !this.mid) {
 				return;
 			}
-
-			const message = await this.chat.data.findMessageByID(this.mid);
-			const draft = this.chat.composer.text;
-
-			if (draft === message?.msg) {
-				await this.chat.data.discardDraft(this.mid);
-			} else {
-				await this.chat.data.saveDraft(this.mid, (await this.chat.data.getDraft(this.mid)) || draft);
+			try {
+				const message = await this.chat.data.findMessageByID(this.mid);
+				const draft = this.chat.composer.text;
+				if (!message || draft === message.msg) {
+					await this.chat.data.discardDraft(this.mid);
+				} else {
+					await this.chat.data.saveDraft(this.mid, (await this.chat.data.getDraft(this.mid)) || draft);
+				}
+			} finally {
+				this.chat.composer.setEditingMode(false);
+				this.mid = undefined;
+				clearHighlightMessage();
 			}
-
-			this.chat.composer.setEditingMode(false);
-			this.mid = undefined;
-			clearHighlightMessage();
 		});
 	};
 
