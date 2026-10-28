@@ -54,6 +54,13 @@ const deferred = <T>() => {
 	return { promise, resolve };
 };
 
+const untilCalled = async (mock: jest.Mock) => {
+	for (let i = 0; i < 50 && mock.mock.calls.length === 0; i++) {
+		await new Promise((resolve) => setTimeout(resolve, 0));
+	}
+	expect(mock).toHaveBeenCalled();
+};
+
 const loadedKeyOwner = () => (e2e.privateKey as unknown as { owner: string } | undefined)?.owner;
 
 describe('E2E client on a user switch with no logout', () => {
@@ -131,6 +138,51 @@ describe('E2E client on a user switch with no logout', () => {
 		expect(loadedKeyOwner()).toBe('user-b');
 		expect(getStoredItem(STORAGE_KEYS.E2EE_PRIVATE_KEY)).toBe(privateKeyOf('user-b'));
 		expect(e2e.getState()).toBe('READY');
+	});
+
+	it('removes every E2EE item that it stored on logout, also the saved E2EE password', async () => {
+		await e2e.startClient('user-a');
+		setStoredItem(STORAGE_KEYS.E2EE_RANDOM_PASSWORD, 'password of user a');
+
+		await e2e.stopClient();
+
+		expect(getStoredItem(STORAGE_KEYS.E2EE_PUBLIC_KEY)).toBeNull();
+		expect(getStoredItem(STORAGE_KEYS.E2EE_PRIVATE_KEY)).toBeNull();
+		expect(getStoredItem(STORAGE_KEYS.E2EE_RANDOM_PASSWORD)).toBeNull();
+	});
+
+	it('keeps the keys of the second user when the key import of the first user ends after the switch', async () => {
+		const importOfUserA = deferred<{ owner: string }>();
+		(Rsa.importPrivateKey as jest.Mock).mockImplementationOnce(() => importOfUserA.promise);
+
+		const startOfUserA = e2e.startClient('user-a');
+		await untilCalled(Rsa.importPrivateKey as jest.Mock);
+
+		loggedInUser = 'user-b';
+		await e2e.startClient('user-b');
+		importOfUserA.resolve({ owner: 'user-a' });
+		await startOfUserA;
+
+		expect(loadedKeyOwner()).toBe('user-b');
+		expect(getStoredItem(STORAGE_KEYS.E2EE_PRIVATE_KEY)).toBe(privateKeyOf('user-b'));
+		expect(e2e.getState()).toBe('READY');
+	});
+
+	it('stores no key when the key import of a start ends after a logout', async () => {
+		const importOfUserA = deferred<{ owner: string }>();
+		(Rsa.importPrivateKey as jest.Mock).mockImplementationOnce(() => importOfUserA.promise);
+
+		const startOfUserA = e2e.startClient('user-a');
+		await untilCalled(Rsa.importPrivateKey as jest.Mock);
+
+		await e2e.stopClient();
+		importOfUserA.resolve({ owner: 'user-a' });
+		await startOfUserA;
+
+		expect(e2e.privateKey).toBeUndefined();
+		expect(getStoredItem(STORAGE_KEYS.E2EE_PUBLIC_KEY)).toBeNull();
+		expect(getStoredItem(STORAGE_KEYS.E2EE_PRIVATE_KEY)).toBeNull();
+		expect(e2e.getState()).toBe('DISABLED');
 	});
 
 	it('does not stop the client when the same user starts it again', async () => {
