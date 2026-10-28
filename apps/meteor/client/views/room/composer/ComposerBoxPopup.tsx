@@ -104,7 +104,7 @@ function ComposerBoxPopup<
 	}, [focused]);
 
 	return (
-		<Box position='relative' marginBlockEnd={8}>
+		<Box display='flex' flexDirection='column' minHeight={0} marginBlockEnd={8}>
 			<PopoverSurface elevation='1' flush ref={composerBoxPopupRef}>
 				{title && (
 					<Box backgroundColor='tint'>
