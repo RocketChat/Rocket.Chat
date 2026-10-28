@@ -4,6 +4,7 @@ import { createRequire } from 'node:module';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
+import { tamaguiPlugin } from '@tamagui/vite-plugin';
 import react from '@vitejs/plugin-react';
 import autoprefixer from 'autoprefixer';
 import postcssCustomProperties from 'postcss-custom-properties';
@@ -132,6 +133,8 @@ const nativeModules = (): Plugin => {
 		},
 	};
 };
+
+const fuselageRoot = resolve(appRoot, '../../packages/fuselage');
 
 // Routes the running Rocket.Chat server answers; everything else is served by Vite.
 const serverUrl = process.env.RC_SERVER_URL || 'http://localhost:3100';
@@ -322,6 +325,14 @@ export default defineConfig({
 		...(servedByServer ? [] : [nativeModules()]),
 		...(servedByServer && process.env.BABEL_ENV === 'coverage' ? [coverage()] : []),
 		devPage(),
+		// Fuselage's `styled()` frames compile to static classes and CSS, so no Tamagui code ships to the browser.
+		// `components` stays empty: warming up Fuselage evaluates its stylesheets outside this config and fails.
+		tamaguiPlugin({
+			config: join(fuselageRoot, 'src/tamagui.config.ts'),
+			components: [],
+			outputCSS: './.tamagui/zero/tamagui-zero.css',
+			experimental: { zeroRuntime: true },
+		}),
 	],
 	resolve: {
 		alias: [
