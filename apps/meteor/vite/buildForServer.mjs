@@ -12,8 +12,10 @@ const dist = join(here, 'dist');
 
 process.env.RC_CLIENT_TARGET = 'server';
 
+// Vite copies `public/` into the build, so the previous bundle has to be gone first or it is carried along.
+rmSync(join(appRoot, 'public/bundle'), { recursive: true, force: true });
+
 await build({ configFile: join(here, 'vite.config.mts') });
 
-rmSync(join(appRoot, 'public/bundle'), { recursive: true, force: true });
 cpSync(join(dist, 'bundle'), join(appRoot, 'public/bundle'), { recursive: true });
 cpSync(join(dist, '.vite/manifest.json'), join(appRoot, 'private/vite-manifest.json'));
