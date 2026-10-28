@@ -1,5 +1,11 @@
 # @rocket.chat/i18n
 
+## 5.0.0-rc.1
+
+### Minor Changes
+
+- ([#43215](https://github.com/RocketChat/Rocket.Chat/pull/43215)) Adds a noise cancellation choice to the microphone menus of native LiveKit calls: off, the browser's own filter (the default), or RNNoise running on the device to also remove typing and background noise. The workspace serves RNNoise itself, so clients never fetch it from a third party.
+
 ## 5.0.0-rc.0
 
 ### Major Changes
