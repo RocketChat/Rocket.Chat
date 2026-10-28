@@ -19,3 +19,9 @@
 .rcx-progress-bar__shine {
 	animation: rcx-progress-bar__animation 2s ease-out infinite;
 }
+
+/* Sizes passed through `style` apply to their own element, never to a nested one */
+@property --rcx-progress-bar-fill-width {
+	syntax: '*';
+	inherits: false;
+}

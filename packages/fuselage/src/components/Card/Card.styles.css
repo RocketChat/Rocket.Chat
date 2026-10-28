@@ -4,3 +4,19 @@
 		row-gap: 4px;
 	}
 }
+
+/* Sizes passed through `style` apply to their own element, never to a nested one */
+@property --rcx-card-width {
+	syntax: '*';
+	inherits: false;
+}
+
+@property --rcx-card-height {
+	syntax: '*';
+	inherits: false;
+}
+
+@property --rcx-card-body-height {
+	syntax: '*';
+	inherits: false;
+}

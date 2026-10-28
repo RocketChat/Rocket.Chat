@@ -19,3 +19,9 @@
 	animation-iteration-count: infinite;
 	animation-fill-mode: both;
 }
+
+/* Sizes passed through `style` apply to their own element, never to a nested one */
+@property --rcx-throbber-size {
+	syntax: '*';
+	inherits: false;
+}

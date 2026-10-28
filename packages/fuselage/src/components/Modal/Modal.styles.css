@@ -34,3 +34,29 @@
 .rcx-modal__icon--variant-success {
 	color: var(--rcx-color-status-font-on-success, #148660);
 }
+
+/* Sizes passed through `style` apply to their own element, never to a nested one */
+@property --rcx-modal-width {
+	syntax: '*';
+	inherits: false;
+}
+
+@property --rcx-modal-height {
+	syntax: '*';
+	inherits: false;
+}
+
+@property --rcx-modal-max-height {
+	syntax: '*';
+	inherits: false;
+}
+
+@property --rcx-modal-hero-image-width {
+	syntax: '*';
+	inherits: false;
+}
+
+@property --rcx-modal-hero-image-height {
+	syntax: '*';
+	inherits: false;
+}

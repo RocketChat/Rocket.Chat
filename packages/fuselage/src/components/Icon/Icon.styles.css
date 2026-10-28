@@ -1,0 +1,5 @@
+/* Sizes passed through `style` apply to their own element, never to a nested one */
+@property --rcx-icon-size {
+	syntax: '*';
+	inherits: false;
+}
