@@ -1,6 +1,5 @@
 import { AppStatus } from '@rocket.chat/apps-engine/definition/AppStatus';
 import type { App, AppPermission } from '@rocket.chat/core-typings';
-import { Box, Icon } from '@rocket.chat/fuselage';
 import { useHasLicenseModule, useIsEnterprise } from '@rocket.chat/ui-client';
 import {
 	useSetModal,
@@ -11,7 +10,7 @@ import {
 	usePermission,
 	useRouter,
 } from '@rocket.chat/ui-contexts';
-import type { ComponentProps, MouseEvent, ReactNode } from 'react';
+import type { MouseEvent, ReactNode } from 'react';
 import { useMemo, useCallback, useState } from 'react';
 import semver from 'semver';
 
@@ -30,6 +29,7 @@ import type { Actions } from '../helpers';
 import { appEnabledStatuses, appButtonProps } from '../helpers';
 import { handleAPIError } from '../helpers/handleAPIError';
 import { warnEnableDisableApp } from '../helpers/warnEnableDisableApp';
+import AppMenuOptionLabel from '../layout/AppMenuOptionLabel';
 
 export type AppMenuOption = {
 	id: string;
@@ -42,19 +42,6 @@ export type AppMenuOption = {
 type AppMenuSections = {
 	items: AppMenuOption[];
 }[];
-
-type AppMenuOptionLabelProps = {
-	icon?: ComponentProps<typeof Icon>['name'];
-	color?: ComponentProps<typeof Box>['color'];
-	children: ReactNode;
-};
-
-const AppMenuOptionLabel = ({ icon, color, children }: AppMenuOptionLabelProps) => (
-	<Box display='flex' alignItems='center' gap={4} color={color}>
-		{icon && <Icon name={icon} size='x16' />}
-		{children}
-	</Box>
-);
 
 export const useAppMenu = (app: App, isAppDetailsPage: boolean) => {
 	const t = useTranslation();

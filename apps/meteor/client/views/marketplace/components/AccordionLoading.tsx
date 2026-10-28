@@ -1,13 +1,15 @@
-import { Box, Skeleton } from '@rocket.chat/fuselage';
+import { Skeleton } from '@rocket.chat/fuselage';
+
+import LoadingList from './layout/LoadingList';
 
 const SKELETON_ITEMS = 3;
 
 const AccordionLoading = () => (
-	<Box display='flex' flexDirection='column' gap='x8' padding='x4'>
+	<LoadingList>
 		{Array.from({ length: SKELETON_ITEMS }, (_v, k) => (
 			<Skeleton key={k} variant='rect' height='80px' />
 		))}
-	</Box>
+	</LoadingList>
 );
 
 export default AccordionLoading;

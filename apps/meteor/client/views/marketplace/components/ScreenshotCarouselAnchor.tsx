@@ -1,10 +1,10 @@
 import type { AppScreenshot } from '@rocket.chat/core-typings';
-import { css } from '@rocket.chat/css-in-js';
-import { Box, Icon, Text } from '@rocket.chat/fuselage';
+import { Icon, Text } from '@rocket.chat/fuselage';
 import { useCallback, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import ScreenshotCarousel from './ScreenshotCarousel';
+import ScreenshotPreview from './layout/ScreenshotPreview';
 
 export type ScreenshotCarouselAnchorProps = {
 	screenshots: AppScreenshot[];
@@ -79,38 +79,12 @@ const ScreenshotCarouselAnchor = ({ screenshots }: ScreenshotCarouselAnchorProps
 
 	return (
 		<>
-			<Box
-				onClick={(): void => setViewCarousel(true)}
-				display='flex'
-				flexDirection='column'
-				maxWidth='x640'
-				width='100%'
-				style={{
-					cursor: 'pointer',
-				}}
-				tabIndex={0}
-			>
-				<Box
-					is='img'
-					src={screenshots[currentPreviewIndex]?.accessUrl}
-					alt='App preview image'
-					className={[
-						css`
-							transition: filter 0.2s ease;
-							&:hover {
-								filter: brightness(90%);
-							}
-						`,
-					]}
-				/>
-
-				<Box display='flex' flexDirection='row' backgroundColor='tint' paddingInline='x16' paddingBlock='x8' alignItems='center' gap='x8'>
-					<Icon name='image' size='x24' />{' '}
-					<Text is='span' fontScale='p2m' color='default'>
-						{currentPreviewIndex + 1} of {screenshots.length}
-					</Text>
-				</Box>
-			</Box>
+			<ScreenshotPreview src={screenshots[currentPreviewIndex]?.accessUrl} alt='App preview image' onClick={() => setViewCarousel(true)}>
+				<Icon name='image' size='x24' />{' '}
+				<Text is='span' fontScale='p2m' color='default'>
+					{currentPreviewIndex + 1} of {screenshots.length}
+				</Text>
+			</ScreenshotPreview>
 			{isCarouselVisible && carouselPortal}
 		</>
 	);

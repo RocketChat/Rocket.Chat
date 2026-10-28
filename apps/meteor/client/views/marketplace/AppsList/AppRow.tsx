@@ -10,6 +10,7 @@ import AppStatus from '../AppDetailsPage/tabs/AppStatus/AppStatus';
 import AppMenu from '../AppMenu';
 import BundleChips from '../BundleChips';
 import AddonChip from './AddonChip';
+import AppsListItem from './layout/AppsListItem';
 
 // TODO: org props
 const AppRow = ({ className, ...props }: App & { className?: string }) => {
@@ -49,7 +50,7 @@ const AppRow = ({ className, ...props }: App & { className?: string }) => {
 	const canUpdate = installed && version && marketplaceVersion && semver.lt(version, marketplaceVersion);
 
 	return (
-		<div role='listitem' className={className} key={id}>
+		<AppsListItem className={className}>
 			<Card
 				data-qa-type='app-row'
 				horizontal
@@ -80,7 +81,7 @@ const AppRow = ({ className, ...props }: App & { className?: string }) => {
 					<AppMenu app={props} isAppDetailsPage={false} />
 				</CardControls>
 			</Card>
-		</div>
+		</AppsListItem>
 	);
 };
 

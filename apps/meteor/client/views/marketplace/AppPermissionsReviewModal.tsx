@@ -1,9 +1,10 @@
 import type { App } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
+import { Stack, Text } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
 import AppPermissionsList from './components/AppPermissionsList';
+import PermissionsList from './components/layout/PermissionsList';
 
 export type AppPermissionsReviewModalProps = {
 	appPermissions: App['permissions'];
@@ -23,12 +24,14 @@ const AppPermissionsReviewModal = ({ appPermissions, onCancel, onConfirm }: AppP
 			onClose={onCancel}
 			confirmText={t('Agree')}
 		>
-			<Box fontScale='p2' marginBlockEnd={20}>
-				{t('Apps_Permissions_Review_Modal_Subtitle')}
-			</Box>
-			<Box is='ol' type='1' style={{ listStyleType: 'decimal' }} marginInlineStart={24}>
-				<AppPermissionsList appPermissions={appPermissions} />
-			</Box>
+			<Stack gap='x20'>
+				<Text is='p' fontScale='p2'>
+					{t('Apps_Permissions_Review_Modal_Subtitle')}
+				</Text>
+				<PermissionsList>
+					<AppPermissionsList appPermissions={appPermissions} />
+				</PermissionsList>
+			</Stack>
 		</GenericModal>
 	);
 };

@@ -1,5 +1,4 @@
 import {
-	Box,
 	Button,
 	Modal,
 	ModalClose,
@@ -10,6 +9,8 @@ import {
 	ModalHeader,
 	ModalHeaderText,
 	ModalTitle,
+	Stack,
+	Text,
 } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
@@ -43,8 +44,10 @@ const PrivateAppInstallModal = ({ onClose, onProceed }: PrivateAppInstallModalPr
 			</ModalHeader>
 
 			<ModalContent>
-				<Box marginBlockEnd='x24'>{t('Private_app_install_modal_content')}</Box>
-				{t('Upgrade_subscription_to_enable_private_apps')}
+				<Stack gap='x24'>
+					<Text is='p'>{t('Private_app_install_modal_content')}</Text>
+					<Text is='p'>{t('Upgrade_subscription_to_enable_private_apps')}</Text>
+				</Stack>
 			</ModalContent>
 
 			<ModalFooter justify='space-between'>

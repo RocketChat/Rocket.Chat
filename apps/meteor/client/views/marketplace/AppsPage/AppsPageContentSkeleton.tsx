@@ -1,10 +1,12 @@
-import { Skeleton, Box, Stack } from '@rocket.chat/fuselage';
+import { Skeleton, Stack } from '@rocket.chat/fuselage';
+
+import AppsPageInset from './layout/AppsPageInset';
 
 const AppsPageContentSkeleton = () => {
 	const loadingSection = (
-		<Stack gap={20}>
+		<Stack gap='x20'>
 			<Skeleton height='x28' width='x150' variant='rect' />
-			<Stack gap={8}>
+			<Stack gap='x8'>
 				{Array.from({ length: 3 }, (_, i) => (
 					<Skeleton key={i} height='x56' width='100%' variant='rect' />
 				))}
@@ -12,11 +14,13 @@ const AppsPageContentSkeleton = () => {
 		</Stack>
 	);
 	return (
-		<Box paddingInline='x24' display='flex' flexDirection='column' gap='x32' marginBlockEnd='x8'>
-			{loadingSection}
-			{loadingSection}
-			{loadingSection}
-		</Box>
+		<AppsPageInset>
+			<Stack gap='x32'>
+				{loadingSection}
+				{loadingSection}
+				{loadingSection}
+			</Stack>
+		</AppsPageInset>
 	);
 };
 

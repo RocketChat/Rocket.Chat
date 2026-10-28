@@ -1,5 +1,5 @@
 import type { App } from '@rocket.chat/core-typings';
-import { Box, Pagination } from '@rocket.chat/fuselage';
+import { Pagination } from '@rocket.chat/fuselage';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import type { Dispatch, SetStateAction } from 'react';
 import { useId, useRef } from 'react';
@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 
 import AppsList from '../AppsList';
 import FeaturedAppsSections from './FeaturedAppsSections';
+import AppsListScrollArea from './layout/AppsListScrollArea';
 
 export type AppsPageContentBodyProps = {
 	isMarketplace: boolean;
@@ -43,12 +44,10 @@ const AppsPageContentBody = ({
 
 	return (
 		<>
-			<Box display='flex' flexDirection='column' overflow='hidden' height='100%' paddingInline={24}>
-				<Box overflowY='scroll' height='100%' ref={scrollableRef}>
-					{isMarketplace && !isFiltered && <FeaturedAppsSections appsListId={appsListId} appsResult={appsResult?.allApps || []} />}
-					<AppsList appsListId={appsListId} apps={appsResult?.items || []} title={isMarketplace ? t('All_Apps') : undefined} />
-				</Box>
-			</Box>
+			<AppsListScrollArea ref={scrollableRef}>
+				{isMarketplace && !isFiltered && <FeaturedAppsSections appsListId={appsListId} appsResult={appsResult?.allApps || []} />}
+				<AppsList appsListId={appsListId} apps={appsResult?.items || []} title={isMarketplace ? t('All_Apps') : undefined} />
+			</AppsListScrollArea>
 			{Boolean(appsResult?.count) && (
 				<Pagination
 					divider
