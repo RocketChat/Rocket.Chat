@@ -1,5 +1,5 @@
 import { styled, View, type GetProps } from '@tamagui/web';
-import type { ImgHTMLAttributes } from 'react';
+import type { CSSProperties, ImgHTMLAttributes } from 'react';
 
 import { size } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
@@ -25,8 +25,9 @@ const ModalHeroImageWrapper = styled(View, {
 const ModalHeroImageFrame = styled(View, {
 	render: 'img',
 	display: 'block',
-	width: '100%',
-	height: 'auto',
+	// A caller's size travels as a custom property, so the frame's styles stay static and app CSS can still override them
+	width: 'var(--rcx-modal-hero-image-width, 100%)',
+	height: 'var(--rcx-modal-hero-image-height, auto)',
 	objectFit: 'contain',
 	borderWidth: 0,
 	borderStyle: 'solid',
@@ -34,11 +35,10 @@ const ModalHeroImageFrame = styled(View, {
 	outlineStyle: 'none',
 });
 
-const ModalHeroImage = ({ width, height, className, ...props }: ModalHeroImageProps) => (
+const ModalHeroImage = ({ width, height, className, style, ...props }: ModalHeroImageProps) => (
 	<ModalHeroImageWrapper className='rcx-modal__hero-image-wrapper'>
 		<ModalHeroImageFrame
-			{...(width !== undefined && { width: size(width) })}
-			{...(height !== undefined && { height: size(height) })}
+			style={{ ...style, '--rcx-modal-hero-image-width': size(width), '--rcx-modal-hero-image-height': size(height) } as CSSProperties}
 			className={['rcx-modal__hero-image', className].filter(Boolean).join(' ')}
 			{...(props as GetProps<typeof ModalHeroImageFrame>)}
 		/>

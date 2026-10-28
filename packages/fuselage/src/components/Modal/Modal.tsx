@@ -1,6 +1,6 @@
 import { css } from '@rocket.chat/css-in-js';
 import { styled, View, type GetProps } from '@tamagui/web';
-import type { DialogHTMLAttributes, ElementType, ReactNode } from 'react';
+import type { CSSProperties, DialogHTMLAttributes, ElementType, ReactNode } from 'react';
 import { createElement } from 'react';
 
 import { surfaceColors, textIconColors } from '../../Theme';
@@ -40,9 +40,11 @@ const ModalFrame = styled(View, {
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',
-	width: '100%',
+	// A caller's size travels as a custom property, so the frame's styles stay static and app CSS can still override them
+	width: 'var(--rcx-modal-width, 100%)',
+	height: 'var(--rcx-modal-height, auto)',
 	maxWidth: { sm: '40rem' },
-	maxHeight: '100%',
+	maxHeight: 'var(--rcx-modal-max-height, 100%)',
 	margin: toCSSValue('--rcx-modal-margin', 'auto'),
 	padding: { default: 0, sm: '1rem' },
 	borderWidth: 0,
@@ -78,7 +80,7 @@ const innerStyle = css`
 	line-height: ${fontScale('p2').lineHeight};
 `;
 
-const Modal = ({ children, wrapper = Box, wrapperFunction, hidden, width, height, maxHeight, className, ...props }: ModalProps) => {
+const Modal = ({ children, wrapper = Box, wrapperFunction, hidden, width, height, maxHeight, className, style, ...props }: ModalProps) => {
 	const wrapperProps = {
 		children,
 		className: `rcx-modal__inner ${useStyle(innerStyle, undefined)}`,
@@ -88,10 +90,14 @@ const Modal = ({ children, wrapper = Box, wrapperFunction, hidden, width, height
 	return (
 		<ModalFrame
 			isHidden={hidden}
-			// An `undefined` style prop would still override the frame's own
-			{...(width !== undefined && { width: size(width) })}
-			{...(height !== undefined && { height: size(height) })}
-			{...(maxHeight !== undefined && { maxHeight: size(maxHeight) })}
+			style={
+				{
+					...style,
+					'--rcx-modal-width': size(width),
+					'--rcx-modal-height': size(height),
+					'--rcx-modal-max-height': size(maxHeight),
+				} as CSSProperties
+			}
 			className={['rcx-modal', className].filter(Boolean).join(' ')}
 			{...({ 'open': true, 'aria-modal': 'true', hidden, ...props } as GetProps<typeof ModalFrame>)}
 		>
