@@ -1,9 +1,570 @@
+import { styled, Text, View } from '@tamagui/web';
 import type { AllHTMLAttributes } from 'react';
-import { useMemo } from 'react';
 
 import type { ElementProps } from '../../types/ElementProps';
 import { Box } from '../Box';
 import { Icon, type IconProps } from '../Icon';
+
+// Tamagui's compiler reads a `styled()` definition from its source, so the values are written out rather than computed:
+// every color is a `--rcx-button-…` custom property over its `--rcx-color-button-…` token and the token's value.
+
+const primary = {
+	color: 'var(--rcx-button-primary-color, var(--rcx-color-button-font-on-primary, #ffffff))',
+	borderColor: {
+		'default': 'var(--rcx-button-primary-border-color, var(--rcx-color-button-background-primary-default, #156ff5))',
+		'focus-visible': 'var(--rcx-button-primary-focus-border-color, var(--rcx-color-stroke-extra-dark, #2f343d))',
+		'hover': 'var(--rcx-button-primary-hover-border-color, var(--rcx-color-button-background-primary-hover, #095ad2))',
+		'press': 'var(--rcx-button-primary-active-border-color, var(--rcx-color-button-background-primary-press, #10529e))',
+	},
+	backgroundColor: {
+		'default': 'var(--rcx-button-primary-background-color, var(--rcx-color-button-background-primary-default, #156ff5))',
+		'focus-visible': 'var(--rcx-button-primary-focus-background-color, var(--rcx-color-button-background-primary-focus, #156ff5))',
+		'hover': 'var(--rcx-button-primary-hover-background-color, var(--rcx-color-button-background-primary-hover, #095ad2))',
+		'press': 'var(--rcx-button-primary-active-background-color, var(--rcx-color-button-background-primary-press, #10529e))',
+	},
+	boxShadow: {
+		'focus-visible': '0 0 0 2px var(--rcx-button-primary-focus-shadow-color, var(--rcx-color-shadow-highlight, #d1ebfe))',
+		'hover': 'none',
+		'press': 'none',
+	},
+} as const;
+
+const secondary = {
+	color: 'var(--rcx-button-secondary-color, var(--rcx-color-button-font-on-secondary, #1f2329))',
+	borderColor: {
+		'default': 'var(--rcx-button-secondary-border-color, var(--rcx-color-button-background-secondary-default, #e4e7ea))',
+		'focus-visible': 'var(--rcx-button-secondary-focus-border-color, var(--rcx-color-stroke-extra-dark, #2f343d))',
+		'hover': 'var(--rcx-button-secondary-hover-border-color, var(--rcx-color-button-background-secondary-hover, #cbced1))',
+		'press': 'var(--rcx-button-secondary-active-border-color, var(--rcx-color-button-background-secondary-press, #9ea2a8))',
+	},
+	backgroundColor: {
+		'default': 'var(--rcx-button-secondary-background-color, var(--rcx-color-button-background-secondary-default, #e4e7ea))',
+		'focus-visible': 'var(--rcx-button-secondary-focus-background-color, var(--rcx-color-button-background-secondary-focus, #e4e7ea))',
+		'hover': 'var(--rcx-button-secondary-hover-background-color, var(--rcx-color-button-background-secondary-hover, #cbced1))',
+		'press': 'var(--rcx-button-secondary-active-background-color, var(--rcx-color-button-background-secondary-press, #9ea2a8))',
+	},
+	boxShadow: {
+		'focus-visible': '0 0 0 2px var(--rcx-button-secondary-focus-shadow-color, var(--rcx-color-shadow-highlight, #d1ebfe))',
+		'hover': 'none',
+		'press': 'none',
+	},
+} as const;
+
+const danger = {
+	color: 'var(--rcx-button-danger-color, var(--rcx-color-button-font-on-danger, #ffffff))',
+	borderColor: {
+		'default': 'var(--rcx-button-danger-border-color, var(--rcx-color-button-background-danger-default, #ec0d2a))',
+		'focus-visible': 'var(--rcx-button-danger-focus-border-color, var(--rcx-color-stroke-extra-dark, #2f343d))',
+		'hover': 'var(--rcx-button-danger-hover-border-color, var(--rcx-color-button-background-danger-hover, #d40c26))',
+		'press': 'var(--rcx-button-danger-active-border-color, var(--rcx-color-button-background-danger-press, #bb0b21))',
+	},
+	backgroundColor: {
+		'default': 'var(--rcx-button-danger-background-color, var(--rcx-color-button-background-danger-default, #ec0d2a))',
+		'focus-visible': 'var(--rcx-button-danger-focus-background-color, var(--rcx-color-button-background-danger-focus, #ec0d2a))',
+		'hover': 'var(--rcx-button-danger-hover-background-color, var(--rcx-color-button-background-danger-hover, #d40c26))',
+		'press': 'var(--rcx-button-danger-active-background-color, var(--rcx-color-button-background-danger-press, #bb0b21))',
+	},
+	boxShadow: {
+		'focus-visible': '0 0 0 2px var(--rcx-button-danger-focus-shadow-color, var(--rcx-color-shadow-extra-light-error, #ffc1c9))',
+		'hover': 'none',
+		'press': 'none',
+	},
+} as const;
+
+const secondaryDanger = {
+	color: 'var(--rcx-button-secondary-danger-color, var(--rcx-color-button-font-on-secondary-danger, #bb0b21))',
+	borderColor: {
+		'default': 'var(--rcx-button-secondary-danger-border-color, var(--rcx-color-button-background-secondary-danger-default, #e4e7ea))',
+		'focus-visible': 'var(--rcx-button-secondary-danger-focus-border-color, var(--rcx-color-stroke-extra-dark, #2f343d))',
+		'hover': 'var(--rcx-button-secondary-danger-hover-border-color, var(--rcx-color-button-background-secondary-danger-hover, #cbced1))',
+		'press': 'var(--rcx-button-secondary-danger-active-border-color, var(--rcx-color-button-background-secondary-danger-press, #9ea2a8))',
+	},
+	backgroundColor: {
+		'default': 'var(--rcx-button-secondary-danger-background-color, var(--rcx-color-button-background-secondary-danger-default, #e4e7ea))',
+		'focus-visible':
+			'var(--rcx-button-secondary-danger-focus-background-color, var(--rcx-color-button-background-secondary-danger-focus, #e4e7ea))',
+		'hover':
+			'var(--rcx-button-secondary-danger-hover-background-color, var(--rcx-color-button-background-secondary-danger-hover, #cbced1))',
+		'press':
+			'var(--rcx-button-secondary-danger-active-background-color, var(--rcx-color-button-background-secondary-danger-press, #9ea2a8))',
+	},
+	boxShadow: {
+		'focus-visible': '0 0 0 2px var(--rcx-button-secondary-danger-focus-shadow-color, var(--rcx-color-shadow-extra-light-error, #ffc1c9))',
+		'hover': 'none',
+		'press': 'none',
+	},
+} as const;
+
+const warning = {
+	color: 'var(--rcx-button-warning-color, var(--rcx-color-button-font-on-warning, #1f2329))',
+	borderColor: {
+		'default': 'var(--rcx-button-warning-border-color, var(--rcx-color-button-background-warning-default, #ffd95a))',
+		'focus-visible': 'var(--rcx-button-warning-focus-border-color, var(--rcx-color-stroke-extra-dark, #2f343d))',
+		'hover': 'var(--rcx-button-warning-hover-border-color, var(--rcx-color-button-background-warning-hover, #ffd031))',
+		'press': 'var(--rcx-button-warning-active-border-color, var(--rcx-color-button-background-warning-press, #f3be08))',
+	},
+	backgroundColor: {
+		'default': 'var(--rcx-button-warning-background-color, var(--rcx-color-button-background-warning-default, #ffd95a))',
+		'focus-visible': 'var(--rcx-button-warning-focus-background-color, var(--rcx-color-button-background-warning-focus, #ffd95a))',
+		'hover': 'var(--rcx-button-warning-hover-background-color, var(--rcx-color-button-background-warning-hover, #ffd031))',
+		'press': 'var(--rcx-button-warning-active-background-color, var(--rcx-color-button-background-warning-press, #f3be08))',
+	},
+	boxShadow: {
+		'focus-visible': '0 0 0 2px var(--rcx-button-warning-focus-shadow-color, var(--rcx-color-stroke-light, #cbced1))',
+		'hover': 'none',
+		'press': 'none',
+	},
+} as const;
+
+const secondaryWarning = {
+	color: 'var(--rcx-button-secondary-warning-color, var(--rcx-color-button-font-on-secondary-warning, #8e6300))',
+	borderColor: {
+		'default': 'var(--rcx-button-secondary-warning-border-color, var(--rcx-color-button-background-secondary-warning-default, #e4e7ea))',
+		'focus-visible': 'var(--rcx-button-secondary-warning-focus-border-color, var(--rcx-color-stroke-extra-dark, #2f343d))',
+		'hover': 'var(--rcx-button-secondary-warning-hover-border-color, var(--rcx-color-button-background-secondary-warning-hover, #cbced1))',
+		'press': 'var(--rcx-button-secondary-warning-active-border-color, var(--rcx-color-button-background-secondary-warning-press, #9ea2a8))',
+	},
+	backgroundColor: {
+		'default':
+			'var(--rcx-button-secondary-warning-background-color, var(--rcx-color-button-background-secondary-warning-default, #e4e7ea))',
+		'focus-visible':
+			'var(--rcx-button-secondary-warning-focus-background-color, var(--rcx-color-button-background-secondary-warning-focus, #e4e7ea))',
+		'hover':
+			'var(--rcx-button-secondary-warning-hover-background-color, var(--rcx-color-button-background-secondary-warning-hover, #cbced1))',
+		'press':
+			'var(--rcx-button-secondary-warning-active-background-color, var(--rcx-color-button-background-secondary-warning-press, #9ea2a8))',
+	},
+	boxShadow: {
+		'focus-visible': '0 0 0 2px var(--rcx-button-secondary-warning-focus-shadow-color, var(--rcx-color-stroke-light, #cbced1))',
+		'hover': 'none',
+		'press': 'none',
+	},
+} as const;
+
+const success = {
+	color: 'var(--rcx-button-success-color, var(--rcx-color-button-font-on-success, #ffffff))',
+	borderColor: {
+		'default': 'var(--rcx-button-success-border-color, var(--rcx-color-button-background-success-default, #148660))',
+		'focus-visible': 'var(--rcx-button-success-focus-border-color, var(--rcx-color-stroke-extra-dark, #2f343d))',
+		'hover': 'var(--rcx-button-success-hover-border-color, var(--rcx-color-button-background-success-hover, #106d4f))',
+		'press': 'var(--rcx-button-success-active-border-color, var(--rcx-color-button-background-success-press, #0d5940))',
+	},
+	backgroundColor: {
+		'default': 'var(--rcx-button-success-background-color, var(--rcx-color-button-background-success-default, #148660))',
+		'focus-visible': 'var(--rcx-button-success-focus-background-color, var(--rcx-color-button-background-success-focus, #148660))',
+		'hover': 'var(--rcx-button-success-hover-background-color, var(--rcx-color-button-background-success-hover, #106d4f))',
+		'press': 'var(--rcx-button-success-active-background-color, var(--rcx-color-button-background-success-press, #0d5940))',
+	},
+	boxShadow: {
+		'focus-visible': '0 0 0 2px var(--rcx-button-success-focus-shadow-color, var(--rcx-color-stroke-light, #cbced1))',
+		'hover': 'none',
+		'press': 'none',
+	},
+} as const;
+
+const secondarySuccess = {
+	color: 'var(--rcx-button-secondary-success-color, var(--rcx-color-button-font-on-secondary-success, #148660))',
+	borderColor: {
+		'default': 'var(--rcx-button-secondary-success-border-color, var(--rcx-color-button-background-secondary-success-default, #e4e7ea))',
+		'focus-visible': 'var(--rcx-button-secondary-success-focus-border-color, var(--rcx-color-stroke-extra-dark, #2f343d))',
+		'hover': 'var(--rcx-button-secondary-success-hover-border-color, var(--rcx-color-button-background-secondary-success-hover, #cbced1))',
+		'press': 'var(--rcx-button-secondary-success-active-border-color, var(--rcx-color-button-background-secondary-success-press, #9ea2a8))',
+	},
+	backgroundColor: {
+		'default':
+			'var(--rcx-button-secondary-success-background-color, var(--rcx-color-button-background-secondary-success-default, #e4e7ea))',
+		'focus-visible':
+			'var(--rcx-button-secondary-success-focus-background-color, var(--rcx-color-button-background-secondary-success-focus, #e4e7ea))',
+		'hover':
+			'var(--rcx-button-secondary-success-hover-background-color, var(--rcx-color-button-background-secondary-success-hover, #cbced1))',
+		'press':
+			'var(--rcx-button-secondary-success-active-background-color, var(--rcx-color-button-background-secondary-success-press, #9ea2a8))',
+	},
+	boxShadow: {
+		'focus-visible': '0 0 0 2px var(--rcx-button-secondary-success-focus-shadow-color, var(--rcx-color-stroke-light, #cbced1))',
+		'hover': 'none',
+		'press': 'none',
+	},
+} as const;
+
+const smallSize = {
+	fontSize: '0.75rem',
+	fontWeight: 700,
+	lineHeight: '1rem',
+	letterSpacing: '0rem',
+	minWidth: 'calc(1.75rem * 2)',
+	height: '1.75rem',
+	paddingBlock: 'calc((1.75rem - 1rem) / 2 - 2px)',
+	paddingInline: 'calc(8px - 2px)',
+} as const;
+
+const mediumSize = {
+	fontSize: '0.75rem',
+	fontWeight: 700,
+	lineHeight: '1rem',
+	letterSpacing: '0rem',
+	minWidth: 'calc(2rem * 2)',
+	height: '2rem',
+	paddingBlock: 'calc((2rem - 1rem) / 2 - 2px)',
+	paddingInline: 'calc(12px - 2px)',
+} as const;
+
+const largeSize = {
+	fontSize: '0.875rem',
+	fontWeight: 400,
+	lineHeight: '1.25rem',
+	letterSpacing: '0rem',
+	minWidth: 'calc(3rem * 2)',
+	height: '3rem',
+	paddingBlock: 'calc((3rem - 1.25rem) / 2 - 2px)',
+	paddingInline: 'calc(24px - 2px)',
+} as const;
+
+const compactWidth = { minWidth: '4ch' } as const;
+
+const squareLayout = {
+	display: 'flex',
+	justifyContent: 'center',
+	alignItems: 'center',
+	flexShrink: 0,
+} as const;
+
+const squaredDefault = {
+	width: '2.5rem',
+	minWidth: '2.5rem',
+	height: '2.5rem',
+	paddingBlock: 0,
+	paddingInline: 0,
+} as const;
+
+const squaredMini = {
+	width: '1.25rem',
+	minWidth: '1.25rem',
+	height: '1.25rem',
+	paddingBlock: 0,
+	paddingInline: 0,
+} as const;
+
+const squaredTiny = {
+	width: '1.5rem',
+	minWidth: '1.5rem',
+	height: '1.5rem',
+	paddingBlock: 0,
+	paddingInline: 0,
+} as const;
+
+const squaredSmall = {
+	width: '1.75rem',
+	minWidth: '1.75rem',
+	height: '1.75rem',
+	paddingBlock: 0,
+	paddingInline: 0,
+} as const;
+
+const squaredMedium = {
+	width: '2rem',
+	minWidth: '2rem',
+	height: '2rem',
+	paddingBlock: 0,
+	paddingInline: 0,
+} as const;
+
+const squaredLarge = {
+	width: '2.5rem',
+	minWidth: '2.5rem',
+	height: '2.5rem',
+	paddingBlock: 0,
+	paddingInline: 0,
+} as const;
+
+const frame = {
+	render: 'button',
+	display: 'inline-block',
+	flexDirection: 'row',
+	flexShrink: 1,
+	alignItems: 'normal',
+	minHeight: 'auto',
+	textAlign: 'center',
+	whiteSpace: 'nowrap',
+	textDecoration: 'none',
+	cursor: 'pointer',
+	outlineStyle: 'none',
+	overflow: 'hidden',
+	textOverflow: 'ellipsis',
+	fontFamily:
+		"var(--rcx-font-family-sans, Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Meiryo UI', Arial, sans-serif)",
+	fontVariantNumeric: 'tabular-nums',
+	fontSize: '0.875rem',
+	fontWeight: 500,
+	lineHeight: '1.25rem',
+	letterSpacing: '0rem',
+	minWidth: 'calc(2.5rem * 2)',
+	height: '2.5rem',
+	paddingBlock: 'calc((2.5rem - 1.25rem) / 2 - 2px)',
+	paddingInline: 'calc(16px - 2px)',
+	borderWidth: 'var(--rcx-button-border-width, 1px)',
+	borderStyle: 'solid',
+	borderRadius: 'var(--rcx-button-border-radius, var(--rcx-border-radius-medium, 0.25rem))',
+};
+
+// Declared where they render: zero-runtime only erases a `styled()` whose every use is in its own module
+const ButtonFrame = styled(View, {
+	...frame,
+	variants: {
+		// Size, compact and square set the same properties, so each combination is one variant
+		sizing: {
+			'||false|false': {},
+			'|mini|false|false': {},
+			'|tiny|false|false': {},
+			'||false|true': { ...squareLayout, ...squaredDefault },
+			'||true|false': { ...compactWidth },
+			'||true|true': { ...squareLayout, ...squaredDefault },
+			'|mini|false|true': { ...squareLayout, ...squaredMini },
+			'|mini|true|false': { ...compactWidth },
+			'|mini|true|true': { ...squareLayout, ...squaredMini },
+			'|tiny|false|true': { ...squareLayout, ...squaredTiny },
+			'|tiny|true|false': { ...compactWidth },
+			'|tiny|true|true': { ...squareLayout, ...squaredTiny },
+			'|small|false|false': { ...smallSize },
+			'|small|false|true': { ...smallSize, ...squareLayout, ...squaredSmall },
+			'|small|true|false': { ...smallSize, ...compactWidth },
+			'|small|true|true': { ...smallSize, ...squareLayout, ...squaredSmall },
+			'|medium|false|false': { ...mediumSize },
+			'|medium|false|true': { ...mediumSize, ...squareLayout, ...squaredMedium },
+			'|medium|true|false': { ...mediumSize, ...compactWidth },
+			'|medium|true|true': { ...mediumSize, ...squareLayout, ...squaredMedium },
+			'|large|false|false': { ...largeSize },
+			'|large|false|true': { ...largeSize, ...squareLayout, ...squaredLarge },
+			'|large|true|false': { ...largeSize, ...compactWidth },
+			'|large|true|true': { ...largeSize, ...squareLayout, ...squaredLarge },
+		},
+		// The compiler reads a shorthand property as a live reference, which it cannot lower
+		/* oxlint-disable object-shorthand */
+		paint: {
+			'primary': primary,
+			'primary-disabled': {
+				cursor: 'not-allowed',
+				color: 'var(--rcx-button-primary-disabled-color, var(--rcx-color-button-font-on-primary-disabled, #ffffff))',
+				borderColor: {
+					'default': 'var(--rcx-button-primary-disabled-border-color, var(--rcx-color-button-background-primary-disabled, #d1ebfe))',
+					'focus-visible': 'var(--rcx-button-primary-disabled-border-color, var(--rcx-color-button-background-primary-disabled, #d1ebfe))',
+					'hover': 'var(--rcx-button-primary-disabled-border-color, var(--rcx-color-button-background-primary-disabled, #d1ebfe))',
+					'press': 'var(--rcx-button-primary-disabled-border-color, var(--rcx-color-button-background-primary-disabled, #d1ebfe))',
+				},
+				backgroundColor: {
+					'default': 'var(--rcx-button-primary-disabled-background-color, var(--rcx-color-button-background-primary-disabled, #d1ebfe))',
+					'focus-visible':
+						'var(--rcx-button-primary-disabled-background-color, var(--rcx-color-button-background-primary-disabled, #d1ebfe))',
+					'hover': 'var(--rcx-button-primary-disabled-background-color, var(--rcx-color-button-background-primary-disabled, #d1ebfe))',
+					'press': 'var(--rcx-button-primary-disabled-background-color, var(--rcx-color-button-background-primary-disabled, #d1ebfe))',
+				},
+				boxShadow: {
+					'focus-visible': '0 0 0 2px var(--rcx-button-primary-focus-shadow-color, var(--rcx-color-shadow-highlight, #d1ebfe))',
+					'hover': 'none',
+					'press': 'none',
+				},
+			},
+			'secondary': secondary,
+			'secondary-disabled': {
+				cursor: 'not-allowed',
+				color: 'var(--rcx-button-secondary-disabled-color, var(--rcx-color-button-font-on-secondary-disabled, #cbced1))',
+				borderColor: {
+					'default': 'var(--rcx-button-secondary-disabled-border-color, var(--rcx-color-button-background-secondary-disabled, #ebecef))',
+					'focus-visible':
+						'var(--rcx-button-secondary-disabled-border-color, var(--rcx-color-button-background-secondary-disabled, #ebecef))',
+					'hover': 'var(--rcx-button-secondary-disabled-border-color, var(--rcx-color-button-background-secondary-disabled, #ebecef))',
+					'press': 'var(--rcx-button-secondary-disabled-border-color, var(--rcx-color-button-background-secondary-disabled, #ebecef))',
+				},
+				backgroundColor: {
+					'default':
+						'var(--rcx-button-secondary-disabled-background-color, var(--rcx-color-button-background-secondary-disabled, #ebecef))',
+					'focus-visible':
+						'var(--rcx-button-secondary-disabled-background-color, var(--rcx-color-button-background-secondary-disabled, #ebecef))',
+					'hover': 'var(--rcx-button-secondary-disabled-background-color, var(--rcx-color-button-background-secondary-disabled, #ebecef))',
+					'press': 'var(--rcx-button-secondary-disabled-background-color, var(--rcx-color-button-background-secondary-disabled, #ebecef))',
+				},
+				boxShadow: {
+					'focus-visible': '0 0 0 2px var(--rcx-button-secondary-focus-shadow-color, var(--rcx-color-shadow-highlight, #d1ebfe))',
+					'hover': 'none',
+					'press': 'none',
+				},
+			},
+			'danger': danger,
+			'danger-disabled': {
+				cursor: 'not-allowed',
+				color: 'var(--rcx-button-danger-disabled-color, var(--rcx-color-button-font-on-danger-disabled, #ffffff))',
+				borderColor: {
+					'default': 'var(--rcx-button-danger-disabled-border-color, var(--rcx-color-button-background-danger-disabled, #ffc1c9))',
+					'focus-visible': 'var(--rcx-button-danger-disabled-border-color, var(--rcx-color-button-background-danger-disabled, #ffc1c9))',
+					'hover': 'var(--rcx-button-danger-disabled-border-color, var(--rcx-color-button-background-danger-disabled, #ffc1c9))',
+					'press': 'var(--rcx-button-danger-disabled-border-color, var(--rcx-color-button-background-danger-disabled, #ffc1c9))',
+				},
+				backgroundColor: {
+					'default': 'var(--rcx-button-danger-disabled-background-color, var(--rcx-color-button-background-danger-disabled, #ffc1c9))',
+					'focus-visible':
+						'var(--rcx-button-danger-disabled-background-color, var(--rcx-color-button-background-danger-disabled, #ffc1c9))',
+					'hover': 'var(--rcx-button-danger-disabled-background-color, var(--rcx-color-button-background-danger-disabled, #ffc1c9))',
+					'press': 'var(--rcx-button-danger-disabled-background-color, var(--rcx-color-button-background-danger-disabled, #ffc1c9))',
+				},
+				boxShadow: {
+					'focus-visible': '0 0 0 2px var(--rcx-button-danger-focus-shadow-color, var(--rcx-color-shadow-extra-light-error, #ffc1c9))',
+					'hover': 'none',
+					'press': 'none',
+				},
+			},
+			'secondary-danger': secondaryDanger,
+			'secondary-danger-disabled': {
+				cursor: 'not-allowed',
+				color: 'var(--rcx-button-secondary-danger-disabled-color, var(--rcx-color-button-font-on-secondary-danger-disabled, #f98f9d))',
+				borderColor: {
+					'default':
+						'var(--rcx-button-secondary-danger-disabled-border-color, var(--rcx-color-button-background-secondary-danger-disabled, #ebecef))',
+					'focus-visible':
+						'var(--rcx-button-secondary-danger-disabled-border-color, var(--rcx-color-button-background-secondary-danger-disabled, #ebecef))',
+					'hover':
+						'var(--rcx-button-secondary-danger-disabled-border-color, var(--rcx-color-button-background-secondary-danger-disabled, #ebecef))',
+					'press':
+						'var(--rcx-button-secondary-danger-disabled-border-color, var(--rcx-color-button-background-secondary-danger-disabled, #ebecef))',
+				},
+				backgroundColor: {
+					'default':
+						'var(--rcx-button-secondary-danger-disabled-background-color, var(--rcx-color-button-background-secondary-danger-disabled, #ebecef))',
+					'focus-visible':
+						'var(--rcx-button-secondary-danger-disabled-background-color, var(--rcx-color-button-background-secondary-danger-disabled, #ebecef))',
+					'hover':
+						'var(--rcx-button-secondary-danger-disabled-background-color, var(--rcx-color-button-background-secondary-danger-disabled, #ebecef))',
+					'press':
+						'var(--rcx-button-secondary-danger-disabled-background-color, var(--rcx-color-button-background-secondary-danger-disabled, #ebecef))',
+				},
+				boxShadow: {
+					'focus-visible':
+						'0 0 0 2px var(--rcx-button-secondary-danger-focus-shadow-color, var(--rcx-color-shadow-extra-light-error, #ffc1c9))',
+					'hover': 'none',
+					'press': 'none',
+				},
+			},
+			'warning': warning,
+			'warning-disabled': {
+				cursor: 'not-allowed',
+				color: 'var(--rcx-button-warning-disabled-color, var(--rcx-color-button-font-on-warning-disabled, #9ea2a8))',
+				borderColor: {
+					'default': 'var(--rcx-button-warning-disabled-border-color, var(--rcx-color-button-background-warning-disabled, #ffecad))',
+					'focus-visible': 'var(--rcx-button-warning-disabled-border-color, var(--rcx-color-button-background-warning-disabled, #ffecad))',
+					'hover': 'var(--rcx-button-warning-disabled-border-color, var(--rcx-color-button-background-warning-disabled, #ffecad))',
+					'press': 'var(--rcx-button-warning-disabled-border-color, var(--rcx-color-button-background-warning-disabled, #ffecad))',
+				},
+				backgroundColor: {
+					'default': 'var(--rcx-button-warning-disabled-background-color, var(--rcx-color-button-background-warning-disabled, #ffecad))',
+					'focus-visible':
+						'var(--rcx-button-warning-disabled-background-color, var(--rcx-color-button-background-warning-disabled, #ffecad))',
+					'hover': 'var(--rcx-button-warning-disabled-background-color, var(--rcx-color-button-background-warning-disabled, #ffecad))',
+					'press': 'var(--rcx-button-warning-disabled-background-color, var(--rcx-color-button-background-warning-disabled, #ffecad))',
+				},
+				boxShadow: {
+					'focus-visible': '0 0 0 2px var(--rcx-button-warning-focus-shadow-color, var(--rcx-color-stroke-light, #cbced1))',
+					'hover': 'none',
+					'press': 'none',
+				},
+			},
+			'secondary-warning': secondaryWarning,
+			'secondary-warning-disabled': {
+				cursor: 'not-allowed',
+				color: 'var(--rcx-button-secondary-warning-disabled-color, var(--rcx-color-button-font-on-secondary-warning-disabled, #f3be08))',
+				borderColor: {
+					'default':
+						'var(--rcx-button-secondary-warning-disabled-border-color, var(--rcx-color-button-background-secondary-warning-disabled, #ebecef))',
+					'focus-visible':
+						'var(--rcx-button-secondary-warning-disabled-border-color, var(--rcx-color-button-background-secondary-warning-disabled, #ebecef))',
+					'hover':
+						'var(--rcx-button-secondary-warning-disabled-border-color, var(--rcx-color-button-background-secondary-warning-disabled, #ebecef))',
+					'press':
+						'var(--rcx-button-secondary-warning-disabled-border-color, var(--rcx-color-button-background-secondary-warning-disabled, #ebecef))',
+				},
+				backgroundColor: {
+					'default':
+						'var(--rcx-button-secondary-warning-disabled-background-color, var(--rcx-color-button-background-secondary-warning-disabled, #ebecef))',
+					'focus-visible':
+						'var(--rcx-button-secondary-warning-disabled-background-color, var(--rcx-color-button-background-secondary-warning-disabled, #ebecef))',
+					'hover':
+						'var(--rcx-button-secondary-warning-disabled-background-color, var(--rcx-color-button-background-secondary-warning-disabled, #ebecef))',
+					'press':
+						'var(--rcx-button-secondary-warning-disabled-background-color, var(--rcx-color-button-background-secondary-warning-disabled, #ebecef))',
+				},
+				boxShadow: {
+					'focus-visible': '0 0 0 2px var(--rcx-button-secondary-warning-focus-shadow-color, var(--rcx-color-stroke-light, #cbced1))',
+					'hover': 'none',
+					'press': 'none',
+				},
+			},
+			'success': success,
+			'success-disabled': {
+				cursor: 'not-allowed',
+				color: 'var(--rcx-button-success-disabled-color, var(--rcx-color-button-font-on-success-disabled, #ffffff))',
+				borderColor: {
+					'default': 'var(--rcx-button-success-disabled-border-color, var(--rcx-color-button-background-success-disabled, #c0f6e4))',
+					'focus-visible': 'var(--rcx-button-success-disabled-border-color, var(--rcx-color-button-background-success-disabled, #c0f6e4))',
+					'hover': 'var(--rcx-button-success-disabled-border-color, var(--rcx-color-button-background-success-disabled, #c0f6e4))',
+					'press': 'var(--rcx-button-success-disabled-border-color, var(--rcx-color-button-background-success-disabled, #c0f6e4))',
+				},
+				backgroundColor: {
+					'default': 'var(--rcx-button-success-disabled-background-color, var(--rcx-color-button-background-success-disabled, #c0f6e4))',
+					'focus-visible':
+						'var(--rcx-button-success-disabled-background-color, var(--rcx-color-button-background-success-disabled, #c0f6e4))',
+					'hover': 'var(--rcx-button-success-disabled-background-color, var(--rcx-color-button-background-success-disabled, #c0f6e4))',
+					'press': 'var(--rcx-button-success-disabled-background-color, var(--rcx-color-button-background-success-disabled, #c0f6e4))',
+				},
+				boxShadow: {
+					'focus-visible': '0 0 0 2px var(--rcx-button-success-focus-shadow-color, var(--rcx-color-stroke-light, #cbced1))',
+					'hover': 'none',
+					'press': 'none',
+				},
+			},
+			'secondary-success': secondarySuccess,
+			'secondary-success-disabled': {
+				cursor: 'not-allowed',
+				color: 'var(--rcx-button-secondary-success-disabled-color, var(--rcx-color-button-font-on-secondary-success-disabled, #6ce9c0))',
+				borderColor: {
+					'default':
+						'var(--rcx-button-secondary-success-disabled-border-color, var(--rcx-color-button-background-secondary-success-disabled, #ebecef))',
+					'focus-visible':
+						'var(--rcx-button-secondary-success-disabled-border-color, var(--rcx-color-button-background-secondary-success-disabled, #ebecef))',
+					'hover':
+						'var(--rcx-button-secondary-success-disabled-border-color, var(--rcx-color-button-background-secondary-success-disabled, #ebecef))',
+					'press':
+						'var(--rcx-button-secondary-success-disabled-border-color, var(--rcx-color-button-background-secondary-success-disabled, #ebecef))',
+				},
+				backgroundColor: {
+					'default':
+						'var(--rcx-button-secondary-success-disabled-background-color, var(--rcx-color-button-background-secondary-success-disabled, #ebecef))',
+					'focus-visible':
+						'var(--rcx-button-secondary-success-disabled-background-color, var(--rcx-color-button-background-secondary-success-disabled, #ebecef))',
+					'hover':
+						'var(--rcx-button-secondary-success-disabled-background-color, var(--rcx-color-button-background-secondary-success-disabled, #ebecef))',
+					'press':
+						'var(--rcx-button-secondary-success-disabled-background-color, var(--rcx-color-button-background-secondary-success-disabled, #ebecef))',
+				},
+				boxShadow: {
+					'focus-visible': '0 0 0 2px var(--rcx-button-secondary-success-focus-shadow-color, var(--rcx-color-stroke-light, #cbced1))',
+					'hover': 'none',
+					'press': 'none',
+				},
+			},
+			/* oxlint-enable object-shorthand */
+		},
+	},
+});
+
+const ButtonContent = styled(Text, {
+	render: 'span',
+	boxSizing: 'content-box',
+	display: 'inline-block',
+	width: '100%',
+	verticalAlign: 'top',
+	overflow: 'hidden',
+	textOverflow: 'ellipsis',
+	whiteSpace: 'nowrap',
+	wordWrap: 'inherit',
+});
 
 export type ButtonProps = {
 	/** Renders a link instead of a button, for actions that navigate or download. */
@@ -35,47 +596,47 @@ function Button({
 	loading,
 	disabled,
 	children,
+	className,
 	...props
 }: ButtonProps) {
-	const extraProps =
-		(is === 'a' && {
-			rel: external ? 'noopener noreferrer' : undefined,
-			target: external ? '_blank' : undefined,
-		}) ||
-		(is === 'button' && {
-			type: 'button',
-		}) ||
-		{};
+	const unavailable = disabled || loading;
 
-	const kindAndVariantProps = useMemo(() => (variant ? { [`rcx-button--${variant}`]: true } : {}), [variant]);
+	// The caller's attributes go on the element `render` names: zero-runtime rejects spreads on a frame
+	const attributes = {
+		...(is === 'a' ? { rel: external ? 'noopener noreferrer' : undefined, target: external ? '_blank' : undefined } : { type: 'button' }),
+		...props,
+	};
+
+	const paint = `${variant ?? 'secondary'}${unavailable ? '-disabled' : ''}`;
+	// Listed in the order `Box` gave the `rcx-` props it used to take: each one went in front of the last
+	const classes = [
+		loading && 'rcx-button--loading',
+		square && size && `rcx-button--${size}-square`,
+		compact && 'rcx-button--compact',
+		square && 'rcx-button--square',
+		size === 'large' && 'rcx-button--large',
+		size === 'medium' && 'rcx-button--medium',
+		size === 'small' && 'rcx-button--small',
+		variant && `rcx-button--${variant}`,
+		'rcx-button',
+		className,
+	]
+		.filter(Boolean)
+		.join(' ');
 
 	return (
-		<Box
-			is={is}
-			rcx-button
-			{...kindAndVariantProps}
-			rcx-button--small={size === 'small'}
-			rcx-button--medium={size === 'medium'}
-			rcx-button--large={size === 'large'}
-			rcx-button--square={square}
-			rcx-button--compact={compact}
-			rcx-button--tiny-square={size === 'tiny' && square}
-			rcx-button--mini-square={size === 'mini' && square}
-			rcx-button--small-square={size === 'small' && square}
-			rcx-button--medium-square={size === 'medium' && square}
-			rcx-button--large-square={size === 'large' && square}
-			rcx-button--loading={loading}
-			disabled={disabled || loading}
-			ref={ref}
-			{...extraProps}
-			{...props}
+		<ButtonFrame
+			render={<Box {...attributes} is={is} disabled={unavailable} ref={ref} />}
+			sizing={`|${size ?? ''}|${Boolean(compact)}|${Boolean(square)}`}
+			paint={paint}
+			className={classes}
 		>
-			<span className='rcx-button--content'>
+			<ButtonContent className='rcx-button--content'>
 				{icon && !loading && <Icon className='rcx-button__icon' size='x16' name={icon} />}
 				{loading && <Icon className='rcx-button__icon' size='x16' name='loading' />}
 				{children}
-			</span>
-		</Box>
+			</ButtonContent>
+		</ButtonFrame>
 	);
 }
 
