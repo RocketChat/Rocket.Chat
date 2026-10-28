@@ -2,7 +2,7 @@ import { execSync } from 'node:child_process';
 import { existsSync, readdirSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import react from '@vitejs/plugin-react';
 import autoprefixer from 'autoprefixer';
@@ -289,6 +289,7 @@ const prebundledWorkspaceDeps = [
 	'@rocket.chat/gazzodown',
 	'@rocket.chat/gazzodown-alt',
 	'@rocket.chat/i18n',
+	'@rocket.chat/icons',
 	'@rocket.chat/layout',
 	'@rocket.chat/message-parser',
 	'@rocket.chat/message-types',
@@ -342,6 +343,17 @@ export default defineConfig({
 		'process.env.MESSAGE_MAX_PARSE_LENGTH': JSON.stringify(process.env.MESSAGE_MAX_PARSE_LENGTH),
 	},
 	css: {
+		preprocessorOptions: {
+			scss: {
+				// Fuselage's stylesheets import the tokens as `~@rocket.chat/fuselage-tokens/...`, the webpack form.
+				importers: [
+					{
+						findFileUrl: (url: string) => (url.startsWith('~') ? pathToFileURL(require.resolve(url.slice(1))) : null),
+					},
+				],
+				charset: false,
+			},
+		},
 		postcss: {
 			plugins: [postcssEasyImport(), postcssCustomProperties({ preserve: true }), postcssMediaMinmax(), postcssNested(), autoprefixer()],
 		},
