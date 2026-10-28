@@ -74,6 +74,45 @@ function AssetSettingInput({ _id, label, value, hint, asset, required, disabled,
 			}
 		}
 
+		/* A file input's label can't be a Button, so it carries the primary look of one */
+		& .rcx-button {
+			overflow: hidden;
+			display: inline-block;
+			min-width: 5rem;
+			height: 2.5rem;
+			padding-block: calc((2.5rem - 1.25rem) / 2 - 2px);
+			padding-inline: calc(16px - 2px);
+			border: var(--rcx-button-border-width, 1px) solid
+				var(--rcx-button-primary-border-color, var(--rcx-color-button-background-primary-default, #156ff5));
+			border-radius: var(--rcx-button-border-radius, var(--rcx-border-radius-medium, 0.25rem));
+			background-color: var(--rcx-button-primary-background-color, var(--rcx-color-button-background-primary-default, #156ff5));
+			color: var(--rcx-button-primary-color, var(--rcx-color-button-font-on-primary, #fff));
+			font-size: 0.875rem;
+			font-weight: 500;
+			line-height: 1.25rem;
+			text-align: center;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+			cursor: pointer;
+
+			&:hover {
+				border-color: var(--rcx-button-primary-hover-border-color, var(--rcx-color-button-background-primary-hover, #095ad2));
+				background-color: var(--rcx-button-primary-hover-background-color, var(--rcx-color-button-background-primary-hover, #095ad2));
+			}
+
+			&:active {
+				border-color: var(--rcx-button-primary-active-border-color, var(--rcx-color-button-background-primary-press, #10529e));
+				background-color: var(--rcx-button-primary-active-background-color, var(--rcx-color-button-background-primary-press, #10529e));
+			}
+
+			&.is-disabled {
+				border-color: var(--rcx-button-primary-disabled-border-color, var(--rcx-color-button-background-primary-disabled, #d1ebfe));
+				background-color: var(--rcx-button-primary-disabled-background-color, var(--rcx-color-button-background-primary-disabled, #d1ebfe));
+				color: var(--rcx-button-primary-disabled-color, var(--rcx-color-button-font-on-primary-disabled, #fff));
+				cursor: not-allowed;
+			}
+		}
+
 		& .preview {
 			overflow: hidden;
 			width: 100px;

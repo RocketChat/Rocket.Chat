@@ -28,6 +28,16 @@ const config: StorybookConfig = {
 		...(zeroRuntime && configType === 'DEVELOPMENT' && { base: '/' }),
 		// Stories render the stylesheets as written: the library build's PostCSS plugins and the CSS minifier reorder and
 		// round declarations.
+		// The stories import the Tamagui config through this name: the runtime needs it, the compiled stories must not reach it
+		resolve: {
+			...config.resolve,
+			alias: [
+				...(Array.isArray(config.resolve?.alias)
+					? config.resolve.alias
+					: Object.entries(config.resolve?.alias ?? {}).map(([find, replacement]) => ({ find, replacement }))),
+				{ find: 'fuselage-tamagui-config', replacement: join(__dirname, zeroRuntime ? 'empty.ts' : '../src/tamagui.config.ts') },
+			],
+		},
 		css: { ...config.css, postcss: { plugins: [] } },
 		build: { ...config.build, cssMinify: false },
 		plugins: [

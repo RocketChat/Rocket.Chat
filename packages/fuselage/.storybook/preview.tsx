@@ -66,7 +66,7 @@ export default {
 	},
 	// Stories that place elements by their measured size, like tooltips, must be measured in the final fonts,
 	// or the visual regression snapshots render where the fallback font left them.
-	loaders: [() => Promise.all([...document.fonts].map((font) => font.load()))],
+	loaders: [() => import('fuselage-tamagui-config'), () => Promise.all([...document.fonts].map((font) => font.load()))],
 	decorators: [
 		(Story) => {
 			const dark = useDarkMode();
