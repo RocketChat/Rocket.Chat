@@ -177,6 +177,8 @@ export const allowlist: Record<string, Record<string, Options>> = {
 	'src/components/NavBar/NavBar.tsx': { NavBarFrame: {} },
 	'src/components/NavBar/NavBarGroup.tsx': { NavBarGroup: {} },
 	'src/components/NavBar/NavBarSection.tsx': { NavBarSectionFrame: {} },
+	'src/components/Sidebar/Sidebar.tsx': { SidebarFrame: {} },
+	'src/components/Item/ItemGroup.tsx': { ItemGroupFrame: {} },
 	'src/components/Sidebar/SidebarAccordion.tsx': { SidebarAccordionFrame: {}, SidebarAccordionWrapper: {} },
 	'src/components/Sidebar/SidebarAccordionItem.tsx': {
 		SidebarAccordionItemFrame: {},
