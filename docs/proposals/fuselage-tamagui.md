@@ -268,7 +268,7 @@ This is the one list to track removing Tamagui's runtime from Fuselage's web bui
 - [x] `group`: Message and Item reveal their parts with parent rules in the `fuselage` layer.
 - [x] `TooltipArrow`: its side and align, which set `inset` together, are one `placement` variant.
 - [ ] Other style props computed at render rather than chosen from a variant (the `Modal` and `ModalHeroImage` sizes, and whatever else the lowering report lists): a finite variant, or a CSS custom property through `style`.
-- [ ] `context:` and `createStyledContext` (6 / 4: Message, MessageToolbar, Card…): a React context read by the lowered component, or a `data-*` attribute on the parent with a descendant selector.
+- [x] `context:` and `createStyledContext`: the parts of Avatar stacks, Cards and Messages that followed their parent only changed a style, so they follow it with descendant rules in the `fuselage` layer.
 - [x] `animation:` (Skeleton, the ProgressBar shine, Throbber): the frames take their `@keyframes` from plain CSS classes.
 - [x] `getTokens` in PaletteStyleTag: already a local function over `fuselage-tokens`' JSON, it never reads Tamagui's config.
 - [ ] `isTamaguiComponent`: a marker the lowered component sets.
@@ -398,9 +398,8 @@ The goal is no SCSS, and as little CSS as Tamagui allows. Each component's resid
   - Declaring a group with no subscriber costs nothing.
   - Removing the subscribers moves the cache warm-up to the first update, which gets about 17% slower; later updates are unchanged.
 - **Container queries**: `container="<name>"` on the parent sets `container-type: inline-size`, and children use `'@md/<name>'` clauses. Only use them where `develop` already had a container.
-- **Cross-component styles** (one component styling another's parts): pass a variant from the parent, or share one with `createStyledContext`. Don't reach into other components with selectors.
-  - A styled frame with `context` hands its variant props to descendant frames that use the same context, with no Provider.
-  - A frame takes one `context`, and a nested Provider resets the other keys to their defaults. Use separate contexts and read them with `useStyledContext()` when several values travel.
+- **Cross-component styles** (one component styling another's parts): pass a variant from the parent. Don't reach into other components with selectors.
+  - Not `context:` or `createStyledContext`: they need Tamagui's runtime. A style a part takes from its parent is a descendant rule on their `rcx-` classes in the component's `.styles.css`, in the `fuselage` layer (`.rcx-card__horizontal .rcx-card__col`); a value a part needs to choose its behavior or variant is a plain React context read by the plain component, which passes it to the frame as a variant.
   - When the other component has no variant for it, a css-in-js class (`useStyle`) on it is the fallback. Avoid inline `style`: it adds an attribute to the DOM.
 - **`:has()`**: let the child register in a parent context (for example "has an addon"), then style through a variant.
 - **Attribute selectors** (`[aria-selected]`, `[tabindex]`): the component already knows the prop, so map it to a variant.

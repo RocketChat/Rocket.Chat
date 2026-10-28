@@ -313,8 +313,9 @@ code (composer mentions) renders the highlight classes on raw elements */
 	box-shadow: 0 0 0 2px var(--rcx-color-stroke-extra-light-highlight, #d1ebfe);
 }
 
-/* What the message group clauses did, as plain rules: a group clause subscribes each element to its message's state at
-   about 28 µs per element on mount, and every message renders several. In the `fuselage` layer, where those clauses were. */
+/* Parts that follow their message's state, as plain rules: a group clause subscribes each element to its message's state at
+   about 28 µs per element on mount, and every message renders several, and a styled context needs Tamagui's runtime.
+   In the `fuselage` layer, where those clauses were. */
 @layer fuselage {
 	@media (hover: hover) {
 		.rcx-message:hover .rcx-message-toolbar__wrapper {
@@ -339,6 +340,21 @@ code (composer mentions) renders the highlight classes on raw elements */
 	.rcx-message:focus-visible .rcx-message-toolbar,
 	.rcx-message:focus-visible .rcx-message-reactions__reaction--action {
 		opacity: 1;
+	}
+
+	.rcx-message-toolbar__wrapper--visible .rcx-message-toolbar {
+		opacity: 1;
+	}
+
+	.rcx-message .rcx-message-toolbar {
+		position: absolute;
+		z-index: 10;
+		top: -1.5rem;
+		inset-inline-end: 0;
+	}
+
+	.rcx-message--pending .rcx-message-body {
+		opacity: 0.4;
 	}
 }
 
