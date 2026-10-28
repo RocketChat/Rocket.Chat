@@ -5,7 +5,6 @@ import { isValidElement, useContext } from 'react';
 
 import { ButtonBadge, ButtonFrame, getButtonStates, renderButtonElement } from './ButtonFrame';
 import { cx } from '../../helpers/composeClassNames';
-import { resolveFontColor } from '../../styleTokens';
 import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 import { Icon } from '../Icon';
@@ -100,7 +99,7 @@ function IconButton({
 				className,
 			)}
 			{...getButtonStates(kindByVariant[variant] ?? 'icon', disabled, segment, pressed)}
-			{...(color && { color: resolveFontColor(color) })}
+			glyphColor={color}
 		>
 			{isValidElement<any>(icon) ? icon : <Icon name={icon} size={iconSizes[size]} />}
 			{Boolean(badge) && (

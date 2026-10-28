@@ -11,6 +11,7 @@ import {
 	type ButtonKind,
 	type GhostKind,
 } from './buttonColors';
+import { textIconColors } from '../../Theme';
 import { borderWidth, fontFamily, fontScale, size, spacing } from '../../styleTokens';
 import type { FontScaleName } from '../../styleTokens';
 
@@ -154,7 +155,7 @@ export const ButtonFrame = styled(View, {
 	borderRadius: buttonBorderRadius,
 	...kindStyle(buttonColors.secondary),
 
-	// Prop order decides which variant wins: `look`, then `ghost`
+	// Prop order decides which variant wins: `look`, then `ghost`, then `glyphColor`
 	variants: {
 		// Not a `disabled` variant: Tamagui would add `aria-disabled`
 		look: looks,
@@ -200,6 +201,11 @@ export const ButtonFrame = styled(View, {
 			GhostKind,
 			ReturnType<typeof ghostStyle>
 		>,
+		// After `ghost`: an icon button's glyph color wins over its kind's
+		glyphColor: {
+			default: { color: String(textIconColors['font-default']) },
+			danger: { color: String(textIconColors['font-danger']) },
+		},
 	} as const,
 });
 
