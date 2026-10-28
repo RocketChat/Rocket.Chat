@@ -376,6 +376,10 @@ $item-group-narrow-width: 320px;
 		@include reveal-actions;
 	}
 
+	&:focus-within .rcx-item__actions-inner {
+		overflow: visible;
+	}
+
 	.rcx-item__meta {
 		font-weight: 400;
 	}
