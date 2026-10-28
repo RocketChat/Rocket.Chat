@@ -34,6 +34,25 @@ export const allowlist: Record<string, Record<string, Options>> = {
 	'src/components/Bubble/BubbleButton.tsx': { BubbleLabel: {}, BubbleButtonFrame: {} },
 	'src/components/Bubble/BubbleItem.tsx': { BubbleItemFrame: {} },
 	'src/components/SplitButton/SplitButton.tsx': { SplitButtonFrame: {} },
+	'src/components/CheckBox/CheckBox.tsx': { CheckBoxFake: {}, CheckBoxMark: {} },
+	'src/components/CheckBox/SelectionButtonFrames.tsx': { SelectionButtonLabel: {}, SelectionButtonInputFrame: {} },
+	'src/components/Field/FieldFrames.tsx': {
+		FieldFrame: {},
+		FieldRowFrame: {},
+		FieldDescriptionFrame: {},
+		FieldHintFrame: {},
+		FieldErrorFrame: {},
+		FieldLinkFrame: {},
+	},
+	'src/components/FieldGroup/FieldGroup.tsx': { FieldGroupFrame: {} },
+	'src/components/InputBox/Input.tsx': { InputFrame: {} },
+	'src/components/InputBox/InputBoxSkeleton.tsx': { InputBoxSkeletonFrame: {} },
+	'src/components/InputBox/InputBoxWrapper.tsx': { InputBoxWrapperFrame: {} },
+	'src/components/Label/Label.tsx': { LabelFrame: {}, LabelRequired: {} },
+	'src/components/Label/LabelInfo.tsx': { LabelInfoFrame: {} },
+	'src/components/Option/OptionDescriptionBlock.tsx': { OptionDescriptionBlockFrame: {} },
+	'src/components/RadioButton/RadioButton.tsx': { RadioButtonFake: {}, RadioButtonDot: {} },
+	'src/components/ToggleSwitch/ToggleSwitch.tsx': { ToggleSwitchFake: {}, ToggleSwitchKnob: {} },
 };
 
 const root = import.meta.dirname;

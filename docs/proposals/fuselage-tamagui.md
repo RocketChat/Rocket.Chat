@@ -287,7 +287,7 @@ A computed `className` or a `{...props}` spread at a frame's use-site doesn't ne
 - [ ] Message family.
 - [ ] Item and Sidebar family.
 - [x] Button family.
-- [ ] Inputs and selects.
+- [x] Inputs and selects.
 - [ ] Containers (Modal, Contextualbar, Card, Table, Tile…).
 - [ ] Everything else, until both ratchets reach zero.
 
