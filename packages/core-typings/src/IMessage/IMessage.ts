@@ -93,6 +93,10 @@ const MessageTypes = [
 	'discussion-created',
 	'abac-removed-user-from-room',
 	'abac-removed-users-from-room',
+	'user-history-restricted',
+	'user-history-restored',
+	'room-set-history-hidden-for-new-members',
+	'room-removed-history-hidden-for-new-members',
 	...TeamMessageTypesValues,
 	...LivechatMessageTypesValues,
 ] as const;

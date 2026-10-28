@@ -9,6 +9,7 @@ import { canSendMessageAsync } from '../../lib/authorization/canSendMessage';
 import { hasAtLeastOnePermissionAsync } from '../../lib/authorization/hasPermission';
 import { i18n } from '../../lib/i18n';
 import { attachMessage } from '../../lib/messages/attachMessage';
+import { canSeeMessage } from '../../lib/messages/historyVisibility';
 import { sendMessage } from '../../lib/messages/sendMessage';
 import { addUserToRoom } from '../../lib/rooms/addUserToRoom';
 import { createRoom } from '../../lib/rooms/createRoom';
@@ -76,7 +77,7 @@ const create = async ({
 	let message: null | IMessage = null;
 	if (pmid) {
 		message = await Messages.findOneById(pmid);
-		if (!message) {
+		if (!message || !(await canSeeMessage(user._id, message))) {
 			throw new ClientSafeError('error-invalid-message', 'Invalid message', {
 				method: 'DiscussionCreation',
 			});
@@ -183,6 +184,7 @@ const create = async ({
 			topic: discussionTopic,
 			prid,
 			encrypted,
+			...(parentRoom.hideHistoryForNewMembers && { hideHistoryForNewMembers: true }),
 		},
 		{
 			creator: user._id,

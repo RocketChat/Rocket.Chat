@@ -8,6 +8,7 @@ import { isTruthy } from '@rocket.chat/tools';
 import { settings } from '../../../settings';
 import { canAccessRoomAsync, roomAccessAttributes } from '../../authorization';
 import { hasPermissionAsync } from '../../authorization/hasPermission';
+import { canSeeMessage } from '../../messages/historyVisibility';
 import { isTheLastMessage } from '../../messages/isTheLastMessage';
 import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../notifyListener';
 import { getUserAvatarURL } from '../../utils/getUserAvatarURL';
@@ -34,7 +35,7 @@ const shouldAdd = (attachments: MessageAttachment[], attachment: MessageQuoteAtt
 
 export async function pinMessage(message: IMessage, userId: string, pinnedAt?: Date) {
 	let originalMessage = await Messages.findOneById(message._id);
-	if (!originalMessage?.rid) {
+	if (!originalMessage?.rid || !(await canSeeMessage(userId, originalMessage))) {
 		throw new ClientSafeError('error-invalid-message', 'Message you are pinning was not found', {
 			method: 'pinMessage',
 			action: 'Message_pinning',

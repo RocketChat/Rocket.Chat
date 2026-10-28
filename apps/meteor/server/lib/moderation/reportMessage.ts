@@ -3,6 +3,7 @@ import type { IMessage, IUser } from '@rocket.chat/core-typings';
 import { Messages, ModerationReports, Rooms, Users } from '@rocket.chat/models';
 
 import { canAccessRoomAsync } from '../authorization/canAccessRoom';
+import { canSeeMessage } from '../messages/historyVisibility';
 
 export const reportMessage = async (messageId: IMessage['_id'], description: string, uid: IUser['_id']) => {
 	if (!uid) {
@@ -15,7 +16,7 @@ export const reportMessage = async (messageId: IMessage['_id'], description: str
 
 	const message = await Messages.findOneById(messageId);
 
-	if (!message) {
+	if (!message || !(await canSeeMessage(uid, message))) {
 		throw new Error('error-invalid-message_id');
 	}
 

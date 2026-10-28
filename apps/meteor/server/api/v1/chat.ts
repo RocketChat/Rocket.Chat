@@ -40,6 +40,14 @@ import { callbacks } from '../../lib/callbacks';
 import { applyAirGappedRestrictionsValidation } from '../../lib/cloud/license/airGappedRestrictionsWrapper';
 import { apiDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { deleteMessageValidatingPermission } from '../../lib/messages/deleteMessage';
+import type { HistoryCheckedMessage } from '../../lib/messages/historyVisibility';
+import {
+	canSeeMessage,
+	getHiddenMessageIds,
+	getHistoryVisibility,
+	historyCheckedMessageProjection,
+	restrictToVisibleHistory,
+} from '../../lib/messages/historyVisibility';
 import { processWebhookMessage } from '../../lib/messages/processWebhookMessage';
 import { pinMessage, unpinMessage } from '../../lib/messaging/pins/pinMessage';
 import { executeSetReaction } from '../../lib/messaging/reactions/setReaction';
@@ -1084,10 +1092,14 @@ const chatEndpoints = API.v1
 				throw new ClientSafeError('error-not-allowed', 'Not allowed');
 			}
 
-			const { cursor, totalCount } = Messages.findPaginatedPinnedByRoom(roomId, {
-				skip: offset,
-				limit: count,
-			});
+			const { cursor, totalCount } = Messages.findPaginatedPinnedByRoom(
+				roomId,
+				{
+					skip: offset,
+					limit: count,
+				},
+				await getHistoryVisibility(this.userId, roomId),
+			);
 
 			const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 
@@ -1143,7 +1155,11 @@ const chatEndpoints = API.v1
 				msg: new RegExp(escapeRegExp(text || ''), 'i'),
 			};
 
-			const threadQuery = { ...typeThread, rid: room._id, tcount: { $exists: true } };
+			const threadQuery = await restrictToVisibleHistory(this.userId, room._id, {
+				...typeThread,
+				rid: room._id,
+				tcount: { $exists: true },
+			});
 			const { cursor, totalCount } = await Messages.findPaginated<IThreadMainMessage>(threadQuery, {
 				sort: sort || { tlm: -1 },
 				skip: offset,
@@ -1212,7 +1228,7 @@ const chatEndpoints = API.v1
 			return API.v1.success({
 				threads: {
 					update: await Messages.find(
-						{ ...threadQuery, _updatedAt: { $gt: updatedSinceDate } },
+						await restrictToVisibleHistory(this.userId, rid, { ...threadQuery, _updatedAt: { $gt: updatedSinceDate } }),
 						{
 							sort,
 							projection: fields,
@@ -1256,14 +1272,14 @@ const chatEndpoints = API.v1
 				throw new ClientSafeError('error-not-allowed', 'Threads Disabled');
 			}
 
-			const thread = await Messages.findOneById(tmid, { projection: { rid: 1 } });
+			const thread = await Messages.findOneById<HistoryCheckedMessage>(tmid, { projection: historyCheckedMessageProjection });
 			if (!thread?.rid) {
 				throw new ClientSafeError('error-invalid-message', 'Invalid Message');
 			}
 			const user = await Users.findOneById(this.userId, { projection: { _id: 1 } });
 			const room = await Rooms.findOneById(thread.rid, { projection: { ...roomAccessAttributes, t: 1, _id: 1 } });
 
-			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
+			if (!room || !user || !(await canAccessRoomAsync(room, user)) || !(await canSeeMessage(this.userId, thread))) {
 				throw new ClientSafeError('error-not-allowed', 'Not Allowed');
 			}
 
@@ -1344,7 +1360,7 @@ const chatEndpoints = API.v1
 			} else {
 				updatedSinceDate = new Date(updatedSince);
 			}
-			const thread = await Messages.findOneById(tmid, { projection: { rid: 1 } });
+			const thread = await Messages.findOneById<HistoryCheckedMessage>(tmid, { projection: historyCheckedMessageProjection });
 			if (!thread?.rid) {
 				throw new ClientSafeError('error-invalid-message', 'Invalid Message');
 			}
@@ -1352,7 +1368,7 @@ const chatEndpoints = API.v1
 			const user = await Users.findOneById(this.userId, { projection: { _id: 1 } });
 			const room = await Rooms.findOneById(thread.rid, { projection: { ...roomAccessAttributes, t: 1, _id: 1 } });
 
-			if (!room || !user || !(await canAccessRoomAsync(room, user))) {
+			if (!room || !user || !(await canAccessRoomAsync(room, user)) || !(await canSeeMessage(this.userId, thread))) {
 				throw new ClientSafeError('error-not-allowed', 'Not Allowed');
 			}
 			return API.v1.success({
@@ -1535,7 +1551,9 @@ const chatEndpoints = API.v1
 		async function action() {
 			const { messageIds } = this.bodyParams;
 
-			const messages = await Messages.findVisibleByIds(messageIds).toArray();
+			const foundMessages = await Messages.findVisibleByIds(messageIds).toArray();
+			const hiddenMessageIds = await getHiddenMessageIds(this.userId, foundMessages);
+			const messages = foundMessages.filter(({ _id }) => !hiddenMessageIds.has(_id));
 			if (!messages.length) {
 				return API.v1.notFound();
 			}

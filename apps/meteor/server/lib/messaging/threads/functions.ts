@@ -4,6 +4,7 @@ import { Messages, Subscriptions, NotificationQueue } from '@rocket.chat/models'
 
 import { getMentions, getUserIdsFromHighlights } from '../../../hooks/messages/notifyUsersOnMessage';
 import { callbacks } from '../../callbacks';
+import { getMembersWithoutAccessToMessage } from '../../messages/historyVisibility';
 import { notifyOnSubscriptionChangedByRoomIdAndUserIds, notifyOnSubscriptionChangedByRoomIdAndUserId } from '../../notifyListener';
 
 export async function reply({ tmid }: { tmid?: string }, message: IMessage, parentMessage: IMessage, followers: string[]) {
@@ -13,7 +14,11 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 
 	const { rid, ts, u } = message;
 
-	const { toAll, toHere, mentionIds } = await getMentions(message);
+	const [{ toAll, toHere, mentionIds: allMentionIds }, membersWithoutAccess] = await Promise.all([
+		getMentions(message),
+		getMembersWithoutAccessToMessage(message),
+	]);
+	const mentionIds = allMentionIds.filter((userId) => !membersWithoutAccess.has(userId));
 
 	const addToReplies = [
 		...new Set([
@@ -25,10 +30,11 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 
 	await Messages.updateRepliesByThreadId(tmid, addToReplies, ts);
 
-	const [highlightsUids, threadFollowers] = await Promise.all([
+	const [allHighlightsUids, threadFollowers] = await Promise.all([
 		getUserIdsFromHighlights(rid, message),
 		Messages.getThreadFollowsByThreadId(tmid),
 	]);
+	const highlightsUids = allHighlightsUids.filter((userId) => !membersWithoutAccess.has(userId));
 
 	const threadFollowersUids = threadFollowers?.filter((userId) => userId !== u._id && !mentionIds.includes(userId)) || [];
 

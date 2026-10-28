@@ -5,6 +5,7 @@ import { Messages } from '@rocket.chat/models';
 import { check } from 'meteor/check';
 
 import { canAccessRoomIdAsync } from '../../../server/lib/authorization/canAccessRoom';
+import { canSeeMessage, historyCheckedMessageProjection } from '../../../server/lib/messages/historyVisibility';
 import { ReadReceipt } from '../lib/message-read-receipt/ReadReceipt';
 
 export const getReadReceiptsFunction = async function (messageId: IMessage['_id'], userId: string): Promise<IReadReceiptWithUser[]> {
@@ -13,8 +14,8 @@ export const getReadReceiptsFunction = async function (messageId: IMessage['_id'
 	}
 	check(messageId, String);
 
-	const message = await Messages.findOneById(messageId, { projection: { _id: 1, rid: 1, receiptsArchived: 1 } });
-	if (!message) {
+	const message = await Messages.findOneById(messageId, { projection: { ...historyCheckedMessageProjection, receiptsArchived: 1 } });
+	if (!message || !(await canSeeMessage(userId, message))) {
 		throw new ClientSafeError('error-invalid-message', 'Invalid message', {
 			method: 'getReadReceipts',
 		});

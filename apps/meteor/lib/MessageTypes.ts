@@ -54,6 +54,22 @@ export const MessageTypesValues: Array<{ key: MessageTypesValuesType; i18nLabel:
 		i18nLabel: 'Message_HideType_user_unbanned',
 	},
 	{
+		key: 'user-history-restricted',
+		i18nLabel: 'Message_HideType_user_history_restricted',
+	},
+	{
+		key: 'user-history-restored',
+		i18nLabel: 'Message_HideType_user_history_restored',
+	},
+	{
+		key: 'room-set-history-hidden-for-new-members',
+		i18nLabel: 'Message_HideType_room_set_history_hidden_for_new_members',
+	},
+	{
+		key: 'room-removed-history-hidden-for-new-members',
+		i18nLabel: 'Message_HideType_room_removed_history_hidden_for_new_members',
+	},
+	{
 		key: 'r', // room name changed
 		i18nLabel: 'Message_HideType_r',
 	},

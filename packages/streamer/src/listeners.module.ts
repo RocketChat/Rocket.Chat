@@ -19,6 +19,7 @@ import { parse } from '@rocket.chat/message-parser';
 
 import { statusVisibilityGate } from './StatusVisibilityGate';
 import { refreshVisibility } from './StreamPresence';
+import { updateHistoryCutoff } from './historyVisibility';
 import type { NotificationsModule } from './notifications.module';
 
 /** Synchronous view of setting values; `undefined` when the host has no value cached. */
@@ -277,6 +278,8 @@ export class ListenersModule {
 				return;
 			}
 
+			updateHistoryCutoff(subscription);
+
 			// emit a removed event on msg stream to remove the user's stream-room-messages subscription when the user is removed from room
 			if (clientAction === 'removed') {
 				notifications.streamRoomMessage.__emit(subscription.u._id, clientAction, subscription);
@@ -284,7 +287,7 @@ export class ListenersModule {
 
 			notifications.streamUser.__emit(subscription.u._id, clientAction, subscription);
 
-			notifications.notifyUserInThisInstance(subscription.u._id, 'subscriptions-changed', clientAction, subscription as any);
+			notifications.notifyUserInThisInstance(subscription.u._id, 'subscriptions-changed', clientAction, subscription);
 		});
 
 		service.onEvent('watch.roles', ({ clientAction, role }): void => {
@@ -381,7 +384,7 @@ export class ListenersModule {
 			// this emit will cause the user to receive a 'rooms-changed' event
 			notifications.streamUser.__emit(room._id, clientAction, room);
 
-			notifications.streamRoomData.emitWithoutBroadcast(room._id, room as IOmnichannelRoom);
+			notifications.streamRoomData.emitWithoutBroadcast(room._id, room);
 		});
 
 		service.onEvent('watch.users', (event): void => {

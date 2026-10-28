@@ -283,6 +283,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		userId: string,
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>>;
+	setHideHistoryForNewMembersById(_id: IRoom['_id'], hideHistoryForNewMembers: boolean): Promise<UpdateResult>;
 	setAllowReactingWhenReadOnlyById(
 		roomId: string,
 		allowReactingWhenReadOnly: NonNullable<IRoom['reactWhenReadOnly']>,

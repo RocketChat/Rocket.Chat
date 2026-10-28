@@ -27,6 +27,7 @@ export const CoreModules = [
 	'fips',
 	'experimental-enterprise-features',
 	'video-conference-native',
+	'restricted-message-history',
 ] as const;
 
 export type InternalModuleName = (typeof CoreModules)[number];

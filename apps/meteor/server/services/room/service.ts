@@ -16,6 +16,7 @@ import { getNameForDMs } from './getNameForDMs';
 import { FederationActions } from './hooks/BeforeFederationActions';
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../lib/getSubscriptionAutotranslateDefaultConfig';
+import { getHistoryVisibleFromForNewMember } from '../../lib/messages/historyVisibility';
 import { readThread } from '../../lib/messaging/threads/functions';
 import {
 	notifyOnSubscriptionChanged,
@@ -175,7 +176,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	}
 
 	async getRouteLink(room: AtLeast<IRoom, '_id' | 't' | 'name'>): Promise<string | boolean> {
-		return roomCoordinator.getRouteLink(room.t as string, { rid: room._id, name: room.name });
+		return roomCoordinator.getRouteLink(room.t, { rid: room._id, name: room.name });
 	}
 
 	/**
@@ -313,9 +314,11 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 		roles?: ISubscription['roles'];
 	}): Promise<string | undefined> {
 		const autoTranslateConfig = getSubscriptionAutotranslateDefaultConfig(userToBeAdded);
+		const historyVisibleFrom = await getHistoryVisibleFromForNewMember(room, ts);
 
 		const { insertedId } = await Subscriptions.createWithRoomAndUser(room, userToBeAdded, {
 			ts,
+			...(historyVisibleFrom && { historyVisibleFrom }),
 			open: !createAsHidden,
 			alert: createAsHidden ? false : !skipAlertSound,
 			unread: 1,

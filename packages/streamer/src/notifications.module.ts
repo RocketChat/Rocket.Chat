@@ -14,6 +14,7 @@ import { Logger } from '@rocket.chat/logger';
 import { Rooms, Subscriptions, Users, VideoConference } from '@rocket.chat/models';
 
 import { emit, StreamPresence } from './StreamPresence';
+import { canMemberReceiveMessage, canReceiveMessage, trackHistoryCutoff } from './historyVisibility';
 import { getCachedUserForPublication } from './publication-user-cache';
 import { Streamer as StreamerModule } from './streamer.module';
 import type { IStreamer, IStreamerConstructor, StreamerOptions, StreamRelay } from './types';
@@ -117,7 +118,7 @@ export class NotificationsModule {
 	}
 
 	private register<N extends StreamNames>(stream: IStreamer<N>): IStreamer<N> {
-		this.streams.set(stream.name, stream as IStreamer<StreamNames>);
+		this.streams.set(stream.name, stream);
 		return stream;
 	}
 
@@ -142,11 +143,21 @@ export class NotificationsModule {
 			}
 
 			const user = await getCachedUserForPublication(this);
-			return Authorization.canReadRoom(room, user ?? undefined, extraData);
+			const canRead = await Authorization.canReadRoom(room, user ?? undefined, extraData);
+			if (canRead && user) {
+				await trackHistoryCutoff(this, room._id, user._id);
+			}
+
+			return canRead;
+		});
+
+		this.streamRoomMessage.allowEmit(async function (eventName, message) {
+			return canReceiveMessage(this, eventName, message);
 		});
 
 		this.streamRoomMessage.allowRead('__my_messages__', 'all');
-		this.streamRoomMessage.allowEmit('__my_messages__', async function (_eventName, { rid }) {
+		this.streamRoomMessage.allowEmit('__my_messages__', async function (_eventName, message) {
+			const { rid } = message;
 			const user = await getCachedUserForPublication(this);
 			if (!user) {
 				return false;
@@ -164,6 +175,9 @@ export class NotificationsModule {
 				}
 
 				const roomParticipant = await Subscriptions.countByRoomIdAndUserId(room._id, user._id);
+				if (roomParticipant > 0 && !(await canMemberReceiveMessage(room._id, user._id, message))) {
+					return false;
+				}
 
 				return {
 					roomParticipant: roomParticipant > 0,

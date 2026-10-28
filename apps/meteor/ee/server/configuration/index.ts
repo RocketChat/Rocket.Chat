@@ -7,3 +7,4 @@ import './saml';
 import './videoConference';
 import './voip';
 import './abac';
+import './restricted-message-history';

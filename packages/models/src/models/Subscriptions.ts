@@ -2041,6 +2041,18 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateOne(query, update);
 	}
 
+	setHistoryVisibleFromByRoomIdAndUserId(roomId: string, userId: string, historyVisibleFrom: Date): Promise<UpdateResult> {
+		return this.updateOne({ 'rid': roomId, 'u._id': userId }, { $set: { historyVisibleFrom } });
+	}
+
+	unsetHistoryVisibleFromByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult> {
+		return this.updateOne({ 'rid': roomId, 'u._id': userId }, { $unset: { historyVisibleFrom: 1 } });
+	}
+
+	findWithHistoryVisibleFromByRoomId(roomId: string): FindCursor<Pick<ISubscription, 'u' | 'historyVisibleFrom'>> {
+		return this.find({ rid: roomId, historyVisibleFrom: { $exists: true } }, { projection: { u: 1, historyVisibleFrom: 1 } });
+	}
+
 	findJoinedByUserId<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		userId: ISubscription['u']['_id'],
 		options?: O,

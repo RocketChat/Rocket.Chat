@@ -613,7 +613,7 @@ describe('AISearchService', () => {
 			expect(results[0]).to.include({ _id: 'general-msg', rid: 'room-general', score: 0.8 });
 			expect(
 				Messages.findVisibleByIds.calledWith(['general-msg', 'blocked-msg'], {
-					projection: { _id: 1, rid: 1, msg: 1, ts: 1, u: 1 },
+					projection: { _id: 1, rid: 1, ts: 1, tmid: 1, tshow: 1, replies: 1, msg: 1, u: 1 },
 				}),
 			).to.be.true;
 

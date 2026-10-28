@@ -7,6 +7,7 @@ import { beforeAddUserToRoom } from '../../hooks/rooms/beforeAddUserToRoom';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { callbacks } from '../../lib/callbacks';
 import { getSubscriptionAutotranslateDefaultConfig } from '../../lib/getSubscriptionAutotranslateDefaultConfig';
+import { getHistoryVisibleFromForNewMember } from '../../lib/messages/historyVisibility';
 import { notifyOnSubscriptionChangedById } from '../../lib/notifyListener';
 import { getDefaultSubscriptionPref } from '../../lib/utils/lib/getDefaultSubscriptionPref';
 import { settings } from '../../settings';
@@ -55,8 +56,10 @@ export const addAllUserToRoomFn = async (userId: string, rid: IRoom['_id'], acti
 		}
 		await callbacks.run('beforeJoinRoom', user, room);
 		const autoTranslateConfig = getSubscriptionAutotranslateDefaultConfig(user);
+		const historyVisibleFrom = await getHistoryVisibleFromForNewMember(room, now);
 		const { insertedId } = await Subscriptions.createWithRoomAndUser(room, user, {
 			ts: now,
+			...(historyVisibleFrom && { historyVisibleFrom }),
 			open: true,
 			alert: true,
 			unread: 1,

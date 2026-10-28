@@ -31,7 +31,19 @@ type PaginatedRequest<S extends string = string> = {
 	/* deprecated */
 	query?: string;
 };
+
+/** What a member with restricted history can read in one room: messages from `since` on, and every message of the threads they follow. */
+export type MessageHistoryVisibility = {
+	since: Date;
+	followedThreadIds: IMessage['_id'][];
+	hiddenThreadIds: IMessage['_id'][];
+};
+
 export interface IMessagesModel extends IBaseModel<IMessage> {
+	findThreadIdsStartedBeforeAndFollowedBy(rid: IRoom['_id'], since: Date, uid: IUser['_id']): Promise<IMessage['_id'][]>;
+	findThreadIdsStartedBeforeAndActiveSinceNotFollowedBy(rid: IRoom['_id'], since: Date, uid: IUser['_id']): Promise<IMessage['_id'][]>;
+	filterVisibleTo(visibility: MessageHistoryVisibility): Filter<IMessage>;
+
 	findPaginatedVisibleByMentionAndRoomId<
 		T extends Document = IMessage,
 		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
@@ -39,18 +51,21 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		username: IUser['username'],
 		rid: IRoom['_id'],
 		options?: O,
+		visibility?: MessageHistoryVisibility,
 	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
 
 	findVisibleByMentionAndRoomId<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		username: IUser['username'],
 		rid: IRoom['_id'],
 		options?: O,
+		visibility?: MessageHistoryVisibility,
 	): FindCursor<DocumentWithProjection<T, O>>;
 
 	findStarredByUserAtRoom<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		userId: IUser['_id'],
 		roomId: IRoom['_id'],
 		options?: O,
+		visibility?: MessageHistoryVisibility,
 	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
 
 	findPaginatedByRoomIdAndType<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
@@ -107,6 +122,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	findPaginatedPinnedByRoom<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		roomId: IMessage['rid'],
 		options?: O,
+		visibility?: MessageHistoryVisibility,
 	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
 
 	setFederationReactionEventId(username: string, _id: string, reaction: string, federationEventId: string): Promise<void>;
@@ -225,6 +241,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		options?: O,
 		showThreadMessages?: boolean,
 		inclusive?: boolean,
+		visibility?: MessageHistoryVisibility,
 	): FindCursor<DocumentWithProjection<T, O>>;
 
 	findVisibleByRoomIdBetweenTimestampsNotContainingTypes<
@@ -238,6 +255,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		options?: O,
 		showThreadMessages?: boolean,
 		inclusive?: boolean,
+		visibility?: MessageHistoryVisibility,
 	): FindCursor<DocumentWithProjection<T, O>>;
 	countVisibleByRoomIdBetweenTimestampsNotContainingTypes(
 		roomId: string,
@@ -246,6 +264,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		types: MessageTypesValues[],
 		showThreadMessages?: boolean,
 		inclusive?: boolean,
+		visibility?: MessageHistoryVisibility,
 	): Promise<number>;
 	findVisibleByRoomIdBeforeTimestamp<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		roomId: string,
@@ -264,6 +283,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		roomId: IMessage['rid'],
 		{ updatedAt, minTs }: { updatedAt: { $lt: Date } | { $gt: Date }; minTs?: Date },
 		options?: O,
+		visibility?: MessageHistoryVisibility,
 	): FindCursor<DocumentWithProjection<T, O>>;
 	updateUsernameOfEditByUserId(userId: string, username: string): Promise<UpdateResult | Document>;
 	updateAllUsernamesByUserId(userId: string, username: string): Promise<UpdateResult | Document>;

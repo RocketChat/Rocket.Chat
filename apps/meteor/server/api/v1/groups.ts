@@ -41,6 +41,7 @@ import { hasAllPermissionAsync, hasPermissionAsync } from '../../lib/authorizati
 import { eraseRoom } from '../../lib/eraseRoom';
 import { findUsersOfRoom } from '../../lib/findUsersOfRoom';
 import { mountIntegrationQueryBasedOnPermissions } from '../../lib/integrations/lib/mountQueriesBasedOnPermission';
+import { getHistoryVisibleFrom, restrictToVisibleHistory } from '../../lib/messages/historyVisibility';
 import { openRoom } from '../../lib/openRoom';
 import { invitesByRawUsername } from '../../lib/rooms/invitesByRawUsername';
 import { toAbacAttributeDefinitions } from '../../lib/rooms/toAbacAttributeDefinitions';
@@ -73,7 +74,7 @@ import { getUserFromParams, getUserListFromParams, getUsernameListFromParams } f
 async function getRoomFromParams(params: { roomId?: string } | { roomName?: string }): Promise<IRoom> {
 	if (
 		(!('roomId' in params) && !('roomName' in params)) ||
-		('roomId' in params && !(params as { roomId?: string }).roomId && 'roomName' in params && !(params as { roomName?: string }).roomName)
+		('roomId' in params && !(params).roomId && 'roomName' in params && !(params as { roomName?: string }).roomName)
 	) {
 		throw new ClientSafeError('error-room-param-not-provided', 'The parameter "roomId" or "roomName" is required');
 	}
@@ -608,12 +609,16 @@ API.v1.get(
 			...(onlyConfirmed && { expiresAt: { $exists: false } }),
 		};
 
-		const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(filter, {
-			sort: sort || { name: 1 },
-			skip: offset,
-			limit: count,
-			projection: fields,
-		});
+		const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(
+			filter,
+			{
+				sort: sort || { name: 1 },
+				skip: offset,
+				limit: count,
+				projection: fields,
+			},
+			await getHistoryVisibleFrom(this.userId, filter.rid),
+		);
 
 		const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
 
@@ -1221,7 +1226,7 @@ API.v1.get(
 			_hidden: { $ne: true },
 		};
 
-		const { cursor, totalCount } = Messages.findPaginated(ourQuery, {
+		const { cursor, totalCount } = Messages.findPaginated(await restrictToVisibleHistory(this.userId, findResult.rid, ourQuery), {
 			sort: sort || { ts: -1 },
 			skip: offset,
 			limit: count,

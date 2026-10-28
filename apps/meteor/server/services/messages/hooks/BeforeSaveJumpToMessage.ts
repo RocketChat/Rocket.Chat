@@ -46,7 +46,7 @@ const removeQuoteAttachments = (message: IMessage) => {
 };
 
 type JumpToMessageInit = {
-	getMessages(messageIds: IMessage['_id'][]): Promise<IMessage[]>;
+	getMessages(messageIds: IMessage['_id'][], user: Pick<IUser, '_id'>): Promise<IMessage[]>;
 	getRooms(roomIds: IRoom['_id'][]): Promise<IRoom[] | IOmnichannelRoom[] | null>;
 	canAccessRoom(room: IRoom, user: Pick<IUser, '_id' | 'username' | 'name' | 'language'>): Promise<boolean>;
 	getUserAvatarURL(user?: string): string;
@@ -112,7 +112,7 @@ export class BeforeSaveJumpToMessage {
 			})
 			.filter(Boolean);
 
-		const msgs = await this.getMessages(linkedMessages.map((linkedMsg) => linkedMsg?.msgId) as string[]);
+		const msgs = await this.getMessages(linkedMessages.map((linkedMsg) => linkedMsg?.msgId) as string[], currentUser);
 
 		const validMessages = msgs.filter((msg) => validateAttachmentDeepness(msg, config.chainLimit));
 

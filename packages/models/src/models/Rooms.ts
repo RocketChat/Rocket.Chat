@@ -1084,6 +1084,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 	}
 
 	// 2
+	setHideHistoryForNewMembersById(_id: IRoom['_id'], hideHistoryForNewMembers: boolean): Promise<UpdateResult> {
+		return this.updateOne({ _id }, { $set: { hideHistoryForNewMembers } });
+	}
+
 	setAllowReactingWhenReadOnlyById(_id: IRoom['_id'], allowReacting: NonNullable<IRoom['reactWhenReadOnly']>): Promise<UpdateResult> {
 		const query: Filter<IRoom> = {
 			_id,

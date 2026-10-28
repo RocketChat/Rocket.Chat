@@ -8,10 +8,11 @@ import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
 import { settings } from '../../settings';
 import { joinPath } from '../fileUtils';
 import { i18n } from '../i18n';
+import { restrictToVisibleHistory } from '../messages/historyVisibility';
 
 const hideUserName = (username: string, userData: Pick<IUser, 'username'> | undefined, usersMap: Record<string, string>) => {
 	if (!usersMap[username]) {
-		if (userData && username === userData.username) {
+		if (username === userData?.username) {
 			usersMap[username] = username;
 		} else {
 			usersMap[username] = `User_${Object.keys(usersMap).length + 1}`;
@@ -214,15 +215,12 @@ export const exportRoomMessages = async (
 ) => {
 	const readPreference = readSecondaryPreferred();
 
-	const { cursor, totalCount } = Messages.findPaginated(
-		{ ...filter, rid },
-		{
-			sort: { ts: 1 },
-			skip,
-			limit,
-			readPreference,
-		},
-	);
+	const { cursor, totalCount } = Messages.findPaginated(await restrictToVisibleHistory(userData?._id, rid, { ...filter, rid }), {
+		sort: { ts: 1 },
+		skip,
+		limit,
+		readPreference,
+	});
 
 	const [results, total] = await Promise.all([cursor.toArray(), totalCount]);
 

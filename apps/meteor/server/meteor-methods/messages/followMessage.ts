@@ -5,6 +5,8 @@ import { Messages } from '@rocket.chat/models';
 
 import { RateLimiterClass as RateLimiter } from '../../lib/RateLimiter';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
+import type { HistoryCheckedMessage } from '../../lib/messages/historyVisibility';
+import { canSeeMessage, historyCheckedMessageProjection } from '../../lib/messages/historyVisibility';
 import { follow } from '../../lib/messaging/threads/functions';
 import { notifyOnMessageChange } from '../../lib/notifyListener';
 import { settings } from '../../settings';
@@ -26,6 +28,13 @@ export const followMessage = async (user: IUser, { mid }: { mid: IMessage['_id']
 	}
 
 	const id = message.tmid || message._id;
+
+	const threadRoot = message.tmid
+		? await Messages.findOneById<HistoryCheckedMessage>(id, { projection: historyCheckedMessageProjection })
+		: message;
+	if (!threadRoot || !(await canSeeMessage(user._id, threadRoot))) {
+		throw new ClientSafeError('error-not-allowed', 'not-allowed', { method: 'followMessage' });
+	}
 
 	const followResult = await follow({ tmid: id, uid: user._id });
 

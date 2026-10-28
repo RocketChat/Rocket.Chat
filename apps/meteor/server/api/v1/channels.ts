@@ -50,6 +50,7 @@ import { hasAllPermissionAsync, hasPermissionAsync } from '../../lib/authorizati
 import { eraseRoom } from '../../lib/eraseRoom';
 import { findUsersOfRoom } from '../../lib/findUsersOfRoom';
 import { mountIntegrationQueryBasedOnPermissions } from '../../lib/integrations/lib/mountQueriesBasedOnPermission';
+import { getHistoryVisibleFrom, restrictToVisibleHistory } from '../../lib/messages/historyVisibility';
 import { openRoom } from '../../lib/openRoom';
 import { invitesByRawUsername } from '../../lib/rooms/invitesByRawUsername';
 import { getUsersHiddenFrom, filterHiddenUsers, redactHiddenUsers } from '../../lib/statusVisibility/hiddenUsers';
@@ -531,7 +532,7 @@ API.v1.get(
 			return API.v1.forbidden();
 		}
 
-		const { cursor, totalCount } = Messages.findPaginated(ourQuery, {
+		const { cursor, totalCount } = Messages.findPaginated(await restrictToVisibleHistory(this.userId, findResult._id, ourQuery), {
 			sort: sort || { ts: -1 },
 			skip: offset,
 			limit: count,
@@ -1202,12 +1203,16 @@ API.v1.get(
 			...(onlyConfirmed && { expiresAt: { $exists: false } }),
 		};
 
-		const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(filter, {
-			sort: sort || { name: 1 },
-			skip: offset,
-			limit: count,
-			projection: fields,
-		});
+		const { cursor, totalCount } = await Uploads.findPaginatedWithoutThumbs(
+			filter,
+			{
+				sort: sort || { name: 1 },
+				skip: offset,
+				limit: count,
+				projection: fields,
+			},
+			await getHistoryVisibleFrom(this.userId, filter.rid),
+		);
 
 		const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
 
@@ -2125,7 +2130,7 @@ API.v1.get(
 			}
 		}
 
-		const { cursor, totalCount } = await Messages.findPaginated(ourQuery, {
+		const { cursor, totalCount } = await Messages.findPaginated(await restrictToVisibleHistory(this.userId, findResult._id, ourQuery), {
 			sort: sort || { ts: -1 },
 			skip: offset,
 			limit: count,

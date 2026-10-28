@@ -30,12 +30,17 @@ export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 		return this.updateOne({ _id: fileId }, { $set: { rid, 'federation.mrid': mrid } });
 	}
 
-	findPaginatedWithoutThumbs(query: Filter<IUpload> = {}, options?: FindOptions<IUpload>): FindPaginated<FindCursor<WithId<IUpload>>> {
+	findPaginatedWithoutThumbs(
+		query: Filter<IUpload> = {},
+		options?: FindOptions<IUpload>,
+		uploadedSince?: Date,
+	): FindPaginated<FindCursor<WithId<IUpload>>> {
 		return this.findPaginated(
 			{
 				typeGroup: { $ne: 'thumb' },
 				...query,
 				_hidden: { $ne: true },
+				...(uploadedSince && { $and: [{ uploadedAt: { $gte: uploadedSince } }] }),
 			},
 			options,
 		);
@@ -45,15 +50,17 @@ export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 		rid: IRoom['_id'],
 		uploadedAt?: Date,
 		options: Omit<FindOptions<IUpload>, 'sort'> = {},
+		uploadedSince?: Date,
 	): FindPaginated<FindCursor<WithId<IUpload>>> {
 		return this.findPaginated(
 			{
 				rid,
 				_hidden: { $ne: true },
 				typeGroup: 'image',
-				...(Boolean(uploadedAt) && {
+				...((uploadedAt || uploadedSince) && {
 					uploadedAt: {
-						$lte: uploadedAt,
+						...(uploadedAt && { $lte: uploadedAt }),
+						...(uploadedSince && { $gte: uploadedSince }),
 					},
 				}),
 			},

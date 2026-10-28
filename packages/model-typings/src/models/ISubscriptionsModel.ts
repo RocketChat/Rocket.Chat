@@ -381,6 +381,9 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	banByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
 	unbanToInvitedById(subId: string, inviter: Required<Pick<IUser, '_id' | 'username'>> & Pick<IUser, 'name'>): Promise<UpdateResult>;
 	setAbacLastTimeCheckedByUserIdAndRoomId(userId: string, roomId: string, time: Date): Promise<UpdateResult>;
+	setHistoryVisibleFromByRoomIdAndUserId(roomId: string, userId: string, historyVisibleFrom: Date): Promise<UpdateResult>;
+	unsetHistoryVisibleFromByRoomIdAndUserId(roomId: string, userId: string): Promise<UpdateResult>;
+	findWithHistoryVisibleFromByRoomId(roomId: string): FindCursor<Pick<ISubscription, 'u' | 'historyVisibleFrom'>>;
 	findJoinedByUserId<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		userId: ISubscription['u']['_id'],
 		options?: O,
