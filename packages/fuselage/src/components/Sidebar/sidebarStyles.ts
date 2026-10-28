@@ -67,12 +67,6 @@ export const hiddenWhileCollapsed = {
 	whiteSpace: { 'default': 'nowrap', 'group-hover/rcx-sidebar': 'inherit' },
 } as const;
 
-/**
- * Style props for the frame of another component the sidebar renders, such as an `Item` part or a `Chevron`. Those hand the
- * props they don't use to their Tamagui frame, where props win over the frame's own styles, as the sidebar's stylesheet used to.
- */
-export const frameStyle = (style: Record<string, unknown>) => style as Record<never, never>;
-
 /** The keyboard focus look of the sidebar's own clickable bars: a highlighted border instead of a ring. */
 export const focusBorder = {
 	borderWidth: borderWidth('default'),

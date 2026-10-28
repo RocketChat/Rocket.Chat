@@ -6,28 +6,12 @@ import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 import { ItemGroup } from '../Item';
 import { SidebarGroupTitle } from './SidebarGroupTitle';
 import { useCollapse } from './hooks/useCollapse';
-import { boxFull, frameStyle } from './sidebarStyles';
+import { boxFull } from './sidebarStyles';
 
 const SidebarCollapseGroupFrame = styled(View, {
 	...boxFull,
 	flexWrap: 'nowrap',
 });
-
-const panelStyle = {
-	visibility: 'hidden',
-	overflow: 'hidden',
-	height: 0,
-	margin: 0,
-	padding: 0,
-	listStyle: 'none',
-};
-
-const expandedPanelStyle = {
-	...panelStyle,
-	visibility: 'visible',
-	flexGrow: 1,
-	height: '100%',
-};
 
 type SidebarCollapseGroupProps = HTMLAttributes<HTMLDivElement> &
 	RefAttributes<HTMLDivElement> & {
@@ -83,7 +67,6 @@ function SidebarCollapseGroupBase({
 				role='list'
 				aria-labelledby={titleId}
 				ref={ref}
-				{...frameStyle(panelExpanded ? expandedPanelStyle : panelStyle)}
 				className={cx(
 					'rcx-sidebar-collapse-group__panel rcx-box--animated',
 					panelExpanded && 'rcx-sidebar-collapse-group__panel--expanded',

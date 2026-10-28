@@ -1,9 +1,7 @@
 import type { AllHTMLAttributes, ElementType } from 'react';
 
 import { cx } from '../../../helpers/composeClassNames';
-import { spacing } from '../../../styleTokens';
 import { Item } from '../../Item';
-import { frameStyle } from '../sidebarStyles';
 
 export type SidebarItemProps = {
 	selected?: boolean;
@@ -50,7 +48,6 @@ export const SidebarItem = ({
 		<Item
 			{...props}
 			{...(!isContainer && { href, target, rel, download })}
-			{...(level === 2 && frameStyle({ paddingBlock: spacing('x8') }))}
 			is={is}
 			inset='md'
 			selected={selected}

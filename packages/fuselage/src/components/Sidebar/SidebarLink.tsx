@@ -1,13 +1,11 @@
 import type { Keys as Icons } from '@rocket.chat/icons';
-import { useContext, type AnchorHTMLAttributes, type ReactNode } from 'react';
+import type { AnchorHTMLAttributes, ReactNode } from 'react';
 
 import { appendClassName } from '../../helpers/appendClassName';
 import { cx } from '../../helpers/composeClassNames';
 import { patchChildren } from '../../helpers/patchChildren';
 import { Icon } from '../Icon';
 import { Item, ItemActions, ItemIcon, ItemTitle, type ItemProps } from '../Item';
-import { SidebarCollapsedContext } from './Sidebar';
-import { frameStyle } from './sidebarStyles';
 
 export type SidebarLinkProps = {
 	selected?: boolean;
@@ -16,12 +14,7 @@ export type SidebarLinkProps = {
 	menu?: ReactNode;
 } & AnchorHTMLAttributes<HTMLAnchorElement>;
 
-// A collapsed sidebar shows only the icon until it is hovered
-const collapsedTitleStyle = frameStyle({ display: { 'default': 'none', 'group-hover/rcx-sidebar': 'block' } });
-
 const SidebarLink = ({ selected, icon, badge, menu, className, children, ...props }: SidebarLinkProps) => {
-	const collapsed = useContext(SidebarCollapsedContext);
-
 	return (
 		<Item
 			is='a'
@@ -39,7 +32,7 @@ const SidebarLink = ({ selected, icon, badge, menu, className, children, ...prop
 					<Icon name={icon} size='x20' />
 				</ItemIcon>
 			)}
-			<ItemTitle is='span' {...(collapsed && collapsedTitleStyle)} className='rcx-sidebar-item__title'>
+			<ItemTitle is='span' className='rcx-sidebar-item__title'>
 				{children}
 			</ItemTitle>
 			{badge}

@@ -25,3 +25,96 @@
 .rcx-item__row > .rcx-sidebar-item__subtitle.rcx-item__description {
 	flex-basis: 0;
 }
+
+/* The sidebar styles the `Item` parts and the `Chevron` it renders through the classes it gives them, since styles handed
+   to them as props need Tamagui's runtime. Two classes beat the parts' own atomic classes in the same layer */
+@layer fuselage {
+	.rcx-sidebar-item--level-2.rcx-item {
+		padding-block: 8px;
+	}
+
+	.rcx-sidebar--divider.rcx-item-divider {
+		border-color: var(--rcx-sidebar-color-stroke-extra-light, var(--rcx-color-stroke-light, #cbced1));
+	}
+
+	.rcx-sidebar-collapse-group__bar.rcx-item-group-header {
+		padding-block: 8px;
+
+		color: var(--rcx-color-font-secondary-info, #6c737a);
+	}
+
+	.rcx-sidebar-collapse-group__bar--empty.rcx-item-group-header {
+		color: var(--rcx-color-font-disabled, #cbced1);
+	}
+
+	/* After the empty one: a collapsed group can be both, and unread wins */
+	.rcx-sidebar-collapse-group__bar--unread.rcx-item-group-header {
+		color: var(--rcx-sidebar-item-color-highlighted, var(--rcx-color-font-titles-labels, #1f2329));
+	}
+
+	.rcx-sidebar-collapse-group__bar-button.rcx-item-group-title {
+		display: flex;
+		align-items: center;
+		flex: 1 1 0;
+
+		min-width: 0;
+
+		text-align: start;
+		column-gap: 4px;
+	}
+
+	.rcx-sidebar-collapse-group__bar-button--focusable.rcx-item-group-title {
+		cursor: pointer;
+
+		border: 1px solid transparent;
+		outline-style: none;
+	}
+
+	.rcx-sidebar-collapse-group__bar-button--focusable.rcx-item-group-title:focus-visible {
+		border-color: var(--rcx-color-stroke-highlight, #156ff5);
+		border-radius: var(--rcx-border-radius-medium, 0.25rem);
+		box-shadow: none;
+	}
+
+	.rcx-sidebar-collapse-group__panel.rcx-item-group {
+		visibility: hidden;
+		overflow: hidden;
+
+		height: 0;
+		margin: 0;
+		padding: 0;
+
+		list-style: none;
+	}
+
+	.rcx-sidebar-collapse-group__panel--expanded.rcx-item-group {
+		visibility: visible;
+		flex-grow: 1;
+
+		height: 100%;
+	}
+
+	/* The chevron only shows while its bar is hovered or holds keyboard focus */
+	.rcx-sidebar-accordion-item__chevron.rcx-chevron {
+		visibility: hidden;
+	}
+
+	.rcx-sidebar-accordion-item__bar:focus-visible > .rcx-sidebar-accordion-item__chevron {
+		visibility: visible;
+	}
+
+	/* A collapsed sidebar shows only a link's icon until it is hovered; this also reaches a sidebar nested in a collapsed one */
+	.rcx-sidebar--collapsed .rcx-sidebar-link .rcx-sidebar-item__title {
+		display: none;
+	}
+
+	@media (hover: hover) {
+		.rcx-sidebar-accordion-item__bar:hover > .rcx-sidebar-accordion-item__chevron {
+			visibility: visible;
+		}
+
+		.rcx-sidebar--collapsed:hover .rcx-sidebar-link .rcx-sidebar-item__title {
+			display: block;
+		}
+	}
+}
