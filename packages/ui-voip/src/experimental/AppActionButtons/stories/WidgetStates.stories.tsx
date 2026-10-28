@@ -110,7 +110,7 @@ const StateControls = () => {
 	const { state } = sessionState;
 
 	return (
-		<Box display='flex' flexDirection='column' alignItems='flex-start' marginBlockEnd={16} gap={8}>
+		<Box display='flex' flexDirection='column' alignItems='flex-start' marginBlockEnd='x16' gap='x8'>
 			<Box color='hint' fontScale='c1'>
 				Current state: <Tag>{state}</Tag>
 			</Box>

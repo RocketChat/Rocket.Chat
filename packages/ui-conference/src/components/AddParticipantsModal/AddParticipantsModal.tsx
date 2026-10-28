@@ -172,7 +172,7 @@ const AddParticipantsModal = ({ onClose }: AddParticipantsModalProps) => {
 									<CheckBox checked={value && canKeepHistory} disabled={!canKeepHistory} onChange={() => onChange(!value)} />
 								)}
 							/>
-							<Box marginInlineStart={8}>
+							<Box marginInlineStart='x8'>
 								<FieldLabel>{t('Keep_chat_history')}</FieldLabel>
 							</Box>
 						</FieldRow>
@@ -196,7 +196,7 @@ const AddParticipantsModal = ({ onClose }: AddParticipantsModalProps) => {
 						<FieldRow>
 							<Box display='flex' alignItems='center'>
 								<CheckBox checked={ring} onChange={toggleRing} />
-								<Box marginInlineStart={8}>
+								<Box marginInlineStart='x8'>
 									<FieldLabel>{t('Ring_people')}</FieldLabel>
 								</Box>
 							</Box>

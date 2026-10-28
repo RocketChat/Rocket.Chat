@@ -14,7 +14,7 @@ const PopupBlockedModal = ({ onClose, onConfirm }: PopupBlockedModalProps) => {
 	const workspaceUrl = useSetting('Site_Url');
 
 	const confirmButtonContent = (
-		<Stack direction='row' gap={8} align='center'>
+		<Stack direction='row' gap='x8' align='center'>
 			<Icon size='x20' name='new-window' />
 			{t('Open_call')}
 		</Stack>
@@ -37,7 +37,7 @@ const PopupBlockedModal = ({ onClose, onConfirm }: PopupBlockedModalProps) => {
 			onClose={onClose}
 		>
 			<>
-				<Box marginBlockEnd={24}>{t('Your_web_browser_blocked_Rocket_Chat_from_opening_tab')}</Box>
+				<Box marginBlockEnd='x24'>{t('Your_web_browser_blocked_Rocket_Chat_from_opening_tab')}</Box>
 				<Box>
 					{t('To_prevent_seeing_this_message_again_allow_popups_from_workspace_URL')}
 					<Box is='span' fontWeight={700}>
