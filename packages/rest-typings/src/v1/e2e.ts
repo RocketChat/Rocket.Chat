@@ -27,6 +27,7 @@ export const isE2eSetUserPublicAndPrivateKeysProps = ajv.compile<E2eSetUserPubli
 type E2eSetRoomKeyIdProps = {
 	rid: string;
 	keyID: string;
+	key?: string;
 };
 
 type e2eGetUsersOfRoomWithoutKeyParamsGET = {

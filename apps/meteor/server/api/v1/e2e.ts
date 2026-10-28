@@ -31,6 +31,7 @@ const LockMap = new ExpiryMap<string, boolean>(10000);
 type E2eSetRoomKeyIdProps = {
 	rid: string;
 	keyID: string;
+	key?: string;
 };
 
 type e2eGetUsersOfRoomWithoutKeyParamsGET = {
@@ -62,6 +63,9 @@ const E2eSetRoomKeyIdSchema = {
 			type: 'string',
 		},
 		keyID: {
+			type: 'string',
+		},
+		key: {
 			type: 'string',
 		},
 	},
@@ -190,9 +194,9 @@ const e2eEndpoints = API.v1
 		},
 
 		async function action() {
-			const { rid, keyID } = this.bodyParams;
+			const { rid, keyID, key } = this.bodyParams;
 
-			await setRoomKeyIDMethod(this.userId, rid, keyID);
+			await setRoomKeyIDMethod(this.userId, rid, keyID, key);
 
 			return API.v1.success();
 		},
