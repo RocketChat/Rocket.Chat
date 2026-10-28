@@ -211,9 +211,9 @@ export class SettingsRegistry {
 
 		const setting = isOverwritten ? settingFromCodeOverwritten : settingOverwrittenDefault;
 
-		await this.model.insertOne(setting); // no need to emit unless we remove the oplog
+		const storedSetting = await this.model.insertIfNotExists(setting);
 
-		this.store.set(setting);
+		this.store.set(storedSetting ?? setting);
 	}
 
 	/*
@@ -236,7 +236,7 @@ export class SettingsRegistry {
 		if (!this.store.has(_id)) {
 			options.ts = new Date();
 			this.store.set(options as ISetting);
-			await this.model.insertOne(options as ISetting);
+			await this.model.insertIfNotExists(options as ISetting);
 		}
 
 		if (!callback) {
