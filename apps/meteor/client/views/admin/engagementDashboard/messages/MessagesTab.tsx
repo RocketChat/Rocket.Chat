@@ -1,8 +1,8 @@
 import { useTranslation } from 'react-i18next';
 
-import EngagementDashboardCard from '../EngagementDashboardCard';
 import MessagesPerChannelSection from './MessagesPerChannelSection';
 import MessagesSentSection from './MessagesSentSection';
+import EngagementDashboardCard from '../layout/EngagementDashboardCard';
 
 export type MessagesTabProps = {
 	timezone: 'utc' | 'local';
