@@ -1,11 +1,11 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Text } from '@rocket.chat/fuselage';
 
 export type AppSecurityLabelProps = { children: string };
 
 const AppSecurityLabel = ({ children }: AppSecurityLabelProps) => (
-	<Box fontScale='h4' marginBlockEnd={8} color='titles-labels'>
+	<Text fontScale='h4' color='titles-labels'>
 		{children}
-	</Box>
+	</Text>
 );
 
 export default AppSecurityLabel;

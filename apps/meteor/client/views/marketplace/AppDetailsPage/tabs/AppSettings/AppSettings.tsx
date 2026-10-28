@@ -1,10 +1,11 @@
-import { Box, FieldGroup, Accordion, AccordionItem } from '@rocket.chat/fuselage';
+import { FieldGroup, Accordion, AccordionItem } from '@rocket.chat/fuselage';
 import { useRouteParameter } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import AppSetting from './AppSetting';
 import type { ISettings } from '../../../definitions/ISettings';
 import { useAppTranslation } from '../../../hooks/useAppTranslation';
+import AppDetailsTabPanel from '../../layout/AppDetailsTabPanel';
 
 export type AppSettingsProps = { settings: ISettings };
 
@@ -29,7 +30,7 @@ const AppSettings = ({ settings }: AppSettingsProps) => {
 	}, [settings]);
 
 	return (
-		<Box display='flex' flexDirection='column' maxWidth='x640' width='full' marginInline='auto'>
+		<AppDetailsTabPanel>
 			<Accordion>
 				{groupedSettings.map(([section, sectionSettings], index) => (
 					<AccordionItem key={section} title={tApp(section)} defaultExpanded={index === 0}>
@@ -41,7 +42,7 @@ const AppSettings = ({ settings }: AppSettingsProps) => {
 					</AccordionItem>
 				))}
 			</Accordion>
-		</Box>
+		</AppDetailsTabPanel>
 	);
 };
 
