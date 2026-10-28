@@ -8,7 +8,7 @@ import { settings } from '../../lib/settings';
 import { callLoginMethod, registerLoginWithMethod } from '../accounts';
 
 declare module 'meteor/accounts-base' {
-	// eslint-disable-next-line @typescript-eslint/no-namespace
+	// oxlint-disable-next-line @typescript-eslint/no-namespace
 	namespace Accounts {
 		/**
 		 * There is one case where the onlogout event is triggered with no user:
@@ -19,7 +19,6 @@ declare module 'meteor/accounts-base' {
 }
 
 declare module 'meteor/service-configuration' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Configuration {
 		logoutBehaviour?: 'SAML' | 'Local';
 		idpSLORedirectURL?: string;
@@ -45,20 +44,26 @@ export const logoutFromSamlIdp = async (): Promise<boolean> => {
 
 	console.info('SAML session terminated via SLO');
 
-	const { sdk } = await import('../../lib/SDKClient');
-	const result = await sdk.call('samlLogout', provider).catch(() => undefined);
+	// Any failure on the way to the identity provider falls back to the local logout.
+	try {
+		const { sdk } = await import('../../lib/SDKClient');
+		const result = await sdk.call('samlLogout', provider);
 
-	if (!result) {
+		if (!result) {
+			return false;
+		}
+
+		// Remove the userId from the client to prevent calls to the server while the logout is processed.
+		// If the logout fails, the userId will be reloaded on the resume call
+		removeStoredItem(STORAGE_KEYS.USER_ID);
+
+		// A nasty bounce: 'result' has the SAML LogoutRequest but we need a proper 302 to redirected from the server.
+		window.location.replace(absoluteUrl(`_saml/sloRedirect/${provider}/?redirect=${encodeURIComponent(result)}`));
+		return true;
+	} catch (error) {
+		console.warn('[saml] single logout failed, logging out locally', error);
 		return false;
 	}
-
-	// Remove the userId from the client to prevent calls to the server while the logout is processed.
-	// If the logout fails, the userId will be reloaded on the resume call
-	removeStoredItem(STORAGE_KEYS.USER_ID);
-
-	// A nasty bounce: 'result' has the SAML LogoutRequest but we need a proper 302 to redirected from the server.
-	window.location.replace(absoluteUrl(`_saml/sloRedirect/${provider}/?redirect=${encodeURIComponent(result)}`));
-	return true;
 };
 
 registerLoginWithMethod('loginWithSaml', (options: { provider: string; credentialToken?: string } = { provider: '' }) => {

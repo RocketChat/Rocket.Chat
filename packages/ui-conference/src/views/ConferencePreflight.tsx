@@ -122,7 +122,7 @@ const ConferencePreflight = ({
 								// Pressed while the device is on, whichever way it is drawn: a screen reader must not hear a live mic as idle.
 								aria-pressed={preferences.mic}
 								dangerWhenPressed
-								large
+								size='large'
 								onToggle={() => toggle('mic')}
 							/>
 						)}
@@ -134,7 +134,7 @@ const ConferencePreflight = ({
 								pressed={!preferences.cam}
 								aria-pressed={preferences.cam}
 								dangerWhenPressed
-								large
+								size='large'
 								onToggle={() => toggle('cam')}
 							/>
 						)}
@@ -230,10 +230,12 @@ const ConferencePreflight = ({
 					{action === 'start' && canChooseRinging && (
 						<Box marginBlockStart={16} width='100%'>
 							<Field>
-								<FieldRow justifyContent='center'>
-									<CheckBox id='conference-preflight-ring' checked={ring} onChange={toggleRing} />
-									<Box is='label' htmlFor='conference-preflight-ring' fontScale='p2' color='default' marginInlineStart={8}>
-										{t('Ring_people')}
+								<FieldRow>
+									<Box display='flex' alignItems='center' justifyContent='center' flexGrow={1}>
+										<CheckBox id='conference-preflight-ring' checked={ring} onChange={toggleRing} />
+										<Box is='label' htmlFor='conference-preflight-ring' fontScale='p2' color='default' marginInlineStart={8}>
+											{t('Ring_people')}
+										</Box>
 									</Box>
 								</FieldRow>
 							</Field>

@@ -15,7 +15,7 @@ const MessagesRoomsCard = ({ statistics }: MessagesRoomsCardProps) => {
 	const { t } = useTranslation();
 
 	return (
-		<Card height='full'>
+		<Card>
 			<WorkspaceCardSection>
 				<WorkspaceCardSectionTitle title={t('Total_rooms')} variant='h4' />
 

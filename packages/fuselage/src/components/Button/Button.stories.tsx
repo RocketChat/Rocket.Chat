@@ -49,6 +49,11 @@ export default {
 			description: 'Renders as a square icon-only footprint instead of the default pill shape.',
 			table: { category: 'Shape' },
 		},
+		compact: {
+			control: 'boolean',
+			description: 'Lowers the minimum width so a label of one or two characters fits.',
+			table: { category: 'Shape' },
+		},
 		icon: {
 			control: 'text',
 			description: 'Name of the Fuselage icon rendered before the label.',
@@ -164,6 +169,18 @@ export const Sizes: Story = {
 			<Button size='medium'>Medium</Button>
 			<Button>Default</Button>
 			<Button size='large'>Large</Button>
+		</ButtonGroup>
+	),
+};
+
+export const Compact: Story = {
+	render: () => (
+		<ButtonGroup>
+			{['1', '2', '10'].map((label) => (
+				<Button key={label} size='small' compact>
+					{label}
+				</Button>
+			))}
 		</ButtonGroup>
 	),
 };

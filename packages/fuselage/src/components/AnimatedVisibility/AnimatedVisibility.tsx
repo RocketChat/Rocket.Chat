@@ -35,6 +35,7 @@ const AnimatedVisibility = (props: AnimatedVisibilityProps) => {
 	const className = useStyle(
 		css`
 			animation-duration: 230ms;
+			animation-fill-mode: both;
 
 			${
 				visibility === AnimatedVisibility.HIDING &&

@@ -1,3 +1,4 @@
+import { useRedirectToSetupWizard } from '@rocket.chat/ui-setup-wizard';
 import { useEffect, Suspense, useSyncExternalStore } from 'react';
 
 import DocumentTitleWrapper from './DocumentTitleWrapper';
@@ -12,6 +13,7 @@ import { useDesktopFavicon } from './hooks/useDesktopFavicon';
 import { useDesktopOutlookCredentials } from './hooks/useDesktopOutlookCredentials';
 import { useDesktopTitle } from './hooks/useDesktopTitle';
 import { useDesktopUserLoggedIn } from './hooks/useDesktopUserLoggedIn';
+import { useDesktopUserPresence } from './hooks/useDesktopUserPresence';
 import { useDesktopUserRoles } from './hooks/useDesktopUserRoles';
 import { useEscapeKeyStroke } from './hooks/useEscapeKeyStroke';
 import { useGoogleTagManager } from './hooks/useGoogleTagManager';
@@ -28,7 +30,6 @@ import { useNativeEmoji } from './hooks/useNativeEmoji';
 import { useNotificationPermission } from './hooks/useNotificationPermission';
 import { useOAuthLogin } from './hooks/useOAuthLogin';
 import { useOAuthPopupCommands } from './hooks/useOAuthPopupCommands';
-import { useRedirectToSetupWizard } from './hooks/useRedirectToSetupWizard';
 import { useSettingsOnLoadSiteUrl } from './hooks/useSettingsOnLoadSiteUrl';
 import { useShareSessionWithOtherClients } from './hooks/useShareSessionWithOtherClients';
 import { useStartupEvent } from './hooks/useStartupEvent';
@@ -71,6 +72,7 @@ const AppLayout = () => {
 	useDesktopUserLoggedIn();
 	useDesktopOutlookCredentials();
 	useDesktopUserRoles();
+	useDesktopUserPresence();
 	useStartupEvent();
 	useIframeCommands();
 

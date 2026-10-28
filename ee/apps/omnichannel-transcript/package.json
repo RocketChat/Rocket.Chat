@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/omnichannel-transcript",
-	"version": "0.5.2-rc.0",
+	"version": "0.5.2",
 	"private": true,
 	"description": "Rocket.Chat service",
 	"keywords": [
@@ -13,7 +13,7 @@
 	],
 	"scripts": {
 		"build": "tsc -p tsconfig.json",
-		"lint": "eslint .",
+		"lint": "yarn run -T oxlint",
 		"ms": "TRANSPORTER=${TRANSPORTER:-TCP} MONGO_URL=${MONGO_URL:-mongodb://localhost:3001/meteor} tsx src/service.ts",
 		"typecheck": "tsc --noEmit --skipLibCheck -p tsconfig.json"
 	},
@@ -53,7 +53,6 @@
 		"@types/polka": "^0.5.8",
 		"@types/prometheus-gc-stats": "^0.6.4",
 		"@types/react": "~19.2.18",
-		"eslint": "~10.12.0",
 		"react": "~19.2.8",
 		"ts-node": "^10.9.2",
 		"typescript": "~7.0.2"

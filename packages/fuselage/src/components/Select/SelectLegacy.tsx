@@ -2,10 +2,10 @@ import { useMergedRefs, useStableCallback, useResizeObserver, useOutsideClick } 
 import type { DependencyList, ElementType, RefAttributes } from 'react';
 import { useState, useRef, useEffect, useMemo } from 'react';
 
+import type { ElementProps } from '../../types/ElementProps';
 import { AnimatedVisibility } from '../AnimatedVisibility';
-import { Box, type BoxProps } from '../Box';
+import { Box } from '../Box';
 import { Icon, type IconProps } from '../Icon';
-import { Margins } from '../Margins';
 import type { OptionType } from '../Options';
 import { Options, useCursor } from '../Options';
 import { PositionAnimated } from '../PositionAnimated';
@@ -13,10 +13,6 @@ import SelectAddon from './SelectAddon';
 import SelectFocus from './SelectFocus';
 
 export type SelectOption = readonly [value: string, label: string, selected?: boolean];
-
-type WrapperProps = BoxProps;
-
-const Wrapper = (props: WrapperProps) => <Box is='div' rcx-select__wrapper {...props} />;
 
 const useDidUpdate = (func: () => void, deps: DependencyList | undefined) => {
 	const didMount = useRef(false);
@@ -30,8 +26,12 @@ const useDidUpdate = (func: () => void, deps: DependencyList | undefined) => {
 	}, deps || []);
 };
 
-export type SelectProps = Omit<BoxProps, 'ref' | 'onChange'> &
+export type SelectProps = Omit<ElementProps<HTMLDivElement>, 'ref' | 'onChange'> &
 	RefAttributes<HTMLInputElement> & {
+		value?: string | number;
+		name?: string;
+		disabled?: boolean;
+		placeholder?: string;
 		anchor?: ElementType;
 		error?: string;
 		options: SelectOption[];
@@ -53,16 +53,20 @@ function SelectLegacy({
 	error,
 	disabled,
 	options = [],
-	anchor: Anchor = SelectFocus,
+	'anchor': Anchor = SelectFocus,
 	onChange = () => {},
 	getValue = ([value] = ['', '']) => value,
 	getLabel = ([, label] = ['', '']) => label,
 	placeholder = '',
 	renderItem,
-	renderSelected: RenderSelected,
-	renderOptions: _Options = Options,
+	'renderSelected': RenderSelected,
+	'renderOptions': _Options = Options,
 	addonIcon,
 	customEmpty,
+	id,
+	'aria-labelledby': ariaLabelledBy,
+	'aria-describedby': ariaDescribedBy,
+	'aria-invalid': ariaInvalid,
 	...props
 }: SelectProps) {
 	const [internalValue, setInternalValue] = useState(value || '');
@@ -134,7 +138,7 @@ function SelectLegacy({
 			className={useMemo(() => [error && 'invalid', disabled && 'disabled'], [error, disabled])}
 			{...props}
 		>
-			<Wrapper display='flex' marginInline='neg-x4' rcx-select__wrapper--hidden={!!visibleText}>
+			<Box is='div' rcx-select__wrapper display='flex' marginInline='neg-x4' rcx-select__wrapper--hidden={!!visibleText}>
 				{visibleText &&
 					(RenderSelected ? (
 						<RenderSelected
@@ -149,15 +153,24 @@ function SelectLegacy({
 							{visibleText}
 						</Box>
 					))}
-				<Anchor ref={anchorRef} disabled={disabled ?? false} onClick={show} onBlur={hide} onKeyDown={handleKeyDown} onKeyUp={handleKeyUp}>
+				<Anchor
+					ref={anchorRef}
+					id={id}
+					aria-labelledby={ariaLabelledBy}
+					aria-describedby={ariaDescribedBy}
+					aria-invalid={ariaInvalid}
+					disabled={disabled ?? false}
+					onClick={show}
+					onBlur={hide}
+					onKeyDown={handleKeyDown}
+					onKeyUp={handleKeyUp}
+				>
 					{!value ? option || placeholder : null}
 				</Anchor>
-				<Margins inline='x4'>
-					<SelectAddon>
-						<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : addonIcon || 'chevron-down'} size='x20' />
-					</SelectAddon>
-				</Margins>
-			</Wrapper>
+				<SelectAddon>
+					<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : addonIcon || 'chevron-down'} size='x20' />
+				</SelectAddon>
+			</Box>
 			<PositionAnimated visible={visible} anchor={containerRef}>
 				<_Options
 					width={borderBoxSize.inlineSize}

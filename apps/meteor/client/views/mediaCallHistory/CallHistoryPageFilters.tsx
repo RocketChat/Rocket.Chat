@@ -90,7 +90,6 @@ const CallHistoryPageFilters = ({ onChangeText, onChangeType, onChangeStates, se
 			<Box minWidth='x224' flexBasis='45%' display='flex' margin='x4' flexGrow={2} flexShrink={0}>
 				<TextInput
 					name='search-rooms'
-					alignItems='center'
 					placeholder={t('Search_calls')}
 					endAddon={<Icon name='magnifier' size='x20' />}
 					onChange={(e: ChangeEvent<HTMLInputElement>) => onChangeText(e.currentTarget.value)}
@@ -99,7 +98,12 @@ const CallHistoryPageFilters = ({ onChangeText, onChangeType, onChangeStates, se
 			</Box>
 			<Box display='flex' flexGrow={1} flexShrink={2} flexWrap='wrap'>
 				<Box minWidth='x224' margin='x4' flexGrow={1} flexShrink={1} alignItems='stretch' display='flex'>
-					<Select options={selectTypeOptions} value={type} onChange={(key: Key) => onChangeType(key as TypeFilter)} />
+					<Select
+						aria-label={t('Type')}
+						options={selectTypeOptions}
+						value={type}
+						onChange={(key: Key) => onChangeType(key as TypeFilter)}
+					/>
 				</Box>
 				<Box minWidth='x224' margin='x4' flexGrow={1} flexShrink={1}>
 					<MultiSelectCustom

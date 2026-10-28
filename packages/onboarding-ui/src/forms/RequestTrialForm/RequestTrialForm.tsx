@@ -15,6 +15,7 @@ import {
 	SelectFiltered,
 } from '@rocket.chat/fuselage';
 import { Form, FormFooter } from '@rocket.chat/layout';
+import { useId } from 'react';
 import type { FieldPathValue, SubmitHandler, Validate } from 'react-hook-form';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation, Trans } from 'react-i18next';
@@ -49,6 +50,7 @@ export const RequestTrialForm = ({
 	policyHref = 'https://rocket.chat/privacy',
 }: RequestTrialFormProps) => {
 	const { t } = useTranslation();
+	const organizationSizeField = useId();
 
 	const {
 		handleSubmit,
@@ -87,7 +89,7 @@ export const RequestTrialForm = ({
 					{errors?.organizationName && <FieldError>{t('component.form.requiredField')}</FieldError>}
 				</Field>
 				<Field>
-					<FieldLabel>{t('form.requestTrialForm.fields.organizationSize.label')}</FieldLabel>
+					<FieldLabel htmlFor={organizationSizeField}>{t('form.requestTrialForm.fields.organizationSize.label')}</FieldLabel>
 					<FieldRow>
 						<Controller
 							name='organizationSize'
@@ -96,6 +98,7 @@ export const RequestTrialForm = ({
 							render={({ field }) => (
 								<Select
 									{...field}
+									id={organizationSizeField}
 									options={organizationSizeOptions}
 									placeholder={t('form.requestTrialForm.fields.organizationSize.placeholder')}
 									error={errors?.email?.message || undefined}
@@ -113,12 +116,7 @@ export const RequestTrialForm = ({
 							control={control}
 							rules={{ required: true }}
 							render={({ field }) => (
-								<SelectFiltered
-									{...field}
-									options={countryOptions}
-									width='full'
-									placeholder={t('form.requestTrialForm.fields.country.placeholder')}
-								/>
+								<SelectFiltered {...field} options={countryOptions} placeholder={t('form.requestTrialForm.fields.country.placeholder')} />
 							)}
 							defaultValue={defaultValues?.country}
 						/>
@@ -127,13 +125,13 @@ export const RequestTrialForm = ({
 				<Field>
 					<Box marginBlockStart={24}>
 						<Box marginBlockEnd={8} display='flex' flexDirection='row' alignItems='flex-start' fontScale='c1' lineHeight={20}>
-							<CheckBox marginInlineEnd={8} {...register('updates')} />{' '}
+							<CheckBox {...register('updates')} />{' '}
 							<Box is='label' htmlFor='updates'>
 								{t('form.registeredServerForm.keepInformed')}
 							</Box>
 						</Box>
 						<Box display='flex' flexDirection='row' alignItems='flex-start' color='default' fontScale='c1' lineHeight={20}>
-							<CheckBox marginInlineEnd={8} {...register('agreement', { required: true })} />{' '}
+							<CheckBox {...register('agreement', { required: true })} />{' '}
 							<Box is='label' htmlFor='agreement' withRichContent>
 								<Trans i18nKey='component.form.termsAndConditions'>
 									I agree with
@@ -156,7 +154,7 @@ export const RequestTrialForm = ({
 				</Field>
 			</FieldGroup>
 			<FormFooter>
-				<Button type='submit' primary loading={isValidating || isSubmitting} disabled={!isValid}>
+				<Button type='submit' variant='primary' loading={isValidating || isSubmitting} disabled={!isValid}>
 					{t('form.requestTrialForm.button.text')}
 				</Button>
 			</FormFooter>

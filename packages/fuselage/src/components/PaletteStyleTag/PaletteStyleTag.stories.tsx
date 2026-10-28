@@ -72,11 +72,11 @@ export const _PaletteStyleTag: Story = {
 					</CardCol>
 				</CardBody>
 				<CardControls>
-					<Button medium>Default</Button>
-					<Button medium primary>
+					<Button size='medium'>Default</Button>
+					<Button size='medium' variant='primary'>
 						Primary
 					</Button>
-					<Button medium danger>
+					<Button size='medium' variant='danger'>
 						Danger
 					</Button>
 				</CardControls>

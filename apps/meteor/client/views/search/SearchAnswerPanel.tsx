@@ -1,4 +1,4 @@
-import { Box, Button, Card, CardBody, CardHeader, CardTitle, FramedIcon, Skeleton, CardControls } from '@rocket.chat/fuselage';
+import { Box, Button, Card, CardBody, CardControls, CardHeader, CardTitle, FramedIcon, Skeleton, Text } from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ReactElement } from 'react';
 import { useId } from 'react';
@@ -63,11 +63,11 @@ const SearchAnswerPanel = ({
 	} else if (error && !isLoading && !disabled) {
 		content = (
 			<Box display='flex' flexDirection='column' alignItems='flex-start' gap={12}>
-				<Box color='danger' fontScale='p2'>
+				<Text color='danger' fontScale='p2'>
 					{t(getAnswerErrorMessage(error, canManageAISettings))}
-				</Box>
+				</Text>
 				<CardControls>
-					<Button small onClick={onRetry}>
+					<Button size='small' onClick={onRetry}>
 						{t('Try_again')}
 					</Button>
 				</CardControls>
@@ -77,9 +77,9 @@ const SearchAnswerPanel = ({
 		content = <SearchAnswerContent key={answer} answer={answer} />;
 	} else {
 		content = (
-			<Box color='hint' fontScale='p2'>
+			<Text color='hint' fontScale='p2'>
 				{disabled ? emptyReason : t('Search_AI_answer_ready')}
-			</Box>
+			</Text>
 		);
 	}
 
@@ -87,7 +87,7 @@ const SearchAnswerPanel = ({
 		<Box marginBlockEnd={40}>
 			<Card role='region' aria-labelledby={titleId}>
 				<CardHeader>
-					<FramedIcon icon='stars' size={20} />
+					<FramedIcon icon='stars' />
 					<CardTitle id={titleId} info={info}>
 						{t('Search_AI_answer')}
 					</CardTitle>

@@ -54,7 +54,8 @@ describe('[Failed Login Attempts]', () => {
 			.expect('Content-Type', 'application/json')
 			.expect(401)
 			.expect((res) => {
-				expect(res.body).to.have.property('status', 'error');
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.not.have.property('status');
 				expect(res.body).to.have.property('message', 'Unauthorized');
 			});
 	}
@@ -90,7 +91,8 @@ describe('[Failed Login Attempts]', () => {
 			.expect('Content-Type', 'application/json')
 			.expect(401)
 			.expect((res) => {
-				expect(res.body).to.have.property('status', 'error');
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.not.have.property('status');
 				expect(res.body).to.have.property('error', `error-login-blocked-for-${reason}`);
 			});
 	}

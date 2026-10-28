@@ -88,7 +88,6 @@ const RoomForm = ({ onClose, onSave, roomInfo, hasAttributeChanges = false, setS
 				)}
 				<RoomFormAttributeFields fields={fields} remove={remove} disabled={redacted} />
 				<Button
-					width='full'
 					disabled={redacted || fields.length >= 10}
 					onClick={() => {
 						append({ key: '', values: [] });
@@ -100,7 +99,7 @@ const RoomForm = ({ onClose, onSave, roomInfo, hasAttributeChanges = false, setS
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button type='submit' form={formId} disabled={redacted || !isValid || !canSubmit} primary>
+					<Button type='submit' form={formId} disabled={redacted || !isValid || !canSubmit} variant='primary'>
 						{roomInfo ? t('ABAC_Review_changes') : t('Save')}
 					</Button>
 				</ButtonGroup>

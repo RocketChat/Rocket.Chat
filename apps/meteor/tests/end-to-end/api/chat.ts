@@ -6,13 +6,13 @@ import { Random } from '@rocket.chat/random';
 import { expect } from 'chai';
 import type { Response } from 'supertest';
 
-import { retry } from './helpers/retry';
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials, apiUrl } from '../../data/api-data';
 import { followMessage, sendMessage, sendSimpleMessage, deleteMessage, updateMessage } from '../../data/chat.helper';
 import { imgURL } from '../../data/interactions';
 import { mockServerHealthy, mockServerReset, mockServerSet } from '../../data/mock-server.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
+import { retry } from '../../data/retry';
 import { addUserToRoom, createRoom, deleteRoom, getSubscriptionByRoomId } from '../../data/rooms.helper';
 import { password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
@@ -980,7 +980,7 @@ describe('[Chat]', () => {
 		describe('message fields owned by the server', () => {
 			const send = (message: Record<string, unknown>) => request.post(api('chat.sendMessage')).set(credentials).send({ message });
 
-			it('should ignore the fields a caller cannot set', async () => {
+			it('should reject the fields a caller cannot set', async () => {
 				const res = await send({
 					rid: testChannel._id,
 					msg: 'message with forged fields',
@@ -995,29 +995,24 @@ describe('[Chat]', () => {
 					editedBy: { _id: 'fake-user-id', username: 'someone' },
 					urls: [{ url: 'https://example.com/', ignoreParse: true, meta: { oembedHtml: '<iframe src="https://example.com/"></iframe>' } }],
 					parseUrls: false,
-				}).expect(200);
+				}).expect(400);
 
-				const { message: sent } = res.body;
-				expect(sent).to.have.property('msg', 'message with forged fields');
-				['reactions', 'actionLinks', 'starred', 'pinned', 'pinnedAt', 'pinnedBy', 'editedAt', 'editedBy'].forEach((field) => {
-					expect(sent).to.not.have.property(field);
-				});
-				expect(sent.md).to.not.equal('forged');
-				expect(JSON.stringify(sent.urls ?? [])).to.not.include('oembedHtml');
-
-				const pinned = await request.get(api('chat.getPinnedMessages')).set(credentials).query({ roomId: testChannel._id }).expect(200);
-				expect(pinned.body.messages.map((pinnedMessage: IMessage) => pinnedMessage._id)).to.not.include(sent._id);
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property(
+					'error',
+					"The message fields cannot be set through 'chat.sendMessage': md, reactions, actionLinks, starred, pinned, pinnedAt, pinnedBy, editedAt, editedBy, urls",
+				);
 			});
 
-			it('should not keep a forged md tree on a message with no text', async () => {
+			it('should reject a md tree on a message with no text', async () => {
 				const res = await send({
 					rid: testChannel._id,
 					msg: '',
 					md: [{ type: 'HIDDEN_BLOCK', value: [{ type: 'MENTION_USER', value: { type: 'PLAIN_TEXT', value: 'rocket.cat' } }] }],
-				}).expect(200);
+				}).expect(400);
 
-				expect(JSON.stringify(res.body.message.md ?? [])).to.not.include('HIDDEN_BLOCK');
-				expect(res.body.message.mentions ?? []).to.have.lengthOf(0);
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', "The message fields cannot be set through 'chat.sendMessage': md");
 			});
 
 			it('should not keep markdown trees sent inside attachments', async () => {
@@ -1051,11 +1046,11 @@ describe('[Chat]', () => {
 				expect(res.body.message.location).to.deep.equal(location);
 			});
 
-			it('should ignore a field whose name cannot be sent in a header', async () => {
-				const res = await send({ 'rid': testChannel._id, 'msg': 'with an unsafe field name', 'bad\nname': true, 'имя': true }).expect(200);
+			it('should sanitize the names of rejected fields in the error', async () => {
+				const res = await send({ 'rid': testChannel._id, 'msg': 'with an unsafe field name', 'bad\nname': true, 'имя': true }).expect(400);
 
-				expect(res.body.message).to.have.property('msg', 'with an unsafe field name');
-				expect(res.headers['x-deprecation-message']).to.include('bad?name');
+				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('error', "The message fields cannot be set through 'chat.sendMessage': bad?name, ???");
 			});
 
 			describe('blocks', () => {
@@ -2125,8 +2120,6 @@ describe('[Chat]', () => {
 			});
 		});
 
-		// TODO: Auto-close unclosed markdown code blocks on backend - Remove in 9.0.0
-		// In 9.0.0, this behavior is handled entirely on the client side and should no longer be done on the backend.
 		it('should auto-close an unclosed code block when sending a message', async () => {
 			const unclosedMsg = '```\nsome code';
 			const expectedMsg = '```\nsome code\n```';
@@ -2175,7 +2168,7 @@ describe('[Chat]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 
@@ -2191,7 +2184,7 @@ describe('[Chat]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 
@@ -2207,7 +2200,7 @@ describe('[Chat]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 
@@ -2490,7 +2483,7 @@ describe('[Chat]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 		it('should fail deleting a message if no room id is provided', async () => {
@@ -2504,7 +2497,7 @@ describe('[Chat]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 		it('should fail deleting a message if it is not in the provided room', async () => {
@@ -2649,7 +2642,7 @@ describe('[Chat]', () => {
 					.expect(400)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'invalid-params');
+						expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					});
 			});
 		});
@@ -4964,7 +4957,7 @@ describe('Threads', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 

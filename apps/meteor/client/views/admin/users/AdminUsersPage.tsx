@@ -1,5 +1,5 @@
 import type { LicenseInfo } from '@rocket.chat/core-typings';
-import { Callout, Skeleton, Tabs, TabsItem } from '@rocket.chat/fuselage';
+import { Box, Callout, Skeleton, Tabs, TabsItem } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { UsersListStatusParamsGET } from '@rocket.chat/rest-typings';
 import type { OptionProp } from '@rocket.chat/ui-client';
@@ -125,34 +125,38 @@ const AdminUsersPage = () => {
 					<UsersPageHeaderContent isSeatsCapExceeded={isSeatsCapExceeded} seatsCap={seatsCap} />
 				</PageHeader>
 				{preventAction?.includes('activeUsers') && (
-					<Callout type='danger' title={t('subscription.callout.servicesDisruptionsOccurring')} marginBlockEnd={19} marginInline={24}>
-						<Trans
-							i18nKey='subscription.callout.description.limitsExceeded'
-							count={preventAction.length}
-							values={{ val: preventAction.map(toTranslationKey) }}
-						>
-							Your workspace exceeded the <>{preventAction.map(toTranslationKey)}</> license limit.
-							<ExternalLink
-								to={manageSubscriptionUrl({
-									target: 'callout',
-									action: 'prevent_action',
-									limits: preventAction.join(','),
-								})}
+					<Box paddingInline='x24' paddingBlockEnd='x20'>
+						<Callout type='danger' title={t('subscription.callout.servicesDisruptionsOccurring')}>
+							<Trans
+								i18nKey='subscription.callout.description.limitsExceeded'
+								count={preventAction.length}
+								values={{ val: preventAction.map(toTranslationKey) }}
 							>
-								Manage your subscription
-							</ExternalLink>
-							to increase limits.
-						</Trans>
-					</Callout>
+								Your workspace exceeded the <>{preventAction.map(toTranslationKey)}</> license limit.
+								<ExternalLink
+									to={manageSubscriptionUrl({
+										target: 'callout',
+										action: 'prevent_action',
+										limits: preventAction.join(','),
+									})}
+								>
+									Manage your subscription
+								</ExternalLink>
+								to increase limits.
+							</Trans>
+						</Callout>
+					</Box>
 				)}
 				<Tabs>
 					<TabsItem selected={!tab || tab === 'all'} onClick={() => handleTabChange('all')}>
 						{t('All')}
 					</TabsItem>
-					<TabsItem selected={tab === 'pending'} onClick={() => handleTabChange('pending')} display='flex' flexDirection='row'>
-						{`${t('Pending')} `}
-						{pendingUsersCount.isLoading && <Skeleton variant='circle' height='x16' width='x16' marginInlineStart={8} />}
-						{pendingUsersCount.isSuccess && `(${pendingUsersCount.data})`}
+					<TabsItem selected={tab === 'pending'} onClick={() => handleTabChange('pending')}>
+						<Box is='span' display='flex' alignItems='center' gap={8}>
+							{`${t('Pending')} `}
+							{pendingUsersCount.isLoading && <Skeleton variant='circle' height='x16' width='x16' />}
+							{pendingUsersCount.isSuccess && `(${pendingUsersCount.data})`}
+						</Box>
 					</TabsItem>
 					<TabsItem selected={tab === 'active'} onClick={() => handleTabChange('active')}>
 						{t('Active')}

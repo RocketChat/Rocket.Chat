@@ -15,7 +15,7 @@ import { GenericModal, ContextualbarScrollableContent, ContextualbarFooter } fro
 import { useSetModal, useAbsoluteUrl, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ChangeEvent } from 'react';
-import { useCallback, useState, useMemo, useEffect } from 'react';
+import { useCallback, useId, useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useEndpointMutation } from '../../../hooks/useEndpointMutation';
@@ -36,6 +36,7 @@ export type EditCustomEmojiProps = {
 
 const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiProps) => {
 	const { t } = useTranslation();
+	const emojiLabelId = useId();
 	const setModal = useSetModal();
 	const absoluteUrl = useAbsoluteUrl();
 	const queryClient = useQueryClient();
@@ -168,10 +169,10 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 						{errors.aliases && <FieldError>{t('Custom_Emoji_Error_Same_Name_And_Alias')}</FieldError>}
 					</Field>
 					<Field>
-						<FieldLabel alignSelf='stretch' display='flex' justifyContent='space-between' alignItems='center'>
-							{t('Custom_Emoji')}
-							<IconButton icon='upload' secondary onClick={clickUpload} />
-						</FieldLabel>
+						<FieldRow>
+							<FieldLabel id={emojiLabelId}>{t('Custom_Emoji')}</FieldLabel>
+							<IconButton aria-labelledby={emojiLabelId} icon='upload' variant='secondary' onClick={clickUpload} />
+						</FieldRow>
 						{newEmojiPreview && (
 							<Box display='flex' flexDirection='row' marginBlockStart='none' justifyContent='center'>
 								<Margins inline={4}>
@@ -185,13 +186,13 @@ const EditCustomEmoji = ({ close, onChange, data, ...props }: EditCustomEmojiPro
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={close}>{t('Cancel')}</Button>
-					<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>
+					<Button variant='primary' onClick={handleSave} disabled={!hasUnsavedChanges}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
 				<Box marginBlockStart={8}>
 					<ButtonGroup stretch>
-						<Button icon='trash' danger onClick={handleDeleteButtonClick}>
+						<Button icon='trash' variant='danger' onClick={handleDeleteButtonClick}>
 							{t('Delete')}
 						</Button>
 					</ButtonGroup>

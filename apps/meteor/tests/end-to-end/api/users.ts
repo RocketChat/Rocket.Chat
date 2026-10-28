@@ -838,7 +838,114 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
+				});
+		});
+
+		it('should create a new user with multiple phones', async () => {
+			const username = `phones_create_${apiUsername}_${Date.now()}`;
+			const email = `phones_create_${Date.now()}_${apiEmail}`;
+
+			const res = await request
+				.post(api('users.create'))
+				.set(credentials)
+				.send({
+					email,
+					name: username,
+					username,
+					password,
+					phones: [
+						{ number: '+15551234567', label: 'Work' },
+						{ number: '+15557654321', label: 'Mobile' },
+					],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.nested.property('user.phones').that.is.an('array').with.lengthOf(2);
+			expect(res.body).to.have.nested.property('user.phones[0].number', '+15551234567');
+			expect(res.body).to.have.nested.property('user.phones[0].label', 'Work');
+			expect(res.body).to.have.nested.property('user.phones[1].number', '+15557654321');
+
+			await deleteUser(res.body.user);
+		});
+
+		it('should trim whitespaces from phone numbers before validating and saving them', async () => {
+			const username = `phones_create_whitespace_${apiUsername}_${Date.now()}`;
+			const email = `phones_create_whitespace_${Date.now()}_${apiEmail}`;
+
+			const res = await request
+				.post(api('users.create'))
+				.set(credentials)
+				.send({
+					email,
+					name: username,
+					username,
+					password,
+					phones: [
+						{ number: ' +1 555 123 4567 ', label: 'Work' },
+						{ number: '+1  555  765  4321', label: 'Mobile' },
+					],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.nested.property('user.phones').that.is.an('array').with.lengthOf(2);
+			expect(res.body).to.have.nested.property('user.phones[0].number', '+15551234567');
+			expect(res.body).to.have.nested.property('user.phones[1].number', '+15557654321');
+
+			await request
+				.get(api('users.info'))
+				.set(credentials)
+				.query({ userId: res.body.user._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.nested.property('user.phones[0].number', '+15551234567');
+					expect(res.body).to.have.nested.property('user.phones[1].number', '+15557654321');
+				});
+
+			await deleteUser(res.body.user);
+		});
+
+		it('should fail to create a user when phone number format is invalid', async () => {
+			await request
+				.post(api('users.create'))
+				.set(credentials)
+				.send({
+					email: `phones_create_invalid_${Date.now()}_${apiEmail}`,
+					name: `phones_create_invalid_${apiUsername}`,
+					username: `phones_create_invalid_${apiUsername}_${Date.now()}`,
+					password,
+					phones: [{ number: 'invalid-number' }],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
+				});
+		});
+
+		it('should fail to create a user when a phone label has more than 50 characters', async () => {
+			await request
+				.post(api('users.create'))
+				.set(credentials)
+				.send({
+					email: `phones_create_invalid_label_${Date.now()}_${apiEmail}`,
+					name: `phones_create_invalid_label_${apiUsername}`,
+					username: `phones_create_invalid_label_${apiUsername}_${Date.now()}`,
+					password,
+					phones: [{ number: '+15551234567', label: 'a'.repeat(51) }],
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 
@@ -911,7 +1018,7 @@ describe('[Users]', () => {
 				.expect(400);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'invalid-params');
+			expect(res.body).to.have.property('errorType', 'error-invalid-params');
 		});
 
 		it('should return an error when trying register new user with an existing username', async () => {
@@ -1372,6 +1479,46 @@ describe('[Users]', () => {
 			expect(res.body).to.not.have.nested.property('user.e2e');
 		});
 
+		it('should return phones information for a user with multiple phone numbers', async () => {
+			const username = `phones_info_${Date.now()}`;
+			const email = `${username}@rocket.chat`;
+
+			const createResponse = await request
+				.post(api('users.create'))
+				.set(credentials)
+				.send({
+					email,
+					name: username,
+					username,
+					password,
+					phones: [
+						{ number: '+5511911111111', label: 'Work' },
+						{ number: '+5511922222222', label: 'Home' },
+					],
+				})
+				.expect(200);
+
+			const createdUser = createResponse.body.user;
+
+			await request
+				.get(api('users.info'))
+				.set(credentials)
+				.query({
+					userId: createdUser._id,
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.phones').that.is.an('array').with.lengthOf(2);
+					expect(res.body).to.have.nested.property('user.phones[0].number', '+5511911111111');
+					expect(res.body).to.have.nested.property('user.phones[0].label', 'Work');
+					expect(res.body).to.have.nested.property('user.phones[1].number', '+5511922222222');
+				});
+
+			await deleteUser(createdUser);
+		});
+
 		it('should return "rooms" property when user request it and the user has the necessary permission (admin, "view-other-user-channels")', async () => {
 			const res = await request
 				.get(api('users.info'))
@@ -1728,7 +1875,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -1738,7 +1886,7 @@ describe('[Users]', () => {
 			it('should return 401 unauthorized', async () => {
 				const res = await request.get(api('users.presence')).expect('Content-Type', 'application/json').expect(401);
 
-				expect(res.body).to.have.property('message');
+				expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 			});
 		});
 		describe('Logged in:', () => {
@@ -2326,7 +2474,7 @@ describe('[Users]', () => {
 						.expect(403)
 						.expect((res) => {
 							expect(res.body).to.have.property('success', false);
-							expect(res.body).to.have.property('error', 'unauthorized');
+							expect(res.body).to.have.property('error', 'forbidden');
 						});
 				});
 			});
@@ -2338,7 +2486,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -2456,7 +2605,8 @@ describe('[Users]', () => {
 					.expect('Content-Type', 'application/json')
 					.expect(401)
 					.expect((res: Response) => {
-						expect(res.body).to.have.property('status', 'error');
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 					});
 			});
 		});
@@ -2552,7 +2702,8 @@ describe('[Users]', () => {
 					.expect('Content-Type', 'application/json')
 					.expect(401)
 					.expect((res: Response) => {
-						expect(res.body).to.have.property('status', 'error');
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 					});
 			});
 		});
@@ -2646,6 +2797,152 @@ describe('[Users]', () => {
 			expect(res.body).to.have.nested.property('user.active', true);
 			expect(res.body).to.have.nested.property('user.name', `edited${apiUsername}`);
 			expect(res.body).to.not.have.nested.property('user.e2e');
+		});
+
+		it("should update a user's phones by userId", async () => {
+			const user = await createUser();
+
+			await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: user._id,
+					data: {
+						phones: [
+							{ number: '+15551234567', label: 'Work' },
+							{ number: '+15557654321', label: 'Mobile' },
+						],
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.phones').that.is.an('array').with.lengthOf(2);
+					expect(res.body).to.have.nested.property('user.phones[0].number', '+15551234567');
+					expect(res.body).to.have.nested.property('user.phones[1].label', 'Mobile');
+				});
+
+			await request
+				.get(api('users.info'))
+				.set(credentials)
+				.query({ userId: user._id })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.nested.property('user.phones').that.is.an('array').with.lengthOf(2);
+				});
+
+			await deleteUser(user);
+		});
+
+		it("should trim whitespaces from a user's phone number when updating by userId", async () => {
+			const user = await createUser();
+
+			await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: user._id,
+					data: {
+						phones: [{ number: ' +1 555 123 4567 ', label: 'Work' }],
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.phones[0].number', '+15551234567');
+				});
+
+			await request
+				.get(api('users.info'))
+				.set(credentials)
+				.query({ userId: user._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.nested.property('user.phones[0].number', '+15551234567');
+				});
+
+			await deleteUser(user);
+		});
+
+		it("should clear a user's phones when updating with an empty phones array", async () => {
+			const user = await createUser();
+
+			await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: user._id,
+					data: {
+						phones: [{ number: '+15551234567', label: 'Work' }],
+					},
+				})
+				.expect(200);
+
+			await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: user._id,
+					data: {
+						phones: [],
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body.user).to.not.have.property('phones');
+				});
+
+			await request
+				.get(api('users.info'))
+				.set(credentials)
+				.query({ userId: user._id })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body.user).to.not.have.property('phones');
+				});
+
+			await deleteUser(user);
+		});
+
+		it('should fail when updating own basic info with a phone label longer than 50 characters', async () => {
+			await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: credentials['X-User-Id'],
+					data: {
+						phones: [{ number: '+15551234567', label: Random.hexString(51) }],
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
+				});
+		});
+
+		it('should fail when updating a user with an invalid phone number format', async () => {
+			await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						phones: [{ number: 'invalid-number' }],
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
+				});
 		});
 
 		it("should update a user's email by userId", async () => {
@@ -2749,7 +3046,7 @@ describe('[Users]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					expect(res.body).to.have.property('error', 'must NOT have fewer than 1 characters');
 				});
 		});
@@ -2768,7 +3065,7 @@ describe('[Users]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					expect(res.body).to.have.property('error', 'must NOT have additional properties');
 				});
 		});
@@ -3456,7 +3753,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -3524,6 +3822,127 @@ describe('[Users]', () => {
 			expect(user.username).to.be.equal(editedUsername);
 			expect(user.name).to.be.equal(editedName);
 			expect(user).to.not.have.property('e2e');
+		});
+
+		it('should update the user own phones', async () => {
+			await request
+				.post(api('users.updateOwnBasicInfo'))
+				.set(userCredentials)
+				.send({
+					data: {
+						phones: [
+							{ number: '+5511911111111', label: 'Work' },
+							{ number: '+5511922222222', label: 'Home' },
+						],
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.phones').that.is.an('array').with.lengthOf(2);
+					expect(res.body).to.have.nested.property('user.phones[0].number', '+5511911111111');
+					expect(res.body).to.have.nested.property('user.phones[0].label', 'Work');
+				});
+		});
+
+		it('should trim whitespaces from the user own phone number when updating', async () => {
+			await request
+				.post(api('users.updateOwnBasicInfo'))
+				.set(userCredentials)
+				.send({
+					data: {
+						phones: [{ number: ' +5511 91111 1111 ', label: 'Work' }],
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.phones[0].number', '+5511911111111');
+				});
+
+			await request
+				.get(api('users.info'))
+				.set(userCredentials)
+				.query({ userId: user._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.nested.property('user.phones[0].number', '+5511911111111');
+				});
+		});
+
+		it('should clear the user own phones when an empty array is sent', async () => {
+			await request
+				.post(api('users.updateOwnBasicInfo'))
+				.set(userCredentials)
+				.send({
+					data: {
+						phones: [{ number: '+5511911111111', label: 'Work' }],
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.nested.property('user.phones[0].number', '+5511911111111');
+				});
+
+			await request
+				.post(api('users.updateOwnBasicInfo'))
+				.set(userCredentials)
+				.send({
+					data: {
+						phones: [],
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).not.have.nested.property('user.phones');
+				});
+
+			await request
+				.get(api('users.info'))
+				.set(userCredentials)
+				.query({ userId: user._id })
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).not.have.nested.property('user.phones');
+				});
+		});
+
+		it('should fail when updating own basic info with invalid phone number format', async () => {
+			await request
+				.post(api('users.updateOwnBasicInfo'))
+				.set(userCredentials)
+				.send({
+					data: { phones: [{ number: 'invalid-number' }] },
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
+				});
+		});
+
+		it('should fail when updating own basic info with a phone label longer than 50 characters', async () => {
+			await request
+				.post(api('users.updateOwnBasicInfo'))
+				.set(userCredentials)
+				.send({
+					data: { phones: [{ number: '+5511911111111', label: 'a'.repeat(51) }] },
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
+				});
 		});
 
 		it('should update the user name only', async () => {
@@ -3988,7 +4407,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -4138,7 +4558,7 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 
@@ -4148,7 +4568,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -4189,7 +4610,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -4240,7 +4662,7 @@ describe('[Users]', () => {
 			const res = await request.post(api('users.forgotPassword')).send({}).expect('Content-Type', 'application/json').expect(400);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'invalid-params');
+			expect(res.body).to.have.property('errorType', 'error-invalid-params');
 			expect(res.body).to.have.property('error', "must have required property 'email'");
 		});
 	});
@@ -4312,8 +4734,8 @@ describe('[Users]', () => {
 		it('should return 401 when not authenticated', async () => {
 			const res = await request.get(api('users.getUsernameSuggestion')).expect('Content-Type', 'application/json').expect(401);
 
-			expect(res.body).to.have.property('status', 'error');
-			expect(res.body).to.have.property('message');
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 		});
 	});
 
@@ -4331,7 +4753,7 @@ describe('[Users]', () => {
 		it('should return 401 unauthorized when user is not logged in', async () => {
 			const res = await request.get(api('users.checkUsernameAvailability')).expect('Content-Type', 'application/json').expect(401);
 
-			expect(res.body).to.have.property('message');
+			expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 		});
 
 		it('should return true if the username is the same user username set', async () => {
@@ -4511,7 +4933,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -4698,7 +5121,8 @@ describe('[Users]', () => {
 						.expect('Content-Type', 'application/json')
 						.expect(401)
 						.expect((res: Response) => {
-							expect(res.body).to.have.property('status', 'error');
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 						});
 				});
 			});
@@ -4736,7 +5160,8 @@ describe('[Users]', () => {
 						.expect('Content-Type', 'application/json')
 						.expect(401)
 						.expect((res: Response) => {
-							expect(res.body).to.have.property('status', 'error');
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 						});
 				});
 
@@ -4785,7 +5210,8 @@ describe('[Users]', () => {
 						.expect('Content-Type', 'application/json')
 						.expect(401)
 						.expect((res: Response) => {
-							expect(res.body).to.have.property('status', 'error');
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 						});
 				});
 
@@ -4845,7 +5271,8 @@ describe('[Users]', () => {
 						.expect('Content-Type', 'application/json')
 						.expect(401)
 						.expect((res: Response) => {
-							expect(res.body).to.have.property('status', 'error');
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 						});
 				});
 
@@ -5400,7 +5827,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -5523,7 +5951,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -5574,7 +6003,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -5749,7 +6179,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -5781,7 +6212,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -5844,7 +6276,7 @@ describe('[Users]', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('unauthorized');
+			expect(res.body.error).to.be.equal('forbidden');
 		});
 		it('should update another user status succesfully', async () => {
 			await updatePermission('edit-other-user-info', ['admin']);
@@ -5876,7 +6308,7 @@ describe('[Users]', () => {
 				.expect(400);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.errorType).to.be.equal('invalid-params');
+			expect(res.body.errorType).to.be.equal('error-invalid-params');
 			expect(res.body.error).to.include('must be equal to one of the allowed values');
 		});
 		it('should return an error when user changes status to offline and "Accounts_AllowInvisibleStatusOption" is disabled', async () => {
@@ -5933,7 +6365,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -6057,7 +6490,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -6176,7 +6610,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -6282,7 +6717,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -6517,7 +6953,7 @@ describe('[Users]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					expect(res.body).to.have.property('error', "must have required property 'email'");
 				});
 		});
@@ -6544,7 +6980,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -6556,7 +6993,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -6580,7 +7018,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -6604,7 +7043,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -6628,7 +7068,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -6640,7 +7081,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});

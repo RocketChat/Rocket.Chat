@@ -31,8 +31,8 @@
 	],
 	"scripts": {
 		"build": "rm -rf dist && rollup -c",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix .",
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
 		"test": "jest",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit"
@@ -52,7 +52,6 @@
 		"@testing-library/react": "~16.3.3",
 		"@types/react": "~19.2.18",
 		"@types/react-dom": "~19.2.7",
-		"eslint": "~10.12.0",
 		"jest": "~30.5.2",
 		"react": "~19.2.8",
 		"react-dom": "~19.2.8",

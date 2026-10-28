@@ -101,7 +101,7 @@ const CannedResponseList = ({
 					<Select aria-label={t('Type')} onChange={(value) => setType(String(value))} value={type} options={options} />
 				</Box>
 			</ContextualbarSection>
-			<ContextualbarContent paddingInline={0} ref={ref}>
+			<ContextualbarContent flush ref={ref}>
 				{itemCount === 0 && <ContextualbarEmptyContent title={t('No_Canned_Responses')} />}
 				{itemCount > 0 && cannedItems.length > 0 && (
 					<Box flexGrow={1} flexShrink={1} overflow='hidden' display='flex' ref={cannedListRef}>

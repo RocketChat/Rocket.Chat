@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/federation-matrix",
-	"version": "0.3.0-rc.0",
+	"version": "0.3.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -10,8 +10,8 @@
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.build.json",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix .",
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
 		"test": "jest",
 		"test:integration": "./tests/scripts/run-integration-tests.sh",
 		"test:federation": "jest --config jest.config.federation.ts",
@@ -36,7 +36,7 @@
 		"mongodb": "6.16.0",
 		"pino": "10.3.1",
 		"reflect-metadata": "^0.2.2",
-		"sanitize-html": "~2.17.7",
+		"sanitize-html": "~2.18.1",
 		"tsyringe": "^4.10.0",
 		"tweetnacl": "^1.0.3"
 	},
@@ -45,7 +45,6 @@
 		"@types/lodash.debounce": "^4.0.9",
 		"@types/node": "~24.13.6",
 		"@types/sanitize-html": "~2.16.2",
-		"eslint": "~10.12.0",
 		"jest": "~30.5.2",
 		"jest-qase-reporter": "^2.6.0",
 		"matrix-js-sdk": "^38.4.0",

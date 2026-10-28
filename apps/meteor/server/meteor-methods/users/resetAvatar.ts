@@ -1,8 +1,7 @@
-import { Upload } from '@rocket.chat/core-services';
+import { Upload, ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import { Meteor } from 'meteor/meteor';
 
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { settings } from '../../settings';
@@ -11,7 +10,7 @@ export const resetAvatar = async (fromUserId: IUser['_id'], userId: IUser['_id']
 	const canEditOtherUserAvatar = await hasPermissionAsync(fromUserId, 'edit-other-user-avatar');
 
 	if (!settings.get('Accounts_AllowUserAvatarChange') && !canEditOtherUserAvatar) {
-		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+		throw new ClientSafeError('error-not-allowed', 'Not allowed', {
 			method: 'resetAvatar',
 		});
 	}
@@ -20,7 +19,7 @@ export const resetAvatar = async (fromUserId: IUser['_id'], userId: IUser['_id']
 
 	if (userId !== fromUserId) {
 		if (!canEditOtherUserAvatar) {
-			throw new Meteor.Error('error-unauthorized', 'Unauthorized', {
+			throw new ClientSafeError('error-unauthorized', 'Unauthorized', {
 				method: 'resetAvatar',
 			});
 		}
@@ -31,7 +30,7 @@ export const resetAvatar = async (fromUserId: IUser['_id'], userId: IUser['_id']
 	}
 
 	if (!user?.username) {
-		throw new Meteor.Error('error-invalid-desired-user', 'Invalid desired user', {
+		throw new ClientSafeError('error-invalid-desired-user', 'Invalid desired user', {
 			method: 'resetAvatar',
 		});
 	}

@@ -56,26 +56,16 @@ export default {
 		),
 	],
 	argTypes: {
-		width: {
-			control: 'text',
-			description: 'Width of the contextual bar.',
-			table: { category: 'Layout' },
-		},
-		height: {
-			control: 'text',
-			description: 'Height of the contextual bar.',
+		stretch: {
+			control: 'boolean',
+			description: 'Makes the bar as wide as its container.',
 			table: { category: 'Layout' },
 		},
 		position: {
 			control: 'select',
-			options: ['static', 'relative', 'absolute', 'sticky', 'fixed'],
+			options: ['static', 'relative', 'absolute', 'fixed'],
 			description: 'CSS position of the contextual bar.',
 			table: { category: 'Layout' },
-		},
-		backgroundColor: {
-			control: 'text',
-			description: 'Background color of the contextual bar. Defaults to `room`.',
-			table: { category: 'Style', defaultValue: { summary: 'room' } },
 		},
 		children: {
 			control: false,
@@ -89,85 +79,87 @@ type Story = StoryObj<typeof Contextualbar>;
 
 export const Default: Story = {
 	render: () => (
-		<Contextualbar position='static' height='x540'>
-			<ContextualbarHeader>
-				<ContextualbarAction title='Back' name='arrow-back' onClick={action('click')} />
-				<ContextualbarTitle>Contextualbar Title</ContextualbarTitle>
-				<ContextualbarActions>
-					<ContextualbarAction title='Title' name='new-window' onClick={action('click')} />
-					<ContextualbarAction title='Add user' name='add-user' onClick={action('click')} />
-					<ContextualbarAction title='Close' name='cross' onClick={action('click')} />
-				</ContextualbarActions>
-			</ContextualbarHeader>
-			<ContextualbarSection>
-				<InputBox type='text' placeholder='Search' endAddon={<Icon name='magnifier' size='x20' />} />
-			</ContextualbarSection>
-			<ContextualbarContent />
-			<ContextualbarFooter>
-				<ButtonGroup>
-					<ContextualbarButton width='full' secondary>
-						Cancel
-					</ContextualbarButton>
-					<Button width='full' primary>
-						Save
-					</Button>
-					<IconButton title='More' icon='menu' secondary />
-				</ButtonGroup>
-			</ContextualbarFooter>
-		</Contextualbar>
+		<Box height='x540'>
+			<Contextualbar position='static'>
+				<ContextualbarHeader>
+					<ContextualbarAction title='Back' name='arrow-back' onClick={action('click')} />
+					<ContextualbarTitle>Contextualbar Title</ContextualbarTitle>
+					<ContextualbarActions>
+						<ContextualbarAction title='Title' name='new-window' onClick={action('click')} />
+						<ContextualbarAction title='Add user' name='add-user' onClick={action('click')} />
+						<ContextualbarAction title='Close' name='cross' onClick={action('click')} />
+					</ContextualbarActions>
+				</ContextualbarHeader>
+				<ContextualbarSection>
+					<InputBox type='text' placeholder='Search' endAddon={<Icon name='magnifier' size='x20' />} />
+				</ContextualbarSection>
+				<ContextualbarContent />
+				<ContextualbarFooter>
+					<ButtonGroup stretch='equal'>
+						<ContextualbarButton variant='secondary'>Cancel</ContextualbarButton>
+						<Button variant='primary'>Save</Button>
+						<IconButton title='More' icon='menu' variant='secondary' />
+					</ButtonGroup>
+				</ContextualbarFooter>
+			</Contextualbar>
+		</Box>
 	),
 };
 
 export const Skeleton: Story = {
-	render: () => <ContextualbarSkeleton position='static' height='x540' />,
+	render: () => (
+		<Box height='x540'>
+			<ContextualbarSkeleton position='static' />
+		</Box>
+	),
 };
 
 export const Empty: Story = {
 	render: () => (
-		<Contextualbar position='static' height='x540'>
-			<ContextualbarHeader>
-				<ContextualbarAction title='Back' name='arrow-back' />
-				<ContextualbarTitle>Contextualbar Empty</ContextualbarTitle>
-				<ContextualbarActions>
-					<ContextualbarAction title='Title' name='new-window' onClick={action('click')} />
-				</ContextualbarActions>
-			</ContextualbarHeader>
-			<ContextualbarEmptyContent />
-			<ContextualbarFooter>Footer</ContextualbarFooter>
-		</Contextualbar>
+		<Box height='x540'>
+			<Contextualbar position='static'>
+				<ContextualbarHeader>
+					<ContextualbarAction title='Back' name='arrow-back' />
+					<ContextualbarTitle>Contextualbar Empty</ContextualbarTitle>
+					<ContextualbarActions>
+						<ContextualbarAction title='Title' name='new-window' onClick={action('click')} />
+					</ContextualbarActions>
+				</ContextualbarHeader>
+				<ContextualbarEmptyContent />
+				<ContextualbarFooter>Footer</ContextualbarFooter>
+			</Contextualbar>
+		</Box>
 	),
 };
 
 export const WithLongTitle: Story = {
 	render: () => (
-		<Contextualbar position='static' height='x540'>
-			<ContextualbarHeader>
-				<ContextualbarAction title='Back' name='arrow-back' onClick={action('click')} />
-				<ContextualbarTitle>
-					Contextualbar Long Title Contextualbar Long Title Contextualbar Long Title Contextualbar Long Title Contextualbar Long Title
-					Contextualbar Long Title Contextualbar Long Title Contextualbar Long Title Contextualbar Long Title
-				</ContextualbarTitle>
-				<ContextualbarActions>
-					<ContextualbarAction title='Title' name='new-window' onClick={action('click')} />
-					<ContextualbarAction title='Add user' name='add-user' onClick={action('click')} />
-					<ContextualbarAction title='Close' name='cross' onClick={action('click')} />
-				</ContextualbarActions>
-			</ContextualbarHeader>
-			<ContextualbarSection>
-				<InputBox type='text' placeholder='Search' endAddon={<Icon name='magnifier' size='x20' />} />
-			</ContextualbarSection>
-			<ContextualbarContent />
-			<ContextualbarFooter>
-				<ButtonGroup>
-					<ContextualbarButton width='full' secondary>
-						Cancel
-					</ContextualbarButton>
-					<Button width='full' primary>
-						Save
-					</Button>
-					<IconButton title='More' icon='menu' secondary />
-				</ButtonGroup>
-			</ContextualbarFooter>
-		</Contextualbar>
+		<Box height='x540'>
+			<Contextualbar position='static'>
+				<ContextualbarHeader>
+					<ContextualbarAction title='Back' name='arrow-back' onClick={action('click')} />
+					<ContextualbarTitle>
+						Contextualbar Long Title Contextualbar Long Title Contextualbar Long Title Contextualbar Long Title Contextualbar Long Title
+						Contextualbar Long Title Contextualbar Long Title Contextualbar Long Title Contextualbar Long Title
+					</ContextualbarTitle>
+					<ContextualbarActions>
+						<ContextualbarAction title='Title' name='new-window' onClick={action('click')} />
+						<ContextualbarAction title='Add user' name='add-user' onClick={action('click')} />
+						<ContextualbarAction title='Close' name='cross' onClick={action('click')} />
+					</ContextualbarActions>
+				</ContextualbarHeader>
+				<ContextualbarSection>
+					<InputBox type='text' placeholder='Search' endAddon={<Icon name='magnifier' size='x20' />} />
+				</ContextualbarSection>
+				<ContextualbarContent />
+				<ContextualbarFooter>
+					<ButtonGroup stretch='equal'>
+						<ContextualbarButton variant='secondary'>Cancel</ContextualbarButton>
+						<Button variant='primary'>Save</Button>
+						<IconButton title='More' icon='menu' variant='secondary' />
+					</ButtonGroup>
+				</ContextualbarFooter>
+			</Contextualbar>
+		</Box>
 	),
 };

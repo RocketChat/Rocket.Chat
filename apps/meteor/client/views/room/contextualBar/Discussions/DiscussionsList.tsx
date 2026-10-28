@@ -82,7 +82,7 @@ function DiscussionsList({
 					endAddon={<Icon name='magnifier' size='x20' />}
 				/>
 			</ContextualbarSection>
-			<ContextualbarContent paddingInline={0}>
+			<ContextualbarContent flush>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} isLoading={isPending} />
 				{isPending && (
 					<Box paddingInline={24} paddingBlock={12}>
@@ -90,9 +90,11 @@ function DiscussionsList({
 					</Box>
 				)}
 				{!!error && (
-					<Callout role='alert' marginInline={24} type='danger'>
-						{getErrorMessage(error, t('Something_went_wrong'))}
-					</Callout>
+					<Box paddingInline={24}>
+						<Callout role='alert' type='danger'>
+							{getErrorMessage(error, t('Something_went_wrong'))}
+						</Callout>
+					</Box>
 				)}
 				{isSuccess && (
 					<Box id={discussionListId} ref={discussionListRef} width='full' height='full' overflow='hidden' flexShrink={1}>

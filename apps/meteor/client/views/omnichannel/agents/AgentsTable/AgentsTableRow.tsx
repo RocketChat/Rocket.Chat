@@ -1,4 +1,4 @@
-import { Box, IconButton } from '@rocket.chat/fuselage';
+import { Box, IconButton, Text } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
@@ -32,13 +32,13 @@ const AgentsTableRow = ({
 					{username && <UserAvatar size={mediaQuery ? 'x28' : 'x40'} title={username} username={username} etag={avatarETag} />}
 					<Box display='flex' withTruncatedText marginInline={8}>
 						<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
-							<Box fontScale='p2m' withTruncatedText color='default'>
+							<Text fontScale='p2m' truncate color='default'>
 								{name || username}
-							</Box>
+							</Text>
 							{!mediaQuery && name && (
-								<Box fontScale='p2' color='hint' withTruncatedText>
+								<Text fontScale='p2' color='hint' truncate>
 									{`@${username}`}
-								</Box>
+								</Text>
 							)}
 						</Box>
 					</Box>
@@ -46,18 +46,18 @@ const AgentsTableRow = ({
 			</GenericTableCell>
 			{mediaQuery && (
 				<GenericTableCell>
-					<Box fontScale='p2m' withTruncatedText color='hint'>
+					<Text fontScale='p2m' truncate color='hint'>
 						{username}
-					</Box>
+					</Text>
 					<Box marginInline={4} />
 				</GenericTableCell>
 			)}
-			<GenericTableCell withTruncatedText>{emails?.length && emails[0].address}</GenericTableCell>
-			<GenericTableCell withTruncatedText>{statusLivechat === 'available' ? t('Available') : t('Not_Available')}</GenericTableCell>
-			<GenericTableCell withTruncatedText>
+			<GenericTableCell truncate>{emails?.length && emails[0].address}</GenericTableCell>
+			<GenericTableCell truncate>{statusLivechat === 'available' ? t('Available') : t('Not_Available')}</GenericTableCell>
+			<GenericTableCell truncate>
 				<IconButton
 					icon='trash'
-					small
+					size='small'
 					title={t('Remove')}
 					onClick={(e) => {
 						e.stopPropagation();

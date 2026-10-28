@@ -51,6 +51,10 @@ This is a monorepo (Yarn workspaces + Turborepo). Running `yarn` at the root
 installs `apps/*`, `packages/*` and `ee/*` at once. Do not run `yarn` inside
 subfolders.
 
+Installed files are hard links into Yarn's global store (`nmMode: hardlinks-global`), so every clone and
+worktree on the machine shares one copy of each package. Editing a file under `node_modules` edits it for
+all of them: change a dependency with `yarn patch` instead.
+
 The Meteor app loads the other workspace packages from their `dist` folders, so
 `yarn build` must finish before the first start. Run it again after a pull that
 changes packages.
@@ -236,7 +240,7 @@ export MONGO_URL='mongodb://localhost:27017/rocketchat?replicaSet=rs0'
 | `yarn testunit` | unit (definition + jest + mocha server, with coverage) |
 | `yarn testapi` | API tests (mocha, needs a running server) |
 | `yarn test:e2e` | end-to-end (Playwright) |
-| `yarn lint` | stylelint + meteor lint + eslint |
+| `yarn lint` | stylelint + oxlint |
 | `yarn typecheck` | `meteor lint` + `tsc --noEmit` |
 
 From the root, `yarn testunit` and `yarn lint` run via Turbo across all

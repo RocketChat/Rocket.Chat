@@ -140,15 +140,10 @@ const ThreadList = () => {
 					onChange={handleSearchTextChange}
 				/>
 				<Box width='x144' marginInlineStart={8}>
-					<Select
-						aria-controls={isSuccess ? threadListId : undefined}
-						options={typeOptions}
-						value={type}
-						onChange={(value) => handleTypeChange(String(value))}
-					/>
+					<Select aria-label={t('Filter')} options={typeOptions} value={type} onChange={(value) => handleTypeChange(String(value))} />
 				</Box>
 			</ContextualbarSection>
-			<ContextualbarContent paddingInline={0} ref={ref}>
+			<ContextualbarContent flush ref={ref}>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={itemCount} />
 				{isPending && (
 					<Box paddingInline={24} paddingBlock={12}>
@@ -156,9 +151,9 @@ const ThreadList = () => {
 					</Box>
 				)}
 				{error && (
-					<Callout marginInline={24} type='danger'>
-						{getErrorMessage(error, t('Something_went_wrong'))}
-					</Callout>
+					<Box paddingInline={24}>
+						<Callout type='danger'>{getErrorMessage(error, t('Something_went_wrong'))}</Callout>
+					</Box>
 				)}
 				{isSuccess && (
 					<Box id={threadListId} ref={threadListRef} width='full' height='full' overflow='hidden' flexShrink={1}>

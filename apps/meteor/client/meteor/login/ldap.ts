@@ -2,7 +2,7 @@ import { handleLogin, type LoginCallback } from '../../lib/2fa/overrideLoginMeth
 import { callLoginMethod, registerLoginWithMethod } from '../accounts';
 
 declare module 'meteor/meteor' {
-	// eslint-disable-next-line @typescript-eslint/no-namespace
+	// oxlint-disable-next-line @typescript-eslint/no-namespace
 	namespace Meteor {
 		function loginWithLDAP(
 			username: string | { username: string } | { email: string } | { id: string },

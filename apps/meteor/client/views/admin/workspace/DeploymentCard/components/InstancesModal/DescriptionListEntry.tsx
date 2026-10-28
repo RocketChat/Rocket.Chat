@@ -1,4 +1,4 @@
-import { TableRow, TableCell } from '@rocket.chat/fuselage';
+import { TableCell, TableRow, Text } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 import { memo } from 'react';
 
@@ -9,11 +9,11 @@ export type DescriptionListEntryProps = {
 
 const DescriptionListEntry = ({ children, label }: DescriptionListEntryProps) => (
 	<TableRow>
-		<TableCell wordBreak='break-word' is='th' scope='col' align='end' color='hint' backgroundColor='surface' fontScale='p2m'>
+		<TableCell rowHeader align='end'>
 			{label}
 		</TableCell>
-		<TableCell align='start' color='default'>
-			{children}
+		<TableCell align='start'>
+			<Text color='default'>{children}</Text>
 		</TableCell>
 	</TableRow>
 );

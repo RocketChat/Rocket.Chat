@@ -1,6 +1,6 @@
 import type { AppliedFilter } from '@rocket.chat/ai-search';
 import { serializeSearchQuery } from '@rocket.chat/ai-search';
-import { Box, Icon, Chip } from '@rocket.chat/fuselage';
+import { Box, Chip, Icon, Text } from '@rocket.chat/fuselage';
 import type { ReactElement } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
@@ -30,11 +30,11 @@ const SearchResultsHeader = ({ query, filters }: SearchResultsHeaderProps): Reac
 					)}
 				</Box>
 			</Box>
-			<Box color='hint' fontScale='c1'>
+			<Text color='hint' fontScale='c1'>
 				{t('Intelligent_Search_scope_all_rooms')}
-			</Box>
+			</Text>
 			{filters.length > 0 && (
-				<Box display='flex' flexWrap='wrap' gap={10} marginBlockStart={12}>
+				<Box display='flex' flexWrap='wrap' gap='x8' marginBlockStart='x12'>
 					{filters.map((filter) => (
 						<Chip key={filter.id}>{serializeSearchQuery({ text: '', filters: [filter] })}</Chip>
 					))}

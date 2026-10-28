@@ -1,7 +1,6 @@
-import { Team, Room } from '@rocket.chat/core-services';
+import { Team, Room, ClientSafeError } from '@rocket.chat/core-services';
 import {
 	TeamType,
-	isRoomNativeFederated,
 	type IIntegration,
 	type IMessage,
 	type IRoom,
@@ -44,7 +43,6 @@ import {
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import { isTruthy } from '@rocket.chat/tools';
-import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
 import { canAccessRoomAsync } from '../../lib/authorization';
@@ -53,6 +51,7 @@ import { eraseRoom } from '../../lib/eraseRoom';
 import { findUsersOfRoom } from '../../lib/findUsersOfRoom';
 import { mountIntegrationQueryBasedOnPermissions } from '../../lib/integrations/lib/mountQueriesBasedOnPermission';
 import { openRoom } from '../../lib/openRoom';
+import { invitesByRawUsername } from '../../lib/rooms/invitesByRawUsername';
 import { getUsersHiddenFrom, filterHiddenUsers, redactHiddenUsers } from '../../lib/statusVisibility/hiddenUsers';
 import { normalizeMessagesForUser } from '../../lib/utils/lib/normalizeMessagesForUser';
 import { getChannelHistory } from '../../meteor-methods/messages/getChannelHistory';
@@ -106,11 +105,11 @@ async function findChannelByIdOrName({
 	}
 
 	if (!room || (room.t !== 'c' && room.t !== 'l')) {
-		throw new Meteor.Error('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any channel');
+		throw new ClientSafeError('error-room-not-found', 'The required "roomId" or "roomName" param provided does not match any channel');
 	}
 
 	if (checkedArchived && room.archived) {
-		throw new Meteor.Error('error-room-archived', `The channel, ${room.name}, is archived`);
+		throw new ClientSafeError('error-room-archived', `The channel, ${room.name}, is archived`);
 	}
 	if (userId && room.lastMessage) {
 		const [lastMessage] = await normalizeMessagesForUser([room.lastMessage], userId);
@@ -383,6 +382,7 @@ API.v1.get(
 			200: rolesResponseSchema,
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
 	},
 	async function action() {
@@ -1400,9 +1400,7 @@ API.v1.post(
 	async function action() {
 		const findResult = await findChannelByIdOrName({ params: this.bodyParams });
 
-		// Federated rooms invite by raw username: the federated user record is created
-		// lazily inside addUsersToRoomMethod, so we must not require it to exist locally yet.
-		if (isRoomNativeFederated(findResult)) {
+		if (invitesByRawUsername(findResult)) {
 			const users = await getUsernameListFromParams(this.bodyParams);
 
 			await addUsersToRoomMethod(this.userId, { rid: findResult._id, users }, this.user);
@@ -1712,7 +1710,7 @@ API.v1.get(
 		}
 
 		if (!(await canAccessRoomAsync(room, this.user))) {
-			throw new Meteor.Error('error-not-allowed', 'Not Allowed');
+			throw new ClientSafeError('error-not-allowed', 'Not Allowed');
 		}
 
 		const hidden = await getUsersHiddenFrom(this.userId);
@@ -2112,7 +2110,7 @@ API.v1.get(
 		const ourQuery = { rid: findResult._id };
 
 		if (!settings.get<boolean>('Accounts_AllowAnonymousRead')) {
-			throw new Meteor.Error('error-not-allowed', 'Enable "Allow Anonymous Read"', {
+			throw new ClientSafeError('error-not-allowed', 'Enable "Allow Anonymous Read"', {
 				method: 'channels.anonymousread',
 			});
 		}

@@ -30,7 +30,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 		return <CategoryRoomMenu rid={rid} name={name} sections={sections} />;
 	}
 
-	return <GenericMenu detached title={t('Options')} mini aria-keyshortcuts='alt' sections={sections} />;
+	return <GenericMenu detached title={t('Options')} size='mini' aria-keyshortcuts='alt' sections={sections} />;
 };
 
 export default memo(RoomMenu);

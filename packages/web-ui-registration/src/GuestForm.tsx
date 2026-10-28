@@ -18,7 +18,7 @@ const GuestForm = ({ setLoginRoute }: GuestFormProps) => {
 			</FormHeader>
 			<FormContainer>
 				<ButtonGroup large stretch vertical>
-					<Button primary onClick={() => setLoginRoute('login')}>
+					<Button variant='primary' onClick={() => setLoginRoute('login')}>
 						{t('registration.page.guest.loginWithRocketChat')}
 					</Button>
 					<Button onClick={() => setLoginRoute('anonymous')}>{t('registration.page.guest.continueAsGuest')}</Button>

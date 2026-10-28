@@ -24,7 +24,8 @@ export default {
 		},
 		color: {
 			control: 'text',
-			description: 'Text color token applied to the icon.',
+			description:
+				'A semantic text or status font token (`info`, `danger`, `status-font-on-warning`…); without it, the icon takes the colour of the text around it.',
 			table: { category: 'Kind' },
 		},
 	},
@@ -40,6 +41,21 @@ export const Default: Story = {
 			{iconsList.map((name) => (
 				<Icon key={name} name={name} size='x40' />
 			))}
+		</Box>
+	),
+};
+
+export const Colors: Story = {
+	render: () => (
+		<Box display='flex' flexDirection='column' gap={8} color='default' fontScale='p2'>
+			{(['default', 'hint', 'info', 'danger', 'status-font-on-success', 'status-font-on-warning', 'status-font-on-danger'] as const).map(
+				(color) => (
+					<Box key={color} display='flex' alignItems='center' gap={4}>
+						<Icon name='bell' size='x20' color={color} />
+						{color}
+					</Box>
+				),
+			)}
 		</Box>
 	),
 };

@@ -43,23 +43,23 @@ export class OmnichannelChatsFilters extends FlexTab {
 	}
 
 	get inputServedBy(): Locator {
-		return this.root.getByLabel('Served by').locator('input');
+		return this.root.getByLabel('Served by');
 	}
 
 	get inputDepartment(): Locator {
-		return this.root.getByLabel('Department').locator('input');
+		return this.root.getByLabel('Department');
 	}
 
 	get selectStatusContainer(): Locator {
-		return this.root.getByRole('button', { name: 'Status' });
+		return this.root.getByRole('combobox', { name: 'Status' });
 	}
 
 	get inputTags(): Locator {
-		return this.root.getByLabel('Tags').locator('input');
+		return this.root.getByLabel('Tags');
 	}
 
 	get inputUnits(): Locator {
-		return this.root.getByLabel('Units').locator('input');
+		return this.root.getByLabel('Units');
 	}
 
 	get btnClearFilters(): Locator {

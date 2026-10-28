@@ -2,6 +2,24 @@
 
 We now use Meteor's [Modern Build Stack](https://docs.meteor.com/about/modern-build-stack.html) to build and run the project. This is a set of components that improve the building process as a whole, with better speed and new features and plugin support.
 
+## Bundle cache maintenance
+
+Check the disk space used by Meteor's generated bundles and build caches from the repository root:
+
+```sh
+bash scripts/meteor-cache.sh
+```
+
+The [script](../scripts/meteor-cache.sh) only measures by default and recommends cleanup when usage exceeds **5 GB** (5,000,000,000 bytes). Check weekly during active development and after Meteor upgrades or frequent branch switches. Clean when the cache exceeds 5 GB or when troubleshooting stale build output; clearing it on every start makes builds slower.
+
+Stop Meteor and any Meteor builds or tests before cleaning, then run:
+
+```sh
+bash scripts/meteor-cache.sh --clean
+```
+
+This removes only `build`, `bundler-cache`, `isopacks`, `plugin-cache`, `server-cache`, and temporary `.build*.build*` directories inside `apps/meteor/.meteor/local`. It preserves the local MongoDB data in `db` and leaves downloaded Meteor packages in `~/.meteor` alone. Meteor regenerates the deleted files on the next start, so that build will take longer. Avoid deleting all of `.meteor/local` or using `meteor reset` for routine cache cleanup: those also remove the local database.
+
 ## Issues with File Watching
 
 The modern stack uses [@parcel/watcher](https://github.com/parcel-bundler/watcher) to watch for file changes. This is a module that supports multiple watcher backends and will use the best option available, following this priority order:

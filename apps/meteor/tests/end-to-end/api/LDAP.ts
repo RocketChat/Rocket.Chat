@@ -5,9 +5,9 @@ import { expect } from 'chai';
 import sharp from 'sharp';
 import type { Response } from 'supertest';
 
-import { retry } from './helpers/retry';
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { getSettingValueById, updatePermission, updateSetting } from '../../data/permissions.helper';
+import { retry } from '../../data/retry';
 import { IS_EE } from '../../e2e/config/constants';
 
 const ldapLoginUsername = 'ldap.e2e';

@@ -13,10 +13,10 @@ import { apps } from '../../data/apps/apps-data';
 import { cleanupApps, installLocalTestPackage } from '../../data/apps/helper';
 import { sleep } from '../../data/livechat/utils';
 import { getSettingValueById, updatePermission, updateSetting } from '../../data/permissions.helper';
+import { retry } from '../../data/retry';
 import { password } from '../../data/user';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
-import { retry } from '../api/helpers/retry';
 
 type CreateRoomBody = {
 	type: 'p' | 'c';

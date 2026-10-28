@@ -86,7 +86,7 @@ const EditBusinessHours = ({ businessHourData, type }: EditBusinessHoursProps) =
 				<ButtonGroup>
 					{!isSingleBH && <Button onClick={() => router.navigate('/omnichannel/businessHours')}>{t('Back')}</Button>}
 					{type === 'custom' && businessHourData?._id && (
-						<Button danger onClick={() => handleRemove(businessHourData?._id, type)}>
+						<Button variant='danger' onClick={() => handleRemove(businessHourData?._id, type)}>
 							{t('Delete')}
 						</Button>
 					)}
@@ -104,7 +104,7 @@ const EditBusinessHours = ({ businessHourData, type }: EditBusinessHoursProps) =
 			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset()}>{t('Cancel')}</Button>
-					<Button form={formId} primary type='submit'>
+					<Button form={formId} variant='primary' type='submit'>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

@@ -1,5 +1,34 @@
 # @rocket.chat/ui-voip
 
+## 25.0.0
+
+### Minor Changes
+
+- ([#41964](https://github.com/RocketChat/Rocket.Chat/pull/41964)) Improves the logic of when the Busy Tone should be played after a call ends
+
+- ([#40484](https://github.com/RocketChat/Rocket.Chat/pull/40484) by [@aleksandernsilva](https://github.com/aleksandernsilva)) Adds name and avatar resolution for external voice calls
+
+- ([#41681](https://github.com/RocketChat/Rocket.Chat/pull/41681)) Adds media call lifecycle events to the Apps-Engine: an app implementing the new `IMediaCallHandler` interface can now observe calls starting, being answered and ending, and can block a call or change the features it was requested with before it is created
+
+- ([#41944](https://github.com/RocketChat/Rocket.Chat/pull/41944)) Improved the in-call voice widget: media elements no longer detach and re-attach when an unrelated device changes, so a shared screen or camera stops blinking whenever the microphone is muted or a device is switched.
+
+### Patch Changes
+
+- ([#42291](https://github.com/RocketChat/Rocket.Chat/pull/42291)) Fixes the new call autocomplete listing two indistinguishable options when a result reads exactly as what was typed
+
+- ([#42173](https://github.com/RocketChat/Rocket.Chat/pull/42173)) Fixes the Voice Call Widget to show the correct call duration after navigating through DMs
+
+- <details><summary>Updated dependencies [3e51ba30e3d48a418adb3bfa1bd41fa69cf636e9, eeca122b913518d2231f9d9568a10873705845ee, 639dcb1a2d2116eeb956c7dfc7890b48cbdf9782, 4be043d9356fd50d2e3e1b585008368f90e95505, 398c880403670d5669b9ece05f3981cfe31ee6c4, 71add68eca423511c0189f2f541b5a2c46a5e7a0, 71cb69992cf9f6a85fff7278dbf5481b64b5c735, 6843a962e18a7c37986bc08e8a7cc9bbd8072b77, 37faaa89ad1b4b721d6054e40a91327bd8140525, e61b41d340e2722037de67551982fd70773d0617]:</summary>
+  - @rocket.chat/media-signaling@1.3.0
+  - @rocket.chat/ui-client@35.0.0
+  - @rocket.chat/css-in-js@0.33.2
+  - @rocket.chat/desktop-api@1.4.0
+  - @rocket.chat/fuselage-ui-kit@35.0.0
+  - @rocket.chat/ui-avatar@31.0.0
+  - @rocket.chat/ui-contexts@35.0.0
+
+  </details>
+
 ## 25.0.0-rc.0
 
 ### Minor Changes

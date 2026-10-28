@@ -1,4 +1,4 @@
-import { Box, Icon, Skeleton, Scrollable, Callout } from '@rocket.chat/fuselage';
+import { Box, Callout, Icon, Scrollable, Skeleton, Text } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 import MarkdownText from '../../../components/MarkdownText';
@@ -11,11 +11,11 @@ const AnalyticsReports = () => {
 	const { data, isLoading, isSuccess, isError } = useStatistics();
 
 	return (
-		<Box display='flex' flexDirection='column' overflow='hidden' height='100%'>
-			<Callout title={t('Server_logs_access_has_changed_callout_title')} marginBlockEnd={16}>
+		<Box display='flex' flexDirection='column' gap={16} overflow='hidden' height='100%'>
+			<Callout title={t('Server_logs_access_has_changed_callout_title')}>
 				<MarkdownText variant='inline' content={t('Server_logs_access_has_changed_callout_description', { docsUrl: links.go.logsDocs })} />
 			</Callout>
-			<Box backgroundColor='light' padding={20} paddingBlockEnd={28} marginBlockEnd={16} borderRadius='medium'>
+			<Box backgroundColor='light' padding='x20' paddingBlockEnd='x24' borderRadius='medium'>
 				<Box display='flex' flexDirection='row' alignItems='center' marginBlockEnd={20}>
 					<Box
 						display='flex'
@@ -25,15 +25,16 @@ const AnalyticsReports = () => {
 						padding={4}
 						marginInlineEnd={8}
 						backgroundColor='status-background-info'
+						color='info'
 					>
-						<Icon name='info' size={20} color='info' />
+						<Icon name='info' size={20} />
 					</Box>
-					<Box fontScale='h4'>{t('How_and_why_we_collect_usage_data')}</Box>
+					<Text fontScale='h4'>{t('How_and_why_we_collect_usage_data')}</Text>
 				</Box>
 				<Box fontScale='p1' marginBlockEnd={16}>
 					{t('Analytics_page_briefing_first_paragraph')}
 				</Box>
-				<Box fontScale='p1'>{t('Analytics_page_briefing_second_paragraph')}</Box>
+				<Text fontScale='p1'>{t('Analytics_page_briefing_second_paragraph')}</Text>
 			</Box>
 			<Scrollable vertical>
 				<Box marginBlockEnd={8} padding={8} backgroundColor='neutral' borderRadius='medium' height='100%'>

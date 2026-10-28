@@ -131,7 +131,7 @@ export class NotificationsModule {
 	}
 
 	configure(): void {
-		// eslint-disable-next-line @typescript-eslint/no-this-alias
+		// oxlint-disable-next-line @typescript-eslint/no-this-alias
 		const self = this;
 
 		this.streamRoomMessage.allowWrite('none');

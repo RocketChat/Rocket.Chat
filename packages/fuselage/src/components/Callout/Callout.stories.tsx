@@ -115,8 +115,8 @@ export const WithActions: Story = {
 		children: 'This is a generic description.',
 		actions: (
 			<ButtonGroup>
-				<Button small>Button</Button>
-				<Button small>Button</Button>
+				<Button size='small'>Button</Button>
+				<Button size='small'>Button</Button>
 			</ButtonGroup>
 		),
 	},

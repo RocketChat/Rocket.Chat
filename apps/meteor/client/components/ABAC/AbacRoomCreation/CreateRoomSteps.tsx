@@ -32,7 +32,7 @@ const CreateRoomSteps = ({ abac, flow, details, security, onCancel, submitDisabl
 
 	return (
 		<>
-			<ModalContent marginBlockEnd={2}>
+			<ModalContent>
 				{step === 'details' && (
 					<>
 						{details}
@@ -61,7 +61,7 @@ const CreateRoomSteps = ({ abac, flow, details, security, onCancel, submitDisabl
 					/>
 				)}
 			</ModalContent>
-			<ModalFooter justifyContent={isStepped ? 'space-between' : undefined}>
+			<ModalFooter justify={isStepped ? 'space-between' : undefined}>
 				{isStepped && <ModalFooterAnnotation>{t('Step_of_total', { step: index + 1, total })}</ModalFooterAnnotation>}
 				<ModalFooterControllers>
 					{index === 0 ? (
@@ -71,7 +71,7 @@ const CreateRoomSteps = ({ abac, flow, details, security, onCancel, submitDisabl
 							{t('Back')}
 						</Button>
 					)}
-					<Button type='submit' primary disabled={submitDisabled || flow.isStepBlocked} loading={isSubmitting}>
+					<Button type='submit' variant='primary' disabled={submitDisabled || flow.isStepBlocked} loading={isSubmitting}>
 						{index === total - 1 ? t('Create') : t('Next')}
 					</Button>
 				</ModalFooterControllers>

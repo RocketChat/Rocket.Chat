@@ -26,6 +26,7 @@ const Header = (props: HeaderProps) => (
 			overflow='hidden'
 			flexDirection='row'
 			backgroundColor='room'
+			marginBlockEnd={-2}
 			{...props}
 		/>
 		<HeaderDivider />
