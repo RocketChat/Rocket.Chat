@@ -15430,6 +15430,31 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tamagui/web@patch:@tamagui/web@npm%3A3.0.18#~/.yarn/patches/@tamagui-web-npm-3.0.18-f8fb3ca22a.patch":
+  version: 3.0.18
+  resolution: "@tamagui/web@patch:@tamagui/web@npm%3A3.0.18#~/.yarn/patches/@tamagui-web-npm-3.0.18-f8fb3ca22a.patch::version=3.0.18&hash=02db0d"
+  dependencies:
+    "@tamagui/animation-helpers": "npm:3.0.18"
+    "@tamagui/compose-refs": "npm:3.0.18"
+    "@tamagui/constants": "npm:3.0.18"
+    "@tamagui/dom": "npm:3.0.18"
+    "@tamagui/helpers": "npm:3.0.18"
+    "@tamagui/is-equal-shallow": "npm:3.0.18"
+    "@tamagui/native": "npm:3.0.18"
+    "@tamagui/normalize-css-color": "npm:3.0.18"
+    "@tamagui/react-native-types": "npm:3.0.18"
+    "@tamagui/style-grammar": "npm:3.0.18"
+    "@tamagui/types": "npm:3.0.18"
+    "@tamagui/use-did-finish-ssr": "npm:3.0.18"
+    "@tamagui/use-event": "npm:3.0.18"
+    "@tamagui/use-force-update": "npm:3.0.18"
+  peerDependencies:
+    react: ">=19"
+    react-dom: "*"
+  checksum: 10/3312f2b43a5403ae022591e4a77fa7b93e62c413d6a514bf29c972b303d2cb011257871f7b5c1842787c498b9e84800aee813a9c440e113ac02ad21bf5979ed2
+  languageName: node
+  linkType: hard
+
 "@tanstack/query-core@npm:5.65.0":
   version: 5.65.0
   resolution: "@tanstack/query-core@npm:5.65.0"
