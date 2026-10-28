@@ -4,6 +4,7 @@ import type { MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useContactFavorite } from './hooks/useContactFavorite';
+import { isContactFavoriteEditable } from '../../../lib/isContactFavoriteEditable';
 
 export type ContactFavoriteToggleProps = {
 	contact: Serialized<IContactPublic>;
@@ -14,7 +15,7 @@ const ContactFavoriteToggle = ({ contact, revealed }: ContactFavoriteToggleProps
 	const { t } = useTranslation();
 	const { favorite, setFavorite } = useContactFavorite(contact);
 
-	if (contact.source !== 'local') {
+	if (!isContactFavoriteEditable(contact)) {
 		return (
 			favorite && (
 				<Stack direction='row' justify='center'>

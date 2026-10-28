@@ -25,10 +25,16 @@ export type ContactFolderSyncOutcome = {
 
 const EMPTY: ContactFolderSyncOutcome = { upserted: 0, modified: 0, deleted: 0, pruned: 0, failed: false, fatal: false };
 
-const toContact = (uid: IUser['_id'], contact: ExchangeContactUpsert, defaultRegion: string): ImportedContact => ({
+const toContact = (
+	uid: IUser['_id'],
+	contact: ExchangeContactUpsert,
+	defaultRegion: string,
+	provider: IExchangeProvider,
+): ImportedContact => ({
 	uid,
 	externalId: contact.externalId,
 	folderId: contact.folderId,
+	syncProvider: provider.id,
 	displayName: contact.displayName,
 	givenName: contact.givenName,
 	surname: contact.surname,
@@ -36,7 +42,7 @@ const toContact = (uid: IUser['_id'], contact: ExchangeContactUpsert, defaultReg
 	officeLocation: contact.officeLocation,
 	emails: contact.emails,
 	categories: contact.categories,
-	favorite: contact.favorite,
+	...(provider.capabilities.syncsFavorites && { favorite: contact.favorite }),
 	phones: contact.phones.map(({ raw, label }) => {
 		const e164 = normalizeE164(raw, defaultRegion);
 
@@ -179,7 +185,7 @@ export const syncContactFolder = async (
 		const now = new Date();
 
 		const imported = await Contacts.bulkUpsertImported(
-			[...upserts.values()].map((contact) => toContact(uid, contact, defaultRegion)),
+			[...upserts.values()].map((contact) => toContact(uid, contact, defaultRegion, provider)),
 			now,
 		);
 

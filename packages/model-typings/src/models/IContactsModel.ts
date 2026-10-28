@@ -1,17 +1,21 @@
-import type { IContact, IContactPublic, IUser } from '@rocket.chat/core-typings';
+import type { ContactSyncProvider, IContact, IContactPublic, IUser } from '@rocket.chat/core-typings';
 import type { DeleteResult, Document, FindCursor, UpdateResult } from 'mongodb';
 
 import type { FindPaginated, IBaseModel, InsertionModel } from './IBaseModel';
 import type { DocumentWithProjection, FindOptionsWithProjection } from '../types/DocumentWithProjection';
 
-export type ImportedContact = Omit<InsertionModel<IContact>, '_id' | 'source' | 'externalId' | 'folderId' | 'lastSyncAt'> & {
+export type ImportedContact = Omit<
+	InsertionModel<IContact>,
+	'_id' | 'source' | 'externalId' | 'folderId' | 'syncProvider' | 'lastSyncAt'
+> & {
 	externalId: string;
 	folderId: string;
+	syncProvider: ContactSyncProvider;
 };
 
 export type LocalContact = Omit<
 	InsertionModel<IContact>,
-	'_id' | 'source' | 'officeLocation' | 'categories' | 'favorite' | 'externalId' | 'folderId' | 'lastSyncAt'
+	'_id' | 'source' | 'officeLocation' | 'categories' | 'favorite' | 'syncProvider' | 'externalId' | 'folderId' | 'lastSyncAt'
 >;
 
 export type LocalContactUpdate = Omit<LocalContact, 'uid'>;
@@ -36,7 +40,7 @@ export interface IContactsModel extends IBaseModel<IContact> {
 	createLocal(contact: LocalContact): Promise<IContactPublic | null>;
 	updateLocal(uid: IUser['_id'], contactId: IContact['_id'], contact: LocalContactUpdate): Promise<IContactPublic | null>;
 	deleteLocal(uid: IUser['_id'], contactId: IContact['_id']): Promise<DeleteResult>;
-	setLocalFavorite(uid: IUser['_id'], contactId: IContact['_id'], favorite: boolean): Promise<UpdateResult>;
+	setFavorite(uid: IUser['_id'], contactId: IContact['_id'], favorite: boolean): Promise<UpdateResult>;
 	bulkUpsertImported(contacts: ImportedContact[], lastSyncAt: Date): Promise<ContactBulkUpsertResult>;
 	findImportedByFolder<P extends Document = IContact, O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>>(
 		uid: IUser['_id'],

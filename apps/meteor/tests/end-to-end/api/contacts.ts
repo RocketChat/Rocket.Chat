@@ -38,12 +38,13 @@ describe('[Contacts]', () => {
 	before(async () => {
 		connection = await MongoClient.connect(URL_MONGODB);
 
-		// No route accepts `source`, on purpose, so the contact the server sync owns is the one that goes in by hand.
+		// No route accepts `source` or `syncProvider`, on purpose, so the contact the server sync owns is the one that goes in by hand.
 		await contacts().insertOne({
 			_id: syncedId,
 			_updatedAt: new Date(),
 			uid: credentials['X-User-Id'],
 			source: 'outlook',
+			syncProvider: 'ews',
 			externalId: `contacts.external-${stamp}`,
 			folderId: 'default',
 			displayName: syncedName,
@@ -232,6 +233,7 @@ describe('[Contacts]', () => {
 		});
 
 		describe('[/contacts.favorite]', () => {
+			const graphContactId = `contacts.graph-${stamp}`;
 			let favoriteId: string;
 
 			const listFavoriteIds = async () => {
@@ -242,10 +244,22 @@ describe('[Contacts]', () => {
 			before(async () => {
 				favoriteId = await createContact(credentials, { givenName: `zFavorite${stamp}` });
 				await request.post(api('contacts.favorite')).set(credentials).send({ contactId: favoriteId, favorite: true }).expect(200);
+				await contacts().insertOne({
+					_id: graphContactId,
+					_updatedAt: new Date(),
+					uid: credentials['X-User-Id'],
+					source: 'outlook',
+					syncProvider: 'graph',
+					externalId: `contacts.graph-external-${stamp}`,
+					folderId: 'default',
+					displayName: `Graph ${stamp}`,
+					emails: [],
+					phones: [],
+				});
 			});
 
 			after(async () => {
-				await contacts().deleteOne({ _id: favoriteId });
+				await contacts().deleteMany({ _id: { $in: [favoriteId, graphContactId] } });
 				await request.post(api('contacts.favorite')).set(credentials).send({ contactId: ownLocalContactId, favorite: false }).expect(200);
 			});
 
@@ -280,7 +294,17 @@ describe('[Contacts]', () => {
 				expect(await contacts().findOne({ _id: otherContactId })).to.not.have.property('favorite');
 			});
 
-			it('should answer 404 for a contact the Outlook sync owns, whose favorite state comes from Outlook', async () => {
+			it('should let the caller mark a contact synced from Graph, which cannot read the favorite in Outlook', async () => {
+				await request.post(api('contacts.favorite')).set(credentials).send({ contactId: graphContactId, favorite: true }).expect(200);
+
+				expect(await contacts().findOne({ _id: graphContactId })).to.include({ favorite: true });
+
+				await request.post(api('contacts.favorite')).set(credentials).send({ contactId: graphContactId, favorite: false }).expect(200);
+
+				expect(await contacts().findOne({ _id: graphContactId })).to.not.have.property('favorite');
+			});
+
+			it('should answer 404 for a contact synced from EWS, whose favorite state comes from Outlook', async () => {
 				const res = await request.post(api('contacts.favorite')).set(credentials).send({ contactId: syncedId, favorite: true }).expect(404);
 
 				expect(res.body).to.have.property('error', 'error-contact-not-found');

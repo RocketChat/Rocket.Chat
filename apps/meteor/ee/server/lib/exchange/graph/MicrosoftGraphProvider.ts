@@ -134,6 +134,7 @@ export class MicrosoftGraphProvider implements IExchangeProvider {
 
 	public readonly capabilities: ExchangeProviderCapabilities = {
 		supportsWebhooks: true,
+		syncsFavorites: false,
 	};
 
 	private readonly tokenClient: GraphTokenClient;

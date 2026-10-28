@@ -32,7 +32,7 @@ integrations:
   ringing as a bare phone number. Contacts are a feature of Rocket.Chat in their own right: a user can
   create, edit and delete their own, and that works with or without Exchange. What this integration adds
   on top is the Outlook address book, **read only**. Synced contacts can be searched and called like any
-  other, but they are changed in Outlook, not here.
+  other, but they are changed in Outlook, not here, except for the favorite on Exchange Online.
 
 ## What an administrator sees
 
@@ -82,9 +82,10 @@ Nothing to set up, which is the point.
 - **An unknown number resolves to a name.** When a call comes in from a number saved in their Outlook
   contacts, the caller shows as that person, and the call history shows names instead of digits.
 - **Their Outlook contacts are searchable in Rocket.Chat**, alongside contacts they create by hand here.
-- **Their Outlook favorites carry over, on Exchange on-premises.** A contact they marked as a favorite in
-  Outlook on the web shows with a star and in the Favorites tab. Like the rest of a synced contact, it is
-  changed in Outlook, not here.
+- **Their favorite contacts show with a star and in the Favorites tab.** On Exchange on-premises these are
+  the contacts they marked as favorites in Outlook on the web, and they are changed in Outlook, not here.
+  On Exchange Online, which cannot read Outlook's favorites, they mark synced contacts as favorites in
+  Rocket.Chat, the same way as the contacts they created here.
 
 Contacts are **private to each user**. A person's Outlook contacts are visible only to them: nothing is
 shared across the workspace, and no administrator view of them exists.
@@ -130,8 +131,9 @@ left as an intention.
   out of scope. Contacts, by contrast, are read from every address book the user has.
 - **Past events are kept on purpose** and are not removed when they fall out of the sync window.
 - **Contact favorites are not synced from Exchange Online.** Microsoft Graph does not expose whether a
-  contact is a favorite in Outlook, so with that provider synced contacts never show as favorites. Local
-  contacts can be marked as favorites either way.
+  contact is a favorite in Outlook, so with that provider users mark favorites in Rocket.Chat instead.
+  Those stay in Rocket.Chat and never reach Outlook. They are lost when the contact is moved to another
+  address book in Outlook, and when the workspace switches to EWS.
 
 ## Where the decisions are written down
 

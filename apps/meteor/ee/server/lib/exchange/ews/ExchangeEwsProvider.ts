@@ -91,6 +91,7 @@ export class ExchangeEwsProvider implements IExchangeProvider {
 
 	public readonly capabilities: ExchangeProviderCapabilities = {
 		supportsWebhooks: false,
+		syncsFavorites: true,
 	};
 
 	private readonly transport: IEwsTransport;

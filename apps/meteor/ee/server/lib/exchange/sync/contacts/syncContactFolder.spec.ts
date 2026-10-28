@@ -72,7 +72,7 @@ const providerReturning = (id: 'graph' | 'ews', ...pages: Page<ExchangeContact>[
 
 	return {
 		id,
-		capabilities: { supportsWebhooks: false },
+		capabilities: { supportsWebhooks: false, syncsFavorites: id === 'ews' },
 		testConnection: jest.fn(),
 		listContacts: jest.fn(async () => queue.shift() ?? page([])),
 		getContactPhotos: jest.fn(async function* () {
@@ -242,7 +242,14 @@ describe('syncContactFolder', () => {
 			expect(imported).toHaveProperty('surname', undefined);
 			expect(imported).toHaveProperty('companyName', undefined);
 			expect(imported).toHaveProperty('officeLocation', undefined);
-			expect(imported).toHaveProperty('favorite', undefined);
+		});
+
+		it('stamps each contact with the provider it came from', async () => {
+			const provider = providerReturning('graph', page([upsert('A')]));
+
+			await syncContactFolder(provider, UID, MAILBOX, FOLDER, REGION);
+
+			expect(bulkUpsertImported.mock.calls[0][0][0]).toHaveProperty('syncProvider', 'graph');
 		});
 
 		it('leaves a number it cannot resolve without a e164 key, so it never matches the wrong contact', async () => {
@@ -351,7 +358,7 @@ describe('syncContactFolder', () => {
 		const failingProvider = (err: unknown): IExchangeProvider =>
 			({
 				id: 'graph',
-				capabilities: { supportsWebhooks: false },
+				capabilities: { supportsWebhooks: false, syncsFavorites: false },
 				testConnection: jest.fn(),
 				listContacts: jest.fn(async () => {
 					throw err;

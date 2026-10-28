@@ -17,6 +17,7 @@ import {
 	CONTACTS_SORTABLE_FIELDS,
 } from '@rocket.chat/rest-typings';
 
+import { isContactFavoriteEditable } from '../../../lib/isContactFavoriteEditable';
 import { API } from '../../../server/api/api';
 import { getPaginationItems } from '../../../server/api/lib/getPaginationItems';
 import { normalizeE164 } from '../lib/exchange/sync/contacts/normalizeE164';
@@ -270,7 +271,13 @@ API.v1.post(
 	async function action() {
 		const { contactId, favorite } = this.bodyParams;
 
-		const { matchedCount } = await Contacts.setLocalFavorite(this.userId, contactId, favorite);
+		const contact = await Contacts.findOneOwnedByUserId(this.userId, contactId);
+
+		if (!contact || !isContactFavoriteEditable(contact)) {
+			return API.v1.notFound('error-contact-not-found');
+		}
+
+		const { matchedCount } = await Contacts.setFavorite(this.userId, contactId, favorite);
 
 		if (!matchedCount) {
 			return API.v1.notFound('error-contact-not-found');

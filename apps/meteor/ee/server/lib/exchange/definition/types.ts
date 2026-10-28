@@ -2,6 +2,8 @@ export type ExchangeProviderId = 'graph' | 'ews';
 
 export type ExchangeProviderCapabilities = {
 	supportsWebhooks: boolean;
+	/** Whether it reads a contact's Outlook favorite. Where it can't, the user sets the favorite in Rocket.Chat */
+	syncsFavorites: boolean;
 };
 
 export type DateRange = {
@@ -74,7 +76,6 @@ export type ExchangeContactUpsert = {
 	emails: ExchangeContactEmail[];
 	phones: ExchangeContactPhone[];
 	categories: string[];
-	/** Only EWS can read it; Graph exposes no such field. */
 	favorite?: boolean;
 };
 

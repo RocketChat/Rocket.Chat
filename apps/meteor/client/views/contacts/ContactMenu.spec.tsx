@@ -56,8 +56,17 @@ describe('ContactMenu', () => {
 		await waitFor(() => expect(setFavorite).toHaveBeenCalledWith(expect.objectContaining({ contactId: CONTACT_ID, favorite: false })));
 	});
 
-	it('shows the favorite of an Outlook contact as disabled, since it is changed in Outlook', async () => {
-		renderMenu(createContact({ source: 'outlook', favorite: true }));
+	it('lets a contact synced from Graph be marked as a favorite, since Graph cannot read the one in Outlook', async () => {
+		const { setFavorite } = renderMenu(createContact({ source: 'outlook', syncProvider: 'graph' }));
+
+		await openMenu();
+		await userEvent.click(await screen.findByRole('menuitem', { name: 'Favorite' }));
+
+		await waitFor(() => expect(setFavorite).toHaveBeenCalledWith(expect.objectContaining({ contactId: CONTACT_ID, favorite: true })));
+	});
+
+	it('shows the favorite of a contact synced from EWS as disabled, since it is changed in Outlook', async () => {
+		renderMenu(createContact({ source: 'outlook', syncProvider: 'ews', favorite: true }));
 
 		await openMenu();
 
