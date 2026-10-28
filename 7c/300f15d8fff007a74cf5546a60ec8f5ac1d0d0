@@ -1,9 +1,11 @@
 apps/meteor/server/lib/notifications/email/transport.ts
   s_f024d5bad5a0a6::t_88b9c9897a33e6 38,40
   s_f024d5bad5a0a6::t_410e3cdd0c29e4 2,6-39,41-44,46,61
+  s_f024d5bad5a0a6::t_606d3fccc91b4c 47
 apps/meteor/server/lib/notifications/email/transport.test.ts
   s_f024d5bad5a0a6::t_410e3cdd0c29e4 64-94
   s_f024d5bad5a0a6::t_6bb55c60c45d9e 63
+  s_f024d5bad5a0a6::t_7411c4e031f399 95
 ---
 {
   "schema_version": "authorship/3.0.0",
