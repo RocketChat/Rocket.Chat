@@ -9,6 +9,8 @@ import moment from 'moment';
 import { canSendMessageAsync } from '../../lib/authorization/canSendMessage';
 import { i18n } from '../../lib/i18n';
 import { SystemLogger } from '../../lib/logger/system';
+import type { HistoryCheckedMessage } from '../../lib/messages/historyVisibility';
+import { canSeeMessage, historyCheckedMessageProjection } from '../../lib/messages/historyVisibility';
 import { sendMessage } from '../../lib/messages/sendMessage';
 import { metrics } from '../../lib/metrics';
 import { settings } from '../../settings';
@@ -78,6 +80,11 @@ export async function executeSendMessage(
 
 		if (parentMessage?.rid) {
 			rid = parentMessage?.rid;
+		}
+
+		const threadRoot = await Messages.findOneById<HistoryCheckedMessage>(message.tmid, { projection: historyCheckedMessageProjection });
+		if (threadRoot && !(await canSeeMessage(user._id, threadRoot))) {
+			throw new ClientSafeError('error-not-allowed', 'Not allowed', { method: 'sendMessage' });
 		}
 	}
 
