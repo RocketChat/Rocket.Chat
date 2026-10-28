@@ -1,0 +1,22 @@
+apps/meteor/server/lib/notifications/email/transport.ts
+  s_f024d5bad5a0a6::t_410e3cdd0c29e4 2,6-39,41-44,46,54,72
+apps/meteor/server/lib/notifications/email/transport.test.ts
+  s_f024d5bad5a0a6::t_410e3cdd0c29e4 65-95
+  s_f024d5bad5a0a6::t_6bb55c60c45d9e 64
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "1fae418019a4e2f1e848880a5f1f573cf54acec1",
+  "prompts": {},
+  "sessions": {
+    "s_f024d5bad5a0a6": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "927449cb-49b0-4c58-a8c1-55f1659fd9a6",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
