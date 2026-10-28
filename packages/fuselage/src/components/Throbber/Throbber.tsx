@@ -32,6 +32,9 @@ const CircleFrame = styled(View, {
 	render: 'span',
 	marginInline: spacing('x1'),
 	borderRadius: '100%',
+	// The size travels as a custom property, like the timing, so the frame's styles stay static
+	width: 'var(--rcx-throbber-size)',
+	height: 'var(--rcx-throbber-size)',
 	backgroundColor: toCSSColorValue('button-background-primary-default', button.light.backgroundPrimaryDefault),
 
 	variants: {
@@ -58,11 +61,15 @@ type CircleProps = {
 function Circle({ disabled, circleCount, iteration, inheritColor, size }: CircleProps) {
 	return (
 		<CircleFrame
-			style={{ '--throbber-duration': `${circleCount * 0.466}s`, '--throbber-delay': `${iteration * 0.16}s` } as CSSProperties}
+			style={
+				{
+					'--throbber-duration': `${circleCount * 0.466}s`,
+					'--throbber-delay': `${iteration * 0.16}s`,
+					'--rcx-throbber-size': sizeToken(size),
+				} as CSSProperties
+			}
 			disabled={disabled}
 			inheritColor={inheritColor}
-			width={sizeToken(size)}
-			height={sizeToken(size)}
 			className={cx(
 				'rcx-throbber__circle',
 				disabled && 'rcx-throbber__circle--disabled',

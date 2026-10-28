@@ -1,10 +1,10 @@
 import { styled, View, type GetProps } from '@tamagui/web';
-import type { AllHTMLAttributes, RefAttributes } from 'react';
+import type { AllHTMLAttributes, CSSProperties, RefAttributes } from 'react';
 
-import { surfaceColors } from '../../Theme';
+import { statusBackgroundColors, statusColors, surfaceColors } from '../../Theme';
 import { cx } from '../../helpers/composeClassNames';
 import { toCSSValue } from '../../helpers/toCSSValue';
-import { borderRadius, fontFamily, resolveBackgroundColor } from '../../styleTokens';
+import { borderRadius, fontFamily } from '../../styleTokens';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 const progressBarBorderRadius = toCSSValue(
@@ -32,7 +32,31 @@ const ProgressBarFrame = styled(View, {
 	backgroundColor: toCSSValue('--rcx-progress-bar-color-background', surfaceColors['surface-neutral']),
 });
 
-const ProgressBarFill = styled(View, resetBox);
+const colors = {
+	info: 'status-font-on-info',
+	success: 'status-font-on-success',
+	warning: 'status-font-on-warning',
+	danger: 'status-font-on-danger',
+} as const;
+const lightColors = {
+	info: 'status-background-info',
+	success: 'status-background-success',
+	warning: 'status-background-warning',
+	danger: 'status-background-danger',
+} as const;
+
+const ProgressBarFill = styled(View, {
+	...resetBox,
+	// The percentage travels as a custom property, so the frame's styles stay static and app CSS can still override them
+	width: 'var(--rcx-progress-bar-fill-width)',
+
+	variants: {
+		fillColor: {
+			...Object.fromEntries(Object.values(colors).map((name) => [name, { backgroundColor: String(statusColors[name]) }])),
+			...Object.fromEntries(Object.values(lightColors).map((name) => [name, { backgroundColor: String(statusBackgroundColors[name]) }])),
+		} as Record<(typeof colors)[keyof typeof colors] | (typeof lightColors)[keyof typeof lightColors], { backgroundColor: string }>,
+	} as const,
+});
 
 const ProgressBarShine = styled(View, {
 	position: 'absolute',
@@ -44,19 +68,6 @@ const ProgressBarShine = styled(View, {
 });
 
 const getWidth = (percentage: number): string => `${Math.min(Math.max(0, percentage), 100).toFixed(1)}%`;
-
-const colors = {
-	info: 'status-font-on-info',
-	success: 'status-font-on-success',
-	warning: 'status-font-on-warning',
-	danger: 'status-font-on-danger',
-};
-const lightColors = {
-	info: 'status-background-info',
-	success: 'status-background-success',
-	warning: 'status-background-warning',
-	danger: 'status-background-danger',
-};
 
 const getColor = (isLight: boolean, variant: 'info' | 'success' | 'warning' | 'danger', error?: string) => {
 	if (error) {
@@ -83,8 +94,8 @@ function ProgressBar({ percentage, variant = 'info', error, animated, light = fa
 			className={cx('rcx-progress-bar', className)}
 		>
 			<ProgressBarFill
-				backgroundColor={resolveBackgroundColor(getColor(light, variant, error))}
-				width={getWidth(percentage)}
+				fillColor={getColor(light, variant, error)}
+				style={{ '--rcx-progress-bar-fill-width': getWidth(percentage) } as CSSProperties}
 				className={cx('rcx-progress-bar__fill', animated && 'rcx-progress-bar__fill--animated')}
 			>
 				{animated && <ProgressBarShine aria-hidden className='rcx-progress-bar__shine' />}
