@@ -209,6 +209,12 @@
 	gap: 0.5rem;
 }
 
+/* A filter input fills the row after the chips */
+.rcx-select__values > input.rcx-input-box--undecorated {
+	flex-grow: 1;
+	order: 1;
+}
+
 .rcx-select__focus--button {
 	letter-spacing: 0;
 
