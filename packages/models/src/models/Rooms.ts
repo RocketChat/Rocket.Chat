@@ -2122,6 +2122,26 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		).map(({ _id }) => _id);
 	}
 
+	// Does not skip users that are already queued: use it for a room whose queue is still empty, such as a new room.
+	addUserIdsToE2EEQueueByRoomId(roomId: IRoom['_id'], uids: IUser['_id'][]): Promise<UpdateResult> {
+		const ts = new Date();
+		const query: Filter<IRoom> = {
+			_id: roomId,
+			encrypted: true,
+		};
+
+		const update: UpdateFilter<IRoom> = {
+			$push: {
+				usersWaitingForE2EKeys: {
+					$each: uids.map((userId) => ({ userId, ts })),
+					$slice: -50,
+				},
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
 	addUserIdToE2EEQueueByRoomIds(roomIds: IRoom['_id'][], uid: IUser['_id']): Promise<Document | UpdateResult> {
 		const query: Filter<IRoom> = {
 			'_id': {
