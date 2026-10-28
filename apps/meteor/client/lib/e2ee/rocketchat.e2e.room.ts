@@ -19,7 +19,7 @@ import { Binary } from './binary';
 import { decodeEncryptedContent } from './content';
 import * as Aes from './crypto/aes';
 import * as Rsa from './crypto/rsa';
-import { encryptAESCTR, generateAESCTRKey, sha256HashFromArrayBuffer, createSha256HashFromText } from './helper';
+import { encryptAESCTR, generateAESCTRKey, sha256HashFromArrayBuffer, createRandomFileName } from './helper';
 import { createLogger } from './logger';
 import { PrefixedBase64 } from './prefixed';
 import { e2e } from './rocketchat.e2e';
@@ -623,7 +623,7 @@ export class E2ERoom extends Emitter {
 
 		const exportedKey = await window.crypto.subtle.exportKey('jwk', key);
 
-		const fileName = await createSha256HashFromText(file.name);
+		const fileName = createRandomFileName();
 
 		const encryptedFile = new File([result], fileName);
 

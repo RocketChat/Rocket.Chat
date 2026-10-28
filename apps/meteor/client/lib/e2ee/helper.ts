@@ -40,9 +40,13 @@ export async function generatePassphrase() {
 	return words.join(' ');
 }
 
-export async function createSha256HashFromText(data: string) {
-	const hash = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(data));
-	return Array.from(new Uint8Array(hash))
+/**
+ * The name that the server stores for an encrypted file: 32 random bytes as 64 hex characters. The real name is only in
+ * the encrypted content. A hash of the name lets anyone who reads the database confirm a guessed name, and shows when two
+ * uploads have the same name. A random value shows neither.
+ */
+export function createRandomFileName() {
+	return Array.from(crypto.getRandomValues(new Uint8Array(32)))
 		.map((b) => b.toString(16).padStart(2, '0'))
 		.join('');
 }
