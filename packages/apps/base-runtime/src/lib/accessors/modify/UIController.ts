@@ -35,28 +35,28 @@ export class UIController implements IUIController {
 	 * @deprecated please prefer the `openSurfaceView` method
 	 */
 	public openModalView(view: IUIKitModalViewParam, context: IUIKitInteractionParam, user: IUser) {
-		return this.openModal(view, context, user);
+		return this.openModal({ ...view, blocks: UIHelper.assignIds(view.blocks, this.appId) }, context, user);
 	}
 
 	/**
 	 * @deprecated please prefer the `updateSurfaceView` method
 	 */
 	public updateModalView(view: IUIKitModalViewParam, context: IUIKitInteractionParam, user: IUser) {
-		return this.openModal(view, context, user, true);
+		return this.openModal({ ...view, blocks: UIHelper.assignIds(view.blocks, this.appId) }, context, user, true);
 	}
 
 	/**
 	 * @deprecated please prefer the `openSurfaceView` method
 	 */
 	public openContextualBarView(view: IUIKitContextualBarViewParam, context: IUIKitInteractionParam, user: IUser) {
-		return this.openContextualBar(view, context, user);
+		return this.openContextualBar({ ...view, blocks: UIHelper.assignIds(view.blocks, this.appId) }, context, user);
 	}
 
 	/**
 	 * @deprecated please prefer the `updateSurfaceView` method
 	 */
 	public updateContextualBarView(view: IUIKitContextualBarViewParam, context: IUIKitInteractionParam, user: IUser) {
-		return this.openContextualBar(view, context, user, true);
+		return this.openContextualBar({ ...view, blocks: UIHelper.assignIds(view.blocks, this.appId) }, context, user, true);
 	}
 
 	public openSurfaceView(view: IUIKitSurfaceViewParam, context: IUIKitInteractionParam, user: IUser) {
