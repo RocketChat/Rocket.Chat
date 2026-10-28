@@ -2,13 +2,13 @@ import { IconButton } from '@rocket.chat/fuselage';
 import type { AllHTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import type { EmojiCategory } from '../../../../app/emoji/client';
+import type { EmojiCategory } from '../../../lib/emoji';
 
 export type EmojiPickerCategoryItemProps = {
 	category: EmojiCategory;
 	active: boolean;
 	handleGoToCategory: () => void;
-} & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is'>;
+} & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is' | 'color' | 'size'>;
 
 const mapCategoryIcon = (category: string) => {
 	switch (category) {
@@ -56,7 +56,7 @@ const EmojiPickerCategoryItem = ({ category, active, handleGoToCategory, ...prop
 			aria-selected={active}
 			title={t(category.i18n)}
 			className={category.key}
-			small
+			size='small'
 			aria-label={t(category.i18n)}
 			onClick={handleGoToCategory}
 			icon={icon}

@@ -1,12 +1,11 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useRouter, useSetModal, useToastMessageDispatch, useEndpoint, usePermission, useUserSubscription } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
-import { LegacyRoomManager } from '../../../../../../../app/ui-utils/client';
 import { UiTextContext } from '../../../../../../../definition/IRoomTypeConfig';
 import WarningModal from '../../../../../../components/WarningModal';
+import { LegacyRoomManager } from '../../../../../../lib/LegacyRoomManager';
 import { roomCoordinator } from '../../../../../../lib/rooms/roomCoordinator';
 
 export const useRoomLeave = (room: IRoom) => {
@@ -46,7 +45,7 @@ export const useRoomLeave = (room: IRoom) => {
 
 		setModal(
 			<WarningModal
-				text={t(warnText as TranslationKey, { roomName: room.fname || room.name })}
+				text={t(warnText, { roomName: room.fname || room.name })}
 				confirmText={t('Leave_room')}
 				close={() => setModal(null)}
 				cancelText={t('Cancel')}

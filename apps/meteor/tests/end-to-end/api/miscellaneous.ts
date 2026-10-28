@@ -1,9 +1,11 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IInstanceStatus, IRoom, ITeam, IUser } from '@rocket.chat/core-typings';
 import { TeamType } from '@rocket.chat/core-typings';
 import type { IInstance } from '@rocket.chat/rest-typings';
 import { AssertionError, expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
+import { MongoClient } from 'mongodb';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
@@ -12,10 +14,10 @@ import { createTeam, deleteTeam } from '../../data/teams.helper';
 import { adminEmail, adminUsername, adminPassword, password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login as doLogin } from '../../data/users.helper';
-import { IS_EE } from '../../e2e/config/constants';
+import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 
 describe('miscellaneous', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	describe('API default', () => {
 		// Required by mobile apps
@@ -196,6 +198,7 @@ describe('miscellaneous', () => {
 
 	describe('/directory', () => {
 		let user: TestUser<IUser>;
+		let userWithLeftoverFederationData: TestUser<IUser>;
 		let testChannel: IRoom;
 		let testGroup: IRoom;
 		let normalUserCredentials: Credentials;
@@ -205,18 +208,28 @@ describe('miscellaneous', () => {
 		before(async () => {
 			await updatePermission('create-team', ['admin', 'user']);
 			user = await createUser();
+			userWithLeftoverFederationData = await createUser();
 			normalUserCredentials = await doLogin(user.username, password);
 			[testChannel, testGroup, teamCreated] = await Promise.all([
 				createRoom({ name: `channel.test.${Date.now()}`, type: 'c' }).then((res) => res.body.channel),
 				createRoom({ name: `group.test.${Date.now()}`, type: 'p' }).then((res) => res.body.group),
 				createTeam(normalUserCredentials, teamName, TeamType.PUBLIC),
 			]);
+
+			const connection = await MongoClient.connect(URL_MONGODB);
+			const updateResult = await connection
+				.db()
+				.collection('users')
+				.updateOne({ _id: userWithLeftoverFederationData._id as any }, { $set: { federation: { origin: 'example.com' } } });
+			await connection.close();
+			expect(updateResult.modifiedCount).to.equal(1);
 		});
 
 		after(async () => {
 			await Promise.all([
 				deleteTeam(normalUserCredentials, teamName),
 				deleteUser(user),
+				deleteUser(userWithLeftoverFederationData),
 				deleteRoom({ type: 'c', roomId: testChannel._id }),
 				deleteRoom({ type: 'p', roomId: testGroup._id }),
 				updatePermission('create-team', ['admin', 'user']),
@@ -268,6 +281,22 @@ describe('miscellaneous', () => {
 			expect(res.body.result[0]).to.not.have.property('emails');
 			expect(res.body.result[0]).to.have.property('name');
 		});
+		it('should find local users that still have leftover federation data', async () => {
+			const res = await request
+				.get(api('directory'))
+				.set(credentials)
+				.query({
+					text: userWithLeftoverFederationData.username,
+					type: 'users',
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.result).to.have.lengthOf(1);
+			expect(res.body.result[0]).to.have.property('_id', userWithLeftoverFederationData._id);
+		});
+
 		it('should return an array(result) when search by channel and execute successfully', async () => {
 			const res = await request
 				.get(api('directory'))
@@ -534,18 +563,74 @@ describe('miscellaneous', () => {
 			expect(res.body).to.have.property('users').and.to.be.an('array');
 			expect(res.body.users.map((u: { username: string }) => u.username)).to.not.include(adminUsername);
 		});
-		it('should allow anonymous (unauthenticated) requests', async () => {
-			const res = await request
-				.get(api('spotlight'))
-				.query({
-					query: `#${testChannel.name}`,
-				})
-				.expect('Content-Type', 'application/json')
-				.expect(200);
+		describe('anonymous (unauthenticated) requests', () => {
+			after(() => updateSetting('Accounts_AllowAnonymousRead', false));
 
-			expect(res.body).to.have.property('success', true);
-			expect(res.body).to.have.property('rooms').and.to.be.an('array');
-			expect(res.body).to.have.property('users').and.to.be.an('array');
+			it('should return no rooms when anonymous read is disabled', async () => {
+				await updateSetting('Accounts_AllowAnonymousRead', false);
+
+				const res = await request
+					.get(api('spotlight'))
+					.query({
+						query: `#${testChannel.name}`,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('rooms').and.to.be.an('array').that.is.empty;
+				expect(res.body).to.have.property('users').and.to.be.an('array').that.is.empty;
+			});
+
+			// An unprefixed query keeps `type.users` enabled, so it also runs the user search with no
+			// user id - the code path that used to throw before the anonymous callers were guarded.
+			it('should return no rooms or users for an unprefixed query when anonymous read is disabled', async () => {
+				await updateSetting('Accounts_AllowAnonymousRead', false);
+
+				const res = await request
+					.get(api('spotlight'))
+					.query({
+						query: testChannel.name,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body).to.have.property('rooms').and.to.be.an('array').that.is.empty;
+				expect(res.body).to.have.property('users').and.to.be.an('array').that.is.empty;
+			});
+
+			it('should return public rooms but no users when anonymous read is enabled', async () => {
+				await updateSetting('Accounts_AllowAnonymousRead', true);
+
+				const res = await request
+					.get(api('spotlight'))
+					.query({
+						query: `#${testChannel.name}`,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body.rooms.map((r: { _id: string }) => r._id)).to.include(testChannel._id);
+				expect(res.body).to.have.property('users').and.to.be.an('array').that.is.empty;
+			});
+
+			it('should return public rooms but no users for an unprefixed query when anonymous read is enabled', async () => {
+				await updateSetting('Accounts_AllowAnonymousRead', true);
+
+				const res = await request
+					.get(api('spotlight'))
+					.query({
+						query: testChannel.name,
+					})
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body.rooms.map((r: { _id: string }) => r._id)).to.include(testChannel._id);
+				expect(res.body).to.have.property('users').and.to.be.an('array').that.is.empty;
+			});
 		});
 	});
 
@@ -570,8 +655,8 @@ describe('miscellaneous', () => {
 		it('should fail if not logged in', async () => {
 			const res = await request.get(api('instances.get')).expect('Content-Type', 'application/json').expect(401);
 
-			expect(res.body).to.have.property('status', 'error');
-			expect(res.body).to.have.property('message');
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 		});
 
 		it('should return instances if user is logged in and is authorized', async () => {
@@ -679,7 +764,8 @@ describe('miscellaneous', () => {
 			const res = await request.post(api('fingerprint')).send({ setDeploymentAs: 'updated-configuration' });
 
 			expect(res.status).to.equal(401);
-			expect(res.body).to.have.property('status', 'error');
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 		});
 
 		it('should return 403 when a user without the manage-cloud permission tries to acknowledge a deployment configuration change', async () => {

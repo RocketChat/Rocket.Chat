@@ -3,7 +3,27 @@ import type { FrameLocator, Locator, Page } from '@playwright/test';
 import { expect } from '../utils/test';
 
 abstract class Main {
+	protected abstract readonly page: Page;
+
 	constructor(protected root: Locator) {}
+
+	/**
+	 * Navigates to `url` and waits for this screen to render.
+	 *
+	 * Auth screens are what an unauthenticated visitor is bounced to, so the url a test navigates to
+	 * is usually not the one it lands on — hence the parameter. Pass `until` when the route settles
+	 * on something else, e.g. a login iframe replacing the login form.
+	 */
+	async goto(url = '/home', until?: Locator): Promise<void> {
+		await this.page.goto(url);
+
+		if (until) {
+			await expect(until).toBeVisible();
+			return;
+		}
+
+		await this.waitForDisplay();
+	}
 
 	waitForDisplay() {
 		return expect(this.root).toBeVisible();
@@ -80,10 +100,6 @@ export class Registration extends Main {
 		super(page.getByRole('main'));
 	}
 
-	async waitForCalloutPage(): Promise<void> {
-		await this.page.getByRole('status').waitFor();
-	}
-
 	get btnSendInstructions(): Locator {
 		return this.page.locator('role=button[name="Send instructions"]');
 	}
@@ -150,6 +166,26 @@ export class Registration extends Main {
 
 	get registrationDisabledCallout(): Locator {
 		return this.page.getByRole('status').filter({ hasText: 'New user registration is currently disabled' });
+	}
+
+	/** Opens an invite url, e.g. `/invite/<id>`. */
+	async gotoInvite(inviteId: string): Promise<void> {
+		await this.goto(`/invite/${inviteId}`);
+	}
+
+	/**
+	 * Opens the secret registration url, e.g. `/register/<secret>`.
+	 *
+	 * Depending on `Accounts_RegistrationForm` the page settles on the register form or on an
+	 * invalid-secret callout, and neither renders a `main` landmark - so the caller says which it expects.
+	 */
+	async gotoWithSecret(secret: string, until: Locator): Promise<void> {
+		await this.goto(`/register/${secret}`, until);
+	}
+
+	/** Opens the password reset url for a token. */
+	async gotoResetPassword(token: string): Promise<void> {
+		await this.goto(`/reset-password/${token}`, this.inputPassword);
 	}
 
 	get registrationInvalidUrlCallout(): Locator {

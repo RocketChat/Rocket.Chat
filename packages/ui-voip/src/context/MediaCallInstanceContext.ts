@@ -5,7 +5,7 @@ import { createContext, useContext } from 'react';
 import type { PeerAutocompleteOptions } from '../components';
 import type { PeerInfo } from './definitions';
 
-export type AvailableViews = 'room' | 'popout' | 'widget';
+export type AvailableViews = 'room' | 'popout' | 'widget' | 'inline-widget';
 
 type RegisterView = (view: AvailableViews) => void;
 type UnregisterView = (view: AvailableViews) => void;

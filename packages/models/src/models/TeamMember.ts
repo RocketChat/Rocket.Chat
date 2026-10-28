@@ -40,7 +40,7 @@ export class TeamMemberRaw extends BaseRaw<ITeamMember> implements ITeamMemberMo
 
 	findByUserId<P extends Document>(
 		userId: string,
-		options?: undefined | FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
+		options?: FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
 	): FindCursor<P> | FindCursor<ITeamMember> {
 		return options ? this.col.find({ userId }, options) : this.col.find({ userId }, options);
 	}
@@ -54,7 +54,7 @@ export class TeamMemberRaw extends BaseRaw<ITeamMember> implements ITeamMemberMo
 	findOneByUserIdAndTeamId<P extends Document>(
 		userId: string,
 		teamId: string,
-		options?: undefined | FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
+		options?: FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
 	): Promise<P | null | ITeamMember> {
 		return options ? this.col.findOne({ userId, teamId }, options) : this.col.findOne({ userId, teamId }, options);
 	}
@@ -67,7 +67,7 @@ export class TeamMemberRaw extends BaseRaw<ITeamMember> implements ITeamMemberMo
 
 	findByTeamId<P extends Document>(
 		teamId: string,
-		options?: undefined | FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
+		options?: FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
 	): FindCursor<P> | FindCursor<ITeamMember> {
 		return options ? this.col.find({ teamId }, options) : this.col.find({ teamId }, options);
 	}
@@ -84,7 +84,7 @@ export class TeamMemberRaw extends BaseRaw<ITeamMember> implements ITeamMemberMo
 
 	findByTeamIds<P extends Document>(
 		teamIds: Array<string>,
-		options?: undefined | FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
+		options?: FindOptions<ITeamMember> | FindOptions<P extends ITeamMember ? ITeamMember : P>,
 	): FindCursor<P> | FindCursor<ITeamMember> {
 		return options ? this.col.find({ teamId: { $in: teamIds } }, options) : this.col.find({ teamId: { $in: teamIds } }, options);
 	}
@@ -109,7 +109,7 @@ export class TeamMemberRaw extends BaseRaw<ITeamMember> implements ITeamMemberMo
 		limit: number,
 		skip: number,
 		query?: Filter<ITeamMember>,
-	): FindPaginated<FindCursor<ITeamMember>> {
+	): FindPaginated<FindCursor<Pick<ITeamMember, '_id' | 'userId' | 'roles' | 'createdBy' | 'createdAt'>>> {
 		return this.findPaginated(
 			{ ...query, teamId },
 			{

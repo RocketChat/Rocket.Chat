@@ -6,7 +6,7 @@ import { useCallback, useEffect, useId } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { LegacyRoomManager } from '../../../../app/ui-utils/client';
+import { LegacyRoomManager } from '../../../lib/LegacyRoomManager';
 import AutoCompleteAgent from '../components/AutoCompleteAgent';
 import AutoCompleteDepartment from '../components/AutoCompleteDepartment';
 
@@ -120,52 +120,52 @@ const ForwardChatModal = ({ room, onCancel }: ForwardChatModalProps) => {
 									id={departmentFieldId}
 									aria-label={t('Forward_to_department')}
 									withTitle={false}
-									maxWidth='100%'
-									flexGrow={1}
 									disabled={!!username}
 								/>
 							)}
 						/>
 					</FieldRow>
 				</Field>
-				<Divider padding={0}>{t('or')}</Divider>
-				<Field>
-					<FieldLabel htmlFor={userFieldId}>{t('Forward_to_user')}</FieldLabel>
-					<FieldRow>
-						<Controller
-							name='username'
-							control={control}
-							render={({ field: { ref: _ref, ...field } }) => (
-								<AutoCompleteAgent
-									id={userFieldId}
-									{...field}
-									aria-label={t('Forward_to_user')}
-									withTitle
-									onlyAvailable
-									excludeId={room.servedBy?._id}
-									showIdleAgents={idleAgentsAllowedForForwarding}
-									placeholder={t('Username_name_email')}
-									disabled={!!department}
-								/>
-							)}
-						/>
-					</FieldRow>
-				</Field>
-				<Field marginBlock={15}>
-					<FieldLabel htmlFor={commentFieldId}>
-						{t('Leave_a_comment')}
-						<Box marginInlineStart={4} is='span' color='annotation'>
-							({t('Optional')})
-						</Box>
-					</FieldLabel>
-					<FieldRow>
-						<Controller
-							name='comment'
-							control={control}
-							render={({ field }) => <TextAreaInput {...field} id={commentFieldId} rows={8} flexGrow={1} />}
-						/>
-					</FieldRow>
-				</Field>
+				<Divider>{t('or')}</Divider>
+				<Box display='flex' flexDirection='column' gap='x16' paddingBlockEnd='x16'>
+					<Field>
+						<FieldLabel htmlFor={userFieldId}>{t('Forward_to_user')}</FieldLabel>
+						<FieldRow>
+							<Controller
+								name='username'
+								control={control}
+								render={({ field: { ref: _ref, ...field } }) => (
+									<AutoCompleteAgent
+										id={userFieldId}
+										{...field}
+										aria-label={t('Forward_to_user')}
+										withTitle
+										onlyAvailable
+										excludeId={room.servedBy?._id}
+										showIdleAgents={idleAgentsAllowedForForwarding}
+										placeholder={t('Username_name_email')}
+										disabled={!!department}
+									/>
+								)}
+							/>
+						</FieldRow>
+					</Field>
+					<Field>
+						<FieldLabel htmlFor={commentFieldId}>
+							{t('Leave_a_comment')}
+							<Box marginInlineStart={4} is='span' color='annotation'>
+								({t('Optional')})
+							</Box>
+						</FieldLabel>
+						<FieldRow>
+							<Controller
+								name='comment'
+								control={control}
+								render={({ field }) => <TextAreaInput {...field} id={commentFieldId} rows={8} />}
+							/>
+						</FieldRow>
+					</Field>
+				</Box>
 			</FieldGroup>
 		</GenericModal>
 	);

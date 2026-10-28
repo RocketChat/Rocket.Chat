@@ -1,7 +1,6 @@
 type ConfigOptions = {
 	https?: boolean;
 	simulateUploadSpeed?: number;
-	storesPath?: string;
 	tmpDir?: string;
 	tmpDirPermissions?: string;
 };
@@ -13,8 +12,6 @@ export class Config {
 
 	public simulateUploadSpeed: RequiredConfigOptions['simulateUploadSpeed'];
 
-	public storesPath: RequiredConfigOptions['storesPath'];
-
 	public tmpDir: RequiredConfigOptions['tmpDir'];
 
 	public tmpDirPermissions: RequiredConfigOptions['tmpDirPermissions'];
@@ -24,7 +21,6 @@ export class Config {
 		options = {
 			https: false,
 			simulateUploadSpeed: 0,
-			storesPath: 'ufs',
 			tmpDir: '/tmp/ufs',
 			tmpDirPermissions: '0700',
 			...options,
@@ -37,9 +33,6 @@ export class Config {
 		if (typeof options.simulateUploadSpeed !== 'number') {
 			throw new TypeError('Config: simulateUploadSpeed is not a number');
 		}
-		if (typeof options.storesPath !== 'string') {
-			throw new TypeError('Config: storesPath is not a string');
-		}
 		if (typeof options.tmpDir !== 'string') {
 			throw new TypeError('Config: tmpDir is not a string');
 		}
@@ -49,7 +42,6 @@ export class Config {
 
 		this.https = options.https;
 		this.simulateUploadSpeed = options.simulateUploadSpeed;
-		this.storesPath = options.storesPath;
 		this.tmpDir = options.tmpDir;
 		this.tmpDirPermissions = options.tmpDirPermissions;
 	}

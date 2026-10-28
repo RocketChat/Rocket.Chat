@@ -1,8 +1,11 @@
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useSetModal } from '@rocket.chat/ui-contexts';
-import type { FC } from 'react';
+import type { ElementType } from 'react';
 
-export const useCreateRoomModal = (Component: FC<any>): (() => void) => {
+export const useCreateRoomModal = (
+	Component: ElementType<{ onSuccess?: (rid: string, name?: string) => void | Promise<void>; onClose: () => void }>,
+	onSuccess?: (rid: string, name?: string) => void | Promise<void>,
+): (() => void) => {
 	const setModal = useSetModal();
 
 	return useStableCallback(() => {
@@ -10,6 +13,6 @@ export const useCreateRoomModal = (Component: FC<any>): (() => void) => {
 			setModal(null);
 		};
 
-		setModal(<Component onClose={handleClose} />);
+		setModal(<Component onSuccess={onSuccess} onClose={handleClose} />);
 	});
 };

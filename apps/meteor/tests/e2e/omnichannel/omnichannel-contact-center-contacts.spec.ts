@@ -3,6 +3,7 @@ import { randomBytes } from 'crypto';
 import { faker } from '@faker-js/faker';
 
 import { Users } from '../fixtures/userStates';
+import { HomeOmnichannel } from '../page-objects';
 import { Navbar } from '../page-objects/fragments';
 import { OmnichannelContactCenterContacts } from '../page-objects/omnichannel';
 import { test, expect } from '../utils/test';
@@ -22,7 +23,7 @@ const createContact = (generateToken = false) => ({
 	id: null,
 	name: `${faker.person.firstName()} ${faker.person.lastName()}`,
 	email: faker.internet.email().toLowerCase(),
-	phone: faker.phone.number('+############'),
+	phone: faker.helpers.replaceSymbols('+############'),
 	token: generateToken ? createToken() : null,
 	customFields: {},
 });
@@ -33,14 +34,14 @@ const EXISTING_CONTACT = {
 	id: undefined,
 	name: `${faker.person.firstName()} ${faker.person.lastName()}`,
 	emails: [faker.internet.email().toLowerCase()],
-	phones: [faker.phone.number('+############')],
+	phones: [faker.helpers.replaceSymbols('+############')],
 	token: undefined,
 };
 const DELETE_CONTACT = {
 	id: undefined,
 	name: `${faker.person.firstName()} ${faker.person.lastName()}`,
 	emails: [faker.internet.email().toLowerCase()],
-	phones: [faker.phone.number('+############')],
+	phones: [faker.helpers.replaceSymbols('+############')],
 };
 
 const URL = {
@@ -103,7 +104,7 @@ test.describe('OC - Contact Center - Contacts', () => {
 	});
 
 	test.beforeEach(async ({ page }) => {
-		await page.goto('/');
+		await new HomeOmnichannel(page).goto();
 		await poNavbar.btnContactCenter.click();
 		await poContacts.tabContacts.click();
 		await page.waitForURL(URL.contactCenter);

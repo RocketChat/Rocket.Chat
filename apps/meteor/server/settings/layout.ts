@@ -1,4 +1,5 @@
 import { settingsRegistry } from '.';
+import roomToolboxLayoutSchema from '../../lib/roomToolboxLayout/room-toolbox-layout.schema.json';
 
 export const createLayoutSettings = () =>
 	settingsRegistry.addGroup('Layout', async function () {
@@ -213,6 +214,18 @@ export const createLayoutSettings = () =>
 				code: 'text/css',
 				multiline: true,
 				public: true,
+			});
+		});
+		await this.section('Room_Header', async function () {
+			await this.add('Room_Toolbox_Layout', '', {
+				type: 'code',
+				code: 'application/json',
+				multiline: true,
+				public: true,
+				enableQuery: [{ _id: 'Accounts_AllowFeaturePreview', value: true }],
+				i18nLabel: 'Room_Toolbox_Layout',
+				i18nDescription: 'Room_Toolbox_Layout_Setting_description',
+				schema: roomToolboxLayoutSchema,
 			});
 		});
 	});

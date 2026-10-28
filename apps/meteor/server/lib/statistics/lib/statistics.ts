@@ -3,7 +3,7 @@ import crypto from 'node:crypto';
 import os from 'node:os';
 
 import { Analytics, Team, VideoConf, Presence } from '@rocket.chat/core-services';
-import type { IRoom, IStats, ISetting } from '@rocket.chat/core-typings';
+import type { IStats, ISetting } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
 import {
@@ -29,7 +29,6 @@ import {
 	LivechatRooms,
 	AbacAttributes,
 } from '@rocket.chat/models';
-import { MongoInternals } from 'meteor/mongo';
 import moment from 'moment';
 
 import { getAppsStatistics } from './getAppsStatistics';
@@ -37,8 +36,9 @@ import { getContactVerificationStatistics } from './getContactVerificationStatis
 import { getStatistics as getEnterpriseStatistics } from './getEEStatistics';
 import { getImporterStatistics } from './getImporterStatistics';
 import { getServicesStatistics } from './getServicesStatistics';
-import { Info } from '../../../../app/utils/rocketchat.info';
+import { Info } from '../../../../rocketchat.info';
 import { readSecondaryPreferred } from '../../../database/readSecondaryPreferred';
+import { db } from '../../../database/utils';
 import { getMatrixFederationStatistics } from '../../../services/federation/infrastructure/rocket-chat/adapters/Statistics';
 import { settings } from '../../../settings';
 import { isRunningMs } from '../../isRunningMs';
@@ -63,8 +63,6 @@ const getUserLanguages = async (totalUsers: number): Promise<{ [key: string]: nu
 
 	return languages;
 };
-
-const { db } = MongoInternals.defaultRemoteCollectionDriver().mongo;
 
 export const statistics = {
 	get: async (): Promise<IStats> => {
@@ -278,36 +276,33 @@ export const statistics = {
 
 		// Message statistics
 		const channels = await Rooms.findByType('c', { projection: { msgs: 1, prid: 1 } }).toArray();
-		const totalChannelDiscussionsMessages = channels.reduce(function _countChannelDiscussionsMessages(num: number, room: IRoom) {
+		const totalChannelDiscussionsMessages = channels.reduce(function _countChannelDiscussionsMessages(num: number, room) {
 			return num + (room.prid ? room.msgs : 0);
 		}, 0);
 		statistics.totalChannelMessages =
-			channels.reduce(function _countChannelMessages(num: number, room: IRoom) {
+			channels.reduce(function _countChannelMessages(num: number, room) {
 				return num + room.msgs;
 			}, 0) - totalChannelDiscussionsMessages;
 
 		const privateGroups = await Rooms.findByType('p', { projection: { msgs: 1, prid: 1 } }).toArray();
-		const totalPrivateGroupsDiscussionsMessages = privateGroups.reduce(function _countPrivateGroupsDiscussionsMessages(
-			num: number,
-			room: IRoom,
-		) {
+		const totalPrivateGroupsDiscussionsMessages = privateGroups.reduce(function _countPrivateGroupsDiscussionsMessages(num: number, room) {
 			return num + (room.prid ? room.msgs : 0);
 		}, 0);
 		statistics.totalPrivateGroupMessages =
-			privateGroups.reduce(function _countPrivateGroupMessages(num: number, room: IRoom) {
+			privateGroups.reduce(function _countPrivateGroupMessages(num: number, room) {
 				return num + room.msgs;
 			}, 0) - totalPrivateGroupsDiscussionsMessages;
 
 		statistics.totalDiscussionsMessages = totalPrivateGroupsDiscussionsMessages + totalChannelDiscussionsMessages;
 
 		statistics.totalDirectMessages = (await Rooms.findByType('d', { projection: { msgs: 1 } }).toArray()).reduce(
-			function _countDirectMessages(num: number, room: IRoom) {
+			function _countDirectMessages(num: number, room) {
 				return num + room.msgs;
 			},
 			0,
 		);
 		statistics.totalLivechatMessages = (await Rooms.findByType('l', { projection: { msgs: 1 } }).toArray()).reduce(
-			function _countLivechatMessages(num: number, room: IRoom) {
+			function _countLivechatMessages(num: number, room) {
 				return num + room.msgs;
 			},
 			0,
@@ -563,8 +558,6 @@ export const statistics = {
 				}),
 			);
 		}
-
-		statistics.allowUnsafeQueryAndFieldsApiParamsEnabled = process.env.ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS?.toUpperCase() === 'TRUE';
 
 		await Promise.all(statsPms).catch(log);
 

@@ -26,5 +26,26 @@ describe('unescapeHTML', () => {
 		expect(unescapeHTML(null as unknown as string)).toBe('');
 		expect(unescapeHTML(undefined as unknown as string)).toBe('');
 		expect(unescapeHTML(5 as unknown as string)).toBe('5');
+		expect(unescapeHTML(0 as unknown as string)).toBe('0');
+		expect(unescapeHTML(false as unknown as string)).toBe('false');
+	});
+
+	it('decodes numeric entities beyond the Basic Multilingual Plane', () => {
+		expect(unescapeHTML('&#x1F600;')).toBe('😀');
+		expect(unescapeHTML('&#128512;')).toBe('😀');
+		expect(unescapeHTML('&#x10FFFF;')).toBe('\u{10FFFF}');
+	});
+
+	it('leaves out-of-range numeric entities as literal text', () => {
+		expect(unescapeHTML('&#x110000;')).toBe('&#x110000;');
+		expect(unescapeHTML('&#1114112;')).toBe('&#1114112;');
+		expect(unescapeHTML('&#9999999999;')).toBe('&#9999999999;');
+	});
+
+	it('leaves inherited object properties as literal text', () => {
+		expect(unescapeHTML('&toString;')).toBe('&toString;');
+		expect(unescapeHTML('&valueOf;')).toBe('&valueOf;');
+		expect(unescapeHTML('&constructor;')).toBe('&constructor;');
+		expect(unescapeHTML('&__proto__;')).toBe('&__proto__;');
 	});
 });

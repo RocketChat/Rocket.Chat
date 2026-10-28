@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/cron",
-	"version": "0.1.59",
+	"version": "0.1.61",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -10,8 +10,9 @@
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.json",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix ."
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@rocket.chat/agenda": "workspace:^",
@@ -23,8 +24,7 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/tsconfig": "workspace:*",
-		"eslint": "~9.39.5",
-		"typescript": "~5.9.3"
+		"typescript": "~7.0.2"
 	},
 	"volta": {
 		"extends": "../../package.json"

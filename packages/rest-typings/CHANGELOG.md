@@ -1,5 +1,254 @@
 # @rocket.chat/rest-typings
 
+## 8.9.0
+
+### Minor Changes
+
+- ([#40484](https://github.com/RocketChat/Rocket.Chat/pull/40484) by [@aleksandernsilva](https://github.com/aleksandernsilva)) Adds name and avatar resolution for external voice calls
+
+- ([#42102](https://github.com/RocketChat/Rocket.Chat/pull/42102)) Adds hybrid retrieval to AI Search. A single search balance setting decides how much semantic retrieval contributes relative to keyword search, so a workspace can find messages by meaning without losing exact matches on error codes, ticket ids or function names. An optional recency boost, disabled by default, promotes newer messages after relevance ranking.
+
+- ([#41539](https://github.com/RocketChat/Rocket.Chat/pull/41539)) Introduces custom, user-defined categories to the sidebar (Enterprise only). Users can create, rename, delete and reorder categories (menu-driven), and move rooms into them via the room context menu or the room header.
+
+- ([#41961](https://github.com/RocketChat/Rocket.Chat/pull/41961)) Adds a new `POST /v1/chat.getMessages` endpoint to fetch several messages at once by id, including messages from different rooms. The request fails if any of the messages belongs to a room the caller cannot read.
+
+- ([#42023](https://github.com/RocketChat/Rocket.Chat/pull/42023)) Adds a new `GET /v1/cloud.workspaceRegisterData` endpoint returning the base64 encoded workspace registration payload used by the offline cloud registration flow. It requires the `manage-cloud` permission.
+
+- ([#41991](https://github.com/RocketChat/Rocket.Chat/pull/41991)) Adds an `aroundId` parameter to `GET /v1/rooms.history`, returning a window of messages centered on a given message instead of a page from one end of the room. This is what jumping to a quoted message, a search result or a thread message uses to load the surrounding conversation.
+
+- ([#41947](https://github.com/RocketChat/Rocket.Chat/pull/41947)) Adds a new `GET /v1/rooms.history` endpoint to load a room's message history. Unlike the existing `channels.history`, `groups.history`, `im.history` and `dm.history` endpoints, it works with any room type through a single route, and can be used to read public channels anonymously when `Accounts_AllowAnonymousRead` is enabled.
+
+- ([#42023](https://github.com/RocketChat/Rocket.Chat/pull/42023)) Adds a new `GET /v1/setupWizard.parameters` endpoint returning the settings flagged for the setup wizard along with a `serverAlreadyRegistered` flag.
+
+- ([#41657](https://github.com/RocketChat/Rocket.Chat/pull/41657)) Gives a video conference a chat that outlives it, and a window of its own to hold both — behind a new Premium setting, **`VideoConf_Conference_Window_Enabled`**, which is **off by default**.
+
+  Nothing below happens until an administrator turns that setting on. With it off, calls behave exactly as they did before: the provider's own page opens in a tab, an incoming call is a popup over the screen, a direct call rings from the room and waits there, and no new request is made of the server. The setting is also independent of `VideoConf_Enable_Persistent_Chat`, which keeps meaning only what it always meant — a discussion or thread per call — so a workspace already running persistent chat sees no change either until the new setting is turned on.
+
+  With it on:
+
+  Joining a conference opens a dedicated call window at `/conference/:id` — the provider's call beside the conference's chat, with the people on the call in a panel of their own — instead of handing the user off to the provider's page. A preflight screen opens first: it is where the camera and microphone are chosen, where whoever started a group call can name it, and where confirming is what actually creates the call, so a call nobody confirmed leaves no message, no ring and no history behind. Closing the window reports leaving, and a call nobody is left in ends by itself.
+
+  Where a call's chat lives becomes a choice. `VideoConf_Persistent_Chat_Mode`, editable only with both the call window and persistent chat on, either puts the chat in a thread off the call's message — listed under the call's name — or leaves it in the room, with the discussion per call that persistent chat has always created. The thread is Rocket.Chat's own chat panel rather than anything the provider supplies, so it applies whoever runs the media, an iframed provider included. Turning the window off puts the answer back to the discussion whatever the mode was left at, so a workspace already running persistent chat is left exactly where it was.
+
+  Adding someone to a conference makes them a member of the **conference** rather than putting them in a room. Membership authorizes joining the call alongside room access, so a person from outside the conference's room can join without being handed the room's history — and whether they can read the chat becomes a separate question, surfaced once it matters with a choice of how to resolve it: bring them into the room, or move the chat to a discussion. `video-conference.info` reports the members who can't read it and `POST /v1/video-conference.share-chat` applies the remedy; `video-conference.add-participants` takes the call and the usernames to add, and returns the ids it added.
+
+  An incoming call is no longer a popup demanding an answer. It is the first item of a list of the calls running now — behind a navigation-bar button — where it can be accepted, turned down, or silenced and left ringing while the user finishes what they were doing. That list is also how a call is reached when its ring was missed entirely, which a one-shot ring in a room of more than ten people always is (`GET /v1/video-conference.joinable`).
+
+  Conferences appear in the personal Call History from the moment they start, as `ongoing`, settling per member into `ended` or `not-answered` when the call stops — so a call that was declined or never answered is still in the log, and still joinable from it. The room's own call list stops counting members who were added but never joined.
+
+  New endpoints: `video-conference.decline` (recorded against the caller's own membership, never ending the call for anyone else), `.leave`, `.ring` (to try someone again — a ring is one-shot, so there was previously no second attempt), `.rename` and `.share-chat`. A single `video-conference.updated` stream event tells an open call window that the conference it is showing has changed.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [17dfc71b4ad7294655e7fab9043cddbea23cb071, 71add68eca423511c0189f2f541b5a2c46a5e7a0, 53b519cc692587a63beaeb780e28d368ed70e94c, 7d7a5c403e175df889afe303c34b9154c4ad6d70, bab7af7e18ea2e70e2b3211904a4adfc6ae33e7c, 37faaa89ad1b4b721d6054e40a91327bd8140525]:</summary>
+  - @rocket.chat/core-typings@8.9.0
+  - @rocket.chat/ui-kit@1.2.0
+
+  </details>
+
+## 8.9.0-rc.5
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@8.9.0-rc.5
+
+  </details>
+
+## 8.9.0-rc.4
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@8.9.0-rc.4
+
+  </details>
+
+## 8.9.0-rc.3
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@8.9.0-rc.3
+
+  </details>
+
+## 8.9.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@8.9.0-rc.2
+
+  </details>
+
+## 8.9.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@8.9.0-rc.1
+
+  </details>
+
+## 8.9.0-rc.0
+
+### Minor Changes
+
+- ([#40484](https://github.com/RocketChat/Rocket.Chat/pull/40484) by [@aleksandernsilva](https://github.com/aleksandernsilva)) Adds name and avatar resolution for external voice calls
+
+- ([#42102](https://github.com/RocketChat/Rocket.Chat/pull/42102)) Adds hybrid retrieval to AI Search. A single search balance setting decides how much semantic retrieval contributes relative to keyword search, so a workspace can find messages by meaning without losing exact matches on error codes, ticket ids or function names. An optional recency boost, disabled by default, promotes newer messages after relevance ranking.
+
+- ([#41539](https://github.com/RocketChat/Rocket.Chat/pull/41539)) Introduces custom, user-defined categories to the sidebar (Enterprise only). Users can create, rename, delete and reorder categories (menu-driven), and move rooms into them via the room context menu or the room header.
+
+- ([#41961](https://github.com/RocketChat/Rocket.Chat/pull/41961)) Adds a new `POST /v1/chat.getMessages` endpoint to fetch several messages at once by id, including messages from different rooms. The request fails if any of the messages belongs to a room the caller cannot read.
+
+- ([#42023](https://github.com/RocketChat/Rocket.Chat/pull/42023)) Adds a new `GET /v1/cloud.workspaceRegisterData` endpoint returning the base64 encoded workspace registration payload used by the offline cloud registration flow. It requires the `manage-cloud` permission.
+
+- ([#41991](https://github.com/RocketChat/Rocket.Chat/pull/41991)) Adds an `aroundId` parameter to `GET /v1/rooms.history`, returning a window of messages centered on a given message instead of a page from one end of the room. This is what jumping to a quoted message, a search result or a thread message uses to load the surrounding conversation.
+
+- ([#41947](https://github.com/RocketChat/Rocket.Chat/pull/41947)) Adds a new `GET /v1/rooms.history` endpoint to load a room's message history. Unlike the existing `channels.history`, `groups.history`, `im.history` and `dm.history` endpoints, it works with any room type through a single route, and can be used to read public channels anonymously when `Accounts_AllowAnonymousRead` is enabled.
+
+- ([#42023](https://github.com/RocketChat/Rocket.Chat/pull/42023)) Adds a new `GET /v1/setupWizard.parameters` endpoint returning the settings flagged for the setup wizard along with a `serverAlreadyRegistered` flag.
+
+- ([#41657](https://github.com/RocketChat/Rocket.Chat/pull/41657)) Gives a video conference a chat that outlives it, and a window of its own to hold both — behind a new Premium setting, **`VideoConf_Conference_Window_Enabled`**, which is **off by default**.
+
+  Nothing below happens until an administrator turns that setting on. With it off, calls behave exactly as they did before: the provider's own page opens in a tab, an incoming call is a popup over the screen, a direct call rings from the room and waits there, and no new request is made of the server. The setting is also independent of `VideoConf_Enable_Persistent_Chat`, which keeps meaning only what it always meant — a discussion or thread per call — so a workspace already running persistent chat sees no change either until the new setting is turned on.
+
+  With it on:
+
+  Joining a conference opens a dedicated call window at `/conference/:id` — the provider's call beside the conference's chat, with the people on the call in a panel of their own — instead of handing the user off to the provider's page. A preflight screen opens first: it is where the camera and microphone are chosen, where whoever started a group call can name it, and where confirming is what actually creates the call, so a call nobody confirmed leaves no message, no ring and no history behind. Closing the window reports leaving, and a call nobody is left in ends by itself.
+
+  Where a call's chat lives becomes a choice. `VideoConf_Persistent_Chat_Mode`, editable only with both the call window and persistent chat on, either puts the chat in a thread off the call's message — listed under the call's name — or leaves it in the room, with the discussion per call that persistent chat has always created. The thread is Rocket.Chat's own chat panel rather than anything the provider supplies, so it applies whoever runs the media, an iframed provider included. Turning the window off puts the answer back to the discussion whatever the mode was left at, so a workspace already running persistent chat is left exactly where it was.
+
+  Adding someone to a conference makes them a member of the **conference** rather than putting them in a room. Membership authorizes joining the call alongside room access, so a person from outside the conference's room can join without being handed the room's history — and whether they can read the chat becomes a separate question, surfaced once it matters with a choice of how to resolve it: bring them into the room, or move the chat to a discussion. `video-conference.info` reports the members who can't read it and `POST /v1/video-conference.share-chat` applies the remedy; `video-conference.add-participants` takes the call and the usernames to add, and returns the ids it added.
+
+  An incoming call is no longer a popup demanding an answer. It is the first item of a list of the calls running now — behind a navigation-bar button — where it can be accepted, turned down, or silenced and left ringing while the user finishes what they were doing. That list is also how a call is reached when its ring was missed entirely, which a one-shot ring in a room of more than ten people always is (`GET /v1/video-conference.joinable`).
+
+  Conferences appear in the personal Call History from the moment they start, as `ongoing`, settling per member into `ended` or `not-answered` when the call stops — so a call that was declined or never answered is still in the log, and still joinable from it. The room's own call list stops counting members who were added but never joined.
+
+  New endpoints: `video-conference.decline` (recorded against the caller's own membership, never ending the call for anyone else), `.leave`, `.ring` (to try someone again — a ring is one-shot, so there was previously no second attempt), `.rename` and `.share-chat`. A single `video-conference.updated` stream event tells an open call window that the conference it is showing has changed.
+
+### Patch Changes
+
+- <details><summary>Updated dependencies [17dfc71b4ad7294655e7fab9043cddbea23cb071, 71add68eca423511c0189f2f541b5a2c46a5e7a0, 53b519cc692587a63beaeb780e28d368ed70e94c, 7d7a5c403e175df889afe303c34b9154c4ad6d70, bab7af7e18ea2e70e2b3211904a4adfc6ae33e7c, 37faaa89ad1b4b721d6054e40a91327bd8140525]:</summary>
+  - @rocket.chat/core-typings@8.9.0-rc.0
+  - @rocket.chat/ui-kit@1.2.0-rc.0
+
+  </details>
+
+## 8.8.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@8.8.1
+
+  </details>
+
+## 8.8.0
+
+### Minor Changes
+
+- ([#41082](https://github.com/RocketChat/Rocket.Chat/pull/41082)) Adds an AI add-on-gated native Model Context Protocol endpoint and its administration controls in AI Center
+
+- ([#41747](https://github.com/RocketChat/Rocket.Chat/pull/41747)) Adds status visibility, letting users hide their presence and status message from specific people they choose. Blocked people see that user as offline, indistinguishable from genuinely offline, and the block can be lifted at any time — changes apply live, without a reload.
+
+- ([#40737](https://github.com/RocketChat/Rocket.Chat/pull/40737)) Adds two new REST endpoints completing the Custom OAuth admin surface:
+
+  - `POST /v1/settings.removeCustomOAuth` body `{ name }` → removes all `Accounts_OAuth_Custom-<Name>-*` setting documents (replaces the deprecated `removeOAuthService` DDP method).
+  - `POST /v1/settings.refreshOAuthServices` (no body) → re-reads ServiceConfiguration entries from settings (replaces the deprecated `refreshOAuthService` DDP method).
+
+  Both endpoints reuse the `add-oauth-service` permission and `twoFactorRequired` gates that the DDP methods already enforced. `addOAuthService` was already covered by the existing `POST /v1/settings.addCustomOAuth` — its DDP method now also logs a deprecation. The three legacy DDP methods remain registered until 9.0.0.
+
+- ([#40734](https://github.com/RocketChat/Rocket.Chat/pull/40734)) Adds five new REST endpoints covering the TOTP 2FA flows that previously only existed as DDP methods:
+
+  - `POST /v1/users.enableTotp` → `{ secret, url }` (replaces `2fa:enable`)
+  - `POST /v1/users.disableTotp` body `{ code }` → `{ disabled }` (replaces `2fa:disable`)
+  - `POST /v1/users.validateTotp` body `{ code }` → `{ codes }` (replaces `2fa:validateTempToken`; also rotates non-PAT login tokens server-side)
+  - `POST /v1/users.regenerateTotpCodes` body `{ code }` → `{ codes }` (replaces `2fa:regenerateCodes`)
+  - `GET /v1/users.totpCodesRemaining` → `{ remaining }` (replaces `2fa:checkCodesRemaining`)
+
+  `users.enableTotp` and `users.validateTotp` require two-factor verification (`twoFactorRequired`) so enrolling a new TOTP device confirms the account owner's identity first — closing a 2FA-enrollment bypass where a hijacked session could register an attacker-controlled TOTP without verifying the existing 2FA. All five endpoints are rate-limited.
+
+  The legacy DDP methods stay registered with deprecation logs pointing at the new routes until 9.0.0 removes them.
+
+- ([#41715](https://github.com/RocketChat/Rocket.Chat/pull/41715)) Adds an optional `fromTs` query parameter to `chat.syncMessages`, so it can be used as a replacement for the deprecated `loadMissedMessages` DDP method. It bounds the sync window and must be used together with `lastUpdate`; sending it with cursor pagination is rejected instead of being ignored.
+
+### Patch Changes
+
+- ([#41481](https://github.com/RocketChat/Rocket.Chat/pull/41481)) Adds an Import IdP metadata option to SAML settings that fetches the Identity Provider metadata from a URL and prefills the matching setting fields — certificate, entry point and IDP SLO redirect URL, plus identifier format on Enterprise — for the admin to review before saving.
+
+- <details><summary>Updated dependencies [4947601bbf042cd1b2385f8f5dda438e608faea7, 0869925e52ca61a440a01a6646935b89af8c7aae, b89a8d411ef65f6931a5fd1cd057740bc00cd9ba]:</summary>
+  - @rocket.chat/core-typings@8.8.0
+
+  </details>
+
+## 8.8.0-rc.2
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@8.8.0-rc.2
+
+  </details>
+
+## 8.8.0-rc.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@8.8.0-rc.1
+  </details>
+
+## 8.8.0-rc.0
+
+### Minor Changes
+
+- ([#41082](https://github.com/RocketChat/Rocket.Chat/pull/41082)) Adds an AI add-on-gated native Model Context Protocol endpoint and its administration controls in AI Center
+
+- ([#41747](https://github.com/RocketChat/Rocket.Chat/pull/41747)) Adds status visibility, letting users hide their presence and status message from specific people they choose. Blocked people see that user as offline, indistinguishable from genuinely offline, and the block can be lifted at any time — changes apply live, without a reload.
+
+- ([#40737](https://github.com/RocketChat/Rocket.Chat/pull/40737)) Adds two new REST endpoints completing the Custom OAuth admin surface:
+
+  - `POST /v1/settings.removeCustomOAuth` body `{ name }` → removes all `Accounts_OAuth_Custom-<Name>-*` setting documents (replaces the deprecated `removeOAuthService` DDP method).
+  - `POST /v1/settings.refreshOAuthServices` (no body) → re-reads ServiceConfiguration entries from settings (replaces the deprecated `refreshOAuthService` DDP method).
+
+  Both endpoints reuse the `add-oauth-service` permission and `twoFactorRequired` gates that the DDP methods already enforced. `addOAuthService` was already covered by the existing `POST /v1/settings.addCustomOAuth` — its DDP method now also logs a deprecation. The three legacy DDP methods remain registered until 9.0.0.
+
+- ([#40734](https://github.com/RocketChat/Rocket.Chat/pull/40734)) Adds five new REST endpoints covering the TOTP 2FA flows that previously only existed as DDP methods:
+
+  - `POST /v1/users.enableTotp` → `{ secret, url }` (replaces `2fa:enable`)
+  - `POST /v1/users.disableTotp` body `{ code }` → `{ disabled }` (replaces `2fa:disable`)
+  - `POST /v1/users.validateTotp` body `{ code }` → `{ codes }` (replaces `2fa:validateTempToken`; also rotates non-PAT login tokens server-side)
+  - `POST /v1/users.regenerateTotpCodes` body `{ code }` → `{ codes }` (replaces `2fa:regenerateCodes`)
+  - `GET /v1/users.totpCodesRemaining` → `{ remaining }` (replaces `2fa:checkCodesRemaining`)
+
+  `users.enableTotp` and `users.validateTotp` require two-factor verification (`twoFactorRequired`) so enrolling a new TOTP device confirms the account owner's identity first — closing a 2FA-enrollment bypass where a hijacked session could register an attacker-controlled TOTP without verifying the existing 2FA. All five endpoints are rate-limited.
+
+  The legacy DDP methods stay registered with deprecation logs pointing at the new routes until 9.0.0 removes them.
+
+- ([#41715](https://github.com/RocketChat/Rocket.Chat/pull/41715)) Adds an optional `fromTs` query parameter to `chat.syncMessages`, so it can be used as a replacement for the deprecated `loadMissedMessages` DDP method. It bounds the sync window and must be used together with `lastUpdate`; sending it with cursor pagination is rejected instead of being ignored.
+
+### Patch Changes
+
+- ([#41481](https://github.com/RocketChat/Rocket.Chat/pull/41481)) Adds an Import IdP metadata option to SAML settings that fetches the Identity Provider metadata from a URL and prefills the matching setting fields — certificate, entry point and IDP SLO redirect URL, plus identifier format on Enterprise — for the admin to review before saving.
+
+- <details><summary>Updated dependencies [4947601bbf042cd1b2385f8f5dda438e608faea7, 0869925e52ca61a440a01a6646935b89af8c7aae, b89a8d411ef65f6931a5fd1cd057740bc00cd9ba]:</summary>
+  - @rocket.chat/core-typings@8.8.0-rc.0
+  - @rocket.chat/message-parser@0.32.0
+  - @rocket.chat/ui-kit@1.1.0
+
+  </details>
+
+## 8.7.1
+
+### Patch Changes
+
+- <details><summary>Updated dependencies []:</summary>
+  - @rocket.chat/core-typings@8.7.1
+  </details>
+
 ## 8.7.0
 
 ### Minor Changes
@@ -9,7 +258,6 @@
   Introduces a more secure and reliable server-side OAuth authentication flow.
 
   ### What’s New
-
   - **Improved OAuth login security**
     OAuth authentication now happens fully on the server, reducing the risk of token theft, phishing attacks, and client-side credential interception.
   - **Built-in CSRF, state validation, and PKCE protection**
@@ -36,9 +284,9 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [c7aff48a40a9a78924cbf27fd38930c536ee11e5, 5f92f9a27dca70d506d919351612bd32dc04241a, 13b4a7b2dc203959b77b3b0c5f154d3e34fe2058, eec6083bb88f0caa1bd0de28b93b926a11c17507, 4b34bd62f2ac8d51efd2f48caea7092e87f30ce7, adc15707128bc3fbe1ccd1cd57e9d30a702fa6ca, 1bf84cbe288df03fc622fbddbc0e434bda291c2f, 8d8cd01d0a4e6872ed543320c966efd52140e884, 3cd7db677a72521439b564dca7a4ca6d6c3a1c07, 4117a1d3fb07905e8c9488a96f368747b48d528e, 615ae2bf74bba0402e0151d9c0b8e4f8dd04cb17, e5da5d016948c9bb5cfd784a65396e08e61264c4, 70c0ff0967cc50144dba4971fc7c3f3e996264a3]:</summary>
-
   - @rocket.chat/core-typings@8.7.0
   - @rocket.chat/message-parser@0.32.0
+
   </details>
 
 ## 8.7.0-rc.6
@@ -46,8 +294,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.7.0-rc.6
+
   </details>
 
 ## 8.7.0-rc.5
@@ -55,8 +303,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.7.0-rc.5
+
   </details>
 
 ## 8.7.0-rc.4
@@ -64,8 +312,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.7.0-rc.4
+
   </details>
 
 ## 8.7.0-rc.3
@@ -73,8 +321,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.7.0-rc.3
+
   </details>
 
 ## 8.7.0-rc.2
@@ -82,8 +330,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.7.0-rc.2
+
   </details>
 
 ## 8.7.0-rc.1
@@ -91,8 +339,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.7.0-rc.1
+
   </details>
 
 ## 8.7.0-rc.0
@@ -104,7 +352,6 @@
   Introduces a more secure and reliable server-side OAuth authentication flow.
 
   ### What’s New
-
   - **Improved OAuth login security**
     OAuth authentication now happens fully on the server, reducing the risk of token theft, phishing attacks, and client-side credential interception.
   - **Built-in CSRF, state validation, and PKCE protection**
@@ -131,7 +378,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [c7aff48a40a9a78924cbf27fd38930c536ee11e5, 5f92f9a27dca70d506d919351612bd32dc04241a, 13b4a7b2dc203959b77b3b0c5f154d3e34fe2058, eec6083bb88f0caa1bd0de28b93b926a11c17507, 4b34bd62f2ac8d51efd2f48caea7092e87f30ce7, adc15707128bc3fbe1ccd1cd57e9d30a702fa6ca, 1bf84cbe288df03fc622fbddbc0e434bda291c2f, 8d8cd01d0a4e6872ed543320c966efd52140e884, 3cd7db677a72521439b564dca7a4ca6d6c3a1c07, 4117a1d3fb07905e8c9488a96f368747b48d528e, 615ae2bf74bba0402e0151d9c0b8e4f8dd04cb17, e5da5d016948c9bb5cfd784a65396e08e61264c4, 70c0ff0967cc50144dba4971fc7c3f3e996264a3]:</summary>
-
   - @rocket.chat/core-typings@8.7.0-rc.0
   - @rocket.chat/message-parser@0.32.0-rc.0
 
@@ -140,8 +386,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [89ab75ca9121feb289a0f5744a526361364b8867]:</summary>
-
   - @rocket.chat/core-typings@8.6.1
+
   </details>
 
 ## 8.6.0
@@ -172,8 +418,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [7380c44c751eff9ee624d80bf26370411ffed78b, 6bd9182ae1d914a55e70866db43e8d2038f7be28, 6fa5378a940cbc809800b3c7d7c0639810bb0ab8, f63b965f82b0ddc590c633706f7c31c8c5251b53]:</summary>
-
   - @rocket.chat/core-typings@8.6.0
+
   </details>
 
 ## 8.6.0-rc.3
@@ -181,8 +427,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.6.0-rc.3
+
   </details>
 
 ## 8.6.0-rc.2
@@ -190,8 +436,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.6.0-rc.2
+
   </details>
 
 ## 8.6.0-rc.1
@@ -199,8 +445,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [6fa5378a940cbc809800b3c7d7c0639810bb0ab8]:</summary>
-
   - @rocket.chat/core-typings@8.6.0-rc.1
+
   </details>
 
 ## 8.6.0-rc.0
@@ -231,8 +477,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [7380c44c751eff9ee624d80bf26370411ffed78b, 6bd9182ae1d914a55e70866db43e8d2038f7be28, f63b965f82b0ddc590c633706f7c31c8c5251b53]:</summary>
-
   - @rocket.chat/core-typings@8.6.0-rc.0
+
   </details>
 
 ## 8.5.1
@@ -240,8 +486,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [01a184640f635866bf4c1c612696acc4eed62311]:</summary>
-
   - @rocket.chat/core-typings@8.5.1
+
   </details>
 
 ## 8.5.0
@@ -257,9 +503,9 @@
 - ([#40513](https://github.com/RocketChat/Rocket.Chat/pull/40513)) Fixes the `users.presence` endpoint returning an empty array when called with multiple comma-separated IDs, caused by `ajvQuery` coercing the string into a single-element array after the OpenAPI migration
 
 - <details><summary>Updated dependencies [90f15e32ae843ed146ccf711ee3201408d1e8731, 12897e25d0dc25b7373f5264d38f38a5a7444257, 90f15e32ae843ed146ccf711ee3201408d1e8731]:</summary>
-
   - @rocket.chat/ui-kit@1.1.0
   - @rocket.chat/core-typings@8.5.0
+
   </details>
 
 ## 8.5.0-rc.6
@@ -267,8 +513,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.5.0-rc.6
+
   </details>
 
 ## 8.5.0-rc.5
@@ -276,8 +522,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.5.0-rc.5
+
   </details>
 
 ## 8.5.0-rc.4
@@ -293,8 +539,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.5.0-rc.3
+
   </details>
 
 ## 8.5.0-rc.2
@@ -302,8 +548,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.5.0-rc.2
+
   </details>
 
 ## 8.5.0-rc.1
@@ -311,8 +557,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.5.0-rc.1
+
   </details>
 
 ## 8.5.0-rc.0
@@ -324,7 +570,6 @@
   Introduces a more secure and reliable server-side OAuth authentication flow.
 
   ### What’s New
-
   - **Improved OAuth login security**
     OAuth authentication now happens fully on the server, reducing the risk of token theft, phishing attacks, and client-side credential interception.
   - **Built-in CSRF, state validation, and PKCE protection**
@@ -343,9 +588,9 @@
 - ([#40513](https://github.com/RocketChat/Rocket.Chat/pull/40513)) Fixes the `users.presence` endpoint returning an empty array when called with multiple comma-separated IDs, caused by `ajvQuery` coercing the string into a single-element array after the OpenAPI migration
 
 - <details><summary>Updated dependencies [90f15e32ae843ed146ccf711ee3201408d1e8731, ae9f740d6af20557eac61b4af902c868b4132b49, 12897e25d0dc25b7373f5264d38f38a5a7444257, 90f15e32ae843ed146ccf711ee3201408d1e8731]:</summary>
-
   - @rocket.chat/ui-kit@1.1.0-rc.0
   - @rocket.chat/core-typings@8.5.0-rc.0
+
   </details>
 
 ## 8.4.3
@@ -353,8 +598,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.4.3
+
   </details>
 
 ## 8.4.2
@@ -364,8 +609,8 @@
 - ([#40527](https://github.com/RocketChat/Rocket.Chat/pull/40527) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes the `users.presence` endpoint returning an empty array when called with multiple comma-separated IDs, caused by `ajvQuery` coercing the string into a single-element array after the OpenAPI migration
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.4.2
+
   </details>
 
 ## 8.4.1
@@ -373,8 +618,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [5b291c38600757482aaf261a02487abdf5f14007]:</summary>
-
   - @rocket.chat/core-typings@8.4.1
+
   </details>
 
 ## 8.4.0
@@ -388,9 +633,9 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [53e32c7df1bf40598d65d170fd50c55f752f2951, 53e32c7df1bf40598d65d170fd50c55f752f2951, 278b84f78360e53792a2e5d7620615039a0e15e9, 24b3671fe61b8b09c6a1b5dc6401b503b3fb92a0, 53e32c7df1bf40598d65d170fd50c55f752f2951, 53e32c7df1bf40598d65d170fd50c55f752f2951, 8c0e16ca29b393cfa50b425520db48ba5a74f678]:</summary>
-
   - @rocket.chat/message-parser@0.31.36
   - @rocket.chat/core-typings@8.4.0
+
   </details>
 
 ## 8.4.0-rc.2
@@ -398,8 +643,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.4.0-rc.2
+
   </details>
 
 ## 8.4.0-rc.1
@@ -407,8 +652,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.4.0-rc.1
+
   </details>
 
 ## 8.3.2
@@ -416,8 +661,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.3.2
+
   </details>
 
 ## 8.3.1
@@ -425,8 +670,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.3.1
+
   </details>
 
 ## 8.4.0-rc.0
@@ -440,9 +685,9 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [53e32c7df1bf40598d65d170fd50c55f752f2951, 53e32c7df1bf40598d65d170fd50c55f752f2951, 278b84f78360e53792a2e5d7620615039a0e15e9, 24b3671fe61b8b09c6a1b5dc6401b503b3fb92a0, 53e32c7df1bf40598d65d170fd50c55f752f2951, 53e32c7df1bf40598d65d170fd50c55f752f2951, 8c0e16ca29b393cfa50b425520db48ba5a74f678]:</summary>
-
   - @rocket.chat/message-parser@0.31.36-rc.0
   - @rocket.chat/core-typings@8.4.0-rc.0
+
   </details>
 
 ## 8.3.0
@@ -502,10 +747,10 @@
 - ([#38974](https://github.com/RocketChat/Rocket.Chat/pull/38974) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat dm.close/im.close API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
 
 - <details><summary>Updated dependencies [d1bf2cc675e80403659d388a1fbbdc6f73889dad, 02b1e6e6a184850d21e335077ca30382a1c7a66b, 9a70095296dbf516b0113a9a65e09f25137b2eaf, 87f9262af4a543d52642a54e1ef546d509a79e23, 539659af22bc19880eda047dfc0b152472ccb65c, b1b1d6ccd81c90d231a7e594f834965c6e5f4fae, 78e37dc3deae4ff05f5e33f9134c7094fd6c1330, d83a1a9753464ee916845b3c88757bbcf76884a5, 722df6f60bc86c51b204e28a39acb3dc8710bdeb, c117492ad90d291a361eedc929506f557495caf7]:</summary>
-
   - @rocket.chat/message-parser@0.31.35
   - @rocket.chat/ui-kit@1.0.0
   - @rocket.chat/core-typings@8.3.0
+
   </details>
 
 ## 8.3.0-rc.4
@@ -513,8 +758,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.3.0-rc.4
+
   </details>
 
 ## 8.3.0-rc.3
@@ -522,8 +767,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.3.0-rc.3
+
   </details>
 
 ## 8.3.0-rc.2
@@ -531,8 +776,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.3.0-rc.2
+
   </details>
 
 ## 8.3.0-rc.1
@@ -540,8 +785,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.3.0-rc.1
+
   </details>
 
 ## 8.3.0-rc.0
@@ -601,10 +846,10 @@
 - ([#38974](https://github.com/RocketChat/Rocket.Chat/pull/38974) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat dm.close/im.close API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
 
 - <details><summary>Updated dependencies [d1bf2cc675e80403659d388a1fbbdc6f73889dad, 02b1e6e6a184850d21e335077ca30382a1c7a66b, 9a70095296dbf516b0113a9a65e09f25137b2eaf, 87f9262af4a543d52642a54e1ef546d509a79e23, 539659af22bc19880eda047dfc0b152472ccb65c, b1b1d6ccd81c90d231a7e594f834965c6e5f4fae, 78e37dc3deae4ff05f5e33f9134c7094fd6c1330, d83a1a9753464ee916845b3c88757bbcf76884a5, 722df6f60bc86c51b204e28a39acb3dc8710bdeb, c117492ad90d291a361eedc929506f557495caf7]:</summary>
-
   - @rocket.chat/message-parser@0.31.35-rc.0
   - @rocket.chat/ui-kit@1.0.0-rc.0
   - @rocket.chat/core-typings@8.3.0-rc.0
+
   </details>
 
 ## 8.2.1
@@ -612,8 +857,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.2.1
+
   </details>
 
 ## 8.2.0
@@ -627,9 +872,9 @@
 - ([#38376](https://github.com/RocketChat/Rocket.Chat/pull/38376)) Fix a validation issue in the `livechat/custom-fields.save` endpoint
 
 - <details><summary>Updated dependencies [d3758a7d57ab602745369ef9d2ccdbf9271cf305, 098f0a7467332f10a7bea5d435ae2ca3b5431fc9, fbc4935dec220495201cf905017170d3cd1e275c, e57f15845e4df048dd2f08f11aa08215780a2c34, 562d5ce6ad8afc67bef61e91939f8c21c4501610]:</summary>
-
   - @rocket.chat/core-typings@8.2.0
   - @rocket.chat/message-parser@0.31.34
+
   </details>
 
 ## 8.2.0-rc.2
@@ -637,8 +882,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.2.0-rc.2
+
   </details>
 
 ## 8.2.0-rc.1
@@ -646,8 +891,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.2.0-rc.1
+
   </details>
 
 ## 8.2.0-rc.0
@@ -661,9 +906,9 @@
 - ([#38376](https://github.com/RocketChat/Rocket.Chat/pull/38376)) Fix a validation issue in the `livechat/custom-fields.save` endpoint
 
 - <details><summary>Updated dependencies [d3758a7d57ab602745369ef9d2ccdbf9271cf305, 098f0a7467332f10a7bea5d435ae2ca3b5431fc9, fbc4935dec220495201cf905017170d3cd1e275c, e57f15845e4df048dd2f08f11aa08215780a2c34, 562d5ce6ad8afc67bef61e91939f8c21c4501610]:</summary>
-
   - @rocket.chat/core-typings@8.2.0-rc.0
   - @rocket.chat/message-parser@0.31.34-rc.0
+
   </details>
 
 ## 8.1.1
@@ -671,8 +916,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.1.1
+
   </details>
 
 ## 8.1.0
@@ -686,9 +931,9 @@
 - ([#38267](https://github.com/RocketChat/Rocket.Chat/pull/38267)) Fixes an issue where web clients could remain with a stale slashcommand list during a rolling workspace update
 
 - <details><summary>Updated dependencies [bed615ef323d4018f779cda013255ac9147e4cde, 6654c5b481f91bdcb03d68ee0f3a12d58201137e]:</summary>
-
   - @rocket.chat/message-parser@0.31.33
   - @rocket.chat/core-typings@8.1.0
+
   </details>
 
 ## 8.1.0-rc.2
@@ -696,9 +941,9 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [bed615ef323d4018f779cda013255ac9147e4cde]:</summary>
-
   - @rocket.chat/message-parser@0.31.33-rc.0
   - @rocket.chat/core-typings@8.1.0-rc.2
+
   </details>
 
 ## 8.1.0-rc.1
@@ -708,8 +953,8 @@
 - ([#38267](https://github.com/RocketChat/Rocket.Chat/pull/38267)) Fixes an issue where web clients could remain with a stale slashcommand list during a rolling workspace update
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.1.0-rc.1
+
   </details>
 
 ## 8.1.0-rc.0
@@ -721,8 +966,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [6654c5b481f91bdcb03d68ee0f3a12d58201137e]:</summary>
-
   - @rocket.chat/core-typings@8.1.0-rc.0
+
   </details>
 
 ## 8.0.1
@@ -730,8 +975,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.0.1
+
   </details>
 
 ## 8.0.0
@@ -780,9 +1025,9 @@
 - ([#37775](https://github.com/RocketChat/Rocket.Chat/pull/37775) by [@lucas-a-pelegrino](https://github.com/lucas-a-pelegrino)) Adds deprecation warning for `livechat:removeBusinessHour` and new endpoint to replace it; `livechat/business-hours.remove`
 
 - <details><summary>Updated dependencies [176d5eae3fb249d7d20c3e260d9fadc1a56a2fca, ac11ea05ffadeca978c794ff38d5199d9acb2c29, ac11ea05ffadeca978c794ff38d5199d9acb2c29, ddc935727e9a7275813006d9dcaa7fe866610844, d3538e7045c41f91b8c561d44e5485ff93b93745, 73d9eb2783176954f42aa2cbeda8abf1d49ac260]:</summary>
-
   - @rocket.chat/core-typings@8.0.0
   - @rocket.chat/ui-kit@0.39.0
+
   </details>
 
 ## 8.0.0-rc.5
@@ -790,8 +1035,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.0.0-rc.5
+
   </details>
 
 ## 8.0.0-rc.4
@@ -799,8 +1044,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.0.0-rc.4
+
   </details>
 
 ## 8.0.0-rc.3
@@ -808,8 +1053,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.0.0-rc.3
+
   </details>
 
 ## 8.0.0-rc.2
@@ -817,8 +1062,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.0.0-rc.2
+
   </details>
 
 ## 8.0.0-rc.1
@@ -826,8 +1071,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@8.0.0-rc.1
+
   </details>
 
 ## 8.0.0-rc.0
@@ -876,9 +1121,9 @@
 - ([#37775](https://github.com/RocketChat/Rocket.Chat/pull/37775)) Adds deprecation warning for `livechat:removeBusinessHour` and new endpoint to replace it; `livechat/business-hours.remove`
 
 - <details><summary>Updated dependencies [176d5eae3fb249d7d20c3e260d9fadc1a56a2fca, ac11ea05ffadeca978c794ff38d5199d9acb2c29, ac11ea05ffadeca978c794ff38d5199d9acb2c29, ddc935727e9a7275813006d9dcaa7fe866610844, d3538e7045c41f91b8c561d44e5485ff93b93745, 73d9eb2783176954f42aa2cbeda8abf1d49ac260]:</summary>
-
   - @rocket.chat/core-typings@8.0.0-rc.0
   - @rocket.chat/ui-kit@0.39.0-rc.0
+
   </details>
 
 ## 7.13.2
@@ -886,8 +1131,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.13.2
+
   </details>
 
 ## 7.13.1
@@ -895,8 +1140,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.13.1
+
   </details>
 
 ## 7.13.0
@@ -908,9 +1153,9 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [7f1b834a55b1240c226afde77713262da47f45dc, 5c7e8ec1de894e7b8eeb6e57b0c8a43bd22d2d46, 44ca3b111f13ac1816a82ab0e4720e9886769c34, 65fbcbed9f64004b953dd9d4182b3fccb8147339]:</summary>
-
   - @rocket.chat/core-typings@7.13.0
   - @rocket.chat/ui-kit@0.38.0
+
   </details>
 
 ## 7.13.0-rc.2
@@ -918,8 +1163,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.13.0-rc.2
+
   </details>
 
 ## 7.13.0-rc.1
@@ -939,7 +1184,6 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [7f1b834a55b1240c226afde77713262da47f45dc, 5c7e8ec1de894e7b8eeb6e57b0c8a43bd22d2d46, 44ca3b111f13ac1816a82ab0e4720e9886769c34, 65fbcbed9f64004b953dd9d4182b3fccb8147339]:</summary>
-
   - @rocket.chat/core-typings@7.13.0-rc.0
   - @rocket.chat/ui-kit@0.38.0-rc.0
 
@@ -956,8 +1200,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.12.1
+
   </details>
 
 ## 7.12.0
@@ -971,8 +1215,8 @@
 - ([#36958](https://github.com/RocketChat/Rocket.Chat/pull/36958)) Adds deprecation warning on `livechat:removeRoom` with new endpoint replacing it; `livechat/rooms.delete`
 
 - <details><summary>Updated dependencies [d166e2a1ffba4e59361d5f79e8c376fca5cbf12f]:</summary>
-
   - @rocket.chat/core-typings@7.12.0
+
   </details>
 
 ## 7.12.0-rc.4
@@ -980,8 +1224,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.12.0-rc.4
+
   </details>
 
 ## 7.12.0-rc.3
@@ -989,8 +1233,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.12.0-rc.3
+
   </details>
 
 ## 7.12.0-rc.2
@@ -998,8 +1242,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.12.0-rc.2
+
   </details>
 
 ## 7.12.0-rc.1
@@ -1007,8 +1251,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.12.0-rc.1
+
   </details>
 
 ## 7.12.0-rc.0
@@ -1022,8 +1266,8 @@
 - ([#36958](https://github.com/RocketChat/Rocket.Chat/pull/36958)) Adds deprecation warning on `livechat:removeRoom` with new endpoint replacing it; `livechat/rooms.delete`
 
 - <details><summary>Updated dependencies [d166e2a1ffba4e59361d5f79e8c376fca5cbf12f]:</summary>
-
   - @rocket.chat/core-typings@7.12.0-rc.0
+
   </details>
 
 ## 7.11.0
@@ -1057,8 +1301,8 @@
 - ([#36986](https://github.com/RocketChat/Rocket.Chat/pull/36986)) Adds deprecation warning on `livechat:sendTranscript` with endpoint replacing it; `livechat/trasncript`
 
 - <details><summary>Updated dependencies [b0a4602a4461200b9872b2b073ec56fa55ecb466]:</summary>
-
   - @rocket.chat/core-typings@7.11.0
+
   </details>
 
 ## 7.11.0-rc.7
@@ -1066,8 +1310,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.11.0-rc.7
+
   </details>
 
 ## 7.11.0-rc.6
@@ -1075,8 +1319,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.11.0-rc.6
+
   </details>
 
 ## 7.11.0-rc.5
@@ -1084,8 +1328,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.11.0-rc.5
+
   </details>
 
 ## 7.11.0-rc.4
@@ -1093,8 +1337,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.11.0-rc.4
+
   </details>
 
 ## 7.11.0-rc.3
@@ -1102,8 +1346,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.11.0-rc.3
+
   </details>
 
 ## 7.11.0-rc.2
@@ -1119,8 +1363,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.11.0-rc.1
+
   </details>
 
 ## 7.11.0-rc.0
@@ -1154,8 +1398,8 @@
 - ([#36986](https://github.com/RocketChat/Rocket.Chat/pull/36986)) Adds deprecation warning on `livechat:sendTranscript` with endpoint replacing it; `livechat/trasncript`
 
 - <details><summary>Updated dependencies [b0a4602a4461200b9872b2b073ec56fa55ecb466]:</summary>
-
   - @rocket.chat/core-typings@7.11.0-rc.0
+
   </details>
 
 ## 7.10.2
@@ -1163,8 +1407,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.10.2
+
   </details>
 
 ## 7.10.1
@@ -1173,6 +1417,7 @@
 
 - <details><summary>Updated dependencies []:</summary>
 - @rocket.chat/core-typings@7.10.1
+
 </details>
 
 ## 7.10.0
@@ -1205,8 +1450,8 @@
 - ([#35985](https://github.com/RocketChat/Rocket.Chat/pull/35985) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat Permissions API endpoints by migrating to a centralized syntax and utilizing shared AJV schemas for validation. This will enhance API documentation and ensure type safety through response validation.
 
 - <details><summary>Updated dependencies [17bca96ecbf23ea807aba2e6e8abc95ebd66b0d0, c7db598e9f3c2ad47f6a6be2a9ba7078533c245b]:</summary>
-
   - @rocket.chat/core-typings@7.10.0
+
   </details>
 
 ## 7.10.0-rc.6
@@ -1214,8 +1459,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.10.0-rc.6
+
   </details>
 
 ## 7.10.0-rc.5
@@ -1247,8 +1492,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.10.0-rc.2
+
   </details>
 
 ## 7.10.0-rc.1
@@ -1256,8 +1501,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.10.0-rc.1
+
   </details>
 
 ## 7.10.0-rc.0
@@ -1290,8 +1535,8 @@
 - ([#35985](https://github.com/RocketChat/Rocket.Chat/pull/35985) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat Permissions API endpoints by migrating to a centralized syntax and utilizing shared AJV schemas for validation. This will enhance API documentation and ensure type safety through response validation.
 
 - <details><summary>Updated dependencies [17bca96ecbf23ea807aba2e6e8abc95ebd66b0d0, c7db598e9f3c2ad47f6a6be2a9ba7078533c245b]:</summary>
-
   - @rocket.chat/core-typings@7.10.0-rc.0
+
   </details>
 
 ## 7.9.3
@@ -1331,8 +1576,8 @@
 - ([#35884](https://github.com/RocketChat/Rocket.Chat/pull/35884) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat Webdav API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
 
 - <details><summary>Updated dependencies [2cec8acd5beddf5ad0c67c29fe632487cb82b026, fd478a7d45a4505ad53d2d7aec8b44e9bf8fa41a]:</summary>
-
   - @rocket.chat/core-typings@7.9.0
+
   </details>
 
 ## 7.9.0-rc.2
@@ -1348,8 +1593,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.9.0-rc.1
+
   </details>
 
 ## 7.9.0-rc.0
@@ -1365,7 +1610,6 @@
 - ([#35884](https://github.com/RocketChat/Rocket.Chat/pull/35884) by [@ahmed-n-abdeltwab](https://github.com/ahmed-n-abdeltwab)) Add OpenAPI support for the Rocket.Chat Webdav API endpoints by migrating to a modern chained route definition syntax and utilizing shared AJV schemas for validation to enhance API documentation and ensure type safety through response validation.
 
 - <details><summary>Updated dependencies [2cec8acd5beddf5ad0c67c29fe632487cb82b026, fd478a7d45a4505ad53d2d7aec8b44e9bf8fa41a]:</summary>
-
   - @rocket.chat/core-typings@7.9.0-rc.0
 
 ## 7.8.3
@@ -1381,8 +1625,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.8.2
+
   </details>
 
 ## 7.8.1
@@ -1390,8 +1634,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.8.1
+
   </details>
 
 ## 7.8.0
@@ -1407,8 +1651,8 @@
 - ([#36258](https://github.com/RocketChat/Rocket.Chat/pull/36258)) Fixes an issue that prevented the action of removing an agent when editing a department to work.
 
 - <details><summary>Updated dependencies [3d024a900426c8bbf646e7ebedce0e17c9f7c140, 3779de0e8c5787f266bdeda5052b27c023c65f1c]:</summary>
-
   - @rocket.chat/core-typings@7.8.0
+
   </details>
 
 ## 7.8.0-rc.9
@@ -1416,8 +1660,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.8.0-rc.9
+
   </details>
 
 ## 7.8.0-rc.8
@@ -1425,8 +1669,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.8.0-rc.8
+
   </details>
 
 ## 7.8.0-rc.7
@@ -1434,8 +1678,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.8.0-rc.7
+
   </details>
 
 ## 7.8.0-rc.6
@@ -1443,8 +1687,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.8.0-rc.6
+
   </details>
 
 ## 7.8.0-rc.5
@@ -1452,8 +1696,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.8.0-rc.5
+
   </details>
 
 ## 7.8.0-rc.4
@@ -1461,8 +1705,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.8.0-rc.4
+
   </details>
 
 ## 7.8.0-rc.3
@@ -1472,8 +1716,8 @@
 - ([#36258](https://github.com/RocketChat/Rocket.Chat/pull/36258)) Fixes an issue that prevented the action of removing an agent when editing a department to work.
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.8.0-rc.3
+
   </details>
 
 ## 7.8.0-rc.2
@@ -1481,8 +1725,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.8.0-rc.2
+
   </details>
 
 ## 7.8.0-rc.1
@@ -1504,8 +1748,8 @@
 - ([#36111](https://github.com/RocketChat/Rocket.Chat/pull/36111)) Fixes Omnichannel Rest API validation schemas that were flagging `Pagination` properties as invalid
 
 - <details><summary>Updated dependencies [3d024a900426c8bbf646e7ebedce0e17c9f7c140, 3779de0e8c5787f266bdeda5052b27c023c65f1c]:</summary>
-
   - @rocket.chat/core-typings@7.8.0-rc.0
+
   </details>
 
 ## 7.7.4
@@ -1521,8 +1765,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.7.3
+
   </details>
 
 ## 7.7.2
@@ -1532,8 +1776,8 @@
 - ([#36298](https://github.com/RocketChat/Rocket.Chat/pull/36298) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue that prevented the action of removing an agent when editing a department to work.
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.7.2
+
   </details>
 
 ## 7.7.1
@@ -1543,8 +1787,8 @@
 - ([#36204](https://github.com/RocketChat/Rocket.Chat/pull/36204) by [@dionisio-bot](https://github.com/dionisio-bot)) Fixes an issue that prevented the action of saving an agent when editing a department to work.
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.7.1
+
   </details>
 
 ## 7.7.0
@@ -1560,8 +1804,8 @@
 - ([#36019](https://github.com/RocketChat/Rocket.Chat/pull/36019)) Adds new endpoint to handle contact's conflicting data
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.7.0
+
   </details>
 
 ## 7.7.0-rc.6
@@ -1569,8 +1813,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.7.0-rc.6
+
   </details>
 
 ## 7.7.0-rc.5
@@ -1578,8 +1822,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.7.0-rc.5
+
   </details>
 
 ## 7.7.1-rc.4
@@ -1587,8 +1831,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.7.1-rc.4
+
   </details>
 
 ## 7.7.0-rc.3
@@ -1604,8 +1848,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.7.0-rc.2
+
   </details>
 
 ## 7.7.0-rc.1
@@ -1613,8 +1857,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.7.0-rc.1
+
   </details>
 
 ## 7.7.0-rc.0
@@ -1630,7 +1874,6 @@
 - ([#36019](https://github.com/RocketChat/Rocket.Chat/pull/36019)) Adds new endpoint to handle contact's conflicting data
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.7.0-rc.0
     </details>
 
@@ -1659,8 +1902,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [aec9eaa941fe9dad81f38d8d18d1b58edd700eb1, 2c190740d0ff166a4cefe8e833b0b2682a41fab1, d8eb824d242cbbeafb11b1c4a806860e4541ba79, bbd0b0d9ed181a156430e2a446d3b56092e3f645, 47ae69912cd90743e7bf836fdee4be481a01bbba, 4b28126ac94cf1d3312b30ad9863ca02673f49d4]:</summary>
-
   - @rocket.chat/core-typings@7.6.0
+
   </details>
 
 ## 7.6.0-rc.8
@@ -1668,8 +1911,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.6.0-rc.8
+
   </details>
 
 ## 7.6.0-rc.7
@@ -1677,8 +1920,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.6.0-rc.7
+
   </details>
 
 ## 7.6.0-rc.6
@@ -1686,8 +1929,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.6.0-rc.6
+
   </details>
 
 ## 7.6.0-rc.5
@@ -1695,8 +1938,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.6.0-rc.5
+
   </details>
 
 ## 7.6.0-rc.4
@@ -1704,8 +1947,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.6.0-rc.4
+
   </details>
 
 ## 7.6.0-rc.3
@@ -1713,8 +1956,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.6.0-rc.3
+
   </details>
 
 ## 7.6.0-rc.2
@@ -1722,8 +1965,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.6.0-rc.2
+
   </details>
 
 ## 7.6.0-rc.1
@@ -1731,8 +1974,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.6.0-rc.1
+
   </details>
 
 ## 7.6.0-rc.0
@@ -1744,8 +1987,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [aec9eaa941fe9dad81f38d8d18d1b58edd700eb1, 2c190740d0ff166a4cefe8e833b0b2682a41fab1, d8eb824d242cbbeafb11b1c4a806860e4541ba79, bbd0b0d9ed181a156430e2a446d3b56092e3f645, 47ae69912cd90743e7bf836fdee4be481a01bbba, 4b28126ac94cf1d3312b30ad9863ca02673f49d4]:</summary>
-
   - @rocket.chat/core-typings@7.6.0-rc.0
+
   </details>
 
 ## 7.5.1
@@ -1753,8 +1996,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.5.1
+
   </details>
 
 ## 7.5.0
@@ -1774,9 +2017,9 @@
 - ([#35546](https://github.com/RocketChat/Rocket.Chat/pull/35546)) Restores `roomName` property in the `GET /groups.messages` endpoint to fix unintended removal.
 
 - <details><summary>Updated dependencies [25592391b04a5a9c5e4be57a3878bca7c7db66b2, c904862b1496cab943e97d28b36d3a24deac21c1, 335f19f5d08b7348263b574e4133ecf93145a79c]:</summary>
-
   - @rocket.chat/core-typings@7.5.0
   - @rocket.chat/message-parser@0.31.32
+
   </details>
 
 ## 7.5.0-rc.5
@@ -1784,8 +2027,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.5.0-rc.5
+
   </details>
 
 ## 7.5.0-rc.4
@@ -1793,8 +2036,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.5.0-rc.4
+
   </details>
 
 ## 7.5.0-rc.3
@@ -1802,8 +2045,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.5.0-rc.3
+
   </details>
 
 ## 7.5.0-rc.2
@@ -1815,8 +2058,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.5.0-rc.2
+
   </details>
 
 ## 7.5.0-rc.1
@@ -1824,8 +2067,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.5.0-rc.1
+
   </details>
 
 ## 7.5.0-rc.0
@@ -1843,9 +2086,9 @@
 - ([#35546](https://github.com/RocketChat/Rocket.Chat/pull/35546)) Restores `roomName` property in the `GET /groups.messages` endpoint to fix unintended removal.
 
 - <details><summary>Updated dependencies [25592391b04a5a9c5e4be57a3878bca7c7db66b2, c904862b1496cab943e97d28b36d3a24deac21c1, 335f19f5d08b7348263b574e4133ecf93145a79c]:</summary>
-
   - @rocket.chat/core-typings@7.5.0-rc.0
   - @rocket.chat/message-parser@0.31.32-rc.0
+
   </details>
 
 ## 7.4.1
@@ -1853,8 +2096,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.4.1
+
   </details>
 
 ## 7.4.0
@@ -1870,8 +2113,8 @@
 - ([#34926](https://github.com/RocketChat/Rocket.Chat/pull/34926)) Enables control of video conference ringing and dialing sounds through the call ringer volume user preference, preventing video conf calls from always playing at maximum volume.
 
 - <details><summary>Updated dependencies [89964144e042c8d9282b51efd89e1e684077fdd7, f85da08765a9d3f8c5aabd9291fd08be6dfdeb85, be5031a21bdcda31270d53d319f7d183e77d84d7]:</summary>
-
   - @rocket.chat/core-typings@7.4.0
+
   </details>
 
 ## 7.4.0-rc.5
@@ -1879,8 +2122,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.4.0-rc.5
+
   </details>
 
 ## 7.4.0-rc.4
@@ -1888,8 +2131,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.4.0-rc.4
+
   </details>
 
 ## 7.4.0-rc.3
@@ -1905,8 +2148,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.4.0-rc.2
+
   </details>
 
 ## 7.4.0-rc.1
@@ -1914,8 +2157,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.4.0-rc.1
+
   </details>
 
 ## 7.4.0-rc.0
@@ -1931,8 +2174,8 @@
 - ([#34926](https://github.com/RocketChat/Rocket.Chat/pull/34926)) Enables control of video conference ringing and dialing sounds through the call ringer volume user preference, preventing video conf calls from always playing at maximum volume.
 
 - <details><summary>Updated dependencies [89964144e042c8d9282b51efd89e1e684077fdd7, f85da08765a9d3f8c5aabd9291fd08be6dfdeb85, be5031a21bdcda31270d53d319f7d183e77d84d7]:</summary>
-
   - @rocket.chat/core-typings@7.4.0-rc.0
+
   </details>
 
 ## 7.3.3
@@ -1948,8 +2191,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.3.2
+
   </details>
 
 ## 7.3.1
@@ -1957,8 +2200,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.3.1
+
   </details>
 
 ## 7.3.0
@@ -1976,8 +2219,8 @@
 - ([#35009](https://github.com/RocketChat/Rocket.Chat/pull/35009)) Fix an issue with apps installations via Marketplace
 
 - <details><summary>Updated dependencies [8942b0032af976738a7c602fa389803dda30c0dc, bfa92f4dba1a16973d7da5a9c0f5d0df998bf944]:</summary>
-
   - @rocket.chat/core-typings@7.3.0
+
   </details>
 
 ## 7.3.0-rc.5
@@ -1985,8 +2228,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.3.0-rc.5
+
   </details>
 
 ## 7.3.0-rc.4
@@ -1994,8 +2237,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.3.0-rc.4
+
   </details>
 
 ## 7.3.0-rc.3
@@ -2003,8 +2246,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.3.0-rc.3
+
   </details>
 
 ## 7.3.0-rc.2
@@ -2012,8 +2255,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.3.0-rc.2
+
   </details>
 
 ## 7.3.0-rc.1
@@ -2021,8 +2264,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.3.0-rc.1
+
   </details>
 
 ## 7.3.0-rc.0
@@ -2038,8 +2281,8 @@
 - ([#34864](https://github.com/RocketChat/Rocket.Chat/pull/34864)) Allows users to fetch the `packageValue` of settings when calling `/settings` endpoint via `includeDefaults` query param.
 
 - <details><summary>Updated dependencies [8942b0032af976738a7c602fa389803dda30c0dc, bfa92f4dba1a16973d7da5a9c0f5d0df998bf944]:</summary>
-
   - @rocket.chat/core-typings@7.3.0-rc.0
+
   </details>
 
 ## 7.2.1
@@ -2047,8 +2290,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.2.1
+
   </details>
 
 ## 7.2.0
@@ -2068,8 +2311,8 @@
 - ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes wrong data being reported to total failed apps metrics and statistics
 
 - <details><summary>Updated dependencies [76f6239ff1a9f34f163c03c140c4ceba62563b4e, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, 475120dc19fb8cc400fd8af21559cd6f3cc17eb8, 2e4af86f6463166ba4d0b37b153b89ab246e112a, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, 75a14b2e013aca7361cac56316f2b7e8c07d9dc8]:</summary>
-
   - @rocket.chat/core-typings@7.2.0
+
   </details>
 
 ## 7.2.0-rc.3
@@ -2077,8 +2320,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.2.0-rc.3
+
   </details>
 
 ## 7.2.0-rc.2
@@ -2086,8 +2329,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.2.0-rc.2
+
   </details>
 
 ## 7.2.0-rc.1
@@ -2095,8 +2338,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.2.0-rc.1
+
   </details>
 
 ## 7.2.0-rc.0
@@ -2116,8 +2359,8 @@
 - ([#34205](https://github.com/RocketChat/Rocket.Chat/pull/34205)) Fixes wrong data being reported to total failed apps metrics and statistics
 
 - <details><summary>Updated dependencies [76f6239ff1a9f34f163c03c140c4ceba62563b4e, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, 475120dc19fb8cc400fd8af21559cd6f3cc17eb8, 2e4af86f6463166ba4d0b37b153b89ab246e112a, 76f6239ff1a9f34f163c03c140c4ceba62563b4e, 75a14b2e013aca7361cac56316f2b7e8c07d9dc8]:</summary>
-
   - @rocket.chat/core-typings@7.2.0-rc.0
+
   </details>
 
 ## 7.1.0
@@ -2138,8 +2381,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [80e36bfc3938775eb26aa5576f1b9b98896e1cc4, 32d93a0666fa1cbe857d02889e93d9bbf45bd4f0]:</summary>
-
   - @rocket.chat/core-typings@7.1.0
+
   </details>
 
 ## 7.1.0-rc.3
@@ -2147,8 +2390,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.1.0-rc.3
+
   </details>
 
 ## 7.1.0-rc.2
@@ -2156,8 +2399,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.1.0-rc.2
+
   </details>
 
 ## 7.1.0-rc.1
@@ -2165,8 +2408,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.1.0-rc.1
+
   </details>
 
 ## 7.1.0-rc.0
@@ -2187,8 +2430,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [80e36bfc3938775eb26aa5576f1b9b98896e1cc4, 32d93a0666fa1cbe857d02889e93d9bbf45bd4f0]:</summary>
-
   - @rocket.chat/core-typings@7.1.0-rc.0
+
   </details>
 
 ## 7.0.0
@@ -2230,9 +2473,9 @@
 - ([#33328](https://github.com/RocketChat/Rocket.Chat/pull/33328)) Allows authorized users to reset the encryption key for end-to-end encrypted rooms. This aims to prevent situations where all users of a room have lost the encryption key, and as such, the access to the room.
 
 - <details><summary>Updated dependencies [687f1efd5f, bcacbb1cee, b338807d76, debd3ffa22, 3ea02d3cc1, e3629e065b, 03d148524b, 81998f3450, 509143d6dd]:</summary>
-
   - @rocket.chat/ui-kit@0.37.0
   - @rocket.chat/core-typings@7.0.0
+
   </details>
 
 ## 7.0.0-rc.6
@@ -2240,8 +2483,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.0.0-rc.6
+
   </details>
 
 ## 7.0.0-rc.5
@@ -2259,8 +2502,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.0.0-rc.5
+
   </details>
 
 ## 7.0.0-rc.4
@@ -2268,8 +2511,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.0.0-rc.4
+
   </details>
 
 ## 7.0.0-rc.3
@@ -2277,8 +2520,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.0.0-rc.3
+
   </details>
 
 ## 7.0.0-rc.2
@@ -2286,8 +2529,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.0.0-rc.2
+
   </details>
 
 ## 7.0.0-rc.1
@@ -2295,8 +2538,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@7.0.0-rc.1
+
   </details>
 
 ## 7.0.0-rc.0
@@ -2330,9 +2573,9 @@
 - ([#33328](https://github.com/RocketChat/Rocket.Chat/pull/33328)) Allows authorized users to reset the encryption key for end-to-end encrypted rooms. This aims to prevent situations where all users of a room have lost the encryption key, and as such, the access to the room.
 
 - <details><summary>Updated dependencies [7726d68374, 687f1efd5f, bcacbb1cee, b338807d76, debd3ffa22, 3ea02d3cc1, e3629e065b, 03d148524b, 81998f3450, 509143d6dd]:</summary>
-
   - @rocket.chat/core-typings@7.0.0-rc.0
   - @rocket.chat/ui-kit@0.37.0-rc.0
+
   </details>
 
 ## 6.13.0
@@ -2354,9 +2597,9 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [274f4f5881, 79c16d315a, 927710d778, 12d6307998]:</summary>
-
   - @rocket.chat/core-typings@6.13.0
   - @rocket.chat/message-parser@0.31.31
+
   </details>
 
 ## 6.13.0-rc.6
@@ -2364,8 +2607,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.13.0-rc.6
+
   </details>
 
 ## 6.13.0-rc.5
@@ -2373,8 +2616,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.13.0-rc.5
+
   </details>
 
 ## 6.13.0-rc.4
@@ -2382,8 +2625,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.13.0-rc.4
+
   </details>
 
 ## 6.13.0-rc.3
@@ -2391,8 +2634,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.13.0-rc.3
+
   </details>
 
 ## 6.13.0-rc.2
@@ -2400,8 +2643,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.13.0-rc.2
+
   </details>
 
 ## 6.13.0-rc.1
@@ -2409,8 +2652,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.13.0-rc.1
+
   </details>
 
 ## 6.13.0-rc.0
@@ -2432,9 +2675,9 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [274f4f5881, 79c16d315a, 927710d778, 12d6307998]:</summary>
-
   - @rocket.chat/core-typings@6.13.0-rc.0
   - @rocket.chat/message-parser@0.31.30-rc.0
+
   </details>
 
 ## 6.12.1
@@ -2442,9 +2685,9 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [3cbb9f6252]:</summary>
-
   - @rocket.chat/message-parser@0.31.30
   - @rocket.chat/core-typings@6.12.1
+
   </details>
 
 ## 6.12.0
@@ -2458,9 +2701,9 @@
 - ([#31525](https://github.com/RocketChat/Rocket.Chat/pull/31525)) Fix: Show correct user info actions for non-members in channels.
 
 - <details><summary>Updated dependencies [c11f3722df, 7937ff741a, 58c0efc732, e28be46db7, 58c0efc732]:</summary>
-
   - @rocket.chat/ui-kit@0.36.1
   - @rocket.chat/core-typings@6.12.0
+
   </details>
 
 ## 6.12.0-rc.6
@@ -2468,8 +2711,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.12.0-rc.6
+
   </details>
 
 ## 6.12.0-rc.5
@@ -2477,8 +2720,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.12.0-rc.5
+
   </details>
 
 ## 6.12.0-rc.4
@@ -2486,8 +2729,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.12.0-rc.4
+
   </details>
 
 ## 6.12.0-rc.3
@@ -2503,8 +2746,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.12.0-rc.2
+
   </details>
 
 ## 6.12.0-rc.1
@@ -2512,8 +2755,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.12.0-rc.1
+
   </details>
 
 ## 6.12.0-rc.0
@@ -2527,9 +2770,9 @@
 - ([#31525](https://github.com/RocketChat/Rocket.Chat/pull/31525)) Fix: Show correct user info actions for non-members in channels.
 
 - <details><summary>Updated dependencies [c11f3722df, 7937ff741a, 58c0efc732, e28be46db7, 58c0efc732]:</summary>
-
   - @rocket.chat/ui-kit@0.36.1-rc.0
   - @rocket.chat/core-typings@6.12.0-rc.0
+
   </details>
 
 ## 6.11.2
@@ -2537,8 +2780,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.11.2
+
   </details>
 
 ## 6.11.1
@@ -2546,8 +2789,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.11.1
+
   </details>
 
 ## 6.11.0
@@ -2561,9 +2804,9 @@
 - ([#32719](https://github.com/RocketChat/Rocket.Chat/pull/32719)) Added the `user` param to apps-engine update method call, allowing apps' new `onUpdate` hook to know who triggered the update.
 
 - <details><summary>Updated dependencies [2d89a0c448, 24f7df4894, b8e5887fb9]:</summary>
-
   - @rocket.chat/core-typings@6.11.0
   - @rocket.chat/ui-kit@0.36.0
+
   </details>
 
 ## 6.11.0-rc.6
@@ -2571,8 +2814,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.11.0-rc.6
+
   </details>
 
 ## 6.11.0-rc.5
@@ -2580,8 +2823,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.11.0-rc.5
+
   </details>
 
 ## 6.11.0-rc.4
@@ -2589,8 +2832,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.11.0-rc.4
+
   </details>
 
 ## 6.11.0-rc.3
@@ -2598,8 +2841,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.11.0-rc.3
+
   </details>
 
 ## 6.11.0-rc.2
@@ -2607,8 +2850,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.11.0-rc.2
+
   </details>
 
 ## 6.11.0-rc.1
@@ -2616,8 +2859,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.11.0-rc.1
+
   </details>
 
 ## 6.11.0-rc.0
@@ -2631,9 +2874,9 @@
 - ([#32719](https://github.com/RocketChat/Rocket.Chat/pull/32719)) Added the `user` param to apps-engine update method call, allowing apps' new `onUpdate` hook to know who triggered the update.
 
 - <details><summary>Updated dependencies [2d89a0c448, 24f7df4894, b8e5887fb9]:</summary>
-
   - @rocket.chat/core-typings@6.11.0-rc.0
   - @rocket.chat/ui-kit@0.36.0-rc.0
+
   </details>
 
 ## 6.10.2
@@ -2649,8 +2892,8 @@
 - ([#32935](https://github.com/RocketChat/Rocket.Chat/pull/32935)) Fixed an issue that caused the video conference button on rooms to not recognize a video conference provider app in some cases
 
 - <details><summary>Updated dependencies [ca6a9d8de8, ca6a9d8de8, ca6a9d8de8, ca6a9d8de8]:</summary>
-
   - @rocket.chat/core-typings@6.10.2
+
   </details>
 
 ## 6.10.1
@@ -2658,8 +2901,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.10.1
+
   </details>
 
 ## 6.10.0
@@ -2677,9 +2920,9 @@
 - ([#31750](https://github.com/RocketChat/Rocket.Chat/pull/31750)) Don't show Join default channels option on edit user form.
 
 - <details><summary>Updated dependencies [a565999ae0, 1240c874a5, 5f95c4ec6b, f75a2cb4bb, 4f72d62aa7, dfa49bdbb2]:</summary>
-
   - @rocket.chat/ui-kit@0.35.0
   - @rocket.chat/core-typings@6.10.0
+
   </details>
 
 ## 6.10.0-rc.7
@@ -2687,8 +2930,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.10.0-rc.7
+
   </details>
 
 ## 6.10.0-rc.6
@@ -2696,8 +2939,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.10.0-rc.6
+
   </details>
 
 ## 6.10.0-rc.5
@@ -2705,8 +2948,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.10.0-rc.5
+
   </details>
 
 ## 6.10.0-rc.4
@@ -2714,8 +2957,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.10.0-rc.4
+
   </details>
 
 ## 6.10.0-rc.3
@@ -2723,8 +2966,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.10.0-rc.3
+
   </details>
 
 ## 6.10.0-rc.2
@@ -2732,8 +2975,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.10.0-rc.2
+
   </details>
 
 ## 6.10.0-rc.1
@@ -2741,8 +2984,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.10.0-rc.1
+
   </details>
 
 ## 6.10.0-rc.0
@@ -2760,7 +3003,6 @@
 - ([#31750](https://github.com/RocketChat/Rocket.Chat/pull/31750)) Don't show Join default channels option on edit user form.
 
 - <details><summary>Updated dependencies [a565999ae0, 1240c874a5, 5f95c4ec6b, f75a2cb4bb, 4f72d62aa7, dfa49bdbb2]:</summary>
-
   - @rocket.chat/ui-kit@0.35.0-rc.0
   - @rocket.chat/core-typings@6.10.0-rc.0
 
@@ -2769,8 +3011,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.9.3
+
   </details>
 
 ## 6.9.2
@@ -2778,8 +3020,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.9.2
+
   </details>
 
 ## 6.9.1
@@ -2787,8 +3029,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.9.1
+
   </details>
 
 ## 6.9.0
@@ -2800,9 +3042,9 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [ff4e396416, ee5cdfc367, 70ab2a7b7b]:</summary>
-
   - @rocket.chat/core-typings@6.9.0
   - @rocket.chat/ui-kit@0.34.0
+
   </details>
 
 ## 6.9.0-rc.2
@@ -2810,8 +3052,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.9.0-rc.2
+
   </details>
 
 ## 6.9.0-rc.1
@@ -2819,8 +3061,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.9.0-rc.1
+
   </details>
 
 ## 6.9.0-rc.0
@@ -2832,9 +3074,9 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [ff4e396416, ee5cdfc367, 70ab2a7b7b]:</summary>
-
   - @rocket.chat/core-typings@6.9.0-rc.0
   - @rocket.chat/ui-kit@0.34.0-rc.0
+
   </details>
 
 ## 6.8.0
@@ -2856,10 +3098,10 @@
 - ([#32141](https://github.com/RocketChat/Rocket.Chat/pull/32141)) Deprecate `channels.images` in favor of `rooms.images`. `Rooms` endpoints are more broad and should interact with all types of rooms. `Channels` on the other hand are specific to public channels.
   This change is to keep the semantics and conventions of the endpoints
 - <details><summary>Updated dependencies [c47a8e3514, b94ca7c30b, 4aba7c8a26]:</summary>
-
   - @rocket.chat/core-typings@6.8.0
   - @rocket.chat/message-parser@0.31.29
   - @rocket.chat/ui-kit@0.33.0
+
   </details>
 
 ## 6.8.0-rc.2
@@ -2871,8 +3113,8 @@
   This returned an empty response to the UI, which ignored the response and continued to show the view.
 
 - <details><summary>Updated dependencies [b94ca7c30b]:</summary>
-
   - @rocket.chat/core-typings@6.8.0-rc.2
+
   </details>
 
 ## 6.8.0-rc.1
@@ -2880,8 +3122,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.8.0-rc.1
+
   </details>
 
 ## 6.8.0-rc.0
@@ -2899,7 +3141,6 @@
 - ([#32141](https://github.com/RocketChat/Rocket.Chat/pull/32141)) Deprecate `channels.images` in favor of `rooms.images`. `Rooms` endpoints are more broad and should interact with all types of rooms. `Channels` on the other hand are specific to public channels.
   This change is to keep the semantics and conventions of the endpoints
 - <details><summary>Updated dependencies [c47a8e3514, 4aba7c8a26]:</summary>
-
   - @rocket.chat/core-typings@6.8.0-rc.0
   - @rocket.chat/message-parser@0.31.29
   - @rocket.chat/ui-kit@0.33.0
@@ -2907,8 +3148,8 @@
 ## 6.7.2
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.7.2
+
   </details>
 
 ## 6.7.1
@@ -2916,8 +3157,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.7.1
+
   </details>
 
 ## 6.7.0
@@ -2936,10 +3177,10 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [b9ef630816, 3eb4dd7f50, b9e897a8f5, 5ad65ff3da]:</summary>
-
   - @rocket.chat/core-typings@6.7.0
   - @rocket.chat/message-parser@0.31.29
   - @rocket.chat/ui-kit@0.33.0
+
   </details>
 
 ## 6.7.0-rc.4
@@ -2947,8 +3188,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.7.0-rc.4
+
   </details>
 
 ## 6.7.0-rc.3
@@ -2956,8 +3197,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.7.0-rc.3
+
   </details>
 
 ## 6.7.0-rc.2
@@ -2965,8 +3206,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.7.0-rc.2
+
   </details>
 
 ## 6.7.0-rc.1
@@ -2974,8 +3215,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.7.0-rc.1
+
   </details>
 
 ## 6.7.0-rc.0
@@ -2994,10 +3235,10 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies [b9ef630816, 3eb4dd7f50, b9e897a8f5, 5ad65ff3da]:</summary>
-
   - @rocket.chat/core-typings@6.7.0-rc.0
   - @rocket.chat/message-parser@0.31.29-rc.0
   - @rocket.chat/ui-kit@0.33.0
+
   </details>
 
 ## 6.6.6
@@ -3005,8 +3246,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.6.6
+
   </details>
 
 ## 6.6.5
@@ -3014,8 +3255,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.6.5
+
   </details>
 
 ## 6.6.4
@@ -3023,8 +3264,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.6.4
+
   </details>
 
 ## 6.6.3
@@ -3032,8 +3273,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.6.3
+
   </details>
 
 ## 6.6.2
@@ -3041,8 +3282,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.6.2
+
   </details>
 
 ## 6.6.1
@@ -3050,8 +3291,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.6.1
+
   </details>
 
 ## 6.6.0
@@ -3073,9 +3314,9 @@
 - ([#30478](https://github.com/RocketChat/Rocket.Chat/pull/30478)) Added `chat.getURLPreview` endpoint to enable users to retrieve previews for URL (ready to be provided in message send/update)
 
 - <details><summary>Updated dependencies [b223cbde14, dbb08ef948, fdd9852079, b4b2cd20a8]:</summary>
-
   - @rocket.chat/ui-kit@0.33.0
   - @rocket.chat/core-typings@6.6.0
+
   </details>
 
 ## 6.6.0-rc.7
@@ -3083,8 +3324,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.6.0-rc.7
+
   </details>
 
 ## 6.6.0-rc.6
@@ -3092,8 +3333,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.6.0-rc.6
+
   </details>
 
 ## 6.6.0-rc.5
@@ -3101,8 +3342,8 @@
 ### Patch Changes
 
 - <details><summary>Updated dependencies []:</summary>
-
   - @rocket.chat/core-typings@6.6.0-rc.5
+
   </details>
 
 ## 6.6.0-rc.4

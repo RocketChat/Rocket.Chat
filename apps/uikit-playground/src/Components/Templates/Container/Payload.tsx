@@ -31,12 +31,12 @@ const Payload = ({ blocks, surface }: PayloadProps) => {
 		);
 	};
 	return (
-		<>
+		<Box display='flex' flexDirection='column' gap='x16' paddingBlockEnd='x24'>
 			<Box
 				onClick={clickHandler}
 				border='1px solid #e6e6e6'
 				padding='4px'
-				borderRadius={12}
+				borderRadius='large'
 				className={css`
 					cursor: pointer;
 				`}
@@ -54,10 +54,12 @@ const Payload = ({ blocks, surface }: PayloadProps) => {
 					</SurfaceRender>
 				</Box>
 			</Box>
-			<Button onClick={clickHandler} primary marginBlockStart='15px' marginBlockEnd='25px'>
-				Use This Template
-			</Button>
-		</>
+			<Box>
+				<Button onClick={clickHandler} variant='primary'>
+					Use This Template
+				</Button>
+			</Box>
+		</Box>
 	);
 };
 

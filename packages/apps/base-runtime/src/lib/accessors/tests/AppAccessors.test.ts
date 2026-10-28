@@ -1,5 +1,5 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion -- acceptable in this test file */
-/* eslint-disable testing-library/no-await-sync-queries */
+/* oxlint-disable @typescript-eslint/no-non-null-assertion -- acceptable in this test file */
+/* oxlint-disable testing-library/no-await-sync-queries */
 import * as assert from 'node:assert';
 import { after, beforeEach, describe, it, mock } from 'node:test';
 
@@ -15,7 +15,7 @@ describe('AppAccessors', () => {
 	const senderFn = (r: object) =>
 		Promise.resolve({
 			id: Math.random().toString(36).substring(2),
-			jsonrpc: '2.0',
+			jsonrpc: '2.0' as const,
 			result: r,
 			serialize() {
 				return JSON.stringify(this);

@@ -1,4 +1,4 @@
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Text } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { GenericModal } from '@rocket.chat/ui-client';
@@ -98,7 +98,7 @@ export const useAttributeOptions = (attribute: { _id: string; key: string }): Ge
 			id: 'delete',
 			iconColor: 'danger',
 			icon: 'trash' as const,
-			content: <Box color='danger'>{t('Delete')}</Box>,
+			content: <Text color='danger'>{t('Delete')}</Text>,
 			onClick: () => deleteAction(),
 		},
 	];

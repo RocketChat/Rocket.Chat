@@ -8,7 +8,7 @@ export const useStatusDisabledModal = () => {
 	const setModal = useSetModal();
 	const closeModal = useStableCallback(() => setModal());
 	const handleGoToSettings = useStableCallback(() => {
-		userStatusRoute.push({ context: 'presence-service' });
+		userStatusRoute.push({ tab: 'custom-status', context: 'presence-service' });
 		closeModal();
 	});
 	const isAdmin = useRole('admin');

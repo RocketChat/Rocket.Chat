@@ -4,10 +4,10 @@ import MongoStore from 'connect-mongo';
 import express from 'express';
 import rateLimit from 'express-rate-limit';
 import session from 'express-session';
-import { MongoInternals } from 'meteor/mongo';
 import { WebApp } from 'meteor/webapp';
 import passport from 'passport';
 
+import { client } from '../database/utils';
 import { configureOAuthServices } from '../lib/oauth/configureOAuthServices';
 import { createOAuthServiceConfig } from '../lib/oauth/createOAuthServiceConfig';
 import { getOAuthServices } from '../lib/oauth/getOAuthServices';
@@ -23,8 +23,6 @@ const oAuthApp = express();
 oAuthApp.set('trust proxy', 1);
 
 export const configurePassport = (settings: ICachedSettings) => {
-	const { client } = MongoInternals.defaultRemoteCollectionDriver().mongo;
-
 	oAuthApp.use(
 		oAuthPaths,
 		session({
@@ -90,11 +88,7 @@ export const configurePassport = (settings: ICachedSettings) => {
 		done(null, user);
 	});
 
-	settings.watchByRegex(/^(Accounts_OAuth_[a-z0-9_]+|API_GitHub_Enterprise_URL)$/i, () => {
-		if (!settings.get<boolean>('Accounts_OAuth_Use_Modern_Flow')) {
-			return;
-		}
-
+	settings.watchByRegex(/^Accounts_OAuth_[a-z0-9_]+$/i, () => {
 		const services = getOAuthServices(settings);
 		const oauthServiceConfigs = createOAuthServiceConfig(settings, services);
 		configureOAuthServices(oauthServiceConfigs, settings);

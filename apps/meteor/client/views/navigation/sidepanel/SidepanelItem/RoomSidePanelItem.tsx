@@ -1,5 +1,5 @@
 import { isOmnichannelRoom } from '@rocket.chat/core-typings';
-import { Icon, SidebarV2ItemIcon as SidebarItemIcon } from '@rocket.chat/fuselage';
+import { Icon, SidebarItemIcon } from '@rocket.chat/fuselage';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useUserId, type SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
@@ -41,7 +41,7 @@ const RoomSidePanelItem = ({ room, openedRoom, isRoomFilter, ...props }: RoomSid
 	const parentRoomId = Boolean(room.prid || (room.teamId && !room.teamMain));
 
 	const titleIcon = getSubscriptionDraft(room) ? (
-		<Icon name='pencil' size='x12' title={room.draft ? t('Unfinished_message') : t('Unfinished_thread_message')} />
+		<Icon name='pencil' size='x12' title={room.draft ? t('Draft') : t('Thread_draft')} />
 	) : undefined;
 
 	const menu =

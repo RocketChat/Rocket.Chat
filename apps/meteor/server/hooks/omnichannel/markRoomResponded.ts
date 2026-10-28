@@ -32,7 +32,7 @@ export async function markRoomResponded(
 	}
 
 	if (!room.v?.activity?.includes(monthYear)) {
-		LivechatRooms.getVisitorActiveForPeriodUpdateQuery(monthYear, roomUpdater);
+		LivechatRooms.getVisitorActiveForPeriodUpdateQuery(monthYear, roomUpdater, room.v?.activity);
 		const livechatInquiry = await LivechatInquiry.markInquiryActiveForPeriod(room._id, monthYear);
 
 		if (livechatInquiry) {

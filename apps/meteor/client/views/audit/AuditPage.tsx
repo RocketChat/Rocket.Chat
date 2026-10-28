@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Box, Callout, Margins, States, StatesIcon, StatesSubtitle, StatesTitle, Tabs, TabsItem } from '@rocket.chat/fuselage';
+import { Box, Callout, States, StatesIcon, StatesSubtitle, StatesTitle, Tabs, TabsItem, Text } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -34,25 +34,25 @@ const AuditPage = () => {
 					{t('Omnichannel')}
 				</TabsItem>
 			</Tabs>
-			<PageScrollableContentWithShadow marginBlock={-4}>
-				<Margins block={4}>
-					<AuditForm key={type} type={type} setSelectedRoom={setSelectedRoom} onSubmit={auditMutation.mutate} />
-					{selectedRoom?.encrypted && type === '' ? (
-						<Callout type='warning' icon='circle-exclamation' marginBlock='x16'>
-							<Box fontScale='p2b'>{t('Encrypted_content_cannot_be_searched_and_audited')}</Box>
+			<PageScrollableContentWithShadow gap={8}>
+				<AuditForm key={type} type={type} setSelectedRoom={setSelectedRoom} onSubmit={auditMutation.mutate} />
+				{selectedRoom?.encrypted && type === '' ? (
+					<Box paddingBlock={16}>
+						<Callout type='warning' icon='circle-exclamation'>
+							<Text fontScale='p2b'>{t('Encrypted_content_cannot_be_searched_and_audited')}</Text>
 							{t('Encrypted_content_cannot_be_searched_and_audited_subtitle')}
 						</Callout>
-					) : null}
-					{auditMutation.isPending && <ListSkeleton listCount={5} />}
-					{auditMutation.isError && (
-						<States>
-							<StatesIcon name='circle-exclamation' variation='danger' />
-							<StatesTitle>{t('Error')}</StatesTitle>
-							<StatesSubtitle>{getErrorMessage(auditMutation.error)}</StatesSubtitle>
-						</States>
-					)}
-					{auditMutation.isSuccess && <AuditResult messages={auditMutation.data} />}
-				</Margins>
+					</Box>
+				) : null}
+				{auditMutation.isPending && <ListSkeleton listCount={5} />}
+				{auditMutation.isError && (
+					<States>
+						<StatesIcon name='circle-exclamation' variation='danger' />
+						<StatesTitle>{t('Error')}</StatesTitle>
+						<StatesSubtitle>{getErrorMessage(auditMutation.error)}</StatesSubtitle>
+					</States>
+				)}
+				{auditMutation.isSuccess && <AuditResult messages={auditMutation.data} />}
 			</PageScrollableContentWithShadow>
 		</Page>
 	);

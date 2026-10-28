@@ -37,6 +37,7 @@ import { ILivechatAgentStatus } from '@rocket.chat/core-typings';
 import type { WithId } from 'mongodb';
 
 import { ajv, ajvQuery } from './Ajv';
+import { paginationQueryProperties } from './pagination';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
@@ -146,12 +147,7 @@ type LivechatDepartmentDepartmentIdAgentsGET = PaginatedRequest;
 const LivechatDepartmentDepartmentIdAgentsGETSchema = {
 	type: 'object',
 	properties: {
-		count: {
-			type: 'number',
-		},
-		offset: {
-			type: 'number',
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 		},
@@ -460,19 +456,8 @@ const LivechatMonitorsListSchema = {
 		text: {
 			type: 'string',
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
 			type: 'string',
 			nullable: true,
 		},
@@ -666,19 +651,8 @@ const LivechatTagsListSchema = {
 			nullable: true,
 			enum: ['true', 'false'],
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
 			type: 'string',
 			nullable: true,
 		},
@@ -721,19 +695,8 @@ const LivechatDepartmentSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
 			type: 'string',
 			nullable: true,
 		},
@@ -867,19 +830,8 @@ const LivechatDepartmentsAvailableByUnitIdSchema = {
 			enum: ['true', 'false'],
 			nullable: true,
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
 			type: 'string',
 			nullable: true,
 		},
@@ -900,19 +852,8 @@ const LivechatDepartmentsByUnitSchema = {
 		text: {
 			type: 'string',
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
 			type: 'string',
 			nullable: true,
 		},
@@ -928,19 +869,8 @@ type LivechatDepartmentsByUnitIdProps = PaginatedRequest;
 const LivechatDepartmentsByUnitIdSchema = {
 	type: 'object',
 	properties: {
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
 			type: 'string',
 			nullable: true,
 		},
@@ -953,7 +883,6 @@ export const isLivechatDepartmentsByUnitIdProps = ajvQuery.compile<LivechatDepar
 
 type LivechatUsersManagerGETProps = PaginatedRequest<{
 	text?: string;
-	fields?: string;
 	onlyAvailable?: boolean;
 	excludeId?: string;
 	showIdleAgents?: boolean;
@@ -978,23 +907,8 @@ const LivechatUsersManagerGETSchema = {
 			type: 'boolean',
 			nullable: true,
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
-			type: 'string',
-			nullable: true,
-		},
-		fields: {
 			type: 'string',
 			nullable: true,
 		},
@@ -1013,19 +927,8 @@ const LivechatUsersManagerPOSTSchema = {
 		username: {
 			type: 'string',
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
 			type: 'string',
 			nullable: true,
 		},
@@ -1060,12 +963,7 @@ const LivechatQueuePropsSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		count: {
-			type: 'number',
-		},
-		offset: {
-			type: 'number',
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 		},
@@ -1115,14 +1013,7 @@ const CannedResponsesPropsSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
@@ -1142,19 +1033,8 @@ const LivechatCustomFieldsSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
 			type: 'string',
 			nullable: true,
 		},
@@ -1255,14 +1135,7 @@ type LivechatRidMessagesProps = PaginatedRequest<{ searchTerm?: string }>;
 const LivechatRidMessagesSchema = {
 	type: 'object',
 	properties: {
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
@@ -1287,19 +1160,8 @@ const LivechatUsersAgentSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
 			type: 'string',
 			nullable: true,
 		},
@@ -1319,23 +1181,8 @@ const LivechatPrioritiesPropsSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
-			type: 'string',
-			nullable: true,
-		},
-		fields: {
 			type: 'string',
 			nullable: true,
 		},
@@ -1642,12 +1489,7 @@ type GETOmnichannelContactsSearchProps = PaginatedRequest<{
 const GETOmnichannelContactsSearchSchema = {
 	type: 'object',
 	properties: {
-		count: {
-			type: 'number',
-		},
-		offset: {
-			type: 'number',
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 		},
@@ -1730,12 +1572,7 @@ const GETOmnichannelContactHistorySchema = {
 		source: {
 			type: 'string',
 		},
-		count: {
-			type: 'number',
-		},
-		offset: {
-			type: 'number',
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 		},
@@ -1796,12 +1633,7 @@ const LivechatAnalyticsAgentsAverageServiceTimeSchema = {
 		end: {
 			type: 'string',
 		},
-		count: {
-			type: 'number',
-		},
-		offset: {
-			type: 'number',
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 		},
@@ -1917,12 +1749,7 @@ const LivechatAnalyticsAgentsTotalServiceTimeSchema = {
 		end: {
 			type: 'string',
 		},
-		count: {
-			type: 'number',
-		},
-		offset: {
-			type: 'number',
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 		},
@@ -1954,12 +1781,7 @@ const LivechatAnalyticsAgentsAvailableForServiceHistorySchema = {
 			type: 'string',
 			nullable: true,
 		},
-		count: {
-			type: 'number',
-		},
-		offset: {
-			type: 'number',
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 		},
@@ -1995,12 +1817,7 @@ const LivechatAnalyticsDepartmentsAmountOfChatsSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		count: {
-			type: 'number',
-		},
-		offset: {
-			type: 'number',
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 		},
@@ -2032,12 +1849,7 @@ const LivechatAnalyticsDepartmentsAverageServiceTimeSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		count: {
-			type: 'number',
-		},
-		offset: {
-			type: 'number',
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 		},
@@ -2069,12 +1881,7 @@ const LivechatAnalyticsDepartmentsAverageChatDurationTimeSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		count: {
-			type: 'number',
-		},
-		offset: {
-			type: 'number',
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 		},
@@ -2105,12 +1912,7 @@ const LivechatAnalyticsDepartmentsTotalServiceTimeSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		count: {
-			type: 'number',
-		},
-		offset: {
-			type: 'number',
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 		},
@@ -2142,12 +1944,7 @@ const LivechatAnalyticsDepartmentsAverageWaitingTimeSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		count: {
-			type: 'number',
-		},
-		offset: {
-			type: 'number',
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 		},
@@ -2179,12 +1976,7 @@ const LivechatAnalyticsDepartmentsTotalTransferredChatsSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		count: {
-			type: 'number',
-		},
-		offset: {
-			type: 'number',
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 		},
@@ -2215,12 +2007,7 @@ const LivechatAnalyticsDepartmentsTotalAbandonedChatsSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		count: {
-			type: 'number',
-		},
-		offset: {
-			type: 'number',
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 		},
@@ -2251,12 +2038,7 @@ const LivechatAnalyticsDepartmentsPercentageAbandonedChatsSchema = {
 			type: 'string',
 			nullable: true,
 		},
-		count: {
-			type: 'number',
-		},
-		offset: {
-			type: 'number',
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 		},
@@ -2678,14 +2460,7 @@ const DELETELivechatMessageIdParamsSchema = {
 		rid: {
 			type: 'string',
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
@@ -2715,14 +2490,7 @@ const GETLivechatMessagesHistoryRidParamsSchema = {
 		token: {
 			type: 'string',
 		},
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
@@ -3023,23 +2791,6 @@ const POSTCannedResponsesPropsSchema = {
 
 export const isPOSTCannedResponsesProps = ajv.compile<POSTCannedResponsesProps>(POSTCannedResponsesPropsSchema);
 
-type DELETECannedResponsesProps = {
-	_id: string;
-};
-
-const DELETECannedResponsesPropsSchema = {
-	type: 'object',
-	properties: {
-		_id: {
-			type: 'string',
-		},
-	},
-	required: ['_id'],
-	additionalProperties: false,
-};
-
-export const isDELETECannedResponsesProps = ajv.compile<DELETECannedResponsesProps>(DELETECannedResponsesPropsSchema);
-
 type POSTLivechatUsersTypeProps = {
 	username: string;
 };
@@ -3062,14 +2813,7 @@ type GETLivechatVisitorsPagesVisitedRoomIdParams = PaginatedRequest;
 const GETLivechatVisitorsPagesVisitedRoomIdParamsSchema = {
 	type: 'object',
 	properties: {
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
@@ -3087,14 +2831,7 @@ type GETLivechatVisitorsChatHistoryRoomRoomIdVisitorVisitorIdParams = PaginatedR
 const GETLivechatVisitorsChatHistoryRoomRoomIdVisitorVisitorIdParamsSchema = {
 	type: 'object',
 	properties: {
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
@@ -3118,14 +2855,7 @@ type GETLivechatVisitorsSearchChatsRoomRoomIdVisitorVisitorIdParams = PaginatedR
 const GETLivechatVisitorsSearchChatsRoomRoomIdVisitorVisitorIdParamsSchema = {
 	type: 'object',
 	properties: {
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
@@ -3177,14 +2907,7 @@ type GETLivechatVisitorsSearch = PaginatedRequest<{ term?: string }>;
 const GETLivechatVisitorsSearchSchema = {
 	type: 'object',
 	properties: {
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
@@ -3240,14 +2963,7 @@ type GETLivechatTriggersParams = PaginatedRequest;
 const GETLivechatTriggersParamsSchema = {
 	type: 'object',
 	properties: {
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
@@ -3422,7 +3138,6 @@ export const POSTLivechatBusinessHoursRemoveSuccessResponse = ajv.compile<void>(
 export const isGETLivechatTriggersParams = ajvQuery.compile<GETLivechatTriggersParams>(GETLivechatTriggersParamsSchema);
 
 export type GETLivechatRoomsParams = PaginatedRequest<{
-	fields?: string;
 	createdAt?: string;
 	customFields?: string;
 	closedAt?: string;
@@ -3440,23 +3155,8 @@ export type GETLivechatRoomsParams = PaginatedRequest<{
 const GETLivechatRoomsParamsSchema = {
 	type: 'object',
 	properties: {
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
-			type: 'string',
-			nullable: true,
-		},
-		fields: {
 			type: 'string',
 			nullable: true,
 		},
@@ -3545,14 +3245,7 @@ type GETLivechatQueueParams = PaginatedRequest<{ agentId?: string; departmentId?
 const GETLivechatQueueParamsSchema = {
 	type: 'object',
 	properties: {
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
@@ -3580,14 +3273,7 @@ type GETLivechatPrioritiesParams = PaginatedRequest<{ text?: string }>;
 const GETLivechatPrioritiesParamsSchema = {
 	type: 'object',
 	properties: {
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
@@ -3645,14 +3331,7 @@ type GETLivechatInquiriesListParams = PaginatedRequest<{ department?: string }>;
 const GETLivechatInquiriesListParamsSchema = {
 	type: 'object',
 	properties: {
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
@@ -3726,14 +3405,7 @@ type GETLivechatInquiriesQueuedForUserParams = PaginatedRequest<{ department?: s
 const GETLivechatInquiriesQueuedForUserParamsSchema = {
 	type: 'object',
 	properties: {
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
@@ -4696,7 +4368,7 @@ export type OmnichannelEndpoints = {
 	};
 
 	'/v1/livechat/department.listByIds': {
-		GET: (params: { ids: string[]; fields?: Record<string, unknown> }) => {
+		GET: (params: { ids: string[] }) => {
 			departments: ILivechatDepartment[];
 		};
 	};
@@ -4810,7 +4482,6 @@ export type OmnichannelEndpoints = {
 			cannedResponses: IOmnichannelCannedResponse[];
 		}>;
 		POST: (params: POSTCannedResponsesProps) => void;
-		DELETE: (params: DELETECannedResponsesProps) => void;
 	};
 
 	'/v1/canned-responses/:_id': {
@@ -4852,7 +4523,7 @@ export type OmnichannelEndpoints = {
 	'/v1/omnichannel/contact': {
 		POST: (params: POSTOmnichannelContactProps) => { contact: string };
 
-		GET: (params: GETOmnichannelContactProps) => { contact: ILivechatVisitor | null };
+		GET: (params: GETOmnichannelContactProps) => { contact: Omit<ILivechatVisitor, 'token'> | null };
 	};
 
 	'/v1/omnichannel/contacts': {
@@ -4880,7 +4551,7 @@ export type OmnichannelEndpoints = {
 		GET: (params: GETOmnichannelContactsChannelsProps) => { channels: ILivechatContactChannel[] | null };
 	};
 	'/v1/omnichannel/contact.search': {
-		GET: (params: GETOmnichannelContactSearchProps) => { contact: ILivechatVisitor | null };
+		GET: (params: GETOmnichannelContactSearchProps) => { contact: Omit<ILivechatVisitor, 'token'> | null };
 	};
 	'/v1/livechat/agent.info/:rid/:token': {
 		GET: () => { agent: ILivechatAgent | { hiddenInfo: true } };

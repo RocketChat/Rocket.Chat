@@ -179,15 +179,6 @@ export const createAccountSettings = () =>
 			type: 'boolean',
 			public: true,
 		});
-		await this.add('Accounts_AllowAnonymousWrite', false, {
-			type: 'boolean',
-			public: true,
-			alert: 'Accounts_AllowAnonymousWrite_Deprecation_Alert',
-			enableQuery: {
-				_id: 'Accounts_AllowAnonymousRead',
-				value: true,
-			},
-		});
 		await this.add('Accounts_AllowDeleteOwnAccount', false, {
 			type: 'boolean',
 			public: true,
@@ -211,6 +202,7 @@ export const createAccountSettings = () =>
 		await this.add('Accounts_AllowUserStatusMessageChange', true, {
 			type: 'boolean',
 			public: true,
+			i18nDescription: 'Accounts_AllowUserStatusMessageChange_Description',
 		});
 		await this.add('Accounts_AllowUsernameChange', true, {
 			type: 'boolean',
@@ -286,6 +278,7 @@ export const createAccountSettings = () =>
 			type: 'boolean',
 			public: true,
 			i18nLabel: 'Accounts_AllowInvisibleStatusOption',
+			i18nDescription: 'Accounts_AllowInvisibleStatusOption_Description',
 		});
 
 		await this.section('Registration', async function () {
@@ -770,6 +763,40 @@ export const createAccountSettings = () =>
 			await this.add('Accounts_Default_User_Preferences_featuresPreview', '[]', {
 				type: 'string',
 				public: true,
+			});
+		});
+
+		await this.section('Privacy', async function () {
+			await this.add('Accounts_UserStatus_Enabled', true, {
+				type: 'boolean',
+				public: true,
+				enterprise: true,
+				modules: ['unlimited-presence'],
+				invalidValue: true,
+				i18nDescription: 'Accounts_UserStatus_Enabled_Description',
+			});
+
+			await this.add('Accounts_StatusVisibility_Admin_Enabled', false, {
+				type: 'boolean',
+				public: true,
+				enterprise: true,
+				modules: ['unlimited-presence'],
+				invalidValue: false,
+				i18nDescription: 'Accounts_StatusVisibility_Admin_Enabled_Description',
+				enableQuery: { _id: 'Accounts_UserStatus_Enabled', value: true },
+			});
+
+			await this.add('Accounts_StatusVisibility_Enabled', false, {
+				type: 'boolean',
+				public: true,
+				enterprise: true,
+				modules: ['unlimited-presence'],
+				invalidValue: false,
+				i18nDescription: 'Accounts_StatusVisibility_Enabled_Description',
+				enableQuery: [
+					{ _id: 'Accounts_UserStatus_Enabled', value: true },
+					{ _id: 'Accounts_StatusVisibility_Admin_Enabled', value: true },
+				],
 			});
 		});
 

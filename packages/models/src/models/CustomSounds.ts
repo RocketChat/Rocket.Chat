@@ -1,6 +1,6 @@
 import type { ICustomSound, RocketChatRecordDeleted } from '@rocket.chat/core-typings';
-import type { ICustomSoundsModel } from '@rocket.chat/model-typings';
-import type { Collection, FindCursor, Db, FindOptions, IndexDescription, InsertOneResult, UpdateResult, WithId } from 'mongodb';
+import type { ICustomSoundsModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
+import type { Collection, FindCursor, Db, IndexDescription, InsertOneResult, UpdateResult, WithId, Document } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -14,22 +14,30 @@ export class CustomSoundsRaw extends BaseRaw<ICustomSound> implements ICustomSou
 	}
 
 	// find
-	findByName(name: string, exceptId?: string, options?: FindOptions<ICustomSound>): FindCursor<ICustomSound> {
+	findByName<T extends Document = ICustomSound, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		name: string,
+		exceptId?: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			name,
 			...(exceptId && { _id: { $nin: [exceptId] } }),
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
-	findOneByName(name: string, exceptId?: string, options?: FindOptions<ICustomSound>): Promise<ICustomSound | null> {
+	findOneByName<T extends Document = ICustomSound, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		name: string,
+		exceptId?: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = {
 			name,
 			...(exceptId && { _id: { $nin: [exceptId] } }),
 		};
 
-		return this.findOne(query, options);
+		return this.findOne<T, O>(query, options);
 	}
 
 	// INSERT

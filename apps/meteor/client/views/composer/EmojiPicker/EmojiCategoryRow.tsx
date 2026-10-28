@@ -5,8 +5,8 @@ import { memo, type MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import EmojiElement from './EmojiElement';
-import { isRowDivider, isLoadMore, CUSTOM_CATEGORY, CUSTOM_CATEGORY_CLASSNAME } from '../../../../app/emoji/client';
-import type { EmojiPickerItem } from '../../../../app/emoji/client';
+import { isRowDivider, isLoadMore, CUSTOM_CATEGORY, CUSTOM_CATEGORY_CLASSNAME } from '../../../lib/emoji';
+import type { EmojiPickerItem } from '../../../lib/emoji';
 
 export type EmojiCategoryRowProps = {
 	customItemsLimit: number;

@@ -1,7 +1,7 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ILivechatAgent, ILivechatVisitor, IMessage, IRoom, IUser, IAuditLog } from '@rocket.chat/core-typings';
 import { LivechatRooms, Messages, Rooms, Users, AuditLog } from '@rocket.chat/models';
 import { escapeRegExp, isTruthy } from '@rocket.chat/tools';
-import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
 import { hasPermissionAsync } from '../../../../server/lib/authorization/hasPermission';
@@ -42,7 +42,7 @@ const getRoomInfoByAuditParams = async ({
 
 	if (type === 'l') {
 		const extraQuery = await callbacks.run('livechat.applyRoomRestrictions', {}, { userId });
-		const rooms: IRoom[] = await LivechatRooms.findByVisitorIdAndAgentId(
+		const rooms = await LivechatRooms.findByVisitorIdAndAgentId(
 			visitor,
 			agent,
 			{
@@ -56,12 +56,12 @@ const getRoomInfoByAuditParams = async ({
 
 const requireAuditor = async (userId: string | null): Promise<IUser> => {
 	if (!userId) {
-		throw new Meteor.Error('Not allowed');
+		throw new ClientSafeError('Not allowed');
 	}
 
 	const user = await Users.findOneById(userId);
 	if (!user || !(await hasPermissionAsync(user._id, 'can-audit'))) {
-		throw new Meteor.Error('Not allowed');
+		throw new ClientSafeError('Not allowed');
 	}
 	return user;
 };
@@ -118,7 +118,7 @@ export const auditGetMessagesMethod = async (userId: string | null, params: Audi
 			userId: user._id,
 		});
 		if (!roomInfo) {
-			throw new Meteor.Error(`Room doesn't exist`);
+			throw new ClientSafeError(`Room doesn't exist`);
 		}
 
 		rids = roomInfo.rids;
@@ -176,7 +176,7 @@ export const auditGetOmnichannelMessagesMethod = async (
 	// No livechat.applyRoomRestrictions here (unlike the type 'l' path in getRoomInfoByAuditParams): this
 	// mirrors the original DDP auditGetOmnichannelMessages. Access is gated by the can-audit permission and
 	// audit is intended to span all omnichannel rooms, so unit/visibility restrictions are not applied.
-	const rooms: IRoom[] = await LivechatRooms.findByVisitorIdAndAgentId(visitor, agent, {
+	const rooms = await LivechatRooms.findByVisitorIdAndAgentId(visitor, agent, {
 		projection: { _id: 1 },
 	}).toArray();
 	// keep rids an array — `$in: undefined` throws "$in needs an array" when no rooms match
@@ -213,7 +213,7 @@ export const auditGetOmnichannelMessagesMethod = async (
 
 export const auditGetAuditionsMethod = async (userId: string | null, startDate: Date, endDate: Date): Promise<IAuditLog[]> => {
 	if (!userId || !(await hasPermissionAsync(userId, 'can-audit-log'))) {
-		throw new Meteor.Error('Not allowed');
+		throw new ClientSafeError('Not allowed');
 	}
 	return AuditLog.find(
 		{

@@ -31,7 +31,7 @@ test.describe('OC - Manual Selection', () => {
 	// Create page object and redirect to home
 	test.beforeEach(async ({ page }: { page: Page }) => {
 		poOmnichannel = new HomeOmnichannel(page);
-		await page.goto('/home');
+		await poOmnichannel.goto();
 	});
 
 	// Create agent b session

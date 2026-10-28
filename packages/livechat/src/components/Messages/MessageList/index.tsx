@@ -1,4 +1,5 @@
-import { parseISO, isSameDay } from 'date-fns';
+import { isSameDay } from 'date-fns/isSameDay';
+import { parseISO } from 'date-fns/parseISO';
 import i18next from 'i18next';
 import type { VNode } from 'preact';
 import type { CSSProperties } from 'preact/compat';
@@ -224,7 +225,7 @@ export class MessageList extends MemoizedComponent<MessageListProps, unknown> {
 	};
 
 	render = ({ className, style = {} }: MessageListProps) => (
-		// eslint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
+		// oxlint-disable-next-line jsx-a11y/no-static-element-interactions, jsx-a11y/click-events-have-key-events
 		<div
 			data-qa='message-list'
 			className={createClassName(styles, 'message-list', {}, [className])}

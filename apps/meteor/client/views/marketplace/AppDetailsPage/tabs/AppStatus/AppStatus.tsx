@@ -1,5 +1,5 @@
 import type { App } from '@rocket.chat/core-typings';
-import { Box, Button, Tag, Margins, Icon } from '@rocket.chat/fuselage';
+import { Box, Button, Tag, Icon, Stack } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useRouteParameter, usePermission, useSetModal } from '@rocket.chat/ui-contexts';
 import { useCallback, useState, memo } from 'react';
@@ -35,7 +35,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 
 	const button = appButtonProps({ ...app, isAdminUser, endUserRequested });
 	const isAppRequestsPage = context === 'requested';
-	const shouldShowPriceDisplay = isAppDetailsPage && button && !app.isEnterpriseOnly;
+	const shouldShowPriceDisplay = isAppDetailsPage && button && !app.isEnterpriseOnly && !installed;
 	const canUpdate = installed && app?.version && app?.marketplaceVersion && semver.lt(app?.version, app?.marketplaceVersion);
 
 	const { data } = useIsEnterprise();
@@ -143,37 +143,43 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 					flexDirection='row'
 					alignItems='center'
 					justifyContent='center'
-					borderRadius='x4'
+					borderRadius='medium'
+					gap={12}
+					paddingInlineEnd={shouldShowPriceDisplay ? 4 : undefined}
 					invisible={!showStatus && !loading}
 				>
 					<Button
 						icon={button.icon}
-						primary
-						small
+						variant='primary'
+						size='small'
 						loading={loading}
 						disabled={action === 'request' && (app?.requestedEndUser || endUserRequested)}
 						onClick={handleAcquireApp}
-						marginInlineEnd={8}
 					>
 						{t(button.label)}
 					</Button>
 
-					{shouldShowPriceDisplay && !installed && (
+					{shouldShowPriceDisplay && (
 						<AppStatusPriceDisplay purchaseType={purchaseType} pricingPlans={pricingPlans} price={price} showType={false} />
 					)}
 				</Box>
 			)}
 
-			{statuses?.map((status, index) => (
-				<Margins inlineEnd={index !== statuses.length - 1 ? 8 : undefined} key={index}>
-					<Tag data-qa-type='app-status-tag' variant={getStatusVariant(status)} title={status.tooltipText ? status.tooltipText : ''}>
-						<Box display='flex' color={getStatusFontColor(status)} alignItems='center'>
-							{status.icon && <Icon name={status.icon} size={16} marginInlineEnd={2} />}
+			<Stack direction='row' align='center' gap={8}>
+				{statuses?.map((status, index) => (
+					<Tag
+						key={index}
+						data-qa-type='app-status-tag'
+						variant={getStatusVariant(status)}
+						title={status.tooltipText ? status.tooltipText : ''}
+					>
+						<Box display='flex' color={getStatusFontColor(status)} alignItems='center' gap='x4'>
+							{status.icon && <Icon name={status.icon} size={16} />}
 							{handleAppRequestsNumber(status)} {t(status.label)}
 						</Box>
 					</Tag>
-				</Margins>
-			))}
+				))}
+			</Stack>
 		</Box>
 	);
 };

@@ -1,4 +1,4 @@
-import { Box, Icon, SidebarV2ItemIcon } from '@rocket.chat/fuselage';
+import { Box, Icon, SidebarItemIcon } from '@rocket.chat/fuselage';
 import type { AISearchResult } from '@rocket.chat/rest-typings';
 import type { ReactElement } from 'react';
 import { memo } from 'react';
@@ -43,7 +43,7 @@ const NavBarSearchMessageRow = ({ item, onClick }: NavBarSearchMessageRowProps):
 			onClick={onClick}
 			title={title}
 			avatar={null}
-			icon={<SidebarV2ItemIcon icon={<Icon name='stars' size='x16' />} />}
+			icon={<SidebarItemIcon icon={<Icon name='stars' size='x16' />} />}
 			actions={
 				roomLabel ? (
 					<Box color='hint' fontScale='c1' withTruncatedText flexShrink={0} maxWidth='x120'>

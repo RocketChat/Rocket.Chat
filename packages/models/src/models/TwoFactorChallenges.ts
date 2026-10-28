@@ -1,8 +1,8 @@
 import { randomBytes } from 'crypto';
 
 import type { ITwoFactorChallenge } from '@rocket.chat/core-typings';
-import type { ITwoFactorChallengesModel } from '@rocket.chat/model-typings';
-import type { Db, FindOptions, IndexDescription } from 'mongodb';
+import type { ITwoFactorChallengesModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
+import type { Db, IndexDescription, Document } from 'mongodb';
 
 import { BaseRaw } from './BaseRaw';
 
@@ -15,15 +15,22 @@ export class TwoFactorChallengesRaw extends BaseRaw<ITwoFactorChallenge> impleme
 		return [{ key: { expireAt: 1 }, expireAfterSeconds: 0 }];
 	}
 
-	findOneByPendingChallengeId(pendingChallengeId: string, options?: FindOptions<ITwoFactorChallenge>) {
-		return this.findOne({ _id: pendingChallengeId }, options);
+	findOneByPendingChallengeId<
+		T extends Document = ITwoFactorChallenge,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(pendingChallengeId: string, options?: O): Promise<DocumentWithProjection<T, O> | null> {
+		return this.findOne<T, O>({ _id: pendingChallengeId }, options);
 	}
 
 	removeByPendingChallengeId(pendingChallengeId: string) {
 		return this.deleteOne({ _id: pendingChallengeId });
 	}
 
-	async createTwoFactorChallenge(userId: string, method: ITwoFactorChallenge['method']): Promise<string> {
+	async createTwoFactorChallenge(
+		userId: string,
+		method: ITwoFactorChallenge['method'],
+		purpose: ITwoFactorChallenge['purpose'] = 'login',
+	): Promise<string> {
 		const now = new Date();
 		const challengeId = randomBytes(32).toString('hex');
 		await this.insertOne({
@@ -32,6 +39,7 @@ export class TwoFactorChallengesRaw extends BaseRaw<ITwoFactorChallenge> impleme
 			method,
 			createdAt: now,
 			expireAt: new Date(now.getTime() + 1000 * 60 * 5),
+			purpose,
 		});
 		return challengeId;
 	}

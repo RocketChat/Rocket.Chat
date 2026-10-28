@@ -1,7 +1,7 @@
 import { Box, IconButton, Sidepanel, SidepanelHeader, SidepanelHeaderTitle, SidepanelListItem, ToggleSwitch } from '@rocket.chat/fuselage';
 import { VirtualizedScrollbars } from '@rocket.chat/ui-client';
 import { useLayout } from '@rocket.chat/ui-contexts';
-import { useId, useRef, type ComponentType } from 'react';
+import { useId, type ComponentType } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
@@ -26,7 +26,6 @@ type SidePanelProps<R = any> = {
 
 const SidePanelInternal = ({ title, currentTab, unreadOnly, toggleUnreadOnly, rooms, ItemContentComponent }: SidePanelProps) => {
 	const { t } = useTranslation();
-	const ref = useRef(null);
 	const unreadFieldId = useId();
 	const openedRoom = useOpenedRoom();
 	const {
@@ -35,13 +34,13 @@ const SidePanelInternal = ({ title, currentTab, unreadOnly, toggleUnreadOnly, ro
 	} = useLayout();
 	const isRoomFilter = useIsRoomFilter();
 
-	usePreventDefault(ref);
+	const ref = usePreventDefault();
 
 	return (
 		<Sidepanel role='tabpanel' aria-label={t('Side_panel')}>
 			<SidepanelHeader role='heading' aria-label={title}>
-				<Box withTruncatedText display='flex' alignItems='center'>
-					{isTablet && <IconButton marginInlineEnd={8} icon='arrow-back' title={t('Back')} small onClick={closeSidePanel} />}
+				<Box withTruncatedText display='flex' alignItems='center' gap={8}>
+					{isTablet && <IconButton icon='arrow-back' title={t('Back')} size='small' onClick={closeSidePanel} />}
 					<SidepanelHeaderTitle>{title}</SidepanelHeaderTitle>
 				</Box>
 				<Box display='flex' alignItems='center'>
@@ -72,7 +71,7 @@ export const createSidePanel =
 	<R extends object>(
 		ItemContentComponent: ComponentType<{ room: R; openedRoom: ReturnType<typeof useOpenedRoom>; isRoomFilter: boolean }>,
 	) =>
-	// eslint-disable-next-line react/no-multi-comp, react/display-name
+	// oxlint-disable-next-line react/display-name
 	({ title, currentTab, unreadOnly, toggleUnreadOnly, rooms }: Omit<SidePanelProps<R>, 'ItemContentComponent'>) => (
 		<SidePanelInternal
 			title={title}

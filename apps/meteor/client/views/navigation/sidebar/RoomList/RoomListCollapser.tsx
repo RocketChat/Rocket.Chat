@@ -1,6 +1,6 @@
 import type { ISubscription } from '@rocket.chat/core-typings';
-import { Badge, SidebarV2CollapseGroup } from '@rocket.chat/fuselage';
-import type { HTMLAttributes, KeyboardEvent, MouseEventHandler } from 'react';
+import { Badge, SidebarCollapseGroup } from '@rocket.chat/fuselage';
+import type { HTMLAttributes, KeyboardEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { AllGroupsKeys } from '../../contexts/RoomsNavigationContext';
@@ -10,19 +10,37 @@ export type RoomListCollapserProps = {
 	group: AllGroupsKeys;
 	groupTitle: string;
 	collapsedGroups: string[];
-	onClick: MouseEventHandler<HTMLElement>;
-	onKeyDown: (e: KeyboardEvent) => void;
+	onClick: () => void;
 	unreadCount: Pick<ISubscription, 'userMentions' | 'groupMentions' | 'unread' | 'tunread' | 'tunreadUser' | 'tunreadGroup'>;
-} & Omit<HTMLAttributes<HTMLElement>, 'onClick' | 'onKeyDown'>;
+} & Omit<HTMLAttributes<HTMLDivElement>, 'onClick' | 'onKeyDown'>;
 
-const RoomListCollapser = ({ groupTitle, unreadCount: unreadGroupCount, collapsedGroups, group, ...props }: RoomListCollapserProps) => {
+const RoomListCollapser = ({
+	groupTitle,
+	unreadCount: unreadGroupCount,
+	collapsedGroups,
+	group,
+	onClick,
+	...props
+}: RoomListCollapserProps) => {
 	const { t } = useTranslation();
 
 	const { unreadTitle, unreadVariant, showUnread, unreadCount } = useUnreadDisplay(unreadGroupCount);
+	const title = t(groupTitle);
+	const expanded = !collapsedGroups.includes(group);
+
+	const toggleOnEnterOrSpace = (event: KeyboardEvent<HTMLDivElement>) => {
+		if (event.repeat || !['Enter', 'Space'].includes(event.code)) {
+			return;
+		}
+
+		event.preventDefault();
+		onClick();
+	};
+
 	return (
-		<SidebarV2CollapseGroup
-			title={t(groupTitle)}
-			expanded={!collapsedGroups.includes(group)}
+		<SidebarCollapseGroup
+			title={title}
+			expanded={expanded}
 			badge={
 				showUnread ? (
 					<Badge variant={unreadVariant} title={unreadTitle} aria-label={unreadTitle} role='status'>
@@ -30,9 +48,9 @@ const RoomListCollapser = ({ groupTitle, unreadCount: unreadGroupCount, collapse
 					</Badge>
 				) : undefined
 			}
-			aria-label={
-				!collapsedGroups.includes(group) ? t('Collapse_group', { group: t(groupTitle) }) : t('Expand_group', { group: t(groupTitle) })
-			}
+			aria-label={expanded ? t('Collapse_group', { group: title }) : t('Expand_group', { group: title })}
+			onClick={onClick}
+			onKeyDown={toggleOnEnterOrSpace}
 			{...props}
 		/>
 	);

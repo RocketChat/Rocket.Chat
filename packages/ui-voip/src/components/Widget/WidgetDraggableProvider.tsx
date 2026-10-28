@@ -16,9 +16,7 @@ const WidgetDraggableProvider = ({ children }: WidgetDraggableProviderProps) => 
 		restorePosition: widgetPositionTracker?.lastKnownPosition,
 	});
 
-	useLayoutEffect(() => {
-		boundingRef(document.body);
-	}, [boundingRef]);
+	useLayoutEffect(() => boundingRef(document.body), [boundingRef]);
 
 	return <DragContext.Provider value={{ draggableRef, boundingRef, handleRef }}>{children}</DragContext.Provider>;
 };

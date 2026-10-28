@@ -58,6 +58,7 @@ slashCommands.add({
 		let msg = '';
 		keys.forEach((key) => {
 			msg = `${msg}\n${i18n.t(key.key, {
+				interpolation: { escapeValue: false },
 				shortcut: key.command,
 				lng: user?.language || settings.get('language') || 'en',
 			})}`;

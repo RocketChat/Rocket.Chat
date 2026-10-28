@@ -1,7 +1,8 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { Credentials } from '@rocket.chat/api-client';
 import type { IInvite, IRoom, IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { createRoom, deleteRoom } from '../../data/rooms.helper';
@@ -12,7 +13,7 @@ import { createUser, deleteUser, login } from '../../data/users.helper';
 describe('Invites', () => {
 	let testInviteID: IInvite['_id'];
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 	describe('POST [/findOrCreateInvite]', () => {
 		it('should fail if not logged in', async () => {
 			const res = await request
@@ -24,8 +25,8 @@ describe('Invites', () => {
 				})
 				.expect(401);
 
-			expect(res.body).to.have.property('status', 'error');
-			expect(res.body).to.have.property('message');
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 		});
 
 		it('should fail if invalid roomid', async () => {
@@ -85,8 +86,8 @@ describe('Invites', () => {
 		it('should fail if not logged in', async () => {
 			const res = await request.get(api('listInvites')).expect(401);
 
-			expect(res.body).to.have.property('status', 'error');
-			expect(res.body).to.have.property('message');
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 		});
 
 		it('should return the existing invite for GENERAL', async () => {
@@ -100,8 +101,8 @@ describe('Invites', () => {
 		it('should fail if not logged in', async () => {
 			const res = await request.post(api('useInviteToken')).expect(401);
 
-			expect(res.body).to.have.property('status', 'error');
-			expect(res.body).to.have.property('message');
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 		});
 
 		it('should fail if invalid token', async () => {
@@ -121,7 +122,7 @@ describe('Invites', () => {
 			const res = await request.post(api('useInviteToken')).set(credentials).send({}).expect(400);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'invalid-params');
+			expect(res.body).to.have.property('errorType', 'error-invalid-params');
 		});
 
 		it('should use the existing invite for GENERAL', async () => {
@@ -227,8 +228,8 @@ describe('Invites', () => {
 		it('should fail if not logged in', async () => {
 			const res = await request.delete(api(`removeInvite/${testInviteID}`)).expect(401);
 
-			expect(res.body).to.have.property('status', 'error');
-			expect(res.body).to.have.property('message');
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 		});
 
 		it('should fail if invalid token', async () => {

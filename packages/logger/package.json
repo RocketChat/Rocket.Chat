@@ -10,16 +10,16 @@
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.json",
 		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix ."
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@rocket.chat/emitter": "workspace:~",
 		"pino": "10.3.1"
 	},
 	"devDependencies": {
-		"eslint": "~9.39.5",
-		"typescript": "~5.9.3"
+		"typescript": "~7.0.2"
 	},
 	"volta": {
 		"extends": "../../package.json"

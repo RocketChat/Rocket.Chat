@@ -1,7 +1,7 @@
 import { useLongPress, usePress } from '@react-aria/interactions';
 import { mergeProps } from '@react-aria/utils';
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Button } from '@rocket.chat/fuselage';
+import { Box, Button, useStyle } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
 export type KeyProps = {
@@ -14,6 +14,12 @@ export type KeyProps = {
 };
 
 const dialPadButtonClass = css`
+	min-width: 3.25rem;
+	width: 3.25rem;
+	height: 2.5rem;
+	padding: 0;
+	border-radius: 0.5rem;
+
 	> .rcx-button--content {
 		display: flex;
 		flex-direction: column;
@@ -22,20 +28,19 @@ const dialPadButtonClass = css`
 
 const Key = ({ primaryKey, alternativeKey, longPressKey, onLongKeyPress, onKeyPress, large }: KeyProps) => {
 	const { t } = useTranslation();
+	const dialPadButtonClassName = useStyle(dialPadButtonClass);
 
 	const { longPressProps } = useLongPress({
 		accessibilityDescription: `${t(`Long_press_to_do_x`, { action: longPressKey })}`,
 		onLongPress: () => longPressKey && onLongKeyPress(longPressKey),
 	});
 
-	const { pressProps } = usePress({
-		onPress: () => onKeyPress(primaryKey),
-	});
+	const { pressProps } = usePress({ onPress: () => onKeyPress(primaryKey) });
 
 	const buttonProps = longPressKey ? mergeProps(pressProps, longPressProps) : pressProps;
 
 	return (
-		<Button minWidth={52} width={52} height={40} padding={0} margin={4} {...buttonProps} className={dialPadButtonClass} borderRadius={8}>
+		<Button {...buttonProps} className={dialPadButtonClassName}>
 			<Box is='span' fontScale={large ? 'h1' : 'p1'} fontWeight={large ? 300 : 400} marginBlock={-4}>
 				{primaryKey}
 			</Box>

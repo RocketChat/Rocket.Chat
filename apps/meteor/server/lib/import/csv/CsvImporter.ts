@@ -218,7 +218,7 @@ export class CsvImporter extends Importer {
 							u: {
 								_id: msg.username,
 							},
-							ts: new Date(parseInt(msg.ts)),
+							ts: new Date(Number(msg.ts)),
 							msg: msg.text,
 						};
 
@@ -235,7 +235,7 @@ export class CsvImporter extends Importer {
 							u: {
 								_id: msg.username,
 							},
-							ts: new Date(parseInt(msg.ts)),
+							ts: new Date(Number(msg.ts)),
 							msg: msg.text,
 						};
 

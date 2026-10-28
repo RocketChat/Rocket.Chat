@@ -1,11 +1,13 @@
 import { View, StyleSheet } from '@react-pdf/renderer';
 import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
-import { fontScale } from '@rocket.chat/fuselage-tokens/dist/typography.json';
+import typography from '@rocket.chat/fuselage-tokens/dist/typography.json';
 import type { ReactNode } from 'react';
 
 import type { PDFQuote } from '../../../types/ChatTranscriptData';
 import { Markup } from '../markup';
 import { MessageHeader } from './MessageHeader';
+
+const { fontScale } = typography;
 
 const styles = StyleSheet.create({
 	wrapper: {

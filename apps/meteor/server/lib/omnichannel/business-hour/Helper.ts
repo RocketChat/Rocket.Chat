@@ -11,7 +11,7 @@ import { businessHourLogger } from '../logger';
 export { filterBusinessHoursThatMustBeOpened };
 
 export const filterBusinessHoursThatMustBeOpenedByDay = async (
-	businessHours: ILivechatBusinessHour[],
+	businessHours: Pick<ILivechatBusinessHour, '_id' | 'type' | 'active' | 'workHours'>[],
 	day: string, // Format: moment.format('dddd')
 ): Promise<Pick<ILivechatBusinessHour, '_id' | 'type'>[]> => {
 	return filterBusinessHoursThatMustBeOpened(

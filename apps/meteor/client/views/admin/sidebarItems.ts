@@ -1,6 +1,6 @@
 import { defaultFeaturesPreview } from '@rocket.chat/ui-client';
 
-import { hasPermission, hasAtLeastOnePermission, hasAllPermission } from '../../../app/authorization/client';
+import { hasPermission, hasAtLeastOnePermission, hasAllPermission } from '../../lib/authorization';
 import { createSidebarItems } from '../../lib/createSidebarItems';
 
 export const {
@@ -62,7 +62,7 @@ export const {
 	},
 	{
 		href: '/admin/user-status',
-		i18nLabel: 'User_Status',
+		i18nLabel: 'Status_and_presence',
 		icon: 'user',
 		permissionGranted: (): boolean => hasAtLeastOnePermission(['manage-user-status']),
 	},

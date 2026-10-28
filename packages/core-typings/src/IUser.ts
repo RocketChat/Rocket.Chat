@@ -99,6 +99,7 @@ interface IUserServices extends IOAuthUserServices {
 		code: string;
 		expire: Date;
 		attempts: number;
+		sentAt?: Date;
 	};
 
 	/**
@@ -140,17 +141,25 @@ const userServiceKeys: IUserService[] = ['emailCode', 'email2fa', 'totp', 'resum
 const isUserServiceKey = (key: string): key is IUserService =>
 	userServiceKeys.includes(key as IUserService) || defaultOAuthKeys.includes(key as IOAuthService);
 
-const isDefaultOAuthUser = (user: IUser): boolean =>
+const isDefaultOAuthUser = (user: Pick<IUser, 'services'>): boolean =>
 	!!user.services && Object.keys(user.services).some((key) => defaultOAuthKeys.includes(key as IOAuthService));
 
-const isCustomOAuthUser = (user: IUser): boolean => !!user.services && Object.keys(user.services).some((key) => !isUserServiceKey(key));
+const isCustomOAuthUser = (user: Pick<IUser, 'services'>): boolean =>
+	!!user.services && Object.keys(user.services).some((key) => !isUserServiceKey(key));
 
-export const isOAuthUser = (user: IUser): boolean => isDefaultOAuthUser(user) || isCustomOAuthUser(user);
+export const isOAuthUser = (user: Pick<IUser, 'services'>): boolean => isDefaultOAuthUser(user) || isCustomOAuthUser(user);
 
 export interface IUserEmail {
 	address: string;
 	verified?: boolean;
 }
+
+export interface IUserPhoneNumber {
+	number: string;
+	label?: string;
+}
+
+export const MAX_USER_PHONES = 10;
 
 export interface IUserCalendar {
 	outlook?: {
@@ -164,6 +173,28 @@ export interface IUserSettings {
 	profile?: Record<string, unknown>;
 	preferences?: Record<string, any>;
 	calendar?: IUserCalendar;
+}
+
+export const SIDEBAR_SYSTEM_GROUP_KEYS = [
+	'Incoming_Calls',
+	'Incoming_Livechats',
+	'Open_Livechats',
+	'On_Hold_Chats',
+	'Unread',
+	'Favorites',
+	'Teams',
+	'Discussions',
+	'Channels',
+	'Direct_Messages',
+	'Conversations',
+] as const;
+
+export interface ISidebarCategory {
+	_id: string;
+	name: string;
+	default?: boolean;
+	showUnreads?: boolean;
+	keepUnreadsOnTop?: boolean;
 }
 
 export interface IUser extends IRocketChatRecord {
@@ -190,6 +221,8 @@ export interface IUser extends IRocketChatRecord {
 	statusSource?: PresenceSource;
 	statusExpiresAt?: Date;
 	statusId?: string;
+	presenceDisabledByAdmin?: boolean;
+	statusVisibilityDeniedByAdmin?: string[];
 	previousState?: {
 		statusDefault: UserStatus;
 		statusText: string;
@@ -208,10 +241,10 @@ export interface IUser extends IRocketChatRecord {
 	settings?: IUserSettings;
 	defaultRoom?: string;
 	ldap?: boolean;
-	freeSwitchExtension?: string;
+	sipExtension?: string;
 	inviteToken?: string;
 	canViewAllInfo?: boolean;
-	phone?: string;
+	phones?: IUserPhoneNumber[];
 	reason?: string;
 	// TODO: move this to a specific federation user type
 	federated?: boolean;
@@ -223,6 +256,7 @@ export interface IUser extends IRocketChatRecord {
 		avatarUrl?: string;
 		searchedServerNames?: string[];
 	};
+	xmppFederation?: IUserXMPPFederation;
 	banners?: {
 		[key: string]: {
 			id: string;
@@ -252,7 +286,9 @@ export interface IRegisterUser extends IUser {
 	name: string;
 }
 
-export const isRegisterUser = (user: IUser): user is IRegisterUser => user.username !== undefined && user.name !== undefined;
+export const isRegisterUser = <T extends Pick<IUser, 'username' | 'name'>>(
+	user: T,
+): user is T & Required<Pick<IUser, 'username' | 'name'>> => user.username !== undefined && user.name !== undefined;
 
 export const isUserFederated = (user: Partial<IUser> | Partial<Serialized<IUser>>) => 'federated' in user && user.federated === true;
 
@@ -268,6 +304,21 @@ export interface IUserNativeFederated extends IUser {
 
 export const isUserNativeFederated = (user: Partial<IUser>): user is IUserNativeFederated =>
 	isUserFederated(user) && 'federation' in user && typeof user.federation?.version === 'number';
+
+/** A remote XMPP user. `jid` equals `username`: the bare JID, or `<nick>#<room JID>` when a remote room disclosed none. */
+export type IUserXMPPFederation = {
+	version: 1;
+	jid: string;
+	origin: string;
+};
+
+interface IUserXMPPFederated extends IUser {
+	federated: true;
+	xmppFederation: IUserXMPPFederation;
+}
+
+export const isUserXMPPFederated = (user: Partial<IUser>): user is IUserXMPPFederated =>
+	'xmppFederation' in user && (user as Partial<IUserXMPPFederated>).xmppFederation !== undefined;
 
 export type IUserDataEvent = {
 	id: unknown;
@@ -320,3 +371,31 @@ export type AvatarObject = AvatarReset | AvatarUrlObj | FormData | AvatarService
 
 export const getUserDisplayName = (name: IUser['name'], username: IUser['username'], useRealName: boolean): string | undefined =>
 	useRealName ? name || username : username;
+
+/**
+ * Strips a leading '@' from a username if present.
+ *
+ * Federated usernames (e.g. @john.doe:matrix.org) are stored with a leading '@', while local usernames are not.
+ * This normalises both forms so callers that render `@{username}` don't accidentally produce `@@john.doe:matrix.org`.
+ */
+export const normalizeUsername = (username: string): string => (username.startsWith('@') ? username.slice(1) : username);
+
+/**
+ * Name and username in the order they are meant to be shown, rather than the one name `getUserDisplayName` picks.
+ *
+ * For callers that show both — a row with the name leading and the username beside it — which is a different
+ * question from "what is this person called".
+ */
+export const getUserDisplayNames = (
+	name: IUser['name'],
+	username: IUser['username'],
+	useRealName: boolean,
+): [nameOrUsername: string, username?: string] => {
+	if (!username) {
+		throw new Error('Username is required');
+	}
+
+	const normalizedUsername = normalizeUsername(username);
+
+	return useRealName && name ? [name, normalizedUsername] : [normalizedUsername];
+};

@@ -96,10 +96,8 @@ export const useMediaSession = (instance?: MediaSignalingSession): SessionState 
 					type: 'instance_updated',
 					payload: {
 						peerInfo: {
+							type: 'unknown',
 							displayName: instanceState.title,
-							userId: 'unknown',
-							username: undefined,
-							callerId: undefined,
 						},
 						transferredBy: undefined,
 						state,
@@ -112,6 +110,7 @@ export const useMediaSession = (instance?: MediaSignalingSession): SessionState 
 						callId: instanceState.tempCallId,
 						startedAt: undefined,
 						supportedFeatures: [],
+						confirmed: instanceState.confirmed,
 					},
 				});
 				return;
@@ -124,44 +123,27 @@ export const useMediaSession = (instance?: MediaSignalingSession): SessionState 
 				features: supportedFeatures,
 				transferredBy: callTransferredBy,
 				remoteParticipant: { muted: remoteMuted, held: remoteHeld, contact },
+				ringing,
 			} = instanceState;
 
 			const transferredBy = callTransferredBy?.displayName || callTransferredBy?.username || undefined;
-
-			if (contact.type === 'sip') {
-				dispatch({
-					type: 'instance_updated',
-					payload: {
-						peerInfo: derivePeerInfoFromInstanceContact(contact),
-						transferredBy,
-						state,
-						muted,
-						held,
-						connectionState,
-						hidden,
-						remoteHeld,
-						remoteMuted,
-						callId,
-						startedAt,
-						supportedFeatures,
-					},
-				});
-				return;
-			}
 
 			const avatarUrl = (() => {
 				if (contact.username) {
 					return getAvatarUrl({ username: contact.username });
 				}
 
-				if (contact.id) {
+				if (contact.type === 'user' && contact.id) {
 					return getAvatarUrl({ userId: contact.id });
 				}
 
 				return undefined;
 			})();
 
-			const peerInfo = { ...derivePeerInfoFromInstanceContact(contact), avatarUrl };
+			const peerInfo = {
+				...derivePeerInfoFromInstanceContact(contact),
+				avatarUrl,
+			};
 
 			dispatch({
 				type: 'instance_updated',
@@ -178,6 +160,8 @@ export const useMediaSession = (instance?: MediaSignalingSession): SessionState 
 					callId,
 					startedAt,
 					supportedFeatures,
+					confirmed: instanceState.confirmed,
+					ringing,
 				},
 			});
 		};

@@ -1,4 +1,4 @@
-import { Message, Omnichannel } from '@rocket.chat/core-services';
+import { Message, Omnichannel, ClientSafeError } from '@rocket.chat/core-services';
 import {
 	type IUser,
 	type MessageTypesValues,
@@ -15,7 +15,6 @@ import { MessageTypes } from '@rocket.chat/message-types';
 import { LivechatRooms, Messages, Uploads, Users } from '@rocket.chat/models';
 import createDOMPurify from 'dompurify';
 import { JSDOM } from 'jsdom';
-import { Meteor } from 'meteor/meteor';
 import moment from 'moment-timezone';
 
 import { settings } from '../../settings';
@@ -136,7 +135,7 @@ export async function sendTranscript({
 					continue;
 				}
 
-				const uploadedFile = await Uploads.findOneById(file._id);
+				const uploadedFile = typeof file._id === 'string' ? await Uploads.findOneByIdAndRoomId(file._id, room._id) : null;
 
 				if (!uploadedFile) {
 					filesHTML += `<div>${escapeHtml(file.name)}${InvalidFileMessage}</div>`;
@@ -229,14 +228,15 @@ export async function requestTranscript({
 	subject: string;
 	user: AtLeast<IUser, '_id' | 'username' | 'utcOffset' | 'name'>;
 }) {
-	const room = await LivechatRooms.findOneById(rid, { projection: { _id: 1, open: 1, transcriptRequest: 1 } });
+	// `v` is required by the MAC-limit check below
+	const room = await LivechatRooms.findOneById(rid, { projection: { _id: 1, open: 1, transcriptRequest: 1, v: 1 } });
 
 	if (!room?.open) {
-		throw new Meteor.Error('error-invalid-room', 'Invalid room');
+		throw new ClientSafeError('error-invalid-room', 'Invalid room');
 	}
 
 	if (room.transcriptRequest) {
-		throw new Meteor.Error('error-transcript-already-requested', 'Transcript already requested');
+		throw new ClientSafeError('error-transcript-already-requested', 'Transcript already requested');
 	}
 
 	if (!(await Omnichannel.isWithinMACLimit(room))) {

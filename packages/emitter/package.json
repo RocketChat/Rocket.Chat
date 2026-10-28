@@ -10,7 +10,8 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/RocketChat/Rocket.Chat.git"
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
+		"directory": "packages/emitter"
 	},
 	"license": "MIT",
 	"author": {
@@ -26,8 +27,8 @@
 	],
 	"scripts": {
 		"build": "rollup -c",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix .",
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
 		"test": "jest",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit"
@@ -37,15 +38,9 @@
 		"@rocket.chat/tsconfig": "workspace:~",
 		"@rollup/plugin-terser": "~1.0.0",
 		"@rollup/plugin-typescript": "~12.3.0",
-		"eslint": "~9.39.5",
-		"jest": "~30.2.0",
-		"prettier": "~3.3.3",
-		"rollup": "~4.62.3",
-		"ts-jest": "~29.4.11",
+		"jest": "~30.5.2",
+		"rollup": "~4.62.5",
 		"typescript": "~5.9.3"
-	},
-	"publishConfig": {
-		"access": "public"
 	},
 	"volta": {
 		"extends": "../../package.json"

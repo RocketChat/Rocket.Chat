@@ -9,7 +9,7 @@ import {
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
-import { format } from 'date-fns';
+import { format } from 'date-fns/format';
 import { useId } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -100,48 +100,34 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 				</Field>
 				{canViewLivechatRooms && (
 					<Field>
-						<FieldLabel is='span' id={servedByFieldId}>
-							{t('Served_By')}
-						</FieldLabel>
+						<FieldLabel htmlFor={servedByFieldId}>{t('Served_By')}</FieldLabel>
 						<FieldRow>
 							<Controller
 								name='servedBy'
 								control={control}
 								render={({ field: { value, onChange } }) => (
-									<AutoCompleteMultipleAgent aria-labelledby={servedByFieldId} value={value} onChange={onChange} />
+									<AutoCompleteMultipleAgent id={servedByFieldId} value={value} onChange={onChange} />
 								)}
 							/>
 						</FieldRow>
 					</Field>
 				)}
 				<Field>
-					<FieldLabel is='span' id={statusFieldId}>
-						{t('Status')}
-					</FieldLabel>
+					<FieldLabel htmlFor={statusFieldId}>{t('Status')}</FieldLabel>
 					<Controller
 						name='status'
 						control={control}
-						render={({ field }) => (
-							<Select {...field} aria-labelledby={statusFieldId} options={statusOptions} placeholder={t('Select_an_option')} />
-						)}
+						render={({ field }) => <Select {...field} id={statusFieldId} options={statusOptions} placeholder={t('Select_an_option')} />}
 					/>
 				</Field>
 				<Field>
-					<FieldLabel is='span' id={departmentFieldId}>
-						{t('Department')}
-					</FieldLabel>
+					<FieldLabel htmlFor={departmentFieldId}>{t('Department')}</FieldLabel>
 					<FieldRow>
 						<Controller
 							name='department'
 							control={control}
 							render={({ field: { value, onChange } }) => (
-								<AutoCompleteDepartmentMultiple
-									aria-labelledby={departmentFieldId}
-									showArchived
-									value={value}
-									onChange={onChange}
-									onlyMyDepartments
-								/>
+								<AutoCompleteDepartmentMultiple id={departmentFieldId} showArchived value={value} onChange={onChange} onlyMyDepartments />
 							)}
 						/>
 					</FieldRow>
@@ -160,16 +146,12 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 				</Field>
 				{isEnterprise && (
 					<Field>
-						<FieldLabel is='span' id={unitsFieldId}>
-							{t('Units')}
-						</FieldLabel>
+						<FieldLabel htmlFor={unitsFieldId}>{t('Units')}</FieldLabel>
 						<FieldRow>
 							<Controller
 								name='units'
 								control={control}
-								render={({ field: { value, onChange } }) => (
-									<AutoCompleteUnits aria-labelledby={unitsFieldId} value={value} onChange={onChange} />
-								)}
+								render={({ field: { value, onChange } }) => <AutoCompleteUnits id={unitsFieldId} value={value} onChange={onChange} />}
 							/>
 						</FieldRow>
 					</Field>
@@ -179,9 +161,7 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 						if (customField.type === 'select') {
 							return (
 								<Field key={customField._id}>
-									<FieldLabel is='span' id={customField._id}>
-										{customField.label}
-									</FieldLabel>
+									<FieldLabel htmlFor={customField._id}>{customField.label}</FieldLabel>
 									<FieldRow>
 										<Controller
 											name={customField._id}
@@ -189,7 +169,7 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 											render={({ field }) => (
 												<Select
 													{...field}
-													aria-labelledby={customField._id}
+													id={customField._id}
 													value={field.value as string}
 													options={(customField.options || '').split(',').map((item) => [item, item])}
 												/>
@@ -219,7 +199,7 @@ const ChatsFiltersContextualBar = ({ onClose }: ChatsFiltersContextualBarProps) 
 					<Button disabled={!hasAppliedFilters} onClick={handleResetFilters}>
 						{t('Clear_filters')}
 					</Button>
-					<Button type='submit' form={formId} primary>
+					<Button type='submit' form={formId} variant='primary'>
 						{t('Apply')}
 					</Button>
 				</ButtonGroup>

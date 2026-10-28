@@ -5,10 +5,25 @@ import { Messages, Rooms, Subscriptions, ReadReceipts, ReadReceiptsArchive } fro
 import { deleteRoom } from './deleteRoom';
 import { NOTIFICATION_ATTACHMENT_COLOR } from '../../../lib/constants';
 import { i18n } from '../i18n';
+import { SystemLogger } from '../logger/system';
 import { FileUpload } from '../media/file-upload';
+import { updateAndNotifyParentRoomWithParentMessage } from '../messaging/discussions/updateAndNotifyParentRoomWithParentMessage';
 import { notifyOnRoomChangedById, notifyOnSubscriptionChangedById } from '../notifyListener';
 
 const FILE_CLEANUP_BATCH_SIZE = 1000;
+
+async function refreshDiscussionMetadataOnParentRoom(rid: IRoom['_id']): Promise<void> {
+	try {
+		const room = await Rooms.findOneDiscussionById(rid, { projection: { msgs: 1, lm: 1, sysMes: 1 } });
+		if (!room) {
+			return;
+		}
+
+		await updateAndNotifyParentRoomWithParentMessage(room);
+	} catch (err) {
+		SystemLogger.error({ msg: 'Failed to propagate discussion metadata', err, rid });
+	}
+}
 
 export async function cleanRoomHistory({
 	rid = '',
@@ -108,61 +123,82 @@ export async function cleanRoomHistory({
 	}
 
 	if (!ignoreThreads) {
-		const threads = new Set<string>();
+		const threads: string[] = [];
 
 		await Messages.findThreadsByRoomIdPinnedTimestampAndUsers(
 			{ rid, pinned: excludePinned, ignoreDiscussion, ts, users: fromUsers },
 			{ projection: { _id: 1 } },
 		).forEach(({ _id }) => {
-			threads.add(_id);
+			threads.push(_id);
 		});
 
-		if (threads.size > 0) {
+		for (let i = 0; i < threads.length; i += FILE_CLEANUP_BATCH_SIZE) {
+			const batch = threads.slice(i, i + FILE_CLEANUP_BATCH_SIZE);
 			const subscriptionIds: string[] = (
-				await Subscriptions.findUnreadThreadsByRoomId(rid, [...threads], { projection: { _id: 1 } }).toArray()
+				await Subscriptions.findUnreadThreadsByRoomId(rid, batch, { projection: { _id: 1 } }).toArray()
 			).map(({ _id }) => _id);
 
-			const { modifiedCount } = await Subscriptions.removeUnreadThreadsByRoomId(rid, [...threads]);
+			const { modifiedCount } = await Subscriptions.removeUnreadThreadsByRoomId(rid, batch);
 			if (modifiedCount) {
 				subscriptionIds.forEach((id) => notifyOnSubscriptionChangedById(id));
 			}
 		}
 	}
 
-	const selectedMessageIds = limit
-		? await Messages.findByIdPinnedTimestampLimitAndUsers(rid, excludePinned, ignoreDiscussion, ts, limit, fromUsers, ignoreThreads)
-		: undefined;
-	const count = await Messages.removeByIdPinnedTimestampLimitAndUsers(
-		rid,
-		excludePinned,
-		ignoreDiscussion,
-		ts,
-		limit,
-		fromUsers,
-		ignoreThreads,
-		selectedMessageIds,
-	);
+	let remaining = limit || Infinity;
+	let count = 0;
 
-	if (limit && selectedMessageIds) {
-		await ReadReceipts.removeByMessageIds(selectedMessageIds);
-		await ReadReceiptsArchive.removeByMessageIds(selectedMessageIds);
-	}
+	try {
+		while (remaining > 0) {
+			const batch = await Messages.findByIdPinnedTimestampLimitAndUsers(
+				rid,
+				excludePinned,
+				ignoreDiscussion,
+				ts,
+				Math.min(FILE_CLEANUP_BATCH_SIZE, remaining),
+				fromUsers,
+				ignoreThreads,
+			);
+			if (!batch.length) {
+				break;
+			}
 
-	if (count) {
-		const lastMessage = await Messages.getLastVisibleUserMessageSentByRoomId(rid);
+			count += await Messages.removeByIdPinnedTimestampLimitAndUsers(
+				rid,
+				excludePinned,
+				ignoreDiscussion,
+				ts,
+				batch.length,
+				fromUsers,
+				ignoreThreads,
+				batch,
+			);
+			void api.broadcast('notify.deleteMessageBulk', rid, {
+				rid,
+				excludePinned,
+				ignoreDiscussion,
+				ts,
+				users: fromUsers,
+				ids: batch,
+			});
+			await ReadReceipts.removeByMessageIds(batch);
+			await ReadReceiptsArchive.removeByMessageIds(batch);
 
-		await Rooms.resetLastMessageById(rid, lastMessage, -count);
+			remaining -= batch.length;
+			if (batch.length < FILE_CLEANUP_BATCH_SIZE) {
+				break;
+			}
+		}
+	} finally {
+		if (count) {
+			const lastMessage = await Messages.getLastVisibleUserMessageSentByRoomId(rid);
 
-		void notifyOnRoomChangedById(rid);
+			await Rooms.resetLastMessageById(rid, lastMessage, -count);
 
-		void api.broadcast('notify.deleteMessageBulk', rid, {
-			rid,
-			excludePinned,
-			ignoreDiscussion,
-			ts,
-			users: fromUsers,
-			ids: selectedMessageIds,
-		});
+			await refreshDiscussionMetadataOnParentRoom(rid);
+
+			void notifyOnRoomChangedById(rid);
+		}
 	}
 
 	return count;

@@ -1,8 +1,9 @@
 import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { ActionButton, StreamVideo, ToggleButton } from '@rocket.chat/ui-media';
 import { useTranslation } from 'react-i18next';
 
+import Dialpad from './Dialpad';
 import {
-	ToggleButton,
 	PeerInfo,
 	Widget,
 	WidgetFooter,
@@ -12,20 +13,22 @@ import {
 	WidgetInfo,
 	Timer,
 	DevicePicker,
-	ActionButton,
 	useInfoSlots,
+	useDraggableWidget,
 	CardWidgetContainer,
 	StreamCard,
+	getPeerDisplayName,
 } from '../../components';
 import { useMediaCallInstance } from '../../context';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
-import { usePlayMediaStream } from '../../providers/usePlayMediaStream';
+import { isUnknownPeer } from '../../utils/isUnknownPeer';
 
 const OngoingCall = () => {
 	const { t } = useTranslation();
 
 	const {
 		sessionState,
+		allowedFeatures,
 		onMute,
 		onHold,
 		onForward,
@@ -39,11 +42,13 @@ const OngoingCall = () => {
 	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt } = sessionState;
 	const { currentViews } = useMediaCallInstance();
 	const isPopout = currentViews.has('popout');
+	const isInline = !useDraggableWidget();
+
+	const screenShareAvailable = allowedFeatures.includes('screen-share');
+	const holdAvailable = allowedFeatures.includes('hold');
+	const transferAvailable = allowedFeatures.includes('transfer');
 
 	const { localScreen, remoteScreen } = streams;
-
-	const [remoteStreamRefCallback] = usePlayMediaStream(remoteScreen?.stream ?? null);
-	const [localStreamRefCallback] = usePlayMediaStream(localScreen?.stream ?? null);
 
 	const slots = useInfoSlots(muted, held, connectionState);
 	const remoteSlots = useInfoSlots(remoteMuted, remoteHeld);
@@ -51,17 +56,14 @@ const OngoingCall = () => {
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
 
-	// TODO: Figure out how to ensure this always exist before rendering the component
-	if (!peerInfo) {
-		throw new Error('Peer info is required');
-	}
+	const isSip = peerInfo?.type === 'sip';
 
 	return (
 		<Widget>
 			<WidgetHandle />
 			<WidgetHeader title={connecting ? t('meteor_status_connecting') : <Timer startAt={startedAt} />}>
 				{onClickDirectMessage && (
-					<ActionButton tiny secondary={false} label={t('Direct_Message')} icon='balloon' onClick={onClickDirectMessage} />
+					<ActionButton size='tiny' secondary={false} label={t('Direct_Message')} icon='balloon' onClick={onClickDirectMessage} />
 				)}
 
 				<ToggleButton
@@ -72,18 +74,20 @@ const OngoingCall = () => {
 					onToggle={isPopout ? onClosePopout : onOpenPopout}
 					danger={false}
 					secondary={false}
-					tiny
+					size='tiny'
 				/>
 
 				<DevicePicker />
 			</WidgetHeader>
 			<WidgetContent>
 				<CardWidgetContainer>
-					<PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />
+					{peerInfo && !isUnknownPeer(peerInfo) && <PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />}
+
+					{isInline && isSip && !localScreen?.active && <Dialpad autoFocus={false} />}
 
 					{isPopout && (
 						<Box display='flex' flexDirection='column' gap={4}>
-							<Button onClick={onClosePopout} icon='arrow-from-cross-box' medium width='full'>
+							<Button onClick={onClosePopout} icon='arrow-from-cross-box' size='medium'>
 								{t('Show_call_here')}
 							</Button>
 							{localScreen?.active && (
@@ -96,17 +100,13 @@ const OngoingCall = () => {
 						<>
 							{remoteScreen?.active && (
 								<StreamCard autoHeight maxHeight={120} onClickOpenInRoom={onClickDirectMessage}>
-									<video preload='metadata' style={{ objectFit: 'contain', height: '100%', width: '100%' }} ref={remoteStreamRefCallback}>
-										<track kind='captions' />
-									</video>
+									<StreamVideo stream={remoteScreen.stream} />
 								</StreamCard>
 							)}
 							{localScreen?.active && (
 								<Box display='flex' flexDirection='column'>
 									<StreamCard own autoHeight maxHeight={120} onClickStopSharing={onToggleScreenSharing}>
-										<video preload='metadata' style={{ objectFit: 'contain', height: '100%', width: '100%' }} ref={localStreamRefCallback}>
-											<track kind='captions' />
-										</video>
+										<StreamVideo stream={localScreen.stream} />
 									</StreamCard>
 									<WidgetInfo slots={[{ text: t('You_are_sharing_your_screen'), type: 'warning' }]} variant='card-content' />
 								</Box>
@@ -117,26 +117,34 @@ const OngoingCall = () => {
 			</WidgetContent>
 			<WidgetInfo slots={slots} />
 			<WidgetFooter>
-				<ButtonGroup large>
+				<ButtonGroup large align='center'>
 					<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
 
-					<ToggleButton
-						label={t('Hold')}
-						icons={['pause-shape-unfilled', 'pause-shape-unfilled']}
-						titles={[t('Hold'), t('Resume')]}
-						pressed={held}
-						onToggle={onHold}
-					/>
-					<ToggleButton
-						label={t('Share_screen')}
-						icons={['desktop-arrow-up', 'desktop-cross']}
-						titles={[t('Share_screen'), t('Stop_sharing_screen')]}
-						pressed={localScreen?.active ?? false}
-						onToggle={onToggleScreenSharing}
-					/>
-					<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
+					{holdAvailable && (
+						<ToggleButton
+							label={t('Hold')}
+							icons={['pause-shape-unfilled', 'pause-shape-unfilled']}
+							titles={[t('Hold'), t('Resume')]}
+							pressed={held}
+							onToggle={onHold}
+						/>
+					)}
+					{screenShareAvailable && (
+						<ToggleButton
+							label={t('Share_screen')}
+							icons={['desktop-arrow-up', 'desktop-cross']}
+							titles={[t('Share_screen'), t('Stop_sharing_screen')]}
+							pressed={localScreen?.active ?? false}
+							onToggle={onToggleScreenSharing}
+						/>
+					)}
+					{transferAvailable && (
+						<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />
+					)}
 					<ActionButton
-						label={t('Voice_call__user__hangup', { user: 'userId' in peerInfo ? peerInfo.displayName : peerInfo.number })}
+						label={t('Voice_call__user__hangup', {
+							user: getPeerDisplayName(t, peerInfo),
+						})}
 						icon='phone-off'
 						danger
 						onClick={onEndCall}

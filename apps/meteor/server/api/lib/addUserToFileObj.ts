@@ -7,9 +7,10 @@ export async function addUserToFileObj(files: IUpload[]): Promise<(IUpload & { u
 	const uids = files.map(({ userId }) => userId).filter(isString);
 
 	const users = await Users.findByIds(uids, { projection: { name: 1, username: 1 } }).toArray();
+	const usersById = new Map(users.map((user) => [user._id, user]));
 
 	return files.map((file) => {
-		const user = users.find(({ _id: userId }) => file.userId && userId === file.userId);
+		const user = file.userId ? usersById.get(file.userId) : undefined;
 		if (!user) {
 			return file;
 		}

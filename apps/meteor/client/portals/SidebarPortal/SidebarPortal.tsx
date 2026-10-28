@@ -12,7 +12,7 @@ const SidebarPortal = ({ children }: SidebarPortalProps) => {
 		return null;
 	}
 
-	return <>{createPortal(<Box className='rcx-sidebar flex-nav'>{children}</Box>, sidebarRoot)}</>;
+	return <>{createPortal(<Box className='sidebar-region-item flex-nav'>{children}</Box>, sidebarRoot)}</>;
 };
 
 export default memo(SidebarPortal);

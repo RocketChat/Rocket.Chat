@@ -116,7 +116,7 @@ test.describe('OC - Contact Center Chats [Auto Selection]', async () => {
 		poContactCenterChats = new OmnichannelContactCenterChats(page);
 		poHomeOmnichannel = new HomeOmnichannel(page);
 
-		await poContactCenterChats.goTo();
+		await poContactCenterChats.goto();
 	});
 
 	test.afterAll(async ({ api }) => {
@@ -199,7 +199,7 @@ test.describe('OC - Contact Center [Manual Selection]', () => {
 		poHomeOmnichannel = new HomeOmnichannel(page);
 		poCurrentChats = new OmnichannelContactCenterChats(page);
 
-		await poCurrentChats.goTo();
+		await poCurrentChats.goto();
 	});
 
 	test('OC - Contact Center Chats - Access queued conversation', async ({ api }) => {

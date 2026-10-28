@@ -1,4 +1,3 @@
-import type { IRoom } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
 
 import type { SubscribedRoomsForUserWithDetails } from '../rooms/getRoomsWithSingleOwner';
@@ -17,13 +16,13 @@ export const getUserSingleOwnedRooms = async function (subscribedRooms: Subscrib
 		shouldChangeOwner: [] as string[],
 	};
 
-	await rooms.forEach((room: IRoom) => {
+	await rooms.forEach((room) => {
 		const name = room.fname || room.name;
 		if (roomsThatWillBeRemoved.includes(room._id)) {
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			// oxlint-disable-next-line @typescript-eslint/no-non-null-assertion
 			result.shouldBeRemoved.push(name!);
 		} else {
-			// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+			// oxlint-disable-next-line @typescript-eslint/no-non-null-assertion
 			result.shouldChangeOwner.push(name!);
 		}
 	});

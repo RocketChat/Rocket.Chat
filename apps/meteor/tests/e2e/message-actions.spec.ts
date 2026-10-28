@@ -122,7 +122,7 @@ test.describe.serial('message-actions', () => {
 
 		await poHomeChannel.content.sendMessage(message);
 		await poHomeChannel.content.openLastMessageMenu();
-		await page.locator('role=menuitem[name="Start a Discussion"]').click();
+		await page.locator('role=menuitem[name="Start a discussion"]').click();
 		const createDiscussionModal = new CreateNewDiscussionModal(page);
 		const createButton = createDiscussionModal.btnCreate;
 		// Name should be prefilled thus making the create button enabled

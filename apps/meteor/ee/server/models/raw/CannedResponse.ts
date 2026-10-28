@@ -1,7 +1,7 @@
 import type { IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
-import type { ICannedResponseModel } from '@rocket.chat/model-typings';
+import type { ICannedResponseModel, DocumentWithProjection, FindOptionsWithProjection } from '@rocket.chat/model-typings';
 import { BaseRaw } from '@rocket.chat/models';
-import type { Db, DeleteResult, FindCursor, FindOptions, IndexDescription, UpdateFilter } from 'mongodb';
+import type { Db, DeleteResult, FindCursor, IndexDescription, UpdateFilter, Document } from 'mongodb';
 
 // TODO need to define type for CannedResponse object
 export class CannedResponseRaw extends BaseRaw<IOmnichannelCannedResponse> implements ICannedResponseModel {
@@ -64,27 +64,36 @@ export class CannedResponseRaw extends BaseRaw<IOmnichannelCannedResponse> imple
 		return Object.assign(record, { _id });
 	}
 
-	override findOneById(_id: string, options?: FindOptions<IOmnichannelCannedResponse>): Promise<IOmnichannelCannedResponse | null> {
+	override findOneById<
+		P extends Document = IOmnichannelCannedResponse,
+		O extends FindOptionsWithProjection<P> = FindOptionsWithProjection<P>,
+	>(_id: string, options?: O): Promise<DocumentWithProjection<P, O> | null> {
 		const query = { _id };
 
-		return this.findOne(query, options);
+		return this.findOne<P, O>(query, options);
 	}
 
-	findOneByShortcut(shortcut: string, options?: FindOptions<IOmnichannelCannedResponse>): Promise<IOmnichannelCannedResponse | null> {
+	findOneByShortcut<T extends Document = IOmnichannelCannedResponse, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		shortcut: string,
+		options?: O,
+	): Promise<DocumentWithProjection<T, O> | null> {
 		const query = {
 			shortcut,
 		};
 
-		return this.findOne(query, options);
+		return this.findOne<T, O>(query, options);
 	}
 
-	findByDepartmentId(departmentId: string, options?: FindOptions<IOmnichannelCannedResponse>): FindCursor<IOmnichannelCannedResponse> {
+	findByDepartmentId<
+		T extends Document = IOmnichannelCannedResponse,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(departmentId: string, options?: O): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			scope: 'department',
 			departmentId,
 		};
 
-		return this.find(query, options);
+		return this.find<T, O>(query, options);
 	}
 
 	// REMOVE

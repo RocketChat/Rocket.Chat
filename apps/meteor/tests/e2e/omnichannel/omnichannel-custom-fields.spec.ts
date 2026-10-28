@@ -10,7 +10,7 @@ test.describe('omnichannel-customFields', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poOmnichannelCustomFields = new OmnichannelCustomFields(page);
-		await poOmnichannelCustomFields.goTo();
+		await poOmnichannelCustomFields.goto();
 	});
 
 	test('expect add new "custom field"', async ({ page }) => {

@@ -1,5 +1,5 @@
 import type { MessageQuoteAttachment, IMessage } from '@rocket.chat/core-typings';
-import { Box } from '@rocket.chat/fuselage';
+import { Box, Text } from '@rocket.chat/fuselage';
 import { useUserDisplayName, GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation, useUserAvatarPath } from '@rocket.chat/ui-contexts';
 import type { ComponentProps } from 'react';
@@ -36,9 +36,9 @@ const PinMessageModal = ({ message, ...props }: PinMessageModalProps) => {
 			<Box is='p' fontScale='c1' marginBlockStart={16}>
 				{t('Pinned_messages_are_visible_to_everyone')}
 			</Box>
-			<Box is='p' fontScale='c1'>
+			<Text is='p' fontScale='c1'>
 				{t('Starred_messages_are_only_visible_to_you')}
-			</Box>
+			</Text>
 		</GenericModal>
 	);
 };

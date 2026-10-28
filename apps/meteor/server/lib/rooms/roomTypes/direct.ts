@@ -7,6 +7,7 @@ import { RoomSettingsEnum, RoomMemberActions } from '../../../../definition/IRoo
 import { getDirectMessageRoomType } from '../../../../lib/rooms/roomTypes/direct';
 import { isFederationEnabled } from '../../../services/federation/utils';
 import { settings } from '../../../settings';
+import { findDirectRoomByIdentifier } from '../findDirectRoomByIdentifier';
 import { roomCoordinator } from '../roomCoordinator';
 
 const DirectMessageRoomType = getDirectMessageRoomType(roomCoordinator);
@@ -85,6 +86,10 @@ roomCoordinator.add(DirectMessageRoomType, {
 
 	isGroupChat(room) {
 		return (room?.uids?.length || 0) > 2;
+	},
+
+	roomFind(identifier, uid) {
+		return uid ? findDirectRoomByIdentifier(identifier, uid) : undefined;
 	},
 
 	async getNotificationDetails(room, sender, notificationMessage, userId) {

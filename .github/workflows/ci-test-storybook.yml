@@ -6,9 +6,6 @@ on:
       node-version:
         required: true
         type: string
-      deno-version:
-        required: true
-        type: string
 
     secrets:
       CODECOV_TOKEN:
@@ -36,7 +33,6 @@ jobs:
         uses: ./.github/actions/setup-node
         with:
           node-version: ${{ inputs.node-version }}
-          deno-version: ${{ inputs.deno-version }}
           cache-modules: true
           install: true
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

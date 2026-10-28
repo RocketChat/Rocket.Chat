@@ -81,7 +81,7 @@ function sentMessage(parameters) {
 		message,
 	} = parameters;
 
-	// eslint-disable-next-line no-control-regex
+	// oxlint-disable-next-line no-control-regex
 	const lines = message.toString().split(/\r\n|\r|\n|\u0007/);
 	for (const line of lines) {
 		this.write({

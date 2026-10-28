@@ -120,10 +120,11 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { selector } = this.queryParams;
+			const { term, exceptions } = JSON.parse(selector);
 
 			return API.v1.success(
 				await findVisitorsToAutocomplete({
-					selector: JSON.parse(selector),
+					selector: { term, exceptions },
 				}),
 			);
 		},

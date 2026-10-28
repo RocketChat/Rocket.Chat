@@ -33,7 +33,6 @@ import type { CloseRoomParams } from './omnichannel/localTypes';
  *
  * TODO: move those to event-based systems
  */
-// eslint-disable-next-line @typescript-eslint/naming-convention
 interface EventLikeCallbackSignatures {
 	'afterActivateUser': (user: IUser) => void;
 	'afterCreateChannel': (owner: IUser, room: IRoom) => void;
@@ -80,7 +79,7 @@ interface EventLikeCallbackSignatures {
 		},
 	) => void;
 	'beforeCreateDirectRoom': (members: string[], room: IRoom) => void;
-	'federation.beforeCreateDirectMessage': (members: IUser[], extraData: Record<string, unknown>) => void;
+	'federation.beforeCreateDirectMessage': (members: (IUser | string)[], extraData: Record<string, unknown>) => void;
 	'afterSetReaction': (message: IMessage, params: { user: IUser; reaction: string; shouldReact: boolean; room: IRoom }) => void;
 	'afterUnsetReaction': (
 		message: IMessage,
@@ -97,6 +96,7 @@ interface EventLikeCallbackSignatures {
 	'livechat.afterDepartmentDisabled': (department: ILivechatDepartmentRecord) => void;
 	'livechat.afterDepartmentArchived': (department: Pick<ILivechatDepartmentRecord, '_id' | 'businessHourId'>) => void;
 	'beforeSaveUser': ({ user, oldUser }: { user: IUser; oldUser?: IUser }) => void;
+	'afterCreateUser': (user: AtLeast<IUser, '_id' | 'username' | 'roles'>) => void;
 	'afterSaveUser': ({ user, oldUser }: { user: IUser; oldUser?: IUser | null }) => void;
 	'livechat.afterTagRemoved': (tag: ILivechatTagRecord) => void;
 	'afterUserImport': (data: { inserted: IUser['_id'][]; updated: IUser['_id']; skipped: number; failed: number }) => void;
@@ -116,7 +116,6 @@ type ChainedCallbackSignatures = {
 		newRoom: IOmnichannelRoom,
 		props: { user: Required<Pick<IUser, '_id' | 'username' | 'name'>>; oldRoom: IOmnichannelRoom },
 	) => IOmnichannelRoom;
-	'afterCreateUser': (user: AtLeast<IUser, '_id' | 'username' | 'roles'>) => IUser;
 	'afterDeleteRoom': (rid: IRoom['_id']) => IRoom['_id'];
 	'livechat:afterOnHold': (room: Pick<IOmnichannelRoom, '_id'>) => Pick<IOmnichannelRoom, '_id'>;
 	'livechat:afterOnHoldChatResumed': (room: Pick<IOmnichannelRoom, '_id'>) => Pick<IOmnichannelRoom, '_id'>;

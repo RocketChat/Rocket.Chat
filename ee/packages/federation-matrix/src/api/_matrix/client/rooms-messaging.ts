@@ -19,6 +19,7 @@ import {
 	license,
 	tags,
 } from './_shared';
+import { getActivityDisplayName } from '../../../helpers/getActivityDisplayName';
 import { isAppServiceAuthenticatedMiddleware } from '../../middlewares/isAppServiceAuthenticated';
 
 const SendEventParamsSchema = {
@@ -57,7 +58,9 @@ const MessagesQuerySchema = {
 		from: { type: 'string' },
 		to: { type: 'string' },
 		dir: { type: 'string', enum: ['b', 'f'] },
-		limit: { oneOf: [{ type: 'number' }, { type: 'string' }] },
+		// a union type list rather than `oneOf`: ajvQuery coerces between number and string, so both
+		// `oneOf` branches would match a numeric value and fail validation
+		limit: { type: ['number', 'string'] },
 		filter: { type: 'string' },
 	},
 };
@@ -340,11 +343,14 @@ export const addRoomsMessagingRoutes = (router: ClientRouter) => {
 						};
 					}
 
-					void api.broadcast('user.activity', {
-						user: user.name || user.username,
-						isTyping: body.typing,
-						roomId: matrixRoom._id,
-					});
+					const displayName = await getActivityDisplayName(user);
+					if (displayName) {
+						void api.broadcast('user.activity', {
+							user: displayName,
+							isTyping: body.typing,
+							roomId: matrixRoom._id,
+						});
+					}
 
 					await federationSDK.sendTypingNotification(roomId, username, body.typing === true);
 					return {

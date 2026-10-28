@@ -9,7 +9,6 @@ describe('different timezones between server and business hours saturday ', () =
 		const bh = await filterBusinessHoursThatMustBeOpened([
 			{
 				_id: '65c40fa9052d6750ae25df83',
-				name: '',
 				active: true,
 				type: LivechatBusinessHourTypes.DEFAULT,
 				workHours: [
@@ -41,11 +40,6 @@ describe('different timezones between server and business hours saturday ', () =
 						code: '',
 					},
 				],
-				timezone: {
-					name: 'Asia/Kolkata',
-					utc: '+05:30',
-				},
-				ts: new Date(),
 			},
 		]);
 
@@ -62,8 +56,6 @@ describe('different timezones between server and business hours sunday ', () => 
 				_id: '68516f256ebb4bdceda2757e',
 				active: true,
 				type: LivechatBusinessHourTypes.DEFAULT,
-				ts: new Date(),
-				name: '',
 				workHours: [
 					{
 						day: 'Sunday',
@@ -255,10 +247,6 @@ describe('different timezones between server and business hours sunday ', () => 
 						code: '',
 					},
 				],
-				timezone: {
-					name: 'Asia/Kolkata',
-					utc: '+05:30',
-				},
 			},
 		]);
 
@@ -275,8 +263,6 @@ describe('regular business hours', () => {
 				_id: '68516f256ebb4bdceda2757e',
 				active: true,
 				type: LivechatBusinessHourTypes.DEFAULT,
-				ts: new Date(),
-				name: '',
 				workHours: [
 					{
 						day: 'Sunday',
@@ -468,10 +454,6 @@ describe('regular business hours', () => {
 						code: '',
 					},
 				],
-				timezone: {
-					name: 'America/Sao_Paulo',
-					utc: '-3',
-				},
 			},
 		]);
 
@@ -532,10 +514,8 @@ describe('finish time boundary', () => {
 		const bh = await filterBusinessHoursThatMustBeOpened([
 			{
 				_id: '68516f256ebb4bdceda2757f',
-				name: '',
 				active: true,
 				type: LivechatBusinessHourTypes.DEFAULT,
-				ts: new Date(),
 				workHours: [
 					{
 						day: 'Monday',
@@ -553,10 +533,6 @@ describe('finish time boundary', () => {
 						code: '',
 					},
 				],
-				timezone: {
-					name: 'UTC',
-					utc: '+00:00',
-				},
 			},
 		]);
 

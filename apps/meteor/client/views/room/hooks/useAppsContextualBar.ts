@@ -1,7 +1,7 @@
 import { useRouteParameter, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useCallback, useSyncExternalStore } from 'react';
 
-import { useUiKitActionManager } from '../../../uikit/hooks/useUiKitActionManager';
+import { useUiKitActionManager } from '../../../hooks/uikit/useUiKitActionManager';
 
 export const useAppsContextualBar = () => {
 	const context = useRouteParameter('context');

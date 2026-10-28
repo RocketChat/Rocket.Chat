@@ -23,7 +23,7 @@ test.describe('Admin > Users', () => {
 
 	test.beforeEach('Go to /admin/users', async ({ page }) => {
 		admin = new AdminUsers(page);
-		await page.goto('/admin/users');
+		await admin.goto();
 	});
 
 	test('New user shows in correct tabs when deactivated', async () => {

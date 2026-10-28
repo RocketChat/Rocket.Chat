@@ -1,4 +1,4 @@
-/* eslint-disable no-nested-ternary */
+/* oxlint-disable no-nested-ternary */
 import { Box } from '@rocket.chat/fuselage';
 import { useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import breakpointsDefinitions from '@rocket.chat/fuselage-tokens/dist/breakpoints.json';

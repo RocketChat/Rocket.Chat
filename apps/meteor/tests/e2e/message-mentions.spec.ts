@@ -26,7 +26,7 @@ test.describe.serial('Should not allow to send @all mention if permission to do 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-		await page.goto('/home');
+		await poHomeChannel.goto();
 	});
 
 	let targetChannel2: string;
@@ -65,7 +65,7 @@ test.describe.serial('Should not allow to send @here mention if permission to do
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-		await page.goto('/home');
+		await poHomeChannel.goto();
 	});
 
 	let targetChannel2: string;
@@ -104,16 +104,15 @@ test.describe.serial('message-mentions', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-		await page.goto('/home');
-		await poHomeChannel.waitForHome();
+		await poHomeChannel.goto();
 	});
 
 	test('expect show "all" and "here" options', async () => {
 		await poHomeChannel.navbar.openChat('general');
 		await poHomeChannel.composer.inputMessage.type('@');
 
-		await expect(poHomeChannel.content.messagePopupUsers.locator('role=listitem >> text="@all"')).toBeVisible();
-		await expect(poHomeChannel.content.messagePopupUsers.locator('role=listitem >> text="@here"')).toBeVisible();
+		await expect(poHomeChannel.content.messagePopupUsers.getByRole('option', { name: '@all' })).toBeVisible();
+		await expect(poHomeChannel.content.messagePopupUsers.getByRole('option', { name: '@here' })).toBeVisible();
 	});
 
 	test.describe('users not in channel', () => {

@@ -1,24 +1,23 @@
+import { hashLoginToken } from '@rocket.chat/account-utils';
+import { isClientSafeError, ClientSafeError } from '@rocket.chat/core-services';
 import type { IMethodConnection, IUser } from '@rocket.chat/core-typings';
-import type { Route, Router } from '@rocket.chat/http-router';
+import type { Router } from '@rocket.chat/http-router';
 import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { Sessions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
-import { ajv } from '@rocket.chat/rest-typings';
 import { wrapExceptions } from '@rocket.chat/tools';
 import type { ValidateFunction } from 'ajv';
 import { Accounts } from 'meteor/accounts-base';
 import { DDP } from 'meteor/ddp';
-// eslint-disable-next-line import-x/no-duplicates
 import { DDPCommon } from 'meteor/ddp-common';
 import { Meteor } from 'meteor/meteor';
 import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
-// eslint-disable-next-line import-x/no-duplicates
 import { RateLimiter } from 'meteor/rate-limit';
 import _ from 'underscore';
 
-import { checkPermissions, parseDeprecation } from './api.helpers';
+import { canBypassRateLimit, checkPermissions, parseDeprecation } from './api.helpers';
 import type {
 	FailureResult,
 	ForbiddenResult,
@@ -27,6 +26,7 @@ import type {
 	NotFoundResult,
 	Operations,
 	Options,
+	RateLimiterOptions,
 	SuccessResult,
 	TypedThis,
 	TypedAction,
@@ -45,13 +45,13 @@ import type { APIActionContext } from './router';
 import { RocketChatAPIRouter } from './router';
 import { isObject } from '../../lib/utils/isObject';
 import { checkCodeForUser } from '../lib/2fa/code';
-import { hasPermissionAsync } from '../lib/authorization/hasPermission';
 import { getNestedProp } from '../lib/getNestedProp';
 import { notifyOnUserChangeAsync } from '../lib/notifyListener';
 import { shouldBreakInVersion } from '../lib/shouldBreakInVersion';
 import { authenticationMiddlewareForHono } from './v1/middlewares/authenticationHono';
 import { permissionsMiddleware } from './v1/middlewares/permissions';
 import { license } from '../../ee/server/api/v1/middlewares/license';
+import { licenseRequired } from '../../ee/server/api/v1/middlewares/licenseRequired';
 import { getDefaultUserFields } from '../lib/utils/functions/getDefaultUserFields';
 import { settings } from '../settings';
 
@@ -90,7 +90,9 @@ type ConvertToRoute<TRoute extends MinimalRoute> = {
 				) => ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['response'][200]>
 			: K2 extends 'POST' | 'PUT'
 				? (
-						params: ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['body']>,
+						...args: [ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['body']>] extends [never]
+							? [params?: never]
+							: [params: ExtractValidation<Extract<TRoute, { path: K; method: K2 }>['body']>]
 					) => ExtractValidation<
 						200 extends keyof Extract<TRoute, { path: K; method: K2 }>['response']
 							? Extract<TRoute, { path: K; method: K2 }>['response'][200]
@@ -113,7 +115,7 @@ interface IAPIProperties {
 interface IAPIDefaultFieldsToExclude {
 	avatarOrigin: number;
 	emails: number;
-	phone: number;
+	phones: number;
 	statusConnection: number;
 	createdAt: number;
 	lastLogin: number;
@@ -125,12 +127,9 @@ interface IAPIDefaultFieldsToExclude {
 	_updatedAt: number;
 	settings: number;
 	inviteToken: number;
+	statusVisibilityDeniedByAdmin: number;
+	presenceDisabledByAdmin: number;
 }
-
-export type RateLimiterOptions = {
-	numRequestsAllowed?: number;
-	intervalTimeInMS?: number;
-};
 
 export const defaultRateLimiterOptions: RateLimiterOptions = {
 	numRequestsAllowed: settings.get<number>('API_Enable_Rate_Limiter_Limit_Calls_Default'),
@@ -154,15 +153,13 @@ export const generateConnection = (
 	httpHeaders: Record<string, any>;
 } => ({
 	id: Random.id(),
-	// eslint-disable-next-line @typescript-eslint/no-empty-function
+	// oxlint-disable-next-line @typescript-eslint/no-empty-function
 	close() {},
 	httpHeaders,
 	clientAddress: ipAddress,
 });
 
 export class APIClass<TBasePath extends string = '', TOperations extends Record<string, unknown> = Record<string, never>> {
-	public typedRoutes: Record<string, Record<string, Route>> = {};
-
 	protected apiPath?: string;
 
 	readonly version?: string;
@@ -172,8 +169,6 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 	public authMethods: ((routeContext: APIActionContext) => Promise<IUser | undefined>)[];
 
 	protected helperMethods: Map<string, () => any> = new Map();
-
-	public fieldSeparator: string;
 
 	public defaultFieldsToExclude: {
 		joinCode: number;
@@ -187,8 +182,10 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 	public limitedUserFieldsToExclude: IAPIDefaultFieldsToExclude;
 
 	public limitedUserFieldsToExcludeIfIsPrivilegedUser: {
-		services: number;
-		inviteToken: number;
+		'services': number;
+		'inviteToken': number;
+		'statusVisibilityDeniedByAdmin': number;
+		'settings.preferences.statusVisibilityDenied': number;
 	};
 
 	readonly router: Router<any, any, any>;
@@ -198,7 +195,6 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 
 		this.apiPath = [properties.apiPath, properties.version].filter(Boolean).join('/').replaceAll('//', '/');
 		this.authMethods = [];
-		this.fieldSeparator = '.';
 		this.defaultFieldsToExclude = {
 			joinCode: 0,
 			members: 0,
@@ -208,7 +204,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		this.defaultLimitedUserFieldsToExclude = {
 			avatarOrigin: 0,
 			emails: 0,
-			phone: 0,
+			phones: 0,
 			statusConnection: 0,
 			createdAt: 0,
 			lastLogin: 0,
@@ -220,11 +216,15 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 			_updatedAt: 0,
 			settings: 0,
 			inviteToken: 0,
+			statusVisibilityDeniedByAdmin: 0,
+			presenceDisabledByAdmin: 0,
 		};
 		this.limitedUserFieldsToExclude = this.defaultLimitedUserFieldsToExclude;
 		this.limitedUserFieldsToExcludeIfIsPrivilegedUser = {
-			services: 0,
-			inviteToken: 0,
+			'services': 0,
+			'inviteToken': 0,
+			'statusVisibilityDeniedByAdmin': 0,
+			'settings.preferences.statusVisibilityDenied': 0,
 		};
 		this.router = new RocketChatAPIRouter(`/${this.apiPath}`.replace(/\/$/, '').replaceAll('//', '/'));
 
@@ -420,7 +420,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 			rateLimiterDictionary.hasOwnProperty(route) &&
 			settings.get<boolean>('API_Enable_Rate_Limiter') === true &&
 			(process.env.NODE_ENV !== 'development' || settings.get<boolean>('API_Enable_Rate_Limiter_Dev') === true) &&
-			!(userId && (await hasPermissionAsync(userId, 'api-bypass-rate-limit')))
+			!(userId && (await canBypassRateLimit(userId, rateLimiterDictionary[route].options.bypassPermissions)))
 		);
 	}
 
@@ -445,7 +445,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		response.headers.set('X-RateLimit-Reset', String(new Date().getTime() + attemptResult.timeToReset));
 
 		if (!attemptResult.allowed) {
-			throw new Meteor.Error(
+			throw new ClientSafeError(
 				'error-too-many-requests',
 				`Error, too many requests. Please slow down. You must wait ${timeToResetAttempsInSeconds} seconds before trying this endpoint again.`,
 				{
@@ -454,6 +454,40 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 				},
 			);
 		}
+	}
+
+	public registerRateLimiterForRoute({
+		route,
+		rateLimiterOptions = defaultRateLimiterOptions,
+		methods,
+	}: {
+		route: string;
+		rateLimiterOptions?: RateLimiterOptions;
+		methods: string[];
+	}): void {
+		if (!this.shouldAddRateLimitToRoute({ rateLimiterOptions })) {
+			return;
+		}
+
+		this.addRateLimiterRuleForRoutes({ routes: [route], rateLimiterOptions, endpoints: methods });
+	}
+
+	public enforceRateLimitForRoute({
+		route,
+		method,
+		request,
+		response,
+		requestIp,
+		userId,
+	}: {
+		route: string;
+		method: string;
+		request: Request;
+		response: Response;
+		requestIp: string;
+		userId?: string;
+	}): Promise<void> {
+		return this.enforceRateLimit({ IPAddr: requestIp, route: this.getFullRouteName(route, method) }, request, response, userId);
 	}
 
 	public reloadRoutesToRefreshRateLimiter(): void {
@@ -482,13 +516,13 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		endpoints: Record<string, string> | string[];
 	}): void {
 		if (typeof rateLimiterOptions !== 'object') {
-			throw new Meteor.Error('"rateLimiterOptions" must be an object');
+			throw new ClientSafeError('"rateLimiterOptions" must be an object');
 		}
 		if (!rateLimiterOptions.numRequestsAllowed) {
-			throw new Meteor.Error(`You must set "numRequestsAllowed" property in rateLimiter for REST API endpoint: ${routes}`);
+			throw new ClientSafeError(`You must set "numRequestsAllowed" property in rateLimiter for REST API endpoint: ${routes}`);
 		}
 		if (!rateLimiterOptions.intervalTimeInMS) {
-			throw new Meteor.Error(`You must set "intervalTimeInMS" property in rateLimiter for REST API endpoint: ${routes}`);
+			throw new ClientSafeError(`You must set "intervalTimeInMS" property in rateLimiter for REST API endpoint: ${routes}`);
 		}
 		const addRateLimitRuleToEveryRoute = (routes: string[]) => {
 			routes.forEach((route) => {
@@ -548,104 +582,6 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		return routeActions.map((action) => this.getFullRouteName(route, action));
 	}
 
-	private registerTypedRoutesLegacy<TSubPathPattern extends string, TOptions extends Options>(
-		method: Method,
-		subpath: TSubPathPattern,
-		options: TOptions,
-	): void {
-		const { authRequired, validateParams } = options;
-
-		const opt = {
-			authRequired,
-			...(validateParams &&
-				method.toLowerCase() === 'get' &&
-				('GET' in validateParams
-					? { query: validateParams.GET }
-					: {
-							query: validateParams as ValidateFunction<any>,
-						})),
-
-			...(validateParams &&
-				method.toLowerCase() === 'post' &&
-				('POST' in validateParams ? { query: validateParams.POST } : { body: validateParams as ValidateFunction<any> })),
-
-			...(validateParams &&
-				method.toLowerCase() === 'put' &&
-				('PUT' in validateParams ? { query: validateParams.PUT } : { body: validateParams as ValidateFunction<any> })),
-			...(validateParams &&
-				method.toLowerCase() === 'delete' &&
-				('DELETE' in validateParams ? { query: validateParams.DELETE } : { body: validateParams as ValidateFunction<any> })),
-
-			tags: ['Missing Documentation'],
-			response: {
-				200: ajv.compile({
-					type: 'object',
-					properties: {
-						success: { type: 'boolean' },
-						error: { type: 'string' },
-					},
-					required: ['success'],
-				}),
-			},
-		};
-
-		this.registerTypedRoutes(method, subpath, opt);
-	}
-
-	private registerTypedRoutes<
-		TSubPathPattern extends string,
-		TOptions extends TypedOptions,
-		TPathPattern extends `${TBasePath}/${TSubPathPattern}`,
-	>(method: MinimalRoute['method'], subpath: TSubPathPattern, options: TOptions): void {
-		const path = `/${this.apiPath}/${subpath}`.replaceAll('//', '/') as TPathPattern;
-		this.typedRoutes = this.typedRoutes || {};
-		this.typedRoutes[path] = this.typedRoutes[path] || {};
-		const { query, authRequired, response, body, tags, ...rest } = options;
-		this.typedRoutes[path][method.toLowerCase()] = {
-			...(response && {
-				responses: Object.fromEntries(
-					Object.entries(response).map(([status, schema]) => [
-						status,
-						{
-							description: '',
-							content: {
-								'application/json': 'schema' in schema ? { schema: schema.schema } : schema,
-							},
-						},
-					]),
-				),
-			}),
-			...(query && {
-				parameters: [
-					{
-						schema: query.schema,
-						in: 'query',
-						name: 'query',
-						required: true,
-					},
-				],
-			}),
-			...(body && {
-				requestBody: {
-					required: true,
-					content: {
-						'application/json': { schema: body.schema },
-					},
-				},
-			}),
-			...(authRequired && {
-				...rest,
-				security: [
-					{
-						userId: [],
-						authToken: [],
-					},
-				],
-			}),
-			tags,
-		};
-	}
-
 	private method<TSubPathPattern extends string, TOptions extends TypedOptions, TPathPattern extends `${TBasePath}/${TSubPathPattern}`>(
 		method: MinimalRoute['method'],
 		subpath: TSubPathPattern,
@@ -662,7 +598,6 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		  >
 	> {
 		this.addRoute([subpath], { tags: [], ...options, typed: true }, { [method.toLowerCase()]: { action } } as any);
-		this.registerTypedRoutes(method, subpath, options);
 		return this;
 	}
 
@@ -831,19 +766,17 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 				const originalAction = (operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action;
 
 				if (options.deprecation && shouldBreakInVersion(options.deprecation.version)) {
-					throw new Meteor.Error('error-deprecated', `The endpoint ${route} should be removed`);
+					throw new ClientSafeError('error-deprecated', `The endpoint ${route} should be removed`);
 				}
 
-				// eslint-disable-next-line @typescript-eslint/no-this-alias
+				// oxlint-disable-next-line @typescript-eslint/no-this-alias
 				const api = this;
 				(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action =
 					async function _internalRouteActionHandler() {
-						this.queryOperations = options.queryOperations;
-						this.queryFields = options.queryFields;
 						this.logger = logger;
 
 						const authToken = this.request.headers.get('x-auth-token');
-						this.token = Accounts._hashLoginToken(String(authToken))!;
+						this.token = hashLoginToken(String(authToken));
 
 						const objectForRateLimitMatch = {
 							IPAddr: this.requestIp,
@@ -868,7 +801,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 									typeof _options.validateParams === 'function' ? _options.validateParams : _options.validateParams[requestMethod];
 
 								if (validatorFunc && !validatorFunc(requestMethod === 'GET' ? this.queryParams : this.bodyParams)) {
-									throw new Meteor.Error('invalid-params', validatorFunc.errors?.map((error: any) => error.message).join('\n '));
+									throw new ClientSafeError('error-invalid-params', validatorFunc.errors?.map((error: any) => error.message).join('\n '));
 								}
 							}
 							if (
@@ -898,18 +831,14 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 								switch (e.error) {
 									case 'error-too-many-requests':
 										return api.tooManyRequests(typeof e === 'string' ? e : e.message);
+									case 'error-unauthenticated':
+										return api.unauthorized(typeof e === 'string' ? e : e.message);
 									case 'unauthorized':
 									case 'error-unauthorized':
-										if (applyBreakingChanges) {
-											return api.unauthorized(typeof e === 'string' ? e : e.message);
-										}
-										return api.forbidden(typeof e === 'string' ? e : e.message);
+									case 'error-not-authorized':
 									case 'forbidden':
 									case 'error-forbidden':
-										if (applyBreakingChanges) {
-											return api.forbidden(typeof e === 'string' ? e : e.message);
-										}
-										return api.failure(typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
+										return api.forbidden(typeof e === 'string' ? e : e.message);
 									default:
 										return api.failure(typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
 								}
@@ -932,6 +861,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 						logger,
 					}),
 					permissionsMiddleware(_options as TypedOptions),
+					licenseRequired(_options as TypedOptions, License),
 					license(_options as TypedOptions, License),
 					(operations[method as keyof Operations<TPathPattern, TOptions>] as Record<string, any>).action,
 				);
@@ -939,11 +869,6 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 					path: route,
 					options: _options,
 					endpoints: operations[method as keyof Operations<TPathPattern, TOptions>] as unknown as Record<string, string>,
-				});
-
-				this.registerTypedRoutesLegacy(method as Method, route, {
-					...options,
-					...operations[method as keyof Operations<TPathPattern, TOptions>],
 				});
 			});
 		});
@@ -956,7 +881,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		if (userId && userToken) {
 			return Users.findOne(
 				{
-					'services.resume.loginTokens.hashedToken': Accounts._hashLoginToken(userToken),
+					'services.resume.loginTokens.hashedToken': hashLoginToken(userToken),
 					'_id': userId,
 				},
 				{
@@ -1049,7 +974,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 			return auth;
 		};
 
-		// eslint-disable-next-line @typescript-eslint/no-this-alias
+		// oxlint-disable-next-line @typescript-eslint/no-this-alias
 		const self = this;
 
 		(this as APIClass<'/v1'>).addRoute(
@@ -1088,24 +1013,23 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 							},
 						});
 					} catch (error) {
-						if (!(error instanceof Meteor.Error)) {
+						if (!isClientSafeError(error)) {
 							return self.internalError();
 						}
 
 						const result = self.unauthorized();
 
-						if (!applyBreakingChanges) {
-							Object.assign(result.body, {
-								status: 'error',
-								error: error.error,
-								details: error.details,
-								message: error.reason || error.message,
-								...(error.reason === 'User not found' && {
-									error: 'Unauthorized',
-									message: 'Unauthorized',
-								}),
-							});
-						}
+						// Clients read these to drive 2FA prompts and explain refused logins
+						Object.assign(result.body, {
+							...(!applyBreakingChanges && { status: 'error' }),
+							error: error.error,
+							details: error.details,
+							message: error.reason || error.message,
+							...(error.reason === 'User not found' && {
+								error: 'Unauthorized',
+								message: 'Unauthorized',
+							}),
+						});
 						return result;
 					}
 				},

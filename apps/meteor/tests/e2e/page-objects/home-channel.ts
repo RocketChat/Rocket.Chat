@@ -11,7 +11,9 @@ import {
 	MembersFlexTab,
 	ChannelsFlexTab,
 	NotificationPreferencesFlexTab,
+	AutoTranslateFlexTab,
 	ExportMessagesFlexTab,
+	OngoingCalls,
 	PruneMessagesFlexTab,
 	SearchMessagesFlexTab,
 	RoomInfoFlexTab,
@@ -19,13 +21,17 @@ import {
 	EditRoomFlexTab,
 	UserInfoFlexTab,
 	FilesFlexTab,
+	ABACAttributesFlexTab,
+	ABACManageAttributesFlexTab,
 } from './fragments';
+import { SidebarRail } from './fragments/siderail';
 import { RoomToolbar } from './fragments/toolbar';
 import { UserCard } from './fragments/user-card';
 import { VoiceCalls } from './fragments/voice-calls';
+import { RoutedPage } from './routed-page';
 
-export class HomeChannel {
-	public readonly page: Page;
+export class HomeChannel extends RoutedPage {
+	protected readonly route: string = '/home';
 
 	readonly content: HomeContent;
 
@@ -37,6 +43,8 @@ export class HomeChannel {
 
 	readonly userCard: UserCard;
 
+	readonly ongoingCalls: OngoingCalls;
+
 	private _tabs: {
 		members: MembersFlexTab;
 		userInfo: UserInfoFlexTab;
@@ -44,11 +52,14 @@ export class HomeChannel {
 		editRoom: EditRoomFlexTab;
 		channels: ChannelsFlexTab;
 		notificationPreferences: NotificationPreferencesFlexTab;
+		autoTranslate: AutoTranslateFlexTab;
 		exportMessages: ExportMessagesFlexTab;
 		pruneMessages: PruneMessagesFlexTab;
 		searchMessages: SearchMessagesFlexTab;
 		threads: ThreadsFlexTab;
 		files: FilesFlexTab;
+		abacAttributes: ABACAttributesFlexTab;
+		abacManageAttributes: ABACManageAttributesFlexTab;
 	};
 
 	readonly roomToolbar: RoomToolbar;
@@ -61,13 +72,17 @@ export class HomeChannel {
 
 	readonly threadComposer: ThreadComposer;
 
+	readonly sidebarRail: SidebarRail;
+
 	constructor(page: Page) {
-		this.page = page;
+		super(page);
 		this.content = new HomeContent(page);
 		this.sidebar = new RoomSidebar(page);
 		this.sidepanel = new Sidepanel(page);
+		this.sidebarRail = new SidebarRail(page);
 		this.navbar = new Navbar(page);
 		this.userCard = new UserCard(page);
+		this.ongoingCalls = new OngoingCalls(page);
 		this._tabs = {
 			members: new MembersFlexTab(page),
 			userInfo: new UserInfoFlexTab(page),
@@ -75,11 +90,14 @@ export class HomeChannel {
 			editRoom: new EditRoomFlexTab(page.getByRole('dialog', { name: 'Edit channel' })),
 			channels: new ChannelsFlexTab(page),
 			notificationPreferences: new NotificationPreferencesFlexTab(page),
+			autoTranslate: new AutoTranslateFlexTab(page),
 			exportMessages: new ExportMessagesFlexTab(page),
 			pruneMessages: new PruneMessagesFlexTab(page),
 			searchMessages: new SearchMessagesFlexTab(page),
 			threads: new ThreadsFlexTab(page),
 			files: new FilesFlexTab(page),
+			abacAttributes: new ABACAttributesFlexTab(page),
+			abacManageAttributes: new ABACManageAttributesFlexTab(page),
 		};
 		this.roomToolbar = new RoomToolbar(page);
 		this.voiceCalls = new VoiceCalls(page);
@@ -92,38 +110,74 @@ export class HomeChannel {
 		return this._tabs;
 	}
 
-	goto() {
-		return this.page.goto('/home');
+	async waitForReady(): Promise<void> {
+		await this.homepageHeader.waitFor({ state: 'visible' });
 	}
 
-	async gotoChannel(name: string) {
-		await this.page.goto(`/channel/${name}`);
-		await this.content.waitForChannel();
+	async gotoChannel(name: string): Promise<void> {
+		await this.navigateTo(`/channel/${name}`, () => this.content.waitForChannel());
 	}
 
-	async gotoGroup(name: string) {
-		await this.page.goto(`/group/${name}`);
-		await this.content.waitForChannel();
+	async gotoGroup(name: string): Promise<void> {
+		await this.navigateTo(`/group/${name}`, () => this.content.waitForChannel());
+	}
+
+	/** Opens a DM by username in the embedded layout, which hides the room header. */
+	async gotoDirectEmbedded(username: string): Promise<void> {
+		await this.navigateTo(`/direct/${username}?layout=embedded`, this.content.mainMessageList);
+	}
+
+	/** Opens a channel scrolled to a message. Pass `isThread` when the message lives in a thread. */
+	async gotoChannelMessage(name: string, messageId: string, isThread = false): Promise<void> {
+		await this.navigateTo(`/channel/${name}?msg=${messageId}`, async () => {
+			await this.content.waitForChannel();
+
+			if (isThread) {
+				await this.content.waitForThread();
+			}
+		});
+	}
+
+	/** Opens a thread by the id of the message that started it. */
+	async gotoChannelThread(name: string, threadMessageId: string): Promise<void> {
+		await this.navigateTo(`/channel/${name}/thread/${threadMessageId}`, async () => {
+			await this.content.waitForChannel();
+			await this.content.waitForThread();
+		});
+	}
+
+	/** Opens a channel with the Prune Messages panel open. */
+	async gotoChannelCleanHistory(name: string): Promise<void> {
+		await this.navigateTo(`/channel/${name}/clean-history`, this.tabs.pruneMessages.root);
 	}
 
 	get btnContextualbarClose(): Locator {
 		return this.page.locator('[data-qa="ContextualbarActionClose"]');
 	}
 
-	get userCardToolbar(): Locator {
-		return this.page.locator('[role=toolbar][aria-label="User card actions"]');
+	getRoomHeaderFavoriteBtn(isEnterprise: boolean): Locator {
+		return isEnterprise ? this.btnCategorySelector : this.roomHeaderFavoriteBtn;
 	}
 
-	get roomHeaderFavoriteBtn(): Locator {
+	private get roomHeaderFavoriteBtn(): Locator {
 		return this.page.getByRole('main').getByRole('button', { name: 'Favorite' });
 	}
 
+	private get btnCategorySelector(): Locator {
+		return this.page.getByRole('main').getByRole('button', { name: 'Move to', exact: true });
+	}
+
+	// TODO: this button should name open room info or something instead of the room name
+	getBtnOpenRoomInfo(roomName: string): Locator {
+		return this.page.getByRole('main').getByRole('button', { name: roomName, exact: true });
+	}
+
 	get roomHeaderToolbar(): Locator {
-		return this.page.locator('[role=toolbar][aria-label="Primary Room actions"]');
+		return this.page.locator('[role=toolbar][aria-label="Primary room actions"]');
 	}
 
 	get markUnread(): Locator {
-		return this.page.locator('role=menuitem[name="Mark Unread"]');
+		return this.page.locator('role=menuitem[name="Mark unread"]');
 	}
 
 	get dialogEnterE2EEPassword(): Locator {
@@ -170,8 +224,8 @@ export class HomeChannel {
 		return this.dialogEmojiPicker.locator('[data-overlayscrollbars]');
 	}
 
-	get btnJoinChannel() {
-		return this.page.getByRole('button', { name: 'Join channel' });
+	get btnJoinChannel(): Locator {
+		return this.content.btnJoinChannel;
 	}
 
 	getEmojiPickerTabByName(name: string) {
@@ -189,7 +243,7 @@ export class HomeChannel {
 	}
 
 	async waitForHome(): Promise<void> {
-		await this.homepageHeader.waitFor({ state: 'visible' });
+		await this.waitForReady();
 	}
 
 	async waitForRoomLoad(): Promise<void> {

@@ -1,13 +1,15 @@
 import type { IAuditLog, IMessage, IUser, IRoom } from '@rocket.chat/core-typings';
 import { Rooms, AuditLog, ServerEvents } from '@rocket.chat/models';
 import {
-	isServerEventsAuditSettingsProps,
 	ajv,
 	ajvQuery,
+	isServerEventsAuditSettingsProps,
+	paginatedResponseProperties,
+	paginationQueryProperties,
 	validateBadRequestErrorResponse,
-	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
 	validateNotFoundErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import type { PaginatedRequest, PaginatedResult } from '@rocket.chat/rest-typings';
 import { convertSubObjectsIntoPaths } from '@rocket.chat/tools';
@@ -15,6 +17,7 @@ import { convertSubObjectsIntoPaths } from '@rocket.chat/tools';
 import { API } from '../../../server/api/api';
 import { getPaginationItems } from '../../../server/api/lib/getPaginationItems';
 import { findUsersOfRoom } from '../../../server/lib/findUsersOfRoom';
+import { getUsersHiddenFrom, redactHiddenUsers } from '../../../server/lib/statusVisibility/hiddenUsers';
 import { auditGetAuditionsMethod, auditGetMessagesMethod, auditGetOmnichannelMessagesMethod } from '../lib/audit/functions';
 
 type AuditRoomMembersParams = PaginatedRequest<{
@@ -27,8 +30,7 @@ const auditRoomMembersSchema = {
 	properties: {
 		roomId: { type: 'string', minLength: 1 },
 		filter: { type: 'string' },
-		count: { type: 'number' },
-		offset: { type: 'number' },
+		...paginationQueryProperties,
 		sort: { type: 'string' },
 	},
 	required: ['roomId'],
@@ -108,7 +110,6 @@ const auditOmnichannelMessagesSchema = {
 const isAuditOmnichannelMessagesProps = ajv.compile<AuditOmnichannelMessagesPayload>(auditOmnichannelMessagesSchema);
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
 		'/v1/audit/rooms.members': {
 			GET: (
@@ -153,9 +154,7 @@ const auditRoomMembersResponseSchema = ajv.compile<
 				additionalProperties: false,
 			},
 		},
-		count: { type: 'number' },
-		offset: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['members', 'count', 'offset', 'total', 'success'],
@@ -187,8 +186,11 @@ API.v1.get(
 			return API.v1.notFound();
 		}
 
-		const { cursor, totalCount } = findUsersOfRoom({
+		const hidden = await getUsersHiddenFrom(this.userId);
+
+		const { cursor, totalCount } = await findUsersOfRoom({
 			rid: room._id,
+			hidden,
 			filter,
 			skip,
 			limit,
@@ -216,7 +218,7 @@ API.v1.get(
 		});
 
 		return API.v1.success({
-			members,
+			members: redactHiddenUsers(members, hidden),
 			count: members.length,
 			offset: skip,
 			total,
@@ -238,18 +240,7 @@ API.v1.get(
 							type: 'object',
 						},
 					},
-					count: {
-						type: 'number',
-						description: 'The number of events returned in this response.',
-					},
-					offset: {
-						type: 'number',
-						description: 'The number of events that were skipped in this response.',
-					},
-					total: {
-						type: 'number',
-						description: 'The total number of events that match the query.',
-					},
+					...paginatedResponseProperties,
 					success: {
 						type: 'boolean',
 						description: 'Indicates if the request was successful.',
@@ -290,7 +281,7 @@ API.v1.get(
 			return API.v1.failure('The "end" query parameter must be a valid date.');
 		}
 
-		const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | number | null | undefined>);
+		const { offset, count } = await getPaginationItems(this.queryParams);
 		const { sort } = await this.parseJsonQuery();
 		const _sort = { ts: sort?.ts ? sort?.ts : -1 };
 

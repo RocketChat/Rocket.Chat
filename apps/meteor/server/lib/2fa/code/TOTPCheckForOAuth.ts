@@ -1,7 +1,7 @@
-import type { IUser } from '@rocket.chat/core-typings';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { TwoFactorChallenges } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
+import type { TwoFactorUser } from './ICodeCheck';
 import { TOTPCheck } from './TOTPCheck';
 
 export class TOTPCheckForOAuth extends TOTPCheck {
@@ -9,18 +9,18 @@ export class TOTPCheckForOAuth extends TOTPCheck {
 
 	public readonly method = 'totp';
 
-	public async sendTwoFactorChallenge(user: IUser): Promise<string> {
+	public async sendTwoFactorChallenge(user: TwoFactorUser): Promise<string> {
 		return TwoFactorChallenges.createTwoFactorChallenge(user._id, 'totp');
 	}
 
-	public async verifyEmailTwoFactorChallenge(user: IUser, challengeId: string, code: string): Promise<boolean> {
+	public async verifyEmailTwoFactorChallenge(user: TwoFactorUser, challengeId: string, code: string): Promise<boolean> {
 		const challenge = await TwoFactorChallenges.findOneByPendingChallengeId(challengeId);
 		if (!challenge) {
 			return false;
 		}
 
 		if (challenge.expireAt && challenge.expireAt < new Date()) {
-			throw new Meteor.Error('error-challenge-expired', 'challenge expired');
+			throw new ClientSafeError('error-challenge-expired', 'challenge expired');
 		}
 
 		const isCodeValid = await this.verify(user, code);

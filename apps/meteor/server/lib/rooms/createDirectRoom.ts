@@ -1,11 +1,11 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ISubscriptionExtraData } from '@rocket.chat/core-services';
 import type { ICreatedRoom, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import { isTruthy } from '@rocket.chat/tools';
-import { Meteor } from 'meteor/meteor';
 import type { MatchKeysAndValues } from 'mongodb';
 
 import { getNameForDMs } from '../../services/room/getNameForDMs';
@@ -49,7 +49,7 @@ export async function createDirectRoom(
 ): Promise<ICreatedRoom> {
 	const maxUsers = settings.get<number>('DirectMesssage_maxUsers') || 1;
 	if (members.length > maxUsers) {
-		throw new Meteor.Error(
+		throw new ClientSafeError(
 			'error-direct-message-max-user-exceeded',
 			`You cannot add more than ${maxUsers} users, including yourself to a direct message`,
 			{
@@ -71,14 +71,15 @@ export async function createDirectRoom(
 
 	const roomMembers = await Users.findUsersByUsernames(membersUsernames).toArray();
 
-	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+	// oxlint-disable-next-line @typescript-eslint/no-non-null-assertion
 	const sortedMembers = roomMembers.sort((u1, u2) => (u1.name! || u1.username!).localeCompare(u2.name! || u2.username!));
 
 	const usernames: string[] = sortedMembers.map(({ username }) => username as string).filter(Boolean);
 	const uids = roomMembers.map(({ _id }) => _id).sort();
 
 	// Deprecated: using users' _id to compose the room _id is deprecated
-	const room: IRoom | null = options?.forceNew ? null : await Rooms.findOneDirectRoomContainingAllUserIDs(uids, { projection: { _id: 1 } });
+	// No projection: the full room is spread into the ICreatedRoom returned below.
+	const room: IRoom | null = options?.forceNew ? null : await Rooms.findOneDirectRoomContainingAllUserIDs(uids);
 
 	const isNewRoom = !room;
 
@@ -104,14 +105,14 @@ export async function createDirectRoom(
 
 		const prevent = await Apps.self?.triggerEvent(AppEvents.IPreRoomCreatePrevent, tmpRoom).catch((error) => {
 			if (error.name === AppsEngineException.name) {
-				throw new Meteor.Error('error-app-prevented', error.message);
+				throw new ClientSafeError('error-app-prevented', error.message);
 			}
 
 			throw error;
 		});
 
 		if (prevent) {
-			throw new Meteor.Error('error-app-prevented', 'A Rocket.Chat App prevented the room creation.');
+			throw new ClientSafeError('error-app-prevented', 'A Rocket.Chat App prevented the room creation.');
 		}
 
 		const result = await Apps.self?.triggerEvent(
@@ -137,7 +138,7 @@ export async function createDirectRoom(
 			{ rid, 'u._id': roomMembers[0]._id },
 			{
 				$set: { open: true },
-				// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+				// oxlint-disable-next-line @typescript-eslint/no-non-null-assertion
 				$setOnInsert: generateSubscription(roomMembers[0].name! || roomMembers[0].username!, roomMembers[0].username!, roomMembers[0], {
 					...options?.subscriptionExtra,
 				}),
@@ -156,7 +157,7 @@ export async function createDirectRoom(
 
 		const creatorUser = roomMembers.find((member) => member._id === options?.creator);
 		if (roomExtraData.federated && !creatorUser) {
-			throw new Meteor.Error('error-creator-not-in-room', 'The creator user must be part of the direct room');
+			throw new ClientSafeError('error-creator-not-in-room', 'The creator user must be part of the direct room');
 		}
 
 		const roomNames = getNameForDMs(roomMembers);
@@ -184,8 +185,8 @@ export async function createDirectRoom(
 				{
 					...(options?.creator === member._id && { $set: { open: true } }),
 					$setOnInsert: generateSubscription(fname, name, member, {
-						...options?.subscriptionExtra,
 						...(options?.creator !== member._id && { open: members.length > 2 }),
+						...options?.subscriptionExtra,
 						...subscriptionStatus,
 						...(roomExtraData.federated && member._id === options?.creator && { roles: ['owner'] }),
 					}),
@@ -211,7 +212,7 @@ export async function createDirectRoom(
 	}
 
 	return {
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		// oxlint-disable-next-line @typescript-eslint/no-non-null-assertion
 		...room!,
 		_id: String(rid),
 		usernames,

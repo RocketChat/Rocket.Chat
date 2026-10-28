@@ -1,23 +1,30 @@
 import fs from 'node:fs';
-import http from 'node:http';
-import https from 'node:https';
+import type { Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
 
-import { Import } from '@rocket.chat/core-services';
+import { Import, ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
-import { Meteor } from 'meteor/meteor';
+import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 
-import { ProgressStep } from '../../../app/importer/lib/ImporterProgressStep';
-import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
-import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
+import { ProgressStep } from '../../../lib/importer/ImporterProgressStep';
 import { Importers } from '../../lib/import';
 import { RocketChatImportFileInstance } from '../../lib/import/startup/store';
+import { SystemLogger } from '../../lib/logger/system';
+import { settings } from '../../settings';
 
-function downloadHttpFile(fileUrl: string, writeStream: fs.WriteStream): void {
-	const protocol = fileUrl.startsWith('https') ? https : http;
-	protocol.get(fileUrl, (response) => {
-		response.pipe(writeStream);
+async function getHttpFileStream(fileUrl: string): Promise<Readable> {
+	const response = await fetch(fileUrl, {
+		ignoreSsrfValidation: false,
+		allowList: settings.get<string>('SSRF_Allowlist'),
 	});
+
+	const body = response.body as Readable;
+	if (!response.ok) {
+		body.destroy();
+		throw new Error(`Unexpected response status ${response.status}`);
+	}
+
+	return body;
 }
 
 function copyLocalFile(filePath: fs.PathLike, writeStream: fs.WriteStream): void {
@@ -29,7 +36,7 @@ export const executeDownloadPublicImportFile = async (userId: IUser['_id'], file
 	const importer = Importers.get(importerKey);
 	const isUrl = fileUrl.startsWith('http');
 	if (!importer) {
-		throw new Meteor.Error(
+		throw new ClientSafeError(
 			'error-importer-not-defined',
 			`The importer (${importerKey}) has no import class defined.`,
 			'downloadImportFile',
@@ -37,11 +44,11 @@ export const executeDownloadPublicImportFile = async (userId: IUser['_id'], file
 	}
 	// Check if it's a valid url or path before creating a new import record
 	if (!isUrl && !fs.existsSync(fileUrl)) {
-		throw new Meteor.Error('error-import-file-missing', fileUrl, 'downloadPublicImportFile');
+		throw new ClientSafeError('error-import-file-missing', fileUrl, 'downloadPublicImportFile');
 	}
 
 	const operation = await Import.newOperation(userId, importer.name, importer.key);
-	const instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
+	const instance = new importer.importer(importer, operation); // oxlint-disable-line new-cap
 
 	const oldFileName = fileUrl.substring(fileUrl.lastIndexOf('/') + 1).split('?')[0];
 	const date = new Date();
@@ -53,49 +60,44 @@ export const executeDownloadPublicImportFile = async (userId: IUser['_id'], file
 	await instance.updateProgress(ProgressStep.DOWNLOADING_FILE);
 
 	const writeStream = RocketChatImportFileInstance.createWriteStream(newFileName);
+	let errorProgressUpdate: Promise<unknown> | undefined;
+	const markImportAsFailed = (): Promise<unknown> => {
+		errorProgressUpdate ??= instance.updateProgress(ProgressStep.ERROR).catch((error) => {
+			SystemLogger.error({ msg: 'Failed to update import progress to ERROR', err: error });
+		});
+		return errorProgressUpdate;
+	};
 
 	writeStream.on('error', () => {
-		void instance.updateProgress(ProgressStep.ERROR);
+		void markImportAsFailed();
 	});
 
-	writeStream.on('end', () => {
+	let readStream: Readable | undefined;
+	if (isUrl) {
+		try {
+			readStream = await getHttpFileStream(fileUrl);
+		} catch (error) {
+			writeStream.destroy();
+			await markImportAsFailed();
+			throw error;
+		}
+	}
+
+	writeStream.on('finish', () => {
 		void instance.updateProgress(ProgressStep.FILE_LOADED);
 	});
 
-	if (isUrl) {
-		downloadHttpFile(fileUrl, writeStream);
-	} else {
-		// If the url is actually a folder path on the current machine, skip moving it to the file store
-		if (fs.statSync(fileUrl).isDirectory()) {
-			await instance.updateRecord({ file: fileUrl });
-			await instance.updateProgress(ProgressStep.FILE_LOADED);
-			return;
-		}
-
-		copyLocalFile(fileUrl, writeStream);
+	if (readStream) {
+		void pipeline(readStream, writeStream).catch(() => markImportAsFailed());
+		return;
 	}
+
+	// If the url is actually a folder path on the current machine, skip moving it to the file store
+	if (fs.statSync(fileUrl).isDirectory()) {
+		await instance.updateRecord({ file: fileUrl });
+		await instance.updateProgress(ProgressStep.FILE_LOADED);
+		return;
+	}
+
+	copyLocalFile(fileUrl, writeStream);
 };
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		downloadPublicImportFile(fileUrl: string, importerKey: string): void;
-	}
-}
-
-Meteor.methods<ServerMethods>({
-	async downloadPublicImportFile(fileUrl: string, importerKey: string) {
-		methodDeprecationLogger.method('downloadPublicImportFile', '9.0.0', '/v1/downloadPublicImportFile');
-		const userId = Meteor.userId();
-
-		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', 'downloadPublicImportFile');
-		}
-
-		if (!(await hasPermissionAsync(userId, 'run-import'))) {
-			throw new Meteor.Error('error-action-not-allowed', 'Importing is not allowed', 'downloadPublicImportFile');
-		}
-
-		await executeDownloadPublicImportFile(userId, fileUrl, importerKey);
-	},
-});

@@ -53,6 +53,13 @@ The agent must **not introduce new features, fix bugs, or change external behavi
 
 ---
 
+## Comment Discipline
+
+Comments: see [docs/code-comments.md](../../docs/code-comments.md). Intent, not
+mechanism; nothing explaining code in another file; no analysis or summary files.
+
+---
+
 ## Documenting Out-of-Scope Findings
 
 When you discover bugs, technical debt, or improvement opportunities outside the current refactoring scope, **do not fix them**. Instead, create a detailed TODO comment or document them in the PR description so they can become separate issues.

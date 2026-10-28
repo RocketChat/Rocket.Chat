@@ -1,6 +1,12 @@
 {
 	"name": "@rocket.chat/ddp-client",
-	"version": "1.1.1",
+	"version": "1.2.0",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
+		"directory": "packages/ddp-client"
+	},
+	"license": "MIT",
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
@@ -9,8 +15,8 @@
 	"scripts": {
 		"build": "tsc -p tsconfig.build.json",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix .",
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
 		"test": "jest",
 		"testunit": "jest",
 		"typecheck": "tsc --noEmit"
@@ -19,17 +25,17 @@
 		"@rocket.chat/api-client": "workspace:^",
 		"@rocket.chat/core-typings": "workspace:~",
 		"@rocket.chat/media-signaling": "workspace:^",
-		"@rocket.chat/rest-typings": "workspace:^"
+		"@rocket.chat/rest-typings": "workspace:^",
+		"@rocket.chat/ui-kit": "workspace:~"
 	},
 	"devDependencies": {
+		"@rocket.chat/apps-engine": "workspace:^",
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
-		"@types/jest": "~30.0.0",
-		"@types/ws": "^8.18.1",
-		"eslint": "~9.39.5",
-		"jest": "~30.2.0",
+		"@types/ws": "^8.18.2",
+		"jest": "~30.5.2",
 		"jest-websocket-mock": "~2.5.0",
-		"typescript": "~5.9.3",
+		"typescript": "~7.0.2",
 		"ws": "~8.21.3"
 	},
 	"peerDependencies": {

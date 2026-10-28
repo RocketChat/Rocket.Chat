@@ -1,13 +1,13 @@
 import type { Locator } from '@playwright/test';
 
-import { OmnichannelAdmin } from './omnichannel-admin';
+import { OmnichannelAdmin, OmnichannelSectionsHref } from './omnichannel-admin';
 
 export class OmnichannelLivechatAppearance extends OmnichannelAdmin {
-	protected readonly route = 'appearance';
+	protected readonly route = OmnichannelSectionsHref.appearance;
 
 	protected readonly title = 'Appearance';
 
-	protected override async waitForPage() {
+	override async waitForReady(): Promise<void> {
 		await this.pageHeader.waitFor({ state: 'visible' });
 	}
 

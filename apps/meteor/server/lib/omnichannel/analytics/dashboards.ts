@@ -36,7 +36,7 @@ const getProductivityMetricsAsync = async ({
 	start: string;
 	end: string;
 	departmentId?: string;
-	user: IUser;
+	user: Pick<IUser, '_id' | 'utcOffset' | 'language'>;
 }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
@@ -83,7 +83,7 @@ const getAgentsProductivityMetricsAsync = async ({
 	start: string;
 	end: string;
 	departmentId?: string;
-	user: IUser;
+	user: Pick<IUser, '_id' | 'utcOffset' | 'language'>;
 }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');
@@ -230,7 +230,7 @@ const getConversationsMetricsAsync = async ({
 	start: string;
 	end: string;
 	departmentId?: string;
-	user: IUser;
+	user: Pick<IUser, '_id' | 'utcOffset' | 'language'>;
 }) => {
 	if (!start || !end) {
 		throw new Error('"start" and "end" must be provided');

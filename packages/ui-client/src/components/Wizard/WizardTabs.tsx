@@ -12,16 +12,9 @@ const WizardTabs = ({ ordered }: WizardTabsProps) => {
 	const items = useWizardSteps(steps);
 
 	return (
-		<Tabs display='flex' flexDirection='column'>
+		<Tabs stretch>
 			{items.map((step, index) => (
-				<TabsItem
-					key={index}
-					textAlign='center'
-					flexGrow={1}
-					selected={currentStep?.id === step.id}
-					disabled={step.disabled}
-					onClick={() => goTo(step)}
-				>
+				<TabsItem key={index} selected={currentStep?.id === step.id} disabled={step.disabled} onClick={() => goTo(step)}>
 					{ordered ? `${index + 1}. ${step.title}` : step.title}
 				</TabsItem>
 			))}

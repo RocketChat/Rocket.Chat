@@ -7,6 +7,7 @@ import type {
 	AISearchModelOption,
 	AISearchResult,
 	AISearchStatus,
+	AISearchType,
 } from './types/IAISearchService';
 import type { IAbacService } from './types/IAbacService';
 import type { IAccount, ILoginResult } from './types/IAccount';
@@ -21,7 +22,6 @@ import type { ICallHistoryService } from './types/ICallHistoryService';
 import type { IDeviceManagementService } from './types/IDeviceManagementService';
 import type { IEnterpriseSettings } from './types/IEnterpriseSettings';
 import type { IFederationMatrixService } from './types/IFederationMatrixService';
-import type { IFederationService, IFederationServiceEE } from './types/IFederationService';
 import type { IImportService } from './types/IImportService';
 import type { ILDAPEEService } from './types/ILDAPEEService';
 import type { ILDAPService } from './types/ILDAPService';
@@ -43,6 +43,7 @@ import type { IQueueWorkerService, HealthAggResult } from './types/IQueueWorkerS
 import type { IRoomService, ICreateRoomParams, ISubscriptionExtraData } from './types/IRoomService';
 import type { ISAUMonitorService } from './types/ISAUMonitorService';
 import type { ISettingsService } from './types/ISettingsService';
+import type { IStatusVisibilityService } from './types/IStatusVisibilityService';
 import type {
 	ITeamService,
 	ITeamUpdateData,
@@ -64,28 +65,34 @@ import type {
 import type { ISendFileLivechatMessageParams, ISendFileMessageParams, IUploadFileParams, IUploadService } from './types/IUploadService';
 import type { IUserService } from './types/IUserService';
 import type { IVideoConfService, VideoConferenceJoinOptions } from './types/IVideoConfService';
+import type { IXMPPServerService } from './types/IXMPPServerService';
 
 export type { AppStatusReport } from './types/IAppsEngineService';
-export type { IAbacService, AbacActor } from './types/IAbacService';
+export type {
+	IAbacService,
+	AbacActor,
+	AbacCreationAttributesDenialReason,
+	AbacCreationAttributesResult,
+	AbacMembershipPreviewResult,
+	AbacRoomAttributesGrant,
+	AbacRoomMembershipPreviewPage,
+	AbacUsersAllowedInRoomResult,
+} from './types/IAbacService';
+export type { PresenceScope } from './types/IStatusVisibilityService';
 export { asyncLocalStorage } from './lib/asyncLocalStorage';
-export { MeteorError, isMeteorError } from './MeteorError';
+export { ClientSafeError, isClientSafeError } from './ClientSafeError';
 export { api } from './api';
-export type { EventSignatures } from './events/Events';
+export type { EventSignatures, RelayedStreamEvent } from './events/Events';
 export { LocalBroker } from './LocalBroker';
+export type { ClusterTransport } from './LocalBroker';
 
 export type { IBroker, IBrokerNode, BaseMetricOptions, CallingOptions, IServiceMetrics } from './types/IBroker';
 
 export type { IServiceContext, IServiceClass } from './types/ServiceClass';
 export { ServiceClass, ServiceClassInternal } from './types/ServiceClass';
 
-export type {
-	IFederationService,
-	IFederationServiceEE,
-	IFederationJoinExternalPublicRoomInput,
-	FederationConfigurationStatus,
-} from './types/IFederationService';
-
 export type { IFederationMatrixService } from './types/IFederationMatrixService';
+export type { IXMPPServerService } from './types/IXMPPServerService';
 
 export type {
 	ConversationData,
@@ -96,6 +103,9 @@ export type {
 	AnalyticsOverviewDataResult,
 } from './types/IOmnichannelAnalyticsService';
 
+export { getInstanceMethods } from './lib/getInstanceMethods';
+export { LocalServiceRegistry, getCallableMethods } from './lib/LocalServiceRegistry';
+export type { LocalHandler } from './lib/LocalServiceRegistry';
 export { getConnection, getTrashCollection } from './lib/mongo';
 export { ServiceStarter } from './lib/ServiceStarter';
 
@@ -163,12 +173,14 @@ export type {
 	AISearchModelOption,
 	AISearchResult,
 	AISearchStatus,
+	AISearchType,
 	ICallHistoryService,
 	IOmnichannelTranscriptService,
 	IQueueWorkerService,
 	HealthAggResult,
 	IMessageService,
 	ISettingsService,
+	IStatusVisibilityService,
 	IOmnichannelEEService,
 	IOmnichannelIntegrationService,
 	IImportService,
@@ -205,9 +217,8 @@ export const QueueWorker = proxify<IQueueWorkerService>('queue-worker');
 export const OmnichannelTranscript = proxify<IOmnichannelTranscriptService>('omnichannel-transcript');
 export const Message = proxify<IMessageService>('message');
 export const Settings = proxify<ISettingsService>('settings');
+export const StatusVisibility = proxify<IStatusVisibilityService>('status-visibility');
 export const OmnichannelIntegration = proxify<IOmnichannelIntegrationService>('omnichannel-integration');
-export const Federation = proxify<IFederationService>('federation');
-export const FederationEE = proxify<IFederationServiceEE>('federation-enterprise');
 export const Omnichannel = proxify<IOmnichannelService>('omnichannel');
 export const OmnichannelEEService = proxify<IOmnichannelEEService>('omnichannel-ee');
 export const Import = proxify<IImportService>('import');
@@ -220,5 +231,6 @@ export const Push = proxify<IPushService>('push');
 export const EnterpriseSettings = proxify<IEnterpriseSettings>('ee-settings');
 
 export const FederationMatrix = proxify<IFederationMatrixService>('federation-matrix');
+export const XMPPServer = proxify<IXMPPServerService>('xmpp-server');
 export const Abac = proxify<IAbacService>('abac');
 export const AISearch = proxify<IAISearchService>('ai-search');

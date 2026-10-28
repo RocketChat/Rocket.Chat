@@ -1,6 +1,6 @@
-/* eslint-disable complexity */
+/* oxlint-disable complexity */
 import type { IRoomWithRetentionPolicy } from '@rocket.chat/core-typings';
-import { isRoomFederated } from '@rocket.chat/core-typings';
+import { isPrivateRoom, isPublicRoom, isRoomFederated } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import {
 	FieldError,
@@ -21,6 +21,7 @@ import {
 	Box,
 	TextAreaInput,
 	AccordionItem,
+	Text,
 } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
@@ -31,22 +32,24 @@ import {
 	ContextualbarScrollableContent,
 	ContextualbarFooter,
 	ContextualbarDialog,
+	ExternalLink,
+	GenericModal,
+	getDirtyFields,
 } from '@rocket.chat/ui-client';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import { useSetting, useTranslation, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
+import { useSetting, useToastMessageDispatch, useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import type { ChangeEvent } from 'react';
 import { useId, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
+import { Trans, useTranslation } from 'react-i18next';
 
 import type { EditRoomInfoFormData } from './useEditRoomInitialValues';
 import { useEditRoomInitialValues } from './useEditRoomInitialValues';
 import { useEditRoomPermissions } from './useEditRoomPermissions';
-import { MessageTypesValues } from '../../../../../../app/lib/lib/MessageTypes';
-import RawText from '../../../../../components/RawText';
+import { MessageTypesValues } from '../../../../../../lib/MessageTypes';
+import AbacAttributesRemovalWarning from '../../../../../components/ABAC/AbacAttributesRemovalWarning';
 import RoomAvatarEditor from '../../../../../components/avatar/RoomAvatarEditor';
 import { msToTimeUnit, TIMEUNIT } from '../../../../../lib/convertTimeUnit';
-import { getDirtyFields } from '../../../../../lib/getDirtyFields';
 import { links } from '../../../../../lib/links';
 import { roomsQueryKeys } from '../../../../../lib/queryKeys';
 import { useIsABACManagedRoom } from '../../../../admin/ABAC/hooks/useIsABACManagedRoom';
@@ -58,12 +61,6 @@ export type EditRoomInfoProps = {
 	onClickClose: () => void;
 	onClickBack: () => void;
 };
-
-const title = {
-	team: 'Edit_team',
-	channel: 'Edit_channel',
-	discussion: 'Edit_discussion',
-} as const;
 
 const getRetentionSetting = (roomType: IRoomWithRetentionPolicy['t']): string => {
 	switch (roomType) {
@@ -79,11 +76,12 @@ const getRetentionSetting = (roomType: IRoomWithRetentionPolicy['t']): string =>
 
 const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) => {
 	const query = useQueryClient();
-	const t = useTranslation();
+	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const setModal = useSetModal();
 	const isFederated = isRoomFederated(room);
 	const isAbacManaged = useIsABACManagedRoom(room);
-	// eslint-disable-next-line no-nested-ternary
+	// oxlint-disable-next-line no-nested-ternary
 	const roomType = 'prid' in room ? 'discussion' : room.teamMain ? 'team' : 'channel';
 
 	const retentionPolicy = useRetentionPolicy(room);
@@ -110,10 +108,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		formState: { isDirty, dirtyFields, errors, isSubmitting },
 	} = useForm<EditRoomInfoFormData>({ defaultValues });
 
-	const sysMesOptions: SelectOption[] = useMemo(
-		() => MessageTypesValues.map(({ key, i18nLabel }) => [key, t(i18nLabel as TranslationKey)]),
-		[t],
-	);
+	const sysMesOptions: SelectOption[] = useMemo(() => MessageTypesValues.map(({ key, i18nLabel }) => [key, t(i18nLabel)]), [t]);
 
 	const { isDirty: isRoomNameDirty } = getFieldState('roomName');
 
@@ -195,9 +190,34 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 		},
 	);
 
-	const handleSave = useStableCallback((data: EditRoomInfoFormData) =>
-		Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter(Boolean)),
-	);
+	const removesAbacAttributes = isPrivateRoom(room) && isPublicRoom({ t: roomTypeP }) && !!room.abacAttributes?.length;
+
+	const handleSave = useStableCallback((data: EditRoomInfoFormData) => {
+		const save = () =>
+			Promise.all([isDirty ? handleUpdateRoomData(data) : Promise.resolve(), changeArchiving ? handleArchive() : Promise.resolve()]);
+
+		if (!removesAbacAttributes) {
+			return save();
+		}
+
+		setModal(
+			<GenericModal
+				variant='warning'
+				title={t('Confirmation')}
+				confirmText={t('Save')}
+				onConfirm={async () => {
+					setModal(null);
+					await save();
+				}}
+				onCancel={() => setModal(null)}
+				onClose={() => setModal(null)}
+			>
+				<Box paddingBlockStart={16}>
+					<AbacAttributesRemovalWarning />
+				</Box>
+			</GenericModal>,
+		);
+	});
 
 	const validateName = async (name: string): Promise<string | undefined> => {
 		if (!name || !isRoomNameDirty) return;
@@ -236,11 +256,21 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 
 	const showAccordion = showAdvancedSettings || showRetentionPolicy;
 
+	const title = useMemo(
+		() =>
+			({
+				team: t('Edit_team'),
+				channel: t('Edit_channel'),
+				discussion: t('Edit_discussion'),
+			})[roomType],
+		[roomType, t],
+	);
+
 	return (
 		<ContextualbarDialog>
 			<ContextualbarHeader>
 				{onClickBack && <ContextualbarBack onClick={onClickBack} />}
-				<ContextualbarTitle>{t(`${title[roomType]}`)}</ContextualbarTitle>
+				<ContextualbarTitle>{title}</ContextualbarTitle>
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
 			<ContextualbarScrollableContent padding={24}>
@@ -345,7 +375,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 												ref={ref}
 												name={name}
 												onBlur={onBlur}
-												disabled={!canChangeType || isFederated}
+												disabled={!canChangeType || isFederated || isAbacManaged}
 												checked={value === 'p'}
 												onChange={() => onChange(value === 'p' ? 'c' : 'p')}
 												aria-describedby={`${roomTypeField}-hint`}
@@ -355,7 +385,8 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 								</FieldRow>
 								<FieldRow>
 									<FieldHint id={`${roomTypeField}-hint`}>
-										{roomTypeP === 'p' ? t('Only_invited_people') : t('Anyone_can_access')}
+										{isAbacManaged && t('ABAC_Managed_Room_Stays_Private_Hint')}
+										{!isAbacManaged && (isPrivateRoom({ t: roomTypeP }) ? t('Only_invited_people') : t('Anyone_can_access'))}
 									</FieldHint>
 								</FieldRow>
 							</Field>
@@ -366,9 +397,9 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 							{showAdvancedSettings && (
 								<AccordionItem title={t('Advanced_settings')}>
 									<FieldGroup>
-										<Box is='h5' fontScale='h5' color='titles-labels'>
+										<Text is='h5' fontScale='h5' color='titles-labels'>
 											{t('Security_and_permissions')}
-										</Box>
+										</Text>
 										{canViewReadOnly && (
 											<Field>
 												<FieldRow>
@@ -475,7 +506,13 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 														control={control}
 														name='hideSysMes'
 														render={({ field: { value, ...field } }) => (
-															<ToggleSwitch id={hideSysMesField} {...field} checked={value} disabled={isFederated} />
+															<ToggleSwitch
+																id={hideSysMesField}
+																{...field}
+																checked={value}
+																disabled={isFederated}
+																aria-describedby={`${hideSysMesField}-hint`}
+															/>
 														)}
 													/>
 												</FieldRow>
@@ -490,9 +527,13 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 																disabled={!hideSysMes || isFederated}
 																placeholder={t('Select_messages_to_hide')}
 																aria-label={t('Select_messages_to_hide')}
+																aria-describedby={`${hideSysMesField}-hint`}
 															/>
 														)}
 													/>
+												</FieldRow>
+												<FieldRow>
+													<FieldHint id={`${hideSysMesField}-hint`}>{t('Hide_System_Messages_Hint')}</FieldHint>
 												</FieldRow>
 											</Field>
 										)}
@@ -529,7 +570,10 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 										{retentionOverrideGlobal && (
 											<>
 												<Callout type='danger'>
-													<RawText>{t('RetentionPolicyRoom_ReadTheDocs', { retentionPolicyUrl: links.retentionPolicy })}</RawText>
+													<Trans
+														i18nKey='RetentionPolicyRoom_ReadTheDocs'
+														components={{ docsLink: <ExternalLink to={links.retentionPolicy} /> }}
+													/>
 												</Callout>
 												<Field>
 													<FieldLabel htmlFor={retentionMaxAgeField}>
@@ -599,7 +643,7 @@ const EditRoomInfo = ({ room, onClickClose, onClickBack }: EditRoomInfoProps) =>
 					<Button type='reset' disabled={!isDirty || isSubmitting} onClick={() => reset(defaultValues)}>
 						{t('Reset')}
 					</Button>
-					<Button form={formId} type='submit' primary loading={isSubmitting} disabled={!isDirty}>
+					<Button form={formId} type='submit' variant='primary' loading={isSubmitting} disabled={!isDirty}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

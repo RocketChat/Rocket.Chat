@@ -11,11 +11,11 @@ jest.mock('@rocket.chat/ui-client', () => ({
 	},
 }));
 
-jest.mock('../../../app/utils/client', () => ({
+jest.mock('../../../client/lib/getUserAvatarURL', () => ({
 	getUserAvatarURL: jest.fn(),
 }));
 
-jest.mock('../../../app/utils/lib/i18n', () => ({
+jest.mock('../../../lib/i18n', () => ({
 	t: (key: string) => key,
 }));
 

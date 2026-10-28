@@ -1,4 +1,5 @@
 import { settingsRegistry } from '.';
+import { mustBeDisabledWhileSettingsAreEnabled } from './functions/validationRuleBuilders';
 
 export const createDiscussionsSettings = () =>
 	settingsRegistry.addGroup('Discussion', async function () {
@@ -9,5 +10,6 @@ export const createDiscussionsSettings = () =>
 			i18nLabel: 'Enable',
 			type: 'boolean',
 			public: true,
+			validation: [mustBeDisabledWhileSettingsAreEnabled('ABAC_Enabled', 'ABAC_Enforce_All_Rooms')],
 		});
 	});

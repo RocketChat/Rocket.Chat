@@ -254,10 +254,12 @@ API.v1.addRoute(
 				return API.v1.failure("The 'selector' param is required");
 			}
 
+			const { term, exceptions } = JSON.parse(selector);
+
 			return API.v1.success(
 				await findDepartmentsToAutocomplete({
 					uid: this.userId,
-					selector: JSON.parse(selector),
+					selector: { term, exceptions },
 					onlyMyDepartments: onlyMyDepartments === 'true',
 					showArchived: showArchived === 'true',
 				}),

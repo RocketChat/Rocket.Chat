@@ -19,16 +19,6 @@ RUN mkdir -p $NVM_DIR && \
 RUN echo "export NVM_DIR=$NVM_DIR" >> /etc/bash.bashrc && \
     echo "[ -s \"$NVM_DIR/nvm.sh\" ] && \. \"$NVM_DIR/nvm.sh\"" >> /etc/bash.bashrc
 
-ENV DENO_INSTALL=/usr/local/deno
-RUN mkdir -p $DENO_INSTALL && \
-    curl -fsSL https://deno.land/install.sh | sh
-
-ENV DENO_INSTALL="/usr/local/deno"
-ENV PATH="$DENO_INSTALL/bin:$PATH"
-
-RUN echo 'export DENO_INSTALL="/usr/local/deno"' >> /etc/bash.bashrc && \
-    echo 'export PATH="$DENO_INSTALL/bin:$PATH"' >> /etc/bash.bashrc
-
 ENV METEOR_INSTALL="/usr/local/meteor"
 ENV PATH="$METEOR_INSTALL/bin:$PATH"
 

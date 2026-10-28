@@ -304,7 +304,7 @@ export class GainAnalysis {
 				rgData.lsum += fsqr(curleftBase[curleft++]);
 				rgData.rsum += fsqr(currightBase[curright++]);
 			}
-			i = cursamples / 8;
+			i = Math.trunc(cursamples / 8);
 			while (i-- !== 0) {
 				rgData.lsum +=
 					fsqr(curleftBase[curleft + 0]) +
@@ -370,7 +370,7 @@ export class GainAnalysis {
 		if (elems === 0) return GainAnalysis.GAIN_NOT_ENOUGH_SAMPLES;
 
 		let upper = Math.ceil(elems * (1 - GainAnalysis.RMS_PERCENTILE));
-		for (i = len; i-- > 0; ) {
+		for (i = len; i-- > 0;) {
 			if ((upper -= Array[i]) <= 0) break;
 		}
 

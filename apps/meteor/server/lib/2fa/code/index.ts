@@ -1,12 +1,12 @@
 import crypto from 'node:crypto';
 
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUser, IMethodConnection } from '@rocket.chat/core-typings';
-import { Users } from '@rocket.chat/models';
+import { TwoFactorChallenges, Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
-import { Meteor } from 'meteor/meteor';
 
 import { EmailCheck } from './EmailCheck';
-import type { ICodeCheck } from './ICodeCheck';
+import type { ICodeCheck, TwoFactorUser } from './ICodeCheck';
 import { PasswordCheckFallback } from './PasswordCheckFallback';
 import { TOTPCheck } from './TOTPCheck';
 import { settings } from '../../../settings';
@@ -16,6 +16,7 @@ export interface ITwoFactorOptions {
 	disablePasswordFallback?: boolean;
 	disableRememberMe?: boolean;
 	requireSecondFactor?: boolean; // whether any two factor should be required
+	issueResendChallenge?: boolean;
 }
 
 const totpCheck = new TOTPCheck();
@@ -27,7 +28,7 @@ const checkMethods = new Map<string, ICodeCheck>();
 checkMethods.set(totpCheck.name, totpCheck);
 checkMethods.set(emailCheck.name, emailCheck);
 
-function getMethodByNameOrFirstActiveForUser(user: IUser, name?: string): ICodeCheck | undefined {
+function getMethodByNameOrFirstActiveForUser(user: TwoFactorUser, name?: string): ICodeCheck | undefined {
 	if (name && checkMethods.has(name)) {
 		return checkMethods.get(name);
 	}
@@ -35,7 +36,7 @@ function getMethodByNameOrFirstActiveForUser(user: IUser, name?: string): ICodeC
 	return Array.from(checkMethods.values()).find((method) => method.isEnabled(user));
 }
 
-function getAvailableMethodNames(user: IUser): string[] {
+function getAvailableMethodNames(user: TwoFactorUser): string[] {
 	return (
 		Array.from(checkMethods)
 			.filter(([, method]) => method.isEnabled(user))
@@ -43,9 +44,10 @@ function getAvailableMethodNames(user: IUser): string[] {
 	);
 }
 
-export async function getUserForCheck(userId: string): Promise<IUser | null> {
+export async function getUserForCheck(userId: string): Promise<TwoFactorUser | null> {
 	return Users.findOneById(userId, {
 		projection: {
+			username: 1,
 			emails: 1,
 			language: 1,
 			createdAt: 1,
@@ -76,7 +78,7 @@ export function getRememberDate(from: Date = new Date()): Date | undefined {
 	return expires;
 }
 
-function isAuthorizedForToken(connection: IMethodConnection, user: IUser, options: ITwoFactorOptions): boolean {
+function isAuthorizedForToken(connection: IMethodConnection, user: TwoFactorUser, options: ITwoFactorOptions): boolean {
 	// Resolve the current login token from both transports:
 	// - DDP: the login flow registers it in `Accounts._accountData`, read via `_getLoginToken`.
 	// - REST: it is not registered in account data, so it is carried on `connection.token`.
@@ -129,7 +131,7 @@ function isAuthorizedForToken(connection: IMethodConnection, user: IUser, option
 export async function rememberAuthorizationByToken(token: string, userId: IUser['_id'], connection: IMethodConnection): Promise<void> {
 	const user = await Users.findOneByIdAndLoginHashedToken(userId, token, { projection: { _id: 1, services: 1 } });
 	if (!user) {
-		throw new Meteor.Error('error-user-not-found', 'user not found');
+		throw new ClientSafeError('error-user-not-found', 'user not found');
 	}
 
 	const expires = getRememberDate();
@@ -140,7 +142,7 @@ export async function rememberAuthorizationByToken(token: string, userId: IUser[
 	await Users.setTwoFactorAuthorizationHashAndUntilForUserIdAndToken(user._id, token, getFingerprintFromConnection(connection), expires);
 }
 
-async function rememberAuthorization(connection: IMethodConnection, user: IUser): Promise<void> {
+async function rememberAuthorization(connection: IMethodConnection, user: TwoFactorUser): Promise<void> {
 	// Same dual-transport resolution as `isAuthorizedForToken`: DDP reads from `Accounts._accountData`
 	// via `_getLoginToken`, REST falls back to the token carried on `connection.token`.
 	const currentToken = Accounts._getLoginToken(connection.id) || connection.token;
@@ -163,14 +165,18 @@ async function rememberAuthorization(connection: IMethodConnection, user: IUser)
 }
 
 interface ICheckCodeForUser {
-	user: IUser | string;
+	user: TwoFactorUser | string;
 	code?: string;
 	method?: string;
 	options?: ITwoFactorOptions;
 	connection?: IMethodConnection;
 }
 
-export const getSecondFactorMethod = (user: IUser, method: string | undefined, options: ITwoFactorOptions): ICodeCheck | undefined => {
+export const getSecondFactorMethod = (
+	user: TwoFactorUser,
+	method: string | undefined,
+	options: ITwoFactorOptions,
+): ICodeCheck | undefined => {
 	// try first getting one of the available methods or the one that was already provided
 	const selectedMethod = getMethodByNameOrFirstActiveForUser(user, method);
 	if (selectedMethod) {
@@ -197,7 +203,7 @@ export async function checkCodeForUser({ user, code, method, options = {}, conne
 		return true;
 	}
 
-	let existingUser: IUser | null;
+	let existingUser: TwoFactorUser | null;
 	if (typeof user === 'string') {
 		existingUser = await getUserForCheck(user);
 	} else {
@@ -205,7 +211,7 @@ export async function checkCodeForUser({ user, code, method, options = {}, conne
 	}
 
 	if (!existingUser) {
-		throw new Meteor.Error('totp-user-not-found', 'TOTP User not found');
+		throw new ClientSafeError('totp-user-not-found', 'TOTP User not found');
 	}
 
 	const headers = normalizeHeaders(connection?.httpHeaders);
@@ -230,10 +236,14 @@ export async function checkCodeForUser({ user, code, method, options = {}, conne
 	const availableMethods = getAvailableMethodNames(existingUser);
 
 	if (!code) {
-		throw new Meteor.Error('totp-required', 'TOTP Required', {
+		throw new ClientSafeError('totp-required', 'TOTP Required', {
 			method: selectedMethod.name,
 			...data,
 			availableMethods,
+			...(options.issueResendChallenge &&
+				selectedMethod === emailCheck && {
+					challengeId: await TwoFactorChallenges.createTwoFactorChallenge(existingUser._id, 'email', 'resend'),
+				}),
 		});
 	}
 
@@ -241,14 +251,14 @@ export async function checkCodeForUser({ user, code, method, options = {}, conne
 	if (!valid) {
 		const tooManyFailedAttempts = await selectedMethod.maxFaildedAttemtpsReached(existingUser);
 		if (tooManyFailedAttempts) {
-			throw new Meteor.Error('totp-max-attempts', 'TOTP Maximun Failed Attempts Reached', {
+			throw new ClientSafeError('totp-max-attempts', 'TOTP Maximun Failed Attempts Reached', {
 				method: selectedMethod.name,
 				...data,
 				availableMethods,
 			});
 		}
 
-		throw new Meteor.Error('totp-invalid', 'TOTP Invalid', {
+		throw new ClientSafeError('totp-invalid', 'TOTP Invalid', {
 			method: selectedMethod.name,
 			...data,
 			availableMethods,

@@ -1,0 +1,23 @@
+{
+	"name": "@rocket.chat/visual-regression",
+	"version": "0.0.1",
+	"private": true,
+	"type": "module",
+	"bin": "./bin/index.js",
+	"scripts": {
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@playwright/test": "~1.52.0"
+	},
+	"devDependencies": {
+		"@rocket.chat/tsconfig": "workspace:*",
+		"@types/node": "~24.13.6",
+		"typescript": "~7.0.2"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	}
+}

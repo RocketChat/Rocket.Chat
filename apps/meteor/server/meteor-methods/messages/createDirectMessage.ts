@@ -1,14 +1,15 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ICreateRoomParams } from '@rocket.chat/core-services';
 import type { ICreatedRoom, IUser } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { validateFederatedUsername } from '@rocket.chat/federation-matrix';
 import { Rooms, Users } from '@rocket.chat/models';
+import { normalizeBareJid } from '@rocket.chat/tools';
 import { check, Match } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
-import { RateLimiterClass as RateLimiter } from '../../lib/RateLimiter';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { callbacks } from '../../lib/callbacks';
 import { createRoom } from '../../lib/rooms/createRoom';
+import { isFederationEnabled, isXMPPServerEnabled } from '../../services/federation/utils';
 import { settings } from '../../settings';
 
 export async function createDirectMessage(
@@ -21,41 +22,77 @@ export async function createDirectMessage(
 	check(excludeSelf, Match.Optional(Boolean));
 
 	if (!userId) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', {
 			method: 'createDirectMessage',
 		});
 	}
 
 	const me = await Users.findOneById(userId, { projection: { username: 1, name: 1 } });
 	if (!me?.username) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 			method: 'createDirectMessage',
 		});
 	}
 
-	if (settings.get('Message_AllowDirectMessagesToYourself') === false && usernames.length === 1 && me.username === usernames[0]) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+	const myUsername = me.username.toLowerCase();
+
+	const targets = usernames.filter((username) => username.toLowerCase() !== myUsername);
+
+	if (!targets.length && (excludeSelf || settings.get('Message_AllowDirectMessagesToYourself') === false)) {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 			method: 'createDirectMessage',
 		});
 	}
 
-	const users = await Promise.all(usernames.filter((username) => username !== me.username));
+	const maxUsers = settings.get<number>('DirectMesssage_maxUsers') || 1;
+	if ((excludeSelf ? targets.length : targets.length + 1) > maxUsers) {
+		throw new ClientSafeError(
+			'error-direct-message-max-user-exceeded',
+			`You cannot add more than ${maxUsers} users, including yourself to a direct message`,
+			{ method: 'createDirectMessage' },
+		);
+	}
+
+	const users = await Promise.all(
+		targets.map(async (username) => {
+			if (isFederationEnabled() && validateFederatedUsername(username)) {
+				return username;
+			}
+
+			// A typed JID names the user record of that XMPP account, however its domain was spelled
+			const jid = isXMPPServerEnabled() ? normalizeBareJid(username) : undefined;
+			const to: IUser | null = await Users.findOneByUsernameIgnoringCase(jid ?? username);
+			if (to) {
+				return to;
+			}
+
+			if (jid) {
+				return jid;
+			}
+
+			throw new ClientSafeError('error-invalid-user', 'Invalid user', {
+				method: 'createDirectMessage',
+			});
+		}),
+	);
+
 	const options: Exclude<ICreateRoomParams['options'], undefined> = { creator: me._id };
 	const roomUsers = excludeSelf ? users : [me, ...users];
 
 	// allow self-DMs
 	if (roomUsers.length === 1 && roomUsers[0] !== undefined && typeof roomUsers[0] !== 'string' && roomUsers[0]._id !== me._id) {
-		throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 			method: 'createDirectMessage',
 		});
 	}
 
 	if (!(await hasPermissionAsync(userId, 'create-d'))) {
 		// If the user can't create DMs but can access already existing ones
-		if ((await hasPermissionAsync(userId, 'view-d-room')) && !Object.keys(roomUsers).some((user) => typeof user === 'string')) {
+		if ((await hasPermissionAsync(userId, 'view-d-room')) && !roomUsers.some((user) => typeof user === 'string')) {
 			// Check if the direct room already exists, then return it
 			const uids = (roomUsers as IUser[]).map(({ _id }) => _id).sort();
-			const room = await Rooms.findOneDirectRoomContainingAllUserIDs(uids, { projection: { _id: 1 } });
+			// No projection: the full room is spread into the ICreatedRoom-shaped return below.
+			const room = await Rooms.findOneDirectRoomContainingAllUserIDs(uids);
 			if (room) {
 				return {
 					...room,
@@ -65,12 +102,12 @@ export async function createDirectMessage(
 			}
 		}
 
-		throw new Meteor.Error('error-not-allowed', 'Not allowed', {
+		throw new ClientSafeError('error-not-allowed', 'Not allowed', {
 			method: 'createDirectMessage',
 		});
 	}
 
-	if (excludeSelf && (await hasPermissionAsync(userId, 'view-room-administration'))) {
+	if (excludeSelf && (await hasPermissionAsync(userId, 'create-d-other-users'))) {
 		options.subscriptionExtra = { open: true };
 	}
 
@@ -79,7 +116,7 @@ export async function createDirectMessage(
 	try {
 		await callbacks.run('federation.beforeCreateDirectMessage', roomUsers, extraData);
 	} catch (error) {
-		throw new Meteor.Error((error as any)?.message);
+		throw new ClientSafeError((error as any)?.message);
 	}
 	const {
 		_id: rid,
@@ -95,22 +132,3 @@ export async function createDirectMessage(
 		...room,
 	};
 }
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		createDirectMessage(...usernames: Exclude<IUser['username'], undefined>[]): Omit<ICreatedRoom, '_id' | 'inserted'>;
-	}
-}
-
-Meteor.methods<ServerMethods>({
-	async createDirectMessage(...usernames) {
-		return createDirectMessage(usernames, Meteor.userId());
-	},
-});
-
-RateLimiter.limitMethod('createDirectMessage', 10, 60000, {
-	async userId(userId: IUser['_id']) {
-		return !(await hasPermissionAsync(userId, 'send-many-messages'));
-	},
-});

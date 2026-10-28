@@ -1,17 +1,17 @@
-import type { ISubscription, ThemePreference } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
+import { StatusVisibility, ClientSafeError } from '@rocket.chat/core-services';
+import type { ISidebarCategory, ISubscription, ThemePreference } from '@rocket.chat/core-typings';
 import { Subscriptions, Users } from '@rocket.chat/models';
 import type { FontSize } from '@rocket.chat/rest-typings';
 import { Match, check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
-import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import {
 	notifyOnSubscriptionChangedByAutoTranslateAndUserId,
 	notifyOnSubscriptionChangedByUserId,
 	notifyOnSubscriptionChangedByUserPreferences,
 	notifyOnUserChange,
 } from '../../lib/notifyListener';
+import { resolveUsersByUsernames } from '../../lib/statusVisibility/resolveUsers';
+import { isUserHidingAllowed } from '../../lib/statusVisibility/settings';
 import { settings as rcSettings } from '../../settings';
 
 type UserPreferences = {
@@ -45,6 +45,7 @@ type UserPreferences = {
 	sidebarViewMode: string;
 	sidebarDisplayAvatar: boolean;
 	sidebarGroupByType: boolean;
+	sidebarCategories: ISidebarCategory[];
 	muteFocusedConversations: boolean;
 	dontAskAgainList: { action: string; label: string }[];
 	themeAppearence: ThemePreference;
@@ -54,14 +55,8 @@ type UserPreferences = {
 	enableMobileRinging: boolean;
 	mentionsWithSymbol?: boolean;
 	utcOffset?: number;
+	statusVisibilityDenied?: string[];
 };
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		saveUserPreferences(preferences: Partial<UserPreferences>): boolean;
-	}
-}
 
 async function updateNotificationPreferences(
 	userId: ISubscription['u']['_id'],
@@ -87,6 +82,28 @@ async function updateNotificationPreferences(
 		void notifyOnSubscriptionChangedByUserPreferences(userId, preferenceType, 'subscription');
 	}
 }
+
+const MAX_CATEGORY_NAME_LENGTH = 30;
+
+export const validateSidebarCategories = (categories: ISidebarCategory[]): void => {
+	for (const category of categories) {
+		if (category.default) {
+			continue;
+		}
+		const trimmed = category.name.trim();
+		if (!trimmed) {
+			throw new ClientSafeError('error-invalid-param', 'sidebarCategories contains a blank category name');
+		}
+		if (trimmed.length > MAX_CATEGORY_NAME_LENGTH) {
+			throw new ClientSafeError('error-invalid-param', 'sidebarCategories category name exceeds maximum length');
+		}
+	}
+
+	const hasDuplicates = (values: string[]): boolean => new Set(values).size !== values.length;
+	if (hasDuplicates(categories.map((category) => category._id))) {
+		throw new ClientSafeError('error-invalid-param', 'sidebarCategories contains duplicate category _id values');
+	}
+};
 
 export const saveUserPreferences = async (settings: Partial<UserPreferences>, userId: string): Promise<void> => {
 	const keys = {
@@ -120,6 +137,15 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		sidebarViewMode: Match.Optional(String),
 		sidebarDisplayAvatar: Match.Optional(Boolean),
 		sidebarGroupByType: Match.Optional(Boolean),
+		sidebarCategories: Match.Optional([
+			{
+				_id: String,
+				name: String,
+				default: Match.Optional(Boolean),
+				showUnreads: Match.Optional(Boolean),
+				keepUnreadsOnTop: Match.Optional(Boolean),
+			},
+		]),
 		muteFocusedConversations: Match.Optional(Boolean),
 		themeAppearence: Match.Optional(String),
 		fontSize: Match.Optional(String),
@@ -130,8 +156,13 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		enableMobileRinging: Match.Optional(Boolean),
 		mentionsWithSymbol: Match.Optional(Boolean),
 		utcOffset: Match.Optional(Number),
+		statusVisibilityDenied: Match.Optional([String]),
 	};
 	check(settings, Match.ObjectIncluding(keys));
+
+	if (settings.sidebarCategories) {
+		validateSidebarCategories(settings.sidebarCategories);
+	}
 
 	const user = await Users.findOneById(userId);
 	if (!user) {
@@ -167,10 +198,21 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 	}
 
 	if (settings.idleTimeLimit != null && settings.idleTimeLimit < 60) {
-		throw new Meteor.Error('invalid-idle-time-limit-value', 'Invalid idleTimeLimit');
+		throw new ClientSafeError('invalid-idle-time-limit-value', 'Invalid idleTimeLimit');
 	}
 
-	await Users.setPreferences(user._id, settings);
+	if (!isUserHidingAllowed()) {
+		delete settings.statusVisibilityDenied;
+	}
+
+	const requested = settings.statusVisibilityDenied?.filter((username) => username !== user.username);
+	const denied = requested ? await resolveUsersByUsernames(requested) : undefined;
+
+	if (denied) {
+		settings.statusVisibilityDenied = denied.usernames;
+	}
+
+	await Users.setPreferences(user._id, denied ? { ...settings, statusVisibilityDenied: denied.ids } : settings);
 
 	const diff = (Object.keys(settings) as (keyof UserPreferences)[]).reduce<Record<string, any>>((data, key) => {
 		data[`settings.preferences.${key}`] = settings[key];
@@ -186,6 +228,10 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 			...(settings.language != null && { language: settings.language }),
 		},
 	});
+
+	if (settings.statusVisibilityDenied != null) {
+		void StatusVisibility.invalidate([user._id]);
+	}
 
 	// propagate changed notification preferences
 	setImmediate(async () => {
@@ -230,17 +276,3 @@ export const saveUserPreferences = async (settings: Partial<UserPreferences>, us
 		}
 	});
 };
-
-Meteor.methods<ServerMethods>({
-	async saveUserPreferences(settings) {
-		methodDeprecationLogger.method('saveUserPreferences', '9.0.0', '/v1/users.setPreferences');
-		const userId = Meteor.userId();
-		if (!userId) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', { method: 'saveUserPreferences' });
-		}
-
-		await saveUserPreferences(settings, userId);
-
-		return true;
-	},
-});

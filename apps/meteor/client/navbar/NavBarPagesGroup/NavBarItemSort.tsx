@@ -1,4 +1,4 @@
-import { SidebarV2Action } from '@rocket.chat/fuselage';
+import { SidebarAction } from '@rocket.chat/fuselage';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import type { HTMLAttributes } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -12,7 +12,7 @@ const NavBarItemSort = (props: NavBarItemSortProps) => {
 
 	const sections = useSortMenu();
 
-	return <GenericMenu icon='sort' sections={sections} title={t('Display')} selectionMode='multiple' is={SidebarV2Action} {...props} />;
+	return <GenericMenu icon='sort' sections={sections} title={t('Display')} selectionMode='multiple' is={SidebarAction} {...props} />;
 };
 
 export default NavBarItemSort;

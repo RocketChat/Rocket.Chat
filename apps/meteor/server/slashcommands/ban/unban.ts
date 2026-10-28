@@ -21,6 +21,7 @@ slashCommands.add({
 		if (!user) {
 			void api.broadcast('notify.ephemeralMessage', userId, message.rid, {
 				msg: i18n.t('Username_doesnt_exist', {
+					interpolation: { escapeValue: false },
 					username,
 					lng: settings.get('Language') || 'en',
 				}),

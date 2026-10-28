@@ -1,22 +1,35 @@
-import { AutoComplete, Option, Box, Chip } from '@rocket.chat/fuselage';
+import { AutoComplete, Box, Chip, Option } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { RoomAvatar } from '@rocket.chat/ui-avatar';
+import { ITEM_MEDIA_SIZE, RoomAvatar } from '@rocket.chat/ui-avatar';
 import type * as UiKit from '@rocket.chat/ui-kit';
 import { memo, useCallback, useState } from 'react';
 
 import { useChannelsData } from './hooks/useChannelsData';
+import { useConversationsData } from './hooks/useConversationsData';
+import { useCurrentConversationDefault } from './hooks/useCurrentConversationDefault';
+import { useAutoCompleteKey } from '../../hooks/useAutoCompleteKey';
 import { useUiKitState } from '../../hooks/useUiKitState';
 import type { BlockProps } from '../../utils/BlockProps';
 
-export type ChannelsSelectElementProps = BlockProps<UiKit.ChannelsSelectElement>;
+export type ChannelsSelectElementProps = BlockProps<UiKit.ChannelsSelectElement | UiKit.ConversationsSelectElement>;
 
 const ChannelsSelectElement = ({ block, context }: ChannelsSelectElementProps) => {
-	const [{ value, loading }, action] = useUiKitState(block, context);
+	const element = useCurrentConversationDefault(block);
+	const [{ value, loading }, action] = useUiKitState(element, context);
 
 	const [filter, setFilter] = useState('');
 	const filterDebounced = useDebouncedValue(filter, 300);
 
-	const options = useChannelsData({ filter: filterDebounced });
+	const isConversations = block.type === 'conversations_select';
+	const channels = useChannelsData({ filter: filterDebounced, enabled: !isConversations, selected: value ? [value] : [] });
+	const conversations = useConversationsData({
+		filter: filterDebounced,
+		enabled: isConversations,
+		selected: value ? [value] : [],
+		include: block.type === 'conversations_select' ? block.filter?.include : undefined,
+	});
+	const options = isConversations ? conversations : channels;
+	const autoCompleteKey = useAutoCompleteKey(value, options);
 
 	const handleChange = useCallback(
 		(value: string | string[]) => {
@@ -27,13 +40,16 @@ const ChannelsSelectElement = ({ block, context }: ChannelsSelectElementProps) =
 
 	return (
 		<AutoComplete
+			key={autoCompleteKey}
+			autoFocus={block.focus_on_load}
 			value={value}
 			onChange={handleChange}
+			placeholder={block.placeholder?.text}
 			disabled={loading}
 			filter={filter}
 			setFilter={setFilter}
 			renderSelected={({ selected: { value, label } }) => (
-				<Chip height='x20' value={value} marginInlineEnd={4}>
+				<Chip value={value}>
 					<RoomAvatar size='x20' room={{ _id: value, ...label, type: label?.type || 'c' }} />
 					<Box verticalAlign='middle' is='span' margin='none' marginInline={4}>
 						{label.name}
@@ -47,13 +63,12 @@ const ChannelsSelectElement = ({ block, context }: ChannelsSelectElementProps) =
 					label={label.name}
 					avatar={
 						<RoomAvatar
-							size='x20'
+							size={ITEM_MEDIA_SIZE.condensed}
 							room={{
 								type: label.type,
 								_id: value,
 								avatarETag: label.avatarETag,
 							}}
-							{...props}
 						/>
 					}
 				/>

@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { useExpirationText } from '../../hooks/useExpirationText';
 import MarkdownText from '../MarkdownText';
 
-const STATUS_LABEL_KEYS: Record<UserStatus, string> = {
+export const STATUS_LABEL_KEYS: Record<UserStatus, string> = {
 	[UserStatus.ONLINE]: 'Online',
 	[UserStatus.AWAY]: 'Away',
 	[UserStatus.BUSY]: 'Busy',
@@ -35,8 +35,8 @@ const UserStatusText = ({ status, statusText, statusExpiresAt }: UserStatusTextP
 		<>
 			{headline && <MarkdownText content={headline} parseEmoji={true} variant='inline' />}
 			{expirationText && (
-				<Box fontScale='c1' display='flex' alignItems='center'>
-					<Icon name='clock' size='x16' marginInlineEnd={4} />
+				<Box fontScale='c1' display='flex' alignItems='center' gap={4}>
+					<Icon name='clock' size='x16' />
 					{expirationText}
 				</Box>
 			)}

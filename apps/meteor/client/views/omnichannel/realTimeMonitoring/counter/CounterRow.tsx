@@ -9,7 +9,7 @@ export type CounterRowProps = {
 
 const CounterRow = ({ children, ...props }: CounterRowProps) => (
 	<Box
-		paddingBlock={28}
+		paddingBlock='x24'
 		paddingInline={20}
 		display='flex'
 		flexDirection='row'
@@ -22,11 +22,7 @@ const CounterRow = ({ children, ...props }: CounterRowProps) => (
 			flattenChildren(children).reduce(
 				(acc: ReactNode[], child, i) =>
 					children.length - 1 !== i
-						? [
-								...acc,
-								<Fragment key={i}>{child}</Fragment>,
-								<Divider key={(i + 1) * children.length} width='x2' margin='none' alignSelf='stretch' />,
-							]
+						? [...acc, <Fragment key={i}>{child}</Fragment>, <Divider key={(i + 1) * children.length} vertical stretch flush />]
 						: [...acc, child],
 				[],
 			)}

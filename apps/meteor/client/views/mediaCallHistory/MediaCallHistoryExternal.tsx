@@ -41,6 +41,7 @@ const MediaCallHistoryExternal = ({ data, onClose }: MediaCallHistoryExternalPro
 			duration: data.item.duration,
 			startedAt: new Date(data.item.ts),
 			state: data.item.state,
+			preventedBy: data.call?.preventedBy,
 		};
 	}, [data]);
 	const state = usePeekMediaSessionState();

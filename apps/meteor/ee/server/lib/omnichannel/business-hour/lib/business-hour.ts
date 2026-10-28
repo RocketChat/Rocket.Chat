@@ -30,7 +30,7 @@ export async function findBusinessHours(userId: string, { offset, count, sort }:
 	const businessHoursWithDepartments = await Promise.all(
 		businessHours.map(async (businessHour) => {
 			const currentDepartments = await LivechatDepartment.findByBusinessHourId(businessHour._id, {
-				projection: { _id: 1 },
+				projection: { _id: 1, name: 1 },
 			}).toArray();
 
 			if (currentDepartments.length) {

@@ -3,13 +3,13 @@ import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { renderHook } from '@testing-library/react';
 
 import { useNormalizedThreadTitleHtml } from './useNormalizedThreadTitleHtml';
-import { filterMarkdown } from '../../../../../../app/markdown/lib/markdown';
+import { filterMarkdown } from '../../../../../../lib/markdown/parser/filtered/filtered';
 
-jest.mock('../../../../../../app/markdown/lib/markdown', () => ({
+jest.mock('../../../../../../lib/markdown/parser/filtered/filtered', () => ({
 	filterMarkdown: jest.fn((text: string) => text),
 }));
 
-jest.mock('../../../../../../app/emoji/client/emojiParser', () => ({
+jest.mock('../../../../../lib/emoji/emojiParser', () => ({
 	emojiParser: jest.fn((text: string) => text),
 }));
 

@@ -1,16 +1,13 @@
 import { Team } from '@rocket.chat/core-services';
 import type { IUser, AtLeast } from '@rocket.chat/core-typings';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms, Users, Subscriptions } from '@rocket.chat/models';
 import { escapeRegExp, isTruthy } from '@rocket.chat/tools';
 import mem from 'mem';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
-import { Meteor } from 'meteor/meteor';
 import type { FindOptions, SortDirection } from 'mongodb';
 
 import { trim } from '../../../lib/utils/stringUtils';
 import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
-import { methodDeprecationLogger } from '../../lib/deprecationWarningLogger';
 import { settings } from '../../settings';
 
 const sortChannels = (field: string, direction: 'asc' | 'desc'): Record<string, 1 | -1> => {
@@ -97,10 +94,11 @@ const getChannelsAndGroups = async (
 
 	const teamIds = result.map(({ teamId }) => teamId).filter(isTruthy);
 	const teamsMains = await Team.listByIds([...new Set(teamIds)], { projection: { _id: 1, name: 1 } });
+	const teamsById = new Map(teamsMains.map((team) => [team._id, team]));
 
 	const results = result.map((room) => {
 		if (room.teamId) {
-			const team = teamsMains.find((mainRoom) => mainRoom._id === room.teamId);
+			const team = teamsById.get(room.teamId);
 			if (team) {
 				return { ...room, belongsTo: team.name };
 			}
@@ -281,13 +279,6 @@ type BrowseChannelsParams = {
 	limit?: number;
 };
 
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		browseChannels: (params: BrowseChannelsParams) => Promise<unknown>;
-	}
-}
-
 export const browseChannelsMethod = async (
 	{
 		text = '',
@@ -343,13 +334,6 @@ export const browseChannelsMethod = async (
 		default:
 	}
 };
-
-Meteor.methods<ServerMethods>({
-	async browseChannels(params: BrowseChannelsParams) {
-		methodDeprecationLogger.method('browseChannels', '9.0.0', '/v1/directory');
-		return browseChannelsMethod(params, await Meteor.userAsync());
-	},
-});
 
 DDPRateLimiter.addRule(
 	{

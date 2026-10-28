@@ -3,7 +3,9 @@ import bannersConfigSchema from '@rocket.chat/abac/docs/classification-banners.s
 import { settingsRegistry } from '../../../server/settings';
 
 const abacEnabledQuery = { _id: 'ABAC_Enabled', value: true };
+const enforceAllRoomsQuery = [abacEnabledQuery, { _id: 'ABAC_Enforce_All_Rooms', value: true }];
 const virtruPdpQuery = [abacEnabledQuery, { _id: 'ABAC_PDP_Type', value: 'virtru' }];
+const localPdpQuery = [abacEnabledQuery, { _id: 'ABAC_PDP_Type', value: 'local' }];
 
 export function addSettings(): Promise<void> {
 	return settingsRegistry.addGroup('General', async function () {
@@ -20,6 +22,30 @@ export function addSettings(): Promise<void> {
 					section: 'ABAC',
 					i18nDescription: 'ABAC_Enabled_Description',
 				});
+				await this.add('ABAC_Required_Attributes', [], {
+					type: 'multiLookup',
+					lookupEndpoint: 'v1/abac/attributes.listKeys',
+					public: false,
+					invalidValue: [],
+					section: 'ABAC',
+					i18nDescription: 'ABAC_Required_Attributes_Description',
+					enableQuery: enforceAllRoomsQuery,
+				});
+				await this.add('ABAC_Enforce_All_Rooms', false, {
+					type: 'boolean',
+					public: true,
+					invalidValue: false,
+					section: 'ABAC',
+					i18nDescription: 'ABAC_Enforce_All_Rooms_Description',
+					enableQuery: abacEnabledQuery,
+				});
+				await this.add('ABAC_Discussion_Enabled_Restore', '', {
+					type: 'string',
+					public: false,
+					hidden: true,
+					invalidValue: '',
+					section: 'ABAC',
+				});
 				await this.add('ABAC_PDP_Type', 'local', {
 					type: 'select',
 					public: true,
@@ -31,6 +57,14 @@ export function addSettings(): Promise<void> {
 					],
 					alert: 'ABAC_PDP_Type_Switch_Alert',
 					enableQuery: abacEnabledQuery,
+				});
+				await this.add('ABAC_Restrict_To_Owned_Attributes', true, {
+					type: 'boolean',
+					public: true,
+					invalidValue: false,
+					section: 'ABAC',
+					i18nDescription: 'ABAC_Restrict_To_Owned_Attributes_Description',
+					enableQuery: localPdpQuery,
 				});
 				await this.add('ABAC_Attribute_Store', 'local', {
 					type: 'select',
@@ -64,7 +98,7 @@ export function addSettings(): Promise<void> {
 					type: 'code',
 					code: 'application/json',
 					multiline: true,
-					public: true,
+					public: false,
 					invalidValue: '',
 					section: 'ABAC_Classification_Banners',
 					enableQuery: [abacEnabledQuery, { _id: 'ABAC_Classification_Banners_Enabled', value: true }],

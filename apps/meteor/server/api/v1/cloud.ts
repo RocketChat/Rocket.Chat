@@ -11,6 +11,7 @@ import {
 } from '@rocket.chat/rest-typings';
 
 import { CloudWorkspaceRegistrationError } from '../../../lib/errors/CloudWorkspaceRegistrationError';
+import { buildWorkspaceRegistrationData } from '../../lib/cloud/buildRegistrationData';
 import { connectWorkspace } from '../../lib/cloud/connectWorkspace';
 import { getCheckoutUrl } from '../../lib/cloud/getCheckoutUrl';
 import { getConfirmationPoll } from '../../lib/cloud/getConfirmationPoll';
@@ -80,6 +81,16 @@ const registrationStatusResponseSchema = ajv.compile<{ registrationStatus: Cloud
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['registrationStatus', 'success'],
+	additionalProperties: false,
+});
+
+const workspaceRegisterDataResponseSchema = ajv.compile<{ registerData: string }>({
+	type: 'object',
+	properties: {
+		registerData: { type: 'string' },
+		success: { type: 'boolean', enum: [true] },
+	},
+	required: ['registerData', 'success'],
 	additionalProperties: false,
 });
 
@@ -207,6 +218,24 @@ API.v1.get(
 	},
 );
 
+API.v1.get(
+	'cloud.workspaceRegisterData',
+	{
+		authRequired: true,
+		permissionsRequired: ['manage-cloud'],
+		response: {
+			200: workspaceRegisterDataResponseSchema,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		const registrationData = await buildWorkspaceRegistrationData(undefined);
+
+		return API.v1.success({ registerData: Buffer.from(JSON.stringify(registrationData)).toString('base64') });
+	},
+);
+
 API.v1.post(
 	'cloud.syncWorkspace',
 	{
@@ -278,7 +307,6 @@ API.v1.post(
  * Declaring endpoint here because we don't want this available to the sdk client
  */
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
 		'/v1/cloud.checkoutUrl': {
 			GET: () => { url: string };

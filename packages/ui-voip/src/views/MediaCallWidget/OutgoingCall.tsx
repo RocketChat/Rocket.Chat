@@ -1,34 +1,42 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
+import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
-import { PeerInfo, Widget, WidgetFooter, WidgetHandle, WidgetHeader, WidgetContent, DevicePicker } from '../../components';
+import { PeerInfo, Widget, WidgetFooter, WidgetHandle, WidgetHeader, WidgetContent, DevicePicker, WidgetInfo } from '../../components';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
+import { isUnknownPeer } from '../../utils/isUnknownPeer';
+
+const getHeaderTitle = ({ connecting, transferred, t }: { connecting: boolean; transferred: boolean; t: TFunction }) => {
+	if (connecting) {
+		return t('meteor_status_connecting');
+	}
+
+	if (transferred) {
+		return `${t('Transferring_call')}...`;
+	}
+
+	return `${t('Calling')}...`;
+};
 
 const OutgoingCall = () => {
 	const { t } = useTranslation();
 
 	const { sessionState, onEndCall } = useMediaCallView();
-	const { peerInfo, connectionState } = sessionState;
-
-	// TODO: Figure out how to ensure this always exist before rendering the component
-	if (!peerInfo) {
-		throw new Error('Peer info is required');
-	}
+	const { peerInfo, connectionState, transferredBy } = sessionState;
 
 	const connecting = connectionState === 'CONNECTING';
 
 	return (
 		<Widget>
 			<WidgetHandle />
-			<WidgetHeader title={connecting ? t('meteor_status_connecting') : `${t('Calling')}...`}>
+			<WidgetHeader title={getHeaderTitle({ connecting, transferred: !!transferredBy, t })}>
 				<DevicePicker />
 			</WidgetHeader>
-			<WidgetContent>
-				<PeerInfo {...peerInfo} />
-			</WidgetContent>
+			{transferredBy && <WidgetInfo slots={[{ text: t('Transferred_call__from__to', { from: transferredBy }), type: 'info' }]} />}
+			<WidgetContent>{peerInfo && !isUnknownPeer(peerInfo) && <PeerInfo {...peerInfo} />}</WidgetContent>
 			<WidgetFooter>
 				<ButtonGroup stretch>
-					<Button medium name='phone' icon='phone-off' danger flexGrow={1} onClick={onEndCall}>
+					<Button size='medium' name='phone' icon='phone-off' variant='danger' onClick={onEndCall}>
 						{t('Cancel')}
 					</Button>
 				</ButtonGroup>

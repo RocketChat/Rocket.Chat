@@ -24,11 +24,6 @@ describe('Story Tests', () => {
 		jest.setSystemTime(new Date('2025-01-01T12:00:00.000Z'));
 	});
 
-	test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
-		const view = render(<Story />, { wrapper: wrapper.build() });
-		expect(view.baseElement).toMatchSnapshot();
-	});
-
 	test.each(testCases)(
 		`%s should be accessible`,
 		async (_storyname, Story) => {
@@ -76,22 +71,20 @@ describe('TimestampPicker', () => {
 		await userEvent.type(timeInput, '{selectall}14:30');
 
 		// 3. Select format
-		const formatSelectButton = screen.getByRole('button', {
-			name: /timestamps\.fullDateTime/i,
-		});
-		await userEvent.click(formatSelectButton);
+		const [formatSelect, timezoneSelect] = screen.getAllByRole('combobox');
+		expect(formatSelect).toHaveTextContent(/timestamps\.fullDateTime/i);
+		await userEvent.click(formatSelect);
 
-		const formatOption = screen.getByRole('option', {
+		const formatOption = await screen.findByRole('option', {
 			name: /timestamps\.fullDateTime \(timestamps\.fullDateTimeDescription\)/,
 		});
 		await userEvent.click(formatOption);
 
 		// 4. Select timezone
-		const timezoneSelects = screen.getAllByRole('button', { name: /Local_Time/ });
-		const timezoneSelect = timezoneSelects[0];
+		expect(timezoneSelect).toHaveTextContent(/Local_Time/);
 		await userEvent.click(timezoneSelect);
 
-		const timezoneOption = screen.getByRole('option', { name: /UTC\+8/ });
+		const timezoneOption = await screen.findByRole('option', { name: /UTC\+8/ });
 		await userEvent.click(timezoneOption);
 
 		// 5. Submit

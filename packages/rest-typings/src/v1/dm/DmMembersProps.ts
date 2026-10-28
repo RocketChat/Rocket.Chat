@@ -1,5 +1,6 @@
 import type { PaginatedRequest } from '../../helpers/PaginatedRequest';
 import { ajvQuery } from '../Ajv';
+import { paginationQueryProperties } from '../pagination';
 
 export type DmMemberProps = PaginatedRequest<
 	(
@@ -32,18 +33,10 @@ export const isDmMemberProps = ajvQuery.compile<DmMemberProps>({
 				filter: {
 					type: 'string',
 				},
-				query: {
-					type: 'string',
-				},
 				sort: {
 					type: 'string',
 				},
-				count: {
-					type: 'number',
-				},
-				offset: {
-					type: 'number',
-				},
+				...paginationQueryProperties,
 			},
 			required: ['roomId'],
 			additionalProperties: false,
@@ -63,18 +56,10 @@ export const isDmMemberProps = ajvQuery.compile<DmMemberProps>({
 				filter: {
 					type: 'string',
 				},
-				query: {
-					type: 'string',
-				},
 				sort: {
 					type: 'string',
 				},
-				count: {
-					type: 'number',
-				},
-				offset: {
-					type: 'number',
-				},
+				...paginationQueryProperties,
 			},
 			required: ['username'],
 			additionalProperties: false,
