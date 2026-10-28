@@ -26,5 +26,15 @@ export const createMobileSettings = () =>
 				i18nDescription: 'Apple_Watch_Quick_Actions_Description',
 				public: true,
 			});
+			await this.add('Apple_Watch_Quick_Actions_Max_Count', 10, {
+				type: 'int',
+				i18nDescription: 'Apple_Watch_Quick_Actions_Max_Count_Description',
+				public: true,
+			});
+			await this.add('Apple_Watch_Quick_Actions_Max_Length', 30, {
+				type: 'int',
+				i18nDescription: 'Apple_Watch_Quick_Actions_Max_Length_Description',
+				public: true,
+			});
 		});
 	});
