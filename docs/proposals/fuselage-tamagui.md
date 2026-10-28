@@ -279,7 +279,7 @@ A computed `className` or a `{...props}` spread at a frame's use-site doesn't ne
 - [ ] Compact class-table encoding.
 - [ ] Emit the lowered CSS once per bundle, not once per module.
 - [ ] Cache resolutions (about 10 s per build today).
-- [ ] Keep the build-time self-check that compares every lowered definition with Tamagui and fails on any difference.
+- [x] Keep the build-time self-check that compares every lowered definition with Tamagui and fails on any difference: classes, inline style and passed-through attributes, over every variant value, every pair and 300 random combinations (2,291 cases on the pilot's four definitions); an allowlisted definition the build can't find fails it too.
 
 **5. Convert all definitions, in batches**
 - [ ] CI ratchets: definitions not lowered, and `@tamagui/*` modules in the web bundle. Both only go down.

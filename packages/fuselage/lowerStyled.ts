@@ -254,34 +254,54 @@ export const computeRecipe = (name: string, sc: StaticConfig, options: Options =
 	return { recipe, css, resolutions };
 };
 
-/** Renders random prop combinations through the recipe and through Tamagui, and throws on the first class difference. */
+/**
+ * Renders prop combinations through the recipe and through Tamagui, and throws on the first difference in classes,
+ * inline style or the attributes passed through: no props, every variant value, every pair of variant values (in both
+ * orders unless `ordered`) and `runs` random combinations of any number of variants.
+ */
 export const checkRecipe = (name: string, sc: StaticConfig, recipe: Recipe, runs = 300) => {
 	const { resolveStaticElement } = require('@tamagui/web/static-resolve');
 	let seed = 1;
 	const random = () => ((seed = (seed * 16807) % 2147483647) - 1) / 2147483646;
 	const names = Object.keys(recipe.variants);
+	const valuesOf = (variant: string) =>
+		Object.keys(sc.variants[variant]).map((key) => (key === 'true' ? true : key === 'false' ? false : key));
 	const pick = (variant: string) => {
-		const keys = Object.keys(sc.variants[variant]);
-		const key = keys[Math.floor(random() * keys.length)];
-		return key === 'true' ? true : key === 'false' ? false : key;
+		const values = valuesOf(variant);
+		return values[Math.floor(random() * values.length)];
 	};
-	const cases: Record<string, unknown>[] = [
-		{},
-		...names.flatMap((variant) => Object.keys(sc.variants[variant]).map(() => ({ [variant]: pick(variant) }))),
-	];
+	const cases: Record<string, unknown>[] = [{}, ...names.flatMap((variant) => valuesOf(variant).map((value) => ({ [variant]: value })))];
+	for (const [i, a] of names.entries()) {
+		for (const b of names.slice(i + 1)) {
+			for (const x of valuesOf(a)) {
+				for (const y of valuesOf(b)) {
+					cases.push({ [a]: x, [b]: y });
+					if (!recipe.ordered) cases.push({ [b]: y, [a]: x });
+				}
+			}
+		}
+	}
 	for (let i = 0; i < runs; i++) {
 		const shuffled = [...names].sort(() => (recipe.ordered ? 0 : random() - 0.5)).filter(() => random() < 0.5);
 		cases.push(Object.fromEntries(shuffled.map((variant) => [variant, pick(variant)])));
 	}
-	const sorted = (className: string) => className.split(/\s+/).filter(Boolean).sort().join(' ');
-	for (const props of cases) {
+
+	const sorted = (className: string | undefined) => (className ?? '').split(/\s+/).filter(Boolean).sort().join(' ');
+	for (const [i, variantProps] of cases.entries()) {
+		// Every other case also passes an attribute through, to compare what reaches the element
+		const props = i % 2 ? { ...variantProps, id: 'checked' } : variantProps;
 		const expected = resolveStaticElement({ id: name, staticConfig: sc, props });
+		if (!expected.ok) throw new Error(`lowerStyled: ${name} ${JSON.stringify(props)}: ${expected.bailout?.message}`);
 		const actual = resolveRecipe(recipe, props);
-		if (sorted(expected.className ?? '') !== sorted(actual.className)) {
-			throw new Error(
-				`lowerStyled: ${name} ${JSON.stringify(props)}\n  tamagui ${sorted(expected.className)}\n  recipe  ${sorted(actual.className)}`,
-			);
-		}
+		const { className: _, style: __, ...attributes } = (expected.viewProps ?? {}) as Record<string, unknown>;
+		const differences = [
+			sorted(expected.className) !== sorted(actual.className) &&
+				`classes\n  tamagui ${sorted(expected.className)}\n  recipe  ${sorted(actual.className)}`,
+			expected.style && Object.keys(expected.style).length > 0 && `inline style ${JSON.stringify(expected.style)}`,
+			JSON.stringify(Object.entries(attributes).sort()) !== JSON.stringify(Object.entries(actual.dom).sort()) &&
+				`attributes\n  tamagui ${JSON.stringify(attributes)}\n  recipe  ${JSON.stringify(actual.dom)}`,
+		].filter(Boolean);
+		if (differences.length) throw new Error(`lowerStyled: ${name} ${JSON.stringify(props)}: ${differences.join('\n')}`);
 	}
 	return cases.length;
 };
@@ -351,7 +371,9 @@ export const lowerModule = async (code: string, id: string) => {
 			}
 		});
 	}
-	if (!calls.size) return null;
+	// A renamed or rewritten definition would otherwise silently fall back to the runtime
+	const missing = Object.keys(allowed).filter((name) => !calls.has(name));
+	if (missing.length) throw new Error(`lowerStyled: ${relative(root, id)}: no \`styled()\` definition named ${missing.join(', ')}`);
 
 	const frames = await evaluate(code, id, [...calls.keys()]);
 	const edits: [start: number, end: number, text: string][] = [];
