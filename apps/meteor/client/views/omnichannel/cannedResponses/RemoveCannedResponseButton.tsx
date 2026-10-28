@@ -5,16 +5,18 @@ import { useTranslation } from 'react-i18next';
 
 import { useRemoveCannedResponse } from './modals/useRemoveCannedResponse';
 
-const RemoveCannedResponseButton = ({ id }: { id: IOmnichannelCannedResponse['_id'] }) => {
+export type RemoveCannedResponseButtonProps = { id: IOmnichannelCannedResponse['_id'] };
+
+const RemoveCannedResponseButton = ({ id }: RemoveCannedResponseButtonProps) => {
 	const { t } = useTranslation();
 
 	const handleDelete = useRemoveCannedResponse(id);
 
 	return (
-		<GenericTableCell withTruncatedText>
+		<GenericTableCell truncate>
 			<IconButton
 				icon='trash'
-				small
+				size='small'
 				title={t('Remove')}
 				onClick={(e) => {
 					e.stopPropagation();

@@ -1,17 +1,16 @@
 import type { IOmnichannelCannedResponse } from '@rocket.chat/core-typings';
-import { Callout } from '@rocket.chat/fuselage';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import { useTranslation } from 'react-i18next';
 
 import CannedResponseEdit from './CannedResponseEdit';
 import CannedResponseEditWithDepartmentData from './CannedResponseEditWithDepartmentData';
 import { useRemoveCannedResponse } from './useRemoveCannedResponse';
 import { FormSkeleton } from '../../../../components/Skeleton';
+import NotAvailableCallout from '../../components/NotAvailableCallout';
 
-const CannedResponseEditWithData = ({ cannedResponseId }: { cannedResponseId: IOmnichannelCannedResponse['_id'] }) => {
-	const { t } = useTranslation();
+export type CannedResponseEditWithDataProps = { cannedResponseId: IOmnichannelCannedResponse['_id'] };
 
+const CannedResponseEditWithData = ({ cannedResponseId }: CannedResponseEditWithDataProps) => {
 	const getCannedResponseById = useEndpoint('GET', '/v1/canned-responses/:_id', { _id: cannedResponseId });
 	const handleDelete = useRemoveCannedResponse(cannedResponseId);
 
@@ -25,11 +24,7 @@ const CannedResponseEditWithData = ({ cannedResponseId }: { cannedResponseId: IO
 	}
 
 	if (isError) {
-		return (
-			<Callout m={16} type='danger'>
-				{t('Not_Available')}
-			</Callout>
-		);
+		return <NotAvailableCallout />;
 	}
 
 	if (data?.cannedResponse?.scope === 'department') {

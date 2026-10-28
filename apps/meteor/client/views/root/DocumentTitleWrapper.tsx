@@ -24,7 +24,7 @@ const useRouteTitleFocus = () => {
 	}, []);
 };
 
-type DocumentTitleWrapperProps = {
+export type DocumentTitleWrapperProps = {
 	children?: ReactNode;
 };
 

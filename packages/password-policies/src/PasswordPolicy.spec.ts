@@ -1,4 +1,5 @@
 import { PasswordPolicy } from './PasswordPolicy';
+import { PasswordPolicyError } from './PasswordPolicyError';
 
 describe('Password tests with default options', () => {
 	it('should allow all passwords', () => {
@@ -186,11 +187,19 @@ describe('Password Policy', () => {
 
 		const policy = passwordPolicy.getPasswordPolicy();
 
-		expect(policy).not.toBe(undefined);
-		expect(policy.enabled).toBe(true);
-		expect(policy.policy.length).toBe(8);
-		expect(policy.policy[0][0]).toBe('get-password-policy-minLength');
-		expect(policy.policy[0][1]?.minLength).toBe(10);
+		expect(policy).toEqual({
+			enabled: true,
+			policy: [
+				['get-password-policy-minLength', { minLength: 10 }],
+				['get-password-policy-maxLength', { maxLength: 20 }],
+				['get-password-policy-forbidRepeatingCharacters'],
+				['get-password-policy-forbidRepeatingCharactersCount', { forbidRepeatingCharactersCount: 4 }],
+				['get-password-policy-mustContainAtLeastOneLowercase'],
+				['get-password-policy-mustContainAtLeastOneUppercase'],
+				['get-password-policy-mustContainAtLeastOneNumber'],
+				['get-password-policy-mustContainAtLeastOneSpecialCharacter'],
+			],
+		});
 	});
 
 	it('should return correct values if policy is disabled', () => {
@@ -215,5 +224,68 @@ describe('Password Policy', () => {
 		// even when no policy is specified, forbidRepeatingCharactersCount is still configured
 		// since its default value is 3
 		expect(policy.policy.length).toBe(1);
+	});
+});
+
+describe('Password validation messages', () => {
+	it('should return no messages when the policy is disabled, even with configured rules', () => {
+		const passwordPolicy = new PasswordPolicy({ enabled: false, minLength: 5, mustContainAtLeastOneNumber: true });
+
+		expect(passwordPolicy.sendValidationMessage('a')).toEqual([]);
+	});
+
+	it('should return no messages when no rules are enabled', () => {
+		const passwordPolicy = new PasswordPolicy({ enabled: true });
+
+		expect(passwordPolicy.sendValidationMessage('a')).toEqual([]);
+	});
+
+	it.each([
+		['', false, true],
+		['a', true, true],
+		['ab', true, false],
+	])('should report inclusive length limits for %j', (password, minValid, maxValid) => {
+		const passwordPolicy = new PasswordPolicy({ enabled: true, minLength: 1, maxLength: 1 });
+
+		expect(passwordPolicy.sendValidationMessage(password)).toEqual([
+			{ name: 'get-password-policy-minLength', limit: 1, isValid: minValid },
+			{ name: 'get-password-policy-maxLength', limit: 1, isValid: maxValid },
+		]);
+	});
+});
+
+describe('Password policy errors', () => {
+	it('should throw a PasswordPolicyError for an empty password by default', () => {
+		const passwordPolicy = new PasswordPolicy({});
+
+		expect(() => passwordPolicy.validate('')).toThrow(PasswordPolicyError);
+		expect(() => passwordPolicy.validate('')).toThrow(
+			expect.objectContaining({
+				message: "The password provided does not meet the server's password policy.",
+				error: 'error-password-policy-not-met',
+				details: undefined,
+			}),
+		);
+	});
+
+	it('should include every failed rule in the thrown error', () => {
+		const passwordPolicy = new PasswordPolicy({ enabled: true, minLength: 5, mustContainAtLeastOneNumber: true });
+
+		expect(() => passwordPolicy.validate('abc')).toThrow(
+			expect.objectContaining({
+				message: "The password provided does not meet the server's password policy.",
+				error: 'error-password-policy-not-met',
+				details: [
+					{
+						error: 'error-password-policy-not-met-minLength',
+						message: 'The password does not meet the minimum length password policy.',
+					},
+					{
+						error: 'error-password-policy-not-met-oneNumber',
+						message: 'The password does not contain at least one numerical character which is against the password policy.',
+					},
+				],
+			}),
+		);
 	});
 });

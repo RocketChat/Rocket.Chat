@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/instance-status",
-	"version": "0.1.55",
+	"version": "0.1.61",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -10,9 +10,9 @@
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.json",
 		"dev": "tsc --watch --preserveWatchOutput -p tsconfig.json",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix .",
-		"test": "echo \"Error: no test specified\" && exit 1"
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
+		"typecheck": "tsc --noEmit"
 	},
 	"dependencies": {
 		"@rocket.chat/models": "workspace:^",
@@ -20,10 +20,8 @@
 	},
 	"devDependencies": {
 		"@rocket.chat/tsconfig": "workspace:*",
-		"eslint": "~9.39.4",
 		"mongodb": "6.16.0",
-		"prettier": "~3.3.3",
-		"typescript": "~5.9.3"
+		"typescript": "~7.0.2"
 	},
 	"volta": {
 		"extends": "../../package.json"

@@ -1,6 +1,7 @@
 import type { ISetting, ISettingColor, LoginServiceConfiguration } from '@rocket.chat/core-typings';
 
-import { ajvQuery } from './Ajv';
+import { ajv, ajvQuery } from './Ajv';
+import { paginationQueryProperties } from './pagination';
 import type { PaginatedRequest } from '../helpers/PaginatedRequest';
 import type { PaginatedResult } from '../helpers/PaginatedResult';
 
@@ -27,27 +28,17 @@ type SettingsUpdatePropDefault = {
 
 export const isSettingsUpdatePropDefault = (props: Partial<SettingsUpdateProps>): props is SettingsUpdatePropDefault => 'value' in props;
 
-type SettingsPublicWithPaginationProps = PaginatedRequest<{ _id?: string; query?: string }>;
+type SettingsPublicWithPaginationProps = PaginatedRequest<{ _id?: string }>;
 
 const SettingsPublicWithPaginationSchema = {
 	type: 'object',
 	properties: {
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
 		},
 		_id: {
-			type: 'string',
-		},
-		query: {
 			type: 'string',
 		},
 	},
@@ -57,7 +48,7 @@ const SettingsPublicWithPaginationSchema = {
 
 export const isSettingsPublicWithPaginationProps = ajvQuery.compile<SettingsPublicWithPaginationProps>(SettingsPublicWithPaginationSchema);
 
-type SettingsGetParams = PaginatedRequest<{ includeDefaults?: boolean; query?: string }>;
+type SettingsGetParams = PaginatedRequest<{ includeDefaults?: boolean }>;
 
 const SettingsGetSchema = {
 	type: 'object',
@@ -65,19 +56,8 @@ const SettingsGetSchema = {
 		includeDefaults: {
 			type: 'boolean',
 		},
-		count: {
-			type: 'number',
-		},
-		offset: {
-			type: 'number',
-		},
+		...paginationQueryProperties,
 		sort: {
-			type: 'string',
-		},
-		fields: {
-			type: 'string',
-		},
-		query: {
 			type: 'string',
 		},
 	},
@@ -86,6 +66,34 @@ const SettingsGetSchema = {
 };
 
 export const isSettingsGetParams = ajvQuery.compile<SettingsGetParams>(SettingsGetSchema);
+
+export type SettingsBulkProps = {
+	settings: { _id: ISetting['_id']; value: ISetting['value']; editor?: ISettingColor['editor'] }[];
+};
+
+const SettingsBulkSchema = {
+	type: 'object',
+	properties: {
+		settings: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: {
+					_id: { type: 'string', minLength: 1 },
+					editor: { type: 'string', enum: ['color', 'expression'] },
+					value: {},
+				},
+				required: ['_id', 'value'],
+				additionalProperties: false,
+			},
+			minItems: 1,
+		},
+	},
+	required: ['settings'],
+	additionalProperties: false,
+};
+
+export const isSettingsBulkProps = ajv.compile<SettingsBulkProps>(SettingsBulkSchema);
 
 export type SettingsEndpoints = {
 	'/v1/settings.public': {
@@ -104,10 +112,19 @@ export type SettingsEndpoints = {
 		POST: (params: { name: string }) => void;
 	};
 
+	'/v1/settings.removeCustomOAuth': {
+		POST: (params: { name: string }) => void;
+	};
+
+	'/v1/settings.refreshOAuthServices': {
+		POST: () => void;
+	};
+
 	'/v1/settings': {
 		GET: (params: SettingsGetParams) => {
 			settings: ISetting[];
 		};
+		POST: (params: SettingsBulkProps) => void;
 	};
 
 	'/v1/settings/:_id': {

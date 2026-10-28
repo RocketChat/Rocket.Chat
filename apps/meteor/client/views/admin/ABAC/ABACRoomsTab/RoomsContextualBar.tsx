@@ -1,23 +1,26 @@
-import { ContextualbarTitle } from '@rocket.chat/fuselage';
-import { ContextualbarClose, ContextualbarHeader } from '@rocket.chat/ui-client';
+import { ContextualbarBack, ContextualbarClose, ContextualbarHeader, ContextualbarTitle } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouteParameter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useState } from 'react';
-import { FormProvider, useForm } from 'react-hook-form';
+import { useEffect, useState } from 'react';
+import { FormProvider, useForm, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import RoomForm from './RoomForm';
+import { toAttributeMap } from '../../../../components/ABAC/AbacRoomCreation/AbacAttributesStep';
+import AbacRoomMembershipPreview from '../../../../components/ABAC/AbacRoomMembershipPreview/AbacRoomMembershipPreview';
+import { hasAttributeChanges } from '../../../../components/ABAC/hasAttributeChanges';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 
-type RoomsContextualBarProps = {
+export type RoomsContextualBarProps = {
 	attributeId?: string;
 	roomInfo?: { rid: string; name: string };
 	attributesData?: { key: string; values: string[] }[];
+	redacted?: boolean;
 
 	onClose: () => void;
 };
 
-const RoomsContextualBar = ({ roomInfo, attributesData, onClose }: RoomsContextualBarProps) => {
+const RoomsContextualBar = ({ roomInfo, attributesData, redacted = false, onClose }: RoomsContextualBarProps) => {
 	const { t } = useTranslation();
 	const queryClient = useQueryClient();
 
@@ -32,9 +35,13 @@ const RoomsContextualBar = ({ roomInfo, attributesData, onClose }: RoomsContextu
 		mode: 'onChange',
 	});
 
-	const { watch } = methods;
+	const { watch, control } = methods;
 
 	const [selectedRoomLabel, setSelectedRoomLabel] = useState<string>('');
+	const [previewAttributes, setPreviewAttributes] = useState<Record<string, string[]>>();
+
+	const attributes = useWatch({ control, name: 'attributes' });
+	const attributesChanged = hasAttributeChanges(attributes, attributesData);
 
 	const attributeId = useRouteParameter('id');
 	const createOrUpdateABACRoom = useEndpoint('POST', '/v1/abac/rooms/:rid/attributes', { rid: watch('room') });
@@ -42,19 +49,12 @@ const RoomsContextualBar = ({ roomInfo, attributesData, onClose }: RoomsContextu
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const saveMutation = useMutation({
-		mutationFn: async (data: { room: string; attributes: { key: string; values: string[] }[] }) => {
-			const payload = {
-				attributes: data.attributes.reduce((acc: Record<string, string[]>, attribute) => {
-					acc[attribute.key] = attribute.values;
-					return acc;
-				}, {}),
-			};
-
-			await createOrUpdateABACRoom(payload);
+		mutationFn: async (payload: Record<string, string[]>) => {
+			await createOrUpdateABACRoom({ attributes: payload });
 		},
 		onSuccess: () => {
 			if (attributeId) {
-				dispatchToastMessage({ type: 'success', message: t('ABAC_Room_updated', { roomName: selectedRoomLabel }) });
+				dispatchToastMessage({ type: 'success', message: t('ABAC_Room_attributes_updated') });
 			} else {
 				dispatchToastMessage({ type: 'success', message: t('ABAC_Room_created', { roomName: selectedRoomLabel }) });
 			}
@@ -68,19 +68,56 @@ const RoomsContextualBar = ({ roomInfo, attributesData, onClose }: RoomsContextu
 		},
 	});
 
+	const previewRid = roomInfo?.rid;
+	useEffect(() => {
+		if (!previewRid) {
+			return;
+		}
+		return () => queryClient.removeQueries({ queryKey: ABACQueryKeys.roomMembershipPreview.all(previewRid) });
+	}, [queryClient, previewRid]);
+
+	const isPreviewing = !!roomInfo && !!previewAttributes;
+
+	const getTitle = () => {
+		if (isPreviewing) {
+			return t('ABAC_Members_preview');
+		}
+		return t(attributeId ? 'ABAC_Edit_Room' : 'ABAC_Add_room');
+	};
+
 	return (
 		<>
 			<ContextualbarHeader>
-				<ContextualbarTitle>{t(attributeId ? 'ABAC_Edit_Room' : 'ABAC_Add_room')}</ContextualbarTitle>
+				{isPreviewing && <ContextualbarBack onClick={() => setPreviewAttributes(undefined)} disabled={saveMutation.isPending} />}
+				<ContextualbarTitle>{getTitle()}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
 			<FormProvider {...methods}>
-				<RoomForm
-					roomInfo={roomInfo}
-					onSave={(values) => saveMutation.mutateAsync(values)}
-					onClose={onClose}
-					setSelectedRoomLabel={setSelectedRoomLabel}
-				/>
+				{isPreviewing ? (
+					<AbacRoomMembershipPreview
+						rid={roomInfo.rid}
+						roomName={roomInfo.name}
+						attributes={previewAttributes}
+						isSaving={saveMutation.isPending}
+						onBack={() => setPreviewAttributes(undefined)}
+						onSave={() => saveMutation.mutate(previewAttributes)}
+					/>
+				) : (
+					<RoomForm
+						roomInfo={roomInfo}
+						hasAttributeChanges={attributesChanged}
+						onSave={(values) => {
+							if (roomInfo) {
+								setPreviewAttributes(toAttributeMap(values.attributes));
+								return;
+							}
+							return saveMutation.mutateAsync(toAttributeMap(values.attributes));
+						}}
+						onClose={onClose}
+						setSelectedRoomLabel={setSelectedRoomLabel}
+						redacted={redacted}
+					/>
+				)}
 			</FormProvider>
 		</>
 	);

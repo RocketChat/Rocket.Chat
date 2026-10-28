@@ -2,13 +2,10 @@ import { Badge, Skeleton } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useTranslation, usePermission, useRouter } from '@rocket.chat/ui-contexts';
 
-import { useUserDropdownAppsActionButtons } from '../../../hooks/useUserDropdownAppsActionButtons';
 import { useAppRequestStats } from '../../../views/marketplace/hooks/useAppRequestStats';
 
 export const useMarketPlaceMenu = () => {
 	const t = useTranslation();
-
-	const appBoxItems = useUserDropdownAppsActionButtons();
 
 	const hasManageAppsPermission = usePermission('manage-apps');
 	const hasAccessMarketplacePermission = usePermission('access-marketplace');
@@ -54,11 +51,7 @@ export const useMarketPlaceMenu = () => {
 	return [
 		{
 			title: t('Marketplace'),
-			items: [
-				...(showMarketplace ? marketPlaceItems : []),
-				...(hasManageAppsPermission ? [appsManagementItem] : []),
-				...(appBoxItems.isSuccess ? appBoxItems.data : []),
-			],
+			items: [...(showMarketplace ? marketPlaceItems : []), ...(hasManageAppsPermission ? [appsManagementItem] : [])],
 		},
 	];
 };

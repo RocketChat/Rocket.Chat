@@ -2,7 +2,7 @@ import type { SlashCommandPreviews } from '@rocket.chat/core-typings';
 
 export type CommandsEndpoints = {
 	'/v1/commands.run': {
-		POST: (params: { command: string; params?: string; roomId: string; tmid?: string; triggerId: string }) => {
+		POST: (params: { command: string; params?: string; roomId: string; tmid?: string; triggerId?: string }) => {
 			result: unknown;
 		};
 	};

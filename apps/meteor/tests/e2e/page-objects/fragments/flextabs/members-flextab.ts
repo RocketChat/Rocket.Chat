@@ -22,6 +22,37 @@ export class ConfirmMuteModal extends Modal {
 	}
 }
 
+export class RemoveTeamMemberModal extends Modal {
+	constructor(page: Page) {
+		super(page.getByRole('dialog', { name: 'Removing member' }));
+	}
+
+	get description() {
+		return this.root.getByText('Select the channels you want the user to be removed from');
+	}
+
+	channel(channelName: string) {
+		return this.root.getByText(channelName);
+	}
+
+	channelCheckbox(channelName: string) {
+		return this.root.getByRole('row', { name: channelName }).getByRole('checkbox');
+	}
+
+	async selectChannel(channelName: string) {
+		await this.channel(channelName).click();
+	}
+
+	private get btnContinue() {
+		return this.root.getByRole('button', { name: 'Continue' });
+	}
+
+	async continue() {
+		await this.btnContinue.click();
+		await this.waitForDismissal();
+	}
+}
+
 class AddUsersFlexTab extends FlexTab {
 	readonly listbox: Listbox;
 
@@ -35,7 +66,7 @@ class AddUsersFlexTab extends FlexTab {
 	}
 
 	async addUser(username: string) {
-		await this.root.getByRole('textbox', { name: 'Choose users' }).pressSequentially(username);
+		await this.root.getByRole('combobox', { name: 'Choose users' }).pressSequentially(username);
 		await this.listbox.selectOption(username);
 		await this.btnAddUsers().click();
 		await this.waitForDismissal();
@@ -46,6 +77,8 @@ export class MembersFlexTab extends FlexTab {
 	readonly listbox: Listbox;
 
 	readonly removeModal: ConfirmRemoveModal;
+
+	readonly removeTeamMemberModal: RemoveTeamMemberModal;
 
 	readonly menu: MenuMore;
 
@@ -58,6 +91,7 @@ export class MembersFlexTab extends FlexTab {
 	constructor(page: Page) {
 		super(page.getByRole('dialog', { name: 'Members' }));
 		this.removeModal = new ConfirmRemoveModal(page.getByRole('dialog', { name: 'Confirmation', exact: true }));
+		this.removeTeamMemberModal = new RemoveTeamMemberModal(page);
 		this.listbox = new Listbox(page);
 		this.menu = new MenuMore(page);
 		this.confirmMuteModal = new ConfirmMuteModal(page);
@@ -66,7 +100,7 @@ export class MembersFlexTab extends FlexTab {
 	}
 
 	memberOption(username: string) {
-		return this.root.locator('li', { hasText: username });
+		return this.root.getByRole('listitem').filter({ hasText: username });
 	}
 
 	getMenuItemAction(action: string) {
@@ -92,7 +126,7 @@ export class MembersFlexTab extends FlexTab {
 	}
 
 	private get btnInviteLink() {
-		return this.root.getByRole('button', { name: 'Invite Link' });
+		return this.root.getByRole('button', { name: 'Invite link' });
 	}
 
 	async inviteUser() {
@@ -121,7 +155,7 @@ export class MembersFlexTab extends FlexTab {
 	}
 
 	async showAllUsers() {
-		await this.root.getByRole('button', { name: 'Online' }).click();
+		await this.root.getByRole('combobox', { name: 'Status' }).click();
 		await this.listbox.selectOption('All');
 	}
 

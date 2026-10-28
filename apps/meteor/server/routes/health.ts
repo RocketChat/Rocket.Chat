@@ -2,15 +2,13 @@ import type { IncomingMessage, ServerResponse } from 'node:http';
 import { monitorEventLoopDelay } from 'node:perf_hooks';
 import { getHeapStatistics } from 'node:v8';
 
-import { MongoInternals } from 'meteor/mongo';
 import { WebApp } from 'meteor/webapp';
 
+import { db } from '../database/utils';
 import { SystemLogger } from '../lib/logger/system';
 
-const { mongo } = MongoInternals.defaultRemoteCollectionDriver();
-
 export function pingMongo() {
-	return mongo.db.command({ ping: 1 });
+	return db.command({ ping: 1 });
 }
 
 function setDefaultHeaders(res: ServerResponse) {

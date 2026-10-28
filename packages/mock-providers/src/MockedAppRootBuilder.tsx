@@ -1,6 +1,7 @@
 import type {
 	CallPreferences,
 	DirectCallData,
+	IRole,
 	IRoom,
 	ISetting,
 	IUser,
@@ -23,6 +24,7 @@ import languages from '@rocket.chat/i18n/dist/languages';
 import { createPredicateFromFilter } from '@rocket.chat/mongo-adapter';
 import type { Method, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import type {
+	ConnectionStatusContextValue,
 	Device,
 	DeviceContext,
 	LoginService,
@@ -30,10 +32,12 @@ import type {
 	ServerContextValue,
 	SettingsContextQuery,
 	SubscriptionWithRoom,
+	ToastMessagesContextValue,
 	TranslationKey,
 } from '@rocket.chat/ui-contexts';
 import {
 	AuthorizationContext,
+	ConnectionStatusContext,
 	RouterContext,
 	ServerContext,
 	SettingsContext,
@@ -43,6 +47,7 @@ import {
 	ModalContext,
 	UserPresenceContext,
 	AuthenticationContext,
+	ToastMessagesContext,
 } from '@rocket.chat/ui-contexts';
 import type { VideoConfPopupPayload } from '@rocket.chat/ui-video-conf';
 import { VideoConfContext } from '@rocket.chat/ui-video-conf';
@@ -60,7 +65,6 @@ type Mutable<T> = {
 	-readonly [P in keyof T]: T[P];
 };
 
-// eslint-disable-next-line @typescript-eslint/naming-convention
 // interface MockedAppRootEvents extends Record<`stream-${StreamNames}-${StreamKeys<StreamNames>}`, any> {
 // 	'update-modal': void;
 // }
@@ -93,15 +97,15 @@ export type StreamControllerRef<N extends StreamNames> = {
 
 const empty = [] as const;
 
+const mockedVideoConfCapabilities: ProviderCapabilities = { mic: true, cam: true };
+const mockedVideoConfPreferences: CallPreferences = { mic: true, cam: true };
+
 export class MockedAppRootBuilder {
 	private _settings: Map<string, ISetting> = new Map();
 
 	private wrappers: Array<(children: ReactNode) => ReactNode> = [];
 
 	private server: ContextType<typeof ServerContext> = {
-		connected: true,
-		status: 'connected',
-		retryCount: 0,
 		info: undefined,
 		absoluteUrl: (path: string) => `http://localhost:3000/${path}`,
 		callEndpoint: <TMethod extends Method, TPathPattern extends PathPattern>({
@@ -116,15 +120,22 @@ export class MockedAppRootBuilder {
 			throw new Error(`not implemented (method: ${method}, pathPattern: ${pathPattern})`);
 		},
 		getStream: () => () => () => undefined,
+		getStreamAll: () => () => () => undefined,
 		uploadToEndpoint: () => Promise.reject(new Error('not implemented')),
 		callMethod: () => Promise.reject(new Error('not implemented')),
+		writeStream: () => {
+			throw new Error('not implemented');
+		},
+	};
+
+	private connectionStatus: ConnectionStatusContextValue = {
+		connected: true,
+		status: 'connected',
+		retryCount: 0,
 		disconnect: () => {
 			throw new Error('not implemented');
 		},
 		reconnect: () => {
-			throw new Error('not implemented');
-		},
-		writeStream: () => {
 			throw new Error('not implemented');
 		},
 	};
@@ -165,12 +176,21 @@ export class MockedAppRootBuilder {
 		userId: undefined,
 	};
 
+	private toastMessages: ToastMessagesContextValue = {
+		dispatch: () => undefined,
+	};
+
 	private userPresence: ContextType<typeof UserPresenceContext> = {
 		queryUserData: (_uid) => ({ subscribe: () => () => undefined, get: () => undefined }),
 	};
 
 	private videoConf: ContextType<typeof VideoConfContext> = {
-		queryIncomingCalls: () => [() => () => undefined, () => []],
+		// Overwritten in `build`, from whatever `withSetting` was told, so a spec turns the call window on the
+		// same way it turns on any other setting.
+		conferenceWindowEnabled: false,
+		// `empty` rather than a fresh array: `useSyncExternalStore` compares snapshots by identity, and a new one
+		// every read is an endless re-render.
+		queryIncomingCalls: () => [() => () => undefined, () => empty as unknown as DirectCallData[]],
 		queryRinging: () => [() => () => undefined, () => false],
 		queryCalling: () => [() => () => undefined, () => false],
 		dispatchOutgoing(_options: Omit<VideoConfPopupPayload, 'id'>): void {
@@ -203,12 +223,19 @@ export class MockedAppRootBuilder {
 		loadCapabilities(): Promise<void> {
 			throw new Error('Function not implemented.');
 		},
-		queryCapabilities(): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ProviderCapabilities] {
-			throw new Error('Function not implemented.');
-		},
-		queryPreferences(): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => CallPreferences] {
-			throw new Error('Function not implemented.');
-		},
+		// The actions above throw so that a test triggering one has to say what it expects to happen. These two
+		// are reads, and every video-conf popup does them just by rendering — throwing would fail such a test on
+		// the render rather than on anything it means to assert.
+		// Both snapshots are module constants, not fresh objects: `useSyncExternalStore` compares them by identity
+		// and a new object every read is an endless re-render.
+		queryCapabilities: (): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => ProviderCapabilities] => [
+			() => () => undefined,
+			() => mockedVideoConfCapabilities,
+		],
+		queryPreferences: (): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => CallPreferences] => [
+			() => () => undefined,
+			() => mockedVideoConfPreferences,
+		],
 	};
 
 	private room: IRoom | undefined = undefined;
@@ -230,18 +257,18 @@ export class MockedAppRootBuilder {
 		},
 	};
 
-	private authorization: ContextType<typeof AuthorizationContext> = (() => {
-		const dummyRolesMap: ReturnType<ContextType<typeof AuthorizationContext>['getRoles']> = new Map();
+	// Mutated by `withRoleDefinition` before render, then held stable, so the identity is
+	// a safe `useSyncExternalStore` snapshot.
+	private rolesMap = new Map<IRole['_id'], IRole>();
 
-		return {
-			queryPermission: () => [() => () => undefined, () => false],
-			queryAtLeastOnePermission: () => [() => () => undefined, () => false],
-			queryAllPermissions: () => [() => () => undefined, () => false],
-			queryRole: () => [() => () => undefined, () => false],
-			getRoles: () => dummyRolesMap,
-			subscribeToRoles: () => () => undefined,
-		};
-	})();
+	private authorization: ContextType<typeof AuthorizationContext> = {
+		queryPermission: () => [() => () => undefined, () => false],
+		queryAtLeastOnePermission: () => [() => () => undefined, () => false],
+		queryAllPermissions: () => [() => () => undefined, () => false],
+		queryRole: () => [() => () => undefined, () => false],
+		getRoles: () => this.rolesMap,
+		subscribeToRoles: () => () => undefined,
+	};
 
 	private authServices: LoginService[] = [];
 
@@ -256,7 +283,9 @@ export class MockedAppRootBuilder {
 			getCurrentValue: () => this.authServices,
 			subscribe: () => () => undefined,
 		},
-		unstoreLoginToken: () => async () => Promise.reject('unstoreLoginToken not implemented'),
+		getLoginToken: () => null,
+		unstoreLoginToken: () => () => undefined,
+		wipeLocalAuth: () => undefined,
 	};
 
 	private events = new Emitter<MockedAppRootEvents>();
@@ -449,6 +478,18 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
+	withLogout(logout: ContextType<typeof UserContext>['logout']): this {
+		this.user = { ...this.user, logout };
+
+		return this;
+	}
+
+	withToastMessageDispatch(dispatch: ToastMessagesContextValue['dispatch']): this {
+		this.toastMessages = { ...this.toastMessages, dispatch };
+
+		return this;
+	}
+
 	withUsers(users: IUser[]): this {
 		users.forEach((user) => {
 			this.userPresence.queryUserData = (_uid) => ({ subscribe: () => () => undefined, get: () => user });
@@ -507,6 +548,48 @@ export class MockedAppRootBuilder {
 		};
 
 		this.authorization.queryRole = outerFn;
+
+		return this;
+	}
+
+	/**
+	 * Grants a role scoped to `Subscriptions` — `owner`, `moderator`, `leader`, or a custom
+	 * one — in a single room. Unlike {@link withRole}, the grant is not workspace-wide: a
+	 * check only passes when it carries that room as its scope, which is how the real
+	 * provider resolves a subscription role. The role is deliberately kept out of the user's
+	 * `roles`, where only a `Users`-scoped grant belongs.
+	 */
+	withRoleScoped(role: string, scope: IRoom['_id']): this {
+		const innerFn = this.authorization.queryRole;
+
+		const outerFn = (
+			innerRole: string | ObjectId,
+			innerScope?: string | undefined,
+		): [subscribe: (onStoreChange: () => void) => () => void, getSnapshot: () => boolean] => {
+			if (innerRole === role && innerScope === scope) {
+				return [() => () => undefined, () => true];
+			}
+
+			return innerFn(innerRole, innerScope);
+		};
+
+		this.authorization.queryRole = outerFn;
+
+		return this;
+	}
+
+	/**
+	 * Registers a role in the workspace roles map without granting it. A custom role
+	 * has an id that differs from its name, so pass both to exercise code that
+	 * resolves a name to an id. Chain `withRole(_id)` to grant it to the user.
+	 */
+	withRoleDefinition(role: Pick<IRole, '_id' | 'name'> & Partial<IRole>): this {
+		this.rolesMap.set(role._id, {
+			description: '',
+			protected: false,
+			scope: 'Users',
+			...role,
+		} as IRole);
 
 		return this;
 	}
@@ -637,7 +720,7 @@ export class MockedAppRootBuilder {
 		interpolation: {
 			escapeValue: false,
 		},
-		initImmediate: false,
+		initAsync: false,
 	}).use(initReactI18next);
 
 	withTranslations(lng: string, ns: string, resources: Record<string, string>): this {
@@ -677,6 +760,11 @@ export class MockedAppRootBuilder {
 		return this;
 	}
 
+	withConnectionStatus(partial: Partial<ConnectionStatusContextValue>): this {
+		this.connectionStatus = { ...this.connectionStatus, ...partial };
+		return this;
+	}
+
 	withQueryClient(client: QueryClient): this {
 		this._providedQueryClient = client;
 		return this;
@@ -686,6 +774,7 @@ export class MockedAppRootBuilder {
 		const {
 			queryClient,
 			server,
+			connectionStatus,
 			router,
 			settings,
 			user,
@@ -696,7 +785,15 @@ export class MockedAppRootBuilder {
 			wrappers,
 			deviceContext,
 			authentication,
+			toastMessages,
 		} = this;
+
+		// The call window is gated on a setting, but every site that changes with it reads the answer off this
+		// context — so a spec that says `withSetting` gets the behaviour it asked for without also knowing that.
+		if (videoConf) {
+			const [, getConferenceWindowSetting] = settings.querySetting('VideoConf_Conference_Window_Enabled');
+			videoConf.conferenceWindowEnabled = Boolean(getConferenceWindowSetting()?.value);
+		}
 
 		const reduceTranslation = (translation?: ContextType<typeof TranslationContext>): ContextType<typeof TranslationContext> => {
 			return {
@@ -764,62 +861,64 @@ export class MockedAppRootBuilder {
 								<I18nextProvider i18n={i18n}>
 									<TranslationContext.Provider value={translation}>
 										{/* <SessionProvider>
-												<TooltipProvider>
-														<ToastMessagesProvider>
-																<LayoutProvider>
-																		<AvatarUrlProvider>
-																				<CustomSoundProvider> */}
-										<UserContext.Provider value={user}>
-											<AuthenticationContext.Provider value={authentication}>
-												<MockedDeviceContext {...deviceContext}>
-													<ModalContext.Provider value={modal}>
-														<AuthorizationContext.Provider value={authorization}>
-															{/* <EmojiPickerProvider>
+												<TooltipProvider> */}
+										<ToastMessagesContext.Provider value={toastMessages}>
+											{/* <LayoutProvider>
+																	<AvatarUrlProvider>
+																			<CustomSoundProvider> */}
+											<ConnectionStatusContext.Provider value={connectionStatus}>
+												<UserContext.Provider value={user}>
+													<AuthenticationContext.Provider value={authentication}>
+														<MockedDeviceContext {...deviceContext}>
+															<ModalContext.Provider value={modal}>
+																<AuthorizationContext.Provider value={authorization}>
+																	{/* <EmojiPickerProvider>
 																<OmnichannelRoomIconProvider>
 																	*/}
-															<UserPresenceContext.Provider value={userPresence}>
-																<ActionManagerContext.Provider
-																	value={{
-																		generateTriggerId: () => '',
-																		emitInteraction: () => Promise.reject(new Error('not implemented')),
-																		getInteractionPayloadByViewId: () => undefined,
-																		handleServerInteraction: () => undefined,
-																		off: () => undefined,
-																		on: () => undefined,
-																		openView: () => undefined,
-																		disposeView: () => undefined,
-																		notifyBusy: () => undefined,
-																		notifyIdle: () => undefined,
-																	}}
-																>
-																	<VideoConfContext.Provider value={videoConf}>
-																		{/* <CallProvider>
+																	<UserPresenceContext.Provider value={userPresence}>
+																		<ActionManagerContext.Provider
+																			value={{
+																				generateTriggerId: () => '',
+																				emitInteraction: () => Promise.reject(new Error('not implemented')),
+																				getInteractionPayloadByViewId: () => undefined,
+																				handleServerInteraction: () => undefined,
+																				off: () => undefined,
+																				on: () => undefined,
+																				openView: () => undefined,
+																				disposeView: () => undefined,
+																				notifyBusy: () => undefined,
+																				notifyIdle: () => undefined,
+																			}}
+																		>
+																			<VideoConfContext.Provider value={videoConf}>
+																				{/* <CallProvider>
 																		<OmnichannelProvider> */}
-																		{wrappers.reduce<ReactNode>(
-																			(children, wrapper) => wrapper(children),
-																			<>
-																				{children}
-																				{modal.currentModal.component}
-																			</>,
-																		)}
-																		{/* </OmnichannelProvider>
+																				{wrappers.reduce<ReactNode>(
+																					(children, wrapper) => wrapper(children),
+																					<>
+																						{children}
+																						{modal.currentModal.component}
+																					</>,
+																				)}
+																				{/* </OmnichannelProvider>
 																	</CallProvider> */}
-																	</VideoConfContext.Provider>
-																</ActionManagerContext.Provider>
-															</UserPresenceContext.Provider>
-															{/*
+																			</VideoConfContext.Provider>
+																		</ActionManagerContext.Provider>
+																	</UserPresenceContext.Provider>
+																	{/*
 																</OmnichannelRoomIconProvider>
 															</EmojiPickerProvider>*/}
-														</AuthorizationContext.Provider>
-													</ModalContext.Provider>
-												</MockedDeviceContext>
-											</AuthenticationContext.Provider>
-										</UserContext.Provider>
-										{/* 					</CustomSoundProvider>
-																</AvatarUrlProvider>
-															</LayoutProvider>
-														</ToastMessagesProvider>
-													</TooltipProvider>
+																</AuthorizationContext.Provider>
+															</ModalContext.Provider>
+														</MockedDeviceContext>
+													</AuthenticationContext.Provider>
+												</UserContext.Provider>
+											</ConnectionStatusContext.Provider>
+											{/* 					</CustomSoundProvider>
+																	</AvatarUrlProvider>
+																</LayoutProvider> */}
+										</ToastMessagesContext.Provider>
+										{/* 	</TooltipProvider>
 												</SessionProvider> */}
 									</TranslationContext.Provider>
 								</I18nextProvider>
@@ -834,7 +933,6 @@ export class MockedAppRootBuilder {
 	buildStoryDecorator(): Decorator {
 		const WrapperComponent = this.build();
 
-		// eslint-disable-next-line react/display-name, react/no-multi-comp
 		return (fn) => <WrapperComponent>{fn()}</WrapperComponent>;
 	}
 }

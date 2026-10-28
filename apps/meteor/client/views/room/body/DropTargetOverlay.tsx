@@ -1,13 +1,12 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import type { DragEvent, ReactElement, ReactNode } from 'react';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { useFormatDateAndTime } from '@rocket.chat/ui-client';
+import type { DragEvent, ReactNode } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useFormatDateAndTime } from '../../../hooks/useFormatDateAndTime';
-
-type DropTargetOverlayProps = {
+export type DropTargetOverlayProps = {
 	enabled: boolean;
 	reason?: ReactNode;
 	onFileDrop?: (files: File[]) => void;
@@ -15,15 +14,15 @@ type DropTargetOverlayProps = {
 	onDismiss?: () => void;
 };
 
-function DropTargetOverlay({ enabled, reason, onFileDrop, visible = true, onDismiss }: DropTargetOverlayProps): ReactElement | null {
+function DropTargetOverlay({ enabled, reason, onFileDrop, visible = true, onDismiss }: DropTargetOverlayProps) {
 	const { t } = useTranslation();
 
-	const handleDragLeave = useEffectEvent((event: DragEvent) => {
+	const handleDragLeave = useStableCallback((event: DragEvent) => {
 		event.stopPropagation();
 		onDismiss?.();
 	});
 
-	const handleDragOver = useEffectEvent((event: DragEvent) => {
+	const handleDragOver = useStableCallback((event: DragEvent) => {
 		event.stopPropagation();
 
 		event.preventDefault();
@@ -32,7 +31,7 @@ function DropTargetOverlay({ enabled, reason, onFileDrop, visible = true, onDism
 
 	const formatDateAndTime = useFormatDateAndTime();
 
-	const handleDrop = useEffectEvent(async (event: DragEvent) => {
+	const handleDrop = useStableCallback(async (event: DragEvent) => {
 		event.stopPropagation();
 		onDismiss?.();
 
@@ -40,13 +39,13 @@ function DropTargetOverlay({ enabled, reason, onFileDrop, visible = true, onDism
 
 		const files = Array.from(event.dataTransfer.files);
 
-		if (event.dataTransfer.types.includes('text/uri-list') && event.dataTransfer.types.includes('text/html')) {
+		if (files.length === 0 && event.dataTransfer.types.includes('text/uri-list') && event.dataTransfer.types.includes('text/html')) {
 			const fragment = document.createRange().createContextualFragment(event.dataTransfer.getData('text/html'));
 			for await (const { src } of Array.from(fragment.querySelectorAll('img'))) {
 				try {
 					const response = await fetch(src);
 					const data = await response.blob();
-					const extension = (await import('../../../../app/utils/lib/mimeTypes')).mime.extension(data.type);
+					const extension = (await import('../../../../lib/mimeTypes')).mime.extension(data.type);
 					const filename = `File - ${formatDateAndTime(new Date())}.${extension}`;
 					const file = new File([data], filename, { type: data.type });
 					files.push(file);
@@ -76,7 +75,7 @@ function DropTargetOverlay({ enabled, reason, onFileDrop, visible = true, onDism
 			fontScale='hero'
 			textAlign='center'
 			backgroundColor='surface-overlay'
-			borderWidth={4}
+			borderWidth='large'
 			borderStyle='dashed'
 			borderColor='currentColor'
 			color={enabled ? 'default' : 'danger'}

@@ -1,3 +1,4 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { UserStatus, type IUser } from '@rocket.chat/core-typings';
 import { Settings, Rooms, Users, Roles } from '@rocket.chat/models';
 import { validateEmail } from '@rocket.chat/tools';
@@ -6,12 +7,12 @@ import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 
 import { addCallHistoryTestData } from './callHistoryTestData';
-import { FileUpload } from '../../app/file-upload/server';
-import { addUserToDefaultChannels } from '../../app/lib/server/functions/addUserToDefaultChannels';
-import { checkUsernameAvailability } from '../../app/lib/server/functions/checkUsernameAvailability';
-import { notifyOnSettingChangedById } from '../../app/lib/server/lib/notifyListener';
-import { settings } from '../../app/settings/server';
+import { FileUpload } from '../lib/media/file-upload';
+import { notifyOnSettingChangedById } from '../lib/notifyListener';
 import { addUserRolesAsync } from '../lib/roles/addUserRoles';
+import { addUserToDefaultChannels } from '../lib/rooms/addUserToDefaultChannels';
+import { checkUsernameAvailability } from '../lib/users/checkUsernameAvailability';
+import { settings } from '../settings';
 
 export async function insertAdminUserFromEnv() {
 	if (process.env.ADMIN_PASS) {
@@ -205,7 +206,7 @@ Meteor.startup(async () => {
 
 	await Users.removeById('rocketchat.internal.admin.test');
 
-	if (process.env.TEST_MODE === 'true') {
+	if (process.env.TEST_MODE === 'true' || process.env.TEST_MODE === 'api') {
 		console.log(colors.green('Inserting admin test user:'));
 
 		const adminUser: Omit<IUser, 'createdAt' | 'roles' | '_updatedAt'> = {
@@ -231,11 +232,11 @@ Meteor.startup(async () => {
 		console.log(colors.green(`Password: ${adminUser._id}`));
 
 		if (await Users.findOneByEmailAddress(adminUser.emails![0].address)) {
-			throw new Meteor.Error(`Email ${adminUser.emails![0].address} already exists`, "Rocket.Chat can't run in test mode");
+			throw new ClientSafeError(`Email ${adminUser.emails![0].address} already exists`, "Rocket.Chat can't run in test mode");
 		}
 
 		if (!(await checkUsernameAvailability(adminUser.username!))) {
-			throw new Meteor.Error(`Username ${adminUser.username} already exists`, "Rocket.Chat can't run in test mode");
+			throw new ClientSafeError(`Username ${adminUser.username} already exists`, "Rocket.Chat can't run in test mode");
 		}
 
 		await Users.create(adminUser);

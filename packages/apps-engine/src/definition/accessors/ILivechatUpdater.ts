@@ -41,8 +41,5 @@ export interface ILivechatUpdater {
 	 *
 	 * @returns Promise resolving to the updated visitor, or undefined if not found
 	 */
-	updateVisitorExternalId(
-		visitorId: string,
-		externalId: Omit<IVisitorExternalIdentifier, 'appId'>,
-	): Promise<IVisitor | undefined>;
+	updateVisitorExternalId(visitorId: string, externalId: Omit<IVisitorExternalIdentifier, 'appId'>): Promise<IVisitor | undefined>;
 }

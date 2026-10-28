@@ -1,6 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import FilterByText from '../../../components/FilterByText';
@@ -10,7 +9,7 @@ import RadioDropDown from '../components/RadioDropDown/RadioDropDown';
 import type { CategoryDropDownListProps, CategoryOnSelected, selectedCategoriesList } from '../definitions/CategoryDropdownDefinitions';
 import type { RadioDropDownGroup, RadioDropDownOnSelected } from '../definitions/RadioDropDownDefinitions';
 
-type AppsFiltersProps = {
+export type AppsFiltersProps = {
 	text: string;
 	setText: (text: string) => void;
 	freePaidFilterStructure: RadioDropDownGroup;
@@ -40,7 +39,7 @@ const AppsFilters = ({
 	statusFilterStructure,
 	statusFilterOnSelected,
 	context,
-}: AppsFiltersProps): ReactElement => {
+}: AppsFiltersProps) => {
 	const { t } = useTranslation();
 
 	const isPrivateAppsPage = context === 'private';
@@ -57,16 +56,24 @@ const AppsFilters = ({
 	const fixFiltersSize = breakpoints.includes('lg') ? { maxWidth: 'x200', minWidth: 'x200' } : null;
 
 	return (
-		<Box pi={24}>
+		<Box paddingInline={24}>
 			<FilterByText value={text} onChange={(event) => setText(event.target.value)} placeholder={appsSearchPlaceholders[context]}>
 				{!isPrivateAppsPage && (
-					<RadioDropDown group={freePaidFilterStructure} onSelected={freePaidFilterOnSelected} flexGrow={1} {...fixFiltersSize} />
+					<Box display='flex' flexDirection='column' flexGrow={1} {...fixFiltersSize}>
+						<RadioDropDown group={freePaidFilterStructure} onSelected={freePaidFilterOnSelected} />
+					</Box>
 				)}
-				<RadioDropDown group={statusFilterStructure} onSelected={statusFilterOnSelected} flexGrow={1} {...fixFiltersSize} />
+				<Box display='flex' flexDirection='column' flexGrow={1} {...fixFiltersSize}>
+					<RadioDropDown group={statusFilterStructure} onSelected={statusFilterOnSelected} />
+				</Box>
 				{!isPrivateAppsPage && (
-					<CategoryDropDown categories={categories} selectedCategories={selectedCategories} onSelected={onSelected} flexGrow={1} />
+					<Box display='flex' flexDirection='column' flexGrow={1}>
+						<CategoryDropDown categories={categories} selectedCategories={selectedCategories} onSelected={onSelected} />
+					</Box>
 				)}
-				<RadioDropDown group={sortFilterStructure} onSelected={sortFilterOnSelected} flexGrow={1} {...fixFiltersSize} />
+				<Box display='flex' flexDirection='column' flexGrow={1} {...fixFiltersSize}>
+					<RadioDropDown group={sortFilterStructure} onSelected={sortFilterOnSelected} />
+				</Box>
 			</FilterByText>
 			<TagList categories={categoryTagList} onClick={onSelected} />
 		</Box>

@@ -1,11 +1,10 @@
 import { MessageGenericPreviewCoverImage } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 
 import OEmbedCollapsible from './OEmbedCollapsible';
 import type { OEmbedPreviewMetadata } from './OEmbedPreviewMetadata';
 
-const OEmbedLinkPreview = ({ image, url, ...props }: OEmbedPreviewMetadata): ReactElement => (
+const OEmbedLinkPreview = ({ image, url, ...props }: OEmbedPreviewMetadata) => (
 	<OEmbedCollapsible url={url} {...props}>
 		{image?.url && url && (
 			<ExternalLink to={url}>

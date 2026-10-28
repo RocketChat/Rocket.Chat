@@ -1,6 +1,6 @@
-export interface IPermission {
-	_id: string;
-	_updatedAt: Date;
+import type { IRocketChatRecord } from './IRocketChatRecord';
+
+export interface IPermission extends IRocketChatRecord {
 	roles: string[];
 	// TODO: migrate settings with group and section with null to undefined
 	group?: string | null;

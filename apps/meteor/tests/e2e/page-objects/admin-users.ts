@@ -1,10 +1,10 @@
 import type { Locator, Page } from '@playwright/test';
 
-import { Admin } from './admin';
+import { Admin, AdminSectionsHref } from './admin';
 import { MenuMoreActions, UserInfoFlexTab, EditUserFlexTab } from './fragments';
 import { expect } from '../utils/test';
 
-type UserActions = 'Make Admin' | 'Remove Admin' | 'Activate' | 'Deactivate';
+type UserActions = 'Make admin' | 'Remove admin' | 'Activate' | 'Deactivate' | 'Manage user status';
 
 export class AdminUsers extends Admin {
 	readonly editUser: EditUserFlexTab;
@@ -20,6 +20,14 @@ export class AdminUsers extends Admin {
 		this.userRowMenu = new MenuMoreActions(page);
 	}
 
+	protected readonly route = AdminSectionsHref.users;
+
+	protected readonly title = 'Users';
+
+	override async waitForReady(): Promise<void> {
+		await this.inputSearchUsers.waitFor({ state: 'visible' });
+	}
+
 	get btnNewUser(): Locator {
 		return this.page.getByRole('button', { name: 'New user', exact: true });
 	}
@@ -29,7 +37,7 @@ export class AdminUsers extends Admin {
 	}
 
 	private get inputSearchUsers(): Locator {
-		return this.page.getByRole('textbox', { name: 'Search Users' });
+		return this.page.getByRole('textbox', { name: 'Search users' });
 	}
 
 	get btnMoreActionsMenu(): Locator {
@@ -38,6 +46,11 @@ export class AdminUsers extends Admin {
 
 	getUserRowByUsername(username: string): Locator {
 		return this.page.locator('tr', { hasText: username }).first();
+	}
+
+	async filterByUserStatus(option: 'All user statuses' | 'Default status' | 'Managed status'): Promise<void> {
+		await this.page.getByRole('combobox', { name: 'User status' }).click();
+		await this.page.getByRole('option', { name: option, exact: true }).click();
 	}
 
 	getTabByName(name: 'All' | 'Pending' | 'Active' | 'Deactivated' = 'All'): Locator {
@@ -51,6 +64,10 @@ export class AdminUsers extends Admin {
 	async dispatchUserAction(username: string, action: UserActions) {
 		await this.openUserActionMenu(username);
 		await this.userRowMenu.root.getByRole('menuitem', { name: action }).click();
+	}
+
+	async activatePendingUser(username: string): Promise<void> {
+		await this.getUserRowByUsername(username).getByRole('button', { name: 'Activate', exact: true }).click();
 	}
 
 	async deleteUser(username: string): Promise<void> {

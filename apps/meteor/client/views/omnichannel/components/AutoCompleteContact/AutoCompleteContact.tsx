@@ -1,8 +1,8 @@
 import type { Serialized } from '@rocket.chat/core-typings';
-import { PaginatedSelectFiltered } from '@rocket.chat/fuselage';
+import { Box, PaginatedSelectFiltered } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { ILivechatContactWithManagerData } from '@rocket.chat/rest-typings';
-import type { ComponentProps, ReactElement, SyntheticEvent } from 'react';
+import type { ComponentProps, ReactNode, SyntheticEvent } from 'react';
 import { memo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -19,16 +19,16 @@ type OptionProps = {
 	onMouseDown(event: SyntheticEvent): void;
 };
 
-type AutoCompleteContactProps = Omit<
+export type AutoCompleteContactProps = Omit<
 	ComponentProps<typeof PaginatedSelectFiltered>,
 	'filter' | 'setFilter' | 'options' | 'endReached' | 'renderItem' | 'value' | 'onChange'
 > & {
 	value: string;
 	onChange: (value: string) => void;
-	renderItem?: (props: OptionProps, contact: Serialized<ILivechatContactWithManagerData>) => ReactElement;
+	renderItem?: (props: OptionProps, contact: Serialized<ILivechatContactWithManagerData>) => ReactNode;
 };
 
-const AutoCompleteContact = ({ value, placeholder, disabled, renderItem, onChange, ...props }: AutoCompleteContactProps): ReactElement => {
+const AutoCompleteContact = ({ value, placeholder, disabled, renderItem, onChange, ...props }: AutoCompleteContactProps) => {
 	const { t } = useTranslation();
 	const [contactsFilter, setContactFilter] = useState<string>('');
 	const debouncedContactFilter = useDebouncedValue(contactsFilter, 500);
@@ -42,21 +42,22 @@ const AutoCompleteContact = ({ value, placeholder, disabled, renderItem, onChang
 	});
 
 	return (
-		<PaginatedSelectFiltered
-			{...props}
-			aria-busy={isPending}
-			placeholder={isPending ? t('Loading...') : placeholder}
-			aria-disabled={isPending || disabled}
-			disabled={isPending || disabled}
-			value={value}
-			flexShrink={0}
-			filter={contactsFilter}
-			setFilter={setContactFilter as (value: string | number | undefined) => void}
-			options={contactsItems}
-			onChange={onChange}
-			endReached={() => fetchNextPage()}
-			renderItem={renderItem ? (props: OptionProps) => renderItem(props, contactsItems[props.index]) : undefined}
-		/>
+		<Box display='flex' flexGrow={1} flexShrink={0}>
+			<PaginatedSelectFiltered
+				{...props}
+				aria-busy={isPending}
+				placeholder={isPending ? t('Loading...') : placeholder}
+				aria-disabled={isPending || disabled}
+				disabled={isPending || disabled}
+				value={value}
+				filter={contactsFilter}
+				setFilter={setContactFilter as (value: string | number | undefined) => void}
+				options={contactsItems}
+				onChange={onChange}
+				endReached={() => fetchNextPage()}
+				renderItem={renderItem ? (props: OptionProps) => renderItem(props, contactsItems[props.index]) : undefined}
+			/>
+		</Box>
 	);
 };
 

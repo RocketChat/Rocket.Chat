@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-avatar",
-	"version": "25.0.2",
+	"version": "31.0.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -10,25 +10,25 @@
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.build.json",
 		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
-		"lint": "eslint .",
-		"lint:fix": "eslint --fix .",
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
 		"typecheck": "tsc -p tsconfig.json --noEmit"
 	},
 	"devDependencies": {
 		"@rocket.chat/core-typings": "workspace:~",
-		"@rocket.chat/emitter": "^0.32.0",
-		"@rocket.chat/fuselage": "^0.76.0",
-		"@rocket.chat/fuselage-hooks": "^0.41.0",
-		"@rocket.chat/fuselage-tokens": "~0.33.2",
-		"@rocket.chat/icons": "~0.47.0",
+		"@rocket.chat/css-in-js": "workspace:~",
+		"@rocket.chat/emitter": "workspace:~",
+		"@rocket.chat/fuselage": "workspace:~",
+		"@rocket.chat/fuselage-hooks": "workspace:^",
+		"@rocket.chat/fuselage-tokens": "workspace:^",
+		"@rocket.chat/icons": "workspace:~",
 		"@rocket.chat/ui-contexts": "workspace:^",
-		"@types/react": "~18.3.28",
-		"@types/react-dom": "~18.3.7",
-		"eslint": "~9.39.4",
-		"react": "~18.3.1",
-		"react-dom": "~18.3.1",
-		"react-virtuoso": "~4.12.8",
-		"typescript": "~5.9.3"
+		"@types/react": "~19.2.18",
+		"@types/react-dom": "~19.2.7",
+		"react": "~19.2.8",
+		"react-dom": "~19.2.8",
+		"react-virtuoso": "~4.18.16",
+		"typescript": "~7.0.2"
 	},
 	"peerDependencies": {
 		"@rocket.chat/fuselage": "*",

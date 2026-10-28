@@ -1,5 +1,4 @@
-import { ContextualbarTitle } from '@rocket.chat/fuselage';
-import { ContextualbarClose, ContextualbarHeader } from '@rocket.chat/ui-client';
+import { ContextualbarClose, ContextualbarHeader, ContextualbarTitle } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouteParameter, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { FormProvider, useForm } from 'react-hook-form';
@@ -9,7 +8,7 @@ import type { AttributesFormFormData } from './AttributesForm';
 import AttributesForm from './AttributesForm';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 
-type AttributesContextualBarProps = {
+export type AttributesContextualBarProps = {
 	attributeId?: string;
 	attributeData?: {
 		key: string;
@@ -72,7 +71,7 @@ const AttributesContextualBar = ({ attributeData, onClose }: AttributesContextua
 			onClose();
 		},
 		onError: (error: { errorType: string; error: string }) => {
-			if (error.errorType === 'invalid-params') {
+			if (error.errorType === 'error-invalid-params') {
 				dispatchToastMessage({ type: 'error', message: t('ABAC_Invalid_attribute') });
 			} else {
 				dispatchToastMessage({ type: 'error', message: error });

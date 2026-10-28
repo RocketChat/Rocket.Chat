@@ -1,17 +1,16 @@
-import { api } from '@rocket.chat/core-services';
+import { api, ClientSafeError } from '@rocket.chat/core-services';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 
 import { i18n } from './i18n';
 import { isUserIdFederated } from './isUserIdFederated';
-import { notifyOnUserChange, notifyOnSubscriptionChangedByUserId } from '../../app/lib/server/lib/notifyListener';
-import * as Mailer from '../../app/mailer/server/api';
-import { settings } from '../../app/settings/server';
+import * as Mailer from './notifications/email/api';
+import { notifyOnUserChange, notifyOnSubscriptionChangedByUserId } from './notifyListener';
+import { settings } from '../settings';
 
 const sendResetNotification = async function (uid: string): Promise<void> {
 	const user = await Users.findOneById(uid, {});
 	if (!user) {
-		throw new Meteor.Error('invalid-user');
+		throw new ClientSafeError('invalid-user');
 	}
 
 	const language = user.language || settings.get('Language') || 'en';
@@ -44,7 +43,7 @@ const sendResetNotification = async function (uid: string): Promise<void> {
 				html,
 			} as any);
 		} catch (error) {
-			throw new Meteor.Error(
+			throw new ClientSafeError(
 				'error-email-send-failed',
 				`Error trying to send email: ${error instanceof Error ? error.message : String(error)}`,
 				{
@@ -63,7 +62,7 @@ export async function resetUserE2EEncriptionKey(uid: string, notifyUser: boolean
 
 	const isUserFederated = await isUserIdFederated(uid);
 	if (isUserFederated) {
-		throw new Meteor.Error('error-not-allowed', 'Federated Users cant have TOTP', { function: 'resetTOTP' });
+		throw new ClientSafeError('error-not-allowed', 'Federated Users cant have TOTP', { function: 'resetTOTP' });
 	}
 
 	// force logout the live sessions

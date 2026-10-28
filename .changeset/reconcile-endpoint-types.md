@@ -1,0 +1,6 @@
+---
+'@rocket.chat/rest-typings': patch
+'@rocket.chat/meteor': patch
+---
+
+Reconciles REST endpoint types so the published `@rocket.chat/rest-typings` contract matches the implementation. Each migrated route is declared twice — hand-written in `rest-typings` (the contract SDK and external consumers see) and derived from the handler via `ExtractRoutesFromAPI` in `apps/meteor` — and the two had drifted: the hand-written side was missing routes and carried stale/inaccurate shapes. The hand-written declarations are now completed and made identical to the implementation-derived types, and the implementation's `ajv.compile<T>` generics were strengthened at the source where they were weak (never loosened to `object`/`any`/`unknown`). Inaccurate public shapes were corrected to the truthful type (e.g. `chat.postMessage` `channel: string`, `chat.getDeletedMessages` returns only `_id`s, `roles.list` has no `_updatedAt`, `roles.sync` `remove` carries `_deletedAt`, `teams.create` `type: 0 | 1`, `chat.getURLPreview` `urlPreview: MessageUrl`, `im.history` typed messages). Covers chat, dm/im, e2e, emoji-custom, invites, push, roles, rooms, teams, and the omnichannel visitor department-transfer route. No runtime behavior change.

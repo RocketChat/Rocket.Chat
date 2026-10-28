@@ -1,5 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { OmnichannelAdmin, OmnichannelSectionsHref } from './omnichannel-admin';
+
 class OmnichannelReportsSection {
 	private readonly page: Page;
 
@@ -15,7 +17,7 @@ class OmnichannelReportsSection {
 	}
 
 	get inputPeriodSelector() {
-		return this.section.locator('button', { has: this.page.locator('select[name="periodSelector"]') });
+		return this.section.locator('button[aria-label="Select period"]');
 	}
 
 	get txtStateTitle() {
@@ -48,11 +50,15 @@ class OmnichannelReportsSection {
 
 	async selectPeriod(period: string) {
 		await this.inputPeriodSelector.click();
-		await this.page.locator(`li.rcx-option[data-key="${period}"]`).click();
+		await this.page.getByRole('option', { name: period }).click();
 	}
 }
 
-export class OmnichannelReports {
+export class OmnichannelReports extends OmnichannelAdmin {
+	protected readonly route = OmnichannelSectionsHref.reports;
+
+	protected readonly title = 'Reports';
+
 	readonly statusSection: OmnichannelReportsSection;
 
 	readonly channelsSection: OmnichannelReportsSection;
@@ -64,10 +70,15 @@ export class OmnichannelReports {
 	readonly agentsSection: OmnichannelReportsSection;
 
 	constructor(page: Page) {
+		super(page);
 		this.statusSection = new OmnichannelReportsSection(page, 'conversations-by-status');
 		this.channelsSection = new OmnichannelReportsSection(page, 'conversations-by-channel');
 		this.departmentsSection = new OmnichannelReportsSection(page, 'conversations-by-department');
 		this.tagsSection = new OmnichannelReportsSection(page, 'conversations-by-tags');
 		this.agentsSection = new OmnichannelReportsSection(page, 'conversations-by-agent');
+	}
+
+	override async waitForReady(): Promise<void> {
+		await this.pageHeader.waitFor({ state: 'visible' });
 	}
 }

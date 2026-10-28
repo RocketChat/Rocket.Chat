@@ -1,10 +1,10 @@
 import type { IRole, IRoom } from '@rocket.chat/core-typings';
-import { Box, Field, FieldLabel, FieldRow, Margins, ButtonGroup, Button, Callout, FieldError } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { Box, Field, FieldLabel, FieldRow, ButtonGroup, Button, Callout, FieldError, Stack } from '@rocket.chat/fuselage';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { usePagination, Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { useId, useMemo, type ReactElement } from 'react';
+import { useId, useMemo } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -18,7 +18,9 @@ type UsersInRolePayload = {
 	users: string[];
 };
 
-const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
+export type UsersInRolePageProps = { role: IRole };
+
+const UsersInRolePage = ({ role }: UsersInRolePageProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const queryClient = useQueryClient();
@@ -38,7 +40,7 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 	const roomFieldId = useId();
 	const usersFieldId = useId();
 
-	const handleAdd = useEffectEvent(async ({ users, rid }: UsersInRolePayload) => {
+	const handleAdd = useStableCallback(async ({ users, rid }: UsersInRolePayload) => {
 		try {
 			await Promise.all(
 				users.map(async (user) => {
@@ -85,41 +87,41 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 					<Button onClick={() => router.navigate(`/admin/permissions/edit/${_id}`)}>{t('Back')}</Button>
 				</ButtonGroup>
 			</PageHeader>
-			<PageContent>
-				<Box display='flex' flexDirection='column' w='full' mi='neg-x4'>
-					<Margins inline={4}>
-						{role.scope !== 'Users' && (
-							<Field mbe={4}>
-								<FieldLabel htmlFor={roomFieldId}>{t('Choose_a_room')}</FieldLabel>
-								<FieldRow>
-									<Controller
-										control={control}
-										name='rid'
-										rules={{ required: t('Required_field', { field: t('Room') }) }}
-										render={({ field: { onChange, value } }) => (
-											<RoomAutoComplete
-												id={roomFieldId}
-												aria-required='true'
-												aria-invalid={Boolean(errors.rid)}
-												aria-describedby={`${roomFieldId}-error`}
-												scope='admin'
-												value={value}
-												onChange={onChange}
-												placeholder={t('Room')}
-											/>
-										)}
-									/>
-								</FieldRow>
-								{errors.rid && (
-									<FieldError aria-live='assertive' id={`${roomFieldId}-error`}>
-										{errors.rid.message}
-									</FieldError>
-								)}
-							</Field>
-						)}
+			<PageContent gap={8}>
+				<Box display='flex' flexDirection='column' width='full' gap={4}>
+					{role.scope !== 'Users' && (
 						<Field>
-							<FieldLabel htmlFor={usersFieldId}>{t('Add_users')}</FieldLabel>
+							<FieldLabel htmlFor={roomFieldId}>{t('Choose_a_room')}</FieldLabel>
 							<FieldRow>
+								<Controller
+									control={control}
+									name='rid'
+									rules={{ required: t('Required_field', { field: t('Room') }) }}
+									render={({ field: { onChange, value } }) => (
+										<RoomAutoComplete
+											id={roomFieldId}
+											aria-required='true'
+											aria-invalid={Boolean(errors.rid)}
+											aria-describedby={`${roomFieldId}-error`}
+											scope='admin'
+											value={value}
+											onChange={onChange}
+											placeholder={t('Room')}
+										/>
+									)}
+								/>
+							</FieldRow>
+							{errors.rid && (
+								<FieldError aria-live='assertive' id={`${roomFieldId}-error`}>
+									{errors.rid.message}
+								</FieldError>
+							)}
+						</Field>
+					)}
+					<Field>
+						<FieldLabel htmlFor={usersFieldId}>{t('Add_users')}</FieldLabel>
+						<FieldRow>
+							<Stack direction='row' align='center' justify='space-between' grow gap={8}>
 								<Controller
 									control={control}
 									name='users'
@@ -136,35 +138,33 @@ const UsersInRolePage = ({ role }: { role: IRole }): ReactElement => {
 										/>
 									)}
 								/>
-								<Button mis={8} primary onClick={handleSubmit(handleAdd)} disabled={!isDirty}>
+								<Button variant='primary' onClick={handleSubmit(handleAdd)} disabled={!isDirty}>
 									{t('Add')}
 								</Button>
+							</Stack>
+						</FieldRow>
+						{errors.users && (
+							<FieldRow>
+								<FieldError aria-live='assertive' id={`${usersFieldId}-error`}>
+									{errors.users.message}
+								</FieldError>
 							</FieldRow>
-							{errors.users && (
-								<FieldRow>
-									<FieldError aria-live='assertive' id={`${usersFieldId}-error`}>
-										{errors.users.message}
-									</FieldError>
-								</FieldRow>
-							)}
-						</Field>
-					</Margins>
+						)}
+					</Field>
 				</Box>
-				<Margins blockStart={8}>
-					{(role.scope === 'Users' || rid) && (
-						<UsersInRoleTable
-							isLoading={isLoading}
-							isError={isError}
-							isSuccess={isSuccess}
-							total={data?.total || 0}
-							users={data?.users || []}
-							onRemove={handleRemove}
-							refetch={refetch}
-							paginationData={paginationData}
-						/>
-					)}
-					{role.scope !== 'Users' && !rid && <Callout type='info'>{t('Select_a_room')}</Callout>}
-				</Margins>
+				{(role.scope === 'Users' || rid) && (
+					<UsersInRoleTable
+						isLoading={isLoading}
+						isError={isError}
+						isSuccess={isSuccess}
+						total={data?.total || 0}
+						users={data?.users || []}
+						onRemove={handleRemove}
+						refetch={refetch}
+						paginationData={paginationData}
+					/>
+				)}
+				{role.scope !== 'Users' && !rid && <Callout type='info'>{t('Select_a_room')}</Callout>}
 			</PageContent>
 		</Page>
 	);

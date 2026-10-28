@@ -31,7 +31,7 @@ test.describe('OC - Manual Selection', () => {
 	// Create page object and redirect to home
 	test.beforeEach(async ({ page }: { page: Page }) => {
 		poOmnichannel = new HomeOmnichannel(page);
-		await page.goto('/home');
+		await poOmnichannel.goto();
 	});
 
 	// Create agent b session
@@ -92,6 +92,8 @@ test.describe('OC - Manual Selection', () => {
 		});
 
 		await test.step('expect chat to be back in queue', async () => {
+			// the returning agent can transiently see the room twice (queued inquiry + not-yet-removed subscription)
+			await expect(poOmnichannel.sidebar.getSidebarItemByName(room.fname)).toHaveCount(1);
 			await expect(poOmnichannel.sidebar.getSidebarItemByName(room.fname)).toBeVisible();
 			await expect(agentB.poHomeOmnichannel.sidebar.getSidebarItemByName(room.fname)).toBeVisible();
 

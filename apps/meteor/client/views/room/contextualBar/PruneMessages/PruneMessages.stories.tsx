@@ -1,5 +1,6 @@
+import { Box } from '@rocket.chat/fuselage';
 import { Contextualbar } from '@rocket.chat/ui-client';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { Meta } from '@storybook/react';
 import { FormProvider, useForm } from 'react-hook-form';
 
 import PruneMessages from './PruneMessages';
@@ -20,18 +21,19 @@ export default {
 
 			return (
 				<FormProvider {...methods}>
-					<Contextualbar height='100vh'>{fn()}</Contextualbar>
+					<Box height='100vh'>
+						<Contextualbar>{fn()}</Contextualbar>
+					</Box>
 				</FormProvider>
 			);
 		},
 	],
 } satisfies Meta<typeof PruneMessages>;
 
-const Template: StoryFn<typeof PruneMessages> = (args) => <PruneMessages {...args} />;
+export const Default = {};
 
-export const Default = Template.bind({});
-
-export const WithCallout = Template.bind({});
-WithCallout.args = {
-	callOutText: 'This is a callout',
+export const WithCallout = {
+	args: {
+		callOutText: 'This is a callout',
+	},
 };

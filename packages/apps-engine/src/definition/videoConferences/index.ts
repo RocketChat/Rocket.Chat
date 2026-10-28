@@ -1,5 +1,5 @@
-import { AppVideoConference } from './AppVideoConference';
-import { IDirectVideoConference, IGroupVideoConference, IVideoConference, VideoConference } from './IVideoConference';
-import { IVideoConferenceUser } from './IVideoConferenceUser';
+import type { AppVideoConference } from './AppVideoConference';
+import type { IDirectVideoConference, IGroupVideoConference, IVideoConference, VideoConference } from './IVideoConference';
+import type { IVideoConferenceUser } from './IVideoConferenceUser';
 
-export { AppVideoConference, IDirectVideoConference, IGroupVideoConference, IVideoConference, IVideoConferenceUser, VideoConference };
+export type { AppVideoConference, IDirectVideoConference, IGroupVideoConference, IVideoConference, IVideoConferenceUser, VideoConference };

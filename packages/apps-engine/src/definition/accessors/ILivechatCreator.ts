@@ -16,7 +16,10 @@ export interface ILivechatCreator {
 	 * @param contactData Optional contact data for fallback lookup. Use `{ phone: '+1234567890' }` or `{ email: 'user@example.com' }`
 	 * @returns The visitor if found, undefined otherwise
 	 */
-	resolveVisitor(externalId: Omit<IVisitorExternalIdentifier, 'appId'>, contactData?: ResolveVisitorContactData): Promise<IVisitor | undefined>;
+	resolveVisitor(
+		externalId: Omit<IVisitorExternalIdentifier, 'appId'>,
+		contactData?: ResolveVisitorContactData,
+	): Promise<IVisitor | undefined>;
 	/**
 	 * Creates a room to connect the `visitor` to an `agent`.
 	 *

@@ -1,7 +1,8 @@
-import { Box, Label, CheckBox } from '@rocket.chat/fuselage';
-import { useUserPreference, useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ComponentType } from 'react';
+import { Box, CheckBox, Stack } from '@rocket.chat/fuselage';
+import { useUserPreference, useEndpoint } from '@rocket.chat/ui-contexts';
+import type { ComponentType, ReactNode } from 'react';
 import { useId, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 
 import type { DontAskAgainList } from '../../../hooks/useDontAskAgain';
 
@@ -15,16 +16,13 @@ type DoNotAskAgainProps = {
 
 export type RequiredModalProps = {
 	onConfirm?: (...args: any) => Promise<void> | void;
-	dontAskAgain?: ReactElement;
+	dontAskAgain?: ReactNode;
 };
 
-function withDoNotAskAgain<T extends RequiredModalProps>(
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	Component: ComponentType<any>,
-) {
+function withDoNotAskAgain<T extends RequiredModalProps>(Component: ComponentType<any>) {
 	type WrappedComponentProps = DoNotAskAgainProps & Omit<T, keyof RequiredModalProps>;
 	const WrappedComponent = function ({ onConfirm, dontAskAgain, ...props }: WrappedComponentProps) {
-		const t = useTranslation();
+		const { t } = useTranslation();
 		const dontAskAgainId = useId();
 		const dontAskAgainList = useUserPreference<DontAskAgainList>('dontAskAgainList');
 		const { action, label } = dontAskAgain;
@@ -51,12 +49,12 @@ function withDoNotAskAgain<T extends RequiredModalProps>(
 			<Component
 				{...props}
 				dontAskAgain={
-					<Box display='flex' flexDirection='row'>
+					<Stack direction='row' gap={8}>
 						<CheckBox id={dontAskAgainId} checked={state} onChange={onChange} name='dont_ask_again' />
-						<Label color='annotation' fontScale='p2' mis={8} htmlFor={dontAskAgainId}>
+						<Box is='label' color='annotation' fontScale='p2' htmlFor={dontAskAgainId}>
 							{t('Dont_ask_me_again')}
-						</Label>
-					</Box>
+						</Box>
+					</Stack>
 				}
 				onConfirm={handleConfirm}
 			/>

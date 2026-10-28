@@ -9,6 +9,7 @@ export const subscriptionFields = {
 	code: 1,
 	f: 1,
 	u: 1,
+	category: 1,
 	open: 1,
 	alert: 1,
 	roles: 1,
@@ -39,6 +40,8 @@ export const subscriptionFields = {
 	E2EKey: 1,
 	E2ESuggestedKey: 1,
 	oldRoomKeys: 1,
+	draft: 1,
+	threadDrafts: 1,
 	tunread: 1,
 	tunreadGroup: 1,
 	tunreadUser: 1,
@@ -116,6 +119,7 @@ export const roomFields = {
 	// Federation fields
 	federated: 1,
 	federation: 1,
+	xmppFederation: 1,
 
 	// fields used by DMs
 	usernames: 1,

@@ -1,4 +1,4 @@
-import { Pagination, States, StatesIcon, StatesActions, StatesAction, StatesTitle } from '@rocket.chat/fuselage';
+import { Pagination, States, StatesIcon, StatesActions, StatesAction, StatesTitle, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
@@ -8,6 +8,7 @@ import {
 	GenericTableLoadingTable,
 	usePagination,
 	useSort,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -16,9 +17,8 @@ import { useState, useMemo, useEffect } from 'react';
 
 import CustomSoundRow from './CustomSoundRow';
 import FilterByText from '../../../../components/FilterByText';
-import GenericNoResults from '../../../../components/GenericNoResults';
 
-type CustomSoundsTableProps = {
+export type CustomSoundsTableProps = {
 	onClick: (soundId: string) => () => void;
 	reload: MutableRefObject<() => void>;
 };
@@ -54,12 +54,14 @@ const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 		reload.current = refetch;
 	}, [reload, refetch]);
 
+	const columns: TableColumnWidth[] = ['auto', 'x40'];
+
 	const headers = (
 		<>
 			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 				{t('Name')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell w='x40' key='action' />
+			<GenericTableHeaderCell key='action' />
 		</>
 	);
 
@@ -67,7 +69,7 @@ const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 		<>
 			<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingTable headerCells={2} />
@@ -76,7 +78,7 @@ const CustomSoundsTable = ({ reload, onClick }: CustomSoundsTableProps) => {
 			)}
 			{isSuccess && data?.sounds.length > 0 && (
 				<>
-					<GenericTable>
+					<GenericTable columns={columns}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.sounds.map((sound) => (

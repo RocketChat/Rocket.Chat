@@ -18,6 +18,7 @@ export class OEmbedCacheRaw extends BaseRaw<IOEmbedCache> implements IOEmbedCach
 			_id,
 			data,
 			updatedAt: new Date(),
+			_updatedAt: new Date(), // TODO: insertOne inserts the field `_updatedAt` synchronously but it's not guaranteed
 		};
 		record._id = (await this.insertOne(record)).insertedId;
 		return record;

@@ -44,6 +44,7 @@ $config = array(
 	'session.cookie.path' => '/',
 	'session.cookie.domain' => null,
 	'session.cookie.secure' => false,
+	'session.cookie.samesite' => 'Lax',
 	'enable.http_post' => false,
 	'session.phpsession.cookiename' => 'PHPSESSIDIDP',
 	'session.phpsession.savepath' => null,

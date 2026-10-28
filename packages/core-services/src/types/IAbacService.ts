@@ -1,14 +1,40 @@
 import type {
 	IAbacAttributeDefinition,
 	IAbacAttribute,
+	IAbacMembershipPreview,
+	IAbacRoomMembershipPreview,
+	AbacMembershipGroup,
+	AbacPreviewCursor,
 	IRoom,
+	IRoomAbacRedaction,
 	IUser,
 	AbacAccessOperation,
 	AbacObjectType,
 	ILDAPEntry,
+	AbacUserIdentifiers,
+	MinimalApp,
 } from '@rocket.chat/core-typings';
 
 export type AbacActor = Pick<IUser, '_id' | 'username' | 'name'>;
+
+export type AbacCreationAttributesDenialReason = 'invalid' | 'not-entitled' | 'creator-not-admitted' | 'unavailable' | 'inconclusive';
+
+export type AbacCreationAttributesResult =
+	| { allowed: true; attributes: IAbacAttributeDefinition[] }
+	| { allowed: false; reason: AbacCreationAttributesDenialReason; code: string; key?: string; attributes?: IAbacAttributeDefinition[] };
+
+export type AbacMembershipPreviewResult =
+	{ allowed: true; preview: IAbacMembershipPreview } | Extract<AbacCreationAttributesResult, { allowed: false }>;
+
+export type AbacUsersAllowedInRoomResult = { allowed: true; userIds: string[] } | { allowed: false; reason: 'unavailable'; code: string };
+
+export type AbacRoomAttributesGrant = 'manage-abac-admin-rooms' | 'edit-room-abac-attributes';
+
+export type AbacRoomMembershipPreviewPage = {
+	filter?: string;
+	after?: AbacPreviewCursor;
+	group?: AbacMembershipGroup;
+};
 
 export interface IAbacService {
 	addAbacAttribute(attribute: IAbacAttributeDefinition, actor: AbacActor | undefined): Promise<void>;
@@ -20,7 +46,8 @@ export interface IAbacService {
 			count?: number;
 		},
 		actor?: AbacActor,
-	): Promise<{ attributes: IAbacAttribute[]; offset: number; count: number; total: number }>;
+	): Promise<{ attributes: Pick<IAbacAttribute, '_id' | 'key' | 'values'>[]; offset: number; count: number; total: number }>;
+	listAbacAttributeKeys(actor?: AbacActor): Promise<string[]>;
 	listAbacRooms(
 		filters?: {
 			offset?: number;
@@ -29,16 +56,63 @@ export interface IAbacService {
 			filterType?: 'all' | 'roomName' | 'attribute' | 'value';
 		},
 		actor?: AbacActor,
-	): Promise<{ rooms: IRoom[]; offset: number; count: number; total: number }>;
+	): Promise<{ rooms: Array<IRoom & IRoomAbacRedaction>; offset: number; count: number; total: number }>;
+	scopeRoomsForAdmin<T extends Pick<IRoom, '_id' | 'abacAttributes'>>(rooms: T[], actor: AbacActor): Promise<Array<T & IRoomAbacRedaction>>;
 	updateAbacAttributeById(_id: string, update: { key?: string; values?: string[] }, actor: AbacActor | undefined): Promise<void>;
 	deleteAbacAttributeById(_id: string, actor: AbacActor | undefined): Promise<void>;
 	getAbacAttributeById(_id: string, actor: AbacActor | undefined): Promise<{ key: string; values: string[] }>;
 	isAbacAttributeInUseByKey(key: string): Promise<boolean>;
-	setRoomAbacAttributes(rid: string, attributes: Record<string, string[]>, actor: AbacActor | undefined): Promise<void>;
+	validateCreationAttributes(
+		attributes: Record<string, string[]>,
+		actor: AbacActor,
+		options: { creatorJoins: boolean },
+	): Promise<AbacCreationAttributesResult>;
+	listAssignableAttributes(actor: AbacActor): Promise<IAbacAttributeDefinition[]>;
+	listRoomAssignableAttributes(rid: string, actor: AbacActor, grant: AbacRoomAttributesGrant): Promise<IAbacAttributeDefinition[]>;
+	auditRoomAttributesAtCreation(
+		room: Pick<IRoom, '_id' | 'name'> & Required<Pick<IRoom, 'abacAttributes'>>,
+		actor: AbacActor,
+		app?: MinimalApp,
+	): Promise<void>;
+	auditRoomAttributesRemoved(room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>, actor: AbacActor): Promise<void>;
+	previewCreationMembers(
+		usernames: string[],
+		attributes: Record<string, string[]>,
+		actor: AbacActor,
+		options: { creatorJoins: boolean },
+	): Promise<AbacMembershipPreviewResult>;
+	previewRoomMembers(
+		rid: string,
+		attributes: Record<string, string[]>,
+		actor: AbacActor,
+		page: AbacRoomMembershipPreviewPage,
+		grant: AbacRoomAttributesGrant,
+	): Promise<IAbacRoomMembershipPreview>;
+	setRoomAbacAttributes(
+		rid: string,
+		attributes: Record<string, string[]>,
+		actor: AbacActor | undefined,
+		grant: AbacRoomAttributesGrant,
+	): Promise<void>;
 	removeRoomAbacAttribute(rid: string, key: string, actor: AbacActor | undefined): Promise<void>;
 	addRoomAbacAttributeByKey(rid: string, key: string, values: string[], actor: AbacActor | undefined): Promise<void>;
 	replaceRoomAbacAttributeByKey(rid: string, key: string, values: string[], actor: AbacActor | undefined): Promise<void>;
 	checkUsernamesMatchAttributes(usernames: string[], attributes: IAbacAttributeDefinition[], object: IRoom): Promise<void>;
+	filterUsersAllowedInRoom(
+		userIds: string[],
+		room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>,
+		options?: { audit?: boolean },
+	): Promise<string[]>;
+	evaluateUsersAllowedInRoom(
+		userIds: string[],
+		room: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>,
+		options?: { audit?: boolean },
+	): Promise<AbacUsersAllowedInRoomResult>;
+	filterRoomsAllowedForUser(
+		userId: string,
+		rooms: Pick<IRoom, '_id' | 'name' | 'abacAttributes'>[],
+		options?: { refreshAttributes?: boolean; audit?: boolean },
+	): Promise<string[]>;
 	canAccessObject(
 		room: Pick<IRoom, '_id' | 't' | 'teamId' | 'prid' | 'abacAttributes'>,
 		user: Pick<IUser, '_id'>,
@@ -47,5 +121,7 @@ export interface IAbacService {
 	): Promise<boolean>;
 	addSubjectAttributes(user: IUser, ldapUser: ILDAPEntry, map: Record<string, string>, actor: AbacActor | undefined): Promise<void>;
 	evaluateRoomMembership(): Promise<void>;
+	reevaluateUsers(identifiers: AbacUserIdentifiers): Promise<void>;
 	getPDPHealth(): Promise<void>;
+	isExternalAttributeStore(): Promise<boolean>;
 }

@@ -1,6 +1,7 @@
-import { Avatar, Box } from '@rocket.chat/fuselage';
+import { Avatar, ItemContent, ItemDescription, ItemLink, ItemMedia, ItemMeta, ItemRow, ItemTitle } from '@rocket.chat/fuselage';
+import { ITEM_MEDIA_SIZE } from '@rocket.chat/ui-avatar';
 
-type ImageItemProps = {
+export type ImageItemProps = {
 	id: string;
 	url: string | undefined;
 	name: string | undefined;
@@ -11,37 +12,24 @@ type ImageItemProps = {
 
 const ImageItem = ({ id, url, name, timestamp, username, alt = '' }: ImageItemProps) => {
 	return (
-		<Box
-			minWidth={0}
-			data-id={id}
-			className='gallery-item-container'
-			title={name}
-			display='flex'
-			alignItems='center'
-			flexGrow={1}
-			flexShrink={1}
-		>
+		<>
 			{url && (
-				<Box minWidth='x48'>
-					<Avatar size='x48' url={url} className='gallery-item' alt={alt} />
-				</Box>
+				<ItemMedia>
+					<Avatar objectFit='cover' size={ITEM_MEDIA_SIZE.extended} url={url} alt={alt} />
+				</ItemMedia>
 			)}
-			<Box mis={8} flexShrink={1} overflow='hidden' className='gallery-item' cursor='default'>
-				{name && (
-					<Box withTruncatedText color='default' fontScale='p2m' className='gallery-item'>
-						{name}
-					</Box>
-				)}
-				{username && (
-					<Box withTruncatedText color='hint' fontScale='p2' className='gallery-item'>
-						@{username}
-					</Box>
-				)}
-				<Box color='hint' fontScale='micro' className='gallery-item'>
-					{timestamp}
-				</Box>
-			</Box>
-		</Box>
+			<ItemContent>
+				<ItemRow>
+					<ItemTitle>
+						<ItemLink is='button' className='gallery-item' data-id={id} title={name}>
+							{name}
+						</ItemLink>
+					</ItemTitle>
+					<ItemMeta>{timestamp}</ItemMeta>
+				</ItemRow>
+				{username && <ItemDescription>@{username}</ItemDescription>}
+			</ItemContent>
+		</>
 	);
 };
 

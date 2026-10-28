@@ -1,17 +1,17 @@
 import type { IPermission, IRole } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Pagination, Palette } from '@rocket.chat/fuselage';
-import { GenericTable, GenericTableHeader, GenericTableHeaderCell, GenericTableBody } from '@rocket.chat/ui-client';
+import { Pagination, Palette, useStyle } from '@rocket.chat/fuselage';
 import type { usePagination } from '@rocket.chat/ui-client';
-import { useMethod } from '@rocket.chat/ui-contexts';
+import { GenericTable, GenericTableHeader, GenericTableHeaderCell, GenericTableBody, GenericNoResults } from '@rocket.chat/ui-client';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
+import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import PermissionRow from './PermissionRow';
 import PermissionsTableFilter from './PermissionsTableFilter';
 import RoleHeader from './RoleHeader';
-import GenericNoResults from '../../../../components/GenericNoResults';
 
-type PermissionsTableProps = {
+export type PermissionsTableProps = {
 	roleList: IRole[];
 	permissions: IPermission[];
 	setFilter: (filter: string) => void;
@@ -22,8 +22,22 @@ type PermissionsTableProps = {
 const PermissionsTable = ({ roleList, permissions, setFilter, total, paginationData }: PermissionsTableProps) => {
 	const { t } = useTranslation();
 
-	const grantRole = useMethod('authorization:addPermissionToRole');
-	const removeRole = useMethod('authorization:removeRoleFromPermission');
+	const addPermissionRole = useEndpoint('POST', '/v1/permissions.addRole');
+	const removePermissionRole = useEndpoint('POST', '/v1/permissions.removeRole');
+
+	const grantRole = useCallback(
+		async (permissionId: IPermission['_id'], role: IRole['_id']) => {
+			await addPermissionRole({ permissionId, role });
+		},
+		[addPermissionRole],
+	);
+
+	const removeRole = useCallback(
+		async (permissionId: IPermission['_id'], role: IRole['_id']) => {
+			await removePermissionRole({ permissionId, role });
+		},
+		[removePermissionRole],
+	);
 
 	const { current, itemsPerPage, setCurrent, setItemsPerPage, ...paginationProps } = paginationData;
 
@@ -59,6 +73,7 @@ const PermissionsTable = ({ roleList, permissions, setFilter, total, paginationD
 			}
 		}
 	`;
+	const tableCustomClassName = useStyle(tableCustomStyle);
 
 	return (
 		<>
@@ -66,10 +81,12 @@ const PermissionsTable = ({ roleList, permissions, setFilter, total, paginationD
 			{permissions?.length === 0 && <GenericNoResults />}
 			{permissions?.length > 0 && (
 				<>
-					<GenericTable className={[tableCustomStyle]} fixed={false}>
+					<GenericTable className={tableCustomClassName} fixed={false} columns={['x120']}>
 						<GenericTableHeader>
-							<GenericTableHeaderCell width='x120'>{t('Name')}</GenericTableHeaderCell>
-							{roleList?.map(({ _id, name, description }) => <RoleHeader key={_id} _id={_id} name={name} description={description} />)}
+							<GenericTableHeaderCell>{t('Name')}</GenericTableHeaderCell>
+							{roleList?.map(({ _id, name, description }) => (
+								<RoleHeader key={_id} _id={_id} name={name} description={description} />
+							))}
 						</GenericTableHeader>
 						<GenericTableBody>
 							{permissions.map((permission) => (

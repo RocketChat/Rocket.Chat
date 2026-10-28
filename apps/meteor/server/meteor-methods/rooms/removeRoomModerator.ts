@@ -1,0 +1,89 @@
+import { api, Message, Team, ClientSafeError } from '@rocket.chat/core-services';
+import type { IRoom, IUser } from '@rocket.chat/core-typings';
+import { isRoomFederated } from '@rocket.chat/core-typings';
+import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
+import { check } from 'meteor/check';
+
+import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { beforeChangeRoomRole } from '../../lib/callbacks/beforeChangeRoomRole';
+import { notifyOnSubscriptionChangedById } from '../../lib/notifyListener';
+import { syncRoomRolePriorityForUserAndRoom } from '../../lib/roles/syncRoomRolePriority';
+import { settings } from '../../settings';
+
+export const removeRoomModerator = async (fromUserId: IUser['_id'], rid: IRoom['_id'], userId: IUser['_id']): Promise<boolean> => {
+	check(rid, String);
+	check(userId, String);
+
+	const room = await Rooms.findOneById(rid, { projection: { t: 1, federated: 1, federation: 1 } });
+	if (!room) {
+		throw new ClientSafeError('error-invalid-room', 'Invalid room', {
+			method: 'removeRoomModerator',
+		});
+	}
+
+	if (!(await hasPermissionAsync(fromUserId, 'set-moderator', rid)) && !isRoomFederated(room)) {
+		throw new ClientSafeError('error-not-allowed', 'Not allowed', {
+			method: 'removeRoomModerator',
+		});
+	}
+
+	const user = await Users.findOneById(userId);
+
+	if (!user?.username) {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
+			method: 'removeRoomModerator',
+		});
+	}
+
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
+
+	if (!subscription) {
+		throw new ClientSafeError('error-invalid-room', 'Invalid room', {
+			method: 'removeRoomModerator',
+		});
+	}
+
+	if (subscription.roles && (!Array.isArray(subscription.roles) || !subscription.roles.includes('moderator'))) {
+		throw new ClientSafeError('error-user-not-moderator', 'User is not a moderator', {
+			method: 'removeRoomModerator',
+		});
+	}
+
+	await beforeChangeRoomRole.run({ fromUserId, userId, room, role: 'user' });
+
+	const removeRoleResponse = await Subscriptions.removeRoleById(subscription._id, 'moderator');
+	await syncRoomRolePriorityForUserAndRoom(userId, rid, subscription.roles?.filter((r) => r !== 'moderator') || []);
+
+	if (removeRoleResponse.modifiedCount) {
+		void notifyOnSubscriptionChangedById(subscription._id);
+	}
+
+	const fromUser = await Users.findOneById(fromUserId);
+	if (!fromUser) {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
+			method: 'removeRoomModerator',
+		});
+	}
+
+	await Message.saveSystemMessage('subscription-role-removed', rid, user.username, fromUser, { role: 'moderator' });
+
+	const team = await Team.getOneByMainRoomId(rid);
+	if (team) {
+		await Team.removeRolesFromMember(team._id, userId, ['moderator']);
+	}
+
+	const event = {
+		type: 'removed',
+		_id: 'moderator',
+		u: {
+			_id: user._id,
+			username: user.username,
+			name: user.name,
+		},
+		scope: rid,
+	} as const;
+	if (settings.get('UI_DisplayRoles')) {
+		void api.broadcast('user.roleUpdate', event);
+	}
+	return true;
+};

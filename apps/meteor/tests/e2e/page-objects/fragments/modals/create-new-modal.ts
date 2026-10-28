@@ -27,19 +27,32 @@ export abstract class CreateNewModal extends Modal {
 		return this.root.locator('label', { hasText: 'Read-only' });
 	}
 
+	get toggleFederated(): Locator {
+		return this.root.getByRole('checkbox', { name: 'Federated', exact: true });
+	}
+
 	get checkboxFederated(): Locator {
-		return this.root.locator('label', { hasText: 'Federated' });
+		return this.root.locator('label', { has: this.root.page().getByRole('checkbox', { name: 'Federated', exact: true }) });
 	}
 
 	get btnCreate(): Locator {
-		return this.root.getByRole('button', { name: 'Create' });
+		return this.root.getByRole('button', { name: 'Create', exact: true });
+	}
+
+	get inputAddMembers(): Locator {
+		return this.root.getByRole('combobox', { name: 'Members' });
 	}
 
 	async addMember(memberName: string): Promise<void> {
-		await this.root.getByRole('textbox', { name: 'Add people' }).click();
-		await this.root.getByRole('textbox', { name: 'Add people' }).fill(memberName, { force: true });
+		await this.inputAddMembers.click();
+		await this.inputAddMembers.fill(memberName, { force: true });
 		await this.listbox.selectOption(memberName);
-		await this.root.getByRole('textbox', { name: 'Add people' }).click();
+		await this.inputAddMembers.click();
+	}
+
+	async create() {
+		await this.btnCreate.click();
+		await this.waitForDismissal();
 	}
 }
 
@@ -52,13 +65,39 @@ export class CreateNewChannelModal extends CreateNewModal {
 		return this.root.getByRole('button', { name: 'Advanced settings', exact: true });
 	}
 
-	get autocompleteUser(): Locator {
-		return this.root.getByRole('textbox', { name: 'Add people' });
+	get checkboxAbacManaged(): Locator {
+		return this.root.locator('label', { hasText: 'ABAC Managed' });
+	}
+
+	get toggleAbacManaged(): Locator {
+		return this.root.getByRole('checkbox', { name: 'ABAC managed' });
+	}
+
+	get btnNext(): Locator {
+		return this.root.getByRole('button', { name: 'Next', exact: true });
+	}
+
+	getStepIndicator(step: number, total: number): Locator {
+		return this.root.getByText(`Step ${step} of ${total}`);
+	}
+
+	async selectAttribute(key: string, values: string[]) {
+		await this.root.getByPlaceholder('Search attribute').last().click();
+		await this.listbox.selectOption(key, true);
+		await this.root.getByPlaceholder('Select attribute values').last().click();
+		for (const value of values) {
+			await this.listbox.selectOption(value, true);
+		}
+		await this.page?.keyboard.press('Escape');
+	}
+
+	getPreviewGroup(name: 'Compliant' | 'Non-compliant'): Locator {
+		return this.root.getByRole('region', { name, exact: true });
 	}
 
 	async inviteUserToChannel(username: string) {
-		await this.autocompleteUser.click();
-		await this.autocompleteUser.fill(username);
+		await this.inputAddMembers.click();
+		await this.inputAddMembers.fill(username);
 		await this.listbox.selectOption(username);
 	}
 }
@@ -69,7 +108,7 @@ export class CreateNewDMModal extends CreateNewModal {
 	}
 
 	get autocompleteUser(): Locator {
-		return this.root.getByLabel('Select one or more people to message', { exact: true }).getByRole('textbox');
+		return this.root.getByRole('combobox', { name: 'Select one or more people to message', exact: true });
 	}
 
 	async inviteUserToDM(username: string) {
@@ -105,5 +144,20 @@ export class CreateNewDiscussionModal extends CreateNewModal {
 
 	get inputMessage(): Locator {
 		return this.root.getByRole('textbox', { name: 'Message', exact: true });
+	}
+}
+
+export class CreateNewCategoryModal extends CreateNewModal {
+	constructor(page: Page) {
+		super(page.getByRole('dialog', { name: 'Create category', exact: true }), page);
+	}
+
+	private get btnCreateAndMove() {
+		return this.root.getByRole('button', { name: 'Create and move', exact: true });
+	}
+
+	override async create(hasRoom = false) {
+		await (hasRoom ? this.btnCreateAndMove.click() : this.btnCreate.click());
+		await this.waitForDismissal();
 	}
 }

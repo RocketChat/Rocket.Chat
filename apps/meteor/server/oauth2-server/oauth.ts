@@ -1,11 +1,20 @@
 import OAuthServer, { OAuthError, UnauthorizedRequestError } from '@node-oauth/oauth2-server';
+import { hashLoginToken } from '@rocket.chat/account-utils';
 import { OAuthApps, Users } from '@rocket.chat/models';
 import express from 'express';
 import type { Express, NextFunction, Request, Response } from 'express';
-import { Accounts } from 'meteor/accounts-base';
 
 import type { ModelConfig } from './model';
 import { Model } from './model';
+
+// Same grammar as `basic-auth`, which the library reads the header with: a header it ignores must not count as a secret.
+const BASIC_CREDENTIALS = /^ *(?:[Bb][Aa][Ss][Ii][Cc]) +([A-Za-z0-9._~+/-]+=*) *$/;
+const USER_PASS = /^([^:]*):(.*)$/;
+
+const hasBasicClientSecret = (authorization: string | undefined): boolean => {
+	const encoded = BASIC_CREDENTIALS.exec(authorization ?? '')?.[1];
+	return encoded !== undefined && Boolean(USER_PASS.exec(Buffer.from(encoded, 'base64').toString())?.[2]);
+};
 
 export class OAuth2Server {
 	public app: Express;
@@ -79,18 +88,51 @@ export class OAuth2Server {
 			return next();
 		};
 
-		this.app.all('/oauth/token', debugMiddleware, transformRequestsNotUsingFormUrlencodedType, async (req, res, next) => {
-			const request = new OAuthServer.Request(req);
-			const response = new OAuthServer.Response(res);
+		const validateTokenPayload = function (req: Request, res: Response, next: NextFunction) {
+			const grantParams = ['client_id', 'client_secret', 'refresh_token', 'code', 'grant_type', 'scope', 'redirect_uri'];
 
-			try {
-				await oauth.token(request, response);
-
-				handleResponse(res, response, next);
-			} catch (e: any) {
-				next(e);
+			for (const param of grantParams) {
+				for (const source of [req.body, req.query]) {
+					if (source?.[param] !== undefined && typeof source[param] !== 'string') {
+						return res.status(400).send({
+							error: 'invalid_request',
+							error_description: `Invalid parameter: ${param} must be a string`,
+						});
+					}
+				}
 			}
-		});
+			return next();
+		};
+
+		// The library lets a PKCE verifier stand in for the client secret, as only a public client may;
+		// every client of this server is confidential.
+		const requireClientSecret = function (req: Request, res: Response, next: NextFunction) {
+			if (req.body?.client_secret || hasBasicClientSecret(req.headers.authorization)) {
+				return next();
+			}
+
+			return res.status(400).send({ error: 'invalid_request', error_description: 'Missing parameter: `client_secret`' });
+		};
+
+		this.app.all(
+			'/oauth/token',
+			debugMiddleware,
+			transformRequestsNotUsingFormUrlencodedType,
+			validateTokenPayload,
+			requireClientSecret,
+			async (req, res, next) => {
+				const request = new OAuthServer.Request(req);
+				const response = new OAuthServer.Response(res);
+
+				try {
+					await oauth.token(request, response);
+
+					handleResponse(res, response, next);
+				} catch (e: any) {
+					next(e);
+				}
+			},
+		);
 
 		this.app.get('/oauth/authorize', debugMiddleware, async (req, res, next) => {
 			if (typeof req.query.client_id !== 'string') {
@@ -128,7 +170,7 @@ export class OAuth2Server {
 
 			const user = await Users.findOne(
 				{
-					'services.resume.loginTokens.hashedToken': Accounts._hashLoginToken(req.body.access_token),
+					'services.resume.loginTokens.hashedToken': hashLoginToken(req.body.access_token),
 				},
 				{ projection: { _id: 1 } },
 			);

@@ -1,8 +1,7 @@
 import { MessageFooterCallout, MessageFooterCalloutContent } from '@rocket.chat/ui-composer';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const ComposerReadOnly = (): ReactElement => {
+const ComposerReadOnly = () => {
 	const { t } = useTranslation();
 
 	return (

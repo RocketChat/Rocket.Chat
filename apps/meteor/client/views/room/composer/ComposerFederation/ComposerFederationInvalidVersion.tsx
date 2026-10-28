@@ -1,11 +1,10 @@
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { MessageFooterCallout, MessageFooterCalloutContent } from '@rocket.chat/ui-composer';
-import type { ReactElement } from 'react';
 import { Trans } from 'react-i18next';
 
 import { links } from '../../../../lib/links';
 
-const ComposerFederationInvalidVersion = (): ReactElement => {
+const ComposerFederationInvalidVersion = () => {
 	return (
 		<MessageFooterCallout>
 			<MessageFooterCalloutContent>

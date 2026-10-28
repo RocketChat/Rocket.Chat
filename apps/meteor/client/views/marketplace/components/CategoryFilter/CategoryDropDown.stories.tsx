@@ -73,7 +73,7 @@ export const Default: StoryFn = () => {
 	const onSelected = useCategoryToggle(setData);
 
 	return (
-		<Box w='x144'>
+		<Box width='x144'>
 			<ButtonGroup>
 				<CategoryDropDown categories={data} selectedCategories={selectedCategories} onSelected={onSelected} />
 			</ButtonGroup>

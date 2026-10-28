@@ -28,7 +28,7 @@ test.describe('avatar-settings', () => {
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
 
-		await page.goto('/home');
+		await poHomeChannel.goto();
 	});
 
 	test.describe('external avatar provider', () => {
@@ -90,7 +90,7 @@ test.describe('avatar-settings', () => {
 			});
 
 			test('expect user card avatar to have provider prefix', async () => {
-				await poHomeChannel.content.lastUserMessage.locator('.rcx-message-header__name-container').click();
+				await poHomeChannel.content.lastUserMessage.locator('.rcx-message-header__name-container').hover();
 				await expect(poHomeChannel.userCard.imgUserCard).toHaveAttribute('src', avatarUrl);
 			});
 		});

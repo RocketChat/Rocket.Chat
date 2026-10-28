@@ -1,5 +1,5 @@
-import type { IRoom, RoomAdminFieldsType } from '@rocket.chat/core-typings';
-import { isRoomFederated } from '@rocket.chat/core-typings';
+import type { IRoom, IRoomAbacRedaction, RoomAdminFieldsType } from '@rocket.chat/core-typings';
+import { isPrivateRoom, isPublicRoom, isRoomFederated } from '@rocket.chat/core-typings';
 import {
 	Box,
 	Button,
@@ -13,22 +13,23 @@ import {
 	TextAreaInput,
 	FieldError,
 } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
-import { ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
-import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { ContextualbarScrollableContent, ContextualbarFooter, GenericModal, getDirtyFields } from '@rocket.chat/ui-client';
+import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import { useEditAdminRoomPermissions } from './useEditAdminRoomPermissions';
+import AbacAttributesRemovalWarning from '../../../components/ABAC/AbacAttributesRemovalWarning';
 import RoomAvatarEditor from '../../../components/avatar/RoomAvatarEditor';
-import { getDirtyFields } from '../../../lib/getDirtyFields';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import { useArchiveRoom } from '../../hooks/roomActions/useArchiveRoom';
 import { useDeleteRoom } from '../../hooks/roomActions/useDeleteRoom';
+import { useIsABACManagedRoom } from '../ABAC/hooks/useIsABACManagedRoom';
 
-type EditRoomProps = {
-	room: IRoom;
+export type EditRoomProps = {
+	room: IRoom & IRoomAbacRedaction;
 	onChange: () => void;
 	onDelete: () => void;
 	onClose: () => void;
@@ -67,6 +68,8 @@ const getInitialValues = (room: Pick<IRoom, RoomAdminFieldsType>): EditRoomFormD
 const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
+	const setModal = useSetModal();
+	const isAbacManaged = useIsABACManagedRoom(room) || !!room.abacAttributesRedacted;
 
 	const {
 		control,
@@ -97,7 +100,7 @@ const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 
 	const handleArchive = useArchiveRoom(room);
 
-	const handleUpdateRoomData = useEffectEvent(async ({ isDefault, favorite, ...formData }: EditRoomFormData) => {
+	const handleUpdateRoomData = useStableCallback(async ({ isDefault, favorite, ...formData }: EditRoomFormData) => {
 		const data = getDirtyFields(formData, dirtyFields);
 		delete data.archived;
 
@@ -117,9 +120,34 @@ const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 		}
 	});
 
-	const handleSave = useEffectEvent((data: EditRoomFormData) =>
-		Promise.all([isDirty && handleUpdateRoomData(data), changeArchiving && handleArchive()].filter(Boolean)),
-	);
+	const removesAbacAttributes = isPrivateRoom(room) && isPublicRoom({ t: roomType }) && !!room.abacAttributes?.length;
+
+	const handleSave = useStableCallback((data: EditRoomFormData) => {
+		const save = () =>
+			Promise.all([isDirty ? handleUpdateRoomData(data) : Promise.resolve(), changeArchiving ? handleArchive() : Promise.resolve()]);
+
+		if (!removesAbacAttributes) {
+			return save();
+		}
+
+		setModal(
+			<GenericModal
+				variant='warning'
+				title={t('Confirmation')}
+				confirmText={t('Save')}
+				onConfirm={async () => {
+					setModal(null);
+					await save();
+				}}
+				onCancel={() => setModal(null)}
+				onClose={() => setModal(null)}
+			>
+				<Box paddingBlockStart={16}>
+					<AbacAttributesRemovalWarning />
+				</Box>
+			</GenericModal>,
+		);
+	});
 
 	const formId = useId();
 	const roomNameField = useId();
@@ -141,7 +169,7 @@ const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 		<>
 			<ContextualbarScrollableContent id={formId} is='form' onSubmit={handleSubmit(handleSave)}>
 				{room.t !== 'd' && (
-					<Box pbe={24} display='flex' justifyContent='center'>
+					<Box paddingBlockEnd={24} display='flex' justifyContent='center'>
 						<Controller
 							name='roomAvatar'
 							control={control}
@@ -239,7 +267,7 @@ const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 											<ToggleSwitch
 												{...field}
 												id={roomTypeField}
-												disabled={isDeleting || roomIsFederated}
+												disabled={isDeleting || roomIsFederated || isAbacManaged}
 												checked={roomType === 'p'}
 												onChange={() => onChange(value === 'p' ? 'c' : 'p')}
 												aria-describedby={`${roomTypeField}-hint`}
@@ -247,7 +275,9 @@ const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 										)}
 									/>
 								</FieldRow>
-								<FieldHint id={`${roomTypeField}-hint`}>{t('Just_invited_people_can_access_this_channel')}</FieldHint>
+								<FieldHint id={`${roomTypeField}-hint`}>
+									{isAbacManaged ? t('ABAC_Managed_Room_Stays_Private_Hint') : t('Just_invited_people_can_access_this_channel')}
+								</FieldHint>
 							</Field>
 						)}
 						{canViewReadOnly && (
@@ -353,9 +383,9 @@ const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-				<Box mbs={8}>
+				<Box marginBlockStart={8}>
 					<ButtonGroup stretch>
-						<Button icon='trash' danger loading={isDeleting} disabled={!canDeleteRoom || roomIsFederated} onClick={handleDelete}>
+						<Button icon='trash' variant='danger' loading={isDeleting} disabled={!canDeleteRoom || roomIsFederated} onClick={handleDelete}>
 							{t('Delete')}
 						</Button>
 					</ButtonGroup>

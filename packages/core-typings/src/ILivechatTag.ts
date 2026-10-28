@@ -1,5 +1,6 @@
-export interface ILivechatTag {
-	_id: string;
+import type { IRocketChatRecord } from './IRocketChatRecord';
+
+export interface ILivechatTag extends IRocketChatRecord {
 	name: string;
 	description?: string;
 	numDepartments: number;

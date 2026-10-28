@@ -17,6 +17,20 @@ jest.mock('@rocket.chat/core-services', () => ({
 			await Subscriptions.removeByRoomIdAndUserId(roomId, user._id);
 		},
 	},
+	Message: {
+		saveSystemMessage: jest.fn(),
+	},
+	api: {
+		broadcast: jest.fn(),
+	},
+	License: {
+		hasModule: async () => true,
+	},
+	Authorization: {
+		hasPermission: async () => false,
+	},
+	ClientSafeError: class extends Error {},
+	isClientSafeError: () => false,
 }));
 
 describe('AbacService integration (onRoomAttributesChanged)', () => {
@@ -57,7 +71,6 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 	type TestUserSeed = {
 		_id: string;
 		abacAttributes?: IAbacAttributeDefinition[];
-		member?: boolean;
 		extraRooms?: string[];
 	};
 
@@ -188,7 +201,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 			u: { _id: `warmup-user-${uniqueSuffix}` },
 		} as any);
 		await insertDefinitions([{ key: warmupAttributeKey, values: ['a'] }]);
-		await insertUsers([{ _id: warmupUserId, member: true, extraRooms: [warmupRid] }]);
+		await insertUsers([{ _id: warmupUserId, extraRooms: [warmupRid] }]);
 		await subscriptionCol.insertOne({
 			_id: `warmup-sub-${uniqueSuffix}`,
 			rid: warmupRid,
@@ -196,7 +209,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 		} as any);
 
 		try {
-			await service.setRoomAbacAttributes(warmupRid, { [warmupAttributeKey]: ['a'] }, fakeActor);
+			await service.setRoomAbacAttributes(warmupRid, { [warmupAttributeKey]: ['a'] }, fakeActor, 'manage-abac-admin-rooms');
 		} finally {
 			await roomsCol.deleteOne({ _id: warmupRid });
 			await usersCol.deleteOne({ _id: warmupUserId });
@@ -251,13 +264,13 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 			]);
 
 			await configureStaticUsers([
-				{ _id: 'u1_newkey', member: true, extraRooms: [rid1], abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] }, // compliant
-				{ _id: 'u2_newkey', member: true, extraRooms: [rid1], abacAttributes: [{ key: 'dept', values: ['eng'] }] }, // missing sales
-				{ _id: 'u3_newkey', member: true, extraRooms: [rid1], abacAttributes: [{ key: 'location', values: ['emea'] }] }, // missing dept key
-				{ _id: 'u4_newkey', member: true, extraRooms: [rid1], abacAttributes: [{ key: 'dept', values: ['eng', 'sales', 'hr'] }] }, // superset
-				{ _id: 'u5_newkey', member: false, abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] }, // not in room
-				{ _id: 'u1_dupvals', member: true, extraRooms: [rid2], abacAttributes: [{ key: 'dep2t', values: ['eng', 'sales'] }] },
-				{ _id: 'u2_dupvals', member: true, extraRooms: [rid2], abacAttributes: [{ key: 'dep2t', values: ['eng'] }] }, // non compliant (missing sales)
+				{ _id: 'u1_newkey', extraRooms: [rid1], abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] }, // compliant
+				{ _id: 'u2_newkey', extraRooms: [rid1], abacAttributes: [{ key: 'dept', values: ['eng'] }] }, // missing sales
+				{ _id: 'u3_newkey', extraRooms: [rid1], abacAttributes: [{ key: 'location', values: ['emea'] }] }, // missing dept key
+				{ _id: 'u4_newkey', extraRooms: [rid1], abacAttributes: [{ key: 'dept', values: ['eng', 'sales', 'hr'] }] }, // superset
+				{ _id: 'u5_newkey', abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] }, // not in room
+				{ _id: 'u1_dupvals', extraRooms: [rid2], abacAttributes: [{ key: 'dep2t', values: ['eng', 'sales'] }] },
+				{ _id: 'u2_dupvals', extraRooms: [rid2], abacAttributes: [{ key: 'dep2t', values: ['eng'] }] }, // non compliant (missing sales)
 			]);
 		});
 
@@ -268,7 +281,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 		it('logs users that do not satisfy newly added attribute key or its values and actually removes them', async () => {
 			const changeSpy = jest.spyOn<any, any>(service as any, 'onRoomAttributesChanged');
 
-			await service.setRoomAbacAttributes(rid1, { dept: ['eng', 'sales'] }, fakeActor);
+			await service.setRoomAbacAttributes(rid1, { dept: ['eng', 'sales'] }, fakeActor, 'manage-abac-admin-rooms');
 
 			expect(changeSpy).toHaveBeenCalledTimes(1);
 			expect(changeSpy.mock.calls[0][0]).toMatchObject({ _id: rid1 });
@@ -284,7 +297,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 		});
 
 		it('handles duplicate values in room attributes equivalently to unique set (logs non compliant and removes them)', async () => {
-			await service.setRoomAbacAttributes(rid2, { dep2t: ['eng', 'eng', 'sales'] }, fakeActor);
+			await service.setRoomAbacAttributes(rid2, { dep2t: ['eng', 'eng', 'sales'] }, fakeActor, 'manage-abac-admin-rooms');
 
 			expect(auditSpy).toHaveBeenCalledTimes(1);
 
@@ -308,9 +321,9 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 
 				await insertDefinitions([{ key: 'dept', values: ['eng', 'sales'] }]);
 				await configureStaticUsers([
-					{ _id: 'u1_newval', member: true, extraRooms: [rid], abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] }, // already superset
-					{ _id: 'u2_newval', member: true, extraRooms: [rid], abacAttributes: [{ key: 'dept', values: ['eng'] }] }, // missing new value
-					{ _id: 'u3_newval', member: true, extraRooms: [rid], abacAttributes: [{ key: 'dept', values: ['eng', 'sales', 'hr'] }] }, // superset
+					{ _id: 'u1_newval', extraRooms: [rid], abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] }, // already superset
+					{ _id: 'u2_newval', extraRooms: [rid], abacAttributes: [{ key: 'dept', values: ['eng'] }] }, // missing new value
+					{ _id: 'u3_newval', extraRooms: [rid], abacAttributes: [{ key: 'dept', values: ['eng', 'sales', 'hr'] }] }, // superset
 				]);
 			});
 
@@ -336,8 +349,8 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 
 				await insertDefinitions([{ key: 'dept', values: ['eng', 'sales'] }]);
 				await configureStaticUsers([
-					{ _id: 'u1_rmval', member: true, extraRooms: [rid], abacAttributes: [{ key: 'dept', values: ['eng'] }] },
-					{ _id: 'u2_rmval', member: true, extraRooms: [rid], abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] },
+					{ _id: 'u1_rmval', extraRooms: [rid], abacAttributes: [{ key: 'dept', values: ['eng'] }] },
+					{ _id: 'u2_rmval', extraRooms: [rid], abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] },
 				]);
 			});
 
@@ -373,7 +386,6 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 			await configureStaticUsers([
 				{
 					_id: 'u1_multi',
-					member: true,
 					extraRooms: [rid],
 					abacAttributes: [
 						{ key: 'dept', values: ['eng', 'sales'] },
@@ -382,19 +394,16 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 				}, // compliant after expansion
 				{
 					_id: 'u2_multi',
-					member: true,
 					extraRooms: [rid],
 					abacAttributes: [{ key: 'dept', values: ['eng'] }], // missing region
 				},
 				{
 					_id: 'u3_multi',
-					member: true,
 					extraRooms: [rid],
 					abacAttributes: [{ key: 'region', values: ['emea'] }], // missing dept key
 				},
 				{
 					_id: 'u4_multi',
-					member: true,
 					extraRooms: [rid],
 					abacAttributes: [
 						{ key: 'dept', values: ['eng', 'sales', 'hr'] },
@@ -403,7 +412,6 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 				}, // superset across both
 				{
 					_id: 'u5_multi',
-					member: true,
 					extraRooms: [rid],
 					abacAttributes: [
 						{ key: 'dept', values: ['eng', 'sales'] },
@@ -425,6 +433,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 					region: ['emea'],
 				},
 				fakeActor,
+				'manage-abac-admin-rooms',
 			);
 
 			expect(auditSpy).toHaveBeenCalledTimes(3);
@@ -445,8 +454,8 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 
 			await insertDefinitions([{ key: 'dept', values: ['eng', 'sales'] }]);
 			await configureStaticUsers([
-				{ _id: 'u1_idem', member: true, extraRooms: [rid], abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] },
-				{ _id: 'u2_idem', member: true, extraRooms: [rid], abacAttributes: [{ key: 'dept', values: ['eng'] }] }, // will be removed on first pass
+				{ _id: 'u1_idem', extraRooms: [rid], abacAttributes: [{ key: 'dept', values: ['eng', 'sales'] }] },
+				{ _id: 'u2_idem', extraRooms: [rid], abacAttributes: [{ key: 'dept', values: ['eng'] }] }, // will be removed on first pass
 			]);
 		});
 		afterEach(async () => {
@@ -454,7 +463,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 		});
 
 		it('does not remove anyone when calling with identical attribute set twice', async () => {
-			await service.setRoomAbacAttributes(rid, { dept: ['eng', 'sales'] }, fakeActor);
+			await service.setRoomAbacAttributes(rid, { dept: ['eng', 'sales'] }, fakeActor, 'manage-abac-admin-rooms');
 			expect(auditSpy).toHaveBeenCalledTimes(1);
 			expect(auditSpy.mock.calls[0][0]).toMatchObject({ _id: 'u2_idem', username: 'u2_idem' });
 			expect(auditSpy.mock.calls[0][1]).toMatchObject({ _id: rid });
@@ -469,7 +478,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 			debugSpy.mockClear();
 			auditSpy.mockClear();
 
-			await service.setRoomAbacAttributes(rid, { dept: ['eng', 'sales'] }, fakeActor);
+			await service.setRoomAbacAttributes(rid, { dept: ['eng', 'sales'] }, fakeActor, 'manage-abac-admin-rooms');
 			expect(auditSpy).not.toHaveBeenCalled();
 
 			u1 = await usersCol.findOne({ _id: 'u1_idem' }, { projection: { __rooms: 1 } });
@@ -490,20 +499,19 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 			await configureStaticUsers([
 				{
 					_id: 'u1_superset',
-					member: true,
 					extraRooms: [ridSuperset],
 					abacAttributes: [{ key: 'dept', values: ['eng', 'sales', 'hr'] }],
 				},
-				{ _id: 'u2_superset', member: true, extraRooms: [ridSuperset], abacAttributes: [{ key: 'dept', values: ['eng', 'hr'] }] }, // missing sales
+				{ _id: 'u2_superset', extraRooms: [ridSuperset], abacAttributes: [{ key: 'dept', values: ['eng', 'hr'] }] }, // missing sales
 			]);
 
 			ridMissingKey = await insertRoom([]);
 
 			await insertDefinitions([{ key: 'region', values: ['emea', 'apac'] }]);
 			await configureStaticUsers([
-				{ _id: 'u1_misskey', member: true, extraRooms: [ridMissingKey], abacAttributes: [{ key: 'region', values: ['emea'] }] },
-				{ _id: 'u2_misskey', member: true, extraRooms: [ridMissingKey], abacAttributes: [{ key: 'dept', values: ['eng'] }] }, // missing region
-				{ _id: 'u3_misskey', member: true, extraRooms: [ridMissingKey] }, // no abacAttributes field
+				{ _id: 'u1_misskey', extraRooms: [ridMissingKey], abacAttributes: [{ key: 'region', values: ['emea'] }] },
+				{ _id: 'u2_misskey', extraRooms: [ridMissingKey], abacAttributes: [{ key: 'dept', values: ['eng'] }] }, // missing region
+				{ _id: 'u3_misskey', extraRooms: [ridMissingKey] }, // no abacAttributes field
 			]);
 		});
 
@@ -512,7 +520,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 		});
 
 		it('keeps user with superset values and removes user missing one required value', async () => {
-			await service.setRoomAbacAttributes(ridSuperset, { dept: ['eng', 'sales', 'hr'] }, fakeActor);
+			await service.setRoomAbacAttributes(ridSuperset, { dept: ['eng', 'sales', 'hr'] }, fakeActor, 'manage-abac-admin-rooms');
 
 			expect(auditSpy).toHaveBeenCalledTimes(1);
 			expect(auditSpy.mock.calls[0][0]).toMatchObject({ _id: 'u2_superset', username: 'u2_superset' });
@@ -526,7 +534,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 		});
 
 		it('removes user missing attribute key entirely', async () => {
-			await service.setRoomAbacAttributes(ridMissingKey, { region: ['emea'] }, fakeActor);
+			await service.setRoomAbacAttributes(ridMissingKey, { region: ['emea'] }, fakeActor, 'manage-abac-admin-rooms');
 
 			expect(auditSpy).toHaveBeenCalledTimes(2);
 			const auditedUsers = auditSpy.mock.calls.map((call) => call[0]._id).sort();
@@ -553,7 +561,6 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 				const values = i % 2 === 0 ? ['eng', 'sales'] : ['eng'];
 				bulk.push({
 					_id: `u${i}`,
-					member: true,
 					extraRooms: [rid],
 					abacAttributes: [{ key: 'dept', values }],
 				});
@@ -570,7 +577,7 @@ describe('AbacService integration (onRoomAttributesChanged)', () => {
 		});
 
 		it('removes only expected fraction in a larger population', async () => {
-			await service.setRoomAbacAttributes(rid, { dept: ['eng', 'sales'] }, fakeActor);
+			await service.setRoomAbacAttributes(rid, { dept: ['eng', 'sales'] }, fakeActor, 'manage-abac-admin-rooms');
 
 			expect(auditSpy).toHaveBeenCalledTimes(150);
 			const removed = auditSpy.mock.calls.map((call) => call[0]._id);

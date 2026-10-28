@@ -1,0 +1,176 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
+import type { INewIncomingIntegration, IIncomingIntegration } from '@rocket.chat/core-typings';
+import { Integrations, Subscriptions, Users, Rooms } from '@rocket.chat/models';
+import { Random } from '@rocket.chat/random';
+import { removeEmpty } from '@rocket.chat/tools';
+import { Match, check } from 'meteor/check';
+
+import { hasPermissionAsync, hasAllPermissionAsync } from '../../../lib/authorization/hasPermission';
+import { validateScriptEngine, isScriptEngineFrozen } from '../../../lib/integrations/lib/validateScriptEngine';
+import { validateScriptSyntax } from '../../../lib/integrations/lib/validateScriptSyntax';
+import { notifyOnIntegrationChanged } from '../../../lib/notifyListener';
+
+const validChannelChars = ['@', '#'];
+
+export const addIncomingIntegration = async (userId: string, integration: INewIncomingIntegration): Promise<IIncomingIntegration> => {
+	check(
+		integration,
+		Match.ObjectIncluding({
+			type: String,
+			name: String,
+			enabled: Boolean,
+			username: String,
+			channel: String,
+			alias: Match.Maybe(String),
+			emoji: Match.Maybe(String),
+			scriptEnabled: Boolean,
+			scriptEngine: Match.Maybe(String),
+			overrideDestinationChannelEnabled: Match.Maybe(Boolean),
+			script: Match.Maybe(String),
+			avatar: Match.Maybe(String),
+		}),
+	);
+
+	if (
+		!userId ||
+		(!(await hasPermissionAsync(userId, 'manage-incoming-integrations')) &&
+			!(await hasPermissionAsync(userId, 'manage-own-incoming-integrations')))
+	) {
+		throw new ClientSafeError('not_authorized', 'Unauthorized', {
+			method: 'addIncomingIntegration',
+		});
+	}
+
+	if (!integration.channel || typeof integration.channel.valueOf() !== 'string') {
+		throw new ClientSafeError('error-invalid-channel', 'Invalid channel', {
+			method: 'addIncomingIntegration',
+		});
+	}
+
+	if (integration.channel.trim() === '') {
+		throw new ClientSafeError('error-invalid-channel', 'Invalid channel', {
+			method: 'addIncomingIntegration',
+		});
+	}
+
+	const channels = integration.channel.split(',').map((channel) => channel.trim());
+
+	for (const channel of channels) {
+		if (!validChannelChars.includes(channel[0])) {
+			throw new ClientSafeError('error-invalid-channel-start-with-chars', 'Invalid channel. Start with @ or #', {
+				method: 'updateIncomingIntegration',
+			});
+		}
+	}
+
+	if (!integration.username || typeof integration.username.valueOf() !== 'string' || integration.username.trim() === '') {
+		throw new ClientSafeError('error-invalid-username', 'Invalid username', {
+			method: 'addIncomingIntegration',
+		});
+	}
+
+	if (integration.script?.trim()) {
+		validateScriptEngine(integration.scriptEngine ?? 'isolated-vm');
+	}
+
+	const user = await Users.findOneByUsername(integration.username, { projection: { _id: 1 } });
+
+	if (!user) {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
+			method: 'addIncomingIntegration',
+		});
+	}
+
+	if (!(await hasPermissionAsync(user._id, 'message-impersonate'))) {
+		throw new ClientSafeError(
+			'error-user-lacks-message-impersonate-permission',
+			"User selected for the incoming integration lacks the 'message-impersonate' permission.",
+			{
+				method: 'addIncomingIntegration',
+			},
+		);
+	}
+
+	// Default to transpiling with Babel for backwards compatibility; integrations
+	// can opt-out per-record by setting `skipTranspile: true` (removed in 9.0.0).
+	const skipTranspile = integration.skipTranspile === true;
+
+	const integrationData: IIncomingIntegration = {
+		...integration,
+		scriptEngine: integration.scriptEngine ?? 'isolated-vm',
+		skipTranspile,
+		type: 'webhook-incoming',
+		channel: channels,
+		overrideDestinationChannelEnabled: integration.overrideDestinationChannelEnabled ?? false,
+		token: Random.id(48),
+		userId: user._id,
+		_createdAt: new Date(),
+		_createdBy: await Users.findOne({ _id: userId }, { projection: { username: 1 } }),
+	};
+
+	// Validate the script syntax if it is enabled and using a sandbox that is
+	// not frozen. isolated-vm embeds modern V8 and runs the script natively, so
+	// no transpilation is needed.
+	if (
+		!isScriptEngineFrozen(integrationData.scriptEngine) &&
+		integration.scriptEnabled === true &&
+		integration.script &&
+		integration.script.trim() !== ''
+	) {
+		const { script, error } = validateScriptSyntax(integration.script);
+		if (error) {
+			integrationData.scriptCompiled = undefined;
+			integrationData.scriptError = error;
+		} else {
+			integrationData.scriptCompiled = script;
+			delete integrationData.scriptError;
+		}
+	}
+
+	for (let channel of channels) {
+		let record;
+		const channelType = channel[0];
+		channel = channel.substr(1);
+
+		switch (channelType) {
+			case '#':
+				record = await Rooms.findOne({
+					$or: [{ _id: channel }, { name: channel }],
+				});
+				break;
+			case '@':
+				record = await Users.findOne({
+					$or: [{ _id: channel }, { username: channel }],
+				});
+				break;
+		}
+
+		if (!record) {
+			throw new ClientSafeError('error-invalid-room', 'Invalid room', {
+				method: 'addIncomingIntegration',
+			});
+		}
+
+		if (
+			!(await hasAllPermissionAsync(userId, ['manage-incoming-integrations', 'manage-own-incoming-integrations'])) &&
+			!(await Subscriptions.findOneByRoomIdAndUserId(record._id, userId, { projection: { _id: 1 } }))
+		) {
+			throw new ClientSafeError('error-invalid-channel', 'Invalid Channel', {
+				method: 'addIncomingIntegration',
+			});
+		}
+	}
+
+	const strippedIntegrationData = removeEmpty(integrationData);
+
+	const { insertedId } = await Integrations.insertOne(strippedIntegrationData);
+
+	const integrationStored = await Integrations.findOne({ _id: insertedId });
+
+	if (!integrationStored) {
+		throw new Error('Error inserting integration');
+	}
+	void notifyOnIntegrationChanged({ ...integrationStored, _id: insertedId }, 'inserted');
+
+	return integrationStored as IIncomingIntegration;
+};

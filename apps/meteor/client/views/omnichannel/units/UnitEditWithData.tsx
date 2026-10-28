@@ -1,16 +1,13 @@
 import type { IOmnichannelBusinessUnit } from '@rocket.chat/core-typings';
-import { Callout } from '@rocket.chat/fuselage';
 import { ContextualbarSkeletonBody } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import { useTranslation } from 'react-i18next';
 
 import UnitEdit from './UnitEdit';
 import { useRemoveUnit } from './useRemoveUnit';
+import NotAvailableCallout from '../components/NotAvailableCallout';
 
 const UnitEditWithData = ({ unitId, onClose }: { unitId: IOmnichannelBusinessUnit['_id']; onClose: () => void }) => {
-	const { t } = useTranslation();
-
 	const getUnitById = useEndpoint('GET', '/v1/livechat/units/:id', { id: unitId });
 	const getMonitorsByUnitId = useEndpoint('GET', '/v1/livechat/units/:unitId/monitors', { unitId });
 	const getDepartmentsByUnitId = useEndpoint('GET', '/v1/livechat/units/:unitId/departments', { unitId });
@@ -50,11 +47,7 @@ const UnitEditWithData = ({ unitId, onClose }: { unitId: IOmnichannelBusinessUni
 	}
 
 	if (isError || unitMonitorsError || unitDepartmentsError) {
-		return (
-			<Callout m={16} type='danger'>
-				{t('Not_Available')}
-			</Callout>
-		);
+		return <NotAvailableCallout />;
 	}
 
 	return (

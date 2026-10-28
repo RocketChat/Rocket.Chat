@@ -1,5 +1,5 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import * as core from '@actions/core';
 import { exec } from '@actions/exec';
@@ -9,7 +9,15 @@ import { createNpmFile } from './createNpmFile';
 import { fixWorkspaceVersionsBeforePublish } from './fixWorkspaceVersionsBeforePublish';
 import { commitChanges, createBranch, createTag, pushNewBranch } from './gitUtils';
 import { setupOctokit } from './setupOctokit';
-import { getChangelogEntry, bumpFileVersions, readPackageJson, getEngineVersionsMd, createTempReleaseNotes } from './utils';
+import {
+	MAX_RELEASE_BODY_LENGTH,
+	getChangelogEntry,
+	bumpFileVersions,
+	readPackageJson,
+	getEngineVersionsMd,
+	createTempReleaseNotes,
+	truncateReleaseNotes,
+} from './utils';
 
 export async function bumpNextVersion({
 	githubToken,
@@ -92,7 +100,7 @@ export async function bumpNextVersion({
 	await octokit.rest.repos.createRelease({
 		name: newVersion,
 		tag_name: newVersion,
-		body: prBody,
+		body: truncateReleaseNotes(prBody, MAX_RELEASE_BODY_LENGTH),
 		prerelease: newVersion.includes('-'),
 		...github.context.repo,
 	});

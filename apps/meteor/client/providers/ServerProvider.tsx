@@ -4,26 +4,24 @@ import type {
 	ServerMethodParameters,
 	ServerMethodReturn,
 	StreamerCallbackArgs,
+	StreamerEvents,
 	StreamNames,
 	StreamKeys,
 } from '@rocket.chat/ddp-client';
 import type { Method, PathFor, OperationParams, OperationResult, UrlParams, PathPattern } from '@rocket.chat/rest-typings';
 import type { UploadResult, ServerContextValue } from '@rocket.chat/ui-contexts';
 import { ServerContext } from '@rocket.chat/ui-contexts';
-import { Meteor } from 'meteor/meteor';
 import { compile } from 'path-to-regexp';
-import { useMemo, type ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
-import { sdk } from '../../app/utils/client/lib/SDKClient';
-import { Info as info } from '../../app/utils/rocketchat.info';
-import { useReactiveValue } from '../hooks/useReactiveValue';
-
-const absoluteUrl = (path: string): string => Meteor.absoluteUrl(path);
+import { Info as info } from '../../rocketchat.info';
+import { sdk } from '../lib/SDKClient';
+import { absoluteUrl } from '../lib/absoluteUrl';
 
 const callMethod = <MethodName extends ServerMethodName>(
 	methodName: MethodName,
 	...args: ServerMethodParameters<MethodName>
-): Promise<ServerMethodReturn<MethodName>> => Meteor.callAsync(methodName, ...args);
+): Promise<ServerMethodReturn<MethodName>> => sdk.call(methodName, ...(args as any)) as Promise<ServerMethodReturn<MethodName>>;
 
 const callEndpoint = <TMethod extends Method, TPathPattern extends PathPattern>({
 	method,
@@ -31,27 +29,33 @@ const callEndpoint = <TMethod extends Method, TPathPattern extends PathPattern>(
 	keys,
 	params,
 	signal,
+	keepalive,
 }: {
 	method: TMethod;
 	pathPattern: TPathPattern;
 	keys: UrlParams<TPathPattern>;
 	params: OperationParams<TMethod, TPathPattern>;
 	signal?: AbortSignal;
+	keepalive?: boolean;
 }): Promise<Serialized<OperationResult<TMethod, TPathPattern>>> => {
 	const compiledPath = compile(pathPattern, { encode: encodeURIComponent })(keys) as any;
 
 	switch (method) {
 		case 'GET':
-			return sdk.rest.get(compiledPath, params as any, { signal }) as any;
+			// oxlint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion
+			return sdk.rest.get(compiledPath, params as any, { signal, keepalive }) as any;
 
 		case 'POST':
-			return sdk.rest.post(compiledPath, params as any, { signal }) as any;
+			// oxlint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion
+			return sdk.rest.post(compiledPath, params as any, { signal, keepalive }) as any;
 
 		case 'PUT':
-			return sdk.rest.put(compiledPath, params as never, { signal }) as never;
+			// oxlint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+			return sdk.rest.put(compiledPath, params as never, { signal, keepalive }) as never;
 
 		case 'DELETE':
-			return sdk.rest.delete(compiledPath, params as any, { signal }) as any;
+			// oxlint-disable-next-line @typescript-eslint/no-unsafe-return, @typescript-eslint/no-unnecessary-type-assertion
+			return sdk.rest.delete(compiledPath, params as any, { signal, keepalive }) as any;
 
 		default:
 			throw new Error('Invalid HTTP method');
@@ -71,40 +75,29 @@ const getStream =
 	<K extends StreamKeys<N>>(eventName: K, callback: (...args: StreamerCallbackArgs<N, K>) => void): (() => void) =>
 		sdk.stream(streamName, [eventName], callback).stop;
 
+const getStreamAll =
+	<N extends StreamNames>(streamName: N) =>
+	(callback: (eventName: string, args: StreamerEvents[N][number]['args']) => void): (() => void) =>
+		sdk.onAnyStreamEvent(streamName, callback).stop;
+
 const writeStream = <N extends StreamNames, K extends StreamKeys<N>>(streamName: N, streamKey: K, ...args: StreamerCallbackArgs<N, K>) =>
 	sdk.publish(streamName, [streamKey, ...args]);
 
-const disconnect = () => Meteor.disconnect();
+export type ServerProviderProps = { children?: ReactNode };
 
-const reconnect = () => Meteor.reconnect();
-
-const getStatus = () => ({ ...Meteor.status() });
-
-type ServerProviderProps = { children?: ReactNode };
-
-const ServerProvider = ({ children }: ServerProviderProps) => {
-	const { connected, status, retryCount, retryTime } = useReactiveValue(getStatus);
-
-	const value = useMemo(
-		(): ServerContextValue => ({
-			connected,
-			status,
-			retryCount,
-			retryTime,
-			info,
-			absoluteUrl,
-			callMethod,
-			callEndpoint,
-			uploadToEndpoint,
-			getStream,
-			writeStream,
-			disconnect,
-			reconnect,
-		}),
-		[connected, retryCount, retryTime, status],
-	);
-
-	return <ServerContext.Provider value={value}>{children}</ServerContext.Provider>;
+const serverContextValue: ServerContextValue = {
+	info,
+	absoluteUrl,
+	callMethod,
+	callEndpoint,
+	uploadToEndpoint,
+	getStream,
+	getStreamAll,
+	writeStream,
 };
+
+const ServerProvider = ({ children }: ServerProviderProps) => (
+	<ServerContext.Provider value={serverContextValue}>{children}</ServerContext.Provider>
+);
 
 export default ServerProvider;

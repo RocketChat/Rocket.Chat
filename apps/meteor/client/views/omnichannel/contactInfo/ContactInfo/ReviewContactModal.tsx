@@ -1,7 +1,6 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { Badge, Box, Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useAtLeastOnePermission } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
@@ -13,7 +12,7 @@ import { ContactManagerInput } from '../../additionalForms';
 import { useCustomFieldsMetadata } from '../../directory/hooks/useCustomFieldsMetadata';
 import { useReviewContact } from '../hooks/useReviewContact';
 
-type ReviewContactModalProps = {
+export type ReviewContactModalProps = {
 	contact: Serialized<ILivechatContact>;
 	onCancel: () => void;
 };
@@ -86,13 +85,13 @@ const ReviewContactModal = ({ contact, onCancel }: ReviewContactModalProps) => {
 
 					return (
 						<Field key={index}>
-							<FieldLabel id={name}>{t(label as TranslationKey)}</FieldLabel>
+							<FieldLabel id={name}>{t(label)}</FieldLabel>
 							<FieldRow>
 								<Controller
 									name={name}
 									control={control}
 									rules={{
-										required: isContactManagerField ? undefined : t('Required_field', { field: t(label as TranslationKey) }),
+										required: isContactManagerField ? undefined : t('Required_field', { field: t(label) }),
 									}}
 									render={({ field: { value, onChange } }) => (
 										<Component
@@ -107,7 +106,7 @@ const ReviewContactModal = ({ contact, onCancel }: ReviewContactModalProps) => {
 							</FieldRow>
 							<FieldHint id={`${name}-hint`}>
 								<Box display='flex' alignItems='center'>
-									<Box mie={4}>{t('different_values_found', { number: values.length })}</Box>
+									<Box marginInlineEnd={4}>{t('different_values_found', { number: values.length })}</Box>
 									<Badge variant='primary' small />
 								</Box>
 							</FieldHint>

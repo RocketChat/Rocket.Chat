@@ -202,7 +202,7 @@ const api = {
 
 	clearWidgetData: async () => {
 		const { minimized, visible, undocked, expanded, businessUnit, ...initial } = initialState();
-		await store.setState(initial);
+		store.setState(initial);
 	},
 
 	setAgent: (agent: StoreState['defaultAgent']) => {

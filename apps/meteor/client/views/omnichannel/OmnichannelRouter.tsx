@@ -1,16 +1,16 @@
 import { useRouter } from '@rocket.chat/ui-contexts';
-import type { ReactNode, ReactElement } from 'react';
+import type { ReactNode } from 'react';
 import { Suspense, useEffect } from 'react';
 
 import OmnichannelSidebar from './sidebar/OmnichannelSidebar';
 import PageSkeleton from '../../components/PageSkeleton';
 import SidebarPortal from '../../portals/SidebarPortal';
 
-type OmnichannelRouterProps = {
+export type OmnichannelRouterProps = {
 	children?: ReactNode;
 };
 
-const OmnichannelRouter = ({ children }: OmnichannelRouterProps): ReactElement => {
+const OmnichannelRouter = ({ children }: OmnichannelRouterProps) => {
 	const router = useRouter();
 
 	useEffect(

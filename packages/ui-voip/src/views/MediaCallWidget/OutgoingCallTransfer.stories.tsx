@@ -1,30 +1,37 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { Meta, StoryObj } from '@storybook/react';
 
-import OutgoingCallTransfer from './OutgoingCallTransfer';
+import OutgoingCall from './OutgoingCall';
 import MockedMediaCallProvider from '../../providers/MockedMediaCallProvider';
 
 const mockedContexts = mockAppRoot()
 	.withTranslations('en', 'core', {
 		Transferred_call__from__to: '{{from}} transferred call to',
 		Transferring_call: 'Transferring call',
+		meteor_status_connecting: 'Connecting...',
 		Cancel: 'Cancel',
 	})
 	.buildStoryDecorator();
 
-export default {
-	title: 'V2/Views/OutgoingCallTransfer',
-	component: OutgoingCallTransfer,
+const meta = {
+	component: OutgoingCall,
 	decorators: [
 		mockedContexts,
-		(Story) => (
-			<MockedMediaCallProvider transferredBy='Joy'>
+		(Story, options) => (
+			<MockedMediaCallProvider transferredBy='Joy' connectionState={options.args.connecting ? 'CONNECTING' : 'CONNECTED'}>
 				<Story />
 			</MockedMediaCallProvider>
 		),
 	],
-} satisfies Meta<typeof OutgoingCallTransfer>;
+	args: { connecting: false },
+} satisfies Meta<{ connecting: boolean }>;
 
-export const OutgoingCallTransferStory: StoryFn<typeof OutgoingCallTransfer> = () => {
-	return <OutgoingCallTransfer />;
+export default meta;
+
+type Story = StoryObj<typeof meta>;
+
+export const OutgoingCallTransferStory: Story = {};
+
+export const OutgoingCallTransferConnectingStory: Story = {
+	args: { connecting: true },
 };

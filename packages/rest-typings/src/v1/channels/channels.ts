@@ -54,9 +54,11 @@ export type ChannelsEndpoints = {
 		}>;
 	};
 	'/v1/channels.history': {
-		GET: (params: ChannelsHistoryProps) => PaginatedResult<{
+		GET: (params: ChannelsHistoryProps) => {
 			messages: IMessage[];
-		}>;
+			firstUnread?: IMessage;
+			unreadNotLoaded?: number;
+		};
 	};
 	'/v1/channels.archive': {
 		POST: (params: ChannelsArchiveProps) => void;
@@ -160,7 +162,7 @@ export type ChannelsEndpoints = {
 	};
 	'/v1/channels.getAllUserMentionsByChannel': {
 		GET: (params: ChannelsGetAllUserMentionsByChannelProps) => PaginatedResult<{
-			mentions: IUser[];
+			mentions: IMessage[];
 		}>;
 	};
 	'/v1/channels.moderators': {

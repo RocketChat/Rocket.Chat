@@ -1,27 +1,31 @@
-import { SidebarV2Item, SidebarV2ItemAvatarWrapper, SidebarV2ItemTitle } from '@rocket.chat/fuselage';
-import type { HTMLAttributes, ReactElement, ReactNode } from 'react';
+import { SidebarItem, SidebarItemAvatarWrapper, SidebarItemTitle } from '@rocket.chat/fuselage';
+import type { HTMLAttributes, ReactNode } from 'react';
 
-type NavBarSearchItemProps = {
+import { useSearchOptionProps } from './hooks/useSearchActiveOption';
+
+export type NavBarSearchItemProps = {
 	title: string;
-	avatar: ReactElement;
+	avatar: ReactNode;
 	icon: ReactNode;
-	actions?: ReactElement;
+	actions?: ReactNode;
 	href?: string;
 	unread?: boolean;
 	selected?: boolean;
-	badges?: ReactElement;
+	badges?: ReactNode;
 	clickable?: boolean;
 } & Omit<HTMLAttributes<HTMLAnchorElement>, 'is'>;
 
 const NavBarSearchItem = ({ icon, title, avatar, actions, unread, badges, ...props }: NavBarSearchItemProps) => {
+	const optionProps = useSearchOptionProps(props.id);
+
 	return (
-		<SidebarV2Item role='option' {...props}>
-			{avatar && <SidebarV2ItemAvatarWrapper>{avatar}</SidebarV2ItemAvatarWrapper>}
+		<SidebarItem role='option' {...props} {...optionProps}>
+			{avatar && <SidebarItemAvatarWrapper>{avatar}</SidebarItemAvatarWrapper>}
 			{icon && icon}
-			<SidebarV2ItemTitle unread={unread}>{title}</SidebarV2ItemTitle>
+			<SidebarItemTitle unread={unread}>{title}</SidebarItemTitle>
 			{badges && badges}
 			{actions && actions}
-		</SidebarV2Item>
+		</SidebarItem>
 	);
 };
 

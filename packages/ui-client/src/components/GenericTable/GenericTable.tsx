@@ -4,7 +4,7 @@ import { forwardRef } from 'react';
 
 import { CustomScrollbars } from '../CustomScrollbars';
 
-type GenericTableProps = {
+export type GenericTableProps = {
 	fixed?: boolean;
 	children: ReactNode;
 } & ComponentProps<typeof Table>;
@@ -14,7 +14,7 @@ export const GenericTable = forwardRef(function GenericTable(
 	ref: ForwardedRef<HTMLElement>,
 ) {
 	return (
-		<Box mi='neg-x24' pi={24} flexShrink={1} flexGrow={1} ref={ref} overflow='hidden'>
+		<Box marginInline='neg-x24' paddingInline={24} flexShrink={1} flexGrow={1} ref={ref} overflow='hidden'>
 			<CustomScrollbars overflowX>
 				<Table fixed={fixed} sticky {...props}>
 					{children}

@@ -1,18 +1,9 @@
-import { Meteor } from 'meteor/meteor';
+import { hashLoginToken } from '@rocket.chat/account-utils';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import { Random } from '@rocket.chat/random';
-import { Accounts } from 'meteor/accounts-base';
-import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Users } from '@rocket.chat/models';
 
-import { hasPermissionAsync } from '../../../../../app/authorization/server/functions/hasPermission';
-import { twoFactorRequired } from '../../../../../app/2fa/server/twoFactorRequired';
-
-declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
-	interface ServerMethods {
-		'personalAccessTokens:generateToken'(params: { tokenName: string; bypassTwoFactor: boolean }): Promise<string>;
-	}
-}
+import { hasPermissionAsync } from '../../../../../server/lib/authorization/hasPermission';
 
 export const generatePersonalAccessTokenOfUser = async ({
 	bypassTwoFactor,
@@ -24,7 +15,7 @@ export const generatePersonalAccessTokenOfUser = async ({
 	bypassTwoFactor: boolean;
 }): Promise<string> => {
 	if (!(await hasPermissionAsync(userId, 'create-personal-access-tokens'))) {
-		throw new Meteor.Error('not-authorized', 'Not Authorized', {
+		throw new ClientSafeError('not-authorized', 'Not Authorized', {
 			method: 'personalAccessTokens:generateToken',
 		});
 	}
@@ -35,7 +26,7 @@ export const generatePersonalAccessTokenOfUser = async ({
 		tokenName,
 	});
 	if (tokenExist) {
-		throw new Meteor.Error('error-token-already-exists', 'A token with this name already exists', {
+		throw new ClientSafeError('error-token-already-exists', 'A token with this name already exists', {
 			method: 'personalAccessTokens:generateToken',
 		});
 	}
@@ -43,7 +34,7 @@ export const generatePersonalAccessTokenOfUser = async ({
 	await Users.addPersonalAccessTokenToUser({
 		userId,
 		loginTokenObject: {
-			hashedToken: Accounts._hashLoginToken(token),
+			hashedToken: hashLoginToken(token),
 			type: 'personalAccessToken',
 			createdAt: new Date(),
 			lastTokenPart: token.slice(-6),
@@ -53,22 +44,3 @@ export const generatePersonalAccessTokenOfUser = async ({
 	});
 	return token;
 };
-
-Meteor.methods<ServerMethods>({
-	'personalAccessTokens:generateToken': twoFactorRequired(async function ({
-		tokenName,
-		bypassTwoFactor,
-	}: {
-		tokenName: string;
-		bypassTwoFactor: boolean;
-	}) {
-		const uid = Meteor.userId();
-		if (!uid) {
-			throw new Meteor.Error('not-authorized', 'Not Authorized', {
-				method: 'personalAccessTokens:generateToken',
-			});
-		}
-
-		return generatePersonalAccessTokenOfUser({ tokenName, userId: uid, bypassTwoFactor });
-	}),
-});

@@ -1,13 +1,12 @@
 import { Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageContent } from '@rocket.chat/ui-client';
 import { useRouteParameter, useTranslation, useRouter } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 
 import EditOauthAppWithData from './EditOauthAppWithData';
 import OAuthAddApp from './OAuthAddApp';
 import OAuthAppsTable from './OAuthAppsTable';
 
-const OAuthAppsPage = (): ReactElement => {
+const OAuthAppsPage = () => {
 	const t = useTranslation();
 	const router = useRouter();
 
@@ -20,7 +19,7 @@ const OAuthAppsPage = (): ReactElement => {
 				<PageHeader title={t('Third_party_login')} onClickBack={context ? () => router.navigate('/admin/third-party-login') : undefined}>
 					{!context && (
 						<ButtonGroup>
-							<Button primary onClick={() => router.navigate('/admin/third-party-login/new')}>
+							<Button variant='primary' onClick={() => router.navigate('/admin/third-party-login/new')}>
 								{t('New_Application')}
 							</Button>
 						</ButtonGroup>

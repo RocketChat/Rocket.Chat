@@ -2,13 +2,13 @@ import { Box } from '@rocket.chat/fuselage';
 import * as UiKit from '@rocket.chat/ui-kit';
 import type { ReactElement } from 'react';
 
-type ActionProps = {
+export type ActionProps = {
 	element: UiKit.ActionsBlock['elements'][number];
-	parser: UiKit.SurfaceRenderer<ReactElement>;
+	parser: UiKit.SurfaceRenderer<ReactElement<any>>;
 	index: number;
 };
 
-const Action = ({ element, parser, index }: ActionProps): ReactElement | null => {
+const Action = ({ element, parser, index }: ActionProps) => {
 	const renderedElement = parser.renderActionsBlockElement(element, index);
 
 	if (!renderedElement) {
@@ -18,7 +18,6 @@ const Action = ({ element, parser, index }: ActionProps): ReactElement | null =>
 	return (
 		<Box
 			display='flex'
-			margin={4}
 			flexGrow={element.type !== UiKit.BlockElementType.BUTTON ? 1 : undefined}
 			flexBasis={element.type !== UiKit.BlockElementType.BUTTON ? '45%' : undefined}
 		>

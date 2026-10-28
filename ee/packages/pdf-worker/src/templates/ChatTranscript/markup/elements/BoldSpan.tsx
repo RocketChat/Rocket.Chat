@@ -20,7 +20,7 @@ type MessageBlock =
 	| MessageParser.MarkupExcluding<MessageParser.Bold>
 	| MessageParser.InlineCode;
 
-type BoldSpanProps = {
+export type BoldSpanProps = {
 	children: MessageBlock[];
 };
 

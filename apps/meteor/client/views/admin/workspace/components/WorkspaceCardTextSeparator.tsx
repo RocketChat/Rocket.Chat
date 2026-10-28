@@ -3,7 +3,7 @@ import type { Keys } from '@rocket.chat/icons';
 import { TextSeparator } from '@rocket.chat/ui-client';
 import type { ComponentProps, ReactNode } from 'react';
 
-type WorkspaceCardTextSeparatorProps = {
+export type WorkspaceCardTextSeparatorProps = {
 	label: ReactNode;
 	icon?: Keys;
 	status?: ComponentProps<typeof StatusBullet>['status'];
@@ -12,15 +12,15 @@ type WorkspaceCardTextSeparatorProps = {
 const WorkspaceCardTextSeparator = ({ icon, label, value, status }: WorkspaceCardTextSeparatorProps) => (
 	<TextSeparator
 		label={
-			<>
-				{icon && <Icon name={icon} size='x16' mie={4} />}
+			<Box display='flex' alignItems='center' columnGap={icon ? 4 : undefined}>
+				{icon && <Icon name={icon} size='x16' />}
 				{status && (
 					<Box minWidth='x16' display='inline-flex' flexDirection='row' alignItems='flex-end' justifyContent='center'>
 						<StatusBullet status={status} />
 					</Box>
 				)}
 				{label && label}
-			</>
+			</Box>
 		}
 		value={value}
 	/>

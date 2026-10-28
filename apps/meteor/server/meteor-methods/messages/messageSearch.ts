@@ -1,0 +1,96 @@
+import type { ISubscription } from '@rocket.chat/core-typings';
+import { Logger } from '@rocket.chat/logger';
+import { Messages, Subscriptions, Users } from '@rocket.chat/models';
+import { Match, check } from 'meteor/check';
+
+import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
+import { parseMessageSearchQuery } from '../../lib/parseMessageSearchQuery';
+import type { IRawSearchResult } from '../../lib/search/model/ISearchResult';
+import { settings } from '../../settings';
+
+const logger = new Logger('MessageSearch');
+export const messageSearch = async function (
+	userId: string,
+	text: string,
+	rid?: string,
+	limit?: number,
+	offset?: number,
+): Promise<IRawSearchResult | false> {
+	check(text, String);
+	check(rid, Match.Maybe(String));
+	check(limit, Match.Optional(Number));
+	check(offset, Match.Optional(Number));
+
+	// Don't process anything else if the user can't access the room
+	if (rid) {
+		if (!(await canAccessRoomIdAsync(rid, userId))) {
+			return false;
+		}
+	} else if (settings.get('Search.defaultProvider.GlobalSearchEnabled') !== true) {
+		return {
+			message: {
+				docs: [],
+			},
+		};
+	}
+
+	const user = (await Users.findOneById(userId)) || undefined;
+
+	let parsedQuery: ReturnType<typeof parseMessageSearchQuery>;
+
+	try {
+		parsedQuery = parseMessageSearchQuery(text, {
+			user,
+			offset,
+			limit,
+			forceRegex: settings.get('Message_AlwaysSearchRegExp'),
+		});
+	} catch (error: unknown) {
+		logger.error({ msg: 'Error while parsing message search query', error });
+		if (error instanceof SyntaxError) {
+			return { message: { docs: [] } };
+		}
+		throw error;
+	}
+
+	const { query, options } = parsedQuery;
+
+	if (Object.keys(query).length === 0) {
+		return {
+			message: {
+				docs: [],
+			},
+		};
+	}
+
+	query.t = {
+		$ne: 'rm', // hide removed messages (useful when searching for user messages)
+	};
+	query._hidden = {
+		$ne: true, // don't return _hidden messages
+	};
+
+	if (rid) {
+		query.rid = rid;
+	} else {
+		query.rid = {
+			$in: user?._id ? (await Subscriptions.findByUserId(user._id).toArray()).map((subscription: ISubscription) => subscription.rid) : [],
+		};
+	}
+
+	try {
+		return {
+			message: {
+				docs: await Messages.find(query, {
+					// @ts-expect-error col.s.db is not typed
+					readPreference: readSecondaryPreferred(Messages.col.s.db),
+					...options,
+				}).toArray(),
+			},
+		};
+	} catch (error) {
+		logger.error({ msg: 'Error while finding messages', error });
+		throw new Error('error-while-finding-messages', { cause: error });
+	}
+};

@@ -3,14 +3,17 @@ import { useMemo } from 'react';
 
 import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
+import { useIsABACManagedRoom } from '../ABAC/hooks/useIsABACManagedRoom';
 
 export const useEditAdminRoomPermissions = (room: Pick<IRoom, RoomAdminFieldsType>) => {
+	const isAbacManaged = useIsABACManagedRoom(room);
+
 	const [
 		canViewName,
-		canViewTopic,
-		canViewAnnouncement,
+		canViewTopicBase,
+		canViewAnnouncementBase,
 		canViewArchived,
-		canViewDescription,
+		canViewDescriptionBase,
 		canViewType,
 		canViewReadOnly,
 		canViewReactWhenReadOnly,
@@ -30,10 +33,10 @@ export const useEditAdminRoomPermissions = (room: Pick<IRoom, RoomAdminFieldsTyp
 
 	return {
 		canViewName,
-		canViewTopic,
-		canViewAnnouncement,
+		canViewTopic: canViewTopicBase && !isAbacManaged,
+		canViewAnnouncement: canViewAnnouncementBase && !isAbacManaged,
 		canViewArchived,
-		canViewDescription,
+		canViewDescription: canViewDescriptionBase && !isAbacManaged,
 		canViewType,
 		canViewReadOnly,
 		canViewReactWhenReadOnly,

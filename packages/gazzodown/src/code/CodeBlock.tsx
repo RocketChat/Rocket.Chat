@@ -1,15 +1,14 @@
 import { css } from '@rocket.chat/css-in-js';
-import { IconButton, Box } from '@rocket.chat/fuselage';
+import { IconButton, Box, useStyle } from '@rocket.chat/fuselage';
 import type * as MessageParser from '@rocket.chat/message-parser';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import hljs from 'highlight.js';
-import type { ReactElement } from 'react';
 import { Fragment, useContext, useLayoutEffect, useMemo, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { MarkupInteractionContext } from '../MarkupInteractionContext';
 
-type CodeBlockProps = {
+export type CodeBlockProps = {
 	language?: string;
 	lines: MessageParser.CodeLine[];
 };
@@ -24,8 +23,9 @@ const onHoverStyle = css`
 	}
 `;
 
-const CodeBlock = ({ lines = [], language }: CodeBlockProps): ReactElement => {
+const CodeBlock = ({ lines = [], language }: CodeBlockProps) => {
 	const ref = useRef<HTMLElement>(null);
+	const onHoverClassName = useStyle(onHoverStyle);
 
 	const { highlightRegex } = useContext(MarkupInteractionContext);
 	const { t } = useTranslation();
@@ -85,18 +85,17 @@ const CodeBlock = ({ lines = [], language }: CodeBlockProps): ReactElement => {
 
 	return (
 		<Box is='pre' position='relative' data-code-block-wrapper role='region'>
-			<IconButton
-				icon='copy'
-				small
-				className={onHoverStyle}
-				title={t('Copy')}
-				onClick={() => {
-					void handleCopy();
-				}}
-				position='absolute'
-				insetInlineEnd={0}
-				margin={8}
-			/>
+			<Box is='span' position='absolute' insetInlineEnd={0} margin={8}>
+				<IconButton
+					icon='copy'
+					size='small'
+					className={onHoverClassName}
+					title={t('Copy')}
+					onClick={() => {
+						void handleCopy();
+					}}
+				/>
+			</Box>
 			<span className='copyonly'>```</span>
 			<code
 				key={language + code}

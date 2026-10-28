@@ -1,6 +1,7 @@
 import type { ICustomSound } from '@rocket.chat/core-typings';
 
-import { ajvQuery } from './Ajv';
+import { ajvQuery, ajv } from './Ajv';
+import { paginationQueryProperties } from './pagination';
 import { type PaginatedRequest } from '../helpers/PaginatedRequest';
 
 type CustomSoundsGetOne = { _id: ICustomSound['_id'] };
@@ -24,23 +25,12 @@ type CustomSoundsList = PaginatedRequest<{ name?: string }>;
 const CustomSoundsListSchema = {
 	type: 'object',
 	properties: {
-		count: {
-			type: 'number',
-			nullable: true,
-		},
-		offset: {
-			type: 'number',
-			nullable: true,
-		},
+		...paginationQueryProperties,
 		sort: {
 			type: 'string',
 			nullable: true,
 		},
 		name: {
-			type: 'string',
-			nullable: true,
-		},
-		query: {
 			type: 'string',
 			nullable: true,
 		},
@@ -50,3 +40,55 @@ const CustomSoundsListSchema = {
 };
 
 export const isCustomSoundsListProps = ajvQuery.compile<CustomSoundsList>(CustomSoundsListSchema);
+
+type CustomSoundsCreate = Pick<ICustomSound, 'name'>;
+
+const CustomSoundsCreateSchema = {
+	type: 'object',
+	properties: {
+		name: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['name'],
+	additionalProperties: false,
+};
+
+export const isCustomSoundsCreateProps = ajv.compile<CustomSoundsCreate>(CustomSoundsCreateSchema);
+
+type CustomSoundsUpdate = Pick<ICustomSound, '_id' | 'name'>;
+
+const CustomSoundsUpdateSchema = {
+	type: 'object',
+	properties: {
+		_id: {
+			type: 'string',
+			minLength: 1,
+		},
+		name: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['_id', 'name'],
+	additionalProperties: false,
+};
+
+export const isCustomSoundsUpdateProps = ajv.compile<CustomSoundsUpdate>(CustomSoundsUpdateSchema);
+
+type CustomSoundsDelete = { _id: ICustomSound['_id'] };
+
+const CustomSoundsDeleteSchema = {
+	type: 'object',
+	properties: {
+		_id: {
+			type: 'string',
+			minLength: 1,
+		},
+	},
+	required: ['_id'],
+	additionalProperties: false,
+};
+
+export const isCustomSoundsDeleteProps = ajv.compile<CustomSoundsDelete>(CustomSoundsDeleteSchema);

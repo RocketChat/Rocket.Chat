@@ -1,15 +1,15 @@
 import { api } from '@rocket.chat/core-services';
-import type { IMessage, IRoom, IReadReceipt, IReadReceiptWithUser } from '@rocket.chat/core-typings';
-import { ReadReceipts, ReadReceiptsArchive, Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import type { IMessage, IRoom, IUser, IReadReceipt, IReadReceiptWithUser } from '@rocket.chat/core-typings';
+import { LivechatVisitors, ReadReceipts, ReadReceiptsArchive, Messages, Rooms, Subscriptions, Users } from '@rocket.chat/models';
 
-import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../../app/settings/server';
 import { SystemLogger } from '../../../../server/lib/logger/system';
+import { notifyOnRoomChangedById, notifyOnMessageChange } from '../../../../server/lib/notifyListener';
+import { settings } from '../../../../server/settings';
 
 // debounced function by roomId, so multiple calls within 2 seconds to same roomId runs only once
 const list: Record<string, NodeJS.Timeout> = {};
-const debounceByRoomId = function (fn: (room: IRoom) => Promise<void>) {
-	return function (this: unknown, room: IRoom) {
+const debounceByRoomId = function <T extends Pick<IRoom, '_id'>>(fn: (room: T) => Promise<void>) {
+	return function (this: unknown, room: T) {
 		clearTimeout(list[room._id]);
 		list[room._id] = setTimeout(() => {
 			void fn.call(this, room);
@@ -18,7 +18,7 @@ const debounceByRoomId = function (fn: (room: IRoom) => Promise<void>) {
 	};
 };
 
-const updateMessages = debounceByRoomId(async ({ _id, lm }: IRoom) => {
+const updateMessages = debounceByRoomId(async ({ _id, lm }: Pick<IRoom, '_id' | 'lm'>) => {
 	// @TODO maybe store firstSubscription in room object so we don't need to call the above update method
 	const firstSubscription = await Subscriptions.getMinimumLastSeenByRoomId(_id);
 	if (!firstSubscription?.ls) {
@@ -49,7 +49,7 @@ class ReadReceiptClass {
 			return;
 		}
 
-		void this.storeReadReceipts(
+		await this.storeReadReceipts(
 			() => {
 				return Messages.findVisibleUnreadMessagesByRoomAndDate(roomId, userLastSeen).toArray();
 			},
@@ -80,7 +80,7 @@ class ReadReceiptClass {
 			}
 		}
 
-		void this.storeReadReceipts(
+		await this.storeReadReceipts(
 			() => {
 				return Promise.resolve([message]);
 			},
@@ -101,7 +101,7 @@ class ReadReceiptClass {
 			return;
 		}
 
-		void this.storeReadReceipts(
+		await this.storeReadReceipts(
 			() => {
 				return Messages.findUnreadThreadMessagesByDate(message.rid, tmid, userId, userLastSeen).toArray();
 			},
@@ -155,12 +155,21 @@ class ReadReceiptClass {
 
 		// get users for the receipts
 		const users = await Users.findByIds(userIds, { projection: { username: 1, name: 1 } }).toArray();
-		const usersMap = new Map(users.map((user) => [user._id, user]));
+		const usersMap: Map<string, Pick<IUser, '_id' | 'username' | 'name'>> = new Map(users.map((user) => [user._id, user]));
+
+		// Resolve livechat visitors for any unresolved user IDs
+		const unresolvedIds = userIds.filter((id) => !usersMap.has(id));
+		if (unresolvedIds.length > 0) {
+			const visitors = await LivechatVisitors.findByIds(unresolvedIds, { projection: { username: 1, name: 1 } }).toArray();
+			for (const visitor of visitors) {
+				usersMap.set(visitor._id, { _id: visitor._id, username: visitor.username, name: visitor.name });
+			}
+		}
 
 		return Promise.all(
 			receipts.map(async (receipt) => ({
 				...receipt,
-				user: usersMap.get(receipt.userId) as IReadReceiptWithUser['user'],
+				user: usersMap.get(receipt.userId),
 			})),
 		);
 	}

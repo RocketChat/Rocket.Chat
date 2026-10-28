@@ -1,13 +1,12 @@
-import type { Meta, StoryFn } from '@storybook/preact';
+import type { Meta, StoryObj } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
-import { Group, Item, PopoverMenu } from '.';
+import { MenuGroup, MenuItem, MenuPopover } from '.';
 import { Button } from '../Button';
 import { PopoverContainer } from '../Popover';
 
 export default {
-	title: 'Components/Menu/PopoverMenu',
-	component: PopoverMenu,
+	component: MenuPopover,
 	args: {},
 	decorators: [
 		(storyFn) => (
@@ -19,27 +18,33 @@ export default {
 	parameters: {
 		layout: 'fullscreen',
 	},
-} satisfies Meta<ComponentProps<typeof PopoverMenu>>;
+} satisfies Meta<ComponentProps<typeof MenuPopover>>;
 
-export const Default: StoryFn<ComponentProps<typeof PopoverMenu>> = (args) => (
-	<PopoverMenu {...args} trigger={({ pop }) => <Button onClick={pop}>More options...</Button>}>
-		<Group>
-			<Item>Reload</Item>
-			<Item danger>Delete...</Item>
-		</Group>
-	</PopoverMenu>
-);
-Default.storyName = 'default';
+type Story = StoryObj<ComponentProps<typeof MenuPopover>>;
 
-export const WithOverlay: StoryFn<ComponentProps<typeof PopoverMenu>> = (args) => (
-	<PopoverMenu {...args} trigger={({ pop }) => <Button onClick={pop}>More options...</Button>}>
-		<Group>
-			<Item>Reload</Item>
-			<Item danger>Delete...</Item>
-		</Group>
-	</PopoverMenu>
-);
-WithOverlay.storyName = 'with overlay';
-WithOverlay.args = {
-	overlayed: true,
+export const Default: Story = {
+	name: 'default',
+	render: (args) => (
+		<MenuPopover {...args} trigger={({ pop }) => <Button onClick={pop}>More options...</Button>}>
+			<MenuGroup>
+				<MenuItem>Reload</MenuItem>
+				<MenuItem danger>Delete...</MenuItem>
+			</MenuGroup>
+		</MenuPopover>
+	),
+};
+
+export const WithOverlay: Story = {
+	name: 'with overlay',
+	args: {
+		overlayed: true,
+	},
+	render: (args) => (
+		<MenuPopover {...args} trigger={({ pop }) => <Button onClick={pop}>More options...</Button>}>
+			<MenuGroup>
+				<MenuItem>Reload</MenuItem>
+				<MenuItem danger>Delete...</MenuItem>
+			</MenuGroup>
+		</MenuPopover>
+	),
 };

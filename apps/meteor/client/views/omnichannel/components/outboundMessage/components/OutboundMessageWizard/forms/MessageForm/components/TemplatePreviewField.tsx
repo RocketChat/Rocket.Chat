@@ -5,7 +5,7 @@ import { useWatch } from 'react-hook-form';
 import TemplatePreview from '../../../../TemplatePreview';
 import type { MessageFormData } from '../MessageForm';
 
-type TemplatePreviewFieldProps = {
+export type TemplatePreviewFieldProps = {
 	control: Control<MessageFormData>;
 	template: IOutboundProviderTemplate;
 };

@@ -2,9 +2,9 @@ import type { IRoom } from '@rocket.chat/core-typings';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { ChannelMention, UserMention } from '@rocket.chat/gazzodown';
 import { MarkupInteractionContext } from '@rocket.chat/gazzodown';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 import { useLayout, useRouter, useUserPreference, useUserId, useUserCard } from '@rocket.chat/ui-contexts';
-import type { UIEvent } from 'react';
+import type { UIEvent, ReactNode } from 'react';
 import { useCallback, memo, useMemo } from 'react';
 
 import { normalizeUsername } from '../../lib/utils/normalizeUsername';
@@ -13,8 +13,8 @@ import { fireGlobalEvent } from '../lib/utils/fireGlobalEvent';
 import { useMessageListHighlights, useMessageListShowRealName } from './message/list/MessageListContext';
 import { useGoToRoom } from '../views/room/hooks/useGoToRoom';
 
-type GazzodownTextProps = {
-	children: JSX.Element;
+export type GazzodownTextProps = {
+	children: ReactNode;
 	mentions?: {
 		type?: 'user' | 'team';
 		_id: string;
@@ -29,7 +29,7 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 	const [userLanguage] = useLocalStorage('userLanguage', 'en');
 
 	const highlights = useMessageListHighlights();
-	const { triggerProps, openUserCard } = useUserCard();
+	const { openUserCard, openUserInfo } = useUserCard();
 
 	const highlightRegex = useMemo(() => {
 		if (!highlights?.length) {
@@ -53,7 +53,7 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 	}, [searchText]);
 
 	const convertAsciiToEmoji = useUserPreference<boolean>('convertAsciiEmoji', true);
-	const useEmoji = Boolean(useUserPreference('useEmojis'));
+	const useEmoji = useUserPreference<boolean>('useEmojis', true);
 	const useRealName = useMessageListShowRealName();
 	const ownUserId = useUserId();
 	const showMentionSymbol = Boolean(useUserPreference<boolean>('mentionsWithSymbol'));
@@ -76,6 +76,20 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 	);
 
 	const onUserMentionClick = useCallback(
+		({ username }: UserMention) => {
+			if (!username) {
+				return;
+			}
+
+			return (event: UIEvent): void => {
+				event.stopPropagation();
+				openUserInfo(username);
+			};
+		},
+		[openUserInfo],
+	);
+
+	const onUserMentionHover = useCallback(
 		({ username }: UserMention) => {
 			if (!username) {
 				return;
@@ -124,6 +138,7 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 				markRegex,
 				resolveUserMention,
 				onUserMentionClick,
+				onUserMentionHover,
 				resolveChannelMention,
 				onChannelMentionClick,
 				convertAsciiToEmoji,
@@ -132,7 +147,6 @@ const GazzodownText = ({ mentions, channels, searchText, children }: GazzodownTe
 				isMobile,
 				ownUserId,
 				showMentionSymbol,
-				triggerProps,
 				language: userLanguage,
 			}}
 		>

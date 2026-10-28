@@ -6,7 +6,7 @@ import { useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Navigation, Zoom, Keyboard, A11y } from 'swiper/modules/index.mjs';
-import type { SwiperClass, SwiperRef } from 'swiper/swiper-react';
+import type { SwiperClass, SwiperRef } from 'swiper/react';
 import { Swiper, SwiperSlide } from 'swiper/swiper-react.mjs';
 
 import 'swiper/swiper.css';
@@ -98,7 +98,15 @@ const swiperStyle = css`
 	}
 `;
 
-export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[]; onClose: () => void; loadMore?: () => void }) => {
+export const ImageGallery = ({
+	images,
+	onClose,
+	loadMore,
+}: {
+	images: Pick<IUpload, '_id' | 'path' | 'url' | 'description'>[];
+	onClose: () => void;
+	loadMore?: () => void;
+}) => {
 	const { t } = useTranslation();
 	const swiperRef = useRef<SwiperRef>(null);
 	const [, setSwiperInst] = useState<SwiperClass>();
@@ -129,32 +137,30 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 							{zoomScale !== 1 && (
 								<IconButton
 									name='resize'
-									small
+									size='small'
 									icon='arrow-collapse'
 									title={t('Resize')}
-									rcx-swiper-zoom-out
-									secondary
+									variant='secondary'
 									onClick={handleResize}
 								/>
 							)}
 							<IconButton
 								name='zoom-out'
-								small
+								size='small'
 								icon='h-bar'
 								title={t('Zoom_out')}
-								rcx-swiper-zoom-out
 								onClick={handleZoomOut}
-								secondary
+								variant='secondary'
 								disabled={zoomScale === 1}
 							/>
-							<IconButton name='zoom-in' small icon='plus' title={t('Zoom_in')} rcx-swiper-zoom-in secondary onClick={handleZoomIn} />
+							<IconButton name='zoom-in' size='small' icon='plus' title={t('Zoom_in')} variant='secondary' onClick={handleZoomIn} />
 							<IconButton
 								name='close'
-								small
+								size='small'
 								icon='cross'
 								aria-label={t('Close_gallery')}
 								className='rcx-swiper-close-button'
-								secondary
+								variant='secondary'
 								onClick={onClose}
 							/>
 						</ButtonGroup>
@@ -162,14 +168,14 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 							icon='chevron-right'
 							aria-label={t('Next_image')}
 							className='rcx-swiper-prev-button'
-							secondary
+							variant='secondary'
 							onClick={preventPropagation}
 						/>
 						<IconButton
 							icon='chevron-left'
 							aria-label={t('Previous_image')}
 							className='rcx-swiper-next-button'
-							secondary
+							variant='secondary'
 							onClick={preventPropagation}
 						/>
 						<Swiper
@@ -195,10 +201,7 @@ export const ImageGallery = ({ images, onClose, loadMore }: { images: IUpload[];
 							{[...images].reverse().map(({ _id, path, url, description }) => (
 								<SwiperSlide key={_id}>
 									<div className='swiper-zoom-container'>
-										{/* eslint-disable-next-line
-											jsx-a11y/no-noninteractive-element-interactions,
-											jsx-a11y/click-events-have-key-events
-										*/}
+										{/* oxlint-disable-next-line jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/click-events-have-key-events */}
 										<img
 											src={path || url}
 											loading='lazy'

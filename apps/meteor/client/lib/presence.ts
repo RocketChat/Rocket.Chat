@@ -2,14 +2,18 @@ import type { IUser, UserPresence } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import type { EventHandlerOf } from '@rocket.chat/emitter';
 import { Emitter } from '@rocket.chat/emitter';
-import { Meteor } from 'meteor/meteor';
 
-import { sdk } from '../../app/utils/client/lib/SDKClient';
+import { sdk } from './SDKClient';
+import { subscribeRaw } from '../meteor/connection';
+
+// A command-style subscription with no lifecycle: the server registers the added and removed uids and moves on.
+const subscribeUserPresence = (payload: { added?: string[]; removed?: string[] }): void => {
+	subscribeRaw('stream-user-presence', '', payload);
+};
 
 type InternalEvents = {
 	remove: IUser['_id'];
 	reset: undefined;
-	restart: undefined;
 };
 
 type ExternalEvents = {
@@ -23,7 +27,7 @@ const emitter = new Emitter<Events>();
 const store = new Map<string, UserPresence>();
 
 const isUid = (eventType: keyof Events): eventType is UserPresence['_id'] =>
-	Boolean(eventType) && typeof eventType === 'string' && !['reset', 'restart', 'remove'].includes(eventType);
+	Boolean(eventType) && typeof eventType === 'string' && !['reset', 'remove'].includes(eventType);
 
 const uids = new Set<UserPresence['_id']>();
 
@@ -55,7 +59,7 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 			const ids = Array.from(currentUids);
 			const removed = Array.from(deletedUids);
 
-			Meteor.subscribe('stream-user-presence', '', {
+			subscribeUserPresence({
 				...(ids.length > 0 && { added: Array.from(currentUids) }),
 				...(removed.length && { removed: Array.from(deletedUids) }),
 			});
@@ -75,11 +79,14 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 
 				const fallbackStatus = status === 'disabled' ? UserStatus.DISABLED : UserStatus.OFFLINE;
 
-				users.forEach((user) => {
-					if (!store.has(user._id)) {
-						notify(user);
+				users.forEach(({ statusExpiresAt, ...rest }) => {
+					if (!store.has(rest._id)) {
+						notify({
+							...rest,
+							...(statusExpiresAt && { statusExpiresAt: new Date(statusExpiresAt) }),
+						});
 					}
-					currentUids.delete(user._id);
+					currentUids.delete(rest._id);
 				});
 
 				currentUids.forEach((uid) => {
@@ -119,9 +126,6 @@ const getPresence = ((): ((uid: UserPresence['_id']) => void) => {
 			.forEach((uid) => {
 				emitter.emit(uid, undefined);
 			});
-		emitter.once('restart', () => {
-			emitter.events().filter(isUid).forEach(get);
-		});
 	});
 
 	return get;
@@ -153,8 +157,9 @@ const reset = (): void => {
 	emitter.emit('reset');
 };
 
-const restart = (): void => {
-	emitter.emit('restart');
+const resync = (): void => {
+	reset();
+	emitter.events().filter(isUid).forEach(getPresence);
 };
 
 const get = async (uid: UserPresence['_id']): Promise<UserPresence | undefined> =>
@@ -184,7 +189,7 @@ export const Presence = {
 	listen,
 	stop,
 	reset,
-	restart,
+	resync,
 	notify,
 	store,
 	get,

@@ -1,3 +1,40 @@
+// Zones where Node/browser Intl returns a legacy IANA name instead of the
+// current canonical one. Workaround until Temporal lands (~late 2026).
+// Source: https://data.iana.org/time-zones/tzdb/backward
+// Ref: https://github.com/tc39/proposal-temporal/issues/3249
+const LEGACY_TO_CANONICAL: Record<string, string> = {
+	'America/Buenos_Aires': 'America/Argentina/Buenos_Aires',
+	'America/Catamarca': 'America/Argentina/Catamarca',
+	'America/Cordoba': 'America/Argentina/Cordoba',
+	'America/Godthab': 'America/Nuuk',
+	'America/Indianapolis': 'America/Indiana/Indianapolis',
+	'America/Jujuy': 'America/Argentina/Jujuy',
+	'America/Louisville': 'America/Kentucky/Louisville',
+	'America/Mendoza': 'America/Argentina/Mendoza',
+	'Asia/Calcutta': 'Asia/Kolkata',
+	'Asia/Katmandu': 'Asia/Kathmandu',
+	'Asia/Rangoon': 'Asia/Yangon',
+	'Asia/Saigon': 'Asia/Ho_Chi_Minh',
+	'Atlantic/Faeroe': 'Atlantic/Faroe',
+	'Europe/Kiev': 'Europe/Kyiv',
+	'Pacific/Enderbury': 'Pacific/Kanton',
+};
+
+export const canonicalizeTimezone = (name: string): string => {
+	try {
+		const resolved = new Intl.DateTimeFormat(undefined, { timeZone: name }).resolvedOptions().timeZone;
+		return LEGACY_TO_CANONICAL[resolved] ?? resolved;
+	} catch {
+		return name;
+	}
+};
+
+export const getTimezoneNames = (): string[] => {
+	const intl = Intl as typeof Intl & { supportedValuesOf?(key: 'timeZone'): string[] };
+	const zones = typeof intl.supportedValuesOf === 'function' ? intl.supportedValuesOf('timeZone') : [];
+	return zones.map((name) => LEGACY_TO_CANONICAL[name] ?? name).sort();
+};
+
 export const guessTimezoneFromOffset = (offset: string | number): string => {
 	const hours = Number(offset);
 	const totalMinutes = Math.round(hours * 60);
@@ -21,7 +58,7 @@ export const guessTimezoneFromOffset = (offset: string | number): string => {
 		const tzHours = match[1] ? parseInt(match[1], 10) : 0;
 		const tzMinutes = match[2] ? parseInt(match[2], 10) * (tzHours < 0 ? -1 : 1) : 0;
 		if (tzHours * 60 + tzMinutes === totalMinutes) {
-			return tz;
+			return LEGACY_TO_CANONICAL[tz] ?? tz;
 		}
 	}
 
@@ -33,4 +70,7 @@ export const guessTimezoneFromOffset = (offset: string | number): string => {
 	return `Etc/GMT${intHours > 0 ? '-' : '+'}${Math.abs(intHours)}`;
 };
 
-export const guessTimezone = (): string => new Intl.DateTimeFormat().resolvedOptions().timeZone;
+export const guessTimezone = (): string => {
+	const resolved = new Intl.DateTimeFormat().resolvedOptions().timeZone;
+	return LEGACY_TO_CANONICAL[resolved] ?? resolved;
+};

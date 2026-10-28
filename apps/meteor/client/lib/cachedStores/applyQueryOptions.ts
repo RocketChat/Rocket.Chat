@@ -38,7 +38,7 @@ export const applyQueryOptions = <T extends Record<string, any>>(records: T[], o
 	let currentPipeline = pipe(records);
 	if (options.sort) {
 		const sortObj = convertSort(options.sort);
-		for (let i = sortObj.sort.length - 1; i >= 0; i--) {
+		for (let i = sortObj.length - 1; i >= 0; i--) {
 			const { field, direction } = sortObj[i];
 			currentPipeline = currentPipeline.sortByField(field, direction);
 		}

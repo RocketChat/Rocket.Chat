@@ -1,4 +1,13 @@
-import { Box, Pagination, States, StatesActions, StatesAction, StatesIcon, StatesTitle } from '@rocket.chat/fuselage';
+import {
+	Pagination,
+	States,
+	StatesAction,
+	StatesActions,
+	StatesIcon,
+	StatesTitle,
+	type TableColumnWidth,
+	Text,
+} from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
@@ -10,6 +19,7 @@ import {
 	GenericTableRow,
 	usePagination,
 	useSort,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -17,9 +27,8 @@ import type { MutableRefObject } from 'react';
 import { useEffect, useMemo, useState } from 'react';
 
 import FilterByText from '../../../components/FilterByText';
-import GenericNoResults from '../../../components/GenericNoResults';
 
-type CustomEmojiProps = {
+export type CustomEmojiProps = {
 	reload: MutableRefObject<() => void>;
 	onClick: (emoji: string) => () => void;
 };
@@ -44,14 +53,14 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 		500,
 	);
 
+	const columns: TableColumnWidth[] = ['x200', 'x200'];
+
 	const headers = useMemo(
 		() => [
-			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name' w='x200'>
+			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
 				{t('Name')}
 			</GenericTableHeaderCell>,
-			<GenericTableHeaderCell key='aliases' w='x200'>
-				{t('Aliases')}
-			</GenericTableHeaderCell>,
+			<GenericTableHeaderCell key='aliases'>{t('Aliases')}</GenericTableHeaderCell>,
 		],
 		[setSort, sortDirection, sortBy, t],
 	);
@@ -70,7 +79,7 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 		<>
 			<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingTable headerCells={2} />
@@ -79,7 +88,7 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 			)}
 			{isSuccess && data && data.emojis.length > 0 && (
 				<>
-					<GenericTable aria-label={t('Emoji')}>
+					<GenericTable columns={columns} aria-label={t('Emoji')}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{isSuccess &&
@@ -94,10 +103,10 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 										qa-emoji-id={emojis._id}
 									>
 										<GenericTableCell color='default'>
-											<Box withTruncatedText>{emojis.name}</Box>
+											<Text truncate>{emojis.name}</Text>
 										</GenericTableCell>
 										<GenericTableCell color='default'>
-											<Box withTruncatedText>{Array.isArray(emojis.aliases) ? emojis.aliases.join(', ') : emojis.aliases}</Box>
+											<Text truncate>{Array.isArray(emojis.aliases) ? emojis.aliases.join(', ') : emojis.aliases}</Text>
 										</GenericTableCell>
 									</GenericTableRow>
 								))}

@@ -1,40 +1,38 @@
 import { css } from '@rocket.chat/css-in-js';
-import { IconButton } from '@rocket.chat/fuselage';
+import { IconButton, useStyle } from '@rocket.chat/fuselage';
 import DOMPurify from 'dompurify';
 import type { MouseEvent, AllHTMLAttributes } from 'react';
 import { memo } from 'react';
 
-import type { EmojiItem } from '../../../../app/emoji/client';
 import { usePreviewEmoji } from '../../../contexts/EmojiPickerContext';
+import type { EmojiItem } from '../../../lib/emoji';
 
-type EmojiElementProps = EmojiItem & { small?: boolean; onClick: (e: MouseEvent<HTMLElement>) => void } & Omit<
+export type EmojiElementProps = EmojiItem & { small?: boolean; onClick: (e: MouseEvent<HTMLElement>) => void } & Omit<
 		AllHTMLAttributes<HTMLButtonElement>,
-		'is'
+		'is' | 'color' | 'size'
 	>;
+
+const smallEmojiClass = css`
+	.emoji {
+		font-size: 1.125rem;
+	}
+`;
 
 const EmojiElement = ({ emoji, image, onClick, small = false, ...props }: EmojiElementProps) => {
 	const { handlePreview, handleRemovePreview } = usePreviewEmoji();
+	const smallEmojiClassName = useStyle(smallEmojiClass);
 
 	if (!image) {
 		return null;
 	}
 
-	const emojiSmallClass = css`
-		> .emoji,
-		.emojione {
-			width: 1.125rem;
-			height: 1.125rem;
-		}
-	`;
-
 	const emojiElement = <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(image) }} />;
 
 	return (
 		<IconButton
-			{...(small && { className: emojiSmallClass })}
-			small={small}
-			medium={!small}
-			onMouseOver={() => handlePreview(image, emoji)}
+			{...(small && { className: smallEmojiClassName })}
+			size={small ? 'small' : 'medium'}
+			onMouseEnter={() => handlePreview(image, emoji)}
 			onMouseLeave={handleRemovePreview}
 			onClick={onClick}
 			data-emoji={emoji}

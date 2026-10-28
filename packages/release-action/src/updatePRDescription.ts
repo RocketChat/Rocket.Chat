@@ -1,12 +1,19 @@
-import fs from 'fs';
-import path from 'path';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import * as core from '@actions/core';
 import { exec } from '@actions/exec';
 import * as github from '@actions/github';
 
 import { setupOctokit } from './setupOctokit';
-import { createTempReleaseNotes, getChangelogEntry, getEngineVersionsMd, isPreRelease, readPackageJson } from './utils';
+import {
+	MAX_PULL_REQUEST_BODY_LENGTH,
+	createTempReleaseNotes,
+	getChangelogEntry,
+	getEngineVersionsMd,
+	isPreRelease,
+	readPackageJson,
+} from './utils';
 
 export async function updatePRDescription({
 	githubToken,
@@ -52,7 +59,7 @@ export async function updatePRDescription({
 
 	const releaseBody = (await getEngineVersionsMd(cwd)) + changelogEntry.content;
 
-	const bodyUpdated = `${cleanBody}\n${createTempReleaseNotes(newVersion, releaseBody)}`;
+	const bodyUpdated = `${cleanBody}\n${createTempReleaseNotes(newVersion, releaseBody, MAX_PULL_REQUEST_BODY_LENGTH - cleanBody.length - 1)}`;
 
 	if (bodyUpdated === originalBody) {
 		core.info('no changes to PR description');

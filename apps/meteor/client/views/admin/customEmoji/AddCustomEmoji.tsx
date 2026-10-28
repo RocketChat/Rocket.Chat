@@ -1,20 +1,22 @@
 import { Box, Button, ButtonGroup, Margins, TextInput, Field, FieldLabel, FieldRow, FieldError, IconButton } from '@rocket.chat/fuselage';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import type { ReactElement, ChangeEvent } from 'react';
-import { useCallback, useState } from 'react';
+import { useQueryClient } from '@tanstack/react-query';
+import type { ChangeEvent } from 'react';
+import { useCallback, useId, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useEndpointUploadMutation } from '../../../hooks/useEndpointUploadMutation';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
-type AddCustomEmojiProps = {
+export type AddCustomEmojiProps = {
 	close: () => void;
 	onChange: () => void;
 };
 
-const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): ReactElement => {
+const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps) => {
 	const { t } = useTranslation();
+	const emojiLabelId = useId();
 	const [name, setName] = useState('');
 	const [aliases, setAliases] = useState('');
 	const [emojiFile, setEmojiFile] = useState<Blob>();
@@ -31,10 +33,12 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 	);
 
 	const dispatchToastMessage = useToastMessageDispatch();
+	const queryClient = useQueryClient();
 
 	const { mutateAsync: saveAction } = useEndpointUploadMutation('/v1/emoji-custom.create', {
 		onSuccess: () => {
 			dispatchToastMessage({ type: 'success', message: t('Custom_Emoji_Added_Successfully') });
+			queryClient.invalidateQueries({ queryKey: ['emoji-custom.list'] });
 			onChange();
 			close();
 		},
@@ -96,15 +100,15 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 					{errors.aliases && <FieldError>{t('Custom_Emoji_Error_Same_Name_And_Alias')}</FieldError>}
 				</Field>
 				<Field>
-					<FieldLabel alignSelf='stretch' display='flex' justifyContent='space-between' alignItems='center'>
-						{t('Custom_Emoji')}
-						<IconButton secondary small icon='upload' onClick={clickUpload} />
-					</FieldLabel>
+					<FieldRow>
+						<FieldLabel id={emojiLabelId}>{t('Custom_Emoji')}</FieldLabel>
+						<IconButton aria-labelledby={emojiLabelId} variant='secondary' size='small' icon='upload' onClick={clickUpload} />
+					</FieldRow>
 					{errors.emoji && <FieldError>{t('Required_field', { field: t('Custom_Emoji') })}</FieldError>}
 					{newEmojiPreview && (
-						<Box display='flex' flexDirection='row' mi='neg-x4' justifyContent='center'>
+						<Box display='flex' flexDirection='row' marginInline='neg-x4' justifyContent='center'>
 							<Margins inline={4}>
-								<Box is='img' style={{ objectFit: 'contain' }} w='x120' h='x120' src={newEmojiPreview} />
+								<Box is='img' objectFit='contain' width='x120' height='x120' src={newEmojiPreview} />
 							</Margins>
 						</Box>
 					)}
@@ -113,7 +117,7 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps): Rea
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={close}>{t('Cancel')}</Button>
-					<Button primary onClick={handleSave}>
+					<Button variant='primary' onClick={handleSave}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
