@@ -9757,7 +9757,7 @@ __metadata:
     npm-run-all: "npm:^4.1.5"
     typedoc: "npm:~0.28.20"
     typescript: "npm:~7.0.2"
-    uuid: "npm:~11.1.1"
+    uuid: "npm:~14.0.0"
   languageName: unknown
   linkType: soft
 
@@ -9790,7 +9790,7 @@ __metadata:
     stack-trace: "npm:0.0.10"
     ts-node: "npm:^10.9.2"
     typescript: "npm:~5.9.3"
-    uuid: "npm:~11.1.1"
+    uuid: "npm:~14.0.0"
   languageName: unknown
   linkType: soft
 
@@ -10002,7 +10002,7 @@ __metadata:
     jest: "npm:~30.5.2"
     typescript: "npm:~7.0.2"
     underscore: "npm:^1.13.8"
-    uuid: "npm:^11.1.1"
+    uuid: "npm:^14.0.0"
     ws: "npm:~8.21.3"
   languageName: unknown
   linkType: soft
@@ -10515,7 +10515,7 @@ __metadata:
     jest-environment-jsdom: "npm:~30.5.2"
     jest-environment-node: "npm:~30.5.2"
     typescript: "npm:~7.0.2"
-    uuid: "npm:~11.1.1"
+    uuid: "npm:~14.0.0"
   languageName: unknown
   linkType: soft
 
@@ -39797,7 +39797,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:11.1.1, uuid@npm:^11.1.1, uuid@npm:~11.1.1":
+"uuid@npm:11.1.1":
   version: 11.1.1
   resolution: "uuid@npm:11.1.1"
   bin:
@@ -39812,6 +39812,15 @@ __metadata:
   bin:
     uuid: dist-node/bin/uuid
   checksum: 10/da190a58eb699dfde38013c9ae8e2469eb62cc6c0774bb7d58b818a4fd1f0b269f11465d5153f88cfcf21e8b8187f35e016b2b033a53a6e06a22103ccce7a5fe
+  languageName: node
+  linkType: hard
+
+"uuid@npm:^14.0.0":
+  version: 14.0.3
+  resolution: "uuid@npm:14.0.3"
+  bin:
+    uuid: dist-node/bin/uuid
+  checksum: 10/a6ab4e6ef84ff77b574846215c425c915de035395710e09f083f3bc1d4744df63db78598da0d04619a0a60a15a9cce2bc7c1ef10bf302349e761838816d798a7
   languageName: node
   linkType: hard
 
@@ -39830,6 +39839,15 @@ __metadata:
   bin:
     uuid: dist/bin/uuid
   checksum: 10/9d0b6adb72b736e36f2b1b53da0d559125ba3e39d913b6072f6f033e0c87835b414f0836b45bcfaf2bdf698f92297fea1c3cc19b0b258bc182c9c43cc0fab9f2
+  languageName: node
+  linkType: hard
+
+"uuid@npm:~14.0.0":
+  version: 14.0.0
+  resolution: "uuid@npm:14.0.0"
+  bin:
+    uuid: dist-node/bin/uuid
+  checksum: 10/8ee9b98f9650e25555515f7a28d3c3ae9364e72f7bb19b9e08b681bc135338beba5509b2830f6ae1cfaba4d45401da0d16d4d109b977097bc3d6ba0c5583341b
   languageName: node
   linkType: hard
 
