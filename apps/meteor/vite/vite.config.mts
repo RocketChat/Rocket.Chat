@@ -351,10 +351,16 @@ export default defineConfig({
 		// The polyfill is an inline script, which the server's Content-Security-Policy blocks.
 		modulePreload: { polyfill: false },
 		rolldownOptions: {
+			// Required by experimentalInlineCommonChunks.
+			preserveEntrySignatures: false,
 			output: {
+				strictExecutionOrder: true,
 				// What every page loads up front ships as a few chunks instead of dozens: the libraries apart, so their
 				// chunk stays cached across releases, then the app code, then the routes the client imports as it starts.
 				codeSplitting: {
+					// A small chunk shared by lazy screens ships inside each screen that uses it instead of as its own file,
+					// so opening a screen takes one request without downloading code it does not use.
+					experimentalInlineCommonChunks: { maxSize: 20_000, exclude: /\.(css|scss|sass|less|styl|stylus|pcss|postcss|sss)(\?|$)/ },
 					groups: [
 						{ name: 'vendor', test: /node_modules/, tags: ['$initial'], priority: 3 },
 						{ name: 'app', tags: ['$initial'], priority: 2 },

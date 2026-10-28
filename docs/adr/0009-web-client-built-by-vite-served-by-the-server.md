@@ -53,4 +53,7 @@ Rejected alternatives:
   root. Neither changed with this decision.
 - Meteor still builds an empty `web.browser` program, only for its page, runtime config and static files. Dropping it
   is the next step: the server renders the page and serves `public/` itself (#43236).
-- How the build splits the client into chunks is tuned separately (#43235).
+- The client ships in a few hundred chunks rather than one per module (#43235). Startup loads a handful of grouped
+  chunks (libraries, app code, startup routes), and common chunks under 20 kB are copied into the lazy screens that use
+  them (Rolldown's experimental `experimentalInlineCommonChunks`). Merging screens into fewer files was rejected:
+  opening any screen then downloads several megabytes.
