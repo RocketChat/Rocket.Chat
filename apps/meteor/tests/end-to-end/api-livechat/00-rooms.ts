@@ -3355,6 +3355,7 @@ describe('LIVECHAT - rooms', () => {
 			let room: IOmnichannelRoom;
 			let visitor: ILivechatVisitor;
 			before(async () => {
+				await makeAgentUnavailable();
 				visitor = await createVisitor();
 				room = await createLivechatRoom(visitor.token);
 				await updatePermission('close-others-livechat-room', []);
@@ -3363,9 +3364,14 @@ describe('LIVECHAT - rooms', () => {
 				await restorePermissionToRoles('close-others-livechat-room');
 				await closeOmnichannelRoom(room._id);
 				await deleteVisitor(visitor.token);
+				await makeAgentAvailable();
 			});
 			it('should fail if user is not serving and doesnt have close-others-livechat-room permission', async () => {
-				await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: room._id }).expect(403);
+				const response = await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: room._id }).expect(403);
+
+				expect(response.body).to.have.property('success', false);
+				expect(response.body).to.have.property('errorType', 'error-forbidden');
+				expect(response.body).to.have.property('error', 'error-not-authorized');
 			});
 		});
 
