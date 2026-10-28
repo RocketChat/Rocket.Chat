@@ -15152,6 +15152,42 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tamagui/static@patch:@tamagui/static@npm%3A3.0.18#~/.yarn/patches/@tamagui-static-npm-3.0.18-189ad8b0b3.patch":
+  version: 3.0.18
+  resolution: "@tamagui/static@patch:@tamagui/static@npm%3A3.0.18#~/.yarn/patches/@tamagui-static-npm-3.0.18-189ad8b0b3.patch::version=3.0.18&hash=dc1bf4"
+  dependencies:
+    "@tamagui/animation-helpers": "npm:3.0.18"
+    "@tamagui/cli-color": "npm:3.0.18"
+    "@tamagui/compiler-core": "npm:3.0.18"
+    "@tamagui/config-default": "npm:3.0.18"
+    "@tamagui/core": "npm:3.0.18"
+    "@tamagui/dom": "npm:3.0.18"
+    "@tamagui/fake-react-native": "npm:3.0.18"
+    "@tamagui/generate-themes": "npm:3.0.18"
+    "@tamagui/helpers": "npm:3.0.18"
+    "@tamagui/helpers-node": "npm:3.0.18"
+    "@tamagui/react-native-web-internals": "npm:3.0.18"
+    "@tamagui/react-native-web-lite": "npm:3.0.18"
+    "@tamagui/shorthands": "npm:3.0.18"
+    "@tamagui/style-grammar": "npm:3.0.18"
+    "@tamagui/types": "npm:3.0.18"
+    "@tamagui/web": "npm:3.0.18"
+    browserslist: "npm:^4.28.1"
+    check-dependency-version-consistency: "npm:^4.1.0"
+    esbuild: "npm:0.28.1"
+    esbuild-register: "npm:^3.6.0"
+    fast-glob: "npm:^3.2.11"
+    find-root: "npm:^1.1.0"
+    fs-extra: "npm:^11.2.0"
+    get-tsconfig: "npm:^4.14.0"
+    js-yaml: "npm:^4.1.0"
+    react-native-web: "npm:~0.21.0"
+  peerDependencies:
+    react: ">=19"
+  checksum: 10/a33bf77321c54804f50407f251ccfca4a0742aff9e2cf18f8bfd3a328c3312d672d3f224bbd6cf4e72392628630289958b98c0a73632f2a986f51e8b47e2d616
+  languageName: node
+  linkType: hard
+
 "@tamagui/style-grammar@npm:3.0.18":
   version: 3.0.18
   resolution: "@tamagui/style-grammar@npm:3.0.18"
