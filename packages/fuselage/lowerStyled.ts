@@ -209,9 +209,29 @@ export const allowlist: Record<string, Record<string, Options>> = {
 	'src/components/Avatar/Avatar.tsx': { AvatarElementFrame: {} },
 	'src/components/Avatar/AvatarContainer.tsx': { AvatarContainerFrame: {} },
 	'src/components/Avatar/AvatarStack.tsx': { AvatarStackFrame: {} },
+	'src/components/Banner/Banner.tsx': {
+		BannerFrame: {},
+		BannerIcon: {},
+		BannerContent: {},
+		BannerTitle: {},
+		BannerLink: {},
+		BannerCloseButton: {},
+	},
+	'src/components/CodeSnippet/CodeSnippet.tsx': { CodeSnippetFrame: {}, CodeboxFrame: {} },
 	'src/components/FramedIcon/FramedIcon.tsx': { FramedIconFrame: {} },
 	'src/components/Icon/Icon.tsx': { IconFrame: {} },
+	'src/components/Menu/MenuItem.tsx': { MenuItemDescription: {} },
 	'src/components/StatusBullet/StatusBulletFrame.tsx': { StatusBulletFrame: {} },
+	'src/components/Pagination/Pagination.tsx': {
+		PaginationFrame: {},
+		PaginationDivider: {},
+		PaginationLeft: {},
+		PaginationRight: {},
+		PaginationLabel: {},
+		PaginationList: {},
+		PaginationListItem: {},
+		PaginationButton: {},
+	},
 };
 
 const root = import.meta.dirname;
