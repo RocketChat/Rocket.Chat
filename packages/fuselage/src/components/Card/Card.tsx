@@ -1,7 +1,6 @@
 import { styled, View, type GetProps } from '@tamagui/web';
 import type { AllHTMLAttributes } from 'react';
 
-import { CardContext } from './CardFrames';
 import { surfaceColors, textIconColors } from '../../Theme';
 import { cx } from '../../helpers/composeClassNames';
 import { toCSSValue } from '../../helpers/toCSSValue';
@@ -12,7 +11,6 @@ const cardBackgroundColor = toCSSValue('--rcx-card-background-color', surfaceCol
 const cardHoverBackgroundColor = String(surfaceColors['surface-hover']);
 
 const CardFrame = styled(View, {
-	context: CardContext,
 	flexDirection: 'row',
 	flexShrink: 1,
 	minWidth: 'auto',

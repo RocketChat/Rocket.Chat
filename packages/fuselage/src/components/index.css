@@ -4,6 +4,7 @@
 @import './Bubble/Bubble.styles.css';
 @import './Button/Button.styles.css';
 @import './ButtonGroup/ButtonGroup.styles.css';
+@import './Card/Card.styles.css';
 @import './CardGrid/CardGrid.styles.css';
 @import './CardGroup/CardGroup.styles.css';
 @import './CheckBox/CheckBox.styles.css';
