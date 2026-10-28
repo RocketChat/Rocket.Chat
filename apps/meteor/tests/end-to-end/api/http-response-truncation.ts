@@ -30,9 +30,12 @@ const TOTAL_REQUESTS = 30000;
 const CONCURRENCY = 64;
 
 let clientFiles: string[] = [];
+// `yarn dev` serves the client unbuilt from Vite, so there is no built file to replay.
+let isDevServer = false;
 
 const findClientFiles = async (): Promise<string[]> => {
 	const page = await (await fetch(`${apiUrl}/home`)).text();
+	isDevServer = /src="[^"]*\/entry\.ts"/.test(page);
 	const urls = [...page.matchAll(/<(?:script type="module"|link rel="modulepreload")[^>]*?(?:src|href)="([^"]+\.js)"/g)].map(([, path]) =>
 		new URL(path, apiUrl).toString(),
 	);
@@ -74,8 +77,12 @@ const fetchClientFile = async (url: string): Promise<{ error?: string }> => {
 };
 
 describe('client file delivery through the proxy', () => {
-	it('should serve client files large enough for the chunked gzip response shape the race depends on', async () => {
+	it('should serve client files large enough for the chunked gzip response shape the race depends on', async (t) => {
 		clientFiles = await findClientFiles();
+		if (isDevServer) {
+			t.skip('the Vite dev server has no built client');
+			return;
+		}
 
 		expect(clientFiles, 'the page loads no client file large enough to be served gzip-chunked').to.have.length.greaterThan(0);
 
@@ -88,7 +95,11 @@ describe('client file delivery through the proxy', () => {
 	it(
 		`should deliver ${TOTAL_REQUESTS} concurrent client file responses without a single truncation`,
 		{ timeout: 10 * 60 * 1000 },
-		async () => {
+		async (t) => {
+			if (isDevServer) {
+				t.skip('the Vite dev server has no built client');
+				return;
+			}
 			const failures: string[] = [];
 			let issued = 0;
 
