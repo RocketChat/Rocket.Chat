@@ -55,16 +55,20 @@ Each item is its own develop-compatible pull request.
 
 ### Step 1: the zero-runtime spike, then the plugin, still no component changed
 
-- **Spike first.** Before committing to the plan, prove zero-runtime works on Fuselage source compiled by an app. Use the pilot's `Button` and a small Vite app whose root includes `packages/fuselage/src`, with `experimental.zeroRuntime`. The spike answers:
-  - does `Button` compile with no `@tamagui/*` module left?
-  - what do `checkZeroGraph` and the rule violations report for it?
-  - what root or include setting makes Fuselage's sources, which sit outside `apps/meteor/vite`, count as app sources?
-  - are the computed styles and DOM identical to the pilot's runtime `Button`, at rest, hovered, focused and pressed?
-  - what does the compiled `Button` cost in JS and CSS?
-
-  If zero-runtime can't compile Fuselage from the app, the pilot's lowering plugin is the fallback; its plan is in `docs/proposals/fuselage-lowered-styled.md`.
-
-- **Then the plugin in the app.** Add `@tamagui/vite-plugin` with `experimental.zeroRuntime` to `apps/meteor/vite/vite.config.mts`, Storybook and the bench app, with Fuselage's sources in its transformed set. Pin `@tamagui/*` to one exact version.
+- **The spike passed** (branch `spike/fuselage-zero-runtime`, app in `packages/fuselage/zero-spike/`).
+  - **Build:** on `@tamagui/*` 3.0.18 a Vite app compiled the pilot's `Button` and `IconButton` from Fuselage's source with `experimental.zeroRuntime`. The zero graph reports no `@tamagui/*` module, and the JS contains no Tamagui code.
+  - **Output:** the DOM and the computed styles of 35 instances, at rest, hovered, focused and pressed, are identical to the pilot's runtime `Button`.
+  - **Size:** the page's JS went from 119.1 kB to 82.7 kB gzip (−36.4 kB). CSS went from 11.3 kB to 20.1 kB (+8.8 kB): Tamagui's zero stylesheet repeats rules per module, and deduplicated it would be about 6.3 kB.
+  - **Left in the JS:** about 12.6 kB gzip of Button code, mostly the variant lookup maps. That is the cost to bring down before other components copy the pattern.
+  - **Fallback:** if a component can't compile, the pilot's library-level lowering plugin remains, documented in `docs/proposals/fuselage-lowered-styled.md`.
+- **Then the plugin in the app.** Add `@tamagui/vite-plugin` with `experimental.zeroRuntime` to `apps/meteor/vite/vite.config.mts`, Storybook and the bench app. Pin `@tamagui/*` to one exact version. The spike showed what the app config needs:
+  - **Fuselage's `src` inside the transformed set.** Zero transforms only `.tsx` under the Vite `root`, and the app's root is `apps/meteor/vite`. Either the root moves up to the monorepo, or a yarn patch on the vite plugin adds an include list. The include list is smaller: moving the root nests the built HTML and transforms every app module.
+  - **A yarn patch for member-expression elements.** Zero reports every `<Ctx.Provider value>` in a transformed module as a theme change, even without a Tamagui import, because `jsxNameOf` returns `null` for `<A.B>` and compares equal to the theme local. The fix is one condition (`!!name &&`) in `static/src/zero/transform.ts`; file it upstream.
+  - **Literal `styled()` options, or `prevalStyled` in the app.** Zero reads only literals: no function calls, no spread of a call, no `Object.fromEntries`.
+  - **`TAMAGUI_CSS_LAYER='fuselage'`.** Without it the zero stylesheet writes its base `:where(.is_View)` rules unlayered, and they beat every layered rule.
+  - **`base: '/'`.** With a relative base and a nested HTML entry, the zero stylesheet's link resolves next to the HTML and 404s.
+  - **`@rocket.chat/fuselage` out of `distOnlyWorkspacePackages`.**
+- **Zero-runtime is all or nothing for the entry graph,** since any reachable `@tamagui/*` module fails the build. This doesn't block migrating one component at a time: components not yet migrated stay on SCSS and import no Tamagui, and each migrated one must compile clean. Fuselage must not keep a Tamagui `ThemeProvider` in a module the app reaches.
 - **`tamagui.config.ts`** lives in Fuselage: no tokens, one static theme, media queries only if a component needs them.
 - **The gate is Tamagui's own.** Zero-runtime fails the build if any `@tamagui/*` module stays reachable, which replaces the pilot's `count-unlowered` ratchet. Keep a CI ratchet only on the number of Fuselage components still on SCSS.
 - Check: with no component migrated, the app bundle has 0 bytes of Tamagui and `build:vite` passes.
@@ -92,9 +96,13 @@ Each component PR:
 
 ## Per-component rules
 
-Tamagui's [zero-runtime rules](https://tamagui.dev/docs/guides/zero-runtime) come first. On top of them, what the pilot learned:
+Tamagui's [zero-runtime rules](https://tamagui.dev/docs/guides/zero-runtime) come first. The spike showed how they apply to Fuselage:
 
-- **Pass props explicitly.** Zero-runtime rejects spreads onto frames. The wrapper destructures what it supports and passes each prop; the element is a string `render` (`render='a'`). A JSX element in `render` deopts ([styled](https://tamagui.dev/docs/core/styled)).
+- **No spread on a frame.** Zero rejects it, and the use-site is skipped without a message: the error only shows later, as an unerased definition. Debug with `TAMAGUI_COMPILER_STATS_FILE`. Caller attributes go on an inline render element, `render={<Tag {...attributes} ref={ref} />}`, which compiles to `jsx(Tag, { ...attributes, className })`. The render element must be written inline, not held in a variable, and the `ref` goes on it rather than on the frame.
+- **No `style` on a frame or on its render element, and no runtime value in a style prop.** A component that needs either is a plain element styled by its `.styles.css`, as `Icon` became in the spike (an `<i>` with `.rcx-icon`).
+- **Declare a frame in the module that renders it.** Zero erases a `styled()` declaration only when every reference is in its own module, so a frame exported to another module is never erased. Shared style data (the variant objects) can live in another module; the `styled()` call can't. A frame another frame extends (as `FramedIcon` extends `IconFrame`) needs its own module and every importer transformed.
+- **One runtime-chosen variant per CSS property.** Zero rejects two conditionals that set the same property on an element ("Multiple conditionals contribute minWidth…"). Variants that used to overlap and resolve by prop order become one precomputed combined variant per group of properties (the spike's `sizing`, `layer` and `paint`), merged state by state. Keep each combination set small: IconButton's `paint` has about 450 keys, and each key is a string in the JS lookup map.
+- **No `ThemeProvider` or `tamagui.config` import in a module the app reaches.** The spike moved `withFuselageProvider` into its own module with no Tamagui import.
 - **No runtime-only features in a frame:**
   - no `context`/`createStyledContext`: use descendant rules or a plain React context ([docs](https://tamagui.dev/docs/core/create-styled-context));
   - no `animation:` for keyframes or loops: use plain `@keyframes`; a CSS `transition` is fine ([animations](https://tamagui.dev/docs/core/animations));
@@ -107,7 +115,7 @@ Tamagui's [zero-runtime rules](https://tamagui.dev/docs/guides/zero-runtime) com
 - **A prop named `disabled` on a frame becomes `aria-disabled`.** Give internal variants another name, such as `muted`.
 - **The wrapper owns the `rcx-*` classes**, joining them with the consumer `className`.
   - Code outside Fuselage styles its own elements with `rcx-*` classes. Keep those rules in `styles/consumer-classes.css`, and check for them before moving a component's CSS.
-- **Use cascade layers.** Tamagui's generated CSS goes in `@layer fuselage`, using the compiler's `wrapExtractedCSS` or the generated stylesheet's import. Unlayered element rules beat it, which is why the reset and the global element rules sit in `@layer reset`.
+- **Use cascade layers.** Tamagui's generated CSS goes in `@layer fuselage`, through `TAMAGUI_CSS_LAYER='fuselage'`. Unlayered element rules beat it, which is why the reset and the global element rules sit in `@layer reset`.
 - **No Tamagui tokens or themes for colors and sizes.** Values stay on the `--rcx-*` custom properties. Tamagui names its variables by hash or path, and would declare them in competition with the app's palettes, dark mode, high contrast and admin custom themes.
 
 ## Verification, per pull request
@@ -129,13 +137,13 @@ Known flaky stories that differ between two captures of the same build: `Positio
 | Pilot workaround                                                                                         | In the restart                                                                                                                                          |
 | -------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | Build-time lowering (`lowerStyled.ts`, recipes, `check-lowered`, `count-unlowered`)                      | Dropped; zero-runtime in the app replaces it. Kept on the pilot branch as the fallback if the spike fails                                               |
-| `prevalStyled.ts`                                                                                        | Dropped; values are literal strings the compiler reads                                                                                                  |
+| `prevalStyled.ts`                                                                                        | Dropped once `styled()` options are literal; until then it runs in the app (the spike needed it)                                                        |
 | `@tamagui/static` patches (default attributes, dynamic variants, `render` element, computed `className`) | Re-check each against the pinned version. The default attributes one looks like an upstream bug worth filing; the others are avoided by the rules above |
 | `@tamagui/web` patches (React 19 refs, `forceStyle`/`onLayout` leaks, frames without a provider)         | Kept for the uncompiled `dist` (npm, Jest, other Storybooks); unused in the app's compiled client                                                       |
 | `variantClass`, `asPublicFrame`                                                                          | Dropped; the wrapper owns the classes                                                                                                                   |
 | Replacing `group`                                                                                        | Possibly avoidable; prove it compiles first                                                                                                             |
 | Replacing `createStyledContext`, keyframe `animation:`                                                   | Still needed                                                                                                                                            |
-| `render={<Tag {...domProps} />}`                                                                         | Dropped; string `render` plus explicit props                                                                                                            |
+| `render={<Tag {...domProps} />}`                                                                         | Kept, inline: under zero it is how caller attributes and the `ref` reach the element, since a frame takes no spread                                     |
 | Cascade layers, `consumer-classes.css`, `--rcx-*` values, `@property` for open values                    | Kept                                                                                                                                                    |
 
 ## What to reuse from the pilot
@@ -152,7 +160,7 @@ Known flaky stories that differ between two captures of the same build: `Positio
 
 ## Open questions
 
-- **Does zero-runtime compile Fuselage from the app?** The step 1 spike answers it. If not, fall back to the pilot's library-level lowering.
+- **How large the variant maps get.** Zero allows one runtime-chosen variant per CSS property, so overlapping variants become combined ones, and each combination is a string in the JS lookup map (IconButton's `paint` has about 450). Find, on `Button` and `IconButton`, the split that keeps the maps small: fewer combinations, a CSS custom property for a colour instead of a variant per colour, or plain CSS for the states.
 
-- **Where the JS goes.** The pilot was about +45 kB JS over `develop` without the runtime. The first component tells whether that was the lowering's recipes, which zero-runtime doesn't need, or the components' own code.
+- **Where the JS goes.** The pilot was about +45 kB JS over `develop` without the runtime. In the spike, zero-runtime `Button` and `IconButton` still carry about 12.6 kB gzip, mostly variant maps, against near zero for `develop`'s SCSS buttons. The budget depends on bringing that down.
 - **What happens to the pilot.** Keep #42942 open as the reference while the component PRs land, then close it. #43167, the develop-compatible preparation, can merge independently.
