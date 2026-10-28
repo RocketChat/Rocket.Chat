@@ -69,7 +69,7 @@ async function saveUserProfile(
 		});
 	}
 
-	if (settings.realname || settings.username) {
+	if (typeof settings.realname === 'string' || settings.username) {
 		if (
 			!(await saveUserIdentity({
 				_id: this.userId,
