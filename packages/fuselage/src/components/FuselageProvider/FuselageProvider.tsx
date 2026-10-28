@@ -81,8 +81,13 @@ export const isTamaguiComponent = (type: unknown): boolean => {
 		return false;
 	}
 
-	// An exported frame carries its `staticConfig`; `memo()` wraps the component in an object that keeps it under `type`
-	return tamaguiComponents.has(type) || 'staticConfig' in type || 'isLoweredFrame' in type || isTamaguiComponent((type as { type?: unknown }).type);
+	// An exported frame carries its `staticConfig`, a lowered one its `isLoweredFrame` marker; `memo()` wraps the component in an object that keeps it under `type`
+	return (
+		tamaguiComponents.has(type) ||
+		'staticConfig' in type ||
+		'isLoweredFrame' in type ||
+		isTamaguiComponent((type as { type?: unknown }).type)
+	);
 };
 
 export default FuselageProvider;

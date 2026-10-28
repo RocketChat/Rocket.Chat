@@ -271,7 +271,7 @@ This is the one list to track removing Tamagui's runtime from Fuselage's web bui
 - [x] `context:` and `createStyledContext`: the parts of Avatar stacks, Cards and Messages that followed their parent only changed a style, so they follow it with descendant rules in the `fuselage` layer.
 - [x] `animation:` (Skeleton, the ProgressBar shine, Throbber): the frames take their `@keyframes` from plain CSS classes.
 - [x] `getTokens` in PaletteStyleTag: already a local function over `fuselage-tokens`' JSON, it never reads Tamagui's config.
-- [ ] `isTamaguiComponent`: a marker the lowered component sets.
+- [x] `isTamaguiComponent`: a marker the lowered component sets (`isLoweredFrame`), so `Box is={…}` still leaves the `rcx-box` base classes off a lowered frame; `Box.spec.tsx` covers it.
 
 A computed `className` or a `{...props}` spread at a frame's use-site doesn't need the runtime once definitions are lowered: the lowered component takes them at runtime like any element. They only stop the compiler from flattening that use-site, so they belong to the optional list below.
 

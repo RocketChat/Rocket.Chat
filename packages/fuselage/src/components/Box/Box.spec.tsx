@@ -1,6 +1,7 @@
 import { css } from '@rocket.chat/css-in-js';
 
 import Box from './Box';
+import { lowered } from '../../lowered/recipe';
 import { render } from '../../testing';
 import { Tag } from '../Tag';
 
@@ -129,6 +130,15 @@ describe('[Box Component]', () => {
 			expect(container.firstElementChild).toHaveClass('rcx-tag');
 			expect(container.firstElementChild).not.toHaveClass('rcx-box');
 			expect(container.firstElementChild).not.toHaveClass('rcx-box--full');
+			expect(container.firstElementChild?.className).toMatch(/rcx-css-/);
+		});
+
+		it('leaves the rcx-box base classes off a lowered frame', () => {
+			const Frame = lowered({ tag: 'span', defaults: [], base: [], baseClass: '_frame', variants: {}, entries: [], slotOf: [], slots: [] });
+			const { container } = render(<Box is={Frame} marginInline={4} />);
+
+			expect(container.firstElementChild).toHaveClass('_frame');
+			expect(container.firstElementChild).not.toHaveClass('rcx-box');
 			expect(container.firstElementChild?.className).toMatch(/rcx-css-/);
 		});
 
