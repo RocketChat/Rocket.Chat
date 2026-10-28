@@ -8,7 +8,7 @@ import { computeRecipe, evaluate } from '../lowerStyled.ts';
 
 const root = join(import.meta.dirname, '..');
 const files = (readdirSync(join(root, 'src/components'), { recursive: true }) as string[]).filter(
-	(file) => file.endsWith('.tsx') && !file.includes('.stories.') && !file.includes('.spec.'),
+	(file) => /\.tsx?$/.test(file) && !file.includes('.stories.') && !file.includes('.spec.'),
 );
 
 const rows: Record<string, unknown>[] = [];
