@@ -286,7 +286,7 @@ A computed `className` or a `{...props}` spread at a frame's use-site doesn't ne
 - [ ] CI ratchets: definitions not lowered, and `@tamagui/*` modules in the web bundle. Both only go down.
 - [ ] Message family.
 - [ ] Item and Sidebar family.
-- [ ] Button family.
+- [x] Button family.
 - [ ] Inputs and selects.
 - [ ] Containers (Modal, Contextualbar, Card, Table, Tile…).
 - [ ] Everything else, until both ratchets reach zero.
