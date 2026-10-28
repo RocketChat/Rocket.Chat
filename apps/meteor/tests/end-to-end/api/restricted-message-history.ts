@@ -135,6 +135,14 @@ const SETTING = 'Restricted_Message_History_Enabled';
 			expect(ids).to.not.include(oldThread._id);
 		});
 
+		it('refuses to let the newcomer reply to a hidden thread', async () => {
+			const res = await request
+				.post(api('chat.sendMessage'))
+				.set(newcomerCredentials)
+				.send({ message: { rid: room._id, msg: 'replying blind', tmid: oldThread._id } });
+			expect(res.status).to.equal(400);
+		});
+
 		it('refuses to follow, react to or star a hidden message', async () => {
 			const follow = await request.post(api('chat.followMessage')).set(newcomerCredentials).send({ mid: oldThread._id });
 			expect(follow.status).to.equal(400);
