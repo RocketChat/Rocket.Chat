@@ -410,6 +410,33 @@ describe('createSearchIndexCrawler', () => {
 			expect(crawler.getPendingDecrypt('roomB').map((message) => message._id)).toEqual(['b1', 'b2']);
 		});
 
+		it('keeps at most 5000 pending messages by default, across rooms, when 6000 never decrypt in a backfill', async () => {
+			// 60 pages of 100 messages in two rooms, newest first, as a backfill of a room whose old key is lost.
+			const pageOf = (rid: string, start: number) => ({
+				updated: Array.from({ length: 100 }, (_, i) => encrypted(`${rid}-${start + i}`, NOW - (start + i) * 1000, { rid })),
+				deleted: [],
+				cursor: { next: null, previous: `${NOW - (start + 99) * 1000}` },
+			});
+			const pages = [
+				...Array.from({ length: 30 }, (_, p) => pageOf('roomA', p * 100)),
+				...Array.from({ length: 30 }, (_, p) => pageOf('roomB', p * 100)),
+			];
+			const undecryptable = new Set(pages.flatMap((page) => page.updated.map((message) => message._id)));
+			const { crawler } = await setup({ pages, undecryptable });
+
+			for (let p = 0; p < 30; p++) await crawler.backfillRoomPage('roomA');
+			for (let p = 0; p < 30; p++) await crawler.backfillRoomPage('roomB');
+
+			const pendingA = crawler.getPendingDecrypt('roomA').map((message) => message._id);
+			const pendingB = crawler.getPendingDecrypt('roomB').map((message) => message._id);
+			expect(pendingA.length + pendingB.length).toBe(5000);
+			// The first 1000 kept (the newest of roomA) are dropped first.
+			expect(pendingA).toHaveLength(2000);
+			expect(pendingA[0]).toBe('roomA-1000');
+			expect(pendingB).toHaveLength(3000);
+			expect(pendingB.at(-1)).toBe('roomB-2999');
+		});
+
 		it('indexes a message added after the drop when its key arrives', async () => {
 			const { crawler } = await setup({ maxPending: 2 });
 			for (let i = 1; i <= 4; i++) crawler.addPendingDecrypt(encrypted(`m${i}`, NOW - 1000));
