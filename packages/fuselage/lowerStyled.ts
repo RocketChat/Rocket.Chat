@@ -29,7 +29,11 @@ type Options = {
 export const allowlist: Record<string, Record<string, Options>> = {
 	'src/components/Message/MessageName.tsx': { MessageNameFrame: {} },
 	'src/components/ButtonGroup/ButtonGroup.tsx': { ButtonGroupFrame: {} },
-	'src/components/Button/ButtonFrame.tsx': { ButtonFrame: { ordered: true }, ButtonContent: {} },
+	'src/components/Button/ButtonFrame.tsx': { ButtonFrame: { ordered: true }, ButtonContent: {}, ButtonBadge: {} },
+	'src/components/Bubble/Bubble.tsx': { BubbleFrame: {} },
+	'src/components/Bubble/BubbleButton.tsx': { BubbleLabel: {}, BubbleButtonFrame: {} },
+	'src/components/Bubble/BubbleItem.tsx': { BubbleItemFrame: {} },
+	'src/components/SplitButton/SplitButton.tsx': { SplitButtonFrame: {} },
 };
 
 const root = import.meta.dirname;
