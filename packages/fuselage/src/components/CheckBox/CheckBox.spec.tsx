@@ -1,4 +1,4 @@
-import { composeStories } from '@storybook/react-webpack5';
+import { composeStories } from '@storybook/react-vite';
 import { fireEvent, getByRole } from '@testing-library/react';
 import { axe } from 'jest-axe';
 

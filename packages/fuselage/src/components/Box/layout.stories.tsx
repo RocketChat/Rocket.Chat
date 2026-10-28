@@ -1,4 +1,4 @@
-import type { Meta, StoryObj, StoryFn, StoryContext } from '@storybook/react-webpack5';
+import type { Meta, StoryObj, StoryFn, StoryContext } from '@storybook/react-vite';
 import { cloneElement } from 'react';
 import flattenChildren from 'react-keyed-flatten-children';
 
