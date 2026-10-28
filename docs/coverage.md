@@ -123,6 +123,8 @@ COVERAGE_DIR=/tmp/coverage COVERAGE_FILE_NAME=local.json COVERAGE_REPORTER=lcov 
 
 Remember to restore `.swcrc` and `.meteor/packages` after testing.
 
+This covers the server only: `yarn dev` serves the client from Vite's dev server, which is never instrumented. To cover the client too, build it with `BABEL_ENV=coverage yarn build:client`, start the server with `meteor` rather than `yarn dev` (which deletes the built client), and run the UI tests with `E2E_COVERAGE=true`; the counters land in `.nyc_output`.
+
 ## Dependencies
 
 | Package | Purpose |
