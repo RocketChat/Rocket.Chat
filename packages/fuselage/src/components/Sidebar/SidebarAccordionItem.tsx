@@ -2,6 +2,7 @@ import type { HTMLAttributes, ReactNode } from 'react';
 
 import { Chevron } from '../Chevron';
 import { useCollapse } from './hooks/useCollapse';
+import { cx } from '../../helpers/composeClassNames';
 
 export type SidebarAccordionItemProps = {
 	children?: ReactNode;
@@ -23,6 +24,7 @@ const SidebarAccordionItem = ({
 	expanded: propExpanded,
 	defaultExpanded,
 	tabIndex,
+	className,
 	...props
 }: SidebarAccordionItemProps) => {
 	const { barProps, expanded, panelExpanded, panelId, titleId } = useCollapse({
@@ -34,7 +36,7 @@ const SidebarAccordionItem = ({
 	});
 
 	return (
-		<section className='rcx-box rcx-box--full rcx-sidebar-accordion-item' {...props}>
+		<section {...props} className={cx('rcx-box rcx-box--full rcx-sidebar-accordion-item', className)}>
 			<div
 				role='button'
 				className={[

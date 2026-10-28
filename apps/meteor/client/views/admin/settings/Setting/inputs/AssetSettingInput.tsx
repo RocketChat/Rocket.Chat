@@ -3,7 +3,7 @@ import { Box, Button, Field, FieldHint, FieldLabel, FieldRow, Icon, Palette } fr
 import { Random } from '@rocket.chat/random';
 import { useToastMessageDispatch, useEndpoint, useTranslation, useUpload } from '@rocket.chat/ui-contexts';
 import type { ChangeEventHandler, DragEvent, SyntheticEvent } from 'react';
-import { useId } from 'react';
+import { useId, useRef } from 'react';
 
 import type { SettingInputProps } from './types';
 
@@ -15,6 +15,7 @@ export type AssetSettingInputProps = Omit<SettingInputProps<{ url: string }>, 'o
 function AssetSettingInput({ _id, label, value, hint, asset, required, disabled, fileConstraints }: AssetSettingInputProps) {
 	const t = useTranslation();
 	const labelId = useId();
+	const fileInputRef = useRef<HTMLInputElement>(null);
 
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setAsset = useUpload('/v1/assets.setAsset');
@@ -58,21 +59,6 @@ function AssetSettingInput({ _id, label, value, hint, asset, required, disabled,
 	const settingsFilePreview = css`
 		display: flex;
 		align-items: center;
-
-		& input[type='file'] {
-			position: absolute !important;
-			z-index: 10000;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			cursor: pointer;
-			opacity: 0;
-
-			& * {
-				cursor: pointer;
-			}
-		}
 
 		& .preview {
 			overflow: hidden;
@@ -121,16 +107,20 @@ function AssetSettingInput({ _id, label, value, hint, asset, required, disabled,
 								{t('Delete')}
 							</Button>
 						) : (
-							<Box position='relative' className={`rcx-button rcx-button--primary ${disabled ? 'is-disabled' : ''}`}>
-								{t('Select_file')}
+							<>
+								<Button variant='primary' disabled={disabled} onClick={() => fileInputRef.current?.click()}>
+									{t('Select_file')}
+								</Button>
 								<input
+									ref={fileInputRef}
 									id={_id}
 									type='file'
+									hidden
 									accept={`.${fileConstraints?.extensions?.join(', .')}`}
 									onChange={handleUpload}
 									disabled={disabled}
 								/>
-							</Box>
+							</>
 						)}
 					</div>
 				</Box>

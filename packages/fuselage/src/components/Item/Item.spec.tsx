@@ -2,7 +2,7 @@ import { composeStories } from '@storybook/react-webpack5';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
-import { createRef } from 'react';
+import { createRef, Profiler } from 'react';
 
 import {
 	Item,
@@ -114,6 +114,96 @@ describe('Item', () => {
 		expect(item).not.toHaveAttribute('role');
 		expect(item).not.toHaveAttribute('aria-selected');
 		expect(item).not.toHaveAttribute('aria-disabled');
+	});
+
+	it('is labelled by its titles as a menu item', () => {
+		render(
+			<Item role='menuitem' data-testid='item'>
+				<ItemContent>
+					<ItemTitle id='title'>Title</ItemTitle>
+				</ItemContent>
+			</Item>,
+		);
+
+		expect(screen.getByTestId('item')).toHaveAttribute('aria-labelledby', 'title');
+	});
+
+	it('renders once on mount when it is not a menu item', () => {
+		const onRender = jest.fn();
+
+		render(
+			<Profiler id='item' onRender={onRender}>
+				<Item>
+					<ItemContent>
+						<ItemTitle>Title</ItemTitle>
+					</ItemContent>
+				</Item>
+			</Profiler>,
+		);
+
+		expect(onRender).toHaveBeenCalledTimes(1);
+	});
+
+	it('renders once on mount without a labelled icon', () => {
+		const onRender = jest.fn();
+
+		render(
+			<Profiler id='item' onRender={onRender}>
+				<Item>
+					<ItemIcon />
+					<ItemTitle>
+						<ItemLink href='#kenji'>Kenji Takahashi</ItemLink>
+					</ItemTitle>
+				</Item>
+			</Profiler>,
+		);
+
+		expect(onRender).toHaveBeenCalledTimes(1);
+	});
+
+	it('references only ids that exist, and keeps ids unique, with two labelled icons', () => {
+		const { container } = render(
+			<Item role='menuitem'>
+				<ItemIcon label='Away' />
+				<ItemIcon label='Raised hand' />
+				<ItemContent>
+					<ItemTitle>Title</ItemTitle>
+					<ItemTitle>
+						<ItemLink href='#kenji'>Kenji</ItemLink>
+					</ItemTitle>
+				</ItemContent>
+			</Item>,
+		);
+
+		const ids = Array.from(container.querySelectorAll('[id]')).map((element) => element.id);
+		expect(new Set(ids).size).toBe(ids.length);
+
+		container.querySelectorAll('[aria-describedby], [aria-labelledby]').forEach((element) => {
+			const refs = `${element.getAttribute('aria-describedby') ?? ''} ${element.getAttribute('aria-labelledby') ?? ''}`
+				.split(' ')
+				.filter(Boolean);
+			refs.forEach((id) => expect(container.querySelector(`[id="${CSS.escape(id)}"]`)).not.toBeNull());
+		});
+	});
+
+	it('describes a menu item by an icon that has its own id', () => {
+		render(
+			<Item role='menuitem' data-testid='item'>
+				<ItemIcon id='own-icon' label='Selected' />
+				<ItemTitle>Title</ItemTitle>
+			</Item>,
+		);
+
+		expect(screen.getByTestId('item')).toHaveAttribute('aria-describedby', 'own-icon');
+	});
+
+	it.each([
+		[{ multiline: true }, 'rcx-item--multiline'],
+		[{ interactive: true }, 'rcx-item--interactive'],
+	])('maps %o to the %s modifier', (props, className) => {
+		render(<Item {...props} data-testid='item' />);
+
+		expect(screen.getByTestId('item')).toHaveClass(className);
 	});
 });
 

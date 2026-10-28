@@ -15,7 +15,7 @@ $option-color-variant-primary: theme('option-color-variant-primary', colors.stat
 	margin-inline: lengths.margin(4);
 }
 
-// Inside an `Item` the row owns layout and states; these rules only style a bare `.rcx-option`, as `MenuOption` renders.
+// Inside an `Item` the row owns layout and states; these rules only style a bare `.rcx-option`.
 .rcx-option {
 	&:not(.rcx-item) {
 		@include clickable;

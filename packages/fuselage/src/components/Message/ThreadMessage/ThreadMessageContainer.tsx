@@ -1,11 +1,13 @@
-import type { ReactNode } from 'react';
+import type { HTMLAttributes, ReactNode } from 'react';
+
+import { cx } from '../../../helpers/composeClassNames';
 
 export type ThreadMessageContainerProps = {
 	children?: ReactNode;
-};
+} & HTMLAttributes<HTMLDivElement>;
 
-const ThreadMessageContainer = (props: ThreadMessageContainerProps) => (
-	<div className='rcx-box rcx-box--full rcx-message-thread__container' {...props} />
+const ThreadMessageContainer = ({ className, ...props }: ThreadMessageContainerProps) => (
+	<div {...props} className={cx('rcx-box rcx-box--full rcx-message-thread__container', className)} />
 );
 
 export default ThreadMessageContainer;

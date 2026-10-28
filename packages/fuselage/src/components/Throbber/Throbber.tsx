@@ -1,4 +1,4 @@
-import { css } from '@rocket.chat/css-in-js';
+import type { CSSProperties } from 'react';
 
 import type { ElementProps } from '../../types/ElementProps';
 import { Box, type BoxProps } from '../Box';
@@ -14,10 +14,7 @@ function Circle({ disabled, circleCount, iteration, inheritColor, ...props }: Ci
 	return (
 		<Box
 			is='span'
-			className={css`
-				animation-duration: ${circleCount * 0.466}s;
-				animation-delay: ${iteration * 0.16}s;
-			`}
+			style={{ '--throbber-duration': `${circleCount * 0.466}s`, '--throbber-delay': `${iteration * 0.16}s` } as CSSProperties}
 			rcx-throbber__circle
 			rcx-throbber__circle--disabled={disabled}
 			rcx-throbber__circle--inherit-color={inheritColor}

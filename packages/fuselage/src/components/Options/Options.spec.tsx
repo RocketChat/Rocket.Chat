@@ -35,6 +35,15 @@ describe('[Options Component]', () => {
 });
 
 describe('[Options]', () => {
+	it.each([
+		[false, 'false'],
+		[true, 'true'],
+	])('should set aria-multiselectable for multiple=%s', (multiple, expected) => {
+		const { getByRole } = render(<Options options={[['a', 'A']]} cursor={0} multiple={multiple} onSelect={() => undefined} />);
+
+		expect(getByRole('listbox')).toHaveAttribute('aria-multiselectable', expected);
+	});
+
 	it('should scroll to the row focused by the cursor when it renders as `Item`', () => {
 		const options = Array.from({ length: 10 }, (_, i) => [i, `Option ${i}`] as [number, string]);
 		const offsetTop = jest.spyOn(HTMLElement.prototype, 'offsetTop', 'get').mockImplementation(function (this: HTMLElement) {

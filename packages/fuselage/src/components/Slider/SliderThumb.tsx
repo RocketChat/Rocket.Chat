@@ -1,9 +1,5 @@
-import { css } from '@rocket.chat/css-in-js';
 import { useRef } from 'react';
 import { mergeProps, useFocusRing, useSliderThumb, VisuallyHidden } from 'react-aria';
-
-import { Palette } from '../../Theme';
-import { useStyle } from '../../hooks/useStyle';
 
 export const SliderThumb = (props: any) => {
 	const { state, trackRef, index } = props;
@@ -19,26 +15,14 @@ export const SliderThumb = (props: any) => {
 
 	const { focusProps, isFocusVisible } = useFocusRing();
 
-	const thumb = useStyle(
-		css`
-			width: 12px;
-			height: 12px;
-
-			cursor: ${state.isDisabled ? 'not-allowed' : 'pointer'};
-			border-radius: 50%;
-			background: ${isFocusVisible || isDragging ? Palette.text['font-info'] : Palette.stroke['stroke-highlight']};
-			${
-				state.orientation === 'horizontal'
-					? css`
-							top: 50%;
-						`
-					: css`
-							left: 50%;
-						`
-			}
-		`,
-		{ isFocusVisible, isDragging },
-	);
+	const thumb = [
+		'rcx-slider__thumb',
+		`rcx-slider__thumb--${state.orientation}`,
+		state.isDisabled && 'rcx-slider__thumb--disabled',
+		(isFocusVisible || isDragging) && 'rcx-slider__thumb--active',
+	]
+		.filter(Boolean)
+		.join(' ');
 	return (
 		<div {...thumbProps} className={thumb}>
 			<VisuallyHidden>

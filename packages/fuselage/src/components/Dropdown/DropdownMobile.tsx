@@ -1,18 +1,24 @@
-import type { ReactNode, RefAttributes } from 'react';
+import type { HTMLAttributes, ReactNode, RefAttributes } from 'react';
 
+import { appendClassName } from '../../helpers/appendClassName';
 import { Box } from '../Box';
 import { PopoverSurface } from '../PopoverSurface';
 
-export type DropdownMobileProps = RefAttributes<HTMLElement> & {
-	children: ReactNode;
-};
+export type DropdownMobileProps = Omit<HTMLAttributes<HTMLElement>, 'children' | 'style' | 'color'> &
+	RefAttributes<HTMLElement> & {
+		children: ReactNode;
+	};
 
-const bottomSheet = { position: 'fixed', bottom: 0, left: 0, zIndex: 2, width: '100vw' } as const;
-
-export function DropdownMobile({ children, ...props }: DropdownMobileProps) {
+export function DropdownMobile({ children, className, ...props }: DropdownMobileProps) {
 	return (
-		<PopoverSurface flush maxHeight='most-of-screen' style={bottomSheet} data-testid='dropdown' {...props}>
-			<Box paddingBlock={16}>{children}</Box>
+		<PopoverSurface
+			flush
+			maxHeight='most-of-screen'
+			data-testid='dropdown'
+			{...props}
+			className={appendClassName(className, 'rcx-dropdown__bottom-sheet')}
+		>
+			<Box rcx-dropdown__bottom-sheet-content>{children}</Box>
 		</PopoverSurface>
 	);
 }

@@ -71,6 +71,7 @@ const config: StorybookConfig = {
 			},
 		},
 		getAbsolutePath('@storybook/addon-docs'),
+		getAbsolutePath('storybook-addon-pseudo-states'),
 	],
 
 	stories: ['../src/**/*.stories.{mdx,js,tsx}', '../src/**/*.mdx'],

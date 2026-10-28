@@ -1,4 +1,4 @@
-import { useMergedRefs, useStableCallback, useResizeObserver, useOutsideClick } from '@rocket.chat/fuselage-hooks';
+import { useMergedRefs, useStableCallback, useResizeObserver } from '@rocket.chat/fuselage-hooks';
 import type { ElementType, MouseEventHandler, ReactNode, RefAttributes } from 'react';
 import { useState, useRef, useEffect } from 'react';
 
@@ -6,10 +6,8 @@ import { prevent } from '../../helpers/prevent';
 import type { ElementProps } from '../../types/ElementProps';
 import { AnimatedVisibility } from '../AnimatedVisibility';
 import { Box } from '../Box';
-import { FlexContainer, FlexItem } from '../Flex';
 import type { IconProps } from '../Icon';
 import { Icon } from '../Icon';
-import { Margins } from '../Margins';
 import { CheckOption } from '../Option';
 import { Options, useCursor } from '../Options';
 import { PositionAnimated } from '../PositionAnimated';
@@ -69,14 +67,15 @@ function MultiSelect({
 	...props
 }: MultiSelectProps) {
 	const [internalValue, setInternalValue] = useState<SelectOption[0][]>(value || []);
-
-	useEffect((): void => setInternalValue(value || []), [value]);
+	const [syncedValue, setSyncedValue] = useState(value);
+	if (value !== syncedValue) {
+		setSyncedValue(value);
+		setInternalValue(value || []);
+	}
 
 	const [currentOptionValue, setCurrentOption] = useState<SelectOption[0]>();
 
 	const index = options.findIndex((option) => getValue(option) === currentOptionValue);
-
-	const removeFocusClass = () => innerRef.current?.classList.remove('focus-visible');
 
 	const internalChanged = ([value]: SelectOption) => {
 		if (internalValue.includes(value)) {
@@ -111,7 +110,6 @@ function MultiSelect({
 	const anchorRef = useMergedRefs(ref, innerRef);
 
 	const { ref: containerRef, borderBoxSize } = useResizeObserver();
-	useOutsideClick([containerRef], removeFocusClass);
 
 	const handleClick = useStableCallback(() => {
 		if (visible === AnimatedVisibility.VISIBLE) {
@@ -139,77 +137,68 @@ function MultiSelect({
 			is='div'
 			animated
 			rcx-select
-			className={[error && 'invalid', disabled && 'disabled']}
+			rcx-select--invalid={!!error}
+			rcx-select--disabled={disabled}
 			ref={containerRef}
 			onClick={handleClick}
 			disabled={disabled}
 			{...containerProps}
 		>
-			<FlexItem grow={1}>
-				<Margins inline='x4'>
-					<FlexContainer>
-						<Box is='div'>
-							<Box is='div' display='flex' alignItems='center' flexWrap='wrap' margin='-x4' gap={4}>
-								<Anchor
-									ref={anchorRef}
-									disabled={disabled ?? false}
-									onClick={show}
-									onBlur={hide}
-									onKeyDown={handleKeyDown}
-									onKeyUp={handleKeyUp}
-									role='combobox'
-									aria-expanded={visible === AnimatedVisibility.VISIBLE}
-									aria-haspopup='listbox'
-									aria-controls={listboxId}
-									id={id}
-									name={name}
-									aria-label={ariaLabel}
-									aria-labelledby={ariaLabelledBy}
-									aria-describedby={ariaDescribedBy}
-									aria-invalid={ariaInvalid}
-									aria-required={ariaRequired}
-								>
-									{internalValue.length === 0 ? placeholder : null}
-								</Anchor>
-								{internalValue.map((value: SelectOption[0]) => {
-									const currentOption = options.find(([val]) => val === value) as SelectOption;
-									return RenderSelected ? (
-										<RenderSelected
-											value={value}
-											key={value}
-											label={getLabel(currentOption)}
-											onMouseDown={(e) => {
-												prevent(e);
-												internalChanged(currentOption);
-												removeFocusClass();
-											}}
-										>
-											{getLabel(currentOption)}
-										</RenderSelected>
-									) : (
-										<SelectedOptions
-											tabIndex={-1}
-											key={String(value)}
-											onMouseDown={(e) => {
-												prevent(e);
-												internalChanged(currentOption);
-												removeFocusClass();
-											}}
-										>
-											{getLabel(currentOption)}
-										</SelectedOptions>
-									);
-								})}
-							</Box>
-						</Box>
-					</FlexContainer>
-				</Margins>
-			</FlexItem>
-			<FlexItem grow={0} shrink={0}>
-				<SelectAddon>
-					<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : addonIcon || 'chevron-down'} size='x20' />
-				</SelectAddon>
-			</FlexItem>
+			<Box is='div' rcx-select__field>
+				<Box is='div' rcx-select__values>
+					<Anchor
+						ref={anchorRef}
+						disabled={disabled ?? false}
+						onClick={show}
+						onBlur={hide}
+						onKeyDown={handleKeyDown}
+						onKeyUp={handleKeyUp}
+						role='combobox'
+						aria-expanded={visible === AnimatedVisibility.VISIBLE}
+						aria-haspopup='listbox'
+						aria-controls={listboxId}
+						id={id}
+						name={name}
+						aria-label={ariaLabel}
+						aria-labelledby={ariaLabelledBy}
+						aria-describedby={ariaDescribedBy}
+						aria-invalid={ariaInvalid}
+						aria-required={ariaRequired}
+					>
+						{internalValue.length === 0 ? placeholder : null}
+					</Anchor>
+					{internalValue.map((value: SelectOption[0]) => {
+						const currentOption = options.find(([val]) => val === value) as SelectOption;
+						return RenderSelected ? (
+							<RenderSelected
+								value={value}
+								key={value}
+								label={getLabel(currentOption)}
+								onMouseDown={(e) => {
+									prevent(e);
+									internalChanged(currentOption);
+								}}
+							>
+								{getLabel(currentOption)}
+							</RenderSelected>
+						) : (
+							<SelectedOptions
+								tabIndex={-1}
+								key={String(value)}
+								onClick={(e) => {
+									prevent(e);
+									internalChanged(currentOption);
+								}}
+							>
+								{getLabel(currentOption)}
+							</SelectedOptions>
+						);
+					})}
+				</Box>
+			</Box>
+			<SelectAddon>
+				<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : addonIcon || 'chevron-down'} size='x20' />
+			</SelectAddon>
 			<PositionAnimated visible={visible} anchor={containerRef}>
 				<_Options
 					width={borderBoxSize.inlineSize}

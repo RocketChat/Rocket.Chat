@@ -104,11 +104,12 @@ $item-group-narrow-width: 320px;
 	@include inset-slots;
 	@include inset-scale;
 
-	&:has(> .rcx-item__content > :nth-child(2)) {
+	&:has(> .rcx-item__content > :nth-child(2)),
+	&--multiline {
 		--rcx-item-gap: #{lengths.margin(8)};
 	}
 
-	&:where(.rcx-item--clickable, a, button, [role='option'], [role^='menuitem'], :has(.rcx-item__link)) {
+	&:where(.rcx-item--clickable, .rcx-item--interactive, a, button, [role='option'], [role^='menuitem'], :has(.rcx-item__link)) {
 		cursor: pointer;
 
 		&:hover {

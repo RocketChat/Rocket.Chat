@@ -1,5 +1,7 @@
 import type { ReactNode, MouseEvent as ReactMouseEvent, AllHTMLAttributes } from 'react';
 
+import { cx } from '../../../helpers/composeClassNames';
+
 export type MessageSystemProps = {
 	children?: ReactNode;
 	title?: string;
@@ -7,9 +9,9 @@ export type MessageSystemProps = {
 	onClick?: (e: ReactMouseEvent<HTMLDivElement, MouseEvent>) => void;
 } & AllHTMLAttributes<HTMLDivElement>;
 
-const MessageSystem = ({ children, title, isSelected, ...props }: MessageSystemProps) => (
+const MessageSystem = ({ children, title, isSelected, className, ...props }: MessageSystemProps) => (
 	<div
-		className={['rcx-box rcx-box--full rcx-message-system', isSelected && 'rcx-message-system--selected'].filter(Boolean).join(' ')}
+		className={cx('rcx-box rcx-box--full rcx-message-system', isSelected && 'rcx-message-system--selected', className)}
 		title={title}
 		{...props}
 	>

@@ -1,5 +1,3 @@
-import { memo } from 'react';
-
 import type { ElementProps } from '../../types/ElementProps';
 import { Box } from '../Box';
 
@@ -11,18 +9,7 @@ export type ContextualbarContentProps = ElementProps<HTMLElement> & {
 };
 
 function ContextualbarContent({ flush, spaced, ...props }: ContextualbarContentProps) {
-	return (
-		<Box
-			rcx-vertical-bar__content
-			paddingInline={flush ? 0 : 24}
-			paddingBlock={spaced ? 12 : undefined}
-			display='flex'
-			flexDirection='column'
-			overflowY='hidden'
-			height='full'
-			{...props}
-		/>
-	);
+	return <Box rcx-vertical-bar__content rcx-vertical-bar__content--flush={flush} rcx-vertical-bar__content--spaced={spaced} {...props} />;
 }
 
-export default memo(ContextualbarContent);
+export default ContextualbarContent;

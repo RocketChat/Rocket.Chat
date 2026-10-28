@@ -10,7 +10,7 @@ function OptionContainer(props: OptionContainerProps) {
 		<Box rcx-options>
 			<PopoverSurface elevation='1'>
 				<Scrollable vertical smooth>
-					<Box borderRadius='medium' backgroundColor='light' maxHeight='x240' {...props} />
+					<Box rcx-options__list rcx-options__list--container {...props} />
 				</Scrollable>
 			</PopoverSurface>
 		</Box>

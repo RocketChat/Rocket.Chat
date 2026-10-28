@@ -1,7 +1,9 @@
 import type { HTMLAttributes } from 'react';
 
+import { cx } from '../../helpers/composeClassNames';
+
 export type CardControlsProps = HTMLAttributes<HTMLDivElement>;
 
-const CardControls = ({ ...props }: CardControlsProps) => <div className='rcx-card__controls' {...props} />;
+const CardControls = ({ className, ...props }: CardControlsProps) => <div {...props} className={cx('rcx-card__controls', className)} />;
 
 export default CardControls;

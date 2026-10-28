@@ -25,6 +25,24 @@ describe('[Button Component]', () => {
 		expect(screen.getByRole('button', { name: 'Save' })).toHaveAttribute('type', 'button');
 	});
 
+	it('should keep the rel passed to a link', () => {
+		render(
+			<Button is='a' href='/somewhere' external rel='nofollow'>
+				Go
+			</Button>,
+		);
+		expect(screen.getByRole('link', { name: 'Go' })).toHaveAttribute('rel', 'nofollow');
+	});
+
+	it('should default the rel of an external link', () => {
+		render(
+			<Button is='a' href='/somewhere' external>
+				Go
+			</Button>,
+		);
+		expect(screen.getByRole('link', { name: 'Go' })).toHaveAttribute('rel', 'noopener noreferrer');
+	});
+
 	it('should render a link without a type when is is a', () => {
 		render(
 			<Button is='a' href='/somewhere'>
