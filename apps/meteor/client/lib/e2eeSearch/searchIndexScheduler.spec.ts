@@ -30,9 +30,11 @@ type SetupOptions = {
 	random?: () => number;
 	/** Uses the scheduler's own pause between requests instead of the short one of these specs. */
 	defaultPause?: boolean;
+	/** Uses the scheduler's own back-off delays instead of the short ones of these specs. */
+	defaultBackoff?: boolean;
 };
 
-const setup = async ({ rooms, messagesPerRoom = 25, random = () => 0.5, defaultPause = false }: SetupOptions) => {
+const setup = async ({ rooms, messagesPerRoom = 25, random = () => 0.5, defaultPause = false, defaultBackoff = false }: SetupOptions) => {
 	const server = createSyncMessagesServerMock({ startAt: NOW });
 	for (const { rid } of rooms) {
 		for (let i = 0; i < messagesPerRoom; i++) server.addHistory(`${rid}-m${i}`, rid, NOW - 100 * HOUR + i * HOUR);
@@ -86,8 +88,7 @@ const setup = async ({ rooms, messagesPerRoom = 25, random = () => 0.5, defaultP
 		backend,
 		getRooms: () => rooms,
 		...(!defaultPause && { pauseMs: PAUSE_MS }),
-		backoffBaseMs: 1000,
-		backoffMaxMs: 60_000,
+		...(!defaultBackoff && { backoffBaseMs: 1000, backoffMaxMs: 60_000 }),
 		random,
 		onError,
 	});
@@ -273,6 +274,19 @@ describe('createSearchIndexScheduler', () => {
 
 			// The delay is half the exponential step plus a random part of the other half: 0.625 of 1 s, 2 s, 4 s.
 			expect(gaps().slice(0, 5)).toEqual([REQUEST_MS + 625, REQUEST_MS + 1250, REQUEST_MS + 2500, REQUEST_MS + PAUSE_MS, REQUEST_MS + 625]);
+		});
+
+		it('backs off from 10 seconds up to 10 minutes by default', async () => {
+			const { scheduler, failures, gaps } = await setup({ rooms: twoRooms, random: () => 1, defaultBackoff: true });
+			failures.push(...Array.from({ length: 8 }, () => httpError(500)));
+
+			scheduler.start();
+			await jest.advanceTimersByTimeAsync(35 * 60_000);
+			scheduler.stop();
+
+			expect(gaps().slice(0, 8)).toEqual(
+				[10_000, 20_000, 40_000, 80_000, 160_000, 320_000, 600_000, 600_000].map((delay) => REQUEST_MS + delay),
+			);
 		});
 
 		it('spreads the delay of two clients with the jitter', async () => {

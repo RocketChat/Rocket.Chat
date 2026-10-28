@@ -31,11 +31,19 @@ type SearchIndexCrawlerOptions = {
 	pageSize?: number;
 	/** The depth limit: the backfill indexes no message sent before it, and stops at the first page that reaches it. */
 	maxAgeMs?: number;
+	/**
+	 * The backfill of a room stops after this many messages inside the depth limit. `undefined` sets no limit. The count
+	 * lives in memory: after a restart, the backfill counts again from its saved cursor. The catch-up has no limit.
+	 */
+	maxBackfillMessagesPerRoom?: number;
 	/** The most messages that the crawler keeps pending (across rooms). A new one past the limit drops the oldest. */
 	maxPending?: number;
 };
 
 const DEFAULT_MAX_PENDING = 5000;
+
+/** Messages per `chat.syncMessages` page when no page size is set. */
+export const DEFAULT_PAGE_SIZE = 100;
 
 export type SearchIndexCrawler = {
 	/** Indexes the next older page of the room and saves the cursor, so a restart continues from there. */
@@ -99,13 +107,16 @@ export const createSearchIndexCrawler = ({
 	decryptMessage,
 	writer,
 	now = Date.now,
-	pageSize = 100,
+	pageSize = DEFAULT_PAGE_SIZE,
 	maxAgeMs,
+	maxBackfillMessagesPerRoom,
 	maxPending = DEFAULT_MAX_PENDING,
 }: SearchIndexCrawlerOptions): SearchIndexCrawler => {
 	// One map for all rooms: its insertion order is the age order that the cap drops from.
 	const pendingDecrypt = new Map<string, IMessage>();
 	const catchUps = new Map<string, CatchUp>();
+	/** The messages that the backfill of each room fetched inside the depth limit since this crawler was made. */
+	const backfilled = new Map<string, number>();
 
 	const keepPending = (message: IMessage) => {
 		pendingDecrypt.set(message._id, message);
@@ -146,23 +157,26 @@ export const createSearchIndexCrawler = ({
 			if (state.backfillDone) return { done: true, indexed: 0 };
 
 			const startedAt = now();
+			const counted = backfilled.get(rid) ?? 0;
 			const page = await syncMessages({
 				roomId: rid,
 				type: 'UPDATED',
-				count: pageSize,
+				count: maxBackfillMessagesPerRoom === undefined ? pageSize : Math.max(1, Math.min(pageSize, maxBackfillMessagesPerRoom - counted)),
 				previous: state.backfillCursor === undefined ? previousCursorAt(startedAt) : toCompoundPreviousCursor(state.backfillCursor),
 			});
 
 			const oldestSendTime = oldestSendTimeAt(startedAt);
 			const inDepth = page.updated.filter((message) => isInDepth(message, oldestSendTime));
 			const indexed = await decryptAll(inDepth);
+			backfilled.set(rid, counted + inDepth.length);
+			const reachedLimit = maxBackfillMessagesPerRoom !== undefined && counted + inDepth.length >= maxBackfillMessagesPerRoom;
 
 			const updatedAts = page.updated.map(updatedAtOf);
 			const oldest = updatedAts.length ? Math.min(...updatedAts) : undefined;
 			const cursor = page.cursor?.previous ?? undefined;
 			// A message is never sent after its last update, so no older page holds a message inside the depth limit.
 			const reachedDepth = oldestSendTime !== undefined && oldest !== undefined && oldest < oldestSendTime;
-			const done = !cursor || page.updated.length === 0 || reachedDepth;
+			const done = !cursor || page.updated.length === 0 || reachedDepth || reachedLimit;
 
 			// An empty room starts its catch-up at 0, not at the client clock, which can be ahead of the server's.
 			const lastUpdate = state.lastUpdate ?? (updatedAts.length ? Math.max(...updatedAts) : 0);
@@ -247,6 +261,7 @@ export const createSearchIndexCrawler = ({
 		forgetRoom(rid) {
 			for (const message of pendingOf(rid)) pendingDecrypt.delete(message._id);
 			catchUps.delete(rid);
+			backfilled.delete(rid);
 		},
 	};
 };

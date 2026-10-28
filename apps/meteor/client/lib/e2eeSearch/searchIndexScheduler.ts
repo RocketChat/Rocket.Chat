@@ -58,7 +58,10 @@ const DEFAULT_RATE_LIMIT_CALLS = 10;
 const DEFAULT_RATE_LIMIT_WINDOW_MS = 60_000;
 /** The crawler uses at most this part of it, so the client's own `chat.syncMessages` calls keep their share. */
 const RATE_LIMIT_SHARE = 0.5;
-const DEFAULT_PAUSE_MS = DEFAULT_RATE_LIMIT_WINDOW_MS / (DEFAULT_RATE_LIMIT_CALLS * RATE_LIMIT_SHARE);
+export const DEFAULT_PAUSE_MS = DEFAULT_RATE_LIMIT_WINDOW_MS / (DEFAULT_RATE_LIMIT_CALLS * RATE_LIMIT_SHARE);
+/** The first wait after a rate limit or a server error. It doubles after each new failure, up to the maximum. */
+export const DEFAULT_BACKOFF_BASE_MS = 10_000;
+export const DEFAULT_BACKOFF_MAX_MS = 10 * 60_000;
 
 /** Attempts for an error that is not an HTTP answer (a network failure, or a bug that a retry does not fix). */
 const MAX_ATTEMPTS_WITHOUT_STATUS = 3;
@@ -132,8 +135,8 @@ export const createSearchIndexScheduler = ({
 	backend,
 	getRooms,
 	pauseMs = DEFAULT_PAUSE_MS,
-	backoffBaseMs = 10_000,
-	backoffMaxMs = 10 * 60_000,
+	backoffBaseMs = DEFAULT_BACKOFF_BASE_MS,
+	backoffMaxMs = DEFAULT_BACKOFF_MAX_MS,
 	random = Math.random,
 	now = Date.now,
 	onError = () => undefined,

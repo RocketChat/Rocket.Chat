@@ -22,9 +22,21 @@ const encrypted = (id: string, updatedAt: number, overrides: Partial<IMessage> =
 		...overrides,
 	}) as IMessage;
 
-type SetupOptions = { pages?: SyncMessagesPage[]; maxAgeMs?: number; undecryptable?: Set<string>; maxPending?: number };
+type SetupOptions = {
+	pages?: SyncMessagesPage[];
+	maxAgeMs?: number;
+	undecryptable?: Set<string>;
+	maxPending?: number;
+	maxBackfillMessagesPerRoom?: number;
+};
 
-const setup = async ({ pages = [], maxAgeMs, undecryptable = new Set<string>(), maxPending }: SetupOptions = {}) => {
+const setup = async ({
+	pages = [],
+	maxAgeMs,
+	undecryptable = new Set<string>(),
+	maxPending,
+	maxBackfillMessagesPerRoom,
+}: SetupOptions = {}) => {
 	const backend = createFakeSearchIndexBackend();
 	await backend.open({ userId: 'u1' });
 
@@ -49,6 +61,7 @@ const setup = async ({ pages = [], maxAgeMs, undecryptable = new Set<string>(), 
 		pageSize: 2,
 		maxAgeMs,
 		maxPending,
+		maxBackfillMessagesPerRoom,
 	});
 
 	return { backend, crawler, calls, decryptMessage, writer, undecryptable };
@@ -191,6 +204,55 @@ describe('createSearchIndexCrawler', () => {
 
 			expect(await crawler.backfillRoomPage('room1')).toEqual({ done: true, indexed: 1 });
 			expect(await backend.getRoomState('room1')).toMatchObject({ backfillDone: true });
+		});
+
+		it('stops the backfill of a room at the message limit, and asks only for the messages left under it', async () => {
+			const { crawler, calls, backend } = await setup({
+				maxBackfillMessagesPerRoom: 3,
+				pages: [
+					{
+						updated: [encrypted('m4', NOW - 1000), encrypted('m3', NOW - 2000)],
+						deleted: [],
+						cursor: { next: null, previous: `${NOW - 2000}` },
+					},
+					{ updated: [encrypted('m2', NOW - 3000)], deleted: [], cursor: { next: null, previous: `${NOW - 3000}` } },
+					{ updated: [encrypted('m5', NOW + 1000)], deleted: [], cursor: { next: null, previous: null } },
+				],
+			});
+
+			expect(await crawler.backfillRoomPage('room1')).toEqual({ done: false, indexed: 2 });
+			expect(await crawler.backfillRoomPage('room1')).toEqual({ done: true, indexed: 1 });
+			expect(await crawler.backfillRoomPage('room1')).toEqual({ done: true, indexed: 0 });
+			expect(await backend.getRoomState('room1')).toMatchObject({ backfillDone: true });
+
+			// The catch-up of new messages has no limit: it asks for full pages.
+			await crawler.catchUpRoomPage('room1');
+			expect(calls.map(({ type, count }) => [type, count])).toEqual([
+				['UPDATED', 2],
+				['UPDATED', 1],
+				['UPDATED', 2],
+			]);
+		});
+
+		it('has no message limit by default', async () => {
+			const { crawler, calls } = await setup({
+				pages: [
+					{
+						updated: [encrypted('m4', NOW - 1000), encrypted('m3', NOW - 2000)],
+						deleted: [],
+						cursor: { next: null, previous: `${NOW - 2000}` },
+					},
+					{
+						updated: [encrypted('m2', NOW - 3000), encrypted('m1', NOW - 4000)],
+						deleted: [],
+						cursor: { next: null, previous: `${NOW - 4000}` },
+					},
+				],
+			});
+
+			expect(await crawler.backfillRoomPage('room1')).toEqual({ done: false, indexed: 2 });
+			expect(await crawler.backfillRoomPage('room1')).toEqual({ done: false, indexed: 2 });
+			expect(calls.map(({ count }) => count)).toEqual([2, 2]);
 		});
 
 		it('applies the depth limit to the send time: an old message edited recently is not indexed', async () => {

@@ -2,7 +2,14 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import type { ISearchIndexBackend } from '@rocket.chat/desktop-api';
 
 import { createFakeSearchIndexBackend } from './fakeSearchIndexBackend';
-import { backfillMonthsToMaxAgeMs, createSearchIndexRuntime, createSyncMessagesFetcher, toSearchIndexRooms } from './searchIndexRuntime';
+import {
+	backfillMonthsToMaxAgeMs,
+	createSearchIndexRuntime,
+	createSyncMessagesFetcher,
+	searchIndexTuningFromSettings,
+	toSearchIndexRooms,
+} from './searchIndexRuntime';
+import type { SearchIndexTuning } from './searchIndexRuntime';
 import type { SearchIndexScheduler } from './searchIndexScheduler';
 import { createSyncMessagesServerMock } from '../../../tests/mocks/client/syncMessagesServerMock';
 
@@ -259,6 +266,137 @@ describe('createSearchIndexRuntime with the admin depth limit', () => {
 
 	it('indexes only new messages with a depth of 0 months', async () => {
 		expect(await backfill(() => 0)).toEqual({ old: false, recent: false, m0: false });
+	});
+});
+
+describe('createSearchIndexRuntime with the admin tuning', () => {
+	const crawl = async (getTuning: (() => SearchIndexTuning) | undefined) => {
+		jest.useFakeTimers({ now: NOW });
+		try {
+			const server = createSyncMessagesServerMock({ startAt: NOW });
+			for (let i = 0; i < 300; i++) server.addHistory(`m${i}`, 'r1', NOW - 1000 * (i + 1));
+
+			const backend = createFakeSearchIndexBackend();
+			await backend.open({ userId: 'u1' });
+			const session = createSessionStub();
+			const requests: { at: number; count: number }[] = [];
+			// The first request fails with a server error, as `fetch` reports it: the `Response`.
+			let failure: unknown = { status: 503, headers: { get: () => null } };
+
+			const runtime = createSearchIndexRuntime({
+				session,
+				writer: { remove: async () => undefined, flush: async () => undefined },
+				syncMessages: async (params) => {
+					requests.push({ at: Date.now(), count: params.count });
+					if (failure) {
+						const error = failure;
+						failure = undefined;
+						throw error;
+					}
+					return server.syncMessages(params);
+				},
+				decryptMessage: async (message) => ({ ...message, e2e: 'done' }) as IMessage,
+				getRooms: () => [{ rid: 'r1', lastActivityAt: NOW }],
+				getTuning,
+			});
+
+			session.set(backend);
+			await jest.advanceTimersByTimeAsync(60_000);
+			runtime.dispose();
+			return {
+				counts: requests.map(({ count }) => count),
+				gaps: requests.slice(1).map(({ at }, i) => at - requests[i].at),
+				backfillDone: (await backend.getRoomState('r1'))?.backfillDone,
+			};
+		} finally {
+			jest.useRealTimers();
+		}
+	};
+
+	it('uses the default pause, page size, back-off and no message limit without tuning', async () => {
+		const { counts, gaps } = await crawl(undefined);
+
+		expect(counts.slice(0, 3)).toEqual([100, 100, 100]);
+		// The first request fails: the back-off starts between 5 and 10 seconds. Then the pause is 12 seconds.
+		expect(gaps[0]).toBeGreaterThanOrEqual(5000);
+		expect(gaps[0]).toBeLessThanOrEqual(10_000);
+		expect(gaps[1]).toBe(12_000);
+	});
+
+	it('uses the pause, page size, back-off and message limit of the tuning', async () => {
+		const { counts, gaps, backfillDone } = await crawl(() => ({
+			pauseMs: 1000,
+			pageSize: 20,
+			maxBackfillMessagesPerRoom: 50,
+			backoffBaseMs: 2000,
+			backoffMaxMs: 2000,
+		}));
+
+		// A failed page, 50 messages of backfill in pages of 20, then the catch-up (updates, deletes) with full pages.
+		expect(counts).toEqual([20, 20, 20, 10, 20, 20]);
+		expect(gaps[0]).toBeGreaterThanOrEqual(1000);
+		expect(gaps[0]).toBeLessThanOrEqual(2000);
+		expect(gaps.slice(1)).toEqual([1000, 1000, 1000, 1000]);
+		expect(backfillDone).toBe(true);
+	});
+});
+
+describe('searchIndexTuningFromSettings', () => {
+	const tuningOf = (values: Record<string, unknown>) => searchIndexTuningFromSettings((id) => values[id]);
+
+	it('gives the defaults when the server sends no setting', () => {
+		expect(tuningOf({})).toEqual({
+			pauseMs: 12_000,
+			pageSize: 100,
+			maxBackfillMessagesPerRoom: undefined,
+			backoffBaseMs: 10_000,
+			backoffMaxMs: 600_000,
+		});
+	});
+
+	it('uses the values of the settings', () => {
+		expect(
+			tuningOf({
+				E2E_Local_Search_Backfill_Pause: 3,
+				E2E_Local_Search_Backfill_Page_Size: 50,
+				E2E_Local_Search_Backfill_Max_Messages_Per_Room: 2000,
+				E2E_Local_Search_Backoff_Min: 5,
+				E2E_Local_Search_Backoff_Max: 120,
+			}),
+		).toEqual({ pauseMs: 3000, pageSize: 50, maxBackfillMessagesPerRoom: 2000, backoffBaseMs: 5000, backoffMaxMs: 120_000 });
+	});
+
+	it('clamps each value to its safe range', () => {
+		expect(
+			tuningOf({
+				E2E_Local_Search_Backfill_Pause: 0,
+				E2E_Local_Search_Backfill_Page_Size: 5000,
+				E2E_Local_Search_Backfill_Max_Messages_Per_Room: 0,
+				E2E_Local_Search_Backoff_Min: -4,
+				E2E_Local_Search_Backoff_Max: 0,
+			}),
+		).toEqual({ pauseMs: 1000, pageSize: 100, maxBackfillMessagesPerRoom: undefined, backoffBaseMs: 1000, backoffMaxMs: 1000 });
+
+		expect(
+			tuningOf({
+				E2E_Local_Search_Backfill_Pause: 0.2,
+				E2E_Local_Search_Backfill_Page_Size: 1,
+				E2E_Local_Search_Backfill_Max_Messages_Per_Room: -5,
+				E2E_Local_Search_Backoff_Min: 30,
+				E2E_Local_Search_Backoff_Max: 20,
+			}),
+		).toEqual({ pauseMs: 1000, pageSize: 10, maxBackfillMessagesPerRoom: undefined, backoffBaseMs: 30_000, backoffMaxMs: 30_000 });
+	});
+
+	it('gives the default for a value that is not a number', () => {
+		expect(
+			tuningOf({
+				E2E_Local_Search_Backfill_Pause: '1',
+				E2E_Local_Search_Backfill_Page_Size: Number.NaN,
+				E2E_Local_Search_Backoff_Min: null,
+				E2E_Local_Search_Backoff_Max: Number.POSITIVE_INFINITY,
+			}),
+		).toMatchObject({ pauseMs: 12_000, pageSize: 100, backoffBaseMs: 10_000, backoffMaxMs: 600_000 });
 	});
 });
 

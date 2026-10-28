@@ -32,6 +32,7 @@ import {
 	backfillMonthsToMaxAgeMs,
 	createSearchIndexRuntime,
 	createSyncMessagesFetcher,
+	searchIndexTuningFromSettings,
 	toSearchIndexRooms,
 } from '../e2eeSearch/searchIndexRuntime';
 import { createSearchIndexSession } from '../e2eeSearch/searchIndexSession';
@@ -1084,6 +1085,7 @@ export const e2eSearchIndexRuntime = createSearchIndexRuntime({
 			});
 		}),
 	getMaxAgeMs: () => backfillMonthsToMaxAgeMs(settings.peek<number>('E2E_Local_Search_Backfill_Months')),
+	getTuning: () => searchIndexTuningFromSettings((id) => settings.peek(id)),
 	onError: (error) => log.span('searchIndexCrawler').error('Error indexing the history of encrypted rooms', error),
 });
 
