@@ -20,7 +20,6 @@ import {
 	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
-import { Match, check } from 'meteor/check';
 import type { FindOptions } from 'mongodb';
 
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
@@ -545,13 +544,6 @@ const dmMembersAction = <Path extends string>(_path: Path): TypedAction<typeof d
 		const { offset, count } = await getPaginationItems(this.queryParams);
 		const { sort } = await this.parseJsonQuery();
 
-		check(
-			this.queryParams,
-			Match.ObjectIncluding({
-				status: Match.Maybe([String]),
-				filter: Match.Maybe(String),
-			}),
-		);
 		const { status, filter } = this.queryParams;
 
 		const hidden = await getUsersHiddenFrom(this.userId);
