@@ -27,7 +27,12 @@ const renderMenu = (contact: Serialized<IContactPublic>) => {
 
 	render(<ContactMenu contact={contact} onEdit={jest.fn()} />, {
 		wrapper: mockAppRoot()
-			.withTranslations('en', 'core', { Favorite: 'Favorite', Unfavorite: 'Unfavorite', Favorite_Outlook: 'Favorite (Outlook)' })
+			.withTranslations('en', 'core', {
+				Favorite: 'Favorite',
+				Unfavorite: 'Unfavorite',
+				Favorite_Outlook: 'Favorite (Outlook)',
+				Unfavorite_Outlook: 'Unfavorite (Outlook)',
+			})
 			.withEndpoint('POST', '/v1/contacts.favorite', setFavorite)
 			.build(),
 	});
@@ -65,8 +70,16 @@ describe('ContactMenu', () => {
 		await waitFor(() => expect(setFavorite).toHaveBeenCalledWith(expect.objectContaining({ contactId: CONTACT_ID, favorite: true })));
 	});
 
-	it('shows the favorite of a contact synced from EWS as disabled, since it is changed in Outlook', async () => {
+	it('shows the favorite option of a contact synced from EWS as disabled, since it is changed in Outlook', async () => {
 		renderMenu(createContact({ source: 'outlook', syncProvider: 'ews', favorite: true }));
+
+		await openMenu();
+
+		expect(await screen.findByRole('menuitem', { name: 'Unfavorite (Outlook)' })).toHaveAttribute('aria-disabled', 'true');
+	});
+
+	it('shows Favorite (Outlook) as disabled for a contact synced from EWS that is not a favorite', async () => {
+		renderMenu(createContact({ source: 'outlook', syncProvider: 'ews' }));
 
 		await openMenu();
 

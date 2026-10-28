@@ -103,7 +103,13 @@ const ContactMenu = ({ contact, onEdit, onDeleted }: ContactMenuProps) => {
 				textValue: favorite ? t('Unfavorite') : t('Favorite'),
 				onClick: () => setFavorite(!favorite),
 			}
-		: { id: 'favorite', icon: 'star', content: t('Favorite_Outlook'), textValue: t('Favorite_Outlook'), disabled: true };
+		: {
+				id: 'favorite',
+				icon: 'star',
+				content: favorite ? t('Unfavorite_Outlook') : t('Favorite_Outlook'),
+				textValue: favorite ? t('Unfavorite_Outlook') : t('Favorite_Outlook'),
+				disabled: true,
+			};
 
 	const sections: { items: GenericMenuItemProps[] }[] = [...(reachItems.length ? [{ items: reachItems }] : []), { items: [favoriteItem] }];
 
