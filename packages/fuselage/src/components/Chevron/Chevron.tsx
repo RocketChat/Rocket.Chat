@@ -1,4 +1,4 @@
-import { styled, View, type GetProps } from '@tamagui/web';
+import { styled, View } from '@tamagui/web';
 import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 
@@ -37,7 +37,17 @@ export type ChevronProps = ElementProps<HTMLSpanElement> & {
 	bottom?: boolean;
 };
 
-function Chevron({ up, right, down, left, size, className, ...props }: ChevronProps): ReactElement<ChevronProps> {
+function Chevron({
+	up,
+	right,
+	down,
+	left,
+	top: _top,
+	bottom: _bottom,
+	size,
+	className,
+	...props
+}: ChevronProps): ReactElement<ChevronProps> {
 	const children = useMemo(() => <Icon name='chevron-down' size={size} />, [size]);
 
 	// Same precedence as the stylesheet had, where the last rule declared won
@@ -45,8 +55,8 @@ function Chevron({ up, right, down, left, size, className, ...props }: ChevronPr
 
 	return (
 		<ChevronFrame
+			render={<span {...props} />}
 			rotation={rotation}
-			{...(props as GetProps<typeof ChevronFrame>)}
 			className={cx(
 				'rcx-chevron',
 				up && 'rcx-chevron--up',
