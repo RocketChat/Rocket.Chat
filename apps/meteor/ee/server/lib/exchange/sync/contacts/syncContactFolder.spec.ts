@@ -252,6 +252,17 @@ describe('syncContactFolder', () => {
 			expect(bulkUpsertImported.mock.calls[0][0][0]).toHaveProperty('syncProvider', 'graph');
 		});
 
+		it.each([
+			['ews', true],
+			['graph', false],
+		] as const)('keeps the favorite from %s only when it reads it from Outlook, so a sync never clears one set here', async (id, kept) => {
+			const provider = providerReturning(id, page([upsert('A', { favorite: true })]));
+
+			await syncContactFolder(provider, UID, MAILBOX, FOLDER, REGION);
+
+			expect('favorite' in bulkUpsertImported.mock.calls[0][0][0]).toBe(kept);
+		});
+
 		it('leaves a number it cannot resolve without a e164 key, so it never matches the wrong contact', async () => {
 			const provider = providerReturning('graph', page([upsert('A', { phones: [{ raw: 'ext. 204' }] })]));
 
