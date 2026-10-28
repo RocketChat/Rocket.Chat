@@ -49,7 +49,7 @@ export type cssFn = Evaluable;
 export type keyframesFn = Evaluable;
 
 const evaluateValue = (value: unknown, args: readonly unknown[]): string => {
-	if (isEvaluable(value) || typeof value === 'function') {
+	if (isEvaluable(value)) {
 		return evaluateValue(value(...args), args);
 	}
 
@@ -61,7 +61,7 @@ const evaluateValue = (value: unknown, args: readonly unknown[]): string => {
 		return value.map((innerValue) => evaluateValue(innerValue, args)).join('');
 	}
 
-	return String(value);
+	return (value as { toString(): string }).toString();
 };
 
 const containsEvaluable = (value: unknown): boolean =>
