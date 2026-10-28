@@ -1,9 +1,11 @@
+import { existsSync } from 'node:fs';
 import type http from 'node:http';
+import { join } from 'node:path';
 import url from 'node:url';
 
 import { Logger } from '@rocket.chat/logger';
+import express from 'express';
 import { Meteor } from 'meteor/meteor';
-import type { StaticFiles } from 'meteor/webapp';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
 
 import { settings } from '../../settings';
@@ -37,7 +39,7 @@ WebApp.rawConnectHandlers.use(async (_req: http.IncomingMessage, res: http.Serve
 		const inlineHashes = [
 			// Hash for `window.close()`, required by the CAS login popup.
 			"'sha256-jqxtvDkBbRAl9Hpqv68WdNOieepg8tJSYu1xIy7zT34='",
-			// Hash for /apps/meteor/packages/rocketchat-livechat/assets/demo.html:25
+			// Hash for /apps/meteor/public/packages/rocketchat_livechat/assets/demo.html:25
 			"'sha256-aui5xYk3Lu1dQcnsPlNZI+qDTdfzdUv3fzsw80VLJgw='",
 		]
 			.filter(Boolean)
@@ -72,7 +74,26 @@ WebApp.rawConnectHandlers.use(async (_req: http.IncomingMessage, res: http.Serve
 	return next();
 });
 
-const _staticFilesMiddleware = WebAppInternals.staticFilesMiddleware;
+declare const __meteor_bootstrap__: { serverDir: string };
+
+// `public/` ships next to the server program (`bundle/public`); a server run from source (`meteor run`) reads the app's
+// own. `RC_PUBLIC_DIR` overrides both.
+const bundledPublicDir = join(__meteor_bootstrap__.serverDir, '../../public');
+const publicDir =
+	process.env.RC_PUBLIC_DIR ||
+	(existsSync(bundledPublicDir) ? bundledPublicDir : join(__meteor_bootstrap__.serverDir, '../../../../../public'));
+
+const servePublicFiles = express.static(publicDir, {
+	index: false,
+	redirect: false,
+	maxAge: 0,
+	setHeaders: (res, filePath) => {
+		// The web client's files are named by their content hash, so they never change under the same URL.
+		if (filePath.startsWith(join(publicDir, 'bundle/'))) {
+			res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+		}
+	},
+});
 
 let cachingVersion = '';
 export function setCachingVersion(value: string): void {
@@ -81,7 +102,7 @@ export function setCachingVersion(value: string): void {
 
 // @ts-expect-error - accessing internal property of webapp
 WebAppInternals.staticFilesMiddleware = function (
-	staticFiles: StaticFiles,
+	_staticFiles: unknown,
 	req: http.IncomingMessage & { cookies: Record<string, string> },
 	res: http.ServerResponse & { cookie: (cookie: string, value: string) => void },
 	next: NextFunction,
@@ -113,12 +134,7 @@ WebAppInternals.staticFilesMiddleware = function (
 		return res.end(req.method === 'HEAD' ? undefined : content);
 	}
 
-	// The web client's files are named by their content hash, so they never change under the same URL.
-	if (path.startsWith('/bundle/')) {
-		res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-	}
-
-	return _staticFilesMiddleware(staticFiles, req, res, next);
+	return servePublicFiles(req as express.Request, res as express.Response, next);
 };
 
 // A chunk missing from the build must fail to load, not be cached for good as the page.

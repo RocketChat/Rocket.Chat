@@ -74,4 +74,3 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
   - [uikit/](docs/features/uikit/README.md) — UiKit blocks, surfaces, rendering, interactions; field reference and per-surface support matrix
   - [web-client-hosting.md](docs/features/web-client-hosting.md) — how the server serves the Vite-built client (manifest, entry injection, CDN, cache) and how to serve the client from another host
 - [docs/proposals/](docs/proposals/) — design proposals, not yet implemented
-  - [serve-client-without-meteor-webapp.md](docs/proposals/serve-client-without-meteor-webapp.md) — serving the client without Meteor's `web.browser` program

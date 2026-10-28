@@ -11,31 +11,35 @@ copies:
 - `vite/dist/bundle` to `public/bundle`, which the server ships as static files;
 - `vite/dist/.vite/manifest.json` to `private/vite-manifest.json`.
 
-`yarn build:ci` runs it before `meteor build`, so both end up in the server bundle.
+`yarn build:ci` runs it, then `meteor build` with every client architecture excluded
+(`METEOR_FORCE_EXCLUDE_ARCHS=web.browser,web.browser.legacy,web.cordova`), and copies `public/` next to the server
+program (`bundle/public`). Meteor builds no client program at all; the server owns what hung off it:
 
-Meteor still builds a `web.browser` program, but its main module (`client/meteorShell.ts`) is empty: Meteor only
-renders the page. Everything the server already did for that page keeps working:
-
-- the head and body injections of `server/lib/ui-master` (title, metas, favicons, theme variables, custom CSS and the
-  `Custom_Script_*` scripts);
-- `__meteor_runtime_config__`, loaded from `/meteor_runtime_config.js` when the Content-Security-Policy is on;
-- `public/` assets, the `/assets/*` defaults and the livechat widget files;
-- the new-version notice: the client files are in `public/`, so a new build changes the version Meteor publishes.
+- the page (`server/lib/ui-master/page.ts`): every route the server does not answer itself gets the head and body
+  injections of `server/lib/ui-master` (title, metas, favicons, theme variables, custom CSS and the `Custom_Script_*`
+  scripts), the client entry and the runtime config;
+- `__meteor_runtime_config__`, always loaded as an external script, `/meteor_runtime_config.js?hash=…`, so the
+  Content-Security-Policy needs no inline script;
+- `public/` (`server/lib/cors/cors.ts`), read from `bundle/public`, from the app's own `public/` when the server runs from source, or from `RC_PUBLIC_DIR`, with the same headers as
+  before; the `/assets/*` defaults and the livechat widget files are served from it;
+- the new-version notice: the server publishes a hash of the manifest as the client version
+  (`packages/autoupdate`). `AUTOUPDATE_VERSION` still overrides it.
 
 At startup `server/lib/ui-master/clientEntry.ts` reads the manifest and adds to the page the client's stylesheets, a
 `modulepreload` for each chunk it imports up front, and its entry as a `<script type="module">`. No tag is inline, so
-the Content-Security-Policy needs no change. The URLs get the same prefix Meteor gave its own bundle:
+the Content-Security-Policy needs no change. The URLs get the same prefix the server gave Meteor's bundle:
 `CDN_PREFIX` when `CDN_PREFIX_ALL` is on, otherwise `CDN_JSCSS_PREFIX`, otherwise the `ROOT_URL` path prefix.
 
 The client is built with a relative `base`, so its chunks, fonts and images load from wherever the entry loads: the
 server root, a path prefix (`ROOT_URL=https://example.com/chat`) or a CDN. Their names carry a content hash, so the
-server serves `/bundle/*` with `Cache-Control: public, max-age=31536000, immutable`.
+server serves `/bundle/*` with `Cache-Control: public, max-age=31536000, immutable`, and answers a missing one with
+an uncached 404 instead of the page.
 
 ## Source maps
 
 The build the server serves has hidden source maps: every chunk gets a `.map` next to it, but the chunk does not
 reference it, so browsers never request one. The Docker images strip the maps; the build tarball keeps them, at
-`bundle/programs/web.browser/app/bundle/<chunk>.js.map`. That tarball is the CI artifact `build-production` and is
+`bundle/public/bundle/<chunk>.js.map`. That tarball is the CI artifact `build-production` and is
 published at `https://download.rocket.chat/build/rocket.chat-<version>.tgz` for releases and at
 `https://download.rocket.chat/build/rocket.chat-<version>.<commit>.tgz` for `develop` builds.
 
@@ -45,8 +49,8 @@ workspace:
 1. Download the tarball of the build the workspace runs and extract the maps. `<version>` is `info.version` and
    `<commit>` is the full `info.commit.hash` that `/api/info` returns to a user with `view-statistics`; anonymous
    callers only get the major and minor version.
-   `tar xzf rocket.chat-<version>[.<commit>].tgz --wildcards 'bundle/programs/web.browser/app/bundle/*.map'`.
-2. Serve them with CORS, for example `npx http-server bundle/programs/web.browser/app/bundle --cors -p 8080`.
+   `tar xzf rocket.chat-<version>[.<commit>].tgz --wildcards 'bundle/public/bundle/*.map'`.
+2. Serve them with CORS, for example `npx http-server bundle/public/bundle --cors -p 8080`.
 3. In Chrome DevTools, open the chunk under Sources, right-click its code, choose **Add source map…** and enter
    `http://localhost:8080/<chunk>.js.map`. Firefox has the same entry in its debugger.
 
@@ -83,6 +87,7 @@ your proxy. What the server-rendered page adds is missing: the title and metas, 
 
 ## Development
 
-`yarn dev` runs Vite in front of a local Meteor server. Vite fetches the page Meteor renders, adds its own entry, and
+`yarn dev` runs Vite in front of a local Meteor server, which builds no client and reads `public/` from the source tree.
+`yarn start` runs that server alone, without a client. Vite fetches the page the server renders, adds its own entry, and
 proxies the server routes, so the page matches production. With `RC_SERVER_URL` set, Vite serves the standalone
 `index.html` against that server instead. See [getting-started.md](../getting-started.md).

@@ -27,7 +27,7 @@
 		".testunit:jest": "TZ=UTC TS_NODE_COMPILER_OPTIONS='{\"allowJs\": false}' jest",
 		".testunit:server": "node --test --experimental-test-isolation=none --require tsx --require ./tests/setup/chaiPlugins.ts '**/*.test.{ts,js}'",
 		".testunit:server:cov": "nyc -r text -r lcov yarn .testunit:server",
-		"build:ci": "yarn build:client && METEOR_DEBUG_BUILD=1 METEOR_DISABLE_OPTIMISTIC_CACHING=1 meteor build --verbose --server-only --directory /tmp/dist",
+		"build:ci": "yarn build:client && METEOR_FORCE_EXCLUDE_ARCHS=web.browser,web.browser.legacy,web.cordova METEOR_DEBUG_BUILD=1 METEOR_DISABLE_OPTIMISTIC_CACHING=1 meteor build --verbose --server-only --directory /tmp/dist && cp -RL public /tmp/dist/bundle/public",
 		"build:client": "node vite/buildForServer.mjs",
 		"build:vite": "vite build --config vite/vite.config.mts",
 		"coverage": "nyc -r html yarn .testunit:server",

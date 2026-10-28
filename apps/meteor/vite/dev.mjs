@@ -54,7 +54,7 @@ if (!remoteServerUrl) {
 
 const children = [
 	!remoteServerUrl &&
-		run('meteor', ['run', '--port', meteorPort, '--exclude-archs', 'web.browser.legacy,web.cordova'], {
+		run('meteor', ['run', '--port', meteorPort, '--exclude-archs', 'web.browser,web.browser.legacy,web.cordova'], {
 			// Links the server builds (emails, OAuth callbacks, Site_Url) point at the Vite origin.
 			ROOT_URL: process.env.ROOT_URL || `http://localhost:${port}`,
 		}),

@@ -13,9 +13,9 @@ adds the client's entry, stylesheets and preloads from the manifest
 ([features/web-client-hosting.md](../features/web-client-hosting.md)). `yarn dev` runs Vite in front of the local
 server.
 
-The server stays the host. It renders the page with everything it already injects into it (title, metas, theme
-variables, custom CSS and scripts, `<base>`), sends the Content-Security-Policy, publishes the new-version notice, and
-serves the bundle under the same CDN or path prefix it used for Meteor's.
+The server stays the host, and Meteor builds only the server. The server renders the page with everything it already
+injects into it (title, metas, theme variables, custom CSS and scripts, `<base>`), sends the Content-Security-Policy,
+publishes the new-version notice, and serves the bundle under the same CDN or path prefix it used for Meteor's.
 
 The server build of the client:
 
@@ -51,8 +51,9 @@ Rejected alternatives:
   `develop`, so a bug that shows only without instrumentation is found there.
 - Under a `ROOT_URL` path prefix the REST API still answers at `/api`, and the E2EE service worker registers at the
   root. Neither changed with this decision.
-- Meteor still builds an empty `web.browser` program, only for its page, runtime config and static files. Dropping it
-  is the next step: the server renders the page and serves `public/` itself (#43236).
+- Meteor builds no client program (`METEOR_FORCE_EXCLUDE_ARCHS` in `build:ci`). The server renders the page itself,
+  serves the runtime config as an external script and `public/` from `bundle/public`, and publishes a hash of the
+  manifest as the client version (#43236).
 - The client ships in a few hundred chunks rather than one per module. Startup loads a handful of grouped chunks
   (libraries, app code, and the startup routes with the layout every page renders), so the login page requests six
   scripts plus one per highlight.js language the workspace enables. Common chunks under 20 kB are copied into the lazy
