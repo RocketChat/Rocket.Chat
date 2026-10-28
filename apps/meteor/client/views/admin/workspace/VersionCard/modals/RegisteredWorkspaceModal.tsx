@@ -1,5 +1,4 @@
 import {
-	Box,
 	Button,
 	ButtonGroup,
 	Modal,
@@ -16,6 +15,8 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import useFeatureBullets from '../hooks/useFeatureBullets';
+import FeatureBullet from './layout/FeatureBullet';
+import RegistrationProse from './layout/RegistrationProse';
 
 export type RegisteredWorkspaceModalProps = {
 	onClose: () => void;
@@ -61,19 +62,16 @@ const RegisteredWorkspaceModal = ({ onClose, onStatusChange, ...props }: Registe
 				<ModalClose onClick={onClose} />
 			</ModalHeader>
 			<ModalContent>
-				<Box withRichContent>
-					<span>{`${t('RegisterWorkspace_Registered_Subtitle')}: `}</span>
+				<RegistrationProse>
+					{`${t('RegisterWorkspace_Registered_Subtitle')}: `}
 					<ul>
 						{bulletFeatures.map((item, index) => (
-							<li key={index}>
-								<strong>{item.title}</strong>
-								<Box is='p' marginBlockStart={4}>
-									{item.description}
-								</Box>
-							</li>
+							<FeatureBullet key={index} title={item.title}>
+								{item.description}
+							</FeatureBullet>
 						))}
 					</ul>
-				</Box>
+				</RegistrationProse>
 			</ModalContent>
 			<ModalFooter>
 				<ButtonGroup align='end'>

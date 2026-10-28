@@ -1,5 +1,5 @@
 import type { IStats } from '@rocket.chat/core-typings';
-import { Button, Card, CardBody, CardControls, Margins } from '@rocket.chat/fuselage';
+import { Button, Card, CardBody, CardControls } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import { useRouter } from '@rocket.chat/ui-contexts';
@@ -8,8 +8,8 @@ import { useTranslation } from 'react-i18next';
 
 import { useFormatMemorySize } from '../../../../hooks/useFormatMemorySize';
 import WorkspaceCardSection from '../components/WorkspaceCardSection';
-import WorkspaceCardSectionTitle from '../components/WorkspaceCardSectionTitle';
 import WorkspaceCardTextSeparator from '../components/WorkspaceCardTextSeparator';
+import WorkspaceCardSections from '../layout/WorkspaceCardSections';
 
 export type UsersUploadsCardProps = {
 	statistics: IStats;
@@ -30,19 +30,15 @@ const UsersUploadsCard = ({ statistics }: UsersUploadsCardProps) => {
 	return (
 		<Card>
 			<CardBody flexDirection='column'>
-				<Margins blockEnd={24}>
-					<WorkspaceCardSection>
-						<WorkspaceCardSectionTitle title={t('Users')} variant='h4' />
-
+				<WorkspaceCardSections gap='x32' spaceBelow='x24'>
+					<WorkspaceCardSection title={t('Users')}>
 						<WorkspaceCardTextSeparator label={t('Online')} status='online' value={statistics.onlineUsers} />
 						<WorkspaceCardTextSeparator label={t('Busy')} status='busy' value={statistics.busyUsers} />
 						<WorkspaceCardTextSeparator label={t('Away')} status='away' value={statistics.awayUsers} />
 						<WorkspaceCardTextSeparator label={t('Offline')} status='offline' value={statistics.offlineUsers} />
 						<WorkspaceCardTextSeparator label={t('Total')} value={statistics.totalUsers} />
 					</WorkspaceCardSection>
-					<WorkspaceCardSection>
-						<WorkspaceCardSectionTitle title={t('Types')} variant='h4' />
-
+					<WorkspaceCardSection title={t('Types')}>
 						<WorkspaceCardTextSeparator label={t('Users_Connected')} value={statistics.totalConnectedUsers} />
 						<WorkspaceCardTextSeparator label={t('Stats_Active_Users')} value={statistics.activeUsers} />
 						<WorkspaceCardTextSeparator label={t('Stats_Active_Guests')} value={statistics.activeGuests} />
@@ -50,13 +46,11 @@ const UsersUploadsCard = ({ statistics }: UsersUploadsCardProps) => {
 						<WorkspaceCardTextSeparator label={t('Stats_App_Users')} value={statistics.appUsers} />
 					</WorkspaceCardSection>
 
-					<WorkspaceCardSection>
-						<WorkspaceCardSectionTitle title={t('Uploads')} variant='h4' />
-
+					<WorkspaceCardSection title={t('Uploads')}>
 						<WorkspaceCardTextSeparator label={t('Stats_Total_Uploads')} value={statistics.uploadsTotal} />
 						<WorkspaceCardTextSeparator label={t('Stats_Total_Uploads_Size')} value={formatMemorySize(statistics.uploadsTotalSize)} />
 					</WorkspaceCardSection>
-				</Margins>
+				</WorkspaceCardSections>
 			</CardBody>
 
 			<CardControls>
