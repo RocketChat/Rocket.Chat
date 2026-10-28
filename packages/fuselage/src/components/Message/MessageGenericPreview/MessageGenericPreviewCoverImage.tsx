@@ -24,12 +24,11 @@ export type MessageGenericPreviewCoverImageProps = {
 	className?: string;
 };
 
-const MessageGenericPreviewCoverImage = ({ url, width, height, className, ...props }: MessageGenericPreviewCoverImageProps) => (
+const MessageGenericPreviewCoverImage = ({ url, width, height, className }: MessageGenericPreviewCoverImageProps) => (
 	<MessageGenericPreviewCoverImageFrame
 		className={prependClassName(className, 'rcx-message-generic-preview__preview')}
 		style={{ backgroundImage: `url(${url})`, maxWidth: '100%' }}
 		data-testid='preview-image'
-		{...props}
 	>
 		<div style={{ paddingTop: `${(height / width) * 100}%` }} />
 	</MessageGenericPreviewCoverImageFrame>

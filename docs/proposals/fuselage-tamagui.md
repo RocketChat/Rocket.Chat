@@ -304,7 +304,8 @@ Each batch gets the Storybook A/B over every story, `story-computed` on its stor
 
 **Flatten more use-sites (optional, performance only)**
 - [ ] A computed `className` on a frame (16 frames: Banner parts, ButtonBadge, CalloutWrapper, SkeletonFrame, ProgressBarFill, ToastBarProgressFill…): a compiler patch that passes it through to the flattened element.
-- [ ] `{...props}` spreads onto frames (8: BannerLink, Chevron, Icon, ItemContent, ItemGroup, ItemLink, ModalHeroImage, NavBarSection). Tamagui's rule is to pass props explicitly, since the compiler can't prove a spread is style-free; hiding the spread from the compiler (for example behind `cloneElement`) is not the fix.
+- [x] `{...props}` spreads onto frames (8: BannerLink, Chevron, Icon, ItemContent, ItemGroup, ItemLink, ModalHeroImage, NavBarSection). Tamagui's rule is to pass props explicitly, since the compiler can't prove a spread is style-free; hiding the spread from the compiler (for example behind `cloneElement`) is not the fix. The attributes go on the `render` element instead (`render={<Tag {...props} />}`), which a third `@tamagui/static` patch flattens to that element. Every `Item` part, Chevron, NavBarSection and BannerLink do so now, `Avatar` and `AvatarStack` already did, and `MessageGenericPreviewCoverImage` only takes its declared props. Most of them still bail on their computed `className` (the item above); with that patch too, 98 of 106 use-sites flatten.
+- [ ] The other frames that still get a `{...props}` spread (about 60, Banner, Sidebar and Message parts among them). `prevalStyled` skips a frame rendered with a spread, so the compiler never counts them.
 
 **Upstream, in parallel (optional)**
 - [ ] Propose to Tamagui: a `resolveStaticDefinition` that returns a definition's class tables and CSS; each class's slot in the static-resolve result; ungrouped per-state atomic classes.
@@ -349,7 +350,7 @@ Follow `Divider` (`components/Divider/Divider.tsx`).
    - Keep each SCSS `theme('<name>', …)` hook as `toCSSValue('--rcx-<name>', …)`.
    - Never hard-code a color.
 4. **Class names:** keep every `rcx-*` class name the SCSS version rendered, on the same elements, along with the same DOM structure and attributes. E2E tests, app CSS and admin custom CSS select on them.
-5. **Props:** a component takes DOM and ARIA attributes plus the variations it declares (`ElementProps`, see #43100), never `Box` styling props. It builds its `className` itself, `rcx-*` classes first and the caller's last, maps a declared `is` to `render`, and spreads the rest onto the frame. Cast the spread to `GetProps<typeof Frame>` only for React's `Booleanish` ARIA types; a cast never carries a style.
+5. **Props:** a component takes DOM and ARIA attributes plus the variations it declares (`ElementProps`, see #43100), never `Box` styling props. It builds its `className` itself, `rcx-*` classes first and the caller's last, and puts the DOM attributes it takes on the element the frame renders (`render={<Tag {...props} />}`, `Tag` being a declared `is`), never in a spread onto the frame, which the compiler can't flatten. The frame gets only its variants, `className` and `children`.
    - Styling a component used to receive from inside Fuselage moves into its frame: a margin, a size, an `rcx-box--*` flag.
    - Only components that `Margins`, `Flex` or `Scrollable` still lay out keep `withFuselageProvider(Component, { takesBoxTransforms: true })`.
    - A frame that replaces a `Box` restates what `rcx-box--full` gave it: `border-box`, `flex-shrink: 1`, `auto` minimum sizes, zero margin, padding and border, no outline, the sans font family and tabular numbers.
