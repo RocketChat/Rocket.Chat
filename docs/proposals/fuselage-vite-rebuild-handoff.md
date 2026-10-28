@@ -26,7 +26,9 @@ The restart changes where compilation happens: **the app compiles Fuselage's sou
 What this costs:
 
 - **Zero-runtime is `experimental.zeroRuntime` in Tamagui 3.x.** Pin one exact version and upgrade deliberately.
-- **Consumers outside the app** (other apps installing `@rocket.chat/fuselage` from npm, Storybook, Jest) don't get the app's compile. They need a Vite build with the same plugin, or they run the Tamagui runtime. Decide which before the first component ships to npm (see "Open questions").
+- **Everything outside the app runs Fuselage uncompiled, with the Tamagui runtime.** This covers other apps installing `@rocket.chat/fuselage` from npm, Jest, and other packages' Storybooks. Fuselage's `dist` stays a plain runtime build, with no compiler and no lowering. The budget applies to the app's client only. Two things follow:
+  - **Patches:** the `@tamagui/web` runtime patches stay wherever the runtime runs. They cover React 19 ref cleanups, `forceStyle`/`onLayout` leaking to the DOM, and frames used without a provider (or a `TamaguiProvider` at the consumer's root).
+  - **Same output both ways:** a component must render the same compiled or uncompiled. The verification compares the app's compiled output with the runtime one.
 
 ## Where things stand
 
@@ -110,14 +112,15 @@ Tamagui's [zero-runtime rules](https://tamagui.dev/docs/guides/zero-runtime) com
 
 ## Verification, per pull request
 
-| Check                                                       | What it catches                                                                  |
-| ----------------------------------------------------------- | -------------------------------------------------------------------------------- |
-| `build:vite` with zero-runtime (CI)                         | Any `@tamagui/*` module left in the client, and the zero-runtime rule violations |
-| Storybook pixel A/B against `develop`, `STORY_AB_WAIT=2000` | Visual changes; the pseudo-states addon needs the wait                           |
-| `story-computed` over every story, against `develop`        | Style changes the screenshot doesn't show (order, grow, hidden states)           |
-| Bench, list components                                      | Mount and update cost                                                            |
-| Size report on the app bundle (CI)                          | The component's JS and CSS cost and the running total against the budget         |
-| Real-app A/B, per family                                    | Consumer classes, layer order, the app's own CSS                                 |
+| Check                                                            | What it catches                                                                                       |
+| ---------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------- |
+| `build:vite` with zero-runtime (CI)                              | Any `@tamagui/*` module left in the client, and the zero-runtime rule violations                      |
+| Storybook pixel A/B against `develop`, `STORY_AB_WAIT=2000`      | Visual changes; the pseudo-states addon needs the wait                                                |
+| `story-computed` over every story, against `develop`             | Style changes the screenshot doesn't show (order, grow, hidden states)                                |
+| `story-computed`, zero-runtime Storybook against the runtime one | A component that renders differently compiled than uncompiled, which npm consumers and Jest would see |
+| Bench, list components                                           | Mount and update cost                                                                                 |
+| Size report on the app bundle (CI)                               | The component's JS and CSS cost and the running total against the budget                              |
+| Real-app A/B, per family                                         | Consumer classes, layer order, the app's own CSS                                                      |
 
 Known flaky stories that differ between two captures of the same build: `PositionAnimated`, `Tooltip` arrow positioning, `Dropdown`, `OptionsPaginated`, and animated values (spinner, skeleton shine, progress bar).
 
@@ -128,7 +131,7 @@ Known flaky stories that differ between two captures of the same build: `Positio
 | Build-time lowering (`lowerStyled.ts`, recipes, `check-lowered`, `count-unlowered`)                      | Dropped; zero-runtime in the app replaces it. Kept on the pilot branch as the fallback if the spike fails                                               |
 | `prevalStyled.ts`                                                                                        | Dropped; values are literal strings the compiler reads                                                                                                  |
 | `@tamagui/static` patches (default attributes, dynamic variants, `render` element, computed `className`) | Re-check each against the pinned version. The default attributes one looks like an upstream bug worth filing; the others are avoided by the rules above |
-| `@tamagui/web` patches (React 19 refs, `forceStyle`/`onLayout` leaks, frames without a provider)         | Not needed where zero-runtime compiles. Needed only where something still runs the runtime (see "Open questions")                                       |
+| `@tamagui/web` patches (React 19 refs, `forceStyle`/`onLayout` leaks, frames without a provider)         | Kept for the uncompiled `dist` (npm, Jest, other Storybooks); unused in the app's compiled client                                                       |
 | `variantClass`, `asPublicFrame`                                                                          | Dropped; the wrapper owns the classes                                                                                                                   |
 | Replacing `group`                                                                                        | Possibly avoidable; prove it compiles first                                                                                                             |
 | Replacing `createStyledContext`, keyframe `animation:`                                                   | Still needed                                                                                                                                            |
@@ -150,12 +153,6 @@ Known flaky stories that differ between two captures of the same build: `Positio
 ## Open questions
 
 - **Does zero-runtime compile Fuselage from the app?** The step 1 spike answers it. If not, fall back to the pilot's library-level lowering.
-- **What do consumers outside the app get?** Jest, other packages' Storybooks and npm consumers don't run the app's compile. Options:
-  - they run the Tamagui runtime, with its patches;
-  - Fuselage keeps a runtime `dist` for them;
-  - they adopt the same Vite plugin.
-
-  Jest can also test against the compiled output.
 
 - **Where the JS goes.** The pilot was about +45 kB JS over `develop` without the runtime. The first component tells whether that was the lowering's recipes, which zero-runtime doesn't need, or the components' own code.
 - **What happens to the pilot.** Keep #42942 open as the reference while the component PRs land, then close it. #43167, the develop-compatible preparation, can merge independently.
