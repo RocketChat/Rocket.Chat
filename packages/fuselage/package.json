@@ -64,6 +64,7 @@
 		"@storybook/addon-docs": "~10.6.5",
 		"@storybook/react": "~10.6.5",
 		"@storybook/react-vite": "~10.6.5",
+		"@tamagui/web": "3.0.18",
 		"@testing-library/dom": "~10.4.2",
 		"@testing-library/react": "~16.3.3",
 		"@testing-library/user-event": "~14.6.7",
