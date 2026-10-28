@@ -1,0 +1,26 @@
+ee/packages/presence/src/Presence.spec.ts
+  s_bc2e5ef527066e::t_a6cbb2ea7b8f49 305-318
+ee/packages/presence/src/lib/presenceEngine.spec.ts
+  s_bc2e5ef527066e::t_7dfd07450f5bfd 10-19
+  s_bc2e5ef527066e::t_8025b89df6e479 79-82
+.changeset/presence-heartbeat-no-op.md
+  s_bc2e5ef527066e::t_53c8bdc611afb4 1-6
+ee/packages/presence/src/lib/presenceEngine.ts
+  s_bc2e5ef527066e::t_ab390464110254 193-205,213-217
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "bb6bd69ea683a9ba7d23979f0df65e9326c8536e",
+  "prompts": {},
+  "sessions": {
+    "s_bc2e5ef527066e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f7d70c60-5c63-4bfe-af99-f7d020c1ee81",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
