@@ -11,7 +11,6 @@ import {
 	boxFull,
 	focusBorder,
 	focusBorderRadius,
-	frameStyle,
 	plainElement,
 	sidebarAccordionBorderColor,
 	sidebarColorSurfaceDefault,
@@ -34,7 +33,6 @@ const barRadius = toCSSValue('--rcx-border-radius-small', borderRadius('small'))
 
 const SidebarAccordionItemBar = styled(View, {
 	...boxFull,
-	group: 'rcx-sidebar-accordion-item-bar' as never,
 	position: 'sticky',
 	zIndex: 1,
 	top: 0,
@@ -67,15 +65,6 @@ const SidebarAccordionItemBar = styled(View, {
 			},
 		},
 	} as const,
-});
-
-// The chevron only shows while its bar is hovered or holds keyboard focus
-const chevronStyle = frameStyle({
-	visibility: {
-		'default': 'hidden',
-		'group-hover/rcx-sidebar-accordion-item-bar': 'visible',
-		'group-focus-visible/rcx-sidebar-accordion-item-bar': 'visible',
-	},
 });
 
 const SidebarAccordionItemTitle = styled(Text, {
@@ -156,7 +145,7 @@ const SidebarAccordionItem = ({
 					.join(' ')}
 				{...(barProps as unknown as GetProps<typeof SidebarAccordionItemBar>)}
 			>
-				{!noncollapsible && <Chevron className='rcx-sidebar-accordion-item__chevron' size='x16' right={!expanded} {...chevronStyle} />}
+				{!noncollapsible && <Chevron className='rcx-sidebar-accordion-item__chevron' size='x16' right={!expanded} />}
 				{title && (
 					<SidebarAccordionItemTitle className='rcx-sidebar-accordion-item__title' id={titleId}>
 						{title}

@@ -267,8 +267,9 @@ This is the one list to track removing Tamagui's runtime from Fuselage's web bui
 - [x] `forceStyle`: no frame forces a state any more; state classes are gone.
 - [x] `group`: Message and Item reveal their parts with parent rules in the `fuselage` layer.
 - [x] `TooltipArrow`: its side and align, which set `inset` together, are one `placement` variant.
-- [x] Other style props computed at render rather than chosen from a variant (the `Modal` and `ModalHeroImage` sizes, and whatever else the lowering report lists): a finite variant, or a CSS custom property through `style`. Card, Icon, `IconButton`, the ProgressBar fill and the Throbber circles too. The Sidebar still hands style objects to `Item` parts through their `{...props}` spread, so those belong to the optional list below.
+- [x] Other style props computed at render rather than chosen from a variant (the `Modal` and `ModalHeroImage` sizes, and whatever else the lowering report lists): a finite variant, or a CSS custom property through `style`. Card, Icon, `IconButton`, the ProgressBar fill and the Throbber circles too.
 - [x] `context:` and `createStyledContext`: the parts of Avatar stacks, Cards and Messages that followed their parent only changed a style, so they follow it with descendant rules in the `fuselage` layer.
+- [x] Style objects handed to frames at render (Sidebar `frameStyle` to `Item` parts, `Chevron` and `ItemTitle`): the classes the Sidebar already gives those parts, or a modifier on them, select descendant rules in the `fuselage` layer. `GridItem` still hands its per-breakpoint sizes, worked out at render, to its own frame.
 - [x] `animation:` (Skeleton, the ProgressBar shine, Throbber): the frames take their `@keyframes` from plain CSS classes.
 - [x] `getTokens` in PaletteStyleTag: already a local function over `fuselage-tokens`' JSON, it never reads Tamagui's config.
 - [x] `isTamaguiComponent`: a marker the lowered component sets (`isLoweredFrame`), so `Box is={…}` still leaves the `rcx-box` base classes off a lowered frame; `Box.spec.tsx` covers it.

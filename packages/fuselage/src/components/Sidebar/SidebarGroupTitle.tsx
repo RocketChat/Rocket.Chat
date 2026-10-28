@@ -1,14 +1,12 @@
 import { styled, Text, View } from '@tamagui/web';
 import type { AriaAttributes, HTMLAttributes, ReactNode } from 'react';
 
-import { textIconColors } from '../../Theme';
 import { cx } from '../../helpers/composeClassNames';
 import { spacing } from '../../styleTokens';
 import { Chevron } from '../Chevron';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 import { ItemGroupHeader, ItemGroupTitle } from '../Item';
-import { focusBorder, focusBorderRadius, frameStyle, plainElement, textEllipsis, typography } from './sidebarStyles';
-import { highlightVariant } from '../Item/itemStyles';
+import { plainElement, textEllipsis, typography } from './sidebarStyles';
 
 const SidebarGroupTitleHeading = styled(View, {
 	...plainElement,
@@ -35,30 +33,6 @@ const SidebarGroupTitleTitle = styled(Text, {
 		},
 	} as const,
 });
-
-const barColor = {
-	default: textIconColors['font-secondary-info'].toString(),
-	empty: textIconColors['font-disabled'].toString(),
-	unread: highlightVariant.sidebar.color,
-};
-
-const barButtonStyle = {
-	display: 'flex',
-	alignItems: 'center',
-	flexGrow: 1,
-	flexShrink: 1,
-	flexBasis: 0,
-	minWidth: 0,
-	textAlign: 'start',
-	columnGap: spacing('x4'),
-};
-
-const focusableBarButtonStyle = {
-	...barButtonStyle,
-	...focusBorder,
-	cursor: 'pointer',
-	borderRadius: { 'focus-visible': focusBorderRadius },
-};
 
 export type SidebarGroupTitleProps = {
 	expanded?: boolean;
@@ -92,10 +66,6 @@ const SidebarGroupTitleBase = ({
 	return (
 		<ItemGroupHeader
 			{...(props as Omit<HTMLAttributes<HTMLDivElement>, 'is'>)}
-			{...frameStyle({
-				paddingBlock: spacing('x8'),
-				color: (isUnread && barColor.unread) || (isEmpty && barColor.empty) || barColor.default,
-			})}
 			inset='md'
 			className={cx(
 				'rcx-sidebar-collapse-group__bar',
@@ -107,8 +77,7 @@ const SidebarGroupTitleBase = ({
 			<ItemGroupTitle
 				role={role}
 				{...barProps}
-				{...frameStyle(focusable ? focusableBarButtonStyle : barButtonStyle)}
-				className='rcx-sidebar-collapse-group__bar-button'
+				className={cx('rcx-sidebar-collapse-group__bar-button', focusable && 'rcx-sidebar-collapse-group__bar-button--focusable')}
 			>
 				<SidebarGroupTitleHeading className='rcx-sidebar-collapse-group__heading'>
 					{title && (
