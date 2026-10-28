@@ -1,11 +1,12 @@
+import { css } from '@rocket.chat/css-in-js';
 import type { Meta, StoryObj } from '@storybook/react';
 import { useState } from 'react';
 import { action } from 'storybook/actions';
 
 import { PropsVariationSection, variationPseudoStatesWithFocusVisible } from '../../../.storybook/helpers';
+import { spacing } from '../../styleTokens';
 import { Box } from '../Box';
 import { ButtonGroup } from '../ButtonGroup';
-import { Margins } from '../Margins';
 import Button from './Button';
 
 export default {
@@ -139,9 +140,17 @@ export const Truncated: Story = {
 	),
 };
 
+// Spaces the groups and, inside them, every button
+const variantsSpacing = css`
+	& > .rcx-button-group,
+	& .rcx-button {
+		margin: ${spacing('x8')};
+	}
+`;
+
 export const Variants: Story = {
 	render: () => (
-		<Margins all='x8'>
+		<Box className={variantsSpacing}>
 			<ButtonGroup>
 				<Button variant='primary'>Primary</Button>
 				<Button variant='secondary'>Secondary</Button>
@@ -158,7 +167,7 @@ export const Variants: Story = {
 				<Button variant='success'>Success</Button>
 				<Button variant='secondary-success'>Secondary Success</Button>
 			</ButtonGroup>
-		</Margins>
+		</Box>
 	),
 };
 
