@@ -283,7 +283,7 @@ A computed `className` or a `{...props}` spread at a frame's use-site doesn't ne
 
 **5. Convert all definitions, in batches**
 - [x] CI ratchets: definitions not lowered, and `@tamagui/*` modules in the web bundle. Both only go down (`yarn workspace @rocket.chat/fuselage run count-unlowered --max <n> --max-modules <n>`, Code Lint job; 239 and 100 when added).
-- [ ] Message family.
+- [x] Message family (54 definitions; the ratchet 239 → 185).
 - [ ] Item and Sidebar family.
 - [ ] Button family.
 - [ ] Inputs and selects.
