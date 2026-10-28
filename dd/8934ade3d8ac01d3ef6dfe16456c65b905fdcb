@@ -1,0 +1,27 @@
+apps/meteor/server/lib/http/httpServer.ts
+  s_f3e7af0b0e6bc5::t_24181e0890aa03 1,11-18
+apps/meteor/server/lib/cors/cors.ts
+  s_f3e7af0b0e6bc5::t_2427b5e0235916 4,23-54,115
+apps/meteor/server/lib/debug.js
+  s_f3e7af0b0e6bc5::t_10495c56653c99 134-136,138
+apps/meteor/server/lib/http/baseMiddlewares.ts
+  s_f3e7af0b0e6bc5::t_22c87dbc78ef77 1-5
+apps/meteor/server/main.ts
+  s_f3e7af0b0e6bc5::t_b009677c6ceaed 10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "dd8934ade3d8ac01d3ef6dfe16456c65b905fdcb",
+  "prompts": {},
+  "sessions": {
+    "s_f3e7af0b0e6bc5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b8028d69-1c86-4683-80b4-6ab4042b0851",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
