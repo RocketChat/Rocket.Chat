@@ -138,6 +138,28 @@ describe('Modify accessors (base-runtime)', () => {
 	});
 
 	describe('UploadCreator', () => {
+		it('uses the app user when the descriptor user is null', async () => {
+			const { rec, sender } = setup({
+				'bridges:getUserBridge:doGetAppUser': { id: 'app-user' },
+				'bridges:getUploadBridge:doCreateUpload': { id: 'upload' },
+			});
+
+			await new UploadCreator(sender).uploadBuffer(Buffer.from([1]), {
+				filename: 'f',
+				room: { id: 'r1' },
+				user: null,
+			});
+
+			assert.deepStrictEqual(rec.methods(), ['bridges:getUserBridge:doGetAppUser', 'bridges:getUploadBridge:doCreateUpload']);
+			assert.deepStrictEqual(rec.emitted()[1].params[0], {
+				name: 'f',
+				size: 1,
+				rid: 'r1',
+				userId: 'app-user',
+				visitorToken: undefined,
+			});
+		});
+
 		it('does not fetch the app user when a visitorToken is provided', async () => {
 			const { rec, sender } = setup();
 			await new UploadCreator(sender).uploadBuffer(Buffer.from([1]), {
