@@ -13,9 +13,7 @@ export type EmojiElementProps = EmojiItem & { small?: boolean; onClick: (e: Mous
 	>;
 
 const smallEmojiClass = css`
-	.emoji {
-		font-size: 1.125rem;
-	}
+	--emoji-size: 1.25rem;
 `;
 
 const EmojiElement = ({ emoji, image, onClick, small = false, ...props }: EmojiElementProps) => {
