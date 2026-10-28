@@ -1,4 +1,4 @@
-import { Accordion, AccordionItem, Box, Button, ButtonGroup, Callout, CardGrid, CardGridItem } from '@rocket.chat/fuselage';
+import { Accordion, AccordionItem, Button, ButtonGroup, Callout, CardGrid, CardGridItem } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useSessionStorage } from '@rocket.chat/fuselage-hooks';
 import {
 	Page,
@@ -29,6 +29,8 @@ import PlanCard from './components/cards/PlanCard';
 import SeatsCard from './components/cards/SeatsCard';
 import { useCancelSubscriptionModal } from './hooks/useCancelSubscriptionModal';
 import { useWorkspaceSync } from './hooks/useWorkspaceSync';
+import SubscriptionContent from './layout/SubscriptionContent';
+import SubscriptionInset from './layout/SubscriptionInset';
 import UiKitSubscriptionLicense from './surface/UiKitSubscriptionLicense';
 import { useRegistrationStatus } from '../../../hooks/useRegistrationStatus';
 
@@ -122,13 +124,13 @@ const SubscriptionPage = () => {
 					<UiKitSubscriptionLicense key='license' initialView={cloudSyncAnnouncement} />
 				</PageBlockWithBorder>
 			)}
-			<PageScrollableContentWithShadow padding={16}>
+			<PageScrollableContentWithShadow padding='x16'>
 				{(showSubscriptionCallout || syncLicenseUpdate.isPending) && (
-					<Box padding={8}>
+					<SubscriptionInset>
 						<Callout type='info' title={t('Sync_license_update_Callout_Title')}>
 							{t('Sync_license_update_Callout')}
 						</Callout>
-					</Box>
+					</SubscriptionInset>
 				)}
 				<SubscriptionCalloutLimits />
 				{isLicenseLoading && <SubscriptionPageSkeleton />}
@@ -141,8 +143,8 @@ const SubscriptionPage = () => {
 								</AccordionItem>
 							</Accordion>
 						)}
-						<Box marginBlock='none' marginInline='auto' width='full' color='default'>
-							<Box padding={8}>
+						<SubscriptionContent>
+							<SubscriptionInset>
 								<CardGrid minRowHeight={260}>
 									<CardGridItem lg={4} xs={4}>
 										<PlanCard license={license} licenseLimits={{ activeUsers: seatsLimit }} />
@@ -189,7 +191,7 @@ const SubscriptionPage = () => {
 										</CardGridItem>
 									)}
 								</CardGrid>
-							</Box>
+							</SubscriptionInset>
 							<UpgradeToGetMore activeModules={activeModules} isEnterprise={isEnterprise}>
 								{Boolean(licensesData?.license?.information.cancellable) && (
 									<Button loading={isCancelSubscriptionLoading} variant='secondary-danger' onClick={openCancelSubscriptionModal}>
@@ -197,7 +199,7 @@ const SubscriptionPage = () => {
 									</Button>
 								)}
 							</UpgradeToGetMore>
-						</Box>
+						</SubscriptionContent>
 					</>
 				)}
 			</PageScrollableContentWithShadow>

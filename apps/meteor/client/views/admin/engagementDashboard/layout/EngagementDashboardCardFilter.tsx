@@ -5,6 +5,9 @@ export type EngagementDashboardCardFilterProps = {
 	children?: ReactNode;
 };
 
+/**
+ * The filters of a dashboard section, aligned to the end of the card above its content.
+ */
 const EngagementDashboardCardFilter = ({ children = <InputBoxSkeleton /> }: EngagementDashboardCardFilterProps) => (
 	<Box rcx-card__row display='flex' justifyContent='flex-end' alignItems='center' wrap='no-wrap' paddingBlockEnd='x8'>
 		{children && (

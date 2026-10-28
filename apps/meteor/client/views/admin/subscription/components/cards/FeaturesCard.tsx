@@ -1,7 +1,9 @@
-import { Box, Card, CardBody, CardControls, CardTitle, FramedIcon } from '@rocket.chat/fuselage';
+import { Card, CardBody, CardControls, CardTitle, FramedIcon, Text } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from 'react-i18next';
 
+import FeatureList from '../../layout/FeatureList';
+import FeatureListItem from '../../layout/FeatureListItem';
 import { PRICING_LINK } from '../../utils/links';
 import InfoTextIconModal from '../InfoTextIconModal';
 
@@ -66,17 +68,20 @@ const FeaturesCard = ({ activeModules, isEnterprise }: FeaturesCardProps) => {
 		<Card>
 			<CardTitle>{!isEnterprise ? t('Unlock_premium_capabilities') : t('Includes')}</CardTitle>
 			<CardBody>
-				<Box display='flex' flexWrap='wrap' justifyContent='space-between' flexDirection={isSmall ? 'row' : 'column'}>
+				<FeatureList twoColumns={isSmall}>
 					{getFeatureSet(activeModules, isEnterprise).map(({ success, title, infoText }, index) => (
-						<Box key={`feature_${index}`} display='flex' alignItems='center' marginBlockEnd={4} width={isSmall ? '50%' : 'full'}>
-							<FramedIcon success={success} icon={success ? 'check' : 'lock'} />
-							<Box is='p' fontScale='p2' marginInlineStart='x12' marginInlineEnd='x4' color='font-secondary-info'>
+						<FeatureListItem
+							key={`feature_${index}`}
+							twoColumns={isSmall}
+							icon={<FramedIcon success={success} icon={success ? 'check' : 'lock'} />}
+							action={infoText && <InfoTextIconModal title={t(title)} infoText={t(infoText)} />}
+						>
+							<Text is='p' fontScale='p2' color='secondary-info'>
 								{t(title)}
-							</Box>
-							{infoText && <InfoTextIconModal title={t(title)} infoText={t(infoText)} />}
-						</Box>
+							</Text>
+						</FeatureListItem>
 					))}
-				</Box>
+				</FeatureList>
 			</CardBody>
 			<CardControls>
 				<a target='_blank' rel='noopener noreferrer' href={PRICING_LINK}>
