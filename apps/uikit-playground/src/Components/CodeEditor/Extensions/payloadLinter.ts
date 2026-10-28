@@ -28,7 +28,7 @@ const payloadLinter = linter((view: EditorView) => {
 		});
 		return diagnostics;
 	}
-	if (!head?.matchContext(['ArrayExpression'])) {
+	if (head?.name !== 'ArrayExpression') {
 		diagnostics.push({
 			from: 0,
 			to: 0,
