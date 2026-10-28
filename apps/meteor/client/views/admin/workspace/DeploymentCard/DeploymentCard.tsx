@@ -1,5 +1,5 @@
 import type { IWorkspaceInfo, IStats } from '@rocket.chat/core-typings';
-import { Button, Card, CardBody, CardControls, Margins } from '@rocket.chat/fuselage';
+import { Button, Card, CardBody, CardControls, Text } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { IInstance } from '@rocket.chat/rest-typings';
 import { useFormatDateAndTime } from '@rocket.chat/ui-client';
@@ -7,9 +7,10 @@ import { useSetModal } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import WorkspaceCardSection from '../components/WorkspaceCardSection';
 import InstancesModal from './components/InstancesModal';
+import WorkspaceCardDetail from '../components/WorkspaceCardDetail';
 import WorkspaceCardSectionTitle from '../components/WorkspaceCardSectionTitle';
+import WorkspaceCardSections from '../layout/WorkspaceCardSections';
 
 export type DeploymentCardProps = {
 	serverInfo: IWorkspaceInfo;
@@ -35,67 +36,34 @@ const DeploymentCard = ({
 	return (
 		<Card>
 			<CardBody flexDirection='column'>
-				<WorkspaceCardSection>
-					<WorkspaceCardSectionTitle title={t('Deployment')} variant='h4' />
-				</WorkspaceCardSection>
-				<Margins blockEnd={8}>
-					<WorkspaceCardSection>
-						<WorkspaceCardSectionTitle title={t('Version')} />
-						{statistics.version}
-					</WorkspaceCardSection>
-					{workspaceUrl && (
-						<WorkspaceCardSection>
-							<WorkspaceCardSectionTitle title={t('Site_Url')} />
-							{workspaceUrl}
-						</WorkspaceCardSection>
-					)}
+				<WorkspaceCardSectionTitle title={t('Deployment')} variant='h4' />
+				<WorkspaceCardSections gap='x16' spaceAbove='x20' spaceBelow='x8'>
+					<WorkspaceCardDetail label={t('Version')}>{statistics.version}</WorkspaceCardDetail>
+					{workspaceUrl && <WorkspaceCardDetail label={t('Site_Url')}>{workspaceUrl}</WorkspaceCardDetail>}
 					{hashedWorkspaceUrl && (
-						<WorkspaceCardSection>
-							<WorkspaceCardSectionTitle title={t('Hashed_Site_Url')} />
-							<span style={{ lineBreak: 'anywhere' }}>{hashedWorkspaceUrl}</span>
-						</WorkspaceCardSection>
+						<WorkspaceCardDetail label={t('Hashed_Site_Url')}>
+							<Text is='span' style={{ lineBreak: 'anywhere' }}>
+								{hashedWorkspaceUrl}
+							</Text>
+						</WorkspaceCardDetail>
 					)}
-					<WorkspaceCardSection>
-						<WorkspaceCardSectionTitle title={t('Deployment_ID')} />
-						{statistics.uniqueId}
-					</WorkspaceCardSection>
+					<WorkspaceCardDetail label={t('Deployment_ID')}>{statistics.uniqueId}</WorkspaceCardDetail>
 
-					{cloudWorkspaceId && (
-						<WorkspaceCardSection>
-							<WorkspaceCardSectionTitle title={t('Cloud_Workspace_Id')} />
-							{cloudWorkspaceId}
-						</WorkspaceCardSection>
-					)}
+					{cloudWorkspaceId && <WorkspaceCardDetail label={t('Cloud_Workspace_Id')}>{cloudWorkspaceId}</WorkspaceCardDetail>}
 
-					{appsEngineVersion && (
-						<WorkspaceCardSection>
-							<WorkspaceCardSectionTitle title={t('Apps_Engine_Version')} />
-							{appsEngineVersion}
-						</WorkspaceCardSection>
-					)}
-					<WorkspaceCardSection>
-						<WorkspaceCardSectionTitle title={t('Node_version')} />
-						{statistics.process.nodeVersion}
-					</WorkspaceCardSection>
-					<WorkspaceCardSection>
-						<WorkspaceCardSectionTitle title={t('DB_Migration')} />
+					{appsEngineVersion && <WorkspaceCardDetail label={t('Apps_Engine_Version')}>{appsEngineVersion}</WorkspaceCardDetail>}
+					<WorkspaceCardDetail label={t('Node_version')}>{statistics.process.nodeVersion}</WorkspaceCardDetail>
+					<WorkspaceCardDetail label={t('DB_Migration')}>
 						{`${statistics.migration.version} (${formatDateAndTime(statistics.migration.lockedAt)})`}
-					</WorkspaceCardSection>
-					<WorkspaceCardSection>
-						<WorkspaceCardSectionTitle title={t('MongoDB')} />
-						{`${statistics.mongoVersion} / ${statistics.mongoStorageEngine}`}
-					</WorkspaceCardSection>
-					<WorkspaceCardSection>
-						<WorkspaceCardSectionTitle title={t('Commit_details')} />
+					</WorkspaceCardDetail>
+					<WorkspaceCardDetail label={t('MongoDB')}>{`${statistics.mongoVersion} / ${statistics.mongoStorageEngine}`}</WorkspaceCardDetail>
+					<WorkspaceCardDetail label={t('Commit_details')}>
 						{t('github_HEAD')}: ({commit.hash ? commit.hash.slice(0, 9) : ''}) <br />
 						{t('Branch')}: {commit.branch} <br />
 						{commit.subject}
-					</WorkspaceCardSection>
-					<WorkspaceCardSection>
-						<WorkspaceCardSectionTitle title={t('PID')} />
-						{statistics.process.pid}
-					</WorkspaceCardSection>
-				</Margins>
+					</WorkspaceCardDetail>
+					<WorkspaceCardDetail label={t('PID')}>{statistics.process.pid}</WorkspaceCardDetail>
+				</WorkspaceCardSections>
 			</CardBody>
 
 			{!!instances.length && (

@@ -1,5 +1,4 @@
 import {
-	Box,
 	Button,
 	ButtonGroup,
 	Modal,
@@ -9,6 +8,7 @@ import {
 	ModalHeader,
 	ModalHeaderText,
 	ModalTitle,
+	Text,
 } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { useSetModal } from '@rocket.chat/ui-contexts';
@@ -16,6 +16,8 @@ import { useTranslation } from 'react-i18next';
 
 import RegisterWorkspaceSetupModal from './RegisterWorkspaceSetupModal';
 import RegisterWorkspaceTokenModal from './RegisterWorkspaceTokenModal';
+import FeatureBullet from './layout/FeatureBullet';
+import RegistrationProse from './layout/RegistrationProse';
 import { links } from '../../../../../lib/links';
 import useFeatureBullets from '../hooks/useFeatureBullets';
 
@@ -50,33 +52,26 @@ const RegisterWorkspaceModal = ({ onClose, onStatusChange, ...props }: RegisterW
 				<ModalClose onClick={onClose} />
 			</ModalHeader>
 			<ModalContent>
-				<Box withRichContent>
-					<span>{`${t('RegisterWorkspace_NotRegistered_Subtitle')}:`}</span>
+				<RegistrationProse>
+					{`${t('RegisterWorkspace_NotRegistered_Subtitle')}:`}
 					<ul>
 						{bulletFeatures.map((features) => (
-							<li key={features.key}>
-								<strong>{features.title}</strong>
-								<Box is='p' marginBlockStart={4}>
-									{features.description}
-								</Box>
-							</li>
+							<FeatureBullet key={features.key} title={features.title}>
+								{features.description}
+							</FeatureBullet>
 						))}
 					</ul>
-					<Box is='p' fontSize='p2'>
-						{t('RegisterWorkspace_Registered_Benefits')}
-					</Box>
-				</Box>
+					<Text is='p'>{t('RegisterWorkspace_Registered_Benefits')}</Text>
+				</RegistrationProse>
 			</ModalContent>
-			<ModalFooter>
-				<Box is='div' display='flex' justifyContent='space-between' alignItems='center' width='full'>
-					<ExternalLink to={documentationLink}>{t('Learn_more')}</ExternalLink>
-					<ButtonGroup align='end'>
-						<Button onClick={handleTokenModal}>{t('Use_token')}</Button>
-						<Button variant='primary' onClick={handleSetupModal}>
-							{t('RegisterWorkspace_Button')}
-						</Button>
-					</ButtonGroup>
-				</Box>
+			<ModalFooter justify='space-between'>
+				<ExternalLink to={documentationLink}>{t('Learn_more')}</ExternalLink>
+				<ButtonGroup align='end'>
+					<Button onClick={handleTokenModal}>{t('Use_token')}</Button>
+					<Button variant='primary' onClick={handleSetupModal}>
+						{t('RegisterWorkspace_Button')}
+					</Button>
+				</ButtonGroup>
 			</ModalFooter>
 		</Modal>
 	);
