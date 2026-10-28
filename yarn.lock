@@ -9982,6 +9982,31 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/ddp-server@workspace:^, @rocket.chat/ddp-server@workspace:packages/ddp-server":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/ddp-server@workspace:packages/ddp-server"
+  dependencies:
+    "@rocket.chat/core-services": "workspace:^"
+    "@rocket.chat/core-typings": "workspace:^"
+    "@rocket.chat/ddp-client": "workspace:~"
+    "@rocket.chat/emitter": "workspace:~"
+    "@rocket.chat/jest-presets": "workspace:~"
+    "@rocket.chat/logger": "workspace:^"
+    "@rocket.chat/streamer": "workspace:^"
+    "@types/ejson": "npm:^2.2.2"
+    "@types/node": "npm:~24.13.6"
+    "@types/underscore": "npm:^1.13.0"
+    "@types/uuid": "npm:^10.0.0"
+    "@types/ws": "npm:^8.18.2"
+    ejson: "npm:^2.2.3"
+    jest: "npm:~30.5.2"
+    typescript: "npm:~7.0.2"
+    underscore: "npm:^1.13.8"
+    uuid: "npm:^11.1.1"
+    ws: "npm:~8.21.3"
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/ddp-streamer@workspace:ee/apps/ddp-streamer":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/ddp-streamer@workspace:ee/apps/ddp-streamer"
@@ -9989,11 +10014,9 @@ __metadata:
     "@rocket.chat/apps-engine": "workspace:^"
     "@rocket.chat/core-services": "workspace:^"
     "@rocket.chat/core-typings": "workspace:^"
-    "@rocket.chat/ddp-client": "workspace:~"
-    "@rocket.chat/emitter": "workspace:~"
+    "@rocket.chat/ddp-server": "workspace:^"
     "@rocket.chat/instance-status": "workspace:^"
     "@rocket.chat/jest-presets": "workspace:*"
-    "@rocket.chat/logger": "workspace:^"
     "@rocket.chat/model-typings": "workspace:^"
     "@rocket.chat/models": "workspace:^"
     "@rocket.chat/network-broker": "workspace:^"
@@ -10005,7 +10028,6 @@ __metadata:
     "@types/polka": "npm:^0.5.8"
     "@types/prometheus-gc-stats": "npm:^0.6.4"
     "@types/underscore": "npm:^1.13.0"
-    "@types/uuid": "npm:^10.0.0"
     "@types/ws": "npm:^8.18.2"
     ejson: "npm:^2.2.3"
     eventemitter3: "npm:^5.0.4"
@@ -10024,7 +10046,6 @@ __metadata:
     ts-node: "npm:^10.9.2"
     typescript: "npm:~7.0.2"
     underscore: "npm:^1.13.8"
-    uuid: "npm:^11.1.1"
     ws: "npm:~8.21.3"
   languageName: unknown
   linkType: soft

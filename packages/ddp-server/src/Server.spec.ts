@@ -1,18 +1,11 @@
 import type { IServiceMetrics } from '@rocket.chat/core-services';
-import { ClientSafeError, MeteorService } from '@rocket.chat/core-services';
+import { ClientSafeError } from '@rocket.chat/core-services';
 import WebSocket from 'ws';
 
 import { Publication } from './Publication';
+import type { RemoteMethodCall } from './Server';
 import { Server } from './Server';
-import { makeSession, makePacket, makeSubscription, sentPackets } from '../__tests__/helpers';
-import { callMeteorMethod } from '../methods/meteorFallback';
-
-jest.mock('@rocket.chat/core-services', () => ({
-	...jest.requireActual('@rocket.chat/core-services'),
-	MeteorService: {
-		callMethodWithToken: jest.fn(),
-	},
-}));
+import { makeSession, makePacket, makeSubscription, sentPackets } from './__tests__/helpers';
 
 jest.mock('@rocket.chat/logger', () => ({
 	Logger: jest.fn().mockReturnValue({
@@ -20,7 +13,7 @@ jest.mock('@rocket.chat/logger', () => ({
 	}),
 }));
 
-const mockCallMethodWithToken = jest.mocked(MeteorService.callMethodWithToken);
+const remoteCall = jest.fn<ReturnType<RemoteMethodCall>, Parameters<RemoteMethodCall>>();
 
 describe('Server method contracts', () => {
 	let server: Server;
@@ -28,8 +21,8 @@ describe('Server method contracts', () => {
 
 	beforeEach(() => {
 		jest.clearAllMocks();
-		mockCallMethodWithToken.mockReset();
-		server = new Server(callMeteorMethod);
+		remoteCall.mockReset();
+		server = new Server(remoteCall);
 		session = makeSession();
 	});
 
@@ -46,7 +39,7 @@ describe('Server method contracts', () => {
 		expect(first).toHaveBeenCalledTimes(1);
 		expect(second).toHaveBeenCalledTimes(1);
 		expect(replacement).not.toHaveBeenCalled();
-		expect(mockCallMethodWithToken).not.toHaveBeenCalled();
+		expect(remoteCall).not.toHaveBeenCalled();
 		expect(sentPackets(session)).toEqual([
 			{ msg: 'result', id: 'm1', result: 'first result' },
 			{ msg: 'updated', methods: ['m1'] },
@@ -70,13 +63,13 @@ describe('Server method contracts', () => {
 		]);
 	});
 
-	it('forwards credentials and parameters to Meteor and sends its result', async () => {
-		mockCallMethodWithToken.mockResolvedValue({ result: 'remote result' });
+	it('forwards the session and parameters to the remote call and sends its result', async () => {
+		remoteCall.mockResolvedValue('remote result');
 		const packet = { ...makePacket('remote'), params: ['room1', 42] };
 
 		await server.call(session, packet);
 
-		expect(mockCallMethodWithToken).toHaveBeenCalledWith('user1', 'token1', 'remote', ['room1', 42]);
+		expect(remoteCall).toHaveBeenCalledWith(session, 'remote', ['room1', 42]);
 		expect(sentPackets(session)).toEqual([
 			{ msg: 'result', id: 'test-id', result: 'remote result' },
 			{ msg: 'updated', methods: ['test-id'] },
@@ -96,8 +89,8 @@ describe('Server method contracts', () => {
 		]);
 	});
 
-	it('sends result and updated when a Meteor method returns void', async () => {
-		mockCallMethodWithToken.mockResolvedValue({ result: undefined });
+	it('sends result and updated when a remote method returns void', async () => {
+		remoteCall.mockResolvedValue(undefined);
 
 		await server.call(session, makePacket('setAvatarFromService'));
 
@@ -107,7 +100,7 @@ describe('Server method contracts', () => {
 		]);
 	});
 
-	describe.each(['local', 'Meteor'] as const)('%s failures', (source) => {
+	describe.each(['local', 'remote'] as const)('%s failures', (source) => {
 		it.each([
 			[
 				'expected error',
@@ -121,12 +114,12 @@ describe('Server method contracts', () => {
 			if (source === 'local') {
 				server.methods({ failing: method });
 			} else {
-				mockCallMethodWithToken.mockRejectedValue(error);
+				remoteCall.mockRejectedValue(error);
 			}
 
 			await server.call(session, makePacket('failing'));
 
-			expect(source === 'local' ? method : mockCallMethodWithToken).toHaveBeenCalledTimes(1);
+			expect(source === 'local' ? method : remoteCall).toHaveBeenCalledTimes(1);
 			expect(sentPackets(session)).toEqual([
 				{ msg: 'result', id: 'test-id', error: expectedError },
 				{ msg: 'updated', methods: ['test-id'] },
@@ -142,7 +135,7 @@ describe('Server method contracts', () => {
 		await server.call(session, makePacket('save'));
 
 		expect(method).not.toHaveBeenCalled();
-		expect(mockCallMethodWithToken).not.toHaveBeenCalled();
+		expect(remoteCall).not.toHaveBeenCalled();
 		expect(session.send).not.toHaveBeenCalled();
 	});
 });
