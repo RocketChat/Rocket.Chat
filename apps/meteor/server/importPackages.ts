@@ -39,6 +39,7 @@ import './lib/bugsnag';
 import './lib/debug';
 import './lib/auth/loginErrorMessageOverride';
 import './hooks/messages/mentionUserNotInChannel';
+import './hooks/messages/mentionUserWithoutThreadAccess';
 import './hooks/afterUserActions';
 import './hooks/messages/notifyUsersOnMessage';
 import './lib/auth/token-login';

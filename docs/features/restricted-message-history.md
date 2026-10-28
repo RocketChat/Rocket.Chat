@@ -47,7 +47,10 @@ A thread belongs to the side of the date its first message is on:
   they follow it. Unfollowing hides it again, and they can't follow a hidden thread themselves.
 
 Mentioning a restricted member inside a hidden thread doesn't make them follow it and doesn't notify
-them.
+them. Instead, the sender is asked, privately, whether to give them access. Anyone who can read the
+thread can give it; the member then follows the thread and finds it unread. "Do nothing" leaves them
+without access and without a notification. Replying is a way of following, so a restricted member
+can't reply to a hidden thread either.
 
 ## UI
 

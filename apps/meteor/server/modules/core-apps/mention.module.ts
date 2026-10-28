@@ -5,7 +5,9 @@ import { Subscriptions, Messages } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
 import { i18n } from '../../lib/i18n';
+import { formatMentionedUsers } from '../../lib/messages/formatMentionedUsers';
 import { processWebhookMessage } from '../../lib/messages/processWebhookMessage';
+import { giveThreadAccess } from '../../lib/messaging/threads/giveThreadAccess';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { addUsersToRoomMethod } from '../../meteor-methods/rooms/addUsersToRoom';
 
@@ -44,6 +46,36 @@ export class MentionModule implements IUiKitCoreApp {
 		}
 
 		const joinedUsernames = `@${usernames.join(', @')}`;
+
+		if (actionId === 'give-thread-access' || actionId === 'dismiss-thread-access') {
+			if (!message.tmid) {
+				throw new Error('Mention bot - Message is not in a thread');
+			}
+
+			const grantedIds =
+				actionId === 'give-thread-access'
+					? await giveThreadAccess(
+							user._id,
+							message.tmid,
+							mentions.map(({ _id }) => _id),
+						)
+					: [];
+			const granted = mentions.filter(({ _id }) => grantedIds.includes(_id));
+			const notGranted = mentions.filter(({ _id }) => !grantedIds.includes(_id));
+
+			void api.broadcast('notify.ephemeralMessage', user._id, room, {
+				msg: [
+					granted.length && i18n.t('Thread_access_given', { mentions: formatMentionedUsers(granted), lng: user.language }),
+					notGranted.length && i18n.t('Thread_access_not_given', { mentions: formatMentionedUsers(notGranted), lng: user.language }),
+				]
+					.filter(Boolean)
+					.join('\n'),
+				_id: payload.message,
+				tmid: message.tmid,
+				mentions,
+			});
+			return undefined;
+		}
 
 		if (actionId === 'dismiss') {
 			void api.broadcast('notify.ephemeralMessage', user._id, room, {
