@@ -32667,12 +32667,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"playwright-core@npm:1.52.0, playwright-core@npm:>=1.2.0, playwright-core@npm:~1.52.0":
+"playwright-core@npm:1.52.0":
   version: 1.52.0
   resolution: "playwright-core@npm:1.52.0"
   bin:
     playwright-core: cli.js
   checksum: 10/42e13f5f98dc25ebc95525fb338a215b9097b2ba39d41e99972a190bf75d79979f163f5bc07b1ca06847ee07acb2c9b487d070fab67e9cd55e33310fc05aca3c
+  languageName: node
+  linkType: hard
+
+"playwright-core@patch:playwright-core@npm%3A1.52.0#~/.yarn/patches/playwright-core-npm-1.52.0-keep-cache.patch":
+  version: 1.52.0
+  resolution: "playwright-core@patch:playwright-core@npm%3A1.52.0#~/.yarn/patches/playwright-core-npm-1.52.0-keep-cache.patch::version=1.52.0&hash=9311c3"
+  bin:
+    playwright-core: cli.js
+  checksum: 10/bc17c2d6dd760cc64f855e756999e7c952cc9dc03602309aefa1e3bc94b2bfab3a779554fea6d6838ec9879cc2c94d639782058973aa745cd34b2a185d196236
   languageName: node
   linkType: hard
 

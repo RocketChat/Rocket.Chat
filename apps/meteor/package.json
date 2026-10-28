@@ -43,7 +43,6 @@
 		"migration:add": "tsx .scripts/make-migration.ts",
 		"ms": "TRANSPORTER=${TRANSPORTER:-TCP} meteor npm run dev",
 		"obj:dev": "TEST_MODE=true yarn dev",
-		"prepare": "node playwright.prepare.mjs",
 		"release": "meteor yarn set-version --silent",
 		"set-version": "node .scripts/set-version.js",
 		"start": "meteor",
