@@ -8,7 +8,8 @@ import { cx } from '../../helpers/composeClassNames';
 import { toCSSValue } from '../../helpers/toCSSValue';
 import { borderRadius, resolveFontScale, size as sizeToken, spacing } from '../../styleTokens';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
-import { IconFrame, type IconProps } from '../Icon/Icon';
+import type { IconProps } from '../Icon/Icon';
+import { IconFrame } from '../Icon/IconFrame';
 
 const FramedIconFrame = styled(IconFrame, {
 	fontSize: 'var(--rcx-icon-size, 20px)',

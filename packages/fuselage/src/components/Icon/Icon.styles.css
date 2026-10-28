@@ -3,3 +3,28 @@
 	syntax: '*';
 	inherits: false;
 }
+
+/* `IconFrame`'s styles for the plain `Icon` element, as strong as the frame's: `is_Text` base, then atomic classes */
+@layer fuselage {
+	:where(.rcx-icon) {
+		box-sizing: border-box;
+		margin: 0;
+	}
+
+	.rcx-icon {
+		display: inline-block;
+		flex-shrink: 0;
+		white-space: inherit;
+		word-wrap: inherit;
+		user-select: none;
+		vertical-align: text-bottom;
+		letter-spacing: 0;
+		font-family: RocketChat;
+		font-size: var(--rcx-icon-size, inherit);
+		font-weight: 400;
+		font-style: normal;
+		font-variant: normal;
+		line-height: 1;
+		text-rendering: auto;
+	}
+}

@@ -1,13 +1,18 @@
-import type { GetProps, TamaguiElement } from '@tamagui/web';
-import type { AllHTMLAttributes, Ref } from 'react';
+import { styled, Text, View } from '@tamagui/web';
+import type { AllHTMLAttributes, ComponentType } from 'react';
 import { useContext } from 'react';
 
-import { ButtonContent, ButtonFrame, getButtonStates, renderButtonElement } from './ButtonFrame';
+import { buttonContentStyle, buttonFrameStyle } from './ButtonFrame';
+import { getButtonStates, variantKey } from './buttonStates';
 import { cx } from '../../helpers/composeClassNames';
 import type { ElementProps } from '../../types/ElementProps';
-import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
+import { withFuselageProvider } from '../FuselageProvider/withFuselageProvider';
 import { Icon, type IconProps } from '../Icon';
 import { ButtonSegmentContext } from './ButtonSegmentContext';
+
+// Declared where they render: zero-runtime only erases a `styled()` whose every use is in its own module
+const ButtonFrame = styled(View, buttonFrameStyle);
+const ButtonContent = styled(Text, buttonContentStyle);
 
 export type ButtonProps = {
 	/** Renders a link instead of a button, for actions that navigate or download. */
@@ -45,32 +50,31 @@ function Button({
 	// `Menu` hands `pressed` to whatever trigger it clones; a `Button` has no pressed look, so it stays off the DOM
 	const { pressed: _pressed, ...props } = rest as typeof rest & { pressed?: boolean };
 
-	const extraProps =
-		(is === 'a' && {
-			rel: rel ?? (external ? 'noopener noreferrer' : undefined),
-			target: external ? '_blank' : undefined,
-		}) ||
-		(is === 'button' && {
-			type: 'button',
-		}) ||
-		{};
-
 	const segment = useContext(ButtonSegmentContext);
 
 	// `<Box is={Button}>` hands over `rcx-box--full`, whose unlayered reset would beat the frame's padding
 	const className = rawClassName?.replace(/(^|\s)rcx-box--full(?=\s|$)/g, '');
 
 	const squareSize = square && size && size !== 'large' ? size : undefined;
+	const states = getButtonStates(variant ?? 'secondary', disabled || loading, segment);
+
+	// The caller's attributes and `disabled` go on the element `render` names: zero-runtime rejects spreads on a frame,
+	// and Tamagui would add `aria-disabled` to a frame's `disabled`
+	// One element type for both tags: the caller's attributes type-check against neither alone
+	const Tag = is as unknown as ComponentType<Record<string, unknown>>;
+	const attributes = {
+		...(is === 'a'
+			? { rel: rel ?? (external ? 'noopener noreferrer' : undefined), target: external ? '_blank' : undefined }
+			: { type: 'button' as const }),
+		...props,
+	};
 
 	return (
 		<ButtonFrame
-			size={size === 'small' || size === 'medium' || size === 'large' ? size : undefined}
-			compact={compact}
-			square={square}
-			squareSize={squareSize}
-			render={renderButtonElement(is, disabled || loading)}
-			ref={ref as Ref<TamaguiElement>}
-			{...({ ...extraProps, ...props } as GetProps<typeof ButtonFrame>)}
+			render={<Tag {...attributes} ref={ref} disabled={disabled || loading} />}
+			sizing={variantKey(size === 'small' || size === 'medium' || size === 'large' ? size : undefined, compact, square, squareSize)}
+			segment={states.segment}
+			paint={variantKey(states.look, states.ghost)}
 			className={cx(
 				'rcx-button',
 				variant && `rcx-button--${variant}`,
@@ -83,7 +87,6 @@ function Button({
 				loading && 'rcx-button--loading',
 				className,
 			)}
-			{...getButtonStates(variant ?? 'secondary', disabled || loading, segment)}
 		>
 			<ButtonContent className='rcx-button--content'>
 				{icon && !loading && <Icon className='rcx-button__icon' size='x16' name={icon} />}

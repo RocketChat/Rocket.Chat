@@ -1,15 +1,20 @@
 import type { Keys as IconName } from '@rocket.chat/icons';
-import type { GetProps } from '@tamagui/web';
-import type { AllHTMLAttributes, ReactElement, ReactNode, RefAttributes } from 'react';
+import { styled, View } from '@tamagui/web';
+import type { AllHTMLAttributes, ComponentType, ReactElement, ReactNode, RefAttributes } from 'react';
 import { isValidElement, useContext } from 'react';
 
-import { ButtonBadge, ButtonFrame, getButtonStates, renderButtonElement } from './ButtonFrame';
+import { buttonBadgeStyle, iconButtonFrameStyle } from './ButtonFrame';
+import { getButtonStates, variantKey } from './buttonStates';
 import { cx } from '../../helpers/composeClassNames';
 import type { ElementProps } from '../../types/ElementProps';
-import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
+import { withFuselageProvider } from '../FuselageProvider/withFuselageProvider';
 import { Icon } from '../Icon';
 import { ButtonSegmentContext } from './ButtonSegmentContext';
 import type { ButtonKind } from './buttonColors';
+
+// Declared where they render: zero-runtime only erases a `styled()` whose every use is in its own module
+const ButtonFrame = styled(View, iconButtonFrameStyle);
+const ButtonBadge = styled(View, buttonBadgeStyle);
 
 export type IconButtonProps = {
 	icon: IconName | ReactElement<any>;
@@ -76,17 +81,25 @@ function IconButton({
 
 	const segment = useContext(ButtonSegmentContext);
 
+	const states = getButtonStates(kindByVariant[variant] ?? 'icon', disabled, segment, pressed);
+
+	// The caller's attributes and `disabled` go on the element `render` names: zero-runtime rejects spreads on a frame,
+	// and Tamagui would add `aria-disabled` to a frame's `disabled`
+	// One element type for both tags: the caller's attributes type-check against neither alone
+	const Tag = is as unknown as ComponentType<Record<string, unknown>>;
+	const attributes = {
+		...(is === 'a'
+			? { rel: external ? 'noopener noreferrer' : undefined, target: external ? '_blank' : undefined }
+			: { type: 'button' as const }),
+		...props,
+	};
+
 	return (
 		<ButtonFrame
-			square
-			icon
+			render={<Tag {...attributes} disabled={disabled} />}
 			squareSize={size}
-			withBadge={Boolean(badge)}
-			render={renderButtonElement(is, disabled)}
-			{...(is === 'a'
-				? { rel: external ? 'noopener noreferrer' : undefined, target: external ? '_blank' : undefined }
-				: { type: 'button' })}
-			{...(props as GetProps<typeof ButtonFrame>)}
+			layer={variantKey(Boolean(badge), states.segment)}
+			paint={variantKey(states.look, states.ghost, color)}
 			className={cx(
 				'rcx-button',
 				'rcx-button--icon',
@@ -98,8 +111,6 @@ function IconButton({
 				Boolean(badge) && 'rcx-button--with-badge',
 				className,
 			)}
-			{...getButtonStates(kindByVariant[variant] ?? 'icon', disabled, segment, pressed)}
-			glyphColor={color}
 		>
 			{isValidElement<any>(icon) ? icon : <Icon name={icon} size={iconSizes[size]} />}
 			{Boolean(badge) && (
