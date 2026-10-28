@@ -289,7 +289,7 @@ A computed `className` or a `{...props}` spread at a frame's use-site doesn't ne
 - [x] Button family.
 - [x] Inputs and selects.
 - [x] Containers (Modal, Contextualbar, Card, Table, Tile…).
-- [ ] Everything else, until both ratchets reach zero.
+- [x] Everything else, until both ratchets reach zero.
 
 Each batch gets the Storybook A/B over every story, `story-computed` on its stories, and the bench.
 
