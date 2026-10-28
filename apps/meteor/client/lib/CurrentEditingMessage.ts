@@ -52,14 +52,15 @@ export class CurrentEditingMessage {
 		});
 	};
 
-	public stopAfterDeletion = async () => {
+	public stopAfterDeletion = async (mid: string) => {
 		await this.runExclusive(async () => {
-			if (!this.mid) {
+			if (this.mid !== mid) {
 				return;
 			}
 
-			await this.chat.data.discardDraft(this.mid);
-			this.clear();
+			if ((await this.restoreComposerDraft(mid)) && this.mid === mid) {
+				this.clear();
+			}
 		});
 	};
 
@@ -69,10 +70,31 @@ export class CurrentEditingMessage {
 				return;
 			}
 
-			await this.chat.data.discardDraft(this.mid);
-			this.chat.composer?.setText((await this.chat.data.getDraft(undefined)) ?? '');
+			await this.restoreComposerDraft(this.mid);
 		});
 	};
+
+	private async restoreComposerDraft(mid: string) {
+		if (this.mid !== mid) {
+			return false;
+		}
+
+		await this.chat.data.discardDraft(mid);
+
+		if (this.mid !== mid) {
+			return false;
+		}
+
+		const draft = await this.chat.data.getDraft(undefined);
+
+		if (this.mid !== mid) {
+			return false;
+		}
+
+		this.chat.composer?.setText(draft ?? '');
+
+		return this.mid === mid;
+	}
 
 	private acquire = async () => {
 		return new Promise<() => void>((resolve) => {
