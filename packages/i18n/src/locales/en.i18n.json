@@ -2381,6 +2381,10 @@
   "E2EE_alert": "<b>Enabling E2EE affects other functionalities</b> <ul><li> - Encrypted content cannot be found by search</li> <li> - Encrypted content cannot be audited</li> <li> - Bot interactions may not work with encrypted messages</li></ul>",
   "E2EE_Composer_Unencrypted_Message": "You're sending an unencrypted message",
   "E2EE_password_reset": "E2EE password reset",
+  "Earlier_replies_count": {
+    "one": "{{count}} earlier reply",
+    "other": "{{count}} earlier replies"
+  },
   "ECDH_Enabled": "Enable second layer encryption for data transport",
   "Edit": "Edit",
   "Edit_Business_Hour": "Edit business hour",
@@ -4268,6 +4272,7 @@
   "MapView_GMapsAPIKey_Description": "This can be obtained from the Google developers console for free.",
   "Mark_all_as_read": "`{{shortcut}}` - Mark all messages (in all channels) as read",
   "Mark_as_read": "Mark as read",
+  "Mark_messages_and_threads_as_read": "Mark all as read",
   "Mark_as_unread": "Mark as unread",
   "Mark_email_as_verified": "Mark email as verified",
   "Mark_read": "Mark read",
@@ -4333,6 +4338,10 @@
   "Medium": "Medium",
   "Meeting_in__roomName__": "Meeting in \"{{roomName}}\"",
   "Members": "Members",
+  "Members_count": {
+    "one": "{{count}} member",
+    "other": "{{count}} members"
+  },
   "Members_List": "Members list",
   "mention-all": "Mention all",
   "mention-all_description": "Permission to use the @all mention",
@@ -4639,6 +4648,10 @@
   "More_groups": "More private groups",
   "More_options": "More options",
   "More_unreads": "More unreads",
+  "More_unread_threads": {
+    "one": "+{{count}} more thread",
+    "other": "+{{count}} more threads"
+  },
   "More_unreads_above": "More unreads above",
   "More_unreads_below": "More unreads below",
   "Most_popular_channels_top_5": "Most popular channels (top 5)",
@@ -4666,6 +4679,7 @@
   "Mute_Focused_Conversations": "Mute focused conversations",
   "Mute_Group_Mentions": "Mute @all and @here mentions",
   "Mute_microphone": "Mute microphone",
+  "Mute_room_notifications": "Mute",
   "Mute_someone_in_room": "Mute someone in the room",
   "Mute_user": "Mute user",
   "mute-user": "Mute user",
@@ -4895,6 +4909,7 @@
   "Notifications_Max_Room_Members": "Max room members before disabling all message notifications",
   "Notifications_Max_Room_Members_Description": "Max number of members in room when notifications for all messages gets disabled. Users can still change per room setting to receive all notifications on an individual basis. (0 to disable)",
   "Notifications_Muted_Description": "If you choose to mute everything, you won't see the room highlight in the list when there are new messages, except for mentions. Muting notifications will override notifications settings.",
+  "Notifications_off": "Notifications off",
   "Notifications_Preferences": "Notifications preferences",
   "Notify_active_in_this_room": "Notify active users in this room",
   "Notify_all_in_this_room": "Notify all in this room",
@@ -5123,8 +5138,10 @@
   "Open_AI_center": "Open AI center",
   "Open_call": "Open call",
   "Open_call_in_new_tab": "Open call in new tab",
+  "Open_channel": "Open channel",
   "Open_channel_user_search": "`{{shortcut}}` - Open channel / user search",
   "Open_chat": "Open chat",
+  "Open_conversation": "Open conversation",
   "Open_conversations": "Open conversations",
   "Open_Days": "Open days",
   "Open_days_of_the_week": "Open days of the week",
@@ -5410,6 +5427,7 @@
   "Private_apps_upgrade_empty_state_description": "Tailor Rocket.Chat according to your needs with private apps.",
   "Private_apps_upgrade_empty_state_title": "Upgrade to unlock private apps",
   "Private_Channel": "Private channel",
+  "Private_channel_in_team": "Private channel in <teamLink>{{teamName}}</teamLink>",
   "Private_Channels": "Private channels",
   "Private_channels": "Private channels",
   "Private_Chats": "Private chats",
@@ -5443,6 +5461,7 @@
   "Public": "Public",
   "public": "public",
   "Public_Channel": "Public channel",
+  "Public_channel_in_team": "Public channel in <teamLink>{{teamName}}</teamLink>",
   "Public_Channels": "Public channels",
   "Public_Community": "Public Community",
   "Public_URL": "Public URL",
@@ -6836,6 +6855,10 @@
   "This_server_will_be_available_while_your_session_is_active": "This server will be available while your session is active",
   "This_week": "This week",
   "This_year": "This year",
+  "Thread_preview_context": {
+    "one": "in {{roomName}} · {{count}} reply",
+    "other": "in {{roomName}} · {{count}} replies"
+  },
   "Thread": "Thread",
   "thread": "thread",
   "Thread_composer": "Thread composer",
@@ -7070,6 +7093,7 @@
   "Unlock_premium_capabilities": "Unlock Premium capabilities",
   "Unmute": "Unmute",
   "Unmute_microphone": "Unmute microphone",
+  "Unmute_room_notifications": "Unmute",
   "Unmute_someone_in_room": "Unmute someone in the room",
   "Unmute_user": "Unmute user",
   "Unnamed": "Unnamed",
@@ -7085,6 +7109,10 @@
   "Unread_mentions_above": "Unread mentions above",
   "Unread_mentions_below": "Unread mentions below",
   "Unread_Messages": "Unread messages",
+  "Unread_threads_count": {
+    "one": "{{count}} unread thread",
+    "other": "{{count}} unread threads"
+  },
   "unread_messages_counter": {
     "one": "{{count}} unread message",
     "other": "{{count}} unread messages"
@@ -7451,6 +7479,7 @@
   "videoconf-ring-users": "Ring other users when calling",
   "videoconf-ring-users_description": "Permission to ring other users when calling",
   "Videos": "Videos",
+  "View_all_threads": "View all threads",
   "View_All": "View all members",
   "View_all_results": "View all results",
   "View_avatar": "View avatar",
