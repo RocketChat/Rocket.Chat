@@ -343,3 +343,117 @@ describe('getMessageHistory', () => {
 		sinon.assert.calledWith(messagesMock.findForUpdates, rid, { updatedAt: { $gt: lastUpdate }, minTs: fromTs }, { sort: { ts: -1 } });
 	});
 });
+
+describe('handleCursorPagination with messages that share one timestamp', () => {
+	type StoredMessage = { _id: string; rid: string; _updatedAt: Date; _deletedAt: Date };
+	type Range = { $gt: Date | string } | { $lt: Date | string };
+
+	const sameMs = new Date('2024-01-01T00:00:00.000Z');
+	const ids = ['a1', 'a2', 'a3', 'a4', 'a5'];
+	const store: StoredMessage[] = [
+		{ _id: 'before', rid: 'roomId', _updatedAt: new Date(sameMs.getTime() - 1), _deletedAt: new Date(sameMs.getTime() - 1) },
+		...ids.map((_id) => ({ _id, rid: 'roomId', _updatedAt: sameMs, _deletedAt: sameMs })),
+		{ _id: 'after', rid: 'roomId', _updatedAt: new Date(sameMs.getTime() + 1), _deletedAt: new Date(sameMs.getTime() + 1) },
+	];
+
+	const value = (v: Date | string) => (v instanceof Date ? v.getTime() : v);
+	const inRange = (v: Date | string, range: Range | Date | string): boolean => {
+		if (range instanceof Date || typeof range === 'string') {
+			return value(v) === value(range);
+		}
+		return '$gt' in range ? value(v) > value(range.$gt) : value(v) < value(range.$lt);
+	};
+	// Evaluates the subset of the MongoDB filter language that the cursor queries use.
+	const matches = (doc: Record<string, any>, filter: Record<string, any>): boolean =>
+		Object.entries(filter).every(([key, condition]) =>
+			key === '$or' ? condition.some((sub: Record<string, any>) => matches(doc, sub)) : inRange(doc[key], condition),
+		);
+	const run = (filter: Record<string, any>, options: { sort: Record<string, 1 | -1>; limit?: number }) => {
+		const sortKeys = Object.entries(options.sort);
+		const rows = store
+			.filter((doc) => matches(doc, filter))
+			.sort((x: Record<string, any>, y: Record<string, any>) => {
+				for (const [key, direction] of sortKeys) {
+					const [a, b] = [value(x[key]), value(y[key])];
+					if (a !== b) {
+						return (a < b ? -1 : 1) * direction;
+					}
+				}
+				return 0;
+			});
+		return { toArray: async () => rows.slice(0, options.limit ?? rows.length) };
+	};
+
+	beforeEach(() => {
+		// Same contract as Messages.findForUpdates: an id tie-breaker orders messages inside the boundary timestamp.
+		messagesMock.findForUpdates.callsFake(
+			(rid: string, { updatedAt, idTieBreaker }: { updatedAt: Range; idTieBreaker?: Range }, options) => {
+				const boundary = '$gt' in updatedAt ? updatedAt.$gt : updatedAt.$lt;
+				const filter = idTieBreaker
+					? { $or: [{ _updatedAt: updatedAt }, { _updatedAt: boundary, _id: idTieBreaker }] }
+					: { _updatedAt: updatedAt };
+				return run({ rid, ...filter }, options);
+			},
+		);
+		messagesMock.trashFind.callsFake((filter: Record<string, any>, options) => run(filter, options));
+	});
+
+	afterEach(() => {
+		messagesMock.findForUpdates.reset();
+		messagesMock.trashFind.reset();
+	});
+
+	const crawl = async (type: 'UPDATED' | 'DELETED', direction: 'next' | 'previous', start: string) => {
+		const seen: string[] = [];
+		let cursor: string | null = start;
+		for (let page = 0; cursor && page < 20; page++) {
+			const result: { updated: IMessage[]; deleted: IMessage[]; cursor: Record<'next' | 'previous', string | null> } =
+				await handleCursorPagination(
+					type,
+					'roomId',
+					2,
+					direction === 'next' ? cursor : undefined,
+					direction === 'previous' ? cursor : undefined,
+				);
+			seen.push(...(type === 'UPDATED' ? result.updated : result.deleted).map((message: IMessage) => message._id));
+			cursor = result.cursor[direction];
+		}
+		return seen;
+	};
+
+	it('should return every updated message exactly once when paging forward with a compound cursor', async () => {
+		expect(await crawl('UPDATED', 'next', '0_')).to.deep.equal(['before', ...ids, 'after']);
+	});
+
+	it('should return every deleted message exactly once when paging forward with a compound cursor', async () => {
+		expect(await crawl('DELETED', 'next', '0_')).to.deep.equal(['before', ...ids, 'after']);
+	});
+
+	it('should return every updated message exactly once when paging backward with a compound cursor', async () => {
+		expect(await crawl('UPDATED', 'previous', `${sameMs.getTime() + 2}_`)).to.deep.equal(['after', ...[...ids].reverse(), 'before']);
+	});
+
+	it('should return compound cursors only when the request cursor is compound', async () => {
+		const compound = await handleCursorPagination('UPDATED', 'roomId', 2, '0_');
+		expect(compound.cursor.next).to.equal(`${sameMs.getTime()}_a1`);
+
+		const legacy = await handleCursorPagination('UPDATED', 'roomId', 2, '0');
+		expect(legacy.cursor.next).to.equal(`${sameMs.getTime()}`);
+	});
+
+	it('should keep the timestamp-only behavior for a legacy cursor', async () => {
+		sinon.assert.notCalled(messagesMock.findForUpdates);
+		await handleCursorPagination('UPDATED', 'roomId', 2, '0');
+		sinon.assert.calledWith(
+			messagesMock.findForUpdates,
+			'roomId',
+			{ updatedAt: { $gt: new Date(0) } },
+			{ sort: { _updatedAt: 1 }, limit: 3 },
+		);
+	});
+
+	it('should reject a compound cursor whose timestamp part is not a number', async () => {
+		const error = await handleCursorPagination('UPDATED', 'roomId', 2, 'abc_a1').catch((e: unknown) => e);
+		expect(error).to.be.an.instanceOf(Error);
+	});
+});

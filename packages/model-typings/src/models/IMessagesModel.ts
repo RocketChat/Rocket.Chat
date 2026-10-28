@@ -262,7 +262,11 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 	): FindCursor<DocumentWithProjection<T, O>>;
 	findForUpdates<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		roomId: IMessage['rid'],
-		{ updatedAt, minTs }: { updatedAt: { $lt: Date } | { $gt: Date }; minTs?: Date },
+		{
+			updatedAt,
+			minTs,
+			idTieBreaker,
+		}: { updatedAt: { $lt: Date } | { $gt: Date }; minTs?: Date; idTieBreaker?: { $lt: string } | { $gt: string } },
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>>;
 	updateUsernameOfEditByUserId(userId: string, username: string): Promise<UpdateResult | Document>;
