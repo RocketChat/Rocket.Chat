@@ -1,10 +1,10 @@
-import { Box } from '@rocket.chat/fuselage';
 import {
 	HorizontalWizardLayout,
 	HorizontalWizardLayoutAside,
 	HorizontalWizardLayoutContent,
 	HorizontalWizardLayoutTitle,
 	HorizontalWizardLayoutFooter,
+	LayoutLogoImage,
 } from '@rocket.chat/layout';
 import { useSetting, useAssetWithDarkModePath } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
@@ -24,7 +24,7 @@ const HorizontalTemplate = ({ children }: HorizontalTemplateProps) => {
 	return (
 		<HorizontalWizardLayout
 			background={customBackground}
-			logo={!hideLogo && customLogo ? <Box is='img' maxHeight='x40' marginInline='neg-x8' src={customLogo} alt='Logo' /> : <></>}
+			logo={!hideLogo && customLogo ? <LayoutLogoImage src={customLogo} alt='Logo' /> : <></>}
 		>
 			<HorizontalWizardLayoutAside>
 				<HorizontalWizardLayoutTitle>

@@ -1,4 +1,4 @@
-# @rocket.chat/web-ui-registration
+# @rocket.chat/ui-registration
 
 ## 35.0.0
 

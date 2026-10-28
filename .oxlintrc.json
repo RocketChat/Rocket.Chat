@@ -258,8 +258,8 @@
 				"packages/fuselage-ui-kit/**/*.{ts,tsx}",
 				"packages/ui-account/**/*.{ts,tsx}",
 				"packages/ui-client/**/*.{ts,tsx}",
-				"packages/ui-voip/**/*.{ts,tsx}",
-				"packages/web-ui-registration/**/*.{ts,tsx}"
+				"packages/ui-registration/**/*.{ts,tsx}",
+				"packages/ui-voip/**/*.{ts,tsx}"
 			],
 			"rules": {
 				"no-unused-vars": [
@@ -351,7 +351,7 @@
 				"packages/storybook-config/src/logo.svg.d.ts",
 				"{ee/packages,packages}/*/jest.config.ts",
 				"ee/packages/pdf-worker/.storybook/*.{ts,tsx}",
-				"packages/{gazzodown,ui-account,ui-client,ui-composer,ui-voip,web-ui-registration}/.storybook/*.{ts,tsx}"
+				"packages/{gazzodown,ui-account,ui-client,ui-composer,ui-registration,ui-voip}/.storybook/*.{ts,tsx}"
 			],
 			"rules": {
 				"typescript/prefer-optional-chain": "off",
