@@ -1,4 +1,4 @@
-import type { E2EESearchHit, ISearchIndexBackend } from '@rocket.chat/desktop-api';
+import type { E2EESearchHit, E2EESearchQuery, ISearchIndexBackend } from '@rocket.chat/desktop-api';
 
 import { searchLocalIndex } from './searchLocalIndex';
 
@@ -96,6 +96,55 @@ describe('searchLocalIndex filters', () => {
 		]);
 		expect(backend.search.mock.calls[0][0]).not.toHaveProperty('uid');
 		expect(backend.search.mock.calls[0][0].limit).toBe(100);
+	});
+
+	it('finds an old message of an unknown username behind more than 100 newer hits of other authors', async () => {
+		const docs: E2EESearchHit[] = [
+			...Array.from({ length: 250 }, (_, i) => ({ ...authorHit(`new${i}`, 'u-carol', 'carol'), ts: 1000 - Math.floor(i / 3) })),
+			{ ...authorHit('old', 'u-bob', 'bob'), ts: 10 },
+		];
+		const backend = {
+			search: jest.fn(async ({ to = Number.MAX_SAFE_INTEGER, limit = 50 }: E2EESearchQuery) =>
+				docs.filter((doc) => doc.ts <= to).slice(0, limit),
+			),
+		} as unknown as jest.Mocked<ISearchIndexBackend>;
+
+		await expect(searchLocalIndex(backend, { searchText: 'invoice from:bob', rid: 'r1', limit: 10 })).resolves.toEqual([
+			{ ...authorHit('old', 'u-bob', 'bob'), ts: 10 },
+		]);
+		expect(backend.search.mock.calls.every(([query]) => query.limit === 100 && !('uid' in query))).toBe(true);
+	});
+
+	it('moves past a millisecond that holds more hits than one page', async () => {
+		const docs: E2EESearchHit[] = [
+			...Array.from({ length: 150 }, (_, i) => ({ ...authorHit(`same${i}`, 'u-carol', 'carol'), ts: 1000 })),
+			{ ...authorHit('old', 'u-bob', 'bob'), ts: 10 },
+		];
+		const backend = {
+			search: jest.fn(async ({ to = Number.MAX_SAFE_INTEGER, limit = 50 }: E2EESearchQuery) =>
+				docs.filter((doc) => doc.ts <= to).slice(0, limit),
+			),
+		} as unknown as jest.Mocked<ISearchIndexBackend>;
+
+		await expect(searchLocalIndex(backend, { searchText: 'from:bob', rid: 'r1', limit: 10 })).resolves.toEqual([
+			{ ...authorHit('old', 'u-bob', 'bob'), ts: 10 },
+		]);
+		expect(backend.search).toHaveBeenCalledTimes(3);
+	});
+
+	it('stops paging when the index has no older hits, and keeps the date range of the text', async () => {
+		const base = new Date(2025, 5, 1).getTime();
+		const pages = [
+			Array.from({ length: 100 }, (_, i) => ({ ...authorHit(`a${i}`, 'u-carol', 'carol'), ts: base + 500 - i })),
+			[{ ...authorHit('b', 'u-bob', 'bob'), ts: base + 300 }],
+		];
+		const backend = { search: jest.fn(async () => pages.shift() ?? []) } as unknown as jest.Mocked<ISearchIndexBackend>;
+
+		await expect(searchLocalIndex(backend, { searchText: 'from:bob after:01-01-2025', rid: 'r1', limit: 10 })).resolves.toEqual([
+			{ ...authorHit('b', 'u-bob', 'bob'), ts: base + 300 },
+		]);
+		expect(backend.search).toHaveBeenCalledTimes(2);
+		expect(backend.search.mock.calls[1][0]).toMatchObject({ to: base + 401, from: new Date(2025, 0, 2).getTime() });
 	});
 
 	it('keeps the hits of each author when the text has more than one from:', async () => {
