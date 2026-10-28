@@ -16,7 +16,7 @@ import { createQuoteAttachment } from '../../../lib/createQuoteAttachment';
 import { getMessageUrlRegex } from '../../../lib/getMessageUrlRegex';
 import { t } from '../../../lib/i18n';
 import { SubscriptionsCachedStore } from '../../cachedStores/SubscriptionsCachedStore';
-import { Messages, Rooms, Subscriptions } from '../../stores';
+import { Messages, PublicSettings, Rooms, Subscriptions } from '../../stores';
 import EnterE2EPasswordModal from '../../views/e2e/EnterE2EPasswordModal';
 import SaveE2EPasswordModal from '../../views/e2e/SaveE2EPasswordModal';
 import { APIClient } from '../RestApiClient';
@@ -929,6 +929,11 @@ export const e2eSearchIndexSession = createSearchIndexSession(
 );
 
 subscribeToSearchIndexOptIn(() => e2eSearchIndexSession.recheck());
+PublicSettings.use.subscribe((state, prevState) => {
+	if (state.records.get('E2E_Enable_Local_Search')?.value !== prevState.records.get('E2E_Enable_Local_Search')?.value) {
+		e2eSearchIndexSession.recheck();
+	}
+});
 
 /** Sends the decrypted messages to the local search index in batches, only while that index is open. */
 export const e2eSearchIndexWriter = createSearchIndexWriter({

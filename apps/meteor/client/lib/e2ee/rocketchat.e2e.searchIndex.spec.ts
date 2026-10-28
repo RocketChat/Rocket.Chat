@@ -3,6 +3,7 @@ import { waitFor } from '@testing-library/react';
 
 import { generate } from './crypto/rsa';
 import { e2e, e2eSearchIndexSession, e2eSearchIndexWriter } from './rocketchat.e2e';
+import { PublicSettings } from '../../stores';
 import { setSearchIndexOptIn } from '../e2eeSearch/searchIndexOptIn';
 import { deriveSearchIndexWrapKey } from '../e2eeSearch/searchIndexSession';
 import { settings } from '../settings';
@@ -38,6 +39,7 @@ describe('E2E client and the local search index', () => {
 
 	beforeEach(() => {
 		localSearchAllowed = true;
+		PublicSettings.state.store({ _id: 'E2E_Enable_Local_Search', value: true } as never);
 		window.localStorage.clear();
 		setSearchIndexOptIn('u1', true);
 		const peek = settings.peek.bind(settings);
@@ -192,6 +194,37 @@ describe('E2E client and the local search index', () => {
 		expect(bridge.wipe).toHaveBeenCalledTimes(1);
 		expect(bridge.wipe).toHaveBeenCalledWith({ userId: 'u1' });
 		expect(bridge.open).not.toHaveBeenCalled();
+		expect(e2eSearchIndexSession.getActiveBackend()).toBeUndefined();
+
+		await e2e.stopClient();
+	});
+
+	it('opens the index for an opted-in user when the admin turns local search back on, and wipes it when the admin turns it off', async () => {
+		const setAdminSetting = (value: boolean) => {
+			localSearchAllowed = value;
+			PublicSettings.state.store({ _id: 'E2E_Enable_Local_Search', value } as never);
+		};
+		setAdminSetting(false);
+		const { privateKey } = await generate();
+		(e2e as unknown as { userId: string }).userId = 'u1';
+		e2e.privateKey = privateKey;
+
+		e2e.setState('READY');
+		await e2eSearchIndexSession.whenSettled();
+		expect(bridge.open).not.toHaveBeenCalled();
+		expect(e2eSearchIndexSession.getActiveBackend()).toBeUndefined();
+
+		setAdminSetting(true);
+		await e2eSearchIndexSession.whenSettled();
+
+		expect(bridge.open).toHaveBeenCalledTimes(1);
+		expect(e2eSearchIndexSession.getActiveBackend()).toBeDefined();
+
+		bridge.wipe.mockClear();
+		setAdminSetting(false);
+		await e2eSearchIndexSession.whenSettled();
+
+		expect(bridge.wipe).toHaveBeenCalledTimes(1);
 		expect(e2eSearchIndexSession.getActiveBackend()).toBeUndefined();
 
 		await e2e.stopClient();
