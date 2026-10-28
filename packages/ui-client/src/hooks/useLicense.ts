@@ -3,7 +3,7 @@ import type { OperationResult } from '@rocket.chat/rest-typings';
 import { useEndpoint, useStream, useUserId } from '@rocket.chat/ui-contexts';
 import type { QueryClient, UseQueryResult } from '@tanstack/react-query';
 import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query';
-import { useEffect } from 'react';
+import { useCallback, useEffect } from 'react';
 
 type LicenseDataType = Serialized<Awaited<OperationResult<'GET', '/v1/licenses.info'>>>;
 
@@ -81,5 +81,5 @@ export const useLicenseName = (params?: LicenseParams) => {
 
 export const useInvalidateLicense = () => {
 	const queryClient = useQueryClient();
-	return (milliseconds?: number) => invalidateQueryClientLicenses(queryClient, milliseconds);
+	return useCallback((milliseconds?: number) => invalidateQueryClientLicenses(queryClient, milliseconds), [queryClient]);
 };
