@@ -53,6 +53,26 @@ describe('SystemMessage', () => {
 		expect(screen.getByText('changed room description to: & test &')).toBeInTheDocument();
 	});
 
+	it('should wrap omnichannel transfer comments', () => {
+		const message = createBaseMessage('A long transfer comment');
+		message.t = 'livechat_transfer_history';
+
+		render(<SystemMessage message={message} showUserAvatar />, { wrapper: wrapper.build() });
+
+		expect(screen.getByRole('document')).toHaveStyle({
+			whiteSpace: 'pre-wrap',
+			overflowWrap: 'anywhere',
+		});
+	});
+
+	it('should keep other system messages truncated', () => {
+		const message = createBaseMessage('& test &');
+
+		render(<SystemMessage message={message} showUserAvatar />, { wrapper: wrapper.build() });
+
+		expect(screen.getByRole('document')).not.toHaveStyle({ whiteSpace: 'pre-wrap' });
+	});
+
 	it('should not show escaped html while rendering system message', () => {
 		const message = createBaseMessage('& test &');
 
