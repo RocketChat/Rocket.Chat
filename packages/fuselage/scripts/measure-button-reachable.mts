@@ -12,14 +12,14 @@ const id = join(root, 'src/components/Button/ButtonFrame.tsx');
 const frames = (await evaluate(readFileSync(id, 'utf8'), id, ['ButtonFrame', 'getButtonStates'])) as Record<string, any>;
 const sc = frames.ButtonFrame.staticConfig;
 const { resolveStaticElement } = createRequire(join(root, 'package.json'))('@tamagui/web/static-resolve');
-const { recipe, css } = computeRecipe('ButtonFrame', sc, { ordered: true });
+const { recipe, css, keys } = computeRecipe('ButtonFrame', sc, { ordered: true });
 
 const byClass = new Map<string, number>();
 for (const rule of css) {
 	const m = rule.match(/\.(_[\w-]+)/);
 	if (m) byClass.set(m[1], (byClass.get(m[1]) ?? 0) + rule.length);
 }
-const slotNames = Object.fromEntries(Object.entries(recipe.slotOf).map(([key, i]) => [i, key.split('|')[0]]));
+const slotNames = Object.fromEntries(recipe.slotOf.map((slot, key) => [slot, keys[key].split('|')[0]]));
 const rows = recipe.slots.map((table, i) => {
 	const classes = new Set(Object.values(table).flatMap((c) => c.split(' ')));
 	return { slot: slotNames[i], keys: Object.keys(table).length, classes };

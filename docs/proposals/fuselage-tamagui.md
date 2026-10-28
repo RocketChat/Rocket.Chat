@@ -276,7 +276,7 @@ This is the one list to track removing Tamagui's runtime from Fuselage's web bui
 A computed `className` or a `{...props}` spread at a frame's use-site doesn't need the runtime once definitions are lowered: the lowered component takes them at runtime like any element. They only stop the compiler from flattening that use-site, so they belong to the optional list below.
 
 **4. Make the lowering plugin production-ready**
-- [ ] Compact class-table encoding.
+- [x] Compact class-table encoding: style keys are numbered, each value indexes its key's own values, and a style is a flat list of pairs. `ButtonFrame`'s recipe 21.8 kB → 10.7 kB raw; the lowered `fuselage.production.js` 106.6 kB → 105.4 kB gzip (100.5 kB unlowered).
 - [x] Emit the lowered CSS once per bundle, not once per module: every lowered module imports one `.lowered/lowered.css` holding each rule once (pilot: 601 B raw less in `fuselage.css`, the rules `MessageName`, `ButtonGroup` and `ButtonFrame` share).
 - [x] Cache resolutions in `node_modules/.cache/fuselage-lowered`, keyed on the module's bundle (definition, config, tokens), `NODE_ENV`, the plugin and the lockfile entries of every `@tamagui/*` package, so a patch change invalidates it. The pilot's production build: 2.9 s lowered against 2.3 s unlowered without the cache, 2.4 s with it.
 - [x] Keep the build-time self-check that compares every lowered definition with Tamagui and fails on any difference: classes, inline style and passed-through attributes, over every variant value, every pair and 300 random combinations (2,291 cases on the pilot's four definitions); an allowlisted definition the build can't find fails it too.

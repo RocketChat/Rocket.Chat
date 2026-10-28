@@ -1,22 +1,24 @@
 import { createElement, isValidElement, type ReactElement, type ReactNode } from 'react';
 
 /**
- * What `lowerStyled` computed from one `styled()` definition with Tamagui at build time. Style values are indices into
- * the build's value pool, keyed by style prop (`prop|state` for a per-state value). Each slot is one of Tamagui's atomic
- * class groups; its class depends on the keys set in it, their order and whether a default or a caller set them, so the
- * recipe tracks exactly that and looks the class up in a table Tamagui filled at build time.
+ * What `lowerStyled` computed from one `styled()` definition with Tamagui at build time. Style keys (`prop|state` for a
+ * per-state value) are numbered, and each value is an index into its key's own values; a style is a flat list of key and
+ * value pairs. Each slot is one of Tamagui's atomic class groups; its class depends on the keys set in it, their order and
+ * whether a default or a caller set them, so the recipe tracks exactly that and looks the class up in a table Tamagui
+ * filled at build time.
  */
 export type Recipe = {
 	name?: string;
 	tag: string;
 	defaults: [string, unknown][];
 	/** Base values of the keys in slots a variant touches. */
-	base: Record<string, number>;
+	base: number[];
 	/** Host class and the classes of the slots no variant touches. */
 	baseClass: string;
 	variants: Record<string, Record<string, number>>;
-	entries: [set: Record<string, number>, className: string][];
-	slotOf: Record<string, number>;
+	entries: [style: number[], className: string][];
+	/** The slot of each key. */
+	slotOf: number[];
 	slots: Record<string, string>[];
 	/** A caller's variants apply in declaration order, not prop order. */
 	ordered?: boolean;
@@ -25,14 +27,6 @@ export type Recipe = {
 };
 
 type Props = Record<string, unknown> & { children?: ReactNode };
-
-// Short ids for the style keys, to keep the tables' keys small
-const keyIds = new WeakMap<Recipe, Record<string, number>>();
-const idsOf = (recipe: Recipe) => {
-	let ids = keyIds.get(recipe);
-	if (!ids) keyIds.set(recipe, (ids = Object.fromEntries(Object.keys(recipe.slotOf).map((key, i) => [key, i]))));
-	return ids;
-};
 
 /** The key of each touched slot for these props: the keys set in it, in Tamagui's order, with value and layer. */
 export const slotTuples = (recipe: Recipe, props: Props) => {
@@ -45,8 +39,9 @@ export const slotTuples = (recipe: Recipe, props: Props) => {
 	}
 
 	const { render = recipe.tag, className, style, ...rest } = merged;
-	const values: Record<string, string> = {};
-	for (const key in recipe.base) values[key] = String(recipe.base[key]);
+	// A key set again moves to the end of its slot, as in Tamagui; a `Map` keeps that order for numeric keys
+	const values = new Map<number, string>();
+	for (let i = 0; i < recipe.base.length; i += 2) values.set(recipe.base[i], String(recipe.base[i + 1]));
 	const dom: Props = {};
 	let variantClass = '';
 
@@ -61,13 +56,14 @@ export const slotTuples = (recipe: Recipe, props: Props) => {
 		if (domain) {
 			const entry = recipe.entries[domain[String(rest[key])]];
 			if (!entry) continue;
+			const [set, entryClass] = entry;
 			// A variant a default names stays in Tamagui's base layer, even with a caller's value
 			const layer = recipe.defaults.some(([name]) => name === key) ? '' : '^';
-			for (const k in entry[0]) {
-				delete values[k];
-				values[k] = `${entry[0][k]}${layer}`;
+			for (let i = 0; i < set.length; i += 2) {
+				values.delete(set[i]);
+				values.set(set[i], `${set[i + 1]}${layer}`);
 			}
-			if (entry[1]) variantClass += ` ${entry[1]}`;
+			if (entryClass) variantClass += ` ${entryClass}`;
 		} else if (recipe.dropped?.includes(key)) {
 			continue;
 		} else {
@@ -76,8 +72,7 @@ export const slotTuples = (recipe: Recipe, props: Props) => {
 	}
 
 	const tuples = recipe.slots.map(() => '');
-	const ids = idsOf(recipe);
-	for (const key in values) tuples[recipe.slotOf[key]] += `${ids[key]}=${values[key]};`;
+	for (const [key, value] of values) tuples[recipe.slotOf[key]] += `${key}=${value};`;
 	return { tuples, render, className, style, variantClass, dom };
 };
 

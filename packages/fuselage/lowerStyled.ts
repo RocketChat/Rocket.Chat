@@ -96,11 +96,12 @@ export const computeRecipe = (name: string, sc: StaticConfig, options: Options =
 	};
 	const isStyleKey = (key: string) => key in (sc.validStyles ?? {}) || key.startsWith('$') || /Style$/.test(key);
 
-	const values: string[] = [];
-	const valueIndex = (value: unknown) => {
+	const values: Record<string, string[]> = {};
+	const valueIndex = (key: string, value: unknown) => {
 		const json = JSON.stringify(value);
-		const found = values.indexOf(json);
-		return found === -1 ? values.push(json) - 1 : found;
+		const own = (values[key] ??= []);
+		const found = own.indexOf(json);
+		return found === -1 ? own.push(json) - 1 : found;
 	};
 
 	const baseFlat: Flat = {};
@@ -164,22 +165,20 @@ export const computeRecipe = (name: string, sc: StaticConfig, options: Options =
 		if (index !== -1) slotOf[key] = index;
 	}
 
+	const keys = Object.keys(slotOf);
+	const pairs = (style: Flat) =>
+		Object.entries(style)
+			.filter(([key]) => key in slotOf)
+			.flatMap(([key, value]) => [keys.indexOf(key), valueIndex(key, value)]);
 	const recipe: Recipe = {
 		name: sc.displayName ?? name,
 		tag,
 		defaults,
-		base: Object.fromEntries(
-			Object.entries(baseFlat)
-				.filter(([key]) => key in slotOf)
-				.map(([key, value]) => [key, valueIndex(value)]),
-		),
+		base: pairs(baseFlat),
 		baseClass: '',
 		variants,
-		entries: entries.map(([set, className]) => [
-			Object.fromEntries(Object.entries(set).map(([key, value]) => [key, valueIndex(value)])),
-			className,
-		]),
-		slotOf,
+		entries: entries.map(([set, className]) => [pairs(set), className]),
+		slotOf: keys.map((key) => slotOf[key]),
 		slots: slotGroups.map(() => ({})),
 		...(options.ordered && { ordered: true }),
 		...(dropped.length && { dropped }),
@@ -251,7 +250,7 @@ export const computeRecipe = (name: string, sc: StaticConfig, options: Options =
 	const used = new Set([recipe.baseClass, ...recipe.slots.flatMap((table) => Object.values(table))].flatMap((c) => c.split(' ')));
 	for (const c of used) if (c.startsWith('_') && !rules.has(c)) fail(`no rules for ${c}`);
 	const css = [...rules].filter(([identifier]) => used.has(identifier)).flatMap(([, list]) => list);
-	return { recipe, css, resolutions };
+	return { recipe, css, resolutions, keys };
 };
 
 /**
@@ -340,7 +339,7 @@ const run = (bundled: string, id: string) => {
 /** Evaluates a module with the real `@tamagui/web`, returning the named frames. */
 export const evaluate = async (code: string, id: string, names: string[]) => run(await bundle(code, id, names), id);
 
-type Lowered = { recipe: Recipe; css: string[]; stats: Record<string, number> };
+type Lowered = { recipe: Recipe; keys: string[]; css: string[]; stats: Record<string, number> };
 
 const cacheDir = join(root, 'node_modules/.cache/fuselage-lowered');
 let toolchain: string | undefined;
@@ -381,10 +380,11 @@ const lowerDefinitions = async (code: string, id: string, names: string[]): Prom
 	for (const name of names) {
 		const { staticConfig } = frames[name];
 		const started = performance.now();
-		const { recipe, css, resolutions } = computeRecipe(name, staticConfig, options[name]);
+		const { recipe, css, resolutions, keys } = computeRecipe(name, staticConfig, options[name]);
 		const checked = checkRecipe(name, staticConfig, recipe);
 		results[name] = {
 			recipe,
+			keys,
 			css,
 			stats: {
 				resolutions,
@@ -416,7 +416,7 @@ const extendedFrames = () => {
 };
 
 export const stats: Record<string, Record<string, number>> = {};
-export const recipes: Record<string, Recipe> = {};
+export const recipes: Record<string, Lowered> = {};
 
 const cssFile = join(root, '.lowered/lowered.css');
 const moduleRules = new Map<string, string[]>();
@@ -481,7 +481,7 @@ export const lowerModule = async (code: string, id: string) => {
 	for (const [name, { call, statement }] of calls) {
 		const { recipe } = lowered[name];
 		const json = JSON.stringify(recipe);
-		recipes[name] = recipe;
+		recipes[name] = lowered[name];
 		stats[`${relative(root, id)}#${name}`] = lowered[name].stats;
 
 		if (!extendedFrames().has(name)) {

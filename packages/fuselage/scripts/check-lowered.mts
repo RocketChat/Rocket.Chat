@@ -13,8 +13,8 @@ for (const file of Object.keys(allowlist)) {
 }
 console.table(stats);
 if (process.argv.includes('--tables')) {
-	for (const [name, recipe] of Object.entries(recipes)) {
-		const slots = Object.fromEntries(Object.entries(recipe.slotOf).map(([key, i]) => [i, key.split('|')[0]]));
+	for (const [name, { recipe, keys }] of Object.entries(recipes)) {
+		const slots = Object.fromEntries(recipe.slotOf.map((slot, key) => [slot, keys[key].split('|')[0]]));
 		console.log(
 			name,
 			recipe.slots.map((table, i) => `${slots[i]}:${Object.keys(table).length}/${new Set(Object.values(table)).size}`).join(' '),
