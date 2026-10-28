@@ -198,8 +198,8 @@ export const iconButtonFrameStyle = {
 	variants: { segment: segments },
 } as const;
 
-/** How `Button.variants.css` selects the colors: by the classes the components already set. */
-export const paintStrategy = 'class';
+/** How `Button.variants.css` selects the colors: by the `data-look`, `data-ghost` and `data-glyph` attributes. */
+export const paintStrategy = 'data';
 
 /** What `scripts/build-button-css.mjs` writes to `Button.variants.css`, in the order the variants override each other. */
 export const buttonVariantStyles = {

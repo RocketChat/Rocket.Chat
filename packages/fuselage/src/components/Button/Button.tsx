@@ -70,7 +70,7 @@ function Button({
 
 	return (
 		<ButtonFrame
-			render={<Tag {...attributes} ref={ref} disabled={disabled || loading} />}
+			render={<Tag {...attributes} data-look={states.look} data-ghost={states.ghost} ref={ref} disabled={disabled || loading} />}
 			segment={states.segment}
 			className={cx(
 				'rcx-button',
@@ -82,7 +82,6 @@ function Button({
 				compact && 'rcx-button--compact',
 				square && size && `rcx-button--${size}-square`,
 				loading && 'rcx-button--loading',
-				states.ghost && `rcx-button--ghost rcx-button--ghost-${states.ghost}`,
 				className,
 			)}
 		>

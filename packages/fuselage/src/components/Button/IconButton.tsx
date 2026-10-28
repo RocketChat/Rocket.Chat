@@ -96,7 +96,7 @@ function IconButton({
 
 	return (
 		<ButtonFrame
-			render={<Tag {...attributes} disabled={disabled} />}
+			render={<Tag {...attributes} data-look={states.look} data-ghost={states.ghost} data-glyph={color} disabled={disabled} />}
 			segment={states.segment}
 			className={cx(
 				'rcx-button',
@@ -107,8 +107,6 @@ function IconButton({
 				`rcx-button--${size}-square`,
 				pressed && 'rcx-button--icon-pressed',
 				Boolean(badge) && 'rcx-button--with-badge',
-				states.ghost && `rcx-button--ghost rcx-button--ghost-${states.ghost}`,
-				color && `rcx-button--glyph rcx-button--glyph-${color}`,
 				className,
 			)}
 		>
