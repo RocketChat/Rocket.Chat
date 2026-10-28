@@ -11156,6 +11156,7 @@ __metadata:
     react-virtuoso: "npm:~4.18.16"
     reflect-metadata: "npm:^0.2.2"
     sanitize-html: "npm:~2.18.1"
+    sass: "npm:~1.102.0"
     semver: "npm:^7.6.3"
     sharp: "npm:^0.35.5"
     sinon: "npm:^19.0.5"
