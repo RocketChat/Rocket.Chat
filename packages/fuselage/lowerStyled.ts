@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
-import { join, relative } from 'node:path';
+import { dirname, join, relative } from 'node:path';
 import { runInThisContext } from 'node:vm';
 
 import { build } from 'esbuild';
@@ -368,7 +368,10 @@ const toolchainHash = () =>
  */
 const lowerDefinitions = async (code: string, id: string, names: string[]): Promise<Record<string, Lowered>> => {
 	const bundled = await bundle(code, id, names);
-	const file = join(cacheDir, `${createHash('sha1').update(toolchainHash()).update(String(process.env.NODE_ENV)).update(id).update(bundled).digest('hex')}.json`);
+	const file = join(
+		cacheDir,
+		`${createHash('sha1').update(toolchainHash()).update(String(process.env.NODE_ENV)).update(id).update(bundled).digest('hex')}.json`,
+	);
 	const useCache = process.env.LOWER_STYLED_CACHE !== '0';
 	if (useCache && existsSync(file)) return JSON.parse(readFileSync(file, 'utf8'));
 
@@ -415,7 +418,37 @@ const extendedFrames = () => {
 export const stats: Record<string, Record<string, number>> = {};
 export const recipes: Record<string, Recipe> = {};
 
-/** Replaces each allowlisted `styled()` definition in a module with a recipe component and an import of its CSS. */
+const cssFile = join(root, '.lowered/lowered.css');
+const moduleRules = new Map<string, string[]>();
+let othersLowered: Promise<unknown> | undefined;
+
+const rulesOf = (lowered: Record<string, Lowered>) => Object.values(lowered).flatMap((definition) => definition.css);
+
+/**
+ * Writes the rules of every lowered module to the one stylesheet they all import, so the bundle holds each rule once.
+ * The modules not transformed yet are lowered from disk first: the bundler reads the stylesheet as soon as the first
+ * module imports it.
+ */
+const writeCss = async (id: string, rules: string[]) => {
+	moduleRules.set(id, rules);
+	othersLowered ??= Promise.all(
+		Object.entries(allowlist).map(async ([file, allowed]) => {
+			const other = join(root, file);
+			if (other === id) return;
+			const lowered = await lowerDefinitions(readFileSync(other, 'utf8'), other, Object.keys(allowed));
+			// A module transformed meanwhile wins: the bundler may have handed it newer code than the disk
+			if (!moduleRules.has(other)) moduleRules.set(other, rulesOf(lowered));
+		}),
+	);
+	await othersLowered;
+	const ordered = Object.keys(allowlist).flatMap((file) => moduleRules.get(join(root, file)) ?? []);
+	const text = `@layer fuselage {\n${[...new Set(ordered)].join('\n')}\n}\n`;
+	if (existsSync(cssFile) && readFileSync(cssFile, 'utf8') === text) return;
+	mkdirSync(dirname(cssFile), { recursive: true });
+	writeFileSync(cssFile, text);
+};
+
+/** Replaces each allowlisted `styled()` definition in a module with a recipe component and an import of the lowered CSS. */
 export const lowerModule = async (code: string, id: string) => {
 	const allowed = allowlist[relative(root, id)];
 	// `LOWER_STYLED=0` builds the Tamagui frames as they are, for A/B measurements
@@ -430,7 +463,7 @@ export const lowerModule = async (code: string, id: string) => {
 				(n.id as Node).type === 'Identifier' &&
 				(n.init as Node | undefined)?.type === 'CallExpression'
 			) {
-				const {name} = (n.id as unknown as { name: string });
+				const { name } = n.id as unknown as { name: string };
 				const callee = (n.init as Node).callee as Node;
 				if (name in allowed && callee.type === 'Identifier' && (callee as unknown as { name: string }).name === 'styled') {
 					calls.set(name, { call: n.init as Node, statement });
@@ -442,12 +475,11 @@ export const lowerModule = async (code: string, id: string) => {
 	const missing = Object.keys(allowed).filter((name) => !calls.has(name));
 	if (missing.length) throw new Error(`lowerStyled: ${relative(root, id)}: no \`styled()\` definition named ${missing.join(', ')}`);
 
-	const lowered = await lowerDefinitions(code, id, [...calls.keys()]);
+	const lowered = await lowerDefinitions(code, id, Object.keys(allowed));
+	await writeCss(id, rulesOf(lowered));
 	const edits: [start: number, end: number, text: string][] = [];
-	const css = new Set<string>();
 	for (const [name, { call, statement }] of calls) {
-		const { recipe, css: rules } = lowered[name];
-		rules.forEach((rule) => css.add(rule));
+		const { recipe } = lowered[name];
 		const json = JSON.stringify(recipe);
 		recipes[name] = recipe;
 		stats[`${relative(root, id)}#${name}`] = lowered[name].stats;
@@ -465,15 +497,6 @@ export const lowerModule = async (code: string, id: string) => {
 			edits.push([n.start, n.end, `${name}__lowered`]);
 		});
 	}
-
-	const cssText = `@layer fuselage {\n${[...css].join('\n')}\n}\n`;
-	const cssDir = join(root, '.lowered');
-	mkdirSync(cssDir, { recursive: true });
-	const cssFile = join(
-		cssDir,
-		`${id.slice(id.lastIndexOf('/') + 1, -4)}-${createHash('sha1').update(cssText).digest('hex').slice(0, 8)}.css`,
-	);
-	writeFileSync(cssFile, cssText);
 
 	let out = code;
 	for (const [start, end, text] of edits.sort((a, b) => b[0] - a[0])) out = `${out.slice(0, start)}${text}${out.slice(end)}`;
