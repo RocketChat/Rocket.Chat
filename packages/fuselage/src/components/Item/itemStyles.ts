@@ -1,7 +1,4 @@
-import type { ElementType } from 'react';
-
 import { statusColors, strokeColors, surfaceColors, textIconColors } from '../../Theme';
-import { renderAs } from '../../helpers/renderAs';
 import { toCSSValue } from '../../helpers/toCSSValue';
 import { borderRadius, borderWidth, fontFamily, fontScale, spacing } from '../../styleTokens';
 
@@ -92,5 +89,3 @@ export const textStyle = (name: 'p2' | 'c1' | 'c2') => {
 	const { fontWeight, ...rest } = fontScale(name);
 	return { ...rest, fontWeight: fontWeight as 400 };
 };
-
-export const toRender = (is: ElementType) => (typeof is === 'string' ? is : renderAs(is));

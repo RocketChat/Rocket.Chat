@@ -1,9 +1,9 @@
-import { styled, Text, type GetProps } from '@tamagui/web';
+import { styled, Text } from '@tamagui/web';
 import type { AllHTMLAttributes, ElementType, RefAttributes } from 'react';
 import { useContext, useEffect, useId } from 'react';
 
 import { ItemHighlightContext, useItemContext } from './ItemContext';
-import { centeredSlotStyle, highlightVariant, toRender } from './itemStyles';
+import { centeredSlotStyle, highlightVariant } from './itemStyles';
 import { cx } from '../../helpers/composeClassNames';
 import { size } from '../../styleTokens';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
@@ -31,7 +31,7 @@ export type ItemIconProps = {
 /**
  * A 20px slot for the room type icon or a user status, placed before the title.
  */
-const ItemIcon = ({ is: Tag = 'div', label, id: propId, className, ...props }: ItemIconProps) => {
+const ItemIcon = ({ is: Tag = 'div', label, id: propId, className, children, ...props }: ItemIconProps) => {
 	const generatedId = useId();
 	const id = propId ?? generatedId;
 	const { registerDescription } = useItemContext();
@@ -48,14 +48,9 @@ const ItemIcon = ({ is: Tag = 'div', label, id: propId, className, ...props }: I
 	const a11yProps = label ? { 'role': 'img', 'aria-label': label } : { 'aria-hidden': true };
 
 	return (
-		<ItemIconFrame
-			{...(a11yProps as GetProps<typeof ItemIconFrame>)}
-			{...(props as GetProps<typeof ItemIconFrame>)}
-			render={toRender(Tag)}
-			highlight={highlight}
-			id={id}
-			className={cx('rcx-item__icon', className)}
-		/>
+		<ItemIconFrame render={<Tag {...a11yProps} {...props} />} highlight={highlight} id={id} className={cx('rcx-item__icon', className)}>
+			{children}
+		</ItemIconFrame>
 	);
 };
 

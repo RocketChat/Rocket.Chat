@@ -11,7 +11,6 @@ import {
 	itemColorSurfaceHover,
 	itemColorSurfaceSelected,
 	itemRowStyle,
-	toRender,
 	textStyle,
 } from './itemStyles';
 import type { ItemInset } from './types';
@@ -189,22 +188,26 @@ const Item = ({
 	const interactive =
 		interactiveProp ?? (!!onClick || Tag === 'a' || Tag === 'button' || props.role === 'option' || isMenuItem || linkIds.length > 0);
 
+	const stateVariants = getStateVariants({
+		disabled: !!disabled,
+		selected: !!selected,
+		focused: !!focused,
+		interactive,
+		danger: variant === 'danger',
+		focusVisible,
+	});
+
 	return (
 		<ItemContext.Provider value={contextValue}>
 			<ItemParentContext.Provider value={parentValue}>
 				<ItemHighlightContext.Provider value={highlighted ? 'item' : undefined}>
 					<ItemFrame
-						{...(props as GetProps<typeof ItemFrame>)}
-						render={toRender(Tag)}
+						render={<Tag {...props} onClick={handleClick} />}
 						gap={gap}
-						{...getStateVariants({
-							disabled: !!disabled,
-							selected: !!selected,
-							focused: !!focused,
-							interactive,
-							danger: variant === 'danger',
-							focusVisible,
-						})}
+						surface={stateVariants.surface}
+						pointer={stateVariants.pointer}
+						tone={stateVariants.tone}
+						focusRing={stateVariants.focusRing}
 						aria-labelledby={ariaLabelledBy}
 						aria-describedby={ariaDescribedBy}
 						className={cx(
@@ -223,7 +226,6 @@ const Item = ({
 							}),
 							className,
 						)}
-						onClick={handleClick}
 					>
 						{children}
 					</ItemFrame>

@@ -1,8 +1,8 @@
-import { styled, Text, type GetProps } from '@tamagui/web';
+import { styled, Text } from '@tamagui/web';
 import type { AllHTMLAttributes, ElementType, RefAttributes } from 'react';
 
 import { ItemGroupHeaderContext, ItemHighlightContext, ItemParentContext, type ItemParent } from './ItemContext';
-import { itemColorFontSecondary, itemColorSurfaceHover, itemRowStyle, toRender, textStyle } from './itemStyles';
+import { itemColorFontSecondary, itemColorSurfaceHover, itemRowStyle, textStyle } from './itemStyles';
 import type { ItemInset } from './types';
 import { useIdRegistry } from './useIdRegistry';
 import { surfaceColors } from '../../Theme';
@@ -57,7 +57,7 @@ export type ItemGroupHeaderProps = {
 /**
  * The label row of a group, such as Favorites, Recent or Moderators. It holds an `ItemGroupTitle` and optional trailing content.
  */
-const ItemGroupHeader = ({ is: Tag = 'div', inset = 'none', sticky, className, ...props }: ItemGroupHeaderProps) => {
+const ItemGroupHeader = ({ is: Tag = 'div', inset = 'none', sticky, className, children, ...props }: ItemGroupHeaderProps) => {
 	const [buttonTitleIds, registerButtonTitle] = useIdRegistry();
 
 	return (
@@ -65,8 +65,7 @@ const ItemGroupHeader = ({ is: Tag = 'div', inset = 'none', sticky, className, .
 			<ItemParentContext.Provider value={headerParent}>
 				<ItemHighlightContext.Provider value={undefined}>
 					<ItemGroupHeaderFrame
-						{...(props as GetProps<typeof ItemGroupHeaderFrame>)}
-						render={toRender(Tag)}
+						render={<Tag {...props} />}
 						sticky={!!sticky}
 						interactive={buttonTitleIds.length > 0}
 						className={cx(
@@ -76,7 +75,9 @@ const ItemGroupHeader = ({ is: Tag = 'div', inset = 'none', sticky, className, .
 							}),
 							className,
 						)}
-					/>
+					>
+						{children}
+					</ItemGroupHeaderFrame>
 				</ItemHighlightContext.Provider>
 			</ItemParentContext.Provider>
 		</ItemGroupHeaderContext.Provider>

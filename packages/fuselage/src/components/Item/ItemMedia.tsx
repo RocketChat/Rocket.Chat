@@ -1,7 +1,7 @@
-import { styled, Text, type GetProps } from '@tamagui/web';
+import { styled, Text } from '@tamagui/web';
 import type { AllHTMLAttributes, ElementType, RefAttributes } from 'react';
 
-import { centeredSlotStyle, toRender } from './itemStyles';
+import { centeredSlotStyle } from './itemStyles';
 import { cx, cxx } from '../../helpers/composeClassNames';
 import { size } from '../../styleTokens';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
@@ -32,13 +32,14 @@ export type ItemMediaProps = {
 /**
  * The leading avatar, icon or thumbnail of an `Item`. Its box fits its child, so the child's size sets the row height.
  */
-const ItemMedia = ({ is: Tag = 'div', variant = 'default', className, ...props }: ItemMediaProps) => (
+const ItemMedia = ({ is: Tag = 'div', variant = 'default', className, children, ...props }: ItemMediaProps) => (
 	<ItemMediaFrame
-		{...(props as GetProps<typeof ItemMediaFrame>)}
-		render={toRender(Tag)}
+		render={<Tag {...props} />}
 		variant={variant}
 		className={cx(cxx('rcx-item__media')({ icon: variant === 'icon' }), className)}
-	/>
+	>
+		{children}
+	</ItemMediaFrame>
 );
 
 export default withFuselageProvider(ItemMedia);

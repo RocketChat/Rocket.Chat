@@ -1,9 +1,9 @@
-import { styled, Text, type GetProps } from '@tamagui/web';
+import { styled, Text } from '@tamagui/web';
 import type { AllHTMLAttributes, ElementType, RefAttributes } from 'react';
 import { useContext } from 'react';
 
 import { ItemHighlightContext } from './ItemContext';
-import { highlightVariant, itemColorFontSecondary, toRender, textStyle } from './itemStyles';
+import { highlightVariant, itemColorFontSecondary, textStyle } from './itemStyles';
 import { cx, cxx } from '../../helpers/composeClassNames';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
@@ -42,17 +42,18 @@ export type ItemMetaProps = {
 /**
  * Short trailing text, such as a timestamp, count or file size. It never truncates unless `truncate` is set.
  */
-const ItemMeta = ({ is: Tag = 'div', truncate, className, ...props }: ItemMetaProps) => {
+const ItemMeta = ({ is: Tag = 'div', truncate, className, children, ...props }: ItemMetaProps) => {
 	const highlight = useContext(ItemHighlightContext);
 
 	return (
 		<ItemMetaFrame
-			{...(props as GetProps<typeof ItemMetaFrame>)}
-			render={toRender(Tag)}
+			render={<Tag {...props} />}
 			truncate={!!truncate}
 			highlight={highlight}
 			className={cx(cxx('rcx-item__meta')({ truncate: !!truncate }), className)}
-		/>
+		>
+			{children}
+		</ItemMetaFrame>
 	);
 };
 

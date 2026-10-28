@@ -1,9 +1,9 @@
-import { styled, Text, type GetProps } from '@tamagui/web';
+import { styled, Text } from '@tamagui/web';
 import type { AllHTMLAttributes, ElementType, RefAttributes } from 'react';
 import { useContext, useEffect, useId } from 'react';
 
 import { ItemHighlightContext, useItemContext } from './ItemContext';
-import { highlightVariant, toRender, truncatedTextStyle } from './itemStyles';
+import { highlightVariant, truncatedTextStyle } from './itemStyles';
 import { cx } from '../../helpers/composeClassNames';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
@@ -24,7 +24,7 @@ export type ItemTitleProps = {
 /**
  * The main label of an `Item`. It truncates with an ellipsis.
  */
-const ItemTitle = ({ is: Tag = 'div', id: propId, className, ...props }: ItemTitleProps) => {
+const ItemTitle = ({ is: Tag = 'div', id: propId, className, children, ...props }: ItemTitleProps) => {
 	const generatedId = useId();
 	const id = propId ?? generatedId;
 	const { registerTitle } = useItemContext();
@@ -33,13 +33,9 @@ const ItemTitle = ({ is: Tag = 'div', id: propId, className, ...props }: ItemTit
 	useEffect(() => registerTitle(id), [id, registerTitle]);
 
 	return (
-		<ItemTitleFrame
-			{...(props as GetProps<typeof ItemTitleFrame>)}
-			render={toRender(Tag)}
-			highlight={highlight}
-			id={id}
-			className={cx('rcx-item__title', className)}
-		/>
+		<ItemTitleFrame render={<Tag {...props} />} highlight={highlight} id={id} className={cx('rcx-item__title', className)}>
+			{children}
+		</ItemTitleFrame>
 	);
 };
 

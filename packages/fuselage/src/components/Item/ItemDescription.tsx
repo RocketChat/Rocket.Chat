@@ -1,9 +1,9 @@
-import { styled, Text, type GetProps } from '@tamagui/web';
+import { styled, Text } from '@tamagui/web';
 import type { AllHTMLAttributes, ElementType, RefAttributes } from 'react';
 import { useContext } from 'react';
 
 import { ItemHighlightContext } from './ItemContext';
-import { highlightVariant, itemColorFontSecondary, toRender, truncatedTextStyle, textStyle } from './itemStyles';
+import { highlightVariant, itemColorFontSecondary, truncatedTextStyle, textStyle } from './itemStyles';
 import { cx, cxx } from '../../helpers/composeClassNames';
 import { spacing } from '../../styleTokens';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
@@ -42,19 +42,20 @@ export type ItemDescriptionProps = {
 /**
  * The secondary line of an `Item`, such as a last message preview or a username.
  */
-const ItemDescription = ({ is, inline, className, ...props }: ItemDescriptionProps) => {
+const ItemDescription = ({ is, inline, className, children, ...props }: ItemDescriptionProps) => {
 	const Tag = is ?? (inline ? 'span' : 'div');
 	const highlight = useContext(ItemHighlightContext);
 
 	return (
 		<ItemDescriptionFrame
-			{...(props as GetProps<typeof ItemDescriptionFrame>)}
-			render={toRender(Tag)}
+			render={<Tag {...props} />}
 			span={Tag === 'span'}
 			inline={!!inline}
 			highlight={highlight}
 			className={cx(cxx('rcx-item__description')({ inline: !!inline }), className)}
-		/>
+		>
+			{children}
+		</ItemDescriptionFrame>
 	);
 };
 

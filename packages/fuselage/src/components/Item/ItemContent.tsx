@@ -1,10 +1,9 @@
 import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
-import { styled, Text, type GetProps } from '@tamagui/web';
+import { styled, Text } from '@tamagui/web';
 import type { AllHTMLAttributes, ElementType, RefAttributes } from 'react';
 import { useId, useLayoutEffect, useRef, useState } from 'react';
 
 import { ItemParentContext, skipRegistration, useItemContext } from './ItemContext';
-import { toRender } from './itemStyles';
 import { cx } from '../../helpers/composeClassNames';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
@@ -27,7 +26,7 @@ export type ItemContentProps = {
 /**
  * The flexible, truncating column that holds the title and description, or one `ItemRow` per line.
  */
-const ItemContent = ({ is: Tag = 'div', className, ref, ...props }: ItemContentProps) => {
+const ItemContent = ({ is: Tag = 'div', className, children, ref, ...props }: ItemContentProps) => {
 	const id = useId();
 	const { registerMultiline } = useItemContext();
 	const ownRef = useRef<HTMLElement>(null);
@@ -47,12 +46,9 @@ const ItemContent = ({ is: Tag = 'div', className, ref, ...props }: ItemContentP
 
 	return (
 		<ItemParentContext.Provider value={undefined}>
-			<ItemContentFrame
-				{...(props as GetProps<typeof ItemContentFrame>)}
-				{...({ ref: mergedRef } as GetProps<typeof ItemContentFrame>)}
-				render={toRender(Tag)}
-				className={cx('rcx-item__content', className)}
-			/>
+			<ItemContentFrame render={<Tag {...props} ref={mergedRef} />} className={cx('rcx-item__content', className)}>
+				{children}
+			</ItemContentFrame>
 		</ItemParentContext.Provider>
 	);
 };

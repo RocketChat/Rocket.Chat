@@ -1,9 +1,8 @@
-import { styled, View, type GetProps } from '@tamagui/web';
+import { styled, View } from '@tamagui/web';
 import type { AllHTMLAttributes, ElementType, RefAttributes } from 'react';
 import { useMemo } from 'react';
 
 import { ItemGroupContext } from './ItemGroupContext';
-import { toRender } from './itemStyles';
 import { useIdRegistry } from './useIdRegistry';
 import { cx } from '../../helpers/composeClassNames';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
@@ -41,9 +40,7 @@ const ItemGroup = ({ is: Tag = 'div', className, children, ...props }: ItemGroup
 	return (
 		<ItemGroupContext.Provider value={contextValue}>
 			<ItemGroupFrame
-				aria-labelledby={ariaLabelledBy}
-				{...(props as GetProps<typeof ItemGroupFrame>)}
-				render={toRender(Tag)}
+				render={<Tag aria-labelledby={ariaLabelledBy} {...props} />}
 				container='rcx-item-group'
 				className={cx('rcx-item-group', className)}
 			>
