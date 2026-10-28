@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { useAdministrationMenu } from './hooks/useAdministrationMenu';
 import { useAuditMenu } from './hooks/useAuditMenu';
 
-type NavBarItemAdministrationMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
+export type NavBarItemAdministrationMenuProps = Omit<HTMLAttributes<HTMLElement>, 'is'>;
 
 const NavBarItemAdministrationMenu = (props: NavBarItemAdministrationMenuProps) => {
 	const { t } = useTranslation();

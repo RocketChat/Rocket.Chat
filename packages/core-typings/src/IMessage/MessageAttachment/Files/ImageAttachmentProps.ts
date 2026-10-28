@@ -11,6 +11,8 @@ export type ImageAttachmentProps = {
 	image_url: string;
 	image_type?: string;
 	image_size?: number;
+	/** Accessibility alternative text for the image. Kept separate from `description` so it is not rendered as a visible caption. */
+	image_alt?: string;
 	file?: FileProp;
 } & MessageAttachmentBase;
 

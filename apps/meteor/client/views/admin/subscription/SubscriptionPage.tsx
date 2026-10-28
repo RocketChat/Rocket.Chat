@@ -1,4 +1,4 @@
-import { Accordion, AccordionItem, Box, Button, ButtonGroup, Callout, Grid, GridItem } from '@rocket.chat/fuselage';
+import { Accordion, AccordionItem, Box, Button, ButtonGroup, Callout, CardGrid, CardGridItem } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useSessionStorage } from '@rocket.chat/fuselage-hooks';
 import {
 	Page,
@@ -25,7 +25,6 @@ import CountSeatsCard from './components/cards/CountSeatsCard';
 import FeaturesCard from './components/cards/FeaturesCard';
 import MACCard from './components/cards/MACCard';
 import PlanCard from './components/cards/PlanCard';
-import PlanCardCommunity from './components/cards/PlanCard/PlanCardCommunity';
 import SeatsCard from './components/cards/SeatsCard';
 import { useCancelSubscriptionModal } from './hooks/useCancelSubscriptionModal';
 import { useWorkspaceSync } from './hooks/useWorkspaceSync';
@@ -105,7 +104,7 @@ const SubscriptionPage = () => {
 	}, [handleSyncLicenseUpdate, router, subscriptionSuccess, syncLicenseUpdate.isIdle]);
 
 	return (
-		<Page bg='tint'>
+		<Page background='tint'>
 			<PageHeaderNoShadow title={t('Subscription')}>
 				<ButtonGroup>
 					{canViewRegistrationStatus && (
@@ -113,7 +112,7 @@ const SubscriptionPage = () => {
 							{t('Sync_license_update')}
 						</Button>
 					)}
-					<UpgradeButton target='subscription_header' action={isEnterprise ? 'manage_subscription' : 'upgrade'} primary>
+					<UpgradeButton target='subscription_header' action={isEnterprise ? 'manage_subscription' : 'upgrade'} variant='primary'>
 						{t(isEnterprise ? 'Manage_subscription' : 'Upgrade')}
 					</UpgradeButton>
 				</ButtonGroup>
@@ -123,11 +122,13 @@ const SubscriptionPage = () => {
 					<UiKitSubscriptionLicense key='license' initialView={cloudSyncAnnouncement} />
 				</PageBlockWithBorder>
 			)}
-			<PageScrollableContentWithShadow p={16}>
+			<PageScrollableContentWithShadow padding={16}>
 				{(showSubscriptionCallout || syncLicenseUpdate.isPending) && (
-					<Callout type='info' title={t('Sync_license_update_Callout_Title')} m={8}>
-						{t('Sync_license_update_Callout')}
-					</Callout>
+					<Box padding={8}>
+						<Callout type='info' title={t('Sync_license_update_Callout_Title')}>
+							{t('Sync_license_update_Callout')}
+						</Callout>
+					</Box>
 				)}
 				<SubscriptionCalloutLimits />
 				{isLicenseLoading && <SubscriptionPageSkeleton />}
@@ -141,56 +142,57 @@ const SubscriptionPage = () => {
 							</Accordion>
 						)}
 						<Box marginBlock='none' marginInline='auto' width='full' color='default'>
-							<Grid m={0}>
-								<GridItem lg={4} xs={4} p={8} minHeight={260}>
-									{license && <PlanCard licenseInformation={license.information} licenseLimits={{ activeUsers: seatsLimit }} />}
-									{!license && <PlanCardCommunity />}
-								</GridItem>
+							<Box padding={8}>
+								<CardGrid minRowHeight={260}>
+									<CardGridItem lg={4} xs={4}>
+										<PlanCard license={license} licenseLimits={{ activeUsers: seatsLimit }} />
+									</CardGridItem>
 
-								<GridItem lg={8} xs={4} p={8} minHeight={260}>
-									<FeaturesCard activeModules={activeModules} isEnterprise={isEnterprise} />
-								</GridItem>
+									<CardGridItem lg={8} xs={4}>
+										<FeaturesCard activeModules={activeModules} isEnterprise={isEnterprise} />
+									</CardGridItem>
 
-								{seatsLimit.value !== undefined && (
-									<GridItem lg={6} xs={4} p={8} minHeight={260}>
-										{seatsLimit.max !== Infinity ? (
-											<SeatsCard value={seatsLimit.value} max={seatsLimit.max} hideManageSubscription={licensesData?.trial} />
-										) : (
-											<CountSeatsCard activeUsers={seatsLimit?.value} />
-										)}
-									</GridItem>
-								)}
+									{seatsLimit.value !== undefined && (
+										<CardGridItem lg={6} xs={4}>
+											{seatsLimit.max !== Infinity ? (
+												<SeatsCard value={seatsLimit.value} max={seatsLimit.max} hideManageSubscription={licensesData?.trial} />
+											) : (
+												<CountSeatsCard activeUsers={seatsLimit?.value} />
+											)}
+										</CardGridItem>
+									)}
 
-								{macLimit.value !== undefined && (
-									<GridItem lg={6} xs={4} p={8} minHeight={260}>
-										{macLimit.max !== Infinity ? (
-											<MACCard max={macLimit.max} value={macLimit.value} hideManageSubscription={licensesData?.trial} />
-										) : (
-											<CountMACCard macsCount={macLimit.value} />
-										)}
-									</GridItem>
-								)}
+									{macLimit.value !== undefined && (
+										<CardGridItem lg={6} xs={4}>
+											{macLimit.max !== Infinity ? (
+												<MACCard max={macLimit.max} value={macLimit.value} hideManageSubscription={licensesData?.trial} />
+											) : (
+												<CountMACCard macsCount={macLimit.value} />
+											)}
+										</CardGridItem>
+									)}
 
-								{!license && (
-									<>
-										{limits?.marketplaceApps !== undefined && (
-											<GridItem lg={4} xs={4} p={8} minHeight={260}>
-												<AppsUsageCard privateAppsLimit={limits?.privateApps} marketplaceAppsLimit={limits.marketplaceApps} />
-											</GridItem>
-										)}
+									{!license && limits?.marketplaceApps !== undefined && (
+										<CardGridItem lg={4} xs={4}>
+											<AppsUsageCard privateAppsLimit={limits?.privateApps} marketplaceAppsLimit={limits.marketplaceApps} />
+										</CardGridItem>
+									)}
 
-										<GridItem lg={4} xs={4} p={8} minHeight={260}>
+									{!license && (
+										<CardGridItem lg={4} xs={4}>
 											<ActiveSessionsCard />
-										</GridItem>
-										<GridItem lg={4} xs={4} p={8} minHeight={260}>
+										</CardGridItem>
+									)}
+									{!license && (
+										<CardGridItem lg={4} xs={4}>
 											<ActiveSessionsPeakCard />
-										</GridItem>
-									</>
-								)}
-							</Grid>
+										</CardGridItem>
+									)}
+								</CardGrid>
+							</Box>
 							<UpgradeToGetMore activeModules={activeModules} isEnterprise={isEnterprise}>
 								{Boolean(licensesData?.license?.information.cancellable) && (
-									<Button loading={isCancelSubscriptionLoading} secondary danger onClick={openCancelSubscriptionModal}>
+									<Button loading={isCancelSubscriptionLoading} variant='secondary-danger' onClick={openCancelSubscriptionModal}>
 										{t('Cancel_subscription')}
 									</Button>
 								)}

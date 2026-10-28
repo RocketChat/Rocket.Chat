@@ -226,14 +226,14 @@ const EditCustomFields = ({ customFieldData, onClose }: { customFieldData?: Seri
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button form={formId} primary type='submit'>
+					<Button form={formId} variant='primary' type='submit'>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
 				{customFieldData?._id && (
-					<Box mbs={8}>
+					<Box marginBlockStart={8}>
 						<ButtonGroup stretch>
-							<Button icon='trash' danger onClick={() => handleDelete(customFieldData._id)}>
+							<Button icon='trash' variant='danger' onClick={() => handleDelete(customFieldData._id)}>
 								{t('Delete')}
 							</Button>
 						</ButtonGroup>

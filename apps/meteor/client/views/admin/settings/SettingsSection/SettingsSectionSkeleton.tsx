@@ -1,14 +1,13 @@
-import { AccordionItem, Box, FieldGroup, Skeleton } from '@rocket.chat/fuselage';
-import type { ReactElement } from 'react';
+import { AccordionItem, FieldGroup, Skeleton, Text } from '@rocket.chat/fuselage';
 
 import SettingSkeleton from '../Setting/SettingSkeleton';
 
-function SettingsSectionSkeleton(): ReactElement {
+function SettingsSectionSkeleton() {
 	return (
 		<AccordionItem noncollapsible title={<Skeleton />}>
-			<Box is='p' color='hint' fontScale='p2'>
+			<Text is='p' color='hint' fontScale='p2'>
 				<Skeleton />
-			</Box>
+			</Text>
 
 			<FieldGroup>
 				{Array.from({ length: 10 }).map((_, i) => (

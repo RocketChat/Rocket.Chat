@@ -1,4 +1,4 @@
-import { settingsRegistry } from '../../app/settings/server';
+import { settingsRegistry } from '.';
 
 export const createSetupWSettings = () =>
 	settingsRegistry.addGroup('Setup_Wizard', async function () {

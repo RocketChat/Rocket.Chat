@@ -1,15 +1,35 @@
-import { Box, PaletteStyleTag, States, StatesAction, StatesActions, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
+import {
+	Box,
+	Icon,
+	PaletteStyleTag,
+	States,
+	StatesAction,
+	StatesActions,
+	StatesIcon,
+	StatesSubtitle,
+	StatesTitle,
+} from '@rocket.chat/fuselage';
 import { useThemeMode } from '@rocket.chat/ui-client';
-import type { ErrorInfo, ReactElement } from 'react';
 
-type AppErrorPageProps = {
-	error: Error;
-	info?: ErrorInfo;
-	clearError: () => void;
+import { Info } from '../../../rocketchat.info';
+import { useCopyErrorReport } from '../../components/ErrorReport/useCopyErrorReport';
+import { router } from '../../providers/RouterProvider';
+
+export type AppErrorPageProps = {
+	error: unknown;
+	info?: { componentStack?: string | null };
 };
 
-const AppErrorPage = (_props: AppErrorPageProps): ReactElement => {
-	const [, , theme] = useThemeMode();
+// Rendered above the translation, router and server providers, hence the hardcoded English copy
+const AppErrorPage = ({ error, info }: AppErrorPageProps) => {
+	const theme = useThemeMode();
+	const { copy, hasCopied } = useCopyErrorReport({
+		error,
+		componentStack: info?.componentStack,
+		routeName: router.getRouteName(),
+		version: Info.version,
+		commitHash: Info.commit?.hash,
+	});
 
 	return (
 		<>
@@ -18,18 +38,23 @@ const AppErrorPage = (_props: AppErrorPageProps): ReactElement => {
 				<States>
 					<StatesIcon name='error-circle' />
 					<StatesTitle>Application Error</StatesTitle>
-					<StatesSubtitle>The application GUI just crashed.</StatesSubtitle>
+					<StatesSubtitle>
+						The application GUI just crashed. Copy the error details to include them when reporting this issue.
+					</StatesSubtitle>
 
 					<StatesActions>
+						<StatesAction variant='primary' onClick={copy}>
+							<Icon name={hasCopied ? 'check' : 'copy'} /> {hasCopied ? 'Copied' : 'Copy error details'}
+						</StatesAction>
 						<StatesAction
 							onClick={() => {
 								const result = indexedDB.deleteDatabase('MeteorDynamicImportCache');
-								result.onsuccess = () => {
+								const reload = () => {
 									window.location.reload();
 								};
-								result.onerror = () => {
-									window.location.reload();
-								};
+								result.onsuccess = reload;
+								result.onerror = reload;
+								result.onblocked = reload;
 							}}
 						>
 							Reload Application

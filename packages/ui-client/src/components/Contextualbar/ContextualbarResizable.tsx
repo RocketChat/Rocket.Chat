@@ -4,7 +4,7 @@ import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { Resizable } from 're-resizable';
 import type { ComponentProps } from 'react';
 
-type ContextualbarResizableProps = { defaultWidth: string } & ComponentProps<typeof Resizable>;
+export type ContextualbarResizableProps = { defaultWidth: string } & ComponentProps<typeof Resizable>;
 
 const ContextualbarResizable = ({ defaultWidth, children, ...props }: ContextualbarResizableProps) => {
 	const [contextualbarWidth, setContextualbarWidth] = useLocalStorage('contextualbarWidth', defaultWidth);

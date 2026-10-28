@@ -10,12 +10,12 @@ const breakpoints = {
 	xl: 6,
 } as const;
 
-type FieldsProps = {
+export type FieldsProps = {
 	fields: readonly UiKit.TextObject[];
-	surfaceRenderer: UiKit.SurfaceRenderer<ReactElement>;
+	surfaceRenderer: UiKit.SurfaceRenderer<ReactElement<any>>;
 };
 
-const Fields = ({ fields, surfaceRenderer }: FieldsProps): ReactElement => (
+const Fields = ({ fields, surfaceRenderer }: FieldsProps) => (
 	<Grid>
 		{fields.map((field, i) => (
 			<GridItem key={i} {...breakpoints}>

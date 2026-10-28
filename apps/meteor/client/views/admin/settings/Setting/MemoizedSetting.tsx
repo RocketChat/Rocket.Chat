@@ -1,6 +1,6 @@
 import type { ISettingBase, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
-import { Box, Callout, Field, Margins } from '@rocket.chat/fuselage';
-import type { ElementType, ReactElement, ReactNode } from 'react';
+import { Box, Callout } from '@rocket.chat/fuselage';
+import type { ElementType, ReactNode } from 'react';
 import { memo } from 'react';
 
 import ActionSettingInput from './inputs/ActionSettingInput';
@@ -13,6 +13,7 @@ import GenericSettingInput from './inputs/GenericSettingInput';
 import IntSettingInput from './inputs/IntSettingInput';
 import LanguageSettingInput from './inputs/LanguageSettingInput';
 import LookupSettingInput from './inputs/LookupSettingInput';
+import MultiLookupSettingInput from './inputs/MultiLookupSettingInput';
 import MultiSelectSettingInput from './inputs/MultiSelectSettingInput';
 import PasswordSettingInput from './inputs/PasswordSettingInput';
 import RangeSettingInput from './inputs/RangeSettingInput';
@@ -41,13 +42,14 @@ const inputsByType: Record<ISettingBase['type'], ElementType<any>> = {
 	roomPick: RoomPickSettingInput,
 	timezone: SelectTimezoneSettingInput,
 	lookup: LookupSettingInput,
+	multiLookup: MultiLookupSettingInput,
 	timespan: TimespanSettingInput,
 	range: RangeSettingInput,
 	date: GenericSettingInput, // @todo: implement
 	group: GenericSettingInput, // @todo: implement
 };
 
-type MemoizedSettingProps = {
+export type MemoizedSettingProps = {
 	_id?: string;
 	type: ISettingBase['type'];
 	packageValue: ISettingBase['packageValue'];
@@ -82,7 +84,7 @@ const MemoizedSetting = ({
 	className = undefined,
 	invisible = undefined,
 	...inputProps
-}: MemoizedSettingProps): ReactElement | null => {
+}: MemoizedSettingProps) => {
 	if (invisible) {
 		return null;
 	}
@@ -90,25 +92,19 @@ const MemoizedSetting = ({
 	const InputComponent = inputsByType[type];
 
 	return (
-		<Field className={className} flexDirection='row' justifyContent='space-between' alignItems='flex-start'>
-			<Box flexDirection='column' flexGrow={1} wordBreak='break-word' w='full'>
-				<InputComponent
-					value={value}
-					hint={hint}
-					editor={editor}
-					onChangeValue={onChangeValue}
-					onChangeEditor={onChangeEditor}
-					disabled={disabled}
-					{...inputProps}
-				/>
-				{callout && (
-					<Margins block={16}>
-						<Callout type='warning'>{callout}</Callout>
-					</Margins>
-				)}
-				{showUpgradeButton}
-			</Box>
-		</Field>
+		<Box className={className} display='flex' flexDirection='column' gap={8} wordBreak='break-word'>
+			<InputComponent
+				value={value}
+				hint={hint}
+				editor={editor}
+				onChangeValue={onChangeValue}
+				onChangeEditor={onChangeEditor}
+				disabled={disabled}
+				{...inputProps}
+			/>
+			{callout && <Callout type='warning'>{callout}</Callout>}
+			{showUpgradeButton}
+		</Box>
 	);
 };
 

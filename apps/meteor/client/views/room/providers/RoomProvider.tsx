@@ -1,5 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import type { ReactNode, ContextType, ReactElement } from 'react';
+import { LayoutContext, useLayout, useSearchParameter } from '@rocket.chat/ui-contexts';
+import type { ReactNode, ContextType } from 'react';
 import { useMemo, memo, useEffect } from 'react';
 
 import ComposerPopupProvider from './ComposerPopupProvider';
@@ -7,12 +8,12 @@ import RoomToolboxProvider from './RoomToolboxProvider';
 import UserCardProvider from './UserCardProvider';
 import { useRedirectOnSettingsChanged } from './hooks/useRedirectOnSettingsChanged';
 import { useUsersNameChanged } from './hooks/useUsersNameChanged';
-import { UserAction } from '../../../../app/ui/client/lib/UserAction';
-import { RoomHistoryManager, useRoomHistoryState } from '../../../../app/ui-utils/client/lib/RoomHistoryManager';
 import { omit } from '../../../../lib/utils/omit';
 import { useFireGlobalEvent } from '../../../hooks/useFireGlobalEvent';
 import { useRoomRolesQuery } from '../../../hooks/useRoomRolesQuery';
+import { RoomHistoryManager, useRoomHistoryState } from '../../../lib/RoomHistoryManager';
 import { RoomManager } from '../../../lib/RoomManager';
+import { UserAction } from '../../../lib/UserAction';
 import { roomCoordinator } from '../../../lib/rooms/roomCoordinator';
 import ImageGalleryProvider from '../../../providers/ImageGalleryProvider';
 import { Rooms, Subscriptions } from '../../../stores';
@@ -21,13 +22,32 @@ import RoomSkeleton from '../RoomSkeleton';
 import type { IRoomWithFederationOriginalName } from '../contexts/RoomContext';
 import { RoomContext } from '../contexts/RoomContext';
 
-type RoomProviderProps = {
+export type RoomProviderProps = {
 	children: ReactNode;
 	rid: IRoom['_id'];
+	/**
+	 * Whether this room is rendered inside something else — a panel beside a call, rather than the workspace's
+	 * main content. It is the same answer the embedded *layout* gives (Rocket.Chat inside another application),
+	 * and the room reads only this one: no header of its own, a composer sized for a narrow column, links that
+	 * stay where they are.
+	 *
+	 * Defaults to what the layout says, so a room opened the ordinary way behaves exactly as it always has —
+	 * this only lets a caller say "embedded" for a room the layout knows nothing about.
+	 */
+	embedded?: boolean;
 };
 
-const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
+const RoomProvider = ({ rid, children, embedded }: RoomProviderProps) => {
+	const layout = useLayout();
+	// Only built when a caller asks for it: the ordinary room passes the layout's own context straight through.
+	// `showTopNavbarEmbeddedLayout` is forced off rather than inherited: it is the workspace saying that an
+	// embedded *page* should still show the navigation, which is a sentence about an iframe in someone else's
+	// site. A room in a panel beside a call has no use for it — `Header` reads exactly these two flags, and with
+	// the setting on the panel would have grown the full room header.
+	const embeddedLayout = useMemo(() => ({ ...layout, isEmbedded: true, showTopNavbarEmbeddedLayout: false }), [layout]);
 	const room = Rooms.use((state) => state.get(rid));
+
+	const messageJumpParam = useSearchParameter('msg');
 
 	const subscritionFromLocal = Subscriptions.use((state) => state.find((record) => record.rid === rid));
 
@@ -85,14 +105,11 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	// Prefetch first batch of history in parallel with room metadata fetches, instead of waiting
 	// for RoomBody's scroll/resize observer in useGetMore to fire.
 	useEffect(() => {
-		if (!room) {
-			return;
-		}
-		if (RoomHistoryManager.isLoaded(rid) || RoomHistoryManager.isLoading(rid)) {
+		if (!room || messageJumpParam || RoomHistoryManager.isLoaded(rid) || RoomHistoryManager.isLoading(rid)) {
 			return;
 		}
 		void RoomHistoryManager.getMore(rid);
-	}, [rid, room]);
+	}, [rid, room, messageJumpParam]);
 
 	// Prefetch room roles alongside history so message rendering doesn't trigger a late fetch.
 	useRoomRolesQuery(rid, { enabled: !!room });
@@ -108,10 +125,10 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 	}, [rid, subscribed]);
 
 	if (!pseudoRoom) {
-		return !room ? <RoomNotFound /> : <RoomSkeleton />;
+		return !room && !subscritionFromLocal ? <RoomNotFound /> : <RoomSkeleton />;
 	}
 
-	return (
+	const roomTree = (
 		<RoomContext.Provider value={context}>
 			<RoomToolboxProvider>
 				<ImageGalleryProvider>
@@ -122,6 +139,11 @@ const RoomProvider = ({ rid, children }: RoomProviderProps): ReactElement => {
 			</RoomToolboxProvider>
 		</RoomContext.Provider>
 	);
+
+	// Whenever the caller says so, even where the layout is already embedded: the conference route is itself an
+	// embedded layout, and skipping the override there left `showTopNavbarEmbeddedLayout` as the workspace set it —
+	// which on a workspace that has it on grew the full room header inside the call's chat panel.
+	return embedded ? <LayoutContext.Provider value={embeddedLayout}>{roomTree}</LayoutContext.Provider> : roomTree;
 };
 
 export default memo(RoomProvider);

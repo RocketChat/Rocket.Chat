@@ -1,14 +1,14 @@
 import { Box } from '@rocket.chat/fuselage';
-import type { ComponentProps, ReactElement } from 'react';
+import type { ComponentProps } from 'react';
 
 import NegativeGrowthSymbol from './NegativeGrowthSymbol';
 import PositiveGrowthSymbol from './PositiveGrowthSymbol';
 
-type GrowthProps = ComponentProps<typeof Box> & {
+export type GrowthProps = ComponentProps<typeof Box> & {
 	children: number;
 };
 
-const Growth = ({ children, ...props }: GrowthProps): ReactElement | null => {
+const Growth = ({ children, ...props }: GrowthProps) => {
 	if (children === 0) {
 		return null;
 	}

@@ -32,9 +32,9 @@ const AdminUserSetRandomPasswordRadios = ({
 	};
 
 	return (
-		<>
-			<Box display='flex' flexDirection='row' alignItems='center' flexGrow={1} mbe={8}>
-				<FieldRow mie={8}>
+		<Box display='flex' flexDirection='column' gap={6} paddingBlockStart={6}>
+			<Box display='flex' alignItems='center' gap={8}>
+				<FieldRow>
 					<Controller
 						control={control}
 						name='setRandomPassword'
@@ -51,23 +51,27 @@ const AdminUserSetRandomPasswordRadios = ({
 						)}
 					/>
 				</FieldRow>
-				<FieldLabel htmlFor={setRandomPasswordId} alignSelf='center' fontScale='p2' disabled={!isSmtpEnabled}>
-					{t('Set_randomly_and_send_by_email')}
-				</FieldLabel>
+				<Box>
+					<FieldLabel htmlFor={setRandomPasswordId} disabled={!isSmtpEnabled}>
+						{t('Set_randomly_and_send_by_email')}
+					</FieldLabel>
+				</Box>
 			</Box>
 			{!isSmtpEnabled && (
-				<FieldHint id={`${setRandomPasswordId}-hint`} mbe={16} mbs={0}>
-					<Trans
-						i18nKey='Send_Email_SMTP_Warning'
-						components={{
-							// eslint-disable-next-line jsx-a11y/anchor-has-content
-							a: <a href='/admin/settings/Email' />,
-						}}
-					/>
-				</FieldHint>
+				<Box display='flex' flexDirection='column' paddingBlockEnd={6}>
+					<FieldHint id={`${setRandomPasswordId}-hint`}>
+						<Trans
+							i18nKey='Send_Email_SMTP_Warning'
+							components={{
+								// oxlint-disable-next-line jsx-a11y/anchor-has-content
+								a: <a href='/admin/settings/Email' />,
+							}}
+						/>
+					</FieldHint>
+				</Box>
 			)}
-			<Box display='flex' flexDirection='row' alignItems='center' flexGrow={1}>
-				<FieldRow mie={8}>
+			<Box display='flex' alignItems='center' gap={8} paddingBlockStart={2}>
+				<FieldRow>
 					<Controller
 						control={control}
 						name='setRandomPassword'
@@ -83,11 +87,11 @@ const AdminUserSetRandomPasswordRadios = ({
 						)}
 					/>
 				</FieldRow>
-				<FieldLabel htmlFor={setPasswordManuallyId} alignSelf='center' fontScale='p2'>
-					{t('Set_manually')}
-				</FieldLabel>
+				<Box>
+					<FieldLabel htmlFor={setPasswordManuallyId}>{t('Set_manually')}</FieldLabel>
+				</Box>
 			</Box>
-		</>
+		</Box>
 	);
 };
 

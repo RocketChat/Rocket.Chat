@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 
-type WorkspaceCardSectionTitleProps = {
+export type WorkspaceCardSectionTitleProps = {
 	variant?: 'p2b' | 'h4';
 	title: string;
 };

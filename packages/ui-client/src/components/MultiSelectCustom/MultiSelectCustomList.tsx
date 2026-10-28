@@ -1,23 +1,30 @@
-import { Box, CheckBox, Icon, Option, OptionIcon, SearchInput, Tile } from '@rocket.chat/fuselage';
+import {
+	Box,
+	CheckBox,
+	Icon,
+	Item,
+	ItemActions,
+	ItemContent,
+	ItemGroupHeader,
+	ItemGroupTitle,
+	ItemMedia,
+	ItemTitle,
+	PopoverSurface,
+	SearchInput,
+} from '@rocket.chat/fuselage';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { FormEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import { Fragment, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import type { OptionProp } from './MultiSelectCustom';
 import { useFilteredOptions } from './useFilteredOptions';
 
-const getIconColor = (color: 'default' | 'danger' | 'warning' | undefined) => {
-	switch (color) {
-		case 'danger':
-			return 'status-font-on-danger';
-		case 'warning':
-			return 'status-font-on-warning';
-		case 'default':
-		default:
-			return undefined;
-	}
-};
+const iconColors = {
+	default: undefined,
+	danger: 'danger',
+	warning: 'status-font-on-warning',
+} as const;
 
 const MultiSelectCustomList = ({
 	options,
@@ -25,26 +32,26 @@ const MultiSelectCustomList = ({
 	searchBarText,
 }: {
 	options: OptionProp[];
-	onSelected: (item: OptionProp, e?: FormEvent<HTMLElement>) => void;
+	onSelected: (item: OptionProp, e?: ChangeEvent<HTMLElement>) => void;
 	searchBarText?: string;
 }) => {
 	const { t } = useTranslation();
 
 	const [text, setText] = useState('');
 
-	const handleChange = useCallback((event: FormEvent<HTMLInputElement>) => setText(event.currentTarget.value), []);
+	const handleChange = useCallback((event: ChangeEvent<HTMLInputElement>) => setText(event.currentTarget.value), []);
 
 	const filteredOptions = useFilteredOptions(text, options);
 
 	return (
-		<Tile overflow='auto' pb={12} pi={0} elevation='2' w='full' bg='light' borderRadius={2} maxHeight='50vh'>
+		<PopoverSurface maxHeight='half-screen'>
 			{searchBarText && (
-				<Box pi={12} mbe={12}>
+				<Box paddingInline={12} marginBlockEnd={12}>
 					<SearchInput
 						name='select-search'
 						placeholder={t(searchBarText as TranslationKey)}
 						autoComplete='off'
-						addon={<Icon name='magnifier' size='x20' />}
+						endAddon={<Icon name='magnifier' size='x20' />}
 						onChange={handleChange}
 						value={text}
 					/>
@@ -53,22 +60,29 @@ const MultiSelectCustomList = ({
 			{filteredOptions.map((option) => (
 				<Fragment key={option.id}>
 					{option.isGroupTitle || !option.hasOwnProperty('checked') ? (
-						<Box mi='x10' mb={4} fontScale='p2b' color='default'>
-							{t(option.text as TranslationKey)}
-						</Box>
+						<ItemGroupHeader inset='md'>
+							<ItemGroupTitle>{t(option.text as TranslationKey)}</ItemGroupTitle>
+						</ItemGroupHeader>
 					) : (
-						<Option key={option.id}>
-							{option.icon && <OptionIcon name={option.icon.name} color={getIconColor(option.icon.color)} mie={4} />}
-							<Box w='full' display='flex' justifyContent='space-between' is='label'>
-								{t(option.text as TranslationKey)}
-
-								<CheckBox checked={option.checked} pi={0} name={option.text} id={option.id} onChange={() => onSelected(option)} />
-							</Box>
-						</Option>
+						<Item inset='md'>
+							{option.icon && (
+								<ItemMedia variant='icon'>
+									<Icon name={option.icon.name} size='x20' color={option.icon.color && iconColors[option.icon.color]} />
+								</ItemMedia>
+							)}
+							<ItemContent>
+								<ItemTitle is='label' htmlFor={option.id}>
+									{t(option.text as TranslationKey)}
+								</ItemTitle>
+							</ItemContent>
+							<ItemActions>
+								<CheckBox checked={option.checked} name={option.text} id={option.id} onChange={() => onSelected(option)} />
+							</ItemActions>
+						</Item>
 					)}
 				</Fragment>
 			))}
-		</Tile>
+		</PopoverSurface>
 	);
 };
 

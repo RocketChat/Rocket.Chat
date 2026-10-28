@@ -1,36 +1,39 @@
 import type { IWorkspaceInfo, IStats } from '@rocket.chat/core-typings';
 import { Button, Card, CardBody, CardControls, Margins } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { IInstance } from '@rocket.chat/rest-typings';
+import { useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useSetModal } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import WorkspaceCardSection from '../components/WorkspaceCardSection';
 import InstancesModal from './components/InstancesModal';
 import WorkspaceCardSectionTitle from '../components/WorkspaceCardSectionTitle';
 
-type DeploymentCardProps = {
+export type DeploymentCardProps = {
 	serverInfo: IWorkspaceInfo;
 	instances: IInstance[];
 	statistics: IStats;
 };
 
-const DeploymentCard = ({ serverInfo: { info, cloudWorkspaceId }, statistics, instances }: DeploymentCardProps): ReactElement => {
+const DeploymentCard = ({
+	serverInfo: { info, cloudWorkspaceId, workspaceUrl, hashedWorkspaceUrl },
+	statistics,
+	instances,
+}: DeploymentCardProps) => {
 	const { t } = useTranslation();
 	const formatDateAndTime = useFormatDateAndTime();
 	const setModal = useSetModal();
 
 	const { commit = {}, marketplaceApiVersion: appsEngineVersion } = info || {};
 
-	const handleInstancesModal = useEffectEvent(() => {
+	const handleInstancesModal = useStableCallback(() => {
 		setModal(<InstancesModal instances={instances} onClose={(): void => setModal()} />);
 	});
 
 	return (
-		<Card height='full'>
+		<Card>
 			<CardBody flexDirection='column'>
 				<WorkspaceCardSection>
 					<WorkspaceCardSectionTitle title={t('Deployment')} variant='h4' />
@@ -40,6 +43,18 @@ const DeploymentCard = ({ serverInfo: { info, cloudWorkspaceId }, statistics, in
 						<WorkspaceCardSectionTitle title={t('Version')} />
 						{statistics.version}
 					</WorkspaceCardSection>
+					{workspaceUrl && (
+						<WorkspaceCardSection>
+							<WorkspaceCardSectionTitle title={t('Site_Url')} />
+							{workspaceUrl}
+						</WorkspaceCardSection>
+					)}
+					{hashedWorkspaceUrl && (
+						<WorkspaceCardSection>
+							<WorkspaceCardSectionTitle title={t('Hashed_Site_Url')} />
+							<span style={{ lineBreak: 'anywhere' }}>{hashedWorkspaceUrl}</span>
+						</WorkspaceCardSection>
+					)}
 					<WorkspaceCardSection>
 						<WorkspaceCardSectionTitle title={t('Deployment_ID')} />
 						{statistics.uniqueId}
@@ -85,7 +100,7 @@ const DeploymentCard = ({ serverInfo: { info, cloudWorkspaceId }, statistics, in
 
 			{!!instances.length && (
 				<CardControls>
-					<Button medium onClick={handleInstancesModal}>
+					<Button size='medium' onClick={handleInstancesModal}>
 						{t('Instances')}
 					</Button>
 				</CardControls>

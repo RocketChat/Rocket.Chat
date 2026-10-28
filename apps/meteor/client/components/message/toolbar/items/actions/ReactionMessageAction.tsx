@@ -16,13 +16,14 @@ import EmojiElement from '../../../../../views/composer/EmojiPicker/EmojiElement
 import { useChat } from '../../../../../views/room/contexts/ChatContext';
 import MessageToolbarItem from '../../MessageToolbarItem';
 
-type ReactionMessageActionProps = {
+export type ReactionMessageActionProps = {
 	message: IMessage;
 	room: IRoom;
 	subscription: ISubscription | undefined;
+	onChangeMenuVisibility?: (visible: boolean) => void;
 };
 
-const ReactionMessageAction = ({ message, room, subscription }: ReactionMessageActionProps) => {
+const ReactionMessageAction = ({ message, room, subscription, onChangeMenuVisibility }: ReactionMessageActionProps) => {
 	const chat = useChat();
 	const user = useUser();
 	const setReaction = useEndpoint('POST', '/v1/chat.react');
@@ -50,7 +51,7 @@ const ReactionMessageAction = ({ message, room, subscription }: ReactionMessageA
 
 			return true;
 		},
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 		[chat, room, subscription, message.private, user, isFederationBlocked, postReadOnly],
 	);
 
@@ -77,9 +78,14 @@ const ReactionMessageAction = ({ message, room, subscription }: ReactionMessageA
 				title={t('Add_Reaction')}
 				onClick={(event) => {
 					event.stopPropagation();
-					chat?.emojiPicker.open(event.currentTarget, (emoji) => {
-						toggleReaction(emoji);
-					});
+					chat?.emojiPicker.open(
+						event.currentTarget,
+						(emoji) => {
+							toggleReaction(emoji);
+						},
+						() => onChangeMenuVisibility?.(false),
+					);
+					onChangeMenuVisibility?.(true);
 				}}
 			/>
 		</>

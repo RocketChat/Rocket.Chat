@@ -1,15 +1,12 @@
 import { Field, FieldHint, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
-import type { PathPattern } from '@rocket.chat/rest-typings';
-import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
-import { miscQueryKeys } from '../../../../../lib/queryKeys';
+import type { SettingLookupEndpoint } from '../../hooks/useSettingLookupOptions';
+import { useSettingLookupOptions } from '../../hooks/useSettingLookupOptions';
 
-type LookupSettingInputProps = SettingInputProps & {
-	lookupEndpoint: PathPattern extends `/${infer U}` ? U : PathPattern;
+export type LookupSettingInputProps = SettingInputProps & {
+	lookupEndpoint: SettingLookupEndpoint;
 };
 
 function LookupSettingInput({
@@ -26,19 +23,12 @@ function LookupSettingInput({
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
-}: LookupSettingInputProps): ReactElement {
+}: LookupSettingInputProps) {
 	const handleChange = (value: string): void => {
 		onChangeValue?.(value);
 	};
 
-	const lookup = useEndpoint('GET', lookupEndpoint) as unknown as () => Promise<{ data: { key: string; label: string }[] }>;
-	const { data: values = [] } = useQuery({
-		queryKey: miscQueryKeys.lookup(lookupEndpoint),
-		queryFn: async () => {
-			const { data = [] } = (await lookup()) ?? {};
-			return data as { key: string; label: string }[];
-		},
-	});
+	const options = useSettingLookupOptions(lookupEndpoint);
 
 	return (
 		<Field>
@@ -57,7 +47,7 @@ function LookupSettingInput({
 					readOnly={readonly}
 					autoComplete={autocomplete === false ? 'off' : undefined}
 					onChange={(value) => handleChange(String(value))}
-					options={values.map(({ key, label }) => [key, label])}
+					options={options.map(({ key, label }) => [key, label])}
 				/>
 			</FieldRow>
 			{hint && <FieldHint>{hint}</FieldHint>}

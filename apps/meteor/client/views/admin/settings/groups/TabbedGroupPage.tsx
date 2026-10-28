@@ -1,14 +1,13 @@
 import { Tabs, TabsItem } from '@rocket.chat/fuselage';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
+import type { ReactNode } from 'react';
 import { memo, useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import GenericGroupPage from './GenericGroupPage';
 import { useEditableSettingsGroupSections } from '../../EditableSettingsContext';
 
-type TabbedGroupPageProps = {
-	headerButtons?: ReactElement;
+export type TabbedGroupPageProps = {
+	headerButtons?: ReactNode;
 	_id: string;
 	i18nLabel: string;
 	tabs: string[];
@@ -26,7 +25,7 @@ function TabbedGroupPage({ _id, tabs, i18nLabel, onClickBack, ...props }: Tabbed
 		<Tabs>
 			{tabs.map((tabName) => (
 				<TabsItem key={tabName || ''} selected={currentTab === tabName} onClick={handleTabClick(tabName)}>
-					{tabName ? t(tabName as TranslationKey) : t(_id as TranslationKey)}
+					{tabName ? t(tabName) : t(_id)}
 				</TabsItem>
 			))}
 		</Tabs>

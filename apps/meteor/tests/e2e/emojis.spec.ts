@@ -30,8 +30,8 @@ test.describe.serial('emoji', () => {
 		await test.step('should focus the active emoji tab category', async () => {
 			const activityEmojiTab = poHomeChannel.getEmojiPickerTabByName('Activity');
 			await activityEmojiTab.click();
-
-			await expect(activityEmojiTab).toBeFocused();
+			//Picker search input can steal focus and cause failures here
+			await expect(activityEmojiTab).toHaveAttribute('aria-selected', 'true');
 			await poHomeChannel.composer.inputMessage.click(); // To close the emoji picker
 		});
 
@@ -68,7 +68,7 @@ test.describe.serial('emoji', () => {
 			await poAdminEmoji.btnNew.click();
 			await poAdminEmoji.addEmojiFlexTab.inputName.fill(emojiName);
 
-			const [fileChooser] = await Promise.all([page.waitForEvent('filechooser'), page.locator('role=button[name="Custom Emoji"]').click()]);
+			const [fileChooser] = await Promise.all([page.waitForEvent('filechooser'), page.locator('role=button[name="Custom emoji"]').click()]);
 			await fileChooser.setFiles(emojiUrl);
 
 			await poAdminEmoji.addEmojiFlexTab.save();

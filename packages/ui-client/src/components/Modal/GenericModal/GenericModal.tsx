@@ -12,7 +12,7 @@ import {
 	ModalTagline,
 	ModalTitle,
 } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { ReactElement, ReactNode, ComponentPropsWithoutRef } from 'react';
 import { useId, useEffect, useRef } from 'react';
@@ -24,15 +24,17 @@ import { modalStore } from '../../../providers/ModalProvider/ModalStore';
 
 type VariantType = 'danger' | 'secondary-danger' | 'warning' | 'info' | 'success' | 'upsell';
 
-type GenericModalProps = RequiredModalProps & {
+export type GenericModalProps = RequiredModalProps & {
 	variant?: VariantType;
 	children?: ReactNode;
 	cancelText?: ReactNode;
 	confirmText?: ReactNode;
-	title?: string | ReactElement;
-	icon?: IconName | ReactElement | null;
+	title?: string | ReactElement<any>;
+	icon?: IconName | ReactElement<any> | null;
 	confirmDisabled?: boolean;
 	confirmLoading?: boolean;
+	/** Symmetric with `confirmDisabled`: for a modal whose action, once started, cannot be called back. */
+	cancelDisabled?: boolean;
 	tagline?: ReactNode;
 	onCancel?: () => Promise<void> | void;
 	onClose?: () => Promise<void> | void;
@@ -50,12 +52,12 @@ const iconMap: Record<string, IconName> = {
 const getButtonProps = (variant: VariantType): ComponentPropsWithoutRef<typeof Button> => {
 	switch (variant) {
 		case 'danger':
-			return { danger: true };
+			return { variant: 'danger' };
 		case 'secondary-danger':
-			return { secondary: true, danger: true };
+			return { variant: 'secondary-danger' };
 		case 'warning':
 		case 'upsell':
-			return { primary: true };
+			return { variant: 'primary' };
 		default:
 			return {};
 	}
@@ -67,7 +69,12 @@ const renderIcon = (icon: GenericModalProps['icon'], variant: VariantType): Reac
 	}
 
 	if (icon === undefined) {
-		return <ModalIcon color={variant} name={iconMap[variant]} />;
+		return (
+			<ModalIcon
+				variant={variant === 'danger' || variant === 'info' || variant === 'warning' || variant === 'success' ? variant : undefined}
+				name={iconMap[variant]}
+			/>
+		);
 	}
 
 	if (typeof icon === 'string') {
@@ -91,6 +98,7 @@ const GenericModal = ({
 	dontAskAgain,
 	confirmDisabled,
 	confirmLoading,
+	cancelDisabled,
 	tagline,
 	wrapperFunction,
 	annotation,
@@ -101,24 +109,22 @@ const GenericModal = ({
 
 	const dismissedRef = useRef(true);
 
-	const taglineColor = variant === 'upsell' ? 'annotation' : undefined;
-
-	const handleConfirm = useEffectEvent(() => {
+	const handleConfirm = useStableCallback(() => {
 		dismissedRef.current = false;
 		void onConfirm?.();
 	});
 
-	const handleCancel = useEffectEvent(() => {
+	const handleCancel = useStableCallback(() => {
 		dismissedRef.current = false;
 		void onCancel?.();
 	});
 
-	const handleCloseButtonClick = useEffectEvent(() => {
+	const handleCloseButtonClick = useStableCallback(() => {
 		dismissedRef.current = true;
 		void onClose?.();
 	});
 
-	const handleDismiss = useEffectEvent(() => {
+	const handleDismiss = useStableCallback(() => {
 		dismissedRef.current = true;
 		void onDismiss?.();
 	});
@@ -138,18 +144,18 @@ const GenericModal = ({
 			<ModalHeader>
 				{renderIcon(icon, variant)}
 				<ModalHeaderText>
-					{tagline && <ModalTagline color={taglineColor}>{tagline}</ModalTagline>}
+					{tagline && <ModalTagline subtle={variant === 'upsell'}>{tagline}</ModalTagline>}
 					<ModalTitle id={`${genericModalId}-title`}>{title ?? t('Are_you_sure')}</ModalTitle>
 				</ModalHeaderText>
 				{onClose && <ModalClose tabIndex={-1} aria-label={t('Close')} onClick={handleCloseButtonClick} />}
 			</ModalHeader>
-			<ModalContent fontScale='p2'>{children}</ModalContent>
-			<ModalFooter justifyContent={dontAskAgain || annotation ? 'space-between' : 'end'}>
+			<ModalContent>{children}</ModalContent>
+			<ModalFooter justify={dontAskAgain || annotation ? 'space-between' : 'end'}>
 				{dontAskAgain}
 				{annotation && !dontAskAgain && <ModalFooterAnnotation>{annotation}</ModalFooterAnnotation>}
 				<ModalFooterControllers>
 					{onCancel && (
-						<Button secondary onClick={handleCancel}>
+						<Button variant='secondary' disabled={cancelDisabled} onClick={handleCancel}>
 							{cancelText ?? t('Cancel')}
 						</Button>
 					)}

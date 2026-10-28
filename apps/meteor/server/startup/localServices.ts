@@ -1,12 +1,6 @@
-import { api, LocalBroker } from '@rocket.chat/core-services';
+import { api } from '@rocket.chat/core-services';
 
-import { StreamerCentral } from '../modules/streamer/streamer.module';
+import { localBroker } from './localBroker';
 
-const broker = new LocalBroker();
-
-broker.onBroadcast((eventName: string, args: unknown[]) => {
-	StreamerCentral.emit('broadcast', 'local', 'broadcast', [{ eventName, args }]);
-});
-
-api.setBroker(broker);
+api.setBroker(localBroker);
 void api.start();

@@ -1,4 +1,4 @@
-import type { Meta, StoryFn } from '@storybook/preact';
+import type { Meta, StoryObj } from '@storybook/preact';
 import type { ComponentProps } from 'preact';
 
 import Message from '.';
@@ -54,7 +54,6 @@ const defaultUser = {
 const now = new Date(Date.parse('2021-01-01T00:00:00.000Z'));
 
 export default {
-	title: 'Messages/Message',
 	component: Message,
 	parameters: {
 		layout: 'centered',
@@ -94,84 +93,7 @@ export default {
 		attachments: [],
 		blocks: [],
 	},
-} satisfies Meta<ComponentProps<typeof Message>>;
-
-export const Default: StoryFn<ComponentProps<typeof Message>> = (args) => (
-	<Message
-		attachmentResolver={attachmentResolver}
-		avatarResolver={avatarResolver}
-		me={args.me}
-		compact={args.compact}
-		msg={args.msg}
-		type={args.t}
-		u={args.u}
-		ts={args.ts}
-		attachments={args.attachments}
-		blocks={args.blocks}
-	/>
-);
-Default.storyName = 'default';
-
-export const System: StoryFn<ComponentProps<typeof Message>> = (args) => (
-	<Message
-		attachmentResolver={attachmentResolver}
-		avatarResolver={avatarResolver}
-		me={args.me}
-		compact={args.compact}
-		msg={args.msg}
-		type={args.t}
-		u={args.u}
-		ts={args.ts}
-		attachments={args.attachments}
-		blocks={args.blocks}
-	/>
-);
-System.storyName = 'system';
-System.args = {
-	msg: '',
-	t: MESSAGE_TYPE_WELCOME,
-};
-
-export const Me: StoryFn<ComponentProps<typeof Message>> = (args) => (
-	<Message
-		attachmentResolver={attachmentResolver}
-		avatarResolver={avatarResolver}
-		me={args.me}
-		compact={args.compact}
-		msg={args.msg}
-		type={args.t}
-		u={args.u}
-		ts={args.ts}
-		attachments={args.attachments}
-		blocks={args.blocks}
-	/>
-);
-Me.storyName = 'me';
-Me.args = {
-	me: true,
-};
-
-export const Markdown: StoryFn<ComponentProps<typeof Message>> = (args) => (
-	<Message
-		attachmentResolver={attachmentResolver}
-		avatarResolver={avatarResolver}
-		me={args.me}
-		compact={args.compact}
-		msg={args.msg}
-		type={args.t}
-		u={args.u}
-		ts={args.ts}
-		attachments={args.attachments}
-		blocks={args.blocks}
-	/>
-);
-Markdown.storyName = 'markdown';
-Markdown.args = {
-	msg: defaultMarkdownMessage,
-};
-
-export const Grouping: StoryFn<ComponentProps<typeof Message>> = (args) => (
-	<div>
+	render: (args) => (
 		<Message
 			attachmentResolver={attachmentResolver}
 			avatarResolver={avatarResolver}
@@ -184,195 +106,158 @@ export const Grouping: StoryFn<ComponentProps<typeof Message>> = (args) => (
 			attachments={args.attachments}
 			blocks={args.blocks}
 		/>
-		<Message
-			attachmentResolver={attachmentResolver}
-			avatarResolver={avatarResolver}
-			me={args.me}
-			msg={defaultMessage}
-			u={defaultUser}
-			ts={now}
-		/>
-	</div>
-);
-Grouping.storyName = 'grouping';
-Grouping.args = {
-	msg: defaultMessageExtra,
-	compact: true,
+	),
+} satisfies Meta<ComponentProps<typeof Message>>;
+
+type Story = StoryObj<ComponentProps<typeof Message>>;
+
+export const Default: Story = {
+	name: 'default',
 };
 
-export const WithQuotation: StoryFn<ComponentProps<typeof Message>> = (args) => (
-	<Message
-		attachmentResolver={attachmentResolver}
-		avatarResolver={avatarResolver}
-		me={args.me}
-		compact={args.compact}
-		msg={args.msg}
-		type={args.t}
-		u={args.u}
-		ts={args.ts}
-		attachments={args.attachments}
-		blocks={args.blocks}
-	/>
-);
-WithQuotation.storyName = 'with quotation';
-WithQuotation.args = {
-	attachments: [
-		{
-			message_link: 'http://localhost:3000/live/SqouQyJ7wDsK8KPnc?msg=EWrxmazqYbEf3rFzd',
-			text: defaultMessageExtra,
-		},
-	],
+export const System: Story = {
+	name: 'system',
+	args: {
+		msg: '',
+		t: MESSAGE_TYPE_WELCOME,
+	},
 };
 
-export const WithAudioAttachment: StoryFn<ComponentProps<typeof Message>> = (args) => (
-	<Message
-		attachmentResolver={attachmentResolver}
-		avatarResolver={avatarResolver}
-		me={args.me}
-		compact={args.compact}
-		msg={args.msg}
-		type={args.t}
-		u={args.u}
-		ts={args.ts}
-		attachments={args.attachments}
-		blocks={args.blocks}
-	/>
-);
-WithAudioAttachment.storyName = 'with audio attachment';
-WithAudioAttachment.args = {
-	attachments: [
-		{
-			audio_url: sampleAudio,
-		},
-	],
+export const Me: Story = {
+	name: 'me',
+	args: {
+		me: true,
+	},
 };
 
-export const WithVideoAttachment: StoryFn<ComponentProps<typeof Message>> = (args) => (
-	<Message
-		attachmentResolver={attachmentResolver}
-		avatarResolver={avatarResolver}
-		me={args.me}
-		compact={args.compact}
-		msg={args.msg}
-		type={args.t}
-		u={args.u}
-		ts={args.ts}
-		attachments={args.attachments}
-		blocks={args.blocks}
-	/>
-);
-WithVideoAttachment.storyName = 'with video attachment';
-WithVideoAttachment.args = {
-	attachments: [
-		{
-			video_url: sampleVideo,
-		},
-	],
+export const Markdown: Story = {
+	name: 'markdown',
+	args: {
+		msg: defaultMarkdownMessage,
+	},
 };
 
-export const WithImageAttachment: StoryFn<ComponentProps<typeof Message>> = (args) => (
-	<Message
-		attachmentResolver={attachmentResolver}
-		avatarResolver={avatarResolver}
-		me={args.me}
-		compact={args.compact}
-		msg={args.msg}
-		type={args.t}
-		u={args.u}
-		ts={args.ts}
-		attachments={args.attachments}
-		blocks={args.blocks}
-	/>
-);
-WithImageAttachment.storyName = 'with image attachment';
-WithImageAttachment.args = {
-	attachments: [
-		{
-			image_url: sampleImage,
-		},
-	],
+export const Grouping: Story = {
+	name: 'grouping',
+	args: {
+		msg: defaultMessageExtra,
+		compact: true,
+	},
+	render: (args) => (
+		<div>
+			<Message
+				attachmentResolver={attachmentResolver}
+				avatarResolver={avatarResolver}
+				me={args.me}
+				compact={args.compact}
+				msg={args.msg}
+				type={args.t}
+				u={args.u}
+				ts={args.ts}
+				attachments={args.attachments}
+				blocks={args.blocks}
+			/>
+			<Message
+				attachmentResolver={attachmentResolver}
+				avatarResolver={avatarResolver}
+				me={args.me}
+				msg={defaultMessage}
+				u={defaultUser}
+				ts={now}
+			/>
+		</div>
+	),
 };
 
-export const WithFilesAttachments: StoryFn<ComponentProps<typeof Message>> = (args) => (
-	<Message
-		attachmentResolver={attachmentResolver}
-		avatarResolver={avatarResolver}
-		me={args.me}
-		compact={args.compact}
-		msg={args.msg}
-		type={args.t}
-		u={args.u}
-		ts={args.ts}
-		attachments={args.attachments}
-		blocks={args.blocks}
-	/>
-);
-WithFilesAttachments.storyName = 'with files attachments';
-WithFilesAttachments.args = {
-	attachments: ['pdf', 'doc', 'ppt', 'xls', 'zip', 'abc'].map((extension) => ({
-		title_link: `http://example.com/demo.${extension}`,
-		title: `Untitled ${extension} file`,
-	})),
-};
-
-export const WithMultipleAttachments: StoryFn<ComponentProps<typeof Message>> = (args) => (
-	<Message
-		attachmentResolver={attachmentResolver}
-		avatarResolver={avatarResolver}
-		me={args.me}
-		compact={args.compact}
-		msg={args.msg}
-		type={args.t}
-		u={args.u}
-		ts={args.ts}
-		attachments={args.attachments}
-		blocks={args.blocks}
-	/>
-);
-WithMultipleAttachments.storyName = 'with mutiple attachments';
-WithMultipleAttachments.args = {
-	attachments: [
-		{
-			audio_url: sampleAudio,
-		},
-		{
-			video_url: sampleVideo,
-		},
-		{
-			image_url: sampleImage,
-		},
-		{
-			title_link: 'http://example.com/demo.pdf',
-			title: 'Untitled pdf file',
-		},
-	],
-};
-
-export const WithUiKitBlocks: StoryFn<ComponentProps<typeof Message>> = (args) => (
-	<Message
-		attachmentResolver={attachmentResolver}
-		avatarResolver={avatarResolver}
-		me={args.me}
-		compact={args.compact}
-		msg={args.msg}
-		type={args.t}
-		u={args.u}
-		ts={args.ts}
-		attachments={args.attachments}
-		blocks={args.blocks}
-	/>
-);
-WithUiKitBlocks.storyName = 'with UiKit blocks';
-WithUiKitBlocks.args = {
-	msg: '',
-	blocks: [
-		{
-			type: 'section',
-			text: {
-				type: 'plain_text',
-				text: 'This is a plain text section block.',
-				emoji: true,
+export const WithQuotation: Story = {
+	name: 'with quotation',
+	args: {
+		attachments: [
+			{
+				message_link: 'http://localhost:3000/live/SqouQyJ7wDsK8KPnc?msg=EWrxmazqYbEf3rFzd',
+				text: defaultMessageExtra,
 			},
-		},
-	],
+		],
+	},
+};
+
+export const WithAudioAttachment: Story = {
+	name: 'with audio attachment',
+	args: {
+		attachments: [
+			{
+				audio_url: sampleAudio,
+			},
+		],
+	},
+};
+
+export const WithVideoAttachment: Story = {
+	name: 'with video attachment',
+	args: {
+		attachments: [
+			{
+				video_url: sampleVideo,
+			},
+		],
+	},
+};
+
+export const WithImageAttachment: Story = {
+	name: 'with image attachment',
+	args: {
+		attachments: [
+			{
+				image_url: sampleImage,
+			},
+		],
+	},
+};
+
+export const WithFilesAttachments: Story = {
+	name: 'with files attachments',
+	args: {
+		attachments: ['pdf', 'doc', 'ppt', 'xls', 'zip', 'abc'].map((extension) => ({
+			title_link: `http://example.com/demo.${extension}`,
+			title: `Untitled ${extension} file`,
+		})),
+	},
+};
+
+export const WithMultipleAttachments: Story = {
+	name: 'with mutiple attachments',
+	args: {
+		attachments: [
+			{
+				audio_url: sampleAudio,
+			},
+			{
+				video_url: sampleVideo,
+			},
+			{
+				image_url: sampleImage,
+			},
+			{
+				title_link: 'http://example.com/demo.pdf',
+				title: 'Untitled pdf file',
+			},
+		],
+	},
+};
+
+export const WithUiKitBlocks: Story = {
+	name: 'with UiKit blocks',
+	args: {
+		msg: '',
+		blocks: [
+			{
+				type: 'section',
+				text: {
+					type: 'plain_text',
+					text: 'This is a plain text section block.',
+					emoji: true,
+				},
+			},
+		],
+	},
 };

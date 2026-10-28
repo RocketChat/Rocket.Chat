@@ -1,5 +1,5 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useStream, useUserId } from '@rocket.chat/ui-contexts';
 import type { InfiniteData } from '@tanstack/react-query';
 import { useQueryClient } from '@tanstack/react-query';
@@ -21,11 +21,11 @@ export const useInfiniteMessageQueryUpdates = <T extends IMessage, TQueryKey ext
 	const subscribeToRoomMessages = useStream('room-messages');
 	const subscribeToNotifyRoom = useStream('notify-room');
 
-	const getQueryKey = useEffectEvent(() => queryKey);
-	const doFilter = useEffectEvent(filter);
-	const doCompare = useEffectEvent(compare);
+	const getQueryKey = useStableCallback(() => queryKey);
+	const doFilter = useStableCallback(filter);
+	const doCompare = useStableCallback(compare);
 
-	const mutateQueryData = useEffectEvent((mutation: (items: T[]) => void) => {
+	const mutateQueryData = useStableCallback((mutation: (items: T[]) => void) => {
 		const queryData = queryClient.getQueryData<
 			InfiniteData<
 				{

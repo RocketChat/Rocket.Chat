@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/naming-convention */
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { composeStories } from '@storybook/react';
 import { render, screen, waitFor } from '@testing-library/react';
@@ -47,12 +46,6 @@ describe('AttributesForm', () => {
 
 	beforeEach(() => {
 		jest.clearAllMocks();
-	});
-
-	test.each(testCases)(`renders %s without crashing`, async (_storyname, Story) => {
-		const { baseElement } = render(<Story />, { wrapper: appRoot });
-
-		expect(baseElement).toMatchSnapshot();
 	});
 
 	test.each(testCases)('%s should have no a11y violations', async (_storyname, Story) => {

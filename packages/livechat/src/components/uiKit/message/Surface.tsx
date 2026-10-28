@@ -10,7 +10,7 @@ const SurfaceContext = createContext<SurfaceContextValue>({
 	dispatchAction: () => undefined,
 });
 
-type SurfaceProps = {
+export type SurfaceProps = {
 	children: ComponentChildren;
 	dispatchAction: (action: any) => void;
 };

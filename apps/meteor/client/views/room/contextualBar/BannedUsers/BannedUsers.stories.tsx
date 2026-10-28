@@ -1,6 +1,7 @@
+import { Box } from '@rocket.chat/fuselage';
 import { Contextualbar } from '@rocket.chat/ui-client';
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryObj } from '@storybook/react';
+import { action } from 'storybook/actions';
 
 import BannedUsers from './BannedUsers';
 
@@ -13,7 +14,13 @@ const meta = {
 	args: {
 		useRealName: false,
 	},
-	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
+	decorators: [
+		(fn) => (
+			<Box height='100vh'>
+				<Contextualbar>{fn()}</Contextualbar>
+			</Box>
+		),
+	],
 } satisfies Meta<typeof BannedUsers>;
 
 export default meta;

@@ -2,7 +2,7 @@ import type { To, SearchParameters, LocationPathname, LocationSearch } from '@ro
 import { RouterContext } from '@rocket.chat/ui-contexts';
 import { compile } from 'path-to-regexp';
 import { useRef, useMemo } from 'react';
-import type { MutableRefObject, ReactElement, ReactNode } from 'react';
+import type { MutableRefObject, ReactNode } from 'react';
 
 const encodeSearchParameters = (searchParameters: SearchParameters) => {
 	const search = new URLSearchParams();
@@ -29,8 +29,7 @@ const buildRoutePath = (to: To): LocationPathname | `${LocationPathname}?${Locat
 	if ('pattern' in to) {
 		const { pattern, params = {}, search = {} } = to;
 		return (compile(pattern, { encode: encodeURIComponent })(params) + encodeSearchParameters(search)) as
-			| LocationPathname
-			| `${LocationPathname}?${LocationSearch}`;
+			LocationPathname | `${LocationPathname}?${LocationSearch}`;
 	}
 
 	if ('name' in to) {
@@ -48,14 +47,13 @@ const buildRoutePath = (to: To): LocationPathname | `${LocationPathname}?${Locat
 		}
 
 		return (compile(name, { encode: encodeURIComponent })(params) + encodeSearchParameters(search)) as
-			| LocationPathname
-			| `${LocationPathname}?${LocationSearch}`;
+			LocationPathname | `${LocationPathname}?${LocationSearch}`;
 	}
 
 	throw new Error('Invalid route');
 };
 
-type RouterContextMockProps = {
+export type RouterContextMockProps = {
 	children?: ReactNode;
 	navigate?: (toOrDelta: number | To) => void;
 	currentPath?: MutableRefObject<string | undefined>;
@@ -63,13 +61,7 @@ type RouterContextMockProps = {
 	routeParameters?: Record<string, any>;
 };
 
-const RouterContextMock = ({
-	children,
-	navigate,
-	currentPath,
-	searchParameters = {},
-	routeParameters = {},
-}: RouterContextMockProps): ReactElement => {
+const RouterContextMock = ({ children, navigate, currentPath, searchParameters = {}, routeParameters = {} }: RouterContextMockProps) => {
 	const history = useRef<{ stack: To[]; index: number }>({ stack: ['/'], index: 0 });
 
 	if (currentPath) {

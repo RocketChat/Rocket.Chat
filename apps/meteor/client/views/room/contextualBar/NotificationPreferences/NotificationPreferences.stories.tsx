@@ -1,6 +1,7 @@
+import { Box } from '@rocket.chat/fuselage';
 import { Contextualbar } from '@rocket.chat/ui-client';
-import { action } from '@storybook/addon-actions';
-import type { Meta, StoryFn } from '@storybook/react';
+import type { StoryObj, Meta } from '@storybook/react';
+import { action } from 'storybook/actions';
 
 import NotificationsPreferences from './NotificationPreferences';
 
@@ -9,21 +10,29 @@ export default {
 	parameters: {
 		layout: 'fullscreen',
 	},
-	decorators: [(fn) => <Contextualbar height='100vh'>{fn()}</Contextualbar>],
+	decorators: [
+		(fn) => (
+			<Box height='100vh'>
+				<Contextualbar>{fn()}</Contextualbar>
+			</Box>
+		),
+	],
 } satisfies Meta<typeof NotificationsPreferences>;
 
-export const Default: StoryFn<typeof NotificationsPreferences> = (args) => <NotificationsPreferences {...args} />;
-Default.storyName = 'NotificationsPreferences';
-Default.args = {
-	handleClose: action('handleClose'),
-	handleSave: action('handleSaveButton'),
-	handlePlaySound: action('handlePlaySound'),
-	notificationOptions: {
-		alerts: [
-			['default', 'Default'],
-			['all', 'All_messages'],
-			['mentions', 'Mentions'],
-			['nothing', 'Nothing'],
-		],
+export const Default: StoryObj<typeof NotificationsPreferences> = {
+	name: 'NotificationsPreferences',
+
+	args: {
+		handleClose: action('handleClose'),
+		handleSave: action('handleSaveButton'),
+		handlePlaySound: action('handlePlaySound'),
+		notificationOptions: {
+			alerts: [
+				['default', 'Default'],
+				['all', 'All_messages'],
+				['mentions', 'Mentions'],
+				['nothing', 'Nothing'],
+			],
+		},
 	},
 };

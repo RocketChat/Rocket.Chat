@@ -1,30 +1,32 @@
 import type { IUser, IRoom } from '@rocket.chat/core-typings';
-import { Callout } from '@rocket.chat/fuselage';
+import { Box, Callout } from '@rocket.chat/fuselage';
 import {
-	ContextualbarHeader,
 	ContextualbarBack,
-	ContextualbarIcon,
-	ContextualbarTitle,
 	ContextualbarClose,
 	ContextualbarContent,
 	ContextualbarDialog,
+	ContextualbarHeader,
+	ContextualbarIcon,
+	ContextualbarTitle,
+	UserCardRole,
+	UserInfo,
 } from '@rocket.chat/ui-client';
-import { useEndpoint, useRolesDescription } from '@rocket.chat/ui-contexts';
+import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import type { ReactElement } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import UserInfoActions from './UserInfoActions';
 import { getUserEmailAddress } from '../../../../../lib/getUserEmailAddress';
 import { FormSkeleton } from '../../../../components/Skeleton';
-import { UserCardRole } from '../../../../components/UserCard';
-import { UserInfo } from '../../../../components/UserInfo';
+import UserInfoPhoneNumberList from '../../../../components/UserInfoPhoneNumberList';
 import { ReactiveUserStatus } from '../../../../components/UserStatus';
+import { ReactiveUserStatusText } from '../../../../components/UserStatusText';
+import { useUserRolesByScope } from '../../../../hooks/useUserRolesByScope';
 import { usersQueryKeys } from '../../../../lib/queryKeys';
 import { getUserEmailVerified } from '../../../../lib/utils/getUserEmailVerified';
 
-type UserInfoWithDataProps = {
+export type UserInfoWithDataProps = {
 	uid?: IUser['_id'];
 	username?: IUser['username'];
 	rid: IRoom['_id'];
@@ -33,9 +35,8 @@ type UserInfoWithDataProps = {
 	onClickBack?: () => void;
 };
 
-const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClickBack }: UserInfoWithDataProps): ReactElement => {
+const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClickBack }: UserInfoWithDataProps) => {
 	const { t } = useTranslation();
-	const getRoles = useRolesDescription();
 
 	const getUserInfo = useEndpoint('GET', '/v1/users.info');
 	const { isPending, isError, data } = useQuery({
@@ -47,6 +48,8 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 		},
 	});
 
+	const { workspaceRoles, roomRoles } = useUserRolesByScope(data?.user?._id, rid, { userRoleIds: data?.user?.roles });
+
 	const user = useMemo(() => {
 		if (!data?.user) {
 			return;
@@ -56,17 +59,16 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			_id,
 			name,
 			username,
-			roles = [],
-			statusText,
 			bio,
 			utcOffset,
 			lastLogin,
 			customFields,
-			phone,
+			phones,
 			nickname,
 			createdAt,
 			canViewAllInfo,
-			freeSwitchExtension,
+			sipExtension,
+			federated,
 		} = data.user;
 
 		return {
@@ -77,28 +79,29 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			/**
 			 * TODO: We shouldn't use UserCard components outside UserCard
 			 */
-			roles: roles && getRoles(roles).map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
+			roles: workspaceRoles.map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
+			roomRoles: roomRoles.map((role, index) => <UserCardRole key={index}>{role}</UserCardRole>),
 			bio,
 			canViewAllInfo,
-			phone,
+			phoneNumbers: phones?.length ? <UserInfoPhoneNumberList phones={phones} /> : undefined,
 			customFields,
 			verified: getUserEmailVerified(data.user),
 			email: getUserEmailAddress(data.user),
 			utcOffset,
 			createdAt,
 			status: <ReactiveUserStatus uid={_id} />,
-			statusText,
+			customStatus: <ReactiveUserStatusText uid={_id} />,
 			nickname,
-			freeSwitchExtension,
+			sipExtension,
+			federated,
 		};
-	}, [data, getRoles]);
+	}, [data, workspaceRoles, roomRoles]);
 
 	return (
 		<ContextualbarDialog>
 			<ContextualbarHeader>
-				{onClickBack && <ContextualbarBack onClick={onClickBack} />}
-				{!onClickBack && <ContextualbarIcon name='user' />}
-				<ContextualbarTitle>{t('User_Info')}</ContextualbarTitle>
+				{onClickBack ? <ContextualbarBack onClick={onClickBack} /> : <ContextualbarIcon name='user' />}
+				<ContextualbarTitle>{t('Full_profile')}</ContextualbarTitle>
 				{onClose && <ContextualbarClose onClick={onClose} />}
 			</ContextualbarHeader>
 
@@ -109,8 +112,10 @@ const UserInfoWithData = ({ uid, username, rid, invitationDate, onClose, onClick
 			)}
 
 			{isError && !user && (
-				<ContextualbarContent pb={16}>
-					<Callout type='danger'>{t('User_not_found')}</Callout>
+				<ContextualbarContent>
+					<Box paddingBlock={16}>
+						<Callout type='danger'>{t('User_not_found')}</Callout>
+					</Box>
 				</ContextualbarContent>
 			)}
 

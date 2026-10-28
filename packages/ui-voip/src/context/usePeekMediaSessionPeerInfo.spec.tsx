@@ -3,8 +3,7 @@ import type { CallContact } from '@rocket.chat/media-signaling';
 import { renderHook, act } from '@testing-library/react';
 import type { ReactNode } from 'react';
 
-import type { Signals } from './MediaCallInstanceContext';
-import { MediaCallInstanceContext } from './MediaCallInstanceContext';
+import { MediaCallInstanceContext, defaultContextValue } from './MediaCallInstanceContext';
 import { usePeekMediaSessionPeerInfo } from './usePeekMediaSessionPeerInfo';
 
 type MockInstance = {
@@ -16,14 +15,8 @@ const createWrapper = (instance: MockInstance | undefined) => {
 	const wrapper = ({ children }: { children?: ReactNode }) => (
 		<MediaCallInstanceContext.Provider
 			value={{
-				inRoomView: false,
-				setInRoomView: () => undefined,
+				...defaultContextValue,
 				instance: instance as any,
-				signalEmitter: new Emitter<Signals>(),
-				audioElement: undefined,
-				openRoomId: undefined,
-				setOpenRoomId: () => undefined,
-				getAutocompleteOptions: () => Promise.resolve([]),
 			}}
 		>
 			{children}
@@ -73,7 +66,7 @@ describe('usePeekMediaSessionPeerInfo', () => {
 				wrapper: createWrapper(instance),
 			});
 
-			expect(result.current).toEqual({ number: '+5511999999999' });
+			expect(result.current).toEqual({ type: 'sip', number: '+5511999999999' });
 		});
 
 		it('returns internal peer info for user contact', () => {
@@ -98,6 +91,7 @@ describe('usePeekMediaSessionPeerInfo', () => {
 			});
 
 			expect(result.current).toEqual({
+				type: 'user',
 				displayName: 'John Doe',
 				userId: 'userId123',
 				username: 'johndoe',
@@ -131,7 +125,7 @@ describe('usePeekMediaSessionPeerInfo', () => {
 				wrapper: createWrapper(instance),
 			});
 
-			expect(result.current).toEqual({ number: '+5511999999999' });
+			expect(result.current).toEqual({ type: 'sip', number: '+5511999999999' });
 
 			act(() => {
 				instanceState = null;
@@ -155,6 +149,7 @@ describe('usePeekMediaSessionPeerInfo', () => {
 			});
 
 			expect(result.current).toEqual({
+				type: 'user',
 				displayName: 'Jane Smith',
 				userId: 'userId456',
 				username: undefined,

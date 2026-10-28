@@ -10,6 +10,7 @@ import type {
 	Types,
 	Task,
 	ListItem,
+	NestedList,
 	Inlines,
 	LineBreak,
 	Emoji,
@@ -17,6 +18,11 @@ import type {
 	InlineKaTeX,
 	Link,
 	Timestamp,
+	SourceRange,
+	HorizontalRule,
+	Table,
+	TableRow,
+	TableCell,
 } from './definitions';
 
 const generate =
@@ -50,10 +56,11 @@ export const bigEmoji = (value: BigEmoji['value']): BigEmoji => ({
 	value,
 });
 
-export const task = (value: Task['value'], status: boolean): Task => ({
+export const task = (value: Task['value'], status: boolean, nested?: NestedList[] | null): Task => ({
 	type: 'TASK',
 	status,
 	value,
+	...(nested && { nested }),
 });
 
 export const inlineCode = generate('INLINE_CODE');
@@ -131,10 +138,99 @@ export const orderedList = generate('ORDERED_LIST');
 
 export const unorderedList = generate('UNORDERED_LIST');
 
-export const listItem = (text: Inlines[], number?: number): ListItem => ({
+export const listItem = (text: Inlines[], number?: number, nested?: NestedList[] | null): ListItem => ({
 	type: 'LIST_ITEM',
 	value: text,
 	...(number !== undefined && { number }),
+	...(nested && { nested }),
+});
+
+type NestedListLine = {
+	indent: string;
+	marker: 'task' | 'ordered' | '-' | '*';
+	item: ListItem | Task;
+};
+
+const indentWidth = (indent: string) => [...indent].reduce((width, char) => width + (char === '\t' ? 4 - (width % 4) : 1), 0);
+
+// Groups indented list lines into lists by marker, nesting each line under the closest less-indented item above it.
+export const nestedLists = (lines: NestedListLine[]): NestedList[] => {
+	const widths = lines.map(({ indent }) => indentWidth(indent));
+	const lists: NestedList[] = [];
+	let i = 0;
+
+	while (i < lines.length) {
+		const { marker } = lines[i];
+		const width = widths[i];
+		const items: (ListItem | Task)[] = [];
+
+		while (i < lines.length && lines[i].marker === marker && widths[i] <= width) {
+			const itemWidth = widths[i];
+			const { item } = lines[i++];
+			const start = i;
+			while (i < lines.length && widths[i] > itemWidth) {
+				i++;
+			}
+			items.push(start < i ? { ...item, nested: nestedLists(lines.slice(start, i)) } : item);
+		}
+
+		if (marker === 'task') {
+			lists.push(tasks(items as Task[]));
+		} else if (marker === 'ordered') {
+			lists.push(orderedList(items as ListItem[]));
+		} else {
+			lists.push(unorderedList(items as ListItem[]));
+		}
+	}
+
+	return lists;
+};
+
+// GFM trims leading/trailing whitespace of each table cell's content
+const trimCellContent = (value: Inlines[]): Inlines[] => {
+	const result = value.slice();
+
+	const first = result[0];
+	if (first?.type === 'PLAIN_TEXT') {
+		const trimmed = first.value.replace(/^\s+/, '');
+		if (trimmed === '') {
+			result.shift();
+		} else {
+			result[0] = { type: 'PLAIN_TEXT', value: trimmed };
+		}
+	}
+
+	const last = result[result.length - 1];
+	if (last?.type === 'PLAIN_TEXT') {
+		const trimmed = last.value.replace(/\s+$/, '');
+		if (trimmed === '') {
+			result.pop();
+		} else {
+			result[result.length - 1] = { type: 'PLAIN_TEXT', value: trimmed };
+		}
+	}
+
+	return result;
+};
+
+const tableCell = (value: Inlines[], align: TableCell['align']): TableCell => ({
+	type: 'TABLE_CELL',
+	align,
+	value: trimCellContent(value),
+});
+
+export const table = (header: Inlines[][], aligns: Array<TableCell['align']>, rows: Inlines[][][], fallback?: SourceRange): Table => ({
+	type: 'TABLE',
+	value: {
+		header: header.map((cell, index) => tableCell(cell, aligns[index])),
+		rows: rows.map((cells): TableRow => ({
+			type: 'TABLE_ROW',
+			// Normalize each row to the header's column count: pad missing cells and
+			// drop extras, so ragged GFM rows stay aligned with the header/delimiter.
+			value: header.map((_, index) => tableCell(cells[index] ?? [], aligns[index])),
+		})),
+	},
+	...(fallback !== undefined && { fallback }),
 });
 
 export const mentionUser = (() => {
@@ -191,7 +287,7 @@ export const reducePlainTexts = (values: Paragraph['value']): Paragraph['value']
 	let needsSlowPath = false;
 	for (let i = 0; i < flattenableValues.length; i++) {
 		const v = flattenableValues[i];
-		if (Array.isArray(v) || (v as Inlines).type === 'EMOJI') {
+		if (Array.isArray(v) || v.type === 'EMOJI') {
 			needsSlowPath = true;
 			break;
 		}
@@ -269,6 +365,12 @@ export const lineBreak = (): LineBreak => ({
 	value: undefined,
 });
 
+export const horizontalRule = (fallback?: SourceRange): HorizontalRule => ({
+	type: 'HORIZONTAL_RULE',
+	value: undefined,
+	...(fallback !== undefined && { fallback }),
+});
+
 export const katex = (content: string): KaTeX => ({
 	type: 'KATEX',
 	value: content,
@@ -287,14 +389,14 @@ export const phoneChecker = (text: string, number: string) => {
 	return link(`tel:${number}`, [plain(text)]);
 };
 
-export const timestamp = (value: string, type?: 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R'): Timestamp => {
+export const timestamp = (value: string, type?: 't' | 'T' | 'd' | 'D' | 'f' | 'F' | 'R', fallback?: SourceRange): Timestamp => {
 	return {
 		type: 'TIMESTAMP',
 		value: {
 			timestamp: value,
 			format: type || 't',
 		},
-		fallback: plain(`<t:${value}:${type || 't'}>`),
+		...(fallback !== undefined && { fallback }),
 	};
 };
 

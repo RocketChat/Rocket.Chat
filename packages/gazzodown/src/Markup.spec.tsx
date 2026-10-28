@@ -152,6 +152,35 @@ it('renders an ordered list', () => {
 	expect(items[2]).toHaveTextContent('你好');
 });
 
+it('renders a nested list inside its parent item', () => {
+	render(
+		<Markup
+			tokens={[
+				{
+					type: 'UNORDERED_LIST',
+					value: [
+						{
+							type: 'LIST_ITEM',
+							value: [{ type: 'PLAIN_TEXT', value: 'Parent' }],
+							nested: [
+								{ type: 'ORDERED_LIST', value: [{ type: 'LIST_ITEM', value: [{ type: 'PLAIN_TEXT', value: 'Child' }], number: 1 }] },
+							],
+						},
+						{ type: 'LIST_ITEM', value: [{ type: 'PLAIN_TEXT', value: 'Sibling' }] },
+					],
+				},
+			]}
+		/>,
+	);
+
+	const [outer, inner] = screen.getAllByRole('list');
+	expect(outer.tagName).toBe('UL');
+	expect(inner.tagName).toBe('OL');
+	expect(screen.getAllByRole('listitem')[0]).toContainElement(inner);
+	expect(inner).toHaveTextContent('Child');
+	expect(screen.getAllByRole('listitem')).toHaveLength(3);
+});
+
 it('renders a task list', () => {
 	render(
 		<Markup
@@ -230,7 +259,7 @@ it('renders a code block', async () => {
 		</Suspense>,
 	);
 
-	await waitFor(() => expect(screen.getByRole('region')).toBeInTheDocument());
+	expect(await screen.findByRole('region')).toBeInTheDocument();
 
 	expect(screen.getByRole('region')).toHaveTextContent('```const foo = bar;```');
 });
@@ -250,7 +279,7 @@ it('renders a code block with language', async () => {
 		</Suspense>,
 	);
 
-	await waitFor(() => expect(screen.getByRole('region')).toBeInTheDocument());
+	expect(await screen.findByRole('region')).toBeInTheDocument();
 
 	expect(screen.getByRole('region')).toHaveTextContent('```const foo = bar;```');
 	expect(screen.getByRole('region').querySelector('.language-javascript')).toBeInTheDocument();
@@ -344,6 +373,87 @@ it('renders plain text instead of ASCII emojis based on useEmojis preference', (
 	);
 
 	expect(screen.getByText('Hey! :smile: :)')).toBeInTheDocument();
+});
+
+describe('unicode emojis with the useEmojis preference disabled', () => {
+	const detectEmoji = (text: string) =>
+		text === '🐕' ? [{ name: ':dog2:', className: 'emoji', content: '🐕' }] : [{ name: '', className: 'emoji', content: text }];
+
+	it('renders the shortcode of an emoji sent as unicode', () => {
+		render(
+			<MarkupInteractionContext.Provider
+				value={{
+					convertAsciiToEmoji: false,
+					useEmoji: false,
+					detectEmoji,
+				}}
+			>
+				<Markup
+					tokens={[
+						{
+							type: 'PARAGRAPH',
+							value: [
+								{ type: 'PLAIN_TEXT', value: 'Hey! ' },
+								{ type: 'EMOJI', value: undefined, unicode: '🐕' },
+							],
+						},
+					]}
+				/>
+			</MarkupInteractionContext.Provider>,
+		);
+
+		expect(screen.getByText('Hey! :dog2:')).toBeInTheDocument();
+	});
+
+	it('renders the glyph when no shortcode is known for the emoji', () => {
+		render(
+			<MarkupInteractionContext.Provider
+				value={{
+					convertAsciiToEmoji: false,
+					useEmoji: false,
+					detectEmoji: () => [],
+				}}
+			>
+				<Markup
+					tokens={[
+						{
+							type: 'PARAGRAPH',
+							value: [{ type: 'EMOJI', value: undefined, unicode: '🫩' }],
+						},
+					]}
+				/>
+			</MarkupInteractionContext.Provider>,
+		);
+
+		expect(screen.getByText('🫩')).toBeInTheDocument();
+	});
+
+	it('renders a big emoji block as plain text', () => {
+		render(
+			<MarkupInteractionContext.Provider
+				value={{
+					convertAsciiToEmoji: false,
+					useEmoji: false,
+					detectEmoji,
+				}}
+			>
+				<Markup
+					tokens={[
+						{
+							type: 'BIG_EMOJI',
+							value: [
+								{ type: 'EMOJI', value: { type: 'PLAIN_TEXT', value: 'dog2' }, shortCode: 'dog2' },
+								{ type: 'EMOJI', value: undefined, unicode: '🐕' },
+							],
+						},
+					]}
+				/>
+			</MarkupInteractionContext.Provider>,
+		);
+
+		expect(screen.getByRole('presentation')).toHaveTextContent(':dog2::dog2:');
+		expect(screen.queryAllByRole('img')).toHaveLength(0);
+	});
 });
 
 describe('ImageElement sanitization', () => {

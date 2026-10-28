@@ -1,23 +1,27 @@
 import { States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, StatesAction, Icon } from '@rocket.chat/fuselage';
-import type { ReactElement, ReactNode } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
+import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import CopyErrorReportAction from '../../../components/ErrorReport/CopyErrorReportAction';
+import ReportableErrorBoundary from '../../../components/ErrorReport/ReportableErrorBoundary';
 import { useRoom } from '../contexts/RoomContext';
 
-const MessageListErrorBoundary = ({ children }: { children: ReactNode }): ReactElement => {
+export type MessageListErrorBoundaryProps = { children: ReactNode };
+
+const MessageListErrorBoundary = ({ children }: MessageListErrorBoundaryProps) => {
 	const { t } = useTranslation();
 	const room = useRoom();
 
 	return (
-		<ErrorBoundary
+		<ReportableErrorBoundary
 			resetKeys={[room._id]}
-			fallback={
+			fallbackRender={({ error, componentStack }) => (
 				<States>
 					<StatesIcon name='circle-exclamation' variation='danger' />
 					<StatesTitle>{t('Error')}</StatesTitle>
 					<StatesSubtitle>{t('Error_something_went_wrong')}</StatesSubtitle>
 					<StatesActions>
+						<CopyErrorReportAction error={error} componentStack={componentStack} />
 						<StatesAction
 							onClick={(): void => {
 								location.reload();
@@ -27,10 +31,10 @@ const MessageListErrorBoundary = ({ children }: { children: ReactNode }): ReactE
 						</StatesAction>
 					</StatesActions>
 				</States>
-			}
+			)}
 		>
 			{children}
-		</ErrorBoundary>
+		</ReportableErrorBoundary>
 	);
 };
 

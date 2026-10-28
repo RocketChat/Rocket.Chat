@@ -1,7 +1,6 @@
 import { Button } from '@rocket.chat/fuselage';
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 const resolveLegacyIcon = (legacyIcon: IconName | `icon-${IconName | 'videocam'}`): IconName => {
@@ -12,7 +11,7 @@ const resolveLegacyIcon = (legacyIcon: IconName | `icon-${IconName | 'videocam'}
 	return legacyIcon?.replace(/^icon-/, '') as IconName;
 };
 
-type MessageActionProps = {
+export type MessageActionProps = {
 	icon: IconName;
 	i18nLabel?: TranslationKey;
 	label?: string;
@@ -21,13 +20,19 @@ type MessageActionProps = {
 	danger?: boolean;
 };
 
-const MessageAction = ({ icon, methodId, i18nLabel, label, runAction, danger }: MessageActionProps): ReactElement => {
+const MessageAction = ({ icon, methodId, i18nLabel, label, runAction, danger }: MessageActionProps) => {
 	const { t } = useTranslation();
 
 	const resolvedIcon = resolveLegacyIcon(icon);
 
 	return (
-		<Button icon={resolvedIcon} data-method-id={methodId} onClick={runAction(methodId)} marginInline={4} small danger={danger}>
+		<Button
+			icon={resolvedIcon}
+			data-method-id={methodId}
+			onClick={runAction(methodId)}
+			size='small'
+			variant={danger ? 'danger' : undefined}
+		>
 			{i18nLabel ? t(i18nLabel) : label}
 		</Button>
 	);

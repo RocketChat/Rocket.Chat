@@ -1,4 +1,4 @@
-import type { Meta, StoryFn } from '@storybook/react';
+import type { StoryObj, Meta } from '@storybook/react';
 
 import AnalyticsPage from './AnalyticsPage';
 
@@ -10,5 +10,7 @@ export default {
 	},
 } satisfies Meta<typeof AnalyticsPage>;
 
-export const Default: StoryFn<typeof AnalyticsPage> = () => <AnalyticsPage />;
-Default.storyName = 'AnalyticsPage';
+export const Default: StoryObj<typeof AnalyticsPage> = {
+	render: () => <AnalyticsPage />,
+	name: 'AnalyticsPage',
+};

@@ -2,7 +2,7 @@ import { IconButton } from '@rocket.chat/fuselage';
 import type { ComponentPropsWithoutRef } from 'react';
 import { forwardRef } from 'react';
 
-type HeaderToolbarActionProps = ComponentPropsWithoutRef<typeof IconButton> & {
+export type HeaderToolbarActionProps = ComponentPropsWithoutRef<typeof IconButton> & {
 	tooltip?: string;
 };
 
@@ -10,7 +10,7 @@ const HeaderToolbarAction = forwardRef<HTMLButtonElement, HeaderToolbarActionPro
 	{ icon, title, tooltip, ...props },
 	ref,
 ) {
-	return <IconButton ref={ref} icon={icon} small position='relative' overflow='visible' title={tooltip ?? title} {...props} />;
+	return <IconButton ref={ref} icon={icon} size='small' title={tooltip ?? title} {...props} />;
 });
 
 export default HeaderToolbarAction;

@@ -14,7 +14,7 @@ const overviewInitalValue = {
 
 const initialData = [overviewInitalValue, overviewInitalValue, overviewInitalValue, overviewInitalValue];
 
-type ConversationOverviewProps = {
+export type ConversationOverviewProps = {
 	departmentId: ILivechatDepartment['_id'];
 	dateRange: { start: string; end: string };
 } & ComponentPropsWithoutRef<typeof Box>;

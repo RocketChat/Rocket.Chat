@@ -5,7 +5,7 @@ import StreamCardOpenInRoomButton from './StreamCardOpenInRoom';
 import StreamCardPin from './StreamCardPin';
 import StreamCardStopSharingButton from './StreamCardStopSharingButton';
 
-type StreamCardProps = {
+export type StreamCardProps = {
 	children: ReactNode;
 	own?: boolean;
 	onClickFocusStream?: () => void;

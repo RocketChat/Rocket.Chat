@@ -4,7 +4,7 @@ import { ReactFlowProvider } from 'reactflow';
 import FlowContainer from '../Components/FlowContainer/FlowContainer';
 
 const FlowDiagram = () => (
-	<Box w='100%' h='100%' position='relative'>
+	<Box width='100%' height='100%' position='relative'>
 		<ReactFlowProvider>
 			<FlowContainer />
 		</ReactFlowProvider>

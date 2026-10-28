@@ -1,10 +1,10 @@
 import { Field, FieldHint, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
-import type { FormEventHandler, ReactElement } from 'react';
+import type { ChangeEventHandler } from 'react';
 
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
-type FontSettingInputProps = SettingInputProps & {
+export type FontSettingInputProps = SettingInputProps & {
 	value: string;
 };
 
@@ -21,8 +21,8 @@ function FontSettingInput({
 	hasResetButton,
 	onChangeValue,
 	onResetButtonClick,
-}: FontSettingInputProps): ReactElement {
-	const handleChange: FormEventHandler<HTMLInputElement> = (event): void => {
+}: FontSettingInputProps) {
+	const handleChange: ChangeEventHandler<HTMLInputElement> = (event): void => {
 		onChangeValue?.(event.currentTarget.value);
 	};
 

@@ -1,6 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryFn } from '@storybook/react';
+import { action } from 'storybook/actions';
 
 import DatePicker from './DatePicker';
 import FormatSelector from './FormatSelector';

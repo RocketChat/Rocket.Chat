@@ -1,18 +1,18 @@
-import { Abac } from '@rocket.chat/core-services';
+import { Abac, LDAPEnterprise } from '@rocket.chat/core-services';
 import { cronJobs } from '@rocket.chat/cron';
 import { License } from '@rocket.chat/license';
 import { Users } from '@rocket.chat/models';
 import { isValidCron } from 'cron-validator';
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../app/settings/server';
-import { LDAPEE } from '../sdk';
+import { settings } from '../../../server/settings';
 
 const VIRTRU_PDP_SYNC_JOB = 'ABAC_Virtru_PDP_Sync';
 
 Meteor.startup(async () => {
 	let stopWatcher: () => void;
 	let stopCronWatcher: () => void;
+	let stopEnforcementWatcher: () => void;
 
 	License.onToggledFeature('abac', {
 		up: async () => {
@@ -26,7 +26,7 @@ Meteor.startup(async () => {
 
 			stopWatcher = settings.watch('ABAC_Enabled', async (value) => {
 				if (value && settings.get<string>('ABAC_PDP_Type') !== 'virtru') {
-					await LDAPEE.syncUsersAbacAttributes(Users.findLDAPUsers());
+					await LDAPEnterprise.syncUsersAbacAttributes(Users.findLDAPUsers());
 				}
 			});
 
@@ -55,10 +55,22 @@ Meteor.startup(async () => {
 				['ABAC_Enabled', 'ABAC_PDP_Type', 'ABAC_Virtru_Sync_Interval'],
 				() => void configureVirtruPdpSync(),
 			);
+
+			const { applyDiscussionEnforcementOverride } = await import('../lib/abac/discussionEnforcementOverride');
+
+			stopEnforcementWatcher = settings.watchMultiple(
+				['ABAC_Enabled', 'ABAC_Enforce_All_Rooms'],
+				() => void applyDiscussionEnforcementOverride(),
+			);
 		},
 		down: async () => {
 			stopWatcher?.();
 			stopCronWatcher?.();
+			stopEnforcementWatcher?.();
+
+			const { restoreDiscussionEnabled } = await import('../lib/abac/discussionEnforcementOverride');
+			// must run before onInvalidateLicense resets ABAC_Enforce_All_Rooms
+			await restoreDiscussionEnabled();
 
 			if (await cronJobs.has(VIRTRU_PDP_SYNC_JOB)) {
 				await cronJobs.remove(VIRTRU_PDP_SYNC_JOB);

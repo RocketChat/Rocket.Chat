@@ -1,9 +1,7 @@
-import { Button } from '@rocket.chat/fuselage';
-import type { AllHTMLAttributes, ReactElement } from 'react';
+import { Button, type ButtonProps } from '@rocket.chat/fuselage';
+import type { ButtonHTMLAttributes } from 'react';
 
-type VideoConfMessageButtonProps = { primary?: boolean } & Omit<AllHTMLAttributes<HTMLButtonElement>, 'is'>;
+export type VideoConfMessageButtonProps = Pick<ButtonProps, 'variant'> & Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'is'>;
 
-const VideoConfMessageButton = ({ primary, ...props }: VideoConfMessageButtonProps): ReactElement => (
-	<Button {...props} mi={4} small primary={primary} />
-);
+const VideoConfMessageButton = ({ variant, ...props }: VideoConfMessageButtonProps) => <Button {...props} size='small' variant={variant} />;
 export default VideoConfMessageButton;

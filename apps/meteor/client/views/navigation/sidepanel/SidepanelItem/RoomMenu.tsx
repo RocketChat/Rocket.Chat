@@ -6,7 +6,7 @@ import { memo } from 'react';
 
 import { useRoomMenuActions } from '../hooks/useRoomMenuActions';
 
-type RoomMenuProps = {
+export type RoomMenuProps = {
 	rid: string;
 	unread?: boolean;
 	threadUnread?: boolean;
@@ -25,7 +25,7 @@ const RoomMenu = ({ rid, unread, threadUnread, alert, roomOpen, type, cl, name =
 	const isUnread = alert || unread || threadUnread;
 	const sections = useRoomMenuActions({ rid, type, name, isUnread, cl, roomOpen, hideDefaultOptions, href });
 
-	return <GenericMenu detached title={t('Options')} mini aria-keyshortcuts='alt' sections={sections} />;
+	return <GenericMenu detached title={t('Options')} size='mini' aria-keyshortcuts='alt' sections={sections} />;
 };
 
 export default memo(RoomMenu);

@@ -1,7 +1,6 @@
 import type { RoomType } from '@rocket.chat/core-typings';
 import { Box, States, StatesIcon, StatesSubtitle, StatesTitle } from '@rocket.chat/fuselage';
 import { Header } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -20,17 +19,17 @@ const Room = lazy(() => import('./Room'));
 const RoomLayout = lazy(() => import('./layout/RoomLayout'));
 const NotAuthorizedPage = lazy(() => import('../notAuthorized/NotAuthorizedPage'));
 
-type RoomOpenerProps = {
+export type RoomOpenerProps = {
 	type: RoomType;
 	reference: string;
 };
 
-const RoomOpener = ({ type, reference }: RoomOpenerProps): ReactElement => {
+const RoomOpener = ({ type, reference }: RoomOpenerProps) => {
 	const { data, error, isSuccess, isError, isLoading } = useOpenRoom({ type, reference });
 	const { t } = useTranslation();
 
 	return (
-		<Box display='flex' w='full' h='full'>
+		<Box display='flex' width='full' height='full'>
 			<Suspense fallback={<RoomSkeleton />}>
 				{isLoading && <RoomSkeleton />}
 				{isSuccess && (

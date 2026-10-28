@@ -1,8 +1,8 @@
-import { Box, Button, ButtonGroup, Margins, TextInput, Field, FieldLabel, FieldRow, IconButton } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, TextInput, Field, FieldLabel, FieldRow, IconButton } from '@rocket.chat/fuselage';
 import { GenericModal, ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
-import { useSetModal, useToastMessageDispatch, useMethod } from '@rocket.chat/ui-contexts';
+import { useSetModal, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import fileSize from 'filesize';
-import type { ReactElement, SyntheticEvent } from 'react';
+import type { ChangeEvent } from 'react';
 import { useCallback, useState, useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -11,7 +11,7 @@ import { CUSTOM_SOUND_ALLOWED_MIME_TYPES, MAX_CUSTOM_SOUND_SIZE_BYTES } from '..
 import { useEndpointUploadMutation } from '../../../hooks/useEndpointUploadMutation';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
-type EditSoundProps = {
+export type EditSoundProps = {
 	close: () => void;
 	onChange: () => void;
 	data: {
@@ -21,7 +21,7 @@ type EditSoundProps = {
 	};
 };
 
-function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactElement {
+function EditSound({ close, onChange, data, ...props }: EditSoundProps) {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
@@ -36,7 +36,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 		setFile(undefined);
 	}, [_id, previousName]);
 
-	const deleteCustomSound = useMethod('deleteCustomSound');
+	const deleteCustomSoundEndpoint = useEndpoint('POST', '/v1/custom-sounds.delete');
 
 	const { mutate: saveAction } = useEndpointUploadMutation('/v1/custom-sounds.update', {
 		onSuccess: () => {
@@ -76,7 +76,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 	const handleDeleteButtonClick = useCallback(() => {
 		const handleDelete = async (): Promise<void> => {
 			try {
-				await deleteCustomSound(_id);
+				await deleteCustomSoundEndpoint({ _id });
 				dispatchToastMessage({ type: 'success', message: t('Custom_Sound_Has_Been_Deleted') });
 			} catch (error) {
 				dispatchToastMessage({ type: 'error', message: error });
@@ -94,7 +94,7 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 				{t('Custom_Sound_Delete_Warning')}
 			</GenericModal>,
 		);
-	}, [_id, close, deleteCustomSound, dispatchToastMessage, onChange, setModal, t]);
+	}, [_id, close, deleteCustomSoundEndpoint, dispatchToastMessage, onChange, setModal, t]);
 
 	const [clickUpload] = useSingleFileInput(
 		handleChangeFile,
@@ -117,31 +117,29 @@ function EditSound({ close, onChange, data, ...props }: EditSoundProps): ReactEl
 					<FieldRow>
 						<TextInput
 							value={name}
-							onChange={(e: SyntheticEvent<HTMLInputElement>): void => setName(e.currentTarget.value)}
+							onChange={(e: ChangeEvent<HTMLInputElement>): void => setName(e.currentTarget.value)}
 							placeholder={t('Name')}
 						/>
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel alignSelf='stretch'>{t('Sound File')}</FieldLabel>
-					<Box display='flex' flexDirection='row' mbs='none' alignItems='center'>
-						<Margins inline={4}>
-							<IconButton secondary small icon='upload' onClick={clickUpload} />
-							{file?.name || (data?.name && data?.extension && `${data.name}.${data.extension}`) || t('None')}
-						</Margins>
+					<FieldLabel>{t('Sound File')}</FieldLabel>
+					<Box display='flex' flexDirection='row' marginBlockStart='none' alignItems='center' gap={4} paddingInlineStart={4}>
+						<IconButton variant='secondary' size='small' icon='upload' onClick={clickUpload} />
+						{file?.name || (data?.name && data?.extension && `${data.name}.${data.extension}`) || t('None')}
 					</Box>
 				</Field>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={close}>{t('Cancel')}</Button>
-					<Button primary onClick={handleSave} disabled={!hasUnsavedChanges}>
+					<Button variant='primary' onClick={handleSave} disabled={!hasUnsavedChanges}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>
-				<Box mbs={8}>
+				<Box marginBlockStart={8}>
 					<ButtonGroup stretch>
-						<Button icon='trash' danger onClick={handleDeleteButtonClick}>
+						<Button icon='trash' variant='danger' onClick={handleDeleteButtonClick}>
 							{t('Delete')}
 						</Button>
 					</ButtonGroup>

@@ -1,0 +1,372 @@
+import { AppEvents, Apps } from '@rocket.chat/apps';
+import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
+import { FederationMatrix, Message, Room, Team, ClientSafeError, XMPPServer } from '@rocket.chat/core-services';
+import type { ICreateRoomParams, ISubscriptionExtraData } from '@rocket.chat/core-services';
+import {
+	type ICreatedRoom,
+	type IUser,
+	type IRoom,
+	type RoomType,
+	isRoomXMPPHostedMuc,
+	isUserNativeFederated,
+} from '@rocket.chat/core-typings';
+import { Rooms, Subscriptions, Users } from '@rocket.chat/models';
+import { isBareJid, normalizeBareJid } from '@rocket.chat/tools';
+
+import { createDirectRoom } from './createDirectRoom';
+import { filterUsersAllowedInRoom } from './filterUsersAllowedInRoom';
+import { calculateRoomRolePriorityFromRoles } from '../../../lib/roles/calculateRoomRolePriorityFromRoles';
+import { callbacks } from '../callbacks';
+import { afterCreateRoomCallback } from '../callbacks/afterCreateRoomCallback';
+import { beforeAddUserToRoom } from '../callbacks/beforeAddUserToRoom';
+import { beforeCreateRoomCallback, prepareCreateRoomCallback } from '../callbacks/beforeCreateRoomCallback';
+import { getSubscriptionAutotranslateDefaultConfig } from '../getSubscriptionAutotranslateDefaultConfig';
+import { notifyOnRoomChanged, notifyOnSubscriptionChangedById } from '../notifyListener';
+import { syncRoomRolePriorityForUserAndRoom } from '../roles/syncRoomRolePriority';
+import { getDefaultSubscriptionPref } from '../utils/lib/getDefaultSubscriptionPref';
+import { getValidRoomName } from '../utils/lib/getValidRoomName';
+
+const isValidName = (name: unknown): name is string => {
+	return typeof name === 'string' && name.trim().length > 0;
+};
+
+const onlyUsernames = (members: unknown): members is string[] =>
+	Array.isArray(members) && members.every((member) => typeof member === 'string');
+
+async function createUsersSubscriptions({
+	room,
+	shouldBeHandledByFederation,
+	members,
+	now,
+	owner,
+	options,
+}: {
+	room: IRoom;
+	shouldBeHandledByFederation: boolean;
+	members: string[];
+	now: Date;
+	owner: IUser;
+	options?: ICreateRoomParams['options'];
+}) {
+	if (shouldBeHandledByFederation) {
+		const extra: Partial<ISubscriptionExtraData> = {
+			...options?.subscriptionExtra,
+			open: true,
+			ls: now,
+			roles: ['owner'],
+			...(room.prid && { prid: room.prid }),
+			...getDefaultSubscriptionPref(owner),
+		};
+
+		const { insertedId } = await Subscriptions.createWithRoomAndUser(room, owner, extra);
+		await syncRoomRolePriorityForUserAndRoom(owner._id, room._id, ['owner']);
+
+		if (insertedId) {
+			await notifyOnSubscriptionChangedById(insertedId, 'inserted');
+			await notifyOnRoomChanged(room, 'inserted');
+		}
+
+		// Invite federated members to the room SYNCRONOUSLY,
+		// since we do not use to invite lots of users at once, this is acceptable.
+		const membersToInvite = members.filter((m) => m !== owner.username);
+
+		await FederationMatrix.ensureFederatedUsersExistLocally(membersToInvite);
+
+		for (const memberUsername of membersToInvite) {
+			const member = await Users.findOneByUsername(memberUsername);
+			if (!member) {
+				throw new Error('Federated user not found locally');
+			}
+
+			await Room.createUserSubscription({
+				ts: new Date(),
+				room,
+				userToBeAdded: member,
+				inviter: owner,
+				status: 'INVITED',
+			});
+		}
+
+		return;
+	}
+
+	// A typed JID names the user record of that XMPP account, however its domain was spelled
+	const memberUsernames = isRoomXMPPHostedMuc(room) ? members.map((member) => normalizeBareJid(member) ?? member) : members;
+	const jids = isRoomXMPPHostedMuc(room) ? memberUsernames.filter(isBareJid) : [];
+	if (jids.length) {
+		await XMPPServer.ensureXMPPUsersExistLocally(jids);
+	}
+
+	const subs = [];
+
+	const memberIds = [];
+
+	const memberIdAndRolePriorityMap: Record<IUser['_id'], number> = {};
+
+	const { allowedMembers, skippedMembers } = await filterMembersAllowedInRoom(memberUsernames, room);
+
+	const membersCursor = Users.findUsersByUsernames(allowedMembers);
+
+	// TODO: Check re new federation-service - should we add them here or keep on createRoom inside of homeserver?!
+	for await (const member of membersCursor) {
+		try {
+			await beforeAddUserToRoom.run({ user: member, inviter: owner }, room);
+			await callbacks.run('beforeAddedToRoom', { user: member, inviter: owner });
+		} catch (error) {
+			continue;
+		}
+
+		memberIds.push(member._id);
+
+		const extra: Partial<ISubscriptionExtraData> = { open: true, ...options?.subscriptionExtra };
+
+		if (room.prid) {
+			extra.prid = room.prid;
+		}
+
+		if (member.username === owner.username) {
+			extra.ls = now;
+			extra.roles = ['owner'];
+		}
+
+		const autoTranslateConfig = getSubscriptionAutotranslateDefaultConfig(member);
+
+		subs.push({
+			user: member,
+			extraData: {
+				...extra,
+				...autoTranslateConfig,
+				...getDefaultSubscriptionPref(member),
+			},
+		});
+
+		if (extra.roles) {
+			memberIdAndRolePriorityMap[member._id] = calculateRoomRolePriorityFromRoles(extra.roles);
+		}
+	}
+
+	if (!['d', 'l'].includes(room.t)) {
+		await Users.addRoomByUserIds(memberIds, room._id);
+	}
+
+	if (!subs.length) {
+		return skippedMembers;
+	}
+
+	const { insertedIds } = await Subscriptions.createWithRoomAndManyUsers(room, subs);
+	await Users.assignRoomRolePrioritiesByUserIdPriorityMap(memberIdAndRolePriorityMap, room._id);
+
+	Object.values(insertedIds).forEach((subId) => notifyOnSubscriptionChangedById(subId, 'inserted'));
+
+	await Rooms.incUsersCountById(room._id, subs.length);
+
+	return skippedMembers;
+}
+
+async function filterMembersAllowedInRoom(
+	members: string[],
+	room: IRoom,
+): Promise<{ allowedMembers: string[]; skippedMembers?: string[] }> {
+	if (!room.abacAttributes?.length) {
+		return { allowedMembers: members };
+	}
+
+	const candidates = await Users.findUsersByUsernames(members, { projection: { _id: 1, username: 1 } }).toArray();
+	const allowed = new Set((await filterUsersAllowedInRoom(candidates, room)).map(({ username }) => username));
+
+	return {
+		allowedMembers: members.filter((username) => allowed.has(username)),
+		skippedMembers: candidates.flatMap(({ username }) => (username && !allowed.has(username) ? [username] : [])),
+	};
+}
+
+export const createRoom = async <T extends RoomType>(
+	type: T,
+	name: T extends 'd' ? undefined : string,
+	owner: T extends 'd' ? IUser | undefined : IUser,
+	members: T extends 'd' ? IUser[] : string[] = [],
+	excludeSelf?: boolean,
+	readOnly?: boolean,
+	roomExtraData?: Partial<IRoom>,
+	options?: ICreateRoomParams['options'],
+): Promise<
+	ICreatedRoom & {
+		rid: string;
+		skippedMembers?: string[];
+	}
+> => {
+	const { teamId, ...extraData } = roomExtraData || {};
+
+	// TODO: use a shared helper to check whether a user is federated
+	const hasFederatedMembers = members.some((member) => {
+		if (typeof member === 'string') {
+			return member.includes(':') && member.includes('@');
+		}
+		return member.username?.includes(':') && member.username?.includes('@');
+	});
+
+	// Prevent adding federated users to rooms that are not marked as federated explicitly
+	if (hasFederatedMembers && extraData.federated !== true) {
+		throw new ClientSafeError('error-federated-users-in-non-federated-rooms', 'Cannot add federated users to non-federated rooms', {
+			method: 'createRoom',
+		});
+	}
+
+	await prepareCreateRoomCallback.run({
+		type,
+		// name,
+		// owner: ownerUsername,
+		// members,
+		// readOnly,
+		extraData,
+		// options,
+	});
+
+	const shouldBeHandledByFederation = extraData.federated === true;
+
+	if (shouldBeHandledByFederation && owner && !isUserNativeFederated(owner) && !(await FederationMatrix.canUserAccessFederation(owner))) {
+		throw new ClientSafeError('error-not-authorized-federation', 'Not authorized to access federation', {
+			method: 'createRoom',
+		});
+	}
+
+	if (type === 'd') {
+		return createDirectRoom(members, extraData, { ...options, creator: options?.creator || owner?._id });
+	}
+
+	const memberList = [...members];
+
+	if (!onlyUsernames(memberList)) {
+		throw new ClientSafeError(
+			'error-invalid-members',
+			'members should be an array of usernames if provided for rooms other than direct messages',
+		);
+	}
+
+	if (!isValidName(name)) {
+		throw new ClientSafeError('error-invalid-name', 'Invalid name', {
+			function: 'RocketChat.createRoom',
+		});
+	}
+
+	if (!owner) {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
+			function: 'RocketChat.createRoom',
+		});
+	}
+
+	if (!owner?.username) {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
+			function: 'RocketChat.createRoom',
+		});
+	}
+
+	if (!excludeSelf && owner.username && !memberList.includes(owner.username)) {
+		memberList.push(owner.username);
+	}
+
+	if (extraData.broadcast) {
+		readOnly = true;
+		delete extraData.reactWhenReadOnly;
+	}
+
+	// this might not be the best way to check if the room is a discussion, we may need a specific field for that
+	const isDiscussion = 'prid' in extraData && extraData.prid !== '';
+
+	const now = new Date();
+
+	const roomProps: Omit<IRoom, '_id' | '_updatedAt'> = {
+		fname: name,
+		_updatedAt: now,
+		...extraData,
+		name: isDiscussion ? name : await getValidRoomName(name.trim(), undefined),
+		t: type,
+		msgs: 0,
+		usersCount: 0,
+		u: {
+			_id: owner._id,
+			username: owner.username,
+			name: owner.name,
+		},
+		ts: now,
+		ro: readOnly === true,
+	};
+
+	if (teamId) {
+		const team = await Team.getOneById(teamId, { projection: { _id: 1 } });
+		if (team) {
+			roomProps.teamId = team._id;
+		}
+	}
+
+	const tmp = {
+		...roomProps,
+		_USERNAMES: memberList,
+	};
+
+	const prevent = await Apps.self?.triggerEvent(AppEvents.IPreRoomCreatePrevent, tmp).catch((error) => {
+		if (error.name === AppsEngineException.name) {
+			throw new ClientSafeError('error-app-prevented', error.message);
+		}
+
+		throw error;
+	});
+
+	if (prevent) {
+		throw new ClientSafeError('error-app-prevented', 'A Rocket.Chat App prevented the room creation.');
+	}
+
+	const eventResult = await Apps.self?.triggerEvent(
+		AppEvents.IPreRoomCreateModify,
+		await Apps.triggerEvent(AppEvents.IPreRoomCreateExtend, tmp),
+	);
+
+	if (eventResult && typeof eventResult === 'object' && delete eventResult._USERNAMES) {
+		Object.assign(roomProps, eventResult);
+	}
+
+	await beforeCreateRoomCallback.run({
+		owner,
+		room: roomProps,
+		members: memberList,
+	});
+
+	if (type === 'c') {
+		await callbacks.run('beforeCreateChannel', owner, roomProps);
+	}
+
+	const room = await Rooms.createWithFullRoomData(roomProps);
+
+	void notifyOnRoomChanged(room, 'inserted');
+
+	// If federated, we must create Matrix room BEFORE subscriptions so invites can be sent.
+	if (shouldBeHandledByFederation) {
+		// Reusing unused callback to create Matrix room.
+		// We should discuss the opportunity to rename it to something with "before" prefix.
+		await callbacks.run('federation.afterCreateFederatedRoom', room, { owner, originalMemberList: memberList, options });
+	}
+
+	const skippedMembers = await createUsersSubscriptions({ room, members: memberList, now, owner, options, shouldBeHandledByFederation });
+
+	if (type === 'c') {
+		if (room.teamId) {
+			const team = await Team.getOneById(room.teamId);
+			if (team) {
+				await Message.saveSystemMessage('user-added-room-to-team', team.roomId, room.name || '', owner);
+			}
+		}
+		callbacks.runAsync('afterCreateChannel', owner, room);
+	} else if (type === 'p') {
+		callbacks.runAsync('afterCreatePrivateGroup', owner, room);
+	}
+	callbacks.runAsync('afterCreateRoom', owner, room);
+	void afterCreateRoomCallback.run({ owner, room, app: options?.app });
+
+	void Apps.self?.triggerEvent(AppEvents.IPostRoomCreate, room);
+	return {
+		rid: room._id, // backwards compatible
+		inserted: true,
+		...room,
+		...(skippedMembers && { skippedMembers }),
+	};
+};

@@ -2,6 +2,7 @@ import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
 import { createDirectMessage, createTargetChannel, deleteChannel } from './utils';
 import { test, expect } from './utils/test';
+import { createTestUser, type ITestUser } from './utils/user-helpers';
 
 const embeddedLayoutURL = (pageUrl: string) => `${pageUrl}?layout=embedded`;
 
@@ -31,8 +32,7 @@ test.describe('embedded-layout', () => {
 
 	test.describe('Layout elements visibility', () => {
 		test('should hide primary navigation elements in embedded layout', async ({ page }) => {
-			await page.goto('/home');
-			await poHomeChannel.navbar.openChat(targetChannelId);
+			await poHomeChannel.gotoChannel(targetChannelId);
 			await expect(poHomeChannel.roomHeaderToolbar).toBeVisible();
 
 			await page.goto(embeddedLayoutURL(page.url()));
@@ -50,8 +50,7 @@ test.describe('embedded-layout', () => {
 			});
 
 			test('should show room header toolbar as top navbar when setting enabled', async ({ page }) => {
-				await page.goto('/home');
-				await poHomeChannel.navbar.openChat(targetChannelId);
+				await poHomeChannel.gotoChannel(targetChannelId);
 				await page.goto(embeddedLayoutURL(page.url()));
 
 				await expect(poHomeChannel.roomHeaderToolbar).toBeVisible();
@@ -61,8 +60,7 @@ test.describe('embedded-layout', () => {
 
 	test.describe('Channel member functionality', () => {
 		test('should hide join button and enable messaging for members', async ({ page }) => {
-			await page.goto('/home');
-			await poHomeChannel.navbar.openChat(targetChannelId);
+			await poHomeChannel.gotoChannel(targetChannelId);
 			await page.goto(embeddedLayoutURL(page.url()));
 
 			await expect(poHomeChannel.composer.inputMessage).toBeVisible();
@@ -71,8 +69,7 @@ test.describe('embedded-layout', () => {
 		});
 
 		test('should allow sending and receiving messages', async ({ page }) => {
-			await page.goto('/home');
-			await poHomeChannel.navbar.openChat(targetChannelId);
+			await poHomeChannel.gotoChannel(targetChannelId);
 			await page.goto(embeddedLayoutURL(page.url()));
 
 			const testMessage = `Embedded test message ${Date.now()}`;
@@ -81,8 +78,7 @@ test.describe('embedded-layout', () => {
 		});
 
 		test('should preserve message composer functionality', async ({ page }) => {
-			await page.goto('/home');
-			await poHomeChannel.navbar.openChat(targetChannelId);
+			await poHomeChannel.gotoChannel(targetChannelId);
 			await page.goto(embeddedLayoutURL(page.url()));
 
 			await expect(poHomeChannel.composer.inputMessage).toBeVisible();
@@ -98,7 +94,7 @@ test.describe('embedded-layout', () => {
 
 	test.describe('Channel non-member functionality', () => {
 		test('should display join button and disable composer for non-members', async ({ page }) => {
-			await page.goto('/home');
+			await poHomeChannel.goto();
 			await poHomeChannel.navbar.openChat(notMemberChannelId);
 			await page.goto(embeddedLayoutURL(page.url()));
 
@@ -107,7 +103,7 @@ test.describe('embedded-layout', () => {
 		});
 
 		test('should allow joining channel and enable messaging', async ({ page }) => {
-			await page.goto('/home');
+			await poHomeChannel.goto();
 			await poHomeChannel.navbar.openChat(joinChannelId);
 			await page.goto(embeddedLayoutURL(page.url()));
 
@@ -124,9 +120,19 @@ test.describe('embedded-layout', () => {
 	});
 
 	test.describe('Direct message functionality', () => {
+		let dmTarget: ITestUser;
+
+		test.beforeAll(async ({ api }) => {
+			dmTarget = await createTestUser(api);
+		});
+
+		test.afterAll(async () => {
+			await dmTarget.delete();
+		});
+
 		test('should allow sending direct messages', async ({ page, api }) => {
 			await createDirectMessage(api);
-			await page.goto('/home');
+			await poHomeChannel.goto();
 			await poHomeChannel.navbar.openChat(Users.user2.data.username);
 			await page.goto(embeddedLayoutURL(page.url()));
 
@@ -135,6 +141,16 @@ test.describe('embedded-layout', () => {
 			await expect(poHomeChannel.composer.btnJoinRoom).not.toBeVisible();
 
 			const dmMessage = `Embedded DM test ${Date.now()}`;
+			await poHomeChannel.content.sendMessage(dmMessage);
+			await expect(poHomeChannel.content.lastUserMessage).toContainText(dmMessage);
+		});
+
+		test('should enable the composer when a new DM is opened by username', async () => {
+			await poHomeChannel.gotoDirectEmbedded(dmTarget.data.username);
+
+			await expect(poHomeChannel.composer.inputMessage).toBeEnabled();
+
+			const dmMessage = `Embedded new DM test ${Date.now()}`;
 			await poHomeChannel.content.sendMessage(dmMessage);
 			await expect(poHomeChannel.content.lastUserMessage).toContainText(dmMessage);
 		});

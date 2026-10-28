@@ -1,0 +1,70 @@
+{
+	"name": "@rocket.chat/styled",
+	"version": "0.34.1",
+	"description": "A simple styled API for React components",
+	"keywords": [
+		"react",
+		"styled",
+		"css-in-js",
+		"rocket.chat"
+	],
+	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
+	"bugs": {
+		"url": "https://github.com/RocketChat/Rocket.Chat/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
+		"directory": "packages/styled"
+	},
+	"license": "MIT",
+	"author": {
+		"name": "Rocket.Chat",
+		"url": "https://rocket.chat/"
+	},
+	"main": "dist/index.js",
+	"module": "dist/index.module.js",
+	"source": "src/index.ts",
+	"types": "dist/index.d.ts",
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		"build": "rm -rf dist && rollup -c",
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
+		"test": "jest",
+		"testunit": "jest",
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@rocket.chat/css-in-js": "workspace:~"
+	},
+	"devDependencies": {
+		"@rocket.chat/jest-presets": "workspace:~",
+		"@rocket.chat/tsconfig": "workspace:~",
+		"@rollup/plugin-commonjs": "~29.0.3",
+		"@rollup/plugin-json": "~6.1.0",
+		"@rollup/plugin-node-resolve": "~16.0.3",
+		"@rollup/plugin-terser": "~1.0.0",
+		"@rollup/plugin-typescript": "~12.3.0",
+		"@testing-library/dom": "~10.4.2",
+		"@testing-library/react": "~16.3.3",
+		"@types/react": "~19.2.18",
+		"@types/react-dom": "~19.2.7",
+		"jest": "~30.5.2",
+		"react": "~19.2.8",
+		"react-dom": "~19.2.8",
+		"rollup": "~4.62.5",
+		"typescript": "~5.9.3"
+	},
+	"peerDependencies": {
+		"react": "*"
+	},
+	"volta": {
+		"extends": "../../package.json"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
+}

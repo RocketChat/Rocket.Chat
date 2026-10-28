@@ -2,9 +2,10 @@ import { mkdir, writeFile } from 'node:fs/promises';
 
 import type { IMessage, IRoom, IUser, MessageAttachment, FileProp, RoomType, IExportOperation } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
+import { escapeHTML } from '@rocket.chat/tools';
 
-import { settings } from '../../../app/settings/server';
 import { readSecondaryPreferred } from '../../database/readSecondaryPreferred';
+import { settings } from '../../settings';
 import { joinPath } from '../fileUtils';
 import { i18n } from '../i18n';
 
@@ -49,7 +50,7 @@ const getAttachmentData = (attachment: MessageAttachment, message: IMessage) => 
 };
 
 export type MessageData = Pick<IMessage, 'msg' | 'ts'> & {
-	username?: IUser['username'] | IUser['name'];
+	username?: IUser['username'];
 	attachments?: ReturnType<typeof getAttachmentData>[];
 	type?: IMessage['t'];
 };
@@ -147,7 +148,7 @@ export const getMessageData = (
 			});
 			break;
 		case 'wm':
-			messageObject.msg = i18n.t('Welcome', { user: username });
+			messageObject.msg = i18n.t('Welcome', { interpolation: { escapeValue: false }, user: username });
 			break;
 		case 'livechat-close':
 			messageObject.msg = i18n.t('Conversation_finished');
@@ -157,6 +158,9 @@ export const getMessageData = (
 			break;
 		case 'abac-removed-user-from-room':
 			messageObject.msg = i18n.t('abac_removed_user_from_the_room');
+			break;
+		case 'abac-removed-users-from-room':
+			messageObject.msg = i18n.t('abac_removed_users_from_the_room', { count: Number(msg.msg) });
 			break;
 	}
 
@@ -175,9 +179,10 @@ export const exportMessageObject = (type: 'json' | 'html', messageObject: Messag
 
 	const italicTypes: IMessage['t'][] = ['uj', 'ul', 'au', 'r', 'ru', 'wm', 'livechat-close'];
 
-	const message = italicTypes.includes(messageType) ? `<i>${messageObject.msg}</i>` : messageObject.msg;
+	const safeMsg = escapeHTML(messageObject.msg ?? '');
+	const message = italicTypes.includes(messageType) ? `<i>${safeMsg}</i>` : safeMsg;
 
-	file.push(`<p><strong>${messageObject.username}</strong> (${timestamp}):<br/>`);
+	file.push(`<p><strong>${escapeHTML(messageObject.username ?? '')}</strong> (${timestamp}):<br/>`);
 	file.push(message);
 
 	for (const messageFile of messageFiles) {
@@ -187,7 +192,7 @@ export const exportMessageObject = (type: 'json' | 'html', messageObject: Messag
 			const description = attachment?.title || i18n.t('Message_Attachments');
 
 			const assetUrl = `./assets/${messageFile._id}-${messageFile.name}`;
-			const link = `<br/><a href="${assetUrl}">${description}</a>`;
+			const link = `<br/><a href="${escapeHTML(assetUrl)}">${escapeHTML(description)}</a>`;
 			file.push(link);
 		}
 	}
@@ -281,7 +286,14 @@ export const exportRoomMessagesToFile = async function (
 		if (exportOpRoomData.status === 'pending') {
 			exportOpRoomData.status = 'exporting';
 			if (exportType === 'html') {
-				await writeFile(filePath, '<meta http-equiv="content-type" content="text/html; charset=utf-8">', { encoding: 'utf8' });
+				await writeFile(
+					filePath,
+					[
+						'<meta http-equiv="content-type" content="text/html; charset=utf-8">',
+						`<meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:;">`,
+					].join('\n'),
+					{ encoding: 'utf8' },
+				);
 			}
 		}
 

@@ -6,7 +6,7 @@ import SidebarNavigationItem from './SidebarNavigationItem';
 import type { SidebarItem } from '../../lib/createSidebarItems';
 import { isSidebarItem } from '../../lib/createSidebarItems';
 
-type SidebarItemsAssemblerProps = {
+export type SidebarItemsAssemblerProps = {
 	items: SidebarItem[];
 	currentPath?: string;
 };

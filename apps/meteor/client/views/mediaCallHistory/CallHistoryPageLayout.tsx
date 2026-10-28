@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import CallHistoryPageFilters, { type CallHistoryPageFiltersProps } from './CallHistoryPageFilters';
 
-type CallHistoryPageLayoutProps = {
+export type CallHistoryPageLayoutProps = {
 	children: ReactNode;
 	contextualBar?: ReactNode;
 	filterProps: CallHistoryPageFiltersProps;

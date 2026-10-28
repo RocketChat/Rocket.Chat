@@ -9,7 +9,7 @@ const MultiSelectCustomListWrapper = forwardRef<Element, MultiSelectCustomListWr
 	ref,
 ) {
 	return (
-		<Box ref={ref} zIndex={999} w='full' position='absolute' mbs={40} pbs={4}>
+		<Box ref={ref} zIndex={999} width='full' position='absolute' marginBlockStart={40} paddingBlockStart={4}>
 			{children}
 		</Box>
 	);

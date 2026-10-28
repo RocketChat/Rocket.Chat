@@ -1,8 +1,9 @@
+import { Box } from '@rocket.chat/fuselage';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { Contextualbar } from '@rocket.chat/ui-client';
-import { action } from '@storybook/addon-actions';
 import type { Meta } from '@storybook/react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { action } from 'storybook/actions';
 
 import { AppLogsFilterContextualBar } from './AppLogsFilterContextualBar';
 
@@ -33,7 +34,9 @@ export default {
 
 			return (
 				<FormProvider {...methods}>
-					<Contextualbar height='100vh'> {fn()}</Contextualbar>
+					<Box height='100vh'>
+						<Contextualbar> {fn()}</Contextualbar>
+					</Box>
 				</FormProvider>
 			);
 		},

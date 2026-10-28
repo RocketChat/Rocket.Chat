@@ -1,7 +1,9 @@
 import { useUser } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 
+import MediaPlayerProvider from '../../../providers/MediaPlayerProvider';
 import { useCustomEmoji } from '../hooks/loggedIn/useCustomEmoji';
+import { useDesktopUnreadAlert } from '../hooks/loggedIn/useDesktopUnreadAlert';
 import { useE2EEncryption } from '../hooks/loggedIn/useE2EEncryption';
 import { useFingerprintChange } from '../hooks/loggedIn/useFingerprintChange';
 import { useFontStylePreference } from '../hooks/loggedIn/useFontStylePreference';
@@ -16,7 +18,9 @@ import { useTwoFactorAuthSetupCheck } from '../hooks/loggedIn/useTwoFactorAuthSe
 import { useUnread } from '../hooks/loggedIn/useUnread';
 import { useUpdateVideoConfUser } from '../hooks/loggedIn/useUpdateVideoConfUser';
 
-const LoggedInArea = ({ children }: { children: ReactNode }) => {
+export type LoggedInAreaProps = { children: ReactNode };
+
+const LoggedInArea = ({ children }: LoggedInAreaProps) => {
 	const user = useUser();
 
 	if (!user) {
@@ -28,6 +32,7 @@ const LoggedInArea = ({ children }: { children: ReactNode }) => {
 	useNotifyUser(user);
 	useUpdateVideoConfUser(user._id);
 	useNotificationUserCalendar(user);
+	useDesktopUnreadAlert();
 	useForceLogout(user._id);
 	useStoreCookiesOnLogin(user._id);
 	useCustomEmoji();
@@ -41,7 +46,7 @@ const LoggedInArea = ({ children }: { children: ReactNode }) => {
 	useLogoutCleanup();
 	useE2EEncryption();
 
-	return children;
+	return <MediaPlayerProvider>{children}</MediaPlayerProvider>;
 };
 
 export default LoggedInArea;

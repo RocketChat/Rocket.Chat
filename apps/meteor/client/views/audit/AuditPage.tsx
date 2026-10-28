@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Box, Callout, Margins, States, StatesIcon, StatesSubtitle, StatesTitle, Tabs } from '@rocket.chat/fuselage';
+import { Box, Callout, States, StatesIcon, StatesSubtitle, StatesTitle, Tabs, TabsItem, Text } from '@rocket.chat/fuselage';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -21,38 +21,38 @@ const AuditPage = () => {
 		<Page background='room'>
 			<PageHeader title={t('Message_auditing')} />
 			<Tabs>
-				<Tabs.Item selected={type === ''} onClick={() => setType('')}>
+				<TabsItem selected={type === ''} onClick={() => setType('')}>
 					{t('Rooms')}
-				</Tabs.Item>
-				<Tabs.Item selected={type === 'u'} onClick={() => setType('u')}>
+				</TabsItem>
+				<TabsItem selected={type === 'u'} onClick={() => setType('u')}>
 					{t('Users')}
-				</Tabs.Item>
-				<Tabs.Item selected={type === 'd'} onClick={() => setType('d')}>
+				</TabsItem>
+				<TabsItem selected={type === 'd'} onClick={() => setType('d')}>
 					{t('Direct_Messages')}
-				</Tabs.Item>
-				<Tabs.Item selected={type === 'l'} onClick={() => setType('l')}>
+				</TabsItem>
+				<TabsItem selected={type === 'l'} onClick={() => setType('l')}>
 					{t('Omnichannel')}
-				</Tabs.Item>
+				</TabsItem>
 			</Tabs>
-			<PageScrollableContentWithShadow mb={-4}>
-				<Margins block={4}>
-					<AuditForm key={type} type={type} setSelectedRoom={setSelectedRoom} onSubmit={auditMutation.mutate} />
-					{selectedRoom?.encrypted && type === '' ? (
-						<Callout type='warning' icon='circle-exclamation' marginBlock='x16'>
-							<Box fontScale='p2b'>{t('Encrypted_content_cannot_be_searched_and_audited')}</Box>
+			<PageScrollableContentWithShadow gap={8}>
+				<AuditForm key={type} type={type} setSelectedRoom={setSelectedRoom} onSubmit={auditMutation.mutate} />
+				{selectedRoom?.encrypted && type === '' ? (
+					<Box paddingBlock={16}>
+						<Callout type='warning' icon='circle-exclamation'>
+							<Text fontScale='p2b'>{t('Encrypted_content_cannot_be_searched_and_audited')}</Text>
 							{t('Encrypted_content_cannot_be_searched_and_audited_subtitle')}
 						</Callout>
-					) : null}
-					{auditMutation.isPending && <ListSkeleton listCount={5} />}
-					{auditMutation.isError && (
-						<States>
-							<StatesIcon name='circle-exclamation' variation='danger' />
-							<StatesTitle>{t('Error')}</StatesTitle>
-							<StatesSubtitle>{getErrorMessage(auditMutation.error)}</StatesSubtitle>
-						</States>
-					)}
-					{auditMutation.isSuccess && <AuditResult messages={auditMutation.data} />}
-				</Margins>
+					</Box>
+				) : null}
+				{auditMutation.isPending && <ListSkeleton listCount={5} />}
+				{auditMutation.isError && (
+					<States>
+						<StatesIcon name='circle-exclamation' variation='danger' />
+						<StatesTitle>{t('Error')}</StatesTitle>
+						<StatesSubtitle>{getErrorMessage(auditMutation.error)}</StatesSubtitle>
+					</States>
+				)}
+				{auditMutation.isSuccess && <AuditResult messages={auditMutation.data} />}
 			</PageScrollableContentWithShadow>
 		</Page>
 	);

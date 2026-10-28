@@ -6,7 +6,7 @@ import { useLayoutEffect, useState } from 'react';
 import RoomOpener from './RoomOpener';
 import RoomOpenerEmbedded from './RoomOpenerEmbedded';
 
-type RoomRouteProps = {
+export type RoomRouteProps = {
 	extractOpenRoomParams: (routeParams: Record<string, string | null | undefined>) => {
 		type: RoomType;
 		reference: string;

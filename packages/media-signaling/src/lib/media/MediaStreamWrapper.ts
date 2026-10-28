@@ -33,9 +33,9 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 
 	private videoTrack: MediaStreamTrackWrapper | null = null;
 
-	private audioSender: RTCRtpSender | null = null;
+	private audioTransceiver: RTCRtpTransceiver | null = null;
 
-	private videoSender: RTCRtpSender | null = null;
+	private videoTransceiver: RTCRtpTransceiver | null = null;
 
 	private stopped = false;
 
@@ -197,17 +197,61 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 		this.emitter.emit('trackChanged', { track: newTrack, kind });
 	}
 
+	private getCurrentTransceiver(kind: MediaStreamTrack['kind']): RTCRtpTransceiver | null {
+		const transceiver = kind === 'audio' ? this.audioTransceiver : this.videoTransceiver;
+		if (!transceiver) {
+			return null;
+		}
+
+		// transceiver.stopped is not available on safari
+		if ('stopped' in transceiver && transceiver.stopped) {
+			return null;
+		}
+
+		if (transceiver.currentDirection === 'stopped' || transceiver.direction === 'stopped') {
+			return null;
+		}
+
+		return transceiver;
+	}
+
+	private setCurrentTransceiver(kind: MediaStreamTrack['kind'], transceiver: RTCRtpTransceiver | null) {
+		const oldTransceiver = kind === 'audio' ? this.audioTransceiver : this.videoTransceiver;
+		if ((!oldTransceiver && !transceiver) || oldTransceiver === transceiver) {
+			return;
+		}
+
+		const action = transceiver ? 'Changed' : 'Removed';
+
+		this.logger?.debug(`${action} current ${kind} transceiver for ${this.tag} stream`);
+		if (kind === 'audio') {
+			this.audioTransceiver = transceiver;
+		} else {
+			this.videoTransceiver = transceiver;
+		}
+	}
+
 	private async syncTrackChange(kind: MediaStreamTrack['kind'], track: MediaStreamTrack | null): Promise<void> {
 		if (this.remote) {
 			return;
 		}
-		const sender = kind === 'audio' ? this.audioSender : this.videoSender;
-		if (sender) {
+		if (this.stopped || ['closed', 'failed'].includes(this.peer.connectionState)) {
+			return;
+		}
+
+		const currentTransceiver = this.getCurrentTransceiver(kind);
+		if (currentTransceiver?.sender) {
 			// If we already have a sender of the same kind for this stream, we can just replace the track with no issues
 			// TODO: safe guard against edge cases where this would fail (eg: changing number of audio channels or increasing video quality)
 			this.logger?.debug('MediaStreamWrapper.setPeerTrack.replaceTrack', kind);
-			await sender.replaceTrack(track);
-			return;
+			try {
+				await currentTransceiver.sender.replaceTrack(track);
+				// Only return early if the track was successfully replaced on a transceiver - otherwise we add it to a new one
+				return;
+			} catch (err) {
+				this.logger?.error('MediaStreamWrapper.setPeerTrack.replaceTrack failed', kind, err);
+				this.setCurrentTransceiver(kind, null);
+			}
 		}
 
 		if (!track) {
@@ -219,13 +263,7 @@ export class MediaStreamWrapper implements IMediaStreamWrapper {
 		this.peer.addTrack(track, this.stream);
 
 		const transceiver = this.peer.getTransceivers().find((t) => t.sender.track === track);
-		if (transceiver) {
-			if (kind === 'audio') {
-				this.audioSender = transceiver.sender;
-			} else {
-				this.videoSender = transceiver.sender;
-			}
-		}
+		this.setCurrentTransceiver(kind, transceiver ?? null);
 	}
 
 	private wrapTrack(kind: MediaStreamTrack['kind'], track: MediaStreamTrack | null) {

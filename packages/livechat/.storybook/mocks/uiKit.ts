@@ -1,4 +1,4 @@
-import { action } from '@storybook/addon-actions';
+import { action } from 'storybook/actions';
 
 export const UIKitInteractionType = {
 	MODAL_OPEN: 'modal.open',

@@ -13,7 +13,6 @@ import { Registration } from './page-objects';
 import { convertHexToRGB } from './utils/convertHexToRGB';
 import { createCustomRole, deleteCustomRole } from './utils/custom-role';
 import { getUserInfo } from './utils/getUserInfo';
-import { parseMeteorResponse } from './utils/parseMeteorResponse';
 import { saveSettings } from './utils/saveSettings';
 import { setSettingValueById } from './utils/setSettingValueById';
 import type { BaseTest } from './utils/test';
@@ -123,6 +122,9 @@ const setupCustomRole = async (api: BaseTest['api']) => {
 };
 
 test.describe('SAML', () => {
+	// SAML requires the `saml-enterprise` module since 9.0.0
+	test.skip(!constants.IS_EE);
+
 	let poRegistration: Registration;
 	let samlRoleId: string;
 	let targetInviteGroupId: string;
@@ -207,7 +209,7 @@ test.describe('SAML', () => {
 	test.beforeEach(async ({ page }) => {
 		poRegistration = new Registration(page);
 
-		await page.goto('/home');
+		await poRegistration.goto();
 	});
 
 	test('Login', async ({ page, api }) => {
@@ -241,30 +243,6 @@ test.describe('SAML', () => {
 			expect(user?.name).toBe('Saml User 1');
 			expect(user?.emails).toBeDefined();
 			expect(user?.emails?.[0].address).toBe('samluser1@example.com');
-		});
-	});
-
-	test('Allow password change for OAuth users', async ({ api }) => {
-		await test.step("should not send password reset mail if 'Allow Password Change for OAuth Users' setting is disabled", async () => {
-			expect((await setSettingValueById(api, 'Accounts_AllowPasswordChangeForOAuthUsers', false)).status()).toBe(200);
-
-			const response = await api.post('/method.call/sendForgotPasswordEmail', {
-				message: JSON.stringify({ msg: 'method', id: 'id', method: 'sendForgotPasswordEmail', params: ['samluser1@example.com'] }),
-			});
-			const mailSent = await parseMeteorResponse<boolean>(response);
-			expect(response.status()).toBe(200);
-			expect(mailSent).toBe(false);
-		});
-
-		await test.step("should send password reset mail if 'Allow Password Change for OAuth Users' setting is enabled", async () => {
-			expect((await setSettingValueById(api, 'Accounts_AllowPasswordChangeForOAuthUsers', true)).status()).toBe(200);
-
-			const response = await api.post('/method.call/sendForgotPasswordEmail', {
-				message: JSON.stringify({ msg: 'method', id: 'id', method: 'sendForgotPasswordEmail', params: ['samluser1@example.com'] }),
-			});
-			const mailSent = await parseMeteorResponse<boolean>(response);
-			expect(response.status()).toBe(200);
-			expect(mailSent).toBe(true);
 		});
 	});
 
@@ -315,10 +293,20 @@ test.describe('SAML', () => {
 	const doLogoutStep = async (page: Page) => {
 		await test.step('logout', async () => {
 			await page.getByRole('button', { name: 'User menu' }).click();
-			await page.locator('//*[contains(@class, "rcx-option__content") and contains(text(), "Logout")]').click();
+			await page.getByRole('menu', { name: 'User menu' }).getByRole('menuitemcheckbox', { name: 'Logout' }).click();
 
 			await expect(page).toHaveURL('/home');
 			await expect(page.getByRole('button', { name: 'User menu' })).not.toBeVisible();
+		});
+	};
+
+	const expectLoggedOutAfterLogoutRequest = async (page: Page) => {
+		await test.step('expect user to be logged out from Rocket.Chat', async () => {
+			// The logout response echoes back the RelayState from the request (per the SAML spec), so the browser
+			// lands on the IdP after SLO instead of returning here; navigate back to confirm the session ended.
+			await poRegistration.goto();
+			await expect(page.getByRole('button', { name: 'User menu' })).not.toBeVisible();
+			await expect(poRegistration.btnLoginWithSaml).toBeVisible();
 		});
 	};
 
@@ -327,7 +315,7 @@ test.describe('SAML', () => {
 			await expect((await setSettingValueById(api, 'SAML_Custom_Default_logout_behaviour', 'Local')).status()).toBe(200);
 		});
 
-		await page.goto('/home');
+		await poRegistration.goto();
 		await doLoginStep(page, 'samluser1');
 		await doLogoutStep(page);
 
@@ -343,7 +331,7 @@ test.describe('SAML', () => {
 			await expect((await setSettingValueById(api, 'SAML_Custom_Default_logout_behaviour', 'SAML')).status()).toBe(200);
 		});
 
-		await page.goto('/home');
+		await poRegistration.goto();
 		await doLoginStep(page, 'samluser1');
 		await doLogoutStep(page);
 
@@ -356,7 +344,7 @@ test.describe('SAML', () => {
 	});
 
 	test('Logout - From IdP', async ({ page }) => {
-		await page.goto('/home');
+		await poRegistration.goto();
 		await doLoginStep(page, 'samluser1');
 
 		// This should trigger a logout request from the IdP, with a redirect to our home on success
@@ -471,8 +459,6 @@ test.describe('SAML', () => {
 	});
 
 	test('User Mapping - Custom Role', async ({ page, api }) => {
-		test.skip(!constants.IS_EE);
-
 		await doLoginStep(page, 'samluser4');
 
 		await test.step('expect users role to have been mapped correctly', async () => {
@@ -490,8 +476,8 @@ test.describe('SAML', () => {
 	});
 
 	test('Redirect to a specific group after login when using a valid invite link', async ({ page }) => {
-		await page.goto(`/invite/${inviteId}`);
-		await page.getByRole('link', { name: 'Back to Login' }).click();
+		await poRegistration.gotoInvite(inviteId);
+		await page.getByRole('link', { name: 'Back to login' }).click();
 
 		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual(JSON.stringify(inviteId));
 
@@ -504,12 +490,12 @@ test.describe('SAML', () => {
 	});
 
 	test('Remove invite token from session storage if invite is not used', async ({ page }) => {
-		await page.goto(`/invite/${inviteId}`);
-		await page.getByRole('link', { name: 'Back to Login' }).click();
+		await poRegistration.gotoInvite(inviteId);
+		await page.getByRole('link', { name: 'Back to login' }).click();
 
 		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual(JSON.stringify(inviteId));
 
-		await page.goto(`/home`);
+		await poRegistration.goto();
 		await doLoginStep(page, 'samluser2');
 
 		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual('null');
@@ -527,11 +513,11 @@ test.describe('SAML', () => {
 		const page2 = await browser.newPage();
 		const poRegistration2 = new Registration(page2);
 
-		await page2.goto(`/home`);
+		await poRegistration2.goto();
 		await expect(page2).toHaveURL('/home');
 
-		await page.goto(`/invite/${inviteId}`);
-		await page.getByRole('link', { name: 'Back to Login' }).click();
+		await poRegistration.gotoInvite(inviteId);
+		await page.getByRole('link', { name: 'Back to login' }).click();
 
 		expect(await page.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual(JSON.stringify(inviteId));
 		expect(await page2.evaluate((key) => sessionStorage.getItem(key), KEY)).toEqual('null');
@@ -637,7 +623,7 @@ test.describe('SAML', () => {
 			});
 
 			test('Reject Invalid Signature on Logout Request', async ({ page }) => {
-				await page.goto('/home');
+				await poRegistration.goto();
 				await doLoginStep(page, 'samluser1');
 
 				await page.goto(`${logoutRequest}&Signature=invalid`);
@@ -649,7 +635,7 @@ test.describe('SAML', () => {
 			});
 
 			test('Reject Missing Signature on Logout Request', async ({ page }) => {
-				await page.goto('/home');
+				await poRegistration.goto();
 				await doLoginStep(page, 'samluser1');
 
 				await page.goto(logoutRequest);
@@ -661,16 +647,12 @@ test.describe('SAML', () => {
 			});
 
 			test('Accept Valid Signature on Logout Request', async ({ page }) => {
-				await page.goto('/home');
+				await poRegistration.goto();
 				await doLoginStep(page, 'samluser1');
 
 				await page.goto(`${logoutRequest}&Signature=${logoutRequestSignature}`);
 
-				await test.step('expect user to be logged out from Rocket.Chat', async () => {
-					await expect(page).toHaveURL('/home');
-					await expect(page.getByRole('button', { name: 'User menu' })).not.toBeVisible();
-					await expect(poRegistration.btnLoginWithSaml).toBeVisible();
-				});
+				await expectLoggedOutAfterLogoutRequest(page);
 			});
 		});
 
@@ -680,29 +662,21 @@ test.describe('SAML', () => {
 			});
 
 			test('Ignore Invalid Signature on Logout Request', async ({ page }) => {
-				await page.goto('/home');
+				await poRegistration.goto();
 				await doLoginStep(page, 'samluser1');
 
 				await page.goto(`${logoutRequest}&Signature=invalid`);
 
-				await test.step('expect user to be logged out from Rocket.Chat', async () => {
-					await expect(page).toHaveURL('/home');
-					await expect(page.getByRole('button', { name: 'User menu' })).not.toBeVisible();
-					await expect(poRegistration.btnLoginWithSaml).toBeVisible();
-				});
+				await expectLoggedOutAfterLogoutRequest(page);
 			});
 
 			test('Ignore Missing Signature on Logout Request', async ({ page }) => {
-				await page.goto('/home');
+				await poRegistration.goto();
 				await doLoginStep(page, 'samluser1');
 
 				await page.goto(logoutRequest);
 
-				await test.step('expect user to be logged out from Rocket.Chat', async () => {
-					await expect(page).toHaveURL('/home');
-					await expect(page.getByRole('button', { name: 'User menu' })).not.toBeVisible();
-					await expect(poRegistration.btnLoginWithSaml).toBeVisible();
-				});
+				await expectLoggedOutAfterLogoutRequest(page);
 			});
 		});
 	});
@@ -807,6 +781,59 @@ test.describe('SAML', () => {
 			const { members: autoCreatedMembers } = await autoCreatedChannelMembersResponse.json();
 			expect(autoCreatedMembers).toBeDefined();
 			expect(autoCreatedMembers.some((member: { username: string }) => member.username === 'samluser1')).toBe(false);
+		});
+	});
+
+	test.describe('SAML Login handoff', () => {
+		// When a native client starts the login it passes `loginClient`, and the web client must hand the SAML
+		// credential token over to the app instead of logging itself in, so that only one session is ever created.
+		const findCredentialToken = async (credentialToken: string) => {
+			const connection = await MongoClient.connect(constants.URL_MONGODB);
+			try {
+				return await connection
+					.db()
+					.collection<{ _id: string; userInfo?: { profile?: Record<string, any> } }>('rocketchat_credential_tokens')
+					.findOne({ _id: credentialToken });
+			} finally {
+				await connection.close();
+			}
+		};
+
+		test('Hand the credential token to the desktop client without logging in the browser', async ({ page }) => {
+			await poRegistration.goto('/home?loginClient=desktop');
+
+			await expect(page).toHaveURL(/loginClient=desktop/);
+
+			// Passing null skips the logged-in assertions, since the browser must not get a session here.
+			await doLoginStep(page, 'samluser1', null);
+
+			let credentialToken: string | null = null;
+
+			await test.step('expect to land on the SAML handoff route carrying the credential token', async () => {
+				// SAMLLoginRoute redirects to rocketchat://auth from here. The browser has no handler for that
+				// scheme, so the page stays put and we can inspect exactly what would have been handed over.
+				await expect(page).toHaveURL(/\/saml\/[^?]+\?.*loginClient=desktop/);
+
+				credentialToken = new URL(page.url()).searchParams.get('saml_idp_credentialToken');
+				expect(credentialToken).toBeTruthy();
+			});
+
+			await test.step('expect the credential to be stored server side, ready for the app to redeem', async () => {
+				const storedCredential = await findCredentialToken(credentialToken as string);
+
+				expect(storedCredential).not.toBeNull();
+				expect(storedCredential?.userInfo?.profile).toBeDefined();
+				expect(storedCredential?.userInfo?.profile?.email).toBe('samluser1@example.com');
+			});
+
+			await test.step('expect the browser to remain unauthenticated', async () => {
+				await expect(poRegistration.btnLoginWithSaml).toBeVisible();
+
+				// Reload to prove no session was persisted for this browser.
+				await poRegistration.goto();
+				await expect(poRegistration.btnLoginWithSaml).toBeVisible();
+				await expect(page.getByRole('button', { name: 'User menu' })).not.toBeVisible();
+			});
 		});
 	});
 

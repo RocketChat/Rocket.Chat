@@ -1,5 +1,5 @@
 import type { AbacAttributeDefinitionChangeType, AbacActionPerformed } from '@rocket.chat/core-typings';
-import { Box, InputBox, Margins, Pagination } from '@rocket.chat/fuselage';
+import { Box, InputBox, Margins, Pagination, Stack } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import {
 	GenericTable,
@@ -9,14 +9,14 @@ import {
 	GenericTableHeaderCell,
 	GenericTableRow,
 	usePagination,
+	GenericNoResults,
+	useFormatDateAndTime,
 } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import GenericNoResults from '../../../../components/GenericNoResults';
-import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 import { ABACQueryKeys } from '../../../../lib/queryKeys';
 import DateRangePicker from '../../moderation/helpers/DateRangePicker';
 
@@ -103,7 +103,19 @@ const LogsPage = () => {
 							room: event.data?.find((item) => item.key === 'object')?.value?.name ?? '',
 							element: t('ABAC_room_membership'),
 						};
-					case 'abac.object.attribute.changed':
+					case 'abac.object.attribute.changed': {
+						const app = event.data?.find((item) => item.key === 'app')?.value;
+						return {
+							...eventInfo,
+							...(app && { user: t('ABAC_User_via_App', { username: eventInfo.user, appName: app.name ?? app._id }) }),
+							name:
+								event.data
+									?.find((item) => item.key === 'current')
+									?.value?.map((item) => item.key)
+									.join(', ') ?? t('Empty'),
+							room: event.data?.find((item) => item.key === 'room')?.value?.name ?? '',
+						};
+					}
 					case 'abac.object.attributes.removed':
 						return {
 							...eventInfo,
@@ -113,6 +125,25 @@ const LogsPage = () => {
 									?.value?.map((item) => item.key)
 									.join(', ') ?? t('Empty'),
 							room: event.data?.find((item) => item.key === 'room')?.value?.name ?? '',
+						};
+					case 'abac.attribute.store.switched':
+						return {
+							...eventInfo,
+							element: t('ABAC_Attribute_Store'),
+							action: t('ABAC_Attribute_Store_Switched'),
+							name: `${event.data?.find((item) => item.key === 'from')?.value} -> ${event.data?.find((item) => item.key === 'to')?.value}`,
+							room: t('ABAC_Rooms_Affected', { count: Number(event.data?.find((item) => item.key === 'roomsAffected')?.value ?? 0) }),
+						};
+					case 'abac.membership.evaluated':
+						return {
+							...eventInfo,
+							element: t('ABAC_room_membership'),
+							action: t('ABAC_Membership_Evaluated'),
+							name:
+								event.data
+									?.find((item) => item.key === 'subjects')
+									?.value?.map((item) => item.username)
+									.join(', ') ?? '',
 						};
 					default:
 						return null;
@@ -127,31 +158,27 @@ const LogsPage = () => {
 	return (
 		<>
 			<Margins block={24}>
-				<Box display='flex'>
+				<Stack direction='row' gap={8}>
 					<InputBox
 						type='date'
 						placeholder={t('Start_date')}
 						value={startDate}
 						onChange={(e) => setStartDate((e.target as HTMLInputElement).value)}
 					/>
-					<Margins inlineStart={8}>
-						<InputBox
-							type='date'
-							placeholder={t('End_date')}
-							value={endDate}
-							onChange={(e) => setEndDate((e.target as HTMLInputElement).value)}
-						/>
-					</Margins>
-					<Margins inlineStart={8}>
-						<DateRangePicker
-							defaultSelectedKey='today'
-							onChange={(range) => {
-								setStartDate(range.start);
-								setEndDate(range.end);
-							}}
-						/>
-					</Margins>
-				</Box>
+					<InputBox
+						type='date'
+						placeholder={t('End_date')}
+						value={endDate}
+						onChange={(e) => setEndDate((e.target as HTMLInputElement).value)}
+					/>
+					<DateRangePicker
+						defaultSelectedKey='today'
+						onChange={(range) => {
+							setStartDate(range.start);
+							setEndDate(range.end);
+						}}
+					/>
+				</Stack>
 			</Margins>
 			{(!data || data.events?.length === 0) && !isLoading ? (
 				<Box display='flex' justifyContent='center' height='full'>
@@ -175,21 +202,21 @@ const LogsPage = () => {
 								}
 								return (
 									<GenericTableRow key={eventInfo.id}>
-										<GenericTableCell withTruncatedText>
+										<GenericTableCell truncate title={eventInfo.user}>
 											{eventInfo.userAvatar && (
-												<Box is='span' mie={4}>
+												<Box is='span' marginInlineEnd={4}>
 													{eventInfo.userAvatar}
 												</Box>
 											)}
 											{eventInfo.user}
 										</GenericTableCell>
-										<GenericTableCell withTruncatedText>{eventInfo.action}</GenericTableCell>
-										<GenericTableCell withTruncatedText>{eventInfo.room}</GenericTableCell>
-										<GenericTableCell withTruncatedText>{eventInfo.element}</GenericTableCell>
-										<GenericTableCell withTruncatedText title={eventInfo.name}>
+										<GenericTableCell truncate>{eventInfo.action}</GenericTableCell>
+										<GenericTableCell truncate>{eventInfo.room}</GenericTableCell>
+										<GenericTableCell truncate>{eventInfo.element}</GenericTableCell>
+										<GenericTableCell truncate title={eventInfo.name}>
 											{eventInfo.name}
 										</GenericTableCell>
-										<GenericTableCell withTruncatedText>{formatDate(eventInfo.timestamp)}</GenericTableCell>
+										<GenericTableCell truncate>{formatDate(eventInfo.timestamp)}</GenericTableCell>
 									</GenericTableRow>
 								);
 							})}

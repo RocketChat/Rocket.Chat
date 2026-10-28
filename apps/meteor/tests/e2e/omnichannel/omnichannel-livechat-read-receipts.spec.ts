@@ -70,6 +70,7 @@ test.describe('OC - Livechat - Read Receipts', () => {
 			await expect(poHomeOmnichannel.content.lastUserMessage).toBeVisible();
 			await expect(poHomeOmnichannel.content.lastUserMessage).toContainText(testMessage);
 			await markedAsRead;
+			await expect(poHomeOmnichannel.content.lastUserMessage.getByRole('status', { name: 'Message viewed' })).toBeVisible();
 		});
 
 		await test.step('read receipts show both agent and visitor names', async () => {

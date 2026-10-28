@@ -24,7 +24,12 @@ export const code = (value: unknown[], language = 'none') => ({
 });
 
 export const bigEmoji = generate('BIG_EMOJI');
-export const task = (value: unknown[], status: boolean) => ({ type: 'TASK' as const, status, value });
+export const task = (value: unknown[], status: boolean, nested?: unknown[]) => ({
+	type: 'TASK' as const,
+	status,
+	value,
+	...(nested ? { nested } : {}),
+});
 export const inlineCode = generate('INLINE_CODE');
 export const tasks = generate('TASKS');
 
@@ -57,10 +62,11 @@ export const mentionChannel = (value: string) => ({
 export const orderedList = generate('ORDERED_LIST');
 export const unorderedList = generate('UNORDERED_LIST');
 
-export const listItem = (value: unknown[], number?: number) => ({
+export const listItem = (value: unknown[], number?: number, nested?: unknown[]) => ({
 	type: 'LIST_ITEM' as const,
 	value,
 	...(number !== undefined ? { number } : {}),
+	...(nested ? { nested } : {}),
 });
 
 export const mentionUser = (value: string) => ({
@@ -89,6 +95,31 @@ export const emoticon = (value: string, shortCode: string) => ({
 export const lineBreak = () => ({
 	type: 'LINE_BREAK' as const,
 	value: undefined,
+});
+
+export const horizontalRule = (fallback?: [number, number]) => ({
+	type: 'HORIZONTAL_RULE' as const,
+	value: undefined,
+	...(fallback !== undefined ? { fallback } : {}),
+});
+
+type Align = 'left' | 'center' | 'right' | undefined;
+
+export const tableCell = (value: unknown[], align: Align = undefined) => ({
+	type: 'TABLE_CELL' as const,
+	align,
+	value,
+});
+
+export const tableRow = (value: unknown[]) => ({
+	type: 'TABLE_ROW' as const,
+	value,
+});
+
+export const table = (header: unknown[], rows: unknown[], fallback?: [number, number]) => ({
+	type: 'TABLE' as const,
+	value: { header, rows },
+	...(fallback !== undefined ? { fallback } : {}),
 });
 
 export const katex = (value: string) => ({

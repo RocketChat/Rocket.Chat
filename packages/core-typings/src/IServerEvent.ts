@@ -3,6 +3,8 @@ import type { IUser } from './IUser';
 import type {
 	IServerEventAbacActionPerformed,
 	IServerEventAbacAttributeChanged,
+	IServerEventAbacAttributeStoreSwitched,
+	IServerEventAbacMembershipEvaluated,
 	IServerEventAbacObjectAttributeChanged,
 	IServerEventAbacObjectAttributesRemoved,
 	IServerEventAbacSubjectAttributeChanged,
@@ -72,6 +74,8 @@ export interface IServerEvents {
 	'abac.attribute.changed': IServerEventAbacAttributeChanged;
 	'abac.action.performed': IServerEventAbacActionPerformed;
 	'abac.object.attributes.removed': IServerEventAbacObjectAttributesRemoved;
+	'abac.attribute.store.switched': IServerEventAbacAttributeStoreSwitched;
+	'abac.membership.evaluated': IServerEventAbacMembershipEvaluated;
 	'settings.changed': IServerEventSettingsChanged;
 	'user.changed': IServerEventUserChanged;
 }

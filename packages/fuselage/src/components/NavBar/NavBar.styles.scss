@@ -1,0 +1,24 @@
+@use '../../styles/colors.scss';
+@use '../../styles/lengths.scss';
+
+.rcx-navbar {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+
+	width: 100%;
+	padding: lengths.padding(8) lengths.padding(16);
+
+	border-bottom: lengths.border-width(default) solid colors.stroke(light);
+
+	background-color: colors.surface(sidebar);
+
+	&-section {
+		display: flex;
+		align-items: center;
+	}
+
+	&-divider {
+		border-color: colors.stroke(medium);
+	}
+}

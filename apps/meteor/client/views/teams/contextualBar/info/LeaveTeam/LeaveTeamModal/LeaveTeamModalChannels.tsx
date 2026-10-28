@@ -1,11 +1,10 @@
 import type { IRoom, Serialized } from '@rocket.chat/core-typings';
 import { GenericModal } from '@rocket.chat/ui-client';
-import type { ReactElement } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import ChannelDesertionTable from '../../../../ChannelDesertionTable';
 
-type LeaveTeamModalChannelsProps = {
+export type LeaveTeamModalChannelsProps = {
 	rooms?: (Serialized<IRoom> & { isLastOwner?: boolean })[];
 	onToggleAllRooms: () => void;
 	onChangeRoomSelection: (room: Serialized<IRoom> & { isLastOwner?: boolean }) => void;
@@ -25,7 +24,7 @@ const LeaveTeamModalChannels = ({
 	onCancel,
 	eligibleRoomsLength,
 	selectedRooms,
-}: LeaveTeamModalChannelsProps): ReactElement => {
+}: LeaveTeamModalChannelsProps) => {
 	const { t } = useTranslation();
 
 	return (

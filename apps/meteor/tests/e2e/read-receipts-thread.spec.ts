@@ -29,7 +29,7 @@ test.describe.serial('read-receipts-thread', () => {
 
 	test.beforeEach(async ({ page }) => {
 		poHomeChannel = new HomeChannel(page);
-		await page.goto('/home');
+		await poHomeChannel.goto();
 	});
 
 	test.afterEach(async () => {
@@ -49,6 +49,9 @@ test.describe.serial('read-receipts-thread', () => {
 		auxContext = { page: auxPage, poHomeChannel: new HomeChannel(auxPage) };
 		await auxContext.poHomeChannel.navbar.openChat(targetChannel);
 		await auxContext.poHomeChannel.content.openReplyInThread();
+
+		// the read receipt only flips once user1 has actually read the reply, so wait for it to render on their side first
+		await expect(auxContext.poHomeChannel.content.lastUserThreadMessage).toContainText('first thread reply');
 
 		await expect(poHomeChannel.content.lastUserThreadMessage.getByRole('status', { name: 'Message viewed' })).toBeVisible();
 	});

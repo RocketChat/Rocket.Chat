@@ -1,4 +1,4 @@
-import type { Meta, StoryFn } from '@storybook/react';
+import type { StoryObj, Meta } from '@storybook/react';
 
 import SecurityLogDisplayModal from './SecurityLogDisplayModal';
 
@@ -19,12 +19,12 @@ export default {
 	},
 } satisfies Meta<typeof SecurityLogDisplayModal>;
 
-export const Default: StoryFn<typeof SecurityLogDisplayModal> = (args) => <SecurityLogDisplayModal {...args} />;
+export const Default: StoryObj<typeof SecurityLogDisplayModal> = {};
 
-export const system: StoryFn<typeof SecurityLogDisplayModal> = (args) => (
-	<SecurityLogDisplayModal {...args} actor={{ type: 'system', reason: 'update' }} />
-);
+export const system: StoryObj<typeof SecurityLogDisplayModal> = {
+	render: (args) => <SecurityLogDisplayModal {...args} actor={{ type: 'system', reason: 'update' }} />,
+};
 
-export const app: StoryFn<typeof SecurityLogDisplayModal> = (args) => (
-	<SecurityLogDisplayModal {...args} actor={{ type: 'app', _id: 'app-id' }} />
-);
+export const app: StoryObj<typeof SecurityLogDisplayModal> = {
+	render: (args) => <SecurityLogDisplayModal {...args} actor={{ type: 'app', _id: 'app-id' }} />,
+};

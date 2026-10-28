@@ -1,6 +1,7 @@
+import { after, before, describe, it } from 'node:test';
+
 import type { App } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { after, before, describe, it } from 'mocha';
 
 import { getCredentials, request, credentials } from '../../data/api-data';
 import { appUpdateStatusTest } from '../../data/apps/app-packages';
@@ -14,7 +15,7 @@ const APP_USERNAME = 'update-status-test.bot';
 (IS_EE ? describe : describe.skip)('Apps - Update App User Status', () => {
 	let app: App;
 
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	before(async () => {
 		await cleanupApps();
@@ -67,9 +68,7 @@ const APP_USERNAME = 'update-status-test.bot';
 			expect(appUser.statusText).to.be.equal(statusText);
 		});
 
-		it('should update status without changing statusText', async () => {
-			const userBefore = await getUserByUsername(APP_USERNAME);
-
+		it('should clear statusText when status is updated without providing statusText', async () => {
 			await request
 				.post(apps(`/public/${app.id}/update-status`))
 				.set(credentials)
@@ -78,10 +77,9 @@ const APP_USERNAME = 'update-status-test.bot';
 
 			const appUser = await getUserByUsername(APP_USERNAME);
 
-			// We can't test the status value because the Presence service will override it with OFFLINE
-			// when the user doesn't have an active session/connection
-			// expect(appUser.status).to.equal(status);
-			expect(appUser.statusText).to.be.equal(userBefore.statusText);
+			// The test app defaults statusText to '' when not provided,
+			// so the presence engine correctly clears it
+			expect(appUser.statusText).to.be.equal('');
 		});
 	});
 });

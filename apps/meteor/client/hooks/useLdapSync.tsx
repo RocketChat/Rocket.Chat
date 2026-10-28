@@ -1,6 +1,5 @@
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericModal } from '@rocket.chat/ui-client';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetModal, useToastMessageDispatch, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
@@ -17,7 +16,7 @@ export const useLdapSync = () => {
 
 		try {
 			const { message } = await syncNow();
-			dispatchToastMessage({ type: 'success', message: t(message as TranslationKey) });
+			dispatchToastMessage({ type: 'success', message: t(message) });
 		} catch (error) {
 			dispatchToastMessage({ type: 'error', message: error });
 		}
@@ -26,8 +25,8 @@ export const useLdapSync = () => {
 	return async (): Promise<void> => {
 		try {
 			await testConnection();
-		} catch {
-			dispatchToastMessage({ type: 'error', message: t('Connection_failed') });
+		} catch (error) {
+			dispatchToastMessage({ type: 'error', message: error });
 			return;
 		}
 

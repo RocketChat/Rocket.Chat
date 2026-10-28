@@ -17,6 +17,6 @@ export interface IBannersDismissModel extends IBaseModel<IBannerDismiss> {
 	findByUserIdAndBannerId<P extends Document>(
 		userId: string,
 		bannerIds: string[],
-		options?: undefined | FindOptions<IBannerDismiss> | FindOptions<P extends IBannerDismiss ? IBannerDismiss : P>,
+		options?: FindOptions<IBannerDismiss> | FindOptions<P extends IBannerDismiss ? IBannerDismiss : P>,
 	): FindCursor<P> | FindCursor<IBannerDismiss>;
 }

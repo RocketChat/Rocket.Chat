@@ -3,6 +3,7 @@ import { MediaSignalingSession, MediaCallWebRTCProcessor } from '@rocket.chat/me
 import type { MediaSignalTransport, ClientMediaSignal, ServerMediaSignal, WebRTCProcessorConfig } from '@rocket.chat/media-signaling';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useSetting, useStream, useToastMessageDispatch, useWriteStream } from '@rocket.chat/ui-contexts';
+import { stopTracks } from '@rocket.chat/ui-media';
 import { useEffect, useSyncExternalStore, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -12,7 +13,8 @@ import { useIceServers } from '../hooks/useIceServers';
 type SignalTransport = MediaSignalTransport<ClientMediaSignal>;
 
 const randomStringFactory = () => {
-	if (!window.crypto) {
+	// `crypto.randomUUID` is only exposed in secure contexts, while `crypto` itself is always present
+	if (typeof window.crypto?.randomUUID !== 'function') {
 		return Math.random().toString(36).substring(2, 15);
 	}
 
@@ -33,6 +35,37 @@ const isNotAllowedError = (error: unknown): error is DOMException & { name: 'Not
 	return error instanceof DOMException && error.name === 'NotAllowedError';
 };
 
+let fakeStream: { audioCtx: AudioContext; stream: MediaStream } | null = null;
+let fakeStreamTimeout: ReturnType<typeof setTimeout> | undefined = undefined;
+
+const getFakeStream = () => {
+	if (fakeStream) {
+		stopFakeStream();
+	}
+
+	const audioCtx = new AudioContext();
+	const { stream } = audioCtx.createMediaStreamDestination();
+
+	fakeStream = {
+		audioCtx,
+		stream,
+	};
+
+	return fakeStream.stream;
+};
+
+const stopFakeStream = () => {
+	if (fakeStreamTimeout) {
+		clearTimeout(fakeStreamTimeout);
+	}
+	if (!fakeStream) {
+		return;
+	}
+	stopTracks(fakeStream.stream);
+	void fakeStream.audioCtx.close();
+	fakeStream = null;
+};
+
 class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 	private sessionInstance: MediaSignalingSession | null = null;
 
@@ -43,6 +76,10 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 	private failedScreenShareAttempts = 0;
 
 	private logger = new MediaCallLogger();
+
+	private popoutWindow: Window | undefined;
+
+	private iceServers: RTCIceServer[] = [];
 
 	constructor() {
 		super();
@@ -93,13 +130,35 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 		return oldSessionId;
 	}
 
+	private async getUserMedia(constraints: MediaStreamConstraints) {
+		try {
+			if (this.sessionInstance?.micless) {
+				return getFakeStream();
+			}
+			const stream = await navigator.mediaDevices.getUserMedia(constraints);
+			if (!stream) {
+				throw new Error();
+			}
+			// Wait a little to ensure the track switch happened.
+			// It's ok for the old stream/audioCtx to hang unused for a little
+			fakeStreamTimeout = setTimeout(stopFakeStream, 1000);
+			return stream;
+		} catch (error) {
+			if (this.sessionInstance) {
+				this.sessionInstance.micless = true;
+			}
+			return getFakeStream();
+		}
+	}
+
 	private async getDisplayMedia(constraints: MediaStreamConstraints) {
 		try {
-			if (!navigator?.mediaDevices?.getDisplayMedia) {
+			const actualWindow = this.popoutWindow || window;
+			if (!actualWindow.navigator?.mediaDevices?.getDisplayMedia) {
 				throw new Error('getDisplayMedia is not supported');
 			}
 
-			const stream = await navigator.mediaDevices.getDisplayMedia(constraints);
+			const stream = await actualWindow.navigator.mediaDevices.getDisplayMedia(constraints);
 			if (!stream) {
 				this.logger.log('MediaSessionStore - getDisplayMedia - no stream returned');
 				throw new Error('MediaSessionStore - getDisplayMedia - Failed to get display media');
@@ -126,11 +185,15 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 		}
 	}
 
-	private makeInstance(userId: string) {
+	private cleanupInstance() {
 		if (this.sessionInstance !== null) {
 			this.sessionInstance.endSession();
 			this.sessionInstance = null;
 		}
+	}
+
+	private makeInstance(userId: string) {
+		this.cleanupInstance();
 
 		this.failedScreenShareAttempts = 0;
 
@@ -147,8 +210,9 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 				webrtc: (config) => this.webrtcProcessorFactory(config),
 			},
 			displayMediaFactory: (...args) => this.getDisplayMedia(...args),
-			mediaStreamFactory: (...args) => navigator.mediaDevices.getUserMedia(...args),
+			mediaStreamFactory: (...args) => this.getUserMedia(...args),
 			randomStringFactory,
+			iceServers: this.iceServers,
 			oldSessionId: this.getOldSessionId(userId),
 			logger: this.logger,
 			features: ['audio', 'screen-share', 'transfer', 'hold'],
@@ -164,7 +228,12 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 		return this.sessionInstance;
 	}
 
-	public getInstance(userId?: string) {
+	public getInstance(userId?: string, enabled = true) {
+		if (!enabled) {
+			this.cleanupInstance();
+			return null;
+		}
+
 		if (!userId) {
 			return null;
 		}
@@ -184,6 +253,11 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 		};
 	}
 
+	public setIceServers(iceServers: RTCIceServer[]) {
+		this.iceServers = iceServers;
+		this.sessionInstance?.setIceServers(iceServers);
+	}
+
 	public setWebRTCProcessorFactory(factory: (config: WebRTCProcessorConfig) => MediaCallWebRTCProcessor) {
 		this._webrtcProcessorFactory = factory;
 		this.change();
@@ -196,11 +270,25 @@ class MediaSessionStore extends Emitter<MediaSessionStoreEventMap> {
 
 		void this.sessionInstance.processSignal(signal);
 	}
+
+	public setPopoutWindow(popoutWindow?: Window) {
+		if (!popoutWindow) {
+			this.popoutWindow = undefined;
+		}
+		this.popoutWindow = popoutWindow;
+	}
 }
 
 const mediaSession = new MediaSessionStore();
 
-export const useMediaSessionInstance = (userId?: string) => {
+export const useSetPopoutWindow = (popoutWindow?: Window) => {
+	useEffect(() => {
+		mediaSession.setPopoutWindow(popoutWindow);
+		return () => mediaSession.setPopoutWindow(undefined);
+	});
+};
+
+export const useMediaSessionInstance = (userId?: string, enabled = true) => {
 	const { t } = useTranslation();
 	const iceServers = useIceServers();
 	const iceGatheringTimeout = useSetting('VoIP_TeamCollab_Ice_Gathering_Timeout', 5000);
@@ -211,10 +299,12 @@ export const useMediaSessionInstance = (userId?: string) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	useEffect(() => {
-		mediaSession.setWebRTCProcessorFactory(
-			(config) => new MediaCallWebRTCProcessor({ ...config, rtc: { ...config.rtc, iceServers }, iceGatheringTimeout }),
-		);
-	}, [iceServers, iceGatheringTimeout]);
+		mediaSession.setIceServers(iceServers);
+	}, [iceServers]);
+
+	useEffect(() => {
+		mediaSession.setWebRTCProcessorFactory((config) => new MediaCallWebRTCProcessor({ ...config, iceGatheringTimeout }));
+	}, [iceGatheringTimeout]);
 
 	useEffect(() => {
 		// TODO: This stream is not typed.
@@ -246,8 +336,8 @@ export const useMediaSessionInstance = (userId?: string) => {
 			return mediaSession.onChange(callback);
 		}, []),
 		useCallback(() => {
-			return mediaSession.getInstance(userId);
-		}, [userId]),
+			return mediaSession.getInstance(userId, enabled);
+		}, [userId, enabled]),
 	);
 
 	return instance ?? undefined;

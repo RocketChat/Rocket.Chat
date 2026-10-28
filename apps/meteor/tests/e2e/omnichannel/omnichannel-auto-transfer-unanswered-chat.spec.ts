@@ -51,7 +51,7 @@ test.describe('omnichannel-auto-transfer-unanswered-chat', () => {
 		// start a new chat for each test
 		newVisitor = createFakeVisitor();
 		poLiveChat = new OmnichannelLiveChat(page, api);
-		await page.goto('/livechat');
+		await poLiveChat.goto();
 		await poLiveChat.openLiveChat();
 		await poLiveChat.sendMessage(newVisitor, false);
 		await poLiveChat.onlineAgentMessage.type('this_a_test_message_from_user');

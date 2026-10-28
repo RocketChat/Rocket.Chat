@@ -1,13 +1,13 @@
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactNode } from 'react';
 
 import { ChatContext } from '../../../client/views/room/contexts/ChatContext';
 import { createFakeSubscription } from '../data';
 
-type FakeChatProviderProps = {
+export type FakeChatProviderProps = {
 	children?: ReactNode;
 };
 
-const FakeChatProvider = ({ children }: FakeChatProviderProps): ReactElement => {
+const FakeChatProvider = ({ children }: FakeChatProviderProps) => {
 	return (
 		<ChatContext.Provider
 			value={

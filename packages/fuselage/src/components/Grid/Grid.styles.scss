@@ -1,0 +1,52 @@
+@use 'sass:math';
+@use 'sass:map';
+@use '~@rocket.chat/fuselage-tokens/dist/breakpoints.scss';
+@use '../../styles/mixins/breakpoints.scss' as *;
+@use '../../styles/functions.scss' as *;
+
+@mixin when-item-is-on-breakpoint($breakpoint-name) {
+	@include on-breakpoint($breakpoint-name) {
+		@content;
+	}
+
+	.rcx-grid--#{$breakpoint-name} > & {
+		@content;
+	}
+}
+
+.rcx-grid {
+	display: flex;
+	flex-flow: row wrap;
+
+	&__wrapper {
+		overflow: hidden;
+	}
+
+	@each $breakpoint-name in $breakpoint-names {
+		@include when-item-is-on-breakpoint($breakpoint-name) {
+			margin-block: calc(#{map.get(breakpoints.$breakpoints, #{$breakpoint-name}-gutter-width)} / -2);
+			margin-inline: calc(#{map.get(breakpoints.$breakpoints, #{$breakpoint-name}-gutter-width)} / -2);
+		}
+	}
+}
+
+.rcx-grid__item {
+	flex: 1 1 0;
+
+	@each $breakpoint-name in $breakpoint-names {
+		@include when-item-is-on-breakpoint($breakpoint-name) {
+			padding-block: calc(#{map.get(breakpoints.$breakpoints, #{$breakpoint-name}-gutter-width)} / 2);
+			padding-inline: calc(#{map.get(breakpoints.$breakpoints, #{$breakpoint-name}-gutter-width)} / 2);
+
+			$total-columns: map.get(breakpoints.$breakpoints, #{$breakpoint-name}-columns);
+			@for $columns from 1 through $total-columns {
+				&--#{$breakpoint-name}-#{$columns} {
+					flex-grow: 0;
+					flex-basis: (math.div($columns, $total-columns) * 100%);
+
+					max-width: (math.div($columns, $total-columns) * 100%);
+				}
+			}
+		}
+	}
+}

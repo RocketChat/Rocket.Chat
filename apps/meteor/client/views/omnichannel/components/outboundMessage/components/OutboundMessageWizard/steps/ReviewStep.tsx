@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import OutboundMessagePreview from '../../OutboundMessagePreview';
 
-type ReviewStepProps = ComponentProps<typeof OutboundMessagePreview> & {
+export type ReviewStepProps = ComponentProps<typeof OutboundMessagePreview> & {
 	onSend(): Promise<void>;
 };
 
@@ -24,7 +24,7 @@ const ReviewStep = ({ onSend, ...props }: ReviewStepProps) => {
 			<WizardActions annotation={t('Messages_cannot_be_unsent')}>
 				<WizardBackButton />
 
-				<Button primary icon='send' loading={sendMutation.isPending} onClick={() => sendMutation.mutate()}>
+				<Button variant='primary' icon='send' loading={sendMutation.isPending} onClick={() => sendMutation.mutate()}>
 					{t('Send')}
 				</Button>
 			</WizardActions>

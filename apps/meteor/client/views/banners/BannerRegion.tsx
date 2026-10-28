@@ -1,4 +1,3 @@
-import type { ReactElement } from 'react';
 import { useSyncExternalStore } from 'react';
 
 import LegacyBanner from './LegacyBanner';
@@ -7,7 +6,7 @@ import { useUserBanners } from './hooks/useUserBanners';
 import { withErrorBoundary } from '../../components/withErrorBoundary';
 import * as banners from '../../lib/banners';
 
-const BannerRegion = (): ReactElement | null => {
+const BannerRegion = () => {
 	const payload = useSyncExternalStore(...banners.firstSubscription);
 
 	useUserBanners();

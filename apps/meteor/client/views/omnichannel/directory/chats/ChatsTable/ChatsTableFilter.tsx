@@ -1,8 +1,9 @@
 import { Box, Button, Chip } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { GenericMenu, GenericModal } from '@rocket.chat/ui-client';
 import { useEndpoint, usePermission, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
+import type { RefObject } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import FilterByText from '../../../../../components/FilterByText';
@@ -19,8 +20,9 @@ const ChatsTableFilter = () => {
 	const canRemoveAllClosedChats = usePermission('remove-closed-livechat-rooms');
 
 	const { filtersQuery, displayFilters, setFiltersQuery, removeFilter, textInputRef } = useChatsContext();
+	const filterChips = Object.entries(displayFilters).filter(([, label]) => label);
 
-	const handleRemoveAllClosed = useEffectEvent(async () => {
+	const handleRemoveAllClosed = useStableCallback(async () => {
 		const onDeleteAll = async () => {
 			try {
 				await removeClosedRooms();
@@ -55,7 +57,7 @@ const ChatsTableFilter = () => {
 	return (
 		<>
 			<FilterByText
-				ref={textInputRef}
+				ref={textInputRef as RefObject<HTMLInputElement>}
 				value={filtersQuery.guest}
 				onChange={(event) => setFiltersQuery((prevState) => ({ ...prevState, guest: event.target.value }))}
 			>
@@ -72,18 +74,19 @@ const ChatsTableFilter = () => {
 				</Button>
 				{menuItems.length > 0 && <GenericMenu placement='bottom-end' detached title={t('More')} sections={menuItems} />}
 			</FilterByText>
-			<Box display='flex' flexWrap='wrap' mbe={4}>
-				{Object.entries(displayFilters).map(([value, label], index) => {
-					if (!label) {
-						return null;
-					}
-
-					return (
-						<Chip mie={8} mbe={8} key={index} onClick={() => removeFilter(value)}>
-							{label}
-						</Chip>
-					);
-				})}
+			<Box
+				display='flex'
+				flexWrap='wrap'
+				gap={8}
+				paddingInlineEnd={8}
+				paddingBlockEnd={filterChips.length ? 8 : undefined}
+				marginBlockEnd={4}
+			>
+				{filterChips.map(([value, label]) => (
+					<Chip key={value} onClick={() => removeFilter(value)}>
+						{label}
+					</Chip>
+				))}
 			</Box>
 		</>
 	);

@@ -10,7 +10,6 @@ import {
 	ToggleSwitch,
 	FieldGroup,
 	Box,
-	Margins,
 	NumberInput,
 	PasswordInput,
 	FieldLabel,
@@ -18,11 +17,10 @@ import {
 	FieldError,
 	FieldHint,
 } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { validateEmail } from '@rocket.chat/tools';
 import { GenericModal, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useSetModal, useToastMessageDispatch, useRoute, useEndpoint } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useId, useCallback } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -49,11 +47,11 @@ type EmailInboxFormData = {
 	imapRetries: string;
 };
 
-type EmailInboxFormProps = {
+export type EmailInboxFormProps = {
 	inboxData?: IEmailInboxPayload;
 };
 
-const EmailInboxForm = ({ inboxData }: EmailInboxFormProps): ReactElement => {
+const EmailInboxForm = ({ inboxData }: EmailInboxFormProps) => {
 	const { t } = useTranslation();
 	const dispatchToastMessage = useToastMessageDispatch();
 	const setModal = useSetModal();
@@ -94,7 +92,7 @@ const EmailInboxForm = ({ inboxData }: EmailInboxFormProps): ReactElement => {
 		mode: 'all',
 	});
 
-	const handleDelete = useEffectEvent(() => {
+	const handleDelete = useStableCallback(() => {
 		const deleteInbox = async (): Promise<void> => {
 			try {
 				await deleteInboxAction();
@@ -114,7 +112,7 @@ const EmailInboxForm = ({ inboxData }: EmailInboxFormProps): ReactElement => {
 		);
 	});
 
-	const handleSave = useEffectEvent(
+	const handleSave = useStableCallback(
 		async ({
 			active,
 			name,
@@ -173,7 +171,7 @@ const EmailInboxForm = ({ inboxData }: EmailInboxFormProps): ReactElement => {
 		},
 	);
 
-	const checkEmailExists = useEffectEvent(async (email: string) => {
+	const checkEmailExists = useStableCallback(async (email: string) => {
 		if (!email) {
 			return;
 		}
@@ -213,7 +211,7 @@ const EmailInboxForm = ({ inboxData }: EmailInboxFormProps): ReactElement => {
 
 	return (
 		<PageScrollableContentWithShadow>
-			<Box maxWidth='x600' w='full' alignSelf='center'>
+			<Box maxWidth='x600' width='full' alignSelf='center'>
 				<Accordion>
 					<AccordionItem defaultExpanded title={t('Inbox_Info')}>
 						<FieldGroup>
@@ -223,7 +221,7 @@ const EmailInboxForm = ({ inboxData }: EmailInboxFormProps): ReactElement => {
 									<Controller
 										control={control}
 										name='active'
-										render={({ field: { onChange, value, ref } }): ReactElement => (
+										render={({ field: { onChange, value, ref } }) => (
 											<ToggleSwitch id={activeField} ref={ref} checked={value} onChange={onChange} />
 										)}
 									/>
@@ -602,23 +600,21 @@ const EmailInboxForm = ({ inboxData }: EmailInboxFormProps): ReactElement => {
 					</AccordionItem>
 					<Field>
 						<FieldRow>
-							<ButtonGroup stretch>
-								<Button onClick={handleBack}>{t('Cancel')}</Button>
-								<Button disabled={!isDirty} primary onClick={handleSubmit(handleSave)}>
-									{t('Save')}
-								</Button>
-							</ButtonGroup>
-						</FieldRow>
-						<FieldRow>
-							<Margins blockStart={16}>
+							<Box display='flex' flexDirection='column' flexGrow={1} gap={22}>
+								<ButtonGroup stretch>
+									<Button onClick={handleBack}>{t('Cancel')}</Button>
+									<Button disabled={!isDirty} variant='primary' onClick={handleSubmit(handleSave)}>
+										{t('Save')}
+									</Button>
+								</ButtonGroup>
 								<ButtonGroup stretch>
 									{inboxData?._id && (
-										<Button danger onClick={handleDelete}>
+										<Button variant='danger' onClick={handleDelete}>
 											{t('Delete')}
 										</Button>
 									)}
 								</ButtonGroup>
-							</Margins>
+							</Box>
 						</FieldRow>
 					</Field>
 				</Accordion>

@@ -1,4 +1,4 @@
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { usePermission, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 
@@ -12,7 +12,7 @@ const TeamsInfoWithData = () => {
 	const { openTab, closeTab } = useRoomToolbox();
 
 	const canEdit = usePermission('edit-team-channel', room._id);
-	const onClickBack = useEffectEvent(() => setEditing(false));
+	const onClickBack = useStableCallback(() => setEditing(false));
 	const onClickViewChannels = useCallback(() => openTab('team-channels'), [openTab]);
 
 	if (editing) {

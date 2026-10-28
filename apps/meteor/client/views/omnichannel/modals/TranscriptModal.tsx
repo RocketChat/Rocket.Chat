@@ -16,7 +16,7 @@ import { useCallback, useEffect } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-type TranscriptModalProps = {
+export type TranscriptModalProps = {
 	email: string;
 	room: IOmnichannelRoom;
 	onRequest: (email: string, subject: string) => void;
@@ -74,7 +74,7 @@ const TranscriptModal = ({ email: emailDefault = '', room, onRequest, onSend, on
 				<ModalTitle>{t('Transcript')}</ModalTitle>
 				<ModalClose onClick={onCancel} />
 			</ModalHeader>
-			<ModalContent fontScale='p2'>
+			<ModalContent>
 				{!!transcriptRequest && <p>{t('Livechat_transcript_already_requested_warning')}</p>}
 				<FieldGroup>
 					<Field>
@@ -89,7 +89,6 @@ const TranscriptModal = ({ email: emailDefault = '', room, onRequest, onSend, on
 										{...field}
 										disabled={!!emailDefault || !!transcriptRequest}
 										error={errors.email?.message}
-										flexGrow={1}
 										aria-required='true'
 									/>
 								)}
@@ -105,7 +104,7 @@ const TranscriptModal = ({ email: emailDefault = '', room, onRequest, onSend, on
 								control={control}
 								rules={{ required: t('Required_field', { field: t('Subject') }) }}
 								render={({ field }) => (
-									<TextInput {...field} disabled={!!transcriptRequest} error={errors.subject?.message} flexGrow={1} aria-required='true' />
+									<TextInput {...field} disabled={!!transcriptRequest} error={errors.subject?.message} aria-required='true' />
 								)}
 							/>
 						</FieldRow>
@@ -117,17 +116,17 @@ const TranscriptModal = ({ email: emailDefault = '', room, onRequest, onSend, on
 				<ModalFooterControllers>
 					<Button onClick={onCancel}>{t('Cancel')}</Button>
 					{roomOpen && transcriptRequest && (
-						<Button danger onClick={handleDiscard}>
+						<Button variant='danger' onClick={handleDiscard}>
 							{t('Undo_request')}
 						</Button>
 					)}
 					{roomOpen && !transcriptRequest && (
-						<Button disabled={isSubmitting} loading={isSubmitting} primary type='submit'>
+						<Button disabled={isSubmitting} loading={isSubmitting} variant='primary' type='submit'>
 							{t('Request')}
 						</Button>
 					)}
 					{!roomOpen && (
-						<Button disabled={isSubmitting} loading={isSubmitting} primary type='submit'>
+						<Button disabled={isSubmitting} loading={isSubmitting} variant='primary' type='submit'>
 							{t('Send')}
 						</Button>
 					)}

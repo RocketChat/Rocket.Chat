@@ -2,12 +2,17 @@ import type { TFunction } from 'i18next';
 
 import { normalizeMessagePreview } from './normalizeMessagePreview';
 import { createFakeMessage, createFakeMessageWithAttachment } from '../../../../tests/mocks/data';
+import { emoji } from '../../emoji/lib';
 
 describe('normalizeMessagePreview', () => {
 	const mockT = jest.fn((key: string) => key) as unknown as TFunction;
 
 	beforeEach(() => {
 		jest.clearAllMocks();
+	});
+
+	afterEach(() => {
+		emoji.list = {};
 	});
 
 	describe('when message has msg property', () => {
@@ -36,7 +41,41 @@ describe('normalizeMessagePreview', () => {
 			const message = createFakeMessage({ msg: 'Hello :smile: :heart:' });
 			const result = normalizeMessagePreview(message, mockT);
 
-			expect(result).toBe('Hello 😄 ❤');
+			expect(result).toBe('Hello 😄 ❤️');
+		});
+
+		it('should convert native emoji when the client registry is empty', () => {
+			const message = createFakeMessage({ msg: 'Hello :smile: :troll:' });
+			const result = normalizeMessagePreview(message, mockT);
+
+			expect(result).toBe('Hello 😄 🧌');
+		});
+
+		it('should keep the shortname of a custom emoji that shares it with a native emoji', () => {
+			emoji.list[':troll:'] = { name: 'troll', extension: 'png', emojiPackage: 'emojiCustom' } as unknown as (typeof emoji.list)[string];
+
+			const message = createFakeMessage({ msg: 'Hello :troll: :smile:' });
+			const result = normalizeMessagePreview(message, mockT);
+
+			expect(result).toBe('Hello :troll: 😄');
+		});
+
+		it('should keep the shortname of a custom emoji alias that shares it with a native emoji', () => {
+			emoji.list[':troll:'] = { emojiPackage: 'emojiCustom', aliasOf: 'trollface' };
+
+			const message = createFakeMessage({ msg: 'Hello :troll: :smile:' });
+			const result = normalizeMessagePreview(message, mockT);
+
+			expect(result).toBe('Hello :troll: 😄');
+		});
+
+		it('should keep the shortname of a custom emoji that shares it with a legacy emojione shortname', () => {
+			emoji.list[':bride_with_veil:'] = { emojiPackage: 'emojiCustom', aliasOf: 'bride' };
+
+			const message = createFakeMessage({ msg: 'Hello :bride_with_veil:' });
+			const result = normalizeMessagePreview(message, mockT);
+
+			expect(result).toBe('Hello :bride_with_veil:');
 		});
 
 		it('should return undefined when message is empty', () => {
@@ -48,7 +87,7 @@ describe('normalizeMessagePreview', () => {
 	});
 
 	describe('when message has attachments', () => {
-		it('should return attachment title when description is available', () => {
+		it('should return attachment description when available', () => {
 			const message = createFakeMessageWithAttachment({
 				msg: '',
 				attachments: [
@@ -60,10 +99,10 @@ describe('normalizeMessagePreview', () => {
 			});
 			const result = normalizeMessagePreview(message, mockT);
 
-			expect(result).toBe('Attachment title');
+			expect(result).toBe('Attachment description');
 		});
 
-		it('should return attachment title when message is not provided', () => {
+		it('should return attachment title when description is not available', () => {
 			const message = createFakeMessageWithAttachment({
 				msg: '',
 				attachments: [
@@ -112,7 +151,7 @@ describe('normalizeMessagePreview', () => {
 			expect(result).toBe('Second attachment title');
 		});
 
-		it('should find first attachment title', () => {
+		it('should find first attachment description', () => {
 			const message = createFakeMessageWithAttachment({
 				msg: '',
 				attachments: [
@@ -129,7 +168,21 @@ describe('normalizeMessagePreview', () => {
 			});
 			const result = normalizeMessagePreview(message, mockT);
 
-			expect(result).toBe('Third attachment title');
+			expect(result).toBe('Second attachment description');
+		});
+
+		it('should escape HTML in attachment description', () => {
+			const message = createFakeMessageWithAttachment({
+				msg: '',
+				attachments: [
+					{
+						description: '<script>alert("xss")</script>',
+					},
+				],
+			});
+			const result = normalizeMessagePreview(message, mockT);
+
+			expect(result).toBe('&lt;script&gt;alert(&quot;xss&quot;)&lt;/script&gt;');
 		});
 
 		it('should escape HTML in attachment title', () => {

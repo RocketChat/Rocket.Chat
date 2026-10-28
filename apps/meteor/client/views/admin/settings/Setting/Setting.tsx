@@ -1,27 +1,27 @@
 import type { ISettingColor, SettingEditor, SettingValue } from '@rocket.chat/core-typings';
-import { isSettingColor, isSetting } from '@rocket.chat/core-typings';
-import { Box, Button, Tag } from '@rocket.chat/fuselage';
+import { isSettingColor, isSetting, isSettingCode } from '@rocket.chat/core-typings';
+import { Box, Button, ButtonGroup, Tag } from '@rocket.chat/fuselage';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { useSettingStructure } from '@rocket.chat/ui-contexts';
-import type { ReactElement } from 'react';
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 
 import MemoizedSetting from './MemoizedSetting';
 import MarkdownText from '../../../../components/MarkdownText';
 import { links } from '../../../../lib/links';
+import { getCodeSettingError } from '../../../../lib/utils/getCodeSettingError';
 import { useEditableSetting, useEditableSettingsDispatch, useEditableSettingVisibilityQuery } from '../../EditableSettingsContext';
 import { useHasSettingModule } from '../hooks/useHasSettingModule';
 
 const PRICING_URL = links.go.pricing;
 
-type SettingProps = {
+export type SettingProps = {
 	className?: string;
 	settingId: string;
 	sectionChanged?: boolean;
 };
 
-function Setting({ className = undefined, settingId, sectionChanged }: SettingProps): ReactElement {
+function Setting({ className = undefined, settingId, sectionChanged }: SettingProps) {
 	const setting = useEditableSetting(settingId);
 	const persistedSetting = useSettingStructure(settingId);
 	const hasSettingModule = useHasSettingModule(setting);
@@ -37,6 +37,8 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 
 	const dispatch = useEditableSettingsDispatch();
 
+	const settingCode = isSettingCode(persistedSetting) ? persistedSetting.code : undefined;
+
 	const update = useDebouncedCallback(
 		({ value, editor }: { value?: SettingValue; editor?: SettingEditor }) => {
 			if (!persistedSetting) {
@@ -51,11 +53,12 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 					changed:
 						JSON.stringify(persistedSetting.value) !== JSON.stringify(value) ||
 						(isSettingColor(persistedSetting) && JSON.stringify(persistedSetting.editor) !== JSON.stringify(editor)),
+					...(value !== undefined && { invalid: getCodeSettingError(settingCode, value) !== undefined }),
 				},
 			]);
 		},
 		230,
-		[persistedSetting, dispatch],
+		[persistedSetting, dispatch, settingCode],
 	);
 
 	const { t, i18n } = useTranslation();
@@ -69,15 +72,18 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 
 	useEffect(() => {
 		setEditor(isSettingColor(setting) ? setting.editor : undefined);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 	}, [(setting as ISettingColor).editor]);
 
 	const onChangeValue = useCallback(
 		(value: SettingValue) => {
 			setValue(value);
+			if (settingCode !== undefined) {
+				dispatch([{ _id: persistedSetting._id, invalid: getCodeSettingError(settingCode, value) !== undefined }]);
+			}
 			update({ value });
 		},
-		[update],
+		[update, dispatch, settingCode, persistedSetting._id],
 	);
 
 	const onChangeEditor = useCallback(
@@ -95,7 +101,7 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 			value: persistedSetting.packageValue,
 			...(isSettingColor(persistedSetting) && { editor: persistedSetting.packageEditor }),
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 	}, [setting.value, (setting as ISettingColor).editor, update, persistedSetting]);
 
 	const { _id, readonly, type, packageValue, i18nLabel, i18nDescription, alert } = setting;
@@ -133,9 +139,11 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 	const showUpgradeButton = useMemo(
 		() =>
 			shouldDisableEnterprise ? (
-				<Button mbs={4} is='a' href={PRICING_URL} target='_blank'>
-					{t('See_Paid_Plan')}
-				</Button>
+				<ButtonGroup>
+					<Button is='a' href={PRICING_URL} target='_blank'>
+						{t('See_Paid_Plan')}
+					</Button>
+				</ButtonGroup>
 			) : undefined,
 		[shouldDisableEnterprise, t],
 	);
@@ -147,7 +155,7 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 
 		return (
 			<>
-				<Box is='span' mie={4}>
+				<Box is='span' marginInlineEnd={4}>
 					{labelText}
 				</Box>
 				<Tag variant='featured'>{t('Premium')}</Tag>

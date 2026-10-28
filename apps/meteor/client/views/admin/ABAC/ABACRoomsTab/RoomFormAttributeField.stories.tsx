@@ -1,8 +1,8 @@
 import { Field } from '@rocket.chat/fuselage';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { action } from '@storybook/addon-actions';
 import type { Meta, StoryObj } from '@storybook/react';
 import { FormProvider, useForm } from 'react-hook-form';
+import { action } from 'storybook/actions';
 
 import type { RoomFormData } from './RoomForm';
 import RoomFormAttributeField from './RoomFormAttributeField';

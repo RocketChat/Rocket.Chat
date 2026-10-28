@@ -1,6 +1,6 @@
 import type { IOutboundProviderMetadata, Serialized, ILivechatContact } from '@rocket.chat/core-typings';
 import { Box, Button, FieldGroup, Scrollable } from '@rocket.chat/fuselage';
-import { useEffectEvent } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -33,7 +33,7 @@ export type RecipientFormSubmitPayload = {
 	sender: string;
 };
 
-type RecipientFormProps = {
+export type RecipientFormProps = {
 	defaultValues?: Partial<RecipientFormData>;
 	onDirty?(): void;
 	onSubmit(values: RecipientFormSubmitPayload): void;
@@ -111,12 +111,12 @@ const RecipientForm = (props: RecipientFormProps) => {
 	const isContactNotFound = isSuccessContact && !contact;
 	const isProviderNotFound = isSuccessProvider && !provider;
 
-	const validateContactField = useEffectEvent((shouldValidate = false) => {
+	const validateContactField = useStableCallback((shouldValidate = false) => {
 		trigger('contactId');
 		setValue('recipient', '', { shouldValidate });
 	});
 
-	const validateProviderField = useEffectEvent((shouldValidate = false) => {
+	const validateProviderField = useStableCallback((shouldValidate = false) => {
 		trigger('providerId');
 		setValue('sender', '', { shouldValidate });
 	});
@@ -151,7 +151,7 @@ const RecipientForm = (props: RecipientFormProps) => {
 		isDirty && onDirty && onDirty();
 	}, [isDirty, onDirty]);
 
-	const submit = useEffectEvent(async (values: RecipientFormData) => {
+	const submit = useStableCallback(async (values: RecipientFormData) => {
 		try {
 			// Wait if contact or provider is still being fetched in background
 			const [updatedContact, updatedProvider] = await Promise.all([
@@ -186,38 +186,40 @@ const RecipientForm = (props: RecipientFormProps) => {
 	return (
 		<Form id={recipientFormId} onSubmit={handleSubmit(submit)} noValidate>
 			<Scrollable vertical>
-				<FieldGroup justifyContent='start' pi={2}>
-					<ContactField
-						control={control}
-						isError={isErrorContact || isContactNotFound}
-						isFetching={isFetchingContact}
-						onRetry={refetchContact}
-					/>
+				<Box>
+					<FieldGroup>
+						<ContactField
+							control={control}
+							isError={isErrorContact || isContactNotFound}
+							isFetching={isFetchingContact}
+							onRetry={refetchContact}
+						/>
 
-					<ChannelField
-						control={control}
-						contact={contact}
-						disabled={!contactId}
-						isFetching={isFetchingProvider}
-						isError={isErrorProvider || isProviderNotFound}
-						onRetry={refetchProvider}
-					/>
+						<ChannelField
+							control={control}
+							contact={contact}
+							disabled={!contactId}
+							isFetching={isFetchingProvider}
+							isError={isErrorProvider || isProviderNotFound}
+							onRetry={refetchProvider}
+						/>
 
-					<RecipientField
-						control={control}
-						contact={contact}
-						type={provider?.providerType || 'phone'}
-						disabled={!providerId || !contact}
-						isLoading={isFetchingContact}
-					/>
+						<RecipientField
+							control={control}
+							contact={contact}
+							type={provider?.providerType || 'phone'}
+							disabled={!providerId || !contact}
+							isLoading={isFetchingContact}
+						/>
 
-					<SenderField control={control} provider={provider} disabled={!recipient || !provider} isLoading={isFetchingProvider} />
-				</FieldGroup>
+						<SenderField control={control} provider={provider} disabled={!recipient || !provider} isLoading={isFetchingProvider} />
+					</FieldGroup>
+				</Box>
 			</Scrollable>
 
 			{customActions ?? (
-				<Box mbs={24} display='flex' justifyContent='end' flexGrow={0} flexShrink={0}>
-					<Button type='submit' primary loading={isSubmitting}>
+				<Box marginBlockStart={24} display='flex' justifyContent='end' flexGrow={0} flexShrink={0}>
+					<Button type='submit' variant='primary' loading={isSubmitting}>
 						{t('Submit')}
 					</Button>
 				</Box>

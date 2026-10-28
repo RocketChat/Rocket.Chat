@@ -1,26 +1,23 @@
-import { Box, Margins, Field, FieldLabel, InputBox } from '@rocket.chat/fuselage';
-import { type ReactElement } from 'react';
+import { Field, FieldLabel, InputBox, Stack } from '@rocket.chat/fuselage';
 import { useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-type PruneMessagesDateTimeRowProps = {
+export type PruneMessagesDateTimeRowProps = {
 	label: string;
 	field: 'newer' | 'older';
 };
 
-const PruneMessagesDateTimeRow = ({ label, field }: PruneMessagesDateTimeRowProps): ReactElement => {
+const PruneMessagesDateTimeRow = ({ label, field }: PruneMessagesDateTimeRowProps) => {
 	const { register } = useFormContext();
 	const { t } = useTranslation();
 
 	return (
 		<Field>
-			<FieldLabel flexGrow={0}>{label}</FieldLabel>
-			<Box display='flex' mi='neg-x4'>
-				<Margins inline={4}>
-					<InputBox aria-label={`${label} ${t('Date')}`} type='date' flexGrow={1} h='x20' {...register(`${field}.date`)} />
-					<InputBox aria-label={`${label} ${t('Time')}`} type='time' flexGrow={1} h='x20' {...register(`${field}.time`)} />
-				</Margins>
-			</Box>
+			<FieldLabel>{label}</FieldLabel>
+			<Stack direction='row' gap={8}>
+				<InputBox aria-label={`${label} ${t('Date')}`} type='date' {...register(`${field}.date`)} />
+				<InputBox aria-label={`${label} ${t('Time')}`} type='time' {...register(`${field}.time`)} />
+			</Stack>
 		</Field>
 	);
 };

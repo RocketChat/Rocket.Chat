@@ -1,6 +1,6 @@
 import { MOCK_SERVER_URL } from '../e2e/config/constants';
 
-type Decision = 'DECISION_PERMIT' | 'DECISION_DENY';
+type Decision = 'DECISION_PERMIT' | 'DECISION_DENY' | 'DECISION_UNSPECIFIED';
 
 export const mockServerSet = async (method: string, path: string, body: unknown, statusCode = 200, times = 0): Promise<void> => {
 	const res = await fetch(`${MOCK_SERVER_URL}/__mock/set`, {
@@ -69,6 +69,16 @@ export const seedGetDecisionBulk = async (
 	times = 0,
 ) => {
 	await mockServerSet('POST', '/authorization.v2.AuthorizationService/GetDecisionBulk', { decisionResponses: responses }, 200, times);
+};
+
+export const seedGetEntitlements = async (fqnMap: Record<string, unknown>, times = 0) => {
+	await mockServerSet(
+		'POST',
+		'/authorization.v2.AuthorizationService/GetEntitlements',
+		{ entitlements: [{ actionsPerAttributeValueFqn: fqnMap }] },
+		200,
+		times,
+	);
 };
 
 export const seedBulkDecisionByEntity = async (permitValues: string[], defaultDecision: Decision = 'DECISION_DENY') => {

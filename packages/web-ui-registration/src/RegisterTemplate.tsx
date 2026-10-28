@@ -4,7 +4,7 @@ import type { AllHTMLAttributes, ReactNode } from 'react';
 import HorizontalTemplate from './template/HorizontalTemplate';
 import VerticalTemplate from './template/VerticalTemplate';
 
-type RegisterTemplateProps = {
+export type RegisterTemplateProps = {
 	children: ReactNode;
 } & AllHTMLAttributes<HTMLElement>;
 

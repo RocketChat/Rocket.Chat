@@ -2,16 +2,17 @@ import { css } from '@rocket.chat/css-in-js';
 import { Avatar, Box, Palette, Skeleton } from '@rocket.chat/fuselage';
 import { useButtonPattern } from '@rocket.chat/fuselage-hooks';
 import { FilePreviewIcon } from '@rocket.chat/ui-client';
-import { useMemo, type KeyboardEvent, type MouseEvent, type AllHTMLAttributes, type ReactElement } from 'react';
+import type { ReactNode, KeyboardEvent, MouseEvent, AllHTMLAttributes } from 'react';
+import { useMemo } from 'react';
 
-type MessageComposerFileProps = {
+export type MessageComposerFileProps = {
 	fileTitle: string;
 	fileSubtitle: string;
 	fileFormat: string;
 	showPreview?: boolean;
 	previewUrl?: string;
 	alt?: string;
-	actionIcon: ReactElement;
+	actionIcon: ReactNode;
 	error?: boolean;
 	disabled?: boolean;
 	onClick: () => void;
@@ -72,14 +73,14 @@ const MessageComposerFile = ({
 			flexShrink={0}
 			flexGrow={0}
 			padding={4}
-			borderRadius={4}
-			borderWidth={1}
+			borderRadius='medium'
+			borderWidth='default'
 			borderColor={error ? 'error' : 'extra-light'}
 			alignItems='center'
 			position='relative'
 			height='x58'
 			width='x234'
-			mie={8}
+			marginInlineEnd={8}
 			onClick={handleClick}
 			{...props}
 		>
@@ -94,7 +95,7 @@ const MessageComposerFile = ({
 			) : (
 				<FilePreviewIcon format={fileFormat} />
 			)}
-			<Box flexGrow={1} withTruncatedText mis={4} display='flex' flexDirection='column'>
+			<Box flexGrow={1} withTruncatedText marginInlineStart={4} display='flex' flexDirection='column'>
 				<Box {...buttonProps} fontScale='p2' color={disabled ? 'disabled' : 'info'} withTruncatedText>
 					{fileTitle}
 				</Box>
