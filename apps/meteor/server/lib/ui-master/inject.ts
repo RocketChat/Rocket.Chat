@@ -1,7 +1,6 @@
 import crypto from 'node:crypto';
 
 import type { NextHandleFunction } from 'connect';
-import { Inject } from 'meteor/meteorhacks:inject-initial';
 import { ReactiveDict } from 'meteor/reactive-dict';
 import { WebApp } from 'meteor/webapp';
 import parseRequest from 'parseurl';
@@ -111,8 +110,10 @@ export const addStyle = (key: string, content: string): void => {
 	});
 };
 
+export const bodyInjections = new Map<string, string>();
+
 export const injectIntoBody = (key: string, value: string): void => {
-	Inject.rawBody(key, value);
+	bodyInjections.set(key, value);
 };
 
 export const applyHeadInjections = (injections: Injection[]): ((html: string) => string) => {

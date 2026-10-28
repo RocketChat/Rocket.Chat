@@ -6,25 +6,15 @@ import { Meteor } from 'meteor/meteor';
 import type { StaticFiles } from 'meteor/webapp';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
 
-import { getWebAppHash } from '../../configuration/configureBoilerplate';
 import { settings } from '../../settings';
+import { getRuntimeConfigScript } from '../ui-master/page';
 
 // Taken from 'connect' types
 type NextFunction = (err?: any) => void;
 
 const logger = new Logger('CORS');
 
-let templatePromise: Promise<void> | void;
-export async function setInlineScriptsAllowed(allowed: boolean): Promise<void> {
-	templatePromise = WebAppInternals.setInlineScriptsAllowed(allowed);
-}
-
 WebApp.rawConnectHandlers.use(async (_req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) => {
-	if (templatePromise) {
-		await templatePromise;
-		templatePromise = void 0;
-	}
-
 	// XSS Protection for old browsers (IE)
 	res.setHeader('X-XSS-Protection', '1');
 
@@ -97,7 +87,7 @@ WebAppInternals.staticFilesMiddleware = function (
 	next: NextFunction,
 ) {
 	res.setHeader('Access-Control-Allow-Origin', '*');
-	const { arch, path, url } = WebApp.categorizeRequest(req);
+	const { path, url } = WebApp.categorizeRequest(req);
 
 	if (cachingVersion && req.cookies.cache_version !== cachingVersion) {
 		res.cookie('cache_version', cachingVersion);
@@ -108,14 +98,19 @@ WebAppInternals.staticFilesMiddleware = function (
 	// a cache of the file for the wrong hash and start a client loop due to the mismatch
 	// of the hashes of ui versions which would be checked against a websocket response
 	if (path === '/meteor_runtime_config.js') {
-		const hash = getWebAppHash(arch);
+		const { content, hash } = getRuntimeConfigScript();
 
-		if (!hash || hash !== url.query.hash) {
+		if (hash !== url.query.hash) {
 			res.writeHead(404);
 			return res.end();
 		}
 
-		res.setHeader('Cache-Control', 'public, max-age=3600');
+		res.writeHead(200, {
+			'Content-Type': 'application/javascript; charset=UTF-8',
+			'Content-Length': Buffer.byteLength(content),
+			'Cache-Control': 'public, max-age=3600',
+		});
+		return res.end(req.method === 'HEAD' ? undefined : content);
 	}
 
 	// The web client's files are named by their content hash, so they never change under the same URL.
