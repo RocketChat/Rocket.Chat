@@ -16,7 +16,7 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 
 	const [{ toAll, toHere, mentionIds: allMentionIds }, membersWithoutAccess] = await Promise.all([
 		getMentions(message),
-		getMembersWithoutAccessToMessage(message),
+		getMembersWithoutAccessToMessage(parentMessage),
 	]);
 	const mentionIds = allMentionIds.filter((userId) => !membersWithoutAccess.has(userId));
 

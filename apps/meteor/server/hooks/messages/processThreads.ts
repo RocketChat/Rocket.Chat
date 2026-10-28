@@ -51,7 +51,7 @@ export async function processThreads(message: IMessage, room: IRoom, options?: S
 		return message;
 	}
 
-	const [{ mentionIds }, membersWithoutAccess] = await Promise.all([getMentions(message), getMembersWithoutAccessToMessage(message)]);
+	const [{ mentionIds }, membersWithoutAccess] = await Promise.all([getMentions(message), getMembersWithoutAccessToMessage(parentMessage)]);
 
 	const replies = [
 		...new Set([

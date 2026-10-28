@@ -159,6 +159,13 @@ const SETTING = 'Restricted_Message_History_Enabled';
 			const res = await getMessage(oldThread._id, credentials).expect(200);
 			expect(res.body.message.replies).to.not.include(newcomer._id);
 		});
+
+		it('does not make the newcomer follow a hidden thread when mentioned in a reply also sent to the channel', async () => {
+			await send(`@${newcomer.username} have a look here too`, credentials, { tmid: oldThread._id, tshow: true });
+
+			const res = await getMessage(oldThread._id, credentials).expect(200);
+			expect(res.body.message.replies).to.not.include(newcomer._id);
+		});
 	});
 
 	describe('rooms.setMemberHistoryAccess', () => {
