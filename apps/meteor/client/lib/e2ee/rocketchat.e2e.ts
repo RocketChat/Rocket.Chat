@@ -373,12 +373,24 @@ class E2E extends Emitter {
 
 		span.info(this.state);
 
+		if (this.userId) {
+			// Another user logged in on this page with no logout (login with a token). The stored keys and the saved
+			// password are not stored per user, so drop the previous user's session before the new one reads them.
+			await this.stopClient();
+			removeStoredItem(STORAGE_KEYS.E2EE_RANDOM_PASSWORD);
+		}
+
 		this.userId = userId;
 		this.keychain = new Keychain(userId);
 
 		let { public_key, private_key } = this.getKeysFromLocalStorage();
 
 		await this.loadKeysFromDB();
+
+		// A start for another user began while this one waited: that start owns the keys now.
+		if (this.userId !== userId) {
+			return;
+		}
 
 		if (!public_key && this.db_public_key) {
 			public_key = this.db_public_key;
@@ -389,6 +401,9 @@ class E2E extends Emitter {
 				this.setState('ENTER_PASSWORD');
 				private_key = await this.decodePrivateKey(this.db_private_key);
 			} catch (error) {
+				if (this.userId !== userId) {
+					return;
+				}
 				this.userId = false;
 				failedToDecodeKey = true;
 				this.openAlert({
@@ -404,15 +419,23 @@ class E2E extends Emitter {
 				});
 				return span.error('E2E -> Error decoding private key: ', error);
 			}
+
+			if (this.userId !== userId) {
+				return;
+			}
 		}
 
 		if (public_key && private_key) {
 			await this.loadKeys({ public_key, private_key });
-			this.setState('READY');
 		} else {
 			await this.createAndLoadKeys();
-			this.setState('READY');
 		}
+
+		if (this.userId !== userId) {
+			return;
+		}
+
+		this.setState('READY');
 
 		if (!this.db_public_key || !this.db_private_key) {
 			this.setState('LOADING_KEYS');
@@ -443,6 +466,8 @@ class E2E extends Emitter {
 		this.instancesByRoomId = {};
 		this.privateKey = undefined;
 		this.publicKey = undefined;
+		this.db_public_key = undefined;
+		this.db_private_key = undefined;
 		this.userId = false;
 		if (this.keyDistributionInterval) {
 			clearInterval(this.keyDistributionInterval);
@@ -463,7 +488,13 @@ class E2E extends Emitter {
 		const span = log.span('loadKeysFromDB');
 		try {
 			this.setState('LOADING_KEYS');
+			const requestedFor = this.userId;
 			const { public_key, private_key } = await sdk.rest.get('/v1/e2e.fetchMyKeys');
+
+			// The user changed while the request was in flight: these keys belong to the previous user.
+			if (this.userId !== requestedFor) {
+				return;
+			}
 
 			this.db_public_key = public_key;
 			this.db_private_key = private_key;
