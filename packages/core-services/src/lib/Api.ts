@@ -8,8 +8,14 @@ export class Api implements IApiService {
 
 	private broker?: IBroker;
 
+	private started = false;
+
 	// set a broker for the API and registers all services in the broker
 	setBroker(broker: IBroker): void {
+		if (this.started) {
+			throw new Error('Cannot set a broker after the API has started.');
+		}
+
 		this.broker = broker;
 
 		this.services.forEach((service) => this.broker?.createService(service));
@@ -76,6 +82,9 @@ export class Api implements IApiService {
 		if (!this.broker) {
 			throw new Error('No broker set to start.');
 		}
+
+		this.started = true;
+
 		await this.broker.start();
 	}
 }
