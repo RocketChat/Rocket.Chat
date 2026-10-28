@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import { Option, OptionDescription } from '../Option';
 import PaginatedSelectFiltered from './PaginatedSelectFiltered';
