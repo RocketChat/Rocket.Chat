@@ -275,7 +275,7 @@ describe('createSearchIndexSession', () => {
 		expect(session.getActiveBackend()).toBe(backend);
 	});
 
-	it('does not use an index that the desktop app reports as locked, and opens it again on the next ready state (LSE2EE-110)', async () => {
+	it('does not use an index that the desktop app reports as locked, and opens it again on the next ready state', async () => {
 		const backend = createBackend();
 		backend.open.mockResolvedValueOnce({ schemaVersion: 1, encryptedAtRest: false, locked: true });
 		const onError = jest.fn();
