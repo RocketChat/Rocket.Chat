@@ -9,26 +9,33 @@ export type LocalSearchQuery = {
 	to?: number;
 };
 
-// Day-month-year (the server search format), or year-month-day (ISO) when the first part has 4 digits.
-const DATE = String.raw`(?:(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})|(\d{4})[\/\.-](\d{1,2})[\/\.-](\d{1,2}))`;
+// Day-month-year, the only date format of the server message search.
+const DATE = String.raw`(\d{1,2})[\/\.-](\d{1,2})[\/\.-](\d{4})`;
 
-type DateParts = [string | undefined, string | undefined, string | undefined, string | undefined, string | undefined, string | undefined];
+type DateParts = [string, string, string];
 
-// Midnight at the start of the day, in the time zone of this browser.
-const startOfDay = ([day, month, year, isoYear, isoMonth, isoDay]: DateParts, addDays = 0) =>
-	new Date(
-		parseInt((year ?? isoYear) as string, 10),
-		parseInt((month ?? isoMonth) as string, 10) - 1,
-		parseInt((day ?? isoDay) as string, 10) + addDays,
-	).getTime();
+type LocalSearchQueryOptions = {
+	/** The `utcOffset` of the user, in hours, as the server message search reads it from the user. */
+	utcOffset?: number;
+};
+
+/**
+ * The start of the day as the server message search computes it on a server that runs in UTC: UTC midnight, moved by
+ * the user's `utcOffset` in whole hours.
+ */
+const startOfDay = ([day, month, year]: DateParts, utcOffset: number, addDays = 0) => {
+	const date = new Date(Date.UTC(parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10) + addDays));
+	date.setUTCHours(date.getUTCHours() + utcOffset);
+	return date.getTime();
+};
 
 /**
  * Reads the filters of the server message search (`from:`, `before:`, `after:`, `on:`) from a local search text, with
- * the same words and date format (day-month-year), and also ISO dates (year-month-day). The local index then applies them, so the query stays on the device.
- * Dates use the time zone of this browser: `before:` and `on:` start at midnight of that day, `after:` starts at the
- * midnight after it.
+ * the same words, date format (day-month-year) and day boundaries as the server, so a date filter finds the same
+ * messages in an encrypted room as in other rooms. The local index then applies them, and the query stays on the
+ * device. The last `before:` and the last `after:` win, and an `on:` replaces both.
  */
-export const parseLocalSearchQuery = (searchText: string): LocalSearchQuery => {
+export const parseLocalSearchQuery = (searchText: string, { utcOffset = 0 }: LocalSearchQueryOptions = {}): LocalSearchQuery => {
 	const usernames: string[] = [];
 	let from: number | undefined;
 	let to: number | undefined;
@@ -40,18 +47,16 @@ export const parseLocalSearchQuery = (searchText: string): LocalSearchQuery => {
 			return '';
 		})
 		.replace(new RegExp(`before:${DATE}`, 'g'), (_, ...parts: DateParts) => {
-			const time = startOfDay(parts);
-			to = to === undefined ? time : Math.min(to, time);
+			to = startOfDay(parts, utcOffset);
 			return '';
 		})
 		.replace(new RegExp(`after:${DATE}`, 'g'), (_, ...parts: DateParts) => {
-			const time = startOfDay(parts, 1);
-			from = from === undefined ? time : Math.max(from, time);
+			from = startOfDay(parts, utcOffset, 1);
 			return '';
 		})
 		.replace(new RegExp(`on:${DATE}`, 'g'), (_, ...parts: DateParts) => {
-			from = startOfDay(parts);
-			to = startOfDay(parts, 1) - 1;
+			from = startOfDay(parts, utcOffset);
+			to = startOfDay(parts, utcOffset, 1) - 1;
 			return '';
 		})
 		.replace(/\s+/g, ' ')

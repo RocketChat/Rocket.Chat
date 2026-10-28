@@ -25,7 +25,7 @@ export const useLocalMessageSearchQuery = ({
 	const t = useTranslation();
 
 	return useQuery({
-		queryKey: ['rooms', room._id, 'local-message-search', { searchText, limit, uid: user?._id }] as const,
+		queryKey: ['rooms', room._id, 'local-message-search', { searchText, limit, uid: user?._id, utcOffset: user?.utcOffset }] as const,
 		queryFn: () =>
 			backend
 				? searchLocalIndex(backend, {
@@ -34,6 +34,7 @@ export const useLocalMessageSearchQuery = ({
 						limit,
 						self: user ? { uid: user._id } : undefined,
 						resolveUid: (username) => findLoadedUid(room._id, username),
+						utcOffset: user?.utcOffset,
 					})
 				: [],
 		enabled: !!backend,

@@ -53,8 +53,19 @@ describe('searchLocalIndex filters', () => {
 			rid: 'r1',
 			order: 'recent',
 			limit: 10,
-			from: new Date(2025, 1, 2).getTime(),
-			to: new Date(2025, 2, 10).getTime(),
+			from: Date.UTC(2025, 1, 2),
+			to: Date.UTC(2025, 2, 10),
+		});
+	});
+
+	it('moves the day boundaries by the utcOffset of the user, like the server message search', async () => {
+		const backend = createBackend();
+
+		await searchLocalIndex(backend, { searchText: 'invoice on:5.6.2024', rid: 'r1', limit: 10, utcOffset: -3 });
+
+		expect(backend.search.mock.calls[0][0]).toMatchObject({
+			from: Date.UTC(2024, 5, 5) - 3 * 60 * 60 * 1000,
+			to: Date.UTC(2024, 5, 6) - 3 * 60 * 60 * 1000 - 1,
 		});
 	});
 
@@ -65,8 +76,8 @@ describe('searchLocalIndex filters', () => {
 
 		expect(backend.search.mock.calls[0][0]).toMatchObject({
 			text: 'invoice',
-			from: new Date(2024, 5, 5).getTime(),
-			to: new Date(2024, 5, 6).getTime() - 1,
+			from: Date.UTC(2024, 5, 5),
+			to: Date.UTC(2024, 5, 6) - 1,
 		});
 	});
 
@@ -133,7 +144,7 @@ describe('searchLocalIndex filters', () => {
 	});
 
 	it('stops paging when the index has no older hits, and keeps the date range of the text', async () => {
-		const base = new Date(2025, 5, 1).getTime();
+		const base = Date.UTC(2025, 5, 1);
 		const pages = [
 			Array.from({ length: 100 }, (_, i) => ({ ...authorHit(`a${i}`, 'u-carol', 'carol'), ts: base + 500 - i })),
 			[{ ...authorHit('b', 'u-bob', 'bob'), ts: base + 300 }],
@@ -144,7 +155,7 @@ describe('searchLocalIndex filters', () => {
 			{ ...authorHit('b', 'u-bob', 'bob'), ts: base + 300 },
 		]);
 		expect(backend.search).toHaveBeenCalledTimes(2);
-		expect(backend.search.mock.calls[1][0]).toMatchObject({ to: base + 401, from: new Date(2025, 0, 2).getTime() });
+		expect(backend.search.mock.calls[1][0]).toMatchObject({ to: base + 401, from: Date.UTC(2025, 0, 2) });
 	});
 
 	it('keeps the hits of each author when the text has more than one from:', async () => {
@@ -173,7 +184,7 @@ describe('searchLocalIndex filters', () => {
 			order: 'recent',
 			limit: 10,
 			uid: 'u-self',
-			from: new Date(2025, 0, 2).getTime(),
+			from: Date.UTC(2025, 0, 2),
 		});
 	});
 
@@ -182,6 +193,6 @@ describe('searchLocalIndex filters', () => {
 
 		await searchLocalIndex(backend, { searchText: 'before:01-01-2025', rid: 'r1', limit: 10 });
 
-		expect(backend.search).toHaveBeenCalledWith({ text: '', rid: 'r1', order: 'recent', limit: 10, to: new Date(2025, 0, 1).getTime() });
+		expect(backend.search).toHaveBeenCalledWith({ text: '', rid: 'r1', order: 'recent', limit: 10, to: Date.UTC(2025, 0, 1) });
 	});
 });

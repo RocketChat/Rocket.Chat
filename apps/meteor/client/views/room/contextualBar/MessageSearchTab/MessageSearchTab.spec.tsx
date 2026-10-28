@@ -64,7 +64,7 @@ jest.mock('../../MessageList/MessageListErrorBoundary', () => () => null);
 jest.mock('../../../../components/message/variants/RoomMessage', () => () => null);
 jest.mock('../../../../components/message/variants/SystemMessage', () => () => null);
 
-const self = { _id: 'u-self', username: 'jean' } as IUser;
+const self = { _id: 'u-self', username: 'jean', utcOffset: -3 } as IUser;
 
 const message = (id: string, uid: string, date: Date, body: string): E2EESearchDoc => ({
 	id,
@@ -135,7 +135,7 @@ describe('MessageSearchTab local search', () => {
 			order: 'recent',
 			limit: 10,
 			uid: 'u-self',
-			from: new Date(2025, 0, 2).getTime(),
+			from: Date.UTC(2025, 0, 2) - 3 * 60 * 60 * 1000,
 		});
 	});
 

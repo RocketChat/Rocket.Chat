@@ -1,38 +1,80 @@
-import { parseLocalSearchQuery } from './parseLocalSearchQuery';
+import type { IUser } from '@rocket.chat/core-typings';
 
-const midnight = (year: number, month: number, day: number) => new Date(year, month - 1, day).getTime();
+import { parseLocalSearchQuery } from './parseLocalSearchQuery';
+import { parseMessageSearchQuery } from '../../../server/lib/parseMessageSearchQuery';
+
+const HOUR = 60 * 60 * 1000;
+const utcMidnight = (year: number, month: number, day: number) => Date.UTC(year, month - 1, day);
 
 describe('parseLocalSearchQuery', () => {
-	it('reads day-month-year dates', () => {
+	it('reads day-month-year dates, with the day boundaries at UTC midnight for a user with no utcOffset', () => {
 		expect(parseLocalSearchQuery('needle after:26/10/2026 before:28-10-2026')).toEqual({
 			text: 'needle',
 			usernames: [],
-			from: midnight(2026, 10, 27),
-			to: midnight(2026, 10, 28),
+			from: utcMidnight(2026, 10, 27),
+			to: utcMidnight(2026, 10, 28),
 		});
 	});
 
-	it('reads an ISO after: date like the day-month-year form', () => {
-		expect(parseLocalSearchQuery('from:me after:2026-10-26')).toEqual(parseLocalSearchQuery('from:me after:26-10-2026'));
-		expect(parseLocalSearchQuery('after:2026-10-26')).toEqual({ text: '', usernames: [], from: midnight(2026, 10, 27) });
-	});
-
-	it('reads ISO before: and on: dates', () => {
-		expect(parseLocalSearchQuery('needle before:2026-10-28')).toEqual({ text: 'needle', usernames: [], to: midnight(2026, 10, 28) });
-		expect(parseLocalSearchQuery('on:2026-10-26')).toEqual({
+	it('moves the day boundaries by the utcOffset of the user, like the server message search', () => {
+		expect(parseLocalSearchQuery('on:26.10.2026', { utcOffset: -3 })).toEqual({
 			text: '',
 			usernames: [],
-			from: midnight(2026, 10, 26),
-			to: midnight(2026, 10, 27) - 1,
+			from: utcMidnight(2026, 10, 26) - 3 * HOUR,
+			to: utcMidnight(2026, 10, 27) - 3 * HOUR - 1,
 		});
 	});
 
-	it('reads year-month-day with slashes or dots', () => {
-		expect(parseLocalSearchQuery('after:2026/10/26').from).toBe(midnight(2026, 10, 27));
-		expect(parseLocalSearchQuery('after:2026.10.26').from).toBe(midnight(2026, 10, 27));
+	it('does not read ISO dates, like the server message search: they stay in the text', () => {
+		expect(parseLocalSearchQuery('from:me after:2026-10-26')).toEqual({ text: 'after:2026-10-26', usernames: ['me'] });
 	});
 
-	it('does not read a day-month-year date as year-month-day', () => {
-		expect(parseLocalSearchQuery('on:01-02-2026')).toMatchObject({ from: midnight(2026, 2, 1) });
+	it('keeps the last before: and the last after:, and on: replaces both, like the server message search', () => {
+		expect(parseLocalSearchQuery('before:10-03-2025 before:01-03-2025 after:01-01-2025 after:05-01-2025')).toMatchObject({
+			from: utcMidnight(2025, 1, 6),
+			to: utcMidnight(2025, 3, 1),
+		});
+		expect(parseLocalSearchQuery('before:10-03-2025 on:5.6.2024')).toMatchObject({
+			from: utcMidnight(2024, 6, 5),
+			to: utcMidnight(2024, 6, 6) - 1,
+		});
 	});
+});
+
+describe('parseLocalSearchQuery and the server message search', () => {
+	// The server parser builds its range in the time zone of the server process: these specs run in UTC (`TZ=UTC`).
+	const serverRange = (text: string, utcOffset: number | undefined) => {
+		const { query } = parseMessageSearchQuery(text, { user: { utcOffset } as IUser });
+		const ts = query.ts as { $gte?: Date; $lte?: Date; $lt?: Date } | undefined;
+		const to = ts?.$lte?.getTime() ?? (ts?.$lt ? ts.$lt.getTime() - 1 : undefined);
+		return { from: ts?.$gte?.getTime(), to };
+	};
+
+	const localRange = (text: string, utcOffset: number | undefined) => {
+		const { from, to } = parseLocalSearchQuery(text, { utcOffset });
+		return { from, to };
+	};
+
+	const texts = [
+		'needle after:26/10/2026',
+		'before:28-10-2026',
+		'on:5.6.2024',
+		'on:31/12/2025',
+		'on:31/02/2026',
+		'after:01-01-2025 before:10/03/2025',
+		'before:10-03-2025 before:01-03-2025',
+		'after:01-03-2025 after:10-03-2025',
+		'after:01-01-2025 on:5.6.2024 before:10-03-2025',
+		'after:2026-10-26',
+		'before:1/2/2025',
+		'needle',
+	];
+	const utcOffsets = [undefined, 0, -3, 5.5, -9.5, 10, 14, -12];
+
+	it.each(texts.flatMap((text) => utcOffsets.map((utcOffset) => [text, utcOffset] as const)))(
+		'gives the same range for %j with utcOffset %p',
+		(text, utcOffset) => {
+			expect(localRange(text, utcOffset)).toEqual(serverRange(text, utcOffset));
+		},
+	);
 });

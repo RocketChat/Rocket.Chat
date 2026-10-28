@@ -12,6 +12,8 @@ type LocalSearchParams = {
 	self?: { uid: string };
 	/** Finds the user id of a username in the data that the client has already loaded. It sends no request. */
 	resolveUid?: (username: string) => string | undefined;
+	/** The `utcOffset` of the logged-in user, which sets the day boundaries of the date filters. */
+	utcOffset?: number;
 };
 
 const clampLimit = (limit: number) => Math.min(Math.max(1, limit), MAX_LOCAL_SEARCH_LIMIT);
@@ -23,9 +25,9 @@ const clampLimit = (limit: number) => Math.min(Math.max(1, limit), MAX_LOCAL_SEA
  */
 export const searchLocalIndex = async (
 	backend: ISearchIndexBackend,
-	{ searchText, rid, limit, self, resolveUid }: LocalSearchParams,
+	{ searchText, rid, limit, self, resolveUid, utcOffset }: LocalSearchParams,
 ): Promise<E2EESearchHit[]> => {
-	const { text, usernames, from, to } = parseLocalSearchQuery(searchText);
+	const { text, usernames, from, to } = parseLocalSearchQuery(searchText, { utcOffset });
 	// A text with only filters goes to the index with an empty text, and the index lists the newest messages of the filters.
 	if (!text && usernames.length === 0 && from === undefined && to === undefined) return [];
 
