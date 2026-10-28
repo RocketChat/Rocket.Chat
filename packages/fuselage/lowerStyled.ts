@@ -411,13 +411,17 @@ const lowerDefinitions = async (code: string, id: string, names: string[]): Prom
 };
 
 let extended: Set<string> | undefined;
-/** Frames some `styled()` call extends; they stay Tamagui frames until those are lowered too. */
+/** Frames some `styled()` call that isn't lowered extends; they stay Tamagui frames until those are lowered too. */
 const extendedFrames = () => {
 	if (extended) return extended;
 	extended = new Set();
+	const lowered = new Set(Object.values(allowlist).flatMap((bindings) => Object.keys(bindings)));
 	for (const file of readdirSync(join(root, 'src'), { recursive: true }) as string[]) {
-		if (!file.endsWith('.tsx')) continue;
-		for (const match of readFileSync(join(root, 'src', file), 'utf8').matchAll(/styled\((\w+)/g)) extended.add(match[1]);
+		if (!/\.tsx?$/.test(file)) continue;
+		for (const match of readFileSync(join(root, 'src', file), 'utf8').matchAll(/(?:const|let)\s+(\w+)\s*=\s*styled\((\w+)/g)) {
+			// An extender that is lowered itself no longer needs the frame
+			if (!lowered.has(match[1])) extended.add(match[2]);
+		}
 	}
 	return extended;
 };
@@ -500,6 +504,8 @@ export const lowerModule = async (code: string, id: string) => {
 		walk(ast, (n, parent) => {
 			if (n.type !== 'Identifier' || (n as unknown as { name: string }).name !== name) return;
 			if (n.start >= statement.start && n.end <= statement.end) return;
+			// A lowered definition's own call is replaced whole, and it extends the frame, not the recipe
+			for (const { call } of calls.values()) if (n.start >= call.start && n.end <= call.end) return;
 			if (parent?.type === 'ExportSpecifier' || parent?.type?.startsWith('TS')) return;
 			edits.push([n.start, n.end, `${name}__lowered`]);
 		});
