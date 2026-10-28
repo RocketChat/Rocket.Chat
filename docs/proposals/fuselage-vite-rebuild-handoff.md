@@ -57,6 +57,10 @@ Each item is its own develop-compatible pull request.
 
 - **The spike passed** (branch `spike/fuselage-zero-runtime`, app in `packages/fuselage/zero-spike/`).
   - **Build:** on `@tamagui/*` 3.0.18 a Vite app compiled the pilot's `Button` and `IconButton` from Fuselage's source with `experimental.zeroRuntime`. The zero graph reports no `@tamagui/*` module, and the JS contains no Tamagui code.
+  - **Not by the book:** the spike ran on the pilot's branch and inherited its yarn patches on `@tamagui/static`, `@tamagui/web` and `@tamagui/compose-refs`. The first Button attempt on `feat/fuselage-zero`, with the documented setup only, could not pass the caller's HTML attributes and `ref` through a frame:
+    - zero rejects a spread on a frame (rule 1);
+    - the `render={<Tag {...attributes} ref={ref} />}` element fails with "Style prop render could not be evaluated".
+  - **Decision (2026-10-28):** port the spike's patches that make the inline render element compile, each in its own commit and listed as a deviation from the docs. No upstream PR for now. The alternative, an explicit prop contract, stays open; see "Open questions".
   - **Output:** the DOM and the computed styles of 35 instances, at rest, hovered, focused and pressed, are identical to the pilot's runtime `Button`.
   - **Size:** the page's JS went from 119.1 kB to 82.7 kB gzip (−36.4 kB). CSS went from 11.3 kB to 20.1 kB (+8.8 kB): Tamagui's zero stylesheet repeats rules per module, and deduplicated it would be about 6.3 kB.
   - **Left in the JS:** about 12.6 kB gzip of Button code, mostly the variant lookup maps. That is the cost to bring down before other components copy the pattern.
@@ -198,6 +202,11 @@ Known flaky stories that differ between two captures of the same build: `Positio
 - Stale workspace `dist`s cause false `tsc`, jest and Storybook failures; run `yarn turbo run build --filter=@rocket.chat/fuselage^...` first.
 
 ## Open questions
+
+- **An explicit prop contract instead of the render-element patch (to evaluate).** Zero-runtime, as documented, expects props to reach a frame explicitly; it has no way for a component to forward arbitrary HTML attributes and a `ref`. Instead of patching the compiler, Fuselage components could accept a closed list of props: the events, `type`, `disabled`, `aria-*` and `data-*` attributes each component documents, passed one by one.
+  - **Cost:** it breaks consumers that pass other attributes, and arbitrary `aria-*` and `data-*` names can't be listed statically.
+  - **To decide:** count the attributes the app and the other packages actually pass to each component, and whether a closed list covers them.
+  - **What it would remove:** the `@tamagui/static` render-element patch.
 
 - **Where the JS goes.** The pilot was about +45 kB JS over `develop` without the runtime. In the spike, zero-runtime `Button` and `IconButton` still carry about 12.6 kB gzip against near zero for `develop`'s SCSS buttons. About 5.9 kB of it is the combined variant maps, which stay by decision (see the optimization strategy below), and 2.9 kB is Icon's inline colour data. Track the running total per component; if it passes the +10 kB budget, apply the optimization below to the components with the largest maps first.
 - **What happens to the pilot.** Keep #42942 open as the reference while the component PRs land, then close it. #43167, the develop-compatible preparation, can merge independently.
