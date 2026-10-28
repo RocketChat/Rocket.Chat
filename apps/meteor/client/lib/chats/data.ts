@@ -36,7 +36,15 @@ export const createDataAPI = ({ rid, tmid }: { rid: IRoom['_id']; tmid: IMessage
 
 	const findMessageByID = async (mid: IMessage['_id']): Promise<IMessage | null> =>
 		Messages.state.find((record) => record._id === mid && record._hidden !== true) ??
-		sdk.rest.get('/v1/chat.getMessage', { msgId: mid }).then((response) => mapMessageFromApi(response.message)).catch(() => null);
+		sdk.rest
+		.get('/v1/chat.getMessage', { msgId: mid })
+		.then((response) => mapMessageFromApi(response.message))
+		.catch((error: unknown) => {
+			if (typeof error === 'object' && error !== null && 'success' in error && !(error as { success: boolean }).success) {
+				return null;
+			}
+			throw error;
+		});
 
 	const getMessageByID = async (mid: IMessage['_id']): Promise<IMessage> => {
 		const message = await findMessageByID(mid);

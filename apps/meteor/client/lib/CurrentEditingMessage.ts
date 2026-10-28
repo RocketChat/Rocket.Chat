@@ -22,13 +22,8 @@ export class CurrentEditingMessage {
 				return false;
 			}
 			const message = await this.chat.data.findMessageByID(this.mid);
-			if (!message) {
-				this.chat.composer.setEditingMode(false);
-				this.mid = undefined;
-				clearHighlightMessage();
-				return false;
-			}
-			if (this.chat.composer.text !== message.msg) {
+
+			if (message && this.chat.composer.text !== message.msg) {
 				this.chat.composer.setText(message.msg ?? '');
 				return true;
 			}
