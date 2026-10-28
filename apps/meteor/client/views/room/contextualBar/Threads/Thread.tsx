@@ -10,6 +10,7 @@ import {
 	ContextualbarBack,
 	ContextualbarInnerContent,
 	ContextualbarDialog,
+	ContextualbarEmptyContent,
 } from '@rocket.chat/ui-client';
 import {
 	useLayoutContextualBarExpanded,
@@ -145,6 +146,7 @@ const Thread = ({ tmid }: ThreadProps) => {
 						<ThreadChat mainMessage={mainMessageQueryResult.data} />
 					</ChatProvider>
 				)) ||
+				(mainMessageQueryResult.isError && <ContextualbarEmptyContent title={t('Thread_not_available')} />) ||
 				null}
 		</Box>
 	);
