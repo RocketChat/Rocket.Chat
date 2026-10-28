@@ -6,7 +6,8 @@
 @use './Badge/Badge.styles.scss';
 @use './Banner/Banner.styles.scss';
 @use './Bubble/Bubble.styles.scss';
-@use './Button/Button.styles.scss';
+@use './Button/Button.styles.css';
+@use './Button/IconButton.styles.scss';
 @use './ButtonGroup/ButtonGroup.styles.scss';
 @use './Callout/Callout.styles.scss';
 @use './Card/Card.styles.scss';

@@ -85,7 +85,7 @@ export default defineConfig(({ mode }) => {
 			// cssnano does the minifying, to match what webpack emitted.
 			cssMinify: false,
 			lib: {
-				entry: resolve(import.meta.dirname, 'src/index.ts'),
+				entry: resolve(import.meta.dirname, 'src/index.runtime.ts'),
 				formats: ['cjs'],
 				fileName: () => `fuselage.${mode}.js`,
 			},
