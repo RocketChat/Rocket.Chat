@@ -177,5 +177,9 @@ export const createFakeSearchIndexBackend = (): ISearchIndexBackend => {
 			clear();
 			userId = undefined;
 		},
+
+		async close() {
+			userId = undefined;
+		},
 	};
 };

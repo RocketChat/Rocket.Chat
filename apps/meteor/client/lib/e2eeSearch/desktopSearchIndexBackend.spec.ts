@@ -62,6 +62,26 @@ describe('getDesktopSearchIndexBackend', () => {
 		expect(bridge.wipe).toHaveBeenCalledWith();
 	});
 
+	it('forwards close when the desktop app offers it', async () => {
+		const bridge = createBridge();
+		const close = jest.fn(async () => undefined);
+		setDesktop({ e2eeSearch: { ...bridge, close } });
+
+		const backend = getDesktopSearchIndexBackend();
+		await backend?.close?.();
+
+		expect(close).toHaveBeenCalledWith();
+	});
+
+	it('returns a backend without close for a desktop app that has no close', () => {
+		setDesktop({ e2eeSearch: createBridge() });
+
+		const backend = getDesktopSearchIndexBackend();
+
+		expect(backend).toBeDefined();
+		expect(backend).not.toHaveProperty('close');
+	});
+
 	it('passes a bridge rejection to the caller', async () => {
 		const bridge = createBridge();
 		bridge.search.mockRejectedValueOnce(new Error('E2EE search call failed'));

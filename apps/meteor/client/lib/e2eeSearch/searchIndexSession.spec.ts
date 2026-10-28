@@ -234,6 +234,68 @@ describe('createSearchIndexSession', () => {
 		expect(session.getActiveBackend()).toBeUndefined();
 	});
 
+	it('closes the index on logout when the desktop app offers close', async () => {
+		const backend = createBackend();
+		backend.close = jest.fn(async () => undefined);
+		const { source, setState } = createSource(privateKey);
+		const session = createSearchIndexSession(source, { getBackend: () => backend });
+
+		setState('READY');
+		await session.whenSettled();
+		setState('DISABLED');
+		await session.whenSettled();
+
+		expect(backend.close).toHaveBeenCalledTimes(1);
+		expect(backend.wipe).not.toHaveBeenCalled();
+		expect(session.getActiveBackend()).toBeUndefined();
+	});
+
+	it('closes nothing on logout when no index is open', async () => {
+		const backend = createBackend();
+		backend.close = jest.fn(async () => undefined);
+		const { source, setState } = createSource(privateKey);
+		createSearchIndexSession(source, { getBackend: () => backend });
+
+		setState('DISABLED');
+
+		expect(backend.close).not.toHaveBeenCalled();
+	});
+
+	it('reports a failed close and stays inactive', async () => {
+		const backend = createBackend();
+		const error = new Error('close failed');
+		backend.close = jest.fn(async () => {
+			throw error;
+		});
+		const onError = jest.fn();
+		const { source, setState } = createSource(privateKey);
+		const session = createSearchIndexSession(source, { getBackend: () => backend, onError });
+
+		setState('READY');
+		await session.whenSettled();
+		setState('DISABLED');
+		await session.whenSettled();
+
+		expect(onError).toHaveBeenCalledWith(error);
+		expect(session.getActiveBackend()).toBeUndefined();
+	});
+
+	it('only stops using the index on logout when the desktop app has no close (the desktop app closes it itself)', async () => {
+		const backend = createBackend();
+		const onError = jest.fn();
+		const { source, setState } = createSource(privateKey);
+		const session = createSearchIndexSession(source, { getBackend: () => backend, onError });
+
+		setState('READY');
+		await session.whenSettled();
+		setState('DISABLED');
+		await session.whenSettled();
+
+		expect(backend.close).toBeUndefined();
+		expect(onError).not.toHaveBeenCalled();
+		expect(session.getActiveBackend()).toBeUndefined();
+	});
+
 	it('does nothing when no backend exists (normal browser, old desktop)', async () => {
 		const { source, setState } = createSource(privateKey);
 		const session = createSearchIndexSession(source, { getBackend: () => undefined });

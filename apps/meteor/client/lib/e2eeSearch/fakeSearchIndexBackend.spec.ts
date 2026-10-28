@@ -195,6 +195,17 @@ describe('createFakeSearchIndexBackend', () => {
 		await expect(backend.stats()).rejects.toThrow('E2EE search index is not open');
 	});
 
+	it('closes the index without deleting it, so the same user finds the messages again after the next open', async () => {
+		const backend = await openBackend();
+		await backend.upsert([doc({ id: 'm1', body: 'needle' })]);
+
+		await backend.close?.();
+
+		await expect(backend.stats()).rejects.toThrow('E2EE search index is not open');
+		await backend.open({ userId: 'u1' });
+		await expect(ids(backend, { text: 'needle' })).resolves.toEqual(['m1']);
+	});
+
 	it('lists each room that has documents or a room state, once', async () => {
 		const backend = await openBackend();
 		await backend.upsert([

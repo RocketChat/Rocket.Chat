@@ -83,7 +83,7 @@ const stoppedStates = new Set(['DISABLED', 'NOT_STARTED', 'ERROR']);
 
 /**
  * Opens the local search index for the logged-in user when E2EE is unlocked, with the wrap key derived from the
- * private key, or wipes it when the workspace does not allow the local search, and stops using it when E2EE stops (logout, E2EE disabled, key error). An open that resolves after
+ * private key, or wipes it when the workspace does not allow the local search, and stops using it when E2EE stops (logout, E2EE disabled, key error), with a close when the desktop app offers one. An open that resolves after
  * the session stopped does not activate the backend.
  */
 export const createSearchIndexSession = (
@@ -159,6 +159,14 @@ export const createSearchIndexSession = (
 		}
 	};
 
+	const close = async (backend: ISearchIndexBackend) => {
+		try {
+			await backend.close?.();
+		} catch (error) {
+			onError(error);
+		}
+	};
+
 	const off = source.on('E2E_STATE_CHANGED', ({ nextState }) => {
 		if (readyStates.has(nextState)) {
 			ready = true;
@@ -168,7 +176,9 @@ export const createSearchIndexSession = (
 
 		if (stoppedStates.has(nextState)) {
 			ready = false;
+			const closing = active;
 			stop();
+			if (closing?.close) pending = close(closing);
 		}
 	});
 

@@ -133,6 +133,11 @@ export interface ISearchIndexBackend {
 	 * desktop app checks against the login session.
 	 */
 	wipe(scope?: { userId: string }): Promise<void>;
+	/**
+	 * Closes the open index and keeps it on disk, so the same user opens it again at the next login. Desktop versions
+	 * without it close the index themselves at logout.
+	 */
+	close?(): Promise<void>;
 }
 
 /**
