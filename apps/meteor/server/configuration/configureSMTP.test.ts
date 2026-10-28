@@ -55,19 +55,13 @@ describe('configureSMTP', () => {
 		expect(sendMail.calledOnceWithExactly(mail)).to.be.true;
 	});
 
-	it('should leave email unsent when there is neither an SMTP host nor MAIL_URL', () => {
-		delete process.env.MAIL_URL;
+	it('should leave email unsent when there is no SMTP host, even with MAIL_URL set', () => {
+		process.env.MAIL_URL = 'smtps://user:secret@mail.example.com:465?pool=true';
 
 		expect(applySettings({ ...smtpSettings, SMTP_Host: '' })).to.be.undefined;
 	});
 
-	it('should configure the transport from MAIL_URL when there is no SMTP host', () => {
-		process.env.MAIL_URL = 'smtps://user:secret@mail.example.com:465?pool=true';
-
-		expect(applySettings({ ...smtpSettings, SMTP_Host: '' })).to.equal('smtps://user:secret@mail.example.com:465?pool=true');
-	});
-
-	it('should prefer the SMTP settings over MAIL_URL', () => {
+	it('should build the transport from the SMTP settings, not MAIL_URL', () => {
 		process.env.MAIL_URL = 'smtps://user:secret@mail.example.com:465';
 
 		expect(applySettings(smtpSettings)).to.deep.equal({ host: 'smtp.example.com', secure: false, pool: true });

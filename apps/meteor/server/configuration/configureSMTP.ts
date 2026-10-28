@@ -8,7 +8,7 @@ import type { ICachedSettings } from '../settings/CachedSettings';
 // @types/meteor declares customTransport as a function, but Meteor reads it as an assignable property.
 const MeteorEmail = Email as unknown as { customTransport?: (mail: SendMailOptions & { packageSettings?: unknown }) => Promise<void> };
 
-/** Sends all server email, Meteor accounts email included, through one transport built from the SMTP settings, or from MAIL_URL when SMTP_Host is empty. */
+/** Sends all server email, Meteor accounts email included, through one transport built from the SMTP settings; without SMTP_Host, email is left unsent. */
 export function configureSMTP(settings: ICachedSettings): void {
 	MeteorEmail.customTransport = ({ packageSettings: _packageSettings, ...mail }) => sendMail(mail);
 
@@ -19,7 +19,7 @@ export function configureSMTP(settings: ICachedSettings): void {
 
 			const host = settings.get<string>('SMTP_Host');
 			if (!host) {
-				configureMailTransport(process.env.MAIL_URL);
+				configureMailTransport(undefined);
 				return;
 			}
 

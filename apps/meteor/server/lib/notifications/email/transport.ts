@@ -8,7 +8,7 @@ type MailTransport = {
 	retire: () => void;
 };
 
-const createMailTransport = (options: SMTPTransportOptions | SMTPPoolOptions | string): MailTransport => {
+const createMailTransport = (options: SMTPTransportOptions | SMTPPoolOptions): MailTransport => {
 	const transporter = nodemailer.createTransport(options);
 	let pending = 0;
 	let retired = false;
@@ -42,7 +42,7 @@ let transport: MailTransport | undefined;
  * Replaces the SMTP transport all server email is sent through; `undefined` leaves email unsent until SMTP is configured again.
  * Mail already handed to the previous transport is still delivered through it before it closes.
  */
-export const configureMailTransport = (options: SMTPTransportOptions | SMTPPoolOptions | string | undefined): void => {
+export const configureMailTransport = (options: SMTPTransportOptions | SMTPPoolOptions | undefined): void => {
 	transport?.retire();
 	transport = options ? createMailTransport(options) : undefined;
 };
