@@ -8,12 +8,13 @@ import {
 	GenericTableHeaderCell,
 	GenericTableBody,
 	GenericTableLoadingRow,
+	usePaginatedQuery,
 	usePagination,
 	useSort,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { useQuery, hashKey } from '@tanstack/react-query';
+import { hashKey } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
 import { useRemoveTag } from './useRemoveTag';
@@ -25,7 +26,6 @@ const TagsTable = () => {
 	const [filter, setFilter] = useState('');
 	const router = useRouter();
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, sortDirection, setSort } = useSort<'name' | 'description'>('name');
 
 	const onRowClick = useStableCallback((id: string) => router.navigate(`/omnichannel/tags/edit/${id}`));
@@ -38,23 +38,35 @@ const TagsTable = () => {
 				viewAll: 'true' as const,
 				text: filter,
 				sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
-				...(itemsPerPage && { count: itemsPerPage }),
-				...(current && { offset: current }),
 			}),
-			[filter, itemsPerPage, current, sortBy, sortDirection],
+			[filter, sortBy, sortDirection],
 		),
 		500,
 	);
 
+	const queryKey = ['livechat-tags', query];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ resetKey: queryKey });
+
 	const getTags = useEndpoint('GET', '/v1/livechat/tags');
-	const { data, isSuccess, isLoading } = useQuery({
-		queryKey: ['livechat-tags', query],
-		queryFn: async () => getTags(query),
-		refetchOnWindowFocus: false,
+	const { data, isSuccess, isLoading } = usePaginatedQuery({
+		query: {
+			queryKey,
+			queryFn: (page) => getTags({ ...query, ...page }),
+			refetchOnWindowFocus: false,
+		},
+		itemsKey: 'tags',
+		offset: current,
+		count: itemsPerPage,
 	});
 
-	const [defaultQuery] = useState(hashKey([query]));
-	const queryHasChanged = defaultQuery !== hashKey([query]);
+	const [defaultQuery] = useState(hashKey([query, current, itemsPerPage]));
+	const queryHasChanged = defaultQuery !== hashKey([query, current, itemsPerPage]);
 
 	const columns: TableColumnWidth[] = ['auto', 'auto', 'x60'];
 

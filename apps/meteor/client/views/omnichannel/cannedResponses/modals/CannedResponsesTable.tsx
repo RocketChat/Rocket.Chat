@@ -9,13 +9,14 @@ import {
 	GenericTableLoadingRow,
 	GenericTableRow,
 	GenericTableCell,
+	usePaginatedQuery,
 	usePagination,
 	useSort,
 	GenericNoResults,
 	useFormatDateAndTime,
 } from '@rocket.chat/ui-client';
 import { useTranslation, usePermission, useToastMessageDispatch, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
-import { hashKey, useQuery } from '@tanstack/react-query';
+import { hashKey } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
 import CannedResponseFilter from './CannedResponseFilter';
@@ -38,7 +39,6 @@ const CannedResponsesTable = () => {
 	const [text, setText] = useState('');
 	const debouncedText = useDebouncedValue(text, 500);
 
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 	const { sortBy, setSort, sortDirection } = useSort<'shortcut' | 'scope' | 'tags' | '_createdAt' | 'createdBy'>('shortcut');
 
 	const query = useMemo(
@@ -47,20 +47,32 @@ const CannedResponsesTable = () => {
 			sort: JSON.stringify({ [sortBy]: sortDirection === 'asc' ? 1 : -1 }),
 			...(sharing && { scope: sharing }),
 			...(createdBy && createdBy !== 'all' && { createdBy }),
-			...(itemsPerPage && { count: itemsPerPage }),
-			...(current && { offset: current }),
 		}),
-		[createdBy, current, debouncedText, itemsPerPage, sharing, sortBy, sortDirection],
+		[createdBy, debouncedText, sharing, sortBy, sortDirection],
 	);
 
-	const [defaultQuery] = useState(hashKey([query]));
-	const queryHasChanged = defaultQuery !== hashKey([query]);
+	const queryKey = ['getCannedResponses', query];
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ resetKey: queryKey });
+
+	const [defaultQuery] = useState(hashKey([query, current, itemsPerPage]));
+	const queryHasChanged = defaultQuery !== hashKey([query, current, itemsPerPage]);
 
 	const getCannedResponses = useEndpoint('GET', '/v1/canned-responses');
-	const { data, isLoading, isSuccess } = useQuery({
-		queryKey: ['getCannedResponses', query],
-		queryFn: () => getCannedResponses(query),
-		refetchOnWindowFocus: false,
+	const { data, isLoading, isSuccess } = usePaginatedQuery({
+		query: {
+			queryKey,
+			queryFn: (page) => getCannedResponses({ ...query, ...page }),
+			refetchOnWindowFocus: false,
+		},
+		itemsKey: 'cannedResponses',
+		offset: current,
+		count: itemsPerPage,
 	});
 
 	const handleAddNew = useStableCallback(() => router.navigate('/omnichannel/canned-responses/new'));

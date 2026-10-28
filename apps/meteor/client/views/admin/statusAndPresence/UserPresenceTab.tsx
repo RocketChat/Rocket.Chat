@@ -9,7 +9,7 @@ import {
 	usePagination,
 	GenericNoResults,
 } from '@rocket.chat/ui-client';
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import UserPresenceTabRow from './UserPresenceTabRow';
@@ -25,18 +25,21 @@ export type UserPresenceTabProps = {
 const UserPresenceTab = ({ onEdit }: UserPresenceTabProps) => {
 	const { t } = useTranslation();
 	const [text, setText] = useState('');
-	const { current, itemsPerPage, setItemsPerPage: onSetItemsPerPage, setCurrent: onSetCurrent, ...paginationProps } = usePagination();
 
 	const query = useDebouncedValue(
-		useMemo(() => ({ searchTerm: text, count: itemsPerPage, offset: current }), [text, itemsPerPage, current]),
+		useMemo(() => ({ searchTerm: text }), [text]),
 		500,
 	);
 
-	useEffect(() => {
-		onSetCurrent(0);
-	}, [text, onSetCurrent]);
+	const {
+		current,
+		itemsPerPage,
+		setItemsPerPage: onSetItemsPerPage,
+		setCurrent: onSetCurrent,
+		...paginationProps
+	} = usePagination({ resetKey: [query] });
 
-	const { data, isLoading, isSuccess, isError, refetch } = useManagedPresenceUsers(query);
+	const { data, isLoading, isSuccess, isError, refetch } = useManagedPresenceUsers({ ...query, count: itemsPerPage, offset: current });
 
 	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 'x48'];
 
