@@ -38,10 +38,11 @@ describe('SidebarItemBadges', () => {
 			{ wrapper: appRoot },
 		);
 
-		const badge = screen.getByRole('status', { name: '1 mention from Test Room' });
-		expect(badge).toHaveAttribute('href', '/channel/test-room');
+		const link = screen.getByRole('link', { name: '1 mention from Test Room' });
+		expect(link).toHaveAttribute('href', '/channel/test-room');
+		expect(link).toContainElement(screen.getByRole('status', { name: '1 mention from Test Room' }));
 
-		fireEvent.click(badge);
+		fireEvent.click(link);
 		expect(onClick).toHaveBeenCalledTimes(1);
 	});
 
