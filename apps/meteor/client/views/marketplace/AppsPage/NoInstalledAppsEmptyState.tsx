@@ -1,11 +1,13 @@
-import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
+import { States, StatesIcon, StatesTitle, StatesSubtitle, StatesActions, StatesAction } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
+
+import AppsPageEmptyState from './layout/AppsPageEmptyState';
 
 const NoInstalledAppsEmptyState = ({ onButtonClick }: { onButtonClick: () => void }) => {
 	const { t } = useTranslation();
 
 	return (
-		<Box marginBlockStart={20}>
+		<AppsPageEmptyState offset='x20'>
 			<States>
 				<StatesIcon name='magnifier' />
 				<StatesTitle>{t('No_apps_installed')}</StatesTitle>
@@ -14,7 +16,7 @@ const NoInstalledAppsEmptyState = ({ onButtonClick }: { onButtonClick: () => voi
 					<StatesAction onClick={onButtonClick}>{t('Explore_marketplace')}</StatesAction>
 				</StatesActions>
 			</States>
-		</Box>
+		</AppsPageEmptyState>
 	);
 };
 

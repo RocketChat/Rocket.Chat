@@ -1,5 +1,4 @@
 import {
-	Box,
 	States,
 	StatesIcon,
 	StatesTitle,
@@ -11,6 +10,8 @@ import {
 } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
+import AppsPageEmptyState from './layout/AppsPageEmptyState';
+
 export type NoInstalledAppMatchesEmptyStateProps = {
 	shouldShowSearchText: boolean;
 	text: string;
@@ -21,15 +22,13 @@ const NoInstalledAppMatchesEmptyState = ({ shouldShowSearchText, text, onButtonC
 	const { t } = useTranslation();
 
 	return (
-		<Box marginBlockStart={20}>
+		<AppsPageEmptyState offset='x20'>
 			<States>
 				<StatesIcon name='magnifier' />
 				<StatesTitle>{t('No_installed_app_matches')}</StatesTitle>
 				{shouldShowSearchText && (
 					<StatesSubtitle>
-						<span>
-							{t('No_app_matches_for')} <strong>"{text}"</strong>
-						</span>
+						{t('No_app_matches_for')} <strong>"{text}"</strong>
 					</StatesSubtitle>
 				)}
 				<StatesSuggestion>
@@ -39,7 +38,7 @@ const NoInstalledAppMatchesEmptyState = ({ shouldShowSearchText, text, onButtonC
 					<StatesAction onClick={onButtonClick}>{t('Search_on_marketplace')}</StatesAction>
 				</StatesActions>
 			</States>
-		</Box>
+		</AppsPageEmptyState>
 	);
 };
 
