@@ -1,3 +1,5 @@
+import { escapeHTML } from '@rocket.chat/tools';
+
 export type ViteManifestChunk = {
 	file: string;
 	css?: string[];
@@ -17,7 +19,7 @@ export const getClientEntryTags = (manifest: ViteManifest, prefix: string): stri
 		return '';
 	}
 
-	const url = (file: string) => `${prefix.replace(/\/$/, '')}/${file}`;
+	const url = (file: string) => escapeHTML(`${prefix.replace(/\/$/, '')}/${file}`);
 
 	const preloads = new Set<string>();
 	const stylesheets = new Set<string>();

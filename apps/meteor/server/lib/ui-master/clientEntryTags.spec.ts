@@ -37,6 +37,12 @@ describe('getClientEntryTags', () => {
 		expect(getClientEntryTags(manifest, prefix)).toContain(`src="${entryUrl}"`);
 	});
 
+	it('escapes the prefix', () => {
+		expect(getClientEntryTags(manifest, 'https://cdn.example.com/"><x')).toContain(
+			'src="https://cdn.example.com/&quot;&gt;&lt;x/bundle/index-abc.js"',
+		);
+	});
+
 	it('renders nothing for a manifest without an entry', () => {
 		expect(getClientEntryTags({ '_react.js': { file: 'bundle/react-def.js' } }, '')).toBe('');
 	});
