@@ -21,7 +21,7 @@ const SystemMessageBody = ({ message }: SystemMessageBodyProps) => {
 			aria-roledescription={t('system_message_body')}
 			style={
 				message.t === 'livechat_transfer_history'
-					? { whiteSpace: 'pre-wrap', overflowWrap: 'anywhere' }
+					? { whiteSpace: 'normal', overflowWrap: 'anywhere' }
 					: undefined
 			}
 		>
