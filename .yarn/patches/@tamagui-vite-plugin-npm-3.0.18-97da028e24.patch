@@ -1,0 +1,96 @@
+diff --git a/dist/cjs/plugin.cjs b/dist/cjs/plugin.cjs
+index de4749ea1d777ed7bdb90b300f2a3b849379e721..fee55352330333ac33bbf8622e65adfe7137af5c 100644
+--- a/dist/cjs/plugin.cjs
++++ b/dist/cjs/plugin.cjs
+@@ -445,7 +445,7 @@ function tamaguiNativePlugin(tamaguiOptionsIn = {}) {
+ 		}
+ 	};
+ }
+-function createTamaguiPlugins({ disableResolveConfig, wrapExtractedCSS = (css) => css, zeroIslandBuild, ...tamaguiOptionsIn } = {}) {
++function createTamaguiPlugins({ disableResolveConfig, wrapExtractedCSS = (css) => css, zeroIslandBuild, appSourceDirs = [], ...tamaguiOptionsIn } = {}) {
+ 	let shouldExtract = !tamaguiOptionsIn.disableExtraction;
+ 	const enableNativeEnv = !!globalThis.__vxrnEnableNativeEnv;
+ 	const tamaguiLoader = (0, import_loadTamagui.createViteTamaguiLoader)(tamaguiOptionsIn);
+@@ -559,6 +559,10 @@ function createTamaguiPlugins({ disableResolveConfig, wrapExtractedCSS = (css) =
+ 	};
+ 	const isAppJSXSource = (filePath) => {
+ 		if (!/\.[jt]sx$/.test(filePath)) return false;
++		if (appSourceDirs.some((dir) => {
++			const inDir = import_node_path.default.relative(dir, filePath);
++			return inDir !== "" && !inDir.startsWith("..") && !import_node_path.default.isAbsolute(inDir) && !inDir.split(import_node_path.default.sep).includes("node_modules");
++		})) return true;
+ 		const relative = import_node_path.default.relative(config.root, filePath);
+ 		return relative !== "" && relative !== ".." && !relative.startsWith(`..${import_node_path.default.sep}`) && !relative.split(import_node_path.default.sep).includes("node_modules");
+ 	};
+diff --git a/dist/esm/plugin.mjs b/dist/esm/plugin.mjs
+index e8f29e176c395b7159ba39d6be1b2123741c6058..e90f700a690104767b62161c7a05a51d4930592b 100644
+--- a/dist/esm/plugin.mjs
++++ b/dist/esm/plugin.mjs
+@@ -411,7 +411,7 @@ function tamaguiNativePlugin(tamaguiOptionsIn = {}) {
+ 		}
+ 	};
+ }
+-function createTamaguiPlugins({ disableResolveConfig, wrapExtractedCSS = (css) => css, zeroIslandBuild, ...tamaguiOptionsIn } = {}) {
++function createTamaguiPlugins({ disableResolveConfig, wrapExtractedCSS = (css) => css, zeroIslandBuild, appSourceDirs = [], ...tamaguiOptionsIn } = {}) {
+ 	let shouldExtract = !tamaguiOptionsIn.disableExtraction;
+ 	const enableNativeEnv = !!globalThis.__vxrnEnableNativeEnv;
+ 	const tamaguiLoader = createViteTamaguiLoader(tamaguiOptionsIn);
+@@ -524,6 +524,10 @@ function createTamaguiPlugins({ disableResolveConfig, wrapExtractedCSS = (css) =
+ 	};
+ 	const isAppJSXSource = (filePath) => {
+ 		if (!/\.[jt]sx$/.test(filePath)) return false;
++		if (appSourceDirs.some((dir) => {
++			const inDir = path.relative(dir, filePath);
++			return inDir !== "" && !inDir.startsWith("..") && !path.isAbsolute(inDir) && !inDir.split(path.sep).includes("node_modules");
++		})) return true;
+ 		const relative = path.relative(config.root, filePath);
+ 		return relative !== "" && relative !== ".." && !relative.startsWith(`..${path.sep}`) && !relative.split(path.sep).includes("node_modules");
+ 	};
+diff --git a/src/plugin.ts b/src/plugin.ts
+index c96acebe5b99b0a27d60b603725a497aaa38b333..5f7299e7803ebeefcbfc86ec9129a6d4cdfa2bf0 100644
+--- a/src/plugin.ts
++++ b/src/plugin.ts
+@@ -761,6 +761,8 @@ export function tamaguiNativePlugin(tamaguiOptionsIn: TamaguiOptions = {}): Plug
+ 
+ export type TamaguiVitePluginOptions = TamaguiOptions & {
+   disableResolveConfig?: boolean
++  /** Directories outside the Vite root whose JSX is compiled as app source. */
++  appSourceDirs?: string[]
+ }
+ 
+ export type TamaguiInternalPluginOptions = TamaguiVitePluginOptions & {
+@@ -788,6 +790,7 @@ export function createTamaguiPlugins({
+   disableResolveConfig,
+   wrapExtractedCSS = (css) => css,
+   zeroIslandBuild,
++  appSourceDirs = [],
+   ...tamaguiOptionsIn
+ }: TamaguiInternalPluginOptions = {}): {
+   plugins: PluginOption[]
+@@ -979,6 +982,13 @@ export function createTamaguiPlugins({
+ 
+   const isAppJSXSource = (filePath: string) => {
+     if (!/\.[jt]sx$/.test(filePath)) return false
++    if (
++      appSourceDirs.some((dir) => {
++        const inDir = path.relative(dir, filePath)
++        return inDir !== '' && !inDir.startsWith('..') && !path.isAbsolute(inDir) && !inDir.split(path.sep).includes('node_modules')
++      })
++    )
++      return true
+     const relative = path.relative(config.root, filePath)
+     return (
+       relative !== '' &&
+diff --git a/types/plugin.d.ts b/types/plugin.d.ts
+index d9d2de256088eb6e0440f3d6b8431fc805f86645..687487b83db716eaf19370bb72a25d0eb7e42482 100644
+--- a/types/plugin.d.ts
++++ b/types/plugin.d.ts
+@@ -20,6 +20,8 @@ export declare function tamaguiAliases(options?: AliasOptions): AliasEntry[];
+ export declare function tamaguiNativePlugin(tamaguiOptionsIn?: TamaguiOptions): Plugin;
+ export type TamaguiVitePluginOptions = TamaguiOptions & {
+     disableResolveConfig?: boolean;
++    /** Directories outside the Vite root whose JSX is compiled as app source. */
++    appSourceDirs?: string[];
+ };
+ export type TamaguiInternalPluginOptions = TamaguiVitePluginOptions & {
+     /**

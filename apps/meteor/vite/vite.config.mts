@@ -333,6 +333,8 @@ export default defineConfig({
 		tamaguiPlugin({
 			config: join(fuselageRoot, 'src/tamagui.config.ts'),
 			components: [],
+			// The compiler only transforms the JSX under Vite's root; Fuselage's sources sit outside it.
+			appSourceDirs: [join(fuselageRoot, 'src')],
 			outputCSS: './.tamagui/zero/tamagui-zero.css',
 			experimental: { zeroRuntime: true },
 		}),
