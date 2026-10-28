@@ -431,6 +431,74 @@ export default [
 			],
 		},
 	},
+	// Feature packages take application state from their provider; see docs/frontend/feature-packages.md
+	{
+		files: ['packages/@(ui-composer|ui-conference|ui-video-conf|ui-voip)/src/**/*.@(ts|tsx)'],
+		ignores: ['**/providers/**', '**/*.@(spec|stories).@(ts|tsx)'],
+		rules: {
+			'no-restricted-imports': [
+				'error',
+				{
+					paths: [
+						{
+							name: '@rocket.chat/ui-contexts',
+							importNames: [
+								'useSetting',
+								'usePermission',
+								'useAtLeastOnePermission',
+								'useAllPermissions',
+								'usePermissionWithScopedRoles',
+								'useUser',
+								'useUserId',
+								'useUserPreference',
+								'useUserRoom',
+								'useUserSubscription',
+								'useUserPresence',
+								'useUserCard',
+								'useEndpoint',
+								'useMethod',
+								'useStream',
+								'useRouter',
+								'useRouteParameter',
+								'useSearchParameter',
+								'useCurrentRoutePath',
+								'useToastMessageDispatch',
+								'useSetModal',
+								'useCustomSound',
+								'useSelectedDevices',
+							],
+							message: 'Read application state in the provider and pass it down. See docs/frontend/feature-packages.md.',
+						},
+					],
+				},
+			],
+		},
+	},
+	// FIXME: existing reads to move into a provider; remove each file from this list as it is migrated
+	{
+		files: [
+			'packages/ui-conference/src/components/AddParticipantsModal/AddParticipantsModal.tsx',
+			'packages/ui-conference/src/components/CallMembersPanel/CallMembersPanel.tsx',
+			'packages/ui-conference/src/components/ChatAccessModal/ChatAccessModal.tsx',
+			'packages/ui-conference/src/components/ChatAccessNotice/ChatAccessNotice.tsx',
+			'packages/ui-conference/src/hooks/useCallDevicesInitialState.ts',
+			'packages/ui-conference/src/views/ConferenceWindow.tsx',
+			'packages/ui-video-conf/src/VideoConfMessage/VideoConfMessageUserStack.tsx',
+			'packages/ui-video-conf/src/hooks/useVideoConferenceInfo.ts',
+			'packages/ui-voip/src/components/CallHistoryInternalUser.tsx',
+			'packages/ui-voip/src/components/DevicePicker.tsx',
+			'packages/ui-voip/src/context/usePeerAutocomplete.ts',
+			'packages/ui-voip/src/hooks/useDevicePermissionPrompt.tsx',
+			'packages/ui-voip/src/hooks/useIceServers.ts',
+			'packages/ui-voip/src/views/MediaCallPopoutWindow.tsx',
+			'packages/ui-voip/src/views/MediaCallRoomSection/MediaCallRoomActivity.tsx',
+			'packages/ui-voip/src/views/useFullscreenToggle.ts',
+			'packages/ui-voip/src/views/usePopoutWindow.ts',
+		],
+		rules: {
+			'no-restricted-imports': 'warn',
+		},
+	},
 	// FIXME: these rules require type information and the files are not included in the main tsconfig.json
 	{
 		files: [
