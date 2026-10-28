@@ -73,7 +73,7 @@ const ContactsTableRow = ({ contact, columns, onClick, onEdit, onDeleted }: Cont
 			)}
 			{columns.isVisible('companyName') && <GenericTableCell truncate>{companyName}</GenericTableCell>}
 			{columns.isVisible('officeLocation') && <GenericTableCell truncate>{officeLocation}</GenericTableCell>}
-			<GenericTableCell>
+			<GenericTableCell onClick={(event) => event.stopPropagation()}>
 				<ContactMenu contact={contact} onEdit={onEdit} onDeleted={onDeleted} />
 			</GenericTableCell>
 		</GenericTableRow>

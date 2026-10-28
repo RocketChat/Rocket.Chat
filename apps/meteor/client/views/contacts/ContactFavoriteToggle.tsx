@@ -1,12 +1,9 @@
 import type { IContactPublic, Serialized } from '@rocket.chat/core-typings';
 import { Icon, IconButton, Stack } from '@rocket.chat/fuselage';
-import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
 import type { MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { getErrorMessage } from '../../lib/errorHandling';
-import { contactsQueryKeys } from '../../lib/queryKeys';
+import { useContactFavorite } from './hooks/useContactFavorite';
 
 export type ContactFavoriteToggleProps = {
 	contact: Serialized<IContactPublic>;
@@ -15,30 +12,13 @@ export type ContactFavoriteToggleProps = {
 
 const ContactFavoriteToggle = ({ contact, revealed }: ContactFavoriteToggleProps) => {
 	const { t } = useTranslation();
-	const queryClient = useQueryClient();
-	const dispatchToastMessage = useToastMessageDispatch();
-	const setFavorite = useEndpoint('POST', '/v1/contacts.favorite');
-
-	const toggle = useMutation({
-		mutationFn: (favorite: boolean) => setFavorite({ contactId: contact._id, favorite }),
-		onSuccess: (_data, favorite) =>
-			dispatchToastMessage({
-				type: 'success',
-				message: favorite
-					? t('Contact_added_to_favorites', { name: contact.displayName })
-					: t('Contact_removed_from_favorites', { name: contact.displayName }),
-			}),
-		onError: (error) => dispatchToastMessage({ type: 'error', message: getErrorMessage(error, 'Contact_favorite_failed') }),
-		onSettled: () => queryClient.invalidateQueries({ queryKey: contactsQueryKeys.all }),
-	});
-
-	const favorite = toggle.isPending ? toggle.variables : Boolean(contact.favorite);
+	const { favorite, setFavorite } = useContactFavorite(contact);
 
 	if (contact.source !== 'local') {
 		return (
 			favorite && (
 				<Stack direction='row' justify='center'>
-					<Icon name='star-filled' size='x20' title={t('Favorite')} />
+					<Icon name='star' size='x20' title={t('Favorite_Outlook')} />
 				</Stack>
 			)
 		);
@@ -50,7 +30,7 @@ const ContactFavoriteToggle = ({ contact, revealed }: ContactFavoriteToggleProps
 
 	const handleClick = (event: MouseEvent) => {
 		event.stopPropagation();
-		toggle.mutate(!favorite);
+		setFavorite(!favorite);
 	};
 
 	return (

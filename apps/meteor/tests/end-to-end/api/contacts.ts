@@ -232,24 +232,37 @@ describe('[Contacts]', () => {
 		});
 
 		describe('[/contacts.favorite]', () => {
+			let favoriteId: string;
+
 			const listFavoriteIds = async () => {
 				const res = await listContacts({ favorite: true }).expect(200);
 				return res.body.items.map(({ _id }: IContact) => _id);
 			};
 
-			it('should mark a contact the caller owns as favorite, and list it among the favorites', async () => {
-				await request
-					.post(api('contacts.favorite'))
-					.set(credentials)
-					.send({ contactId: ownLocalContactId, favorite: true })
-					.expect('Content-Type', 'application/json')
-					.expect(200);
+			before(async () => {
+				favoriteId = await createContact(credentials, { givenName: `zFavorite${stamp}` });
+				await request.post(api('contacts.favorite')).set(credentials).send({ contactId: favoriteId, favorite: true }).expect(200);
+			});
+
+			after(async () => {
+				await contacts().deleteOne({ _id: favoriteId });
+				await request.post(api('contacts.favorite')).set(credentials).send({ contactId: ownLocalContactId, favorite: false }).expect(200);
+			});
+
+			it('should list the favorites first when sorting by them, ahead of contacts named before them', async () => {
+				const byName = await listContacts().expect(200);
+				const byFavorite = await listContacts({ sort: JSON.stringify({ favorite: -1 }) }).expect(200);
+
+				expect(byName.body.items[0]._id).to.not.equal(favoriteId);
+				expect(byFavorite.body.items[0]).to.have.property('_id', favoriteId);
+			});
+
+			it('should mark a contact the caller owns as favorite, and list it among the favorites and the opposite when unfavorited', async () => {
+				await request.post(api('contacts.favorite')).set(credentials).send({ contactId: ownLocalContactId, favorite: true }).expect(200);
 
 				expect(await contacts().findOne({ _id: ownLocalContactId })).to.include({ favorite: true });
 				expect(await listFavoriteIds()).to.include(ownLocalContactId);
-			});
 
-			it('should take it out of the favorites again, leaving no flag behind', async () => {
 				await request.post(api('contacts.favorite')).set(credentials).send({ contactId: ownLocalContactId, favorite: false }).expect(200);
 
 				expect(await contacts().findOne({ _id: ownLocalContactId })).to.not.have.property('favorite');

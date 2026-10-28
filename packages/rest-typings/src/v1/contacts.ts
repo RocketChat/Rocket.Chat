@@ -12,6 +12,7 @@ export const CONTACTS_SORTABLE_FIELDS = [
 	'categories',
 	'companyName',
 	'officeLocation',
+	'favorite',
 ] as const;
 
 export type ContactsSortableField = (typeof CONTACTS_SORTABLE_FIELDS)[number];

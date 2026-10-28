@@ -3015,6 +3015,7 @@
   "Fallback_message": "Fallback message",
   "False": "False",
   "Favorite": "Favorite",
+  "Favorite_Outlook": "Favorite (Outlook)",
   "Favorite_Rooms": "Enable favorite rooms",
   "Favorites": "Favorites",
   "Feature_Depends_on_Livechat_Visitor_navigation_as_a_message_to_be_enabled": "This feature depends on \"send visitor navigation history as a message\" to be enabled.",

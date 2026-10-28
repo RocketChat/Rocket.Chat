@@ -93,7 +93,7 @@ API.v1.get(
 			userId,
 			text,
 			{
-				sort: sort ?? { displayName: 1 },
+				sort: { ...sort, displayName: sort?.displayName ?? 1 },
 				skip: offset,
 				limit: count,
 				projection: { uid: 0, externalId: 0, folderId: 0, lastSyncAt: 0 },

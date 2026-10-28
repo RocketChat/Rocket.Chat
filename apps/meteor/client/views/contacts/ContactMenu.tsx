@@ -7,6 +7,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useTranslation } from 'react-i18next';
 
 import { useContactCall } from './hooks/useContactCall';
+import { useContactFavorite } from './hooks/useContactFavorite';
 import { useContactLabel } from './hooks/useContactLabel';
 import { isContactNotFoundError } from './lib/isContactNotFoundError';
 import { getErrorMessage } from '../../lib/errorHandling';
@@ -27,6 +28,7 @@ const ContactMenu = ({ contact, onEdit, onDeleted }: ContactMenuProps) => {
 	const labelOf = useContactLabel();
 
 	const { canCall, isCallInProgress, call } = useContactCall();
+	const { favorite, setFavorite } = useContactFavorite(contact);
 
 	const remove = useMutation({
 		mutationFn: () => deleteContact({ contactId: contact._id }),
@@ -92,7 +94,18 @@ const ContactMenu = ({ contact, onEdit, onDeleted }: ContactMenuProps) => {
 		}),
 	];
 
-	const sections: { items: GenericMenuItemProps[] }[] = reachItems.length ? [{ items: reachItems }] : [];
+	const favoriteItem: GenericMenuItemProps =
+		contact.source === 'local'
+			? {
+					id: 'favorite',
+					icon: favorite ? 'star-filled' : 'star',
+					content: favorite ? t('Unfavorite') : t('Favorite'),
+					textValue: favorite ? t('Unfavorite') : t('Favorite'),
+					onClick: () => setFavorite(!favorite),
+				}
+			: { id: 'favorite', icon: 'star', content: t('Favorite_Outlook'), textValue: t('Favorite_Outlook'), disabled: true };
+
+	const sections: { items: GenericMenuItemProps[] }[] = [...(reachItems.length ? [{ items: reachItems }] : []), { items: [favoriteItem] }];
 
 	if (contact.source === 'local') {
 		sections.push({
@@ -112,10 +125,6 @@ const ContactMenu = ({ contact, onEdit, onDeleted }: ContactMenuProps) => {
 				},
 			],
 		});
-	}
-
-	if (!sections.length) {
-		return null;
 	}
 
 	return <GenericMenu title={t('Options')} icon='kebab' sections={sections} />;

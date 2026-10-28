@@ -1,5 +1,6 @@
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
+import type { ContactsSortableField } from '@rocket.chat/rest-typings';
 import { GenericNoResults, GenericTableLoadingRow, usePagination, useSort } from '@rocket.chat/ui-client';
 import { useEndpoint, useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -10,7 +11,6 @@ import ContactPanelRouter from './ContactPanelRouter';
 import ContactsPageFilters from './ContactsPageFilters';
 import ContactsTable from './ContactsTable';
 import ContactsTableRow from './ContactsTableRow';
-import type { ContactsColumnKey } from './hooks/useContactsColumns';
 import { useContactsColumns } from './hooks/useContactsColumns';
 import { contactsQueryKeys } from '../../lib/queryKeys';
 import type { CallHistoryTab } from '../mediaCallHistory/CallHistoryPageLayout';
@@ -25,7 +25,7 @@ const LOADING_ROWS = 4;
 
 const ContactsTab = ({ tab, onChangeTab }: ContactsTabProps) => {
 	const { t } = useTranslation();
-	const sortProps = useSort<ContactsColumnKey>('displayName', 'asc');
+	const sortProps = useSort<ContactsSortableField>('displayName', 'asc');
 	const { setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 	const columns = useContactsColumns();
 	// The favorite and menu cells are on every row and no setting hides them, so they are not part of the visible count.
@@ -101,7 +101,7 @@ const ContactsTab = ({ tab, onChangeTab }: ContactsTabProps) => {
 	if (isPending || isPastLastPage) {
 		return (
 			<CallHistoryPageLayout filters={contactFilters} contextualBar={contextualBar} tab={tab} onChangeTab={onChangeTab}>
-				<ContactsTable sort={sortProps} columns={columns}>
+				<ContactsTable sort={sortProps} sortableByFavorite={!favoritesOnly} columns={columns}>
 					{Array.from({ length: LOADING_ROWS }, (_, index) => (
 						<GenericTableLoadingRow key={index} cols={loadingCols} />
 					))}
@@ -135,7 +135,7 @@ const ContactsTab = ({ tab, onChangeTab }: ContactsTabProps) => {
 				/>
 			)}
 			{data.items.length > 0 && (
-				<ContactsTable sort={sortProps} columns={columns}>
+				<ContactsTable sort={sortProps} sortableByFavorite={!favoritesOnly} columns={columns}>
 					{data.items.map((contact) => (
 						<ContactsTableRow
 							key={contact._id}
