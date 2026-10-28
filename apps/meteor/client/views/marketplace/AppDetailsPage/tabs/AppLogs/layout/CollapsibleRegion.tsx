@@ -7,6 +7,9 @@ export type CollapsibleRegionProps = {
 	expanded?: boolean;
 } & ComponentProps<typeof Box>;
 
+/**
+ * The details of a collapsible panel entry, shown while its header is expanded.
+ */
 export const CollapsibleRegion = ({ children, expanded, ...props }: CollapsibleRegionProps) => {
 	return (
 		<Box

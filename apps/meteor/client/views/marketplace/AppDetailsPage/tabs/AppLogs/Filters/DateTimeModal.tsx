@@ -1,5 +1,4 @@
 import {
-	Box,
 	Button,
 	Label,
 	Modal,
@@ -9,12 +8,14 @@ import {
 	ModalFooterControllers,
 	ModalHeader,
 	ModalTitle,
+	Stack,
 } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import DateTimeFilter from './DateTimeFilter';
+import FilterField from './layout/FilterField';
 
 export type DateTimeModalFormData = {
 	startDate?: string;
@@ -51,14 +52,16 @@ export const DateTimeModal = ({ onSave, onClose, defaultValues }: DateTimeModalP
 				<ModalClose onClick={onClose} />
 			</ModalHeader>
 			<ModalContent>
-				<Box display='flex' flexDirection='column' marginInlineEnd='x8' marginBlockEnd='x24' flexGrow={1}>
-					<Label htmlFor='timeFilter'>{t('Logs_from')}</Label>
-					<DateTimeFilter control={control} type='start' />
-				</Box>
-				<Box display='flex' flexDirection='column' marginInlineEnd='x8' flexGrow={1}>
-					<Label htmlFor='timeFilter'>{t('Until')}</Label>
-					<DateTimeFilter control={control} type='end' />
-				</Box>
+				<Stack gap='x24'>
+					<FilterField inset>
+						<Label htmlFor='timeFilter'>{t('Logs_from')}</Label>
+						<DateTimeFilter control={control} type='start' />
+					</FilterField>
+					<FilterField inset>
+						<Label htmlFor='timeFilter'>{t('Until')}</Label>
+						<DateTimeFilter control={control} type='end' />
+					</FilterField>
+				</Stack>
 			</ModalContent>
 			<ModalFooter>
 				<ModalFooterControllers>
