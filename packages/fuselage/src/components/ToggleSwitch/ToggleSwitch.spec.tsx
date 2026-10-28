@@ -1,4 +1,4 @@
-import { composeStories } from '@storybook/react-webpack5';
+import { composeStories } from '@storybook/react-vite';
 import { axe, toHaveNoViolations } from 'jest-axe';
 
 import * as stories from './ToggleSwitch.stories';
