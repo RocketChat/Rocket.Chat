@@ -639,6 +639,8 @@ export const lowerModule = async (code: string, id: string) => {
 				if (other !== name && !extendedFrames().has(other) && n.start >= call.start && n.end <= call.end) return;
 			}
 			if (parent?.type === 'ExportSpecifier' || parent?.type?.startsWith('TS')) return;
+			// A `styled(Frame, …)` in this module extends the frame, not its recipe
+			if (parent?.type === 'CallExpression' && (parent.callee as Node).name === 'styled') return;
 			edits.push([n.start, n.end, `${name}__lowered`]);
 		});
 	}
