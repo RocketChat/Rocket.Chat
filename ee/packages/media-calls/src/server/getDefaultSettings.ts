@@ -31,5 +31,6 @@ export function getDefaultSettings(): IMediaCallServerSettings {
 
 		permissionCheck: async () => false,
 		isFeatureEnabled: () => false,
+		resolveCallerName: async () => undefined,
 	};
 }
