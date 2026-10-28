@@ -113,4 +113,34 @@ describe('E2E requestSubscriptionKeys', () => {
 
 		expect(sdk.rest.post).toHaveBeenCalledTimes(2);
 	});
+
+	it('should not share the request of the previous user after stopClient', async () => {
+		let resolvePrevious!: () => void;
+		let resolveNext!: () => void;
+		(sdk.rest.post as jest.Mock)
+			.mockReturnValueOnce(
+				new Promise<void>((r) => {
+					resolvePrevious = r;
+				}),
+			)
+			.mockReturnValueOnce(
+				new Promise<void>((r) => {
+					resolveNext = r;
+				}),
+			);
+
+		const previousUser = e2e.requestSubscriptionKeys();
+		await e2e.stopClient();
+		const nextUser = e2e.requestSubscriptionKeys();
+		expect(sdk.rest.post).toHaveBeenCalledTimes(2);
+
+		// The request of the previous user settles first. The next user still shares its own request.
+		resolvePrevious();
+		await previousUser;
+		const sameUser = e2e.requestSubscriptionKeys();
+		expect(sdk.rest.post).toHaveBeenCalledTimes(2);
+
+		resolveNext();
+		await Promise.all([nextUser, sameUser]);
+	});
 });
