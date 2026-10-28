@@ -16,6 +16,7 @@ export const useContactFavorite = (contact: Serialized<IContactPublic>) => {
 
 	const { mutate } = useMutation({
 		mutationKey,
+		scope: { id: `contact-favorite-${contact._id}` },
 		mutationFn: (favorite: boolean) => setFavoriteEndpoint({ contactId: contact._id, favorite }),
 		onSuccess: (_data, favorite) =>
 			dispatchToastMessage({
