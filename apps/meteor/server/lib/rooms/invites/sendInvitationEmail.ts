@@ -15,7 +15,7 @@ Meteor.startup(() => {
 	});
 });
 
-export const sendInvitationEmail = async (userId: string, emails: string[]) => {
+export const sendInvitationEmail = async (userId: string, emails: string[]): Promise<boolean> => {
 	check(emails, [String]);
 	if (!userId) {
 		throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', {
@@ -68,4 +68,6 @@ export const sendInvitationEmail = async (userId: string, emails: string[]) => {
 			});
 		}
 	}
+
+	return true;
 };
