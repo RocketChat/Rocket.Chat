@@ -64,6 +64,7 @@
 		"@storybook/addon-a11y": "~9.1.21",
 		"@storybook/addon-docs": "~9.1.21",
 		"@storybook/react-vite": "^9.1.21",
+		"@tamagui/vite-plugin": "3.0.18",
 		"@tamagui/web": "3.0.18",
 		"@testing-library/dom": "~10.4.2",
 		"@testing-library/react": "~16.3.3",

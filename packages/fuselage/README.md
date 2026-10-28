@@ -184,6 +184,10 @@ yarn workspace @rocket.chat/fuselage storybook
 yarn workspace @rocket.chat/fuselage build-storybook
 ```
 
+With `FUSELAGE_ZERO_RUNTIME=1`, Storybook compiles Fuselage with Tamagui's zero runtime, as the web client does; without it,
+components run on the Tamagui runtime, as npm consumers and Jest run them. To check that a component renders the same both
+ways, build both and compare them with `node scripts/verify/story-computed.mjs <runtime build> <zero build>`.
+
 Visual regression tests compare Storybook screenshots:
 
 ```sh

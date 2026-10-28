@@ -10403,6 +10403,7 @@ __metadata:
     "@storybook/addon-a11y": "npm:~9.1.21"
     "@storybook/addon-docs": "npm:~9.1.21"
     "@storybook/react-vite": "npm:^9.1.21"
+    "@tamagui/vite-plugin": "npm:3.0.18"
     "@tamagui/web": "npm:3.0.18"
     "@testing-library/dom": "npm:~10.4.2"
     "@testing-library/react": "npm:~16.3.3"
