@@ -48,9 +48,18 @@ export class CurrentEditingMessage {
 				await this.chat.data.saveDraft(this.mid, (await this.chat.data.getDraft(this.mid)) || draft);
 			}
 
-			this.chat.composer.setEditingMode(false);
-			this.mid = undefined;
-			clearHighlightMessage();
+			this.clear();
+		});
+	};
+
+	public stopAfterDeletion = async () => {
+		await this.runExclusive(async () => {
+			if (!this.mid) {
+				return;
+			}
+
+			await this.chat.data.discardDraft(this.mid);
+			this.clear();
 		});
 	};
 
@@ -100,6 +109,12 @@ export class CurrentEditingMessage {
 
 	public setMID(mid: string) {
 		this.mid = mid;
+	}
+
+	private clear() {
+		this.chat.composer?.setEditingMode(false);
+		this.mid = undefined;
+		clearHighlightMessage();
 	}
 
 	private async runExclusive<T>(callback: () => Promise<T>) {

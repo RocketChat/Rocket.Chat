@@ -144,6 +144,7 @@ export type ChatAPI = {
 		getMID(): string | undefined;
 		reset(): Promise<boolean>;
 		stop(): Promise<void>;
+		stopAfterDeletion(): Promise<void>;
 		cancel(): Promise<void>;
 	};
 
