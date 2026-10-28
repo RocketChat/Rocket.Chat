@@ -112,6 +112,22 @@ export const allowlist: Record<string, Record<string, Options>> = {
 	'src/components/Option/OptionDescriptionBlock.tsx': { OptionDescriptionBlockFrame: {} },
 	'src/components/RadioButton/RadioButton.tsx': { RadioButtonFake: {}, RadioButtonDot: {} },
 	'src/components/ToggleSwitch/ToggleSwitch.tsx': { ToggleSwitchFake: {}, ToggleSwitchKnob: {} },
+	'src/components/Modal/Modal.tsx': { ModalFrame: {} },
+	'src/components/Modal/ModalBackdrop.tsx': { ModalBackdropFrame: {} },
+	'src/components/Modal/ModalFooter.tsx': { ModalFooterFrame: {} },
+	'src/components/Modal/ModalFooterAnnotation.tsx': { ModalFooterAnnotationFrame: {} },
+	'src/components/Modal/ModalFooterControllers.tsx': { ModalFooterControllers: {} },
+	'src/components/Modal/ModalHeader.tsx': { ModalHeaderFrame: {}, ModalHeaderInner: {} },
+	'src/components/Modal/ModalHeaderText.tsx': { ModalHeaderTextFrame: {} },
+	'src/components/Modal/ModalHeroImage.tsx': { ModalHeroImageWrapper: {}, ModalHeroImageFrame: {} },
+	'src/components/Modal/ModalTagline.tsx': { ModalTaglineFrame: {} },
+	'src/components/Modal/ModalTitle.tsx': { ModalTitleFrame: {} },
+	'src/components/Sidepanel/Sidepanel.tsx': { SidepanelFrame: {} },
+	'src/components/Sidepanel/SidepanelHeader.tsx': { SidepanelHeaderFrame: {} },
+	'src/components/Sidepanel/SidepanelHeaderTitle.tsx': { SidepanelHeaderTitleFrame: {} },
+	'src/components/Sidepanel/SidepanelSection.tsx': { SidepanelSectionFrame: {}, SidepanelSection: {} },
+	'src/components/ToastBar/ToastBar.tsx': { ToastBarFrame: {}, ToastBarStatusLine: {}, ToastBarInner: {}, ToastBarContent: {}, ToastBarProgressBar: {}, ToastBarProgressFill: {} },
+	'src/components/Tooltip/Tooltip.tsx': { TooltipFrame: {}, TooltipArrow: {} },
 };
 
 const root = import.meta.dirname;
