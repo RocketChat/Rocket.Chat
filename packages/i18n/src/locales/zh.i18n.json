@@ -4591,7 +4591,6 @@
   "Outlook_authentication": "Outlook 认证",
   "Outlook_authentication_description": "禁用此项以清除本机保存的 Outlook 凭据。",
   "Outlook_authentication_disabled": "Outlook 认证已禁用",
-  "Outlook_Calendar": "Outlook 日历",
   "Outlook_calendar": "Outlook 日历",
   "Outlook_Calendar_Enabled": "已启用",
   "Outlook_calendar_event": "Outlook 日历事件",

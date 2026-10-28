@@ -9,7 +9,7 @@ import type {
 	IOutboundProvider,
 	RoomType,
 } from '@rocket.chat/core-typings';
-import type { PaginatedRequest } from '@rocket.chat/rest-typings';
+import type { ContactsSortableField, PaginatedRequest } from '@rocket.chat/rest-typings';
 import { videoConferenceInfoQueryKey } from '@rocket.chat/ui-video-conf';
 
 export const roomsQueryKeys = {
@@ -169,6 +169,14 @@ export const ABACQueryKeys = {
 		autocomplete: (...args: [query?: PaginatedRequest]) => [...ABACQueryKeys.rooms.all(), 'autocomplete', ...args] as const,
 		room: (roomId: string) => [...ABACQueryKeys.rooms.all(), roomId] as const,
 	},
+};
+
+export const contactsQueryKeys = {
+	all: ['contacts'] as const,
+	list: (
+		...args: [query?: { sortBy: ContactsSortableField; sortDirection: 'asc' | 'desc'; offset: number; count: number; text?: string }]
+	) => [...contactsQueryKeys.all, 'list', ...args] as const,
+	info: (contactId: string) => [...contactsQueryKeys.all, 'info', contactId] as const,
 };
 
 export const callHistoryQueryKeys = {

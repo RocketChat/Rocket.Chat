@@ -82,6 +82,10 @@ export class CallHistoryRaw extends BaseRaw<CallHistoryItem> implements ICallHis
 						contactName: textSearch,
 					},
 					{
+						external: true,
+						externalContactName: textSearch,
+					},
+					{
 						external: false,
 						contactUsername: textSearch,
 					},

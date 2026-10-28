@@ -8,6 +8,7 @@ import {
 	VideoConf,
 } from '@rocket.chat/core-services';
 import type {
+	IContact,
 	IMediaCall,
 	IUser,
 	IRoom,
@@ -53,6 +54,7 @@ import {
 import { ctiGateway } from './ctiGateway';
 import { logger } from './logger';
 import { sendVoipPushNotification } from './push/sendVoipPushNotification';
+import { resolveCallerContact } from '../../../ee/server/lib/contacts/resolveCallerContact';
 import { turnServersSchema } from '../../../ee/server/settings/turnServersSchema';
 import { i18n } from '../../lib/i18n';
 import { sendMessage } from '../../lib/messages/sendMessage';
@@ -299,6 +301,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		const contact = callerIsInternal ? call.callee : call.caller;
 
 		const contactExtension = contact.sipExtension || contact.id;
+		const resolvedContact = contactExtension ? await this.resolveExternalContact(uid, contactExtension) : undefined;
 
 		const historyItem: InsertionModel<IExternalMediaCallHistoryItem> = {
 			uid,
@@ -311,6 +314,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			external: true,
 			direction,
 			contactExtension,
+			...(resolvedContact && { externalContactId: resolvedContact._id, externalContactName: resolvedContact.displayName }),
 		};
 
 		await CallHistory.insertOne(historyItem).catch((err: unknown) => logger.error({ msg: 'Failed to insert item into Call History', err }));
@@ -320,6 +324,14 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		CallHistoryService.importExternalHistory(uid).catch((err: unknown) =>
 			logger.error({ msg: 'Failed to import external Call History after a call', err, callId: call._id }),
 		);
+	}
+
+	private async resolveExternalContact(uid: IUser['_id'], extension: string): Promise<Pick<IContact, '_id' | 'displayName'> | undefined> {
+		try {
+			return await resolveCallerContact(uid, extension);
+		} catch (err) {
+			logger.warn({ msg: 'Failed to resolve a contact for a call history entry', err });
+		}
 	}
 
 	private getContactDataForInternalHistory(
@@ -527,7 +539,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		);
 	}
 
-	private async sendSignal(toUid: IUser['_id'], signal: ServerMediaSignal): Promise<void> {
+	private sendSignal(toUid: IUser['_id'], signal: ServerMediaSignal): void {
 		void api.broadcast('user.media-signal', { userId: toUid, signal });
 	}
 
@@ -561,6 +573,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 					port: settings.get<number>('Pexip_Integration_SIP_Port') ?? 5060,
 				},
 			},
+			resolveCallerName: async (uid, number) => (await resolveCallerContact(uid, number))?.displayName,
 			mobileRinging,
 			iceServers: this.getIceServerConfigs(),
 			cti: {
