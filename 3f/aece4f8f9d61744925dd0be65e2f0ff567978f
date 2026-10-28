@@ -1,0 +1,19 @@
+packages/ui-client/src/hooks/useLicense.ts
+  s_eefaeb027ea5e8::t_fb7eb3db3f421a 6,84
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "3faece4f8f9d61744925dd0be65e2f0ff567978f",
+  "prompts": {},
+  "sessions": {
+    "s_eefaeb027ea5e8": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "01eed7ce-af81-4e59-b02b-de0f1ff45282",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
