@@ -5,7 +5,7 @@ Package.describe({
 });
 
 Package.onUse(function (api) {
-	api.use(['webapp', 'check', 'inter-process-messaging'], 'server');
+	api.use(['check'], 'server');
 
 	api.use(['tracker', 'retry'], 'client');
 

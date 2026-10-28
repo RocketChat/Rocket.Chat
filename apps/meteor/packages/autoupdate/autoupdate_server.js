@@ -1,29 +1,12 @@
-// Publish the current client versions for each client architecture
-// (web.browser, web.browser.legacy, web.cordova). When a client observes
-// a change in the versions associated with its client architecture,
-// it will refresh itself, either by swapping out CSS assets or by
-// reloading the page. Changes to the replaceable version are ignored
-// and handled by the hot-module-replacement package.
+// Publishes the version of the web client the server serves. A page that
+// runs another version sees its document change and offers a reload.
 //
-// There are four versions for any given client architecture: `version`,
-// `versionRefreshable`, `versionNonRefreshable`, and
-// `versionReplaceable`. The refreshable version is a hash of just the
-// client resources that are refreshable, such as CSS. The replaceable
-// version is a hash of files that can be updated with HMR. The
-// non-refreshable version is a hash of the rest of the client assets,
-// excluding the refreshable ones: HTML, JS that is not replaceable, and
-// static files in the `public` directory. The `version` version is a
-// combined hash of everything.
-//
-// If the environment variable `AUTOUPDATE_VERSION` is set, it will be
-// used in place of all client versions. You can use this variable to
-// control when the client reloads. For example, if you want to force a
-// reload only after major changes, use a custom AUTOUPDATE_VERSION and
-// change it only when something worth pushing to clients happens.
+// If the environment variable `AUTOUPDATE_VERSION` is set, it is used in
+// place of the client version, to control when clients reload.
 //
 // The server publishes a `meteor_autoupdate_clientVersions` collection.
 // The ID of each document is the client architecture, and the fields of
-// the document are the versions described above.
+// the document are its versions.
 
 import { Meteor } from 'meteor/meteor';
 import { ClientVersions } from './client_versions.js';
@@ -41,66 +24,29 @@ export const Autoupdate = (__meteor_runtime_config__.autoupdate = {
 // Stores acceptable client versions.
 const clientVersions = new ClientVersions();
 
-// The client hash includes __meteor_runtime_config__, so wait until
-// all packages have loaded and have had a chance to populate the
-// runtime config before using the client hash as our default auto
-// update version id.
-
 // Note: Tests allow people to override Autoupdate.autoupdateVersion before
 // startup.
 Autoupdate.autoupdateVersion = null;
-Autoupdate.autoupdateVersionRefreshable = null;
-Autoupdate.autoupdateVersionCordova = null;
 Autoupdate.appId = __meteor_runtime_config__.appId = process.env.APP_ID;
 
-var syncQueue = new Meteor._AsynchronousQueue();
+// The web client is built outside Meteor, so the server names its version once it knows which build it serves.
+const CLIENT_ARCH = 'web.browser';
 
-async function updateVersions(shouldReloadClientProgram) {
-	// Step 1: load the current client program on the server
-	if (shouldReloadClientProgram) {
-		await WebAppInternals.reloadClientPrograms();
-	}
+Autoupdate.setClientVersion = function (clientVersion) {
+	// If the AUTOUPDATE_VERSION environment variable is defined, it takes
+	// precedence, but Autoupdate.autoupdateVersion is still supported as
+	// a fallback.
+	const { AUTOUPDATE_VERSION = Autoupdate.autoupdateVersion } = process.env;
+	const version = AUTOUPDATE_VERSION || clientVersion;
 
-	const {
-		// If the AUTOUPDATE_VERSION environment variable is defined, it takes
-		// precedence, but Autoupdate.autoupdateVersion is still supported as
-		// a fallback. In most cases neither of these values will be defined.
-		AUTOUPDATE_VERSION = Autoupdate.autoupdateVersion,
-	} = process.env;
+	Autoupdate.versions[CLIENT_ARCH] = {
+		version,
+		versionRefreshable: version,
+		versionNonRefreshable: version,
+	};
 
-	// Step 2: update __meteor_runtime_config__.autoupdate.versions.
-	const clientArchs = Object.keys(WebApp.clientPrograms);
-	clientArchs.forEach((arch) => {
-		Autoupdate.versions[arch] = {
-			version: AUTOUPDATE_VERSION || WebApp.calculateClientHash(arch),
-			versionRefreshable: AUTOUPDATE_VERSION || WebApp.calculateClientHashRefreshable(arch),
-			versionNonRefreshable: AUTOUPDATE_VERSION || WebApp.calculateClientHashNonRefreshable(arch),
-			versionReplaceable: AUTOUPDATE_VERSION || WebApp.calculateClientHashReplaceable(arch),
-			versionHmr: WebApp.clientPrograms[arch].hmrVersion,
-		};
-	});
-
-	// Step 3: form the new client boilerplate which contains the updated
-	// assets and __meteor_runtime_config__.
-	if (shouldReloadClientProgram) {
-		await WebAppInternals.generateBoilerplate();
-	}
-
-	// Step 4: update the ClientVersions collection.
-	// We use `onListening` here because we need to use
-	// `WebApp.getRefreshableAssets`, which is only set after
-	// `WebApp.generateBoilerplate` is called by `main` in webapp.
-	WebApp.onListening(() => {
-		clientArchs.forEach((arch) => {
-			const payload = {
-				...Autoupdate.versions[arch],
-				assets: WebApp.getRefreshableAssets(arch),
-			};
-
-			clientVersions.set(arch, payload);
-		});
-	});
-}
+	clientVersions.set(CLIENT_ARCH, { ...Autoupdate.versions[CLIENT_ARCH], assets: [] });
+};
 
 Meteor.publish(
 	'meteor_autoupdate_clientVersions',
@@ -129,9 +75,7 @@ Meteor.publish(
 	{ is_auto: true },
 );
 
-Meteor.startup(async function () {
-	await updateVersions(false);
-
+Meteor.startup(function () {
 	// Force any connected clients that are still looking for these older
 	// document IDs to reload.
 	['version', 'version-refreshable', 'version-cordova'].forEach((_id) => {
@@ -139,28 +83,4 @@ Meteor.startup(async function () {
 			version: 'outdated',
 		});
 	});
-});
-
-function enqueueVersionsRefresh() {
-	syncQueue.queueTask(async function () {
-		await updateVersions(true);
-	});
-}
-
-const setupListeners = () => {
-	// Listen for messages pertaining to the client-refresh topic.
-	import { onMessage } from 'meteor/inter-process-messaging';
-	onMessage('client-refresh', enqueueVersionsRefresh);
-
-	// Another way to tell the process to refresh: send SIGHUP signal
-	process.on(
-		'SIGHUP',
-		Meteor.bindEnvironment(function () {
-			enqueueVersionsRefresh();
-		}, 'handling SIGHUP signal for refresh'),
-	);
-};
-
-WebApp.onListening(function () {
-	Promise.resolve(setupListeners());
 });
