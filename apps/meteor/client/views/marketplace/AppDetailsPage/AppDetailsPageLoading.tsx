@@ -1,14 +1,13 @@
-import { Box, Skeleton } from '@rocket.chat/fuselage';
+import { Skeleton } from '@rocket.chat/fuselage';
+
+import AppDetailsHeaderLayout from './layout/AppDetailsHeaderLayout';
 
 const AppDetailsPageLoading = () => (
-	<Box display='flex' flexDirection='row' gap={32} marginBlockEnd={20} width='full'>
-		<Skeleton variant='rect' width='x120' height='x120' />
-		<Box display='flex' flexDirection='column' justifyContent='space-between' flexGrow={1}>
-			<Skeleton variant='rect' width='full' height='x32' />
-			<Skeleton variant='rect' width='full' height='x32' />
-			<Skeleton variant='rect' width='full' height='x32' />
-		</Box>
-	</Box>
+	<AppDetailsHeaderLayout avatar={<Skeleton variant='rect' width='x120' height='x120' />} spread>
+		<Skeleton variant='rect' width='full' height='x32' />
+		<Skeleton variant='rect' width='full' height='x32' />
+		<Skeleton variant='rect' width='full' height='x32' />
+	</AppDetailsHeaderLayout>
 );
 
 export default AppDetailsPageLoading;
