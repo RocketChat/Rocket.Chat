@@ -232,7 +232,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 
 	private async atLeastOne(user: string | UserWithRoles, permissions: string[] = [], scope?: string): Promise<boolean> {
 		const sortedRoles = await this.resolveRoles(user, scope);
-		for await (const permission of permissions) {
+		for (const permission of permissions) {
 			if (await this.rolesHasPermissionCached(permission, sortedRoles)) {
 				return true;
 			}
@@ -243,7 +243,7 @@ export class Authorization extends ServiceClass implements IAuthorization {
 
 	private async all(user: string | UserWithRoles, permissions: string[] = [], scope?: string): Promise<boolean> {
 		const sortedRoles = await this.resolveRoles(user, scope);
-		for await (const permission of permissions) {
+		for (const permission of permissions) {
 			if (!(await this.rolesHasPermissionCached(permission, sortedRoles))) {
 				return false;
 			}
