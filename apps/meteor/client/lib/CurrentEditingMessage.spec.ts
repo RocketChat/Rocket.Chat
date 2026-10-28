@@ -13,6 +13,7 @@ const makeChat = (
 	const composer = {
 		text: '',
 		clear: jest.fn(),
+		setText: jest.fn(),
 		setEditingMode: jest.fn(),
 	};
 	const data = {
@@ -29,16 +30,20 @@ describe('CurrentEditingMessage', () => {
 		jest.clearAllMocks();
 	});
 
-	it('clears editing state without looking up a message that was deleted', async () => {
+	it('restores the room draft and clears editing state without looking up the deleted message', async () => {
 		const { chat, composer, data } = makeChat(null);
 		const editingMessage = new CurrentEditingMessage(chat);
+		data.getDraft.mockResolvedValue('unsent room draft');
 		editingMessage.setMID('message-id');
 
 		await editingMessage.stop({ messageDeleted: true });
 
 		expect(data.findMessageByID).not.toHaveBeenCalled();
+		expect(data.getDraft).toHaveBeenCalledWith(undefined);
 		expect(data.discardDraft).toHaveBeenCalledWith('message-id');
+		expect(data.getDraft.mock.invocationCallOrder[0]).toBeLessThan(data.discardDraft.mock.invocationCallOrder[0]);
 		expect(composer.clear).toHaveBeenCalledTimes(1);
+		expect(composer.setText).toHaveBeenCalledWith('unsent room draft');
 		expect(composer.setEditingMode).toHaveBeenCalledWith(false);
 		expect(editingMessage.getMID()).toBeUndefined();
 		expect(clearHighlightMessage).toHaveBeenCalledTimes(1);
@@ -75,12 +80,33 @@ describe('CurrentEditingMessage', () => {
 		const { chat, composer, data } = makeChat(null);
 		const editingMessage = new CurrentEditingMessage(chat);
 		const error = new Error('Draft discard failed');
+		data.getDraft.mockResolvedValue('unsent room draft');
 		data.discardDraft.mockRejectedValue(error);
 		editingMessage.setMID('message-id');
 
 		await expect(editingMessage.stop({ messageDeleted: true })).rejects.toBe(error);
 
 		expect(composer.clear).toHaveBeenCalledTimes(1);
+		expect(composer.setText).toHaveBeenCalledWith('unsent room draft');
+		expect(composer.setEditingMode).toHaveBeenCalledWith(false);
+		expect(editingMessage.getMID()).toBeUndefined();
+		expect(clearHighlightMessage).toHaveBeenCalledTimes(1);
+	});
+
+	it('attempts to discard the edit draft and clears state when the room draft lookup fails', async () => {
+		const { chat, composer, data } = makeChat(null);
+		const editingMessage = new CurrentEditingMessage(chat);
+		const error = new Error('Room draft lookup failed');
+		data.getDraft.mockRejectedValue(error);
+		editingMessage.setMID('message-id');
+
+		await expect(editingMessage.stop({ messageDeleted: true })).rejects.toBe(error);
+
+		expect(data.findMessageByID).not.toHaveBeenCalled();
+		expect(data.getDraft).toHaveBeenCalledWith(undefined);
+		expect(data.discardDraft).toHaveBeenCalledWith('message-id');
+		expect(composer.clear).toHaveBeenCalledTimes(1);
+		expect(composer.setText).toHaveBeenCalledWith('');
 		expect(composer.setEditingMode).toHaveBeenCalledWith(false);
 		expect(editingMessage.getMID()).toBeUndefined();
 		expect(clearHighlightMessage).toHaveBeenCalledTimes(1);

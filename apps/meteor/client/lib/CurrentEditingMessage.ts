@@ -41,14 +41,44 @@ export class CurrentEditingMessage {
 
 			if (messageDeleted) {
 				const { mid } = this;
+				let roomDraft: string | undefined;
+				let roomDraftError: unknown;
+				let roomDraftFailed = false;
+				let discardDraftError: unknown;
+				let discardDraftFailed = false;
 
 				try {
-					await this.chat.data.discardDraft(mid);
+					try {
+						roomDraft = await this.chat.data.getDraft(undefined);
+					} catch (error) {
+						roomDraftError = error;
+						roomDraftFailed = true;
+					}
+
+					try {
+						await this.chat.data.discardDraft(mid);
+					} catch (error) {
+						discardDraftError = error;
+						discardDraftFailed = true;
+					}
 				} finally {
 					this.chat.composer?.clear();
+					this.chat.composer?.setText(roomDraft ?? '');
 					this.chat.composer?.setEditingMode(false);
 					this.mid = undefined;
 					clearHighlightMessage();
+				}
+
+				if (roomDraftFailed && discardDraftFailed) {
+					throw new AggregateError([roomDraftError, discardDraftError], 'Failed to clean up drafts after deleting an edited message');
+				}
+
+				if (roomDraftFailed) {
+					throw roomDraftError;
+				}
+
+				if (discardDraftFailed) {
+					throw discardDraftError;
 				}
 
 				return;
