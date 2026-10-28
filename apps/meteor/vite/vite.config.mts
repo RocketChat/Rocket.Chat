@@ -343,7 +343,9 @@ export default defineConfig({
 		emptyOutDir: true,
 		// Minify stylesheets without rewriting their values, so they render as the Meteor build ships them.
 		cssMinify: 'esbuild',
-		sourcemap: true,
+		// The server's images ship without the maps, so its chunks must not point browsers at them; the build tarball
+		// keeps them for loading by hand (see docs/features/web-client-hosting.md).
+		sourcemap: servedByServer ? 'hidden' : true,
 		// The server reads it to inject the entry and its preloads into the page it renders.
 		manifest: true,
 		// The polyfill is an inline script, which the server's Content-Security-Policy blocks.
