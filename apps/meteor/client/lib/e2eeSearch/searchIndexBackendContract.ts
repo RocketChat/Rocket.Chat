@@ -5,6 +5,8 @@ export type SearchIndexBackendContractRunner = {
 	describe: (name: string, body: () => void) => void;
 	it: (name: string, body: () => Promise<void>) => void;
 	expect: typeof expect;
+	/** What `open` reports for `encryptedAtRest`: true for a backend that keeps an encrypted copy on disk. */
+	encryptedAtRest?: boolean;
 };
 
 const doc = (overrides: Partial<E2EESearchDoc> & Pick<E2EESearchDoc, 'id' | 'body'>): E2EESearchDoc => ({
@@ -27,7 +29,7 @@ const ids = async (backend: ISearchIndexBackend, query: Parameters<ISearchIndexB
 export const describeSearchIndexBackendContract = (
 	name: string,
 	createBackend: () => Promise<ISearchIndexBackend>,
-	{ describe, it, expect }: SearchIndexBackendContractRunner,
+	{ describe, it, expect, encryptedAtRest = false }: SearchIndexBackendContractRunner,
 ): void => {
 	const openBackend = async () => {
 		const backend = await createBackend();
@@ -48,8 +50,8 @@ export const describeSearchIndexBackendContract = (
 			await expect(backend.stats()).rejects.toThrow('E2EE search index is not open');
 		});
 
-		it('opens as a memory-only index', async () => {
-			await expect((await createBackend()).open({ userId: 'u1' })).resolves.toEqual({ schemaVersion: 1, encryptedAtRest: false });
+		it(encryptedAtRest ? 'opens as an index encrypted at rest' : 'opens as a memory-only index', async () => {
+			await expect((await createBackend()).open({ userId: 'u1' })).resolves.toEqual({ schemaVersion: 1, encryptedAtRest });
 		});
 
 		it('finds a message by a word prefix, with no case or diacritic difference', async () => {

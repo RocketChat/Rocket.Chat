@@ -1,0 +1,15 @@
+{
+	"extends": "@rocket.chat/tsconfig/client.json",
+	"compilerOptions": {
+		"rootDir": "./src",
+		"target": "es2024",
+		"lib": ["es2024", "WebWorker"],
+		"types": [],
+		"outDir": "./dist",
+		"declaration": false,
+		"declarationMap": false,
+		"isolatedModules": true
+	},
+	"include": ["src/**/*"],
+	"exclude": ["./dist"]
+}

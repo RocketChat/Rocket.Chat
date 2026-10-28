@@ -10037,6 +10037,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@rocket.chat/e2ee-search-worker@workspace:packages/e2ee-search-worker, @rocket.chat/e2ee-search-worker@workspace:~":
+  version: 0.0.0-use.local
+  resolution: "@rocket.chat/e2ee-search-worker@workspace:packages/e2ee-search-worker"
+  dependencies:
+    "@rocket.chat/tsconfig": "workspace:~"
+    "@rollup/plugin-node-resolve": "npm:~16.0.3"
+    "@rollup/plugin-typescript": "npm:~12.3.0"
+    "@sqlite.org/sqlite-wasm": "npm:3.53.4-build2"
+    rollup: "npm:~4.62.5"
+    typescript: "npm:~5.9.3"
+  languageName: unknown
+  linkType: soft
+
 "@rocket.chat/emitter@npm:^0.33.0, @rocket.chat/emitter@workspace:packages/emitter, @rocket.chat/emitter@workspace:~":
   version: 0.0.0-use.local
   resolution: "@rocket.chat/emitter@workspace:packages/emitter"
@@ -10829,6 +10842,7 @@ __metadata:
     "@rocket.chat/css-supports": "workspace:~"
     "@rocket.chat/ddp-client": "workspace:^"
     "@rocket.chat/desktop-api": "workspace:~"
+    "@rocket.chat/e2ee-search-worker": "workspace:~"
     "@rocket.chat/emitter": "workspace:~"
     "@rocket.chat/favicon": "workspace:^"
     "@rocket.chat/federation-matrix": "workspace:^"
@@ -13817,6 +13831,13 @@ __metadata:
   dependencies:
     tslib: "npm:^2.6.2"
   checksum: 10/26acc5b818d219ec049c1877857afc783dd9c4cb62234b61d1c18b1465ec731ec0aea902bdf6f58f730a4bf72d9564559b1fb14c94ceaafe3d41f6923745a97c
+  languageName: node
+  linkType: hard
+
+"@sqlite.org/sqlite-wasm@npm:3.53.4-build2":
+  version: 3.53.4-build2
+  resolution: "@sqlite.org/sqlite-wasm@npm:3.53.4-build2"
+  checksum: 10/fa89557a5ede085c7436283ef207ae9d3d41f2b0b67b66e99685867841a2a166893aab5018bf0bfcb8aa3e617b43d9324cee852b31f46af9206757719a69ae4b
   languageName: node
   linkType: hard
 
