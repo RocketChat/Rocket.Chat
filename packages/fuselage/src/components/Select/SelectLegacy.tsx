@@ -23,7 +23,7 @@ const useDidUpdate = (func: () => void, deps: DependencyList | undefined) => {
 			fn();
 		}
 		didMount.current = true;
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 	}, deps || []);
 };
 
@@ -47,7 +47,6 @@ export type SelectProps = Omit<ElementProps<HTMLDivElement>, 'ref' | 'onChange'>
 		addonIcon?: IconProps['name'];
 	};
 
-// eslint-disable-next-line react/no-multi-comp
 function SelectLegacy({
 	ref,
 	value,

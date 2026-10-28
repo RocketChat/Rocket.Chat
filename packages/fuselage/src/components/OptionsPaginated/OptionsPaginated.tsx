@@ -40,7 +40,7 @@ export { CheckOption };
 /**
  * An input for selection of options.
  */
-// eslint-disable-next-line react/no-multi-comp
+// oxlint-disable-next-line react/no-multi-comp
 export function OptionsPaginated({
 	ref,
 	withTitle,
@@ -53,7 +53,6 @@ export function OptionsPaginated({
 	endReached,
 	...props
 }: OptionsPaginatedProps) {
-	// eslint-disable-next-line react/no-multi-comp
 	const OptionsComponentWithData = ({ index, data }: { index: number; data: OptionsPaginatedProps['options'][0] }) => {
 		const { value, label, selected } = data;
 		return (

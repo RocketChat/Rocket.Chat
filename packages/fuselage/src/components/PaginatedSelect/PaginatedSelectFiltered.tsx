@@ -13,7 +13,6 @@ export type PaginatedSelectFilteredProps = Omit<PaginatedSelectProps, 'setFilter
 const PaginatedSelectFiltered = ({ filter, setFilter, options, placeholder, ...props }: PaginatedSelectFilteredProps) => {
 	const anchor = useMemo(
 		() =>
-			// eslint-disable-next-line react/display-name, react/no-multi-comp
 			({ filter, onChange: _onChange, ...props }: InputProps<HTMLInputElement> & { filter?: string }) => (
 				<Input
 					className='rcx-select__focus rcx-select__filter rcx-input-box--undecorated'

@@ -1,4 +1,3 @@
-/* eslint-disable react/no-multi-comp */
 import type { Decorator } from '@storybook/react-webpack5';
 
 import {
@@ -58,6 +57,7 @@ export const MenuTemplate = () => (
 	</Menu>
 );
 
+// oxlint-disable-next-line react/no-multi-comp
 export const GenericCondensedItem = ({ i = 0 }: { i: number }) => (
 	<SidebarListItem>
 		<SidebarItem selected={i === 2} href='#'>
@@ -80,6 +80,7 @@ export const GenericCondensedItem = ({ i = 0 }: { i: number }) => (
 	</SidebarListItem>
 );
 
+// oxlint-disable-next-line react/no-multi-comp
 export const GenericNoAvatarItem = ({ i = 0 }: { i: number }) => (
 	<SidebarListItem>
 		<SidebarItem href='#'>
@@ -93,6 +94,7 @@ export const GenericNoAvatarItem = ({ i = 0 }: { i: number }) => (
 	</SidebarListItem>
 );
 
+// oxlint-disable-next-line react/no-multi-comp
 export const GenericMediumItem = ({ i = 0 }: { i: number }) => (
 	<SidebarListItem>
 		<SidebarItem href='#'>
@@ -109,6 +111,7 @@ export const GenericMediumItem = ({ i = 0 }: { i: number }) => (
 	</SidebarListItem>
 );
 
+// oxlint-disable-next-line react/no-multi-comp
 export const GenericExtendedItem = ({ i = 0 }: { i: number }) => (
 	<SidebarListItem>
 		<SidebarItem href='#'>
@@ -135,6 +138,7 @@ export const GenericExtendedItem = ({ i = 0 }: { i: number }) => (
 	</SidebarListItem>
 );
 
+// oxlint-disable-next-line react/no-multi-comp
 export const GenericCallItem = ({ i = 0, ...props }: { i?: number } & SidebarItemProps) => (
 	<SidebarItem {...props}>
 		<SidebarItemAvatarWrapper>
