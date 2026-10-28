@@ -1,9 +1,15 @@
 diff --git a/dist/cjs/compilerHost.cjs b/dist/cjs/compilerHost.cjs
-index 53270b93d46417dc87519c0edc9b50a5559f0ce7..e98f76ef18a63d1b8ad0db5497fa77d052d3adfa 100644
+index 53270b93d46417dc87519c0edc9b50a5559f0ce7..e499858e3add3b417b1878308d2a17a208547386 100644
 --- a/dist/cjs/compilerHost.cjs
 +++ b/dist/cjs/compilerHost.cjs
-@@ -1220,6 +1220,17 @@ function createTamaguiCompilerHost(options) {
+@@ -1218,8 +1218,23 @@ function createTamaguiCompilerHost(options) {
+ 		"render"
+ 	]);
  	const isFrontendClassName = (name, component) => name === "className" && !!component.staticConfig.styleFrontend;
++	// Rocket.Chat: className is not a style, so a computed one is concatenated onto the extracted classes instead of bailing;
++	// a frame with a default className stays on the runtime, where the caller's className replaces it
++	const passesClassNameThrough = (component) => platform === "web" && !options.disablePartialExtraction && !component.staticConfig.styleFrontend && component.staticConfig.defaultProps?.className === void 0;
++	const passthroughClassName = (entry, component) => entry.kind === "prop" && entry.name === "className" && (entry.value.kind === "bailout" || entry.value.kind === "conditional") && passesClassNameThrough(component);
  	const canLowerConditionalStyleProp = (name, component) => isStyleProp(name, component) && (!runtimeOnlyStyleProps.has(name) || isFrontendClassName(name, component));
  	const frontendClassDomain = (entry, component) => {
 +		// Rocket.Chat: an opaque value for a variant can only take one of the variant's keys, or none of them, so it lowers
@@ -20,7 +26,7 @@ index 53270b93d46417dc87519c0edc9b50a5559f0ce7..e98f76ef18a63d1b8ad0db5497fa77d0
  		if (entry.kind !== "prop" || entry.value.kind !== "bailout" || !isFrontendClassName(entry.name, component)) {
  			return null;
  		}
-@@ -1382,12 +1393,16 @@ function createTamaguiCompilerHost(options) {
+@@ -1382,12 +1397,18 @@ function createTamaguiCompilerHost(options) {
  		resolveComponent: resolve,
  		isStyleProp,
  		canLowerDynamicStyleProp(name, component, valueKind, dynamic) {
@@ -34,10 +40,12 @@ index 53270b93d46417dc87519c0edc9b50a5559f0ce7..e98f76ef18a63d1b8ad0db5497fa77d0
  			}
 +			// Rocket.Chat: a variant's finite domain lowers to a class table (see frontendClassDomain)
 +			if (!options.disablePartialExtraction && platform === "web" && valueKind === "bailout" && typeof component.staticConfig.variants?.[name] === "object") return true;
++			// Rocket.Chat: a computed className passes through to the flattened host (see passthroughClassName)
++			if (name === "className" && passesClassNameThrough(component)) return true;
  			if (!options.disablePartialExtraction && platform === "web" && isFrontendClassName(name, component)) {
  				return true;
  			}
-@@ -1421,6 +1436,24 @@ function createTamaguiCompilerHost(options) {
+@@ -1421,6 +1442,24 @@ function createTamaguiCompilerHost(options) {
  					props[entry.name] = entry.value.value;
  				}
  			}
@@ -62,16 +70,18 @@ index 53270b93d46417dc87519c0edc9b50a5559f0ce7..e98f76ef18a63d1b8ad0db5497fa77d0
  			if (component.staticConfig.resolvers?.length) {
  				const unresolvedProps = input.element.entries.filter((entry) => entry.kind === "prop" && entry.value.kind !== "static");
  				const onlyStaticBranchConditional = unresolvedProps.length === 1 && unresolvedProps[0]?.kind === "prop" && unresolvedProps[0].value.kind === "conditional" && canLowerConditionalStyleProp(unresolvedProps[0].name, component);
-@@ -1485,6 +1518,8 @@ function createTamaguiCompilerHost(options) {
+@@ -1484,7 +1523,9 @@ function createTamaguiCompilerHost(options) {
+ 				if (Object.keys(styleObjectStatic).length === 0) styleObjectStatic = null;
  			}
  			if (styleObjectStatic) props.style = styleObjectStatic;
- 			const dynamicStyleEntries = [...input.element.entries.filter((entry) => entry.kind === "prop" && (entry.value.kind === "bailout" || entry.value.kind === "conditional") && isStyleProp(entry.name, component)), ...styleMemberEntries];
+-			const dynamicStyleEntries = [...input.element.entries.filter((entry) => entry.kind === "prop" && (entry.value.kind === "bailout" || entry.value.kind === "conditional") && isStyleProp(entry.name, component)), ...styleMemberEntries];
++			const dynamicStyleEntries = [...input.element.entries.filter((entry) => entry.kind === "prop" && (entry.value.kind === "bailout" || entry.value.kind === "conditional") && isStyleProp(entry.name, component) && !passthroughClassName(entry, component)), ...styleMemberEntries];
 +			// Rocket.Chat: the render element is flattened instead (see renderElement)
 +			if (dynamicStyleEntries.includes(renderEntry)) dynamicStyleEntries.splice(dynamicStyleEntries.indexOf(renderEntry), 1);
  			{
  				const needsRuntimeMapping = (name) => runtimeEventProps.has(name) || platform === "web" && name === "onLayout" || platform === "native" && !component.domTag && nativePointerEventProps.has(name);
  				const directRuntimeEvent = input.element.entries.find((entry) => entry.kind === "prop" && needsRuntimeMapping(entry.name));
-@@ -1816,11 +1851,11 @@ function createTamaguiCompilerHost(options) {
+@@ -1816,11 +1857,11 @@ function createTamaguiCompilerHost(options) {
  					message: (0, import_compiler_core.zeroRuleMessage)(5, { detail: `an enter or exit style program on ${input.element.component.name}` })
  				});
  			}
@@ -85,7 +95,7 @@ index 53270b93d46417dc87519c0edc9b50a5559f0ce7..e98f76ef18a63d1b8ad0db5497fa77d0
  				origin: span
  			}));
  			const isPropIgnored = (name) => isStyleProp(name, component) || isInvalidHostStyleProp(name, component) || componentOnlyProps.has(name);
-@@ -1884,6 +1919,14 @@ function createTamaguiCompilerHost(options) {
+@@ -1884,6 +1925,14 @@ function createTamaguiCompilerHost(options) {
  				additions: []
  			};
  			webPropEdits.push(...webDOMResult.edits);
@@ -100,12 +110,27 @@ index 53270b93d46417dc87519c0edc9b50a5559f0ce7..e98f76ef18a63d1b8ad0db5497fa77d0
  			if (platform === "native") {
  				const nativeStyleResolved = split.viewProps?.style;
  				let themedStyleKeys = null;
+@@ -2420,6 +2469,8 @@ const ${nativeLocal} = require('react-native').${nativeExport};`,
+ 			}
+ 			const programCSS = [];
+ 			const programClassSources = [];
++			// Rocket.Chat: see passthroughClassName
++			for (const entry of input.element.entries) if (passthroughClassName(entry, component)) programClassSources.push(`(${input.source.slice(entry.value.span.start, entry.value.span.end)})`);
+ 			if (domStyleProgram?.kind === "prop" && domStyleProgram.value.kind === "dom-style") {
+ 				for (const item of domStyleProgram.value.items) {
+ 					if (item.value.kind !== "static" || !staticObject(item.value.value)) {
 diff --git a/dist/esm/compilerHost.mjs b/dist/esm/compilerHost.mjs
-index 6caef09479c8534cf2b3040a7af14777e909e2b3..799630f645b2fd5fdd098c6fc881de53678cfef9 100644
+index 6caef09479c8534cf2b3040a7af14777e909e2b3..7f7117584d7a6c77d953db58767f869a8ad32b66 100644
 --- a/dist/esm/compilerHost.mjs
 +++ b/dist/esm/compilerHost.mjs
-@@ -1195,6 +1195,17 @@ function createTamaguiCompilerHost(options) {
+@@ -1193,8 +1193,23 @@ function createTamaguiCompilerHost(options) {
+ 		"render"
+ 	]);
  	const isFrontendClassName = (name, component) => name === "className" && !!component.staticConfig.styleFrontend;
++	// Rocket.Chat: className is not a style, so a computed one is concatenated onto the extracted classes instead of bailing;
++	// a frame with a default className stays on the runtime, where the caller's className replaces it
++	const passesClassNameThrough = (component) => platform === "web" && !options.disablePartialExtraction && !component.staticConfig.styleFrontend && component.staticConfig.defaultProps?.className === void 0;
++	const passthroughClassName = (entry, component) => entry.kind === "prop" && entry.name === "className" && (entry.value.kind === "bailout" || entry.value.kind === "conditional") && passesClassNameThrough(component);
  	const canLowerConditionalStyleProp = (name, component) => isStyleProp(name, component) && (!runtimeOnlyStyleProps.has(name) || isFrontendClassName(name, component));
  	const frontendClassDomain = (entry, component) => {
 +		// Rocket.Chat: an opaque value for a variant can only take one of the variant's keys, or none of them, so it lowers
@@ -122,7 +147,7 @@ index 6caef09479c8534cf2b3040a7af14777e909e2b3..799630f645b2fd5fdd098c6fc881de53
  		if (entry.kind !== "prop" || entry.value.kind !== "bailout" || !isFrontendClassName(entry.name, component)) {
  			return null;
  		}
-@@ -1357,12 +1368,16 @@ function createTamaguiCompilerHost(options) {
+@@ -1357,12 +1372,18 @@ function createTamaguiCompilerHost(options) {
  		resolveComponent: resolve,
  		isStyleProp,
  		canLowerDynamicStyleProp(name, component, valueKind, dynamic) {
@@ -136,10 +161,12 @@ index 6caef09479c8534cf2b3040a7af14777e909e2b3..799630f645b2fd5fdd098c6fc881de53
  			}
 +			// Rocket.Chat: a variant's finite domain lowers to a class table (see frontendClassDomain)
 +			if (!options.disablePartialExtraction && platform === "web" && valueKind === "bailout" && typeof component.staticConfig.variants?.[name] === "object") return true;
++			// Rocket.Chat: a computed className passes through to the flattened host (see passthroughClassName)
++			if (name === "className" && passesClassNameThrough(component)) return true;
  			if (!options.disablePartialExtraction && platform === "web" && isFrontendClassName(name, component)) {
  				return true;
  			}
-@@ -1396,6 +1411,24 @@ function createTamaguiCompilerHost(options) {
+@@ -1396,6 +1417,24 @@ function createTamaguiCompilerHost(options) {
  					props[entry.name] = entry.value.value;
  				}
  			}
@@ -164,16 +191,18 @@ index 6caef09479c8534cf2b3040a7af14777e909e2b3..799630f645b2fd5fdd098c6fc881de53
  			if (component.staticConfig.resolvers?.length) {
  				const unresolvedProps = input.element.entries.filter((entry) => entry.kind === "prop" && entry.value.kind !== "static");
  				const onlyStaticBranchConditional = unresolvedProps.length === 1 && unresolvedProps[0]?.kind === "prop" && unresolvedProps[0].value.kind === "conditional" && canLowerConditionalStyleProp(unresolvedProps[0].name, component);
-@@ -1460,6 +1493,8 @@ function createTamaguiCompilerHost(options) {
+@@ -1459,7 +1498,9 @@ function createTamaguiCompilerHost(options) {
+ 				if (Object.keys(styleObjectStatic).length === 0) styleObjectStatic = null;
  			}
  			if (styleObjectStatic) props.style = styleObjectStatic;
- 			const dynamicStyleEntries = [...input.element.entries.filter((entry) => entry.kind === "prop" && (entry.value.kind === "bailout" || entry.value.kind === "conditional") && isStyleProp(entry.name, component)), ...styleMemberEntries];
+-			const dynamicStyleEntries = [...input.element.entries.filter((entry) => entry.kind === "prop" && (entry.value.kind === "bailout" || entry.value.kind === "conditional") && isStyleProp(entry.name, component)), ...styleMemberEntries];
++			const dynamicStyleEntries = [...input.element.entries.filter((entry) => entry.kind === "prop" && (entry.value.kind === "bailout" || entry.value.kind === "conditional") && isStyleProp(entry.name, component) && !passthroughClassName(entry, component)), ...styleMemberEntries];
 +			// Rocket.Chat: the render element is flattened instead (see renderElement)
 +			if (dynamicStyleEntries.includes(renderEntry)) dynamicStyleEntries.splice(dynamicStyleEntries.indexOf(renderEntry), 1);
  			{
  				const needsRuntimeMapping = (name) => runtimeEventProps.has(name) || platform === "web" && name === "onLayout" || platform === "native" && !component.domTag && nativePointerEventProps.has(name);
  				const directRuntimeEvent = input.element.entries.find((entry) => entry.kind === "prop" && needsRuntimeMapping(entry.name));
-@@ -1791,11 +1826,11 @@ function createTamaguiCompilerHost(options) {
+@@ -1791,11 +1832,11 @@ function createTamaguiCompilerHost(options) {
  					message: zeroRuleMessage(5, { detail: `an enter or exit style program on ${input.element.component.name}` })
  				});
  			}
@@ -187,7 +216,7 @@ index 6caef09479c8534cf2b3040a7af14777e909e2b3..799630f645b2fd5fdd098c6fc881de53
  				origin: span
  			}));
  			const isPropIgnored = (name) => isStyleProp(name, component) || isInvalidHostStyleProp(name, component) || componentOnlyProps.has(name);
-@@ -1859,6 +1894,14 @@ function createTamaguiCompilerHost(options) {
+@@ -1859,6 +1900,14 @@ function createTamaguiCompilerHost(options) {
  				additions: []
  			};
  			webPropEdits.push(...webDOMResult.edits);
@@ -202,3 +231,12 @@ index 6caef09479c8534cf2b3040a7af14777e909e2b3..799630f645b2fd5fdd098c6fc881de53
  			if (platform === "native") {
  				const nativeStyleResolved = split.viewProps?.style;
  				let themedStyleKeys = null;
+@@ -2395,6 +2444,8 @@ const ${nativeLocal} = require('react-native').${nativeExport};`,
+ 			}
+ 			const programCSS = [];
+ 			const programClassSources = [];
++			// Rocket.Chat: see passthroughClassName
++			for (const entry of input.element.entries) if (passthroughClassName(entry, component)) programClassSources.push(`(${input.source.slice(entry.value.span.start, entry.value.span.end)})`);
+ 			if (domStyleProgram?.kind === "prop" && domStyleProgram.value.kind === "dom-style") {
+ 				for (const item of domStyleProgram.value.items) {
+ 					if (item.value.kind !== "static" || !staticObject(item.value.value)) {
