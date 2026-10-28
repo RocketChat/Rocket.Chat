@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 import { action } from 'storybook/actions';
+import { userEvent, within } from 'storybook/test';
 
 import {
 	Modal,
@@ -89,7 +90,7 @@ export const Default: Story = {
 			<ModalFooter>
 				<ModalFooterControllers>
 					<Button>Cancel</Button>
-					<Button primary onClick={action('click')}>
+					<Button variant='primary' onClick={action('click')}>
 						Submit
 					</Button>
 				</ModalFooterControllers>
@@ -112,7 +113,7 @@ export const _WithThumb: Story = {
 			<ModalFooter>
 				<ModalFooterControllers>
 					<Button>Cancel</Button>
-					<Button primary onClick={action('click')}>
+					<Button variant='primary' onClick={action('click')}>
 						Submit
 					</Button>
 				</ModalFooterControllers>
@@ -135,7 +136,7 @@ export const _WithIcon: Story = {
 			<ModalFooter>
 				<ModalFooterControllers>
 					<Button>Cancel</Button>
-					<Button primary onClick={action('click')}>
+					<Button variant='primary' onClick={action('click')}>
 						Submit
 					</Button>
 				</ModalFooterControllers>
@@ -158,7 +159,7 @@ export const _WithTagline: Story = {
 			<ModalFooter>
 				<ModalFooterControllers>
 					<Button>Cancel</Button>
-					<Button primary onClick={action('click')}>
+					<Button variant='primary' onClick={action('click')}>
 						Submit
 					</Button>
 				</ModalFooterControllers>
@@ -171,7 +172,7 @@ export const _WithIconAndTagline: Story = {
 	render: () => (
 		<Modal>
 			<ModalHeader>
-				<ModalIcon alignItems='end' name='info' />
+				<ModalIcon align='end' name='info' />
 				<ModalHeaderText>
 					<ModalTagline>Tagline</ModalTagline>
 					<ModalTitle>Modal Header</ModalTitle>
@@ -182,7 +183,7 @@ export const _WithIconAndTagline: Story = {
 			<ModalFooter>
 				<ModalFooterControllers>
 					<Button>Cancel</Button>
-					<Button primary onClick={action('click')}>
+					<Button variant='primary' onClick={action('click')}>
 						Submit
 					</Button>
 				</ModalFooterControllers>
@@ -224,7 +225,7 @@ export const _WithSubtleTagline: Story = {
 			<ModalFooter>
 				<ModalFooterControllers>
 					<Button>Cancel</Button>
-					<Button primary onClick={action('click')}>
+					<Button variant='primary' onClick={action('click')}>
 						Upgrade
 					</Button>
 				</ModalFooterControllers>
@@ -260,7 +261,7 @@ export const _WithFillContent: Story = {
 				<Box display='flex' flexDirection='column' justifyContent='space-between' height='100%'>
 					Content that brings its own footer
 					<Box display='flex' justifyContent='end'>
-						<Button primary onClick={action('click')}>
+						<Button variant='primary' onClick={action('click')}>
 							Next
 						</Button>
 					</Box>
@@ -280,11 +281,11 @@ export const _WithAnnotation: Story = {
 				<ModalClose />
 			</ModalHeader>
 			<ModalContent>Modal Body</ModalContent>
-			<ModalFooter justifyContent='space-between'>
+			<ModalFooter justify='space-between'>
 				<ModalFooterAnnotation>Anototation</ModalFooterAnnotation>
 				<ModalFooterControllers>
 					<Button>Cancel</Button>
-					<Button primary onClick={action('click')}>
+					<Button variant='primary' onClick={action('click')}>
 						Submit
 					</Button>
 				</ModalFooterControllers>
@@ -313,7 +314,7 @@ export const _WithHeroImage: Story = {
 			<ModalFooter>
 				<ModalFooterControllers>
 					<Button>Cancel</Button>
-					<Button primary onClick={action('click')}>
+					<Button variant='primary' onClick={action('click')}>
 						Submit
 					</Button>
 				</ModalFooterControllers>
@@ -355,11 +356,18 @@ export const _WithForm: Story = {
 			<ModalFooter>
 				<ModalFooterControllers>
 					<Button>Cancel</Button>
-					<Button type='submit' primary>
+					<Button type='submit' variant='primary'>
 						Submit
 					</Button>
 				</ModalFooterControllers>
 			</ModalFooter>
 		</Modal>
 	),
+};
+
+export const _WithFocusedField: Story = {
+	..._WithForm,
+	play: async ({ canvasElement }) => {
+		await userEvent.click(within(canvasElement.ownerDocument.body).getByPlaceholderText('Placeholder'));
+	},
 };

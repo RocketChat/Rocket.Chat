@@ -1,26 +1,27 @@
 import type { ILivechatDepartment, Serialized } from '@rocket.chat/core-typings';
 import {
-	Field,
-	FieldGroup,
-	Button,
-	TextInput,
-	Modal,
 	Box,
+	Button,
 	CheckBox,
 	Divider,
 	EmailInput,
+	Field,
+	FieldError,
+	FieldGroup,
+	FieldHint,
 	FieldLabel,
 	FieldRow,
-	FieldError,
-	FieldHint,
+	Modal,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
 	ModalHeader,
 	ModalIcon,
 	ModalTitle,
-	ModalClose,
-	ModalFooter,
-	ModalFooterControllers,
-	ModalContent,
 	Stack,
+	Text,
+	TextInput,
 } from '@rocket.chat/fuselage';
 import { GenericModal } from '@rocket.chat/ui-client';
 import { usePermission, useSetting, useUserPreference, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
@@ -165,7 +166,7 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 					<ModalClose onClick={onCancel} />
 				</ModalHeader>
 				<ModalContent>
-					<Box color='annotation'>{t('Close_room_description')}</Box>
+					<Text color='annotation'>{t('Close_room_description')}</Text>
 					<FieldGroup>
 						<Field>
 							<FieldLabel required={commentRequired}>{t('Comment')}</FieldLabel>
@@ -184,7 +185,7 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 						</Field>
 						{canSendTranscript && (
 							<Stack gap={16}>
-								<Stack gap={10}>
+								<Stack gap='x8'>
 									<Field>
 										<Stack gap={6}>
 											<Divider />
@@ -200,7 +201,7 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 										</Field>
 									)}
 									{canSendTranscriptEmail && (
-										<Stack gap={14}>
+										<Stack gap='x12'>
 											<Field>
 												<FieldRow>
 													<FieldLabel htmlFor='transcript-email'>{t('Omnichannel_transcript_email')}</FieldLabel>
@@ -245,7 +246,7 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 				<ModalFooter>
 					<ModalFooterControllers>
 						<Button onClick={onCancel}>{t('Cancel')}</Button>
-						<Button type='submit' disabled={cannotSubmit} primary>
+						<Button type='submit' disabled={cannotSubmit} variant='primary'>
 							{t('Confirm')}
 						</Button>
 					</ModalFooterControllers>

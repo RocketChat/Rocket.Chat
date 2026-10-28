@@ -74,9 +74,9 @@ export const Vertical: Story = {
 export const AsButtonSeparator: Story = {
 	render: () => (
 		<ButtonGroup>
-			<IconButton small icon='phone' />
+			<IconButton size='small' icon='phone' />
 			<Divider vertical />
-			<IconButton small icon='user' />
+			<IconButton size='small' icon='user' />
 		</ButtonGroup>
 	),
 };
@@ -100,9 +100,9 @@ export const Light: Story = {
 export const VerticalSmall: Story = {
 	render: () => (
 		<ButtonGroup small>
-			<IconButton small icon='emoji' />
+			<IconButton size='small' icon='emoji' />
 			<Divider vertical small />
-			<IconButton small icon='bold' />
+			<IconButton size='small' icon='bold' />
 		</ButtonGroup>
 	),
 };

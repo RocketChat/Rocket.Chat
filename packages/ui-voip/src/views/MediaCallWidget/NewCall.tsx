@@ -32,7 +32,7 @@ const NewCall = () => {
 		<Widget>
 			<WidgetHandle />
 			<WidgetHeader title={t('New_call')}>
-				{!isInline && <ActionButton tiny secondary={false} label={t('Close')} icon='cross' onClick={() => toggleWidget()} />}
+				{!isInline && <ActionButton size='tiny' secondary={false} label={t('Close')} icon='cross' onClick={() => toggleWidget()} />}
 			</WidgetHeader>
 			<WidgetContent>
 				<PeerAutocomplete {...autocomplete} />
@@ -50,7 +50,7 @@ const NewCall = () => {
 			<WidgetFooter>
 				<ButtonGroup stretch>
 					<DevicePicker secondary />
-					<Button medium icon='phone' success onClick={onCall}>
+					<Button size='medium' icon='phone' variant='success' onClick={onCall}>
 						{t('Call')}
 					</Button>
 				</ButtonGroup>

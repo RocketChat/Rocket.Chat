@@ -1,7 +1,8 @@
-import { Box, type BoxProps } from '../Box';
+import type { ElementProps } from '../../types/ElementProps';
+import { Box } from '../Box';
 import { Scrollable } from '../Scrollable';
 
-export type ModalContentProps = Omit<BoxProps, 'fill'> & {
+export type ModalContentProps = ElementProps<HTMLDivElement> & {
 	onScrollContent?: ((touching: { top: boolean }) => void) | undefined;
 	/** Stretches the content to the modal's height and closes the modal itself, for content that brings its own footer. */
 	fill?: boolean;

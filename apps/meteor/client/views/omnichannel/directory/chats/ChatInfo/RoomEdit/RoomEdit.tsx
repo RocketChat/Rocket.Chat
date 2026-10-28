@@ -157,7 +157,7 @@ function RoomEdit({ room, visitor, reload, reloadInfo, onClose }: RoomEditProps)
 				<ButtonGroup stretch>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 
-					<Button onClick={handleSubmit(handleSave)} loading={isSubmitting} disabled={!isFormValid || !isFormDirty} primary>
+					<Button onClick={handleSubmit(handleSave)} loading={isSubmitting} disabled={!isFormValid || !isFormDirty} variant='primary'>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

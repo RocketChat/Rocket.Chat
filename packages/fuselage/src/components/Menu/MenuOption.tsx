@@ -1,16 +1,15 @@
-import type { ReactNode, MouseEvent, AllHTMLAttributes, RefAttributes } from 'react';
+import type { ReactNode, MouseEvent, AllHTMLAttributes, ElementType, RefAttributes } from 'react';
 import { memo } from 'react';
 
 import { prevent } from '../../helpers/prevent';
-import type { BoxProps } from '../Box';
 
 export type MenuOptionProps = RefAttributes<Element> & {
-	is?: BoxProps['is'];
+	is?: ElementType;
 	id?: string;
 	children?: ReactNode;
 	focus?: boolean;
 	selected?: boolean;
-	className?: BoxProps['className'];
+	className?: string;
 	title?: string;
 	disabled?: boolean;
 	value?: string;

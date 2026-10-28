@@ -1,24 +1,26 @@
-import type { AvatarObject, IRole, IUser, Serialized } from '@rocket.chat/core-typings';
+import type { AvatarObject, IRole, IUser, IUserPhoneNumber, Serialized } from '@rocket.chat/core-typings';
 import {
 	Accordion,
 	AccordionItem,
-	Field,
-	FieldLabel,
-	FieldRow,
-	FieldError,
-	FieldHint,
-	TextInput,
-	TextAreaInput,
-	MultiSelectFiltered,
 	Box,
-	ToggleSwitch,
-	Icon,
-	FieldGroup,
 	Button,
 	ButtonGroup,
 	Callout,
+	Divider,
+	Field,
+	FieldError,
+	FieldGroup,
+	FieldHint,
+	FieldLabel,
+	FieldRow,
+	Icon,
+	MultiSelectFiltered,
 	Skeleton,
 	Stack,
+	Text,
+	TextAreaInput,
+	TextInput,
+	ToggleSwitch,
 } from '@rocket.chat/fuselage';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
@@ -45,6 +47,7 @@ import PasswordFieldSkeleton from './PasswordFieldSkeleton';
 import { useSmtpQuery } from './hooks/useSmtpQuery';
 import { useShowVoipExtension } from './useShowVoipExtension';
 import { parseCSV } from '../../../../lib/utils/parseCSV';
+import PhoneNumberFieldList, { getInitialPhones, getPersistedPhones } from '../../../components/PhoneNumberFieldList';
 import UserAutoCompleteMultiple from '../../../components/UserAutoCompleteMultiple';
 import UserAvatarEditor from '../../../components/avatar/UserAvatarEditor';
 import { useCanManageUserStatus } from '../../../hooks/useCanManageUserStatus';
@@ -67,6 +70,7 @@ export type UserFormProps = UserCreateParamsPOST & {
 	passwordConfirmation: string;
 	sipExtension?: string;
 	statusVisibilityDeniedByAdmin?: string[];
+	phones?: IUserPhoneNumber[];
 };
 
 const getInitialValue = ({
@@ -97,6 +101,7 @@ const getInitialValue = ({
 	presenceDisabledByAdmin: data?.presenceDisabledByAdmin === true,
 	statusVisibilityDeniedByAdmin: data?.statusVisibilityDeniedByAdmin ?? [],
 	sipExtension: data?.sipExtension ?? '',
+	phones: getInitialPhones(data?.phones),
 	...(isNewUserPage && { joinDefaultChannels: true }),
 	sendWelcomeEmail: isSmtpEnabled,
 	avatar: '' as AvatarObject,
@@ -188,8 +193,12 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 	});
 
 	const handleSaveUser = useStableCallback(async (userFormPayload: UserFormProps) => {
-		const { avatar, passwordConfirmation, statusVisibilityDeniedByAdmin, presenceDisabledByAdmin, statusText, ...userFormData } =
+		const { avatar, passwordConfirmation, statusVisibilityDeniedByAdmin, presenceDisabledByAdmin, statusText, phones, ...rest } =
 			userFormPayload;
+		const userFormData = {
+			...rest,
+			...((isNewUserPage || dirtyFields.phones) && { phones: getPersistedPhones(phones) }),
+		};
 
 		if (!isNewUserPage && userData?._id) {
 			return handleUpdateUser.mutateAsync({
@@ -255,7 +264,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							/>
 						</Field>
 					)}
-					{isNewUserPage && <Box color='hint'>{t('Manually_created_users_briefing')}</Box>}
+					{isNewUserPage && <Text color='hint'>{t('Manually_created_users_briefing')}</Text>}
 					<Field>
 						<FieldLabel htmlFor={emailId}>{t('Email')}</FieldLabel>
 						<FieldRow>
@@ -311,7 +320,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 										<Trans
 											i18nKey='Send_Email_SMTP_Warning'
 											components={{
-												// eslint-disable-next-line jsx-a11y/anchor-has-content
+												// oxlint-disable-next-line jsx-a11y/anchor-has-content
 												a: <a href='/admin/settings/Email' />,
 											}}
 										/>
@@ -322,7 +331,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 										<Trans
 											i18nKey='Email_verification_isnt_required'
 											components={{
-												// eslint-disable-next-line jsx-a11y/anchor-has-content
+												// oxlint-disable-next-line jsx-a11y/anchor-has-content
 												a: <a href='/admin/settings/Accounts' />,
 											}}
 										/>
@@ -483,7 +492,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 										<Trans
 											i18nKey='Send_Email_SMTP_Warning'
 											components={{
-												// eslint-disable-next-line jsx-a11y/anchor-has-content
+												// oxlint-disable-next-line jsx-a11y/anchor-has-content
 												a: <a href='/admin/settings/Email' />,
 											}}
 										/>
@@ -556,10 +565,14 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 							<Controller control={control} name='nickname' render={({ field }) => <TextInput {...field} id={nicknameId} />} />
 						</FieldRow>
 					</Field>
+
+					<Divider flush />
+					<PhoneNumberFieldList control={control} />
+					<Divider flush />
 					{!!customFieldsMetadata.length && (
 						<>
 							<Box>
-								<Button small onClick={() => setShowCustomFields((prevState) => !prevState)}>
+								<Button size='small' onClick={() => setShowCustomFields((prevState) => !prevState)}>
 									{showCustomFields ? t('Hide_additional_fields') : t('Show_additional_fields')}
 								</Button>
 							</Box>
@@ -664,7 +677,7 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button primary disabled={!isDirty} onClick={handleSubmit(handleSaveUser)}>
+					<Button variant='primary' disabled={!isDirty} onClick={handleSubmit(handleSaveUser)}>
 						{isNewUserPage ? t('Add_user') : t('Save_user')}
 					</Button>
 				</ButtonGroup>

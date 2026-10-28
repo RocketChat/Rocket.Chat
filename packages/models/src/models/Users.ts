@@ -30,6 +30,7 @@ import type {
 	Document,
 	UpdateFilter,
 	UpdateOptions,
+	UpdateResult,
 	FindCursor,
 	SortDirection,
 	FindOneAndUpdateOptions,
@@ -1727,6 +1728,38 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		});
 	}
 
+	upsertXMPPUser(jid: string, origin: string, name?: string): Promise<IUser | null> {
+		return this.findOneAndUpdate(
+			{ username: jid, xmppFederation: { $exists: true } },
+			{
+				$set: {
+					username: jid,
+					...(name && { name }),
+					type: 'user' as const,
+					active: true,
+					roles: ['federated-external'],
+					requirePasswordChange: false,
+					federated: true,
+					xmppFederation: { version: 1 as const, jid, origin },
+					_updatedAt: new Date(),
+				},
+				$setOnInsert: {
+					...(!name && { name: jid }),
+					status: UserStatus.OFFLINE,
+					createdAt: new Date(),
+				},
+			},
+			{
+				upsert: true,
+				returnDocument: 'after',
+			},
+		);
+	}
+
+	updateStatusAndStatusDefaultById(userId: IUser['_id'], status: UserStatus): Promise<UpdateResult> {
+		return this.updateOne({ _id: userId }, { $set: { status, statusDefault: status } });
+	}
+
 	findOnlineUserFromList<T extends Document = ILivechatAgent>(
 		userList: string | string[],
 		isLivechatEnabledWhenAgentIdle?: boolean,
@@ -2115,7 +2148,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 	getAgentInfo(
 		agentId: IUser['_id'],
 		showAgentEmail = false,
-	): Promise<Pick<ILivechatAgent, '_id' | 'name' | 'username' | 'phone' | 'customFields' | 'status' | 'livechat' | 'emails'> | null> {
+	): Promise<Pick<ILivechatAgent, '_id' | 'name' | 'username' | 'phones' | 'customFields' | 'status' | 'livechat' | 'emails'> | null> {
 		// TODO: Create class Agent
 		const query = {
 			_id: agentId,
@@ -2125,7 +2158,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			projection: {
 				name: 1,
 				username: 1,
-				phone: 1,
+				phones: 1,
 				customFields: 1,
 				status: 1,
 				livechat: 1,
@@ -2136,7 +2169,6 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne(query, options);
 	}
 
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	setE2EPublicAndPrivateKeysByUserId(userId: IUser['_id'], { public_key, private_key }: { public_key: string; private_key: string }) {
 		return this.updateOne(
 			{ _id: userId },
@@ -3098,6 +3130,11 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 						},
 					}),
 		};
+		return this.updateOne({ _id }, update);
+	}
+
+	setPhones(_id: IUser['_id'], phones: IUser['phones']) {
+		const update: UpdateFilter<IUser> = phones?.length ? { $set: { phones } } : { $unset: { phones: 1 } };
 		return this.updateOne({ _id }, update);
 	}
 

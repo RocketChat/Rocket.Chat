@@ -84,10 +84,10 @@ const RoomFiles = ({
 					endAddon={<Icon name='magnifier' size='x20' />}
 				/>
 				<Box width='x144' marginInlineStart={8}>
-					<Select aria-controls={isSuccess ? filesListId : undefined} onChange={setType} value={type} options={options} />
+					<Select aria-label={t('File_Type')} onChange={setType} value={type} options={options} />
 				</Box>
 			</ContextualbarSection>
-			<ContextualbarContent paddingInline={0}>
+			<ContextualbarContent flush>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={total} />
 				{isPending && (
 					<Box padding={24}>

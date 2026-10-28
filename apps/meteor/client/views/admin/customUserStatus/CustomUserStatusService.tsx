@@ -8,6 +8,7 @@ import {
 	StatesAction,
 	StatesIcon,
 	StatesSubtitle,
+	Text,
 	ToggleSwitch,
 } from '@rocket.chat/fuselage';
 import { ContextualbarContent, ContextualbarFooter } from '@rocket.chat/ui-client';
@@ -56,10 +57,10 @@ const CustomUserStatusService = () => {
 
 	return (
 		<>
-			<ContextualbarContent display='flex' flexDirection='column' justifyContent='space-between' color='default'>
-				<Box display='flex' flexDirection='column' gap={16} paddingBlock={16}>
+			<ContextualbarContent>
+				<Box display='flex' flexDirection='column' gap={16} paddingBlock={16} flexGrow={1}>
 					<Box display='flex' justifyContent='space-between'>
-						<Box fontScale='p1'>{t('Service_status')}</Box>
+						<Text fontScale='p1'>{t('Service_status')}</Text>
 						<ToggleSwitch
 							disabled={disablePresenceService.isPending || !presenceDisabled || percentage === 100}
 							checked={!presenceDisabled}
@@ -106,13 +107,15 @@ const CustomUserStatusService = () => {
 				</Box>
 			</ContextualbarContent>
 			{!license?.isEnterprise && (
-				<ContextualbarFooter borderBlockStartWidth='default' borderBlockColor='extra-light'>
-					<ButtonGroup stretch vertical>
-						<Button primary is='a' href={links.enterprise} target='_blank'>
-							{t('More_about_Premium_plans')}
-						</Button>
-					</ButtonGroup>
-				</ContextualbarFooter>
+				<Box borderBlockStartWidth='default' borderBlockColor='extra-light'>
+					<ContextualbarFooter>
+						<ButtonGroup stretch vertical>
+							<Button variant='primary' is='a' href={links.enterprise} target='_blank'>
+								{t('More_about_Premium_plans')}
+							</Button>
+						</ButtonGroup>
+					</ContextualbarFooter>
+				</Box>
 			)}
 		</>
 	);

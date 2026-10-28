@@ -56,20 +56,16 @@ const RoleCell = ({ _id, name, description, onChange, permissionId, permissionNa
 	const checkboxLabel = `${permissionName} - ${description || name}`;
 
 	return (
-		<GenericTableCell withTruncatedText>
-			<Box is='span' paddingInline={2}>
+		<GenericTableCell truncate>
+			<Box display='flex' alignItems='center' gap='x4'>
 				<CheckBox aria-label={checkboxLabel} checked={granted} onChange={handleChange} disabled={isDisabled} />
+				{!loading && (
+					<Box display='inline' color='hint' invisible>
+						{description || name}
+					</Box>
+				)}
+				{loading && <Throbber size='x12' />}
 			</Box>
-			{!loading && (
-				<Box display='inline' marginInline={2} color='hint' invisible>
-					{description || name}
-				</Box>
-			)}
-			{loading && (
-				<Box is='span' display='inline-block' marginInline={2}>
-					<Throbber size='x12' />
-				</Box>
-			)}
 		</GenericTableCell>
 	);
 };

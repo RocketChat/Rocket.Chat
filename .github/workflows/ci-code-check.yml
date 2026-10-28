@@ -101,11 +101,15 @@ jobs:
 
       - name: Styling props on Fuselage components
         if: matrix.check == 'lint'
-        run: node scripts/scan-style-props.mjs --max 1 "$RUNNER_TEMP/style-props-findings.json"
+        run: node scripts/scan-style-props.mjs --max 0 "$RUNNER_TEMP/style-props-findings.json"
 
       - name: Raw layout elements in screens
         if: matrix.check == 'lint'
-        run: node scripts/scan-raw-layout.mjs --max 1248 "$RUNNER_TEMP/raw-layout-findings.json"
+        run: node scripts/scan-raw-layout.mjs --max 1146 "$RUNNER_TEMP/raw-layout-findings.json"
+
+      - name: Spacing scale
+        if: matrix.check == 'lint'
+        run: yarn lint:spacing
 
       - name: Stylelint
         if: matrix.check == 'lint'

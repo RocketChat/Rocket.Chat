@@ -54,11 +54,10 @@
 		"@testing-library/user-event": "~14.6.7",
 		"@types/react": "~19.2.18",
 		"@types/react-dom": "~19.2.7",
-		"eslint": "~10.12.0",
 		"jest": "~30.5.2",
 		"react": "~19.2.8",
 		"react-dom": "~19.2.8",
-		"storybook": "~9.1.20",
+		"storybook": "~9.1.21",
 		"typescript": "~7.0.2"
 	},
 	"peerDependencies": {

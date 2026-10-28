@@ -1,5 +1,5 @@
 import type { IWorkspaceInfo } from '@rocket.chat/core-typings';
-import { Box, Card, CardBody, CardCol, CardControls, CardHeader, CardTitle, Icon } from '@rocket.chat/fuselage';
+import { Card, CardBody, CardCol, CardControls, CardHeader, CardTitle, Icon, Text } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import type { SupportedVersions } from '@rocket.chat/server-cloud-communication';
 import { ExternalLink, useLicense, useLicenseName } from '@rocket.chat/ui-client';
@@ -195,9 +195,9 @@ const VersionCard = ({ serverInfo }: VersionCardProps) => {
 					{!isAirgapped && versions && <VersionTag versionStatus={versionStatus?.label} title={versionStatus.version} />}
 				</CardHeader>
 
-				<Box color='secondary-info'>
+				<Text color='secondary-info'>
 					<Icon name='rocketchat' size={16} /> {licenseName.data}
-				</Box>
+				</Text>
 			</CardCol>
 
 			<CardBody flexDirection='column'>

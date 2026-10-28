@@ -172,7 +172,7 @@ function AutoComplete<TLabel = ReactNode>({
 					value={filter}
 					disabled={disabled}
 					{...props}
-					className={['rcx-input-box--undecorated', 'rcx-autocomplete__input', props.className]}
+					className={['rcx-input-box--undecorated', 'rcx-autocomplete__input', props.className].filter(Boolean).join(' ')}
 				/>
 				{selected.map((itemSelected) =>
 					SelectedComponent ? (
@@ -194,7 +194,6 @@ function AutoComplete<TLabel = ReactNode>({
 					renderItem={renderItem}
 					renderEmpty={renderEmpty}
 					cursor={cursor}
-					value={value}
 					options={memoizedOptions}
 				/>
 			</PositionAnimated>

@@ -30,18 +30,21 @@ export default {
 	},
 	decorators: [
 		(Story, { parameters }) => (
-			<Tile
-				is='ul'
-				role='listbox'
-				aria-label='Options'
-				aria-busy={parameters.busy || undefined}
-				position='relative'
-				maxWidth={250}
-				margin='none'
-				paddingInline='0'
-			>
-				<Story />
-			</Tile>
+			<Box position='relative' maxWidth={250}>
+				<Tile flush>
+					<Box
+						is='ul'
+						role='listbox'
+						aria-label='Options'
+						aria-busy={parameters.busy || undefined}
+						margin='none'
+						paddingInline={0}
+						paddingBlock={16}
+					>
+						<Story />
+					</Box>
+				</Tile>
+			</Box>
 		),
 	],
 	argTypes: {
@@ -132,7 +135,7 @@ export default {
 type Story = StoryObj<typeof Option>;
 
 const MenuExample = () => (
-	<Menu detached small title='More options' items={[{ id: '1', label: 'Option', icon: 'hashtag' }]}>
+	<Menu detached size='small' title='More options' items={[{ id: '1', label: 'Option', icon: 'hashtag' }]}>
 		<MenuItem key='1'>Profile</MenuItem>
 		<MenuItem key='2'>Chats</MenuItem>
 		<MenuItem key='3'>Settings</MenuItem>
@@ -221,7 +224,7 @@ export const WithMenu: Story = {
 				</OptionColumn>
 				<OptionContent>Lorem Ipsum Lorem Lorem Ipsum Lorem Lorem Ipsum Lorem Lorem Ipsum Lorem</OptionContent>
 				<OptionMenu>
-					<Menu detached small title='More options' items={[{ id: '1', label: 'Option', icon: 'hashtag' }]}>
+					<Menu detached size='small' title='More options' items={[{ id: '1', label: 'Option', icon: 'hashtag' }]}>
 						<MenuItem key='1'>Profile</MenuItem>
 						<MenuItem key='2'>Chats</MenuItem>
 						<MenuItem key='3'>Settings</MenuItem>

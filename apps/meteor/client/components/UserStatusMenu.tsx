@@ -74,9 +74,9 @@ const UserStatusMenu = ({ onChange, initialStatus = UserStatusType.OFFLINE, plac
 		<>
 			<Button
 				ref={ref}
-				mini
+				size='mini'
 				square
-				secondary
+				variant='secondary'
 				onClick={onClick}
 				onBlur={hide}
 				onKeyUp={handleKeyUp}
@@ -85,7 +85,7 @@ const UserStatusMenu = ({ onChange, initialStatus = UserStatusType.OFFLINE, plac
 			>
 				<UserStatus status={status} />
 			</Button>
-			<PositionAnimated width='auto' visible={visible} anchor={ref} placement={placement}>
+			<PositionAnimated visible={visible} anchor={ref} placement={placement}>
 				<Options onSelect={handleSelection} options={options} cursor={cursor} />
 			</PositionAnimated>
 		</>

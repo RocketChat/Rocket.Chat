@@ -20,11 +20,11 @@ const MessageCollapsible = ({ children, title, hasDownload, link, size, isCollap
 
 	return (
 		<>
-			<Box display='flex' flexDirection='row' color='hint' fontScale='c1' alignItems='center' gap={2}>
+			<Box display='flex' flexDirection='row' color='hint' fontScale='c1' alignItems='center' gap='x4'>
 				<Box withTruncatedText title={title}>
 					{title}
 				</Box>
-				{size && <AttachmentSize size={size} />}{' '}
+				{size && <AttachmentSize size={size} />}
 				<ButtonGroup small>
 					<CollapsibleContent key='collapsible-content-action' collapsed={collapsed} onClick={toggleCollapse} />
 					{hasDownload && link && <AttachmentDownload title={title} href={link} />}

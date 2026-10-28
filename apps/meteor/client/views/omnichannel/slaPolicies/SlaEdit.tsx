@@ -140,7 +140,7 @@ function SlaEdit({ data, isNew, slaId, reload, ...props }: SlaEditProps) {
 							{t('Reset')}
 						</Button>
 					)}
-					<Button primary type='submit' form={formId}>
+					<Button variant='primary' type='submit' form={formId}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

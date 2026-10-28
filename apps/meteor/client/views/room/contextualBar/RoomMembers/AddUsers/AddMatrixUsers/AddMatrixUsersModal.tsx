@@ -111,7 +111,7 @@ const AddMatrixUsersModal = ({ onClose, matrixIdVerifiedStatus, onSave, complete
 					</Box>
 				)}
 			</ModalContent>
-			<ModalFooter justifyContent={bannedError ? 'space-between' : 'flex-end'}>
+			<ModalFooter justify={bannedError ? 'space-between' : 'end'}>
 				{bannedError && (
 					<ModalFooterAnnotation>
 						<Stack direction='row' align='center' gap={8}>
@@ -123,7 +123,7 @@ const AddMatrixUsersModal = ({ onClose, matrixIdVerifiedStatus, onSave, complete
 				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button
-						primary
+						variant='primary'
 						onClick={handleSubmit(onSubmit)}
 						disabled={!(usersToInvite.length > 0) || (bannedError && !unbanConfirmed)}
 						loading={loading}

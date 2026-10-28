@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-webpack5';
 
-import Tabs from './Tabs';
-import TabsItem from './TabsItem';
+import Tabs, { type TabsProps } from './Tabs';
+import TabsItem, { type TabsItemProps } from './TabsItem';
 
 export default {
 	title: 'Navigation/Tabs',
@@ -35,11 +35,13 @@ export default {
 	},
 } satisfies Meta<typeof Tabs>;
 
-type Story = StoryObj<typeof Tabs>;
+type Story = StoryObj<TabsProps & Pick<TabsItemProps, 'selected' | 'disabled'>>;
 
-const render: Story['render'] = (args) => (
+const render: Story['render'] = ({ selected, disabled, ...args }) => (
 	<Tabs {...args}>
-		<TabsItem {...args}>Tab text 1</TabsItem>
+		<TabsItem selected={selected} disabled={disabled}>
+			Tab text 1
+		</TabsItem>
 		<TabsItem>Tab text 2</TabsItem>
 		<TabsItem>Tab text 3</TabsItem>
 		<TabsItem>Tab text 4</TabsItem>

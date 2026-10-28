@@ -1,7 +1,7 @@
 {
 	"$schema": "https://www.schemastore.org/package",
 	"name": "@rocket.chat/desktop-api",
-	"version": "1.4.0-rc.0",
+	"version": "1.4.0",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
@@ -22,7 +22,6 @@
 		"typecheck": "tsc -p tsconfig.json --noEmit"
 	},
 	"devDependencies": {
-		"eslint": "~10.12.0",
 		"typescript": "~7.0.2"
 	},
 	"volta": {

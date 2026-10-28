@@ -64,7 +64,7 @@ const RoomListCollapser = ({ group, canMoveUp, canMoveDown, onMoveUp, onMoveDown
 								onMoveDown={onMoveDown}
 							/>
 						) : (
-							<IconButton tabIndex={-1} aria-hidden mini icon='kebab' onPointerDown={mountNow} />
+							<IconButton tabIndex={-1} aria-hidden size='mini' icon='kebab' onPointerDown={mountNow} />
 						)}
 					</SidebarCollapseGroupMenu>
 				) : undefined

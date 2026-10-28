@@ -28,7 +28,7 @@ const LoaderPage = ({ title, subtitles, isReady = false, loadingSeconds = 90 }: 
 		return () => {
 			clearInterval(timer);
 		};
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 	}, [isReady]);
 
 	const subtitleIndex = Math.floor(percentage / timeFraction);

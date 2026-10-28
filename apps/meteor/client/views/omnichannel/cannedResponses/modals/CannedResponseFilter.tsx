@@ -21,7 +21,7 @@ const CannedResponsesFilter = ({ createdBy, setCreatedBy, sharing, setSharing, t
 	const { t } = useTranslation();
 
 	const searchId = useId();
-	const sharingLabelId = useId();
+	const sharingField = useId();
 	const createdByLabelId = useId();
 
 	const sharingList: SelectOption[] = [
@@ -48,14 +48,9 @@ const CannedResponsesFilter = ({ createdBy, setCreatedBy, sharing, setSharing, t
 			</Box>
 			<Box flexGrow={1}>
 				<Field>
-					<FieldLabel id={sharingLabelId}>{t('Sharing')}</FieldLabel>
+					<FieldLabel htmlFor={sharingField}>{t('Sharing')}</FieldLabel>
 					<FieldRow>
-						<Select
-							aria-labelledby={sharingLabelId}
-							value={sharing}
-							onChange={(value) => setSharing(value as SharingValues)}
-							options={sharingList}
-						/>
+						<Select id={sharingField} value={sharing} onChange={(value) => setSharing(value as SharingValues)} options={sharingList} />
 					</FieldRow>
 				</Field>
 			</Box>

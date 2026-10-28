@@ -2,8 +2,9 @@ import { useMergedRefs, useStableCallback, useResizeObserver, useOutsideClick } 
 import type { DependencyList, ElementType, RefAttributes } from 'react';
 import { useState, useRef, useEffect, useMemo } from 'react';
 
+import type { ElementProps } from '../../types/ElementProps';
 import { AnimatedVisibility } from '../AnimatedVisibility';
-import { Box, type BoxProps } from '../Box';
+import { Box } from '../Box';
 import { Icon, type IconProps } from '../Icon';
 import type { OptionType } from '../Options';
 import { Options, useCursor } from '../Options';
@@ -12,10 +13,6 @@ import SelectAddon from './SelectAddon';
 import SelectFocus from './SelectFocus';
 
 export type SelectOption = readonly [value: string, label: string, selected?: boolean];
-
-type WrapperProps = BoxProps;
-
-const Wrapper = (props: WrapperProps) => <Box is='div' rcx-select__wrapper {...props} />;
 
 const useDidUpdate = (func: () => void, deps: DependencyList | undefined) => {
 	const didMount = useRef(false);
@@ -30,8 +27,12 @@ const useDidUpdate = (func: () => void, deps: DependencyList | undefined) => {
 	}, deps || []);
 };
 
-export type SelectProps = Omit<BoxProps, 'ref' | 'onChange'> &
+export type SelectProps = Omit<ElementProps<HTMLDivElement>, 'ref' | 'onChange'> &
 	RefAttributes<HTMLInputElement> & {
+		value?: string | number;
+		name?: string;
+		disabled?: boolean;
+		placeholder?: string;
 		anchor?: ElementType;
 		error?: string;
 		options: SelectOption[];
@@ -139,7 +140,7 @@ function SelectLegacy({
 			className={useMemo(() => [error && 'invalid', disabled && 'disabled'], [error, disabled])}
 			{...props}
 		>
-			<Wrapper display='flex' marginInline='neg-x4' rcx-select__wrapper--hidden={!!visibleText}>
+			<Box is='div' rcx-select__wrapper display='flex' marginInline='neg-x4' rcx-select__wrapper--hidden={!!visibleText}>
 				{visibleText &&
 					(SelectedComponent ? (
 						<SelectedComponent
@@ -171,7 +172,7 @@ function SelectLegacy({
 				<SelectAddon>
 					<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : addonIcon || 'chevron-down'} size='x20' />
 				</SelectAddon>
-			</Wrapper>
+			</Box>
 			<PositionAnimated visible={visible} anchor={containerRef}>
 				<OptionsComponent
 					width={borderBoxSize.inlineSize}

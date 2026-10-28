@@ -1,4 +1,4 @@
-import { Box, Skeleton } from '@rocket.chat/fuselage';
+import { Box, Skeleton, Text } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
@@ -31,7 +31,7 @@ const ContactManagerInfo = ({ userId }: ContactManagerInfoProps) => {
 					<Box marginInline={8}>
 						<UserStatus status={data.user.status} />
 					</Box>
-					<Box fontScale='p2'>{data.user.name}</Box>
+					<Text fontScale='p2'>{data.user.name}</Text>
 				</Box>
 			)}
 		</Box>

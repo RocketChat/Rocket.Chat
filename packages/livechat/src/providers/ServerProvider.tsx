@@ -50,19 +50,19 @@ const ServerProvider = ({ children, serverURL: host }: ServerProviderProps) => {
 
 			switch (method) {
 				case 'GET':
-					// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+					// oxlint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
 					return sdk.rest.get(compiledPath, params) as any;
 
 				case 'POST':
-					// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+					// oxlint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
 					return sdk.rest.post(compiledPath, params) as any;
 
 				case 'PUT':
-					// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+					// oxlint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
 					return sdk.rest.put(compiledPath, params as never) as any;
 
 				case 'DELETE':
-					// eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
+					// oxlint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion
 					return sdk.rest.delete(compiledPath, params) as any;
 
 				default:

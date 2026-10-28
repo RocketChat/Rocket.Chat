@@ -72,7 +72,7 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 
 	useEffect(() => {
 		setEditor(isSettingColor(setting) ? setting.editor : undefined);
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 	}, [(setting as ISettingColor).editor]);
 
 	const onChangeValue = useCallback(
@@ -101,7 +101,7 @@ function Setting({ className = undefined, settingId, sectionChanged }: SettingPr
 			value: persistedSetting.packageValue,
 			...(isSettingColor(persistedSetting) && { editor: persistedSetting.packageEditor }),
 		});
-		// eslint-disable-next-line react-hooks/exhaustive-deps
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 	}, [setting.value, (setting as ISettingColor).editor, update, persistedSetting]);
 
 	const { _id, readonly, type, packageValue, i18nLabel, i18nDescription, alert } = setting;

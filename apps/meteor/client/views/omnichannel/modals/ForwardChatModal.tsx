@@ -120,8 +120,6 @@ const ForwardChatModal = ({ room, onCancel }: ForwardChatModalProps) => {
 									id={departmentFieldId}
 									aria-label={t('Forward_to_department')}
 									withTitle={false}
-									maxWidth='100%'
-									flexGrow={1}
 									disabled={!!username}
 								/>
 							)}
@@ -129,7 +127,7 @@ const ForwardChatModal = ({ room, onCancel }: ForwardChatModalProps) => {
 					</FieldRow>
 				</Field>
 				<Divider>{t('or')}</Divider>
-				<Box display='flex' flexDirection='column' gap={15} paddingBlockEnd={15}>
+				<Box display='flex' flexDirection='column' gap='x16' paddingBlockEnd='x16'>
 					<Field>
 						<FieldLabel htmlFor={userFieldId}>{t('Forward_to_user')}</FieldLabel>
 						<FieldRow>

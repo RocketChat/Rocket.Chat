@@ -1,5 +1,37 @@
 # @rocket.chat/federation-matrix
 
+## 0.3.0
+
+### Minor Changes
+
+- ([#41718](https://github.com/RocketChat/Rocket.Chat/pull/41718)) Adds support for federation room version 11 (version 10 remains the default)
+
+### Patch Changes
+
+- ([#41872](https://github.com/RocketChat/Rocket.Chat/pull/41872)) Fixes federated user presence never being sent to remote workspaces
+
+- ([#41785](https://github.com/RocketChat/Rocket.Chat/pull/41785)) Fixes federation endpoints rejecting requests that are valid per the Matrix specification:
+
+  - `publicRooms` (GET and POST) required params/fields the spec marks optional
+  - `query/profile` rejected spec-valid profile fields such as `m.tz`
+  - `get_missing_events` required the optional `limit` field and bounded it
+  - `make_join` returned 500 instead of 400 `M_INCOMPATIBLE_ROOM_VERSION` for unsupported room versions
+  - `backfill` rejected spec-valid `limit` values
+  - `send` rejected an entire transaction when a single PDU didn't match a fixed event shape, instead of reporting failures per PDU
+
+  Also links every federation endpoint to its definition in the Matrix specification.
+
+- <details><summary>Updated dependencies [75e5b937aab6f6884df522af9e4aee2b6463fdfd, e7fd972c86b04b8cf80e7be8ec825f176939203b, 1c48beb3300fe2dcbae5094aca4f27ab2ce985e4, 17dfc71b4ad7294655e7fab9043cddbea23cb071, 38ea6ba80fd0e8d7c41a44278d54703b5d70da56, 71add68eca423511c0189f2f541b5a2c46a5e7a0, 53b519cc692587a63beaeb780e28d368ed70e94c, 71cb69992cf9f6a85fff7278dbf5481b64b5c735, 7d7a5c403e175df889afe303c34b9154c4ad6d70, 2f18297792c973da326be7253f497d239ea6f2b0, 4be043d9356fd50d2e3e1b585008368f90e95505, 781a3bccc16378284afabae87abf11897c6e1013, b263243745917337314259cf987c0e989cf0cdc9, 4be043d9356fd50d2e3e1b585008368f90e95505, bab7af7e18ea2e70e2b3211904a4adfc6ae33e7c, 6b7ce0cc0f32cda7a78b91effaff5fc02aab4340, 37faaa89ad1b4b721d6054e40a91327bd8140525, 4964afe2dd4301ae02ba0299231fc946920837b9]:</summary>
+  - @rocket.chat/models@2.6.0
+  - @rocket.chat/core-services@0.17.0
+  - @rocket.chat/core-typings@8.9.0
+  - @rocket.chat/rest-typings@8.9.0
+  - @rocket.chat/license@1.2.1
+  - @rocket.chat/network-broker@0.2.40
+  - @rocket.chat/http-router@7.9.24
+
+  </details>
+
 ## 0.3.0-rc.0
 
 ### Minor Changes

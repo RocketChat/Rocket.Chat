@@ -1,6 +1,5 @@
 import { beforeEach, describe, it } from 'node:test';
 
-import { ClientSafeError } from '@rocket.chat/core-services';
 import { expect } from 'chai';
 import p from 'proxyquire';
 import sinon from 'sinon';
@@ -11,6 +10,7 @@ const createRoomMock = sandbox.stub();
 const hasPermissionMock = sandbox.stub();
 const validateFederatedUsernameMock = sandbox.stub();
 const isFederationEnabledMock = sandbox.stub();
+const isXMPPServerEnabledMock = sandbox.stub();
 const settingsGetMock = sandbox.stub();
 
 const modelsMock = {
@@ -27,7 +27,6 @@ const { createDirectMessage } = p.noCallThru().load('./createDirectMessage', {
 	'meteor/meteor': {
 		Meteor: {
 			userId: sandbox.stub(),
-			Error: ClientSafeError,
 			methods: sandbox.stub(),
 		},
 	},
@@ -41,7 +40,10 @@ const { createDirectMessage } = p.noCallThru().load('./createDirectMessage', {
 	'../../lib/authorization/hasPermission': { hasPermissionAsync: hasPermissionMock },
 	'../../lib/callbacks': { callbacks: { run: sandbox.stub() } },
 	'../../lib/rooms/createRoom': { createRoom: createRoomMock },
-	'../../services/federation/utils': { isFederationEnabled: isFederationEnabledMock },
+	'../../services/federation/utils': {
+		isFederationEnabled: isFederationEnabledMock,
+		isXMPPServerEnabled: isXMPPServerEnabledMock,
+	},
 	'../../settings': { settings: { get: settingsGetMock } },
 });
 
@@ -55,6 +57,7 @@ describe('createDirectMessage', () => {
 		hasPermissionMock.resolves(true);
 		validateFederatedUsernameMock.returns(false);
 		isFederationEnabledMock.returns(true);
+		isXMPPServerEnabledMock.returns(false);
 		settingsGetMock.withArgs('DirectMesssage_maxUsers').returns(8);
 		createRoomMock.resolves({ _id: 'rid', inserted: true });
 	});

@@ -102,7 +102,7 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps) => {
 				<Field>
 					<FieldRow>
 						<FieldLabel id={emojiLabelId}>{t('Custom_Emoji')}</FieldLabel>
-						<IconButton aria-labelledby={emojiLabelId} secondary small icon='upload' onClick={clickUpload} />
+						<IconButton aria-labelledby={emojiLabelId} variant='secondary' size='small' icon='upload' onClick={clickUpload} />
 					</FieldRow>
 					{errors.emoji && <FieldError>{t('Required_field', { field: t('Custom_Emoji') })}</FieldError>}
 					{newEmojiPreview && (
@@ -117,7 +117,7 @@ const AddCustomEmoji = ({ close, onChange, ...props }: AddCustomEmojiProps) => {
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={close}>{t('Cancel')}</Button>
-					<Button primary onClick={handleSave}>
+					<Button variant='primary' onClick={handleSave}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

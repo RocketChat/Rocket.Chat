@@ -1,4 +1,4 @@
-import { IconButton, Pagination } from '@rocket.chat/fuselage';
+import { IconButton, Pagination, type TableColumnWidth } from '@rocket.chat/fuselage';
 import { useDebouncedValue, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	GenericTable,
@@ -56,6 +56,8 @@ const TagsTable = () => {
 	const [defaultQuery] = useState(hashKey([query]));
 	const queryHasChanged = defaultQuery !== hashKey([query]);
 
+	const columns: TableColumnWidth[] = ['auto', 'auto', 'x60'];
+
 	const headers = (
 		<>
 			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
@@ -70,7 +72,7 @@ const TagsTable = () => {
 			>
 				{t('Description')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='remove' width='x60' />
+			<GenericTableHeaderCell key='remove' />
 		</>
 	);
 
@@ -80,7 +82,7 @@ const TagsTable = () => {
 				<FilterByText value={filter} onChange={(event) => setFilter(event.target.value)} />
 			)}
 			{isLoading && (
-				<GenericTable>
+				<GenericTable columns={columns}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingRow cols={3} />
@@ -101,17 +103,17 @@ const TagsTable = () => {
 			)}
 			{isSuccess && data?.tags.length > 0 && (
 				<>
-					<GenericTable aria-label={t('Tags')}>
+					<GenericTable columns={columns} aria-label={t('Tags')}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data?.tags.map(({ _id, name, description }) => (
 								<GenericTableRow key={_id} tabIndex={0} onClick={() => onRowClick(_id)} action>
-									<GenericTableCell withTruncatedText>{name}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{description}</GenericTableCell>
+									<GenericTableCell truncate>{name}</GenericTableCell>
+									<GenericTableCell truncate>{description}</GenericTableCell>
 									<GenericTableCell>
 										<IconButton
 											icon='trash'
-											small
+											size='small'
 											title={t('Remove')}
 											onClick={(e) => {
 												e.stopPropagation();

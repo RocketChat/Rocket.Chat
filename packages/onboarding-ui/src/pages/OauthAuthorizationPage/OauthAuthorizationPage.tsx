@@ -22,12 +22,12 @@ const OauthAuthorizationPage = ({ clientName, onClickAuthorizeOAuth, error }: Oa
 				<Box fontScale='p1' padding={40} textAlign='start' color={colors.n900}>
 					{!clientName || error.message ? (
 						<>
-							<Box fontScale='h1' marginBlockEnd={18}>
+							<Box fontScale='h1' marginBlockEnd='x16'>
 								Error
 							</Box>
 							{error.message}
 							<Box marginBlockStart={24}>
-								<Button onClick={error.onGoBack} primary>
+								<Button onClick={error.onGoBack} variant='primary'>
 									{t('page.oauthAuthorizationPage.buttons.goBack')}
 								</Button>
 							</Box>
@@ -41,7 +41,7 @@ const OauthAuthorizationPage = ({ clientName, onClickAuthorizeOAuth, error }: Oa
 							</Trans>
 
 							<Box marginBlockStart={24}>
-								<Button onClick={onClickAuthorizeOAuth} primary>
+								<Button onClick={onClickAuthorizeOAuth} variant='primary'>
 									{t('page.oauthAuthorizationPage.buttons.authorize')}
 								</Button>
 							</Box>

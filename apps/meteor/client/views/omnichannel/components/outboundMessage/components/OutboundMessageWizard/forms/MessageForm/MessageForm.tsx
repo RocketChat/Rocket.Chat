@@ -80,7 +80,7 @@ const MessageForm = (props: MessageFormProps) => {
 	return (
 		<Form id={messageFormId} onSubmit={handleSubmit(submit)} noValidate>
 			<Scrollable vertical>
-				<Box paddingInline={2}>
+				<Box>
 					<FieldGroup>
 						<TemplateField control={control} templates={templates} onChange={() => setValue('templateParameters', {})} />
 
@@ -95,7 +95,7 @@ const MessageForm = (props: MessageFormProps) => {
 
 			{customActions ?? (
 				<Box marginBlockStart={24} display='flex' justifyContent='end'>
-					<Button type='submit' primary loading={isSubmitting}>
+					<Button type='submit' variant='primary' loading={isSubmitting}>
 						{t('Submit')}
 					</Button>
 				</Box>

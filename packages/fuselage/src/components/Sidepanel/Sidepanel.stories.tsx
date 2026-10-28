@@ -45,7 +45,7 @@ const render: Story['render'] = (args) => (
 	<Sidepanel {...args}>
 		<SidepanelHeader>
 			<SidepanelHeaderTitle>Title Lorem Ipsum Indolor Ipsum Dolor Ipsum Ipsum</SidepanelHeaderTitle>
-			<IconButton icon='burger-menu' size='x28' title='menu' />
+			<IconButton icon='burger-menu' title='menu' />
 		</SidepanelHeader>
 		<SidepanelSection>
 			<InputBox type='text' placeholder='Search' endAddon={<Icon name='magnifier' size='x18' />} />
@@ -67,10 +67,11 @@ const render: Story['render'] = (args) => (
 									</SidebarItemRow>
 									<SidebarItemRow>
 										<SidebarItemContent unread={Boolean(index === 0)}>Lorem Ipsum Indolor Dolor Ipsum Ipsum</SidebarItemContent>
-										<Tag role='button' maxWidth='50%' flexShrink={1} flexGrow={0}>
-											<Icon size='x12' marginInlineEnd={4} name='team' />
-											Team title
-										</Tag>
+										<Box display='flex' maxWidth='50%' flexShrink={1} flexGrow={0}>
+											<Tag role='button' icon={<Icon size='x12' name='team' />}>
+												Team title
+											</Tag>
+										</Box>
 										<SidebarItemBadge title='unread messages'>{index + 3}</SidebarItemBadge>
 										<SidebarItemMenu>
 											<MenuTemplate />

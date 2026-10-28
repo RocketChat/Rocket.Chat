@@ -1,21 +1,22 @@
 import {
-	Modal,
 	Box,
+	Button,
+	ButtonGroup,
+	CheckBox,
 	Field,
 	FieldLabel,
 	FieldRow,
-	TextInput,
-	CheckBox,
-	ButtonGroup,
-	Button,
+	Modal,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
 	ModalHeader,
 	ModalHeaderText,
 	ModalTagline,
 	ModalTitle,
-	ModalClose,
-	ModalContent,
-	ModalFooter,
 	Stack,
+	Text,
+	TextInput,
 } from '@rocket.chat/fuselage';
 import { ExternalLink } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
@@ -84,7 +85,7 @@ const RegisterWorkspaceSetupStepOneModal = ({
 			</ModalHeader>
 			<ModalContent>
 				<Box>
-					<Stack gap={10}>
+					<Stack gap='x8'>
 						<Box is='p' fontSize='p2' withRichContent>
 							{t('RegisterWorkspace_Setup_Subtitle')}
 						</Box>
@@ -114,12 +115,12 @@ const RegisterWorkspaceSetupStepOneModal = ({
 						<FieldRow>
 							<Box display='flex' alignItems='center' minWidth={0}>
 								<FieldLabel htmlFor={termsField}>
-									<Box is='span' fontScale='c1'>
+									<Text is='span' fontScale='c1'>
 										<Trans i18nKey='RegisterWorkspace_Setup_Terms_Privacy'>
 											I agree with <ExternalLink to={links.terms}>Terms and Conditions</ExternalLink> and{' '}
 											<ExternalLink to={links.privacy}>Privacy Policy</ExternalLink>
 										</Trans>
-									</Box>
+									</Text>
 								</FieldLabel>
 								<CheckBox id={termsField} checked={terms} onChange={() => setTerms(!terms)} />
 							</Box>
@@ -130,7 +131,7 @@ const RegisterWorkspaceSetupStepOneModal = ({
 			<ModalFooter>
 				<ButtonGroup align='end'>
 					<Button onClick={handleBack}>{t('Back')}</Button>
-					<Button primary onClick={handleRegisterWorkspace} disabled={!validInfo}>
+					<Button variant='primary' onClick={handleRegisterWorkspace} disabled={!validInfo}>
 						{t('Next')}
 					</Button>
 				</ButtonGroup>

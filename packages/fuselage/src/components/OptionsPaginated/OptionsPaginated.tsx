@@ -4,12 +4,13 @@ import { memo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
 import { prevent } from '../../helpers/prevent';
+import type { ElementProps } from '../../types/ElementProps';
 import { AnimatedVisibility } from '../AnimatedVisibility';
-import { Box, type BoxProps } from '../Box';
+import { Box } from '../Box';
 import { CheckOption, Option } from '../Option';
 import { PopoverSurface } from '../PopoverSurface';
 
-export type OptionsPaginatedProps = Omit<BoxProps, 'ref' | 'onSelect'> &
+export type OptionsPaginatedProps = Omit<ElementProps<HTMLDivElement>, 'ref' | 'onSelect'> &
 	RefAttributes<Element> & {
 		multiple?: boolean;
 		options: { value: string | number; label: string; selected?: boolean }[];

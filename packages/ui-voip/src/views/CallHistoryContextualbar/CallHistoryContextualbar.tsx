@@ -121,7 +121,7 @@ const CallHistoryContextualBar = ({ onClose, actions, contact, data }: CallHisto
 					)}
 					{voiceCall && (
 						<Button
-							success
+							variant='success'
 							onClick={voiceCall}
 							disabled={state !== 'available'}
 							title={state !== 'available' ? t('Call_in_progress') : undefined}

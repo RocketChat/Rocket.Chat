@@ -43,7 +43,7 @@ const AddManager = () => {
 				<FieldRow>
 					<Stack direction='row' align='center' justify='space-between' grow gap={8}>
 						<UserAutoComplete id={usernameFieldId} value={username} onChange={handleChange} />
-						<Button disabled={!username} onClick={handleSave} primary>
+						<Button disabled={!username} onClick={handleSave} variant='primary'>
 							{t('Add_manager')}
 						</Button>
 					</Stack>

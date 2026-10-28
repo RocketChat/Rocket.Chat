@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/apps-engine",
-	"version": "1.67.0-rc.0",
+	"version": "1.67.0",
 	"description": "The public API and type definitions for Rocket.Chat App development.",
 	"keywords": [
 		"rocket.chat",
@@ -70,7 +70,6 @@
 	"devDependencies": {
 		"@rocket.chat/ui-kit": "workspace:~",
 		"@types/node": "~24.13.6",
-		"eslint": "~10.12.0",
 		"npm-run-all": "^4.1.5",
 		"typedoc": "~0.28.20",
 		"typescript": "~7.0.2"

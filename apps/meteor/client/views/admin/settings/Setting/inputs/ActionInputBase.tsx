@@ -35,7 +35,7 @@ function ActionInputBase({ _id, label, actionText, hint, disabled, sectionChange
 				</FieldLabel>
 			</FieldRow>
 			<FieldRow>
-				<Button aria-describedby={labelId} disabled={disabled || sectionChanged} primary onClick={handleClick}>
+				<Button aria-describedby={labelId} disabled={disabled || sectionChanged} variant='primary' onClick={handleClick}>
 					{t(actionText)}
 				</Button>
 			</FieldRow>

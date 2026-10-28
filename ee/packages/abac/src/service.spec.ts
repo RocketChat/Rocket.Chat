@@ -911,6 +911,11 @@ describe('AbacService (unit)', () => {
 
 	describe.each([
 		['a federated room', { _id: 'r1', federated: true }, 'error-abac-federated-room-attributes'],
+		[
+			'an XMPP federated room',
+			{ _id: 'r1', xmppFederation: { version: 1, role: 'host-muc', muc: 'room@conference.example.com', origin: 'example.com' } },
+			'error-abac-federated-room-attributes',
+		],
 		['a discussion', { _id: 'r1', prid: 'parent' }, 'error-abac-discussion-room-attributes'],
 	])('attribute writes on %s', (_, room, code) => {
 		beforeEach(() => {

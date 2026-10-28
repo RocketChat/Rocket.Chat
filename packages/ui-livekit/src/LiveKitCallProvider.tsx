@@ -13,6 +13,7 @@ import {
 	CallActionsProvider,
 	CallDiagnosticsProvider,
 	CallStateProvider,
+	NoiseSuppressionProvider,
 	VideoQualityProvider,
 	playJoinChime,
 	playMutedReminder,
@@ -30,6 +31,7 @@ import { useCallDataChannel } from './useCallDataChannel';
 import { useCallDeviceSwitching } from './useCallDeviceSwitching';
 import { useCallDiagnostics } from './useCallDiagnostics';
 import { useLiveKitTransport } from './useLiveKitTransport';
+import { useNoiseSuppression } from './useNoiseSuppression';
 import { useSendResolution } from './useSendResolution';
 import { useSpeakingWhileMuted } from './useSpeakingWhileMuted';
 import { useVideoQuality } from './useVideoQuality';
@@ -42,6 +44,8 @@ export type LiveKitCallProviderProps = {
 	preferences?: { mic?: boolean; cam?: boolean; micId?: string; camId?: string; speakerId?: string };
 	/** The call ended for this user, whoever ended it. */
 	onEnded: () => void;
+	/** Where the workspace serves RNNoise's worklet and WebAssembly from. */
+	rnnoiseBaseUrl: string;
 	children: ReactNode;
 };
 
@@ -64,7 +68,7 @@ const useArrivalPreferences = (preferences: LiveKitCallProviderProps['preference
  * Mounted around the window before the join: the room exists from the first render and `connect` is what flips,
  * so nothing it wraps remounts when the call starts.
  */
-export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, children }: LiveKitCallProviderProps) => {
+export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, rnnoiseBaseUrl, children }: LiveKitCallProviderProps) => {
 	const dispatchToastMessage = useToastMessageDispatch();
 	const { data: credentials, error: transportError } = useLiveKitTransport(callId, connect);
 	const [room] = useState(() => new Room());
@@ -153,6 +157,7 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 
 	const sendResolution = useSendResolution(localCameraTrack);
 	const videoQuality = useVideoQuality(room, camEnabled ? localCameraTrack : undefined, sendResolution?.height);
+	const noiseSuppression = useNoiseSuppression(room, localMicPub?.audioTrack, rnnoiseBaseUrl);
 
 	const diagnostics = useCallDiagnostics(
 		room,
@@ -259,10 +264,12 @@ export const LiveKitCallProvider = ({ callId, connect, preferences, onEnded, chi
 			<CallActionsProvider value={actions}>
 				<DeviceSelectionProvider value={deviceSelection}>
 					<VideoQualityProvider value={videoQuality}>
-						<CallDiagnosticsProvider value={diagnostics ?? null}>
-							{children}
-							<RoomAudioRenderer room={room} />
-						</CallDiagnosticsProvider>
+						<NoiseSuppressionProvider value={noiseSuppression}>
+							<CallDiagnosticsProvider value={diagnostics ?? null}>
+								{children}
+								<RoomAudioRenderer room={room} />
+							</CallDiagnosticsProvider>
+						</NoiseSuppressionProvider>
 					</VideoQualityProvider>
 				</DeviceSelectionProvider>
 			</CallActionsProvider>

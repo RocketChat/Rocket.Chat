@@ -150,8 +150,8 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 				>
 					<Button
 						icon={button.icon}
-						primary
-						small
+						variant='primary'
+						size='small'
 						loading={loading}
 						disabled={action === 'request' && (app?.requestedEndUser || endUserRequested)}
 						onClick={handleAcquireApp}
@@ -173,7 +173,7 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 						variant={getStatusVariant(status)}
 						title={status.tooltipText ? status.tooltipText : ''}
 					>
-						<Box display='flex' color={getStatusFontColor(status)} alignItems='center' gap={2}>
+						<Box display='flex' color={getStatusFontColor(status)} alignItems='center' gap='x4'>
 							{status.icon && <Icon name={status.icon} size={16} />}
 							{handleAppRequestsNumber(status)} {t(status.label)}
 						</Box>

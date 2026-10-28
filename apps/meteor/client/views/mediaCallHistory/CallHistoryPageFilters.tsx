@@ -98,7 +98,12 @@ const CallHistoryPageFilters = ({ onChangeText, onChangeType, onChangeStates, se
 			</Box>
 			<Box display='flex' flexGrow={1} flexShrink={2} flexWrap='wrap'>
 				<Box minWidth='x224' margin='x4' flexGrow={1} flexShrink={1} alignItems='stretch' display='flex'>
-					<Select options={selectTypeOptions} value={type} onChange={(key: Key) => onChangeType(key as TypeFilter)} />
+					<Select
+						aria-label={t('Type')}
+						options={selectTypeOptions}
+						value={type}
+						onChange={(key: Key) => onChangeType(key as TypeFilter)}
+					/>
 				</Box>
 				<Box minWidth='x224' margin='x4' flexGrow={1} flexShrink={1}>
 					<MultiSelectCustom

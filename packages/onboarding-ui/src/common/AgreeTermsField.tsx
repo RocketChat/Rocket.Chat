@@ -38,17 +38,19 @@ const AgreeTermsField = ({ agreementField, termsHref, policyHref, control, error
 							/>
 						)}
 					/>
-					<FieldLabel htmlFor={agreementField} withRichContent required>
-						<Trans i18nKey='component.form.termsAndConditions'>
-							I agree with
-							<Box is='a' href={termsHref} target='_blank' rel='noopener noreferrer'>
-								Terms and Conditions
-							</Box>
-							and
-							<Box is='a' href={policyHref} target='_blank' rel='noopener noreferrer'>
-								Privacy Policy
-							</Box>
-						</Trans>
+					<FieldLabel htmlFor={agreementField} required>
+						<Box is='span' withRichContent>
+							<Trans i18nKey='component.form.termsAndConditions'>
+								I agree with
+								<Box is='a' href={termsHref} target='_blank' rel='noopener noreferrer'>
+									Terms and Conditions
+								</Box>
+								and
+								<Box is='a' href={policyHref} target='_blank' rel='noopener noreferrer'>
+									Privacy Policy
+								</Box>
+							</Trans>
+						</Box>
 					</FieldLabel>
 				</Box>
 			</FieldRow>
