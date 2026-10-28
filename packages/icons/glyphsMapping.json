@@ -1162,5 +1162,8 @@
 	},
 	"book-clock": {
 		"start": "\ue1cf"
+	},
+	"phone-control": {
+		"start": "\ue1d1"
 	}
 }
