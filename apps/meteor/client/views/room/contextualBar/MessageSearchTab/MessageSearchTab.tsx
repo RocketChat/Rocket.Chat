@@ -1,4 +1,4 @@
-import { Callout, Box, MessageDivider, Throbber } from '@rocket.chat/fuselage';
+import { Callout, MessageDivider, Throbber } from '@rocket.chat/fuselage';
 import { MessageTypes } from '@rocket.chat/message-types';
 import {
 	ContextualbarClose,
@@ -19,6 +19,7 @@ import { Virtuoso } from 'react-virtuoso';
 import MessageSearchForm from './components/MessageSearchForm';
 import { useMessageSearchProviderQuery } from './hooks/useMessageSearchProviderQuery';
 import { useMessageSearchQuery } from './hooks/useMessageSearchQuery';
+import MessageSearchResults from './layout/MessageSearchResults';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import RoomMessage from '../../../../components/message/variants/RoomMessage';
 import SystemMessage from '../../../../components/message/variants/SystemMessage';
@@ -27,6 +28,8 @@ import MessageListErrorBoundary from '../../MessageList/MessageListErrorBoundary
 import { isMessageNewDay } from '../../MessageList/lib/isMessageNewDay';
 import MessageListProvider from '../../MessageList/providers/MessageListProvider';
 import { useRoomSubscription } from '../../contexts/RoomContext';
+import ContextualbarInset from '../layout/ContextualbarInset';
+import MessageListSection from '../layout/MessageListSection';
 
 // TODO: Refactor this component to isolate the data from the visual
 const MessageSearchTab = () => {
@@ -64,12 +67,12 @@ const MessageSearchTab = () => {
 					<>
 						{searchText && isPending && <Throbber />}
 						{isSuccess && (
-							<Box id={searchListId} display='flex' flexDirection='column' flexGrow={1} flexShrink={1} flexBasis={0}>
+							<MessageSearchResults id={searchListId}>
 								{messageSearchData.length === 0 && <ContextualbarEmptyContent title={t('No_results_found')} />}
 								{messageSearchData.length > 0 && (
 									<MessageListErrorBoundary>
 										<MessageListProvider>
-											<Box is='section' display='flex' flexDirection='column' flexGrow={1} flexShrink={1} flexBasis='auto' height='full'>
+											<MessageListSection>
 												<VirtualizedScrollbars>
 													<Virtuoso
 														totalCount={messageSearchData.length}
@@ -112,18 +115,18 @@ const MessageSearchTab = () => {
 														}}
 													/>
 												</VirtualizedScrollbars>
-											</Box>
+											</MessageListSection>
 										</MessageListProvider>
 									</MessageListErrorBoundary>
 								)}
-							</Box>
+							</MessageSearchResults>
 						)}
 					</>
 				)}
 				{providerQuery.isError && (
-					<Box padding={24}>
+					<ContextualbarInset>
 						<Callout type='danger'>{t('Search_current_provider_not_active')}</Callout>
-					</Box>
+					</ContextualbarInset>
 				)}
 			</ContextualbarContent>
 		</ContextualbarDialog>

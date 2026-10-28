@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button, Callout, Stack, Text } from '@rocket.chat/fuselage';
+import { Icon, TextInput, Select, Throbber, ButtonGroup, Button, Callout, Stack } from '@rocket.chat/fuselage';
 import { useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
@@ -23,6 +23,10 @@ import { GroupedVirtuoso } from 'react-virtuoso';
 import { MembersListGroupHeader } from './MembersListGroupHeader';
 import RoomMembersListWrapper from './RoomMembersListWrapper';
 import RoomMembersRow from './RoomMembersRow';
+import ContextualbarListArea from '../../../../components/ContextualbarList/ContextualbarListArea';
+import ContextualbarListFilter from '../../../../components/ContextualbarList/ContextualbarListFilter';
+import ContextualbarListStatus from '../../../../components/ContextualbarList/ContextualbarListStatus';
+import ContextualbarListSummary from '../../../../components/ContextualbarList/ContextualbarListSummary';
 import InfiniteListAnchor from '../../../../components/InfiniteListAnchor';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import type { RoomMember } from '../../../hooks/useMembersList';
@@ -158,32 +162,28 @@ const RoomMembers = ({
 					onChange={setText}
 					endAddon={<Icon name='magnifier' size='x20' />}
 				/>
-				<Box width='x144' marginInlineStart={8}>
+				<ContextualbarListFilter>
 					<Select aria-label={t('Status')} options={options} value={type} onChange={(value): void => setType(value as 'online' | 'all')} />
-				</Box>
+				</ContextualbarListFilter>
 			</ContextualbarSection>
 			<ContextualbarContent flush spaced>
 				<ResultsLiveRegion shouldAnnounce={isSuccess} itemCount={members.length} />
 				{isPending && (
-					<Box paddingInline={24} paddingBlock={12}>
+					<ContextualbarListStatus spaced>
 						<Throbber size='x12' />
-					</Box>
+					</ContextualbarListStatus>
 				)}
 				{error && (
-					<Box paddingInline={24} paddingBlock={12}>
+					<ContextualbarListStatus spaced>
 						<Callout type='danger'>{error.message}</Callout>
-					</Box>
+					</ContextualbarListStatus>
 				)}
 				{isSuccess && (
 					<>
 						{members.length > 0 && (
-							<Box paddingInline={24} paddingBlockStart={4} paddingBlockEnd={8}>
-								<Text is='span' color='hint' fontScale='p2'>
-									{t('Showing_current_of_total', { current: members.length, total })}
-								</Text>
-							</Box>
+							<ContextualbarListSummary>{t('Showing_current_of_total', { current: members.length, total })}</ContextualbarListSummary>
 						)}
-						<Box id={membersListId} width='full' height='full' overflow='hidden' flexShrink={1}>
+						<ContextualbarListArea id={membersListId}>
 							{members.length <= 0 && <ContextualbarEmptyContent title={t('No_members_found')} />}
 							{members.length > 0 && (
 								<VirtualizedScrollbars>
@@ -205,7 +205,7 @@ const RoomMembers = ({
 									/>
 								</VirtualizedScrollbars>
 							)}
-						</Box>
+						</ContextualbarListArea>
 					</>
 				)}
 			</ContextualbarContent>
