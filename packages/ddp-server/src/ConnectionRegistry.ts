@@ -18,6 +18,11 @@ export class ConnectionRegistry {
 		return this.sessions.size;
 	}
 
+	/** The user of every logged-in session, repeated for a user with several sessions. */
+	userIds(): string[] {
+		return Array.from(this.sessions, (session) => session.userId).filter((userId): userId is string => !!userId);
+	}
+
 	closeSession(sessionId: string): void {
 		for (const session of this.sessions) {
 			if (session.connection.id === sessionId) {

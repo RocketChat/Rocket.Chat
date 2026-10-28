@@ -43,6 +43,15 @@ describe('ConnectionRegistry', () => {
 		expect(registry.size).toBe(1);
 	});
 
+	it('lists the user of every logged-in session, once per session', () => {
+		lifecycle.emit('connected', makeSession('user1', 's1'));
+		lifecycle.emit('connected', makeSession('user1', 's2'));
+		lifecycle.emit('connected', makeSession('user2', 's3'));
+		lifecycle.emit('connected', makeSession(undefined, 's4'));
+
+		expect(registry.userIds().sort()).toEqual(['user1', 'user1', 'user2']);
+	});
+
 	describe('closeSession', () => {
 		it('closes only the socket of the named session, whoever owns it, and never terminates', () => {
 			const target = makeSession('user1', 's1');
