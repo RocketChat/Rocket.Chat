@@ -31,6 +31,25 @@ The client is built with a relative `base`, so its chunks, fonts and images load
 server root, a path prefix (`ROOT_URL=https://example.com/chat`) or a CDN. Their names carry a content hash, so the
 server serves `/bundle/*` with `Cache-Control: public, max-age=31536000, immutable`.
 
+## Source maps
+
+The build the server serves has hidden source maps: every chunk gets a `.map` next to it, but the chunk does not
+reference it, so browsers never request one. The Docker images strip the maps; the build tarball keeps them, at
+`bundle/programs/web.browser/app/bundle/<chunk>.js.map`. That tarball is the CI artifact `build-production` and, for
+releases and `develop` builds, `https://download.rocket.chat/build/rocket.chat-<version>.tgz`.
+
+A chunk name carries its content hash, so a map named after the chunk belongs to that exact build. To debug a
+workspace:
+
+1. Download the tarball of the version the workspace runs (`/api/info`) and extract the maps:
+   `tar xzf rocket.chat-<version>.tgz --wildcards 'bundle/programs/web.browser/app/bundle/*.map'`.
+2. Serve them with CORS, for example `npx http-server bundle/programs/web.browser/app/bundle --cors -p 8080`.
+3. In Chrome DevTools, open the chunk under Sources, right-click its code, choose **Add source map…** and enter
+   `http://localhost:8080/<chunk>.js.map`. Firefox has the same entry in its debugger.
+
+To map a stack trace without a browser, resolve each `chunk:line:column` against the same files with the
+[`source-map`](https://www.npmjs.com/package/source-map) package.
+
 ## Serving the client from another host
 
 ### Through a CDN
