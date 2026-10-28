@@ -61,6 +61,38 @@ describe('email transport', () => {
 		expect(second.sendMail.calledOnceWithExactly(mail)).to.be.true;
 	});
 
+	it('should close the previous transport only after the mail already handed to it is delivered', async () => {
+		const first = fakeTransport();
+		const delivery = Promise.withResolvers<void>();
+		first.sendMail.returns(delivery.promise);
+		createTransport.onFirstCall().returns(first).onSecondCall().returns(fakeTransport());
+
+		configureMailTransport({ host: 'old.example.com', secure: false, pool: true });
+		const sending = sendMail(mail);
+		configureMailTransport({ host: 'new.example.com', secure: true, pool: true });
+
+		expect(first.close.called).to.be.false;
+		delivery.resolve();
+		await sending;
+		expect(first.close.calledOnce).to.be.true;
+	});
+
+	it('should close the previous transport once the mail already handed to it fails, and propagate the failure', async () => {
+		const first = fakeTransport();
+		const delivery = Promise.withResolvers<void>();
+		first.sendMail.returns(delivery.promise);
+		createTransport.onFirstCall().returns(first).onSecondCall().returns(fakeTransport());
+
+		configureMailTransport({ host: 'old.example.com', secure: false, pool: true });
+		const sending = sendMail(mail);
+		configureMailTransport({ host: 'new.example.com', secure: true, pool: true });
+
+		expect(first.close.called).to.be.false;
+		delivery.reject(new Error('connection refused'));
+		await expect(sending).to.be.rejectedWith('connection refused');
+		expect(first.close.calledOnce).to.be.true;
+	});
+
 	it('should close the transport and warn instead of sending once SMTP is unconfigured', async () => {
 		const transport = fakeTransport();
 		createTransport.returns(transport);
