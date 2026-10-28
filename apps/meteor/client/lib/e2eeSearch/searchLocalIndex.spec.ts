@@ -58,14 +58,14 @@ describe('searchLocalIndex filters', () => {
 		});
 	});
 
-	it('moves the day boundaries by the utcOffset of the user, like the server message search', async () => {
+	it('starts the day at midnight in the time zone of the user, like the server message search', async () => {
 		const backend = createBackend();
 
 		await searchLocalIndex(backend, { searchText: 'invoice on:5.6.2024', rid: 'r1', limit: 10, utcOffset: -3 });
 
 		expect(backend.search.mock.calls[0][0]).toMatchObject({
-			from: Date.UTC(2024, 5, 5) - 3 * 60 * 60 * 1000,
-			to: Date.UTC(2024, 5, 6) - 3 * 60 * 60 * 1000 - 1,
+			from: Date.UTC(2024, 5, 5) + 3 * 60 * 60 * 1000,
+			to: Date.UTC(2024, 5, 6) + 3 * 60 * 60 * 1000 - 1,
 		});
 	});
 

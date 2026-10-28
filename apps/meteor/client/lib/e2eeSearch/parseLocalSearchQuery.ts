@@ -20,14 +20,11 @@ type LocalSearchQueryOptions = {
 };
 
 /**
- * The start of the day as the server message search computes it on a server that runs in UTC: UTC midnight, moved by
- * the user's `utcOffset` in whole hours.
+ * The start of a day in the user's time zone, as the server message search computes it. `utcOffset` is in hours and is
+ * positive east of UTC, so a user at UTC-3 starts the day at 03:00 UTC.
  */
-const startOfDay = ([day, month, year]: DateParts, utcOffset: number, addDays = 0) => {
-	const date = new Date(Date.UTC(parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10) + addDays));
-	date.setUTCHours(date.getUTCHours() + utcOffset);
-	return date.getTime();
-};
+const startOfDay = ([day, month, year]: DateParts, utcOffset: number, addDays = 0) =>
+	Date.UTC(parseInt(year, 10), parseInt(month, 10) - 1, parseInt(day, 10) + addDays) - utcOffset * 60 * 60 * 1000;
 
 /**
  * Reads the filters of the server message search (`from:`, `before:`, `after:`, `on:`) from a local search text, with

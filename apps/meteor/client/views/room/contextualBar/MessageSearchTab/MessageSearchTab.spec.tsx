@@ -135,7 +135,7 @@ describe('MessageSearchTab local search', () => {
 			order: 'recent',
 			limit: 10,
 			uid: 'u-self',
-			from: Date.UTC(2025, 0, 2) - 3 * 60 * 60 * 1000,
+			from: Date.UTC(2025, 0, 2) + 3 * 60 * 60 * 1000,
 		});
 	});
 

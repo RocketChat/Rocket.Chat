@@ -16,12 +16,18 @@ describe('parseLocalSearchQuery', () => {
 		});
 	});
 
-	it('moves the day boundaries by the utcOffset of the user, like the server message search', () => {
+	it('starts the day at midnight in the time zone of the user, like the server message search', () => {
 		expect(parseLocalSearchQuery('on:26.10.2026', { utcOffset: -3 })).toEqual({
 			text: '',
 			usernames: [],
-			from: utcMidnight(2026, 10, 26) - 3 * HOUR,
-			to: utcMidnight(2026, 10, 27) - 3 * HOUR - 1,
+			from: utcMidnight(2026, 10, 26) + 3 * HOUR,
+			to: utcMidnight(2026, 10, 27) + 3 * HOUR - 1,
+		});
+		expect(parseLocalSearchQuery('on:26.10.2026', { utcOffset: 5.5 })).toEqual({
+			text: '',
+			usernames: [],
+			from: utcMidnight(2026, 10, 26) - 5.5 * HOUR,
+			to: utcMidnight(2026, 10, 27) - 5.5 * HOUR - 1,
 		});
 	});
 
@@ -42,7 +48,7 @@ describe('parseLocalSearchQuery', () => {
 });
 
 describe('parseLocalSearchQuery and the server message search', () => {
-	// The server parser builds its range in the time zone of the server process: these specs run in UTC (`TZ=UTC`).
+	// The server range does not depend on the time zone of the server process. These specs run in UTC (`TZ=UTC`).
 	const serverRange = (text: string, utcOffset: number | undefined) => {
 		const { query } = parseMessageSearchQuery(text, { user: { utcOffset } as IUser });
 		const ts = query.ts as { $gte?: Date; $lte?: Date; $lt?: Date } | undefined;
