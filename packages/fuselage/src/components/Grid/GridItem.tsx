@@ -1,6 +1,6 @@
 import breakpoints from '@rocket.chat/fuselage-tokens/dist/breakpoints.json';
 import { styled, View, type GetProps } from '@tamagui/web';
-import { createContext, useContext } from 'react';
+import { createContext, useContext, type CSSProperties } from 'react';
 
 import { cx } from '../../helpers/composeClassNames';
 import { fontFamily } from '../../styleTokens';
@@ -35,13 +35,24 @@ export const gutter = (breakpoint: Breakpoint, factor: number) => `${(breakpoint
 /** The breakpoints a `Grid` pins its items to, whatever the viewport width. */
 export const GridContext = createContext<Partial<Record<Breakpoint, boolean>>>({});
 
+type Sizing = 'grow' | 'basis' | 'max';
+
+const sizingProperty = (sizing: Sizing, breakpoint: Breakpoint) => `--rcx-grid-item-${sizing}-${breakpoint}` as const;
+
+/** A breakpoint without its own value keeps the one of the narrower breakpoint before it. */
+const sizingChain = (sizing: Sizing, breakpoint: Breakpoint, base: string) =>
+	breakpointNames
+		.slice(0, breakpointNames.indexOf(breakpoint) + 1)
+		.reduce((fallback, name) => `var(${sizingProperty(sizing, name)}, ${fallback})`, base);
+
 const GridItemFrame = styled(View, {
 	...gridBoxStyle,
 	display: 'block',
-	flexGrow: 1,
-	flexBasis: 0,
-	paddingBlock: perBreakpoint((breakpoint) => gutter(breakpoint, 1 / 2)),
-	paddingInline: perBreakpoint((breakpoint) => gutter(breakpoint, 1 / 2)),
+	flexGrow: perBreakpoint((breakpoint) => sizingChain('grow', breakpoint, '1')),
+	flexBasis: perBreakpoint((breakpoint) => sizingChain('basis', breakpoint, '0')),
+	maxWidth: perBreakpoint((breakpoint) => sizingChain('max', breakpoint, 'none')),
+	paddingBlock: perBreakpoint((breakpoint) => `var(--rcx-grid-item-padding, ${gutter(breakpoint, 1 / 2)})`),
+	paddingInline: perBreakpoint((breakpoint) => `var(--rcx-grid-item-padding, ${gutter(breakpoint, 1 / 2)})`),
 });
 
 const width = (breakpoint: Breakpoint, columns: number) => `${(columns / breakpoints[breakpoint].columns) * 100}%`;
@@ -52,33 +63,19 @@ const useItemStyle = (columnsByBreakpoint: Partial<Record<Breakpoint, number>>) 
 	const pinnedPadding = breakpointNames.findLast((breakpoint) => pinned[breakpoint]);
 	const pinnedColumns = breakpointNames.findLast((breakpoint) => pinned[breakpoint] && columnsByBreakpoint[breakpoint]);
 
-	const padding = pinnedPadding && gutter(pinnedPadding, 1 / 2);
+	const style: Record<string, string | number> = {};
+	if (pinnedPadding) style['--rcx-grid-item-padding'] = gutter(pinnedPadding, 1 / 2);
 
-	if (pinnedColumns) {
-		const w = width(pinnedColumns, columnsByBreakpoint[pinnedColumns]!);
-		return { flexGrow: 0, flexBasis: w, maxWidth: w, ...(padding && { paddingBlock: padding, paddingInline: padding }) };
+	for (const breakpoint of breakpointNames) {
+		const columns = pinnedColumns ? columnsByBreakpoint[pinnedColumns] : columnsByBreakpoint[breakpoint];
+		if (!columns) continue;
+		const w = width(pinnedColumns ?? breakpoint, columns);
+		style[sizingProperty('grow', breakpoint)] = 0;
+		style[sizingProperty('basis', breakpoint)] = w;
+		style[sizingProperty('max', breakpoint)] = w;
 	}
 
-	if (!breakpointNames.some((breakpoint) => columnsByBreakpoint[breakpoint])) {
-		return padding ? { paddingBlock: padding, paddingInline: padding } : {};
-	}
-
-	// Breakpoints the item sets no columns for keep the value of the narrower one before them
-	const sized = (sizedValue: (breakpoint: Breakpoint, columns: number) => string | number, baseValue: string | number) =>
-		perBreakpoint((breakpoint) => {
-			const columns = columnsByBreakpoint[breakpoint];
-			if (columns) {
-				return sizedValue(breakpoint, columns);
-			}
-			return breakpoint === 'xs' ? baseValue : undefined;
-		});
-
-	return {
-		flexGrow: sized(() => 0, 1),
-		flexBasis: sized(width, 0),
-		maxWidth: sized(width, 'none'),
-		...(padding && { paddingBlock: padding, paddingInline: padding }),
-	};
+	return style;
 };
 
 export type GridItemProps = ElementProps<HTMLDivElement> & {
@@ -89,12 +86,12 @@ export type GridItemProps = ElementProps<HTMLDivElement> & {
 	xl?: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 };
 
-const GridItem = ({ xs, sm, md, lg, xl, className, ...props }: GridItemProps) => {
+const GridItem = ({ xs, sm, md, lg, xl, className, style, ...props }: GridItemProps) => {
 	const itemStyle = useItemStyle({ xs, sm, md, lg, xl });
 
 	return (
 		<GridItemFrame
-			{...itemStyle}
+			style={{ ...itemStyle, ...style } as CSSProperties}
 			{...(props as GetProps<typeof GridItemFrame>)}
 			className={cx(
 				'rcx-grid__item',

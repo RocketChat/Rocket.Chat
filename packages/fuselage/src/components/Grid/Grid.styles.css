@@ -1,0 +1,80 @@
+/* Sizes passed through `style` apply to their own item, never to a nested one */
+@property --rcx-grid-item-grow-xs {
+	syntax: '*';
+	inherits: false;
+}
+
+@property --rcx-grid-item-grow-sm {
+	syntax: '*';
+	inherits: false;
+}
+
+@property --rcx-grid-item-grow-md {
+	syntax: '*';
+	inherits: false;
+}
+
+@property --rcx-grid-item-grow-lg {
+	syntax: '*';
+	inherits: false;
+}
+
+@property --rcx-grid-item-grow-xl {
+	syntax: '*';
+	inherits: false;
+}
+
+@property --rcx-grid-item-basis-xs {
+	syntax: '*';
+	inherits: false;
+}
+
+@property --rcx-grid-item-basis-sm {
+	syntax: '*';
+	inherits: false;
+}
+
+@property --rcx-grid-item-basis-md {
+	syntax: '*';
+	inherits: false;
+}
+
+@property --rcx-grid-item-basis-lg {
+	syntax: '*';
+	inherits: false;
+}
+
+@property --rcx-grid-item-basis-xl {
+	syntax: '*';
+	inherits: false;
+}
+
+@property --rcx-grid-item-max-xs {
+	syntax: '*';
+	inherits: false;
+}
+
+@property --rcx-grid-item-max-sm {
+	syntax: '*';
+	inherits: false;
+}
+
+@property --rcx-grid-item-max-md {
+	syntax: '*';
+	inherits: false;
+}
+
+@property --rcx-grid-item-max-lg {
+	syntax: '*';
+	inherits: false;
+}
+
+@property --rcx-grid-item-max-xl {
+	syntax: '*';
+	inherits: false;
+}
+
+@property --rcx-grid-item-padding {
+	syntax: '*';
+	inherits: false;
+}
