@@ -54,6 +54,7 @@ Rejected alternatives:
 - Meteor still builds an empty `web.browser` program, only for its page, runtime config and static files. Dropping it
   is the next step: the server renders the page and serves `public/` itself (#43236).
 - The client ships in a few hundred chunks rather than one per module. Startup loads a handful of grouped chunks
-  (libraries, app code, startup routes), and common chunks under 20 kB are copied into the lazy screens that use them
-  (Rolldown's experimental `experimentalInlineCommonChunks`). Merging screens into fewer files was rejected: opening
-  any screen then downloads several megabytes.
+  (libraries, app code, and the startup routes with the layout every page renders), so the login page requests six
+  scripts plus one per highlight.js language the workspace enables. Common chunks under 20 kB are copied into the lazy
+  screens that use them (Rolldown's experimental `experimentalInlineCommonChunks`). Merging screens into fewer files
+  was rejected: opening any screen then downloads several megabytes.

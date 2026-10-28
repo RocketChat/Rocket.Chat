@@ -199,6 +199,27 @@ const proxyTo = (options: { ws?: boolean } = {}) => ({
 	...options,
 });
 
+// Lazy modules every page loads as it starts, whatever the route: the routes the client imports on startup and the
+// layout the root renders. They ship together, and each keeps its own initialization.
+const bootModules = new Set(
+	[
+		'client/meteor/login/index.ts',
+		'client/startup/index.ts',
+		'client/views/omnichannel/index.ts',
+		'client/views/admin/index.ts',
+		'client/views/marketplace/index.ts',
+		'client/views/account/index.ts',
+		'client/providers/MeteorProvider.tsx',
+		'client/views/root/AppLayout.tsx',
+		'client/views/root/MainLayout/MainLayout.tsx',
+		'client/views/banners/BannerRegion.tsx',
+		'client/views/cloud/CloudAnnouncementsRegion.tsx',
+		'client/components/connectionStatus/ConnectionStatusBar.tsx',
+		'client/components/AppLayoutThemeWrapper.tsx',
+		'client/components/ActionManagerBusyState.tsx',
+	].map((file) => join(appRoot, file)),
+);
+
 const distOnly = new Set(distOnlyWorkspacePackages);
 
 // Every other workspace package is compiled from its source, so the client needs no package build and edits to
@@ -362,13 +383,11 @@ export default defineConfig({
 					// so opening a screen takes one request without downloading code it does not use.
 					experimentalInlineCommonChunks: { maxSize: 20_000, exclude: /\.(css|scss|sass|less|styl|stylus|pcss|postcss|sss)(\?|$)/ },
 					groups: [
+						// Its direct eval keeps the minifier from renaming anything in the chunk that holds it.
+						{ name: 'libphonenumber', test: /[\\/]google-libphonenumber[\\/]/, priority: 4 },
 						{ name: 'vendor', test: /node_modules/, tags: ['$initial'], priority: 3 },
 						{ name: 'app', tags: ['$initial'], priority: 2 },
-						{
-							name: 'boot',
-							test: /client[\\/](meteor[\\/]login|startup|views[\\/](omnichannel|admin|marketplace|account))[\\/]index\.tsx?$/,
-							priority: 1,
-						},
+						{ name: 'boot', test: (id: string) => bootModules.has(id.split('?')[0]), priority: 1 },
 					],
 				},
 			},
