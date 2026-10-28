@@ -10,7 +10,6 @@ export const SidebarCollapsedContext = createContext(false);
 
 const SidebarFrame = styled(View, {
 	render: 'nav',
-	group: 'rcx-sidebar' as never,
 	...boxFull,
 	position: 'relative',
 	height: size('full'),

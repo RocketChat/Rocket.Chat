@@ -61,10 +61,10 @@ export const textEllipsis = {
 	textOverflow: 'ellipsis',
 } as const;
 
-/** A collapsed sidebar keeps this text out of sight, on one line, until it is hovered. */
+/** A collapsed sidebar keeps this text out of sight, on one line; Sidebar.styles.css shows it while the sidebar is hovered. */
 export const hiddenWhileCollapsed = {
-	visibility: { 'default': 'hidden', 'group-hover/rcx-sidebar': 'visible' },
-	whiteSpace: { 'default': 'nowrap', 'group-hover/rcx-sidebar': 'inherit' },
+	visibility: 'hidden',
+	whiteSpace: 'nowrap',
 } as const;
 
 /** The keyboard focus look of the sidebar's own clickable bars: a highlighted border instead of a ring. */

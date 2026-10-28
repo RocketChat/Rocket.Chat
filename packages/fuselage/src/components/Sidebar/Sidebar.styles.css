@@ -116,5 +116,15 @@
 		.rcx-sidebar--collapsed:hover .rcx-sidebar-link .rcx-sidebar-item__title {
 			display: block;
 		}
+
+		.rcx-sidebar--collapsed:hover .rcx-sidebar-banner__content {
+			display: block;
+		}
+
+		.rcx-sidebar--collapsed:hover .rcx-sidebar-footer,
+		.rcx-sidebar--collapsed:hover .rcx-sidebar-media__title {
+			visibility: visible;
+			white-space: inherit;
+		}
 	}
 }

@@ -38,7 +38,7 @@ const SidebarBannerContent = styled(Text, {
 
 	variants: {
 		collapsed: {
-			true: { display: { 'default': 'none', 'group-hover/rcx-sidebar': 'block' } },
+			true: { display: 'none' },
 		},
 	} as const,
 });
