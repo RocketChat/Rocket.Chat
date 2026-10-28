@@ -16,6 +16,8 @@ const ItemGroupFrame = styled(View, {
 	margin: 0,
 	padding: 0,
 	listStyle: 'none',
+	containerType: 'inline-size',
+	containerName: 'rcx-item-group',
 });
 
 export type ItemGroupProps = {
@@ -39,11 +41,7 @@ const ItemGroup = ({ is: Tag = 'div', className, children, ...props }: ItemGroup
 
 	return (
 		<ItemGroupContext.Provider value={contextValue}>
-			<ItemGroupFrame
-				render={<Tag aria-labelledby={ariaLabelledBy} {...props} />}
-				container='rcx-item-group'
-				className={cx('rcx-item-group', className)}
-			>
+			<ItemGroupFrame render={<Tag aria-labelledby={ariaLabelledBy} {...props} />} className={cx('rcx-item-group', className)}>
 				{children}
 			</ItemGroupFrame>
 		</ItemGroupContext.Provider>
