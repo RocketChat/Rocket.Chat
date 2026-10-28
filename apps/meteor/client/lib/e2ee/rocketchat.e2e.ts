@@ -938,6 +938,7 @@ PublicSettings.use.subscribe((state, prevState) => {
 export const e2eSearchIndexWriter = createSearchIndexWriter({
 	getBackend: () => e2eSearchIndexSession.getActiveBackend(),
 	onError: (error) => log.span('searchIndexWriter').error('Error indexing decrypted messages', error),
+	onWarn: (message) => log.span('searchIndexWriter').warn(message),
 });
 
 roomMessageDeletes.on('deleteMessage', ({ _id }) => {

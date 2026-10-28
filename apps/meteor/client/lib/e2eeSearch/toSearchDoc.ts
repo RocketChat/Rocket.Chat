@@ -19,11 +19,12 @@ const removeLongUrlTails = (text: string): string =>
 		return url.slice(0, tailStart);
 	});
 
-const capLength = (text: string): string => {
-	if (text.length <= MAX_SEARCH_DOC_BODY_LENGTH) {
+/** Cuts a body to at most `maxLength` characters, without keeping half of a character. */
+export const cutSearchDocBody = (text: string, maxLength = MAX_SEARCH_DOC_BODY_LENGTH): string => {
+	if (text.length <= maxLength) {
 		return text;
 	}
-	const capped = text.slice(0, MAX_SEARCH_DOC_BODY_LENGTH);
+	const capped = text.slice(0, maxLength);
 	const last = capped.charCodeAt(capped.length - 1);
 	// Do not keep half of a surrogate pair.
 	return last >= 0xd800 && last <= 0xdbff ? capped.slice(0, -1) : capped;
@@ -95,7 +96,7 @@ export const toSearchDoc = (message: IMessage): E2EESearchDoc | undefined => {
 	fileNames.forEach(add);
 	const hasAttachmentText = parts.length > textParts;
 
-	const body = capLength(removeLongUrlTails(parts.join('\n')));
+	const body = cutSearchDocBody(removeLongUrlTails(parts.join('\n')));
 	if (!body.trim()) {
 		return undefined;
 	}

@@ -1,5 +1,5 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import type { ISearchIndexBackend } from '@rocket.chat/desktop-api';
+import type { E2EESearchDoc, ISearchIndexBackend } from '@rocket.chat/desktop-api';
 
 import { createSearchIndexWriter } from './searchIndexWriter';
 import { MAX_SEARCH_DOC_BODY_LENGTH } from './toSearchDoc';
@@ -135,11 +135,11 @@ describe('createSearchIndexWriter', () => {
 		expect(backend.upsert.mock.calls.flatMap(([docs]) => docs)).toHaveLength(70);
 	});
 
-	it('reports a failed upsert and keeps working for the next window', async () => {
+	it('reports a document that the index rejects also with its body cut, and keeps working for the next window', async () => {
 		const backend = createBackend();
 		const onError = jest.fn();
 		const writer = createSearchIndexWriter({ getBackend: () => backend, delayMs: DELAY, onError });
-		backend.upsert.mockRejectedValueOnce(new Error('index is full'));
+		backend.upsert.mockRejectedValueOnce(new Error('index is full')).mockRejectedValueOnce(new Error('index is full'));
 
 		writer.index(message('m1'));
 		await jest.advanceTimersByTimeAsync(DELAY);
@@ -147,8 +147,8 @@ describe('createSearchIndexWriter', () => {
 		await jest.advanceTimersByTimeAsync(DELAY);
 
 		expect(onError).toHaveBeenCalledTimes(1);
-		expect(backend.upsert).toHaveBeenCalledTimes(2);
-		expect(backend.upsert.mock.calls[1][0].map((doc) => doc.id)).toEqual(['m2']);
+		expect(backend.upsert).toHaveBeenCalledTimes(3);
+		expect(backend.upsert.mock.calls[2][0].map((doc) => doc.id)).toEqual(['m2']);
 	});
 
 	it('does not change the message that it indexes', () => {
@@ -167,6 +167,84 @@ describe('createSearchIndexWriter', () => {
 		const writer = createSearchIndexWriter({ getBackend: () => backend, delayMs: DELAY });
 
 		writer.index(message('m1'));
+		await writer.flush();
+
+		expect(backend.upsert).toHaveBeenCalledTimes(1);
+	});
+});
+
+describe('createSearchIndexWriter with a rejected batch', () => {
+	beforeEach(() => {
+		jest.useFakeTimers();
+	});
+
+	afterEach(() => {
+		jest.useRealTimers();
+	});
+
+	const rejecting = (isRejected: (doc: E2EESearchDoc) => boolean) => {
+		const backend = createBackend();
+		const accepted: E2EESearchDoc[] = [];
+		backend.upsert.mockImplementation(async (docs) => {
+			if (docs.some(isRejected)) throw new Error('docs are not valid');
+			accepted.push(...docs);
+		});
+		return { backend, accepted };
+	};
+
+	it('splits a rejected batch in halves and retries each half, down to single documents', async () => {
+		const { backend, accepted } = rejecting((doc) => doc.id === 'm3');
+		const writer = createSearchIndexWriter({ getBackend: () => backend, delayMs: DELAY });
+
+		for (let i = 0; i < 8; i++) writer.index(message(`m${i}`));
+		await writer.flush();
+
+		expect(accepted.map((doc) => doc.id).sort()).toEqual(['m0', 'm1', 'm2', 'm4', 'm5', 'm6', 'm7']);
+		expect(backend.upsert.mock.calls.map(([docs]) => docs.length)).toEqual([8, 4, 2, 2, 1, 1, 1, 4]);
+	});
+
+	it('cuts the body of a single rejected document and retries it once', async () => {
+		const { backend, accepted } = rejecting((doc) => doc.body.length > 20);
+		const writer = createSearchIndexWriter({ getBackend: () => backend, delayMs: DELAY });
+
+		writer.index(message('m1', { msg: 'first words then many more words' }));
+		await writer.flush();
+
+		expect(accepted).toHaveLength(1);
+		expect(accepted[0]).toMatchObject({ id: 'm1', body: 'first words then' });
+		expect(backend.upsert).toHaveBeenCalledTimes(2);
+	});
+
+	it('reports a document that is still rejected with its body cut, logs it by id without its text, and indexes the others', async () => {
+		const { backend, accepted } = rejecting((doc) => doc.id === 'bad');
+		const onError = jest.fn();
+		const onWarn = jest.fn();
+		const writer = createSearchIndexWriter({ getBackend: () => backend, delayMs: DELAY, onError, onWarn });
+
+		writer.index(message('ok'));
+		writer.index(message('bad'));
+		await writer.flush();
+
+		expect(accepted.map((doc) => doc.id)).toEqual(['ok']);
+		expect(backend.upsert.mock.calls.filter(([docs]) => docs.length === 1 && docs[0].id === 'bad')).toHaveLength(2);
+		expect(onError).toHaveBeenCalledTimes(1);
+		const warnings = onWarn.mock.calls.map(([text]) => text).join('\n');
+		expect(warnings).toMatch(/2 documents/);
+		expect(warnings).toMatch(/bad/);
+		expect(warnings).not.toMatch(/secret words/);
+	});
+
+	it('stops the retries when the index closes', async () => {
+		let open = true;
+		const backend = createBackend();
+		backend.upsert.mockImplementation(async () => {
+			open = false;
+			throw new Error('index is not open');
+		});
+		const writer = createSearchIndexWriter({ getBackend: () => (open ? backend : undefined), delayMs: DELAY });
+
+		writer.index(message('m1'));
+		writer.index(message('m2'));
 		await writer.flush();
 
 		expect(backend.upsert).toHaveBeenCalledTimes(1);

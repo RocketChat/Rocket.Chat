@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import type { E2EESearchDoc, ISearchIndexBackend } from '@rocket.chat/desktop-api';
 
-import { toSearchDoc } from './toSearchDoc';
+import { cutSearchDocBody, toSearchDoc } from './toSearchDoc';
 
 /** The most documents that the desktop index accepts in one `upsert` call (`MAX_BATCH_SIZE` in the desktop `validate.ts`). */
 const MAX_DOCS_PER_CALL = 500;
@@ -18,6 +18,8 @@ type SearchIndexWriterOptions = {
 	/** How long the writer collects documents before it sends them in one call. */
 	delayMs?: number;
 	onError?: (error: unknown) => void;
+	/** Reports a rejected upsert and what the writer does about it. The text names documents by id only, never their words. */
+	onWarn?: (message: string) => void;
 };
 
 export type SearchIndexWriter = {
@@ -62,6 +64,7 @@ export const createSearchIndexWriter = ({
 	getBackend,
 	delayMs = 500,
 	onError = () => undefined,
+	onWarn = () => undefined,
 }: SearchIndexWriterOptions): SearchIndexWriter => {
 	let queue = new Map<string, E2EESearchDoc>();
 	let queueBackend: ISearchIndexBackend | undefined;
@@ -101,14 +104,43 @@ export const createSearchIndexWriter = ({
 
 		return enqueue(async () => {
 			for (const call of toCalls(docs)) {
-				if (getBackend() !== backend) return;
-				try {
-					await backend.upsert(call);
-				} catch (error) {
-					onError(error);
-				}
+				await upsert(backend, call);
 			}
 		});
+	};
+
+	/**
+	 * Sends the documents. A rejected call is split in halves and each half is sent again, down to single documents. A
+	 * rejected document is sent once more with its body cut to half, and reported if the index rejects it again.
+	 */
+	const upsert = async (backend: ISearchIndexBackend, docs: E2EESearchDoc[]): Promise<void> => {
+		if (getBackend() !== backend) return;
+		try {
+			await backend.upsert(docs);
+		} catch {
+			if (getBackend() !== backend) return;
+
+			if (docs.length > 1) {
+				onWarn(`The index rejected an upsert of ${docs.length} documents; sending it again in two halves`);
+				const half = Math.ceil(docs.length / 2);
+				await upsert(backend, docs.slice(0, half));
+				await upsert(backend, docs.slice(half));
+				return;
+			}
+
+			const [doc] = docs;
+			const body = cutSearchDocBody(doc.body, Math.floor(doc.body.length / 2));
+			onWarn(
+				`The index rejected document ${doc.id}; sending it again with its body cut from ${doc.body.length} to ${body.length} characters`,
+			);
+			try {
+				await backend.upsert([{ ...doc, body }]);
+			} catch (retryError) {
+				if (getBackend() !== backend) return;
+				onWarn(`The index rejected document ${doc.id} also with its body cut; it is not indexed`);
+				onError(retryError);
+			}
+		}
 	};
 
 	const remove = (ids: string[], { deleted = true }: { deleted?: boolean } = {}) => {
