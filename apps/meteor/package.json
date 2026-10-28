@@ -40,6 +40,7 @@
 		"ha:add": "tsx .scripts/run-ha.ts instance",
 		"ha:start": "tsx .scripts/run-ha.ts main",
 		"lint": "yarn stylelint && yarn run -T oxlint",
+		"lint:fix": "yarn stylelint:fix && yarn run -T oxlint --fix",
 		"migration:add": "tsx .scripts/make-migration.ts",
 		"ms": "TRANSPORTER=${TRANSPORTER:-TCP} meteor npm run dev",
 		"obj:dev": "TEST_MODE=true yarn dev",
