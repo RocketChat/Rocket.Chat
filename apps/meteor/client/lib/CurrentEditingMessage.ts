@@ -33,9 +33,28 @@ export class CurrentEditingMessage {
 		});
 	};
 
-	public stop = async () => {
+	public stop = async ({ messageDeleted = false }: { messageDeleted?: boolean } = {}) => {
 		await this.runExclusive(async () => {
-			if (!this.chat.composer || !this.mid) {
+			if (!this.mid) {
+				return;
+			}
+
+			if (messageDeleted) {
+				const { mid } = this;
+
+				try {
+					await this.chat.data.discardDraft(mid);
+				} finally {
+					this.chat.composer?.clear();
+					this.chat.composer?.setEditingMode(false);
+					this.mid = undefined;
+					clearHighlightMessage();
+				}
+
+				return;
+			}
+
+			if (!this.chat.composer) {
 				return;
 			}
 
