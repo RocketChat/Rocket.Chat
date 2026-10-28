@@ -54,8 +54,9 @@ To map a stack trace without a browser, resolve each `chunk:line:column` against
 
 ### Through a CDN
 
-Set `CDN_PREFIX` (with `CDN_PREFIX_ALL`) or `CDN_JSCSS_PREFIX` to a CDN that pulls from the server. The server still
-renders the page, and the entry, chunks and stylesheets load from the CDN. Nothing else changes.
+Set `CDN_PREFIX` with `CDN_PREFIX_ALL` on (the default), or turn `CDN_PREFIX_ALL` off and set `CDN_JSCSS_PREFIX`, to a
+CDN that pulls from the server. The server still renders the page, and the entry, chunks and stylesheets load from the
+CDN. Nothing else changes.
 
 ### From your own host
 
