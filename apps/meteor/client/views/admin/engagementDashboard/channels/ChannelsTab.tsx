@@ -1,5 +1,5 @@
-import EngagementDashboardCard from '../EngagementDashboardCard';
 import ChannelsOverview from './ChannelsOverview';
+import EngagementDashboardCard from '../layout/EngagementDashboardCard';
 
 const ChannelsTab = () => (
 	<EngagementDashboardCard>

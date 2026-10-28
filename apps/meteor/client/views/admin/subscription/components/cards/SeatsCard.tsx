@@ -1,9 +1,9 @@
 import { Palette } from '@rocket.chat/fuselage';
 import { useTranslation } from 'react-i18next';
 
+import FeatureUsageCardBody from '../../layout/FeatureUsageCardBody';
 import type { CardProps } from '../FeatureUsageCard';
 import FeatureUsageCard from '../FeatureUsageCard';
-import FeatureUsageCardBody from '../FeatureUsageCardBody';
 import UpgradeButton from '../UpgradeButton';
 import UsagePieGraph from '../UsagePieGraph';
 
