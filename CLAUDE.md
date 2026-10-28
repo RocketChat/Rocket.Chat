@@ -14,7 +14,9 @@ the route-level view; components take props and callbacks (translation, theme an
 fine anywhere). Pass derived values, not raw data to derive from; derive in a function instead
 of syncing state in an effect; data down, actions up — a component never navigates or toasts
 on its own. A small component just takes props and needs no provider. Full rules:
-[docs/frontend/building-components.md](docs/frontend/building-components.md).
+[docs/frontend/building-components.md](docs/frontend/building-components.md). A scope with
+several screens lives in its own `packages/ui-<scope>` with stories and specs, and the
+provider stays in the app: [docs/frontend/feature-packages.md](docs/frontend/feature-packages.md).
 
 ## Documentation index
 
@@ -31,7 +33,8 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
   - [typescript-conventions.md](docs/frontend/typescript-conventions.md) — ES modules, `import type`, `type` vs `interface`, `any` vs `unknown`
   - [migrating-from-javascript.md](docs/frontend/migrating-from-javascript.md) — gradual JS → TS migration
   - [react.md](docs/frontend/react.md) — component structure, naming, exports, explicit and generic props types
-  - [building-components.md](docs/frontend/building-components.md) — application vs Fuselage components, styling rules, Storybook-first
+  - [building-components.md](docs/frontend/building-components.md) — application vs Fuselage components, where a component gets its data, styling rules, Storybook-first
+  - [feature-packages.md](docs/frontend/feature-packages.md) — screens of a scope in `packages/ui-<scope>`: when to extract, package shape, allowed dependencies, the lint boundary, stories and specs
   - [i18n.md](docs/frontend/i18n.md) — client side only: `useTranslation`, `Trans`, runtime keys, escaping (shared rules in [docs/i18n.md](docs/i18n.md))
 - [docs/form-validation.md](docs/form-validation.md) — standardized form validation patterns
 - [docs/anchor-navigation.md](docs/anchor-navigation.md) — deep-linking to a field via URL hash fragments

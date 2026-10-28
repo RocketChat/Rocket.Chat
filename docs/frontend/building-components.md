@@ -211,7 +211,8 @@ Leaks to watch for:
 - a hook in the logic layer returning **icon names or copy**
 - a **state → screen mapping that exists only as JSX**, so it cannot be reused or tested
 
-In this repo: `packages/ui-conference` is the shape to copy.
+In this repo: `packages/ui-conference` is the shape to copy. Where such a package lives, what
+it may import and when a scope deserves one: [feature-packages.md](feature-packages.md).
 
 [react-context]: https://react.dev/learn/passing-data-deeply-with-context
 [abramov]: https://medium.com/@dan_abramov/smart-and-dumb-components-7ca2f9a7c7d0
@@ -224,7 +225,7 @@ In this repo: `packages/ui-conference` is the shape to copy.
 [humble]: https://martinfowler.com/bliki/HumbleObject.html
 [ioc]: https://kentcdodds.com/blog/inversion-of-control
 [react-aria]: https://react-spectrum.adobe.com/react-aria/hooks.html
-[tanstack]: https://tanstack.com/table/latest/docs/introduction
+[tanstack]: https://tanstack.com/table/latest/docs/overview
 [cdd]: https://www.componentdriven.org/
 [sb-args]: https://storybook.js.org/docs/writing-stories/args
 
