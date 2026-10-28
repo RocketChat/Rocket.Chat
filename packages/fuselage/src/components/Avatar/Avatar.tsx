@@ -2,9 +2,8 @@ import { styled, View } from '@tamagui/web';
 import type { AllHTMLAttributes, CSSProperties } from 'react';
 
 import AvatarContainer, { type AvatarContainerProps } from './AvatarContainer';
-import { AvatarStackContext } from './AvatarStack';
 import { toCSSValue } from '../../helpers/toCSSValue';
-import { borderRadius, borderWidth } from '../../styleTokens';
+import { borderRadius } from '../../styleTokens';
 import { withFuselageProvider } from '../FuselageProvider/FuselageProvider';
 
 const radius = (px: number, token: 'small' | 'medium' | 'large') => ({
@@ -12,7 +11,6 @@ const radius = (px: number, token: 'small' | 'medium' | 'large') => ({
 });
 
 const AvatarElementFrame = styled(View, {
-	context: AvatarStackContext,
 	render: 'img',
 	flexShrink: 1,
 	boxSizing: 'content-box',
@@ -43,13 +41,6 @@ const AvatarElementFrame = styled(View, {
 			'fill': { objectFit: 'fill' },
 			'none': { objectFit: 'none' },
 			'scale-down': { objectFit: 'scale-down' },
-		},
-		stacked: {
-			true: {
-				borderWidth: borderWidth('default'),
-				borderStyle: 'solid',
-				borderColor: 'transparent',
-			},
 		},
 		rounded: {
 			true: {

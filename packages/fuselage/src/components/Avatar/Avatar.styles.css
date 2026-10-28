@@ -2,3 +2,12 @@
 .rcx-avatar-stack > .rcx-avatar {
 	margin: auto -0.125rem;
 }
+
+/* A stacked avatar keeps a ring of the stack's background between it and the next one */
+@layer fuselage {
+	.rcx-avatar-stack .rcx-avatar__element {
+		border-width: 1px;
+		border-style: solid;
+		border-color: transparent;
+	}
+}
