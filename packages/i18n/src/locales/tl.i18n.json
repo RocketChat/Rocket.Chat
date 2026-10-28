@@ -1,1 +1,10 @@
-{ }
+{
+  "Apple_Watch": "Apple Watch",
+  "Apple_Watch_Quick_Actions": "Mga Mabilisang Aksyon ng Apple Watch",
+  "Apple_Watch_Quick_Actions_Description": "Mga default na mabilis na sagot para sa Apple Watch app, pinaghihiwalay ng kuwit. Idinaragdag ang mga ito sa listahan ng user sa unang beses na mag-log in sa device na may watch app; hindi binabago ang mga listahang mayroon na ang mga user. Iwanang walang laman kung ayaw ng mga default na sagot.",
+  "Apple_Watch_Quick_Actions_Max_Count": "Pinakamaraming bilang ng mabilis na sagot",
+  "Apple_Watch_Quick_Actions_Max_Count_Description": "Ang pinakamaraming mabilis na sagot na maaaring itago ng isang user. Hindi idinaragdag sa listahan ng user ang mga default na sagot na lampas sa bilang na ito. Pinapayagang saklaw: 1 hanggang 100.",
+  "Apple_Watch_Quick_Actions_Max_Length": "Pinakamataas na haba ng mabilis na sagot",
+  "Apple_Watch_Quick_Actions_Max_Length_Description": "Ang pinakamaraming character sa isang mabilis na sagot. Pinaiikli sa haba na ito ang mas mahahabang default na sagot. Pinapayagang saklaw: 1 hanggang 100.",
+  "Apple_Watch_Quick_Replies_Default": "Mga default na mabilis na sagot"
+}
