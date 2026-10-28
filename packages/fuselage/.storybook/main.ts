@@ -10,6 +10,14 @@ const config: StorybookConfig = {
 			type: 'asset/resource',
 		});
 
+		// The same lowering of allowlisted frames as the library build
+		config.module?.rules?.push({
+			test: /\/src\/components\/.+\.tsx$/,
+			exclude: /\.stories\./,
+			enforce: 'pre',
+			use: [{ loader: join(__dirname, 'lowerStyledLoader.mjs') }],
+		});
+
 		// Matches the cascade layer the published bundle pins in `vite.config.mts`
 		config.plugins?.push(new DefinePlugin({ 'process.env.TAMAGUI_CSS_LAYER': JSON.stringify('fuselage') }));
 
