@@ -492,6 +492,7 @@ API.v1.post(
 			}),
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
 		},
 	},
 	async function action() {
@@ -499,7 +500,7 @@ API.v1.post(
 		const { _id } = room;
 
 		if (!room || !(await canAccessRoomAsync(room, { _id: this.userId }))) {
-			return API.v1.failure('User does not have access to the room [error-not-allowed]', 'error-not-allowed');
+			return API.v1.forbidden('User does not have access to the room');
 		}
 
 		const { latest, oldest, inclusive = false, limit, excludePinned, filesOnly, ignoreThreads, ignoreDiscussion, users } = this.bodyParams;
