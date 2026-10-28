@@ -56,7 +56,7 @@ const setup = async ({ pages = [], maxAgeMs, undecryptable = new Set<string>(), 
 
 describe('createSearchIndexCrawler', () => {
 	describe('backfillRoomPage', () => {
-		it('asks for the newest page first, with a cursor at the start time', async () => {
+		it('asks for the newest page first, with a compound cursor at the start time', async () => {
 			const { crawler, calls } = await setup({
 				pages: [
 					{
@@ -69,7 +69,7 @@ describe('createSearchIndexCrawler', () => {
 
 			await crawler.backfillRoomPage('room1');
 
-			expect(calls).toEqual([{ roomId: 'room1', type: 'UPDATED', count: 2, previous: `${NOW}` }]);
+			expect(calls).toEqual([{ roomId: 'room1', type: 'UPDATED', count: 2, previous: `${NOW}_` }]);
 		});
 
 		it('decrypts each message of the page through the E2E path, then flushes the writer', async () => {
@@ -107,9 +107,41 @@ describe('createSearchIndexCrawler', () => {
 
 			const result = await crawler.backfillRoomPage('room1');
 
-			expect(calls[1]).toEqual({ roomId: 'room1', type: 'UPDATED', count: 2, previous: `${NOW - 2000}` });
+			expect(calls[1]).toEqual({ roomId: 'room1', type: 'UPDATED', count: 2, previous: `${NOW - 2000}_` });
 			expect(result).toEqual({ done: true, indexed: 1 });
 			expect(await backend.getRoomState('room1')).toMatchObject({ backfillDone: true });
+		});
+
+		it('saves the compound cursor that the server returns as it is, and sends it back unchanged', async () => {
+			const { crawler, calls, backend } = await setup({
+				pages: [
+					{
+						updated: [encrypted('m3', NOW - 1000), encrypted('m2', NOW - 2000)],
+						deleted: [],
+						cursor: { next: `${NOW - 1000}_m3`, previous: `${NOW - 2000}_m2` },
+					},
+					{ updated: [encrypted('m1', NOW - 2000)], deleted: [], cursor: { next: null, previous: null } },
+				],
+			});
+
+			await crawler.backfillRoomPage('room1');
+			expect(await backend.getRoomState('room1')).toMatchObject({ backfillCursor: `${NOW - 2000}_m2`, backfillDone: false });
+
+			await crawler.backfillRoomPage('room1');
+			expect(calls[1]).toEqual({ roomId: 'room1', type: 'UPDATED', count: 2, previous: `${NOW - 2000}_m2` });
+		});
+
+		it.each([
+			['a string', `${NOW - 2000}`],
+			['a number', NOW - 2000],
+		])('continues from a saved cursor of the old format (%s), with the same time as a compound cursor', async (_label, saved) => {
+			const { crawler, calls, backend } = await setup({
+				pages: [{ updated: [encrypted('m1', NOW - 3000)], deleted: [], cursor: { next: null, previous: null } }],
+			});
+			await backend.setRoomState('room1', { lastUpdate: NOW - 1000, backfillCursor: saved as string, backfillDone: false });
+
+			expect(await crawler.backfillRoomPage('room1')).toEqual({ done: true, indexed: 1 });
+			expect(calls).toEqual([{ roomId: 'room1', type: 'UPDATED', count: 2, previous: `${NOW - 2000}_` }]);
 		});
 
 		it('sets lastUpdate from the newest message of the first page, so the catch-up starts where the backfill started', async () => {
@@ -221,7 +253,7 @@ describe('createSearchIndexCrawler', () => {
 			expect(calls).toHaveLength(0);
 		});
 
-		it('pages the updated messages from lastUpdate with a next cursor, then the deleted ones', async () => {
+		it('pages the updated messages from lastUpdate with a compound next cursor, then the deleted ones', async () => {
 			const { crawler, calls, backend, writer, decryptMessage } = await setup({
 				pages: [
 					{ updated: [encrypted('m4', NOW + 5000)], deleted: [], cursor: noMore },
@@ -234,8 +266,8 @@ describe('createSearchIndexCrawler', () => {
 			expect(await crawler.catchUpRoomPage('room1')).toEqual({ done: true, indexed: 0, removed: 1 });
 
 			expect(calls).toEqual([
-				{ roomId: 'room1', type: 'UPDATED', count: 2, next: `${NOW}` },
-				{ roomId: 'room1', type: 'DELETED', count: 2, next: `${NOW}` },
+				{ roomId: 'room1', type: 'UPDATED', count: 2, next: `${NOW}_\uffff` },
+				{ roomId: 'room1', type: 'DELETED', count: 2, next: `${NOW}_\uffff` },
 			]);
 			expect(decryptMessage.mock.calls.map(([message]) => message._id)).toEqual(['m4']);
 			expect(writer.flush).toHaveBeenCalled();
@@ -258,7 +290,7 @@ describe('createSearchIndexCrawler', () => {
 			expect(await backend.getRoomState('room1')).toEqual({ lastUpdate: NOW + 5000, backfillCursor: 'c1', backfillDone: false });
 		});
 
-		it('follows the next cursor until the server returns none', async () => {
+		it('follows the next cursor that the server returns, as it is, until the server returns none', async () => {
 			const { crawler, calls, backend } = await setup({
 				pages: [
 					{
@@ -413,7 +445,10 @@ describe('createSearchIndexCrawler', () => {
 		});
 	});
 
-	describe('against the chat.syncMessages paging rules of the server', () => {
+	describe.each([
+		['a server with compound cursors', true],
+		['an older server with time-only cursors', false],
+	])('against the chat.syncMessages paging rules of %s', (_server, compoundCursors) => {
 		const MINUTE = 60 * 1000;
 		const ROOM = 'room1';
 
@@ -450,7 +485,7 @@ describe('createSearchIndexCrawler', () => {
 		};
 
 		const withHistory = () => {
-			const server = createSyncMessagesServerMock({ startAt: NOW });
+			const server = createSyncMessagesServerMock({ startAt: NOW, compoundCursors });
 			for (let i = 0; i < 250; i++) server.addHistory(`h${i}`, ROOM, NOW - 30 * DAY + i * 60 * MINUTE);
 			// Sent less than 10 minutes ago: newer than a client clock that is 10 minutes behind.
 			for (let i = 0; i < 5; i++) server.addHistory(`recent${i}`, ROOM, NOW - 5 * MINUTE + i * 1000);
@@ -482,7 +517,7 @@ describe('createSearchIndexCrawler', () => {
 			});
 
 			it('loses 0 messages of a room that was empty at the first backfill', async () => {
-				const server = createSyncMessagesServerMock({ startAt: NOW });
+				const server = createSyncMessagesServerMock({ startAt: NOW, compoundCursors });
 				const { crawler, indexed } = await crawlAgainst(server, offset);
 
 				await untilDone(() => crawler.backfillRoomPage(ROOM));
@@ -526,6 +561,90 @@ describe('createSearchIndexCrawler', () => {
 				expect(Boolean(call.next) !== Boolean(call.previous)).toBe(true);
 				expect(call.count).toBe(100);
 			}
+		});
+	});
+
+	describe('against a server with compound cursors, with messages that share one millisecond', () => {
+		const ROOM = 'room1';
+
+		const untilDone = async (step: () => Promise<{ done: boolean }>) => {
+			for (let i = 0; i < 100; i++) {
+				if ((await step()).done) return;
+			}
+			throw new Error('the crawler did not finish');
+		};
+
+		const crawlAgainst = async (server: SyncMessagesServerMock) => {
+			const backend = createFakeSearchIndexBackend();
+			await backend.open({ userId: 'u1' });
+
+			const indexed = new Map<string, number>();
+			const crawler = createSearchIndexCrawler({
+				backend,
+				syncMessages: (params) => server.syncMessages(params),
+				decryptMessage: async (message) => {
+					indexed.set(message._id, new Date(message._updatedAt).getTime());
+					return { ...message, e2e: 'done' } as IMessage;
+				},
+				writer: {
+					remove: async (ids) => {
+						ids.forEach((id) => indexed.delete(id));
+					},
+					flush: async () => undefined,
+				},
+				now: () => server.now(),
+				pageSize: 100,
+			});
+
+			return { backend, crawler, indexed };
+		};
+
+		it('loses 0 messages when a page boundary falls inside one millisecond', async () => {
+			const server = createSyncMessagesServerMock({ startAt: NOW });
+			for (let i = 0; i < 250; i++) server.addHistory(`same${String(i).padStart(3, '0')}`, ROOM, NOW - DAY);
+			const { crawler, indexed } = await crawlAgainst(server);
+
+			await untilDone(() => crawler.backfillRoomPage(ROOM));
+			server.advance(1000);
+			server.send('after', ROOM);
+			for (let i = 0; i < 250; i++) server.sendInSameMillisecond(`burst${String(i).padStart(3, '0')}`, ROOM);
+			await untilDone(() => crawler.catchUpRoomPage(ROOM));
+
+			expect(indexed).toEqual(server.liveVersions(ROOM));
+			expect(server.calls.slice(1).every((call) => (call.next ?? call.previous)?.includes('_'))).toBe(true);
+		});
+
+		it('starts the catch-up after the messages of lastUpdate, as the time-only cursor did', async () => {
+			const server = createSyncMessagesServerMock({ startAt: NOW });
+			server.addHistory('a', ROOM, NOW - DAY);
+			server.addHistory('b', ROOM, NOW - DAY);
+			const { crawler } = await crawlAgainst(server);
+			await untilDone(() => crawler.backfillRoomPage(ROOM));
+
+			server.advance(1000);
+			await untilDone(() => crawler.catchUpRoomPage(ROOM));
+
+			const catchUpCalls = server.calls.filter((call) => call.next);
+			expect(catchUpCalls).toHaveLength(2);
+			for (const call of catchUpCalls) expect(call.next).toBe(`${NOW - DAY}_\uffff`);
+			expect(await Promise.all(catchUpCalls.map((call) => server.syncMessages(call)))).toEqual([
+				{ updated: [], deleted: [], cursor: { next: null, previous: null } },
+				{ updated: [], deleted: [], cursor: { next: null, previous: null } },
+			]);
+		});
+
+		it('continues a backfill from a saved cursor of the old format and loses 0 messages', async () => {
+			const server = createSyncMessagesServerMock({ startAt: NOW });
+			for (let i = 0; i < 250; i++) server.addHistory(`h${String(i).padStart(3, '0')}`, ROOM, NOW - DAY - (i % 50));
+			const { backend, crawler, indexed } = await crawlAgainst(server);
+			// A page from before compound cursors indexed the messages from NOW - DAY - 9 on and saved a bare time.
+			await backend.setRoomState(ROOM, { lastUpdate: NOW - DAY, backfillCursor: `${NOW - DAY - 9}`, backfillDone: false });
+			for (const [id, at] of server.liveVersions(ROOM)) if (at >= NOW - DAY - 9) indexed.set(id, at);
+
+			await untilDone(() => crawler.backfillRoomPage(ROOM));
+
+			expect(indexed).toEqual(server.liveVersions(ROOM));
+			expect(server.calls[0].previous).toBe(`${NOW - DAY - 9}_`);
 		});
 	});
 });

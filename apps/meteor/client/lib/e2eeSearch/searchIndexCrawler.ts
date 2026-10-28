@@ -60,6 +60,29 @@ export type SearchIndexCrawler = {
 
 type CatchUp = { type: 'UPDATED' | 'DELETED'; from: number; cursor: string; newestUpdate: number };
 
+/*
+ * `chat.syncMessages` cursors. A server with compound cursors reads `<ms>_<_id>` as a position: it orders the messages of
+ * one millisecond by `_id`, so a page boundary inside that millisecond skips nothing, and it returns compound cursors for
+ * the next pages. An older server reads only the leading number (`parseInt`), so it sees `<ms>` and works as before.
+ * The crawler sends a compound cursor only to start paging from a time. After that, it sends back the server's cursor.
+ */
+const COMPOUND_CURSOR_SEPARATOR = '_';
+
+/** Sorts after every real `_id`, so `<ms>_<this>` as a `next` cursor excludes the messages of that millisecond. */
+const AFTER_EVERY_ID = '\uffff';
+
+/** A `previous` cursor before the messages of `ms`: no `_id` sorts before the empty one. */
+const previousCursorAt = (ms: number | string): string => `${ms}${COMPOUND_CURSOR_SEPARATOR}`;
+
+/** A `next` cursor after the messages of `ms`, like the time-only cursor `<ms>`. */
+const nextCursorAt = (ms: number): string => `${ms}${COMPOUND_CURSOR_SEPARATOR}${AFTER_EVERY_ID}`;
+
+/** A saved backfill cursor from before compound cursors is a bare `<ms>` (or a number). `<ms>_` excludes the same messages. */
+const toCompoundPreviousCursor = (cursor: string | number): string => {
+	const saved = `${cursor}`;
+	return saved.includes(COMPOUND_CURSOR_SEPARATOR) ? saved : previousCursorAt(saved);
+};
+
 const updatedAtOf = (message: IMessage): number => new Date(message._updatedAt).getTime();
 
 /**
@@ -118,7 +141,7 @@ export const createSearchIndexCrawler = ({
 				roomId: rid,
 				type: 'UPDATED',
 				count: pageSize,
-				previous: state.backfillCursor ?? `${startedAt}`,
+				previous: state.backfillCursor === undefined ? previousCursorAt(startedAt) : toCompoundPreviousCursor(state.backfillCursor),
 			});
 
 			const oldestSendTime = maxAgeMs === undefined ? undefined : startedAt - maxAgeMs;
@@ -152,7 +175,7 @@ export const createSearchIndexCrawler = ({
 			const catchUp: CatchUp = catchUps.get(rid) ?? {
 				type: 'UPDATED',
 				from: state.lastUpdate,
-				cursor: `${state.lastUpdate}`,
+				cursor: nextCursorAt(state.lastUpdate),
 				newestUpdate: state.lastUpdate,
 			};
 			const page = await syncMessages({ roomId: rid, type: catchUp.type, count: pageSize, next: catchUp.cursor });
@@ -175,7 +198,7 @@ export const createSearchIndexCrawler = ({
 				return { done: false, ...result };
 			}
 			if (catchUp.type === 'UPDATED') {
-				catchUps.set(rid, { ...catchUp, type: 'DELETED', cursor: `${catchUp.from}`, newestUpdate });
+				catchUps.set(rid, { ...catchUp, type: 'DELETED', cursor: nextCursorAt(catchUp.from), newestUpdate });
 				return { done: false, ...result };
 			}
 

@@ -16,10 +16,15 @@ export type AnySyncMessagesParams = {
 
 /**
  * An in-memory `chat.syncMessages` with the paging rules of `handleCursorPagination` and `handleWithoutPagination`
- * (`server/publications/messages.ts`): cursors are `_updatedAt` (or `_deletedAt`) in milliseconds, compared strictly,
- * and a call without a cursor has no page-size limit. Every write moves the server clock forward by 1 ms.
+ * (`server/publications/messages.ts`), and a call without a cursor has no page-size limit. Every write moves the server
+ * clock forward by 1 ms, except `sendInSameMillisecond`.
+ *
+ * With `compoundCursors` (the default), the server reads a cursor `<ms>_<_id>` as a position: it orders the messages by
+ * time and then by `_id`, and it returns compound cursors. A cursor without `_` keeps the old rules. Without
+ * `compoundCursors`, the server is an older one: it reads the leading number of each cursor (`parseInt`), compares it
+ * strictly, and returns `<ms>` cursors.
  */
-export const createSyncMessagesServerMock = ({ startAt }: { startAt: number }) => {
+export const createSyncMessagesServerMock = ({ startAt, compoundCursors = true }: { startAt: number; compoundCursors?: boolean }) => {
 	let clock = startAt;
 	const messages = new Map<string, IMessage>();
 	const trash = new Map<string, Trashed>();
@@ -47,21 +52,36 @@ export const createSyncMessagesServerMock = ({ startAt }: { startAt: number }) =
 	const updatedAtOf = (item: IMessage) => item._updatedAt.getTime();
 	const deletedAtOf = (item: Trashed) => item._deletedAt.getTime();
 
-	const page = <T>(items: T[], key: (item: T) => number, count: number, next?: string, previous?: string) => {
-		const selected = previous
-			? sortedBy(
-					items.filter((item) => key(item) < Number(previous)),
-					key,
-					-1,
-				)
-			: sortedBy(
-					items.filter((item) => key(item) > Number(next)),
-					key,
-					1,
-				);
+	const parseCursor = (cursor: string): { at: number; id?: string } => {
+		const separator = compoundCursors ? cursor.indexOf('_') : -1;
+		const at = parseInt(separator === -1 ? cursor : cursor.slice(0, separator), 10);
+		if (Number.isNaN(at)) throw new Error('Invalid Date');
+		return separator === -1 ? { at } : { at, id: cursor.slice(separator + 1) };
+	};
+
+	const compareIds = (a: string, b: string) => {
+		if (a === b) return 0;
+		return a < b ? -1 : 1;
+	};
+
+	const page = <T extends { _id: string }>(items: T[], key: (item: T) => number, count: number, next?: string, previous?: string) => {
+		const { at, id } = parseCursor((previous ?? next) as string);
+		const direction = previous ? -1 : 1;
+		const afterCursor = (item: T) => {
+			const byTime = (key(item) - at) * direction;
+			if (id === undefined || byTime !== 0) return byTime > 0;
+			return compareIds(item._id, id) * direction > 0;
+		};
+		const selected =
+			id === undefined
+				? sortedBy(items.filter(afterCursor), key, direction)
+				: items.filter(afterCursor).sort((a, b) => (key(a) - key(b)) * direction || compareIds(a._id, b._id) * direction);
 		const response = selected.slice(0, count + 1);
 
-		const cursorOf = (item: T | undefined) => (item === undefined ? null : `${key(item)}`);
+		const cursorOf = (item: T | undefined) => {
+			if (item === undefined) return null;
+			return id === undefined ? `${key(item)}` : `${key(item)}_${item._id}`;
+		};
 		let nextCursor: string | null;
 		let previousCursor: string | null;
 		if (response.length === 0) {
@@ -93,6 +113,10 @@ export const createSyncMessagesServerMock = ({ startAt }: { startAt: number }) =
 		send(id: string, rid: string) {
 			const at = tick();
 			messages.set(id, message(id, rid, at, at));
+		},
+		/** Adds a message in the same millisecond as the last write. */
+		sendInSameMillisecond(id: string, rid: string) {
+			messages.set(id, message(id, rid, clock, clock));
 		},
 		edit(id: string) {
 			const current = messages.get(id);
