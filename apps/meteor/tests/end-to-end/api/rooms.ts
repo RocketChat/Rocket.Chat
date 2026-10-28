@@ -5093,7 +5093,7 @@ describe('[Rooms]', () => {
 					},
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400);
+				.expect(403);
 		});
 
 		it('should not list the banned user in channel members', async () => {

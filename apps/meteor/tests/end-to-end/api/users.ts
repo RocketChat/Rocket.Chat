@@ -2566,7 +2566,7 @@ describe('[Users]', () => {
 					.attach('image', imgURL)
 					.field({ userId: credentials['X-User-Id'] })
 					.expect('Content-Type', 'application/json')
-					.expect(400);
+					.expect(403);
 
 				expect(res.body).to.have.property('success', false);
 			});
@@ -2675,7 +2675,7 @@ describe('[Users]', () => {
 						userId: credentials['X-User-Id'],
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400);
+					.expect(403);
 
 				expect(res.body).to.have.property('success', false);
 			});

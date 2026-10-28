@@ -2883,7 +2883,7 @@ describe('LIVECHAT - rooms', () => {
 					.expect(403)
 					.expect((res: Response) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.have.string('forbidden');
+						expect(res.body).to.have.property('errorType', 'error-forbidden');
 					});
 			});
 
@@ -3365,7 +3365,7 @@ describe('LIVECHAT - rooms', () => {
 				await deleteVisitor(visitor.token);
 			});
 			it('should fail if user is not serving and doesnt have close-others-livechat-room permission', async () => {
-				await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: room._id }).expect(400);
+				await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: room._id }).expect(403);
 			});
 		});
 
