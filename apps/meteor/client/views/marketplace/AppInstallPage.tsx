@@ -1,10 +1,11 @@
-import { Box, Button, ButtonGroup, Field, FieldGroup, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Field, FieldGroup, FieldLabel, FieldRow, TextInput } from '@rocket.chat/fuselage';
 import { PageScrollableContent, Page, PageHeader } from '@rocket.chat/ui-client';
 import { useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import { useCallback, useId } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 
 import { useInstallApp } from './hooks/useInstallApp';
+import PageFormColumn from '../../components/PageFormColumn';
 import { useSingleFileInput } from '../../hooks/useSingleFileInput';
 
 const AppInstallPage = () => {
@@ -33,7 +34,7 @@ const AppInstallPage = () => {
 		<Page flexDirection='column'>
 			<PageHeader title={t('App_Installation')} />
 			<PageScrollableContent>
-				<Box maxWidth='x600' width='full' alignSelf='center'>
+				<PageFormColumn>
 					<FieldGroup>
 						<Field>
 							<FieldLabel htmlFor={fileField}>{t('App_Url_to_Install_From_File')}</FieldLabel>
@@ -67,7 +68,7 @@ const AppInstallPage = () => {
 							</ButtonGroup>
 						</Field>
 					</FieldGroup>
-				</Box>
+				</PageFormColumn>
 			</PageScrollableContent>
 		</Page>
 	);

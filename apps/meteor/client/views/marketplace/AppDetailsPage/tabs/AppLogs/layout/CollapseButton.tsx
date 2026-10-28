@@ -9,6 +9,9 @@ export type CollapseButtonProps = {
 	onClick: () => void;
 };
 
+/**
+ * The header of a collapsible panel entry: the button that expands or collapses the region it controls.
+ */
 export const CollapseButton = ({ regionId, children, expanded, onClick }: CollapseButtonProps) => {
 	const clickable = css`
 		background: ${Palette.surface['surface-light']};

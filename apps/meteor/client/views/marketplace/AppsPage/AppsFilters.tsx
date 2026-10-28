@@ -1,4 +1,3 @@
-import { Box } from '@rocket.chat/fuselage';
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
 import { useTranslation } from 'react-i18next';
 
@@ -8,6 +7,8 @@ import TagList from '../components/CategoryFilter/TagList';
 import RadioDropDown from '../components/RadioDropDown/RadioDropDown';
 import type { CategoryDropDownListProps, CategoryOnSelected, selectedCategoriesList } from '../definitions/CategoryDropdownDefinitions';
 import type { RadioDropDownGroup, RadioDropDownOnSelected } from '../definitions/RadioDropDownDefinitions';
+import AppsFilterSlot from './layout/AppsFilterSlot';
+import AppsPageInset from './layout/AppsPageInset';
 
 export type AppsFiltersProps = {
 	text: string;
@@ -53,30 +54,30 @@ const AppsFilters = ({
 		private: t('Search_Private_apps'),
 	};
 
-	const fixFiltersSize = breakpoints.includes('lg') ? { maxWidth: 'x200', minWidth: 'x200' } : null;
+	const fixedWidthFilters = breakpoints.includes('lg');
 
 	return (
-		<Box paddingInline={24}>
+		<AppsPageInset>
 			<FilterByText value={text} onChange={(event) => setText(event.target.value)} placeholder={appsSearchPlaceholders[context]}>
 				{!isPrivateAppsPage && (
-					<Box display='flex' flexDirection='column' flexGrow={1} {...fixFiltersSize}>
+					<AppsFilterSlot fixedWidth={fixedWidthFilters}>
 						<RadioDropDown group={freePaidFilterStructure} onSelected={freePaidFilterOnSelected} />
-					</Box>
+					</AppsFilterSlot>
 				)}
-				<Box display='flex' flexDirection='column' flexGrow={1} {...fixFiltersSize}>
+				<AppsFilterSlot fixedWidth={fixedWidthFilters}>
 					<RadioDropDown group={statusFilterStructure} onSelected={statusFilterOnSelected} />
-				</Box>
+				</AppsFilterSlot>
 				{!isPrivateAppsPage && (
-					<Box display='flex' flexDirection='column' flexGrow={1}>
+					<AppsFilterSlot>
 						<CategoryDropDown categories={categories} selectedCategories={selectedCategories} onSelected={onSelected} />
-					</Box>
+					</AppsFilterSlot>
 				)}
-				<Box display='flex' flexDirection='column' flexGrow={1} {...fixFiltersSize}>
+				<AppsFilterSlot fixedWidth={fixedWidthFilters}>
 					<RadioDropDown group={sortFilterStructure} onSelected={sortFilterOnSelected} />
-				</Box>
+				</AppsFilterSlot>
 			</FilterByText>
 			<TagList categories={categoryTagList} onClick={onSelected} />
-		</Box>
+		</AppsPageInset>
 	);
 };
 

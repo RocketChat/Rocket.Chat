@@ -1,10 +1,12 @@
 import type { IApiEndpointMetadata } from '@rocket.chat/apps-engine/definition/api';
-import { Box, Text } from '@rocket.chat/fuselage';
+import { Text } from '@rocket.chat/fuselage';
 import { useAbsoluteUrl } from '@rocket.chat/ui-contexts';
 import { Fragment } from 'react';
 import { useTranslation } from 'react-i18next';
 
+import ApiReference from './layout/ApiReference';
 import { apiCurlGetter } from '../../../helpers/apiCurlGetter';
+import RichContent from '../../layout/RichContent';
 
 export type AppDetailsAPIsProps = {
 	apis: IApiEndpointMetadata[];
@@ -16,36 +18,29 @@ const AppDetailsAPIs = ({ apis }: AppDetailsAPIsProps) => {
 	const getApiCurl = apiCurlGetter(absoluteUrl);
 
 	return (
-		<>
-			<Box display='flex' flexDirection='column'>
-				<Box fontScale='h4' marginBlock={12}>
-					{t('APIs')}
-				</Box>
-				{apis.map((api) => (
-					<Box key={api.path} marginBlock={8}>
-						<Text fontScale='p2m'>
-							{api.methods.join(' | ').toUpperCase()} {api.path}
-						</Text>
-						{api.methods.map((method, index) => (
-							<Box key={index}>
-								<Box withRichContent>
-									<pre>
-										<code>
-											{getApiCurl(method, api).map((curlAddress, index) => (
-												<Fragment key={index}>
-													{curlAddress}
-													<br />
-												</Fragment>
-											))}
-										</code>
-									</pre>
-								</Box>
-							</Box>
-						))}
-					</Box>
-				))}
-			</Box>
-		</>
+		<ApiReference title={<Text fontScale='h4'>{t('APIs')}</Text>}>
+			{apis.map((api) => (
+				<Fragment key={api.path}>
+					<Text fontScale='p2m'>
+						{api.methods.join(' | ').toUpperCase()} {api.path}
+					</Text>
+					{api.methods.map((method, index) => (
+						<RichContent key={index}>
+							<pre>
+								<code>
+									{getApiCurl(method, api).map((curlAddress, index) => (
+										<Fragment key={index}>
+											{curlAddress}
+											<br />
+										</Fragment>
+									))}
+								</code>
+							</pre>
+						</RichContent>
+					))}
+				</Fragment>
+			))}
+		</ApiReference>
 	);
 };
 

@@ -1,13 +1,14 @@
-import { Box } from '@rocket.chat/fuselage';
-
 import PrivateEmptyStateDefault from './PrivateEmptyStateDefault';
 import PrivateEmptyStateUpgrade from './PrivateEmptyStateUpgrade';
+import AppsPageEmptyState from './layout/AppsPageEmptyState';
 import { usePrivateAppsEnabled } from '../hooks/usePrivateAppsEnabled';
 
 const PrivateEmptyState = () => {
 	const privateAppsEnabled = usePrivateAppsEnabled();
 
-	return <Box marginBlockStart='24px'>{privateAppsEnabled ? <PrivateEmptyStateDefault /> : <PrivateEmptyStateUpgrade />}</Box>;
+	return (
+		<AppsPageEmptyState offset='x24'>{privateAppsEnabled ? <PrivateEmptyStateDefault /> : <PrivateEmptyStateUpgrade />}</AppsPageEmptyState>
+	);
 };
 
 export default PrivateEmptyState;

@@ -1,4 +1,4 @@
-import { Box, Button, IconButton, Label } from '@rocket.chat/fuselage';
+import { Button, IconButton, Label } from '@rocket.chat/fuselage';
 import { useRouter, useSetModal } from '@rocket.chat/ui-contexts';
 import { Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +9,8 @@ import { EventFilterSelect } from './EventFilterSelect';
 import { InstanceFilterSelect } from './InstanceFilterSelect';
 import { SeverityFilterSelect } from './SeverityFilterSelect';
 import { TimeFilterSelect } from './TimeFilterSelect';
+import AppLogsFilterBar from './layout/AppLogsFilterBar';
+import FilterField from './layout/FilterField';
 import { useCompactMode } from '../../../useCompactMode';
 import { useAppLogsFilterFormContext } from '../useAppLogsFilterForm';
 import { ExportLogsModal } from './ExportLogsModal';
@@ -58,8 +60,8 @@ export const AppLogsFilter = ({ appId, expandAll, collapseAll, refetchLogs, isLo
 	const compactMode = useCompactMode();
 
 	return (
-		<Box display='flex' alignItems='flex-end' flexDirection='row' width='full' flexWrap='wrap' alignContent='flex-end' columnGap='x8'>
-			<Box display='flex' flexDirection='column' flexGrow={1}>
+		<AppLogsFilterBar>
+			<FilterField>
 				<Label id='eventFilterLabel' htmlFor='eventFilter'>
 					{t('Event')}
 				</Label>
@@ -68,17 +70,17 @@ export const AppLogsFilter = ({ appId, expandAll, collapseAll, refetchLogs, isLo
 					name='event'
 					render={({ field }) => <EventFilterSelect appId={appId} aria-labelledby='eventFilterLabel' id='eventFilter' {...field} />}
 				/>
-			</Box>
+			</FilterField>
 			{!compactMode && (
 				<>
-					<Box display='flex' flexDirection='column' flexGrow={1}>
+					<FilterField>
 						<Label id='timeFilterLabel' htmlFor='timeFilter'>
 							{t('Time')}
 						</Label>
 						<TimeFilterSelect id='timeFilter' aria-labelledby='timeFilterLabel' />
-					</Box>
+					</FilterField>
 
-					<Box display='flex' flexDirection='column' flexGrow={1}>
+					<FilterField>
 						<Label id='instanceFilterLabel' htmlFor='instanceFilter'>
 							{t('Instance')}
 						</Label>
@@ -89,12 +91,12 @@ export const AppLogsFilter = ({ appId, expandAll, collapseAll, refetchLogs, isLo
 								<InstanceFilterSelect appId={appId} aria-labelledby='instanceFilterLabel' id='instanceFilter' {...field} />
 							)}
 						/>
-					</Box>
+					</FilterField>
 
-					<Box display='flex' flexDirection='column' flexGrow={1}>
+					<FilterField>
 						<Label>{t('Severity')}</Label>
 						<Controller control={control} name='severity' render={({ field }) => <SeverityFilterSelect id='severityFilter' {...field} />} />
-					</Box>
+					</FilterField>
 
 					<IconButton
 						title={isLoading ? t('Loading') : t('Refresh_logs')}
@@ -132,6 +134,6 @@ export const AppLogsFilter = ({ appId, expandAll, collapseAll, refetchLogs, isLo
 					/>
 				</>
 			)}
-		</Box>
+		</AppLogsFilterBar>
 	);
 };
