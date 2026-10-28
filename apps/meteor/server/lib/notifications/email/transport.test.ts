@@ -17,10 +17,11 @@ const fakeTransport = () => ({ sendMail: sinon.stub().resolves(), close: sinon.s
 const mail = { to: 'someone@example.com', from: 'rocket.chat@example.com', subject: 'Hello', text: 'Hello' };
 
 describe('email transport', () => {
-	const originalTestMode = process.env.TEST_MODE;
+	const originalEnv = { TEST_MODE: process.env.TEST_MODE, NODE_ENV: process.env.NODE_ENV };
 
 	beforeEach(() => {
 		delete process.env.TEST_MODE;
+		delete process.env.NODE_ENV;
 		createTransport.reset();
 		SystemLogger.info.reset();
 		SystemLogger.warn.reset();
@@ -28,10 +29,13 @@ describe('email transport', () => {
 
 	afterEach(() => {
 		configureMailTransport(undefined);
-		if (originalTestMode === undefined) {
-			delete process.env.TEST_MODE;
-		} else {
-			process.env.TEST_MODE = originalTestMode;
+		sinon.restore();
+		for (const [name, value] of Object.entries(originalEnv)) {
+			if (value === undefined) {
+				delete process.env[name];
+			} else {
+				process.env[name] = value;
+			}
 		}
 	});
 
@@ -104,6 +108,26 @@ describe('email transport', () => {
 		expect(transport.close.calledOnce).to.be.true;
 		expect(transport.sendMail.called).to.be.false;
 		expect(SystemLogger.warn.calledOnce).to.be.true;
+	});
+
+	it('should reject instead of sending in production when SMTP is not configured', async () => {
+		process.env.NODE_ENV = 'production';
+
+		await expect(sendMail(mail)).to.be.rejectedWith('SMTP is not configured');
+	});
+
+	it('should print the mail instead of sending in development when SMTP is not configured', async () => {
+		process.env.NODE_ENV = 'development';
+		const printer = { sendMail: sinon.stub().resolves({ message: Buffer.from('Subject: Hello') }) };
+		createTransport.withArgs({ streamTransport: true, buffer: true }).returns(printer);
+		const write = sinon.stub(process.stdout, 'write');
+
+		await sendMail(mail);
+		write.restore();
+
+		expect(printer.sendMail.calledOnceWithExactly(mail)).to.be.true;
+		expect(write.calledOnce).to.be.true;
+		expect(write.firstCall.args[0]).to.include('Subject: Hello');
 	});
 
 	it('should propagate a failed delivery to the caller', async () => {

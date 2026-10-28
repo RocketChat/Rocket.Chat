@@ -47,6 +47,12 @@ export const configureMailTransport = (options: SMTPTransportOptions | SMTPPoolO
 	transport = options ? createMailTransport(options) : undefined;
 };
 
+const printMail = async (mail: SendMailOptions): Promise<void> => {
+	const { message } = await nodemailer.createTransport({ streamTransport: true, buffer: true }).sendMail(mail);
+	process.stdout.write(`====== BEGIN MAIL ======\n(Mail not sent; to enable sending, configure SMTP.)\n${message}\n====== END MAIL ======\n`);
+};
+
+/** Without SMTP, email is printed in development, rejected in production and dropped otherwise. */
 export const sendMail = async (mail: SendMailOptions): Promise<void> => {
 	if (process.env.TEST_MODE === 'true' || process.env.TEST_MODE === 'api') {
 		SystemLogger.info({ msg: 'Email not sent in test mode', mail });
@@ -54,6 +60,15 @@ export const sendMail = async (mail: SendMailOptions): Promise<void> => {
 	}
 
 	if (!transport) {
+		if (process.env.NODE_ENV === 'production') {
+			throw new Error('Email not sent: SMTP is not configured');
+		}
+
+		if (process.env.NODE_ENV === 'development') {
+			await printMail(mail);
+			return;
+		}
+
 		SystemLogger.warn('Email not sent: SMTP is not configured');
 		return;
 	}
