@@ -31,10 +31,12 @@ describe('getClientEntryTags', () => {
 	});
 
 	it.each([
-		['a path prefix', '/chat', '/chat/bundle/index-abc.js'],
-		['a CDN', 'https://cdn.example.com/', 'https://cdn.example.com/bundle/index-abc.js'],
-	])('serves every file under %s', (_name, prefix, entryUrl) => {
-		expect(getClientEntryTags(manifest, prefix)).toContain(`src="${entryUrl}"`);
+		['a path prefix', '/chat', '/chat/bundle/'],
+		['a CDN', 'https://cdn.example.com/', 'https://cdn.example.com/bundle/'],
+	])('serves every file under %s', (_name, prefix, bundleUrl) => {
+		const tags = getClientEntryTags(manifest, prefix).split('\n');
+		expect(tags).toHaveLength(6);
+		tags.forEach((tag) => expect(tag).toContain(`"${bundleUrl}`));
 	});
 
 	it('escapes the prefix', () => {
