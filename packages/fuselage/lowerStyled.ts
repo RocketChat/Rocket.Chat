@@ -1,5 +1,5 @@
 import { createHash } from 'node:crypto';
-import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { join, relative } from 'node:path';
 import { runInThisContext } from 'node:vm';
@@ -306,8 +306,8 @@ export const checkRecipe = (name: string, sc: StaticConfig, recipe: Recipe, runs
 	return cases.length;
 };
 
-/** Evaluates a module with the real `@tamagui/web`, returning the named frames. */
-export const evaluate = async (code: string, id: string, names: string[]) => {
+/** Bundles a module with the Fuselage config, so it can run against the real `@tamagui/web`. */
+const bundle = async (code: string, id: string, names: string[]) => {
 	const result = await build({
 		stdin: {
 			contents: `import ${JSON.stringify(join(root, 'src/tamagui.config.ts'))};\n${code}\nexport const __lowered__ = { ${names.join(', ')} };`,
@@ -324,13 +324,80 @@ export const evaluate = async (code: string, id: string, names: string[]) => {
 		external: ['react', 'react-dom', 'react/*', '@tamagui/*'],
 		loader: { '.css': 'empty', '.svg': 'empty', '.woff2': 'empty' },
 	});
+	return result.outputFiles[0].text;
+};
+
+const run = (bundled: string, id: string) => {
 	const module = { exports: {} as { __lowered__: Record<string, { staticConfig: StaticConfig }> } };
-	(runInThisContext(`(function (require, module, exports) {\n${result.outputFiles[0].text}\n})`) as (...args: unknown[]) => void)(
+	(runInThisContext(`(function (require, module, exports) {\n${bundled}\n})`) as (...args: unknown[]) => void)(
 		createRequire(id),
 		module,
 		module.exports,
 	);
 	return module.exports.__lowered__;
+};
+
+/** Evaluates a module with the real `@tamagui/web`, returning the named frames. */
+export const evaluate = async (code: string, id: string, names: string[]) => run(await bundle(code, id, names), id);
+
+type Lowered = { recipe: Recipe; css: string[]; stats: Record<string, number> };
+
+const cacheDir = join(root, 'node_modules/.cache/fuselage-lowered');
+let toolchain: string | undefined;
+/**
+ * What a resolution depends on besides the module's bundle: this plugin, the recipe runtime, and the version and patch
+ * of every `@tamagui/*` package, read from the lockfile because Tamagui's own cache in `node_modules/.cache/tamagui`
+ * survives a patch change.
+ */
+const toolchainHash = () =>
+	(toolchain ??= createHash('sha1')
+		.update(readFileSync(join(root, 'lowerStyled.ts')))
+		.update(readFileSync(join(root, 'src/lowered/recipe.ts')))
+		.update(
+			readFileSync(join(root, '../../yarn.lock'), 'utf8')
+				.split('\n\n')
+				.filter((block) => block.startsWith('"@tamagui/'))
+				.join('\n\n'),
+		)
+		.digest('hex'));
+
+/**
+ * Resolves and checks the named definitions of a module, or reads them from the cache. The key is the module's bundle
+ * (its source, the Fuselage config, the tokens and everything else it imports), `NODE_ENV` and the toolchain; `LOWER_STYLED_CACHE=0`
+ * always resolves.
+ */
+const lowerDefinitions = async (code: string, id: string, names: string[]): Promise<Record<string, Lowered>> => {
+	const bundled = await bundle(code, id, names);
+	const file = join(cacheDir, `${createHash('sha1').update(toolchainHash()).update(String(process.env.NODE_ENV)).update(id).update(bundled).digest('hex')}.json`);
+	const useCache = process.env.LOWER_STYLED_CACHE !== '0';
+	if (useCache && existsSync(file)) return JSON.parse(readFileSync(file, 'utf8'));
+
+	const options = allowlist[relative(root, id)];
+	const frames = run(bundled, id);
+	const results: Record<string, Lowered> = {};
+	for (const name of names) {
+		const { staticConfig } = frames[name];
+		const started = performance.now();
+		const { recipe, css, resolutions } = computeRecipe(name, staticConfig, options[name]);
+		const checked = checkRecipe(name, staticConfig, recipe);
+		results[name] = {
+			recipe,
+			css,
+			stats: {
+				resolutions,
+				checked,
+				ms: Math.round(performance.now() - started),
+				cssBytes: css.join('').length,
+				rules: css.length,
+				recipeBytes: JSON.stringify(recipe).length,
+			},
+		};
+	}
+	if (useCache) {
+		mkdirSync(cacheDir, { recursive: true });
+		writeFileSync(file, JSON.stringify(results));
+	}
+	return results;
 };
 
 let extended: Set<string> | undefined;
@@ -375,25 +442,15 @@ export const lowerModule = async (code: string, id: string) => {
 	const missing = Object.keys(allowed).filter((name) => !calls.has(name));
 	if (missing.length) throw new Error(`lowerStyled: ${relative(root, id)}: no \`styled()\` definition named ${missing.join(', ')}`);
 
-	const frames = await evaluate(code, id, [...calls.keys()]);
+	const lowered = await lowerDefinitions(code, id, [...calls.keys()]);
 	const edits: [start: number, end: number, text: string][] = [];
 	const css = new Set<string>();
 	for (const [name, { call, statement }] of calls) {
-		const { staticConfig } = frames[name];
-		const started = performance.now();
-		const { recipe, css: rules, resolutions } = computeRecipe(name, staticConfig, allowed[name]);
-		const cases = checkRecipe(name, staticConfig, recipe);
+		const { recipe, css: rules } = lowered[name];
 		rules.forEach((rule) => css.add(rule));
 		const json = JSON.stringify(recipe);
 		recipes[name] = recipe;
-		stats[`${relative(root, id)}#${name}`] = {
-			resolutions,
-			checked: cases,
-			ms: Math.round(performance.now() - started),
-			cssBytes: rules.join('').length,
-			rules: rules.length,
-			recipeBytes: json.length,
-		};
+		stats[`${relative(root, id)}#${name}`] = lowered[name].stats;
 
 		if (!extendedFrames().has(name)) {
 			edits.push([call.start, call.end, `__lowered(${json})`]);
