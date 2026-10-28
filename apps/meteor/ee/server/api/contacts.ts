@@ -271,7 +271,11 @@ API.v1.post(
 	async function action() {
 		const { contactId, favorite } = this.bodyParams;
 
-		const contact = await Contacts.findOneOwnedByUserId(this.userId, contactId);
+		const contact = await Contacts.findOneOwnedByUserId(
+			this.userId,
+			contactId,
+			License.hasModule('outlook-calendar') ? undefined : 'local',
+		);
 
 		if (!contact || !isContactFavoriteEditable(contact)) {
 			return API.v1.notFound('error-contact-not-found');
