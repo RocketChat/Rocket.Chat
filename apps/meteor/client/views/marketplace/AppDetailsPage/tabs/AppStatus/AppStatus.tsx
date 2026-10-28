@@ -1,5 +1,5 @@
 import type { App } from '@rocket.chat/core-typings';
-import { Box, Button, Tag, Icon, Stack } from '@rocket.chat/fuselage';
+import { Button, Tag, Icon, Stack } from '@rocket.chat/fuselage';
 import { useSafely } from '@rocket.chat/fuselage-hooks';
 import { useRouteParameter, usePermission, useSetModal } from '@rocket.chat/ui-contexts';
 import { useCallback, useState, memo } from 'react';
@@ -7,6 +7,9 @@ import { useTranslation } from 'react-i18next';
 import semver from 'semver';
 
 import AppStatusPriceDisplay from './AppStatusPriceDisplay';
+import AppAcquireAction from './layout/AppAcquireAction';
+import AppStatusBar from './layout/AppStatusBar';
+import AppStatusTagLabel from './layout/AppStatusTagLabel';
 import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 import { useIsEnterprise } from '../../../../../hooks/useIsEnterprise';
 import AddonRequiredModal from '../../../AppsList/AddonRequiredModal';
@@ -23,7 +26,7 @@ export type AppStatusProps = {
 	installed?: boolean;
 };
 
-const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...props }: AppStatusProps) => {
+const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed }: AppStatusProps) => {
 	const { t } = useTranslation();
 	const [endUserRequested, setEndUserRequested] = useState(false);
 	const [loading, setLoading] = useSafely(useState(false));
@@ -105,16 +108,12 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 		return undefined;
 	};
 
-	const getStatusFontColor = (status: appStatusSpanResponseProps) => {
-		if (status.type === 'warning') {
-			return 'status-font-on-warning';
+	const getStatusTone = (status: appStatusSpanResponseProps) => {
+		if (status.type === 'warning' || status.type === 'danger') {
+			return status.type;
 		}
 
-		if (status.type === 'danger') {
-			return 'status-font-on-danger';
-		}
-
-		return 'font-default';
+		return 'default';
 	};
 
 	const handleAppRequestsNumber = (status: appStatusSpanResponseProps) => {
@@ -136,18 +135,9 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 	};
 
 	return (
-		<Box {...props} display='flex' alignItems='center' marginInlineEnd={8}>
+		<AppStatusBar>
 			{button && isAppDetailsPage && (!installed || canUpdate) && (
-				<Box
-					display='flex'
-					flexDirection='row'
-					alignItems='center'
-					justifyContent='center'
-					borderRadius='medium'
-					gap={12}
-					paddingInlineEnd={shouldShowPriceDisplay ? 4 : undefined}
-					invisible={!showStatus && !loading}
-				>
+				<AppAcquireAction withPrice={!!shouldShowPriceDisplay} hidden={!showStatus && !loading}>
 					<Button
 						icon={button.icon}
 						variant='primary'
@@ -162,10 +152,10 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 					{shouldShowPriceDisplay && (
 						<AppStatusPriceDisplay purchaseType={purchaseType} pricingPlans={pricingPlans} price={price} showType={false} />
 					)}
-				</Box>
+				</AppAcquireAction>
 			)}
 
-			<Stack direction='row' align='center' gap={8}>
+			<Stack direction='row' align='center' gap='x8'>
 				{statuses?.map((status, index) => (
 					<Tag
 						key={index}
@@ -173,14 +163,14 @@ const AppStatus = ({ app, showStatus = true, isAppDetailsPage, installed, ...pro
 						variant={getStatusVariant(status)}
 						title={status.tooltipText ? status.tooltipText : ''}
 					>
-						<Box display='flex' color={getStatusFontColor(status)} alignItems='center' gap='x4'>
+						<AppStatusTagLabel tone={getStatusTone(status)}>
 							{status.icon && <Icon name={status.icon} size={16} />}
 							{handleAppRequestsNumber(status)} {t(status.label)}
-						</Box>
+						</AppStatusTagLabel>
 					</Tag>
 				))}
 			</Stack>
-		</Box>
+		</AppStatusBar>
 	);
 };
 
