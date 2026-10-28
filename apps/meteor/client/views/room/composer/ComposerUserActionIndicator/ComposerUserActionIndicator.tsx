@@ -1,58 +1,11 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useCallback, Fragment, useSyncExternalStore, useMemo } from 'react';
-import { useTranslation } from 'react-i18next';
 
-import { UserAction, USER_ACTIVITIES } from '../../../../lib/UserAction';
-
-const maxUsernames = 5;
-
-const ACTION_PRIORITY: Record<string, number> = {
-	[USER_ACTIVITIES.USER_RECORDING]: 0,
-	[USER_ACTIVITIES.USER_UPLOADING]: 1,
-	[USER_ACTIVITIES.USER_TYPING]: 2,
-	[USER_ACTIVITIES.USER_PLAYING]: 3,
-};
+import { UserActivityText, useUserActivities } from '../../../../components/UserActivity';
 
 export type ComposerUserActionIndicatorProps = { rid: string; tmid?: string };
 
 const ComposerUserActionIndicator = ({ rid, tmid }: ComposerUserActionIndicatorProps) => {
-	const { t } = useTranslation();
-	const roomAction = useSyncExternalStore(
-		UserAction.subscribe,
-		useCallback(() => UserAction.get(tmid || rid), [rid, tmid]),
-	);
-	const actions = useMemo(() => {
-		const usersRendered = new Set<string>();
-		return Object.entries(roomAction ?? {})
-			.sort(([a], [b]) => ACTION_PRIORITY[a] - ACTION_PRIORITY[b])
-			.map(([key, _users]) => {
-				const action = key.split('-')[1];
-
-				const users = Object.keys(_users);
-				if (users.length === 0) {
-					return;
-				}
-
-				const filteredUsers = users.filter((user) => !usersRendered.has(user));
-
-				if (filteredUsers.length === 0) {
-					return;
-				}
-
-				for (const user of filteredUsers) {
-					usersRendered.add(user);
-				}
-
-				return {
-					action,
-					users: filteredUsers,
-				};
-			})
-			.filter(Boolean) as {
-			action: 'typing' | 'recording' | 'uploading' | 'playing';
-			users: string[];
-		}[];
-	}, [roomAction]);
+	const activities = useUserActivities(rid, tmid);
 
 	return (
 		<Box
@@ -64,23 +17,7 @@ const ComposerUserActionIndicator = ({ rid, tmid }: ComposerUserActionIndicatorP
 			display='flex'
 			alignItems='center'
 		>
-			{actions.map(({ action, users }, index) => {
-				const shownUsers = users.length <= maxUsernames ? users : users.slice(0, maxUsernames - 1);
-				const hiddenUsersCount = users.length - shownUsers.length;
-				// The verb agrees with the listed subject (one person, two, or several), not with the total number of users
-				const subjectCount = Math.min(users.length, 3);
-
-				return (
-					<Fragment key={action}>
-						{index > 0 && ', '}
-						{t('User_activity', {
-							context: action,
-							count: subjectCount,
-							users: hiddenUsersCount ? [...shownUsers, t('User_activity_hidden_users', { count: hiddenUsersCount })] : shownUsers,
-						})}
-					</Fragment>
-				);
-			})}
+			<UserActivityText activities={activities} />
 		</Box>
 	);
 };
