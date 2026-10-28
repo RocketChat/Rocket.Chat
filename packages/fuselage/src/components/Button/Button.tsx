@@ -3,7 +3,7 @@ import type { AllHTMLAttributes, ComponentType } from 'react';
 import { useContext } from 'react';
 
 import { buttonContentStyle, buttonFrameStyle } from './ButtonFrame';
-import { getButtonStates, variantKey } from './buttonStates';
+import { getButtonStates } from './buttonStates';
 import { cx } from '../../helpers/composeClassNames';
 import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/withFuselageProvider';
@@ -55,7 +55,6 @@ function Button({
 	// `<Box is={Button}>` hands over `rcx-box--full`, whose unlayered reset would beat the frame's padding
 	const className = rawClassName?.replace(/(^|\s)rcx-box--full(?=\s|$)/g, '');
 
-	const squareSize = square && size && size !== 'large' ? size : undefined;
 	const states = getButtonStates(variant ?? 'secondary', disabled || loading, segment);
 
 	// The caller's attributes and `disabled` go on the element `render` names: zero-runtime rejects spreads on a frame,
@@ -72,9 +71,7 @@ function Button({
 	return (
 		<ButtonFrame
 			render={<Tag {...attributes} ref={ref} disabled={disabled || loading} />}
-			sizing={variantKey(size === 'small' || size === 'medium' || size === 'large' ? size : undefined, compact, square, squareSize)}
 			segment={states.segment}
-			paint={variantKey(states.look, states.ghost)}
 			className={cx(
 				'rcx-button',
 				variant && `rcx-button--${variant}`,
@@ -85,6 +82,7 @@ function Button({
 				compact && 'rcx-button--compact',
 				square && size && `rcx-button--${size}-square`,
 				loading && 'rcx-button--loading',
+				states.ghost && `rcx-button--ghost rcx-button--ghost-${states.ghost}`,
 				className,
 			)}
 		>

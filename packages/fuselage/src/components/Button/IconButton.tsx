@@ -4,7 +4,7 @@ import type { AllHTMLAttributes, ComponentType, ReactElement, ReactNode, RefAttr
 import { isValidElement, useContext } from 'react';
 
 import { buttonBadgeStyle, iconButtonFrameStyle } from './ButtonFrame';
-import { getButtonStates, variantKey } from './buttonStates';
+import { getButtonStates } from './buttonStates';
 import { cx } from '../../helpers/composeClassNames';
 import type { ElementProps } from '../../types/ElementProps';
 import { withFuselageProvider } from '../FuselageProvider/withFuselageProvider';
@@ -97,9 +97,7 @@ function IconButton({
 	return (
 		<ButtonFrame
 			render={<Tag {...attributes} disabled={disabled} />}
-			squareSize={size}
-			layer={variantKey(Boolean(badge), states.segment)}
-			paint={variantKey(states.look, states.ghost, color)}
+			segment={states.segment}
 			className={cx(
 				'rcx-button',
 				'rcx-button--icon',
@@ -109,6 +107,8 @@ function IconButton({
 				`rcx-button--${size}-square`,
 				pressed && 'rcx-button--icon-pressed',
 				Boolean(badge) && 'rcx-button--with-badge',
+				states.ghost && `rcx-button--ghost rcx-button--ghost-${states.ghost}`,
+				color && `rcx-button--glyph rcx-button--glyph-${color}`,
 				className,
 			)}
 		>

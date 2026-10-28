@@ -3,6 +3,7 @@
 @import './Avatar/Avatar.styles.css';
 @import './Bubble/Bubble.styles.css';
 @import './Button/Button.styles.css';
+@import './Button/Button.variants.css';
 @import './ButtonGroup/ButtonGroup.styles.css';
 @import './Card/Card.styles.css';
 @import './CardGrid/CardGrid.styles.css';

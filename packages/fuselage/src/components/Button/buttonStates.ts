@@ -7,10 +7,6 @@ type PressableKind = (typeof pressableKinds)[number];
 
 export type ButtonLook = ButtonKind | `${PressableKind}-pressed` | `${ButtonKind}-disabled`;
 
-/** Names a combination of the variants `ButtonFrame` merges into one. */
-export const variantKey = (...values: (string | boolean | undefined)[]) =>
-	['', ...values.map((value) => (value === true ? 'true' : value || ''))].join('|');
-
 const getLook = (kind: ButtonKind, disabled: boolean | undefined, pressed: boolean | undefined): ButtonLook => {
 	if (disabled) return `${kind}-disabled`;
 	const pressable = pressed ? pressableKinds.find((candidate) => candidate === kind) : undefined;

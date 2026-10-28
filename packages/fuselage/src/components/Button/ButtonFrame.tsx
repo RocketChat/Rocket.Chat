@@ -4,7 +4,6 @@ import {
 	buttonColors,
 	ghostButtonColors,
 	type ButtonColors,
-	type ButtonKind,
 	type GhostKind,
 } from './buttonColors';
 import { pressableKinds, type ButtonLook } from './buttonStates';
@@ -161,69 +160,6 @@ const glyphColors = {
 	danger: { color: String(textIconColors['font-danger']) },
 };
 
-const looksOf = (kinds: readonly ButtonKind[]) =>
-	Object.fromEntries(
-		Object.entries(looks).filter(([look]) => kinds.some((kind) => [kind, `${kind}-pressed`, `${kind}-disabled`].includes(look))),
-	);
-
-type Variant = Record<string, object>;
-
-const isStates = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null;
-
-// A later variant overrides an earlier one state by state: a plain value is the `default` state
-const mergeStyles = (earlier: object, later: object) =>
-	Object.fromEntries(
-		Object.entries({ ...earlier, ...later }).map(([property, value]) => {
-			const before = (earlier as Record<string, unknown>)[property];
-			if (!(property in earlier) || !(property in later) || (!isStates(before) && !isStates(value))) {
-				return [property, value];
-			}
-			const states = (style: unknown) => (isStates(style) ? style : { default: style });
-			return [property, { ...states(before), ...states(value) }];
-		}),
-	);
-
-/**
- * Every combination of the given variants as one variant, each merged in order the way a later prop overrides an
- * earlier one. Zero-runtime lowers one runtime-chosen variant per CSS property, so variants that set the same
- * properties are chosen together; `variantKey` names a combination.
- */
-const combine = (...variants: Variant[]) =>
-	variants.reduce<Variant>(
-		(combined, variant) =>
-			Object.fromEntries(
-				Object.entries(combined).flatMap(([key, style]): [string, object][] => [
-					[`${key}|`, style],
-					...Object.entries(variant).map(([name, value]): [string, object] => [`${key}|${name}`, mergeStyles(style, value)]),
-				]),
-			),
-		{ '': {} },
-	);
-
-const buttonKinds = [
-	'primary',
-	'secondary',
-	'danger',
-	'warning',
-	'success',
-	'secondary-danger',
-	'secondary-warning',
-	'secondary-success',
-] as const;
-
-export const iconButtonKinds = [
-	'icon',
-	'icon-info',
-	'icon-success',
-	'icon-warning',
-	'icon-danger',
-	'secondary',
-	'primary',
-	'success',
-	'warning',
-	'danger',
-] as const;
-
 const frameBase = {
 	render: 'button',
 	display: 'inline-block',
@@ -248,16 +184,10 @@ const frameBase = {
 	...kindStyle(buttonColors.secondary),
 };
 
-/** Layout, typography and colors of `rcx-button`. */
+/** Layout, typography and the secondary colors of `rcx-button`; the other variants are plain CSS, see `Button.variants.css`. */
 export const buttonFrameStyle = {
 	...frameBase,
-	variants: {
-		// size, compact, square, squareSize
-		sizing: combine(sizes, { true: { minWidth: '4ch' } }, { true: squareStyle }, squareSizes),
-		segment: segments,
-		// look, then ghost: the ghost colors won over the disabled ones too
-		paint: combine(looksOf(buttonKinds), ghosts),
-	},
+	variants: { segment: segments },
 } as const;
 
 /** `rcx-button` as a square icon button. */
@@ -265,14 +195,23 @@ export const iconButtonFrameStyle = {
 	...frameBase,
 	...squareStyle,
 	...iconStyle,
-	variants: {
-		squareSize: squareSizes,
-		// withBadge, then segment
-		layer: combine({ true: { position: 'relative', overflow: 'visible' } }, segments),
-		// look, then ghost, then the glyph color, which wins over its kind's
-		paint: combine(looksOf(iconButtonKinds), ghosts, glyphColors),
-	},
+	variants: { segment: segments },
 } as const;
+
+/** How `Button.variants.css` selects the colors: by the classes the components already set. */
+export const paintStrategy = 'class';
+
+/** What `scripts/build-button-css.mjs` writes to `Button.variants.css`, in the order the variants override each other. */
+export const buttonVariantStyles = {
+	sizes,
+	compact: { minWidth: '4ch' },
+	square: squareStyle,
+	squareSizes,
+	withBadge: { position: 'relative', overflow: 'visible' },
+	looks,
+	ghosts,
+	glyphColors,
+};
 
 export const buttonContentStyle = {
 	render: 'span',
