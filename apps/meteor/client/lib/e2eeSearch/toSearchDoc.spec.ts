@@ -45,6 +45,22 @@ describe('toSearchDoc', () => {
 			expect(toSearchDoc(decrypted({ tmid: 'parent1' }))).toMatchObject({ tmid: 'parent1', kind: 'text' });
 		});
 
+		it('thread parent: the server keeps only tcount, tlm and replies (user ids) on it, no reply text, so the doc is the parent text only', () => {
+			const doc = toSearchDoc(
+				decrypted({ msg: 'parent text', tcount: 3, tlm: new Date('2026-10-02T10:00:00.000Z'), replies: ['u2', 'u3'] }),
+			);
+			expect(doc).toEqual({
+				id: 'm1',
+				rid: 'r1',
+				uid: 'u1',
+				username: 'alice',
+				ts: ts.getTime(),
+				updatedAt: updatedAt.getTime(),
+				kind: 'text',
+				body: 'parent text',
+			});
+		});
+
 		it('legacy v1 message (msg decrypted in place, no content): indexed like a text message', () => {
 			const message = decrypted({ msg: 'legacy text' });
 			delete (message as Partial<IMessage>).content;

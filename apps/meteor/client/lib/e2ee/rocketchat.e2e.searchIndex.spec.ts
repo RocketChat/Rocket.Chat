@@ -3,7 +3,7 @@ import { waitFor } from '@testing-library/react';
 
 import { generate } from './crypto/rsa';
 import { e2e, e2eSearchIndexSession, e2eSearchIndexWriter } from './rocketchat.e2e';
-import { PublicSettings } from '../../stores';
+import { PublicSettings, Subscriptions } from '../../stores';
 import { setSearchIndexOptIn } from '../e2eeSearch/searchIndexOptIn';
 import { deriveSearchIndexWrapKey } from '../e2eeSearch/searchIndexSession';
 import { settings } from '../settings';
@@ -42,6 +42,7 @@ describe('E2E client and the local search index', () => {
 		PublicSettings.state.store({ _id: 'E2E_Enable_Local_Search', value: true } as never);
 		window.localStorage.clear();
 		setSearchIndexOptIn('u1', true);
+		Subscriptions.state.replaceAll([{ _id: 's1', rid: 'r1', u: { _id: 'u1' } } as never]);
 		const peek = settings.peek.bind(settings);
 		jest
 			.spyOn(settings, 'peek')
@@ -144,6 +145,35 @@ describe('E2E client and the local search index', () => {
 		await waitFor(() => expect(bridge.upsert).toHaveBeenCalledTimes(1));
 		expect(bridge.upsert.mock.calls[0][0]).toEqual([expect.objectContaining({ id: 'm1', rid: 'r1', body: 'budget review on friday' })]);
 		expect(roomDecrypt).toHaveBeenLastCalledWith(expect.objectContaining({ _id: 'm1', e2e: 'pending', msg: 'ciphertext' }));
+
+		await e2e.stopClient();
+	});
+
+	it('does not index a message whose decrypt ends after the user left its room (for example, a quoted message)', async () => {
+		const { privateKey } = await generate();
+		(e2e as unknown as { userId: string }).userId = 'u1';
+		e2e.privateKey = privateKey;
+		const encrypted = {
+			_id: 'm2',
+			rid: 'r2',
+			t: 'e2e',
+			e2e: 'pending',
+			msg: '',
+			u: { _id: 'u2', username: 'bob' },
+			ts: new Date(),
+			_updatedAt: new Date(),
+		};
+		jest
+			.spyOn(e2e, 'getInstanceByRoomId')
+			.mockResolvedValue({ decryptMessage: jest.fn(async () => ({ ...encrypted, e2e: 'done', msg: 'left room words' })) } as never);
+		jest.spyOn(e2e, 'parseQuoteAttachment').mockImplementation(async (message) => message);
+
+		e2e.setState('READY');
+		await e2eSearchIndexSession.whenSettled();
+		await e2e.decryptMessage(encrypted as never);
+		await e2eSearchIndexWriter.flush();
+
+		expect(bridge.upsert).not.toHaveBeenCalled();
 
 		await e2e.stopClient();
 	});

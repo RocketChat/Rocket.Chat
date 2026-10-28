@@ -48,6 +48,20 @@ describe('createSearchIndexWriter', () => {
 		expect(backend.upsert.mock.calls[0][0][0]).toMatchObject({ rid: 'room1', uid: 'u1', body: 'secret words m1' });
 	});
 
+	it('drops a message of a room that the user left, also when its decrypt ends after the leave (a quote or a late live message)', async () => {
+		const backend = createBackend();
+		const subscribed = new Set(['room1', 'room2']);
+		const writer = createSearchIndexWriter({ getBackend: () => backend, delayMs: DELAY, isRoomSubscribed: (rid) => subscribed.has(rid) });
+
+		subscribed.delete('room2');
+		writer.index(message('m1'));
+		writer.index(message('quoted', { rid: 'room2' }));
+		await jest.advanceTimersByTimeAsync(DELAY);
+
+		expect(backend.upsert).toHaveBeenCalledTimes(1);
+		expect(backend.upsert.mock.calls[0][0].map((doc) => [doc.id, doc.rid])).toEqual([['m1', 'room1']]);
+	});
+
 	it('sends nothing for a message that is not a decrypted E2EE message', async () => {
 		const backend = createBackend();
 		const writer = createSearchIndexWriter({ getBackend: () => backend, delayMs: DELAY });

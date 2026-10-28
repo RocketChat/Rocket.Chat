@@ -20,6 +20,12 @@ type SearchIndexWriterOptions = {
 	onError?: (error: unknown) => void;
 	/** Reports a rejected upsert and what the writer does about it. The text names documents by id only, never their words. */
 	onWarn?: (message: string) => void;
+	/**
+	 * True while the user has a subscription to the room. A decrypt that ends after the user left the room (a live
+	 * message or a quoted message) must not add rows that the room removal already deleted. Without it, every room is
+	 * indexed.
+	 */
+	isRoomSubscribed?: (rid: string) => boolean;
 };
 
 export type SearchIndexWriter = {
@@ -65,6 +71,7 @@ export const createSearchIndexWriter = ({
 	delayMs = 500,
 	onError = () => undefined,
 	onWarn = () => undefined,
+	isRoomSubscribed = () => true,
 }: SearchIndexWriterOptions): SearchIndexWriter => {
 	let queue = new Map<string, E2EESearchDoc>();
 	let queueBackend: ISearchIndexBackend | undefined;
@@ -171,7 +178,7 @@ export const createSearchIndexWriter = ({
 			if (!backend) return;
 
 			const doc = toSearchDoc(message);
-			if (!doc || deletedIds.has(doc.id)) return;
+			if (!doc || deletedIds.has(doc.id) || !isRoomSubscribed(doc.rid)) return;
 
 			if (queueBackend !== backend) {
 				queue = new Map();
