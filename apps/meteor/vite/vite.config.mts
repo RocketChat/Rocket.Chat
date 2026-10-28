@@ -350,5 +350,22 @@ export default defineConfig({
 		manifest: true,
 		// The polyfill is an inline script, which the server's Content-Security-Policy blocks.
 		modulePreload: { polyfill: false },
+		rolldownOptions: {
+			output: {
+				// What every page loads up front ships as a few chunks instead of dozens: the libraries apart, so their
+				// chunk stays cached across releases, then the app code, then the routes the client imports as it starts.
+				codeSplitting: {
+					groups: [
+						{ name: 'vendor', test: /node_modules/, tags: ['$initial'], priority: 3 },
+						{ name: 'app', tags: ['$initial'], priority: 2 },
+						{
+							name: 'boot',
+							test: /client[\\/](meteor[\\/]login|startup|views[\\/](omnichannel|admin|marketplace|account))[\\/]index\.tsx?$/,
+							priority: 1,
+						},
+					],
+				},
+			},
+		},
 	},
 });
