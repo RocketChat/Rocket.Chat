@@ -71,6 +71,129 @@ describe('[SidebarCollapseGroup]', () => {
 	});
 });
 
+describe('[SidebarCollapseGroup actions]', () => {
+	it('renders the actions after the title, outside the toggle and before the menu', async () => {
+		const { container } = render(
+			<SidebarCollapseGroup
+				title='Channels'
+				defaultExpanded
+				actions={<button type='button'>Filter</button>}
+				menu={
+					<SidebarCollapseGroupMenu>
+						<button type='button'>Options</button>
+					</SidebarCollapseGroupMenu>
+				}
+			>
+				<div role='listitem'>general</div>
+			</SidebarCollapseGroup>,
+		);
+
+		const toggle = screen.getByRole('button', { name: 'Channels' });
+		const filter = screen.getByRole('button', { name: 'Filter' });
+		const options = screen.getByRole('button', { name: 'Options' });
+
+		expect(toggle).not.toContainElement(filter);
+		expect(toggle.parentElement).toHaveClass('rcx-sidebar-collapse-group__bar--with-actions');
+		expect(filter.parentElement).toHaveClass('rcx-sidebar-collapse-group__actions');
+		expect(filter.parentElement).toHaveAttribute('role', 'presentation');
+		expect(toggle.compareDocumentPosition(filter) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+		expect(filter.compareDocumentPosition(options) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+
+		await userEvent.click(filter);
+		expect(toggle).toHaveAttribute('aria-expanded', 'true');
+
+		const results = await axe(container);
+		expect(results).toHaveNoViolations();
+	});
+
+	it('keeps Enter and Space on an action from toggling the group', async () => {
+		const onAction = jest.fn();
+		render(
+			<SidebarCollapseGroup
+				title='Channels'
+				defaultExpanded
+				actions={
+					<button type='button' onClick={onAction}>
+						Filter
+					</button>
+				}
+			>
+				<div role='listitem'>general</div>
+			</SidebarCollapseGroup>,
+		);
+
+		const toggle = screen.getByRole('button', { name: 'Channels' });
+		screen.getByRole('button', { name: 'Filter' }).focus();
+
+		await userEvent.keyboard('{Enter}');
+		await userEvent.keyboard(' ');
+
+		expect(onAction).toHaveBeenCalledTimes(2);
+		expect(toggle).toHaveAttribute('aria-expanded', 'true');
+	});
+
+	it('moves focus to the title when the focused action disappears', () => {
+		const { rerender } = render(
+			<SidebarCollapseGroup title='Channels' defaultExpanded actions={<button type='button'>Filter</button>}>
+				<div role='listitem'>general</div>
+			</SidebarCollapseGroup>,
+		);
+
+		screen.getByRole('button', { name: 'Filter' }).focus();
+		rerender(
+			<SidebarCollapseGroup title='Channels' defaultExpanded>
+				<div role='listitem'>general</div>
+			</SidebarCollapseGroup>,
+		);
+
+		expect(screen.getByRole('button', { name: 'Channels' })).toHaveFocus();
+	});
+
+	it('leaves focus where the user put it when an action disappears unfocused', async () => {
+		const { rerender } = render(
+			<SidebarCollapseGroup
+				title='Channels'
+				defaultExpanded
+				actions={<button type='button'>Filter</button>}
+				menu={
+					<SidebarCollapseGroupMenu>
+						<button type='button'>Options</button>
+					</SidebarCollapseGroupMenu>
+				}
+			>
+				<div role='listitem'>general</div>
+			</SidebarCollapseGroup>,
+		);
+
+		screen.getByRole('button', { name: 'Filter' }).focus();
+		await userEvent.tab();
+		expect(screen.getByRole('button', { name: 'Options' })).toHaveFocus();
+
+		rerender(
+			<SidebarCollapseGroup
+				title='Channels'
+				defaultExpanded
+				menu={
+					<SidebarCollapseGroupMenu>
+						<button type='button'>Options</button>
+					</SidebarCollapseGroupMenu>
+				}
+			>
+				<div role='listitem'>general</div>
+			</SidebarCollapseGroup>,
+		);
+
+		expect(screen.getByRole('button', { name: 'Options' })).toHaveFocus();
+	});
+
+	it('leaves the header as it was without actions', () => {
+		render(<SidebarCollapseGroup title='Channels' />);
+
+		expect(screen.getByRole('button', { name: 'Channels' }).parentElement).not.toHaveClass('rcx-sidebar-collapse-group__bar--with-actions');
+		expect(document.querySelector('.rcx-sidebar-collapse-group__actions')).toBeNull();
+	});
+});
+
 describe('[SidebarDivider]', () => {
 	it('should render a separator as `ItemDivider`', () => {
 		render(<SidebarDivider />);

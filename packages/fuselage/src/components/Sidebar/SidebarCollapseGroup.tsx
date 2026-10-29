@@ -14,6 +14,7 @@ type SidebarCollapseGroupProps = HTMLAttributes<HTMLDivElement> &
 		empty?: boolean;
 		badge?: ReactNode;
 		menu?: ReactNode;
+		/** Controls shown right after the title, such as a filter toggle. They sit outside the button that collapses the group. */
 		actions?: ReactNode;
 	};
 
@@ -25,7 +26,7 @@ export function SidebarCollapseGroup({
 	children,
 	badge,
 	menu,
-	actions: _actions,
+	actions,
 	title,
 	empty,
 	role = 'group',
@@ -47,6 +48,7 @@ export function SidebarCollapseGroup({
 				title={title}
 				titleId={titleId}
 				badge={badge}
+				actions={actions}
 				menu={menu}
 				barProps={barProps}
 				role='button'
