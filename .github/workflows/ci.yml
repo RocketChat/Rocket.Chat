@@ -667,6 +667,108 @@ jobs:
     secrets:
       CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
 
+  e2e-impact-select:
+    name: 🎯 E2E Impact Selection
+    runs-on: ubuntu-24.04-arm
+    needs: [release-versions]
+    outputs:
+      specs: ${{ steps.select.outputs.specs }}
+    # Runs on every event so the UI suites that need it are never skipped; only pull requests get a selection,
+    # an empty one means the full suite. The 'e2e-full' label opts a pull request out.
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        if: github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'e2e-full')
+        with:
+          fetch-depth: 2
+
+      - name: Use Node.js
+        if: github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'e2e-full')
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ needs.release-versions.outputs.node-version }}
+
+      - name: Restore e2e impact map
+        id: map
+        if: github.event_name == 'pull_request' && !contains(github.event.pull_request.labels.*.name, 'e2e-full')
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: /tmp/e2e-impact-map.json
+          key: e2e-impact-map-${{ github.sha }}
+          restore-keys: e2e-impact-map-
+
+      - name: Select specs
+        id: select
+        if: steps.map.outputs.cache-matched-key != ''
+        continue-on-error: true
+        run: |
+          # the pull request checkout is a merge commit, so its first parent is the base branch tip
+          node apps/meteor/tests/e2e/impact/impact.mts select /tmp/e2e-impact-map.json HEAD^1 > /tmp/selection.json
+
+          # an empty selection also means the full suite, never zero tests
+          specs=$(jq -r 'select(.all | not) | .specs[] | sub("^apps/meteor/"; "")' /tmp/selection.json | tr '\n' ' ')
+          echo "specs=${specs}" >> "$GITHUB_OUTPUT"
+
+          {
+            echo "### 🎯 E2E impact selection (map: \`${{ steps.map.outputs.cache-matched-key }}\`)"
+            echo '```json'
+            cat /tmp/selection.json
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  e2e-impact-map:
+    name: 🗺️ E2E Impact Map
+    runs-on: ubuntu-24.04-arm
+    needs: [release-versions, test-ui-ee]
+    # Merge queue runs build the map from the coverage of a green suite; the develop push then caches it,
+    # since a develop cache is the only one pull requests can restore
+    if: always() && (github.event_name == 'merge_group' || (github.event_name == 'push' && github.ref == 'refs/heads/develop'))
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Use Node.js
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: ${{ needs.release-versions.outputs.node-version }}
+
+      - name: Download map fragments
+        if: needs.test-ui-ee.result == 'success'
+        uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8.0.1
+        with:
+          pattern: e2e-impact-map-fragment-*
+          path: /tmp/e2e-impact-fragments
+          merge-multiple: true
+
+      - name: Build map
+        id: build
+        if: needs.test-ui-ee.result == 'success'
+        run: node apps/meteor/tests/e2e/impact/impact.mts build /tmp/e2e-impact-map.json /tmp/e2e-impact-fragments/*.json
+
+      - name: Store map
+        if: steps.build.outcome == 'success' && github.event_name == 'merge_group'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: e2e-impact-map
+          path: /tmp/e2e-impact-map.json
+          retention-days: 5
+
+      # develop pushes skip the suite (see test-guard), so the map comes from the merge queue run of the same SHA
+      - name: Fetch map built by the merge queue
+        id: fetch
+        if: needs.test-ui-ee.result == 'skipped' && github.event_name == 'push'
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          run_id=$(gh run list --workflow "$GITHUB_WORKFLOW" --event merge_group --commit "$GITHUB_SHA" --status success --limit 1 --json databaseId --jq '.[0].databaseId')
+          gh run download "$run_id" --name e2e-impact-map --dir /tmp
+
+      - name: Cache map
+        if: github.event_name == 'push' && (steps.build.outcome == 'success' || steps.fetch.outcome == 'success')
+        uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: /tmp/e2e-impact-map.json
+          key: e2e-impact-map-${{ github.sha }}
+
   test-api:
     name: 🔨 Test API (CE)
     needs: [checks, build-gh-docker-publish, release-versions]
@@ -701,7 +803,7 @@ jobs:
 
   test-ui:
     name: 🔨 Test UI (CE)
-    needs: [checks, build-gh-docker-publish, release-versions]
+    needs: [checks, build-gh-docker-publish, release-versions, e2e-impact-select]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -715,6 +817,7 @@ jobs:
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
       retries: ${{ (github.event_name == 'release' || github.event_name == 'merge_group' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
+      specs: ${{ needs.e2e-impact-select.outputs.specs }}
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
@@ -766,7 +869,7 @@ jobs:
 
   test-ui-ee:
     name: 🔨 Test UI (EE)
-    needs: [checks, build-gh-docker-publish, release-versions]
+    needs: [checks, build-gh-docker-publish, release-versions, e2e-impact-select]
 
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
@@ -782,6 +885,7 @@ jobs:
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
       retries: ${{ (github.event_name == 'release' || github.event_name == 'merge_group' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
+      specs: ${{ needs.e2e-impact-select.outputs.specs }}
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
@@ -838,7 +942,7 @@ jobs:
     name: 🔨 Test UI (FIPS)
     # only the 'fips' label opts a PR into the UI shards
     if: needs.release-versions.outputs.fips-skip == 'none'
-    needs: [checks, build-gh-docker-publish, release-versions]
+    needs: [checks, build-gh-docker-publish, release-versions, e2e-impact-select]
     uses: ./.github/workflows/ci-test-e2e.yml
     with:
       type: ui
@@ -853,6 +957,7 @@ jobs:
       lowercase-repo: ${{ needs.release-versions.outputs.lowercase-repo }}
       gh-docker-tag: ${{ needs.release-versions.outputs.gh-docker-tag }}
       retries: ${{ (github.event_name == 'release' || github.event_name == 'merge_group' || github.ref == 'refs/heads/develop' || github.ref == 'refs/heads/master') && 2 || 0 }}
+      specs: ${{ needs.e2e-impact-select.outputs.specs }}
     secrets:
       CR_USER: ${{ secrets.CR_USER }}
       CR_PAT: ${{ secrets.CR_PAT }}
@@ -959,7 +1064,7 @@ jobs:
   report-coverage:
     name: 📊 Report Coverage
     runs-on: ubuntu-24.04
-    needs: [release-versions, test-api-ee, test-api-livechat-ee, test-ui-ee]
+    needs: [release-versions, test-api-ee, test-api-livechat-ee, test-ui-ee, e2e-impact-select]
 
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -1002,7 +1107,9 @@ jobs:
           # that lands on develop) provides the develop coverage baseline
           override_branch: ${{ github.event_name == 'merge_group' && github.event.merge_group.base_ref == 'refs/heads/develop' && 'develop' || '' }}
 
+      # a pull request that ran only the selected specs would report a coverage drop that isn't real
       - name: Report UI coverage
+        if: needs.e2e-impact-select.outputs.specs == ''
         uses: codecov/codecov-action@fb8b3582c8e4def4969c97caa2f19720cb33a72f # v7.0.0
         with:
           files: /tmp/coverage_report/ui/lcov.info
