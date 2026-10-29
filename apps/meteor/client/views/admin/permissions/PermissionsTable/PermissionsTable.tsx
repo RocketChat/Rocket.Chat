@@ -1,15 +1,16 @@
 import type { IPermission, IRole } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
 import { Pagination, Palette, useStyle } from '@rocket.chat/fuselage';
+import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import type { usePagination } from '@rocket.chat/ui-client';
 import { GenericTable, GenericTableHeader, GenericTableHeaderCell, GenericTableBody, GenericNoResults } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
-import { useCallback } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import PermissionRow from './PermissionRow';
-import PermissionsTableFilter from './PermissionsTableFilter';
 import RoleHeader from './RoleHeader';
+import FilterByText from '../../../../components/FilterByText';
 
 export type PermissionsTableProps = {
 	roleList: IRole[];
@@ -40,6 +41,15 @@ const PermissionsTable = ({ roleList, permissions, setFilter, total, paginationD
 	);
 
 	const { current, itemsPerPage, setCurrent, setItemsPerPage, ...paginationProps } = paginationData;
+
+	const [text, setText] = useState('');
+	const debouncedText = useDebouncedValue(text, 500);
+
+	useEffect(() => {
+		setFilter(debouncedText);
+		// Reset to the first page so narrowing the filter doesn't strand the user on a now-empty offset
+		setCurrent(0);
+	}, [debouncedText, setFilter, setCurrent]);
 
 	const tableCustomStyle = css`
 		// Makes the first column of the table sticky
@@ -77,7 +87,7 @@ const PermissionsTable = ({ roleList, permissions, setFilter, total, paginationD
 
 	return (
 		<>
-			<PermissionsTableFilter onChange={setFilter} />
+			<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			{permissions?.length === 0 && <GenericNoResults />}
 			{permissions?.length > 0 && (
 				<>
