@@ -2136,6 +2136,73 @@ const generateGridCss = () => {
 
 	return rules.join('\n\n');
 };
+const generateContextualbarContent = () =>
+	part(
+		'ContextualbarContentFrame',
+		{ ...flexBox, flexDirection: 'column', overflowY: 'hidden', height: '100%' },
+		{
+			// both set `padding`, so one variant holds each combination
+			padding: {
+				'default': { paddingInline: spacing('x24') },
+				'flush': { paddingInline: 0 },
+				'spaced': { paddingInline: spacing('x24'), paddingBlock: spacing('x12') },
+				'flush-spaced': { paddingInline: 0, paddingBlock: spacing('x12') },
+			},
+		},
+	);
+
+const generateContextualbarEmptyContent = () =>
+	part('ContextualbarEmptyContentFrame', { ...flexBox, flexDirection: 'column', justifyContent: 'center', flexGrow: 1 });
+
+const generateContextualbarFooter = () =>
+	part('ContextualbarFooterFrame', { ...blockBox, paddingInline: spacing('x16'), paddingBlock: spacing('x20') });
+
+const generateContextualbarHeader = () =>
+	`${part('ContextualbarHeaderFrame', {
+		...flexBox,
+		alignItems: 'center',
+		flexShrink: 0,
+		height: size('x44')!,
+		paddingInline: spacing('x16')!,
+		borderBlockEndWidth: borderWidth('default')!,
+		borderBlockEndStyle: 'solid',
+		borderBlockColor: strokeExtraLight,
+	})}\n\n${frame('ContextualbarHeaderInnerFrame', {
+		...flexBox,
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		flexGrow: 1,
+		height: '100%',
+		overflow: 'hidden',
+		marginInline: spacing('-x4'),
+		paddingInline: spacing('x4'),
+		gap: spacing('x8'),
+	})}`;
+
+const generateContextualbarSection = () =>
+	part('ContextualbarSectionFrame', {
+		...flexBox,
+		alignItems: 'center',
+		flexGrow: 1,
+		padding: spacing('x16')!,
+		borderBlockEndWidth: borderWidth('default')!,
+		borderBlockEndStyle: 'solid',
+		borderBlockColor: strokeExtraLight,
+	});
+
+const generateContextualbarSkeleton = () =>
+	part('ContextualbarSkeletonBodyFrame', { ...flexBox, flexDirection: 'column', padding: spacing('x24'), gap: spacing('x4') });
+
+const generateContextualbarTitle = () =>
+	part('ContextualbarTitleFrame', {
+		...blockBox,
+		flexGrow: 1,
+		flexShrink: 1,
+		overflow: 'hidden',
+		textOverflow: 'ellipsis',
+		whiteSpace: 'nowrap',
+		...font('h5'),
+	});
 
 // The Item family: one frame per module, over the values the SCSS read under `--rcx-item-…`
 const itemTokens = {
@@ -3239,6 +3306,17 @@ const components: { file: string; generate: () => string; css?: boolean; section
 	{ file: join(import.meta.dirname, '../src/components/States/StatesSuggestionListItem.tsx'), generate: generateStatesSuggestionListItem },
 	{ file: join(import.meta.dirname, '../src/components/States/StatesLink.tsx'), generate: generateStatesLink },
 	{ file: join(import.meta.dirname, '../src/components/Grid/Grid.styles.css'), generate: generateGridCss, css: true },
+	{ file: join(import.meta.dirname, '../src/components/Contextualbar/Contextualbar.tsx'), generate: generateContextualbar },
+	{ file: join(import.meta.dirname, '../src/components/Contextualbar/ContextualbarContent.tsx'), generate: generateContextualbarContent },
+	{
+		file: join(import.meta.dirname, '../src/components/Contextualbar/ContextualbarEmptyContent.tsx'),
+		generate: generateContextualbarEmptyContent,
+	},
+	{ file: join(import.meta.dirname, '../src/components/Contextualbar/ContextualbarFooter.tsx'), generate: generateContextualbarFooter },
+	{ file: join(import.meta.dirname, '../src/components/Contextualbar/ContextualbarHeader.tsx'), generate: generateContextualbarHeader },
+	{ file: join(import.meta.dirname, '../src/components/Contextualbar/ContextualbarSection.tsx'), generate: generateContextualbarSection },
+	{ file: join(import.meta.dirname, '../src/components/Contextualbar/ContextualbarSkeleton.tsx'), generate: generateContextualbarSkeleton },
+	{ file: join(import.meta.dirname, '../src/components/Contextualbar/ContextualbarTitle.tsx'), generate: generateContextualbarTitle },
 	{ file: frames('Skeleton/Skeleton.tsx'), generate: generateSkeleton },
 	{ file: frames('Throbber/Throbber.tsx'), generate: generateThrobber },
 	{ file: frames('ProgressBar/ProgressBar.tsx'), generate: generateProgressBar },
@@ -3548,6 +3626,7 @@ const textFrames = [
 	'CardTitleFrame',
 	'CheckBoxLabel',
 	'CodeSnippetCodeBoxFrame',
+	'ContextualbarFooterFrame',
 	'ContextualbarTitleFrame',
 	'DividerLabel',
 	'FramedIconFrame',
