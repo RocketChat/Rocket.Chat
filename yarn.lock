@@ -14232,7 +14232,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/react@npm:9.1.21, @storybook/react@npm:~9.1.21":
+"@storybook/react@npm:9.1.21, @storybook/react@npm:^9.1.21, @storybook/react@npm:~9.1.21":
   version: 9.1.21
   resolution: "@storybook/react@npm:9.1.21"
   dependencies:
@@ -36869,7 +36869,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"storybook@npm:~9.1.21":
+"storybook@npm:^9.1.21, storybook@npm:~9.1.21":
   version: 9.1.21
   resolution: "storybook@npm:9.1.21"
   dependencies:
