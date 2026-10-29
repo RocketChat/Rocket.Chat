@@ -1,0 +1,31 @@
+apps/meteor/server/api/router.spec.ts
+  s_35ce995ae950b9::t_ba73cc8ec57011 1,8-13,53
+apps/meteor/server/api/v1/middlewares/cors.spec.ts
+  s_35ce995ae950b9::t_9e2dbfc0198010 1,8-13,51,94,145,203,233,277,316
+apps/meteor/server/api/v1/middlewares/experimental.spec.ts
+  s_35ce995ae950b9::t_59b4892e169648 1-3,31-33,36
+apps/meteor/server/api/v1/middlewares/metrics.spec.ts
+  s_35ce995ae950b9::t_2a3db371bed3a6 1,8-13,68,131,191,270,332-334
+ee/packages/federation-matrix/src/api/routes.spec.ts
+  s_35ce995ae950b9::t_4a01c4a34531c0 2-3,21-29
+packages/http-router/README.md
+  s_35ce995ae950b9::t_f75646924836c2 3,8,24,75-77,108,110,114,116-117,121-122,124
+packages/http-router/src/Router.spec.ts
+  s_35ce995ae950b9::t_990a5e4afe7649 5-11,37,64,97,126,162,201,244,296,336,370,401,431,470,501,543,580,612-613,653,698,736
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "d9e486f0e836ac07ab94018ac6c54e7c4f9fe983",
+  "prompts": {},
+  "sessions": {
+    "s_35ce995ae950b9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f447591c-fd40-47e9-ae6b-d905502975ef",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
