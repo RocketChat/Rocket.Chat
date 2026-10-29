@@ -575,12 +575,70 @@ const generateAccordionItem = () => {
 	});
 };
 
+const generateTableRow = () => {
+	const tint = surfaceColor('tint');
+	const hover = surfaceColor('hover');
+	const clickable = { cursor: { hover: 'pointer', focus: 'pointer' }, outlineStyle: { hover: 'none', focus: 'none' } };
+
+	return constants({
+		rowPlain: {},
+		rowSelected: { backgroundColor: tint },
+		rowAction: { ...clickable, backgroundColor: { hover, focus: hover } },
+		rowSelectedAction: { ...clickable, backgroundColor: { default: tint, hover, focus: hover } },
+	});
+};
+
+const generateTableCell = () => {
+	const secondary = fontColor('secondary-info');
+	const hint = fontColor('hint');
+	const strong = fontScaleOf('p2m');
+
+	return constants({
+		cell: {
+			render: 'td',
+			display: 'table-cell',
+			position: 'static',
+			flexDirection: 'row',
+			alignItems: 'normal',
+			flexShrink: 1,
+			minWidth: 'auto',
+			minHeight: 'auto',
+			padding: spacing('x8')!,
+			userSelect: 'text',
+			textAlign: 'inherit',
+			verticalAlign: 'middle',
+			color: secondary,
+		},
+		body: { ...fontScaleOf('p2') },
+		header: { position: 'relative', ...fontScaleOf('c2') },
+		strong: { ...strong },
+		headerStrong: { position: 'relative', ...strong },
+		secondaryTone: { color: secondary },
+		defaultTone: { color: fontColor('default') },
+		hintTone: { color: hint },
+		rowHeaderTone: { color: hint, backgroundColor: surfaceColor('light') },
+		rowHeaderDefaultTone: { color: fontColor('default'), backgroundColor: surfaceColor('light') },
+	});
+};
+
+const generateTableSelection = () =>
+	constants({
+		selection: {
+			color: fontColor('titles-labels'),
+			borderRadius: themedVar('table-selected-border-radius', radiusOf('medium')),
+			backgroundColor: surfaceColor('neutral'),
+		},
+	});
+
 const components = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
 	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
 	{ file: join(import.meta.dirname, '../src/components/Tabs/Tabs.tsx'), generate: generateTabs },
 	{ file: join(import.meta.dirname, '../src/components/Tabs/TabsItem.tsx'), generate: generateTabsItem },
 	{ file: join(import.meta.dirname, '../src/components/Accordion/Accordion.tsx'), generate: generateAccordion },
+	{ file: join(import.meta.dirname, '../src/components/Table/TableRow.tsx'), generate: generateTableRow },
+	{ file: join(import.meta.dirname, '../src/components/Table/TableCell.tsx'), generate: generateTableCell },
+	{ file: join(import.meta.dirname, '../src/components/Table/TableSelection/TableSelection.tsx'), generate: generateTableSelection },
 	{ file: join(import.meta.dirname, '../src/components/Accordion/AccordionItem.tsx'), generate: generateAccordionItem },
 ];
 const check = process.argv.includes('--check');
