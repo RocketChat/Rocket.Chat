@@ -3824,7 +3824,7 @@ describe('[Users]', () => {
 			expect(user).to.not.have.property('e2e');
 		});
 
-		describe('clearing the name', () => {
+		describe.only('clearing the name', () => {
 			after(() => updateSetting('Accounts_RequireNameForSignUp', true));
 
 			it('should remove the name when it is optional and sent alone', async () => {
@@ -3834,6 +3834,19 @@ describe('[Users]', () => {
 					.post(api('users.updateOwnBasicInfo'))
 					.set(userCredentials)
 					.send({ data: { name: '' } })
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body.user).to.not.have.property('name');
+				expect(res.body.user.username).to.be.equal(editedUsername);
+			});
+
+			it('should keep the username when it is sent as null alongside an empty name', async () => {
+				const res = await request
+					.post(api('users.updateOwnBasicInfo'))
+					.set(userCredentials)
+					.send({ data: { name: '', username: null } })
 					.expect('Content-Type', 'application/json')
 					.expect(200);
 

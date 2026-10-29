@@ -69,12 +69,15 @@ async function saveUserProfile(
 		});
 	}
 
-	if (typeof settings.realname === 'string' || settings.username) {
+	const realname = typeof settings.realname === 'string' ? settings.realname : undefined;
+	const username = typeof settings.username === 'string' ? settings.username : undefined;
+
+	if (realname !== undefined || username) {
 		if (
 			!(await saveUserIdentity({
 				_id: this.userId,
-				name: settings.realname,
-				username: settings.username,
+				name: realname,
+				username,
 			}))
 		) {
 			throw new ClientSafeError('error-could-not-save-identity', 'Could not save user identity', {
