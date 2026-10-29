@@ -1,0 +1,19 @@
+apps/meteor/server/settings/theme/server.ts
+  s_35ce995ae950b9::t_f87f18799b0dd8 25
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a5d342ff5d96223815870d2690ae96b88cdf8415",
+  "prompts": {},
+  "sessions": {
+    "s_35ce995ae950b9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f447591c-fd40-47e9-ae6b-d905502975ef",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
