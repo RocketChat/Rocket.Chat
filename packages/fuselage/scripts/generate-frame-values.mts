@@ -12,7 +12,15 @@ import { join } from 'node:path';
 
 import prettier from 'prettier';
 
-import { badgeBackgroundColors, shadowColors, statusBackgroundColors, statusColors, strokeColors, surfaceColors, textIconColors } from '../src/Theme.ts';
+import {
+	badgeBackgroundColors,
+	shadowColors,
+	statusBackgroundColors,
+	statusColors,
+	strokeColors,
+	surfaceColors,
+	textIconColors,
+} from '../src/Theme.ts';
 import { toCSSColorValue, toCSSValue } from '../src/helpers/toCSSValue.ts';
 import { backgroundColor, borderRadius, borderWidth, fontColor, fontFamily, fontScale, inset, size, spacing } from '../src/styleTokens.ts';
 
@@ -412,8 +420,8 @@ const selectionColors = () => {
 	const stroke = (name: string) => strokeColors[`stroke-${name}` as keyof typeof strokeColors].toString();
 	const surface = backgroundColor('light')!;
 	const rule = (kind: string, name: string, value: string) => toCSSValue(`--rcx-button-${kind}-${name}`, value);
-	const white = fontColor('white')!;
-	const hint = fontColor('hint')!;
+	const white = fontColor('white');
+	const hint = fontColor('hint');
 	const extraDark = stroke('extra-dark');
 	const secondaryDisabled = buttonBackground('secondary', 'disabled');
 
@@ -618,7 +626,6 @@ const toggleSwitch: SelectionControl = {
 	extraStates: toggleSwitchKnob,
 };
 
-
 const themed = (name: string, value: string) => toCSSValue(`--rcx-${name}`, value);
 const textIconColor = (name: keyof typeof textIconColors) => textIconColors[name].toString();
 const statusFont = (name: string) => statusColors[`status-font-on-${name}` as keyof typeof statusColors].toString();
@@ -751,8 +758,6 @@ const TagFrame = styled(View, {
 	return out.join('\n\n');
 };
 
-
-
 const generateBadge = () => {
 	const levels = { primary: 2, secondary: 1, warning: 3, danger: 4 } as const;
 	const looks = Object.entries(levels).map(([variant, level]) => {
@@ -799,8 +804,6 @@ const BadgeFrame = styled(View, {
 	},
 });`;
 };
-
-
 
 const generateChip = () => {
 	const secondary = (state: string) => buttonBackground('secondary', state);
@@ -1211,8 +1214,6 @@ const generateTabsItem = () => {
 	});
 };
 
-
-
 const generateAccordion = () =>
 	constants({
 		border: {
@@ -1283,8 +1284,6 @@ const generateAccordionItem = () => {
 	});
 };
 
-
-
 const generateTableRow = () => {
 	const tint = surfaceColor('tint');
 	const hover = surfaceColor('hover');
@@ -1340,8 +1339,6 @@ const generateTableSelection = () =>
 		},
 	});
 
-
-
 const generatePagination = () => {
 	const small = fontScaleOf('c1');
 	const clickable = { cursor: 'pointer', outlineStyle: 'none' };
@@ -1377,6 +1374,53 @@ const generatePagination = () => {
 	});
 };
 
+const frameDeclaration = (
+	name: string,
+	config: Value,
+) => `// Declared where they render: zero-runtime only erases a \`styled()\` whose every use is in its own module
+const ${name} = styled(View, ${literal(config)});`;
+
+// What `.rcx-box` gave an element that is not a Tamagui View: the View's own defaults would otherwise show through
+const boxBase = {
+	boxSizing: 'border-box',
+	flexDirection: 'row',
+	alignItems: 'normal',
+	flexShrink: 1,
+	minWidth: 'auto',
+	minHeight: 'auto',
+	outlineStyle: 'none',
+	fontVariantNumeric: 'tabular-nums',
+};
+
+const generateSkeleton = () => {
+	const stroke = strokeColors['stroke-extra-dark'].toString();
+	const gradient = `repeat 0% 0%/100vw 100% linear-gradient(to right, ${stroke}, color-mix(in srgb, ${stroke}, transparent 50%) 50%, ${stroke})`;
+
+	return frameDeclaration('SkeletonFrame', {
+		render: 'span',
+		...boxBase,
+		display: 'block',
+		height: '1.2em',
+		opacity: 0.1,
+		borderRadius: radiusOf('medium'),
+		background: gradient,
+		variants: {
+			variant: {
+				text: { height: 'auto', marginBlock: 0, transform: 'scale(1, 0.6)', transformOrigin: '0 60%' },
+				rect: {},
+				circle: { borderRadius: radiusOf('full') },
+			},
+			// The whole shorthand: the color has to sit under the gradient whatever order the atomic rules land in
+			inverted: {
+				true: { background: `${gradient} ${surfaceColors['surface-light']}` },
+				false: {},
+			},
+		},
+	});
+};
+
+const frames = (relative: string) => join(import.meta.dirname, '../src/components', relative);
+
 const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
 	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
@@ -1406,9 +1450,14 @@ const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Table/TableCell.tsx'), generate: generateTableCell },
 	{ file: join(import.meta.dirname, '../src/components/Table/TableSelection/TableSelection.tsx'), generate: generateTableSelection },
 	{ file: join(import.meta.dirname, '../src/components/Accordion/AccordionItem.tsx'), generate: generateAccordionItem },
+	{ file: frames('Skeleton/Skeleton.tsx'), generate: generateSkeleton },
 ];
 
-for (const [dir, control] of [['CheckBox', checkBox], ['RadioButton', radioButton], ['ToggleSwitch', toggleSwitch]] as const) {
+for (const [dir, control] of [
+	['CheckBox', checkBox],
+	['RadioButton', radioButton],
+	['ToggleSwitch', toggleSwitch],
+] as const) {
 	const base = join(import.meta.dirname, `../src/components/${dir}/${dir}`);
 	components.push(
 		{ file: `${base}.tsx`, generate: () => selectionFrames(control) },
