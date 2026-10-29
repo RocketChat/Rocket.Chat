@@ -3211,6 +3211,86 @@ const generateBannerCss = () => `.rcx-banner {
 	display: none;
 }`;
 
+const toastBarRadius = theme('toastbar-border-radius', radius('medium'));
+const toastBarKinds = { success: 'on-success', error: 'on-danger' } as const;
+const toastBarColor = (kind: keyof typeof toastBarKinds) =>
+	theme(`toastbar-${kind}-color`, String(statusColors[`status-font-${toastBarKinds[kind]}` as keyof typeof statusColors]));
+
+const generateToastBar = () =>
+	`${part('ToastBarFrame', {
+		...blockBox,
+		position: 'relative',
+		minWidth: size('x232')!,
+		maxWidth: size('x416')!,
+		color: theme('toastbar-color', fontDefault),
+		borderRadius: toastBarRadius,
+		backgroundColor: theme('toastbar-background-color', surfaceOf('tint')),
+		...font('p2'),
+	})}\n\n${frame('ToastBarInnerFrame', { ...flexBox, ...contentBox, padding: px(16) })}\n\n${frame('ToastBarContentFrame', {
+		...blockBox,
+		...contentBox,
+		width: '100%',
+		marginBlock: 0,
+		marginInline: px(16),
+	})}\n\n${frame('ToastBarProgressFrame', {
+		...blockBox,
+		position: 'absolute',
+		bottom: 0,
+		overflow: 'hidden',
+		width: '100%',
+		height: size('x4')!,
+		borderBottomLeftRadius: toastBarRadius,
+		borderBottomRightRadius: toastBarRadius,
+	})}`;
+
+const generateToastBarCss = () => `.rcx-toastbar {
+	animation: rcx-toastbar-side-open 0.5s;
+}
+
+.rcx-toastbar::before {
+	position: absolute;
+	top: 0;
+
+	display: block;
+
+	width: 100%;
+	height: ${size('x4')};
+
+	content: '';
+
+	border-radius: ${toastBarRadius} ${toastBarRadius} 0 0;
+	background-color: transparent;
+}
+
+.rcx-toastbar--success::before {
+	background-color: ${toastBarColor('success')};
+}
+
+.rcx-toastbar--error::before {
+	background-color: ${toastBarColor('error')};
+}
+
+.rcx-toastbar_icon--success {
+	color: ${toastBarColor('success')};
+}
+
+.rcx-toastbar_icon--error {
+	color: ${toastBarColor('error')};
+}
+
+.rcx-toastbar_progressbar::after {
+	display: block;
+
+	width: 0%;
+	height: 100%;
+
+	content: '';
+	animation: rcx-toastbar-progress var(--rcx-toastbar-progress-time, 5s) forwards;
+	animation-play-state: var(--rcx-toastbar-progress-state, running);
+
+	background-color: ${theme('toastbar-progressbar-background-color', surfaceOf('neutral'))};
+}`;
+
 const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
 	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
@@ -3336,6 +3416,8 @@ const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Contextualbar/ContextualbarTitle.tsx'), generate: generateContextualbarTitle },
 	{ file: join(import.meta.dirname, '../src/components/Banner/Banner.tsx'), generate: generateBanner },
 	{ file: join(import.meta.dirname, '../src/components/Banner/Banner.styles.css'), generate: generateBannerCss, css: true },
+	{ file: join(import.meta.dirname, '../src/components/ToastBar/ToastBar.tsx'), generate: generateToastBar },
+	{ file: join(import.meta.dirname, '../src/components/ToastBar/ToastBar.styles.css'), generate: generateToastBarCss, css: true },
 ];
 
 for (const [dir, control] of [
