@@ -1,5 +1,5 @@
 import { composeStories } from '@storybook/react';
-import { screen, within } from '@testing-library/react';
+import { act, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
@@ -106,7 +106,7 @@ test.each(['{Enter}', ' '])('removes a custom chip from the keyboard with %s', a
 		/>,
 	);
 
-	screen.getByRole('button', { name: 'Apple' }).focus();
+	act(() => screen.getByRole('button', { name: 'Apple' }).focus());
 	await userEvent.keyboard(key);
 
 	expect(onChange).toHaveBeenCalledWith(['2']);
