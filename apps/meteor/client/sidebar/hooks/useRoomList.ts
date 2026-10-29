@@ -175,14 +175,24 @@ export const useRoomList = ({
 				const activeSince = activityFilterHours ? now - activityFilterHours * HOUR : undefined;
 				const isInactive = (room: SubscriptionWithRoom) =>
 					activeSince !== undefined && room.rid !== openedRoom && !isUnreadRoom(room) && (getLastActivity(room) ?? Infinity) < activeSince;
-				const inactiveCount = collapsed ? 0 : allRooms.filter(isInactive).length;
-				const hideInactive = inactiveCount > 0 && !showingInactive;
+				const activeRooms: SubscriptionWithRoom[] = [];
+				let inactiveCount = 0;
+				for (const room of allRooms) {
+					if (isInactive(room)) {
+						inactiveCount += 1;
+					} else {
+						activeRooms.push(room);
+					}
+				}
+				if (collapsed) {
+					inactiveCount = 0;
+				}
 
 				let displayRooms = allRooms;
 				if (collapsed) {
 					displayRooms = allRooms.filter(isVisibleWhileCollapsed);
-				} else if (hideInactive) {
-					displayRooms = allRooms.filter((room) => !isInactive(room));
+				} else if (!showingInactive) {
+					displayRooms = activeRooms;
 				}
 
 				// "Keep unreads on top": stable-partition so unread rooms come first, each partition keeping the
