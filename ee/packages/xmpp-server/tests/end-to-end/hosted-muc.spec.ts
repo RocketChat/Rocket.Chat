@@ -267,8 +267,7 @@ describe('XMPP federation: rooms hosted by Rocket.Chat', () => {
 			assert.equal((await waitForMessage(owner, room, text))._id, original._id);
 		});
 
-		// Known defect: ../../docs/specs/message-corrections.md#d2-the-room-strips-corrections-it-relays-between-xmpp-users
-		it.skip("relays an XMPP user's correction to the other XMPP occupants as a correction (message-corrections D2)", async () => {
+		it("relays an XMPP user's correction to the other XMPP occupants as a correction (R13, message-corrections R5)", async () => {
 			const id = `e2e-${uniqueSuffix()}`;
 			const text = `before correction ${uniqueSuffix()}`;
 			await alice.sendGroupchat(muc, text, { id });
@@ -298,8 +297,7 @@ describe('XMPP federation: rooms hosted by Rocket.Chat', () => {
 			assert.ok(statusCodes(kicked).includes('307'), `expected status 307, got ${statusCodes(kicked).join(',')}`);
 		});
 
-		// Known defect: ../../docs/specs/hosted-muc.md#d1-kicked-xmpp-users-are-not-told-they-were-removed
-		it.skip('tells the kicked XMPP user they were removed (D1)', async () => {
+		it('tells the kicked XMPP user they were removed (R9)', async () => {
 			const notice = await bob.waitFor(isOccupantPresence(muc, bob.username, { type: 'unavailable' }), 'his own removal');
 			assert.ok(statusCodes(notice).includes('307'));
 		});
@@ -437,8 +435,7 @@ describe('XMPP federation: rooms hosted by Rocket.Chat', () => {
 	});
 
 	describe('after a change made in Rocket.Chat', () => {
-		// Known defect: ../../docs/specs/hosted-muc.md#d3-a-new-topic-does-not-reach-occupants-already-in-the-room
-		it.skip('tells occupants already in the room about a new topic (D3)', async () => {
+		it('tells occupants already in the room about a new topic (R19)', async () => {
 			const room = await createHostedRoom(rc, owner, { type: 'c', name: `xe2e-topic-${uniqueSuffix()}` });
 			const muc = mucJidOf(room);
 			await alice.joinRoom(muc);

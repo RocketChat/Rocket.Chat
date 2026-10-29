@@ -10,7 +10,7 @@ import {
 	parseJoinPresence,
 	splitOccupantJid,
 } from './stanzas';
-import type { MucRole } from './stanzas';
+import type { MucRole, MucStatusCode } from './stanzas';
 import { parseReplaceId } from '../xml/correction';
 import { buildStanzaError } from '../xml/errors';
 
@@ -57,8 +57,15 @@ export class MucRoom {
 		return this.subject;
 	}
 
+	/** Takes a new subject and tells the occupants already in the room when it differs. */
 	setSubject(subject: string): void {
+		if (subject === this.subject) {
+			return;
+		}
 		this.subject = subject;
+		for (const recipient of this.remoteOccupants()) {
+			this.deps.send(buildSubjectMessage({ roomJid: this.roomJid, to: recipient.realJid, subject }));
+		}
 	}
 
 	get roomId(): string {
@@ -182,13 +189,14 @@ export class MucRoom {
 			return;
 		}
 
-		this.broadcastMessage({ fromNick: occupant.nick, body, id: message.attrs.id });
+		const replaceId = parseReplaceId(message);
+		this.broadcastMessage({ fromNick: occupant.nick, body, id: message.attrs.id, replaceId });
 		this.deps.emit('message', {
 			fromNick: occupant.nick,
 			fromJid: occupant.realJid,
 			body,
 			id: message.attrs.id,
-			replaceId: parseReplaceId(message),
+			replaceId,
 			raw: message,
 		});
 	}
@@ -203,18 +211,15 @@ export class MucRoom {
 		if (!occupant) {
 			return;
 		}
+		const notice = (to: string, statusCodes: MucStatusCode[]) =>
+			buildOccupantPresence({ roomJid: this.roomJid, nick: occupant.nick, to, role: occupant.role, type: 'unavailable', statusCodes });
+
+		if (!occupant.isLocal) {
+			this.deps.send(notice(occupant.realJid, [MUC_STATUS.kicked, MUC_STATUS.selfPresence]));
+		}
 		this.occupants.delete(nick);
 		for (const recipient of this.remoteOccupants()) {
-			this.deps.send(
-				buildOccupantPresence({
-					roomJid: this.roomJid,
-					nick: occupant.nick,
-					to: recipient.realJid,
-					role: occupant.role,
-					type: 'unavailable',
-					statusCodes: [MUC_STATUS.kicked],
-				}),
-			);
+			this.deps.send(notice(recipient.realJid, [MUC_STATUS.kicked]));
 		}
 		this.deps.emit('occupantLeft', occupant, 'kicked');
 	}
