@@ -1,9 +1,9 @@
 import { ClientSafeError, isClientSafeError } from '@rocket.chat/core-services';
 import type { RemoteMethodCall } from '@rocket.chat/ddp-server';
-import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
 import { getMeteorConnection } from './meteorConnection';
+import { checkMethodRateLimit } from '../utils/checkMethodRateLimit';
 import { createMeteorInvocation } from '../utils/createMeteorInvocation';
 
 // accounts-base still throws Meteor.Error, which the DDP server would otherwise hide behind a generic 500
@@ -20,20 +20,13 @@ const toClientSafeError = (err: unknown): unknown => {
 export const callMeteorMethod: RemoteMethodCall = async (session, method, params) => {
 	const connection = getMeteorConnection(session);
 
-	const rateLimiterInput = {
+	checkMethodRateLimit({
 		userId: session.userId,
 		clientAddress: connection.clientAddress,
-		type: 'method' as const,
+		type: 'method',
 		name: method,
 		connectionId: connection.id,
-	};
-	DDPRateLimiter._increment(rateLimiterInput);
-	const rateLimitResult = DDPRateLimiter._check(rateLimiterInput);
-	if (!rateLimitResult.allowed) {
-		throw new ClientSafeError('too-many-requests', DDPRateLimiter.getErrorMessage(rateLimitResult), {
-			timeToReset: rateLimitResult.timeToReset,
-		});
-	}
+	});
 
 	const { applyInvocation } = createMeteorInvocation(connection, session.userId, session.userToken);
 	try {
