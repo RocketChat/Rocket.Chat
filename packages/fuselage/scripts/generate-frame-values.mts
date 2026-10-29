@@ -12,7 +12,7 @@ import { join } from 'node:path';
 
 import prettier from 'prettier';
 
-import { shadowColors, statusColors, strokeColors, surfaceColors, textIconColors } from '../src/Theme.ts';
+import { badgeBackgroundColors, shadowColors, statusColors, strokeColors, surfaceColors, textIconColors } from '../src/Theme.ts';
 import { toCSSColorValue, toCSSValue } from '../src/helpers/toCSSValue.ts';
 import { borderRadius, borderWidth, fontFamily, fontScale, size, spacing } from '../src/styleTokens.ts';
 
@@ -535,10 +535,58 @@ const TagFrame = styled(View, {
 	return out.join('\n\n');
 };
 
+const generateBadge = () => {
+	const levels = { primary: 2, secondary: 1, warning: 3, danger: 4 } as const;
+	const looks = Object.entries(levels).map(([variant, level]) => {
+		const color = themed(`badge-colors-${variant}-color`, fontColor('font-pure-white'));
+		const backgroundColor = themed(
+			`badge-colors-${variant}-background-color`,
+			badgeBackgroundColors[`badge-background-level-${level}` as keyof typeof badgeBackgroundColors].toString(),
+		);
+		return `${variant}: ${literal({ color, backgroundColor }, '\t\t\t')},`;
+	});
+
+	const frame = literal({
+		render: 'span',
+		boxSizing: 'border-box',
+		display: 'flex',
+		flexDirection: 'row',
+		flexShrink: 1,
+		alignItems: 'normal',
+		justifyContent: 'center',
+		overflow: 'hidden',
+		width: 'fit-content',
+		paddingBlock: '2px',
+		paddingInline: '4px',
+		textAlign: 'center',
+		whiteSpace: 'nowrap',
+		textDecoration: 'none',
+		textOverflow: 'ellipsis',
+		wordBreak: 'keep-all',
+		borderRadius: themed('badge-border-radius', themed('border-radius-full', borderRadius('full')!)),
+		...font('micro'),
+	});
+
+	return `// Declared where they render: zero-runtime only erases a \`styled()\` whose every use is in its own module
+const BadgeFrame = styled(View, {
+	...${frame},
+	variants: {
+		look: {
+			${looks.join('\n')}
+		},
+		sizing: {
+			regular: { minWidth: '${size('x16')}', minHeight: '${size('x16')}' },
+			small: { minWidth: '${size('x8')}', minHeight: '${size('x8')}' },
+		},
+	},
+});`;
+};
+
 const components = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
 	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
 	{ file: join(import.meta.dirname, '../src/components/Tag/Tag.tsx'), generate: generateTag },
+	{ file: join(import.meta.dirname, '../src/components/Badge/Badge.tsx'), generate: generateBadge },
 ];
 const check = process.argv.includes('--check');
 let stale = false;
