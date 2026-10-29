@@ -131,25 +131,19 @@ describe('RoomListCollapser', () => {
 	});
 });
 
-const makeFilteredGroup = (overrides: Partial<SidebarRoomListGroup> = {}): SidebarRoomListGroup => ({
-	key: 'Channels',
-	title: 'Channels',
-	translateTitle: false,
-	showUnreads: false,
-	keepUnreadsOnTop: false,
-	activityFilterHours: 24 * 7,
-	inactiveCount: 4,
-	showingInactive: false,
-	collapsed: false,
-	rooms: [],
-	unreadInfo: { userMentions: 0, groupMentions: 0, tunread: [], tunreadUser: [], unread: 0 },
-	empty: false,
-	...overrides,
-});
+const makeFilteredGroup = (overrides: Partial<SidebarRoomListGroup> = {}): SidebarRoomListGroup =>
+	({
+		...makeGroup(false),
+		activityFilterHours: 24 * 7,
+		inactiveCount: 4,
+		showingInactive: false,
+		empty: false,
+		...overrides,
+	}) as SidebarRoomListGroup;
 
-const filterAppRoot = mockAppRoot()
+const FilterAppRoot = mockAppRoot()
 	.withTranslations('en', 'core', {
-		Filter: 'Filter',
+		Activity_filter_label: 'Filter: {{filter}}',
 		Last_24_hours: 'Last 24 hours',
 		Last_7_days: 'Last 7 days',
 		Days_count_one: '{{count}} day',
@@ -159,8 +153,15 @@ const filterAppRoot = mockAppRoot()
 		Show_inactive_one: 'Show {{count}} inactive',
 		Show_inactive_other: 'Show {{count}} inactive',
 		Hide_inactive: 'Hide inactive',
+		No_inactive_rooms_hidden: 'No inactive rooms hidden',
 	})
 	.build();
+
+const FilterListWrapper = ({ children }: { children: ReactNode }) => (
+	<FilterAppRoot>
+		<div role='list'>{children}</div>
+	</FilterAppRoot>
+);
 
 const renderFilteredCollapser = (overrides: Partial<SidebarRoomListGroup> = {}) => {
 	const handlers = { onClick: jest.fn(), onToggleInactive: jest.fn() };
@@ -174,9 +175,7 @@ const renderFilteredCollapser = (overrides: Partial<SidebarRoomListGroup> = {}) 
 			onMoveDown={jest.fn()}
 			{...handlers}
 		/>,
-		{
-			wrapper: filterAppRoot,
-		},
+		{ wrapper: FilterListWrapper },
 	);
 
 	return handlers;
@@ -235,8 +234,9 @@ describe('the activity filter chip', () => {
 
 		getChip().focus();
 		await userEvent.keyboard('{Enter}');
+		await userEvent.keyboard(' ');
 
-		expect(onToggleInactive).toHaveBeenCalledTimes(1);
+		expect(onToggleInactive).toHaveBeenCalledTimes(2);
 		expect(onClick).not.toHaveBeenCalled();
 	});
 
@@ -246,10 +246,12 @@ describe('the activity filter chip', () => {
 		expect(getChip()).toBeInTheDocument();
 	});
 
-	it('is absent when the filter hides nothing', () => {
+	it('stays as a sign, disabled, when the filter hides nothing', () => {
 		renderFilteredCollapser({ inactiveCount: 0 });
 
-		expect(screen.queryByRole('button', { name: /Filter/ })).not.toBeInTheDocument();
+		expect(getChip()).toBeDisabled();
+		expect(getChip()).toHaveAttribute('aria-pressed', 'true');
+		expect(getChip()).toHaveAttribute('title', 'No inactive rooms hidden');
 	});
 
 	it('is absent when the group has no filter', () => {
@@ -262,5 +264,22 @@ describe('the activity filter chip', () => {
 		renderFilteredCollapser({ collapsed: true });
 
 		expect(screen.queryByRole('button', { name: /Filter/ })).not.toBeInTheDocument();
+	});
+
+	it('has no a11y violations', async () => {
+		const { container } = render(
+			<RoomListCollapser
+				group={makeFilteredGroup()}
+				canMoveUp
+				canMoveDown
+				onMoveUp={jest.fn()}
+				onMoveDown={jest.fn()}
+				onToggleInactive={jest.fn()}
+				onClick={jest.fn()}
+			/>,
+			{ wrapper: FilterListWrapper },
+		);
+
+		expect(await axe(container)).toHaveNoViolations();
 	});
 });
