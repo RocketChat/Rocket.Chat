@@ -12,9 +12,3 @@ export type MessageEmojiBaseProps = PartAttributes<HTMLSpanElement> & {
 	// The emoji's shortcode, which the app's tooltip reads back
 	'data-title'?: string;
 };
-
-const MessageEmojiBase = ({ name, image, className, ...props }: MessageEmojiBaseProps) => (
-	<span className={`${className || ''} ${name}`} style={image?.length ? { backgroundImage: image } : undefined} {...props} />
-);
-
-export default MessageEmojiBase;

@@ -26,12 +26,15 @@
 @use './InputBox/InputBox.styles.css';
 @use './Item/Item.styles.css';
 @use './Label/Label.styles.css';
-@use './Message/Messages.styles.scss';
 @use './Menu/Menu.styles.css';
 @use './Message/Message.styles.css';
+@use './Message/MessageDivider/MessageDivider.styles.css';
 @use './Message/MessageGenericPreview/MessageGenericPreview.styles.css';
 @use './Message/MessageReactions/MessageReactions.styles.css';
 @use './Message/MessageToolbar/MessageToolbar.styles.css';
+@use './Message/MessageStatusIndicator/MessageStatusIndicator.styles.css';
+@use './Message/MessageSystem/MessageSystem.styles.css';
+@use './Message/ThreadMessage/ThreadMessage.styles.css';
 @use './Modal/Modal.styles.css';
 @use './NavBar/NavBar.styles.css';
 @use './Option/Option.styles.css';

@@ -1952,7 +1952,6 @@ const generateBubbleCss = () => {
 }`;
 };
 
-
 const bannerKinds = ['info', 'success', 'warning', 'danger'];
 const bannerColor = (kind: string) => theme(`banner-colors-${kind}-color`, statusFontOf(kind));
 
@@ -3529,7 +3528,6 @@ const generateSidepanelStyles = () => `.rcx-sidepanel--divider {
 	padding-block: ${spacing('x8')};
 }`;
 
-
 // The Select family: one container frame (Select, SelectLegacy, MultiSelect, PaginatedSelect, AutoComplete) and its parts
 const generateSelectContainer = () => {
 	const frame: Value = {
@@ -3802,15 +3800,6 @@ const text = (name: string, value: Record<string, Value>, variants?: Record<stri
 	mParts(mPart(name, 'Text', value, variants));
 const inView = (name: string, value: Record<string, Value>, variants?: Record<string, Record<string, Value>>) =>
 	mPart(name, 'View', value, variants);
-
-const mFocusState = {
-	borderWidth: px(1),
-	borderStyle: 'solid',
-	borderColor: { 'default': 'transparent', 'focus-visible': mStroke('highlight') },
-	borderRadius: { 'focus-visible': radius('medium') },
-	outlineStyle: 'none',
-	boxShadow: { 'focus-visible': `0 0 0 2px ${mStroke('extra-light-highlight')}` },
-} as const;
 
 const messageDir = (relative: string) => join(import.meta.dirname, '../src/components/Message', relative);
 // The frames' atomic classes can be doubled, so a rule that overrides one needs three
@@ -4414,6 +4403,196 @@ const messagePreviews = [
 	{ file: messageDir('MessageGenericPreview/MessageGenericPreview.styles.css'), generate: generateMessageGenericPreviewCss, css: true },
 ];
 
+const generateMessageDivider = () =>
+	mParts(
+		inView('MessageDividerBarFrame', {
+			render: 'div',
+			...mBox,
+			alignItems: 'center',
+			// Equal bars keep the date centred, whatever room the Unread label takes from its bar
+			flexGrow: 1,
+			flexBasis: 0,
+			minWidth: 0,
+		}),
+		inView('MessageDividerWrapperFrame', {
+			render: 'div',
+			...mBox,
+			display: 'block',
+			marginBlock: spacing('x8'),
+			paddingInline: spacing('x8')!,
+		}),
+		inView('MessageDividerUnreadFrame', {
+			render: 'div',
+			...mBox,
+			display: 'block',
+			order: 1,
+			// Takes no block size, so a divider with only this label stays a 1px line that the label overhangs
+			marginBlock: spacing('-x8'),
+			paddingInlineStart: spacing('x8'),
+			color: theme('message-divider-color-unread', mFont('danger')),
+		}),
+	);
+
+// Divider's labelled variant renders this root through the `rcx-message-divider` class, so the root cannot be a frame
+const generateMessageDividerCss = () => {
+	const c2 = fontScale('c2')!;
+	const barHeight = theme('message-divider-size', px(1));
+
+	return `.rcx-message-divider {
+	position: relative;
+	z-index: 1;
+
+	display: flex;
+	align-items: center;
+
+	margin-bottom: ${theme('message-divider-size-neg', offScale(-1))};
+	padding-inline: ${spacing('x20')};
+
+	color: ${theme('message-divider-color', mFont('default'))};
+
+	font-size: ${c2.fontSize};
+	font-weight: ${c2.fontWeight};
+	line-height: ${c2.lineHeight};
+	letter-spacing: ${c2.letterSpacing};
+}
+
+.rcx-message-divider__bar::after {
+	flex-grow: 1;
+
+	height: ${barHeight};
+
+	content: '';
+
+	background: ${theme('message-divider-background-color', mStroke('extra-light'))};
+}
+
+.rcx-message-divider--unread .rcx-message-divider__bar::after {
+	background: ${theme('message-divider-background-color-unread', mStroke('error'))};
+}`;
+};
+
+// The system row, its container, block and timestamp are `Item` parts
+const generateMessageSystemBody = () => view('MessageSystemBodyFrame', { render: 'div', ...mBox, display: 'block', ...mTruncate });
+
+const generateMessageSystemName = () =>
+	text('MessageSystemNameFrame', {
+		render: 'span',
+		...mInline,
+		...font('p2b'),
+		flexShrink: 0,
+		color: mFont('titles-labels'),
+	});
+
+const generateMessageSystemCss = () => `${raised('.rcx-message-system')} {
+	padding-block: ${spacing('x8')};
+}
+
+/* The row keeps the avatar at the top when an attachment makes it tall; a single line still centres on it */
+${raised('.rcx-message-system__container')} {
+	align-self: center;
+
+	margin-block: ${spacing('-x4')};
+}`;
+
+const generateMessageStatusIndicator = () =>
+	view('MessageStatusIndicatorFrame', {
+		render: 'div',
+		...mBox,
+		display: 'block',
+		userSelect: 'none',
+	});
+
+// The item is an `Icon` or a plain span, neither of them a frame, so its color stays a stylesheet
+const generateMessageStatusIndicatorCss = () => `${raised('.rcx-message-status-indicator:empty')} {
+	display: none;
+}
+
+.rcx-message-status-indicator__item {
+	color: ${mFont('secondary-info')};
+}`;
+
+const generateThreadMessageBody = () =>
+	view('ThreadMessageBodyFrame', { render: 'div', ...mBox, display: 'block', ...mTruncate, color: mFont('default') });
+
+const generateThreadMessageContainer = () =>
+	view('ThreadMessageContainerFrame', {
+		render: 'div',
+		...mBox,
+		...mTruncate,
+		width: '100%',
+	});
+
+const generateThreadMessageOrigin = () =>
+	view(
+		'ThreadMessageOriginFrame',
+		{
+			render: 'div',
+			...mBox,
+			display: 'block',
+			...mTruncate,
+		},
+		{ look: { default: {}, system: { color: mFont('default') } } },
+	);
+
+const generateThreadMessageEmoji = () =>
+	text('ThreadMessageEmojiFrame', {
+		render: 'span',
+		display: 'inline-block',
+		whiteSpace: 'inherit',
+		wordWrap: 'inherit',
+		marginInline: offScale(2),
+		backgroundSize: 'contain',
+		fontSize: size('x12')!,
+		lineHeight: size('x8')!,
+		width: size('x12')!,
+		height: size('x12')!,
+	});
+
+const generateThreadMessageCss = () => {
+	const c1 = fontScale('c1')!;
+
+	return `${raised('.rcx-message-thread')} {
+	overflow: hidden;
+
+	color: ${mFont('info')};
+
+	font-size: ${c1.fontSize};
+	font-weight: ${c1.fontWeight};
+	line-height: ${c1.lineHeight};
+	letter-spacing: ${c1.letterSpacing};
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+${raised('.rcx-message-thread__content')} {
+	gap: ${spacing('x8')};
+}
+
+/* Same gap as the message row, so the preview text starts on the message text column */
+.rcx-message-thread__row {
+	--rcx-item-gap: ${spacing('x8')};
+}
+
+.rcx-message-thread__origin--system::first-letter {
+	text-transform: uppercase;
+}`;
+};
+
+const messageSystem = [
+	{ file: messageDir('MessageDivider/MessageDivider.tsx'), generate: generateMessageDivider },
+	{ file: messageDir('MessageDivider/MessageDivider.styles.css'), generate: generateMessageDividerCss, css: true },
+	{ file: messageDir('MessageSystem/MessageSystemBody.tsx'), generate: generateMessageSystemBody },
+	{ file: messageDir('MessageSystem/MessageSystemName.tsx'), generate: generateMessageSystemName },
+	{ file: messageDir('MessageSystem/MessageSystem.styles.css'), generate: generateMessageSystemCss, css: true },
+	{ file: messageDir('MessageStatusIndicator/MessageStatusIndicator.tsx'), generate: generateMessageStatusIndicator },
+	{ file: messageDir('MessageStatusIndicator/MessageStatusIndicator.styles.css'), generate: generateMessageStatusIndicatorCss, css: true },
+	{ file: messageDir('ThreadMessage/ThreadMessageBody.tsx'), generate: generateThreadMessageBody },
+	{ file: messageDir('ThreadMessage/ThreadMessageContainer.tsx'), generate: generateThreadMessageContainer },
+	{ file: messageDir('ThreadMessage/ThreadMessageOrigin.tsx'), generate: generateThreadMessageOrigin },
+	{ file: messageDir('ThreadMessage/ThreadMessageEmoji.tsx'), generate: generateThreadMessageEmoji },
+	{ file: messageDir('ThreadMessage/ThreadMessage.styles.css'), generate: generateThreadMessageCss, css: true },
+];
+
 const generateAccordion = () =>
 	constants({
 		border: {
@@ -4538,9 +4717,6 @@ const generateTableSelection = () =>
 			backgroundColor: surfaceColor('neutral'),
 		},
 	});
-
-
-
 
 const generatePagination = () => {
 	const small = fontScaleOf('c1');
@@ -4733,7 +4909,7 @@ const components: { file: string; generate: () => string; css?: boolean; section
 	{ file: frames('Menu/MenuItem.tsx'), generate: generateMenuItemDescription },
 ];
 
-components.push(...messageCore, ...messagePreviews, ...messageReactions, ...messageMetrics, ...messageToolbar);
+components.push(...messageCore, ...messageSystem, ...messagePreviews, ...messageReactions, ...messageMetrics, ...messageToolbar);
 
 for (const [dir, control] of [
 	['CheckBox', checkBox],
@@ -4988,6 +5164,7 @@ const textFrames = [
 	'MenuItemDescriptionFrame',
 	'MessageBodyFrame',
 	'MessageDividerUnreadFrame',
+	'MessageDividerWrapperFrame',
 	'MessageGenericPreviewDescriptionFrame',
 	'MessageGenericPreviewIconTitleFrame',
 	'MessageMetricsItemLabelFrame',
