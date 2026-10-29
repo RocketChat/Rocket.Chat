@@ -1,8 +1,5 @@
 export { default as MessageMetricsItem, type MessageMetricsItemProps } from './MessageMetricsItem';
-export {
-	default as MessageMetricsItemAvatarRow,
-	type MessageMetricsItemProps as MessageMetricsItemAvatarRowProps,
-} from './MessageMetricsItemAvatarRow';
+export { default as MessageMetricsItemAvatarRow, type MessageMetricsItemAvatarRowProps } from './MessageMetricsItemAvatarRow';
 export {
 	default as MessageMetricsItemAvatarRowContent,
 	type MessageMetricsItemAvatarRowContentProps,
