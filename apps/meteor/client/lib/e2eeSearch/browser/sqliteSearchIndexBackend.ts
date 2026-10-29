@@ -97,7 +97,7 @@ export const createSqliteSearchIndexBackend = (runner: SqlRunner, { namespace }:
 
 	return {
 		async open(scope) {
-			const { persistent, evicted, locked } = await runner.open(scopeIdOf(scope.userId), await importWrapKey(scope.wrapKey));
+			const { persistent, evicted, locked } = await runner.open(scopeIdOf(scope.userId), await importWrapKey(scope.wrapKey), SCHEMA);
 			if (locked) {
 				userId = undefined;
 				return { ...LOCKED_RESULT };
@@ -105,7 +105,6 @@ export const createSqliteSearchIndexBackend = (runner: SqlRunner, { namespace }:
 			if (persistent) requestPersistentStorage();
 			// The index starts empty. Its room states are gone with it, so the crawler indexes every room again.
 			if (evicted) console.warn('E2EE search index: the saved copy is gone, the index is built again');
-			await runner.exec({ sql: SCHEMA });
 			userId = scope.userId;
 			return { schemaVersion: 1, encryptedAtRest: persistent };
 		},

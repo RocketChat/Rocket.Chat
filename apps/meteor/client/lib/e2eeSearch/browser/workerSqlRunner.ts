@@ -24,9 +24,10 @@ export type SqlRunner = {
 	/**
 	 * Switches to the database of `scopeId`. A database kept on disk for that scope comes back. `wrapKey` is the
 	 * non-extractable HKDF key of the user's wrap key: without it, or with another one than the one that sealed the copy,
-	 * the open is locked.
+	 * the open is locked. `schema` runs after each open that is not locked, also when a runner opens the database again
+	 * by itself, so it must be safe to repeat.
 	 */
-	open(scopeId: string, wrapKey?: CryptoKey): Promise<SqlScopeState>;
+	open(scopeId: string, wrapKey?: CryptoKey, schema?: string): Promise<SqlScopeState>;
 	exec(statement: SqlStatement): Promise<SqlRow[]>;
 	/** Runs every statement in one transaction: all of them apply, or none. */
 	batch(statements: SqlStatement[]): Promise<void>;
@@ -58,6 +59,10 @@ export const createWorkerSqlRunner = (workerUrl: string | URL): SqlRunner => {
 		};
 
 		started.onerror = (event) => {
+			// The next call starts a new worker. An error of a worker that is already replaced changes nothing.
+			if (worker !== started) return;
+			worker = undefined;
+			started.terminate();
 			event.preventDefault();
 			const error = new Error(`E2EE search worker failed: ${event.message || 'the worker did not start'}`);
 			for (const call of pending.values()) call.reject(error);
@@ -76,7 +81,11 @@ export const createWorkerSqlRunner = (workerUrl: string | URL): SqlRunner => {
 		});
 
 	return {
-		open: async (scopeId, wrapKey) => (await send({ op: 'open', scopeId, wrapKey }))[0] as unknown as SqlScopeState,
+		open: async (scopeId, wrapKey, schema) => {
+			const state = (await send({ op: 'open', scopeId, wrapKey }))[0] as unknown as SqlScopeState;
+			if (!state.locked && schema !== undefined) await send({ op: 'exec', sql: schema });
+			return state;
+		},
 		exec: (statement) => send({ op: 'exec', ...statement }),
 		batch: async (statements) => {
 			await send({ op: 'batch', statements });
