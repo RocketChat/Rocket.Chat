@@ -37,8 +37,11 @@ export type AccessibilityViewProps = {
 
 const AccessibilityView = ({ vm: { values: preferencesValues, displayRolesEnabled, save } }: AccessibilityViewProps) => {
 	const t = useTranslation();
+	// `[class]` outranks the white space the field text frames set
 	const breakSpacesClassName = useStyle(css`
-		white-space: break-spaces;
+		&[class] {
+			white-space: break-spaces;
+		}
 	`);
 
 	const createFontStyleElement = useCreateFontStyleElement();
@@ -125,7 +128,7 @@ const AccessibilityView = ({ vm: { values: preferencesValues, displayRolesEnable
 												/>
 											</FieldRow>
 											<Box paddingBlockStart={12}>
-												<FieldHint style={{ whiteSpace: 'break-spaces' }}>{t(description)}</FieldHint>
+												<FieldHint className={breakSpacesClassName}>{t(description)}</FieldHint>
 											</Box>
 										</Field>
 									</Box>
