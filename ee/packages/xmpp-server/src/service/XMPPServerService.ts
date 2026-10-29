@@ -546,7 +546,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			return { allow: false, reason: 'forbidden' };
 		}
 
-		const user = await Users.findOneByUsername(toBareJid(params.occupantJid), { projection: { _id: 1 } });
+		const user = await this.findXMPPUser(params.occupantJid);
 		const subscription = user && (await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { projection: { status: 1 } }));
 		if (subscription && isBannedSubscription(subscription)) {
 			this.logger.warn({ msg: 'MUC join refused: banned from this room', muc: mucJid, from: params.occupantJid });
@@ -643,12 +643,18 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 
 	private async onHostedOccupantLeft(mucJid: string, occupantJid: string): Promise<void> {
 		const room = await Rooms.findOneByXMPPMucJid(mucJid);
-		const user = room && (await Users.findOneByUsername(toBareJid(occupantJid)));
+		const user = room && (await this.findXMPPUser(occupantJid));
 		if (!room || !user) {
 			return;
 		}
 		// performUserRemoval runs no callbacks, so the removal does not bounce back as a kick
 		await Room.performUserRemoval(room, user);
+	}
+
+	/** The record of the remote XMPP user a JID names, never that of a local user holding the same username. */
+	private async findXMPPUser(jid: string): Promise<IUser | null> {
+		const user = await Users.findOneByUsername(toBareJid(jid));
+		return user && isUserXMPPFederated(user) ? user : null;
 	}
 
 	/** Persists a message received in a hosted MUC room (author addressed by real JID). */

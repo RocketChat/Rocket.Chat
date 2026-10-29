@@ -63,6 +63,9 @@ export const setSetting = (rc: Pick<RocketChat, 'admin'>, id: string, value: unk
 		{ 'x-2fa-code': crypto.createHash('sha256').update(adminPassword).digest('hex'), 'x-2fa-method': 'password' },
 	);
 
+/** A `UTF8_User_Names_Validation` that lets usernames hold `@` and `'`, as SAML, LDAP or an admin can. */
+export const WIDENED_USERNAMES = "[0-9a-zA-Z-_.@']+";
+
 /** Changes a setting for the rest of the suite and queues the original value for restoring. */
 export async function overrideSetting(rc: RocketChat, id: string, value: unknown): Promise<void> {
 	const original = await getSetting(rc, id);

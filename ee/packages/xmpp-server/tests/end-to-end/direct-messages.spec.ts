@@ -19,14 +19,12 @@ import {
 	updateMessage,
 	waitForDirectMessageWith,
 	waitForMessage,
+	WIDENED_USERNAMES,
 } from './helper/rocketchat';
 import type { LocalUser, RocketChat } from './helper/rocketchat';
 import { assertFederationReachable, registerXmppUser, setupSuite } from './helper/suite';
 import type { XmppUser } from './helper/xmpp-client';
 import { escapeLocalpart } from '../../src/jid/escaping';
-
-// Lets usernames hold `@` and `'`, as SAML, LDAP or an admin can
-const WIDENED_USERNAMES = "[0-9a-zA-Z-_.@']+";
 
 describe('XMPP federation: direct messages', () => {
 	let rc: RocketChat;
