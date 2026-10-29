@@ -1,0 +1,45 @@
+apps/meteor/ee/server/startup/presence.ts
+  s_f3e7af0b0e6bc5::t_45d2387979a3cd 8,11,61-85
+apps/meteor/package.json
+  s_f3e7af0b0e6bc5::t_b125b9beb77576 109,331,427
+apps/meteor/server/lib/notifications/core/lib/Notifications.ts
+  s_f3e7af0b0e6bc5::t_34a7d3ffecdcc6 1,3,5,7
+apps/meteor/server/lib/realtime/accountMethods.ts
+  s_f3e7af0b0e6bc5::t_252a73b73f1fa5 1-20,25-43
+apps/meteor/server/lib/realtime/ddpServer.ts
+  s_f3e7af0b0e6bc5::t_c967d2003649da 2-6,8-9,10-36
+apps/meteor/server/lib/realtime/meteorConnection.ts
+  s_f3e7af0b0e6bc5::t_05f5db5cfb23f4 1-3,5-16,26-45
+apps/meteor/server/lib/realtime/meteorMethods.ts
+  s_f3e7af0b0e6bc5::t_26071802987606 1-9,16-44
+apps/meteor/server/lib/realtime/routes.ts
+  s_f3e7af0b0e6bc5::t_ccb877ceaca9c3 1-23
+apps/meteor/server/lib/realtime/websocket.spec.ts
+  s_f3e7af0b0e6bc5::t_6026a9a99f4260 1-29
+apps/meteor/server/lib/realtime/websocket.ts
+  s_f3e7af0b0e6bc5::t_0fc1ffecb27768 1-6,9-36,39-48
+apps/meteor/server/main.ts
+  s_f3e7af0b0e6bc5::t_0423476a18cdf1 23
+apps/meteor/server/services/realtime/service.ts
+  s_f3e7af0b0e6bc5::t_0fd3939f17fbf0 1-3,6-54
+apps/meteor/server/services/startup.ts
+  s_f3e7af0b0e6bc5::t_dbfbafcdaf56bb 24,45
+yarn.lock
+  s_f3e7af0b0e6bc5::t_d76d630978c344 10852,11003,11204
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ad02fb7f7755af80e88a0505fb104f3cfd8f1855",
+  "prompts": {},
+  "sessions": {
+    "s_f3e7af0b0e6bc5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b8028d69-1c86-4683-80b4-6ab4042b0851",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
