@@ -287,7 +287,7 @@ export class ListenersModule {
 
 			notifications.streamUser.__emit(subscription.u._id, clientAction, subscription);
 
-			notifications.notifyUserInThisInstance(subscription.u._id, 'subscriptions-changed', clientAction, subscription);
+			notifications.notifyUserInThisInstance(subscription.u._id, 'subscriptions-changed', clientAction, subscription as any);
 		});
 
 		service.onEvent('watch.roles', ({ clientAction, role }): void => {
@@ -384,7 +384,7 @@ export class ListenersModule {
 			// this emit will cause the user to receive a 'rooms-changed' event
 			notifications.streamUser.__emit(room._id, clientAction, room);
 
-			notifications.streamRoomData.emitWithoutBroadcast(room._id, room);
+			notifications.streamRoomData.emitWithoutBroadcast(room._id, room as IOmnichannelRoom);
 		});
 
 		service.onEvent('watch.users', (event): void => {
