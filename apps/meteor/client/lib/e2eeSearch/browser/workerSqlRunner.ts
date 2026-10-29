@@ -40,22 +40,39 @@ export type SqlRunner = {
 
 type WorkerReply = { id: number; rows?: SqlRow[]; error?: string };
 
+type WorkerRequest = { op: string } & Record<string, unknown>;
+
+// A call that gets no answer in this time fails, so a stalled worker does not hang the caller.
+const CALL_TIMEOUT_MS = 30_000;
+
+const ignore = (): void => undefined;
+
 /** Sends the SQL of the E2EE search index to the SQLite worker at `workerUrl`, which starts on the first call. */
 export const createWorkerSqlRunner = (workerUrl: string | URL): SqlRunner => {
-	const pending = new Map<number, { resolve: (rows: SqlRow[]) => void; reject: (error: Error) => void }>();
+	const pending = new Map<
+		number,
+		{ resolve: (rows: SqlRow[]) => void; reject: (error: Error) => void; timer: ReturnType<typeof setTimeout> }
+	>();
 	let nextId = 0;
 	let worker: Worker | undefined;
+	// The last open that was not locked. A worker that replaces a failed one opens it again before its first SQL.
+	let opened: { scopeId: string; wrapKey: CryptoKey; schema?: string } | undefined;
+	// The open that runs now. The other calls wait for it, so no call runs between the open and its schema.
+	let opening: Promise<void> | undefined;
+
+	const settle = (id: number, rows: SqlRow[] | undefined, error: string | undefined) => {
+		const call = pending.get(id);
+		if (!call) return;
+		pending.delete(id);
+		clearTimeout(call.timer);
+		if (error !== undefined) call.reject(new Error(error));
+		else call.resolve(rows ?? []);
+	};
 
 	const start = (): Worker => {
 		const started = new Worker(workerUrl, { type: 'module', name: 'e2ee-search-index' });
 
-		started.onmessage = ({ data }: MessageEvent<WorkerReply>) => {
-			const call = pending.get(data.id);
-			if (!call) return;
-			pending.delete(data.id);
-			if (data.error !== undefined) call.reject(new Error(data.error));
-			else call.resolve(data.rows ?? []);
-		};
+		started.onmessage = ({ data }: MessageEvent<WorkerReply>) => settle(data.id, data.rows, data.error);
 
 		started.onerror = (event) => {
 			// The next call starts a new worker. An error of a worker that is already replaced changes nothing.
@@ -63,40 +80,82 @@ export const createWorkerSqlRunner = (workerUrl: string | URL): SqlRunner => {
 			worker = undefined;
 			started.terminate();
 			event.preventDefault();
-			const error = new Error(`E2EE search worker failed: ${event.message || 'the worker did not start'}`);
-			for (const call of pending.values()) call.reject(error);
-			pending.clear();
+			const error = `E2EE search worker failed: ${event.message || 'the worker did not start'}`;
+			for (const id of [...pending.keys()]) settle(id, undefined, error);
 		};
 
 		return started;
 	};
 
-	const send = (request: Record<string, unknown>) =>
+	const post = (target: Worker, request: WorkerRequest, resolve: (rows: SqlRow[]) => void, reject: (error: Error) => void) => {
+		const id = nextId++;
+		const timer = setTimeout(
+			() => settle(id, undefined, `E2EE search worker did not answer the ${request.op} call in ${CALL_TIMEOUT_MS / 1000} s`),
+			CALL_TIMEOUT_MS,
+		);
+		pending.set(id, { resolve, reject, timer });
+		target.postMessage({ ...request, id });
+	};
+
+	const send = (request: WorkerRequest) =>
 		new Promise<SqlRow[]>((resolve, reject) => {
-			const id = nextId++;
-			pending.set(id, { resolve, reject });
-			worker ??= start();
-			worker.postMessage({ ...request, id });
+			if (!worker) {
+				worker = start();
+				// The worker runs its messages in order, so this open and its schema run before the SQL of the call.
+				if (opened && (request.op === 'exec' || request.op === 'batch' || request.op === 'flush')) {
+					post(worker, { op: 'open', scopeId: opened.scopeId, wrapKey: opened.wrapKey }, ignore, ignore);
+					if (opened.schema !== undefined) post(worker, { op: 'exec', sql: opened.schema }, ignore, ignore);
+				}
+			}
+			post(worker, request, resolve, reject);
 		});
 
+	// Also after the call: an open that ran before it can open the scope again.
+	const forget = (scopeId: string) => {
+		if (opened?.scopeId === scopeId) opened = undefined;
+	};
+
+	const call = (request: WorkerRequest) => (opening ? opening.then(() => send(request)) : send(request));
+
 	return {
-		open: async (scopeId, wrapKey, schema) => {
-			const state = (await send({ op: 'open', scopeId, wrapKey }))[0] as unknown as SqlScopeState;
-			if (!state.locked && schema !== undefined) await send({ op: 'exec', sql: schema });
-			return state;
+		open: (scopeId, wrapKey, schema) => {
+			const run = async () => {
+				opened = undefined;
+				const state = (await send({ op: 'open', scopeId, wrapKey }))[0] as unknown as SqlScopeState;
+				if (!state.locked && schema !== undefined) await send({ op: 'exec', sql: schema });
+				if (!state.locked && wrapKey) opened = { scopeId, wrapKey, schema };
+				return state;
+			};
+			const result = opening ? opening.then(run) : run();
+			const done = result.then(ignore, ignore);
+			opening = done;
+			void done.then(() => {
+				if (opening === done) opening = undefined;
+			});
+			return result;
 		},
-		exec: (statement) => send({ op: 'exec', ...statement }),
+		exec: (statement) => call({ op: 'exec', ...statement }),
 		batch: async (statements) => {
-			await send({ op: 'batch', statements });
+			await call({ op: 'batch', statements });
 		},
 		flush: async () => {
-			await send({ op: 'flush' });
+			await call({ op: 'flush' });
 		},
 		wipe: async (scopeId) => {
-			await send({ op: 'wipe', scopeId });
+			forget(scopeId);
+			try {
+				await call({ op: 'wipe', scopeId });
+			} finally {
+				forget(scopeId);
+			}
 		},
 		close: async (scopeId) => {
-			await send({ op: 'close', scopeId });
+			forget(scopeId);
+			try {
+				await call({ op: 'close', scopeId });
+			} finally {
+				forget(scopeId);
+			}
 		},
 	};
 };
