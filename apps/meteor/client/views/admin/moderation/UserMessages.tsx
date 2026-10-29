@@ -8,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 
 import MessageContextFooter from './MessageContextFooter';
 import ContextMessage from './helpers/ContextMessage';
+import { MessagesProvider } from '../../../providers/MessagesProvider';
 
 // TODO: We should use Contextualbar components here
 const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid: string) => void }) => {
@@ -53,19 +54,21 @@ const UserMessages = ({ userId, onRedirect }: { userId: string; onRedirect: (mid
 						)}
 					</Box>
 				)}
-				{isSuccess &&
-					report.messages.length > 0 &&
-					report.messages.map((message) => (
-						<Fragment key={message._id}>
-							<ContextMessage
-								message={message.message}
-								room={message.room}
-								onRedirect={onRedirect}
-								onChange={handleChange}
-								deleted={!report.user}
-							/>
-						</Fragment>
-					))}
+				{isSuccess && report.messages.length > 0 && (
+					<MessagesProvider allowsInteraction={false}>
+						{report.messages.map((message) => (
+							<Fragment key={message._id}>
+								<ContextMessage
+									message={message.message}
+									room={message.room}
+									onRedirect={onRedirect}
+									onChange={handleChange}
+									deleted={!report.user}
+								/>
+							</Fragment>
+						))}
+					</MessagesProvider>
+				)}
 				{isSuccess && report.messages.length === 0 && <GenericNoResults title={t('No_message_reports')} icon='message' />}
 				{isError && (
 					<Box display='flex' flexDirection='column' alignItems='center' paddingBlock={20} color='default'>

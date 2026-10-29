@@ -16,16 +16,20 @@ import {
 	MessageUsername,
 } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useFormatTime, useUserDisplayName, useFormatDateAndTime } from '@rocket.chat/ui-client';
+import {
+	MessageAttachments as Attachments,
+	MessageContentBody,
+	useFormatTime,
+	useUserDisplayName,
+	useFormatDateAndTime,
+	useMessageRenderers,
+} from '@rocket.chat/ui-client';
 import { useSetting } from '@rocket.chat/ui-contexts';
 import { useTranslation } from 'react-i18next';
 
 import ReportReasonCollapsible from './ReportReasonCollapsible';
-import MessageContentBody from '../../../../components/message/MessageContentBody';
-import Attachments from '../../../../components/message/content/Attachments';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { toPlainTextRoot } from '../../../../lib/toPlainTextRoot';
-import UiKitMessageBlock from '../../../../providers/MessagesProvider/renderers/UiKitMessageBlock';
 import MessageReportInfo from '../MessageReportInfo';
 import useDeleteMessage from '../hooks/useDeleteMessage';
 import { useDismissMessageAction } from '../hooks/useDismissMessageAction';
@@ -54,6 +58,7 @@ const ContextMessage = ({
 	const formatTime = useFormatTime();
 	const formatDate = useFormatDate();
 	const useRealName = useSetting('UI_Use_Real_Name', false);
+	const { UiKitMessageBlock } = useMessageRenderers();
 
 	const name = message.u.name || '';
 	const username = message.u.username || '';
