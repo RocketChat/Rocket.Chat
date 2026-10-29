@@ -12,14 +12,18 @@ export const trackPresence = (lifecycle: ConnectionLifecycle, nodeId: string): v
 		if (!userId) {
 			return;
 		}
-		void Presence.removeConnection(userId, connection.id, nodeId);
+		void Presence.removeConnection(userId, connection.id, nodeId).catch((err) => {
+			console.error('Error removing connection presence:', err);
+		});
 	};
 
 	lifecycle.on('loggedIn', ({ userId, connection }) => {
 		if (!userId) {
 			return;
 		}
-		void Presence.newConnection(userId, connection.id, nodeId);
+		void Presence.newConnection(userId, connection.id, nodeId).catch((err) => {
+			console.error('Error adding connection presence:', err);
+		});
 	});
 
 	lifecycle.on('activity', ({ userId, connection }) => {
