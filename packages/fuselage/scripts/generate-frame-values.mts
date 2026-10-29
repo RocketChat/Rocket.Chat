@@ -817,6 +817,8 @@ const components = [
 	{ file: join(import.meta.dirname, '../src/components/Tile/Tile.tsx'), generate: generateTile, kind: 'ts' as const },
 	{ file: join(import.meta.dirname, '../src/components/Divider/Divider.tsx'), generate: generateDivider, kind: 'ts' as const },
 	{ file: join(import.meta.dirname, '../src/components/Divider/Divider.styles.css'), generate: generateDividerCss, kind: 'css' as const },
+	{ file: join(import.meta.dirname, '../src/components/Callout/Callout.tsx'), generate: generateCallout, kind: 'ts' as const },
+	{ file: join(import.meta.dirname, '../src/components/Callout/Callout.styles.css'), generate: generateCalloutCss, kind: 'css' as const },
 	{ file: join(import.meta.dirname, '../src/styles/consumer-classes.css'), generate: generateConsumerClasses, kind: 'css' as const },
 ];
 const check = process.argv.includes('--check');
