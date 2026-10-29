@@ -1,5 +1,4 @@
 import { Box } from '@rocket.chat/fuselage';
-import { isTruthy } from '@rocket.chat/tools';
 import type { MessageListHandle, MessageListVisibility } from '@rocket.chat/ui-client';
 import { useEmbeddedLayout } from '@rocket.chat/ui-client';
 import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
@@ -45,8 +44,6 @@ const RoomBody = () => {
 	useTryToJumpToThreadMessage();
 
 	const hideFlexTab = useUserPreference<boolean>('hideFlexTab') || undefined;
-	const hideUsernames = useUserPreference<boolean>('hideUsernames');
-	const displayAvatars = useUserPreference<boolean>('displayAvatars');
 
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead', false);
 
@@ -173,15 +170,13 @@ const RoomBody = () => {
 									/>
 								)}
 							</Box>
-							<div className={['messages-box'].filter(isTruthy).join(' ')}>
+							<div className='messages-box'>
 								{!canPreview ? (
 									<div className='content room-not-found error-color'>
 										<div>{t('You_must_join_to_view_messages_in_this_channel')}</div>
 									</div>
 								) : null}
-								<div
-									className={['wrapper', hideUsernames && 'hide-usernames', !displayAvatars && 'hide-avatar'].filter(isTruthy).join(' ')}
-								>
+								<div className='wrapper'>
 									<MessageListErrorBoundary>
 										<RoomMessageList
 											key={room._id}
