@@ -14949,6 +14949,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@tamagui/compose-refs@patch:@tamagui/compose-refs@npm%3A3.0.18#~/.yarn/patches/@tamagui-compose-refs-npm-3.0.18-59cbb88350.patch":
+  version: 3.0.18
+  resolution: "@tamagui/compose-refs@patch:@tamagui/compose-refs@npm%3A3.0.18#~/.yarn/patches/@tamagui-compose-refs-npm-3.0.18-59cbb88350.patch::version=3.0.18&hash=748c11"
+  peerDependencies:
+    react: ">=19"
+  checksum: 10/b7a0ed1cbf00237202f2a9dc39ff6707ed689c46aa5d40a159726ce161a558d7f2a00f4072f3f8d8569e4f995fce779ea5ed14e35c2c208015f4dd3fe75831b0
+  languageName: node
+  linkType: hard
+
 "@tamagui/config-default@npm:3.0.18":
   version: 3.0.18
   resolution: "@tamagui/config-default@npm:3.0.18"
@@ -15440,7 +15449,7 @@ __metadata:
 
 "@tamagui/web@patch:@tamagui/web@npm%3A3.0.18#~/.yarn/patches/@tamagui-web-npm-3.0.18-f8fb3ca22a.patch":
   version: 3.0.18
-  resolution: "@tamagui/web@patch:@tamagui/web@npm%3A3.0.18#~/.yarn/patches/@tamagui-web-npm-3.0.18-f8fb3ca22a.patch::version=3.0.18&hash=02db0d"
+  resolution: "@tamagui/web@patch:@tamagui/web@npm%3A3.0.18#~/.yarn/patches/@tamagui-web-npm-3.0.18-f8fb3ca22a.patch::version=3.0.18&hash=b40c31"
   dependencies:
     "@tamagui/animation-helpers": "npm:3.0.18"
     "@tamagui/compose-refs": "npm:3.0.18"
@@ -15459,7 +15468,7 @@ __metadata:
   peerDependencies:
     react: ">=19"
     react-dom: "*"
-  checksum: 10/3312f2b43a5403ae022591e4a77fa7b93e62c413d6a514bf29c972b303d2cb011257871f7b5c1842787c498b9e84800aee813a9c440e113ac02ad21bf5979ed2
+  checksum: 10/5a9d5a9ad5b324f1d87dfd4be4080e6c74d25dd1630c8673bf13a47647ee172e77e1f2d7e8ef5147bb914c847ab134e5c1b2339815a1f60d4a264141c13f2fae
   languageName: node
   linkType: hard
 
