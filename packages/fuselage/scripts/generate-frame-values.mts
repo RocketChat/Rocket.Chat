@@ -4054,6 +4054,56 @@ const messageCore = [
 	{ file: messageDir('Message.styles.css'), generate: generateMessageCss, css: true },
 ];
 
+const generateMessageToolbar = () =>
+	view('MessageToolbarFrame', {
+		render: 'div',
+		...mBox,
+		display: 'inline-block',
+		opacity: 0,
+		marginInline: px(20),
+		padding: px(2),
+		borderWidth: px(1),
+		borderStyle: 'solid',
+		borderColor: mStroke('extra-light'),
+		borderRadius: theme('message-toolbar-border-radius', radius('medium')),
+		backgroundColor: mSurface('room'),
+	});
+
+const generateMessageToolbarWrapper = () =>
+	view(
+		'MessageToolbarWrapperFrame',
+		{ render: 'div', ...mBox, userSelect: 'none' },
+		{ shown: { true: { display: 'inline-block' }, false: { display: 'none' } } },
+	);
+
+const generateMessageToolbarCss = () => `${raised('.rcx-message .rcx-message-toolbar')} {
+	position: absolute;
+	z-index: 10;
+	inset-block-start: ${-24 / 16}rem;
+	inset-inline-end: 0;
+}
+
+${raised('.rcx-message:hover .rcx-message-toolbar')},
+${raised('.rcx-message:focus-visible .rcx-message-toolbar')},
+${raised('.rcx-message-toolbar__wrapper--visible .rcx-message-toolbar')} {
+	opacity: 1;
+}
+
+${raised('.rcx-message:has(:focus-visible) .rcx-message-toolbar')} {
+	opacity: 1;
+}
+
+${raised('.rcx-message:hover .rcx-message-toolbar__wrapper')},
+${raised('.rcx-message:focus-within .rcx-message-toolbar__wrapper')} {
+	display: inline-block;
+}`;
+
+const messageToolbar = [
+	{ file: messageDir('MessageToolbar/MessageToolbar.tsx'), generate: generateMessageToolbar },
+	{ file: messageDir('MessageToolbar/MessageToolbarWrapper.tsx'), generate: generateMessageToolbarWrapper },
+	{ file: messageDir('MessageToolbar/MessageToolbar.styles.css'), generate: generateMessageToolbarCss, css: true },
+];
+
 const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
 	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
@@ -4199,7 +4249,7 @@ const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: frames('Menu/MenuItem.tsx'), generate: generateMenuItemDescription },
 ];
 
-components.push(...messageCore);
+components.push(...messageCore, ...messageToolbar);
 
 for (const [dir, control] of [
 	['CheckBox', checkBox],
