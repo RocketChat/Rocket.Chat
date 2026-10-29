@@ -581,13 +581,22 @@ const checkBox: SelectionControl = {
 	fakeSize: { display: 'flex', justifyContent: 'center', alignItems: 'center', width: size('x20')! },
 };
 
+const radioButton: SelectionControl = {
+	name: 'radio-button',
+	frames: 'RadioButton',
+	unchecked: 'empty',
+	checked: [':checked'],
+	fakeRadius: toCSSValue('--rcx-border-radius-full', borderRadius('full')!),
+	fakeSize: { display: 'flex', justifyContent: 'center', alignItems: 'center', width: size('x20')! },
+};
+
 const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
 	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
 	{ file: join(import.meta.dirname, '../src/components/ButtonGroup/ButtonGroup.tsx'), generate: generateButtonGroup },
 ];
 
-for (const [dir, control] of [['CheckBox', checkBox]] as const) {
+for (const [dir, control] of [['CheckBox', checkBox], ['RadioButton', radioButton]] as const) {
 	const base = join(import.meta.dirname, `../src/components/${dir}/${dir}`);
 	components.push(
 		{ file: `${base}.tsx`, generate: () => selectionFrames(control) },
@@ -623,6 +632,7 @@ const textFrames = [
 	'ModalTaglineFrame',
 	'ModalTitleFrame',
 	'OptionDescriptionBlockFrame',
+	'RadioButtonLabel',
 	'SidebarAccordionTitleFrame',
 	'SidebarBannerLinkFrame',
 	'SidebarBannerTitleFrame',
