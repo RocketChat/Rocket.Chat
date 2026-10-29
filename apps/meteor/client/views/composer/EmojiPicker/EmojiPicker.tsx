@@ -1,4 +1,5 @@
-import { Box, TextInput, Icon, Button, Divider } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Box, TextInput, Icon, Button, Divider, useStyle } from '@rocket.chat/fuselage';
 import { useMediaQuery, useOutsideClick } from '@rocket.chat/fuselage-hooks';
 import {
 	EmojiPickerCategoryHeader,
@@ -31,8 +32,13 @@ export type EmojiPickerProps = {
 	onPickEmoji: (emoji: string) => void;
 };
 
+const scrollingCategories = css`
+	overflow-x: scroll;
+`;
+
 const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 	const t = useTranslation();
+	const scrollingCategoriesClassName = useStyle(scrollingCategories);
 
 	const ref = useRef<Element | null>(reference);
 	const virtuosoRef = useRef<VirtuosoHandle>(null);
@@ -210,7 +216,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 						aria-label={t('Search')}
 					/>
 				</EmojiPickerHeader>
-				<EmojiPickerCategoryHeader role='tablist' {...(scrollCategories && { style: { overflowX: 'scroll' } })}>
+				<EmojiPickerCategoryHeader role='tablist' className={scrollCategories ? scrollingCategoriesClassName : undefined}>
 					{emojiCategories.map((category) => (
 						<EmojiPickerCategoryItem
 							key={category.key}

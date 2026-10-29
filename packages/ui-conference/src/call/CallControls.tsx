@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { Box, ButtonGroup, Palette, RadioButton, SplitButton, borderRadius } from '@rocket.chat/fuselage';
+import { Box, ButtonGroup, Palette, RadioButton, SplitButton, borderRadius, useStyle } from '@rocket.chat/fuselage';
 import type { Keys } from '@rocket.chat/icons';
 import { GenericMenu } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
@@ -105,6 +105,11 @@ const speakingWhileMutedTooltip = css`
  * The column a control can raise above the strip: the muted-while-talking notice, and the reaction picker under it.
  * Centred on the row rather than on the button that opened it, which keeps both on screen at any width.
  */
+// The row the control notices are raised from
+const controlsRowStyles = css`
+	position: relative;
+`;
+
 const controlNoticesStyles = css`
 	position: absolute;
 	bottom: calc(100% + 0.5rem);
@@ -147,6 +152,7 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 	const reactionPickerRef = useRef<HTMLDivElement>(null);
 	// The popover hangs off the controls row rather than the button, so "outside" is asked of both.
 	const reactionPopoverRef = useRef<HTMLDivElement>(null);
+	const controlsRowClassName = useStyle(controlsRowStyles);
 
 	// Stays open while emojis are clicked, so several can be sent in a row; closes on a click anywhere else.
 	useEffect(() => {
@@ -180,7 +186,7 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 	];
 
 	return (
-		<ButtonGroup style={{ position: 'relative' }}>
+		<ButtonGroup className={controlsRowClassName}>
 			<SplitButton danger={self.muted} aria-label={t('Microphone')}>
 				<AudioDevicePicker />
 				<ToggleButton
