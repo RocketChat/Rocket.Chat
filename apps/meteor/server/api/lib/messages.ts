@@ -5,8 +5,8 @@ import type { FindOptions } from 'mongodb';
 import { canAccessRoomAsync } from '../../lib/authorization/canAccessRoom';
 
 async function getActivityRoomIds(uid: string): Promise<string[]> {
-	const subscriptions = await Subscriptions.findByUserId(uid, { projection: { rid: 1, t: 1 } }).toArray();
-	return subscriptions.filter(({ t }) => ['c', 'p', 'd'].includes(t)).map(({ rid }) => rid);
+	const subscriptions = await Subscriptions.findByUserId(uid, { projection: { rid: 1, t: 1, status: 1 } }).toArray();
+	return subscriptions.filter(({ t, status }) => !status && ['c', 'p', 'd'].includes(t)).map(({ rid }) => rid);
 }
 
 export async function findMentionedMessages({
@@ -42,7 +42,11 @@ export async function findMentionedMessages({
 		}
 		result = Messages.findPaginatedVisibleByMentionAndRoomId(user.username, roomId, options);
 	} else {
-		result = Messages.findPaginatedVisibleByMention(user.username, await getActivityRoomIds(uid), options);
+		const roomIds = await getActivityRoomIds(uid);
+		if (!roomIds.length) {
+			return { messages: [], count: 0, offset, total: 0 };
+		}
+		result = Messages.findPaginatedVisibleByMention(user.username, roomIds, options);
 	}
 	const { cursor, totalCount } = result;
 
@@ -89,7 +93,11 @@ export async function findStarredMessages({
 		}
 		result = Messages.findStarredByUserAtRoom(uid, roomId, options);
 	} else {
-		result = Messages.findStarredByUser(uid, await getActivityRoomIds(uid), options);
+		const roomIds = await getActivityRoomIds(uid);
+		if (!roomIds.length) {
+			return { messages: [], count: 0, offset, total: 0 };
+		}
+		result = Messages.findStarredByUser(uid, roomIds, options);
 	}
 	const { cursor, totalCount } = result;
 

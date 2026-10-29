@@ -3703,15 +3703,18 @@ describe('[Chat]', () => {
 
 		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
 
-		it('should return an error when the required "roomId" parameter is not sent', async () => {
+		it('should return mentioned messages when "roomId" is not sent', async () => {
 			const res = await request
 				.get(api('chat.getMentionedMessages'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
-				.expect(400);
+				.expect(200);
 
-			expect(res.body).to.have.property('success', false);
-			expect(res.body.errorType).to.be.equal('error-invalid-params');
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.messages).to.be.an('array');
+			expect(res.body).to.have.property('offset');
+			expect(res.body).to.have.property('total');
+			expect(res.body).to.have.property('count');
 		});
 
 		it('should return an error when the roomId is invalid', async () => {
@@ -3756,11 +3759,14 @@ describe('[Chat]', () => {
 
 		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
 
-		it('should return an error when the required "roomId" parameter is not sent', async () => {
-			const res = await request.get(api('chat.getStarredMessages')).set(credentials).expect('Content-Type', 'application/json').expect(400);
+		it('should return starred messages when "roomId" is not sent', async () => {
+			const res = await request.get(api('chat.getStarredMessages')).set(credentials).expect('Content-Type', 'application/json').expect(200);
 
-			expect(res.body).to.have.property('success', false);
-			expect(res.body.errorType).to.be.equal('error-invalid-params');
+			expect(res.body).to.have.property('success', true);
+			expect(res.body.messages).to.be.an('array');
+			expect(res.body).to.have.property('offset');
+			expect(res.body).to.have.property('total');
+			expect(res.body).to.have.property('count');
 		});
 
 		it('should return an error when the roomId is invalid', async () => {
