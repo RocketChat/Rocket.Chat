@@ -106,7 +106,6 @@ const PaginationFrame = styled(View, {
 
 const LeftFrame = styled(View, {
 	render: 'div',
-	boxSizing: 'content-box',
 	display: 'flex',
 	flexDirection: 'row',
 	flexWrap: 'nowrap',
@@ -123,7 +122,6 @@ const LeftFrame = styled(View, {
 
 const RightFrame = styled(View, {
 	render: 'div',
-	boxSizing: 'content-box',
 	display: 'flex',
 	flexDirection: 'column',
 	flexWrap: 'nowrap',
@@ -139,7 +137,6 @@ const RightFrame = styled(View, {
 
 const LabelFrame = styled(View, {
 	render: 'span',
-	boxSizing: 'content-box',
 	display: 'inline',
 	flexDirection: 'row',
 	alignItems: 'normal',
@@ -165,7 +162,6 @@ const ListFrame = styled(View, {
 
 const ListItemFrame = styled(View, {
 	render: 'li',
-	boxSizing: 'content-box',
 	display: 'flex',
 	flexDirection: 'row',
 	alignItems: 'normal',

@@ -20,7 +20,6 @@ const MessageGenericPreviewImageFrame = styled(View, {
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	width: 'fit-content',
 	maxWidth: 'inherit',
 	maxHeight: 'inherit',

@@ -19,7 +19,6 @@ const MessageSystemBlockFrame = styled(View, {
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 });
 
 // end of generated

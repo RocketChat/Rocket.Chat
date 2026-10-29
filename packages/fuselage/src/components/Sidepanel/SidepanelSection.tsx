@@ -17,7 +17,6 @@ const SidepanelSectionFrame = styled(View, {
 	alignItems: 'center',
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	justifyContent: 'space-between',
 	gap: '8px',
 	padding: '16px',

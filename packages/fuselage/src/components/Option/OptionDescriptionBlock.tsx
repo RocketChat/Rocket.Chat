@@ -15,7 +15,6 @@ const OptionDescriptionBlockFrame = styled(View, {
 	alignItems: 'normal',
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	padding: '4px',
 	whiteSpace: 'normal',
 	wordBreak: 'break-word',

@@ -91,7 +91,6 @@ const BannerIconFrame = styled(View, {
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	paddingBlock: '8px',
 	paddingInlineEnd: '12px',
 	variants: {
@@ -121,7 +120,6 @@ const BannerContentFrame = styled(View, {
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	flexGrow: 1,
 	alignSelf: 'center',
 	fontSize: '0.875rem',
@@ -149,7 +147,6 @@ const BannerTitleFrame = styled(View, {
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	margin: 0,
 	paddingBlock: 0,
 	paddingInlineStart: 0,
@@ -176,7 +173,6 @@ const BannerLinkFrame = styled(Text, {
 	display: 'inline',
 	whiteSpace: 'normal',
 	wordWrap: 'normal',
-	boxSizing: 'content-box',
 	paddingLeft: '10px',
 });
 
@@ -188,7 +184,6 @@ const BannerCloseButtonFrame = styled(View, {
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	paddingInline: '8px',
 	variants: {
 		inline: {

@@ -11,7 +11,6 @@ const AvatarElementFrame = styled(View, {
 	display: 'inline',
 	flexDirection: 'row',
 	alignItems: 'normal',
-	boxSizing: 'content-box',
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',

@@ -555,7 +555,6 @@ const ButtonFrame = styled(View, {
 
 const ButtonContent = styled(Text, {
 	render: 'span',
-	boxSizing: 'content-box',
 	display: 'inline-block',
 	width: '100%',
 	verticalAlign: 'top',

@@ -12,7 +12,6 @@ export type MessageEmojiProps = MessageEmojiBaseProps & {
 // Declared where they render: zero-runtime only erases a `styled()` whose every use is in its own module
 const MessageEmojiFrame = styled(Text, {
 	render: 'span',
-	boxSizing: 'content-box',
 	display: 'inline-block',
 	whiteSpace: 'inherit',
 	wordWrap: 'inherit',

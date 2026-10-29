@@ -23,7 +23,6 @@ const ItemMetaFrame = styled(View, {
 	alignItems: 'normal',
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	whiteSpace: 'nowrap',
 	color: 'var(--rcx-item-color-font-secondary, var(--rcx-color-font-secondary-info, #6c737a))',
 	fontSize: '0.75rem',
