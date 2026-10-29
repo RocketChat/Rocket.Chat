@@ -1,4 +1,4 @@
-import { createReadStream, mkdtempSync } from 'node:fs';
+import { createReadStream, mkdtempSync, rmSync } from 'node:fs';
 import { createServer, type Server } from 'node:http';
 import { tmpdir } from 'node:os';
 import { extname, join, resolve } from 'node:path';
@@ -53,7 +53,13 @@ export const startHarnessServer = async (): Promise<{ url: string; close: () => 
 	await new Promise<void>((done) => server.listen(0, '127.0.0.1', done));
 	const address = server.address();
 	const port = typeof address === 'object' && address ? address.port : 0;
-	return { url: `http://127.0.0.1:${port}/`, close: () => server.close() };
+	return {
+		url: `http://127.0.0.1:${port}/`,
+		close: () => {
+			server.close();
+			rmSync(outDir, { recursive: true, force: true });
+		},
+	};
 };
 
 export type TestWindow = Window & {

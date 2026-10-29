@@ -132,7 +132,8 @@ const server = createServer(async (request, response) => {
 	if (path === '/rpc/hello') {
 		const body = await readBody(request);
 		helloInfo[body.tab] = body;
-		hellos.get(body.tab)?.(body);
+		const greet = hellos.get(body.tab);
+		if (typeof greet === 'function') greet(body);
 		hellos.delete(body.tab);
 		response.writeHead(204).end();
 		return;
@@ -154,7 +155,8 @@ const server = createServer(async (request, response) => {
 	}
 	if (path === '/rpc/result') {
 		const body = await readBody(request);
-		results.get(body.cid)?.(body);
+		const settle = results.get(body.cid);
+		if (typeof settle === 'function') settle(body);
 		results.delete(body.cid);
 		response.writeHead(204).end();
 		return;
@@ -392,8 +394,9 @@ const openTab = async () => {
 };
 
 // ---------------------------------------------------------------- test runner
+class TestTimeout extends Error {}
 const withTimeout = (promise, ms, label) =>
-	Promise.race([promise, new Promise((_, reject) => setTimeout(() => reject(new Error(`test timeout ${ms} ms: ${label}`)), ms))]);
+	Promise.race([promise, new Promise((_, reject) => setTimeout(() => reject(new TestTimeout(`test timeout ${ms} ms: ${label}`)), ms))]);
 const run = async (group, name, body) => {
 	const t0 = Date.now();
 	try {
@@ -408,6 +411,8 @@ const run = async (group, name, body) => {
 				.slice(0, 6)
 				.join('\n  ')}`,
 		);
+		// A test that timed out keeps running in the shared tabs, so the next tests could see its calls. The run stops.
+		if (error instanceof TestTimeout) throw new Error(`stopped after a test timeout: ${group} > ${name}`, { cause: error });
 	}
 };
 const poll = async (fn, want, timeoutMs = 5000, interval = 50) => {
