@@ -1,6 +1,6 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Rooms } from '@rocket.chat/models';
+import { Rooms, Subscriptions } from '@rocket.chat/models';
 
 import { updateGroupKey } from './updateGroupKey';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
@@ -13,6 +13,11 @@ export const setRoomKeyIDMethod = async (userId: string, rid: IRoom['_id'], keyI
 		throw new ClientSafeError('error-invalid-room', 'Invalid room', { method: 'e2e.setRoomKeyID' });
 	}
 
+	// The key is saved on the caller's subscription: with no subscription, the room would get a key id that no member holds.
+	if (key && !(await Subscriptions.findOneByRoomIdAndUserId(rid, userId, { projection: { _id: 1 } }))) {
+		throw new ClientSafeError('error-invalid-room', 'Invalid room', { method: 'e2e.setRoomKeyID' });
+	}
+
 	const room = await Rooms.setE2eKeyId(rid, keyID);
 
 	if (!room) {
@@ -21,9 +26,15 @@ export const setRoomKeyIDMethod = async (userId: string, rid: IRoom['_id'], keyI
 		});
 	}
 
-	void notifyOnRoomChanged(room);
-
 	if (key) {
-		await updateGroupKey(rid, userId, key, userId);
+		try {
+			await updateGroupKey(rid, userId, key, userId);
+		} catch (error) {
+			// The caller can try again only when the room has no key id.
+			await Rooms.unsetE2eKeyId(rid, keyID);
+			throw error;
+		}
 	}
+
+	void notifyOnRoomChanged(room);
 };

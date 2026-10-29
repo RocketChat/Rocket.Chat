@@ -67,6 +67,7 @@ const E2eSetRoomKeyIdSchema = {
 		},
 		key: {
 			type: 'string',
+			minLength: 1,
 		},
 	},
 	required: ['rid', 'keyID'],

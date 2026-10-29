@@ -295,6 +295,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		e2eKeyId: string,
 		options?: Omit<FindOneAndUpdateOptions, 'returnDocument' | 'includeResultMetadata' | 'upsert'>,
 	): Promise<IRoom | null>;
+	/** Removes the key id of the room only while it is still `e2eKeyId`. */
+	unsetE2eKeyId(roomId: string, e2eKeyId: string): Promise<UpdateResult>;
 	findOneByImportId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		importId: string,
 		options?: O,

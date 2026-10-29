@@ -1157,6 +1157,10 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOneAndUpdate(query, update, { returnDocument: 'after', ...options });
 	}
 
+	unsetE2eKeyId(_id: IRoom['_id'], e2eKeyId: string): Promise<UpdateResult> {
+		return this.updateOne({ _id, e2eKeyId }, { $unset: { e2eKeyId: 1 } });
+	}
+
 	findOneByImportId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		_id: IRoom['_id'],
 		options?: O,
