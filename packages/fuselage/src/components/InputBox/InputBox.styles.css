@@ -285,10 +285,9 @@
 	}
 }
 
-/* Addons, which the Select family uses too */
+/* Addons, which the Select family's color rules below reach too */
 
-.rcx-input-box__addon:where(:not(.is_View)),
-.rcx-select__addon {
+.rcx-input-box__addon:where(:not(.is_View)) {
 	display: flex;
 	flex-flow: row nowrap;
 	align-items: flex-start;
@@ -299,8 +298,7 @@
 	outline: 0;
 }
 
-.rcx-input-box__addon:disabled,
-.rcx-select__addon:disabled {
+.rcx-input-box__addon:disabled {
 	cursor: not-allowed;
 }
 

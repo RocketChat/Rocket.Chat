@@ -1,9 +1,0 @@
-@use '../Select/Select.styles.scss' as *;
-
-.rcx-autocomplete {
-	@extend .rcx-select;
-
-	&__input {
-		order: 1;
-	}
-}

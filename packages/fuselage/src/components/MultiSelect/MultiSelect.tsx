@@ -16,6 +16,7 @@ import MultiSelectAnchor from './MultiSelectAnchor';
 import type { MultiSelectAnchorParams } from './MultiSelectAnchorParams';
 import { SelectedOptions } from './SelectedOptions';
 import SelectAddon from '../Select/SelectAddon';
+import SelectContainer from '../Select/SelectContainer';
 
 export type MultiSelectProps = Omit<ElementProps<HTMLDivElement>, 'ref' | 'onChange'> &
 	RefAttributes<HTMLInputElement> & {
@@ -133,7 +134,7 @@ function MultiSelect({
 	} = props;
 
 	return (
-		<Box
+		<SelectContainer
 			is='div'
 			animated
 			rcx-select
@@ -213,7 +214,7 @@ function MultiSelect({
 					customEmpty={customEmpty}
 				/>
 			</PositionAnimated>
-		</Box>
+		</SelectContainer>
 	);
 }
 

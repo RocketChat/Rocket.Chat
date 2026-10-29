@@ -3,12 +3,14 @@ import type { AllHTMLAttributes, FocusEvent, KeyboardEvent, Key, MouseEvent, Poi
 import { useCallback, useEffect, useId, useRef, useState } from 'react';
 import { useOverlayTriggerState } from 'react-stately';
 
+import { cx } from '../../helpers/composeClassNames';
 import { AnimatedVisibility } from '../AnimatedVisibility';
 import { Box } from '../Box';
 import { Icon } from '../Icon';
 import { Listbox, ListboxOption } from '../Listbox';
 import { OptionContainer } from '../Options';
 import { PositionAnimated } from '../PositionAnimated';
+import SelectContainer from './SelectContainer';
 import type { SelectOption } from './SelectLegacy';
 import { useTypeahead } from './useTypeahead';
 
@@ -287,7 +289,7 @@ function Select<V extends Key = Key>({
 					value={selectedKey === null || selectedKey === undefined ? '' : String(selectedKey)}
 				/>
 			)}
-			<Box
+			<SelectContainer
 				{...pickTriggerProps(props)}
 				is='button'
 				type='button'
@@ -302,11 +304,9 @@ function Select<V extends Key = Key>({
 				disabled={disabled}
 				animated
 				rcx-select
-				rcx-select--trigger
-				rcx-input-box--small={small}
-				rcx-select--invalid={!!error}
-				rcx-select--disabled={disabled}
-				className={props.className}
+				trigger
+				small={small}
+				className={cx(error && 'rcx-select--invalid', disabled && 'rcx-select--disabled', props.className)}
 				style={style}
 				onMouseDown={handleMouseDown}
 				onClick={handleClick}
@@ -318,7 +318,7 @@ function Select<V extends Key = Key>({
 					{selectedOption ? (selectedOption[1] ?? selectedOption[0]) : placeholder}
 				</Box>
 				<Icon name={isOpen ? 'chevron-up' : 'chevron-down'} size='x20' />
-			</Box>
+			</SelectContainer>
 			<PositionAnimated
 				visible={isOpen ? AnimatedVisibility.VISIBLE : AnimatedVisibility.HIDDEN}
 				anchor={triggerRef}
