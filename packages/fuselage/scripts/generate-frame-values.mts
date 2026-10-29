@@ -2329,6 +2329,8 @@ const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Field/FieldError.tsx'), generate: generateFieldError },
 	{ file: join(import.meta.dirname, '../src/components/Field/FieldLink.tsx'), generate: generateFieldLink },
 	{ file: join(import.meta.dirname, '../src/components/FieldGroup/FieldGroup.tsx'), generate: generateFieldGroup },
+	{ file: join(import.meta.dirname, '../src/components/Label/Label.tsx'), generate: generateLabel },
+	{ file: join(import.meta.dirname, '../src/components/Label/LabelInfo.tsx'), generate: generateLabelInfo },
 ];
 
 for (const [dir, control] of [
