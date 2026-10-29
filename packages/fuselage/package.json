@@ -100,8 +100,8 @@
 	"peerDependencies": {
 		"@rocket.chat/fuselage-hooks": "*",
 		"@rocket.chat/icons": "*",
-		"react": "*",
-		"react-dom": "*",
+		"react": ">=19",
+		"react-dom": ">=19",
 		"react-virtuoso": "*"
 	},
 	"volta": {
