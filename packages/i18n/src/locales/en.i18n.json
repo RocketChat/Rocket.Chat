@@ -2351,7 +2351,7 @@
   "E2E_enable_encryption": "Enable encryption",
   "E2E_enable_encryption_description": "Keep conversations private with E2EE, ensuring only intended recipients can access messages and files in this {{roomType}}.",
   "E2E_Enable_Local_Search": "Local search of encrypted messages",
-  "E2E_Enable_Local_Search_Description": "Allow the desktop app to keep an encrypted index of decrypted messages on the user's device, so users can search encrypted rooms. The server never receives the index or the search terms. When this setting is turned off, the desktop app deletes the index at once if it is open, and otherwise at the next login.",
+  "E2E_Enable_Local_Search_Description": "Allow the desktop app and web browsers to keep an encrypted index of decrypted messages on the user's device, so users can search encrypted rooms. The server never receives the index or the search terms. When this setting is turned off, the app deletes the index at once if the user is logged in, and otherwise at the next login.",
   "E2E_Enabled": "E2E enabled",
   "E2E_Enabled_Default_DirectRooms": "Encrypt direct messages",
   "E2E_Enabled_Default_DirectRooms_Description": "Turn encryption on by default each time a new direct message room is started.",
