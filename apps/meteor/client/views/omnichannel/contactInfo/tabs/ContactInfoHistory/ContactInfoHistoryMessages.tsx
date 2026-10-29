@@ -20,9 +20,9 @@ import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Virtuoso } from 'react-virtuoso';
 
+import { isMessageNewDay } from '../../../../../lib/utils/isMessageNewDay';
+import { isMessageSequential } from '../../../../../lib/utils/isMessageSequential';
 import { MessagesProvider } from '../../../../../providers/MessagesProvider';
-import { isMessageNewDay } from '../../../../room/MessageList/lib/isMessageNewDay';
-import { isMessageSequential } from '../../../../room/MessageList/lib/isMessageSequential';
 import ContactHistoryMessage from '../../../contactHistory/MessageList/ContactHistoryMessage';
 import { useHistoryMessageList } from '../../../contactHistory/MessageList/useHistoryMessageList';
 

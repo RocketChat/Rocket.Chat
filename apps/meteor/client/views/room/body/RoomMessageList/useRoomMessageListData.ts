@@ -3,10 +3,10 @@ import type { MessageListPosition } from '@rocket.chat/ui-client';
 import { useSetting, useUserId } from '@rocket.chat/ui-contexts';
 import { useCallback, useState } from 'react';
 
+import { useMessages } from './useMessages';
 import { useRoomJumpTarget } from './useRoomJumpTarget';
 import { RoomHistoryManager, useRoomHistoryState } from '../../../../lib/RoomHistoryManager';
 import { RoomManager } from '../../../../lib/RoomManager';
-import { useMessages } from '../../MessageList/hooks/useMessages';
 import { useRoomMessages } from '../../contexts/RoomContext';
 import { useFirstUnreadMessageId } from '../../hooks/useFirstUnreadMessageId';
 

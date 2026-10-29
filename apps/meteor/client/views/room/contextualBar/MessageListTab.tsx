@@ -23,9 +23,9 @@ import { Virtuoso } from 'react-virtuoso';
 import { useFormatDate } from '../../../hooks/useFormatDate';
 import { useMessageRowListNavigation } from '../../../hooks/useMessageRowListNavigation';
 import type { MessageActionContext } from '../../../lib/MessageAction';
+import { isMessageNewDay } from '../../../lib/utils/isMessageNewDay';
 import { MessagesProvider } from '../../../providers/MessagesProvider';
-import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
-import { isMessageNewDay } from '../MessageList/lib/isMessageNewDay';
+import MessageListErrorBoundary from '../body/MessageListErrorBoundary';
 import { useRoom, useRoomSubscription } from '../contexts/RoomContext';
 
 export type MessageListTabProps = {

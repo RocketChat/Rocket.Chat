@@ -1,16 +1,16 @@
-import { clearHighlightMessage, getSnapshot, setHighlightMessage, subscribe } from './messageHighlightSubscription';
+import { clearEditingMessage, getSnapshot, setEditingMessage, subscribe } from './editingMessageSubscription';
 
 afterEach(() => {
-	clearHighlightMessage();
+	clearEditingMessage();
 });
 
-it('notifies every subscriber of a highlight', () => {
+it('notifies every subscriber of the message being edited', () => {
 	const first = jest.fn();
 	const second = jest.fn();
 	subscribe(first);
 	subscribe(second);
 
-	setHighlightMessage('message-id');
+	setEditingMessage('message-id');
 
 	expect(getSnapshot()).toBe('message-id');
 	expect(first).toHaveBeenCalledTimes(1);
@@ -24,7 +24,7 @@ it('keeps notifying the other subscribers once one unsubscribes', () => {
 	const unsubscribeSecond = subscribe(second);
 
 	unsubscribeSecond();
-	setHighlightMessage('message-id');
+	setEditingMessage('message-id');
 
 	expect(first).toHaveBeenCalledTimes(1);
 	expect(second).not.toHaveBeenCalled();

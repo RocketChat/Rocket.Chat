@@ -2,9 +2,9 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import type { Options } from '@rocket.chat/message-parser';
 import { useMemo } from 'react';
 
+import { useAutoLinkDomains } from '../../../hooks/useAutoLinkDomains';
 import type { MessageWithMdEnforced } from '../../../lib/parseMessageTextToAstMarkdown';
 import { normalizeMessage } from '../../../providers/MessagesProvider/normalizeMessage';
-import { useAutoLinkDomains } from '../../../views/room/MessageList/hooks/useAutoLinkDomains';
 import { useMessageListAutoTranslate, useMessageListKatex, useMessageListShowColors } from '../list/MessageListContext';
 
 export const useNormalizedMessage = <TMessage extends IMessage>(message: TMessage): MessageWithMdEnforced => {

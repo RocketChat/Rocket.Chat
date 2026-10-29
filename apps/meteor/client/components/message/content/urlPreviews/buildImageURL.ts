@@ -1,4 +1,4 @@
-import { isValidLink } from '../../../../views/room/MessageList/lib/isValidLink';
+import { isValidLink } from '../../../../lib/utils/isValidLink';
 
 export const buildImageURL = (url: string, imageUrl: string): string => {
 	if (isValidLink(imageUrl)) {

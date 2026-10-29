@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 
 import { selectedMessageStore } from './SelectedMessageStore';
-import { SelectedMessageContext } from '../MessageList/contexts/SelectedMessagesContext';
+import { SelectedMessageContext } from './SelectedMessagesContext';
 
 export type SelectedMessagesProviderProps = {
 	children?: ReactNode;

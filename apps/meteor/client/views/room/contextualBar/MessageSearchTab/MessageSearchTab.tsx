@@ -23,9 +23,9 @@ import { useMessageSearchProviderQuery } from './hooks/useMessageSearchProviderQ
 import { useMessageSearchQuery } from './hooks/useMessageSearchQuery';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
+import { isMessageNewDay } from '../../../../lib/utils/isMessageNewDay';
 import { MessagesProvider } from '../../../../providers/MessagesProvider';
-import MessageListErrorBoundary from '../../MessageList/MessageListErrorBoundary';
-import { isMessageNewDay } from '../../MessageList/lib/isMessageNewDay';
+import MessageListErrorBoundary from '../../body/MessageListErrorBoundary';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 
 // TODO: Refactor this component to isolate the data from the visual

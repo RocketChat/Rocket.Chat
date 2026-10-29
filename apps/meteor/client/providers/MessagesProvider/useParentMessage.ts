@@ -2,10 +2,10 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import type { UseQueryResult } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
-import { withDebouncing } from '../../../../../lib/utils/highOrderFunctions';
-import { sdk } from '../../../../lib/SDKClient';
-import { mapMessageFromApi } from '../../../../lib/utils/mapMessageFromApi';
-import { Messages } from '../../../../stores';
+import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
+import { sdk } from '../../lib/SDKClient';
+import { mapMessageFromApi } from '../../lib/utils/mapMessageFromApi';
+import { Messages } from '../../stores';
 
 const MAX_IDS_PER_REQUEST = 100;
 

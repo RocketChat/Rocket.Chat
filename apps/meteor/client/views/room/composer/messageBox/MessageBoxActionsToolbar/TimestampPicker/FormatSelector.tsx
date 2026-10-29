@@ -3,8 +3,8 @@ import type { Key } from 'react';
 import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { TIMESTAMP_FORMATS } from '../../../../../../../lib/utils/timestamp/formats';
-import type { TimestampFormat, ITimestampFormatConfig } from '../../../../../../../lib/utils/timestamp/types';
+import { TIMESTAMP_FORMATS } from '../../../../../../lib/utils/timestamp/formats';
+import type { TimestampFormat, ITimestampFormatConfig } from '../../../../../../lib/utils/timestamp/types';
 
 export type FormatSelectorProps = {
 	value: TimestampFormat;

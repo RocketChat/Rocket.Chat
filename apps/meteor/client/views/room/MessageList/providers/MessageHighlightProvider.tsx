@@ -1,7 +1,7 @@
 import type { ContextType, ReactNode } from 'react';
 import { useMemo, useSyncExternalStore } from 'react';
 
-import * as messageHighlightSubscription from './messageHighlightSubscription';
+import * as messageHighlightSubscription from '../../../../lib/chats/editingMessageSubscription';
 import MessageHighlightContext from '../contexts/MessageHighlightContext';
 
 export type MessageHighlightProviderProps = { children: ReactNode };

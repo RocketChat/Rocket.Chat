@@ -26,9 +26,9 @@ import { useMessageNavigationValue } from './useMessageNavigationValue';
 import { useMessageRelatedDataValue } from './useMessageRelatedDataValue';
 import { useMessageToolbarValue } from './useMessageToolbarValue';
 import Emoji from '../../components/Emoji';
-import AttachmentProvider from '../AttachmentProvider';
-import { getSnapshot, subscribe } from '../../views/room/MessageList/providers/messageHighlightSubscription';
+import { getSnapshot, subscribe } from '../../lib/chats/editingMessageSubscription';
 import { useChat } from '../../views/room/contexts/ChatContext';
+import AttachmentProvider from '../AttachmentProvider';
 
 const renderers: MessageRenderersContextValue = {
 	Markup: MessageMarkup,
