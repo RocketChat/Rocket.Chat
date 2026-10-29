@@ -14,6 +14,7 @@ import { useVisible } from '../Options/useVisible';
 import { OptionsPaginated } from '../OptionsPaginated';
 import { PositionAnimated } from '../PositionAnimated';
 import SelectAddon from '../Select/SelectAddon';
+import SelectContainer from '../Select/SelectContainer';
 import SelectFocus from '../Select/SelectFocus';
 
 export type PaginatedMultiSelectOption = {
@@ -134,7 +135,7 @@ const PaginatedMultiSelect = ({
 	};
 
 	return (
-		<Box
+		<SelectContainer
 			is='div'
 			rcx-select
 			className={[error && 'invalid', disabled && 'disabled']}
@@ -205,7 +206,7 @@ const PaginatedMultiSelect = ({
 					}}
 				/>
 			</PositionAnimated>
-		</Box>
+		</SelectContainer>
 	);
 };
 
