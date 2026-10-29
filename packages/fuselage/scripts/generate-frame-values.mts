@@ -2033,6 +2033,157 @@ const generateConsumerClasses = () => {
 	background-color: ${String(surfaceColors['surface-overlay'])};
 }`;
 };
+const fontColorOf = (name: string) => textIconColors[`font-${name}` as keyof typeof textIconColors].toString();
+
+const inputColor = (name: string, fallback: { toString: () => string }) => toCSSValue(`--rcx-input-colors-${name}`, fallback.toString());
+
+// The input box's resting and pointer states; invalid and disabled stay in InputBox.styles.css, as they follow the input's own state
+const inputChrome = (focusState: string): Value => ({
+	borderWidth: borderWidth('default')!,
+	borderStyle: 'solid',
+	borderColor: {
+		default: inputColor('border-color', strokeColors['stroke-light']),
+		hover: inputColor('hover-border-color', strokeColors['stroke-dark']),
+		[focusState]: inputColor('focus-border-color', strokeColors['stroke-highlight']),
+		press: inputColor('active-border-color', strokeColors['stroke-dark']),
+	},
+	borderRadius: toCSSValue('--rcx-input-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!)),
+	backgroundColor: inputColor('background-color', surfaceColors['surface-light']),
+	boxShadow: {
+		[focusState]: `0 0 0 ${borderWidth('medium')} ${inputColor('focus-shadow-color', shadowColors['shadow-highlight'])}`,
+		press: 'none',
+	},
+});
+
+const generateInput = () => {
+	const chrome = inputChrome('focus');
+	const frame: Value = {
+		render: 'input',
+		position: 'relative',
+		display: 'inline-flex',
+		flexDirection: 'row',
+		alignItems: 'normal',
+		flexGrow: 1,
+		flexShrink: 0,
+		flexBasis: 'auto',
+		width: size('none')!,
+		minWidth: size('x128')!,
+		minHeight: 'auto',
+		verticalAlign: 'baseline',
+		whiteSpace: 'nowrap',
+		wordBreak: 'break-all',
+		overflow: 'hidden',
+		textOverflow: 'ellipsis',
+		backgroundColor: 'transparent',
+		color: inputColor('color', textIconColors['font-titles-labels']),
+		...font('p2m'),
+	};
+	const decorated = (minWidth: string, minHeight: string, paddingBlock: string, paddingInline: string): Value => ({
+		minWidth,
+		minHeight,
+		paddingBlock,
+		paddingInline,
+		...(chrome as Record<string, Value>),
+	});
+
+	return `const frame = ${literal(frame)};
+
+// Declared where they render: zero-runtime only erases a \`styled()\` whose every use is in its own module
+const InputFrame = styled(View, {
+	...frame,
+	variants: {
+		// Decoration, size and the wrapper set the same properties, so each combination is one variant
+		look: {
+			'plain': {},
+			'plain-small': ${literal(font('c1'), '\t\t\t')},
+			'wrapped': { minWidth: ${JSON.stringify(size('none'))} },
+			'wrapped-small': ${literal({ minWidth: size('none')!, ...font('c1') }, '\t\t\t')},
+			'decorated': ${literal(decorated(size('x128')!, size('x40')!, spacing('x8')!, `calc(${spacing('x16')} - ${borderWidth('default')})`), '\t\t\t')},
+			'small': ${literal({ ...font('c1'), ...(decorated(size('x112')!, size('x28')!, spacing('x4')!, spacing('x8')!) as Record<string, Value>) }, '\t\t\t')},
+		},
+		kind: {
+			text: {},
+			textarea: { overflow: 'auto', resize: 'none', verticalAlign: 'middle', whiteSpace: 'normal' },
+			select: { overflow: 'auto', appearance: 'none' },
+			multiple: { overflow: 'auto', appearance: 'none', verticalAlign: 'middle' },
+		},
+		placeholderVisible: {
+			true: { color: ${JSON.stringify(inputColor('placeholder-color', textIconColors['font-hint']))} },
+			false: {},
+		},
+	},
+});`;
+};
+
+const generateInputBoxWrapper = () => {
+	const chrome = inputChrome('focus-within') as Record<string, Value>;
+	const frame: Value = {
+		render: 'label',
+		position: 'relative',
+		// Label's `display: flex` comes after the input box's `inline-flex` in the stylesheet
+		display: 'flex',
+		flexDirection: 'row',
+		flexGrow: 1,
+		flexShrink: 1,
+		alignItems: 'center',
+		minWidth: size('x144')!,
+		minHeight: size('x40')!,
+		paddingBlock: spacing('x8')!,
+		paddingInline: `calc(${spacing('x16')} - ${borderWidth('default')})`,
+		verticalAlign: 'baseline',
+		wordBreak: 'break-all',
+		cursor: 'default',
+		color: fontColorOf('default'),
+		...font('p2m'),
+		...chrome,
+	};
+
+	return `const frame = ${literal(frame)};
+
+// Declared where they render: zero-runtime only erases a \`styled()\` whose every use is in its own module
+const InputBoxWrapperFrame = styled(View, {
+	...frame,
+	variants: {
+		// Small, flush and textarea set the same properties, so each combination is one variant
+		layout: {
+			'default': {},
+			'flush': ${literal({ paddingBlock: spacing('x4')!, paddingInlineEnd: spacing('x4')! }, '\t\t\t')},
+			'textarea': { alignItems: 'flex-start' },
+			'textarea-flush': ${literal({ alignItems: 'flex-start', paddingBlock: spacing('x4')!, paddingInlineEnd: spacing('x4')! }, '\t\t\t')},
+			'small': ${literal({ minWidth: size('x112')!, minHeight: size('x28')!, maxHeight: size('x28')!, paddingBlock: spacing('x4')!, paddingInline: spacing('x8')! }, '\t\t\t')},
+		},
+	},
+});`;
+};
+
+const generateInputBoxSkeleton = () => {
+	const frame: Value = {
+		display: 'inline-flex',
+		flexDirection: 'row',
+		alignItems: 'normal',
+		flexGrow: 1,
+		flexShrink: 0,
+		flexBasis: size('none')!,
+		minWidth: size('x128')!,
+		minHeight: size('x40')!,
+		paddingBlock: `calc(${spacing('x12')} - ${borderWidth('default')})`,
+		paddingInline: `calc(${spacing('x16')} - ${borderWidth('default')})`,
+		verticalAlign: 'baseline',
+		overflow: 'hidden',
+		textOverflow: 'ellipsis',
+		color: inputColor('color', textIconColors['font-titles-labels']),
+		borderWidth: borderWidth('default')!,
+		borderStyle: 'solid',
+		borderColor: inputColor('border-color', strokeColors['stroke-light']),
+		borderRadius: toCSSValue('--rcx-input-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!)),
+		backgroundColor: inputColor('background-color', surfaceColors['surface-light']),
+		...font('p2m'),
+	};
+
+	return `// Declared where they render: zero-runtime only erases a \`styled()\` whose every use is in its own module
+const InputBoxSkeletonFrame = styled(View, ${literal(frame)});`;
+};
+
 
 const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
@@ -2099,6 +2250,9 @@ const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Modal/ModalHeroImage.tsx'), generate: generateModalHeroImage },
 	{ file: join(import.meta.dirname, '../src/components/Modal/ModalFooter.tsx'), generate: generateModalFooter },
 	{ file: join(import.meta.dirname, '../src/components/Modal/ModalFooterAnnotation.tsx'), generate: generateModalFooterAnnotation },
+	{ file: join(import.meta.dirname, '../src/components/InputBox/Input.tsx'), generate: generateInput },
+	{ file: join(import.meta.dirname, '../src/components/InputBox/InputBoxWrapper.tsx'), generate: generateInputBoxWrapper },
+	{ file: join(import.meta.dirname, '../src/components/InputBox/InputBoxSkeleton.tsx'), generate: generateInputBoxSkeleton },
 ];
 
 for (const [dir, control] of [
