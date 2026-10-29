@@ -6,7 +6,31 @@ import { Messages, Rooms } from '@rocket.chat/models';
 import { afterSaveMessage } from '../../hooks/messages/afterSaveMessage';
 import { settings } from '../../settings';
 import { validateCustomMessageFields } from '../messaging/validateCustomMessageFields';
-import { notifyOnRoomChangedById } from '../notifyListener';
+import { notifyOnMessageChange, notifyOnRoomChangedById } from '../notifyListener';
+
+/** Keeps the reply counters of both thread parents right when an update moves a message into, out of or between threads. */
+async function updateThreadParents(message: IMessage, originalMessage: IMessage): Promise<void> {
+	if (message.tmid === originalMessage.tmid) {
+		return;
+	}
+
+	if (originalMessage.tmid) {
+		await Messages.decreaseReplyCountById(originalMessage.tmid, -1);
+		void notifyOnMessageChange({ id: originalMessage.tmid });
+	}
+
+	if (!message.tmid) {
+		return;
+	}
+
+	const parentMessage = await Messages.findOneById(message.tmid, { projection: { u: 1, replies: 1 } });
+	if (!parentMessage) {
+		return;
+	}
+
+	const replies = parentMessage.replies?.length ? [message.u._id] : [parentMessage.u._id, message.u._id];
+	await Messages.addReplyByThreadId(message.tmid, [...new Set(replies)], message.ts);
+}
 
 export const updateMessage = async function (
 	{
@@ -70,6 +94,11 @@ export const updateMessage = async function (
 	}
 
 	const { _id, ...editedMessage } = messageData;
+	// A message without a thread loses `tmid` entirely; a stored null would still mark it as a thread reply.
+	const shouldUnsetTmid = 'tmid' in editedMessage && !editedMessage.tmid;
+	if (shouldUnsetTmid) {
+		delete editedMessage.tmid;
+	}
 
 	if (!editedMessage.msg) {
 		delete editedMessage.md;
@@ -82,9 +111,16 @@ export const updateMessage = async function (
 			$set: {
 				...editedMessage,
 			},
-			...(!editedMessage.md && { $unset: { md: 1 } }),
+			...((shouldUnsetTmid || !editedMessage.md) && {
+				$unset: {
+					...(shouldUnsetTmid && { tmid: 1 }),
+					...(!editedMessage.md && { md: 1 }),
+				},
+			}),
 		},
 	);
+
+	await updateThreadParents(messageData, originalMessage);
 
 	if (Apps.self?.isLoaded()) {
 		// This returns a promise, but it won't mutate anything about the message

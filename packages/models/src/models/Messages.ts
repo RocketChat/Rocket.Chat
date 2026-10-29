@@ -1737,6 +1737,28 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.updateOne(query, update);
 	}
 
+	addReplyByThreadId(tmid: string, replies: string[], ts: Date): Promise<UpdateResult> {
+		const query = {
+			_id: tmid,
+		};
+
+		const update: UpdateFilter<IMessage> = {
+			$addToSet: {
+				replies: {
+					$each: replies,
+				},
+			},
+			$max: {
+				tlm: ts,
+			},
+			$inc: {
+				tcount: 1,
+			},
+		};
+
+		return this.updateOne(query, update);
+	}
+
 	async getThreadFollowsByThreadId(tmid: string): Promise<string[] | undefined> {
 		const msg = await this.findOneById(tmid, { projection: { replies: 1 } });
 		return msg?.replies;
