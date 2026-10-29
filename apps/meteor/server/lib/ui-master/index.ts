@@ -2,10 +2,8 @@ import type { ISettingColor } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
 import { escapeHTML } from '@rocket.chat/tools';
 import { Meteor } from 'meteor/meteor';
-import { Inject } from 'meteor/meteorhacks:inject-initial';
-import { Tracker } from 'meteor/tracker';
 
-import { applyHeadInjections, headInjections, injectIntoBody, injectIntoHead } from './inject';
+import { injectIntoBody, injectIntoHead } from './inject';
 import { getMessageMaxParseLength } from '../../../lib/getMessageMaxParseLength';
 import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
 import { settings } from '../../settings';
@@ -17,11 +15,6 @@ import './scripts';
 export * from './inject';
 
 Meteor.startup(() => {
-	Tracker.autorun(() => {
-		const injections = Object.values(headInjections.all()).filter((injection): injection is NonNullable<typeof injection> => !!injection);
-		Inject.rawModHtml('headInjections', applyHeadInjections(injections));
-	});
-
 	settings.watch<string>('Default_Referrer_Policy', (value) => {
 		if (!value) {
 			return injectIntoHead('noreferrer', '<meta name="referrer" content="same-origin" />');
