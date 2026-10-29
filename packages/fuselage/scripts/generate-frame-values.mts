@@ -414,6 +414,7 @@ const IconButtonFrame = styled(View, {
 const components = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
 	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
+	{ file: join(import.meta.dirname, '../src/components/ButtonGroup/ButtonGroup.tsx'), generate: generateButtonGroup },
 ];
 const check = process.argv.includes('--check');
 let stale = false;
