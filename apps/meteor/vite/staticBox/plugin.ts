@@ -75,7 +75,11 @@ export const staticBox = (): Plugin => {
 
 			let box: string | undefined;
 			for (const statement of program.body as Node[]) {
-				if (statement.type !== 'ImportDeclaration' || statement.source.value !== '@rocket.chat/fuselage' || statement.importKind === 'type') {
+				if (
+					statement.type !== 'ImportDeclaration' ||
+					statement.source.value !== '@rocket.chat/fuselage' ||
+					statement.importKind === 'type'
+				) {
 					continue;
 				}
 				for (const specifier of statement.specifiers) {
