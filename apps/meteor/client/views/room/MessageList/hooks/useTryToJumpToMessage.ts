@@ -18,9 +18,11 @@ type UseTryToJumpToMessageProps = {
 	virtualizerRef: MutableRefObject<WindowVirtualizerHandle | null>;
 	setIsJumpingToMessage: Dispatch<SetStateAction<boolean>>;
 	messages: { _id: string }[];
+	/** Rows the list renders above the first message, such as the start-of-room header. */
+	leadingRows: number;
 };
 
-const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, messages }: UseTryToJumpToMessageProps) => {
+const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, messages, leadingRows }: UseTryToJumpToMessageProps) => {
 	const messageJumpParam = useSearchParameter('msg');
 
 	const { isLoadingMoreMessages } = useRoomMessages();
@@ -91,7 +93,7 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 		}
 
 		// TODO: Calculate the offset of the page, for the message to be in the center of the page
-		virtualizerRef.current?.scrollToIndex(targetIndex, {
+		virtualizerRef.current?.scrollToIndex(leadingRows + targetIndex, {
 			align: 'center',
 		});
 
@@ -107,7 +109,19 @@ const useTryToJumpToMessage = ({ rid, virtualizerRef, setIsJumpingToMessage, mes
 				setMessageJumpQueryStringParameter(null);
 			}
 		}, 500);
-	}, [messageJumpParam, virtualizerRef, setIsJumpingToMessage, rid, messages, message, isError, isLoadingMoreMessages, targetId, goToRoom]);
+	}, [
+		messageJumpParam,
+		virtualizerRef,
+		setIsJumpingToMessage,
+		rid,
+		messages,
+		message,
+		isError,
+		isLoadingMoreMessages,
+		targetId,
+		goToRoom,
+		leadingRows,
+	]);
 };
 
 export default useTryToJumpToMessage;
