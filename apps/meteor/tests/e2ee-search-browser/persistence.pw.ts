@@ -230,13 +230,43 @@ test('refuses to open a saved copy without the wrap key, and keeps the copy as i
 	await expect(indexDigests()).resolves.toEqual(saved);
 });
 
-test('refuses to open the saved copy with the wrap key of another private key, and keeps the copy as it was', async () => {
+// After an E2EE key reset the wrap key of the old private key does not come back, so its copy is deleted, not kept.
+test('deletes the saved copy when the wrap key of another private key opens it, and opens an empty index', async () => {
 	const saved = await saveSealedCopy();
 	const backend = await create('https://sealed.example');
-	await expect(call(backend, 'open', { userId: 'u1', wrapKey: wrapKey(9) })).resolves.toEqual(LOCKED);
-	await expect(call(backend, 'upsert', [DOC])).rejects.toThrow('E2EE search index is not open');
+	await expect(call(backend, 'open', { userId: 'u1', wrapKey: wrapKey(9) })).resolves.toEqual({ schemaVersion: 1, encryptedAtRest: true });
+	await expect(indexDigests()).resolves.toEqual([]);
+	await expect(hitIds(backend)).resolves.toEqual([]);
+	await expect(storedKeys()).resolves.toEqual([{ type: 'CryptoKey', extractable: false, exportFails: true }]);
+
+	// The new index is saved under the new wrap key, and the old wrap key does not open it.
+	await call(backend, 'upsert', [DOC]);
 	await flush(backend);
+	const resealed = await indexDigests();
+	expect(resealed).toHaveLength(1);
+	expect(resealed).not.toEqual(saved);
+	await load();
+	const reopened = await create('https://sealed.example');
+	await expect(call(reopened, 'open', { userId: 'u1', wrapKey: wrapKey(9) })).resolves.toEqual({ schemaVersion: 1, encryptedAtRest: true });
+	await expect(hitIds(reopened)).resolves.toEqual(['m1']);
+	await call(reopened, 'wipe');
+});
+
+test('keeps the saved copy when a tab with no wrap key opens it after a key reset', async () => {
+	await saveSealedCopy();
+	const reset = await create('https://sealed.example');
+	await call(reset, 'open', { userId: 'u1', wrapKey: wrapKey(9) });
+	await call(reset, 'upsert', [DOC]);
+	await flush(reset);
+	const saved = await indexDigests();
+	expect(saved).toHaveLength(1);
+
+	await load();
+	const keyless = await create('https://sealed.example');
+	await expect(call(keyless, 'open', { userId: 'u1' })).resolves.toEqual(LOCKED);
+	await flush(keyless);
 	await expect(indexDigests()).resolves.toEqual(saved);
+	await call(keyless, 'wipe', { userId: 'u1' });
 });
 
 test('opens the saved copy again with the right wrap key and finds its messages', async () => {

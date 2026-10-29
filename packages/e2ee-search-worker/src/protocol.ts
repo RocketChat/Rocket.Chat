@@ -6,7 +6,8 @@ export type SqlStatement = { sql: string; bind?: SqlValue[] };
 
 export type SqlRow = Record<string, SqlValue>;
 
-// `locked`: the open had no wrap key, or not the one that sealed the saved copy. No index is open, and the copy stays.
+// `locked`: the open had no wrap key. No index is open, and the copy stays. An open with a wrap key that does not open
+// the saved copy deletes the copy and starts an empty index.
 export type ScopeState = { persistent: boolean; restored: boolean; evicted?: boolean; locked?: boolean };
 
 export type WorkerRequest = { id: number } &

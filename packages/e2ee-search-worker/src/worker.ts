@@ -249,14 +249,14 @@ const createDataKey = async (
 };
 
 // Opens a saved copy: the IndexedDB key opens the wrapped data key, the key-wrap key opens the data key, and the data
-// key opens the database. Returns 'locked' when only the key-wrap key does not fit, so the copy stays for the right
-// one. Throws when no wrap key can open the copy: another format, damage, or an IndexedDB key that is gone.
+// key opens the database. Returns 'otherKey' when only the key-wrap key does not fit: the wrap key of another E2EE key
+// sealed the copy. Throws when no wrap key can open the copy: another format, damage, or an IndexedDB key that is gone.
 const openFile = async (
 	file: Uint8Array<ArrayBuffer>,
 	storeKey: CryptoKey,
 	keyWrapKey: CryptoKey,
 	scopeId: string,
-): Promise<(Pick<Scope, 'header' | 'wrappedKey' | 'dataKey'> & { plain: Uint8Array<ArrayBuffer> }) | 'locked'> => {
+): Promise<(Pick<Scope, 'header' | 'wrappedKey' | 'dataKey'> & { plain: Uint8Array<ArrayBuffer> }) | 'otherKey'> => {
 	if (file.length < HEADER_BYTES + IV_BYTES + TAG_BYTES || MAGIC.some((byte, index) => file[index] !== byte)) {
 		throw new Error('not an index file');
 	}
@@ -267,7 +267,7 @@ const openFile = async (
 	try {
 		dataKey = await unwrapDataKey(keyWrapKey, scopeId, wrappedKey);
 	} catch {
-		return 'locked';
+		return 'otherKey';
 	}
 	return { header, wrappedKey, dataKey, plain: await decrypt(dataKey, scopeId, file.subarray(HEADER_BYTES)) };
 };
@@ -357,6 +357,13 @@ const openMemoryDb = async (keyWrapKey: CryptoKey, scopeId: string): Promise<Sco
 	return { persistent: false, restored: false, evicted: false };
 };
 
+// Deletes the copy of a scope, its IndexedDB key and its saved mark.
+const removeStored = async (scopeId: string): Promise<void> => {
+	await removeFile(await fileNameFor(scopeId));
+	await withKeyStore('readwrite', (store) => idbRequest(store.delete(scopeId)));
+	await withSavedStore('readwrite', (store) => idbRequest(store.delete(scopeId)));
+};
+
 const openScope = async (scopeId: string, wrapKey: CryptoKey | undefined): Promise<ScopeState> => {
 	const open = scope ?? memoryScope;
 	if (open?.id === scopeId && db && wrapKey && (await opensScope(wrapKey, open)))
@@ -396,23 +403,39 @@ const openScope = async (scopeId: string, wrapKey: CryptoKey | undefined): Promi
 		return openMemoryDb(keyWrapKey, scopeId);
 	}
 	if (file) {
+		let otherKey = false;
 		try {
 			const opened = await openFile(file, storeKey, keyWrapKey, scopeId);
-			if (opened === 'locked') {
-				// Another wrap key sealed this copy. It stays as it is, so the right wrap key opens it later.
-				dbScope = undefined;
-				dropFileLock();
-				return LOCKED;
+			if (opened === 'otherKey') {
+				otherKey = true;
+			} else {
+				const { plain, ...keys } = opened;
+				db = await loadDb(plain);
+				scope = { id: scopeId, fileName, ...keys, saved: true };
+				return { persistent: true, restored: true, evicted: false };
 			}
-			const { plain, ...keys } = opened;
-			db = await loadDb(plain);
-			scope = { id: scopeId, fileName, ...keys, saved: true };
-			return { persistent: true, restored: true, evicted: false };
 		} catch (error) {
 			// A file that no wrap key can open (another format, damaged, or sealed under an IndexedDB key that is gone) is
 			// useless: start again.
 			console.warn('E2EE search index file could not be opened, starting empty:', messageOf(error));
 			await removeFile(fileName);
+		}
+		if (otherKey) {
+			// The wrap key comes from a new E2EE key (a key reset), so the wrap key that sealed this copy does not come back.
+			// The copy is deleted with its keys. It is not sealed again under the new wrap key, so the new E2EE key never
+			// opens what the old one sealed. The index starts empty, and the crawler builds it again.
+			console.warn('E2EE search index was sealed under another E2EE key, starting empty');
+			try {
+				await removeStored(scopeId);
+				({ key: storeKey } = await getOrCreateKey(scopeId));
+			} catch (error) {
+				dbScope = undefined;
+				dropFileLock();
+				throw error;
+			}
+			scope = { id: scopeId, fileName, ...(await createDataKey(keyWrapKey, storeKey, scopeId)), saved: false };
+			db = await newMemoryDb();
+			return { persistent: true, restored: false, evicted: false };
 		}
 	}
 	scope = { id: scopeId, fileName, ...(await createDataKey(keyWrapKey, storeKey, scopeId)), saved: saved || Boolean(file) };
@@ -437,9 +460,7 @@ const wipeScope = async (scopeId: string | undefined): Promise<void> => {
 	}
 	if (scopeId === undefined || !canStore()) return;
 	try {
-		await removeFile(await fileNameFor(scopeId));
-		await withKeyStore('readwrite', (store) => idbRequest(store.delete(scopeId)));
-		await withSavedStore('readwrite', (store) => idbRequest(store.delete(scopeId)));
+		await removeStored(scopeId);
 	} catch (error) {
 		// A browser that refused the storage in this worker saved nothing in it. Any other failure must reach the caller.
 		if (!storageRefused) throw error;

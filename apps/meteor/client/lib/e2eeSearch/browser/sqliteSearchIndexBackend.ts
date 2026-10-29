@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS room_state (rid TEXT PRIMARY KEY, state TEXT NOT NULL
 
 const WRAP_KEY_BYTES = 32;
 
-// The answer to an open with no wrap key, or not the one that sealed the saved copy. The desktop app gives the same.
+// The answer to an open with no wrap key. The desktop app gives the same.
 const LOCKED_RESULT = { schemaVersion: 1, encryptedAtRest: false, locked: true } as const;
 
 // The worker gets the wrap key as a non-extractable HKDF key. The bytes from the caller are cleared once imported.
@@ -83,8 +83,9 @@ const toHit = (row: SqlRow, tokens: string[]): E2EESearchHit => {
  * The E2EE search index of a browser: SQLite with full-text search, run by `runner` in a worker. It has the same
  * contract as the desktop index. Each server (`namespace`) and user has its own index. The runner keeps an encrypted
  * copy on disk when the browser can, so the index survives a reload. Like the desktop index, it opens only with the wrap
- * key that the web client derives from the E2EE private key: an open with no wrap key, or with another one than the
- * one that sealed the copy, is `locked` and leaves the copy as it is.
+ * key that the web client derives from the E2EE private key: an open with no wrap key is `locked` and leaves the copy as
+ * it is. An open with another wrap key than the one that sealed the copy comes after an E2EE key reset: like the desktop
+ * index after a change of the public key, the copy is deleted and the index starts empty.
  */
 export const createSqliteSearchIndexBackend = (runner: SqlRunner, { namespace }: { namespace: string }): ISearchIndexBackend => {
 	let userId: string | undefined;

@@ -13,8 +13,7 @@ export type SqlScopeState = {
 	 */
 	evicted?: boolean;
 	/**
-	 * True when the open had no wrap key, or not the wrap key that sealed the copy on disk: no database is open, and the
-	 * copy stays as it is.
+	 * True when the open had no wrap key: no database is open, and the copy on disk stays as it is.
 	 */
 	locked?: boolean;
 };
@@ -23,9 +22,9 @@ export type SqlScopeState = {
 export type SqlRunner = {
 	/**
 	 * Switches to the database of `scopeId`. A database kept on disk for that scope comes back. `wrapKey` is the
-	 * non-extractable HKDF key of the user's wrap key: without it, or with another one than the one that sealed the copy,
-	 * the open is locked. `schema` runs after each open that is not locked, also when a runner opens the database again
-	 * by itself, so it must be safe to repeat.
+	 * non-extractable HKDF key of the user's wrap key: without it the open is locked. With another one than the one that
+	 * sealed the copy (a new E2EE key), the copy is deleted and the database starts empty. `schema` runs after each open
+	 * that is not locked, also when a runner opens the database again by itself, so it must be safe to repeat.
 	 */
 	open(scopeId: string, wrapKey?: CryptoKey, schema?: string): Promise<SqlScopeState>;
 	exec(statement: SqlStatement): Promise<SqlRow[]>;
