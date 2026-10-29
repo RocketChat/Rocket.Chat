@@ -18,6 +18,7 @@ import { Icon } from '../Icon';
 import { Input } from '../InputBox';
 import { useCursor, Options, type OptionType } from '../Options';
 import { PositionAnimated } from '../PositionAnimated';
+import SelectContainer from '../Select/SelectContainer';
 
 export type AutoCompleteOption<TLabel> = {
 	value: string;
@@ -153,7 +154,7 @@ function AutoComplete<TLabel = ReactNode>({
 	useEffect(reset, [filter, reset]);
 
 	return (
-		<Box
+		<SelectContainer
 			animated
 			rcx-autocomplete
 			ref={containerRef}
@@ -197,7 +198,7 @@ function AutoComplete<TLabel = ReactNode>({
 					options={memoizedOptions}
 				/>
 			</PositionAnimated>
-		</Box>
+		</SelectContainer>
 	);
 }
 

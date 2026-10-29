@@ -1,7 +1,6 @@
 @use './Box/Box.styles.scss';
 @use '../styles/consumer-classes.css';
 
-@use './AutoComplete/AutoComplete.styles.scss';
 @use './Avatar/Avatar.styles.css';
 @use './Banner/Banner.styles.css';
 @use './Bubble/Bubble.styles.css';
@@ -33,7 +32,7 @@
 @use './Pagination/Pagination.styles.css';
 @use './ProgressBar/ProgressBar.styles.css';
 @use './RadioButton/RadioButton.styles.css';
-@use './Select/Select.styles.scss';
+@use './Select/Select.styles.css';
 @use './Sidebar/Sidebar.styles.css';
 @use './Sidepanel/Sidepanel.styles.css';
 @use './Skeleton/Skeleton.styles.css';

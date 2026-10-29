@@ -9,6 +9,7 @@ import { Icon } from '../Icon';
 import { Listbox, ListboxOption } from '../Listbox';
 import { OptionContainer } from '../Options';
 import { PositionAnimated } from '../PositionAnimated';
+import SelectContainer from './SelectContainer';
 import type { SelectOption } from './SelectLegacy';
 import { useTypeahead } from './useTypeahead';
 
@@ -293,7 +294,7 @@ function Select<V extends Key = Key>({
 					value={selectedKey === null || selectedKey === undefined ? '' : String(selectedKey)}
 				/>
 			)}
-			<Box
+			<SelectContainer
 				{...pickTriggerProps(props)}
 				is='button'
 				type='button'
@@ -308,11 +309,8 @@ function Select<V extends Key = Key>({
 				disabled={disabled}
 				animated
 				rcx-select
-				display='flex'
-				flexDirection='row'
-				fontScale='p2'
-				justifyContent='space-between'
-				rcx-input-box--small={small}
+				trigger
+				small={small}
 				className={[error && 'invalid', disabled && 'disabled', (triggerFocusVisible || isOpen) && 'focus', props.className]
 					.filter(Boolean)
 					.join(' ')}
@@ -326,7 +324,7 @@ function Select<V extends Key = Key>({
 					{selectedOption ? (selectedOption[1] ?? selectedOption[0]) : placeholder}
 				</Box>
 				<Icon name={isOpen ? 'chevron-up' : 'chevron-down'} size='x20' />
-			</Box>
+			</SelectContainer>
 			<PositionAnimated
 				visible={isOpen ? AnimatedVisibility.VISIBLE : AnimatedVisibility.HIDDEN}
 				anchor={triggerRef}
