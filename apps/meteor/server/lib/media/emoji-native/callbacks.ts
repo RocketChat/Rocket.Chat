@@ -1,12 +1,12 @@
 import { Meteor } from 'meteor/meteor';
 
-import { shortnameToUnicode } from '../../../../lib/emoji-native/shortnameToUnicode';
+import { shortnameToUnicodeOutsideCode } from '../../../../lib/emoji-native/shortnameToUnicodeOutsideCode';
 import { callbacks } from '../../callbacks';
 
 Meteor.startup(() => {
 	callbacks.add(
 		'beforeSendMessageNotifications',
-		(message) => shortnameToUnicode(message),
+		(message) => shortnameToUnicodeOutsideCode(message),
 		callbacks.priority.MEDIUM,
 		'native-emoji-shortnameToUnicode',
 	);
