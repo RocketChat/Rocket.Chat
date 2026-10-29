@@ -1488,6 +1488,72 @@ const generateProgressBarShine = () => `.rcx-progress-bar__fill--animated::befor
 	background: ${toCSSValue('--rcx-progress-bar-color-shine', surfaceColors['surface-light'].toString())};
 }`;
 
+const avatarSizes = [16, 18, 20, 24, 28, 32, 36, 40, 48, 124, 200, 332];
+const avatarRadiusTokens: Record<number, string> = { 16: 'small', 18: 'small', 332: 'large' };
+const avatarRadius = (px: number) => toCSSValue(`--rcx-avatar-border-radius-${px}`, radiusOf(avatarRadiusTokens[px] ?? 'medium'));
+
+const generateAvatar = () => {
+	const shape: Record<string, Value> = {};
+
+	for (const px of avatarSizes) {
+		shape[`x${px}`] = { borderRadius: avatarRadius(px) };
+		shape[`x${px}-rounded`] = { borderRadius: toCSSValue('--rcx-avatar-border-radius-rounded', radiusOf('full')) };
+	}
+
+	return frameDeclaration('AvatarElementFrame', {
+		render: 'img',
+		display: 'inline',
+		flexDirection: 'row',
+		alignItems: 'normal',
+		boxSizing: 'content-box',
+		flexShrink: 1,
+		minWidth: 'auto',
+		minHeight: 'auto',
+		position: 'relative',
+		width: '100%',
+		height: '100%',
+		variants: {
+			// Size and rounded both set the radius, so each combination is one variant
+			shape,
+			objectFit: Object.fromEntries(['contain', 'cover', 'fill', 'none', 'scale-down'].map((fit) => [fit, { objectFit: fit }])),
+		},
+	});
+};
+
+const generateAvatarContainer = () => {
+	const sizing: Record<string, Value> = {};
+
+	for (const px of avatarSizes) {
+		sizing[`x${px}`] = { width: size(`x${px}`)!, height: size(`x${px}`)! };
+	}
+
+	return frameDeclaration('AvatarContainerFrame', {
+		render: 'figure',
+		alignItems: 'normal',
+		flexShrink: 1,
+		minWidth: 'auto',
+		minHeight: 'auto',
+		display: 'inline-flex',
+		flexDirection: 'row',
+		verticalAlign: 'middle',
+		variants: { sizing },
+	});
+};
+
+const generateAvatarStack = () =>
+	frameDeclaration('AvatarStackFrame', {
+		render: 'div',
+		alignItems: 'normal',
+		boxSizing: 'content-box',
+		flexShrink: 1,
+		minWidth: 'auto',
+		minHeight: 'auto',
+		display: 'flex',
+		flexDirection: 'row-reverse',
+		justifyContent: 'center',
+		backgroundColor: toCSSValue('--rcx-avatar-background-color', surfaceColors['surface-light'].toString()),
+	});
+
 const frames = (relative: string) => join(import.meta.dirname, '../src/components', relative);
 
 const components: { file: string; generate: () => string; css?: boolean }[] = [
@@ -1523,6 +1589,9 @@ const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: frames('Throbber/Throbber.tsx'), generate: generateThrobber },
 	{ file: frames('ProgressBar/ProgressBar.tsx'), generate: generateProgressBar },
 	{ file: frames('ProgressBar/ProgressBar.styles.css'), generate: generateProgressBarShine, css: true },
+	{ file: frames('Avatar/Avatar.tsx'), generate: generateAvatar },
+	{ file: frames('Avatar/AvatarContainer.tsx'), generate: generateAvatarContainer },
+	{ file: frames('Avatar/AvatarStack.tsx'), generate: generateAvatarStack },
 ];
 
 for (const [dir, control] of [
