@@ -7,7 +7,16 @@ const ONE_HOUR = 3600_000;
 
 type PresenceUser = Pick<
 	IUser,
-	'type' | 'roles' | 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt' | 'statusId' | 'previousState'
+	| 'type'
+	| 'roles'
+	| 'status'
+	| 'statusConnection'
+	| 'statusDefault'
+	| 'statusSource'
+	| 'statusText'
+	| 'statusExpiresAt'
+	| 'statusId'
+	| 'previousState'
 >;
 
 const user = (data: Partial<PresenceUser> = {}): PresenceUser => ({
@@ -66,6 +75,26 @@ describe('processPresence', () => {
 		test('should stay OFFLINE when user is invisible (OFFLINE statusDefault with sessions)', () => {
 			const result = processPresence(user({ statusDefault: UserStatus.OFFLINE }), [session(UserStatus.ONLINE)]);
 			expect(result.values).toMatchObject({ status: UserStatus.OFFLINE, statusConnection: UserStatus.ONLINE });
+		});
+
+		test('should return no values when the connected user already has the resolved status', () => {
+			const result = processPresence(user({ status: UserStatus.ONLINE, statusConnection: UserStatus.ONLINE }), [
+				session(UserStatus.ONLINE),
+			]);
+			expect(result.values).toEqual({});
+		});
+
+		test('should return no values when the disconnected user is already OFFLINE', () => {
+			const result = processPresence(user({ status: UserStatus.OFFLINE, statusConnection: UserStatus.OFFLINE }), []);
+			expect(result.values).toEqual({});
+		});
+
+		test('should update when only statusConnection changed', () => {
+			const result = processPresence(
+				user({ statusDefault: UserStatus.BUSY, status: UserStatus.BUSY, statusConnection: UserStatus.ONLINE }),
+				[session(UserStatus.AWAY)],
+			);
+			expect(result.values).toEqual({ status: UserStatus.BUSY, statusConnection: UserStatus.AWAY });
 		});
 	});
 

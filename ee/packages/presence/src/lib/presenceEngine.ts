@@ -190,18 +190,30 @@ function resolveIntent(
  * Returns the DB fields to $set and optionally $unset.
  */
 export function processPresence(
-	user: Pick<IUser, 'type' | 'roles' | 'statusDefault' | 'statusSource' | 'statusText' | 'statusExpiresAt' | 'statusId' | 'previousState'>,
+	user: Pick<
+		IUser,
+		| 'type'
+		| 'roles'
+		| 'status'
+		| 'statusConnection'
+		| 'statusDefault'
+		| 'statusSource'
+		| 'statusText'
+		| 'statusExpiresAt'
+		| 'statusId'
+		| 'previousState'
+	>,
 	sessions: IUserSessionConnection[],
 	claimUpdate?: ClaimUpdate,
 ): { values: Record<string, unknown>; clear?: string[] } {
 	// no claim - status is determined entirely by DDP sessions
 	if (!claimUpdate) {
-		if (!sessions.length) {
-			return { values: { status: UserStatus.OFFLINE, statusConnection: UserStatus.OFFLINE } };
-		}
-		const statusDefault = user.statusDefault ?? UserStatus.ONLINE;
 		const statusConnection = sessions.map((s) => s.status).reduce(reduceConnections, UserStatus.OFFLINE);
-		return { values: { status: computeStatus(statusConnection, statusDefault), statusConnection } };
+		const status = sessions.length ? computeStatus(statusConnection, user.statusDefault ?? UserStatus.ONLINE) : UserStatus.OFFLINE;
+		if (status === user.status && statusConnection === user.statusConnection) {
+			return { values: {} };
+		}
+		return { values: { status, statusConnection } };
 	}
 
 	const intent = resolveIntent(user, claimUpdate);
