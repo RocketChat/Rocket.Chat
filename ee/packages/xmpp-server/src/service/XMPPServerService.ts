@@ -375,6 +375,35 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		});
 	}
 
+	async banFromHostedRoom(rid: string, userId: string): Promise<void> {
+		if (!this.server) {
+			return;
+		}
+		const [room, user] = await Promise.all([
+			Rooms.findOneById(rid, { projection: HOSTED_ROOM_PROJECTION }),
+			Users.findOneById(userId, { projection: { username: 1, federated: 1, xmppFederation: 1 } }),
+		]);
+		if (!room || !isRoomXMPPHostedMuc(room) || !user?.username || !isUserXMPPFederated(user)) {
+			return;
+		}
+		this.server.mucBanOccupantByJid({ roomId: coreRoomIdOf(room.xmppFederation.muc), bareJid: user.username });
+	}
+
+	async destroyHostedRoom(rid: string): Promise<void> {
+		if (!this.server) {
+			return;
+		}
+		const room = await Rooms.findOneById(rid, { projection: HOSTED_ROOM_PROJECTION });
+		if (room && isRoomXMPPHostedMuc(room)) {
+			this.server.mucDestroyRoom(coreRoomIdOf(room.xmppFederation.muc));
+		}
+	}
+
+	private async isBannedFrom(rid: string, userId: string): Promise<boolean> {
+		const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userId, { projection: { status: 1 } });
+		return subscription !== null && isBannedSubscription(subscription);
+	}
+
 	/** Re-registers every hosted room and its local occupants with the core. */
 	private async registerHostedRooms(): Promise<void> {
 		const rooms = await Rooms.findByXMPPRole('host-muc', { projection: HOSTED_ROOM_PROJECTION }).toArray();
@@ -581,9 +610,9 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			);
 		});
 
-		// A kick is the echo of a Rocket.Chat removal — only a voluntary leave has to be mirrored back.
+		// A kick or a ban is the echo of a Rocket.Chat removal — only a voluntary leave has to be mirrored back.
 		server.on('muc.occupantLeft', (event) => {
-			if (event.reason === 'kicked') {
+			if (event.reason === 'kicked' || event.reason === 'banned') {
 				return;
 			}
 			this.track(
@@ -642,7 +671,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 	private async onHostedOccupantLeft(mucJid: string, occupantJid: string): Promise<void> {
 		const room = await Rooms.findOneByXMPPMucJid(mucJid);
 		const user = room && (await Users.findOneByUsername(toBareJid(occupantJid)));
-		if (!room || !user) {
+		if (!room || !user || (await this.isBannedFrom(room._id, user._id))) {
 			return;
 		}
 		// performUserRemoval runs no callbacks, so the removal does not bounce back as a kick
@@ -660,6 +689,10 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		}
 		const authorJid = toBareJid(fromJid);
 		const author = await createOrUpdateXMPPUser({ jid: authorJid, name: fromNick });
+		// The occupant may still be in the room while their ban travels to the core
+		if (await this.isBannedFrom(room._id, author._id)) {
+			return;
+		}
 		await this.receiveMessage({
 			rid: room._id,
 			author,

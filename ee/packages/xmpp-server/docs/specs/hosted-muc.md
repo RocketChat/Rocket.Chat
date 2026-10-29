@@ -63,6 +63,10 @@ history in Rocket.Chat and lets remote users join with nothing but a room addres
   message carrying the new `<subject/>` (XEP-0045 §8.1). It comes from the bare room JID,
   since the change has no occupant behind it. Registering the room again with an unchanged
   topic sends nothing.
+- **R21** Deleting the room in Rocket.Chat closes it (XEP-0045 §10.9): every remote occupant
+  receives, under their own nick, an `unavailable` presence with affiliation and role `none`
+  carrying `<destroy/>`, and the room is unregistered from the core, so it is no longer
+  listed and `disco#info` answers `item-not-found` ([service-discovery R4, R6](service-discovery.md)).
 - **R3** Public channels are listed by `disco#items` on the MUC domain and describe themselves
   as `muc_public`/`muc_open`; private groups are unlisted and `muc_hidden`/`muc_membersonly`
   ([service-discovery R4, R5](service-discovery.md)).
@@ -82,10 +86,15 @@ history in Rocket.Chat and lets remote users join with nothing but a room addres
   and a subscription created, unless one exists.
 - **R8** An `unavailable` presence from an occupant removes them from the room, is broadcast
   to the remaining remote occupants, and removes their Rocket.Chat subscription without
-  running the room-leave callbacks.
+  running the room-leave callbacks, unless the subscription is banned (R20).
 - **R9** Removing a remote member on the Rocket.Chat side kicks them (XEP-0045 §8.2): they
   receive their own `unavailable` presence with status codes 307 and 110, and the remaining
   remote occupants receive it with status code 307.
+- **R20** Banning a remote member on the Rocket.Chat side removes them if they are an
+  occupant (XEP-0045 §9.1): they receive their own `unavailable` presence with status codes
+  301 and 110 and affiliation `outcast`, and the remaining remote occupants receive it with
+  301. A message they send before the removal reaches the room is not stored, and their
+  banned subscription outlives their leaving, so R4 keeps refusing them with `forbidden`.
 - **R10** Removing or a leave by a local member broadcasts their `unavailable` presence to
   remote occupants.
 - **R16** A local member added to the room by a local user, or joining it in Rocket.Chat,
@@ -98,7 +107,8 @@ history in Rocket.Chat and lets remote users join with nothing but a room addres
 - **R11** A remote JID added as a member, at creation or later by a local user, receives a
   mediated invitation (XEP-0045 §7.8.2) from the room on behalf of the inviter and holds a
   subscription from that moment, which is what admits them under R4.
-- **R12** A JID cannot be added to a room that is not an XMPP hosted room; the API answers
+- **R12** A JID cannot be added to a room that is not an XMPP hosted room, whether listed
+  when the room is created or added later; the API answers
   `error-xmpp-users-in-non-xmpp-rooms`.
 
 **Messages**
@@ -135,9 +145,10 @@ only, a kick is the echo of a removal) and `muc.messageReceived`, and exposes
 Parts of XEP-0045 not implemented:
 
 - Room configuration forms (§10), owner and admin IQ, affiliations beyond what disco reports.
-- Moderation other than kick: ban, voice, role changes initiated from the XMPP side.
+- Moderation initiated from the XMPP side: kick, ban, voice, role changes.
 - Discussion history on join (§7.2.13, §7.2.14): the newcomer receives no backlog.
-- Room passwords, nick changes (status 303), room destruction (§10.9).
+- Room passwords, nick changes (status 303), and an owner destroying the room over XMPP
+  (§10.9): only a deletion in Rocket.Chat closes it (R21).
 - Private messages between occupants (§7.5), subject changes from occupants (§8.1):
   `muc.subjectChanged` is declared but never emitted.
 - Invitation declines (§7.8.2 decline) and direct invitations from a hosted room: rooms
@@ -157,18 +168,6 @@ reconnects. Where: nothing acts on `connection.lost` on behalf of the rooms. Tes
 lost"; the end-to-end harness cannot sever the link to ejabberd, so this one is an
 integration test.
 
-### D4 A deleted room keeps running until the service restarts
-
-Deleting a hosted room in Rocket.Chat leaves it registered with the protocol core. Remote
-occupants still in it keep exchanging messages through our server, a public one stays
-listed by `disco#items` ([service-discovery R4](service-discovery.md)) and `disco#info`
-still describes it instead of answering `item-not-found` ([service-discovery R6](service-discovery.md)).
-New joins are refused, since no Rocket.Chat room hosts the JID. Where: nothing calls
-`mucDestroyRoom` when a room is deleted, and `MucService.destroyRoom` only drops the room
-from the registry: the fix must also send each occupant the unavailable presence carrying
-`<destroy/>` (XEP-0045 §10.9), or their clients keep a dead room. Test: `hosted-muc.spec.ts`,
-"closes the room when it is deleted in Rocket.Chat".
-
 ### D5 A Rocket.Chat member takes the nick of an XMPP occupant
 
 Rocket.Chat members occupy the room under their username (R2). When a Rocket.Chat user is
@@ -179,31 +178,6 @@ takes the newcomer's messages for reflections of its own. R5's conflict check on
 XMPP joins. Where: `MucRoom.addLocalOccupant`. How to settle the clash is Q3. Test:
 `hosted-muc.spec.ts`, "never leaves an XMPP occupant unaware that a Rocket.Chat member took
 their nick".
-
-### D6 An XMPP user listed when a room is created joins any room
-
-R12 holds for members added to an existing room, not for the member list a room is created
-with: an XMPP user Rocket.Chat already knows becomes a member of a room that is not XMPP
-federated, where nothing reaches them. A JID Rocket.Chat has not seen names no user and is
-silently left out. Where: room creation subscribes its members through
-`createUsersSubscriptions` in `apps/meteor/server/lib/rooms/createRoom.ts`, whose hooks do
-not include the XMPP check, which runs only in `beforeAddUsersToRoom`. Test:
-`hosted-muc.spec.ts`, "refuses JIDs listed when creating a group that is not
-XMPP-federated".
-
-### D7 Banning an XMPP occupant neither removes them nor keeps them out
-
-A ban in Rocket.Chat keeps the subscription with status `BANNED`, which R4 refuses on the
-next join. An XMPP user who is an occupant when banned stays in the room: their messages
-are still stored and relayed, and they keep receiving the room's messages. When they later
-leave, the leave removes their membership as R8 asks, which deletes the banned subscription
-with it, so their next join is judged as a non-member's: a public channel admits it and a
-private group refuses it with `registration-required` rather than `forbidden`. Where: the
-XMPP hooks in `apps/meteor/ee/server/hooks/xmpp/index.ts` act on removals but not on
-`afterBanFromRoomCallback`, and `XMPPServerService.onHostedOccupantLeft` removes any
-subscription. A fix removes the occupant on a ban, with status 301 (XEP-0045 §9.1), and
-leaves a banned subscription in place when they leave. Test: `hosted-muc.spec.ts`, "removes
-a banned XMPP occupant and keeps them out after they leave".
 
 ## Open questions
 

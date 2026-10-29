@@ -260,4 +260,40 @@ describe('MucRoom', () => {
 				.map((s) => s.attrs.code),
 		).toEqual(['307', '110']);
 	});
+
+	it('removes a banned occupant with 301, as an outcast (R20)', async () => {
+		const { room, sent, events } = setup();
+		await room.handleJoin(join('alice@remote.tld/pc', 'alice'));
+		await room.handleJoin(join('bob@remote.tld/pc', 'bob'));
+		sent.length = 0;
+
+		room.ban('bob');
+		const codesTo = (to: string) =>
+			sent
+				.find((s) => s.attrs.to === to && s.attrs.type === 'unavailable')
+				?.getChild('x')
+				?.getChildren('status')
+				.map((s) => s.attrs.code);
+		expect(codesTo('bob@remote.tld/pc')).toEqual(['301', '110']);
+		expect(codesTo('alice@remote.tld/pc')).toEqual(['301']);
+		expect(sent.every((s) => s.getChild('x')?.getChild('item')?.attrs.affiliation === 'outcast')).toBe(true);
+		expect(room.listOccupants().map((o) => o.nick)).toEqual(['alice']);
+		expect(events.find((e) => e.event === 'occupantLeft')?.args[1]).toBe('banned');
+	});
+
+	it('tells every remote occupant the room is destroyed, and empties it (R21)', async () => {
+		const { room, sent, events } = setup();
+		await room.handleJoin(join('alice@remote.tld/pc', 'alice'));
+		room.addLocalOccupant({ nick: 'carol', realJid: 'carol@rc.tld' });
+		sent.length = 0;
+		events.length = 0;
+
+		room.destroy();
+		expect(sent).toHaveLength(1);
+		expect(sent[0].attrs).toMatchObject({ from: `${ROOM}/alice`, to: 'alice@remote.tld/pc', type: 'unavailable' });
+		expect(sent[0].getChild('x')?.getChild('destroy')).toBeDefined();
+		expect(sent[0].getChild('x')?.getChild('item')?.attrs).toMatchObject({ affiliation: 'none', role: 'none' });
+		expect(room.listOccupants()).toEqual([]);
+		expect(events).toEqual([]);
+	});
 });

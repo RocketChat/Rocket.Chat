@@ -48,7 +48,7 @@ export type XMPPServerEventMap = {
 	'presence.probe': { from: string; to: string };
 
 	'muc.occupantJoined': { roomId: string; nick: string; jid: string; role: string };
-	'muc.occupantLeft': { roomId: string; nick: string; jid: string; reason?: 'left' | 'kicked' };
+	'muc.occupantLeft': { roomId: string; nick: string; jid: string; reason?: 'left' | 'kicked' | 'banned' };
 	'muc.messageReceived': { roomId: string; fromNick: string; fromJid: string; body: string; id?: string; replaceId?: string; raw: Element };
 	'muc.subjectChanged': { roomId: string; fromNick: string; subject: string };
 	'muc.inviteReceived': { roomJid: string; toLocalJid: string; fromJid: string; reason?: string; password?: string };

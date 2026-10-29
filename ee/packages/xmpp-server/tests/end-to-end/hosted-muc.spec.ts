@@ -174,8 +174,7 @@ describe('XMPP federation: rooms hosted by Rocket.Chat', () => {
 			await assert.rejects(alice.joinRoom(muc), (error: unknown) => error instanceof StanzaError && error.condition === 'forbidden');
 		});
 
-		// Known defect: ../../docs/specs/hosted-muc.md#d7-banning-an-xmpp-occupant-neither-removes-them-nor-keeps-them-out
-		it.skip('removes a banned XMPP occupant and keeps them out after they leave (D7)', async () => {
+		it('removes a banned XMPP occupant and keeps them out after they leave (R20)', async () => {
 			const banned = await createHostedRoom(rc, owner, { type: 'c', name: `xe2e-ban-${uniqueSuffix()}` });
 			const bannedMuc = mucJidOf(banned);
 			await alice.joinRoom(bannedMuc);
@@ -302,10 +301,9 @@ describe('XMPP federation: rooms hosted by Rocket.Chat', () => {
 			assert.ok(statusCodes(notice).includes('307'));
 		});
 
-		// Known defect: ../../docs/specs/hosted-muc.md#d6-an-xmpp-user-listed-when-a-room-is-created-joins-any-room
-		it.skip('refuses JIDs listed when creating a group that is not XMPP-federated (R12, D6)', async () => {
+		it('refuses JIDs listed when creating a group that is not XMPP-federated (R12)', async () => {
 			const attempt = createRoom({ type: 'p', name: `xe2e-plain-${uniqueSuffix()}`, members: [alice.bareJid], config: owner.config });
-			// While D6 stands the group is created, and must not outlive the suite
+			// Should the check let it through, the group must not outlive the suite
 			attempt.then(
 				(res) => deleteRoomOnCleanup(rc, (res.body as { group: IRoom }).group._id),
 				() => undefined,
@@ -472,14 +470,16 @@ describe('XMPP federation: rooms hosted by Rocket.Chat', () => {
 			);
 		});
 
-		// Known defect: ../../docs/specs/hosted-muc.md#d4-a-deleted-room-keeps-running-until-the-service-restarts
-		it.skip('closes the room when it is deleted in Rocket.Chat (D4)', async () => {
+		it('closes the room when it is deleted in Rocket.Chat (R21)', async () => {
 			const room = await createHostedRoom(rc, owner, { type: 'c', name: `xe2e-deleted-${uniqueSuffix()}` });
 			const muc = mucJidOf(room);
 			await alice.joinRoom(muc);
 			await waitForMember(owner, room, alice.bareJid);
 
+			const after = alice.cursor();
 			await deleteRoom(rc, room);
+			const notice = await alice.waitFor(isOccupantPresence(muc, alice.username, { type: 'unavailable' }), 'the room closing', { after });
+			assert.ok(notice.getChild('x', NS.mucUser)?.getChild('destroy'), 'expected a <destroy/> in the closing presence');
 			await retry(`${muc} to be gone`, () => assert.rejects(alice.discoInfo(muc), { condition: 'item-not-found' }), federationPolling);
 		});
 	});

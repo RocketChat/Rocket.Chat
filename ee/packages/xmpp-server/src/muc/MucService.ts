@@ -70,6 +70,7 @@ export class MucService {
 	}
 
 	destroyRoom(roomId: string): void {
+		this.rooms.get(roomId)?.destroy();
 		this.rooms.delete(roomId);
 		this.publicRooms.delete(roomId);
 	}
@@ -162,7 +163,7 @@ export class MucService {
 				break;
 			}
 			case 'occupantLeft': {
-				const [occupant, reason] = args as [{ nick: string; realJid: string }, 'left' | 'kicked'];
+				const [occupant, reason] = args as [{ nick: string; realJid: string }, 'left' | 'kicked' | 'banned'];
 				this.deps.events.emit('muc.occupantLeft', { roomId, nick: occupant.nick, jid: occupant.realJid, reason });
 				break;
 			}

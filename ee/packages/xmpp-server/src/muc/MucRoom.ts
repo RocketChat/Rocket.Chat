@@ -2,6 +2,7 @@ import type Element from 'ltx/lib/Element';
 
 import type { MucJoinDecision } from '../config';
 import {
+	buildDestroyPresence,
 	buildGroupchatMessage,
 	buildMediatedInvite,
 	buildOccupantPresence,
@@ -26,7 +27,7 @@ type BroadcastMessage = { fromNick: string; body: string; id?: string; replaceId
 
 export type MucRoomEvents = {
 	occupantJoined: (occupant: MucOccupant) => void;
-	occupantLeft: (occupant: MucOccupant, reason: 'left' | 'kicked') => void;
+	occupantLeft: (occupant: MucOccupant, reason: 'left' | 'kicked' | 'banned') => void;
 	message: (params: { fromNick: string; fromJid: string; body: string; id?: string; replaceId?: string; raw: Element }) => void;
 };
 
@@ -207,21 +208,47 @@ export class MucRoom {
 	}
 
 	kick(nick: string, _reason?: string): void {
+		this.remove(nick, 'kicked');
+	}
+
+	/** Removes an occupant banned in Rocket.Chat (XEP-0045 §9.1). */
+	ban(nick: string): void {
+		this.remove(nick, 'banned');
+	}
+
+	/** Tells every remote occupant the room is gone and empties it. */
+	destroy(): void {
+		for (const occupant of this.remoteOccupants()) {
+			this.deps.send(buildDestroyPresence({ roomJid: this.roomJid, nick: occupant.nick, to: occupant.realJid }));
+		}
+		this.occupants.clear();
+	}
+
+	private remove(nick: string, reason: 'kicked' | 'banned'): void {
 		const occupant = this.occupants.get(nick);
 		if (!occupant) {
 			return;
 		}
+		const status = reason === 'banned' ? MUC_STATUS.banned : MUC_STATUS.kicked;
 		const notice = (to: string, statusCodes: MucStatusCode[]) =>
-			buildOccupantPresence({ roomJid: this.roomJid, nick: occupant.nick, to, role: occupant.role, type: 'unavailable', statusCodes });
+			buildOccupantPresence({
+				roomJid: this.roomJid,
+				nick: occupant.nick,
+				to,
+				role: occupant.role,
+				...(reason === 'banned' && { affiliation: 'outcast' as const }),
+				type: 'unavailable',
+				statusCodes,
+			});
 
 		if (!occupant.isLocal) {
-			this.deps.send(notice(occupant.realJid, [MUC_STATUS.kicked, MUC_STATUS.selfPresence]));
+			this.deps.send(notice(occupant.realJid, [status, MUC_STATUS.selfPresence]));
 		}
 		this.occupants.delete(nick);
 		for (const recipient of this.remoteOccupants()) {
-			this.deps.send(notice(recipient.realJid, [MUC_STATUS.kicked]));
+			this.deps.send(notice(recipient.realJid, [status]));
 		}
-		this.deps.emit('occupantLeft', occupant, 'kicked');
+		this.deps.emit('occupantLeft', occupant, reason);
 	}
 
 	private broadcastPresence(occupant: MucOccupant, type?: 'unavailable'): void {

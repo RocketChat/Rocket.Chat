@@ -13,6 +13,7 @@ import { isBareJid } from '@rocket.chat/tools';
 import { escapeLocalpart, XMPP_SERVER_DEFAULTS } from '@rocket.chat/xmpp-server';
 
 import { callbacks } from '../../../../server/lib/callbacks';
+import { afterBanFromRoomCallback } from '../../../../server/lib/callbacks/afterBanFromRoomCallback';
 import { afterLeaveRoomCallback } from '../../../../server/lib/callbacks/afterLeaveRoomCallback';
 import { afterRemoveFromRoomCallback } from '../../../../server/lib/callbacks/afterRemoveFromRoomCallback';
 import { beforeAddUsersToRoom } from '../../../../server/lib/callbacks/beforeAddUserToRoom';
@@ -114,6 +115,17 @@ beforeCreateRoomCallback.add(
 	// Ahead of the guards that let XMPP federated rooms through, so they see the room as one
 	callbacks.priority.HIGH - 1,
 	'xmpp-server-before-create-room',
+);
+
+// After the stamping hook, so a hosted room is already recognised as one
+beforeCreateRoomCallback.add(
+	({ room, members }) => {
+		if (!isRoomXMPPHostedMuc(room) && members.some((member) => isBareJid(member))) {
+			throw new ClientSafeError('error-xmpp-users-in-non-xmpp-rooms', 'Cannot add XMPP users to non-XMPP-federated rooms');
+		}
+	},
+	callbacks.priority.HIGH,
+	'xmpp-server-before-create-room-members',
 );
 
 callbacks.add(
@@ -231,4 +243,36 @@ afterRemoveFromRoomCallback.add(
 	async ({ removedUser }, room) => withdrawRoomMember({ user: removedUser }, room),
 	callbacks.priority.HIGH,
 	'xmpp-server-after-remove-from-room',
+);
+
+callbacks.add(
+	'afterDeleteRoom',
+	async (rid) => {
+		if (!isXMPPServerEnabled()) {
+			return rid;
+		}
+		try {
+			await XMPPServer.destroyHostedRoom(rid);
+		} catch (error) {
+			logger.error({ msg: 'Failed to close deleted XMPP room', err: error });
+		}
+		return rid;
+	},
+	callbacks.priority.HIGH,
+	'xmpp-server-after-delete-room',
+);
+
+afterBanFromRoomCallback.add(
+	async ({ bannedUser }, room) => {
+		if (!isXMPPServerEnabled() || !isRoomXMPPHostedMuc(room)) {
+			return;
+		}
+		try {
+			await XMPPServer.banFromHostedRoom(room._id, bannedUser._id);
+		} catch (error) {
+			logger.error({ msg: 'Failed to ban XMPP room member', err: error });
+		}
+	},
+	callbacks.priority.HIGH,
+	'xmpp-server-after-ban-from-room',
 );
