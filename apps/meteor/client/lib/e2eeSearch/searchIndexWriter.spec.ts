@@ -260,6 +260,38 @@ describe('createSearchIndexWriter with a rejected batch', () => {
 		await expect(writer.flush({ throwOnError: true })).resolves.toBeUndefined();
 	});
 
+	it('does not reject a flush with throwOnError of the next index with a document that the previous index rejected', async () => {
+		const { backend: first } = rejecting((doc) => doc.id === 'bad');
+		const second = createBackend();
+		let active: ISearchIndexBackend | undefined = first;
+		const writer = createSearchIndexWriter({ getBackend: () => active, delayMs: DELAY });
+
+		writer.index(message('bad'));
+		await jest.advanceTimersByTimeAsync(DELAY);
+		active = second;
+		writer.index(message('ok'));
+
+		await expect(writer.flush({ throwOnError: true })).resolves.toBeUndefined();
+		expect(second.upsert).toHaveBeenCalledTimes(1);
+	});
+
+	it('rejects a flush with throwOnError with the failure of the open index when the previous index left one unreported', async () => {
+		const first = createBackend();
+		first.upsert.mockRejectedValue(new Error('first index rejected it'));
+		const second = createBackend();
+		second.upsert.mockRejectedValue(new Error('second index rejected it'));
+		let active: ISearchIndexBackend | undefined = first;
+		const writer = createSearchIndexWriter({ getBackend: () => active, delayMs: DELAY });
+
+		writer.index(message('m1'));
+		await jest.advanceTimersByTimeAsync(DELAY);
+		active = second;
+		writer.index(message('m2'));
+		await jest.advanceTimersByTimeAsync(DELAY);
+
+		await expect(writer.flush({ throwOnError: true })).rejects.toThrow('second index rejected it');
+	});
+
 	it('resolves a flush with throwOnError when the index took every document, and a plain flush when it did not', async () => {
 		const { backend } = rejecting((doc) => doc.id === 'bad');
 		const writer = createSearchIndexWriter({ getBackend: () => backend, delayMs: DELAY });
