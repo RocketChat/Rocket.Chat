@@ -1,5 +1,5 @@
 import type { EncryptedMessageContent, IMessage, IRocketChatRecord } from '@rocket.chat/core-typings';
-import { isEncryptedMessageContent } from '@rocket.chat/core-typings';
+import { isEncryptedMessageContent, isRemovedFileAttachment } from '@rocket.chat/core-typings';
 import type { StreamNames } from '@rocket.chat/ddp-client';
 import { isTruthy } from '@rocket.chat/tools';
 import localforage from 'localforage';
@@ -57,10 +57,24 @@ const toCacheRecord = <T>(record: T): T => {
 		return rest as T;
 	}
 
-	const { _id, rid, ts, u, _updatedAt, tmid, content } = lastMessage as Partial<IMessage> & EncryptedMessageContent;
+	const { _id, rid, ts, u, _updatedAt, tmid, content, attachments, e2e } = lastMessage as Partial<IMessage> & EncryptedMessageContent;
+	// Before the decryption, the attachments are the server's markers of deleted files. The decryption replaces them with
+	// the decrypted attachments, so a decrypted message keeps none.
+	const removedFiles = e2e === 'done' ? [] : (attachments?.filter(isRemovedFileAttachment) ?? []);
 	return {
 		...record,
-		lastMessage: { _id, rid, ts, u, _updatedAt, ...(tmid && { tmid }), t: 'e2e', e2e: 'pending', content },
+		lastMessage: {
+			_id,
+			rid,
+			ts,
+			u,
+			_updatedAt,
+			...(tmid && { tmid }),
+			t: 'e2e',
+			e2e: 'pending',
+			content,
+			...(removedFiles.length > 0 && { attachments: removedFiles }),
+		},
 	};
 };
 
@@ -277,6 +291,8 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 
 	protected async clearCache() {
 		this.log('clearing cache');
+		// The startup scrub rewrites the cache: a rewrite that lands after the remove would bring the cache back.
+		await this.scrubbedCache;
 		await localforage.removeItem(this.name);
 		this.store.getState().replaceAll([]);
 	}
