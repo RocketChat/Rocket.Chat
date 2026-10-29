@@ -285,7 +285,7 @@ describe('E2E client and the local search index', () => {
 		const oldKeys = deferred<void>();
 		jest.spyOn(E2ERoom.prototype, 'handshake').mockResolvedValue(undefined);
 		jest.spyOn(E2ERoom.prototype, 'decryptOldRoomKeys').mockReturnValue(oldKeys.promise);
-		jest.spyOn(E2ERoom.prototype, 'decryptPendingMessages').mockResolvedValue(undefined);
+		const decryptPending = jest.spyOn(E2ERoom.prototype, 'decryptPendingMessages').mockResolvedValue(undefined);
 		jest.spyOn(E2ERoom.prototype, 'decryptSubscription').mockResolvedValue(undefined);
 		const roomReady = jest.fn();
 		const off = e2e.on('E2E_ROOM_READY', roomReady);
@@ -297,9 +297,11 @@ describe('E2E client and the local search index', () => {
 
 		expect(e2eRoom?.isReady()).toBe(true);
 		expect(roomReady).not.toHaveBeenCalled();
+		expect(decryptPending).not.toHaveBeenCalled();
 
 		oldKeys.resolve();
 		await waitFor(() => expect(roomReady).toHaveBeenCalledWith('r1'));
+		expect(decryptPending).toHaveBeenCalledTimes(1);
 
 		off();
 		Rooms.state.delete('r1');
