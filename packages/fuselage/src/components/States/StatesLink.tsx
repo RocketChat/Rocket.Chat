@@ -25,8 +25,10 @@ const StatesLinkFrame = styled(Text, {
 
 // end of generated
 
-const StatesLink = ({ className, ...props }: StatesLinkProps) => (
-	<StatesLinkFrame render={<Box is='a' rcx-states__link {...props} />} className={className} />
+const StatesLink = ({ className, children, ...props }: StatesLinkProps) => (
+	<StatesLinkFrame render={<Box is='a' rcx-states__link {...props} />} className={className}>
+		{children}
+	</StatesLinkFrame>
 );
 
 export default StatesLink;
