@@ -214,7 +214,10 @@ Tick an item in the commit that completes it.
 **Correctness**
 
 - [x] Box sizing in the app: the Storybook loads the app's reset and frames no longer force `content-box`.
-- [ ] `States`' link renders 0×0 when Fuselage runs uncompiled (npm consumers, Jest); the compiled build is right.
+- [x] `States`' link rendered empty when Fuselage runs uncompiled, like the Message emoji: their `children` travelled in the props spread on the render element and the childless frame replaced them. They go to the frame now.
+- [x] Uncompiled runtime: React 19 callback refs (cleanup ignored, `ref(null)` on unmount) and props leaking to the DOM, fixed by the `@tamagui/compose-refs` and `@tamagui/web` patches.
+- [ ] Visual regression baselines: regenerate the 47 that changed with `packages/visual-regression/scripts/run-playwright-docker.sh` (forced-state stories, the reset's box model, the two new Sidebar stories). Check `navigation-sidebar--collapsed` first: its badges are cut off at the 48px edge.
+- [ ] `ContextualbarTitle` logs "A text node cannot be a child of a `<View>`" uncompiled: frames that hold text should be based on `Text`.
 - [ ] Cascade order: the app's CSS and the admin's Custom CSS now lose to the zero stylesheet for any one- or two-class override of a Fuselage part. Try loading the zero stylesheet before the component and app stylesheets (the server injects stylesheets from the Vite manifest, so the order is ours); otherwise document the `[class]` rule for consumers.
 
 **Verification**
