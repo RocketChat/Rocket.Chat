@@ -15,6 +15,7 @@ tests:
   [
     src/XMPPServer.spec.ts,
     tests/integration/service-observer.spec.ts,
+    tests/integration/lifecycle.spec.ts,
     tests/end-to-end/connectivity.spec.ts,
     apps/meteor/server/services/federation/utils.test.ts,
   ]
@@ -63,6 +64,10 @@ under load.
   connection.
 - **R9** Inbound handlers run detached from the stanza that triggered them; a handler
   failure is logged and never closes the stream.
+- **R14** While `XMPP_Server_Enabled` is on and the license lacks the `federation` module,
+  the service keeps reading the license again, at intervals that grow to at most a minute.
+  A license installed while the service is still starting, whose `license.module` event
+  does not reach it, enables the server within a minute.
 
 **Microservice**
 
