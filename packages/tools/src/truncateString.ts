@@ -11,13 +11,27 @@ export function truncateString(str: string, maxLength: number, shouldAddEllipses
 		return str;
 	}
 
+	const sliceToBoundary = (end: number): string => {
+		const previousCodePoint = str.charCodeAt(end - 1);
+		const nextCodePoint = str.charCodeAt(end);
+		const splitsSurrogatePair =
+			end > 0 &&
+			end < str.length &&
+			previousCodePoint >= 0xd800 &&
+			previousCodePoint <= 0xdbff &&
+			nextCodePoint >= 0xdc00 &&
+			nextCodePoint <= 0xdfff;
+
+		return str.slice(0, splitsSurrogatePair ? end - 1 : end);
+	};
+
 	if (shouldAddEllipses && str.length > maxLength) {
 		if (maxLength <= ellipsis.length) {
-			return str.slice(0, maxLength);
+			return sliceToBoundary(maxLength);
 		}
 
-		return `${str.slice(0, maxLength - ellipsis.length)}${ellipsis}`;
+		return `${sliceToBoundary(maxLength - ellipsis.length)}${ellipsis}`;
 	}
 
-	return str.slice(0, maxLength);
+	return sliceToBoundary(maxLength);
 }
