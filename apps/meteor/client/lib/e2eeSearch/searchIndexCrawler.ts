@@ -150,6 +150,7 @@ export const createSearchIndexCrawler = ({
 		let indexed = 0;
 		let encrypted = 0;
 		let failed = 0;
+		const decryptedIds: string[] = [];
 		for (const message of messages) {
 			const decrypted = await decryptMessage(message);
 			if (!isE2EEMessage(decrypted)) continue;
@@ -160,10 +161,12 @@ export const createSearchIndexCrawler = ({
 				keepPending(message);
 				continue;
 			}
-			pendingDecrypt.delete(message._id);
+			decryptedIds.push(message._id);
 			if (counts(message)) indexed++;
 		}
-		await writer.flush();
+		// A rejected write rejects here, so the checkpoint does not move and a pending message stays for the next retry.
+		await writer.flush({ throwOnError: true });
+		for (const id of decryptedIds) pendingDecrypt.delete(id);
 		return { indexed, noneDecrypted: encrypted > 0 && failed === encrypted };
 	};
 

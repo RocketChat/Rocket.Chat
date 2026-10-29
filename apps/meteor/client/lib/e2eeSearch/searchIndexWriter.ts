@@ -46,8 +46,12 @@ export type SearchIndexWriter = {
 	 * promise rejects when the index rejected a remove, so a caller can keep its checkpoint and try again.
 	 */
 	remove(ids: string[], options?: { deleted?: boolean; throwOnError?: boolean }): Promise<void>;
-	/** Sends the queued documents now. */
-	flush(): Promise<void>;
+	/**
+	 * Sends the queued documents now, after the calls that are in flight. With `throwOnError`, the returned promise rejects
+	 * when the index rejected a document since the last such flush, also one that a timed flush sent, so a caller can keep
+	 * its checkpoint and try again.
+	 */
+	flush(options?: { throwOnError?: boolean }): Promise<void>;
 	/** Calls the listener after the index took documents or removed them. Returns the function that removes it. */
 	subscribe(listener: () => void): () => void;
 	/** Counts the changes that `subscribe` reports. */
@@ -95,6 +99,8 @@ export const createSearchIndexWriter = ({
 	/** Upserts and removes run one after the other, so a remove never lands before an upsert of the same message. */
 	let calls: Promise<void> = Promise.resolve();
 	let version = 0;
+	/** The first rejected document that no flush with `throwOnError` reported yet. */
+	let unreportedFailure: { error: unknown } | undefined;
 	const listeners = new Set<() => void>();
 
 	const changed = () => {
@@ -122,20 +128,27 @@ export const createSearchIndexWriter = ({
 		timer = undefined;
 	};
 
-	const flush = () => {
+	const flush = ({ throwOnError = false }: { throwOnError?: boolean } = {}) => {
 		clearTimer();
 		const backend = queueBackend;
 		const docs = [...queue.values()];
 		queue = new Map();
 		queueBackend = undefined;
 
-		if (!backend || docs.length === 0) return calls;
-
-		return enqueue(async () => {
-			for (const call of toCalls(docs)) {
-				await upsert(backend, call);
-			}
-			if (getBackend() === backend) changed();
+		const flushing =
+			!backend || docs.length === 0
+				? calls
+				: enqueue(async () => {
+						for (const call of toCalls(docs)) {
+							await upsert(backend, call);
+						}
+						if (getBackend() === backend) changed();
+					});
+		if (!throwOnError) return flushing;
+		return flushing.then(() => {
+			const failure = unreportedFailure;
+			unreportedFailure = undefined;
+			if (failure) throw failure.error;
 		});
 	};
 
@@ -168,6 +181,7 @@ export const createSearchIndexWriter = ({
 			} catch (retryError) {
 				if (getBackend() !== backend) return;
 				onWarn(`The index rejected document ${doc.id} also with its body cut; it is not indexed`);
+				unreportedFailure ??= { error: retryError };
 				onError(retryError);
 			}
 		}
@@ -252,6 +266,7 @@ export const createSearchIndexWriter = ({
 			queue = new Map();
 			queueBackend = undefined;
 			deletedIds = new Set();
+			unreportedFailure = undefined;
 		},
 	};
 };

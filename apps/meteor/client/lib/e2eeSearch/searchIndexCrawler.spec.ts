@@ -50,7 +50,10 @@ const setup = async ({
 	const decryptMessage = jest.fn(async (message: IMessage) =>
 		undecryptable.has(message._id) ? message : ({ ...message, e2e: 'done' } as IMessage),
 	);
-	const writer = { remove: jest.fn(async (_ids: string[]) => undefined), flush: jest.fn(async () => undefined) };
+	const writer = {
+		remove: jest.fn(async (_ids: string[]) => undefined),
+		flush: jest.fn(async (_options?: { throwOnError?: boolean }) => undefined),
+	};
 
 	const crawler = createSearchIndexCrawler({
 		backend,
@@ -563,11 +566,9 @@ describe('createSearchIndexCrawler', () => {
 	describe('failed removals', () => {
 		it('does not move lastUpdate past deletes that the index failed to remove, so the next catch-up removes them', async () => {
 			const noMore = { next: null, previous: null };
-			const { crawler, backend, writer } = await setup({
-				pages: [
-					{ updated: [encrypted('m4', NOW + 3000)], deleted: [], cursor: noMore },
-					{ updated: [], deleted: [{ _id: 'm2', _deletedAt: new Date(NOW + 2000).toISOString() }], cursor: noMore },
-				],
+			const deleted = { updated: [], deleted: [{ _id: 'm2', _deletedAt: new Date(NOW + 2000).toISOString() }], cursor: noMore };
+			const { crawler, backend, writer, calls } = await setup({
+				pages: [{ updated: [encrypted('m4', NOW + 3000)], deleted: [], cursor: noMore }, deleted, deleted],
 			});
 			writer.remove.mockRejectedValueOnce(new Error('remove failed'));
 			await backend.setRoomState('room1', { lastUpdate: NOW, backfillDone: true });
@@ -576,6 +577,47 @@ describe('createSearchIndexCrawler', () => {
 			await expect(crawler.catchUpRoomPage('room1')).rejects.toThrow('remove failed');
 
 			expect(await backend.getRoomState('room1')).toEqual({ lastUpdate: NOW, backfillDone: true });
+
+			expect(await crawler.catchUpRoomPage('room1')).toEqual({ done: true, indexed: 0, removed: 1 });
+			expect(calls.map(({ type }) => type)).toEqual(['UPDATED', 'DELETED', 'DELETED']);
+			expect(writer.remove).toHaveBeenCalledTimes(2);
+			expect(writer.remove).toHaveBeenLastCalledWith(['m2'], { throwOnError: true });
+			expect(await backend.getRoomState('room1')).toEqual({ lastUpdate: NOW + 3000, backfillDone: true });
+		});
+	});
+
+	describe('failed writes', () => {
+		it('does not save the backfill state of a page whose documents the index rejected, so the page is read again', async () => {
+			const page = (): SyncMessagesPage => ({
+				updated: [encrypted('m2', NOW - 1000), encrypted('m1', NOW - 2000)],
+				deleted: [],
+				cursor: { next: null, previous: null },
+			});
+			const { crawler, backend, writer } = await setup({ pages: [page(), page()] });
+			writer.flush.mockRejectedValueOnce(new Error('write failed'));
+
+			await expect(crawler.backfillRoomPage('room1')).rejects.toThrow('write failed');
+			expect(await backend.getRoomState('room1')).toBeUndefined();
+
+			expect(await crawler.backfillRoomPage('room1')).toEqual({ done: true, indexed: 2 });
+			expect(writer.flush).toHaveBeenLastCalledWith({ throwOnError: true });
+		});
+
+		it('keeps a message pending when the index rejected it after its key arrived', async () => {
+			const undecryptable = new Set(['m2']);
+			const { crawler, writer } = await setup({
+				undecryptable,
+				pages: [{ updated: [encrypted('m2', NOW - 2000)], deleted: [], cursor: { next: null, previous: null } }],
+			});
+			await crawler.backfillRoomPage('room1');
+			undecryptable.clear();
+			writer.flush.mockRejectedValueOnce(new Error('write failed'));
+
+			await expect(crawler.retryPendingDecrypt('room1')).rejects.toThrow('write failed');
+			expect(crawler.getPendingDecrypt('room1').map(({ _id }) => _id)).toEqual(['m2']);
+
+			expect(await crawler.retryPendingDecrypt('room1')).toEqual({ indexed: 1 });
+			expect(crawler.getPendingDecrypt('room1')).toEqual([]);
 		});
 	});
 

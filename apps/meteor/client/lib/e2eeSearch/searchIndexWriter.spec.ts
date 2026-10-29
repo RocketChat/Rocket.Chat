@@ -248,6 +248,28 @@ describe('createSearchIndexWriter with a rejected batch', () => {
 		expect(warnings).not.toMatch(/secret words/);
 	});
 
+	it('rejects a flush with throwOnError when a document is not indexed, also one that a timed flush sent, and reports it once', async () => {
+		const { backend } = rejecting((doc) => doc.id === 'bad');
+		const writer = createSearchIndexWriter({ getBackend: () => backend, delayMs: DELAY });
+
+		writer.index(message('bad'));
+		await jest.advanceTimersByTimeAsync(DELAY);
+		writer.index(message('ok'));
+
+		await expect(writer.flush({ throwOnError: true })).rejects.toThrow('docs are not valid');
+		await expect(writer.flush({ throwOnError: true })).resolves.toBeUndefined();
+	});
+
+	it('resolves a flush with throwOnError when the index took every document, and a plain flush when it did not', async () => {
+		const { backend } = rejecting((doc) => doc.id === 'bad');
+		const writer = createSearchIndexWriter({ getBackend: () => backend, delayMs: DELAY });
+
+		writer.index(message('ok'));
+		await expect(writer.flush({ throwOnError: true })).resolves.toBeUndefined();
+		writer.index(message('bad'));
+		await expect(writer.flush()).resolves.toBeUndefined();
+	});
+
 	it('stops the retries when the index closes', async () => {
 		let open = true;
 		const backend = createBackend();
@@ -481,6 +503,8 @@ describe('createSearchIndexWriter remove', () => {
 
 			writer.index(message('m1'));
 			await writer.flush();
+			expect(listener).toHaveBeenCalledTimes(1);
+			expect(writer.getVersion()).toBe(1);
 			await writer.remove(['m1']);
 
 			expect(listener).toHaveBeenCalledTimes(2);
