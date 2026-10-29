@@ -1878,6 +1878,30 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		);
 	}
 
+	// @all / @here in a thread reach the whole room, so members who don't follow the thread need the unread state too.
+	// Like the notification path, members who muted group mentions are skipped. Banned and invited subscriptions
+	// (the ones with a `status`) are not members of the room and must not be reopened or alerted.
+	addUnreadGroupMentionThreadByRoomIdExcludingUserIds(rid: string, excludeUids: string[], tmid: string): Promise<UpdateResult | Document> {
+		return this.updateMany(
+			{
+				'rid': rid,
+				'u._id': { $nin: excludeUids },
+				'muteGroupMentions': { $ne: true },
+				'status': { $exists: false },
+			},
+			{
+				$addToSet: {
+					tunread: tmid,
+					tunreadGroup: tmid,
+				},
+				$set: {
+					alert: true,
+					open: true,
+				},
+			},
+		);
+	}
+
 	removeUnreadThreadByRoomIdAndUserId(rid: string, userId: string, tmid: string, clearAlert = false): Promise<UpdateResult> {
 		const update: UpdateFilter<ISubscription> = {
 			$pull: {
