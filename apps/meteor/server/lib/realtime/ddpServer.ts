@@ -5,12 +5,22 @@ import { registerAccountMethods } from './accountMethods';
 import { announceConnection } from './meteorConnection';
 import { callMeteorMethod } from './meteorMethods';
 import { lifecycle } from './sessions';
+import { checkDdpRateLimit } from '../utils/checkDdpRateLimit';
 import { getBaseUserFields } from '../utils/functions/getBaseUserFields';
 
 /**
- * The DDP server behind this process's websocket. Methods it doesn't implement run through Meteor's method registry.
+ * The DDP server behind this process's websocket. Methods it doesn't implement run through Meteor's method registry,
+ * and every method call and subscription counts against the DDP rate limits.
  */
-export const ddpServer = new Server(callMeteorMethod);
+export const ddpServer = new Server(callMeteorMethod, (session, type, name) =>
+	checkDdpRateLimit({
+		userId: session.userId,
+		clientAddress: session.connection.clientAddress ?? '',
+		type,
+		name,
+		connectionId: session.connection.id,
+	}),
+);
 
 export const meteorCollections = {
 	loginServices: registerLoginServiceConfigurationPublication(ddpServer),

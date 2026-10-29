@@ -26,7 +26,7 @@ import { Meteor } from 'meteor/meteor';
 import { passwordPolicy } from '../../lib/auth/passwordPolicy';
 import { i18n } from '../../lib/i18n';
 import { notifyOnSettingChangedById } from '../../lib/notifyListener';
-import { checkMethodRateLimit } from '../../lib/utils/checkMethodRateLimit';
+import { checkDdpRateLimit } from '../../lib/utils/checkDdpRateLimit';
 import { getBaseUserFields } from '../../lib/utils/functions/getBaseUserFields';
 import { isSMTPConfigured } from '../../lib/utils/functions/isSMTPConfigured';
 import { getURL } from '../../lib/utils/getURL';
@@ -655,7 +655,7 @@ API.v1.post(
 		};
 
 		try {
-			checkMethodRateLimit(rateLimiterInput);
+			checkDdpRateLimit(rateLimiterInput);
 
 			return API.v1.success(mountResult({ id, result: await Meteor.callAsync(method, ...params) }));
 		} catch (err) {
@@ -700,7 +700,7 @@ API.v1.post(
 		};
 
 		try {
-			checkMethodRateLimit(rateLimiterInput);
+			checkDdpRateLimit(rateLimiterInput);
 
 			return API.v1.success(mountResult({ id, result: await Meteor.callAsync(method, ...params) }));
 		} catch (err) {
