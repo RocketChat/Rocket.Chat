@@ -78,7 +78,8 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 			column-gap: lengths.padding(4);
 		}
 
-		&__heading {
+		// `[class]` outranks the Item frames' classes, which load after this sheet
+		&__heading[class] {
 			display: flex;
 			align-items: center;
 
@@ -161,7 +162,7 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 			}
 		}
 
-		&__bar-button {
+		&__bar-button[class] {
 			display: flex;
 			align-items: center;
 
@@ -247,7 +248,7 @@ $sidebar-color-stroke-extra-light: theme('sidebar-color-stroke-extra-light', col
 		}
 	}
 
-	&-link {
+	&-link[class] {
 		@include use-link-colors($color: $sidebar-link-color);
 	}
 

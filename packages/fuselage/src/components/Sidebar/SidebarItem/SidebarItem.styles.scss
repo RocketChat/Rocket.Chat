@@ -40,7 +40,7 @@ $sidebar-color-font-active: theme('sidebar-color-font-active', colors.font(title
 }
 
 @mixin highlighted {
-	&--highlighted {
+	&--highlighted[class] {
 		@extend %highlightedV2;
 	}
 }
