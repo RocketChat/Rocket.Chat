@@ -1,16 +1,6 @@
-import { afterEach, before, beforeEach, describe, it } from 'node:test';
+import { CUSTOM_CATEGORY, getEmojisBySearchTerm, isLoadMore } from '@rocket.chat/ui-emoji-picker';
 
-import { expect } from 'chai';
-
-import {
-	CUSTOM_CATEGORY,
-	createEmojiList,
-	getEmojisBySearchTerm,
-	isLoadMore,
-	updateRecent,
-	removeFromRecent,
-	replaceEmojiInRecent,
-} from './helpers';
+import { createEmojiList, updateRecent, replaceEmojiInRecent } from './helpers';
 import { emoji } from './lib';
 import { getEmojiConfig } from '../../../lib/emoji-native/getEmojiConfig';
 
@@ -67,57 +57,57 @@ describe('Emoji Client Helpers', () => {
 	});
 
 	describe('getEmojisBySearchTerm', () => {
-		before(registerNativeEmojis);
+		beforeAll(registerNativeEmojis);
 
 		const search = (term: string, tone = 0) => getEmojisBySearchTerm(emoji, term, tone, [], () => undefined);
 		const names = (term: string, tone = 0) => search(term, tone).map((result) => result.emoji);
 		const rendersThumbsUp = (term: string) => search(term).some((result) => result.image?.includes('👍'));
 
 		it('finds an emoji by its primary shortcode', () => {
-			expect(names('+1')).to.include('+1');
+			expect(names('+1')).toContain('+1');
 		});
 
 		it('finds an emoji by its first alias (thumbsup -> 👍)', () => {
-			expect(rendersThumbsUp('thumbsup')).to.be.true;
+			expect(rendersThumbsUp('thumbsup')).toBe(true);
 		});
 
 		it('finds an emoji by a secondary alias (thumbup -> 👍)', () => {
-			expect(rendersThumbsUp('thumbup')).to.be.true;
+			expect(rendersThumbsUp('thumbup')).toBe(true);
 		});
 
 		it('matches aliases partially (thumb -> thumbsup)', () => {
-			expect(names('thumb')).to.include('thumbsup');
+			expect(names('thumb')).toContain('thumbsup');
 		});
 
 		it('does not list the same emoji more than once', () => {
 			const images = search('grinning').map((result) => result.image);
-			expect(images.length).to.equal(new Set(images).size);
+			expect(images.length).toBe(new Set(images).size);
 		});
 
 		it('excludes skin-tone variants from the results', () => {
-			expect(names('+1').some((name) => /_tone[1-5]/.test(name))).to.be.false;
+			expect(names('+1').some((name) => /_tone[1-5]/.test(name))).toBe(false);
 		});
 
 		it('applies the selected skin tone when searching by an alias', () => {
 			const result = getEmojisBySearchTerm(emoji, 'thumbsup', 2, [], () => undefined).find(({ image }) => image?.includes('👍'));
 
-			expect(result).to.exist;
-			expect(result?.image).to.include('👍🏼');
-			expect(result?.emoji).to.equal('thumbsup_tone2');
+			expect(result).toBeDefined();
+			expect(result?.image).toContain('👍🏼');
+			expect(result?.emoji).toBe('thumbsup_tone2');
 		});
 
 		it('finds a custom emoji whose name ends in a mixed skin-tone suffix (CORE-2473)', () => {
 			registerCustomEmoji('mycustom_tone1-2');
-			expect(names('mycustom_tone1-2')).to.include('mycustom_tone1-2');
+			expect(names('mycustom_tone1-2')).toContain('mycustom_tone1-2');
 		});
 
 		it('leaves out native mixed skin-tone variants that do not match the selected tone', () => {
-			expect(names('handshake')).to.deep.equal(['handshake']);
+			expect(names('handshake')).toEqual(['handshake']);
 
 			const selectedTone = names('handshake', 1);
 
-			expect(selectedTone).to.include('handshake_tone1');
-			expect(selectedTone).to.not.include('handshake_tone2-1');
+			expect(selectedTone).toContain('handshake_tone1');
+			expect(selectedTone).not.toContain('handshake_tone2-1');
 		});
 
 		describe('when a package offers tones for an emoji whose toned variant it does not provide', () => {
@@ -142,9 +132,9 @@ describe('Emoji Client Helpers', () => {
 
 				const results = getEmojisBySearchTerm(emoji, 'handshake', 1, recentEmojis, (emojis) => updates.push([...emojis]));
 
-				expect(results).to.be.empty;
-				expect(recentEmojis).to.deep.equal(['smile']);
-				expect(updates).to.deep.equal([['smile']]);
+				expect(results).toHaveLength(0);
+				expect(recentEmojis).toEqual(['smile']);
+				expect(updates).toEqual([['smile']]);
 			});
 		});
 	});
@@ -169,7 +159,7 @@ describe('Emoji Client Helpers', () => {
 			emoji.list[':grin:'] = { emojiPackage: 'native' } as any;
 			emoji.list[':smile:'] = { emojiPackage: 'emojiCustom' } as any;
 
-			expect(listEmojiNames(createEmojiList(10, 'people', 0, [], () => undefined))).to.deep.equal(['grin']);
+			expect(listEmojiNames(createEmojiList(10, 'people', 0, [], () => undefined))).toEqual(['grin']);
 		});
 
 		it('skips an emoji its own package cannot render a picker image for', () => {
@@ -179,7 +169,7 @@ describe('Emoji Client Helpers', () => {
 			emoji.list[':grin:'] = { emojiPackage: 'native' } as any;
 			emoji.list[':broken:'] = { emojiPackage: 'native' } as any;
 
-			expect(listEmojiNames(createEmojiList(10, 'people', 0, [], () => undefined))).to.deep.equal(['grin']);
+			expect(listEmojiNames(createEmojiList(10, 'people', 0, [], () => undefined))).toEqual(['grin']);
 		});
 
 		it('appends a load more item when the custom emoji limit truncates the category', () => {
@@ -190,8 +180,8 @@ describe('Emoji Client Helpers', () => {
 
 			const rows = createEmojiList(2, CUSTOM_CATEGORY, 0, [], () => undefined);
 
-			expect(listEmojiNames(rows)).to.deep.equal(['one', 'two']);
-			expect(rows.some(isLoadMore)).to.be.true;
+			expect(listEmojiNames(rows)).toEqual(['one', 'two']);
+			expect(rows.some(isLoadMore)).toBe(true);
 		});
 
 		it('does not append a load more item when the limit matches the whole category', () => {
@@ -202,8 +192,8 @@ describe('Emoji Client Helpers', () => {
 
 			const rows = createEmojiList(3, CUSTOM_CATEGORY, 0, [], () => undefined);
 
-			expect(listEmojiNames(rows)).to.deep.equal(['one', 'two', 'three']);
-			expect(rows.some(isLoadMore)).to.be.false;
+			expect(listEmojiNames(rows)).toEqual(['one', 'two', 'three']);
+			expect(rows.some(isLoadMore)).toBe(false);
 		});
 
 		it('drops a recent emoji that no longer exists and notifies the caller', () => {
@@ -213,9 +203,9 @@ describe('Emoji Client Helpers', () => {
 
 			const rows = createEmojiList(10, 'recent', 0, recentEmojis, (emojis) => updates.push([...emojis]));
 
-			expect(listEmojiNames(rows)).to.be.empty;
-			expect(recentEmojis).to.be.empty;
-			expect(updates).to.deep.equal([[]]);
+			expect(listEmojiNames(rows)).toHaveLength(0);
+			expect(recentEmojis).toHaveLength(0);
+			expect(updates).toEqual([[]]);
 		});
 	});
 
@@ -237,19 +227,19 @@ describe('Emoji Client Helpers', () => {
 			emoji.packages.emojiCustom = fakePackage({}, (name) => `<custom>${name}</custom>`);
 			emoji.list[':partyparrot:'] = { emojiPackage: 'emojiCustom' } as any;
 
-			expect(emoji.packages.base.renderPicker(':partyparrot:')).to.equal('<custom>:partyparrot:</custom>');
+			expect(emoji.packages.base.renderPicker(':partyparrot:')).toBe('<custom>:partyparrot:</custom>');
 		});
 
 		it('renders nothing when the emoji has no package', () => {
 			emoji.list[':orphan:'] = { emojiPackage: '' } as any;
 
-			expect(emoji.packages.base.renderPicker(':orphan:')).to.be.undefined;
+			expect(emoji.packages.base.renderPicker(':orphan:')).toBeUndefined();
 		});
 
 		it('renders nothing when the package the emoji points to is gone', () => {
 			emoji.list[':ghost:'] = { emojiPackage: 'uninstalled' } as any;
 
-			expect(emoji.packages.base.renderPicker(':ghost:')).to.be.undefined;
+			expect(emoji.packages.base.renderPicker(':ghost:')).toBeUndefined();
 		});
 	});
 
@@ -257,23 +247,8 @@ describe('Emoji Client Helpers', () => {
 		it('should update recent emojis with the provided emojis', () => {
 			const recentEmojis = ['emoji1', 'emoji2'];
 			updateRecent(recentEmojis);
-			expect(emoji.packages.base.emojisByCategory.recent).to.contain('emoji1');
-			expect(emoji.packages.base.emojisByCategory.recent).to.contain('emoji2');
-		});
-	});
-
-	describe('removeFromRecent', () => {
-		it('should remove a specific emoji from recent emojis', () => {
-			emoji.packages.base.emojisByCategory.recent = ['emoji1', 'emoji2', 'emoji3'];
-			removeFromRecent('emoji2', emoji.packages.base.emojisByCategory.recent);
-			expect(emoji.packages.base.emojisByCategory.recent).to.not.include('emoji2');
-			expect(emoji.packages.base.emojisByCategory.recent).to.deep.equal(['emoji1', 'emoji3']);
-		});
-
-		it('should do nothing if the emoji is not in the recent list', () => {
-			emoji.packages.base.emojisByCategory.recent = ['emoji1', 'emoji2'];
-			removeFromRecent('emoji3', emoji.packages.base.emojisByCategory.recent);
-			expect(emoji.packages.base.emojisByCategory.recent).to.deep.equal(['emoji1', 'emoji2']);
+			expect(emoji.packages.base.emojisByCategory.recent).toContain('emoji1');
+			expect(emoji.packages.base.emojisByCategory.recent).toContain('emoji2');
 		});
 	});
 
@@ -281,15 +256,15 @@ describe('Emoji Client Helpers', () => {
 		it('should replace an existing emoji with a new one in recent emojis', () => {
 			emoji.packages.base.emojisByCategory.recent = ['emoji1', 'emoji2', 'emoji3'];
 			replaceEmojiInRecent({ oldEmoji: 'emoji2', newEmoji: 'emoji4' });
-			expect(emoji.packages.base.emojisByCategory.recent).to.not.include('emoji2');
-			expect(emoji.packages.base.emojisByCategory.recent).to.include('emoji4');
-			expect(emoji.packages.base.emojisByCategory.recent).to.deep.equal(['emoji1', 'emoji4', 'emoji3']);
+			expect(emoji.packages.base.emojisByCategory.recent).not.toContain('emoji2');
+			expect(emoji.packages.base.emojisByCategory.recent).toContain('emoji4');
+			expect(emoji.packages.base.emojisByCategory.recent).toEqual(['emoji1', 'emoji4', 'emoji3']);
 		});
 
 		it('should do nothing if the emoji to replace is not in the recent list', () => {
 			emoji.packages.base.emojisByCategory.recent = ['emoji1', 'emoji2'];
 			replaceEmojiInRecent({ oldEmoji: 'emoji3', newEmoji: 'emoji4' });
-			expect(emoji.packages.base.emojisByCategory.recent).to.deep.equal(['emoji1', 'emoji2']);
+			expect(emoji.packages.base.emojisByCategory.recent).toEqual(['emoji1', 'emoji2']);
 		});
 	});
 });

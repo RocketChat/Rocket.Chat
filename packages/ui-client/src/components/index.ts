@@ -1,6 +1,5 @@
 export * from './CallTimer';
 export { default as AnchorPortal, type AnchorPortalProps } from './AnchorPortal';
-export * from './EmojiPicker';
 export * from './ExternalLink';
 export * from './DotLeader';
 export * from './CustomFieldsForm';

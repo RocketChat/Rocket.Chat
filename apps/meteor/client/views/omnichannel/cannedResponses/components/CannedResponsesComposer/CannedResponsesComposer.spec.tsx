@@ -1,8 +1,8 @@
 import { useUserPreference } from '@rocket.chat/ui-contexts';
+import { useEmojiPicker } from '@rocket.chat/ui-emoji-picker';
 import { render, screen } from '@testing-library/react';
 
 import CannedResponsesComposer from './CannedResponsesComposer';
-import { useEmojiPicker } from '../../../../../contexts/EmojiPickerContext';
 import { emoji } from '../../../../../lib/emoji';
 
 jest.mock('@rocket.chat/ui-contexts', () => ({
@@ -10,7 +10,8 @@ jest.mock('@rocket.chat/ui-contexts', () => ({
 	useUserPreference: jest.fn(),
 }));
 
-jest.mock('../../../../../contexts/EmojiPickerContext', () => ({
+jest.mock('@rocket.chat/ui-emoji-picker', () => ({
+	...jest.requireActual('@rocket.chat/ui-emoji-picker'),
 	useEmojiPicker: jest.fn(),
 }));
 

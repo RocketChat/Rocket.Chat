@@ -4,8 +4,8 @@ import DOMPurify from 'dompurify';
 import type { MouseEvent, AllHTMLAttributes } from 'react';
 import { memo } from 'react';
 
-import { usePreviewEmoji } from '../../../contexts/EmojiPickerContext';
-import type { EmojiItem } from '../../../lib/emoji';
+import { usePreviewEmoji } from '../contexts/EmojiPickerContext';
+import type { EmojiItem } from '../lib/types';
 
 export type EmojiElementProps = EmojiItem & { small?: boolean; onClick: (e: MouseEvent<HTMLElement>) => void } & Omit<
 		AllHTMLAttributes<HTMLButtonElement>,

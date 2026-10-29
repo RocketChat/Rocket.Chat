@@ -19,7 +19,7 @@ const EmojiPickerDropdown = forwardRef(function EmojiPickerDropdown<TReferenceEl
 	const Dropdown = isMobile ? DropdownMobile : EmojiPickerDesktopDropdown;
 
 	return (
-		<Dropdown ref={ref} reference={reference as RefObject<TReferenceElement>}>
+		<Dropdown ref={ref} reference={reference}>
 			{children}
 		</Dropdown>
 	);

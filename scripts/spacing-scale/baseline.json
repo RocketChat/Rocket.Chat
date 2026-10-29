@@ -532,7 +532,6 @@
 	"packages/ui-client/src/components/AnnouncementBanner/AnnouncementBanner.tsx": 1,
 	"packages/ui-client/src/components/Contextualbar/ContextualbarScrollableContent.tsx": 2,
 	"packages/ui-client/src/components/Contextualbar/ContextualbarSkeletonBody.tsx": 2,
-	"packages/ui-client/src/components/EmojiPicker/EmojiPickerFooter.tsx": 1,
 	"packages/ui-client/src/components/GenericNoResults/GenericNoResults.stories.tsx": 1,
 	"packages/ui-client/src/components/GenericTable/GenericTable.stories.tsx": 1,
 	"packages/ui-client/src/components/GenericTable/GenericTable.tsx": 1,

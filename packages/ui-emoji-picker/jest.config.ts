@@ -4,7 +4,6 @@ import type { Config } from 'jest';
 export default {
 	preset: client.preset,
 	setupFilesAfterEnv: [...client.setupFilesAfterEnv],
-	passWithNoTests: true,
 	moduleNameMapper: {
 		'^react($|/.+)': '<rootDir>/../../node_modules/react$1',
 		'^react-dom($|/.+)': '<rootDir>/../../node_modules/react-dom$1',
