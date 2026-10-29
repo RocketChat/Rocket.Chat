@@ -12,7 +12,7 @@ import { join } from 'node:path';
 
 import prettier from 'prettier';
 
-import { shadowColors, statusBackgroundColors, statusColors, strokeColors, textIconColors } from '../src/Theme.ts';
+import { shadowColors, statusBackgroundColors, statusColors, strokeColors, surfaceColors, textIconColors } from '../src/Theme.ts';
 import { toCSSColorValue, toCSSValue } from '../src/helpers/toCSSValue.ts';
 import { borderRadius, borderWidth, fontFamily, fontScale, size, spacing } from '../src/styleTokens.ts';
 
@@ -404,6 +404,7 @@ const IconButtonFrame = styled(View, {
 };
 
 const fontColor = (name: string) => textIconColors[`font-${name}` as keyof typeof textIconColors].toString();
+const surfaceColor = (name: string) => surfaceColors[`surface-${name}` as keyof typeof surfaceColors].toString();
 const strokeColor = (name: string) => strokeColors[`stroke-${name}` as keyof typeof strokeColors].toString();
 const statusBackground = (name: string) =>
 	statusBackgroundColors[`status-background-${name}` as keyof typeof statusBackgroundColors].toString();
@@ -504,11 +505,83 @@ const generateTabsItem = () => {
 	});
 };
 
+const generateAccordion = () =>
+	constants({
+		border: {
+			borderBottomWidth: borderWidth('default')!,
+			borderBottomColor: strokeColor('extra-light'),
+		},
+	});
+
+const generateAccordionItem = () => {
+	const thin = borderWidth('default')!;
+	const separator = strokeColor('extra-light');
+	const highlight = strokeColor('highlight');
+	const sides = (top: Value, others: Value) => ({
+		borderTopColor: top,
+		borderRightColor: others,
+		borderBottomColor: others,
+		borderLeftColor: others,
+	});
+
+	return constants({
+		barLayout: {
+			minHeight: `${(2 * 32 + 24) / 16}rem`,
+			paddingBlock: `calc(${spacing('x32')} - ${thin})`,
+			paddingInline: `calc(${spacing('x8')} - ${thin})`,
+			textAlign: 'start',
+			borderWidth: thin,
+			...sides(separator, 'transparent'),
+		},
+		barPlain: {
+			color: fontColor('titles-labels'),
+		},
+		barInteractive: {
+			color: fontColor('titles-labels'),
+			cursor: 'pointer',
+			outlineStyle: 'none',
+			backgroundColor: { hover: surfaceColor('tint') },
+			...sides({ default: separator, focus: highlight }, { default: 'transparent', focus: highlight }),
+			boxShadow: { focus: `0 0 0 ${borderWidth('medium')} ${strokeColor('extra-light-highlight')}` },
+		},
+		barDisabled: {
+			color: fontColor('disabled'),
+			cursor: 'not-allowed',
+			backgroundColor: surfaceColor('disabled'),
+		},
+		titleLine: {
+			flexGrow: 1,
+			flexShrink: 1,
+			flexBasis: size('none')!,
+			minWidth: 'auto',
+			minHeight: 'auto',
+			overflow: 'hidden',
+			textOverflow: 'ellipsis',
+			whiteSpace: 'nowrap',
+			...fontScaleOf('h4'),
+		},
+		panelCollapsed: {
+			visibility: 'hidden',
+			height: size('none')!,
+			paddingBlock: 0,
+			paddingInline: spacing('x8')!,
+		},
+		panelExpanded: {
+			visibility: 'visible',
+			height: 'auto',
+			paddingBlock: spacing('x32')!,
+			paddingInline: spacing('x8')!,
+		},
+	});
+};
+
 const components = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
 	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
 	{ file: join(import.meta.dirname, '../src/components/Tabs/Tabs.tsx'), generate: generateTabs },
 	{ file: join(import.meta.dirname, '../src/components/Tabs/TabsItem.tsx'), generate: generateTabsItem },
+	{ file: join(import.meta.dirname, '../src/components/Accordion/Accordion.tsx'), generate: generateAccordion },
+	{ file: join(import.meta.dirname, '../src/components/Accordion/AccordionItem.tsx'), generate: generateAccordionItem },
 ];
 const check = process.argv.includes('--check');
 let stale = false;
