@@ -16,6 +16,7 @@ export * from './useLazyRef';
 export * from './useMediaQueries';
 export * from './useMediaQuery';
 export * from './useMergedRefs';
+export * from './useMergedRefsV2';
 export * from './usePosition';
 export * from './usePrefersColorScheme';
 export * from './usePrefersReducedData';

@@ -1,5 +1,5 @@
 import { Box, TextInput, Icon, Button, Divider } from '@rocket.chat/fuselage';
-import { useMediaQuery, useOutsideClick } from '@rocket.chat/fuselage-hooks';
+import { useMediaQuery, useOutsideClick, useMergedRefsV2 } from '@rocket.chat/fuselage-hooks';
 import {
 	EmojiPickerCategoryHeader,
 	EmojiPickerContainer,
@@ -20,7 +20,6 @@ import SearchingResult from './SearchingResult';
 import ToneSelector from './ToneSelector';
 import ToneSelectorWrapper from './ToneSelector/ToneSelectorWrapper';
 import { usePreviewEmoji, useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
-import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
 import { emoji, getCategoriesList, getEmojisBySearchTerm } from '../../../lib/emoji';
 import type { EmojiItem } from '../../../lib/emoji';
 import { useIsVisible } from '../../room/hooks/useIsVisible';

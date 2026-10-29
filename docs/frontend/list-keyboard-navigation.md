@@ -11,7 +11,7 @@ Every list in the client follows one of three keyboard models, taken from the [A
 
 ## Composite lists
 
-Sidebar room lists, the side panel, contextual bar lists (members, files, threads, discussions, pinned, starred, mentions, canned responses, contact history, Outlook events) and any new list of rows use `useItemListNavigation` from `apps/meteor/client/hooks`, or one of its variants listed below. The list behaves as one tab stop:
+Sidebar room lists, the side panel, contextual bar lists (members, files, threads, discussions, pinned, starred, mentions, canned responses, contact history, Outlook events) and any new list of rows use `useItemListNavigation` from `apps/meteor/client/hooks`, or one of its variants listed below. `@rocket.chat/ui-client` has its own copy of these hooks, used by `MessageList`, with two more options: `scrollToAdjacentRow`, which brings an unrendered row into view through the virtualizer instead of scrolling by one row height, and `onMoveBetweenRows`. The list behaves as one tab stop:
 
 - Up and Down move between rows. In a virtualized list, the row outside the render window is scrolled in first.
 - Tab and Shift+Tab walk the controls of the focused row only: its focus target first, then every other tabbable control in reading order, such as the buttons of `ItemActions`, a menu trigger or the links and toolbar of a message. Tab past the last control, or Shift+Tab from the focus target, leaves the list; Tab never enters the next row.

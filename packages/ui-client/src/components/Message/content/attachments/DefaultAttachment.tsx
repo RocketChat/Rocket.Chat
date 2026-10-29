@@ -1,0 +1,120 @@
+import type { MarkdownFields, MessageAttachmentDefault } from '@rocket.chat/core-typings';
+import { isActionAttachment } from '@rocket.chat/core-typings';
+import type { ComponentType, ReactNode } from 'react';
+import { useContext } from 'react';
+
+import ActionAttachment from './default/ActionAttachtment';
+import FieldsAttachment from './default/FieldsAttachment';
+import AttachmentAuthor from './structure/AttachmentAuthor';
+import AttachmentAuthorAvatar from './structure/AttachmentAuthorAvatar';
+import AttachmentAuthorName from './structure/AttachmentAuthorName';
+import AttachmentBlock from './structure/AttachmentBlock';
+import AttachmentContent from './structure/AttachmentContent';
+import AttachmentImage from './structure/AttachmentImage';
+import AttachmentRow from './structure/AttachmentRow';
+import AttachmentText from './structure/AttachmentText';
+import AttachmentThumb from './structure/AttachmentThumb';
+import AttachmentTitle from './structure/AttachmentTitle';
+import type { MarkdownTextComponentProps } from '../../../MarkdownTextContext';
+import { MarkdownTextContext } from '../../../MarkdownTextContext';
+import { useCollapse } from '../../hooks/useCollapse';
+import CollapsibleContent from '../collapsible/CollapsibleContent';
+
+const applyMarkdownIfRequires = (
+	MarkdownText: ComponentType<MarkdownTextComponentProps>,
+	list: MessageAttachmentDefault['mrkdwn_in'] = ['text', 'pretext'],
+	key: MarkdownFields,
+	text: string,
+	variant: MarkdownTextComponentProps['variant'] = 'inline',
+): ReactNode => (list?.includes(key) ? <MarkdownText parseEmoji variant={variant} content={text} /> : text);
+
+export type DefaultAttachmentProps = MessageAttachmentDefault & {
+	collapseKey?: string;
+};
+
+const DefaultAttachment = ({ collapseKey, ...attachment }: DefaultAttachmentProps) => {
+	const MarkdownText = useContext(MarkdownTextContext);
+	const [collapsed, toggleCollapse] = useCollapse(!!attachment.collapsed, collapseKey);
+
+	return (
+		<AttachmentBlock
+			color={attachment.color}
+			pre={
+				attachment.pretext && (
+					<AttachmentText>{applyMarkdownIfRequires(MarkdownText, attachment.mrkdwn_in, 'pretext', attachment.pretext)}</AttachmentText>
+				)
+			}
+		>
+			<AttachmentContent>
+				{attachment.author_name && (
+					<AttachmentAuthor>
+						{attachment.author_icon && <AttachmentAuthorAvatar url={attachment.author_icon} />}
+						<AttachmentAuthorName
+							{...(attachment.author_link && {
+								is: 'a',
+								href: attachment.author_link,
+								target: '_blank',
+								color: undefined,
+							})}
+						>
+							{attachment.author_name}
+						</AttachmentAuthorName>
+					</AttachmentAuthor>
+				)}
+				{attachment.title && (
+					<AttachmentRow gap={2}>
+						<AttachmentTitle
+							{...(attachment.title_link && {
+								is: 'a',
+								href: attachment.title_link,
+								target: '_blank',
+								color: undefined,
+							})}
+						>
+							{attachment.title}
+						</AttachmentTitle>
+						<CollapsibleContent key='collapsible-content-action' collapsed={collapsed} onClick={toggleCollapse} />
+					</AttachmentRow>
+				)}
+				{!collapsed && (
+					<>
+						{attachment.text && (
+							<AttachmentText>
+								{applyMarkdownIfRequires(MarkdownText, attachment.mrkdwn_in, 'text', attachment.text, 'document')}
+							</AttachmentText>
+						)}
+						{attachment.fields && (
+							<FieldsAttachment
+								fields={attachment.fields.map((field) => {
+									if (!field.value) {
+										return field;
+									}
+
+									const { value, title, ...rest } = field;
+
+									return {
+										...rest,
+										title: title ? (
+											<MarkdownText variant='inline' parseEmoji content={title.replace(/(.*)/g, (line: string) => `${line}  `)} />
+										) : null,
+										value: value ? (
+											<MarkdownText variant='inline' parseEmoji content={String(value).replace(/(.*)/g, (line: string) => `${line}  `)} />
+										) : null,
+									};
+								})}
+							/>
+						)}
+						{attachment.image_url && (
+							<AttachmentImage {...(attachment.image_dimensions as any)} src={attachment.image_url} alt={attachment.image_alt || ''} />
+						)}
+						{/* DEPRECATED */}
+						{isActionAttachment(attachment) && <ActionAttachment {...attachment} />}
+					</>
+				)}
+			</AttachmentContent>
+			{attachment.thumb_url && <AttachmentThumb url={attachment.thumb_url} />}
+		</AttachmentBlock>
+	);
+};
+
+export default DefaultAttachment;
