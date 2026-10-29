@@ -45,8 +45,10 @@ $sidepanel-color-default: colors.font(default);
 	&--divider {
 		border-color: colors.stroke(light);
 
-		&.rcx-divider {
+		&.rcx-divider[class] {
 			margin-block: lengths.margin(-2) lengths.margin(none);
+
+			border-color: colors.stroke(light);
 		}
 
 		&.rcx-item-divider::before {
