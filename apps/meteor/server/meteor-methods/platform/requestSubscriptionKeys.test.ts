@@ -4,22 +4,25 @@ import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
+// Other test files restore the default sinon sandbox, so these stubs live in their own sandbox.
+const sandbox = sinon.createSandbox();
+
 const models = {
 	Subscriptions: {
-		findByUserIdWithoutE2E: sinon.stub(),
+		findByUserIdWithoutE2E: sandbox.stub(),
 	},
 	Rooms: {
-		find: sinon.stub(),
-		addUserIdToE2EEQueueByRoomIds: sinon.stub(),
+		find: sandbox.stub(),
+		addUserIdToE2EEQueueByRoomIds: sandbox.stub(),
 	},
 	Users: {
-		findOneById: sinon.stub(),
+		findOneById: sandbox.stub(),
 	},
 };
 
-const settingsGet = sinon.stub();
-const notifyOnRoomChangedById = sinon.stub();
-const broadcast = sinon.stub();
+const settingsGet = sandbox.stub();
+const notifyOnRoomChangedById = sandbox.stub();
+const broadcast = sandbox.stub();
 
 const { requestSubscriptionKeysMethod } = proxyquire.noCallThru().load('./requestSubscriptionKeys.ts', {
 	'@rocket.chat/models': models,
@@ -28,11 +31,11 @@ const { requestSubscriptionKeysMethod } = proxyquire.noCallThru().load('./reques
 	'../../settings': { settings: { get: settingsGet } },
 });
 
-const cursor = <T>(items: T[]) => ({ toArray: sinon.stub().resolves(items), forEach: (fn: (item: T) => void) => items.forEach(fn) });
+const cursor = <T>(items: T[]) => ({ toArray: sandbox.stub().resolves(items), forEach: (fn: (item: T) => void) => items.forEach(fn) });
 
 describe('requestSubscriptionKeysMethod', () => {
 	beforeEach(() => {
-		sinon.resetHistory();
+		sandbox.resetHistory();
 		settingsGet.withArgs('E2E_Enable').returns(true);
 		models.Users.findOneById.resolves({ _id: 'uid', e2e: { public_key: 'pub' } });
 		models.Subscriptions.findByUserIdWithoutE2E.returns(cursor([{ rid: 'r1' }, { rid: 'r2' }]));
