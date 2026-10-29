@@ -12,7 +12,7 @@ import { join } from 'node:path';
 
 import prettier from 'prettier';
 
-import { shadowColors, statusColors, strokeColors } from '../src/Theme.ts';
+import { shadowColors, statusColors, strokeColors, surfaceColors, textIconColors } from '../src/Theme.ts';
 import { toCSSColorValue, toCSSValue } from '../src/helpers/toCSSValue.ts';
 import { borderRadius, borderWidth, fontFamily, fontScale, size, spacing } from '../src/styleTokens.ts';
 
@@ -403,9 +403,142 @@ const IconButtonFrame = styled(View, {
 	return out.join('\n\n');
 };
 
+const themed = (name: string, value: string) => toCSSValue(`--rcx-${name}`, value);
+const fontColor = (name: keyof typeof textIconColors) => textIconColors[name].toString();
+const statusFont = (name: string) => statusColors[`status-font-on-${name}` as keyof typeof statusColors].toString();
+
+const generateTag = () => {
+	const out: string[] = [];
+
+	const kindsOfTag: Record<string, { color: string; background: string; hover: string }> = {
+		'default': {
+			color: buttonFont('secondary'),
+			background: buttonBackground('secondary', 'default'),
+			hover: buttonBackground('secondary', 'hover'),
+		},
+		'primary': {
+			color: buttonFont('primary'),
+			background: buttonBackground('primary', 'default'),
+			hover: buttonBackground('primary', 'hover'),
+		},
+		'secondary': {
+			color: buttonFont('secondary'),
+			background: buttonBackground('secondary', 'default'),
+			hover: buttonBackground('secondary', 'hover'),
+		},
+		'danger': {
+			color: buttonFont('danger'),
+			background: buttonBackground('danger', 'default'),
+			hover: buttonBackground('danger', 'hover'),
+		},
+		'warning': {
+			color: buttonFont('warning'),
+			background: buttonBackground('warning', 'default'),
+			hover: buttonBackground('warning', 'hover'),
+		},
+		'featured': {
+			color: buttonFont('primary'),
+			background: surfaceColors['surface-featured'].toString(),
+			hover: surfaceColors['surface-featured-hover'].toString(),
+		},
+		'secondary-danger': {
+			color: buttonFont('secondary-danger'),
+			background: buttonBackground('secondary-danger', 'default'),
+			hover: buttonBackground('secondary-danger', 'hover'),
+		},
+		'secondary-warning': {
+			color: statusFont('warning'),
+			background: buttonBackground('secondary', 'default'),
+			hover: buttonBackground('secondary', 'hover'),
+		},
+		'secondary-info': {
+			color: statusFont('info'),
+			background: buttonBackground('secondary', 'default'),
+			hover: buttonBackground('secondary', 'hover'),
+		},
+	};
+
+	const disabledColor = themed('tag-colors-disabled-color', fontColor('font-secondary-info'));
+	const disabledBackground = themed('tag-colors-disabled-background-color', surfaceColors['surface-neutral'].toString());
+
+	const looks: string[] = [];
+	for (const [kind, k] of Object.entries(kindsOfTag)) {
+		const color = themed(`tag-colors-${kind}-color`, k.color);
+		const background = themed(`tag-colors-${kind}-background-color`, k.background);
+		const hover = themed(`tag-colors-${kind}-hover-background-color`, k.hover);
+		const link = {
+			default: themed('link-color', color),
+			focus: themed('link-focus-color', color),
+			press: themed('link-active-color', color),
+		};
+		const entries: Record<string, Value> = {
+			'false|false': { color, backgroundColor: background },
+			'true|false': { cursor: 'pointer', color: link, backgroundColor: { default: background, hover } },
+			'false|true': { cursor: 'not-allowed', color: disabledColor, backgroundColor: disabledBackground },
+			// the clickable link color outranks the disabled one, and so does its hover
+			'true|true': { cursor: 'not-allowed', color: link, backgroundColor: { default: disabledBackground, hover } },
+		};
+		for (const [key, value] of Object.entries(entries)) {
+			looks.push(`${JSON.stringify(`${kind}|${key}`)}: ${literal(value, '\t\t\t')},`);
+		}
+	}
+
+	const small = themed('border-radius-small', borderRadius('small')!);
+	const focusRadius = themed('border-radius-medium', borderRadius('medium')!);
+	const full = themed('border-radius-full', borderRadius('full')!);
+
+	const frame = literal({
+		render: 'span',
+		boxSizing: 'border-box',
+		display: 'flex',
+		flexDirection: 'row',
+		flexShrink: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		minWidth: 'auto',
+		minHeight: 'auto',
+		overflow: 'hidden',
+		paddingBlock: '2px',
+		paddingInline: '4px',
+		gap: '4px',
+		whiteSpace: 'nowrap',
+		textDecoration: 'none',
+		textOverflow: 'ellipsis',
+		wordBreak: 'keep-all',
+		outlineStyle: 'none',
+		borderWidth: '1px',
+		borderStyle: 'solid',
+		borderColor: { 'default': 'transparent', 'focus-visible': strokeColors['stroke-highlight'].toString() },
+		borderRadius: { 'default': themed('tag-border-radius', small), 'focus-visible': focusRadius },
+		boxShadow: { 'focus-visible': `0 0 0 ${borderWidth('medium')} ${strokeColors['stroke-extra-light-highlight'].toString()}` },
+	});
+
+	out.push(`// Declared where they render: zero-runtime only erases a \`styled()\` whose every use is in its own module
+const TagFrame = styled(View, {
+	...${frame},
+	variants: {
+		// kind, clickable and disabled all set the colors, so each combination is one variant
+		look: {
+			${looks.join('\n')}
+		},
+		scale: {
+			default: ${literal(font('micro'), '\t\t\t')},
+			medium: ${literal(font('c2'), '\t\t\t')},
+			large: ${literal(font('p2b'), '\t\t\t')},
+		},
+		pill: {
+			true: { borderRadius: ${literal({ 'default': themed('tag-border-radius', full), 'focus-visible': focusRadius }, '\t\t\t')} },
+			false: {},
+		},
+	},
+});`);
+	return out.join('\n\n');
+};
+
 const components = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
 	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
+	{ file: join(import.meta.dirname, '../src/components/Tag/Tag.tsx'), generate: generateTag },
 ];
 const check = process.argv.includes('--check');
 let stale = false;
