@@ -1,9 +1,23 @@
-import type { HTMLAttributes } from 'react';
+import type { ReactNode } from 'react';
 
-export type SidepanelSectionActionProps = HTMLAttributes<HTMLDivElement>;
+import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
+import { cx } from '../../helpers/composeClassNames';
+import type { PartAttributes } from '../../types/ElementAttributes';
 
-const SidepanelSectionAction = ({ className, ...props }: SidepanelSectionActionProps) => (
-	<div className={['rcx-sidepanel-section__action', className].filter(Boolean).join(' ')} {...props} />
+export type SidepanelSectionActionProps = {
+	children?: ReactNode;
+} & PartAttributes<HTMLDivElement>;
+
+const SidepanelSectionAction = (props: SidepanelSectionActionProps) => (
+	<div
+		{...ariaAndDataAttributes(props)}
+		ref={props.ref}
+		id={props.id}
+		title={props.title}
+		className={cx('rcx-sidepanel-section__action', props.className)}
+	>
+		{props.children}
+	</div>
 );
 
 export default SidepanelSectionAction;
