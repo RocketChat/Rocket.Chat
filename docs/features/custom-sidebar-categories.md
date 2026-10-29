@@ -142,18 +142,21 @@ Both toggles go through `useUpsertGroupEntry` — `upsertGroupEntry(id, patch)` 
 `ISidebarCategory` entry in `sidebarCategories` (or creates a new one if the entry doesn't exist yet), and
 calls `withDynamicFirst` before persisting when it creates one.
 
-### Activity filter — `useActivityFilter`
+### Activity filter — `useActivityFilterHours` / `useSetActivityFilterHours`
 
 A per-group setting, for custom categories and static system groups alike, stored as `activityFilterHours` on
-the group's `sidebarCategories` entry through the same `upsertGroupEntry`. Choosing "All" writes
-`activityFilterHours: undefined`, which the JSON payload drops, so the field disappears from the entry. The
-`users.setPreferences` schema accepts an integer from 1 to `SIDEBAR_CATEGORY_ACTIVITY_FILTER_MAX_HOURS`, and
-`validateSidebarCategories` enforces the same range on the server.
+the group's `sidebarCategories` entry through the same `upsertGroupEntry` (`useSetActivityFilterHours`).
+Choosing "All" writes `activityFilterHours: undefined`, which the JSON payload drops, so the field disappears
+from the entry; an explicit `null` clears it too, which the server drops instead of storing. The
+`users.setPreferences` schema accepts an integer from 1 to `SIDEBAR_CATEGORY_ACTIVITY_FILTER_MAX_HOURS` or
+`null`, and `validateSidebarCategories` enforces the same range on the server. Reading is a separate hook,
+`useActivityFilterHours`, so the room list does not instantiate the mutation it never calls.
 
 What it does, in `makeGroup` (`useRoomList.ts`):
 
 - Applies **only while the group is expanded**. A collapsed group keeps its own rules (open room, plus
-  unreads with "Always display") and reports `inactiveCount: 0`.
+  unreads with "Always display"); its inactive rooms are still counted, so the announcement can say what the
+  filter hides, but the chip is not shown.
 - A room is **inactive** when it is read, is not the room currently open, and its last activity
   (`getLastActivity`) is older than `now - activityFilterHours` hours. Unread rooms are never hidden — the
   filter only thins out read ones.
@@ -163,36 +166,54 @@ What it does, in `makeGroup` (`useRoomList.ts`):
   messages in long-lived workspaces, which also lack `ts` and `lr` — so then the latest of `lr`, `ls` (last
   seen) and `ts` is used. Only a room with none of these dates is kept, rather than guessed at. Without this
   fallback a 1,900-room "Conversations" group kept ~400 DMs untouched for years on a 24-hour filter.
-- Inactive rooms are left out of `group.rooms` unless the group is in `groupsShowingInactive`;
-  `group.inactiveCount` counts them either way, so the chip can stay while they are revealed.
+- Inactive rooms are left out of `group.rooms` unless the group's filter is lifted (`liftedFilters`, below);
+  `group.inactiveCount` counts them either way, so the chip can stay while they are revealed. One pass over
+  the rooms yields both the count and the active list.
 - **Dynamic groups are never filtered** (`isActivityFilterable`): calls, queued / open / on-hold chats and
-  the Unread group list rooms that need attention now. The menu offers no filter for them.
-- Enterprise only: without an enterprise license the stored filter is ignored.
+  the Unread group list rooms that need attention now. The menu offers no filter for them, and
+  `useActivityFilterHours` reads none for them whatever their entry says.
+- Enterprise only: without an enterprise license the stored filter is ignored. `useActivityFilterHours`
+  decides this once (it reads `useIsEnterprise` and reports no filter without a license), so its consumers
+  never check the license themselves.
 - `useActivityFilterClock` re-evaluates the cutoff every 5 minutes while any group has a filter, so a room
   drops out once it ages past the window even when no subscription changes. The cutoff can therefore lag
   by up to 5 minutes.
 
 #### Filter chip — `RoomListActivityFilterChip`
 
-When an expanded group's filter hides at least one room, a chip right after the group name shows the
+When an expanded group has a filter, a chip right after the group name shows the
 window ("24 hours", "7 days", "30 days" — `Hours_count` / `Days_count`; a whole number of days of 48 hours or
 more reads in days, anything else in hours) with a clock. Clicking it lifts the
-filter for this session and clicking again puts it back: it toggles the group's key in
-`groupsShowingInactive`, kept in `RoomList` component state, so it resets on reload and never touches the
-saved preference. Revealed rooms render inline in the group's normal sort order.
+filter for this session and clicking again puts it back. The lifts live in `useLiftedActivityFilters`
+(`RoomList` state, so they reset on reload and never touch the saved preference) as one entry per group with
+the window it was lifted at, e.g. `{ Channels: 168 }`: the group shows its inactive rooms only while its
+filter is still that window, and choosing any window from the menu drops the group's lift, so the new window
+applies right away and the old one applies again if it is chosen back. Revealed rooms render inline in the
+group's normal sort order.
 
-- A toggle button (`aria-pressed`): pressed (Fuselage `Tag` `secondary-info`, blue) while the filter is
-  applied, released (`secondary`, gray) while it is lifted. Accessible name "Filter: Last 7 days"; the
-  tooltip says what a click does — "Show N inactive" / "Hide inactive" — and is the only place the count
-  appears. The pill shape comes from Tag's `--rcx-tag-border-radius`.
-- Shown only while the filter hides something (`inactiveCount > 0`, which keeps counting while the rooms
-  are revealed, so the chip stays to put the filter back). Never on a collapsed group.
+- A toggle button (`aria-pressed`): pressed (`secondary-info`, blue text) while the filter is applied,
+  released (`secondary`, gray text) while it is lifted, on the same background — the state is told apart by
+  the text colour and, for assistive technology, by `aria-pressed`. Accessible name "Filter: Last 7 days"
+  (`Activity_filter_label`); the tooltip says what a click does — "Show N inactive" / "Hide inactive" — and
+  is the only place the count appears. The pill shape is Tag's `pill` variant.
+- Shown whenever the expanded group has a filter, so the filter is seen even when it hides nothing right now
+  (a group whose only rooms are unread, say). With nothing hidden there is nothing to lift, so the chip is
+  disabled and its tooltip says "No inactive rooms hidden"; `inactiveCount` keeps counting while the rooms
+  are revealed, so the chip can put the filter back. Never on a collapsed group.
 - Changing the window itself is done from the kebab's Filter submenu (`useActivityFilterItems`).
-- It sits in the `menu` slot but outside `SidebarCollapseGroupMenu` (hover-only), and a wrapping `Box`
-  stops the header's toggle area from stretching (`flex: 0 1 auto`) so the chip sits against the name and
-  the kebab keeps to the far end (`margin-inline-start: auto`). Clicking the empty part of the header still
-  collapses the group, since the section handles the click. The chip stops click and keydown propagation
-  for the same reason.
+- It is a Fuselage `Tag` with `is='button'` in `SidebarCollapseGroup`'s `actions` slot, which places it
+  right after the name, outside the collapse toggle, with the kebab at the far end. Clicking the empty part
+  of the header still collapses the group, since the section handles the click, and the header shows its
+  hover there too. The `actions` slot itself keeps clicks and Enter/Space from reaching the header, so the
+  chip needs no propagation handling of its own; and when a focused action disappears (the chip, once the
+  last inactive room turns unread), the slot moves focus to the group title instead of letting the browser
+  drop it to the document.
+- Choosing a window from the menu is announced in a polite status region (`useActivityFilterAnnouncement`:
+  "Last 7 days: 3 inactive rooms hidden in Channels" — `Inactive_rooms_hidden_in_group` — or
+  `Activity_filter_cleared_in_group`), since the menu closes and the list changes without moving focus. The
+  choice is reported up from the submenu (`onActivityFilterChange`) and announced once the groups reflect
+  it, so a filter that changes on its own — another device, the license arriving — stays quiet, and the
+  window in the message keeps two choices with the same count from reading the same.
 
 ### Delete — `useDeleteCategory`
 
@@ -234,15 +255,10 @@ in `sidebarCategories` can be silently dropped during a move.
 - Main: Move up / Move down (dynamic groups have both disabled) / Filter › (not on dynamic groups)
 - Unreads: Always display / Keep on top toggles
 
-**Filter ›** shows the current choice — the preset's name, or the bare window ("36 hours") for a value no preset matches — as a subtitle under its label (a trailing value wraps in the narrow menu) and opens a submenu — All / Last 24 hours /
-Last 7 days / Last 30 days — with a checkmark on the current one. Picking one closes the menu and persists
-it via `useActivityFilter`.
-
-### Header hover — `RoomListCollapser.tsx`
-
-Fuselage highlights a group header only while the pointer is over its collapse toggle (chevron + name). The
-header is styled to highlight on hover anywhere in the bar, so pointing at the filter chip, the kebab or the
-empty space between them highlights it too.
+**Filter ›** opens a submenu — All / Last 24 hours /
+Last 7 days / Last 30 days — of radio items (`MenuSubmenuTrigger selectionMode='single'`), the current one
+checked (`aria-checked`) and marked with a checkmark. Picking one closes the menu, persists it via
+`useSetActivityFilterHours` and reports the choice through `onActivityFilterChange`, for the announcement.
 
 ### Room context menu — `CategoryRoomMenu.tsx`
 
@@ -291,7 +307,9 @@ Placed before the room title in `RoomHeader`. Icon: `star-filled` (favorited) / 
 | Move category position | `apps/meteor/client/sidebar/categories/hooks/useMoveCategoryPosition.ts` |
 | Toggle unreads | `apps/meteor/client/sidebar/categories/hooks/useToggleUnreads.ts` |
 | Group metadata upsert | `apps/meteor/client/sidebar/categories/hooks/useUpsertGroupEntry.ts` |
-| Activity filter (setting, windows, clock) | `apps/meteor/client/sidebar/categories/hooks/useActivityFilter.ts` |
+| Activity filter (read, write, clock) | `apps/meteor/client/sidebar/categories/hooks/useActivityFilter.ts` |
+| Activity filter lifts (session) | `apps/meteor/client/sidebar/hooks/useLiftedActivityFilters.ts` |
+| Activity filter announcement | `apps/meteor/client/sidebar/hooks/useActivityFilterAnnouncement.ts` |
 | Filter chip | `apps/meteor/client/sidebar/RoomList/RoomListActivityFilterChip.tsx` |
 | Filter menu items + labels | `apps/meteor/client/sidebar/categories/hooks/useActivityFilterItems.tsx` |
 | Preference validation (server) | `apps/meteor/server/meteor-methods/users/saveUserPreferences.ts`, `packages/rest-typings/src/v1/users/UsersSetPreferenceParamsPOST.ts` |
@@ -311,8 +329,12 @@ Placed before the room title in `RoomHeader`. Icon: `star-filled` (favorited) / 
 |------|------|
 | API (preference persistence + validation) | `apps/meteor/tests/end-to-end/api/sidebar-custom-categories.ts` |
 | Unit (grouping, activity filter) | `apps/meteor/client/sidebar/hooks/useRoomList.spec.tsx` |
-| Unit (activity filter setting + clock) | `apps/meteor/client/sidebar/categories/hooks/useActivityFilter.spec.ts` |
-| Unit (session toggle wiring) | `apps/meteor/client/sidebar/RoomList/RoomList.spec.tsx` |
+| Unit (activity filter read, write + clock) | `apps/meteor/client/sidebar/categories/hooks/useActivityFilter.spec.ts` |
+| Unit (activity filter lifts) | `apps/meteor/client/sidebar/hooks/useLiftedActivityFilters.spec.ts` |
+| Unit (activity filter announcement) | `apps/meteor/client/sidebar/hooks/useActivityFilterAnnouncement.spec.tsx` |
+| Unit (rejected write toast) | `apps/meteor/client/sidebar/categories/hooks/usePersistCategoriesMutation.spec.tsx` |
+| Unit (session toggle + announcement wiring) | `apps/meteor/client/sidebar/RoomList/RoomList.spec.tsx` |
 | Unit (filter chip) | `apps/meteor/client/sidebar/RoomList/RoomListCollapser.spec.tsx` |
+| Unit (activity filter range validation) | `apps/meteor/server/meteor-methods/users/saveUserPreferences.spec.ts` |
 | E2E (Playwright) | `apps/meteor/tests/e2e/sidebar-custom-categories.spec.ts` |
 | E2E page object | `apps/meteor/tests/e2e/page-objects/fragments/sidebar.ts` (custom-category helpers) |
