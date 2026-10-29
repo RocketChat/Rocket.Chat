@@ -1,4 +1,4 @@
-/* eslint-disable complexity */
+/* oxlint-disable complexity */
 import {
 	FieldGroup,
 	TextInput,
@@ -32,7 +32,9 @@ type LoginRegisterPayload = {
 	reason: string;
 };
 
-export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRouter }) => {
+export type RegisterFormProps = { setLoginRoute: DispatchLoginRouter };
+
+export const RegisterForm = ({ setLoginRoute }: RegisterFormProps) => {
 	const { t } = useTranslation();
 
 	const requireNameForRegister = useSetting('Accounts_RequireNameForSignUp', true);
@@ -298,7 +300,7 @@ export const RegisterForm = ({ setLoginRoute }: { setLoginRoute: DispatchLoginRo
 			</FormContainer>
 			<FormFooter>
 				<ButtonGroup>
-					<Button type='submit' loading={registerUser.isPending} primary>
+					<Button type='submit' loading={registerUser.isPending} variant='primary'>
 						{t('registration.component.form.joinYourTeam')}
 					</Button>
 				</ButtonGroup>

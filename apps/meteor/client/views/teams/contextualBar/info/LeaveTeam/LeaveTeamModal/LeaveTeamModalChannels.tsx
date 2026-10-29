@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 
 import ChannelDesertionTable from '../../../../ChannelDesertionTable';
 
-type LeaveTeamModalChannelsProps = {
+export type LeaveTeamModalChannelsProps = {
 	rooms?: (Serialized<IRoom> & { isLastOwner?: boolean })[];
 	onToggleAllRooms: () => void;
 	onChangeRoomSelection: (room: Serialized<IRoom> & { isLastOwner?: boolean }) => void;

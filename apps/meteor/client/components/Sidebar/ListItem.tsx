@@ -18,7 +18,7 @@ type ListItemConditionalProps =
 			gap?: boolean;
 	  };
 
-type ListItemProps = ListItemCommonProps & ListItemConditionalProps;
+export type ListItemProps = ListItemCommonProps & ListItemConditionalProps;
 
 const ListItem = ({ icon, text, input, children, gap, ...props }: ListItemProps) => (
 	<Option {...props}>

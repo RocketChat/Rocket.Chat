@@ -1,12 +1,12 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import { Rooms } from '@rocket.chat/models';
 import { Meteor } from 'meteor/meteor';
 
-import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
-import { settings } from '../../../app/settings/server';
+import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { settings } from '../../settings';
 
 declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		removeSlackBridgeChannelLinks(): { message: string; params: unknown[] };
 	}
@@ -16,19 +16,19 @@ Meteor.methods<ServerMethods>({
 	async removeSlackBridgeChannelLinks() {
 		const user = await Meteor.userAsync();
 		if (!user) {
-			throw new Meteor.Error('error-invalid-user', 'Invalid user', {
+			throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', {
 				method: 'removeSlackBridgeChannelLinks',
 			});
 		}
 
-		if (!(await hasPermissionAsync(user._id, 'remove-slackbridge-links'))) {
-			throw new Meteor.Error('error-not-authorized', 'Not authorized', {
+		if (!(await hasPermissionAsync(user, 'remove-slackbridge-links'))) {
+			throw new ClientSafeError('error-not-authorized', 'Not authorized', {
 				method: 'removeSlackBridgeChannelLinks',
 			});
 		}
 
 		if (settings.get('SlackBridge_Enabled') !== true) {
-			throw new Meteor.Error('SlackBridge_disabled');
+			throw new ClientSafeError('SlackBridge_disabled');
 		}
 
 		await Rooms.unsetAllImportIds();

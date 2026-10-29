@@ -1,20 +1,23 @@
 import { Apps } from '@rocket.chat/apps';
+import { ClientSafeError, isClientSafeError } from '@rocket.chat/core-services';
 import type { SlashCommand, SlashCommandPreviewItem } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
 import {
 	ajv,
 	ajvQuery,
-	validateUnauthorizedErrorResponse,
+	paginatedResponseProperties,
+	paginationQueryProperties,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
 import objectPath from 'object-path';
 
-import { canAccessRoomIdAsync } from '../../../app/authorization/server/functions/canAccessRoom';
-import { executeSlashCommandPreview } from '../../../app/lib/server/methods/executeSlashCommandPreview';
-import { getSlashCommandPreviews } from '../../../app/lib/server/methods/getSlashCommandPreviews';
-import { slashCommands } from '../../../app/utils/server/slashCommand';
+import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
+import { slashCommands } from '../../lib/utils/slashCommand';
+import { executeSlashCommandPreview } from '../../meteor-methods/messages/executeSlashCommandPreview';
+import { getSlashCommandPreviews } from '../../meteor-methods/messages/getSlashCommandPreviews';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
@@ -46,9 +49,7 @@ const commandsListResponseSchema = ajv.compile<{
 			items: { $ref: '#/components/schemas/SlashCommand' },
 		},
 		appsLoaded: { type: 'boolean' },
-		offset: { type: 'number' },
-		count: { type: 'number' },
-		total: { type: 'number' },
+		...paginatedResponseProperties,
 		success: { type: 'boolean', enum: [true] },
 	},
 	required: ['commands', 'appsLoaded', 'offset', 'count', 'total', 'success'],
@@ -59,18 +60,13 @@ type CommandsListParams = {
 	offset?: number;
 	count?: number;
 	sort?: string;
-	query?: string;
-	fields?: string;
 };
 
 const isCommandsListParams = ajvQuery.compile<CommandsListParams>({
 	type: 'object',
 	properties: {
-		offset: { type: 'number', nullable: true },
-		count: { type: 'number', nullable: true },
+		...paginationQueryProperties,
 		sort: { type: 'string', nullable: true },
-		query: { type: 'string', nullable: true },
-		fields: { type: 'string', nullable: true },
 	},
 	additionalProperties: false,
 });
@@ -161,26 +157,26 @@ const commandsEndpoints = API.v1
 			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, query } = await this.parseJsonQuery();
+			const { sort } = await this.parseJsonQuery();
 
-			let commands = Object.values(slashCommands.commands);
+			const commands = Object.values(slashCommands.commands);
 
-			if (query?.command) {
-				commands = commands.filter((command) => command.command === query.command);
-			}
+			// Read before paging: `processQueryOptionsOnResult` splices in place, so afterwards
+			// `commands` is the page rather than the collection.
+			const total = commands.length;
 
-			const totalCount = commands.length;
+			const page = processQueryOptionsOnResult(commands, {
+				sort: sort || { name: 1 },
+				skip: offset,
+				limit: count,
+			});
 
 			return API.v1.success({
-				commands: processQueryOptionsOnResult(commands, {
-					sort: sort || { name: 1 },
-					skip: offset,
-					limit: count,
-				}),
+				commands: page,
 				appsLoaded: true as const,
 				offset,
-				count: commands.length,
-				total: totalCount,
+				count: page.length,
+				total,
 			});
 		},
 	);
@@ -374,6 +370,11 @@ const commandsPreviewPostResponseSchema = ajv.compile<void>({
 	additionalProperties: false,
 });
 
+const forbiddenErrors = ['error-not-authorized', 'error-not-allowed'];
+
+const isForbiddenError = (error: unknown): error is ClientSafeError =>
+	isClientSafeError(error) && forbiddenErrors.includes(String(error.error));
+
 // Expects a body of: { command: 'gimme', params: 'any string value', roomId: 'value', triggerId: 'value' }
 API.v1.post(
 	'commands.run',
@@ -416,9 +417,17 @@ API.v1.post(
 
 		const { triggerId } = body;
 
-		const result = await slashCommands.run({ command: cmd, params, message, triggerId, userId: this.userId });
+		try {
+			const result = await slashCommands.run({ command: cmd, params, message, triggerId, userId: this.userId });
 
-		return API.v1.success({ result });
+			return API.v1.success({ result });
+		} catch (error) {
+			if (isForbiddenError(error)) {
+				throw new ClientSafeError('error-forbidden', error.reason, error.details);
+			}
+
+			throw error;
+		}
 	},
 );
 
@@ -449,14 +458,22 @@ API.v1.get(
 
 		const params = query.params ? query.params : '';
 
-		const preview = await getSlashCommandPreviews({
-			cmd,
-			params,
-			msg: { rid: query.roomId },
-			userId: this.userId,
-		});
+		try {
+			const preview = await getSlashCommandPreviews({
+				cmd,
+				params,
+				msg: { rid: query.roomId },
+				userId: this.userId,
+			});
 
-		return API.v1.success({ preview: preview ?? null });
+			return API.v1.success({ preview: preview ?? null });
+		} catch (error) {
+			if (isForbiddenError(error)) {
+				throw new ClientSafeError('error-forbidden', error.reason, error.details);
+			}
+
+			throw error;
+		}
 	},
 );
 
@@ -498,24 +515,32 @@ API.v1.post(
 			...(body.tmid && { tmid: body.tmid }),
 		};
 
-		await executeSlashCommandPreview(
-			{
-				cmd,
-				params,
-				msg,
-				triggerId: body.triggerId,
-			},
-			body.previewItem,
-			this.userId,
-		);
+		try {
+			await executeSlashCommandPreview(
+				{
+					cmd,
+					params,
+					msg,
+					triggerId: body.triggerId,
+				},
+				body.previewItem,
+				this.userId,
+			);
 
-		return API.v1.success();
+			return API.v1.success();
+		} catch (error) {
+			if (isForbiddenError(error)) {
+				throw new ClientSafeError('error-forbidden', error.reason, error.details);
+			}
+
+			throw error;
+		}
 	},
 );
 
 export type CommandsEndpoints = ExtractRoutesFromAPI<typeof commandsEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends CommandsEndpoints {}
 }

@@ -1,108 +1,90 @@
+import { after, afterEach, before, describe, it } from 'node:test';
+
 import type { IServerEvents, LoginServiceConfiguration } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
-import { before, describe, it, after } from 'mocha';
 
 import { getCredentials, api, request, credentials } from '../../data/api-data';
 import { updatePermission, updateSetting, getSettingValueById } from '../../data/permissions.helper';
 import { IS_EE } from '../../e2e/config/constants';
 
 describe('[Settings]', () => {
-	before((done) => getCredentials(done));
+	before((_t, done) => getCredentials(done));
 
 	describe('[/settings.public]', () => {
-		it('should return public settings', (done) => {
-			void request
-				.get(api('settings.public'))
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('settings');
-					expect(res.body).to.have.property('count');
-				})
-				.end(done);
+		it('should return public settings', async () => {
+			const res = await request.get(api('settings.public')).expect('Content-Type', 'application/json').expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('settings');
+			expect(res.body).to.have.property('count');
 		});
-		it('should return public settings even requested with count and offset params', (done) => {
-			void request
+		it('should return public settings even requested with count and offset params', async () => {
+			const res = await request
 				.get(api('settings.public'))
 				.query({
 					count: 5,
 					offset: 0,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success').and.to.be.true;
-					expect(res.body).to.have.property('settings').and.to.be.an('array').and.to.have.lengthOf(5);
-					expect(res.body).to.have.property('count').and.to.be.a('number').and.to.equal(5);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success').and.to.be.true;
+			expect(res.body).to.have.property('settings').and.to.be.an('array').and.to.have.lengthOf(5);
+			expect(res.body).to.have.property('count').and.to.be.a('number').and.to.equal(5);
 		});
-		it('should return public settings even requested with _id param', (done) => {
-			void request
+		it('should return public settings even requested with _id param', async () => {
+			const res = await request
 				.get(api('settings.public'))
 				.query({
 					_id: 'Site_Url',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success').and.to.be.true;
-					expect(res.body).to.have.property('settings').and.to.be.an('array').and.to.have.lengthOf(1);
-					expect(res.body).to.have.property('count').and.to.be.a('number').and.to.equal(1);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success').and.to.be.true;
+			expect(res.body).to.have.property('settings').and.to.be.an('array').and.to.have.lengthOf(1);
+			expect(res.body).to.have.property('count').and.to.be.a('number').and.to.equal(1);
 		});
-		it('should return public settings even requested with _id param as an array', (done) => {
-			void request
+		it('should return public settings even requested with _id param as an array', async () => {
+			const res = await request
 				.get(api('settings.public'))
 				.query({
 					_id: 'Site_Url,LDAP_Enable',
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success').and.to.be.true;
-					expect(res.body).to.have.property('settings').and.to.be.an('array').and.to.have.lengthOf(2);
-					expect(res.body).to.have.property('count').and.to.be.a('number').and.to.equal(2);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success').and.to.be.true;
+			expect(res.body).to.have.property('settings').and.to.be.an('array').and.to.have.lengthOf(2);
+			expect(res.body).to.have.property('count').and.to.be.a('number').and.to.equal(2);
 		});
-		it('should return an empty response when requesting public settings with a broken _id param', (done) => {
-			void request
+		it('should return an empty response when requesting public settings with a broken _id param', async () => {
+			const res = await request
 				.get(api('settings.public'))
 				.query({
 					_id: 10,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success').and.to.be.true;
-					expect(res.body).to.have.property('settings').and.to.be.an('array').and.to.be.empty;
-					expect(res.body).to.have.property('count').and.to.be.a('number').and.to.equal(0);
-					expect(res.body).to.have.property('offset').and.to.be.a('number').and.to.equal(0);
-					expect(res.body).to.have.property('total').and.to.be.a('number').and.to.equal(0);
-				})
-				.end(done);
+				.expect(200);
+
+			expect(res.body).to.have.property('success').and.to.be.true;
+			expect(res.body).to.have.property('settings').and.to.be.an('array').and.to.be.empty;
+			expect(res.body).to.have.property('count').and.to.be.a('number').and.to.equal(0);
+			expect(res.body).to.have.property('offset').and.to.be.a('number').and.to.equal(0);
+			expect(res.body).to.have.property('total').and.to.be.a('number').and.to.equal(0);
 		});
 	});
 
 	describe('[/settings]', () => {
-		it('should return private settings', (done) => {
-			void request
-				.get(api('settings'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('settings');
-					expect(res.body).to.have.property('count');
-				})
-				.end(done);
+		it('should return private settings', async () => {
+			const res = await request.get(api('settings')).set(credentials).expect('Content-Type', 'application/json').expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('settings');
+			expect(res.body).to.have.property('count');
 		});
 		it('should return the default values of the settings when includeDefaults is true', async () => {
-			return request
+			await request
 				.get(api('settings'))
 				.query({ includeDefaults: true })
 				.set(credentials)
@@ -146,6 +128,22 @@ describe('[Settings]', () => {
 					.set(credentials)
 					.send({ settings: [{ _id: 'LDAP_Enable' }] })
 					.expect(400);
+			});
+
+			it('should reject an empty integer value without changing the setting', async () => {
+				const settingId = 'UserData_ProcessingFrequency';
+				const originalValue = await getSettingValueById(settingId);
+
+				await request
+					.post(api('settings'))
+					.set(credentials)
+					.send({ settings: [{ _id: settingId, value: null }] })
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+					});
+
+				expect(await getSettingValueById(settingId)).to.equal(originalValue);
 			});
 
 			it('should successfully update multiple settings in a single request', async () => {
@@ -234,7 +232,7 @@ describe('[Settings]', () => {
 		});
 
 		it('should successfully return one setting (GET)', async () => {
-			return request
+			await request
 				.get(api('settings/Site_Url'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -248,7 +246,7 @@ describe('[Settings]', () => {
 
 		it('should fail returning a setting if user does NOT have the view-privileged-setting permission (GET)', async () => {
 			await updatePermission('view-privileged-setting', []);
-			return request
+			await request
 				.get(api('settings/Site_Url'))
 				.set(credentials)
 				.expect('Content-Type', 'application/json')
@@ -260,7 +258,7 @@ describe('[Settings]', () => {
 		});
 
 		it('should successfully set the value of a setting (POST)', async () => {
-			return request
+			await request
 				.post(api('settings/LDAP_Enable'))
 				.set(credentials)
 				.send({
@@ -274,7 +272,7 @@ describe('[Settings]', () => {
 		});
 
 		it('should fail updating the value of a setting less than its minValue (POST)', async () => {
-			return request
+			await request
 				.post(api('settings/Accounts_Default_User_Preferences_masterVolume'))
 				.set(credentials)
 				.send({
@@ -292,7 +290,7 @@ describe('[Settings]', () => {
 		});
 
 		it('should fail updating the value of a setting greater than its maxValue (POST)', async () => {
-			return request
+			await request
 				.post(api('settings/Accounts_Default_User_Preferences_masterVolume'))
 				.set(credentials)
 				.send({
@@ -311,7 +309,7 @@ describe('[Settings]', () => {
 
 		it('should fail updating the value of a setting if user does NOT have the edit-privileged-setting permission (POST)', async () => {
 			await updatePermission('edit-privileged-setting', []);
-			return request
+			await request
 				.post(api('settings/LDAP_Enable'))
 				.set(credentials)
 				.send({
@@ -326,18 +324,201 @@ describe('[Settings]', () => {
 		});
 	});
 
-	describe('[/service.configurations]', () => {
-		it('should return service configurations', (done) => {
-			void request
-				.get(api('service.configurations'))
+	describe('[Cron settings]', () => {
+		const settingIds = [
+			'RetentionPolicy_Advanced_Precision_Cron',
+			...(IS_EE
+				? [
+						'LDAP_Background_Sync_Avatars_Interval',
+						'LDAP_Sync_AutoLogout_Interval',
+						'LDAP_Background_Sync_ABAC_Attributes_Interval',
+						'ABAC_Virtru_Sync_Interval',
+						'Message_Read_Receipt_Archive_Cron',
+					]
+				: []),
+		];
+		const originalValues = new Map<string, Awaited<ReturnType<typeof getSettingValueById>>>();
+
+		before(async () => {
+			await updatePermission('view-privileged-setting', ['admin']);
+			await updatePermission('edit-privileged-setting', ['admin']);
+			for (const id of settingIds) {
+				originalValues.set(id, await getSettingValueById(id));
+			}
+		});
+
+		after(async () => {
+			for (const [id, value] of originalValues) {
+				await updateSetting(id, value);
+			}
+		});
+
+		for (const id of settingIds) {
+			it(`accepts valid cron expressions and rejects invalid ones for ${id}`, async () => {
+				const validCron = '15 3 * * 1-5';
+				await request
+					.post(api(`settings/${id}`))
+					.set(credentials)
+					.send({ value: validCron })
+					.expect(200);
+				expect(await getSettingValueById(id)).to.equal(validCron);
+
+				await request
+					.post(api(`settings/${id}`))
+					.set(credentials)
+					.send({ value: '60 * * * *' })
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', `${id}_Invalid`);
+						expect(res.body).to.have.property('errorType', 'error-setting-validation-failed');
+					});
+				expect(await getSettingValueById(id)).to.equal(validCron);
+			});
+		}
+
+		it('saves a valid cron in a bulk update', async () => {
+			const id = 'RetentionPolicy_Advanced_Precision_Cron';
+			const value = '0 4 * * *';
+			await request
+				.post(api('settings'))
 				.set(credentials)
-				.expect('Content-Type', 'application/json')
+				.send({ settings: [{ _id: id, value }] })
+				.expect(200);
+			expect(await getSettingValueById(id)).to.equal(value);
+		});
+
+		it('rejects an invalid cron in a bulk update without saving any values', async () => {
+			const id = 'RetentionPolicy_Advanced_Precision_Cron';
+			const otherId = 'Accounts_Default_User_Preferences_masterVolume';
+			const cronBefore = await getSettingValueById(id);
+			const volumeBefore = await getSettingValueById(otherId);
+			const nextVolume = volumeBefore === 25 ? 50 : 25;
+
+			await request
+				.post(api('settings'))
+				.set(credentials)
+				.send({
+					settings: [
+						{ _id: otherId, value: nextVolume },
+						{ _id: id, value: 'not a cron' },
+					],
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', `${id}_Invalid`);
+					expect(res.body).to.have.property('errorType', 'error-setting-validation-failed');
+				});
+			expect(await getSettingValueById(id)).to.equal(cronBefore);
+			expect(await getSettingValueById(otherId)).to.equal(volumeBefore);
+		});
+
+		it('rejects a bulk update with a valid and an invalid value for the same cron setting', async () => {
+			const id = 'RetentionPolicy_Advanced_Precision_Cron';
+			const previous = await getSettingValueById(id);
+
+			await request
+				.post(api('settings'))
+				.set(credentials)
+				.send({
+					settings: [
+						{ _id: id, value: '0 0 * * *' },
+						{ _id: id, value: 'invalid' },
+					],
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('error', `${id}_Invalid`);
+					expect(res.body).to.have.property('errorType', 'error-setting-validation-failed');
+				});
+			expect(await getSettingValueById(id)).to.equal(previous);
+		});
+	});
+
+	describe('[Room_Toolbox_Layout]', () => {
+		const validLayout = [
+			{ roomType: ['c', 'p'], maxVisibleNormal: 3, items: [{ id: 'members-list', featured: true, order: 1 }] },
+			{ roomType: ['d'], maxVisibleNormal: 1 },
+		];
+
+		const saveLayout = (value: string) => request.post(api('settings/Room_Toolbox_Layout')).set(credentials).send({ value });
+
+		after(() => updateSetting('Room_Toolbox_Layout', ''));
+
+		it('should reject a value that is not valid JSON', async () => {
+			await saveLayout('not json {')
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Room_Toolbox_Layout_Invalid');
+					expect(res.body).to.have.property('errorType', 'error-setting-validation-failed');
+				});
+		});
+
+		it('should reject an entry declaring an unsupported room type', async () => {
+			await saveLayout(JSON.stringify([{ roomType: ['l'] }]))
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Room_Toolbox_Layout_Invalid');
+					expect(res.body).to.have.property('errorType', 'error-setting-validation-failed');
+				});
+		});
+
+		it('should reject entries claiming the same room type', async () => {
+			await saveLayout(JSON.stringify([{ roomType: ['c', 'p'] }, { roomType: ['c'] }]))
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Room_Toolbox_Layout_Invalid');
+					expect(res.body).to.have.property('errorType', 'error-setting-validation-failed');
+				});
+		});
+
+		it('should reject an entry repeating a room type', async () => {
+			await saveLayout(JSON.stringify([{ roomType: ['c', 'c'] }]))
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Room_Toolbox_Layout_Invalid');
+					expect(res.body).to.have.property('errorType', 'error-setting-validation-failed');
+				});
+		});
+
+		it('should reject an entry carrying an unknown key', async () => {
+			await saveLayout(JSON.stringify([{ roomType: ['c'], somethingElse: true }]))
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'Room_Toolbox_Layout_Invalid');
+					expect(res.body).to.have.property('errorType', 'error-setting-validation-failed');
+				});
+		});
+
+		it('should accept a document matching the schema', async () => {
+			await saveLayout(JSON.stringify(validLayout))
 				.expect(200)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('configurations');
-				})
-				.end(done);
+				});
+		});
+
+		it('should accept an empty value, leaving the setting unconfigured', async () => {
+			await saveLayout('')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+				});
+		});
+	});
+
+	describe('[/service.configurations]', () => {
+		it('should return service configurations', async () => {
+			const res = await request.get(api('service.configurations')).set(credentials).expect('Content-Type', 'application/json').expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('configurations');
 		});
 
 		describe('With OAuth enabled', () => {
@@ -345,7 +526,7 @@ describe('[Settings]', () => {
 
 			after(() => updateSetting('Accounts_OAuth_Google', false));
 
-			it('should include the OAuth service in the response', (done) => {
+			it('should include the OAuth service in the response', (_t, done) => {
 				// wait 3 seconds before getting the service list so the server has had time to update it
 				setTimeout(() => {
 					void request
@@ -369,7 +550,7 @@ describe('[Settings]', () => {
 
 			after(() => updateSetting('Accounts_OAuth_Google', false));
 
-			it('should not include the OAuth service in the response', (done) => {
+			it('should not include the OAuth service in the response', (_t, done) => {
 				// wait 3 seconds before getting the service list so the server has had time to update it
 				setTimeout(() => {
 					void request
@@ -390,29 +571,18 @@ describe('[Settings]', () => {
 	});
 
 	describe('/settings.oauth', () => {
-		it('should have return list of available oauth services when user is not logged', (done) => {
-			void request
-				.get(api('settings.oauth'))
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('services').and.to.be.an('array');
-				})
-				.end(done);
+		it('should have return list of available oauth services when user is not logged', async () => {
+			const res = await request.get(api('settings.oauth')).expect('Content-Type', 'application/json').expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('services').and.to.be.an('array');
 		});
 
-		it('should have return list of available oauth services when user is logged', (done) => {
-			void request
-				.get(api('settings.oauth'))
-				.set(credentials)
-				.expect('Content-Type', 'application/json')
-				.expect(200)
-				.expect((res) => {
-					expect(res.body).to.have.property('success', true);
-					expect(res.body).to.have.property('services').and.to.be.an('array');
-				})
-				.end(done);
+		it('should have return list of available oauth services when user is logged', async () => {
+			const res = await request.get(api('settings.oauth')).set(credentials).expect('Content-Type', 'application/json').expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.property('services').and.to.be.an('array');
 		});
 	});
 
@@ -678,6 +848,148 @@ describe('[Settings]', () => {
 				expect(response.body).to.have.property('success', true);
 				expect(response.body.events).to.have.length.greaterThanOrEqual(2);
 				expect(isSortedDescending(response.body.events)).to.be.true;
+			});
+		});
+	});
+
+	describe('Custom OAuth admin endpoints', () => {
+		const oauthName = 'apitest';
+		const enableSettingId = 'Accounts_OAuth_Custom-Apitest';
+
+		before(() => updatePermission('add-oauth-service', ['admin']));
+
+		// guarantee the permission is restored even if a permission-denied assertion fails mid-test,
+		// so a failure cannot cascade into the following cases
+		afterEach(() => updatePermission('add-oauth-service', ['admin']));
+
+		after(async () => {
+			await updatePermission('add-oauth-service', ['admin']);
+			// best-effort cleanup in case a test left the custom service behind
+			await request.post(api('settings.removeCustomOAuth')).set(credentials).send({ name: oauthName });
+		});
+
+		describe('[/settings.addCustomOAuth]', () => {
+			it('should fail when unauthenticated', async () => {
+				await request.post(api('settings.addCustomOAuth')).send({ name: oauthName }).expect(401);
+			});
+
+			it('should fail when the "name" param is not provided', async () => {
+				await request.post(api('settings.addCustomOAuth')).set(credentials).send({}).expect(400);
+			});
+
+			it('should fail when the user does not have the add-oauth-service permission', async () => {
+				await updatePermission('add-oauth-service', []);
+				await request
+					.post(api('settings.addCustomOAuth'))
+					.set(credentials)
+					.send({ name: oauthName })
+					.expect((res) => {
+						expect(res.status).to.equal(403);
+						expect(res.body).to.have.property('success', false);
+					});
+			});
+
+			(IS_EE ? it.skip : it)('should fail without the oauth-enterprise module', async () => {
+				await request
+					.post(api('settings.addCustomOAuth'))
+					.set(credentials)
+					.send({ name: oauthName })
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('errorType', 'error-action-not-allowed');
+					});
+			});
+
+			(IS_EE ? it : it.skip)('should add a custom oauth service', async () => {
+				await request
+					.post(api('settings.addCustomOAuth'))
+					.set(credentials)
+					.send({ name: oauthName })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				const value = await getSettingValueById(enableSettingId);
+				expect(value).to.be.a('boolean');
+			});
+		});
+
+		describe('[/settings.refreshOAuthServices]', () => {
+			it('should fail when unauthenticated', async () => {
+				await request.post(api('settings.refreshOAuthServices')).expect(401);
+			});
+
+			it('should fail when the user does not have the add-oauth-service permission', async () => {
+				await updatePermission('add-oauth-service', []);
+				await request
+					.post(api('settings.refreshOAuthServices'))
+					.set(credentials)
+					.expect((res) => {
+						expect(res.status).to.equal(403);
+						expect(res.body).to.have.property('success', false);
+					});
+			});
+
+			it('should refresh the oauth services', async () => {
+				await request
+					.post(api('settings.refreshOAuthServices'))
+					.set(credentials)
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+			});
+		});
+
+		describe('[/settings.removeCustomOAuth]', () => {
+			it('should fail when unauthenticated', async () => {
+				await request.post(api('settings.removeCustomOAuth')).send({ name: oauthName }).expect(401);
+			});
+
+			it('should fail when the "name" param is not provided', async () => {
+				await request.post(api('settings.removeCustomOAuth')).set(credentials).send({}).expect(400);
+			});
+
+			it('should fail when the "name" normalizes to an empty string', async () => {
+				await request
+					.post(api('settings.removeCustomOAuth'))
+					.set(credentials)
+					.send({ name: '!!!' })
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+					});
+			});
+
+			it('should fail when the user does not have the add-oauth-service permission', async () => {
+				await updatePermission('add-oauth-service', []);
+				await request
+					.post(api('settings.removeCustomOAuth'))
+					.set(credentials)
+					.send({ name: oauthName })
+					.expect((res) => {
+						expect(res.status).to.equal(403);
+						expect(res.body).to.have.property('success', false);
+					});
+			});
+
+			it('should remove a custom oauth service', async () => {
+				await request
+					.post(api('settings.removeCustomOAuth'))
+					.set(credentials)
+					.send({ name: oauthName })
+					.expect('Content-Type', 'application/json')
+					.expect(200)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', true);
+					});
+
+				// the provider settings should be gone: settings/:_id answers 400 for an unknown id
+				await request.get(`/api/v1/settings/${enableSettingId}`).set(credentials).expect(400);
 			});
 		});
 	});

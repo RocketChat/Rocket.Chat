@@ -5,7 +5,7 @@ import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
 
 import { RoomIcon } from '../../../../../../components/RoomIcon';
 
-type ChannelDeletionTableRowProps = {
+export type ChannelDeletionTableRowProps = {
 	room: Serialized<IRoom>;
 	onChange: (room: Serialized<IRoom>) => void;
 	selected: boolean;
@@ -17,14 +17,14 @@ const ChannelDeletionTableRow = ({ room, onChange, selected }: ChannelDeletionTa
 
 	return (
 		<GenericTableRow action>
-			<GenericTableCell maxWidth='x300' withTruncatedText>
+			<GenericTableCell truncate>
 				<CheckBox checked={selected} onChange={handleChange} />
 				<Margins inline='x8'>
 					<RoomIcon room={room} />
 					{fname ?? name}
 				</Margins>
 			</GenericTableCell>
-			<GenericTableCell align='end' withTruncatedText>
+			<GenericTableCell align='end' truncate>
 				{usersCount}
 			</GenericTableCell>
 		</GenericTableRow>

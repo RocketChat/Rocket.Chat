@@ -16,7 +16,7 @@ import KatexErrorBoundary from './katex/KatexErrorBoundary';
 const CodeBlock = lazy(() => import('./code/CodeBlock'));
 const KatexBlock = lazy(() => import('./katex/KatexBlock'));
 
-type MarkupProps = {
+export type MarkupProps = {
 	tokens: MessageParser.Root;
 	/** Original message source, used to render the `fallback` of blocks without a dedicated renderer. */
 	source?: string;

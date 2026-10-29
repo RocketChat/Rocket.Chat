@@ -3,7 +3,7 @@ import * as UiKit from '@rocket.chat/ui-kit';
 
 import type { BlockProps } from '../utils/BlockProps';
 
-type CalloutBlockProps = BlockProps<UiKit.CalloutBlock>;
+export type CalloutBlockProps = BlockProps<UiKit.CalloutBlock>;
 
 const CalloutBlock = ({ block, surfaceRenderer }: CalloutBlockProps) => (
 	<Callout

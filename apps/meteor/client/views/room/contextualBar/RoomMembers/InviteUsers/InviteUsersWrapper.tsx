@@ -9,7 +9,7 @@ import {
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type InviteUsersWrapperProps = {
+export type InviteUsersWrapperProps = {
 	children: ReactNode;
 	onClickBack: (() => void) | undefined;
 	onClose: () => void;

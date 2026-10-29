@@ -18,7 +18,7 @@ type MessageBlock =
 	| MessageParser.MarkupExcluding<MessageParser.Strike>
 	| MessageParser.InlineCode;
 
-type StrikeSpanProps = {
+export type StrikeSpanProps = {
 	children: MessageBlock[];
 };
 

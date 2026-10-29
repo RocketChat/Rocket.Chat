@@ -1,9 +1,8 @@
 import * as assert from 'node:assert';
 import { after, beforeEach, describe, it, mock } from 'node:test';
 
-import jsonrpc from 'jsonrpc-lite';
-
 import { AppObjectRegistry } from '../../../AppObjectRegistry';
+import jsonrpc from '../../jsonrpc';
 import { ModifyExtender } from '../modify/ModifyExtender';
 
 describe('ModifyExtender', () => {
@@ -12,7 +11,7 @@ describe('ModifyExtender', () => {
 	const senderFn = (r: any) =>
 		Promise.resolve({
 			id: Math.random().toString(36).substring(2),
-			jsonrpc: '2.0',
+			jsonrpc: '2.0' as const,
 			result: structuredClone(r),
 			serialize() {
 				return JSON.stringify(this);
@@ -37,7 +36,7 @@ describe('ModifyExtender', () => {
 		assert.deepStrictEqual(_spy.mock.calls[0].arguments, [
 			{
 				method: 'bridges:getMessageBridge:doGetById',
-				params: ['message-id', 'deno-test'],
+				params: ['message-id', 'APP_ID'],
 			},
 		]);
 
@@ -48,7 +47,7 @@ describe('ModifyExtender', () => {
 		assert.deepStrictEqual(_spy.mock.calls[1].arguments, [
 			{
 				method: 'bridges:getMessageBridge:doUpdate',
-				params: [messageExtender.getMessage(), 'deno-test'],
+				params: [messageExtender.getMessage(), 'APP_ID'],
 			},
 		]);
 
@@ -63,7 +62,7 @@ describe('ModifyExtender', () => {
 		assert.deepStrictEqual(_spy.mock.calls[0].arguments, [
 			{
 				method: 'bridges:getRoomBridge:doGetById',
-				params: ['room-id', 'deno-test'],
+				params: ['room-id', 'APP_ID'],
 			},
 		]);
 
@@ -74,7 +73,7 @@ describe('ModifyExtender', () => {
 		assert.deepStrictEqual(_spy.mock.calls[1].arguments, [
 			{
 				method: 'bridges:getRoomBridge:doUpdate',
-				params: [roomExtender.getRoom(), [], 'deno-test'],
+				params: [roomExtender.getRoom(), [], 'APP_ID'],
 			},
 		]);
 
@@ -89,7 +88,7 @@ describe('ModifyExtender', () => {
 		assert.deepStrictEqual(_spy.mock.calls[0].arguments, [
 			{
 				method: 'bridges:getVideoConferenceBridge:doGetById',
-				params: ['video-conference-id', 'deno-test'],
+				params: ['video-conference-id', 'APP_ID'],
 			},
 		]);
 
@@ -100,7 +99,7 @@ describe('ModifyExtender', () => {
 		assert.deepStrictEqual(_spy.mock.calls[1].arguments, [
 			{
 				method: 'bridges:getVideoConferenceBridge:doUpdate',
-				params: [videoConferenceExtender.getVideoConference(), 'deno-test'],
+				params: [videoConferenceExtender.getVideoConference(), 'APP_ID'],
 			},
 		]);
 

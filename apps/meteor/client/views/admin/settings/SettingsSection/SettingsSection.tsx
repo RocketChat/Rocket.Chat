@@ -1,7 +1,6 @@
 import { isSetting, isSettingColor } from '@rocket.chat/core-typings';
-import { AccordionItem, Box, Button, FieldGroup } from '@rocket.chat/fuselage';
+import { AccordionItem, Button, ButtonGroup, FieldGroup, Stack, Text } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -9,17 +8,18 @@ import { useTranslation } from 'react-i18next';
 import { useEditableSettings, useEditableSettingsDispatch } from '../../EditableSettingsContext';
 import Setting from '../Setting';
 
-type SettingsSectionProps = {
+export type SettingsSectionProps = {
 	groupId: string;
 	hasReset?: boolean;
 	sectionName: string;
+	sectionTitle?: string;
 	currentTab?: string;
 	solo: boolean;
 	help?: ReactNode;
 	children?: ReactNode;
 };
 
-function SettingsSection({ groupId, hasReset = true, sectionName, currentTab, solo, help, children }: SettingsSectionProps) {
+function SettingsSection({ groupId, hasReset = true, sectionTitle, sectionName, currentTab, solo, help, children }: SettingsSectionProps) {
 	const { t } = useTranslation();
 
 	const editableSettings = useEditableSettings(
@@ -74,25 +74,29 @@ function SettingsSection({ groupId, hasReset = true, sectionName, currentTab, so
 		<AccordionItem
 			data-qa-section={sectionName}
 			noncollapsible={solo || !sectionName}
-			title={sectionName && t(sectionName as TranslationKey)}
+			title={sectionTitle || (sectionName && t(sectionName))}
 		>
 			{help && (
-				<Box is='p' color='hint' fontScale='p2'>
+				<Text is='p' color='hint' fontScale='p2'>
 					{help}
-				</Box>
+				</Text>
 			)}
-			<FieldGroup>
-				{editableSettings.map(
-					(setting) => isSetting(setting) && <Setting key={setting._id} settingId={setting._id} sectionChanged={changed} />,
-				)}
+			<Stack gap={16}>
+				<FieldGroup>
+					{editableSettings.map(
+						(setting) => isSetting(setting) && <Setting key={setting._id} settingId={setting._id} sectionChanged={changed} />,
+					)}
 
-				{children}
-			</FieldGroup>
-			{hasReset && canReset && (
-				<Button secondary danger marginBlockStart={16} data-section={sectionName} onClick={handleResetSectionClick}>
-					{t('Reset_section_settings')}
-				</Button>
-			)}
+					{children}
+				</FieldGroup>
+				{hasReset && canReset && (
+					<ButtonGroup>
+						<Button variant='secondary-danger' data-section={sectionName} onClick={handleResetSectionClick}>
+							{t('Reset_section_settings')}
+						</Button>
+					</ButtonGroup>
+				)}
+			</Stack>
 		</AccordionItem>
 	);
 }

@@ -1,5 +1,5 @@
 import type { AbacActor } from '@rocket.chat/core-services';
-import type { IAbacAttribute, IAbacAttributeDefinition, IRoom, IRoomAbacRedaction } from '@rocket.chat/core-typings';
+import type { IAbacAttributeDefinition, IRoom, IRoomAbacRedaction } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import mem from 'mem';
 
@@ -9,6 +9,7 @@ import {
 	AbacNotAuthorizedToModifyRoomError,
 	PdpUnavailableError,
 } from '../errors';
+import { findUnownedValues } from '../helper';
 import { logger } from '../logger';
 import type { AttributeEntitlements, IAttributeStore, ListAttributesOptions, ListAttributesResult } from './types';
 import type { VirtruClient } from '../clients/virtru/VirtruClient';
@@ -96,11 +97,19 @@ export class VirtruAttributeStore implements IAttributeStore {
 		const count = opts?.count ?? total;
 		const slice = attributes.slice(offset, offset + count);
 		return {
-			attributes: slice.map((a) => ({ _id: a.key, ...a })) as IAbacAttribute[],
+			attributes: slice.map((a) => ({ _id: a.key, ...a })),
 			offset,
 			count: slice.length,
 			total,
 		};
+	}
+
+	async listAttributeKeys(actor: AbacActor | undefined): Promise<string[]> {
+		if (!actor) {
+			throw new AbacEntityResolutionFailedError();
+		}
+
+		return (await this.getEntitlements(actor)).map(({ key }) => key);
 	}
 
 	async entitlementsOf(actor: AbacActor): Promise<AttributeEntitlements> {
@@ -113,12 +122,9 @@ export class VirtruAttributeStore implements IAttributeStore {
 	}
 
 	async validateAssignable(attrs: IAbacAttributeDefinition[], actor: AbacActor): Promise<void> {
-		const owned = await this.entitlementsOf(actor);
-		for (const a of attrs) {
-			const allowed = owned.get(a.key);
-			if (!allowed || !a.values.every((v) => allowed.has(v))) {
-				throw new AbacInvalidAttributeValuesError();
-			}
+		const unowned = findUnownedValues(attrs, await this.entitlementsOf(actor));
+		if (unowned.length) {
+			throw new AbacInvalidAttributeValuesError({ attributes: unowned });
 		}
 	}
 

@@ -1,32 +1,34 @@
 import type { ILivechatDepartment, Serialized } from '@rocket.chat/core-typings';
 import {
-	Field,
-	FieldGroup,
-	Button,
-	TextInput,
-	Modal,
 	Box,
+	Button,
 	CheckBox,
 	Divider,
 	EmailInput,
+	Field,
+	FieldError,
+	FieldGroup,
+	FieldHint,
 	FieldLabel,
 	FieldRow,
-	FieldError,
+	Modal,
+	ModalClose,
+	ModalContent,
+	ModalFooter,
+	ModalFooterControllers,
 	ModalHeader,
 	ModalIcon,
 	ModalTitle,
-	ModalClose,
-	ModalFooter,
-	ModalFooterControllers,
-	ModalContent,
+	Stack,
+	Text,
+	TextInput,
 } from '@rocket.chat/fuselage';
-import { GenericModal } from '@rocket.chat/ui-client';
+import { GenericModal, useHasLicenseModule } from '@rocket.chat/ui-client';
 import { usePermission, useSetting, useUserPreference, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useCallback, useState, useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import Tags from '../components/Tags';
 
 type CloseChatModalFormData = {
@@ -37,7 +39,7 @@ type CloseChatModalFormData = {
 	subject: string;
 };
 
-type CloseChatModalProps = {
+export type CloseChatModalProps = {
 	department?: Serialized<ILivechatDepartment | null>;
 	visitorEmail?: string;
 	onCancel: () => void;
@@ -162,8 +164,8 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 					<ModalTitle>{t('Wrap_up_conversation')}</ModalTitle>
 					<ModalClose onClick={onCancel} />
 				</ModalHeader>
-				<ModalContent fontScale='p2'>
-					<Box color='annotation'>{t('Close_room_description')}</Box>
+				<ModalContent>
+					<Text color='annotation'>{t('Close_room_description')}</Text>
 					<FieldGroup>
 						<Field>
 							<FieldLabel required={commentRequired}>{t('Comment')}</FieldLabel>
@@ -171,7 +173,6 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 								<TextInput
 									{...register('comment')}
 									error={errors.comment && t('Required_field', { field: t('Comment') })}
-									flexGrow={1}
 									placeholder={t('Please_add_a_comment')}
 								/>
 							</FieldRow>
@@ -182,66 +183,69 @@ const CloseChatModal = ({ department, visitorEmail, onCancel, onConfirm }: Close
 							<FieldError>{errors.tags?.message}</FieldError>
 						</Field>
 						{canSendTranscript && (
-							<>
-								<Field>
-									<Divider />
-									<FieldLabel marginBlockStart={8}>{t('Chat_transcript')}</FieldLabel>
-								</Field>
-								{canSendTranscriptPDF && (
-									<Field marginBlockStart={10}>
-										<FieldRow>
-											<FieldLabel htmlFor='transcript-pdf'>{t('Omnichannel_transcript_pdf')}</FieldLabel>
-											<CheckBox id='transcript-pdf' {...register('transcriptPDF', { value: userTranscriptPDF })} />
-										</FieldRow>
+							<Stack gap={16}>
+								<Stack gap='x8'>
+									<Field>
+										<Stack gap={6}>
+											<Divider />
+											<FieldLabel>{t('Chat_transcript')}</FieldLabel>
+										</Stack>
 									</Field>
-								)}
-								{canSendTranscriptEmail && (
-									<>
-										<Field marginBlockStart={10}>
+									{canSendTranscriptPDF && (
+										<Field>
 											<FieldRow>
-												<FieldLabel htmlFor='transcript-email'>{t('Omnichannel_transcript_email')}</FieldLabel>
-												<CheckBox id='transcript-email' {...register('transcriptEmail', { value: userTranscriptEmail })} />
+												<FieldLabel htmlFor='transcript-pdf'>{t('Omnichannel_transcript_pdf')}</FieldLabel>
+												<CheckBox id='transcript-pdf' {...register('transcriptPDF', { value: userTranscriptPDF })} />
 											</FieldRow>
 										</Field>
-										{transcriptEmail && (
-											<>
-												<Field marginBlockStart={14}>
-													<FieldLabel required>{t('Contact_email')}</FieldLabel>
-													<FieldRow>
-														<EmailInput value={visitorEmail} required disabled flexGrow={1} />
-													</FieldRow>
-												</Field>
-												<Field marginBlockStart={12}>
-													<FieldLabel required>{t('Subject')}</FieldLabel>
-													<FieldRow>
-														<TextInput
-															{...register('subject', { required: true })}
-															className='active'
-															error={errors.subject && t('Required_field', { field: t('Subject') })}
-															flexGrow={1}
-														/>
-													</FieldRow>
-													<FieldError>{errors.subject?.message}</FieldError>
-												</Field>
-											</>
-										)}
-									</>
-								)}
-								<Field marginBlockStart={16}>
-									<FieldLabel color='annotation' fontScale='c1'>
+									)}
+									{canSendTranscriptEmail && (
+										<Stack gap='x12'>
+											<Field>
+												<FieldRow>
+													<FieldLabel htmlFor='transcript-email'>{t('Omnichannel_transcript_email')}</FieldLabel>
+													<CheckBox id='transcript-email' {...register('transcriptEmail', { value: userTranscriptEmail })} />
+												</FieldRow>
+											</Field>
+											{transcriptEmail && (
+												<Stack gap={12}>
+													<Field>
+														<FieldLabel required>{t('Contact_email')}</FieldLabel>
+														<FieldRow>
+															<EmailInput value={visitorEmail} required disabled />
+														</FieldRow>
+													</Field>
+													<Field>
+														<FieldLabel required>{t('Subject')}</FieldLabel>
+														<FieldRow>
+															<TextInput
+																{...register('subject', { required: true })}
+																className='active'
+																error={errors.subject && t('Required_field', { field: t('Subject') })}
+															/>
+														</FieldRow>
+														<FieldError>{errors.subject?.message}</FieldError>
+													</Field>
+												</Stack>
+											)}
+										</Stack>
+									)}
+								</Stack>
+								<Field>
+									<FieldHint>
 										{canSendTranscriptPDF && canSendTranscriptEmail
 											? t('These_options_affect_this_conversation_only_To_set_default_selections_go_to_My_Account_Omnichannel')
 											: t('This_option_affect_this_conversation_only_To_set_default_selection_go_to_My_Account_Omnichannel')}
-									</FieldLabel>
+									</FieldHint>
 								</Field>
-							</>
+							</Stack>
 						)}
 					</FieldGroup>
 				</ModalContent>
 				<ModalFooter>
 					<ModalFooterControllers>
 						<Button onClick={onCancel}>{t('Cancel')}</Button>
-						<Button type='submit' disabled={cannotSubmit} primary>
+						<Button type='submit' disabled={cannotSubmit} variant='primary'>
 							{t('Confirm')}
 						</Button>
 					</ModalFooterControllers>

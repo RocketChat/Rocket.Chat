@@ -1,11 +1,10 @@
 import { Users } from '@rocket.chat/models';
 import { isLivechatUsersManagerGETProps, isPOSTLivechatUsersTypeProps } from '@rocket.chat/rest-typings';
-import { check } from 'meteor/check';
 
 import { API } from '../..';
 import { findAgents, findManagers } from './lib/users';
-import { hasAtLeastOnePermissionAsync } from '../../../../app/authorization/server/functions/hasPermission';
-import { addManager, addAgent, removeAgent, removeManager } from '../../../../app/livechat/server/lib/omni-users';
+import { hasAtLeastOnePermissionAsync, hasPermissionAsync } from '../../../lib/authorization/hasPermission';
+import { addManager, addAgent, removeAgent, removeManager } from '../../../lib/omnichannel/omni-users';
 import { getPaginationItems } from '../../lib/getPaginationItems';
 
 const emptyStringArray: string[] = [];
@@ -14,10 +13,6 @@ API.v1.addRoute(
 	'livechat/users/:type',
 	{
 		authRequired: true,
-		permissionsRequired: {
-			'POST': ['view-livechat-manager'],
-			'*': emptyStringArray,
-		},
 		validateParams: {
 			GET: isLivechatUsersManagerGETProps,
 			POST: isPOSTLivechatUsersTypeProps,
@@ -25,15 +20,12 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			check(this.urlParams, {
-				type: String,
-			});
 			const { offset, count } = await getPaginationItems(this.queryParams);
 			const { sort } = await this.parseJsonQuery();
 			const { text } = this.queryParams;
 
 			if (this.urlParams.type === 'agent') {
-				if (!(await hasAtLeastOnePermissionAsync(this.userId, ['transfer-livechat-guest', 'edit-omnichannel-contact']))) {
+				if (!(await hasAtLeastOnePermissionAsync(this.user, ['transfer-livechat-guest', 'edit-omnichannel-contact']))) {
 					return API.v1.forbidden();
 				}
 
@@ -53,7 +45,7 @@ API.v1.addRoute(
 				);
 			}
 			if (this.urlParams.type === 'manager') {
-				if (!(await hasAtLeastOnePermissionAsync(this.userId, ['view-livechat-manager']))) {
+				if (!(await hasAtLeastOnePermissionAsync(this.user, ['view-livechat-manager']))) {
 					return API.v1.forbidden();
 				}
 
@@ -72,11 +64,19 @@ API.v1.addRoute(
 		},
 		async post() {
 			if (this.urlParams.type === 'agent') {
+				if (!(await hasPermissionAsync(this.userId, 'manage-livechat-agents'))) {
+					return API.v1.forbidden();
+				}
+
 				const user = await addAgent(this.bodyParams.username);
 				if (user) {
 					return API.v1.success({ user });
 				}
 			} else if (this.urlParams.type === 'manager') {
+				if (!(await hasPermissionAsync(this.userId, 'manage-livechat-managers'))) {
+					return API.v1.forbidden();
+				}
+
 				const user = await addManager(this.bodyParams.username);
 				if (user) {
 					return API.v1.success({ user });
@@ -92,7 +92,13 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/users/:type/:_id',
-	{ authRequired: true, permissionsRequired: ['view-livechat-manager'] },
+	{
+		authRequired: true,
+		permissionsRequired: {
+			'GET': ['view-livechat-manager'],
+			'*': emptyStringArray,
+		},
+	},
 	{
 		async get() {
 			if (!['agent', 'manager'].includes(this.urlParams.type)) {
@@ -109,10 +115,18 @@ API.v1.addRoute(
 		},
 		async delete() {
 			if (this.urlParams.type === 'agent') {
+				if (!(await hasPermissionAsync(this.userId, 'manage-livechat-agents'))) {
+					return API.v1.forbidden();
+				}
+
 				if (await removeAgent(this.urlParams._id)) {
 					return API.v1.success();
 				}
 			} else if (this.urlParams.type === 'manager') {
+				if (!(await hasPermissionAsync(this.userId, 'manage-livechat-managers'))) {
+					return API.v1.forbidden();
+				}
+
 				if (await removeManager(this.urlParams._id)) {
 					return API.v1.success();
 				}

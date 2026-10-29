@@ -1,11 +1,15 @@
 import { Select, Box, type SelectOption } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { subDays, subMonths, startOfMonth, endOfMonth, format } from 'date-fns';
+import { endOfMonth } from 'date-fns/endOfMonth';
+import { format } from 'date-fns/format';
+import { startOfMonth } from 'date-fns/startOfMonth';
+import { subDays } from 'date-fns/subDays';
+import { subMonths } from 'date-fns/subMonths';
 import type { Key } from 'react';
 import { useMemo, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type DateRangePickerProps = {
+export type DateRangePickerProps = {
 	onChange(range: { start: string; end: string }): void;
 	defaultSelectedKey?: 'today' | 'yesterday' | 'thisWeek' | 'previousWeek' | 'thisMonth' | 'alldates';
 };
@@ -82,7 +86,7 @@ const DateRangePicker = ({ onChange, defaultSelectedKey = 'alldates' }: DateRang
 
 	return (
 		<Box flexGrow={0}>
-			<Select defaultSelectedKey={defaultSelectedKey} width='100%' options={timeOptions} onChange={handleOptionClick} />
+			<Select aria-label={t('Select_period')} defaultSelectedKey={defaultSelectedKey} options={timeOptions} onChange={handleOptionClick} />
 		</Box>
 	);
 };

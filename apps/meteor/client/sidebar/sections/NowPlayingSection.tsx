@@ -38,7 +38,7 @@ const NowPlayingSection = () => {
 
 	return (
 		<SidebarCard>
-			<Box display='flex' alignItems='center' justifyContent='space-between' mbe={10} style={{ gap: 8 }}>
+			<Box display='flex' alignItems='center' justifyContent='space-between' marginBlockEnd='x8' style={{ gap: 8 }}>
 				<Box
 					display='flex'
 					alignItems='center'
@@ -66,7 +66,7 @@ const NowPlayingSection = () => {
 						</Box>
 					</Box>
 				</Box>
-				<IconButton mini icon='cross' onClick={close} title={t('Close')} aria-label={t('Close')} />
+				<IconButton size='mini' icon='cross' onClick={close} title={t('Close')} aria-label={t('Close')} />
 			</Box>
 
 			<AudioPlayerControls

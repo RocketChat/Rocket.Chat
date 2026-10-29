@@ -1,5 +1,5 @@
 import { css } from '@rocket.chat/css-in-js';
-import { FlexContainer, Box, InputBox, Button, Label } from '@rocket.chat/fuselage';
+import { FlexContainer, Box, InputBox, Button } from '@rocket.chat/fuselage';
 import { RocketChatLogo } from '@rocket.chat/logo';
 import { useNavigate } from 'react-router-dom';
 
@@ -22,32 +22,35 @@ const labels = {
 	},
 };
 
-const SignInSignUp = ({ route }: { route: string }) => {
+export type SignInSignUpProps = { route: string };
+
+const SignInSignUp = ({ route }: SignInSignUpProps) => {
 	const navigate = useNavigate();
 	const clickHandler = () => {
 		navigate(route === routes.login ? routes.signup : routes.login);
 	};
 	return (
 		<FlexContainer justifyContent='center' alignItems='center'>
-			<Box w='100%' flexGrow={1}>
+			<Box width='100%' flexGrow={1}>
 				<FlexContainer justifyContent='start' alignItems='center' direction='column'>
-					<Box w='max-content' h='100%'>
-						<Box w='180px' h='40px' mbs='100px'>
+					<Box width='max-content' height='100%'>
+						<Box width='180px' height='40px' marginBlockStart='100px'>
 							<RocketChatLogo />
 						</Box>
-						<Label mbs='20px' fontScale='hero'>
+						<Box marginBlockStart='20px' fontScale='hero'>
 							{labels[route].header}
-						</Label>
-						<Label mbs='10px' fontScale='p2'>
+						</Box>
+						<Box marginBlockStart='x8' fontScale='p2'>
 							{labels[route].description}
-						</Label>
-						<InputBox mbs='20px' w='80%' maxHeight='50px' type='email' />
-						<Button mbs='20px' w='80%' primary>
-							{labels[route].button}
-						</Button>
-						<Label mbs='20px' fontScale='p2'>
+						</Box>
+						<Box display='flex' flexDirection='column' gap='20px' paddingBlockStart='20px' width='80%'>
+							<InputBox type='email' />
+							<Button variant='primary'>{labels[route].button}</Button>
+						</Box>
+						<Box marginBlockStart='20px' fontScale='p2'>
 							{`${labels[route].footer} `}
-							<Label
+							<Box
+								is='span'
 								fontScale='p2'
 								color='primary'
 								onClick={clickHandler}
@@ -56,8 +59,8 @@ const SignInSignUp = ({ route }: { route: string }) => {
 								`}
 							>
 								{labels[route].footerButton}
-							</Label>
-						</Label>
+							</Box>
+						</Box>
 					</Box>
 				</FlexContainer>
 			</Box>

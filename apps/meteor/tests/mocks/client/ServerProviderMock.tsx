@@ -63,9 +63,6 @@ const callEndpoint = () => {
 const writeStream = () => undefined; // to be implemented
 
 const contextValue: ServerContextValue = {
-	connected: true,
-	status: 'connected',
-	retryCount: 0,
 	info: undefined,
 	absoluteUrl,
 	// callMethod,
@@ -73,12 +70,10 @@ const contextValue: ServerContextValue = {
 	uploadToEndpoint,
 	getStream,
 	getStreamAll,
-	reconnect: () => undefined,
-	disconnect: () => undefined,
 	writeStream,
 };
 
-type ServerProviderMockProps = {
+export type ServerProviderMockProps = {
 	children?: ReactNode;
 	callEndpoint?: ContextType<typeof ServerContext>['callEndpoint'];
 };

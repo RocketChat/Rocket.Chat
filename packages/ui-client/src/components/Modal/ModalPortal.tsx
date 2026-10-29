@@ -16,7 +16,7 @@ const createModalRoot = (ownerDocument: Document): HTMLElement => {
 	return newOne;
 };
 
-type ModalPortalProps = {
+export type ModalPortalProps = {
 	children?: ReactNode;
 };
 

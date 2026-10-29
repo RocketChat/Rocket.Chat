@@ -18,10 +18,6 @@ export type UploadResult = {
 };
 
 export type ServerContextValue = {
-	connected: boolean;
-	status: 'connected' | 'connecting' | 'failed' | 'waiting' | 'offline';
-	retryCount: number;
-	retryTime?: number | undefined;
 	info?: IServerInfo;
 	absoluteUrl: (path: string) => string;
 	callMethod?: <MethodName extends ServerMethodName>(
@@ -34,6 +30,7 @@ export type ServerContextValue = {
 		keys: UrlParams<TPathPattern>;
 		params: OperationParams<TMethod, TPathPattern>;
 		signal?: AbortSignal;
+		keepalive?: boolean;
 	}) => Promise<Serialized<OperationResult<TMethod, TPathPattern>>>;
 	uploadToEndpoint: (
 		endpoint: PathFor<'POST'>,
@@ -54,14 +51,9 @@ export type ServerContextValue = {
 		streamName: N,
 	) => (callback: (eventName: string, args: StreamerEvents[N][number]['args']) => void) => () => void;
 	writeStream: <N extends StreamNames, K extends StreamKeys<N>>(streamName: N, eventName: K, ...args: StreamerCallbackArgs<N, K>) => void;
-	disconnect: () => void;
-	reconnect: () => void;
 };
 
 export const ServerContext = createContext<ServerContextValue>({
-	connected: true,
-	status: 'connected',
-	retryCount: 0,
 	info: undefined,
 	absoluteUrl: (path) => path,
 	callEndpoint: () => {
@@ -73,12 +65,6 @@ export const ServerContext = createContext<ServerContextValue>({
 	getStream: () => () => (): void => undefined,
 	getStreamAll: () => () => (): void => undefined,
 	writeStream: () => {
-		throw new Error('not implemented');
-	},
-	disconnect: () => {
-		throw new Error('not implemented');
-	},
-	reconnect: () => {
 		throw new Error('not implemented');
 	},
 });

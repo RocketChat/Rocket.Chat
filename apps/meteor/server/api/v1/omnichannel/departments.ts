@@ -17,15 +17,15 @@ import {
 	findDepartmentAgents,
 	findArchivedDepartments,
 } from './lib/departments';
-import { hasPermissionAsync } from '../../../../app/authorization/server/functions/hasPermission';
+import { hasPermissionAsync } from '../../../lib/authorization/hasPermission';
 import {
 	saveDepartment,
 	archiveDepartment,
 	unarchiveDepartment,
 	saveDepartmentAgents,
 	removeDepartment,
-} from '../../../../app/livechat/server/lib/departmentsLib';
-import { settings } from '../../../../app/settings/server';
+} from '../../../lib/omnichannel/departmentsLib';
+import { settings } from '../../../settings';
 import { getPaginationItems } from '../../lib/getPaginationItems';
 
 API.v1.addRoute(
@@ -64,12 +64,6 @@ API.v1.addRoute(
 			return API.v1.success({ departments, count: departments.length, offset, total });
 		},
 		async post() {
-			check(this.bodyParams, {
-				department: Object,
-				agents: Match.Maybe(Array),
-				departmentUnit: Match.Maybe({ _id: Match.Optional(String) }),
-			});
-
 			const agents = this.bodyParams.agents ? { upsert: this.bodyParams.agents } : {};
 			const { departmentUnit } = this.bodyParams;
 			const department = await saveDepartment(
@@ -120,10 +114,6 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			check(this.urlParams, {
-				_id: String,
-			});
-
 			const { onlyMyDepartments } = this.queryParams;
 
 			const { department, agents } = await findDepartmentById({
@@ -140,8 +130,8 @@ API.v1.addRoute(
 			return API.v1.success({ department, agents });
 		},
 		async put() {
-			const permissionToSave = await hasPermissionAsync(this.userId, 'manage-livechat-departments');
-			const permissionToAddAgents = await hasPermissionAsync(this.userId, 'add-livechat-department-agents');
+			const permissionToSave = await hasPermissionAsync(this.user, 'manage-livechat-departments');
+			const permissionToAddAgents = await hasPermissionAsync(this.user, 'add-livechat-department-agents');
 
 			check(this.bodyParams, {
 				department: Object,
@@ -165,10 +155,6 @@ API.v1.addRoute(
 			});
 		},
 		async delete() {
-			check(this.urlParams, {
-				_id: String,
-			});
-
 			const isRemoveEnabled = settings.get<boolean>('Omnichannel_enable_department_removal');
 
 			if (!isRemoveEnabled) {
@@ -254,10 +240,12 @@ API.v1.addRoute(
 				return API.v1.failure("The 'selector' param is required");
 			}
 
+			const { term, exceptions } = JSON.parse(selector);
+
 			return API.v1.success(
 				await findDepartmentsToAutocomplete({
 					uid: this.userId,
-					selector: JSON.parse(selector),
+					selector: { term, exceptions },
 					onlyMyDepartments: onlyMyDepartments === 'true',
 					showArchived: showArchived === 'true',
 				}),

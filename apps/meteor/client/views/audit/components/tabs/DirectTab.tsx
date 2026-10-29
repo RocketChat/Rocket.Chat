@@ -1,4 +1,4 @@
-import { Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
+import { Box, Field, FieldLabel, FieldRow, FieldError } from '@rocket.chat/fuselage';
 import type { UseFormReturn } from 'react-hook-form';
 import { useController } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import type { AuditFields } from '../../hooks/useAuditForm';
 
-type DirectTabProps = {
+export type DirectTabProps = {
 	form: UseFormReturn<AuditFields>;
 };
 
@@ -27,19 +27,21 @@ const DirectTab = ({ form: { control } }: DirectTabProps) => {
 	});
 
 	return (
-		<Field flexShrink={1}>
-			<FieldLabel>{t('Users')}</FieldLabel>
-			<FieldRow>
-				<UserAutoCompleteMultiple
-					value={usersField.value}
-					error={usersFieldState.error?.message}
-					onChange={usersField.onChange}
-					placeholder={t('Username_Placeholder')}
-				/>
-			</FieldRow>
-			{usersFieldState.error?.type === 'required' && <FieldError>{t('Required_field', { field: t('Users') })}</FieldError>}
-			{usersFieldState.error?.type === 'validate' && <FieldError>{usersFieldState.error.message}</FieldError>}
-		</Field>
+		<Box width='full'>
+			<Field>
+				<FieldLabel>{t('Users')}</FieldLabel>
+				<FieldRow>
+					<UserAutoCompleteMultiple
+						value={usersField.value}
+						error={usersFieldState.error?.message}
+						onChange={usersField.onChange}
+						placeholder={t('Username_Placeholder')}
+					/>
+				</FieldRow>
+				{usersFieldState.error?.type === 'required' && <FieldError>{t('Required_field', { field: t('Users') })}</FieldError>}
+				{usersFieldState.error?.type === 'validate' && <FieldError>{usersFieldState.error.message}</FieldError>}
+			</Field>
+		</Box>
 	);
 };
 

@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import ShareLocationModal from '../../../../ShareLocation/ShareLocationModal';
 
-export const useShareLocationAction = (room?: IRoom, tmid?: IMessage['tmid']): GenericMenuItemProps => {
+export const useShareLocationAction = (disabled: boolean, room?: IRoom, tmid?: IMessage['tmid']): GenericMenuItemProps => {
 	if (!room) {
 		throw new Error('Invalid room');
 	}
@@ -28,6 +28,6 @@ export const useShareLocationAction = (room?: IRoom, tmid?: IMessage['tmid']): G
 		content: t('Location'),
 		icon: 'map-pin',
 		onClick: handleShareLocation,
-		disabled: !allowGeolocation,
+		disabled: !allowGeolocation || disabled,
 	};
 };

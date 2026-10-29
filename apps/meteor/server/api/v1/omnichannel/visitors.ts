@@ -8,7 +8,7 @@ import {
 	isLivechatRidMessagesProps,
 	isGETLivechatVisitorsSearch,
 } from '@rocket.chat/rest-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 
 import { API } from '../..';
 import {
@@ -19,8 +19,8 @@ import {
 	findVisitorsToAutocomplete,
 	findVisitorsByEmailOrPhoneOrNameOrUsernameOrCustomField,
 } from './lib/visitors';
-import { canAccessRoomAsync } from '../../../../app/authorization/server';
-import { normalizeMessagesForUser } from '../../../../app/utils/server/lib/normalizeMessagesForUser';
+import { canAccessRoomAsync } from '../../../lib/authorization';
+import { normalizeMessagesForUser } from '../../../lib/utils/lib/normalizeMessagesForUser';
 import { getPaginationItems } from '../../lib/getPaginationItems';
 
 API.v1.addRoute(
@@ -120,10 +120,11 @@ API.v1.addRoute(
 	{
 		async get() {
 			const { selector } = this.queryParams;
+			const { term, exceptions } = JSON.parse(selector);
 
 			return API.v1.success(
 				await findVisitorsToAutocomplete({
-					selector: JSON.parse(selector),
+					selector: { term, exceptions },
 				}),
 			);
 		},

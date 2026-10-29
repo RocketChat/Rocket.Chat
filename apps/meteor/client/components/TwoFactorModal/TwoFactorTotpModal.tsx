@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import type { OnConfirm } from './TwoFactorModal';
 import { Method } from './TwoFactorModal';
 
-type TwoFactorTotpModalProps = {
+export type TwoFactorTotpModalProps = {
 	onConfirm: OnConfirm;
 	onClose: () => void;
 	onDismiss?: () => void;
@@ -69,7 +69,7 @@ const TwoFactorTotpModal = ({ onConfirm, onClose, onDismiss, invalidAttempt }: T
 		>
 			<FieldGroup>
 				<Field>
-					<FieldLabel alignSelf='stretch'>{t('Enter_the_code_provided_by_your_authentication_app_to_continue')}</FieldLabel>
+					<FieldLabel>{t('Enter_the_code_provided_by_your_authentication_app_to_continue')}</FieldLabel>
 					<FieldRow>
 						<Controller
 							name='code'

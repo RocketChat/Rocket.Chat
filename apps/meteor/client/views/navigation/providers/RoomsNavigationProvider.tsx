@@ -151,7 +151,9 @@ const useRoomsGroups = (): [RoomsNavigationGroup, UnreadGroupDataMap] => {
 	);
 };
 
-const RoomsNavigationContextProvider = ({ children }: { children: ReactNode }) => {
+export type RoomsNavigationContextProviderProps = { children: ReactNode };
+
+const RoomsNavigationContextProvider = ({ children }: RoomsNavigationContextProviderProps) => {
 	const {
 		sidePanel: { openSidePanel },
 	} = useLayout();

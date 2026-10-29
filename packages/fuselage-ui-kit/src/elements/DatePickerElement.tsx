@@ -5,7 +5,7 @@ import { useStringFromTextObject } from '../hooks/useStringFromTextObject';
 import { useUiKitState } from '../hooks/useUiKitState';
 import type { BlockProps } from '../utils/BlockProps';
 
-type DatePickerElementProps = BlockProps<UiKit.DatePickerElement>;
+export type DatePickerElementProps = BlockProps<UiKit.DatePickerElement>;
 
 const DatePickerElement = ({ block, context }: DatePickerElementProps) => {
 	const [{ loading, value, error }, action] = useUiKitState(block, context);
@@ -16,9 +16,10 @@ const DatePickerElement = ({ block, context }: DatePickerElementProps) => {
 		<InputBox
 			type='date'
 			error={error}
-			value={value as string}
+			value={value}
 			disabled={loading}
 			id={actionId}
+			autoFocus={block.focus_on_load}
 			name={actionId}
 			rows={6}
 			placeholder={fromTextObjectToString(placeholder)}

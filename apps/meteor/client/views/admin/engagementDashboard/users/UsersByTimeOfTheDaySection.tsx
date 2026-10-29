@@ -1,8 +1,12 @@
 import type { ComputedCell, DefaultHeatMapDatum } from '@nivo/heatmap';
 import { ResponsiveHeatMapCanvas } from '@nivo/heatmap';
 import { Box, FlexItem, Skeleton, Tooltip } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors.json';
-import { differenceInDays, addDays, endOfDay, format, isSameDay } from 'date-fns';
+import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
+import { addDays } from 'date-fns/addDays';
+import { differenceInDays } from 'date-fns/differenceInDays';
+import { endOfDay } from 'date-fns/endOfDay';
+import { format } from 'date-fns/format';
+import { isSameDay } from 'date-fns/isSameDay';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -12,7 +16,7 @@ import PeriodSelector from '../../../../components/dashboards/PeriodSelector';
 import { usePeriodSelectorState } from '../../../../components/dashboards/usePeriodSelectorState';
 import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
 
-type UsersByTimeOfTheDaySectionProps = {
+export type UsersByTimeOfTheDaySectionProps = {
 	timezone: 'utc' | 'local';
 };
 

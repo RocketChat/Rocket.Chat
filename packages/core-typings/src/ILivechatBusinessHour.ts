@@ -37,5 +37,6 @@ export interface ILivechatBusinessHour extends IRocketChatRecord {
 	timezone: IBusinessHourTimezone;
 	ts: Date;
 	workHours: IBusinessHourWorkHour[];
-	departments?: ILivechatDepartment[];
+	/** Populated on the fly by the business-hours endpoints; never persisted with the record. */
+	departments?: Pick<ILivechatDepartment, '_id' | 'name'>[];
 }

@@ -1,11 +1,12 @@
-/* eslint-disable react-hooks/rules-of-hooks */
+/* oxlint-disable react-hooks/rules-of-hooks */
 import type { IUser } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
 import { useConnectionStatus, useIsLoggingIn, useMethod, useUser, useUserPreference } from '@rocket.chat/ui-contexts';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 import { withDebouncing } from '../../lib/utils/highOrderFunctions';
 import { Users } from '../stores';
+import { callDesktopBridge } from './utils/callDesktopBridge';
 
 // TODO: merge this with the current React-based implementation of idle detection
 
@@ -14,11 +15,15 @@ export class UserPresence {
 
 	private timer: ReturnType<typeof setTimeout> | undefined;
 
-	private status: UserStatus | undefined;
+	private status: UserStatus = UserStatus.ONLINE;
 
 	private awayTime: number | undefined = 60_000;
 
 	private connected = true;
+
+	private lastActivityAt = Date.now();
+
+	private idle = false;
 
 	private goOnline: () => Promise<boolean | undefined> = async () => undefined;
 
@@ -29,20 +34,38 @@ export class UserPresence {
 	startTimer() {
 		this.stopTimer();
 		if (!this.awayTime) return;
-
-		this.timer = setTimeout(this.setAway, this.awayTime);
+		const remaining = Math.max(this.awayTime - (Date.now() - this.lastActivityAt), 0);
+		this.timer = setTimeout(this.setAway, remaining);
 	}
 
 	private stopTimer() {
 		clearTimeout(this.timer);
 	}
 
-	private readonly setOnline = () => this.setStatus(UserStatus.ONLINE);
+	private readonly registerActivity = () => {
+		this.lastActivityAt = Date.now();
+		this.idle = false;
+		this.setStatus(UserStatus.ONLINE);
+	};
 
-	private readonly setAway = () => this.setStatus(UserStatus.AWAY);
+	private readonly setAway = () => {
+		this.idle = true;
+		this.setStatus(UserStatus.AWAY);
+	};
 
-	private readonly setStatus = withDebouncing({ wait: 1000 })(async (newStatus: UserStatus.ONLINE | UserStatus.AWAY) => {
-		if (!this.connected || newStatus === this.status) {
+	private isIdle(): boolean {
+		if (this.awayTime) {
+			return Date.now() - this.lastActivityAt >= this.awayTime;
+		}
+		return this.idle;
+	}
+
+	private readonly applyStatus = async (newStatus: UserStatus.ONLINE | UserStatus.AWAY, { force = false } = {}) => {
+		if (!this.connected) {
+			return;
+		}
+
+		if (newStatus === this.status && !force) {
 			this.startTimer();
 			return;
 		}
@@ -53,17 +76,36 @@ export class UserPresence {
 
 		switch (newStatus) {
 			case UserStatus.ONLINE:
+				this.startTimer();
 				await this.goOnline();
 				break;
 
 			case UserStatus.AWAY:
-				await this.goAway();
 				this.stopTimer();
+				await this.goAway();
 				break;
 		}
 
 		this.status = newStatus;
-	});
+	};
+
+	private readonly setStatus = withDebouncing({ wait: 1000 })(this.applyStatus);
+
+	/**
+	 * When auto-away is enabled, after a dropped socket, reconnection, or network change,
+	 * the server sets the user as online. Since we may have marked the user away in the UI,
+	 * we need to re-send away to the server if still idle.
+	 */
+	private readonly reassertPresence = () => {
+		this.setStatus.cancel();
+
+		if (!this.isIdle()) {
+			void this.applyStatus(UserStatus.ONLINE);
+			return;
+		}
+
+		void this.applyStatus(UserStatus.AWAY, { force: true });
+	};
 
 	readonly use = () => {
 		const user = useUser() ?? undefined;
@@ -72,10 +114,13 @@ export class UserPresence {
 		const enableAutoAway = useUserPreference<boolean>('enableAutoAway');
 		const idleTimeLimit = useUserPreference<number>('idleTimeLimit') ?? 300;
 		const { RocketChatDesktop } = window;
+		// The desktop app detects idleness itself; when it cannot, the browser's own detection takes over.
+		const [desktopDetectsIdle, setDesktopDetectsIdle] = useState(() => Boolean(RocketChatDesktop));
+
+		const awayTime = enableAutoAway && !desktopDetectsIdle ? idleTimeLimit * 1000 : undefined;
 
 		this.user = user;
 		this.connected = connected;
-		this.awayTime = enableAutoAway && !RocketChatDesktop ? idleTimeLimit * 1000 : undefined;
 		this.goOnline = useMethod('UserPresence:online');
 		this.goAway = useMethod('UserPresence:away');
 		this.storeUser = Users.use((state) => state.store);
@@ -83,53 +128,63 @@ export class UserPresence {
 		useEffect(() => {
 			if (!RocketChatDesktop) return;
 
-			RocketChatDesktop.setUserPresenceDetection({
-				isAutoAwayEnabled: enableAutoAway ?? false,
-				idleThreshold: idleTimeLimit,
-				setUserOnline: (online) => {
-					if (!online) {
-						this.goAway();
-						return;
-					}
-					this.goOnline();
-				},
-			});
+			const registered =
+				callDesktopBridge((desktop) => {
+					desktop.setUserPresenceDetection({
+						isAutoAwayEnabled: enableAutoAway ?? false,
+						idleThreshold: idleTimeLimit,
+						setUserOnline: (online) => {
+							this.idle = !online;
+							this.setStatus.cancel();
+							this.setStatus(online ? UserStatus.ONLINE : UserStatus.AWAY, { force: true });
+						},
+					});
+					return true;
+				}) === true;
+			setDesktopDetectsIdle(registered);
+			if (!registered) {
+				// The browser saw no activity while the desktop app detected it, so its countdown starts now for an active user.
+				if (!this.idle) this.lastActivityAt = Date.now();
+				return;
+			}
 
 			return () => {
-				RocketChatDesktop.setUserPresenceDetection({
-					isAutoAwayEnabled: false,
-					idleThreshold: null,
-					setUserOnline: () => undefined,
-				});
+				callDesktopBridge((desktop) =>
+					desktop.setUserPresenceDetection({
+						isAutoAwayEnabled: false,
+						idleThreshold: null,
+						setUserOnline: () => undefined,
+					}),
+				);
 			};
 		}, [RocketChatDesktop, enableAutoAway, idleTimeLimit]);
 
 		useEffect(() => {
-			if (RocketChatDesktop) return;
+			if (desktopDetectsIdle) return;
 
 			const documentEvents = ['mousemove', 'mousedown', 'touchend', 'keydown'] as const;
-			documentEvents.forEach((key) => document.addEventListener(key, this.setOnline));
-			window.addEventListener('focus', this.setOnline);
+			documentEvents.forEach((key) => document.addEventListener(key, this.registerActivity));
+			window.addEventListener('focus', this.registerActivity);
 
 			return () => {
-				documentEvents.forEach((key) => document.removeEventListener(key, this.setOnline));
-				window.removeEventListener('focus', this.setOnline);
+				documentEvents.forEach((key) => document.removeEventListener(key, this.registerActivity));
+				window.removeEventListener('focus', this.registerActivity);
 			};
-		}, [RocketChatDesktop]);
+		}, [desktopDetectsIdle]);
 
 		useEffect(() => {
-			if (!user || !connected || isLoggingIn) return;
-			this.startTimer();
-		}, [connected, isLoggingIn, user]);
+			this.awayTime = awayTime;
 
-		useEffect(() => {
-			if (connected) {
-				this.startTimer();
-				this.status = UserStatus.ONLINE;
+			if (!connected) {
+				this.setStatus.cancel();
+				this.stopTimer();
+				this.status = UserStatus.OFFLINE;
 				return;
 			}
-			this.stopTimer();
-			this.status = UserStatus.OFFLINE;
-		}, [connected]);
+
+			if (!user?._id || isLoggingIn) return;
+
+			this.reassertPresence();
+		}, [connected, isLoggingIn, user?._id, awayTime]);
 	};
 }

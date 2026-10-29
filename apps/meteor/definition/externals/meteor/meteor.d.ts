@@ -1,4 +1,5 @@
 import 'meteor/meteor';
+import type { IUser } from '@rocket.chat/core-typings';
 import type { ServerMethods } from '@rocket.chat/ddp-client';
 import type { DDPCommon, IStreamerConstructor, IStreamer } from 'meteor/ddp-common';
 
@@ -6,25 +7,9 @@ type StringifyBuffers<T extends unknown[]> = {
 	[P in keyof T]: T[P] extends Buffer ? string : T[P];
 };
 
-declare global {
-	namespace Assets {
-		function getBinaryAsync(assetPath: string): Promise<Uint8Array | undefined>;
-
-		function getTextAsync(assetPath: string): Promise<string | undefined>;
-	}
-}
-
 declare module 'meteor/meteor' {
 	namespace Meteor {
 		const Streamer: IStreamerConstructor & IStreamer;
-
-		namespace StreamerCentral {
-			const instances: {
-				[name: string]: IStreamer;
-			};
-
-			function on(name: string, callback: (...args: any[]) => void): void;
-		}
 
 		interface ErrorStatic {
 			new (error: string | number, reason?: string, details?: any): Error;
@@ -36,7 +21,8 @@ declare module 'meteor/meteor' {
 		}
 
 		interface Device {
-			isDesktop: () => boolean;
+			isDesktop(): boolean;
+			isPhone(): boolean;
 		}
 
 		const server: {
@@ -47,6 +33,8 @@ declare module 'meteor/meteor' {
 		};
 
 		const runAsUser: <T>(userId: string, scope: () => T) => T;
+
+		function userAsync(): Promise<IUser | null>;
 
 		interface MethodThisType {
 			twoFactorChecked: boolean | undefined;
@@ -175,9 +163,19 @@ declare module 'meteor/meteor' {
 
 			drain(): unknown;
 		}
-	}
 
-	// eslint-disable-next-line no-var
+		interface UserServices {
+			totp?: {
+				enabled: boolean;
+				hashedBackup: string[];
+				secret: string;
+				tempSecret?: string;
+			};
+		}
+	}
+}
+
+declare module 'meteor/meteor' {
 	var Meteor: {
 		[key: `loginWith${string}`]: any;
 	};

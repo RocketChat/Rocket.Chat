@@ -4,7 +4,7 @@ import { isLivechatPrioritiesProps, isCreateOrUpdateLivechatSlaProps } from '@ro
 import { findSLA } from './lib/sla';
 import { API } from '../../../../../server/api';
 import { getPaginationItems } from '../../../../../server/api/lib/getPaginationItems';
-import { LivechatEnterprise } from '../../../../app/livechat-enterprise/server/lib/LivechatEnterprise';
+import { LivechatEnterprise } from '../../../lib/omnichannel/LivechatEnterprise';
 
 API.v1.addRoute(
 	'livechat/sla',

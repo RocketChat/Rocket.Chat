@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useUnitsList } from '../hooks/useUnitsList';
 
-type AutoCompleteUnitsProps = Omit<
+export type AutoCompleteUnitsProps = Omit<
 	ComponentProps<typeof PaginatedMultiSelectFiltered>,
 	'filter' | 'setFilter' | 'options' | 'endReached' | 'renderItem'
 >;
@@ -24,9 +24,6 @@ const AutoCompleteUnits = ({ value, placeholder, onChange, ...props }: AutoCompl
 			value={value}
 			placeholder={placeholder || t('Select_an_option')}
 			filter={unitsFilter}
-			width='100%'
-			flexShrink={0}
-			flexGrow={0}
 			setFilter={setUnitsFilter as (value: string | number | undefined) => void}
 			options={unitItems}
 			onChange={onChange}

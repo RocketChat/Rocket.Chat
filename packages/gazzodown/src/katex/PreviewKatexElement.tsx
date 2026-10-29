@@ -1,6 +1,6 @@
 import 'katex/dist/katex.css';
 
-type PreviewKatexElementProps = {
+export type PreviewKatexElementProps = {
 	code: string;
 };
 

@@ -2,19 +2,18 @@ import { isIMessageInbox } from '@rocket.chat/core-typings';
 import type { IEmailInbox, IUser, IOmnichannelRoom, SlashCommandCallbackParams, IUpload } from '@rocket.chat/core-typings';
 import { Messages, Uploads, LivechatRooms, Rooms, Users } from '@rocket.chat/models';
 import { isTruthy } from '@rocket.chat/tools';
-import { Match } from 'meteor/check';
 import type Mail from 'nodemailer/lib/mailer';
 
 import { inboxes } from './EmailInbox';
 import type { Inbox } from './EmailInbox';
 import { logger } from './logger';
-import { FileUpload } from '../../../app/file-upload/server';
-import { sendMessage } from '../../../app/lib/server/functions/sendMessage';
-import { notifyOnMessageChange } from '../../../app/lib/server/lib/notifyListener';
-import { settings } from '../../../app/settings/server';
-import { slashCommands } from '../../../app/utils/server/slashCommand';
 import { callbacks } from '../../lib/callbacks';
 import { i18n } from '../../lib/i18n';
+import { FileUpload } from '../../lib/media/file-upload';
+import { sendMessage } from '../../lib/messages/sendMessage';
+import { notifyOnMessageChange } from '../../lib/notifyListener';
+import { slashCommands } from '../../lib/utils/slashCommand';
+import { settings } from '../../settings';
 
 const livechatQuoteRegExp = /^\[\s\]\(https?:\/\/.+\/live\/.+\?msg=(?<id>.+?)\)\s(?<text>.+)/s;
 
@@ -77,7 +76,7 @@ const sendSuccessReplyMessage = async (options: { room: IOmnichannelRoom; msgId:
 	return sendMessage(user, message, options.room);
 };
 
-async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promise<{ messageId: string }> {
+async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promise<{ messageId: string } | undefined> {
 	return inbox.smtp
 		.sendMail({
 			from: inbox.config.senderInfo
@@ -96,17 +95,18 @@ async function sendEmail(inbox: Inbox, mail: Mail.Options, options?: any): Promi
 			logger.error({ msg: 'Error sending Email reply', err });
 
 			if (!options?.msgId) {
-				return;
+				return undefined;
 			}
 
 			await sendErrorReplyMessage(err.message, options);
+			return undefined;
 		});
 }
 
 slashCommands.add({
 	command: 'sendEmailAttachment',
 	callback: async ({ command, params }: SlashCommandCallbackParams<'sendEmailAttachment'>) => {
-		if (command !== 'sendEmailAttachment' || !Match.test(params, String)) {
+		if (command !== 'sendEmailAttachment') {
 			return;
 		}
 
@@ -163,7 +163,7 @@ slashCommands.add({
 				sender: message.u.username,
 				rid: message.rid,
 			},
-		).then((info) => LivechatRooms.updateEmailThreadByRoomId(room._id, info.messageId));
+		).then((info) => info && LivechatRooms.updateEmailThreadByRoomId(room._id, info.messageId));
 
 		await Messages.updateOne(
 			{ _id: message._id },
@@ -285,7 +285,7 @@ callbacks.add(
 				sender: message.u.username,
 				rid: room._id,
 			},
-		).then((info) => LivechatRooms.updateEmailThreadByRoomId(room._id, info.messageId));
+		).then((info) => info && LivechatRooms.updateEmailThreadByRoomId(room._id, info.messageId));
 
 		message.msg = match.groups.text;
 

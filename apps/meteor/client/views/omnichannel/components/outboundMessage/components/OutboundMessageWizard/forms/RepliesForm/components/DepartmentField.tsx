@@ -1,4 +1,4 @@
-import { Field, FieldError, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
+import { Box, Field, FieldError, FieldHint, FieldLabel, FieldRow } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { ComponentProps } from 'react';
 import { useId } from 'react';
@@ -11,7 +11,7 @@ import RetryButton from '../../../components/RetryButton';
 import { cxp } from '../../../utils/cx';
 import type { RepliesFormData } from '../RepliesForm';
 
-type DepartmentFieldProps = ComponentProps<typeof Field> & {
+export type DepartmentFieldProps = ComponentProps<typeof Field> & {
 	control: Control<RepliesFormData>;
 	onlyMyDepartments?: boolean;
 	isError: boolean;
@@ -52,12 +52,12 @@ const DepartmentField = ({
 
 	return (
 		<Field {...props}>
-			<FieldLabel is='span' id={departmentFieldId}>{`${t('Department')} (${t('optional')})`}</FieldLabel>
+			<FieldLabel htmlFor={departmentFieldId}>{`${t('Department')} (${t('optional')})`}</FieldLabel>
 			<FieldRow>
 				<AutoCompleteDepartment
 					name={departmentField.name}
 					aria-invalid={!!departmentFieldError}
-					aria-labelledby={departmentFieldId}
+					id={departmentFieldId}
 					aria-describedby={cxp(departmentFieldId, {
 						error: !!departmentFieldError,
 						hint: true,
@@ -70,9 +70,11 @@ const DepartmentField = ({
 				/>
 			</FieldRow>
 			{departmentFieldError && (
-				<FieldError aria-live='assertive' id={`${departmentFieldId}-error`} display='flex' alignItems='center'>
-					{departmentFieldError.message}
-					{isError && <RetryButton loading={isFetching} onClick={onRefetch} />}
+				<FieldError aria-live='assertive' id={`${departmentFieldId}-error`}>
+					<Box display='flex' alignItems='center' gap={4}>
+						{departmentFieldError.message}
+						{isError && <RetryButton loading={isFetching} onClick={onRefetch} />}
+					</Box>
 				</FieldError>
 			)}
 			<FieldHint id={`${departmentFieldId}-hint`}>{t('Outbound_message_department_hint')}</FieldHint>

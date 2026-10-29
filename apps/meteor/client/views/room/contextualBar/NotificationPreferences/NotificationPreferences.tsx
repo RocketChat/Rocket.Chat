@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 
 import NotificationPreferencesForm from './NotificationPreferencesForm';
 
-type NotificationPreferencesProps = {
+export type NotificationPreferencesProps = {
 	handleClose: () => void;
 	handleSave: () => void;
 	notificationOptions: {
@@ -45,7 +45,7 @@ const NotificationPreferences = ({ handleClose, handleSave, notificationOptions,
 					<Button type='reset' disabled={!isDirty || isSubmitting} onClick={() => reset()}>
 						{t('Reset')}
 					</Button>
-					<Button primary disabled={!isDirty} loading={isSubmitting} onClick={handleSave}>
+					<Button variant='primary' disabled={!isDirty} loading={isSubmitting} onClick={handleSave}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

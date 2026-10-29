@@ -1,4 +1,4 @@
-import { Field, FieldLabel, FieldRow, TextInput, Box, Margins, Button, ButtonGroup, IconButton } from '@rocket.chat/fuselage';
+import { Field, FieldLabel, FieldRow, TextInput, Box, Button, ButtonGroup, IconButton } from '@rocket.chat/fuselage';
 import { ContextualbarScrollableContent, ContextualbarFooter } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, type UploadResult } from '@rocket.chat/ui-contexts';
 import fileSize from 'filesize';
@@ -11,7 +11,7 @@ import { CUSTOM_SOUND_ALLOWED_MIME_TYPES, MAX_CUSTOM_SOUND_SIZE_BYTES } from '..
 import { useEndpointUploadMutation } from '../../../hooks/useEndpointUploadMutation';
 import { useSingleFileInput } from '../../../hooks/useSingleFileInput';
 
-type AddCustomSoundProps = {
+export type AddCustomSoundProps = {
 	goToNew: (_id: string) => () => void;
 	close: () => void;
 	onChange: () => void;
@@ -92,19 +92,17 @@ const AddCustomSound = ({ goToNew, close, onChange, ...props }: AddCustomSoundPr
 					</FieldRow>
 				</Field>
 				<Field>
-					<FieldLabel alignSelf='stretch'>{t('Sound File')}</FieldLabel>
-					<Box display='flex' flexDirection='row' mbs='none' alignItems='center'>
-						<Margins inline={4}>
-							<IconButton secondary small icon='upload' onClick={clickUpload} />
-							{sound?.name || t('None')}
-						</Margins>
+					<FieldLabel>{t('Sound File')}</FieldLabel>
+					<Box display='flex' flexDirection='row' marginBlockStart='none' alignItems='center' gap={4} paddingInlineStart={4}>
+						<IconButton variant='secondary' size='small' icon='upload' onClick={clickUpload} />
+						{sound?.name || t('None')}
 					</Box>
 				</Field>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
 					<Button onClick={close}>{t('Cancel')}</Button>
-					<Button primary onClick={handleSave}>
+					<Button variant='primary' onClick={handleSave}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

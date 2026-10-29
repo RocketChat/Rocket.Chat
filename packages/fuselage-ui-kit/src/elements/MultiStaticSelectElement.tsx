@@ -7,7 +7,7 @@ import { useStringFromTextObject } from '../hooks/useStringFromTextObject';
 import { useUiKitState } from '../hooks/useUiKitState';
 import type { BlockProps } from '../utils/BlockProps';
 
-type MultiStaticSelectElementProps = BlockProps<UiKit.MultiStaticSelectElement>;
+export type MultiStaticSelectElementProps = BlockProps<UiKit.MultiStaticSelectElement>;
 
 const MultiStaticSelectElement = ({ block, context }: MultiStaticSelectElementProps) => {
 	const [{ loading, value, error }, action] = useUiKitState(block, context);

@@ -13,13 +13,14 @@ import {
 	ModalFooter,
 	ModalFooterAnnotation,
 	ModalFooterControllers,
+	Stack,
 } from '@rocket.chat/fuselage';
 import type { ComponentProps } from 'react';
 import { useId, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-type AddMatrixUsersModalProps = {
+export type AddMatrixUsersModalProps = {
 	matrixIdVerifiedStatus: Map<string, string>;
 	completeUserList: string[];
 	onClose: () => void;
@@ -89,8 +90,8 @@ const AddMatrixUsersModal = ({ onClose, matrixIdVerifiedStatus, onSave, complete
 			<ModalContent>
 				<Box is='ul'>
 					{[...matrixIdVerifiedStatus.entries()].map(([_matrixId, _verificationStatus]) => (
-						<Box is='li' display='flex' key={_matrixId}>
-							{_matrixId} <Icon mis={4} name={verificationStatusAsIcon(_verificationStatus)} title={t(_verificationStatus)} size='x20' />
+						<Box is='li' display='flex' gap={4} key={_matrixId}>
+							{_matrixId} <Icon name={verificationStatusAsIcon(_verificationStatus)} title={t(_verificationStatus)} size='x20' />
 						</Box>
 					))}
 					{rocketChatUsers.map((_user) => (
@@ -100,31 +101,29 @@ const AddMatrixUsersModal = ({ onClose, matrixIdVerifiedStatus, onSave, complete
 					))}
 				</Box>
 				{bannedError && (
-					<Box color='danger' fontScale='c1' mbs={8}>
+					<Box color='danger' fontScale='c1' marginBlockStart={8}>
 						{t('User_is_banned_from_room_confirm_unban')}
 					</Box>
 				)}
 				{error && (
-					<Box color='danger' fontScale='c1' mbs={8}>
+					<Box color='danger' fontScale='c1' marginBlockStart={8}>
 						{error}
 					</Box>
 				)}
 			</ModalContent>
-			<ModalFooter justifyContent={bannedError ? 'space-between' : 'flex-end'}>
+			<ModalFooter justify={bannedError ? 'space-between' : 'end'}>
 				{bannedError && (
 					<ModalFooterAnnotation>
-						<Box display='flex' alignItems='center'>
+						<Stack direction='row' align='center' gap={8}>
 							<CheckBox checked={unbanConfirmed} onChange={() => setUnbanConfirmed((prev) => !prev)} id={checkboxId} />
-							<Label htmlFor={checkboxId} mis={8}>
-								{t('Yes_unban_user')}
-							</Label>
-						</Box>
+							<Label htmlFor={checkboxId}>{t('Yes_unban_user')}</Label>
+						</Stack>
 					</ModalFooterAnnotation>
 				)}
 				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
 					<Button
-						primary
+						variant='primary'
 						onClick={handleSubmit(onSubmit)}
 						disabled={!(usersToInvite.length > 0) || (bannedError && !unbanConfirmed)}
 						loading={loading}

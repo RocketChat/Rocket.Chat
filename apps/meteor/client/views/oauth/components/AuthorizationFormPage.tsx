@@ -8,7 +8,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import CurrentUserDisplay from './CurrentUserDisplay';
 import Layout from './Layout';
 
-type AuthorizationFormPageProps = {
+export type AuthorizationFormPageProps = {
 	oauthApp: IOAuthApps;
 	redirectUri: string;
 	user: IUser;
@@ -69,11 +69,11 @@ const AuthorizationFormPage = ({ oauthApp, redirectUri, user }: AuthorizationFor
 				</FormContainer>
 				<FormFooter>
 					<ButtonGroup stretch>
-						<Button ref={submitRef} type='submit' primary name='allow' value='yes'>
+						<Button ref={submitRef} type='submit' variant='primary' name='allow' value='yes'>
 							{t('core.Authorize')}
 						</Button>
 						<Button onClick={handleCancelButtonClick}>{t('core.Cancel')}</Button>
-						<Button danger onClick={handleLogoutButtonClick}>
+						<Button variant='danger' onClick={handleLogoutButtonClick}>
 							{t('core.Logout')}
 						</Button>
 					</ButtonGroup>

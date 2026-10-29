@@ -1,6 +1,6 @@
 import { Users } from '@rocket.chat/models';
 
-import { notifyOnUserChange } from '../../../../../app/lib/server/lib/notifyListener';
+import { notifyOnUserChange } from '../../../../lib/notifyListener';
 
 export default async function handleUserRegistered(args) {
 	// Check if there is an user with the given username

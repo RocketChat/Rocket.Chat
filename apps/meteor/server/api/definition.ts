@@ -1,12 +1,13 @@
 import type { IncomingMessage } from 'node:http';
 
 import type { IUser, LicenseModule, RequiredField } from '@rocket.chat/core-typings';
+import type { OpenAPIDocumentation } from '@rocket.chat/http-router';
 import type { Logger } from '@rocket.chat/logger';
 import type { Method, MethodOf, OperationParams, OperationResult, PathPattern, UrlParams } from '@rocket.chat/rest-typings';
 import type { ValidateFunction } from 'ajv';
 
-import type { ITwoFactorOptions } from '../../app/2fa/server/code';
-import type { DeprecationLoggerNextPlannedVersion } from '../../app/lib/server/lib/deprecationWarningLogger';
+import type { ITwoFactorOptions } from '../lib/2fa/code';
+import type { DeprecationLoggerNextPlannedVersion } from '../lib/deprecationWarningLogger';
 
 export type SuccessStatusCodes = Exclude<Range<208>, Range<200>>;
 
@@ -99,6 +100,12 @@ export type NonEnterpriseTwoFactorOptions = {
 	twoFactorOptions: ITwoFactorOptions;
 };
 
+export type RateLimiterOptions = {
+	numRequestsAllowed?: number;
+	intervalTimeInMS?: number;
+	bypassPermissions?: string[];
+};
+
 export type Options = SharedOptions<'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'>;
 
 export type SharedOptions<TMethod extends string> = (
@@ -112,14 +119,7 @@ export type SharedOptions<TMethod extends string> = (
 			authRequired?: boolean;
 			userWithoutUsername?: boolean;
 			forceTwoFactorAuthenticationForNonEnterprise?: boolean;
-			rateLimiterOptions?:
-				| {
-						numRequestsAllowed?: number;
-						intervalTimeInMS?: number;
-				  }
-				| boolean;
-			queryOperations?: string[];
-			queryFields?: string[];
+			rateLimiterOptions?: RateLimiterOptions | boolean;
 	  }
 	| {
 			permissionsRequired?:
@@ -132,15 +132,7 @@ export type SharedOptions<TMethod extends string> = (
 			userWithoutUsername?: boolean;
 			twoFactorRequired: true;
 			twoFactorOptions?: ITwoFactorOptions;
-			rateLimiterOptions?:
-				| {
-						numRequestsAllowed?: number;
-						intervalTimeInMS?: number;
-				  }
-				| boolean;
-
-			queryOperations?: string[];
-			queryFields?: string[];
+			rateLimiterOptions?: RateLimiterOptions | boolean;
 	  }
 ) & {
 	/**
@@ -191,21 +183,11 @@ export type ActionThis<TMethod extends Method, TPathPattern extends PathPattern,
 	readonly request: Request;
 	readonly incoming: IncomingMessage;
 
-	readonly queryOperations: TOptions extends { queryOperations: infer T } ? T : never;
-	readonly queryFields: TOptions extends { queryFields: infer T } ? T : never;
-
 	readonly twoFactorChecked: boolean;
 
 	parseJsonQuery(): Promise<{
 		sort: Record<string, 1 | -1>;
-		/**
-		 * @deprecated To access "fields" parameter, use ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS environment variable.
-		 */
 		fields: Record<string, 0 | 1>;
-		/**
-		 * @deprecated To access "query" parameter, use ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS environment variable.
-		 */
-		query: Record<string, unknown>;
 	}>;
 
 	readonly connection: {
@@ -294,7 +276,9 @@ export type TypedOptions = {
 	tags?: string[];
 	typed?: boolean;
 	license?: LicenseModule[];
-} & SharedOptions<'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'>;
+	licenseRequired?: boolean;
+} & OpenAPIDocumentation &
+	SharedOptions<'GET' | 'POST' | 'PUT' | 'DELETE' | 'PATCH'>;
 
 export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> = {
 	readonly logger: Logger;
@@ -304,22 +288,13 @@ export type TypedThis<TOptions extends TypedOptions, TPath extends string = ''> 
 	urlParams: UrlParams<TPath> extends Record<any, any> ? UrlParams<TPath> : never;
 	parseJsonQuery(): Promise<{
 		sort: Record<string, 1 | -1>;
-		/**
-		 * @deprecated To access "fields" parameter, use ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS environment variable.
-		 */
 		fields: Record<string, 0 | 1>;
-		/**
-		 * @deprecated To access "query" parameter, use ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS environment variable.
-		 */
-		query: Record<string, unknown>;
 	}>;
 	bodyParams: TOptions['body'] extends ValidateFunction<infer Body> ? Body : never;
 	request: Request;
 	requestIp?: string;
 	route: string;
 	response: Response;
-	readonly queryOperations: TOptions extends { queryOperations: infer T } ? T : never;
-	readonly queryFields: TOptions extends { queryFields: infer T } ? T : never;
 	readonly connection: {
 		token: string;
 		id: string;

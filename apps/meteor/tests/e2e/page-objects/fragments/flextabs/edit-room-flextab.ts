@@ -53,7 +53,7 @@ export class EditRoomFlexTab extends FlexTab {
 	}
 
 	get checkboxIgnoreThreads(): Locator {
-		return this.root.locator('label', { hasText: 'Do not prune Threads' });
+		return this.root.locator('label', { hasText: 'Do not prune threads' });
 	}
 
 	get checkboxChannels(): Locator {
@@ -82,13 +82,13 @@ export class OmnichannelEditRoomFlexTab extends EditRoomFlexTab {
 	private readonly slaListbox: Listbox;
 
 	constructor(page: Page) {
-		super(page.getByRole('dialog', { name: 'Edit Room' }));
+		super(page.getByRole('dialog', { name: 'Edit room' }));
 		this.tagsListbox = new Listbox(page);
-		this.slaListbox = new Listbox(page, 'SLA Policy');
+		this.slaListbox = new Listbox(page, 'SLA policy');
 	}
 
 	get inputSLAPolicy(): Locator {
-		return this.root.getByRole('button', { name: 'SLA Policy', exact: true });
+		return this.root.getByRole('combobox', { name: 'SLA policy', exact: true });
 	}
 
 	optionTag(name: string): Locator {
@@ -105,10 +105,10 @@ export class OmnichannelEditRoomFlexTab extends EditRoomFlexTab {
 	}
 
 	get inputTags(): Locator {
-		return this.root.getByRole('textbox', { name: 'Select an option' });
+		return this.root.getByRole('textbox', { name: 'Tags' });
 	}
 
 	getRoomCustomField(label: string): Locator {
-		return this.root.getByRole('group', { name: 'Custom Fields' }).getByLabel(label);
+		return this.root.getByRole('group', { name: 'Custom fields' }).getByLabel(label);
 	}
 }

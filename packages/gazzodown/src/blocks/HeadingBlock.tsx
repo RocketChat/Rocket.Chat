@@ -2,7 +2,7 @@ import type * as MessageParser from '@rocket.chat/message-parser';
 
 import InlineElements from '../elements/InlineElements';
 
-type HeadingBlockProps = {
+export type HeadingBlockProps = {
 	children?: MessageParser.Inlines[];
 	level?: 1 | 2 | 3 | 4;
 };

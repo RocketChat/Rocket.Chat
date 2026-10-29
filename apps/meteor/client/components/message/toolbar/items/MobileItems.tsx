@@ -6,16 +6,17 @@ import QuoteMessageAction from './actions/QuoteMessageAction';
 import ReactionMessageAction from './actions/ReactionMessageAction';
 import ReplyInThreadMessageAction from './actions/ReplyInThreadMessageAction';
 
-type MobileItemsProps = {
+export type MobileItemsProps = {
 	message: IMessage;
 	room: IRoom;
 	subscription: ISubscription | undefined;
+	onChangeMenuVisibility?: (visible: boolean) => void;
 };
 
-const MobileItems = ({ message, room, subscription }: MobileItemsProps) => {
+const MobileItems = ({ message, room, subscription, onChangeMenuVisibility }: MobileItemsProps) => {
 	return (
 		<>
-			<ReactionMessageAction message={message} room={room} subscription={subscription} />
+			<ReactionMessageAction message={message} room={room} subscription={subscription} onChangeMenuVisibility={onChangeMenuVisibility} />
 			<QuoteMessageAction message={message} subscription={subscription} />
 			<ReplyInThreadMessageAction message={message} room={room} subscription={subscription} />
 			<ForwardMessageAction message={message} room={room} />

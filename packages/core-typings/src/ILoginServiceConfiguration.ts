@@ -34,20 +34,11 @@ export type OAuthConfiguration = {
 	mergeRoles: boolean;
 	rolesToSync: string;
 	showButton: boolean;
-};
-
-export type FacebookOAuthConfiguration = Omit<Partial<OAuthConfiguration>, 'clientId'> & {
-	appId: OAuthConfiguration['clientId'];
-};
-
-export type TwitterOAuthConfiguration = Omit<Partial<OAuthConfiguration>, 'clientId'> & {
-	consumerKey: OAuthConfiguration['clientId'];
-};
-
-export type LinkedinOAuthConfiguration = Partial<OAuthConfiguration> & {
-	clientConfig: {
-		requestPermissions?: string[];
+	addAutopublishFields?: {
+		forLoggedInUser: string[];
+		forOtherUsers: string[];
 	};
+	pkce?: boolean;
 };
 
 export type CASConfiguration = {
@@ -108,11 +99,4 @@ export type SAMLConfiguration = {
 };
 
 export type LoginServiceConfiguration = ILoginServiceConfiguration &
-	(
-		| Partial<OAuthConfiguration>
-		| Partial<FacebookOAuthConfiguration>
-		| Partial<TwitterOAuthConfiguration>
-		| Partial<LinkedinOAuthConfiguration>
-		| Partial<CASConfiguration>
-		| Partial<SAMLConfiguration>
-	);
+	(Partial<OAuthConfiguration> | Partial<CASConfiguration> | Partial<SAMLConfiguration>);

@@ -5,8 +5,8 @@ const CallHistoryUnknownUser = () => {
 	const { t } = useTranslation();
 	return (
 		<Box display='flex' flexDirection='row' alignItems='center'>
-			<Box mie={8}>
-				<FramedIcon icon='warning' size={28} />
+			<Box marginInlineEnd={8}>
+				<FramedIcon icon='warning' />
 			</Box>
 			<Box>{t('Unknown')}</Box>
 		</Box>

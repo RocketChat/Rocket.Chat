@@ -5,7 +5,7 @@ import { action } from 'storybook/actions';
 
 const logAction = action('ModalContext');
 
-type ModalContextMockProps = {
+export type ModalContextMockProps = {
 	children: ReactNode;
 };
 

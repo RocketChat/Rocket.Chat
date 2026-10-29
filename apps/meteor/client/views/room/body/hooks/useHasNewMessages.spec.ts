@@ -11,7 +11,7 @@ jest.mock('../../contexts/ChatContext', () => ({
 	}),
 }));
 
-jest.mock('../../../../../app/ui-utils/client', () => ({
+jest.mock('../../../../lib/RoomHistoryManager', () => ({
 	RoomHistoryManager: {
 		clear: jest.fn(),
 		getMoreIfIsEmpty: jest.fn(),

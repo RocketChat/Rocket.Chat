@@ -1,5 +1,6 @@
 import type { App } from '@rocket.chat/apps-engine/definition/App';
-import { JsonRpcError } from 'jsonrpc-lite';
+
+import { JsonRpcError } from '../../lib/jsonrpc';
 
 /**
  * Known failures that can happen in the runtime.
@@ -43,7 +44,7 @@ export function assertAppAvailable(v: unknown): asserts v is App {
 	throw JsonRpcError.internalError({ err: 'App object not available', code: Errors.DRT_APP_NOT_AVAILABLE });
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unsafe-function-type
+// oxlint-disable-next-line @typescript-eslint/no-unsafe-function-type
 export function assertHandlerFunction(v: unknown): asserts v is Function {
 	if (v instanceof Function) return;
 

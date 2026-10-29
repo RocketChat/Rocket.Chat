@@ -11,7 +11,7 @@ jest.mock('@rocket.chat/models', () => ({
 
 const mockSettings = new Map<string, ISetting>();
 
-jest.mock('../../../app/settings/server/cached', () => {
+jest.mock('../cached', () => {
 	const mockGetSetting = jest.fn((key: string) => mockSettings.get(key));
 	return {
 		settings: {

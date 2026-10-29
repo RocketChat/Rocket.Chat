@@ -14,7 +14,7 @@ const marketplaceAppsMaxCountFallback = 5;
 const privateAppsMaxCountFallback = 0;
 const defaultWarningThreshold = 80;
 
-type AppsUsageCardProps = {
+export type AppsUsageCardProps = {
 	privateAppsLimit?: { value?: number; max: number };
 	marketplaceAppsLimit?: { value?: number; max: number };
 };
@@ -53,7 +53,7 @@ const AppsUsageCard = ({ privateAppsLimit, marketplaceAppsLimit }: AppsUsageCard
 
 		...(marketplaceAppsAboveWarning && {
 			upgradeButton: (
-				<UpgradeButton target='app-usage-card' action='upgrade' small>
+				<UpgradeButton target='app-usage-card' action='upgrade' size='small'>
 					{t('Upgrade')}
 				</UpgradeButton>
 			),

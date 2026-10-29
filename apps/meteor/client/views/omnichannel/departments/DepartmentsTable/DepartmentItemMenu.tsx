@@ -13,7 +13,7 @@ const ARCHIVE_DEPARTMENT_ENDPOINTS = {
 	unarchive: '/v1/livechat/department/:_id/unarchive',
 } as const;
 
-type DepartmentItemMenuProps = {
+export type DepartmentItemMenuProps = {
 	department: Omit<ILivechatDepartment, '_updatedAt'>;
 	archived: boolean;
 };

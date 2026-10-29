@@ -4,7 +4,7 @@ import type { ComponentProps } from 'react';
 import NegativeGrowthSymbol from './NegativeGrowthSymbol';
 import PositiveGrowthSymbol from './PositiveGrowthSymbol';
 
-type GrowthProps = ComponentProps<typeof Box> & {
+export type GrowthProps = ComponentProps<typeof Box> & {
 	children: number;
 };
 

@@ -49,7 +49,7 @@ const ActiveSessionsCard = () => {
 				...card,
 				...(exceedLimit && {
 					upgradeButton: (
-						<UpgradeButton target='active-session-card' action='upgrade' small>
+						<UpgradeButton target='active-session-card' action='upgrade' size='small'>
 							{t('Upgrade')}
 						</UpgradeButton>
 					),
@@ -58,7 +58,7 @@ const ActiveSessionsCard = () => {
 		>
 			<FeatureUsageCardBody justifyContent='flex-start'>
 				<Box color='font-secondary-info' textAlign='center'>
-					<Box fontScale='h1' color={exceedLimit ? 'font-danger' : 'font-default'} mbe={12}>
+					<Box fontScale='h1' color={exceedLimit ? 'font-danger' : 'font-default'} marginBlockEnd={12}>
 						{used} / {total}
 					</Box>
 					{available} {t('ActiveSessions_available')}

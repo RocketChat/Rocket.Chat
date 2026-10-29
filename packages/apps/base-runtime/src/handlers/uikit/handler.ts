@@ -13,11 +13,10 @@ import {
 } from '@rocket.chat/apps-engine/definition/uikit/UIKitInteractionContext';
 import type { IUIKitLivechatBlockIncomingInteraction } from '@rocket.chat/apps-engine/definition/uikit/livechat/UIKitLivechatIncomingInteractionType';
 import { UIKitLivechatBlockInteractionContext } from '@rocket.chat/apps-engine/definition/uikit/livechat/UIKitLivechatInteractionContext';
-import type { Defined } from 'jsonrpc-lite';
-import { JsonRpcError } from 'jsonrpc-lite';
 
 import { AppObjectRegistry } from '../../AppObjectRegistry';
 import { AppAccessorsInstance } from '../../lib/accessors/mod';
+import { JsonRpcError, type Defined } from '../../lib/jsonrpc';
 import type { RequestContext } from '../../lib/requestContext';
 import { wrapAppForRequest } from '../../lib/wrapAppForRequest';
 import { isOneOf } from '../lib/assertions';

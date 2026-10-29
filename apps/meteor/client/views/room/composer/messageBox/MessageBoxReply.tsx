@@ -9,7 +9,9 @@ import { QuoteAttachment } from '../../../../components/message/content/attachme
 import AttachmentProvider from '../../../../providers/AttachmentProvider';
 import { useChat } from '../../contexts/ChatContext';
 
-const MessageBoxReply = ({ reply }: { reply: IMessage }) => {
+export type MessageBoxReplyProps = { reply: IMessage };
+
+const MessageBoxReply = ({ reply }: MessageBoxReplyProps) => {
 	const { t } = useTranslation();
 	const chat = useChat();
 
@@ -46,7 +48,7 @@ const MessageBoxReply = ({ reply }: { reply: IMessage }) => {
 						chat?.composer?.dismissQuotedMessage(reply._id);
 					}}
 				>
-					<IconButton mini icon='cross' aria-label={t('Dismiss_quoted_message')} />
+					<IconButton size='mini' icon='cross' aria-label={t('Dismiss_quoted_message')} />
 				</Box>
 			</Box>
 		</Margins>

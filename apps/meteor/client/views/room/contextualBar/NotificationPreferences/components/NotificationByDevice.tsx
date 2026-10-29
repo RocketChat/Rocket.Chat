@@ -3,7 +3,7 @@ import type { Keys as IconName } from '@rocket.chat/icons';
 import type { ReactNode } from 'react';
 import { memo } from 'react';
 
-type NotificationByDeviceProps = {
+export type NotificationByDeviceProps = {
 	device: string;
 	icon: IconName;
 	children: ReactNode;
@@ -14,7 +14,7 @@ const NotificationByDevice = ({ device, icon, children }: NotificationByDevicePr
 		title={
 			<Box display='flex' alignItems='center'>
 				<Icon name={icon} size='x18' />
-				<Box fontScale='p2m' mi={16}>
+				<Box fontScale='p2m' marginInline={16}>
 					{device}
 				</Box>
 			</Box>

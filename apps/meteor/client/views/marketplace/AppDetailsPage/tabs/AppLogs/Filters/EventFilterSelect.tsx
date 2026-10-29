@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 
 import { useLogsDistinctValues } from '../../../../hooks/useLogsDistinctValues';
 
-type EventFilterSelectProps = Omit<ComponentProps<typeof Select>, 'options'> & { appId: string };
+export type EventFilterSelectProps = Omit<ComponentProps<typeof Select>, 'options'> & { appId: string };
 
 export const EventFilterSelect = ({ appId, ...props }: EventFilterSelectProps) => {
 	const { t } = useTranslation();

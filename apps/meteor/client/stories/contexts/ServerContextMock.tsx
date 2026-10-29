@@ -36,23 +36,27 @@ const getStream = (
 };
 
 type Operations = {
-	[TOperation in Method extends infer TMethod
-		? TMethod extends Method
-			? PathPattern extends infer TPathPattern
-				? TPathPattern extends PathPattern
-					? {
-							id: `${TMethod} ${TPathPattern extends `/${string}` ? TPathPattern : `/v1/${TPathPattern}`}`;
-							fn: (
-								params: void extends OperationParams<TMethod, TPathPattern> ? void : OperationParams<TMethod, TPathPattern>,
-							) => Promise<void extends OperationResult<TMethod, TPathPattern> ? Serialized<OperationResult<TMethod, TPathPattern>> : void>;
-						}
+	[
+		TOperation in Method extends infer TMethod
+			? TMethod extends Method
+				? PathPattern extends infer TPathPattern
+					? TPathPattern extends PathPattern
+						? {
+								id: `${TMethod} ${TPathPattern extends `/${string}` ? TPathPattern : `/v1/${TPathPattern}`}`;
+								fn: (
+									params: void extends OperationParams<TMethod, TPathPattern> ? void : OperationParams<TMethod, TPathPattern>,
+								) => Promise<
+									void extends OperationResult<TMethod, TPathPattern> ? Serialized<OperationResult<TMethod, TPathPattern>> : void
+								>;
+							}
+						: never
 					: never
 				: never
-			: never
-		: never as TOperation['id']]: TOperation['fn'];
+			: never as TOperation['id']
+	]: TOperation['fn'];
 };
 
-type ServerContextMockProps = Omit<Partial<ContextType<typeof ServerContext>>, 'callEndpoint' | 'callMethod'> & {
+export type ServerContextMockProps = Omit<Partial<ContextType<typeof ServerContext>>, 'callEndpoint' | 'callMethod'> & {
 	children: ReactNode;
 	baseURL?: string | URL;
 	callEndpoint?: {
@@ -60,9 +64,7 @@ type ServerContextMockProps = Omit<Partial<ContextType<typeof ServerContext>>, '
 	};
 	callMethod?: {
 		[TMethodName in ServerMethodName]?:
-			| ((...args: ServerMethodParameters<TMethodName>) => Promise<ServerMethodReturn<TMethodName>>)
-			| 'infinite'
-			| 'errored';
+			((...args: ServerMethodParameters<TMethodName>) => Promise<ServerMethodReturn<TMethodName>>) | 'infinite' | 'errored';
 	};
 };
 

@@ -72,7 +72,7 @@ const MailerPage = () => {
 	return (
 		<Page>
 			<PageHeader title={t('Mailer')} />
-			<PageScrollableContentWithShadow alignSelf='center' w='100%' display='flex' flexDirection='column' alignItems='center'>
+			<PageScrollableContentWithShadow alignSelf='center' width='100%' display='flex' flexDirection='column' alignItems='center'>
 				<Box id={mailerFormId} is='form' autoComplete='off' maxWidth='x600' onSubmit={handleSubmit(handleSendEmail)}>
 					<FieldGroup>
 						<Field>
@@ -185,7 +185,7 @@ const MailerPage = () => {
 			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset(initialData)}>{t('Cancel')}</Button>
-					<Button form={mailerFormId} primary type='submit'>
+					<Button form={mailerFormId} variant='primary' type='submit'>
 						{t('Send_email')}
 					</Button>
 				</ButtonGroup>

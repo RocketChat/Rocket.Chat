@@ -1,6 +1,6 @@
 import { Box, Icon } from '@rocket.chat/fuselage';
 
-type VideoConfMessageIconProps = {
+export type VideoConfMessageIconProps = {
 	variant?: keyof typeof styles;
 };
 
@@ -28,10 +28,11 @@ const VideoConfMessageIcon = ({ variant = 'ended' }: VideoConfMessageIconProps) 
 		alignItems='center'
 		justifyContent='center'
 		display='flex'
-		borderRadius='x4'
+		borderRadius='medium'
 		backgroundColor={styles[variant].backgroundColor}
+		color={styles[variant].color}
 	>
-		<Icon size='x20' name={styles[variant].icon} color={styles[variant].color} />
+		<Icon size='x20' name={styles[variant].icon} />
 	</Box>
 );
 

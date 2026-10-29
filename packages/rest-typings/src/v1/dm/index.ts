@@ -3,5 +3,6 @@ export type * from './im';
 export * from './DmBlockUserProps';
 export * from './DmCreateProps';
 export * from './DmFileProps';
+export * from './DmLeaveProps';
 export * from './DmMembersProps';
 export * from './DmMessagesProps';

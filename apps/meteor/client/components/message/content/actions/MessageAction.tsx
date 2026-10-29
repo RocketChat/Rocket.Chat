@@ -11,7 +11,7 @@ const resolveLegacyIcon = (legacyIcon: IconName | `icon-${IconName | 'videocam'}
 	return legacyIcon?.replace(/^icon-/, '') as IconName;
 };
 
-type MessageActionProps = {
+export type MessageActionProps = {
 	icon: IconName;
 	i18nLabel?: TranslationKey;
 	label?: string;
@@ -26,7 +26,13 @@ const MessageAction = ({ icon, methodId, i18nLabel, label, runAction, danger }: 
 	const resolvedIcon = resolveLegacyIcon(icon);
 
 	return (
-		<Button icon={resolvedIcon} data-method-id={methodId} onClick={runAction(methodId)} marginInline={4} small danger={danger}>
+		<Button
+			icon={resolvedIcon}
+			data-method-id={methodId}
+			onClick={runAction(methodId)}
+			size='small'
+			variant={danger ? 'danger' : undefined}
+		>
 			{i18nLabel ? t(i18nLabel) : label}
 		</Button>
 	);

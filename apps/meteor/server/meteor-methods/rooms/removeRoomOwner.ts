@@ -1,0 +1,91 @@
+import { api, Message, Team, ClientSafeError } from '@rocket.chat/core-services';
+import { isRoomFederated } from '@rocket.chat/core-typings';
+import { Subscriptions, Rooms, Users, Roles } from '@rocket.chat/models';
+
+import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
+import { beforeChangeRoomRole } from '../../lib/callbacks/beforeChangeRoomRole';
+import { notifyOnSubscriptionChangedById } from '../../lib/notifyListener';
+import { syncRoomRolePriorityForUserAndRoom } from '../../lib/roles/syncRoomRolePriority';
+import { settings } from '../../settings';
+
+export const removeRoomOwner = async (fromUserId: string, rid: string, userId: string): Promise<boolean> => {
+	const room = await Rooms.findOneById(rid, { projection: { t: 1, federated: 1, federation: 1 } });
+	if (!room) {
+		throw new ClientSafeError('error-invalid-room', 'Invalid room', {
+			method: 'removeRoomOwner',
+		});
+	}
+
+	if (!(await hasPermissionAsync(fromUserId, 'set-owner', rid)) && !isRoomFederated(room)) {
+		throw new ClientSafeError('error-not-allowed', 'Not allowed', {
+			method: 'removeRoomOwner',
+		});
+	}
+
+	const user = await Users.findOneById(userId);
+	if (!user?.username) {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
+			method: 'removeRoomOwner',
+		});
+	}
+
+	const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, user._id);
+
+	if (!subscription) {
+		throw new ClientSafeError('error-invalid-room', 'Invalid room', {
+			method: 'removeRoomOwner',
+		});
+	}
+
+	if (Array.isArray(subscription.roles) === false || subscription.roles?.includes('owner') === false) {
+		throw new ClientSafeError('error-user-not-owner', 'User is not an owner', {
+			method: 'removeRoomOwner',
+		});
+	}
+
+	const numOwners = await Roles.countUsersInRole('owner', rid);
+
+	if (numOwners === 1) {
+		throw new ClientSafeError('error-remove-last-owner', 'This is the last owner. Please set a new owner before removing this one.', {
+			method: 'removeRoomOwner',
+		});
+	}
+
+	await beforeChangeRoomRole.run({ fromUserId, userId, room, role: 'user' });
+
+	const removeRoleResponse = await Subscriptions.removeRoleById(subscription._id, 'owner');
+	await syncRoomRolePriorityForUserAndRoom(userId, rid, subscription.roles?.filter((r) => r !== 'owner') || []);
+
+	if (removeRoleResponse.modifiedCount) {
+		void notifyOnSubscriptionChangedById(subscription._id);
+	}
+
+	const fromUser = await Users.findOneById(fromUserId);
+	if (!fromUser) {
+		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
+			method: 'removeRoomOwner',
+		});
+	}
+
+	await Message.saveSystemMessage('subscription-role-removed', rid, user.username, fromUser, { role: 'owner' });
+
+	const team = await Team.getOneByMainRoomId(rid);
+	if (team) {
+		await Team.removeRolesFromMember(team._id, userId, ['owner']);
+	}
+
+	const event = {
+		type: 'removed',
+		_id: 'owner',
+		u: {
+			_id: user._id,
+			username: user.username,
+			name: user.name,
+		},
+		scope: rid,
+	} as const;
+	if (settings.get('UI_DisplayRoles')) {
+		void api.broadcast('user.roleUpdate', event);
+	}
+	return true;
+};

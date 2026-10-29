@@ -1,17 +1,30 @@
-import { Box } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Box, Text, useStyle } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { ILivechatContactWithManagerData } from '@rocket.chat/rest-typings';
 import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
 
 import ContactItemMenu from './ContactItemMenu';
 import { OmnichannelRoomIcon } from '../../../../components/RoomIcon/OmnichannelRoomIcon';
+import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { useTimeFromNow } from '../../../../hooks/useTimeFromNow';
 import { useOmnichannelSource } from '../../hooks/useOmnichannelSource';
 import { useOmnichannelDirectoryRouter } from '../hooks/useOmnichannelDirectoryRouter';
 
+/**
+ * TODO: We should have a variant for aligning row cell instead of using custom CSS
+ **/
+const customAlignTop = css`
+	td {
+		vertical-align: top;
+	}
+`;
+
 const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILivechatContactWithManagerData) => {
+	const customAlignTopClassName = useStyle(customAlignTop);
 	const { getSourceLabel } = useOmnichannelSource();
 	const getTimeFromNow = useTimeFromNow(true);
+	const formatDate = useFormatDate();
 	const omnichannelDirectoryRouter = useOmnichannelDirectoryRouter();
 
 	const latestChannel = channels?.sort((a, b) => {
@@ -31,20 +44,38 @@ const ContactTableRow = ({ _id, name, contactManager, lastChat, channels }: ILiv
 	);
 
 	return (
-		<GenericTableRow action key={_id} tabIndex={0} height='40px' rcx-show-call-button-on-hover onClick={() => onRowClick(_id)}>
-			<GenericTableCell withTruncatedText>{name}</GenericTableCell>
-			<GenericTableCell withTruncatedText>
+		<GenericTableRow
+			action
+			key={_id}
+			tabIndex={0}
+			rcx-show-call-button-on-hover
+			className={customAlignTopClassName}
+			onClick={() => onRowClick(_id)}
+		>
+			<GenericTableCell strong color='default' truncate>
+				{name}
+			</GenericTableCell>
+			<GenericTableCell truncate>
 				{latestChannel?.details && (
 					<Box withTruncatedText display='flex' alignItems='center'>
 						<OmnichannelRoomIcon size='x20' source={latestChannel?.details} />
-						<Box withTruncatedText mis={8}>
+						<Box withTruncatedText marginInlineStart={8}>
 							{getSourceLabel(latestChannel?.details)}
 						</Box>
 					</Box>
 				)}
 			</GenericTableCell>
-			<GenericTableCell withTruncatedText>{contactManager?.username}</GenericTableCell>
-			<GenericTableCell withTruncatedText>{lastChat && getTimeFromNow(lastChat.ts)}</GenericTableCell>
+			<GenericTableCell truncate>{contactManager?.username}</GenericTableCell>
+			<GenericTableCell truncate>
+				{lastChat && (
+					<Box display='flex' flexDirection='column'>
+						<Text fontScale='p2m' truncate color='default'>
+							{formatDate(lastChat.ts)}
+						</Text>
+						<Text truncate>{getTimeFromNow(lastChat.ts)}</Text>
+					</Box>
+				)}
+			</GenericTableCell>
 			<GenericTableCell>
 				<ContactItemMenu _id={_id} name={name} channels={channels} />
 			</GenericTableCell>

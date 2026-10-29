@@ -4,7 +4,7 @@ import { GenericModal } from '@rocket.chat/ui-client';
 import type { ComponentPropsWithoutRef } from 'react';
 import { Trans } from 'react-i18next';
 
-type ConfirmOwnerChangeModalProps = {
+export type ConfirmOwnerChangeModalProps = {
 	shouldChangeOwner: string[];
 	shouldBeRemoved: string[];
 	contentTitle?: string;

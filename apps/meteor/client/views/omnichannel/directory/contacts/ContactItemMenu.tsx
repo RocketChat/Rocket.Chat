@@ -8,7 +8,7 @@ import { useTranslation } from 'react-i18next';
 import RemoveContactModal from './RemoveContactModal';
 import { useOmnichannelDirectoryRouter } from '../hooks/useOmnichannelDirectoryRouter';
 
-type ContactItemMenuProps = {
+export type ContactItemMenuProps = {
 	_id: string;
 	name: string;
 	channels: ILivechatContactChannel[];

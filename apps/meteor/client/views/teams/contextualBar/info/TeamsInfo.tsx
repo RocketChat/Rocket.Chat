@@ -28,7 +28,7 @@ import RoomInfoABACSection from '../../../room/contextualBar/Info/RoomInfo/ABAC/
 import { useSplitRoomActions } from '../../../room/contextualBar/Info/hooks/useSplitRoomActions';
 import { useRetentionPolicy } from '../../../room/hooks/useRetentionPolicy';
 
-type TeamsInfoProps = {
+export type TeamsInfoProps = {
 	room: IRoom;
 	onClickEdit?: () => void;
 	onClickClose?: () => void;
@@ -50,9 +50,9 @@ const TeamsInfo = ({ room, onClickClose, onClickEdit, onClickViewChannels }: Tea
 				<ContextualbarTitle>{t('Teams_Info')}</ContextualbarTitle>
 				{onClickClose && <ContextualbarClose onClick={onClickClose} />}
 			</ContextualbarHeader>
-			<ContextualbarScrollableContent p={24}>
+			<ContextualbarScrollableContent padding={24}>
 				<InfoPanel>
-					<InfoPanelSection maxWidth='x332' mi='auto'>
+					<InfoPanelSection maxWidth='x332' marginInline='auto'>
 						<InfoPanelAvatar>
 							<RoomAvatar size='x332' room={room} />
 						</InfoPanelAvatar>
@@ -66,7 +66,7 @@ const TeamsInfo = ({ room, onClickClose, onClickEdit, onClickViewChannels }: Tea
 									title={t('More')}
 									placement='bottom-end'
 									detached
-									button={<IconButton icon='kebab' secondary flexShrink={0} flexGrow={0} maxHeight='initial' />}
+									button={<IconButton icon='kebab' variant='secondary' />}
 									sections={menu}
 								/>
 							)}
@@ -75,7 +75,7 @@ const TeamsInfo = ({ room, onClickClose, onClickEdit, onClickViewChannels }: Tea
 
 					<InfoPanelSection>
 						{room.archived && (
-							<Box mb={16}>
+							<Box marginBlock={16}>
 								<Callout type='warning'>{t('Room_archived')}</Callout>
 							</Box>
 						)}
@@ -125,7 +125,7 @@ const TeamsInfo = ({ room, onClickClose, onClickEdit, onClickViewChannels }: Tea
 							<InfoPanelField>
 								<InfoPanelLabel>{t('Teams_channels')}</InfoPanelLabel>
 								<InfoPanelText>
-									<Button onClick={onClickViewChannels} small>
+									<Button onClick={onClickViewChannels} size='small'>
 										{t('View_channels')}
 									</Button>
 								</InfoPanelText>

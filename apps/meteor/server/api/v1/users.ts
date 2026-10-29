@@ -1,83 +1,88 @@
-import { MeteorError, Presence, Team } from '@rocket.chat/core-services';
+import { hashLoginToken } from '@rocket.chat/account-utils';
+import { ClientSafeError, Presence, Team, isClientSafeError } from '@rocket.chat/core-services';
 import type { IExportOperation, ILoginToken, IPersonalAccessToken, IUser, UserStatus } from '@rocket.chat/core-typings';
 import { Users, Subscriptions, Sessions, OAuthAccessTokens, OAuthRefreshTokens, OAuthAuthCodes } from '@rocket.chat/models';
 import {
+	ajv,
 	isUserCreateParamsPOST,
-	isUserSetActiveStatusParamsPOST,
 	isUserDeactivateIdleParamsPOST,
-	isUsersInfoParamsGetProps,
-	isUsersListStatusProps,
-	isUsersSendWelcomeEmailProps,
-	isUserRegisterParamsPOST,
 	isUserLogoutParamsPOST,
-	isUsersListTeamsProps,
+	isUserRegisterParamsPOST,
 	isUsersAutocompleteProps,
-	isUsersSetAvatarProps,
-	isUsersUpdateParamsPOST,
-	isUsersUpdateOwnBasicInfoParamsPOST,
-	isUsersSetPreferencesParamsPOST,
 	isUsersCheckUsernameAvailabilityParamsGET,
-	isUsersSendConfirmationEmailParamsPOST,
-	isUsersListParamsGET,
-	isUsersPresenceParamsGET,
-	isUsersRequestDataDownloadParamsGET,
+	isUserSetActiveStatusParamsPOST,
 	isUsersGetPresenceParamsGET,
 	isUsersGetStatusParamsGET,
-	ajv,
+	isUsersInfoParamsGetProps,
+	isUsersListParamsGET,
+	isUsersListStatusProps,
+	isUsersListStatusVisibilityParamsGET,
+	isUsersListTeamsProps,
+	isUsersPresenceParamsGET,
+	isUsersRequestDataDownloadParamsGET,
+	isUsersSendConfirmationEmailParamsPOST,
+	isUsersSendWelcomeEmailProps,
+	isUsersSetAvatarProps,
+	isUsersSetPreferencesParamsPOST,
+	isUsersUpdateOwnBasicInfoParamsPOST,
+	isUsersUpdateParamsPOST,
+	paginatedResponseProperties,
 	validateBadRequestErrorResponse,
-	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
-import { getLoginExpirationInMs } from '@rocket.chat/tools';
-import { Accounts } from 'meteor/accounts-base';
+import { isHiddenFor } from '@rocket.chat/streamer';
+import { escapeRegExp, getLoginExpirationInMs } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 import type { Filter } from 'mongodb';
 
-import { getUserForCheck, emailCheck } from '../../../app/2fa/server/code';
-import { resetTOTP } from '../../../app/2fa/server/functions/resetTOTP';
-import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
-import { checkEmailAvailability } from '../../../app/lib/server/functions/checkEmailAvailability';
-import {
-	checkUsernameAvailability,
-	checkUsernameAvailabilityWithValidation,
-} from '../../../app/lib/server/functions/checkUsernameAvailability';
-import { deleteUser } from '../../../app/lib/server/functions/deleteUser';
-import { getAvatarSuggestionForUser } from '../../../app/lib/server/functions/getAvatarSuggestionForUser';
-import { getFullUserDataByUniqueSearchTerm, defaultFields, fullFields } from '../../../app/lib/server/functions/getFullUserData';
-import { generateUsernameSuggestion } from '../../../app/lib/server/functions/getUsernameSuggestion';
-import { saveCustomFields } from '../../../app/lib/server/functions/saveCustomFields';
-import { saveCustomFieldsWithoutValidation } from '../../../app/lib/server/functions/saveCustomFieldsWithoutValidation';
-import { saveUser } from '../../../app/lib/server/functions/saveUser';
-import { sendWelcomeEmail } from '../../../app/lib/server/functions/saveUser/sendUserEmail';
-import { canEditExtension } from '../../../app/lib/server/functions/saveUser/validateUserEditing';
-import { setUserAvatar } from '../../../app/lib/server/functions/setUserAvatar';
-import { setUsernameWithValidation } from '../../../app/lib/server/functions/setUsername';
-import { validateCustomFields } from '../../../app/lib/server/functions/validateCustomFields';
-import { validateNameChars } from '../../../app/lib/server/functions/validateNameChars';
-import { validateUsername } from '../../../app/lib/server/functions/validateUsername';
-import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../../app/lib/server/lib/notifyListener';
-import { generateAccessToken } from '../../../app/lib/server/methods/createToken';
-import { deleteUserOwnAccount } from '../../../app/lib/server/methods/deleteUserOwnAccount';
-import { settings } from '../../../app/settings/server';
-import { isSMTPConfigured } from '../../../app/utils/server/functions/isSMTPConfigured';
-import { getURL } from '../../../app/utils/server/getURL';
 import { generatePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/generateToken';
 import { regeneratePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/regenerateToken';
 import { removePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/removeToken';
+import { runUserLogoutCleanUp } from '../../hooks/userLogoutCleanUp';
+import { getUserForCheck, emailCheck } from '../../lib/2fa/code';
+import { resetTOTP } from '../../lib/2fa/functions/resetTOTP';
+import { codesRemainingTotp, disableTotp, enableTotp, regenerateTotpCodes, validateTotpTempToken } from '../../lib/2fa/functions/totp';
 import { UserChangedAuditStore } from '../../lib/auditServerEvents/userChanged';
+import { hasAllPermissionAsync, hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { i18n } from '../../lib/i18n';
 import { SystemLogger } from '../../lib/logger/system';
+import { notifyOnUserChange, notifyOnUserChangeAsync } from '../../lib/notifyListener';
 import { resetUserE2EEncriptionKey } from '../../lib/resetUserE2EKey';
-import { registerUser } from '../../methods/registerUser';
-import { requestDataDownload } from '../../methods/requestDataDownload';
-import { resetAvatar } from '../../methods/resetAvatar';
-import { saveUserPreferences } from '../../methods/saveUserPreferences';
-import { executeSaveUserProfile } from '../../methods/saveUserProfile';
-import { sendConfirmationEmail } from '../../methods/sendConfirmationEmail';
-import { sendForgotPasswordEmail } from '../../methods/sendForgotPasswordEmail';
-import { executeSetUserActiveStatus } from '../../methods/setUserActiveStatus';
+import { validateNameChars } from '../../lib/shared/validateNameChars';
+import { excludingHiddenFilter } from '../../lib/statusVisibility/effectiveStatus';
+import { getUsersHiddenFrom, filterHiddenUsers, redactHiddenUser, redactHiddenUsers } from '../../lib/statusVisibility/hiddenUsers';
+import { resolveUsersByIds } from '../../lib/statusVisibility/resolveUsers';
+import { isAdminHidingAllowed, isUserHidingAllowed } from '../../lib/statusVisibility/settings';
+import { checkEmailAvailability } from '../../lib/users/checkEmailAvailability';
+import { checkUsernameAvailability, checkUsernameAvailabilityWithValidation } from '../../lib/users/checkUsernameAvailability';
+import { deleteUser } from '../../lib/users/deleteUser';
+import { getAvatarSuggestionForUser } from '../../lib/users/getAvatarSuggestionForUser';
+import { getFullUserDataByUniqueSearchTerm, defaultFields, fullFields } from '../../lib/users/getFullUserData';
+import { generateUsernameSuggestion } from '../../lib/users/getUsernameSuggestion';
+import { saveCustomFields } from '../../lib/users/saveCustomFields';
+import { saveCustomFieldsWithoutValidation } from '../../lib/users/saveCustomFieldsWithoutValidation';
+import { saveUser } from '../../lib/users/saveUser';
+import { sendWelcomeEmail } from '../../lib/users/saveUser/sendUserEmail';
+import { canEditExtension } from '../../lib/users/saveUser/validateUserEditing';
+import { setUserAvatar } from '../../lib/users/setUserAvatar';
+import { setUsernameWithValidation } from '../../lib/users/setUsername';
+import { validateCustomFields } from '../../lib/users/validateCustomFields';
+import { validateUsername } from '../../lib/users/validateUsername';
+import { verifyEmail } from '../../lib/users/verifyEmail';
+import { isSMTPConfigured } from '../../lib/utils/functions/isSMTPConfigured';
+import { getURL } from '../../lib/utils/getURL';
+import { generateAccessToken } from '../../meteor-methods/auth/createToken';
+import { sendConfirmationEmail } from '../../meteor-methods/auth/sendConfirmationEmail';
+import { sendForgotPasswordEmail } from '../../meteor-methods/auth/sendForgotPasswordEmail';
+import { requestDataDownload } from '../../meteor-methods/platform/requestDataDownload';
+import { deleteUserOwnAccount } from '../../meteor-methods/users/deleteUserOwnAccount';
+import { registerUser } from '../../meteor-methods/users/registerUser';
+import { resetAvatar } from '../../meteor-methods/users/resetAvatar';
+import { saveUserPreferences } from '../../meteor-methods/users/saveUserPreferences';
+import { executeSaveUserProfile } from '../../meteor-methods/users/saveUserProfile';
+import { executeSetUserActiveStatus } from '../../meteor-methods/users/setUserActiveStatus';
+import { settings } from '../../settings';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
@@ -86,6 +91,7 @@ import { getUserFromParams } from '../lib/getUserFromParams';
 import { getUserInfo } from '../lib/getUserInfo';
 import { isUserFromParams } from '../lib/isUserFromParams';
 import { isValidQuery } from '../lib/isValidQuery';
+import { queryFiltersStatus } from '../lib/queryFiltersStatus';
 import { findPaginatedUsersByStatus, findUsersToAutocomplete, getInclusiveFields, getNonEmptyFields, getNonEmptyQuery } from '../lib/users';
 
 API.v1.addRoute(
@@ -201,6 +207,7 @@ API.v1
 				statusType: this.bodyParams.data.statusType,
 				newPassword: this.bodyParams.data.newPassword,
 				typedPassword: this.bodyParams.data.currentPassword,
+				phones: this.bodyParams.data.phones,
 			};
 
 			if (userData.realname && !validateNameChars(userData.realname)) {
@@ -237,16 +244,18 @@ API.v1
 			if (
 				this.bodyParams.userId &&
 				this.bodyParams.userId !== this.userId &&
-				!(await hasPermissionAsync(this.userId, 'edit-other-user-info'))
+				!(await hasPermissionAsync(this.user, 'edit-other-user-info'))
 			) {
-				throw new Meteor.Error('error-action-not-allowed', 'Editing user is not allowed');
+				throw new ClientSafeError('error-action-not-allowed', 'Editing user is not allowed');
 			}
 			const userId = this.bodyParams.userId ? this.bodyParams.userId : this.userId;
 			if (!(await Users.findOneById(userId))) {
-				throw new Meteor.Error('error-invalid-user', 'The optional "userId" param provided does not match any users');
+				throw new ClientSafeError('error-invalid-user', 'The optional "userId" param provided does not match any users');
 			}
 
-			await saveUserPreferences(this.bodyParams.data, userId);
+			const { statusVisibilityDenied: _ownBlockList, ...preferences } = this.bodyParams.data;
+
+			await saveUserPreferences(userId === this.userId ? this.bodyParams.data : preferences, userId);
 			const user = await Users.findOneById(userId, {
 				projection: {
 					'settings.preferences': 1,
@@ -258,16 +267,23 @@ API.v1
 				return API.v1.failure('User not found');
 			}
 
+			const { statusVisibilityDenied, ...savedPreferences } = user.settings?.preferences ?? {};
+
 			return API.v1.success({
 				user: {
 					_id: user._id,
 					settings: {
 						preferences: {
-							...user.settings?.preferences,
+							...savedPreferences,
+							...(userId === this.userId &&
+								isUserHidingAllowed() &&
+								statusVisibilityDenied?.length && {
+									statusVisibilityDenied: (await resolveUsersByIds(statusVisibilityDenied)).usernames,
+								}),
 							language: user.language,
 						},
 					},
-				} as unknown as Required<Pick<IUser, '_id' | 'settings'>>,
+				},
 			});
 		},
 	)
@@ -284,10 +300,10 @@ API.v1
 			},
 		},
 		async function action() {
-			const canEditOtherUserAvatar = await hasPermissionAsync(this.userId, 'edit-other-user-avatar');
+			const canEditOtherUserAvatar = await hasPermissionAsync(this.user, 'edit-other-user-avatar');
 
 			if (!settings.get('Accounts_AllowUserAvatarChange') && !canEditOtherUserAvatar) {
-				throw new Meteor.Error('error-not-allowed', 'Change avatar is not allowed', {
+				throw new ClientSafeError('error-not-allowed', 'Change avatar is not allowed', {
 					method: 'users.setAvatar',
 				});
 			}
@@ -334,13 +350,21 @@ API.v1
 				}
 
 				if (!user) {
-					throw new Meteor.Error('error-invalid-user', 'The optional "userId" or "username" param provided does not match any users');
+					throw new ClientSafeError('error-invalid-user', 'The optional "userId" or "username" param provided does not match any users');
 				}
 
 				const isAnotherUser = this.userId !== user._id;
-				if (isAnotherUser && !(await hasPermissionAsync(this.userId, 'edit-other-user-avatar'))) {
-					throw new Meteor.Error('error-not-allowed', 'Not allowed');
+				if (isAnotherUser && !(await hasPermissionAsync(this.user, 'edit-other-user-avatar'))) {
+					throw new ClientSafeError('error-not-allowed', 'Not allowed');
 				}
+			}
+
+			// an avatar coming from an OAuth service suggestion carries the provider data URI (a string) in the
+			// image field; setUserAvatar parses it and records the provider name as the avatar origin. A regular
+			// upload has no service and is stored from the binary buffer.
+			if (typeof fields.service === 'string' && fields.service.length > 0) {
+				await setUserAvatar(user, fileBuffer.toString('utf8'), mimetype, fields.service);
+				return API.v1.success();
 			}
 
 			await setUserAvatar(user, fileBuffer, mimetype, 'rest');
@@ -373,7 +397,7 @@ API.v1
 				validateCustomFields(this.bodyParams.customFields);
 			}
 
-			if (this.bodyParams.freeSwitchExtension && !(await canEditExtension(this.bodyParams.freeSwitchExtension))) {
+			if (this.bodyParams.sipExtension && !(await canEditExtension(this.bodyParams.sipExtension))) {
 				return API.v1.failure('Setting user voice call extension is not allowed', 'error-action-not-allowed');
 			}
 
@@ -467,7 +491,7 @@ API.v1.post(
 	},
 	async function action() {
 		if (!settings.get('Accounts_AllowDeleteOwnAccount')) {
-			throw new Meteor.Error('error-not-allowed', 'Not allowed');
+			throw new ClientSafeError('error-not-allowed', 'Not allowed');
 		}
 
 		const { confirmRelinquish = false } = this.bodyParams;
@@ -587,13 +611,12 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		const searchTerms: [string, 'id' | 'username' | 'importId' | 'email' | 'freeSwitchExtension'] | false =
+		const searchTerms: [string, 'id' | 'username' | 'importId' | 'email' | 'sipExtension'] | false =
 			('userId' in this.queryParams && !!this.queryParams.userId && [this.queryParams.userId, 'id']) ||
 			('username' in this.queryParams && !!this.queryParams.username && [this.queryParams.username, 'username']) ||
 			('importId' in this.queryParams && !!this.queryParams.importId && [this.queryParams.importId, 'importId']) ||
 			('email' in this.queryParams && !!this.queryParams.email && [this.queryParams.email, 'email']) ||
-			('freeSwitchExtension' in this.queryParams &&
-				!!this.queryParams.freeSwitchExtension && [this.queryParams.freeSwitchExtension, 'freeSwitchExtension']);
+			('sipExtension' in this.queryParams && !!this.queryParams.sipExtension && [this.queryParams.sipExtension, 'sipExtension']);
 
 		if (!searchTerms) {
 			return API.v1.failure('Invalid search query.');
@@ -607,7 +630,7 @@ API.v1.get(
 
 		const myself = user._id === this.userId;
 
-		if (this.queryParams.includeUserRooms === 'true' && (myself || (await hasPermissionAsync(this.userId, 'view-other-user-channels')))) {
+		if (this.queryParams.includeUserRooms === 'true' && (myself || (await hasPermissionAsync(this.user, 'view-other-user-channels')))) {
 			return API.v1.success({
 				user: {
 					...user,
@@ -635,13 +658,10 @@ API.v1.get(
 	},
 );
 
-// users.list accepts arbitrary query filter fields (name, username, etc.)
-// that cannot be statically defined — keeping as addRoute until params are known
 API.v1.addRoute(
 	'users.list',
 	{
 		authRequired: true,
-		queryOperations: ['$or', '$and'],
 		permissionsRequired: ['view-d-room'],
 		query: isUsersListParamsGET,
 	},
@@ -649,22 +669,25 @@ API.v1.addRoute(
 		async get() {
 			if (
 				settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
-				!(await hasPermissionAsync(this.userId, 'view-outside-room'))
+				!(await hasPermissionAsync(this.user, 'view-outside-room'))
 			) {
 				return API.v1.forbidden();
 			}
-			const canViewFullOtherUserInfo = await hasPermissionAsync(this.userId, 'view-full-other-user-info');
+			const canViewFullOtherUserInfo = await hasPermissionAsync(this.user, 'view-full-other-user-info');
+			const { customFields, includeCustomFields } = this.queryParams;
+
+			if ((customFields || includeCustomFields) && !canViewFullOtherUserInfo) {
+				return API.v1.forbidden();
+			}
 
 			const { offset, count } = await getPaginationItems(this.queryParams);
-			const { sort, fields, query } = await this.parseJsonQuery();
+			const { sort, fields } = await this.parseJsonQuery();
 
 			const nonEmptyFields = getNonEmptyFields(fields);
 
 			const inclusiveFields = getInclusiveFields(nonEmptyFields);
 
-			const inclusiveFieldsKeys = Object.keys(inclusiveFields);
-
-			const nonEmptyQuery = getNonEmptyQuery(query, canViewFullOtherUserInfo);
+			const nonEmptyQuery = getNonEmptyQuery(canViewFullOtherUserInfo);
 
 			if ('email' in this.queryParams && this.queryParams.email) {
 				if (!canViewFullOtherUserInfo) {
@@ -677,31 +700,23 @@ API.v1.addRoute(
 				};
 			}
 
-			// if user provided a query, validate it with their allowed operators
-			// otherwise we use the default query (with $regex and $options)
-			if (
-				!isValidQuery(
-					nonEmptyQuery,
-					[
-						...inclusiveFieldsKeys,
-						inclusiveFieldsKeys.includes('emails') && 'emails.address.*',
-						inclusiveFieldsKeys.includes('username') && 'username.*',
-						inclusiveFieldsKeys.includes('name') && 'name.*',
-						inclusiveFieldsKeys.includes('type') && 'type.*',
-						inclusiveFieldsKeys.includes('customFields') && 'customFields.*',
-					].filter(Boolean) as string[],
-					// At this point, we have already validated the user query not containing malicious fields
-					// On here we are using our own query so we can allow some extra fields
-					[...this.queryOperations, '$regex', '$options'],
-				)
-			) {
-				throw new Meteor.Error('error-invalid-query', isValidQuery.errors.join('\n'));
+			if (customFields) {
+				for (const [key, value] of Object.entries(customFields)) {
+					nonEmptyQuery[`customFields.${key}`] = value;
+				}
 			}
 
-			const actualSort = sort || { username: 1 };
+			if ('username' in this.queryParams && this.queryParams.username) {
+				nonEmptyQuery.username = { $regex: escapeRegExp(this.queryParams.username), $options: 'i' };
+			}
+
+			const hidden = await getUsersHiddenFrom(this.userId);
+
+			const actualSort = sort ? { ...sort } : { username: 1 };
 
 			if (sort?.status) {
 				actualSort.active = sort.status;
+				delete actualSort.status;
 			}
 
 			if (sort?.name) {
@@ -723,7 +738,10 @@ API.v1.addRoute(
 						$match: nonEmptyQuery,
 					},
 					{
-						$project: inclusiveFields,
+						$project: {
+							...inclusiveFields,
+							...(includeCustomFields && { customFields: 1 }),
+						},
 					},
 					{
 						$addFields: {
@@ -755,7 +773,7 @@ API.v1.addRoute(
 			} = result[0];
 
 			return API.v1.success({
-				users,
+				users: redactHiddenUsers(users, hidden),
 				count: users.length,
 				offset,
 				total,
@@ -775,6 +793,70 @@ API.v1.get(
 				type: 'object',
 				properties: {
 					// user shape varies by projection and permissions
+					users: { type: 'array', items: {} },
+					...paginatedResponseProperties,
+					success: { type: 'boolean', enum: [true] },
+				},
+				required: ['users', 'count', 'offset', 'total', 'success'],
+				additionalProperties: false,
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		if (
+			settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
+			!(await hasPermissionAsync(this.user, 'view-outside-room'))
+		) {
+			return API.v1.forbidden();
+		}
+
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { sort } = await this.parseJsonQuery();
+		const { status, hasLoggedIn, type, roles, searchTerm, inactiveReason, statusManagement } = this.queryParams;
+
+		if (
+			statusManagement &&
+			!(isAdminHidingAllowed() && (await hasAllPermissionAsync(this.userId, ['edit-other-user-info', 'view-full-other-user-info'])))
+		) {
+			return API.v1.forbidden();
+		}
+
+		const result = await findPaginatedUsersByStatus({
+			uid: this.userId,
+			offset,
+			count,
+			sort,
+			status,
+			roles,
+			searchTerm,
+			hasLoggedIn,
+			type,
+			inactiveReason,
+			statusManagement,
+		});
+
+		const hidden = await getUsersHiddenFrom(this.userId);
+
+		return API.v1.success({
+			...result,
+			users: redactHiddenUsers(result.users, hidden),
+		});
+	},
+);
+
+API.v1.get(
+	'users.listStatusVisibility',
+	{
+		authRequired: true,
+		permissionsRequired: ['edit-other-user-info', 'view-full-other-user-info'],
+		query: isUsersListStatusVisibilityParamsGET,
+		response: {
+			200: ajv.compile<{ users: object[]; count: number; offset: number; total: number }>({
+				type: 'object',
+				properties: {
 					users: { type: 'array' },
 					count: { type: 'number' },
 					offset: { type: 'number' },
@@ -790,31 +872,50 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		if (
-			settings.get('API_Apply_permission_view-outside-room_on_users-list') &&
-			!(await hasPermissionAsync(this.userId, 'view-outside-room'))
-		) {
-			return API.v1.forbidden();
+		const { offset, count } = await getPaginationItems(this.queryParams);
+		const { searchTerm } = this.queryParams;
+
+		if (!isAdminHidingAllowed()) {
+			return API.v1.success({ users: [], count: 0, offset, total: 0 });
 		}
 
-		const { offset, count } = await getPaginationItems(this.queryParams);
-		const { sort } = await this.parseJsonQuery();
-		const { status, hasLoggedIn, type, roles, searchTerm, inactiveReason } = this.queryParams;
+		const { cursor, totalCount } = Users.findPaginatedManagedPresenceUsers(searchTerm, {
+			projection: {
+				username: 1,
+				name: 1,
+				status: 1,
+				statusText: 1,
+				presenceDisabledByAdmin: 1,
+				statusVisibilityDeniedByAdmin: 1,
+			},
+			sort: { username: 1 },
+			skip: offset,
+			limit: count,
+		});
 
-		return API.v1.success(
-			await findPaginatedUsersByStatus({
-				uid: this.userId,
-				offset,
-				count,
-				sort,
-				status,
-				roles,
-				searchTerm,
-				hasLoggedIn,
-				type,
-				inactiveReason,
-			}),
-		);
+		const [rows, total] = await Promise.all([cursor.toArray(), totalCount]);
+
+		const hidden = await getUsersHiddenFrom(this.userId);
+		const visible = redactHiddenUsers(rows, hidden);
+
+		const everyId = [...new Set(visible.flatMap((user) => user.statusVisibilityDeniedByAdmin ?? []))];
+		const resolved = await resolveUsersByIds(everyId);
+		const usernameById = new Map(resolved.ids.map((id, index) => [id, resolved.usernames[index]]));
+
+		return API.v1.success({
+			users: visible.map((user) => ({
+				_id: user._id,
+				username: user.username,
+				name: user.name,
+				status: user.status,
+				statusText: user.statusText,
+				presenceDisabledByAdmin: user.presenceDisabledByAdmin === true,
+				statusVisibilityDeniedByAdmin: (user.statusVisibilityDeniedByAdmin ?? []).map((id) => usernameById.get(id)).filter(Boolean),
+			})),
+			count: visible.length,
+			offset,
+			total,
+		});
 	},
 );
 
@@ -841,7 +942,7 @@ API.v1.post(
 		const { email } = this.bodyParams;
 
 		if (!isSMTPConfigured()) {
-			throw new MeteorError('error-email-send-failed', 'SMTP is not configured', {
+			throw new ClientSafeError('error-email-send-failed', 'SMTP is not configured', {
 				method: 'sendWelcomeEmail',
 			});
 		}
@@ -849,7 +950,7 @@ API.v1.post(
 		const user = await Users.findOneByEmailAddress(email.trim(), { projection: { name: 1 } });
 
 		if (!user) {
-			throw new MeteorError('error-invalid-user', 'Invalid user', {
+			throw new ClientSafeError('error-invalid-user', 'Invalid user', {
 				method: 'sendWelcomeEmail',
 			});
 		}
@@ -899,6 +1000,10 @@ API.v1.post(
 			try {
 				validateCustomFields(this.bodyParams.customFields);
 			} catch (e) {
+				if (isClientSafeError(e)) {
+					const { isClientSafe, errorType, error, reason, message, details } = e;
+					return API.v1.failure({ isClientSafe, errorType, error, reason, message, details });
+				}
 				return API.v1.failure(e);
 			}
 		}
@@ -955,12 +1060,12 @@ API.v1.post(
 		if (settings.get('Accounts_AllowUserAvatarChange') && user._id === this.userId) {
 			await resetAvatar(this.userId, this.userId);
 		} else if (
-			(await hasPermissionAsync(this.userId, 'edit-other-user-avatar')) ||
-			(await hasPermissionAsync(this.userId, 'manage-moderation-actions'))
+			(await hasPermissionAsync(this.user, 'edit-other-user-avatar')) ||
+			(await hasPermissionAsync(this.user, 'manage-moderation-actions'))
 		) {
 			await resetAvatar(this.userId, user._id);
 		} else {
-			throw new Meteor.Error('error-not-allowed', 'Reset avatar is not allowed', {
+			throw new ClientSafeError('error-not-allowed', 'Reset avatar is not allowed', {
 				method: 'users.resetAvatar',
 			});
 		}
@@ -1031,7 +1136,7 @@ const usersEndpoints = API.v1
 		async function action() {
 			const user = await getUserFromParams(this.bodyParams);
 
-			const data = await generateAccessToken(user._id, this.bodyParams.secret);
+			const data = await generateAccessToken(user._id, this.bodyParams.secret, this.user);
 
 			return API.v1.success({ data });
 		},
@@ -1376,7 +1481,7 @@ API.v1
 		async function action() {
 			const hasUnverifiedEmail = this.user.emails?.some((email) => !email.verified);
 			if (hasUnverifiedEmail) {
-				throw new MeteorError('error-invalid-user', 'You need to verify your emails before setting up 2FA');
+				throw new ClientSafeError('error-invalid-user', 'You need to verify your emails before setting up 2FA');
 			}
 
 			await Users.enableEmail2FAByUserId(this.userId);
@@ -1387,10 +1492,10 @@ API.v1
 				return API.v1.success();
 			}
 
-			const hashedToken = Accounts._hashLoginToken(xAuthToken);
+			const hashedToken = hashLoginToken(xAuthToken);
 
 			if (!(await Users.removeNonPATLoginTokensExcept(this.userId, hashedToken))) {
-				throw new MeteorError('error-logging-out-other-clients', 'Error logging out other clients');
+				throw new ClientSafeError('error-logging-out-other-clients', 'Error logging out other clients');
 			}
 
 			// TODO this can be optmized so places that care about loginTokens being removed are invoked directly
@@ -1453,6 +1558,10 @@ API.v1
 				required: ['emailOrUsername'],
 				additionalProperties: false,
 			}),
+			rateLimiterOptions: {
+				numRequestsAllowed: 5,
+				intervalTimeInMS: 60000,
+			},
 			response: {
 				200: voidSuccessResponse,
 				400: validateBadRequestErrorResponse,
@@ -1510,7 +1619,7 @@ API.v1.get(
 				type: 'object',
 				properties: {
 					// user shape varies by projection and permissions
-					users: { type: 'array' },
+					users: { type: 'array', items: {} },
 					full: { type: 'boolean' },
 					success: { type: 'boolean', enum: [true] },
 				},
@@ -1544,9 +1653,14 @@ API.v1.get(
 			},
 		};
 
+		const hidden = await getUsersHiddenFrom(this.userId);
+
 		if (ids) {
+			const requested = Array.isArray(ids) ? ids : ids.split(',');
+			const users = await Users.findPresenceUsersByIds(requested, options).toArray();
+
 			return API.v1.success({
-				users: await Users.findPresenceUsersByIds(Array.isArray(ids) ? ids : ids.split(','), options).toArray(),
+				users: filterHiddenUsers(users, hidden),
 				full: false,
 			});
 		}
@@ -1556,15 +1670,19 @@ API.v1.get(
 			const diff = (Date.now() - Number(ts)) / 1000 / 60;
 
 			if (diff < 10) {
+				const users = await Users.findNotIdUpdatedFrom(this.userId, ts, options).toArray();
+
 				return API.v1.success({
-					users: await Users.findNotIdUpdatedFrom(this.userId, ts, options).toArray(),
+					users: filterHiddenUsers(users, hidden),
 					full: false,
 				});
 			}
 		}
 
+		const users = await Users.findUsersNotOffline(options).toArray();
+
 		return API.v1.success({
-			users: await Users.findUsersNotOffline(options).toArray(),
+			users: filterHiddenUsers(users, hidden),
 			full: true,
 		});
 	},
@@ -1632,12 +1750,12 @@ API.v1
 			const xAuthToken = this.request.headers.get('x-auth-token') as string;
 
 			if (!xAuthToken) {
-				throw new Meteor.Error('error-parameter-required', 'x-auth-token is required');
+				throw new ClientSafeError('error-parameter-required', 'x-auth-token is required');
 			}
-			const hashedToken = Accounts._hashLoginToken(xAuthToken);
+			const hashedToken = hashLoginToken(xAuthToken);
 
 			if (!(await Users.removeNonPATLoginTokensExcept(this.userId, hashedToken))) {
-				throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
+				throw new ClientSafeError('error-invalid-user-id', 'Invalid user id');
 			}
 
 			const me = (await Users.findOneById(this.userId, { projection: { 'services.resume.loginTokens': 1 } })) as Pick<IUser, 'services'>;
@@ -1671,7 +1789,7 @@ API.v1.get(
 				type: 'object',
 				properties: {
 					// autocomplete items shape varies by permissions
-					items: { type: 'array' },
+					items: { type: 'array', items: {} },
 					success: { type: 'boolean', enum: [true] },
 				},
 				required: ['items', 'success'],
@@ -1688,7 +1806,7 @@ API.v1.get(
 
 		try {
 			if (selector?.conditions) {
-				const canViewFullInfo = await hasPermissionAsync(this.userId, 'view-full-other-user-info');
+				const canViewFullInfo = await hasPermissionAsync(this.user, 'view-full-other-user-info');
 				const allowedFields = canViewFullInfo ? [...Object.keys(defaultFields), ...Object.keys(fullFields)] : Object.keys(defaultFields);
 
 				if (!isValidQuery(selector.conditions, allowedFields, ['$and', '$ne', '$exists'])) {
@@ -1699,12 +1817,15 @@ API.v1.get(
 			return API.v1.failure(e);
 		}
 
-		return API.v1.success(
-			await findUsersToAutocomplete({
-				uid: this.userId,
-				selector,
-			}),
-		);
+		const hidden = await getUsersHiddenFrom(this.userId);
+
+		if (queryFiltersStatus(selector.conditions)) {
+			selector.conditions = { $and: [selector.conditions, excludingHiddenFilter(hidden)] };
+		}
+
+		const { items } = await findUsersToAutocomplete({ uid: this.userId, selector });
+
+		return API.v1.success({ items: redactHiddenUsers(items, hidden) });
 	},
 );
 
@@ -1748,11 +1869,11 @@ API.v1
 			if ('userId' in this.bodyParams || 'username' in this.bodyParams || 'user' in this.bodyParams) {
 				const user = await getUserFromParams(this.bodyParams);
 				if (!user) {
-					throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
+					throw new ClientSafeError('error-invalid-user-id', 'Invalid user id');
 				}
 
-				if (!(await hasPermissionAsync(this.userId, 'edit-other-user-e2ee'))) {
-					throw new Meteor.Error('error-not-allowed', 'Not allowed');
+				if (!(await hasPermissionAsync(this.user, 'edit-other-user-e2ee'))) {
+					throw new ClientSafeError('error-not-allowed', 'Not allowed');
 				}
 
 				if (!(await resetUserE2EEncriptionKey(user._id, true))) {
@@ -1788,17 +1909,17 @@ API.v1
 		},
 		async function action() {
 			if ('userId' in this.bodyParams || 'username' in this.bodyParams || 'user' in this.bodyParams) {
-				if (!(await hasPermissionAsync(this.userId, 'edit-other-user-totp'))) {
-					throw new Meteor.Error('error-not-allowed', 'Not allowed');
+				if (!(await hasPermissionAsync(this.user, 'edit-other-user-totp'))) {
+					throw new ClientSafeError('error-not-allowed', 'Not allowed');
 				}
 
 				if (!settings.get('Accounts_TwoFactorAuthentication_Enabled')) {
-					throw new Meteor.Error('error-two-factor-not-enabled', 'Two factor authentication is not enabled');
+					throw new ClientSafeError('error-two-factor-not-enabled', 'Two factor authentication is not enabled');
 				}
 
 				const user = await getUserFromParams(this.bodyParams);
 				if (!user) {
-					throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
+					throw new ClientSafeError('error-invalid-user-id', 'Invalid user id');
 				}
 
 				await resetTOTP(user._id, true);
@@ -1820,7 +1941,7 @@ API.v1
 				200: ajv.compile<{ teams: unknown[] }>({
 					type: 'object',
 					properties: {
-						teams: { type: 'array' },
+						teams: { type: 'array', items: {} },
 						success: { type: 'boolean', enum: [true] },
 					},
 					required: ['teams', 'success'],
@@ -1831,17 +1952,10 @@ API.v1
 			},
 		},
 		async function action() {
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					userId: Match.Maybe(String),
-				}),
-			);
-
 			const { userId } = this.queryParams;
 
 			// If the caller has permission to view all teams, there's no need to filter the teams
-			const adminId = (await hasPermissionAsync(this.userId, 'view-all-teams')) ? undefined : this.userId;
+			const adminId = (await hasPermissionAsync(this.user, 'view-all-teams')) ? undefined : this.userId;
 
 			const teams = await Team.findBySubscribedUserIds(userId, adminId);
 
@@ -1873,18 +1987,24 @@ API.v1
 		async function action() {
 			const userId = this.bodyParams.userId || this.userId;
 
-			if (userId !== this.userId && !(await hasPermissionAsync(this.userId, 'logout-other-user'))) {
+			if (userId !== this.userId && !(await hasPermissionAsync(this.user, 'logout-other-user'))) {
 				return API.v1.forbidden();
 			}
 
+			const user = await Users.findOneById(userId);
+
 			// this method logs the user out automatically, if successful returns 1, otherwise 0
 			if (!(await Users.unsetLoginTokens(userId))) {
-				throw new Meteor.Error('error-invalid-user-id', 'Invalid user id');
+				throw new ClientSafeError('error-invalid-user-id', 'Invalid user id');
 			}
 
 			await Sessions.logoutAllByUserId(userId, this.userId);
 
 			void notifyOnUserChange({ clientAction: 'updated', id: userId, diff: { 'services.resume.loginTokens': [] } });
+
+			if (user) {
+				await runUserLogoutCleanUp(user);
+			}
 
 			return API.v1.success({
 				message: `User ${userId} has been logged out!`,
@@ -1927,9 +2047,10 @@ API.v1
 			}
 
 			const user = await getUserFromParams(this.queryParams);
+			const hidden = await getUsersHiddenFrom(this.userId);
 
 			return API.v1.success({
-				presence: user.status || ('offline' as UserStatus),
+				presence: (isHiddenFor(hidden, user._id) ? 'offline' : user.status || 'offline') as UserStatus,
 			});
 		},
 	)
@@ -1986,7 +2107,7 @@ API.v1
 				if (isUserFromParams(this.bodyParams, this.userId, this.user)) {
 					return Users.findOneById(this.userId);
 				}
-				if (await hasPermissionAsync(this.userId, 'edit-other-user-info')) {
+				if (await hasPermissionAsync(this.user, 'edit-other-user-info')) {
 					return getUserFromParams(this.bodyParams);
 				}
 			})();
@@ -1998,20 +2119,20 @@ API.v1
 			const { status, message, expiresAt } = this.bodyParams;
 
 			if (message && !settings.get('Accounts_AllowUserStatusMessageChange')) {
-				throw new Meteor.Error('error-not-allowed', 'Change status is not allowed', {
+				throw new ClientSafeError('error-not-allowed', 'Change status is not allowed', {
 					method: 'users.setStatus',
 				});
 			}
 
 			const statusExpiresAt = expiresAt ? new Date(expiresAt) : undefined;
 			if (statusExpiresAt && Number.isNaN(statusExpiresAt.getTime())) {
-				throw new Meteor.Error('error-invalid-date', 'Invalid expiresAt date string', {
+				throw new ClientSafeError('error-invalid-date', 'Invalid expiresAt date string', {
 					method: 'users.setStatus',
 				});
 			}
 
 			if (statusExpiresAt && statusExpiresAt.getTime() <= Date.now()) {
-				throw new Meteor.Error('error-invalid-date', 'expiresAt must be a future date', {
+				throw new ClientSafeError('error-invalid-date', 'expiresAt must be a future date', {
 					method: 'users.setStatus',
 				});
 			}
@@ -2021,7 +2142,7 @@ API.v1
 			const effectiveStatus = status || user.statusDefault || ('online' as UserStatus);
 
 			if (effectiveStatus === 'offline' && !settings.get('Accounts_AllowInvisibleStatusOption')) {
-				throw new Meteor.Error('error-status-not-allowed', 'Invisible status is disabled', {
+				throw new ClientSafeError('error-status-not-allowed', 'Invisible status is disabled', {
 					method: 'users.setStatus',
 				});
 			}
@@ -2066,13 +2187,207 @@ API.v1
 			}
 
 			const user = await getUserFromParams(this.queryParams);
+			const hidden = await getUsersHiddenFrom(this.userId);
+			const visible = redactHiddenUser(user, hidden);
 
 			return API.v1.success({
-				_id: user._id,
-				status: (user.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
-				...(user.statusSource && { statusSource: user.statusSource }),
-				...(user.statusExpiresAt && { statusExpiresAt: user.statusExpiresAt.toISOString() }),
+				_id: visible._id,
+				status: (visible.status || 'offline') as 'online' | 'offline' | 'away' | 'busy',
+				...(visible.statusSource && { statusSource: visible.statusSource }),
+				...(visible.statusExpiresAt && { statusExpiresAt: visible.statusExpiresAt.toISOString() }),
 			});
+		},
+	);
+
+API.v1.post(
+	'users.verifyEmail',
+	{
+		authRequired: false,
+		body: ajv.compile<{ token: string }>({
+			type: 'object',
+			properties: {
+				token: { type: 'string', minLength: 1 },
+			},
+			required: ['token'],
+			additionalProperties: false,
+		}),
+		response: {
+			200: voidSuccessResponse,
+			400: validateBadRequestErrorResponse,
+			403: validateForbiddenErrorResponse,
+		},
+	},
+	async function action() {
+		const { token } = this.bodyParams;
+
+		const user = await Users.findOneByEmailVerificationToken<Pick<IUser, '_id' | 'services' | 'emails'>>(token);
+		if (!user) {
+			return API.v1.forbidden('Verify email link expired');
+		}
+
+		await verifyEmail(user, token);
+
+		return API.v1.success();
+	},
+);
+API.v1
+	.post(
+		'users.enableTotp',
+		{
+			authRequired: true,
+			twoFactorRequired: true,
+			twoFactorOptions: { disableRememberMe: true },
+			rateLimiterOptions: {
+				numRequestsAllowed: 5,
+				intervalTimeInMS: 60000,
+			},
+			response: {
+				200: ajv.compile<{ secret: string; url: string }>({
+					type: 'object',
+					properties: {
+						secret: { type: 'string' },
+						url: { type: 'string' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['secret', 'url', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			return API.v1.success(await enableTotp(this.userId));
+		},
+	)
+	.post(
+		'users.disableTotp',
+		{
+			authRequired: true,
+			rateLimiterOptions: {
+				numRequestsAllowed: 5,
+				intervalTimeInMS: 60000,
+			},
+			body: ajv.compile<{ code: string }>({
+				type: 'object',
+				properties: { code: { type: 'string', minLength: 1 } },
+				required: ['code'],
+				additionalProperties: false,
+			}),
+			response: {
+				200: ajv.compile<{ disabled: boolean }>({
+					type: 'object',
+					properties: {
+						disabled: { type: 'boolean' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['disabled', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const disabled = await disableTotp(this.userId, this.bodyParams.code);
+			return API.v1.success({ disabled });
+		},
+	)
+	.post(
+		'users.validateTotp',
+		{
+			authRequired: true,
+			twoFactorRequired: true,
+			twoFactorOptions: { disableRememberMe: true },
+			rateLimiterOptions: {
+				numRequestsAllowed: 5,
+				intervalTimeInMS: 60000,
+			},
+			body: ajv.compile<{ code: string }>({
+				type: 'object',
+				properties: { code: { type: 'string', minLength: 1 } },
+				required: ['code'],
+				additionalProperties: false,
+			}),
+			response: {
+				200: ajv.compile<{ codes: string[] }>({
+					type: 'object',
+					properties: {
+						codes: { type: 'array', items: { type: 'string' } },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['codes', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const result = await validateTotpTempToken(this.userId, this.bodyParams.code, this.request.headers.get('x-auth-token') ?? undefined);
+			return API.v1.success(result);
+		},
+	)
+	.post(
+		'users.regenerateTotpCodes',
+		{
+			authRequired: true,
+			rateLimiterOptions: {
+				numRequestsAllowed: 5,
+				intervalTimeInMS: 60000,
+			},
+			body: ajv.compile<{ code: string }>({
+				type: 'object',
+				properties: { code: { type: 'string', minLength: 1 } },
+				required: ['code'],
+				additionalProperties: false,
+			}),
+			response: {
+				200: ajv.compile<{ codes: string[] }>({
+					type: 'object',
+					properties: {
+						codes: { type: 'array', items: { type: 'string' } },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['codes', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			const result = await regenerateTotpCodes(this.userId, this.bodyParams.code);
+			if (!result) {
+				return API.v1.failure('invalid-totp');
+			}
+			return API.v1.success(result);
+		},
+	)
+	.get(
+		'users.totpCodesRemaining',
+		{
+			authRequired: true,
+			rateLimiterOptions: {
+				numRequestsAllowed: 5,
+				intervalTimeInMS: 60000,
+			},
+			response: {
+				200: ajv.compile<{ remaining: number }>({
+					type: 'object',
+					properties: {
+						remaining: { type: 'number' },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['remaining', 'success'],
+					additionalProperties: false,
+				}),
+				400: validateBadRequestErrorResponse,
+				401: validateUnauthorizedErrorResponse,
+			},
+		},
+		async function action() {
+			return API.v1.success(await codesRemainingTotp(this.userId));
 		},
 	);
 
@@ -2085,6 +2400,6 @@ settings.watch<number>('Rate_Limiter_Limit_RegisterUser', (value) => {
 type UsersEndpoints = ExtractRoutesFromAPI<typeof usersEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends UsersEndpoints {}
 }

@@ -1,4 +1,5 @@
-import { startOfDay, endOfDay } from 'date-fns';
+import { endOfDay } from 'date-fns/endOfDay';
+import { startOfDay } from 'date-fns/startOfDay';
 
 export const getDateRange = (): {
 	start: string;

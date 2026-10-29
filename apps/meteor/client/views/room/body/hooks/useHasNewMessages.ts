@@ -5,7 +5,7 @@ import { clientCallbacks } from '@rocket.chat/ui-client';
 import type { Dispatch, MutableRefObject, SetStateAction } from 'react';
 import { useCallback, useEffect, useState } from 'react';
 
-import { RoomHistoryManager } from '../../../../../app/ui-utils/client';
+import { RoomHistoryManager } from '../../../../lib/RoomHistoryManager';
 import { useChat } from '../../contexts/ChatContext';
 
 export const useHasNewMessages = (

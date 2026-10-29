@@ -5,7 +5,7 @@ import { useOutboundMessageAccess } from '../../../components/outboundMessage/ho
 import type { OutboundMessageModalProps } from '../../../components/outboundMessage/modals/OutboundMessageModal';
 import { useOutboundMessageModal } from '../../../components/outboundMessage/modals/OutboundMessageModal';
 
-type ContactInfoOutboundMessageButtonProps = {
+export type ContactInfoOutboundMessageButtonProps = {
 	title?: string;
 	disabled?: boolean;
 	defaultValues?: OutboundMessageModalProps['defaultValues'];
@@ -24,7 +24,7 @@ const ContactInfoOutboundMessageButton = ({ defaultValues, disabled, title }: Co
 		<IconButton
 			disabled={disabled}
 			onClick={() => outboundMessageModal.open(defaultValues)}
-			tiny
+			size='tiny'
 			icon='send'
 			title={`${t('Outbound_message')} ${title ? `(${title})` : ''}`}
 		/>

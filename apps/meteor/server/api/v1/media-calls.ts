@@ -94,7 +94,7 @@ const mediaCallsAnswerEndpoints = API.v1.post(
 type MediaCallsAnswerEndpoints = ExtractRoutesFromAPI<typeof mediaCallsAnswerEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends MediaCallsAnswerEndpoints {}
 }
 
@@ -207,6 +207,71 @@ const mediaCallsStateEndpoints = API.v1
 type MediaCallsStateEndpoints = ExtractRoutesFromAPI<typeof mediaCallsStateEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends MediaCallsStateEndpoints {}
+}
+
+type MediaCallsInfoParams = {
+	callId: string;
+};
+
+const MediaCallsInfoSchema: JSONSchemaType<MediaCallsInfoParams> = {
+	type: 'object',
+	properties: {
+		callId: {
+			type: 'string',
+		},
+	},
+	required: ['callId'],
+	additionalProperties: false,
+};
+
+export const isMediaCallsInfoProps = ajv.compile<MediaCallsInfoParams>(MediaCallsInfoSchema);
+
+const mediaCallsInfoEndpoints = API.v1.get(
+	'media-calls.info',
+	{
+		response: {
+			200: ajv.compile<{
+				call: IMediaCall;
+			}>({
+				additionalProperties: false,
+				type: 'object',
+				properties: {
+					call: {
+						type: 'object',
+						$ref: '#/components/schemas/IMediaCall',
+					},
+					success: {
+						type: 'boolean',
+						description: 'Indicates the request was successful.',
+					},
+				},
+				required: ['call', 'success'],
+			}),
+			400: validateBadRequestErrorResponse,
+			401: validateUnauthorizedErrorResponse,
+			404: validateNotFoundErrorResponse,
+		},
+		query: isMediaCallsInfoProps,
+		authRequired: true,
+	},
+	async function action() {
+		const call = await MediaCalls.findOneById(this.queryParams.callId);
+
+		if (!call?.uids.includes(this.userId)) {
+			return API.v1.notFound();
+		}
+
+		return API.v1.success({
+			call,
+		});
+	},
+);
+
+type MediaCallsInfoEndpoints = ExtractRoutesFromAPI<typeof mediaCallsInfoEndpoints>;
+
+declare module '@rocket.chat/rest-typings' {
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
+	interface Endpoints extends MediaCallsInfoEndpoints {}
 }

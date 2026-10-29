@@ -1,4 +1,4 @@
-import { OmnichannelIntegration } from '@rocket.chat/core-services';
+import { OmnichannelIntegration, ClientSafeError } from '@rocket.chat/core-services';
 import type {
 	ILivechatVisitor,
 	IUpload,
@@ -13,16 +13,15 @@ import { LivechatVisitors, LivechatRooms, LivechatDepartment } from '@rocket.cha
 import { registerGuest } from '@rocket.chat/omni-core';
 import { Random } from '@rocket.chat/random';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { Meteor } from 'meteor/meteor';
 
 import { API } from '../..';
 import { setCustomField } from './lib/customFields';
-import { FileUpload } from '../../../../app/file-upload/server';
-import type { ILivechatMessage } from '../../../../app/livechat/server/lib/localTypes';
-import { sendMessage } from '../../../../app/livechat/server/lib/messages';
-import { createRoom } from '../../../../app/livechat/server/lib/rooms';
-import { settings } from '../../../../app/settings/server';
 import { getFileExtension } from '../../../../lib/utils/getFileExtension';
+import { FileUpload } from '../../../lib/media/file-upload';
+import type { ILivechatMessage } from '../../../lib/omnichannel/localTypes';
+import { sendMessage } from '../../../lib/omnichannel/messages';
+import { createRoom } from '../../../lib/omnichannel/rooms';
+import { settings } from '../../../settings';
 
 const logger = new Logger('SMS');
 
@@ -37,7 +36,7 @@ const getUploadFile = async (details: Omit<IUpload, '_id' | '_updatedAt'>, fileU
 	const contentSize = content.length;
 
 	if (response.status !== 200 || contentSize === 0) {
-		throw new Meteor.Error('error-invalid-file-uploaded', 'Invalid file uploaded');
+		throw new ClientSafeError('error-invalid-file-uploaded', 'Invalid file uploaded');
 	}
 
 	const fileStore = FileUpload.getStore('Uploads');
@@ -79,7 +78,7 @@ const defineVisitor = async (smsNumber: string, targetDepartment?: string) => {
 	});
 
 	if (!livechatVisitor) {
-		throw new Meteor.Error('error-invalid-visitor', 'Invalid visitor');
+		throw new ClientSafeError('error-invalid-visitor', 'Invalid visitor');
 	}
 
 	return livechatVisitor;

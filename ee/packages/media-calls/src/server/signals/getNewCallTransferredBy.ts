@@ -2,7 +2,11 @@ import type { IMediaCall } from '@rocket.chat/core-typings';
 import type { CallContact } from '@rocket.chat/media-signaling';
 
 export function getNewCallTransferredBy(call: IMediaCall): CallContact | null {
-	const { createdBy, parentCallId, caller, callee } = call;
+	const { createdBy, parentCallId, caller, callee, divertedBy } = call;
+
+	if (divertedBy) {
+		return divertedBy;
+	}
 
 	if (!createdBy || !parentCallId) {
 		return null;

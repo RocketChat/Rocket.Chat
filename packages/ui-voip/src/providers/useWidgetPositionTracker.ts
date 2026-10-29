@@ -1,5 +1,5 @@
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
-import { useCallback, useRef } from 'react';
+import { useState } from 'react';
 
 export type LastKnownPosition = {
 	x: number;
@@ -9,23 +9,13 @@ export type LastKnownPosition = {
 };
 
 const useWidgetPositionTracker = () => {
-	const lastKnownPosition = useRef<LastKnownPosition | null>(null);
+	const [lastKnownPosition, setLastKnownPosition] = useState<LastKnownPosition | null>(null);
 
-	const onChangePosition = useDebouncedCallback(
-		(position: LastKnownPosition | null) => {
-			lastKnownPosition.current = position;
-		},
-		500,
-		[],
-	);
-
-	const getRestorePosition = useCallback(() => {
-		return lastKnownPosition.current;
-	}, []);
+	const onChangePosition = useDebouncedCallback(setLastKnownPosition, 500, []);
 
 	return {
 		onChangePosition,
-		getRestorePosition,
+		lastKnownPosition,
 	};
 };
 

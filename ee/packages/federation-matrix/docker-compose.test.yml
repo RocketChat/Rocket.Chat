@@ -41,7 +41,7 @@ services:
 
   # HomeServer 1 (synapse)
   hs1:
-    image: matrixdotorg/synapse:latest
+    image: matrixdotorg/synapse:v1.160.0
     profiles:
       - test
       - element
@@ -82,6 +82,7 @@ services:
     build:
       context: ${ROCKETCHAT_BUILD_CONTEXT:-./test/dist}
       dockerfile: ${ROCKETCHAT_DOCKERFILE:-../../../apps/meteor/.docker/Dockerfile.alpine}
+      target: release-standard
     image: ${ROCKETCHAT_IMAGE:-rocketchat/rocket.chat:latest}
     profiles:
       - test
@@ -102,6 +103,9 @@ services:
       ADMIN_PASS: admin
       ADMIN_EMAIL: admin@admin.com
       TEST_MODE: api
+      # keep server sockets alive longer than traefik's 90s idleConnTimeout so
+      # the proxy always closes pooled conns first and never reuses a dead one
+      HTTP_SOCKET_TIMEOUT_MS: 120000
     volumes:
       - ./docker-compose/traefik/certs/ca/rootCA.crt:/usr/local/share/ca-certificates/rootCA.pem
     networks:
@@ -120,13 +124,16 @@ services:
       - 'traefik.http.routers.rc1-http.middlewares=rc1'
 
   mongo:
-    image: mongo:${MONGODB_FEDERATION_VERSION:-8.0}
+    image: mongodb/mongodb-community-server:${MONGODB_FEDERATION_VERSION:-8.0.19-ubi9}
     profiles:
       - test
       - element
     restart: on-failure
     ports:
       - '27017:27017'
+    environment:
+      # MongoDB 8.0 refuses to start on Linux kernel 6.19+; see https://jira.mongodb.org/browse/SERVER-121912
+      GLIBC_TUNABLES: glibc.pthread.rseq=0
     entrypoint: |
       bash -c
         "mongod --replSet rs0 --bind_ip_all &

@@ -1,7 +1,7 @@
 import type { AppScreenshot } from '@rocket.chat/core-typings';
 import { Box, IconButton } from '@rocket.chat/fuselage';
 
-type ScreenshotCarouselProps = {
+export type ScreenshotCarouselProps = {
 	AppScreenshots: Array<AppScreenshot>;
 	setViewCarousel: (state: boolean) => void;
 	handleNextSlide: () => void;
@@ -37,7 +37,15 @@ const ScreenshotCarousel = ({
 			return (
 				<Box style={screenshotWrapperStyle} key={currentScreenshot.id}>
 					{isCurrentImageOnScreen && (
-						<Box is='img' src={currentScreenshot.accessUrl} alt='Carousel image' maxWidth='x1200' maxHeight='x600' w='100%' height='100%' />
+						<Box
+							is='img'
+							src={currentScreenshot.accessUrl}
+							alt='Carousel image'
+							maxWidth='x1200'
+							maxHeight='x600'
+							width='100%'
+							height='100%'
+						/>
 					)}
 				</Box>
 			);
@@ -45,28 +53,18 @@ const ScreenshotCarousel = ({
 
 	return (
 		<>
-			<Box position='fixed' w='100%' h='100vh' bg='font-pure-black' opacity='0.7' marginBlock='-0.75px' zIndex='2' />
+			<Box position='fixed' width='100%' height='100vh' backgroundColor='font-pure-black' opacity='0.7' marginBlock='0' zIndex='2' />
 
 			{!isFirstSlide && (
-				<IconButton
-					secondary
-					icon='chevron-right'
-					onClick={handlePrevSlide}
-					style={{ top: '50%', left: '10px', cursor: 'pointer', transform: 'translateY(-50%)' }}
-					position='absolute'
-					zIndex={3}
-				/>
+				<Box position='absolute' zIndex={3} style={{ top: '50%', left: '10px', transform: 'translateY(-50%)' }}>
+					<IconButton variant='secondary' icon='chevron-right' onClick={handlePrevSlide} />
+				</Box>
 			)}
 
 			{!isLastSlide && (
-				<IconButton
-					secondary
-					icon='chevron-left'
-					onClick={handleNextSlide}
-					style={{ top: '50%', right: '10px', cursor: 'pointer', transform: 'translateY(-50%)' }}
-					position='absolute'
-					zIndex={3}
-				/>
+				<Box position='absolute' zIndex={3} style={{ top: '50%', right: '10px', transform: 'translateY(-50%)' }}>
+					<IconButton variant='secondary' icon='chevron-left' onClick={handleNextSlide} />
+				</Box>
 			)}
 
 			<Box
@@ -78,7 +76,7 @@ const ScreenshotCarousel = ({
 				justifyContent='center'
 				alignItems='center'
 				zIndex='2'
-				mi={38}
+				marginInline='x40'
 			>
 				{handleScreenshotRender()}
 			</Box>

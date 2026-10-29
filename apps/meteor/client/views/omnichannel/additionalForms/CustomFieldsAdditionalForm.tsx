@@ -1,11 +1,11 @@
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Field, FieldLabel, FieldRow, FieldError, FieldHint, ToggleSwitch, TextInput, Select } from '@rocket.chat/fuselage';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
 import { useId, useMemo } from 'react';
 import { useFormContext, Controller } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import type { EditCustomFieldsFormData } from '../customFields/EditCustomFields';
 
 const checkIsOptionsValid = (value: string) => {
@@ -16,7 +16,9 @@ const checkIsOptionsValid = (value: string) => {
 	return value.split(',').every((v) => /^[a-zA-Z0-9-_ ]+$/.test(v));
 };
 
-const CustomFieldsAdditionalForm = ({ className }: { className?: ComponentProps<typeof Field>['className'] }) => {
+export type CustomFieldsAdditionalFormProps = { className?: ComponentProps<typeof Field>['className'] };
+
+const CustomFieldsAdditionalForm = ({ className }: CustomFieldsAdditionalFormProps) => {
 	const { t } = useTranslation();
 	const {
 		control,

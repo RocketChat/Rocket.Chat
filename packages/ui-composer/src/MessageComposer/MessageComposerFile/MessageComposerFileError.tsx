@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import MessageComposerFile from './MessageComposerFile';
 
-type MessageComposerFileErrorProps = {
+export type MessageComposerFileErrorProps = {
 	fileTitle: string;
 	fileFormat: string;
 	error: Error;

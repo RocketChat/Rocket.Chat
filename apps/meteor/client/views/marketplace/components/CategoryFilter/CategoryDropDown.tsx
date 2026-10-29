@@ -10,7 +10,7 @@ import { isValidReference } from '../../helpers/isValidReference';
 import { onMouseEventPreventSideEffects } from '../../helpers/onMouseEventPreventSideEffects';
 import DropDownListWrapper from '../DropDownListWrapper';
 
-type CategoryDropDownProps = {
+export type CategoryDropDownProps = {
 	categories: CategoryDropDownListProps['categories'];
 	onSelected: CategoryDropDownListProps['onSelected'];
 	selectedCategories: (CategoryDropdownItem & { checked: true })[];

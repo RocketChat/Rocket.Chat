@@ -4,8 +4,8 @@ import { Meteor } from 'meteor/meteor';
 import moment from 'moment-timezone';
 
 import { sendEmail } from './sendEmail';
-import { settings } from '../../../../app/settings/server';
 import { i18n } from '../../../lib/i18n';
+import { settings } from '../../../settings';
 
 const start =
 	'<table style="width: 100%; border: 1px solid; border-collapse: collapse; table-layout: fixed; margin-top: 10px; font-size: 12px; word-break: break-word;"><tbody>';

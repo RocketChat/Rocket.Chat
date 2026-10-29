@@ -1,1 +1,2 @@
 import './sauMonitorHooks';
+import './userLogoutCleanUp';

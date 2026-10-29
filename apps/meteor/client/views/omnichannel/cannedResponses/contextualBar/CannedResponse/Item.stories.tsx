@@ -34,5 +34,5 @@ export const Default: StoryObj<typeof Item> = {
 		},
 	},
 
-	decorators: [(fn) => <Box w='330px'>{fn()}</Box>],
+	decorators: [(fn) => <Box width='330px'>{fn()}</Box>],
 };

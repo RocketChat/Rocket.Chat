@@ -1,16 +1,22 @@
 import type { IOmnichannelRoom, IVisitor } from '@rocket.chat/core-typings';
 import { Box, Margins, Tag, Button, ButtonGroup } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
-import { ContextualbarScrollableContent, ContextualbarFooter, InfoPanelField, InfoPanelLabel, InfoPanelText } from '@rocket.chat/ui-client';
+import {
+	ContextualbarScrollableContent,
+	ContextualbarFooter,
+	InfoPanelField,
+	InfoPanelLabel,
+	InfoPanelText,
+	useFormatDateAndTime,
+} from '@rocket.chat/ui-client';
 import type { IRouterPaths } from '@rocket.chat/ui-contexts';
 import { useToastMessageDispatch, useRoute, useUserSubscription, useTranslation, usePermission, useUserId } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 
 import DepartmentField from './DepartmentField';
 import VisitorClientInfo from './VisitorClientInfo';
+import { useFormatDuration } from './useFormatDuration';
 import MarkdownText from '../../../../../components/MarkdownText';
-import { useFormatDateAndTime } from '../../../../../hooks/useFormatDateAndTime';
-import { useFormatDuration } from '../../../../../hooks/useFormatDuration';
 import { useFormattedRelativeTime } from '../../../../../hooks/useFormattedRelativeTime';
 import CustomField from '../../../components/CustomField';
 import { useValidCustomFields } from '../../../contactInfo/hooks/useValidCustomFields';
@@ -19,7 +25,7 @@ import PriorityField from '../../components/PriorityField';
 import { useOmnichannelRoomInfo } from '../../hooks/useOmnichannelRoomInfo';
 import { formatQueuedAt } from '../../utils/formatQueuedAt';
 
-type ChatInfoProps = {
+export type ChatInfoProps = {
 	id: string;
 	route: keyof IRouterPaths;
 };
@@ -90,7 +96,7 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 
 	return (
 		<>
-			<ContextualbarScrollableContent p={24}>
+			<ContextualbarScrollableContent padding={24}>
 				<Margins block='x4'>
 					{source && <SourceField room={room as unknown as IOmnichannelRoom} />}
 					{room && v && <ContactField contact={v as IVisitor} room={room as unknown as IOmnichannelRoom} />}
@@ -103,7 +109,7 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 							<InfoPanelText>
 								<ul aria-labelledby={`${roomId}-tags`}>
 									{tags.map((tag) => (
-										<Box is='li' key={tag} mie={4} display='inline'>
+										<Box is='li' key={tag} marginInlineEnd={4} display='inline'>
 											<Tag style={{ display: 'inline' }} disabled>
 												{tag}
 											</Tag>

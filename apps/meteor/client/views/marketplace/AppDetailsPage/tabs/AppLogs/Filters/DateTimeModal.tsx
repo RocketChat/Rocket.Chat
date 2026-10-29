@@ -23,7 +23,7 @@ export type DateTimeModalFormData = {
 	endTime?: string;
 };
 
-type DateTimeModalProps = {
+export type DateTimeModalProps = {
 	onClose: () => void;
 	onSave: (value: DateTimeModalFormData) => void;
 	confirmDisabled?: boolean;
@@ -51,11 +51,11 @@ export const DateTimeModal = ({ onSave, onClose, defaultValues }: DateTimeModalP
 				<ModalClose onClick={onClose} />
 			</ModalHeader>
 			<ModalContent>
-				<Box display='flex' flexDirection='column' mie={10} mbe={24} flexGrow={1}>
+				<Box display='flex' flexDirection='column' marginInlineEnd='x8' marginBlockEnd='x24' flexGrow={1}>
 					<Label htmlFor='timeFilter'>{t('Logs_from')}</Label>
 					<DateTimeFilter control={control} type='start' />
 				</Box>
-				<Box display='flex' flexDirection='column' mie={10} flexGrow={1}>
+				<Box display='flex' flexDirection='column' marginInlineEnd='x8' flexGrow={1}>
 					<Label htmlFor='timeFilter'>{t('Until')}</Label>
 					<DateTimeFilter control={control} type='end' />
 				</Box>
@@ -63,7 +63,7 @@ export const DateTimeModal = ({ onSave, onClose, defaultValues }: DateTimeModalP
 			<ModalFooter>
 				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button primary disabled={!watch('startDate') || !watch('endDate')} onClick={handleSave}>
+					<Button variant='primary' disabled={!watch('startDate') || !watch('endDate')} onClick={handleSave}>
 						{t('Apply')}
 					</Button>
 				</ModalFooterControllers>

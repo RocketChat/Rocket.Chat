@@ -2,8 +2,10 @@ import type { ILivechatAgent, IUser, Serialized } from '@rocket.chat/core-typing
 import { createTransformFromUpdateFilter } from '@rocket.chat/mongo-adapter';
 import { create } from 'zustand';
 
-import { sdk } from '../../app/utils/client/lib/SDKClient';
+import { sdk } from './SDKClient';
 import { Users } from '../stores';
+import { clearStoredCredentials } from './sdk/ddpSdk';
+import { STORAGE_KEYS, getStoredItem } from './sdk/storage';
 
 export const useUserDataSyncReady = create(() => false);
 
@@ -15,6 +17,7 @@ type RawUserData = Serialized<
 		| 'name'
 		| 'username'
 		| 'emails'
+		| 'phones'
 		| 'status'
 		| 'statusDefault'
 		| 'statusText'
@@ -78,6 +81,9 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 
 			case 'removed':
 				Users.state.delete(uid);
+				if (getStoredItem(STORAGE_KEYS.USER_ID) === uid) {
+					clearStoredCredentials();
+				}
 				break;
 		}
 	});
@@ -89,7 +95,7 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 
 	if (fromMe._id) {
 		const existingUser = Users.state.get(uid);
-		const { email: _meEmail, ...meFields } = fromMe;
+		const { email: _meEmail, phones, ...meFields } = fromMe;
 		const { email, cloud, resume, email2fa, emailCode, ...services } = (rawServices ?? {}) as NonNullable<IUser['services']>;
 
 		const mergedEmail2fa =
@@ -165,6 +171,7 @@ export const synchronizeUserData = async (uid: IUser['_id']): Promise<RawUserDat
 			ldap: Boolean(ldap),
 			createdAt: meFields.createdAt != null ? new Date(meFields.createdAt) : (existingUser?.createdAt ?? new Date()),
 			_updatedAt: new Date(meFields._updatedAt ?? existingUser?._updatedAt ?? Date.now()),
+			phones,
 		} as IUser);
 	}
 	useUserDataSyncReady.setState(true);

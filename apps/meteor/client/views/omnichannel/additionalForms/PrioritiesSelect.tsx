@@ -2,15 +2,14 @@ import type { ILivechatPriority, Serialized } from '@rocket.chat/core-typings';
 import { LivechatPriorityWeight } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { Options, Box, Option, Field, FieldLabel, FieldRow, SelectLegacy } from '@rocket.chat/fuselage';
-import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import type { ComponentProps } from 'react';
 import { useCallback, forwardRef, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import { PriorityIcon } from '../priorities/PriorityIcon';
 
-type PrioritiesSelectProps = {
+export type PrioritiesSelectProps = {
 	value: string;
 	label: string;
 	options: Serialized<ILivechatPriority[]>;
@@ -24,7 +23,7 @@ export const PrioritiesSelect = ({ value = '', label, options, onChange }: Prior
 
 	const formattedOptions = useMemo<SelectOption[]>(() => {
 		const opts: SelectOption[] = options?.map(({ dirty, name, i18n, _id, sortItem }) => {
-			const label = dirty && name ? name : t(i18n as TranslationKey);
+			const label = dirty && name ? name : t(i18n);
 			sorting[_id] = sortItem;
 			return [_id, label];
 		});
@@ -42,7 +41,6 @@ export const PrioritiesSelect = ({ value = '', label, options, onChange }: Prior
 		[sorting],
 	);
 
-	// eslint-disable-next-line react/no-multi-comp
 	const renderOptions = forwardRef<HTMLElement, ComponentProps<typeof Options>>(function OptionsWrapper(props, ref) {
 		return <Options ref={ref} {...props} maxHeight={200} />;
 	});

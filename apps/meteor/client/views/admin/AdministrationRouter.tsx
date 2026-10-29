@@ -21,7 +21,7 @@ const firstSidebarPage = (sidebarItem: SidebarItem): sidebarItem is Item => {
 	return Boolean(sidebarItem.permissionGranted?.());
 };
 
-type AdministrationRouterProps = {
+export type AdministrationRouterProps = {
 	children?: ReactNode;
 };
 

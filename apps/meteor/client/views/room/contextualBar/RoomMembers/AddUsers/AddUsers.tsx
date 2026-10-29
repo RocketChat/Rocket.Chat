@@ -1,5 +1,5 @@
 import type { IRoom } from '@rocket.chat/core-typings';
-import { isRoomFederated, isRoomNativeFederated } from '@rocket.chat/core-typings';
+import { isRoomFederated, isRoomNativeFederated, isRoomXMPPHostedMuc } from '@rocket.chat/core-typings';
 import { Field, FieldError, FieldLabel, Button, ButtonGroup, FieldGroup } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
@@ -23,7 +23,7 @@ import { useRoom } from '../../../contexts/RoomContext';
 
 const hasExternalUsers = (users: string[]): boolean => users.some((user) => user.startsWith('@'));
 
-type AddUsersProps = {
+export type AddUsersProps = {
 	rid: IRoom['_id'];
 	onClickBack: () => void;
 	reload: () => void;
@@ -38,6 +38,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps) => {
 	// we are dropping the non native federation for now
 	const isFederationBlocked = room && !isRoomNativeFederated(room);
 	const isFederated = roomIsFederated && !isFederationBlocked;
+	const isXmppHostedMuc = isRoomXMPPHostedMuc(room);
 
 	const setModal = useSetModal();
 	const { closeTab } = useRoomToolbox();
@@ -120,7 +121,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps) => {
 			<ContextualbarScrollableContent>
 				<FieldGroup>
 					<Field>
-						<FieldLabel flexGrow={0}>{t('Choose_users')}</FieldLabel>
+						<FieldLabel>{t('Choose_users')}</FieldLabel>
 						<Controller
 							name='users'
 							control={control}
@@ -130,6 +131,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps) => {
 							render={({ field }) => (
 								<UserAutoCompleteMultiple
 									federated={isFederated}
+									xmpp={isXmppHostedMuc}
 									placeholder={t('Choose_users')}
 									aria-describedby={`${usersFieldId}-error`}
 									{...field}
@@ -149,7 +151,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps) => {
 					{roomIsFederated ? (
 						!isFederationBlocked && (
 							<Button
-								primary
+								variant='primary'
 								disabled={addClickHandler.isPending || !isDirty}
 								onClick={() =>
 									addClickHandler.mutate({
@@ -162,7 +164,7 @@ const AddUsers = ({ rid, onClickBack, reload }: AddUsersProps) => {
 							</Button>
 						)
 					) : (
-						<Button primary loading={isSubmitting} disabled={!isDirty} onClick={handleSubmit(handleSaveWithBannedCheck)}>
+						<Button variant='primary' loading={isSubmitting} disabled={!isDirty} onClick={handleSubmit(handleSaveWithBannedCheck)}>
 							{t('Add_users')}
 						</Button>
 					)}

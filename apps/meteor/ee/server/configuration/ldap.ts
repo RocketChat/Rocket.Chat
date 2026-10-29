@@ -6,11 +6,11 @@ import { Settings } from '@rocket.chat/models';
 import { isValidCron } from 'cron-validator';
 import { Meteor } from 'meteor/meteor';
 
-import { settings } from '../../../app/settings/server';
 import { callbacks } from '../../../server/lib/callbacks';
-import type { LDAPConnection } from '../../../server/lib/ldap/Connection';
-import { logger } from '../../../server/lib/ldap/Logger';
-import { LDAPEEManager } from '../lib/ldap/Manager';
+import { settings } from '../../../server/settings';
+import type { LDAPConnection } from '../lib/ldap/Connection';
+import { LDAPEEManager } from '../lib/ldap/EEManager';
+import { logger } from '../lib/ldap/Logger';
 import { addSettings, ldapIntervalValuesToCronMap } from '../settings/ldap';
 
 Meteor.startup(async () => {

@@ -5,7 +5,7 @@ import { isTruthy } from '@rocket.chat/tools';
 
 import { API } from '../..';
 import { findAppearance } from './lib/appearance';
-import { notifyOnSettingChangedById } from '../../../../app/lib/server/lib/notifyListener';
+import { notifyOnSettingChangedById } from '../../../lib/notifyListener';
 import { updateAuditedByUser } from '../../../settings/lib/auditedSettingUpdates';
 
 API.v1.addRoute(

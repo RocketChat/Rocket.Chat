@@ -10,7 +10,7 @@ import {
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type AgentsTableProps = {
+export type AgentsTableProps = {
 	data: {
 		label: string;
 		value: number;
@@ -40,7 +40,7 @@ export const AgentsTable = memo(({ data, sortBy, sortDirection, setSort }: Agent
 			<GenericTableBody>
 				{data.map((item) => (
 					<GenericTableRow key={`${item.label}_${item.value}`}>
-						<GenericTableCell withTruncatedText>{item.label}</GenericTableCell>
+						<GenericTableCell truncate>{item.label}</GenericTableCell>
 						<GenericTableCell>{item.value}</GenericTableCell>
 					</GenericTableRow>
 				))}

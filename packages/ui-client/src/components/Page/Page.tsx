@@ -4,7 +4,7 @@ import { useState } from 'react';
 
 import PageContext from './PageContext';
 
-type PageProps = Omit<ComponentProps<typeof Box>, 'backgroundColor'> & {
+export type PageProps = Omit<ComponentProps<typeof Box>, 'backgroundColor'> & {
 	background?: 'light' | 'tint' | 'neutral' | 'room';
 };
 
@@ -20,7 +20,7 @@ const Page = ({ background = 'light', ...props }: PageProps) => {
 				flexShrink={1}
 				height='full'
 				overflow='hidden'
-				bg={background}
+				backgroundColor={background}
 				color='default'
 				{...props}
 			/>

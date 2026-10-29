@@ -1,7 +1,9 @@
 import { Box } from '@rocket.chat/fuselage';
 import { Trans } from 'react-i18next';
 
-const AirGappedRestrictionWarning = ({ isRestricted, remainingDays }: { isRestricted: boolean; remainingDays: number }) => {
+export type AirGappedRestrictionWarningProps = { isRestricted: boolean; remainingDays: number };
+
+const AirGappedRestrictionWarning = ({ isRestricted, remainingDays }: AirGappedRestrictionWarningProps) => {
 	if (isRestricted) {
 		return (
 			<Trans i18nKey='Airgapped_workspace_restriction'>

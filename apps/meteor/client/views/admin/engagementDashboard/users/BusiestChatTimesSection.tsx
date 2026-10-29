@@ -8,7 +8,7 @@ import ContentForHours from './ContentForHours';
 
 type TimeUnit = 'hours' | 'days';
 
-type BusiestChatTimesSectionProps = {
+export type BusiestChatTimesSectionProps = {
 	timezone: 'utc' | 'local';
 };
 

@@ -1,7 +1,9 @@
 import { ResponsiveBar } from '@nivo/bar';
 import { Box, FlexContainer, FlexItem, Skeleton, Palette, Tooltip } from '@rocket.chat/fuselage';
-import colors from '@rocket.chat/fuselage-tokens/colors.json';
-import { differenceInDays, addDays, format } from 'date-fns';
+import colors from '@rocket.chat/fuselage-tokens/dist/colors.json';
+import { addDays } from 'date-fns/addDays';
+import { differenceInDays } from 'date-fns/differenceInDays';
+import { format } from 'date-fns/format';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -14,7 +16,7 @@ import EngagementDashboardCardFilter from '../EngagementDashboardCardFilter';
 import { useMessagesSent } from './useMessagesSent';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 
-type MessagesSentSectionProps = {
+export type MessagesSentSectionProps = {
 	timezone: 'utc' | 'local';
 };
 

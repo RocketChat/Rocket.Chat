@@ -1,6 +1,5 @@
 import type { Meta, StoryFn } from '@storybook/preact';
-import type { ComponentProps } from 'preact';
-import type { JSXInternal } from 'preact/src/jsx';
+import type { ComponentProps, JSX as JSXInternal } from 'preact';
 import { Controller, useForm } from 'react-hook-form';
 import { action } from 'storybook/actions';
 

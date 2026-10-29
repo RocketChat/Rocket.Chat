@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 
 import Action from '../Action';
 
-type CollapsibleContentProps = Omit<ComponentProps<typeof Action>, 'icon'> & { collapsed?: boolean };
+export type CollapsibleContentProps = Omit<ComponentProps<typeof Action>, 'icon'> & { collapsed?: boolean };
 
 const CollapsibleContent = ({ collapsed = false, ...props }: CollapsibleContentProps) => {
 	const { t } = useTranslation();

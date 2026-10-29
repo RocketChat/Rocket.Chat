@@ -1,27 +1,29 @@
+import { isClientSafeError } from '@rocket.chat/core-services';
 import type { ICustomSound } from '@rocket.chat/core-typings';
 import { CustomSounds } from '@rocket.chat/models';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import {
-	isCustomSoundsGetOneProps,
-	isCustomSoundsListProps,
+	ajv,
 	isCustomSoundsCreateProps,
 	isCustomSoundsDeleteProps,
+	isCustomSoundsGetOneProps,
+	isCustomSoundsListProps,
 	isCustomSoundsUpdateProps,
-	ajv,
+	paginatedResponseProperties,
 	validateBadRequestErrorResponse,
-	validateNotFoundErrorResponse,
 	validateForbiddenErrorResponse,
-	validateUnauthorizedErrorResponse,
 	validateInternalErrorResponse,
+	validateNotFoundErrorResponse,
+	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
-import { escapeRegExp } from '@rocket.chat/string-helpers';
+import { escapeRegExp } from '@rocket.chat/tools';
 
-import { deleteCustomSound } from '../../../app/custom-sounds/server/lib/deleteCustomSound';
-import { insertOrUpdateSound } from '../../../app/custom-sounds/server/lib/insertOrUpdateSound';
-import { uploadCustomSound } from '../../../app/custom-sounds/server/lib/uploadCustomSound';
-import { getExtension, getMimeTypeFromFileName } from '../../../app/utils/lib/mimeTypes';
 import { MAX_CUSTOM_SOUND_SIZE_BYTES, CUSTOM_SOUND_ALLOWED_MIME_TYPES } from '../../../lib/constants';
+import { getExtension, getMimeTypeFromFileName } from '../../../lib/mimeTypes';
 import { SystemLogger } from '../../lib/logger/system';
+import { deleteCustomSound } from '../../lib/media/custom-sounds/lib/deleteCustomSound';
+import { insertOrUpdateSound } from '../../lib/media/custom-sounds/lib/insertOrUpdateSound';
+import { uploadCustomSound } from '../../lib/media/custom-sounds/lib/uploadCustomSound';
 import type { ExtractRoutesFromAPI } from '../ApiClass';
 import { API } from '../api';
 import { getPaginationItems } from '../lib/getPaginationItems';
@@ -89,18 +91,7 @@ const customSoundsEndpoints = API.v1
 					additionalProperties: false,
 					type: 'object',
 					properties: {
-						count: {
-							type: 'number',
-							description: 'The number of sounds returned in this response.',
-						},
-						offset: {
-							type: 'number',
-							description: 'The number of sounds that were skipped in this response.',
-						},
-						total: {
-							type: 'number',
-							description: 'The total number of sounds that match the query.',
-						},
+						...paginatedResponseProperties,
 						success: {
 							type: 'boolean',
 							description: 'Indicates if the request was successful.',
@@ -119,14 +110,13 @@ const customSoundsEndpoints = API.v1
 			authRequired: true,
 		},
 		async function action() {
-			const { offset, count } = await getPaginationItems(this.queryParams as Record<string, string | number | null | undefined>);
-			const { sort, query } = await this.parseJsonQuery();
+			const { offset, count } = await getPaginationItems(this.queryParams);
+			const { sort } = await this.parseJsonQuery();
 
 			const { name } = this.queryParams;
 
 			const filter = {
-				...query,
-				...(name ? { name: { $regex: escapeRegExp(name as string), $options: 'i' } } : {}),
+				...(name ? { name: { $regex: escapeRegExp(name), $options: 'i' } } : {}),
 			};
 
 			const { cursor, totalCount } = CustomSounds.findPaginated(filter, {
@@ -321,7 +311,7 @@ const customSoundsEndpoints = API.v1
 			} catch (error: unknown) {
 				this.logger.error({ error });
 
-				if (error instanceof Meteor.Error && error.error === 'Custom_Sound_Error_Invalid_Sound') {
+				if (isClientSafeError(error) && error.error === 'Custom_Sound_Error_Invalid_Sound') {
 					return API.v1.failure(error.error);
 				}
 
@@ -333,6 +323,6 @@ const customSoundsEndpoints = API.v1
 export type CustomSoundEndpoints = ExtractRoutesFromAPI<typeof customSoundsEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends CustomSoundEndpoints {}
 }

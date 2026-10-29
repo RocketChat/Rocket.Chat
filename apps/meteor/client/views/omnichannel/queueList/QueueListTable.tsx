@@ -12,13 +12,13 @@ import {
 	GenericTableLoadingRow,
 	usePagination,
 	useSort,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo, useState } from 'react';
 
 import { QueueListFilter } from './QueueListFilter';
-import GenericNoResults from '../../../components/GenericNoResults';
 
 const QueueListTable = () => {
 	const t = useTranslation();
@@ -132,17 +132,17 @@ const QueueListTable = () => {
 						<GenericTableBody>
 							{data?.queue.map(({ user, department, chats }) => (
 								<GenericTableRow key={user._id} tabIndex={0}>
-									<GenericTableCell withTruncatedText>
-										<Box display='flex' alignItems='center' mb='5px'>
+									<GenericTableCell truncate>
+										<Box display='flex' alignItems='center' marginBlock='x4'>
 											<UserAvatar size={mediaQuery ? 'x28' : 'x40'} username={user.username} />
-											<Box display='flex' mi={8}>
+											<Box display='flex' marginInline={8}>
 												{user.username}
 											</Box>
 										</Box>
 									</GenericTableCell>
-									<GenericTableCell withTruncatedText>{department ? department.name : ''}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{chats}</GenericTableCell>
-									<GenericTableCell withTruncatedText>{getUserStatus(user?.status)}</GenericTableCell>
+									<GenericTableCell truncate>{department ? department.name : ''}</GenericTableCell>
+									<GenericTableCell truncate>{chats}</GenericTableCell>
+									<GenericTableCell truncate>{getUserStatus(user?.status)}</GenericTableCell>
 								</GenericTableRow>
 							))}
 						</GenericTableBody>

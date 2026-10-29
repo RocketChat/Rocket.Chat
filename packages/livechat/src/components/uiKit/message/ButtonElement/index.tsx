@@ -9,12 +9,22 @@ import styles from './styles.scss';
 
 const handleMouseUp = ({ currentTarget }: TargetedEvent<HTMLElement, MouseEvent>) => currentTarget.blur();
 
-type ButtonElementProps = uikit.ButtonElement & {
+export type ButtonElementProps = uikit.ButtonElement & {
 	context: uikit.BlockContext;
 	parser: uikit.SurfaceRenderer<ComponentChild>;
 };
 
-const ButtonElement = ({ text, actionId, url, value, style, context, confirm, parser }: ButtonElementProps) => {
+const ButtonElement = ({
+	text,
+	actionId,
+	url,
+	value,
+	style,
+	context,
+	confirm,
+	parser,
+	accessibility_label: accessibilityLabel,
+}: ButtonElementProps) => {
 	const [performAction, performingAction] = usePerformAction(actionId);
 
 	const handleClick = useCallback(
@@ -25,7 +35,7 @@ const ButtonElement = ({ text, actionId, url, value, style, context, confirm, pa
 				// TODO
 			}
 
-			if (url) {
+			if (url && uikit.isSafeUrl(url)) {
 				const newTab = window.open();
 				if (!newTab) {
 					throw new Error('Failed to open new tab');
@@ -49,6 +59,7 @@ const ButtonElement = ({ text, actionId, url, value, style, context, confirm, pa
 			})}
 			disabled={performingAction}
 			type='button'
+			aria-label={accessibilityLabel}
 			onClick={handleClick}
 			onMouseUp={handleMouseUp}
 		>

@@ -4,7 +4,7 @@ import type { ChangeEventHandler } from 'react';
 import ResetSettingButton from '../ResetSettingButton';
 import type { SettingInputProps } from './types';
 
-type StringSettingInputProps = SettingInputProps & {
+export type StringSettingInputProps = SettingInputProps & {
 	name?: string;
 	multiline?: boolean;
 	error?: string;
@@ -27,7 +27,7 @@ function StringSettingInput({
 	onChangeValue,
 	onResetButtonClick,
 }: StringSettingInputProps) {
-	const handleChange: ChangeEventHandler<HTMLInputElement> = (event) => {
+	const handleChange: ChangeEventHandler<HTMLInputElement | HTMLTextAreaElement> = (event) => {
 		onChangeValue?.(event.currentTarget.value);
 	};
 

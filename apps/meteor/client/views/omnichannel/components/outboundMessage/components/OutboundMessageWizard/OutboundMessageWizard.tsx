@@ -1,20 +1,19 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { useToastBarDispatch } from '@rocket.chat/fuselage-toastbar';
-import { Wizard, useWizard, WizardContent, WizardTabs } from '@rocket.chat/ui-client';
+import { Wizard, useWizard, WizardContent, WizardTabs, useHasLicenseModule } from '@rocket.chat/ui-client';
 import { usePermission } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
 import { useEffect, useLayoutEffect, useState } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
 
 import OutboundMessageWizardErrorState from './components/OutboundMessageWizardErrorState';
 import OutboubdMessageWizardSkeleton from './components/OutboundMessageWizardSkeleton';
-import type { SubmitPayload } from './forms';
+import type { SubmitPayload } from './forms/SubmitPayload';
 import { ReviewStep, MessageStep, RecipientStep, RepliesStep } from './steps';
+import ReportableErrorBoundary from '../../../../../../components/ErrorReport/ReportableErrorBoundary';
 import GenericError from '../../../../../../components/GenericError';
 import { useEndpointMutation } from '../../../../../../hooks/useEndpointMutation';
-import { useHasLicenseModule } from '../../../../../../hooks/useHasLicenseModule';
 import { formatPhoneNumber } from '../../../../../../lib/formatPhoneNumber';
 import { omnichannelQueryKeys } from '../../../../../../lib/queryKeys';
 import { useOmnichannelEnabled } from '../../../../hooks/useOmnichannelEnabled';
@@ -22,7 +21,7 @@ import useOutboundProvidersList from '../../hooks/useOutboundProvidersList';
 import { useOutboundMessageUpsellModal } from '../../modals';
 import { formatOutboundMessagePayload, isMessageStepValid, isRecipientStepValid, isRepliesStepValid } from '../../utils/outbound-message';
 
-type OutboundMessageWizardProps = {
+export type OutboundMessageWizardProps = {
 	defaultValues?: Partial<Pick<SubmitPayload, 'contactId' | 'providerId' | 'recipient' | 'sender'>>;
 	onSuccess?(): void;
 	onError?(): void;
@@ -167,11 +166,13 @@ const OutboundMessageWizard = ({ defaultValues = {}, onSuccess, onError }: Outbo
 	}
 
 	return (
-		<ErrorBoundary fallbackRender={() => <GenericError icon='circle-exclamation' />}>
+		<ReportableErrorBoundary
+			fallbackRender={({ error, componentStack }) => <GenericError icon='circle-exclamation' errorReport={{ error, componentStack }} />}
+		>
 			<Wizard api={wizardApi} display='flex' flexDirection='column' height='100%'>
 				<WizardTabs />
 
-				<Box mbs={16} minHeight={0} flexGrow={1}>
+				<Box marginBlockStart={16} minHeight={0} flexGrow={1}>
 					<WizardContent id='recipient'>
 						<RecipientStep defaultValues={state} onDirty={handleDirtyStep} onSubmit={handleSubmit} />
 					</WizardContent>
@@ -200,7 +201,7 @@ const OutboundMessageWizard = ({ defaultValues = {}, onSuccess, onError }: Outbo
 					</WizardContent>
 				</Box>
 			</Wizard>
-		</ErrorBoundary>
+		</ReportableErrorBoundary>
 	);
 };
 

@@ -47,9 +47,18 @@ test.describe('E2EE File Encryption', () => {
 
 		encryptedRoomId = group._id;
 
-		await page.goto(`/group/${group.name}`);
-		await page.locator('#main-content').waitFor();
+		await poHomeChannel.gotoGroup(group.name as string);
 		await expect(poHomeChannel.content.encryptedRoomHeaderIcon).toBeVisible();
+		await expect
+			.poll(
+				() =>
+					page.evaluate(async (rid) => {
+						const room = await window.__rocketChatE2E?.getInstanceByRoomId(rid);
+						return room?.getState();
+					}, group._id),
+				{ message: 'expect room encryption key to be ready before sending messages' },
+			)
+			.toBe('READY');
 	});
 
 	test.afterEach(async ({ api }) => {

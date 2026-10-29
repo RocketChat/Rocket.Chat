@@ -17,7 +17,7 @@ export type CannedResponseEditFormData = {
 	departmentId: string;
 };
 
-type CannedResponseEditProps = {
+export type CannedResponseEditProps = {
 	cannedResponseData?: Serialized<IOmnichannelCannedResponse>;
 	departmentData?: Serialized<ILivechatDepartment>;
 	onDelete?: () => void;
@@ -80,7 +80,7 @@ const CannedResponseEdit = ({ cannedResponseData, onDelete }: CannedResponseEdit
 			>
 				{cannedResponseData?._id && (
 					<ButtonGroup>
-						<Button danger onClick={onDelete}>
+						<Button variant='danger' onClick={onDelete}>
 							{t('Delete')}
 						</Button>
 					</ButtonGroup>
@@ -88,7 +88,7 @@ const CannedResponseEdit = ({ cannedResponseData, onDelete }: CannedResponseEdit
 			</PageHeader>
 			<PageScrollableContentWithShadow>
 				<FormProvider {...methods}>
-					<Box id={formId} onSubmit={handleSubmit(handleSave)} w='full' alignSelf='center' maxWidth='x600' is='form' autoComplete='off'>
+					<Box id={formId} onSubmit={handleSubmit(handleSave)} width='full' alignSelf='center' maxWidth='x600' is='form' autoComplete='off'>
 						<CannedResponseForm />
 					</Box>
 				</FormProvider>
@@ -96,7 +96,7 @@ const CannedResponseEdit = ({ cannedResponseData, onDelete }: CannedResponseEdit
 			<PageFooter isDirty={isDirty}>
 				<ButtonGroup>
 					<Button onClick={() => reset()}>{t('Cancel')}</Button>
-					<Button form={formId} primary type='submit'>
+					<Button form={formId} variant='primary' type='submit'>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

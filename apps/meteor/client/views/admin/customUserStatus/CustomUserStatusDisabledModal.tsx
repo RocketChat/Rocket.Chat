@@ -1,7 +1,7 @@
 import { GenericModal } from '@rocket.chat/ui-client';
 import { useTranslation } from 'react-i18next';
 
-type CustomUserStatusDisabledModalProps = { isAdmin: boolean; onConfirm: () => void; onClose: () => void };
+export type CustomUserStatusDisabledModalProps = { isAdmin: boolean; onConfirm: () => void; onClose: () => void };
 
 const CustomUserStatusDisabledModal = ({ isAdmin, onConfirm, onClose }: CustomUserStatusDisabledModalProps) => {
 	const { t } = useTranslation();

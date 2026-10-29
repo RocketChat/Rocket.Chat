@@ -14,7 +14,7 @@ import { useCallback } from 'react';
 import OutlookSettingItem from './OutlookSettingItem';
 import { useOutlookAuthentication, useOutlookAuthenticationMutationLogout } from '../hooks/useOutlookAuthentication';
 
-type OutlookSettingsListProps = {
+export type OutlookSettingsListProps = {
 	onClose: () => void;
 	changeRoute: () => void;
 };
@@ -66,7 +66,7 @@ const OutlookSettingsList = ({ onClose, changeRoute }: OutlookSettingsListProps)
 				<ContextualbarTitle>{t('Outlook_calendar_settings')}</ContextualbarTitle>
 				<ContextualbarClose onClick={onClose} />
 			</ContextualbarHeader>
-			<ContextualbarContent paddingInline={0} color='default'>
+			<ContextualbarContent flush>
 				{calendarSettings.map((setting, index) => {
 					if (setting.id === 'authentication' && !setting.enabled) {
 						return;

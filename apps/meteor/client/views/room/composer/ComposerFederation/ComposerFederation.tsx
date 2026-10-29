@@ -1,4 +1,5 @@
-import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
+
 import type { ComposerMessageProps } from '../ComposerMessage';
 import ComposerMessage from '../ComposerMessage';
 import ComposerFederationDisabled from './ComposerFederationDisabled';
@@ -6,7 +7,7 @@ import ComposerFederationInvalidVersion from './ComposerFederationInvalidVersion
 import ComposerFederationJoinRoomDisabled from './ComposerFederationJoinRoomDisabled';
 import { useIsFederationEnabled } from '../../../../hooks/useIsFederationEnabled';
 
-type ComposerFederationProps = ComposerMessageProps & {
+export type ComposerFederationProps = ComposerMessageProps & {
 	blocked?: boolean;
 };
 

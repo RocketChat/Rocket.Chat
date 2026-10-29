@@ -3,10 +3,12 @@ import { useSettingStructure } from '@rocket.chat/ui-contexts';
 
 import SettingsGroupPageSkeleton from '../SettingsGroupPage/SettingsGroupPageSkeleton';
 import BaseGroupPage from '../groups/BaseGroupPage';
+import EnterpriseGroupPage from '../groups/EnterpriseGroupPage';
 import LDAPGroupPage from '../groups/LDAPGroupPage';
 import OAuthGroupPage from '../groups/OAuthGroupPage';
+import SAMLGroupPage from '../groups/SAMLGroupPage';
 
-type SettingsGroupSelectorProps = {
+export type SettingsGroupSelectorProps = {
 	groupId: ISetting['_id'];
 	onClickBack?: () => void;
 };
@@ -26,8 +28,16 @@ const SettingsGroupSelector = ({ groupId, onClickBack }: SettingsGroupSelectorPr
 		return <LDAPGroupPage {...group} onClickBack={onClickBack} />;
 	}
 
+	if (groupId === 'SAML') {
+		return <SAMLGroupPage {...group} onClickBack={onClickBack} />;
+	}
+
 	if (groupId === 'Assets') {
 		return <BaseGroupPage {...group} onClickBack={onClickBack} hasReset={false} />;
+	}
+
+	if (groupId === 'Enterprise') {
+		return <EnterpriseGroupPage {...group} onClickBack={onClickBack} />;
 	}
 
 	return <BaseGroupPage {...group} onClickBack={onClickBack} />;

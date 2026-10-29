@@ -3,11 +3,12 @@ import { Field, FieldLabel, FieldGroup, FieldRow, TextInput, Button, Box, Icon, 
 import type { SelectOption } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
-	ContextualbarTitle,
 	ContextualbarClose,
+	ContextualbarFooter,
 	ContextualbarHeader,
 	ContextualbarScrollableContent,
-	ContextualbarFooter,
+	ContextualbarTitle,
+	UserInfoAvatar,
 } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQueryClient } from '@tanstack/react-query';
@@ -15,7 +16,6 @@ import { useId, useMemo } from 'react';
 import { useForm, Controller, FormProvider } from 'react-hook-form';
 
 import { getUserEmailAddress } from '../../../../lib/getUserEmailAddress';
-import { UserInfoAvatar } from '../../../components/UserInfo';
 import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 import { MaxChatsPerAgent } from '../additionalForms';
 import AutoCompleteDepartmentMultiple from '../components/AutoCompleteDepartmentMultiple';
@@ -29,7 +29,7 @@ type AgentEditFormData = {
 	maxNumberSimultaneousChat: number;
 };
 
-type AgentEditProps = {
+export type AgentEditProps = {
 	agentData: Pick<ILivechatAgent, '_id' | 'username' | 'name' | 'status' | 'statusLivechat' | 'emails' | 'livechat'>;
 	agentDepartments: (Pick<ILivechatDepartmentAgents, 'departmentId'> & { departmentName: string })[];
 };
@@ -131,7 +131,7 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 									<Controller
 										name='username'
 										control={control}
-										render={({ field }) => <TextInput id={usernameField} {...field} readOnly addon={<Icon name='at' size='x20' />} />}
+										render={({ field }) => <TextInput id={usernameField} {...field} readOnly endAddon={<Icon name='at' size='x20' />} />}
 									/>
 								</FieldRow>
 							</Field>
@@ -141,7 +141,7 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 									<Controller
 										name='email'
 										control={control}
-										render={({ field }) => <TextInput id={emailField} {...field} readOnly addon={<Icon name='mail' size='x20' />} />}
+										render={({ field }) => <TextInput id={emailField} {...field} readOnly endAddon={<Icon name='mail' size='x20' />} />}
 									/>
 								</FieldRow>
 							</Field>
@@ -179,7 +179,7 @@ const AgentEdit = ({ agentData, agentDepartments }: AgentEditProps) => {
 					<Button type='reset' disabled={!isDirty} onClick={() => reset()}>
 						{t('Reset')}
 					</Button>
-					<Button form={formId} primary type='submit' disabled={!isDirty}>
+					<Button form={formId} variant='primary' type='submit' disabled={!isDirty}>
 						{t('Save')}
 					</Button>
 				</ButtonGroup>

@@ -8,8 +8,8 @@ import type {
 } from '@rocket.chat/core-typings';
 import { ValidOutboundProviderList } from '@rocket.chat/core-typings';
 
-import { getOutboundService } from '../../../../../../app/livechat/server/lib/outboundcommunication';
 import { OutboundMessageProvider } from '../../../../../../server/lib/OutboundMessageProvider';
+import { getOutboundService } from '../../../../../../server/lib/omnichannel/outboundcommunication';
 
 export class OutboundMessageProviderService implements IOutboundMessageProviderService {
 	private readonly provider: OutboundMessageProvider;

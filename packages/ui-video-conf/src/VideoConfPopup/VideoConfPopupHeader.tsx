@@ -1,7 +1,9 @@
 import { Box } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 
-const VideoConfPopupHeader = ({ children }: { children: ReactNode }) => (
+export type VideoConfPopupHeaderProps = { children: ReactNode };
+
+const VideoConfPopupHeader = ({ children }: VideoConfPopupHeaderProps) => (
 	<Box display='flex' minHeight='x28' justifyContent='space-between'>
 		{children}
 	</Box>

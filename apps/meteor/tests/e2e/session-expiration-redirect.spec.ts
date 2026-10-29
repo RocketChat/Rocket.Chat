@@ -1,10 +1,10 @@
 import type { Page } from '@playwright/test';
 import { MongoClient } from 'mongodb';
 
-import { URL_MONGODB } from './config/constants';
+import { DEFAULT_USER_CREDENTIALS, URL_MONGODB } from './config/constants';
 import { createAuxContext } from './fixtures/createAuxContext';
 import type { IUserState } from './fixtures/userStates';
-import { HomeChannel } from './page-objects';
+import { Authenticated, HomeChannel, Login } from './page-objects';
 import { createTargetChannel, deleteChannel } from './utils';
 import { test, expect } from './utils/test';
 import type { ITestUser } from './utils/user-helpers';
@@ -28,6 +28,7 @@ test.describe('Session Expiration Redirect', () => {
 	let expiringUser2: ITestUser;
 	let expiringUser1State: IUserState;
 	let expiringUser2State: IUserState;
+	let recreatedUser: ITestUser | undefined;
 
 	test.beforeAll(async ({ api }) => {
 		[expiringUser1, expiringUser2] = await Promise.all([createTestUser(api), createTestUser(api)]);
@@ -38,7 +39,7 @@ test.describe('Session Expiration Redirect', () => {
 
 	test.afterAll(async ({ api }) => {
 		await deleteChannel(api, targetChannel);
-		await Promise.all([expiringUser1?.delete(), expiringUser2?.delete()]);
+		await Promise.all([expiringUser1?.delete(), expiringUser2?.delete(), recreatedUser?.delete()]);
 	});
 
 	test.afterEach(async () => {
@@ -111,6 +112,38 @@ test.describe('Session Expiration Redirect', () => {
 			const loginToken = await page.evaluate(() => localStorage.getItem('Meteor.loginToken'));
 			expect(userId).toBeNull();
 			expect(loginToken).toBeNull();
+		});
+	});
+
+	test('should log back in as a recreated user at the first attempt, on the same page, after the logged-in user is deleted', async ({
+		api,
+		browser,
+	}) => {
+		recreatedUser = await createTestUser(api);
+		const { username } = recreatedUser.data;
+		const { page } = await createAuxContext(browser, await loginTestUser(api, recreatedUser), '/home');
+		const poHomeChannel = new HomeChannel(page);
+		const poLogin = new Login(page);
+		sessions.push({ page, poHomeChannel });
+
+		await test.step('delete the logged-in user', async () => {
+			await recreatedUser?.delete();
+			await poLogin.waitForDisplay();
+		});
+
+		await test.step('verify localStorage was cleared', async () => {
+			const userId = await page.evaluate(() => localStorage.getItem('Meteor.userId'));
+			const loginToken = await page.evaluate(() => localStorage.getItem('Meteor.loginToken'));
+
+			expect(userId).toBeNull();
+			expect(loginToken).toBeNull();
+		});
+
+		await test.step('recreate the user and log in on the same page, without reloading', async () => {
+			recreatedUser = await createTestUser(api, { username });
+			await poLogin.login(username, DEFAULT_USER_CREDENTIALS.password);
+
+			await new Authenticated(page).waitForDisplay();
 		});
 	});
 });

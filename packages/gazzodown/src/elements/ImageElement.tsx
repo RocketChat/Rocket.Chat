@@ -41,7 +41,7 @@ const style = {
 	maxWidth: '100%',
 };
 
-type ImageElementProps = {
+export type ImageElementProps = {
 	src: string;
 	alt: MessageParser.Markup;
 };

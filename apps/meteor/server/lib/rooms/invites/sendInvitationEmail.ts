@@ -1,0 +1,69 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
+import { Settings } from '@rocket.chat/models';
+import { Meteor } from 'meteor/meteor';
+
+import { settings } from '../../../settings';
+import { hasPermissionAsync } from '../../authorization/hasPermission';
+import * as Mailer from '../../notifications/email/api';
+import { notifyOnSettingChanged } from '../../notifyListener';
+
+let html = '';
+Meteor.startup(() => {
+	Mailer.getTemplate('Invitation_Email', (value) => {
+		html = value;
+	});
+});
+
+export const sendInvitationEmail = async (userId: string, emails: string[]) => {
+	if (!userId) {
+		throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', {
+			method: 'sendInvitationEmail',
+		});
+	}
+	if (!(await hasPermissionAsync(userId, 'bulk-register-user'))) {
+		throw new ClientSafeError('error-not-allowed', 'Not allowed', {
+			method: 'sendInvitationEmail',
+		});
+	}
+	const validEmails = emails.filter(Mailer.checkAddressFormat);
+
+	if (!validEmails || validEmails.length === 0) {
+		throw new ClientSafeError('error-email-send-failed', 'No valid email addresses', {
+			method: 'sendInvitationEmail',
+		});
+	}
+
+	const subject = settings.get<string>('Invitation_Subject');
+
+	if (!subject) {
+		throw new ClientSafeError('error-email-send-failed', 'No subject', {
+			method: 'sendInvitationEmail',
+		});
+	}
+
+	for (const email of validEmails) {
+		try {
+			await Mailer.send({
+				to: email,
+				from: settings.get('From_Email'),
+				subject,
+				html,
+				data: {
+					email,
+				},
+			});
+
+			const value = await Settings.incrementValueById('Invitation_Email_Count', 1, { returnDocument: 'after' });
+			if (value) {
+				void notifyOnSettingChanged(value);
+			}
+
+			continue;
+		} catch ({ message }: any) {
+			throw new ClientSafeError('error-email-send-failed', `Error trying to send email: ${message}`, {
+				method: 'sendInvitationEmail',
+				message,
+			});
+		}
+	}
+};

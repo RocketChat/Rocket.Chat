@@ -1,5 +1,5 @@
 import type { ProgressStep } from '@rocket.chat/core-typings';
-import { Box, Margins, ProgressBar, Throbber } from '@rocket.chat/fuselage';
+import { Box, ProgressBar, Text, Throbber } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { Page, PageHeader, PageScrollableContentWithShadow } from '@rocket.chat/ui-client';
 import { useToastMessageDispatch, useEndpoint, useStream, useRouter } from '@rocket.chat/ui-contexts';
@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useErrorHandler } from './useErrorHandler';
-import { ImportingStartedStates } from '../../../../app/importer/lib/ImporterProgressStep';
+import { ImportingStartedStates } from '../../../../lib/importer/ImporterProgressStep';
 import { numberFormat } from '../../../../lib/utils/stringUtils';
 
 // TODO: review inner logic
@@ -159,26 +159,24 @@ const ImportProgressPage = function ImportProgressPage() {
 		<Page>
 			<PageHeader title={t('Importing_Data')} />
 			<PageScrollableContentWithShadow>
-				<Box marginInline='auto' marginBlock='neg-x24' width='full' maxWidth='x580'>
-					<Margins block={24}>
-						{currentOperation.isLoading && <Throbber justifyContent='center' />}
-						{progress.fetchStatus !== 'idle' && progress.isLoading && <Throbber justifyContent='center' />}
+				<Box marginInline='auto' width='full' maxWidth='x580' display='flex' flexDirection='column' gap={24}>
+					{currentOperation.isLoading && <Throbber />}
+					{progress.fetchStatus !== 'idle' && progress.isLoading && <Throbber />}
 
-						{(currentOperation.isError || progress.isError) && <Box is='p'>{t('Failed_To_Load_Import_Data')}</Box>}
-						{progress.isSuccess && (
-							<>
-								<Box is='p' fontScale='p2'>
-									{t((progress.data.step[0].toUpperCase() + progress.data.step.slice(1)) as any)}
+					{(currentOperation.isError || progress.isError) && <Box is='p'>{t('Failed_To_Load_Import_Data')}</Box>}
+					{progress.isSuccess && (
+						<>
+							<Text is='p' fontScale='p2'>
+								{t((progress.data.step[0].toUpperCase() + progress.data.step.slice(1)) as any)}
+							</Text>
+							<Box display='flex' justifyContent='center'>
+								<ProgressBar percentage={(progress.data.completed / progress.data.total) * 100} />
+								<Box is='span' fontScale='p2' marginInlineStart={24}>
+									{numberFormat((progress.data.completed / progress.data.total) * 100, 0)}%
 								</Box>
-								<Box display='flex' justifyContent='center'>
-									<ProgressBar percentage={(progress.data.completed / progress.data.total) * 100} />
-									<Box is='span' fontScale='p2' mis={24}>
-										{numberFormat((progress.data.completed / progress.data.total) * 100, 0)}%
-									</Box>
-								</Box>
-							</>
-						)}
-					</Margins>
+							</Box>
+						</>
+					)}
 				</Box>
 			</PageScrollableContentWithShadow>
 		</Page>

@@ -3,7 +3,7 @@ import { Option, Box } from '@rocket.chat/fuselage';
 import type { AutoCompleteProps } from '@rocket.chat/fuselage';
 import { AutoComplete } from '@rocket.chat/fuselage-forms';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
-import { RoomAvatar } from '@rocket.chat/ui-avatar';
+import { ITEM_MEDIA_SIZE, RoomAvatar } from '@rocket.chat/ui-avatar';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
@@ -17,7 +17,7 @@ const generateQuery = (
 	selector: string;
 } => ({ selector: JSON.stringify({ name: term }) });
 
-type RoomAutoCompleteProps = Omit<AutoCompleteProps<LabelType>, 'filter'> & {
+export type RoomAutoCompleteProps = Omit<AutoCompleteProps<LabelType>, 'filter'> & {
 	scope?: 'admin' | 'regular';
 	renderRoomIcon?: (props: { encrypted: IRoom['encrypted']; type: IRoom['t'] }) => ReactNode;
 	setSelectedRoom?: (room: IRoom | undefined) => void;
@@ -77,15 +77,11 @@ const RoomAutoComplete = forwardRef<HTMLInputElement, RoomAutoCompleteProps>(fun
 			filter={filter}
 			setFilter={setFilter}
 			renderSelected={({ selected: { value, label } }) => (
-				<>
-					<Box margin='none' mi={2}>
-						<RoomAvatar size={AVATAR_SIZE} room={{ ...label, type: label?.type || 'c', _id: value }} />
-					</Box>
-					<Box margin='none' mi={2}>
-						{label?.name}
-					</Box>
+				<Box display='flex' alignItems='center' gap='x4'>
+					<RoomAvatar size={AVATAR_SIZE} room={{ ...label, type: label?.type || 'c', _id: value }} />
+					<Box margin='none'>{label?.name}</Box>
 					{renderRoomIcon?.({ encrypted: label?.encrypted, type: label?.type })}
-				</>
+				</Box>
 			)}
 			renderItem={({ value, label, ...props }) => (
 				<Option
@@ -96,7 +92,7 @@ const RoomAutoComplete = forwardRef<HTMLInputElement, RoomAutoCompleteProps>(fun
 							{renderRoomIcon?.({ encrypted: label?.encrypted, type: label?.type })}
 						</>
 					}
-					avatar={<RoomAvatar size={AVATAR_SIZE} room={{ _id: value, ...label }} />}
+					avatar={<RoomAvatar size={ITEM_MEDIA_SIZE.condensed} room={{ _id: value, ...label }} />}
 				/>
 			)}
 			options={options}

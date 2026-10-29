@@ -7,7 +7,7 @@ import { useCallback } from 'react';
 import ThreadMetricsBadge from './ThreadMetricsUnreadBadge';
 import { useToggleFollowingThreadMutation } from '../../../views/room/contextualBar/Threads/hooks/useToggleFollowingThreadMutation';
 
-type ThreadMetricsFollowProps = {
+export type ThreadMetricsFollowProps = {
 	following: boolean;
 	mid: IMessage['_id'];
 	rid: IMessage['rid'];

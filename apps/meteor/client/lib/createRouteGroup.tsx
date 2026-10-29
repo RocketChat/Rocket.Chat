@@ -11,9 +11,9 @@ type GroupPrefix<TGroupName extends GroupName> = IRouterPaths[`${TGroupName}-ind
 
 type RouteNamesOf<TGroupName extends GroupName> = (
 	| keyof {
-			[TRouteName in RouteName as IRouterPaths[TRouteName]['pattern'] extends `${GroupPrefix<TGroupName>}/${string}`
-				? TRouteName
-				: never]: never;
+			[
+				TRouteName in RouteName as IRouterPaths[TRouteName]['pattern'] extends `${GroupPrefix<TGroupName>}/${string}` ? TRouteName : never
+			]: never;
 	  }
 	| `${GroupName}-index`
 ) &

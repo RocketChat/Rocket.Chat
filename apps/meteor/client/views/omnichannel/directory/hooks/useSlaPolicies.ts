@@ -1,8 +1,7 @@
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
-import { millisecondsToMinutes } from 'date-fns';
-
-import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
+import { millisecondsToMinutes } from 'date-fns/millisecondsToMinutes';
 
 export const useSlaPolicies = () => {
 	const { data: isEnterprise = false } = useHasLicenseModule('livechat-enterprise');

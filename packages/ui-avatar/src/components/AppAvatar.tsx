@@ -1,7 +1,7 @@
 import type { BaseAvatarProps } from './BaseAvatar';
 import BaseAvatar from './BaseAvatar';
 
-type AppAvatarProps = Pick<BaseAvatarProps, 'size'> & {
+export type AppAvatarProps = Pick<BaseAvatarProps, 'size'> & {
 	iconFileContent: string;
 	iconFileData: string;
 };

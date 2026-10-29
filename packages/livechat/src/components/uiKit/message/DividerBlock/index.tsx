@@ -5,7 +5,7 @@ import { createClassName } from '../../../../helpers/createClassName';
 import Block from '../Block';
 import styles from './styles.scss';
 
-type DividerBlockProps = uikit.DividerBlock;
+export type DividerBlockProps = uikit.DividerBlock;
 
 const DividerBlock = ({ appId, blockId }: DividerBlockProps) => (
 	<Block appId={appId} blockId={blockId}>

@@ -3,7 +3,7 @@ import { ContactVisitorAssociationSchema, ajv } from '@rocket.chat/rest-typings'
 
 import { changeContactBlockStatus, closeBlockedRoom, ensureSingleContactLicense } from './lib/contacts';
 import { API } from '../../../../../server/api';
-import { logger } from '../../../../app/livechat-enterprise/server/lib/logger';
+import { logger } from '../../../lib/omnichannel/logger';
 
 type blockContactProps = {
 	visitor: ILivechatContactVisitorAssociation;
@@ -21,7 +21,6 @@ const blockContactSchema = {
 const isBlockContactProps = ajv.compile<blockContactProps>(blockContactSchema);
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
 		'/v1/omnichannel/contacts.block': {
 			POST: (params: blockContactProps) => void;

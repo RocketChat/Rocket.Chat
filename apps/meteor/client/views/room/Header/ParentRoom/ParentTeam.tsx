@@ -10,7 +10,7 @@ import { useUserTeamsQuery } from '../../hooks/useUserTeamsQuery';
 
 type APIErrorResult = { success: boolean; error: string };
 
-type ParentTeamProps = {
+export type ParentTeamProps = {
 	room: IRoom;
 };
 
@@ -32,7 +32,7 @@ const ParentTeam = ({ room }: ParentTeamProps) => {
 		data: teamInfo,
 		isLoading: teamInfoLoading,
 		isError: teamInfoError,
-	} = useTeamInfoQuery(teamId, { retry: (_, error) => (error as unknown as APIErrorResult)?.error !== 'unauthorized' });
+	} = useTeamInfoQuery(teamId, { retry: (_, error) => (error as unknown as APIErrorResult)?.error !== 'forbidden' });
 
 	const { data: userTeams, isLoading: userTeamsLoading } = useUserTeamsQuery(userId);
 

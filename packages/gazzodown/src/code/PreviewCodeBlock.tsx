@@ -1,7 +1,7 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 import { useMemo } from 'react';
 
-type PreviewCodeBlockProps = {
+export type PreviewCodeBlockProps = {
 	language?: string;
 	lines: MessageParser.CodeLine[];
 };

@@ -1,5 +1,5 @@
 import type { IAnalytics, IRoom } from '@rocket.chat/core-typings';
-import type { AggregationCursor, FindCursor, FindOptions, UpdateResult, Document } from 'mongodb';
+import type { AggregationCursor, FindOptions, UpdateResult, Document } from 'mongodb';
 
 import type { IBaseModel } from './IBaseModel';
 import type { IChannelsWithNumberOfMessagesBetweenDate } from './IRoomsModel';
@@ -38,7 +38,7 @@ export interface IAnalyticsModel extends IBaseModel<IAnalytics> {
 		_id: IAnalytics['date'];
 		users: number;
 	}>;
-	findByTypeBeforeDate({ type, date }: { type: IAnalytics['type']; date: IAnalytics['date'] }): FindCursor<IAnalytics>;
+	findOneByTypeBeforeDate({ type, date }: { type: IAnalytics['type']; date: IAnalytics['date'] }): Promise<IAnalytics | null>;
 	findRoomsByTypesWithNumberOfMessagesBetweenDate(params: {
 		types: Array<IRoom['t']>;
 		start: number;

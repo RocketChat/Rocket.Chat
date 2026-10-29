@@ -1,4 +1,4 @@
-import { Box, Pagination } from '@rocket.chat/fuselage';
+import { Box, Pagination, type TableColumnWidth, Text } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import {
@@ -11,6 +11,7 @@ import {
 	GenericTableRow,
 	usePagination,
 	useSort,
+	GenericNoResults,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint } from '@rocket.chat/ui-contexts';
 import { hashKey, useQuery } from '@tanstack/react-query';
@@ -20,7 +21,6 @@ import AddManager from './AddManager';
 import RemoveManagerButton from './RemoveManagerButton';
 import FilterByText from '../../../components/FilterByText';
 import GenericError from '../../../components/GenericError';
-import GenericNoResults from '../../../components/GenericNoResults/GenericNoResults';
 import { links } from '../../../lib/links';
 import { omnichannelQueryKeys } from '../../../lib/queryKeys';
 
@@ -55,6 +55,8 @@ const ManagersTable = () => {
 	const [defaultQuery] = useState(hashKey([query]));
 	const queryHasChanged = defaultQuery !== hashKey([query]);
 
+	const columns: TableColumnWidth[] = ['auto', 'auto', 'auto', 'x60'];
+
 	const headers = (
 		<>
 			<GenericTableHeaderCell key='name' direction={sortDirection} active={sortBy === 'name'} onClick={setSort} sort='name'>
@@ -72,9 +74,7 @@ const ManagersTable = () => {
 			>
 				{t('Email')}
 			</GenericTableHeaderCell>
-			<GenericTableHeaderCell key='remove' w='x60'>
-				{t('Remove')}
-			</GenericTableHeaderCell>
+			<GenericTableHeaderCell key='remove'>{t('Remove')}</GenericTableHeaderCell>
 		</>
 	);
 
@@ -85,7 +85,7 @@ const ManagersTable = () => {
 				<FilterByText value={text} onChange={(event) => setText(event.target.value)} />
 			)}
 			{isLoading && (
-				<GenericTable aria-busy={isLoading} aria-label={t('Managers')}>
+				<GenericTable columns={columns} aria-busy={isLoading} aria-label={t('Managers')}>
 					<GenericTableHeader>{headers}</GenericTableHeader>
 					<GenericTableBody>
 						<GenericTableLoadingTable headerCells={4} />
@@ -103,30 +103,30 @@ const ManagersTable = () => {
 			)}
 			{isSuccess && data.users.length > 0 && (
 				<>
-					<GenericTable aria-busy={isLoading} aria-label={t('Managers')}>
+					<GenericTable columns={columns} aria-busy={isLoading} aria-label={t('Managers')}>
 						<GenericTableHeader>{headers}</GenericTableHeader>
 						<GenericTableBody>
 							{data.users.map((user) => (
 								<GenericTableRow key={user._id} tabIndex={0}>
-									<GenericTableCell withTruncatedText>
+									<GenericTableCell truncate>
 										<Box display='flex' alignItems='center'>
 											<UserAvatar size='x28' username={user.username || ''} etag={user.avatarETag} />
-											<Box display='flex' withTruncatedText mi={8}>
+											<Box display='flex' withTruncatedText marginInline={8}>
 												<Box display='flex' flexDirection='column' alignSelf='center' withTruncatedText>
-													<Box fontScale='p2m' withTruncatedText color='default'>
+													<Text fontScale='p2m' truncate color='default'>
 														{user.name || user.username}
-													</Box>
+													</Text>
 												</Box>
 											</Box>
 										</Box>
 									</GenericTableCell>
 									<GenericTableCell>
-										<Box fontScale='p2m' withTruncatedText color='hint'>
+										<Text fontScale='p2m' truncate color='hint'>
 											{user.username}
-										</Box>
-										<Box mi={4} />
+										</Text>
+										<Box marginInline={4} />
 									</GenericTableCell>
-									<GenericTableCell withTruncatedText>{user.emails?.length && user.emails[0].address}</GenericTableCell>
+									<GenericTableCell truncate>{user.emails?.length && user.emails[0].address}</GenericTableCell>
 									<RemoveManagerButton _id={user._id} />
 								</GenericTableRow>
 							))}

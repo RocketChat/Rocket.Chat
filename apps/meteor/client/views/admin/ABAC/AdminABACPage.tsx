@@ -19,7 +19,7 @@ import { useExternalLink } from '../../../hooks/useExternalLink';
 import { useLdapSync } from '../../../hooks/useLdapSync';
 import { links } from '../../../lib/links';
 
-type AdminABACPageProps = {
+export type AdminABACPageProps = {
 	shouldShowWarning: boolean;
 };
 
@@ -63,13 +63,13 @@ const AdminABACPage = ({ shouldShowWarning }: AdminABACPageProps) => {
 						>
 							{t('LDAP_Sync_Now')}
 						</Button>
-						<Button icon='new-window' secondary onClick={() => learnMore(links.go.abacDocs)}>
+						<Button icon='new-window' variant='secondary' onClick={() => learnMore(links.go.abacDocs)}>
 							{t('ABAC_Learn_More')}
 						</Button>
 					</ButtonGroup>
 				</PageHeader>
 				{shouldShowWarning && (
-					<Box mi={24} mb={16}>
+					<Box marginInline={24} marginBlock={16}>
 						<Callout type='warning' title={t('ABAC_automatically_disabled_callout')}>
 							<Trans
 								i18nKey='ABAC_automatically_disabled_callout_description'

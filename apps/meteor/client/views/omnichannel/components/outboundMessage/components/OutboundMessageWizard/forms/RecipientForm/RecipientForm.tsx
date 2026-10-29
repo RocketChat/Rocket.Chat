@@ -33,7 +33,7 @@ export type RecipientFormSubmitPayload = {
 	sender: string;
 };
 
-type RecipientFormProps = {
+export type RecipientFormProps = {
 	defaultValues?: Partial<RecipientFormData>;
 	onDirty?(): void;
 	onSubmit(values: RecipientFormSubmitPayload): void;
@@ -186,38 +186,40 @@ const RecipientForm = (props: RecipientFormProps) => {
 	return (
 		<Form id={recipientFormId} onSubmit={handleSubmit(submit)} noValidate>
 			<Scrollable vertical>
-				<FieldGroup justifyContent='start' pi={2}>
-					<ContactField
-						control={control}
-						isError={isErrorContact || isContactNotFound}
-						isFetching={isFetchingContact}
-						onRetry={refetchContact}
-					/>
+				<Box>
+					<FieldGroup>
+						<ContactField
+							control={control}
+							isError={isErrorContact || isContactNotFound}
+							isFetching={isFetchingContact}
+							onRetry={refetchContact}
+						/>
 
-					<ChannelField
-						control={control}
-						contact={contact}
-						disabled={!contactId}
-						isFetching={isFetchingProvider}
-						isError={isErrorProvider || isProviderNotFound}
-						onRetry={refetchProvider}
-					/>
+						<ChannelField
+							control={control}
+							contact={contact}
+							disabled={!contactId}
+							isFetching={isFetchingProvider}
+							isError={isErrorProvider || isProviderNotFound}
+							onRetry={refetchProvider}
+						/>
 
-					<RecipientField
-						control={control}
-						contact={contact}
-						type={provider?.providerType || 'phone'}
-						disabled={!providerId || !contact}
-						isLoading={isFetchingContact}
-					/>
+						<RecipientField
+							control={control}
+							contact={contact}
+							type={provider?.providerType || 'phone'}
+							disabled={!providerId || !contact}
+							isLoading={isFetchingContact}
+						/>
 
-					<SenderField control={control} provider={provider} disabled={!recipient || !provider} isLoading={isFetchingProvider} />
-				</FieldGroup>
+						<SenderField control={control} provider={provider} disabled={!recipient || !provider} isLoading={isFetchingProvider} />
+					</FieldGroup>
+				</Box>
 			</Scrollable>
 
 			{customActions ?? (
-				<Box mbs={24} display='flex' justifyContent='end' flexGrow={0} flexShrink={0}>
-					<Button type='submit' primary loading={isSubmitting}>
+				<Box marginBlockStart={24} display='flex' justifyContent='end' flexGrow={0} flexShrink={0}>
+					<Button type='submit' variant='primary' loading={isSubmitting}>
 						{t('Submit')}
 					</Button>
 				</Box>

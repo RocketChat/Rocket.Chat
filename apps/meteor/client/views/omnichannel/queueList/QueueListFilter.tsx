@@ -1,13 +1,13 @@
-import { Box, Select, Label } from '@rocket.chat/fuselage';
+import { Box, Field, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import { useStableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import type { Dispatch, FormEvent, Key, SetStateAction } from 'react';
-import { useEffect } from 'react';
+import { useEffect, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import AutoCompleteAgent from '../components/AutoCompleteAgent';
 import AutoCompleteDepartment from '../components/AutoCompleteDepartment';
 
-type QueueListFilterProps = {
+export type QueueListFilterProps = {
 	setFilter: Dispatch<SetStateAction<any>>;
 };
 
@@ -18,6 +18,10 @@ export const QueueListFilter = ({ setFilter, ...props }: QueueListFilterProps) =
 		['online', t('Online')],
 		['offline', t('Include_Offline_Agents')],
 	];
+
+	const servedByLabelId = useId();
+	const statusField = useId();
+	const departmentLabelId = useId();
 
 	const [servedBy, setServedBy] = useLocalStorage('servedBy', 'all');
 	const [status, setStatus] = useLocalStorage('status', 'online');
@@ -47,19 +51,37 @@ export const QueueListFilter = ({ setFilter, ...props }: QueueListFilterProps) =
 	}, [setFilter, servedBy, status, department]);
 
 	return (
-		<Box mb={16} is='form' onSubmit={onSubmit} display='flex' flexDirection='column' {...props}>
-			<Box display='flex' flexDirection='row' flexWrap='wrap' {...props}>
-				<Box display='flex' mie={8} flexGrow={1} flexDirection='column'>
-					<Label mb={4}>{t('Served_By')}</Label>
-					<AutoCompleteAgent haveAll value={servedBy} onChange={handleServedBy} />
+		<Box marginBlock={16} is='form' onSubmit={onSubmit} display='flex' flexDirection='column' {...props}>
+			<Box display='flex' flexDirection='row' flexWrap='wrap' columnGap={8} paddingInlineEnd={8} {...props}>
+				<Box flexGrow={1}>
+					<Field>
+						<FieldLabel id={servedByLabelId}>{t('Served_By')}</FieldLabel>
+						<FieldRow>
+							<AutoCompleteAgent aria-labelledby={servedByLabelId} haveAll value={servedBy} onChange={handleServedBy} />
+						</FieldRow>
+					</Field>
 				</Box>
-				<Box display='flex' mie={8} flexGrow={1} flexDirection='column'>
-					<Label mb={4}>{t('Status')}</Label>
-					<Select options={statusOptions} value={status} onChange={handleStatus} placeholder={t('Status')} />
+				<Box flexGrow={1}>
+					<Field>
+						<FieldLabel htmlFor={statusField}>{t('Status')}</FieldLabel>
+						<FieldRow>
+							<Select id={statusField} options={statusOptions} value={status} onChange={handleStatus} placeholder={t('Status')} />
+						</FieldRow>
+					</Field>
 				</Box>
-				<Box display='flex' mie={8} flexGrow={1} flexDirection='column'>
-					<Label mb={4}>{t('Department')}</Label>
-					<AutoCompleteDepartment haveAll value={department} onChange={handleDepartment} onlyMyDepartments />
+				<Box flexGrow={1}>
+					<Field>
+						<FieldLabel id={departmentLabelId}>{t('Department')}</FieldLabel>
+						<FieldRow>
+							<AutoCompleteDepartment
+								aria-labelledby={departmentLabelId}
+								haveAll
+								value={department}
+								onChange={handleDepartment}
+								onlyMyDepartments
+							/>
+						</FieldRow>
+					</Field>
 				</Box>
 			</Box>
 		</Box>

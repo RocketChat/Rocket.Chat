@@ -1,8 +1,10 @@
 import { faker } from '@faker-js/faker';
+import { request as baseRequest } from '@playwright/test';
 import type { IRoom, IMessage } from '@rocket.chat/core-typings';
 import type { ChannelsCreateProps, GroupsCreateProps } from '@rocket.chat/rest-typings';
 
 import type { BaseTest } from './test';
+import { BASE_API_URL } from '../config/constants';
 
 /**
  * createTargetChannel:
@@ -30,13 +32,20 @@ export async function sendTargetChannelMessage(api: BaseTest['api'], roomName: s
 		channel: { _id: rid },
 	}: { channel: IRoom } = await response.json();
 
-	await api.post('/chat.sendMessage', {
+	const { pinned, ...messageOptions } = options ?? {};
+
+	const sendResponse = await api.post('/chat.sendMessage', {
 		message: {
 			rid,
 			msg: options?.msg || 'simple message',
-			...options,
+			...messageOptions,
 		},
 	});
+
+	if (pinned) {
+		const { message }: { message: IMessage } = await sendResponse.json();
+		await api.post('/chat.pinMessage', { messageId: message._id });
+	}
 
 	return options?.msg || 'simple message';
 }
@@ -53,6 +62,37 @@ export async function isChannelMember(api: BaseTest['api'], roomName: string, us
 
 export async function deleteRoom(api: BaseTest['api'], roomId: string): Promise<void> {
 	await api.post('/rooms.delete', { roomId });
+}
+
+export async function deletePrivateRoomsByName(credentials: { username: string; password: string }, roomNames: string[]): Promise<void> {
+	const userApi = await baseRequest.newContext();
+
+	try {
+		const loginResponse = await userApi.post(`${BASE_API_URL}/login`, { data: credentials });
+
+		if (!loginResponse.ok()) {
+			return;
+		}
+
+		const { data } = await loginResponse.json();
+		await Promise.allSettled(
+			roomNames.map((roomName) =>
+				userApi.post(`${BASE_API_URL}/groups.delete`, {
+					data: { roomName },
+					headers: {
+						'X-Auth-Token': data.authToken,
+						'X-User-Id': data.userId,
+					},
+				}),
+			),
+		);
+	} finally {
+		await userApi.dispose();
+	}
+}
+
+export async function markRoomAsRead(api: BaseTest['api'], roomId: string): Promise<void> {
+	await api.post('/subscriptions.read', { rid: roomId });
 }
 
 export async function createTargetPrivateChannel(api: BaseTest['api'], options?: Omit<GroupsCreateProps, 'name'>): Promise<string> {

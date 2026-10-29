@@ -13,7 +13,7 @@ import {
 } from '@rocket.chat/rest-typings';
 
 import { API } from '../..';
-import { setCustomFields, setMultipleCustomFields } from '../../../../app/livechat/server/lib/custom-fields';
+import { setCustomFields, setMultipleCustomFields } from '../../../lib/omnichannel/custom-fields';
 import type { ExtractRoutesFromAPI } from '../../ApiClass';
 import { findLivechatCustomFields, findCustomFieldById } from './lib/customFields';
 import { findGuest } from './lib/livechat';
@@ -161,6 +161,6 @@ const livechatCustomFieldsEndpoints = API.v1
 type LivechatCustomFieldsEndpoints = ExtractRoutesFromAPI<typeof livechatCustomFieldsEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends LivechatCustomFieldsEndpoints {}
 }

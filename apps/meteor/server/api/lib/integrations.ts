@@ -1,7 +1,7 @@
 import type { IIntegration, IUser } from '@rocket.chat/core-typings';
 import { Integrations } from '@rocket.chat/models';
 
-import { hasPermissionAsync } from '../../../app/authorization/server/functions/hasPermission';
+import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 
 const hasIntegrationsPermission = async (userId: string, integration: IIntegration): Promise<boolean> => {
 	const type = integration.type === 'webhook-incoming' ? 'incoming' : 'outgoing';

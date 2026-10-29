@@ -1,10 +1,10 @@
 import { GenericMenu } from '@rocket.chat/ui-client';
 import type { CallHistoryExternalContact, CallHistoryTableRowProps } from '@rocket.chat/ui-voip';
-import { CallHistoryTableRow, usePeekMediaSessionState, useWidgetExternalControls } from '@rocket.chat/ui-voip';
+import { CallHistoryTableRow, getCallHistoryMenuItems, usePeekMediaSessionState, useWidgetExternalControls } from '@rocket.chat/ui-voip';
 import { useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-type CallHistoryRowExternalUserProps = Omit<CallHistoryTableRowProps<CallHistoryExternalContact>, 'onClick' | 'menu'> & {
+export type CallHistoryRowExternalUserProps = Omit<CallHistoryTableRowProps<CallHistoryExternalContact>, 'onClick' | 'menu'> & {
 	onClick: (historyId: string) => void;
 };
 
@@ -18,22 +18,10 @@ const CallHistoryRowExternalUser = ({ _id, contact, type, status, duration, time
 		onClick(_id);
 	}, [onClick, _id]);
 
-	const actions = useMemo(() => {
-		if (state === 'unavailable') {
-			return [];
-		}
-		const disabled = state !== 'available';
-		return [
-			{
-				id: 'voiceCall',
-				icon: 'phone',
-				content: t('Voice_call'),
-				disabled,
-				tooltip: disabled ? t('Call_in_progress') : undefined,
-				onClick: () => toggleWidget({ number: contact.number }),
-			} as const,
-		];
-	}, [contact, toggleWidget, t, state]);
+	const actions = useMemo(
+		() => (state === 'unavailable' ? [] : getCallHistoryMenuItems({ voiceCall: () => toggleWidget({ number: contact.number }) }, t, state)),
+		[contact, toggleWidget, t, state],
+	);
 
 	return (
 		<CallHistoryTableRow

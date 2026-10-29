@@ -1,5 +1,5 @@
 import type { DeviceManagementPopulatedSession } from '@rocket.chat/core-typings';
-import { Box, Button, ButtonGroup, StatusBullet } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, StatusBullet, Text } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import {
 	ContextualbarHeader,
@@ -11,15 +11,15 @@ import {
 	InfoPanelField,
 	InfoPanelLabel,
 	InfoPanelText,
+	useFormatDateAndTime,
 } from '@rocket.chat/ui-client';
 import { useRoute, useUserPresence } from '@rocket.chat/ui-contexts';
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useDeviceLogout } from '../../../../hooks/useDeviceLogout';
-import { useFormatDateAndTime } from '../../../../hooks/useFormatDateAndTime';
 
-type DeviceManagementInfoProps = DeviceManagementPopulatedSession;
+export type DeviceManagementInfoProps = DeviceManagementPopulatedSession;
 
 const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user }: DeviceManagementInfoProps) => {
 	const { t } = useTranslation();
@@ -62,13 +62,13 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user }:
 							<InfoPanelLabel>{t('User')}</InfoPanelLabel>
 							<Box>
 								<UserAvatar username={username} etag={userPresence?.avatarETag} />
-								<Box is='span' pi={8}>
+								<Box is='span' paddingInline={8}>
 									<StatusBullet status={userPresence?.status} />
 								</Box>
 								{name && <Box is='span'>{name}</Box>}
-								<Box is='span' color='hint'>
+								<Text is='span' color='hint'>
 									{`(${username})`}
-								</Box>
+								</Text>
 							</Box>
 						</InfoPanelField>
 					)}
@@ -91,7 +91,7 @@ const DeviceManagementInfo = ({ device, sessionId, loginAt, ip, userId, _user }:
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button primary onClick={() => handleDeviceLogout()}>
+					<Button variant='primary' onClick={() => handleDeviceLogout()}>
 						{t('Logout_Device')}
 					</Button>
 				</ButtonGroup>

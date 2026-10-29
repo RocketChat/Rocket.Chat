@@ -5,7 +5,7 @@ const NoAppRequestsEmptyState = () => {
 	const { t } = useTranslation();
 
 	return (
-		<Box mbs='24px'>
+		<Box marginBlockStart='24px'>
 			<States>
 				<StatesIcon name='cube' />
 				<StatesTitle>{t('No_requested_apps')}</StatesTitle>

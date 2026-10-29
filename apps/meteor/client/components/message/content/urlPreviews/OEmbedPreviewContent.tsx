@@ -10,7 +10,7 @@ import type { ReactElement, ReactNode } from 'react';
 import type { OEmbedPreviewMetadata } from './OEmbedPreviewMetadata';
 import MarkdownText from '../../../MarkdownText';
 
-type OEmbedPreviewContentProps = { thumb?: ReactElement<any>; children?: ReactNode } & OEmbedPreviewMetadata;
+export type OEmbedPreviewContentProps = { thumb?: ReactElement<any>; children?: ReactNode } & OEmbedPreviewMetadata;
 
 const OEmbedPreviewContent = ({ title, description, url, thumb, authorName, authorUrl, siteName, siteUrl }: OEmbedPreviewContentProps) => {
 	const showSiteName = siteName && siteUrl;

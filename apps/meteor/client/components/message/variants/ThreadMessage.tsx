@@ -4,29 +4,33 @@ import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { useTranslation, useUserId, useUserCard } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 
-import type { MessageActionContext } from '../../../../app/ui-utils/client/lib/MessageAction';
+import type { MessageActionContext } from '../../../lib/MessageAction';
 import { useIsMessageHighlight } from '../../../views/room/MessageList/contexts/MessageHighlightContext';
 import Emoji from '../../Emoji';
 import IgnoredContent from '../IgnoredContent';
+import MessageContentFallback from '../MessageContentFallback';
 import MessageHeader from '../MessageHeader';
 import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
 import ThreadMessageContent from './thread/ThreadMessageContent';
 
-type ThreadMessageProps = {
+export type ThreadMessageProps = {
 	message: IThreadMessage | IThreadMainMessage;
 	unread: boolean;
 	sequential: boolean;
 	showUserAvatar: boolean;
+	ignoredUser?: boolean;
 };
 
-const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMessageProps) => {
+const ThreadMessage = ({ message, sequential, unread, showUserAvatar, ignoredUser }: ThreadMessageProps) => {
 	const t = useTranslation();
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
-	const [ignored, toggleIgnoring] = useToggle((message as { ignored?: boolean }).ignored);
-	const { openUserCard, triggerProps } = useUserCard();
+	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
+	const ignored = ignoredUser && !displayIgnoredMessage;
+	const { openUserCard, openUserInfo } = useUserCard();
 
 	// Checks if is videoconf message to limit toolbox actions
 	const messageContext: MessageActionContext = isVideoConfMessage(message) ? 'videoconf-threads' : 'threads';
@@ -52,11 +56,13 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMe
 						emoji={message.emoji ? <Emoji emojiHandle={message.emoji} fillContainer /> : undefined}
 						avatarUrl={message.avatar}
 						username={message.u.username}
+						title=''
 						size='x36'
-						onClick={(e) => openUserCard(e, message.u.username)}
+						onMouseEnter={(e) => openUserCard(e, message.u.username)}
+						onClick={() => openUserInfo(message.u.username)}
 						style={{ cursor: 'pointer' }}
-						role='button'
-						{...triggerProps}
+						// Redundant pointer-only shortcut for the accessible name button next to it
+						aria-hidden='true'
 					/>
 				)}
 				{sequential && <StatusIndicators message={message} />}
@@ -66,9 +72,11 @@ const ThreadMessage = ({ message, sequential, unread, showUserAvatar }: ThreadMe
 				{!sequential && <MessageHeader message={message} />}
 
 				{ignored ? (
-					<IgnoredContent messageId={message._id} onShowMessageIgnored={toggleIgnoring} />
+					<IgnoredContent messageId={message._id} onShowMessageIgnored={toggleDisplayIgnoredMessage} />
 				) : (
-					<ThreadMessageContent message={message} />
+					<ErrorBoundary fallback={<MessageContentFallback />} resetKeys={[message]}>
+						<ThreadMessageContent message={message} />
+					</ErrorBoundary>
 				)}
 			</MessageContainer>
 			{!message.private && <MessageToolbarHolder message={message} context={messageContext} />}

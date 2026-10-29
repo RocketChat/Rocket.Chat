@@ -11,7 +11,7 @@ const makeFakeActor = (): Omit<IAuditServerUserActor, 'type'> => {
 		ip: faker.internet.ip(),
 		useragent: faker.internet.userAgent(),
 		_id: faker.database.mongodbObjectId(),
-		username: faker.internet.userName(),
+		username: faker.internet.username(),
 	};
 };
 
@@ -49,7 +49,7 @@ const createObfuscatedFields = (_2faEnabled = true): Pick<IUser, 'services' | 'e
 		services: {
 			password: {
 				bcrypt: faker.string.uuid(),
-				// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+				// oxlint-disable-next-line @typescript-eslint/ban-ts-comment
 				// @ts-ignore this field is not in IUser, but is present in DB
 				enroll: {
 					token: faker.string.uuid(),
@@ -113,7 +113,7 @@ describe('userChanged audit module', () => {
 
 		const store = new UserChangedAuditStore(actor);
 
-		const [newUsername, newName] = [faker.internet.userName(), faker.person.fullName()];
+		const [newUsername, newName] = [faker.internet.username(), faker.person.fullName()];
 
 		updater.set('username', newUsername);
 		updater.set('name', newName);

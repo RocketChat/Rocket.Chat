@@ -17,6 +17,7 @@ import InviteUsers from './InviteUsers';
 import RoomMembers from './RoomMembers';
 import * as Federation from '../../../../lib/federation/Federation';
 import { useMembersList } from '../../../hooks/useMembersList';
+import { useIsRoomAbacLocked } from '../../hooks/useIsRoomAbacLocked';
 import UserInfoWithData from '../UserInfo';
 
 enum ROOM_MEMBERS_TABS {
@@ -28,7 +29,9 @@ enum ROOM_MEMBERS_TABS {
 
 type validRoomType = 'd' | 'p' | 'c';
 
-const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }) => {
+export type RoomMembersWithDataProps = { rid: IRoom['_id'] };
+
+const RoomMembersWithData = ({ rid }: RoomMembersWithDataProps) => {
 	const user = useUser();
 	const room = useUserRoom(rid);
 	const { closeTab } = useRoomToolbox();
@@ -42,6 +45,7 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }) => {
 	const isFederated = room && isRoomFederated(room);
 	// we are dropping the non native federation for now
 	const isFederationBlocked = room && !isRoomNativeFederated(room);
+	const isAbacLocked = useIsRoomAbacLocked(rid, room);
 
 	const canCreateInviteLinks =
 		room && user && isFederated && !isFederationBlocked
@@ -133,6 +137,7 @@ const RoomMembersWithData = ({ rid }: { rid: IRoom['_id'] }) => {
 			onClickInvite={canCreateInviteLinks && canAddUsers ? openInvite : undefined}
 			onClickAdd={canAddUsers ? openAddUser : undefined}
 			isABACRoom={Boolean(room?.abacAttributes)}
+			isAbacLocked={isAbacLocked}
 		/>
 	);
 };
