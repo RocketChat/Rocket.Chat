@@ -33,6 +33,6 @@ export class LDAPEEService extends ServiceClassInternal implements ILDAPEEServic
 	}
 
 	async syncUsersAbacAttributesByIds(userIds: string[]): Promise<void> {
-		return LDAPEEManager.syncUsersAbacAttributes(Users.findUsersByIdentifiers({ ids: userIds }));
+		return LDAPEEManager.syncUsersAbacAttributes(Users.findActiveLDAPUsersByIds(userIds));
 	}
 }
