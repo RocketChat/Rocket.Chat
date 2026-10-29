@@ -1,3 +1,4 @@
+import type { IContact } from './IContact';
 import type { IMessage } from './IMessage/IMessage';
 import type { IRocketChatRecord } from './IRocketChatRecord';
 import type { IRoom } from './IRoom';
@@ -50,6 +51,39 @@ export interface IExternalMediaCallHistoryItem extends IMediaCallHistoryItem {
 	external: true;
 
 	contactExtension: string;
+
+	externalContactId?: IContact['_id'];
+	externalContactName?: IContact['displayName'];
 }
 
-export type CallHistoryItem = IInternalMediaCallHistoryItem | IExternalMediaCallHistoryItem;
+export interface IMitelCallHistoryItem extends ICallHistoryItem {
+	type: 'mitel';
+
+	contactNumber?: string;
+	contactName?: string;
+	contactId?: IUser['_id'];
+	contactUsername?: IUser['username'];
+
+	duration: number;
+
+	transferredFrom?: {
+		number?: string;
+		name?: string;
+		username?: IUser['username'];
+		uid?: IUser['_id'];
+	};
+
+	transferredTo?: {
+		number?: string;
+		name?: string;
+		username?: IUser['username'];
+		uid?: IUser['_id'];
+	};
+
+	transferred?: boolean;
+	diverted?: boolean;
+}
+
+export type MediaCallHistoryItem = IInternalMediaCallHistoryItem | IExternalMediaCallHistoryItem;
+
+export type CallHistoryItem = MediaCallHistoryItem | IMitelCallHistoryItem;

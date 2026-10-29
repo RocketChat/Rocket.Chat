@@ -2,11 +2,13 @@ import type {
 	IMediaCall,
 	MediaCallActorType,
 	MediaCallNegotiationStream,
+	MediaCallContact,
 	MediaCallSignedActor,
 	MediaCallSignedContact,
 } from '@rocket.chat/core-typings';
 import { isPendingState, isBusyState } from '@rocket.chat/media-signaling';
 import type {
+	ClientMediaSignalAttendedTransfer,
 	ClientMediaSignalTransfer,
 	CallHangupReason,
 	CallRole,
@@ -19,12 +21,13 @@ import type {
 } from '@rocket.chat/media-signaling';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
-import { DEFAULT_CALL_FEATURES } from '../../constants';
+import { DEFAULT_CALL_FEATURES, TAKE_OVER_NEGOTIATION_POLL_INTERVAL, TAKE_OVER_NEGOTIATION_TIMEOUT } from '../../constants';
 import type { IMediaCallAgent } from '../../definition/IMediaCallAgent';
 import type { SignalProcessingOptions } from '../../definition/common';
 import { logger } from '../../logger';
 import { mediaCallDirector } from '../../server/CallDirector';
-import { getMediaCallServer } from '../../server/injection';
+import { getCallRoleForUser } from '../../server/getCallRoleForUser';
+import { getMediaCallAppGateway, getMediaCallServer } from '../../server/injection';
 import { stripSensitiveDataFromSignal } from '../../server/stripSensitiveData';
 
 export class UserActorSignalProcessor {
@@ -70,7 +73,24 @@ export class UserActorSignalProcessor {
 		this.throwIfSkipped = false;
 	}
 
+	/**
+	 * Whether this call negotiates media with the client at all. A `cti` call happens on an external
+	 * device, so the client has no peer connection to offer and nothing to negotiate.
+	 */
+	private get usesWebRTC(): boolean {
+		return this.call.service === 'webrtc';
+	}
+
 	public async requestWebRTCOffer(params: { negotiationId: string }): Promise<void> {
+		if (!this.usesWebRTC) {
+			logger.debug({
+				msg: 'Skipping webrtc offer request for a call that carries no media',
+				callId: this.callId,
+				service: this.call.service,
+			});
+			return;
+		}
+
 		logger.debug({ msg: 'UserActorSignalProcessor.requestWebRTCOffer', params });
 
 		await this.sendSignal({
@@ -113,8 +133,18 @@ export class UserActorSignalProcessor {
 				return this.processNegotiationNeeded(signal.oldNegotiationId);
 			case 'transfer':
 				return this.processCallTransfer(signal.to);
+			case 'attended-transfer':
+				return this.processAttendedTransfer(signal.to, signal.requestedCallId);
+			case 'complete-attended-transfer':
+				return this.processCompleteAttendedTransfer();
 			case 'dtmf':
 				return this.processDTMF(signal.dtmf, signal.duration);
+			case 'mute':
+				return this.processMute(signal.muted);
+			case 'hold':
+				return this.processHold(signal.held);
+			case 'take-over':
+				return this.processTakeOver(signal.supportedFeatures || DEFAULT_CALL_FEATURES);
 		}
 	}
 
@@ -190,6 +220,11 @@ export class UserActorSignalProcessor {
 	private async processNegotiationNeeded(oldNegotiationId: string): Promise<void> {
 		// Unsigned clients may not request negotiations
 		if (!this.signed) {
+			return;
+		}
+
+		// A client with no media of its own has nothing to renegotiate
+		if (!this.usesWebRTC) {
 			return;
 		}
 
@@ -271,10 +306,206 @@ export class UserActorSignalProcessor {
 		return mediaCallDirector.transferCall(this.call, to, self, this.agent);
 	}
 
+	private async processAttendedTransfer(to: ClientMediaSignalAttendedTransfer['to'], requestedCallId: string): Promise<void> {
+		logger.debug({ msg: 'UserActorSignalProcessor.processAttendedTransfer', to, requestedCallId });
+		if (!isBusyState(this.call.state)) {
+			return;
+		}
+
+		const self: MediaCallSignedContact = {
+			...this.agent.getMyCallActor(this.call),
+			...this.actor,
+		};
+
+		const rejection = { callId: requestedCallId, toContractId: self.contractId, reason: 'invalid-call-id' } as const;
+
+		// The requestedCallId must never match a real call id
+		if (await MediaCalls.findOneById(requestedCallId, { projection: { _id: 1 } })) {
+			getMediaCallServer().sendSignal(self.id, { type: 'rejected-call-request', ...rejection });
+			return;
+		}
+
+		// A request that was already processed won't create a second call
+		if (await MediaCalls.findOneByCallerRequestedId(requestedCallId, { type: self.type, id: self.id })) {
+			return;
+		}
+
+		await getMediaCallServer().requestCall({
+			caller: self,
+			callee: to,
+			requestedCallId,
+			requestedService: this.call.service,
+			requestedBy: self,
+			parentCallId: this.call._id,
+			attended: true,
+			// Both legs of an attended transfer must be of the same type for them to be bridged together
+			requiredCalleeType: this.call[this.role === 'caller' ? 'callee' : 'caller'].type,
+			features: this.call.features as CallFeature[],
+		});
+	}
+
+	private async processCompleteAttendedTransfer(): Promise<void> {
+		logger.debug({ msg: 'UserActorSignalProcessor.processCompleteAttendedTransfer' });
+		const { parentCallId } = this.call;
+		if (!this.call.attended || !parentCallId || this.role !== 'caller' || !isBusyState(this.call.state)) {
+			return;
+		}
+
+		const heldCall = await MediaCalls.findOneById(parentCallId);
+		if (!heldCall || heldCall.ended || !isBusyState(heldCall.state)) {
+			return;
+		}
+
+		const heldRole = getCallRoleForUser(heldCall, this.actor.id);
+		if (!heldRole || !heldCall[heldRole].contractId) {
+			return;
+		}
+
+		// The device bridges the two calls itself; the app reports them ended once it has
+		if (heldCall.service === 'cti' && this.call.service === 'cti') {
+			await getMediaCallAppGateway()?.completeAttendedTransfer(heldCall._id, this.call._id);
+			return;
+		}
+
+		const heldActor = heldCall[heldRole === 'caller' ? 'callee' : 'caller'];
+		const consultedActor = this.call.callee;
+
+		const self: MediaCallSignedContact = {
+			...this.agent.getMyCallActor(this.call),
+			...this.actor,
+		};
+
+		if (heldActor.type === 'sip' && consultedActor.type === 'sip') {
+			return this.bridgeSipCalls(heldCall, heldRole, consultedActor);
+		}
+
+		if (heldActor.type !== 'user' || consultedActor.type !== 'user' || !heldActor.contractId) {
+			return;
+		}
+
+		// The actor on the held call calls the consulted one; both stay with the user until that call is active
+		await getMediaCallServer()
+			.requestCall({
+				caller: heldActor as MediaCallSignedContact,
+				callee: consultedActor,
+				requestedService: 'webrtc',
+				requestedBy: self,
+				parentCallId: heldCall._id,
+				replacedCallIds: [heldCall._id, this.call._id],
+				requiredCalleeType: 'user',
+				features: this.call.features as CallFeature[],
+			})
+			.catch((err) => logger.error({ msg: 'Failed to bridge the calls of an attended transfer', err, callId: this.call._id }));
+	}
+
+	/** Refers the sip actor on the held call to replace the consultation call's dialog with the sip actor it is consulting */
+	private async bridgeSipCalls(heldCall: IMediaCall, heldRole: CallRole, consultedActor: MediaCallContact): Promise<void> {
+		// Without the dialog of the consultation call there is nothing for the other actor to replace
+		if (!this.call.sipDialog) {
+			logger.error({ msg: 'The consultation call has no sip dialog to be replaced', callId: this.call._id });
+			return;
+		}
+
+		const heldAgent = (await mediaCallDirector.cast.getAgentsFromCall(heldCall))[heldRole];
+		const by = { ...heldAgent.getMyCallActor(heldCall), ...heldCall[heldRole] } as MediaCallSignedContact;
+
+		await mediaCallDirector.transferCall(heldCall, consultedActor, by, heldAgent, { replacesCallId: this.call._id });
+	}
+
+	/** The actor's own side of an active call moves to the session that requested it, which then offers new media */
+	private async processTakeOver(supportedFeatures: CallFeature[]): Promise<void> {
+		logger.debug({ msg: 'UserActorSignalProcessor.processTakeOver', supportedFeatures });
+		const oldContractId = this.call[this.role].contractId;
+
+		if (this.signed || !oldContractId || this.call.state !== 'active' || this.call.service !== 'webrtc') {
+			return;
+		}
+
+		// Calls that are part of a transfer or a second line stay where they are
+		if (await MediaCalls.hasUnfinishedCallsByUid(this.actorId, this.callId)) {
+			return;
+		}
+
+		if (!(await this.waitForCallerNegotiation())) {
+			await this.endCallStuckInNegotiation(oldContractId);
+			return;
+		}
+
+		const updatedCall = await mediaCallDirector.replaceActorContract(this.call, this.role, {
+			oldContractId,
+			newContractId: this.contractId,
+			supportedFeatures,
+		});
+		if (!updatedCall) {
+			return;
+		}
+
+		await this.sendSignal({
+			callId: this.callId,
+			type: 'notification',
+			notification: 'session-changed',
+			signedContractId: this.contractId,
+			features: updatedCall.features as CallFeature[],
+		});
+
+		if (updatedCall.features.length !== this.call.features.length) {
+			void this.agent.oppositeAgent?.onCallUpdated(this.callId);
+		}
+
+		await this.startNewNegotiation();
+	}
+
+	/** Resolves false if a negotiation offered by the caller is still waiting for its answer after the time limit */
+	private async waitForCallerNegotiation(): Promise<boolean> {
+		const deadline = Date.now() + TAKE_OVER_NEGOTIATION_TIMEOUT;
+
+		for (;;) {
+			const negotiation = await MediaCallNegotiations.findLatestByCallId(this.callId);
+			if (negotiation?.offerer !== 'caller' || negotiation.answer) {
+				return true;
+			}
+
+			if (Date.now() >= deadline) {
+				return false;
+			}
+
+			await new Promise((resolve) => setTimeout(resolve, TAKE_OVER_NEGOTIATION_POLL_INTERVAL));
+		}
+	}
+
+	/** Ends the call that can't be moved, unless it ended or moved to another session in the meantime */
+	private async endCallStuckInNegotiation(oldContractId: string): Promise<void> {
+		const call = await MediaCalls.findOneById(this.callId);
+		if (!call || call.ended || call[this.role].contractId !== oldContractId) {
+			return;
+		}
+
+		logger.error({ msg: 'Ending a call that could not be taken over', callId: this.callId, role: this.role });
+		await mediaCallDirector.hangupByServer(call, 'take-over-negotiation-timeout');
+	}
+
 	private async processDTMF(dtmf: string, duration?: number): Promise<void> {
 		logger.debug({ msg: 'UserActorSignalProcessor.processDTMF', dtmf, duration });
 
 		void this.agent.oppositeAgent?.onDTMF(this.call._id, dtmf, duration || 2000);
+	}
+
+	private async processMute(muted: boolean): Promise<void> {
+		logger.debug({ msg: 'UserActorSignalProcessor.processMute', muted });
+		if (!this.signed) {
+			return;
+		}
+
+		void this.agent.oppositeAgent?.onMute(this.call._id, muted);
+	}
+
+	private async processHold(held: boolean): Promise<void> {
+		logger.debug({ msg: 'UserActorSignalProcessor.processHold', held });
+		if (!this.signed) {
+			return;
+		}
+
+		void this.agent.oppositeAgent?.onHold(this.call._id, held);
 	}
 
 	protected async clientIsReachable(): Promise<void> {
@@ -287,7 +518,7 @@ export class UserActorSignalProcessor {
 		}
 
 		// The caller contract should be signed before the call even starts, so if this one isn't, ignore its state
-		if (this.role === 'caller' && this.signed) {
+		if (this.role === 'caller' && this.signed && this.usesWebRTC) {
 			// When the signed caller's client is reached, we immediatelly start the first negotiation
 			const negotiationId = await mediaCallDirector.startFirstNegotiation(this.call);
 			if (negotiationId) {

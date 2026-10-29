@@ -6,15 +6,14 @@ import type {
 	IMediaCallNegotiation,
 	MediaCallContact,
 	MediaCallSignedContact,
-	ServerActor,
 	MediaCallNegotiationStream,
 } from '@rocket.chat/core-typings';
-import type { CallFeature, CallHangupReason, CallRole } from '@rocket.chat/media-signaling';
+import type { CallFeature, CallHangupReason, CallRole, CallService } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
 
 import { getCastDirector, getMediaCallServer } from './injection';
-import { SIP_CALL_FEATURES } from '../constants';
+import { CTI_CALL_FEATURES, EXTERNAL_CALL_FEATURES, SIP_CALL_FEATURES } from '../constants';
 import type { IMediaCallAgent } from '../definition/IMediaCallAgent';
 import type { IMediaCallCastDirector } from '../definition/IMediaCallCastDirector';
 import { CallRejectedError } from '../definition/common';
@@ -30,7 +29,10 @@ export type CreateCallParams = InternalCallParams & {
 	sipCallId?: string;
 };
 
-type CallIdentityParams = Pick<CreateCallParams, 'caller' | 'callee' | 'requestedCallId' | 'parentCallId' | 'divertedBy'> & {
+type CallIdentityParams = Pick<
+	CreateCallParams,
+	'caller' | 'callee' | 'requestedCallId' | 'parentCallId' | 'attended' | 'replacedCallIds' | 'divertedBy'
+> & {
 	createdBy: MediaCallContact;
 	service: IMediaCall['service'];
 };
@@ -46,7 +48,7 @@ const scheduledExpirationChecks = new Map<string, ReturnType<typeof setTimeout>>
  * The fields that identify a call attempt, whether or not the call goes on to happen.
  */
 function getCallIdentity(params: CallIdentityParams) {
-	const { caller, callee, createdBy, service, requestedCallId, parentCallId, divertedBy } = params;
+	const { caller, callee, createdBy, service, requestedCallId, parentCallId, attended, replacedCallIds, divertedBy } = params;
 
 	return {
 		// Use UUIDs to identify all media calls, for better compatibility with libs that require it (such as React Native's CallKit)
@@ -68,13 +70,24 @@ function getCallIdentity(params: CallIdentityParams) {
 
 		...(requestedCallId && { callerRequestedId: requestedCallId }),
 		...(parentCallId && { parentCallId }),
+		...(attended && { attended }),
+		...(replacedCallIds?.length && { replacedCallIds }),
 		...(divertedBy && { divertedBy }),
 	};
 }
 
-function getFeaturesSupportedByTransport(caller: MediaCallContact, callee: MediaCallContact, features: CallFeature[]): CallFeature[] {
+function getFeaturesSupportedByTransport(
+	service: CallService,
+	caller: MediaCallContact,
+	callee: MediaCallContact,
+	features: CallFeature[],
+): CallFeature[] {
+	if (service === 'cti') {
+		return features.filter((feature) => CTI_CALL_FEATURES.includes(feature));
+	}
+
 	if (caller.type !== 'sip' && callee.type !== 'sip') {
-		return features;
+		return features.filter((feature) => !EXTERNAL_CALL_FEATURES.includes(feature));
 	}
 
 	return features.filter((feature) => SIP_CALL_FEATURES.includes(feature));
@@ -106,7 +119,22 @@ class MediaCallDirector {
 		logger.info({ msg: 'Call was flagged as active', callId: call._id });
 		this.scheduleExpirationCheckByCallId(call._id);
 		getMediaCallServer().emitter.emit('callActivated', { call: activatedCall });
-		return actorAgent.oppositeAgent?.onCallActive(call._id);
+		this.hangupReplacedCalls(activatedCall).catch((err) =>
+			logger.error({ msg: 'Failed to end the calls replaced by a call', err, callId: call._id }),
+		);
+		// The activating actor's other sessions learn about it too, or they would keep a call they could take over as not yet active
+		await Promise.all([actorAgent.onCallActive(call._id), actorAgent.oppositeAgent?.onCallActive(call._id)]);
+	}
+
+	private async hangupReplacedCalls(call: IMediaCall): Promise<void> {
+		for (const replacedCallId of call.replacedCallIds ?? []) {
+			const replacedCall = await MediaCalls.findOneById(replacedCallId);
+			if (!replacedCall || replacedCall.ended) {
+				continue;
+			}
+
+			await this.hangupDetachedCall(replacedCall, { endedBy: call.createdBy, reason: 'transfer' });
+		}
 	}
 
 	public async acceptCall(
@@ -117,15 +145,12 @@ class MediaCallDirector {
 			webrtcAnswer?: RTCSessionDescriptionInit;
 			supportedFeatures: CallFeature[];
 			sipCallId?: string;
+			negotiationId?: string;
 		},
 	): Promise<boolean> {
 		logger.debug({ msg: 'MediaCallDirector.acceptCall' });
 
-		// To avoid race conditions, load the negotiation before changing the call state
-		// Once the state changes, negotiations need to be referred by id.
-		const negotiation = await MediaCallNegotiations.findLatestByCallId(call._id);
-
-		const { webrtcAnswer, ...acceptData } = data;
+		const { webrtcAnswer, negotiationId, ...acceptData } = data;
 
 		const updatedCall = await MediaCalls.acceptCallById(call._id, acceptData, this.getNewExpirationTime());
 		// Nothing came back: the call was no longer ringing
@@ -141,15 +166,32 @@ class MediaCallDirector {
 		await calleeAgent.onCallAccepted(updatedCall);
 		await calleeAgent.oppositeAgent?.onCallAccepted(updatedCall);
 
-		if (data.webrtcAnswer && negotiation) {
-			const negotiationResult = await MediaCallNegotiations.setAnswerById(negotiation._id, data.webrtcAnswer);
+		if (webrtcAnswer && negotiationId) {
+			const negotiationResult = await MediaCallNegotiations.setAnswerById(negotiationId, webrtcAnswer);
 			if (negotiationResult.modifiedCount) {
-				logger.info({ msg: 'Negotiation answer was saved', callId: call._id, negotiationId: negotiation._id });
+				logger.info({ msg: 'Negotiation answer was saved', callId: call._id, negotiationId });
 			}
-			await calleeAgent.oppositeAgent?.onRemoteDescriptionChanged(call._id, negotiation._id);
+			await calleeAgent.oppositeAgent?.onRemoteDescriptionChanged(call._id, negotiationId);
 		}
 
 		return true;
+	}
+
+	/** Moves one side of an active call to another session of the same actor; returns null if that side no longer belongs to the old session */
+	public async replaceActorContract(
+		call: MediaCallHeader,
+		role: CallRole,
+		data: { oldContractId: string; newContractId: string; supportedFeatures: CallFeature[] },
+	): Promise<IMediaCall | null> {
+		const updatedCall = await MediaCalls.replaceActiveCallContractById(call._id, role, data, this.getNewExpirationTime());
+		if (!updatedCall) {
+			return null;
+		}
+
+		logger.info({ msg: 'Call contract was replaced', callId: call._id, role });
+		this.scheduleExpirationCheckByCallId(call._id);
+
+		return updatedCall;
 	}
 
 	public async startFirstNegotiation(
@@ -272,8 +314,9 @@ class MediaCallDirector {
 
 		const service = requestedService || 'webrtc';
 
-		// webrtc is our only known service right now, but if the call was requested by a client that doesn't also implement it, we don't need to even create a call
-		if (service !== 'webrtc') {
+		// `webrtc` is handled by the client; `cti` is handled by an external device/gateway through an app.
+		// Any other service is unknown and the call can't be created.
+		if (service !== 'webrtc' && service !== 'cti') {
 			throw new Error('invalid-call-service');
 		}
 
@@ -310,8 +353,19 @@ class MediaCallDirector {
 			throw new CallRejectedError('prevented', hookResult.reason);
 		}
 
-		const requestedFeatures = getFeaturesSupportedByTransport(caller, callee, hookResult.features || features);
-		const allowedFeatures = requestedFeatures.filter((feature) => getMediaCallServer().isFeatureAvailableForUser(caller.id, feature));
+		const featureSetAfterHook = hookResult.features || features;
+		const requestedFeatures = getFeaturesSupportedByTransport(service, caller, callee, featureSetAfterHook);
+
+		const forbiddenFeatures: CallFeature[] = [];
+		if (parentCallId) {
+			// Transferred calls can not be escalated yet
+			forbiddenFeatures.push('conference-escalation');
+		}
+
+		const allowedFeatures = requestedFeatures.filter(
+			(feature) => !forbiddenFeatures.includes(feature) && getMediaCallServer().isFeatureEnabled(feature),
+		);
+
 		const call: Omit<IMediaCall, '_updatedAt'> = {
 			...getCallIdentity({ ...params, createdBy, service }),
 
@@ -322,9 +376,10 @@ class MediaCallDirector {
 
 			features: allowedFeatures,
 			...(params.sipCallId && { sipCallId: params.sipCallId }),
+			...(params.device && { device: params.device }),
 		};
 
-		logger.debug({ msg: 'creating call', call });
+		logger.debug({ msg: 'creating call', call, initialFeatureSet: features, featureSetAfterHook, requestedFeatures, allowedFeatures });
 
 		const insertResult = await MediaCalls.insertOne(call);
 		if (!insertResult.insertedId) {
@@ -347,13 +402,14 @@ class MediaCallDirector {
 		to: MediaCallContact,
 		by: MediaCallSignedContact,
 		agent: IMediaCallAgent,
+		options: { replacesCallId?: string } = {},
 	): Promise<void> {
 		if (!agent.oppositeAgent) {
 			logger.error({ msg: 'Unable to transfer calls without a reference to the opposite agent.' });
 			return;
 		}
 
-		const updateResult = await MediaCalls.transferCallById(call._id, { by, to });
+		const updateResult = await MediaCalls.transferCallById(call._id, { by, to, ...options });
 		if (!updateResult.modifiedCount) {
 			return;
 		}
@@ -519,7 +575,7 @@ class MediaCallDirector {
 		logger.debug({ msg: 'MediaCallDirector.hangupDetachedCall', callId: call._id, params });
 		let modified = false;
 		try {
-			const endedBy = params?.endedBy || ({ type: 'server', id: 'server' } as ServerActor);
+			const endedBy = params?.endedBy || { type: 'server', id: 'server' };
 
 			modified = await this.hangupCallById(call._id, { ...params, endedBy });
 			if (!modified) {

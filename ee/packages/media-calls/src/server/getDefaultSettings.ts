@@ -17,11 +17,20 @@ export function getDefaultSettings(): IMediaCallServerSettings {
 				host: '',
 				port: 5080,
 			},
+			pexipServer: {
+				host: '',
+				port: 5060,
+			},
 		},
 		mobileRinging: false,
 		iceServers: [],
 
+		cti: {
+			enabled: false,
+		},
+
 		permissionCheck: async () => false,
-		isFeatureAvailableForUser: () => false,
+		isFeatureEnabled: () => false,
+		resolveCallerName: async () => undefined,
 	};
 }

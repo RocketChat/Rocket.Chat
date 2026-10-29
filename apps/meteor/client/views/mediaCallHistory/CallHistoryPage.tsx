@@ -2,20 +2,22 @@ import type { CallHistoryItem, Serialized } from '@rocket.chat/core-typings';
 import { Pagination } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import { useSort, usePagination, GenericTableLoadingRow, GenericNoResults } from '@rocket.chat/ui-client';
-import { useEndpoint, useRouteParameter, useRouter } from '@rocket.chat/ui-contexts';
+import { useEndpoint, useRouteParameter, useRouter, useStream, useUserId } from '@rocket.chat/ui-contexts';
 import { MediaCallHistoryTable, isCallHistoryUnknownContact, isCallHistoryInternalContact } from '@rocket.chat/ui-voip';
 import type { CallHistoryContact } from '@rocket.chat/ui-voip';
-import { useQuery } from '@tanstack/react-query';
-import { useCallback, useMemo, useState } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useCallHistoryPageFilters } from './CallHistoryPageFilters';
+import CallHistoryPageFilters, { useCallHistoryPageFilters } from './CallHistoryPageFilters';
+import type { CallHistoryTab } from './CallHistoryPageLayout';
 import CallHistoryPageLayout from './CallHistoryPageLayout';
 import CallHistoryRowExternalUser from './CallHistoryRowExternalUser';
 import CallHistoryRowInternalUser from './CallHistoryRowInternalUser';
 import CallHistoryRowUnknownUser from './CallHistoryRowUnknownUser';
 import MediaCallHistoryContextualbar from './MediaCallHistoryContextualbar';
 import { getExternalContact } from './MediaCallHistoryExternal';
+import { callHistoryQueryKeys } from '../../lib/queryKeys';
 import UserInfoWithData from '../room/contextualBar/UserInfo/UserInfoWithData';
 
 const getSort = (sortBy: 'contact' | 'type' | 'status' | 'timestamp', sortDirection: 'asc' | 'desc') => {
@@ -45,7 +47,7 @@ const getStateFilter = <T extends string[]>(states: T): T | [...T, 'error'] | un
 };
 
 const getContact = (item: Serialized<CallHistoryItem>): CallHistoryContact => {
-	if (item.external) {
+	if (item.type !== 'media-call' || item.external) {
 		return getExternalContact(item);
 	}
 
@@ -63,18 +65,24 @@ type DetailsTab = {
 
 type UserInfoTab = {
 	openTab: 'user-info';
-	rid: string;
+	rid?: string;
 	userId: string;
 };
 
 type Tab = DetailsTab | UserInfoTab;
 
-const CallHistoryPage = () => {
+type CallHistoryPageProps = {
+	tab: CallHistoryTab;
+	onChangeTab: (tab: CallHistoryTab) => void;
+};
+
+const CallHistoryPage = ({ tab: currentTab, onChangeTab }: CallHistoryPageProps) => {
 	const { t } = useTranslation();
 	const [tab, setTab] = useState<Tab | null>(null);
 	const sortProps = useSort<'contact' | 'type' | 'status' | 'timestamp'>('timestamp', 'desc');
 
 	const getCallHistory = useEndpoint('GET', '/v1/call-history.list');
+	const importCallHistory = useEndpoint('POST', '/v1/call-history.import');
 	const { setItemsPerPage, setCurrent, ...paginationProps } = usePagination();
 
 	const router = useRouter();
@@ -95,7 +103,7 @@ const CallHistoryPage = () => {
 	);
 
 	const openUserInfo = useCallback(
-		(userId: string, rid: string) => {
+		(userId: string, rid?: string) => {
 			setTab({ openTab: 'user-info', rid, userId });
 		},
 		[setTab],
@@ -114,10 +122,36 @@ const CallHistoryPage = () => {
 		setTab(null);
 	}, [setTab, historyId, onClickRow, tab?.rid]);
 
+	const uid = useUserId();
+	const queryClient = useQueryClient();
+	const subscribeToNotifyUser = useStream('notify-user');
+
+	useEffect(() => {
+		if (!uid) {
+			return;
+		}
+
+		return subscribeToNotifyUser(`${uid}/call-history`, () => {
+			void queryClient.invalidateQueries({ queryKey: callHistoryQueryKeys.list() });
+		});
+	}, [uid, queryClient, subscribeToNotifyUser]);
+
+	// The list only reads what the server already has, so the external history is fetched once, before the first list
+	const { isSuccess: importSettled } = useQuery({
+		queryKey: callHistoryQueryKeys.import(),
+		queryFn: () =>
+			importCallHistory().then(
+				() => true,
+				() => false,
+			),
+		staleTime: Infinity,
+		gcTime: Infinity,
+	});
+
 	const { data, isPending, error, refetch } = useQuery({
+		enabled: importSettled,
 		queryKey: [
-			'call-history',
-			'list',
+			...callHistoryQueryKeys.list(),
 			sortProps.sortBy,
 			sortProps.sortDirection,
 			paginationProps.current,
@@ -172,7 +206,7 @@ const CallHistoryPage = () => {
 
 	if (isPending) {
 		return (
-			<CallHistoryPageLayout filterProps={filterProps}>
+			<CallHistoryPageLayout filters={<CallHistoryPageFilters {...filterProps} />} tab={currentTab} onChangeTab={onChangeTab}>
 				<MediaCallHistoryTable sort={sortProps}>
 					<GenericTableLoadingRow cols={5} />
 					<GenericTableLoadingRow cols={5} />
@@ -186,7 +220,7 @@ const CallHistoryPage = () => {
 
 	if (error) {
 		return (
-			<CallHistoryPageLayout filterProps={filterProps}>
+			<CallHistoryPageLayout filters={<CallHistoryPageFilters {...filterProps} />} tab={currentTab} onChangeTab={onChangeTab}>
 				<GenericNoResults
 					icon='warning'
 					title={t('Something_went_wrong')}
@@ -199,7 +233,12 @@ const CallHistoryPage = () => {
 	}
 
 	return (
-		<CallHistoryPageLayout filterProps={filterProps} contextualBar={contextualBar}>
+		<CallHistoryPageLayout
+			filters={<CallHistoryPageFilters {...filterProps} />}
+			contextualBar={contextualBar}
+			tab={currentTab}
+			onChangeTab={onChangeTab}
+		>
 			{!tableData || (tableData.length === 0 && <GenericNoResults />)}
 			{tableData && tableData.length > 0 && (
 				<MediaCallHistoryTable sort={sortProps}>
@@ -215,12 +254,20 @@ const CallHistoryPage = () => {
 									contact={item.contact}
 									onClick={() => onClickRow(item.rid ?? '', item._id)}
 									rid={item.rid ?? ''}
-									onClickUserInfo={item.rid ? openUserInfo : undefined}
+									onClickUserInfo={openUserInfo}
 								/>
 							);
 						}
 
-						return <CallHistoryRowExternalUser key={item._id} {...item} contact={item.contact} onClick={() => onClickRow('', item._id)} />;
+						return (
+							<CallHistoryRowExternalUser
+								key={item._id}
+								{...item}
+								contact={item.contact}
+								onClick={() => onClickRow('', item._id)}
+								onClickUserInfo={openUserInfo}
+							/>
+						);
 					})}
 				</MediaCallHistoryTable>
 			)}

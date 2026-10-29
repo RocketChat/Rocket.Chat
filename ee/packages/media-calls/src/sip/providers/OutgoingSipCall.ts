@@ -1,7 +1,7 @@
 import type { IMediaCall, MediaCallSignedContact } from '@rocket.chat/core-typings';
 import { isBusyState, type ClientMediaSignalBody, type CallHangupReason } from '@rocket.chat/media-signaling';
 import { MediaCallNegotiations, MediaCalls } from '@rocket.chat/models';
-import type { SrfRequest } from 'drachtio-srf';
+import type { SrfRequest, SrfResponse } from 'drachtio-srf';
 
 import { BaseSipCall } from './BaseSipCall';
 import { SIP_CALL_FEATURES } from '../../constants';
@@ -11,9 +11,12 @@ import { BroadcastActorAgent } from '../../server/BroadcastAgent';
 import { mediaCallDirector } from '../../server/CallDirector';
 import type { SipServerSession } from '../Session';
 import { SipError, SipErrorCodes } from '../errorCodes';
+import { getCalleeNameFromResponse } from '../utils/getCalleeNameFromResponse';
 
 export class OutgoingSipCall extends BaseSipCall {
 	private sipDialogReq: SrfRequest | null;
+
+	private calleeNameResolved: boolean;
 
 	constructor(
 		session: SipServerSession,
@@ -22,6 +25,7 @@ export class OutgoingSipCall extends BaseSipCall {
 	) {
 		super(session, call, agent);
 		this.sipDialogReq = null;
+		this.calleeNameResolved = false;
 	}
 
 	public static async createCall(session: SipServerSession, params: InternalCallParams): Promise<IMediaCall> {
@@ -76,6 +80,10 @@ export class OutgoingSipCall extends BaseSipCall {
 			return this.processTransferredCall(call);
 		}
 
+		if (call.escalatedAt) {
+			return this.processEscalatedCall(call);
+		}
+
 		if (call.state === 'hangup') {
 			return this.processEndedCall(call);
 		}
@@ -110,7 +118,7 @@ export class OutgoingSipCall extends BaseSipCall {
 		}
 
 		this.lastCallState = 'ringing';
-		const referredBy = call.parentCallId && this.session.geContactUri(call.createdBy);
+		const referredBy = call.parentCallId && !call.attended && this.session.geContactUri(call.createdBy);
 
 		let hangupReason: CallHangupReason | null = null;
 		try {
@@ -157,6 +165,14 @@ export class OutgoingSipCall extends BaseSipCall {
 									res: res && this.session.stripDrachtioServerDetails(res),
 									ack,
 								});
+
+								if (!res) {
+									return;
+								}
+
+								void this.identifyCalleeFromResponse(res).catch((err) => {
+									logger.error({ msg: 'OutgoingSipCall - failed to identify the callee', err, callId: call._id });
+								});
 							});
 						}
 					},
@@ -184,6 +200,9 @@ export class OutgoingSipCall extends BaseSipCall {
 			return;
 		}
 
+		// The dialog's remote sdp is replaced by any re-invite, so the answer must be read before anything is awaited.
+		const answerSdp = this.sipDialog.remote.sdp;
+
 		logger.debug({ msg: 'OutgoingSipCall.createDialog - dialog created', callId: this.sipDialog.sip?.callId });
 		this.sipDialog.on('destroy', () => this.onDialogDestroyed());
 
@@ -191,15 +210,41 @@ export class OutgoingSipCall extends BaseSipCall {
 			void this.handleDialogModify(req, res);
 		});
 
+		await this.saveDialogIdentity();
+
 		logger.debug({ msg: 'OutgoingSipCall.createDialog - remote data', data: this.sipDialog.remote });
 
 		// This will not do anything if the call is no longer waiting to be accepted.
 		await mediaCallDirector.acceptCall(call, this.agent, {
 			calleeContractId: this.session.sessionId,
-			webrtcAnswer: { type: 'answer', sdp: this.sipDialog.remote.sdp },
+			webrtcAnswer: { type: 'answer', sdp: answerSdp },
 			supportedFeatures: SIP_CALL_FEATURES,
 			sipCallId: this.sipDialog.sip?.callId,
+			negotiationId: negotiation._id,
 		});
+	}
+
+	/**
+	 * Gives a callee that is only known by its number the name that the remote side reports on its 180 and 200 responses.
+	 */
+	protected async identifyCalleeFromResponse(res: SrfResponse): Promise<void> {
+		if (this.calleeNameResolved || !res.status || res.status < 180 || res.status >= 300) {
+			return;
+		}
+
+		const callee = this.agent.getMyCallActor(this.call);
+		if (callee.type !== 'sip' || (callee.displayName && callee.displayName !== callee.id)) {
+			this.calleeNameResolved = true;
+			return;
+		}
+
+		const displayName = getCalleeNameFromResponse(res);
+		if (!displayName) {
+			return;
+		}
+
+		this.calleeNameResolved = true;
+		await this.updateRemoteContact({ ...callee, displayName });
 	}
 
 	protected async processNegotiations(call: IMediaCall): Promise<void> {
@@ -241,6 +286,19 @@ export class OutgoingSipCall extends BaseSipCall {
 		const localNegotiation = await this.getPendingInboundNegotiation();
 		// If we don't have an sdp, we can't respond to it yet
 		if (!localNegotiation?.answer?.sdp) {
+			logger.debug({
+				msg: 'Skipping negotiation due to missing answer sdp',
+				method: 'OutgoingSipCall.processCalleeNegotiations',
+				callId: this.callId,
+			});
+			return;
+		}
+		if (localNegotiation.res.finalResponseSent) {
+			logger.debug({
+				msg: 'Final response has already been sent',
+				method: 'OutgoingSipCall.processCalleeNegotiations',
+				callId: this.callId,
+			});
 			return;
 		}
 

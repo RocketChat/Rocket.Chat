@@ -9,6 +9,7 @@ import type {
 	IRole,
 	IRoom,
 	IUser,
+	IUserMediaCallDevice,
 	RocketChatRecordDeleted,
 } from '@rocket.chat/core-typings';
 import { ILivechatAgentStatus, UserStatus } from '@rocket.chat/core-typings';
@@ -86,6 +87,7 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 			{ key: { openBusinessHours: 1 }, sparse: true },
 			{ key: { statusLivechat: 1 }, sparse: true },
 			{ key: { sipExtension: 1 }, sparse: true, unique: true },
+			{ key: { 'phones.number': 1 }, sparse: true },
 			{ key: { language: 1 }, sparse: true },
 			{ key: { 'active': 1, 'services.email2fa.enabled': 1 }, sparse: true }, // used by statistics
 			{ key: { 'active': 1, 'services.totp.enabled': 1 }, sparse: true }, // used by statistics
@@ -2835,6 +2837,34 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.findOne<T, O>(
 			{
 				sipExtension,
+			},
+			options,
+		);
+	}
+
+	setMediaCallDeviceById(userId: IUser['_id'], device: IUserMediaCallDevice | null): Promise<UpdateResult> {
+		return this.updateOne({ _id: userId }, device ? { $set: { mediaCallDevice: device } } : { $unset: { mediaCallDevice: 1 } });
+	}
+
+	findByPhone<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		phoneNumber: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>(
+			{
+				'phones.number': phoneNumber,
+			},
+			options,
+		);
+	}
+
+	findAllBySipIdentifiers<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		sipIdentifiers: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		return this.find<T, O>(
+			{
+				$or: [{ sipExtension: { $in: sipIdentifiers } }, { 'phones.number': { $in: sipIdentifiers } }],
 			},
 			options,
 		);

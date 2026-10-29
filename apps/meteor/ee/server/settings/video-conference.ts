@@ -52,6 +52,14 @@ export function addSettings(): Promise<void> {
 					enableQuery: [discussionsEnabled, persistentChatEnabled],
 				});
 
+				await this.add('VideoConf_Persistent_Chat_Create_Discussion', true, {
+					type: 'boolean',
+					public: true,
+					invalidValue: true,
+					i18nDescription: 'VideoConf_Persistent_Chat_Create_Discussion_Description',
+					enableQuery: [discussionsEnabled, persistentChatEnabled],
+				});
+
 				await this.section('VideoConf_LiveKit', async function () {
 					// Sold apart from the rest of video conferencing, so licensed by a module of its own.
 					await this.with({ modules: ['video-conference-native'] }, async function () {

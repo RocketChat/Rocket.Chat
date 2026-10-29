@@ -161,6 +161,16 @@ export interface IUserPhoneNumber {
 
 export const MAX_USER_PHONES = 10;
 
+/** An external device (e.g. a desk phone) a user takes their calls on, offered by an app. */
+export interface IUserMediaCallDevice {
+	/** Device id as the providing app reported it. */
+	id: string;
+	/** The app that owns the device, and that call control is dispatched to. */
+	appId: string;
+	/** Name as it was when chosen, so the selection still reads correctly if the app goes away. */
+	name?: string;
+}
+
 export interface IUserCalendar {
 	outlook?: {
 		Enabled: boolean;
@@ -185,6 +195,7 @@ export const SIDEBAR_SYSTEM_GROUP_KEYS = [
 	'Teams',
 	'Discussions',
 	'Channels',
+	'Teams_and_channels',
 	'Direct_Messages',
 	'Conversations',
 ] as const;
@@ -242,6 +253,12 @@ export interface IUser extends IRocketChatRecord {
 	defaultRoom?: string;
 	ldap?: boolean;
 	sipExtension?: string;
+	/**
+	 * The external device the user takes calls on, chosen by them and kept until they change it.
+	 * While it is set the user is only reachable on that device: calls to the Rocket.Chat client are
+	 * refused. Absent means calls happen in Rocket.Chat itself.
+	 */
+	mediaCallDevice?: IUserMediaCallDevice;
 	inviteToken?: string;
 	canViewAllInfo?: boolean;
 	phones?: IUserPhoneNumber[];

@@ -6,6 +6,7 @@ import { useEffect, useReducer } from 'react';
 import { defaultSessionState } from '../context/MediaCallViewContext';
 import type { ConnectionState, SessionState } from '../context/definitions';
 import { derivePeerInfoFromInstanceContact } from '../utils/derivePeerInfoFromInstanceContact';
+import { deriveSupportedFeatures } from '../utils/deriveSupportedFeatures';
 import { deriveWidgetStateFromCallState } from '../utils/deriveWidgetStateFromCallState';
 
 export const getExtensionFromInstanceContact = (contact: CallContact): string | undefined => {
@@ -111,6 +112,9 @@ export const useMediaSession = (instance?: MediaSignalingSession): SessionState 
 						startedAt: undefined,
 						supportedFeatures: [],
 						confirmed: instanceState.confirmed,
+						hasAlternateCall: false,
+						canCompleteTransfer: false,
+						escalated: false,
 					},
 				});
 				return;
@@ -120,8 +124,10 @@ export const useMediaSession = (instance?: MediaSignalingSession): SessionState 
 				hidden,
 				callId,
 				activeTimestamp: startedAt,
-				features: supportedFeatures,
+				features,
+				service,
 				transferredBy: callTransferredBy,
+				escalated,
 				remoteParticipant: { muted: remoteMuted, held: remoteHeld, contact },
 				ringing,
 			} = instanceState;
@@ -159,8 +165,11 @@ export const useMediaSession = (instance?: MediaSignalingSession): SessionState 
 					remoteMuted,
 					callId,
 					startedAt,
-					supportedFeatures,
+					supportedFeatures: deriveSupportedFeatures(service, features),
 					confirmed: instanceState.confirmed,
+					hasAlternateCall: instance.hasAlternateCall(),
+					canCompleteTransfer: instance.canCompleteTransfer(),
+					escalated,
 					ringing,
 				},
 			});

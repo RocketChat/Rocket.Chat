@@ -8,11 +8,29 @@ import type {
 } from './IClientMediaCallParticipant';
 import type { CallActorType } from './common';
 
-export type CallService = 'webrtc';
+export const callServiceList = [
+	'webrtc', // media is handled by the client through a WebRTC connection
+	'cti', // the call is fully handled by an external device/gateway through a Rocket.Chat app; the client is only a remote control
+] as const;
 
-export const callFeatureList = ['audio', 'screen-share', 'transfer', 'hold'] as const;
+export type CallService = (typeof callServiceList)[number];
+
+export const callControlFeatureList = ['mute', 'direct-message', 'device-picker'] as const;
+
+export const callFeatureList = [
+	'audio',
+	'screen-share',
+	'transfer',
+	'attended-transfer',
+	'hold',
+	'conference-escalation',
+	'dialpad',
+	...callControlFeatureList,
+] as const;
 
 export type CallFeature = (typeof callFeatureList)[number];
+
+export type CallControlFeature = (typeof callControlFeatureList)[number];
 
 export const callStateList = [
 	'none', // trying to call with no idea if it'll reach anyone
@@ -45,6 +63,7 @@ export const callHangupReasonList = [
 	'error', // Hanging up because of an unidentified error
 	'unknown', // One of the call's signed users reported they don't know this call
 	'another-client', // One of the call's users requested a hangup from a different client session than the one where the call is happening
+	'conference-escalation', // The user has escalated this call into a video conference
 ] as const;
 
 export type CallHangupReason = (typeof callHangupReasonList)[number];
@@ -65,6 +84,8 @@ export const callNotificationList = [
 	'active', // notify that call activity was confirmed
 	'hangup', // notify that the call is over;
 	'trying', // notify that the other client is connecting but still need more time
+	'escalated', // notify that the call was escalated to a video-conference
+	'session-changed', // notify that the user's side of the call moved to another session, identified by `signedContractId`
 ] as const;
 
 export type CallNotification = (typeof callNotificationList)[number];
@@ -84,7 +105,7 @@ export const callRejectedReasonList = [
 
 export type CallRejectedReason = (typeof callRejectedReasonList)[number];
 
-export const callFlagList = ['internal', 'create-data-channel'];
+export const callFlagList = ['internal', 'create-data-channel', 'replaces-call'];
 
 export type CallFlag = (typeof callFlagList)[number];
 

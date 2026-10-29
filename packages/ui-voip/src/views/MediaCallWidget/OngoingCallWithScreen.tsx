@@ -1,4 +1,4 @@
-import { Box, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Divider } from '@rocket.chat/fuselage';
 import { ActionButton, StreamVideo, ToggleButton } from '@rocket.chat/ui-media';
 import { useTranslation } from 'react-i18next';
 
@@ -18,9 +18,12 @@ import {
 	CardWidgetContainer,
 	StreamCard,
 	getPeerDisplayName,
+	VideoCallWidgetAction,
 } from '../../components';
 import { useMediaCallInstance } from '../../context';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
+import AppActions from '../../experimental/AppActionButtons/components/AppActions';
+import { useVisibleAppActions } from '../../experimental/AppActionButtons/hooks/useVisibleAppActions';
 import { isUnknownPeer } from '../../utils/isUnknownPeer';
 
 const OngoingCall = () => {
@@ -28,10 +31,13 @@ const OngoingCall = () => {
 
 	const {
 		sessionState,
-		allowedFeatures,
+		isRequestingVideoCall,
+		onRequestVideoCall,
 		onMute,
 		onHold,
 		onForward,
+		onSwapCalls,
+		onCompleteTransfer,
 		onEndCall,
 		onClickDirectMessage,
 		onOpenPopout,
@@ -39,14 +45,31 @@ const OngoingCall = () => {
 		onToggleScreenSharing,
 		onClosePopout,
 	} = useMediaCallView();
-	const { muted, held, remoteMuted, remoteHeld, peerInfo, connectionState, startedAt } = sessionState;
+	const {
+		muted,
+		held,
+		remoteMuted,
+		remoteHeld,
+		peerInfo,
+		connectionState,
+		startedAt,
+		escalated,
+		supportedFeatures,
+		hasAlternateCall,
+		canCompleteTransfer,
+	} = sessionState;
 	const { currentViews } = useMediaCallInstance();
 	const isPopout = currentViews.has('popout');
 	const isInline = !useDraggableWidget();
 
-	const screenShareAvailable = allowedFeatures.includes('screen-share');
-	const holdAvailable = allowedFeatures.includes('hold');
-	const transferAvailable = allowedFeatures.includes('transfer');
+	const screenShareAvailable = supportedFeatures.includes('screen-share');
+	const holdAvailable = supportedFeatures.includes('hold');
+	const transferAvailable = supportedFeatures.includes('transfer');
+	const videoConfAvailable = supportedFeatures.includes('conference-escalation');
+	const muteAvailable = supportedFeatures.includes('mute');
+	const dialpadAvailable = supportedFeatures.includes('dialpad');
+	const directMessageAvailable = supportedFeatures.includes('direct-message');
+	const devicePickerAvailable = supportedFeatures.includes('device-picker');
 
 	const { localScreen, remoteScreen } = streams;
 
@@ -56,13 +79,13 @@ const OngoingCall = () => {
 	const connecting = connectionState === 'CONNECTING';
 	const reconnecting = connectionState === 'RECONNECTING';
 
-	const isSip = peerInfo?.type === 'sip';
+	const appActions = useVisibleAppActions();
 
 	return (
 		<Widget>
 			<WidgetHandle />
 			<WidgetHeader title={connecting ? t('meteor_status_connecting') : <Timer startAt={startedAt} />}>
-				{onClickDirectMessage && (
+				{directMessageAvailable && onClickDirectMessage && (
 					<ActionButton size='tiny' secondary={false} label={t('Direct_Message')} icon='balloon' onClick={onClickDirectMessage} />
 				)}
 
@@ -77,13 +100,13 @@ const OngoingCall = () => {
 					size='tiny'
 				/>
 
-				<DevicePicker />
+				{devicePickerAvailable && <DevicePicker />}
 			</WidgetHeader>
 			<WidgetContent>
 				<CardWidgetContainer>
 					{peerInfo && !isUnknownPeer(peerInfo) && <PeerInfo {...peerInfo} slots={remoteSlots} remoteMuted={remoteMuted} />}
 
-					{isInline && isSip && !localScreen?.active && <Dialpad autoFocus={false} />}
+					{dialpadAvailable && isInline && !localScreen?.active && <Dialpad autoFocus={false} />}
 
 					{isPopout && (
 						<Box display='flex' flexDirection='column' gap={4}>
@@ -113,12 +136,26 @@ const OngoingCall = () => {
 							)}
 						</>
 					)}
+
+					{videoConfAvailable && (
+						<VideoCallWidgetAction escalated={escalated} loading={isRequestingVideoCall} onClick={onRequestVideoCall} />
+					)}
 				</CardWidgetContainer>
 			</WidgetContent>
 			<WidgetInfo slots={slots} />
 			<WidgetFooter>
+				<AppActions actions={appActions} vertical />
+				{appActions.length > 0 && <Divider />}
 				<ButtonGroup large align='center'>
-					<ToggleButton label={t('Mute')} icons={['mic', 'mic-off']} titles={[t('Mute'), t('Unmute')]} pressed={muted} onToggle={onMute} />
+					{muteAvailable && (
+						<ToggleButton
+							label={t('Mute')}
+							icons={['mic', 'mic-off']}
+							titles={[t('Mute'), t('Unmute')]}
+							pressed={muted}
+							onToggle={onMute}
+						/>
+					)}
 
 					{holdAvailable && (
 						<ToggleButton
@@ -137,6 +174,12 @@ const OngoingCall = () => {
 							pressed={localScreen?.active ?? false}
 							onToggle={onToggleScreenSharing}
 						/>
+					)}
+					{hasAlternateCall && (
+						<ActionButton disabled={connecting || reconnecting} label={t('Switch_call')} icon='arrow-loop' onClick={onSwapCalls} />
+					)}
+					{canCompleteTransfer && (
+						<ActionButton disabled={connecting || reconnecting} label={t('Complete_transfer')} icon='check' onClick={onCompleteTransfer} />
 					)}
 					{transferAvailable && (
 						<ActionButton disabled={connecting || reconnecting} label={t('Forward')} icon='arrow-forward' onClick={onForward} />

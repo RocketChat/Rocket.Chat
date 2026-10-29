@@ -1,4 +1,4 @@
-import type { IUser, MediaCallContact, MediaCallSignedContact } from '@rocket.chat/core-typings';
+import type { IMediaCall, IUser, IUserMediaCallDevice, MediaCallContact, MediaCallSignedContact } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';
 import type {
 	CallFeature,
@@ -7,11 +7,16 @@ import type {
 	ClientMediaSignalBody,
 	ServerMediaSignal,
 } from '@rocket.chat/media-signaling';
+import { MediaCalls, Users } from '@rocket.chat/models';
 
 import { mediaCallDirector } from './CallDirector';
+import { CtiCallProvider } from './CtiCallProvider';
 import { getDefaultSettings } from './getDefaultSettings';
 import { getIceServer } from './getIceServer';
+import { getMediaCallAppGateway } from './injection';
+import { getSelectedDevice } from './selectedDevice';
 import { stripSensitiveDataFromSignal } from './stripSensitiveData';
+import type { CtiCallStateEvent, MediaCallDevice } from '../definition/IMediaCallAppGateway';
 import type {
 	IMediaCallServer,
 	IMediaCallServerSettings,
@@ -22,7 +27,7 @@ import type {
 	VoipPushNotificationEventType,
 } from '../definition/IMediaCallServer';
 import { CallRejectedError } from '../definition/common';
-import type { SignalProcessingOptions, GetActorContactOptions, InternalCallParams } from '../definition/common';
+import type { SignalProcessingOptions, GetActorContactOptions, InternalCallParams, MediaCallHeader } from '../definition/common';
 import { InternalCallProvider } from '../internal/InternalCallProvider';
 import { GlobalSignalProcessor } from '../internal/SignalProcessor';
 import { logger } from '../logger';
@@ -91,7 +96,8 @@ export class MediaCallServer implements IMediaCallServer {
 
 	public async requestCall(params: InternalCallParams): Promise<void> {
 		try {
-			const fullParams = await this.parseCallContacts(params);
+			const routed = await this.routeToSelectedDevice(params);
+			const fullParams = routed.requestedService === 'cti' ? await this.parseCtiCallContacts(routed) : await this.parseCallContacts(routed);
 
 			await this.createCall(fullParams);
 		} catch (error) {
@@ -103,7 +109,8 @@ export class MediaCallServer implements IMediaCallServer {
 				logger.error({ msg: 'Failed to create a requested call', params, err: error });
 			}
 
-			const originalId = params.requestedCallId || params.parentCallId;
+			// The call that is being replaced is not the one that was requested, and must not be told it was refused
+			const originalId = params.requestedCallId || (params.replacedCallIds?.length ? undefined : params.parentCallId);
 
 			if (originalId && params.requestedBy?.type === 'user') {
 				logger.info({ msg: 'Call Request Rejected', uid: params.requestedBy.id, rejectionReason });
@@ -123,6 +130,11 @@ export class MediaCallServer implements IMediaCallServer {
 	public async createCall(params: InternalCallParams): Promise<void> {
 		logger.debug({ msg: 'MediaCallServer.createCall', params });
 
+		if (params.requestedService === 'cti') {
+			await CtiCallProvider.createCall(params);
+			return;
+		}
+
 		if (params.callee.type === 'sip') {
 			await this.session.createOutgoingCall(params);
 			return;
@@ -131,12 +143,91 @@ export class MediaCallServer implements IMediaCallServer {
 		await InternalCallProvider.createCall(params);
 	}
 
+	/** Entry point for an app to report an inbound call arriving on a user's device (app -> host). */
+	public async createIncomingCtiCall(params: {
+		user: MediaCallContact;
+		from: MediaCallContact;
+		device?: string;
+		features?: CallFeature[];
+	}): Promise<void> {
+		if (!this.settings.cti.enabled) {
+			logger.debug('An app reported an inbound cti call while the feature is disabled');
+			throw new CallRejectedError('unsupported');
+		}
+
+		if (params.user.type !== 'user' || !(await this.settings.permissionCheck(params.user.id, 'external'))) {
+			logger.debug({ msg: 'An app reported an inbound cti call for a user without permission for it' });
+			throw new CallRejectedError('forbidden');
+		}
+
+		await CtiCallProvider.createIncomingCall(params);
+	}
+
+	/** Entry point for an app to report a state/control change on a cti call it is handling (app -> host). */
+	public async reportCtiCallState(callId: string, event: CtiCallStateEvent): Promise<void> {
+		await CtiCallProvider.reportState(callId, event);
+	}
+
+	/**
+	 * Records which device a user takes their calls on, from then until they change it.
+	 *
+	 * Refused while the user is on a call: the choice decides where calls are placed and which ones
+	 * are answered, and moving it out from under a call in progress has no sane meaning.
+	 */
+	public async selectUserMediaDevice(uid: IUser['_id'], deviceId: string | null): Promise<IUserMediaCallDevice | null> {
+		if (await MediaCalls.hasUnfinishedCallsByUid(uid)) {
+			throw new Error('error-media-call-in-progress');
+		}
+
+		if (!deviceId) {
+			await Users.setMediaCallDeviceById(uid, null);
+			return null;
+		}
+
+		// Only a device an app currently offers this user may be chosen, which also covers the feature
+		// being disabled and the user lacking permission for it.
+		const device = (await this.getUserMediaDevices(uid)).find(({ id }) => id === deviceId);
+		if (!device) {
+			throw new Error('error-invalid-media-call-device');
+		}
+
+		const selected: IUserMediaCallDevice = { id: device.id, appId: device.appId, name: device.name };
+		await Users.setMediaCallDeviceById(uid, selected);
+
+		return selected;
+	}
+
+	/** Lists the cti devices a user may place/receive calls on, as provided by the installed apps. */
+	public async getUserMediaDevices(uid: IUser['_id']): Promise<MediaCallDevice[]> {
+		if (!this.settings.cti.enabled) {
+			return [];
+		}
+
+		// A device is only useful to someone allowed to place calls on it
+		if (!(await this.settings.permissionCheck(uid, 'external'))) {
+			return [];
+		}
+
+		const gateway = getMediaCallAppGateway();
+		if (!gateway) {
+			return [];
+		}
+		return gateway.getDevices(uid);
+	}
+
 	public receiveCallUpdate(params: { callId: string; dtmf?: ClientMediaSignalBody<'dtmf'> }): void {
 		this.session.reactToCallUpdate(params);
 	}
 
 	public async hangupExpiredCalls(): Promise<void> {
 		return mediaCallDirector.hangupExpiredCalls();
+	}
+
+	public async hangupEscalatedCall(call: MediaCallHeader, endedBy?: IMediaCall['endedBy']): Promise<boolean> {
+		return mediaCallDirector.hangupDetachedCall(call, {
+			reason: 'conference-escalation',
+			...(endedBy && { endedBy }),
+		});
 	}
 
 	public scheduleExpirationCheck(): void {
@@ -165,12 +256,16 @@ export class MediaCallServer implements IMediaCallServer {
 		return this.settings.permissionCheck(uid, callType);
 	}
 
-	public isFeatureAvailableForUser(uid: IUser['_id'], feature: CallFeature): boolean {
-		return this.settings.isFeatureAvailableForUser(uid, feature);
+	public isFeatureEnabled(feature: CallFeature): boolean {
+		return this.settings.isFeatureEnabled(feature);
 	}
 
 	public getIceServersForUser(uid: IUser['_id']): RTCIceServer[] {
 		return this.settings.iceServers.map((server) => getIceServer(server, uid));
+	}
+
+	public async resolveCallerName(uid: IUser['_id'], number: string): Promise<string | undefined> {
+		return this.settings.resolveCallerName(uid, number);
 	}
 
 	/**
@@ -181,6 +276,72 @@ export class MediaCallServer implements IMediaCallServer {
 	 * Will throw if a call can't be routed or if one of the user lacks permission for it.
 	 * Blocked permissions do not affect the routing rules, meaning a call may be blocked even if it would have been allowed through a different route.
 	 * */
+	/**
+	 * Decides where a call the caller asked for should actually be placed.
+	 *
+	 * The device is read from the caller rather than taken from the request: a user's calls go to the
+	 * device they chose, whatever the client believed when it asked. A caller who chose no device
+	 * places the call in Rocket.Chat, even if the request named a device.
+	 */
+	private async routeToSelectedDevice(params: InternalCallParams): Promise<InternalCallParams> {
+		if (params.caller.type !== 'user') {
+			return params;
+		}
+
+		const selected = await getSelectedDevice(params.caller.id);
+
+		if (!selected) {
+			const { device: _unusedDevice, requestedService, ...rest } = params;
+
+			return { ...rest, ...(requestedService && requestedService !== 'cti' && { requestedService }) };
+		}
+
+		return { ...params, requestedService: 'cti', device: selected.id };
+	}
+
+	/**
+	 * Resolves contacts for a `cti` call. The callee is always the app-backed leg — the app places the
+	 * call on the gateway and dials the callee's id — so it is kept `sip`-typed and its id has to be
+	 * something dialable. A Rocket.Chat user is therefore reached through their extension rather than
+	 * their user id, with `uid` still recording who was called. Unlike a webrtc/sip call the callee is
+	 * not routed by Rocket.Chat, so any other id is passed through as the app's own dial target.
+	 */
+	private async parseCtiCallContacts(params: InternalCallParams): Promise<InternalCallParams> {
+		if (!this.settings.cti.enabled) {
+			logger.debug('A cti call was requested while the feature is disabled');
+			throw new CallRejectedError('unsupported');
+		}
+
+		const requester = params.requestedBy || params.caller;
+		if (requester.type !== 'user') {
+			logger.warn('Invalid cti call requester');
+			throw new CallRejectedError('invalid-call-params');
+		}
+
+		if (!(await this.settings.permissionCheck(requester.id, 'external'))) {
+			logger.debug({ msg: 'User lacks permission for a cti call', uid: requester.id });
+			throw new CallRejectedError('forbidden');
+		}
+
+		const caller = await mediaCallDirector.cast.getContactForActor(params.caller, { requiredType: 'user' });
+		if (!caller) {
+			logger.debug('Failed to load cti caller contact information');
+			throw new CallRejectedError('invalid-call-params');
+		}
+
+		const callee = await mediaCallDirector.cast.getContactForActor(params.callee, { requiredType: 'sip' });
+		if (!callee) {
+			logger.debug({ msg: 'Failed to resolve a dialable cti callee', callee: params.callee });
+			throw new CallRejectedError('invalid-call-params');
+		}
+
+		return {
+			...params,
+			caller: { ...caller, contractId: params.caller.contractId },
+			callee,
+		};
+	}
+
 	private async parseCallContacts(params: InternalCallParams): Promise<InternalCallParams> {
 		// On call transfers, do not mutate the caller
 		// On new calls, force the caller type to be 'user' (since the call is being created in rocket.chat first)
@@ -208,7 +369,10 @@ export class MediaCallServer implements IMediaCallServer {
 		}
 
 		// The callee contact type will determine if the call is going to go through SIP or directly to another rocket.chat user
-		const callee = await mediaCallDirector.cast.getContactForActor(params.callee, this.getCalleeContactOptions());
+		const callee = await mediaCallDirector.cast.getContactForActor(
+			params.callee,
+			params.requiredCalleeType ? { requiredType: params.requiredCalleeType } : this.getCalleeContactOptions(),
+		);
 		if (!callee) {
 			logger.debug('Failed to load callee contact information');
 			throw new CallRejectedError('invalid-call-params');

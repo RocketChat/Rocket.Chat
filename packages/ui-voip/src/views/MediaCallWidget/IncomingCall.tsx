@@ -1,9 +1,11 @@
-import { Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Divider } from '@rocket.chat/fuselage';
 import type { TFunction } from 'i18next';
 import { useTranslation } from 'react-i18next';
 
 import { DevicePicker, PeerInfo, Widget, WidgetFooter, WidgetHandle, WidgetHeader, WidgetContent, WidgetInfo } from '../../components';
 import { useMediaCallView } from '../../context/MediaCallViewContext';
+import AppActions from '../../experimental/AppActionButtons/components/AppActions';
+import { useVisibleAppActions } from '../../experimental/AppActionButtons/hooks/useVisibleAppActions';
 import { isUnknownPeer } from '../../utils/isUnknownPeer';
 
 const getHeaderTitle = ({ connecting, transferred, t }: { connecting: boolean; transferred: boolean; t: TFunction }) => {
@@ -26,6 +28,8 @@ const IncomingCall = () => {
 
 	const connecting = connectionState === 'CONNECTING';
 
+	const appActions = useVisibleAppActions();
+
 	return (
 		<Widget>
 			<WidgetHandle />
@@ -35,6 +39,8 @@ const IncomingCall = () => {
 			{transferredBy && <WidgetInfo slots={[{ text: t('Transferring_call_incoming__from_', { from: transferredBy }), type: 'info' }]} />}
 			<WidgetContent>{peerInfo && !isUnknownPeer(peerInfo) && <PeerInfo {...peerInfo} />}</WidgetContent>
 			<WidgetFooter>
+				<AppActions actions={appActions} vertical />
+				{appActions.length > 0 && <Divider />}
 				<ButtonGroup stretch>
 					{connecting ? (
 						<Button size='medium' name='phone' icon='phone-off' variant='danger' onClick={onEndCall}>

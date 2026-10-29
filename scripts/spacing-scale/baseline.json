@@ -592,7 +592,6 @@
 	"packages/ui-conference/src/call/diagnostics/CallDiagnosticsParticipantCard.tsx": 4,
 	"packages/ui-conference/src/call/diagnostics/CallDiagnosticsStatRow.tsx": 1,
 	"packages/ui-conference/src/call/stage/OverflowTile.tsx": 2,
-	"packages/ui-conference/src/components/AddParticipantsModal/AddParticipantsModal.tsx": 1,
 	"packages/ui-conference/src/components/CallBar.tsx": 1,
 	"packages/ui-conference/src/components/CallMembersPanel/CallMembersPanel.tsx": 1,
 	"packages/ui-conference/src/components/CallParticipants.stories.tsx": 1,

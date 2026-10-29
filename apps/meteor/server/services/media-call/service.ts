@@ -1,16 +1,39 @@
-import { api, Presence, ServiceClassInternal, type IMediaCallService, Authorization } from '@rocket.chat/core-services';
+import {
+	api,
+	Presence,
+	ServiceClassInternal,
+	type IMediaCallService,
+	Authorization,
+	CallHistory as CallHistoryService,
+	VideoConf,
+} from '@rocket.chat/core-services';
 import type {
+	IContact,
 	IMediaCall,
 	IUser,
 	IRoom,
 	IInternalMediaCallHistoryItem,
 	CallHistoryItemState,
 	IExternalMediaCallHistoryItem,
+	VideoConference,
+	AtLeast,
+	IGroupVideoConference,
+	IRegisterUser,
+	MediaCallContact,
+	IUserMediaCallDevice,
 } from '@rocket.chat/core-typings';
 import { UserStatus } from '@rocket.chat/core-typings';
-import { callServer, type IceServerConfig, type IMediaCallServerSettings, getSignalsForExistingCall } from '@rocket.chat/media-calls';
+import {
+	callServer,
+	type IceServerConfig,
+	type IMediaCallServerSettings,
+	getSignalsForExistingCall,
+	ESCALATED_CALL_FEATURES,
+	setMediaCallAppGateway,
+} from '@rocket.chat/media-calls';
 import type {
 	CallFeature,
+	CallHangupReason,
 	ClientMediaSignal,
 	ServerMediaSignal,
 	ServerMediaCallSignal,
@@ -18,7 +41,7 @@ import type {
 } from '@rocket.chat/media-signaling';
 import { isClientMediaSignal } from '@rocket.chat/media-signaling';
 import type { InsertionModel } from '@rocket.chat/model-typings';
-import { CallHistory, MediaCalls, Rooms, Users } from '@rocket.chat/models';
+import { CallHistory, MediaCalls, Rooms, Users, VideoConference as VideoConferenceModel } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings';
 import { callStateToTranslationKey, getHistoryMessagePayload } from '@rocket.chat/ui-voip/dist/ui-kit/getHistoryMessagePayload';
 
@@ -28,8 +51,10 @@ import {
 	notifyAppsOfMediaCallStarted,
 	runPreMediaCallCreatedAppHook,
 } from './appEvents';
+import { ctiGateway } from './ctiGateway';
 import { logger } from './logger';
 import { sendVoipPushNotification } from './push/sendVoipPushNotification';
+import { resolveCallerContact } from '../../../ee/server/lib/contacts/resolveCallerContact';
 import { turnServersSchema } from '../../../ee/server/settings/turnServersSchema';
 import { i18n } from '../../lib/i18n';
 import { sendMessage } from '../../lib/messages/sendMessage';
@@ -57,8 +82,14 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		callServer.emitter.on('callEnded', ({ call }) => this.notifyApps(call, notifyAppsOfMediaCallEnded));
 		callServer.setHooks({ onPreCallCreated: runPreMediaCallCreatedAppHook });
 
+		// Let cti (app-controlled device) calls dispatch control to the apps that handle them
+		setMediaCallAppGateway(ctiGateway);
+
 		this.onEvent('watch.settings', async ({ setting }): Promise<void> => {
-			if (setting._id.startsWith('VoIP_TeamCollab_')) {
+			if (
+				(setting._id.startsWith('VoIP_TeamCollab_') && !setting._id.includes('ExternalCallHistory')) ||
+				setting._id.startsWith('Pexip_Integration_SIP_')
+			) {
 				setImmediate(() => this.configureMediaCallServer());
 			}
 		});
@@ -149,6 +180,59 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		}
 	}
 
+	// cti (app-controlled device calls)
+
+	public async getUserMediaDevices(uid: IUser['_id']): Promise<{ id: string; name: string; appId: string }[]> {
+		return callServer.getUserMediaDevices(uid);
+	}
+
+	public async selectUserMediaDevice(uid: IUser['_id'], deviceId: string | null): Promise<IUserMediaCallDevice | null> {
+		return callServer.selectUserMediaDevice(uid, deviceId);
+	}
+
+	// app -> host intake, called from the apps-engine media-call bridge.
+
+	public async createIncomingCtiCall(params: {
+		userId: IUser['_id'];
+		from: MediaCallContact;
+		device?: string;
+		features?: string[];
+	}): Promise<void> {
+		await callServer.createIncomingCtiCall({
+			user: { type: 'user', id: params.userId },
+			from: { ...params.from, type: params.from.type },
+			...(params.device && { device: params.device }),
+			...(params.features && { features: params.features as CallFeature[] }),
+		});
+	}
+
+	public async reportCtiCallRinging(callId: string): Promise<void> {
+		await callServer.reportCtiCallState(callId, { type: 'ringing' });
+	}
+
+	public async reportCtiCallAnswered(callId: string, features?: string[]): Promise<void> {
+		await callServer.reportCtiCallState(callId, { type: 'answered', ...(features && { features: features as CallFeature[] }) });
+	}
+
+	public async reportCtiCallActive(callId: string): Promise<void> {
+		await callServer.reportCtiCallState(callId, { type: 'active' });
+	}
+
+	public async reportCtiCallEnded(callId: string, reason?: string): Promise<void> {
+		await callServer.reportCtiCallState(callId, { type: 'ended', ...(reason && { reason: reason as CallHangupReason }) });
+	}
+
+	public async reportCtiCallState(
+		callId: string,
+		state: { muted?: boolean; held?: boolean; remoteMuted?: boolean; remoteHeld?: boolean },
+	): Promise<void> {
+		await callServer.reportCtiCallState(callId, { type: 'state', ...state });
+	}
+
+	public async notifyUserMediaDevicesChanged(uid: IUser['_id']): Promise<void> {
+		void api.broadcast('user.media-call-devices', { userId: uid });
+	}
+
 	public async getUserStateSignals(uid: IUser['_id'], contractId: string): Promise<ServerMediaCallSignal[]> {
 		const calls = await MediaCalls.findAllNotOverByUid(uid).toArray();
 
@@ -165,6 +249,15 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		setImmediate(() => {
 			notify(call).catch((err) => logger.error({ msg: 'Failed to notify apps about a media call event', err, callId: call._id }));
 		});
+	}
+
+	private notifyCallHistoryChanged(uid: IUser['_id']): void {
+		// Only entries the user can see in their call history are worth telling them about
+		if (settings.get('VoIP_TeamCollab_ExternalCallHistory_Enabled')) {
+			return;
+		}
+
+		void api.broadcast('user.call-history', { userId: uid });
 	}
 
 	private async saveCallToHistory(callId: IMediaCall['_id']): Promise<void> {
@@ -208,6 +301,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		const contact = callerIsInternal ? call.callee : call.caller;
 
 		const contactExtension = contact.sipExtension || contact.id;
+		const resolvedContact = contactExtension ? await this.resolveExternalContact(uid, contactExtension) : undefined;
 
 		const historyItem: InsertionModel<IExternalMediaCallHistoryItem> = {
 			uid,
@@ -220,9 +314,24 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			external: true,
 			direction,
 			contactExtension,
+			...(resolvedContact && { externalContactId: resolvedContact._id, externalContactName: resolvedContact.displayName }),
 		};
 
 		await CallHistory.insertOne(historyItem).catch((err: unknown) => logger.error({ msg: 'Failed to insert item into Call History', err }));
+		this.notifyCallHistoryChanged(uid);
+
+		// The external service keeps its own history, so it has to be asked again after every call that went through it
+		CallHistoryService.importExternalHistory(uid).catch((err: unknown) =>
+			logger.error({ msg: 'Failed to import external Call History after a call', err, callId: call._id }),
+		);
+	}
+
+	private async resolveExternalContact(uid: IUser['_id'], extension: string): Promise<Pick<IContact, '_id' | 'displayName'> | undefined> {
+		try {
+			return await resolveCallerContact(uid, extension);
+		} catch (err) {
+			logger.warn({ msg: 'Failed to resolve a contact for a call history entry', err });
+		}
 	}
 
 	private getContactDataForInternalHistory(
@@ -280,6 +389,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		await CallHistory.insertMany(historyItems).catch((err: unknown) =>
 			logger.error({ msg: 'Failed to insert items into Call History', err }),
 		);
+		historyItems.forEach(({ uid }) => this.notifyCallHistoryChanged(uid));
 
 		if (room) {
 			return this.sendHistoryMessage(call, room);
@@ -429,7 +539,7 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		);
 	}
 
-	private async sendSignal(toUid: IUser['_id'], signal: ServerMediaSignal): Promise<void> {
+	private sendSignal(toUid: IUser['_id'], signal: ServerMediaSignal): void {
 		void api.broadcast('user.media-signal', { userId: toUid, signal });
 	}
 
@@ -458,11 +568,19 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 					host: settings.get<string>('VoIP_TeamCollab_SIP_Server_Host') ?? '',
 					port: settings.get<number>('VoIP_TeamCollab_SIP_Server_Port') ?? 5060,
 				},
+				pexipServer: {
+					host: settings.get<string>('Pexip_Integration_SIP_Host') ?? '',
+					port: settings.get<number>('Pexip_Integration_SIP_Port') ?? 5060,
+				},
 			},
+			resolveCallerName: async (uid, number) => (await resolveCallerContact(uid, number))?.displayName,
 			mobileRinging,
 			iceServers: this.getIceServerConfigs(),
+			cti: {
+				enabled: settings.get<boolean>('VoIP_TeamCollab_CTI_Enabled') ?? false,
+			},
 			permissionCheck: (uid, callType) => this.userHasMediaCallPermission(uid, callType),
-			isFeatureAvailableForUser: (uid, feature) => this.userHasFeaturePermission(uid, feature),
+			isFeatureEnabled: (feature) => this.isFeatureEnabled(feature),
 		};
 	}
 
@@ -484,16 +602,15 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 		}
 	}
 
-	private userHasFeaturePermission(_uid: IUser['_id'], feature: CallFeature): boolean {
-		if (feature === 'audio') {
-			return true;
+	private isFeatureEnabled(feature: CallFeature): boolean {
+		switch (feature) {
+			case 'screen-share':
+				return settings.get<boolean>('VoIP_TeamCollab_Screen_Sharing_Enabled') ?? false;
+			case 'conference-escalation':
+				return Boolean(settings.get('VoIP_TeamCollab_Video_Escalation_Enabled') && settings.get('Pexip_Integration_Enabled'));
+			default:
+				return true;
 		}
-
-		if (feature === 'screen-share') {
-			return settings.get<boolean>('VoIP_TeamCollab_Screen_Sharing_Enabled') ?? false;
-		}
-
-		return true;
 	}
 
 	private async userHasMediaCallPermission(uid: IUser['_id'], callType: 'internal' | 'external' | 'any'): Promise<boolean> {
@@ -517,5 +634,258 @@ export class MediaCallService extends ServiceClassInternal implements IMediaCall
 			logger.error({ msg: 'Failed to parse client signal', err });
 			throw err;
 		}
+	}
+
+	public async escalateCall(uid: IUser['_id'], params: { callId: string }): Promise<string> {
+		const { callId } = params;
+
+		logger.debug({ msg: 'Escalating Voice Call', method: 'MediaCallService.escalateCall', uid, callId });
+
+		const call = await MediaCalls.findOneById(callId);
+
+		try {
+			if (!call?.acceptedAt || call.ended) {
+				throw new Error('not-found');
+			}
+
+			if (!call.uids.includes(uid)) {
+				throw new Error('not-found');
+			}
+			if (!call.features.includes('conference-escalation')) {
+				throw new Error('feature-not-available');
+			}
+
+			const user = await Users.findOneById(uid);
+			if (!user) {
+				throw new Error('internal-error');
+			}
+
+			const url = await this.escalateVoiceCallToConference(user, call);
+
+			logger.debug({ msg: 'Voice Call escalated', uid, callId, url });
+
+			return url;
+		} catch (err) {
+			logger.debug({ msg: 'Unexpected error during escalation', err, uid, callId, call });
+			throw err;
+		}
+	}
+
+	private async escalateVoiceCallToConference(user: IUser, call: IMediaCall): Promise<string> {
+		const conference = await this.getOrCreateConferenceForEscalatingCall(call, user);
+		if (conference?.type !== 'videoconference') {
+			logger.error({ msg: 'Failed to create conference for voice call escalation', type: conference?.type });
+			throw new Error('internal-error');
+		}
+
+		void this.flagAsEscalated(call).catch((err) => {
+			logger.error({ msg: 'Unexpected error while flagging call as escalated', err });
+		});
+
+		await VideoConf.joinCall(conference, user, { mic: true, cam: false });
+
+		const url = await VideoConf.makePersistentChatUrlForConference(conference._id);
+
+		// If the peer has also escalated this call, then we can hangup as we join the conference
+		// but only if the peer has joined the call via web already
+		// otherwise this hangup could disconnect the only conference participant, making it end
+		if (call.escalatedByPeerAt && conference.webrtcParticipantCount) {
+			void callServer.hangupEscalatedCall(call, { type: 'user', id: user._id }).catch((err) => {
+				logger.error({ msg: 'Unexpected error while hanging up a fully escalated voice call', err });
+			});
+		}
+
+		return url;
+	}
+
+	private async getOrCreateConferenceForEscalatingCall(call: IMediaCall, user: IUser): Promise<VideoConference | null> {
+		const existingConference = await VideoConferenceModel.findOneByMediaCallId(call._id);
+		if (existingConference) {
+			logger.debug({
+				msg: 'Voice Call already linked to a conference',
+				method: 'MediaCallService.getOrCreateConferenceForEscalatingCall',
+				uid: user._id,
+				callId: call._id,
+				conferenceId: existingConference._id,
+			});
+			return existingConference;
+		}
+
+		// If the call is already flagged as escalated but no conference for it exists, don't create a new conference - some other process might still be running
+		if (call.escalatedAt) {
+			logger.warn({
+				msg: 'Voice Call already flagged as escalated, but no conference found',
+				method: 'MediaCallService.getOrCreateConferenceForEscalatingCall',
+				uid: user._id,
+				callId: call._id,
+			});
+			throw new Error('pre-escalated-conference-not-found');
+		}
+
+		return this.createConferenceForEscalatingCall(user, call);
+	}
+
+	private async createConferenceForEscalatingCall(user: IUser, call: IMediaCall): Promise<IGroupVideoConference | null> {
+		logger.debug({
+			msg: 'MediaCallService.createConferenceForEscalatingCall',
+			uid: user._id,
+			callId: call._id,
+		});
+
+		// TODO: ensure there are two legs with the same uid pair
+		const dmRid = await this.getRoomIdForExternalCall(call);
+		const rid = dmRid || (await VideoConf.getRidForExternalConference());
+		if (!rid) {
+			logger.warn({
+				msg: 'No parent room available for the conference',
+				method: 'MediaCallService.createConferenceForEscalatingCall',
+				callId: call._id,
+			});
+			throw new Error('Could not find parent room to create the conference on');
+		}
+
+		return VideoConf.createEscalatedConference(
+			{
+				rid,
+				mediaCallIds: [call._id],
+			},
+			user as IRegisterUser,
+			{ createDiscussion: !dmRid },
+		);
+	}
+
+	private async getRoomIdForExternalCall(call: IMediaCall): Promise<string | null> {
+		const callerUid = call.caller.uid;
+		const calleeUid = call.callee.uid;
+
+		logger.debug({
+			msg: 'MediaCallService.getRoomIdForExternalCall',
+			callId: call._id,
+			callerUid,
+			calleeUid,
+		});
+
+		if (!callerUid || !calleeUid) {
+			return null;
+		}
+
+		try {
+			const uids = [callerUid, calleeUid];
+			const uniqueUids = [...new Set(uids)];
+
+			const room = await Rooms.findOneDirectRoomContainingAllUserIDs(uniqueUids, { projection: { _id: 1 } });
+			if (room) {
+				logger.debug({
+					msg: 'A DM between the users already exists',
+					method: 'MediaCallService.getRoomIdForExternalCall',
+					callId: call._id,
+					callerUid,
+					calleeUid,
+				});
+				return room._id;
+			}
+
+			const dmCreatorId = call.caller.type === 'user' ? callerUid : calleeUid;
+
+			const usernames = (
+				await Users.findByIds(uids, { projection: { username: 1 } })
+					.map((user) => user.username)
+					.toArray()
+			).filter((username) => username);
+
+			if (usernames.length !== 2) {
+				throw new Error('Invalid usernames for DM.');
+			}
+
+			logger.debug({
+				msg: 'Creating new DM for the users',
+				method: 'MediaCallService.getRoomIdForExternalCall',
+				callId: call._id,
+				callerUid,
+				calleeUid,
+			});
+
+			const newRoom = await createDirectMessage(usernames, dmCreatorId, false);
+			return newRoom.rid;
+		} catch (err) {
+			logger.error({ msg: 'Failed to determine DM room for external call', err });
+			return null;
+		}
+	}
+
+	private async flagAsEscalated(call: IMediaCall): Promise<void> {
+		logger.debug({
+			msg: 'MediaCallService.flagAsEscalated',
+			callId: call._id,
+		});
+
+		if (call.escalatedAt) {
+			return;
+		}
+
+		const updateResult = await MediaCalls.flagAsEscalatedByCallId(call._id);
+		if (!updateResult.modifiedCount) {
+			logger.debug({
+				msg: 'No calls were modified',
+				method: 'MediaCallService.flagAsEscalated',
+				callId: call._id,
+			});
+			return;
+		}
+
+		await this.notifyEscalatedCall(call, Boolean(call.escalatedByPeerAt));
+		api.broadcast('media-call.updated', {
+			callId: call._id,
+		});
+	}
+
+	public async hangupAutoEscalatedCall(call: IMediaCall, uid: IUser['_id']): Promise<void> {
+		if (!call.escalatedByPeerAt) {
+			return this.flagAsEscalated(call);
+		}
+
+		if (!call.escalatedAt) {
+			await MediaCalls.flagAsEscalatedByCallId(call._id).catch((err) => {
+				logger.error({ msg: 'Unexpected error while flagging call as auto escalated', err });
+			});
+		}
+
+		await callServer.hangupEscalatedCall(call, { type: 'user', id: uid }).catch((err) => {
+			logger.error({ msg: 'Unexpected error while hanging up an auto escalated voice call', err });
+		});
+	}
+
+	private async notifyEscalatedCall(call: AtLeast<IMediaCall, '_id' | 'uids' | 'features'>, escalatedByPeer = false): Promise<void> {
+		for (const uid of call.uids) {
+			await this.sendSignal(uid, {
+				callId: call._id,
+				type: 'notification',
+				notification: 'escalated',
+				...(escalatedByPeer &&
+					call.features && {
+						features: call.features.filter((feature: any): feature is CallFeature => ESCALATED_CALL_FEATURES.includes(feature)),
+					}),
+			});
+		}
+	}
+
+	public async flagAsRemotelyEscalatedByCallId(callId: string): Promise<void> {
+		const call = await MediaCalls.findOneById(callId, {
+			projection: { _id: 1, escalatedByPeerAt: 1, uids: 1, features: 1, escalatedAt: 1 },
+		});
+		if (!call || call.escalatedByPeerAt) {
+			return;
+		}
+
+		const updateResult = await MediaCalls.flagAsRemotelyEscalatedByCallId(call._id);
+		if (!updateResult.modifiedCount) {
+			return;
+		}
+
+		if (!call.escalatedAt) {
+			await this.notifyEscalatedCall(call, true);
+		}
+
+		// TODO: maybe hangup if escalatedAt is already set?
 	}
 }

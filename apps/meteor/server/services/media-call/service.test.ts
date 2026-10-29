@@ -22,9 +22,12 @@ const MediaCalls = { findOneById: sandbox.stub() };
 const Rooms = { findOneDirectRoomContainingAllUserIDs: sandbox.stub() };
 const Users = { findOneById: sandbox.stub(), findByIds: sandbox.stub() };
 
+const importExternalHistory = sandbox.stub();
 const sendMessage = sandbox.stub();
 const callStateToTranslationKey = sandbox.stub();
 const getHistoryMessagePayload = sandbox.stub();
+
+const resolveCallerContact = sandbox.stub();
 
 const loggerMock = { info: sandbox.stub(), warn: sandbox.stub(), error: sandbox.stub(), debug: sandbox.stub() };
 
@@ -41,8 +44,13 @@ const { MediaCallService } = proxyquire.noCallThru().load('./service', {
 		api: { broadcast: sandbox.stub() },
 		Presence: {},
 		Authorization: {},
+		CallHistory: { importExternalHistory },
 	},
-	'@rocket.chat/media-calls': { callServer: callServerMock, getSignalsForExistingCall: sandbox.stub() },
+	'@rocket.chat/media-calls': {
+		callServer: callServerMock,
+		getSignalsForExistingCall: sandbox.stub(),
+		setMediaCallAppGateway: sandbox.stub(),
+	},
 	'@rocket.chat/media-signaling': { isClientMediaSignal: sandbox.stub() },
 	'@rocket.chat/models': { CallHistory, MediaCalls, Rooms, Users },
 	'@rocket.chat/ui-voip/dist/ui-kit/getHistoryMessagePayload': { callStateToTranslationKey, getHistoryMessagePayload },
@@ -52,8 +60,10 @@ const { MediaCallService } = proxyquire.noCallThru().load('./service', {
 		notifyAppsOfMediaCallStarted: sandbox.stub(),
 		runPreMediaCallCreatedAppHook: sandbox.stub(),
 	},
+	'./ctiGateway': { ctiGateway: {} },
 	'./logger': { logger: loggerMock },
 	'./push/sendVoipPushNotification': { sendVoipPushNotification: sandbox.stub() },
+	'../../../ee/server/lib/contacts/resolveCallerContact': { resolveCallerContact },
 	'../../lib/i18n': { i18n: { t: sandbox.stub().returns('text') } },
 	'../../lib/messages/sendMessage': { sendMessage },
 	'../../meteor-methods/messages/createDirectMessage': { createDirectMessage: sandbox.stub() },
@@ -86,6 +96,7 @@ describe('media call history pipeline', () => {
 
 	beforeEach(() => {
 		sandbox.reset();
+		importExternalHistory.resolves();
 		Rooms.findOneDirectRoomContainingAllUserIDs.resolves({ _id: 'rid' });
 		Users.findOneById.resolves({ _id: 'caller-id', language: 'en' });
 		callStateToTranslationKey.returns({ type: 'mrkdwn', i18n: { key: 'Call_failed_bold' }, text: 'Call failed' });
@@ -94,6 +105,7 @@ describe('media call history pipeline', () => {
 		CallHistory.insertOne.resolves({ insertedId: 'history-id' });
 		CallHistory.insertMany.resolves({});
 		CallHistory.updateMany.resolves({});
+		resolveCallerContact.resolves(undefined);
 
 		service = new MediaCallService();
 	});
@@ -171,5 +183,69 @@ describe('media call history pipeline', () => {
 
 		expect(CallHistory.insertOne.calledOnce).to.be.true;
 		expect(CallHistory.insertOne.firstCall.args[0]).to.include({ uid: 'callee-id', direction: 'inbound', state: 'prevented' });
+	});
+
+	describe('putting a name on an external number', () => {
+		const outbound = () =>
+			makeCall({
+				acceptedAt: new Date(),
+				activatedAt: new Date(),
+				callee: { type: 'external', id: 'callee-ext', sipExtension: '2002' },
+				uids: ['caller-id'],
+			} as unknown as Partial<IMediaCall>);
+
+		const inbound = () =>
+			makeCall({
+				acceptedAt: new Date(),
+				activatedAt: new Date(),
+				caller: { type: 'external', id: 'caller-ext', sipExtension: '2002' },
+				uids: ['callee-id'],
+			} as unknown as Partial<IMediaCall>);
+
+		it('stores the contact the number belongs to, so the entry survives a later rename', async () => {
+			resolveCallerContact.resolves({ _id: 'contact-id', displayName: 'John Doe' });
+			MediaCalls.findOneById.resolves(outbound());
+
+			await service.saveCallToHistory('call-id');
+
+			expect(CallHistory.insertOne.firstCall.args[0]).to.include({ externalContactId: 'contact-id', externalContactName: 'John Doe' });
+		});
+
+		it('looks the number up in the address book of the user on the call', async () => {
+			MediaCalls.findOneById.resolves(outbound());
+
+			await service.saveCallToHistory('call-id');
+
+			expect(resolveCallerContact.calledWith('caller-id', '2002')).to.be.true;
+		});
+
+		it('looks it up for the person who was called on an inbound call', async () => {
+			MediaCalls.findOneById.resolves(inbound());
+
+			await service.saveCallToHistory('call-id');
+
+			expect(resolveCallerContact.calledWith('callee-id', '2002')).to.be.true;
+		});
+
+		it('leaves the fields off entirely when no contact holds the number', async () => {
+			MediaCalls.findOneById.resolves(outbound());
+
+			await service.saveCallToHistory('call-id');
+
+			expect(CallHistory.insertOne.firstCall.args[0]).to.not.have.property('externalContactId');
+			expect(CallHistory.insertOne.firstCall.args[0]).to.not.have.property('externalContactName');
+		});
+	});
+
+	describe('the name the call server rings with', () => {
+		it('answers with the display name of the contact holding the number', async () => {
+			resolveCallerContact.resolves({ _id: 'contact-id', displayName: 'John Doe' });
+
+			await expect(service.getMediaServerSettings().resolveCallerName('uid', '+541143211000')).to.eventually.equal('John Doe');
+		});
+
+		it('answers with nothing when the number is in nobody address book, leaving the number on screen', async () => {
+			await expect(service.getMediaServerSettings().resolveCallerName('uid', '+541143211000')).to.eventually.be.undefined;
+		});
 	});
 });

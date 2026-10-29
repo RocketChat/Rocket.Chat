@@ -1,6 +1,7 @@
 import type {
 	AvailableAgentsAggregation,
 	IUser,
+	IUserMediaCallDevice,
 	IRole,
 	ILivechatAgent,
 	UserStatus,
@@ -623,6 +624,15 @@ export interface IUsersModel extends IBaseModel<IUser> {
 		sipExtension: string,
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null>;
+	setMediaCallDeviceById(userId: IUser['_id'], device: IUserMediaCallDevice | null): Promise<UpdateResult>;
+	findByPhone<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		phoneNumber: string,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findAllBySipIdentifiers<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		sipIdentifiers: string[],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	countUsersInRoles(roles: IRole['_id'][]): Promise<number>;
 	countAllUsersWithPendingAvatar(): Promise<number>;
 	findOneByIdAndRole<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(

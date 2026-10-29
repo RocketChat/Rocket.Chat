@@ -101,6 +101,11 @@ export interface IRocketChatDesktop {
 	destroyNotification: (id: unknown) => void;
 	getInternalVideoChatWindowEnabled: () => boolean;
 	openInternalVideoChatWindow: (url: string, options: VideoChatWindowOptions) => void;
+	/**
+	 * Registers a handler for routes the main window is asked to open, such as a link followed in the call
+	 * window. Optional: only desktop builds that implement it have one.
+	 */
+	onNavigateToRoute?: (cb: (path: string) => void) => void;
 	setGitCommitHash: (gitCommitHash: string) => void;
 	writeTextToClipboard: (text: string) => void;
 	getOutlookEvents: (date: Date) => Promise<OutlookEventsResponse>;
@@ -118,6 +123,7 @@ export interface IRocketChatDesktop {
 	 * nothing of the main window's but no-op setters.
 	 */
 	videoCall?: IVideoCallWindow;
+	onTelephonyCallRequested?: (callback: (payload: { phoneNumber: string; rawUri: string }) => void) => void;
 }
 
 /** What the desktop app's video call window offers the page loaded in it. */

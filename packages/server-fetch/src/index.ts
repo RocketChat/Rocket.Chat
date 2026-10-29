@@ -2,7 +2,6 @@ import http from 'node:http';
 import https from 'node:https';
 import type { Readable } from 'node:stream';
 
-import { Logger } from '@rocket.chat/logger';
 import { censorUrl } from '@rocket.chat/tools';
 import { AbortController } from 'abort-controller';
 import { HttpProxyAgent } from 'http-proxy-agent';
@@ -10,13 +9,13 @@ import { HttpsProxyAgent } from 'https-proxy-agent';
 import fetch, { FetchError, Response } from 'node-fetch';
 import { getProxyForUrl } from 'proxy-from-env';
 
+import { fetchWithAuthentication } from './auth/fetchWithAuthentication';
 import { checkForSsrfWithIp, parseSsrfAllowlist } from './checkForSsrf';
-import { MAX_REDIRECTS, redirectStatus } from './constants';
+import { authRequiredStatus, MAX_REDIRECTS, redirectStatus } from './constants';
 import { buildPinnedUrl, checkDirectIp, extractHostname } from './helpers';
+import { logger } from './logger';
 import { parseRequestOptions } from './parsers';
 import type { ExtendedFetchOptions } from './types';
-
-const logger = new Logger('ExternalRequest');
 
 function getFetchAgent<U extends string>(
 	url: U,
@@ -107,6 +106,20 @@ function followRedirect(response: fetch.Response, redirectCount = 0) {
 	return location;
 }
 
+async function doFetch(
+	url: URL,
+	init: fetch.RequestInit & { headers: Record<string, string> },
+	auth?: ExtendedFetchOptions['auth'],
+): Promise<fetch.Response> {
+	const response = await fetch(url.toString(), init);
+
+	if (response?.status !== authRequiredStatus || !auth) {
+		return response;
+	}
+
+	return fetchWithAuthentication(url, init, auth, response);
+}
+
 export async function serverFetch(input: string, options?: ExtendedFetchOptions, allowSelfSignedCerts?: boolean): Promise<Response> {
 	let currentUrl = input;
 	let controller = new AbortController();
@@ -161,14 +174,21 @@ export async function serverFetch(input: string, options?: ExtendedFetchOptions,
 				}
 			}
 
-			const response = await fetch(url.toString(), {
-				// @ts-expect-error - This complained when types were moved to file :/
-				signal: controller.signal,
-				...parsedOptions,
-				redirect: 'manual',
-				headers,
-				...(agent ? { agent } : {}),
-			});
+			// Do not send credentials if the origin changed
+			const useAuth = Boolean(options?.auth && new URL(currentUrl).origin === new URL(input).origin);
+
+			const response = await doFetch(
+				url,
+				{
+					// @ts-expect-error - This complained when types were moved to file :/
+					signal: controller.signal,
+					...parsedOptions,
+					redirect: 'manual',
+					headers,
+					...(agent ? { agent } : {}),
+				},
+				useAuth ? options?.auth : undefined,
+			);
 
 			if (!redirectStatus.has(response.status)) {
 				// node-fetch v2 only closes the socket through the abort signal, so destroying the body alone leaves it open

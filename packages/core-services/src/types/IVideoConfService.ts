@@ -1,4 +1,8 @@
 import type {
+	AtLeast,
+	ExternalVideoConference,
+	IGroupVideoConference,
+	IRegisterUser,
 	IRoom,
 	IStats,
 	IUser,
@@ -59,8 +63,29 @@ export interface IVideoConfService {
 	ringMember(uid: IUser['_id'], callId: VideoConference['_id'], memberId: IUser['_id']): Promise<boolean>;
 	listJoinableCalls(uid: IUser['_id']): Promise<JoinableVideoConference[]>;
 	getChatAccess(uid: IUser['_id'], callId: VideoConference['_id']): Promise<VideoConferenceChatAccess>;
-	shareChatWithMembers(uid: IUser['_id'], callId: VideoConference['_id'], mode: VideoConferenceChatAccessMode): Promise<IRoom['_id']>;
+	/** `users` names people to bring in outright; left out, the members who cannot read the chat are worked out. */
+	shareChatWithMembers(
+		uid: IUser['_id'],
+		callId: VideoConference['_id'],
+		mode: VideoConferenceChatAccessMode,
+		users?: NonNullable<IUser['username']>[],
+	): Promise<IRoom['_id']>;
 
 	renameCall(uid: IUser['_id'], callId: VideoConference['_id'], title: string): Promise<void>;
 	createVoIP(data: InsertionModel<IVoIPVideoConference>): Promise<IVoIPVideoConference['_id'] | undefined>;
+	/** The room a conference created without anybody picking one should hang off, or `null` if none is set. */
+	getRidForExternalConference(): Promise<IRoom['_id'] | null>;
+	makePersistentChatUrlForConference(conferenceId: VideoConference['_id']): Promise<string>;
+	/** The conference a dialled SIP alias stands for, creating it if this is the first person to ask. */
+	initializeOrJoinScheduledConference(sipAlias: string, uid: IUser['_id']): Promise<VideoConference['_id']>;
+	joinCall(
+		call: ExternalVideoConference,
+		user: AtLeast<IUser, '_id' | 'username' | 'name' | 'avatarETag'> | undefined,
+		options: VideoConferenceJoinOptions,
+	): Promise<string>;
+	createEscalatedConference(
+		data: Required<Pick<IGroupVideoConference, 'rid' | 'mediaCallIds'>>,
+		user: IRegisterUser,
+		options: { createDiscussion: boolean },
+	): Promise<IGroupVideoConference | null>;
 }
