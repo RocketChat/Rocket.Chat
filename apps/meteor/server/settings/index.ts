@@ -21,4 +21,11 @@ settingsRegistry.addGroup = use(settingsRegistry.addGroup, async (context, next)
 	return next(...context) as any;
 });
 
-await initializeSettings({ model: Settings, settings });
+/**
+ * Explicit startup lifecycle hook to populate in-memory settings cache from DB.
+ * Calling this explicitly prevents top-level await side-effects during module import.
+ */
+export const initSettingsStorage = async (): Promise<void> => {
+	await initializeSettings({ model: Settings, settings });
+};
+
