@@ -274,6 +274,14 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 		return this.setLicenseV3(convertToV3(newLicense), encryptedLicense, newLicense, isNewLicense);
 	}
 
+	private async decodeLicense(encryptedLicense: string): Promise<ILicenseV3> {
+		await validateFormat(encryptedLicense);
+
+		const decrypted = JSON.parse(await decrypt(encryptedLicense));
+		const license: ILicenseV3 = encryptedLicense.startsWith('RCV3_') ? decrypted : convertToV3(decrypted);
+		return license;
+	}
+
 	private isLicenseDuplicated(encryptedLicense: string): boolean {
 		return Boolean(this._lockedLicense && this._lockedLicense === encryptedLicense);
 	}
@@ -359,10 +367,7 @@ export abstract class LicenseManager extends Emitter<LicenseEvents> {
 
 		let license: ILicenseV3;
 		try {
-			await validateFormat(encryptedLicense);
-
-			const decrypted = JSON.parse(await decrypt(encryptedLicense));
-			license = encryptedLicense.startsWith('RCV3_') ? decrypted : convertToV3(decrypted);
+			license = await this.decodeLicense(encryptedLicense);
 		} catch (err) {
 			logger.error({ msg: 'Invalid raw license provided for validation preview', err });
 			return { valid: false, reasons: [] };
