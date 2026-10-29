@@ -302,10 +302,9 @@ describe('XMPP federation: rooms hosted by Rocket.Chat', () => {
 			assert.ok(statusCodes(notice).includes('307'));
 		});
 
-		// Known defect: ../../docs/specs/hosted-muc.md#d6-an-xmpp-user-listed-when-a-room-is-created-joins-any-room
-		it.skip('refuses JIDs listed when creating a group that is not XMPP-federated (R12, D6)', async () => {
+		it('refuses JIDs listed when creating a group that is not XMPP-federated (R12)', async () => {
 			const attempt = createRoom({ type: 'p', name: `xe2e-plain-${uniqueSuffix()}`, members: [alice.bareJid], config: owner.config });
-			// While D6 stands the group is created, and must not outlive the suite
+			// Should the check let it through, the group must not outlive the suite
 			attempt.then(
 				(res) => deleteRoomOnCleanup(rc, (res.body as { group: IRoom }).group._id),
 				() => undefined,

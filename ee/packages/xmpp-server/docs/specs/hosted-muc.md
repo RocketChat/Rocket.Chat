@@ -98,7 +98,8 @@ history in Rocket.Chat and lets remote users join with nothing but a room addres
 - **R11** A remote JID added as a member, at creation or later by a local user, receives a
   mediated invitation (XEP-0045 §7.8.2) from the room on behalf of the inviter and holds a
   subscription from that moment, which is what admits them under R4.
-- **R12** A JID cannot be added to a room that is not an XMPP hosted room; the API answers
+- **R12** A JID cannot be added to a room that is not an XMPP hosted room, whether listed
+  when the room is created or added later; the API answers
   `error-xmpp-users-in-non-xmpp-rooms`.
 
 **Messages**
@@ -179,17 +180,6 @@ takes the newcomer's messages for reflections of its own. R5's conflict check on
 XMPP joins. Where: `MucRoom.addLocalOccupant`. How to settle the clash is Q3. Test:
 `hosted-muc.spec.ts`, "never leaves an XMPP occupant unaware that a Rocket.Chat member took
 their nick".
-
-### D6 An XMPP user listed when a room is created joins any room
-
-R12 holds for members added to an existing room, not for the member list a room is created
-with: an XMPP user Rocket.Chat already knows becomes a member of a room that is not XMPP
-federated, where nothing reaches them. A JID Rocket.Chat has not seen names no user and is
-silently left out. Where: room creation subscribes its members through
-`createUsersSubscriptions` in `apps/meteor/server/lib/rooms/createRoom.ts`, whose hooks do
-not include the XMPP check, which runs only in `beforeAddUsersToRoom`. Test:
-`hosted-muc.spec.ts`, "refuses JIDs listed when creating a group that is not
-XMPP-federated".
 
 ### D7 Banning an XMPP occupant neither removes them nor keeps them out
 

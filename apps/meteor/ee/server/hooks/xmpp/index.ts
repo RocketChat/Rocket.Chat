@@ -116,6 +116,17 @@ beforeCreateRoomCallback.add(
 	'xmpp-server-before-create-room',
 );
 
+// After the stamping hook, so a hosted room is already recognised as one
+beforeCreateRoomCallback.add(
+	({ room, members }) => {
+		if (!isRoomXMPPHostedMuc(room) && members.some((member) => isBareJid(member))) {
+			throw new ClientSafeError('error-xmpp-users-in-non-xmpp-rooms', 'Cannot add XMPP users to non-XMPP-federated rooms');
+		}
+	},
+	callbacks.priority.HIGH,
+	'xmpp-server-before-create-room-members',
+);
+
 callbacks.add(
 	'afterCreateRoom',
 	async (owner, room) => {
