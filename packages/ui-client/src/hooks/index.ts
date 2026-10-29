@@ -15,6 +15,7 @@ export * from './useGoToDirectMessage';
 export * from './useHasLicenseModule';
 export * from './useIsEnterprise';
 export * from './useLicense';
+export * from './useMergedRefsV2';
 export * from './usePreferenceFeaturePreviewList';
 export * from './useResizeInlineBreakpoint';
 export * from './useRoomRoute';

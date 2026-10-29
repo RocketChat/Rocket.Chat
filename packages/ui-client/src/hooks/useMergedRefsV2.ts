@@ -4,7 +4,7 @@ import { useCallback, useRef } from 'react';
 /**
  * Attaches a value to a ref, the way React would, and returns what detaches it again.
  */
-export const setRef = <T>(ref: Ref<T> | undefined, refValue: T): (() => void) => {
+const setRef = <T>(ref: Ref<T> | undefined, refValue: T): (() => void) => {
 	if (typeof ref === 'function') {
 		const cleanup = ref(refValue);
 		return typeof cleanup === 'function' ? cleanup : () => ref(null);

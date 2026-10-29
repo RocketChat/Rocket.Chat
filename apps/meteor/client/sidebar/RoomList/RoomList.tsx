@@ -1,5 +1,5 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useShortTimeAgo } from '@rocket.chat/ui-client';
+import { useMergedRefsV2, useShortTimeAgo } from '@rocket.chat/ui-client';
 import { useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
 import { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -10,7 +10,6 @@ import RoomListCollapser from './RoomListCollapser';
 import RoomListRow from './RoomListRow';
 import RoomListRowWrapper from './RoomListRowWrapper';
 import RoomListWrapper from './RoomListWrapper';
-import { useMergedRefsV2 } from '../../hooks/useMergedRefsV2';
 import { useMoveCategoryPosition } from '../categories/hooks/useMoveCategoryPosition';
 import SidebarVirtualList from '../components/SidebarVirtualList';
 import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../hooks/useCategoryList';
