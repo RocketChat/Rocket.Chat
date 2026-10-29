@@ -386,6 +386,7 @@ const generateIconButton = () => {
 		overflow: 'hidden',
 		textOverflow: 'ellipsis',
 		...font('p2m'),
+		lineHeight: 0,
 		borderWidth: toCSSValue('--rcx-button-border-width', '1px'),
 		borderStyle: 'solid',
 		borderRadius: toCSSValue('--rcx-button-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!)),

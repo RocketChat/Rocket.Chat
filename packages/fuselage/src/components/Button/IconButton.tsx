@@ -591,7 +591,7 @@ const frame = {
 	textOverflow: 'ellipsis',
 	fontSize: '0.875rem',
 	fontWeight: 500,
-	lineHeight: '1.25rem',
+	lineHeight: 0,
 	letterSpacing: '0rem',
 	borderWidth: 'var(--rcx-button-border-width, 1px)',
 	borderStyle: 'solid',
