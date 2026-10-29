@@ -9,6 +9,8 @@ import { resolveThemeMode, subscribeToSystemColorScheme } from './theme';
 
 import 'normalize.css/normalize.css';
 import '@rocket.chat/icons/dist/rocketchat.css';
+// Stories render on the same reset as the web client, which every component is styled against
+import '../../../apps/meteor/client/styles/imports/general/reset.css';
 
 export default {
 	parameters: {
