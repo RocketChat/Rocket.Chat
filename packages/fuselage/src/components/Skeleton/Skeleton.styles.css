@@ -1,0 +1,25 @@
+.rcx-skeleton {
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+
+	animation: rcx-skeleton__animation 1s linear 0s infinite running;
+}
+
+.rcx-skeleton--text:empty::before {
+	content: '\00a0';
+}
+
+@keyframes rcx-skeleton__animation {
+	0% {
+		background-position: 0 0;
+	}
+
+	100% {
+		background-position: 100vw 0;
+	}
+}
+
+/* The frame sets `display`, which would otherwise beat the `hidden` attribute */
+.rcx-skeleton[hidden] {
+	display: none;
+}
