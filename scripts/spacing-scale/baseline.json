@@ -196,7 +196,7 @@
 	"apps/meteor/client/views/admin/workspace/VersionCard/modals/RegisterWorkspaceModal.tsx": 1,
 	"apps/meteor/client/views/admin/workspace/VersionCard/modals/RegisterWorkspaceSetupModal/RegisterWorkspaceSetupStepOneModal.tsx": 2,
 	"apps/meteor/client/views/admin/workspace/VersionCard/modals/RegisterWorkspaceSetupModal/RegisterWorkspaceSetupStepTwoModal.tsx": 2,
-	"apps/meteor/client/views/admin/workspace/WorkspacePage.tsx": 2,
+	"apps/meteor/client/views/admin/workspace/WorkspacePage.tsx": 1,
 	"apps/meteor/client/views/apps/GameCenterContainer.tsx": 1,
 	"apps/meteor/client/views/apps/GameCenterInvitePlayersModal.tsx": 2,
 	"apps/meteor/client/views/audit/AuditPage.tsx": 2,
