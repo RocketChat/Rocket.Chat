@@ -28,6 +28,7 @@ export * from './InfoPanel';
 export * from './GenericTable';
 export * from './SidebarToggler';
 export * from './MarkdownTextContext';
+export * from './Message';
 export * from './MessageList';
 export * from './UserCard';
 export * from './UserInfo';
