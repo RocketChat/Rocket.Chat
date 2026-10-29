@@ -28,6 +28,9 @@ export const useActivityFilterLabel = (hours: number | undefined): string => {
 	return preset ? t(preset.label) : windowLabel;
 };
 
+/** The menu item id of a filter, `all` when there is none. */
+export const getActivityFilterItemId = (hours: number | undefined): string => `activity-filter-${hours ?? 'all'}`;
+
 /** One menu item per preset for a group, the current one checked. */
 export const useActivityFilterItems = (
 	groupId: string,
@@ -40,7 +43,7 @@ export const useActivityFilterItems = (
 	return useMemo(
 		() =>
 			ACTIVITY_FILTER_PRESETS.map(({ hours, label }) => ({
-				id: `activity-filter-${hours ?? 'all'}`,
+				id: getActivityFilterItemId(hours),
 				content: t(label),
 				onClick: () => {
 					onSelect?.();

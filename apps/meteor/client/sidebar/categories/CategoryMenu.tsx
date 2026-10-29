@@ -1,14 +1,14 @@
 import type { ISidebarCategory } from '@rocket.chat/core-typings';
-import { Box, Menu, MenuItem, MenuItemContent, MenuItemIcon, MenuSection, MenuSubmenuTrigger, ToggleSwitch } from '@rocket.chat/fuselage';
+import { Menu, MenuItem, MenuSection, MenuSubmenuTrigger, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { GenericMenuItem, useHandleMenuAction } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
-import { memo } from 'react';
+import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { isActivityFilterable } from './hooks/useActivityFilter';
-import { useActivityFilterItems, useActivityFilterLabel } from './hooks/useActivityFilterItems';
+import { getActivityFilterItemId, useActivityFilterItems } from './hooks/useActivityFilterItems';
 import { useCategoryModals } from './hooks/useCategoryModals';
 import { useMoveRoomCategory } from './hooks/useMoveRoomCategory';
 import { useToggleUnreads } from './hooks/useToggleUnreads';
@@ -39,7 +39,7 @@ const CategoryMenu = ({
 }: CategoryMenuProps) => {
 	const { t } = useTranslation();
 	const [isOpen, toggleOpen] = useToggle(false);
-	const close = () => toggleOpen(false);
+	const close = useCallback(() => toggleOpen(false), [toggleOpen]);
 
 	const { openManage, openDelete } = useCategoryModals();
 	const moveRoomCategory = useMoveRoomCategory();
@@ -128,8 +128,8 @@ const CategoryMenu = ({
 		},
 	];
 
-	const activityFilterLabel = useActivityFilterLabel(activityFilterHours);
-	const filterItems = useActivityFilterItems(category?._id ?? groupKey, activityFilterHours, close);
+	// `close` is stable, so the filter items are rebuilt only when the group or its filter changes.
+	const filterItems = useActivityFilterItems(groupKey, activityFilterHours, close);
 	const activityFilterItems = isActivityFilterable(groupKey) ? filterItems : [];
 
 	const allItems = [...orderItems, ...(category ? manageItems : []), ...createItems, ...activityFilterItems, ...unreadItems];
@@ -177,19 +177,18 @@ const CategoryMenu = ({
 								</MenuItem>
 							))}
 						{activityFilterItems.length > 0 && (
-							<MenuSubmenuTrigger key='activity-filter' textValue={t('Filter')}>
-								<MenuItem aria-label={`${t('Filter')}: ${activityFilterLabel}`}>
-									<MenuItemIcon name='clock' />
-									<MenuItemContent>
-										{t('Filter')}
-										<Box fontScale='c1' color='hint'>
-											{activityFilterLabel}
-										</Box>
-									</MenuItemContent>
+							<MenuSubmenuTrigger
+								key='activity-filter'
+								textValue={t('Filter')}
+								selectionMode='single'
+								selectedKeys={[getActivityFilterItemId(activityFilterHours)]}
+							>
+								<MenuItem aria-label={t('Filter')}>
+									<GenericMenuItem id='activity-filter' icon='clock' content={t('Filter')} />
 								</MenuItem>
 								<MenuSection items={activityFilterItems}>
 									{(item) => (
-										<MenuItem key={item.id}>
+										<MenuItem key={item.id} textValue={typeof item.content === 'string' ? item.content : undefined}>
 											<GenericMenuItem {...item} />
 										</MenuItem>
 									)}
