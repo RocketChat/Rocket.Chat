@@ -3,7 +3,6 @@ import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useMemo, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-const style = { width: '100%' };
 
 const AgentOverview = ({
 	type,
@@ -46,7 +45,7 @@ const AgentOverview = ({
 	}, [start, end, loadData, params]);
 
 	return (
-		<Table style={style} fixed>
+		<Table fixed>
 			<TableHead>
 				<TableRow>
 					{displayData.head?.map(({ name }, i) => (
