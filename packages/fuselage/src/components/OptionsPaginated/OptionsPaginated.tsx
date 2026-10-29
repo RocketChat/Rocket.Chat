@@ -1,17 +1,24 @@
 import { useStableCallback, useDebouncedState } from '@rocket.chat/fuselage-hooks';
-import type { ComponentType, ElementType, MouseEvent, ReactNode, RefAttributes } from 'react';
+import type { AriaRole, ComponentType, CSSProperties, DOMAttributes, ElementType, MouseEvent, ReactNode, Ref } from 'react';
 import { memo } from 'react';
 import { Virtuoso } from 'react-virtuoso';
 
+import { ariaAndDataAttributes } from '../../helpers/ariaAndDataAttributes';
 import { prevent } from '../../helpers/prevent';
-import type { ElementProps } from '../../types/ElementProps';
+import { size as sizeToken } from '../../styleTokens';
+import type { CommonAttributes } from '../../types/ElementAttributes';
 import { AnimatedVisibility } from '../AnimatedVisibility';
-import { Box } from '../Box';
 import { CheckOption, Option } from '../Option';
 import { PopoverSurface } from '../PopoverSurface';
 
-export type OptionsPaginatedProps = Omit<ElementProps<HTMLDivElement>, 'ref' | 'onSelect'> &
-	RefAttributes<Element> & {
+export type OptionsPaginatedProps = CommonAttributes &
+	Pick<DOMAttributes<HTMLDivElement>, 'onMouseDown'> & {
+		ref?: Ref<HTMLDivElement>;
+		className?: string;
+		/** `listbox`: the list has no element of its own around the options. */
+		role?: AriaRole;
+		/** The width of the list, as the control it opens from measures it. */
+		width?: number | string;
 		multiple?: boolean;
 		options: { value: string | number; label: string; selected?: boolean }[];
 		cursor: number;
@@ -48,6 +55,9 @@ export function OptionsPaginated({
 	renderItem: OptionComponent = Option,
 	onSelect,
 	endReached,
+	width,
+	className,
+	onMouseDown,
 	...props
 }: OptionsPaginatedProps) {
 	const OptionsComponentWithData = ({ index, data }: { index: number; data: OptionsPaginatedProps['options'][0] }) => {
@@ -72,7 +82,15 @@ export function OptionsPaginated({
 	};
 
 	return (
-		<Box rcx-options {...props} ref={ref}>
+		<div
+			{...ariaAndDataAttributes(props)}
+			ref={ref}
+			role={props.role}
+			onMouseDown={onMouseDown}
+			className={['rcx-box rcx-box--full rcx-options', className].filter(Boolean).join(' ')}
+			// The measured width travels as a custom property, which the stylesheet reads
+			style={{ '--rcx-options-width': sizeToken(width) } as CSSProperties}
+		>
 			<PopoverSurface>
 				{!options.length ? (
 					<EmptyComponent />
@@ -88,7 +106,7 @@ export function OptionsPaginated({
 					/>
 				)}
 			</PopoverSurface>
-		</Box>
+		</div>
 	);
 }
 
