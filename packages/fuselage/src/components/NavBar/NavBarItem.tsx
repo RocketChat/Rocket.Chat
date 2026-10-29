@@ -1,4 +1,4 @@
-import type { HTMLAttributes, RefAttributes } from 'react';
+import type { ReactNode } from 'react';
 
 import { appendClassName } from '../../helpers/appendClassName';
 import { cx } from '../../helpers/composeClassNames';
@@ -6,7 +6,10 @@ import { patchChildren } from '../../helpers/patchChildren';
 import { IconButton } from '../Button';
 import type { IconButtonProps } from '../Button/IconButton';
 
-export type NavbarItemProps = HTMLAttributes<HTMLElement> & Partial<Omit<IconButtonProps, 'ref'>> & RefAttributes<HTMLElement>;
+export type NavbarItemProps = {
+	/** Without an icon, the item takes these props onto its child instead of rendering an `IconButton`. */
+	children?: ReactNode;
+} & Partial<IconButtonProps>;
 
 function NavBarItem({ children, icon, className, ...props }: NavbarItemProps) {
 	return (
