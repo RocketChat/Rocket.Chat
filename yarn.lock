@@ -11943,6 +11943,7 @@ __metadata:
   resolution: "@rocket.chat/ui-client@workspace:packages/ui-client"
   dependencies:
     "@react-aria/dialog": "npm:^3.5.21"
+    "@react-aria/focus": "npm:^3.21.1"
     "@react-aria/toolbar": "npm:^3.0.0-nightly.5042"
     "@rocket.chat/core-typings": "workspace:~"
     "@rocket.chat/css-in-js": "workspace:~"
@@ -11953,6 +11954,8 @@ __metadata:
     "@rocket.chat/icons": "workspace:~"
     "@rocket.chat/jest-presets": "workspace:~"
     "@rocket.chat/logo": "workspace:~"
+    "@rocket.chat/message-parser": "workspace:^"
+    "@rocket.chat/message-types": "workspace:~"
     "@rocket.chat/mock-providers": "workspace:^"
     "@rocket.chat/models": "workspace:~"
     "@rocket.chat/storybook-config": "workspace:~"
@@ -11961,37 +11964,51 @@ __metadata:
     "@rocket.chat/ui-avatar": "workspace:~"
     "@rocket.chat/ui-contexts": "workspace:~"
     "@storybook/react": "npm:~9.1.21"
+    "@storybook/test-runner": "npm:^0.22.1"
+    "@tanstack/react-query": "npm:~5.65.1"
     "@testing-library/dom": "npm:~10.4.2"
     "@testing-library/react": "npm:~16.3.3"
+    "@testing-library/user-event": "npm:~14.6.7"
+    "@types/jest-axe": "npm:~3.5.9"
     "@types/react": "npm:~19.2.18"
     "@types/react-dom": "npm:~19.2.7"
     date-fns: "npm:~4.1.0"
     dompurify: "npm:~3.4.17"
     i18next: "npm:~26.4.2"
     jest: "npm:~30.5.2"
+    jest-axe: "npm:~11.0.0"
     overlayscrollbars: "npm:~2.11.5"
     overlayscrollbars-react: "npm:^0.5.6"
     re-resizable: "npm:^6.10.4"
     react: "npm:~19.2.8"
     react-dom: "npm:~19.2.8"
+    react-error-boundary: "npm:~6.1.6"
     react-hook-form: "npm:~7.54.2"
     react-i18next: "npm:~17.0.16"
     react-virtuoso: "npm:~4.18.16"
     storybook: "npm:~9.1.21"
     typescript: "npm:~7.0.2"
+    virtua: "npm:^0.49.3"
   peerDependencies:
+    "@react-aria/focus": "*"
     "@react-aria/toolbar": "*"
+    "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/css-in-js": "workspace:^"
     "@rocket.chat/fuselage": "*"
     "@rocket.chat/fuselage-hooks": "*"
     "@rocket.chat/icons": "*"
+    "@rocket.chat/message-parser": "workspace:^"
+    "@rocket.chat/message-types": "workspace:^"
     "@rocket.chat/ui-avatar": "workspace:^"
     "@rocket.chat/ui-contexts": "workspace:^"
+    "@tanstack/react-query": "*"
     overlayscrollbars: "*"
     overlayscrollbars-react: "*"
     re-resizable: "*"
     react: "*"
+    react-error-boundary: "*"
     react-i18next: "*"
+    virtua: "*"
   languageName: unknown
   linkType: soft
 
@@ -14211,7 +14228,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/react@npm:9.1.21, @storybook/react@npm:~9.1.21":
+"@storybook/react@npm:9.1.21, @storybook/react@npm:^9.1.21, @storybook/react@npm:~9.1.21":
   version: 9.1.21
   resolution: "@storybook/react@npm:9.1.21"
   dependencies:
@@ -36848,7 +36865,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"storybook@npm:~9.1.21":
+"storybook@npm:^9.1.21, storybook@npm:~9.1.21":
   version: 9.1.21
   resolution: "storybook@npm:9.1.21"
   dependencies:
