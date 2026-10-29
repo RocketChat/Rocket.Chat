@@ -1,5 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
-import { Message, MessageLeftContainer, MessageContainer, CheckBox } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Message, MessageLeftContainer, MessageContainer, CheckBox, useStyle } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { MessageAvatar } from '@rocket.chat/ui-avatar';
 import { useUserId, useUserCard } from '@rocket.chat/ui-contexts';
@@ -62,6 +63,11 @@ const getAriaLabelledBy = ({
 	return labels.join(' ');
 };
 
+// The avatar's container takes the class; the image inherits the cursor
+const pointer = css`
+	cursor: pointer;
+`;
+
 const RoomMessage = ({
 	message,
 	showUserAvatar,
@@ -78,6 +84,7 @@ const RoomMessage = ({
 	const uid = useUserId();
 	const editing = useIsMessageHighlight(message._id);
 	const [displayIgnoredMessage, toggleDisplayIgnoredMessage] = useToggle(false);
+	const pointerClassName = useStyle(pointer);
 	const ignored = (ignoredUser || message.ignored) && !displayIgnoredMessage;
 	const { openUserCard, openUserInfo } = useUserCard();
 
@@ -135,7 +142,7 @@ const RoomMessage = ({
 							e.stopPropagation();
 							openUserInfo(message.u.username);
 						}}
-						style={{ cursor: 'pointer' }}
+						className={pointerClassName}
 						// Redundant pointer-only shortcut for the accessible name button next to it
 						aria-hidden='true'
 					/>
