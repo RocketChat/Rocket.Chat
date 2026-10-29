@@ -47,7 +47,7 @@ const CompactFilterOptions = ({
 		},
 	];
 
-	return <GenericMenu title={t('Options')} large items={items} {...props} />;
+	return <GenericMenu title={t('Options')} size='large' items={items} {...props} />;
 };
 
 export default CompactFilterOptions;

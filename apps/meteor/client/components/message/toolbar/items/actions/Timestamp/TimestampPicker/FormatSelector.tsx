@@ -1,5 +1,6 @@
 import { Box, Field, FieldLabel, FieldRow, Select } from '@rocket.chat/fuselage';
 import type { Key } from 'react';
+import { useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { TIMESTAMP_FORMATS } from '../../../../../../../lib/utils/timestamp/formats';
@@ -12,6 +13,7 @@ export type FormatSelectorProps = {
 
 const FormatSelector = ({ value, onChange }: FormatSelectorProps) => {
 	const { t } = useTranslation();
+	const formatField = useId();
 
 	const handleFormatChange = (key: Key): void => {
 		onChange(key as TimestampFormat);
@@ -24,9 +26,9 @@ const FormatSelector = ({ value, onChange }: FormatSelectorProps) => {
 	return (
 		<Box marginBlock='x16'>
 			<Field>
-				<FieldLabel>{t('Format')}</FieldLabel>
+				<FieldLabel htmlFor={formatField}>{t('Format')}</FieldLabel>
 				<FieldRow>
-					<Select value={value} onChange={handleFormatChange} options={formatOptions} />
+					<Select id={formatField} value={value} onChange={handleFormatChange} options={formatOptions} />
 				</FieldRow>
 			</Field>
 		</Box>

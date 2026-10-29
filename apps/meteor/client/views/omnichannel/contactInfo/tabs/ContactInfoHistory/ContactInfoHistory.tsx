@@ -1,6 +1,6 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { OmnichannelSourceType } from '@rocket.chat/core-typings';
-import { Box, Throbber, States, StatesIcon, StatesTitle, Select } from '@rocket.chat/fuselage';
+import { Box, Select, States, StatesIcon, StatesTitle, Text, Throbber } from '@rocket.chat/fuselage';
 import { useLocalStorage } from '@rocket.chat/fuselage-hooks';
 import { VirtualizedScrollbars, ContextualbarContent, ContextualbarEmptyContent } from '@rocket.chat/ui-client';
 import { useEndpoint, useSetModal } from '@rocket.chat/ui-contexts';
@@ -82,6 +82,7 @@ const ContactInfoHistory = ({ contact, setChatId }: ContactInfoHistoryProps) => 
 			>
 				<Box display='flex' flexDirection='row' flexGrow={1}>
 					<Select
+						aria-label={t('Filter')}
 						value={type}
 						onChange={handleChangeFilter}
 						placeholder={t('Filter')}
@@ -107,9 +108,9 @@ const ContactInfoHistory = ({ contact, setChatId }: ContactInfoHistoryProps) => 
 			{!isError && data?.history && data.history.length > 0 && (
 				<>
 					<Box paddingInline={24} paddingBlock={12}>
-						<Box is='span' color='hint' fontScale='p2'>
+						<Text is='span' color='hint' fontScale='p2'>
 							{t('Showing_current_of_total', { current: data?.history.length, total: data?.total })}
-						</Box>
+						</Text>
 					</Box>
 					<Box role='list' height='100%' overflow='hidden' flexShrink={1} ref={historyListRef}>
 						<VirtualizedScrollbars>

@@ -81,6 +81,7 @@ const RoomsPage = () => {
 					/>
 					<Box maxWidth={192}>
 						<Select
+							aria-label={t('Filter')}
 							options={[
 								['all', t('All'), true],
 								['roomName', t('Rooms'), false],

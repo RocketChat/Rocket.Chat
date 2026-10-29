@@ -881,7 +881,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -968,7 +969,7 @@ describe('[Users]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 
@@ -987,7 +988,7 @@ describe('[Users]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 
@@ -1060,7 +1061,7 @@ describe('[Users]', () => {
 				.expect(400);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'invalid-params');
+			expect(res.body).to.have.property('errorType', 'error-invalid-params');
 		});
 
 		it('should return an error when trying register new user with an existing username', async () => {
@@ -1917,7 +1918,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -1927,7 +1929,7 @@ describe('[Users]', () => {
 			it('should return 401 unauthorized', async () => {
 				const res = await request.get(api('users.presence')).expect('Content-Type', 'application/json').expect(401);
 
-				expect(res.body).to.have.property('message');
+				expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 			});
 		});
 		describe('Logged in:', () => {
@@ -2515,7 +2517,7 @@ describe('[Users]', () => {
 						.expect(403)
 						.expect((res) => {
 							expect(res.body).to.have.property('success', false);
-							expect(res.body).to.have.property('error', 'unauthorized');
+							expect(res.body).to.have.property('error', 'forbidden');
 						});
 				});
 			});
@@ -2527,7 +2529,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -2645,7 +2648,8 @@ describe('[Users]', () => {
 					.expect('Content-Type', 'application/json')
 					.expect(401)
 					.expect((res: Response) => {
-						expect(res.body).to.have.property('status', 'error');
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 					});
 			});
 		});
@@ -2741,7 +2745,8 @@ describe('[Users]', () => {
 					.expect('Content-Type', 'application/json')
 					.expect(401)
 					.expect((res: Response) => {
-						expect(res.body).to.have.property('status', 'error');
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 					});
 			});
 		});
@@ -2961,7 +2966,7 @@ describe('[Users]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 
@@ -2979,7 +2984,7 @@ describe('[Users]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 
@@ -3084,7 +3089,7 @@ describe('[Users]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					expect(res.body).to.have.property('error', 'must NOT have fewer than 1 characters');
 				});
 		});
@@ -3103,7 +3108,7 @@ describe('[Users]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					expect(res.body).to.have.property('error', 'must NOT have additional properties');
 				});
 		});
@@ -3791,7 +3796,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -3963,7 +3969,7 @@ describe('[Users]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 
@@ -3978,7 +3984,7 @@ describe('[Users]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 
@@ -4444,7 +4450,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -4594,7 +4601,7 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 
@@ -4604,7 +4611,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -4645,7 +4653,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -4696,7 +4705,7 @@ describe('[Users]', () => {
 			const res = await request.post(api('users.forgotPassword')).send({}).expect('Content-Type', 'application/json').expect(400);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'invalid-params');
+			expect(res.body).to.have.property('errorType', 'error-invalid-params');
 			expect(res.body).to.have.property('error', "must have required property 'email'");
 		});
 	});
@@ -4768,8 +4777,8 @@ describe('[Users]', () => {
 		it('should return 401 when not authenticated', async () => {
 			const res = await request.get(api('users.getUsernameSuggestion')).expect('Content-Type', 'application/json').expect(401);
 
-			expect(res.body).to.have.property('status', 'error');
-			expect(res.body).to.have.property('message');
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 		});
 	});
 
@@ -4787,7 +4796,7 @@ describe('[Users]', () => {
 		it('should return 401 unauthorized when user is not logged in', async () => {
 			const res = await request.get(api('users.checkUsernameAvailability')).expect('Content-Type', 'application/json').expect(401);
 
-			expect(res.body).to.have.property('message');
+			expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 		});
 
 		it('should return true if the username is the same user username set', async () => {
@@ -4967,7 +4976,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -5154,7 +5164,8 @@ describe('[Users]', () => {
 						.expect('Content-Type', 'application/json')
 						.expect(401)
 						.expect((res: Response) => {
-							expect(res.body).to.have.property('status', 'error');
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 						});
 				});
 			});
@@ -5192,7 +5203,8 @@ describe('[Users]', () => {
 						.expect('Content-Type', 'application/json')
 						.expect(401)
 						.expect((res: Response) => {
-							expect(res.body).to.have.property('status', 'error');
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 						});
 				});
 
@@ -5241,7 +5253,8 @@ describe('[Users]', () => {
 						.expect('Content-Type', 'application/json')
 						.expect(401)
 						.expect((res: Response) => {
-							expect(res.body).to.have.property('status', 'error');
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 						});
 				});
 
@@ -5301,7 +5314,8 @@ describe('[Users]', () => {
 						.expect('Content-Type', 'application/json')
 						.expect(401)
 						.expect((res: Response) => {
-							expect(res.body).to.have.property('status', 'error');
+							expect(res.body).to.have.property('success', false);
+							expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 						});
 				});
 
@@ -5856,7 +5870,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -5979,7 +5994,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -6030,7 +6046,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -6205,7 +6222,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -6237,7 +6255,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -6300,7 +6319,7 @@ describe('[Users]', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('unauthorized');
+			expect(res.body.error).to.be.equal('forbidden');
 		});
 		it('should update another user status succesfully', async () => {
 			await updatePermission('edit-other-user-info', ['admin']);
@@ -6332,7 +6351,7 @@ describe('[Users]', () => {
 				.expect(400);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.errorType).to.be.equal('invalid-params');
+			expect(res.body.errorType).to.be.equal('error-invalid-params');
 			expect(res.body.error).to.include('must be equal to one of the allowed values');
 		});
 		it('should return an error when user changes status to offline and "Accounts_AllowInvisibleStatusOption" is disabled', async () => {
@@ -6389,7 +6408,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -6513,7 +6533,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -6632,7 +6653,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -6738,7 +6760,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -6973,7 +6996,7 @@ describe('[Users]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					expect(res.body).to.have.property('error', "must have required property 'email'");
 				});
 		});
@@ -7000,7 +7023,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -7012,7 +7036,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -7036,7 +7061,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -7060,7 +7086,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -7084,7 +7111,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});
@@ -7096,7 +7124,8 @@ describe('[Users]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res: Response) => {
-					expect(res.body).to.have.property('status', 'error');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 	});

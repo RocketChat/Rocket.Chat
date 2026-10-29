@@ -1,5 +1,5 @@
 import type { IMessageSearchProvider } from '@rocket.chat/core-typings';
-import { Box, Field, FieldLabel, FieldHint, Icon, TextInput, ToggleSwitch, Callout } from '@rocket.chat/fuselage';
+import { Box, Callout, Field, FieldHint, FieldLabel, Icon, Text, TextInput, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useDebouncedCallback, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import DOMPurify from 'dompurify';
 import { useEffect, useId } from 'react';
@@ -76,7 +76,7 @@ const MessageSearchForm = ({ provider, onSearch, searchListId, isSuccess, localS
 			</Box>
 			{room.encrypted && !localSearch && (
 				<Callout type='warning' icon='circle-exclamation'>
-					<Box fontScale='p2b'>{t('Encrypted_RoomType', { roomType: getRoomTypeTranslation(room).toLowerCase() })}</Box>
+					<Text fontScale='p2b'>{t('Encrypted_RoomType', { roomType: getRoomTypeTranslation(room).toLowerCase() })}</Text>
 					{t('Encrypted_content_cannot_be_searched')}
 				</Callout>
 			)}

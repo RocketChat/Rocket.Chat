@@ -1113,6 +1113,8 @@ e2e.on('E2E_ROOM_READY', (rid: string) => {
 	});
 }
 
+window.__rocketChatE2E = e2e;
+
 getDdpSdk().account.onLogout(() => {
 	void e2e.stopClient();
 });

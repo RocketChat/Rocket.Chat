@@ -35,7 +35,7 @@
 		"prettier": "~3.9.9"
 	},
 	"devDependencies": {
-		"storybook": "^9.1.20",
+		"storybook": "~9.1.21",
 		"typescript": "~5.9.3"
 	},
 	"volta": {

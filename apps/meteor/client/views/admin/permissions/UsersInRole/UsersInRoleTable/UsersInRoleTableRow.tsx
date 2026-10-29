@@ -1,5 +1,5 @@
 import type { IUserInRole, Serialized } from '@rocket.chat/core-typings';
-import { Box, IconButton } from '@rocket.chat/fuselage';
+import { Box, IconButton, Text } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import { GenericTableRow, GenericTableCell } from '@rocket.chat/ui-client';
@@ -28,9 +28,9 @@ const UsersInRoleTableRow = ({ user, onRemove }: UsersInRoleTableRowProps) => {
 				<Box display='flex' alignItems='center'>
 					<UserAvatar size='x40' username={username ?? ''} etag={avatarETag} />
 					<Box display='flex' withTruncatedText marginInline={8}>
-						<Box fontScale='p2m' withTruncatedText color='default'>
+						<Text fontScale='p2m' truncate color='default'>
 							{name || username}
-						</Box>
+						</Text>
 						{name && (
 							<Box marginInlineStart={4} fontScale='p2' color='hint' withTruncatedText>
 								{`@${username}`}
@@ -41,7 +41,7 @@ const UsersInRoleTableRow = ({ user, onRemove }: UsersInRoleTableRowProps) => {
 			</GenericTableCell>
 			<GenericTableCell truncate>{email}</GenericTableCell>
 			<GenericTableCell>
-				<IconButton small icon='trash' title={t('Remove')} danger onClick={handleRemove} />
+				<IconButton size='small' icon='trash' title={t('Remove')} variant='danger' onClick={handleRemove} />
 			</GenericTableCell>
 		</GenericTableRow>
 	);

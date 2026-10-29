@@ -102,10 +102,6 @@ API.v1.addRoute(
 
 API.v1.addRoute('livechat/visitor/:token', {
 	async get() {
-		check(this.urlParams, {
-			token: String,
-		});
-
 		const visitor = await VisitorsRaw.getVisitorByToken(this.urlParams.token, {});
 
 		if (!visitor) {
@@ -115,10 +111,6 @@ API.v1.addRoute('livechat/visitor/:token', {
 		return API.v1.success({ visitor });
 	},
 	async delete() {
-		check(this.urlParams, {
-			token: String,
-		});
-
 		const visitor = await VisitorsRaw.getVisitorByToken(this.urlParams.token, {});
 		if (!visitor) {
 			throw new ClientSafeError('invalid-token');

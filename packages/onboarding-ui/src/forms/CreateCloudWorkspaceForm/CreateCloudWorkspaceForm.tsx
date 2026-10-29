@@ -17,6 +17,7 @@ import {
 } from '@rocket.chat/fuselage';
 import { Form, FormFooter, FormHeader, FormTitle } from '@rocket.chat/layout';
 import type { FocusEvent } from 'react';
+import { useId } from 'react';
 import type { FieldPathValue, SubmitHandler, Validate } from 'react-hook-form';
 import { useForm, Controller } from 'react-hook-form';
 import { useTranslation, Trans } from 'react-i18next';
@@ -56,6 +57,8 @@ export const CreateCloudWorkspaceForm = ({
 	validateEmail,
 }: CreateCloudWorkspaceFormProps) => {
 	const { t } = useTranslation();
+	const serverRegionField = useId();
+	const languageField = useId();
 
 	const {
 		register,
@@ -133,7 +136,7 @@ export const CreateCloudWorkspaceForm = ({
 					<Grid>
 						<Grid.Item>
 							<Field>
-								<FieldLabel>
+								<FieldLabel htmlFor={serverRegionField}>
 									<Box display='inline' marginInlineEnd={8}>
 										{t('form.createCloudWorkspace.fields.serverRegionlabel')}
 									</Box>
@@ -148,6 +151,7 @@ export const CreateCloudWorkspaceForm = ({
 										render={({ field }) => (
 											<Select
 												{...field}
+												id={serverRegionField}
 												options={serverRegionOptions}
 												placeholder={t('form.createCloudWorkspace.fields.serverRegionlabel')}
 											/>
@@ -159,7 +163,7 @@ export const CreateCloudWorkspaceForm = ({
 
 						<Grid.Item>
 							<Field>
-								<FieldLabel>
+								<FieldLabel htmlFor={languageField}>
 									<Box display='inline' marginInlineEnd={8}>
 										{t('form.createCloudWorkspace.fields.languagelabel')}
 									</Box>
@@ -172,7 +176,12 @@ export const CreateCloudWorkspaceForm = ({
 										rules={{ required: true }}
 										defaultValue={defaultValues?.language}
 										render={({ field }) => (
-											<Select {...field} options={languageOptions} placeholder={t('form.createCloudWorkspace.fields.languagelabel')} />
+											<Select
+												{...field}
+												id={languageField}
+												options={languageOptions}
+												placeholder={t('form.createCloudWorkspace.fields.languagelabel')}
+											/>
 										)}
 									/>
 								</FieldRow>

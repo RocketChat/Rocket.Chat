@@ -20,14 +20,12 @@ const ufsFilterMock = proxyquire.noCallThru().load('./ufs-filter', {
 	'meteor/meteor': {},
 	'meteor/check': {},
 	'meteor/mongo': {},
-	'meteor/npm-mongo': {},
 });
 
 const { UploadFS } = proxyquire.noCallThru().load('./ufs', {
 	'meteor/meteor': {},
 	'meteor/check': {},
 	'meteor/mongo': {},
-	'meteor/npm-mongo': {},
 	'./ufs-filter': ufsFilterMock,
 	'./ufs-store': {
 		Store: Object,
@@ -54,7 +52,6 @@ const ufsStoreMockRaw = proxyquire.noCallThru().load('./ufs-store', {
 	'meteor/meteor': {},
 	'meteor/check': {},
 	'meteor/mongo': {},
-	'meteor/npm-mongo': {},
 	'./ufs': ufsMockModule,
 	'./ufs-filter': ufsFilterMock,
 	'./index': ufsIndexMock,
@@ -66,7 +63,6 @@ const localStoreProxy = proxyquire.noCallThru().load('./ufs-local', {
 	'meteor/meteor': {},
 	'meteor/check': {},
 	'meteor/mongo': {},
-	'meteor/npm-mongo': {},
 	'./ufs': ufsMock,
 	'./ufs-store': ufsStoreMock,
 	'./index': ufsIndexMock,

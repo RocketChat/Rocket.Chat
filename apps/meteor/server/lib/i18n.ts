@@ -95,4 +95,22 @@ void i18n.init({
 	),
 });
 
+const languageResourceJSONs = new Map<string, string>();
+
+/** A supported language's translation file, serialized as JSON for clients; `undefined` for an unsupported language. */
+export function getLanguageResourceJSON(lng: string): string | undefined {
+	if (!languages.includes(lng)) {
+		return undefined;
+	}
+
+	let json = languageResourceJSONs.get(lng);
+	if (json === undefined) {
+		// eslint-disable-next-line import-x/no-dynamic-require
+		json = JSON.stringify(require(`@rocket.chat/i18n/dist/resources/${lng}.i18n.json`));
+		languageResourceJSONs.set(lng, json);
+	}
+
+	return json;
+}
+
 export { i18n };

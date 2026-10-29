@@ -95,7 +95,7 @@ const RealTimeComposer = ({ source, placeholder }: RealTimeComposerProps) => (
 				))}
 			</MessageComposerToolbarActions>
 			<MessageComposerToolbarSubmit>
-				<MessageComposerAction aria-label='Send' icon='send' disabled={source === ''} secondary={source !== ''} info={source !== ''} />
+				<MessageComposerAction aria-label='Send' icon='send' disabled={source === ''} variant={source !== '' ? 'primary' : undefined} />
 			</MessageComposerToolbarSubmit>
 		</MessageComposerToolbar>
 	</MessageComposer>

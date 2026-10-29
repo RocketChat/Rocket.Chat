@@ -190,7 +190,7 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 					pressed={self.muted}
 					aria-pressed={self.muted}
 					dangerWhenPressed
-					large
+					size='large'
 					onToggle={toggleMic}
 				/>
 			</SplitButton>
@@ -204,7 +204,7 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 					// Pressed as its label reads: "Camera" is pressed while the camera is on, whichever way it is drawn.
 					aria-pressed={self.cameraOn}
 					dangerWhenPressed
-					large
+					size='large'
 					onToggle={toggleCamera}
 				/>
 			</SplitButton>
@@ -215,7 +215,7 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 				pressed={self.screenSharing}
 				aria-pressed={self.screenSharing}
 				info
-				large
+				size='large'
 				onToggle={toggleScreenShare}
 			/>
 			<ToggleButton
@@ -225,7 +225,7 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 				pressed={self.handRaised}
 				aria-pressed={self.handRaised}
 				info
-				large
+				size='large'
 				onToggle={toggleHand}
 			/>
 			<Box className={reactionPickerWrapStyles} ref={reactionPickerRef}>
@@ -235,7 +235,8 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 					titles={[t('Send_reaction'), t('Send_reaction')]}
 					pressed={reactionPickerOpen}
 					aria-expanded={reactionPickerOpen}
-					large
+					info
+					size='large'
 					onToggle={() => setReactionPickerOpen((p) => !p)}
 				/>
 			</Box>
@@ -244,9 +245,9 @@ const CallControls = ({ layout, onLayoutChange, onOpenDiagnostics }: CallControl
 				sections={[{ items: layoutItems }, { items: moreItems }]}
 				placement='top-end'
 				selectionMode='multiple'
-				button={<ActionButton secondary label={t('More')} icon='kebab' large />}
+				button={<ActionButton secondary label={t('More')} icon='kebab' size='large' />}
 			/>
-			<ActionButton label={hangupLabel} icon='phone-off' danger large onClick={leave} />
+			<ActionButton label={hangupLabel} icon='phone-off' danger size='large' onClick={leave} />
 			{(self.speakingWhileMuted || reactionPickerOpen) && (
 				<Box className={controlNoticesStyles}>
 					{self.speakingWhileMuted && (

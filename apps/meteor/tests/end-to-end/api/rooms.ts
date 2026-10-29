@@ -956,7 +956,8 @@ describe('[Rooms]', () => {
 		it('should return 401 unauthorized when user is not logged in', async () => {
 			const res = await request.get(api('rooms.nameExists')).expect('Content-Type', 'application/json').expect(401);
 
-			expect(res.body).to.have.property('message');
+			expect(res.body).to.have.property('success', false);
+			expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 		});
 
 		it('should return true if this room name exists', async () => {
@@ -2738,12 +2739,12 @@ describe('[Rooms]', () => {
 				void request
 					.get(api('rooms.adminRooms'))
 					.set(credentials)
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body.error).to.be.equal('error-not-authorized');
+						expect(res.body.error).to.be.equal('Not authorized [error-not-authorized]');
 					})
-					.end(() => updatePermission('view-room-administration', ['admin']).then(done));
+					.end((err) => updatePermission('view-room-administration', ['admin']).then(() => done(err)));
 			});
 		});
 		it('should return a list of admin rooms', async () => {
@@ -3041,7 +3042,7 @@ describe('[Rooms]', () => {
 		it('should return an error for users without view-room-administration permission', async () => {
 			await updatePermission('view-room-administration', []);
 
-			const res = await request.get(api('rooms.adminRooms.getRoom')).set(credentials).query({ rid: privateRoom._id }).expect(400);
+			const res = await request.get(api('rooms.adminRooms.getRoom')).set(credentials).query({ rid: privateRoom._id }).expect(403);
 
 			expect(res.body).to.have.property('success', false);
 
@@ -3158,7 +3159,7 @@ describe('[Rooms]', () => {
 			const res = await request.post(api('rooms.delete')).set(credentials).send({}).expect('Content-Type', 'application/json').expect(400);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('errorType', 'invalid-params');
+			expect(res.body).to.have.property('errorType', 'error-invalid-params');
 			expect(res.body).to.have.property('error').include("must have required property 'roomId'");
 		});
 
@@ -3691,7 +3692,7 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 
@@ -3709,7 +3710,7 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					expect(res.body).to.have.property('error').include("must have required property 'rid'");
 				});
 		});
@@ -3728,7 +3729,7 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 					expect(res.body).to.have.property('error').include("must have required property 'type'");
 				});
 		});
@@ -3786,7 +3787,7 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 
@@ -3805,7 +3806,7 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 
@@ -3824,7 +3825,7 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 
@@ -3933,7 +3934,7 @@ describe('[Rooms]', () => {
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'invalid-params');
+					expect(res.body).to.have.property('errorType', 'error-invalid-params');
 				});
 		});
 
@@ -4176,7 +4177,7 @@ describe('[Rooms]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'unauthorized');
+					expect(res.body).to.have.property('error', 'forbidden');
 				});
 		});
 
@@ -4236,7 +4237,7 @@ describe('[Rooms]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'unauthorized');
+					expect(res.body).to.have.property('error', 'forbidden');
 				});
 		});
 	});
@@ -4949,8 +4950,8 @@ describe('[Rooms]', () => {
 				.expect('Content-Type', 'application/json')
 				.expect(401)
 				.expect((res) => {
-					expect(res.body).to.have.property('status', 'error');
-					expect(res.body).to.have.property('message');
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', 'You must be logged in to do this.');
 				});
 		});
 
@@ -4960,7 +4961,7 @@ describe('[Rooms]', () => {
 				.set(nonMemberCredentials)
 				.send({ roomId: roomB._id })
 				.expect('Content-Type', 'application/json')
-				.expect(401)
+				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 				});

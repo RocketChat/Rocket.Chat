@@ -1,6 +1,5 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { Settings } from '@rocket.chat/models';
-import { check } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { settings } from '../../../settings';
@@ -16,9 +15,8 @@ Meteor.startup(() => {
 });
 
 export const sendInvitationEmail = async (userId: string, emails: string[]) => {
-	check(emails, [String]);
 	if (!userId) {
-		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', {
 			method: 'sendInvitationEmail',
 		});
 	}

@@ -17,11 +17,8 @@ import { getPlacement } from './helpers/helpers';
 export type MenuProps<T> = AriaMenuProps<T> &
 	MenuTriggerProps & {
 		icon?: IconButtonProps['icon'];
-		large?: boolean;
-		medium?: boolean;
-		small?: boolean;
-		tiny?: boolean;
-		mini?: boolean;
+		/** The size of the trigger. */
+		size?: IconButtonProps['size'];
 		placement?: UsePositionOptions['placement'];
 		title?: string;
 		detached?: boolean;
@@ -45,6 +42,7 @@ const Menu = <T extends object>({
 	maxWidth = 'x250',
 	button,
 	detached,
+	size = 'small',
 	...props
 }: MenuProps<T>) => {
 	const state = useMenuTriggerState(props);
@@ -60,10 +58,6 @@ const Menu = <T extends object>({
 		},
 		ref,
 	);
-
-	const { large, medium, tiny, mini } = props;
-	const sizes = { large, medium, tiny, mini };
-	const defaultSmall = !large && !medium && !tiny && !mini;
 
 	const { document: ownerDocument } = useOwnerDocument();
 
@@ -92,8 +86,7 @@ const Menu = <T extends object>({
 					className={className}
 					title={title}
 					pressed={pressed || state.isOpen}
-					small={defaultSmall}
-					{...sizes}
+					size={size}
 				/>
 			)}
 			{detached ? createPortal(popover, ownerDocument?.body || document.body) : popover}

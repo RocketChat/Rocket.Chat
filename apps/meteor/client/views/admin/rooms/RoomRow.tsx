@@ -1,6 +1,6 @@
 import { isDiscussion } from '@rocket.chat/core-typings';
 import type { IRoom, RoomAdminFieldsType, Serialized } from '@rocket.chat/core-typings';
-import { Box, Icon } from '@rocket.chat/fuselage';
+import { Box, Icon, Text } from '@rocket.chat/fuselage';
 import { useMediaQuery } from '@rocket.chat/fuselage-hooks';
 import { RoomAvatar } from '@rocket.chat/ui-avatar';
 import { GenericTableCell, GenericTableRow } from '@rocket.chat/ui-client';
@@ -84,9 +84,9 @@ const RoomRow = ({ room }: RoomRowProps) => {
 				</Box>
 			</GenericTableCell>
 			<GenericTableCell>
-				<Box color='hint' fontScale='p2m' withTruncatedText>
+				<Text color='hint' fontScale='p2m' truncate>
 					{t(getRoomType(room))}
-				</Box>
+				</Text>
 			</GenericTableCell>
 			<GenericTableCell truncate>{usersCount}</GenericTableCell>
 			{mediaQuery && <GenericTableCell truncate>{msgs}</GenericTableCell>}

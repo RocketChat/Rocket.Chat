@@ -18,7 +18,7 @@ export const createChannelMethod = async (
 	check(name, String);
 	check(members, Match.Optional([String]));
 	if (!userId) {
-		throw new ClientSafeError('error-invalid-user', 'Invalid user', { method: 'createChannel' });
+		throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', { method: 'createChannel' });
 	}
 
 	const user = await Users.findOneById(userId, { projection: { services: 0 } });

@@ -8,6 +8,8 @@ import { action } from 'storybook/actions';
 import { JOHN_DOE_ID } from './storyFixtures';
 import type { CallActions, CallDiagnosticsData, CallSelf, CallState, RemoteParticipantInfo } from '../call/context';
 import { CallActionsProvider, CallDiagnosticsProvider, CallStateProvider } from '../call/context';
+import type { NoiseSuppressionSelection } from '../devices/NoiseSuppressionContext';
+import { NoiseSuppressionProvider } from '../devices/NoiseSuppressionContext';
 import type { VideoQualitySelection } from '../devices/VideoQualityContext';
 import { VideoQualityProvider } from '../devices/VideoQualityContext';
 
@@ -83,6 +85,14 @@ export const buildVideoQuality = (overrides: Partial<VideoQualitySelection> = {}
 	...overrides,
 });
 
+export const buildNoiseSuppression = (overrides: Partial<NoiseSuppressionSelection> = {}): NoiseSuppressionSelection => ({
+	method: 'browser',
+	methods: ['none', 'browser', 'rnnoise'],
+	pending: false,
+	select: action('selectNoiseMethod'),
+	...overrides,
+});
+
 export const diagnosticsSample: CallDiagnosticsData = {
 	serverUrl: 'wss://livekit.example.com',
 	connectionState: 'connected',
@@ -117,22 +127,33 @@ export type CallFixture = {
 	state?: Parameters<typeof buildCallState>[0];
 	deviceSelection?: Partial<DeviceSelection>;
 	videoQuality?: Partial<VideoQualitySelection>;
+	noiseSuppression?: Partial<NoiseSuppressionSelection>;
 	diagnostics?: CallDiagnosticsData | null;
 };
 
-const CallContexts = ({ state, deviceSelection, videoQuality, diagnostics = null, children }: CallFixture & { children: ReactNode }) => {
+const CallContexts = ({
+	state,
+	deviceSelection,
+	videoQuality,
+	noiseSuppression,
+	diagnostics = null,
+	children,
+}: CallFixture & { children: ReactNode }) => {
 	// Built on mount, so the call starts when the story does and the timer in a snapshot always reads zero.
 	const [callState] = useState(() => buildCallState(state));
 	const [actions] = useState(buildCallActions);
 	const [devices] = useState(() => buildDeviceSelection(deviceSelection));
 	const [quality] = useState(() => buildVideoQuality(videoQuality));
+	const [noise] = useState(() => buildNoiseSuppression(noiseSuppression));
 
 	return (
 		<CallStateProvider value={callState}>
 			<CallActionsProvider value={actions}>
 				<DeviceSelectionProvider value={devices}>
 					<VideoQualityProvider value={quality}>
-						<CallDiagnosticsProvider value={diagnostics}>{children}</CallDiagnosticsProvider>
+						<NoiseSuppressionProvider value={noise}>
+							<CallDiagnosticsProvider value={diagnostics}>{children}</CallDiagnosticsProvider>
+						</NoiseSuppressionProvider>
 					</VideoQualityProvider>
 				</DeviceSelectionProvider>
 			</CallActionsProvider>
@@ -149,6 +170,7 @@ export const withCall =
 			state={fixture.state}
 			deviceSelection={fixture.deviceSelection}
 			videoQuality={fixture.videoQuality}
+			noiseSuppression={fixture.noiseSuppression}
 			diagnostics={fixture.diagnostics}
 		>
 			<Story />
