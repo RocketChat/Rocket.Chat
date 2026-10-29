@@ -1,4 +1,4 @@
-import type { ItemProps } from '@react-types/shared';
+import type { ItemProps, MultipleSelection } from '@react-types/shared';
 import type { ReactElement, ReactNode } from 'react';
 import { isValidElement } from 'react';
 
@@ -14,7 +14,10 @@ export type MenuSubmenuTriggerProps<T> = Omit<ItemProps<T>, 'title' | 'children'
 	 */
 	children: ReactNode;
 	variant?: 'danger' | 'success' | 'warning' | 'primary';
-};
+} & Pick<MultipleSelection, 'selectionMode' | 'selectedKeys' | 'defaultSelectedKeys' | 'onSelectionChange' | 'disallowEmptySelection'>;
+// The selection props above are react-stately's own, for the submenu this trigger opens: with `selectionMode='single'`
+// its items are radio items and with `'multiple'` checkbox items, each announcing whether it is checked from
+// `selectedKeys`. The parent menu's selection mode does not reach them, since the submenu has its own tree state.
 
 function MenuSubmenuTrigger<T>(_props: MenuSubmenuTriggerProps<T>) {
 	return null;
