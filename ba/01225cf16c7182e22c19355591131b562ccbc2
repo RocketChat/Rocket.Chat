@@ -1,0 +1,29 @@
+packages/http-router/src/server.ts
+  s_0e2e8b999c8e5e::t_dafcc48e5f213e 1-27
+apps/meteor/package.json
+  s_0e2e8b999c8e5e::t_dafcc48e5f213e 77
+packages/http-router/package.json
+  s_0e2e8b999c8e5e::t_dafcc48e5f213e 20
+packages/http-router/src/middlewares/nodeHandler.ts
+  s_0e2e8b999c8e5e::t_dafcc48e5f213e 1-38
+packages/http-router/src/index.ts
+  s_0e2e8b999c8e5e::t_dafcc48e5f213e 5-6
+packages/http-router/src/server.spec.ts
+  s_0e2e8b999c8e5e::t_dafcc48e5f213e 1-91
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "ba01225cf16c7182e22c19355591131b562ccbc2",
+  "prompts": {},
+  "sessions": {
+    "s_0e2e8b999c8e5e": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "da489734-9a71-4947-9cbf-6377db728fea",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

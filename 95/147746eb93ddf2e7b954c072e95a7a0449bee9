@@ -1,0 +1,24 @@
+docs/features/web-client-hosting.md
+  s_99c6293868b191::t_a83a65a380db58 57-59
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "95147746eb93ddf2e7b954c072e95a7a0449bee9",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_99c6293868b191": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "045dd0e5-16fd-401d-af04-f8224793145f",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

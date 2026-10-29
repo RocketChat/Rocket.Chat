@@ -1,0 +1,26 @@
+ee/packages/xmpp-server/tests/end-to-end/connectivity.spec.ts
+  s_fda792b4ee3dce::t_fd5e3082679134 59
+ee/packages/xmpp-server/src/service/XMPPServerService.ts
+  s_fda792b4ee3dce::t_74564e4a10cd41 912,914
+ee/packages/xmpp-server/docs/specs/configuration-and-lifecycle.md
+  s_fda792b4ee3dce::t_99a34ecc0aa357 58-60
+  s_fda792b4ee3dce::t_7fd114c2f29a25 105
+ee/packages/xmpp-server/docs/operations.md
+  s_fda792b4ee3dce::t_493cb1ff298809 37-38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "2d0331fcea928d28032ac40ae8905a926945f9b0",
+  "prompts": {},
+  "sessions": {
+    "s_fda792b4ee3dce": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e31a5082-261d-4ac9-a82c-537267ace868",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

@@ -1,0 +1,27 @@
+apps/meteor/server/configuration/configurePassport.ts
+  s_35ce995ae950b9::t_5517f507133369 98-99
+apps/meteor/server/modules/apps/bridges/api.ts
+  s_35ce995ae950b9::t_5517f507133369 15-17
+apps/meteor/ee/server/api/mcp/metadata.ts
+  s_35ce995ae950b9::t_5517f507133369 41-44
+apps/meteor/ee/server/api/apps/uikit.ts
+  s_35ce995ae950b9::t_5517f507133369 37
+apps/meteor/server/lib/auth/oauth2-server/oauth2-server.ts
+  s_35ce995ae950b9::t_5517f507133369 120
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "86154aaa70fc1d8055fe73ce49e5830097cb3a1a",
+  "prompts": {},
+  "sessions": {
+    "s_35ce995ae950b9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f447591c-fd40-47e9-ae6b-d905502975ef",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

@@ -1,0 +1,24 @@
+apps/meteor/tests/end-to-end/api/http-response-truncation.ts
+  s_99c6293868b191::t_834841d86eaea4 33-34,38,80,82-85,98-102
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "37964139e1448d289e6960dcd5290cb12e410ca0",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_99c6293868b191": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "045dd0e5-16fd-401d-af04-f8224793145f",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

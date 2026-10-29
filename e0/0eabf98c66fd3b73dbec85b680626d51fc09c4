@@ -1,0 +1,24 @@
+apps/meteor/vite/vite.config.mts
+  s_de9197b470976f::t_79f4c61e41bed1 188,190
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e00eabf98c66fd3b73dbec85b680626d51fc09c4",
+  "prompts": {},
+  "humans": {
+    "h_4c386397e672f4": {
+      "author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  },
+  "sessions": {
+    "s_de9197b470976f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "111a94e0-9d28-4f9b-b843-a0a830279f4e",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
