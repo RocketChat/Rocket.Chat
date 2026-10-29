@@ -36,14 +36,14 @@ describe('XMPP federation: presence', () => {
 	let bob: XmppUser;
 	let local: LocalUser;
 
-	/** Resolves once the service answers alice's subscription request again, i.e. presence is back on. */
-	const waitForPresenceEnabled = () =>
+	/** Resolves once the service refuses a subscription request from `stranger` again, i.e. presence is back on. */
+	const waitForPresenceEnabled = (stranger: XmppUser) =>
 		retry(
 			'presence to be enabled',
 			async () => {
-				const after = alice.cursor();
-				await alice.sendPresence({ to: local.jid, type: 'subscribe' });
-				await alice.waitFor(isSubscriptionReply(local.jid, 'subscribed'), 'the subscription approval', {
+				const after = stranger.cursor();
+				await stranger.sendPresence({ to: local.jid, type: 'subscribe' });
+				await stranger.waitFor(isSubscriptionReply(local.jid, 'unsubscribed'), 'the subscription refusal', {
 					after,
 					timeoutMs: PROBE_REPLY_MS,
 				});
@@ -83,21 +83,23 @@ describe('XMPP federation: presence', () => {
 	});
 
 	it('answers no subscription request while presence is off (R5)', async () => {
+		// An XMPP server may swallow a request for a subscription it already holds, so this contact holds none
+		const carol = await registerXmppUser(rc, 'carol');
 		try {
 			await setSetting(rc, 'XMPP_Server_Presence_Enabled', false);
 			await sleep(SETTING_PROPAGATION_MS);
 
-			const after = alice.cursor();
-			await alice.sendPresence({ to: local.jid, type: 'subscribe' });
+			const after = carol.cursor();
+			await carol.sendPresence({ to: local.jid, type: 'subscribe' });
 			await sleep(DELIVERY_WINDOW_MS);
-			const answers = alice.received(
+			const answers = carol.received(
 				(stanza) => isPresenceFrom(local.jid)(stanza) && ['subscribed', 'subscribe', 'unsubscribed'].includes(stanza.attrs.type),
 				after,
 			);
 			assert.equal(answers.length, 0);
 		} finally {
 			await setSetting(rc, 'XMPP_Server_Presence_Enabled', true);
-			await waitForPresenceEnabled();
+			await waitForPresenceEnabled(carol);
 		}
 	});
 
