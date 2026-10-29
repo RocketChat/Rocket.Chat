@@ -1552,15 +1552,33 @@ const modalPart = (name: string, base: Record<string, Value>, variants?: Record<
 	declaredWhereTheyRender + frame(name, base, variants);
 
 const generateModal = () =>
-	modalPart('ModalFrame', {
+	// The open sizes arrive as custom properties the dialog element sets
+	`${modalPart('ModalFrame', {
 		render: 'dialog',
 		...flexBox,
 		position: 'static',
-		width: '100%',
-		maxHeight: '100%',
+		width: 'var(--rcx-modal-width, 100%)',
+		height: 'var(--rcx-modal-height, auto)',
+		maxHeight: 'var(--rcx-modal-max-height, 100%)',
 		margin: theme('modal-margin', 'auto'),
 		backgroundColor: 'transparent',
-	});
+	})}\n\n${frame('ModalInnerFrame', {
+		render: 'div',
+		...flexBox,
+		flexDirection: 'column',
+		flexGrow: 1,
+		width: '100%',
+		minWidth: 0,
+		padding: 0,
+		color: fontDefault,
+		borderRadius: theme('modal-border-radius', radius('large')),
+		borderWidth: '1px',
+		borderStyle: 'solid',
+		borderColor: String(shadowColors['shadow-elevation-border']),
+		backgroundColor: surfaceLight,
+		boxShadow: `0 0 2px 0 ${shadowColors['shadow-elevation-2x']}, 0 0 12px 0 ${shadowColors['shadow-elevation-2y']}`,
+		...font('p2'),
+	})}`;
 
 const generateModalBackdrop = () =>
 	modalPart(
@@ -1601,16 +1619,40 @@ const generateModalTagline = () =>
 	);
 
 const generateModalHeroImage = () =>
-	`${declaredWhereTheyRender}${frame('ModalHeroImageFrame', { ...blockBox, width: '100%', height: 'auto', objectFit: 'contain' })}\n\n${frame(
-		'ModalHeroFigureFrame',
-		{ render: 'figure', ...blockBox, marginBlockStart: 0, marginBlockEnd: size('x24')!, marginInline: size('-x24')! },
-	)}`;
+	`${declaredWhereTheyRender}${frame('ModalHeroImageFrame', {
+		...blockBox,
+		width: 'var(--rcx-modal-hero-image-width, 100%)',
+		height: 'var(--rcx-modal-hero-image-height, auto)',
+		objectFit: 'contain',
+	})}\n\n${frame('ModalHeroFigureFrame', {
+		render: 'figure',
+		...blockBox,
+		marginBlockStart: 0,
+		marginBlockEnd: size('x24')!,
+		marginInline: size('-x24')!,
+	})}`;
 
 const generateModalFooter = () =>
 	modalPart(
 		'ModalFooterFrame',
 		{ ...flexBox, alignItems: 'center', margin: containerMargin },
 		{ justify: { 'end': { justifyContent: 'end' }, 'space-between': { justifyContent: 'space-between' } } },
+	);
+
+const generateModalIcon = () =>
+	modalPart(
+		'ModalIconFrame',
+		{ render: 'div', ...flexBox, alignItems: 'center' },
+		{
+			align: { center: {}, end: { alignItems: 'end' } },
+			tone: {
+				default: {},
+				danger: { color: fontColorOf('danger') },
+				warning: { color: statusFontOf('warning') },
+				info: { color: fontColorOf('info') },
+				success: { color: statusFontOf('success') },
+			},
+		},
 	);
 
 const generateModalFooterAnnotation = () =>
@@ -1706,6 +1748,17 @@ const generateConsumerClasses = () => {
 .rcx-card__row:where(.rcx-card__row) {
 	flex-grow: 1;
 	flex-shrink: 1;
+}
+
+.rcx-modal__backdrop:where(.rcx-modal__backdrop) {
+	position: fixed;
+	z-index: 100;
+	inset: 0;
+
+	display: flex;
+	flex-direction: column;
+
+	background-color: ${String(surfaceColors['surface-overlay'])};
 }`;
 };
 
@@ -3206,6 +3259,18 @@ const components: { file: string; generate: () => string; css?: boolean; section
 	{ file: join(import.meta.dirname, '../src/components/Card/CardHeader.tsx'), generate: generateCardHeader },
 	{ file: join(import.meta.dirname, '../src/components/Card/CardRow.tsx'), generate: generateCardRow },
 	{ file: join(import.meta.dirname, '../src/components/Card/CardTitle.tsx'), generate: generateCardTitle },
+	{ file: join(import.meta.dirname, '../src/components/Modal/Modal.styles.css'), generate: generateModalCss, css: true },
+	{ file: join(import.meta.dirname, '../src/components/Modal/Modal.tsx'), generate: generateModal },
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalBackdrop.tsx'), generate: generateModalBackdrop },
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalHeader.tsx'), generate: generateModalHeader },
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalHeaderInner.tsx'), generate: generateModalHeaderInner },
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalHeaderText.tsx'), generate: generateModalHeaderText },
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalTitle.tsx'), generate: generateModalTitle },
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalTagline.tsx'), generate: generateModalTagline },
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalHeroImage.tsx'), generate: generateModalHeroImage },
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalFooter.tsx'), generate: generateModalFooter },
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalFooterAnnotation.tsx'), generate: generateModalFooterAnnotation },
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalIcon.tsx'), generate: generateModalIcon },
 	{ file: join(import.meta.dirname, '../src/components/SplitButton/SplitButton.tsx'), generate: generateSplitButton },
 	{ file: join(import.meta.dirname, '../src/components/SplitButton/SplitButton.styles.css'), generate: generateSplitButtonCss, css: true },
 	{ file: join(import.meta.dirname, '../src/components/Banner/Banner.tsx'), generate: generateBanner },
