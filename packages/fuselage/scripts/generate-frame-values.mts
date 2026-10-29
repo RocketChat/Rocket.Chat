@@ -182,6 +182,7 @@ const literal = (value: Value, indent = ''): string => {
 	}
 
 	return `{\n${Object.entries(value)
+		.filter(([, entry]) => entry !== undefined)
 		.map(([key, entry]) => `${indent}\t${JSON.stringify(key)}: ${literal(entry, `${indent}\t`)},`)
 		.join('\n')}\n${indent}}`;
 };
@@ -2074,12 +2075,284 @@ const generateGridCss = () => {
 	return rules.join('\n\n');
 };
 
+// The Item family: one frame per module, over the values the SCSS read under `--rcx-item-…`
+const itemTokens = {
+	font: toCSSValue('--rcx-item-color-font-default', textIconColors['font-default']),
+	highlighted: toCSSValue('--rcx-item-color-font-highlighted', textIconColors['font-titles-labels']),
+	secondary: toCSSValue('--rcx-item-color-font-secondary', textIconColors['font-secondary-info']),
+	disabled: toCSSValue('--rcx-item-color-font-disabled', textIconColors['font-disabled']),
+	danger: toCSSValue('--rcx-item-color-font-danger', statusColors['status-font-on-danger']),
+	hover: toCSSValue('--rcx-item-color-surface-hover', surfaceColors['surface-hover']),
+	selected: toCSSValue('--rcx-item-color-surface-selected', surfaceColors['surface-selected']),
+	focus: toCSSValue('--rcx-item-color-stroke-focus', strokeColors['stroke-highlight']),
+	divider: toCSSValue('--rcx-item-color-stroke-divider', strokeColors['stroke-extra-light']),
+	headerSurface: toCSSValue('--rcx-item-group-header-color-surface', surfaceColors['surface-light']),
+};
+
+// Tamagui's View is a flex column with its own box model; the elements Item renders were plain ones
+const plain = {
+	position: 'static',
+	display: 'block',
+	flexDirection: 'row',
+	flexShrink: 1,
+	alignItems: 'normal',
+	minWidth: 'auto',
+	minHeight: 'auto',
+} as const;
+
+const itemRadius = toCSSValue('--rcx-border-radius-small', borderRadius('small')!);
+const ring = `inset 0 0 0 ${borderWidth('medium')} ${itemTokens.focus}`;
+const truncating = { overflow: 'hidden', minWidth: 0, whiteSpace: 'nowrap', textOverflow: 'ellipsis' };
+
+const itemFrame = (name: string, base: Record<string, Value>, variants?: Record<string, Value>) =>
+	`// Declared where it renders: zero-runtime only erases a \`styled()\` whose every use is in its own module
+const ${name} = styled(View, ${literal({ render: 'div', ...plain, ...base, ...(variants && { variants }) })});`;
+
+const generateItem = () =>
+	itemFrame(
+		'ItemFrame',
+		{
+			position: 'relative',
+			display: 'flex',
+			alignItems: 'center',
+			boxSizing: 'border-box',
+			minWidth: 0,
+			margin: 0,
+			paddingBlock: spacing('x4')!,
+			paddingInline: `calc(${spacing('x4')} + var(--rcx-item-inset-inline))`,
+			textAlign: 'start',
+			textDecorationLine: 'none',
+			color: itemTokens.font,
+			borderRadius: itemRadius,
+			fontFamily: fontFamily('sans')!,
+			gap: 'var(--rcx-item-gap)',
+			...font('p2'),
+		},
+		{
+			// A multi-line row keeps its avatar at the top
+			align: { center: {}, start: { alignItems: 'flex-start' } },
+			// The disabled text wins over danger
+			tone: { default: {}, danger: { color: itemTokens.danger }, disabled: { color: itemTokens.disabled } },
+			// Selected wins over focused; disabled wins over both
+			surface: {
+				none: {},
+				focused: { backgroundColor: itemTokens.hover },
+				selected: { backgroundColor: itemTokens.selected },
+				disabled: { backgroundColor: 'transparent', cursor: 'not-allowed' },
+			},
+			// A row whose owner moves focus (`focusVisible`) draws its ring from `Item.styles.css`
+			ring: {
+				native: {
+					outlineWidth: { 'focus-visible': borderWidth('medium')! },
+					outlineStyle: { 'focus-visible': 'solid' },
+					outlineColor: { 'focus-visible': 'transparent' },
+					outlineOffset: { 'focus-visible': `calc(-1 * ${borderWidth('medium')})` },
+					boxShadow: { 'focus-visible': ring },
+				},
+				managed: {},
+			},
+		},
+	);
+
+const generateItemGroup = () => itemFrame('ItemGroupFrame', { display: 'flex', flexDirection: 'column', margin: 0, padding: 0 });
+
+const generateItemGroupHeader = () =>
+	itemFrame(
+		'ItemGroupHeaderFrame',
+		{
+			position: 'relative',
+			display: 'flex',
+			alignItems: 'center',
+			boxSizing: 'border-box',
+			minWidth: 0,
+			minHeight: size('x28')!,
+			margin: 0,
+			paddingBlock: spacing('x4')!,
+			paddingInline: `calc(${spacing('x4')} + var(--rcx-item-inset-inline))`,
+			color: itemTokens.secondary,
+			borderRadius: itemRadius,
+			fontFamily: fontFamily('sans')!,
+			gap: 'var(--rcx-item-gap)',
+			...font('c2'),
+		},
+		{
+			sticky: { true: { position: 'sticky', zIndex: 2, top: 0, backgroundColor: itemTokens.headerSurface }, false: {} },
+		},
+	);
+
+const generateItemGroupTitle = () =>
+	itemFrame('ItemGroupTitleFrame', {
+		display: 'block',
+		...truncating,
+		flexGrow: 1,
+		flexBasis: 'auto',
+		margin: 0,
+		color: 'inherit',
+	});
+
+const generateItemDivider = () =>
+	itemFrame('ItemDividerFrame', {
+		display: 'block',
+		margin: 0,
+		paddingBlock: spacing('x4')!,
+		paddingInline: 0,
+		borderWidth: 0,
+		borderStyle: 'none',
+	});
+
+const slot = { display: 'flex', justifyContent: 'center', alignItems: 'center', flexGrow: 0, flexShrink: 0, flexBasis: 'auto' };
+
+const generateItemMedia = () =>
+	itemFrame('ItemMediaFrame', slot, { icon: { true: { width: size('x20')!, height: size('x20')! }, false: {} } });
+
+const generateItemIcon = () => itemFrame('ItemIconFrame', { ...slot, width: size('x20')!, height: size('x20')! });
+
+const generateItemContent = () =>
+	itemFrame('ItemContentFrame', { display: 'flex', flexDirection: 'column', flexGrow: 1, flexShrink: 1, flexBasis: 'auto', minWidth: 0 });
+
+const generateItemRow = () => itemFrame('ItemRowFrame', { display: 'flex', alignItems: 'center', minWidth: 0, gap: 'var(--rcx-item-gap)' });
+
+const generateItemTitle = () =>
+	itemFrame('ItemTitleFrame', { display: 'block', ...truncating, flexGrow: 1, flexShrink: 1, flexBasis: 'auto' });
+
+const generateItemDescription = () =>
+	itemFrame(
+		'ItemDescriptionFrame',
+		{ display: undefined, ...truncating, flexGrow: 1, flexShrink: 1, flexBasis: 'auto', color: itemTokens.secondary, ...font('c1') },
+		{ inline: { true: { display: 'inline', marginInlineStart: spacing('x4') }, false: { display: 'block' } } },
+	);
+
+const generateItemMeta = () =>
+	itemFrame(
+		'ItemMetaFrame',
+		{ display: 'block', flexShrink: undefined, whiteSpace: 'nowrap', color: itemTokens.secondary, ...font('c1') },
+		{
+			truncate: {
+				true: { overflow: 'hidden', flexGrow: 0, flexShrink: 1, flexBasis: 'auto', minWidth: 0, textOverflow: 'ellipsis' },
+				false: { flexGrow: 0, flexShrink: 0, flexBasis: 'auto' },
+			},
+		},
+	);
+
+const generateItemActions = () =>
+	`${itemFrame('ItemActionsFrame', {
+		position: 'relative',
+		zIndex: 1,
+		display: 'flex',
+		alignItems: 'center',
+		flexGrow: 0,
+		flexShrink: 0,
+		flexBasis: 'auto',
+		gap: offScale(2),
+	})}
+
+${itemFrame('ItemActionsInnerFrame', { display: 'flex', overflow: 'hidden', alignItems: 'center', minWidth: 0, gap: offScale(2) })}`;
+
+const generateItemLink = () =>
+	itemFrame('ItemLinkFrame', {
+		display: 'block',
+		overflow: 'hidden',
+		width: '100%',
+		margin: 0,
+		padding: 0,
+		cursor: 'pointer',
+		textAlign: 'start',
+		whiteSpace: 'nowrap',
+		textDecorationLine: 'none',
+		textOverflow: 'ellipsis',
+		color: 'inherit',
+		borderWidth: 0,
+		borderStyle: 'none',
+		borderColor: 'currentcolor',
+		backgroundColor: 'transparent',
+	});
+
+const clickable =
+	":where(.rcx-item--clickable, .rcx-item--interactive, a, button, [role='option'], [role^='menuitem'], :has(.rcx-item__link))";
+// A row whose content is interactive shows the hover surface without being a click target
+const hoverable = clickable.replace(':where(', ':where(.rcx-item--hoverable, ');
+
+// What a Tamagui frame cannot say, for the colors it takes from the tokens
+const generateItemStyles = () => `.rcx-item${clickable}:where(:not(.rcx-item--disabled)) {
+	cursor: pointer;
+}
+
+.rcx-item${hoverable}:where(:not(.rcx-item--selected, .rcx-item--disabled)):hover {
+	background-color: ${itemTokens.hover};
+}
+
+/* Forced colors drop the box-shadow and paint the transparent outline instead */
+.rcx-item:has(.rcx-item__link:focus-visible),
+.rcx-item.rcx-item--focus-visible,
+.rcx-item-group-header:has(.rcx-item-group-title:is(button):focus-visible) {
+	outline: ${borderWidth('medium')} solid transparent;
+	outline-offset: calc(-1 * ${borderWidth('medium')});
+	box-shadow: ${ring};
+}
+
+.rcx-item-group-header:has(.rcx-item-group-title:is(button)):hover {
+	background-color: ${itemTokens.hover};
+}
+
+.rcx-item--highlighted .rcx-item__title,
+.rcx-item--highlighted .rcx-item__icon,
+.rcx-item--highlighted .rcx-item__description,
+.rcx-item--highlighted .rcx-item__meta {
+	font-weight: 500;
+	color: ${itemTokens.highlighted};
+}
+
+.rcx-item-divider::before {
+	display: block;
+
+	content: '';
+
+	border-top: ${borderWidth('default')} solid ${itemTokens.divider};
+}
+
+.rcx-item-divider.rcx-item-divider--inset-sm,
+.rcx-item-divider.rcx-item-divider--inset-md,
+.rcx-item-divider.rcx-item-divider--inset-lg {
+	margin-inline: calc(${spacing('x4')} + var(--rcx-item-inset-inline));
+}
+
+.rcx-item-group + .rcx-item-group {
+	margin-block-start: ${spacing('x8')};
+}
+
+.rcx-item-group-title:is(button) {
+	gap: ${spacing('x4')};
+}
+
+@media (pointer: coarse) {
+	.rcx-item.rcx-item {
+		padding-block: ${spacing('x8')};
+	}
+}`;
+
+const itemFile = (name: string) => join(import.meta.dirname, `../src/components/Item/${name}`);
+
 const components: { file: string; generate: () => string; css?: boolean; section?: string }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
 	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
 	{ file: join(import.meta.dirname, '../src/components/Tag/Tag.tsx'), generate: generateTag },
 	{ file: join(import.meta.dirname, '../src/components/Badge/Badge.tsx'), generate: generateBadge },
 	{ file: join(import.meta.dirname, '../src/components/Chip/Chip.tsx'), generate: generateChip },
+	{ file: itemFile('Item.tsx'), generate: generateItem },
+	{ file: itemFile('ItemGroup.tsx'), generate: generateItemGroup },
+	{ file: itemFile('ItemGroupHeader.tsx'), generate: generateItemGroupHeader },
+	{ file: itemFile('ItemGroupTitle.tsx'), generate: generateItemGroupTitle },
+	{ file: itemFile('ItemDivider.tsx'), generate: generateItemDivider },
+	{ file: itemFile('ItemMedia.tsx'), generate: generateItemMedia },
+	{ file: itemFile('ItemIcon.tsx'), generate: generateItemIcon },
+	{ file: itemFile('ItemContent.tsx'), generate: generateItemContent },
+	{ file: itemFile('ItemRow.tsx'), generate: generateItemRow },
+	{ file: itemFile('ItemTitle.tsx'), generate: generateItemTitle },
+	{ file: itemFile('ItemDescription.tsx'), generate: generateItemDescription },
+	{ file: itemFile('ItemMeta.tsx'), generate: generateItemMeta },
+	{ file: itemFile('ItemActions.tsx'), generate: generateItemActions },
+	{ file: itemFile('ItemLink.tsx'), generate: generateItemLink },
+	{ file: itemFile('Item.styles.css'), generate: generateItemStyles, css: true },
 	{
 		file: join(import.meta.dirname, '../src/components/Chip/Chip.styles.css'),
 		css: true,
@@ -2138,6 +2411,236 @@ for (const [dir, control] of [
 		{ file: `${base}.styles.css`, generate: () => selectionStates(control), css: true },
 	);
 }
+
+// The spacing and type of the hand-written stylesheets, each section where its rules sit so their order holds
+const stylesheet = (name: string) => join(import.meta.dirname, `../src/components/${name}.styles.css`);
+const inputPaddingInline = `calc(${spacing('x16')} - ${borderWidth('default')})`;
+
+components.push(
+	{
+		file: stylesheet('Avatar/Avatar'),
+		css: true,
+		generate: () => `.rcx-avatar-stack > .rcx-avatar {
+	margin: auto ${offScale(-2)};
+}`,
+	},
+	{
+		file: stylesheet('Button/Button'),
+		css: true,
+		generate: () => `.rcx-button .rcx-button__icon {
+	margin-inline-end: ${spacing('x4')};
+}`,
+	},
+	{
+		file: stylesheet('Card/Card'),
+		css: true,
+		generate: () => `.rcx-card__horizontal .rcx-card__col {
+	row-gap: ${spacing('x4')};
+}`,
+	},
+	{
+		file: stylesheet('CardGrid/CardGrid'),
+		css: true,
+		section: 'grid',
+		generate: () => `.rcx-grid.rcx-card-grid {
+	margin: ${spacing('-x8')};
+}`,
+	},
+	{
+		file: stylesheet('CardGrid/CardGrid'),
+		css: true,
+		section: 'item',
+		generate: () => `.rcx-grid__item.rcx-card-grid__item {
+	padding: ${spacing('x8')};
+}`,
+	},
+	{
+		file: stylesheet('CardGroup/CardGroup'),
+		css: true,
+		section: 'row',
+		generate: () => `.rcx-card-group__item {
+	margin-inline: ${spacing('x8')};
+}
+
+.rcx-card-group__item:first-of-type {
+	margin-inline-start: 0;
+}
+
+.rcx-card-group__item:last-of-type {
+	margin-inline-end: 0;
+}
+
+.rcx-card-group--wrap > .rcx-card-group__item {
+	margin-block-end: ${spacing('x16')};
+	margin-inline: ${spacing('x8')} ${spacing('x8')};
+}`,
+	},
+	{
+		file: stylesheet('CardGroup/CardGroup'),
+		css: true,
+		section: 'vertical',
+		generate: () => `.rcx-card-group--vertical .rcx-card-group__item {
+	margin-block: ${spacing('x4')};
+	margin-inline: 0;
+}
+
+.rcx-card-group--vertical .rcx-card-group__item:first-child {
+	margin-block-start: 0;
+}
+
+.rcx-card-group--vertical .rcx-card-group__item:last-child {
+	margin-block-end: 0;
+}`,
+	},
+	{
+		file: stylesheet('Dropdown/Dropdown'),
+		css: true,
+		generate: () => `.rcx-dropdown__bottom-sheet-content {
+	padding-block: ${spacing('x16')};
+}`,
+	},
+	{
+		file: stylesheet('FieldGroup/FieldGroup'),
+		css: true,
+		generate: () => `.rcx-field-group__item + .rcx-field-group__item {
+	margin-block-start: ${spacing('x24')};
+}`,
+	},
+	{
+		file: stylesheet('Tabs/Tabs'),
+		css: true,
+		generate: () => `.rcx-tabs--with-divider .rcx-tabs__item.rcx-tabs__item {
+	margin-block-end: ${offScale(-1)};
+}`,
+	},
+	{
+		file: stylesheet('Table/Table'),
+		css: true,
+		section: 'selection',
+		generate: () => `.rcx-table__selection.rcx-table__selection {
+	padding-inline: ${spacing('x24')};
+}
+
+.rcx-table__selection-text {
+	margin-block: ${spacing('x16')};
+	${fontDeclarations('p2b')}
+}`,
+	},
+	{
+		file: stylesheet('Table/Table'),
+		css: true,
+		section: 'selection-actions',
+		generate: () => `.rcx-table__selection-actions {
+	margin-inline: ${spacing('-x8')};
+	${fontDeclarations('p2m')}
+}`,
+	},
+	{
+		file: stylesheet('InputBox/InputBox'),
+		css: true,
+		section: 'box',
+		generate: () => `.rcx-input-box__wrapper:where(:not(.is_View)) {
+	padding-block: ${spacing('x8')};
+	padding-inline: ${inputPaddingInline};
+}
+
+.rcx-input-box:where(:not(.is_View)) {
+	${fontDeclarations('p2m')}
+}`,
+	},
+	{
+		file: stylesheet('InputBox/InputBox'),
+		css: true,
+		section: 'decorated',
+		generate: () => `.rcx-input-box:where(:not(.is_View)):not(.rcx-input-box--undecorated) {
+	padding: ${spacing('x8')} ${inputPaddingInline};
+}`,
+	},
+	{
+		file: stylesheet('InputBox/InputBox'),
+		css: true,
+		section: 'addons',
+		generate: () => `.rcx-input-box__addon:has(+ .rcx-input-box) {
+	margin-inline-end: ${spacing('x8')};
+}
+
+.rcx-input-box + .rcx-input-box__addon {
+	margin-inline-start: ${spacing('x8')};
+}`,
+	},
+	{
+		file: stylesheet('InputBox/InputBox'),
+		css: true,
+		section: 'text',
+		generate: () => `.rcx-input-box__placeholder {
+	${fontDeclarations('p2m')}
+}
+
+.rcx-input-box__option {
+	${fontDeclarations('p2m')}
+}`,
+	},
+	{
+		file: itemFile('Item.styles.css'),
+		css: true,
+		section: 'gap',
+		generate: () => `.rcx-item,
+.rcx-item-group-header {
+	--rcx-item-gap: ${spacing('x4')};
+}
+
+.rcx-item__row {
+	--rcx-item-gap: ${spacing('x4')};
+}
+
+.rcx-item:has(> .rcx-item__content > :nth-child(2)),
+.rcx-item--multiline {
+	--rcx-item-gap: ${spacing('x8')};
+}`,
+	},
+	{
+		file: itemFile('Item.styles.css'),
+		css: true,
+		section: 'inset',
+		generate:
+			() => `/* The inset widens the row's own padding and a divider's margin, so it stays a custom property; a unitless zero would make their calc() invalid */
+.rcx-item,
+.rcx-item-group-header,
+.rcx-item-divider {
+	--rcx-item-inset-inline: 0px; /* stylelint-disable-line length-zero-no-unit */
+}
+
+.rcx-item--inset-sm,
+.rcx-item-group-header--inset-sm,
+.rcx-item-divider--inset-sm {
+	--rcx-item-inset-inline: ${spacing('x4')};
+}
+
+.rcx-item--inset-md,
+.rcx-item-group-header--inset-md,
+.rcx-item-divider--inset-md {
+	--rcx-item-inset-inline: ${spacing('x8')};
+}
+
+.rcx-item--inset-lg,
+.rcx-item-group-header--inset-lg,
+.rcx-item-divider--inset-lg {
+	--rcx-item-inset-inline: ${spacing('x20')};
+}`,
+	},
+	{
+		file: itemFile('Item.styles.css'),
+		css: true,
+		section: 'narrow-inset',
+		generate: () => `@container rcx-item-group (width < 320px) {
+	.rcx-item--inset-lg,
+	.rcx-item-group-header--inset-lg,
+	.rcx-item-divider--inset-lg {
+		--rcx-item-inset-inline: ${spacing('x12')};
+	}
+}`,
+	},
+);
 
 // Frames whose children are text are a Tamagui Text: a string child of a View throws on React Native
 const textFrames = [

@@ -56,7 +56,7 @@ $sidepanel-color-default: colors.font(default);
 		}
 	}
 
-	&-list {
+	&-list[class] {
 		padding-block: lengths.padding(8);
 	}
 }
