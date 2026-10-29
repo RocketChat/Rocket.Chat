@@ -1419,6 +1419,37 @@ const generateSkeleton = () => {
 	});
 };
 
+const generateThrobber = () => {
+	const circleColor = (name: string, token: string) => toCSSColorValue(`button-background-${name}-default`, buttonTokens.light[token]);
+
+	return `${frameDeclaration('ThrobberFrame', {
+		render: 'div',
+		...boxBase,
+		display: 'flex',
+		justifyContent: 'center',
+		marginBlock: '-1px',
+	})}
+
+${frameDeclaration('ThrobberCircleFrame', {
+	render: 'span',
+	...boxBase,
+	display: 'block',
+	width: 'var(--rcx-throbber-size)',
+	height: 'var(--rcx-throbber-size)',
+	marginInline: '1px',
+	borderRadius: '100%',
+	backgroundColor: circleColor('primary', 'backgroundPrimaryDefault'),
+	variants: {
+		// Not `disabled`: Tamagui turns that prop into `aria-disabled`
+		tone: {
+			primary: {},
+			muted: { backgroundColor: circleColor('secondary', 'backgroundSecondaryDefault') },
+			inherit: { backgroundColor: 'currentColor' },
+		},
+	},
+})}`;
+};
+
 const frames = (relative: string) => join(import.meta.dirname, '../src/components', relative);
 
 const components: { file: string; generate: () => string; css?: boolean }[] = [
@@ -1451,6 +1482,7 @@ const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Table/TableSelection/TableSelection.tsx'), generate: generateTableSelection },
 	{ file: join(import.meta.dirname, '../src/components/Accordion/AccordionItem.tsx'), generate: generateAccordionItem },
 	{ file: frames('Skeleton/Skeleton.tsx'), generate: generateSkeleton },
+	{ file: frames('Throbber/Throbber.tsx'), generate: generateThrobber },
 ];
 
 for (const [dir, control] of [
