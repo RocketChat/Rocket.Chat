@@ -2739,6 +2739,28 @@ const generateSidebarStyles = () => `.rcx-sidebar--divider {
 
 const sbFile = (name: string) => join(import.meta.dirname, `../src/components/${name}`);
 
+// The NavBar family
+const generateNavBar = () =>
+	sbFrame('NavBarFrame', 'nav', {
+		display: 'flex',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		width: '100%',
+		paddingBlock: spacing('x8')!,
+		paddingInline: spacing('x16')!,
+		borderBottomWidth: sbBorder,
+		borderBottomStyle: 'solid',
+		borderBottomColor: strokeColor('light'),
+		backgroundColor: surfaceColor('sidebar'),
+	});
+
+const generateNavBarSection = () => sbFrame('NavBarSectionFrame', 'span', sbRow);
+
+// The divider is a `Divider`, so its color is a rule over the frame's
+const generateNavBarStyles = () => `.rcx-navbar-divider.rcx-divider[class] {
+	border-color: ${strokeColor('medium')};
+}`;
+
 const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
 	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
@@ -2830,6 +2852,9 @@ const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: sbFile('Sidebar/SidebarMedia/SidebarMediaController.tsx'), generate: generateSidebarMediaController },
 	{ file: sbFile('Sidebar/SidebarItem/SidebarItemAction.tsx'), generate: generateSidebarItemAction },
 	{ file: sbFile('Sidebar/Sidebar.styles.css'), generate: generateSidebarStyles, css: true },
+	{ file: sbFile('NavBar/NavBar.tsx'), generate: generateNavBar },
+	{ file: sbFile('NavBar/NavBarSection.tsx'), generate: generateNavBarSection },
+	{ file: sbFile('NavBar/NavBar.styles.css'), generate: generateNavBarStyles, css: true },
 ];
 
 for (const [dir, control] of [
