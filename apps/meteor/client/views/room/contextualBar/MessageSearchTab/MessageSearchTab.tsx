@@ -19,8 +19,10 @@ import { Virtuoso } from 'react-virtuoso';
 import LocalMessageSearchResults from './components/LocalMessageSearchResults';
 import LocalSearchIndexStatus from './components/LocalSearchIndexStatus';
 import MessageSearchForm from './components/MessageSearchForm';
-import { useLocalMessageSearchQuery } from './hooks/useLocalMessageSearchQuery';
+import { canLoadMoreLocalHits, useLocalMessageSearchQuery } from './hooks/useLocalMessageSearchQuery';
 import { useLocalSearchIndexBackend } from './hooks/useLocalSearchIndexBackend';
+import { useLocalSearchIndexRoomCatchUp } from './hooks/useLocalSearchIndexChanges';
+import { useLocalSearchIndexExpected } from './hooks/useLocalSearchIndexExpected';
 import { useMessageSearchProviderQuery } from './hooks/useMessageSearchProviderQuery';
 import { useMessageSearchQuery } from './hooks/useMessageSearchQuery';
 import ResultsLiveRegion from '../../../../components/ResultsLiveRegion';
@@ -49,9 +51,13 @@ const MessageSearchTab = () => {
 
 	const [{ searchText, globalSearch }, handleSearch] = useState({ searchText: '', globalSearch: false });
 	const indexBackend = useLocalSearchIndexBackend();
+	const indexExpected = useLocalSearchIndexExpected();
 	const localBackend = room.encrypted ? indexBackend : undefined;
-	const localSearch = !!localBackend;
+	// An encrypted room that this device searches locally never sends the search to the server, also before the index opens.
+	const localSearch = !!localBackend || (!!room.encrypted && indexExpected);
 	const localQuery = useLocalMessageSearchQuery({ backend: localBackend, searchText, limit });
+	useLocalSearchIndexRoomCatchUp(room._id, !!localBackend);
+	const canLoadMoreLocal = canLoadMoreLocalHits(localQuery, limit);
 	const {
 		isSuccess,
 		data: messageSearchData,
@@ -82,12 +88,17 @@ const MessageSearchTab = () => {
 				{providerQuery.isSuccess && localSearch && (
 					<>
 						<LocalSearchIndexStatus />
-						{searchText && localQuery.isPending && <Throbber />}
+						{searchText && (localQuery.isPending || !localBackend) && <Throbber />}
 						{searchText.trim() && localQuery.isSuccess && localQuery.data.length === 0 && (
 							<ContextualbarEmptyContent title={t('No_results_found')} />
 						)}
 						{localQuery.isSuccess && localQuery.data.length > 0 && (
-							<LocalMessageSearchResults id={searchListId} hits={localQuery.data} showUserAvatar={showUserAvatar} />
+							<LocalMessageSearchResults
+								id={searchListId}
+								hits={localQuery.data}
+								showUserAvatar={showUserAvatar}
+								onEndReached={canLoadMoreLocal ? () => setLimit((limit) => limit + pageSize) : undefined}
+							/>
 						)}
 					</>
 				)}

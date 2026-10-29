@@ -22,7 +22,7 @@ const LocalSearchIndexStatus = () => {
 		<LocalSearchIndexStatusPanel>
 			{memoryOnly && <Callout type='info'>{t('E2E_Local_Search_Memory_Only')}</Callout>}
 			{indexing && (
-				<Text fontScale='c1' color='hint' data-qa='local-search-index-progress'>
+				<Text role='status' fontScale='c1' color='hint' data-qa='local-search-index-progress'>
 					{t('E2E_Local_Search_Indexing_Progress', { done: progress.roomsDone, total: progress.rooms })}
 				</Text>
 			)}

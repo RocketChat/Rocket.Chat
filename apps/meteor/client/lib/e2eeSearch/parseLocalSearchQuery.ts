@@ -1,8 +1,10 @@
 export type LocalSearchQuery = {
 	/** The words to find, without the filters. */
 	text: string;
-	/** Lowercase usernames of `from:` filters. `me` stays `me`, the caller resolves it. */
+	/** Lowercase usernames of `from:` filters, without the `from:me` alias. */
 	usernames: string[];
+	/** The text has `from:me` (in lowercase only, as the server reads it): the logged-in user, which the caller resolves. */
+	fromSelf?: true;
 	/** Earliest message time in ms, inclusive. */
 	from?: number;
 	/** Latest message time in ms, inclusive. */
@@ -34,11 +36,17 @@ const startOfDay = ([day, month, year]: DateParts, utcOffset: number, addDays = 
  */
 export const parseLocalSearchQuery = (searchText: string, { utcOffset = 0 }: LocalSearchQueryOptions = {}): LocalSearchQuery => {
 	const usernames: string[] = [];
+	let fromSelf = false;
 	let from: number | undefined;
 	let to: number | undefined;
 
 	const text = searchText
 		.replace(/from:([a-z0-9.\-_]+)/gi, (_, username: string) => {
+			// The server resolves only a lowercase `me` to the user. `from:Me` is a filter on a user named so.
+			if (username === 'me') {
+				fromSelf = true;
+				return '';
+			}
 			const name = username.toLowerCase();
 			if (!usernames.includes(name)) usernames.push(name);
 			return '';
@@ -59,5 +67,11 @@ export const parseLocalSearchQuery = (searchText: string, { utcOffset = 0 }: Loc
 		.replace(/\s+/g, ' ')
 		.trim();
 
-	return { text, usernames, ...(from !== undefined && { from }), ...(to !== undefined && { to }) };
+	return {
+		text,
+		usernames,
+		...(fromSelf ? { fromSelf: true as const } : {}),
+		...(from !== undefined && { from }),
+		...(to !== undefined && { to }),
+	};
 };

@@ -32,7 +32,12 @@ describe('parseLocalSearchQuery', () => {
 	});
 
 	it('does not read ISO dates, like the server message search: they stay in the text', () => {
-		expect(parseLocalSearchQuery('from:me after:2026-10-26')).toEqual({ text: 'after:2026-10-26', usernames: ['me'] });
+		expect(parseLocalSearchQuery('from:me after:2026-10-26')).toEqual({ text: 'after:2026-10-26', usernames: [], fromSelf: true });
+	});
+
+	it('reads only a lowercase from:me as the logged-in user, like the server, and another spelling as a username', () => {
+		expect(parseLocalSearchQuery('from:Me from:ME')).toEqual({ text: '', usernames: ['me'] });
+		expect(parseLocalSearchQuery('from:me from:Bob')).toEqual({ text: '', usernames: ['bob'], fromSelf: true });
 	});
 
 	it('keeps the last before: and the last after:, and on: replaces both, like the server message search', () => {

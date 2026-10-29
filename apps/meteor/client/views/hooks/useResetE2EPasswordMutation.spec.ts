@@ -3,12 +3,6 @@ import { act, renderHook, waitFor } from '@testing-library/react';
 
 import { useResetE2EPasswordMutation } from './useResetE2EPasswordMutation';
 
-const mockWipe = jest.fn(async () => true);
-
-jest.mock('../../lib/e2ee/rocketchat.e2e', () => ({
-	e2eSearchIndexRuntime: { wipe: () => mockWipe() },
-}));
-
 afterEach(() => {
 	jest.clearAllMocks();
 });
@@ -26,10 +20,10 @@ const renderReset = (endpoint: () => Promise<null>) => {
 	return { result, logout };
 };
 
-// The desktop app replaces the index of an old E2E key at the next open, so the key reset does not
-// wipe the local search index. A cancelled reset keeps the index.
-describe('useResetE2EPasswordMutation and the local search index', () => {
-	it('keeps the local search index when the key reset is cancelled', async () => {
+// The key reset does not touch the local search index: the desktop app replaces the index of an old E2E key at the
+// next open. These specs cover what the hook does: the reset call and the logout after it.
+describe('useResetE2EPasswordMutation', () => {
+	it('does not log out when the key reset is cancelled', async () => {
 		const endpoint = jest.fn(async (): Promise<null> => {
 			throw new Error('totp-canceled');
 		});
@@ -39,11 +33,10 @@ describe('useResetE2EPasswordMutation and the local search index', () => {
 
 		await waitFor(() => expect(result.current.isError).toBe(true));
 		expect(endpoint).toHaveBeenCalledTimes(1);
-		expect(mockWipe).not.toHaveBeenCalled();
 		expect(logout).not.toHaveBeenCalled();
 	});
 
-	it('does not wipe the local search index around a key reset', async () => {
+	it('logs out after the key reset', async () => {
 		const endpoint = jest.fn(async () => null);
 		const { result, logout } = renderReset(endpoint);
 
@@ -51,7 +44,6 @@ describe('useResetE2EPasswordMutation and the local search index', () => {
 
 		await waitFor(() => expect(result.current.isSuccess).toBe(true));
 		expect(endpoint).toHaveBeenCalledTimes(1);
-		expect(mockWipe).not.toHaveBeenCalled();
 		await waitFor(() => expect(logout).toHaveBeenCalledTimes(1));
 	});
 });

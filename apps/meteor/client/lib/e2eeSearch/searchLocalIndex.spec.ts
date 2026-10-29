@@ -164,12 +164,12 @@ describe('searchLocalIndex filters', () => {
 		const hits = await searchLocalIndex(backend, {
 			searchText: 'invoice from:bob from:me',
 			rid: 'r1',
-			limit: 1,
+			limit: 2,
 			self: { uid: 'u-carol' },
 			resolveUid: (username) => (username === 'bob' ? 'u-bob' : undefined),
 		});
 
-		expect(hits).toEqual([authorHit('m1', 'u-bob', 'bob')]);
+		expect(hits).toEqual([authorHit('m1', 'u-bob', 'bob'), authorHit('m2', 'u-carol', 'carol')]);
 	});
 
 	it('searches the room with an empty text when the text has only filters', async () => {
@@ -194,5 +194,66 @@ describe('searchLocalIndex filters', () => {
 		await searchLocalIndex(backend, { searchText: 'before:01-01-2025', rid: 'r1', limit: 10 });
 
 		expect(backend.search).toHaveBeenCalledWith({ text: '', rid: 'r1', order: 'recent', limit: 10, to: Date.UTC(2025, 0, 1) });
+	});
+	describe('more than one index page', () => {
+		const pagedBackend = (count: number) => {
+			const all = Array.from({ length: count }, (_, i): E2EESearchHit => ({
+				id: `m${i}`,
+				rid: 'r1',
+				ts: 10_000 - i,
+				snippet: `m${i}`,
+				uid: 'u1',
+				username: 'alice',
+			}));
+			return {
+				search: jest.fn(async (query: E2EESearchQuery) =>
+					all.filter((item) => query.to === undefined || item.ts <= query.to).slice(0, Math.min(100, query.limit ?? 50)),
+				),
+			} as unknown as jest.Mocked<ISearchIndexBackend>;
+		};
+
+		it('reads older pages until it has the limit, past the 100 hits of one index call', async () => {
+			const backend = pagedBackend(250);
+
+			const hits = await searchLocalIndex(backend, { searchText: 'needle', rid: 'r1', limit: 230 });
+
+			expect(hits.map(({ id }) => id)).toEqual(Array.from({ length: 230 }, (_, i) => `m${i}`));
+			expect(backend.search.mock.calls.map(([query]) => query.limit)).toEqual([100, 100, 100]);
+		});
+
+		it('stops at the end of the matches', async () => {
+			const backend = pagedBackend(120);
+
+			await expect(searchLocalIndex(backend, { searchText: 'needle', rid: 'r1', limit: 300 })).resolves.toHaveLength(120);
+		});
+
+		it('stops reading pages when the search is replaced', async () => {
+			const backend = pagedBackend(1000);
+			const controller = new AbortController();
+			backend.search.mockImplementationOnce(async () => {
+				controller.abort();
+				return Array.from({ length: 100 }, (_, i): E2EESearchHit => ({
+					id: `x${i}`,
+					rid: 'r1',
+					ts: 5000 - i,
+					snippet: '',
+					uid: 'u9',
+					username: 'zed',
+				}));
+			});
+
+			await expect(
+				searchLocalIndex(backend, { searchText: 'needle from:nobody', rid: 'r1', limit: 10, signal: controller.signal }),
+			).rejects.toThrow();
+			expect(backend.search).toHaveBeenCalledTimes(1);
+		});
+	});
+
+	it('reads from:Me as a username, not as the logged-in user, like the server', async () => {
+		const backend = createBackend([authorHit('m1', 'u-self', 'jean')]);
+
+		await expect(
+			searchLocalIndex(backend, { searchText: 'from:Me', rid: 'r1', limit: 10, self: { uid: 'u-self' }, resolveUid: () => undefined }),
+		).resolves.toEqual([]);
 	});
 });

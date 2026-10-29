@@ -1,7 +1,7 @@
 import type { IMessage, IMessageSearchProvider, IUser } from '@rocket.chat/core-typings';
 import type { E2EESearchDoc, ISearchIndexBackend } from '@rocket.chat/desktop-api';
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { render, screen, within } from '@testing-library/react';
+import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import MessageSearchTab from './MessageSearchTab';
@@ -12,6 +12,16 @@ import { toSearchDoc } from '../../../../lib/e2eeSearch/toSearchDoc';
 let mockBackend: ISearchIndexBackend | undefined;
 let mockProgress: SearchIndexProgress | undefined;
 let mockEncryptedAtRest: boolean | undefined;
+let mockIndexExpected = false;
+const mockRoomCatchUp = jest.fn();
+const mockIndexVersion = {
+	value: 0,
+	listeners: new Set<() => void>(),
+	bump() {
+		this.value++;
+		this.listeners.forEach((listener) => listener());
+	},
+};
 
 const provider: IMessageSearchProvider = {
 	key: 'defaultProvider',
@@ -31,6 +41,22 @@ jest.mock('./hooks/useLocalSearchIndexBackend', () => ({
 
 jest.mock('./hooks/useLocalSearchIndexProgress', () => ({
 	useLocalSearchIndexProgress: () => mockProgress,
+}));
+
+jest.mock('./hooks/useLocalSearchIndexChanges', () => ({
+	useLocalSearchIndexVersion: () =>
+		jest.requireActual<typeof import('react')>('react').useSyncExternalStore(
+			(listener: () => void) => {
+				mockIndexVersion.listeners.add(listener);
+				return () => mockIndexVersion.listeners.delete(listener);
+			},
+			() => mockIndexVersion.value,
+		),
+	useLocalSearchIndexRoomCatchUp: (rid: string, enabled: boolean) => mockRoomCatchUp(rid, enabled),
+}));
+
+jest.mock('./hooks/useLocalSearchIndexExpected', () => ({
+	useLocalSearchIndexExpected: () => mockIndexExpected,
 }));
 
 jest.mock('./hooks/useLocalSearchIndexEncryptedAtRest', () => ({
@@ -139,6 +165,35 @@ describe('MessageSearchTab local search', () => {
 		});
 	});
 
+	it('loads more hits as the list reaches its end, also past the first page of the setting PageSize', async () => {
+		await mockBackend?.upsert(
+			Array.from({ length: 25 }, (_, i) => message(`page${i}`, 'u-bob', new Date(2026, 0, 1, 12, i), `paged ${i}`)),
+		);
+		renderTab();
+
+		await userEvent.type(screen.getByRole('textbox', { name: 'Search_Messages' }), 'paged');
+
+		await waitFor(() => expect(screen.getAllByRole('button', { name: /paged/ })).toHaveLength(25), { timeout: 5000 });
+	});
+
+	it('runs the search again when the index changes, so a hit that the indexing adds later shows', async () => {
+		renderTab();
+		await userEvent.type(screen.getByRole('textbox', { name: 'Search_Messages' }), 'later');
+		expect(await screen.findByText('No_results_found')).toBeInTheDocument();
+
+		await mockBackend?.upsert([message('late', 'u-bob', new Date(2026, 0, 2), 'indexed later')]);
+		act(() => mockIndexVersion.bump());
+
+		expect(await screen.findByRole('button', { name: /indexed later/ })).toBeInTheDocument();
+	});
+
+	it('asks for a catch-up of the room while its local search is open', async () => {
+		renderTab();
+
+		expect(await screen.findByRole('textbox', { name: 'Search_Messages' })).toBeInTheDocument();
+		expect(mockRoomCatchUp).toHaveBeenCalledWith('r1', true);
+	});
+
 	it('does not search the local index for an empty text', async () => {
 		renderTab();
 
@@ -238,6 +293,27 @@ describe('MessageSearchTab local search of file messages', () => {
 		const [hit] = await screen.findAllByRole('button', { name: /board/ });
 		expect(within(hit).getByText('board', { selector: 'mark' })).toBeInTheDocument();
 		expect(hit).toHaveTextContent('budget numbers for the board');
+	});
+});
+
+describe('MessageSearchTab while the local index of this device is not open yet', () => {
+	afterEach(() => {
+		mockIndexExpected = false;
+	});
+
+	it('sends no search of the encrypted room to the server', async () => {
+		mockBackend = undefined;
+		mockIndexExpected = true;
+		const serverSearch = jest.fn(() => ({ message: { docs: [] } }));
+		render(<MessageSearchTab />, {
+			wrapper: mockAppRoot().withUser(self).withSetting('PageSize', 10).withMethod('rocketchatSearch.search', serverSearch).build(),
+		});
+
+		await userEvent.type(screen.getByRole('textbox', { name: 'Search_Messages' }), 'secret words');
+		await new Promise((resolve) => setTimeout(resolve, 400));
+
+		expect(serverSearch).not.toHaveBeenCalled();
+		expect(screen.queryByText('Encrypted_content_cannot_be_searched')).not.toBeInTheDocument();
 	});
 });
 
