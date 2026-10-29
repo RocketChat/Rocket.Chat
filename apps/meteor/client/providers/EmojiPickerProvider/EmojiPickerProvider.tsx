@@ -1,4 +1,5 @@
 import { useDebouncedState, useStableCallback, useLocalStorage } from '@rocket.chat/fuselage-hooks';
+import { EmojiRegistryContext } from '@rocket.chat/ui-emoji-picker';
 import type { ReactNode, ContextType } from 'react';
 import { useState, useCallback, useMemo, useRef, useSyncExternalStore } from 'react';
 
@@ -156,10 +157,12 @@ const EmojiPickerProvider = ({ children }: EmojiPickerProviderProps) => {
 	);
 
 	return (
-		<EmojiPickerContext.Provider value={contextValue}>
-			{children}
-			{emojiPicker}
-		</EmojiPickerContext.Provider>
+		<EmojiRegistryContext.Provider value={emoji}>
+			<EmojiPickerContext.Provider value={contextValue}>
+				{children}
+				{emojiPicker}
+			</EmojiPickerContext.Provider>
+		</EmojiRegistryContext.Provider>
 	);
 };
 
