@@ -10,7 +10,6 @@ import {
 	ModalHeader,
 	ModalTitle,
 } from '@rocket.chat/fuselage';
-import type { ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
