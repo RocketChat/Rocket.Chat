@@ -305,6 +305,9 @@ const _saveUser = (session?: ClientSession) =>
 				if (userData.active !== undefined) {
 					updater.set('active', userData.active);
 				}
+				if (userData.username && userData.username !== oldUserData.username) {
+					updater.set('username', userData.username);
+				}
 				if (updater.hasChanges()) {
 					options.auditStore.setUpdateFilter(updater.getRawUpdateFilter());
 					void options.auditStore.commitAuditEvent();

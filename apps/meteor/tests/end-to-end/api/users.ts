@@ -18,6 +18,7 @@ import { imgURL, tiffURL } from '../../data/interactions';
 import { createAgent, makeAgentAvailable } from '../../data/livechat/rooms';
 import { removeAgent, getAgent } from '../../data/livechat/users';
 import { updatePermission, updateSetting, restorePermissionToRoles, getSettingValueById } from '../../data/permissions.helper';
+import { retry } from '../../data/retry';
 import type { ActionRoomParams } from '../../data/rooms.helper';
 import { actionRoom, createRoom, deleteRoom } from '../../data/rooms.helper';
 import { createTeam, deleteTeam } from '../../data/teams.helper';
@@ -3157,6 +3158,29 @@ describe('[Users]', () => {
 				.expect((res) => {
 					expect(res.body).to.have.property('success', true);
 				});
+		});
+
+		it('should record a username-only change in the audit log', async () => {
+			const username = `audited.name.${Date.now()}`;
+
+			await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: { username },
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			await retry('wait for the user.changed audit event', async () => {
+				const event = await withDatabase((db) =>
+					db
+						.collection('rocketchat_server_events')
+						.findOne({ t: 'user.changed', data: { $elemMatch: { 'key': 'operation', 'value.$set.username': username } } }),
+				);
+				expect(event).to.not.be.null;
+			});
 		});
 
 		it('should return an error when trying update user real name and it is not allowed', async () => {
