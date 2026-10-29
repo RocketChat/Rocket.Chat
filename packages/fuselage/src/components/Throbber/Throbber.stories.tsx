@@ -1,5 +1,4 @@
 import type { Meta, StoryObj } from '@storybook/react';
-import { action } from 'storybook/actions';
 
 import { PropsVariationSection } from '../../../.storybook/helpers';
 import { Box } from '../Box';
@@ -71,7 +70,7 @@ export const States: Story = {
 	render: () => (
 		<PropsVariationSection
 			component={Throbber}
-			common={{ onClick: action('click') }}
+			common={{}}
 			yAxis={{
 				'default': {},
 				'3 circles + x40': { circleCount: 3, size: 'x40' },
