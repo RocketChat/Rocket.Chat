@@ -3131,6 +3131,86 @@ const generateContextualbarTitle = () =>
 		...font('h5'),
 	});
 
+const bannerKinds = ['info', 'success', 'warning', 'danger'];
+const bannerColor = (kind: string) => theme(`banner-colors-${kind}-color`, statusFontOf(kind));
+
+const genBanner = () =>
+	part(
+		'BannerFrame',
+		{
+			...flexBox,
+			flexDirection: 'row',
+			flexWrap: 'nowrap',
+			justifyContent: 'space-between',
+			alignItems: 'flex-start',
+			flexGrow: 0,
+			flexShrink: 1,
+			flexBasis: 'auto',
+			boxSizing: 'border-box',
+			paddingInline: px(16),
+			color: theme('banner-colors-neutral-color', fontDefault),
+			borderTopWidth: borderWidth('large')!,
+			borderTopStyle: 'solid',
+			borderBottomWidth: borderWidth('default')!,
+			borderBottomStyle: 'solid',
+			borderBottomColor: strokeExtraLight,
+			backgroundColor: theme('banner-colors-neutral-background-color', surfaceOf('tint')),
+			fontFamily: fontFamily('sans')!,
+		},
+		{
+			tone: {
+				neutral: { borderTopColor: 'transparent' },
+				...Object.fromEntries(bannerKinds.map((kind) => [kind, { borderTopColor: bannerColor(kind) }])),
+			},
+			inline: { true: { paddingBlock: px(12) }, false: { paddingBlock: px(14) } },
+			actionable: { true: { cursor: 'pointer' }, false: {} },
+		},
+	);
+
+const genBannerIcon = () =>
+	part(
+		'BannerIconFrame',
+		{ ...blockBox, ...contentBox, paddingBlock: px(8), paddingInlineEnd: px(12) },
+		{ tone: { neutral: {}, ...Object.fromEntries(bannerKinds.map((kind) => [kind, { color: bannerColor(kind) }])) } },
+	);
+
+const genBannerContent = () =>
+	part(
+		'BannerContentFrame',
+		{ ...blockBox, ...contentBox, flexGrow: 1, alignSelf: 'center', ...font('p2') },
+		{ inline: { true: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }, false: {} } },
+	);
+
+const genBannerTitle = () =>
+	part(
+		'BannerTitleFrame',
+		{ render: 'h6', ...blockBox, ...contentBox, margin: 0, paddingBlock: 0, paddingInlineStart: 0, ...font('h5') },
+		{ inline: { true: { display: 'inline', paddingInlineEnd: px(8) }, false: { paddingInlineEnd: 0 } } },
+	);
+
+const genBannerLink = () => frameCode('BannerLinkFrame', 'Text', { render: 'a', ...inlineBase, ...contentBox, paddingLeft: px(10) });
+
+const genBannerCloseButton = () =>
+	part(
+		'BannerCloseButtonFrame',
+		{ ...blockBox, ...contentBox, paddingInline: px(8) },
+		{ inline: { true: { marginBlock: px(-4), paddingBlock: 0 }, false: { paddingBlock: px(6) } } },
+	);
+
+const generateBanner = () =>
+	[genBanner, genBannerIcon, genBannerContent, genBannerTitle, genBannerLink, genBannerCloseButton]
+		.map((generate) => generate())
+		.join('\n\n');
+
+const generateBannerCss = () => `.rcx-banner {
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.rcx-banner.rcx-banner[hidden] {
+	display: none;
+}`;
+
 const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
 	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
@@ -3254,6 +3334,8 @@ const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Contextualbar/ContextualbarSection.tsx'), generate: generateContextualbarSection },
 	{ file: join(import.meta.dirname, '../src/components/Contextualbar/ContextualbarSkeleton.tsx'), generate: generateContextualbarSkeleton },
 	{ file: join(import.meta.dirname, '../src/components/Contextualbar/ContextualbarTitle.tsx'), generate: generateContextualbarTitle },
+	{ file: join(import.meta.dirname, '../src/components/Banner/Banner.tsx'), generate: generateBanner },
+	{ file: join(import.meta.dirname, '../src/components/Banner/Banner.styles.css'), generate: generateBannerCss, css: true },
 ];
 
 for (const [dir, control] of [
