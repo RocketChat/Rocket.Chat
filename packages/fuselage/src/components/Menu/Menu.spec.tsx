@@ -3,6 +3,7 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
+import { Menu, MenuItem } from '.';
 import * as stories from './Menu.stories';
 import { withResizeObserverMock } from '../../../mocks/withResizeObserverMock';
 import { render } from '../../testing';
@@ -305,6 +306,91 @@ describe('[Menu Component]', () => {
 			// both the submenu and the root menu close
 			await waitFor(() => expect(screen.queryByText('Inbox')).not.toBeInTheDocument());
 			expect(screen.queryByText('New')).not.toBeInTheDocument();
+		});
+
+		it('should render items in a data-backed submenu built with childItems', async () => {
+			const user = userEvent.setup();
+			const childItems = [
+				{ id: 'sub-1', name: 'Data Sub Item 1' },
+				{ id: 'sub-2', name: 'Data Sub Item 2' },
+			];
+
+			render(
+				<Menu>
+					<MenuItem key='data-submenu' title='Data Submenu' childItems={childItems}>
+						{(item: any) => <MenuItem key={item.id}>{item.name}</MenuItem>}
+					</MenuItem>
+				</Menu>,
+			);
+
+			await user.click(screen.getByRole('button'));
+			const trigger = await screen.findByRole('menuitem', { name: 'Data Submenu' });
+			expect(trigger).toHaveAttribute('aria-haspopup', 'menu');
+
+			await user.keyboard('{ArrowDown}{ArrowRight}');
+			expect(await screen.findByRole('menuitem', { name: 'Data Sub Item 1' })).toBeInTheDocument();
+			expect(await screen.findByRole('menuitem', { name: 'Data Sub Item 2' })).toBeInTheDocument();
+		});
+
+		it('should render a data-backed submenu whose childItems can only be iterated once', async () => {
+			const user = userEvent.setup();
+			function* generateChildItems() {
+				yield { id: 'sub-1', name: 'Data Sub Item 1' };
+				yield { id: 'sub-2', name: 'Data Sub Item 2' };
+			}
+
+			render(
+				<Menu>
+					<MenuItem key='data-submenu' title='Data Submenu' childItems={generateChildItems()}>
+						{(item: any) => <MenuItem key={item.id}>{item.name}</MenuItem>}
+					</MenuItem>
+				</Menu>,
+			);
+
+			await user.click(screen.getByRole('button'));
+			await screen.findByRole('menuitem', { name: 'Data Submenu' });
+
+			await user.keyboard('{ArrowDown}{ArrowRight}');
+			expect(await screen.findByRole('menuitem', { name: 'Data Sub Item 1' })).toBeInTheDocument();
+
+			await user.keyboard('{ArrowLeft}');
+			await waitFor(() => expect(screen.queryByRole('menuitem', { name: 'Data Sub Item 1' })).not.toBeInTheDocument());
+
+			await user.keyboard('{ArrowRight}');
+			expect(await screen.findByRole('menuitem', { name: 'Data Sub Item 1' })).toBeInTheDocument();
+			expect(await screen.findByRole('menuitem', { name: 'Data Sub Item 2' })).toBeInTheDocument();
+		});
+
+		it('should keep single-use childItems after the root menu closes and reopens', async () => {
+			const user = userEvent.setup();
+			function* generateChildItems() {
+				yield { id: 'sub-1', name: 'Data Sub Item 1' };
+				yield { id: 'sub-2', name: 'Data Sub Item 2' };
+			}
+			const childItems = generateChildItems();
+
+			render(
+				<Menu>
+					<MenuItem key='data-submenu' title='Data Submenu' childItems={childItems}>
+						{(item: any) => <MenuItem key={item.id}>{item.name}</MenuItem>}
+					</MenuItem>
+				</Menu>,
+			);
+
+			const button = screen.getByRole('button');
+			await user.click(button);
+			await screen.findByRole('menuitem', { name: 'Data Submenu' });
+			await user.keyboard('{ArrowDown}{ArrowRight}');
+			expect(await screen.findByRole('menuitem', { name: 'Data Sub Item 1' })).toBeInTheDocument();
+
+			await user.click(document.body);
+			await waitFor(() => expect(screen.queryByRole('menuitem', { name: 'Data Submenu' })).not.toBeInTheDocument());
+
+			await user.click(button);
+			await screen.findByRole('menuitem', { name: 'Data Submenu' });
+			await user.keyboard('{ArrowDown}{ArrowRight}');
+			expect(await screen.findByRole('menuitem', { name: 'Data Sub Item 1' })).toBeInTheDocument();
+			expect(await screen.findByRole('menuitem', { name: 'Data Sub Item 2' })).toBeInTheDocument();
 		});
 	});
 
