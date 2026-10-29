@@ -59,6 +59,8 @@ type KeyPair = {
 
 const ROOM_KEY_EXCHANGE_SIZE = 10;
 
+const getQuoteChainLimit = (): number => Math.max(0, settings.peek<number>('Message_QuoteChainLimit') ?? 2);
+
 class E2E extends Emitter {
 	private userId: string | false = false;
 
@@ -773,7 +775,14 @@ class E2E extends Emitter {
 		return e2eRoom.decryptContent(file);
 	}
 
-	async decryptMessage(message: IMessage | IE2EEMessage): Promise<IMessage> {
+	/**
+	 * `quoteDepth` is how many levels of quoted message links the decrypt follows. A quote deeper than the quote chain limit
+	 * is never shown, and each level is a request, so a chain of messages that quote each other stops there.
+	 */
+	async decryptMessage(
+		message: IMessage | IE2EEMessage,
+		{ quoteDepth = getQuoteChainLimit() }: { quoteDepth?: number } = {},
+	): Promise<IMessage> {
 		// A deleted message that stays as a placeholder arrives as an update: its old text leaves the local search index.
 		if (isDeletionPlaceholder(message)) {
 			e2eSearchIndexWriter.index(message);
@@ -794,7 +803,7 @@ class E2E extends Emitter {
 
 		const decryptedMessage = (await e2eRoom.decryptMessage(message)) as IE2EEMessage;
 
-		const decryptedMessageWithQuote = await this.parseQuoteAttachment(decryptedMessage);
+		const decryptedMessageWithQuote = quoteDepth > 0 ? await this.parseQuoteAttachment(decryptedMessage, quoteDepth) : decryptedMessage;
 
 		// A logout or another user's login ended the session that started this decrypt: its words stay out of the index.
 		if (this.isStale(generation)) {
@@ -873,8 +882,8 @@ class E2E extends Emitter {
 		banners.closeById('e2e');
 	}
 
-	async parseQuoteAttachment(message: IE2EEMessage): Promise<IE2EEMessage> {
-		if (!message?.msg) {
+	async parseQuoteAttachment(message: IE2EEMessage, quoteDepth = getQuoteChainLimit()): Promise<IE2EEMessage> {
+		if (!message?.msg || quoteDepth <= 0) {
 			return message;
 		}
 		const urls = message.msg.match(getMessageUrlRegex()) || [];
@@ -915,7 +924,7 @@ class E2E extends Emitter {
 					return;
 				}
 
-				const decryptedQuoteMessage = await this.decryptMessage(mapMessageFromApi(quotedMessage));
+				const decryptedQuoteMessage = await this.decryptMessage(mapMessageFromApi(quotedMessage), { quoteDepth: quoteDepth - 1 });
 
 				message.attachments = message.attachments || [];
 				const useRealName = settings.peek('UI_Use_Real_Name');
@@ -926,7 +935,7 @@ class E2E extends Emitter {
 					getUserAvatarURL(decryptedQuoteMessage.u.username || '') as string,
 				);
 
-				message.attachments.push(limitQuoteChain(quoteAttachment, settings.peek('Message_QuoteChainLimit') ?? 2));
+				message.attachments.push(limitQuoteChain(quoteAttachment, getQuoteChainLimit()));
 			}),
 		);
 
@@ -1101,7 +1110,8 @@ export const e2eSearchIndexRuntime = createSearchIndexRuntime({
 		baseUrl: baseURI.replace(/\/$/, ''),
 		getCredentials: () => APIClient.getCredentials(),
 	}),
-	decryptMessage: (message) => e2e.decryptMessage(message),
+	// The index leaves quotes out, so the crawler follows no quoted message links.
+	decryptMessage: (message) => e2e.decryptMessage(message, { quoteDepth: 0 }),
 	getRooms: () => toSearchIndexRooms(Subscriptions.state.records.values()),
 	getSubscribedRids: () => new Set(Array.from(Subscriptions.state.records.values(), (sub) => sub.rid)),
 	whenRoomsReady: () =>

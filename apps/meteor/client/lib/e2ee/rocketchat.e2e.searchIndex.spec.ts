@@ -5,6 +5,7 @@ import { generate } from './crypto/rsa';
 import { e2e, e2eSearchIndexSession, e2eSearchIndexWriter } from './rocketchat.e2e';
 import { E2ERoom } from './rocketchat.e2e.room';
 import { PublicSettings, Rooms, Subscriptions } from '../../stores';
+import { sdk } from '../SDKClient';
 import { setSearchIndexOptIn } from '../e2eeSearch/searchIndexOptIn';
 import { deriveSearchIndexWrapKey } from '../e2eeSearch/searchIndexSession';
 import { settings } from '../settings';
@@ -411,5 +412,47 @@ describe('E2E client and the local search index', () => {
 		expect(e2eSearchIndexSession.getActiveBackend()).toBeDefined();
 
 		await e2e.stopClient();
+	});
+	describe('quoted message links', () => {
+		const loopingMessage = () => ({
+			_id: 'm-loop',
+			rid: 'r1',
+			t: 'e2e',
+			e2e: 'pending',
+			msg: '',
+			u: { _id: 'u2', username: 'bob' },
+			ts: new Date(),
+			_updatedAt: new Date(),
+		});
+
+		beforeEach(() => {
+			const peek = settings.peek as jest.MockedFunction<typeof settings.peek>;
+			const allowed = peek.getMockImplementation();
+			peek.mockImplementation(((id: string) => {
+				if (id === 'Site_Url') return 'http://localhost:3000';
+				if (id === 'Message_QuoteChainLimit') return 2;
+				return allowed?.(id);
+			}) as never);
+			// The message quotes itself, so each decrypt finds the same link again.
+			jest.spyOn(e2e, 'getInstanceByRoomId').mockResolvedValue({
+				decryptMessage: jest.fn(async (message: object) => ({ ...message, e2e: 'done', msg: 'see http://localhost:3000/?msg=m-loop' })),
+			} as never);
+			jest.spyOn(sdk.rest, 'get').mockImplementation((async () => ({
+				message: { ...loopingMessage(), ts: new Date().toISOString(), _updatedAt: new Date().toISOString() },
+			})) as never);
+		});
+
+		it('follows a message that quotes itself only down to the quote chain limit', async () => {
+			await e2e.decryptMessage(loopingMessage() as never);
+
+			expect(sdk.rest.get).toHaveBeenCalledTimes(2);
+		});
+
+		it('follows no quoted message link when the quote depth is 0, as the search index crawler asks', async () => {
+			const decrypted = await e2e.decryptMessage(loopingMessage() as never, { quoteDepth: 0 });
+
+			expect(sdk.rest.get).not.toHaveBeenCalled();
+			expect(decrypted.msg).toBe('see http://localhost:3000/?msg=m-loop');
+		});
 	});
 });
