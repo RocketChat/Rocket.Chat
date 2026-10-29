@@ -4579,6 +4579,49 @@ describe('Threads', () => {
 			filterThreadsByText(text);
 		});
 
+		describe('filtered by drafts', () => {
+			const getDraftThreads = async () =>
+				(
+					await request
+						.get(api('chat.getThreadsList'))
+						.set(credentials)
+						.query({ rid: testChannel._id, type: 'drafts' })
+						.expect('Content-Type', 'application/json')
+						.expect(200)
+				).body;
+
+			const saveThreadDraft = (draft: string) =>
+				request.post(api('rooms.saveDraft')).set(credentials).send({ rid: testChannel._id, draft, tmid: threadMessage.tmid }).expect(200);
+
+			after(() => saveThreadDraft(''));
+
+			it('should return no threads when the user has no thread drafts', async () => {
+				const body = await getDraftThreads();
+
+				expect(body).to.have.property('success', true);
+				expect(body.threads).to.have.lengthOf(0);
+				expect(body).to.have.property('total', 0);
+			});
+
+			it('should return only the threads the user has a draft in', async () => {
+				await saveThreadDraft(`thread draft ${Date.now()}`);
+
+				const body = await getDraftThreads();
+
+				expect(body.threads).to.have.lengthOf(1);
+				expect(body.threads[0]._id).to.be.equal(threadMessage.tmid);
+				expect(body).to.have.property('total', 1);
+			});
+
+			it('should stop returning a thread once its draft is cleared', async () => {
+				await saveThreadDraft('');
+
+				const body = await getDraftThreads();
+
+				expect(body.threads).to.have.lengthOf(0);
+			});
+		});
+
 		it('should return an empty thread list', async () => {
 			await updatePermission('view-c-room', ['admin', 'user']);
 

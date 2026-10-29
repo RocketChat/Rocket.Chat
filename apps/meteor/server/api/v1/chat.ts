@@ -1136,10 +1136,16 @@ const chatEndpoints = API.v1
 				throw new ClientSafeError('error-not-allowed', 'Not Allowed');
 			}
 
+			const subscription =
+				type === 'unread' || type === 'drafts'
+					? await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id, { projection: { tunread: 1, threadDrafts: 1 } })
+					: null;
+
 			const typeThread = {
 				_hidden: { $ne: true },
 				...(type === 'following' && { replies: { $in: [this.userId] } }),
-				...(type === 'unread' && { _id: { $in: (await Subscriptions.findOneByRoomIdAndUserId(room._id, user._id))?.tunread || [] } }),
+				...(type === 'unread' && { _id: { $in: subscription?.tunread || [] } }),
+				...(type === 'drafts' && { _id: { $in: Object.keys(subscription?.threadDrafts ?? {}) } }),
 				msg: new RegExp(escapeRegExp(text || ''), 'i'),
 			};
 
