@@ -11,6 +11,7 @@ export type MessageGenericPreviewTitleProps = {
 // Declared where they render: zero-runtime only erases a `styled()` whose every use is in its own module
 const MessageGenericPreviewTitleFrame = styled(Text, {
 	render: 'span',
+	boxSizing: 'content-box',
 	display: 'block',
 	wordWrap: 'normal',
 	overflow: 'hidden',
@@ -38,11 +39,7 @@ const MessageGenericPreviewTitle = ({ externalUrl, children, ...props }: Message
 		);
 	}
 
-	return (
-		<MessageGenericPreviewTitleFrame render={<span {...props} />} className='rcx-message-generic-preview__title'>
-			{children}
-		</MessageGenericPreviewTitleFrame>
-	);
+	return <MessageGenericPreviewTitleFrame render={<span {...props} />} className='rcx-message-generic-preview__title' />;
 };
 
 export default MessageGenericPreviewTitle;

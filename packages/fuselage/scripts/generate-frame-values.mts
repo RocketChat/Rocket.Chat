@@ -3735,6 +3735,7 @@ const generateMessage = () =>
 		{
 			render: 'div',
 			...mPlain,
+			position: 'relative',
 			alignItems: 'flex-start',
 			marginInline: px(2),
 			paddingBlockEnd: px(4),
@@ -3867,7 +3868,15 @@ const generateMessageBlock = () =>
 const generateMessageEmoji = () =>
 	text(
 		'MessageEmojiFrame',
-		{ render: 'span', display: 'inline-block', whiteSpace: 'normal', wordWrap: 'normal', marginInline: px(2), backgroundSize: 'contain' },
+		{
+			render: 'span',
+			boxSizing: 'content-box',
+			display: 'inline-block',
+			whiteSpace: 'inherit',
+			wordWrap: 'inherit',
+			marginInline: px(2),
+			backgroundSize: 'contain',
+		},
 		{
 			big: {
 				true: { fontSize: size('x44')!, lineHeight: size('x48')!, width: size('x44')!, height: size('x44')! },
@@ -4185,7 +4194,7 @@ const reactionBase = {
 const reactionLook = (look: 'default' | 'mine') => ({
 	color: look === 'mine' ? theme('message-reaction-color', mFont('default')) : mFont('hint'),
 	borderColor: {
-		'default': look === 'mine' ? theme('message-reaction-border-color', mStroke('dark')) : mStroke('light'),
+		'default': mStroke('light'),
 		'hover': reactionHoverBorder,
 		'focus-visible': mStroke('highlight'),
 	},
@@ -4206,9 +4215,10 @@ const generateMessageReactionCounter = () =>
 const generateMessageReactionEmoji = () =>
 	text('MessageReactionEmojiFrame', {
 		render: 'span',
+		boxSizing: 'content-box',
 		display: 'block',
-		whiteSpace: 'normal',
-		wordWrap: 'normal',
+		whiteSpace: 'inherit',
+		wordWrap: 'inherit',
 		fontSize: size('x12')!,
 		lineHeight: size('x16')!,
 		width: size('x16')!,
@@ -4273,6 +4283,7 @@ const generateMessageGenericPreviewContent = () =>
 const generateMessageGenericPreviewTitle = () =>
 	text('MessageGenericPreviewTitleFrame', {
 		render: 'span',
+		boxSizing: 'content-box',
 		...mInline,
 		...mTruncate,
 		display: 'block',
@@ -4573,6 +4584,7 @@ const generateMessageStatusIndicator = () =>
 const generateMessageStatusIndicatorText = () =>
 	text('MessageStatusIndicatorTextFrame', {
 		render: 'span',
+		boxSizing: 'content-box',
 		...mInline,
 		whiteSpace: 'nowrap',
 		color: mFont('secondary-info'),
@@ -4603,7 +4615,8 @@ ${Object.entries(statusVariantColors)
 	)
 	.join('\n\n')}`;
 
-const generateThreadMessageBody = () => view('ThreadMessageBodyFrame', { render: 'div', ...mBox, ...mTruncate, color: mFont('default') });
+const generateThreadMessageBody = () =>
+	view('ThreadMessageBodyFrame', { render: 'div', ...mBox, display: 'block', ...mTruncate, color: mFont('default') });
 
 const generateThreadMessageContainer = () =>
 	view('ThreadMessageContainerFrame', {
@@ -4644,9 +4657,10 @@ const generateThreadMessageOrigin = () =>
 const generateThreadMessageEmoji = () =>
 	text('ThreadMessageEmojiFrame', {
 		render: 'span',
+		boxSizing: 'content-box',
 		display: 'inline-block',
-		whiteSpace: 'normal',
-		wordWrap: 'normal',
+		whiteSpace: 'inherit',
+		wordWrap: 'inherit',
 		marginInline: px(2),
 		backgroundSize: 'contain',
 		fontSize: size('x12')!,
