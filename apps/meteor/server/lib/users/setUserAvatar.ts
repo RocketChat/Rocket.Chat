@@ -203,8 +203,7 @@ export async function setUserAvatar(
 			updater.set('avatarOrigin', service);
 			updater.set('avatarETag', avatarETag);
 		} else {
-			// TODO: Why was this timeout added?
-			setTimeout(async () => Users.setAvatarData(user._id, service, avatarETag, { session }), 500);
+			await Users.setAvatarData(user._id, service, avatarETag, { session });
 		}
 
 		await onceTransactionCommitedSuccessfully(async () => {

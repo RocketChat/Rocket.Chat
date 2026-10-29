@@ -164,6 +164,8 @@ const AdminUserForm = ({ userData, onReload, context, refetchUserFormData, roleD
 			dispatchToastMessage({ type: 'success', message: t('User_updated_successfully') });
 			await updateAvatar();
 			queryClient.invalidateQueries({ queryKey: managedPresenceQueryKeys.all });
+			queryClient.invalidateQueries({ queryKey: ['users'] });
+			queryClient.invalidateQueries({ queryKey: ['users.info'] });
 			router.navigate(`/admin/users/info/${_id}`);
 			onReload();
 			refetchUserFormData?.();
