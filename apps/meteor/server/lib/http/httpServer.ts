@@ -29,8 +29,16 @@ httpApp.notFound((c) => {
  */
 export const httpServer = createNodeServer(httpApp);
 
-httpServer.setTimeout(IDLE_SOCKET_TIMEOUT_MS);
-httpServer.on('request', WebApp._timeoutAdjustmentRequestCallback);
+// CI sets it above its proxy's idle timeout, so the proxy closes keep-alive connections before the server does (PR #41399)
+const socketTimeout = parseInt(process.env.HTTP_SOCKET_TIMEOUT_MS ?? '', 10);
+if (socketTimeout > 0) {
+	httpServer.setTimeout(socketTimeout);
+	httpServer.keepAliveTimeout = socketTimeout;
+	httpServer.headersTimeout = socketTimeout + 1000;
+} else {
+	httpServer.setTimeout(IDLE_SOCKET_TIMEOUT_MS);
+	httpServer.on('request', WebApp._timeoutAdjustmentRequestCallback);
+}
 
 // lets a load balancer tell a malformed request apart from a server dropping connections
 httpServer.on('clientError', (err: NodeJS.ErrnoException, socket) => {
