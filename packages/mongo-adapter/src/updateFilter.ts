@@ -478,7 +478,7 @@ const findModTarget = (
 
 				if (!last) {
 					const nextpart = keyparts[i + 1];
-					doc[keypart] = typeof nextpart === 'number' || /\d+/.test(nextpart) ? [] : {};
+					doc[keypart] = typeof nextpart === 'number' || isNumericKey(nextpart) ? [] : {};
 				}
 			}
 		}

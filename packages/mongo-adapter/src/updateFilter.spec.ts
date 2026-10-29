@@ -85,6 +85,18 @@ describe('createTransformFromUpdateFilter', () => {
 				expect(result.address.state).toBe('NY');
 			});
 
+			it('should create a missing parent object when the next field name contains a digit', () => {
+				const updater = createTransformFromUpdateFilter({ $set: { 'settings.v2': true } });
+				const result = updater(baseDoc);
+				expect(result).toMatchObject({ settings: { v2: true } });
+			});
+
+			it('should create a missing parent array when the next field name is an index', () => {
+				const updater = createTransformFromUpdateFilter({ $set: { 'tags.0': 'a' } });
+				const result = updater(baseDoc);
+				expect(result).toMatchObject({ tags: ['a'] });
+			});
+
 			it('should throw an error when setting a property on null', () => {
 				const doc = { _id: 'test123', nullField: null };
 				const updater = createTransformFromUpdateFilter({ $set: { 'nullField.prop': 'value' } });
