@@ -8,13 +8,13 @@ import type { Response } from 'supertest';
 
 import { sleep } from '../../../lib/utils/sleep';
 import { getCredentials, api, request, credentials, apiUrl } from '../../data/api-data';
-import { followMessage, sendMessage, sendSimpleMessage, deleteMessage, updateMessage } from '../../data/chat.helper';
+import { followMessage, sendMessage, sendSimpleMessage, deleteMessage, starMessage, updateMessage } from '../../data/chat.helper';
 import { imgURL } from '../../data/interactions';
 import { mockServerHealthy, mockServerReset, mockServerSet } from '../../data/mock-server.helper';
 import { updatePermission, updateSetting } from '../../data/permissions.helper';
 import { retry } from '../../data/retry';
 import { addUserToRoom, createRoom, deleteRoom, getSubscriptionByRoomId } from '../../data/rooms.helper';
-import { password } from '../../data/user';
+import { adminUsername, password } from '../../data/user';
 import type { TestUser } from '../../data/users.helper';
 import { createUser, deleteUser, login } from '../../data/users.helper';
 
@@ -3691,6 +3691,7 @@ describe('[Chat]', () => {
 
 	describe('[/chat.getMentionedMessages]', () => {
 		let testChannel: IRoom;
+		let mentionedMessageId: IMessage['_id'];
 
 		before(async () => {
 			testChannel = (
@@ -3699,6 +3700,8 @@ describe('[Chat]', () => {
 					name: `channel.test.${Date.now()}`,
 				})
 			).body.channel;
+			const { body } = await sendMessage({ message: { rid: testChannel._id, msg: `Global mention for @${adminUsername}` } });
+			mentionedMessageId = body.message._id;
 		});
 
 		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
@@ -3715,6 +3718,7 @@ describe('[Chat]', () => {
 			expect(res.body).to.have.property('offset');
 			expect(res.body).to.have.property('total');
 			expect(res.body).to.have.property('count');
+			expect(res.body.messages.map(({ _id }: IMessage) => _id)).to.include(mentionedMessageId);
 		});
 
 		it('should return an error when the roomId is invalid', async () => {
@@ -3747,6 +3751,7 @@ describe('[Chat]', () => {
 
 	describe('[/chat.getStarredMessages]', () => {
 		let testChannel: IRoom;
+		let starredMessageId: IMessage['_id'];
 
 		before(async () => {
 			testChannel = (
@@ -3755,6 +3760,9 @@ describe('[Chat]', () => {
 					name: `channel.test.${Date.now()}`,
 				})
 			).body.channel;
+			const { body } = await sendMessage({ message: { rid: testChannel._id, msg: 'Global starred message' } });
+			starredMessageId = body.message._id;
+			await starMessage({ messageId: starredMessageId });
 		});
 
 		after(() => deleteRoom({ type: 'c', roomId: testChannel._id }));
@@ -3767,6 +3775,7 @@ describe('[Chat]', () => {
 			expect(res.body).to.have.property('offset');
 			expect(res.body).to.have.property('total');
 			expect(res.body).to.have.property('count');
+			expect(res.body.messages.map(({ _id }: IMessage) => _id)).to.include(starredMessageId);
 		});
 
 		it('should return an error when the roomId is invalid', async () => {
