@@ -117,5 +117,6 @@ it('Time select should prefill the modal with the last custom time range after p
 		expect(within(reopened).getByLabelText('End_Date')).toHaveValue('2026-03-05');
 		await userEvent.click(within(reopened).getByRole('button', { name: 'Cancel' }));
 		await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+		expect(screen.getByRole('combobox', { name: 'Time' })).toHaveTextContent(option);
 	}
 });

@@ -7,7 +7,6 @@ import { format } from 'date-fns/format';
 import { startOfDay } from 'date-fns/startOfDay';
 import { startOfWeek } from 'date-fns/startOfWeek';
 import { subMinutes } from 'date-fns/subMinutes';
-import { useState } from 'react';
 import type { ComponentProps } from 'react';
 import { Controller, useWatch } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
@@ -27,7 +26,7 @@ type DateRangeAction =
 export type TimeFilterSelectProps = { compactView?: boolean } & Omit<ComponentProps<typeof Select>, 'onChange' | 'options'>;
 
 export const TimeFilterSelect = ({ compactView = false, ...props }: TimeFilterSelectProps) => {
-	const { setValue, control } = useAppLogsFilterFormContext();
+	const { setValue, control, getValues } = useAppLogsFilterFormContext();
 	const { t } = useTranslation();
 
 	const setModal = useSetModal();
@@ -35,13 +34,6 @@ export const TimeFilterSelect = ({ compactView = false, ...props }: TimeFilterSe
 	const [timeFilter, startDate, startTime, endDate, endTime] = useWatch({
 		control,
 		name: ['timeFilter', 'startDate', 'startTime', 'endDate', 'endTime'],
-	});
-
-	const [lastCustomRange, setLastCustomRange] = useState<DateTimeModalFormData>({
-		startDate: '',
-		startTime: '00:00',
-		endDate: '',
-		endTime: '00:00',
 	});
 
 	const getTimeZoneOffset = (): string => {
@@ -101,7 +93,7 @@ export const TimeFilterSelect = ({ compactView = false, ...props }: TimeFilterSe
 		}
 
 		const range = { startDate, startTime: startTime || '00:00', endDate, endTime: endTime || '00:00' };
-		setLastCustomRange(range);
+		setValue('lastCustomRange', range);
 		setValue('timeFilter', 'custom');
 		setValue('startDate', range.startDate);
 		setValue('startTime', range.startTime);
@@ -121,7 +113,10 @@ export const TimeFilterSelect = ({ compactView = false, ...props }: TimeFilterSe
 
 	const handleChange = (action: DateRangeAction): void => {
 		if (action === 'pickCustomRange') {
-			setModal(<DateTimeModal onSave={onModalSave} onClose={() => setModal(null)} defaultValues={lastCustomRange} />);
+			const { startDate = '', startTime = '00:00', endDate = '', endTime = '00:00' } = getValues('lastCustomRange') ?? {};
+			setModal(
+				<DateTimeModal onSave={onModalSave} onClose={() => setModal(null)} defaultValues={{ startDate, startTime, endDate, endTime }} />,
+			);
 			return;
 		}
 
