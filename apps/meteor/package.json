@@ -27,13 +27,13 @@
 		".testunit:jest": "TZ=UTC TS_NODE_COMPILER_OPTIONS='{\"allowJs\": false}' jest",
 		".testunit:server": "node --test --experimental-test-isolation=none --require tsx --require ./tests/setup/chaiPlugins.ts '**/*.test.{ts,js}'",
 		".testunit:server:cov": "nyc -r text -r lcov yarn .testunit:server",
-		"build:ci": "METEOR_DEBUG_BUILD=1 METEOR_DISABLE_OPTIMISTIC_CACHING=1 meteor build --verbose --server-only --directory /tmp/dist",
+		"build:ci": "yarn build:client && METEOR_DEBUG_BUILD=1 METEOR_DISABLE_OPTIMISTIC_CACHING=1 meteor build --verbose --server-only --directory /tmp/dist",
+		"build:client": "node vite/buildForServer.mjs",
 		"build:vite": "vite build --config vite/vite.config.mts",
 		"coverage": "nyc -r html yarn .testunit:server",
 		"debug": "meteor run --inspect",
 		"debug-brk": "meteor run --inspect-brk",
-		"dev": "NODE_OPTIONS=\"--trace-warnings\" meteor --exclude-archs \"web.browser.legacy, web.cordova\"",
-		"dev:next": "node vite/dev.mjs",
+		"dev": "node vite/dev.mjs",
 		"docker:start": "docker-compose up",
 		"dsv": "meteor npm run dev",
 		"ha": "meteor npm run ha:start",
@@ -436,6 +436,7 @@
 		"docker-compose": "^0.24.8",
 		"fast-glob": "^3.3.3",
 		"i18next": "~26.4.2",
+		"istanbul-lib-instrument": "^6.0.2",
 		"jest": "~30.5.2",
 		"jsdom-global": "^3.0.2",
 		"nyc": "^17.1.0",
@@ -479,7 +480,7 @@
 	"meteor": {
 		"disableLegacyBuild": true,
 		"mainModule": {
-			"client": "client/main.ts",
+			"client": "client/meteorShell.ts",
 			"server": "server/main.ts"
 		},
 		"modern": true
