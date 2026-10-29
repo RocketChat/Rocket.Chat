@@ -1,0 +1,22 @@
+/* The doubled class outranks the item frame's atomic classes (two classes) wherever the stylesheets are ordered */
+.rcx-tabs__scroll-box {
+	-ms-overflow-style: none;
+}
+
+.rcx-tabs__scroll-box::-webkit-scrollbar {
+	display: none;
+}
+
+.rcx-tabs--with-divider .rcx-tabs__item.rcx-tabs__item {
+	margin-block-end: -1px;
+	border-block-width: 1px;
+}
+
+.rcx-tabs--stretch .rcx-tabs__item.rcx-tabs__item {
+	flex-grow: 1;
+	text-align: center;
+}
+
+:is(.rcx-tabs, .rcx-tabs__scroll-box, .rcx-tabs__wrapper, .rcx-tabs__item)[hidden][hidden] {
+	display: none;
+}
