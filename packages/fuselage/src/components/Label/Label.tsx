@@ -4,7 +4,7 @@ import { createContext, useContext } from 'react';
 import type { ElementProps } from '../../types/ElementProps';
 import { Box } from '../Box';
 
-const LabelContext = createContext(false);
+export const LabelContext = createContext(false);
 
 export type LabelProps = ElementProps<HTMLElement, LabelHTMLAttributes<HTMLElement>> & {
 	/** Renders another element, such as a `legend` or a `span`. */
