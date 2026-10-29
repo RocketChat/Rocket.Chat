@@ -1,5 +1,7 @@
+import { css } from '@rocket.chat/css-in-js';
 import type { Meta, StoryObj } from '@storybook/react';
 
+import { useStyle } from '../../hooks/useStyle';
 import { Badge } from '../Badge';
 import { Button, IconButton } from '../Button';
 import type { CardProps } from '../Card';
@@ -56,8 +58,16 @@ export default {
 
 type Story = StoryObj<typeof CardGroup>;
 
-const CardItem = (props: CardProps) => (
-	<Card {...props}>
+const fixedWidth = css`
+	width: 16.25rem;
+`;
+
+const fullWidth = css`
+	width: 100%;
+`;
+
+const CardItem = ({ className, ...props }: CardProps) => (
+	<Card {...props} className={[className, useStyle(fixedWidth)].filter(Boolean).join(' ')}>
 		<CardHeader>
 			<Icon name='address-book' size='x24' />
 			<CardTitle info='Heading info'>Heading</CardTitle>
@@ -75,8 +85,8 @@ const CardItem = (props: CardProps) => (
 	</Card>
 );
 
-const CardHorizontal = (props: CardProps) => (
-	<Card horizontal {...props}>
+const CardHorizontal = ({ className, ...props }: CardProps) => (
+	<Card horizontal {...props} className={[className, useStyle(fullWidth)].filter(Boolean).join(' ')}>
 		<CardRow>
 			<Icon name='document-eye' size='x24' />
 			<CardCol>
@@ -96,7 +106,7 @@ export const Default: Story = {
 	render: (args) => (
 		<CardGroup {...args}>
 			{Array.from(new Array(9)).map((_, index) => (
-				<CardItem key={index} width='x260' />
+				<CardItem key={index} />
 			))}
 		</CardGroup>
 	),
@@ -129,7 +139,7 @@ export const VerticalWithHorizontalCard: Story = {
 	render: (args) => (
 		<CardGroup vertical stretch {...args}>
 			{Array.from(new Array(9)).map((_, index) => (
-				<CardHorizontal clickable key={index} width='full' />
+				<CardHorizontal clickable key={index} />
 			))}
 		</CardGroup>
 	),
