@@ -297,8 +297,7 @@ describe('XMPP federation: rooms hosted by Rocket.Chat', () => {
 			assert.ok(statusCodes(kicked).includes('307'), `expected status 307, got ${statusCodes(kicked).join(',')}`);
 		});
 
-		// Known defect: ../../docs/specs/hosted-muc.md#d1-kicked-xmpp-users-are-not-told-they-were-removed
-		it.skip('tells the kicked XMPP user they were removed (D1)', async () => {
+		it('tells the kicked XMPP user they were removed (R9)', async () => {
 			const notice = await bob.waitFor(isOccupantPresence(muc, bob.username, { type: 'unavailable' }), 'his own removal');
 			assert.ok(statusCodes(notice).includes('307'));
 		});

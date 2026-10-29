@@ -83,8 +83,9 @@ history in Rocket.Chat and lets remote users join with nothing but a room addres
 - **R8** An `unavailable` presence from an occupant removes them from the room, is broadcast
   to the remaining remote occupants, and removes their Rocket.Chat subscription without
   running the room-leave callbacks.
-- **R9** Removing a remote member on the Rocket.Chat side kicks them: the remaining remote
-  occupants receive their `unavailable` presence with status code 307.
+- **R9** Removing a remote member on the Rocket.Chat side kicks them (XEP-0045 §8.2): they
+  receive their own `unavailable` presence with status codes 307 and 110, and the remaining
+  remote occupants receive it with status code 307.
 - **R10** Removing or a leave by a local member broadcasts their `unavailable` presence to
   remote occupants.
 - **R16** A local member added to the room by a local user, or joining it in Rocket.Chat,
@@ -145,13 +146,6 @@ Parts of XEP-0045 not implemented:
 - Membership changes to the Rocket.Chat room by remote moderators.
 
 ## Known defects
-
-### D1 Kicked XMPP users are not told they were removed
-
-When Rocket.Chat removes an XMPP user from a room it hosts, the other occupants get the
-`unavailable` presence with status 307 but the removed user does not. Their client keeps
-showing them in the room. Where: `MucRoom.kick` deletes the occupant before building the
-recipients list. Test: `hosted-muc.spec.ts`, "tells the kicked XMPP user they were removed".
 
 ### D2 Occupants are never removed when their server's connection drops
 

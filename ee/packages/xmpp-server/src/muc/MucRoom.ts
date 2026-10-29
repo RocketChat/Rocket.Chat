@@ -10,7 +10,7 @@ import {
 	parseJoinPresence,
 	splitOccupantJid,
 } from './stanzas';
-import type { MucRole } from './stanzas';
+import type { MucRole, MucStatusCode } from './stanzas';
 import { parseReplaceId } from '../xml/correction';
 import { buildStanzaError } from '../xml/errors';
 
@@ -211,18 +211,15 @@ export class MucRoom {
 		if (!occupant) {
 			return;
 		}
+		const notice = (to: string, statusCodes: MucStatusCode[]) =>
+			buildOccupantPresence({ roomJid: this.roomJid, nick: occupant.nick, to, role: occupant.role, type: 'unavailable', statusCodes });
+
+		if (!occupant.isLocal) {
+			this.deps.send(notice(occupant.realJid, [MUC_STATUS.kicked, MUC_STATUS.selfPresence]));
+		}
 		this.occupants.delete(nick);
 		for (const recipient of this.remoteOccupants()) {
-			this.deps.send(
-				buildOccupantPresence({
-					roomJid: this.roomJid,
-					nick: occupant.nick,
-					to: recipient.realJid,
-					role: occupant.role,
-					type: 'unavailable',
-					statusCodes: [MUC_STATUS.kicked],
-				}),
-			);
+			this.deps.send(notice(recipient.realJid, [MUC_STATUS.kicked]));
 		}
 		this.deps.emit('occupantLeft', occupant, 'kicked');
 	}

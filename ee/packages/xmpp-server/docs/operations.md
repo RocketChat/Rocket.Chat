@@ -252,8 +252,6 @@ Rocket.Chat status changes do not reach XMPP contacts
 
 - A room deleted in Rocket.Chat keeps running for its XMPP occupants until the service
   restarts ([hosted-muc D4](specs/hosted-muc.md#d4-a-deleted-room-keeps-running-until-the-service-restarts)).
-- An XMPP user removed from a room is not told, and their client still shows them in it
-  ([hosted-muc D1](specs/hosted-muc.md#d1-kicked-xmpp-users-are-not-told-they-were-removed)).
 
 ### Remote rooms
 

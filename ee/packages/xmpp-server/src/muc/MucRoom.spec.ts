@@ -243,4 +243,21 @@ describe('MucRoom', () => {
 		).toContain('307');
 		expect(room.listOccupants().map((o) => o.nick)).toEqual(['alice']);
 	});
+
+	it('tells the kicked occupant they were removed, with 307 and 110 (R9)', async () => {
+		const { room, sent } = setup();
+		await room.handleJoin(join('alice@remote.tld/pc', 'alice'));
+		await room.handleJoin(join('bob@remote.tld/pc', 'bob'));
+		sent.length = 0;
+
+		room.kick('bob');
+		const ownNotice = sent.find((s) => s.attrs.to === 'bob@remote.tld/pc');
+		expect(ownNotice?.attrs).toMatchObject({ from: `${ROOM}/bob`, type: 'unavailable' });
+		expect(
+			ownNotice
+				?.getChild('x')
+				?.getChildren('status')
+				.map((s) => s.attrs.code),
+		).toEqual(['307', '110']);
+	});
 });
