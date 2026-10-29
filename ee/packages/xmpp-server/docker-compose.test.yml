@@ -88,6 +88,28 @@ services:
     environment: *service-env
     depends_on: [mongo, nats]
 
+  account-service:
+    build:
+      <<: *service-build
+      context: ${XMPP_STACK_BUILD_DIR:-/tmp/rc-xmpp-stack-build}/account-service
+      args:
+        SERVICE: account-service
+    image: ${XMPP_STACK_REGISTRY:-rc-xmpp-stack}/account-service:${XMPP_STACK_TAG:-local}
+    environment: *service-env
+    depends_on: [mongo, nats]
+
+  ddp-streamer:
+    build:
+      <<: *service-build
+      context: ${XMPP_STACK_BUILD_DIR:-/tmp/rc-xmpp-stack-build}/ddp-streamer
+      args:
+        SERVICE: ddp-streamer
+    image: ${XMPP_STACK_REGISTRY:-rc-xmpp-stack}/ddp-streamer-service:${XMPP_STACK_TAG:-local}
+    environment: *service-env
+    ports:
+      - ${XMPP_STACK_DDP_PORT:-4000}:3000
+    depends_on: [mongo, nats, account-service]
+
   xmpp-server-service:
     build:
       <<: *service-build

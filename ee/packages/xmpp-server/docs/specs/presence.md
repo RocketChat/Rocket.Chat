@@ -65,13 +65,7 @@ rooms.
 
 ## Known defects
 
-### D2 Rocket.Chat status changes do not reach XMPP contacts
-
-After a Rocket.Chat user changes status, the XMPP server never receives a presence from
-them. The user holds a live session, their status really changes, and the DM with the
-contact is marked as XMPP-federated. The cause is not known; the service's debug log
-(`LOG_LEVEL=debug`) is the place to start. Test: `presence.spec.ts`, "relays a Rocket.Chat
-status change to subscribed contacts".
+None.
 
 ## Open questions
 
