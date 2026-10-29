@@ -137,3 +137,10 @@
 		border-collapse: collapse;
 	}
 }
+
+/* Unlayered, so it is the box every element starts from while component styles can still set their own */
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
