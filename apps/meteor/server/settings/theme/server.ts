@@ -22,13 +22,7 @@ Meteor.startup(async () => {
 	await Settings.deleteOne({ _id: 'css' });
 });
 
-httpApp.use(async (c, next) => {
-	const prefix = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
-
-	if (c.req.path !== `${prefix}/theme.css`) {
-		return next();
-	}
-
+httpApp.all(`${__meteor_runtime_config__.ROOT_URL_PATH_PREFIX || ''}/theme.css`, (c) => {
 	const style = settings.get('theme-custom-css');
 	if (typeof style !== 'string') {
 		throw new Error('Invalid theme-custom-css setting');
