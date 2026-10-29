@@ -819,6 +819,13 @@ const components = [
 	{ file: join(import.meta.dirname, '../src/components/Divider/Divider.styles.css'), generate: generateDividerCss, kind: 'css' as const },
 	{ file: join(import.meta.dirname, '../src/components/Callout/Callout.tsx'), generate: generateCallout, kind: 'ts' as const },
 	{ file: join(import.meta.dirname, '../src/components/Callout/Callout.styles.css'), generate: generateCalloutCss, kind: 'css' as const },
+	{ file: join(import.meta.dirname, '../src/components/Card/Card.tsx'), generate: generateCard, kind: 'ts' as const },
+	{ file: join(import.meta.dirname, '../src/components/Card/CardBody.tsx'), generate: generateCardBody, kind: 'ts' as const },
+	{ file: join(import.meta.dirname, '../src/components/Card/CardCol.tsx'), generate: generateCardCol, kind: 'ts' as const },
+	{ file: join(import.meta.dirname, '../src/components/Card/CardControls.tsx'), generate: generateCardControls, kind: 'ts' as const },
+	{ file: join(import.meta.dirname, '../src/components/Card/CardHeader.tsx'), generate: generateCardHeader, kind: 'ts' as const },
+	{ file: join(import.meta.dirname, '../src/components/Card/CardRow.tsx'), generate: generateCardRow, kind: 'ts' as const },
+	{ file: join(import.meta.dirname, '../src/components/Card/CardTitle.tsx'), generate: generateCardTitle, kind: 'ts' as const },
 	{ file: join(import.meta.dirname, '../src/components/CardGroup/CardGroup.tsx'), generate: generateCardGroup, kind: 'ts' as const },
 	{ file: join(import.meta.dirname, '../src/styles/consumer-classes.css'), generate: generateConsumerClasses, kind: 'css' as const },
 ];
