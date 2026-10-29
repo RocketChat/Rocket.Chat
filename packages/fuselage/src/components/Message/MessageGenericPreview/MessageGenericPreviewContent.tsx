@@ -18,7 +18,6 @@ const MessageGenericPreviewContentFrame = styled(View, {
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	fontSize: 0,
 });
 
@@ -31,7 +30,6 @@ const MessageGenericPreviewContentWrapperFrame = styled(View, {
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	overflow: 'hidden',
 	textOverflow: 'ellipsis',
 	whiteSpace: 'nowrap',

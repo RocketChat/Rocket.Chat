@@ -11,7 +11,6 @@ export type MessageGenericPreviewTitleProps = {
 // Declared where they render: zero-runtime only erases a `styled()` whose every use is in its own module
 const MessageGenericPreviewTitleFrame = styled(Text, {
 	render: 'span',
-	boxSizing: 'content-box',
 	display: 'block',
 	wordWrap: 'normal',
 	overflow: 'hidden',

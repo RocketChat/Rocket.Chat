@@ -17,7 +17,6 @@ const NavBarFrame = styled(View, {
 	alignItems: 'center',
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	justifyContent: 'space-between',
 	width: '100%',
 	paddingBlock: '8px',

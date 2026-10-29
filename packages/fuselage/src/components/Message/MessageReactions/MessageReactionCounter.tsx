@@ -17,7 +17,6 @@ const MessageReactionCounterFrame = styled(View, {
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	fontSize: '0.75rem',
 	fontWeight: 400,
 	lineHeight: '1rem',

@@ -15,7 +15,6 @@ const SidebarFooterFrame = styled(View, {
 	alignItems: 'normal',
 	minWidth: 'auto',
 	minHeight: '3rem',
-	boxSizing: 'content-box',
 	justifyContent: 'center',
 	paddingBlock: '12px 8px',
 	paddingInline: '16px',

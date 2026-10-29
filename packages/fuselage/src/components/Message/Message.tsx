@@ -26,7 +26,6 @@ const MessageFrame = styled(View, {
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	marginInline: '2px',
 	paddingBlockEnd: '4px',
 	paddingInline: '20px',
