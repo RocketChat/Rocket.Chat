@@ -21,6 +21,7 @@ import EnterE2EPasswordModal from '../../views/e2e/EnterE2EPasswordModal';
 import SaveE2EPasswordModal from '../../views/e2e/SaveE2EPasswordModal';
 import { APIClient } from '../RestApiClient';
 import { sdk } from '../SDKClient';
+import { absoluteUrl } from '../absoluteUrl';
 import * as banners from '../banners';
 import type { LegacyBannerPayload } from '../banners';
 import { baseURI } from '../baseURI';
@@ -1094,7 +1095,7 @@ roomMessageDeletes.on('deleteMessageBulk', (event) => {
  */
 export const e2eSearchIndexRuntime = createSearchIndexRuntime({
 	session: e2eSearchIndexSession,
-	syncTime: createSearchIndexSyncTimeStore(getE2EUserId),
+	syncTime: createSearchIndexSyncTimeStore(absoluteUrl(''), getE2EUserId),
 	writer: e2eSearchIndexWriter,
 	syncMessages: createSyncMessagesFetcher({
 		baseUrl: baseURI.replace(/\/$/, ''),

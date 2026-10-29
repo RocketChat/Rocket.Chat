@@ -75,26 +75,56 @@ describe('searchIndexOptIn', () => {
 			throw new Error('blocked');
 		});
 		const listener = jest.fn();
-		subscribeToSearchIndexOptIn(listener);
+		const unsubscribe = subscribeToSearchIndexOptIn(listener);
 
 		expect(setSearchIndexOptIn('u1', false)).toBe(false);
 		expect(isSearchIndexOptedIn('u1')).toBe(true);
 		expect(listener).toHaveBeenCalledTimes(1);
+		unsubscribe();
 	});
 
-	it('does not throw when the local storage cannot be cleared', () => {
-		jest.spyOn(Storage.prototype, 'clear').mockImplementation(() => {
+	it('removes the other keys at logout without a clear, and never removes a choice that is on', () => {
+		setSearchIndexOptIn('u1', true);
+		window.localStorage.setItem('Meteor.loginToken', 'token');
+		const clear = jest.spyOn(Storage.prototype, 'clear');
+		const removeItem = jest.spyOn(Storage.prototype, 'removeItem');
+
+		clearLocalStorageKeepingSearchIndexOptIns();
+
+		expect(clear).not.toHaveBeenCalled();
+		expect(removeItem.mock.calls).toEqual([['Meteor.loginToken']]);
+		expect(isSearchIndexOptedIn('u1')).toBe(true);
+	});
+
+	it('does not throw when the local storage cannot be changed', () => {
+		window.localStorage.setItem('Meteor.loginToken', 'token');
+		jest.spyOn(Storage.prototype, 'removeItem').mockImplementation(() => {
 			throw new Error('blocked');
 		});
 
+		expect(() => clearLocalStorageKeepingSearchIndexOptIns()).not.toThrow();
+	});
+
+	it('clears the local storage when it cannot be read, and does not throw when the clear fails too', () => {
+		setSearchIndexOptIn('u1', true);
+		jest.spyOn(Storage.prototype, 'key').mockImplementation(() => {
+			throw new Error('blocked');
+		});
+
+		clearLocalStorageKeepingSearchIndexOptIns();
+		expect(isSearchIndexOptedIn('u1')).toBe(false);
+
+		jest.spyOn(Storage.prototype, 'clear').mockImplementation(() => {
+			throw new Error('blocked');
+		});
 		expect(() => clearLocalStorageKeepingSearchIndexOptIns()).not.toThrow();
 	});
 });
 
 describe('createSearchIndexSyncTimeStore', () => {
 	it('keeps the catch-up time of each user, also across the clear of a logout', () => {
-		const u1 = createSearchIndexSyncTimeStore(() => 'u1');
-		const u2 = createSearchIndexSyncTimeStore(() => 'u2');
+		const u1 = createSearchIndexSyncTimeStore('https://chat.example/', () => 'u1');
+		const u2 = createSearchIndexSyncTimeStore('https://chat.example/', () => 'u2');
 		u1.write(1000);
 		window.localStorage.setItem('other', 'x');
 
@@ -105,10 +135,19 @@ describe('createSearchIndexSyncTimeStore', () => {
 		expect(window.localStorage.getItem('other')).toBeNull();
 	});
 
-	it('reads no time without a user or for a value that is not a time', () => {
-		window.localStorage.setItem('E2EESearch_SyncedAt_u1', 'garbage');
+	it('keeps the catch-up time of each server apart, also for the same user on servers under the paths of one origin', () => {
+		const first = createSearchIndexSyncTimeStore('https://chat.example/a/', () => 'u1');
+		const second = createSearchIndexSyncTimeStore('https://chat.example/b/', () => 'u1');
+		first.write(1000);
 
-		expect(createSearchIndexSyncTimeStore(() => 'u1').read()).toBeUndefined();
-		expect(createSearchIndexSyncTimeStore(() => undefined).read()).toBeUndefined();
+		expect(first.read()).toBe(1000);
+		expect(second.read()).toBeUndefined();
+	});
+
+	it('reads no time without a user or for a value that is not a time', () => {
+		window.localStorage.setItem('E2EESearch_SyncedAt_["https://chat.example/","u1"]', 'garbage');
+
+		expect(createSearchIndexSyncTimeStore('https://chat.example/', () => 'u1').read()).toBeUndefined();
+		expect(createSearchIndexSyncTimeStore('https://chat.example/', () => undefined).read()).toBeUndefined();
 	});
 });

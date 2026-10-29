@@ -55,29 +55,33 @@ const syncTimeKeyPrefix = 'E2EESearch_SyncedAt_';
 
 /**
  * The time of the last catch-up of every room of the user's index on this device. It is a time only, with nothing of
- * the messages. An unknown time makes the next open index the rooms again, which is the safe default.
+ * the messages. An unknown time makes the next open index the rooms again, which is the safe default. `namespace` is the
+ * server of the index: the servers under the paths of one origin share the local storage, and each has its own index.
  */
-export const createSearchIndexSyncTimeStore = (getUserId: () => string | undefined) => ({
-	read(): number | undefined {
-		const userId = getUserId();
-		if (!userId) return undefined;
-		try {
-			const value = Number(window.localStorage.getItem(`${syncTimeKeyPrefix}${userId}`));
-			return Number.isFinite(value) && value > 0 ? value : undefined;
-		} catch {
-			return undefined;
-		}
-	},
-	write(at: number): void {
-		const userId = getUserId();
-		if (!userId) return;
-		try {
-			window.localStorage.setItem(`${syncTimeKeyPrefix}${userId}`, String(at));
-		} catch {
-			// The next open reads no time and indexes the rooms again.
-		}
-	},
-});
+export const createSearchIndexSyncTimeStore = (namespace: string, getUserId: () => string | undefined) => {
+	const keyOf = (userId: string) => `${syncTimeKeyPrefix}${JSON.stringify([namespace, userId])}`;
+	return {
+		read(): number | undefined {
+			const userId = getUserId();
+			if (!userId) return undefined;
+			try {
+				const value = Number(window.localStorage.getItem(keyOf(userId)));
+				return Number.isFinite(value) && value > 0 ? value : undefined;
+			} catch {
+				return undefined;
+			}
+		},
+		write(at: number): void {
+			const userId = getUserId();
+			if (!userId) return;
+			try {
+				window.localStorage.setItem(keyOf(userId), String(at));
+			} catch {
+				// The next open reads no time and indexes the rooms again.
+			}
+		},
+	};
+};
 
 const isKeptAtLogout = (key: string, value: string | null) =>
 	(key.startsWith(storageKeyPrefix) && value === 'true') || (key.startsWith(syncTimeKeyPrefix) && value !== null);
@@ -86,28 +90,29 @@ const isKeptAtLogout = (key: string, value: string | null) =>
  * Clears the local storage of this page, but keeps each user's choice that is on and the catch-up time of each index. A
  * logout clears the local storage, and the sealed index stays on the device after a logout, so both must stay with it:
  * without the choice, the next login reads "off" and wipes the index, and without the time, it indexes every room again.
+ * The kept keys are never removed, also not for a moment: another tab that saw its choice go off would wipe the index.
  */
 export const clearLocalStorageKeepingSearchIndexOptIns = (): void => {
-	const kept: [string, string][] = [];
+	const removed: string[] = [];
 	try {
 		for (let i = 0; i < window.localStorage.length; i++) {
 			const key = window.localStorage.key(i);
-			const value = key === null ? null : window.localStorage.getItem(key);
-			if (key !== null && value !== null && isKeptAtLogout(key, value)) kept.push([key, value]);
+			if (key !== null && !isKeptAtLogout(key, window.localStorage.getItem(key))) removed.push(key);
 		}
 	} catch {
-		// Nothing to keep when the local storage cannot be read.
-	}
-	try {
-		window.localStorage.clear();
-	} catch {
+		// A local storage that cannot be read is cleared, choices included, which are the safe defaults.
+		try {
+			window.localStorage.clear();
+		} catch {
+			// Nothing can be removed.
+		}
 		return;
 	}
-	for (const [key, value] of kept) {
+	for (const key of removed) {
 		try {
-			window.localStorage.setItem(key, value);
+			window.localStorage.removeItem(key);
 		} catch {
-			// The choice reads off and the time reads unknown, which are the safe defaults.
+			// The next key can still go.
 		}
 	}
 };
