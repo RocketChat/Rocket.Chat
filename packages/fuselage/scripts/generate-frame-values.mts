@@ -1238,6 +1238,10 @@ const generateTile = () => {
 					'1nb': {},
 					'2nb': {},
 				},
+				flush: {
+					true: { padding: 0 },
+					false: { padding: spacing('x16') },
+				},
 			},
 		)
 	);
@@ -1595,6 +1599,41 @@ const generateModalCss = () => {
 }`;
 };
 
+// Code outside Fuselage styles its own elements with these classes; the zero specificity lets a frame's own styles win
+const generateConsumerClasses = () => {
+	const p2 = fontScale('p2')!;
+	const border = `1px solid ${shadowColors['shadow-elevation-border']}`;
+
+	return `.rcx-tile[class] {
+	display: block;
+
+	color: ${fontDefault};
+	border-radius: ${theme('tile-border-radius', radius('medium'))};
+	background-color: ${surfaceLight};
+
+	font-size: ${p2.fontSize};
+	font-weight: ${p2.fontWeight};
+	line-height: ${p2.lineHeight};
+	letter-spacing: ${p2.letterSpacing};
+}
+
+.rcx-tile--elevation-0[class] {
+	box-shadow: none;
+}
+
+.rcx-tile--elevation-1[class] {
+	border: ${border};
+	box-shadow: 0 0 12px 0 ${shadowColors['shadow-elevation-1']};
+}
+
+.rcx-tile--elevation-2[class] {
+	border: ${border};
+	box-shadow:
+		0 0 2px 0 ${shadowColors['shadow-elevation-2x']},
+		0 0 12px 0 ${shadowColors['shadow-elevation-2y']};
+}`;
+};
+
 type SplitKind = 'default' | 'danger' | 'warning' | 'success' | 'primary';
 const splitKinds: SplitKind[] = ['default', 'danger', 'warning', 'success', 'primary'];
 const splitBase = (kind: SplitKind) => (kind === 'default' ? 'secondary' : kind);
@@ -1710,6 +1749,8 @@ const components: { file: string; generate: () => string; css?: boolean; section
 
 	{ file: join(import.meta.dirname, '../src/components/Divider/Divider.tsx'), generate: generateDivider },
 	{ file: join(import.meta.dirname, '../src/components/Divider/Divider.styles.css'), generate: generateDividerCss, css: true },
+	{ file: join(import.meta.dirname, '../src/components/Tile/Tile.tsx'), generate: generateTile },
+	{ file: join(import.meta.dirname, '../src/styles/consumer-classes.css'), generate: generateConsumerClasses, css: true },
 	{ file: join(import.meta.dirname, '../src/components/SplitButton/SplitButton.tsx'), generate: generateSplitButton },
 	{ file: join(import.meta.dirname, '../src/components/SplitButton/SplitButton.styles.css'), generate: generateSplitButtonCss, css: true },
 ];
