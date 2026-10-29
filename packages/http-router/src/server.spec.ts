@@ -147,6 +147,8 @@ describe('mountRouter', () => {
 		router.get('echo', {}, async () => ({ statusCode: 200, body: {} }));
 		mountRouter(app, router);
 		const server = createNodeServer(app).listen(0);
+		const connections = jest.fn();
+		server.on('connection', connections);
 		const agent = new Agent({ keepAlive: true, maxSockets: 1 });
 
 		try {
@@ -159,6 +161,7 @@ describe('mountRouter', () => {
 			const response = await request(server).get('/api/echo').agent(agent).timeout(400);
 
 			expect(response.status).toBe(200);
+			expect(connections).toHaveBeenCalledTimes(1);
 		} finally {
 			agent.destroy();
 			server.close();
