@@ -1,0 +1,23 @@
+ee/packages/xmpp-server/docs/specs/s2s-connectivity.md
+  s_fda792b4ee3dce::t_21ad1756921ffb 152
+ee/packages/xmpp-server/tests/integration/s2s.spec.ts
+  s_fda792b4ee3dce::t_5a394cb1ea93c6 145
+ee/packages/xmpp-server/src/s2s/S2SManager.ts
+  s_fda792b4ee3dce::t_f26cf82176ae0f 109,118-120,124
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "4f9a9fd549d2b0b67669dd2ab6f3a1177062e3aa",
+  "prompts": {},
+  "sessions": {
+    "s_fda792b4ee3dce": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e31a5082-261d-4ac9-a82c-537267ace868",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
