@@ -216,7 +216,8 @@ const UsersSetPreferencesParamsPostSchema = {
 							default: { type: 'boolean' },
 							showUnreads: { type: 'boolean', nullable: true },
 							keepUnreadsOnTop: { type: 'boolean', nullable: true },
-							activityFilterHours: { type: 'integer', minimum: 1, maximum: SIDEBAR_CATEGORY_ACTIVITY_FILTER_MAX_HOURS },
+							// `null` clears the filter, like omitting it
+							activityFilterHours: { type: 'integer', minimum: 1, maximum: SIDEBAR_CATEGORY_ACTIVITY_FILTER_MAX_HOURS, nullable: true },
 						},
 						required: ['_id', 'name'],
 						additionalProperties: false,
