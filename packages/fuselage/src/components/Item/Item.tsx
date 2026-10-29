@@ -37,6 +37,23 @@ export type ItemProps = {
 } & Omit<AllHTMLAttributes<HTMLElement>, 'is' | 'selected' | 'disabled'> &
 	RefAttributes<HTMLElement>;
 
+const interactiveSelector =
+	'a[href], button, input, select, textarea, label, summary, [role="button"], [role="link"], [role^="menuitem"], [tabindex]';
+
+// Content raised above the link to show its tooltip, such as an avatar, still opens the row when clicked.
+const findForwardTarget = ({ target, currentTarget }: MouseEvent<HTMLElement>) => {
+	if (!(target instanceof Element) || !window.getSelection()?.isCollapsed) {
+		return undefined;
+	}
+
+	const interactive = target.closest(interactiveSelector);
+	if (interactive && currentTarget.contains(interactive)) {
+		return undefined;
+	}
+
+	return currentTarget.querySelector<HTMLElement>('.rcx-item__link') ?? undefined;
+};
+
 /**
  * A list row composed from slots: media, icon, content and actions.
  */
@@ -71,14 +88,20 @@ const Item = ({
 		? [props['aria-describedby'], ...descriptionIds].filter(Boolean).join(' ') || undefined
 		: props['aria-describedby'];
 
-	const handleClick = onClick
-		? (event: MouseEvent<HTMLElement>) => {
-				if (disabled) {
-					return;
-				}
-				onClick(event);
-			}
-		: undefined;
+	const handleClick = (event: MouseEvent<HTMLElement>) => {
+		if (disabled) {
+			return;
+		}
+
+		const link = findForwardTarget(event);
+		if (link) {
+			event.stopPropagation();
+			link.dispatchEvent(new window.MouseEvent('click', event.nativeEvent));
+			return;
+		}
+
+		onClick?.(event);
+	};
 
 	return (
 		<ItemContext.Provider value={contextValue}>

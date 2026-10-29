@@ -2,6 +2,7 @@ import { composeStories } from '@storybook/react-webpack5';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
+import type { MouseEvent } from 'react';
 import { createRef } from 'react';
 
 import {
@@ -143,6 +144,53 @@ describe('ItemLink', () => {
 
 		await userEvent.click(button);
 		expect(onClick).toHaveBeenCalledTimes(1);
+	});
+
+	it('is activated by a click on the row media, which keeps its tooltip', async () => {
+		const onClickLink = jest.fn((event: MouseEvent<HTMLElement>) => event.currentTarget.dataset.userid);
+		const onClickRow = jest.fn();
+		render(
+			<Item onClick={onClickRow}>
+				<ItemMedia>
+					<img alt='' title='kenji.takahashi' data-testid='avatar' />
+				</ItemMedia>
+				<ItemTitle>
+					<ItemLink is='button' data-userid='kenji' onClick={onClickLink}>
+						Kenji Takahashi
+					</ItemLink>
+				</ItemTitle>
+			</Item>,
+		);
+
+		await userEvent.click(screen.getByTestId('avatar'));
+
+		expect(onClickLink).toHaveBeenCalledTimes(1);
+		expect(onClickLink).toHaveReturnedWith('kenji');
+		expect(onClickRow).toHaveBeenCalledTimes(1);
+	});
+
+	it('is not activated by a click on an action of its row', async () => {
+		const onClickLink = jest.fn();
+		const onClickAction = jest.fn();
+		render(
+			<Item>
+				<ItemTitle>
+					<ItemLink is='button' onClick={onClickLink}>
+						Kenji Takahashi
+					</ItemLink>
+				</ItemTitle>
+				<ItemActions>
+					<button type='button' onClick={onClickAction}>
+						Options
+					</button>
+				</ItemActions>
+			</Item>,
+		);
+
+		await userEvent.click(screen.getByRole('button', { name: 'Options' }));
+
+		expect(onClickAction).toHaveBeenCalledTimes(1);
+		expect(onClickLink).not.toHaveBeenCalled();
 	});
 
 	it('is described by the labelled icons of its row', () => {
