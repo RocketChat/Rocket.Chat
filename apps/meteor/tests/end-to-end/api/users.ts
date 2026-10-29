@@ -3000,6 +3000,24 @@ describe('[Users]', () => {
 			expect(res.body).to.not.have.nested.property('user.e2e');
 		});
 
+		it("should keep a user's bio and nickname when the update omits them", async () => {
+			const res = await request
+				.post(api('users.update'))
+				.set(credentials)
+				.send({
+					userId: targetUser._id,
+					data: {
+						statusText: 'edited-status-text-test',
+					},
+				})
+				.expect('Content-Type', 'application/json')
+				.expect(200);
+
+			expect(res.body).to.have.property('success', true);
+			expect(res.body).to.have.nested.property('user.bio', 'edited-bio-test');
+			expect(res.body).to.have.nested.property('user.nickname', 'edited-nickname-test');
+		});
+
 		it(`should return an error when trying to set a nickname longer than ${MAX_NICKNAME_LENGTH} characters`, async () => {
 			const res = await request
 				.post(api('users.update'))

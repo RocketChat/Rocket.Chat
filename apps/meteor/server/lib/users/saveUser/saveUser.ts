@@ -188,8 +188,13 @@ const _saveUser = (session?: ClientSession) =>
 			sendPassword = false;
 		}
 
-		handleBio(updater, userData.bio);
-		handleNickname(updater, userData.nickname);
+		if (typeof userData.bio !== 'undefined') {
+			handleBio(updater, userData.bio);
+		}
+
+		if (typeof userData.nickname !== 'undefined') {
+			handleNickname(updater, userData.nickname);
+		}
 
 		if (userData.roles) {
 			updater.set('roles', userData.roles);
