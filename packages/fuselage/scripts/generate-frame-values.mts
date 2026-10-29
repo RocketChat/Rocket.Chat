@@ -664,6 +664,31 @@ const generateChevronCss = () => `.rcx-chevron.rcx-chevron--right:dir(rtl) {
 	transform: rotate(-90deg);
 }`;
 
+const generateCodeSnippet = () =>
+	`${declaredWhereTheyRender}${frame('CodeSnippetFrame', {
+		render: 'pre',
+		...flexBox,
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		width: size('full')!,
+		minHeight: size('x60')!,
+		padding: spacing('x16')!,
+		color: fontDefault,
+		borderRadius: theme('code-snippet-border-radius', radius('medium')),
+		backgroundColor: String(surfaceColors['surface-neutral']),
+	})}
+
+${frame('CodeSnippetCodeBoxFrame', {
+	render: 'div',
+	...blockBox,
+	marginRight: spacing('x8')!,
+	whiteSpace: 'pre-line',
+	wordBreak: 'break-all',
+	fontFamily: 'monospace',
+})}
+
+${frame('CodeSnippetActionFrame', { render: 'div', ...blockBox })}`;
+
 const flexBox = { display: 'flex', flexDirection: 'row', alignItems: 'normal', flexShrink: 1, minWidth: 'auto', minHeight: 'auto' };
 const blockBox = { ...flexBox, display: 'block' };
 
@@ -1738,6 +1763,7 @@ const components: { file: string; generate: () => string; css?: boolean; section
 	{ file: join(import.meta.dirname, '../src/components/ButtonGroup/ButtonGroup.tsx'), generate: generateButtonGroup },
 	{ file: join(import.meta.dirname, '../src/components/Chevron/Chevron.tsx'), generate: generateChevron },
 	{ file: join(import.meta.dirname, '../src/components/Chevron/Chevron.styles.css'), generate: generateChevronCss, css: true },
+	{ file: join(import.meta.dirname, '../src/components/CodeSnippet/CodeSnippet.tsx'), generate: generateCodeSnippet },
 	{ file: frames('Skeleton/Skeleton.tsx'), generate: generateSkeleton },
 	{ file: frames('Throbber/Throbber.tsx'), generate: generateThrobber },
 	{ file: frames('ProgressBar/ProgressBar.tsx'), generate: generateProgressBar },
