@@ -1,12 +1,11 @@
 import { RegisterServerPage, RegisterOfflinePage } from '@rocket.chat/onboarding-ui';
+import { links, useInvalidateLicense } from '@rocket.chat/ui-client';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import type { ComponentProps } from 'react';
 import { useState } from 'react';
 import { I18nextProvider, useTranslation } from 'react-i18next';
 
-import { useInvalidateLicense } from '../../../hooks';
-import { links } from '../../../lib/links';
 import { useSetupWizardContext } from '../contexts/SetupWizardContext';
 
 const SERVER_OPTIONS = {

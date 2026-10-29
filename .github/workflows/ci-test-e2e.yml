@@ -275,7 +275,6 @@ jobs:
         run: |
           set -o xtrace
 
-          yarn prepare
           yarn test:e2e --shard="$E2E_SHARD/$E2E_TOTAL_SHARD"
 
       - name: Merge ui coverage files

@@ -1,4 +1,5 @@
-import { useHasLicenseModule } from '../../../../hooks/useHasLicenseModule';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
+
 import type { ComposerMessageProps } from '../ComposerMessage';
 import ComposerMessage from '../ComposerMessage';
 import ComposerFederationDisabled from './ComposerFederationDisabled';

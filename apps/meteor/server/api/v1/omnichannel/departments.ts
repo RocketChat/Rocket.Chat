@@ -64,12 +64,6 @@ API.v1.addRoute(
 			return API.v1.success({ departments, count: departments.length, offset, total });
 		},
 		async post() {
-			check(this.bodyParams, {
-				department: Object,
-				agents: Match.Maybe(Array),
-				departmentUnit: Match.Maybe({ _id: Match.Optional(String) }),
-			});
-
 			const agents = this.bodyParams.agents ? { upsert: this.bodyParams.agents } : {};
 			const { departmentUnit } = this.bodyParams;
 			const department = await saveDepartment(
@@ -120,10 +114,6 @@ API.v1.addRoute(
 	},
 	{
 		async get() {
-			check(this.urlParams, {
-				_id: String,
-			});
-
 			const { onlyMyDepartments } = this.queryParams;
 
 			const { department, agents } = await findDepartmentById({
@@ -165,10 +155,6 @@ API.v1.addRoute(
 			});
 		},
 		async delete() {
-			check(this.urlParams, {
-				_id: String,
-			});
-
 			const isRemoveEnabled = settings.get<boolean>('Omnichannel_enable_department_removal');
 
 			if (!isRemoveEnabled) {
