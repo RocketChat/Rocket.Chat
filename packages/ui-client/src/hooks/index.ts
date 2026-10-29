@@ -14,6 +14,7 @@ export * from './useFeaturePreviewList';
 export * from './useGoToDirectMessage';
 export * from './useHasLicenseModule';
 export * from './useIsEnterprise';
+export * from './useIsVisible';
 export * from './useLicense';
 export * from './useMergedRefsV2';
 export * from './usePreferenceFeaturePreviewList';

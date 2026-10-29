@@ -79,7 +79,7 @@ A hook must not accept a ref just to write the node into it — that is the call
 
 ## Reference implementation
 
-`client/views/room/hooks/useIsVisible.ts` is the canonical example: it takes no argument, returns `[ref, isVisible]` as a tuple, creates its `IntersectionObserver` inside the callback and disconnects it in the cleanup it returns, and states its return type without a cast.
+`useIsVisible` in `@rocket.chat/ui-client` is the canonical example: it takes no argument, returns `[ref, isVisible]` as a tuple, creates its `IntersectionObserver` inside the callback and disconnects it in the cleanup it returns, and states its return type without a cast.
 
 ## When this does not apply
 
