@@ -70,6 +70,7 @@ export class MucService {
 	}
 
 	destroyRoom(roomId: string): void {
+		this.rooms.get(roomId)?.destroy();
 		this.rooms.delete(roomId);
 		this.publicRooms.delete(roomId);
 	}

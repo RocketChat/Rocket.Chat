@@ -280,4 +280,20 @@ describe('MucRoom', () => {
 		expect(room.listOccupants().map((o) => o.nick)).toEqual(['alice']);
 		expect(events.find((e) => e.event === 'occupantLeft')?.args[1]).toBe('banned');
 	});
+
+	it('tells every remote occupant the room is destroyed, and empties it (R21)', async () => {
+		const { room, sent, events } = setup();
+		await room.handleJoin(join('alice@remote.tld/pc', 'alice'));
+		room.addLocalOccupant({ nick: 'carol', realJid: 'carol@rc.tld' });
+		sent.length = 0;
+		events.length = 0;
+
+		room.destroy();
+		expect(sent).toHaveLength(1);
+		expect(sent[0].attrs).toMatchObject({ from: `${ROOM}/alice`, to: 'alice@remote.tld/pc', type: 'unavailable' });
+		expect(sent[0].getChild('x')?.getChild('destroy')).toBeDefined();
+		expect(sent[0].getChild('x')?.getChild('item')?.attrs).toMatchObject({ affiliation: 'none', role: 'none' });
+		expect(room.listOccupants()).toEqual([]);
+		expect(events).toEqual([]);
+	});
 });

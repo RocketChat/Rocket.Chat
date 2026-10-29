@@ -248,11 +248,6 @@ Presence works one way only. A contact's XMPP presence sets their Rocket.Chat st
 Rocket.Chat status changes do not reach XMPP contacts
 ([presence D2](specs/presence.md#d2-rocketchat-status-changes-do-not-reach-xmpp-contacts)).
 
-### Hosted rooms
-
-- A room deleted in Rocket.Chat keeps running for its XMPP occupants until the service
-  restarts ([hosted-muc D4](specs/hosted-muc.md#d4-a-deleted-room-keeps-running-until-the-service-restarts)).
-
 ### Remote rooms
 
 Invitations to a remote room whose name the workspace's channel-name validation rejects are

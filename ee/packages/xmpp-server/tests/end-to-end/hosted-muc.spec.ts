@@ -470,14 +470,16 @@ describe('XMPP federation: rooms hosted by Rocket.Chat', () => {
 			);
 		});
 
-		// Known defect: ../../docs/specs/hosted-muc.md#d4-a-deleted-room-keeps-running-until-the-service-restarts
-		it.skip('closes the room when it is deleted in Rocket.Chat (D4)', async () => {
+		it('closes the room when it is deleted in Rocket.Chat (R21)', async () => {
 			const room = await createHostedRoom(rc, owner, { type: 'c', name: `xe2e-deleted-${uniqueSuffix()}` });
 			const muc = mucJidOf(room);
 			await alice.joinRoom(muc);
 			await waitForMember(owner, room, alice.bareJid);
 
+			const after = alice.cursor();
 			await deleteRoom(rc, room);
+			const notice = await alice.waitFor(isOccupantPresence(muc, alice.username, { type: 'unavailable' }), 'the room closing', { after });
+			assert.ok(notice.getChild('x', NS.mucUser)?.getChild('destroy'), 'expected a <destroy/> in the closing presence');
 			await retry(`${muc} to be gone`, () => assert.rejects(alice.discoInfo(muc), { condition: 'item-not-found' }), federationPolling);
 		});
 	});

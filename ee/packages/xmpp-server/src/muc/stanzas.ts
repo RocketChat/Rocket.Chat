@@ -39,6 +39,15 @@ export function buildOccupantPresence(params: {
 	return xml('presence', { from: `${params.roomJid}/${params.nick}`, to: params.to, type: params.type }, x);
 }
 
+/** Tells an occupant, under their own nick, that the room is gone (XEP-0045 §10.9). */
+export function buildDestroyPresence(params: { roomJid: string; nick: string; to: string }): Element {
+	return xml(
+		'presence',
+		{ from: `${params.roomJid}/${params.nick}`, to: params.to, type: 'unavailable' },
+		xml('x', { xmlns: NS_MUC_USER }, xml('item', { affiliation: 'none', role: 'none' }), xml('destroy', {})),
+	);
+}
+
 /** Builds a groupchat message reflected from a room occupant to a recipient. */
 export function buildGroupchatMessage(params: {
 	roomJid: string;

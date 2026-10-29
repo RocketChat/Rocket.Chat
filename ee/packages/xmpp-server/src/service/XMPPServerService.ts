@@ -389,6 +389,16 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		this.server.mucBanOccupantByJid({ roomId: coreRoomIdOf(room.xmppFederation.muc), bareJid: user.username });
 	}
 
+	async destroyHostedRoom(rid: string): Promise<void> {
+		if (!this.server) {
+			return;
+		}
+		const room = await Rooms.findOneById(rid, { projection: HOSTED_ROOM_PROJECTION });
+		if (room && isRoomXMPPHostedMuc(room)) {
+			this.server.mucDestroyRoom(coreRoomIdOf(room.xmppFederation.muc));
+		}
+	}
+
 	private async isBannedFrom(rid: string, userId: string): Promise<boolean> {
 		const subscription = await Subscriptions.findOneByRoomIdAndUserId(rid, userId, { projection: { status: 1 } });
 		return subscription !== null && isBannedSubscription(subscription);

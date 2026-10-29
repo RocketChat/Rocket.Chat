@@ -63,6 +63,10 @@ history in Rocket.Chat and lets remote users join with nothing but a room addres
   message carrying the new `<subject/>` (XEP-0045 §8.1). It comes from the bare room JID,
   since the change has no occupant behind it. Registering the room again with an unchanged
   topic sends nothing.
+- **R21** Deleting the room in Rocket.Chat closes it (XEP-0045 §10.9): every remote occupant
+  receives, under their own nick, an `unavailable` presence with affiliation and role `none`
+  carrying `<destroy/>`, and the room is unregistered from the core, so it is no longer
+  listed and `disco#info` answers `item-not-found` ([service-discovery R4, R6](service-discovery.md)).
 - **R3** Public channels are listed by `disco#items` on the MUC domain and describe themselves
   as `muc_public`/`muc_open`; private groups are unlisted and `muc_hidden`/`muc_membersonly`
   ([service-discovery R4, R5](service-discovery.md)).
@@ -143,7 +147,8 @@ Parts of XEP-0045 not implemented:
 - Room configuration forms (§10), owner and admin IQ, affiliations beyond what disco reports.
 - Moderation initiated from the XMPP side: kick, ban, voice, role changes.
 - Discussion history on join (§7.2.13, §7.2.14): the newcomer receives no backlog.
-- Room passwords, nick changes (status 303), room destruction (§10.9).
+- Room passwords, nick changes (status 303), and an owner destroying the room over XMPP
+  (§10.9): only a deletion in Rocket.Chat closes it (R21).
 - Private messages between occupants (§7.5), subject changes from occupants (§8.1):
   `muc.subjectChanged` is declared but never emitted.
 - Invitation declines (§7.8.2 decline) and direct invitations from a hosted room: rooms
@@ -162,18 +167,6 @@ reconnects. Where: nothing acts on `connection.lost` on behalf of the rooms. Tes
 `tests/integration/muc.spec.ts`, "drops the occupants of a server whose connection is
 lost"; the end-to-end harness cannot sever the link to ejabberd, so this one is an
 integration test.
-
-### D4 A deleted room keeps running until the service restarts
-
-Deleting a hosted room in Rocket.Chat leaves it registered with the protocol core. Remote
-occupants still in it keep exchanging messages through our server, a public one stays
-listed by `disco#items` ([service-discovery R4](service-discovery.md)) and `disco#info`
-still describes it instead of answering `item-not-found` ([service-discovery R6](service-discovery.md)).
-New joins are refused, since no Rocket.Chat room hosts the JID. Where: nothing calls
-`mucDestroyRoom` when a room is deleted, and `MucService.destroyRoom` only drops the room
-from the registry: the fix must also send each occupant the unavailable presence carrying
-`<destroy/>` (XEP-0045 §10.9), or their clients keep a dead room. Test: `hosted-muc.spec.ts`,
-"closes the room when it is deleted in Rocket.Chat".
 
 ### D5 A Rocket.Chat member takes the nick of an XMPP occupant
 

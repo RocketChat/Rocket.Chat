@@ -13,6 +13,8 @@ export interface IXMPPServerService {
 	removeHostedRoomMember(rid: string, userId: string): Promise<void>;
 	/** Removes a remote user banned from a hosted room from its occupants. */
 	banFromHostedRoom(rid: string, userId: string): Promise<void>;
+	/** Closes a hosted room that is being deleted, telling its remote occupants it is gone. */
+	destroyHostedRoom(rid: string): Promise<void>;
 	/** Joins a remote MUC on behalf of a local user; an existing session is reused. */
 	joinRemoteMUC(userId: string, rid: string): Promise<void>;
 	/** Leaves a remote MUC on behalf of a local user who left the mirrored room. */

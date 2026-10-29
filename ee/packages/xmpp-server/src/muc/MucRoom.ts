@@ -2,6 +2,7 @@ import type Element from 'ltx/lib/Element';
 
 import type { MucJoinDecision } from '../config';
 import {
+	buildDestroyPresence,
 	buildGroupchatMessage,
 	buildMediatedInvite,
 	buildOccupantPresence,
@@ -213,6 +214,14 @@ export class MucRoom {
 	/** Removes an occupant banned in Rocket.Chat (XEP-0045 §9.1). */
 	ban(nick: string): void {
 		this.remove(nick, 'banned');
+	}
+
+	/** Tells every remote occupant the room is gone and empties it. */
+	destroy(): void {
+		for (const occupant of this.remoteOccupants()) {
+			this.deps.send(buildDestroyPresence({ roomJid: this.roomJid, nick: occupant.nick, to: occupant.realJid }));
+		}
+		this.occupants.clear();
 	}
 
 	private remove(nick: string, reason: 'kicked' | 'banned'): void {

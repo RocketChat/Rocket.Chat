@@ -245,6 +245,23 @@ afterRemoveFromRoomCallback.add(
 	'xmpp-server-after-remove-from-room',
 );
 
+callbacks.add(
+	'afterDeleteRoom',
+	async (rid) => {
+		if (!isXMPPServerEnabled()) {
+			return rid;
+		}
+		try {
+			await XMPPServer.destroyHostedRoom(rid);
+		} catch (error) {
+			logger.error({ msg: 'Failed to close deleted XMPP room', err: error });
+		}
+		return rid;
+	},
+	callbacks.priority.HIGH,
+	'xmpp-server-after-delete-room',
+);
+
 afterBanFromRoomCallback.add(
 	async ({ bannedUser }, room) => {
 		if (!isXMPPServerEnabled() || !isRoomXMPPHostedMuc(room)) {
