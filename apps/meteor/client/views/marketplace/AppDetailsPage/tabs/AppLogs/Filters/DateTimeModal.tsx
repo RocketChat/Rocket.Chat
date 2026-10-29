@@ -30,7 +30,7 @@ export type DateTimeModalProps = {
 	defaultValues?: DateTimeModalFormData;
 };
 
-export const DateTimeModal = ({ onSave, onClose, defaultValues }: DateTimeModalProps): ReactNode => {
+export const DateTimeModal = ({ onSave, onClose, defaultValues }: DateTimeModalProps) => {
 	const { t } = useTranslation();
 
 	const { control, getValues, watch } = useForm<DateTimeModalFormData>({ defaultValues });
@@ -45,7 +45,7 @@ export const DateTimeModal = ({ onSave, onClose, defaultValues }: DateTimeModalP
 	};
 
 	return (
-		<Modal title={t('Custom_time_range')}>
+		<Modal>
 			<ModalHeader>
 				<ModalTitle>{t('Custom_time_range')}</ModalTitle>
 				<ModalClose onClick={onClose} />
