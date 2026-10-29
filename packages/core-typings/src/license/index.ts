@@ -3,6 +3,7 @@ export type * from './ILicenseTag';
 export type * from './ILicenseV2';
 export type * from './ILicenseV3';
 export type * from './LicenseBehavior';
+export type * from './LicenseDiagnostics';
 export type * from './LicenseInfo';
 export type * from './LicenseLimit';
 export * from './LicenseModule';
