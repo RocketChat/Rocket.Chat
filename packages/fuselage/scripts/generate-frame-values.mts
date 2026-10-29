@@ -3482,6 +3482,165 @@ const generateBubbleCss = () => {
 }`;
 };
 
+// The Select family: one container frame (Select, SelectLegacy, MultiSelect, PaginatedSelect, AutoComplete) and its parts
+const generateSelectContainer = () => {
+	const frame: Value = {
+		render: 'div',
+		position: 'relative',
+		display: 'inline-flex',
+		flexDirection: 'row',
+		alignItems: 'center',
+		flexGrow: 1,
+		flexShrink: 1,
+		flexBasis: 'auto',
+		minWidth: size('x144')!,
+		minHeight: size('x40')!,
+		paddingBlock: spacing('x8')!,
+		paddingInline: `calc(${spacing('x16')} - ${borderWidth('default')})`,
+		verticalAlign: 'baseline',
+		wordBreak: 'break-all',
+		outlineWidth: 0,
+		...(inputChrome('focus-within') as Record<string, Value>),
+	};
+	// The trigger keeps its p2 font when small: the label inside is the one that shrinks
+	const small: Record<string, Value> = {
+		minWidth: size('x112')!,
+		minHeight: size('x28')!,
+		paddingBlock: spacing('x4')!,
+		paddingInline: spacing('x8')!,
+	};
+
+	return frameCode('SelectContainerFrame', 'View', {
+		...frame,
+		variants: {
+			// The trigger button spreads its label and icon, and small sets the box's own sizes
+			layout: {
+				'default': {},
+				'trigger': { display: 'flex', justifyContent: 'space-between', ...font('p2') },
+				'trigger-small': { ...small, display: 'flex', justifyContent: 'space-between', ...font('p2') },
+			},
+		},
+	});
+};
+
+const generateSelectWrapper = () =>
+	frameCode('SelectWrapperFrame', 'View', {
+		render: 'div',
+		display: 'flex',
+		flexDirection: 'row',
+		alignItems: 'center',
+		flexGrow: 1,
+		flexShrink: 1,
+		minWidth: 0,
+		minHeight: 'auto',
+		userSelect: 'none',
+		whiteSpace: 'nowrap',
+		opacity: 1,
+	});
+
+const generateSelectItem = () =>
+	frameCode('SelectItemFrame', 'Text', {
+		render: 'span',
+		display: 'inline',
+		whiteSpace: 'inherit',
+		wordWrap: 'normal',
+		overflow: 'hidden',
+		textOverflow: 'ellipsis',
+	});
+
+const selectFocus: Record<string, Value> = {
+	display: 'inline-block',
+	flexDirection: 'row',
+	alignItems: 'normal',
+	flexShrink: 1,
+	minWidth: 'auto',
+	minHeight: 'auto',
+	userSelect: 'none',
+	textAlign: 'start',
+	verticalAlign: 'middle',
+	whiteSpace: 'nowrap',
+	textDecorationLine: 'none',
+	backgroundColor: 'inherit',
+	cursor: 'pointer',
+	outlineWidth: 0,
+	overflow: 'hidden',
+	textOverflow: 'ellipsis',
+};
+
+const generateSelectFocus = () => frameCode('SelectFocusFrame', 'View', { render: 'button', ...selectFocus, appearance: 'none' });
+// The multi select's button keeps the browser's own appearance
+const generateMultiSelectAnchor = () => frameCode('SelectFocusFrame', 'View', { render: 'button', ...selectFocus });
+
+const generateSelectAddon = () =>
+	frameCode('SelectAddonFrame', 'View', {
+		render: 'div',
+		display: 'flex',
+		flexDirection: 'row',
+		alignItems: 'flex-start',
+		flexGrow: 0,
+		flexShrink: 0,
+		flexBasis: 'auto',
+		minWidth: 'auto',
+		minHeight: 'auto',
+		padding: 0,
+		marginInline: spacing('x4')!,
+		cursor: 'pointer',
+		outlineWidth: 0,
+	});
+
+const selectRoots = ['.rcx-select', '.rcx-autocomplete'];
+// Doubled, so the rule out-ranks the frame's atomic classes, which load after this file
+const onRoots = (suffix: string, scope = '') => selectRoots.map((root) => `${scope}${root}${root}${suffix}`).join(',\n');
+
+const generateSelectCss = () => {
+	const c = (name: string, fallback: { toString: () => string }) => inputColor(name, fallback);
+	const stroke = (name: string) => strokeColors[name as keyof typeof strokeColors];
+	const disabledOn = (extra = '') =>
+		[onRoots(`${extra}:disabled`), onRoots(`${extra}.disabled`), onRoots(extra, '*:disabled ')].join(',\n');
+
+	return `${onRoots(' > .rcx-icon.rcx-icon')} {
+	color: ${fontColorOf('titles-labels')};
+}
+
+${onRoots('.disabled')},
+${onRoots(':disabled')},
+${onRoots('', '*:disabled ')} {
+	cursor: not-allowed;
+	pointer-events: none;
+	border-color: ${c('disabled-border-color', stroke('stroke-light'))};
+	background-color: ${c('disabled-background-color', surfaceColors['surface-disabled'])};
+}
+
+${onRoots('.invalid')} {
+	color: ${c('invalid-color', textIconColors['font-titles-labels'])};
+	border-width: ${borderWidth('default')};
+	border-color: ${c('invalid-border-color', stroke('stroke-error'))};
+	border-radius: ${toCSSValue('--rcx-input-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!))};
+	background-color: ${c('invalid-background-color', surfaceColors['surface-light'])};
+	box-shadow: none;
+}
+
+${onRoots('.invalid:hover')} {
+	border-color: ${c('invalid-hover-border-color', stroke('stroke-error'))};
+}
+
+${onRoots('.invalid:focus-within')} {
+	border-color: ${c('invalid-focus-border-color', stroke('stroke-error'))};
+	box-shadow: 0 0 0 ${borderWidth('medium')} ${c('invalid-focus-shadow-color', shadowColors['shadow-danger'])};
+}
+
+${onRoots('.invalid:active')} {
+	border-color: ${c('invalid-active-border-color', stroke('stroke-error'))};
+	box-shadow: none;
+}
+
+${disabledOn('.invalid')} {
+	color: ${c('invalid-disabled-color', textIconColors['font-disabled'])};
+	border-color: ${c('invalid-disabled-border-color', stroke('stroke-light'))};
+	background-color: ${c('invalid-disabled-background-color', surfaceColors['surface-disabled'])};
+}`;
+};
+
 const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
 	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
@@ -3615,6 +3774,13 @@ const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Bubble/BubbleButton.tsx'), generate: generateBubbleButton },
 	{ file: join(import.meta.dirname, '../src/components/Bubble/BubbleItem.tsx'), generate: generateBubbleItem },
 	{ file: join(import.meta.dirname, '../src/components/Bubble/Bubble.styles.css'), generate: generateBubbleCss, css: true },
+	{ file: frames('Select/SelectContainer.tsx'), generate: generateSelectContainer },
+	{ file: frames('Select/SelectWrapper.tsx'), generate: generateSelectWrapper },
+	{ file: frames('Select/SelectItem.tsx'), generate: generateSelectItem },
+	{ file: frames('Select/SelectFocus.tsx'), generate: generateSelectFocus },
+	{ file: frames('MultiSelect/MultiSelectAnchor.tsx'), generate: generateMultiSelectAnchor },
+	{ file: frames('Select/SelectAddon.tsx'), generate: generateSelectAddon },
+	{ file: frames('Select/Select.styles.css'), generate: generateSelectCss, css: true },
 ];
 
 for (const [dir, control] of [
