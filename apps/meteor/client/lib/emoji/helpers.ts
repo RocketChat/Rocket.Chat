@@ -1,5 +1,6 @@
 import { escapeRegExp } from '@rocket.chat/tools';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import type { EmojiPackages } from '@rocket.chat/ui-emoji-picker';
 
 import type { EmojiCategory, EmojiItem } from '.';
 import { emoji, emojiEmitter } from './lib';
@@ -48,7 +49,7 @@ export const createPickerEmojis = (
 	recentEmojis: string[],
 	setRecentEmojis: (emojis: string[]) => void,
 ): [EmojiPickerItem[], CategoriesIndexes] => {
-	const categories = getCategoriesList();
+	const categories = getCategoriesList(emoji);
 	const categoriesIndexes: CategoriesIndexes = [];
 
 	const mappedCategories = categories.reduce<EmojiPickerItem[]>((acc, category) => {
@@ -130,10 +131,10 @@ export const createEmojiList = (
 	return rowList;
 };
 
-export const getCategoriesList = () => {
+export const getCategoriesList = (registry: EmojiPackages) => {
 	let categoriesList: EmojiCategory[] = [];
 
-	for (const emojiPackage of Object.values(emoji.packages)) {
+	for (const emojiPackage of Object.values(registry.packages)) {
 		if (emojiPackage.emojiCategories) {
 			if (typeof emojiPackage.categoryIndex !== 'undefined') {
 				categoriesList.splice(emojiPackage.categoryIndex, 0, ...emojiPackage.emojiCategories);
@@ -151,21 +152,22 @@ export const getCategoriesList = () => {
 };
 
 export const getEmojisBySearchTerm = (
+	registry: EmojiPackages,
 	searchTerm: string,
 	actualTone: number,
 	recentEmojis: string[],
 	setRecentEmojis: (emojis: string[]) => void,
 ) => {
 	const emojis = [];
-	const seenEmojis = new Set<(typeof emoji.list)[string]>();
+	const seenEmojis = new Set<(typeof registry.list)[string]>();
 	const searchRegExp = new RegExp(escapeRegExp(searchTerm.replace(/:/g, '')), 'i');
 
-	for (let current in emoji.list) {
-		if (!emoji.list.hasOwnProperty(current) || !searchRegExp.test(current)) {
+	for (let current in registry.list) {
+		if (!registry.list.hasOwnProperty(current) || !searchRegExp.test(current)) {
 			continue;
 		}
 
-		const emojiObject = emoji.list[current];
+		const emojiObject = registry.list[current];
 
 		// Skip duplicates (same emoji in different packages)
 		if (seenEmojis.has(emojiObject)) {
@@ -176,7 +178,7 @@ export const getEmojisBySearchTerm = (
 		let tone = '';
 		current = current.replace(/:/g, '');
 
-		if (actualTone > 0 && emoji.packages[emojiPackage].toneList.hasOwnProperty(name ?? current)) {
+		if (actualTone > 0 && registry.packages[emojiPackage].toneList.hasOwnProperty(name ?? current)) {
 			tone = `_tone${actualTone}`;
 		}
 
@@ -190,7 +192,7 @@ export const getEmojisBySearchTerm = (
 
 		const categoryName = isNative ? current.replace(MIXED_TONE_SUFFIX, '') : current;
 
-		const isCategoryEmoji = Object.values(emoji.packages[emojiPackage].emojisByCategory).some(
+		const isCategoryEmoji = Object.values(registry.packages[emojiPackage].emojisByCategory).some(
 			(contents) => contents.indexOf(categoryName) !== -1,
 		);
 		if (!isCategoryEmoji && shortnames.length === 0) {
@@ -199,7 +201,7 @@ export const getEmojisBySearchTerm = (
 
 		const emojiToRender = `:${current}${tone}:`;
 
-		const actualEmoji = emoji.list[emojiToRender];
+		const actualEmoji = registry.list[emojiToRender];
 		if (!actualEmoji) {
 			removeFromRecent(emojiToRender, recentEmojis, setRecentEmojis);
 			continue;
@@ -209,7 +211,7 @@ export const getEmojisBySearchTerm = (
 
 		const actualPackage = actualEmoji.emojiPackage;
 
-		emojis.push({ emoji: `${current}${tone}`, image: emoji.packages[actualPackage].renderPicker(emojiToRender) });
+		emojis.push({ emoji: `${current}${tone}`, image: registry.packages[actualPackage].renderPicker(emojiToRender) });
 	}
 
 	return emojis;

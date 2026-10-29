@@ -69,7 +69,7 @@ describe('Emoji Client Helpers', () => {
 	describe('getEmojisBySearchTerm', () => {
 		before(registerNativeEmojis);
 
-		const search = (term: string, tone = 0) => getEmojisBySearchTerm(term, tone, [], () => undefined);
+		const search = (term: string, tone = 0) => getEmojisBySearchTerm(emoji, term, tone, [], () => undefined);
 		const names = (term: string, tone = 0) => search(term, tone).map((result) => result.emoji);
 		const rendersThumbsUp = (term: string) => search(term).some((result) => result.image?.includes('👍'));
 
@@ -99,7 +99,7 @@ describe('Emoji Client Helpers', () => {
 		});
 
 		it('applies the selected skin tone when searching by an alias', () => {
-			const result = getEmojisBySearchTerm('thumbsup', 2, [], () => undefined).find(({ image }) => image?.includes('👍'));
+			const result = getEmojisBySearchTerm(emoji, 'thumbsup', 2, [], () => undefined).find(({ image }) => image?.includes('👍'));
 
 			expect(result).to.exist;
 			expect(result?.image).to.include('👍🏼');
@@ -140,7 +140,7 @@ describe('Emoji Client Helpers', () => {
 				const recentEmojis = ['handshake_tone1', 'smile'];
 				const updates: string[][] = [];
 
-				const results = getEmojisBySearchTerm('handshake', 1, recentEmojis, (emojis) => updates.push([...emojis]));
+				const results = getEmojisBySearchTerm(emoji, 'handshake', 1, recentEmojis, (emojis) => updates.push([...emojis]));
 
 				expect(results).to.be.empty;
 				expect(recentEmojis).to.deep.equal(['smile']);
