@@ -4,7 +4,6 @@ import { ContextualbarSkeleton } from '@rocket.chat/ui-client';
 import { useSetting, useRoomToolbox, useUserId } from '@rocket.chat/ui-contexts';
 import { useMediaCallOpenRoomTracker } from '@rocket.chat/ui-voip';
 import { createElement, lazy, memo, Suspense } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
 import { useTranslation } from 'react-i18next';
 
 import ClassificationBanner from './ClassificationBanner';
@@ -20,6 +19,7 @@ import RoomLayout from './layout/RoomLayout';
 import ChatProvider from './providers/ChatProvider';
 import { DateListProvider } from './providers/DateListProvider';
 import { SelectedMessagesProvider } from './providers/SelectedMessagesProvider';
+import ReportableErrorBoundary from '../../components/ErrorReport/ReportableErrorBoundary';
 import GenericError from '../../components/GenericError';
 
 const UiKitContextualBar = lazy(() => import('./contextualBar/uikit/UiKitContextualBar'));
@@ -68,21 +68,29 @@ const Room = () => {
 							}
 							aside={
 								(toolbox.tab?.tabComponent && (
-									<ErrorBoundary fallback={<GenericError icon='circle-exclamation' />}>
+									<ReportableErrorBoundary
+										fallbackRender={({ error, componentStack }) => (
+											<GenericError icon='circle-exclamation' errorReport={{ error, componentStack }} />
+										)}
+									>
 										<SelectedMessagesProvider>
 											<Suspense fallback={<ContextualbarSkeleton />}>{createElement(toolbox.tab.tabComponent)}</Suspense>
 										</SelectedMessagesProvider>
-									</ErrorBoundary>
+									</ReportableErrorBoundary>
 								)) ||
 								(contextualBarView && (
 									// TODO: improve fallback handling
-									<ErrorBoundary fallback={<GenericError icon='circle-exclamation' />}>
+									<ReportableErrorBoundary
+										fallbackRender={({ error, componentStack }) => (
+											<GenericError icon='circle-exclamation' errorReport={{ error, componentStack }} />
+										)}
+									>
 										<SelectedMessagesProvider>
 											<Suspense fallback={<ContextualbarSkeleton />}>
 												<UiKitContextualBar key={contextualBarView.id} initialView={contextualBarView} />
 											</Suspense>
 										</SelectedMessagesProvider>
-									</ErrorBoundary>
+									</ReportableErrorBoundary>
 								))
 							}
 						/>

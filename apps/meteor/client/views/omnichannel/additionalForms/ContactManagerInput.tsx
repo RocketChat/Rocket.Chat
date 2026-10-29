@@ -1,4 +1,5 @@
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
+
 import AutoCompleteAgent from '../components/AutoCompleteAgent';
 
 export type ContactManagerInputProps = {

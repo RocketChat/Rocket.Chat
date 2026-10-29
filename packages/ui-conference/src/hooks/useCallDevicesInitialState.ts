@@ -2,7 +2,7 @@ import type { VideoConferenceCapabilities } from '@rocket.chat/core-typings';
 import { useUserId } from '@rocket.chat/ui-contexts';
 import { useCallback, useMemo, useSyncExternalStore } from 'react';
 
-import { VIDEO_QUALITY_LABELS, choicesOf } from '../call/lib/mediaChoiceLabels';
+import { NOISE_METHOD_LABELS, VIDEO_QUALITY_LABELS, choicesOf } from '../call/lib/mediaChoiceLabels';
 
 /** Whether to arrive with mic and camera on. Exactly what the join endpoint accepts, which rejects anything more. */
 export type CallPreferences = {
@@ -32,10 +32,22 @@ export type VideoQuality = 'auto' | 'h1080' | 'h720' | 'h360' | 'h180';
 
 export type CallVideoQualityPreference = { videoQuality: VideoQuality };
 
-type StoredCallPreferences = CallPreferences & CallDevices & CallRingPreference & CallVideoQualityPreference;
+/** How the microphone is cleaned up: untouched, the browser's own filter, or RNNoise running on this device. */
+export type NoiseMethod = 'none' | 'browser' | 'rnnoise';
 
-/** Muted and unseen is the safe way in: it can only surprise in the harmless direction. */
-const DEFAULTS: StoredCallPreferences = { mic: true, cam: false, ring: true, videoQuality: 'auto' };
+export type CallNoiseSuppressionPreference = { noiseMethod: NoiseMethod };
+
+type StoredCallPreferences = CallPreferences &
+	CallDevices &
+	CallRingPreference &
+	CallVideoQualityPreference &
+	CallNoiseSuppressionPreference;
+
+/**
+ * Muted and unseen is the safe way in: it can only surprise in the harmless direction. The browser's filter is what
+ * every call had before there was a choice, so nobody's voice changes until they ask for it.
+ */
+const DEFAULTS: StoredCallPreferences = { mic: true, cam: false, ring: true, videoQuality: 'auto', noiseMethod: 'browser' };
 
 const STORAGE_KEY = 'videoconf-call-preferences';
 
@@ -61,6 +73,10 @@ const sanitise = (value: unknown): StoredCallPreferences => {
 
 	if (!choicesOf(VIDEO_QUALITY_LABELS).includes(stored.videoQuality as VideoQuality)) {
 		stored.videoQuality = DEFAULTS.videoQuality;
+	}
+
+	if (!choicesOf(NOISE_METHOD_LABELS).includes(stored.noiseMethod as NoiseMethod)) {
+		stored.noiseMethod = DEFAULTS.noiseMethod;
 	}
 
 	// Optional, so they have no default to fall back to: one that is not a device id is no choice at all.
@@ -166,6 +182,19 @@ const useRingIn = (stored: StoredCallPreferences, setStored: SetStoredCallPrefer
 	const toggleRing = useCallback(() => setStored((current) => ({ ...current, ring: !current.ring })), [setStored]);
 
 	return { ring, toggleRing };
+};
+
+/** How to clean up the microphone, remembered like the rest of it. */
+export const useNoiseSuppressionPreference = () => {
+	const [stored, setStored] = useStoredCallPreferences();
+
+	const { noiseMethod } = stored;
+	const selectNoiseMethod = useCallback(
+		(method: NoiseMethod) => setStored((current) => ({ ...current, noiseMethod: method })),
+		[setStored],
+	);
+
+	return { noiseMethod, selectNoiseMethod };
 };
 
 /** Which resolution to ask the camera for, remembered like the rest of it. */

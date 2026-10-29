@@ -1,11 +1,11 @@
 import type { ISidebarCategory } from '@rocket.chat/core-typings';
+import { useIsEnterprise } from '@rocket.chat/ui-client';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
 import { act, renderHook } from '@testing-library/react';
 
 import { isActivityFilterable, useActivityFilterClock, useActivityFilterHours, useSetActivityFilterHours } from './useActivityFilter';
 import { usePersistCategoriesMutation } from './usePersistCategoriesMutation';
 import { useUserSidebarCategories } from './useUserSidebarCategories';
-import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../../hooks/useCategoryList';
 
 jest.mock('@rocket.chat/ui-contexts', () => ({
@@ -20,7 +20,8 @@ jest.mock('./useUserSidebarCategories', () => ({
 	useUserSidebarCategories: jest.fn(),
 }));
 
-jest.mock('../../../hooks/useIsEnterprise', () => ({
+jest.mock('@rocket.chat/ui-client', () => ({
+	...jest.requireActual('@rocket.chat/ui-client'),
 	useIsEnterprise: jest.fn(),
 }));
 

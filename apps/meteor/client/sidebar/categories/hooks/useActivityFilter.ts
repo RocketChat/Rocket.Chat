@@ -1,8 +1,8 @@
+import { useIsEnterprise } from '@rocket.chat/ui-client';
 import { useCallback, useEffect, useState } from 'react';
 
 import { useUpsertGroupEntry } from './useUpsertGroupEntry';
 import { useUserSidebarCategories } from './useUserSidebarCategories';
-import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../../hooks/useCategoryList';
 
 export const HOUR = 60 * 60 * 1000;

@@ -3,7 +3,6 @@ import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUserPhoneNumber, UserStatus, IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
-import { Match, check } from 'meteor/check';
 import type { UpdateFilter } from 'mongodb';
 
 import { setEmailFunction } from './setEmail';
@@ -242,9 +241,6 @@ export function executeSaveUserProfile(
 	customFields: Record<string, any> = {},
 	...args: unknown[]
 ) {
-	check(settings, Object);
-	check(customFields, Match.Maybe(Object));
-
 	if (
 		(settings.email && user.emails?.length) ||
 		(settings.newPassword && Object.keys(user.services || {}).length && !user.requirePasswordChange)
