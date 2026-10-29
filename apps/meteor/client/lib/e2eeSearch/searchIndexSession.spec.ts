@@ -4,7 +4,7 @@ import { Emitter } from '@rocket.chat/emitter';
 import { createSearchIndexSession, deriveSearchIndexWrapKey } from './searchIndexSession';
 import { generate } from '../e2ee/crypto/rsa';
 
-const methods = ['open', 'upsert', 'remove', 'removeRoom', 'search', 'getRoomState', 'setRoomState', 'stats', 'wipe'] as const;
+const methods = ['open', 'upsert', 'remove', 'removeRoom', 'listRooms', 'search', 'getRoomState', 'setRoomState', 'stats', 'wipe'] as const;
 
 const createBackend = () => {
 	const backend = Object.fromEntries(
@@ -50,6 +50,10 @@ const holdOpen = (backend: jest.Mocked<ISearchIndexBackend>) => {
 			}),
 	);
 	return { opened, resolveOpen: (value: { schemaVersion: number; encryptedAtRest: boolean }) => resolveOpen(value) };
+};
+
+const waitForCall = async (fn: { mock: { calls: unknown[] } }) => {
+	for (let i = 0; i < 20 && fn.mock.calls.length === 0; i++) await new Promise((resolve) => setTimeout(resolve, 0));
 };
 
 const toHex = (bytes: Uint8Array) => Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
@@ -515,8 +519,11 @@ describe('createSearchIndexSession backend of one open', () => {
 		setState('READY');
 		await session.whenSettled();
 		await session.getActiveBackend()?.search({ text: 'needle' });
+		backend.listRooms.mockResolvedValue(['r1']);
 
 		expect(backend.search).toHaveBeenCalledWith({ text: 'needle' });
+		expect(await session.getActiveBackend()?.listRooms()).toEqual(['r1']);
+		expect(backend.listRooms).toHaveBeenCalledTimes(1);
 	});
 
 	it('gives each open its own backend, also when the backend is one shared object', async () => {
@@ -555,6 +562,18 @@ describe('createSearchIndexSession backend of one open', () => {
 		await expect(previous?.wipe()).rejects.toThrow();
 		expect(backend.upsert).not.toHaveBeenCalled();
 		expect(backend.setRoomState).not.toHaveBeenCalled();
+		expect(backend.wipe).not.toHaveBeenCalled();
+
+		const beforeLogout = session.getActiveBackend();
+		expect(beforeLogout).toBeDefined();
+		setState('DISABLED');
+		await session.whenSettled();
+
+		await expect(beforeLogout?.upsert([])).rejects.toThrow('The E2EE search index session has ended');
+		await expect(beforeLogout?.listRooms()).rejects.toThrow();
+		await expect(beforeLogout?.wipe()).rejects.toThrow();
+		expect(backend.upsert).not.toHaveBeenCalled();
+		expect(backend.listRooms).not.toHaveBeenCalled();
 		expect(backend.wipe).not.toHaveBeenCalled();
 	});
 
@@ -749,6 +768,51 @@ describe('createSearchIndexSession with the admin setting', () => {
 		await session.whenSettled();
 		allowed = false;
 		session.recheck();
+		await session.whenSettled();
+
+		expect(backend.wipe).toHaveBeenCalledTimes(1);
+		expect(backend.wipe).toHaveBeenCalledWith({ userId: 'u1' });
+	});
+
+	it('wipes the closed index when the user opts out after a key error', async () => {
+		const backend = createBackend();
+		let allowed = true;
+		const { source, setState } = createSource(undefined);
+		const session = createSearchIndexSession(source, { getBackend: () => backend, isAllowed: () => allowed });
+
+		setState('LOADING_KEYS');
+		setState('ERROR');
+		await session.whenSettled();
+		expect(backend.wipe).not.toHaveBeenCalled();
+		allowed = false;
+		session.recheck();
+		await session.whenSettled();
+
+		expect(backend.wipe).toHaveBeenCalledTimes(1);
+		expect(backend.wipe).toHaveBeenCalledWith({ userId: 'u1' });
+	});
+
+	it('does not run a locked-state wipe queued for one user after another user logged in', async () => {
+		const backend = createBackend();
+		let finishFirstWipe: () => void = () => undefined;
+		backend.wipe.mockImplementationOnce(
+			() =>
+				new Promise<undefined>((resolve) => {
+					finishFirstWipe = () => resolve(undefined);
+				}),
+		);
+		const allowedFor = new Set<string>();
+		const { source, state, setState } = createSource(undefined);
+		const session = createSearchIndexSession(source, {
+			getBackend: () => backend,
+			isAllowed: () => !!state.userId && allowedFor.has(state.userId),
+		});
+
+		setState('ENTER_PASSWORD');
+		await waitForCall(backend.wipe);
+		session.recheck();
+		state.userId = 'u2';
+		finishFirstWipe();
 		await session.whenSettled();
 
 		expect(backend.wipe).toHaveBeenCalledTimes(1);

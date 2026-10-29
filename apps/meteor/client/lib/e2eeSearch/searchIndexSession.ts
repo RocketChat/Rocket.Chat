@@ -224,10 +224,12 @@ export const createSearchIndexSession = (
 		}
 	};
 
-	/** Wipes the closed index of the user when the local search is not allowed, also while E2EE stays locked. */
-	const wipeIfNotAllowed = async () => {
-		const userId = source.getUserId();
-		if (!userId || active || wipedFor === userId || isAllowed()) return;
+	/**
+	 * Wipes the closed index of the user when the local search is not allowed, also while E2EE stays locked. A wipe queued
+	 * for one user does nothing after another user logged in.
+	 */
+	const wipeIfNotAllowed = async (userId: string | undefined) => {
+		if (!userId || source.getUserId() !== userId || active || wipedFor === userId || isAllowed()) return;
 
 		const backend = getBackend();
 		if (!backend) return;
@@ -275,13 +277,16 @@ export const createSearchIndexSession = (
 
 		if (stoppedStates.has(nextState)) {
 			stopAndClose();
+			// A key error comes after the settings loaded, like the locked states: an opt-out still wipes the closed index.
+			if (nextState === 'ERROR') started = true;
 			return;
 		}
 
 		// E2EE started but is locked (keys loading, password needed). Unlike `DISABLED`, which also comes before the first
 		// settings arrive, these states come after the settings loaded, so `isAllowed` is reliable here.
 		started = true;
-		void serialize(wipeIfNotAllowed);
+		const userId = source.getUserId();
+		void serialize(() => wipeIfNotAllowed(userId));
 	});
 
 	return {
@@ -317,7 +322,8 @@ export const createSearchIndexSession = (
 				wipedFor = undefined;
 				return;
 			}
-			void serialize(wipeIfNotAllowed);
+			const userId = source.getUserId();
+			void serialize(() => wipeIfNotAllowed(userId));
 		},
 		wipeClosed: () => {
 			const userId = source.getUserId();
