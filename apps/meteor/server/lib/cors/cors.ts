@@ -20,6 +20,9 @@ export async function setInlineScriptsAllowed(allowed: boolean): Promise<void> {
 	templatePromise = WebAppInternals.setInlineScriptsAllowed(allowed);
 }
 
+const localhostRegexp = /^\s*(127\.0\.0\.1|::1)\s*$/;
+const isLocalhost = (address: string) => localhostRegexp.test(address);
+
 export const forceSsl: RootMiddleware = async (c, next) => {
 	if (settings.get('Force_SSL') !== true) {
 		return next();
@@ -27,14 +30,9 @@ export const forceSsl: RootMiddleware = async (c, next) => {
 
 	const req = c.env.incoming;
 	const remoteAddress = req.socket.remoteAddress || '';
-	const localhostRegexp = /^\s*(127\.0\.0\.1|::1)\s*$/;
-	const localhostTest = function (x: string) {
-		return localhostRegexp.test(x);
-	};
-
 	const isLocal =
-		localhostRegexp.test(remoteAddress) &&
-		(!req.headers['x-forwarded-for'] || (req.headers['x-forwarded-for'] as string).split(',').every(localhostTest));
+		isLocalhost(remoteAddress) &&
+		(!req.headers['x-forwarded-for'] || (req.headers['x-forwarded-for'] as string).split(',').every(isLocalhost));
 	// @ts-expect-error - `pair` is valid, but doesnt exists on types
 	const isSsl = req.socket.pair || (req.headers['x-forwarded-proto'] && req.headers['x-forwarded-proto'].indexOf('https') !== -1);
 

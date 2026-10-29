@@ -5,9 +5,10 @@ import { addUpgradeHandler, httpApp } from '../http/httpServer';
 
 addUpgradeHandler(handleDdpUpgrade);
 
+const sockJsPath = `${__meteor_runtime_config__.ROOT_URL_PATH_PREFIX || ''}/sockjs`;
+
 // SockJS clients ask for the server's transports first. Only the websocket one is served, as ddp-streamer does.
 httpApp.use(async (c, next) => {
-	const sockJsPath = `${__meteor_runtime_config__.ROOT_URL_PATH_PREFIX || ''}/sockjs`;
 	if (!c.req.path.startsWith(`${sockJsPath}/`)) {
 		return next();
 	}
