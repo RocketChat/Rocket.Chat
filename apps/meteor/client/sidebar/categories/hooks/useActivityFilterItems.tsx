@@ -1,6 +1,7 @@
 import { Icon } from '@rocket.chat/fuselage';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import type { TranslationKey } from '@rocket.chat/ui-contexts';
+import type { TFunction } from 'i18next';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
@@ -15,17 +16,23 @@ const ACTIVITY_FILTER_PRESETS: { hours: number | undefined; label: TranslationKe
 ];
 
 /** The window on its own, short enough for a chip: "24 hours", "7 days", "36 hours", … */
-export const useActivityFilterWindowLabel = (hours: number): string => {
-	const { t } = useTranslation();
-	return hours >= 48 && hours % 24 === 0 ? t('Days_count', { count: hours / 24 }) : t('Hours_count', { count: hours });
-};
+export const getActivityFilterWindowLabel = (t: TFunction, hours: number): string =>
+	hours >= 48 && hours % 24 === 0 ? t('Days_count', { count: hours / 24 }) : t('Hours_count', { count: hours });
 
 /** The filter as the menus name it: "All", "Last 7 days", … — or the bare window for a value no preset matches. */
+export const getActivityFilterLabel = (t: TFunction, hours: number | undefined): string => {
+	const preset = ACTIVITY_FILTER_PRESETS.find((option) => option.hours === hours);
+	return preset ? t(preset.label) : getActivityFilterWindowLabel(t, hours ?? 0);
+};
+
+export const useActivityFilterWindowLabel = (hours: number): string => {
+	const { t } = useTranslation();
+	return getActivityFilterWindowLabel(t, hours);
+};
+
 export const useActivityFilterLabel = (hours: number | undefined): string => {
 	const { t } = useTranslation();
-	const windowLabel = useActivityFilterWindowLabel(hours ?? 0);
-	const preset = ACTIVITY_FILTER_PRESETS.find((option) => option.hours === hours);
-	return preset ? t(preset.label) : windowLabel;
+	return getActivityFilterLabel(t, hours);
 };
 
 /** The menu item id of a filter, `all` when there is none. */
@@ -33,7 +40,7 @@ export const getActivityFilterItemId = (hours: number | undefined): string => `a
 
 /**
  * One menu item per preset for a group, the current one checked. Choosing one stores it and reports the choice
- * to `onChoose`, so the owner can close the menu and react to it.
+ * to `onChoose`, so the owner can close the menu and announce the outcome.
  */
 export const useActivityFilterItems = (
 	groupId: string,

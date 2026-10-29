@@ -565,6 +565,7 @@
   "ActiveSessionsPeak": "Active sessions peak",
   "ActiveSessionsPeak_InfoText": "Highest amount of active connections in the past 30 days",
   "Activity": "Activity",
+  "Activity_filter_cleared_in_group": "Filter cleared in {{group}}",
   "Activity_filter_label": "Filter: {{filter}}",
   "Actor": "Actor",
   "Add": "Add",
@@ -3410,6 +3411,10 @@
   "Importing_users": "Importing users",
   "In_call": "In call",
   "In_progress": "In progress",
+  "Inactive_rooms_hidden_in_group": {
+    "one": "{{filter}}: {{count}} inactive room hidden in {{group}}",
+    "other": "{{filter}}: {{count}} inactive rooms hidden in {{group}}"
+  },
   "Inactivity_Time": "Inactivity time",
   "Inbound": "Inbound",
   "Inbox_Info": "Inbox info",

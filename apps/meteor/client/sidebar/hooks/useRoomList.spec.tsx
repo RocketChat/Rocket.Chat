@@ -544,7 +544,8 @@ describe('the activity filter', () => {
 		await waitFor(() => expect(channelsGroupOf(result.current.groups)?.activityFilterHours).toBe(24));
 		const group = channelsGroupOf(result.current.groups);
 		expect(namesOf(group)).toEqual(['dormant-read']);
-		expect(group?.inactiveCount).toBe(0);
+		// Still counted, so the announcement can say what the filter hides once the group is expanded.
+		expect(group?.inactiveCount).toBe(1);
 	});
 
 	it('judges a room with no activity date by when the user last read, saw or joined it', async () => {

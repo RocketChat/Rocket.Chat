@@ -173,7 +173,9 @@ export const useRoomList = ({
 				// sidebar, plus its unread rooms when "Show unreads" is enabled.
 				const isVisibleWhileCollapsed = (room: SubscriptionWithRoom) => room.rid === openedRoom || (showUnreads && isUnreadRoom(room));
 				// The activity filter only thins out read rooms: unread ones and the one currently open always stay
-				// listed. A room with no date at all is kept rather than guessed at.
+				// listed. A room with no date at all is kept rather than guessed at. The inactive rooms are counted
+				// even while they are shown or the group is collapsed, so the chip and the announcement can say how
+				// many the filter hides.
 				const activeSince = activityFilterHours ? now - activityFilterHours * HOUR : undefined;
 				const isInactive = (room: SubscriptionWithRoom) =>
 					activeSince !== undefined && room.rid !== openedRoom && !isUnreadRoom(room) && (getLastActivity(room) ?? Infinity) < activeSince;
@@ -185,9 +187,6 @@ export const useRoomList = ({
 					} else {
 						activeRooms.push(room);
 					}
-				}
-				if (collapsed) {
-					inactiveCount = 0;
 				}
 
 				let displayRooms = allRooms;
