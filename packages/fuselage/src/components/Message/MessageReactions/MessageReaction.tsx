@@ -58,7 +58,7 @@ const MessageReactionFrame = styled(View, {
 			mine: {
 				color: 'var(--rcx-message-reaction-color, var(--rcx-color-font-default, #2f343d))',
 				borderColor: {
-					'default': 'var(--rcx-message-reaction-border-color, var(--rcx-color-stroke-dark, #6c737a))',
+					'default': 'var(--rcx-color-stroke-light, #cbced1)',
 					'hover': 'var(--rcx-message-reaction-hover-border-color, var(--rcx-color-stroke-dark, #6c737a))',
 					'focus-visible': 'var(--rcx-color-stroke-highlight, #156ff5)',
 				},

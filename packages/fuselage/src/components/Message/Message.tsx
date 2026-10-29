@@ -19,7 +19,7 @@ export type MessageProps = AllHTMLAttributes<HTMLDivElement> &
 // Declared where they render: zero-runtime only erases a `styled()` whose every use is in its own module
 const MessageFrame = styled(View, {
 	render: 'div',
-	position: 'static',
+	position: 'relative',
 	display: 'flex',
 	flexDirection: 'row',
 	alignItems: 'flex-start',
