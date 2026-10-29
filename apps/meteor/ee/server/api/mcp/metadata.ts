@@ -1,9 +1,7 @@
-import { nodeHandler } from '@rocket.chat/http-router';
-import type { RequestHandler } from 'express';
-import express from 'express';
+import type { MiddlewareHandler } from 'hono';
 
 import { httpApp } from '../../../../server/lib/http/httpServer';
-import { getOAuthIssuer, getWellKnownUrl, isWellKnownRequest } from '../../../../server/oauth2-server/metadata';
+import { getOAuthIssuer, getWellKnownUrl, isWellKnownPath } from '../../../../server/oauth2-server/metadata';
 import { settings } from '../../../../server/settings/cached';
 
 const MCP_PATH = '/api/v1/mcp';
@@ -24,21 +22,16 @@ export const getProtectedResourceMetadata = (issuer: string) => ({
  * which ignore the 401 challenge fall back to. For a workspace served under a path, the RFC location is outside that
  * path, so this must see requests before the path prefix is stripped.
  */
-export const serveProtectedResourceMetadata: RequestHandler = (req, res, next) => {
-	if (!isWellKnownRequest(req, [getProtectedResourceMetadataUrl(), BARE_METADATA_PATH])) {
-		next();
-		return;
+export const serveProtectedResourceMetadata: MiddlewareHandler = async (c, next) => {
+	if (!isWellKnownPath(c.req.path, [getProtectedResourceMetadataUrl(), BARE_METADATA_PATH])) {
+		return next();
 	}
 
 	if (!settings.get<boolean>('MCP_Enabled')) {
-		res.status(404).send({ error: 'not_found', error_description: 'MCP endpoint is disabled' });
-		return;
+		return c.json({ error: 'not_found', error_description: 'MCP endpoint is disabled' }, 404);
 	}
 
-	res.send(getProtectedResourceMetadata(getOAuthIssuer()));
+	return c.json(getProtectedResourceMetadata(getOAuthIssuer()));
 };
 
-httpApp.use(
-	`${BARE_METADATA_PATH}/*`,
-	nodeHandler(express().disable('x-powered-by').use(BARE_METADATA_PATH, serveProtectedResourceMetadata)),
-);
+httpApp.get(`${BARE_METADATA_PATH}/*`, serveProtectedResourceMetadata);

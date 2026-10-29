@@ -1,8 +1,7 @@
 import type { IUser } from '@rocket.chat/core-typings';
-import { nodeHandler } from '@rocket.chat/http-router';
 import { OAuthAccessTokens, Users } from '@rocket.chat/models';
 import type { NextFunction, Request, Response } from 'express';
-import express from 'express';
+import type express from 'express';
 import rateLimit from 'express-rate-limit';
 import { Meteor } from 'meteor/meteor';
 import { WebApp } from 'meteor/webapp';
@@ -116,7 +115,4 @@ API.v1.addAuthMethod((routeContext) => {
 });
 
 (WebApp.connectHandlers as unknown as ReturnType<typeof express>).use(oauth2server.app);
-httpApp.use(
-	'/.well-known/oauth-authorization-server/*',
-	nodeHandler(express().disable('x-powered-by').use('/.well-known/oauth-authorization-server', serveAuthorizationServerMetadata)),
-);
+httpApp.get('/.well-known/oauth-authorization-server/*', serveAuthorizationServerMetadata);
