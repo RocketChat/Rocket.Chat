@@ -12,11 +12,20 @@ import { join } from 'node:path';
 
 import prettier from 'prettier';
 
-import { badgeBackgroundColors, shadowColors, statusBackgroundColors, statusColors, strokeColors, surfaceColors, textIconColors } from '../src/Theme.ts';
+import {
+	badgeBackgroundColors,
+	shadowColors,
+	statusBackgroundColors,
+	statusColors,
+	strokeColors,
+	surfaceColors,
+	textIconColors,
+} from '../src/Theme.ts';
 import { toCSSColorValue, toCSSValue } from '../src/helpers/toCSSValue.ts';
 import { backgroundColor, borderRadius, borderWidth, fontColor, fontFamily, fontScale, inset, size, spacing } from '../src/styleTokens.ts';
 
 const require = createRequire(import.meta.url);
+const breakpoints: Record<string, { minViewportWidth: number }> = require('@rocket.chat/fuselage-tokens/dist/breakpoints.json');
 const buttonTokens: { light: Record<string, string> } = require('@rocket.chat/fuselage-tokens/dist/button.json');
 const colors: Record<string, string> = require('@rocket.chat/fuselage-tokens/dist/colors.json');
 
@@ -412,8 +421,8 @@ const selectionColors = () => {
 	const stroke = (name: string) => strokeColors[`stroke-${name}` as keyof typeof strokeColors].toString();
 	const surface = backgroundColor('light')!;
 	const rule = (kind: string, name: string, value: string) => toCSSValue(`--rcx-button-${kind}-${name}`, value);
-	const white = fontColor('white')!;
-	const hint = fontColor('hint')!;
+	const white = fontColor('white');
+	const hint = fontColor('hint');
 	const extraDark = stroke('extra-dark');
 	const secondaryDisabled = buttonBackground('secondary', 'disabled');
 
@@ -618,7 +627,6 @@ const toggleSwitch: SelectionControl = {
 	extraStates: toggleSwitchKnob,
 };
 
-
 const themed = (name: string, value: string) => toCSSValue(`--rcx-${name}`, value);
 const textIconColor = (name: keyof typeof textIconColors) => textIconColors[name].toString();
 const statusFont = (name: string) => statusColors[`status-font-on-${name}` as keyof typeof statusColors].toString();
@@ -751,8 +759,6 @@ const TagFrame = styled(View, {
 	return out.join('\n\n');
 };
 
-
-
 const generateBadge = () => {
 	const levels = { primary: 2, secondary: 1, warning: 3, danger: 4 } as const;
 	const looks = Object.entries(levels).map(([variant, level]) => {
@@ -799,8 +805,6 @@ const BadgeFrame = styled(View, {
 	},
 });`;
 };
-
-
 
 const generateChip = () => {
 	const secondary = (state: string) => buttonBackground('secondary', state);
@@ -1211,8 +1215,6 @@ const generateTabsItem = () => {
 	});
 };
 
-
-
 const generateAccordion = () =>
 	constants({
 		border: {
@@ -1283,8 +1285,6 @@ const generateAccordionItem = () => {
 	});
 };
 
-
-
 const generateTableRow = () => {
 	const tint = surfaceColor('tint');
 	const hover = surfaceColor('hover');
@@ -1340,8 +1340,6 @@ const generateTableSelection = () =>
 		},
 	});
 
-
-
 const generatePagination = () => {
 	const small = fontScaleOf('c1');
 	const clickable = { cursor: 'pointer', outlineStyle: 'none' };
@@ -1377,6 +1375,352 @@ const generatePagination = () => {
 	});
 };
 
+const theme = (name: string, value: string) => toCSSValue(`--rcx-${name}`, value);
+const px = (value: number) => `${value}px`;
+const radius = (name: string) => theme(`border-radius-${name}`, borderRadius(name)!);
+const fontDefault = String(textIconColors['font-default']);
+const surfaceLight = String(surfaceColors['surface-light']);
+
+// A Tamagui View is a column that does not shrink; these put back the block or flex box the SCSS left
+const flexBox = { display: 'flex', flexDirection: 'row', alignItems: 'normal', flexShrink: 1, minWidth: 'auto', minHeight: 'auto' };
+const blockBox = { ...flexBox, display: 'block' };
+const contentBox = { boxSizing: 'content-box' };
+
+const frame = (name: string, base: Record<string, Value>, variants?: Record<string, Record<string, Value>>) =>
+	`const ${name} = styled(View, ${literal(variants ? { ...base, variants } : base)});`;
+
+const declaredWhereTheyRender =
+	'// Declared where they render: zero-runtime only erases a `styled()` whose every use is in its own module\n';
+
+const generateTile = () => {
+	const border = { borderWidth: '1px', borderStyle: 'solid', borderColor: String(shadowColors['shadow-elevation-border']) };
+
+	return (
+		declaredWhereTheyRender +
+		frame(
+			'TileFrame',
+			{
+				render: 'div',
+				...blockBox,
+				color: fontDefault,
+				borderRadius: theme('tile-border-radius', radius('medium')),
+				backgroundColor: surfaceLight,
+				...font('p2'),
+			},
+			{
+				elevation: {
+					'0': { boxShadow: 'none' },
+					'1': { boxShadow: `0 0 12px 0 ${shadowColors['shadow-elevation-1']}`, ...border },
+					'2': {
+						boxShadow: `0 0 2px 0 ${shadowColors['shadow-elevation-2x']}, 0 0 12px 0 ${shadowColors['shadow-elevation-2y']}`,
+						...border,
+					},
+					'1nb': {},
+					'2nb': {},
+				},
+			},
+		)
+	);
+};
+
+const generateDivider = () => {
+	const width = theme('divider-size', borderWidth('default')!);
+	const color = theme('divider-color', String(strokeColors['stroke-extra-light']));
+	const tones = { default: undefined, danger: String(strokeColors['stroke-error']), light: String(strokeColors['stroke-light']) };
+	const looks: Record<string, Value> = {};
+
+	for (const [tone, toneColor] of Object.entries(tones)) {
+		const paint = (side: 'Top' | 'Left') => (toneColor ? {} : { [`border${side}Color`]: color });
+		const toned = toneColor ? { borderColor: toneColor } : {};
+
+		for (const flush of [false, true]) {
+			looks[`horizontal${flush ? '-flush' : ''}:${tone}`] = {
+				marginBlock: flush ? 0 : px(8),
+				marginInline: 0,
+				...paint('Top'),
+				...toned,
+			};
+
+			for (const small of [false, true]) {
+				for (const stretch of [false, true]) {
+					looks[`vertical${small ? '-small' : ''}${stretch ? '-stretch' : ''}${flush ? '-flush' : ''}:${tone}`] = {
+						width: 0,
+						height: stretch ? 'auto' : size('x20')!,
+						...(stretch && { alignSelf: 'stretch' }),
+						marginBlock: 0,
+						marginInline: flush ? 0 : px(small ? 4 : 8),
+						borderLeftWidth: width,
+						borderLeftStyle: 'solid',
+						...paint('Top'),
+						...paint('Left'),
+						...toned,
+					};
+				}
+			}
+		}
+	}
+
+	return (
+		declaredWhereTheyRender +
+		[
+			frame('DividerLine', { render: 'hr', ...blockBox, borderTopWidth: width, borderTopStyle: 'solid' }, { look: looks }),
+			frame('DividerBar', { ...flexBox, ...contentBox, justifyContent: 'flex-end', alignItems: 'center', flexGrow: 1 }),
+			frame('DividerLabel', { ...blockBox, ...contentBox, marginBlock: px(8), paddingInline: px(8) }),
+		].join('\n\n')
+	);
+};
+
+const generateDividerCss = () => `.rcx-divider__bar::after {
+	flex-grow: 1;
+
+	content: '';
+
+	border: ${theme('divider-size', borderWidth('default')!)} solid ${theme('divider-color', String(strokeColors['stroke-extra-light']))};
+}`;
+
+const calloutKinds = ['info', 'success', 'warning', 'danger'];
+const calloutColor = (kind: string) =>
+	theme(`callout-${kind}-color`, String(statusColors[`status-font-on-${kind}` as keyof typeof statusColors]));
+
+const generateCallout = () =>
+	declaredWhereTheyRender +
+	[
+		frame(
+			'CalloutFrame',
+			{
+				render: 'section',
+				...flexBox,
+				padding: px(12),
+				color: theme('callout-text-color', fontDefault),
+				borderWidth: borderWidth('default')!,
+				borderStyle: 'solid',
+				borderColor: theme('callout-default-color', String(textIconColors['font-secondary-info'])),
+				borderRadius: theme('callout-border-radius', radius('medium')),
+				backgroundColor: theme('callout-background-color', surfaceLight),
+			},
+			{ type: Object.fromEntries(calloutKinds.map((kind) => [kind, { borderColor: calloutColor(kind) }])) },
+		),
+		frame(
+			'CalloutWrapper',
+			{
+				...blockBox,
+				overflow: 'hidden',
+				justifyContent: 'space-between',
+				flexGrow: 1,
+				flexShrink: 1,
+				flexBasis: 0,
+				marginInlineStart: px(12),
+			},
+			{ large: { true: { display: 'flex', alignItems: 'center' }, false: {} } },
+		),
+		frame('CalloutBody', { ...flexBox, flexDirection: 'column', overflow: 'hidden' }),
+		frame('CalloutTitle', { ...blockBox, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', ...font('p2b') }),
+		frame('CalloutContent', { ...blockBox, ...font('p2') }, { afterTitle: { true: { marginBlockStart: px(4) }, false: {} } }),
+		frame('CalloutActions', blockBox, { large: { true: {}, false: { marginBlockStart: px(12) } } }),
+	].join('\n\n');
+
+const generateCalloutCss = () =>
+	calloutKinds
+		.map(
+			(kind) => `.rcx-callout--${kind} .rcx-callout__icon {
+	color: ${calloutColor(kind)};
+}`,
+		)
+		.join('\n\n');
+
+const cardGap = px(8);
+
+const generateCard = () =>
+	declaredWhereTheyRender +
+	frame(
+		'CardFrame',
+		{
+			render: 'div',
+			...flexBox,
+			color: theme('card-color', fontDefault),
+			borderRadius: radius('large'),
+			backgroundColor: theme('card-background-color', surfaceLight),
+		},
+		{
+			// Direction, padding and wrap set overlapping flex properties, so each combination is one variant
+			layout: Object.fromEntries(
+				[false, true].flatMap((hero) =>
+					[false, true].flatMap((wrap) =>
+						(['horizontal', 'vertical'] as const)
+							.filter((kind) => !(kind === 'vertical' && wrap))
+							.map((kind): [string, Value] => [
+								`${kind}${hero ? '-hero' : ''}${wrap ? '-wrap' : ''}`,
+								kind === 'horizontal'
+									? {
+											alignItems: 'center',
+											padding: px(hero ? 28 : 12),
+											gap: px(16),
+											...(wrap && { flexWrap: 'wrap' }),
+										}
+									: { flexDirection: 'column', padding: px(hero ? 28 : 20), gap: px(24) },
+							]),
+					),
+				),
+			),
+			clickable: {
+				true: {
+					cursor: { hover: 'pointer', focus: 'pointer' },
+					outlineWidth: { hover: 0, focus: 0 },
+					backgroundColor: {
+						default: theme('card-background-color', surfaceLight),
+						hover: String(surfaceColors['surface-hover']),
+						focus: String(surfaceColors['surface-hover']),
+					},
+				},
+				false: {},
+			},
+		},
+	);
+
+const cardPart = (name: string, extra: Record<string, Value> = {}) =>
+	declaredWhereTheyRender + frame(name, { render: 'div', ...flexBox, ...contentBox, alignItems: 'center', gap: cardGap, ...extra });
+
+const generateCardBody = () => declaredWhereTheyRender + frame('CardBodyFrame', { ...flexBox, flexGrow: 1, gap: cardGap, ...font('p2m') });
+const generateCardCol = () => cardPart('CardColFrame', { alignItems: 'normal', flexDirection: 'column' });
+const generateCardControls = () => cardPart('CardControlsFrame');
+const generateCardHeader = () => cardPart('CardHeaderFrame');
+const generateCardRow = () => cardPart('CardRowFrame', { flexGrow: 1, flexShrink: 1 });
+const generateCardTitle = () =>
+	declaredWhereTheyRender +
+	frame(
+		'CardTitleFrame',
+		{ ...flexBox, alignItems: 'center', gap: cardGap },
+		{ scale: { h3: font('h3'), h4: font('h4'), h5: font('h5') } },
+	);
+
+const generateCardGroup = () =>
+	declaredWhereTheyRender +
+	frame(
+		'CardGroupFrame',
+		{ render: 'div', ...flexBox, alignItems: 'center', flexWrap: 'nowrap', justifyContent: 'flex-start' },
+		{
+			// Direction, wrap and stretch set overlapping flex properties, so each combination is one variant
+			flow: Object.fromEntries(
+				[false, true].flatMap((vertical) =>
+					[false, true].flatMap((wrap) =>
+						[false, true].map((stretch): [string, Value] => [
+							`${vertical ? 'column' : 'row'}-${wrap ? 'wrap' : 'nowrap'}-${stretch ? 'stretch' : 'start'}`,
+							{
+								...(vertical && { flexDirection: 'column' }),
+								...(wrap && { flexWrap: 'wrap', marginBlockEnd: px(-16) }),
+								...(stretch && { alignItems: 'stretch' }),
+							},
+						]),
+					),
+				),
+			),
+			align: { start: { justifyContent: 'flex-start' }, center: { justifyContent: 'center' }, end: { justifyContent: 'flex-end' } },
+		},
+	);
+
+const containerMargin = theme('modal-container-margin', size('x24')!);
+const modalPart = (name: string, base: Record<string, Value>, variants?: Record<string, Record<string, Value>>) =>
+	declaredWhereTheyRender + frame(name, base, variants);
+
+const generateModal = () =>
+	modalPart('ModalFrame', {
+		render: 'dialog',
+		...flexBox,
+		position: 'static',
+		width: '100%',
+		maxHeight: '100%',
+		margin: theme('modal-margin', 'auto'),
+		backgroundColor: 'transparent',
+	});
+
+const generateModalBackdrop = () =>
+	modalPart(
+		'ModalBackdropFrame',
+		{ ...flexBox, flexDirection: 'column', position: 'fixed', zIndex: 100, top: 0, right: 0, bottom: 0, left: 0 },
+		{ tone: { overlay: { backgroundColor: String(surfaceColors['surface-overlay']) }, transparent: { backgroundColor: 'transparent' } } },
+	);
+
+const generateModalHeader = () => modalPart('ModalHeaderFrame', { ...blockBox, margin: containerMargin });
+const generateModalHeaderInner = () => modalPart('ModalHeaderInnerFrame', { ...flexBox, flexWrap: 'nowrap', margin: px(-4) });
+const generateModalHeaderText = () =>
+	modalPart('ModalHeaderTextFrame', {
+		...flexBox,
+		flexDirection: 'column',
+		flexGrow: 1,
+		flexShrink: 1,
+		overflow: 'hidden',
+		textOverflow: 'ellipsis',
+	});
+
+const generateModalTitle = () =>
+	modalPart('ModalTitleFrame', {
+		...blockBox,
+		overflow: 'hidden',
+		textOverflow: 'ellipsis',
+		flexGrow: 1,
+		flexShrink: 1,
+		whiteSpace: 'nowrap',
+		color: fontDefault,
+		...font('h2'),
+	});
+
+const generateModalTagline = () =>
+	modalPart(
+		'ModalTaglineFrame',
+		{ ...blockBox, color: fontDefault, ...font('c2') },
+		{ subtle: { true: { color: String(textIconColors['font-annotation']) }, false: {} } },
+	);
+
+const generateModalHeroImage = () =>
+	`${declaredWhereTheyRender}${frame('ModalHeroImageFrame', { ...blockBox, width: '100%', height: 'auto', objectFit: 'contain' })}\n\n${frame(
+		'ModalHeroFigureFrame',
+		{ render: 'figure', ...blockBox, ...contentBox, marginBlockStart: 0, marginBlockEnd: size('x24')!, marginInline: size('-x24')! },
+	)}`;
+
+const generateModalFooter = () =>
+	modalPart(
+		'ModalFooterFrame',
+		{ ...flexBox, alignItems: 'center', margin: containerMargin },
+		{ justify: { 'end': { justifyContent: 'end' }, 'space-between': { justifyContent: 'space-between' } } },
+	);
+
+const generateModalFooterAnnotation = () =>
+	modalPart('ModalFooterAnnotationFrame', { ...blockBox, color: String(textIconColors['font-secondary-info']), ...font('c1') });
+
+const generateModalCss = () => {
+	const p2 = fontScale('p2')!;
+
+	return `.rcx-modal.rcx-modal[hidden] {
+	display: none;
+}
+
+.rcx-modal__inner {
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+
+	width: 100%;
+	min-width: 0;
+	padding: 0;
+
+	color: ${fontDefault};
+	border-radius: ${theme('modal-border-radius', radius('large'))};
+	background-color: ${surfaceLight};
+
+	font-size: ${p2.fontSize};
+	font-weight: ${p2.fontWeight};
+	line-height: ${p2.lineHeight};
+	letter-spacing: ${p2.letterSpacing};
+}
+
+@media screen and (min-width: ${breakpoints.sm.minViewportWidth / 16}em) {
+	.rcx-modal {
+		max-width: ${size('x640')};
+		padding: ${px(16)};
+	}
+}`;
+};
+
 const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
 	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
@@ -1408,7 +1752,11 @@ const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Accordion/AccordionItem.tsx'), generate: generateAccordionItem },
 ];
 
-for (const [dir, control] of [['CheckBox', checkBox], ['RadioButton', radioButton], ['ToggleSwitch', toggleSwitch]] as const) {
+for (const [dir, control] of [
+	['CheckBox', checkBox],
+	['RadioButton', radioButton],
+	['ToggleSwitch', toggleSwitch],
+] as const) {
 	const base = join(import.meta.dirname, `../src/components/${dir}/${dir}`);
 	components.push(
 		{ file: `${base}.tsx`, generate: () => selectionFrames(control) },
