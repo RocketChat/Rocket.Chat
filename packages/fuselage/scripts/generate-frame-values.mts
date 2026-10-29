@@ -1784,6 +1784,86 @@ ${on(':active', '.active', '.is-active')} {
 };
 
 
+const bannerKinds = ['info', 'success', 'warning', 'danger'];
+const bannerColor = (kind: string) => theme(`banner-colors-${kind}-color`, statusFontOf(kind));
+
+const genBanner = () =>
+	part(
+		'BannerFrame',
+		{
+			...flexBox,
+			flexDirection: 'row',
+			flexWrap: 'nowrap',
+			justifyContent: 'space-between',
+			alignItems: 'flex-start',
+			flexGrow: 0,
+			flexShrink: 1,
+			flexBasis: 'auto',
+			boxSizing: 'border-box',
+			paddingInline: spacing('x16'),
+			color: theme('banner-colors-neutral-color', fontDefault),
+			borderTopWidth: borderWidth('large')!,
+			borderTopStyle: 'solid',
+			borderBottomWidth: borderWidth('default')!,
+			borderBottomStyle: 'solid',
+			borderBottomColor: strokeExtraLight,
+			backgroundColor: theme('banner-colors-neutral-background-color', surfaceOf('tint')),
+			fontFamily: fontFamily('sans')!,
+		},
+		{
+			tone: {
+				neutral: { borderTopColor: 'transparent' },
+				...Object.fromEntries(bannerKinds.map((kind) => [kind, { borderTopColor: bannerColor(kind) }])),
+			},
+			inline: { true: { paddingBlock: spacing('x12') }, false: { paddingBlock: offScale(14) } },
+			actionable: { true: { cursor: 'pointer' }, false: {} },
+		},
+	);
+
+const genBannerIcon = () =>
+	part(
+		'BannerIconFrame',
+		{ ...blockBox, paddingBlock: spacing('x8'), paddingInlineEnd: spacing('x12') },
+		{ tone: { neutral: {}, ...Object.fromEntries(bannerKinds.map((kind) => [kind, { color: bannerColor(kind) }])) } },
+	);
+
+const genBannerContent = () =>
+	part(
+		'BannerContentFrame',
+		{ ...blockBox, flexGrow: 1, alignSelf: 'center', ...font('p2') },
+		{ inline: { true: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }, false: {} } },
+	);
+
+const genBannerTitle = () =>
+	part(
+		'BannerTitleFrame',
+		{ render: 'h6', ...blockBox, margin: 0, paddingBlock: 0, paddingInlineStart: 0, ...font('h5') },
+		{ inline: { true: { display: 'inline', paddingInlineEnd: spacing('x8') }, false: { paddingInlineEnd: 0 } } },
+	);
+
+const genBannerLink = () => frameCode('BannerLinkFrame', 'Text', { render: 'a', ...inlineBase, paddingLeft: offScale(10) });
+
+const genBannerCloseButton = () =>
+	part(
+		'BannerCloseButtonFrame',
+		{ ...blockBox, paddingInline: spacing('x8') },
+		{ inline: { true: { marginBlock: spacing('-x4'), paddingBlock: 0 }, false: { paddingBlock: offScale(6) } } },
+	);
+
+const generateBanner = () =>
+	[genBanner, genBannerIcon, genBannerContent, genBannerTitle, genBannerLink, genBannerCloseButton]
+		.map((generate) => generate())
+		.join('\n\n');
+
+const generateBannerCss = () => `.rcx-banner {
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.rcx-banner.rcx-banner[hidden] {
+	display: none;
+}`;
+
 const statesColumn = {
 	...flexBox,
 	display: 'flex',
@@ -1961,6 +2041,8 @@ const components: { file: string; generate: () => string; css?: boolean; section
 	{ file: join(import.meta.dirname, '../src/components/Callout/Callout.styles.css'), generate: generateCalloutCss, css: true },
 	{ file: join(import.meta.dirname, '../src/components/SplitButton/SplitButton.tsx'), generate: generateSplitButton },
 	{ file: join(import.meta.dirname, '../src/components/SplitButton/SplitButton.styles.css'), generate: generateSplitButtonCss, css: true },
+	{ file: join(import.meta.dirname, '../src/components/Banner/Banner.tsx'), generate: generateBanner },
+	{ file: join(import.meta.dirname, '../src/components/Banner/Banner.styles.css'), generate: generateBannerCss, css: true },
 ];
 
 for (const [dir, control] of [
@@ -1978,6 +2060,7 @@ for (const [dir, control] of [
 // Frames whose children are text are a Tamagui Text: a string child of a View throws on React Native
 const textFrames = [
 	'BadgeFrame',
+	'BannerContentFrame',
 	'BannerTitleFrame',
 	'CalloutContent',
 	'CalloutTitle',
