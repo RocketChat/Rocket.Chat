@@ -59,7 +59,8 @@ type KeyPair = {
 
 const ROOM_KEY_EXCHANGE_SIZE = 10;
 
-const getQuoteChainLimit = (): number => Math.max(0, settings.peek<number>('Message_QuoteChainLimit') ?? 2);
+// limitQuoteChain keeps one quote also when the limit is 0 or 1, so the decrypt resolves at least one level.
+const getQuoteChainLimit = (): number => Math.max(1, settings.peek<number>('Message_QuoteChainLimit') ?? 2);
 
 class E2E extends Emitter {
 	private userId: string | false = false;

@@ -425,12 +425,15 @@ describe('E2E client and the local search index', () => {
 			_updatedAt: new Date(),
 		});
 
+		let quoteChainLimit: number;
+
 		beforeEach(() => {
+			quoteChainLimit = 2;
 			const peek = settings.peek as jest.MockedFunction<typeof settings.peek>;
 			const allowed = peek.getMockImplementation();
 			peek.mockImplementation(((id: string) => {
 				if (id === 'Site_Url') return 'http://localhost:3000';
-				if (id === 'Message_QuoteChainLimit') return 2;
+				if (id === 'Message_QuoteChainLimit') return quoteChainLimit;
 				return allowed?.(id);
 			}) as never);
 			// The message quotes itself, so each decrypt finds the same link again.
@@ -446,6 +449,14 @@ describe('E2E client and the local search index', () => {
 			await e2e.decryptMessage(loopingMessage() as never);
 
 			expect(sdk.rest.get).toHaveBeenCalledTimes(2);
+		});
+
+		it('still resolves the direct quote when the quote chain limit is 0, as limitQuoteChain still shows one quote', async () => {
+			quoteChainLimit = 0;
+
+			await e2e.decryptMessage(loopingMessage() as never);
+
+			expect(sdk.rest.get).toHaveBeenCalledTimes(1);
 		});
 
 		it('follows no quoted message link when the quote depth is 0, as the search index crawler asks', async () => {
