@@ -466,6 +466,8 @@ describe('the activity filter', () => {
 
 	const channels = [recentRead, quietRead, quietUnread, dormantRead];
 
+	afterEach(() => jest.restoreAllMocks());
+
 	const renderChannels = ({
 		activityFilterHours,
 		collapsedGroups = [],
@@ -525,6 +527,23 @@ describe('the activity filter', () => {
 		const group = channelsGroupOf(result.current.groups);
 		expect(group?.showingInactive).toBe(false);
 		expect(namesOf(group)).toEqual(['quiet-read', 'quiet-unread', 'recent-read']);
+	});
+
+	it('keeps a room whose last activity is exactly on the cutoff', async () => {
+		const now = Date.now();
+		jest.spyOn(Date, 'now').mockReturnValue(now);
+		const onTheCutoff = channel('on-the-cutoff', new Date(now - 24 * HOUR));
+		const { result } = renderHook(() => useRoomList({ collapsedGroups: [] }), {
+			wrapper: getWrapperSettings({
+				rooms: [onTheCutoff, dormantRead],
+				sidebarGroupByType: true,
+				isEnterprise: true,
+				sidebarCategories: [{ _id: 'Channels', name: 'Channels', default: true, activityFilterHours: 24 }],
+			}).build(),
+		});
+
+		await waitFor(() => expect(channelsGroupOf(result.current.groups)?.activityFilterHours).toBe(24));
+		expect(namesOf(channelsGroupOf(result.current.groups))).toEqual(['on-the-cutoff']);
 	});
 
 	it('keeps the open room listed even when it is inactive', async () => {
