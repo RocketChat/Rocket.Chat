@@ -118,7 +118,7 @@ export class NotificationsModule {
 	}
 
 	private register<N extends StreamNames>(stream: IStreamer<N>): IStreamer<N> {
-		this.streams.set(stream.name, stream);
+		this.streams.set(stream.name, stream as IStreamer<StreamNames>);
 		return stream;
 	}
 

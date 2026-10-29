@@ -176,7 +176,7 @@ export class RoomService extends ServiceClassInternal implements IRoomService {
 	}
 
 	async getRouteLink(room: AtLeast<IRoom, '_id' | 't' | 'name'>): Promise<string | boolean> {
-		return roomCoordinator.getRouteLink(room.t, { rid: room._id, name: room.name });
+		return roomCoordinator.getRouteLink(room.t as string, { rid: room._id, name: room.name });
 	}
 
 	/**

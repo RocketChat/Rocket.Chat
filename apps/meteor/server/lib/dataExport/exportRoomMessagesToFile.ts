@@ -12,7 +12,7 @@ import { restrictToVisibleHistory } from '../messages/historyVisibility';
 
 const hideUserName = (username: string, userData: Pick<IUser, 'username'> | undefined, usersMap: Record<string, string>) => {
 	if (!usersMap[username]) {
-		if (username === userData?.username) {
+		if (userData && username === userData.username) {
 			usersMap[username] = username;
 		} else {
 			usersMap[username] = `User_${Object.keys(usersMap).length + 1}`;
