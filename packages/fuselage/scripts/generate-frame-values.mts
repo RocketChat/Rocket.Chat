@@ -25,7 +25,10 @@ import { toCSSColorValue, toCSSValue } from '../src/helpers/toCSSValue.ts';
 import { backgroundColor, borderRadius, borderWidth, fontColor, fontFamily, fontScale, inset, size, spacing } from '../src/styleTokens.ts';
 
 const require = createRequire(import.meta.url);
-const breakpoints: Record<string, { minViewportWidth: number }> = require('@rocket.chat/fuselage-tokens/dist/breakpoints.json');
+const breakpoints: Record<
+	string,
+	{ minViewportWidth: number | null; columns: number; gutterWidth: number }
+> = require('@rocket.chat/fuselage-tokens/dist/breakpoints.json');
 const buttonTokens: { light: Record<string, string> } = require('@rocket.chat/fuselage-tokens/dist/button.json');
 const colors: Record<string, string> = require('@rocket.chat/fuselage-tokens/dist/colors.json');
 const statusBulletTokens: { light: Record<string, string> } = require('@rocket.chat/fuselage-tokens/dist/statusBullet.json');
@@ -2864,7 +2867,14 @@ ${frame('CodeSnippetCodeBoxFrame', {
 })}`;
 
 // A frame over an `Icon` keeps the inline-block box `.rcx-icon` gives it, as the frame's own display would outrank it
-const iconBase = { display: 'inline-block', flexDirection: 'row', alignItems: 'normal', flexShrink: 0, minWidth: 'auto', minHeight: 'auto' } as const;
+const iconBase = {
+	display: 'inline-block',
+	flexDirection: 'row',
+	alignItems: 'normal',
+	flexShrink: 0,
+	minWidth: 'auto',
+	minHeight: 'auto',
+} as const;
 
 const framedIconFont = (name: string) => String(statusColors[`status-font-on-${name}` as keyof typeof statusColors]);
 
@@ -2982,6 +2992,45 @@ const generateStatesLink = () =>
 		color: fontColorOf('info'),
 	});
 
+// CardGrid renders on these classes without the Grid components, so they stay classes; the gutters and column spans also depend on the viewport, which a frame cannot hold
+const generateGridCss = () => {
+	const rem = (value: number) => `${value / 16}rem`;
+	const rules: string[] = [
+		'.rcx-grid {\n\tdisplay: flex;\n\tflex-flow: row wrap;\n}',
+		'.rcx-grid__wrapper {\n\toverflow: hidden;\n}',
+		'.rcx-grid__item {\n\tflex: 1 1 0;\n}',
+	];
+
+	const onBreakpoint = (name: string, selectors: (pinned: string) => string[], body: string) => {
+		const { minViewportWidth } = breakpoints[name];
+		const rule = (list: string[]) => `${list.join(',\n')} {\n${body}\n}`;
+		const media = (css: string) =>
+			minViewportWidth === null ? css : `@media screen and (min-width: ${rem(minViewportWidth)}) {\n${css}\n}`;
+
+		rules.push(media(rule(selectors(''))), rule(selectors(`.rcx-grid--${name} > `)));
+	};
+
+	for (const [name, { columns, gutterWidth }] of Object.entries(breakpoints)) {
+		const half = `calc(${rem(gutterWidth)} / 2)`;
+		const negativeHalf = `calc(${rem(gutterWidth)} / -2)`;
+
+		onBreakpoint(name, (pinned) => [`${pinned}.rcx-grid`], `\tmargin-block: ${negativeHalf};\n\tmargin-inline: ${negativeHalf};`);
+		onBreakpoint(name, (pinned) => [`${pinned}.rcx-grid__item`], `\tpadding-block: ${half};\n\tpadding-inline: ${half};`);
+
+		for (let span = 1; span <= columns; span++) {
+			const width = `${Number(((span / columns) * 100).toFixed(10))}%`;
+
+			onBreakpoint(
+				name,
+				(pinned) => [`${pinned}.rcx-grid__item--${name}-${span}`],
+				`\tflex-grow: 0;\n\tflex-basis: ${width};\n\n\tmax-width: ${width};`,
+			);
+		}
+	}
+
+	return rules.join('\n\n');
+};
+
 const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
 	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
@@ -3093,6 +3142,7 @@ const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/States/StatesSuggestionList.tsx'), generate: generateStatesSuggestionList },
 	{ file: join(import.meta.dirname, '../src/components/States/StatesSuggestionListItem.tsx'), generate: generateStatesSuggestionListItem },
 	{ file: join(import.meta.dirname, '../src/components/States/StatesLink.tsx'), generate: generateStatesLink },
+	{ file: join(import.meta.dirname, '../src/components/Grid/Grid.styles.css'), generate: generateGridCss, css: true },
 ];
 
 for (const [dir, control] of [
