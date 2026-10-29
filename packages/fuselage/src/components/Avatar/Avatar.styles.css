@@ -1,0 +1,22 @@
+/* Chip wraps its thumbnail in a bare `rcx-avatar` box, which has to lay out like an avatar */
+.rcx-avatar {
+	display: inline-flex;
+
+	vertical-align: middle;
+}
+
+/* Has to beat the `rcx-box--full` reset the avatar carries */
+.rcx-avatar-stack > .rcx-avatar {
+	margin: auto -2px;
+}
+
+/* A stacked avatar keeps a ring of the stack's background between it and the next one */
+.rcx-avatar-stack > .rcx-avatar > .rcx-avatar__element {
+	border: 1px solid transparent;
+}
+
+/* The frames set `display`, which would otherwise beat the `hidden` attribute */
+.rcx-avatar[hidden],
+.rcx-avatar-stack[hidden] {
+	display: none;
+}
