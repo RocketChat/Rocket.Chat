@@ -25,7 +25,7 @@ const MessageContainerFixedFrame = styled(View, {
 // end of generated
 
 const MessageContainerFixed = ({ children, className, ...props }: MessageContainerFixedProps) => (
-	<MessageContainerFixedFrame render={<Box rcx-message-container rcx-message-container--fixed {...props} />} className={className}>
+	<MessageContainerFixedFrame render={<Box rcx-message-container--fixed rcx-message-container {...props} />} className={className}>
 		{children}
 	</MessageContainerFixedFrame>
 );
