@@ -1,6 +1,5 @@
 import { Agent } from 'node:http';
 
-import express from 'express';
 import request from 'supertest';
 
 import { Router } from './Router';
@@ -44,51 +43,49 @@ describe('createRootApp', () => {
 });
 
 describe('nodeHandler', () => {
-	const createServer = (expressApp: express.Express) => {
+	const createServer = (handler: Parameters<typeof nodeHandler>[0]) => {
 		const app = createRootApp();
-		app.use(nodeHandler(expressApp));
+		app.use(nodeHandler(handler));
 		app.get('/after', (c) => c.text('after'));
 		return createNodeServer(app);
 	};
 
-	it('returns the response the express app sends', async () => {
-		const expressApp = express().get('/express', (_req, res) => {
-			res.status(201).send('from express');
-		});
-
-		const response = await request(createServer(expressApp)).get('/express');
+	it('returns the response the handler sends', async () => {
+		const response = await request(
+			createServer((_req, res) => {
+				res.writeHead(201).end('from node');
+			}),
+		).get('/node');
 
 		expect(response.status).toBe(201);
-		expect(response.text).toBe('from express');
+		expect(response.text).toBe('from node');
 	});
 
-	it('continues to the next routes when the express app passes the request on', async () => {
-		const expressApp = express().get('/express', (_req, res) => {
-			res.send('from express');
-		});
-
-		const response = await request(createServer(expressApp)).get('/after');
+	it('continues to the next routes when the handler passes the request on', async () => {
+		const response = await request(createServer((_req, _res, next) => next())).get('/after');
 
 		expect(response.status).toBe(200);
 		expect(response.text).toBe('after');
 	});
 
-	it('leaves the request body for the express app to read', async () => {
-		const expressApp = express().post('/echo', express.json(), (req, res) => {
-			res.json(req.body);
-		});
-
-		const response = await request(createServer(expressApp)).post('/echo').send({ a: 1 });
+	it('leaves the request body for the handler to read', async () => {
+		const response = await request(
+			createServer(async (req, res) => {
+				let body = '';
+				for await (const chunk of req) {
+					body += chunk;
+				}
+				res.writeHead(200, { 'content-type': 'application/json' }).end(body);
+			}),
+		)
+			.post('/echo')
+			.send({ a: 1 });
 
 		expect(response.body).toEqual({ a: 1 });
 	});
 
-	it('answers 500 when the express app passes an error on', async () => {
-		const expressApp = express().get('/broken', (_req, _res, next) => {
-			next(new Error('broken'));
-		});
-
-		const response = await request(createServer(expressApp)).get('/broken');
+	it('answers 500 when the handler passes an error on', async () => {
+		const response = await request(createServer((_req, _res, next) => next(new Error('broken')))).get('/broken');
 
 		expect(response.status).toBe(500);
 	});
