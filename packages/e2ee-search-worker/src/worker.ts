@@ -51,6 +51,8 @@ const sqlite3Ready = sqlite3InitModule();
 
 let db: Database | undefined;
 let scope: Scope | undefined; // the open index, or undefined for a memory-only index
+// The key check of an open memory-only index: a reopen with the same wrap key keeps its rows.
+let memoryScope: Pick<Scope, 'id' | 'wrappedKey'> | undefined;
 let dbScope: string | undefined; // the scope of the open database, memory-only or not
 let dirty = false;
 let saveTimer: ReturnType<typeof setTimeout> | undefined;
@@ -66,7 +68,6 @@ const nameOf = (error: unknown): string | undefined => (error instanceof Error ?
 // only worker, so this lock is the last guard: a second worker that tries to open the same copy is refused. The wait
 // covers the short time in which the worker of a tab that just closed still holds the lock.
 const takeFileLock = async (fileName: string): Promise<void> => {
-	if (typeof navigator.locks?.request !== 'function') return;
 	await new Promise<void>((granted, refused) => {
 		navigator.locks
 			.request(`rc-e2ee-search-file:${fileName}`, { signal: AbortSignal.timeout(FILE_LOCK_WAIT_MS) }, () => {
@@ -93,12 +94,15 @@ const dropFileLock = (): void => {
 const newMemoryDb = async (): Promise<Database> => new (await sqlite3Ready).oo1.DB(':memory:', 'c');
 
 // A browser without one of these keeps the index in memory only. createWritable is what saves the copy.
-const canPersist = (): boolean =>
+const canStore = (): boolean =>
 	typeof indexedDB === 'object' &&
 	typeof navigator.storage?.getDirectory === 'function' &&
 	typeof FileSystemFileHandle === 'function' &&
 	typeof FileSystemFileHandle.prototype.createWritable === 'function' &&
 	typeof crypto?.subtle === 'object';
+
+// Without Web Locks no file lock keeps a second worker off the copy, so the index is not saved.
+const canPersist = (): boolean => canStore() && typeof navigator.locks?.request === 'function';
 
 const toHex = (buffer: ArrayBuffer): string => Array.from(new Uint8Array(buffer), (byte) => byte.toString(16).padStart(2, '0')).join('');
 
@@ -222,6 +226,13 @@ const unwrapDataKey = (keyWrapKey: CryptoKey, scopeId: string, wrappedKey: Uint8
 		'decrypt',
 	]);
 
+// A new random key, sealed by the key-wrap key. Its bytes leave WebCrypto only sealed.
+const wrapFreshKey = async (keyWrapKey: CryptoKey, scopeId: string): Promise<Uint8Array<ArrayBuffer>> => {
+	const fresh = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
+	const iv = crypto.getRandomValues(new Uint8Array(IV_BYTES));
+	return concat(iv, new Uint8Array(await crypto.subtle.wrapKey('raw', fresh, keyWrapKey, gcm(scopeId, iv))));
+};
+
 // A new random data key for a scope with no copy. Its bytes leave WebCrypto only sealed, and the worker keeps a
 // non-extractable copy of it.
 const createDataKey = async (
@@ -229,9 +240,7 @@ const createDataKey = async (
 	storeKey: CryptoKey,
 	scopeId: string,
 ): Promise<Pick<Scope, 'header' | 'wrappedKey' | 'dataKey'>> => {
-	const fresh = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
-	const iv = crypto.getRandomValues(new Uint8Array(IV_BYTES));
-	const wrappedKey = concat(iv, new Uint8Array(await crypto.subtle.wrapKey('raw', fresh, keyWrapKey, gcm(scopeId, iv))));
+	const wrappedKey = await wrapFreshKey(keyWrapKey, scopeId);
 	return {
 		header: concat(MAGIC, await encrypt(storeKey, scopeId, wrappedKey)),
 		wrappedKey,
@@ -264,7 +273,7 @@ const openFile = async (
 };
 
 // True when `wrapKey` is the wrap key of the open scope.
-const opensScope = async (wrapKey: CryptoKey, open: Scope): Promise<boolean> => {
+const opensScope = async (wrapKey: CryptoKey, open: Pick<Scope, 'id' | 'wrappedKey'>): Promise<boolean> => {
 	try {
 		await unwrapDataKey(await keyWrapKeyOf(wrapKey), open.id, open.wrappedKey);
 		return true;
@@ -304,10 +313,12 @@ const saveNow = async (): Promise<void> => {
 	saveTimer = undefined;
 	if (!dirty || !scope || !db) return;
 	const target = scope;
+	const open = db;
 	dirty = false;
-	// The database is open here, so sqlite3 is ready and the export runs before any other request.
-	const plain = (await sqlite3Ready).capi.sqlite3_js_db_export(pointerOf(db));
+	let plain: Uint8Array<ArrayBuffer> | undefined;
 	try {
+		// The database is open here, so sqlite3 is ready and the export runs before any other request.
+		plain = (await sqlite3Ready).capi.sqlite3_js_db_export(pointerOf(open));
 		const file = concat(target.header, await encrypt(target.dataKey, target.id, plain));
 		// createWritable writes to a swap file and replaces the old file only on close, so a crash keeps the old copy.
 		const writable = await (await (await folder()).getFileHandle(target.fileName, { create: true })).createWritable();
@@ -321,26 +332,42 @@ const saveNow = async (): Promise<void> => {
 		if (scope === target) dirty = true;
 		throw error;
 	} finally {
-		plain.fill(0);
+		plain?.fill(0);
 	}
 };
 
+// Rejects when the save fails. The queue goes on, so the next save tries again.
 const queueSave = (): Promise<void> => {
-	saving = saving.then(saveNow, saveNow).catch((error: unknown) => console.warn('E2EE search index was not saved:', messageOf(error)));
-	return saving;
+	const saved = saving.then(saveNow, saveNow);
+	saving = saved.catch(() => undefined);
+	return saved;
 };
+
+const warnUnsaved = (error: unknown): void => console.warn('E2EE search index was not saved:', messageOf(error));
 
 const markDirty = (): void => {
 	dirty = true;
-	if (scope && saveTimer === undefined) saveTimer = setTimeout(queueSave, SAVE_DELAY_MS);
+	if (scope && saveTimer === undefined) saveTimer = setTimeout(() => queueSave().catch(warnUnsaved), SAVE_DELAY_MS);
+};
+
+// A memory-only index of `scopeId`: the wrapped key lets a reopen with the same wrap key keep its rows.
+const openMemoryDb = async (keyWrapKey: CryptoKey, scopeId: string): Promise<ScopeState> => {
+	memoryScope = { id: scopeId, wrappedKey: await wrapFreshKey(keyWrapKey, scopeId) };
+	db = await newMemoryDb();
+	return { persistent: false, restored: false, evicted: false };
 };
 
 const openScope = async (scopeId: string, wrapKey: CryptoKey | undefined): Promise<ScopeState> => {
-	if (scope?.id === scopeId && db && wrapKey && (await opensScope(wrapKey, scope))) return { persistent: true, restored: false };
-	await queueSave();
+	const open = scope ?? memoryScope;
+	if (open?.id === scopeId && db && wrapKey && (await opensScope(wrapKey, open)))
+		return { persistent: scope !== undefined, restored: false };
+	// Rows that this save cannot write are lost with the database. The room states in the same database go back with
+	// them, so the crawler indexes those rows again.
+	await queueSave().catch(warnUnsaved);
 	db?.close();
 	db = undefined;
 	scope = undefined;
+	memoryScope = undefined;
 	dbScope = undefined;
 	dirty = false;
 	dropFileLock();
@@ -350,10 +377,7 @@ const openScope = async (scopeId: string, wrapKey: CryptoKey | undefined): Promi
 	const keyWrapKey = await keyWrapKeyOf(wrapKey);
 	dbScope = scopeId;
 
-	if (!canPersist()) {
-		db = await newMemoryDb();
-		return { persistent: false, restored: false, evicted: false };
-	}
+	if (!canPersist()) return openMemoryDb(keyWrapKey, scopeId);
 
 	const fileName = await fileNameFor(scopeId);
 	await takeFileLock(fileName);
@@ -369,8 +393,7 @@ const openScope = async (scopeId: string, wrapKey: CryptoKey | undefined): Promi
 		console.warn('E2EE search index cannot be saved in this browser, keeping it in memory only:', messageOf(error));
 		storageRefused = true;
 		dropFileLock();
-		db = await newMemoryDb();
-		return { persistent: false, restored: false, evicted: false };
+		return openMemoryDb(keyWrapKey, scopeId);
 	}
 	if (file) {
 		try {
@@ -400,7 +423,7 @@ const openScope = async (scopeId: string, wrapKey: CryptoKey | undefined): Promi
 };
 
 const wipeScope = async (scopeId: string | undefined): Promise<void> => {
-	if (scope?.id === scopeId || scopeId === undefined) {
+	if (dbScope === scopeId || scopeId === undefined) {
 		clearTimeout(saveTimer);
 		saveTimer = undefined;
 		dirty = false;
@@ -408,9 +431,11 @@ const wipeScope = async (scopeId: string | undefined): Promise<void> => {
 		db?.close();
 		db = undefined;
 		scope = undefined;
+		memoryScope = undefined;
+		dbScope = undefined;
 		dropFileLock();
 	}
-	if (scopeId === undefined || !canPersist()) return;
+	if (scopeId === undefined || !canStore()) return;
 	try {
 		await removeFile(await fileNameFor(scopeId));
 		await withKeyStore('readwrite', (store) => idbRequest(store.delete(scopeId)));
@@ -436,6 +461,7 @@ const closeScope = async (scopeId: string): Promise<void> => {
 		db?.close();
 		db = undefined;
 		scope = undefined;
+		memoryScope = undefined;
 		dbScope = undefined;
 		dirty = false;
 		dropFileLock();
@@ -484,14 +510,28 @@ const run = async (request: WorkerRequest): Promise<SqlRow[] | [ScopeState]> => 
 // One request at a time, in order, so a save or a scope change never runs between the statements of another call.
 let queue: Promise<void> = Promise.resolve();
 
-self.onmessage = ({ data: request }: MessageEvent<WorkerRequest>) => {
-	queue = queue.then(async () => {
-		let reply: WorkerReply;
-		try {
-			reply = { id: request.id, rows: (await run(request)) as SqlRow[] };
-		} catch (error) {
-			reply = { id: request.id, error: error instanceof Error ? error.message : String(error) };
-		}
+// Each request gets an answer, also when its result cannot be sent, so no caller waits for ever.
+const answer = (reply: WorkerReply): void => {
+	try {
 		self.postMessage(reply);
-	});
+	} catch (error) {
+		self.postMessage({
+			id: reply.id,
+			error: `E2EE search index could not send the result: ${String(messageOf(error))}`,
+		} satisfies WorkerReply);
+	}
+};
+
+self.onmessage = ({ data: request }: MessageEvent<WorkerRequest>) => {
+	queue = queue
+		.then(async () => {
+			let reply: WorkerReply;
+			try {
+				reply = { id: request.id, rows: (await run(request)) as SqlRow[] };
+			} catch (error) {
+				reply = { id: request.id, error: error instanceof Error ? error.message : String(error) };
+			}
+			answer(reply);
+		})
+		.catch((error: unknown) => console.warn('E2EE search index could not answer a request:', messageOf(error)));
 };
