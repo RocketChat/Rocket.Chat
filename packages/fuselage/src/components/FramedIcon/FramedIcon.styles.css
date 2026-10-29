@@ -1,0 +1,4 @@
+@property --rcx-framed-icon-size {
+	syntax: '*';
+	inherits: false;
+}
