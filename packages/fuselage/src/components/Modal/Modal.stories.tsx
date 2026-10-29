@@ -64,7 +64,7 @@ export default {
 		wrapper: {
 			control: false,
 			description:
-				'Component type used to wrap `children` inside the dialog; defaults to `Box`. Receives `elevation`, `className` and `children`.',
+				'Component type used to wrap `children` inside the dialog; defaults to the modal panel. Receives `elevation`, `className` and `children`.',
 			table: { category: 'Composition' },
 		},
 		wrapperFunction: {
