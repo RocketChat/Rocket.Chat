@@ -3,7 +3,7 @@ import { isEditedMessage } from '@rocket.chat/core-typings';
 import { useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import { MessageTypes } from '@rocket.chat/message-types';
 import { isTruthy } from '@rocket.chat/tools';
-import { clientCallbacks, CustomVirtuaScrollbars } from '@rocket.chat/ui-client';
+import { clientCallbacks, CustomVirtuaScrollbars, useMergedRefsV2 } from '@rocket.chat/ui-client';
 import { useSearchParameter, useSetting, useUserId, useUserPreference } from '@rocket.chat/ui-contexts';
 import { differenceInSeconds } from 'date-fns/differenceInSeconds';
 import { Fragment, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
@@ -13,7 +13,6 @@ import { VList } from 'virtua';
 
 import { ThreadMessageItem } from './ThreadMessageItem';
 import InfiniteListAnchor from '../../../../../components/InfiniteListAnchor';
-import { useMergedRefsV2 } from '../../../../../hooks/useMergedRefsV2';
 import { setMessageJumpQueryStringParameter } from '../../../../../lib/utils/setMessageJumpQueryStringParameter';
 import { BubbleDate } from '../../../BubbleDate';
 import { useKeepAtBottom } from '../../../MessageList/hooks/useKeepAtBottom';
