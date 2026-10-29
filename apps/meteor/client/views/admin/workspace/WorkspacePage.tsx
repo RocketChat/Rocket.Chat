@@ -1,5 +1,5 @@
 import type { IWorkspaceInfo, IStats } from '@rocket.chat/core-typings';
-import { Box, Button, ButtonGroup, Callout, CardGrid } from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, Callout, CardGrid, Stack } from '@rocket.chat/fuselage';
 import type { IInstance } from '@rocket.chat/rest-typings';
 import { Page, PageHeader, PageScrollableContentWithShadow, useIsEnterprise } from '@rocket.chat/ui-client';
 import { memo } from 'react';
@@ -48,18 +48,16 @@ const WorkspacePage = ({
 				)}
 			</PageHeader>
 
-			<PageScrollableContentWithShadow padding={16}>
-				<Box display='flex' flexDirection='column' gap={16} marginBlock='none' marginInline='auto' width='full' color='default'>
+			<PageScrollableContentWithShadow padding='x24'>
+				<Stack gap='x16'>
 					{warningMultipleInstances && <Callout type='warning' title={t('Multiple_monolith_instances_alert')}></Callout>}
-					<Box>
-						<VersionCard serverInfo={serverInfo} />
-					</Box>
+					<VersionCard serverInfo={serverInfo} />
 					<CardGrid breakpoints={{ lg: 4, xs: 4 }}>
 						<DeploymentCard serverInfo={serverInfo} statistics={statistics} instances={instances} />
 						<UsersUploadsCard statistics={statistics} />
 						<MessagesRoomsCard statistics={statistics} />
 					</CardGrid>
-				</Box>
+				</Stack>
 			</PageScrollableContentWithShadow>
 		</Page>
 	);
