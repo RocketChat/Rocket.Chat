@@ -17,7 +17,7 @@ Each step is its own pull request, and each leaves production working with the M
 
 ### 1. Move the `WebApp.connectHandlers` sites to the root app
 
-Still on the fallback: avatar (and its global middleware), file-upload, fileDecrypt, data-export, assets,
+Still on the fallback: avatar (and its global middleware), file-upload, fileDecrypt, data-export, assets, rnnoise,
 emoji-custom, custom-sounds, i18n, robots, livechat, CAS, SAML, requestSeats, the swagger `/api-docs`, the OAuth2
 server `/oauth/*`, and the ui-master page injection.
 
