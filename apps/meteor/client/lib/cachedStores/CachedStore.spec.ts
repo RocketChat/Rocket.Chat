@@ -290,6 +290,40 @@ describe('CachedStore', () => {
 			expect(mockRemoveItem).toHaveBeenCalledWith('subscriptions');
 		});
 
+		it('drops a pending save on logout, and removes the cache only after the save that already runs', async () => {
+			jest.useFakeTimers();
+			try {
+				const cachedStore = new TestCachedStore();
+				const { save } = cachedStore as unknown as { save: () => Promise<void> };
+				cachedStore.store.getState().store(fresh);
+				let finishSave: () => void = () => undefined;
+				mockSetItem.mockReturnValueOnce(
+					new Promise<void>((resolve) => {
+						finishSave = resolve;
+					}),
+				);
+
+				void save();
+				await jest.advanceTimersByTimeAsync(1000);
+				expect(mockSetItem).toHaveBeenCalledTimes(1);
+				void save();
+
+				const clearing = cachedStore.clear();
+				await jest.advanceTimersByTimeAsync(0);
+				expect(mockRemoveItem).not.toHaveBeenCalled();
+
+				finishSave();
+				await clearing;
+				expect(mockRemoveItem).toHaveBeenCalledWith('subscriptions');
+
+				await jest.advanceTimersByTimeAsync(2000);
+				expect(mockSetItem).toHaveBeenCalledTimes(1);
+				expect(recordsOf(cachedStore)).toEqual([]);
+			} finally {
+				jest.useRealTimers();
+			}
+		});
+
 		it('keeps the last message of a room that is not encrypted', async () => {
 			const cachedStore = new TestCachedStore();
 			const lastMessage = { _id: 'msg-3', rid: 'GENERAL', msg: 'a public okapi' };

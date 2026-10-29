@@ -275,7 +275,16 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 		await this.save();
 	}
 
-	private save = withDebouncing({ wait: 1000 })(async () => {
+	/** The cache write that runs now, if any. */
+	private saving: Promise<void> = Promise.resolve();
+
+	private save = withDebouncing({ wait: 1000 })(() => {
+		const write = this.writeCache();
+		this.saving = write.catch(() => undefined);
+		return write;
+	});
+
+	private async writeCache() {
 		await this.scrubbedCache;
 		this.log('saving cache');
 		await localforage.setItem(this.name, {
@@ -285,16 +294,19 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 			records: Array.from(this.store.getState().records.values(), toCacheRecord),
 		});
 		this.log('saving cache (done)');
-	});
+	}
 
 	abstract clearCacheOnLogout(): void;
 
 	protected async clearCache() {
 		this.log('clearing cache');
-		// The startup scrub rewrites the cache: a rewrite that lands after the remove would bring the cache back.
-		await this.scrubbedCache;
-		await localforage.removeItem(this.name);
+		// A save or the startup scrub that writes after the remove would bring the cache back. The records go first, so a
+		// later save writes none of them, and the remove waits for the writes that already run.
 		this.store.getState().replaceAll([]);
+		this.save.cancel();
+		await this.scrubbedCache;
+		await this.saving;
+		await localforage.removeItem(this.name);
 	}
 
 	protected setupListener() {
