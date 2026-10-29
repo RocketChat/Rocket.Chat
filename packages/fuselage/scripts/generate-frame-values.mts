@@ -4194,6 +4194,62 @@ const messageToolbar = [
 	{ file: messageDir('MessageToolbar/MessageToolbar.styles.css'), generate: generateMessageToolbarCss, css: true },
 ];
 
+const generateMessageMetrics = () => view('MessageMetricsContentWrapperFrame', { render: 'div', ...mBox, marginInline: spacing('-x4') });
+
+const generateMessageMetricsContentItem = () =>
+	view('MessageMetricsContentItemFrame', { render: 'div', ...mBox, marginBlock: spacing('x4') });
+
+const generateMessageMetricsItem = () =>
+	view('MessageMetricsItemFrame', {
+		render: 'div',
+		...mBox,
+		justifyContent: 'center',
+		alignItems: 'center',
+		...font('micro'),
+		marginInline: spacing('x4')!,
+		color: mFont('default'),
+	});
+
+const generateMessageMetricsItemLabel = () =>
+	view('MessageMetricsItemLabelFrame', { render: 'div', ...mBox, display: 'block', marginInlineStart: spacing('x4') });
+
+const generateMessageMetricsItemAvatarRow = () =>
+	view('MessageMetricsItemAvatarRowFrame', { render: 'div', ...mBox, marginInline: offScale(-2) });
+
+const generateMessageMetricsItemAvatarRowContent = () =>
+	view('MessageMetricsItemAvatarRowContentFrame', { render: 'div', ...mBox, display: 'block', marginInline: offScale(2) });
+
+const generateMessageMetricsFollowing = () =>
+	view('MessageMetricsFollowBadgeFrame', { render: 'div', ...mBox, display: 'block', position: 'absolute', top: 0, right: 0 });
+
+const generateMessageMetricsCss = () => `${raised('.rcx-message-metrics__content-item + .rcx-message-metrics__content-item')} {
+	margin-inline-start: ${spacing('x4')};
+}
+
+${raised('.rcx-message-metrics__item__follow')} {
+	position: relative;
+
+	overflow: visible;
+}
+
+${raised('.rcx-message-metrics__item__follow-badge')} {
+	transform: translate(40%, -40%);
+}`;
+
+const messageMetrics = [
+	{ file: messageDir('MessageMetrics/MessageMetrics.tsx'), generate: generateMessageMetrics },
+	{ file: messageDir('MessageMetrics/MessageMetricsContentItem.tsx'), generate: generateMessageMetricsContentItem },
+	{ file: messageDir('MessageMetrics/MessageMetricsFollowing.tsx'), generate: generateMessageMetricsFollowing },
+	{ file: messageDir('MessageMetrics/MessageMetricsItem/MessageMetricsItem.tsx'), generate: generateMessageMetricsItem },
+	{ file: messageDir('MessageMetrics/MessageMetricsItem/MessageMetricsItemLabel.tsx'), generate: generateMessageMetricsItemLabel },
+	{ file: messageDir('MessageMetrics/MessageMetricsItem/MessageMetricsItemAvatarRow.tsx'), generate: generateMessageMetricsItemAvatarRow },
+	{
+		file: messageDir('MessageMetrics/MessageMetricsItem/MessageMetricsItemAvatarRowContent.tsx'),
+		generate: generateMessageMetricsItemAvatarRowContent,
+	},
+	{ file: messageDir('MessageMetrics/MessageMetrics.styles.css'), generate: generateMessageMetricsCss, css: true },
+];
+
 const generateAccordion = () =>
 	constants({
 		border: {
@@ -4513,7 +4569,7 @@ const components: { file: string; generate: () => string; css?: boolean; section
 	{ file: frames('Menu/MenuItem.tsx'), generate: generateMenuItemDescription },
 ];
 
-components.push(...messageCore, ...messageToolbar);
+components.push(...messageCore, ...messageMetrics, ...messageToolbar);
 
 for (const [dir, control] of [
 	['CheckBox', checkBox],
