@@ -1450,6 +1450,44 @@ ${frameDeclaration('ThrobberCircleFrame', {
 })}`;
 };
 
+const generateProgressBar = () => {
+	const themedRadius = toCSSValue('--rcx-progress-bar-border-radius', radiusOf('large'));
+	const fills: Record<string, Value> = {};
+
+	for (const name of ['info', 'success', 'warning', 'danger']) {
+		fills[`status-font-on-${name}`] = { backgroundColor: statusColors[`status-font-on-${name}` as keyof typeof statusColors].toString() };
+		fills[`status-background-${name}`] = {
+			backgroundColor: statusBackgroundColors[`status-background-${name}` as keyof typeof statusBackgroundColors].toString(),
+		};
+	}
+
+	return `${frameDeclaration('ProgressBarFrame', {
+		render: 'div',
+		...boxBase,
+		display: 'block',
+		overflow: 'hidden',
+		width: '100%',
+		height: 8,
+		borderRadius: themedRadius,
+		backgroundColor: toCSSValue('--rcx-progress-bar-color-background', surfaceColors['surface-neutral'].toString()),
+	})}
+
+${frameDeclaration('ProgressBarFill', {
+	render: 'div',
+	...boxBase,
+	display: 'block',
+	height: 8,
+	borderRadius: themedRadius,
+	width: 'var(--rcx-progress-bar-fill-width)',
+	variants: { fillColor: fills },
+})}`;
+};
+
+// The shine is a pseudo-element, which a frame cannot style
+const generateProgressBarShine = () => `.rcx-progress-bar__fill--animated::before {
+	background: ${toCSSValue('--rcx-progress-bar-color-shine', surfaceColors['surface-light'].toString())};
+}`;
+
 const frames = (relative: string) => join(import.meta.dirname, '../src/components', relative);
 
 const components: { file: string; generate: () => string; css?: boolean }[] = [
@@ -1483,6 +1521,8 @@ const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Accordion/AccordionItem.tsx'), generate: generateAccordionItem },
 	{ file: frames('Skeleton/Skeleton.tsx'), generate: generateSkeleton },
 	{ file: frames('Throbber/Throbber.tsx'), generate: generateThrobber },
+	{ file: frames('ProgressBar/ProgressBar.tsx'), generate: generateProgressBar },
+	{ file: frames('ProgressBar/ProgressBar.styles.css'), generate: generateProgressBarShine, css: true },
 ];
 
 for (const [dir, control] of [
