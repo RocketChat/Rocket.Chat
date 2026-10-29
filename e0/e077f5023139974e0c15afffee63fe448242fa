@@ -1,0 +1,44 @@
+packages/ddp-server/src/trackPresence.spec.ts
+  s_f1121fd6cdc780::t_1016754a0238a1 1-53
+packages/ddp-server/src/ConnectionRegistry.ts
+  s_f1121fd6cdc780::t_be4238a9a2e21e 55-63
+packages/ddp-server/src/index.ts
+  s_f1121fd6cdc780::t_11123e2b434c9b 17-20
+  s_f1121fd6cdc780::t_4565064149e19f 15,21
+ee/apps/ddp-streamer/src/DDPStreamer.ts
+  s_f1121fd6cdc780::t_2d53de9bb0c991 49-51
+  s_f1121fd6cdc780::t_4565064149e19f 3,6,53,55,112-113,121,143,242
+packages/ddp-server/src/publications/loginServiceConfiguration.ts
+  s_f1121fd6cdc780::t_be4238a9a2e21e 1,8-22
+  s_f1121fd6cdc780::t_bcf88746b45965 23
+packages/ddp-server/src/publications/autoupdate.ts
+  s_f1121fd6cdc780::t_be4238a9a2e21e 11-15
+packages/ddp-server/src/publications/loginServiceConfiguration.spec.ts
+  s_f1121fd6cdc780::t_be4238a9a2e21e 1-3,34-44
+  s_f1121fd6cdc780::t_11123e2b434c9b 6
+  s_f1121fd6cdc780::t_930b3350f15b08 45-46
+packages/ddp-server/src/publications/autoupdate.spec.ts
+  s_f1121fd6cdc780::t_11123e2b434c9b 5,38-44
+  s_f1121fd6cdc780::t_be4238a9a2e21e 1-2,33-37,45-47
+  s_f1121fd6cdc780::t_5327ad257de7b0 48-50
+packages/ddp-server/src/trackPresence.ts
+  s_f1121fd6cdc780::t_a7483112d158a0 1-36
+packages/ddp-server/src/ConnectionRegistry.spec.ts
+  s_f1121fd6cdc780::t_be4238a9a2e21e 110-131
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "e0e077f5023139974e0c15afffee63fe448242fa",
+  "prompts": {},
+  "sessions": {
+    "s_f1121fd6cdc780": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bc1dcb85-fc36-44bb-b01a-4bbd6676be8c",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
