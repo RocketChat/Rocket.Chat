@@ -3090,7 +3090,7 @@ import { IS_EE, URL_MONGODB } from '../../e2e/config/constants';
 				updateSetting('LDAP_AD_User_Search_Field', ''),
 				updateSetting('LDAP_AD_Username_Field', ''),
 				updateSetting('LDAP_Background_Sync_ABAC_Attributes', false),
-				updateSetting('LDAP_Background_Sync_ABAC_Attributes_Interval', ''),
+				updateSetting('LDAP_Background_Sync_ABAC_Attributes_Interval', '0 0 * * *'),
 				updateSetting('LDAP_ABAC_AttributeMap', ''),
 			]);
 		});

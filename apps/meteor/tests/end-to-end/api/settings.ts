@@ -324,6 +324,118 @@ describe('[Settings]', () => {
 		});
 	});
 
+	describe('[Cron settings]', () => {
+		const settingIds = [
+			'RetentionPolicy_Advanced_Precision_Cron',
+			...(IS_EE
+				? [
+						'LDAP_Background_Sync_Avatars_Interval',
+						'LDAP_Sync_AutoLogout_Interval',
+						'LDAP_Background_Sync_ABAC_Attributes_Interval',
+						'ABAC_Virtru_Sync_Interval',
+						'Message_Read_Receipt_Archive_Cron',
+					]
+				: []),
+		];
+		const originalValues = new Map<string, Awaited<ReturnType<typeof getSettingValueById>>>();
+
+		before(async () => {
+			await updatePermission('view-privileged-setting', ['admin']);
+			await updatePermission('edit-privileged-setting', ['admin']);
+			for (const id of settingIds) {
+				originalValues.set(id, await getSettingValueById(id));
+			}
+		});
+
+		after(async () => {
+			for (const [id, value] of originalValues) {
+				await updateSetting(id, value);
+			}
+		});
+
+		for (const id of settingIds) {
+			it(`accepts valid cron expressions and rejects invalid ones for ${id}`, async () => {
+				const validCron = '15 3 * * 1-5';
+				await request
+					.post(api(`settings/${id}`))
+					.set(credentials)
+					.send({ value: validCron })
+					.expect(200);
+				expect(await getSettingValueById(id)).to.equal(validCron);
+
+				await request
+					.post(api(`settings/${id}`))
+					.set(credentials)
+					.send({ value: '60 * * * *' })
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', `${id}_Invalid`);
+						expect(res.body).to.have.property('errorType', 'error-setting-validation-failed');
+					});
+				expect(await getSettingValueById(id)).to.equal(validCron);
+			});
+		}
+
+		it('saves a valid cron in a bulk update', async () => {
+			const id = 'RetentionPolicy_Advanced_Precision_Cron';
+			const value = '0 4 * * *';
+			await request
+				.post(api('settings'))
+				.set(credentials)
+				.send({ settings: [{ _id: id, value }] })
+				.expect(200);
+			expect(await getSettingValueById(id)).to.equal(value);
+		});
+
+		it('rejects an invalid cron in a bulk update without saving any values', async () => {
+			const id = 'RetentionPolicy_Advanced_Precision_Cron';
+			const otherId = 'Accounts_Default_User_Preferences_masterVolume';
+			const cronBefore = await getSettingValueById(id);
+			const volumeBefore = await getSettingValueById(otherId);
+			const nextVolume = volumeBefore === 25 ? 50 : 25;
+
+			await request
+				.post(api('settings'))
+				.set(credentials)
+				.send({
+					settings: [
+						{ _id: otherId, value: nextVolume },
+						{ _id: id, value: 'not a cron' },
+					],
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', false);
+					expect(res.body).to.have.property('error', `${id}_Invalid`);
+					expect(res.body).to.have.property('errorType', 'error-setting-validation-failed');
+				});
+			expect(await getSettingValueById(id)).to.equal(cronBefore);
+			expect(await getSettingValueById(otherId)).to.equal(volumeBefore);
+		});
+
+		it('rejects a bulk update with a valid and an invalid value for the same cron setting', async () => {
+			const id = 'RetentionPolicy_Advanced_Precision_Cron';
+			const previous = await getSettingValueById(id);
+
+			await request
+				.post(api('settings'))
+				.set(credentials)
+				.send({
+					settings: [
+						{ _id: id, value: '0 0 * * *' },
+						{ _id: id, value: 'invalid' },
+					],
+				})
+				.expect(400)
+				.expect((res) => {
+					expect(res.body).to.have.property('error', `${id}_Invalid`);
+					expect(res.body).to.have.property('errorType', 'error-setting-validation-failed');
+				});
+			expect(await getSettingValueById(id)).to.equal(previous);
+		});
+	});
+
 	describe('[Room_Toolbox_Layout]', () => {
 		const validLayout = [
 			{ roomType: ['c', 'p'], maxVisibleNormal: 3, items: [{ id: 'members-list', featured: true, order: 1 }] },
