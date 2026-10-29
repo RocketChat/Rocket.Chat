@@ -4,13 +4,15 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 
 import type { ElementProps } from '../../types/ElementProps';
 import { AnimatedVisibility } from '../AnimatedVisibility';
-import { Box } from '../Box';
 import { Icon, type IconProps } from '../Icon';
 import type { OptionType } from '../Options';
 import { Options, useCursor } from '../Options';
 import { PositionAnimated } from '../PositionAnimated';
 import SelectAddon from './SelectAddon';
+import SelectContainer from './SelectContainer';
 import SelectFocus from './SelectFocus';
+import SelectItem from './SelectItem';
+import SelectWrapper from './SelectWrapper';
 
 export type SelectOption = readonly [value: string, label: string, selected?: boolean];
 
@@ -129,7 +131,7 @@ function SelectLegacy({
 	});
 
 	return (
-		<Box
+		<SelectContainer
 			animated
 			rcx-select
 			disabled={disabled}
@@ -138,7 +140,7 @@ function SelectLegacy({
 			className={useMemo(() => [error && 'invalid', disabled && 'disabled'], [error, disabled])}
 			{...props}
 		>
-			<Box is='div' rcx-select__wrapper display='flex' marginInline='neg-x4' rcx-select__wrapper--hidden={!!visibleText}>
+			<SelectWrapper display='flex' rcx-select__wrapper--hidden={!!visibleText}>
 				{visibleText &&
 					(RenderSelected ? (
 						<RenderSelected
@@ -149,9 +151,9 @@ function SelectLegacy({
 							onClick={internalChangedByClick}
 						/>
 					) : (
-						<Box flexGrow={1} is='span' marginInline={4} rcx-select__item fontScale='p2' color={valueLabel ? 'titles-labels' : 'hint'}>
+						<SelectItem flexGrow={1} marginInline={4} fontScale='p2' color={valueLabel ? 'titles-labels' : 'hint'}>
 							{visibleText}
-						</Box>
+						</SelectItem>
 					))}
 				<Anchor
 					ref={anchorRef}
@@ -170,7 +172,7 @@ function SelectLegacy({
 				<SelectAddon>
 					<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : addonIcon || 'chevron-down'} size='x20' />
 				</SelectAddon>
-			</Box>
+			</SelectWrapper>
 			<PositionAnimated visible={visible} anchor={containerRef}>
 				<_Options
 					width={borderBoxSize.inlineSize}
@@ -183,7 +185,7 @@ function SelectLegacy({
 					customEmpty={customEmpty}
 				/>
 			</PositionAnimated>
-		</Box>
+		</SelectContainer>
 	);
 }
 
