@@ -2,7 +2,7 @@ import { ClientSafeError } from '@rocket.chat/core-services';
 import type { ISetting, ISettingColor } from '@rocket.chat/core-typings';
 import { isSettingCode, isSettingColor } from '@rocket.chat/core-typings';
 import { Settings } from '@rocket.chat/models';
-import { Match, check } from 'meteor/check';
+import { isRecord } from '@rocket.chat/tools';
 
 import { settings } from '..';
 import { updateAuditedByUser } from './auditedSettingUpdates';
@@ -13,17 +13,20 @@ import { validateSettingRules } from '../../lib/settingValidationRules';
 import { disableCustomScripts } from '../../lib/shared/disableCustomScripts';
 import { checkSettingValueBounds } from '../checkSettingValueBonds';
 
-const validJSON = Match.Where((value: string) => {
+const checkJSON = (value: string) => {
+	if (value === '') {
+		return;
+	}
+
 	try {
-		value === '' || JSON.parse(value);
-		return true;
+		JSON.parse(value);
 	} catch (_) {
 		throw new ClientSafeError('Invalid JSON provided');
 	}
-});
+};
 
-const checkInteger = (value: ISetting['value']) => {
-	if (!Number.isInteger(value)) {
+const assertValidSettingValue = (isValid: boolean, value: ISetting['value']) => {
+	if (!isValid) {
 		throw new ClientSafeError('error-invalid-setting-value', `Invalid setting value ${value}`, {
 			method: 'saveSettings',
 		});
@@ -76,30 +79,29 @@ export const saveSettingsBulk = async (
 			// Verify the value is what it should be
 			switch (setting?.type) {
 				case 'roomPick':
-					check(value, Match.OneOf([Object], ''));
+					assertValidSettingValue(value === '' || (Array.isArray(value) && value.every(isRecord)), value);
 					break;
 				case 'boolean':
-					check(value, Boolean);
+					assertValidSettingValue(typeof value === 'boolean', value);
 					break;
 				case 'timespan':
 				case 'int':
 				case 'range':
-					check(value, Number);
-					checkInteger(value);
+					assertValidSettingValue(Number.isInteger(value), value);
 					checkSettingValueBounds(setting, value);
 					break;
 				case 'multiSelect':
 				case 'multiLookup':
-					check(value, Array);
+					assertValidSettingValue(Array.isArray(value), value);
 					break;
 				case 'code':
-					check(value, String);
+					assertValidSettingValue(typeof value === 'string', value);
 					if (isSettingCode(setting) && setting.code === 'application/json') {
-						check(value, validJSON);
+						checkJSON(value as string);
 					}
 					break;
 				default:
-					check(value, String);
+					assertValidSettingValue(typeof value === 'string', value);
 					break;
 			}
 		}),

@@ -1,19 +1,28 @@
 import type { IDirectMessageRoom, IRoom } from '@rocket.chat/core-typings';
 import {
 	ajv,
+	ajvQuery,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
-import { check, Match } from 'meteor/check';
 
 import { API } from '../../../../server/api';
-import { isDateISOString, transformDatesForAPI } from '../../lib/engagementDashboard/date';
+import { transformDatesForAPI } from '../../lib/engagementDashboard/date';
 import {
 	findWeeklyMessagesSentData,
 	findMessagesSentOrigin,
 	findTopFivePopularChannelsByMessageSentQuantity,
 } from '../../lib/engagementDashboard/messages';
+
+const isDateRangeParams = ajvQuery.compile<{ start: string; end: string }>({
+	type: 'object',
+	properties: {
+		start: { type: 'string', format: 'date-time' },
+		end: { type: 'string', format: 'date-time' },
+	},
+	required: ['start', 'end'],
+});
 
 const weeklyDataResponseSchema = ajv.compile<{
 	days: { day: Date; messages: number }[];
@@ -151,6 +160,7 @@ API.v1.get(
 		authRequired: true,
 		permissionsRequired: ['view-engagement-dashboard'],
 		license: ['engagement-dashboard'],
+		query: isDateRangeParams,
 		response: {
 			200: weeklyDataResponseSchema,
 			400: validateBadRequestErrorResponse,
@@ -159,14 +169,6 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		check(
-			this.queryParams,
-			Match.ObjectIncluding({
-				start: Match.Where(isDateISOString),
-				end: Match.Where(isDateISOString),
-			}),
-		);
-
 		const { start, end } = this.queryParams;
 
 		const data = await findWeeklyMessagesSentData(transformDatesForAPI(start, end));
@@ -180,6 +182,7 @@ API.v1.get(
 		authRequired: true,
 		permissionsRequired: ['view-engagement-dashboard'],
 		license: ['engagement-dashboard'],
+		query: isDateRangeParams,
 		response: {
 			200: messagesOriginResponseSchema,
 			400: validateBadRequestErrorResponse,
@@ -188,14 +191,6 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		check(
-			this.queryParams,
-			Match.ObjectIncluding({
-				start: Match.Where(isDateISOString),
-				end: Match.Where(isDateISOString),
-			}),
-		);
-
 		const { start, end } = this.queryParams;
 
 		const data = await findMessagesSentOrigin(transformDatesForAPI(start, end));
@@ -209,6 +204,7 @@ API.v1.get(
 		authRequired: true,
 		permissionsRequired: ['view-engagement-dashboard'],
 		license: ['engagement-dashboard'],
+		query: isDateRangeParams,
 		response: {
 			200: topFivePopularChannelsResponseSchema,
 			400: validateBadRequestErrorResponse,
@@ -217,14 +213,6 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		check(
-			this.queryParams,
-			Match.ObjectIncluding({
-				start: Match.Where(isDateISOString),
-				end: Match.Where(isDateISOString),
-			}),
-		);
-
 		const { start, end } = this.queryParams;
 
 		const data = await findTopFivePopularChannelsByMessageSentQuantity(transformDatesForAPI(start, end));
