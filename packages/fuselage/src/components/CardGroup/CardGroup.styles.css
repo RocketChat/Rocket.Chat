@@ -1,0 +1,33 @@
+.rcx-card-group__item {
+	margin-inline: 8px;
+}
+
+.rcx-card-group__item:first-of-type {
+	margin-inline-start: 0;
+}
+
+.rcx-card-group__item:last-of-type {
+	margin-inline-end: 0;
+}
+
+.rcx-card-group--wrap > .rcx-card-group__item {
+	margin-block-end: 16px;
+	margin-inline: 8px 8px;
+}
+
+.rcx-card-group--stretch > .rcx-card-group__item {
+	flex-grow: 1;
+}
+
+.rcx-card-group--vertical .rcx-card-group__item {
+	margin-block: 4px;
+	margin-inline: 0;
+}
+
+.rcx-card-group--vertical .rcx-card-group__item:first-child {
+	margin-block-start: 0;
+}
+
+.rcx-card-group--vertical .rcx-card-group__item:last-child {
+	margin-block-end: 0;
+}
