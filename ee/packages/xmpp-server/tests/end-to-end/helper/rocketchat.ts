@@ -14,6 +14,7 @@ import { adminPassword, adminUsername, password } from '../../../../../../apps/m
 import { createUser, deleteUser, findUserByUsername, getRequestConfig } from '../../../../../../apps/meteor/tests/data/users.helper';
 import type { IRequestConfig } from '../../../../../../apps/meteor/tests/data/users.helper';
 import { DDPListener } from '../../../../federation-matrix/tests/helper/ddp-listener';
+import { escapeLocalpart } from '../../../src/jid/escaping';
 import { isDomainAllowed } from '../../../src/jid/normalize';
 
 type Endpoint = Parameters<typeof api>[0];
@@ -125,7 +126,12 @@ export async function createLocalUser(
 ): Promise<LocalUser> {
 	const user = await createUser({ username, ...(email && { email }), joinDefaultChannels: false }, rc.admin);
 	rc.cleanup.add(() => deleteUser(user, { confirmRelinquish: true }, rc.admin));
-	return { _id: user._id, username, jid: `${username}@${rc.domain}`, config: await getRequestConfig(apiUrl, username, password) };
+	return {
+		_id: user._id,
+		username,
+		jid: `${escapeLocalpart(username)}@${rc.domain}`,
+		config: await getRequestConfig(apiUrl, username, password),
+	};
 }
 
 /** Keeps a DDP session open for the user: without one their connection status stays offline, masking any status they pick. */

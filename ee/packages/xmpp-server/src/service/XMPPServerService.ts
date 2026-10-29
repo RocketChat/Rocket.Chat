@@ -20,7 +20,7 @@ import type { XMPPServerConfiguration } from './configuration';
 import { normalizeDomain } from '../jid/normalize';
 import type { Logger as CoreLogger } from '../logger';
 import { isXMPPSettingKey, readXMPPServerConfiguration } from './configuration';
-import { domainOfJid, toBareJid } from './helpers/jid';
+import { domainOfJid, localJidOf, localUsernameOf, toBareJid } from './helpers/jid';
 import { deriveInboundEventId, deriveInboundMessageId } from './helpers/messageId';
 import type { InboundEventKey, InboundMessageKey } from './helpers/messageId';
 import { mapPresenceToStatus, mapStatusToPresence } from './helpers/presence';
@@ -259,7 +259,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			case 'dm':
 				if (federation.with) {
 					await this.server.sendChatMessage({
-						from: `${user.username}@${this.server.domain}`,
+						from: localJidOf(user.username, this.server.domain),
 						to: federation.with,
 						body: message.msg,
 						...stanza,
@@ -276,7 +276,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 					// The author may have no session in the room yet
 					await this.joinRemoteMUC(user._id, room._id);
 					await this.server.mucSendToRemoteRoom({
-						localJid: `${user.username}@${this.server.domain}`,
+						localJid: localJidOf(user.username, this.server.domain),
 						roomJid: federation.muc,
 						body: message.msg,
 						...stanza,
@@ -306,7 +306,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		this.server.mucInvite({
 			roomId: coreRoomIdOf(room.xmppFederation.muc),
 			inviteeJid: toBareJid(jid),
-			inviterJid: `${inviter.username}@${this.server.domain}`,
+			inviterJid: localJidOf(inviter.username, this.server.domain),
 		});
 		this.logger.debug({ msg: 'Sent MUC invite', room: room.xmppFederation.muc, to: jid });
 	}
@@ -326,7 +326,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		this.syncHostedRoomWithCore(room);
 		this.server.mucAddLocalOccupant({
 			roomId: coreRoomIdOf(room.xmppFederation.muc),
-			localJid: `${user.username}@${this.server.domain}`,
+			localJid: localJidOf(user.username, this.server.domain),
 			nick: user.username,
 			role: room.u?._id === user._id ? 'moderator' : 'participant',
 		});
@@ -402,7 +402,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			}
 			this.server.mucAddLocalOccupant({
 				roomId,
-				localJid: `${u.username}@${this.server.domain}`,
+				localJid: localJidOf(u.username, this.server.domain),
 				nick: u.username,
 				role: room.u?._id === u._id ? 'moderator' : 'participant',
 			});
@@ -421,7 +421,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			return;
 		}
 		await this.server.mucJoinRemoteRoom({
-			localJid: `${user.username}@${this.server.domain}`,
+			localJid: localJidOf(user.username, this.server.domain),
 			roomJid: room.xmppFederation.muc,
 			nick: user.username,
 			// History catches up on messages missed while offline; decode-only mode has nowhere to store them
@@ -441,7 +441,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			return;
 		}
 		await this.server.mucLeaveRemoteRoom({
-			localJid: `${user.username}@${this.server.domain}`,
+			localJid: localJidOf(user.username, this.server.domain),
 			roomJid: room.xmppFederation.muc,
 		});
 	}
@@ -474,7 +474,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 
 	/** Stores a remote user's direct message in their DM with the addressee. */
 	private async onIncomingDirectMessage(event: IncomingChatMessage): Promise<void> {
-		const localUsername = toBareJid(event.to).split('@')[0];
+		const localUsername = localUsernameOf(event.to);
 		const localUser = await Users.findOneByUsername(localUsername, { projection: { _id: 1, username: 1 } });
 		if (!localUser) {
 			this.logger.debug({ msg: 'XMPP message for unknown local user', to: event.to });
@@ -797,7 +797,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		if (!this.server) {
 			return;
 		}
-		const localUsername = toBareJid(event.toLocalJid).split('@')[0];
+		const localUsername = localUsernameOf(event.toLocalJid);
 		const localUser = await Users.findOneByUsername(localUsername, { projection: { _id: 1, username: 1 } });
 		if (!localUser) {
 			return;
@@ -830,7 +830,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		if (!this.server || !user.username) {
 			return;
 		}
-		const from = `${user.username}@${this.server.domain}`;
+		const from = localJidOf(user.username, this.server.domain);
 		const { availability, show } = mapStatusToPresence(user.status);
 
 		const rooms = await Rooms.findXMPPDirectMessagesByUserId(user._id, { projection: { xmppFederation: 1 } }).toArray();
@@ -869,7 +869,7 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		if (!this.server || !this.presenceEnabled) {
 			return;
 		}
-		const localUsername = toBareJid(event.to).split('@')[0];
+		const localUsername = localUsernameOf(event.to);
 		const remoteJid = toBareJid(event.from);
 
 		const localUser = await Users.findOneByUsername(localUsername, { projection: { _id: 1 } });

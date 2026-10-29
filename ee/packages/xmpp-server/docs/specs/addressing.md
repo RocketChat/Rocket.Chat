@@ -20,6 +20,7 @@ tests:
   [
     src/jid/escaping.spec.ts,
     src/jid/normalize.spec.ts,
+    src/service/helpers/jid.spec.ts,
     src/service/helpers/remoteRoom.spec.ts,
     src/service/helpers/xmppUser.spec.ts,
     src/muc/MucService.spec.ts,
@@ -93,7 +94,8 @@ localparts, and compare domains the way DNS does.
 `src/jid/escaping.ts` wraps `@xmpp/jid` with the byte limit. `src/jid/normalize.ts` holds
 `normalizeDomain` and `isDomainAllowed`; `InboundSession`, `OutboundSession`, `S2SManager`
 and the dialback flow call it on every domain they compare. `src/service/helpers/jid.ts` has
-`toBareJid` and `domainOfJid` for the service, and `normalizeUserBareJid` normalizes the
+`toBareJid` and `domainOfJid` for the service, `localJidOf` and `localUsernameOf` to escape a
+local username into its JID and back (R1), and `normalizeUserBareJid` normalizes the
 real JIDs remote rooms disclose before they become usernames. `createOrUpdateXMPPUser` in
 `src/service/helpers/xmppUser.ts` is the single upsert behind R9 and R10: it reduces the JID
 to its bare form with `normalizeUserBareJid`, which refuses anything but one localpart and a
@@ -125,16 +127,6 @@ fails. Where: `isBareJid` filters in `apps/meteor/ee/server/hooks/xmpp/index.ts`
 `apps/meteor/server/lib/rooms/createRoom.ts`. A fix asks who holds each username and treats
 a JID-shaped one as XMPP only when no local user does. Test: `direct-messages.spec.ts`,
 "treats a local user whose username looks like a JID as that local user".
-
-### D2 Local JIDs are not escaped
-
-R1 is not implemented: a local user's JID is built as `<username>@<domain>` with no
-XEP-0106 escaping, and inbound localparts are looked up without unescaping. A username that
-holds a character a localpart cannot carry, which needs a widened
-`UTF8_User_Names_Validation`, sends from an invalid JID and cannot be reached. Where: every
-`` `${user.username}@${this.server.domain}` `` in `XMPPServerService`, and the username
-lookups in its inbound handlers. Test: `direct-messages.spec.ts`, "sends from the escaped
-JID of a local user whose username needs escaping".
 
 ## Open questions
 

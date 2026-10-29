@@ -154,8 +154,7 @@ describe('XMPP federation: direct messages', () => {
 		await inviteToRoom(local, await createPlainGroup(rc, local), lookalike.username);
 	});
 
-	// Known defect: ../../docs/specs/addressing.md#d2-local-jids-are-not-escaped
-	it.skip('sends from the escaped JID of a local user whose username needs escaping (addressing D2)', async () => {
+	it('sends from the escaped JID of a local user whose username needs escaping (addressing R1)', async () => {
 		await overrideSetting(rc, 'UTF8_User_Names_Validation', WIDENED_USERNAMES);
 		const quoted = await createLocalUser(rc, "o'quote");
 		const escapedJid = `${escapeLocalpart(quoted.username)}@${rc.domain}`;
