@@ -1,7 +1,9 @@
 // Runs the SQLite database of the browser E2EE search index off the page thread. Nothing leaves this worker except the
 // rows that the page asks for. The database lives in memory. A sealed copy goes to the origin private file system
-// (OPFS): AES-GCM under a non-extractable key that IndexedDB keeps for each index scope. The copy is not compressed
-// before encryption, so its size tells nothing about the text.
+// (OPFS): AES-GCM under a random data key. The file holds the data key sealed twice: first by a key derived from the
+// wrap key of the user (which the web client derives from the E2EE private key), then by a non-extractable key that
+// IndexedDB keeps for each index scope. Neither key alone opens the copy, so a script of the origin cannot read it
+// before the E2EE unlock. The copy is not compressed before encryption, so its size tells nothing about the text.
 import sqlite3InitModule, { type Database } from '@sqlite.org/sqlite-wasm';
 
 import type { ScopeState, SqlRow, WorkerReply, WorkerRequest } from './protocol';
@@ -15,13 +17,34 @@ const KEY_STORE = 'keys';
 // The scopes that saved a copy at least once. It is apart from the key store, which holds only keys.
 const SAVED_DB = 'rc-e2ee-search-saved';
 const SAVED_STORE = 'saved';
-// The file starts with these 4 bytes and a 12-byte IV. The rest is the AES-GCM ciphertext of the database.
-const MAGIC = new Uint8Array([0x52, 0x43, 0x53, 0x31]); // "RCS1"
+// The file starts with these 4 bytes and the sealed data key (SEALED_KEY_BYTES). Then come a 12-byte IV and the AES-GCM
+// ciphertext of the database. A file in another format (the "RCS1" format of the first version) cannot be opened and
+// is built again.
+const MAGIC = new Uint8Array([0x52, 0x43, 0x53, 0x32]); // "RCS2"
 const IV_BYTES = 12;
+const TAG_BYTES = 16;
+const DATA_KEY_BYTES = 32;
+// The data key sealed by the key-wrap key: IV, ciphertext and tag.
+const WRAPPED_KEY_BYTES = IV_BYTES + DATA_KEY_BYTES + TAG_BYTES;
+// The wrapped data key sealed again by the IndexedDB key: IV, ciphertext and tag.
+const SEALED_KEY_BYTES = IV_BYTES + WRAPPED_KEY_BYTES + TAG_BYTES;
+const HEADER_BYTES = MAGIC.length + SEALED_KEY_BYTES;
+// Changes only with a new file format: a new label makes every saved copy unreadable.
+const KEY_WRAP_LABEL = 'Rocket.Chat E2EE search browser index key wrap v1';
+const LOCKED: ScopeState = { persistent: false, restored: false, locked: true };
 // Only one worker of the origin may write a copy. A worker that waits longer than this for the file lock gives up.
 const FILE_LOCK_WAIT_MS = 3000;
 
-type Scope = { id: string; fileName: string; key: CryptoKey; saved: boolean };
+// `header` starts each saved copy. `wrappedKey` is the data key sealed by the key-wrap key only, so a new open of the
+// scope can check its wrap key. `dataKey` is not extractable.
+type Scope = {
+	id: string;
+	fileName: string;
+	header: Uint8Array<ArrayBuffer>;
+	wrappedKey: Uint8Array<ArrayBuffer>;
+	dataKey: CryptoKey;
+	saved: boolean;
+};
 
 const encoder = new TextEncoder();
 const sqlite3Ready = sqlite3InitModule();
@@ -155,26 +178,99 @@ const removeFile = async (fileName: string): Promise<void> => {
 	}
 };
 
-const seal = async (key: CryptoKey, scopeId: string, plain: Uint8Array<ArrayBuffer>): Promise<Uint8Array<ArrayBuffer>> => {
-	const iv = crypto.getRandomValues(new Uint8Array(IV_BYTES));
-	const sealed = new Uint8Array(await crypto.subtle.encrypt({ name: 'AES-GCM', iv, additionalData: encoder.encode(scopeId) }, key, plain));
-	const file = new Uint8Array(MAGIC.length + IV_BYTES + sealed.length);
-	file.set(MAGIC, 0);
-	file.set(iv, MAGIC.length);
-	file.set(sealed, MAGIC.length + IV_BYTES);
-	return file;
+const concat = (...parts: Uint8Array<ArrayBuffer>[]): Uint8Array<ArrayBuffer> => {
+	const joined = new Uint8Array(parts.reduce((length, part) => length + part.length, 0));
+	let offset = 0;
+	for (const part of parts) {
+		joined.set(part, offset);
+		offset += part.length;
+	}
+	return joined;
 };
 
-const unseal = async (key: CryptoKey, scopeId: string, file: Uint8Array<ArrayBuffer>): Promise<Uint8Array<ArrayBuffer>> => {
-	if (file.length <= MAGIC.length + IV_BYTES || MAGIC.some((byte, index) => file[index] !== byte)) throw new Error('not an index file');
-	const iv = file.subarray(MAGIC.length, MAGIC.length + IV_BYTES);
-	return new Uint8Array(
-		await crypto.subtle.decrypt(
-			{ name: 'AES-GCM', iv, additionalData: encoder.encode(scopeId) },
-			key,
-			file.subarray(MAGIC.length + IV_BYTES),
-		),
+// Each AES-GCM operation binds its ciphertext to the scope, so a copy cannot be read as the copy of another scope.
+const gcm = (scopeId: string, iv: Uint8Array<ArrayBuffer>): AesGcmParams => ({
+	name: 'AES-GCM',
+	iv,
+	additionalData: encoder.encode(scopeId),
+});
+
+// IV and ciphertext.
+const encrypt = async (key: CryptoKey, scopeId: string, plain: Uint8Array<ArrayBuffer>): Promise<Uint8Array<ArrayBuffer>> => {
+	const iv = crypto.getRandomValues(new Uint8Array(IV_BYTES));
+	return concat(iv, new Uint8Array(await crypto.subtle.encrypt(gcm(scopeId, iv), key, plain)));
+};
+
+const decrypt = async (key: CryptoKey, scopeId: string, sealed: Uint8Array<ArrayBuffer>): Promise<Uint8Array<ArrayBuffer>> =>
+	new Uint8Array(await crypto.subtle.decrypt(gcm(scopeId, sealed.slice(0, IV_BYTES)), key, sealed.subarray(IV_BYTES)));
+
+// The key that seals the data key: HKDF-SHA-256 over the wrap key, like the key file of the desktop app. It is not
+// extractable, and it lives only during an open.
+const keyWrapKeyOf = (wrapKey: CryptoKey): Promise<CryptoKey> =>
+	crypto.subtle.deriveKey(
+		{ name: 'HKDF', hash: 'SHA-256', salt: new Uint8Array(0), info: encoder.encode(KEY_WRAP_LABEL) },
+		wrapKey,
+		{ name: 'AES-GCM', length: 256 },
+		false,
+		['wrapKey', 'unwrapKey'],
 	);
+
+// Fails when the key-wrap key is not the one that sealed `wrappedKey`.
+const unwrapDataKey = (keyWrapKey: CryptoKey, scopeId: string, wrappedKey: Uint8Array<ArrayBuffer>): Promise<CryptoKey> =>
+	crypto.subtle.unwrapKey('raw', wrappedKey.subarray(IV_BYTES), keyWrapKey, gcm(scopeId, wrappedKey.slice(0, IV_BYTES)), 'AES-GCM', false, [
+		'encrypt',
+		'decrypt',
+	]);
+
+// A new random data key for a scope with no copy. Its bytes leave WebCrypto only sealed, and the worker keeps a
+// non-extractable copy of it.
+const createDataKey = async (
+	keyWrapKey: CryptoKey,
+	storeKey: CryptoKey,
+	scopeId: string,
+): Promise<Pick<Scope, 'header' | 'wrappedKey' | 'dataKey'>> => {
+	const fresh = await crypto.subtle.generateKey({ name: 'AES-GCM', length: 256 }, true, ['encrypt', 'decrypt']);
+	const iv = crypto.getRandomValues(new Uint8Array(IV_BYTES));
+	const wrappedKey = concat(iv, new Uint8Array(await crypto.subtle.wrapKey('raw', fresh, keyWrapKey, gcm(scopeId, iv))));
+	return {
+		header: concat(MAGIC, await encrypt(storeKey, scopeId, wrappedKey)),
+		wrappedKey,
+		dataKey: await unwrapDataKey(keyWrapKey, scopeId, wrappedKey),
+	};
+};
+
+// Opens a saved copy: the IndexedDB key opens the wrapped data key, the key-wrap key opens the data key, and the data
+// key opens the database. Returns 'locked' when only the key-wrap key does not fit, so the copy stays for the right
+// one. Throws when no wrap key can open the copy: another format, damage, or an IndexedDB key that is gone.
+const openFile = async (
+	file: Uint8Array<ArrayBuffer>,
+	storeKey: CryptoKey,
+	keyWrapKey: CryptoKey,
+	scopeId: string,
+): Promise<(Pick<Scope, 'header' | 'wrappedKey' | 'dataKey'> & { plain: Uint8Array<ArrayBuffer> }) | 'locked'> => {
+	if (file.length < HEADER_BYTES + IV_BYTES + TAG_BYTES || MAGIC.some((byte, index) => file[index] !== byte)) {
+		throw new Error('not an index file');
+	}
+	const header = file.slice(0, HEADER_BYTES);
+	const wrappedKey = await decrypt(storeKey, scopeId, header.subarray(MAGIC.length));
+	if (wrappedKey.length !== WRAPPED_KEY_BYTES) throw new Error('not an index file');
+	let dataKey: CryptoKey;
+	try {
+		dataKey = await unwrapDataKey(keyWrapKey, scopeId, wrappedKey);
+	} catch {
+		return 'locked';
+	}
+	return { header, wrappedKey, dataKey, plain: await decrypt(dataKey, scopeId, file.subarray(HEADER_BYTES)) };
+};
+
+// True when `wrapKey` is the wrap key of the open scope.
+const opensScope = async (wrapKey: CryptoKey, open: Scope): Promise<boolean> => {
+	try {
+		await unwrapDataKey(await keyWrapKeyOf(wrapKey), open.id, open.wrappedKey);
+		return true;
+	} catch {
+		return false;
+	}
 };
 
 // An open oo1.DB always has its C pointer. It is undefined only after close().
@@ -212,7 +308,7 @@ const saveNow = async (): Promise<void> => {
 	// The database is open here, so sqlite3 is ready and the export runs before any other request.
 	const plain = (await sqlite3Ready).capi.sqlite3_js_db_export(pointerOf(db));
 	try {
-		const file = await seal(target.key, target.id, plain);
+		const file = concat(target.header, await encrypt(target.dataKey, target.id, plain));
 		// createWritable writes to a swap file and replaces the old file only on close, so a crash keeps the old copy.
 		const writable = await (await (await folder()).getFileHandle(target.fileName, { create: true })).createWritable();
 		await writable.write(file);
@@ -239,14 +335,19 @@ const markDirty = (): void => {
 	if (scope && saveTimer === undefined) saveTimer = setTimeout(queueSave, SAVE_DELAY_MS);
 };
 
-const openScope = async (scopeId: string): Promise<ScopeState> => {
-	if (scope?.id === scopeId && db) return { persistent: true, restored: false };
+const openScope = async (scopeId: string, wrapKey: CryptoKey | undefined): Promise<ScopeState> => {
+	if (scope?.id === scopeId && db && wrapKey && (await opensScope(wrapKey, scope))) return { persistent: true, restored: false };
 	await queueSave();
 	db?.close();
 	db = undefined;
 	scope = undefined;
+	dbScope = undefined;
 	dirty = false;
 	dropFileLock();
+
+	// Before the E2EE unlock the page has no wrap key: no index opens, and nothing is read or written.
+	if (!wrapKey) return LOCKED;
+	const keyWrapKey = await keyWrapKeyOf(wrapKey);
 	dbScope = scopeId;
 
 	if (!canPersist()) {
@@ -256,12 +357,12 @@ const openScope = async (scopeId: string): Promise<ScopeState> => {
 
 	const fileName = await fileNameFor(scopeId);
 	await takeFileLock(fileName);
-	let key: CryptoKey;
+	let storeKey: CryptoKey;
 	let saved: boolean;
 	let file: Uint8Array<ArrayBuffer> | undefined;
 	try {
 		file = (await readFile(fileName)) as Uint8Array<ArrayBuffer> | undefined;
-		({ key, saved } = await getOrCreateKey(scopeId));
+		({ key: storeKey, saved } = await getOrCreateKey(scopeId));
 	} catch (error) {
 		// The browser has the APIs but refuses them here: a private window, a blocked origin, or a key that IndexedDB
 		// cannot store. The index works in memory only, and the page says so.
@@ -271,22 +372,31 @@ const openScope = async (scopeId: string): Promise<ScopeState> => {
 		db = await newMemoryDb();
 		return { persistent: false, restored: false, evicted: false };
 	}
-	scope = { id: scopeId, fileName, key, saved: saved || Boolean(file) };
 	if (file) {
 		try {
-			db = await loadDb(await unseal(key, scopeId, file));
+			const opened = await openFile(file, storeKey, keyWrapKey, scopeId);
+			if (opened === 'locked') {
+				// Another wrap key sealed this copy. It stays as it is, so the right wrap key opens it later.
+				dbScope = undefined;
+				dropFileLock();
+				return LOCKED;
+			}
+			const { plain, ...keys } = opened;
+			db = await loadDb(plain);
+			scope = { id: scopeId, fileName, ...keys, saved: true };
 			return { persistent: true, restored: true, evicted: false };
 		} catch (error) {
-			// A file that this key cannot open (damaged, or sealed under a key that is gone) is useless: start again.
+			// A file that no wrap key can open (another format, damaged, or sealed under an IndexedDB key that is gone) is
+			// useless: start again.
 			console.warn('E2EE search index file could not be opened, starting empty:', messageOf(error));
 			await removeFile(fileName);
-			db = await newMemoryDb();
-			return { persistent: true, restored: false, evicted: true };
 		}
 	}
+	scope = { id: scopeId, fileName, ...(await createDataKey(keyWrapKey, storeKey, scopeId)), saved: saved || Boolean(file) };
 	db = await newMemoryDb();
-	// A copy was saved once and the file is gone: the browser deleted it (storage eviction, or site data cleared).
-	return { persistent: true, restored: false, evicted: saved };
+	// A copy that could not be opened was deleted above. A copy saved once whose file is gone was deleted by the browser
+	// (storage eviction, or site data cleared).
+	return { persistent: true, restored: false, evicted: Boolean(file) || saved };
 };
 
 const wipeScope = async (scopeId: string | undefined): Promise<void> => {
@@ -337,7 +447,7 @@ const isWrite = (sql: string): boolean => !/^\s*SELECT\b/i.test(sql);
 const run = async (request: WorkerRequest): Promise<SqlRow[] | [ScopeState]> => {
 	switch (request.op) {
 		case 'open':
-			return [await openScope(request.scopeId)];
+			return [await openScope(request.scopeId, request.wrapKey)];
 		case 'wipe':
 			await wipeScope(request.scopeId);
 			return [];
@@ -349,7 +459,8 @@ const run = async (request: WorkerRequest): Promise<SqlRow[] | [ScopeState]> => 
 			return [];
 	}
 
-	db ??= await newMemoryDb();
+	// No SQL runs before an open, or after an open that was locked.
+	if (!db) throw new Error('E2EE search index is not open');
 	const open = db;
 	switch (request.op) {
 		case 'exec': {

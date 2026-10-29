@@ -50,14 +50,20 @@ describe('getSearchIndexBackend', () => {
 			expect(getSearchIndexBackend()).toBe(backend);
 			expect(workers).toHaveLength(0);
 
-			void backend?.open({ userId: 'u1' });
+			void backend?.open({ userId: 'u1', wrapKey: new Uint8Array(32).fill(1) });
 
+			// The worker starts after the page imported the wrap key.
+			for (let tries = 0; workers.length === 0 && tries < 100; tries++) await new Promise((resolve) => setTimeout(resolve, 5));
 			expect(workers).toHaveLength(1);
 			expect(workers[0].url).toMatch(/workers\/e2ee-search\/worker\.mjs$/);
 			expect(workers[0].options).toEqual({ type: 'module', name: 'e2ee-search-index' });
 			// The first call opens the index of this server and user, which comes back from its encrypted copy.
 			expect(workers[0].postMessage).toHaveBeenCalledWith(
-				expect.objectContaining({ op: 'open', scopeId: JSON.stringify([absoluteUrl(''), 'u1']) }),
+				expect.objectContaining({
+					op: 'open',
+					scopeId: JSON.stringify([absoluteUrl(''), 'u1']),
+					wrapKey: expect.objectContaining({ type: 'secret', extractable: false }),
+				}),
 			);
 		} finally {
 			delete (window as { Worker?: unknown }).Worker;

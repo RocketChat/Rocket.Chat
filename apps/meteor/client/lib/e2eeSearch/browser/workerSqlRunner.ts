@@ -12,12 +12,21 @@ export type SqlScopeState = {
 	 * deletes the copy when it evicts the storage of the site.
 	 */
 	evicted?: boolean;
+	/**
+	 * True when the open had no wrap key, or not the wrap key that sealed the copy on disk: no database is open, and the
+	 * copy stays as it is.
+	 */
+	locked?: boolean;
 };
 
 /** Runs SQL in the database of the E2EE search index. */
 export type SqlRunner = {
-	/** Switches to the database of `scopeId`. A database kept on disk for that scope comes back. */
-	open(scopeId: string): Promise<SqlScopeState>;
+	/**
+	 * Switches to the database of `scopeId`. A database kept on disk for that scope comes back. `wrapKey` is the
+	 * non-extractable HKDF key of the user's wrap key: without it, or with another one than the one that sealed the copy,
+	 * the open is locked.
+	 */
+	open(scopeId: string, wrapKey?: CryptoKey): Promise<SqlScopeState>;
 	exec(statement: SqlStatement): Promise<SqlRow[]>;
 	/** Runs every statement in one transaction: all of them apply, or none. */
 	batch(statements: SqlStatement[]): Promise<void>;
@@ -67,7 +76,7 @@ export const createWorkerSqlRunner = (workerUrl: string | URL): SqlRunner => {
 		});
 
 	return {
-		open: async (scopeId) => (await send({ op: 'open', scopeId }))[0] as unknown as SqlScopeState,
+		open: async (scopeId, wrapKey) => (await send({ op: 'open', scopeId, wrapKey }))[0] as unknown as SqlScopeState,
 		exec: (statement) => send({ op: 'exec', ...statement }),
 		batch: async (statements) => {
 			await send({ op: 'batch', statements });

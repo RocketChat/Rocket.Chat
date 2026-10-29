@@ -19,6 +19,10 @@ const doc = (overrides: Partial<E2EESearchDoc> & Pick<E2EESearchDoc, 'id' | 'bod
 	...overrides,
 });
 
+// The web client opens the index only after the E2EE unlock, with the wrap key derived from the private key. Each open
+// gets its own copy of the same key, because a backend may clear the bytes it receives.
+const scopeOf = (userId: string) => ({ userId, wrapKey: new Uint8Array(32).fill(1) });
+
 const ids = async (backend: ISearchIndexBackend, query: Parameters<ISearchIndexBackend['search']>[0]) =>
 	(await backend.search(query)).map((hit) => hit.id);
 
@@ -33,7 +37,7 @@ export const describeSearchIndexBackendContract = (
 ): void => {
 	const openBackend = async () => {
 		const backend = await createBackend();
-		await backend.open({ userId: 'u1' });
+		await backend.open(scopeOf('u1'));
 		return backend;
 	};
 
@@ -51,7 +55,7 @@ export const describeSearchIndexBackendContract = (
 		});
 
 		it(encryptedAtRest ? 'opens as an index encrypted at rest' : 'opens as a memory-only index', async () => {
-			await expect((await createBackend()).open({ userId: 'u1' })).resolves.toEqual({ schemaVersion: 1, encryptedAtRest });
+			await expect((await createBackend()).open(scopeOf('u1'))).resolves.toEqual({ schemaVersion: 1, encryptedAtRest });
 		});
 
 		it('finds a message by a word prefix, with no case or diacritic difference', async () => {
@@ -197,7 +201,7 @@ export const describeSearchIndexBackendContract = (
 			await backend.setRoomState('r1', { backfillDone: true });
 
 			await backend.wipe();
-			await backend.open({ userId: 'u1' });
+			await backend.open(scopeOf('u1'));
 
 			await expect(backend.stats()).resolves.toEqual({ docs: 0, bytes: 0, rooms: 0 });
 			await expect(backend.getRoomState('r1')).resolves.toBeUndefined();
@@ -218,7 +222,7 @@ export const describeSearchIndexBackendContract = (
 			await backend.close?.();
 
 			await expect(backend.stats()).rejects.toThrow('E2EE search index is not open');
-			await backend.open({ userId: 'u1' });
+			await backend.open(scopeOf('u1'));
 			await expect(ids(backend, { text: 'needle' })).resolves.toEqual(['m1']);
 		});
 
@@ -241,7 +245,7 @@ export const describeSearchIndexBackendContract = (
 			const backend = await openBackend();
 			await backend.upsert([doc({ id: 'm1', body: 'needle' })]);
 
-			await backend.open({ userId: 'u2' });
+			await backend.open(scopeOf('u2'));
 
 			await expect(ids(backend, { text: 'needle' })).resolves.toEqual([]);
 		});

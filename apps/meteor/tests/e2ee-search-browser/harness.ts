@@ -66,3 +66,9 @@ export type TestWindow = Window & {
 		flush: (id: number) => Promise<void>;
 	};
 };
+
+/**
+ * A 32-byte wrap key, as the web client derives it from the E2EE private key after the unlock. Each call gives a new
+ * copy. A different `fill` gives the key of another private key.
+ */
+export const wrapKey = (fill = 7): Uint8Array => new Uint8Array(32).fill(fill);

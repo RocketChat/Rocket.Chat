@@ -30,6 +30,22 @@ END;
 CREATE TABLE IF NOT EXISTS room_state (rid TEXT PRIMARY KEY, state TEXT NOT NULL);
 `;
 
+const WRAP_KEY_BYTES = 32;
+
+// The answer to an open with no wrap key, or not the one that sealed the saved copy. The desktop app gives the same.
+const LOCKED_RESULT = { schemaVersion: 1, encryptedAtRest: false, locked: true } as const;
+
+// The worker gets the wrap key as a non-extractable HKDF key. The bytes from the caller are cleared once imported.
+const importWrapKey = async (wrapKey: Uint8Array | undefined): Promise<CryptoKey | undefined> => {
+	if (wrapKey === undefined) return undefined;
+	if (!(wrapKey instanceof Uint8Array) || wrapKey.length !== WRAP_KEY_BYTES) throw new Error('wrap key must be 32 bytes');
+	try {
+		return await crypto.subtle.importKey('raw', wrapKey as Uint8Array<ArrayBuffer>, 'HKDF', false, ['deriveKey']);
+	} finally {
+		wrapKey.fill(0);
+	}
+};
+
 let persistRequested = false;
 
 // Asks the browser once per page to keep the storage of the site under storage pressure, so the copy of the index is not
@@ -66,7 +82,9 @@ const toHit = (row: SqlRow, tokens: string[]): E2EESearchHit => {
 /**
  * The E2EE search index of a browser: SQLite with full-text search, run by `runner` in a worker. It has the same
  * contract as the desktop index. Each server (`namespace`) and user has its own index. The runner keeps an encrypted
- * copy on disk when the browser can, so the index survives a reload.
+ * copy on disk when the browser can, so the index survives a reload. Like the desktop index, it opens only with the wrap
+ * key that the web client derives from the E2EE private key: an open with no wrap key, or with another one than the
+ * one that sealed the copy, is `locked` and leaves the copy as it is.
  */
 export const createSqliteSearchIndexBackend = (runner: SqlRunner, { namespace }: { namespace: string }): ISearchIndexBackend => {
 	let userId: string | undefined;
@@ -79,7 +97,11 @@ export const createSqliteSearchIndexBackend = (runner: SqlRunner, { namespace }:
 
 	return {
 		async open(scope) {
-			const { persistent, evicted } = await runner.open(scopeIdOf(scope.userId));
+			const { persistent, evicted, locked } = await runner.open(scopeIdOf(scope.userId), await importWrapKey(scope.wrapKey));
+			if (locked) {
+				userId = undefined;
+				return { ...LOCKED_RESULT };
+			}
 			if (persistent) requestPersistentStorage();
 			// The index starts empty. Its room states are gone with it, so the crawler indexes every room again.
 			if (evicted) console.warn('E2EE search index: the saved copy is gone, the index is built again');

@@ -1,6 +1,6 @@
 import { expect, test, type BrowserContext, type Page } from '@playwright/test';
 
-import { startHarnessServer, type TestWindow } from './harness';
+import { startHarnessServer, wrapKey, type TestWindow } from './harness';
 
 // The tabs of one origin share one index: one leader tab runs the worker and owns the encrypted copy.
 const NAMESPACE = 'https://chat.example';
@@ -69,8 +69,8 @@ const locks = (page: Page) =>
 test('elects one leader tab, and a write from the other tab is found in both tabs', async () => {
 	const first = await openTab();
 	const second = await openTab();
-	await expect(call(first, 'open', { userId: 'u1' })).resolves.toEqual({ schemaVersion: 1, encryptedAtRest: true });
-	await expect(call(second, 'open', { userId: 'u1' })).resolves.toEqual({ schemaVersion: 1, encryptedAtRest: true });
+	await expect(call(first, 'open', { userId: 'u1', wrapKey: wrapKey() })).resolves.toEqual({ schemaVersion: 1, encryptedAtRest: true });
+	await expect(call(second, 'open', { userId: 'u1', wrapKey: wrapKey() })).resolves.toEqual({ schemaVersion: 1, encryptedAtRest: true });
 
 	const leaders = [await isLeader(first), await isLeader(second)];
 	console.log(`leaders: ${JSON.stringify(leaders)}, locks: ${JSON.stringify(await locks(first.page))}`);
@@ -83,6 +83,18 @@ test('elects one leader tab, and a write from the other tab is found in both tab
 	expect(await ids(first, NEEDLE.slice(0, 6))).toEqual(['m1']);
 	expect(await ids(second, NEEDLE.slice(0, 6))).toEqual(['m1']);
 	await expect(call(follower, 'stats')).resolves.toEqual({ docs: 1, bytes: expect.any(Number), rooms: 1 });
+});
+
+test('locks an open with no wrap key in a follower tab, also while the leader tab has the index open', async () => {
+	const follower = (await isLeader(tabs[0])) ? tabs[1] : tabs[0];
+	const keyless = {
+		page: follower.page,
+		backend: await follower.page.evaluate((name) => (window as unknown as TestWindow).e2eeSearchTest.createShared(name), NAMESPACE),
+	};
+	await expect(call(keyless, 'open', { userId: 'u1' })).resolves.toEqual({ schemaVersion: 1, encryptedAtRest: false, locked: true });
+	await expect(call(keyless, 'search', { text: NEEDLE })).rejects.toThrow('E2EE search index is not open');
+	// The locked tab asked for nothing: it waits for no lock.
+	await expect(locks(follower.page)).resolves.toEqual({ leaders: 1, waiting: 1, files: 1 });
 });
 
 test('moves the lock to the other tab when the leader tab closes, and that tab finds the earlier message', async () => {
@@ -104,7 +116,7 @@ test('moves the lock to the other tab when the leader tab closes, and that tab f
 
 test('a tab that opens later joins as a follower of the new leader', async () => {
 	const late = await openTab();
-	await call(late, 'open', { userId: 'u1' });
+	await call(late, 'open', { userId: 'u1', wrapKey: wrapKey() });
 	expect(await isLeader(late)).toBe(false);
 	expect(await ids(late, LATER)).toEqual(['m2']);
 });
@@ -114,7 +126,7 @@ test('refuses a second worker that opens the same encrypted copy', async () => {
 	const direct = await page.evaluate((name) => (window as unknown as TestWindow).e2eeSearchTest.create(name), NAMESPACE);
 	const error = await page.evaluate(
 		(id) =>
-			(window as unknown as TestWindow).e2eeSearchTest.call(id, 'open', [{ userId: 'u1' }]).then(
+			(window as unknown as TestWindow).e2eeSearchTest.call(id, 'open', [{ userId: 'u1', wrapKey: new Uint8Array(32).fill(7) }]).then(
 				() => 'opened',
 				(reason: Error) => reason.message,
 			),

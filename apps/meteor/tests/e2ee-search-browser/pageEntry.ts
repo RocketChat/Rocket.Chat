@@ -15,6 +15,13 @@ const backends: { backend: ISearchIndexBackend; runner: SqlRunner | SharedSqlRun
 const add = (runner: SqlRunner | SharedSqlRunner, namespace: string) =>
 	backends.push({ backend: createSqliteSearchIndexBackend(runner, { namespace }), runner }) - 1;
 
+// A driver that sends the arguments as JSON gives the wrap key as an array of numbers. The backend takes bytes.
+const withWrapKeyBytes = (method: string, args: unknown[]): unknown[] => {
+	const [scope, ...rest] = args as [{ wrapKey?: unknown } | undefined, ...unknown[]];
+	if (method !== 'open' || !Array.isArray(scope?.wrapKey)) return args;
+	return [{ ...scope, wrapKey: Uint8Array.from(scope.wrapKey as number[]) }, ...rest];
+};
+
 Object.assign(window, {
 	e2eeSearchTest: {
 		create: (namespace: string, workerUrl = WORKER_URL) => add(createWorkerSqlRunner(workerUrl), namespace),
@@ -29,7 +36,7 @@ Object.assign(window, {
 			return 'isLeader' in runner ? runner.isLeader() : true;
 		},
 		call: (id: number, method: keyof ISearchIndexBackend, args: unknown[]) =>
-			(backends[id].backend[method] as (...rest: unknown[]) => Promise<unknown>)(...args),
+			(backends[id].backend[method] as (...rest: unknown[]) => Promise<unknown>)(...withWrapKeyBytes(method, args)),
 		flush: (id: number) => backends[id].runner.flush(),
 	},
 });

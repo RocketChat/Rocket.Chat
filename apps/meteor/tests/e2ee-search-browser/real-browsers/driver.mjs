@@ -13,6 +13,8 @@ import { fileURLToPath } from 'node:url';
 import * as P from './probes.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
+// The wrap key that the web client derives from the E2EE private key after the unlock. The index opens only with it.
+const WRAP_KEY = Array(32).fill(7);
 const METEOR = resolve(HERE, '../../..');
 const OUT = join(HERE, 'out');
 const PUBLIC = join(METEOR, 'public/workers/e2ee-search');
@@ -526,7 +528,7 @@ const main = async () => {
 	await run('extra', 'indexes "orçamento" and finds it with "orcamento"', async () => {
 		const { create, call } = api(mainTab);
 		const id = await create('https://accent.example');
-		const opened = await call(id, 'open', { userId: 'u1' });
+		const opened = await call(id, 'open', { userId: 'u1', wrapKey: WRAP_KEY });
 		await call(id, 'upsert', [
 			{ id: 'a1', rid: 'r1', uid: 'u1', username: 'alice', ts: 1000, updatedAt: 1000, kind: 'text', body: 'o orçamento da sprint' },
 			{ id: 'a2', rid: 'r1', uid: 'u1', username: 'alice', ts: 1001, updatedAt: 1001, kind: 'text', body: 'nothing here' },
@@ -575,12 +577,12 @@ const main = async () => {
 	await run('persistence', 'finds a message after a page reload from the encrypted copy, with no crawl', async () => {
 		await mainTab.reload();
 		const first = await pa().create('https://chat.example');
-		const opened = await pa().call(first, 'open', { userId: 'u1' });
+		const opened = await pa().call(first, 'open', { userId: 'u1', wrapKey: WRAP_KEY });
 		await pa().call(first, 'upsert', [DOC]);
 		await pa().flush(first);
 		await mainTab.reload();
 		const second = await pa().create('https://chat.example');
-		const reopened = await pa().call(second, 'open', { userId: 'u1' });
+		const reopened = await pa().call(second, 'open', { userId: 'u1', wrapKey: WRAP_KEY });
 		const hits = (await pa().call(second, 'search', { text: NEEDLE.slice(0, 7) })).map((h) => h.id);
 		const detail = { opened, reopened, hits, logs: await mainTab.logs() };
 		expect(opened).toEqual({ schemaVersion: 1, encryptedAtRest: true });
@@ -613,7 +615,7 @@ const main = async () => {
 	});
 	await run('persistence', 'keeps the index of each server and user apart', async () => {
 		const other = await pa().create('https://other.example');
-		await pa().call(other, 'open', { userId: 'u1' });
+		await pa().call(other, 'open', { userId: 'u1', wrapKey: WRAP_KEY });
 		expect(await pa().call(other, 'search', { text: NEEDLE })).toEqual([]);
 		await pa().call(other, 'upsert', [{ ...DOC, body: 'other server words' }]);
 		await pa().flush(other);
@@ -624,7 +626,7 @@ const main = async () => {
 	await run('persistence', 'deletes the OPFS file and the IndexedDB key on wipe', async () => {
 		await mainTab.reload();
 		const backend = await pa().create('https://chat.example');
-		await pa().call(backend, 'open', { userId: 'u1' });
+		await pa().call(backend, 'open', { userId: 'u1', wrapKey: WRAP_KEY });
 		await pa().call(backend, 'wipe');
 		expect(await mainTab.eval(fnOpfsFiles, NEEDLE)).toEqual([]);
 		expect(await mainTab.eval(fnStoredKeys)).toEqual([]);
@@ -632,7 +634,7 @@ const main = async () => {
 	await run('persistence', 'deletes the copy of a user whose index is not open, by scope', async () => {
 		await mainTab.reload();
 		const first = await pa().create('https://chat.example');
-		await pa().call(first, 'open', { userId: 'u9' });
+		await pa().call(first, 'open', { userId: 'u9', wrapKey: WRAP_KEY });
 		await pa().call(first, 'upsert', [DOC]);
 		await pa().flush(first);
 		await mainTab.reload();
@@ -652,7 +654,7 @@ const main = async () => {
 	await run('storage', 'asks the browser once to keep its storage persistent, and logs the answer', async () => {
 		await mainTab.reload();
 		const backend = await pa().create('https://persist.example');
-		const opened = await pa().call(backend, 'open', { userId: 'u1' });
+		const opened = await pa().call(backend, 'open', { userId: 'u1', wrapKey: WRAP_KEY });
 		savesToDisk = opened.encryptedAtRest;
 		expect(savesToDisk).toBe(true);
 		const requests = (logs) => logs.filter((line) => line === 'E2EE search index: persistent storage requested');
@@ -668,7 +670,7 @@ const main = async () => {
 			const got = answers(await mainTab.logs());
 			if (got.length) answer = got[0];
 		}
-		await pa().call(backend, 'open', { userId: 'u2' });
+		await pa().call(backend, 'open', { userId: 'u2', wrapKey: WRAP_KEY });
 		await new Promise((r) => setTimeout(r, 500));
 		const logs = await mainTab.logs();
 		expect(requests(logs)).toHaveLength(1);
@@ -683,14 +685,14 @@ const main = async () => {
 			if (!savesToDisk) throw new Error('not run: encryptedAtRest was false in this browser');
 			await mainTab.reload();
 			const first = await pa().create('https://evict.example');
-			await pa().call(first, 'open', { userId: 'u1' });
+			await pa().call(first, 'open', { userId: 'u1', wrapKey: WRAP_KEY });
 			await pa().call(first, 'upsert', [SDOC]);
 			await pa().call(first, 'setRoomState', 'r1', { lastUpdate: 5, backfillDone: true });
 			await pa().flush(first);
 			expect(await mainTab.eval(fnEvict)).toBeGreaterThan(0);
 			await mainTab.reload();
 			const second = await pa().create('https://evict.example');
-			expect(await pa().call(second, 'open', { userId: 'u1' })).toEqual({ schemaVersion: 1, encryptedAtRest: true });
+			expect(await pa().call(second, 'open', { userId: 'u1', wrapKey: WRAP_KEY })).toEqual({ schemaVersion: 1, encryptedAtRest: true });
 			expect(await mainTab.logs()).toContain(EVICTED);
 			expect(await hitIds(second)).toEqual([]);
 			expect(await pa().call(second, 'getRoomState', 'r1')).toBeUndefined();
@@ -699,7 +701,7 @@ const main = async () => {
 			await pa().flush(second);
 			await mainTab.reload();
 			const third = await pa().create('https://evict.example');
-			await pa().call(third, 'open', { userId: 'u1' });
+			await pa().call(third, 'open', { userId: 'u1', wrapKey: WRAP_KEY });
 			expect(await hitIds(third)).toEqual(['m1']);
 			expect(await mainTab.logs()).not.toContain(EVICTED);
 			await pa().call(third, 'wipe');
@@ -709,7 +711,7 @@ const main = async () => {
 		if (!savesToDisk) throw new Error('not run: encryptedAtRest was false in this browser');
 		await mainTab.reload();
 		const backend = await pa().create('https://fresh.example');
-		await pa().call(backend, 'open', { userId: 'u1' });
+		await pa().call(backend, 'open', { userId: 'u1', wrapKey: WRAP_KEY });
 		expect(await mainTab.logs()).not.toContain(EVICTED);
 		await pa().call(backend, 'wipe');
 	});
@@ -717,12 +719,12 @@ const main = async () => {
 		if (!savesToDisk) throw new Error('not run: encryptedAtRest was false in this browser');
 		await mainTab.reload();
 		const first = await pa().create('https://quick-close.example');
-		await pa().call(first, 'open', { userId: 'u1' });
+		await pa().call(first, 'open', { userId: 'u1', wrapKey: WRAP_KEY });
 		await pa().call(first, 'upsert', [SDOC]);
 		await mainTab.reload();
 		expect(await mainTab.eval(fnIndexFiles)).toEqual([]);
 		const second = await pa().create('https://quick-close.example');
-		await pa().call(second, 'open', { userId: 'u1' });
+		await pa().call(second, 'open', { userId: 'u1', wrapKey: WRAP_KEY });
 		expect(await mainTab.logs()).not.toContain(EVICTED);
 		await pa().call(second, 'wipe');
 	});
@@ -730,7 +732,7 @@ const main = async () => {
 		await mainTab.reload();
 		const before = await mainTab.eval(fnIndexFiles);
 		const backend = await pa().create('https://refused.example', '/test/refused-storage-worker.mjs');
-		expect(await pa().call(backend, 'open', { userId: 'u1' })).toEqual({ schemaVersion: 1, encryptedAtRest: false });
+		expect(await pa().call(backend, 'open', { userId: 'u1', wrapKey: WRAP_KEY })).toEqual({ schemaVersion: 1, encryptedAtRest: false });
 		await pa().call(backend, 'upsert', [SDOC]);
 		expect(await hitIds(backend)).toEqual(['m1']);
 		await pa().flush(backend);
@@ -770,8 +772,8 @@ const main = async () => {
 		liveTabs.add(second);
 		tabs.push(await shared(second));
 		const [first, other] = tabs;
-		expect(await mcall(first, 'open', { userId: 'u1' })).toEqual({ schemaVersion: 1, encryptedAtRest: true });
-		expect(await mcall(other, 'open', { userId: 'u1' })).toEqual({ schemaVersion: 1, encryptedAtRest: true });
+		expect(await mcall(first, 'open', { userId: 'u1', wrapKey: WRAP_KEY })).toEqual({ schemaVersion: 1, encryptedAtRest: true });
+		expect(await mcall(other, 'open', { userId: 'u1', wrapKey: WRAP_KEY })).toEqual({ schemaVersion: 1, encryptedAtRest: true });
 		const leaders = [await mleader(first), await mleader(other)];
 		const locks = await first.tab.eval(fnLocks, LOCK);
 		expect(leaders.filter(Boolean)).toHaveLength(1);
@@ -805,7 +807,7 @@ const main = async () => {
 		liveTabs.add(late);
 		const t = await shared(late);
 		tabs.push(t);
-		await mcall(t, 'open', { userId: 'u1' });
+		await mcall(t, 'open', { userId: 'u1', wrapKey: WRAP_KEY });
 		expect(await mleader(t)).toBe(false);
 		expect(await mids(t, LATER)).toEqual(['m2']);
 	});
@@ -814,7 +816,7 @@ const main = async () => {
 		const direct = await tab.eval(fnCreate, NAMESPACE, null);
 		const error = await tab.eval(
 			(id) =>
-				window.e2eeSearchTest.call(id, 'open', [{ userId: 'u1' }]).then(
+				window.e2eeSearchTest.call(id, 'open', [{ userId: 'u1', wrapKey: Array(32).fill(7) }]).then(
 					() => 'opened',
 					(reason) => reason.message,
 				),

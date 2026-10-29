@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 
-import { startHarnessServer, type TestWindow } from './harness';
+import { startHarnessServer, wrapKey, type TestWindow } from './harness';
 
 // What the browser index does when the browser keeps, evicts or refuses its storage.
 const NEEDLE = 'pangolinmesaquartz';
@@ -74,7 +74,7 @@ let savesToDisk = false;
 test('asks the browser once to keep its storage persistent, and logs the answer', async ({ browserName }) => {
 	await load();
 	const backend = await create('https://persist.example');
-	const opened = (await call(backend, 'open', { userId: 'u1' })) as { encryptedAtRest: boolean };
+	const opened = (await call(backend, 'open', { userId: 'u1', wrapKey: wrapKey() })) as { encryptedAtRest: boolean };
 	savesToDisk = opened.encryptedAtRest;
 	console.log(`encryptedAtRest: ${savesToDisk}`);
 	// Playwright's WebKit cannot store a CryptoKey in IndexedDB, so it must fall back to memory only, not fail.
@@ -87,7 +87,7 @@ test('asks the browser once to keep its storage persistent, and logs the answer'
 	// Firefox answers only after the user answers its prompt, and a headless browser shows no prompt.
 	if (browserName !== 'firefox') await expect.poll(() => answers().length).toBe(1);
 	// A second open on the same page does not ask again.
-	await call(backend, 'open', { userId: 'u2' });
+	await call(backend, 'open', { userId: 'u2', wrapKey: wrapKey() });
 	await page.waitForTimeout(500);
 	expect(requests()).toHaveLength(1);
 	expect(answers().length).toBeLessThanOrEqual(1);
@@ -98,7 +98,7 @@ test('reports an evicted copy, starts empty with no room state, and finds the me
 	test.skip(!savesToDisk, 'this browser keeps the index in memory only, so nothing can be evicted');
 	await load();
 	const first = await create('https://evict.example');
-	await call(first, 'open', { userId: 'u1' });
+	await call(first, 'open', { userId: 'u1', wrapKey: wrapKey() });
 	await call(first, 'upsert', [DOC]);
 	await call(first, 'setRoomState', 'r1', { lastUpdate: 5, backfillDone: true });
 	await flush(first);
@@ -107,7 +107,7 @@ test('reports an evicted copy, starts empty with no room state, and finds the me
 	await load();
 	logs.length = 0;
 	const second = await create('https://evict.example');
-	await expect(call(second, 'open', { userId: 'u1' })).resolves.toEqual({ schemaVersion: 1, encryptedAtRest: true });
+	await expect(call(second, 'open', { userId: 'u1', wrapKey: wrapKey() })).resolves.toEqual({ schemaVersion: 1, encryptedAtRest: true });
 	expect(logs).toContain('E2EE search index: the saved copy is gone, the index is built again');
 	await expect(hitIds(second)).resolves.toEqual([]);
 	// No room state means the crawler treats every room as not indexed and backfills it from the start.
@@ -120,7 +120,7 @@ test('reports an evicted copy, starts empty with no room state, and finds the me
 	await load();
 	logs.length = 0;
 	const third = await create('https://evict.example');
-	await call(third, 'open', { userId: 'u1' });
+	await call(third, 'open', { userId: 'u1', wrapKey: wrapKey() });
 	await expect(hitIds(third)).resolves.toEqual(['m1']);
 	expect(logs).not.toContain('E2EE search index: the saved copy is gone, the index is built again');
 	await call(third, 'wipe');
@@ -131,7 +131,7 @@ test('does not report an eviction on the first open of a new user', async () => 
 	await load();
 	logs.length = 0;
 	const backend = await create('https://fresh.example');
-	await call(backend, 'open', { userId: 'u1' });
+	await call(backend, 'open', { userId: 'u1', wrapKey: wrapKey() });
 	expect(logs).not.toContain('E2EE search index: the saved copy is gone, the index is built again');
 	await call(backend, 'wipe');
 });
@@ -140,14 +140,14 @@ test('does not report an eviction when the tab closed before the first copy was 
 	test.skip(!savesToDisk, 'this browser keeps the index in memory only');
 	await load();
 	const first = await create('https://quick-close.example');
-	await call(first, 'open', { userId: 'u1' });
+	await call(first, 'open', { userId: 'u1', wrapKey: wrapKey() });
 	await call(first, 'upsert', [DOC]);
 	// The reload comes before the 1 s save delay ends, so no copy was ever saved for this user.
 	await load();
 	await expect(indexFiles()).resolves.toEqual([]);
 	logs.length = 0;
 	const second = await create('https://quick-close.example');
-	await call(second, 'open', { userId: 'u1' });
+	await call(second, 'open', { userId: 'u1', wrapKey: wrapKey() });
 	expect(logs).not.toContain('E2EE search index: the saved copy is gone, the index is built again');
 	await call(second, 'wipe');
 });
@@ -156,7 +156,7 @@ test('keeps the index in memory when the browser refuses its storage, and still 
 	await load();
 	const before = await indexFiles();
 	const backend = await create('https://refused.example', REFUSED_STORAGE_WORKER);
-	await expect(call(backend, 'open', { userId: 'u1' })).resolves.toEqual({ schemaVersion: 1, encryptedAtRest: false });
+	await expect(call(backend, 'open', { userId: 'u1', wrapKey: wrapKey() })).resolves.toEqual({ schemaVersion: 1, encryptedAtRest: false });
 	await call(backend, 'upsert', [DOC]);
 	await expect(hitIds(backend)).resolves.toEqual(['m1']);
 	await flush(backend);
