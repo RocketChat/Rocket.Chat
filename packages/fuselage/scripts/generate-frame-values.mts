@@ -4425,6 +4425,296 @@ const messagePreviews = [
 	{ file: messageDir('MessageGenericPreview/MessageGenericPreview.styles.css'), generate: generateMessageGenericPreviewCss, css: true },
 ];
 
+const generateMessageDivider = () =>
+	mParts(
+		inView('MessageDividerBarFrame', {
+			render: 'div',
+			...mPlain,
+			justifyContent: 'flex-end',
+			alignItems: 'center',
+			flexGrow: 1,
+		}),
+		inView('MessageDividerWrapperFrame', {
+			render: 'div',
+			...mPlain,
+			display: 'block',
+			marginBlock: px(8),
+			paddingInline: px(8),
+			backgroundColor: theme('message-background-color', mSurface('room')),
+		}),
+		inView('MessageDividerUnreadFrame', {
+			render: 'div',
+			...mPlain,
+			display: 'block',
+			position: 'absolute',
+			zIndex: 1,
+			order: 1,
+			paddingInlineStart: px(8),
+			color: theme('message-divider-color-unread', mFont('danger')),
+			backgroundColor: theme('message-background-color', mSurface('room')),
+		}),
+	);
+
+// Divider's labelled variant renders this root through the `rcx-message-divider` class, so the root cannot be a frame
+const generateMessageDividerCss = () => {
+	const c2 = fontScale('c2')!;
+	const barHeight = theme('message-divider-size', px(1));
+
+	return `.rcx-message-divider {
+	position: relative;
+	z-index: 1;
+
+	display: flex;
+	align-items: center;
+
+	margin-bottom: ${theme('message-divider-size-neg', px(-1))};
+	padding-inline: ${px(20)};
+
+	color: ${theme('message-divider-color', mFont('default'))};
+
+	font-size: ${c2.fontSize};
+	font-weight: ${c2.fontWeight};
+	line-height: ${c2.lineHeight};
+	letter-spacing: ${c2.letterSpacing};
+}
+
+.rcx-message-divider__bar::after {
+	flex-grow: 1;
+
+	height: ${barHeight};
+
+	content: '';
+
+	background: ${theme('message-divider-background-color', mStroke('extra-light'))};
+}
+
+.rcx-message-divider--unread .rcx-message-divider__bar::after {
+	background: ${theme('message-divider-background-color-unread', mStroke('error'))};
+}`;
+};
+
+const generateMessageSystem = () =>
+	view(
+		'MessageSystemFrame',
+		{
+			render: 'div',
+			...mBox,
+			alignItems: 'flex-start',
+			...mTruncate,
+			...font('c1'),
+			marginInline: px(2),
+			paddingBlock: px(8),
+			paddingInline: px(20),
+			color: mFont('default'),
+			...mFocusState,
+		},
+		{
+			selected: {
+				true: { backgroundColor: theme('message-system-background-color-selected', mSurface('selected')) },
+				false: {},
+			},
+		},
+	);
+
+const generateMessageSystemContainer = () =>
+	view('MessageSystemContainerFrame', {
+		render: 'div',
+		...mBox,
+		flexDirection: 'column',
+		flexShrink: 1,
+		alignSelf: 'center',
+		...mTruncate,
+		width: '100%',
+		marginBlock: px(-4),
+	});
+
+const generateMessageSystemBody = () =>
+	view('MessageSystemBodyFrame', {
+		render: 'div',
+		...mPlain,
+		display: 'block',
+		...mTruncate,
+		...font('p2'),
+		marginInline: px(2),
+	});
+
+const generateMessageSystemName = () =>
+	text('MessageSystemNameFrame', {
+		render: 'span',
+		...mInline,
+		...mTruncate,
+		...font('p2b'),
+		flexShrink: 0,
+		color: mFont('titles-labels'),
+	});
+
+const generateMessageSystemTimestamp = () =>
+	text('MessageSystemTimestampFrame', {
+		render: 'span',
+		...mInline,
+		...mTruncate,
+		...font('c1'),
+		flexShrink: 0,
+		marginInline: px(2),
+		color: mFont('secondary-info'),
+	});
+
+const generateMessageSystemBlock = () => view('MessageSystemBlockFrame', { render: 'div', ...mPlain, alignItems: 'center' });
+
+const generateMessageStatusIndicator = () =>
+	view('MessageStatusIndicatorFrame', {
+		render: 'div',
+		...mPlain,
+		display: 'block',
+		marginBlock: px(2),
+		userSelect: 'none',
+	});
+
+const generateMessageStatusIndicatorText = () =>
+	text('MessageStatusIndicatorTextFrame', {
+		render: 'span',
+		...mInline,
+		whiteSpace: 'nowrap',
+		color: mFont('secondary-info'),
+		...font('c1'),
+	});
+
+const statusVariantColors = {
+	success: theme('message-status-variant-color-success', mStatusFont('on-success')),
+	danger: theme('message-status-variant-color-danger', mStatusFont('on-danger')),
+	warning: theme('message-status-variant-color-warning', mStatusFont('on-warning')),
+	primary: theme('message-status-variant-color-primary', 'var(--rcx-color-status-font-on-primary, )'),
+};
+
+// The item is an `Icon` or a plain span, neither of them a frame, so its colors stay a stylesheet
+const generateMessageStatusIndicatorCss = () => `${raised('.rcx-message-status-indicator:empty')} {
+	display: none;
+}
+
+.rcx-message-status-indicator__item {
+	color: ${mFont('secondary-info')};
+}
+
+${Object.entries(statusVariantColors)
+	.map(
+		([variant, color]) => `.rcx-message-status-indicator__item--${variant} {
+	color: ${color};
+}`,
+	)
+	.join('\n\n')}`;
+
+const generateThreadMessageBody = () => view('ThreadMessageBodyFrame', { render: 'div', ...mBox, ...mTruncate, color: mFont('default') });
+
+const generateThreadMessageContainer = () =>
+	view('ThreadMessageContainerFrame', {
+		render: 'div',
+		...mBox,
+		flexShrink: 1,
+		...mTruncate,
+		width: '100%',
+		margin: px(4),
+	});
+
+const generateThreadMessageRow = () =>
+	view('ThreadMessageRowFrame', {
+		render: 'div',
+		...mBox,
+		alignItems: 'center',
+		flexShrink: 1,
+		...mTruncate,
+		width: '100%',
+		cursor: 'pointer',
+	});
+
+const generateThreadMessageOrigin = () =>
+	view(
+		'ThreadMessageOriginFrame',
+		{
+			render: 'div',
+			...mBox,
+			display: 'block',
+			flexShrink: 1,
+			...mTruncate,
+			...font('c1'),
+			cursor: 'pointer',
+		},
+		{ look: { default: { color: mFont('info') }, system: { color: mFont('default') } } },
+	);
+
+const generateThreadMessageEmoji = () =>
+	text('ThreadMessageEmojiFrame', {
+		render: 'span',
+		display: 'inline-block',
+		whiteSpace: 'normal',
+		wordWrap: 'normal',
+		marginInline: px(2),
+		backgroundSize: 'contain',
+		fontSize: size('x12')!,
+		lineHeight: size('x8')!,
+		width: size('x12')!,
+		height: size('x12')!,
+	});
+
+const generateThreadMessageCss = () => {
+	const c1 = fontScale('c1')!;
+
+	return `${raised('.rcx-message.rcx-message-thread')} {
+	display: flex;
+	overflow: hidden;
+	flex-direction: column;
+
+	padding-block: 0;
+
+	color: ${mFont('info')};
+
+	font-size: ${c1.fontSize};
+	font-weight: ${c1.fontWeight};
+	line-height: ${c1.lineHeight};
+	letter-spacing: ${c1.letterSpacing};
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.rcx-message-thread__origin--system::first-letter {
+	text-transform: uppercase;
+}
+
+.rcx-message-thread__icon {
+	color: ${mFont('info')};
+}
+
+.rcx-message-thread__icon--unfollow,
+.rcx-message-thread__icon--follow {
+	cursor: pointer;
+
+	color: ${mFont('secondary-info')};
+}
+
+.rcx-message:not(:hover) .rcx-message-thread__icon--unfollow {
+	display: none;
+}`;
+};
+
+const messageSystem = [
+	{ file: messageDir('MessageDivider/MessageDivider.tsx'), generate: generateMessageDivider },
+	{ file: messageDir('MessageDivider/MessageDivider.styles.css'), generate: generateMessageDividerCss, css: true },
+	{ file: messageDir('MessageSystem/MessageSystem.tsx'), generate: generateMessageSystem },
+	{ file: messageDir('MessageSystem/MessageSystemContainer.tsx'), generate: generateMessageSystemContainer },
+	{ file: messageDir('MessageSystem/MessageSystemBody.tsx'), generate: generateMessageSystemBody },
+	{ file: messageDir('MessageSystem/MessageSystemName.tsx'), generate: generateMessageSystemName },
+	{ file: messageDir('MessageSystem/MessageSystemTimestamp.tsx'), generate: generateMessageSystemTimestamp },
+	{ file: messageDir('MessageSystem/MessageSystemBlock.tsx'), generate: generateMessageSystemBlock },
+	{ file: messageDir('MessageStatusIndicator/MessageStatusIndicator.tsx'), generate: generateMessageStatusIndicator },
+	{ file: messageDir('MessageStatusIndicator/MessageStatusIndicatorText.tsx'), generate: generateMessageStatusIndicatorText },
+	{ file: messageDir('MessageStatusIndicator/MessageStatusIndicator.styles.css'), generate: generateMessageStatusIndicatorCss, css: true },
+	{ file: messageDir('ThreadMessage/ThreadMessageBody.tsx'), generate: generateThreadMessageBody },
+	{ file: messageDir('ThreadMessage/ThreadMessageContainer.tsx'), generate: generateThreadMessageContainer },
+	{ file: messageDir('ThreadMessage/ThreadMessageRow.tsx'), generate: generateThreadMessageRow },
+	{ file: messageDir('ThreadMessage/ThreadMessageOrigin.tsx'), generate: generateThreadMessageOrigin },
+	{ file: messageDir('ThreadMessage/ThreadMessageEmoji.tsx'), generate: generateThreadMessageEmoji },
+	{ file: messageDir('ThreadMessage/ThreadMessage.styles.css'), generate: generateThreadMessageCss, css: true },
+];
+
 const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
 	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
@@ -4570,7 +4860,7 @@ const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: frames('Menu/MenuItem.tsx'), generate: generateMenuItemDescription },
 ];
 
-components.push(...messageCore, ...messagePreviews, ...messageReactions, ...messageMetrics, ...messageToolbar);
+components.push(...messageCore, ...messageSystem, ...messagePreviews, ...messageReactions, ...messageMetrics, ...messageToolbar);
 
 for (const [dir, control] of [
 	['CheckBox', checkBox],
