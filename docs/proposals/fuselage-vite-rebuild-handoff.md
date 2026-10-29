@@ -32,7 +32,7 @@ What this costs:
 
 ## Status (2026-10-29)
 
-Branch `feat/fuselage-zero`, on top of #43055 (`feat/serve-vite-client`, the Vite-built web client served by the server).
+Branch `feat/fuselage-tamagui-pilot` (pull request #42942), on top of `develop`, which now carries #43055 (the Vite-built web client served by the server) and #43302 (build-time static `Box`). The earlier `feat/fuselage-zero` branch is superseded; the library-lowering pilot is kept as `feat/fuselage-tamagui-pilot-lowering`.
 
 - **Every Fuselage component with its own styles is migrated**, one commit per component or family: Button, IconButton, ButtonGroup, SplitButton, Bubble, CheckBox, RadioButton, ToggleSwitch, Tag, Badge, Chip, the Item family, Tabs, Accordion, Table, Pagination, Skeleton, Throbber, ProgressBar, Avatar, StatusBullet, Tooltip, Divider, Tile, Callout, CardGrid, CardGroup, Card, Modal, InputBox and its inputs, Field, FieldGroup, Label, the Select family, Option, Options, Menu, Sidebar, NavBar, Sidepanel, the Message family, Contextualbar, Banner, ToastBar, Chevron, CodeSnippet, FramedIcon, States, Grid, Icon and Dropdown (the last three as plain CSS).
 - **The web client compiles them with zero runtime:** `yarn build:client` passes and no `@tamagui` code reaches `public/bundle` (246 frames lowered, 0 bailed).
@@ -274,7 +274,8 @@ Tick an item in the commit that completes it.
 - [x] Box sizing in the app: the Storybook loads the app's reset and frames no longer force `content-box`.
 - [x] `States`' link rendered empty when Fuselage runs uncompiled, like the Message emoji: their `children` travelled in the props spread on the render element and the childless frame replaced them. They go to the frame now.
 - [x] Uncompiled runtime: React 19 callback refs (cleanup ignored, `ref(null)` on unmount) and props leaking to the DOM, fixed by the `@tamagui/compose-refs` and `@tamagui/web` patches.
-- [ ] Visual regression baselines: regenerate the 47 that changed with `packages/visual-regression/scripts/run-playwright-docker.sh` (forced-state stories, the reset's box model, the two new Sidebar stories). Check `navigation-sidebar--collapsed` first: its badges are cut off at the 48px edge.
+- [x] Visual regression baselines regenerated for the Tamagui frames.
+- [ ] `navigation-sidebar--collapsed`: its badges are cut off at the 48px edge; confirm whether `develop` does the same.
 - [ ] `ContextualbarTitle` logs "A text node cannot be a child of a `<View>`" uncompiled: frames that hold text should be based on `Text`.
 - [ ] Cascade order: the app's CSS and the admin's Custom CSS now lose to the zero stylesheet for any one- or two-class override of a Fuselage part. Try loading the zero stylesheet before the component and app stylesheets (the server injects stylesheets from the Vite manifest, so the order is ours); otherwise document the `[class]` rule for consumers.
 
@@ -292,7 +293,7 @@ Tick an item in the commit that completes it.
 - [ ] Remove the SCSS nothing uses any more: the `styles/` mixins, variables and primitives, `InputBox/mixins.scss`, and variables such as `--rcx-button-empty-*` and `--rcx-button-off-*`.
 - [ ] Review the infrastructure's deviations against the Tamagui docs (absolute dev `base`, loading the zero stylesheet, the `<Ctx.Provider>` and include patches) and keep only the ones the docs can't replace.
 - [ ] CI: fail the build on any reachable `@tamagui/*` module from the zero graph receipt, and a ratchet on components still on SCSS.
-- [ ] Convert the stories that force states by class to the pseudo-states addon.
+- [x] Convert the stories that force states by class to the pseudo-states addon.
 
 **Decisions**
 
@@ -300,11 +301,24 @@ Tick an item in the commit that completes it.
 - [x] The Option `success`/`warning`/`primary` text colours, which the branch had silently lost when Item became frames, are fixed in their own `regression(fuselage)` commit right after the Item commit.
 - [ ] Shrink the variant tables (see "Variant tables: measured cost and how to shrink them"): deferred.
 - [ ] Behaviour changes to record in changesets: state classes removed; a consumer `className` now adds to the component's classes instead of replacing them (Pagination, Bubble, Card parts, Sidebar, MessageSystem, MessageContainer); several Message prop types moved from `HTMLAttributes` to `ElementProps`.
+- [ ] The npm `dist` grew from 36 to 110 kB gzip because uncompiled consumers get the Tamagui runtime bundled: also publish a zero-runtime-compiled build, make the runtime a peer dependency, or accept it.
 
 **Delivery**
 
-- [ ] Changesets and the pull request strategy: this branch depends on #43055; one pull request per component, as planned, or per lot. Jira ticket and milestone.
-- [ ] Delete the agents' and spikes' temporary worktrees and branches.
+- [ ] Changesets and the pull request strategy: one pull request (#42942) or one per lot. Jira ticket and milestone.
+- [ ] Delete the agents' and spikes' temporary worktrees and branches (`spike/fuselage-zero-*`, `fuselage-zero-*`, `pilot-*`, and `feat/fuselage-zero` once nothing points at it).
+
+## Next steps, in order
+
+1. **Cascade order** (Correctness): the only remaining risk users would see. Try loading the zero stylesheet before the component and app stylesheets; fall back to documenting the `[class]` rule.
+2. **Fast verification scripts** (Verification): parallel stories, frozen animations, id filter. They unblock steps 3 and 4.
+3. **Full A/B** over every story against `develop`, and compiled against uncompiled.
+4. **Real-app A/B** against `develop`, including the consumers never seen in a browser.
+5. **Decisions**, cheap and can run in parallel with 1–4: the `style` custom-property pattern and the npm `dist` size.
+6. **Small fixes and cleanup:** `ContextualbarTitle` on `Text`, the collapsed-sidebar badges, the unused SCSS, the CI gate on `@tamagui/*` and the SCSS ratchet, the review of the infrastructure's deviations.
+7. **Bench the lists**, then Meteor `tsc`, the e2e suite and the uncompiled consumers.
+8. **Delivery:** changesets for the behaviour changes, the pull request strategy, Jira, and deleting the temporary branches and worktrees.
+9. **Later, when the size budget asks for it:** shrink the variant tables, in the order given in "Variant tables: measured cost and how to shrink them".
 
 ## Open questions
 
