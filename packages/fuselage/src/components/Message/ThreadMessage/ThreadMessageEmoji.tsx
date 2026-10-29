@@ -10,9 +10,10 @@ export type ThreadMessageEmojiProps = MessageEmojiBaseProps;
 // Declared where they render: zero-runtime only erases a `styled()` whose every use is in its own module
 const ThreadMessageEmojiFrame = styled(Text, {
 	render: 'span',
+	boxSizing: 'content-box',
 	display: 'inline-block',
-	whiteSpace: 'normal',
-	wordWrap: 'normal',
+	whiteSpace: 'inherit',
+	wordWrap: 'inherit',
 	marginInline: '2px',
 	backgroundSize: 'contain',
 	fontSize: '0.75rem',

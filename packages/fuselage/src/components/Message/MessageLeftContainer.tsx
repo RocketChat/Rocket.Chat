@@ -26,7 +26,7 @@ const MessageLeftContainerFrame = styled(View, {
 // end of generated
 
 const MessageLeftContainer = ({ children, className, ...props }: MessageLeftContainerProps) => (
-	<MessageLeftContainerFrame render={<Box rcx-message-container rcx-message-container--left {...props} />} className={className}>
+	<MessageLeftContainerFrame render={<Box rcx-message-container--left rcx-message-container {...props} />} className={className}>
 		{children}
 	</MessageLeftContainerFrame>
 );
