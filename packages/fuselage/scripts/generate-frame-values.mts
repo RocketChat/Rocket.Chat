@@ -2020,6 +2020,17 @@ const generateConsumerClasses = () => {
 .rcx-card__row:where(.rcx-card__row) {
 	flex-grow: 1;
 	flex-shrink: 1;
+}
+
+.rcx-modal__backdrop:where(.rcx-modal__backdrop) {
+	position: fixed;
+	z-index: 100;
+	inset: 0;
+
+	display: flex;
+	flex-direction: column;
+
+	background-color: ${String(surfaceColors['surface-overlay'])};
 }`;
 };
 
@@ -2077,6 +2088,17 @@ const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Card/CardHeader.tsx'), generate: generateCardHeader },
 	{ file: join(import.meta.dirname, '../src/components/Card/CardRow.tsx'), generate: generateCardRow },
 	{ file: join(import.meta.dirname, '../src/components/Card/CardTitle.tsx'), generate: generateCardTitle },
+	{ file: join(import.meta.dirname, '../src/components/Modal/Modal.styles.css'), generate: generateModalCss, css: true },
+	{ file: join(import.meta.dirname, '../src/components/Modal/Modal.tsx'), generate: generateModal },
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalBackdrop.tsx'), generate: generateModalBackdrop },
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalHeader.tsx'), generate: generateModalHeader },
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalHeaderInner.tsx'), generate: generateModalHeaderInner },
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalHeaderText.tsx'), generate: generateModalHeaderText },
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalTitle.tsx'), generate: generateModalTitle },
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalTagline.tsx'), generate: generateModalTagline },
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalHeroImage.tsx'), generate: generateModalHeroImage },
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalFooter.tsx'), generate: generateModalFooter },
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalFooterAnnotation.tsx'), generate: generateModalFooterAnnotation },
 ];
 
 for (const [dir, control] of [
