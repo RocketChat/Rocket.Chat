@@ -77,7 +77,7 @@ const RegisterWorkspaceTokenModal = ({ onClose, onStatusChange, ...props }: Regi
 				<ModalClose onClick={onClose} />
 			</ModalHeader>
 			<ModalContent>
-				<Text is='p'>
+				<Text is='p' fontScale='p2'>
 					<Trans i18nKey='RegisterWorkspace_Token_Step_One'>
 						1. Go to:{' '}
 						<Text is='strong' fontScale='p2b'>
@@ -91,7 +91,7 @@ const RegisterWorkspaceTokenModal = ({ onClose, onStatusChange, ...props }: Regi
 					</Trans>
 				</Text>
 				<Stack gap='x8'>
-					<Text is='p'>{`2. ${t('RegisterWorkspace_Token_Step_Two')}`}</Text>
+					<Text is='p' fontScale='p2'>{`2. ${t('RegisterWorkspace_Token_Step_Two')}`}</Text>
 					<Field>
 						<FieldLabel>{t('Registration_Token')}</FieldLabel>
 						<FieldRow>
