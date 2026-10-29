@@ -1,0 +1,60 @@
+diff --git a/dist/cjs/compose-refs.cjs b/dist/cjs/compose-refs.cjs
+index f4555e7ac319bd693792577459a6db1317048b39..eef1e6d883877e2ca72b49fec00023c653004503 100644
+--- a/dist/cjs/compose-refs.cjs
++++ b/dist/cjs/compose-refs.cjs
+@@ -35,14 +35,23 @@ module.exports = __toCommonJS(compose_refs_exports);
+ var React = __toESM(require("react"), 1);
+ function setRef(ref, value) {
+ 	if (typeof ref === "function") {
+-		ref(value);
++		return ref(value);
+ 	} else if (ref) {
+ 		;
+ 		ref.current = value;
+ 	}
+ }
+ function composeRefs(...refs) {
+-	return (node) => refs.forEach((ref) => setRef(ref, node));
++	return (node) => {
++		const cleanups = refs.map((ref) => setRef(ref, node));
++		// React 19 runs the returned cleanup instead of calling the ref again with null
++		return () => {
++			refs.forEach((ref, i) => {
++				if (typeof cleanups[i] === "function") cleanups[i]();
++				else setRef(ref, null);
++			});
++		};
++	};
+ }
+ function useComposedRefs(...refs) {
+ 	return React.useCallback(composeRefs(...refs), refs);
+diff --git a/dist/esm/compose-refs.mjs b/dist/esm/compose-refs.mjs
+index 44d51087adc2dcad0d0d37822707954d45dadc82..56ee8f0420ebac23302c2bde689c50d5544fe6d1 100644
+--- a/dist/esm/compose-refs.mjs
++++ b/dist/esm/compose-refs.mjs
+@@ -2,14 +2,23 @@ import * as React from "react";
+ 
+ function setRef(ref, value) {
+ 	if (typeof ref === "function") {
+-		ref(value);
++		return ref(value);
+ 	} else if (ref) {
+ 		;
+ 		ref.current = value;
+ 	}
+ }
+ function composeRefs(...refs) {
+-	return (node) => refs.forEach((ref) => setRef(ref, node));
++	return (node) => {
++		const cleanups = refs.map((ref) => setRef(ref, node));
++		// React 19 runs the returned cleanup instead of calling the ref again with null
++		return () => {
++			refs.forEach((ref, i) => {
++				if (typeof cleanups[i] === "function") cleanups[i]();
++				else setRef(ref, null);
++			});
++		};
++	};
+ }
+ function useComposedRefs(...refs) {
+ 	return React.useCallback(composeRefs(...refs), refs);
