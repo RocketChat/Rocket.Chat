@@ -1,37 +1,29 @@
 import { Box } from '@rocket.chat/fuselage';
-import { useMergedRefsV2 } from '@rocket.chat/fuselage-hooks';
 import { isTruthy } from '@rocket.chat/tools';
-import { CustomVirtuaScrollbars, useEmbeddedLayout } from '@rocket.chat/ui-client';
+import type { MessageListHandle, MessageListVisibility } from '@rocket.chat/ui-client';
+import { useEmbeddedLayout } from '@rocket.chat/ui-client';
 import { usePermission, useRole, useSetting, useTranslation, useUser, useUserPreference, useRoomToolbox } from '@rocket.chat/ui-contexts';
 import type { MouseEvent } from 'react';
-import { memo, useCallback, useMemo, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef } from 'react';
 
-import { BubbleDate } from '../BubbleDate';
-import { MessageList } from '../MessageList';
 import DropTargetOverlay from './DropTargetOverlay';
-import JumpToRecentMessageButton from './JumpToRecentMessageButton';
 import UnreadMessagesIndicator from './UnreadMessagesIndicator';
 import MessageListErrorBoundary from '../MessageList/MessageListErrorBoundary';
+import { useToggleSelectAll } from '../MessageList/contexts/SelectedMessagesContext';
 import RoomAnnouncement from '../RoomAnnouncement';
+import RoomMessageList from './RoomMessageList/RoomMessageList';
 import UploadProgressIndicator from './UploadProgress';
 import ComposerContainer from '../composer/ComposerContainer';
 import { useFileUpload } from './hooks/useFileUpload';
 import { useGoToHomeOnRemoved } from './hooks/useGoToHomeOnRemoved';
-import { useIsAtBottomRef } from './hooks/useIsAtBottomRef';
 import { useQuoteMessageByUrl } from './hooks/useQuoteMessageByUrl';
 import { useReadMessageWindowEvents } from './hooks/useReadMessageWindowEvents';
 import RoomComposer from '../composer/RoomComposer/RoomComposer';
 import { useChat } from '../contexts/ChatContext';
-import { useRoom, useRoomSubscription, useRoomMessages } from '../contexts/RoomContext';
-import { useDateScroll } from '../hooks/useDateScroll';
-import { useMessageListNavigation } from '../hooks/useMessageListNavigation';
+import { useRoom, useRoomSubscription } from '../contexts/RoomContext';
 import { useRetentionPolicy } from '../hooks/useRetentionPolicy';
 import { useFileUploadDropTarget } from './hooks/useFileUploadDropTarget';
-import { useGetMore } from './hooks/useGetMore';
-import { useHasNewMessages } from './hooks/useHasNewMessages';
-import { useSelectAllAndScrollToTop } from './hooks/useSelectAllAndScrollToTop';
 import { useHandleUnread } from './hooks/useUnreadMessages';
-import { useKeepAtBottom } from '../MessageList/hooks/useKeepAtBottom';
 import useTryToJumpToThreadMessage from '../MessageList/hooks/useTryToJumpToThreadMessage';
 
 const RoomBody = () => {
@@ -48,22 +40,6 @@ const RoomBody = () => {
 	const admin = useRole('admin');
 	const subscription = useRoomSubscription();
 
-	const [shouldJumpToBottom, setShouldJumpToBottom] = useState<boolean>(false);
-	const isAtBottom = useIsAtBottomRef(room._id);
-	const [isJumpingToMessage, setIsJumpingToMessage] = useState<boolean>(false);
-
-	// RoomBody persists across room switches, so this state must be reset per room rather than carried over.
-	const [previousRoomId, setPreviousRoomId] = useState(room._id);
-	if (previousRoomId !== room._id) {
-		setPreviousRoomId(room._id);
-		if (shouldJumpToBottom) {
-			setShouldJumpToBottom(false);
-		}
-		if (isJumpingToMessage) {
-			setIsJumpingToMessage(false);
-		}
-	}
-
 	const retentionPolicy = useRetentionPolicy(room);
 
 	useTryToJumpToThreadMessage();
@@ -71,8 +47,6 @@ const RoomBody = () => {
 	const hideFlexTab = useUserPreference<boolean>('hideFlexTab') || undefined;
 	const hideUsernames = useUserPreference<boolean>('hideUsernames');
 	const displayAvatars = useUserPreference<boolean>('displayAvatars');
-
-	const { hasMorePreviousMessages, hasMoreNextMessages, isLoadingMoreMessages } = useRoomMessages();
 
 	const allowAnonymousRead = useSetting('Accounts_AllowAnonymousRead', false);
 
@@ -105,27 +79,32 @@ const RoomBody = () => {
 		debouncedMessageRead,
 	} = useHandleUnread(room, subscription);
 
-	const { handleDateScroll, bubbleRef, listStyle, ...bubbleDate } = useDateScroll();
-
-	const { innerRef: getMoreInnerRef } = useGetMore(room._id, isJumpingToMessage);
-
 	const [fileUploadTriggerProps, fileUploadOverlayProps] = useFileUploadDropTarget();
 	const { uploads, isUploading } = useFileUpload();
 
-	const { messageListRef } = useMessageListNavigation();
-	const { innerRef: selectAndScrollRef, selectAllAndScrollToTop } = useSelectAllAndScrollToTop();
+	const messageListRef = useRef<MessageListHandle>(null);
+	const toggleSelectAll = useToggleSelectAll();
 
-	const {
-		handleNewMessageButtonClick,
-		handleJumpToRecentButtonClick,
-		handleComposerResize,
-		hasNewMessages,
-		debouncedClearNewMessagesOnScroll,
-	} = useHasNewMessages(room._id, user?._id, setShouldJumpToBottom, isAtBottom);
+	const selectAllAndScrollToTop = useCallback(() => {
+		messageListRef.current?.scrollToTop();
+		toggleSelectAll();
+	}, [toggleSelectAll]);
 
-	const { keepAtBottomRef, setKeepAtBottom } = useKeepAtBottom(isAtBottom);
+	const handleVisibleMessagesChange = useCallback(
+		({ topMessage }: MessageListVisibility) => {
+			if (!topMessage) {
+				setUnreadCount(0);
+			} else {
+				setLastMessageDate(topMessage.ts);
+			}
+			debouncedMessageRead();
+		},
+		[setUnreadCount, setLastMessageDate, debouncedMessageRead],
+	);
 
-	const innerRef = useMergedRefsV2(getMoreInnerRef, selectAndScrollRef, messageListRef, keepAtBottomRef);
+	useEffect(() => {
+		chat.readStateManager.setIsUnreadMarkVisibleCallback(() => messageListRef.current?.getVisibility()?.isFirstUnreadVisible ?? false);
+	}, [chat.readStateManager]);
 
 	const handleNavigateToPreviousMessage = useCallback((): void => {
 		chat.messageEditing.toPreviousMessage();
@@ -174,7 +153,7 @@ const RoomBody = () => {
 	return (
 		<>
 			{!isLayoutEmbedded && room.announcement && <RoomAnnouncement announcement={room.announcement} />}
-			<Box key={room._id} className={['main-content-flex', listStyle]}>
+			<Box key={room._id} className='main-content-flex'>
 				<section
 					role='presentation'
 					className={`messages-container flex-tab-main-content ${admin ? 'admin' : ''}`}
@@ -193,61 +172,33 @@ const RoomBody = () => {
 										onMarkAsReadButtonClick={handleMarkAsReadButtonClick}
 									/>
 								)}
-								<BubbleDate ref={bubbleRef} {...bubbleDate} />
 							</Box>
 							<div className={['messages-box'].filter(isTruthy).join(' ')}>
-								<JumpToRecentMessageButton visible={hasNewMessages} onClick={handleNewMessageButtonClick} text={t('New_messages')} />
-								<JumpToRecentMessageButton
-									visible={hasMoreNextMessages}
-									onClick={handleJumpToRecentButtonClick}
-									text={t('Jump_to_recent_messages')}
-								/>
 								{!canPreview ? (
 									<div className='content room-not-found error-color'>
 										<div>{t('You_must_join_to_view_messages_in_this_channel')}</div>
 									</div>
 								) : null}
 								<div
-									className={[
-										'wrapper',
-										hasMoreNextMessages && 'has-more-next',
-										hideUsernames && 'hide-usernames',
-										!displayAvatars && 'hide-avatar',
-									]
-										.filter(isTruthy)
-										.join(' ')}
+									className={['wrapper', hideUsernames && 'hide-usernames', !displayAvatars && 'hide-avatar'].filter(isTruthy).join(' ')}
 								>
 									<MessageListErrorBoundary>
-										<CustomVirtuaScrollbars ref={innerRef} key={room._id}>
-											<MessageList
-												rid={room._id}
-												shouldJumpToBottom={shouldJumpToBottom}
-												setShouldJumpToBottom={setShouldJumpToBottom}
-												isAtBottom={isAtBottom}
-												isJumpingToMessage={isJumpingToMessage}
-												setIsJumpingToMessage={setIsJumpingToMessage}
-												canPreview={canPreview}
-												hasMorePreviousMessages={hasMorePreviousMessages}
-												isLoadingMoreMessages={isLoadingMoreMessages}
-												user={user}
-												room={room}
-												retentionPolicy={retentionPolicy}
-												hasMoreNextMessages={hasMoreNextMessages}
-												setUnreadCount={setUnreadCount}
-												setLastMessageDate={setLastMessageDate}
-												debouncedClearNewMessagesOnScroll={debouncedClearNewMessagesOnScroll}
-												handleDateScroll={handleDateScroll}
-												debouncedMessageRead={debouncedMessageRead}
-												setKeepAtBottom={setKeepAtBottom}
-											/>
-										</CustomVirtuaScrollbars>
+										<RoomMessageList
+											key={room._id}
+											ref={messageListRef}
+											room={room}
+											subscription={subscription}
+											user={user}
+											canPreview={canPreview}
+											retentionPolicy={retentionPolicy}
+											onVisibleMessagesChange={handleVisibleMessagesChange}
+										/>
 									</MessageListErrorBoundary>
 								</div>
 							</div>
 							<RoomComposer aria-label={t('Room_composer')}>
 								<ComposerContainer
 									subscription={subscription}
-									onResize={handleComposerResize}
 									onNavigateToPreviousMessage={handleNavigateToPreviousMessage}
 									onNavigateToNextMessage={handleNavigateToNextMessage}
 									onClickSelectAll={selectAllAndScrollToTop}
