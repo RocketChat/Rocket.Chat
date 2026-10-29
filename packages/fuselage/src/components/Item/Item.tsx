@@ -37,6 +37,20 @@ export type ItemProps = {
 } & Omit<AllHTMLAttributes<HTMLElement>, 'is' | 'selected' | 'disabled'> &
 	RefAttributes<HTMLElement>;
 
+// Content with a title sits above the row's `ItemLink` so its tooltip shows a click on it still opens the link.
+const forwardClickToLink = (event: MouseEvent<HTMLElement>): boolean => {
+	const link = event.currentTarget.querySelector('.rcx-item__link');
+	const raised = (event.target as Element).closest('[title]:not(.rcx-item__link)');
+
+	if (!link || !raised || !event.currentTarget.contains(raised) || raised.closest('a, button, .rcx-item__actions')) {
+		return false;
+	}
+
+	event.stopPropagation();
+	link.dispatchEvent(new globalThis.MouseEvent('click', event.nativeEvent));
+	return true;
+};
+
 /**
  * A list row composed from slots: media, icon, content and actions.
  */
@@ -71,14 +85,12 @@ const Item = ({
 		? [props['aria-describedby'], ...descriptionIds].filter(Boolean).join(' ') || undefined
 		: props['aria-describedby'];
 
-	const handleClick = onClick
-		? (event: MouseEvent<HTMLElement>) => {
-				if (disabled) {
-					return;
-				}
-				onClick(event);
-			}
-		: undefined;
+	const handleClick = (event: MouseEvent<HTMLElement>) => {
+		if (disabled || forwardClickToLink(event)) {
+			return;
+		}
+		onClick?.(event);
+	};
 
 	return (
 		<ItemContext.Provider value={contextValue}>

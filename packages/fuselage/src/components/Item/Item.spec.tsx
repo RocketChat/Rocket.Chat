@@ -188,6 +188,81 @@ describe('ItemLink', () => {
 
 		expect(screen.getByRole('link', { name: 'general' })).not.toHaveAttribute('aria-describedby');
 	});
+	it('opens when content with a tooltip beside it, such as a badge, is clicked', async () => {
+		const onClick = jest.fn((event) => event.preventDefault());
+		render(
+			<Item>
+				<ItemTitle>
+					<ItemLink href='#general' onClick={onClick}>
+						general
+					</ItemLink>
+				</ItemTitle>
+				<span title='3 unread messages'>3</span>
+			</Item>,
+		);
+
+		await userEvent.click(screen.getByTitle('3 unread messages'));
+
+		expect(onClick).toHaveBeenCalledTimes(1);
+	});
+
+	it('runs its handler when an avatar with a tooltip is clicked, as a button', async () => {
+		const onClick = jest.fn();
+		render(
+			<Item>
+				<ItemMedia>
+					<img alt='Avatar' title='rocket.cat' />
+				</ItemMedia>
+				<ItemTitle>
+					<ItemLink is='button' onClick={onClick}>
+						Rocket Cat
+					</ItemLink>
+				</ItemTitle>
+			</Item>,
+		);
+
+		await userEvent.click(screen.getByTitle('rocket.cat'));
+
+		expect(onClick).toHaveBeenCalledTimes(1);
+	});
+
+	it('runs the row onClick once when content with a tooltip is clicked', async () => {
+		const onRowClick = jest.fn();
+		render(
+			<Item onClick={onRowClick}>
+				<ItemTitle>
+					<ItemLink is='button'>general</ItemLink>
+				</ItemTitle>
+				<span title='3 unread messages'>3</span>
+			</Item>,
+		);
+
+		await userEvent.click(screen.getByTitle('3 unread messages'));
+
+		expect(onRowClick).toHaveBeenCalledTimes(1);
+	});
+
+	it('is not opened by the row actions', async () => {
+		const onClick = jest.fn();
+		render(
+			<Item>
+				<ItemTitle>
+					<ItemLink is='button' onClick={onClick}>
+						general
+					</ItemLink>
+				</ItemTitle>
+				<ItemActions>
+					<button type='button' title='Options'>
+						Options
+					</button>
+				</ItemActions>
+			</Item>,
+		);
+
+		await userEvent.click(screen.getByRole('button', { name: 'Options' }));
+
+		expect(onClick).not.toHaveBeenCalled();
+	});
 });
 
 describe('ItemIcon', () => {
