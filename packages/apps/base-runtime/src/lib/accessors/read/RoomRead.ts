@@ -32,8 +32,8 @@ export class RoomRead implements IRoomRead {
 	}
 
 	public getMessages(roomId: string, options: Partial<GetMessagesOptions> = {}): Promise<IMessageRaw[]> {
-		if (typeof options.limit !== 'undefined' && (!Number.isFinite(options.limit) || options.limit > 100)) {
-			throw new Error(`Invalid limit provided. Expected number <= 100, got ${options.limit}`);
+		if (typeof options.limit !== 'undefined' && (!Number.isFinite(options.limit) || options.limit <= 0 || options.limit > 100)) {
+			throw new Error(`Invalid limit provided. Expected number between 1 and 100, got ${options.limit}`);
 		}
 
 		options.limit ??= 100;
