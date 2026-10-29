@@ -1,10 +1,11 @@
 import type { SqlRow, SqlRunner, SqlScopeState, SqlStatement } from './workerSqlRunner';
 
+// `keyId` tells the leader which wrap key the tab has for the scope (`keyIdOf`).
 type Request =
-	| { op: 'open'; scopeId: string }
-	| { op: 'exec'; scopeId?: string; statement: SqlStatement }
-	| { op: 'batch'; scopeId?: string; statements: SqlStatement[] }
-	| { op: 'flush'; scopeId?: string }
+	| { op: 'open'; scopeId: string; keyId: string }
+	| { op: 'exec'; scopeId?: string; keyId?: string; statement: SqlStatement }
+	| { op: 'batch'; scopeId?: string; keyId?: string; statements: SqlStatement[] }
+	| { op: 'flush'; scopeId?: string; keyId?: string }
 	| { op: 'wipe'; scopeId: string }
 	| { op: 'close'; scopeId: string };
 
@@ -21,6 +22,23 @@ export type SharedSqlRunner = SqlRunner & {
 // A call that gets no answer in this time fails, so a lost reply or a stalled worker does not hang the caller.
 const CALL_TIMEOUT_MS = 30_000;
 
+const KEY_ID_LABEL = 'Rocket.Chat E2EE search browser index key id v1';
+
+// A value that is the same only for the same wrap key, so the tabs can compare their keys on the channel. It is an
+// HMAC with a key that HKDF derives from the wrap key, so it does not give the wrap key.
+const keyIdOf = async (wrapKey: CryptoKey): Promise<string> => {
+	const label = new TextEncoder().encode(KEY_ID_LABEL);
+	const macKey = await crypto.subtle.deriveKey(
+		{ name: 'HKDF', hash: 'SHA-256', salt: new Uint8Array(0), info: label },
+		wrapKey,
+		{ name: 'HMAC', hash: 'SHA-256', length: 256 },
+		false,
+		['sign'],
+	);
+	const mac = new Uint8Array(await crypto.subtle.sign('HMAC', macKey, label));
+	return Array.from(mac, (byte) => byte.toString(16).padStart(2, '0')).join('');
+};
+
 const canShare = (): boolean =>
 	typeof navigator !== 'undefined' && typeof navigator.locks?.request === 'function' && typeof BroadcastChannel === 'function';
 
@@ -33,7 +51,9 @@ const canShare = (): boolean =>
  *
  * The wrap key never goes on the channel: a tab gives it only to its own worker, when it is the leader or after it
  * becomes the leader. A leader opens the index for another tab only with its own wrap key for that scope, so a call
- * from a tab while no leader has the key is locked.
+ * from a tab while no leader has the key is locked. Each call of another tab carries the key id of its wrap key, and the
+ * leader serves it only when that key id is the one of its own key: a tab with another key, for example the new key
+ * after an E2EE key reset, gets a locked index, not the index that the other key sealed.
  *
  * Without Web Locks or `BroadcastChannel`, each tab uses its own worker (`createLocal`).
  */
@@ -56,7 +76,12 @@ export const createSharedSqlRunner = (name: string, createLocal: () => SqlRunner
 	let tabScope: string | undefined;
 	// The wrap key and the schema that this tab got for a scope. They stay in this tab, so the worker that this tab starts
 	// as the leader can open the scope again, and create the tables of a database that starts empty.
-	let tabKey: { scopeId: string; wrapKey: CryptoKey; schema?: string } | undefined;
+	let tabKey: { scopeId: string; wrapKey: CryptoKey; keyId: string; schema?: string } | undefined;
+	// The key id that goes with the calls of this tab, for the scope that it opened.
+	const tabKeyId = () => (tabScope !== undefined && tabKey?.scopeId === tabScope ? tabKey.keyId : undefined);
+	// True when another tab holds the same wrap key for `scopeId` as this tab.
+	const sameKey = (scopeId: string, keyId: string | undefined) =>
+		keyId !== undefined && tabKey?.scopeId === scopeId && tabKey.keyId === keyId;
 	const openLocal = (runner: SqlRunner, scopeId: string) => {
 		const own = tabKey?.scopeId === scopeId ? tabKey : undefined;
 		return runner.open(scopeId, own?.wrapKey, own?.schema);
@@ -68,6 +93,10 @@ export const createSharedSqlRunner = (name: string, createLocal: () => SqlRunner
 	const runLocal = async (request: Request, own: boolean): Promise<SqlRow[]> => {
 		local ??= createLocal();
 		if (request.op === 'open') {
+			if (!own && !sameKey(request.scopeId, request.keyId)) {
+				const locked: SqlScopeState = { persistent: false, restored: false, locked: true };
+				return [locked as unknown as SqlRow];
+			}
 			localScope = undefined;
 			const state = await openLocal(local, request.scopeId);
 			localScope = state.locked ? undefined : request.scopeId;
@@ -90,6 +119,7 @@ export const createSharedSqlRunner = (name: string, createLocal: () => SqlRunner
 		}
 		// SQL with no scope comes from a tab that opened nothing, so it must not reach the index of another tab.
 		if (request.scopeId === undefined) throw new Error('E2EE search index is not open');
+		if (!own && !sameKey(request.scopeId, request.keyId)) throw new Error('E2EE search index is locked');
 		if (request.scopeId !== localScope) {
 			localScope = undefined;
 			const state = await openLocal(local, request.scopeId);
@@ -118,6 +148,8 @@ export const createSharedSqlRunner = (name: string, createLocal: () => SqlRunner
 	// The wait for the lock, and the release of the lock once this tab holds it.
 	let lockWait: AbortController | undefined;
 	let releaseLock: (() => void) | undefined;
+	// Counts the calls of `stop`, so an open that started before a stop does not start the channel again.
+	let stops = 0;
 
 	const settle = (id: number, rows: SqlRow[] | undefined, error: string | undefined) => {
 		const call = pending.get(id);
@@ -186,6 +218,7 @@ export const createSharedSqlRunner = (name: string, createLocal: () => SqlRunner
 		channel?.close();
 		channel = undefined;
 		leader = false;
+		stops++;
 		for (const call of pending.values()) {
 			clearTimeout(call.timer);
 			call.reject(new Error('E2EE search index is closed'));
@@ -215,10 +248,13 @@ export const createSharedSqlRunner = (name: string, createLocal: () => SqlRunner
 				tabScope = undefined;
 				return { persistent: false, restored: false, locked: true };
 			}
+			const stopsBefore = stops;
+			const keyId = await keyIdOf(wrapKey);
+			if (stops !== stopsBefore) throw new Error('E2EE search index is closed');
 			// Until this open succeeds, the calls of this tab do not go to the scope that it opened before.
 			if (tabScope !== scopeId) tabScope = undefined;
-			tabKey = { scopeId, wrapKey, schema };
-			const [row] = await send({ op: 'open', scopeId });
+			tabKey = { scopeId, wrapKey, keyId, schema };
+			const [row] = await send({ op: 'open', scopeId, keyId });
 			const state = row as unknown as SqlScopeState;
 			if (state.locked) {
 				tabKey = undefined;
@@ -228,12 +264,12 @@ export const createSharedSqlRunner = (name: string, createLocal: () => SqlRunner
 			}
 			return state;
 		},
-		exec: (statement) => send({ op: 'exec', scopeId: tabScope, statement }),
+		exec: (statement) => send({ op: 'exec', scopeId: tabScope, keyId: tabKeyId(), statement }),
 		batch: async (statements) => {
-			await send({ op: 'batch', scopeId: tabScope, statements });
+			await send({ op: 'batch', scopeId: tabScope, keyId: tabKeyId(), statements });
 		},
 		flush: async () => {
-			await send({ op: 'flush', scopeId: tabScope });
+			await send({ op: 'flush', scopeId: tabScope, keyId: tabKeyId() });
 		},
 		wipe: async (scopeId) => {
 			if (tabScope === scopeId) tabScope = undefined;

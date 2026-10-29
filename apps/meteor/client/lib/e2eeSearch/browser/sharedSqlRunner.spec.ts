@@ -3,6 +3,32 @@ import type { SqlRunner } from './workerSqlRunner';
 
 const channels: SilentChannel[] = [];
 
+// The real `setTimeout`: the key id comes from WebCrypto, which the fake timers do not wait for.
+const realSetTimeout = globalThis.setTimeout;
+const until = async (check: () => boolean) => {
+	while (!check()) await new Promise((resolve) => realSetTimeout(resolve, 1));
+};
+
+const wrapKeyOf = (byte: number) => crypto.subtle.importKey('raw', new Uint8Array(32).fill(byte), 'HKDF', false, ['deriveKey']);
+
+// Gives the calls of the tab with the channel `from` to the leader tab with the channel `to`, and the replies back,
+// until `call` settles.
+const relay = async (from: number, to: number, call: Promise<unknown>) => {
+	const outcome = outcomeOf(call);
+	let sent = 0;
+	let replied = channels[to].postMessage.mock.calls.length;
+	while (!outcome.settled) {
+		const requests = channels[from]?.postMessage.mock.calls.slice(sent) ?? [];
+		sent += requests.length;
+		for (const [data] of requests) channels[to].onmessage?.({ data } as MessageEvent);
+		const replies = channels[to].postMessage.mock.calls.slice(replied);
+		replied += replies.length;
+		for (const [data] of replies) channels[from]?.onmessage?.({ data } as MessageEvent);
+		await new Promise((resolve) => realSetTimeout(resolve, 1));
+	}
+	return call;
+};
+
 class SilentChannel {
 	onmessage: ((event: MessageEvent) => void) | null = null;
 
@@ -102,8 +128,9 @@ describe('createSharedSqlRunner', () => {
 	it('fails a call in the leader tab when its own worker does not answer in 30 s', async () => {
 		useLocks(true);
 		const runner = createSharedSqlRunner('rc-e2ee-search:test', stalledRunner);
-		const outcome = outcomeOf(runner.open('scope', {} as CryptoKey));
+		const outcome = outcomeOf(runner.open('scope', await wrapKeyOf(1)));
 
+		await until(() => jest.getTimerCount() > 0);
 		await jest.advanceTimersByTimeAsync(30_000);
 		expect(runner.isLeader()).toBe(true);
 		expect(outcome).toEqual({ settled: true, error: 'E2EE search index did not answer the open call in 30 s' });
@@ -113,7 +140,7 @@ describe('createSharedSqlRunner', () => {
 		useLocks(true);
 		const local = memoryRunner();
 		const leader = createSharedSqlRunner('rc-e2ee-search:test', () => local);
-		await leader.open('scope', {} as CryptoKey, SCHEMA);
+		await leader.open('scope', await wrapKeyOf(1), SCHEMA);
 		const [leaderChannel] = channels;
 
 		useLocks(false);
@@ -136,7 +163,7 @@ describe('createSharedSqlRunner', () => {
 		useLocks(true);
 		const local = memoryRunner();
 		const leader = createSharedSqlRunner('rc-e2ee-search:test', () => local);
-		await leader.open('scope', {} as CryptoKey, SCHEMA);
+		await leader.open('scope', await wrapKeyOf(1), SCHEMA);
 		const [channel] = channels;
 
 		channel.onmessage?.({
@@ -157,13 +184,15 @@ describe('createSharedSqlRunner', () => {
 	it('sends no call to the scope that this tab opened before, while the open of another scope fails', async () => {
 		useLocks(false);
 		const runner = createSharedSqlRunner('rc-e2ee-search:test', stalledRunner);
-		const opened = runner.open('a', {} as CryptoKey, SCHEMA);
+		const opened = runner.open('a', await wrapKeyOf(1), SCHEMA);
+		await until(() => channels.length > 0);
 		const [channel] = channels;
 		const [{ from, id }] = channel.postMessage.mock.calls[0];
 		channel.onmessage?.({ data: { kind: 'reply', to: from, id, rows: [{ persistent: false, restored: false }] } } as MessageEvent);
 		await opened;
 
-		const other = outcomeOf(runner.open('b', {} as CryptoKey, SCHEMA));
+		const other = outcomeOf(runner.open('b', await wrapKeyOf(1), SCHEMA));
+		await until(() => jest.getTimerCount() > 0);
 		await jest.advanceTimersByTimeAsync(30_000);
 		expect(other).toEqual({ settled: true, error: 'E2EE search index did not answer the open call in 30 s' });
 
@@ -177,10 +206,11 @@ describe('createSharedSqlRunner', () => {
 		const grant = useLeaderHandover();
 		const local = memoryRunner();
 		const runner = createSharedSqlRunner('rc-e2ee-search:test', () => local);
-		const key = {} as CryptoKey;
+		const key = await wrapKeyOf(1);
 
 		const opened = runner.open('scope', key, SCHEMA);
 		// The leader tab answers the open with its own worker.
+		await until(() => channels.length > 0);
 		const [channel] = channels;
 		const [{ from, id }] = channel.postMessage.mock.calls[0];
 		channel.onmessage?.({ data: { kind: 'reply', to: from, id, rows: [{ persistent: false, restored: false }] } } as MessageEvent);
@@ -198,12 +228,64 @@ describe('createSharedSqlRunner', () => {
 		useLocks(true);
 		const local = memoryRunner();
 		const runner = createSharedSqlRunner('rc-e2ee-search:test', () => local);
-		const key = {} as CryptoKey;
+		const key = await wrapKeyOf(1);
 		await runner.open('scope', key, SCHEMA);
 
 		local.open.mockRejectedValueOnce(new Error('the storage failed'));
 		await expect(runner.open('scope', key, SCHEMA)).rejects.toThrow('the storage failed');
 		await expect(runner.exec({ sql: 'SELECT n FROM t' })).resolves.toEqual([{ n: 1 }]);
 		expect(local.open).toHaveBeenCalledTimes(3);
+	});
+
+	it('serves the index of the leader tab to another tab with the same wrap key', async () => {
+		useLocks(true);
+		const local = memoryRunner();
+		const leader = createSharedSqlRunner('rc-e2ee-search:test', () => local);
+		await leader.open('scope', await wrapKeyOf(1), SCHEMA);
+
+		useLocks(false);
+		const follower = createSharedSqlRunner('rc-e2ee-search:test', () => memoryRunner());
+		await expect(relay(1, 0, follower.open('scope', await wrapKeyOf(1), SCHEMA))).resolves.toEqual({ persistent: false, restored: false });
+		await expect(relay(1, 0, follower.exec({ sql: 'SELECT n FROM t' }))).resolves.toEqual([{ n: 1 }]);
+	});
+
+	it('gives no rows of the index of the leader tab to a tab with another wrap key', async () => {
+		useLocks(true);
+		const local = memoryRunner();
+		const leader = createSharedSqlRunner('rc-e2ee-search:test', () => local);
+		await leader.open('scope', await wrapKeyOf(1), SCHEMA);
+
+		// After an E2EE key reset, the other tab has the new wrap key, and the leader tab still has the old one.
+		useLocks(false);
+		const follower = createSharedSqlRunner('rc-e2ee-search:test', () => memoryRunner());
+		await expect(relay(1, 0, follower.open('scope', await wrapKeyOf(2), SCHEMA))).resolves.toEqual({
+			persistent: false,
+			restored: false,
+			locked: true,
+		});
+		await expect(relay(1, 0, follower.exec({ sql: 'SELECT n FROM t' }))).rejects.toThrow('E2EE search index is not open');
+
+		// A call that names the scope with the key id of another key does not reach the index either.
+		const [openRequest] = channels[1].postMessage.mock.calls[0];
+		channels[0].onmessage?.({
+			data: {
+				kind: 'request',
+				from: 'other-tab',
+				id: 9,
+				request: { op: 'exec', scopeId: 'scope', keyId: openRequest.request.keyId, statement: { sql: 'SELECT n FROM t' } },
+			},
+		} as MessageEvent);
+		await jest.advanceTimersByTimeAsync(0);
+		expect(channels[0].postMessage).toHaveBeenLastCalledWith({
+			kind: 'reply',
+			to: 'other-tab',
+			id: 9,
+			error: 'E2EE search index is locked',
+		});
+
+		expect(local.open).toHaveBeenCalledTimes(1);
+		expect(local.exec).not.toHaveBeenCalled();
+		expect(local.wipe).not.toHaveBeenCalled();
+		await expect(leader.exec({ sql: 'SELECT n FROM t' })).resolves.toEqual([{ n: 1 }]);
 	});
 });
