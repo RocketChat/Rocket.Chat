@@ -122,9 +122,9 @@ export async function createLocalUser(
 	rc: RocketChat,
 	label: string,
 	username = `xe2e-${label}-${uniqueSuffix()}`,
-	email?: string,
+	profile: { email?: string; name?: string } = {},
 ): Promise<LocalUser> {
-	const user = await createUser({ username, ...(email && { email }), joinDefaultChannels: false }, rc.admin);
+	const user = await createUser({ username, ...profile, joinDefaultChannels: false }, rc.admin);
 	rc.cleanup.add(() => deleteUser(user, { confirmRelinquish: true }, rc.admin));
 	return {
 		_id: user._id,

@@ -140,12 +140,11 @@ describe('XMPP federation: direct messages', () => {
 		await alice.expectNone(isChat({ from: local.jid, body: text }), 'an echo of her own message', { after });
 	});
 
-	// Known defect: ../../docs/specs/addressing.md#d1-a-local-username-shaped-like-a-bare-jid-is-taken-for-an-xmpp-account
-	it.skip('treats a local user whose username looks like a JID as that local user (addressing D1)', async () => {
+	it('treats a local user whose username looks like a JID as that local user (addressing R12)', async () => {
 		await overrideSetting(rc, 'UTF8_User_Names_Validation', WIDENED_USERNAMES);
 		const username = `xe2e-lookalike-${uniqueSuffix()}@corp.example`;
-		// The username doubles as the email, as when a SAML or LDAP sync copies one into the other.
-		const lookalike = await createLocalUser(rc, 'lookalike', username, username);
+		// The username doubles as the email, as when a SAML or LDAP sync copies one into the other along with a display name.
+		const lookalike = await createLocalUser(rc, 'lookalike', username, { email: username, name: 'Look Alike' });
 
 		const room = await createDirectMessage(rc, lookalike, alice.bareJid);
 		assert.ok(room.xmppFederation?.role === 'dm', `expected a dm room, got ${room.xmppFederation?.role}`);

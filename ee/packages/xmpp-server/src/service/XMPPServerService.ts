@@ -51,8 +51,6 @@ const HOSTED_ROOM_PROJECTION = { _id: 1, t: 1, u: 1, topic: 1, xmppFederation: 1
 
 const coreRoomIdOf = (mucJid: string): string => mucJid.split('@')[0];
 
-const isRemoteUsername = (username: string): boolean => username.includes('@');
-
 /** A message from the wire, in whichever kind of room it arrived. */
 type InboundMessage = InboundEventKey & {
 	author: IUser;
@@ -393,18 +391,22 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 			return;
 		}
 		const roomId = coreRoomIdOf(room.xmppFederation.muc);
-		const subscriptions = await Subscriptions.findByRoomId(room._id, { projection: { 'u._id': 1, 'u.username': 1 } }).toArray();
+		const subscriptions = await Subscriptions.findByRoomId(room._id, { projection: { 'u._id': 1 } }).toArray();
+		const members = await Users.findByIds(
+			subscriptions.map(({ u }) => u._id),
+			{ projection: { username: 1, xmppFederation: 1 } },
+		).toArray();
 
-		for (const { u } of subscriptions) {
+		for (const member of members) {
 			// Remote occupants join by themselves
-			if (!u.username || isRemoteUsername(u.username)) {
+			if (!member.username || isUserXMPPFederated(member)) {
 				continue;
 			}
 			this.server.mucAddLocalOccupant({
 				roomId,
-				localJid: localJidOf(u.username, this.server.domain),
-				nick: u.username,
-				role: room.u?._id === u._id ? 'moderator' : 'participant',
+				localJid: localJidOf(member.username, this.server.domain),
+				nick: member.username,
+				role: room.u?._id === member._id ? 'moderator' : 'participant',
 			});
 		}
 	}

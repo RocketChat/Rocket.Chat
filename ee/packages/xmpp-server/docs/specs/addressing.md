@@ -15,6 +15,8 @@ code:
     apps/meteor/server/meteor-methods/messages/createDirectMessage.ts,
     apps/meteor/server/meteor-methods/rooms/addUsersToRoom.ts,
     apps/meteor/server/lib/rooms/createRoom.ts,
+    apps/meteor/server/services/federation/utils.ts,
+    apps/meteor/ee/server/hooks/xmpp/index.ts,
   ]
 tests:
   [
@@ -27,6 +29,7 @@ tests:
     tests/integration/inbound-addressing.spec.ts,
     tests/integration/muc.spec.ts,
     packages/tools/src/isBareJid.spec.ts,
+    apps/meteor/server/services/federation/utils.test.ts,
     tests/end-to-end/direct-messages.spec.ts,
     tests/end-to-end/hosted-muc.spec.ts,
     tests/end-to-end/remote-muc.spec.ts,
@@ -88,6 +91,12 @@ localparts, and compare domains the way DNS does.
 - **R11** No remote address resolves to a local account. A record is created or updated
   only for a `<localpart>@<domain>` address, and only when no user other than a remote XMPP
   user holds that username; otherwise the upsert fails and nothing is stored for the stanza.
+- **R12** A username Rocket.Chat is given, opening a DM, creating a room or adding members,
+  names an XMPP account only when it is shaped like a bare JID and no user other than a
+  remote XMPP user holds it, compared without case. A local user whose username looks like a
+  JID, as when a SAML or LDAP sync copies an email address into it, stays that local user:
+  they can join rooms that are not XMPP federated, and in XMPP rooms they appear under their
+  escaped JID (R1).
 
 ## Design
 
@@ -102,7 +111,10 @@ to its bare form with `normalizeUserBareJid`, which refuses anything but one loc
 valid domain, and hands it to
 `Users.upsertXMPPUser` in `packages/models`, which stores the record and decides which name
 survives. The upsert matches remote XMPP users only, so a username a local user holds hits
-the unique index instead of that user (R11).
+the unique index instead of that user (R11). `filterXMPPJids` in `apps/meteor/server/services/federation/utils.ts`
+is the lookup behind R12: the Meteor hooks and `createRoom` take a username for an XMPP
+account only through it, and the service tells local hosted-room members from remote ones by
+their record, never by the shape of their username.
 
 ## Out of scope
 
@@ -115,18 +127,7 @@ the unique index instead of that user (R11).
 
 ## Known defects
 
-### D1 A local username shaped like a bare JID is taken for an XMPP account
-
-Rocket.Chat decides a username names an XMPP account by its shape alone. A local username
-can look like `alice@corp.example` when a SAML or LDAP sync copies an email address into it,
-or an admin widens `UTF8_User_Names_Validation`. Adding such a user to a room that is not
-XMPP federated is refused with `error-xmpp-users-in-non-xmpp-rooms`, XMPP on or off. Opening
-a DM between them and an XMPP user, or adding them to a hosted room, tries to create an XMPP
-record under their own username; the unique index refuses it (R11), so the DM or the room
-fails. Where: `isBareJid` filters in `apps/meteor/ee/server/hooks/xmpp/index.ts` and
-`apps/meteor/server/lib/rooms/createRoom.ts`. A fix asks who holds each username and treats
-a JID-shaped one as XMPP only when no local user does. Test: `direct-messages.spec.ts`,
-"treats a local user whose username looks like a JID as that local user".
+None.
 
 ## Open questions
 
