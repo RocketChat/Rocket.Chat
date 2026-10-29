@@ -37,6 +37,8 @@ export type MessageMediaContextValue = {
 	player: MediaPlayerValue;
 	/** Downloads a file that has to be decrypted on the way. */
 	downloadEncrypted: (link: string, title?: string) => void;
+	/** Whether files that have to be decrypted on the way can be downloaded right now. */
+	canDownloadEncrypted: boolean;
 	openEncryptedPdf: (link: string, attachment: { title?: string; size?: number; format?: string }) => Promise<void>;
 	/** The desktop app's document viewer, when there is one. */
 	documentViewer: DocumentViewer | undefined;
@@ -66,6 +68,7 @@ export const messageMediaDefaultValue: MessageMediaContextValue = {
 		isActive: () => false,
 	},
 	downloadEncrypted: noop,
+	canDownloadEncrypted: true,
 	openEncryptedPdf: async () => undefined,
 	documentViewer: undefined,
 	formatFileSize,

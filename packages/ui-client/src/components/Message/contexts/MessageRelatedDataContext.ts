@@ -1,6 +1,5 @@
 import type { IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
-import { useState } from 'react';
-import { createContext, useContext } from 'react';
+import { useState, createContext, useContext } from 'react';
 
 export type MessageQueryResult<TData> = { data: TData | undefined; isLoading: boolean; isError: boolean };
 
@@ -13,7 +12,7 @@ export type MessageConversation = { room: IRoom | undefined; subscription: ISubs
 export type MessageRelatedDataContextValue = {
 	useUserRoles: (uid: IUser['_id'], rid: IRoom['_id'], options: { enabled: boolean }) => { workspaceRoles: string[]; roomRoles: string[] };
 	useParentMessage: (tmid: IMessage['_id']) => MessageQueryResult<IMessage>;
-	useMessageById: (messageId: IMessage['_id']) => MessageQueryResult<IMessage>;
+	useMessageById: (messageId: IMessage['_id'], options?: { enabled: boolean }) => MessageQueryResult<IMessage>;
 	useConversation: (message: IMessage, options: { enabled: boolean }) => MessageQueryResult<MessageConversation>;
 	/** Whether a collapsible part of a message is collapsed, remembered across mounts by `key`. */
 	useCollapsedState: (key: string, initiallyCollapsed: boolean) => [isCollapsed: boolean, toggle: () => void];

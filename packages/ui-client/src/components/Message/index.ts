@@ -13,3 +13,19 @@ export { default as MessageRoles, type MessageRolesProps } from './header/Messag
 export { normalizeUsername } from './lib/normalizeUsername';
 export { toPlainTextRoot } from './lib/toPlainTextRoot';
 export { isParsedMessage } from './lib/isParsedMessage';
+export { default as MessageAttachments, type AttachmentsProps as MessageAttachmentsProps } from './content/Attachments';
+export { default as MessageBroadcastMetrics, type BroadcastMetricsProps as MessageBroadcastMetricsProps } from './content/BroadcastMetrics';
+export {
+	default as MessageDiscussionMetrics,
+	type DiscussionMetricsProps as MessageDiscussionMetricsProps,
+} from './content/DiscussionMetrics';
+export { default as MessageLocation, type LocationProps as MessageLocationProps } from './content/Location';
+export { default as MessageActionLinks, type MessageActionsProps as MessageActionLinksProps } from './content/MessageActions';
+export { default as MessageReactionList, type ReactionsProps as MessageReactionListProps } from './content/Reactions';
+export { default as MessageThreadMetrics, type ThreadMetricsProps as MessageThreadMetricsProps } from './content/ThreadMetrics';
+export { default as MessageUrlPreviews, type UrlPreviewsProps as MessageUrlPreviewsProps } from './content/UrlPreviews';
+export {
+	default as MessageQuoteAttachment,
+	type QuoteAttachmentProps as MessageQuoteAttachmentProps,
+} from './content/attachments/QuoteAttachment';
+export { default as MessageCollapsible, type MessageCollapsibleProps } from './MessageCollapsible';

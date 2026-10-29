@@ -1,0 +1,44 @@
+import type { IMessage } from '@rocket.chat/core-typings';
+import { Box, ButtonGroup } from '@rocket.chat/fuselage';
+import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import type { Keys as IconName } from '@rocket.chat/icons';
+import type { TranslationKey } from '@rocket.chat/ui-contexts';
+
+import MessageAction from './actions/MessageAction';
+import { useMessageNavigation } from '../contexts/MessageNavigationContext';
+
+type MessageActionOptions = {
+	icon: IconName;
+	i18nLabel?: TranslationKey;
+	label?: string;
+	methodId: string;
+	runAction?: (action: string) => () => void;
+	actionLinksAlignment?: string;
+};
+
+export type MessageActionsProps = {
+	message: IMessage;
+	actions: MessageActionOptions[];
+};
+
+const MessageActions = ({ message, actions }: MessageActionsProps) => {
+	const { runActionLink } = useMessageNavigation();
+
+	const runAction = useStableCallback((methodId: string) => () => {
+		runActionLink(message, methodId);
+	});
+
+	const alignment = actions[0]?.actionLinksAlignment || 'center';
+
+	return (
+		<Box display='flex' marginBlock={4} marginInline={-4} paddingInline={4} width='full' justifyContent={alignment}>
+			<ButtonGroup align='center' large>
+				{actions.map((action, key) => (
+					<MessageAction key={key} runAction={runAction} {...action} />
+				))}
+			</ButtonGroup>
+		</Box>
+	);
+};
+
+export default MessageActions;

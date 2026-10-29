@@ -1,4 +1,4 @@
-export * from './MessageAction';
+export type * from './MessageAction';
 export * from './MessageContentContext';
 export * from './MessageDisplayContext';
 export * from './MessageEditingContext';
