@@ -1,0 +1,18 @@
+.rcx-chip {
+	appearance: none;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+}
+
+.rcx-chip__text {
+	overflow: hidden;
+
+	white-space: nowrap;
+	letter-spacing: inherit;
+
+	text-overflow: ellipsis;
+
+	color: inherit;
+
+	font: inherit;
+}
