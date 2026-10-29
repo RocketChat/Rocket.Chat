@@ -12,7 +12,7 @@ import { join } from 'node:path';
 
 import prettier from 'prettier';
 
-import { shadowColors, strokeColors } from '../src/Theme.ts';
+import { shadowColors, statusColors, strokeColors } from '../src/Theme.ts';
 import { toCSSColorValue, toCSSValue } from '../src/helpers/toCSSValue.ts';
 import { borderRadius, borderWidth, fontFamily, fontScale, size, spacing } from '../src/styleTokens.ts';
 
@@ -149,7 +149,7 @@ const literal = (value: Value, indent = ''): string => {
 
 const camelName = (kind: string) => camelCase(kind);
 
-const generate = () => {
+const generateButton = () => {
 	const out: string[] = [];
 	const constant = (name: string, value: Value) => out.push(`const ${name} = ${literal(value)} as const;`);
 
@@ -244,11 +244,173 @@ const ButtonFrame = styled(View, {
 	return out.join('\n\n');
 };
 
-const components = [join(import.meta.dirname, '../src/components/Button/Button.tsx')];
+// IconButton's palettes sit over the secondary one: each color is its own `--rcx-color-button-<kind>-…` property
+const iconPalettes = () => {
+	const secondary = kindColors('secondary', kinds.secondary);
+	const statusFont = (name: string) => statusColors[`status-font-on-${name}` as keyof typeof statusColors].toString();
+
+	const palette = (
+		kind: string,
+		own: { color: string; activeBorder: string; pressedBorder: string; focusShadow: string; disabledColor: string },
+	) => {
+		const themed = (name: string, value: string) => toCSSColorValue(`button-${kind}-${name}`, value);
+		const iconThemed = (name: string, value: string) => toCSSColorValue(`button-icon-${name}`, value);
+
+		return {
+			colors: {
+				color: themed('color', own.color),
+				background: themed('background-color', 'transparent'),
+				border: themed('border-color', 'transparent'),
+				hoverBackground: themed('hover-background-color', secondary.hoverBackground),
+				hoverBorder: themed('hover-border-color', secondary.hoverBorder),
+				activeBackground: themed('active-background-color', secondary.activeBackground),
+				activeBorder: themed('active-border-color', own.activeBorder),
+				focusBackground: themed('focus-background-color', secondary.focusBackground),
+				focusBorder: themed('focus-border-color', secondary.focusBorder),
+				focusShadow: themed('focus-shadow-color', own.focusShadow),
+				disabledBackground: iconThemed('disabled-background-color', 'transparent'),
+				disabledBorder: iconThemed('disabled-border-color', 'transparent'),
+				disabledColor: themed('disabled-color', own.disabledColor),
+			},
+			pressedBackground: themed('pressed-background-color', secondary.activeBackground),
+			pressedBorder: themed('pressed-border-color', own.pressedBorder),
+		};
+	};
+
+	// info presses and activates over the secondary background; the others over its border
+	const statusPalette = (name: string, owner: ReturnType<typeof kindColors>) => {
+		const border = name === 'info' ? secondary.activeBackground : secondary.activeBorder;
+
+		return palette(name, {
+			color: statusFont(name),
+			activeBorder: border,
+			pressedBorder: border,
+			focusShadow: name === 'info' ? secondary.focusShadow : owner.focusShadow,
+			disabledColor: owner.disabledBackground,
+		});
+	};
+
+	return {
+		icon: palette('icon', {
+			color: secondary.color,
+			activeBorder: secondary.activeBorder,
+			pressedBorder: secondary.activeBorder,
+			focusShadow: secondary.focusShadow,
+			disabledColor: secondary.disabledColor,
+		}),
+		info: statusPalette('info', kindColors('primary', kinds.primary)),
+		success: statusPalette('success', kindColors('success', kinds.success)),
+		warning: statusPalette('warning', kindColors('warning', kinds.warning)),
+		danger: statusPalette('danger', kindColors('danger', kinds.danger)),
+	};
+};
+
+const generateIconButton = () => {
+	const out: string[] = [];
+	const constant = (name: string, value: Value) => out.push(`const ${name} = ${literal(value)} as const;`);
+
+	const paints: string[] = [];
+	const addPaint = (name: string, base: Value, pressed: Value, disabled: Value) => {
+		paints.push(
+			`${JSON.stringify(name)}: ${camelName(name)},`,
+			`${JSON.stringify(`${name}-pressed`)}: ${camelName(name)}Pressed,`,
+			`${JSON.stringify(`${name}-disabled`)}: ${literal(disabled, '\t\t\t')},`,
+		);
+		constant(camelName(name), base);
+		constant(`${camelName(name)}Pressed`, pressed);
+	};
+
+	const withPressed = (style: Value, background: string, border: string): Value => {
+		const { backgroundColor, borderColor, ...rest } = style as Record<string, Value>;
+
+		return {
+			...rest,
+			borderColor: { ...(borderColor as Record<string, Value>), default: border },
+			backgroundColor: { ...(backgroundColor as Record<string, Value>), default: background },
+		};
+	};
+
+	for (const [name, { colors: c, pressedBackground, pressedBorder }] of Object.entries(iconPalettes())) {
+		const base = kindStyle(c);
+		addPaint(name, base, withPressed(base, pressedBackground, pressedBorder), disabledStyle(c));
+	}
+
+	// Only the icon palettes have a pressed color; for these, pressing changes nothing
+	const kindOf: Record<string, keyof typeof kinds> = {
+		'secondary': 'secondary',
+		'secondary-info': 'primary',
+		'secondary-success': 'success',
+		'secondary-warning': 'warning',
+		'secondary-danger': 'danger',
+	};
+
+	for (const [name, kind] of Object.entries(kindOf)) {
+		const c = kindColors(kind, kinds[kind]);
+		addPaint(name, kindStyle(c), kindStyle(c), disabledStyle(c));
+	}
+
+	const sides = { mini: 20, tiny: 24, small: 28, medium: 32, large: 40 };
+	const label = (name: string) => `${name[0].toUpperCase()}${name.slice(1)}`;
+	for (const [name, side] of Object.entries(sides)) {
+		constant(`squared${label(name)}`, squaredSize(side));
+	}
+
+	constant('frame', {
+		render: 'button',
+		display: 'flex',
+		flexDirection: 'row',
+		justifyContent: 'center',
+		alignItems: 'center',
+		flexShrink: 0,
+		minHeight: 'auto',
+		textAlign: 'center',
+		whiteSpace: 'nowrap',
+		textDecoration: 'none',
+		cursor: 'pointer',
+		outlineStyle: 'none',
+		overflow: 'hidden',
+		textOverflow: 'ellipsis',
+		...font('p2m'),
+		borderWidth: toCSSValue('--rcx-button-border-width', '1px'),
+		borderStyle: 'solid',
+		borderRadius: toCSSValue('--rcx-button-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!)),
+	});
+	out[out.length - 1] = out[out.length - 1].replace(/ as const;$/, ';');
+
+	const sizing = Object.keys(sides).map((name) => `${name}: { ...squared${label(name)} },`);
+
+	out.push(`// Declared where they render: zero-runtime only erases a \`styled()\` whose every use is in its own module
+const IconButtonFrame = styled(View, {
+	...frame,
+	variants: {
+		sizing: {
+			${sizing.join('\n')}
+		},
+		// A badge sits over the corner, so the frame must not clip it
+		badged: {
+			true: { overflow: 'visible', position: 'relative' },
+			false: {},
+		},
+		// The compiler reads a shorthand property as a live reference, which it cannot lower
+		/* oxlint-disable object-shorthand */
+		paint: {
+			${paints.join('\n')}
+		},
+		/* oxlint-enable object-shorthand */
+	},
+});`);
+
+	return out.join('\n\n');
+};
+
+const components = [
+	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
+	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
+];
 const check = process.argv.includes('--check');
 let stale = false;
 
-for (const file of components) {
+for (const { file, generate } of components) {
 	const source = readFileSync(file, 'utf8');
 	const start = source.indexOf(START);
 	const end = source.indexOf(END);
