@@ -42,7 +42,6 @@ const MessageHeader = ({ message }: MessageHeaderProps) => {
 		? {}
 		: {
 				...buttonProps,
-				style: { cursor: 'pointer' },
 				onMouseEnter: (e: MouseEvent) => openUserCard(e, message.u.username),
 			};
 
