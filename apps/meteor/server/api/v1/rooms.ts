@@ -709,6 +709,7 @@ API.v1.get(
 		});
 
 		const [files, total] = await Promise.all([cursor.toArray(), totalCount]);
+		const pageSize = files.length;
 
 		// If the initial image was not returned in the query, insert it as the first element of the list
 		if (initialImage && !files.find(({ _id }) => _id === initialImage._id)) {
@@ -717,7 +718,7 @@ API.v1.get(
 
 		return API.v1.success({
 			files,
-			count,
+			count: pageSize,
 			offset,
 			total,
 		});
