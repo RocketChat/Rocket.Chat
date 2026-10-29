@@ -9,6 +9,8 @@ export { encodeAdded } from './codec';
 export { WS_ERRORS } from './constants';
 export { createStreamAdapter } from './streams/StreamAdapter';
 export { MeteorCollection } from './lib/MeteorCollection';
+export { registerAccountMethods } from './methods/accounts';
+export type { LoginResult, SessionAccounts } from './methods/accounts';
 export { registerPresenceMethods } from './methods/presence';
 export { registerAutoupdatePublication } from './publications/autoupdate';
 export type { ClientVersion } from './publications/autoupdate';
