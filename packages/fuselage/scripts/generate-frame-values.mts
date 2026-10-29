@@ -800,11 +800,89 @@ const BadgeFrame = styled(View, {
 };
 
 
+
+const generateChip = () => {
+	const secondary = (state: string) => buttonBackground('secondary', state);
+	const border = (name: string, value: string) => themed(`chip-${name}-border-color`, value);
+	const bg = (name: string, value: string) => themed(`chip-${name}-background-color`, value);
+	const shadow = themed('chip-focus-shadow-color', strokeColors['stroke-extra-light-highlight'].toString());
+
+	const enabled = {
+		cursor: 'pointer',
+		color: themed('chip-color', textIconColor('font-secondary-info')),
+		borderColor: {
+			'default': themed('chip-border-color', secondary('default')),
+			'focus-visible': themed('chip-focus-border-color', strokeColors['stroke-extra-dark'].toString()),
+			'hover': border('hover', secondary('hover')),
+			'press': border('active', secondary('press')),
+		},
+		backgroundColor: {
+			'default': themed('chip-background-color', secondary('default')),
+			'focus-visible': bg('focus', secondary('focus')),
+			'hover': bg('hover', secondary('hover')),
+			'press': bg('active', secondary('press')),
+		},
+		boxShadow: {
+			'focus-visible': `0 0 0 ${borderWidth('medium')} ${shadow}`,
+			'hover': 'none',
+			'press': 'none',
+		},
+	};
+
+	const disabled = {
+		cursor: 'not-allowed',
+		color: themed('button-secondary-color', buttonFont('secondary')),
+		borderColor: themed('button-secondary-border-color', secondary('default')),
+		backgroundColor: themed('button-secondary-background-color', secondary('default')),
+	};
+
+	const frame = literal({
+		render: 'button',
+		boxSizing: 'border-box',
+		display: 'flex',
+		flexDirection: 'row',
+		flexShrink: 1,
+		alignItems: 'center',
+		minWidth: 'auto',
+		overflow: 'hidden',
+		margin: 0,
+		padding: 0,
+		outlineStyle: 'none',
+		borderWidth: 0,
+		borderStyle: 'solid',
+		borderRadius: toCSSValue('--rcx-button-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!)),
+		fontFamily: fontFamily('sans')!,
+		...font('p2'),
+	});
+
+	return `// Declared where they render: zero-runtime only erases a \`styled()\` whose every use is in its own module
+const ChipFrame = styled(View, {
+	...${frame},
+	variants: {
+		// the disabled colors win over every state
+		look: {
+			enabled: ${literal(enabled, '\t\t\t')},
+			disabled: ${literal(disabled, '\t\t\t')},
+		},
+		sizing: {
+			regular: { height: '${size('x28')}', minHeight: '${size('x28')}' },
+			small: { height: '${size('x20')}', minHeight: '${size('x20')}' },
+		},
+		label: {
+			true: { textTransform: 'uppercase' },
+			false: {},
+		},
+	},
+});`;
+};
+
+
 const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
 	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
 	{ file: join(import.meta.dirname, '../src/components/Tag/Tag.tsx'), generate: generateTag },
 	{ file: join(import.meta.dirname, '../src/components/Badge/Badge.tsx'), generate: generateBadge },
+	{ file: join(import.meta.dirname, '../src/components/Chip/Chip.tsx'), generate: generateChip },
 ];
 
 for (const [dir, control] of [['CheckBox', checkBox], ['RadioButton', radioButton], ['ToggleSwitch', toggleSwitch]] as const) {
