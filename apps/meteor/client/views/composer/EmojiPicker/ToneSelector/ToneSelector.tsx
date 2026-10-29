@@ -61,7 +61,7 @@ const ToneSelector = ({ tone, setTone }: { tone: number; setTone: (tone: number)
 				icon={<ToneItem tone={tone} />}
 			/>
 			<PositionAnimated visible={visible} anchor={ref} placement='top-middle'>
-				<Options maxHeight='auto' onSelect={handleSelection} options={options} cursor={cursor} />
+				<Options maxHeight='max-content' onSelect={handleSelection} options={options} cursor={cursor} />
 			</PositionAnimated>
 		</>
 	);
