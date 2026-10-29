@@ -16,10 +16,14 @@ const UnreadBadge = ({ title, variant, total, roomTitle, href, onClick }: Unread
 	const linkProps = href ? { is: 'a' as const, href, onClick, tabIndex: -1 } : undefined;
 
 	return (
-		<Badge {...linkProps} variant={variant} title={title}>
-			<span role='status' aria-label={t('__unreadTitle__from__roomTitle__', { unreadTitle: title, roomTitle })}>
-				<span aria-hidden>{total}</span>
-			</span>
+		<Badge
+			{...linkProps}
+			variant={variant}
+			title={title}
+			role='status'
+			aria-label={t('__unreadTitle__from__roomTitle__', { unreadTitle: title, roomTitle })}
+		>
+			<span aria-hidden>{total}</span>
 		</Badge>
 	);
 };
