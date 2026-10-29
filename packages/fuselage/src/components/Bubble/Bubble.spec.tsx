@@ -1,4 +1,5 @@
 import { composeStories } from '@storybook/react';
+import { fireEvent } from '@testing-library/react';
 import { axe } from 'jest-axe';
 
 import Bubble from './Bubble';
@@ -26,5 +27,23 @@ describe('[Bubble className]', () => {
 
 		expect(container.querySelector('.rcx-bubble.custom')).toBeInTheDocument();
 		expect(container.querySelector('.rcx-bubble__button.content')).toBeInTheDocument();
+	});
+});
+
+describe('[Bubble actions]', () => {
+	test('calls onClick from its label and onDismiss from its dismiss button', () => {
+		const onClick = jest.fn();
+		const onDismiss = jest.fn();
+		const { getByText, getByLabelText } = render(
+			<Bubble onClick={onClick} onDismiss={onDismiss} dismissProps={{ 'aria-label': 'Mark as read' }}>
+				Label
+			</Bubble>,
+		);
+
+		fireEvent.click(getByText('Label'));
+		fireEvent.click(getByLabelText('Mark as read'));
+
+		expect(onClick).toHaveBeenCalledTimes(1);
+		expect(onDismiss).toHaveBeenCalledTimes(1);
 	});
 });
