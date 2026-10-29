@@ -2185,6 +2185,75 @@ const InputBoxSkeletonFrame = styled(View, ${literal(frame)});`;
 };
 
 
+
+// Boxes the field parts used to render as spans or divs: a Tamagui View starts as a column flex box, a Text as a pre-wrapped inline one
+const flexBase = { display: 'flex', flexDirection: 'row', alignItems: 'normal', flexShrink: 1, minWidth: 'auto', minHeight: 'auto' } as const;
+const inlineBase = { display: 'inline', whiteSpace: 'normal', wordWrap: 'normal' } as const;
+
+const frameCode = (name: string, base: 'View' | 'Text', value: Value) =>
+	`// Declared where they render: zero-runtime only erases a \`styled()\` whose every use is in its own module
+const ${name} = styled(${base}, ${literal(value)});`;
+
+const field = (scale: string, color: string): Value => ({
+	...inlineBase,
+	...font(scale),
+	marginTop: spacing('x2')!,
+	marginBottom: spacing('x2')!,
+	color: fontColorOf(color),
+});
+
+const generateField = () =>
+	frameCode('FieldFrame', 'View', {
+		render: 'div',
+		...flexBase,
+		flexDirection: 'column',
+		alignItems: 'stretch',
+		flexShrink: 0,
+		width: size('full')!,
+	});
+
+const generateFieldRow = () =>
+	frameCode('FieldRowFrame', 'View', {
+		render: 'span',
+		...flexBase,
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		marginTop: spacing('x4')!,
+		marginBottom: spacing('x2')!,
+		color: fontColorOf('secondary-info'),
+		variants: { justify: { start: {}, end: { justifyContent: 'flex-end' } } },
+	});
+
+const generateFieldDescription = () => frameCode('FieldDescriptionFrame', 'Text', { render: 'span', ...field('p2', 'secondary-info') });
+const generateFieldHint = () => frameCode('FieldHintFrame', 'Text', { render: 'span', ...field('c1', 'secondary-info') });
+const generateFieldError = () => frameCode('FieldErrorFrame', 'Text', { render: 'span', ...field('c1', 'danger') });
+const generateFieldLink = () => frameCode('FieldLinkFrame', 'Text', { render: 'a', ...field('c1', 'info') });
+
+const generateFieldGroup = () =>
+	frameCode('FieldGroupFrame', 'View', {
+		render: 'fieldset',
+		...flexBase,
+		flexDirection: 'column',
+		justifyContent: 'center',
+		alignItems: 'stretch',
+		minWidth: size('none')!,
+	});
+
+const generateLabel = () =>
+	`${frameCode('LabelFrame', 'View', {
+		render: 'label',
+		...flexBase,
+		cursor: 'default',
+		color: fontColorOf('default'),
+		...font('p2m'),
+		variants: { unavailable: { true: { pointerEvents: 'none', color: fontColorOf('secondary-info') }, false: {} } },
+	})}
+
+${frameCode('LabelRequiredFrame', 'Text', { render: 'span', ...inlineBase, color: fontColorOf('danger') })}`;
+
+const generateLabelInfo = () =>
+	frameCode('LabelInfoFrame', 'View', { render: 'span', ...flexBase, alignItems: 'center', order: 1 });
+
 const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
 	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
@@ -2253,6 +2322,13 @@ const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/InputBox/Input.tsx'), generate: generateInput },
 	{ file: join(import.meta.dirname, '../src/components/InputBox/InputBoxWrapper.tsx'), generate: generateInputBoxWrapper },
 	{ file: join(import.meta.dirname, '../src/components/InputBox/InputBoxSkeleton.tsx'), generate: generateInputBoxSkeleton },
+	{ file: join(import.meta.dirname, '../src/components/Field/Field.tsx'), generate: generateField },
+	{ file: join(import.meta.dirname, '../src/components/Field/FieldRow.tsx'), generate: generateFieldRow },
+	{ file: join(import.meta.dirname, '../src/components/Field/FieldDescription.tsx'), generate: generateFieldDescription },
+	{ file: join(import.meta.dirname, '../src/components/Field/FieldHint.tsx'), generate: generateFieldHint },
+	{ file: join(import.meta.dirname, '../src/components/Field/FieldError.tsx'), generate: generateFieldError },
+	{ file: join(import.meta.dirname, '../src/components/Field/FieldLink.tsx'), generate: generateFieldLink },
+	{ file: join(import.meta.dirname, '../src/components/FieldGroup/FieldGroup.tsx'), generate: generateFieldGroup },
 ];
 
 for (const [dir, control] of [
