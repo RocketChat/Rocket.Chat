@@ -1,10 +1,12 @@
 import type { MessageAttachmentBase } from '@rocket.chat/core-typings';
+import { css } from '@rocket.chat/css-in-js';
 import {
 	MessageGenericPreview,
 	MessageGenericPreviewContent,
 	MessageGenericPreviewIcon,
 	MessageGenericPreviewTitle,
 	MessageGenericPreviewDescription,
+	useStyle,
 } from '@rocket.chat/fuselage';
 import { useMediaUrl, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import { useId } from 'react';
@@ -27,6 +29,11 @@ const MARKDOWN_FILE_FORMATS = ['MD', 'MARKDOWN'];
 
 export type GenericFileAttachmentProps = MessageAttachmentBase;
 
+const previewWidth = css`
+	max-width: 368px;
+	width: 100%;
+`;
+
 const GenericFileAttachment = ({
 	title,
 	description,
@@ -38,6 +45,7 @@ const GenericFileAttachment = ({
 	collapsed,
 }: GenericFileAttachmentProps) => {
 	const getURL = useMediaUrl();
+	const previewClassName = useStyle(previewWidth);
 	const uid = useId();
 	const { t } = useTranslation();
 	const openEncryptedPdf = useOpenEncryptedPdf();
@@ -101,7 +109,7 @@ const GenericFileAttachment = ({
 		<>
 			{descriptionMd ? <MessageContentBody md={descriptionMd} /> : <MarkdownText parseEmoji content={description} />}
 			<MessageCollapsible title={title} hasDownload={hasDownload} link={link} isCollapsed={collapsed}>
-				<MessageGenericPreview style={{ maxWidth: 368, width: '100%' }}>
+				<MessageGenericPreview className={previewClassName}>
 					<MessageGenericPreviewContent
 						thumb={<MessageGenericPreviewIcon name='attachment-file' type={format || getFileExtension(title)} />}
 					>
