@@ -208,6 +208,17 @@ describe('E2ERoom.decryptMessage and the search index', () => {
 
 		expect(toSearchDoc(decrypted as any)).toMatchObject({ id: 'm1', body: 'hello after the key', kind: 'text' });
 	});
+
+	it('indexes a message whose decrypted payload has a field named like the marker of a failed decrypt', async () => {
+		const e2eRoom = makeRoom();
+		e2eRoom.groupSessionKey = { algorithm: { name: 'AES-CTR' }, extractable: false, type: 'secret', usages: ['decrypt'] } as any;
+		(Aes.decrypt as jest.Mock).mockResolvedValueOnce(JSON.stringify({ msg: 'hello with a field', decryptFailed: true }));
+
+		const decrypted = await e2eRoom.decryptMessage(encryptedMessage());
+
+		expect(decrypted).not.toHaveProperty('decryptFailed');
+		expect(toSearchDoc(decrypted as any)).toMatchObject({ id: 'm1', body: 'hello with a field', kind: 'text' });
+	});
 });
 
 describe('E2ERoom.encryptKeyForOtherParticipants', () => {

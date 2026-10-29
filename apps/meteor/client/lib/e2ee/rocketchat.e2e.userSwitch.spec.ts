@@ -48,10 +48,12 @@ const serverKeysOf = (userId: string) => ({ public_key: publicKeyOf(userId), pri
 
 const deferred = <T>() => {
 	let resolve!: (value: T) => void;
-	const promise = new Promise<T>((res) => {
+	let reject!: (error: unknown) => void;
+	const promise = new Promise<T>((res, rej) => {
 		resolve = res;
+		reject = rej;
 	});
-	return { promise, resolve };
+	return { promise, resolve, reject };
 };
 
 const untilCalled = async (mock: jest.Mock) => {
@@ -137,6 +139,34 @@ describe('E2E client on a user switch with no logout', () => {
 
 		expect(loadedKeyOwner()).toBe('user-b');
 		expect(getStoredItem(STORAGE_KEYS.E2EE_PRIVATE_KEY)).toBe(privateKeyOf('user-b'));
+		expect(e2e.getState()).toBe('READY');
+	});
+
+	it('keeps the second user ready when the key request of the first user fails after the switch', async () => {
+		const keysOfUserA = deferred<ReturnType<typeof serverKeysOf>>();
+		(sdk.rest.get as jest.Mock).mockImplementationOnce(() => keysOfUserA.promise);
+
+		const startOfUserA = e2e.startClient('user-a');
+
+		loggedInUser = 'user-b';
+		await e2e.startClient('user-b');
+		keysOfUserA.reject(new Error('network error'));
+
+		await expect(startOfUserA).resolves.toBeUndefined();
+		expect(loadedKeyOwner()).toBe('user-b');
+		expect(e2e.getState()).toBe('READY');
+	});
+
+	it('gives the session to the newest start when a second start begins while the first one stops the previous user', async () => {
+		await e2e.startClient('user-a');
+
+		loggedInUser = 'user-c';
+		const startOfUserB = e2e.startClient('user-b');
+		const startOfUserC = e2e.startClient('user-c');
+		await Promise.all([startOfUserB, startOfUserC]);
+
+		expect(e2e.getUserId()).toBe('user-c');
+		expect(loadedKeyOwner()).toBe('user-c');
 		expect(e2e.getState()).toBe('READY');
 	});
 

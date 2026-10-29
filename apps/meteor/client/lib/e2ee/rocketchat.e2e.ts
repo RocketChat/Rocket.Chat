@@ -281,7 +281,11 @@ class E2E extends Emitter {
 
 		if (!this.instancesByRoomId[rid] && this.userId) {
 			const e2eRoom = new E2ERoom(this.userId, room);
-			e2eRoom.on('READY', () => this.emit('E2E_ROOM_READY', rid));
+			// A message sent with an old room key decrypts only after the old keys are loaded, so the retry waits for them.
+			const emitRoomReady = () => this.emit('E2E_ROOM_READY', rid);
+			e2eRoom.on('READY', () => {
+				void e2eRoom.whenOldRoomKeysLoaded().then(emitRoomReady, emitRoomReady);
+			});
 			this.instancesByRoomId[rid] = e2eRoom;
 		}
 
@@ -383,7 +387,13 @@ class E2E extends Emitter {
 		if (this.userId) {
 			// Another user logged in on this page with no logout (login with a token). The stored keys and the saved
 			// password are not stored per user, so drop the previous user's session before the new one reads them.
-			await this.stopClient();
+			const stopping = this.stopClient();
+			const stoppedGeneration = this.startGeneration;
+			await stopping;
+			// Another start ran while this one waited for the stop: that start is newer and owns the session.
+			if (this.isStale(stoppedGeneration)) {
+				return;
+			}
 		}
 
 		const generation = ++this.startGeneration;
@@ -523,6 +533,10 @@ class E2E extends Emitter {
 
 			span.info('fetched keys from db');
 		} catch (error) {
+			// The session ended while the request was in flight: the failure belongs to the previous session.
+			if (this.isStale(generation)) {
+				return;
+			}
 			this.setState('ERROR');
 			span.error('Error fetching RSA keys: ', error);
 			// Stop any process since we can't communicate with the server
@@ -763,6 +777,7 @@ class E2E extends Emitter {
 			return message;
 		}
 
+		const generation = this.startGeneration;
 		const e2eRoom = await this.getInstanceByRoomId(message.rid);
 
 		if (!e2eRoom) {
@@ -772,6 +787,11 @@ class E2E extends Emitter {
 		const decryptedMessage = (await e2eRoom.decryptMessage(message)) as IE2EEMessage;
 
 		const decryptedMessageWithQuote = await this.parseQuoteAttachment(decryptedMessage);
+
+		// A logout or another user's login ended the session that started this decrypt: its words stay out of the index.
+		if (this.isStale(generation)) {
+			return decryptedMessageWithQuote;
+		}
 
 		e2eSearchIndexWriter.index(decryptedMessageWithQuote);
 		// The room key is missing: the retry after E2E_ROOM_READY indexes the message. Only the crawler kept it before.

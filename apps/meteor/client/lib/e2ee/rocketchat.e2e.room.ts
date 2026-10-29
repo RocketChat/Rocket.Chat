@@ -97,6 +97,8 @@ export class E2ERoom extends Emitter {
 
 	sessionKeyExported: Aes.Jwk | undefined;
 
+	private oldRoomKeysLoaded: Promise<void> = Promise.resolve();
+
 	constructor(userId: string, room: IRoom) {
 		super();
 
@@ -106,13 +108,19 @@ export class E2ERoom extends Emitter {
 		this.roomKeyId = room.e2eKeyId;
 
 		this.once('READY', async () => {
-			await this.decryptOldRoomKeys();
+			this.oldRoomKeysLoaded = this.decryptOldRoomKeys();
+			await this.oldRoomKeysLoaded;
 			return this.decryptPendingMessages();
 		});
 		this.once('READY', () => this.decryptSubscription());
 		this.on('STATE_CHANGED', () => this.handshake());
 
 		this.setState('NOT_STARTED');
+	}
+
+	/** Resolves when the old room keys, which the first `READY` loads, are in memory. */
+	whenOldRoomKeysLoaded(): Promise<void> {
+		return this.oldRoomKeysLoaded;
 	}
 
 	hasSessionKey() {
@@ -789,11 +797,14 @@ export class E2ERoom extends Emitter {
 		span.set('usages', key.usages.toString());
 		try {
 			const result = await Aes.decrypt(key, { iv, ciphertext });
-			const ret: unknown = EJSON.parse(result);
-			if (typeof ret !== 'object' || ret === null) {
+			const parsed: unknown = EJSON.parse(result);
+			if (typeof parsed !== 'object' || parsed === null) {
 				span.error('Decrypted message is not an object');
 				return { msg: t('E2E_indecipherable'), decryptFailed: true };
 			}
+
+			// `decryptFailed` is this client's marker of a failed decrypt. A field of the same name in the payload must not set it.
+			const { decryptFailed: _payloadMarker, ...ret } = parsed as { decryptFailed?: unknown };
 
 			if ('text' in ret && typeof ret.text === 'string' && !('msg' in ret)) {
 				const { text, ...rest } = ret;

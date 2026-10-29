@@ -3,7 +3,8 @@ import { waitFor } from '@testing-library/react';
 
 import { generate } from './crypto/rsa';
 import { e2e, e2eSearchIndexSession, e2eSearchIndexWriter } from './rocketchat.e2e';
-import { PublicSettings, Subscriptions } from '../../stores';
+import { E2ERoom } from './rocketchat.e2e.room';
+import { PublicSettings, Rooms, Subscriptions } from '../../stores';
 import { setSearchIndexOptIn } from '../e2eeSearch/searchIndexOptIn';
 import { deriveSearchIndexWrapKey } from '../e2eeSearch/searchIndexSession';
 import { settings } from '../settings';
@@ -32,6 +33,14 @@ jest.mock('../banners', () => ({
 const methods = ['open', 'upsert', 'remove', 'removeRoom', 'listRooms', 'search', 'getRoomState', 'setRoomState', 'stats', 'wipe'] as const;
 
 const toHex = (bytes: Uint8Array) => Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0')).join('');
+
+const deferred = <T>() => {
+	let resolve!: (value: T) => void;
+	const promise = new Promise<T>((res) => {
+		resolve = res;
+	});
+	return { promise, resolve };
+};
 
 describe('E2E client and the local search index', () => {
 	let bridge: jest.Mocked<ISearchIndexBackend>;
@@ -163,18 +172,99 @@ describe('E2E client and the local search index', () => {
 			ts: new Date(),
 			_updatedAt: new Date(),
 		};
-		jest
-			.spyOn(e2e, 'getInstanceByRoomId')
-			.mockResolvedValue({ decryptMessage: jest.fn(async () => ({ ...encrypted, e2e: 'done', msg: 'left room words' })) } as never);
+		Subscriptions.state.replaceAll([
+			{ _id: 's1', rid: 'r1', u: { _id: 'u1' } },
+			{ _id: 's2', rid: 'r2', u: { _id: 'u1' } },
+		] as never);
+		const roomDecrypt = deferred<unknown>();
+		const decryptInRoom = jest.fn(() => roomDecrypt.promise);
+		jest.spyOn(e2e, 'getInstanceByRoomId').mockResolvedValue({ decryptMessage: decryptInRoom } as never);
 		jest.spyOn(e2e, 'parseQuoteAttachment').mockImplementation(async (message) => message);
 
 		e2e.setState('READY');
 		await e2eSearchIndexSession.whenSettled();
-		await e2e.decryptMessage(encrypted as never);
+		const decrypting = e2e.decryptMessage(encrypted as never);
+		await waitFor(() => expect(decryptInRoom).toHaveBeenCalled());
+
+		// The user leaves the room while the decrypt runs.
+		Subscriptions.state.replaceAll([{ _id: 's1', rid: 'r1', u: { _id: 'u1' } }] as never);
+		roomDecrypt.resolve({ ...encrypted, e2e: 'done', msg: 'left room words' });
+		await decrypting;
 		await e2eSearchIndexWriter.flush();
 
 		expect(bridge.upsert).not.toHaveBeenCalled();
 
+		await e2e.stopClient();
+	});
+
+	it('does not index a message whose decrypt ends after another user logged in on the same page', async () => {
+		const { privateKey } = await generate();
+		(e2e as unknown as { userId: string }).userId = 'u1';
+		e2e.privateKey = privateKey;
+		const encrypted = {
+			_id: 'm3',
+			rid: 'r1',
+			t: 'e2e',
+			e2e: 'pending',
+			msg: '',
+			u: { _id: 'u2', username: 'bob' },
+			ts: new Date(),
+			_updatedAt: new Date(),
+		};
+		const decrypted = { ...encrypted, e2e: 'done', msg: 'words of the first user' };
+		jest.spyOn(e2e, 'getInstanceByRoomId').mockResolvedValue({ decryptMessage: jest.fn(async () => decrypted) } as never);
+		const quote = deferred<never>();
+		const parseQuote = jest.spyOn(e2e, 'parseQuoteAttachment').mockImplementation(() => quote.promise);
+
+		e2e.setState('READY');
+		await e2eSearchIndexSession.whenSettled();
+		const decrypting = e2e.decryptMessage(encrypted as never);
+		await waitFor(() => expect(parseQuote).toHaveBeenCalled());
+
+		// Another user logs in with no page reload, and the index of that user opens.
+		await e2e.stopClient();
+		setSearchIndexOptIn('u3', true);
+		Subscriptions.state.replaceAll([{ _id: 's3', rid: 'r1', u: { _id: 'u3' } }] as never);
+		const { privateKey: privateKeyOfSecondUser } = await generate();
+		(e2e as unknown as { userId: string }).userId = 'u3';
+		e2e.privateKey = privateKeyOfSecondUser;
+		e2e.setState('READY');
+		await e2eSearchIndexSession.whenSettled();
+		expect(e2eSearchIndexSession.getActiveBackend()).toBeDefined();
+
+		quote.resolve(decrypted as never);
+		await decrypting;
+		await e2eSearchIndexWriter.flush();
+
+		expect(bridge.upsert).not.toHaveBeenCalled();
+
+		await e2e.stopClient();
+	});
+
+	it('asks to decrypt the failed messages of a room again only after the old keys of the room are loaded', async () => {
+		(e2e as unknown as { userId: string }).userId = 'u1';
+		Rooms.state.store({ _id: 'r1', t: 'p', encrypted: true } as never);
+		const oldKeys = deferred<void>();
+		jest.spyOn(E2ERoom.prototype, 'handshake').mockResolvedValue(undefined);
+		jest.spyOn(E2ERoom.prototype, 'decryptOldRoomKeys').mockReturnValue(oldKeys.promise);
+		jest.spyOn(E2ERoom.prototype, 'decryptPendingMessages').mockResolvedValue(undefined);
+		jest.spyOn(E2ERoom.prototype, 'decryptSubscription').mockResolvedValue(undefined);
+		const roomReady = jest.fn();
+		const off = e2e.on('E2E_ROOM_READY', roomReady);
+
+		const e2eRoom = await e2e.getInstanceByRoomId('r1');
+		e2eRoom?.setState('ESTABLISHING');
+		e2eRoom?.setState('READY');
+		await new Promise((resolve) => setTimeout(resolve, 0));
+
+		expect(e2eRoom?.isReady()).toBe(true);
+		expect(roomReady).not.toHaveBeenCalled();
+
+		oldKeys.resolve();
+		await waitFor(() => expect(roomReady).toHaveBeenCalledWith('r1'));
+
+		off();
+		Rooms.state.delete('r1');
 		await e2e.stopClient();
 	});
 
