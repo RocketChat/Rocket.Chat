@@ -1,8 +1,8 @@
 import * as Aes from './crypto/aes';
 import { e2e } from './rocketchat.e2e';
 import { E2ERoom } from './rocketchat.e2e.room';
-import { sdk } from '../SDKClient';
 import { Rooms, Subscriptions } from '../../stores';
+import { sdk } from '../SDKClient';
 import { toSearchDoc } from '../e2eeSearch/toSearchDoc';
 
 jest.mock('./crypto/aes');
