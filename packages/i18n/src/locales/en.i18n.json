@@ -7618,6 +7618,8 @@
   "VideoConf_Mobile_Ringing": "Enable mobile ringing",
   "VideoConf_Mobile_Ringing_Alert": "This feature is currently in an experimental stage and may not yet be fully supported by the mobile app. When enabled it will send additional push notifications to users.",
   "VideoConf_Mobile_Ringing_Description": "When enabled, direct calls to mobile users will ring their device as a phone call.",
+  "VideoConf_Persistent_Chat_Create_Discussion": "Create a discussion for every conference",
+  "VideoConf_Persistent_Chat_Create_Discussion_Description": "Starting a conference creates a discussion to hold its chat. Ignored when Chat Mode is set to Thread.",
   "VideoConf_Persistent_Chat_Discussion_Name": "Persistent chat discussion name",
   "VideoConf_Persistent_Chat_Discussion_Name_Description": "Use [date] tag to set where to include the date. Date will be added to the start if tag is not included.",
   "VideoConf_Persistent_Chat_Mode": "Chat Mode",
