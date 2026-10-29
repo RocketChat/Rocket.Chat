@@ -6,8 +6,8 @@ import type { VirtuosoGridHandle } from 'react-virtuoso';
 import { VirtuosoGrid } from 'react-virtuoso';
 
 import EmojiElement from './EmojiElement';
+import EmojiPickerNotFound from './EmojiPickerNotFound';
 import SearchingResultWrapper from './SearchingResultWrapper';
-import { EmojiPickerNotFound } from '../components';
 import type { EmojiItem } from '../lib/types';
 
 /**

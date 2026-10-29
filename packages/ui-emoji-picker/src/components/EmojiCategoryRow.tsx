@@ -4,7 +4,9 @@ import { memo, type MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import EmojiElement from './EmojiElement';
-import { EmojiPickerLoadMore, EmojiPickerNotFound, EmojiPickerCategoryWrapper } from '../components';
+import EmojiPickerCategoryWrapper from './EmojiPickerCategoryWrapper';
+import EmojiPickerLoadMore from './EmojiPickerLoadMore';
+import EmojiPickerNotFound from './EmojiPickerNotFound';
 import { isRowDivider, isLoadMore, CUSTOM_CATEGORY, CUSTOM_CATEGORY_CLASSNAME } from '../lib/emoji';
 import type { EmojiPickerItem } from '../lib/emoji';
 
