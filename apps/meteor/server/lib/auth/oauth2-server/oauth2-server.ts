@@ -117,5 +117,6 @@ API.v1.addAuthMethod((routeContext) => {
 
 (WebApp.connectHandlers as unknown as ReturnType<typeof express>).use(oauth2server.app);
 httpApp.use(
+	'/.well-known/oauth-authorization-server/*',
 	nodeHandler(express().disable('x-powered-by').use('/.well-known/oauth-authorization-server', serveAuthorizationServerMetadata)),
 );

@@ -34,7 +34,7 @@ settings.watch('API_CORS_Origin', (value: string) => {
 		: [];
 });
 
-httpApp.use(nodeHandler(apiServer));
+httpApp.use('/api/apps/ui.interaction/*', nodeHandler(apiServer));
 
 // oxlint-disable-next-line new-cap
 const router = express.Router();

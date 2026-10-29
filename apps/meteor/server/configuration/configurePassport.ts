@@ -95,5 +95,6 @@ export const configurePassport = (settings: ICachedSettings) => {
 		configureOAuthServices(oauthServiceConfigs, settings);
 	});
 
-	httpApp.use(nodeHandler(oAuthApp));
+	const oAuthHandler = nodeHandler(oAuthApp);
+	oAuthPaths.forEach((path) => httpApp.use(`${path}/*`, oAuthHandler));
 };

@@ -12,7 +12,9 @@ import { apiServer } from './router';
 import { authenticationMiddleware } from '../../../api/v1/middlewares/authentication';
 import { httpApp } from '../../../lib/http/httpServer';
 
-httpApp.use(nodeHandler(apiServer));
+const apiHandler = nodeHandler(apiServer);
+httpApp.use('/api/apps/private/*', apiHandler);
+httpApp.use('/api/apps/public/*', apiHandler);
 
 interface IRequestWithPrivateHash extends Request {
 	_privateHash?: string;

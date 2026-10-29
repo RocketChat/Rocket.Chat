@@ -38,4 +38,7 @@ export const serveProtectedResourceMetadata: RequestHandler = (req, res, next) =
 	res.send(getProtectedResourceMetadata(getOAuthIssuer()));
 };
 
-httpApp.use(nodeHandler(express().disable('x-powered-by').use(BARE_METADATA_PATH, serveProtectedResourceMetadata)));
+httpApp.use(
+	`${BARE_METADATA_PATH}/*`,
+	nodeHandler(express().disable('x-powered-by').use(BARE_METADATA_PATH, serveProtectedResourceMetadata)),
+);
