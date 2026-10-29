@@ -7,7 +7,7 @@ import { test } from 'node:test';
 
 import { buildMap, selectSpecs, toRepoPath } from './impact.mts';
 
-test('toRepoPath normalizes absolute and app-relative paths', () => {
+void test('toRepoPath normalizes absolute and app-relative paths', () => {
 	assert.equal(toRepoPath('/home/runner/work/Rocket.Chat/Rocket.Chat/apps/meteor/client/a.ts'), 'apps/meteor/client/a.ts');
 	assert.equal(toRepoPath('ee/server/b.ts'), 'apps/meteor/ee/server/b.ts');
 	assert.equal(toRepoPath('packages/rocketchat-i18n/i18n.js'), 'apps/meteor/packages/rocketchat-i18n/i18n.js');
@@ -15,7 +15,7 @@ test('toRepoPath normalizes absolute and app-relative paths', () => {
 	assert.equal(toRepoPath('/app/node_modules/react/index.js'), undefined);
 });
 
-test('builds a per-spec map and merges shard fragments', () => {
+void test('builds a per-spec map and merges shard fragments', () => {
 	const dir = mkdtempSync(path.join(tmpdir(), 'impact-'));
 	const write = (spec: string, coverage: object) =>
 		writeFileSync(path.join(dir, `playwright_coverage_${encodeURIComponent(spec)}_${randomUUID()}.json`), JSON.stringify(coverage));
@@ -38,7 +38,7 @@ test('builds a per-spec map and merges shard fragments', () => {
 	assert.deepEqual(files('other.spec.ts'), ['apps/meteor/client/other.ts']);
 });
 
-test('selects covering specs and falls back to the full suite on unknown changes', () => {
+void test('selects covering specs and falls back to the full suite on unknown changes', () => {
 	const map = {
 		files: ['apps/meteor/client/admin.ts', 'apps/meteor/client/chat.ts', 'apps/meteor/client/dead.ts'],
 		specs: { 'apps/meteor/tests/e2e/admin.spec.ts': [0], 'apps/meteor/tests/e2e/chat.spec.ts': [0, 1] },
