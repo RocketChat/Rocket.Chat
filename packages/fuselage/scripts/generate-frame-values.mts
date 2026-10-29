@@ -722,7 +722,7 @@ const generateModalFooterAnnotation = () =>
 const generateModalCss = () => {
 	const p2 = fontScale('p2')!;
 
-	return `.rcx-modal[hidden] {
+	return `.rcx-modal.rcx-modal[hidden] {
 	display: none;
 }
 
@@ -827,6 +827,29 @@ const components = [
 	{ file: join(import.meta.dirname, '../src/components/Card/CardRow.tsx'), generate: generateCardRow, kind: 'ts' as const },
 	{ file: join(import.meta.dirname, '../src/components/Card/CardTitle.tsx'), generate: generateCardTitle, kind: 'ts' as const },
 	{ file: join(import.meta.dirname, '../src/components/CardGroup/CardGroup.tsx'), generate: generateCardGroup, kind: 'ts' as const },
+	{ file: join(import.meta.dirname, '../src/components/Modal/Modal.tsx'), generate: generateModal, kind: 'ts' as const },
+	{ file: join(import.meta.dirname, '../src/components/Modal/Modal.styles.css'), generate: generateModalCss, kind: 'css' as const },
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalBackdrop.tsx'), generate: generateModalBackdrop, kind: 'ts' as const },
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalHeader.tsx'), generate: generateModalHeader, kind: 'ts' as const },
+	{
+		file: join(import.meta.dirname, '../src/components/Modal/ModalHeaderInner.tsx'),
+		generate: generateModalHeaderInner,
+		kind: 'ts' as const,
+	},
+	{
+		file: join(import.meta.dirname, '../src/components/Modal/ModalHeaderText.tsx'),
+		generate: generateModalHeaderText,
+		kind: 'ts' as const,
+	},
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalTitle.tsx'), generate: generateModalTitle, kind: 'ts' as const },
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalTagline.tsx'), generate: generateModalTagline, kind: 'ts' as const },
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalHeroImage.tsx'), generate: generateModalHeroImage, kind: 'ts' as const },
+	{ file: join(import.meta.dirname, '../src/components/Modal/ModalFooter.tsx'), generate: generateModalFooter, kind: 'ts' as const },
+	{
+		file: join(import.meta.dirname, '../src/components/Modal/ModalFooterAnnotation.tsx'),
+		generate: generateModalFooterAnnotation,
+		kind: 'ts' as const,
+	},
 	{ file: join(import.meta.dirname, '../src/styles/consumer-classes.css'), generate: generateConsumerClasses, kind: 'css' as const },
 ];
 const check = process.argv.includes('--check');
