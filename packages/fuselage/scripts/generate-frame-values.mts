@@ -38,6 +38,7 @@ import {
 const require = createRequire(import.meta.url);
 const buttonTokens: { light: Record<string, string> } = require('@rocket.chat/fuselage-tokens/dist/button.json');
 const colors: Record<string, string> = require('@rocket.chat/fuselage-tokens/dist/colors.json');
+const statusBulletTokens: { light: Record<string, string> } = require('@rocket.chat/fuselage-tokens/dist/statusBullet.json');
 
 const GENERATED_BY = 'by scripts/generate-frame-values.mts from @rocket.chat/fuselage-tokens, do not edit';
 
@@ -1120,6 +1121,35 @@ const generateAvatarStack = () =>
 		backgroundColor: toCSSValue('--rcx-avatar-background-color', surfaceColors['surface-light'].toString()),
 	});
 
+const generateStatusBullet = () => {
+	const bullet = (name: string) => toCSSColorValue(`status-bullet-${name}`, statusBulletTokens.light[name]);
+
+	return frameDeclaration('StatusBulletFrame', {
+		alignItems: 'normal',
+		flexDirection: 'row',
+		minWidth: 'auto',
+		minHeight: 'auto',
+		display: 'inline-block',
+		flexGrow: 0,
+		flexShrink: 0,
+		borderRadius: radiusOf('full'),
+		backgroundSize: 'contain',
+		width: size('x12')!,
+		height: size('x12')!,
+		variants: {
+			small: { true: { width: size('x10')!, height: size('x10')! }, false: {} },
+			status: {
+				online: { fill: bullet('online') },
+				away: { fill: bullet('away') },
+				busy: { fill: bullet('busy') },
+				disabled: { fill: bullet('disabled') },
+				offline: { stroke: bullet('offline') },
+				loading: { stroke: bullet('loading') },
+			},
+		},
+	});
+};
+
 const frames = (relative: string) => join(import.meta.dirname, '../src/components', relative);
 
 
@@ -1147,6 +1177,7 @@ const components: { file: string; generate: () => string; css?: boolean; section
 	{ file: frames('Avatar/Avatar.tsx'), generate: generateAvatar },
 	{ file: frames('Avatar/AvatarContainer.tsx'), generate: generateAvatarContainer },
 	{ file: frames('Avatar/AvatarStack.tsx'), generate: generateAvatarStack },
+	{ file: frames('StatusBullet/StatusBullet.tsx'), generate: generateStatusBullet },
 ];
 
 for (const [dir, control] of [
