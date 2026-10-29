@@ -1,9 +1,7 @@
-@use '../../styles/lengths.scss';
-
 .rcx-grid.rcx-card-grid {
 	--rcx-card-grid-min-row-height: auto;
 
-	margin: lengths.margin(-8);
+	margin: -8px;
 }
 
 .rcx-card-grid__item {
@@ -14,5 +12,5 @@
 }
 
 .rcx-grid__item.rcx-card-grid__item {
-	padding: lengths.padding(8);
+	padding: 8px;
 }
