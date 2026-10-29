@@ -11,6 +11,7 @@ type BaseExtendedOptions = FetchOptionsWithoutBody & {
 	timeout?: number;
 	params?: Record<string, any>;
 	body?: BodyInit | Record<string, any>;
+	onRedirect?: (nextUrl: URL) => void | Promise<void>;
 };
 
 type SsrfValidationIgnored = {
