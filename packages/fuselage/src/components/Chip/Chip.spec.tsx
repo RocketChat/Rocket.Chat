@@ -30,6 +30,18 @@ describe('[Chip Component]', () => {
 		expect(onMouseDown).toHaveBeenCalledTimes(1);
 	});
 
+	it('keeps a tap from reaching onMouseDown, so a preventDefault there does not cancel the tap', () => {
+		const onMouseDown = jest.fn((event: { preventDefault: () => void }) => event.preventDefault());
+		const { getByRole } = render(
+			<Chip onClick={() => undefined} onMouseDown={onMouseDown}>
+				Label
+			</Chip>,
+		);
+
+		expect(fireEvent.touchStart(getByRole('button'))).toBe(true);
+		expect(onMouseDown).not.toHaveBeenCalled();
+	});
+
 	it('is enabled when only onMouseDown is given', () => {
 		const { getByRole } = render(<Chip onMouseDown={() => undefined}>Label</Chip>);
 
