@@ -20,7 +20,6 @@ const ItemRowFrame = styled(View, {
 	alignItems: 'center',
 	minWidth: 0,
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	gap: 'var(--rcx-item-gap)',
 });
 

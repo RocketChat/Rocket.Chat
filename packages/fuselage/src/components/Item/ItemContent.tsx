@@ -20,7 +20,6 @@ const ItemContentFrame = styled(View, {
 	alignItems: 'normal',
 	minWidth: 0,
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	flexGrow: 1,
 	flexBasis: 'auto',
 });

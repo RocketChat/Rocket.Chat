@@ -18,7 +18,6 @@ const MessageDividerBarFrame = styled(View, {
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	justifyContent: 'flex-end',
 	flexGrow: 1,
 });
@@ -32,7 +31,6 @@ const MessageDividerWrapperFrame = styled(View, {
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	marginBlock: '8px',
 	paddingInline: '8px',
 	backgroundColor: 'var(--rcx-message-background-color, var(--rcx-color-surface-room, #ffffff))',
@@ -47,7 +45,6 @@ const MessageDividerUnreadFrame = styled(View, {
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	zIndex: 1,
 	order: 1,
 	paddingInlineStart: '8px',

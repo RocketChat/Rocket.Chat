@@ -308,7 +308,6 @@ const DividerBar = styled(View, {
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	justifyContent: 'flex-end',
 	flexGrow: 1,
 });
@@ -320,7 +319,6 @@ const DividerLabel = styled(View, {
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	marginBlock: '8px',
 	paddingInline: '8px',
 });

@@ -17,7 +17,6 @@ const MessageReactionActionFrame = styled(View, {
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	margin: '2px',
 	padding: '2px',
 	cursor: 'pointer',

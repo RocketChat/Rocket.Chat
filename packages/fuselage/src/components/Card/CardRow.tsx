@@ -16,7 +16,6 @@ const CardRowFrame = styled(View, {
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	gap: '8px',
 	flexGrow: 1,
 });

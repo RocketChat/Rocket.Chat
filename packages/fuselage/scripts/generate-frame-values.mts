@@ -247,7 +247,6 @@ const ButtonFrame = styled(View, {
 
 	out.push(`const ButtonContent = styled(Text, {
 	render: 'span',
-	boxSizing: 'content-box',
 	display: 'inline-block',
 	width: '100%',
 	verticalAlign: 'top',
@@ -908,7 +907,6 @@ const plain = {
 	alignItems: 'normal',
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 } as const;
 
 const itemRadius = toCSSValue('--rcx-border-radius-small', borderRadius('small')!);
@@ -1510,7 +1508,6 @@ const generateAvatar = () => {
 		display: 'inline',
 		flexDirection: 'row',
 		alignItems: 'normal',
-		boxSizing: 'content-box',
 		flexShrink: 1,
 		minWidth: 'auto',
 		minHeight: 'auto',
@@ -1549,7 +1546,6 @@ const generateAvatarStack = () =>
 	frameDeclaration('AvatarStackFrame', {
 		render: 'div',
 		alignItems: 'normal',
-		boxSizing: 'content-box',
 		flexShrink: 1,
 		minWidth: 'auto',
 		minHeight: 'auto',
@@ -1565,7 +1561,6 @@ const generateStatusBullet = () => {
 	return frameDeclaration('StatusBulletFrame', {
 		alignItems: 'normal',
 		flexDirection: 'row',
-		boxSizing: 'content-box',
 		minWidth: 'auto',
 		minHeight: 'auto',
 		display: 'inline-block',
@@ -1642,7 +1637,6 @@ const surfaceLight = String(surfaceColors['surface-light']);
 // A Tamagui View is a column that does not shrink; these put back the block or flex box the SCSS left
 const flexBox = { display: 'flex', flexDirection: 'row', alignItems: 'normal', flexShrink: 1, minWidth: 'auto', minHeight: 'auto' };
 const blockBox = { ...flexBox, display: 'block' };
-const contentBox = { boxSizing: 'content-box' };
 
 const frame = (name: string, base: Record<string, Value>, variants?: Record<string, Record<string, Value>>) =>
 	`const ${name} = styled(View, ${literal(variants ? { ...base, variants } : base)});`;
@@ -1722,8 +1716,8 @@ const generateDivider = () => {
 		declaredWhereTheyRender +
 		[
 			frame('DividerLine', { render: 'hr', ...blockBox, borderTopWidth: width, borderTopStyle: 'solid' }, { look: looks }),
-			frame('DividerBar', { ...flexBox, ...contentBox, justifyContent: 'flex-end', alignItems: 'center', flexGrow: 1 }),
-			frame('DividerLabel', { ...blockBox, ...contentBox, marginBlock: px(8), paddingInline: px(8) }),
+			frame('DividerBar', { ...flexBox, justifyContent: 'flex-end', alignItems: 'center', flexGrow: 1 }),
+			frame('DividerLabel', { ...blockBox, marginBlock: px(8), paddingInline: px(8) }),
 		].join('\n\n')
 	);
 };
@@ -1836,7 +1830,7 @@ const generateCard = () =>
 	);
 
 const cardPart = (name: string, extra: Record<string, Value> = {}) =>
-	declaredWhereTheyRender + frame(name, { render: 'div', ...flexBox, ...contentBox, alignItems: 'center', gap: cardGap, ...extra });
+	declaredWhereTheyRender + frame(name, { render: 'div', ...flexBox, alignItems: 'center', gap: cardGap, ...extra });
 
 const generateCardBody = () => declaredWhereTheyRender + frame('CardBodyFrame', { ...flexBox, flexGrow: 1, gap: cardGap, ...font('p2m') });
 const generateCardCol = () => cardPart('CardColFrame', { alignItems: 'normal', flexDirection: 'column' });
@@ -1932,7 +1926,7 @@ const generateModalTagline = () =>
 const generateModalHeroImage = () =>
 	`${declaredWhereTheyRender}${frame('ModalHeroImageFrame', { ...blockBox, width: '100%', height: 'auto', objectFit: 'contain' })}\n\n${frame(
 		'ModalHeroFigureFrame',
-		{ render: 'figure', ...blockBox, ...contentBox, marginBlockStart: 0, marginBlockEnd: size('x24')!, marginInline: size('-x24')! },
+		{ render: 'figure', ...blockBox, marginBlockStart: 0, marginBlockEnd: size('x24')!, marginInline: size('-x24')! },
 	)}`;
 
 const generateModalFooter = () =>
@@ -2902,7 +2896,6 @@ const generateFramedIcon = () =>
 
 const statesColumn = {
 	...flexBox,
-	...contentBox,
 	display: 'flex',
 	flexDirection: 'column',
 	justifyContent: 'center',
@@ -2959,7 +2952,6 @@ const generateStatesTitle = () =>
 	`${declaredWhereTheyRender}${frame('StatesTitleFrame', {
 		render: 'h3',
 		...blockBox,
-		...contentBox,
 		marginTop: 0,
 		marginBottom: spacing('x8')!,
 		textAlign: 'center',
@@ -2980,7 +2972,7 @@ const generateStatesSuggestionList = () =>
 	})}`;
 
 const generateStatesSuggestionListItem = () =>
-	frameCode('StatesSuggestionListItemWrapperFrame', 'Text', { render: 'span', ...inlineBase, ...contentBox, marginInlineStart: '-4px' });
+	frameCode('StatesSuggestionListItemWrapperFrame', 'Text', { render: 'span', ...inlineBase, marginInlineStart: '-4px' });
 
 const generateStatesLink = () =>
 	frameCode('StatesLinkFrame', 'Text', {
@@ -3170,30 +3162,30 @@ const genBanner = () =>
 const genBannerIcon = () =>
 	part(
 		'BannerIconFrame',
-		{ ...blockBox, ...contentBox, paddingBlock: px(8), paddingInlineEnd: px(12) },
+		{ ...blockBox, paddingBlock: px(8), paddingInlineEnd: px(12) },
 		{ tone: { neutral: {}, ...Object.fromEntries(bannerKinds.map((kind) => [kind, { color: bannerColor(kind) }])) } },
 	);
 
 const genBannerContent = () =>
 	part(
 		'BannerContentFrame',
-		{ ...blockBox, ...contentBox, flexGrow: 1, alignSelf: 'center', ...font('p2') },
+		{ ...blockBox, flexGrow: 1, alignSelf: 'center', ...font('p2') },
 		{ inline: { true: { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }, false: {} } },
 	);
 
 const genBannerTitle = () =>
 	part(
 		'BannerTitleFrame',
-		{ render: 'h6', ...blockBox, ...contentBox, margin: 0, paddingBlock: 0, paddingInlineStart: 0, ...font('h5') },
+		{ render: 'h6', ...blockBox, margin: 0, paddingBlock: 0, paddingInlineStart: 0, ...font('h5') },
 		{ inline: { true: { display: 'inline', paddingInlineEnd: px(8) }, false: { paddingInlineEnd: 0 } } },
 	);
 
-const genBannerLink = () => frameCode('BannerLinkFrame', 'Text', { render: 'a', ...inlineBase, ...contentBox, paddingLeft: px(10) });
+const genBannerLink = () => frameCode('BannerLinkFrame', 'Text', { render: 'a', ...inlineBase, paddingLeft: px(10) });
 
 const genBannerCloseButton = () =>
 	part(
 		'BannerCloseButtonFrame',
-		{ ...blockBox, ...contentBox, paddingInline: px(8) },
+		{ ...blockBox, paddingInline: px(8) },
 		{ inline: { true: { marginBlock: px(-4), paddingBlock: 0 }, false: { paddingBlock: px(6) } } },
 	);
 
@@ -3226,9 +3218,8 @@ const generateToastBar = () =>
 		borderRadius: toastBarRadius,
 		backgroundColor: theme('toastbar-background-color', surfaceOf('tint')),
 		...font('p2'),
-	})}\n\n${frame('ToastBarInnerFrame', { ...flexBox, ...contentBox, padding: px(16) })}\n\n${frame('ToastBarContentFrame', {
+	})}\n\n${frame('ToastBarInnerFrame', { ...flexBox, padding: px(16) })}\n\n${frame('ToastBarContentFrame', {
 		...blockBox,
-		...contentBox,
 		width: '100%',
 		marginBlock: 0,
 		marginInline: px(16),
@@ -3311,7 +3302,6 @@ const generateSplitButton = () =>
 		'SplitButtonFrame',
 		{
 			render: 'div',
-			...contentBox,
 			display: 'inline-flex',
 			flexDirection: 'row',
 			flexWrap: 'nowrap',
@@ -3423,7 +3413,7 @@ const generateBubbleButton = () => {
 const generateBubbleItem = () =>
 	part(
 		'BubbleItemFrame',
-		{ ...bubbleChrome('span'), ...contentBox },
+		{ ...bubbleChrome('span') },
 		{
 			look: Object.fromEntries(
 				bubbleKinds.map((kind) => {
@@ -3702,7 +3692,6 @@ const mBox = {
 	minWidth: 'auto',
 	minHeight: 'auto',
 } as const;
-const mPlain = { ...mBox, boxSizing: 'content-box' } as const;
 const mTruncate = { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } as const;
 const mInline = { display: 'inline', wordWrap: 'normal' } as const;
 
@@ -3734,7 +3723,7 @@ const generateMessage = () =>
 		'MessageFrame',
 		{
 			render: 'div',
-			...mPlain,
+			...mBox,
 			position: 'relative',
 			alignItems: 'flex-start',
 			marginInline: px(2),
@@ -3843,7 +3832,7 @@ const generateMessageRoles = () => view('MessageRolesFrame', { render: 'div', ..
 const generateMessageBody = () =>
 	view('MessageBodyFrame', {
 		render: 'div',
-		...mPlain,
+		...mBox,
 		display: 'block',
 		flexShrink: 1,
 		overflow: 'hidden',
@@ -3870,7 +3859,6 @@ const generateMessageEmoji = () =>
 		'MessageEmojiFrame',
 		{
 			render: 'span',
-			boxSizing: 'content-box',
 			display: 'inline-block',
 			whiteSpace: 'inherit',
 			wordWrap: 'inherit',
@@ -4113,14 +4101,14 @@ const messageToolbar = [
 	{ file: messageDir('MessageToolbar/MessageToolbar.styles.css'), generate: generateMessageToolbarCss, css: true },
 ];
 
-const generateMessageMetrics = () => view('MessageMetricsContentWrapperFrame', { render: 'div', ...mPlain, marginInline: px(-4) });
+const generateMessageMetrics = () => view('MessageMetricsContentWrapperFrame', { render: 'div', ...mBox, marginInline: px(-4) });
 
-const generateMessageMetricsContentItem = () => view('MessageMetricsContentItemFrame', { render: 'div', ...mPlain, marginBlock: px(4) });
+const generateMessageMetricsContentItem = () => view('MessageMetricsContentItemFrame', { render: 'div', ...mBox, marginBlock: px(4) });
 
 const generateMessageMetricsItem = () =>
 	view('MessageMetricsItemFrame', {
 		render: 'div',
-		...mPlain,
+		...mBox,
 		justifyContent: 'center',
 		alignItems: 'center',
 		...font('micro'),
@@ -4129,16 +4117,16 @@ const generateMessageMetricsItem = () =>
 	});
 
 const generateMessageMetricsItemLabel = () =>
-	view('MessageMetricsItemLabelFrame', { render: 'div', ...mPlain, display: 'block', marginInlineStart: px(4) });
+	view('MessageMetricsItemLabelFrame', { render: 'div', ...mBox, display: 'block', marginInlineStart: px(4) });
 
 const generateMessageMetricsItemAvatarRow = () =>
-	view('MessageMetricsItemAvatarRowFrame', { render: 'div', ...mPlain, marginInline: px(-2) });
+	view('MessageMetricsItemAvatarRowFrame', { render: 'div', ...mBox, marginInline: px(-2) });
 
 const generateMessageMetricsItemAvatarRowContent = () =>
-	view('MessageMetricsItemAvatarRowContentFrame', { render: 'div', ...mPlain, display: 'block', marginInline: px(2) });
+	view('MessageMetricsItemAvatarRowContentFrame', { render: 'div', ...mBox, display: 'block', marginInline: px(2) });
 
 const generateMessageMetricsFollowing = () =>
-	view('MessageMetricsFollowBadgeFrame', { render: 'div', ...mPlain, display: 'block', position: 'absolute', top: 0, right: 0 });
+	view('MessageMetricsFollowBadgeFrame', { render: 'div', ...mBox, display: 'block', position: 'absolute', top: 0, right: 0 });
 
 const generateMessageMetricsCss = () => `${raised('.rcx-message-metrics__content-item + .rcx-message-metrics__content-item')} {
 	margin-inline-start: ${px(4)};
@@ -4177,7 +4165,7 @@ const reactionHoverBorder = theme('message-reaction-hover-border-color', mStroke
 
 const reactionBase = {
 	render: 'div',
-	...mPlain,
+	...mBox,
 	display: 'inline-flex',
 	alignItems: 'center',
 	margin: px(2),
@@ -4210,12 +4198,11 @@ const generateMessageReaction = () =>
 const generateMessageReactionAction = () => view('MessageReactionActionFrame', { ...reactionBase, opacity: 0, ...reactionLook('default') });
 
 const generateMessageReactionCounter = () =>
-	view('MessageReactionCounterFrame', { render: 'div', ...mPlain, display: 'block', ...font('c1'), marginInline: px(2) });
+	view('MessageReactionCounterFrame', { render: 'div', ...mBox, display: 'block', ...font('c1'), marginInline: px(2) });
 
 const generateMessageReactionEmoji = () =>
 	text('MessageReactionEmojiFrame', {
 		render: 'span',
-		boxSizing: 'content-box',
 		display: 'block',
 		whiteSpace: 'inherit',
 		wordWrap: 'inherit',
@@ -4226,7 +4213,7 @@ const generateMessageReactionEmoji = () =>
 	});
 
 const generateMessageReactions = () =>
-	view('MessageReactionsContainerFrame', { render: 'div', ...mPlain, flexWrap: 'wrap', justifyContent: 'flex-start', margin: px(-2) });
+	view('MessageReactionsContainerFrame', { render: 'div', ...mBox, flexWrap: 'wrap', justifyContent: 'flex-start', margin: px(-2) });
 
 const generateMessageReactionsCss = () => `${raised('.rcx-message:hover .rcx-message-reactions__reaction--action')},
 ${raised('.rcx-message:focus-visible .rcx-message-reactions__reaction--action')} {
@@ -4253,7 +4240,7 @@ const previewTitleColor = theme('message-generic-preview-title-color', mFont('de
 const generateMessageGenericPreview = () =>
 	view('MessageGenericPreviewFrame', {
 		render: 'div',
-		...mPlain,
+		...mBox,
 		flexDirection: 'column',
 		overflow: 'hidden',
 		fontSize: 0,
@@ -4267,10 +4254,10 @@ const generateMessageGenericPreview = () =>
 
 const generateMessageGenericPreviewContent = () =>
 	mParts(
-		inView('MessageGenericPreviewContentFrame', { render: 'div', ...mPlain, fontSize: 0 }),
+		inView('MessageGenericPreviewContentFrame', { render: 'div', ...mBox, fontSize: 0 }),
 		inView('MessageGenericPreviewContentWrapperFrame', {
 			render: 'div',
-			...mPlain,
+			...mBox,
 			...mTruncate,
 			flexDirection: 'column',
 			justifyContent: 'center',
@@ -4283,7 +4270,6 @@ const generateMessageGenericPreviewContent = () =>
 const generateMessageGenericPreviewTitle = () =>
 	text('MessageGenericPreviewTitleFrame', {
 		render: 'span',
-		boxSizing: 'content-box',
 		...mInline,
 		...mTruncate,
 		display: 'block',
@@ -4297,7 +4283,7 @@ const generateMessageGenericPreviewDescription = () =>
 		'MessageGenericPreviewDescriptionFrame',
 		{
 			render: 'div',
-			...mPlain,
+			...mBox,
 			display: 'block',
 			...font('c1'),
 			marginBlockEnd: px(4),
@@ -4309,7 +4295,7 @@ const generateMessageGenericPreviewDescription = () =>
 const generateMessageGenericPreviewFooter = () =>
 	view('MessageGenericPreviewFooterFrame', {
 		render: 'div',
-		...mPlain,
+		...mBox,
 		display: 'block',
 		...mTruncate,
 		...font('c1'),
@@ -4320,7 +4306,7 @@ const generateMessageGenericPreviewFooter = () =>
 const generateMessageGenericPreviewThumb = () =>
 	view('MessageGenericPreviewThumbFrame', {
 		render: 'div',
-		...mPlain,
+		...mBox,
 		display: 'block',
 		flexShrink: 0,
 		width: rem(96),
@@ -4331,7 +4317,7 @@ const generateMessageGenericPreviewIcon = () =>
 	mParts(
 		inView('MessageGenericPreviewIconFrame', {
 			render: 'div',
-			...mPlain,
+			...mBox,
 			flexDirection: 'column',
 			justifyContent: 'center',
 			alignItems: 'center',
@@ -4347,7 +4333,7 @@ const generateMessageGenericPreviewIcon = () =>
 		}),
 		inView('MessageGenericPreviewIconTitleFrame', {
 			render: 'div',
-			...mPlain,
+			...mBox,
 			display: 'block',
 			...mTruncate,
 			...font('micro'),
@@ -4359,7 +4345,7 @@ const generateMessageGenericPreviewIcon = () =>
 const generateMessageGenericPreviewImage = () =>
 	view('MessageGenericPreviewImageFrame', {
 		render: 'img',
-		...mPlain,
+		...mBox,
 		display: 'inline',
 		width: 'fit-content',
 		maxWidth: 'inherit',
@@ -4440,14 +4426,14 @@ const generateMessageDivider = () =>
 	mParts(
 		inView('MessageDividerBarFrame', {
 			render: 'div',
-			...mPlain,
+			...mBox,
 			justifyContent: 'flex-end',
 			alignItems: 'center',
 			flexGrow: 1,
 		}),
 		inView('MessageDividerWrapperFrame', {
 			render: 'div',
-			...mPlain,
+			...mBox,
 			display: 'block',
 			marginBlock: px(8),
 			paddingInline: px(8),
@@ -4455,7 +4441,7 @@ const generateMessageDivider = () =>
 		}),
 		inView('MessageDividerUnreadFrame', {
 			render: 'div',
-			...mPlain,
+			...mBox,
 			display: 'block',
 			position: 'absolute',
 			zIndex: 1,
@@ -4542,7 +4528,7 @@ const generateMessageSystemContainer = () =>
 const generateMessageSystemBody = () =>
 	view('MessageSystemBodyFrame', {
 		render: 'div',
-		...mPlain,
+		...mBox,
 		display: 'block',
 		...mTruncate,
 		...font('p2'),
@@ -4570,12 +4556,12 @@ const generateMessageSystemTimestamp = () =>
 		color: mFont('secondary-info'),
 	});
 
-const generateMessageSystemBlock = () => view('MessageSystemBlockFrame', { render: 'div', ...mPlain, alignItems: 'center' });
+const generateMessageSystemBlock = () => view('MessageSystemBlockFrame', { render: 'div', ...mBox, alignItems: 'center' });
 
 const generateMessageStatusIndicator = () =>
 	view('MessageStatusIndicatorFrame', {
 		render: 'div',
-		...mPlain,
+		...mBox,
 		display: 'block',
 		marginBlock: px(2),
 		userSelect: 'none',
@@ -4584,7 +4570,6 @@ const generateMessageStatusIndicator = () =>
 const generateMessageStatusIndicatorText = () =>
 	text('MessageStatusIndicatorTextFrame', {
 		render: 'span',
-		boxSizing: 'content-box',
 		...mInline,
 		whiteSpace: 'nowrap',
 		color: mFont('secondary-info'),
@@ -4657,7 +4642,6 @@ const generateThreadMessageOrigin = () =>
 const generateThreadMessageEmoji = () =>
 	text('ThreadMessageEmojiFrame', {
 		render: 'span',
-		boxSizing: 'content-box',
 		display: 'inline-block',
 		whiteSpace: 'inherit',
 		wordWrap: 'inherit',

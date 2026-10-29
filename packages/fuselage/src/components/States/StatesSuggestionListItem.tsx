@@ -13,7 +13,6 @@ const StatesSuggestionListItemWrapperFrame = styled(Text, {
 	display: 'inline',
 	whiteSpace: 'normal',
 	wordWrap: 'normal',
-	boxSizing: 'content-box',
 	marginInlineStart: '-4px',
 });
 

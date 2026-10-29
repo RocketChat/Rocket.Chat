@@ -18,7 +18,6 @@ const SidepanelHeaderFrame = styled(View, {
 	alignItems: 'center',
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	justifyContent: 'space-between',
 	gap: '8px',
 	height: '2.75rem',

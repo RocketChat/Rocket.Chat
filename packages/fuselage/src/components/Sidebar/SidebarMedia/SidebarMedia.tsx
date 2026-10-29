@@ -15,7 +15,6 @@ const SidebarMediaFrame = styled(View, {
 	alignItems: 'normal',
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	paddingBlock: '8px',
 	color: 'var(--rcx-sidebar-media-color, var(--rcx-color-font-titles-labels, #1f2329))',
 	borderBottomWidth: '1px',
