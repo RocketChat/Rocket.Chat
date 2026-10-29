@@ -37,7 +37,7 @@ const MessageToolbarWrapperFrame = styled(View, {
 function MessageToolbarWrapper({ className, children, visible, ...props }: MessageToolbarWrapperProps) {
 	return (
 		<MessageToolbarWrapperFrame
-			render={<Box rcx-message-toolbar__wrapper rcx-message-toolbar__wrapper--visible={visible} {...props} />}
+			render={<Box rcx-message-toolbar__wrapper--visible={visible} rcx-message-toolbar__wrapper {...props} />}
 			shown={Boolean(visible)}
 			className={className}
 		>
