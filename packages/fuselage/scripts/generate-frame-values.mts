@@ -2057,6 +2057,7 @@ const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/styles/consumer-classes.css'), generate: generateConsumerClasses, css: true },
 	{ file: join(import.meta.dirname, '../src/components/Callout/Callout.tsx'), generate: generateCallout },
 	{ file: join(import.meta.dirname, '../src/components/Callout/Callout.styles.css'), generate: generateCalloutCss, css: true },
+	{ file: join(import.meta.dirname, '../src/components/CardGroup/CardGroup.tsx'), generate: generateCardGroup },
 ];
 
 for (const [dir, control] of [
