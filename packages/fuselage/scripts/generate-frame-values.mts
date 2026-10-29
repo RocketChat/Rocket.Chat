@@ -4236,6 +4236,195 @@ const messageReactions = [
 	{ file: messageDir('MessageReactions/MessageReactions.styles.css'), generate: generateMessageReactionsCss, css: true },
 ];
 
+const rem = (px: number) => `${px / 16}rem`;
+const previewContext = theme('message-generic-preview-context-color', mFont('secondary-info'));
+const previewTitleColor = theme('message-generic-preview-title-color', mFont('default'));
+
+const generateMessageGenericPreview = () =>
+	view('MessageGenericPreviewFrame', {
+		render: 'div',
+		...mPlain,
+		flexDirection: 'column',
+		overflow: 'hidden',
+		fontSize: 0,
+		color: previewContext,
+		borderWidth: px(1),
+		borderStyle: 'solid',
+		borderColor: theme('message-generic-preview-border-color', mStroke('extra-light')),
+		borderRadius: radius('medium'),
+		backgroundColor: theme('message-generic-preview-content-background-color', mSurface('tint')),
+	});
+
+const generateMessageGenericPreviewContent = () =>
+	mParts(
+		inView('MessageGenericPreviewContentFrame', { render: 'div', ...mPlain, fontSize: 0 }),
+		inView('MessageGenericPreviewContentWrapperFrame', {
+			render: 'div',
+			...mPlain,
+			...mTruncate,
+			flexDirection: 'column',
+			justifyContent: 'center',
+			flexGrow: 1,
+			paddingBlock: px(8),
+			paddingInline: px(16),
+		}),
+	);
+
+const generateMessageGenericPreviewTitle = () =>
+	text('MessageGenericPreviewTitleFrame', {
+		render: 'span',
+		...mInline,
+		...mTruncate,
+		display: 'block',
+		...font('p2'),
+		marginBlockEnd: px(4),
+		color: previewTitleColor,
+	});
+
+const generateMessageGenericPreviewDescription = () =>
+	view(
+		'MessageGenericPreviewDescriptionFrame',
+		{
+			render: 'div',
+			...mPlain,
+			display: 'block',
+			...font('c1'),
+			marginBlockEnd: px(4),
+			color: theme('message-generic-preview-description-color', mFont('default')),
+		},
+		{ clamp: { true: { whiteSpace: 'normal' }, false: { ...mTruncate } } },
+	);
+
+const generateMessageGenericPreviewFooter = () =>
+	view('MessageGenericPreviewFooterFrame', {
+		render: 'div',
+		...mPlain,
+		display: 'block',
+		...mTruncate,
+		...font('c1'),
+		width: '100%',
+		color: previewContext,
+	});
+
+const generateMessageGenericPreviewThumb = () =>
+	view('MessageGenericPreviewThumbFrame', {
+		render: 'div',
+		...mPlain,
+		display: 'block',
+		flexShrink: 0,
+		width: rem(96),
+		height: rem(96),
+	});
+
+const generateMessageGenericPreviewIcon = () =>
+	mParts(
+		inView('MessageGenericPreviewIconFrame', {
+			render: 'div',
+			...mPlain,
+			flexDirection: 'column',
+			justifyContent: 'center',
+			alignItems: 'center',
+			flexShrink: 0,
+			alignSelf: 'center',
+			width: rem(48),
+			height: rem(52),
+			marginBlock: px(12),
+			marginInlineStart: px(16),
+			color: mFont('default'),
+			borderRadius: radius('medium'),
+			backgroundColor: theme('message-generic-preview-icon-background-color', mSurface('neutral')),
+		}),
+		inView('MessageGenericPreviewIconTitleFrame', {
+			render: 'div',
+			...mPlain,
+			display: 'block',
+			...mTruncate,
+			...font('micro'),
+			maxWidth: rem(40),
+			color: previewTitleColor,
+		}),
+	);
+
+const generateMessageGenericPreviewImage = () =>
+	view('MessageGenericPreviewImageFrame', {
+		render: 'img',
+		...mPlain,
+		display: 'inline',
+		width: 'fit-content',
+		maxWidth: 'inherit',
+		maxHeight: 'inherit',
+		cursor: 'pointer',
+	});
+
+const linkStates = (selector: string, color: string, theLink: boolean) => {
+	const states = (names: string[]) => names.map((name) => (theLink ? raised(`${selector}${name}`) : `${selector}${name}`)).join(',\n');
+	const link = (name: string) => theme(`link-${name}`, color);
+
+	return `${states([''])} {
+	color: ${link('color')};
+}
+
+${states([':focus', ':focus-within', '.focus', '.is-focused'])} {
+	color: ${link('focus-color')};
+}
+
+${states([':focus-visible', '.is-focused', '.focus'])} {
+	text-decoration: none;
+
+	color: ${link('focus-color')};
+	border-radius: ${radius('small')};
+	outline: ${theme('link-focus-outline-color', mStroke('highlight'))} solid ${px(1)};
+	outline-offset: 0;
+	box-shadow: 0 0 0 2px ${theme('link-focus-box-shadow-color', mStroke('extra-light-highlight'))};
+}
+
+${states([':where(:visited)', ':where(.is-visited)'])} {
+	color: ${link('visited-color')};
+}
+
+${states([':where(:active)', ':where(.active)', ':where(.is-active)'])} {
+	color: ${link('active-color')};
+}`;
+};
+
+const generateMessageGenericPreviewCss = () => `${raised('.rcx-message-generic-preview__description--clamp')} {
+	display: -webkit-box;
+	overflow: hidden;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+}
+
+.rcx-message-generic-preview__preview {
+	display: inline-block;
+	overflow: hidden;
+
+	width: 100%;
+	height: 100%;
+
+	white-space: nowrap;
+	text-indent: 100%;
+
+	background-repeat: no-repeat;
+	background-position: 50%;
+	background-size: cover;
+}
+
+${linkStates('.rcx-message-generic-preview__title-link', mFont('info'), true)}
+
+${linkStates('.rcx-message-generic-preview__footer a', mFont('secondary-info'), false)}`;
+
+const messagePreviews = [
+	{ file: messageDir('MessageGenericPreview/MessageGenericPreview.tsx'), generate: generateMessageGenericPreview },
+	{ file: messageDir('MessageGenericPreview/MessageGenericPreviewContent.tsx'), generate: generateMessageGenericPreviewContent },
+	{ file: messageDir('MessageGenericPreview/MessageGenericPreviewTitle.tsx'), generate: generateMessageGenericPreviewTitle },
+	{ file: messageDir('MessageGenericPreview/MessageGenericPreviewDescription.tsx'), generate: generateMessageGenericPreviewDescription },
+	{ file: messageDir('MessageGenericPreview/MessageGenericPreviewFooter.tsx'), generate: generateMessageGenericPreviewFooter },
+	{ file: messageDir('MessageGenericPreview/MessageGenericPreviewThumb.tsx'), generate: generateMessageGenericPreviewThumb },
+	{ file: messageDir('MessageGenericPreview/MessageGenericPreviewIcon.tsx'), generate: generateMessageGenericPreviewIcon },
+	{ file: messageDir('MessageGenericPreview/MessageGenericPreviewImage.tsx'), generate: generateMessageGenericPreviewImage },
+	{ file: messageDir('MessageGenericPreview/MessageGenericPreview.styles.css'), generate: generateMessageGenericPreviewCss, css: true },
+];
+
 const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
 	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
@@ -4381,7 +4570,7 @@ const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: frames('Menu/MenuItem.tsx'), generate: generateMenuItemDescription },
 ];
 
-components.push(...messageCore, ...messageReactions, ...messageMetrics, ...messageToolbar);
+components.push(...messageCore, ...messagePreviews, ...messageReactions, ...messageMetrics, ...messageToolbar);
 
 for (const [dir, control] of [
 	['CheckBox', checkBox],
