@@ -34,7 +34,9 @@ export const findChannelsWithNumberOfMessages = async ({
 }> => {
 	const daysBetweenDates = diffBetweenDaysInclusive(end, start);
 	const endOfLastWeek = moment(start).subtract(1, 'days').toDate();
-	const startOfLastWeek = moment(endOfLastWeek).subtract(daysBetweenDates, 'days').toDate();
+	const startOfLastWeek = moment(endOfLastWeek)
+		.subtract(daysBetweenDates - 1, 'days')
+		.toDate();
 	const roomTypes = roomCoordinator.getTypesToShowOnDashboard() as Array<IRoom['t']>;
 
 	const aggregationResult = await Analytics.findRoomsByTypesWithNumberOfMessagesBetweenDate({
