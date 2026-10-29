@@ -57,8 +57,15 @@ export class MucRoom {
 		return this.subject;
 	}
 
+	/** Takes a new subject and tells the occupants already in the room when it differs. */
 	setSubject(subject: string): void {
+		if (subject === this.subject) {
+			return;
+		}
 		this.subject = subject;
+		for (const recipient of this.remoteOccupants()) {
+			this.deps.send(buildSubjectMessage({ roomJid: this.roomJid, to: recipient.realJid, subject }));
+		}
 	}
 
 	get roomId(): string {

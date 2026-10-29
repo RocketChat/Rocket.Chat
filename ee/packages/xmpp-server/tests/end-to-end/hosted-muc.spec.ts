@@ -436,8 +436,7 @@ describe('XMPP federation: rooms hosted by Rocket.Chat', () => {
 	});
 
 	describe('after a change made in Rocket.Chat', () => {
-		// Known defect: ../../docs/specs/hosted-muc.md#d3-a-new-topic-does-not-reach-occupants-already-in-the-room
-		it.skip('tells occupants already in the room about a new topic (D3)', async () => {
+		it('tells occupants already in the room about a new topic (R19)', async () => {
 			const room = await createHostedRoom(rc, owner, { type: 'c', name: `xe2e-topic-${uniqueSuffix()}` });
 			const muc = mucJidOf(room);
 			await alice.joinRoom(muc);

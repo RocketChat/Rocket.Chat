@@ -250,8 +250,6 @@ Rocket.Chat status changes do not reach XMPP contacts
 
 ### Hosted rooms
 
-- A topic changed in Rocket.Chat reaches only XMPP occupants who join afterwards
-  ([hosted-muc D3](specs/hosted-muc.md#d3-a-new-topic-does-not-reach-occupants-already-in-the-room)).
 - A room deleted in Rocket.Chat keeps running for its XMPP occupants until the service
   restarts ([hosted-muc D4](specs/hosted-muc.md#d4-a-deleted-room-keeps-running-until-the-service-restarts)).
 - An XMPP user removed from a room is not told, and their client still shows them in it
