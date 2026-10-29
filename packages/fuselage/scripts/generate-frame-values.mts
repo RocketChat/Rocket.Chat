@@ -2015,6 +2015,9 @@ const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: frames('StatusBullet/StatusBullet.tsx'), generate: generateStatusBullet },
 	{ file: frames('Tooltip/Tooltip.tsx'), generate: generateTooltip },
 	{ file: frames('Tooltip/Tooltip.styles.css'), generate: generateTooltipArrow, css: true },
+
+	{ file: join(import.meta.dirname, '../src/components/Divider/Divider.tsx'), generate: generateDivider },
+	{ file: join(import.meta.dirname, '../src/components/Divider/Divider.styles.css'), generate: generateDividerCss, css: true },
 ];
 
 for (const [dir, control] of [
