@@ -1,11 +1,10 @@
-import { useStableCallback } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback, useMergedRefsV2 } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode } from 'react';
 import { useCallback, useMemo, useRef, useState } from 'react';
 
 import type { MediaPlayerContextValue, PersistentAudioTrack } from './MediaPlayerContext';
 import { MediaPlayerContext } from './MediaPlayerContext';
 import { useReloadOnError } from '../../components/message/content/attachments/file/hooks/useReloadOnError';
-import { useMergedRefsV2 } from '../../hooks/useMergedRefsV2';
 
 const PLAYBACK_RATES = [1, 1.5, 2] as const;
 

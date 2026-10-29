@@ -1,9 +1,12 @@
-import { useMergedRefs } from '@rocket.chat/fuselage-hooks';
 import { render } from '@testing-library/react';
-import type { Ref, RefCallback } from 'react';
+import type { ReactElement, Ref, RefCallback } from 'react';
 import { createRef, useCallback } from 'react';
 
+import { useMergedRefs } from './useMergedRefs';
 import { useMergedRefsV2 } from './useMergedRefsV2';
+
+// Strict mode attaches every ref twice, which would hide the order these tests assert
+const renderOnce = (ui: ReactElement) => render(ui, { reactStrictMode: false });
 
 const useTrackedRef = (events: string[], name: string): RefCallback<HTMLElement> =>
 	useCallback(
@@ -27,7 +30,7 @@ describe('useMergedRefsV2', () => {
 			return <div ref={ref} />;
 		};
 
-		const { unmount } = render(<Component />);
+		const { unmount } = renderOnce(<Component />);
 
 		expect(events).toEqual(['a:attach:DIV', 'b:attach:DIV']);
 		expect(objectRef.current).toBeInstanceOf(HTMLDivElement);
@@ -48,7 +51,7 @@ describe('useMergedRefsV2', () => {
 			return <div ref={ref} />;
 		};
 
-		const { rerender } = render(<Component name='a' />);
+		const { rerender } = renderOnce(<Component name='a' />);
 		rerender(<Component name='b' />);
 
 		expect(events).toEqual(['a:attach:DIV', 'a:detach', 'b:attach:DIV']);
@@ -62,7 +65,7 @@ describe('useMergedRefsV2', () => {
 			return <div ref={ref} />;
 		};
 
-		const { unmount } = render(<Component />);
+		const { unmount } = renderOnce(<Component />);
 		unmount();
 
 		expect(events).toEqual(['a:attach:DIV', 'a:detach']);

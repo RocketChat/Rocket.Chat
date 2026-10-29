@@ -20,7 +20,6 @@ export const setRef = <T>(ref: Ref<T> | undefined, refValue: T): (() => void) =>
 	return () => undefined;
 };
 
-// TODO: backport to fuselage-hooks
 /**
  * Merges multiple refs into a single ref callback, forwarding the cleanup each of them returns.
  *
@@ -29,6 +28,7 @@ export const setRef = <T>(ref: Ref<T> | undefined, refValue: T): (() => void) =>
  *
  * @param refs The refs to merge.
  * @returns The merged ref callback.
+ * @public
  */
 export const useMergedRefsV2 = <T>(...refs: (Ref<T> | undefined)[]): RefCallback<T> => {
 	const detachRef = useRef<() => void>(undefined);

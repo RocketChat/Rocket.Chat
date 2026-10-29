@@ -61,7 +61,7 @@ Keep the callback's dependencies stable, since each new identity re-runs the tea
 
 ## Combining refs at the call site
 
-When several hooks need the same element, or the element is also needed as an object ref, merge at the call site with `useMergedRefsV2` (`client/hooks/useMergedRefsV2.ts`):
+When several hooks need the same element, or the element is also needed as an object ref, merge at the call site with `useMergedRefsV2` from `@rocket.chat/fuselage-hooks`:
 
 ```tsx
 const preventDefaultRef = usePreventDefault();
