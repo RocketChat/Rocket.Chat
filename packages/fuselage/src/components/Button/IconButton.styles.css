@@ -1,0 +1,23 @@
+.rcx-button__badge {
+	position: absolute;
+	inset-block-start: 0;
+	inset-inline-end: 0;
+
+	display: flex;
+
+	translate: 30% -30%;
+}
+
+.rcx-button__badge:dir(rtl) {
+	translate: -30% -30%;
+}
+
+.rcx-button__badge--bottom-end {
+	inset-block: auto 0;
+
+	translate: 30% 30%;
+}
+
+.rcx-button__badge--bottom-end:dir(rtl) {
+	translate: -30% 30%;
+}
