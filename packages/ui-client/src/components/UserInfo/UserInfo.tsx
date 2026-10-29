@@ -109,7 +109,7 @@ const UserInfo = ({
 					{reason && (
 						<InfoPanelField>
 							<InfoPanelLabel>{t('Reason_for_joining')}</InfoPanelLabel>
-							<UserInfoCopyableText text={reason} label={t('Reason_for_joining')} />
+							<UserInfoCopyableText text={reason} label={t('Reason_for_joining')} withTruncatedText={false} />
 						</InfoPanelField>
 					)}
 
