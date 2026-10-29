@@ -13,6 +13,7 @@ import postcssNested from 'postcss-nested';
 import type { Plugin } from 'vite';
 import { defineConfig } from 'vite';
 
+import { staticBox } from './staticBox/plugin';
 import { distOnlyWorkspacePackages } from './workspacePackages.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -315,6 +316,7 @@ export default defineConfig({
 	// Relative, so chunks, fonts and images resolve from wherever the entry is loaded: a CDN, a path prefix or the root.
 	base: './',
 	plugins: [
+		staticBox(),
 		react(),
 		appFallbackResolve(),
 		singlePackageFormat(),
