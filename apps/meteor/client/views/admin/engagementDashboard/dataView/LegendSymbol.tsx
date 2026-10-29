@@ -6,7 +6,7 @@ export type LegendSymbolProps = {
 };
 
 const LegendSymbol = ({ color = 'currentColor' }: LegendSymbolProps) => (
-	<Margins inlineEnd={8}>
+	<Margins inlineEnd='x8'>
 		<Box
 			is='span'
 			aria-hidden='true'
