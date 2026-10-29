@@ -45,6 +45,7 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 	// The field turns into a drop target while a file is dragged over it
 	const licenseInputClassName = useStyle(css`
 		margin-block-end: 8px !important;
+		font-family: monospace !important;
 		width: 100% !important;
 		border-style: ${isDragOver ? 'dashed' : 'solid'} !important;
 		border-color: ${strokeColor(isDragOver ? 'highlight' : 'light')} !important;
@@ -152,7 +153,6 @@ const ManageLicenseModal = ({ enterpriseLicense, onCancel }: ManageLicenseModalP
 				<FieldRow>
 					<TextAreaInput
 						className={licenseInputClassName}
-						style={{ fontFamily: 'monospace' }}
 						rows={4}
 						placeholder={t('Drag_and_drop_license_placeholder')}
 						value={license}
