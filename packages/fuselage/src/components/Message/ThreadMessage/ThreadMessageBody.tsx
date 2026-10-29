@@ -11,7 +11,7 @@ export type ThreadMessageBodyProps = {
 const ThreadMessageBodyFrame = styled(View, {
 	render: 'div',
 	position: 'static',
-	display: 'flex',
+	display: 'block',
 	flexDirection: 'row',
 	alignItems: 'normal',
 	flexShrink: 1,
