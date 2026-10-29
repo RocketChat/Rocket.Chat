@@ -60,7 +60,7 @@ export type ThreadMessageListProps = {
 const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBottom }: ThreadMessageListProps) => {
 	const { t } = useTranslation();
 	const msgJumpParam = useSearchParameter('msg');
-	const { bubbleRef, handleDateScroll, ...bubbleDate } = useDateScroll();
+	const { bubbleRef, handleDateScroll, listStyle, ...bubbleDate } = useDateScroll();
 
 	const {
 		data,
@@ -374,7 +374,7 @@ const ThreadMessageList = ({ mainMessage, shouldJumpToBottom, setShouldJumpToBot
 	const keepMountedMessages = useKeepMountedMessages(items, leadingRows);
 
 	return (
-		<div className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames'].filter(isTruthy).join(' ')}>
+		<div className={['thread-list js-scroll-thread', hideUsernames && 'hide-usernames', listStyle].filter(isTruthy).join(' ')}>
 			<BubbleDate ref={bubbleRef} {...bubbleDate} />
 			<CustomVirtuaScrollbars ref={mergedRefs}>
 				<MessageListProvider>
