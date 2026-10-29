@@ -61,6 +61,12 @@ const fileTitle = (attachment: MessageAttachment): string | undefined =>
 export const isDecryptFailed = (message: IMessage): boolean => (message as IMessage & { decryptFailed?: true }).decryptFailed === true;
 
 /**
+ * True for a message that was deleted while the server shows deleted messages (`Message_ShowDeletedStatus`): the server
+ * keeps its record as a "message deleted" placeholder (`t: 'rm'`), so the change arrives as an update, not as a delete.
+ */
+export const isDeletionPlaceholder = (message: IMessage): boolean => message.t === 'rm';
+
+/**
  * Turns a decrypted end-to-end encrypted message into the document that the local search index stores.
  * It returns `undefined` for a message that has nothing to index. It does not change the message.
  */

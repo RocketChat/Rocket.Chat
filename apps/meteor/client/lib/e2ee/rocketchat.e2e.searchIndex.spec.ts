@@ -121,6 +121,44 @@ describe('E2E client and the local search index', () => {
 		expect(bridge.upsert).toHaveBeenCalledTimes(1);
 	});
 
+	it('removes a message from the index when it arrives again as a deletion placeholder, and does not index it again', async () => {
+		const { privateKey } = await generate();
+		(e2e as unknown as { userId: string }).userId = 'u1';
+		e2e.privateKey = privateKey;
+		const encrypted = {
+			_id: 'm-deleted',
+			rid: 'r1',
+			t: 'e2e',
+			e2e: 'pending',
+			msg: '',
+			u: { _id: 'u2', username: 'bob' },
+			ts: new Date(),
+			_updatedAt: new Date(),
+		};
+		const decrypted = { ...encrypted, e2e: 'done', msg: 'budget review on friday' };
+		jest.spyOn(e2e, 'getInstanceByRoomId').mockResolvedValue({ decryptMessage: jest.fn(async () => decrypted) } as never);
+		jest.spyOn(e2e, 'parseQuoteAttachment').mockImplementation(async (message) => message);
+
+		e2e.setState('READY');
+		await e2eSearchIndexSession.whenSettled();
+		await e2e.decryptMessage(encrypted as never);
+		await e2eSearchIndexWriter.flush();
+		expect(bridge.upsert).toHaveBeenCalledTimes(1);
+
+		const placeholder = { ...encrypted, t: 'rm', msg: '', editedAt: new Date(), editedBy: { _id: 'u2', username: 'bob' } };
+		await e2e.decryptMessage(placeholder as never);
+		await e2eSearchIndexWriter.flush();
+
+		expect(bridge.remove).toHaveBeenCalledWith(['m-deleted']);
+
+		// A decrypt of the old version that ends after the delete does not bring its text back.
+		await e2e.decryptMessage(encrypted as never);
+		await e2eSearchIndexWriter.flush();
+		expect(bridge.upsert).toHaveBeenCalledTimes(1);
+
+		await e2e.stopClient();
+	});
+
 	it('indexes a live message that failed to decrypt (room key missing) after the room key arrives', async () => {
 		const { privateKey } = await generate();
 		(e2e as unknown as { userId: string }).userId = 'u1';

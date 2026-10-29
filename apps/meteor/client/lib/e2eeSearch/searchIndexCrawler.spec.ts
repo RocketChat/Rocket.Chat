@@ -334,6 +334,21 @@ describe('createSearchIndexCrawler', () => {
 			expect(crawler.getPendingDecrypt('room1').map((message) => message._id)).toEqual(['m2']);
 		});
 
+		it('removes a message that the server keeps as a deletion placeholder, so a live-indexed text of it is not found', async () => {
+			const { crawler, writer } = await setup({
+				pages: [
+					{
+						updated: [encrypted('m3', NOW - 1000), encrypted('m2', NOW - 2000, { t: 'rm', msg: '' })],
+						deleted: [],
+						cursor: { next: null, previous: `${NOW - 2000}` },
+					},
+				],
+			});
+
+			expect(await crawler.backfillRoomPage('room1')).toEqual({ done: false, indexed: 1 });
+			expect(writer.remove).toHaveBeenCalledWith(['m2'], { throwOnError: true });
+		});
+
 		it('does not count a plain (not encrypted) message as indexed', async () => {
 			const { crawler } = await setup({
 				pages: [
@@ -417,6 +432,38 @@ describe('createSearchIndexCrawler', () => {
 
 			expect(calls[1]).toEqual({ roomId: 'room1', type: 'UPDATED', count: 2, next: `${NOW + 2000}` });
 			expect((await backend.getRoomState('room1'))?.lastUpdate).toBe(NOW + 3000);
+		});
+
+		it('removes a message that the server keeps as a deletion placeholder (shown deleted status) and drops it from the pending set', async () => {
+			const placeholder = encrypted('m2', NOW + 3000, { t: 'rm', msg: '' });
+			const { crawler, backend, writer, decryptMessage } = await setup({
+				undecryptable: new Set(['m2']),
+				pages: [
+					{ updated: [encrypted('m4', NOW + 2000), placeholder], deleted: [], cursor: noMore },
+					{ updated: [], deleted: [], cursor: noMore },
+				],
+			});
+			crawler.addPendingDecrypt(encrypted('m2', NOW - 1000));
+			await backend.setRoomState('room1', { lastUpdate: NOW, backfillDone: true });
+
+			expect(await crawler.catchUpRoomPage('room1')).toEqual({ done: false, indexed: 1, removed: 1 });
+			expect(await crawler.catchUpRoomPage('room1')).toEqual({ done: true, indexed: 0, removed: 0 });
+
+			expect(writer.remove).toHaveBeenCalledWith(['m2'], { throwOnError: true });
+			expect(crawler.getPendingDecrypt('room1')).toEqual([]);
+			expect(decryptMessage.mock.calls.map(([message]) => message._id)).not.toContain('m2');
+			expect((await backend.getRoomState('room1'))?.lastUpdate).toBe(NOW + 3000);
+		});
+
+		it('does not move lastUpdate past a deletion placeholder whose remove the index rejected', async () => {
+			const { crawler, backend, writer } = await setup({
+				pages: [{ updated: [encrypted('m2', NOW + 3000, { t: 'rm', msg: '' })], deleted: [], cursor: noMore }],
+			});
+			writer.remove.mockRejectedValueOnce(new Error('index rejected the remove'));
+			await backend.setRoomState('room1', { lastUpdate: NOW, backfillDone: true });
+
+			await expect(crawler.catchUpRoomPage('room1')).rejects.toThrow('index rejected the remove');
+			expect(await backend.getRoomState('room1')).toEqual({ lastUpdate: NOW, backfillDone: true });
 		});
 
 		it('keeps lastUpdate when nothing changed', async () => {

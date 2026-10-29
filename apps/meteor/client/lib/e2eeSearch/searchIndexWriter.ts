@@ -1,7 +1,7 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import type { E2EESearchDoc, ISearchIndexBackend } from '@rocket.chat/desktop-api';
 
-import { cutSearchDocBody, toSearchDoc } from './toSearchDoc';
+import { cutSearchDocBody, isDecryptFailed, isDeletionPlaceholder, toSearchDoc } from './toSearchDoc';
 
 /** The most documents that the desktop index accepts in one `upsert` call (`MAX_BATCH_SIZE` in the desktop `validate.ts`). */
 const MAX_DOCS_PER_CALL = 500;
@@ -29,7 +29,10 @@ type SearchIndexWriterOptions = {
 };
 
 export type SearchIndexWriter = {
-	/** Queues the search document of a decrypted E2EE message. Other messages are ignored. */
+	/**
+	 * Queues the search document of a decrypted E2EE message. A deletion placeholder (`t: 'rm'`) leaves the index, and so
+	 * does a decrypted message with no text left. Other messages are ignored.
+	 */
 	index(message: IMessage): void;
 	/**
 	 * Returns an `index` bound to the index that is open now. It drops the message when that index is not open any more
@@ -51,6 +54,8 @@ export type SearchIndexWriter = {
 	getVersion(): number;
 	dispose(): void;
 };
+
+const isDecryptedE2EEMessage = (message: IMessage): boolean => message.t === 'e2e' && message.e2e === 'done' && !isDecryptFailed(message);
 
 const toCalls = (docs: E2EESearchDoc[]): E2EESearchDoc[][] => {
 	const calls: E2EESearchDoc[][] = [];
@@ -200,8 +205,19 @@ export const createSearchIndexWriter = ({
 	const index = (message: IMessage, backend: ISearchIndexBackend | undefined) => {
 		if (!backend || getBackend() !== backend) return;
 
+		if (isDeletionPlaceholder(message)) {
+			// A room shows its placeholders again on each load: one remove per message is enough.
+			if (message._id && !deletedIds.has(message._id)) void remove([message._id]);
+			return;
+		}
+
 		const doc = toSearchDoc(message);
-		if (!doc || deletedIds.has(doc.id) || !isRoomSubscribed(doc.rid)) return;
+		if (!doc) {
+			// An edit left the message with no text: the document of its old text goes.
+			if (message._id && isDecryptedE2EEMessage(message)) void remove([message._id], { deleted: false });
+			return;
+		}
+		if (deletedIds.has(doc.id) || !isRoomSubscribed(doc.rid)) return;
 
 		if (queueBackend !== backend) {
 			queue = new Map();

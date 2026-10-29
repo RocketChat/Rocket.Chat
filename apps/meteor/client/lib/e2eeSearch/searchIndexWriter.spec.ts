@@ -335,6 +335,61 @@ describe('createSearchIndexWriter remove', () => {
 		expect(backend.upsert).not.toHaveBeenCalled();
 	});
 
+	it('removes a message that arrives as a deletion placeholder, once, and does not index its old text again', async () => {
+		const backend = createBackend();
+		const writer = createSearchIndexWriter({ getBackend: () => backend, delayMs: DELAY });
+
+		writer.index(message('m1'));
+		await jest.advanceTimersByTimeAsync(DELAY);
+		const placeholder = message('m1', { t: 'rm', msg: '', e2e: undefined });
+		writer.index(placeholder);
+		writer.index(placeholder);
+		await writer.flush();
+		writer.index(message('m1'));
+		await jest.advanceTimersByTimeAsync(DELAY);
+
+		expect(backend.remove.mock.calls).toEqual([[['m1']]]);
+		expect(backend.upsert).toHaveBeenCalledTimes(1);
+	});
+
+	it('drops a queued document of a message that becomes a deletion placeholder before the flush', async () => {
+		const backend = createBackend();
+		const writer = createSearchIndexWriter({ getBackend: () => backend, delayMs: DELAY });
+
+		writer.index(message('m1'));
+		writer.index(message('m1', { t: 'rm', msg: '' }));
+		await jest.advanceTimersByTimeAsync(DELAY);
+
+		expect(backend.upsert).not.toHaveBeenCalled();
+		expect(backend.remove).toHaveBeenCalledWith(['m1']);
+	});
+
+	it('removes the old document of a message that an edit left with no text, and indexes it again after a new edit', async () => {
+		const backend = createBackend();
+		const writer = createSearchIndexWriter({ getBackend: () => backend, delayMs: DELAY });
+
+		writer.index(message('m1'));
+		await jest.advanceTimersByTimeAsync(DELAY);
+		writer.index(message('m1', { msg: '  ' }));
+		await writer.flush();
+		writer.index(message('m1', { msg: 'new words' }));
+		await jest.advanceTimersByTimeAsync(DELAY);
+
+		expect(backend.remove).toHaveBeenCalledWith(['m1']);
+		expect(backend.upsert.mock.calls.map(([docs]) => docs.map((doc) => doc.body))).toEqual([['secret words m1'], ['new words']]);
+	});
+
+	it('does not remove a message that failed to decrypt or is not decrypted yet', async () => {
+		const backend = createBackend();
+		const writer = createSearchIndexWriter({ getBackend: () => backend, delayMs: DELAY });
+
+		writer.index(message('m1', { e2e: 'pending', msg: '' }));
+		writer.index(message('m2', { msg: '', decryptFailed: true } as Partial<IMessage>));
+		await writer.flush();
+
+		expect(backend.remove).not.toHaveBeenCalled();
+	});
+
 	it('indexes again a message whose document was only dropped (not deleted)', async () => {
 		const backend = createBackend();
 		const writer = createSearchIndexWriter({ getBackend: () => backend, delayMs: DELAY });

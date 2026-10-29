@@ -3,7 +3,7 @@ import type { IMessage } from '@rocket.chat/core-typings';
 import type { E2EESearchRoomState, ISearchIndexBackend } from '@rocket.chat/desktop-api';
 
 import type { SearchIndexWriter } from './searchIndexWriter';
-import { isDecryptFailed } from './toSearchDoc';
+import { isDecryptFailed, isDeletionPlaceholder } from './toSearchDoc';
 
 /**
  * The `chat.syncMessages` query params that the crawler sends: always one paging cursor, because a call without one has
@@ -167,6 +167,18 @@ export const createSearchIndexCrawler = ({
 		return { indexed, noneDecrypted: encrypted > 0 && failed === encrypted };
 	};
 
+	/**
+	 * Removes the deletion placeholders of the page from the index and from the pending set, so the text of a deleted
+	 * message is not found and a retry does not index it again. Rejects when the index rejected a remove.
+	 */
+	const removeDeletionPlaceholders = async (messages: IMessage[]): Promise<number> => {
+		const ids = messages.filter(isDeletionPlaceholder).map(({ _id }) => _id);
+		if (!ids.length) return 0;
+		await writer.remove(ids, { throwOnError: true });
+		for (const id of ids) pendingDecrypt.delete(id);
+		return ids.length;
+	};
+
 	return {
 		async backfillRoomPage(rid, { waitForKey = false } = {}) {
 			const state: E2EESearchRoomState = (await backend.getRoomState(rid)) ?? { backfillDone: false };
@@ -181,9 +193,10 @@ export const createSearchIndexCrawler = ({
 				previous: state.backfillCursor === undefined ? previousCursorAt(startedAt) : toCompoundPreviousCursor(state.backfillCursor),
 			});
 
+			await removeDeletionPlaceholders(page.updated);
 			const oldestSendTime = oldestSendTimeAt(startedAt);
 			const inDepth = page.updated.filter((message) => isInDepth(message, oldestSendTime));
-			const { indexed, noneDecrypted } = await decryptAll(inDepth);
+			const { indexed, noneDecrypted } = await decryptAll(inDepth.filter((message) => !isDeletionPlaceholder(message)));
 			if (waitForKey && noneDecrypted) return { done: false, indexed, waitingForKey: true };
 			const reachedLimit = maxBackfillMessagesPerRoom !== undefined && counted + inDepth.length >= maxBackfillMessagesPerRoom;
 
@@ -221,11 +234,15 @@ export const createSearchIndexCrawler = ({
 			const page = await syncMessages({ roomId: rid, type: catchUp.type, count: pageSize, next: catchUp.cursor });
 
 			let indexed = 0;
+			let removed = 0;
 			let { newestUpdate } = catchUp;
 			const deletedIds = page.deleted.map(({ _id }) => _id);
 			if (catchUp.type === 'UPDATED') {
+				removed = await removeDeletionPlaceholders(page.updated);
 				const oldestSendTime = oldestSendTimeAt(now());
-				const outOfDepth = page.updated.filter((message) => !isInDepth(message, oldestSendTime)).map(({ _id }) => _id);
+				const outOfDepth = page.updated
+					.filter((message) => !isDeletionPlaceholder(message) && !isInDepth(message, oldestSendTime))
+					.map(({ _id }) => _id);
 				if (outOfDepth.length) {
 					// Sent before the depth limit: not indexed, and an older version of it leaves the index, so its old text is not found.
 					await writer.remove(outOfDepth, { deleted: false, throwOnError: true });
@@ -234,19 +251,20 @@ export const createSearchIndexCrawler = ({
 				// The messages of the `from` millisecond were indexed by the read that set `lastUpdate`, so they are not new.
 				const isNew = (message: IMessage) => updatedAtOf(message) !== catchUp.from;
 				const decrypted = await decryptAll(
-					page.updated.filter((message) => isInDepth(message, oldestSendTime)),
+					page.updated.filter((message) => !isDeletionPlaceholder(message) && isInDepth(message, oldestSendTime)),
 					isNew,
 				);
 				// The cursor does not move, so the page is read again after the key arrives.
-				if (waitForKey && decrypted.noneDecrypted) return { done: false, indexed: decrypted.indexed, removed: 0, waitingForKey: true };
+				if (waitForKey && decrypted.noneDecrypted) return { done: false, indexed: decrypted.indexed, removed, waitingForKey: true };
 				indexed = decrypted.indexed;
 				newestUpdate = Math.max(newestUpdate, ...page.updated.map(updatedAtOf));
 			} else if (deletedIds.length) {
 				// A failed remove rejects, so `lastUpdate` does not move past the deletes and the next catch-up reads them again.
 				await writer.remove(deletedIds, { throwOnError: true });
 				for (const id of deletedIds) pendingDecrypt.delete(id);
+				removed = deletedIds.length;
 			}
-			const result = { indexed, removed: catchUp.type === 'DELETED' ? deletedIds.length : 0 };
+			const result = { indexed, removed };
 
 			const next = page.cursor?.next;
 			if (next) {

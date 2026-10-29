@@ -38,7 +38,7 @@ import {
 import { createSearchIndexSession } from '../e2eeSearch/searchIndexSession';
 import { createSearchIndexWriter } from '../e2eeSearch/searchIndexWriter';
 import { subscriptionRemovals } from '../e2eeSearch/subscriptionRemovals';
-import { isDecryptFailed } from '../e2eeSearch/toSearchDoc';
+import { isDecryptFailed, isDeletionPlaceholder } from '../e2eeSearch/toSearchDoc';
 import { getUserAvatarURL } from '../getUserAvatarURL';
 import { limitQuoteChain } from '../limitQuoteChain';
 import { getDdpSdk } from '../sdk/ddpSdk';
@@ -773,6 +773,12 @@ class E2E extends Emitter {
 	}
 
 	async decryptMessage(message: IMessage | IE2EEMessage): Promise<IMessage> {
+		// A deleted message that stays as a placeholder arrives as an update: its old text leaves the local search index.
+		if (isDeletionPlaceholder(message)) {
+			e2eSearchIndexWriter.index(message);
+			return message;
+		}
+
 		if (!isE2EEMessage(message) || message.e2e === 'done') {
 			return message;
 		}
