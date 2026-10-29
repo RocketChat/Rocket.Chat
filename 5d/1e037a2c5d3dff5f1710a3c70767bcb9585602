@@ -1,0 +1,19 @@
+yarn.lock
+  s_35ce995ae950b9::t_cc4ae90a2b9a5d 14227,36864
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "5d1e037a2c5d3dff5f1710a3c70767bcb9585602",
+  "prompts": {},
+  "sessions": {
+    "s_35ce995ae950b9": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "f447591c-fd40-47e9-ae6b-d905502975ef",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
