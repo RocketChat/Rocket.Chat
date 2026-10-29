@@ -136,4 +136,10 @@
 		border-spacing: 0;
 		border-collapse: collapse;
 	}
+
+	*,
+	*::before,
+	*::after {
+		box-sizing: border-box;
+	}
 }
