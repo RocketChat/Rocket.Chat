@@ -37,7 +37,18 @@ Branch `feat/fuselage-zero`, on top of #43055 (`feat/serve-vite-client`, the Vit
 - **Every Fuselage component with its own styles is migrated**, one commit per component or family: Button, IconButton, ButtonGroup, SplitButton, Bubble, CheckBox, RadioButton, ToggleSwitch, Tag, Badge, Chip, the Item family, Tabs, Accordion, Table, Pagination, Skeleton, Throbber, ProgressBar, Avatar, StatusBullet, Tooltip, Divider, Tile, Callout, CardGrid, CardGroup, Card, Modal, InputBox and its inputs, Field, FieldGroup, Label, the Select family, Option, Options, Menu, Sidebar, NavBar, Sidepanel, the Message family, Contextualbar, Banner, ToastBar, Chevron, CodeSnippet, FramedIcon, States, Grid, Icon and Dropdown (the last three as plain CSS).
 - **The web client compiles them with zero runtime:** `yarn build:client` passes and no `@tamagui` code reaches `public/bundle` (246 frames lowered, 0 bailed).
 - **Checks on the integrated branch:** `yarn generate:frame-values --check`, Fuselage `tsc`, the full Fuselage Jest suite (538 tests) and oxlint (0 errors) pass. The Fuselage Storybook, which now loads the app's CSS reset, is pixel-identical to `develop` in 552 of 566 stories; the 14 others force states by class, which are dropped on purpose.
-- **Size so far:** each component's lot reported its own delta; the running total is estimated at +13 to +15 kB gzip JS against `develop`, not yet measured as a whole.
+- **Size, measured on the whole client** (production `build:client`, `develop` 0e17ef571d against this branch at 1e42d1f120):
+
+  |                    | `develop`  | this branch | delta                                         |
+  | ------------------ | ---------- | ----------- | --------------------------------------------- |
+  | JS gzip            | 4,255.6 kB | 4,215.9 kB  | −39.7 kB                                      |
+  | CSS gzip           | 80.7 kB    | 90.3 kB     | +9.6 kB (`tamagui-zero.css` is 25.4 kB of it) |
+  | Startup JS gzip    | 418.0 kB   | 386.5 kB    | −31.5 kB                                      |
+  | `@tamagui/*` bytes | —          | 0           |                                               |
+
+  The JS shrinks because the client now compiles Fuselage from its source instead of bundling the prebuilt `dist`. Against a `develop` that also compiles Fuselage from source, this branch is **+17.5 kB gzip JS**, inside the +25 kB budget. The largest growth is in Button, Pagination, Divider, Tag and IconButton (variant tables; see "Variant tables: measured cost and how to shrink them").
+
+- **The npm `dist` grows:** `fuselage.production.js` goes from 36.1 to 109.5 kB gzip (about 3×) because consumers outside the app run Fuselage uncompiled and the Tamagui runtime is bundled into it; `fuselage.css` goes from 28.0 to 13.8 kB gzip. The budget covers the app's client only. If the npm size matters: publish a zero-runtime-compiled build as well, or make the runtime a peer dependency instead of bundling it.
 - **Out of scope and still SCSS:** `Box` and `Text` (the css-in-js track), plus small `Field` and `States` remainders kept for an `@extend` of the rich-text placeholder, and the shared `styles/` mixins and variables.
 
 The pilot (#42942, `feat/fuselage-tamagui-pilot`) lowered every definition in the library instead; its decisions and lessons are in `docs/proposals/fuselage-tamagui.md` and `docs/proposals/fuselage-lowered-styled.md` on that branch. The lowering plugin is the fallback if zero-runtime stops fitting.
@@ -165,7 +176,54 @@ The combined variants are kept as `styled()` variants so one frame definition se
   - Plain classes per value: same size, but needs a specificity ladder.
   - CSS custom properties per dimension: same size, but React Native has no `var()`.
 
-**When to apply it:** only when the size report shows the running total over the +10 kB JS budget. Start with the components whose combined variants are largest (`IconButton`, `Button`, then whichever the report ranks next).
+**When to apply it:** only when the size report shows the running total over the JS budget (raised from +10 to +25 kB gzip). It breaks the one-frame-for-web-and-native decision, so prefer the techniques in the next section first.
+
+## Variant tables: measured cost and how to shrink them (analysed, not applied)
+
+Measured on `feat/fuselage-tamagui-pilot` at f34eb126b8 by rewriting the tables inside the built client chunk and re-compressing it (gzip level 9). Deferred: none of this is applied yet.
+
+**What the tables cost.** Of the +17.5 kB gzip JS, the zero-runtime lookup tables are about **7.1 kB** (87 tables, 515 keys, 1,392 class tokens of which 486 are distinct, average 12.8 characters). The static `className` strings of the frames are about **7.4 kB** (229 strings). All the tables live in one shared chunk.
+
+- Every key is reachable from the public props except the `undefined` key each table gets.
+- 39 tables are booleans (`{ true, false, undefined }`), 86 keys duplicate another key's value in the same table, and 62 values are empty.
+- IconButton's `paint` is 30 keys now (10 variants × none/pressed/disabled), not the spike's 469.
+
+| Component  | Tables | Keys | gzip (B) | Notes                                                                                      |
+| ---------- | ------ | ---- | -------- | ------------------------------------------------------------------------------------------ |
+| Button     | 2      | 42   | 718      | `sizing` repeats 7–12 base classes per key; mini/tiny without square duplicate the default |
+| Tag        | 3      | 44   | 656      | the disabled keys are identical across the 9 variants                                      |
+| IconButton | 3      | 40   | 591      | all reachable; `pressed` must stay a key (no `aria-pressed` state in Tamagui)              |
+| Divider    | 1      | 31   | 384      | 10 shapes × 3 tones; the best case for splitting                                           |
+| TableCell  | 5      | 23   | 282      | small enum and boolean tables                                                              |
+| Input      | 3      | 15   | 275      |                                                                                            |
+
+**Where the tables come from.** The table mechanism is our own `@tamagui/static` patch (`.yarn/patches/@tamagui-static-npm-3.0.18-*.patch`): `frontendClassDomain` takes every key of a variant, adds `false` when only `true` exists and always adds `undefined`; the table is emitted at `compilerHost.ts:4176-4183`. Upstream only builds tables for a frontend `className`. The one-conditional-per-property rule is upstream (`compilerHost.ts:4049-4057`).
+
+**Techniques, ranked** (gzip savings measured on the built chunk):
+
+| #   | Technique                                                                                                                                                                                        | Savings                                    | Effort       | Keeps one frame for web and native | By the book                          |
+| --- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ------------------------------------------ | ------------ | ---------------------------------- | ------------------------------------ |
+| 1   | Base-36 class hashes (`_bg-1895627589` → `_bg-vfa2ox`): one-line patch of the atomic class name; also shrinks the static strings and the CSS                                                     | JS −2.2 kB, CSS −1.9 kB                    | small        | yes                                | no (patch; worth proposing upstream) |
+| 2   | Split each combined variant by the props each CSS property depends on, in `generate-frame-values.mts` (Divider 30 keys → 6 + 4 + 3; Button `sizing` into several small tables)                   | −1.5 kB                                    | medium       | yes                                | yes                                  |
+| 3   | `disabled` as Tamagui's built-in state inside each variant value (Button `paint` 16 → 8, IconButton 30 → 20, Tag 36 → 18); the wrapper must pass `aria-disabled`, which zero-runtime doesn't add | −0.95 kB (−2.0 kB together with 2)         | small–medium | yes                                | yes                                  |
+| 4   | Canonicalise equivalent keys in the wrapper (Button mini/tiny without square = default; compact + square = square)                                                                               | −0.3 kB, mostly covered by 2               | small        | yes                                | yes                                  |
+| 5   | Drop `undefined` from a table's domain when the expression can't be undefined (our patch)                                                                                                        | −0.35 kB                                   | small        | yes                                | our patch                            |
+| 6   | Emit boolean tables as a ternary                                                                                                                                                                 | −0.17 kB                                   | small        | yes                                | yes                                  |
+| 7   | Shared constants for identical class strings                                                                                                                                                     | ≤ 0.2 kB (gzip already absorbs most of it) | small        | yes                                | yes                                  |
+
+Recommended order: 5 and 6, then 3, then 2 (which absorbs 4), then 1. Together they would take the tables from about 7.1 to 4.8 kB gzip and the JS down 4–5 kB, with about 2 kB less CSS. After that the static class strings are the next lever, and only technique 1 touches them.
+
+**Caveats:**
+
+- **Technique 3:** zero-runtime emits the DOM `disabled` attribute, not `aria-disabled`; the runtime path adds it (`getSplitStyles.tsx:959-960`). Tag and Item render a `span`/`li`, so adding `aria-disabled` there changes what assistive technology hears.
+- **Technique 2:** estimated by grouping properties per key partition at about 40 B per extra table; not prototyped in Fuselage.
+
+**Ruled out:**
+
+- **CSS custom properties set inside a variant:** dropped silently on 3.0.18 (`isValidStyleKey` is `key in validStyles`, `getSplitStyles.tsx:481-482`); the build passes with the style missing.
+- **Tamagui 3.1.x:** `compilerHost.ts` differs from 3.0.18 by 6 lines; no compound variants, no precedence, no `ordered` option.
+- **The parent choosing the variant through a styled context** (e.g. ButtonGroup for its buttons): a component with a context can't be flattened (`compilerHost.ts:1584`) and zero-runtime bails (rule 6).
+- **The data-attribute CSS fallback** (previous section): saves the most JS, but needs a `.native.tsx` mirror per frame.
 
 ## Verification, per pull request
 
@@ -226,7 +284,7 @@ Tick an item in the commit that completes it.
 - [ ] Pixel and computed-style A/B over every story against `develop`, and compiled against uncompiled. Each lot was only checked on its own stories.
 - [ ] Real-app A/B against `develop`: home, a room, members, a modal, preferences, the marketplace and the dark sidebar. Also the consumers never seen in a browser: OutlookSettingItem, VideoConfListItem, ui-composer, the marketplace `CategoryDropDownAnchor`.
 - [ ] Bench the lists (150 messages, 200 sidebar rows, members): mount and update within +10% of `develop`. Commit the pilot's bench (`perf/bench`) with it.
-- [ ] Measure the whole client bundle against `develop` (JS and CSS gzip).
+- [x] Measure the whole client bundle against `develop` (JS and CSS gzip): see "Status".
 - [ ] Meteor `tsc`, the e2e suite, and the uncompiled consumers: `fuselage-ui-kit`, the ui-client Storybook, the app packages' Jest.
 
 **Cleanup**
@@ -239,7 +297,8 @@ Tick an item in the commit that completes it.
 **Decisions**
 
 - [ ] `style` passed inside the render element's attributes object (Throbber, ProgressBar, ToastBar) to give a frame a custom property: keep, or fall back to `Box` styling props (css-in-js at runtime, as on `develop`).
-- [ ] The Option `success`/`warning`/`primary` text colours, which the branch had silently lost, were fixed inside the Option commit; split it into its own `fix` commit or keep.
+- [x] The Option `success`/`warning`/`primary` text colours, which the branch had silently lost when Item became frames, are fixed in their own `regression(fuselage)` commit right after the Item commit.
+- [ ] Shrink the variant tables (see "Variant tables: measured cost and how to shrink them"): deferred.
 - [ ] Behaviour changes to record in changesets: state classes removed; a consumer `className` now adds to the component's classes instead of replacing them (Pagination, Bubble, Card parts, Sidebar, MessageSystem, MessageContainer); several Message prop types moved from `HTMLAttributes` to `ElementProps`.
 
 **Delivery**
@@ -254,5 +313,6 @@ Tick an item in the commit that completes it.
   - **To decide:** count the attributes the app and the other packages actually pass to each component, and whether a closed list covers them.
   - **What it would remove:** the `@tamagui/static` render-element patch.
 
-- **Where the JS goes.** The pilot was about +45 kB JS over `develop` without the runtime. In the spike, zero-runtime `Button` and `IconButton` still carry about 12.6 kB gzip against near zero for `develop`'s SCSS buttons. About 5.9 kB of it is the combined variant maps, which stay by decision (see the optimization strategy below), and 2.9 kB is Icon's inline colour data. Track the running total per component; if it passes the +10 kB budget, apply the optimization below to the components with the largest maps first.
+- **Where the JS goes.** Measured: +17.5 kB gzip JS against a `develop` that compiles Fuselage from source, about 7.1 kB of it in variant tables and 7.4 kB in the frames' static class strings. The budget is +25 kB; the shrink techniques are documented and deferred.
+- **The npm build's size.** Uncompiled consumers get the Tamagui runtime bundled into `fuselage.production.js` (36 → 110 kB gzip). Decide whether to also publish a zero-runtime-compiled build or make the runtime a peer dependency.
 - **What happens to the pilot.** Keep #42942 open as the reference while the component PRs land, then close it. #43167, the develop-compatible preparation, can merge independently.
