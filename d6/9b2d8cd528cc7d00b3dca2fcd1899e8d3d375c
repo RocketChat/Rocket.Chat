@@ -1,0 +1,11 @@
+apps/meteor/server/lib/users/saveUser/saveUser.ts
+  ai_agent 308-310
+apps/meteor/tests/end-to-end/api/users.ts
+  ai_agent 21,3163-3183
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "d69b2d8cd528cc7d00b3dca2fcd1899e8d3d375c",
+  "prompts": {}
+}
