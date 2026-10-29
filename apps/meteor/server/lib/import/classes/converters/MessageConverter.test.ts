@@ -16,7 +16,6 @@ const { MessageConverter } = proxyquire.noCallThru().load('./MessageConverter', 
 	'../../../messages/insertMessage': {
 		insertMessage,
 	},
-	'meteor/check': sinon.stub(),
 	'meteor/meteor': sinon.stub(),
 	'@rocket.chat/models': { ...modelsMock, '@global': true },
 });

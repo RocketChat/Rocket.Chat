@@ -10,7 +10,6 @@ import type {
 	FileProp,
 } from '@rocket.chat/core-typings';
 import { Rooms, Uploads, Users } from '@rocket.chat/models';
-import { Match, check } from 'meteor/check';
 
 import { executeSendMessage } from './sendMessage';
 import { getFileExtension } from '../../../lib/utils/getFileExtension';
@@ -161,6 +160,8 @@ export const parseFileIntoMessageAttachments = async (
 	return { files, attachments };
 };
 
+const msgDataStringFields = ['avatar', 'emoji', 'alias', 'msg', 'tmid', 'customFields', 't'];
+
 export const sendFileMessage = async (
 	userId: string,
 	{
@@ -190,25 +191,23 @@ export const sendFileMessage = async (
 		return false;
 	}
 
-	check(
-		msgData,
-		Match.Maybe({
-			avatar: Match.Optional(String),
-			emoji: Match.Optional(String),
-			alias: Match.Optional(String),
-			groupable: Match.Optional(Boolean),
-			msg: Match.Optional(String),
-			tmid: Match.Optional(String),
-			customFields: Match.Optional(String),
-			t: Match.Optional(String),
-			content: Match.Optional(
-				Match.ObjectIncluding({
-					algorithm: String,
-					ciphertext: String,
-				}),
-			),
-		}),
-	);
+	if (
+		msgData != null &&
+		(typeof msgData !== 'object' ||
+			Object.entries(msgData).some(([key, value]) => {
+				if (key === 'groupable') {
+					return value !== undefined && typeof value !== 'boolean';
+				}
+				if (key === 'content') {
+					return value !== undefined && (typeof value?.algorithm !== 'string' || typeof value.ciphertext !== 'string');
+				}
+				return !msgDataStringFields.includes(key) || (value !== undefined && typeof value !== 'string');
+			}))
+	) {
+		throw new ClientSafeError('error-invalid-arguments', 'Invalid arguments', {
+			method: 'sendFileMessage',
+		});
+	}
 
 	const data = {
 		rid: roomId,

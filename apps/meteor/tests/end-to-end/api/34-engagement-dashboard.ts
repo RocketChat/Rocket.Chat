@@ -66,7 +66,7 @@ describe('[Engagement Dashboard]', () => {
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('Match error: Failed Match.Where validation in field start');
+					expect(res.body.error).to.be.equal('must match format "date-time"');
 				});
 		});
 
@@ -84,7 +84,7 @@ describe('[Engagement Dashboard]', () => {
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal('Match error: Failed Match.Where validation in field end');
+					expect(res.body.error).to.be.equal('must match format "date-time"');
 				});
 		});
 
@@ -99,7 +99,7 @@ describe('[Engagement Dashboard]', () => {
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal("Match error: Missing key 'start'");
+					expect(res.body.error).to.be.equal("must have required property 'start'");
 				});
 		});
 
@@ -114,7 +114,7 @@ describe('[Engagement Dashboard]', () => {
 				.expect(400)
 				.expect((res: Response) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body.error).to.be.equal("Match error: Missing key 'end'");
+					expect(res.body.error).to.be.equal("must have required property 'end'");
 				});
 		});
 

@@ -3,7 +3,6 @@ import { User, ClientSafeError } from '@rocket.chat/core-services';
 import { Roles, Settings, Users } from '@rocket.chat/models';
 import { escapeRegExp, escapeHTML, getLoginExpirationInDays, removeEmpty } from '@rocket.chat/tools';
 import { Accounts } from 'meteor/accounts-base';
-import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
@@ -269,11 +268,11 @@ const { insertUserDoc } = Accounts;
 Accounts.insertUserDoc = async function (options, user) {
 	const globalRoles = new Set();
 
-	if (Match.test(options.globalRoles, [String]) && options.globalRoles.length > 0) {
+	if (Array.isArray(options.globalRoles) && options.globalRoles.every((role) => typeof role === 'string')) {
 		options.globalRoles.map((role) => globalRoles.add(role));
 	}
 
-	if (Match.test(user.globalRoles, [String]) && user.globalRoles.length > 0) {
+	if (Array.isArray(user.globalRoles) && user.globalRoles.every((role) => typeof role === 'string')) {
 		user.globalRoles.map((role) => globalRoles.add(role));
 	}
 

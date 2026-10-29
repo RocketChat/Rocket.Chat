@@ -49,7 +49,6 @@ const { UserConverter } = proxyquire.noCallThru().load('./UserConverter', {
 		'hash': bcryptHash,
 		'@global': true,
 	},
-	'meteor/check': sinon.stub(),
 	'meteor/meteor': sinon.stub(),
 	'@rocket.chat/sha256': {
 		SHA256: sha,

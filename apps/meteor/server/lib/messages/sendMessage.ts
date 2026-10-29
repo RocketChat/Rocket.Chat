@@ -2,8 +2,7 @@ import { AppEvents, Apps } from '@rocket.chat/apps';
 import { Message } from '@rocket.chat/core-services';
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
-import { isAbsoluteURL } from '@rocket.chat/tools';
-import { Match, check } from 'meteor/check';
+import { isAbsoluteURL, isRecord } from '@rocket.chat/tools';
 
 import { isRelativeURL } from '../../../lib/utils/isRelativeURL';
 import { afterSaveMessage } from '../../hooks/messages/afterSaveMessage';
@@ -30,59 +29,44 @@ export type SendMessageOptions = {
  * is going to be rendered in the href attribute of a
  * link.
  */
-const validFullURLParam = Match.Where((value) => {
-	check(value, String);
-
-	if (!isAbsoluteURL(value) && !value.startsWith(FileUpload.getPath())) {
-		throw new Error('Invalid href value provided');
-	}
-
-	if (/^javascript:/i.test(value)) {
+const validFullURLParam = (value: unknown) => {
+	if (typeof value !== 'string' || (!isAbsoluteURL(value) && !value.startsWith(FileUpload.getPath())) || /^javascript:/i.test(value)) {
 		throw new Error('Invalid href value provided');
 	}
 
 	return true;
-});
+};
 
-const validPartialURLParam = Match.Where((value) => {
-	check(value, String);
-
-	if (!isRelativeURL(value) && !isAbsoluteURL(value) && !value.startsWith(FileUpload.getPath())) {
-		throw new Error('Invalid href value provided');
-	}
-
-	if (/^javascript:/i.test(value)) {
+const validPartialURLParam = (value: unknown) => {
+	if (
+		typeof value !== 'string' ||
+		(!isRelativeURL(value) && !isAbsoluteURL(value) && !value.startsWith(FileUpload.getPath())) ||
+		/^javascript:/i.test(value)
+	) {
 		throw new Error('Invalid href value provided');
 	}
 
 	return true;
-});
+};
 
-const objectMaybeIncluding = (types: any) =>
-	Match.Where((value: any) => {
-		Object.keys(types).forEach((field) => {
-			if (value[field] != null) {
-				try {
-					check(value[field], types[field]);
-				} catch (error: any) {
-					error.path = field;
-					throw error;
-				}
-			}
-		});
+const isString = (value: unknown) => typeof value === 'string';
+const isNumber = (value: unknown) => typeof value === 'number';
+const isBoolean = (value: unknown) => typeof value === 'boolean';
 
-		return true;
+const validateFieldsWhenPresent = (value: any, validators: Record<string, (fieldValue: unknown) => boolean>) => {
+	Object.entries(validators).forEach(([field, isValid]) => {
+		if (value[field] != null && !isValid(value[field])) {
+			throw new Error(`Invalid value for field ${field}`);
+		}
 	});
+};
 
 const validateAttachmentsFields = (attachmentField: any) => {
-	check(
-		attachmentField,
-		objectMaybeIncluding({
-			short: Boolean,
-			title: String,
-			value: Match.OneOf(String, Number, Boolean),
-		}),
-	);
+	validateFieldsWhenPresent(attachmentField, {
+		short: isBoolean,
+		title: isString,
+		value: (value) => isString(value) || isNumber(value) || isBoolean(value),
+	});
 
 	if (!attachmentField.value || !attachmentField.title) {
 		throw new Error('Invalid attachment field, title and value is required');
@@ -90,53 +74,47 @@ const validateAttachmentsFields = (attachmentField: any) => {
 };
 
 const validateAttachmentsActions = (attachmentActions: any) => {
-	check(
-		attachmentActions,
-		objectMaybeIncluding({
-			type: String,
-			text: String,
-			url: validFullURLParam,
-			image_url: validFullURLParam,
-			is_webview: Boolean,
-			webview_height_ratio: String,
-			msg: String,
-			msg_in_chat_window: Boolean,
-		}),
-	);
+	validateFieldsWhenPresent(attachmentActions, {
+		type: isString,
+		text: isString,
+		url: validFullURLParam,
+		image_url: validFullURLParam,
+		is_webview: isBoolean,
+		webview_height_ratio: isString,
+		msg: isString,
+		msg_in_chat_window: isBoolean,
+	});
 };
 
 const validateAttachment = (attachment: any) => {
-	check(
-		attachment,
-		objectMaybeIncluding({
-			color: String,
-			text: String,
-			ts: Match.OneOf(String, Number),
-			thumb_url: validFullURLParam,
-			button_alignment: String,
-			actions: [Match.Any],
-			message_link: validFullURLParam,
-			collapsed: Boolean,
-			author_name: String,
-			author_link: validFullURLParam,
-			author_icon: validFullURLParam,
-			title: String,
-			title_link: validFullURLParam,
-			title_link_download: Boolean,
-			image_dimensions: Object,
-			image_url: validFullURLParam,
-			image_preview: String,
-			image_type: String,
-			image_size: Number,
-			audio_url: validFullURLParam,
-			audio_type: String,
-			audio_size: Number,
-			video_url: validFullURLParam,
-			video_type: String,
-			video_size: Number,
-			fields: [Match.Any],
-		}),
-	);
+	validateFieldsWhenPresent(attachment, {
+		color: isString,
+		text: isString,
+		ts: (value) => isString(value) || isNumber(value),
+		thumb_url: validFullURLParam,
+		button_alignment: isString,
+		actions: Array.isArray,
+		message_link: validFullURLParam,
+		collapsed: isBoolean,
+		author_name: isString,
+		author_link: validFullURLParam,
+		author_icon: validFullURLParam,
+		title: isString,
+		title_link: validFullURLParam,
+		title_link_download: isBoolean,
+		image_dimensions: isRecord,
+		image_url: validFullURLParam,
+		image_preview: isString,
+		image_type: isString,
+		image_size: isNumber,
+		audio_url: validFullURLParam,
+		audio_type: isString,
+		audio_size: isNumber,
+		video_url: validFullURLParam,
+		video_type: isString,
+		video_size: isNumber,
+		fields: Array.isArray,
+	});
 
 	if (attachment.fields?.length) {
 		attachment.fields.map(validateAttachmentsFields);
@@ -150,21 +128,18 @@ const validateAttachment = (attachment: any) => {
 const validateBodyAttachments = (attachments: any[]) => attachments.map(validateAttachment);
 
 export const validateMessage = async (message: any, room: any, user: any) => {
-	check(
-		message,
-		objectMaybeIncluding({
-			_id: String,
-			msg: String,
-			text: String,
-			alias: String,
-			emoji: String,
-			tmid: String,
-			tshow: Boolean,
-			avatar: validPartialURLParam,
-			attachments: [Match.Any],
-			blocks: [Match.Any],
-		}),
-	);
+	validateFieldsWhenPresent(message, {
+		_id: isString,
+		msg: isString,
+		text: isString,
+		alias: isString,
+		emoji: isString,
+		tmid: isString,
+		tshow: isBoolean,
+		avatar: validPartialURLParam,
+		attachments: Array.isArray,
+		blocks: Array.isArray,
+	});
 
 	if (message.alias || message.avatar) {
 		const isLiveChatGuest = !message.avatar && user.token && user.token === room.v?.token;
@@ -208,7 +183,7 @@ export function prepareMessageObject(
 	};
 	message.rid = rid;
 
-	if (!Match.test(message.msg, String)) {
+	if (typeof message.msg !== 'string') {
 		message.msg = '';
 	}
 

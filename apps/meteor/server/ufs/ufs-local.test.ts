@@ -18,13 +18,11 @@ const fakeCollection = {
 // Proxyquire chain to mock all Meteor dependencies
 const ufsFilterMock = proxyquire.noCallThru().load('./ufs-filter', {
 	'meteor/meteor': {},
-	'meteor/check': {},
 	'meteor/mongo': {},
 });
 
 const { UploadFS } = proxyquire.noCallThru().load('./ufs', {
 	'meteor/meteor': {},
-	'meteor/check': {},
 	'meteor/mongo': {},
 	'./ufs-filter': ufsFilterMock,
 	'./ufs-store': {
@@ -50,7 +48,6 @@ const ufsIndexMock = { UploadFS };
 
 const ufsStoreMockRaw = proxyquire.noCallThru().load('./ufs-store', {
 	'meteor/meteor': {},
-	'meteor/check': {},
 	'meteor/mongo': {},
 	'./ufs': ufsMockModule,
 	'./ufs-filter': ufsFilterMock,
@@ -61,7 +58,6 @@ const ufsStoreMock = Object.assign({}, ufsStoreMockRaw, { default: ufsStoreMockR
 const localStoreProxy = proxyquire.noCallThru().load('./ufs-local', {
 	// 'mkdirp': sinon.stub(),
 	'meteor/meteor': {},
-	'meteor/check': {},
 	'meteor/mongo': {},
 	'./ufs': ufsMock,
 	'./ufs-store': ufsStoreMock,

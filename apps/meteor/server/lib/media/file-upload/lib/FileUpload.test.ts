@@ -35,7 +35,6 @@ const { FileUpload, FileUploadClass } = proxyquire.noCallThru().load('./FileUplo
 		Users: usersModelStub,
 		Subscriptions: subscriptionsModelStub,
 	},
-	'meteor/check': sinon.stub(),
 	'meteor/meteor': sinon.stub(),
 	'sharp': sinon.stub(),
 	'stream-buffers': sinon.stub(),

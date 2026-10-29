@@ -2,7 +2,7 @@ import { afterEach, beforeEach, describe, it } from 'node:test';
 
 import type { IPushNotificationConfig } from '@rocket.chat/core-typings/src/IPushNotificationConfig';
 import type { IPushToken } from '@rocket.chat/core-typings/src/IPushToken';
-import { pick, truncateString } from '@rocket.chat/tools';
+import { isRecord, pick, truncateString } from '@rocket.chat/tools';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -17,16 +17,7 @@ const { Push } = proxyquire.noCallThru().load('./push', {
 	'../../../settings': { settings: settingsStub },
 	'./apn': { initAPN: sinon.stub(), sendAPN: sendAPNStub, shutdownAPN: sinon.stub() },
 	'./fcm': { sendFCM: sendFCMStub },
-	'@rocket.chat/tools': { pick, truncateString },
-	'meteor/check': {
-		check: sinon.stub(),
-		Match: {
-			Optional: () => sinon.stub(),
-			Integer: Number,
-			OneOf: () => sinon.stub(),
-			test: sinon.stub().returns(true),
-		},
-	},
+	'@rocket.chat/tools': { isRecord, pick, truncateString },
 	'meteor/meteor': {
 		Meteor: {
 			absoluteUrl: sinon.stub().returns('http://localhost'),

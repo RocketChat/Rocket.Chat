@@ -3,7 +3,6 @@ import type { IUserEmail } from '@rocket.chat/core-typings';
 import { isUserFederated, isDirectMessageRoom } from '@rocket.chat/core-typings';
 import { Rooms, Users, Subscriptions, OAuthAccessTokens, OAuthRefreshTokens, OAuthAuthCodes } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
-import { check } from 'meteor/check';
 
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
 import { settings } from '../../settings';
@@ -55,8 +54,6 @@ export async function setUserActiveStatus(
 	confirmRelinquish = false,
 	executedBy?: string,
 ): Promise<boolean | undefined> {
-	check(active, Boolean);
-
 	const user = await Users.findOneById(userId);
 
 	if (!user) {

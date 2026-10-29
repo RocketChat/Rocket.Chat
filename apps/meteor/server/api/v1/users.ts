@@ -33,7 +33,6 @@ import {
 } from '@rocket.chat/rest-typings';
 import { isHiddenFor } from '@rocket.chat/streamer';
 import { escapeRegExp, getLoginExpirationInMs } from '@rocket.chat/tools';
-import { Match, check } from 'meteor/check';
 import type { Filter } from 'mongodb';
 
 import { generatePersonalAccessTokenOfUser } from '../../../imports/personal-access-tokens/server/api/methods/generateToken';
@@ -2089,19 +2088,9 @@ API.v1
 			},
 		},
 		async function action() {
-			check(
-				this.bodyParams,
-				Match.OneOf(
-					Match.ObjectIncluding({
-						status: Match.Maybe(String),
-						message: String,
-					}),
-					Match.ObjectIncluding({
-						status: String,
-						message: Match.Maybe(String),
-					}),
-				),
-			);
+			if (typeof this.bodyParams.status !== 'string' && typeof this.bodyParams.message !== 'string') {
+				return API.v1.failure("The 'status' or 'message' param is required");
+			}
 
 			const user = await (async () => {
 				if (isUserFromParams(this.bodyParams, this.userId, this.user)) {

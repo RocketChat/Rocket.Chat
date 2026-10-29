@@ -6356,7 +6356,7 @@ describe('[Users]', () => {
 				.expect(400);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body.error).to.be.equal('Match error: Failed Match.OneOf, Match.Maybe or Match.Optional validation');
+			expect(res.body.error).to.be.equal("The 'status' or 'message' param is required");
 		});
 
 		it('should return 401 when not authenticated', async () => {

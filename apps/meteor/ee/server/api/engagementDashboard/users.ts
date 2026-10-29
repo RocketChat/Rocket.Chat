@@ -1,14 +1,14 @@
 import type { IUser } from '@rocket.chat/core-typings';
 import {
 	ajv,
+	ajvQuery,
 	validateBadRequestErrorResponse,
 	validateUnauthorizedErrorResponse,
 	validateForbiddenErrorResponse,
 } from '@rocket.chat/rest-typings';
-import { check, Match } from 'meteor/check';
 
 import { API } from '../../../../server/api';
-import { isDateISOString, transformDatesForAPI } from '../../lib/engagementDashboard/date';
+import { transformDatesForAPI } from '../../lib/engagementDashboard/date';
 import {
 	findWeeklyUsersRegisteredData,
 	findActiveUsersMonthlyData,
@@ -16,6 +16,23 @@ import {
 	findBusiestsChatsWithinAWeek,
 	findUserSessionsByHourWithinAWeek,
 } from '../../lib/engagementDashboard/users';
+
+const isDateRangeParams = ajvQuery.compile<{ start: string; end: string }>({
+	type: 'object',
+	properties: {
+		start: { type: 'string', format: 'date-time' },
+		end: { type: 'string', format: 'date-time' },
+	},
+	required: ['start', 'end'],
+});
+
+const isStartDateParams = ajvQuery.compile<{ start: string }>({
+	type: 'object',
+	properties: {
+		start: { type: 'string', format: 'date-time' },
+	},
+	required: ['start'],
+});
 
 const newUsersResponseSchema = ajv.compile<{
 	days: { day: Date; users: number }[];
@@ -222,6 +239,7 @@ API.v1.get(
 		authRequired: true,
 		permissionsRequired: ['view-engagement-dashboard'],
 		license: ['engagement-dashboard'],
+		query: isDateRangeParams,
 		response: {
 			200: newUsersResponseSchema,
 			400: validateBadRequestErrorResponse,
@@ -230,14 +248,6 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		check(
-			this.queryParams,
-			Match.ObjectIncluding({
-				start: Match.Where(isDateISOString),
-				end: Match.Where(isDateISOString),
-			}),
-		);
-
 		const { start, end } = this.queryParams;
 
 		const data = await findWeeklyUsersRegisteredData(transformDatesForAPI(start, end));
@@ -251,6 +261,7 @@ API.v1.get(
 		authRequired: true,
 		permissionsRequired: ['view-engagement-dashboard'],
 		license: ['engagement-dashboard'],
+		query: isDateRangeParams,
 		response: {
 			200: activeUsersResponseSchema,
 			400: validateBadRequestErrorResponse,
@@ -259,14 +270,6 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		check(
-			this.queryParams,
-			Match.ObjectIncluding({
-				start: Match.Where(isDateISOString),
-				end: Match.Where(isDateISOString),
-			}),
-		);
-
 		const { start, end } = this.queryParams;
 
 		const data = await findActiveUsersMonthlyData(transformDatesForAPI(start, end));
@@ -280,6 +283,7 @@ API.v1.get(
 		authRequired: true,
 		permissionsRequired: ['view-engagement-dashboard'],
 		license: ['engagement-dashboard'],
+		query: isStartDateParams,
 		response: {
 			200: hourlyDataResponseSchema,
 			400: validateBadRequestErrorResponse,
@@ -288,13 +292,6 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		check(
-			this.queryParams,
-			Match.ObjectIncluding({
-				start: Match.Where(isDateISOString),
-			}),
-		);
-
 		const { start } = this.queryParams;
 
 		const data = await findBusiestsChatsInADayByHours(transformDatesForAPI(start));
@@ -308,6 +305,7 @@ API.v1.get(
 		authRequired: true,
 		permissionsRequired: ['view-engagement-dashboard'],
 		license: ['engagement-dashboard'],
+		query: isStartDateParams,
 		response: {
 			200: weeklyChatBusierResponseSchema,
 			400: validateBadRequestErrorResponse,
@@ -316,13 +314,6 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		check(
-			this.queryParams,
-			Match.ObjectIncluding({
-				start: Match.Where(isDateISOString),
-			}),
-		);
-
 		const { start } = this.queryParams;
 
 		const data = await findBusiestsChatsWithinAWeek(transformDatesForAPI(start));
@@ -336,6 +327,7 @@ API.v1.get(
 		authRequired: true,
 		permissionsRequired: ['view-engagement-dashboard'],
 		license: ['engagement-dashboard'],
+		query: isDateRangeParams,
 		response: {
 			200: userSessionsByHourResponseSchema,
 			400: validateBadRequestErrorResponse,
@@ -344,14 +336,6 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		check(
-			this.queryParams,
-			Match.ObjectIncluding({
-				start: Match.Where(isDateISOString),
-				end: Match.Where(isDateISOString),
-			}),
-		);
-
 		const { start, end } = this.queryParams;
 
 		const data = await findUserSessionsByHourWithinAWeek(transformDatesForAPI(start, end));

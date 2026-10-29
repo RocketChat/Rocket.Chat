@@ -1,3 +1,4 @@
+import { ClientSafeError } from '@rocket.chat/core-services';
 import type {
 	FileAttachmentProps,
 	ImageAttachmentProps,
@@ -7,7 +8,6 @@ import type {
 } from '@rocket.chat/core-typings';
 import { LivechatVisitors, LivechatRooms } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import { Match, check } from 'meteor/check';
 
 import { sendMessageLivechat } from './sendMessageLivechat';
 import { FileUpload } from '../../lib/media/file-upload';
@@ -18,6 +18,8 @@ interface ISendFileLivechatMessage {
 	file: IUpload;
 	msgData?: { avatar?: string; emoji?: string; alias?: string; groupable?: boolean; msg?: string };
 }
+
+const msgDataStringFields = ['avatar', 'emoji', 'alias', 'msg'];
 
 export const sendFileLivechatMessage = async ({ roomId, visitorToken, file, msgData = {} }: ISendFileLivechatMessage): Promise<boolean> => {
 	const visitor = await LivechatVisitors.getVisitorByToken(visitorToken);
@@ -32,13 +34,19 @@ export const sendFileLivechatMessage = async ({ roomId, visitorToken, file, msgD
 		return false;
 	}
 
-	check(msgData, {
-		avatar: Match.Optional(String),
-		emoji: Match.Optional(String),
-		alias: Match.Optional(String),
-		groupable: Match.Optional(Boolean),
-		msg: Match.Optional(String),
-	});
+	if (
+		typeof msgData !== 'object' ||
+		msgData === null ||
+		Object.entries(msgData).some(([key, value]) =>
+			key === 'groupable'
+				? value !== undefined && typeof value !== 'boolean'
+				: !msgDataStringFields.includes(key) || (value !== undefined && typeof value !== 'string'),
+		)
+	) {
+		throw new ClientSafeError('error-invalid-arguments', 'Invalid arguments', {
+			method: 'sendFileLivechatMessage',
+		});
+	}
 
 	const fileUrl = file.name && FileUpload.getPath(`${file._id}/${encodeURI(file.name)}`);
 

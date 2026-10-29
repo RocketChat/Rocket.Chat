@@ -4,9 +4,8 @@ import { PushToken } from '@rocket.chat/models';
 import { ajv } from '@rocket.chat/rest-typings';
 import type { ExtendedFetchOptions } from '@rocket.chat/server-fetch';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
-import { pick, truncateString } from '@rocket.chat/tools';
+import { isRecord, pick, truncateString } from '@rocket.chat/tools';
 import { JWT } from 'google-auth-library';
-import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { initAPN, sendAPN, shutdownAPN } from './apn';
@@ -461,11 +460,11 @@ class PushClass {
 	}
 
 	private hasApnOptions(options: IPushNotificationConfig): options is RequiredField<IPushNotificationConfig, 'apn'> {
-		return Match.test(options.apn, Object);
+		return isRecord(options.apn);
 	}
 
 	private hasGcmOptions(options: IPushNotificationConfig): options is RequiredField<IPushNotificationConfig, 'gcm'> {
-		return Match.test(options.gcm, Object);
+		return isRecord(options.gcm);
 	}
 
 	public async send(options: IPushNotificationConfig) {
