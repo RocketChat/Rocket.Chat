@@ -1,8 +1,14 @@
 import Ajv from 'ajv';
-import express from 'express';
 import request from 'supertest';
 
 import { Router } from './Router';
+import { createNodeServer, createRootApp, mountRouter } from './server';
+
+const serve = (router: Parameters<typeof mountRouter>[1]) => {
+	const app = createRootApp();
+	mountRouter(app, router);
+	return createNodeServer(app);
+};
 
 describe('Router', () => {
 	const ajv = new Ajv();
@@ -13,7 +19,6 @@ describe('Router', () => {
 
 	describe('Basic routing', () => {
 		it('should handle GET requests', async () => {
-			const app = express();
 			const api = new Router('/api');
 
 			api.get(
@@ -29,7 +34,7 @@ describe('Router', () => {
 				}),
 			);
 
-			app.use(api.router);
+			const app = serve(api);
 
 			const response = await request(app).get('/api/hello');
 
@@ -38,7 +43,6 @@ describe('Router', () => {
 		});
 
 		it('should handle POST requests', async () => {
-			const app = express();
 			const api = new Router('/api');
 
 			api.post(
@@ -57,7 +61,7 @@ describe('Router', () => {
 				},
 			);
 
-			app.use(api.router);
+			const app = serve(api);
 
 			const testData = { message: 'Hello from POST' };
 			const response = await request(app).post('/api/echo').send(testData);
@@ -67,7 +71,6 @@ describe('Router', () => {
 		});
 
 		it('should handle PUT requests', async () => {
-			const app = express();
 			const api = new Router('/api');
 
 			api.put(
@@ -91,7 +94,7 @@ describe('Router', () => {
 				},
 			);
 
-			app.use(api.router);
+			const app = serve(api);
 
 			const testData = { name: 'Updated Resource' };
 			const response = await request(app).put('/api/update/123').send(testData);
@@ -101,7 +104,6 @@ describe('Router', () => {
 		});
 
 		it('should handle DELETE requests', async () => {
-			const app = express();
 			const api = new Router('/api');
 
 			api.delete(
@@ -121,7 +123,7 @@ describe('Router', () => {
 				},
 			);
 
-			app.use(api.router);
+			const app = serve(api);
 
 			const response = await request(app).delete('/api/remove/123');
 
@@ -133,7 +135,6 @@ describe('Router', () => {
 	describe('Validation', () => {
 		it('should validate query parameters', async () => {
 			const ajv = new Ajv();
-			const app = express();
 			const api = new Router('/api');
 
 			api.get(
@@ -158,7 +159,7 @@ describe('Router', () => {
 				}),
 			);
 
-			app.use(api.router);
+			const app = serve(api);
 
 			const validResponse = await request(app).get('/api/validate-query?required=value');
 
@@ -172,7 +173,6 @@ describe('Router', () => {
 
 		it('should validate request body', async () => {
 			const ajv = new Ajv();
-			const app = express();
 			const api = new Router('/api');
 
 			api.post(
@@ -198,7 +198,7 @@ describe('Router', () => {
 				}),
 			);
 
-			app.use(api.router);
+			const app = serve(api);
 
 			const validResponse = await request(app).post('/api/validate-body').send({ name: 'John', age: 30 });
 
@@ -218,7 +218,6 @@ describe('Router', () => {
 		it('should validate response body in test mode', async () => {
 			process.env.TEST_MODE = 'true';
 			const ajv = new Ajv();
-			const app = express();
 			const api = new Router('/api');
 
 			api.get(
@@ -242,7 +241,7 @@ describe('Router', () => {
 				}),
 			);
 
-			app.use(api.router);
+			const app = serve(api);
 
 			const response = await request(app).get('/api/validate-response');
 
@@ -255,7 +254,6 @@ describe('Router', () => {
 
 	describe('Middleware', () => {
 		it('should apply middleware to routes', async () => {
-			const app = express();
 			const api = new Router('/api');
 
 			const authMiddleware = async (c: any, next: () => Promise<void>) => {
@@ -295,7 +293,7 @@ describe('Router', () => {
 				},
 			);
 
-			app.use(api.router);
+			const app = serve(api);
 
 			const unauthorizedResponse = await request(app).get('/api/protected');
 
@@ -311,7 +309,6 @@ describe('Router', () => {
 		});
 
 		it('should support global middleware via use()', async () => {
-			const app = express();
 			const api = new Router('/api');
 
 			api.use(async (c, next) => {
@@ -336,7 +333,7 @@ describe('Router', () => {
 				},
 			);
 
-			app.use(api.router);
+			const app = serve(api);
 
 			const response = await request(app).get('/api/time');
 
@@ -347,7 +344,6 @@ describe('Router', () => {
 
 	describe('Nested routers', () => {
 		it('should support nested routers with the use() method', async () => {
-			const app = express();
 			const api = new Router('/api');
 			const v1 = new Router('/v1');
 			const users = new Router('/users');
@@ -371,7 +367,7 @@ describe('Router', () => {
 			v1.use(users);
 			api.use(v1);
 
-			app.use(api.router);
+			const app = serve(api);
 
 			const response = await request(app).get('/api/v1/users/123');
 
@@ -380,7 +376,6 @@ describe('Router', () => {
 		});
 
 		it('should pass middleware from parent to child routers', async () => {
-			const app = express();
 			const api = new Router('/api');
 			const v1 = new Router('/v1');
 
@@ -403,7 +398,7 @@ describe('Router', () => {
 			);
 
 			api.use(v1);
-			app.use(api.router);
+			const app = serve(api);
 
 			const response = await request(app).get('/api/v1/info');
 
@@ -415,7 +410,6 @@ describe('Router', () => {
 
 	describe('Error handling', () => {
 		it('should handle errors thrown in route handlers', async () => {
-			const app = express();
 			const api = new Router('/api');
 
 			const originalConsoleError = console.error;
@@ -434,7 +428,7 @@ describe('Router', () => {
 				},
 			);
 
-			app.use(api.router);
+			const app = serve(api);
 
 			try {
 				const response = await request(app).get('/api/error');
@@ -447,7 +441,6 @@ describe('Router', () => {
 
 	describe('Content types', () => {
 		it('should not auto-parse multipart/form-data and provide raw request for manual parsing', async () => {
-			const app = express();
 			const api = new Router('/api');
 
 			api.post(
@@ -474,7 +467,7 @@ describe('Router', () => {
 				},
 			);
 
-			app.use(api.router);
+			const app = serve(api);
 
 			const response = await request(app).post('/api/form-data').field('name', 'Test User');
 
@@ -486,7 +479,6 @@ describe('Router', () => {
 		});
 
 		it('should set custom response headers', async () => {
-			const app = express();
 			const api = new Router('/api');
 
 			api.get(
@@ -506,7 +498,7 @@ describe('Router', () => {
 				}),
 			);
 
-			app.use(api.router);
+			const app = serve(api);
 
 			const response = await request(app).get('/api/custom-headers');
 
@@ -518,7 +510,6 @@ describe('Router', () => {
 
 	it('should fail if the query request is not valid', async () => {
 		const ajv = new Ajv();
-		const app = express();
 		const api = new Router('/api');
 		const test = new Router('/test').get(
 			'/',
@@ -549,14 +540,13 @@ describe('Router', () => {
 				};
 			},
 		);
-		app.use(api.use(test).router);
+		const app = serve(api.use(test));
 		const response = await request(app).get('/api/test');
 		expect(response.statusCode).toBe(400);
 		expect(response.body).toHaveProperty('error', "must have required property 'customProperty'");
 	});
 	it('should fail if the body request is not valid', async () => {
 		const ajv = new Ajv();
-		const app = express();
 		const api = new Router('/api');
 		const test = new Router('/test').post(
 			'/',
@@ -587,7 +577,7 @@ describe('Router', () => {
 				};
 			},
 		);
-		app.use(api.use(test).router);
+		const app = serve(api.use(test));
 		const response = await request(app).post('/api/test').send({});
 		expect(response.statusCode).toBe(400);
 		expect(response.body).toHaveProperty('error', "must have required property 'customProperty'");
@@ -597,7 +587,6 @@ describe('Router', () => {
 		process.env.NODE_ENV = 'test';
 		process.env.TEST_MODE = 'true';
 		const ajv = new Ajv();
-		const app = express();
 		const api = new Router('/api');
 		const test = new Router('/test').get(
 			'/',
@@ -620,8 +609,8 @@ describe('Router', () => {
 				};
 			},
 		);
-		app.use(api.use(test).router);
-		const response = await request(app).get('/api/test');
+		const app = serve(api.use(test));
+		const response = await request(app).get('/api/test').set('Host', 'localhost');
 		expect(response.statusCode).toBe(400);
 		expect(response.body).toHaveProperty(
 			'error',
@@ -631,7 +620,6 @@ describe('Router', () => {
 
 	it('middleware should be applied only on the right path', async () => {
 		const ajv = new Ajv();
-		const app = express();
 		const api = new Router('/api');
 		const v1 = new Router('/v1').use(async (x, next) => {
 			x.header('x-api-version', 'v1');
@@ -662,7 +650,7 @@ describe('Router', () => {
 			},
 		);
 
-		app.use(api.use(v1.use(test)).use(v2.use(test)).router);
+		const app = serve(api.use(v1.use(test)).use(v2.use(test)));
 
 		const response1 = await request(app).get('/api/v1/test');
 
@@ -677,7 +665,6 @@ describe('Router', () => {
 
 	it('should fail if the delete request body is not valid', async () => {
 		const ajv = new Ajv();
-		const app = express();
 		const api = new Router('/api');
 		const test = new Router('/test').delete(
 			'/',
@@ -708,7 +695,7 @@ describe('Router', () => {
 				};
 			},
 		);
-		app.use(api.use(test).router);
+		const app = serve(api.use(test));
 		const response = await request(app).delete('/api/test').send({});
 		expect(response.statusCode).toBe(400);
 		expect(response.body).toHaveProperty('error', "must have required property 'customProperty'");
@@ -716,7 +703,6 @@ describe('Router', () => {
 
 	it('should fail if the put request body is not valid', async () => {
 		const ajv = new Ajv();
-		const app = express();
 		const api = new Router('/api');
 		const test = new Router('/test').put(
 			'/',
@@ -747,7 +733,7 @@ describe('Router', () => {
 				};
 			},
 		);
-		app.use(api.use(test).router);
+		const app = serve(api.use(test));
 		const response = await request(app).put('/api/test').send({});
 		expect(response.statusCode).toBe(400);
 		expect(response.body).toHaveProperty('error', "must have required property 'customProperty'");

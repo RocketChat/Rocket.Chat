@@ -1,12 +1,10 @@
 import { Logger } from '@rocket.chat/logger';
 import type { Method } from '@rocket.chat/rest-typings';
-import express from 'express';
 import type { Context, HonoRequest, MiddlewareHandler } from 'hono';
 import { Hono } from 'hono';
 import type { StatusCode } from 'hono/utils/http-status';
 
 import type { ResponseSchema, TypedOptions } from './definition';
-import { honoAdapterForExpress } from './middlewares/honoAdapterForExpress';
 import type { OpenAPIDocsOptions, Route } from './openapi';
 import { buildOperation, toOpenAPIPath } from './openapi';
 import { parseQueryParams } from './parseQueryParams';
@@ -359,13 +357,6 @@ export class Router<
 		return new Hono().route(this.base, this.innerRouter).options('*', (c) => {
 			return c.body('OK');
 		});
-	}
-
-	get router(): express.Router {
-		// oxlint-disable-next-line new-cap
-		const router = express.Router();
-		router.use(this.base, honoAdapterForExpress(this.toHono()));
-		return router;
 	}
 
 	getHonoRouter(): InnerRouter {
