@@ -2863,6 +2863,33 @@ ${frame('CodeSnippetCodeBoxFrame', {
 	fontFamily: 'monospace',
 })}`;
 
+// A frame over an `Icon` keeps the inline-block box `.rcx-icon` gives it, as the frame's own display would outrank it
+const iconBase = { display: 'inline-block', flexDirection: 'row', alignItems: 'normal', flexShrink: 0, minWidth: 'auto', minHeight: 'auto' } as const;
+
+const framedIconFont = (name: string) => String(statusColors[`status-font-on-${name}` as keyof typeof statusColors]);
+
+const generateFramedIcon = () =>
+	`${declaredWhereTheyRender}${frame(
+		'FramedIconFrame',
+		{
+			render: 'i',
+			...iconBase,
+			padding: spacing('x4')!,
+			color: fontColorOf('secondary-info'),
+			borderRadius: radius('medium'),
+			backgroundColor: String(surfaceColors['surface-tint']),
+		},
+		{
+			tone: {
+				neutral: {},
+				info: { color: framedIconFont('info') },
+				success: { color: framedIconFont('success') },
+				warning: { color: framedIconFont('warning') },
+				danger: { color: framedIconFont('danger') },
+			},
+		},
+	)}`;
+
 const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
 	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
@@ -2965,6 +2992,7 @@ const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Chevron/Chevron.tsx'), generate: generateChevron },
 	{ file: join(import.meta.dirname, '../src/components/Chevron/Chevron.styles.css'), generate: generateChevronCss, css: true },
 	{ file: join(import.meta.dirname, '../src/components/CodeSnippet/CodeSnippet.tsx'), generate: generateCodeSnippet },
+	{ file: join(import.meta.dirname, '../src/components/FramedIcon/FramedIcon.tsx'), generate: generateFramedIcon },
 ];
 
 for (const [dir, control] of [
