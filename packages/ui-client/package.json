@@ -19,6 +19,7 @@
 	},
 	"dependencies": {
 		"@react-aria/dialog": "^3.5.21",
+		"@react-aria/overlays": "^3.25.0",
 		"@rocket.chat/onboarding-ui": "workspace:^",
 		"@rocket.chat/tools": "workspace:~",
 		"date-fns": "~4.1.0",

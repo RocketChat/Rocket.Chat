@@ -1,9 +1,10 @@
 import type { AriaDialogProps } from '@react-aria/dialog';
 import { useDialog } from '@react-aria/dialog';
 import { FocusScope } from '@react-aria/focus';
+import { useOverlay } from '@react-aria/overlays';
 import { Contextualbar, type ContextualbarProps } from '@rocket.chat/fuselage';
 import { useLayoutSizes, useLayoutContextualBarPosition, useRoomToolbox } from '@rocket.chat/ui-contexts';
-import { useCallback, useRef } from 'react';
+import { useRef } from 'react';
 
 import ContextualbarResizable from './ContextualbarResizable';
 
@@ -18,31 +19,12 @@ const ContextualbarDialog = ({ onClose, ...props }: ContextualbarDialogProps) =>
 	const { contextualBar } = useLayoutSizes();
 	const position = useLayoutContextualBarPosition();
 	const { closeTab } = useRoomToolbox();
-	const closeContextualbar = onClose ?? closeTab;
-
-	const callbackRef = useCallback(
-		(node: HTMLElement) => {
-			const onKeyDown = (e: KeyboardEvent) => {
-				if (e.key === 'Escape') {
-					closeContextualbar();
-				}
-			};
-
-			ref.current = node;
-			node.addEventListener('keydown', onKeyDown);
-
-			return () => {
-				node.removeEventListener('keydown', onKeyDown);
-				ref.current = null;
-			};
-		},
-		[closeContextualbar],
-	);
+	const { overlayProps } = useOverlay({ isOpen: true, onClose: onClose ?? closeTab }, ref);
 
 	return (
 		<FocusScope autoFocus restoreFocus>
 			<ContextualbarResizable defaultWidth={contextualBar}>
-				<Contextualbar ref={callbackRef} stretch position={position} {...dialogProps} {...props} />
+				<Contextualbar ref={ref} stretch position={position} {...overlayProps} {...dialogProps} {...props} />
 			</ContextualbarResizable>
 		</FocusScope>
 	);
