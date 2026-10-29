@@ -11,14 +11,15 @@ type MessageHighlightSubscription = {
 };
 
 const createMessageHighlightSubscription = (): MessageHighlightSubscription => {
-	let updateCb: () => void = () => undefined;
+	const listeners = new Set<() => void>();
+	const notify = () => listeners.forEach((listener) => listener());
 
 	let highlightMessageId: IMessage['_id'] | undefined;
 
 	const subscribe = (cb: () => void): (() => void) => {
-		updateCb = cb;
+		listeners.add(cb);
 		return (): void => {
-			updateCb = (): void => undefined;
+			listeners.delete(cb);
 		};
 	};
 
@@ -26,12 +27,12 @@ const createMessageHighlightSubscription = (): MessageHighlightSubscription => {
 
 	const setHighlight = (_id: IMessage['_id']): void => {
 		highlightMessageId = _id;
-		updateCb();
+		notify();
 	};
 
 	const clearHighlight = (): void => {
 		highlightMessageId = undefined;
-		updateCb();
+		notify();
 	};
 
 	return { subscribe, getSnapshot, setHighlight, clearHighlight };
