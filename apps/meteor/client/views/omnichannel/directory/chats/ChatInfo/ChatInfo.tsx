@@ -1,5 +1,6 @@
 import type { IOmnichannelRoom, IVisitor } from '@rocket.chat/core-typings';
-import { Box, Tag, Button, ButtonGroup } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Box, Tag, Button, ButtonGroup, useStyle } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	ContextualbarScrollableContent,
@@ -25,6 +26,13 @@ import PriorityField from '../../components/PriorityField';
 import { useOmnichannelRoomInfo } from '../../hooks/useOmnichannelRoomInfo';
 import { formatQueuedAt } from '../../utils/formatQueuedAt';
 
+// The tags flow as text; `[class]` outranks the Tag frame's own display
+const inlineTag = css`
+	&[class] {
+		display: inline;
+	}
+`;
+
 export type ChatInfoProps = {
 	id: string;
 	route: keyof IRouterPaths;
@@ -32,6 +40,7 @@ export type ChatInfoProps = {
 
 function ChatInfo({ id, route }: ChatInfoProps) {
 	const t = useTranslation();
+	const inlineTagClassName = useStyle(inlineTag);
 	const dispatchToastMessage = useToastMessageDispatch();
 
 	const formatDateAndTime = useFormatDateAndTime();
@@ -109,7 +118,7 @@ function ChatInfo({ id, route }: ChatInfoProps) {
 							<ul aria-labelledby={`${roomId}-tags`}>
 								{tags.map((tag) => (
 									<Box is='li' key={tag} marginInlineEnd={4} display='inline'>
-										<Tag style={{ display: 'inline' }} disabled>
+										<Tag className={inlineTagClassName} disabled>
 											{tag}
 										</Tag>
 									</Box>
