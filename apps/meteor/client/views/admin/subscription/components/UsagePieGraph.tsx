@@ -62,7 +62,7 @@ const UsagePieGraph = ({ used = 0, total = 0, label, color, size = 140 }: UsageP
 
 	return (
 		<Box display='flex' flexDirection='column' alignItems='center'>
-			<Box size={`x${size}`}>
+			<Box size={`x${size}`} mbe={8}>
 				<Box position='relative'>
 					<Pie
 						data={parsedData}
