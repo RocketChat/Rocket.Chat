@@ -4,7 +4,7 @@ import { useMemo } from 'react';
 
 import { SelectedMessageContext } from '../MessageList/contexts/SelectedMessagesContext';
 
-export const selectedMessageStore = new (class SelectMessageStore extends Emitter<
+export class SelectedMessageStore extends Emitter<
 	{
 		change: undefined;
 		toggleIsSelecting: boolean;
@@ -80,7 +80,9 @@ export const selectedMessageStore = new (class SelectMessageStore extends Emitte
 		this.store = new Set([...this.store, ...mids]);
 		this.emit('change');
 	}
-})();
+}
+
+export const selectedMessageStore = new SelectedMessageStore();
 
 export type SelectedMessagesProviderProps = {
 	children?: ReactNode;
