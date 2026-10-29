@@ -20,6 +20,13 @@ import { useOmnichannelDirectoryRouter } from '../../hooks/useOmnichannelDirecto
 /**
  * TODO: We should have a variant for aligning row cell instead of using custom CSS
  **/
+// The tags flow as text; `[class]` outranks the Tag frame's own display
+const inlineTag = css`
+	&[class] {
+		display: inline;
+	}
+`;
+
 const customAlignTop = css`
 	td {
 		vertical-align: top;
@@ -28,6 +35,7 @@ const customAlignTop = css`
 
 const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 	const customAlignTopClassName = useStyle(customAlignTop);
+	const inlineTagClassName = useStyle(inlineTag);
 	const { t } = useTranslation();
 	const { _id, fname, tags, servedBy, ts, department, open, priorityWeight, lm, onHold, source, verified } = room;
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
@@ -69,7 +77,7 @@ const ChatsTableRow = (room: IOmnichannelRoomWithDepartment) => {
 						<Box color='hint' display='flex' flex-direction='row'>
 							{tags.map((tag: string) => (
 								<Box marginBlockStart={4} marginInlineEnd={4} withTruncatedText overflow={tag.length > 10 ? 'hidden' : 'visible'} key={tag}>
-									<Tag style={{ display: 'inline' }} disabled>
+									<Tag className={inlineTagClassName} disabled>
 										{tag}
 									</Tag>
 								</Box>
