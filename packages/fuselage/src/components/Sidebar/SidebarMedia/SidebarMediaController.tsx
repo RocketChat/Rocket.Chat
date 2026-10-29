@@ -16,7 +16,6 @@ const SidebarMediaControllerFrame = styled(View, {
 	alignItems: 'center',
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	justifyContent: 'space-between',
 	paddingInline: '16px',
 });
@@ -31,7 +30,6 @@ const SidebarMediaLabelFrame = styled(View, {
 	alignItems: 'normal',
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	fontSize: '0.875rem',
 	fontWeight: 400,
 	lineHeight: '1.25rem',

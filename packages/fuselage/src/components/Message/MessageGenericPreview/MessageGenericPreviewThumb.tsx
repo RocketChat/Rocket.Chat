@@ -15,7 +15,6 @@ const MessageGenericPreviewThumbFrame = styled(View, {
 	flexShrink: 0,
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	width: '6rem',
 	height: '6rem',
 });

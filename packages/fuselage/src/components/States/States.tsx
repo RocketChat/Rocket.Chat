@@ -16,7 +16,6 @@ const StatesFrame = styled(View, {
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	justifyContent: 'center',
 	padding: '16px',
 	color: 'var(--rcx-color-font-secondary-info, #6c737a)',

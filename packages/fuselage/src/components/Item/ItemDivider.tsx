@@ -29,7 +29,6 @@ const ItemDividerFrame = styled(View, {
 	alignItems: 'normal',
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	margin: 0,
 	paddingBlock: '4px',
 	paddingInline: 0,

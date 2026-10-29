@@ -36,7 +36,6 @@ const SidebarAccordionWrapperFrame = styled(View, {
 	alignItems: 'normal',
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	overflow: 'scroll',
 });
 

@@ -10,7 +10,6 @@ export type MessageStatusIndicatorTextProps = {
 // Declared where they render: zero-runtime only erases a `styled()` whose every use is in its own module
 const MessageStatusIndicatorTextFrame = styled(Text, {
 	render: 'span',
-	boxSizing: 'content-box',
 	display: 'inline',
 	wordWrap: 'normal',
 	whiteSpace: 'nowrap',

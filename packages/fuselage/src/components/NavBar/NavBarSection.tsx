@@ -21,7 +21,6 @@ const NavBarSectionFrame = styled(View, {
 	alignItems: 'center',
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 });
 
 // end of generated

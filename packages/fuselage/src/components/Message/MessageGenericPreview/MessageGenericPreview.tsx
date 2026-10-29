@@ -15,7 +15,6 @@ const MessageGenericPreviewFrame = styled(View, {
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	overflow: 'hidden',
 	fontSize: 0,
 	color: 'var(--rcx-message-generic-preview-context-color, var(--rcx-color-font-secondary-info, #6c737a))',

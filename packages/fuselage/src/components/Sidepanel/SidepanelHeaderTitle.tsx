@@ -17,7 +17,6 @@ const SidepanelHeaderTitleFrame = styled(View, {
 	alignItems: 'normal',
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	overflow: 'hidden',
 	whiteSpace: 'nowrap',
 	textOverflow: 'ellipsis',
