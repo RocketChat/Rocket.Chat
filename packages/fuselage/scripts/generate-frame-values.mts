@@ -4250,6 +4250,83 @@ const messageMetrics = [
 	{ file: messageDir('MessageMetrics/MessageMetrics.styles.css'), generate: generateMessageMetricsCss, css: true },
 ];
 
+const reactionBorderRadius = {
+	'default': theme('message-reaction-border-radius', radius('medium')),
+	'focus-visible': radius('medium'),
+};
+const reactionHoverBackground = theme('message-reaction-hover-background-color', mSurface('hover'));
+const reactionHoverBorder = theme('message-reaction-hover-border-color', mStroke('dark'));
+
+const reactionBase = {
+	render: 'div',
+	...mBox,
+	display: 'inline-flex',
+	alignItems: 'center',
+	margin: offScale(2),
+	padding: offScale(2),
+	cursor: 'pointer',
+	...font('c1'),
+	borderWidth: px(1),
+	borderStyle: 'solid',
+	borderRadius: reactionBorderRadius,
+	outlineStyle: 'none',
+	boxShadow: { 'focus-visible': `0 0 0 2px ${mStroke('extra-light-highlight')}` },
+} as const;
+
+const reactionLook = (look: 'default' | 'mine') => ({
+	color: look === 'mine' ? theme('message-reaction-color', mFont('default')) : mFont('hint'),
+	borderColor: {
+		'default': mStroke('light'),
+		'hover': reactionHoverBorder,
+		'focus-visible': mStroke('highlight'),
+	},
+	backgroundColor: {
+		default: look === 'mine' ? theme('message-reaction-background-color', mSurface('selected')) : reactionHoverBackground,
+		hover: reactionHoverBackground,
+	},
+});
+
+const generateMessageReaction = () =>
+	view('MessageReactionFrame', reactionBase, { look: { default: reactionLook('default'), mine: reactionLook('mine') } });
+
+const generateMessageReactionAction = () => view('MessageReactionActionFrame', { ...reactionBase, opacity: 0, ...reactionLook('default') });
+
+const generateMessageReactionCounter = () =>
+	view('MessageReactionCounterFrame', { render: 'div', ...mBox, display: 'block', ...font('c1'), marginInline: offScale(2) });
+
+const generateMessageReactionEmoji = () =>
+	text('MessageReactionEmojiFrame', {
+		render: 'span',
+		display: 'block',
+		whiteSpace: 'inherit',
+		wordWrap: 'inherit',
+		fontSize: size('x12')!,
+		lineHeight: size('x16')!,
+		width: size('x16')!,
+		height: size('x16')!,
+	});
+
+const generateMessageReactions = () =>
+	view('MessageReactionsContainerFrame', { render: 'div', ...mBox, flexWrap: 'wrap', justifyContent: 'flex-start', margin: offScale(-2) });
+
+const generateMessageReactionsCss = () => `${raised('.rcx-message:hover .rcx-message-reactions__reaction--action')},
+${raised('.rcx-message:focus-visible .rcx-message-reactions__reaction--action')} {
+	opacity: 1;
+}
+
+${raised('.rcx-message:has(:focus-visible) .rcx-message-reactions__reaction--action')} {
+	opacity: 1;
+}`;
+
+const messageReactions = [
+	{ file: messageDir('MessageReactions/MessageReaction.tsx'), generate: generateMessageReaction },
+	{ file: messageDir('MessageReactions/MessageReactionAction.tsx'), generate: generateMessageReactionAction },
+	{ file: messageDir('MessageReactions/MessageReactionCounter.tsx'), generate: generateMessageReactionCounter },
+	{ file: messageDir('MessageReactions/MessageReactionEmoji.tsx'), generate: generateMessageReactionEmoji },
+	{ file: messageDir('MessageReactions/MessageReactions.tsx'), generate: generateMessageReactions },
+	{ file: messageDir('MessageReactions/MessageReactions.styles.css'), generate: generateMessageReactionsCss, css: true },
+];
+
 const generateAccordion = () =>
 	constants({
 		border: {
@@ -4569,7 +4646,7 @@ const components: { file: string; generate: () => string; css?: boolean; section
 	{ file: frames('Menu/MenuItem.tsx'), generate: generateMenuItemDescription },
 ];
 
-components.push(...messageCore, ...messageMetrics, ...messageToolbar);
+components.push(...messageCore, ...messageReactions, ...messageMetrics, ...messageToolbar);
 
 for (const [dir, control] of [
 	['CheckBox', checkBox],
