@@ -630,12 +630,48 @@ const generateTableSelection = () =>
 		},
 	});
 
+const generatePagination = () => {
+	const small = fontScaleOf('c1');
+	const clickable = { cursor: 'pointer', outlineStyle: 'none' };
+	const button = { display: 'inline-flex', backgroundColor: 'transparent', ...small };
+
+	return constants({
+		root: {
+			paddingBlock: spacing('x12')!,
+			paddingInline: spacing('x24')!,
+		},
+		label: { color: fontColor('annotation'), ...small },
+		item: {
+			marginInline: spacing('x2')!,
+			padding: spacing('x4')!,
+			color: fontColor('secondary-info'),
+			...small,
+		},
+		link: {
+			...button,
+			...clickable,
+			color: fontColor('info'),
+			textDecorationLine: { hover: 'underline', focus: 'underline' },
+		},
+		linkCurrent: {
+			...button,
+			...clickable,
+			cursor: 'default',
+			color: fontColor('default'),
+			...fontScaleOf('c2'),
+		},
+		step: { ...button, ...clickable, color: fontColor('secondary-info') },
+		stepInactive: { ...button, ...clickable, cursor: 'not-allowed', color: fontColor('secondary-info') },
+	});
+};
+
 const components = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
 	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
 	{ file: join(import.meta.dirname, '../src/components/Tabs/Tabs.tsx'), generate: generateTabs },
 	{ file: join(import.meta.dirname, '../src/components/Tabs/TabsItem.tsx'), generate: generateTabsItem },
 	{ file: join(import.meta.dirname, '../src/components/Accordion/Accordion.tsx'), generate: generateAccordion },
+	{ file: join(import.meta.dirname, '../src/components/Pagination/Pagination.tsx'), generate: generatePagination },
 	{ file: join(import.meta.dirname, '../src/components/Table/TableRow.tsx'), generate: generateTableRow },
 	{ file: join(import.meta.dirname, '../src/components/Table/TableCell.tsx'), generate: generateTableCell },
 	{ file: join(import.meta.dirname, '../src/components/Table/TableSelection/TableSelection.tsx'), generate: generateTableSelection },
