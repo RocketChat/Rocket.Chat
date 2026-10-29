@@ -14,7 +14,7 @@ import prettier from 'prettier';
 
 import { shadowColors, statusColors, strokeColors } from '../src/Theme.ts';
 import { toCSSColorValue, toCSSValue } from '../src/helpers/toCSSValue.ts';
-import { backgroundColor, borderRadius, borderWidth, fontColor, fontFamily, fontScale, size, spacing } from '../src/styleTokens.ts';
+import { backgroundColor, borderRadius, borderWidth, fontColor, fontFamily, fontScale, inset, size, spacing } from '../src/styleTokens.ts';
 
 const require = createRequire(import.meta.url);
 const buttonTokens: { light: Record<string, string> } = require('@rocket.chat/fuselage-tokens/dist/button.json');
@@ -582,12 +582,47 @@ const radioButton: SelectionControl = {
 	fakeSize: { display: 'flex', justifyContent: 'center', alignItems: 'center', width: size('x20')! },
 };
 
+const toggleSwitchRadius = toCSSValue('--rcx-toggle-switch-border-radius', toCSSValue('--rcx-border-radius-full', borderRadius('full')!));
+const knobSize = `calc(${size('x16')} - 2 * ${borderWidth('default')})`;
+
+// The knob sits in the fake's ::before; it slides to the end when checked, white even when disabled
+const toggleSwitchKnob = `.rcx-toggle-switch__input + .rcx-toggle-switch__fake::before {
+	position: absolute;
+	top: 50%;
+	inset-inline-start: ${inset('x1')};
+	width: ${knobSize};
+	height: ${knobSize};
+	content: '';
+	transform: translateY(-50%);
+	border-radius: ${toggleSwitchRadius};
+	background-color: ${buttonFont('primary')};
+}
+
+.rcx-toggle-switch__input:disabled + .rcx-toggle-switch__fake::before {
+	background-color: ${buttonFont('secondary-disabled')};
+}
+
+.rcx-toggle-switch__input:checked + .rcx-toggle-switch__fake::before {
+	inset-inline-start: calc(100% - (${size('x16')} - ${borderWidth('default')}));
+	background-color: ${buttonFont('primary')};
+}`;
+
+const toggleSwitch: SelectionControl = {
+	name: 'toggle-switch',
+	frames: 'ToggleSwitch',
+	unchecked: 'off',
+	checked: [':checked'],
+	fakeRadius: toggleSwitchRadius,
+	fakeSize: { display: 'block', width: size('x36')!, height: `calc(${size('x20')} - 2 * ${borderWidth('default')})` },
+	extraStates: toggleSwitchKnob,
+};
+
 const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
 	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
 ];
 
-for (const [dir, control] of [['CheckBox', checkBox], ['RadioButton', radioButton]] as const) {
+for (const [dir, control] of [['CheckBox', checkBox], ['RadioButton', radioButton], ['ToggleSwitch', toggleSwitch]] as const) {
 	const base = join(import.meta.dirname, `../src/components/${dir}/${dir}`);
 	components.push(
 		{ file: `${base}.tsx`, generate: () => selectionFrames(control) },
