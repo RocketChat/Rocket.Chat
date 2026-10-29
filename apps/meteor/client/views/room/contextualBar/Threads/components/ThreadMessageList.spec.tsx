@@ -87,6 +87,7 @@ jest.mock('../../../hooks/useDateScroll', () => ({
 	useDateScroll: () => ({
 		bubbleRef: { current: null },
 		handleDateScroll: mockHandleDateScroll,
+		listStyle: 'rcx-hide-covered-divider',
 	}),
 }));
 
@@ -288,4 +289,25 @@ describe('ThreadMessageList rows', () => {
 
 		expect(mockHandleDateScroll).toHaveBeenCalledWith(withFile, mockVirtualizerHandle.scrollOffset);
 	});
+});
+
+it('hides the inline day divider the floating date covers', () => {
+	(useThreadMessagesQuery as jest.Mock).mockReturnValue({
+		data: { messages: [createThreadMessage(1)] },
+		isLoading: false,
+		fetchNextPage: jest.fn(),
+		hasNextPage: false,
+		isFetchingNextPage: false,
+		fetchPreviousPage: jest.fn(),
+		hasPreviousPage: false,
+		isFetchingPreviousPage: false,
+		loadMessageAround: jest.fn(),
+	});
+	const mainMessage = createFakeMessage<IThreadMainMessage>({ _id: 'thread-id', rid: room._id, msg: 'main message', tcount: 1 });
+
+	render(<ThreadMessageList mainMessage={mainMessage} shouldJumpToBottom={false} setShouldJumpToBottom={jest.fn()} />, {
+		wrapper: mockAppRoot().withJohnDoe().withSetting('Message_GroupingPeriod', 300).build(),
+	});
+
+	expect(screen.getByTestId('thread-message-list').closest('.thread-list')).toHaveClass('rcx-hide-covered-divider');
 });
