@@ -31,17 +31,19 @@ export default {
 		},
 		viewport: {
 			viewports: Object.fromEntries(
-				Object.entries(breakpointTokens).map(([name, { minViewportWidth }]) => [
-					name,
-					{
+				Object.entries(breakpointTokens)
+					.filter(([, { minViewportWidth }]) => minViewportWidth != null)
+					.map(([name, { minViewportWidth }]) => [
 						name,
-						styles: {
-							width: `${minViewportWidth}px`,
-							height: '90%',
+						{
+							name,
+							styles: {
+								width: `${minViewportWidth}px`,
+								height: '90%',
+							},
+							type: 'desktop',
 						},
-						type: 'desktop',
-					},
-				]),
+					]),
 			),
 		},
 		darkMode: {
