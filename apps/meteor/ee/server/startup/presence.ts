@@ -1,6 +1,6 @@
 import { Presence } from '@rocket.chat/core-services';
+import { trackPresence } from '@rocket.chat/ddp-server';
 import { InstanceStatus } from '@rocket.chat/instance-status';
-import { Accounts } from 'meteor/accounts-base';
 import { Meteor } from 'meteor/meteor';
 import { throttle } from 'underscore';
 
@@ -18,33 +18,9 @@ Meteor.startup(() => {
 		await Presence.removeLostConnections(nodeId);
 	});
 
-	lifecycle.on('loggedIn', ({ userId, connection }) => {
-		if (!userId) {
-			return;
-		}
-		void Presence.newConnection(userId, connection.id, nodeId).then(updateConns);
-	});
+	trackPresence(lifecycle, nodeId);
 
-	lifecycle.on('activity', ({ userId, connection }) => {
-		if (!userId) {
-			return;
-		}
-		void Presence.updateConnection(userId, connection.id).catch((err) => {
-			console.error('Error updating connection presence:', err);
-		});
-	});
-
-	lifecycle.on('disconnected', ({ userId, connection }) => {
-		updateConns();
-		if (!userId) {
-			return;
-		}
-		void Presence.removeConnection(userId, connection.id, nodeId);
-	});
-
-	Accounts.onLogout((login): void => {
-		void Presence.removeConnection(login.user?._id, login.connection.id, nodeId);
-
-		updateConns();
-	});
+	lifecycle.on('loggedIn', updateConns);
+	lifecycle.on('loggedOut', updateConns);
+	lifecycle.on('disconnected', updateConns);
 });

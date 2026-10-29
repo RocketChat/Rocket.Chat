@@ -1,9 +1,15 @@
-import { Server, encodeAdded, registerAutoupdatePublication, registerLoginServiceConfigurationPublication } from '@rocket.chat/ddp-server';
+import {
+	Server,
+	encodeAdded,
+	registerAccountMethods,
+	registerAutoupdatePublication,
+	registerLoginServiceConfigurationPublication,
+} from '@rocket.chat/ddp-server';
 import { Users } from '@rocket.chat/models';
 
-import { registerAccountMethods } from './accountMethods';
 import { announceConnection } from './meteorConnection';
 import { callMeteorMethod } from './meteorMethods';
+import { sessionAccounts } from './sessionAccounts';
 import { lifecycle } from './sessions';
 import { checkDdpRateLimit } from '../utils/checkDdpRateLimit';
 import { getBaseUserFields } from '../utils/functions/getBaseUserFields';
@@ -27,7 +33,7 @@ export const meteorCollections = {
 	clientVersions: registerAutoupdatePublication(ddpServer),
 };
 
-registerAccountMethods(ddpServer, lifecycle);
+registerAccountMethods(ddpServer, lifecycle, sessionAccounts);
 
 lifecycle.on('connected', announceConnection);
 
