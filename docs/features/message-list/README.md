@@ -2,6 +2,27 @@
 
 The message list shows a conversation, a room or a thread, as an infinite list that opens on the latest message, loads older and newer pages as the viewer scrolls, and jumps to any message. It lives in `@rocket.chat/ui-client` and knows nothing about where messages come from: the consumer passes the messages it has and the capabilities it offers, and the list reports back what the viewer sees.
 
+## What it does
+
+- **Opens at the latest message**, unless it was left elsewhere and that position is restored, or it opens on a jump target.
+- **Stays at the bottom while the viewer is there**: as messages arrive, as content grows (reactions, images, embeds, collapsibles), as the composer grows, and as the window or a panel resizes.
+- **Follows the viewer's own messages**, from anywhere. From an older part of the conversation it first goes back to the latest messages.
+- **"New messages"** shows when someone else writes while the viewer is reading further up; it takes them down and clears once they reach the bottom.
+- **Loads older messages** as the viewer approaches the top, without moving what is on screen.
+- **Loads newer messages** at the bottom after a jump into history, and **"Jump to recent messages"** goes straight back to the latest.
+- **Jumps to any message**, centered and briefly highlighted, loading the messages around it first when needed, and keeps it centered while images around it load. The unread banner jumps to the first unread message the same way.
+- **Day and unread dividers** mark the first message of each day and the first unread message, combined when they fall on the same message.
+- **A floating date** shows the day of the topmost message while the viewer scrolls, fades shortly after, and never doubles an inline day divider.
+- **Groups consecutive messages** of the same author (see Grouping).
+- **A header** above the first message once nothing older remains: the room foreword and retention warning in a room.
+- **Loading indicators** for the first page and for older and newer pages.
+- **Remembers where it was left** when switching conversations; unread messages take precedence and open it at the bottom.
+- **Keeps live embeds mounted** (players, URL previews, iframes) so they do not reload when scrolled away and back.
+- **Reports what is visible**: the topmost message, whether the first unread message is on screen, whether the list is at the bottom.
+- **Keyboard**: a single tab stop; Up and Down move between messages, scrolling unrendered ones into view; Tab walks the controls of the focused message, then leaves the list; the first entry lands on the latest message.
+- **Selection mode**: checkboxes on every message; a click, Space or Enter toggles one; selecting all scrolls to the top.
+- **Accessible**: a labelled `list`, busy while loading, every message a `listitem` with a role description and a name.
+
 ## Model
 
 ### Rows
@@ -64,3 +85,21 @@ A message from someone else that arrives while the viewer is away from the botto
 ### Paging
 
 Older messages load when the viewport comes within a third of its height from the first message; newer messages load at the bottom. One page loads at a time. The check runs after every scroll and once more after every data change, so a viewport taller than a page keeps loading until it is full, and it never runs while the list is positioning or holding a message in view.
+
+## The data contract
+
+The consumer gives the list:
+
+- the messages it has, **sorted oldest first**, and whether older and newer messages remain;
+- loading flags for the first page and for older and newer pages;
+- callbacks that **return a promise settling once the page is in the messages** (or failed): load older, load newer, and jump to the latest page;
+- which message is the first unread one, and which one to jump to, if any; when the jump target is not loaded, the consumer loads the messages around it and the list jumps once they arrive;
+- how to tell the viewer's own messages, including their optimistic copies;
+- a saved position to restore, and the list must be keyed by conversation for it to take effect;
+- a renderer for each message row and, optionally, a header.
+
+The list reports back when a jump target was reached, where it was left (an opaque position to store and hand back), and what is visible. The latest visibility can also be read at any time from the list's handle, for callers that ask instead of listening, and the handle scrolls to the bottom, the top or a message on demand.
+
+Overlays (the floating date, "New messages", "Jump to recent messages") are composed by the consumer as children of the list, so a thread can show only the date while a room shows all three. The overlay buttons scroll the list themselves; what else a click does, such as focusing the composer, stays with the consumer.
+
+How each message renders, and the capabilities it needs from the app, is in [message-components.md](message-components.md).
