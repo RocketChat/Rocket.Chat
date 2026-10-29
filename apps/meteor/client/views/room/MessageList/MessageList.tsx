@@ -105,7 +105,7 @@ export const MessageList = function MessageList({
 		});
 	}, [messagesLength, setKeepAtBottom]);
 
-	const keepMountedMessages = useKeepMountedMessages(messages, canPreview);
+	const keepMountedMessages = useKeepMountedMessages(messages, canPreview ? 1 : 0);
 
 	useTryToJumpToMessage({ rid, virtualizerRef, setIsJumpingToMessage, messages, leadingRows: canPreview ? 1 : 0 });
 
