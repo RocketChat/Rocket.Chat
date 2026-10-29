@@ -1,10 +1,9 @@
 import crypto from 'crypto';
 
-import type { AutoUpdateRecord } from '@rocket.chat/core-services';
-import { MeteorService, Presence, ServiceClass } from '@rocket.chat/core-services';
+import { MeteorService, ServiceClass } from '@rocket.chat/core-services';
 import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
 import type { ClientVersion, ConnectionLifecycle, ConnectionRegistry, MeteorCollection, Server } from '@rocket.chat/ddp-server';
-import { Session, encodeAdded } from '@rocket.chat/ddp-server';
+import { Session, applyLoginServiceConfigurationChange, encodeAdded, setClientVersion, trackPresence } from '@rocket.chat/ddp-server';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { Users } from '@rocket.chat/models';
 import type { NotificationsModule, SettingsReader } from '@rocket.chat/streamer';
@@ -47,28 +46,13 @@ export class DDPStreamer extends ServiceClass {
 
 		new ListenersModule(this, notifications, noSettings);
 
-		this.onEvent('watch.loginServiceConfiguration', ({ clientAction, id, data }) => {
-			if (clientAction === 'removed') {
-				this.collections.loginServices.remove(id);
-				return;
-			}
+		this.onEvent('watch.loginServiceConfiguration', (change) =>
+			applyLoginServiceConfigurationChange(this.collections.loginServices, change),
+		);
 
-			if (data) {
-				this.collections.loginServices.set(id, data);
-			}
-		});
+		this.onEvent('user.forceLogout', (uid: string, sessionId?: string) => this.registry.forceLogout(uid, sessionId));
 
-		this.onEvent('user.forceLogout', (uid: string, sessionId?: string) => {
-			if (sessionId) {
-				this.registry.closeSession(sessionId);
-				return;
-			}
-			this.registry.closeForUser(uid);
-		});
-
-		this.onEvent('meteor.clientVersionUpdated', (record): void => {
-			this.setClientVersion(record);
-		});
+		this.onEvent('meteor.clientVersionUpdated', (record) => setClientVersion(this.collections.clientVersions, record));
 
 		// The publication user cache lives inside the NotificationsModule process. In a
 		// microservices deployment, ddp-streamer hosts that module but does not host
@@ -125,6 +109,8 @@ export class DDPStreamer extends ServiceClass {
 			this.server.setMetrics(metrics);
 		}
 
+		trackPresence(this.lifecycle, nodeID);
+
 		this.lifecycle.on('connected', ({ connection }) => {
 			metrics?.increment('users_connected', { nodeID }, 1);
 			void this.api?.broadcast('socket.connected', connection);
@@ -132,7 +118,7 @@ export class DDPStreamer extends ServiceClass {
 
 		this.lifecycle.on('loggedIn', (session) => {
 			metrics?.increment('users_logged', { nodeID }, 1);
-			void this.onLoggedIn(session, nodeID);
+			void this.onLoggedIn(session);
 		});
 
 		this.lifecycle.on('loggedOut', ({ userId, connection }) => {
@@ -140,11 +126,6 @@ export class DDPStreamer extends ServiceClass {
 			void this.api?.broadcast('accounts.logout', { userId: userId as string, connection });
 
 			this.updateConnections();
-
-			if (!userId) {
-				return;
-			}
-			void Presence.removeConnection(userId, connection.id, nodeID);
 		});
 
 		this.lifecycle.on('disconnected', ({ userId, connection }) => {
@@ -156,31 +137,15 @@ export class DDPStreamer extends ServiceClass {
 			void this.api?.broadcast('socket.disconnected', connection);
 
 			this.updateConnections();
-
-			if (!userId) {
-				return;
-			}
-			void Presence.removeConnection(userId, connection.id, nodeID);
-		});
-
-		this.lifecycle.on('activity', ({ userId, connection }) => {
-			if (!userId) {
-				return;
-			}
-			void Presence.updateConnection(userId, connection.id).catch((err) => {
-				console.error('Error updating connection presence:', err);
-			});
 		});
 	}
 
-	private async onLoggedIn(session: Session, nodeID: string): Promise<void> {
+	private async onLoggedIn(session: Session): Promise<void> {
 		const { userId, connection } = session;
 
 		if (!userId) {
 			throw new Error('User not logged in');
 		}
-
-		await Presence.newConnection(userId, connection.id, nodeID);
 
 		this.updateConnections();
 
@@ -233,11 +198,6 @@ export class DDPStreamer extends ServiceClass {
 		setImmediate(() => session.send(encodeAdded('users', userId, loggedUser)));
 	}
 
-	// The architecture is the DDP document id, so it is not repeated in the fields, matching Meteor's autoupdate collection.
-	private setClientVersion({ _id, ...version }: AutoUpdateRecord): void {
-		this.collections.clientVersions.set(_id, version);
-	}
-
 	override async started(): Promise<void> {
 		void MeteorService.getLoginServiceConfiguration()
 			.then((records = []) => records.forEach((record) => this.collections.loginServices.set(record._id, record)))
@@ -279,7 +239,7 @@ export class DDPStreamer extends ServiceClass {
 		// deliberately last and non fatal: traefik routes /websocket to this process, so
 		// one that is up but not listening takes down every realtime feature
 		await MeteorService.getAutoUpdateClientVersions()
-			.then((versions) => Object.values(versions ?? {}).forEach((version) => this.setClientVersion(version)))
+			.then((versions) => Object.values(versions ?? {}).forEach((version) => setClientVersion(this.collections.clientVersions, version)))
 			.catch((err) => console.error('DDPStreamer could not load client versions', err));
 	}
 

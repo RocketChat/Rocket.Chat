@@ -107,6 +107,28 @@ describe('ConnectionRegistry', () => {
 		});
 	});
 
+	describe('forceLogout', () => {
+		it('closes only the named session when one is given', () => {
+			const closeSession = jest.spyOn(registry, 'closeSession');
+			const closeForUser = jest.spyOn(registry, 'closeForUser');
+
+			registry.forceLogout('user1', 's1');
+
+			expect(closeSession).toHaveBeenCalledWith('s1');
+			expect(closeForUser).not.toHaveBeenCalled();
+		});
+
+		it('closes every session of the user otherwise', () => {
+			const closeSession = jest.spyOn(registry, 'closeSession');
+			const closeForUser = jest.spyOn(registry, 'closeForUser');
+
+			registry.forceLogout('user1');
+
+			expect(closeForUser).toHaveBeenCalledWith('user1');
+			expect(closeSession).not.toHaveBeenCalled();
+		});
+	});
+
 	it('terminates every connected socket on terminateAll', () => {
 		const first = makeSession('user1', 's1');
 		const gone = makeSession('user2', 's2');

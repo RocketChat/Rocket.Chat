@@ -52,6 +52,15 @@ export class ConnectionRegistry {
 		}
 	}
 
+	/** Ends the sessions a forced logout of `userId` targets: only `sessionId` when it is given, otherwise all of the user's. */
+	forceLogout(userId: string, sessionId?: string): void {
+		if (sessionId) {
+			this.closeSession(sessionId);
+			return;
+		}
+		this.closeForUser(userId);
+	}
+
 	terminateAll(): void {
 		for (const session of this.sessions) {
 			session.ws.terminate();
