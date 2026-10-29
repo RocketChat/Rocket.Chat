@@ -3030,6 +3030,106 @@ const generateGridCss = () => {
 
 	return rules.join('\n\n');
 };
+const strokeExtraLight = String(strokeColors['stroke-extra-light']);
+const surfaceOf = (name: string) => String(surfaceColors[`surface-${name}` as keyof typeof surfaceColors]);
+const statusFontOf = (kind: string) => String(statusColors[`status-font-on-${kind}` as keyof typeof statusColors]);
+const part = (name: string, base: Record<string, Value>, variants?: Record<string, Record<string, Value>>) =>
+	declaredWhereTheyRender + frame(name, base, variants);
+
+const generateContextualbar = () =>
+	part(
+		'ContextualbarFrame',
+		{
+			...flexBox,
+			flexDirection: 'column',
+			flexShrink: 0,
+			insetInlineEnd: 0,
+			insetBlockStart: 0,
+			zIndex: 10,
+			height: '100%',
+			color: fontDefault,
+			backgroundColor: surfaceOf('room'),
+			borderInlineStartWidth: borderWidth('default')!,
+			borderInlineStartStyle: 'solid',
+			borderInlineStartColor: strokeExtraLight,
+		},
+		{
+			stretch: { true: { width: '100%' }, false: {} },
+			placement: {
+				static: { position: 'static' },
+				relative: { position: 'relative' },
+				absolute: { position: 'absolute' },
+				fixed: { position: 'fixed' },
+			},
+		},
+	);
+
+const generateContextualbarContent = () =>
+	part(
+		'ContextualbarContentFrame',
+		{ ...flexBox, flexDirection: 'column', overflowY: 'hidden', height: '100%' },
+		{
+			// both set `padding`, so one variant holds each combination
+			padding: {
+				'default': { paddingInline: px(24) },
+				'flush': { paddingInline: 0 },
+				'spaced': { paddingInline: px(24), paddingBlock: px(12) },
+				'flush-spaced': { paddingInline: 0, paddingBlock: px(12) },
+			},
+		},
+	);
+
+const generateContextualbarEmptyContent = () =>
+	part('ContextualbarEmptyContentFrame', { ...flexBox, flexDirection: 'column', justifyContent: 'center', flexGrow: 1 });
+
+const generateContextualbarFooter = () => part('ContextualbarFooterFrame', { ...blockBox, paddingInline: px(16), paddingBlock: px(20) });
+
+const generateContextualbarHeader = () =>
+	`${part('ContextualbarHeaderFrame', {
+		...flexBox,
+		alignItems: 'center',
+		flexShrink: 0,
+		height: size('x44')!,
+		paddingInline: px(16),
+		borderBlockEndWidth: borderWidth('default')!,
+		borderBlockEndStyle: 'solid',
+		borderBlockColor: strokeExtraLight,
+	})}\n\n${frame('ContextualbarHeaderInnerFrame', {
+		...flexBox,
+		alignItems: 'center',
+		justifyContent: 'space-between',
+		flexGrow: 1,
+		height: '100%',
+		overflow: 'hidden',
+		marginInline: px(-4),
+		paddingInline: px(4),
+		gap: px(8),
+	})}`;
+
+const generateContextualbarSection = () =>
+	part('ContextualbarSectionFrame', {
+		...flexBox,
+		alignItems: 'center',
+		flexGrow: 1,
+		padding: px(16),
+		borderBlockEndWidth: borderWidth('default')!,
+		borderBlockEndStyle: 'solid',
+		borderBlockColor: strokeExtraLight,
+	});
+
+const generateContextualbarSkeleton = () =>
+	part('ContextualbarSkeletonBodyFrame', { ...flexBox, flexDirection: 'column', padding: px(24), gap: px(4) });
+
+const generateContextualbarTitle = () =>
+	part('ContextualbarTitleFrame', {
+		...blockBox,
+		flexGrow: 1,
+		flexShrink: 1,
+		overflow: 'hidden',
+		textOverflow: 'ellipsis',
+		whiteSpace: 'nowrap',
+		...font('h5'),
+	});
 
 const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
@@ -3143,6 +3243,17 @@ const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/States/StatesSuggestionListItem.tsx'), generate: generateStatesSuggestionListItem },
 	{ file: join(import.meta.dirname, '../src/components/States/StatesLink.tsx'), generate: generateStatesLink },
 	{ file: join(import.meta.dirname, '../src/components/Grid/Grid.styles.css'), generate: generateGridCss, css: true },
+	{ file: join(import.meta.dirname, '../src/components/Contextualbar/Contextualbar.tsx'), generate: generateContextualbar },
+	{ file: join(import.meta.dirname, '../src/components/Contextualbar/ContextualbarContent.tsx'), generate: generateContextualbarContent },
+	{
+		file: join(import.meta.dirname, '../src/components/Contextualbar/ContextualbarEmptyContent.tsx'),
+		generate: generateContextualbarEmptyContent,
+	},
+	{ file: join(import.meta.dirname, '../src/components/Contextualbar/ContextualbarFooter.tsx'), generate: generateContextualbarFooter },
+	{ file: join(import.meta.dirname, '../src/components/Contextualbar/ContextualbarHeader.tsx'), generate: generateContextualbarHeader },
+	{ file: join(import.meta.dirname, '../src/components/Contextualbar/ContextualbarSection.tsx'), generate: generateContextualbarSection },
+	{ file: join(import.meta.dirname, '../src/components/Contextualbar/ContextualbarSkeleton.tsx'), generate: generateContextualbarSkeleton },
+	{ file: join(import.meta.dirname, '../src/components/Contextualbar/ContextualbarTitle.tsx'), generate: generateContextualbarTitle },
 ];
 
 for (const [dir, control] of [
