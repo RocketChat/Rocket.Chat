@@ -38,7 +38,7 @@ export function parseParameters(parameters: string, ignoreExtraUnquotedSpaces = 
 			// Replace tabs inside the quotes with a VTS character
 			.replace(/\t/g, '\u008A');
 
-		line = line.replace(item, newItem);
+		line = line.replace(item, () => newItem);
 	});
 
 	// If two quoted parameters are not separated by a space, add one automatically
