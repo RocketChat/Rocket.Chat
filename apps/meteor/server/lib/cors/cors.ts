@@ -1,30 +1,22 @@
+import { existsSync } from 'node:fs';
 import type http from 'node:http';
+import { join } from 'node:path';
 import url from 'node:url';
 
 import { Logger } from '@rocket.chat/logger';
+import express from 'express';
 import { Meteor } from 'meteor/meteor';
-import type { StaticFiles } from 'meteor/webapp';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
 
-import { getWebAppHash } from '../../configuration/configureBoilerplate';
 import { settings } from '../../settings';
+import { getRuntimeConfigScript } from '../ui-master/page';
 
 // Taken from 'connect' types
 type NextFunction = (err?: any) => void;
 
 const logger = new Logger('CORS');
 
-let templatePromise: Promise<void> | void;
-export async function setInlineScriptsAllowed(allowed: boolean): Promise<void> {
-	templatePromise = WebAppInternals.setInlineScriptsAllowed(allowed);
-}
-
 WebApp.rawConnectHandlers.use(async (_req: http.IncomingMessage, res: http.ServerResponse, next: NextFunction) => {
-	if (templatePromise) {
-		await templatePromise;
-		templatePromise = void 0;
-	}
-
 	// XSS Protection for old browsers (IE)
 	res.setHeader('X-XSS-Protection', '1');
 
@@ -47,7 +39,7 @@ WebApp.rawConnectHandlers.use(async (_req: http.IncomingMessage, res: http.Serve
 		const inlineHashes = [
 			// Hash for `window.close()`, required by the CAS login popup.
 			"'sha256-jqxtvDkBbRAl9Hpqv68WdNOieepg8tJSYu1xIy7zT34='",
-			// Hash for /apps/meteor/packages/rocketchat-livechat/assets/demo.html:25
+			// Hash for /apps/meteor/public/packages/rocketchat_livechat/assets/demo.html:25
 			"'sha256-aui5xYk3Lu1dQcnsPlNZI+qDTdfzdUv3fzsw80VLJgw='",
 		]
 			.filter(Boolean)
@@ -82,7 +74,26 @@ WebApp.rawConnectHandlers.use(async (_req: http.IncomingMessage, res: http.Serve
 	return next();
 });
 
-const _staticFilesMiddleware = WebAppInternals.staticFilesMiddleware;
+declare const __meteor_bootstrap__: { serverDir: string };
+
+// `public/` ships next to the server program (`bundle/public`); a server run from source (`meteor run`) reads the app's
+// own. `RC_PUBLIC_DIR` overrides both.
+const bundledPublicDir = join(__meteor_bootstrap__.serverDir, '../../public');
+const publicDir =
+	process.env.RC_PUBLIC_DIR ||
+	(existsSync(bundledPublicDir) ? bundledPublicDir : join(__meteor_bootstrap__.serverDir, '../../../../../public'));
+
+const servePublicFiles = express.static(publicDir, {
+	index: false,
+	redirect: false,
+	maxAge: 0,
+	setHeaders: (res, filePath) => {
+		// The web client's files are named by their content hash, so they never change under the same URL.
+		if (filePath.startsWith(join(publicDir, 'bundle/'))) {
+			res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+		}
+	},
+});
 
 let cachingVersion = '';
 export function setCachingVersion(value: string): void {
@@ -91,13 +102,13 @@ export function setCachingVersion(value: string): void {
 
 // @ts-expect-error - accessing internal property of webapp
 WebAppInternals.staticFilesMiddleware = function (
-	staticFiles: StaticFiles,
+	_staticFiles: unknown,
 	req: http.IncomingMessage & { cookies: Record<string, string> },
 	res: http.ServerResponse & { cookie: (cookie: string, value: string) => void },
 	next: NextFunction,
 ) {
 	res.setHeader('Access-Control-Allow-Origin', '*');
-	const { arch, path, url } = WebApp.categorizeRequest(req);
+	const { path, url } = WebApp.categorizeRequest(req);
 
 	if (cachingVersion && req.cookies.cache_version !== cachingVersion) {
 		res.cookie('cache_version', cachingVersion);
@@ -108,22 +119,22 @@ WebAppInternals.staticFilesMiddleware = function (
 	// a cache of the file for the wrong hash and start a client loop due to the mismatch
 	// of the hashes of ui versions which would be checked against a websocket response
 	if (path === '/meteor_runtime_config.js') {
-		const hash = getWebAppHash(arch);
+		const { content, hash } = getRuntimeConfigScript();
 
-		if (!hash || hash !== url.query.hash) {
+		if (hash !== url.query.hash) {
 			res.writeHead(404);
 			return res.end();
 		}
 
-		res.setHeader('Cache-Control', 'public, max-age=3600');
+		res.writeHead(200, {
+			'Content-Type': 'application/javascript; charset=UTF-8',
+			'Content-Length': Buffer.byteLength(content),
+			'Cache-Control': 'public, max-age=3600',
+		});
+		return res.end(req.method === 'HEAD' ? undefined : content);
 	}
 
-	// The web client's files are named by their content hash, so they never change under the same URL.
-	if (path.startsWith('/bundle/')) {
-		res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
-	}
-
-	return _staticFilesMiddleware(staticFiles, req, res, next);
+	return servePublicFiles(req as express.Request, res as express.Response, next);
 };
 
 // A chunk missing from the build must fail to load, not be cached for good as the page.

@@ -185,11 +185,8 @@ const serverRoutes = [
 	'/robots.txt',
 	'^/css-theme',
 	'^/scripts_',
-	// What the page the server renders loads from Meteor itself: the runtime config and the files of its (empty)
-	// client program, all versioned by a query parameter, and the source maps of those files.
-	'^/[^?]*\\?(hash|meteor_js_resource|meteor_css_resource)=',
-	'^/(packages|app)/[0-9a-f]+\\.map$',
-	'/__meteor__',
+	// The runtime config the page the server renders loads.
+	'/meteor_runtime_config.js',
 ];
 
 // Cookies the server sets (rc_token for avatars and downloads) are scoped to its own domain; rewrite them to the dev origin.

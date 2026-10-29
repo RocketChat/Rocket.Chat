@@ -2,7 +2,6 @@ import { configureAccounts } from './accounts_meld';
 import { configureCAS } from './cas';
 import { configureAssets } from './configureAssets';
 import { configureBoilerplate } from './configureBoilerplate';
-import { configureCDN } from './configureCDN';
 import { configureCORS } from './configureCORS';
 import { configureDirectReply } from './configureDirectReply';
 import { configureIRC } from './configureIRC';
@@ -21,7 +20,6 @@ export async function configureServer(settings: ICachedSettings) {
 		configureOAuth(settings),
 		configureAssets(settings),
 		configureCORS(settings),
-		configureCDN(settings),
 		configurePushNotifications(settings),
 		configureBoilerplate(settings),
 		configureDirectReply(settings),

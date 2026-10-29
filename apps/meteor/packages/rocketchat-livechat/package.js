@@ -12,8 +12,3 @@ Package.registerBuildPlugin({
 		'uglify-js': '2.8.29',
 	},
 });
-
-Package.onUse(function (api) {
-	// livechat app
-	api.addAssets('assets/demo.html', 'client');
-});

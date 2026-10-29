@@ -1,3 +1,6 @@
+import { createHash } from 'node:crypto';
+
+import { Autoupdate } from 'meteor/autoupdate';
 import { Meteor } from 'meteor/meteor';
 
 import type { ViteManifest } from './clientEntryTags';
@@ -27,13 +30,13 @@ const getBundlePrefix = (): string => {
 	return __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
 };
 
-const readManifest = async (): Promise<ViteManifest | undefined> => {
+const readManifest = async (): Promise<{ manifest: ViteManifest; version: string } | undefined> => {
 	try {
 		const manifest = await readPrivateAssetText(MANIFEST);
 		if (!manifest) {
 			throw new Error('Empty manifest');
 		}
-		return JSON.parse(manifest) as ViteManifest;
+		return { manifest: JSON.parse(manifest) as ViteManifest, version: createHash('sha1').update(manifest).digest('hex') };
 	} catch (err) {
 		// In development the Vite dev server puts the client into the page itself.
 		if (process.env.NODE_ENV === 'production') {
@@ -44,10 +47,13 @@ const readManifest = async (): Promise<ViteManifest | undefined> => {
 };
 
 Meteor.startup(async () => {
-	const manifest = await readManifest();
-	if (!manifest) {
+	const build = await readManifest();
+	if (!build) {
 		return;
 	}
+
+	const { manifest, version } = build;
+	Autoupdate.setClientVersion(version);
 
 	settings.watchMultiple(['CDN_PREFIX', 'CDN_PREFIX_ALL', 'CDN_JSCSS_PREFIX'], () => {
 		injectIntoHead('client-entry', getClientEntryTags(manifest, getBundlePrefix()));
