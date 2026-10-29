@@ -35,6 +35,7 @@ export const DateTimeModal = ({ onSave, onClose, defaultValues }: DateTimeModalP
 
 	return (
 		<GenericModal
+			icon={null}
 			variant='warning'
 			title={t('Custom_time_range')}
 			onCancel={onClose}
