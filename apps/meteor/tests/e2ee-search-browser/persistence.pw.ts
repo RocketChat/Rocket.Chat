@@ -249,7 +249,13 @@ test('deletes the saved copy when the wrap key of another private key opens it, 
 	const reopened = await create('https://sealed.example');
 	await expect(call(reopened, 'open', { userId: 'u1', wrapKey: wrapKey(9) })).resolves.toEqual({ schemaVersion: 1, encryptedAtRest: true });
 	await expect(hitIds(reopened)).resolves.toEqual(['m1']);
-	await call(reopened, 'wipe');
+
+	await load();
+	const oldKey = await create('https://sealed.example');
+	await expect(call(oldKey, 'open', { userId: 'u1', wrapKey: wrapKey() })).resolves.toEqual({ schemaVersion: 1, encryptedAtRest: true });
+	await expect(indexDigests()).resolves.toEqual([]);
+	await expect(hitIds(oldKey)).resolves.toEqual([]);
+	await call(oldKey, 'wipe');
 });
 
 test('keeps the saved copy when a tab with no wrap key opens it after a key reset', async () => {
