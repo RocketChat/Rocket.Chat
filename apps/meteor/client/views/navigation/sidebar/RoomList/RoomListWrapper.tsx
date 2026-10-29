@@ -1,9 +1,9 @@
+import { useMergedRefsV2 } from '@rocket.chat/fuselage-hooks';
 import type { ForwardedRef, HTMLAttributes } from 'react';
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import { useSidebarListNavigation } from './useSidebarListNavigation';
-import { useMergedRefsV2 } from '../../../../hooks/useMergedRefsV2';
 
 export type RoomListWrapperProps = HTMLAttributes<HTMLDivElement>;
 
