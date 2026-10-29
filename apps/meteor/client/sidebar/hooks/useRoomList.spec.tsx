@@ -3,6 +3,7 @@ import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 import { VideoConfContext } from '@rocket.chat/ui-video-conf';
 import { renderHook, waitFor } from '@testing-library/react';
 
+import type { LiftedActivityFilters } from './useLiftedActivityFilters';
 import { useRoomList } from './useRoomList';
 import type { SidebarRoomListGroup } from './useRoomList';
 import { createFakeLicenseInfo, createFakeRoom, createFakeSubscription, createFakeUser } from '../../../tests/mocks/data';
@@ -468,15 +469,15 @@ describe('the activity filter', () => {
 	const renderChannels = ({
 		activityFilterHours,
 		collapsedGroups = [],
-		groupsShowingInactive,
+		liftedFilters,
 		isEnterprise = true,
 	}: {
 		activityFilterHours: number;
 		collapsedGroups?: string[];
-		groupsShowingInactive?: string[];
+		liftedFilters?: LiftedActivityFilters;
 		isEnterprise?: boolean;
 	}) =>
-		renderHook(() => useRoomList({ collapsedGroups, groupsShowingInactive }), {
+		renderHook(() => useRoomList({ collapsedGroups, liftedFilters }), {
 			wrapper: getWrapperSettings({
 				rooms: channels,
 				sidebarGroupByType: true,
@@ -508,13 +509,22 @@ describe('the activity filter', () => {
 	});
 
 	it('lists every room while the group is showing its inactive ones, still counting them', async () => {
-		const { result } = renderChannels({ activityFilterHours: 24, groupsShowingInactive: ['Channels'] });
+		const { result } = renderChannels({ activityFilterHours: 24, liftedFilters: { Channels: 24 } });
 
 		await waitFor(() => expect(channelsGroupOf(result.current.groups)?.activityFilterHours).toBe(24));
 		const group = channelsGroupOf(result.current.groups);
 		expect(namesOf(group)).toHaveLength(channels.length);
 		expect(group?.inactiveCount).toBe(2);
 		expect(group?.showingInactive).toBe(true);
+	});
+
+	it('applies a newly chosen window even though the previous one was lifted', async () => {
+		const { result } = renderChannels({ activityFilterHours: 24 * 7, liftedFilters: { Channels: 24 } });
+
+		await waitFor(() => expect(channelsGroupOf(result.current.groups)?.activityFilterHours).toBe(24 * 7));
+		const group = channelsGroupOf(result.current.groups);
+		expect(group?.showingInactive).toBe(false);
+		expect(namesOf(group)).toEqual(['quiet-read', 'quiet-unread', 'recent-read']);
 	});
 
 	it('keeps the open room listed even when it is inactive', async () => {

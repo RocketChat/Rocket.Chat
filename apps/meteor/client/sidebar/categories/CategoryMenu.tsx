@@ -1,6 +1,6 @@
 import type { ISidebarCategory } from '@rocket.chat/core-typings';
 import { Menu, MenuItem, MenuSection, MenuSubmenuTrigger, ToggleSwitch } from '@rocket.chat/fuselage';
-import { useToggle } from '@rocket.chat/fuselage-hooks';
+import { useStableCallback, useToggle } from '@rocket.chat/fuselage-hooks';
 import { GenericMenuItem, useHandleMenuAction } from '@rocket.chat/ui-client';
 import type { GenericMenuItemProps } from '@rocket.chat/ui-client';
 import { useUserPreference } from '@rocket.chat/ui-contexts';
@@ -24,6 +24,8 @@ type CategoryMenuProps = {
 	canMoveDown: boolean;
 	onMoveUp: () => void;
 	onMoveDown: () => void;
+	/** The user chose a window from the Filter submenu; `undefined` means "All". */
+	onActivityFilterChange?: (activityFilterHours: number | undefined) => void;
 };
 
 const CategoryMenu = ({
@@ -36,6 +38,7 @@ const CategoryMenu = ({
 	canMoveDown,
 	onMoveUp,
 	onMoveDown,
+	onActivityFilterChange,
 }: CategoryMenuProps) => {
 	const { t } = useTranslation();
 	const [isOpen, toggleOpen] = useToggle(false);
@@ -128,8 +131,12 @@ const CategoryMenu = ({
 		},
 	];
 
-	// `close` is stable, so the filter items are rebuilt only when the group or its filter changes.
-	const filterItems = useActivityFilterItems(groupKey, activityFilterHours, close);
+	// Stable, so the filter items are rebuilt only when the group or its filter changes, not on every render.
+	const handleActivityFilterChoice = useStableCallback((hours: number | undefined) => {
+		close();
+		onActivityFilterChange?.(hours);
+	});
+	const filterItems = useActivityFilterItems(groupKey, activityFilterHours, handleActivityFilterChoice);
 	const activityFilterItems = isActivityFilterable(groupKey) ? filterItems : [];
 
 	const allItems = [...orderItems, ...(category ? manageItems : []), ...createItems, ...activityFilterItems, ...unreadItems];

@@ -1,6 +1,6 @@
 import { Box } from '@rocket.chat/fuselage';
 import { useUserPreference, useUserId } from '@rocket.chat/ui-contexts';
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { VirtualizerHandle } from 'virtua';
 
@@ -15,6 +15,7 @@ import { useMoveCategoryPosition } from '../categories/hooks/useMoveCategoryPosi
 import SidebarVirtualList from '../components/SidebarVirtualList';
 import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../hooks/useCategoryList';
 import { useCollapsedGroups } from '../hooks/useCollapsedGroups';
+import { useLiftedActivityFilters } from '../hooks/useLiftedActivityFilters';
 import { useOffscreenUnreads } from '../hooks/useOffscreenUnreads';
 import { usePreventDefault } from '../hooks/usePreventDefault';
 import { useRoomList } from '../hooks/useRoomList';
@@ -42,14 +43,10 @@ const RoomList = () => {
 	const isAnonymous = !userId;
 
 	const { collapsedGroups, handleClick } = useCollapsedGroups();
-	// Lifting a group's activity filter from its chip lasts for this session only.
-	const [groupsShowingInactive, setGroupsShowingInactive] = useState<string[]>([]);
-	const toggleShowingInactive = useCallback(
-		(key: string) => setGroupsShowingInactive((keys) => (keys.includes(key) ? keys.filter((k) => k !== key) : [...keys, key])),
-		[],
-	);
-	const { groups } = useRoomList({ collapsedGroups, groupsShowingInactive });
+	const { liftedFilters, toggleLifted, dropLifted } = useLiftedActivityFilters();
+	const { groups } = useRoomList({ collapsedGroups, liftedFilters });
 	const moveCategory = useMoveCategoryPosition();
+
 	const virtualizerRef = useRef<VirtualizerHandle>(null);
 	const { previousUnread, nextUnread, handleRangeChange } = useOffscreenUnreads({ groups });
 	const openedRoom = useOpenedRoom() ?? '';
@@ -105,7 +102,9 @@ const RoomList = () => {
 						canMoveDown={canMoveGroup(groups, index, 'down')}
 						onMoveUp={() => moveCategory(allGroupKeys, group.key, 'up')}
 						onMoveDown={() => moveCategory(allGroupKeys, group.key, 'down')}
-						onToggleInactive={() => toggleShowingInactive(group.key)}
+						onToggleInactive={() => group.activityFilterHours && toggleLifted(group.key, group.activityFilterHours)}
+						// A window chosen from the menu applies right away, even if the previous one was lifted.
+						onActivityFilterChange={() => dropLifted(group.key)}
 						onClick={() => handleClick(group.key)}
 					/>
 				)}

@@ -31,11 +31,14 @@ export const useActivityFilterLabel = (hours: number | undefined): string => {
 /** The menu item id of a filter, `all` when there is none. */
 export const getActivityFilterItemId = (hours: number | undefined): string => `activity-filter-${hours ?? 'all'}`;
 
-/** One menu item per preset for a group, the current one checked. */
+/**
+ * One menu item per preset for a group, the current one checked. Choosing one stores it and reports the choice
+ * to `onChoose`, so the owner can close the menu and react to it.
+ */
 export const useActivityFilterItems = (
 	groupId: string,
 	activityFilterHours: number | undefined,
-	onSelect?: () => void,
+	onChoose?: (hours: number | undefined) => void,
 ): GenericMenuItemProps[] => {
 	const { t } = useTranslation();
 	const setActivityFilterHours = useSetActivityFilterHours();
@@ -46,11 +49,11 @@ export const useActivityFilterItems = (
 				id: getActivityFilterItemId(hours),
 				content: t(label),
 				onClick: () => {
-					onSelect?.();
-					void setActivityFilterHours(groupId, hours);
+					onChoose?.(hours);
+					setActivityFilterHours(groupId, hours);
 				},
 				addon: hours === activityFilterHours ? <Icon name='check' size='x16' /> : undefined,
 			})),
-		[t, groupId, activityFilterHours, onSelect, setActivityFilterHours],
+		[t, groupId, activityFilterHours, onChoose, setActivityFilterHours],
 	);
 };

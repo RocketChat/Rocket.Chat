@@ -49,6 +49,7 @@ const renderCollapser = (group: SidebarRoomListGroup, onClick = jest.fn()) =>
 			onMoveUp={jest.fn()}
 			onMoveDown={jest.fn()}
 			onToggleInactive={jest.fn()}
+			onActivityFilterChange={jest.fn()}
 			onClick={onClick}
 		/>,
 		{ wrapper: ListWrapper },
@@ -94,6 +95,7 @@ describe('RoomListCollapser', () => {
 				onMoveUp={jest.fn()}
 				onMoveDown={jest.fn()}
 				onToggleInactive={jest.fn()}
+				onActivityFilterChange={jest.fn()}
 				onClick={jest.fn()}
 			/>,
 		);
@@ -164,7 +166,7 @@ const FilterListWrapper = ({ children }: { children: ReactNode }) => (
 );
 
 const renderFilteredCollapser = (overrides: Partial<SidebarRoomListGroup> = {}) => {
-	const handlers = { onClick: jest.fn(), onToggleInactive: jest.fn() };
+	const handlers = { onClick: jest.fn(), onToggleInactive: jest.fn(), onActivityFilterChange: jest.fn() };
 
 	render(
 		<RoomListCollapser
@@ -275,6 +277,7 @@ describe('the activity filter chip', () => {
 				onMoveUp={jest.fn()}
 				onMoveDown={jest.fn()}
 				onToggleInactive={jest.fn()}
+				onActivityFilterChange={jest.fn()}
 				onClick={jest.fn()}
 			/>,
 			{ wrapper: FilterListWrapper },

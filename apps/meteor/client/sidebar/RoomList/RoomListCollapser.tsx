@@ -17,6 +17,8 @@ type RoomListCollapserProps = {
 	onMoveUp: () => void;
 	onMoveDown: () => void;
 	onToggleInactive: () => void;
+	/** The user chose a window from the group's Filter submenu; `undefined` means "All". */
+	onActivityFilterChange: (activityFilterHours: number | undefined) => void;
 	onClick: () => void;
 } & Omit<HTMLAttributes<HTMLDivElement>, 'onClick' | 'onKeyDown'>;
 
@@ -27,6 +29,7 @@ const RoomListCollapser = ({
 	onMoveUp,
 	onMoveDown,
 	onToggleInactive,
+	onActivityFilterChange,
 	onClick,
 	...props
 }: RoomListCollapserProps) => {
@@ -86,6 +89,7 @@ const RoomListCollapser = ({
 								canMoveDown={canMoveDown}
 								onMoveUp={onMoveUp}
 								onMoveDown={onMoveDown}
+								onActivityFilterChange={onActivityFilterChange}
 							/>
 						) : (
 							<IconButton tabIndex={-1} aria-hidden size='mini' icon='kebab' onPointerDown={mountNow} />

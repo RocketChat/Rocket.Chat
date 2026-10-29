@@ -7,6 +7,7 @@ import { useVideoConfIncomingCalls, useVideoConfWindowEnabled } from '@rocket.ch
 import { useMemo } from 'react';
 
 import { filterGroupVisibility, getRoomCategory, useCategoryList } from './useCategoryList';
+import type { LiftedActivityFilters } from './useLiftedActivityFilters';
 import { useIsEnterprise } from '../../hooks/useIsEnterprise';
 import { useSortQueryOptions } from '../../hooks/useSortQueryOptions';
 import { useOpenedRoom } from '../../lib/RoomManager';
@@ -66,10 +67,11 @@ export const getLastActivity = (room: SubscriptionWithRoom): number | undefined 
 
 export const useRoomList = ({
 	collapsedGroups,
-	groupsShowingInactive,
+	liftedFilters,
 }: {
 	collapsedGroups?: string[];
-	groupsShowingInactive?: string[];
+	/** The groups showing their inactive rooms this session, each at the window it was lifted at. */
+	liftedFilters?: LiftedActivityFilters;
 }): useRoomListReturnType => {
 	const showOmnichannel = useOmnichannelEnabled();
 
@@ -165,7 +167,7 @@ export const useRoomList = ({
 				const keepUnreadsOnTopForGroup = isEnterprise ? isKeepUnreadsOnTop(key) : false;
 				const keepUnreadsOnTop = category ? Boolean(category.keepUnreadsOnTop) : keepUnreadsOnTopForGroup;
 				const activityFilterHours = getActivityFilterHours(key);
-				const showingInactive = groupsShowingInactive?.includes(key) ?? false;
+				const showingInactive = activityFilterHours !== undefined && liftedFilters?.[key] === activityFilterHours;
 				const allRooms = [...set];
 				// A collapsed group still shows the room currently open, so the user can locate themselves in the
 				// sidebar, plus its unread rooms when "Show unreads" is enabled.
@@ -236,7 +238,7 @@ export const useRoomList = ({
 			isShowUnreads,
 			isKeepUnreadsOnTop,
 			getActivityFilterHours,
-			groupsShowingInactive,
+			liftedFilters,
 			now,
 			openedRoom,
 		]),

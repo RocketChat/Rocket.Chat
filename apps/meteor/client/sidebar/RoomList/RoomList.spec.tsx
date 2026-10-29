@@ -34,12 +34,12 @@ const makeGroup = (key: string, groupRooms: typeof rooms, unread: number): Sideb
 	}) as unknown as SidebarRoomListGroup;
 
 const groups = [
-	makeGroup('Channels', [rooms[0], rooms[1]], 3),
+	{ ...makeGroup('Channels', [rooms[0], rooms[1]], 3), activityFilterHours: 24 },
 	makeGroup('Direct_Messages', [rooms[2]], 1),
 	makeGroup('Empty_Group', [], 0),
 ];
 
-const mockUseRoomList = jest.fn((_options: { collapsedGroups?: string[]; groupsShowingInactive?: string[] }) => ({
+const mockUseRoomList = jest.fn((_options: { collapsedGroups?: string[]; liftedFilters?: Record<string, number> }) => ({
 	groups,
 	groupsCount: [2, 1, 0],
 	totalCount: 3,
@@ -121,7 +121,7 @@ jest.mock('../hooks/usePreventDefault', () => ({
 
 jest.mock('../hooks/useRoomList', () => ({
 	...jest.requireActual('../hooks/useRoomList'),
-	useRoomList: (options: { collapsedGroups?: string[]; groupsShowingInactive?: string[] }) => mockUseRoomList(options),
+	useRoomList: (options: { collapsedGroups?: string[]; liftedFilters?: Record<string, number> }) => mockUseRoomList(options),
 }));
 
 jest.mock('../hooks/useShortcutOpenMenu', () => ({
@@ -130,10 +130,20 @@ jest.mock('../hooks/useShortcutOpenMenu', () => ({
 
 jest.mock('./RoomListCollapser', () => ({
 	__esModule: true,
-	default: ({ group, onToggleInactive }: { group: SidebarRoomListGroup; onToggleInactive: () => void }) => (
+	default: ({
+		group,
+		onToggleInactive,
+		onActivityFilterChange,
+	}: {
+		group: SidebarRoomListGroup;
+		onToggleInactive: () => void;
+		onActivityFilterChange: (hours: number | undefined) => void;
+	}) => (
 		<>
 			<button type='button' data-testid='group-header'>{`${group.title}:${group.unreadInfo.unread}`}</button>
 			<button type='button' onClick={onToggleInactive}>{`toggle ${group.key}`}</button>
+			<button type='button' onClick={() => onActivityFilterChange(24 * 7)}>{`filter ${group.key} by 7 days`}</button>
+			<button type='button' onClick={() => onActivityFilterChange(undefined)}>{`clear ${group.key} filter`}</button>
 		</>
 	),
 }));
@@ -186,12 +196,22 @@ describe('RoomList', () => {
 	it("lifts and restores a group's activity filter for the session from its header", async () => {
 		render(<RoomList />, { wrapper: appRoot });
 
-		expect(mockUseRoomList).toHaveBeenLastCalledWith(expect.objectContaining({ groupsShowingInactive: [] }));
+		expect(mockUseRoomList).toHaveBeenLastCalledWith(expect.objectContaining({ liftedFilters: {} }));
 
 		await userEvent.click(screen.getByRole('button', { name: 'toggle Channels' }));
-		expect(mockUseRoomList).toHaveBeenLastCalledWith(expect.objectContaining({ groupsShowingInactive: ['Channels'] }));
+		expect(mockUseRoomList).toHaveBeenLastCalledWith(expect.objectContaining({ liftedFilters: { Channels: 24 } }));
 
 		await userEvent.click(screen.getByRole('button', { name: 'toggle Channels' }));
-		expect(mockUseRoomList).toHaveBeenLastCalledWith(expect.objectContaining({ groupsShowingInactive: [] }));
+		expect(mockUseRoomList).toHaveBeenLastCalledWith(expect.objectContaining({ liftedFilters: {} }));
+	});
+
+	it('drops the lift of a group when a window is chosen for it', async () => {
+		render(<RoomList />, { wrapper: appRoot });
+
+		await userEvent.click(screen.getByRole('button', { name: 'toggle Channels' }));
+		expect(mockUseRoomList).toHaveBeenLastCalledWith(expect.objectContaining({ liftedFilters: { Channels: 24 } }));
+
+		await userEvent.click(screen.getByRole('button', { name: 'filter Channels by 7 days' }));
+		expect(mockUseRoomList).toHaveBeenLastCalledWith(expect.objectContaining({ liftedFilters: {} }));
 	});
 });
