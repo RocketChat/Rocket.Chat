@@ -55,8 +55,9 @@ under load.
 - **R5** The service applies its configuration on start and again on every `watch.settings`
   event for an `XMPP_Server_*` key and every `license.module` event for `federation`.
   Applications are serialized ([ADR 0013](../adr/0013-reconfigure-restarts-the-listener-only-for-listener-settings.md)).
-- **R6** A change to the domain, port, MUC subdomain, certificate or key stops the server and
-  starts a new one. Any other change to a running server is applied without a restart.
+- **R6** A change to the domain, port, MUC subdomain, certificate, key or allow list stops
+  the server and starts a new one. Any other change to a running server is applied without a
+  restart.
 - **R7** After the listener is up, hosted rooms are registered and remote rooms rejoined from
   the database. A failure in that step is logged and does not stop the listener
   ([ADR 0012](../adr/0012-core-state-is-ephemeral-and-rebuilt-from-the-database.md)).
@@ -101,13 +102,7 @@ service with the observer that feeds `/stats`.
 
 ## Known defects
 
-### D1 Allow list changes need a service restart
-
-Changes to `XMPP_Server_Domain_Allow_List` are only applied when the server restarts. The
-allow list is not part of the listener fingerprint, and the soft update path refreshes only
-the presence flag, so the running server keeps enforcing the old list. Where:
-`applyConfiguration` and `fingerprintOf` in `XMPPServerService.ts`. Test:
-`connectivity.spec.ts`, "drops messages from a domain outside the allow list".
+None.
 
 ## Open questions
 

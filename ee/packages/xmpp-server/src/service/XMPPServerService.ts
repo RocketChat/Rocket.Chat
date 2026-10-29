@@ -909,8 +909,8 @@ export class XMPPServerService extends ServiceClass implements IXMPPServerServic
 		}
 	}
 
-	/** Changes exactly when a setting the listener is bound to changes. */
+	/** Changes exactly when a setting that only a new listener applies changes. */
 	private fingerprintOf(config: XMPPServerConfiguration): string {
-		return [config.domain, config.port, config.mucSubdomain, config.tlsCert, config.tlsKey].join('\0');
+		return [config.domain, config.port, config.mucSubdomain, config.tlsCert, config.tlsKey, config.domainAllowList.join(',')].join('\0');
 	}
 }
