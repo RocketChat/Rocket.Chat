@@ -8,6 +8,8 @@ import { WORD, clampLimit, fold, queryTokens, toFilterOnlySnippet, toSnippet, ut
  */
 export const createFakeSearchIndexBackend = (): ISearchIndexBackend => {
 	let userId: string | undefined;
+	/** The user whose documents `docs` holds. It stays set after `close`, so the next user's open drops them. */
+	let owner: string | undefined;
 	const docs = new Map<string, E2EESearchDoc & { words: string[] }>();
 	const roomStates = new Map<string, E2EESearchRoomState>();
 
@@ -22,8 +24,9 @@ export const createFakeSearchIndexBackend = (): ISearchIndexBackend => {
 
 	return {
 		async open(scope) {
-			if (userId !== undefined && userId !== scope.userId) clear();
+			if (owner !== undefined && owner !== scope.userId) clear();
 			userId = scope.userId;
+			owner = scope.userId;
 			return { schemaVersion: 1, encryptedAtRest: false };
 		},
 
@@ -110,6 +113,7 @@ export const createFakeSearchIndexBackend = (): ISearchIndexBackend => {
 		async wipe() {
 			clear();
 			userId = undefined;
+			owner = undefined;
 		},
 
 		async close() {

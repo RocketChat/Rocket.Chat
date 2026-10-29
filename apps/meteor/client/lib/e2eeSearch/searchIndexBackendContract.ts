@@ -217,9 +217,11 @@ export const describeSearchIndexBackendContract = (
 
 		it('closes the index without deleting it, so the same user finds the messages again after the next open', async () => {
 			const backend = await openBackend();
+			// `close` is optional: a desktop version without it closes the index itself.
+			if (!backend.close) return;
 			await backend.upsert([doc({ id: 'm1', body: 'needle' })]);
 
-			await backend.close?.();
+			await backend.close();
 
 			await expect(backend.stats()).rejects.toThrow('E2EE search index is not open');
 			await backend.open(scopeOf('u1'));

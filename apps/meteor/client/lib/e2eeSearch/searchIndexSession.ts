@@ -81,10 +81,49 @@ const readyStates = new Set(['READY', 'SAVE_PASSWORD']);
 /** E2EE is off in these states. `stopClient` (logout) ends in `DISABLED`. Key loading in between keeps the index. */
 const stoppedStates = new Set(['DISABLED', 'NOT_STARTED', 'ERROR']);
 
+const backendMethods = [
+	'open',
+	'upsert',
+	'remove',
+	'removeRoom',
+	'listRooms',
+	'search',
+	'getRoomState',
+	'setRoomState',
+	'stats',
+	'wipe',
+	'close',
+] as const satisfies readonly (keyof ISearchIndexBackend)[];
+
+type BackendCall = (...args: unknown[]) => Promise<unknown>;
+
+/** The backend of one open of the index. After `revoke`, each call rejects, so work of an ended session reaches no index. */
+const createSessionBackend = (backend: ISearchIndexBackend) => {
+	let revoked = false;
+	const forward =
+		(call: BackendCall): BackendCall =>
+		(...args) =>
+			revoked ? Promise.reject(new Error('The E2EE search index session has ended')) : call.apply(backend, args);
+	const handle: Partial<Record<(typeof backendMethods)[number], BackendCall>> = {};
+	for (const method of backendMethods) {
+		const call = backend[method] as BackendCall | undefined;
+		if (typeof call === 'function') handle[method] = forward(call);
+	}
+	return {
+		backend: handle as unknown as ISearchIndexBackend,
+		revoke: () => {
+			revoked = true;
+		},
+	};
+};
+
+type ActiveIndex = ReturnType<typeof createSessionBackend> & { raw: ISearchIndexBackend; encryptedAtRest: boolean };
+
 /**
  * Opens the local search index for the logged-in user when E2EE is unlocked, with the wrap key derived from the
- * private key, or wipes it when the workspace does not allow the local search, and stops using it when E2EE stops (logout, E2EE disabled, key error), with a close when the desktop app offers one. An open that resolves after
- * the session stopped does not activate the backend.
+ * private key, or wipes it when the workspace does not allow the local search, and stops using it when E2EE stops
+ * (logout, E2EE disabled, key error), with a close when the desktop app offers one. Each open gets its own backend
+ * object, which rejects every call after the session stops using it. Opens, closes and wipes run one after the other.
  */
 export const createSearchIndexSession = (
 	source: SearchIndexSessionSource,
@@ -92,16 +131,28 @@ export const createSearchIndexSession = (
 ): SearchIndexSession => {
 	let generation = 0;
 	let ready = false;
+	/** E2EE started for the user (keys loading, password needed or ready). It starts only after the settings loaded. */
+	let started = false;
 	let openedFor: string | undefined;
-	let active: ISearchIndexBackend | undefined;
-	let encryptedAtRest: boolean | undefined;
+	/** The user whose closed index was wiped because the local search is not allowed, so each state change does not wipe again. */
+	let wipedFor: string | undefined;
+	let active: ActiveIndex | undefined;
 	let pending: Promise<void> = Promise.resolve();
 	const listeners = new Set<() => void>();
 
-	const setActive = (backend: ISearchIndexBackend | undefined, atRest?: boolean) => {
-		if (active === backend) return;
-		active = backend;
-		encryptedAtRest = backend ? atRest : undefined;
+	const serialize = <T>(operation: () => Promise<T>): Promise<T> => {
+		const run = pending.then(operation);
+		pending = run.then(
+			() => undefined,
+			() => undefined,
+		);
+		return run;
+	};
+
+	const setActive = (next: ActiveIndex | undefined) => {
+		if (active === next) return;
+		active?.revoke();
+		active = next;
 		for (const listener of [...listeners]) listener();
 	};
 
@@ -111,7 +162,16 @@ export const createSearchIndexSession = (
 		setActive(undefined);
 	};
 
+	const close = async (backend: ISearchIndexBackend) => {
+		try {
+			await backend.close?.();
+		} catch (error) {
+			onError(error);
+		}
+	};
+
 	const start = async (run: number) => {
+		if (run !== generation) return;
 		const userId = source.getUserId();
 		const privateKey = source.getPrivateKey();
 		if (!userId || !privateKey) return;
@@ -137,7 +197,11 @@ export const createSearchIndexSession = (
 			if (run !== generation) return;
 
 			const opened = await backend.open({ userId, wrapKey });
-			if (run !== generation) return;
+			if (run !== generation) {
+				// The session stopped (logout) while the open ran: the index of that user does not stay open.
+				if (!opened.locked) await close(backend);
+				return;
+			}
 
 			// The desktop app did not take the wrap key: no index is open, so the session does not use it.
 			if (opened.locked) {
@@ -152,16 +216,34 @@ export const createSearchIndexSession = (
 				return;
 			}
 
-			setActive(backend, opened.encryptedAtRest);
+			wipedFor = undefined;
+			setActive({ ...createSessionBackend(backend), raw: backend, encryptedAtRest: opened.encryptedAtRest });
 		} catch (error) {
 			if (run === generation) openedFor = undefined;
 			onError(error);
 		}
 	};
 
-	const close = async (backend: ISearchIndexBackend) => {
+	/** Wipes the closed index of the user when the local search is not allowed, also while E2EE stays locked. */
+	const wipeIfNotAllowed = async () => {
+		const userId = source.getUserId();
+		if (!userId || active || wipedFor === userId || isAllowed()) return;
+
+		const backend = getBackend();
+		if (!backend) return;
+
+		wipedFor = userId;
 		try {
-			await backend.close?.();
+			await backend.wipe({ userId });
+		} catch (error) {
+			wipedFor = undefined;
+			onError(error);
+		}
+	};
+
+	const withdraw = async (backend: ISearchIndexBackend) => {
+		try {
+			await backend.wipe();
 		} catch (error) {
 			onError(error);
 		}
@@ -170,47 +252,42 @@ export const createSearchIndexSession = (
 	/** Another user logged in on the same page with no logout (`loginWithToken`), so the index is not of the current user. */
 	const isOtherUser = () => openedFor !== undefined && source.getUserId() !== openedFor;
 
+	const stopAndClose = () => {
+		ready = false;
+		started = false;
+		wipedFor = undefined;
+		const closing = active?.raw;
+		stop();
+		if (closing?.close) void serialize(() => close(closing));
+	};
+
 	const off = source.on('E2E_STATE_CHANGED', ({ nextState }) => {
 		// The index of the previous user closes, like at a logout, before the index of the new user opens.
-		let closingPrevious: Promise<void> | undefined;
-		if (isOtherUser()) {
-			ready = false;
-			const closing = active;
-			stop();
-			if (closing?.close) {
-				closingPrevious = close(closing);
-				pending = closingPrevious;
-			}
-		}
+		if (isOtherUser()) stopAndClose();
 
 		if (readyStates.has(nextState)) {
 			ready = true;
+			started = true;
 			const run = generation;
-			pending = closingPrevious ? closingPrevious.then(() => start(run)) : start(run);
+			void serialize(() => start(run));
 			return;
 		}
 
 		if (stoppedStates.has(nextState)) {
-			ready = false;
-			const closing = active;
-			stop();
-			if (closing?.close) pending = close(closing);
+			stopAndClose();
+			return;
 		}
-	});
 
-	const withdraw = async (backend: ISearchIndexBackend) => {
-		stop();
-		try {
-			await backend.wipe();
-		} catch (error) {
-			onError(error);
-		}
-	};
+		// E2EE started but is locked (keys loading, password needed). Unlike `DISABLED`, which also comes before the first
+		// settings arrive, these states come after the settings loaded, so `isAllowed` is reliable here.
+		started = true;
+		void serialize(wipeIfNotAllowed);
+	});
 
 	return {
 		// From the user switch until the next E2EE state change, the index of the previous user is not used.
-		getActiveBackend: () => (isOtherUser() ? undefined : active),
-		isEncryptedAtRest: () => (isOtherUser() ? undefined : encryptedAtRest),
+		getActiveBackend: () => (isOtherUser() ? undefined : active?.backend),
+		isEncryptedAtRest: () => (isOtherUser() ? undefined : active?.encryptedAtRest),
 		subscribe: (listener) => {
 			listeners.add(listener);
 			return () => {
@@ -219,22 +296,40 @@ export const createSearchIndexSession = (
 		},
 		recheck: () => {
 			if (active) {
-				if (!isAllowed()) pending = withdraw(active);
+				if (isAllowed()) return;
+				const withdrawn = active.raw;
+				stop();
+				void serialize(() => withdraw(withdrawn));
 				return;
 			}
 
 			// An open in flight reads `isAllowed` itself when it resolves.
-			if (ready && !openedFor) pending = start(generation);
+			if (ready) {
+				if (!openedFor) {
+					const run = generation;
+					void serialize(() => start(run));
+				}
+				return;
+			}
+
+			if (!started) return;
+			if (isAllowed()) {
+				wipedFor = undefined;
+				return;
+			}
+			void serialize(wipeIfNotAllowed);
 		},
-		wipeClosed: async () => {
+		wipeClosed: () => {
 			const userId = source.getUserId();
 			const backend = getBackend();
-			if (!userId || !backend) return false;
+			if (!userId || !backend) return Promise.resolve(false);
 
 			// An open that resolves after this point does not activate the backend.
 			stop();
-			await backend.wipe({ userId });
-			return true;
+			return serialize(async () => {
+				await backend.wipe({ userId });
+				return true;
+			});
 		},
 		whenSettled: () => pending,
 		dispose: () => {

@@ -17,8 +17,14 @@ const HTML_ESCAPES: Record<string, string> = {
 
 const escapeHtml = (text: string): string => text.replace(/[&<>"']/g, (char) => HTML_ESCAPES[char]);
 
-// The same folding as the desktop index (`unicode61 remove_diacritics 2`): no case and no diacritic difference.
-export const fold = (word: string): string => word.normalize('NFKD').replace(/\p{M}/gu, '').toLowerCase();
+// The same folding as the desktop index (`unicode61 remove_diacritics 2`): no case and no diacritic difference. JavaScript
+// lowercases a word-final capital sigma to the final form, which case folding maps to the plain sigma.
+export const fold = (word: string): string =>
+	word
+		.normalize('NFKD')
+		.replace(/\p{M}/gu, '')
+		.toLowerCase()
+		.replace(/\u03C2/gu, '\u03C3');
 
 export const queryTokens = (text: string): string[] =>
 	(text.normalize('NFKC').match(WORD) ?? []).map(fold).filter(Boolean).slice(0, MAX_QUERY_TOKENS);

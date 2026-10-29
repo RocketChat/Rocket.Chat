@@ -112,7 +112,7 @@ describe('createSearchIndexSession', () => {
 		expect(Object.keys(scope).sort()).toEqual(['userId', 'wrapKey']);
 		expect(scope.userId).toBe('u1');
 		expect(toHex(scope.wrapKey as Uint8Array)).toBe(toHex(await deriveSearchIndexWrapKey(privateKey, 'u1')));
-		expect(session.getActiveBackend()).toBe(backend);
+		expect(session.getActiveBackend()).toBeDefined();
 	});
 
 	it('sends no private key material across the bridge', async () => {
@@ -146,7 +146,7 @@ describe('createSearchIndexSession', () => {
 		await session.whenSettled();
 
 		expect(backend.open).toHaveBeenCalledTimes(1);
-		expect(session.getActiveBackend()).toBe(backend);
+		expect(session.getActiveBackend()).toBeDefined();
 	});
 
 	it('is not active before the open resolves', async () => {
@@ -164,7 +164,7 @@ describe('createSearchIndexSession', () => {
 		resolveOpen({ schemaVersion: 1, encryptedAtRest: true });
 		await session.whenSettled();
 
-		expect(session.getActiveBackend()).toBe(backend);
+		expect(session.getActiveBackend()).toBeDefined();
 	});
 
 	it('stops using the index on logout, and opens it again on the next login', async () => {
@@ -186,7 +186,7 @@ describe('createSearchIndexSession', () => {
 		await session.whenSettled();
 
 		expect(backend.open).toHaveBeenCalledTimes(2);
-		expect(session.getActiveBackend()).toBe(backend);
+		expect(session.getActiveBackend()).toBeDefined();
 	});
 
 	it('opens the index of the new user after a logout and a login as another user', async () => {
@@ -232,7 +232,7 @@ describe('createSearchIndexSession', () => {
 		const [scope] = backend.open.mock.calls[1];
 		expect(scope.userId).toBe('u2');
 		expect(toHex(scope.wrapKey as Uint8Array)).toBe(toHex(await deriveSearchIndexWrapKey(otherPrivateKey, 'u2')));
-		expect(session.getActiveBackend()).toBe(backend);
+		expect(session.getActiveBackend()).toBeDefined();
 	});
 
 	it('closes the index of the previous user when another user logs in with no logout, before E2EE of the new user is ready', async () => {
@@ -404,7 +404,7 @@ describe('createSearchIndexSession', () => {
 		await session.whenSettled();
 
 		expect(backend.open).toHaveBeenCalledTimes(2);
-		expect(session.getActiveBackend()).toBe(backend);
+		expect(session.getActiveBackend()).toBeDefined();
 	});
 
 	it('does not use an index that the desktop app reports as locked, and opens it again on the next ready state', async () => {
@@ -424,7 +424,7 @@ describe('createSearchIndexSession', () => {
 		await session.whenSettled();
 
 		expect(backend.open).toHaveBeenCalledTimes(2);
-		expect(session.getActiveBackend()).toBe(backend);
+		expect(session.getActiveBackend()).toBeDefined();
 	});
 
 	it('stops listening after dispose', async () => {
@@ -452,7 +452,7 @@ describe('createSearchIndexSession', () => {
 		await session.whenSettled();
 		setState('DISABLED');
 
-		expect(seen).toEqual([backend, undefined]);
+		expect(seen.map(Boolean)).toEqual([true, false]);
 	});
 
 	it('does not tell a subscriber that unsubscribed', async () => {
@@ -466,7 +466,7 @@ describe('createSearchIndexSession', () => {
 		setState('READY');
 		await session.whenSettled();
 
-		expect(session.getActiveBackend()).toBe(backend);
+		expect(session.getActiveBackend()).toBeDefined();
 		expect(listener).not.toHaveBeenCalled();
 	});
 
@@ -506,6 +506,76 @@ describe('createSearchIndexSession', () => {
 	});
 });
 
+describe('createSearchIndexSession backend of one open', () => {
+	it('forwards the calls of the active backend to the backend', async () => {
+		const backend = createBackend();
+		const { source, setState } = createSource(privateKey);
+		const session = createSearchIndexSession(source, { getBackend: () => backend });
+
+		setState('READY');
+		await session.whenSettled();
+		await session.getActiveBackend()?.search({ text: 'needle' });
+
+		expect(backend.search).toHaveBeenCalledWith({ text: 'needle' });
+	});
+
+	it('gives each open its own backend, also when the backend is one shared object', async () => {
+		const backend = createBackend();
+		const { source, setState } = createSource(privateKey);
+		const session = createSearchIndexSession(source, { getBackend: () => backend });
+
+		setState('READY');
+		await session.whenSettled();
+		const first = session.getActiveBackend();
+		setState('DISABLED');
+		setState('READY');
+		await session.whenSettled();
+
+		expect(session.getActiveBackend()).toBeDefined();
+		expect(session.getActiveBackend()).not.toBe(first);
+	});
+
+	it('rejects each call of the backend of an ended session, so it reaches no index after a logout or a user switch', async () => {
+		const backend = createBackend();
+		const { source, state, setState } = createSource(privateKey);
+		const session = createSearchIndexSession(source, { getBackend: () => backend });
+
+		setState('READY');
+		await session.whenSettled();
+		const previous = session.getActiveBackend();
+		state.userId = 'u2';
+		setState('READY');
+		await session.whenSettled();
+		backend.upsert.mockClear();
+		backend.setRoomState.mockClear();
+		backend.wipe.mockClear();
+
+		await expect(previous?.upsert([])).rejects.toThrow('The E2EE search index session has ended');
+		await expect(previous?.setRoomState('r1', { backfillDone: true })).rejects.toThrow();
+		await expect(previous?.wipe()).rejects.toThrow();
+		expect(backend.upsert).not.toHaveBeenCalled();
+		expect(backend.setRoomState).not.toHaveBeenCalled();
+		expect(backend.wipe).not.toHaveBeenCalled();
+	});
+
+	it('closes an index whose open resolves after the logout', async () => {
+		const backend = createBackend();
+		backend.close = jest.fn(async () => undefined);
+		const { opened, resolveOpen } = holdOpen(backend);
+		const { source, setState } = createSource(privateKey);
+		const session = createSearchIndexSession(source, { getBackend: () => backend });
+
+		setState('READY');
+		await opened;
+		setState('DISABLED');
+		resolveOpen({ schemaVersion: 1, encryptedAtRest: true });
+		await session.whenSettled();
+
+		expect(session.getActiveBackend()).toBeUndefined();
+		expect(backend.close).toHaveBeenCalledTimes(1);
+	});
+});
+
 describe('createSearchIndexSession with the admin setting', () => {
 	it('wipes the index of the user without an open and never activates it when the workspace does not allow local search', async () => {
 		const backend = createBackend();
@@ -539,7 +609,7 @@ describe('createSearchIndexSession with the admin setting', () => {
 
 		expect(backend.wipe).toHaveBeenCalledWith({ userId: 'u1' });
 		expect(backend.open).toHaveBeenCalledTimes(1);
-		expect(session.getActiveBackend()).toBe(backend);
+		expect(session.getActiveBackend()).toBeDefined();
 	});
 
 	it('opens the index and wipes nothing when the local search is allowed', async () => {
@@ -552,7 +622,7 @@ describe('createSearchIndexSession with the admin setting', () => {
 
 		expect(backend.open).toHaveBeenCalledTimes(1);
 		expect(backend.wipe).not.toHaveBeenCalled();
-		expect(session.getActiveBackend()).toBe(backend);
+		expect(session.getActiveBackend()).toBeDefined();
 	});
 
 	it('reads the setting at each login: off wipes, on opens and activates', async () => {
@@ -571,7 +641,7 @@ describe('createSearchIndexSession with the admin setting', () => {
 		await session.whenSettled();
 
 		expect(backend.wipe).toHaveBeenCalledTimes(1);
-		expect(session.getActiveBackend()).toBe(backend);
+		expect(session.getActiveBackend()).toBeDefined();
 	});
 
 	it('wipes and stops using the open index when a recheck finds that it is not allowed any more', async () => {
@@ -584,7 +654,7 @@ describe('createSearchIndexSession with the admin setting', () => {
 
 		setState('READY');
 		await session.whenSettled();
-		expect(session.getActiveBackend()).toBe(backend);
+		expect(session.getActiveBackend()).toBeDefined();
 
 		allowed = false;
 		session.recheck();
@@ -610,7 +680,7 @@ describe('createSearchIndexSession with the admin setting', () => {
 		await session.whenSettled();
 
 		expect(backend.open).toHaveBeenCalledTimes(1);
-		expect(session.getActiveBackend()).toBe(backend);
+		expect(session.getActiveBackend()).toBeDefined();
 	});
 
 	it('does not open on a recheck while E2EE is not ready', async () => {
@@ -630,6 +700,95 @@ describe('createSearchIndexSession with the admin setting', () => {
 
 		expect(backend.open).toHaveBeenCalledTimes(1);
 		expect(session.getActiveBackend()).toBeUndefined();
+	});
+
+	it('wipes the closed index of the user while E2EE waits for the password, when the local search is not allowed', async () => {
+		const backend = createBackend();
+		const { source, setState } = createSource(undefined);
+		const session = createSearchIndexSession(source, { getBackend: () => backend, isAllowed: () => false });
+
+		setState('LOADING_KEYS');
+		setState('ENTER_PASSWORD');
+		await session.whenSettled();
+
+		expect(backend.wipe).toHaveBeenCalledTimes(1);
+		expect(backend.wipe).toHaveBeenCalledWith({ userId: 'u1' });
+		expect(backend.open).not.toHaveBeenCalled();
+	});
+
+	it('wipes nothing in the disabled state, which also comes before the settings load', async () => {
+		const backend = createBackend();
+		const { source, setState } = createSource(undefined);
+		const session = createSearchIndexSession(source, { getBackend: () => backend, isAllowed: () => false });
+
+		setState('DISABLED');
+		session.recheck();
+		await session.whenSettled();
+
+		expect(backend.wipe).not.toHaveBeenCalled();
+	});
+
+	it('wipes nothing while E2EE is locked when the local search is allowed', async () => {
+		const backend = createBackend();
+		const { source, setState } = createSource(undefined);
+		const session = createSearchIndexSession(source, { getBackend: () => backend, isAllowed: () => true });
+
+		setState('ENTER_PASSWORD');
+		await session.whenSettled();
+
+		expect(backend.wipe).not.toHaveBeenCalled();
+	});
+
+	it('wipes the closed index when the user opts out while E2EE is locked', async () => {
+		const backend = createBackend();
+		let allowed = true;
+		const { source, setState } = createSource(undefined);
+		const session = createSearchIndexSession(source, { getBackend: () => backend, isAllowed: () => allowed });
+
+		setState('ENTER_PASSWORD');
+		await session.whenSettled();
+		allowed = false;
+		session.recheck();
+		await session.whenSettled();
+
+		expect(backend.wipe).toHaveBeenCalledTimes(1);
+		expect(backend.wipe).toHaveBeenCalledWith({ userId: 'u1' });
+	});
+
+	it('opens the index again only after the wipe of a withdrawn index has ended', async () => {
+		const backend = createBackend();
+		let allowed = true;
+		const { source, setState } = createSource(privateKey);
+		const session = createSearchIndexSession(source, { getBackend: () => backend, isAllowed: () => allowed });
+		const order: string[] = [];
+
+		setState('READY');
+		await session.whenSettled();
+		let endWipe: () => void = () => undefined;
+		backend.wipe.mockImplementation(
+			() =>
+				new Promise<void>((resolve) => {
+					endWipe = () => {
+						order.push('wipe');
+						resolve();
+					};
+				}),
+		);
+		backend.open.mockImplementation(async () => {
+			order.push('open');
+			return { schemaVersion: 1, encryptedAtRest: true };
+		});
+
+		allowed = false;
+		session.recheck();
+		allowed = true;
+		session.recheck();
+		for (let i = 0; i < 50 && backend.wipe.mock.calls.length === 0; i++) await Promise.resolve();
+		endWipe();
+		await session.whenSettled();
+
+		expect(order).toEqual(['wipe', 'open']);
+		expect(session.getActiveBackend()).toBeDefined();
 	});
 
 	it('reports a failed wipe and stays inactive', async () => {

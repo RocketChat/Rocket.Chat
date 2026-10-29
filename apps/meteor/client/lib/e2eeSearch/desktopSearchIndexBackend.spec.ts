@@ -48,6 +48,7 @@ describe('getDesktopSearchIndexBackend', () => {
 		await expect(backend.setRoomState('r1', roomState)).resolves.toBe('setRoomState result');
 		await expect(backend.stats()).resolves.toBe('stats result');
 		await expect(backend.wipe()).resolves.toBe('wipe result');
+		await expect(backend.wipe({ userId: 'u1' })).resolves.toBe('wipe result');
 
 		expect(bridge.open).toHaveBeenCalledWith({ userId: 'u1', wrapKey });
 		expect(bridge.open.mock.calls[0][0].wrapKey).toBe(wrapKey);
@@ -59,7 +60,8 @@ describe('getDesktopSearchIndexBackend', () => {
 		expect(bridge.getRoomState).toHaveBeenCalledWith('r1');
 		expect(bridge.setRoomState).toHaveBeenCalledWith('r1', roomState);
 		expect(bridge.stats).toHaveBeenCalledWith();
-		expect(bridge.wipe).toHaveBeenCalledWith();
+		expect(bridge.wipe).toHaveBeenNthCalledWith(1);
+		expect(bridge.wipe).toHaveBeenNthCalledWith(2, { userId: 'u1' });
 	});
 
 	it('forwards close when the desktop app offers it', async () => {
