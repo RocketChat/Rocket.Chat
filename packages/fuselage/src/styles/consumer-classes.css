@@ -34,4 +34,16 @@
 		0 0 12px 0 var(--rcx-color-shadow-elevation-2y, #2f343d1f);
 }
 
+.rcx-card__header:where(.rcx-card__header),
+.rcx-card__row:where(.rcx-card__row) {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.rcx-card__row:where(.rcx-card__row) {
+	flex-grow: 1;
+	flex-shrink: 1;
+}
+
 /* end of generated */
