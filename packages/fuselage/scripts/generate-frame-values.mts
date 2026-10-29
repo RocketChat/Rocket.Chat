@@ -2890,6 +2890,98 @@ const generateFramedIcon = () =>
 		},
 	)}`;
 
+const statesColumn = {
+	...flexBox,
+	...contentBox,
+	display: 'flex',
+	flexDirection: 'column',
+	justifyContent: 'center',
+	alignItems: 'center',
+} as const;
+
+// The subtitle, list and suggestion are the same centered, capped column
+const statesText = (scale: string, extra: Record<string, Value> = {}): Value => ({
+	...statesColumn,
+	width: size('full')!,
+	maxWidth: '462px',
+	marginTop: 0,
+	marginBottom: 0,
+	marginLeft: 0,
+	marginRight: 0,
+	paddingTop: 0,
+	paddingBottom: 0,
+	paddingLeft: 0,
+	paddingRight: 0,
+	listStylePosition: 'inside',
+	textAlign: 'center',
+	...font(scale),
+	...extra,
+});
+
+const statesIconColor = (name: string) => theme(`states-icons-color-${name}`, framedIconFont(name === 'primary' ? 'info' : name));
+
+const generateStates = () =>
+	`${declaredWhereTheyRender}${frame('StatesFrame', {
+		render: 'div',
+		...statesColumn,
+		padding: spacing('x16')!,
+		color: fontColorOf('secondary-info'),
+	})}`;
+
+const generateStatesIcon = () =>
+	`${declaredWhereTheyRender}${frame(
+		'StatesIconFrame',
+		{
+			render: 'i',
+			...iconBase,
+			marginBottom: spacing('x20')!,
+			padding: spacing('x16')!,
+			color: fontColorOf('secondary-info'),
+			borderRadius: radius('full'),
+			backgroundColor: String(surfaceColors['surface-neutral']),
+		},
+		{
+			variation: Object.fromEntries(['success', 'danger', 'warning', 'primary'].map((name) => [name, { color: statesIconColor(name) }])),
+		},
+	)}`;
+
+const generateStatesTitle = () =>
+	`${declaredWhereTheyRender}${frame('StatesTitleFrame', {
+		render: 'h3',
+		...blockBox,
+		...contentBox,
+		marginTop: 0,
+		marginBottom: spacing('x8')!,
+		textAlign: 'center',
+		color: fontDefault,
+		...font('h3'),
+	})}`;
+
+const generateStatesSubtitle = () =>
+	`${declaredWhereTheyRender}${frame('StatesSubtitleFrame', { render: 'div', ...(statesText('p1', { marginBottom: spacing('x24')! }) as object) })}`;
+
+const generateStatesSuggestion = () =>
+	`${declaredWhereTheyRender}${frame('StatesSuggestionFrame', { render: 'div', ...(statesText('p2m', { marginBottom: spacing('x24')! }) as object) })}`;
+
+const generateStatesSuggestionList = () =>
+	`${declaredWhereTheyRender}${frame('StatesSuggestionListFrame', {
+		render: 'ul',
+		...(statesText('p2m', { listStyleType: 'disc', listStylePosition: 'outside' }) as object),
+	})}`;
+
+const generateStatesSuggestionListItem = () =>
+	frameCode('StatesSuggestionListItemWrapperFrame', 'Text', { render: 'span', ...inlineBase, ...contentBox, marginInlineStart: '-4px' });
+
+const generateStatesLink = () =>
+	frameCode('StatesLinkFrame', 'Text', {
+		render: 'a',
+		...inlineBase,
+		...font('p2'),
+		marginTop: spacing('x16')!,
+		marginBottom: spacing('x16')!,
+		color: fontColorOf('info'),
+	});
+
 const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
 	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
@@ -2993,6 +3085,14 @@ const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Chevron/Chevron.styles.css'), generate: generateChevronCss, css: true },
 	{ file: join(import.meta.dirname, '../src/components/CodeSnippet/CodeSnippet.tsx'), generate: generateCodeSnippet },
 	{ file: join(import.meta.dirname, '../src/components/FramedIcon/FramedIcon.tsx'), generate: generateFramedIcon },
+	{ file: join(import.meta.dirname, '../src/components/States/States.tsx'), generate: generateStates },
+	{ file: join(import.meta.dirname, '../src/components/States/StatesIcon.tsx'), generate: generateStatesIcon },
+	{ file: join(import.meta.dirname, '../src/components/States/StatesTitle.tsx'), generate: generateStatesTitle },
+	{ file: join(import.meta.dirname, '../src/components/States/StatesSubtitle.tsx'), generate: generateStatesSubtitle },
+	{ file: join(import.meta.dirname, '../src/components/States/StatesSuggestion.tsx'), generate: generateStatesSuggestion },
+	{ file: join(import.meta.dirname, '../src/components/States/StatesSuggestionList.tsx'), generate: generateStatesSuggestionList },
+	{ file: join(import.meta.dirname, '../src/components/States/StatesSuggestionListItem.tsx'), generate: generateStatesSuggestionListItem },
+	{ file: join(import.meta.dirname, '../src/components/States/StatesLink.tsx'), generate: generateStatesLink },
 ];
 
 for (const [dir, control] of [
