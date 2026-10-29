@@ -1,15 +1,15 @@
 import { useBreakpoints } from '@rocket.chat/fuselage-hooks';
-import type { ReactNode } from 'react';
+import type { CSSProperties, ReactNode } from 'react';
 import { useRef } from 'react';
 import type { AriaPopoverProps } from 'react-aria';
 import { useInteractOutside } from 'react-aria';
 import type { OverlayTriggerState } from 'react-stately';
 
-import { Box } from '../Box';
+import { MenuPortalContext, useMenuPortalContainer } from './MenuPortalContext';
+import { size as sizeToken } from '../../styleTokens';
 import { DropdownDesktop } from '../Dropdown/DropdownDesktop';
 import { DropdownMobile } from '../Dropdown/DropdownMobile';
 import { Popover } from '../Popover';
-import { MenuPortalContext, useMenuPortalContainer } from './MenuPortalContext';
 
 type MenuPopoverProps = Omit<AriaPopoverProps, 'popoverRef'> & {
 	children: ReactNode;
@@ -60,9 +60,10 @@ function MenuPopover({ children, state, offset = 4, maxWidth, ...props }: MenuPo
 			{isMobile ? (
 				<DropdownMobile>{children}</DropdownMobile>
 			) : (
-				<Box maxWidth={maxWidth}>
+				// The caller's width cap travels as a custom property, which the stylesheet reads
+				<div className='rcx-menu-popover__width' style={{ '--rcx-menu-max-width': sizeToken(maxWidth) } as CSSProperties}>
 					<DropdownDesktop maxHeight='most-of-screen'>{children}</DropdownDesktop>
-				</Box>
+				</div>
 			)}
 			{!isSubmenu && <span ref={containerRef} style={{ display: 'contents' }} />}
 		</Popover>

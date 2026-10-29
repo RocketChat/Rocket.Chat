@@ -1,0 +1,17 @@
+/* The frames' display outranks the user agent's `hidden` */
+.rcx-menu-item__description[hidden] {
+	display: none;
+}
+
+.rcx-menu-item--with-description.rcx-menu-item--with-description {
+	flex-wrap: wrap;
+}
+
+.rcx-menu-popover__width {
+	max-width: var(--rcx-menu-max-width);
+}
+
+@property --rcx-menu-max-width {
+	syntax: '*';
+	inherits: false;
+}

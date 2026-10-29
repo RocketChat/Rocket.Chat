@@ -2829,6 +2829,41 @@ const fontDeclarations = (name: string) => {
 	return `letter-spacing: ${letterSpacing}; font-size: ${fontSize}; font-weight: ${fontWeight}; line-height: ${lineHeight};`;
 };
 
+// Option and Menu: the description blocks are plain divs, and the status colors apply to the Item rows Option renders
+const generateOptionDescriptionBlock = () =>
+	itemFrame('OptionDescriptionBlockFrame', {
+		padding: spacing('x4')!,
+		whiteSpace: 'normal',
+		wordBreak: 'break-word',
+		color: fontColorOf('secondary-info'),
+		...font('p2'),
+	});
+
+const generateMenuItemDescription = () =>
+	itemFrame('MenuItemDescriptionFrame', {
+		flexBasis: '100%',
+		whiteSpace: 'normal',
+		wordBreak: 'break-word',
+		color: fontColorOf('secondary-info'),
+		...font('p2'),
+	});
+
+// The tokens have no primary status color, so it only follows the custom properties, as the SCSS did
+const optionKindColor = (kind: string) => {
+	const own = `--rcx-option-color-variant-${kind}`;
+	const fallback =
+		kind === 'primary'
+			? 'var(--rcx-color-status-font-on-primary)'
+			: toCSSValue(own, statusColors[`status-font-on-${kind}` as keyof typeof statusColors]);
+
+	return `.rcx-option--${kind}.rcx-option--${kind}.rcx-item {
+	color: ${kind === 'primary' ? `var(${own}, ${fallback})` : fallback};
+}`;
+};
+
+const generateOptionCss = () => ['success', 'warning', 'primary'].map(optionKindColor).join('\n\n');
+
+
 const components: { file: string; generate: () => string; css?: boolean; section?: string }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
 	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
@@ -2915,6 +2950,9 @@ const components: { file: string; generate: () => string; css?: boolean; section
 	{ file: frames('MultiSelect/MultiSelectAnchor.tsx'), generate: generateMultiSelectAnchor },
 	{ file: frames('Select/SelectAddon.tsx'), generate: generateSelectAddon },
 	{ file: frames('Select/Select.styles.css'), generate: generateSelectCss, css: true },
+	{ file: frames('Option/OptionDescriptionBlock.tsx'), generate: generateOptionDescriptionBlock },
+	{ file: frames('Option/Option.styles.css'), generate: generateOptionCss, css: true },
+	{ file: frames('Menu/MenuItem.tsx'), generate: generateMenuItemDescription },
 ];
 
 for (const [dir, control] of [
