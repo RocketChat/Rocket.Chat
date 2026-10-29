@@ -1,0 +1,31 @@
+ee/packages/xmpp-server/src/service/XMPPServerService.ts
+  s_fda792b4ee3dce::t_0fae663d41c68d 130-133
+  s_fda792b4ee3dce::t_97b302a9ffd13d 171
+  s_fda792b4ee3dce::t_7293152176c4ae 189,198-208
+  s_fda792b4ee3dce::t_0905069dbdc6da 52-54
+  s_fda792b4ee3dce::t_a3b3ee97af04f9 209-210
+ee/packages/xmpp-server/tests/integration/lifecycle.spec.ts
+  s_fda792b4ee3dce::t_acc9ab174b7ec0 1-100
+ee/packages/xmpp-server/docs/specs/configuration-and-lifecycle.md
+  s_fda792b4ee3dce::t_c65bc38d7904aa 18
+  s_fda792b4ee3dce::t_6c2aa3dc127fcc 67-70
+ee/packages/xmpp-server/src/service/configuration.ts
+  s_fda792b4ee3dce::t_79427f440c933e 44,47-48
+  s_fda792b4ee3dce::t_55c72211e41325 5-6
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "6d490556f1b56d0c5cbccb343f17a0cf86368ac3",
+  "prompts": {},
+  "sessions": {
+    "s_fda792b4ee3dce": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e31a5082-261d-4ac9-a82c-537267ace868",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
