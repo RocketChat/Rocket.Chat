@@ -3078,6 +3078,91 @@ const generateToastBarCss = () => `.rcx-toastbar {
 	background-color: ${theme('toastbar-progressbar-background-color', surfaceOf('neutral'))};
 }`;
 
+type SplitKind = 'default' | 'danger' | 'warning' | 'success' | 'primary';
+const splitKinds: SplitKind[] = ['default', 'danger', 'warning', 'success', 'primary'];
+const splitBase = (kind: SplitKind) => (kind === 'default' ? 'secondary' : kind);
+const translucent = (kind: SplitKind, state: string) => `color-mix(in srgb, ${buttonBackground(splitBase(kind), state)} 70%, transparent)`;
+const splitColor = (kind: SplitKind) =>
+	kind === 'default' ? buttonFont('secondary') : theme(`split-button-${kind}-color`, buttonFont(kind));
+const splitBackground = (kind: SplitKind) =>
+	theme(kind === 'default' ? 'split-button-background-color' : `split-button-${kind}-background-color`, translucent(kind, 'default'));
+const ghost = (kind: SplitKind, state: 'focus' | 'hover' | 'active') =>
+	theme(
+		kind === 'default' ? `button-ghost-${state}-background-color` : `button-ghost-${kind}-${state}-background-color`,
+		translucent(kind, state === 'active' ? 'press' : state),
+	);
+const splitRadius = toCSSValue('--rcx-button-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!));
+
+const generateSplitButton = () =>
+	part(
+		'SplitButtonFrame',
+		{
+			render: 'div',
+			...contentBox,
+			display: 'inline-flex',
+			flexDirection: 'row',
+			flexWrap: 'nowrap',
+			alignItems: 'stretch',
+			flexShrink: 1,
+			minWidth: 'auto',
+			minHeight: 'auto',
+			borderRadius: splitRadius,
+		},
+		{ tone: Object.fromEntries(splitKinds.map((kind) => [kind, { backgroundColor: splitBackground(kind) }])) },
+	);
+
+const generateSplitButtonCss = () => {
+	const trigger = '> .rcx-button.rcx-split-button__trigger[class]';
+
+	return `.rcx-split-button[class] > .rcx-button[class] {
+	border-radius: 0;
+}
+
+.rcx-split-button[class] > .rcx-button[class]:first-child {
+	border-start-start-radius: ${splitRadius};
+	border-end-start-radius: ${splitRadius};
+}
+
+.rcx-split-button[class] > .rcx-button[class]:last-child {
+	border-start-end-radius: ${splitRadius};
+	border-end-end-radius: ${splitRadius};
+}
+
+.rcx-split-button[class] > .rcx-button[class]:focus-visible,
+.rcx-split-button[class] > .rcx-button[class].focus.focus-visible {
+	position: relative;
+	z-index: 1;
+}
+
+${splitKinds
+	.map((kind) => {
+		const root = `.rcx-split-button${kind === 'default' ? '' : `.rcx-split-button--${kind}`}[class]`;
+		const on = (...states: string[]) => states.map((state) => `${root} ${trigger}${state}`).join(',\n');
+
+		return `${on('')} {
+	color: ${splitColor(kind)};
+	border-color: transparent;
+	background-color: transparent;
+}
+
+${on(':focus-visible', '.focus.focus-visible')} {
+	border-color: transparent;
+	background-color: ${ghost(kind, 'focus')};
+}
+
+${on(':hover', '.hover', '.is-hovered')} {
+	border-color: transparent;
+	background-color: ${ghost(kind, 'hover')};
+}
+
+${on(':active', '.active', '.is-active')} {
+	border-color: transparent;
+	background-color: ${ghost(kind, 'active')};
+}`;
+	})
+	.join('\n\n')}`;
+};
+
 const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
 	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
@@ -3192,6 +3277,8 @@ const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Banner/Banner.styles.css'), generate: generateBannerCss, css: true },
 	{ file: join(import.meta.dirname, '../src/components/ToastBar/ToastBar.tsx'), generate: generateToastBar },
 	{ file: join(import.meta.dirname, '../src/components/ToastBar/ToastBar.styles.css'), generate: generateToastBarCss, css: true },
+	{ file: join(import.meta.dirname, '../src/components/SplitButton/SplitButton.tsx'), generate: generateSplitButton },
+	{ file: join(import.meta.dirname, '../src/components/SplitButton/SplitButton.styles.css'), generate: generateSplitButtonCss, css: true },
 ];
 
 for (const [dir, control] of [
