@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 
 import { useUpsertGroupEntry } from './useUpsertGroupEntry';
 import { useUserSidebarCategories } from './useUserSidebarCategories';
+import { useIsEnterprise } from '../../../hooks/useIsEnterprise';
 import { SIDEBAR_DYNAMIC_GROUP_KEYS } from '../../hooks/useCategoryList';
 
 export const HOUR = 60 * 60 * 1000;
@@ -12,23 +13,34 @@ const CLOCK_INTERVAL = 5 * 60 * 1000;
 // them may be hidden for being quiet.
 export const isActivityFilterable = (groupKey: string): boolean => !SIDEBAR_DYNAMIC_GROUP_KEYS.includes(groupKey);
 
-export const useActivityFilter = () => {
+/**
+ * Reads the activity filter of each group. Like the custom categories, it needs an enterprise license: without
+ * one the stored filters read as none, so no caller has to check the license itself. A dynamic group never has
+ * one either, whatever its entry says.
+ */
+export const useActivityFilterHours = () => {
+	const { data: { isEnterprise = false } = {} } = useIsEnterprise();
 	const { rawCategories } = useUserSidebarCategories();
-	const upsertGroupEntry = useUpsertGroupEntry();
 
 	const getActivityFilterHours = useCallback(
-		(id: string): number | undefined => rawCategories.find((entry) => entry._id === id)?.activityFilterHours,
-		[rawCategories],
+		(id: string): number | undefined =>
+			isEnterprise && isActivityFilterable(id) ? rawCategories.find((entry) => entry._id === id)?.activityFilterHours : undefined,
+		[isEnterprise, rawCategories],
 	);
 
-	const setActivityFilterHours = useCallback(
+	const hasActivityFilters = isEnterprise && rawCategories.some((entry) => entry.activityFilterHours && isActivityFilterable(entry._id));
+
+	return { getActivityFilterHours, hasActivityFilters };
+};
+
+/** Stores a group's activity filter on its `sidebarCategories` entry; `undefined` clears it. */
+export const useSetActivityFilterHours = () => {
+	const upsertGroupEntry = useUpsertGroupEntry();
+
+	return useCallback(
 		(id: string, activityFilterHours: number | undefined) => upsertGroupEntry(id, { activityFilterHours }),
 		[upsertGroupEntry],
 	);
-
-	const hasActivityFilters = rawCategories.some((entry) => entry.activityFilterHours);
-
-	return { getActivityFilterHours, setActivityFilterHours, hasActivityFilters };
 };
 
 /** The current time, refreshed while `enabled` so a room leaves a filtered group once its activity ages out. */

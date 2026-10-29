@@ -4,7 +4,7 @@ import type { TranslationKey } from '@rocket.chat/ui-contexts';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useActivityFilter } from './useActivityFilter';
+import { useSetActivityFilterHours } from './useActivityFilter';
 
 // The windows the menus offer. Any whole number of hours is a valid filter; these are just the choices.
 const ACTIVITY_FILTER_PRESETS: { hours: number | undefined; label: TranslationKey }[] = [
@@ -35,7 +35,7 @@ export const useActivityFilterItems = (
 	onSelect?: () => void,
 ): GenericMenuItemProps[] => {
 	const { t } = useTranslation();
-	const { setActivityFilterHours } = useActivityFilter();
+	const setActivityFilterHours = useSetActivityFilterHours();
 
 	return useMemo(
 		() =>

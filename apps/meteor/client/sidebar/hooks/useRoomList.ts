@@ -12,7 +12,7 @@ import { useSortQueryOptions } from '../../hooks/useSortQueryOptions';
 import { useOpenedRoom } from '../../lib/RoomManager';
 import { useOmnichannelEnabled } from '../../views/omnichannel/hooks/useOmnichannelEnabled';
 import { useQueuedInquiries } from '../../views/omnichannel/hooks/useQueuedInquiries';
-import { HOUR, isActivityFilterable, useActivityFilter, useActivityFilterClock } from '../categories/hooks/useActivityFilter';
+import { HOUR, useActivityFilterClock, useActivityFilterHours } from '../categories/hooks/useActivityFilter';
 import { useToggleUnreads } from '../categories/hooks/useToggleUnreads';
 import { useUserSidebarCategories } from '../categories/hooks/useUserSidebarCategories';
 
@@ -77,8 +77,8 @@ export const useRoomList = ({
 
 	const { customCategories } = useUserSidebarCategories();
 	const { isShowUnreads, isKeepUnreadsOnTop } = useToggleUnreads();
-	const { getActivityFilterHours, hasActivityFilters } = useActivityFilter();
-	const now = useActivityFilterClock(isEnterprise && hasActivityFilters);
+	const { getActivityFilterHours, hasActivityFilters } = useActivityFilterHours();
+	const now = useActivityFilterClock(hasActivityFilters);
 
 	const options = useSortQueryOptions();
 
@@ -164,7 +164,7 @@ export const useRoomList = ({
 				const showUnreads = category ? Boolean(category.showUnreads) : showUnreadsForGroup;
 				const keepUnreadsOnTopForGroup = isEnterprise ? isKeepUnreadsOnTop(key) : false;
 				const keepUnreadsOnTop = category ? Boolean(category.keepUnreadsOnTop) : keepUnreadsOnTopForGroup;
-				const activityFilterHours = isEnterprise && isActivityFilterable(key) ? getActivityFilterHours(key) : undefined;
+				const activityFilterHours = getActivityFilterHours(key);
 				const showingInactive = groupsShowingInactive?.includes(key) ?? false;
 				const allRooms = [...set];
 				// A collapsed group still shows the room currently open, so the user can locate themselves in the
