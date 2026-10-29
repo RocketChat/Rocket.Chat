@@ -1,0 +1,23 @@
+.changeset/user-update-keeps-bio-nickname.md
+  s_6dc6f9544b4b23::t_7c0d7650a2edd7 1-5
+apps/meteor/tests/end-to-end/api/users.ts
+  ai_agent 3003-3020
+apps/meteor/server/lib/users/saveUser/saveUser.ts
+  ai_agent 191-197
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "851e78bba2b7c4d1389e38c79286db1bd7db7776",
+  "prompts": {},
+  "sessions": {
+    "s_6dc6f9544b4b23": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "1547d588-2459-46c3-86cf-e6dabde7e427",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
