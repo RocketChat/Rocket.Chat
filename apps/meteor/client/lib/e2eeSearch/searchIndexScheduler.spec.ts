@@ -362,6 +362,7 @@ describe('createSearchIndexScheduler', () => {
 
 			scheduler.start();
 			await jest.advanceTimersByTimeAsync(30_000);
+			expect(scheduler.getProgress()).toMatchObject({ status: 'done', roomsSkipped: 1 });
 			scheduler.stop();
 
 			expect(onError).toHaveBeenCalledWith(error);
@@ -429,12 +430,13 @@ describe('createSearchIndexScheduler', () => {
 				_updatedAt: new Date(NOW),
 			};
 
+			// Before the first start the runtime can still be emptying an out-of-date index.
+			missingKeys.add('recent');
 			scheduler.addPendingDecrypt(live as unknown as IMessage);
-			expect(scheduler.getProgress().pendingDecrypt).toBe(0);
+			expect(scheduler.getProgress().pendingDecrypt).toBe(1);
 
 			scheduler.start();
 			await jest.advanceTimersByTimeAsync(10_000);
-			missingKeys.add('recent');
 			scheduler.addPendingDecrypt(live as unknown as IMessage);
 			expect(scheduler.getProgress().pendingDecrypt).toBe(1);
 
@@ -446,6 +448,8 @@ describe('createSearchIndexScheduler', () => {
 			expect(scheduler.getProgress().pendingDecrypt).toBe(0);
 
 			scheduler.stop();
+			scheduler.addPendingDecrypt(live as unknown as IMessage);
+			expect(scheduler.getProgress().pendingDecrypt).toBe(0);
 		});
 	});
 
@@ -515,6 +519,22 @@ describe('createSearchIndexScheduler', () => {
 			scheduler.stop();
 		});
 
+		it('indexes a room again when the user left it and joined it again before the next refresh', async () => {
+			const rooms = [{ rid: 'recent', lastActivityAt: NOW }];
+			const { scheduler, indexed } = await setup({ rooms, messagesPerRoom: 5 });
+
+			scheduler.start();
+			await jest.advanceTimersByTimeAsync(60_000);
+			const left = rooms.splice(0);
+			await scheduler.removeRoom('recent');
+			rooms.push(...left);
+			indexed.clear();
+			await jest.advanceTimersByTimeAsync(5 * 60_000 + 30_000);
+
+			expect(indexed.size).toBe(5);
+			scheduler.stop();
+		});
+
 		it('catches up only the requested room', async () => {
 			const { scheduler, requests } = await setup({ rooms: twoRooms, messagesPerRoom: 5 });
 
@@ -542,10 +562,14 @@ describe('createSearchIndexScheduler', () => {
 			await jest.advanceTimersByTimeAsync(2 * (PAUSE_MS + REQUEST_MS));
 			expect(roomsOf().slice(1)).toEqual(['old', 'old']);
 
+			const sent = roomsOf().length;
 			missingKeys.clear();
 			scheduler.retryPendingDecrypt('recent');
-			await jest.advanceTimersByTimeAsync(60_000);
+			await jest.advanceTimersByTimeAsync(PAUSE_MS + REQUEST_MS);
+			// The room reads its page again at once, before the last page of the other room.
+			expect(roomsOf()[sent]).toBe('recent');
 
+			await jest.advanceTimersByTimeAsync(60_000);
 			expect(scheduler.getProgress()).toMatchObject({ status: 'done', roomsDone: 2, pendingDecrypt: 0 });
 			expect(indexed.size).toBe(50);
 			scheduler.stop();
@@ -562,6 +586,28 @@ describe('createSearchIndexScheduler', () => {
 			expect(scheduler.getProgress()).toMatchObject({ status: 'done', pendingDecrypt: 25 });
 			scheduler.stop();
 		});
+
+		it('waits for the key again in a room that the user joined again after its wait ran out', async () => {
+			const rooms = [{ rid: 'recent', lastActivityAt: NOW }];
+			const { scheduler, missingKeys, backend, roomsOf } = await setup({ rooms, messagesPerRoom: 25 });
+			missingKeys.add('recent');
+
+			scheduler.start();
+			await jest.advanceTimersByTimeAsync(60_000);
+			expect(await backend.getRoomState('recent')).toMatchObject({ backfillDone: true });
+
+			const left = rooms.splice(0);
+			await scheduler.removeRoom('recent');
+			await jest.advanceTimersByTimeAsync(5 * 60_000 + 10_000);
+			const sent = roomsOf().length;
+			rooms.push(...left);
+			scheduler.requestCatchUp();
+			await jest.advanceTimersByTimeAsync(REQUEST_MS + 10);
+
+			expect(roomsOf().slice(sent)).toEqual(['recent']);
+			expect(await backend.getRoomState('recent')).toBeUndefined();
+			scheduler.stop();
+		});
 	});
 
 	describe('progress', () => {
@@ -570,14 +616,21 @@ describe('createSearchIndexScheduler', () => {
 			const listener = jest.fn();
 			scheduler.subscribe(listener);
 
-			expect(scheduler.getProgress()).toEqual({ status: 'stopped', rooms: 2, roomsDone: 0, indexed: 0, pendingDecrypt: 0 });
+			expect(scheduler.getProgress()).toEqual({
+				status: 'stopped',
+				rooms: 2,
+				roomsDone: 0,
+				roomsSkipped: 0,
+				indexed: 0,
+				pendingDecrypt: 0,
+			});
 
 			scheduler.start();
 			await jest.advanceTimersByTimeAsync(REQUEST_MS);
 			expect(scheduler.getProgress()).toMatchObject({ status: 'indexing', rooms: 2, roomsDone: 0, indexed: PAGE_SIZE });
 
 			await jest.advanceTimersByTimeAsync(60_000);
-			expect(scheduler.getProgress()).toEqual({ status: 'done', rooms: 2, roomsDone: 2, indexed: 30, pendingDecrypt: 0 });
+			expect(scheduler.getProgress()).toEqual({ status: 'done', rooms: 2, roomsDone: 2, roomsSkipped: 0, indexed: 30, pendingDecrypt: 0 });
 			expect(listener).toHaveBeenCalled();
 
 			scheduler.stop();

@@ -11,6 +11,8 @@ export type SearchIndexProgress = {
 	rooms: number;
 	/** Rooms whose history backfill is complete. */
 	roomsDone: number;
+	/** Rooms that failed with an error that a retry does not fix: this run indexes them no more. */
+	roomsSkipped: number;
 	/** Messages indexed since `start`. */
 	indexed: number;
 	/** Messages that wait for their room key. */
@@ -196,6 +198,7 @@ export const createSearchIndexScheduler = ({
 			status,
 			rooms: current.length,
 			roomsDone: current.filter(({ rid }) => backfillDone.get(rid) === true).length,
+			roomsSkipped: current.filter(({ rid }) => skippedRooms.has(rid)).length,
 			indexed,
 			pendingDecrypt: current.reduce((sum, { rid }) => sum + crawler.getPendingDecrypt(rid).length, 0),
 		};
@@ -343,7 +346,10 @@ export const createSearchIndexScheduler = ({
 		catchUpAfterBackfill.delete(rid);
 		backfillDone.delete(rid);
 		waitingForKey.delete(rid);
+		noKeyWait.delete(rid);
 		seenActivity.delete(rid);
+		// The user left the room: the next refresh that lists it again sees that the user joined it again.
+		if (!getRooms().some((room) => room.rid === rid)) absentAfterRemoval.add(rid);
 		crawler.forgetRoom(rid);
 		try {
 			await backend.removeRoom(rid);
@@ -482,7 +488,8 @@ export const createSearchIndexScheduler = ({
 		},
 
 		addPendingDecrypt(message) {
-			if (!started || removedRooms.has(message.rid)) return;
+			// Before the first start the runtime can still be emptying an out-of-date index: the message waits for its key too.
+			if ((!started && generation > 0) || removedRooms.has(message.rid)) return;
 			crawler.addPendingDecrypt(message);
 			publish();
 		},

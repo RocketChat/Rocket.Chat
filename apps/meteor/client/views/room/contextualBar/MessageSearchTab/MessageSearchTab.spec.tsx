@@ -121,6 +121,7 @@ const progress = (status: SearchIndexProgress['status'], roomsDone: number, room
 	status,
 	rooms,
 	roomsDone,
+	roomsSkipped: 0,
 	indexed: 300,
 	pendingDecrypt: 0,
 });

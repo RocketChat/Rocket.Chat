@@ -107,7 +107,7 @@ describe('createSearchIndexRuntime', () => {
 
 		session.set(backendA);
 		const { scheduler } = schedulers[0];
-		const progress = { status: 'indexing', rooms: 40, roomsDone: 12, indexed: 300, pendingDecrypt: 0 } as const;
+		const progress = { status: 'indexing', rooms: 40, roomsDone: 12, roomsSkipped: 0, indexed: 300, pendingDecrypt: 0 } as const;
 		scheduler.getProgress.mockReturnValue(progress);
 		const [[onSchedulerChange]] = scheduler.subscribe.mock.calls;
 		listener.mockClear();
@@ -214,7 +214,7 @@ describe('createSearchIndexRuntime after the server dropped old deletion records
 		if (failRemove) jest.spyOn(backend, 'removeRoom').mockRejectedValue(new Error('disk full'));
 
 		const saved: number[] = [];
-		const syncTime = { read: () => syncedAt, write: (at: number) => saved.push(at) };
+		const syncTime = { read: () => saved.at(-1) ?? syncedAt, write: (at: number) => saved.push(at) };
 		const session = createSessionStub();
 		const schedulers: jest.Mocked<SearchIndexScheduler>[] = [];
 		const onError = jest.fn();
@@ -229,7 +229,14 @@ describe('createSearchIndexRuntime after the server dropped old deletion records
 			onError,
 			createScheduler: () => {
 				const scheduler = createSchedulerStub();
-				scheduler.getProgress.mockReturnValue({ status: 'indexing', rooms: 1, roomsDone: 0, indexed: 0, pendingDecrypt: 0 });
+				scheduler.getProgress.mockReturnValue({
+					status: 'indexing',
+					rooms: 1,
+					roomsDone: 0,
+					roomsSkipped: 0,
+					indexed: 0,
+					pendingDecrypt: 0,
+				});
 				schedulers.push(scheduler);
 				return scheduler;
 			},
@@ -241,11 +248,18 @@ describe('createSearchIndexRuntime after the server dropped old deletion records
 		});
 		await runtime.whenSettled();
 
-		const reportDone = () => {
-			schedulers[0].getProgress.mockReturnValue({ status: 'done', rooms: 1, roomsDone: 1, indexed: 0, pendingDecrypt: 0 });
+		const reportDone = ({ roomsSkipped = 0 } = {}) => {
+			schedulers[0].getProgress.mockReturnValue({
+				status: 'done',
+				rooms: 1,
+				roomsDone: 1 - roomsSkipped,
+				roomsSkipped,
+				indexed: 0,
+				pendingDecrypt: 0,
+			});
 			for (const [listener] of schedulers[0].subscribe.mock.calls) listener();
 		};
-		return { backend, runtime, scheduler: schedulers[0], saved, roomsAtStart, reportDone, onError };
+		return { backend, session, runtime, scheduler: schedulers[0], saved, roomsAtStart, reportDone, onError };
 	};
 
 	it('empties every room before the crawler starts when the last full catch-up is older than the deletion records', async () => {
@@ -259,6 +273,12 @@ describe('createSearchIndexRuntime after the server dropped old deletion records
 
 	it('empties every room of an index with no known catch-up time', async () => {
 		const { backend } = await setup(undefined);
+
+		expect(await backend.listRooms()).toEqual([]);
+	});
+
+	it('empties every room when the last catch-up time is in the future, saved with a clock that was ahead', async () => {
+		const { backend } = await setup(NOW + DAY);
 
 		expect(await backend.listRooms()).toEqual([]);
 	});
@@ -280,15 +300,31 @@ describe('createSearchIndexRuntime after the server dropped old deletion records
 		expect(saved).toEqual([NOW]);
 	});
 
+	it('saves no time when a room was skipped after an error, as that room was not caught up', async () => {
+		const { saved, reportDone } = await setup(NOW - DAY);
+
+		reportDone({ roomsSkipped: 1 });
+
+		expect(saved).toEqual([]);
+	});
+
 	it('saves no time when the rooms could not be emptied, so the next open tries again', async () => {
-		const { scheduler, saved, reportDone, onError, runtime } = await setup(undefined, { failRemove: true });
+		const { backend, session, scheduler, saved, reportDone, onError, runtime } = await setup(undefined, { failRemove: true });
 
 		expect(onError).toHaveBeenCalled();
 		expect(scheduler.start).toHaveBeenCalledTimes(1);
+		expect(backend.removeRoom).toHaveBeenCalledTimes(1);
 		runtime.onReconnect();
 		reportDone();
 
 		expect(saved).toEqual([]);
+
+		session.set(undefined);
+		session.set(backend);
+		await runtime.whenSettled();
+
+		expect(backend.removeRoom).toHaveBeenCalledTimes(2);
+		expect(backend.removeRoom).toHaveBeenLastCalledWith('r1');
 	});
 });
 

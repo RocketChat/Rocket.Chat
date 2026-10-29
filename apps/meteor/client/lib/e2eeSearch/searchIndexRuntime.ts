@@ -240,7 +240,9 @@ export const createSearchIndexRuntime = ({
 		scheduler = next;
 		if (next) {
 			unsubscribeScheduler = next.subscribe(() => {
-				if (catchUpStartedAt !== undefined && next.getProgress().status === 'done') {
+				const { status, roomsSkipped } = next.getProgress();
+				// A skipped room was not caught up, so the time is not saved: its deletions can still be missing.
+				if (catchUpStartedAt !== undefined && status === 'done' && roomsSkipped === 0) {
 					syncTime?.write(catchUpStartedAt);
 					catchUpStartedAt = undefined;
 				}
@@ -263,7 +265,9 @@ export const createSearchIndexRuntime = ({
 	 */
 	const reindexIfOutOfSync = async (opened: ISearchIndexBackend) => {
 		const syncedAt = syncTime?.read();
-		if (syncedAt !== undefined && now() - syncedAt <= REINDEX_AFTER_MS) return;
+		const age = syncedAt === undefined ? undefined : now() - syncedAt;
+		// A time in the future was saved with a clock that was ahead: the real age of the index is unknown.
+		if (age !== undefined && age >= 0 && age <= REINDEX_AFTER_MS) return;
 
 		for (const rid of await opened.listRooms()) {
 			if (backend !== opened) return;
