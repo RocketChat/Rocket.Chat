@@ -62,6 +62,6 @@ Rejected alternatives:
     connection.
 - New HTTP code registers on the root app; `WebApp.connectHandlers` is legacy.
 - A workspace package the server loads has its third-party dependencies repeated in `apps/meteor/package.json`, or
-  the production bundle starts without them.
+  the production bundle fails at startup with `MODULE_NOT_FOUND`.
 - What remains on Meteor, and the order to move it, is in
   [proposals/finish-moving-http-and-ddp-off-meteor.md](../proposals/finish-moving-http-and-ddp-off-meteor.md).
