@@ -82,3 +82,88 @@ describe('TranslationProviderRegistry', () => {
 		expect(result).to.be.null;
 	});
 });
+
+describe('AutoTranslate.tokenizeMentions', () => {
+	const { AutoTranslate } = proxyquire.noCallThru().load('./autotranslate', {
+		'meteor/meteor': { Meteor: { startup: sinon.stub() } },
+		'@rocket.chat/models': { Messages: {}, Subscriptions: {} },
+		'../../settings': { settings: { watch: sinon.stub(), get: sinon.stub() } },
+		'../callbacks': { callbacks: { add: sinon.stub(), remove: sinon.stub(), priority: { MEDIUM: 2 } } },
+		'../messaging/markdown': { Markdown: {} },
+		'../notifyListener': { notifyOnMessageChange: sinon.stub() },
+	});
+
+	class TestAutoTranslate extends AutoTranslate {}
+
+	const tokenize = (message: Partial<IMessage>) =>
+		new (TestAutoTranslate as any)().tokenizeMentions({ tokens: [], ...message } as IMessage) as IMessage;
+
+	const tokenTexts = (message: IMessage) => (message.tokens ?? []).map(({ text }) => text).sort();
+
+	it('should protect each mention whole when one username starts with another', () => {
+		const message = tokenize({
+			msg: 'hi @john and @jo',
+			mentions: [
+				{ _id: 'a', username: 'jo' },
+				{ _id: 'b', username: 'john' },
+			],
+		});
+
+		expect(tokenTexts(message)).to.deep.equal(['@jo', '@john']);
+		expect(message.msg).to.not.include('hn');
+	});
+
+	it('should match dots in a mentioned username literally', () => {
+		const message = tokenize({ msg: 'hi @johnxdoe', mentions: [{ _id: 'a', username: 'john.doe' }] });
+
+		expect(tokenTexts(message)).to.deep.equal([]);
+		expect(message.msg).to.equal('hi @johnxdoe');
+	});
+
+	it('should protect each channel whole when one channel name starts with another', () => {
+		const message = tokenize({
+			msg: 'see #dev-ops and #dev',
+			channels: [
+				{ _id: 'a', name: 'dev' },
+				{ _id: 'b', name: 'dev-ops' },
+			],
+		});
+
+		expect(tokenTexts(message)).to.deep.equal(['#dev', '#dev-ops']);
+		expect(message.msg).to.not.include('-ops');
+	});
+
+	it('should protect each mention whole when the longer username continues with non-ASCII letters', () => {
+		const message = tokenize({
+			msg: 'hi @joá and @jo',
+			mentions: [
+				{ _id: 'a', username: 'jo' },
+				{ _id: 'b', username: 'joá' },
+			],
+		});
+
+		expect(tokenTexts(message)).to.deep.equal(['@jo', '@joá']);
+	});
+
+	it('should skip mentions and channels without a name', () => {
+		const message = tokenize({
+			msg: 'hi @jo in #dev',
+			mentions: [{ _id: 'a' }, { _id: 'b', username: 'jo' }],
+			channels: [{ _id: 'c' }, { _id: 'd', name: 'dev' }],
+		});
+
+		expect(tokenTexts(message)).to.deep.equal(['#dev', '@jo']);
+	});
+
+	it('should protect each mention whole when the longer username continues with a combining mark', () => {
+		const message = tokenize({
+			msg: 'hi @jó and @jo',
+			mentions: [
+				{ _id: 'a', username: 'jo' },
+				{ _id: 'b', username: 'jó' },
+			],
+		});
+
+		expect(tokenTexts(message)).to.deep.equal(['@jo', '@jó']);
+	});
+});
