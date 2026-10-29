@@ -32,7 +32,8 @@
 	"scripts": {
 		"build": "rm -rf dist && vite build --mode development && vite build --mode production && tsc -p tsconfig.build.json --emitDeclarationOnly",
 		"build-storybook": "NODE_ENV=production storybook build",
-		"lint": "yarn run -T oxlint && yarn run stylelint",
+		"generate:frame-values": "yarn run -T tsx scripts/generate-frame-values.mts",
+		"lint": "yarn run -T oxlint && yarn run stylelint && yarn generate:frame-values --check",
 		"lint:fix": "yarn run -T oxlint --fix && stylelint --fix '**/*.scss'",
 		"stylelint": "stylelint --allow-empty-input '**/*.scss'",
 		"start": "vite build --watch --mode development",
