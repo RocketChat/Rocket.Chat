@@ -1,5 +1,3 @@
-@use '../../styles/lengths.scss';
-
 .rcx-dropdown__bottom-sheet {
 	position: fixed;
 	z-index: 2;
@@ -10,7 +8,7 @@
 }
 
 .rcx-dropdown__bottom-sheet-content {
-	padding-block: lengths.padding(16);
+	padding-block: 16px;
 }
 
 .rcx-dropdown-enter {
