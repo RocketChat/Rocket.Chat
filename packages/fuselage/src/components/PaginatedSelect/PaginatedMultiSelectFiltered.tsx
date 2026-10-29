@@ -1,7 +1,6 @@
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { InputEvent } from 'react';
 
-import { FlexItem } from '../Flex';
 import { Input, type InputProps } from '../InputBox';
 import type { PaginatedMultiSelectProps } from './PaginatedMultiSelect';
 import PaginatedMultiSelect from './PaginatedMultiSelect';
@@ -12,16 +11,14 @@ export type PaginatedMultiSelectFilteredProps = {
 
 const PaginatedMultiSelectFiltered = ({ filter, setFilter, options, placeholder, ...props }: PaginatedMultiSelectFilteredProps) => {
 	const anchor = useStableCallback(
-		({ children: _children, filter, className, ...props }: InputProps<HTMLInputElement> & { filter?: string }) => (
-			<FlexItem grow={1}>
-				<Input
-					placeholder={placeholder}
-					value={filter}
-					onInput={(e: InputEvent<HTMLInputElement>) => setFilter?.(e.currentTarget.value)}
-					{...props}
-					className={['rcx-input-box--undecorated', className].filter(Boolean).join(' ')}
-				/>
-			</FlexItem>
+		({ children: _children, filter, last, ...props }: InputProps<HTMLInputElement> & { filter?: string; last?: boolean }) => (
+			<Input
+				placeholder={placeholder}
+				value={filter}
+				onInput={(e: InputEvent<HTMLInputElement>) => setFilter?.(e.currentTarget.value)}
+				{...props}
+				className={['rcx-input-box--undecorated', last && 'rcx-select__anchor'].filter(Boolean).join(' ')}
+			/>
 		),
 	);
 
