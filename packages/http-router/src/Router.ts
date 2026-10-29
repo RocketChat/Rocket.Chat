@@ -354,7 +354,7 @@ export class Router<
 	 * An app answering every request under the router's base, with the routes the router has when it is called.
 	 */
 	toHono(): Hono {
-		return new Hono().route(this.base, this.innerRouter).options('*', (c) => {
+		return new Hono().route(this.base, this.innerRouter).options(`${this.base}/*`, (c) => {
 			return c.body('OK');
 		});
 	}

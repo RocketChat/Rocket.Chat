@@ -130,6 +130,14 @@ describe('Router', () => {
 			expect(response.status).toBe(200);
 			expect(response.body).toEqual({ deleted: '123' });
 		});
+
+		it('should answer OPTIONS only under its base', async () => {
+			const app = new Router('/api').toHono();
+
+			expect((await app.request('/api', { method: 'OPTIONS' })).status).toBe(200);
+			expect((await app.request('/api/any/path', { method: 'OPTIONS' })).status).toBe(200);
+			expect((await app.request('/other', { method: 'OPTIONS' })).status).toBe(404);
+		});
 	});
 
 	describe('Validation', () => {
