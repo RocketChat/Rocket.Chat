@@ -1,6 +1,6 @@
 import type { IMessage } from '@rocket.chat/core-typings';
 import { isThreadMainMessage, isRoomFederated } from '@rocket.chat/core-typings';
-import { useFormatTime, useFormatDateAndTime } from '@rocket.chat/ui-client';
+import { MessageDisplayContext, useFormatTime, useFormatDateAndTime } from '@rocket.chat/ui-client';
 import { useLayout, useUser, useUserPreference, useSetting, useEndpoint, useSearchParameter } from '@rocket.chat/ui-contexts';
 import type { KeyboardEvent, MouseEvent, ReactNode } from 'react';
 import { useMemo, memo } from 'react';
@@ -10,6 +10,7 @@ import { MessageListContext } from '../../../../components/message/list/MessageL
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { getRegexHighlight, getRegexHighlightUrl } from '../../../../lib/highlightWords';
 import AttachmentProvider from '../../../../providers/AttachmentProvider';
+import { useMessageDisplayValue } from '../../../../providers/MessagesProvider/useMessageDisplayValue';
 import { useChat } from '../../contexts/ChatContext';
 import { useRoom, useRoomSubscription } from '../../contexts/RoomContext';
 import { useAutoTranslate } from '../hooks/useAutoTranslate';
@@ -154,9 +155,13 @@ const MessageListProvider = ({ children, attachmentDimension }: MessageListProvi
 		],
 	);
 
+	const display = useMessageDisplayValue({ room, subscription, allowsInteraction: true });
+
 	return (
 		<AttachmentProvider width={attachmentDimension?.width} height={attachmentDimension?.height}>
-			<MessageListContext.Provider value={context}>{children}</MessageListContext.Provider>
+			<MessageDisplayContext.Provider value={display}>
+				<MessageListContext.Provider value={context}>{children}</MessageListContext.Provider>
+			</MessageDisplayContext.Provider>
 		</AttachmentProvider>
 	);
 };

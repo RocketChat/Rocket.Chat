@@ -3,14 +3,14 @@ import { useSetModal } from '@rocket.chat/ui-contexts';
 
 import type { MessageActionConfig } from '../../../lib/MessageAction';
 import ReadReceiptsModal from '../../../views/room/modals/ReadReceiptsModal';
-import { useMessageListReadReceipts } from '../list/MessageListContext';
 
-export const useReadReceiptsDetailsAction = (message: IMessage): MessageActionConfig | null => {
+export const useReadReceiptsDetailsAction = (
+	message: IMessage,
+	readReceipts: { enabled: boolean; storeUsers: boolean },
+): MessageActionConfig | null => {
 	const setModal = useSetModal();
 
-	const { enabled: readReceiptsEnabled, storeUsers: readReceiptsStoreUsers } = useMessageListReadReceipts();
-
-	if (!readReceiptsEnabled || !readReceiptsStoreUsers) {
+	if (!readReceipts.enabled || !readReceipts.storeUsers) {
 		return null;
 	}
 
