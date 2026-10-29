@@ -1,5 +1,5 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 
 import SidebarItemBadges from './SidebarItemBadges';
 import { createFakeSubscription } from '../../../../../tests/mocks/data';
@@ -24,25 +24,6 @@ describe('SidebarItemBadges', () => {
 		});
 
 		expect(screen.getByRole('status', { name: '1 mention from Test Room' })).toBeInTheDocument();
-	});
-
-	it('should open the room from the UnreadBadge when given the room link', () => {
-		const onClick = jest.fn((event) => event.preventDefault());
-		render(
-			<SidebarItemBadges
-				room={createFakeSubscription({ unread: 1, userMentions: 1, groupMentions: 0 })}
-				roomTitle='Test Room'
-				href='/channel/test-room'
-				onClick={onClick}
-			/>,
-			{ wrapper: appRoot },
-		);
-
-		const badge = screen.getByRole('status', { name: '1 mention from Test Room' });
-		expect(badge).toHaveAttribute('href', '/channel/test-room');
-
-		fireEvent.click(badge);
-		expect(onClick).toHaveBeenCalledTimes(1);
 	});
 
 	it('should not render UnreadBadge when there are no unread messages', () => {

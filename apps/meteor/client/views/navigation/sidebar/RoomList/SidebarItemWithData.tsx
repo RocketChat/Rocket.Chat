@@ -72,7 +72,6 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListR
 	const selected = isRoomFilter && room.rid === parentRid;
 
 	const redirectToFilter = useRedirectToFilter();
-	const handleClick = () => redirectToFilter(room);
 
 	return (
 		<RoomListItem
@@ -84,12 +83,12 @@ const SidebarItemWithData = ({ room, id, style, t, videoConfActions }: RoomListR
 			aria-current={selected || undefined}
 			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title }) : title}
 			href={href}
-			onClick={handleClick}
+			onClick={() => redirectToFilter(room)}
 			title={title}
 			icon={<RoomIcon room={room} placement='sidebar' size='x20' isIncomingCall={isIncomingCall} />}
 			iconLabel={iconLabel}
 			style={style}
-			badges={<SidebarItemBadges room={room} roomTitle={title} href={href} onClick={handleClick} />}
+			badges={<SidebarItemBadges room={room} roomTitle={title} />}
 			room={room}
 			actions={actions}
 			{...dmStatusTooltipHandlers}

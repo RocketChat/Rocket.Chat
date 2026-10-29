@@ -97,10 +97,6 @@ const SidebarItemTemplateWithData = ({
 	const isQueued = isOmnichannelRoom(room) && room.status === 'queued';
 	const { enabled: isPriorityEnabled } = useOmnichannelPriorities();
 
-	const handleClick = () => {
-		if (!selected) sidebar.toggle();
-	};
-
 	const message = viewMode === 'extended' && getMessagePreview(room, lastMessage, t);
 	const subtitle = message ? <span className='message-body--unstyled' dangerouslySetInnerHTML={{ __html: message }} /> : null;
 
@@ -115,7 +111,9 @@ const SidebarItemTemplateWithData = ({
 			selected={selected}
 			aria-current={selected ? 'page' : undefined}
 			href={href}
-			onClick={handleClick}
+			onClick={() => {
+				if (!selected) sidebar.toggle();
+			}}
 			aria-label={showUnread ? t('__unreadTitle__from__roomTitle__', { unreadTitle, roomTitle: title }) : title}
 			title={title}
 			time={lastMessage?.ts}
@@ -124,7 +122,7 @@ const SidebarItemTemplateWithData = ({
 			iconLabel={iconLabel}
 			titleIcon={titleIcon}
 			style={style}
-			badges={<SidebarItemBadges room={room} roomTitle={title} href={href} onClick={handleClick} />}
+			badges={<SidebarItemBadges room={room} roomTitle={title} />}
 			actions={actions}
 			menu={
 				!isIOsDevice && !isAnonymous && (!isQueued || (isQueued && isPriorityEnabled)) ? (
