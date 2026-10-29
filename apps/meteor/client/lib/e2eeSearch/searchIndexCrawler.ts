@@ -150,7 +150,7 @@ export const createSearchIndexCrawler = ({
 		let indexed = 0;
 		let encrypted = 0;
 		let failed = 0;
-		const decryptedIds: string[] = [];
+		const decryptedMessages: IMessage[] = [];
 		for (const message of messages) {
 			const decrypted = await decryptMessage(message);
 			if (!isE2EEMessage(decrypted)) continue;
@@ -161,12 +161,16 @@ export const createSearchIndexCrawler = ({
 				keepPending(message);
 				continue;
 			}
-			decryptedIds.push(message._id);
+			decryptedMessages.push(message);
 			if (counts(message)) indexed++;
 		}
 		// A rejected write rejects here, so the checkpoint does not move and a pending message stays for the next retry.
 		await writer.flush({ throwOnError: true });
-		for (const id of decryptedIds) pendingDecrypt.delete(id);
+		for (const message of decryptedMessages) {
+			// A newer version that the live client failed to decrypt while this call ran stays pending for its retry.
+			const pending = pendingDecrypt.get(message._id);
+			if (pending && !(updatedAtOf(pending) > updatedAtOf(message))) pendingDecrypt.delete(message._id);
+		}
 		return { indexed, noneDecrypted: encrypted > 0 && failed === encrypted };
 	};
 

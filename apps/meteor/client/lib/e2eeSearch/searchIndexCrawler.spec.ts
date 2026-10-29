@@ -621,6 +621,32 @@ describe('createSearchIndexCrawler', () => {
 		});
 	});
 
+	describe('pending messages added during the flush', () => {
+		const page = (): SyncMessagesPage => ({ updated: [encrypted('m2', NOW - 2000)], deleted: [], cursor: { next: null, previous: null } });
+
+		it('keeps a newer version of a message pending when the live client failed to decrypt it during the flush', async () => {
+			const { crawler, writer } = await setup({ pages: [page()] });
+			writer.flush.mockImplementationOnce(async () => {
+				crawler.addPendingDecrypt(encrypted('m2', NOW - 1000));
+			});
+
+			await crawler.backfillRoomPage('room1');
+
+			expect(crawler.getPendingDecrypt('room1').map((message) => new Date(message._updatedAt).getTime())).toEqual([NOW - 1000]);
+		});
+
+		it('drops a pending copy of the version that the page decrypted', async () => {
+			const { crawler, writer } = await setup({ pages: [page()] });
+			writer.flush.mockImplementationOnce(async () => {
+				crawler.addPendingDecrypt(encrypted('m2', NOW - 2000));
+			});
+
+			await crawler.backfillRoomPage('room1');
+
+			expect(crawler.getPendingDecrypt('room1')).toEqual([]);
+		});
+	});
+
 	describe('backfill count', () => {
 		it('does not count a page whose state failed to save, so the page read again does not use up the limit', async () => {
 			const page = (): SyncMessagesPage => ({
