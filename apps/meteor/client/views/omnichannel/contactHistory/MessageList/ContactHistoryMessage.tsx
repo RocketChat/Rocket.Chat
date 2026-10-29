@@ -18,17 +18,20 @@ import {
 	Bubble,
 } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
-import { useFormatTime, useUserDisplayName } from '@rocket.chat/ui-client';
+import {
+	MessageAttachments as Attachments,
+	MessageContentBody,
+	StatusIndicators,
+	useFormatTime,
+	useMessageRenderers,
+	useUserDisplayName,
+} from '@rocket.chat/ui-client';
 import { useUserCard } from '@rocket.chat/ui-contexts';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import MessageContentBody from '../../../../components/message/MessageContentBody';
-import StatusIndicators from '../../../../components/message/StatusIndicators';
-import Attachments from '../../../../components/message/content/Attachments';
 import { useFormatDate } from '../../../../hooks/useFormatDate';
 import { toPlainTextRoot } from '../../../../lib/toPlainTextRoot';
-import UiKitMessageBlock from '../../../../providers/MessagesProvider/renderers/UiKitMessageBlock';
 
 export type ContactHistoryMessageProps = {
 	message: IMessage;
@@ -44,6 +47,7 @@ const ContactHistoryMessage = ({ message, sequential, isNewDay, showUserAvatar }
 	const format = useFormatDate();
 	const formatTime = useFormatTime();
 	const displayName = useUserDisplayName(message.u);
+	const { UiKitMessageBlock } = useMessageRenderers();
 
 	const quotes = message?.attachments?.filter(isQuoteAttachment) || [];
 
