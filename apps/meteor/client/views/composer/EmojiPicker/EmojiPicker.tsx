@@ -8,6 +8,7 @@ import {
 	EmojiPickerListArea,
 	EmojiPickerPreview,
 	useMergedRefsV2,
+	useIsVisible,
 } from '@rocket.chat/ui-client';
 import { useTranslation, usePermission, useRoute } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, KeyboardEvent, MouseEvent, RefObject } from 'react';
@@ -23,7 +24,6 @@ import ToneSelectorWrapper from './ToneSelector/ToneSelectorWrapper';
 import { usePreviewEmoji, useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
 import { emoji, getCategoriesList, getEmojisBySearchTerm } from '../../../lib/emoji';
 import type { EmojiItem } from '../../../lib/emoji';
-import { useIsVisible } from '../../room/hooks/useIsVisible';
 
 export type EmojiPickerProps = {
 	reference: Element;
