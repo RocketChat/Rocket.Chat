@@ -1,10 +1,10 @@
 import type { IOutboundProvider, Serialized } from '@rocket.chat/core-typings';
 import type { OperationResult } from '@rocket.chat/rest-typings';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import { useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
 import type { UseQueryOptions } from '@tanstack/react-query';
 import { useQuery } from '@tanstack/react-query';
 
-import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 import { omnichannelQueryKeys } from '../../../../../lib/queryKeys';
 import { useOmnichannelEnterpriseEnabled } from '../../../hooks/useOmnichannelEnterpriseEnabled';
 
