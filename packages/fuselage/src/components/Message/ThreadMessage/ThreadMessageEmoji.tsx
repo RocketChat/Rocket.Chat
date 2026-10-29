@@ -23,8 +23,10 @@ const ThreadMessageEmojiFrame = styled(Text, {
 
 // end of generated
 
-const ThreadMessageEmoji = ({ className, ...props }: ThreadMessageEmojiProps) => (
-	<ThreadMessageEmojiFrame render={<MessageEmojiBase {...props} />} className={`rcx-message-thread__emoji ${className || ''}`} />
+const ThreadMessageEmoji = ({ className, children, ...props }: ThreadMessageEmojiProps) => (
+	<ThreadMessageEmojiFrame render={<MessageEmojiBase {...props} />} className={`rcx-message-thread__emoji ${className || ''}`}>
+		{children}
+	</ThreadMessageEmojiFrame>
 );
 
 export default ThreadMessageEmoji;
