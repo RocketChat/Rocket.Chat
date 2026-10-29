@@ -1474,24 +1474,15 @@ const generateCard = () =>
 			backgroundColor: theme('card-background-color', surfaceLight),
 		},
 		{
-			// Direction, padding and wrap set overlapping flex properties, so each combination is one variant
+			// Direction and padding set overlapping flex properties, so each combination is one variant
 			layout: Object.fromEntries(
 				[false, true].flatMap((hero) =>
-					[false, true].flatMap((wrap) =>
-						(['horizontal', 'vertical'] as const)
-							.filter((kind) => !(kind === 'vertical' && wrap))
-							.map((kind): [string, Value] => [
-								`${kind}${hero ? '-hero' : ''}${wrap ? '-wrap' : ''}`,
-								kind === 'horizontal'
-									? {
-											alignItems: 'center',
-											padding: px(hero ? 28 : 12),
-											gap: px(16),
-											...(wrap && { flexWrap: 'wrap' }),
-										}
-									: { flexDirection: 'column', padding: px(hero ? 28 : 20), gap: px(24) },
-							]),
-					),
+					(['horizontal', 'vertical'] as const).map((kind): [string, Value] => [
+						`${kind}${hero ? '-hero' : ''}`,
+						kind === 'horizontal'
+							? { alignItems: 'center', padding: hero ? offScale(28) : spacing('x12'), gap: spacing('x16') }
+							: { flexDirection: 'column', padding: hero ? offScale(28) : spacing('x20'), gap: spacing('x24') },
+					]),
 				),
 			),
 			clickable: {
@@ -1512,7 +1503,13 @@ const generateCard = () =>
 const cardPart = (name: string, extra: Record<string, Value> = {}) =>
 	declaredWhereTheyRender + frame(name, { render: 'div', ...flexBox, alignItems: 'center', gap: cardGap, ...extra });
 
-const generateCardBody = () => declaredWhereTheyRender + frame('CardBodyFrame', { ...flexBox, flexGrow: 1, gap: cardGap, ...font('p2m') });
+const generateCardBody = () =>
+	declaredWhereTheyRender +
+	frame(
+		'CardBodyFrame',
+		{ ...flexBox, flexGrow: 1, gap: cardGap, ...font('p2m') },
+		{ direction: { row: {}, column: { flexDirection: 'column' } }, fullHeight: { true: { height: '100%' }, false: {} } },
+	);
 const generateCardCol = () => cardPart('CardColFrame', { alignItems: 'normal', flexDirection: 'column' });
 const generateCardControls = () => cardPart('CardControlsFrame');
 const generateCardHeader = () => cardPart('CardHeaderFrame');
@@ -1697,6 +1694,18 @@ const generateConsumerClasses = () => {
 	box-shadow:
 		0 0 2px 0 ${shadowColors['shadow-elevation-2x']},
 		0 0 12px 0 ${shadowColors['shadow-elevation-2y']};
+}
+
+.rcx-card__header:where(.rcx-card__header),
+.rcx-card__row:where(.rcx-card__row) {
+	display: flex;
+	align-items: center;
+	gap: ${cardGap};
+}
+
+.rcx-card__row:where(.rcx-card__row) {
+	flex-grow: 1;
+	flex-shrink: 1;
 }`;
 };
 
@@ -3195,6 +3204,13 @@ const components: { file: string; generate: () => string; css?: boolean; section
 	{ file: join(import.meta.dirname, '../src/components/Callout/Callout.tsx'), generate: generateCallout },
 	{ file: join(import.meta.dirname, '../src/components/Callout/Callout.styles.css'), generate: generateCalloutCss, css: true },
 	{ file: join(import.meta.dirname, '../src/components/CardGroup/CardGroup.tsx'), generate: generateCardGroup },
+	{ file: join(import.meta.dirname, '../src/components/Card/Card.tsx'), generate: generateCard },
+	{ file: join(import.meta.dirname, '../src/components/Card/CardBody.tsx'), generate: generateCardBody },
+	{ file: join(import.meta.dirname, '../src/components/Card/CardCol.tsx'), generate: generateCardCol },
+	{ file: join(import.meta.dirname, '../src/components/Card/CardControls.tsx'), generate: generateCardControls },
+	{ file: join(import.meta.dirname, '../src/components/Card/CardHeader.tsx'), generate: generateCardHeader },
+	{ file: join(import.meta.dirname, '../src/components/Card/CardRow.tsx'), generate: generateCardRow },
+	{ file: join(import.meta.dirname, '../src/components/Card/CardTitle.tsx'), generate: generateCardTitle },
 	{ file: join(import.meta.dirname, '../src/components/SplitButton/SplitButton.tsx'), generate: generateSplitButton },
 	{ file: join(import.meta.dirname, '../src/components/SplitButton/SplitButton.styles.css'), generate: generateSplitButtonCss, css: true },
 	{ file: join(import.meta.dirname, '../src/components/Banner/Banner.tsx'), generate: generateBanner },
@@ -3463,6 +3479,7 @@ const textFrames = [
 	'BannerTitleFrame',
 	'CalloutContent',
 	'CalloutTitle',
+	'CardBodyFrame',
 	'CardTitleFrame',
 	'CheckBoxLabel',
 	'CodeSnippetCodeBoxFrame',

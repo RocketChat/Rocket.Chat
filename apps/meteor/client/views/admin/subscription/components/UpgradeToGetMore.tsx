@@ -1,4 +1,5 @@
-import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, Button, ButtonGroup, CardGrid } from '@rocket.chat/fuselage';
+import { css } from '@rocket.chat/css-in-js';
+import { Box, States, StatesIcon, StatesTitle, StatesSubtitle, Button, ButtonGroup, CardGrid, useStyle } from '@rocket.chat/fuselage';
 import type { ReactNode } from 'react';
 import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -22,7 +23,12 @@ const enterpriseModules = [
 	'auditing',
 ];
 
+const fullHeight = css`
+	height: 100%;
+`;
+
 const UpgradeToGetMore = ({ activeModules, children }: UpgradeToGetMoreProps) => {
+	const fullHeightClassName = useStyle(fullHeight);
 	const { t } = useTranslation();
 	const handleOpenLink = useExternalLink();
 
@@ -60,7 +66,7 @@ const UpgradeToGetMore = ({ activeModules, children }: UpgradeToGetMoreProps) =>
 				}}
 			>
 				{upgradeModules.map((card, index) => {
-					return <GenericCard key={index} icon='check' type='success' height='full' {...card} />;
+					return <GenericCard key={index} icon='check' type='success' className={fullHeightClassName} {...card} />;
 				})}
 			</CardGrid>
 			<Box paddingBlockStart={24}>
