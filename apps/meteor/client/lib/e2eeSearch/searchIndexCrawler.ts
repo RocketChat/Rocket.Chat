@@ -45,16 +45,22 @@ const DEFAULT_MAX_PENDING = 5000;
 /** Messages per `chat.syncMessages` page when no page size is set. */
 export const DEFAULT_PAGE_SIZE = 100;
 
+/**
+ * With `waitForKey`, a page whose encrypted messages all failed to decrypt (the room key is not loaded yet) keeps the
+ * checkpoint and reports `waitingForKey`: the page is read again after the key arrives, also after a restart.
+ */
+type PageOptions = { waitForKey?: boolean };
+
 export type SearchIndexCrawler = {
 	/** Indexes the next older page of the room and saves the cursor, so a restart continues from there. */
-	backfillRoomPage(rid: string): Promise<{ done: boolean; indexed: number }>;
+	backfillRoomPage(rid: string, options?: PageOptions): Promise<{ done: boolean; indexed: number; waitingForKey?: true }>;
 	/**
 	 * Applies the next page of the changes since the room's `lastUpdate`: indexes new and edited messages, then removes
 	 * deleted ones. `lastUpdate` moves only after the last page, so an interrupted catch-up starts again from it. The
 	 * millisecond of `lastUpdate` is read again, so a message written in it after the last read is not skipped. Its messages
 	 * are indexed again (the upsert by `_id` changes nothing) and `indexed` does not count them.
 	 */
-	catchUpRoomPage(rid: string): Promise<{ done: boolean; indexed: number; removed: number }>;
+	catchUpRoomPage(rid: string, options?: PageOptions): Promise<{ done: boolean; indexed: number; removed: number; waitingForKey?: true }>;
 	/** Decrypts the pending messages of the room again, after its room key arrived. */
 	retryPendingDecrypt(rid: string): Promise<{ indexed: number }>;
 	/**
@@ -133,14 +139,24 @@ export const createSearchIndexCrawler = ({
 	const isInDepth = (message: IMessage, oldestSendTime: number | undefined) =>
 		oldestSendTime === undefined || new Date(message.ts).getTime() >= oldestSendTime;
 
-	/** Decrypts the messages, so the client indexes them, and returns how many of them were indexed and `counts` accepts. */
-	const decryptAll = async (messages: IMessage[], counts: (message: IMessage) => boolean = () => true): Promise<number> => {
+	/**
+	 * Decrypts the messages, so the client indexes them. Returns how many of them were indexed and `counts` accepts, and
+	 * whether every encrypted message failed to decrypt.
+	 */
+	const decryptAll = async (
+		messages: IMessage[],
+		counts: (message: IMessage) => boolean = () => true,
+	): Promise<{ indexed: number; noneDecrypted: boolean }> => {
 		let indexed = 0;
+		let encrypted = 0;
+		let failed = 0;
 		for (const message of messages) {
 			const decrypted = await decryptMessage(message);
 			if (!isE2EEMessage(decrypted)) continue;
 
+			encrypted++;
 			if (decrypted.e2e !== 'done' || isDecryptFailed(decrypted)) {
+				failed++;
 				keepPending(message);
 				continue;
 			}
@@ -148,11 +164,11 @@ export const createSearchIndexCrawler = ({
 			if (counts(message)) indexed++;
 		}
 		await writer.flush();
-		return indexed;
+		return { indexed, noneDecrypted: encrypted > 0 && failed === encrypted };
 	};
 
 	return {
-		async backfillRoomPage(rid) {
+		async backfillRoomPage(rid, { waitForKey = false } = {}) {
 			const state: E2EESearchRoomState = (await backend.getRoomState(rid)) ?? { backfillDone: false };
 			if (state.backfillDone) return { done: true, indexed: 0 };
 
@@ -167,8 +183,8 @@ export const createSearchIndexCrawler = ({
 
 			const oldestSendTime = oldestSendTimeAt(startedAt);
 			const inDepth = page.updated.filter((message) => isInDepth(message, oldestSendTime));
-			const indexed = await decryptAll(inDepth);
-			backfilled.set(rid, counted + inDepth.length);
+			const { indexed, noneDecrypted } = await decryptAll(inDepth);
+			if (waitForKey && noneDecrypted) return { done: false, indexed, waitingForKey: true };
 			const reachedLimit = maxBackfillMessagesPerRoom !== undefined && counted + inDepth.length >= maxBackfillMessagesPerRoom;
 
 			const updatedAts = page.updated.map(updatedAtOf);
@@ -186,11 +202,13 @@ export const createSearchIndexCrawler = ({
 				...(!done && { backfillCursor: cursor }),
 				backfillDone: done,
 			});
+			// Counted only after the state is saved: a page read again from the same cursor does not count twice.
+			backfilled.set(rid, counted + inDepth.length);
 
 			return { done, indexed };
 		},
 
-		async catchUpRoomPage(rid) {
+		async catchUpRoomPage(rid, { waitForKey = false } = {}) {
 			const state = await backend.getRoomState(rid);
 			if (state?.lastUpdate === undefined) return { done: true, indexed: 0, removed: 0 };
 
@@ -210,18 +228,22 @@ export const createSearchIndexCrawler = ({
 				const outOfDepth = page.updated.filter((message) => !isInDepth(message, oldestSendTime)).map(({ _id }) => _id);
 				if (outOfDepth.length) {
 					// Sent before the depth limit: not indexed, and an older version of it leaves the index, so its old text is not found.
-					await writer.remove(outOfDepth, { deleted: false });
+					await writer.remove(outOfDepth, { deleted: false, throwOnError: true });
 					for (const id of outOfDepth) pendingDecrypt.delete(id);
 				}
 				// The messages of the `from` millisecond were indexed by the read that set `lastUpdate`, so they are not new.
 				const isNew = (message: IMessage) => updatedAtOf(message) !== catchUp.from;
-				indexed = await decryptAll(
+				const decrypted = await decryptAll(
 					page.updated.filter((message) => isInDepth(message, oldestSendTime)),
 					isNew,
 				);
+				// The cursor does not move, so the page is read again after the key arrives.
+				if (waitForKey && decrypted.noneDecrypted) return { done: false, indexed: decrypted.indexed, removed: 0, waitingForKey: true };
+				indexed = decrypted.indexed;
 				newestUpdate = Math.max(newestUpdate, ...page.updated.map(updatedAtOf));
 			} else if (deletedIds.length) {
-				await writer.remove(deletedIds);
+				// A failed remove rejects, so `lastUpdate` does not move past the deletes and the next catch-up reads them again.
+				await writer.remove(deletedIds, { throwOnError: true });
 				for (const id of deletedIds) pendingDecrypt.delete(id);
 			}
 			const result = { indexed, removed: catchUp.type === 'DELETED' ? deletedIds.length : 0 };
@@ -247,7 +269,7 @@ export const createSearchIndexCrawler = ({
 		async retryPendingDecrypt(rid) {
 			const pending = pendingOf(rid);
 			if (!pending.length) return { indexed: 0 };
-			return { indexed: await decryptAll(pending) };
+			return { indexed: (await decryptAll(pending)).indexed };
 		},
 
 		addPendingDecrypt(message) {

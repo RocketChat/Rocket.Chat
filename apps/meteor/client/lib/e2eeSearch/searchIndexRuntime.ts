@@ -90,6 +90,10 @@ const MIN_BACKOFF_SECONDS = 1;
 const MIN_PAGE_SIZE = 10;
 /** The server's default `API_Upper_Count_Limit`. That setting is not public, so the client cannot read the value of a server. */
 const MAX_PAGE_SIZE = 100;
+/** `setTimeout` runs a longer delay (more than 2^31 - 1 ms) at once, so a larger admin value is cut to this. */
+const MAX_TIMER_SECONDS = Math.floor((2 ** 31 - 1) / 1000);
+
+const toTimerMs = (seconds: number, minSeconds: number): number => Math.min(MAX_TIMER_SECONDS, Math.max(minSeconds, seconds)) * 1000;
 
 const isFiniteNumber = (value: unknown): value is number => typeof value === 'number' && Number.isFinite(value);
 
@@ -104,15 +108,21 @@ export const searchIndexTuningFromSettings = (get: (id: string) => unknown): Sea
 	const backoffMin = get('E2E_Local_Search_Backoff_Min');
 	const backoffMax = get('E2E_Local_Search_Backoff_Max');
 
-	const backoffBaseMs = isFiniteNumber(backoffMin) ? Math.max(MIN_BACKOFF_SECONDS, backoffMin) * 1000 : DEFAULT_BACKOFF_BASE_MS;
+	const backoffBaseMs = isFiniteNumber(backoffMin) ? toTimerMs(backoffMin, MIN_BACKOFF_SECONDS) : DEFAULT_BACKOFF_BASE_MS;
 	return {
-		pauseMs: isFiniteNumber(pause) ? Math.max(MIN_PAUSE_SECONDS, pause) * 1000 : DEFAULT_PAUSE_MS,
+		pauseMs: isFiniteNumber(pause) ? toTimerMs(pause, MIN_PAUSE_SECONDS) : DEFAULT_PAUSE_MS,
 		pageSize: isFiniteNumber(pageSize) ? Math.min(MAX_PAGE_SIZE, Math.max(MIN_PAGE_SIZE, Math.round(pageSize))) : DEFAULT_PAGE_SIZE,
 		maxBackfillMessagesPerRoom: isFiniteNumber(maxPerRoom) && maxPerRoom >= 1 ? Math.floor(maxPerRoom) : undefined,
 		backoffBaseMs,
-		backoffMaxMs: Math.max(backoffBaseMs, isFiniteNumber(backoffMax) ? backoffMax * 1000 : DEFAULT_BACKOFF_MAX_MS),
+		backoffMaxMs: Math.max(backoffBaseMs, isFiniteNumber(backoffMax) ? toTimerMs(backoffMax, 0) : DEFAULT_BACKOFF_MAX_MS),
 	};
 };
+
+export type SearchIndexSyncTime = { read(): number | undefined; write(at: number): void };
+
+/** The server keeps deletion records (`rocketchat__trash`) for 30 days. Some days of margin cover a client clock that is wrong. */
+export const DELETION_RECORDS_KEPT_MS = 30 * 24 * 60 * 60 * 1000;
+export const REINDEX_AFTER_MS = DELETION_RECORDS_KEPT_MS - 5 * 24 * 60 * 60 * 1000;
 
 type SearchIndexRuntimeOptions = {
 	session: Pick<SearchIndexSession, 'getActiveBackend' | 'subscribe'> & Partial<Pick<SearchIndexSession, 'wipeClosed'>>;
@@ -133,6 +143,13 @@ type SearchIndexRuntimeOptions = {
 	/** The pacing and the limits of the crawler, read each time the index opens. A missing value gives the default. */
 	getTuning?: () => SearchIndexTuning;
 	onError?: (error: unknown) => void;
+	/**
+	 * Keeps the time of the last catch-up of every room, for the user of the open index. When it is older than the time
+	 * that the server keeps deletion records, or unknown for an index with rows, the rooms are indexed again from the
+	 * start: a catch-up cannot see those deletions any more.
+	 */
+	syncTime?: SearchIndexSyncTime;
+	now?: () => number;
 	/** Builds the crawler and its scheduler for an open index. Specs replace it. */
 	createScheduler?: (backend: ISearchIndexBackend) => SearchIndexScheduler;
 };
@@ -146,6 +163,8 @@ export type SearchIndexRuntime = {
 	subscribe(listener: () => void): () => void;
 	/** Catches up every room, after the connection to the server came back. */
 	onReconnect(): void;
+	/** Catches up the room before the next backfill page, so a search in it finds its edits and misses its deletes. */
+	requestRoomCatchUp(rid: string): void;
 	/** Indexes the messages that waited for the room key, after the key arrived. */
 	onRoomKeyReady(rid: string): void;
 	/** Keeps a live message that failed to decrypt (room key missing), so `onRoomKeyReady` indexes it. Pass the encrypted message. */
@@ -179,6 +198,8 @@ export const createSearchIndexRuntime = ({
 	getMaxAgeMs = () => undefined,
 	getTuning = () => ({}),
 	onError = () => undefined,
+	syncTime,
+	now = () => Date.now(),
 	createScheduler,
 }: SearchIndexRuntimeOptions): SearchIndexRuntime => {
 	const buildScheduler =
@@ -201,6 +222,10 @@ export const createSearchIndexRuntime = ({
 	let scheduler: SearchIndexScheduler | undefined;
 	let pruning: Promise<void> = Promise.resolve();
 	let unsubscribeScheduler: (() => void) | undefined;
+	/** The time when the running catch-up of every room started. It is saved when the scheduler has nothing left to do. */
+	let catchUpStartedAt: number | undefined;
+	/** False while the rooms of an out-of-date index could not be emptied: no catch-up time is saved for it then. */
+	let recordsSync = false;
 	const listeners = new Set<() => void>();
 
 	const notify = () => {
@@ -210,9 +235,40 @@ export const createSearchIndexRuntime = ({
 	const setScheduler = (next: SearchIndexScheduler | undefined) => {
 		unsubscribeScheduler?.();
 		unsubscribeScheduler = undefined;
+		catchUpStartedAt = undefined;
+		recordsSync = false;
 		scheduler = next;
-		if (next) unsubscribeScheduler = next.subscribe(notify);
+		if (next) {
+			unsubscribeScheduler = next.subscribe(() => {
+				if (catchUpStartedAt !== undefined && next.getProgress().status === 'done') {
+					syncTime?.write(catchUpStartedAt);
+					catchUpStartedAt = undefined;
+				}
+				notify();
+			});
+		}
 		notify();
+	};
+
+	const startScheduler = (started: SearchIndexScheduler, { recordSync }: { recordSync: boolean }) => {
+		if (scheduler !== started) return;
+		recordsSync = recordSync;
+		if (recordSync) catchUpStartedAt = now();
+		started.start();
+	};
+
+	/**
+	 * Empties every room of an index whose last full catch-up is older than the deletion records of the server, so the
+	 * backfill indexes them again and a message deleted in between does not stay searchable.
+	 */
+	const reindexIfOutOfSync = async (opened: ISearchIndexBackend) => {
+		const syncedAt = syncTime?.read();
+		if (syncedAt !== undefined && now() - syncedAt <= REINDEX_AFTER_MS) return;
+
+		for (const rid of await opened.listRooms()) {
+			if (backend !== opened) return;
+			await opened.removeRoom(rid);
+		}
 	};
 
 	// Removes the rows of the rooms that the user left while the index was closed: no removal event reached it then.
@@ -241,8 +297,24 @@ export const createSearchIndexRuntime = ({
 
 		const created = buildScheduler(next);
 		setScheduler(created);
-		created.start();
-		pruning = pruneLeftRooms(next).catch(onError);
+		if (!syncTime) {
+			created.start();
+			pruning = pruneLeftRooms(next).catch(onError);
+			return;
+		}
+
+		pruning = reindexIfOutOfSync(next).then(
+			() => {
+				startScheduler(created, { recordSync: true });
+				return pruneLeftRooms(next).catch(onError);
+			},
+			(error) => {
+				onError(error);
+				// The rooms were not emptied: the index runs, but no catch-up time is saved, so the next open tries again.
+				startScheduler(created, { recordSync: false });
+				return pruneLeftRooms(next).catch(onError);
+			},
+		);
 	};
 
 	const unsubscribe = session.subscribe(sync);
@@ -258,7 +330,12 @@ export const createSearchIndexRuntime = ({
 			};
 		},
 		whenSettled: () => pruning,
-		onReconnect: () => scheduler?.requestCatchUp(),
+		onReconnect: () => {
+			if (!scheduler) return;
+			if (recordsSync && catchUpStartedAt === undefined) catchUpStartedAt = now();
+			scheduler.requestCatchUp();
+		},
+		requestRoomCatchUp: (rid) => scheduler?.requestCatchUp([rid]),
 		onRoomKeyReady: (rid) => scheduler?.retryPendingDecrypt(rid),
 		onDecryptFailed: (message) => scheduler?.addPendingDecrypt(message),
 		async onRoomRemoved(rid) {
@@ -267,6 +344,8 @@ export const createSearchIndexRuntime = ({
 
 			// Sends the queued documents first, so the remove also takes the ones of this room.
 			await writer.flush();
+			// The index closed or another one opened during the flush: this removal was for the index that closed.
+			if (backend !== current) return;
 			if (scheduler) {
 				await scheduler.removeRoom(rid);
 				return;
@@ -286,6 +365,8 @@ export const createSearchIndexRuntime = ({
 			await stopping;
 			// Sends the queued documents first, so the wipe also takes them.
 			await writer.flush();
+			// Another index opened during the waits: the wipe was for the index that closed, not for this one.
+			if (backend !== current) return false;
 			await current.wipe();
 			return true;
 		},

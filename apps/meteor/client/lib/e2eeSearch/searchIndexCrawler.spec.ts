@@ -67,6 +67,51 @@ const setup = async ({
 	return { backend, crawler, calls, decryptMessage, writer, undecryptable };
 };
 
+const untilDoneCounting = async (step: () => Promise<{ done: boolean; indexed: number }>) => {
+	let indexed = 0;
+	for (let i = 0; i < 100; i++) {
+		const result = await step();
+		indexed += result.indexed;
+		if (result.done) return indexed;
+	}
+	throw new Error('the crawler did not finish');
+};
+
+const crawlAgainst = async (
+	server: SyncMessagesServerMock,
+	{ clientClockOffsetMs = 0, maxAgeMs }: { clientClockOffsetMs?: number; maxAgeMs?: number } = {},
+) => {
+	const backend = createFakeSearchIndexBackend();
+	await backend.open({ userId: 'u1' });
+
+	const indexed = new Map<string, number>();
+	const removedFromIndex: { ids: string[]; options?: { deleted?: boolean } }[] = [];
+	const crawler = createSearchIndexCrawler({
+		backend,
+		syncMessages: (params) => server.syncMessages(params),
+		decryptMessage: async (message) => {
+			indexed.set(message._id, new Date(message._updatedAt).getTime());
+			return { ...message, e2e: 'done' } as IMessage;
+		},
+		writer: {
+			remove: async (ids, options) => {
+				removedFromIndex.push({ ids, ...(options && { options }) });
+				ids.forEach((id) => indexed.delete(id));
+			},
+			flush: async () => undefined,
+		},
+		now: () => server.now() + clientClockOffsetMs,
+		pageSize: 100,
+		maxAgeMs,
+	});
+
+	return { backend, crawler, indexed, removedFromIndex };
+};
+
+const untilDone = async (step: () => Promise<{ done: boolean; indexed: number }>) => {
+	await untilDoneCounting(step);
+};
+
 describe('createSearchIndexCrawler', () => {
 	describe('backfillRoomPage', () => {
 		it('asks for the newest page first, with a compound cursor at the start time', async () => {
@@ -333,7 +378,7 @@ describe('createSearchIndexCrawler', () => {
 			]);
 			expect(decryptMessage.mock.calls.map(([message]) => message._id)).toEqual(['m4']);
 			expect(writer.flush).toHaveBeenCalled();
-			expect(writer.remove).toHaveBeenCalledWith(['m2']);
+			expect(writer.remove).toHaveBeenCalledWith(['m2'], { throwOnError: true });
 		});
 
 		it('moves lastUpdate to the newest update only after the last page, and keeps the backfill state', async () => {
@@ -395,6 +440,114 @@ describe('createSearchIndexCrawler', () => {
 
 			await expect(crawler.catchUpRoomPage('room1')).rejects.toThrow();
 			expect(await backend.getRoomState('room1')).toEqual({ lastUpdate: NOW, backfillDone: true });
+		});
+	});
+
+	describe('waiting for the room key', () => {
+		const noMore = { next: null, previous: null };
+
+		it('keeps the backfill cursor when no message of the page decrypts, so the page is read again after the key arrives', async () => {
+			const { crawler, backend, undecryptable } = await setup({
+				pages: [
+					{
+						updated: [encrypted('m2', NOW - 1000), encrypted('m1', NOW - 2000)],
+						deleted: [],
+						cursor: { next: null, previous: `${NOW - 2000}` },
+					},
+					{
+						updated: [encrypted('m2', NOW - 1000), encrypted('m1', NOW - 2000)],
+						deleted: [],
+						cursor: { next: null, previous: `${NOW - 2000}` },
+					},
+				],
+				undecryptable: new Set(['m1', 'm2']),
+			});
+
+			expect(await crawler.backfillRoomPage('room1', { waitForKey: true })).toEqual({ done: false, indexed: 0, waitingForKey: true });
+			expect(await backend.getRoomState('room1')).toBeUndefined();
+			expect(crawler.getPendingDecrypt('room1').map(({ _id }) => _id)).toEqual(['m2', 'm1']);
+
+			undecryptable.clear();
+			expect(await crawler.backfillRoomPage('room1', { waitForKey: true })).toEqual({ done: false, indexed: 2 });
+			expect(await backend.getRoomState('room1')).toMatchObject({ backfillCursor: `${NOW - 2000}`, backfillDone: false });
+		});
+
+		it('saves the cursor without waiting for the key when some messages of the page decrypt', async () => {
+			const { crawler, backend } = await setup({
+				pages: [
+					{
+						updated: [encrypted('m2', NOW - 1000), encrypted('m1', NOW - 2000)],
+						deleted: [],
+						cursor: { next: null, previous: `${NOW - 2000}` },
+					},
+				],
+				undecryptable: new Set(['m1']),
+			});
+
+			expect(await crawler.backfillRoomPage('room1', { waitForKey: true })).toEqual({ done: false, indexed: 1 });
+			expect(await backend.getRoomState('room1')).toMatchObject({ backfillCursor: `${NOW - 2000}` });
+		});
+
+		it('keeps the catch-up cursor when no updated message decrypts', async () => {
+			const { crawler, backend, calls, undecryptable } = await setup({
+				pages: [
+					{ updated: [encrypted('m4', NOW + 5000)], deleted: [], cursor: noMore },
+					{ updated: [encrypted('m4', NOW + 5000)], deleted: [], cursor: noMore },
+				],
+				undecryptable: new Set(['m4']),
+			});
+			await backend.setRoomState('room1', { lastUpdate: NOW, backfillDone: true });
+
+			expect(await crawler.catchUpRoomPage('room1', { waitForKey: true })).toEqual({
+				done: false,
+				indexed: 0,
+				removed: 0,
+				waitingForKey: true,
+			});
+			undecryptable.clear();
+			expect(await crawler.catchUpRoomPage('room1', { waitForKey: true })).toEqual({ done: false, indexed: 1, removed: 0 });
+			expect(calls.map(({ type, next }) => [type, next])).toEqual([
+				['UPDATED', `${NOW}_`],
+				['UPDATED', `${NOW}_`],
+			]);
+		});
+	});
+
+	describe('failed removals', () => {
+		it('does not move lastUpdate past deletes that the index failed to remove, so the next catch-up removes them', async () => {
+			const noMore = { next: null, previous: null };
+			const { crawler, backend, writer } = await setup({
+				pages: [
+					{ updated: [encrypted('m4', NOW + 3000)], deleted: [], cursor: noMore },
+					{ updated: [], deleted: [{ _id: 'm2', _deletedAt: new Date(NOW + 2000).toISOString() }], cursor: noMore },
+				],
+			});
+			writer.remove.mockRejectedValueOnce(new Error('remove failed'));
+			await backend.setRoomState('room1', { lastUpdate: NOW, backfillDone: true });
+
+			await crawler.catchUpRoomPage('room1');
+			await expect(crawler.catchUpRoomPage('room1')).rejects.toThrow('remove failed');
+
+			expect(await backend.getRoomState('room1')).toEqual({ lastUpdate: NOW, backfillDone: true });
+		});
+	});
+
+	describe('backfill count', () => {
+		it('does not count a page whose state failed to save, so the page read again does not use up the limit', async () => {
+			const page = (): SyncMessagesPage => ({
+				updated: [encrypted('m2', NOW - 1000), encrypted('m1', NOW - 2000)],
+				deleted: [],
+				cursor: { next: null, previous: `${NOW - 2000}` },
+			});
+			const { crawler, backend, calls } = await setup({ pages: [page(), page(), page()], maxBackfillMessagesPerRoom: 4 });
+			const setRoomState = jest.spyOn(backend, 'setRoomState').mockRejectedValueOnce(new Error('state failed'));
+
+			await expect(crawler.backfillRoomPage('room1')).rejects.toThrow('state failed');
+			setRoomState.mockRestore();
+			expect(await crawler.backfillRoomPage('room1')).toEqual({ done: false, indexed: 2 });
+			await crawler.backfillRoomPage('room1');
+
+			expect(calls.map(({ count }) => count)).toEqual([2, 2, 2]);
 		});
 	});
 
@@ -541,38 +694,6 @@ describe('createSearchIndexCrawler', () => {
 		const MINUTE = 60 * 1000;
 		const ROOM = 'room1';
 
-		const untilDone = async (step: () => Promise<{ done: boolean }>) => {
-			for (let i = 0; i < 100; i++) {
-				if ((await step()).done) return;
-			}
-			throw new Error('the crawler did not finish');
-		};
-
-		const crawlAgainst = async (server: SyncMessagesServerMock, clientClockOffsetMs: number) => {
-			const backend = createFakeSearchIndexBackend();
-			await backend.open({ userId: 'u1' });
-
-			const indexed = new Map<string, number>();
-			const crawler = createSearchIndexCrawler({
-				backend,
-				syncMessages: (params) => server.syncMessages(params),
-				decryptMessage: async (message) => {
-					indexed.set(message._id, new Date(message._updatedAt).getTime());
-					return { ...message, e2e: 'done' } as IMessage;
-				},
-				writer: {
-					remove: async (ids) => {
-						ids.forEach((id) => indexed.delete(id));
-					},
-					flush: async () => undefined,
-				},
-				now: () => server.now() + clientClockOffsetMs,
-				pageSize: 100,
-			});
-
-			return { crawler, indexed };
-		};
-
 		const withHistory = () => {
 			const server = createSyncMessagesServerMock({ startAt: NOW, compoundCursors });
 			for (let i = 0; i < 250; i++) server.addHistory(`h${i}`, ROOM, NOW - 30 * DAY + i * 60 * MINUTE);
@@ -587,7 +708,7 @@ describe('createSearchIndexCrawler', () => {
 		])('first backfill with the client clock %s', (_label, offset) => {
 			it('loses 0 messages, also the ones sent, edited and deleted while it runs', async () => {
 				const server = withHistory();
-				const { crawler, indexed } = await crawlAgainst(server, offset);
+				const { crawler, indexed } = await crawlAgainst(server, { clientClockOffsetMs: offset });
 
 				await crawler.backfillRoomPage(ROOM);
 				server.advance(MINUTE);
@@ -607,7 +728,7 @@ describe('createSearchIndexCrawler', () => {
 
 			it('loses 0 messages of a room that was empty at the first backfill', async () => {
 				const server = createSyncMessagesServerMock({ startAt: NOW, compoundCursors });
-				const { crawler, indexed } = await crawlAgainst(server, offset);
+				const { crawler, indexed } = await crawlAgainst(server, { clientClockOffsetMs: offset });
 
 				await untilDone(() => crawler.backfillRoomPage(ROOM));
 				server.advance(MINUTE);
@@ -620,7 +741,7 @@ describe('createSearchIndexCrawler', () => {
 
 		it('keeps a message sent after the catch-up read the updates and before it read a later delete', async () => {
 			const server = withHistory();
-			const { crawler, indexed } = await crawlAgainst(server, 0);
+			const { crawler, indexed } = await crawlAgainst(server);
 			await untilDone(() => crawler.backfillRoomPage(ROOM));
 
 			server.advance(MINUTE);
@@ -635,7 +756,7 @@ describe('createSearchIndexCrawler', () => {
 
 		it('never sends a sync call without a cursor, also for a catch-up that spans many pages', async () => {
 			const server = withHistory();
-			const { crawler, indexed } = await crawlAgainst(server, 0);
+			const { crawler, indexed } = await crawlAgainst(server);
 
 			await untilDone(() => crawler.backfillRoomPage(ROOM));
 			server.advance(DAY);
@@ -655,51 +776,6 @@ describe('createSearchIndexCrawler', () => {
 
 	describe('against a server with compound cursors, with messages that share one millisecond', () => {
 		const ROOM = 'room1';
-
-		const untilDone = async (step: () => Promise<{ done: boolean }>) => {
-			for (let i = 0; i < 100; i++) {
-				if ((await step()).done) return;
-			}
-			throw new Error('the crawler did not finish');
-		};
-
-		const untilDoneCounting = async (step: () => Promise<{ done: boolean; indexed: number }>) => {
-			let indexed = 0;
-			for (let i = 0; i < 100; i++) {
-				const result = await step();
-				indexed += result.indexed;
-				if (result.done) return indexed;
-			}
-			throw new Error('the crawler did not finish');
-		};
-
-		const crawlAgainst = async (server: SyncMessagesServerMock, { maxAgeMs }: { maxAgeMs?: number } = {}) => {
-			const backend = createFakeSearchIndexBackend();
-			await backend.open({ userId: 'u1' });
-
-			const indexed = new Map<string, number>();
-			const removedFromIndex: { ids: string[]; options?: { deleted?: boolean } }[] = [];
-			const crawler = createSearchIndexCrawler({
-				backend,
-				syncMessages: (params) => server.syncMessages(params),
-				decryptMessage: async (message) => {
-					indexed.set(message._id, new Date(message._updatedAt).getTime());
-					return { ...message, e2e: 'done' } as IMessage;
-				},
-				writer: {
-					remove: async (ids, options) => {
-						removedFromIndex.push({ ids, ...(options && { options }) });
-						ids.forEach((id) => indexed.delete(id));
-					},
-					flush: async () => undefined,
-				},
-				now: () => server.now(),
-				pageSize: 100,
-				maxAgeMs,
-			});
-
-			return { backend, crawler, indexed, removedFromIndex };
-		};
 
 		it('loses 0 messages when a page boundary falls inside one millisecond', async () => {
 			const server = createSyncMessagesServerMock({ startAt: NOW });
@@ -785,7 +861,7 @@ describe('createSearchIndexCrawler', () => {
 			await untilDone(() => crawler.catchUpRoomPage(ROOM));
 
 			expect(indexed.has('aging')).toBe(false);
-			expect(removedFromIndex).toEqual([{ ids: ['aging'], options: { deleted: false } }]);
+			expect(removedFromIndex).toEqual([{ ids: ['aging'], options: { deleted: false, throwOnError: true } }]);
 		});
 
 		it('continues a backfill from a saved cursor of the old format and loses 0 messages', async () => {

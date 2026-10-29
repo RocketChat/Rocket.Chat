@@ -375,4 +375,78 @@ describe('createSearchIndexWriter remove', () => {
 
 		expect(onError).toHaveBeenCalledTimes(1);
 	});
+	describe('bindToOpenIndex', () => {
+		it('drops a message whose decrypt started for an index that closed before it ended, when another index is open', async () => {
+			const first = createBackend();
+			const second = createBackend();
+			let current: ISearchIndexBackend | undefined = first;
+			const writer = createSearchIndexWriter({ getBackend: () => current, delayMs: DELAY });
+
+			const indexDecrypted = writer.bindToOpenIndex();
+			current = second;
+			indexDecrypted(message('of-the-first-user'));
+			writer.index(message('of-the-second-user'));
+			await jest.advanceTimersByTimeAsync(DELAY);
+
+			expect(first.upsert).not.toHaveBeenCalled();
+			expect(second.upsert).toHaveBeenCalledTimes(1);
+			expect(second.upsert.mock.calls[0][0].map((doc) => doc.id)).toEqual(['of-the-second-user']);
+		});
+
+		it('drops a message whose decrypt started while no index was open', async () => {
+			const backend = createBackend();
+			let current: ISearchIndexBackend | undefined;
+			const writer = createSearchIndexWriter({ getBackend: () => current, delayMs: DELAY });
+
+			const indexDecrypted = writer.bindToOpenIndex();
+			current = backend;
+			indexDecrypted(message('m1'));
+			await jest.advanceTimersByTimeAsync(DELAY);
+
+			expect(backend.upsert).not.toHaveBeenCalled();
+		});
+
+		it('indexes the message when the same index is still open', async () => {
+			const backend = createBackend();
+			const writer = createSearchIndexWriter({ getBackend: () => backend, delayMs: DELAY });
+
+			writer.bindToOpenIndex()(message('m1'));
+			await jest.advanceTimersByTimeAsync(DELAY);
+
+			expect(backend.upsert.mock.calls[0][0].map((doc) => doc.id)).toEqual(['m1']);
+		});
+	});
+
+	describe('changes', () => {
+		it('tells the subscribers after an upsert and after a remove, and counts the changes', async () => {
+			const backend = createBackend();
+			const writer = createSearchIndexWriter({ getBackend: () => backend, delayMs: DELAY });
+			const listener = jest.fn();
+			const unsubscribe = writer.subscribe(listener);
+
+			writer.index(message('m1'));
+			await writer.flush();
+			await writer.remove(['m1']);
+
+			expect(listener).toHaveBeenCalledTimes(2);
+			expect(writer.getVersion()).toBe(2);
+			unsubscribe();
+			writer.index(message('m2'));
+			await writer.flush();
+			expect(listener).toHaveBeenCalledTimes(2);
+		});
+	});
+
+	describe('remove with throwOnError', () => {
+		it('rejects when the index rejected the remove, and resolves without it', async () => {
+			const backend = createBackend();
+			backend.remove.mockRejectedValue(new Error('remove failed'));
+			const onError = jest.fn();
+			const writer = createSearchIndexWriter({ getBackend: () => backend, delayMs: DELAY, onError });
+
+			await expect(writer.remove(['m1'], { throwOnError: true })).rejects.toThrow('remove failed');
+			await expect(writer.remove(['m2'])).resolves.toBeUndefined();
+			expect(onError).toHaveBeenCalledTimes(2);
+		});
+	});
 });

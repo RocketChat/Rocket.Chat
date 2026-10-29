@@ -9,6 +9,9 @@ const createWriter = () =>
 		remove: jest.fn<Promise<void>, Parameters<SearchIndexWriter['remove']>>(async () => undefined),
 		flush: jest.fn<Promise<void>, []>(async () => undefined),
 		dispose: jest.fn(),
+		bindToOpenIndex: jest.fn(),
+		subscribe: jest.fn(),
+		getVersion: jest.fn(),
 	}) as jest.Mocked<SearchIndexWriter>;
 
 const decrypted = (id: string): IMessage =>

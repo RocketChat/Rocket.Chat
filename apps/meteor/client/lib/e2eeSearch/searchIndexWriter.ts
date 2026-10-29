@@ -32,13 +32,23 @@ export type SearchIndexWriter = {
 	/** Queues the search document of a decrypted E2EE message. Other messages are ignored. */
 	index(message: IMessage): void;
 	/**
+	 * Returns an `index` bound to the index that is open now. It drops the message when that index is not open any more
+	 * (logout, another user). Call it before an asynchronous decrypt starts, so its result never reaches the next index.
+	 */
+	bindToOpenIndex(): (message: IMessage) => void;
+	/**
 	 * Removes messages from the index and from the queue. The remove runs after the calls that are in flight. A deleted
 	 * message (the default) is never indexed again. Use `{ deleted: false }` when the message stays and only its document
-	 * must go (for example, its files were pruned and it is not loaded to index again).
+	 * must go (for example, its files were pruned and it is not loaded to index again). With `throwOnError`, the returned
+	 * promise rejects when the index rejected a remove, so a caller can keep its checkpoint and try again.
 	 */
-	remove(ids: string[], options?: { deleted?: boolean }): Promise<void>;
+	remove(ids: string[], options?: { deleted?: boolean; throwOnError?: boolean }): Promise<void>;
 	/** Sends the queued documents now. */
 	flush(): Promise<void>;
+	/** Calls the listener after the index took documents or removed them. Returns the function that removes it. */
+	subscribe(listener: () => void): () => void;
+	/** Counts the changes that `subscribe` reports. */
+	getVersion(): number;
 	dispose(): void;
 };
 
@@ -79,6 +89,13 @@ export const createSearchIndexWriter = ({
 	let deletedIds = new Set<string>();
 	/** Upserts and removes run one after the other, so a remove never lands before an upsert of the same message. */
 	let calls: Promise<void> = Promise.resolve();
+	let version = 0;
+	const listeners = new Set<() => void>();
+
+	const changed = () => {
+		version++;
+		for (const listener of [...listeners]) listener();
+	};
 
 	const enqueue = (call: () => Promise<void>): Promise<void> => {
 		calls = calls.then(call, call);
@@ -113,6 +130,7 @@ export const createSearchIndexWriter = ({
 			for (const call of toCalls(docs)) {
 				await upsert(backend, call);
 			}
+			if (getBackend() === backend) changed();
 		});
 	};
 
@@ -150,7 +168,7 @@ export const createSearchIndexWriter = ({
 		}
 	};
 
-	const remove = (ids: string[], { deleted = true }: { deleted?: boolean } = {}) => {
+	const remove = (ids: string[], { deleted = true, throwOnError = false }: { deleted?: boolean; throwOnError?: boolean } = {}) => {
 		if (deleted) rememberDeleted(ids);
 
 		const backend = getBackend();
@@ -160,40 +178,59 @@ export const createSearchIndexWriter = ({
 			ids.forEach((id) => queue.delete(id));
 		}
 
-		return enqueue(async () => {
+		let failure: { error: unknown } | undefined;
+		const removing = enqueue(async () => {
 			for (let start = 0; start < ids.length; start += MAX_DOCS_PER_CALL) {
 				if (getBackend() !== backend) return;
 				try {
 					await backend.remove(ids.slice(start, start + MAX_DOCS_PER_CALL));
 				} catch (error) {
+					failure ??= { error };
 					onError(error);
 				}
 			}
+			if (getBackend() === backend) changed();
+		});
+		if (!throwOnError) return removing;
+		return removing.then(() => {
+			if (failure) throw failure.error;
 		});
 	};
 
+	const index = (message: IMessage, backend: ISearchIndexBackend | undefined) => {
+		if (!backend || getBackend() !== backend) return;
+
+		const doc = toSearchDoc(message);
+		if (!doc || deletedIds.has(doc.id) || !isRoomSubscribed(doc.rid)) return;
+
+		if (queueBackend !== backend) {
+			queue = new Map();
+			queueBackend = backend;
+		}
+
+		queue.delete(doc.id);
+		queue.set(doc.id, doc);
+
+		if (timer === undefined) {
+			timer = setTimeout(() => void flush(), delayMs);
+		}
+	};
+
 	return {
-		index(message) {
+		index: (message) => index(message, getBackend()),
+		bindToOpenIndex() {
 			const backend = getBackend();
-			if (!backend) return;
-
-			const doc = toSearchDoc(message);
-			if (!doc || deletedIds.has(doc.id) || !isRoomSubscribed(doc.rid)) return;
-
-			if (queueBackend !== backend) {
-				queue = new Map();
-				queueBackend = backend;
-			}
-
-			queue.delete(doc.id);
-			queue.set(doc.id, doc);
-
-			if (timer === undefined) {
-				timer = setTimeout(() => void flush(), delayMs);
-			}
+			return (message) => index(message, backend);
 		},
 		flush,
 		remove,
+		subscribe(listener) {
+			listeners.add(listener);
+			return () => {
+				listeners.delete(listener);
+			};
+		},
+		getVersion: () => version,
 		dispose() {
 			clearTimer();
 			queue = new Map();

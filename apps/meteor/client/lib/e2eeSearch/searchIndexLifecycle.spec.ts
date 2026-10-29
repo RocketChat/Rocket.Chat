@@ -28,6 +28,12 @@ beforeAll(async () => {
 	privateKey = (await generate()).privateKey;
 });
 
+const disposers: Array<() => void> = [];
+
+afterEach(() => {
+	disposers.splice(0).forEach((dispose) => dispose());
+});
+
 const setup = async (
 	subscriptions: Subscription[] = [{ rid: 'r1', encrypted: true }],
 	{ userId = 'u1', whenRoomsReady }: { userId?: string; whenRoomsReady?: () => Promise<void> } = {},
@@ -71,6 +77,12 @@ const setup = async (
 	};
 
 	const searchIds = async (text: string) => (await backend.search({ text })).map((hit) => hit.id);
+
+	disposers.push(() => {
+		runtime.dispose();
+		session.dispose();
+		writer.dispose();
+	});
 
 	await login();
 

@@ -6,6 +6,7 @@ import {
 	backfillMonthsToMaxAgeMs,
 	createSearchIndexRuntime,
 	createSyncMessagesFetcher,
+	REINDEX_AFTER_MS,
 	searchIndexTuningFromSettings,
 	toSearchIndexRooms,
 } from './searchIndexRuntime';
@@ -200,6 +201,97 @@ describe('createSearchIndexRuntime', () => {
 	});
 });
 
+describe('createSearchIndexRuntime after the server dropped old deletion records', () => {
+	const DAY = 24 * 60 * 60 * 1000;
+
+	const setup = async (syncedAt: number | undefined, { failRemove = false } = {}) => {
+		const backend = createFakeSearchIndexBackend();
+		await backend.open({ userId: 'u1' });
+		await backend.upsert([
+			{ id: 'm1', rid: 'r1', uid: 'u2', username: 'bob', ts: NOW - DAY, updatedAt: NOW - DAY, kind: 'text', body: 'deleted long ago' },
+		]);
+		await backend.setRoomState('r1', { lastUpdate: NOW - 40 * DAY, backfillDone: true });
+		if (failRemove) jest.spyOn(backend, 'removeRoom').mockRejectedValue(new Error('disk full'));
+
+		const saved: number[] = [];
+		const syncTime = { read: () => syncedAt, write: (at: number) => saved.push(at) };
+		const session = createSessionStub();
+		const schedulers: jest.Mocked<SearchIndexScheduler>[] = [];
+		const onError = jest.fn();
+		const runtime = createSearchIndexRuntime({
+			session,
+			writer: { remove: async () => undefined, flush: async () => undefined },
+			syncMessages: jest.fn(),
+			decryptMessage: async (message) => message,
+			getRooms: () => [],
+			syncTime,
+			now: () => NOW,
+			onError,
+			createScheduler: () => {
+				const scheduler = createSchedulerStub();
+				scheduler.getProgress.mockReturnValue({ status: 'indexing', rooms: 1, roomsDone: 0, indexed: 0, pendingDecrypt: 0 });
+				schedulers.push(scheduler);
+				return scheduler;
+			},
+		});
+		const roomsAtStart: string[][] = [];
+		session.set(backend);
+		schedulers[0].start.mockImplementation(() => {
+			void backend.listRooms().then((rids) => roomsAtStart.push(rids));
+		});
+		await runtime.whenSettled();
+
+		const reportDone = () => {
+			schedulers[0].getProgress.mockReturnValue({ status: 'done', rooms: 1, roomsDone: 1, indexed: 0, pendingDecrypt: 0 });
+			for (const [listener] of schedulers[0].subscribe.mock.calls) listener();
+		};
+		return { backend, runtime, scheduler: schedulers[0], saved, roomsAtStart, reportDone, onError };
+	};
+
+	it('empties every room before the crawler starts when the last full catch-up is older than the deletion records', async () => {
+		const { backend, scheduler, roomsAtStart } = await setup(NOW - REINDEX_AFTER_MS - DAY);
+
+		expect(scheduler.start).toHaveBeenCalledTimes(1);
+		expect(roomsAtStart).toEqual([[]]);
+		expect(await backend.getRoomState('r1')).toBeUndefined();
+		expect(await backend.search({ text: 'deleted', rid: 'r1', order: 'recent', limit: 10 })).toEqual([]);
+	});
+
+	it('empties every room of an index with no known catch-up time', async () => {
+		const { backend } = await setup(undefined);
+
+		expect(await backend.listRooms()).toEqual([]);
+	});
+
+	it('keeps the rooms after a recent catch-up', async () => {
+		const { backend, scheduler } = await setup(NOW - DAY);
+
+		expect(scheduler.start).toHaveBeenCalledTimes(1);
+		expect(await backend.listRooms()).toEqual(['r1']);
+	});
+
+	it('saves the start time of the catch-up when the crawler has nothing left to do', async () => {
+		const { saved, reportDone } = await setup(NOW - DAY);
+		expect(saved).toEqual([]);
+
+		reportDone();
+		reportDone();
+
+		expect(saved).toEqual([NOW]);
+	});
+
+	it('saves no time when the rooms could not be emptied, so the next open tries again', async () => {
+		const { scheduler, saved, reportDone, onError, runtime } = await setup(undefined, { failRemove: true });
+
+		expect(onError).toHaveBeenCalled();
+		expect(scheduler.start).toHaveBeenCalledTimes(1);
+		runtime.onReconnect();
+		reportDone();
+
+		expect(saved).toEqual([]);
+	});
+});
+
 describe('createSearchIndexRuntime with the admin depth limit', () => {
 	const MONTH = YEAR / 12;
 
@@ -314,9 +406,12 @@ describe('createSearchIndexRuntime with the admin tuning', () => {
 	};
 
 	it('uses the default pause, page size, back-off and no message limit without tuning', async () => {
-		const { counts, gaps } = await crawl(undefined);
+		const { counts, gaps, backfillDone } = await crawl(undefined);
 
-		expect(counts.slice(0, 3)).toEqual([100, 100, 100]);
+		// A failed page, the 300 messages of backfill in pages of 100 and an empty last page, then the catch-up: no message
+		// limit stops the backfill.
+		expect(counts).toEqual([100, 100, 100, 100, 100, 100]);
+		expect(backfillDone).toBe(true);
 		// The first request fails: the back-off starts between 5 and 10 seconds. Then the pause is 12 seconds.
 		expect(gaps[0]).toBeGreaterThanOrEqual(5000);
 		expect(gaps[0]).toBeLessThanOrEqual(10_000);

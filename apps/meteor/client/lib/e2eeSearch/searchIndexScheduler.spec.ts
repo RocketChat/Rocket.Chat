@@ -449,6 +449,121 @@ describe('createSearchIndexScheduler', () => {
 		});
 	});
 
+	describe('room list changes', () => {
+		it('catches up an idle room whose activity moved, after the refresh interval, with no reconnect', async () => {
+			const rooms = [{ rid: 'recent', lastActivityAt: NOW }];
+			const { scheduler, server, indexed, requests } = await setup({ rooms, messagesPerRoom: 5 });
+
+			scheduler.start();
+			await jest.advanceTimersByTimeAsync(60_000);
+			expect(scheduler.getProgress().status).toBe('done');
+			const sent = requests.length;
+
+			server.send('new1', 'recent');
+			rooms[0] = { rid: 'recent', lastActivityAt: server.now() };
+			await jest.advanceTimersByTimeAsync(5 * 60_000 + 10_000);
+
+			expect(requests.length).toBeGreaterThan(sent);
+			expect(indexed.has('new1')).toBe(true);
+			scheduler.stop();
+		});
+
+		it('sends no request on the refresh when no room changed', async () => {
+			const rooms = [{ rid: 'recent', lastActivityAt: NOW }];
+			const { scheduler, requests } = await setup({ rooms, messagesPerRoom: 5 });
+
+			scheduler.start();
+			await jest.advanceTimersByTimeAsync(60_000);
+			const sent = requests.length;
+			await jest.advanceTimersByTimeAsync(15 * 60_000);
+
+			expect(requests).toHaveLength(sent);
+			scheduler.stop();
+		});
+
+		it('indexes a room that the user joined while the scheduler was idle', async () => {
+			const rooms = [{ rid: 'recent', lastActivityAt: NOW }];
+			const { scheduler, server, indexed } = await setup({ rooms, messagesPerRoom: 5 });
+
+			scheduler.start();
+			await jest.advanceTimersByTimeAsync(60_000);
+			for (let i = 0; i < 3; i++) server.addHistory(`joined-m${i}`, 'joined', NOW - (i + 1) * HOUR);
+			rooms.push({ rid: 'joined', lastActivityAt: NOW - HOUR });
+			await jest.advanceTimersByTimeAsync(5 * 60_000 + 10_000);
+
+			expect(['joined-m0', 'joined-m1', 'joined-m2'].every((id) => indexed.has(id))).toBe(true);
+			scheduler.stop();
+		});
+
+		it('indexes a room again after the user left it and joined it again', async () => {
+			const rooms = [{ rid: 'recent', lastActivityAt: NOW }];
+			const { scheduler, indexed, roomsOf } = await setup({ rooms, messagesPerRoom: 5 });
+
+			scheduler.start();
+			await jest.advanceTimersByTimeAsync(60_000);
+			const left = rooms.splice(0);
+			await scheduler.removeRoom('recent');
+			indexed.clear();
+			await jest.advanceTimersByTimeAsync(5 * 60_000 + 10_000);
+			const sentWhileLeft = roomsOf().length;
+
+			rooms.push(...left);
+			await jest.advanceTimersByTimeAsync(5 * 60_000 + 30_000);
+
+			expect(roomsOf().length).toBeGreaterThan(sentWhileLeft);
+			expect(indexed.size).toBe(5);
+			scheduler.stop();
+		});
+
+		it('catches up only the requested room', async () => {
+			const { scheduler, requests } = await setup({ rooms: twoRooms, messagesPerRoom: 5 });
+
+			scheduler.start();
+			await jest.advanceTimersByTimeAsync(60_000);
+			const sent = requests.length;
+			scheduler.requestCatchUp(['old']);
+			await jest.advanceTimersByTimeAsync(10_000);
+
+			expect(requests.slice(sent).map(({ params }) => params.roomId)).toEqual(['old', 'old']);
+			scheduler.stop();
+		});
+	});
+
+	describe('rooms without their key', () => {
+		it('keeps the backfill checkpoint of a room whose key is missing while other rooms have work, and reads the page again when the key arrives', async () => {
+			const { scheduler, missingKeys, indexed, backend, roomsOf } = await setup({ rooms: twoRooms, messagesPerRoom: 25 });
+			missingKeys.add('recent');
+
+			scheduler.start();
+			await jest.advanceTimersByTimeAsync(REQUEST_MS);
+			expect(roomsOf()).toEqual(['recent']);
+			expect(await backend.getRoomState('recent')).toBeUndefined();
+
+			await jest.advanceTimersByTimeAsync(2 * (PAUSE_MS + REQUEST_MS));
+			expect(roomsOf().slice(1)).toEqual(['old', 'old']);
+
+			missingKeys.clear();
+			scheduler.retryPendingDecrypt('recent');
+			await jest.advanceTimersByTimeAsync(60_000);
+
+			expect(scheduler.getProgress()).toMatchObject({ status: 'done', roomsDone: 2, pendingDecrypt: 0 });
+			expect(indexed.size).toBe(50);
+			scheduler.stop();
+		});
+
+		it('indexes the pages of a room whose key never arrives once nothing else is left, so its older history is not blocked', async () => {
+			const { scheduler, missingKeys, backend } = await setup({ rooms: [{ rid: 'recent', lastActivityAt: NOW }], messagesPerRoom: 25 });
+			missingKeys.add('recent');
+
+			scheduler.start();
+			await jest.advanceTimersByTimeAsync(60_000);
+
+			expect(await backend.getRoomState('recent')).toMatchObject({ backfillDone: true });
+			expect(scheduler.getProgress()).toMatchObject({ status: 'done', pendingDecrypt: 25 });
+			scheduler.stop();
+		});
+	});
+
 	describe('progress', () => {
 		it('counts the rooms whose backfill is done and the indexed messages, and tells the subscribers', async () => {
 			const { scheduler } = await setup({ rooms: twoRooms, messagesPerRoom: 15 });
