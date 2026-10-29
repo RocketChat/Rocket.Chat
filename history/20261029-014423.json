@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-10-29T01:44:09Z",
+  "tag": "develop",
+  "total": 2975347346,
+  "services": {
+    "account-service": 148049981,
+    "account-service-fips": 124128009,
+    "authorization-service": 147070308,
+    "authorization-service-fips": 123150150,
+    "ddp-streamer-service": 168852977,
+    "ddp-streamer-service-fips": 144940943,
+    "omnichannel-transcript-service": 180932694,
+    "omnichannel-transcript-service-fips": 157008866,
+    "presence-service": 149355363,
+    "presence-service-fips": 125432292,
+    "queue-worker-service": 180903243,
+    "queue-worker-service-fips": 156980836,
+    "rocketchat": 316163026,
+    "rocketchat-cov": 323688255,
+    "rocketchat-fips": 287012415,
+    "xmpp-server-service": 132798755,
+    "xmpp-server-service-fips": 108879233
+  },
+  "commit": "969fc3bfd852c2a1f91f321527c50d37ed7c408a"
+}
