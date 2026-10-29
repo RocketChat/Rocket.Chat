@@ -2761,6 +2761,62 @@ const generateNavBarStyles = () => `.rcx-navbar-divider.rcx-divider[class] {
 	border-color: ${strokeColor('medium')};
 }`;
 
+// The Sidepanel family
+const spLight = strokeColor('light');
+
+const spSection = { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: spacing('x8')! };
+
+const generateSidepanel = () =>
+	sbFrame('SidepanelFrame', 'div', {
+		display: 'flex',
+		flexDirection: 'column',
+		flexGrow: 1,
+		flexShrink: 0,
+		flexBasis: 'auto',
+		height: '100%',
+		color: fontColor('default'),
+		borderTopWidth: 0,
+		borderRightWidth: sbBorder,
+		borderBottomWidth: 0,
+		borderLeftWidth: sbBorder,
+		borderStyle: 'solid',
+		borderColor: spLight,
+		backgroundColor: surfaceColor('sidebar'),
+	});
+
+const generateSidepanelSection = () => sbFrame('SidepanelSectionFrame', 'div', { ...spSection, padding: spacing('x16')! });
+
+const generateSidepanelHeader = () =>
+	sbFrame('SidepanelHeaderFrame', 'div', { ...spSection, height: size('x44')!, paddingInline: spacing('x16')! });
+
+const generateSidepanelHeaderTitle = () =>
+	sbFrame('SidepanelHeaderTitleFrame', 'div', {
+		overflow: 'hidden',
+		whiteSpace: 'nowrap',
+		textOverflow: 'ellipsis',
+		color: fontColor('titles-labels'),
+		...font('h5'),
+	});
+
+// The dividers and the list are `Item` parts, so their values are rules over the frames'
+const generateSidepanelStyles = () => `.rcx-sidepanel--divider {
+	border-color: ${spLight};
+}
+
+.rcx-sidepanel--divider.rcx-divider[class] {
+	margin-block: -2px 0;
+
+	border-color: ${spLight};
+}
+
+.rcx-sidepanel--divider.rcx-item-divider::before {
+	border-color: ${spLight};
+}
+
+.rcx-sidepanel-list[class] {
+	padding-block: ${spacing('x8')};
+}`;
+
 const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
 	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
@@ -2855,6 +2911,11 @@ const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: sbFile('NavBar/NavBar.tsx'), generate: generateNavBar },
 	{ file: sbFile('NavBar/NavBarSection.tsx'), generate: generateNavBarSection },
 	{ file: sbFile('NavBar/NavBar.styles.css'), generate: generateNavBarStyles, css: true },
+	{ file: sbFile('Sidepanel/Sidepanel.tsx'), generate: generateSidepanel },
+	{ file: sbFile('Sidepanel/SidepanelSection.tsx'), generate: generateSidepanelSection },
+	{ file: sbFile('Sidepanel/SidepanelHeader.tsx'), generate: generateSidepanelHeader },
+	{ file: sbFile('Sidepanel/SidepanelHeaderTitle.tsx'), generate: generateSidepanelHeaderTitle },
+	{ file: sbFile('Sidepanel/Sidepanel.styles.css'), generate: generateSidepanelStyles, css: true },
 ];
 
 for (const [dir, control] of [
