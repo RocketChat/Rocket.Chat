@@ -9,6 +9,8 @@ declare module 'meteor/webapp' {
 		// Present in Meteor 3's generated types but missing from @types/meteor.
 		const rawHandlers: express.Application;
 
+		const expressApp: express.Application;
+
 		function setInlineScriptsAllowed(allowed: boolean): Promise<void>;
 
 		// Meteor documents it as overridable, to change how the server listens.

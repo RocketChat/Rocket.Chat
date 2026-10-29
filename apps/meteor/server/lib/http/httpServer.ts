@@ -20,7 +20,8 @@ httpApp.use(baseMiddlewares.middleware);
 export const addBaseMiddlewares = baseMiddlewares.add;
 
 httpApp.notFound((c) => {
-	WebApp.httpServer.emit('request', c.env.incoming, c.env.outgoing);
+	// not through Meteor's own server, whose request listeners would reset the socket timeout set below
+	WebApp.expressApp(c.env.incoming, c.env.outgoing);
 	return RESPONSE_ALREADY_SENT;
 });
 

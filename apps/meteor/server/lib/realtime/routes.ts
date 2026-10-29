@@ -5,7 +5,13 @@ import { addUpgradeHandler, httpApp } from '../http/httpServer';
 
 addUpgradeHandler(handleDdpUpgrade);
 
-const sockJsPath = `${__meteor_runtime_config__.ROOT_URL_PATH_PREFIX || ''}/sockjs`;
+const pathPrefix = __meteor_runtime_config__.ROOT_URL_PATH_PREFIX || '';
+const sockJsPath = `${pathPrefix}/sockjs`;
+
+// the websocket endpoint asked for without an upgrade gets SockJS's answer
+for (const path of [`${pathPrefix}/websocket`, `${pathPrefix}/websocket/`]) {
+	httpApp.all(path, (c) => c.text('Can "Upgrade" only to "WebSocket".', 400));
+}
 
 // SockJS clients ask for the server's transports first; only the websocket one is served.
 httpApp.all(`${sockJsPath}/info`, (c) =>
