@@ -1,9 +1,11 @@
 import type { HTMLAttributes } from 'react';
 
-export type MessageLeftContainerProps = HTMLAttributes<HTMLDivElement>;
+import ItemMedia from '../Item/ItemMedia';
+
+export type MessageLeftContainerProps = Omit<HTMLAttributes<HTMLDivElement>, 'is'>;
 
 const MessageLeftContainer = (props: MessageLeftContainerProps) => (
-	<div className='rcx-box rcx-box--full rcx-message-container rcx-message-container--left' {...props} />
+	<ItemMedia className='rcx-box rcx-box--full rcx-message-container rcx-message-container--left' {...props} />
 );
 
 export default MessageLeftContainer;
