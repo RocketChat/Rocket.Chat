@@ -40,6 +40,10 @@ describe('applyLoginServiceConfigurationChange', () => {
 		applyLoginServiceConfigurationChange(collection, { clientAction: 'inserted', id: 'google', data: record });
 		expect([...collection.entries()]).toEqual([['google', record]]);
 
+		const updated = { _id: 'google', service: 'google' };
+		applyLoginServiceConfigurationChange(collection, { clientAction: 'updated', id: 'google', data: updated });
+		expect([...collection.entries()]).toEqual([['google', updated]]);
+
 		applyLoginServiceConfigurationChange(collection, { clientAction: 'removed', id: 'google' });
 		expect([...collection.entries()]).toEqual([]);
 	});
