@@ -105,6 +105,19 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		return this.findPaginated<T, O>(query, options);
 	}
 
+	findPaginatedVisibleByMention<
+		T extends Document = IMessage,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(username: IUser['username'], roomIds: IRoom['_id'][], options?: O): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
+		const query: Filter<IMessage> = {
+			'_hidden': { $ne: true },
+			'mentions.username': username,
+			rid: { $in: roomIds },
+		};
+
+		return this.findPaginated<T, O>(query, options);
+	}
+
 	findStarredByUserAtRoom<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		userId: IUser['_id'],
 		roomId: IRoom['_id'],
@@ -114,6 +127,20 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			'_hidden': { $ne: true },
 			'starred._id': userId,
 			'rid': roomId,
+		};
+
+		return this.findPaginated<T, O>(query, options);
+	}
+
+	findStarredByUser<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		userId: IUser['_id'],
+		roomIds: IRoom['_id'][],
+		options?: O,
+	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
+		const query: Filter<IMessage> = {
+			'_hidden': { $ne: true },
+			'starred._id': userId,
+			rid: { $in: roomIds },
 		};
 
 		return this.findPaginated<T, O>(query, options);
