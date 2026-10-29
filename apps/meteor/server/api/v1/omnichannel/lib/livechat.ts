@@ -6,6 +6,7 @@ import { Meteor } from 'meteor/meteor';
 
 import { callbacks } from '../../../../lib/callbacks';
 import { normalizeAgent } from '../../../../lib/omnichannel/Helper';
+import { getLivechatMessageCharacterLimit } from '../../../../lib/omnichannel/getLivechatMessageCharacterLimit';
 import { getInitSettings } from '../../../../lib/omnichannel/settings';
 
 async function findTriggers(): Promise<Pick<ILivechatTrigger, '_id' | 'actions' | 'conditions' | 'runOnce'>[]> {
@@ -131,9 +132,7 @@ export async function settings({ businessUnit = '', userId }: { businessUnit?: s
 			showConnecting: initSettings.Livechat_Show_Connecting,
 			agentHiddenInfo: initSettings.Livechat_show_agent_info === false,
 			clearLocalStorageWhenChatEnded: initSettings.Livechat_clear_local_storage_when_chat_ended,
-			limitTextLength:
-				initSettings.Livechat_enable_message_character_limit &&
-				(initSettings.Livechat_message_character_limit || initSettings.Message_MaxAllowedSize),
+			limitTextLength: getLivechatMessageCharacterLimit() ?? false,
 			hiddenSystemMessages: initSettings.Livechat_hide_system_messages,
 			livechatLogo: initSettings.Assets_livechat_widget_logo,
 			hideWatermark: initSettings.Livechat_hide_watermark || false,
