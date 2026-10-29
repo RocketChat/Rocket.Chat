@@ -41,3 +41,39 @@ it('mutates its value to true if the media query matches', async () => {
 
 	expect(result.current).toEqual([true, false]);
 });
+
+it('returns the matches of the new queries when the queries change', () => {
+	const { result, rerender } = renderHook(({ queries }) => useMediaQueries(...queries), {
+		initialProps: { queries: ['(max-width: 968px)'] },
+	});
+
+	expect(result.current).toEqual([false]);
+
+	rerender({ queries: ['(max-width: 1024px)'] });
+
+	expect(result.current).toEqual([true]);
+
+	rerender({ queries: ['(max-width: 1024px)', '(max-width: 968px)'] });
+
+	expect(result.current).toEqual([true, false]);
+});
+
+it('reads the current matches when a change event was missed', () => {
+	const { result, rerender } = renderHook(() => useMediaQueries('(max-width: 968px)'));
+
+	expect(result.current).toEqual([false]);
+
+	// detaches the hook's listeners, as when the query changes before they are attached
+	jest.mocked(window.matchMedia).mock.results.forEach(({ value }) => {
+		const mediaQueryList = value as MediaQueryList;
+		jest.mocked(mediaQueryList.addEventListener).mock.calls.forEach((call: unknown[]) => {
+			const [type, listener] = call as [string, EventListener];
+			mediaQueryList.removeEventListener(type, listener);
+		});
+	});
+	setViewport({ width: 968 });
+
+	rerender();
+
+	expect(result.current).toEqual([true]);
+});
