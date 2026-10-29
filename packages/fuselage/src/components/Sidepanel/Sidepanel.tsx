@@ -17,7 +17,6 @@ const SidepanelFrame = styled(View, {
 	alignItems: 'normal',
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	flexGrow: 1,
 	flexBasis: 'auto',
 	height: '100%',

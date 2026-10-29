@@ -17,7 +17,6 @@ const MessageReactionsContainerFrame = styled(View, {
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	flexWrap: 'wrap',
 	justifyContent: 'flex-start',
 	margin: '-2px',

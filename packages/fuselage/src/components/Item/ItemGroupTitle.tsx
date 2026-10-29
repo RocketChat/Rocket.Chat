@@ -25,7 +25,6 @@ const ItemGroupTitleFrame = styled(View, {
 	alignItems: 'normal',
 	minWidth: 0,
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	overflow: 'hidden',
 	whiteSpace: 'nowrap',
 	textOverflow: 'ellipsis',

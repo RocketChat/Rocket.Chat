@@ -19,7 +19,6 @@ const MessageBodyFrame = styled(View, {
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	overflow: 'hidden',
 	marginBlock: '2px',
 	wordBreak: 'break-word',

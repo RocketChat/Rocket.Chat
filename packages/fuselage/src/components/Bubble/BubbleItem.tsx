@@ -33,7 +33,6 @@ const BubbleItemFrame = styled(View, {
 	fontWeight: 700,
 	lineHeight: '1rem',
 	letterSpacing: '0rem',
-	boxSizing: 'content-box',
 	variants: {
 		look: {
 			primary: {

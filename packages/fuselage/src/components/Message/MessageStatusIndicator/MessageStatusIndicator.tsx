@@ -15,7 +15,6 @@ const MessageStatusIndicatorFrame = styled(View, {
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	marginBlock: '2px',
 	userSelect: 'none',
 });

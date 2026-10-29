@@ -17,7 +17,6 @@ const MessageMetricsContentWrapperFrame = styled(View, {
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	marginInline: '-4px',
 });
 
