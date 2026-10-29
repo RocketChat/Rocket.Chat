@@ -72,7 +72,7 @@ export const AppLogsFilter = ({ appId, expandAll, collapseAll, refetchLogs, isLo
 				<>
 					<Box display='flex' flexDirection='column' flexGrow={1}>
 						<Label htmlFor={timeField}>{t('Time')}</Label>
-						<Controller control={control} name='timeFilter' render={({ field }) => <TimeFilterSelect id={timeField} {...field} />} />
+						<TimeFilterSelect id={timeField} />
 					</Box>
 					<Box display='flex' flexDirection='column' flexGrow={1}>
 						<Label htmlFor={instanceField}>{t('Instance')}</Label>
