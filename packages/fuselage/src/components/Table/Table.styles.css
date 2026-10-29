@@ -1,0 +1,46 @@
+/* Doubled classes outrank the frames' atomic classes (two classes) wherever the stylesheets are ordered */
+.rcx-table {
+	border-spacing: 0 2px;
+	border-collapse: collapse;
+}
+
+.rcx-table.rcx-table--fixed {
+	table-layout: fixed;
+}
+
+.rcx-table--striped .rcx-table__row:nth-child(even) {
+	background-color: var(--rcx-color-surface-tint, #f7f8fa);
+}
+
+.rcx-table--sticky .rcx-table__cell--header.rcx-table__cell--header {
+	position: sticky;
+	z-index: 10;
+	top: 0;
+
+	background-color: var(--rcx-color-surface-light, #ffffff);
+}
+
+.rcx-table__cell--header::after {
+	position: absolute;
+	inset-inline: 0;
+	bottom: 0;
+	left: 0;
+	right: 0;
+
+	display: flex;
+
+	content: '';
+	border-block-end: 1px solid var(--rcx-color-stroke-light, #cbced1);
+}
+
+.rcx-table__cell--row-header {
+	word-break: break-word;
+}
+
+.rcx-table__selection-button.rcx-table__selection-button {
+	flex-shrink: 0;
+}
+
+:is(.rcx-table, .rcx-table__wrapper, .rcx-table__head, .rcx-table__body, .rcx-table__foot, .rcx-table__row, .rcx-table__cell, .rcx-table__selection)[hidden][hidden] {
+	display: none;
+}
