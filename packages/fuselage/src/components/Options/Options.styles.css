@@ -1,0 +1,5 @@
+/* While the pointer is over the list, the keyboard's focused option stops looking focused unless the pointer is on it */
+.rcx-options:hover .rcx-option--focus.rcx-option--focus:not(.rcx-option--selected):not(:hover),
+.rcx-options:hover .rcx-item--focused.rcx-item--focused:not(.rcx-item--selected):not(:hover) {
+	background: initial;
+}
