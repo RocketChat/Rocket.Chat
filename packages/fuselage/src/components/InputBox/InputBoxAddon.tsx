@@ -23,9 +23,7 @@ const InputBoxAddonFrame = styled(View, {
  * An addon for the input box.
  */
 function InputBoxAddon({ ref, children, ...props }: InputBoxAddonProps) {
-	return (
-		<InputBoxAddonFrame render={<Box is='span' rcx-input-box__addon {...props} ref={ref} />}>{children}</InputBoxAddonFrame>
-	);
+	return <InputBoxAddonFrame render={<Box is='span' rcx-input-box__addon {...props} ref={ref} />}>{children}</InputBoxAddonFrame>;
 }
 
 export default InputBoxAddon;

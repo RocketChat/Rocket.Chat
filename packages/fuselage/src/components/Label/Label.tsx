@@ -69,7 +69,9 @@ function Label({ ref, disabled, is, required, children, className, ...props }: L
 			>
 				{children}
 				{required && (
-					<LabelRequiredFrame render={<Box is='span' rcx-label__required marginInlineStart='x4' aria-hidden='true' />}>*</LabelRequiredFrame>
+					<LabelRequiredFrame render={<Box is='span' rcx-label__required marginInlineStart='x4' aria-hidden='true' />}>
+						*
+					</LabelRequiredFrame>
 				)}
 			</LabelFrame>
 		</LabelContext.Provider>

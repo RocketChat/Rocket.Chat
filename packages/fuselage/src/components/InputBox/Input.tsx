@@ -133,7 +133,13 @@ export const InputBoxWrapperContext = createContext(false);
 
 const UNDECORATED = 'rcx-input-box--undecorated';
 
-function Input<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>({ is = 'input', ref, className, children, ...props }: InputProps<T>) {
+function Input<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>({
+	is = 'input',
+	ref,
+	className,
+	children,
+	...props
+}: InputProps<T>) {
 	const {
 		'rcx-input-box--type': type,
 		'rcx-input-box--multiple': multiple,
@@ -146,7 +152,7 @@ function Input<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaElem
 	const undecorated = Boolean(undecoratedProp) || (typeof className === 'string' && className.split(/\s+/).includes(UNDECORATED));
 	const wrapped = useContext(InputBoxWrapperContext);
 
-	const look = undecorated ? `${wrapped ? 'wrapped' : 'plain'}${small ? '-small' : ''}` : small ? 'small' : 'decorated';
+	const look = (undecorated && `${wrapped ? 'wrapped' : 'plain'}${small ? '-small' : ''}`) || (small && 'small') || 'decorated';
 	const kind = (type === 'textarea' && 'textarea') || (type === 'select' && (multiple ? 'multiple' : 'select')) || 'text';
 
 	return (
