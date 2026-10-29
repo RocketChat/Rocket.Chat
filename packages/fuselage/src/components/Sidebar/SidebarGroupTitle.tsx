@@ -2,7 +2,7 @@ import type { AriaAttributes, HTMLAttributes, ReactNode } from 'react';
 
 import { cx } from '../../helpers/composeClassNames';
 import { Chevron } from '../Chevron';
-import { ItemGroupHeader, ItemGroupTitle } from '../Item';
+import { ItemGroupHeader, ItemGroupTitle, type ItemGroupHeaderProps, type ItemGroupTitleProps } from '../Item';
 
 export type SidebarGroupTitleProps = {
 	expanded?: boolean;
@@ -11,8 +11,12 @@ export type SidebarGroupTitleProps = {
 	titleId?: string;
 	badge?: ReactNode;
 	menu?: ReactNode;
-	barProps?: AriaAttributes;
-} & Omit<HTMLAttributes<HTMLDivElement>, 'is'>;
+	barProps?: Pick<
+		ItemGroupTitleProps,
+		'aria-controls' | 'aria-expanded' | 'aria-disabled' | 'aria-labelledby' | 'tabIndex' | 'onClick' | 'onKeyDown'
+	>;
+	role?: ItemGroupTitleProps['role'];
+} & Omit<ItemGroupHeaderProps, 'is' | 'inset' | 'title' | 'role'>;
 
 /**
  * The header of a sidebar group. It renders an `ItemGroupHeader`, so its menu reveals on hover like a row's.
