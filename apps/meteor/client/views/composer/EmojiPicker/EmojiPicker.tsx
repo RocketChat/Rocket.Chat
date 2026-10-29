@@ -10,7 +10,7 @@ import {
 	useMergedRefsV2,
 	useIsVisible,
 } from '@rocket.chat/ui-client';
-import { useTranslation, usePermission, useRoute } from '@rocket.chat/ui-contexts';
+import { useTranslation, usePermission } from '@rocket.chat/ui-contexts';
 import { useEmojiRegistry } from '@rocket.chat/ui-emoji-picker';
 import type { ChangeEvent, KeyboardEvent, MouseEvent, RefObject } from 'react';
 import { useLayoutEffect, useState, useEffect, useRef } from 'react';
@@ -30,9 +30,10 @@ export type EmojiPickerProps = {
 	reference: Element;
 	onClose: () => void;
 	onPickEmoji: (emoji: string) => void;
+	onAddCustomEmoji: () => void;
 };
 
-const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
+const EmojiPicker = ({ reference, onClose, onPickEmoji, onAddCustomEmoji }: EmojiPickerProps) => {
 	const t = useTranslation();
 
 	const ref = useRef<Element | null>(reference);
@@ -48,7 +49,6 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 	const emojiCategories = getCategoriesList(emojiRegistry);
 
 	const canManageEmoji = usePermission('manage-emoji');
-	const customEmojiRoute = useRoute('emoji-custom');
 
 	const [searching, setSearching] = useState(false);
 	const [searchTerm, setSearchTerm] = useState('');
@@ -193,7 +193,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 	};
 
 	const handleGoToAddCustom = () => {
-		customEmojiRoute.push();
+		onAddCustomEmoji();
 		onClose();
 	};
 
