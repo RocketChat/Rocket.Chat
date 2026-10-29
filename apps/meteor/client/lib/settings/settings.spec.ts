@@ -78,6 +78,8 @@ describe('settings.observe', () => {
 		PublicSettings.state.replaceAll([createSetting('Setting_A', 1), createSetting('Setting_B', 2), createSetting('Setting_C', 1)]);
 
 		expect(callback).toHaveBeenCalledTimes(2);
+		expect(callback).toHaveBeenNthCalledWith(1, 'Setting_B', 2);
+		expect(callback).toHaveBeenNthCalledWith(2, 'Setting_C', 1);
 		stop();
 	});
 
