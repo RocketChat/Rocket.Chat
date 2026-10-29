@@ -37,13 +37,16 @@ registerAccountMethods(ddpServer, lifecycle, sessionAccounts);
 
 lifecycle.on('connected', announceConnection);
 
+// a status read at login may predate it, so it is left out as Meteor's publication does
+const { status: _status, ...userProjection } = getBaseUserFields(true);
+
 // stands in for Meteor's default publication, which sends a client its own user once it logs in
 lifecycle.on('loggedIn', async (session) => {
 	const { userId } = session;
 	if (!userId) {
 		return;
 	}
-	const user = await Users.findOneById(userId, { projection: getBaseUserFields(true) });
+	const user = await Users.findOneById(userId, { projection: userProjection });
 	if (!user) {
 		return;
 	}
