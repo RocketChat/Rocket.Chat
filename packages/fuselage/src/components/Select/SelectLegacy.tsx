@@ -4,13 +4,15 @@ import { useState, useRef, useEffect, useMemo } from 'react';
 
 import type { ElementProps } from '../../types/ElementProps';
 import { AnimatedVisibility } from '../AnimatedVisibility';
-import { Box } from '../Box';
 import { Icon, type IconProps } from '../Icon';
 import type { OptionType } from '../Options';
 import { Options, useCursor } from '../Options';
 import { PositionAnimated } from '../PositionAnimated';
 import SelectAddon from './SelectAddon';
+import SelectContainer from './SelectContainer';
 import SelectFocus from './SelectFocus';
+import SelectItem from './SelectItem';
+import SelectWrapper from './SelectWrapper';
 
 export type SelectOption = readonly [value: string, label: string, selected?: boolean];
 
@@ -128,7 +130,7 @@ function SelectLegacy({
 	});
 
 	return (
-		<Box
+		<SelectContainer
 			animated
 			rcx-select
 			disabled={disabled}
@@ -138,7 +140,7 @@ function SelectLegacy({
 			rcx-select--disabled={disabled}
 			{...props}
 		>
-			<Box is='div' rcx-select__wrapper rcx-select__wrapper--hidden={!!visibleText}>
+			<SelectWrapper rcx-select__wrapper--hidden={!!visibleText}>
 				{visibleText &&
 					(RenderSelected ? (
 						<RenderSelected
@@ -149,9 +151,7 @@ function SelectLegacy({
 							onClick={internalChangedByClick}
 						/>
 					) : (
-						<Box is='span' rcx-select__item rcx-select__item--placeholder={!valueLabel}>
-							{visibleText}
-						</Box>
+						<SelectItem rcx-select__item--placeholder={!valueLabel}>{visibleText}</SelectItem>
 					))}
 				<Anchor
 					ref={anchorRef}
@@ -170,7 +170,7 @@ function SelectLegacy({
 				<SelectAddon>
 					<Icon name={visible === AnimatedVisibility.VISIBLE ? 'chevron-up' : addonIcon || 'chevron-down'} size='x20' />
 				</SelectAddon>
-			</Box>
+			</SelectWrapper>
 			<PositionAnimated visible={visible} anchor={containerRef}>
 				<_Options
 					width={borderBoxSize.inlineSize}
@@ -183,7 +183,7 @@ function SelectLegacy({
 					customEmpty={customEmpty}
 				/>
 			</PositionAnimated>
-		</Box>
+		</SelectContainer>
 	);
 }
 
