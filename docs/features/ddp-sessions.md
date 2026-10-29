@@ -32,8 +32,9 @@ Every other method runs through Meteor's method registry, inside a Meteor invoca
 and connection, so `Meteor.methods` code sees `this.userId` and `this.connection` as before. A subscription to any
 other name is answered with a 404 error: no Meteor publication is served.
 
-Every method call and subscription counts against the DDP rate-limit rules (`DDPRateLimiter`) before it runs,
-whichever side implements it. Errors a client may see keep their code and reason; anything else becomes a generic
+Every method call, and every subscription to a publication the server serves, counts against the DDP rate-limit rules
+(`DDPRateLimiter`) before it runs, whichever side implements it. A subscription to an unknown name is refused before it
+is counted, as Meteor's server did. Errors a client may see keep their code and reason; anything else becomes a generic
 error.
 
 ## Logging in

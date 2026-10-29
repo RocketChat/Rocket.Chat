@@ -17,7 +17,7 @@ import { getBaseUserFields } from '../utils/functions/getBaseUserFields';
 
 /**
  * The DDP server behind this process's websocket. Methods it doesn't implement run through Meteor's method registry,
- * and every method call and subscription counts against the DDP rate limits.
+ * and every method call and subscription to a publication it serves counts against the DDP rate limits.
  */
 export const ddpServer = new Server(callMeteorMethod, (session, type, name) =>
 	checkDdpRateLimit({
