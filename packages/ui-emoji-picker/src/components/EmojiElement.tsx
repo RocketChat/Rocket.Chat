@@ -1,15 +1,15 @@
 import { css } from '@rocket.chat/css-in-js';
-import { IconButton, useStyle } from '@rocket.chat/fuselage';
+import { IconButton, type IconButtonProps, useStyle } from '@rocket.chat/fuselage';
 import DOMPurify from 'dompurify';
-import type { MouseEvent, AllHTMLAttributes } from 'react';
+import type { MouseEvent } from 'react';
 import { memo } from 'react';
 
 import { usePreviewEmoji } from '../contexts/EmojiPickerContext';
 import type { EmojiItem } from '../lib/types';
 
 export type EmojiElementProps = EmojiItem & { small?: boolean; onClick: (e: MouseEvent<HTMLElement>) => void } & Omit<
-		AllHTMLAttributes<HTMLButtonElement>,
-		'is' | 'color' | 'size'
+		IconButtonProps,
+		'icon' | 'onClick' | 'color' | 'size'
 	>;
 
 const smallEmojiClass = css`
