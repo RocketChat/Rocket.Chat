@@ -2008,6 +2008,18 @@ const generateConsumerClasses = () => {
 	box-shadow:
 		0 0 2px 0 ${shadowColors['shadow-elevation-2x']},
 		0 0 12px 0 ${shadowColors['shadow-elevation-2y']};
+}
+
+.rcx-card__header:where(.rcx-card__header),
+.rcx-card__row:where(.rcx-card__row) {
+	display: flex;
+	align-items: center;
+	gap: ${cardGap};
+}
+
+.rcx-card__row:where(.rcx-card__row) {
+	flex-grow: 1;
+	flex-shrink: 1;
 }`;
 };
 
@@ -2058,6 +2070,13 @@ const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Callout/Callout.tsx'), generate: generateCallout },
 	{ file: join(import.meta.dirname, '../src/components/Callout/Callout.styles.css'), generate: generateCalloutCss, css: true },
 	{ file: join(import.meta.dirname, '../src/components/CardGroup/CardGroup.tsx'), generate: generateCardGroup },
+	{ file: join(import.meta.dirname, '../src/components/Card/Card.tsx'), generate: generateCard },
+	{ file: join(import.meta.dirname, '../src/components/Card/CardBody.tsx'), generate: generateCardBody },
+	{ file: join(import.meta.dirname, '../src/components/Card/CardCol.tsx'), generate: generateCardCol },
+	{ file: join(import.meta.dirname, '../src/components/Card/CardControls.tsx'), generate: generateCardControls },
+	{ file: join(import.meta.dirname, '../src/components/Card/CardHeader.tsx'), generate: generateCardHeader },
+	{ file: join(import.meta.dirname, '../src/components/Card/CardRow.tsx'), generate: generateCardRow },
+	{ file: join(import.meta.dirname, '../src/components/Card/CardTitle.tsx'), generate: generateCardTitle },
 ];
 
 for (const [dir, control] of [
