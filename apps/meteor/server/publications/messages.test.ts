@@ -368,9 +368,9 @@ describe('handleCursorPagination with messages that share one timestamp', () => 
 		Object.entries(filter).every(([key, condition]) =>
 			key === '$or' ? condition.some((sub: Record<string, any>) => matches(doc, sub)) : inRange(doc[key], condition),
 		);
-	const run = (filter: Record<string, any>, options: { sort: Record<string, 1 | -1>; limit?: number }) => {
+	const run = (filter: Record<string, any>, options: { sort: Record<string, 1 | -1>; limit?: number }, docs: StoredMessage[] = store) => {
 		const sortKeys = Object.entries(options.sort);
-		const rows = store
+		const rows = docs
 			.filter((doc) => matches(doc, filter))
 			.sort((x: Record<string, any>, y: Record<string, any>) => {
 				for (const [key, direction] of sortKeys) {
@@ -387,11 +387,13 @@ describe('handleCursorPagination with messages that share one timestamp', () => 
 	beforeEach(() => {
 		// Same contract as Messages.findForUpdates: an id tie-breaker orders messages inside the boundary timestamp.
 		messagesMock.findForUpdates.callsFake(
-			(rid: string, { updatedAt, idTieBreaker }: { updatedAt: Range; idTieBreaker?: Range }, options) => {
-				const boundary = '$gt' in updatedAt ? updatedAt.$gt : updatedAt.$lt;
-				const filter = idTieBreaker
-					? { $or: [{ _updatedAt: updatedAt }, { _updatedAt: boundary, _id: idTieBreaker }] }
-					: { _updatedAt: updatedAt };
+			(rid: string, { updatedAt, idTieBreaker }: { updatedAt: Range; idTieBreaker?: string }, options) => {
+				const [boundary, idRange] =
+					'$gt' in updatedAt ? [updatedAt.$gt, { $gt: idTieBreaker as string }] : [updatedAt.$lt, { $lt: idTieBreaker as string }];
+				const filter =
+					idTieBreaker !== undefined
+						? { $or: [{ _updatedAt: updatedAt }, { _updatedAt: boundary, _id: idRange }] }
+						: { _updatedAt: updatedAt };
 				return run({ rid, ...filter }, options);
 			},
 		);
@@ -427,6 +429,25 @@ describe('handleCursorPagination with messages that share one timestamp', () => 
 
 	it('should return every deleted message exactly once when paging forward with a compound cursor', async () => {
 		expect(await crawl('DELETED', 'next', '0_')).to.deep.equal(['before', ...ids, 'after']);
+	});
+
+	// The trash keeps the `_updatedAt` of each message, so the deletion order can differ from the update order.
+	const trash: StoredMessage[] = [
+		{ _id: 'before', rid: 'roomId', _updatedAt: new Date(sameMs.getTime() + 10), _deletedAt: new Date(sameMs.getTime() - 1) },
+		...ids.map((_id, index) => ({ _id, rid: 'roomId', _updatedAt: new Date(sameMs.getTime() - 10 - index), _deletedAt: sameMs })),
+		{ _id: 'after', rid: 'roomId', _updatedAt: new Date(sameMs.getTime() - 100), _deletedAt: new Date(sameMs.getTime() + 1) },
+	];
+
+	it('should return every deleted message exactly once when the deletion order differs from the update order', async () => {
+		messagesMock.trashFind.callsFake((filter: Record<string, any>, options) => run(filter, options, trash));
+
+		expect(await crawl('DELETED', 'next', '0_')).to.deep.equal(['before', ...ids, 'after']);
+		expect(await crawl('DELETED', 'previous', `${sameMs.getTime() + 2}_`)).to.deep.equal(['after', ...[...ids].reverse(), 'before']);
+	});
+
+	it('should sort deleted messages by _deletedAt and _id with a compound cursor', () => {
+		expect(mountCursorQuery({ next: '0_', count: 2, type: 'DELETED' }).options.sort).to.deep.equal({ _deletedAt: 1, _id: 1 });
+		expect(mountCursorQuery({ previous: '0_', count: 2, type: 'DELETED' }).options.sort).to.deep.equal({ _deletedAt: -1, _id: -1 });
 	});
 
 	it('should return every updated message exactly once when paging backward with a compound cursor', async () => {
