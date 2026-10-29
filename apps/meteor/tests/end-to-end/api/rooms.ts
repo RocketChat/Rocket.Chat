@@ -5083,7 +5083,7 @@ describe('[Rooms]', () => {
 		});
 
 		it('should prevent banned user from sending messages', async () => {
-			await request
+			const res = await request
 				.post(api('chat.sendMessage'))
 				.set(bannableUserCredentials)
 				.send({
@@ -5094,6 +5094,8 @@ describe('[Rooms]', () => {
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(403);
+
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 
 		it('should not list the banned user in channel members', async () => {

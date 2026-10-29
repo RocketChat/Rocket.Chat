@@ -1515,6 +1515,7 @@ describe('[Direct Messages]', () => {
 					.expect('Content-Type', 'application/json');
 
 				expect(res.body).to.have.property('success', false);
+				expect(res.body).to.have.property('errorType', 'error-forbidden');
 			});
 		});
 	});
