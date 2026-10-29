@@ -2840,6 +2840,29 @@ const generateChevronCss = () => `.rcx-chevron.rcx-chevron--right:dir(rtl) {
 	transform: rotate(-90deg);
 }`;
 
+const generateCodeSnippet = () =>
+	`${declaredWhereTheyRender}${frame('CodeSnippetFrame', {
+		render: 'pre',
+		...flexBox,
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		width: size('full')!,
+		minHeight: size('x60')!,
+		padding: spacing('x16')!,
+		color: fontDefault,
+		borderRadius: theme('code-snippet-border-radius', radius('medium')),
+		backgroundColor: String(surfaceColors['surface-neutral']),
+	})}
+
+${frame('CodeSnippetCodeBoxFrame', {
+	render: 'div',
+	...blockBox,
+	marginRight: spacing('x8')!,
+	whiteSpace: 'pre-line',
+	wordBreak: 'break-all',
+	fontFamily: 'monospace',
+})}`;
+
 const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
 	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
@@ -2941,6 +2964,7 @@ const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: sbFile('Sidepanel/Sidepanel.styles.css'), generate: generateSidepanelStyles, css: true },
 	{ file: join(import.meta.dirname, '../src/components/Chevron/Chevron.tsx'), generate: generateChevron },
 	{ file: join(import.meta.dirname, '../src/components/Chevron/Chevron.styles.css'), generate: generateChevronCss, css: true },
+	{ file: join(import.meta.dirname, '../src/components/CodeSnippet/CodeSnippet.tsx'), generate: generateCodeSnippet },
 ];
 
 for (const [dir, control] of [
