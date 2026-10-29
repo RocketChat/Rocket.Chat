@@ -1,12 +1,12 @@
 import { css } from '@rocket.chat/css-in-js';
 import { Box } from '@rocket.chat/fuselage';
-import { EmojiPickerLoadMore, EmojiPickerNotFound, EmojiPickerCategoryWrapper } from '@rocket.chat/ui-client';
 import { memo, type MouseEvent } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import EmojiElement from './EmojiElement';
-import { isRowDivider, isLoadMore, CUSTOM_CATEGORY, CUSTOM_CATEGORY_CLASSNAME } from '../../../lib/emoji';
-import type { EmojiPickerItem } from '../../../lib/emoji';
+import { EmojiPickerLoadMore, EmojiPickerNotFound, EmojiPickerCategoryWrapper } from '../components';
+import { isRowDivider, isLoadMore, CUSTOM_CATEGORY, CUSTOM_CATEGORY_CLASSNAME } from '../lib/emoji';
+import type { EmojiPickerItem } from '../lib/emoji';
 
 export type EmojiCategoryRowProps = {
 	customItemsLimit: number;

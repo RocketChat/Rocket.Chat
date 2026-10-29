@@ -28,6 +28,7 @@ const useDropdownPosition = (reference: RefObject<HTMLElement | null>, target: R
 			return 'top-start';
 		}
 		return 'bottom-end';
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 	}, [targetHeight, refTop]);
 
 	const maxHeight = useMemo(() => (placement === 'bottom-end' ? '482px' : `${refTop - 12}px`), [placement, refTop]);
@@ -39,6 +40,7 @@ const useDropdownPosition = (reference: RefObject<HTMLElement | null>, target: R
 
 	return useMemo(() => {
 		return { ...style, maxHeight };
+		// oxlint-disable-next-line react-hooks/exhaustive-deps
 	}, [style]);
 };
 
