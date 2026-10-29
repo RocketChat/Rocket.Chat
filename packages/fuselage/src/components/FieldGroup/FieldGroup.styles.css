@@ -1,0 +1,14 @@
+.rcx-field-group > .rcx-field-group__item {
+	flex: 0 0 auto;
+
+	width: 100%;
+}
+
+.rcx-field-group__item + .rcx-field-group__item {
+	margin-block-start: 1.5rem;
+}
+
+/* The frame's display outranks the user agent's `hidden` */
+.rcx-field-group[hidden] {
+	display: none;
+}
