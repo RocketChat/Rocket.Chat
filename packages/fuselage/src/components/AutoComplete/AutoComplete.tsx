@@ -1,23 +1,14 @@
 import { useStableCallback, useResizeObserver, useMergedRefs } from '@rocket.chat/fuselage-hooks';
-import type {
-	AllHTMLAttributes,
-	ChangeEvent,
-	ComponentType,
-	FocusEvent,
-	MouseEvent,
-	MouseEventHandler,
-	ReactNode,
-	RefAttributes,
-} from 'react';
+import type { ChangeEvent, ComponentType, FocusEvent, MouseEvent, MouseEventHandler, ReactNode, RefAttributes } from 'react';
 import { useEffect, useRef, useMemo, useState } from 'react';
 
 import { AnimatedVisibility } from '../AnimatedVisibility';
-import { Box } from '../Box';
 import { Chip } from '../Chip';
 import { Icon } from '../Icon';
-import { Input } from '../InputBox';
+import { Input, type InputProps } from '../InputBox';
 import { useCursor, Options, type OptionType } from '../Options';
 import { PositionAnimated } from '../PositionAnimated';
+import SelectContainer from '../Select/SelectContainer';
 
 export type AutoCompleteOption<TLabel> = {
 	value: string;
@@ -46,7 +37,7 @@ const isSelectedValid =
 /**
  * @deprecated Use `SelectFilteredProps` or `MultiSelectFilteredProps` instead.
  */
-export type AutoCompleteProps<TLabel = ReactNode> = Omit<AllHTMLAttributes<HTMLInputElement>, 'value' | 'onChange' | 'is'> & {
+export type AutoCompleteProps<TLabel = ReactNode> = Omit<InputProps<HTMLInputElement>, 'value' | 'onChange' | 'is' | 'ref'> & {
 	filter: string;
 	setFilter?: (filter: string) => void;
 	options?: AutoCompleteOption<TLabel>[];
@@ -97,7 +88,7 @@ function AutoComplete<TLabel = ReactNode>({
 }: AutoCompleteProps<TLabel>) {
 	const innerRef = useRef<HTMLInputElement>(null);
 	const mergedRefs = useMergedRefs(ref, innerRef);
-	const { ref: containerRef, borderBoxSize } = useResizeObserver();
+	const { ref: containerRef, borderBoxSize } = useResizeObserver<HTMLDivElement>();
 
 	const [selected, setSelected] = useState(() => getSelected(value, options) || []);
 	const [syncedValue, setSyncedValue] = useState(value);
@@ -151,16 +142,14 @@ function AutoComplete<TLabel = ReactNode>({
 	useEffect(reset, [filter, reset]);
 
 	return (
-		<Box
-			animated
-			rcx-autocomplete
+		<SelectContainer
+			kind='autocomplete'
 			ref={containerRef}
 			onClick={useStableCallback(() => innerRef.current?.focus())}
-			flexGrow={1}
-			rcx-select--invalid={!!error}
-			rcx-select--disabled={disabled}
+			invalid={!!error}
+			disabled={disabled}
 		>
-			<Box display='flex' flexGrow={1} alignItems='center' flexWrap='wrap' gap={4} role='group'>
+			<div className='rcx-box rcx-box--full rcx-autocomplete__values' role='group'>
 				<Input
 					ref={mergedRefs}
 					onChange={useStableCallback((e: ChangeEvent<HTMLInputElement>) => setFilter?.(e.currentTarget.value))}
@@ -182,13 +171,13 @@ function AutoComplete<TLabel = ReactNode>({
 						</Chip>
 					),
 				)}
-			</Box>
-			<Box rcx-autocomplete__addon color='titles-labels'>
+			</div>
+			<div className='rcx-box rcx-box--full rcx-autocomplete__addon'>
 				<Icon name={optionsAreVisible === AnimatedVisibility.VISIBLE ? 'cross' : 'magnifier'} size='x20' />
-			</Box>
+			</div>
 			<PositionAnimated visible={optionsAreVisible} anchor={containerRef}>
 				<Options
-					style={{ width: borderBoxSize.inlineSize }}
+					width={borderBoxSize.inlineSize}
 					onSelect={handleSelect}
 					renderItem={renderItem}
 					renderEmpty={renderEmpty}
@@ -196,7 +185,7 @@ function AutoComplete<TLabel = ReactNode>({
 					options={memoizedOptions}
 				/>
 			</PositionAnimated>
-		</Box>
+		</SelectContainer>
 	);
 }
 

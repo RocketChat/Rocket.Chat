@@ -2625,6 +2625,205 @@ const generateLabelInfo = () =>
 	frameCode('LabelInfoFrame', 'View', { render: 'span', ...flexBase, alignItems: 'center', order: 1, marginInline: spacing('x4')! });
 
 
+// The Select family: one container frame (Select, SelectLegacy, MultiSelect, PaginatedSelect, AutoComplete) and its parts
+const generateSelectContainer = () => {
+	const frame: Value = {
+		render: 'div',
+		position: 'relative',
+		display: 'inline-flex',
+		flexDirection: 'row',
+		alignItems: 'center',
+		flexGrow: 1,
+		flexShrink: 1,
+		flexBasis: 'auto',
+		minWidth: size('x144')!,
+		minHeight: size('x40')!,
+		paddingBlock: spacing('x8')!,
+		paddingInline: `calc(${spacing('x16')} - ${borderWidth('default')})`,
+		verticalAlign: 'baseline',
+		wordBreak: 'break-all',
+		outlineWidth: 0,
+		...(inputChrome('focus-within') as Record<string, Value>),
+	};
+	// The trigger keeps its p2 font when small: the label inside is the one that shrinks
+	const small: Record<string, Value> = {
+		minWidth: size('x112')!,
+		minHeight: size('x28')!,
+		paddingBlock: spacing('x4')!,
+		paddingInline: spacing('x8')!,
+	};
+
+	return frameCode('SelectContainerFrame', 'View', {
+		...frame,
+		variants: {
+			// The trigger button spreads its label and icon, and small sets the box's own sizes
+			layout: {
+				'default': {},
+				'trigger': { display: 'flex', justifyContent: 'space-between', ...font('p2') },
+				'trigger-small': { ...small, display: 'flex', justifyContent: 'space-between', ...font('p2') },
+			},
+		},
+	});
+};
+
+const generateSelectWrapper = () =>
+	frameCode('SelectWrapperFrame', 'View', {
+		render: 'div',
+		display: 'flex',
+		flexDirection: 'row',
+		alignItems: 'center',
+		flexGrow: 1,
+		flexShrink: 1,
+		minWidth: 0,
+		minHeight: 'auto',
+		marginInline: spacing('-x4')!,
+		userSelect: 'none',
+		whiteSpace: 'nowrap',
+		opacity: 1,
+	});
+
+const generateSelectItem = () =>
+	frameCode('SelectItemFrame', 'Text', {
+		render: 'span',
+		display: 'inline',
+		whiteSpace: 'inherit',
+		wordWrap: 'normal',
+		overflow: 'hidden',
+		textOverflow: 'ellipsis',
+	});
+
+const selectFocus: Record<string, Value> = {
+	display: 'inline-block',
+	flexDirection: 'row',
+	alignItems: 'normal',
+	flexShrink: 1,
+	minWidth: 'auto',
+	minHeight: 'auto',
+	userSelect: 'none',
+	textAlign: 'start',
+	verticalAlign: 'middle',
+	whiteSpace: 'nowrap',
+	textDecorationLine: 'none',
+	backgroundColor: 'inherit',
+	cursor: 'pointer',
+	outlineWidth: 0,
+	overflow: 'hidden',
+	textOverflow: 'ellipsis',
+};
+
+const generateSelectFocus = () => frameCode('SelectFocusFrame', 'View', { render: 'button', ...selectFocus, appearance: 'none' });
+// The multi select's button keeps the browser's own appearance
+// Placed after the chips of the selected values
+const generateMultiSelectAnchor = () => frameCode('SelectFocusFrame', 'View', { render: 'button', ...selectFocus, order: 1 });
+
+const generateSelectAddon = () =>
+	frameCode('SelectAddonFrame', 'View', {
+		render: 'div',
+		display: 'flex',
+		flexDirection: 'row',
+		alignItems: 'flex-start',
+		flexGrow: 0,
+		flexShrink: 0,
+		flexBasis: 'auto',
+		minWidth: 'auto',
+		minHeight: 'auto',
+		padding: 0,
+		marginInline: spacing('x4')!,
+		cursor: 'pointer',
+		outlineWidth: 0,
+	});
+
+const selectRoots = ['.rcx-select', '.rcx-autocomplete'];
+// Doubled, so the rule out-ranks the frame's atomic classes, which load after this file
+const onRoots = (suffix: string, scope = '') => selectRoots.map((root) => `${scope}${root}${root}${suffix}`).join(',\n');
+
+const generateSelectCss = () => {
+	const c = (name: string, fallback: { toString: () => string }) => inputColor(name, fallback);
+	const stroke = (name: string) => strokeColors[name as keyof typeof strokeColors];
+	const disabledOn = (extra = '') =>
+		[onRoots(`${extra}:disabled`), onRoots(`${extra}.rcx-select--disabled`), onRoots(extra, '*:disabled ')].join(',\n');
+
+	return `${onRoots(' > .rcx-icon.rcx-icon')} {
+	color: ${fontColorOf('titles-labels')};
+}
+
+${onRoots('.rcx-select--disabled')},
+${onRoots(':disabled')},
+${onRoots('', '*:disabled ')} {
+	pointer-events: none;
+	border-color: ${c('disabled-border-color', stroke('stroke-light'))};
+	background-color: ${c('disabled-background-color', surfaceColors['surface-disabled'])};
+}
+
+${onRoots('.rcx-select--invalid')} {
+	color: ${c('invalid-color', textIconColors['font-titles-labels'])};
+	border-width: ${borderWidth('default')};
+	border-color: ${c('invalid-border-color', stroke('stroke-error'))};
+	border-radius: ${toCSSValue('--rcx-input-border-radius', toCSSValue('--rcx-border-radius-medium', borderRadius('medium')!))};
+	background-color: ${c('invalid-background-color', surfaceColors['surface-light'])};
+	box-shadow: none;
+}
+
+${onRoots('.rcx-select--invalid:hover')} {
+	border-color: ${c('invalid-hover-border-color', stroke('stroke-error'))};
+}
+
+${onRoots('.rcx-select--invalid:focus-within')} {
+	border-color: ${c('invalid-focus-border-color', stroke('stroke-error'))};
+	box-shadow: 0 0 0 ${borderWidth('medium')} ${c('invalid-focus-shadow-color', shadowColors['shadow-danger'])};
+}
+
+${onRoots('.rcx-select--invalid:active')} {
+	border-color: ${c('invalid-active-border-color', stroke('stroke-error'))};
+	box-shadow: none;
+}
+
+${disabledOn('.rcx-select--invalid')} {
+	color: ${c('invalid-disabled-color', textIconColors['font-disabled'])};
+	border-color: ${c('invalid-disabled-border-color', stroke('stroke-light'))};
+	background-color: ${c('invalid-disabled-background-color', surfaceColors['surface-disabled'])};
+}
+
+.rcx-select__filter.rcx-select__filter {
+	margin-inline: ${spacing('x4')};
+}
+
+.rcx-select__item.rcx-select__item {
+	margin-inline: ${spacing('x4')};
+	${fontDeclarations('p2')}
+}
+
+.rcx-select__value--small {
+	${fontDeclarations('c1')}
+}
+
+.rcx-select__field {
+	margin-inline: ${spacing('x4')};
+}
+
+.rcx-select__values {
+	margin: ${spacing('-x4')};
+	gap: ${spacing('x4')};
+}
+
+.rcx-select__values--spacious {
+	gap: ${spacing('x8')};
+}
+
+.rcx-autocomplete__values {
+	gap: ${spacing('x4')};
+}
+
+.rcx-select__focus--button.rcx-select__focus--button {
+	${fontDeclarations('p2m')}
+}`;
+};
+
+const fontDeclarations = (name: string) => {
+	const { fontSize, fontWeight, lineHeight, letterSpacing } = fontScale(name)!;
+	return `letter-spacing: ${letterSpacing}; font-size: ${fontSize}; font-weight: ${fontWeight}; line-height: ${lineHeight};`;
+};
+
 const components: { file: string; generate: () => string; css?: boolean; section?: string }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
 	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
@@ -2704,6 +2903,13 @@ const components: { file: string; generate: () => string; css?: boolean; section
 	{ file: join(import.meta.dirname, '../src/components/FieldGroup/FieldGroup.tsx'), generate: generateFieldGroup },
 	{ file: join(import.meta.dirname, '../src/components/Label/Label.tsx'), generate: generateLabel },
 	{ file: join(import.meta.dirname, '../src/components/Label/LabelInfo.tsx'), generate: generateLabelInfo },
+	{ file: frames('Select/SelectContainer.tsx'), generate: generateSelectContainer },
+	{ file: frames('Select/SelectWrapper.tsx'), generate: generateSelectWrapper },
+	{ file: frames('Select/SelectItem.tsx'), generate: generateSelectItem },
+	{ file: frames('Select/SelectFocus.tsx'), generate: generateSelectFocus },
+	{ file: frames('MultiSelect/MultiSelectAnchor.tsx'), generate: generateMultiSelectAnchor },
+	{ file: frames('Select/SelectAddon.tsx'), generate: generateSelectAddon },
+	{ file: frames('Select/Select.styles.css'), generate: generateSelectCss, css: true },
 ];
 
 for (const [dir, control] of [

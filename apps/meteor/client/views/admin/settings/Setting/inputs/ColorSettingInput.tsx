@@ -89,13 +89,10 @@ function ColorSettingInput({
 						/>
 					)}
 					<Select
-						type='color'
 						id={`${_id}_editor`}
 						aria-label={t('Setting_color_editor', { setting: label })}
 						value={editor}
 						disabled={disabled}
-						readOnly={readonly}
-						autoComplete={autocomplete === false ? 'off' : undefined}
 						onChange={handleEditorTypeChange}
 						options={allowedTypes.map((type) => [type, t(type)])}
 					/>

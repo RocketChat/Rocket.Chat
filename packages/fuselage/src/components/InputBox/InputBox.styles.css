@@ -13,14 +13,28 @@
 	flex-grow: 1;
 
 	min-width: 9rem;
-	padding-block: 0.5rem;
-	padding-inline: calc(1rem - 1px);
 
 	vertical-align: baseline;
 	word-break: break-all;
 
 	outline: 0;
 }
+
+/* generated box by scripts/generate-frame-values.mts from @rocket.chat/fuselage-tokens, do not edit */
+
+.rcx-input-box__wrapper:where(:not(.is_View)) {
+	padding-block: 8px;
+	padding-inline: calc(16px - 1px);
+}
+
+.rcx-input-box:where(:not(.is_View)) {
+	letter-spacing: 0rem;
+	font-size: 0.875rem;
+	font-weight: 500;
+	line-height: 1.25rem;
+}
+
+/* end of generated box */
 
 .rcx-input-box:where(:not(.is_View)) {
 	position: relative;
@@ -35,17 +49,12 @@
 	user-select: initial;
 	vertical-align: baseline;
 	white-space: nowrap;
-	letter-spacing: 0;
 	text-overflow: ellipsis;
 	word-break: break-all;
 
 	color: var(--rcx-input-colors-color, var(--rcx-color-font-titles-labels, #1f2329));
 	outline: 0;
 	background-color: transparent;
-
-	font-size: 0.875rem;
-	font-weight: 500;
-	line-height: 1.25rem;
 }
 
 .rcx-input-box:where(:not(.is_View)).rcx-input-box--placeholder-visible {
@@ -61,10 +70,17 @@
 	box-shadow: none;
 }
 
+/* generated decorated by scripts/generate-frame-values.mts from @rocket.chat/fuselage-tokens, do not edit */
+
+.rcx-input-box:where(:not(.is_View)):not(.rcx-input-box--undecorated) {
+	padding: 8px calc(16px - 1px);
+}
+
+/* end of generated decorated */
+
 .rcx-input-box:where(:not(.is_View)):not(.rcx-input-box--undecorated) {
 	min-width: 8rem;
 	min-height: 2.5rem;
-	padding: 0.5rem calc(1rem - 1px);
 }
 
 .rcx-input-box__wrapper:where(:not(.is_View)):hover,
@@ -89,23 +105,28 @@
 	display: none;
 }
 
-/* Disabled */
+/*
+ * Disabled. The wrapper and the addons take `InputBox`'s `disabled` as a variant; a disabled `fieldset` around the input
+ * (`FieldGroup disabled`, as the login and email confirmation forms use) is a web-only state no component passes down.
+ */
 
-.rcx-input-box__wrapper:has(> .rcx-input-box:disabled),
-*:disabled .rcx-input-box__wrapper,
-*:disabled .rcx-input-box:not(.rcx-input-box--undecorated),
+fieldset:disabled .rcx-input-box__wrapper,
+fieldset:disabled .rcx-input-box:not(.rcx-input-box--undecorated),
 .rcx-input-box:disabled:not(.rcx-input-box--undecorated) {
 	border-color: var(--rcx-input-colors-disabled-border-color, var(--rcx-color-stroke-light, #cbced1));
 	background-color: var(--rcx-input-colors-disabled-background-color, var(--rcx-color-surface-disabled, #f7f8fa));
 }
 
-.rcx-input-box__wrapper:has(> .rcx-input-box:disabled),
-*:disabled .rcx-input-box__wrapper {
+fieldset:disabled .rcx-input-box__wrapper {
 	cursor: not-allowed;
 	pointer-events: none;
 }
 
-/* Invalid */
+/*
+ * Invalid. The wrapper and the addons take `InputBox`'s `error` as a variant. The `:has()` and sibling rules stay for
+ * the browser's own constraint validation, which no prop reports: date boxes with `min` or `max` and no `error` (the
+ * audit and omnichannel date range pickers, the chats filters) show their calendar addon, so they render the wrapper.
+ */
 
 .rcx-input-box__wrapper:has(> .rcx-input-box:invalid),
 .rcx-input-box:not(.rcx-input-box--undecorated):invalid {
@@ -134,7 +155,7 @@
 }
 
 .rcx-input-box__wrapper:has(> .rcx-input-box:invalid:disabled),
-*:disabled .rcx-input-box:not(.rcx-input-box--undecorated):invalid,
+fieldset:disabled .rcx-input-box:not(.rcx-input-box--undecorated):invalid,
 .rcx-input-box:disabled:not(.rcx-input-box--undecorated):invalid {
 	border-color: var(--rcx-input-colors-invalid-disabled-border-color, var(--rcx-color-stroke-light, #cbced1));
 	background-color: var(--rcx-input-colors-invalid-disabled-background-color, var(--rcx-color-surface-disabled, #f7f8fa));
@@ -154,14 +175,14 @@
 	caret-color: var(--rcx-input-colors-active-caret-color, var(--rcx-color-font-titles-labels, #1f2329));
 }
 
-*:disabled .rcx-input-box,
+fieldset:disabled .rcx-input-box,
 .rcx-input-box:disabled {
 	cursor: not-allowed;
 
 	color: var(--rcx-input-colors-disabled-color, var(--rcx-color-font-disabled, #cbced1));
 }
 
-*:disabled .rcx-input-box::placeholder,
+fieldset:disabled .rcx-input-box::placeholder,
 .rcx-input-box:disabled::placeholder {
 	color: var(--rcx-input-colors-disabled-color, var(--rcx-color-font-disabled, #cbced1));
 }
@@ -183,12 +204,12 @@
 	caret-color: var(--rcx-input-colors-invalid-active-caret-color, var(--rcx-color-font-titles-labels, #1f2329));
 }
 
-*:disabled .rcx-input-box:invalid,
+fieldset:disabled .rcx-input-box:invalid,
 .rcx-input-box:invalid:disabled {
 	color: var(--rcx-input-colors-invalid-disabled-color, var(--rcx-color-font-disabled, #cbced1));
 }
 
-*:disabled .rcx-input-box:invalid::placeholder,
+fieldset:disabled .rcx-input-box:invalid::placeholder,
 .rcx-input-box:invalid:disabled::placeholder {
 	color: var(--rcx-input-colors-invalid-disabled-color, var(--rcx-color-font-disabled, #cbced1));
 }
@@ -237,9 +258,9 @@
 	-webkit-text-fill-color: var(--rcx-input-colors-color, var(--rcx-color-font-titles-labels, #1f2329));
 }
 
-*:disabled .rcx-input-box--type-date,
+fieldset:disabled .rcx-input-box--type-date,
 .rcx-input-box--type-date:disabled,
-*:disabled .rcx-input-box--type-time,
+fieldset:disabled .rcx-input-box--type-time,
 .rcx-input-box--type-time:disabled {
 	-webkit-text-fill-color: var(--rcx-input-colors-disabled-color, var(--rcx-color-font-disabled, #cbced1));
 }
@@ -285,10 +306,9 @@
 	}
 }
 
-/* Addons, which the Select family uses too */
+/* Addons: their position and their colors for `error` and `disabled` are variants of the addon frame */
 
-.rcx-input-box__addon:where(:not(.is_View)),
-.rcx-select__addon {
+.rcx-input-box__addon:where(:not(.is_View)) {
 	display: flex;
 	flex-flow: row nowrap;
 	align-items: flex-start;
@@ -299,26 +319,24 @@
 	outline: 0;
 }
 
-.rcx-input-box__addon:disabled,
-.rcx-select__addon:disabled {
-	cursor: not-allowed;
-}
+/* generated addons by scripts/generate-frame-values.mts from @rocket.chat/fuselage-tokens, do not edit */
 
 .rcx-input-box__addon:has(+ .rcx-input-box) {
-	margin-inline-end: 0.5rem;
+	margin-inline-end: 8px;
 }
 
 .rcx-input-box + .rcx-input-box__addon {
-	margin-inline-start: 0.5rem;
+	margin-inline-start: 8px;
 }
 
-.rcx-input-box + .rcx-input-box__addon,
+/* end of generated addons */
+
 .rcx-input-box + .rcx-select__addon,
-.rcx-input-box__addon:has(+ .rcx-input-box),
 .rcx-select__addon:has(+ .rcx-input-box) {
 	color: var(--rcx-input-colors-color, var(--rcx-color-font-titles-labels, #1f2329));
 }
 
+/* Focus is the input's own state, which no prop reports */
 .rcx-input-box:focus + .rcx-input-box__addon,
 .rcx-input-box:focus + .rcx-select__addon,
 .rcx-input-box__addon:has(+ .rcx-input-box:focus),
@@ -326,18 +344,15 @@
 	color: var(--rcx-input-colors-focus-icon-color, var(--rcx-color-font-titles-labels, #1f2329));
 }
 
-*:disabled .rcx-input-box + .rcx-input-box__addon,
-*:disabled .rcx-input-box + .rcx-select__addon,
-.rcx-input-box:disabled + .rcx-input-box__addon,
+fieldset:disabled .rcx-input-box + .rcx-input-box__addon,
+fieldset:disabled .rcx-input-box + .rcx-select__addon,
 .rcx-input-box:disabled + .rcx-select__addon,
-.rcx-input-box__addon:has(+ .rcx-input-box:disabled),
 .rcx-select__addon:has(+ .rcx-input-box:disabled) {
 	color: var(--rcx-input-colors-disabled-color, var(--rcx-color-font-disabled, #cbced1));
 }
 
-*:disabled .rcx-input-box + .rcx-input-box__addon,
-*:disabled .rcx-input-box + .rcx-select__addon,
-.rcx-input-box:disabled + .rcx-input-box__addon,
+fieldset:disabled .rcx-input-box + .rcx-input-box__addon,
+fieldset:disabled .rcx-input-box + .rcx-select__addon,
 .rcx-input-box:disabled + .rcx-select__addon {
 	pointer-events: none;
 }
@@ -356,8 +371,8 @@
 	color: var(--rcx-input-colors-invalid-focus-icon-color, var(--rcx-color-font-titles-labels, #1f2329));
 }
 
-*:disabled .rcx-input-box:invalid + .rcx-input-box__addon,
-*:disabled .rcx-input-box:invalid + .rcx-select__addon,
+fieldset:disabled .rcx-input-box:invalid + .rcx-input-box__addon,
+fieldset:disabled .rcx-input-box:invalid + .rcx-select__addon,
 .rcx-input-box:invalid:disabled + .rcx-input-box__addon,
 .rcx-input-box:invalid:disabled + .rcx-select__addon,
 .rcx-input-box__addon:has(+ .rcx-input-box:invalid:disabled),
@@ -369,26 +384,34 @@
 	overflow: hidden;
 
 	white-space: nowrap;
-	letter-spacing: 0;
 	text-overflow: ellipsis;
 
 	color: var(--rcx-input-colors-placeholder-color, var(--rcx-color-font-hint, #6c737a));
+}
 
+/* generated text by scripts/generate-frame-values.mts from @rocket.chat/fuselage-tokens, do not edit */
+
+.rcx-input-box__placeholder {
+	letter-spacing: 0rem;
 	font-size: 0.875rem;
 	font-weight: 500;
 	line-height: 1.25rem;
 }
 
 .rcx-input-box__option {
-	overflow: hidden;
-
-	white-space: nowrap;
-	letter-spacing: 0;
-	text-overflow: ellipsis;
-
-	color: var(--rcx-input-colors-color, var(--rcx-color-font-titles-labels, #1f2329));
-
+	letter-spacing: 0rem;
 	font-size: 0.875rem;
 	font-weight: 500;
 	line-height: 1.25rem;
+}
+
+/* end of generated text */
+
+.rcx-input-box__option {
+	overflow: hidden;
+
+	white-space: nowrap;
+	text-overflow: ellipsis;
+
+	color: var(--rcx-input-colors-color, var(--rcx-color-font-titles-labels, #1f2329));
 }
