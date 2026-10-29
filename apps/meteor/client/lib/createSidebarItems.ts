@@ -1,8 +1,7 @@
 import type { Keys as IconName } from '@rocket.chat/icons';
+import { GO_ROCKET_CHAT_PREFIX } from '@rocket.chat/ui-client';
 import type { LocationPathname } from '@rocket.chat/ui-contexts';
 import type { ReactNode } from 'react';
-
-import { GO_ROCKET_CHAT_PREFIX } from './links';
 
 export type Item = {
 	i18nLabel: string;
