@@ -10,13 +10,14 @@ import { useSidebarSectionsOrder } from '../../hooks/useSidebarSectionsOrder';
 export const useUpsertGroupEntry = () => {
 	const { rawCategories } = useUserSidebarCategories();
 	const sidebarSectionsOrder = useSidebarSectionsOrder();
-	const { mutateAsync: persistCategories } = usePersistCategoriesMutation();
+	// A rejected write is reported by the mutation itself, so there is nothing for a caller to await or catch.
+	const { mutate: persistCategories } = usePersistCategoriesMutation();
 
 	return useCallback(
-		async (id: string, patch: Partial<ISidebarCategory>) => {
+		(id: string, patch: Partial<ISidebarCategory>) => {
 			const existing = rawCategories.find((entry) => entry._id === id);
 			if (existing) {
-				await persistCategories(rawCategories.map((entry) => (entry._id === id ? { ...entry, ...patch } : entry)));
+				persistCategories(rawCategories.map((entry) => (entry._id === id ? { ...entry, ...patch } : entry)));
 				return;
 			}
 
@@ -28,7 +29,7 @@ export const useUpsertGroupEntry = () => {
 				sidebarSectionsOrder,
 			);
 
-			await persistCategories(merged.map((key) => entryMap.get(key) ?? { _id: key, name: key, default: true }));
+			persistCategories(merged.map((key) => entryMap.get(key) ?? { _id: key, name: key, default: true }));
 		},
 		[rawCategories, sidebarSectionsOrder, persistCategories],
 	);

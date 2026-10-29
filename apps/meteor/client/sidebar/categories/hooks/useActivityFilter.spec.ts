@@ -23,18 +23,18 @@ const mockedUseUserPreference = jest.mocked(useUserPreference);
 const mockedUsePersistCategoriesMutation = jest.mocked(usePersistCategoriesMutation);
 const mockedUseUserSidebarCategories = jest.mocked(useUserSidebarCategories);
 
-const mutateAsync = jest.fn().mockResolvedValue(undefined);
+const mutate = jest.fn();
 
 const persistedEntry = (id: string): ISidebarCategory | undefined =>
-	mutateAsync.mock.calls[0][0].find((entry: ISidebarCategory) => entry._id === id);
+	mutate.mock.calls[0][0].find((entry: ISidebarCategory) => entry._id === id);
 
 const withCategories = (rawCategories: ISidebarCategory[]) =>
 	mockedUseUserSidebarCategories.mockReturnValue({ rawCategories, customCategories: rawCategories.filter((entry) => !entry.default) });
 
 beforeEach(() => {
-	mutateAsync.mockClear();
+	mutate.mockClear();
 	mockedUseUserPreference.mockReturnValue(undefined); // sidebarSectionsOrder falls back to SIDEBAR_SYSTEM_GROUP_KEYS
-	mockedUsePersistCategoriesMutation.mockReturnValue({ mutateAsync } as any);
+	mockedUsePersistCategoriesMutation.mockReturnValue({ mutate } as any);
 	withCategories([]);
 });
 
