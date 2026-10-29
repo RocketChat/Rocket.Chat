@@ -1,4 +1,5 @@
 @use './Box/Box.styles.scss';
+@use '../styles/consumer-classes.css';
 
 @use './Accordion/Accordion.styles.scss';
 @use './AutoComplete/AutoComplete.styles.scss';
@@ -48,7 +49,6 @@
 @use './Tag/Tag.styles.scss';
 @use './Text/Text.styles.scss';
 @use './Throbber/Throbber.styles.scss';
-@use './Tile/Tile.styles.scss';
 @use './ToastBar/ToastBar.styles.scss';
 @use './ToggleSwitch/ToggleSwitch.styles.scss';
 @use './Tooltip/Tooltip.styles.scss';

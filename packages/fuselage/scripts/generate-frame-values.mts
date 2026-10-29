@@ -814,8 +814,10 @@ const generateConsumerClasses = () => {
 const components = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton, kind: 'ts' as const },
 	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton, kind: 'ts' as const },
+	{ file: join(import.meta.dirname, '../src/components/Tile/Tile.tsx'), generate: generateTile, kind: 'ts' as const },
 	{ file: join(import.meta.dirname, '../src/components/Divider/Divider.tsx'), generate: generateDivider, kind: 'ts' as const },
 	{ file: join(import.meta.dirname, '../src/components/Divider/Divider.styles.css'), generate: generateDividerCss, kind: 'css' as const },
+	{ file: join(import.meta.dirname, '../src/styles/consumer-classes.css'), generate: generateConsumerClasses, kind: 'css' as const },
 ];
 const check = process.argv.includes('--check');
 let stale = false;
