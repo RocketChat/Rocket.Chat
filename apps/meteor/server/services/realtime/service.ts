@@ -41,10 +41,11 @@ export class RealtimeService extends ServiceClassInternal {
 	}
 
 	override async started(): Promise<void> {
-		const loginServices = await MeteorService.getLoginServiceConfiguration();
+		const [loginServices, versions] = await Promise.all([
+			MeteorService.getLoginServiceConfiguration(),
+			MeteorService.getAutoUpdateClientVersions(),
+		]);
 		loginServices.forEach((record) => meteorCollections.loginServices.set(record._id, record));
-
-		const versions = await MeteorService.getAutoUpdateClientVersions();
 		Object.values(versions ?? {}).forEach(setClientVersion);
 	}
 
