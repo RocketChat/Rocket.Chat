@@ -5,6 +5,7 @@ import { getRequestListener } from '@hono/node-server';
 import type { HttpBindings } from '@hono/node-server';
 import { Hono } from 'hono';
 import type { MiddlewareHandler } from 'hono';
+import { every } from 'hono/combine';
 import { TrieRouter } from 'hono/router/trie-router';
 
 import type { Router } from './Router';
@@ -30,18 +31,7 @@ export const createMiddlewareSlot = (): { middleware: RootMiddleware; add: (...m
 	const middlewares: RootMiddleware[] = [];
 
 	return {
-		middleware: (c, next) => {
-			const dispatch = async (index: number): Promise<Response | void> => {
-				const middleware = middlewares[index];
-				if (!middleware) {
-					return next();
-				}
-				return middleware(c, async () => {
-					await dispatch(index + 1);
-				});
-			};
-			return dispatch(0);
-		},
+		middleware: (c, next) => every(...middlewares)(c, next),
 		add: (...added) => {
 			middlewares.push(...added);
 		},
