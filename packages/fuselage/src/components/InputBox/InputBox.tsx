@@ -137,7 +137,9 @@ function InputBox<T extends HTMLInputElement | HTMLSelectElement | HTMLTextAreaE
 			className={[props.disabled && 'disabled', className].filter(Boolean).join(' ')}
 			hidden={hidden}
 			invisible={invisible}
-			rcx-input-box__wrapper--end-addon-flush={endAddonFlush}
+			small={small}
+			textarea={type === 'textarea'}
+			endAddonFlush={endAddonFlush}
 		>
 			{startAddon && <InputBoxAddon>{startAddon}</InputBoxAddon>}
 			<Input

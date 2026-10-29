@@ -5,15 +5,47 @@
 @use '../../styles/variables/input-colors.scss' as *;
 @use '../../styles/mixins/interactivity.scss' as *;
 @use '../InputBox/mixins.scss' as *;
-@use '../InputBox/InputBox.styles.scss' as *;
+@use '../../styles/primitives/input.scss';
 
 .rcx-select {
-	@extend %rcx-input-box;
 	position: relative;
 
-	align-items: center;
+	display: inline-flex;
 
+	flex-flow: row nowrap;
+
+	align-items: center;
+	flex-grow: 1;
+
+	min-width: lengths.size(144);
 	min-height: lengths.size(40);
+
+	padding-block: lengths.padding(8);
+	padding-inline: calc(lengths.padding(16) - lengths.border-width(default));
+
+	vertical-align: baseline;
+
+	word-break: break-all;
+
+	outline: 0;
+
+	@extend %input;
+
+	&.rcx-input-box--small {
+		@include use-font-scale(c1);
+
+		min-width: lengths.size(112);
+		min-height: lengths.size(28);
+
+		padding: lengths.padding(4) lengths.padding(8);
+	}
+
+	*:disabled &,
+	&:disabled,
+	&.disabled {
+		cursor: not-allowed;
+		pointer-events: none;
+	}
 
 	// TODO move to .rcx-input-box
 	&__item {
@@ -42,7 +74,6 @@
 	}
 
 	&__addon {
-		@extend .rcx-input-box__addon;
 		@include clickable;
 		padding: initial;
 	}
@@ -86,6 +117,8 @@
 
 	&:invalid,
 	&.invalid {
+		@extend %input--invalid;
+
 		@include with-colors(
 			$color: $input-colors-invalid-color,
 			$placeholder-color: $input-colors-invalid-placeholder-color,
@@ -111,4 +144,15 @@
 // beats the spacing .rcx-input-box__addon gets next to an input
 .rcx-select .rcx-select__addon {
 	margin-inline: lengths.margin(4);
+}
+
+// A filter `Input` is a Tamagui frame, whose one-class rules would otherwise win over `.rcx-select__focus`
+input.rcx-select__focus {
+	display: inline-block;
+
+	min-width: auto;
+
+	vertical-align: middle;
+
+	background: inherit;
 }
