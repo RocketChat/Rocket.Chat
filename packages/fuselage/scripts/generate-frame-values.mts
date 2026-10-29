@@ -1750,6 +1750,8 @@ const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Table/TableCell.tsx'), generate: generateTableCell },
 	{ file: join(import.meta.dirname, '../src/components/Table/TableSelection/TableSelection.tsx'), generate: generateTableSelection },
 	{ file: join(import.meta.dirname, '../src/components/Accordion/AccordionItem.tsx'), generate: generateAccordionItem },
+	{ file: join(import.meta.dirname, '../src/components/Divider/Divider.tsx'), generate: generateDivider },
+	{ file: join(import.meta.dirname, '../src/components/Divider/Divider.styles.css'), generate: generateDividerCss, css: true },
 ];
 
 for (const [dir, control] of [
