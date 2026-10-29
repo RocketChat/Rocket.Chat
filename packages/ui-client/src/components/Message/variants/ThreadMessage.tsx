@@ -1,4 +1,5 @@
 import type { IThreadMainMessage, IThreadMessage } from '@rocket.chat/core-typings';
+import { isVideoConfMessage } from '@rocket.chat/core-typings';
 import { Message, MessageLeftContainer, MessageContainer } from '@rocket.chat/fuselage';
 import { useToggle } from '@rocket.chat/fuselage-hooks';
 import { useUserId } from '@rocket.chat/ui-contexts';
@@ -10,6 +11,7 @@ import IgnoredContent from '../IgnoredContent';
 import MessageAuthorAvatar from '../MessageAuthorAvatar';
 import MessageContentFallback from '../MessageContentFallback';
 import MessageHeader from '../MessageHeader';
+import MessageToolbarHolder from '../MessageToolbarHolder';
 import StatusIndicators from '../StatusIndicators';
 import { useMessageDisplay } from '../contexts/MessageDisplayContext';
 import { useIsMessageEmphasized } from '../hooks/useIsMessageEmphasized';
@@ -61,6 +63,9 @@ const ThreadMessage = ({ message, sequential, unread, ignoredUser }: ThreadMessa
 					</ErrorBoundary>
 				)}
 			</MessageContainer>
+			{!message.private && (
+				<MessageToolbarHolder message={message} context={isVideoConfMessage(message) ? 'videoconf-threads' : 'threads'} />
+			)}
 		</Message>
 	);
 };
