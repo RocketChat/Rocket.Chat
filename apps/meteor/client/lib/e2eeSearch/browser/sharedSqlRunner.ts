@@ -64,7 +64,8 @@ export const createSharedSqlRunner = (name: string, createLocal: () => SqlRunner
 	// The leader runs one call at a time, so no call from another tab runs between a scope check and its SQL.
 	let serving: Promise<unknown> = Promise.resolve();
 
-	const runLocal = async (request: Request): Promise<SqlRow[]> => {
+	// `own` is false for a call from another tab.
+	const runLocal = async (request: Request, own: boolean): Promise<SqlRow[]> => {
 		local ??= createLocal();
 		if (request.op === 'open') {
 			localScope = undefined;
@@ -78,6 +79,11 @@ export const createSharedSqlRunner = (name: string, createLocal: () => SqlRunner
 			return [];
 		}
 		if (request.op === 'close') {
+			// Another tab stops using the index, but this tab still uses it: the index is saved, not closed.
+			if (!own && tabScope === request.scopeId) {
+				if (localScope === request.scopeId) await local.flush();
+				return [];
+			}
 			await local.close(request.scopeId);
 			if (localScope === request.scopeId) localScope = undefined;
 			return [];
@@ -102,8 +108,8 @@ export const createSharedSqlRunner = (name: string, createLocal: () => SqlRunner
 		}
 	};
 
-	const serve = (request: Request): Promise<SqlRow[]> => {
-		const result = serving.then(() => runLocal(request));
+	const serve = (request: Request, own: boolean): Promise<SqlRow[]> => {
+		const result = serving.then(() => runLocal(request, own));
 		serving = result.catch(() => undefined);
 		return result;
 	};
@@ -123,7 +129,7 @@ export const createSharedSqlRunner = (name: string, createLocal: () => SqlRunner
 	};
 
 	const runOwn = (id: number, request: Request) =>
-		serve(request).then(
+		serve(request, true).then(
 			(rows) => settle(id, rows, undefined),
 			(error: unknown) => settle(id, undefined, error instanceof Error ? error.message : String(error)),
 		);
@@ -140,7 +146,7 @@ export const createSharedSqlRunner = (name: string, createLocal: () => SqlRunner
 		}
 		if (data.kind === 'request' && leader) {
 			const { from, id, request } = data;
-			serve(request).then(
+			serve(request, false).then(
 				(rows) => channel?.postMessage({ kind: 'reply', to: from, id, rows } satisfies Message),
 				(error: unknown) =>
 					channel?.postMessage({
@@ -209,6 +215,8 @@ export const createSharedSqlRunner = (name: string, createLocal: () => SqlRunner
 				tabScope = undefined;
 				return { persistent: false, restored: false, locked: true };
 			}
+			// Until this open succeeds, the calls of this tab do not go to the scope that it opened before.
+			if (tabScope !== scopeId) tabScope = undefined;
 			tabKey = { scopeId, wrapKey, schema };
 			const [row] = await send({ op: 'open', scopeId });
 			const state = row as unknown as SqlScopeState;

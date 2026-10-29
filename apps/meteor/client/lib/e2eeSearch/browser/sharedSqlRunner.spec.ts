@@ -112,14 +112,65 @@ describe('createSharedSqlRunner', () => {
 	it('runs no SQL for a tab that opened no index, also while the worker of the leader tab has one open', async () => {
 		useLocks(true);
 		const local = memoryRunner();
-		const runner = createSharedSqlRunner('rc-e2ee-search:test', () => local);
+		const leader = createSharedSqlRunner('rc-e2ee-search:test', () => local);
+		await leader.open('scope', {} as CryptoKey, SCHEMA);
+		const [leaderChannel] = channels;
 
-		await expect(runner.exec({ sql: 'SELECT 1' })).rejects.toThrow('E2EE search index is not open');
-		await expect(runner.batch([{ sql: 'DELETE FROM docs' }])).rejects.toThrow('E2EE search index is not open');
-		await expect(runner.flush()).rejects.toThrow('E2EE search index is not open');
+		useLocks(false);
+		const follower = createSharedSqlRunner('rc-e2ee-search:test', () => memoryRunner());
+		const calls = [follower.exec({ sql: 'SELECT 1' }), follower.batch([{ sql: 'DELETE FROM docs' }]), follower.flush()];
+		const followerChannel = channels[1];
+		for (const [data] of followerChannel.postMessage.mock.calls) leaderChannel.onmessage?.({ data } as MessageEvent);
+		await jest.advanceTimersByTimeAsync(0);
+		const replies = leaderChannel.postMessage.mock.calls.map(([data]) => data).filter((data) => data.kind === 'reply');
+		for (const data of replies) followerChannel.onmessage?.({ data } as MessageEvent);
+
+		for (const call of calls) await expect(call).rejects.toThrow('E2EE search index is not open');
+		expect(replies).toHaveLength(3);
 		expect(local.exec).not.toHaveBeenCalled();
 		expect(local.batch).not.toHaveBeenCalled();
 		expect(local.flush).not.toHaveBeenCalled();
+	});
+
+	it('saves the index of the leader tab, and does not close it, when another tab closes that scope', async () => {
+		useLocks(true);
+		const local = memoryRunner();
+		const leader = createSharedSqlRunner('rc-e2ee-search:test', () => local);
+		await leader.open('scope', {} as CryptoKey, SCHEMA);
+		const [channel] = channels;
+
+		channel.onmessage?.({
+			data: { kind: 'request', from: 'other-tab', id: 0, request: { op: 'close', scopeId: 'scope' } },
+		} as MessageEvent);
+		await jest.advanceTimersByTimeAsync(0);
+		expect(channel.postMessage).toHaveBeenLastCalledWith({ kind: 'reply', to: 'other-tab', id: 0, rows: [] });
+		expect(local.flush).toHaveBeenCalledTimes(1);
+		expect(local.close).not.toHaveBeenCalled();
+
+		await expect(leader.exec({ sql: 'SELECT n FROM t' })).resolves.toEqual([{ n: 1 }]);
+		expect(local.open).toHaveBeenCalledTimes(1);
+
+		await leader.close('scope');
+		expect(local.close).toHaveBeenCalledWith('scope');
+	});
+
+	it('sends no call to the scope that this tab opened before, while the open of another scope fails', async () => {
+		useLocks(false);
+		const runner = createSharedSqlRunner('rc-e2ee-search:test', stalledRunner);
+		const opened = runner.open('a', {} as CryptoKey, SCHEMA);
+		const [channel] = channels;
+		const [{ from, id }] = channel.postMessage.mock.calls[0];
+		channel.onmessage?.({ data: { kind: 'reply', to: from, id, rows: [{ persistent: false, restored: false }] } } as MessageEvent);
+		await opened;
+
+		const other = outcomeOf(runner.open('b', {} as CryptoKey, SCHEMA));
+		await jest.advanceTimersByTimeAsync(30_000);
+		expect(other).toEqual({ settled: true, error: 'E2EE search index did not answer the open call in 30 s' });
+
+		void runner.exec({ sql: 'SELECT 1' }).catch(() => undefined);
+		expect(channel.postMessage).toHaveBeenLastCalledWith(
+			expect.objectContaining({ kind: 'request', request: { op: 'exec', scopeId: undefined, statement: { sql: 'SELECT 1' } } }),
+		);
 	});
 
 	it('creates the tables when this tab becomes the leader and opens the index in its own worker', async () => {
