@@ -27,7 +27,7 @@ import { baseURI } from '../baseURI';
 import { getSearchIndexBackend } from '../e2eeSearch/getSearchIndexBackend';
 import { roomMessageDeletes } from '../e2eeSearch/roomMessageDeletes';
 import { applyDeleteMessageBulkToSearchIndex } from '../e2eeSearch/searchIndexDeletes';
-import { isSearchIndexOptedIn, subscribeToSearchIndexOptIn } from '../e2eeSearch/searchIndexOptIn';
+import { createSearchIndexSyncTimeStore, isSearchIndexOptedIn, subscribeToSearchIndexOptIn } from '../e2eeSearch/searchIndexOptIn';
 import {
 	backfillMonthsToMaxAgeMs,
 	createSearchIndexRuntime,
@@ -778,6 +778,7 @@ class E2E extends Emitter {
 		}
 
 		const generation = this.startGeneration;
+		const indexDecrypted = e2eSearchIndexWriter.bindToOpenIndex();
 		const e2eRoom = await this.getInstanceByRoomId(message.rid);
 
 		if (!e2eRoom) {
@@ -793,7 +794,7 @@ class E2E extends Emitter {
 			return decryptedMessageWithQuote;
 		}
 
-		e2eSearchIndexWriter.index(decryptedMessageWithQuote);
+		indexDecrypted(decryptedMessageWithQuote);
 		// The room key is missing: the retry after E2E_ROOM_READY indexes the message. Only the crawler kept it before.
 		if (isDecryptFailed(decryptedMessageWithQuote)) e2eSearchIndexRuntime.onDecryptFailed(message);
 
@@ -1087,6 +1088,7 @@ roomMessageDeletes.on('deleteMessageBulk', (event) => {
  */
 export const e2eSearchIndexRuntime = createSearchIndexRuntime({
 	session: e2eSearchIndexSession,
+	syncTime: createSearchIndexSyncTimeStore(getE2EUserId),
 	writer: e2eSearchIndexWriter,
 	syncMessages: createSyncMessagesFetcher({
 		baseUrl: baseURI.replace(/\/$/, ''),
