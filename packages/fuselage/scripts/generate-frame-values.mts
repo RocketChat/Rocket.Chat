@@ -2817,6 +2817,29 @@ const generateSidepanelStyles = () => `.rcx-sidepanel--divider {
 	padding-block: ${spacing('x8')};
 }`;
 
+const generateChevron = () =>
+	`${declaredWhereTheyRender}${frame(
+		'ChevronFrame',
+		{ render: 'span', ...flexBox, display: 'inline-flex', alignSelf: 'center' },
+		{
+			direction: {
+				up: { transform: 'rotate(-180deg)' },
+				down: { transform: 'rotate(0deg)' },
+				right: { transform: 'rotate(-90deg)' },
+				left: { transform: 'rotate(-270deg)' },
+			},
+		},
+	)}`;
+
+// A frame cannot test the writing direction, so the horizontal chevrons turn the other way here
+const generateChevronCss = () => `.rcx-chevron.rcx-chevron--right:dir(rtl) {
+	transform: rotate(-270deg);
+}
+
+.rcx-chevron.rcx-chevron--left:dir(rtl) {
+	transform: rotate(-90deg);
+}`;
+
 const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
 	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
@@ -2916,6 +2939,8 @@ const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: sbFile('Sidepanel/SidepanelHeader.tsx'), generate: generateSidepanelHeader },
 	{ file: sbFile('Sidepanel/SidepanelHeaderTitle.tsx'), generate: generateSidepanelHeaderTitle },
 	{ file: sbFile('Sidepanel/Sidepanel.styles.css'), generate: generateSidepanelStyles, css: true },
+	{ file: join(import.meta.dirname, '../src/components/Chevron/Chevron.tsx'), generate: generateChevron },
+	{ file: join(import.meta.dirname, '../src/components/Chevron/Chevron.styles.css'), generate: generateChevronCss, css: true },
 ];
 
 for (const [dir, control] of [
