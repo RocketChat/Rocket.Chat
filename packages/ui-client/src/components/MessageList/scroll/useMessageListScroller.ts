@@ -245,6 +245,9 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 
 	const dispatchRef = useRef<(event: MessageListScrollEvent) => void>(() => undefined);
 
+	// A page of newer messages can be committed before or after its load settles; until then, rows added at the end are that page
+	const awaitingNewerPageRef = useRef(false);
+
 	const load = (loader: (() => Promise<unknown> | void) | undefined) => {
 		void Promise.resolve()
 			.then(() => loader?.())
@@ -272,6 +275,7 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 				break;
 
 			case 'loadNewer':
+				awaitingNewerPageRef.current = true;
 				load(onLoadNewerMessages);
 				break;
 
@@ -326,7 +330,11 @@ export const useMessageListScroller = <TMessage extends IMessage>({
 		if (isOwnMessage(last.message)) {
 			return 'own';
 		}
-		return isLoadingNewerMessages || stateRef.current?.loading === 'newer' ? 'page' : 'live';
+		if (awaitingNewerPageRef.current) {
+			awaitingNewerPageRef.current = false;
+			return 'page';
+		}
+		return isLoadingNewerMessages ? 'page' : 'live';
 	};
 
 	// Strict mode runs this effect twice for one commit; each plan is carried out once
