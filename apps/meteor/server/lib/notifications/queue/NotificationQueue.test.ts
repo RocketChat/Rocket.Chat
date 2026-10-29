@@ -1,5 +1,7 @@
-import { afterEach, beforeEach, describe, it } from 'node:test';
+import { afterEach, before, beforeEach, describe, it } from 'node:test';
 
+import type { INotificationQueueModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -14,7 +16,6 @@ const notificationQueueModelStub = {
 const pushNotificationStub = { send: sinon.stub() };
 
 const { Notification } = proxyquire.noCallThru().load('./NotificationQueue', {
-	'@rocket.chat/models': { NotificationQueue: notificationQueueModelStub, Users: {} },
 	'@rocket.chat/tracing': { tracerSpan: (_name: string, _options: unknown, fn: () => unknown) => fn() },
 	'meteor/meteor': { Meteor: { startup: sinon.stub() } },
 	'../../logger/system': { SystemLogger: { error: sinon.stub() } },
@@ -25,6 +26,10 @@ const { Notification } = proxyquire.noCallThru().load('./NotificationQueue', {
 const queueItem = (id: string) => ({ _id: id, uid: 'user1', rid: 'room1', mid: 'msg1', items: [{ type: 'push', data: {} }] });
 
 describe('NotificationQueue worker', () => {
+	before(() => {
+		registerModel('INotificationQueueModel', notificationQueueModelStub as unknown as INotificationQueueModel);
+	});
+
 	beforeEach(() => {
 		Notification.maxBatchSize = 2;
 		notificationQueueModelStub.clearScheduleByUserId.resolves({ modifiedCount: 0 });
