@@ -18,6 +18,9 @@ export type SharedSqlRunner = SqlRunner & {
 	isLeader(): boolean;
 };
 
+// A call that gets no answer in this time fails, so a lost reply or a stalled worker does not hang the caller.
+const CALL_TIMEOUT_MS = 30_000;
+
 const canShare = (): boolean =>
 	typeof navigator !== 'undefined' && typeof navigator.locks?.request === 'function' && typeof BroadcastChannel === 'function';
 
@@ -41,7 +44,10 @@ export const createSharedSqlRunner = (name: string, createLocal: () => SqlRunner
 	}
 
 	const self = crypto.randomUUID();
-	const pending = new Map<number, { request: Request; resolve: (rows: SqlRow[]) => void; reject: (error: Error) => void }>();
+	const pending = new Map<
+		number,
+		{ request: Request; resolve: (rows: SqlRow[]) => void; reject: (error: Error) => void; timer: ReturnType<typeof setTimeout> }
+	>();
 	let nextId = 0;
 	let channel: BroadcastChannel | undefined;
 	let local: SqlRunner | undefined;
@@ -107,6 +113,7 @@ export const createSharedSqlRunner = (name: string, createLocal: () => SqlRunner
 		const call = pending.get(id);
 		if (!call) return;
 		pending.delete(id);
+		clearTimeout(call.timer);
 		if (error !== undefined) call.reject(new Error(error));
 		else call.resolve(rows ?? []);
 	};
@@ -169,7 +176,10 @@ export const createSharedSqlRunner = (name: string, createLocal: () => SqlRunner
 		channel?.close();
 		channel = undefined;
 		leader = false;
-		for (const call of pending.values()) call.reject(new Error('E2EE search index is closed'));
+		for (const call of pending.values()) {
+			clearTimeout(call.timer);
+			call.reject(new Error('E2EE search index is closed'));
+		}
 		pending.clear();
 	};
 
@@ -177,7 +187,11 @@ export const createSharedSqlRunner = (name: string, createLocal: () => SqlRunner
 		new Promise<SqlRow[]>((resolve, reject) => {
 			start();
 			const id = nextId++;
-			pending.set(id, { request, resolve, reject });
+			const timer = setTimeout(
+				() => settle(id, undefined, `E2EE search index did not answer the ${request.op} call in ${CALL_TIMEOUT_MS / 1000} s`),
+				CALL_TIMEOUT_MS,
+			);
+			pending.set(id, { request, resolve, reject, timer });
 			if (leader) void runOwn(id, request);
 			else channel?.postMessage({ kind: 'request', from: self, id, request } satisfies Message);
 		});

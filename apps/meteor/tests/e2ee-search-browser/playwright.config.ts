@@ -8,7 +8,13 @@ export default {
 	timeout: 60_000,
 	use: { headless: true },
 	projects: [
-		{ name: 'chrome', use: { browserName: 'chromium', channel: 'chrome' } },
+		// Chrome gives each tab except the front one a lower process priority. Playwright's --disable-renderer-backgrounding
+		// does not stop the Performance Manager policy that does it. When the machine is busy, the worker of the leader tab
+		// in multitab.pw.ts then waits more than 60 s for a CPU, and the test times out.
+		{
+			name: 'chrome',
+			use: { browserName: 'chromium', channel: 'chrome', launchOptions: { args: ['--disable-features=PMProcessPriorityPolicy'] } },
+		},
 		{ name: 'firefox', use: { browserName: 'firefox' } },
 		{ name: 'webkit', use: { browserName: 'webkit' } },
 	],
