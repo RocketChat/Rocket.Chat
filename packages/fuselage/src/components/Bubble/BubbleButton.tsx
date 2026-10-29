@@ -1,6 +1,7 @@
 import type { Keys as IconName } from '@rocket.chat/icons';
 import type { ButtonHTMLAttributes, ReactNode } from 'react';
 
+import { prependClassName } from '../../helpers/prependClassName';
 import { Icon } from '../Icon';
 
 type BubbleButtonProps = {
@@ -10,9 +11,12 @@ type BubbleButtonProps = {
 	icon?: IconName;
 } & Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'onClick'>;
 
-export const BubbleButton = ({ secondary, label, onClick, icon, ...props }: BubbleButtonProps) => (
+export const BubbleButton = ({ secondary, label, onClick, icon, className, ...props }: BubbleButtonProps) => (
 	<button
-		className={`rcx-box rcx-box--full rcx-bubble__button ${secondary ? 'rcx-bubble__button--secondary' : 'rcx-bubble__button--primary'}`}
+		className={prependClassName(
+			className,
+			`rcx-box rcx-box--full rcx-bubble__button ${secondary ? 'rcx-bubble__button--secondary' : 'rcx-bubble__button--primary'}`,
+		)}
 		onClick={onClick}
 		{...props}
 	>
