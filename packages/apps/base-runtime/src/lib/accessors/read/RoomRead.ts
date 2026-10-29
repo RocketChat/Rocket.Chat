@@ -36,14 +36,22 @@ export class RoomRead implements IRoomRead {
 			throw new Error(`Invalid limit provided. Expected number <= 100, got ${options.limit}`);
 		}
 
-		options.limit ??= 100;
-		options.showThreadMessages ??= true;
+		const normalizedOptions = { ...options };
+		normalizedOptions.limit ??= 100;
+		normalizedOptions.showThreadMessages ??= true;
 
-		if (options.sort) {
-			this.validateSort(options.sort);
+		if (normalizedOptions.sort) {
+			this.validateSort(normalizedOptions.sort);
 		}
 
-		return bridgeCall<IMessageRaw[]>(this.senderFn, 'getRoomBridge', 'doGetMessages', roomId, options as GetMessagesOptions, 'APP_ID');
+		return bridgeCall<IMessageRaw[]>(
+			this.senderFn,
+			'getRoomBridge',
+			'doGetMessages',
+			roomId,
+			normalizedOptions as GetMessagesOptions,
+			'APP_ID',
+		);
 	}
 
 	public getMembers(roomId: string): Promise<Array<IUser>> {
