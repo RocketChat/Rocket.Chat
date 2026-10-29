@@ -2020,6 +2020,9 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				usernames: username,
 				uids: userId,
 			},
+			$inc: {
+				usersCount: -1,
+			},
 		};
 
 		return this.updateMany(query, update);
