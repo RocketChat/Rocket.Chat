@@ -11,5 +11,6 @@ export const distOnlyWorkspacePackages = [
 	'@rocket.chat/ui-kit',
 ];
 
-// Built only for the files public/ links to (the audio recording worker, the voice call popout page).
-export const publicAssetWorkspacePackages = ['@rocket.chat/mp3-encoder', '@rocket.chat/ui-voip'];
+// Built only for the files public/ links to (the audio recording worker, the E2EE search worker, the voice call popout
+// page).
+export const publicAssetWorkspacePackages = ['@rocket.chat/e2ee-search-worker', '@rocket.chat/mp3-encoder', '@rocket.chat/ui-voip'];

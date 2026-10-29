@@ -21,7 +21,7 @@ class Settings {
 			}
 
 			for (const setting of state.records.values()) {
-				if (setting.value !== prevState.get(setting._id)?.value) {
+				if (setting.value !== prevState.records.get(setting._id)?.value) {
 					this.handleChange(setting._id, setting.value);
 				}
 			}
@@ -33,7 +33,7 @@ class Settings {
 	private handleChange(key: string, value: SettingValue): void {
 		for (const _key of ['*', key]) {
 			const callbacks = this.callbacks.get(_key);
-			callbacks?.forEach((callback) => callback(_key, value));
+			callbacks?.forEach((callback) => callback(key, value));
 		}
 	}
 

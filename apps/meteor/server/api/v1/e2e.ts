@@ -31,6 +31,7 @@ const LockMap = new ExpiryMap<string, boolean>(10000);
 type E2eSetRoomKeyIdProps = {
 	rid: string;
 	keyID: string;
+	key?: string;
 };
 
 type e2eGetUsersOfRoomWithoutKeyParamsGET = {
@@ -63,6 +64,10 @@ const E2eSetRoomKeyIdSchema = {
 		},
 		keyID: {
 			type: 'string',
+		},
+		key: {
+			type: 'string',
+			minLength: 1,
 		},
 	},
 	required: ['rid', 'keyID'],
@@ -190,9 +195,9 @@ const e2eEndpoints = API.v1
 		},
 
 		async function action() {
-			const { rid, keyID } = this.bodyParams;
+			const { rid, keyID, key } = this.bodyParams;
 
-			await setRoomKeyIDMethod(this.userId, rid, keyID);
+			await setRoomKeyIDMethod(this.userId, rid, keyID, key);
 
 			return API.v1.success();
 		},
@@ -236,6 +241,33 @@ const e2eEndpoints = API.v1
 			const result = await Users.fetchKeysByUserId(this.userId);
 
 			return API.v1.success(result as { public_key?: string; private_key?: string });
+		},
+	)
+	.get(
+		'e2e.fetchMyPublicKey',
+		{
+			authRequired: true,
+			query: undefined,
+			response: {
+				401: validateUnauthorizedErrorResponse,
+				200: ajv.compile<{ public_key: string | null }>({
+					type: 'object',
+					properties: {
+						public_key: { type: ['string', 'null'] },
+						success: { type: 'boolean', enum: [true] },
+					},
+					required: ['public_key', 'success'],
+					additionalProperties: false,
+				}),
+			},
+		},
+		async function action() {
+			const user = await Users.findOneById<Pick<IUser, 'e2e'>>(this.userId, { projection: { 'e2e.public_key': 1 } });
+			const publicKey = user?.e2e?.public_key;
+
+			// An explicit null tells a client that the server holds no key, which is
+			// different from an answer that does not say.
+			return API.v1.success({ public_key: publicKey || null });
 		},
 	)
 	.get(

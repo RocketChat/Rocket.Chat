@@ -18,7 +18,7 @@ import { API } from '../api';
 
 const subscriptionsGetResponseSchema = ajv.compile<{
 	update: ISubscription[];
-	remove: (Pick<ISubscription, '_id'> & { _deletedAt: Date })[];
+	remove: (Pick<ISubscription, '_id' | 'rid'> & { _deletedAt: Date })[];
 }>({
 	type: 'object',
 	properties: {
@@ -29,6 +29,7 @@ const subscriptionsGetResponseSchema = ajv.compile<{
 				type: 'object',
 				properties: {
 					_id: { type: 'string' },
+					rid: { type: 'string' },
 					_deletedAt: { type: 'string', format: 'date-time' },
 				},
 				required: ['_id', '_deletedAt'],

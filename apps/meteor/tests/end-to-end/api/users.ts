@@ -269,6 +269,49 @@ describe('[Users]', () => {
 		});
 	});
 
+	describe('[/e2e.fetchMyPublicKey]', () => {
+		let userWithoutKeys: TestUser<IUser>;
+		let userWithoutKeysCredentials: Credentials;
+
+		before(async () => {
+			userWithoutKeys = await createUser();
+			userWithoutKeysCredentials = await login(userWithoutKeys.username, password);
+		});
+
+		after(() => deleteUser(userWithoutKeys));
+
+		it('should return unauthorized when not authenticated', async () => {
+			await request.get(api('e2e.fetchMyPublicKey')).expect(401);
+		});
+
+		it('should return only the public key of a user with keys', async () => {
+			await request
+				.get(api('e2e.fetchMyPublicKey'))
+				.set(userCredentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('public_key', 'test');
+					expect(res.body).to.not.have.property('private_key');
+					expect(res.body).to.not.have.property('e2e');
+				});
+		});
+
+		it('should return a null public key for a user without keys', async () => {
+			await request
+				.get(api('e2e.fetchMyPublicKey'))
+				.set(userWithoutKeysCredentials)
+				.expect('Content-Type', 'application/json')
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('public_key', null);
+					expect(res.body).to.not.have.property('private_key');
+				});
+		});
+	});
+
 	describe('[/users.create]', () => {
 		before(async () => clearCustomFields());
 		after(async () => clearCustomFields());

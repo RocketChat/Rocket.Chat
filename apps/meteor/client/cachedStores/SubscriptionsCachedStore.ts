@@ -3,6 +3,7 @@ import { DEFAULT_SLA_CONFIG, isRoomNativeFederated, LivechatPriorityWeight } fro
 import type { SubscriptionWithRoom } from '@rocket.chat/ui-contexts';
 
 import { PrivateCachedStore } from '../lib/cachedStores/CachedStore';
+import { subscriptionRemovals } from '../lib/e2eeSearch/subscriptionRemovals';
 import { Rooms, Subscriptions } from '../stores';
 
 class SubscriptionsCachedStore extends PrivateCachedStore<SubscriptionWithRoom, ISubscription> {
@@ -88,6 +89,10 @@ class SubscriptionsCachedStore extends PrivateCachedStore<SubscriptionWithRoom, 
 		}
 
 		return deserialized && Rooms.use.getState().has(deserialized.rid) ? this.mapRecord(deserialized) : deserialized;
+	}
+
+	protected override handleSyncEvent(action: 'removed' | 'changed', record: SubscriptionWithRoom) {
+		if (action === 'removed' && record.rid) subscriptionRemovals.emit('removed', { rid: record.rid });
 	}
 }
 

@@ -1,0 +1,31 @@
+{
+	"name": "@rocket.chat/e2ee-search-worker",
+	"version": "0.0.1",
+	"private": true,
+	"description": "The web worker that keeps the browser E2EE search index in SQLite WebAssembly, with an encrypted copy in OPFS",
+	"license": "MIT",
+	"author": {
+		"name": "Rocket.Chat",
+		"url": "https://rocket.chat/"
+	},
+	"files": [
+		"/dist"
+	],
+	"scripts": {
+		"build": "rollup -c",
+		"lint": "yarn run -T oxlint",
+		"lint:fix": "yarn run -T oxlint --fix",
+		"start": "rollup -c -w",
+		"typecheck": "tsc --noEmit"
+	},
+	"dependencies": {
+		"@sqlite.org/sqlite-wasm": "3.53.4-build2"
+	},
+	"devDependencies": {
+		"@rocket.chat/tsconfig": "workspace:~",
+		"@rollup/plugin-node-resolve": "~16.0.3",
+		"@rollup/plugin-typescript": "~12.3.0",
+		"rollup": "~4.62.5",
+		"typescript": "~5.9.3"
+	}
+}

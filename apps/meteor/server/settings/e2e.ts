@@ -48,4 +48,64 @@ export const createE2ESettings = () =>
 			public: true,
 			enableQuery: { _id: 'E2E_Enable', value: true },
 		});
+
+		await this.add('E2E_Enable_Local_Search', false, {
+			type: 'boolean',
+			public: true,
+			enableQuery: { _id: 'E2E_Enable', value: true },
+		});
+
+		await this.add('E2E_Local_Search_Backfill_Months', 12, {
+			type: 'int',
+			public: true,
+			enableQuery: [
+				{ _id: 'E2E_Enable', value: true },
+				{ _id: 'E2E_Enable_Local_Search', value: true },
+			],
+		});
+
+		await this.add('E2E_Local_Search_Backfill_Max_Messages_Per_Room', 0, {
+			type: 'int',
+			public: true,
+			enableQuery: [
+				{ _id: 'E2E_Enable', value: true },
+				{ _id: 'E2E_Enable_Local_Search', value: true },
+			],
+		});
+
+		await this.add('E2E_Local_Search_Backfill_Page_Size', 100, {
+			type: 'int',
+			public: true,
+			enableQuery: [
+				{ _id: 'E2E_Enable', value: true },
+				{ _id: 'E2E_Enable_Local_Search', value: true },
+			],
+		});
+
+		await this.add('E2E_Local_Search_Backfill_Pause', 12, {
+			type: 'int',
+			public: true,
+			enableQuery: [
+				{ _id: 'E2E_Enable', value: true },
+				{ _id: 'E2E_Enable_Local_Search', value: true },
+			],
+		});
+
+		await this.add('E2E_Local_Search_Backoff_Min', 10, {
+			type: 'int',
+			public: true,
+			enableQuery: [
+				{ _id: 'E2E_Enable', value: true },
+				{ _id: 'E2E_Enable_Local_Search', value: true },
+			],
+		});
+
+		await this.add('E2E_Local_Search_Backoff_Max', 600, {
+			type: 'int',
+			public: true,
+			enableQuery: [
+				{ _id: 'E2E_Enable', value: true },
+				{ _id: 'E2E_Enable_Local_Search', value: true },
+			],
+		});
 	});

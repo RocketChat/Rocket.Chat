@@ -1,6 +1,7 @@
 import { Box, Divider } from '@rocket.chat/fuselage';
 
 import { ChangePassphrase } from './ChangePassphrase';
+import LocalSearchOptIn from './LocalSearchOptIn';
 import { ResetPassphrase } from './ResetPassphrase';
 
 const EndToEnd = () => {
@@ -11,6 +12,7 @@ const EndToEnd = () => {
 				<Divider flush />
 			</Box>
 			<ResetPassphrase />
+			<LocalSearchOptIn />
 		</Box>
 	);
 };

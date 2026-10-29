@@ -1,12 +1,21 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IRoom } from '@rocket.chat/core-typings';
-import { Rooms } from '@rocket.chat/models';
+import { Rooms, Subscriptions } from '@rocket.chat/models';
 
+import { updateGroupKey } from './updateGroupKey';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
+import { SystemLogger } from '../../lib/logger/system';
 import { notifyOnRoomChanged } from '../../lib/notifyListener';
 
-export const setRoomKeyIDMethod = async (userId: string, rid: IRoom['_id'], keyID: string): Promise<void> => {
+// `key` is the room key encrypted for the caller. Sent with the key id, it is saved in the same request, so the
+// room never has a key id that no member holds.
+export const setRoomKeyIDMethod = async (userId: string, rid: IRoom['_id'], keyID: string, key?: string): Promise<void> => {
 	if (!(await canAccessRoomIdAsync(rid, userId))) {
+		throw new ClientSafeError('error-invalid-room', 'Invalid room', { method: 'e2e.setRoomKeyID' });
+	}
+
+	// The key is saved on the caller's subscription: with no subscription, the room would get a key id that no member holds.
+	if (key && !(await Subscriptions.findOneByRoomIdAndUserId(rid, userId, { projection: { _id: 1 } }))) {
 		throw new ClientSafeError('error-invalid-room', 'Invalid room', { method: 'e2e.setRoomKeyID' });
 	}
 
@@ -16,6 +25,20 @@ export const setRoomKeyIDMethod = async (userId: string, rid: IRoom['_id'], keyI
 		throw new ClientSafeError('error-room-e2e-key-already-exists', 'E2E Key ID already exists', {
 			method: 'e2e.setRoomKeyID',
 		});
+	}
+
+	if (key) {
+		try {
+			await updateGroupKey(rid, userId, key, userId);
+		} catch (error) {
+			// The caller can try again only when the room has no key id.
+			try {
+				await Rooms.unsetE2eKeyId(rid, keyID);
+			} catch (err) {
+				SystemLogger.error({ msg: 'Could not remove the E2E key id of the room after the room key was not saved', rid, err });
+			}
+			throw error;
+		}
 	}
 
 	void notifyOnRoomChanged(room);

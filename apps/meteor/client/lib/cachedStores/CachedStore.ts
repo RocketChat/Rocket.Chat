@@ -1,4 +1,5 @@
-import type { IRocketChatRecord } from '@rocket.chat/core-typings';
+import type { EncryptedMessageContent, IMessage, IRocketChatRecord } from '@rocket.chat/core-typings';
+import { isEncryptedMessageContent, isRemovedFileAttachment } from '@rocket.chat/core-typings';
 import type { StreamNames } from '@rocket.chat/ddp-client';
 import { isTruthy } from '@rocket.chat/tools';
 import localforage from 'localforage';
@@ -35,6 +36,63 @@ const hasUnserializedUpdatedAt = <T>(record: T): record is T & { _updatedAt: Con
 	'_updatedAt' in record &&
 	!((record as unknown as { _updatedAt: unknown })._updatedAt instanceof Date);
 
+// The cache is written to disk (IndexedDB), and the client decrypts end-to-end encrypted last messages in memory.
+// Keep only the ciphertext form of an encrypted last message, so the client decrypts it again after a reload.
+// An old-format message carried its ciphertext in `msg`, which the decryption replaced: drop it.
+const toCacheRecord = <T>(record: T): T => {
+	if (typeof record !== 'object' || record === null || !('lastMessage' in record)) {
+		return record;
+	}
+
+	const { lastMessage } = record;
+	if (typeof lastMessage !== 'object' || lastMessage === null || !('t' in lastMessage) || lastMessage.t !== 'e2e') {
+		return record;
+	}
+
+	if (!isEncryptedMessageContent(lastMessage)) {
+		if (!('e2e' in lastMessage) || lastMessage.e2e !== 'done') {
+			return record;
+		}
+		const { lastMessage: _decrypted, ...rest } = record;
+		return rest as T;
+	}
+
+	const { _id, rid, ts, u, _updatedAt, tmid, content, attachments, e2e } = lastMessage as Partial<IMessage> & EncryptedMessageContent;
+	// Before the decryption, the attachments are the server's markers of deleted files. The decryption replaces them with
+	// the decrypted attachments, so a decrypted message keeps none.
+	const removedFiles = e2e === 'done' ? [] : (attachments?.filter(isRemovedFileAttachment) ?? []);
+	return {
+		...record,
+		lastMessage: {
+			_id,
+			rid,
+			ts,
+			u,
+			_updatedAt,
+			...(tmid && { tmid }),
+			t: 'e2e',
+			e2e: 'pending',
+			content,
+			...(removedFiles.length > 0 && { attachments: removedFiles }),
+		},
+	};
+};
+
+const hasDecryptedLastMessage = (record: unknown): boolean => {
+	if (typeof record !== 'object' || record === null || !('lastMessage' in record)) {
+		return false;
+	}
+	const { lastMessage } = record;
+	return (
+		typeof lastMessage === 'object' &&
+		lastMessage !== null &&
+		't' in lastMessage &&
+		lastMessage.t === 'e2e' &&
+		'e2e' in lastMessage &&
+		lastMessage.e2e === 'done'
+	);
+};
+
 localforage.config({ name: baseURI });
 
 export interface IWithManageableCache {
@@ -64,6 +122,8 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 
 	readonly useReady = create(() => false);
 
+	private readonly scrubbedCache: Promise<void>;
+
 	constructor({ name, eventType, store }: { name: Name; eventType: StreamNames; store: UseBoundStore<StoreApi<IDocumentMapStore<T>>> }) {
 		this.name = name;
 		this.eventType = eventType;
@@ -74,6 +134,28 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 			: () => undefined;
 
 		CachedStoresManager.register(this);
+
+		this.scrubbedCache = this.scrubPersistedCache();
+	}
+
+	// Older clients wrote decrypted last messages of encrypted rooms to the cache.
+	// Rewrite such a cache in place when the store starts, also with no login, and keep the rest of it.
+	private async scrubPersistedCache() {
+		try {
+			const data = await localforage.getItem<{ records?: unknown }>(this.name);
+			if (!data || !Array.isArray(data.records)) {
+				return;
+			}
+
+			if (!data.records.some(hasDecryptedLastMessage)) {
+				return;
+			}
+
+			await localforage.setItem(this.name, { ...data, records: data.records.map(toCacheRecord) });
+			this.log('scrubbed decrypted messages from the cache');
+		} catch (error) {
+			console.error(`CachedCollection ${this.name}: could not scrub the cache`, error);
+		}
 	}
 
 	protected get eventName(): `${Name}-changed` | `${string}/${Name}-changed` {
@@ -86,6 +168,7 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 	protected abstract getToken(): unknown;
 
 	private async loadFromCache() {
+		await this.scrubbedCache;
 		const data = await localforage.getItem<{ version: number; token: unknown; records: unknown[]; updatedAt: Date | string }>(this.name);
 
 		if (!data) {
@@ -192,23 +275,38 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 		await this.save();
 	}
 
-	private save = withDebouncing({ wait: 1000 })(async () => {
+	/** The cache write that runs now, if any. */
+	private saving: Promise<void> = Promise.resolve();
+
+	private save = withDebouncing({ wait: 1000 })(() => {
+		const write = this.writeCache();
+		this.saving = write.catch(() => undefined);
+		return write;
+	});
+
+	private async writeCache() {
+		await this.scrubbedCache;
 		this.log('saving cache');
 		await localforage.setItem(this.name, {
 			updatedAt: this.updatedAt,
 			version: this.version,
 			token: this.getToken(),
-			records: Array.from(this.store.getState().records.values()),
+			records: Array.from(this.store.getState().records.values(), toCacheRecord),
 		});
 		this.log('saving cache (done)');
-	});
+	}
 
 	abstract clearCacheOnLogout(): void;
 
 	protected async clearCache() {
 		this.log('clearing cache');
-		await localforage.removeItem(this.name);
+		// A save or the startup scrub that writes after the remove would bring the cache back. The records go first, so a
+		// later save writes none of them, and the remove waits for the writes that already run.
 		this.store.getState().replaceAll([]);
+		this.save.cancel();
+		await this.scrubbedCache;
+		await this.saving;
+		await localforage.removeItem(this.name);
 	}
 
 	protected setupListener() {

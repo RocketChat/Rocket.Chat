@@ -87,7 +87,6 @@ export type EventSignatures = {
 	'notify.uiInteraction'(uid: string, data: UiKit.ServerInteraction): void;
 	'notify.updateInvites'(uid: string, data: { invite: Omit<IInvite, '_updatedAt'> }): void;
 	'notify.ephemeralMessage'(uid: string, rid: string, message: AtLeast<IMessage, 'msg'>): void;
-	'notify.e2e.keyRequest'(rid: string, data: IRoom['e2eKeyId']): void;
 	'notify.deleteMessage'(rid: string, data: { _id: string }): void;
 	'notify.deleteMessageBulk'(
 		rid: string,

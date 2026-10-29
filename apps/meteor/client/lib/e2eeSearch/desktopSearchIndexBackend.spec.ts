@@ -1,0 +1,102 @@
+import type { ISearchIndexBackend } from '@rocket.chat/desktop-api';
+
+import { getDesktopSearchIndexBackend } from './desktopSearchIndexBackend';
+
+const methods = ['open', 'upsert', 'remove', 'removeRoom', 'listRooms', 'search', 'getRoomState', 'setRoomState', 'stats', 'wipe'] as const;
+
+const createBridge = () =>
+	Object.fromEntries(
+		methods.map((method) => [method, jest.fn(async () => `${method} result`)]),
+	) as unknown as jest.Mocked<ISearchIndexBackend>;
+
+const setDesktop = (desktop: unknown) => {
+	(window as { RocketChatDesktop?: unknown }).RocketChatDesktop = desktop;
+};
+
+afterEach(() => {
+	setDesktop(undefined);
+});
+
+describe('getDesktopSearchIndexBackend', () => {
+	it('returns no backend outside the desktop app', () => {
+		expect(getDesktopSearchIndexBackend()).toBeUndefined();
+	});
+
+	it('returns no backend when the desktop app has no E2EE search bridge', () => {
+		setDesktop({ setBadge: jest.fn() });
+
+		expect(getDesktopSearchIndexBackend()).toBeUndefined();
+	});
+
+	it('forwards each call and its result unchanged', async () => {
+		const bridge = createBridge();
+		setDesktop(Object.freeze({ e2eeSearch: Object.freeze(bridge) }));
+		const wrapKey = new Uint8Array(32).fill(7);
+		const doc = { id: 'm1', rid: 'r1', uid: 'u1', username: 'alice', ts: 1, updatedAt: 1, kind: 'text' as const, body: 'needle' };
+		const roomState = { backfillDone: false, backfillCursor: 'c1' };
+
+		const backend = getDesktopSearchIndexBackend();
+		if (!backend) throw new Error('expected a backend');
+
+		await expect(backend.open({ userId: 'u1', wrapKey })).resolves.toBe('open result');
+		await expect(backend.upsert([doc])).resolves.toBe('upsert result');
+		await expect(backend.remove(['m1'])).resolves.toBe('remove result');
+		await expect(backend.removeRoom('r1')).resolves.toBe('removeRoom result');
+		await expect(backend.listRooms()).resolves.toBe('listRooms result');
+		await expect(backend.search({ text: 'needle', rid: 'r1' })).resolves.toBe('search result');
+		await expect(backend.getRoomState('r1')).resolves.toBe('getRoomState result');
+		await expect(backend.setRoomState('r1', roomState)).resolves.toBe('setRoomState result');
+		await expect(backend.stats()).resolves.toBe('stats result');
+		await expect(backend.wipe()).resolves.toBe('wipe result');
+		await expect(backend.wipe({ userId: 'u1' })).resolves.toBe('wipe result');
+
+		expect(bridge.open).toHaveBeenCalledWith({ userId: 'u1', wrapKey });
+		expect(bridge.open.mock.calls[0][0].wrapKey).toBe(wrapKey);
+		expect(bridge.upsert).toHaveBeenCalledWith([doc]);
+		expect(bridge.remove).toHaveBeenCalledWith(['m1']);
+		expect(bridge.removeRoom).toHaveBeenCalledWith('r1');
+		expect(bridge.listRooms).toHaveBeenCalledWith();
+		expect(bridge.search).toHaveBeenCalledWith({ text: 'needle', rid: 'r1' });
+		expect(bridge.getRoomState).toHaveBeenCalledWith('r1');
+		expect(bridge.setRoomState).toHaveBeenCalledWith('r1', roomState);
+		expect(bridge.stats).toHaveBeenCalledWith();
+		expect(bridge.wipe).toHaveBeenNthCalledWith(1);
+		expect(bridge.wipe).toHaveBeenNthCalledWith(2, { userId: 'u1' });
+	});
+
+	it('forwards close when the desktop app offers it', async () => {
+		const bridge = createBridge();
+		const close = jest.fn(async () => undefined);
+		setDesktop({ e2eeSearch: { ...bridge, close } });
+
+		const backend = getDesktopSearchIndexBackend();
+		await backend?.close?.();
+
+		expect(close).toHaveBeenCalledWith();
+	});
+
+	it('returns a backend without close for a desktop app that has no close', () => {
+		setDesktop({ e2eeSearch: createBridge() });
+
+		const backend = getDesktopSearchIndexBackend();
+
+		expect(backend).toBeDefined();
+		expect(backend).not.toHaveProperty('close');
+	});
+
+	it('passes a bridge rejection to the caller', async () => {
+		const bridge = createBridge();
+		bridge.search.mockRejectedValueOnce(new Error('E2EE search call failed'));
+		setDesktop({ e2eeSearch: bridge });
+
+		await expect(getDesktopSearchIndexBackend()?.search({ text: 'needle' })).rejects.toThrow('E2EE search call failed');
+	});
+
+	it('reads the bridge again on each call, so a desktop reload of the bridge is seen', () => {
+		setDesktop({ e2eeSearch: createBridge() });
+		expect(getDesktopSearchIndexBackend()).toBeDefined();
+
+		setDesktop({});
+		expect(getDesktopSearchIndexBackend()).toBeUndefined();
+	});
+});

@@ -8,6 +8,7 @@ import { RoomManager } from './RoomManager';
 import { Messages, Subscriptions } from '../stores';
 import { upsertMessage, RoomHistoryManager } from './RoomHistoryManager';
 import { sdk } from './SDKClient';
+import { roomMessageDeletes } from './e2eeSearch/roomMessageDeletes';
 import { roomCoordinator } from './rooms/roomCoordinator';
 import { fireGlobalEvent } from './utils/fireGlobalEvent';
 import { getConfig } from './utils/getConfig';
@@ -219,14 +220,20 @@ const openRoom = (typeName: string, record: OpenedRoom) => {
 					(record) => record.tmid === msg._id,
 					({ tmid: _, ...record }) => record,
 				);
+
+				roomMessageDeletes.emit('deleteMessage', { _id: msg._id });
 			}),
 			sdk.stream('notify-room', [`${record.rid}/deleteMessageBulk`], async (params) => {
 				const query = createDeleteQuery(params);
 				const predicate = createPredicateFromFilter(query);
 
 				if (params.filesOnly) {
-					return Messages.state.update(predicate, (record) => modifyMessageOnFilesDelete(record, params.replaceFileAttachmentsWith));
+					Messages.state.update(predicate, (record) => modifyMessageOnFilesDelete(record, params.replaceFileAttachmentsWith));
+					roomMessageDeletes.emit('deleteMessageBulk', params);
+					return;
 				}
+
+				roomMessageDeletes.emit('deleteMessageBulk', params);
 
 				if (params.showDeletedStatus) {
 					return Messages.state.update(predicate, (record) => ({

@@ -295,6 +295,8 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		e2eKeyId: string,
 		options?: Omit<FindOneAndUpdateOptions, 'returnDocument' | 'includeResultMetadata' | 'upsert'>,
 	): Promise<IRoom | null>;
+	/** Removes the key id of the room only while it is still `e2eKeyId`. */
+	unsetE2eKeyId(roomId: string, e2eKeyId: string): Promise<UpdateResult>;
 	findOneByImportId<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		importId: string,
 		options?: O,
@@ -454,6 +456,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	removeByIds(rids: string[]): Promise<DeleteResult>;
 	removeDirectRoomContainingUsername(username: string): Promise<DeleteResult>;
 	countDiscussions(): Promise<number>;
+	addUserIdsToE2EEQueueByRoomId(roomId: IRoom['_id'], uids: IUser['_id'][]): Promise<UpdateResult>;
 	addUserIdToE2EEQueueByRoomIds(roomIds: IRoom['_id'][], uid: IUser['_id']): Promise<Document | UpdateResult>;
 	getSubscribedRoomIdsWithoutE2EKeys(uid: IUser['_id']): Promise<IRoom['_id'][]>;
 	removeUsersFromE2EEQueueByRoomId(roomId: IRoom['_id'], uids: IUser['_id'][]): Promise<Document | UpdateResult>;

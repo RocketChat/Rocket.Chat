@@ -861,13 +861,19 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 	findForUpdates<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		roomId: IMessage['rid'],
-		{ updatedAt, minTs }: { updatedAt: { $lt: Date } | { $gt: Date }; minTs?: Date },
+		{ updatedAt, minTs, idTieBreaker }: { updatedAt: { $lt: Date } | { $gt: Date }; minTs?: Date; idTieBreaker?: string },
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>> {
+		// With an id tie-breaker, messages that share the boundary `_updatedAt` are ordered by `_id`,
+		// so a page boundary inside one millisecond neither skips nor repeats a message.
+		// The `_id` comparison takes the direction of `updatedAt`.
+		const [boundary, idRange] = '$gt' in updatedAt ? [updatedAt.$gt, { $gt: idTieBreaker }] : [updatedAt.$lt, { $lt: idTieBreaker }];
 		const query = {
 			rid: roomId,
 			_hidden: { $ne: true },
-			_updatedAt: updatedAt,
+			...(idTieBreaker !== undefined
+				? { $or: [{ _updatedAt: updatedAt }, { _updatedAt: boundary, _id: idRange }] }
+				: { _updatedAt: updatedAt }),
 			...(minTs && { ts: { $gte: minTs } }),
 		};
 
