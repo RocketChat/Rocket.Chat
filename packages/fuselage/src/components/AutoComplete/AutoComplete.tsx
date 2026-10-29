@@ -48,7 +48,7 @@ const isSelectedValid =
  */
 export type AutoCompleteProps<TLabel = ReactNode> = Omit<AllHTMLAttributes<HTMLInputElement>, 'value' | 'onChange' | 'is'> & {
 	filter: string;
-	setFilter?: (filter: string) => void;
+	setFilter: (filter: string) => void;
 	options?: AutoCompleteOption<TLabel>[];
 	renderSelected?: ComponentType<{
 		selected: AutoCompleteOption<TLabel>;
@@ -102,11 +102,39 @@ function AutoComplete<TLabel = ReactNode>({
 	const [selected, setSelected] = useState(() => getSelected(value, options) || []);
 
 	useEffect(() => {
-		// Validates if selected items are still valid after value changes
-		setSelected((selected) => {
-			return !selected.every(isSelectedValid(value)) ? selected.filter(isSelectedValid(value)) : selected;
+		setSelected((currentSelected) => {
+			const incoming = getSelected(value, options) || [];
+			const incomingMap = new Map(incoming.map((item) => [item.value, item]));
+
+			const mappedCurrent = currentSelected
+				.map((item) => incomingMap.get(item.value) || item)
+				.filter(isSelectedValid(value));
+
+			const currentValues = new Set(mappedCurrent.map((item) => item.value));
+			const newIncoming = incoming.filter((item) => !currentValues.has(item.value));
+
+			const valueOrder = Array.isArray(value) ? new Map(value.map((item, index) => [item, index])) : undefined;
+			const validMerged = [...mappedCurrent, ...newIncoming].sort((a, b) => {
+				if (!valueOrder) {
+					return 0;
+				}
+				return (valueOrder.get(a.value) ?? 0) - (valueOrder.get(b.value) ?? 0);
+			});
+
+			const isDifferent =
+				validMerged.length !== currentSelected.length ||
+				validMerged.some(
+					(item, index) =>
+						item.value !== currentSelected[index]?.value ||
+						item.label !== currentSelected[index]?.label
+				);
+
+			if (isDifferent) {
+				return validMerged;
+			}
+			return currentSelected;
 		});
-	}, [value]);
+	}, [value, options]);
 
 	const handleSelect = useStableCallback(([newValue]: OptionType<string, TLabel>) => {
 		if (selected.some((item) => item.value === newValue)) {
@@ -184,7 +212,46 @@ function AutoComplete<TLabel = ReactNode>({
 					),
 				)}
 			</Box>
-			<Box rcx-autocomplete__addon color='titles-labels'>
+			<Box
+				rcx-autocomplete__addon
+				color='titles-labels'
+				role='button'
+				tabIndex={disabled ? -1 : 0}
+				aria-label={optionsAreVisible === AnimatedVisibility.VISIBLE ? 'Clear filter' : 'Open options'}
+				onKeyDown={useStableCallback((e: React.KeyboardEvent<HTMLElement>) => {
+					if (disabled) return;
+					if (e.key === 'Enter' || e.key === ' ') {
+						e.preventDefault();
+						e.stopPropagation();
+						if (optionsAreVisible === AnimatedVisibility.VISIBLE) {
+							hide();
+							setFilter?.('');
+						} else {
+							innerRef.current?.focus();
+							show();
+						}
+					}
+				})}
+				onMouseDown={useStableCallback((e: MouseEvent<HTMLElement>) => {
+					if (disabled) return;
+					// Prevent native focus loss to safely allow onClick to fire
+					e.preventDefault();
+					e.stopPropagation();
+				})}
+				onClick={useStableCallback((e: MouseEvent<HTMLElement>) => {
+					if (disabled) return;
+					e.stopPropagation();
+
+					if (optionsAreVisible === AnimatedVisibility.VISIBLE) {
+						hide();
+						setFilter?.('');
+					} else {
+						innerRef.current?.focus();
+						show();
+					}
+				})}
+				style={{ cursor: disabled ? 'not-allowed' : optionsAreVisible === AnimatedVisibility.VISIBLE ? 'pointer' : 'default' }}
+			>
 				<Icon name={optionsAreVisible === AnimatedVisibility.VISIBLE ? 'cross' : 'magnifier'} size='x20' />
 			</Box>
 			<PositionAnimated visible={optionsAreVisible} anchor={containerRef}>
