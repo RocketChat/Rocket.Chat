@@ -46,7 +46,7 @@ Only exists on Windows, so other platforms skip it in the fallback list. */
 }
 
 .rcx-message {
-	/* emojis on messages */
+	/* emojis on messages; [class][class] out-ranks the atomic classes of Fuselage's frames */
 	&__emoji {
 		font-family: 'Apple Color Emoji', rc-emoji-segoe, 'Noto Color Emoji', 'Twemoji Mozilla', 'Android Emoji', sans-serif;
 
@@ -57,7 +57,7 @@ Only exists on Windows, so other platforms skip it in the fallback list. */
 		banner's .emoji span (plain inline) aligns by font metrics; Segoe UI Emoji's
 		asymmetric metrics make those disagree by ~2px, leaving message glyphs off-center.
 		Use the same inline model everywhere. */
-		&:not(&--custom) {
+		&[class][class]:not(&--custom) {
 			display: inline;
 			width: auto;
 			height: auto;
@@ -71,7 +71,7 @@ Only exists on Windows, so other platforms skip it in the fallback list. */
 		/* Can't be written as `&--custom` like the .rcx-message rule above: custom emojis here
 		carry the renderer's global `.emoji--custom` class, not a block modifier. */
 		/* stylelint-disable-next-line selector-class-pattern */
-		&:not(.emoji--custom) {
+		&[class][class]:not(.emoji--custom) {
 			width: auto;
 			height: auto;
 			font-size: 1rem;
