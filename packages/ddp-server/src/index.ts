@@ -1,5 +1,5 @@
 export { Server } from './Server';
-export type { RemoteMethodCall } from './Server';
+export type { CallCheck, RemoteMethodCall } from './Server';
 export { Session } from './Session';
 export type { Publication } from './Publication';
 export type { IPacket } from './IPacket';
