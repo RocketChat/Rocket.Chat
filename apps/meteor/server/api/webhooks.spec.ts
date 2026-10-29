@@ -310,7 +310,7 @@ describe('Webhooks API', () => {
 
 			const response = await request(app).post(HOOK_URL).send({ text: 'hello' });
 
-			expect(response.statusCode).toBe(400);
+			expect(response.statusCode).toBe(403);
 			expect(response.body.error).toBe('error-user-lacks-message-impersonate-permission');
 			expect(mockProcessWebhookMessage).not.toHaveBeenCalled();
 		});
@@ -346,7 +346,7 @@ describe('Webhooks API', () => {
 		it('refuses a `channel` override when overriding is disabled', async () => {
 			const response = await request(app).post(HOOK_URL).send({ text: 'hello', channel: '#other' });
 
-			expect(response.statusCode).toBe(400);
+			expect(response.statusCode).toBe(403);
 			expect(response.body.error).toBe('overriding destination channel is disabled for this integration');
 			expect(mockProcessWebhookMessage).not.toHaveBeenCalled();
 		});
@@ -354,7 +354,7 @@ describe('Webhooks API', () => {
 		it('refuses a `roomId` override when overriding is disabled', async () => {
 			const response = await request(app).post(HOOK_URL).send({ text: 'hello', roomId: 'room-id' });
 
-			expect(response.statusCode).toBe(400);
+			expect(response.statusCode).toBe(403);
 			expect(response.body.error).toBe('overriding destination channel is disabled for this integration');
 			expect(mockProcessWebhookMessage).not.toHaveBeenCalled();
 		});
@@ -377,7 +377,7 @@ describe('Webhooks API', () => {
 
 			const response = await request(app).post(HOOK_URL).send({ text: 'hello' });
 
-			expect(response.statusCode).toBe(400);
+			expect(response.statusCode).toBe(500);
 			expect(response.body.error).toBe('unknown-error');
 		});
 
@@ -386,7 +386,7 @@ describe('Webhooks API', () => {
 
 			const response = await request(app).post(HOOK_URL).send({ text: 'hello' });
 
-			expect(response.statusCode).toBe(400);
+			expect(response.statusCode).toBe(404);
 			expect(response.body.error).toBe('error-invalid-room');
 		});
 
@@ -513,7 +513,7 @@ describe('Webhooks API', () => {
 
 			const response = await request(app).post(HOOK_URL).send({ text: 'hello' });
 
-			expect(response.statusCode).toBe(400);
+			expect(response.statusCode).toBe(500);
 			expect(response.body.error).toBe('error-running-script');
 			expect(mockProcessWebhookMessage).not.toHaveBeenCalled();
 		});
@@ -523,7 +523,7 @@ describe('Webhooks API', () => {
 
 			const response = await request(app).post(HOOK_URL).send({ text: 'hello' });
 
-			expect(response.statusCode).toBe(400);
+			expect(response.statusCode).toBe(500);
 			expect(response.body.error).toBe('error-running-script');
 			expect(mockProcessWebhookMessage).not.toHaveBeenCalled();
 		});
@@ -720,7 +720,8 @@ describe('Webhooks API', () => {
 				.post('/hooks/remove/integration-id/legacy-user-id/the-token')
 				.send({ target_url: 'https://example.com/missing' });
 
-			expect(JSON.stringify(response.body)).toContain('integration-not-found');
+			expect(response.statusCode).toBe(404);
+			expect(response.body.error).toBe('integration-not-found');
 			expect(mockDeleteOutgoingIntegration).not.toHaveBeenCalled();
 		});
 	});

@@ -3355,16 +3355,16 @@ describe('LIVECHAT - rooms', () => {
 			let room: IOmnichannelRoom;
 			let visitor: ILivechatVisitor;
 			before(async () => {
-				await makeAgentUnavailable();
+				await Promise.all([makeAgentUnavailable(), updateSetting('Livechat_accept_chats_with_no_agents', true)]);
 				visitor = await createVisitor();
 				room = await createLivechatRoom(visitor.token);
 				await updatePermission('close-others-livechat-room', []);
 			});
 			after(async () => {
+				await Promise.all([makeAgentAvailable(), updateSetting('Livechat_accept_chats_with_no_agents', false)]);
 				await restorePermissionToRoles('close-others-livechat-room');
 				await closeOmnichannelRoom(room._id);
 				await deleteVisitor(visitor.token);
-				await makeAgentAvailable();
 			});
 			it('should fail if user is not serving and doesnt have close-others-livechat-room permission', async () => {
 				const response = await request.post(api('livechat/room.closeByUser')).set(credentials).send({ rid: room._id }).expect(403);
