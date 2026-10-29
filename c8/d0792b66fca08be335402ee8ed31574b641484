@@ -1,0 +1,26 @@
+ee/packages/xmpp-server/tests/integration/inbound-addressing.spec.ts
+  s_fda792b4ee3dce::t_57ad42775a0b36 208
+ee/packages/xmpp-server/src/xml/StanzaParser.ts
+  s_fda792b4ee3dce::t_7efae96781ef1b 23-35
+  s_fda792b4ee3dce::t_ae3e66195d1650 208-209
+  s_fda792b4ee3dce::t_b192dd334a8cd4 152-154,158,162-170
+  s_fda792b4ee3dce::t_df497c16501df0 54-57
+ee/packages/xmpp-server/src/xml/StanzaParser.spec.ts
+  s_fda792b4ee3dce::t_030a49f7e981bf 97-127
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "c8d0792b66fca08be335402ee8ed31574b641484",
+  "prompts": {},
+  "sessions": {
+    "s_fda792b4ee3dce": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e31a5082-261d-4ac9-a82c-537267ace868",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
