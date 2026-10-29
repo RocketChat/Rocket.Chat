@@ -12,7 +12,7 @@ import { join } from 'node:path';
 
 import prettier from 'prettier';
 
-import { badgeBackgroundColors, shadowColors, statusColors, strokeColors, surfaceColors, textIconColors } from '../src/Theme.ts';
+import { badgeBackgroundColors, shadowColors, statusBackgroundColors, statusColors, strokeColors, surfaceColors, textIconColors } from '../src/Theme.ts';
 import { toCSSColorValue, toCSSValue } from '../src/helpers/toCSSValue.ts';
 import { backgroundColor, borderRadius, borderWidth, fontColor, fontFamily, fontScale, inset, size, spacing } from '../src/styleTokens.ts';
 
@@ -1109,6 +1109,107 @@ const generateItemStyles = () => `.rcx-item${clickable}:where(:not(.rcx-item--di
 
 const itemFile = (name: string) => join(import.meta.dirname, `../src/components/Item/${name}`);
 
+const fontColor = (name: string) => textIconColors[`font-${name}` as keyof typeof textIconColors].toString();
+const strokeColor = (name: string) => strokeColors[`stroke-${name}` as keyof typeof strokeColors].toString();
+const statusBackground = (name: string) =>
+	statusBackgroundColors[`status-background-${name}` as keyof typeof statusBackgroundColors].toString();
+const themedVar = (name: string, value: string) => toCSSValue(`--rcx-${name}`, value);
+const fontScaleOf = (name: string) => fontScale(name) as unknown as Record<string, Value>;
+const radiusOf = (name: string) => toCSSValue(`--rcx-border-radius-${name}`, borderRadius(name)!);
+
+// One `const` per entry, for the frames of the module to read
+const constants = (entries: Record<string, Value>) =>
+	Object.entries(entries)
+		.map(([name, value]) => `const ${name} = ${literal(value)} as const;`)
+		.join('\n\n');
+
+const generateTabs = () =>
+	constants({
+		divider: {
+			borderBottomWidth: borderWidth('default')!,
+			borderBottomStyle: 'solid',
+			borderBottomColor: strokeColor('light'),
+		},
+	});
+
+const generateTabsItem = () => {
+	const t = (name: string, value: string) => themedVar(`tabs-${name}`, value);
+	const color = t('color', fontColor('hint'));
+	const hover = t('hover-border-color', fontColor('default'));
+	const active = t('active-color', fontColor('titles-labels'));
+	const selected = t('selected-color', fontColor('info'));
+	const selectedBorder = t('selected-border-color', fontColor('info'));
+	const hoverSelected = t('hover-selected-color', buttonBackground('primary', 'hover'));
+	const hoverSelectedBorder = t('hover-selected-border-color', buttonBackground('primary', 'hover'));
+	const activeSelected = t('active-selected-color', buttonBackground('primary', 'press'));
+	const activeSelectedBorder = t('active-selected-border-color', buttonBackground('primary', 'press'));
+	const disabled = t('disabled-color', fontColor('disabled'));
+	const disabledSelected = t('disabled-selected-color', statusBackground('info'));
+	const disabledSelectedBorder = t('disabled-selected-border-color', statusBackground('info'));
+	const thin = borderWidth('default')!;
+	const thick = borderWidth('large')!;
+	const unselectedPadding = `calc(${spacing('x4')} + ${thin})`;
+	const underlined = { default: thin, hover: thick, press: thick };
+
+	return constants({
+		frame: {
+			render: 'button',
+			display: 'inline-block',
+			position: 'relative',
+			flexDirection: 'row',
+			alignItems: 'center',
+			flexGrow: 0,
+			flexShrink: 0,
+			flexBasis: 'auto',
+			minWidth: 'auto',
+			minHeight: size('x40')!,
+			marginBlock: 0,
+			marginInline: spacing('x12')!,
+			cursor: 'pointer',
+			outlineStyle: 'none',
+			...fontScaleOf('h4'),
+			borderWidth: thin,
+			borderStyle: 'solid',
+			borderColor: { 'default': 'transparent', 'focus-visible': t('focus-border-color', buttonBackground('primary', 'default')) },
+			backgroundColor: 'transparent',
+			borderRadius: { 'focus-visible': t('border-radius', radiusOf('medium')) },
+			boxShadow: {
+				'focus-visible': `0 0 0 ${borderWidth('medium')} ${t('focus-shadow-color', strokeColor('extra-light-highlight'))}`,
+			},
+		},
+		idle: {
+			paddingBlock: unselectedPadding,
+			paddingInline: 0,
+			color: { default: color, hover, press: active },
+			borderBottomColor: { hover, press: active },
+			borderBottomWidth: underlined,
+		},
+		idleDisabled: {
+			paddingBlock: unselectedPadding,
+			paddingInline: 0,
+			cursor: 'not-allowed',
+			color: { default: disabled, hover: disabled, press: active },
+			borderBottomColor: { hover, press: active },
+			borderBottomWidth: underlined,
+		},
+		selected: {
+			paddingBlock: spacing('x4')!,
+			paddingInline: 0,
+			color: { default: selected, hover: hoverSelected, press: activeSelected },
+			borderBottomColor: { default: selectedBorder, hover: hoverSelectedBorder, press: activeSelectedBorder },
+			borderBottomWidth: thin,
+		},
+		selectedDisabled: {
+			paddingBlock: spacing('x4')!,
+			paddingInline: 0,
+			cursor: 'not-allowed',
+			color: disabledSelected,
+			borderBottomColor: disabledSelectedBorder,
+			borderBottomWidth: thin,
+		},
+	});
+};
+
 const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
 	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
@@ -1130,6 +1231,8 @@ const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: itemFile('ItemActions.tsx'), generate: generateItemActions },
 	{ file: itemFile('ItemLink.tsx'), generate: generateItemLink },
 	{ file: itemFile('Item.styles.css'), generate: generateItemStyles, css: true },
+	{ file: join(import.meta.dirname, '../src/components/Tabs/Tabs.tsx'), generate: generateTabs },
+	{ file: join(import.meta.dirname, '../src/components/Tabs/TabsItem.tsx'), generate: generateTabsItem },
 ];
 
 for (const [dir, control] of [['CheckBox', checkBox], ['RadioButton', radioButton], ['ToggleSwitch', toggleSwitch]] as const) {
