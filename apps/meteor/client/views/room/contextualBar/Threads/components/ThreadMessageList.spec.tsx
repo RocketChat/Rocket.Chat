@@ -8,6 +8,7 @@ import { forwardRef } from 'react';
 
 import ThreadMessageList from './ThreadMessageList';
 import { createFakeMessage, createFakeRoom } from '../../../../../../tests/mocks/data';
+import { selectedMessageStore } from '../../../providers/SelectedMessagesProvider';
 import { useThreadMessagesQuery } from '../hooks/useThreadMessagesQuery';
 
 const room = createFakeRoom({ _id: 'room-id', t: 'c' });
@@ -113,9 +114,16 @@ jest.mock('../../../../../lib/utils/setMessageJumpQueryStringParameter', () => (
 	setMessageJumpQueryStringParameter: jest.fn(),
 }));
 
-jest.mock('./ThreadMessageItem', () => ({
-	ThreadMessageItem: ({ message }: { message: IMessage }) => <div role='listitem'>{message._id}</div>,
-}));
+// Each row registers itself as selectable, as a system message does.
+jest.mock('./ThreadMessageItem', () => {
+	const { useIsSelectedMessage } = jest.requireActual('../../../MessageList/contexts/SelectedMessagesContext');
+	return {
+		ThreadMessageItem: ({ message }: { message: IMessage }) => {
+			useIsSelectedMessage(message._id);
+			return <div role='listitem'>{message._id}</div>;
+		},
+	};
+});
 
 jest.mock('../../../BubbleDate', () => ({
 	BubbleDate: forwardRef(function BubbleDate(_, ref) {
@@ -310,4 +318,25 @@ it('hides the inline day divider the floating date covers', () => {
 	});
 
 	expect(screen.getByTestId('thread-message-list').closest('.thread-list')).toHaveClass('rcx-hide-covered-divider');
+});
+
+it("keeps the thread's messages out of the room's selection", () => {
+	(useThreadMessagesQuery as jest.Mock).mockReturnValue({
+		data: { messages: [createThreadMessage(1)] },
+		isLoading: false,
+		fetchNextPage: jest.fn(),
+		hasNextPage: false,
+		isFetchingNextPage: false,
+		fetchPreviousPage: jest.fn(),
+		hasPreviousPage: false,
+		isFetchingPreviousPage: false,
+		loadMessageAround: jest.fn(),
+	});
+	const mainMessage = createFakeMessage<IThreadMainMessage>({ _id: 'thread-id', rid: room._id, msg: 'main message', tcount: 1 });
+
+	render(<ThreadMessageList mainMessage={mainMessage} shouldJumpToBottom={false} setShouldJumpToBottom={jest.fn()} />, {
+		wrapper: mockAppRoot().withJohnDoe().withSetting('Message_GroupingPeriod', 300).build(),
+	});
+
+	expect(selectedMessageStore.availableMessagesCount()).toBe(0);
 });
