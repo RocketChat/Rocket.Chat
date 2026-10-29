@@ -2,7 +2,7 @@ import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { Field, FieldLabel, useFieldDescriptorId } from '.';
-import { CheckBox, MultiSelectFiltered, TextInput } from '../Inputs';
+import { CheckBox, MultiSelectFiltered, PaginatedSelectFiltered, TextInput } from '../Inputs';
 
 it('should stop acting on a wrapped input after it is replaced', async () => {
 	const { container, rerender } = render(
@@ -83,4 +83,25 @@ it('should keep the wrapped input name in sync with the label text', async () =>
 	);
 
 	await waitFor(() => expect(screen.getByRole('checkbox')).toHaveAccessibleName('New label'));
+});
+
+
+it('should associate PaginatedSelectFiltered with its field label', () => {
+        render(
+                <Field>
+                        <FieldLabel>Unit</FieldLabel>
+                        <PaginatedSelectFiltered
+                                filter=''
+                                setFilter={() => undefined}
+                                options={[]}
+                                onChange={() => undefined}
+                        />
+                </Field>,
+        );
+
+        const input = screen.getByRole('textbox', { name: 'Unit' });
+        const label = screen.getByText('Unit', { selector: 'label' });
+
+        expect(input).toHaveAttribute('id');
+        expect(label).toHaveAttribute('for', input.id);
 });
