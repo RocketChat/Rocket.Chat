@@ -3675,6 +3675,385 @@ const optionKindColor = (kind: string) => {
 
 const generateOptionCss = () => ['success', 'warning', 'primary'].map(optionKindColor).join('\n\n');
 
+// The Message family. Its parts are plain `div`s and `span`s: a Tamagui View starts as a column flex box that does not
+// shrink and a Text as a pre-wrapped inline one, so each frame states the box the stylesheet left
+type Token = { toString: () => string };
+const token = (group: object, key: string) => {
+	const value = (group as Record<string, Token | undefined>)[key];
+
+	if (!value) {
+		throw new Error(`unknown token ${key}`);
+	}
+
+	return value.toString();
+};
+const mFont = (name: string) => token(textIconColors, `font-${name}`);
+const mSurface = (name: string) => token(surfaceColors, `surface-${name}`);
+const mStroke = (name: string) => token(strokeColors, `stroke-${name}`);
+const mStatusFont = (name: string) => token(statusColors, `status-font-${name}`);
+const mStatusBackground = (name: string) => token(statusBackgroundColors, `status-background-${name}`);
+
+const mBox = {
+	position: 'static',
+	display: 'flex',
+	flexDirection: 'row',
+	alignItems: 'normal',
+	flexShrink: 1,
+	minWidth: 'auto',
+	minHeight: 'auto',
+} as const;
+const mPlain = { ...mBox, boxSizing: 'content-box' } as const;
+const mTruncate = { overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' } as const;
+const mInline = { display: 'inline', wordWrap: 'normal' } as const;
+
+const mPart = (name: string, base: 'View' | 'Text', value: Record<string, Value>, variants?: Record<string, Record<string, Value>>) =>
+	`const ${name} = styled(${base}, ${literal(variants ? { ...value, variants } : value)});`;
+const mParts = (...parts: string[]) => `${declaredWhereTheyRender}${parts.join('\n\n')}`;
+const view = (name: string, value: Record<string, Value>, variants?: Record<string, Record<string, Value>>) =>
+	mParts(mPart(name, 'View', value, variants));
+const text = (name: string, value: Record<string, Value>, variants?: Record<string, Record<string, Value>>) =>
+	mParts(mPart(name, 'Text', value, variants));
+const inView = (name: string, value: Record<string, Value>, variants?: Record<string, Record<string, Value>>) =>
+	mPart(name, 'View', value, variants);
+
+const mFocusState = {
+	borderWidth: px(1),
+	borderStyle: 'solid',
+	borderColor: { 'default': 'transparent', 'focus-visible': mStroke('highlight') },
+	borderRadius: { 'focus-visible': radius('medium') },
+	outlineStyle: 'none',
+	boxShadow: { 'focus-visible': `0 0 0 2px ${mStroke('extra-light-highlight')}` },
+} as const;
+
+const messageDir = (relative: string) => join(import.meta.dirname, '../src/components/Message', relative);
+// The frames' atomic classes can be doubled, so a rule that overrides one needs three
+const raised = (selector: string) => `${selector}[class][class]`;
+
+const generateMessage = () =>
+	view(
+		'MessageFrame',
+		{
+			render: 'div',
+			...mPlain,
+			alignItems: 'flex-start',
+			marginInline: px(2),
+			paddingBlockEnd: px(4),
+			paddingInline: px(20),
+			...mFocusState,
+		},
+		{
+			// A selected or editing message keeps its surface while hovered, so the three are one variant
+			tone: {
+				default: { backgroundColor: { hover: theme('message-background-color-hover', mSurface('hover')) } },
+				selected: { backgroundColor: theme('message-background-color-selected', mSurface('selected')) },
+				editing: {
+					color: theme('message-background-color-editing', mStatusFont('on-warning-2')),
+					backgroundColor: theme('message-background-color-editing', mStatusBackground('warning-2')),
+				},
+			},
+			rhythm: { sequential: { paddingBlockStart: px(4) }, regular: { paddingBlockStart: px(8) } },
+			clickable: { true: { cursor: 'pointer' }, false: {} },
+		},
+	);
+
+const containerBase = {
+	render: 'div',
+	...mBox,
+	flexDirection: 'column',
+	flexShrink: 1,
+	minWidth: px(1),
+	marginBlock: px(-2),
+	marginInline: px(4),
+} as const;
+
+const generateMessageContainer = () => view('MessageContainerFrame', { ...containerBase, flexGrow: 1 });
+
+const generateMessageContainerFixed = () =>
+	view('MessageContainerFixedFrame', { ...containerBase, alignItems: 'center', flexGrow: 0, flexShrink: 0 });
+
+const generateMessageLeftContainer = () =>
+	view('MessageLeftContainerFrame', {
+		...containerBase,
+		alignItems: 'flex-end',
+		flexGrow: 0,
+		flexShrink: 0,
+		width: size('x36')!,
+	});
+
+const generateMessageHeader = () =>
+	mParts(
+		inView('MessageHeaderFrame', { render: 'div', ...mBox, flexGrow: 0, flexShrink: 1, minWidth: px(1), marginBlock: px(2) }),
+		inView('MessageHeaderWrapperFrame', {
+			render: 'div',
+			...mBox,
+			alignItems: 'center',
+			flexGrow: 1,
+			flexShrink: 1,
+			minWidth: px(1),
+			marginBlock: px(-4),
+			marginInline: px(-2),
+		}),
+	);
+
+const generateMessageTimestamp = () =>
+	text('MessageTimestampFrame', {
+		render: 'span',
+		...mInline,
+		...mTruncate,
+		...font('c1'),
+		flexShrink: 0,
+		marginInline: px(2),
+		color: mFont('secondary-info'),
+	});
+
+const generateMessageNameContainer = () =>
+	text('MessageNameContainerFrame', {
+		render: 'span',
+		...mInline,
+		...mTruncate,
+		flexShrink: 0,
+		marginInline: px(2),
+		color: mFont('titles-labels'),
+		...mFocusState,
+	});
+
+const generateMessageName = () =>
+	text('MessageNameFrame', {
+		render: 'span',
+		...mInline,
+		...mTruncate,
+		...font('h5'),
+		flexShrink: 1,
+		color: mFont('titles-labels'),
+	});
+
+const generateMessageUsername = () =>
+	text('MessageUsernameFrame', {
+		render: 'span',
+		...mInline,
+		...mTruncate,
+		...font('p2'),
+		flexShrink: 1,
+		color: mFont('default'),
+	});
+
+const generateMessageRoles = () => view('MessageRolesFrame', { render: 'div', ...mBox, flexShrink: 1, ...mTruncate });
+
+const generateMessageBody = () =>
+	view('MessageBodyFrame', {
+		render: 'div',
+		...mPlain,
+		display: 'block',
+		flexShrink: 1,
+		overflow: 'hidden',
+		marginBlock: px(2),
+		wordBreak: 'break-word',
+		color: mFont('default'),
+		...font('p2'),
+	});
+
+const generateMessageBlock = () =>
+	view(
+		'MessageBlockFrame',
+		{ render: 'div', ...mBox, flexDirection: 'column', marginBlock: px(2) },
+		{
+			width: {
+				fixed: { flexGrow: 0, flexShrink: 1, width: '100%', maxWidth: theme('message-block-width-fixed', px(368)) },
+				fluid: {},
+			},
+		},
+	);
+
+const generateMessageEmoji = () =>
+	text(
+		'MessageEmojiFrame',
+		{ render: 'span', display: 'inline-block', whiteSpace: 'normal', wordWrap: 'normal', marginInline: px(2), backgroundSize: 'contain' },
+		{
+			big: {
+				true: { fontSize: size('x44')!, lineHeight: size('x48')!, width: size('x44')!, height: size('x44')! },
+				false: { fontSize: size('x24')!, lineHeight: size('x24')!, width: size('x24')!, height: size('x24')! },
+			},
+		},
+	);
+
+const highlightColors = {
+	critical: theme('message-highlight-colors-critical-color', mStatusFont('on-danger')),
+	relevant: theme('message-highlight-colors-relevant-color', mStatusFont('on-service-1')),
+	other: theme('message-highlight-colors-other-color', mStatusFont('on-warning')),
+	link: theme('message-highlight-colors-link-color', mStatusFont('on-info')),
+};
+
+const generateMessageHighlight = () =>
+	text(
+		'MessageHighlightFrame',
+		{
+			render: 'span',
+			...mInline,
+			whiteSpace: 'nowrap',
+			wordBreak: 'keep-all',
+			fontWeight: 500,
+			borderRadius: { 'focus-visible': radius('medium') },
+			outlineWidth: { 'focus-visible': px(1) },
+			outlineStyle: { 'default': 'none', 'focus-visible': 'solid' },
+			outlineColor: { 'focus-visible': mStroke('highlight') },
+			boxShadow: { 'focus-visible': `0 0 0 2px ${mStroke('extra-light-highlight')}` },
+		},
+		{
+			tone: Object.fromEntries(Object.entries(highlightColors).map(([name, color]) => [name, { color }])),
+			clickable: { true: { cursor: 'pointer', textDecorationLine: { hover: 'underline' } }, false: {} },
+		},
+	);
+
+const bodyHeading = (level: string) => {
+	const scale = fontScale(level)!;
+
+	return `.rcx-message-body ${level} {
+	font-size: ${scale.fontSize};
+	font-weight: ${scale.fontWeight};
+	line-height: ${scale.lineHeight};
+	letter-spacing: ${scale.letterSpacing};
+}`;
+};
+
+const generateMessageCss = () => `.rcx-message--highlight {
+	animation: background-fade 6s forwards;
+}
+
+@keyframes background-fade {
+	50% {
+		background: ${theme('message-background-color-highlight', mStatusBackground('warning-2'))};
+	}
+
+	100% {
+		background: ${theme('message-background-color', mSurface('room'))};
+	}
+}
+
+${raised('.rcx-message--pending .rcx-message-body')} {
+	opacity: 0.4;
+}
+
+${raised('.rcx-message-header + .rcx-message-block')} {
+	margin-block-start: ${px(4)};
+}
+
+${raised('.rcx-message:hover .rcx-message-header__time')} {
+	color: ${mFont('default')};
+}
+
+${raised(".rcx-message-header__name-container[role='button']")} {
+	cursor: pointer;
+}
+
+.rcx-message-header__name-container[role='button']:hover {
+	text-decoration: underline;
+}
+
+${raised('.rcx-message-header__role')} {
+	margin-inline: ${px(2)};
+}
+
+.rcx-message-body {
+	transition: opacity 0.3s linear;
+}
+
+${['h1', 'h2', 'h3', 'h4'].map(bodyHeading).join('\n\n')}
+
+.rcx-message-body ul,
+.rcx-message-body ol {
+	margin: 0;
+	padding-block: ${px(4)} 0;
+	padding-inline: 0;
+
+	list-style: none;
+}
+
+.rcx-message-body ul li::before {
+	padding: 0 ${px(8)};
+
+	content: '•';
+
+	font-weight: bold;
+}
+
+.rcx-message-body ol li::before {
+	padding: 0 ${px(8)};
+
+	content: attr(value) '.';
+
+	font-weight: bold;
+}
+
+${raised('.rcx-message-body--clamp')} {
+	display: -webkit-box;
+	overflow: hidden;
+
+	word-break: break-word;
+	-webkit-box-orient: vertical;
+	-webkit-line-clamp: 2;
+}
+
+${raised('.rcx-message-body--clamp-2')} {
+	-webkit-line-clamp: 2;
+}
+
+${raised('.rcx-message-body--clamp-3')} {
+	-webkit-line-clamp: 3;
+}
+
+${raised('.rcx-message-body--clamp-4')} {
+	-webkit-line-clamp: 3;
+}
+
+.rcx-message-body blockquote {
+	padding-inline: ${px(8)};
+
+	border: 1px solid ${mStroke('extra-light')};
+	border-radius: ${radius('small')};
+	background-color: ${mSurface('tint')};
+	border-inline-start-color: ${mStroke('medium')};
+}
+
+.rcx-message-body blockquote:hover,
+.rcx-message-body blockquote:focus {
+	border-color: ${mStroke('light')};
+	background-color: ${mSurface('hover')};
+	border-inline-start-color: ${mStroke('medium')};
+}
+
+.rcx-message-body ul.task-list {
+	margin-inline-start: 0;
+	padding-inline-start: 0;
+
+	list-style: none;
+}
+
+.rcx-message-body ul.task-list > li::before {
+	display: none;
+}
+
+.rcx-message-body ul.task-list > li > .rcx-check-box > .rcx-check-box__input:focus + .rcx-check-box__fake {
+	z-index: 1;
+}`;
+
+const messageCore = [
+	{ file: messageDir('Message.tsx'), generate: generateMessage },
+	{ file: messageDir('MessageContainer.tsx'), generate: generateMessageContainer },
+	{ file: messageDir('MessageContainerFixed.tsx'), generate: generateMessageContainerFixed },
+	{ file: messageDir('MessageLeftContainer.tsx'), generate: generateMessageLeftContainer },
+	{ file: messageDir('MessageHeader.tsx'), generate: generateMessageHeader },
+	{ file: messageDir('MessageTimestamp.tsx'), generate: generateMessageTimestamp },
+	{ file: messageDir('MessageNameContainer.tsx'), generate: generateMessageNameContainer },
+	{ file: messageDir('MessageName.tsx'), generate: generateMessageName },
+	{ file: messageDir('MessageUsername.tsx'), generate: generateMessageUsername },
+	{ file: messageDir('MessageRoles.tsx'), generate: generateMessageRoles },
+	{ file: messageDir('MessageBody.tsx'), generate: generateMessageBody },
+	{ file: messageDir('MessageBlock.tsx'), generate: generateMessageBlock },
+	{ file: messageDir('MessageEmoji.tsx'), generate: generateMessageEmoji },
+	{ file: messageDir('MessageHighlight.tsx'), generate: generateMessageHighlight },
+	{ file: messageDir('Message.styles.css'), generate: generateMessageCss, css: true },
+];
+
 const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
 	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
@@ -3819,6 +4198,8 @@ const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: frames('Option/Option.styles.css'), generate: generateOptionCss, css: true },
 	{ file: frames('Menu/MenuItem.tsx'), generate: generateMenuItemDescription },
 ];
+
+components.push(...messageCore);
 
 for (const [dir, control] of [
 	['CheckBox', checkBox],
