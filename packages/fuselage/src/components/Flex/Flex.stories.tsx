@@ -1,9 +1,32 @@
+import { css } from '@rocket.chat/css-in-js';
 import type { Meta, StoryObj } from '@storybook/react';
+import type { ReactNode } from 'react';
 
+import { useStyle } from '../../hooks/useStyle';
 import { Box } from '../Box';
 import { Tile } from '../Tile';
 import FlexContainer from './FlexContainer';
 import FlexItem from './FlexItem';
+
+const TallTile = ({ height, children }: { height: number; children: ReactNode }) => (
+	<Tile
+		className={useStyle(css`
+			height: ${height}px;
+		`)}
+	>
+		{children}
+	</Tile>
+);
+
+// `[class]` outranks the Tile frame's own display
+const flexTile = css`
+	&[class] {
+		display: flex;
+	}
+	min-height: 400px;
+`;
+
+const FlexTile = ({ children }: { children: ReactNode }) => <Tile className={useStyle(flexTile)}>{children}</Tile>;
 
 export default {
 	title: 'Layout/Flex',
@@ -132,7 +155,7 @@ export const AlignItems: Story = {
 					{Array.from({ length: 3 }, (_, i) => (
 						<FlexItem key={i}>
 							<Box>
-								<Tile style={{ height: i * 100 }}>#{i + 1}</Tile>
+								<TallTile height={i * 100}>#{i + 1}</TallTile>
 							</Box>
 						</FlexItem>
 					))}
@@ -144,7 +167,7 @@ export const AlignItems: Story = {
 
 export const AlignContent: Story = {
 	render: () => (
-		<Tile style={{ display: 'flex', minHeight: 400 }}>
+		<FlexTile>
 			<FlexContainer wrap='wrap' alignContent='end'>
 				<Box flexGrow={1}>
 					{Array.from({ length: 12 }, (_, i) => (
@@ -156,7 +179,7 @@ export const AlignContent: Story = {
 					))}
 				</Box>
 			</FlexContainer>
-		</Tile>
+		</FlexTile>
 	),
 };
 
@@ -266,7 +289,7 @@ export const Basis: Story = {
 
 export const Align: Story = {
 	render: () => (
-		<Tile style={{ display: 'flex', minHeight: 400 }}>
+		<FlexTile>
 			<FlexContainer alignItems='center'>
 				<Box flexGrow={1}>
 					<FlexItem>
@@ -286,6 +309,6 @@ export const Align: Story = {
 					</FlexItem>
 				</Box>
 			</FlexContainer>
-		</Tile>
+		</FlexTile>
 	),
 };

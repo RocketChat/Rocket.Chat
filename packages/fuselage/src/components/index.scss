@@ -1,5 +1,6 @@
 @use '../styles/box-sizing.css';
 @use './Box/Box.styles.scss';
+@use '../styles/consumer-classes.css';
 
 @use './Accordion/Accordion.styles.scss';
 @use './AudioPlayer/AudioPlayer.styles.scss';
@@ -52,7 +53,6 @@
 @use './Tag/Tag.styles.css';
 @use './Text/Text.styles.scss';
 @use './Throbber/Throbber.styles.css';
-@use './Tile/Tile.styles.scss';
 @use './ToastBar/ToastBar.styles.scss';
 @use './ToggleSwitch/ToggleSwitch.styles.css';
 @use './Tooltip/Tooltip.styles.css';
