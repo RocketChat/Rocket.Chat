@@ -21,8 +21,10 @@ const MessageReactionEmojiFrame = styled(Text, {
 
 // end of generated
 
-const MessageReactionEmoji = ({ className, ...props }: MessageReactionEmojiProps) => (
-	<MessageReactionEmojiFrame render={<MessageEmojiBase {...props} />} className={`rcx-message-reactions__emoji ${className || ''}`} />
+const MessageReactionEmoji = ({ className, children, ...props }: MessageReactionEmojiProps) => (
+	<MessageReactionEmojiFrame render={<MessageEmojiBase {...props} />} className={`rcx-message-reactions__emoji ${className || ''}`}>
+		{children}
+	</MessageReactionEmojiFrame>
 );
 
 export default MessageReactionEmoji;
