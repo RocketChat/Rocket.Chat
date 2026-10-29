@@ -201,3 +201,86 @@ describe('with a `data-tooltip`-only anchor', () => {
 		expect(anchor).not.toHaveAttribute('title');
 	});
 });
+
+describe('with an anchor covered by a stretched `ItemLink`', () => {
+	const setupStretchedLink = () => {
+		render(
+			<TooltipProvider>
+				<div className='rcx-item' data-testid='row'>
+					<a className='rcx-item__link' href='#room'>
+						<span>Room</span>
+					</a>
+					<span data-testid='badge' title='3 unread messages'>
+						3
+					</span>
+				</div>
+			</TooltipProvider>,
+		);
+
+		const row = screen.getByTestId('row');
+		const link = screen.getByRole('link');
+		const badge = screen.getByTestId('badge');
+
+		// jsdom has no layout, so each test sets the stack of elements under the pointer
+		const pointAt = (element: Element) => {
+			document.elementsFromPoint = jest.fn(() => [link, element, row]);
+		};
+
+		return { link, badge, pointAt };
+	};
+
+	afterEach(() => {
+		// @ts-expect-error - jsdom does not implement it, so the tests define it
+		delete document.elementsFromPoint;
+	});
+
+	it('should show the tooltip of the content under the pointer', () => {
+		const { link, badge, pointAt } = setupStretchedLink();
+
+		pointAt(badge);
+		fireEvent.mouseOver(link);
+		waitForTooltipDebounce();
+
+		expect(screen.getByRole('tooltip', { hidden: true })).toHaveTextContent('3 unread messages');
+		expect(badge).toHaveAttribute('data-title', '3 unread messages');
+	});
+
+	it('should close the tooltip when the pointer moves off the content within the link', () => {
+		const { link, badge, pointAt } = setupStretchedLink();
+
+		pointAt(badge);
+		fireEvent.mouseOver(link);
+		waitForTooltipDebounce();
+
+		pointAt(screen.getByText('Room'));
+		fireEvent.mouseMove(link);
+
+		expect(screen.queryByRole('tooltip', { hidden: true })).not.toBeInTheDocument();
+		expect(badge).toHaveAttribute('title', '3 unread messages');
+	});
+
+	it('should close the tooltip and restore the title when the pointer leaves the link', () => {
+		const { link, badge, pointAt } = setupStretchedLink();
+
+		pointAt(badge);
+		fireEvent.mouseOver(link);
+		waitForTooltipDebounce();
+		fireEvent.mouseLeave(link);
+
+		expect(screen.queryByRole('tooltip', { hidden: true })).not.toBeInTheDocument();
+		expect(badge).toHaveAttribute('title', '3 unread messages');
+	});
+
+	it('should restore the title when the pointer leaves the link after a click-dismiss', () => {
+		const { link, badge, pointAt } = setupStretchedLink();
+
+		pointAt(badge);
+		fireEvent.mouseOver(link);
+		waitForTooltipDebounce();
+		fireEvent.click(link);
+		fireEvent.mouseLeave(link);
+
+		expect(badge).toHaveAttribute('title', '3 unread messages');
+		expect(badge).not.toHaveAttribute('data-title');
+	});
+});
