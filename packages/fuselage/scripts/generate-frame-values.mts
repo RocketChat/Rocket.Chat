@@ -12,7 +12,7 @@ import { join } from 'node:path';
 
 import prettier from 'prettier';
 
-import { shadowColors, statusColors, strokeColors } from '../src/Theme.ts';
+import { shadowColors, statusColors, strokeColors, surfaceColors, textIconColors } from '../src/Theme.ts';
 import { toCSSColorValue, toCSSValue } from '../src/helpers/toCSSValue.ts';
 import { borderRadius, borderWidth, fontFamily, fontScale, size, spacing } from '../src/styleTokens.ts';
 
@@ -143,6 +143,7 @@ const literal = (value: Value, indent = ''): string => {
 	}
 
 	return `{\n${Object.entries(value)
+		.filter(([, entry]) => entry !== undefined)
 		.map(([key, entry]) => `${indent}\t${JSON.stringify(key)}: ${literal(entry, `${indent}\t`)},`)
 		.join('\n')}\n${indent}}`;
 };
@@ -403,25 +404,278 @@ const IconButtonFrame = styled(View, {
 	return out.join('\n\n');
 };
 
+// The Item family: one frame per module, over the values the SCSS read under `--rcx-item-…`
+const itemTokens = {
+	font: toCSSValue('--rcx-item-color-font-default', textIconColors['font-default']),
+	highlighted: toCSSValue('--rcx-item-color-font-highlighted', textIconColors['font-titles-labels']),
+	secondary: toCSSValue('--rcx-item-color-font-secondary', textIconColors['font-secondary-info']),
+	disabled: toCSSValue('--rcx-item-color-font-disabled', textIconColors['font-disabled']),
+	danger: toCSSValue('--rcx-item-color-font-danger', statusColors['status-font-on-danger']),
+	hover: toCSSValue('--rcx-item-color-surface-hover', surfaceColors['surface-hover']),
+	selected: toCSSValue('--rcx-item-color-surface-selected', surfaceColors['surface-selected']),
+	focus: toCSSValue('--rcx-item-color-stroke-focus', strokeColors['stroke-highlight']),
+	divider: toCSSValue('--rcx-item-color-stroke-divider', strokeColors['stroke-extra-light']),
+	headerSurface: toCSSValue('--rcx-item-group-header-color-surface', surfaceColors['surface-light']),
+};
+
+// Tamagui's View is a flex column with its own box model; the elements Item renders were plain ones
+const plain = {
+	position: 'static',
+	display: 'block',
+	flexDirection: 'row',
+	flexShrink: 1,
+	alignItems: 'normal',
+	minWidth: 'auto',
+	minHeight: 'auto',
+	boxSizing: 'content-box',
+} as const;
+
+const itemRadius = toCSSValue('--rcx-border-radius-small', borderRadius('small')!);
+const ring = `inset 0 0 0 ${borderWidth('medium')} ${itemTokens.focus}`;
+const truncating = { overflow: 'hidden', minWidth: 0, whiteSpace: 'nowrap', textOverflow: 'ellipsis' };
+
+const itemFrame = (name: string, base: Record<string, Value>, variants?: Record<string, Value>) =>
+	`// Declared where it renders: zero-runtime only erases a \`styled()\` whose every use is in its own module
+const ${name} = styled(View, ${literal({ render: 'div', ...plain, ...base, ...(variants && { variants }) })});`;
+
+const generateItem = () =>
+	itemFrame(
+		'ItemFrame',
+		{
+			position: 'relative',
+			display: 'flex',
+			alignItems: 'center',
+			boxSizing: 'border-box',
+			minWidth: 0,
+			margin: 0,
+			paddingBlock: '4px',
+			paddingInline: '4px',
+			textAlign: 'start',
+			textDecorationLine: 'none',
+			color: itemTokens.font,
+			borderRadius: itemRadius,
+			fontFamily: fontFamily('sans')!,
+			gap: 'var(--rcx-item-gap)',
+			...font('p2'),
+		},
+		{
+			// The disabled text wins over danger
+			tone: { default: {}, danger: { color: itemTokens.danger }, disabled: { color: itemTokens.disabled } },
+			// Selected wins over focused; disabled wins over both
+			surface: {
+				none: {},
+				focused: { backgroundColor: itemTokens.hover },
+				selected: { backgroundColor: itemTokens.selected },
+				disabled: { backgroundColor: 'transparent', cursor: 'not-allowed' },
+			},
+			// A row whose owner moves focus (`focusVisible`) draws its ring from `Item.styles.css`
+			ring: {
+				native: {
+					outlineWidth: { 'focus-visible': borderWidth('medium')! },
+					outlineStyle: { 'focus-visible': 'solid' },
+					outlineColor: { 'focus-visible': 'transparent' },
+					outlineOffset: { 'focus-visible': `calc(-1 * ${borderWidth('medium')})` },
+					boxShadow: { 'focus-visible': ring },
+				},
+				managed: {},
+			},
+		},
+	);
+
+const generateItemGroup = () => itemFrame('ItemGroupFrame', { display: 'flex', flexDirection: 'column', margin: 0, padding: 0 });
+
+const generateItemGroupHeader = () =>
+	itemFrame(
+		'ItemGroupHeaderFrame',
+		{
+			position: 'relative',
+			display: 'flex',
+			alignItems: 'center',
+			boxSizing: 'border-box',
+			minWidth: 0,
+			minHeight: size('x28')!,
+			margin: 0,
+			padding: '4px',
+			color: itemTokens.secondary,
+			borderRadius: itemRadius,
+			fontFamily: fontFamily('sans')!,
+			gap: 'var(--rcx-item-gap)',
+			...font('c2'),
+		},
+		{
+			sticky: { true: { position: 'sticky', zIndex: 2, top: 0, backgroundColor: itemTokens.headerSurface }, false: {} },
+		},
+	);
+
+const generateItemGroupTitle = () =>
+	itemFrame('ItemGroupTitleFrame', {
+		display: 'block',
+		...truncating,
+		flexGrow: 1,
+		flexBasis: 'auto',
+		margin: 0,
+		color: 'inherit',
+	});
+
+const generateItemDivider = () =>
+	itemFrame('ItemDividerFrame', {
+		display: 'block',
+		margin: 0,
+		paddingBlock: '4px',
+		paddingInline: 0,
+		borderWidth: 0,
+		borderStyle: 'none',
+	});
+
+const slot = { display: 'flex', justifyContent: 'center', alignItems: 'center', flexGrow: 0, flexShrink: 0, flexBasis: 'auto' };
+
+const generateItemMedia = () =>
+	itemFrame('ItemMediaFrame', slot, { icon: { true: { width: size('x20')!, height: size('x20')! }, false: {} } });
+
+const generateItemIcon = () => itemFrame('ItemIconFrame', { ...slot, width: size('x20')!, height: size('x20')! });
+
+const generateItemContent = () =>
+	itemFrame('ItemContentFrame', { display: 'flex', flexDirection: 'column', flexGrow: 1, flexShrink: 1, flexBasis: 'auto', minWidth: 0 });
+
+const generateItemRow = () => itemFrame('ItemRowFrame', { display: 'flex', alignItems: 'center', minWidth: 0, gap: 'var(--rcx-item-gap)' });
+
+const generateItemTitle = () =>
+	itemFrame('ItemTitleFrame', { display: 'block', ...truncating, flexGrow: 1, flexShrink: 1, flexBasis: 'auto' });
+
+const generateItemDescription = () =>
+	itemFrame(
+		'ItemDescriptionFrame',
+		{ display: undefined, ...truncating, flexGrow: 1, flexShrink: 1, flexBasis: 'auto', color: itemTokens.secondary, ...font('c1') },
+		{ inline: { true: { display: 'inline', marginInlineStart: '4px' }, false: { display: 'block' } } },
+	);
+
+const generateItemMeta = () =>
+	itemFrame(
+		'ItemMetaFrame',
+		{ display: 'block', flexShrink: undefined, whiteSpace: 'nowrap', color: itemTokens.secondary, ...font('c1') },
+		{
+			truncate: {
+				true: { overflow: 'hidden', flexGrow: 0, flexShrink: 1, flexBasis: 'auto', minWidth: 0, textOverflow: 'ellipsis' },
+				false: { flexGrow: 0, flexShrink: 0, flexBasis: 'auto' },
+			},
+		},
+	);
+
+const generateItemActions = () =>
+	`${itemFrame('ItemActionsFrame', {
+		position: 'relative',
+		zIndex: 1,
+		display: 'flex',
+		alignItems: 'center',
+		flexGrow: 0,
+		flexShrink: 0,
+		flexBasis: 'auto',
+		gap: '2px',
+	})}
+
+${itemFrame('ItemActionsInnerFrame', { display: 'flex', overflow: 'hidden', alignItems: 'center', minWidth: 0, gap: '2px' })}`;
+
+const generateItemLink = () =>
+	itemFrame('ItemLinkFrame', {
+		display: 'block',
+		overflow: 'hidden',
+		width: '100%',
+		margin: 0,
+		padding: 0,
+		cursor: 'pointer',
+		textAlign: 'start',
+		whiteSpace: 'nowrap',
+		textDecorationLine: 'none',
+		textOverflow: 'ellipsis',
+		color: 'inherit',
+		borderWidth: 0,
+		borderStyle: 'none',
+		borderColor: 'currentcolor',
+		backgroundColor: 'transparent',
+	});
+
+const clickable = ":where(.rcx-item--clickable, a, button, [role='option'], [role^='menuitem'], :has(.rcx-item__link))";
+
+// What a Tamagui frame cannot say, for the colors it takes from the tokens
+const generateItemStyles = () => `.rcx-item${clickable}:where(:not(.rcx-item--disabled)) {
+	cursor: pointer;
+}
+
+.rcx-item${clickable}:where(:not(.rcx-item--selected, .rcx-item--disabled)):hover {
+	background-color: ${itemTokens.hover};
+}
+
+/* Forced colors drop the box-shadow and paint the transparent outline instead */
+.rcx-item:has(.rcx-item__link:focus-visible),
+.rcx-item.rcx-item--focus-visible,
+.rcx-item-group-header:has(.rcx-item-group-title:is(button):focus-visible) {
+	outline: ${borderWidth('medium')} solid transparent;
+	outline-offset: calc(-1 * ${borderWidth('medium')});
+	box-shadow: ${ring};
+}
+
+.rcx-item-group-header:has(.rcx-item-group-title:is(button)):hover {
+	background-color: ${itemTokens.hover};
+}
+
+.rcx-item--highlighted .rcx-item__title,
+.rcx-item--highlighted .rcx-item__icon,
+.rcx-item--highlighted .rcx-item__description,
+.rcx-item--highlighted .rcx-item__meta {
+	font-weight: 500;
+	color: ${itemTokens.highlighted};
+}
+
+.rcx-item-divider::before {
+	display: block;
+
+	content: '';
+
+	border-top: ${borderWidth('default')} solid ${itemTokens.divider};
+}`;
+
+const itemFile = (name: string) => join(import.meta.dirname, `../src/components/Item/${name}`);
+
 const components = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
 	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
+	{ file: itemFile('Item.tsx'), generate: generateItem },
+	{ file: itemFile('ItemGroup.tsx'), generate: generateItemGroup },
+	{ file: itemFile('ItemGroupHeader.tsx'), generate: generateItemGroupHeader },
+	{ file: itemFile('ItemGroupTitle.tsx'), generate: generateItemGroupTitle },
+	{ file: itemFile('ItemDivider.tsx'), generate: generateItemDivider },
+	{ file: itemFile('ItemMedia.tsx'), generate: generateItemMedia },
+	{ file: itemFile('ItemIcon.tsx'), generate: generateItemIcon },
+	{ file: itemFile('ItemContent.tsx'), generate: generateItemContent },
+	{ file: itemFile('ItemRow.tsx'), generate: generateItemRow },
+	{ file: itemFile('ItemTitle.tsx'), generate: generateItemTitle },
+	{ file: itemFile('ItemDescription.tsx'), generate: generateItemDescription },
+	{ file: itemFile('ItemMeta.tsx'), generate: generateItemMeta },
+	{ file: itemFile('ItemActions.tsx'), generate: generateItemActions },
+	{ file: itemFile('ItemLink.tsx'), generate: generateItemLink },
+	{
+		file: itemFile('Item.styles.css'),
+		generate: generateItemStyles,
+		parser: 'css',
+		start: '/* generated by scripts/generate-frame-values.mts from @rocket.chat/fuselage-tokens, do not edit */',
+		end: '/* end of generated */',
+	},
 ];
 const check = process.argv.includes('--check');
 let stale = false;
 
-for (const { file, generate } of components) {
+for (const { file, generate, parser = 'typescript', start: startMarker = START, end: endMarker = END } of components) {
 	const source = readFileSync(file, 'utf8');
-	const start = source.indexOf(START);
-	const end = source.indexOf(END);
+	const start = source.indexOf(startMarker);
+	const end = source.indexOf(endMarker);
 
 	if (start === -1 || end === -1) {
-		throw new Error(`${file} has no generated section: add the ${START} and ${END} markers`);
+		throw new Error(`${file} has no generated section: add the ${startMarker} and ${endMarker} markers`);
 	}
 
 	const config = (await prettier.resolveConfig(file)) ?? {};
-	const body = await prettier.format(generate(), { ...config, parser: 'typescript' });
-	const next = `${source.slice(0, start)}${START}\n\n${body}\n${source.slice(end)}`;
+	const body = await prettier.format(generate(), { ...config, parser, ...(parser === 'css' && { printWidth: 200 }) });
+	const next = `${source.slice(0, start)}${startMarker}\n\n${body}\n${source.slice(end)}`;
 
 	if (next !== source) {
 		if (check) {
