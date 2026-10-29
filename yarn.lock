@@ -11202,6 +11202,7 @@ __metadata:
   resolution: "@rocket.chat/mock-providers@workspace:packages/mock-providers"
   dependencies:
     "@faker-js/faker": "npm:~10.5.0"
+    "@rocket.chat/core-typings": "workspace:~"
     "@rocket.chat/ddp-client": "workspace:~"
     "@rocket.chat/emitter": "workspace:~"
     "@rocket.chat/i18n": "workspace:~"
