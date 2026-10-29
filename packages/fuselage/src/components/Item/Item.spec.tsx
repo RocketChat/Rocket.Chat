@@ -169,17 +169,39 @@ describe('ItemLink', () => {
 		expect(onClickRow).toHaveBeenCalledTimes(1);
 	});
 
-	it('is not activated by a click on an action of its row', async () => {
-		const onClickLink = jest.fn();
-		const onClickAction = jest.fn();
+	it('is activated by a click on the row content beside it, such as a badge', async () => {
+		const onClickLink = jest.fn((event: MouseEvent<HTMLElement>) => event.preventDefault());
 		render(
 			<Item>
+				<ItemTitle>
+					<ItemLink href='#general' onClick={onClickLink}>
+						general
+					</ItemLink>
+				</ItemTitle>
+				<span title='3 unread messages'>3</span>
+			</Item>,
+		);
+
+		await userEvent.click(screen.getByTitle('3 unread messages'));
+
+		expect(onClickLink).toHaveBeenCalledTimes(1);
+	});
+
+	it.each([
+		['an action of its row', 'Options'],
+		['the space between its actions', 'actions'],
+	])('is not activated, and the row onClick does not run, on a click on %s', async (_, target) => {
+		const onClickLink = jest.fn();
+		const onClickRow = jest.fn();
+		const onClickAction = jest.fn();
+		render(
+			<Item onClick={onClickRow}>
 				<ItemTitle>
 					<ItemLink is='button' onClick={onClickLink}>
 						Kenji Takahashi
 					</ItemLink>
 				</ItemTitle>
-				<ItemActions>
+				<ItemActions reveal='hover' data-testid='actions'>
 					<button type='button' onClick={onClickAction}>
 						Options
 					</button>
@@ -187,10 +209,11 @@ describe('ItemLink', () => {
 			</Item>,
 		);
 
-		await userEvent.click(screen.getByRole('button', { name: 'Options' }));
+		await userEvent.click(target === 'Options' ? screen.getByRole('button', { name: 'Options' }) : screen.getByTestId('actions'));
 
-		expect(onClickAction).toHaveBeenCalledTimes(1);
+		expect(onClickAction).toHaveBeenCalledTimes(target === 'Options' ? 1 : 0);
 		expect(onClickLink).not.toHaveBeenCalled();
+		expect(onClickRow).not.toHaveBeenCalled();
 	});
 
 	it('is described by the labelled icons of its row', () => {

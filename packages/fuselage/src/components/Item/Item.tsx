@@ -37,21 +37,14 @@ export type ItemProps = {
 } & Omit<AllHTMLAttributes<HTMLElement>, 'is' | 'selected' | 'disabled'> &
 	RefAttributes<HTMLElement>;
 
-const interactiveSelector =
-	'a[href], button, input, select, textarea, label, summary, [role="button"], [role="link"], [role^="menuitem"], [tabindex]';
-
-// Content raised above the link to show its tooltip, such as an avatar, still opens the row when clicked.
+// A click anywhere in a linked row opens it; content with a behavior of its own, such as `ItemActions`, stops the click instead.
 const findForwardTarget = ({ target, currentTarget }: MouseEvent<HTMLElement>) => {
-	if (!(target instanceof Element) || !window.getSelection()?.isCollapsed) {
+	const link = currentTarget.querySelector<HTMLElement>('.rcx-item__link');
+	if (!link || link.contains(target as Node) || !currentTarget.ownerDocument.getSelection()?.isCollapsed) {
 		return undefined;
 	}
 
-	const interactive = target.closest(interactiveSelector);
-	if (interactive && currentTarget.contains(interactive)) {
-		return undefined;
-	}
-
-	return currentTarget.querySelector<HTMLElement>('.rcx-item__link') ?? undefined;
+	return link;
 };
 
 /**

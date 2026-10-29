@@ -18,7 +18,7 @@ export type ItemLinkProps = ItemLinkAnchorProps | ItemLinkButtonProps;
 
 /**
  * The primary target of an `Item`. It covers the whole row, so actions sit beside it instead of inside it,
- * and clicks on the row's other non-interactive content, such as an avatar, activate it too.
+ * and a click anywhere else in the row, such as on an avatar, activates it too, except inside `ItemActions`.
  */
 const ItemLink = (props: ItemLinkProps) => {
 	const { descriptionIds } = useItemContext();
