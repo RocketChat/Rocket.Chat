@@ -10,11 +10,12 @@ export type DropTargetOverlayProps = {
 	enabled: boolean;
 	reason?: ReactNode;
 	onFileDrop?: (files: File[]) => void;
+	onUrlDrop?: (url: string) => void;
 	visible?: boolean;
 	onDismiss?: () => void;
 };
 
-function DropTargetOverlay({ enabled, reason, onFileDrop, visible = true, onDismiss }: DropTargetOverlayProps) {
+function DropTargetOverlay({ enabled, reason, onFileDrop, onUrlDrop, visible = true, onDismiss }: DropTargetOverlayProps) {
 	const { t } = useTranslation();
 
 	const handleDragLeave = useStableCallback((event: DragEvent) => {
@@ -40,7 +41,21 @@ function DropTargetOverlay({ enabled, reason, onFileDrop, visible = true, onDism
 		const files = Array.from(event.dataTransfer.files);
 
 		if (files.length === 0 && event.dataTransfer.types.includes('text/uri-list') && event.dataTransfer.types.includes('text/html')) {
-			const fragment = document.createRange().createContextualFragment(event.dataTransfer.getData('text/html'));
+			const html = event.dataTransfer.getData('text/html');
+			const fragment = document.createRange().createContextualFragment(html);
+			const hasImages = fragment.querySelector('img[src]') !== null;
+			const link = fragment.querySelector('a[href]');
+			const url =
+				event.dataTransfer
+					.getData('text/uri-list')
+					.split(/\r?\n/)
+					.find((line) => line && !line.startsWith('#')) || link?.getAttribute('href');
+
+			if (!hasImages && url && link) {
+				onUrlDrop?.(url);
+				return;
+			}
+
 			for await (const { src } of Array.from(fragment.querySelectorAll('img'))) {
 				try {
 					const response = await fetch(src);
