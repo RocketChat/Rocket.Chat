@@ -817,10 +817,9 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 							this.parseJsonQuery = () => api.parseJsonQuery(this);
 
 							if (options.applyMeteorContext) {
-								const invocation = createMeteorInvocation(connection, this.userId, this.token);
-								result = await invocation
-									.applyInvocation(() => originalAction.apply(this))
-									.finally(() => invocation[Symbol.asyncDispose]());
+								result = await createMeteorInvocation(connection, this.userId, this.token).applyInvocation(() =>
+									originalAction.apply(this),
+								);
 							} else {
 								result = await originalAction.apply(this);
 							}
