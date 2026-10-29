@@ -15,7 +15,6 @@ const SidebarMediaTitleFrame = styled(View, {
 	alignItems: 'normal',
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	flexGrow: 1,
 	paddingBlockEnd: '4px',
 	paddingInline: '16px',

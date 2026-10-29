@@ -27,7 +27,6 @@ const ItemIconFrame = styled(View, {
 	alignItems: 'center',
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	justifyContent: 'center',
 	flexGrow: 0,
 	flexBasis: 'auto',

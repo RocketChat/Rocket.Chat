@@ -25,7 +25,6 @@ const ItemActionsFrame = styled(View, {
 	alignItems: 'center',
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	zIndex: 1,
 	flexGrow: 0,
 	flexBasis: 'auto',
@@ -42,7 +41,6 @@ const ItemActionsInnerFrame = styled(View, {
 	alignItems: 'center',
 	minWidth: 0,
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	overflow: 'hidden',
 	gap: '2px',
 });

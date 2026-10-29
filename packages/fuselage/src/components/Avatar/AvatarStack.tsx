@@ -10,7 +10,6 @@ import { prependClassName } from '../../helpers/prependClassName';
 const AvatarStackFrame = styled(View, {
 	render: 'div',
 	alignItems: 'normal',
-	boxSizing: 'content-box',
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',

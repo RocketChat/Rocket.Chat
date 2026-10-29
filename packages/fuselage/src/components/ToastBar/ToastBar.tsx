@@ -44,7 +44,6 @@ const ToastBarInnerFrame = styled(View, {
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	padding: '16px',
 });
 
@@ -55,7 +54,6 @@ const ToastBarContentFrame = styled(View, {
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	width: '100%',
 	marginBlock: 0,
 	marginInline: '16px',

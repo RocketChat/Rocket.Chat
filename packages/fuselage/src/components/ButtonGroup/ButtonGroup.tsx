@@ -14,7 +14,6 @@ export type ButtonGroupProps = RefAttributes<HTMLDivElement> & {
 // Declared where they render: zero-runtime only erases a `styled()` whose every use is in its own module
 const ButtonGroupFrame = styled(View, {
 	render: 'div',
-	boxSizing: 'content-box',
 	display: 'flex',
 	flexDirection: 'row',
 	flexShrink: 1,

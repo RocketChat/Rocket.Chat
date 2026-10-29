@@ -17,7 +17,6 @@ const MessageMetricsItemAvatarRowContentFrame = styled(View, {
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	marginInline: '2px',
 });
 

@@ -20,7 +20,6 @@ const MenuItemDescriptionFrame = styled(View, {
 	alignItems: 'normal',
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	flexBasis: '100%',
 	whiteSpace: 'normal',
 	wordBreak: 'break-word',

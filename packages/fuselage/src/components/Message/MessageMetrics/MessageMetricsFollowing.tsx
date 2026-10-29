@@ -20,7 +20,6 @@ const MessageMetricsFollowBadgeFrame = styled(View, {
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	top: 0,
 	right: 0,
 });

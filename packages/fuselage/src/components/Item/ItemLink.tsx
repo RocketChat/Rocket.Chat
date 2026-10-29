@@ -29,7 +29,6 @@ const ItemLinkFrame = styled(View, {
 	alignItems: 'normal',
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	overflow: 'hidden',
 	width: '100%',
 	margin: 0,

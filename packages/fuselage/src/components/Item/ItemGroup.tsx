@@ -26,7 +26,6 @@ const ItemGroupFrame = styled(View, {
 	alignItems: 'normal',
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	margin: 0,
 	padding: 0,
 });

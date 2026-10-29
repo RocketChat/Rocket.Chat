@@ -34,7 +34,6 @@ const ModalHeroFigureFrame = styled(View, {
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	marginBlockStart: 0,
 	marginBlockEnd: '1.5rem',
 	marginInline: '-1.5rem',
