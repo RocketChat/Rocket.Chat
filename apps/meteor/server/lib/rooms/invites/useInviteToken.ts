@@ -9,7 +9,7 @@ import { roomCoordinator } from '../roomCoordinator';
 
 export const useInviteToken = async (userId: string, token: string) => {
 	if (!userId) {
-		throw new ClientSafeError('error-invalid-user', 'The user is invalid', {
+		throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', {
 			method: 'useInviteToken',
 			field: 'userId',
 		});

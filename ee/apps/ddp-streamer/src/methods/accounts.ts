@@ -1,8 +1,6 @@
 import { Account, ClientSafeError } from '@rocket.chat/core-services';
-
-import type { Server } from '../ddp/Server';
-import { WS_ERRORS } from '../ddp/constants';
-import type { ConnectionLifecycle } from '../ddp/lifecycle';
+import type { ConnectionLifecycle, Server } from '@rocket.chat/ddp-server';
+import { WS_ERRORS } from '@rocket.chat/ddp-server';
 
 export function registerAccountMethods(server: Server, lifecycle: ConnectionLifecycle): void {
 	server.methods({

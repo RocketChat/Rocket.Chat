@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button, Callout, Stack } from '@rocket.chat/fuselage';
+import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button, Callout, Stack, Text } from '@rocket.chat/fuselage';
 import { useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
@@ -159,12 +159,7 @@ const RoomMembers = ({
 					endAddon={<Icon name='magnifier' size='x20' />}
 				/>
 				<Box width='x144' marginInlineStart={8}>
-					<Select
-						aria-controls={isSuccess ? membersListId : undefined}
-						options={options}
-						value={type}
-						onChange={(value): void => setType(value as 'online' | 'all')}
-					/>
+					<Select aria-label={t('Status')} options={options} value={type} onChange={(value): void => setType(value as 'online' | 'all')} />
 				</Box>
 			</ContextualbarSection>
 			<ContextualbarContent flush spaced>
@@ -183,9 +178,9 @@ const RoomMembers = ({
 					<>
 						{members.length > 0 && (
 							<Box paddingInline={24} paddingBlockStart={4} paddingBlockEnd={8}>
-								<Box is='span' color='hint' fontScale='p2'>
+								<Text is='span' color='hint' fontScale='p2'>
 									{t('Showing_current_of_total', { current: members.length, total })}
-								</Box>
+								</Text>
 							</Box>
 						)}
 						<Box id={membersListId} width='full' height='full' overflow='hidden' flexShrink={1}>
@@ -201,7 +196,6 @@ const RoomMembers = ({
 										groupCounts={counts}
 										groupContent={(index) => titles[index]}
 										components={{
-											// eslint-disable-next-line react/no-multi-comp
 											Footer: () => <InfiniteListAnchor loadMore={loadMoreMembers} />,
 											List: RoomMembersListWrapper,
 										}}
@@ -232,7 +226,7 @@ const RoomMembers = ({
 								</Button>
 							)}
 							{onClickAdd && (
-								<Button icon='user-plus' onClick={onClickAdd} primary disabled={isAbacLocked}>
+								<Button icon='user-plus' onClick={onClickAdd} variant='primary' disabled={isAbacLocked}>
 									{t('Add')}
 								</Button>
 							)}

@@ -51,6 +51,10 @@ This is a monorepo (Yarn workspaces + Turborepo). Running `yarn` at the root
 installs `apps/*`, `packages/*` and `ee/*` at once. Do not run `yarn` inside
 subfolders.
 
+Installed files are hard links into Yarn's global store (`nmMode: hardlinks-global`), so every clone and
+worktree on the machine shares one copy of each package. Editing a file under `node_modules` edits it for
+all of them: change a dependency with `yarn patch` instead.
+
 The Meteor app loads the other workspace packages from their `dist` folders, so
 `yarn build` must finish before the first start. Run it again after a pull that
 changes packages.
@@ -80,39 +84,25 @@ http://localhost:3000
 On the first run the Setup Wizard asks you to create the **admin** user and the
 organization. That's it — you are running.
 
-Hot reload is active: editing files in `apps/meteor` recompiles and reloads.
+`yarn dev` runs the Rocket.Chat server and the web client together:
+
+1. It builds the packages the app depends on (`turbo run build
+   --filter=@rocket.chat/meteor^...`). If the build fails, nothing starts.
+2. It starts the Meteor server on `METEOR_PORT` (default `3100`). `ROOT_URL`
+   defaults to the client address, so the links that the server builds
+   (emails, OAuth callbacks) point to it.
+3. It starts Vite on `PORT` (default `3000`). Vite serves the page the server
+   renders, as in production, with the client from your working tree in it,
+   and sends the server routes (`/api`, `/websocket`, `/sockjs`, `/_oauth`,
+   `/avatar`, `/file-upload` and others) to Meteor.
+
+Client edits hot-reload in the browser. Server edits make Meteor restart. Ctrl+C
+stops Vite, Meteor and the bundled Mongo together.
 
 > The first Meteor compilation is slow (several minutes). Subsequent ones use
 > the cache and are much faster.
 
-### Work on a package
-
-`apps/meteor` does not watch `packages/*`. When you edit a package, run
-`yarn dev` (`tsc --watch`) in that package, in a separate terminal:
-
-```bash
-cd packages/rest-typings
-yarn dev
-```
-
-Meteor picks up the new `dist` on its next reload. For a one-shot rebuild, or in
-a package without a `dev` script (`fuselage`, `ui-kit`, `message-parser` and
-others), run `yarn build` in that package instead.
-
-Recommended loop: `yarn dev` in `apps/meteor` in one terminal, and `yarn dev`
-only in the package(s) you are editing.
-
-### Vite client (`yarn dev:next`)
-
-`yarn dev:next` serves the client from Vite instead of Meteor. It has two
-modes: against a **remote server**, or against a **local Meteor server**.
-
-> The Vite client is a work in progress. Every `meteor/*` import resolves to an
-> inert shim, so a feature that still calls a Meteor client API does not work.
-> The browser console shows `[vite] <name> is not available outside the Meteor
-> build` once for each such API. Use `yarn dev` to get the full client.
-
-#### Against a remote server — client work without a local server
+### Against a remote server — client work without a local server
 
 Set `RC_SERVER_URL` to a Rocket.Chat server that already runs. Only Vite
 starts: no Meteor compilation and no Mongo. The script builds only the packages
@@ -125,53 +115,47 @@ client work.
 
 ```bash
 cd apps/meteor
-RC_SERVER_URL=https://my-server.example.com yarn dev:next
+RC_SERVER_URL=https://my-server.example.com yarn dev
 ```
 
-Open `http://localhost:3000`. Vite serves the client from your working tree and
-sends the server routes (`/api`, `/websocket`, `/sockjs`, `/_oauth`, `/avatar`,
-`/file-upload` and others) to the remote server. Vite rewrites the cookies of
-the server to the local address, so the login and the file downloads work.
+Vite rewrites the cookies of the server to the local address, so the login and
+the file downloads work. The page is Vite's own `index.html`, not the one the
+server renders, so the server's head injections (title, theme variables,
+custom scripts) are missing.
 
 The client runs your code, but the server runs its own version. A client change
-that needs a server change from your branch does not work in this mode — use
-the local server mode for it.
+that needs a server change from your branch does not work in this mode — run
+`yarn dev` without `RC_SERVER_URL` for it.
 
-#### Against a local Meteor server
+### Work on a package
 
-Without `RC_SERVER_URL`, the script runs the Meteor server too:
-
-```bash
-cd apps/meteor
-yarn dev:next
-```
-
-The script (`apps/meteor/vite/dev.mjs`) does three things:
-
-1. It builds the packages the app depends on (`turbo run build
-   --filter=@rocket.chat/meteor^...`). If the build fails, nothing starts.
-2. It starts Meteor on `METEOR_PORT` (default `3100`) without a client build.
-   `ROOT_URL` defaults to the Vite address, so the links that the server
-   builds (emails, OAuth callbacks) point to Vite.
-3. It starts Vite on `PORT` (default `3000`). Vite serves the client and sends
-   the server routes to Meteor.
-
-Open `http://localhost:3000` as usual. Ctrl+C stops Vite, Meteor and the
-bundled Mongo together.
-
-#### Package edits in both modes
-
-The Vite client compiles most workspace packages in `packages/` and
-`ee/packages/` from their source. An edit to one of these packages
-hot-reloads in the browser, with no `yarn dev` in the package. These rules
-apply:
+The client compiles most workspace packages in `packages/` and `ee/packages/`
+from their source. An edit to one of these packages hot-reloads in the browser,
+with no `yarn dev` in the package. These rules apply:
 
 - The client reads a few packages from `dist`, because their build does more
   than compile TypeScript. The list is in `apps/meteor/vite/workspacePackages.mjs`.
   After you edit one of them, run `yarn build` in that package.
-- The local Meteor server still loads every package from `dist`. For a change
-  that the server uses, run `yarn dev` in the package as usual.
+- The Meteor server loads every package from `dist`. For a change that the
+  server uses, run `yarn dev` (`tsc --watch`) in that package, in a separate
+  terminal:
+
+  ```bash
+  cd packages/rest-typings
+  yarn dev
+  ```
+
+  Meteor picks up the new `dist` on its next reload. For a one-shot rebuild, or
+  in a package without a `dev` script (`fuselage`, `ui-kit`, `message-parser`
+  and others), run `yarn build` in that package instead.
 - Set `RC_WORKSPACE_DIST=1` to make the client read every package from `dist`.
+
+### How production serves the client
+
+In production the server serves the client itself: `yarn build:client` builds
+it into `public/bundle`, and `yarn build:ci` runs it before `meteor build`. See
+[features/web-client-hosting.md](features/web-client-hosting.md) for how the
+server loads it and how to serve the client from another host.
 
 ---
 
@@ -220,9 +204,8 @@ export MONGO_URL='mongodb://localhost:27017/rocketchat?replicaSet=rs0'
 
 | Command | What it does | When to use |
 |---------|-----------|-------------|
-| `yarn dev` (in `apps/meteor`) | Monolithic Meteor app | **default** — day-to-day development |
-| `RC_SERVER_URL=<url> yarn dev:next` (in `apps/meteor`) | Vite client against a remote server (work in progress) | client work without a local server |
-| `yarn dev:next` (in `apps/meteor`) | Meteor server + Vite client (work in progress) | client work against your own server code |
+| `yarn dev` (in `apps/meteor`) | Meteor server + Vite client | **default** — day-to-day development |
+| `RC_SERVER_URL=<url> yarn dev` (in `apps/meteor`) | Vite client against a remote server | client work without a local server |
 | `yarn ms` | Microservices mode (transporter, default TCP) | working on services (presence, ddp-streamer, authorization…) |
 | `yarn storybook` | Component Storybook on port 6006 | developing UI in isolation |
 | `yarn build` | Full monorepo build (Turbo) | validate build / local CI |
@@ -236,7 +219,7 @@ export MONGO_URL='mongodb://localhost:27017/rocketchat?replicaSet=rs0'
 | `yarn testunit` | unit (definition + jest + mocha server, with coverage) |
 | `yarn testapi` | API tests (mocha, needs a running server) |
 | `yarn test:e2e` | end-to-end (Playwright) |
-| `yarn lint` | stylelint + meteor lint + eslint |
+| `yarn lint` | stylelint + oxlint |
 | `yarn typecheck` | `meteor lint` + `tsc --noEmit` |
 
 From the root, `yarn testunit` and `yarn lint` run via Turbo across all

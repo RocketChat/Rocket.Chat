@@ -148,7 +148,6 @@ class UserPresence {
 }
 
 export class StreamPresence {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	static getInstance(StreamerClass: IStreamerConstructor, options?: StreamerOptions): IStreamer<'user-presence'> {
 		return new (
 			class StreamPresence extends StreamerClass<'user-presence'> {

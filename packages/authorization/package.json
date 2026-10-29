@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/authorization",
-	"version": "0.0.2-rc.0",
+	"version": "0.0.2",
 	"private": true,
 	"description": "Rocket.Chat Authorization service",
 	"main": "./dist/Authorization.js",
@@ -28,7 +28,6 @@
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@types/node": "~24.13.6",
-		"eslint": "~10.12.0",
 		"jest": "~30.5.2",
 		"typescript": "~7.0.2"
 	},

@@ -20,7 +20,7 @@ export const executeGetImportProgress = async (): Promise<IImportProgress> => {
 		);
 	}
 
-	const instance = new importer.importer(importer, operation); // eslint-disable-line new-cap
+	const instance = new importer.importer(importer, operation); // oxlint-disable-line new-cap
 
 	return instance.getProgress();
 };

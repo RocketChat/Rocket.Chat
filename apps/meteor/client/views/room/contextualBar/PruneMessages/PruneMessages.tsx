@@ -108,7 +108,7 @@ const PruneMessages = ({ callOutText, validateText, onClickClose, onClickPrune }
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
 				<ButtonGroup stretch>
-					<Button danger disabled={Boolean(validateText)} onClick={onClickPrune}>
+					<Button variant='danger' disabled={Boolean(validateText)} onClick={onClickPrune}>
 						{t('Prune')}
 					</Button>
 				</ButtonGroup>

@@ -1,6 +1,6 @@
 {
 	"name": "rocket.chat",
-	"version": "9.0.0-develop",
+	"version": "9.1.0-develop",
 	"private": true,
 	"description": "Rocket.Chat Monorepo",
 	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
@@ -23,12 +23,12 @@
 	"scripts": {
 		"build": "turbo run build",
 		"dev": "turbo run dev --env-mode=loose --parallel --filter=@rocket.chat/meteor...",
-		"dev:next": "yarn workspace @rocket.chat/meteor dev:next",
 		"docs:check-links": "node scripts/check-docs-links.mjs docs",
 		"dsv": "turbo run dsv --env-mode=loose --filter=@rocket.chat/meteor...",
 		"ms": "turbo run ms --env-mode=loose",
 		"fossify": "tsx scripts/fossify.ts",
 		"lint": "turbo run lint",
+		"lint:spacing": "node scripts/spacing-scale/check.mjs",
 		"storybook": "yarn workspace @rocket.chat/meteor run storybook",
 		"test-storybook": "turbo run test-storybook",
 		"testunit": "turbo run testunit"
@@ -203,7 +203,9 @@
 		"uuid@npm:13": "13.0.1",
 		"moment-timezone/moment": "^2.31.0",
 		"@types/chart.js/moment": "^2.31.0",
-		"@react-pdf/layout@npm:^4.6.1": "patch:@react-pdf/layout@npm%3A4.6.1#~/.yarn/patches/@react-pdf-layout-npm-4.6.1-b12fdb71f4.patch"
+		"@react-pdf/layout@npm:^4.6.1": "patch:@react-pdf/layout@npm%3A4.6.1#~/.yarn/patches/@react-pdf-layout-npm-4.6.1-b12fdb71f4.patch",
+		"cookie@npm:^2.0.1": "patch:cookie@npm%3A2.0.1#~/.yarn/patches/cookie-npm-2.0.1-2aea16e44e.patch",
+		"playwright-core": "patch:playwright-core@npm%3A1.52.0#~/.yarn/patches/playwright-core-npm-1.52.0-keep-cache.patch"
 	},
 	"dependencies": {
 		"@types/stream-buffers": "^3.0.8",
@@ -211,13 +213,11 @@
 	},
 	"devDependencies": {
 		"@changesets/cli": "^2.27.12",
-		"@rocket.chat/eslint-config": "workspace:~",
+		"@rocket.chat/lint-config": "workspace:~",
 		"@types/chart.js": "^2.9.41",
 		"@types/js-yaml": "^4.0.9",
 		"@types/node": "~24.13.6",
-		"eslint": "~10.12.0",
 		"eslint-plugin-you-dont-need-lodash-underscore": "~6.14.0",
-		"globals": "~17.7.0",
 		"oxlint": "~1.89.0",
 		"oxlint-tsgolint": "~7.0.2000",
 		"ts-node": "^10.9.2",

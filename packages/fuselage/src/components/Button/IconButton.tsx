@@ -6,14 +6,6 @@ import type { ElementProps } from '../../types/ElementProps';
 import { Box } from '../Box';
 import { Icon } from '../Icon';
 
-export type IconButtonSize = {
-	large?: boolean;
-	medium?: boolean;
-	small?: boolean;
-	tiny?: boolean;
-	mini?: boolean;
-};
-
 export type IconButtonProps = {
 	icon: IconName | ReactElement<any>;
 	/**
@@ -26,12 +18,9 @@ export type IconButtonProps = {
 	badge?: ReactNode;
 	/** The corner the badge is pinned to. */
 	badgePosition?: 'top-end' | 'bottom-end';
-	primary?: boolean;
-	secondary?: boolean;
-	info?: boolean;
-	danger?: boolean;
-	warning?: boolean;
-	success?: boolean;
+	variant?:
+		'primary' | 'secondary' | 'info' | 'danger' | 'warning' | 'success' | 'secondary-danger' | 'secondary-warning' | 'secondary-success';
+	size?: 'mini' | 'tiny' | 'small' | 'medium' | 'large';
 	pressed?: boolean;
 	/** Renders a link instead of a button, for actions that navigate or download. */
 	is?: 'button' | 'a';
@@ -39,9 +28,16 @@ export type IconButtonProps = {
 	external?: boolean;
 	/** Paints the glyph with a font token, for icon-only actions on light surfaces. */
 	color?: 'default' | 'danger';
-} & IconButtonSize &
-	Omit<ElementProps<HTMLButtonElement | HTMLAnchorElement, AllHTMLAttributes<HTMLButtonElement | HTMLAnchorElement>>, 'ref'> &
+} & Omit<ElementProps<HTMLButtonElement | HTMLAnchorElement, AllHTMLAttributes<HTMLButtonElement | HTMLAnchorElement>>, 'ref'> &
 	RefAttributes<Element>;
+
+const iconSizes = {
+	mini: 'x12',
+	tiny: 'x16',
+	small: 'x20',
+	medium: 'x24',
+	large: 'x28',
+} as const;
 
 const getVariantClass = (variant: string) => {
 	if (variant) {
@@ -60,17 +56,8 @@ function IconButton({
 	icon,
 	badge,
 	badgePosition = 'top-end',
-	primary,
-	info,
-	secondary,
-	danger,
-	warning,
-	success,
-	mini,
-	large,
-	tiny,
-	small,
-	medium,
+	variant: variantProp,
+	size = 'large',
 	pressed,
 	is = 'button',
 	external,
@@ -78,21 +65,8 @@ function IconButton({
 	children,
 	...props
 }: IconButtonProps) {
-	const variant = useMemo(
-		() =>
-			(secondary && danger && 'secondary-danger') ||
-			(secondary && warning && 'secondary-warning') ||
-			(secondary && success && 'secondary-success') ||
-			(secondary && info && 'secondary-info') ||
-			(info && 'info') ||
-			(success && 'success') ||
-			(warning && 'warning') ||
-			(danger && 'danger') ||
-			(primary && 'secondary-info') ||
-			(secondary && 'secondary') ||
-			'',
-		[danger, info, primary, secondary, success, warning],
-	);
+	// `secondary-info` is the class that paints the primary palette.
+	const variant = variantProp === 'primary' ? 'secondary-info' : (variantProp ?? '');
 
 	const kindAndVariantProps = useMemo(() => {
 		const variantProp = {} as any;
@@ -105,14 +79,7 @@ function IconButton({
 		return variantProp;
 	}, [variant, pressed]);
 
-	const size = useMemo(
-		() => (mini && 'mini') || (tiny && 'tiny') || (small && 'small') || (medium && 'medium') || (large && 'large') || 'large',
-		[medium, mini, small, tiny, large],
-	);
-
 	const getSizeClass = () => ({ [`rcx-button--${size}-square`]: true });
-
-	const getIconSize = () => (large && 'x28') || (medium && 'x24') || (small && 'x20') || (tiny && 'x16') || (mini && 'x12') || 'x28';
 
 	return (
 		<Box
@@ -130,7 +97,7 @@ function IconButton({
 			color={color}
 			{...props}
 		>
-			{isValidElement<any>(icon) ? icon : <Icon name={icon} size={getIconSize()} />}
+			{isValidElement<any>(icon) ? icon : <Icon name={icon} size={iconSizes[size]} />}
 			{Boolean(badge) && (
 				<span className={`rcx-button__badge rcx-button__badge--${badgePosition}`} aria-hidden='true'>
 					{badge}

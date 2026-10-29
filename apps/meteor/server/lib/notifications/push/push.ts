@@ -6,7 +6,7 @@ import type { ExtendedFetchOptions } from '@rocket.chat/server-fetch';
 import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { pick, truncateString } from '@rocket.chat/tools';
 import { JWT } from 'google-auth-library';
-import { Match, check } from 'meteor/check';
+import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 
 import { initAPN, sendAPN, shutdownAPN } from './apn';
@@ -14,8 +14,6 @@ import type { PushOptions, PendingPushNotification } from './definition';
 import { sendFCM } from './fcm';
 import { logger } from './logger';
 import { settings } from '../../../settings';
-
-export const _matchToken = Match.OneOf({ apn: String }, { gcm: String });
 
 const PUSH_TITLE_LIMIT = 65;
 const PUSH_MESSAGE_BODY_LIMIT = 240;
@@ -456,36 +454,7 @@ class PushClass {
 		};
 	}
 
-	// This is a general function to validate that the data added to notifications
-	// is in the correct format. If not this function will throw errors
 	private _validateDocument(notification: PendingPushNotification): void {
-		// Check the general notification
-		check(notification, {
-			from: Match.Optional(String),
-			title: Match.Optional(String),
-			text: Match.Optional(String),
-			sent: Match.Optional(Boolean),
-			sending: Match.Optional(Match.Integer),
-			badge: Match.Optional(Match.Integer),
-			sound: Match.Optional(String),
-			notId: Match.Optional(Match.Integer),
-			contentAvailable: Match.Optional(Match.Integer),
-			apn: Match.Optional({
-				category: Match.Optional(String),
-				expirationSeconds: Match.Optional(Match.Integer),
-			}),
-			gcm: Match.Optional({
-				image: Match.Optional(String),
-				style: Match.Optional(String),
-			}),
-			userId: String,
-			payload: Match.Optional(Object),
-			createdAt: Date,
-			createdBy: Match.OneOf(String, null),
-			priority: Match.Optional(Match.Integer),
-			useVoipToken: Match.Optional(Boolean),
-		});
-
 		if (!notification.userId) {
 			throw new Error('No userId found');
 		}

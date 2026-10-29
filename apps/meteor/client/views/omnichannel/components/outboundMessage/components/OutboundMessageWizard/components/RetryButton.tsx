@@ -21,9 +21,8 @@ const RetryButton = ({ loading, onClick }: RetryButtonProps) => {
 
 	return (
 		<IconButton
-			mini
-			danger
-			secondary
+			size='mini'
+			variant='secondary-danger'
 			className={[btnClassName, loading && 'rcx-button--loading'].filter(Boolean).join(' ')}
 			disabled={loading}
 			icon={loading ? 'loading' : 'reload'}

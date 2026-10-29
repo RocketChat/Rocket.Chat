@@ -77,7 +77,6 @@ export const RoutingManager: Routing = {
 		return settings.get<string>('Livechat_Routing_Method') !== '';
 	},
 
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	registerMethod(name, Method) {
 		this.methods[name] = new Method();
 	},
@@ -237,15 +236,6 @@ export const RoutingManager: Routing = {
 			Match.ObjectIncluding({
 				agentId: String,
 				username: String,
-			}),
-		);
-
-		check(
-			inquiry,
-			Match.ObjectIncluding({
-				_id: String,
-				rid: String,
-				status: String,
 			}),
 		);
 

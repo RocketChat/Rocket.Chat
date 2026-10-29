@@ -40,7 +40,7 @@ export class Lame {
 		return gfp;
 	}
 
-	// eslint-disable-next-line complexity
+	// oxlint-disable-next-line complexity
 	private lame_init_params(gfp: LameGlobalFlags): void {
 		const gfc = gfp.internal_flags;
 
@@ -258,7 +258,7 @@ export class Lame {
 			case VbrMode.vbr_mt:
 				gfp.VBR = VbrMode.vbr_mtrh;
 
-			// eslint-disable-next-line no-fallthrough
+			// oxlint-disable-next-line no-fallthrough
 			case VbrMode.vbr_mtrh: {
 				this.p.applyPresetFromQuality(gfp, gfp.VBR_q);
 
@@ -602,7 +602,7 @@ export class Lame {
 			case 8:
 				gfp.quality = 7;
 
-			// eslint-disable-next-line no-fallthrough
+			// oxlint-disable-next-line no-fallthrough
 			case 7:
 				gfc.psymodel = 1;
 				gfc.noise_shaping = 0;

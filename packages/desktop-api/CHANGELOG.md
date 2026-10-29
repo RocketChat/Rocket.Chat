@@ -1,5 +1,11 @@
 # @rocket.chat/desktop-api
 
+## 1.4.0
+
+### Minor Changes
+
+- ([#40915](https://github.com/RocketChat/Rocket.Chat/pull/40915)) Desktop markdown attachments now open in the desktop document viewer directly instead of relying on download interception
+
 ## 1.4.0-rc.0
 
 ### Minor Changes

@@ -17,7 +17,7 @@ import type { ReactNode } from 'react';
 import { useEffect, memo, useMemo, useRef, useId } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { getActiveDescendantOptionProps } from '../../../hooks/useActiveDescendant';
+import { getActiveDescendantOptionProps } from '../../../hooks/getActiveDescendantOptionProps';
 
 export type ComposerBoxPopupProps<
 	T extends {
@@ -104,7 +104,7 @@ function ComposerBoxPopup<
 	}, [focused]);
 
 	return (
-		<Box position='relative' marginBlockEnd={8}>
+		<Box display='flex' flexDirection='column' minHeight={0} marginBlockEnd={8}>
 			<PopoverSurface elevation='1' flush ref={composerBoxPopupRef}>
 				{title && (
 					<Box backgroundColor='tint'>

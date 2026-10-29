@@ -63,7 +63,7 @@ export const DateTimeModal = ({ onSave, onClose, defaultValues }: DateTimeModalP
 			<ModalFooter>
 				<ModalFooterControllers>
 					<Button onClick={onClose}>{t('Cancel')}</Button>
-					<Button primary disabled={!watch('startDate') || !watch('endDate')} onClick={handleSave}>
+					<Button variant='primary' disabled={!watch('startDate') || !watch('endDate')} onClick={handleSave}>
 						{t('Apply')}
 					</Button>
 				</ModalFooterControllers>

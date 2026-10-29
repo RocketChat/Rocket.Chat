@@ -7,7 +7,6 @@ import { hasPermissionAsync } from '../../lib/authorization/hasPermission';
 import { settings } from '../../settings';
 
 declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		removeSlackBridgeChannelLinks(): { message: string; params: unknown[] };
 	}
@@ -17,7 +16,7 @@ Meteor.methods<ServerMethods>({
 	async removeSlackBridgeChannelLinks() {
 		const user = await Meteor.userAsync();
 		if (!user) {
-			throw new ClientSafeError('error-invalid-user', 'Invalid user', {
+			throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', {
 				method: 'removeSlackBridgeChannelLinks',
 			});
 		}

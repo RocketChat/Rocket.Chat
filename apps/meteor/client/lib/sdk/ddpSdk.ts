@@ -2,6 +2,7 @@ import { DDPSDK } from '@rocket.chat/ddp-client';
 import EJSON from 'ejson';
 
 import { createMeteorBackedStorage } from './meteorBackedSdk';
+import { STORAGE_KEYS, getStoredItem } from './storage';
 import {
 	clearLocalSession,
 	isLoggingIn,
@@ -10,17 +11,12 @@ import {
 	resumeStoredSession,
 	subscribeLoggingIn,
 } from '../../meteor/accounts';
-import { getRootUrl } from '../meteorRuntimeConfig';
-import { STORAGE_KEYS, getStoredItem } from './storage';
 import { userIdStore } from '../user';
 
 const stripTrailingSlash = (value: string): string => (value.endsWith('/') ? value.slice(0, -1) : value);
 
-const computeDdpUrl = (): string => {
-	const rootUrl = getRootUrl();
-	const source = rootUrl && rootUrl !== '/' ? rootUrl : window.location.origin;
-	return stripTrailingSlash(source.replace(/^http/, 'ws'));
-};
+// Connects back to wherever the page was loaded from, not to Site_Url.
+const computeDdpUrl = (): string => stripTrailingSlash(document.baseURI.replace(/^http/, 'ws'));
 
 let instance: DDPSDK | undefined;
 let connectPromise: Promise<unknown> | undefined;
@@ -177,7 +173,6 @@ const teardownAuthenticatedConnection = (): void => {
 };
 
 declare global {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Window {
 		__rocketChatSdk?: DDPSDK;
 	}

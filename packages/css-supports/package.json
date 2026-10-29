@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/css-supports",
-	"version": "0.31.26-rc.0",
+	"version": "0.31.26",
 	"description": "Memoized and SSR-compatible facade of CSS.supports API",
 	"bugs": {
 		"url": "https://github.com/RocketChat/Rocket.Chat/issues"
@@ -35,7 +35,6 @@
 	"devDependencies": {
 		"@rocket.chat/jest-presets": "workspace:~",
 		"@rocket.chat/tsconfig": "workspace:~",
-		"eslint": "~10.12.0",
 		"jest": "~30.5.2",
 		"typescript": "~7.0.2"
 	},

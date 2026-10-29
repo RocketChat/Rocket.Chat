@@ -225,7 +225,7 @@ const VideoConferenceBlock = ({ block }: VideoConferenceBlockProps) => {
 				{actions}
 			</VideoConfMessageRow>
 			<VideoConfMessageFooter>
-				<VideoConfMessageButton primary disabled={joinDisabled} onClick={joinHandler}>
+				<VideoConfMessageButton variant='primary' disabled={joinDisabled} onClick={joinHandler}>
 					{t('Join')}
 				</VideoConfMessageButton>
 				{Boolean(joinedUsers.length) && (

@@ -6,7 +6,6 @@ import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUpload } from '@rocket.chat/core-typings';
 import type { IBaseUploadsModel } from '@rocket.chat/model-typings';
 import type createServer from 'connect';
-import { check } from 'meteor/check';
 import type { ClientSession, OptionalId } from 'mongodb';
 
 import { UploadFS } from '.';
@@ -104,8 +103,6 @@ export class Store {
 		UploadFS.addStore(this);
 
 		this.copy = async (fileId, store, callback) => {
-			check(fileId, String);
-
 			if (!(store instanceof Store)) {
 				throw new TypeError('store is not an instance of UploadFS.Store');
 			}
@@ -149,7 +146,6 @@ export class Store {
 		};
 
 		this.create = async (file, options) => {
-			check(file, Object);
 			file.store = this.options.name; // assign store to file
 			return (await this.getCollection().insertOne(file, { session: options?.session })).insertedId;
 		};
@@ -244,7 +240,7 @@ export class Store {
 	}
 
 	getCollection() {
-		// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+		// oxlint-disable-next-line @typescript-eslint/no-non-null-assertion
 		return this.options.collection!;
 	}
 

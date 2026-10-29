@@ -1,12 +1,11 @@
-import { Box, Button, Callout, Chip, Margins } from '@rocket.chat/fuselage';
-import { ExternalLink } from '@rocket.chat/ui-client';
+import { Box, Button, Callout, Chip, Margins, Text } from '@rocket.chat/fuselage';
+import { ExternalLink, useHasLicenseModule } from '@rocket.chat/ui-client';
 import DOMPurify from 'dompurify';
 import { useTranslation } from 'react-i18next';
 
 import AppDetailsAPIs from './AppDetailsAPIs';
 import { normalizeUrl } from './normalizeUrl';
 import { useExternalLink } from '../../../../../hooks/useExternalLink';
-import { useHasLicenseModule } from '../../../../../hooks/useHasLicenseModule';
 import { GET_ADDONS_LINK } from '../../../../admin/subscription/utils/links';
 import ScreenshotCarouselAnchor from '../../../components/ScreenshotCarouselAnchor';
 import type { AppInfo } from '../../../definitions/AppInfo';
@@ -57,7 +56,7 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 							title={t('Subscription_add-on_required')}
 							type='info'
 							actions={
-								<Button small onClick={() => openExternalLink(GET_ADDONS_LINK)}>
+								<Button size='small' onClick={() => openExternalLink(GET_ADDONS_LINK)}>
 									{t('Contact_sales')}
 								</Button>
 							}
@@ -123,22 +122,22 @@ const AppDetails = ({ app }: AppDetailsProps) => {
 						</Box>
 						<Box display='flex' flexDirection='row' flexGrow={1} justifyContent='space-around' flexWrap='wrap' marginBlockEnd={24}>
 							<Box display='flex' flexDirection='column' marginInlineEnd={12} flexGrow={1}>
-								<Box fontScale='h4' color='hint'>
+								<Text fontScale='h4' color='hint'>
 									{t('Author_Site')}
-								</Box>
+								</Text>
 								{normalizedHomepageUrl ? <ExternalLink to={normalizedHomepageUrl}>{homepage}</ExternalLink> : homepage}
 							</Box>
 							<Box display='flex' flexDirection='column' flexGrow={1}>
-								<Box fontScale='h4' color='hint'>
+								<Text fontScale='h4' color='hint'>
 									{t('Support')}
-								</Box>
+								</Text>
 								{normalizedSupportUrl ? <ExternalLink to={normalizedSupportUrl}>{support}</ExternalLink> : support}
 							</Box>
 						</Box>
 						<>
-							<Box fontScale='h4' color='hint'>
+							<Text fontScale='h4' color='hint'>
 								{t('Documentation')}
-							</Box>
+							</Text>
 							{normalizedDocumentationUrl ? <ExternalLink to={normalizedDocumentationUrl}>{documentation}</ExternalLink> : documentation}
 						</>
 					</Box>

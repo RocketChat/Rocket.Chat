@@ -3,6 +3,8 @@ import crypto from 'crypto';
 import type { AutoUpdateRecord } from '@rocket.chat/core-services';
 import { MeteorService, Presence, ServiceClass } from '@rocket.chat/core-services';
 import type { LoginServiceConfiguration } from '@rocket.chat/core-typings';
+import type { ClientVersion, ConnectionLifecycle, ConnectionRegistry, MeteorCollection, Server } from '@rocket.chat/ddp-server';
+import { Session, encodeAdded } from '@rocket.chat/ddp-server';
 import { InstanceStatus } from '@rocket.chat/instance-status';
 import { Users } from '@rocket.chat/models';
 import type { NotificationsModule, SettingsReader } from '@rocket.chat/streamer';
@@ -11,14 +13,7 @@ import polka from 'polka';
 import { throttle } from 'underscore';
 import WebSocket from 'ws';
 
-import type { ConnectionRegistry } from './ddp/ConnectionRegistry';
-import type { Server } from './ddp/Server';
-import { Session } from './ddp/Session';
-import { encodeAdded } from './ddp/codec';
-import type { ConnectionLifecycle } from './ddp/lifecycle';
 import { proxy } from './http/proxy';
-import type { MeteorCollection } from './lib/MeteorCollection';
-import type { ClientVersion } from './publications/autoupdate';
 
 const { PORT = 4000 } = process.env;
 

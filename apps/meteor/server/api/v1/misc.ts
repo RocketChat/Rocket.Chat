@@ -21,7 +21,6 @@ import {
 import type { MeApiSuccessResponse } from '@rocket.chat/rest-typings';
 import { escapeHTML } from '@rocket.chat/tools';
 import EJSON from 'ejson';
-import { check } from 'meteor/check';
 import { DDPRateLimiter } from 'meteor/ddp-rate-limiter';
 import { Meteor } from 'meteor/meteor';
 
@@ -552,7 +551,6 @@ API.v1.get(
  */
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
 		'method.call/:method': {
 			POST: (params: { method: string; args: any[] }) => any;
@@ -637,10 +635,6 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		check(this.bodyParams, {
-			message: String,
-		});
-
 		const data = EJSON.parse(this.bodyParams.message);
 
 		const { method, params, id } = data;
@@ -692,10 +686,6 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		check(this.bodyParams, {
-			message: String,
-		});
-
 		const data = EJSON.parse(this.bodyParams.message);
 
 		const { method, params, id } = data;
@@ -812,10 +802,6 @@ API.v1.post(
 		},
 	},
 	async function action() {
-		check(this.bodyParams, {
-			setDeploymentAs: String,
-		});
-
 		const settingsIds: string[] = [];
 
 		if (this.bodyParams.setDeploymentAs === 'new-workspace') {

@@ -1,6 +1,6 @@
 import type { IRoom } from '@rocket.chat/core-typings';
 import type { SelectOption } from '@rocket.chat/fuselage';
-import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button } from '@rocket.chat/fuselage';
+import { Box, Icon, TextInput, Select, Throbber, ButtonGroup, Button, Text } from '@rocket.chat/fuselage';
 import { useStableCallback, useAutoFocus, useDebouncedCallback } from '@rocket.chat/fuselage-hooks';
 import {
 	VirtualizedScrollbars,
@@ -96,7 +96,7 @@ const TeamsChannels = ({
 					endAddon={<Icon name='magnifier' size='x20' />}
 				/>
 				<Box width='x144' marginInlineStart={8}>
-					<Select onChange={(val) => setType(val)} value={type} options={options} />
+					<Select aria-label={t('Filter')} onChange={(val) => setType(val)} value={type} options={options} />
 				</Box>
 			</ContextualbarSection>
 			<ContextualbarContent flush spaced>
@@ -109,16 +109,15 @@ const TeamsChannels = ({
 				{!loading && channels.length > 0 && (
 					<>
 						<Box paddingInline={24} paddingBlockStart={4} paddingBlockEnd={8}>
-							<Box is='span' color='hint' fontScale='p2'>
+							<Text is='span' color='hint' fontScale='p2'>
 								{t('Showing_current_of_total', { current: channels.length, total })}
-							</Box>
+							</Text>
 						</Box>
 						<Box width='full' height='full' role='list' overflow='hidden' flexShrink={1}>
 							<VirtualizedScrollbars>
 								<Virtuoso
 									totalCount={total}
 									data={channels}
-									// eslint-disable-next-line react/no-multi-comp
 									components={{ Footer: () => <InfiniteListAnchor loadMore={loadMoreChannels} /> }}
 									itemContent={(index, data) => (
 										<TeamsChannelItem onClickView={onClickView} room={data} mainRoom={mainRoom} reload={reload} key={index} />

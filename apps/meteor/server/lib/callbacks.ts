@@ -33,7 +33,6 @@ import type { CloseRoomParams } from './omnichannel/localTypes';
  *
  * TODO: move those to event-based systems
  */
-// eslint-disable-next-line @typescript-eslint/naming-convention
 interface EventLikeCallbackSignatures {
 	'afterActivateUser': (user: IUser) => void;
 	'afterCreateChannel': (owner: IUser, room: IRoom) => void;

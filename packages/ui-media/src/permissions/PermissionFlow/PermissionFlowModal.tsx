@@ -45,7 +45,7 @@ const getFooter = (
 				<Button key='join-micless' onClick={onCancel} icon='mic-off'>
 					{t('Accept_without_mic')}
 				</Button>,
-				<Button key='confirm' success onClick={onConfirm} icon='phone'>
+				<Button key='confirm' variant='success' onClick={onConfirm} icon='phone'>
 					{t('VoIP_allow_and_accept')}
 				</Button>,
 			];
@@ -54,7 +54,7 @@ const getFooter = (
 				<Button key='join-micless' onClick={onCancel} icon='mic-off'>
 					{t('Call_without_mic')}
 				</Button>,
-				<Button key='confirm' success onClick={onConfirm} icon='phone'>
+				<Button key='confirm' variant='success' onClick={onConfirm} icon='phone'>
 					{t('VoIP_allow_and_call')}
 				</Button>,
 			];
@@ -63,7 +63,7 @@ const getFooter = (
 				<Button key='cancel' onClick={onCancel}>
 					{t('Cancel')}
 				</Button>,
-				<Button key='confirm' primary onClick={onConfirm}>
+				<Button key='confirm' variant='primary' onClick={onConfirm}>
 					{t('Allow')}
 				</Button>,
 			];

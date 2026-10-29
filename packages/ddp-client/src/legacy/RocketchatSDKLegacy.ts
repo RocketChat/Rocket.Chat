@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-this-alias */
+/* oxlint-disable @typescript-eslint/no-this-alias */
 
 import type { IMessage, Serialized } from '@rocket.chat/core-typings';
 import { Emitter } from '@rocket.chat/emitter';

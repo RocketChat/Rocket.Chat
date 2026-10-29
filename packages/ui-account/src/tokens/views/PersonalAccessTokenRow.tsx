@@ -30,8 +30,8 @@ const PersonalAccessTokenRow = ({
 			<GenericTableCell truncate>{bypassTwoFactor ? t('Ignore') : t('Require')}</GenericTableCell>
 			<GenericTableCell truncate>
 				<ButtonGroup>
-					<IconButton title={t('Refresh')} icon='refresh' small secondary onClick={() => onRegenerate(name)} />
-					<IconButton title={t('Remove')} icon='trash' small secondary onClick={() => onRemove(name)} />
+					<IconButton title={t('Refresh')} icon='refresh' size='small' variant='secondary' onClick={() => onRegenerate(name)} />
+					<IconButton title={t('Remove')} icon='trash' size='small' variant='secondary' onClick={() => onRemove(name)} />
 				</ButtonGroup>
 			</GenericTableCell>
 		</GenericTableRow>

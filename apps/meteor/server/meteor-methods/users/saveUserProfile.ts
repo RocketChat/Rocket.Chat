@@ -3,7 +3,6 @@ import { ClientSafeError } from '@rocket.chat/core-services';
 import type { IUserPhoneNumber, UserStatus, IUser } from '@rocket.chat/core-typings';
 import { Users } from '@rocket.chat/models';
 import { Accounts } from 'meteor/accounts-base';
-import { Match, check } from 'meteor/check';
 import type { UpdateFilter } from 'mongodb';
 
 import { setEmailFunction } from './setEmail';
@@ -47,7 +46,7 @@ async function saveUserProfile(
 	}
 
 	if (!this.userId) {
-		throw new ClientSafeError('error-invalid-user', 'Invalid user', {
+		throw new ClientSafeError('error-unauthenticated', 'Unauthenticated', {
 			method: 'saveUserProfile',
 		});
 	}
@@ -206,7 +205,6 @@ const saveUserProfileWithTwoFactor = twoFactorRequired(saveUserProfile, {
 });
 
 declare module '@rocket.chat/ddp-client' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface ServerMethods {
 		saveUserProfile(
 			settings: {
@@ -243,9 +241,6 @@ export function executeSaveUserProfile(
 	customFields: Record<string, any> = {},
 	...args: unknown[]
 ) {
-	check(settings, Object);
-	check(customFields, Match.Maybe(Object));
-
 	if (
 		(settings.email && user.emails?.length) ||
 		(settings.newPassword && Object.keys(user.services || {}).length && !user.requirePasswordChange)

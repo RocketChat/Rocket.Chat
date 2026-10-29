@@ -1,5 +1,5 @@
 import { isSetting, isSettingColor } from '@rocket.chat/core-typings';
-import { AccordionItem, Box, Button, ButtonGroup, FieldGroup, Stack } from '@rocket.chat/fuselage';
+import { AccordionItem, Button, ButtonGroup, FieldGroup, Stack, Text } from '@rocket.chat/fuselage';
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import type { ReactNode } from 'react';
 import { useMemo } from 'react';
@@ -77,9 +77,9 @@ function SettingsSection({ groupId, hasReset = true, sectionTitle, sectionName, 
 			title={sectionTitle || (sectionName && t(sectionName))}
 		>
 			{help && (
-				<Box is='p' color='hint' fontScale='p2'>
+				<Text is='p' color='hint' fontScale='p2'>
 					{help}
-				</Box>
+				</Text>
 			)}
 			<Stack gap={16}>
 				<FieldGroup>
@@ -91,7 +91,7 @@ function SettingsSection({ groupId, hasReset = true, sectionTitle, sectionName, 
 				</FieldGroup>
 				{hasReset && canReset && (
 					<ButtonGroup>
-						<Button secondary danger data-section={sectionName} onClick={handleResetSectionClick}>
+						<Button variant='secondary-danger' data-section={sectionName} onClick={handleResetSectionClick}>
 							{t('Reset_section_settings')}
 						</Button>
 					</ButtonGroup>

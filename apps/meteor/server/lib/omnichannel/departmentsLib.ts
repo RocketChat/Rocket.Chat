@@ -83,13 +83,6 @@ export async function saveDepartment(
 	});
 
 	check(departmentData, defaultValidations);
-	check(
-		departmentAgents,
-		Match.Maybe({
-			upsert: Match.Maybe(Array),
-			remove: Match.Maybe(Array),
-		}),
-	);
 
 	const { requestTagBeforeClosingChat, chatClosingTags, fallbackForwardDepartment } = departmentData;
 	if (requestTagBeforeClosingChat && (!chatClosingTags || chatClosingTags.length === 0)) {

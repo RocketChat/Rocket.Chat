@@ -1,35 +1,37 @@
-import {
-	Box,
-	Button,
-	ButtonGroup,
-	States,
-	StatesAction,
-	StatesActions,
-	StatesSubtitle,
-	StatesTitle,
-	TextAreaInput,
-} from '@rocket.chat/fuselage';
+import { Button, ButtonGroup, States, StatesAction, StatesActions, StatesSubtitle, Stack, StatesTitle, Text } from '@rocket.chat/fuselage';
+import { Field, FieldError, FieldHint, FieldLabel, FieldRow, TextAreaInput } from '@rocket.chat/fuselage-forms';
 import { validateEmail } from '@rocket.chat/tools';
 import { ContextualbarScrollableContent, ContextualbarFooter, ContextualbarContent } from '@rocket.chat/ui-client';
-import { useTranslation, useRoute } from '@rocket.chat/ui-contexts';
-import type { ChangeEvent } from 'react';
-import { useCallback, useState } from 'react';
+import { useRoute } from '@rocket.chat/ui-contexts';
+import { useId } from 'react';
+import { Controller, useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 
 import { useSendInvitationEmailMutation } from './hooks/useSendInvitationEmailMutation';
 import { useSmtpQuery } from './hooks/useSmtpQuery';
 import { FormSkeleton } from '../../../components/Skeleton';
 
-// TODO: Replace using RHF
+type AdminInviteUsersFormValues = {
+	emails: string;
+};
+
+const getEmails = (text: string) => text.split(/[ ,;]+/i).filter((val: string) => validateEmail(val));
+
 const AdminInviteUsers = () => {
-	const t = useTranslation();
-	const [text, setText] = useState('');
-	const getEmails = useCallback((text: string) => text.split(/[\ ,;]+/i).filter((val: string) => validateEmail(val)), []);
+	const { t } = useTranslation();
+	const formId = useId();
 	const adminRouter = useRoute('admin-settings');
 	const sendInvitationMutation = useSendInvitationEmailMutation();
 	const { data, isLoading } = useSmtpQuery();
 
-	const handleClick = () => {
-		sendInvitationMutation.mutate({ emails: getEmails(text) });
+	const {
+		control,
+		handleSubmit,
+		formState: { errors },
+	} = useForm<AdminInviteUsersFormValues>({ defaultValues: { emails: '' } });
+
+	const handleSend = ({ emails }: AdminInviteUsersFormValues) => {
+		sendInvitationMutation.mutate({ emails: getEmails(emails) });
 	};
 
 	if (isLoading) {
@@ -58,23 +60,45 @@ const AdminInviteUsers = () => {
 
 	return (
 		<>
-			<ContextualbarScrollableContent>
-				<Box is='h2' fontScale='h2' marginBlock={8}>
-					{t('Send_invitation_email')}
-				</Box>
-				<Box fontScale='p2' marginBlock={8}>
-					{t('Send_invitation_email_info')}
-				</Box>
-				<TextAreaInput rows={5} onChange={(e: ChangeEvent<HTMLTextAreaElement>): void => setText(e.currentTarget.value)} />
+			<ContextualbarScrollableContent is='form' onSubmit={handleSubmit(handleSend)} id={formId}>
+				<Field>
+					<Stack gap={8}>
+						<FieldLabel required>
+							<Text is='span' fontScale='h2'>
+								{t('Send_invitation_email')}
+							</Text>
+						</FieldLabel>
+						<FieldHint>
+							<Text is='span' fontScale='p2'>
+								{t('Send_invitation_email_info')}
+							</Text>
+						</FieldHint>
+					</Stack>
+					<FieldRow>
+						<Controller
+							control={control}
+							name='emails'
+							rules={{ validate: (value) => getEmails(value).length > 0 || t('Send_invitation_email_error') }}
+							render={({ field }) => (
+								<TextAreaInput
+									{...field}
+									rows={5}
+									aria-required='true'
+									placeholder={t('Send_invitation_email_placeholder')}
+									error={errors.emails?.message}
+								/>
+							)}
+						/>
+					</FieldRow>
+					{errors.emails && <FieldError>{errors.emails.message}</FieldError>}
+				</Field>
 			</ContextualbarScrollableContent>
 			<ContextualbarFooter>
-				<Box paddingBlock={8}>
-					<ButtonGroup stretch>
-						<Button icon='send' primary onClick={handleClick} disabled={!getEmails(text).length}>
-							{t('Send')}
-						</Button>
-					</ButtonGroup>
-				</Box>
+				<ButtonGroup stretch>
+					<Button icon='send' variant='primary' type='submit' form={formId} loading={sendInvitationMutation.isPending}>
+						{t('Send')}
+					</Button>
+				</ButtonGroup>
 			</ContextualbarFooter>
 		</>
 	);

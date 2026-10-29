@@ -90,7 +90,7 @@ const OAuthAddApp = () => {
 						<FieldRow>
 							<ButtonGroup stretch>
 								<Button onClick={close}>{t('Cancel')}</Button>
-								<Button primary onClick={handleSubmit(onSubmit)}>
+								<Button variant='primary' onClick={handleSubmit(onSubmit)}>
 									{t('Save')}
 								</Button>
 							</ButtonGroup>

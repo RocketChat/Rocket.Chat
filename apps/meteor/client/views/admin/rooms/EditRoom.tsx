@@ -385,7 +385,7 @@ const EditRoom = ({ room, onChange, onDelete, onClose }: EditRoomProps) => {
 				</ButtonGroup>
 				<Box marginBlockStart={8}>
 					<ButtonGroup stretch>
-						<Button icon='trash' danger loading={isDeleting} disabled={!canDeleteRoom || roomIsFederated} onClick={handleDelete}>
+						<Button icon='trash' variant='danger' loading={isDeleting} disabled={!canDeleteRoom || roomIsFederated} onClick={handleDelete}>
 							{t('Delete')}
 						</Button>
 					</ButtonGroup>

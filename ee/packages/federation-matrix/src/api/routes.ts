@@ -17,9 +17,10 @@ import { isFederationDomainAllowedMiddleware } from './middlewares/isFederationD
 import { isFederationEnabledMiddleware } from './middlewares/isFederationEnabled';
 import { isLicenseEnabledMiddleware } from './middlewares/isLicenseEnabled';
 
-export const getFederationRoutes = (version: string): { matrix: Router<'/_matrix'>; wellKnown: Router<'/.well-known'> } => {
+export const getFederationRoutes = (version: string): { matrix: Router<'/_matrix'>; wellKnown: Router<'/.well-known/matrix'> } => {
 	const matrix = new Router('/_matrix');
-	const wellKnown = new Router('/.well-known');
+	// the router answers every path under its base, and the rest of /.well-known belongs to other protocols
+	const wellKnown = new Router('/.well-known/matrix');
 
 	matrix
 		.use(isFederationEnabledMiddleware)

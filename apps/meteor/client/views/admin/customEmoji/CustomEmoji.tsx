@@ -1,12 +1,12 @@
 import {
-	Box,
 	Pagination,
 	States,
-	StatesActions,
 	StatesAction,
+	StatesActions,
 	StatesIcon,
 	StatesTitle,
 	type TableColumnWidth,
+	Text,
 } from '@rocket.chat/fuselage';
 import { useDebouncedValue } from '@rocket.chat/fuselage-hooks';
 import {
@@ -103,10 +103,10 @@ const CustomEmoji = ({ onClick, reload }: CustomEmojiProps) => {
 										qa-emoji-id={emojis._id}
 									>
 										<GenericTableCell color='default'>
-											<Box withTruncatedText>{emojis.name}</Box>
+											<Text truncate>{emojis.name}</Text>
 										</GenericTableCell>
 										<GenericTableCell color='default'>
-											<Box withTruncatedText>{Array.isArray(emojis.aliases) ? emojis.aliases.join(', ') : emojis.aliases}</Box>
+											<Text truncate>{Array.isArray(emojis.aliases) ? emojis.aliases.join(', ') : emojis.aliases}</Text>
 										</GenericTableCell>
 									</GenericTableRow>
 								))}

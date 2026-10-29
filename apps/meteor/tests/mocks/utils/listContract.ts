@@ -41,7 +41,6 @@ export const expectListKeyboard = async (
 	// The first row has a next one, so Tab entering it would show
 	const row = rowOf(firstTarget, list);
 	for (let presses = 0; presses < 20; presses++) {
-		// eslint-disable-next-line no-await-in-loop
 		await user.tab();
 		if (!list.contains(document.activeElement)) {
 			break;

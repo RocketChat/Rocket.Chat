@@ -1,6 +1,6 @@
 import type { ILivechatContact, Serialized } from '@rocket.chat/core-typings';
 import { css } from '@rocket.chat/css-in-js';
-import { Box, Button, ButtonGroup, Callout, IconButton, Tabs, TabsItem, useStyle } from '@rocket.chat/fuselage';
+import { Box, Button, ButtonGroup, Callout, IconButton, Tabs, TabsItem, Text, useStyle } from '@rocket.chat/fuselage';
 import { UserAvatar } from '@rocket.chat/ui-avatar';
 import {
 	ContextualbarHeader,
@@ -57,16 +57,16 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 						<Box withTruncatedText display='flex'>
 							<UserAvatar size='x40' title={name} username={name} />
 							<Box withTruncatedText marginInlineStart={16} display='flex' flexDirection='column'>
-								<Box withTruncatedText fontScale='h4'>
+								<Text truncate fontScale='h4'>
 									{name}
-								</Box>
-								{lastChat && <Box fontScale='c1'>{`${t('Last_Chat')}: ${formatDate(lastChat.ts)}`}</Box>}
+								</Text>
+								{lastChat && <Text fontScale='c1'>{`${t('Last_Chat')}: ${formatDate(lastChat.ts)}`}</Text>}
 							</Box>
 						</Box>
 						<IconButton
 							disabled={!canEditContact || hasConflicts}
 							title={canEditContact ? t('Edit') : t('Not_authorized')}
-							small
+							size='small'
 							icon='pencil'
 							onClick={() => handleNavigate({ context: 'edit' })}
 						/>
@@ -78,7 +78,7 @@ const ContactInfo = ({ contact, onClose }: ContactInfoProps) => {
 						icon='members'
 						actions={
 							<ButtonGroup>
-								<Button onClick={() => setModal(<ReviewContactModal onCancel={() => setModal(null)} contact={contact} />)} small>
+								<Button onClick={() => setModal(<ReviewContactModal onCancel={() => setModal(null)} contact={contact} />)} size='small'>
 									{t('See_conflicts')}
 								</Button>
 							</ButtonGroup>

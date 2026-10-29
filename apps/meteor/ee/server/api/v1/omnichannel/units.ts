@@ -9,7 +9,6 @@ import { findAllDepartmentsAvailable, findAllDepartmentsByUnit } from '../../../
 import { LivechatEnterprise } from '../../../lib/omnichannel/LivechatEnterprise';
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention
 	interface Endpoints {
 		'/v1/livechat/units/:unitId/monitors': {
 			GET: (params: { unitId: string }) => { monitors: ILivechatUnitMonitor[] };

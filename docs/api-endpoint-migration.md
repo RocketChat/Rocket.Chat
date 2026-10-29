@@ -509,7 +509,7 @@ type InvitesEndpoints = ExtractRoutesFromAPI<typeof invites>;
 
 // Augment the Endpoints interface so the SDK, client hooks, and tests see these routes
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends InvitesEndpoints {}
 }
 ```

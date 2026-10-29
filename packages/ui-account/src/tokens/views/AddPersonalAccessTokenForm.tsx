@@ -69,7 +69,7 @@ const AddPersonalAccessTokenForm = ({ onCreate }: AddPersonalAccessTokenFormProp
 								/>
 							</Box>
 						</Margins>
-						<Button primary type='submit'>
+						<Button variant='primary' type='submit'>
 							{t('Add')}
 						</Button>
 					</FieldRow>

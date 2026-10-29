@@ -1952,13 +1952,6 @@ API.v1
 			},
 		},
 		async function action() {
-			check(
-				this.queryParams,
-				Match.ObjectIncluding({
-					userId: Match.Maybe(String),
-				}),
-			);
-
 			const { userId } = this.queryParams;
 
 			// If the caller has permission to view all teams, there's no need to filter the teams
@@ -2407,6 +2400,6 @@ settings.watch<number>('Rate_Limiter_Limit_RegisterUser', (value) => {
 type UsersEndpoints = ExtractRoutesFromAPI<typeof usersEndpoints>;
 
 declare module '@rocket.chat/rest-typings' {
-	// eslint-disable-next-line @typescript-eslint/naming-convention, @typescript-eslint/no-empty-interface
+	// oxlint-disable-next-line @typescript-eslint/no-empty-interface
 	interface Endpoints extends UsersEndpoints {}
 }
