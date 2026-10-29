@@ -284,16 +284,29 @@ describe('Push Notifications [PushClass]', () => {
 			expect(sendNotificationGatewayStub.calledOnce).to.be.true;
 		});
 
-		it('waits for a gateway request to finish once 50 are in flight', async () => {
+		it('waits for a gateway request to finish before starting a 51st', async () => {
 			pushTokenModelStub.findAllTokensByUserId.returns(
-				Array.from({ length: 50 }, (_, i) => ({ _id: `token-${i}`, tokenType: 'gcm', tokenValue: `GCM_TOKEN_${i}` })),
+				Array.from({ length: 51 }, (_, i) => ({ _id: `token-${i}`, tokenType: 'gcm', tokenValue: `GCM_TOKEN_${i}` })),
 			);
 
 			const sending = Push.sendNotification(notification);
 
 			expect(await isSettled(sending)).to.be.false;
+			expect(sendNotificationGatewayStub.callCount).to.equal(50);
 			pendingGatewayRequests.shift()?.();
 			expect(await isSettled(sending)).to.be.true;
+			expect(sendNotificationGatewayStub.callCount).to.equal(51);
+		});
+
+		it('keeps concurrent senders within 50 gateway requests in flight', async () => {
+			pushTokenModelStub.findAllTokensByUserId.returns(
+				Array.from({ length: 30 }, (_, i) => ({ _id: `token-${i}`, tokenType: 'gcm', tokenValue: `GCM_TOKEN_${i}` })),
+			);
+
+			const sending = [Push.sendNotification(notification), Push.sendNotification(notification)];
+
+			expect(await isSettled(Promise.all(sending))).to.be.false;
+			expect(sendNotificationGatewayStub.callCount).to.equal(50);
 		});
 
 		it('logs a failed gateway request instead of rejecting', async () => {

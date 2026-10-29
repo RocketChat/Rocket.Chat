@@ -336,22 +336,22 @@ class PushClass {
 	}
 
 	// Sends without waiting for the gateway, so the notification queue is not throttled to one push per gateway round trip;
-	// waits only once the in-flight requests reach the limit, keeping the backlog in the queue instead of in memory.
+	// waits for a free slot once the in-flight requests reach the limit, keeping the backlog in the queue instead of in memory.
 	private async sendNotificationGatewayInBackground(
 		pushToken: IPushToken,
 		notification: PendingPushNotification,
 		countApn: string[],
 		countGcm: string[],
 	): Promise<void> {
+		while (this.gatewayRequestsInFlight.size >= PUSH_GATEWAY_MAX_CONCURRENT_REQUESTS) {
+			await Promise.race(this.gatewayRequestsInFlight);
+		}
+
 		const request: Promise<void> = this.sendNotificationGateway(pushToken, notification, countApn, countGcm)
 			.catch((err) => logger.error({ msg: 'Error sending push to gateway', err }))
 			.finally(() => this.gatewayRequestsInFlight.delete(request));
 
 		this.gatewayRequestsInFlight.add(request);
-
-		if (this.gatewayRequestsInFlight.size >= PUSH_GATEWAY_MAX_CONCURRENT_REQUESTS) {
-			await Promise.race(this.gatewayRequestsInFlight);
-		}
 	}
 
 	private getGatewayNotificationData(notification: PendingPushNotification): Omit<GatewayNotification, 'uniqueId'> {
