@@ -3163,6 +3163,112 @@ ${on(':active', '.active', '.is-active')} {
 	.join('\n\n')}`;
 };
 
+const bubbleChrome = (tag: 'button' | 'span'): Record<string, Value> => ({
+	render: tag,
+	...flexBox,
+	display: 'flex',
+	justifyContent: 'center',
+	alignItems: 'center',
+	height: size('x28')!,
+	paddingInline: px(8),
+	columnGap: px(4),
+	overflow: 'hidden',
+	textOverflow: 'ellipsis',
+	whiteSpace: 'nowrap',
+	borderRadius: radius('extra-large'),
+	...font('c2'),
+});
+
+const bubbleKinds = ['primary', 'secondary'] as const;
+
+const generateBubble = () => part('BubbleFrame', { render: 'div', ...flexBox, display: 'flex', overflow: 'hidden', alignItems: 'center' });
+
+const generateBubbleButton = () => {
+	const looks: Record<string, Record<string, Value>> = {};
+
+	for (const kind of bubbleKinds) {
+		const colors = kindColors(kind, kinds[kind]);
+
+		looks[kind] = { ...(kindStyle(colors) as Record<string, Value>), cursor: 'pointer' };
+		looks[`${kind}-disabled`] = disabledStyle(colors) as Record<string, Value>;
+	}
+
+	return part(
+		'BubbleButtonFrame',
+		{
+			...bubbleChrome('button'),
+			margin: 0,
+			appearance: 'none',
+			outlineStyle: 'none',
+			borderWidth: borderWidth('default')!,
+			borderStyle: 'solid',
+		},
+		{ look: looks },
+	);
+};
+
+const generateBubbleItem = () =>
+	part(
+		'BubbleItemFrame',
+		{ ...bubbleChrome('span'), ...contentBox },
+		{
+			look: Object.fromEntries(
+				bubbleKinds.map((kind) => {
+					const colors = kindColors(kind, kinds[kind]);
+
+					return [kind, { color: colors.color, backgroundColor: colors.background }];
+				}),
+			),
+		},
+	);
+
+const generateBubbleCss = () => {
+	const micro = fontScale('micro')!;
+
+	return `.rcx-bubble__button > span,
+.rcx-bubble__item > span {
+	overflow: hidden;
+
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}
+
+.rcx-bubble__item > .rcx-icon {
+	margin-inline-end: ${px(8)};
+}
+
+.rcx-bubble__button:active > *:not([role='false']),
+.rcx-bubble__button.active > *:not([role='false']),
+.rcx-bubble__button.is-active > *:not([role='false']) {
+	transform: translateY(1px);
+}
+
+.rcx-bubble:not(.rcx-bubble__group) .rcx-bubble__button[class]:has(> .rcx-icon),
+.rcx-bubble:not(.rcx-bubble__group) .rcx-bubble__item[class]:has(> .rcx-icon) {
+	padding-inline-end: ${px(12)};
+}
+
+.rcx-bubble--small .rcx-bubble__button[class],
+.rcx-bubble--small .rcx-bubble__item[class] {
+	height: ${size('x20')};
+
+	font-size: ${micro.fontSize};
+	font-weight: ${micro.fontWeight};
+	line-height: ${micro.lineHeight};
+	letter-spacing: ${micro.letterSpacing};
+}
+
+.rcx-bubble__group[class] > :first-child[class] {
+	border-top-right-radius: 0;
+	border-bottom-right-radius: 0;
+}
+
+.rcx-bubble__group[class] > :last-child[class] {
+	border-top-left-radius: 0;
+	border-bottom-left-radius: 0;
+}`;
+};
+
 const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
 	{ file: join(import.meta.dirname, '../src/components/Button/IconButton.tsx'), generate: generateIconButton },
@@ -3279,6 +3385,10 @@ const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/ToastBar/ToastBar.styles.css'), generate: generateToastBarCss, css: true },
 	{ file: join(import.meta.dirname, '../src/components/SplitButton/SplitButton.tsx'), generate: generateSplitButton },
 	{ file: join(import.meta.dirname, '../src/components/SplitButton/SplitButton.styles.css'), generate: generateSplitButtonCss, css: true },
+	{ file: join(import.meta.dirname, '../src/components/Bubble/Bubble.tsx'), generate: generateBubble },
+	{ file: join(import.meta.dirname, '../src/components/Bubble/BubbleButton.tsx'), generate: generateBubbleButton },
+	{ file: join(import.meta.dirname, '../src/components/Bubble/BubbleItem.tsx'), generate: generateBubbleItem },
+	{ file: join(import.meta.dirname, '../src/components/Bubble/Bubble.styles.css'), generate: generateBubbleCss, css: true },
 ];
 
 for (const [dir, control] of [
