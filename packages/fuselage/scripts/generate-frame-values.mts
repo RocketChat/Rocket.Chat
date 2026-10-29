@@ -1148,6 +1148,57 @@ const generateStatusBullet = () => {
 	});
 };
 
+const generateTooltip = () =>
+	frameDeclaration('TooltipFrame', {
+		render: 'div',
+		position: 'relative',
+		display: 'inline-block',
+		flexDirection: 'row',
+		alignItems: 'normal',
+		flexShrink: 1,
+		minWidth: 'auto',
+		minHeight: 'auto',
+		maxWidth: 240,
+		paddingBlock: spacing('x8')!,
+		paddingInline: spacing('x12'),
+		userSelect: 'none',
+		wordBreak: 'break-word',
+		pointerEvents: 'none',
+		fontVariantNumeric: 'tabular-nums',
+		borderRadius: toCSSValue('--rcx-tooltip-border-radius', radiusOf('medium')),
+		...font('p2m'),
+		variants: {
+			variation: {
+				dark: {
+					color: toCSSValue('--rcx-tooltip-dark-text-color', textIconColors['font-white'].toString()),
+					backgroundColor: toCSSValue('--rcx-tooltip-dark-background-color', surfaceColors['surface-dark'].toString()),
+				},
+				light: {
+					color: toCSSValue('--rcx-tooltip-light-text-color', textIconColors['font-default'].toString()),
+					backgroundColor: toCSSValue('--rcx-tooltip-light-background-color', surfaceColors['surface-neutral'].toString()),
+				},
+			},
+		},
+	});
+
+// The arrow is a pseudo-element, which a frame cannot style
+const generateTooltipArrow = () => `.rcx-tooltip--dir-top::after,
+.rcx-tooltip--dir-bottom::after,
+.rcx-tooltip--dir-left::after,
+.rcx-tooltip--dir-right::after {
+	border-color: transparent transparent ${toCSSValue('--rcx-tooltip-dark-background-color', surfaceColors['surface-dark'].toString())}
+		${toCSSValue('--rcx-tooltip-dark-background-color', surfaceColors['surface-dark'].toString())};
+}
+
+.rcx-tooltip--dir-left::after,
+.rcx-tooltip--dir-right::after {
+	margin-block-start: ${spacing('-x4')};
+}
+
+.rcx-tooltip--pos-middle::after {
+	margin-left: ${spacing('-x4')};
+}`;
+
 const frames = (relative: string) => join(import.meta.dirname, '../src/components', relative);
 
 
@@ -1176,6 +1227,8 @@ const components: { file: string; generate: () => string; css?: boolean; section
 	{ file: frames('Avatar/AvatarContainer.tsx'), generate: generateAvatarContainer },
 	{ file: frames('Avatar/AvatarStack.tsx'), generate: generateAvatarStack },
 	{ file: frames('StatusBullet/StatusBullet.tsx'), generate: generateStatusBullet },
+	{ file: frames('Tooltip/Tooltip.tsx'), generate: generateTooltip },
+	{ file: frames('Tooltip/Tooltip.styles.css'), generate: generateTooltipArrow, css: true },
 ];
 
 for (const [dir, control] of [
