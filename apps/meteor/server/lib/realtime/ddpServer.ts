@@ -11,6 +11,7 @@ import { announceConnection } from './meteorConnection';
 import { callMeteorMethod } from './meteorMethods';
 import { sessionAccounts } from './sessionAccounts';
 import { lifecycle } from './sessions';
+import { SystemLogger } from '../logger/system';
 import { checkDdpRateLimit } from '../utils/checkDdpRateLimit';
 import { getBaseUserFields } from '../utils/functions/getBaseUserFields';
 
@@ -46,10 +47,14 @@ lifecycle.on('loggedIn', async (session) => {
 	if (!userId) {
 		return;
 	}
-	const user = await Users.findOneById(userId, { projection: userProjection });
-	if (!user) {
-		return;
+	try {
+		const user = await Users.findOneById(userId, { projection: userProjection });
+		if (!user) {
+			return;
+		}
+		// after the login result, which is already queued
+		setImmediate(() => session.send(encodeAdded('users', userId, user)));
+	} catch (err) {
+		SystemLogger.error({ msg: 'Could not send a session its own user', err });
 	}
-	// after the login result, which is already queued
-	setImmediate(() => session.send(encodeAdded('users', userId, user)));
 });
