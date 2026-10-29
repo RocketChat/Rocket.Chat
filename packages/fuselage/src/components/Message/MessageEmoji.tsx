@@ -37,12 +37,14 @@ const MessageEmojiFrame = styled(Text, {
 
 // end of generated
 
-const MessageEmoji = ({ name, className, image, big, ...props }: MessageEmojiProps) => (
+const MessageEmoji = ({ name, className, image, big, children, ...props }: MessageEmojiProps) => (
 	<MessageEmojiFrame
 		render={<MessageEmojiBase name={name} image={image} {...props} />}
 		big={Boolean(big)}
 		className={['rcx-message__emoji', className, big && 'rcx-message__emoji--big'].filter(Boolean).join(' ')}
-	/>
+	>
+		{children}
+	</MessageEmojiFrame>
 );
 
 export default MessageEmoji;
