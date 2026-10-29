@@ -48,7 +48,7 @@ const WorkspacePage = ({
 				)}
 			</PageHeader>
 
-			<PageScrollableContentWithShadow padding={16}>
+			<PageScrollableContentWithShadow padding='x24'>
 				<Box display='flex' flexDirection='column' gap={16} marginBlock='none' marginInline='auto' width='full' color='default'>
 					{warningMultipleInstances && <Callout type='warning' title={t('Multiple_monolith_instances_alert')}></Callout>}
 					<Box>
