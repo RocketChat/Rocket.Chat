@@ -16,7 +16,6 @@ const StatesTitleFrame = styled(View, {
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	marginTop: 0,
 	marginBottom: '8px',
 	textAlign: 'center',

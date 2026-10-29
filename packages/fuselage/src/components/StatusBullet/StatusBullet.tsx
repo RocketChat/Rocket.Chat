@@ -14,7 +14,6 @@ import Online from './icons/Online';
 const StatusBulletFrame = styled(View, {
 	alignItems: 'normal',
 	flexDirection: 'row',
-	boxSizing: 'content-box',
 	minWidth: 'auto',
 	minHeight: 'auto',
 	display: 'inline-block',

@@ -16,7 +16,6 @@ const StatesSuggestionFrame = styled(View, {
 	flexShrink: 1,
 	minWidth: 'auto',
 	minHeight: 'auto',
-	boxSizing: 'content-box',
 	justifyContent: 'center',
 	width: '100%',
 	maxWidth: '462px',
