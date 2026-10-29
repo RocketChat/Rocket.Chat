@@ -149,14 +149,7 @@ The dialback secret is generated at start and never persisted
 
 ## Known defects
 
-### D2 Stopping the server drops stanzas not yet written out
-
-A send resolves once the stanza is handed to the socket. Stopping the server destroys
-outbound sockets instead of closing their streams, so stanzas still buffered are lost
-although their send resolved (R18). Where: `S2SManager.stopAll` calls `destroy()` on outbound
-sessions. Test: `tests/integration/s2s.spec.ts`, "delivers every stanza already sent when
-the server stops"; the end-to-end harness cannot stop the service between a send and its
-delivery, so this one is an integration test.
+None.
 
 ## Open questions
 
