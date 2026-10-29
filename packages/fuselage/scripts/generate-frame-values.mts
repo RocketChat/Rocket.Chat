@@ -2184,10 +2184,15 @@ const generateInputBoxSkeleton = () => {
 const InputBoxSkeletonFrame = styled(View, ${literal(frame)});`;
 };
 
-
-
 // Boxes the field parts used to render as spans or divs: a Tamagui View starts as a column flex box, a Text as a pre-wrapped inline one
-const flexBase = { display: 'flex', flexDirection: 'row', alignItems: 'normal', flexShrink: 1, minWidth: 'auto', minHeight: 'auto' } as const;
+const flexBase = {
+	display: 'flex',
+	flexDirection: 'row',
+	alignItems: 'normal',
+	flexShrink: 1,
+	minWidth: 'auto',
+	minHeight: 'auto',
+} as const;
 const inlineBase = { display: 'inline', whiteSpace: 'normal', wordWrap: 'normal' } as const;
 
 const frameCode = (name: string, base: 'View' | 'Text', value: Value) =>
@@ -2251,8 +2256,488 @@ const generateLabel = () =>
 
 ${frameCode('LabelRequiredFrame', 'Text', { render: 'span', ...inlineBase, color: fontColorOf('danger') })}`;
 
-const generateLabelInfo = () =>
-	frameCode('LabelInfoFrame', 'View', { render: 'span', ...flexBase, alignItems: 'center', order: 1 });
+const generateLabelInfo = () => frameCode('LabelInfoFrame', 'View', { render: 'span', ...flexBase, alignItems: 'center', order: 1 });
+
+// The Sidebar family: one frame per element, over the values the SCSS read under `--rcx-sidebar-…`
+const sb = {
+	surface: themedVar('sidebar-color-surface-default', surfaceColor('sidebar')),
+	surfaceHover: themedVar('sidebar-color-surface-hover', surfaceColor('hover')),
+	surfaceSelected: themedVar('sidebar-color-surface-selected', surfaceColor('selected')),
+	font: themedVar('sidebar-color-font-default', fontColor('default')),
+	fontActive: themedVar('sidebar-color-font-active', fontColor('titles-labels')),
+	accordionBorder: themedVar('sidebar-accordion-border-color', strokeColor('light')),
+	link: themedVar('sidebar-link-color', fontColor('titles-labels')),
+	highlighted: themedVar('sidebar-item-color-highlighted', fontColor('titles-labels')),
+	divider: themedVar('sidebar-color-stroke-extra-light', strokeColor('light')),
+	mediaColor: themedVar('sidebar-media-color', fontColor('titles-labels')),
+	mediaBorder: themedVar('sidebar-media-border-color', strokeColor('light')),
+	bannerBackground: themedVar('sidebar-banner-background-default', surfaceColor('sidebar')),
+	bannerColor: themedVar('sidebar-banner-color-default', fontColor('titles-labels')),
+};
+
+const sbBanner = (kind: string) => ({
+	color: themedVar(`sidebar-banner-color-${kind}`, statusColors[`status-font-on-${kind}` as keyof typeof statusColors].toString()),
+	backgroundColor: themedVar(`sidebar-banner-background-${kind}`, statusBackground(kind)),
+});
+
+// `link-*` over a fallback: the generic link properties, then the sidebar's own color
+const sbLinkColor = (state: string, fallback: string) => themedVar(`link-${state}`, fallback);
+const sbLink = {
+	outline: themedVar('link-focus-outline-color', strokeColor('highlight')),
+	shadow: themedVar('link-focus-box-shadow-color', strokeColor('extra-light-highlight')),
+};
+
+const sbSmall = radiusOf('small');
+const sbMedium = radiusOf('medium');
+const sbHighlight = strokeColor('highlight');
+const sbBorder = borderWidth('default')!;
+
+// A Tamagui View is a flex column; `plain` is the box the SCSS left, and `box` adds what `rcx-box` gave it
+const sbFrame = (name: string, render: string, base: Record<string, Value>, variants?: Record<string, Value>, box = false) =>
+	`// Declared where it renders: zero-runtime only erases a \`styled()\` whose every use is in its own module
+const ${name} = styled(View, ${literal({ render, ...plain, ...(box && { boxSizing: 'border-box' }), ...base, ...(variants && { variants }) })});`;
+
+const sbTitle = {
+	overflow: 'hidden',
+	flexGrow: 0,
+	flexShrink: 1,
+	flexBasis: 'auto',
+	margin: 0,
+	whiteSpace: 'nowrap',
+	textOverflow: 'ellipsis',
+};
+
+const sbRow = { display: 'flex', alignItems: 'center' };
+
+const generateSidebar = () =>
+	sbFrame(
+		'SidebarFrame',
+		'nav',
+		{ position: 'relative', display: 'flex', flexDirection: 'column', height: '100%', color: sb.font, backgroundColor: sb.surface },
+		{ collapsed: { true: { overflow: 'hidden', width: size('x48')! }, false: {} } },
+		true,
+	);
+
+const generateSidebarSection = () =>
+	sbFrame(
+		'SidebarSectionFrame',
+		'div',
+		{ ...sbRow, height: size('x44')!, paddingInline: spacing('x16')!, gap: spacing('x8')! },
+		undefined,
+		true,
+	);
+
+const generateSidebarAccordion = () =>
+	`${sbFrame(
+		'SidebarAccordionFrame',
+		'div',
+		{
+			display: 'flex',
+			overflow: 'hidden',
+			flexDirection: 'column',
+			flexWrap: 'nowrap',
+			justifyContent: 'stretch',
+			flexGrow: 0,
+			flexShrink: 1,
+			flexBasis: 'auto',
+			height: '100%',
+		},
+		undefined,
+		true,
+	)}
+
+${sbFrame('SidebarAccordionWrapperFrame', 'div', { display: 'flex', overflow: 'scroll', flexDirection: 'column' })}`;
+
+const generateSidebarAccordionItem = () =>
+	`${sbFrame(
+		'SidebarAccordionItemFrame',
+		'section',
+		{
+			display: 'flex',
+			flexDirection: 'column',
+			flexWrap: 'nowrap',
+			flexGrow: 0,
+			flexShrink: 1,
+			flexBasis: 0,
+			borderTopWidth: '2px',
+			borderRightWidth: '2px',
+			borderLeftWidth: '2px',
+			borderBottomWidth: sbBorder,
+			borderStyle: 'solid',
+			borderTopColor: 'transparent',
+			borderRightColor: 'transparent',
+			borderLeftColor: 'transparent',
+			borderBottomColor: sb.accordionBorder,
+		},
+		undefined,
+		true,
+	)}
+
+${sbFrame(
+	'SidebarAccordionBarFrame',
+	'div',
+	{
+		position: 'sticky',
+		zIndex: 1,
+		top: 0,
+		display: 'flex',
+		flexDirection: 'row',
+		flexWrap: 'nowrap',
+		alignItems: 'center',
+		minHeight: size('x24')!,
+		paddingBlock: `calc(${spacing('x8')} - ${sbBorder})`,
+		paddingInline: `calc(${spacing('x16')} - ${sbBorder})`,
+		columnGap: spacing('x4')!,
+		textAlign: 'start',
+		color: fontColor('default'),
+		borderRadius: sbSmall,
+		backgroundColor: sb.surface,
+	},
+	{
+		// The bar is a button only while it has a tabindex, which a disabled one lacks
+		mode: {
+			static: {},
+			interactive: {
+				cursor: 'pointer',
+				borderWidth: sbBorder,
+				borderStyle: 'solid',
+				borderColor: { 'default': 'transparent', 'focus-visible': sbHighlight },
+				borderRadius: { 'default': sbSmall, 'focus-visible': sbMedium },
+				backgroundColor: { default: sb.surface, hover: surfaceColor('tint') },
+			},
+			disabled: { cursor: 'not-allowed', color: fontColor('disabled') },
+		},
+	},
+	true,
+)}
+
+${sbFrame('SidebarAccordionTitleFrame', 'h5', { ...sbTitle, ...font('h5') })}
+
+${sbFrame(
+	'SidebarAccordionPanelFrame',
+	'div',
+	{ visibility: 'hidden', overflow: 'hidden', height: 0, margin: 0, padding: 0 },
+	{
+		expanded: {
+			true: { visibility: 'visible', flexGrow: 1, height: '100%', paddingBlock: `${spacing('x4')} ${spacing('x8')}` },
+			false: {},
+		},
+	},
+)}`;
+
+const generateSidebarCollapseGroup = () =>
+	sbFrame('SidebarCollapseGroupFrame', 'div', { display: 'flex', flexDirection: 'column', flexWrap: 'nowrap' }, undefined, true);
+
+const generateSidebarGroupTitle = () =>
+	`${sbFrame('SidebarGroupHeadingFrame', 'div', {
+		...sbRow,
+		flexGrow: 1,
+		flexShrink: 1,
+		flexBasis: 0,
+		minWidth: 0,
+		columnGap: spacing('x4')!,
+	})}
+
+${sbFrame('SidebarGroupTitleFrame', 'h4', { ...sbTitle, ...font('c1') })}`;
+
+const generateSidebarBanner = () =>
+	`${sbFrame(
+		'SidebarBannerFrame',
+		'div',
+		{
+			display: 'flex',
+			justifyContent: 'space-between',
+			alignItems: 'center',
+			padding: spacing('x16')!,
+			color: sb.bannerColor,
+			borderBottomWidth: sbBorder,
+			borderBottomStyle: 'solid',
+			borderBottomColor: sb.accordionBorder,
+			backgroundColor: sb.bannerBackground,
+			gap: spacing('x12')!,
+		},
+		{
+			tone: {
+				default: {},
+				info: sbBanner('info'),
+				success: sbBanner('success'),
+				warning: sbBanner('warning'),
+				danger: sbBanner('danger'),
+			},
+		},
+		true,
+	)}
+
+${sbFrame('SidebarBannerAddonFrame', 'div', sbRow, undefined, true)}
+
+${sbFrame('SidebarBannerTitleFrame', 'h5', { margin: 0, padding: 0, ...font('h5') }, undefined, true)}
+
+${sbFrame(
+	'SidebarBannerLinkFrame',
+	'a',
+	{ display: 'inline-block', cursor: 'pointer', outlineWidth: 0, textDecorationLine: 'underline', ...font('p2m') },
+	undefined,
+	true,
+)}`;
+
+const generateSidebarFooter = () =>
+	sbFrame('SidebarFooterFrame', 'footer', {
+		display: 'flex',
+		flexDirection: 'column',
+		justifyContent: 'center',
+		minHeight: size('x48')!,
+		paddingBlock: `${spacing('x12')} ${spacing('x8')}`,
+		paddingInline: spacing('x16')!,
+		color: fontColor('default'),
+		backgroundColor: surfaceColor('sidebar'),
+		gap: spacing('x4')!,
+	});
+
+const generateSidebarFooterContent = () => sbFrame('SidebarFooterContentFrame', 'div', font('micro'), undefined, true);
+
+const generateSidebarMedia = () =>
+	sbFrame('SidebarMediaFrame', 'div', {
+		paddingBlock: spacing('x8')!,
+		color: sb.mediaColor,
+		borderBottomWidth: sbBorder,
+		borderBottomStyle: 'solid',
+		borderBottomColor: sb.mediaBorder,
+		backgroundColor: sb.surface,
+	});
+
+const generateSidebarMediaTitle = () =>
+	sbFrame('SidebarMediaTitleFrame', 'div', {
+		flexGrow: 1,
+		paddingBlockEnd: spacing('x4')!,
+		paddingInline: spacing('x16')!,
+		textAlign: 'center',
+		...font('c1'),
+	});
+
+const generateSidebarMediaController = () =>
+	`${sbFrame('SidebarMediaControllerFrame', 'div', {
+		display: 'flex',
+		justifyContent: 'space-between',
+		alignItems: 'center',
+		paddingInline: spacing('x16')!,
+	})}
+
+${sbFrame('SidebarMediaLabelFrame', 'div', font('p2'))}`;
+
+// SidebarItemAction is the one sidebar row that is not an Item, so it takes what `.rcx-sidebar-item` gave a bare element
+const generateSidebarItemAction = () =>
+	sbFrame(
+		'SidebarItemActionFrame',
+		'div',
+		{
+			display: 'flex',
+			justifyContent: 'flex-start',
+			alignItems: 'center',
+			overflow: 'hidden',
+			paddingBlock: `calc(${spacing('x4')} - ${sbBorder})`,
+			paddingInline: `calc(${spacing('x16')} - ${sbBorder})`,
+			gap: spacing('x4')!,
+			cursor: 'pointer',
+			whiteSpace: 'nowrap',
+			textOverflow: 'ellipsis',
+			textDecorationLine: 'none',
+			color: {
+				default: sbLinkColor('color', fontColor('default')),
+				focus: sbLinkColor('focus-color', fontColor('default')),
+				press: sbLinkColor('active-color', fontColor('default')),
+			},
+			borderWidth: sbBorder,
+			borderStyle: 'solid',
+			borderColor: { 'default': 'transparent', 'focus-visible': sbHighlight },
+			borderRadius: { 'default': sbSmall, 'focus-visible': sbMedium },
+			backgroundColor: { default: 'transparent', hover: sb.surfaceHover, press: sb.surfaceSelected },
+			...font('p2'),
+		},
+		undefined,
+		true,
+	);
+
+// What the frames cannot say: rules on the parts that `Item` renders, and the sidebar's collapsed and hover states
+const generateSidebarStyles = () => `.rcx-sidebar--divider {
+	border-color: ${sb.divider};
+}
+
+.rcx-sidebar--divider.rcx-item-divider::before {
+	border-color: ${sb.divider};
+}
+
+/* Tamagui has no list-style: the panel's children inherit it */
+.rcx-sidebar-accordion-item__panel {
+	list-style: none;
+}
+
+.rcx-sidebar-accordion-item__bar .rcx-sidebar-accordion-item__chevron {
+	visibility: hidden;
+}
+
+.rcx-sidebar-accordion-item__bar:hover .rcx-sidebar-accordion-item__chevron,
+.rcx-sidebar-accordion-item__bar:focus-visible .rcx-sidebar-accordion-item__chevron {
+	visibility: visible;
+}
+
+.rcx-sidebar-collapse-group__bar {
+	color: ${fontColor('secondary-info')};
+}
+
+.rcx-sidebar-collapse-group__bar--empty {
+	color: ${fontColor('disabled')};
+}
+
+.rcx-sidebar-collapse-group__bar--unread {
+	color: ${sb.highlighted};
+}
+
+.rcx-sidebar-collapse-group__bar--unread .rcx-sidebar-collapse-group__title[class] {
+	font-size: ${fontScale('c2')!.fontSize};
+	font-weight: ${fontScale('c2')!.fontWeight};
+	line-height: ${fontScale('c2')!.lineHeight};
+	letter-spacing: ${fontScale('c2')!.letterSpacing};
+}
+
+.rcx-sidebar-collapse-group__bar-button[class] {
+	display: flex;
+	align-items: center;
+	flex: 1 1 0;
+
+	min-width: 0;
+
+	text-align: start;
+
+	column-gap: ${spacing('x4')};
+}
+
+.rcx-sidebar-collapse-group__bar-button[class][tabindex] {
+	cursor: pointer;
+
+	outline: 0;
+
+	border-width: ${sbBorder};
+	border-style: solid;
+	border-color: transparent;
+}
+
+.rcx-sidebar-collapse-group__bar-button[class][tabindex]:focus-visible {
+	border-color: ${sbHighlight};
+	border-radius: ${sbMedium};
+	outline: 0;
+
+	box-shadow: none;
+}
+
+.rcx-sidebar-collapse-group__bar:has(.rcx-sidebar-collapse-group__bar-button:hover) {
+	background-color: ${sb.surfaceHover};
+}
+
+.rcx-sidebar-collapse-group__bar.rcx-item-group-header {
+	padding-block: ${spacing('x8')};
+}
+
+.rcx-sidebar-collapse-group__panel {
+	visibility: hidden;
+	overflow: hidden;
+
+	height: 0;
+	margin: 0;
+	padding: 0;
+
+	list-style: none;
+}
+
+.rcx-sidebar-collapse-group__panel--expanded {
+	visibility: visible;
+
+	flex-grow: 1;
+
+	height: 100%;
+	padding-block: 0;
+}
+
+.rcx-sidebar-link[class] {
+	color: ${sbLinkColor('color', sb.link)};
+}
+
+.rcx-sidebar-link[class]:is(:focus, :focus-within) {
+	color: ${sbLinkColor('focus-color', sb.link)};
+}
+
+.rcx-sidebar-link[class]:focus-visible {
+	text-decoration: none;
+
+	color: ${sbLinkColor('focus-color', sb.link)};
+	border-radius: ${sbSmall};
+	outline: ${sbLink.outline} solid 1px;
+	outline-offset: 0;
+	box-shadow: 0 0 0 ${borderWidth('medium')} ${sbLink.shadow};
+}
+
+.rcx-sidebar-link[class]:where(:visited) {
+	color: ${sbLinkColor('visited-color', sb.link)};
+}
+
+.rcx-sidebar-link[class]:where(:active) {
+	color: ${sbLinkColor('active-color', sb.link)};
+}
+
+.rcx-sidebar-item.rcx-item.rcx-sidebar-item--level-2 {
+	padding-block: ${spacing('x8')};
+}
+
+.rcx-sidebar-item--level-2:not(.rcx-item)[class] {
+	padding-block: calc(${spacing('x8')} - ${sbBorder});
+}
+
+.rcx-sidebar-item:not(.rcx-item)[class]:active {
+	color: ${sb.fontActive};
+}
+
+.rcx-sidebar-item--selected:not(.rcx-item)[class],
+.rcx-sidebar-item:not(.rcx-item)[class]:active:not(:focus-within) {
+	background-color: ${sb.surfaceSelected};
+}
+
+.rcx-sidebar-item__title--highlighted[class],
+.rcx-sidebar-item__icon--highlighted[class],
+.rcx-sidebar-item__subtitle--highlighted[class],
+.rcx-sidebar-item__timestamp--highlighted[class] {
+	font-weight: 500;
+	color: ${sb.highlighted};
+}
+
+.rcx-sidebar-item__icon {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+
+	width: ${size('x20')};
+	height: ${size('x20')};
+}
+
+.rcx-item__row > .rcx-sidebar-item__subtitle.rcx-item__description {
+	flex-basis: 0;
+}
+
+.rcx-sidebar-item__content {
+	flex-grow: 1;
+}
+
+.rcx-sidebar--collapsed:not(:hover) .rcx-sidebar-item.rcx-sidebar-link > .rcx-sidebar-item__title,
+.rcx-sidebar--collapsed:not(:hover) .rcx-sidebar-banner__content {
+	display: none;
+}
+
+.rcx-sidebar--collapsed:not(:hover) .rcx-sidebar-media__title,
+.rcx-sidebar--collapsed:not(:hover) .rcx-sidebar-footer {
+	visibility: hidden;
+
+	white-space: nowrap;
+}`;
+
+const sbFile = (name: string) => join(import.meta.dirname, `../src/components/${name}`);
 
 const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/Button/Button.tsx'), generate: generateButton },
@@ -2331,6 +2816,20 @@ const components: { file: string; generate: () => string; css?: boolean }[] = [
 	{ file: join(import.meta.dirname, '../src/components/FieldGroup/FieldGroup.tsx'), generate: generateFieldGroup },
 	{ file: join(import.meta.dirname, '../src/components/Label/Label.tsx'), generate: generateLabel },
 	{ file: join(import.meta.dirname, '../src/components/Label/LabelInfo.tsx'), generate: generateLabelInfo },
+	{ file: sbFile('Sidebar/Sidebar.tsx'), generate: generateSidebar },
+	{ file: sbFile('Sidebar/SidebarSection.tsx'), generate: generateSidebarSection },
+	{ file: sbFile('Sidebar/SidebarAccordion.tsx'), generate: generateSidebarAccordion },
+	{ file: sbFile('Sidebar/SidebarAccordionItem.tsx'), generate: generateSidebarAccordionItem },
+	{ file: sbFile('Sidebar/SidebarCollapseGroup.tsx'), generate: generateSidebarCollapseGroup },
+	{ file: sbFile('Sidebar/SidebarGroupTitle.tsx'), generate: generateSidebarGroupTitle },
+	{ file: sbFile('Sidebar/SidebarBanner.tsx'), generate: generateSidebarBanner },
+	{ file: sbFile('Sidebar/SidebarFooter/SidebarFooter.tsx'), generate: generateSidebarFooter },
+	{ file: sbFile('Sidebar/SidebarFooter/SidebarFooterContent.tsx'), generate: generateSidebarFooterContent },
+	{ file: sbFile('Sidebar/SidebarMedia/SidebarMedia.tsx'), generate: generateSidebarMedia },
+	{ file: sbFile('Sidebar/SidebarMedia/SidebarMediaTitle.tsx'), generate: generateSidebarMediaTitle },
+	{ file: sbFile('Sidebar/SidebarMedia/SidebarMediaController.tsx'), generate: generateSidebarMediaController },
+	{ file: sbFile('Sidebar/SidebarItem/SidebarItemAction.tsx'), generate: generateSidebarItemAction },
+	{ file: sbFile('Sidebar/Sidebar.styles.css'), generate: generateSidebarStyles, css: true },
 ];
 
 for (const [dir, control] of [
