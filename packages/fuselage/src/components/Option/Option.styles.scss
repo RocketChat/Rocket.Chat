@@ -169,15 +169,19 @@ $option-color-variant-primary: theme('option-color-variant-primary', colors.stat
 		justify-content: flex-end;
 	}
 
-	&--success {
+	// Doubled on an Item row: the Item frames' atomic `color` class loads after this file
+	&--success,
+	&--success.rcx-option--success.rcx-item {
 		color: $option-color-variant-success;
 	}
 
-	&--warning {
+	&--warning,
+	&--warning.rcx-option--warning.rcx-item {
 		color: $option-color-variant-warning;
 	}
 
-	&--primary {
+	&--primary,
+	&--primary.rcx-option--primary.rcx-item {
 		color: $option-color-variant-primary;
 	}
 }
