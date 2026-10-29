@@ -626,6 +626,29 @@ const toggleSwitchKnob = `.rcx-toggle-switch__input + .rcx-toggle-switch__fake::
 	background-color: ${buttonFont('primary')};
 }`;
 
+const generateChevron = () =>
+	`${declaredWhereTheyRender}${frame(
+		'ChevronFrame',
+		{ render: 'span', ...flexBox, display: 'inline-flex', alignSelf: 'center' },
+		{
+			direction: {
+				up: { transform: 'rotate(-180deg)' },
+				down: { transform: 'rotate(0deg)' },
+				right: { transform: 'rotate(-90deg)' },
+				left: { transform: 'rotate(-270deg)' },
+			},
+		},
+	)}`;
+
+// A frame cannot test the writing direction, so the horizontal chevrons turn the other way here
+const generateChevronCss = () => `.rcx-chevron.rcx-chevron--right:dir(rtl) {
+	transform: rotate(-270deg);
+}
+
+.rcx-chevron.rcx-chevron--left:dir(rtl) {
+	transform: rotate(-90deg);
+}`;
+
 const flexBox = { display: 'flex', flexDirection: 'row', alignItems: 'normal', flexShrink: 1, minWidth: 'auto', minHeight: 'auto' };
 const blockBox = { ...flexBox, display: 'block' };
 
@@ -925,6 +948,8 @@ const components: { file: string; generate: () => string; css?: boolean }[] = [
 }`,
 	},
 	{ file: join(import.meta.dirname, '../src/components/ButtonGroup/ButtonGroup.tsx'), generate: generateButtonGroup },
+	{ file: join(import.meta.dirname, '../src/components/Chevron/Chevron.tsx'), generate: generateChevron },
+	{ file: join(import.meta.dirname, '../src/components/Chevron/Chevron.styles.css'), generate: generateChevronCss, css: true },
 ];
 
 for (const [dir, control] of [['CheckBox', checkBox], ['RadioButton', radioButton], ['ToggleSwitch', toggleSwitch]] as const) {
