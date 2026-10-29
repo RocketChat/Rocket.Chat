@@ -1,0 +1,13 @@
+apps/meteor/server/lib/users/saveUser/saveUser.ts
+  ai_agent 278-280,303-306
+apps/meteor/server/lib/auditServerEvents/userChanged.ts
+  ai_agent 155
+apps/meteor/server/lib/auditServerEvents/userChanged.spec.ts
+  ai_agent 162-186
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "75b9b9c53c8e0f02230b169e5939fad500005c7f",
+  "prompts": {}
+}
