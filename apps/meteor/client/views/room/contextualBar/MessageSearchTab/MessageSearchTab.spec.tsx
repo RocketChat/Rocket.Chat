@@ -189,6 +189,7 @@ describe('MessageSearchTab local search', () => {
 	});
 
 	it('asks for a catch-up of the room while its local search is open', async () => {
+		mockRoomCatchUp.mockClear();
 		renderTab();
 
 		expect(await screen.findByRole('textbox', { name: 'Search_Messages' })).toBeInTheDocument();
@@ -315,6 +316,20 @@ describe('MessageSearchTab while the local index of this device is not open yet'
 
 		expect(serverSearch).not.toHaveBeenCalled();
 		expect(screen.queryByText('Encrypted_content_cannot_be_searched')).not.toBeInTheDocument();
+	});
+
+	it('shows the loading state for a text, and none for a text of only spaces', async () => {
+		mockBackend = undefined;
+		mockIndexExpected = true;
+		renderTab();
+		const input = screen.getByRole('textbox', { name: 'Search_Messages' });
+
+		await userEvent.type(input, '   ');
+		await new Promise((resolve) => setTimeout(resolve, 400));
+		expect(document.querySelector('.rcx-throbber__circle')).toBeNull();
+
+		await userEvent.type(input, 'secret');
+		await waitFor(() => expect(document.querySelector('.rcx-throbber__circle')).not.toBeNull());
 	});
 });
 

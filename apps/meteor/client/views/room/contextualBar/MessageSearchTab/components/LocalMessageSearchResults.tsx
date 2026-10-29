@@ -26,9 +26,26 @@ const LocalMessageSearchResults = ({ id, hits, showUserAvatar, onEndReached }: L
 	const formatDate = useFormatDate();
 	const listRef = useRef<HTMLElement>(null);
 
-	// A first page that does not fill the panel cannot scroll, so the next one loads at once.
+	// A page that does not fill the panel cannot scroll, so the next one loads at once. A larger panel can also leave
+	// nothing to scroll, so a change of the list size checks again.
 	useEffect(() => {
-		if (onEndReached && listRef.current && isAtEnd(listRef.current)) onEndReached();
+		const list = listRef.current;
+		if (!onEndReached || !list) return;
+
+		const loadIfAtEnd = () => {
+			if (isAtEnd(list)) onEndReached();
+		};
+		loadIfAtEnd();
+
+		const sizeOf = () => `${list.clientWidth}x${list.clientHeight}`;
+		let size = sizeOf();
+		const observer = new ResizeObserver(() => {
+			if (sizeOf() === size) return;
+			size = sizeOf();
+			loadIfAtEnd();
+		});
+		observer.observe(list);
+		return () => observer.disconnect();
 	}, [hits.length, onEndReached]);
 
 	const handleScroll = (event: UIEvent<HTMLElement>) => {

@@ -88,7 +88,7 @@ const MessageSearchTab = () => {
 				{providerQuery.isSuccess && localSearch && (
 					<>
 						<LocalSearchIndexStatus />
-						{searchText && (localQuery.isPending || !localBackend) && <Throbber />}
+						{searchText.trim() && (localQuery.isPending || !localBackend) && <Throbber />}
 						{searchText.trim() && localQuery.isSuccess && localQuery.data.length === 0 && (
 							<ContextualbarEmptyContent title={t('No_results_found')} />
 						)}

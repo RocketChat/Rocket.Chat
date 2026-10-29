@@ -30,8 +30,15 @@ const hit = (overrides: Partial<E2EESearchHit> = {}): E2EESearchHit => ({
 
 const navigate = jest.fn();
 
-const renderResults = (hits: E2EESearchHit[], { showUserAvatar = true, useRealName = false } = {}) =>
-	render(<LocalMessageSearchResults id='results' hits={hits} showUserAvatar={showUserAvatar} />, {
+const renderResults = (
+	hits: E2EESearchHit[],
+	{
+		showUserAvatar = true,
+		useRealName = false,
+		onEndReached,
+	}: { showUserAvatar?: boolean; useRealName?: boolean; onEndReached?: () => void } = {},
+) =>
+	render(<LocalMessageSearchResults id='results' hits={hits} showUserAvatar={showUserAvatar} onEndReached={onEndReached} />, {
 		wrapper: mockAppRoot()
 			.withSetting('UI_Use_Real_Name', useRealName)
 			.withRouter({
@@ -104,6 +111,40 @@ describe('LocalMessageSearchResults', () => {
 
 		expect(setMessageJumpQueryStringParameter).toHaveBeenCalledWith('m9');
 		expect(navigate).not.toHaveBeenCalled();
+	});
+
+	describe('when the panel resizes', () => {
+		const observers: { callback: () => void }[] = [];
+		const { ResizeObserver: originalResizeObserver } = globalThis;
+
+		beforeEach(() => {
+			globalThis.ResizeObserver = jest.fn((callback: () => void) => {
+				observers.push({ callback });
+				return { observe: jest.fn(), unobserve: jest.fn(), disconnect: jest.fn() };
+			}) as unknown as typeof ResizeObserver;
+		});
+
+		afterEach(() => {
+			observers.splice(0);
+			globalThis.ResizeObserver = originalResizeObserver;
+			jest.restoreAllMocks();
+		});
+
+		it('loads the next hits when a resize leaves the list with nothing to scroll', () => {
+			let clientHeight = 300;
+			jest.spyOn(Element.prototype, 'scrollHeight', 'get').mockReturnValue(1000);
+			jest.spyOn(Element.prototype, 'clientHeight', 'get').mockImplementation(() => clientHeight);
+			const onEndReached = jest.fn();
+			renderResults([hit()], { onEndReached });
+
+			// The first observation reports the size that the render already checked.
+			observers.at(-1)?.callback();
+			expect(onEndReached).not.toHaveBeenCalled();
+
+			clientHeight = 900;
+			observers.at(-1)?.callback();
+			expect(onEndReached).toHaveBeenCalledTimes(1);
+		});
 	});
 
 	it('opens the hit with the keyboard', async () => {
