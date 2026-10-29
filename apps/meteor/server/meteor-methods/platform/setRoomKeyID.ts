@@ -4,6 +4,7 @@ import { Rooms, Subscriptions } from '@rocket.chat/models';
 
 import { updateGroupKey } from './updateGroupKey';
 import { canAccessRoomIdAsync } from '../../lib/authorization/canAccessRoom';
+import { SystemLogger } from '../../lib/logger/system';
 import { notifyOnRoomChanged } from '../../lib/notifyListener';
 
 // `key` is the room key encrypted for the caller. Sent with the key id, it is saved in the same request, so the
@@ -31,7 +32,11 @@ export const setRoomKeyIDMethod = async (userId: string, rid: IRoom['_id'], keyI
 			await updateGroupKey(rid, userId, key, userId);
 		} catch (error) {
 			// The caller can try again only when the room has no key id.
-			await Rooms.unsetE2eKeyId(rid, keyID);
+			try {
+				await Rooms.unsetE2eKeyId(rid, keyID);
+			} catch (err) {
+				SystemLogger.error({ msg: 'Could not remove the E2E key id of the room after the room key was not saved', rid, err });
+			}
 			throw error;
 		}
 	}

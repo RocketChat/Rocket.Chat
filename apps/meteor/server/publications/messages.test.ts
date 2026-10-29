@@ -439,7 +439,10 @@ describe('handleCursorPagination with messages that share one timestamp', () => 
 	];
 
 	it('should return every deleted message exactly once when the deletion order differs from the update order', async () => {
-		messagesMock.trashFind.callsFake((filter: Record<string, any>, options) => run(filter, options, trash));
+		messagesMock.trashFind.callsFake((filter: Record<string, any>, options) => {
+			expect(options.limit).to.equal(3);
+			return run(filter, options, trash);
+		});
 
 		expect(await crawl('DELETED', 'next', '0_')).to.deep.equal(['before', ...ids, 'after']);
 		expect(await crawl('DELETED', 'previous', `${sameMs.getTime() + 2}_`)).to.deep.equal(['after', ...[...ids].reverse(), 'before']);

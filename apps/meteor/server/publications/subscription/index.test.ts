@@ -34,9 +34,12 @@ describe('getSubscriptions', () => {
 
 	it('should return the room id of each removed subscription, so the client can remove the local data of that room', async () => {
 		const updatedAt = new Date('2024-01-01T00:00:00.000Z');
+		const removed = { _id: 'sid', rid: 'rid', _deletedAt: new Date('2024-01-02T00:00:00.000Z') };
+		subscriptionsMock.trashFindDeletedAfter.returns({ toArray: sinon.stub().resolves([removed]) });
 
-		await getSubscriptions('uid', updatedAt);
+		const result = await getSubscriptions('uid', updatedAt);
 
+		expect(result).to.deep.equal({ update: [], remove: [removed] });
 		sinon.assert.calledOnceWithExactly(
 			subscriptionsMock.trashFindDeletedAfter,
 			updatedAt,
