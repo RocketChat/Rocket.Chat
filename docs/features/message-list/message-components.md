@@ -41,9 +41,12 @@ The highlight of a jump target belongs to the message list, not to these context
 
 ## Who provides them
 
+The app provides every context from `MessagesProvider` (`apps/meteor/client/providers/MessagesProvider`), one hook per context (`useMessageDisplayValue`, `useMessageInteractionsValue`, ...). It reads the chat of the conversation when there is one, so the composer, the emoji picker and message editing are reached only where a conversation is open.
+
 | Place | Notes |
 | --- | --- |
-| room and thread lists | every context, with interactions and toolbar wired to the room |
-| contextual-bar tabs (pinned, starred, mentions, search, threads) | the same, with the toolbar items of their context |
-| read-only places (audit, moderation, contact history) | display with interaction turned off, so neither the toolbar nor the thread metrics show |
+| room list | the room and its subscription, and the room's selection |
+| thread list | the room and its subscription, and no selection: a thread's messages never join the room's |
+| contextual-bar tabs (pinned, starred, mentions, search, the thread list) | the room and its subscription; the toolbar shows the items of the tab's context |
+| read-only places (audit, moderation, contact history, the message in the forward, pin and report modals, the composer's quote) | `allowsInteraction={false}`, so neither the toolbar nor the thread metrics show |
 | stories and tests | the defaults: no-op capabilities, plain-text markdown, a placeholder for UiKit blocks |
