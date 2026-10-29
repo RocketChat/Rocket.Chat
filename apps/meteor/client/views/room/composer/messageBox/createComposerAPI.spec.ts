@@ -63,6 +63,57 @@ describe('ChatMessages Composer API - replaceText', () => {
 	});
 });
 
+describe('ChatMessages Composer API - wrapSelection', () => {
+	afterEach(() => {
+		document.body.innerHTML = '';
+	});
+
+	it('wraps each line of a multi-line selection with an inline marker', () => {
+		const { composer, input } = setupComposer('This is\na test', { start: 0, end: 14 });
+
+		composer.wrapSelection('*{{text}}*');
+
+		expect(input.value).toBe('*This is*\n*a test*');
+		expect(input.selectionStart).toBe(0);
+		expect(input.selectionEnd).toBe('*This is*\n*a test*'.length);
+	});
+
+	it('unwraps the lines when the same marker is applied again', () => {
+		const { composer, input } = setupComposer('This is\na test', { start: 0, end: 14 });
+
+		composer.wrapSelection('_{{text}}_');
+		composer.wrapSelection('_{{text}}_');
+
+		expect(input.value).toBe('This is\na test');
+	});
+
+	it('unwraps every line when only the text inside a per-line formatted block is selected', () => {
+		const { composer, input } = setupComposer('*foo*\n*bar*', { start: 1, end: 10 });
+
+		composer.wrapSelection('*{{text}}*');
+
+		expect(input.value).toBe('foo\nbar');
+	});
+
+	it('still wraps a multi-line selection as a whole with brackets', () => {
+		const { composer, input } = setupComposer('foo\nbar', { start: 0, end: 7 });
+
+		composer.wrapSelection('({{text}})');
+
+		expect(input.value).toBe('(foo\nbar)');
+	});
+
+	it('still wraps a single line as before', () => {
+		const { composer, input } = setupComposer('hello world', { start: 6, end: 11 });
+
+		composer.wrapSelection('*{{text}}*');
+
+		expect(input.value).toBe('hello *world*');
+		expect(input.selectionStart).toBe(7);
+		expect(input.selectionEnd).toBe(12);
+	});
+});
+
 describe('ChatMessages Composer API - clear', () => {
 	afterEach(() => {
 		document.body.innerHTML = '';
