@@ -52,7 +52,7 @@ $check-box-border-radius: theme('check-box-border-radius', lengths.border-radius
 		border-radius: $icon-smoothness;
 	}
 
-	&__input:checked + &__fake {
+	&__input:checked:not(:indeterminate) + &__fake {
 		&::before,
 		&::after {
 			visibility: visible;
