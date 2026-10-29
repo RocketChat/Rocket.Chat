@@ -1,12 +1,9 @@
-import {
-	Box,
-	Label,
-} from '@rocket.chat/fuselage';
+import { Box, Label } from '@rocket.chat/fuselage';
+import { GenericModal } from '@rocket.chat/ui-client';
 import { useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import DateTimeFilter from './DateTimeFilter';
-import { GenericModal } from '@rocket.chat/ui-client';
 
 export type DateTimeModalFormData = {
 	startDate?: string;
@@ -37,15 +34,22 @@ export const DateTimeModal = ({ onSave, onClose, defaultValues }: DateTimeModalP
 	};
 
 	return (
-		<GenericModal variant='warning' title={t('Custom_time_range')} onCancel={onClose} confirmDisabled={!watch('startDate') || !watch('endDate')} confirmText={t('Apply')} onConfirm={handleSave}>
-<Box display='flex' flexDirection='column' marginInlineEnd='x8' marginBlockEnd='x24' flexGrow={1}>
-					<Label htmlFor='timeFilter'>{t('Logs_from')}</Label>
-					<DateTimeFilter control={control} type='start' />
-				</Box>
-				<Box display='flex' flexDirection='column' marginInlineEnd='x8' flexGrow={1}>
-					<Label htmlFor='timeFilter'>{t('Until')}</Label>
-					<DateTimeFilter control={control} type='end' />
-				</Box>
-			</GenericModal>
-	)
+		<GenericModal
+			variant='warning'
+			title={t('Custom_time_range')}
+			onCancel={onClose}
+			confirmDisabled={!watch('startDate') || !watch('endDate')}
+			confirmText={t('Apply')}
+			onConfirm={handleSave}
+		>
+			<Box display='flex' flexDirection='column' marginInlineEnd='x8' marginBlockEnd='x24' flexGrow={1}>
+				<Label htmlFor='timeFilter'>{t('Logs_from')}</Label>
+				<DateTimeFilter control={control} type='start' />
+			</Box>
+			<Box display='flex' flexDirection='column' marginInlineEnd='x8' flexGrow={1}>
+				<Label htmlFor='timeFilter'>{t('Until')}</Label>
+				<DateTimeFilter control={control} type='end' />
+			</Box>
+		</GenericModal>
+	);
 };
