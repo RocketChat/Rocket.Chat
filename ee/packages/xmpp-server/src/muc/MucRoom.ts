@@ -182,13 +182,14 @@ export class MucRoom {
 			return;
 		}
 
-		this.broadcastMessage({ fromNick: occupant.nick, body, id: message.attrs.id });
+		const replaceId = parseReplaceId(message);
+		this.broadcastMessage({ fromNick: occupant.nick, body, id: message.attrs.id, replaceId });
 		this.deps.emit('message', {
 			fromNick: occupant.nick,
 			fromJid: occupant.realJid,
 			body,
 			id: message.attrs.id,
-			replaceId: parseReplaceId(message),
+			replaceId,
 			raw: message,
 		});
 	}

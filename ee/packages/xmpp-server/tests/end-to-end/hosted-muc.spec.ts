@@ -267,8 +267,7 @@ describe('XMPP federation: rooms hosted by Rocket.Chat', () => {
 			assert.equal((await waitForMessage(owner, room, text))._id, original._id);
 		});
 
-		// Known defect: ../../docs/specs/message-corrections.md#d2-the-room-strips-corrections-it-relays-between-xmpp-users
-		it.skip("relays an XMPP user's correction to the other XMPP occupants as a correction (message-corrections D2)", async () => {
+		it("relays an XMPP user's correction to the other XMPP occupants as a correction (R13, message-corrections R5)", async () => {
 			const id = `e2e-${uniqueSuffix()}`;
 			const text = `before correction ${uniqueSuffix()}`;
 			await alice.sendGroupchat(muc, text, { id });
