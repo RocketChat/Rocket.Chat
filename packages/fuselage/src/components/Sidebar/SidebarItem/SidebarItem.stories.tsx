@@ -35,10 +35,6 @@ export default {
 		},
 	},
 	argTypes: {
-		selected: {
-			control: 'boolean',
-			description: 'Marks the list item as the currently selected entry.',
-		},
 		children: {
 			control: false,
 			description: 'Content of the list item.',
