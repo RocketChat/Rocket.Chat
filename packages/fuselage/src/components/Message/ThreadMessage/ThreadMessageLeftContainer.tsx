@@ -1,11 +1,9 @@
 import type { HTMLAttributes } from 'react';
 
-import { cx } from '../../../helpers/composeClassNames';
+import MessageLeftContainer from '../MessageLeftContainer';
 
 export type ThreadMessageLeftContainerProps = HTMLAttributes<HTMLDivElement>;
 
-const ThreadMessageLeftContainer = ({ className, ...props }: ThreadMessageLeftContainerProps) => (
-	<div {...props} className={cx('rcx-box rcx-box--full rcx-message-container rcx-message-container--left', className)} />
-);
+const ThreadMessageLeftContainer = (props: ThreadMessageLeftContainerProps) => <MessageLeftContainer {...props} />;
 
 export default ThreadMessageLeftContainer;
