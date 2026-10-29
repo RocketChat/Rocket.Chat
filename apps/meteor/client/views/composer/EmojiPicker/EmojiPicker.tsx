@@ -222,7 +222,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji, onAddCustomEmoji }: Emoj
 						/>
 					))}
 				</EmojiPickerCategoryHeader>
-				<Box paddingBlock={12}>
+				<Box paddingBlock='x12'>
 					<Divider flush />
 				</Box>
 				<EmojiPickerListArea role='tabpanel'>
