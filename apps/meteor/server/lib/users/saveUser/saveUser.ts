@@ -275,7 +275,9 @@ const _saveUser = (session?: ClientSession) =>
 			await saveCustomFields(userData._id, userData.customFields, { _updater: updater, session });
 		}
 
-		await Users.updateFromUpdater({ _id: userData._id }, updater, { session });
+		if (updater.hasChanges()) {
+			await Users.updateFromUpdater({ _id: userData._id }, updater, { session });
+		}
 
 		await onceTransactionCommitedSuccessfully(async () => {
 			if (presenceChanged || deniedByAdminChanged) {
@@ -298,8 +300,10 @@ const _saveUser = (session?: ClientSession) =>
 				if (userData.active !== undefined) {
 					updater.set('active', userData.active);
 				}
-				options.auditStore.setUpdateFilter(updater.getRawUpdateFilter());
-				void options.auditStore.commitAuditEvent();
+				if (updater.hasChanges()) {
+					options.auditStore.setUpdateFilter(updater.getRawUpdateFilter());
+					void options.auditStore.commitAuditEvent();
+				}
 			}
 
 			// App IPostUserUpdated event hook
