@@ -5,12 +5,12 @@ import { buildReplace } from '../xml/correction';
 import { NS_CONFERENCE, NS_MUC, NS_MUC_USER } from '../xml/namespaces';
 
 export type MucRole = 'moderator' | 'participant';
-export type MucAffiliation = 'owner' | 'admin' | 'member' | 'none';
+export type MucAffiliation = 'owner' | 'admin' | 'member' | 'none' | 'outcast';
 
 const roleAffiliation = (role: MucRole): MucAffiliation => (role === 'moderator' ? 'owner' : 'member');
 
 /** The XEP-0045 status codes this server sends or reads. */
-export const MUC_STATUS = { selfPresence: 110, kicked: 307 } as const;
+export const MUC_STATUS = { selfPresence: 110, banned: 301, kicked: 307 } as const;
 
 export type MucStatusCode = (typeof MUC_STATUS)[keyof typeof MUC_STATUS];
 
@@ -21,11 +21,12 @@ export function buildOccupantPresence(params: {
 	to: string;
 	realJid?: string;
 	role: MucRole;
+	affiliation?: MucAffiliation;
 	type?: 'unavailable';
 	statusCodes?: MucStatusCode[];
 }): Element {
 	const item = xml('item', {
-		affiliation: roleAffiliation(params.role),
+		affiliation: params.affiliation ?? roleAffiliation(params.role),
 		role: params.type === 'unavailable' ? 'none' : params.role,
 		jid: params.realJid,
 	});

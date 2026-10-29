@@ -260,4 +260,24 @@ describe('MucRoom', () => {
 				.map((s) => s.attrs.code),
 		).toEqual(['307', '110']);
 	});
+
+	it('removes a banned occupant with 301, as an outcast (R20)', async () => {
+		const { room, sent, events } = setup();
+		await room.handleJoin(join('alice@remote.tld/pc', 'alice'));
+		await room.handleJoin(join('bob@remote.tld/pc', 'bob'));
+		sent.length = 0;
+
+		room.ban('bob');
+		const codesTo = (to: string) =>
+			sent
+				.find((s) => s.attrs.to === to && s.attrs.type === 'unavailable')
+				?.getChild('x')
+				?.getChildren('status')
+				.map((s) => s.attrs.code);
+		expect(codesTo('bob@remote.tld/pc')).toEqual(['301', '110']);
+		expect(codesTo('alice@remote.tld/pc')).toEqual(['301']);
+		expect(sent.every((s) => s.getChild('x')?.getChild('item')?.attrs.affiliation === 'outcast')).toBe(true);
+		expect(room.listOccupants().map((o) => o.nick)).toEqual(['alice']);
+		expect(events.find((e) => e.event === 'occupantLeft')?.args[1]).toBe('banned');
+	});
 });

@@ -13,6 +13,7 @@ import { isBareJid } from '@rocket.chat/tools';
 import { escapeLocalpart, XMPP_SERVER_DEFAULTS } from '@rocket.chat/xmpp-server';
 
 import { callbacks } from '../../../../server/lib/callbacks';
+import { afterBanFromRoomCallback } from '../../../../server/lib/callbacks/afterBanFromRoomCallback';
 import { afterLeaveRoomCallback } from '../../../../server/lib/callbacks/afterLeaveRoomCallback';
 import { afterRemoveFromRoomCallback } from '../../../../server/lib/callbacks/afterRemoveFromRoomCallback';
 import { beforeAddUsersToRoom } from '../../../../server/lib/callbacks/beforeAddUserToRoom';
@@ -242,4 +243,19 @@ afterRemoveFromRoomCallback.add(
 	async ({ removedUser }, room) => withdrawRoomMember({ user: removedUser }, room),
 	callbacks.priority.HIGH,
 	'xmpp-server-after-remove-from-room',
+);
+
+afterBanFromRoomCallback.add(
+	async ({ bannedUser }, room) => {
+		if (!isXMPPServerEnabled() || !isRoomXMPPHostedMuc(room)) {
+			return;
+		}
+		try {
+			await XMPPServer.banFromHostedRoom(room._id, bannedUser._id);
+		} catch (error) {
+			logger.error({ msg: 'Failed to ban XMPP room member', err: error });
+		}
+	},
+	callbacks.priority.HIGH,
+	'xmpp-server-after-ban-from-room',
 );

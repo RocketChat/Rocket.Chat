@@ -221,6 +221,14 @@ export class XMPPServer {
 		}
 	}
 
+	mucBanOccupantByJid(params: { roomId: string; bareJid: string }): void {
+		const room = this.muc.getRoom(params.roomId);
+		const occupant = room?.findOccupantByJid(params.bareJid);
+		if (room && occupant) {
+			room.ban(occupant.nick);
+		}
+	}
+
 	// --- Remote MUC (we join as a client on behalf of a local user) ---
 
 	async mucJoinRemoteRoom(params: { localJid: string; roomJid: string; nick: string; maxHistoryStanzas?: number }): Promise<void> {

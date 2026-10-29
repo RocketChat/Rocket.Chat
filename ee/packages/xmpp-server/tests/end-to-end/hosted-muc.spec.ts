@@ -174,8 +174,7 @@ describe('XMPP federation: rooms hosted by Rocket.Chat', () => {
 			await assert.rejects(alice.joinRoom(muc), (error: unknown) => error instanceof StanzaError && error.condition === 'forbidden');
 		});
 
-		// Known defect: ../../docs/specs/hosted-muc.md#d7-banning-an-xmpp-occupant-neither-removes-them-nor-keeps-them-out
-		it.skip('removes a banned XMPP occupant and keeps them out after they leave (D7)', async () => {
+		it('removes a banned XMPP occupant and keeps them out after they leave (R20)', async () => {
 			const banned = await createHostedRoom(rc, owner, { type: 'c', name: `xe2e-ban-${uniqueSuffix()}` });
 			const bannedMuc = mucJidOf(banned);
 			await alice.joinRoom(bannedMuc);
