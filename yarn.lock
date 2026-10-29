@@ -11138,7 +11138,6 @@ __metadata:
     re-resizable: "npm:^6.10.4"
     react: "npm:~19.2.8"
     react-aria: "npm:~3.37.0"
-    react-docgen-typescript-plugin: "npm:^1.0.8"
     react-dom: "npm:~19.2.8"
     react-error-boundary: "npm:~6.1.6"
     react-hook-form: "npm:~7.54.2"
@@ -34418,23 +34417,6 @@ __metadata:
     react: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
     react-dom: ^16.8.0 || ^17.0.0-rc.1 || ^18.0.0 || ^19.0.0-rc.1
   checksum: 10/d1e66ab1a58fb6f134eb79268086fa78c74ef19c17bb187a1d7594f6cdd3b5df59ebdb9591bc18c322d346de49026bcc35124ba2dc560af8bba9e2b00b4493ef
-  languageName: node
-  linkType: hard
-
-"react-docgen-typescript-plugin@npm:^1.0.8":
-  version: 1.0.8
-  resolution: "react-docgen-typescript-plugin@npm:1.0.8"
-  dependencies:
-    debug: "npm:^4.1.1"
-    find-cache-dir: "npm:^3.3.1"
-    flat-cache: "npm:^3.0.4"
-    micromatch: "npm:^4.0.2"
-    react-docgen-typescript: "npm:^2.2.2"
-    tslib: "npm:^2.6.2"
-  peerDependencies:
-    typescript: ">= 4.x"
-    webpack: ">= 4"
-  checksum: 10/8d293a75fd7d6f663b5c5150f229794ddd5bd70eb532cf35f84aa0aa8b5d38ca8f8a9aaef96c70e584d03723b72cdc44ccc166e9e966f93f296e85fe97129cc6
   languageName: node
   linkType: hard
 
