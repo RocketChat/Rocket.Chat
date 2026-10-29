@@ -1,5 +1,6 @@
 import { Account, ClientSafeError } from '@rocket.chat/core-services';
 import { ConnectionLifecycle, Server, WS_ERRORS } from '@rocket.chat/ddp-server';
+import WebSocket from 'ws';
 
 import { registerAccountMethods } from './accounts';
 import { makeSession, makePacket, sentPackets } from '../__tests__/helpers';
@@ -60,6 +61,24 @@ describe('account methods', () => {
 				{ msg: 'result', id: 'test-id', result: { id: 'user2', token: 'plain', tokenExpires, type: 'resume' } },
 				{ msg: 'updated', methods: ['test-id'] },
 			]);
+		});
+
+		it('does not announce a login that finished after the socket closed', async () => {
+			let finishLogin!: () => void;
+			mockLogin.mockReturnValue(
+				new Promise((resolve) => {
+					finishLogin = () => resolve({ uid: 'user2', hashedToken: 'hashed', token: 'plain', tokenExpires, type: 'resume' } as any);
+				}),
+			);
+			const loggedIn = jest.fn();
+			lifecycle.on('loggedIn', loggedIn);
+
+			const call = server.call(session, { ...makePacket('login'), params: [{ resume: 'plain' }] });
+			session.ws.readyState = WebSocket.CLOSED;
+			finishLogin();
+			await call;
+
+			expect(loggedIn).not.toHaveBeenCalled();
 		});
 
 		it('rejects an expired token with a 403 and announces nothing', async () => {

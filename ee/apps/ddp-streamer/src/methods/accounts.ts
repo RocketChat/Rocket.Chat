@@ -1,6 +1,7 @@
 import { Account, ClientSafeError } from '@rocket.chat/core-services';
 import type { ConnectionLifecycle, Server } from '@rocket.chat/ddp-server';
 import { WS_ERRORS } from '@rocket.chat/ddp-server';
+import WebSocket from 'ws';
 
 export function registerAccountMethods(server: Server, lifecycle: ConnectionLifecycle): void {
 	server.methods({
@@ -14,7 +15,10 @@ export function registerAccountMethods(server: Server, lifecycle: ConnectionLife
 			this.userToken = result.hashedToken;
 			this.connection.loginToken = result.hashedToken;
 
-			lifecycle.emit('loggedIn', this);
+			// a socket that closed while logging in already reported its disconnection, so nothing would undo the login
+			if (this.ws.readyState === WebSocket.OPEN) {
+				lifecycle.emit('loggedIn', this);
+			}
 
 			return {
 				id: result.uid,
