@@ -2619,10 +2619,10 @@ const generateLabel = () =>
 		variants: { unavailable: { true: { pointerEvents: 'none', color: fontColorOf('secondary-info') }, false: {} } },
 	})}
 
-${frameCode('LabelRequiredFrame', 'Text', { render: 'span', ...inlineBase, color: fontColorOf('danger') })}`;
+${frameCode('LabelRequiredFrame', 'Text', { render: 'span', ...inlineBase, marginInlineStart: spacing('x4')!, color: fontColorOf('danger') })}`;
 
 const generateLabelInfo = () =>
-	frameCode('LabelInfoFrame', 'View', { render: 'span', ...flexBase, alignItems: 'center', order: 1 });
+	frameCode('LabelInfoFrame', 'View', { render: 'span', ...flexBase, alignItems: 'center', order: 1, marginInline: spacing('x4')! });
 
 
 const components: { file: string; generate: () => string; css?: boolean; section?: string }[] = [
@@ -2702,6 +2702,8 @@ const components: { file: string; generate: () => string; css?: boolean; section
 	{ file: join(import.meta.dirname, '../src/components/Field/FieldError.tsx'), generate: generateFieldError },
 	{ file: join(import.meta.dirname, '../src/components/Field/FieldLink.tsx'), generate: generateFieldLink },
 	{ file: join(import.meta.dirname, '../src/components/FieldGroup/FieldGroup.tsx'), generate: generateFieldGroup },
+	{ file: join(import.meta.dirname, '../src/components/Label/Label.tsx'), generate: generateLabel },
+	{ file: join(import.meta.dirname, '../src/components/Label/LabelInfo.tsx'), generate: generateLabelInfo },
 ];
 
 for (const [dir, control] of [

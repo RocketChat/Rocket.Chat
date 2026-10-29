@@ -1,0 +1,4 @@
+/* The frames' display outranks the user agent's `hidden` */
+:is(.rcx-label, .rcx-label__info, .rcx-label__required)[hidden] {
+	display: none;
+}
