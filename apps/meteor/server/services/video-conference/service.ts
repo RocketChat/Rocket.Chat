@@ -82,14 +82,6 @@ import { settings } from '../../settings';
 
 const logger = new Logger('VideoConference');
 
-// temp fix for DMV project: skip Discussions when starting new conferences from rocket.chat
-//
-// Only auto-creation. Forking on demand — `share-chat`, when members cannot read the chat — is untouched, and
-// so is thread mode: `VideoConf_Persistent_Chat_Mode` is unregistered today, but once it is, setting it to
-// 'thread' gives conferences a persistent chat again with this still `true`. Widen this to
-// `isPersistentChatEnabled` if that is ever the intent; it is deliberately narrow so removing it is one revert.
-const SKIP_DISCUSSIONS_ON_CHANNEL_CONFERENCES = true;
-
 export class VideoConfService extends ServiceClassInternal implements IVideoConfService {
 	protected name = 'video-conference';
 
@@ -895,7 +887,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			await this.addAbsentMember(callId, calleeId);
 		}
 
-		if (!SKIP_DISCUSSIONS_ON_CHANNEL_CONFERENCES) {
+		if (settings.get<boolean>('VideoConf_Persistent_Chat_Create_Discussion')) {
 			await this.maybeCreateDiscussion(callId, user);
 		}
 
@@ -1136,7 +1128,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 
 		await this.runNewVideoConferenceEvent(callId);
 
-		if (!SKIP_DISCUSSIONS_ON_CHANNEL_CONFERENCES) {
+		if (settings.get<boolean>('VideoConf_Persistent_Chat_Create_Discussion')) {
 			await this.maybeCreateDiscussion(callId, user);
 		}
 
