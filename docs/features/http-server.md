@@ -61,8 +61,8 @@ as `@hono/node-server` or `hono/router/trie-router`, from app code, while worksp
 - **Idle sockets:** `HTTP_SOCKET_TIMEOUT_MS`, when set, is the socket and keep-alive timeout, so it can be put above a
   proxy's idle timeout. Otherwise the server keeps Meteor's behavior: a 5 second idle timeout that Meteor's own
   per-request adjustment extends for long requests.
-- **Malformed requests** get `400 Bad Request` instead of a dropped connection, so a load balancer can tell them apart
-  from a failing server.
+- **Malformed requests** get Node's answer, `400 Bad Request` (`431` for oversized headers, `408` on a request
+  timeout), instead of a dropped connection, so a load balancer can tell them apart from a failing server.
 - **Client address:** `HTTP_FORWARDED_COUNT` decides which `X-Forwarded-For` entry is the client for REST (the
   `remoteAddress` middleware) and DDP sessions. With more entries than the count, the one that many hops from the end
   is used. The Express apps keep their own `trust proxy` setting: passport trusts one proxy, the OAuth2 server

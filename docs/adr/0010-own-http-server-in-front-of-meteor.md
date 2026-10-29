@@ -57,7 +57,9 @@ Rejected alternatives:
   - the `stream-*` methods are no longer reachable through REST `method.call`;
   - subscriptions made before login are not re-run after it;
   - DDP accepts an `X-Forwarded-For` longer than `HTTP_FORWARDED_COUNT`, as REST and ddp-streamer already did;
-  - `/theme.css` sends its byte length as `Content-Length`, not its character count.
+  - `/theme.css` sends its byte length as `Content-Length`, not its character count;
+  - malformed requests get `400` (`431` for oversized headers, `408` on a request timeout) instead of a dropped
+    connection.
 - New HTTP code registers on the root app; `WebApp.connectHandlers` is legacy.
 - A workspace package the server loads has its third-party dependencies repeated in `apps/meteor/package.json`, or
   the production bundle starts without them.

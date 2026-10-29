@@ -41,18 +41,6 @@ if (socketTimeout > 0) {
 	httpServer.on('request', WebApp._timeoutAdjustmentRequestCallback);
 }
 
-// lets a load balancer tell a malformed request apart from a server dropping connections
-httpServer.on('clientError', (err: NodeJS.ErrnoException, socket) => {
-	if (socket.destroyed) {
-		return;
-	}
-	if (err.message === 'Parse Error') {
-		socket.end('HTTP/1.1 400 Bad Request\r\n\r\n');
-		return;
-	}
-	socket.destroy(err);
-});
-
 type UpgradeHandler = (req: IncomingMessage, socket: Duplex, head: Buffer) => boolean;
 
 const upgradeHandlers: UpgradeHandler[] = [];
