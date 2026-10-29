@@ -799,5 +799,15 @@ describe('Webhooks API', () => {
 			expect(first.statusCode).toBe(200);
 			expect(second.statusCode).toBe(429);
 		});
+
+		it('counts a webhook url against one budget whatever query string it carries', async () => {
+			enableRateLimiter();
+
+			const first = await post(`${HOOK_URL}?attempt=1`, 'a');
+			const second = await post(`${HOOK_URL}?attempt=2`, 'b');
+
+			expect(first.statusCode).toBe(200);
+			expect(second.statusCode).toBe(429);
+		});
 	});
 });

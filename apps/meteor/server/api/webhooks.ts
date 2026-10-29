@@ -408,8 +408,7 @@ class WebHookAPI extends APIClass<'/hooks'> {
 		response: Response,
 		userId: string,
 	): Promise<void> {
-		const { pathname, search } = new URL(request.url);
-		const route = `${pathname}${search}`.replace(`/${this.apiPath}`, '');
+		const route = new URL(request.url).pathname.replace(`/${this.apiPath}`, '');
 		const nameRoute = this.getFullRouteName(route, request.method.toLowerCase());
 		if (!this.getRateLimiter(nameRoute)) {
 			this.addRateLimiterRuleForRoutes({
