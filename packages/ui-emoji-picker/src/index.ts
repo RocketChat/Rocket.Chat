@@ -1,9 +1,9 @@
 import { lazy } from 'react';
 
-export const EmojiPicker = lazy(() => import('./EmojiPicker'));
-export type { EmojiPickerProps } from './EmojiPicker/EmojiPicker';
+export const EmojiPicker = lazy(() => import('./components/EmojiPicker'));
+export type { EmojiPickerProps } from './components/EmojiPicker';
 
-export { default as EmojiElement } from './EmojiPicker/EmojiElement';
+export { default as EmojiElement } from './components/EmojiElement';
 export { EmojiPickerContext, useEmojiPicker, usePreviewEmoji, useEmojiPickerData } from './contexts/EmojiPickerContext';
 export {
 	EmojiRegistryContext,

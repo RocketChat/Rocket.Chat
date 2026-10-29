@@ -7,18 +7,16 @@ import { useLayoutEffect, useState, useEffect, useRef } from 'react';
 import type { ListRange, VirtuosoHandle } from 'react-virtuoso';
 
 import CategoriesResult from './CategoriesResult';
+import EmojiPickerCategoryHeader from './EmojiPickerCategoryHeader';
 import EmojiPickerCategoryItem from './EmojiPickerCategoryItem';
+import EmojiPickerContainer from './EmojiPickerContainer';
 import EmojiPickerDropdown from './EmojiPickerDropDown';
+import EmojiPickerHeader from './EmojiPickerHeader';
+import EmojiPickerListArea from './EmojiPickerListArea';
+import EmojiPickerPreview from './EmojiPickerPreview';
+import EmojiPickerPreviewArea from './EmojiPickerPreviewArea';
 import SearchingResult from './SearchingResult';
 import ToneSelector from './ToneSelector';
-import {
-	EmojiPickerCategoryHeader,
-	EmojiPickerContainer,
-	EmojiPickerPreviewArea,
-	EmojiPickerHeader,
-	EmojiPickerListArea,
-	EmojiPickerPreview,
-} from '../components';
 import ToneSelectorWrapper from './ToneSelector/ToneSelectorWrapper';
 import { usePreviewEmoji, useEmojiPickerData } from '../contexts/EmojiPickerContext';
 import { useEmojiRegistry } from '../contexts/EmojiRegistryContext';
