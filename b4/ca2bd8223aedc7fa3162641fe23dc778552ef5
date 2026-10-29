@@ -1,0 +1,23 @@
+.changeset/webhook-rate-limit-by-path.md
+  s_f3e7af0b0e6bc5::t_195e1fab4ca401 1-5
+apps/meteor/server/api/webhooks.spec.ts
+  s_f3e7af0b0e6bc5::t_46b474729216de 802-811
+apps/meteor/server/api/webhooks.ts
+  s_f3e7af0b0e6bc5::t_2ebd9e395dcbeb 411
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "b4ca2bd8223aedc7fa3162641fe23dc778552ef5",
+  "prompts": {},
+  "sessions": {
+    "s_f3e7af0b0e6bc5": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "b8028d69-1c86-4683-80b4-6ab4042b0851",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
