@@ -116,6 +116,31 @@ describe('UserPresence', () => {
 		expect(goAway).toHaveBeenCalledTimes(2);
 	});
 
+	it('handles a rejected presence request and retries after reconnect', async () => {
+		const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+		const { rerender } = render();
+		goOnline.mockRejectedValueOnce(new Error('Connection lost before the method result arrived'));
+		dropConnection(rerender);
+		restoreConnection(rerender);
+		await jest.advanceTimersByTimeAsync(0);
+		expect(warn).toHaveBeenCalledWith('Could not update user presence', expect.any(Error));
+		dropConnection(rerender);
+		restoreConnection(rerender);
+		await jest.advanceTimersByTimeAsync(0);
+		expect(goOnline).toHaveBeenCalledTimes(2);
+		warn.mockRestore();
+	});
+
+	it('does not send queued activity after logout', async () => {
+		const { rerender } = render();
+		document.dispatchEvent(new MouseEvent('mousemove'));
+		state.user = undefined;
+		rerender();
+		await jest.advanceTimersByTimeAsync(DEBOUNCE_WAIT);
+		expect(goOnline).not.toHaveBeenCalled();
+		expect(goAway).not.toHaveBeenCalled();
+	});
+
 	it('should bring the user back online on reconnection if they interacted while disconnected', async () => {
 		const { rerender } = render();
 
