@@ -1,0 +1,11 @@
+apps/meteor/client/views/admin/users/AdminUserForm.spec.tsx
+  ai_agent 1,7,18,20,23,26,29-31,67-83
+apps/meteor/client/hooks/useCanManageUserStatus.ts
+  ai_agent 3-4,9,11
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "7ef716be210afe23de2bf5575bd8429c276ae304",
+  "prompts": {}
+}
