@@ -1,4 +1,4 @@
-import { createPredicateFromFilter } from './filter';
+import { createDocumentMatcherFromFilter, createPredicateFromFilter } from './filter';
 
 describe('createPredicateFromFilter', () => {
 	it('matches simple equality', () => {
@@ -85,6 +85,11 @@ describe('createPredicateFromFilter', () => {
 		const fn = createPredicateFromFilter({ foo: { $type: 'string' } });
 		expect(fn({ foo: [1, 'bar'] })).toBe(true);
 		expect(fn({ foo: [1, 2] })).toBe(false);
+	});
+
+	it('reports the index of a nested array matched by $type array', () => {
+		const matcher = createDocumentMatcherFromFilter({ foo: { $type: 'array' } });
+		expect(matcher({ foo: [1, [2]] })).toEqual({ result: true, arrayIndices: [1] });
 	});
 
 	it('matches $regex', () => {

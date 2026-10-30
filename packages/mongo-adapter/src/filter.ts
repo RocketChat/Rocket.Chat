@@ -102,19 +102,27 @@ const getOperandBitmask = (operand: unknown, selector: string) => {
 	);
 };
 
-const expandArraysInBranches = (branches: LookupBranch[]) => {
+const expandArraysInBranches = (branches: LookupBranch[], leafArraysLast?: boolean) => {
 	const branchesOut: LookupBranch[] = [];
 
 	for (const branch of branches) {
-		branchesOut.push({ arrayIndices: branch.arrayIndices, value: branch.value });
+		const leafArray: unknown[] | undefined = Array.isArray(branch.value) && !branch.dontIterate ? branch.value : undefined;
 
-		if (Array.isArray(branch.value) && !branch.dontIterate) {
-			branch.value.forEach((value: unknown, i) => {
+		if (!(leafArraysLast && leafArray)) {
+			branchesOut.push({ arrayIndices: branch.arrayIndices, value: branch.value });
+		}
+
+		if (leafArray) {
+			leafArray.forEach((value, i) => {
 				branchesOut.push({
 					arrayIndices: (branch.arrayIndices || []).concat(i),
 					value,
 				});
 			});
+		}
+
+		if (leafArraysLast && leafArray) {
+			branchesOut.push({ arrayIndices: branch.arrayIndices, value: branch.value });
 		}
 	}
 
@@ -123,10 +131,10 @@ const expandArraysInBranches = (branches: LookupBranch[]) => {
 
 const convertElementMatcherToBranchedMatcher = (
 	elementMatcher: (value: unknown) => boolean | number,
-	options: { dontExpandLeafArrays?: boolean } = {},
+	options: { dontExpandLeafArrays?: boolean; leafArraysLast?: boolean } = {},
 ) => {
 	return (branches: LookupBranch[]) => {
-		const expanded = options.dontExpandLeafArrays ? branches : expandArraysInBranches(branches);
+		const expanded = options.dontExpandLeafArrays ? branches : expandArraysInBranches(branches, options.leafArraysLast);
 
 		return someMatches(expanded, (element) => {
 			const matched = elementMatcher(element.value);
@@ -156,6 +164,7 @@ const operatorBranchedMatcher = <T>(valueSelector: FilterOperators<T>) => {
 			const compileElementSelector = elementOperators[operator];
 			return convertElementMatcherToBranchedMatcher(compileElementSelector(operand, valueSelector), {
 				dontExpandLeafArrays: operator === '$size' || operator === '$elemMatch',
+				leafArraysLast: operator === '$type',
 			});
 		}
 
