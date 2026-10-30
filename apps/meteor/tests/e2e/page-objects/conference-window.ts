@@ -1,5 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { expect } from '../utils/test';
+
 /**
  * The call window: the separate browser window `VideoConf_Conference_Window_Enabled` opens a conference in.
  *
@@ -261,11 +263,26 @@ export class ConferenceWindow {
 		return this.dialogAddPeople.getByRole('button', { name: 'Add', exact: true });
 	}
 
+	/**
+	 * Picks `username` in the picker and confirms. The picker keeps listing the previous search until its debounced
+	 * search answers, and its list can close while being swapped, leaving nothing to click until it is typed in
+	 * again — so the pick is retried, re-typing whenever the option is not on screen.
+	 */
 	async addPeople(username: string): Promise<void> {
+		const option = this.page.getByRole('option', { name: username, exact: true });
+
 		await this.btnAddPeople.click();
 		await this.inputAddPeople.click();
-		await this.inputAddPeople.fill(username);
-		await this.page.getByRole('option', { name: username, exact: true }).click();
+
+		await expect(async () => {
+			if (!(await option.isVisible())) {
+				await this.inputAddPeople.fill('');
+				await this.inputAddPeople.fill(username);
+			}
+			await option.click({ timeout: 5_000 });
+		}).toPass({ timeout: 30_000 });
+
+		await expect(this.btnConfirmAddPeople).toBeEnabled();
 		await this.btnConfirmAddPeople.click();
 	}
 
