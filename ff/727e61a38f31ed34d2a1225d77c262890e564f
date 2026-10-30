@@ -1,0 +1,11 @@
+apps/meteor/client/hooks/useCanManageUserStatus.ts
+  ai_agent 5,9,11
+apps/meteor/client/views/admin/statusAndPresence/StatusAndPresenceRoute.tsx
+  ai_agent 15,34,44,51,54,73
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "ff727e61a38f31ed34d2a1225d77c262890e564f",
+  "prompts": {}
+}
