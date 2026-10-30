@@ -22,6 +22,14 @@ it('does not take focus when it mounts', () => {
 	expect(screen.getAllByRole('dialog')).toHaveLength(2);
 });
 
+it('renders the custom status it is given', () => {
+	render(<UserCard user={{ name: 'Jane', username: 'jane', customStatus: <em>Out of office</em> }} />, {
+		wrapper: mockAppRoot().build(),
+	});
+
+	expect(screen.getByText('Out of office').tagName).toBe('EM');
+});
+
 it('leaves out the details list when there is nothing to list', () => {
 	render(<UserCard user={{ name: 'bruno.admin', username: 'bruno.admin' }} />, { wrapper: mockAppRoot().build() });
 

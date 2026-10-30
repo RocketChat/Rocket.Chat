@@ -5,6 +5,7 @@ import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
 import LocalTime from '../../../components/LocalTime';
+import MarkdownText from '../../../components/MarkdownText';
 
 export type CurrentUserDisplayProps = {
 	user: IUser;
@@ -24,7 +25,11 @@ const CurrentUserDisplay = ({ user }: CurrentUserDisplayProps) => {
 			name: showRealNames ? name : username,
 			nickname,
 			status: <UserStatus.Online />,
-			customStatus: statusText ?? <></>,
+			customStatus: statusText ? (
+				<MarkdownText withTruncatedText variant='inlineWithoutBreaks' content={statusText} parseEmoji={true} />
+			) : (
+				(statusText ?? <></>)
+			),
 			workspaceRoles: roles && getRoles(roles).join(', '),
 			localTime: typeof utcOffset === 'number' && Number.isFinite(utcOffset) && <LocalTime utcOffset={utcOffset} />,
 		}),
