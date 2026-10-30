@@ -276,6 +276,18 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		deletedAt: { $gt: Date } | { $lt: Date },
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>>;
+	findDeletedByRoomIdAfter<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roomId: IMessage['rid'],
+		deletedAt: Date,
+		minTs: Date | undefined,
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+	findDeletedByRoomIdAndDeletedAt<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roomId: IMessage['rid'],
+		deletedAt: { $gt: Date } | { $lt: Date },
+		options?: O,
+		idTieBreaker?: string,
+	): FindCursor<DocumentWithProjection<T, O>>;
 	updateUsernameOfEditByUserId(userId: string, username: string): Promise<UpdateResult | Document>;
 	updateAllUsernamesByUserId(userId: string, username: string): Promise<UpdateResult | Document>;
 
