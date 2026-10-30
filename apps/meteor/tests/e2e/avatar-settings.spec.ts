@@ -96,20 +96,23 @@ test.describe.serial('avatar-settings', () => {
 		const { username } = Users.user2.data;
 		const avatarPath = new RegExp(`/avatar/${username}(\\?.*)?$`);
 		let roomId = '';
-		let user2Page: Page;
+		let user2Page: Page | undefined;
 
 		test.beforeAll(async ({ api, browser }) => {
 			roomId = await createDirectMessageRoom(api, username);
 
-			({ page: user2Page } = await createAuxContext(browser, Users.user2));
-			const user2HomeChannel = new HomeChannel(user2Page);
+			const { page } = await createAuxContext(browser, Users.user2);
+			user2Page = page;
+			const user2HomeChannel = new HomeChannel(page);
 			await user2HomeChannel.navbar.openChat(Users.admin.data.username);
 			await user2HomeChannel.content.sendMessage('hello world');
 		});
 
 		test.afterAll(async ({ api }) => {
-			await user2Page.close();
-			await deleteRoom(api, roomId);
+			if (roomId) {
+				await deleteRoom(api, roomId);
+			}
+			await user2Page?.close();
 		});
 
 		test('expect sidebar avatar to be served by the server proxy', async () => {
