@@ -166,6 +166,15 @@ type Listing = {
 	});
 
 	describe('every path that lists messages leaves out what the newcomer cannot see', () => {
+		let previousGlobalSearch: ISetting['value'];
+
+		before(async () => {
+			previousGlobalSearch = await getSettingValueById('Search.defaultProvider.GlobalSearchEnabled');
+			await updateSetting('Search.defaultProvider.GlobalSearchEnabled', true);
+		});
+
+		after(() => updateSetting('Search.defaultProvider.GlobalSearchEnabled', previousGlobalSearch));
+
 		const roomHistory = {
 			hidden: () => [oldMessage._id, oldThread._id],
 			visible: () => [newMessage._id, newThread._id, channelReplyToOldThread._id],
@@ -351,12 +360,12 @@ type Listing = {
 	describe('every action on a hidden message is refused', () => {
 		it('chat.react', async () => {
 			const res = await request.post(api('chat.react')).set(newcomerCredentials).send({ messageId: oldMessage._id, emoji: ':smile:' });
-			expect(res.body).to.have.property('errorType', 'error-not-allowed');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 
 		it('chat.followMessage', async () => {
 			const res = await request.post(api('chat.followMessage')).set(newcomerCredentials).send({ mid: oldThread._id });
-			expect(res.body).to.have.property('errorType', 'error-not-allowed');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 
 		it('chat.pinMessage', async () => {
@@ -425,7 +434,7 @@ type Listing = {
 				.post(api('chat.sendMessage'))
 				.set(newcomerCredentials)
 				.send({ message: { rid: room._id, msg: 'replying blind', tmid: oldThread._id } });
-			expect(res.body).to.have.property('errorType', 'error-not-allowed');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 			await expectNotFollowing();
 		});
 
@@ -434,7 +443,7 @@ type Listing = {
 				.post(api('chat.postMessage'))
 				.set(newcomerCredentials)
 				.send({ roomId: room._id, text: 'replying blind', tmid: oldThread._id });
-			expect(res.body).to.have.property('errorType', 'error-not-allowed');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 			await expectNotFollowing();
 		});
 
