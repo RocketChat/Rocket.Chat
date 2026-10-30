@@ -1,0 +1,24 @@
+apps/meteor/ee/server/hooks/xmpp/index.ts
+  s_fda792b4ee3dce::t_ff3d5908cb30bc 119-129
+ee/packages/xmpp-server/tests/end-to-end/hosted-muc.spec.ts
+  s_fda792b4ee3dce::t_a947d34a3498a0 305
+  s_fda792b4ee3dce::t_d077ae1457cf53 307
+ee/packages/xmpp-server/docs/specs/hosted-muc.md
+  s_fda792b4ee3dce::t_75661280296a17 101-102
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "a98b426ac015e4d87f2d3ec8c2707489da6fccb4",
+  "prompts": {},
+  "sessions": {
+    "s_fda792b4ee3dce": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "e31a5082-261d-4ac9-a82c-537267ace868",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

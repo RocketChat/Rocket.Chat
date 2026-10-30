@@ -1,0 +1,19 @@
+apps/meteor/server/lib/realtime/routes.ts
+  s_f1121fd6cdc780::t_085f54495dfd6e 10-12,15-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "7f07eb1f5cb1d16eda0d1d1cbd88548c01d8f610",
+  "prompts": {},
+  "sessions": {
+    "s_f1121fd6cdc780": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bc1dcb85-fc36-44bb-b01a-4bbd6676be8c",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

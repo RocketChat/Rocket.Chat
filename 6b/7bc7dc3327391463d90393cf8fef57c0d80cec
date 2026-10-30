@@ -1,0 +1,23 @@
+apps/meteor/server/lib/http/httpServer.ts
+  s_f1121fd6cdc780::t_56e9bc0c618815 23-24
+apps/meteor/definition/externals/meteor/webapp.d.ts
+  s_f1121fd6cdc780::t_56e9bc0c618815 12-13
+apps/meteor/server/lib/realtime/routes.ts
+  s_f1121fd6cdc780::t_56e9bc0c618815 8-14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "6b7bc7dc3327391463d90393cf8fef57c0d80cec",
+  "prompts": {},
+  "sessions": {
+    "s_f1121fd6cdc780": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "bc1dcb85-fc36-44bb-b01a-4bbd6676be8c",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}

@@ -1,0 +1,19 @@
+packages/ddp-server/src/publications/loginServiceConfiguration.spec.ts
+  s_29c461251ce55f::t_6ba776c1ec4642 43-46
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "693267437db3b923b4eb0904995123df5eaa06fa",
+  "prompts": {},
+  "sessions": {
+    "s_29c461251ce55f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "98ca5981-8946-4d8b-820e-c90a203f06a2",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
