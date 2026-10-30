@@ -178,6 +178,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		rid: IRoom['_id'],
 		text: string,
 		options?: O,
+		visibility?: MessageHistoryVisibility,
 	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>> {
 		const query: Filter<IMessage> = {
 			rid,
@@ -185,7 +186,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 			msg: new RegExp(escapeRegExp(text), 'i'),
 		};
 
-		return this.findPaginated<T, O>(query, options);
+		return this.findPaginated<T, O>(this.withVisibility(query, visibility), options);
 	}
 
 	findAllNumberOfTransferredRooms({

@@ -1,5 +1,5 @@
 import { Settings } from '@rocket.chat/core-services';
-import { Messages, Subscriptions } from '@rocket.chat/models';
+import { Messages, Rooms, Subscriptions } from '@rocket.chat/models';
 
 import { canMemberReceiveMessage, canReceiveMessage, trackHistoryCutoff, updateHistoryCutoff } from './historyVisibility';
 import type { IPublication } from './types';
@@ -11,6 +11,7 @@ jest.mock('@rocket.chat/core-services', () => ({
 jest.mock('@rocket.chat/models', () => ({
 	Subscriptions: { findOneByRoomIdAndUserId: jest.fn() },
 	Messages: { findOneById: jest.fn() },
+	Rooms: { findOneById: jest.fn() },
 }));
 
 const rid = 'room';
@@ -39,6 +40,7 @@ describe('historyVisibility', () => {
 	beforeEach(() => {
 		jest.mocked(Settings.get).mockResolvedValue(true);
 		jest.mocked(Messages.findOneById).mockReset();
+		jest.mocked(Rooms.findOneById).mockReset();
 	});
 
 	describe('canReceiveMessage', () => {
@@ -90,6 +92,36 @@ describe('historyVisibility', () => {
 
 			updateHistoryCutoff({ rid, u: { _id: uid } as any });
 			await expect(canReceiveMessage(publication, rid, { ts: before } as any)).resolves.toBe(true);
+		});
+
+		describe('in a discussion read through its parent room', () => {
+			const discussion = 'discussion';
+			const parent = 'parent';
+
+			const subscribeThroughParent = async () => {
+				jest
+					.mocked(Subscriptions.findOneByRoomIdAndUserId)
+					.mockResolvedValueOnce(null)
+					.mockResolvedValueOnce({ rid: parent, historyVisibleFrom: cutoff } as any);
+				jest.mocked(Rooms.findOneById).mockResolvedValueOnce({ prid: parent } as any);
+				const publication = createPublication();
+				await trackHistoryCutoff(publication, discussion, uid);
+				return publication;
+			};
+
+			it('applies the member cutoff in the parent room', async () => {
+				const publication = await subscribeThroughParent();
+
+				await expect(canReceiveMessage(publication, discussion, { ts: before } as any)).resolves.toBe(false);
+				await expect(canReceiveMessage(publication, discussion, { ts: after } as any)).resolves.toBe(true);
+			});
+
+			it('follows cutoff changes in the parent room', async () => {
+				const publication = await subscribeThroughParent();
+
+				updateHistoryCutoff({ rid: parent, u: { _id: uid } as any });
+				await expect(canReceiveMessage(publication, discussion, { ts: before } as any)).resolves.toBe(true);
+			});
 		});
 
 		it('stops tracking a stream once it closes', async () => {

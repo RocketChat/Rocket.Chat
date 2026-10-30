@@ -2092,6 +2092,14 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.countDocuments({ prid: { $exists: true } });
 	}
 
+	findPaginatedDiscussionsByParentId(
+		prid: IRoom['_id'],
+		createdSince?: Date,
+		options?: FindOptions<IRoom>,
+	): FindPaginated<FindCursor<IRoom>> {
+		return this.findPaginated({ prid, ...(createdSince && { ts: { $gte: createdSince } }) }, options);
+	}
+
 	async getSubscribedRoomIdsWithoutE2EKeys(uid: IUser['_id']): Promise<IRoom['_id'][]> {
 		return (
 			await this.col
