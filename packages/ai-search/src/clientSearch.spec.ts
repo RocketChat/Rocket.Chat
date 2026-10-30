@@ -1,4 +1,4 @@
-import type { AppliedFilter, SearchFilterKey, SearchFilterMeta } from './clientSearch';
+import type { AppliedFilter, SearchFilterKey, SearchFilterMeta } from './clientSearch.js';
 import {
 	buildFilterSuggestions,
 	buildRoomSearchQuery,
@@ -13,8 +13,8 @@ import {
 	removeDraftFilter,
 	serializeSearchQuery,
 	toAISearchParams,
-} from './clientSearch';
-import { AI_SEARCH_FILTER_SUGGESTION_LIMIT, MAX_SEARCH_FILTER_VALUES } from './constants';
+} from './clientSearch.js';
+import { AI_SEARCH_FILTER_SUGGESTION_LIMIT, MAX_SEARCH_FILTER_VALUES } from './constants.js';
 
 const appliedFilter = (key: SearchFilterKey, value: string, meta?: SearchFilterMeta): AppliedFilter => {
 	const filter = createAppliedFilter(key, value, meta);
