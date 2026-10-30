@@ -1,3 +1,5 @@
+/* stylelint-disable selector-class-pattern -- styles BEM classes owned by Fuselage and the emoji renderer */
+
 /* Emoji fonts are rescaled so each paints its glyphs 1em tall, as Apple Color Emoji
 already does; that lets a native emoji fill the same box as a custom image. */
 
@@ -52,8 +54,12 @@ emoji boxes, which load after this file. */
 	--emoji-size: 0.875rem;
 }
 
-.rcx-message-thread__emoji {
+/* The box is shorter than the preview line, so it is centered rather than pinned to
+the top, where the line's overflow: hidden would cut glyphs that paint above it. */
+.rcx-message-thread__emoji.emoji {
 	--emoji-size: 0.75rem;
+
+	vertical-align: middle;
 }
 
 /* emoji picker */
