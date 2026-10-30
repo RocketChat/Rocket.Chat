@@ -456,7 +456,6 @@
 	"packages/fuselage-ui-kit/src/elements/UsersSelectElement/UsersSelectElement.tsx": 1,
 	"packages/fuselage-ui-kit/src/surfaces/Surface.tsx": 2,
 	"packages/fuselage/.storybook/helpers.tsx": 3,
-	"packages/fuselage/.storybook/PropsVariation.tsx": 3,
 	"packages/fuselage/scripts/generate-frame-values.mts": 4,
 	"packages/fuselage/src/components/Accordion/Accordion.stories.tsx": 10,
 	"packages/fuselage/src/components/AnimatedVisibility/AnimatedVisibility.stories.tsx": 1,
