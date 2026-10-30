@@ -3,6 +3,13 @@
 	"version": "0.1.1",
 	"private": true,
 	"description": "Fork of https://github.com/agenda/agenda",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
 	"files": [
