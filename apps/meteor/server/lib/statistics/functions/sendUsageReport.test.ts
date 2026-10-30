@@ -16,9 +16,7 @@ const mocks = {
 	},
 	serverFetch: sandbox.stub(),
 	getWorkspaceAccessToken: sandbox.stub().resolves('workspace-token'),
-	Meteor: {
-		absoluteUrl: sandbox.stub().returns('http://localhost:3000/'),
-	},
+	getWorkspaceURL: sandbox.stub().returns('http://localhost:3000'),
 	logger: {
 		error: sandbox.stub(),
 	},
@@ -32,7 +30,7 @@ const { sendUsageReport } = proxyquire.noCallThru().load('./sendUsageReport', {
 	'@rocket.chat/server-fetch': { serverFetch: mocks.serverFetch },
 	'../index': { statistics: mocks.statistics },
 	'../../cloud': { getWorkspaceAccessToken: mocks.getWorkspaceAccessToken },
-	'meteor/meteor': { Meteor: mocks.Meteor },
+	'../../utils/getURL': { getWorkspaceURL: mocks.getWorkspaceURL },
 	'../../../../rocketchat.info': { Info: mocks.Info },
 });
 
@@ -63,6 +61,7 @@ describe('sendUsageReport', () => {
 		expect(mocks.statistics.save.called).to.be.true;
 		expect(mocks.serverFetch.calledOnce).to.be.true;
 		expect(mocks.serverFetch.calledWith('https://collector.rocket.chat/', sinon.match({ method: 'POST' }))).to.be.true;
+		expect(mocks.serverFetch.firstCall.args[1].body.host).to.equal('http://localhost:3000/');
 		expect(result).to.be.undefined;
 	});
 

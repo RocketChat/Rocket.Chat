@@ -111,7 +111,7 @@ export async function getEmailContent({ message, user, room }) {
 }
 
 const getButtonUrl = (room, subscription, message) => {
-	const basePath = roomCoordinator.getRouteLink(room.t, subscription).replace(Meteor.absoluteUrl(), '');
+	const basePath = roomCoordinator.getRouteLink(room.t, subscription);
 
 	const path = `${ltrim(basePath, '/')}?msg=${message._id}`;
 	return getURL(

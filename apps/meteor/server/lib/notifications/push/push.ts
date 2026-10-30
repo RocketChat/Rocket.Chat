@@ -7,13 +7,13 @@ import { serverFetch as fetch } from '@rocket.chat/server-fetch';
 import { pick, truncateString } from '@rocket.chat/tools';
 import { JWT } from 'google-auth-library';
 import { Match } from 'meteor/check';
-import { Meteor } from 'meteor/meteor';
 
 import { initAPN, sendAPN, shutdownAPN } from './apn';
 import type { PushOptions, PendingPushNotification } from './definition';
 import { sendFCM } from './fcm';
 import { logger } from './logger';
 import { settings } from '../../../settings';
+import { getWorkspaceURL } from '../../utils/getURL';
 
 const PUSH_TITLE_LIMIT = 65;
 const PUSH_MESSAGE_BODY_LIMIT = 240;
@@ -164,7 +164,7 @@ class PushClass {
 		logger.debug({ msg: 'Configure', options: this.options });
 
 		if (this.options.apn) {
-			initAPN({ options: this.options as RequiredField<PushOptions, 'apn'>, absoluteUrl: Meteor.absoluteUrl() });
+			initAPN({ options: this.options as RequiredField<PushOptions, 'apn'>, absoluteUrl: `${getWorkspaceURL()}/` });
 		}
 	}
 
