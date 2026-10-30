@@ -1,5 +1,6 @@
 import type { AppScreenshot } from '@rocket.chat/core-typings';
 import { Box, IconButton } from '@rocket.chat/fuselage';
+import { useTranslation } from 'react-i18next';
 
 export type ScreenshotCarouselProps = {
 	AppScreenshots: Array<AppScreenshot>;
@@ -20,6 +21,7 @@ const ScreenshotCarousel = ({
 	isLastSlide,
 	currentSlideIndex,
 }: ScreenshotCarouselProps) => {
+	const { t } = useTranslation();
 	const handleScreenshotRender = () =>
 		AppScreenshots.map((currentScreenshot, index) => {
 			const isCurrentImageOnScreen = index === currentSlideIndex;
@@ -57,13 +59,13 @@ const ScreenshotCarousel = ({
 
 			{!isFirstSlide && (
 				<Box position='absolute' zIndex={3} style={{ top: '50%', left: '10px', transform: 'translateY(-50%)' }}>
-					<IconButton variant='secondary' icon='chevron-left' onClick={handlePrevSlide} />
+					<IconButton variant='secondary' icon='chevron-left' aria-label={t('Previous_image')} onClick={handlePrevSlide} />
 				</Box>
 			)}
 
 			{!isLastSlide && (
 				<Box position='absolute' zIndex={3} style={{ top: '50%', right: '10px', transform: 'translateY(-50%)' }}>
-					<IconButton variant='secondary' icon='chevron-right' onClick={handleNextSlide} />
+					<IconButton variant='secondary' icon='chevron-right' aria-label={t('Next_image')} onClick={handleNextSlide} />
 				</Box>
 			)}
 
