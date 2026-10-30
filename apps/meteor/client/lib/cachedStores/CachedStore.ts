@@ -1,5 +1,5 @@
 import type { EncryptedMessageContent, IMessage, IRocketChatRecord } from '@rocket.chat/core-typings';
-import { isEncryptedMessageContent } from '@rocket.chat/core-typings';
+import { isEncryptedMessageContent, isRemovedFileAttachment } from '@rocket.chat/core-typings';
 import type { StreamNames } from '@rocket.chat/ddp-client';
 import { isTruthy } from '@rocket.chat/tools';
 import localforage from 'localforage';
@@ -57,10 +57,23 @@ const toCacheRecord = <T>(record: T): T => {
 		return rest as T;
 	}
 
-	const { _id, rid, ts, u, _updatedAt, tmid, content } = lastMessage as Partial<IMessage> & EncryptedMessageContent;
+	const { _id, rid, ts, u, _updatedAt, tmid, content, attachments, e2e } = lastMessage as Partial<IMessage> & EncryptedMessageContent;
+	// Keep deletion markers only before decryption. Decrypted attachments can contain plaintext, even when they look like markers.
+	const removedFiles = e2e === 'done' ? [] : (attachments?.filter(isRemovedFileAttachment) ?? []);
 	return {
 		...record,
-		lastMessage: { _id, rid, ts, u, _updatedAt, ...(tmid && { tmid }), t: 'e2e', e2e: 'pending', content },
+		lastMessage: {
+			_id,
+			rid,
+			ts,
+			u,
+			_updatedAt,
+			...(tmid && { tmid }),
+			t: 'e2e',
+			e2e: 'pending',
+			content,
+			...(removedFiles.length > 0 && { attachments: removedFiles }),
+		},
 	};
 };
 
@@ -261,7 +274,15 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 		await this.save();
 	}
 
-	private save = withDebouncing({ wait: 1000 })(async () => {
+	private saving: Promise<void> = Promise.resolve();
+
+	private save = withDebouncing({ wait: 1000 })(() => {
+		const write = this.writeCache();
+		this.saving = write.catch(() => undefined);
+		return write;
+	});
+
+	private async writeCache() {
 		await this.scrubbedCache;
 		this.log('saving cache');
 		await localforage.setItem(this.name, {
@@ -271,14 +292,18 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 			records: Array.from(this.store.getState().records.values(), toCacheRecord),
 		});
 		this.log('saving cache (done)');
-	});
+	}
 
 	abstract clearCacheOnLogout(): void;
 
 	protected async clearCache() {
 		this.log('clearing cache');
-		await localforage.removeItem(this.name);
+		// Old records must not survive logout through a pending save or an unfinished cache write.
 		this.store.getState().replaceAll([]);
+		this.save.cancel();
+		await this.scrubbedCache;
+		await this.saving;
+		await localforage.removeItem(this.name);
 	}
 
 	protected setupListener() {

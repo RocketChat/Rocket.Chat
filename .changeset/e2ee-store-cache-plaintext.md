@@ -2,4 +2,4 @@
 '@rocket.chat/meteor': patch
 ---
 
-Keeps the decrypted last message of end-to-end encrypted rooms out of the client's persistent store cache. Also rewrites a cache that an older client left on disk
+Keeps decrypted last messages from end-to-end encrypted rooms out of the client's persistent cache. Rewrites caches that older clients left on disk. Preserves server file-deletion markers only before decryption. Prevents startup rewrites and delayed saves from restoring cached records after logout.

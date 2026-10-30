@@ -1,16 +1,18 @@
 import { PrivateCachedStore } from './CachedStore';
 import { createDocumentMapStore } from './DocumentMapStore';
+import { NOTIFICATION_ATTACHMENT_COLOR } from '../../../lib/constants';
 import { STORAGE_KEYS } from '../sdk/storage';
 
 const mockCall = jest.fn();
 const mockGetItem = jest.fn();
 const mockSetItem = jest.fn();
+const mockRemoveItem = jest.fn();
 
 jest.mock('localforage', () => ({
 	config: jest.fn(),
 	getItem: (...args: unknown[]) => mockGetItem(...args),
 	setItem: (...args: unknown[]) => mockSetItem(...args),
-	removeItem: jest.fn().mockResolvedValue(undefined),
+	removeItem: (...args: unknown[]) => mockRemoveItem(...args),
 }));
 
 jest.mock('../SDKClient', () => ({
@@ -32,8 +34,21 @@ type TestRecord = { _id: string; rid: string; _updatedAt: Date; lastMessage?: Re
 class TestCachedStore extends PrivateCachedStore<TestRecord> {
 	constructor() {
 		super({ name: 'subscriptions', eventType: 'notify-user', store: createDocumentMapStore<TestRecord>() });
+		createdStores.push(this);
+	}
+
+	clear() {
+		return this.clearCache();
 	}
 }
+
+// A save from a previous test must not affect the next test.
+const createdStores: TestCachedStore[] = [];
+const cancelPendingSaves = () => {
+	for (const cachedStore of createdStores.splice(0)) {
+		(cachedStore as unknown as { save: { cancel(): void } }).save.cancel();
+	}
+};
 
 const recordsOf = (cachedStore: TestCachedStore) => Array.from(cachedStore.store.getState().records.values());
 
@@ -45,8 +60,11 @@ describe('CachedStore', () => {
 		mockCall.mockReset();
 		mockGetItem.mockReset().mockResolvedValue(null);
 		mockSetItem.mockReset().mockResolvedValue(undefined);
+		mockRemoveItem.mockReset().mockResolvedValue(undefined);
 		localStorage.clear();
 	});
+
+	afterEach(cancelPendingSaves);
 
 	it('drops records left in memory by a previous session when loading from the server after a cache miss', async () => {
 		const cachedStore = new TestCachedStore();
@@ -203,6 +221,129 @@ describe('CachedStore', () => {
 			await new Promise((resolve) => setTimeout(resolve, 200));
 
 			expect(mockSetItem).not.toHaveBeenCalled();
+		});
+
+		it.each([['file-1'], [undefined]])(
+			'keeps server deletion markers before decryption with fileId %s, but no other attachments',
+			async (fileId) => {
+				const cachedStore = new TestCachedStore();
+				const removedFile = {
+					type: 'removed-file',
+					color: NOTIFICATION_ATTACHMENT_COLOR,
+					text: '_File removed_',
+					...(fileId && { fileId }),
+				};
+				mockCall.mockResolvedValue([
+					{
+						...fresh,
+						lastMessage: {
+							_id: 'msg-7',
+							rid: 'GENERAL',
+							t: 'e2e',
+							e2e: 'pending',
+							content: encryptedContent,
+							attachments: [removedFile, { title: 'okapi.png' }],
+						},
+					},
+				]);
+
+				await cachedStore.init();
+				const records = await savedRecords();
+
+				expect(records[0].lastMessage).toMatchObject({ _id: 'msg-7', e2e: 'pending', content: encryptedContent });
+				expect(records[0].lastMessage?.attachments).toEqual([removedFile]);
+				expect(JSON.stringify(records)).not.toContain('okapi');
+			},
+		);
+
+		it('writes no attachment of a decrypted last message, also one that looks like a marker of a deleted file', async () => {
+			const cachedStore = new TestCachedStore();
+			mockCall.mockResolvedValue([
+				{
+					...fresh,
+					lastMessage: {
+						_id: 'msg-8',
+						rid: 'GENERAL',
+						t: 'e2e',
+						e2e: 'done',
+						content: encryptedContent,
+						attachments: [
+							{ type: 'removed-file', color: NOTIFICATION_ATTACHMENT_COLOR, text: '_File removed_', fileId: 'okapi' },
+							{ type: 'removed-file', color: NOTIFICATION_ATTACHMENT_COLOR, text: 'okapi' },
+							{ title: 'okapi.png' },
+						],
+					},
+				},
+			]);
+
+			await cachedStore.init();
+			const records = await savedRecords();
+
+			expect(JSON.stringify(records)).not.toContain('okapi');
+			expect(records[0].lastMessage).not.toHaveProperty('attachments');
+		});
+
+		it('removes the cache on logout only after the startup rewrite, so the rewrite cannot bring the cache back', async () => {
+			mockGetItem.mockResolvedValue({
+				version: 19,
+				token: 't',
+				updatedAt: new Date(5),
+				records: [{ ...fresh, lastMessage: { _id: 'msg-9', rid: 'GENERAL', t: 'e2e', e2e: 'done', msg: 'old format okapi' } }],
+			});
+			let finishRewrite: () => void = () => undefined;
+			mockSetItem.mockReturnValue(
+				new Promise<void>((resolve) => {
+					finishRewrite = resolve;
+				}),
+			);
+
+			const cachedStore = new TestCachedStore();
+			for (let i = 0; i < 20 && mockSetItem.mock.calls.length === 0; i++) {
+				await new Promise((resolve) => setTimeout(resolve, 0));
+			}
+			expect(mockSetItem).toHaveBeenCalledTimes(1);
+
+			const clearing = cachedStore.clear();
+			await new Promise((resolve) => setTimeout(resolve, 0));
+			expect(mockRemoveItem).not.toHaveBeenCalled();
+
+			finishRewrite();
+			await clearing;
+			expect(mockRemoveItem).toHaveBeenCalledWith('subscriptions');
+		});
+
+		it('drops a pending save on logout, and removes the cache only after the save that already runs', async () => {
+			jest.useFakeTimers();
+			try {
+				const cachedStore = new TestCachedStore();
+				const { save } = cachedStore as unknown as { save: () => Promise<void> };
+				cachedStore.store.getState().store(fresh);
+				let finishSave: () => void = () => undefined;
+				mockSetItem.mockReturnValueOnce(
+					new Promise<void>((resolve) => {
+						finishSave = resolve;
+					}),
+				);
+
+				void save();
+				await jest.advanceTimersByTimeAsync(1000);
+				expect(mockSetItem).toHaveBeenCalledTimes(1);
+				void save();
+
+				const clearing = cachedStore.clear();
+				await jest.advanceTimersByTimeAsync(0);
+				expect(mockRemoveItem).not.toHaveBeenCalled();
+
+				finishSave();
+				await clearing;
+				expect(mockRemoveItem).toHaveBeenCalledWith('subscriptions');
+
+				await jest.advanceTimersByTimeAsync(2000);
+				expect(mockSetItem).toHaveBeenCalledTimes(1);
+				expect(recordsOf(cachedStore)).toEqual([]);
+			} finally {
+				jest.useRealTimers();
+			}
 		});
 
 		it('keeps the last message of a room that is not encrypted', async () => {
