@@ -27,8 +27,8 @@ const NavbarNavigation = () => {
 			{!isMobile && (
 				<Box marginInlineEnd={8}>
 					<NavBarGroup aria-label={t('History_navigation')}>
-						<NavBarItem title={t('Back_in_history')} onClick={() => navigate(-1)} icon='chevron-right' size='small' />
-						<NavBarItem title={t('Forward_in_history')} onClick={() => navigate(1)} icon='chevron-left' size='small' />
+						<NavBarItem title={t('Back_in_history')} onClick={() => navigate(-1)} icon='chevron-left' size='small' />
+						<NavBarItem title={t('Forward_in_history')} onClick={() => navigate(1)} icon='chevron-right' size='small' />
 					</NavBarGroup>
 				</Box>
 			)}

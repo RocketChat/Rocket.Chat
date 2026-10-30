@@ -27,7 +27,7 @@ const IgnoredContent = ({ messageId, onShowMessageIgnored }: IgnoredContentProps
 					onKeyDown={(e) => e.code === 'Enter' && showMessageIgnored(e)}
 					style={{ cursor: 'pointer' }}
 				>
-					<Icon name='chevron-left' /> {t('Message_Ignored')}
+					<Icon name='chevron-right' /> {t('Message_Ignored')}
 				</span>
 			</Box>
 		</MessageBody>
