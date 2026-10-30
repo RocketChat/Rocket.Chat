@@ -879,6 +879,8 @@ class E2E extends Emitter {
 
 export const e2e = new E2E();
 
+window.__rocketChatE2E = e2e;
+
 getDdpSdk().account.onLogout(() => {
 	void e2e.stopClient();
 });

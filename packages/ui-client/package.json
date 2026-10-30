@@ -19,8 +19,6 @@
 	},
 	"dependencies": {
 		"@react-aria/dialog": "^3.5.21",
-		"@rocket.chat/onboarding-ui": "workspace:^",
-		"@rocket.chat/tools": "workspace:~",
 		"date-fns": "~4.1.0",
 		"dompurify": "~3.4.17"
 	},
@@ -34,7 +32,6 @@
 		"@rocket.chat/fuselage-tokens": "workspace:^",
 		"@rocket.chat/icons": "workspace:~",
 		"@rocket.chat/jest-presets": "workspace:~",
-		"@rocket.chat/layout": "workspace:~",
 		"@rocket.chat/logo": "workspace:~",
 		"@rocket.chat/mock-providers": "workspace:^",
 		"@rocket.chat/models": "workspace:~",
@@ -43,7 +40,7 @@
 		"@rocket.chat/tsconfig": "workspace:*",
 		"@rocket.chat/ui-avatar": "workspace:~",
 		"@rocket.chat/ui-contexts": "workspace:~",
-		"@storybook/react": "^9.1.21",
+		"@storybook/react": "~9.1.21",
 		"@testing-library/dom": "~10.4.2",
 		"@testing-library/react": "~16.3.3",
 		"@types/react": "~19.2.18",
@@ -58,7 +55,7 @@
 		"react-hook-form": "~7.54.2",
 		"react-i18next": "~17.0.16",
 		"react-virtuoso": "~4.18.16",
-		"storybook": "^9.1.21",
+		"storybook": "~9.1.21",
 		"typescript": "~7.0.2"
 	},
 	"peerDependencies": {

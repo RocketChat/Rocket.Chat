@@ -63,8 +63,6 @@ export const saveSettingsBulk = async (
 
 	await Promise.all(
 		params.map(async ({ _id, value }) => {
-			// Verify the _id passed in is a string.
-			check(_id, String);
 			if (!editPrivilegedSetting && !(manageSelectedSettings && (await hasPermissionAsync(uid, getSettingPermissionId(_id))))) {
 				return settingsNotAllowed.push(_id);
 			}

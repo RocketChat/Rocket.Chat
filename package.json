@@ -23,7 +23,6 @@
 	"scripts": {
 		"build": "turbo run build",
 		"dev": "turbo run dev --env-mode=loose --parallel --filter=@rocket.chat/meteor...",
-		"dev:next": "yarn workspace @rocket.chat/meteor dev:next",
 		"docs:check-links": "node scripts/check-docs-links.mjs docs",
 		"dsv": "turbo run dsv --env-mode=loose --filter=@rocket.chat/meteor...",
 		"ms": "turbo run ms --env-mode=loose",
@@ -205,7 +204,8 @@
 		"moment-timezone/moment": "^2.31.0",
 		"@types/chart.js/moment": "^2.31.0",
 		"@react-pdf/layout@npm:^4.6.1": "patch:@react-pdf/layout@npm%3A4.6.1#~/.yarn/patches/@react-pdf-layout-npm-4.6.1-b12fdb71f4.patch",
-		"cookie@npm:^2.0.1": "patch:cookie@npm%3A2.0.1#~/.yarn/patches/cookie-npm-2.0.1-2aea16e44e.patch"
+		"cookie@npm:^2.0.1": "patch:cookie@npm%3A2.0.1#~/.yarn/patches/cookie-npm-2.0.1-2aea16e44e.patch",
+		"playwright-core": "patch:playwright-core@npm%3A1.52.0#~/.yarn/patches/playwright-core-npm-1.52.0-keep-cache.patch"
 	},
 	"dependencies": {
 		"@types/stream-buffers": "^3.0.8",

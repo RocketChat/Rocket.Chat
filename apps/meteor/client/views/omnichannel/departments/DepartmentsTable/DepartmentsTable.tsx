@@ -12,6 +12,7 @@ import {
 	usePagination,
 	useSort,
 	GenericNoResults,
+	links,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useEndpoint, useRouter } from '@rocket.chat/ui-contexts';
 import { useQuery, hashKey, keepPreviousData } from '@tanstack/react-query';
@@ -19,7 +20,6 @@ import { useState, useMemo } from 'react';
 
 import DepartmentItemMenu from './DepartmentItemMenu';
 import FilterByText from '../../../../components/FilterByText';
-import { links } from '../../../../lib/links';
 
 const DEPARTMENTS_ENDPOINTS = {
 	department: '/v1/livechat/department',
