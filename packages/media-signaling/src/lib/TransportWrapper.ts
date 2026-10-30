@@ -1,5 +1,5 @@
-import type { CallAnswer, CallFeature, CallHangupReason } from '../definition';
-import type { IMediaSignalLogger } from '../definition/logger';
+import type { CallAnswer, CallFeature, CallHangupReason } from '../definition/index.js';
+import type { IMediaSignalLogger } from '../definition/logger.js';
 import type {
 	MediaSignalTransport,
 	ClientMediaSignalType,
@@ -7,7 +7,7 @@ import type {
 	GenericClientMediaSignal,
 	ClientMediaSignal,
 	ClientMediaSignalError,
-} from '../definition/signals';
+} from '../definition/signals/index.js';
 
 export class MediaSignalTransportWrapper {
 	constructor(

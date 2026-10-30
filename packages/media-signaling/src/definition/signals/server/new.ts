@@ -1,4 +1,4 @@
-import type { CallContact, CallRole, CallService, CallFlag } from '../../call';
+import type { CallContact, CallRole, CallService, CallFlag } from '../../call/index.js';
 
 /** Sent by the server to notify an agent that there's a new call for their actor */
 export type ServerMediaSignalNewCall = {

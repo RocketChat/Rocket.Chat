@@ -1,12 +1,12 @@
 import type { Emitter } from '@rocket.chat/emitter';
 
-import type { CallEvents } from './CallEvents';
+import type { CallEvents } from './CallEvents.js';
 import type {
 	AnyClientMediaCallParticipant,
 	IClientMediaCallLocalParticipant,
 	IClientMediaCallRemoteParticipant,
-} from './IClientMediaCallParticipant';
-import type { CallActorType } from './common';
+} from './IClientMediaCallParticipant.js';
+import type { CallActorType } from './common.js';
 
 export type CallService = 'webrtc';
 

@@ -1,7 +1,7 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-import type { IClientMediaCall, IWebRTCProcessor, NegotiationManagerEvents, NegotiationManagerConfig } from '../definition';
-import { Negotiation } from './services/webrtc/Negotiation';
+import type { IClientMediaCall, IWebRTCProcessor, NegotiationManagerEvents, NegotiationManagerConfig } from '../definition/index.js';
+import { Negotiation } from './services/webrtc/Negotiation.js';
 
 export class NegotiationManager {
 	public readonly emitter: Emitter<NegotiationManagerEvents>;

@@ -1,8 +1,8 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-import { MediaSignalingSession } from './Session';
-import type { ClientMediaSignal, IWebRTCProcessor } from '../definition';
-import type { ServerMediaSignalNewCall } from '../definition/signals/server';
+import { MediaSignalingSession } from './Session.js';
+import type { ClientMediaSignal, IWebRTCProcessor } from '../definition/index.js';
+import type { ServerMediaSignalNewCall } from '../definition/signals/server/index.js';
 
 const makeWebRtcProcessor = () =>
 	({

@@ -1,6 +1,6 @@
 import type { JSONSchemaType } from 'ajv';
 
-import { callHangupReasonList, type CallHangupReason } from '../../call';
+import { callHangupReasonList, type CallHangupReason } from '../../call/index.js';
 
 /** Client is saying they hanged up from a call. The reason specifies if its a clean hangup or an error */
 export type ClientMediaSignalHangup = {

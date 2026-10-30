@@ -1,8 +1,10 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-import type { MediaSignalTransportWrapper } from './TransportWrapper';
-import type { ClientMediaSignalError, IServiceProcessorFactoryList } from '../definition';
-import { NegotiationManager } from './NegotiationManager';
+import { NegotiationManager } from './NegotiationManager.js';
+import type { MediaSignalTransportWrapper } from './TransportWrapper.js';
+import { isPendingState } from './services/states.js';
+import { serializeError } from './utils/serializeError.js';
+import type { AnyMediaCallData } from '../definition/call/callStates/index.js';
 import type {
 	IClientMediaCall,
 	CallEvents,
@@ -17,21 +19,19 @@ import type {
 	IClientMediaCallLocalParticipant,
 	IClientMediaCallRemoteParticipant,
 	AnyClientMediaCallParticipant,
-} from '../definition/call';
-import type { AnyMediaCallData } from '../definition/call/callStates';
-import type { ClientContractState, ClientState } from '../definition/client';
-import type { IMediaSignalLogger } from '../definition/logger';
-import type { MediaStreamIdentification, IMediaStreamWrapper } from '../definition/media';
-import type { IWebRTCProcessor, WebRTCInternalStateMap } from '../definition/services';
-import { isPendingState } from './services/states';
-import { serializeError } from './utils/serializeError';
+} from '../definition/call/index.js';
+import type { ClientContractState, ClientState } from '../definition/client.js';
+import type { ClientMediaSignalError, IServiceProcessorFactoryList } from '../definition/index.js';
+import type { IMediaSignalLogger } from '../definition/logger.js';
+import type { MediaStreamIdentification, IMediaStreamWrapper } from '../definition/media/index.js';
+import type { IWebRTCProcessor, WebRTCInternalStateMap } from '../definition/services/index.js';
 import type {
 	ServerMediaSignal,
 	ServerMediaSignalNewCall,
 	ServerMediaSignalNotification,
 	ServerMediaSignalRemoteSDP,
 	ServerMediaSignalRequestOffer,
-} from '../definition/signals/server';
+} from '../definition/signals/server/index.js';
 
 export interface IClientMediaCallConfig {
 	userId: string;
