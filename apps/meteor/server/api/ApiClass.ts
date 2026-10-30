@@ -58,6 +58,21 @@ import { settings } from '../settings';
 
 const logger = new Logger('API');
 
+// error codes that mean the caller was refused, answered with 403
+export const refusalErrorCodes = new Set([
+	'unauthorized',
+	'error-unauthorized',
+	'not-authorized',
+	'not_authorized',
+	'error-not-authorized',
+	'error-not-allowed',
+	'not-allowed',
+	'no-permission',
+	'error-not-authorized-federation',
+	'forbidden',
+	'error-forbidden',
+]);
+
 // We have some breaking changes planned to the API.
 // To avoid conflicts or missing something during the period we are adopting a 'feature flag approach'
 // TODO: MAJOR check if this is still needed
@@ -593,7 +608,7 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		  >
 	> {
 		// any thrown refusal answers 403, so every typed route can answer it
-		const response = options.response && { 403: validateForbiddenErrorResponse, ...options.response };
+		const response = options.response && { ...options.response, 403: validateForbiddenErrorResponse };
 		this.addRoute([subpath], { tags: [], ...options, response, typed: true }, { [method.toLowerCase()]: { action } } as any);
 		return this;
 	}
@@ -827,24 +842,18 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 							result = ((e: any) => {
 								// plain `Error`s carry the code in `message`
 								const code = typeof e === 'string' ? e : (e.error ?? e.message);
+								const message: string = typeof e === 'string' ? e : e.message;
+								if (refusalErrorCodes.has(code)) {
+									// a ClientSafeError's message ends in a `[code]` suffix; its reason is the readable part
+									return api.forbidden(isClientSafeError(e) ? e.reason : message);
+								}
 								switch (code) {
 									case 'error-too-many-requests':
-										return api.tooManyRequests(typeof e === 'string' ? e : e.message);
+										return api.tooManyRequests(message);
 									case 'error-unauthenticated':
-										return api.unauthorized(typeof e === 'string' ? e : e.message);
-									case 'unauthorized':
-									case 'error-unauthorized':
-									case 'not-authorized':
-									case 'error-not-authorized':
-									case 'error-not-allowed':
-									case 'not-allowed':
-									case 'no-permission':
-									case 'error-not-authorized-federation':
-									case 'forbidden':
-									case 'error-forbidden':
-										return api.forbidden(typeof e === 'string' ? e : e.message);
+										return api.unauthorized(message);
 									default:
-										return api.failure(typeof e === 'string' ? e : e.message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
+										return api.failure(message, e.error, process.env.TEST_MODE ? e.stack : undefined, e);
 								}
 							})(e);
 						} finally {

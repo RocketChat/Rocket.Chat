@@ -1,3 +1,4 @@
+import { isClientSafeError } from '@rocket.chat/core-services';
 import type { IIncomingIntegration, IIntegration, IOutgoingIntegration, IUser, RequiredField } from '@rocket.chat/core-typings';
 import { Integrations, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
@@ -8,7 +9,7 @@ import type { RateLimiterOptionsToCheck } from 'meteor/rate-limit';
 import { WebApp } from 'meteor/webapp';
 import _ from 'underscore';
 
-import { APIClass } from './ApiClass';
+import { APIClass, refusalErrorCodes } from './ApiClass';
 import type { RateLimiterOptions } from './api';
 import { API, defaultRateLimiterOptions } from './api';
 import type {
@@ -318,8 +319,8 @@ async function executeIntegrationRest(
 		if (code === 'error-invalid-room') {
 			return API.v1.notFound(code);
 		}
-		if (['error-not-allowed', 'error-not-authorized', 'not-authorized', 'error-forbidden'].includes(code)) {
-			return API.v1.forbidden(code);
+		if (refusalErrorCodes.has(code)) {
+			return API.v1.forbidden(isClientSafeError(err) ? err.reason : code);
 		}
 		return API.v1.failure(code);
 	}

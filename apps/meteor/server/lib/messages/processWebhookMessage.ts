@@ -155,6 +155,9 @@ export async function processWebhookMessage(
 	const sentData: WebhookResponseItem[] = [];
 
 	const channels: Array<string> = [...new Set(ensureArray(messageObj.channel || messageObj.roomId || defaultValues.channel))];
+	if (!channels.length) {
+		throw new ClientSafeError('invalid-channel');
+	}
 
 	if (messageObj.attachments && !Array.isArray(messageObj.attachments)) {
 		SystemLogger.warn({
