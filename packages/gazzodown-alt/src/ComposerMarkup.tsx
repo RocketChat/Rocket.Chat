@@ -2,13 +2,13 @@ import type * as MessageParser from '@rocket.chat/message-parser';
 import type { ReactElement } from 'react';
 import { memo, useContext } from 'react';
 
-import ComposerCodeBlock from './ComposerCodeBlock';
-import ComposerInlineElements from './ComposerInlineElements';
-import ComposerList from './ComposerList';
-import { ComposerMarkupContext } from './ComposerMarkupContext';
-import ComposerPlainSpan from './ComposerPlainSpan';
-import { nestedSourceOf, sourceLinesOf } from './sourceLines';
-import { blockSourceOf, sourceOf } from './sourceOf';
+import ComposerCodeBlock from './ComposerCodeBlock.js';
+import ComposerInlineElements from './ComposerInlineElements.js';
+import ComposerList from './ComposerList.js';
+import { ComposerMarkupContext } from './ComposerMarkupContext.js';
+import ComposerPlainSpan from './ComposerPlainSpan.js';
+import { nestedSourceOf, sourceLinesOf } from './sourceLines.js';
+import { blockSourceOf, sourceOf } from './sourceOf.js';
 
 type ComposerMarkupProps = {
 	tokens: MessageParser.Root;
