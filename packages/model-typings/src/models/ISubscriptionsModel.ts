@@ -3,6 +3,7 @@ import type {
 	FindOptions,
 	FindCursor,
 	UpdateResult,
+	UpdateOptions,
 	DeleteResult,
 	Document,
 	AggregateOptions,
@@ -129,7 +130,7 @@ export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 
 	updateNameAndFnameByVisitorIds(visitorIds: string[], name: string): Promise<UpdateResult | Document>;
 
-	setGroupE2EKey(_id: string, key: string): Promise<UpdateResult>;
+	setGroupE2EKey(_id: string, key: string, options?: UpdateOptions): Promise<UpdateResult>;
 
 	setGroupE2EKeyAndOldRoomKeys(_id: string, key: string, oldRoomKeys: ISubscription['oldRoomKeys']): Promise<UpdateResult>;
 

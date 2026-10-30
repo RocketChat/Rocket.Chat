@@ -9,6 +9,7 @@ import type {
 	Filter,
 	FindOptions,
 	UpdateResult,
+	UpdateOptions,
 	DeleteResult,
 	Document,
 	AggregateOptions,
@@ -593,10 +594,10 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		return this.updateOne(query, update);
 	}
 
-	async setGroupE2EKey(_id: string, key: string): Promise<UpdateResult> {
+	async setGroupE2EKey(_id: string, key: string, options?: UpdateOptions): Promise<UpdateResult> {
 		const query = { _id };
 		const update = { $set: { E2EKey: key } };
-		return this.updateOne(query, update);
+		return this.updateOne(query, update, options);
 	}
 
 	setGroupE2ESuggestedKey(uid: string, rid: string, key: string): Promise<null | WithId<ISubscription>> {
