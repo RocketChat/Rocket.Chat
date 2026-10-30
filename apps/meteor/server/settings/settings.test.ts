@@ -102,6 +102,19 @@ describe('Settings', () => {
 		expect(settings.get('my_concurrent_setting')).to.be.equal('from another instance');
 	});
 
+	it('should keep the stored group when another instance inserted it after the cache was loaded', async () => {
+		const settings = new CachedSettings();
+		Settings.settings = settings;
+		settings.initialized();
+		Settings.data.set('my_concurrent_group', { _id: 'my_concurrent_group', type: 'group', i18nLabel: 'from another instance' });
+		const settingsRegistry = new SettingsRegistry({ store: settings, model: Settings as any });
+
+		await settingsRegistry.addGroup('my_concurrent_group');
+
+		expect(Settings.findOne({ _id: 'my_concurrent_group' }).i18nLabel).to.be.equal('from another instance');
+		expect(settings.getSetting('my_concurrent_group')?.i18nLabel).to.be.equal('from another instance');
+	});
+
 	it('should keep the schema option in memory instead of persisting it', async () => {
 		const settings = new CachedSettings();
 		Settings.settings = settings;
