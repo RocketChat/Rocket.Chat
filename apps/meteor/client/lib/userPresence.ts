@@ -61,7 +61,7 @@ export class UserPresence {
 	}
 
 	private readonly applyStatus = async (newStatus: UserStatus.ONLINE | UserStatus.AWAY, { force = false } = {}) => {
-		if (!this.connected) {
+		if (!this.connected || !this.user?._id) {
 			return;
 		}
 
@@ -74,19 +74,23 @@ export class UserPresence {
 			this.storeUser({ ...this.user, status: newStatus });
 		}
 
-		switch (newStatus) {
-			case UserStatus.ONLINE:
-				this.startTimer();
-				await this.goOnline();
-				break;
+		const userId = this.user._id;
+		try {
+			switch (newStatus) {
+				case UserStatus.ONLINE:
+					this.startTimer();
+					await this.goOnline();
+					break;
 
-			case UserStatus.AWAY:
-				this.stopTimer();
-				await this.goAway();
-				break;
+				case UserStatus.AWAY:
+					this.stopTimer();
+					await this.goAway();
+					break;
+			}
+			if (this.user?._id === userId) this.status = newStatus;
+		} catch (error) {
+			console.warn('Could not update user presence', error);
 		}
-
-		this.status = newStatus;
 	};
 
 	private readonly setStatus = withDebouncing({ wait: 1000 })(this.applyStatus);
