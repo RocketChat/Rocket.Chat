@@ -102,21 +102,27 @@ const getOperandBitmask = (operand: unknown, selector: string) => {
 	);
 };
 
-const expandArraysInBranches = (branches: LookupBranch[], skipTheArrays?: boolean) => {
+const expandArraysInBranches = (branches: LookupBranch[], leafArraysLast?: boolean) => {
 	const branchesOut: LookupBranch[] = [];
 
 	for (const branch of branches) {
-		if (!(skipTheArrays && Array.isArray(branch.value) && !branch.dontIterate)) {
+		const leafArray: unknown[] | undefined = Array.isArray(branch.value) && !branch.dontIterate ? branch.value : undefined;
+
+		if (!(leafArraysLast && leafArray)) {
 			branchesOut.push({ arrayIndices: branch.arrayIndices, value: branch.value });
 		}
 
-		if (Array.isArray(branch.value) && !branch.dontIterate) {
-			branch.value.forEach((value: unknown, i) => {
+		if (leafArray) {
+			leafArray.forEach((value, i) => {
 				branchesOut.push({
 					arrayIndices: (branch.arrayIndices || []).concat(i),
 					value,
 				});
 			});
+		}
+
+		if (leafArraysLast && leafArray) {
+			branchesOut.push({ arrayIndices: branch.arrayIndices, value: branch.value });
 		}
 	}
 
@@ -125,10 +131,10 @@ const expandArraysInBranches = (branches: LookupBranch[], skipTheArrays?: boolea
 
 const convertElementMatcherToBranchedMatcher = (
 	elementMatcher: (value: unknown) => boolean | number,
-	options: { dontExpandLeafArrays?: boolean; dontIncludeLeafArrays?: boolean } = {},
+	options: { dontExpandLeafArrays?: boolean; leafArraysLast?: boolean } = {},
 ) => {
 	return (branches: LookupBranch[]) => {
-		const expanded = options.dontExpandLeafArrays ? branches : expandArraysInBranches(branches, options.dontIncludeLeafArrays);
+		const expanded = options.dontExpandLeafArrays ? branches : expandArraysInBranches(branches, options.leafArraysLast);
 
 		return someMatches(expanded, (element) => {
 			const matched = elementMatcher(element.value);
@@ -158,7 +164,7 @@ const operatorBranchedMatcher = <T>(valueSelector: FilterOperators<T>) => {
 			const compileElementSelector = elementOperators[operator];
 			return convertElementMatcherToBranchedMatcher(compileElementSelector(operand, valueSelector), {
 				dontExpandLeafArrays: operator === '$size' || operator === '$elemMatch',
-				dontIncludeLeafArrays: operator === '$type',
+				leafArraysLast: operator === '$type',
 			});
 		}
 

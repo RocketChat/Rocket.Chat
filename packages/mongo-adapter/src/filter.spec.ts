@@ -1,4 +1,4 @@
-import { createPredicateFromFilter } from './filter';
+import { createDocumentMatcherFromFilter, createPredicateFromFilter } from './filter';
 
 describe('createPredicateFromFilter', () => {
 	it('matches simple equality', () => {
@@ -70,6 +70,26 @@ describe('createPredicateFromFilter', () => {
 		const fn = createPredicateFromFilter({ foo: { $type: 2 } });
 		expect(fn({ foo: 'bar' })).toBe(true);
 		expect(fn({ foo: 1 })).toBe(false);
+	});
+
+	it.each(['array', 4] as const)('matches $type %s against any array', (type) => {
+		const fn = createPredicateFromFilter({ foo: { $type: type } });
+		expect(fn({ foo: [1, 2] })).toBe(true);
+		expect(fn({ foo: [] })).toBe(true);
+		expect(fn({ foo: [[1]] })).toBe(true);
+		expect(fn({ foo: 1 })).toBe(false);
+		expect(fn({ foo: { bar: [1] } })).toBe(false);
+	});
+
+	it('matches $type against the elements of an array', () => {
+		const fn = createPredicateFromFilter({ foo: { $type: 'string' } });
+		expect(fn({ foo: [1, 'bar'] })).toBe(true);
+		expect(fn({ foo: [1, 2] })).toBe(false);
+	});
+
+	it('reports the index of a nested array matched by $type array', () => {
+		const matcher = createDocumentMatcherFromFilter({ foo: { $type: 'array' } });
+		expect(matcher({ foo: [1, [2]] })).toEqual({ result: true, arrayIndices: [1] });
 	});
 
 	it('matches $regex', () => {
