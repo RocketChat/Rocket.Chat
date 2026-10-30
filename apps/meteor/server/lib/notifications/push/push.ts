@@ -18,6 +18,7 @@ import { settings } from '../../../settings';
 const PUSH_TITLE_LIMIT = 65;
 const PUSH_MESSAGE_BODY_LIMIT = 240;
 const PUSH_GATEWAY_MAX_RETRIES = 5;
+const PUSH_GATEWAY_MAX_CONCURRENT_REQUESTS = Number(process.env.PUSH_GATEWAY_MAX_CONCURRENT_REQUESTS) || 50;
 
 type FCMCredentials = {
 	type: string;
@@ -132,6 +133,8 @@ class PushClass {
 	};
 
 	isConfigured = false;
+
+	private gatewayRequestsInFlight = new Set<Promise<void>>();
 
 	public configure(options: PushOptions): void {
 		this.options = {
@@ -320,8 +323,33 @@ class PushClass {
 
 			logger.log({ msg: 'Retrying push to gateway', tries: tries + 1, in: ms });
 
-			setTimeout(() => this.sendGatewayPush(gateway, service, token, notification, { tries: tries + 1, maxRetries }), ms);
+			setTimeout(
+				() =>
+					this.sendGatewayPush(gateway, service, token, notification, { tries: tries + 1, maxRetries }).catch((err) =>
+						logger.error({ msg: 'Error sending push to gateway', err }),
+					),
+				ms,
+			);
 		}
+	}
+
+	// Sends without waiting for the gateway, so the notification queue is not throttled to one push per gateway round trip;
+	// waits for a free slot once the in-flight requests reach the limit, keeping the backlog in the queue instead of in memory.
+	private async sendNotificationGatewayInBackground(
+		pushToken: IPushToken,
+		notification: PendingPushNotification,
+		countApn: string[],
+		countGcm: string[],
+	): Promise<void> {
+		while (this.gatewayRequestsInFlight.size >= PUSH_GATEWAY_MAX_CONCURRENT_REQUESTS) {
+			await Promise.race(this.gatewayRequestsInFlight);
+		}
+
+		const request: Promise<void> = this.sendNotificationGateway(pushToken, notification, countApn, countGcm)
+			.catch((err) => logger.error({ msg: 'Error sending push to gateway', err }))
+			.finally(() => this.gatewayRequestsInFlight.delete(request));
+
+		this.gatewayRequestsInFlight.add(request);
 	}
 
 	private getGatewayNotificationData(notification: PendingPushNotification): Omit<GatewayNotification, 'uniqueId'> {
@@ -409,7 +437,7 @@ class PushClass {
 			logger.debug({ msg: 'send to token', tokenType: pushToken.tokenType });
 
 			if (this.shouldUseGateway()) {
-				await this.sendNotificationGateway(pushToken, notification, countApn, countGcm);
+				await this.sendNotificationGatewayInBackground(pushToken, notification, countApn, countGcm);
 				continue;
 			}
 
