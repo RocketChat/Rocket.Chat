@@ -869,9 +869,9 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		const [boundary, idRange] = '$gt' in updatedAt ? [updatedAt.$gt, { $gt: idTieBreaker }] : [updatedAt.$lt, { $lt: idTieBreaker }];
 		const query = {
 			rid: roomId,
-			_hidden: { $ne: true },
+			$or: [{ _hidden: { $ne: true } }, { parent: { $exists: false } }],
 			...(idTieBreaker !== undefined
-				? { $or: [{ _updatedAt: updatedAt }, { _updatedAt: boundary, _id: idRange }] }
+				? { $and: [{ $or: [{ _updatedAt: updatedAt }, { _updatedAt: boundary, _id: idRange }] }] }
 				: { _updatedAt: updatedAt }),
 			...(minTs && { ts: { $gte: minTs } }),
 		};

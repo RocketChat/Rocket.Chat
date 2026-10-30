@@ -151,6 +151,23 @@ export function mountPreviousCursor(
 	return mountCursorFromMessage(messages[0], type, compound);
 }
 
+const toSyncMessage = (message: IMessage): IMessage => {
+	if (!message._hidden) {
+		return message;
+	}
+
+	return {
+		_id: message._id,
+		rid: message.rid,
+		ts: message.ts,
+		_updatedAt: message._updatedAt,
+		_hidden: true,
+		u: message.u,
+		t: 'rm',
+		msg: '',
+	};
+};
+
 export async function handleWithoutPagination(rid: IRoom['_id'], lastUpdate: Date, fromTs?: Date) {
 	const options: FindOptions<IMessage> = { sort: { ts: -1 } };
 
@@ -160,7 +177,7 @@ export async function handleWithoutPagination(rid: IRoom['_id'], lastUpdate: Dat
 	]);
 
 	return {
-		updated: updatedMessages,
+		updated: updatedMessages.map(toSyncMessage),
 		deleted: deletedMessages,
 	};
 }
@@ -202,7 +219,7 @@ export async function handleCursorPagination(
 	}
 
 	return {
-		updated: type === 'UPDATED' ? response : [],
+		updated: type === 'UPDATED' ? response.map(toSyncMessage) : [],
 		deleted: type === 'DELETED' ? response : [],
 		cursor,
 	};
