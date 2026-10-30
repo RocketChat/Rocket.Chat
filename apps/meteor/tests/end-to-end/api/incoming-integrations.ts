@@ -268,7 +268,7 @@ describe('[Incoming Integrations]', () => {
 						text: 'Example message',
 						channel: [testChannelName],
 					})
-					.expect(400);
+					.expect(403);
 
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error', 'overriding destination channel is disabled for this integration');
@@ -281,7 +281,7 @@ describe('[Incoming Integrations]', () => {
 						text: 'Example message',
 						roomId: channel._id,
 					})
-					.expect(400);
+					.expect(403);
 
 				expect(res.body).to.have.property('success', false);
 				expect(res.body).to.have.property('error', 'overriding destination channel is disabled for this integration');
@@ -398,7 +398,7 @@ describe('[Incoming Integrations]', () => {
 						.send({
 							text: 'Example message',
 						})
-						.expect(400)
+						.expect(403)
 						.expect((res) => {
 							expect(res.body).to.have.property('success', false);
 							expect(res.body).to.have.property('error', 'error-user-lacks-message-impersonate-permission');
@@ -604,7 +604,7 @@ describe('[Incoming Integrations]', () => {
 				.expect(403);
 
 			expect(res.body).to.have.property('success', false);
-			expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+			expect(res.body).to.have.property('errorType', 'error-forbidden');
 		});
 	});
 
@@ -707,7 +707,7 @@ describe('[Incoming Integrations]', () => {
 					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+						expect(res.body).to.have.property('errorType', 'error-forbidden');
 					});
 			});
 		});
@@ -753,10 +753,10 @@ describe('[Incoming Integrations]', () => {
 					.query({ integrationId: integration._id })
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
-					.expect(400);
+					.expect(403);
 
 				expect(res.body).to.have.property('success', false);
-				expect(res.body).to.have.property('error', 'not-authorized');
+				expect(res.body).to.have.property('errorType', 'error-forbidden');
 			});
 
 			it('should return an error when the user DOES NOT have the permission "manage-incoming-integrations" to get an incoming integration created by another user', async () => {
@@ -765,10 +765,10 @@ describe('[Incoming Integrations]', () => {
 					.query({ integrationId: integrationCreatedByAnUser._id })
 					.set(credentials)
 					.expect('Content-Type', 'application/json')
-					.expect(400);
+					.expect(403);
 
 				expect(res.body).to.have.property('success', false);
-				expect(res.body).to.have.property('error', 'not-authorized');
+				expect(res.body).to.have.property('errorType', 'error-forbidden');
 			});
 		});
 
@@ -992,7 +992,7 @@ describe('[Incoming Integrations]', () => {
 					.expect(403);
 
 				expect(res.body).to.have.property('success', false);
-				expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+				expect(res.body).to.have.property('errorType', 'error-forbidden');
 			});
 
 			it('should return an error when the user DOES NOT have the permission "manage-own-incoming-integrations" to remove an incoming integration', async () => {
@@ -1007,7 +1007,7 @@ describe('[Incoming Integrations]', () => {
 					.expect(403);
 
 				expect(res.body).to.have.property('success', false);
-				expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+				expect(res.body).to.have.property('errorType', 'error-forbidden');
 			});
 		});
 
@@ -1302,9 +1302,9 @@ describe('[Incoming Integrations]', () => {
 				.send({
 					text: successfulMessage,
 				})
-				.expect(400)
+				.expect(404)
 				.expect((res) => {
-					expect(res.body).to.have.property('error', 'error-not-allowed');
+					expect(res.body).to.have.property('error', 'error-invalid-room');
 				});
 			await request
 				.get(api('groups.messages'))
@@ -1328,9 +1328,9 @@ describe('[Incoming Integrations]', () => {
 				.send({
 					text: successfulMessage,
 				})
-				.expect(400)
+				.expect(404)
 				.expect((res) => {
-					expect(res.body).to.have.property('error', 'error-not-allowed');
+					expect(res.body).to.have.property('error', 'error-invalid-room');
 				});
 			await request
 				.get(api('groups.members'))
@@ -1354,9 +1354,9 @@ describe('[Incoming Integrations]', () => {
 				.send({
 					text: successfulMessage,
 				})
-				.expect(400)
+				.expect(404)
 				.expect((res) => {
-					expect(res.body).to.have.property('error', 'error-not-allowed');
+					expect(res.body).to.have.property('error', 'error-invalid-room');
 				});
 			await request
 				.get(api('channels.messages'))
@@ -1380,9 +1380,9 @@ describe('[Incoming Integrations]', () => {
 				.send({
 					text: successfulMessage,
 				})
-				.expect(400)
+				.expect(404)
 				.expect((res) => {
-					expect(res.body).to.have.property('error', 'error-not-allowed');
+					expect(res.body).to.have.property('error', 'error-invalid-room');
 				});
 			await request
 				.get(api('channels.members'))
@@ -1508,7 +1508,7 @@ describe('[Incoming Integrations]', () => {
 					.send({
 						text: testMsg,
 					})
-					.expect(400)
+					.expect(404)
 					.expect((res) => {
 						expect(res.body).to.not.have.property('responses');
 					});
@@ -1523,7 +1523,7 @@ describe('[Incoming Integrations]', () => {
 						text: testMsg,
 						separateResponse: false,
 					})
-					.expect(400)
+					.expect(404)
 					.expect((res) => {
 						expect(res.body).to.not.have.property('responses');
 					});
@@ -1556,7 +1556,7 @@ describe('[Incoming Integrations]', () => {
 					.send({
 						text: testMsg,
 					})
-					.expect(400)
+					.expect(404)
 					.expect((res) => {
 						expect(res.body).to.have.property('error');
 					});
@@ -1589,7 +1589,7 @@ describe('[Incoming Integrations]', () => {
 						text: testMsg,
 						separateResponse: false,
 					})
-					.expect(400)
+					.expect(404)
 					.expect((res) => {
 						expect(res.body).to.have.property('error');
 					});
