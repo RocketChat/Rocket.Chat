@@ -1,5 +1,7 @@
 import type { Locator, Page } from '@playwright/test';
 
+import { expect } from '../utils/test';
+
 /**
  * The call window: the separate browser window `VideoConf_Conference_Window_Enabled` opens a conference in.
  *
@@ -261,11 +263,22 @@ export class ConferenceWindow {
 		return this.dialogAddPeople.getByRole('button', { name: 'Add', exact: true });
 	}
 
+	/** Picks `username` and confirms, typing the name again whenever the list it was picked from closes first. */
 	async addPeople(username: string): Promise<void> {
+		const option = this.page.getByRole('option', { name: username, exact: true });
+
 		await this.btnAddPeople.click();
 		await this.inputAddPeople.click();
-		await this.inputAddPeople.fill(username);
-		await this.page.getByRole('option', { name: username, exact: true }).click();
+
+		await expect(async () => {
+			if (!(await option.isVisible())) {
+				await this.inputAddPeople.fill('');
+				await this.inputAddPeople.fill(username);
+			}
+			await option.click({ timeout: 5_000 });
+		}).toPass({ timeout: 30_000 });
+
+		await expect(this.btnConfirmAddPeople).toBeEnabled();
 		await this.btnConfirmAddPeople.click();
 	}
 
