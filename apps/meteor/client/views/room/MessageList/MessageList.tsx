@@ -143,6 +143,11 @@ export const MessageList = function MessageList({
 
 	const isRoomInitialized = useRef<boolean>(false);
 
+	// The at-bottom state the list had when a jump to a message started, and whether the list
+	// scrolled while that jump was in flight; `null` when no jump is in flight.
+	const atBottomBeforeJump = useRef<boolean | null>(null);
+	const scrolledDuringJump = useRef(false);
+
 	const firstUnreadMessageId = useFirstUnreadMessageId();
 	const subscription = useRoomSubscription();
 	// The first unread id may only be computed after the room is initialized, so the messages already listed are checked too.
@@ -166,12 +171,30 @@ export const MessageList = function MessageList({
 	// Scroll to bottom
 	useEffect(() => {
 		if (isJumpingToMessage || messageJumpParam) {
+			// While a jump is in flight the list must not be treated as sitting at the bottom: the
+			// keep-at-bottom observer and the at-bottom branch below would otherwise send it back to
+			// the latest message as soon as the items measured by the jump change the scroll size.
+			if (atBottomBeforeJump.current === null) {
+				atBottomBeforeJump.current = isAtBottom.current;
+				scrolledDuringJump.current = false;
+			}
+			isAtBottom.current = false;
 			if (!isRoomInitialized.current) {
 				// Jump to message will have to load messages, thus removing the need to initialize the room here
 				isRoomInitialized.current = true;
 				setShouldJumpToBottom(false);
 			}
 			return;
+		}
+
+		if (atBottomBeforeJump.current !== null) {
+			// The jump is over. One that reached its target scrolled the list, and the scroll handler
+			// has recomputed the at-bottom state from the new position; one that failed (unknown
+			// message, request error) left the list where it was, so give it back the state it had.
+			if (!scrolledDuringJump.current) {
+				isAtBottom.current = atBottomBeforeJump.current;
+			}
+			atBottomBeforeJump.current = null;
 		}
 
 		if (!isRoomInitialized.current) {
@@ -304,6 +327,9 @@ export const MessageList = function MessageList({
 					keepMounted={keepMountedMessages}
 					cache={initialCacheRef.current}
 					onScroll={(offset: number) => {
+						if (atBottomBeforeJump.current !== null) {
+							scrolledDuringJump.current = true;
+						}
 						handlePrepend(offset);
 						storeScrollPosition();
 						debouncedClearNewMessagesOnScroll();

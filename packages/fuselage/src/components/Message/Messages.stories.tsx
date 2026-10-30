@@ -22,7 +22,7 @@ import {
 } from './MessageMetrics';
 import MessageName from './MessageName';
 import MessageNameContainer from './MessageNameContainer';
-import MessageReactions, { MessageReaction, MessageReactionAction } from './MessageReactions';
+import MessageReactions, { MessageReaction, MessageReactionAction, MessageReactionCounter, MessageReactionEmoji } from './MessageReactions';
 import MessageRole from './MessageRole';
 import MessageRoles from './MessageRoles';
 import MessageTimestamp from './MessageTimestamp';
@@ -384,6 +384,145 @@ export const WithSequential: Story = {
 					</MessageToolbar>
 				</MessageToolbarWrapper>
 			</Message>
+		</Box>
+	),
+};
+
+export const WithEmojis: Story = {
+	parameters: {
+		docs: {
+			description: {
+				story:
+					'Every place an emoji can show up in a message. The message body takes its ' +
+					'line height from the `--rcx-message-body-line-height` token (22px) and inline ' +
+					'emojis (`MessageEmoji`) are sized from the same token, so a line holding an ' +
+					'emoji is exactly as tall as one without, whether the emoji is unicode or ' +
+					'custom (image), at the start, middle or end of a line, or in a row. A message ' +
+					'made only of emojis renders them `big`. Thread previews use ' +
+					'`ThreadMessageEmoji` and reactions use `MessageReactionEmoji`, each sized to ' +
+					'its own container.',
+			},
+		},
+	},
+	render: () => (
+		<Box>
+			<MessageDivider>May, 24, 2020</MessageDivider>
+			<Message className='customclass' clickable>
+				<MessageLeftContainer>
+					<Avatar url={avatarUrl} size='x36' />
+				</MessageLeftContainer>
+				<MessageContainer>
+					<MessageHeader>
+						<MessageNameContainer>
+							<MessageName>Haylie George</MessageName> <MessageUsername>@haylie.george</MessageUsername>
+						</MessageNameContainer>
+						<MessageTimestamp>12:00 PM</MessageTimestamp>
+					</MessageHeader>
+					<MessageBody>
+						Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat a duis aute irure
+						dolor in reprehenderit <MessageEmoji name='pink_heart'>🩷</MessageEmoji> in voluptate velit esse cillum dolore eu fugiat nulla
+						pariatur. Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+						veniam...
+					</MessageBody>
+				</MessageContainer>
+				<MessageToolbarWrapper>
+					<MessageToolbar>
+						<MessageToolbarItem icon='quote' />
+						<MessageToolbarItem icon='clock' />
+						<MessageToolbarItem icon='thread' />
+					</MessageToolbar>
+				</MessageToolbarWrapper>
+			</Message>
+			<Message className='customclass' clickable sequential>
+				<MessageLeftContainer />
+				<MessageContainer>
+					<MessageBody>
+						Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat a duis aute irure
+						dolor in reprehenderit <MessageEmoji name='custom' image={`url(${avatarUrl})`} /> in voluptate velit esse cillum dolore eu
+						fugiat nulla pariatur. Consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+						ad minim veniam...
+					</MessageBody>
+				</MessageContainer>
+			</Message>
+			<Message className='customclass' clickable sequential>
+				<MessageLeftContainer />
+				<MessageContainer>
+					<MessageBody>
+						<MessageEmoji name='wave'>👋</MessageEmoji> Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua{' '}
+						<MessageEmoji name='rocket'>🚀</MessageEmoji>
+					</MessageBody>
+				</MessageContainer>
+			</Message>
+			<Message className='customclass' clickable sequential>
+				<MessageLeftContainer />
+				<MessageContainer>
+					<MessageBody>
+						Sed do eiusmod tempor <MessageEmoji name='grinning'>😀</MessageEmoji>
+						<MessageEmoji name='joy'>😂</MessageEmoji>
+						<MessageEmoji name='heart_eyes'>😍</MessageEmoji>
+						<MessageEmoji name='custom' image={`url(${avatarUrl})`} />
+						<MessageEmoji name='fire'>🔥</MessageEmoji> incididunt ut labore et dolore magna aliqua
+					</MessageBody>
+				</MessageContainer>
+			</Message>
+			<Message className='customclass' clickable sequential>
+				<MessageLeftContainer />
+				<MessageContainer>
+					<MessageBody>
+						Sed do eiusmod tempor incididunt ut labore et <MessageHighlight>dolore</MessageHighlight>{' '}
+						<MessageEmoji name='tada'>🎉</MessageEmoji> magna aliqua
+					</MessageBody>
+				</MessageContainer>
+			</Message>
+			<Message className='customclass' clickable sequential>
+				<MessageLeftContainer />
+				<MessageContainer>
+					<MessageBody>
+						<MessageEmoji big name='rocket'>
+							🚀
+						</MessageEmoji>{' '}
+						<MessageEmoji big name='custom' image={`url(${avatarUrl})`} />{' '}
+						<MessageEmoji big name='tada'>
+							🎉
+						</MessageEmoji>
+					</MessageBody>
+					<MessageReactions>
+						<MessageReaction title='grinning' mine>
+							<MessageReactionEmoji name='grinning'>😀</MessageReactionEmoji>
+							<MessageReactionCounter counter={5} />
+						</MessageReaction>
+						<MessageReaction title='custom'>
+							<MessageReactionEmoji name='custom' image={`url(${avatarUrl})`} />
+							<MessageReactionCounter counter={2} />
+						</MessageReaction>
+						<MessageReactionAction />
+					</MessageReactions>
+				</MessageContainer>
+			</Message>
+			<ThreadMessage>
+				<ThreadMessageRow>
+					<ThreadMessageLeftContainer>
+						<ThreadMessageIconThread />
+					</ThreadMessageLeftContainer>
+					<ThreadMessageContainer>
+						<ThreadMessageOrigin>
+							Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat...
+						</ThreadMessageOrigin>
+						<ThreadMessageUnfollow />
+					</ThreadMessageContainer>
+				</ThreadMessageRow>
+				<ThreadMessageRow>
+					<ThreadMessageLeftContainer>
+						<Avatar url={avatarUrl} size='x16' />
+					</ThreadMessageLeftContainer>
+					<ThreadMessageContainer>
+						<ThreadMessageBody>
+							Ut enim ad minim veniam <ThreadMessageEmoji name='grinning'>😀</ThreadMessageEmoji> quis nostrud exercitation{' '}
+							<ThreadMessageEmoji image={`url(${avatarUrl})`} name='custom' /> ullamco laboris nisi ut aliquip ex ea commodo consequat...
+						</ThreadMessageBody>
+					</ThreadMessageContainer>
+				</ThreadMessageRow>
+			</ThreadMessage>
 		</Box>
 	),
 };
