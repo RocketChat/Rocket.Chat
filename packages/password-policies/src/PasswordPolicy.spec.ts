@@ -253,6 +253,24 @@ describe('Password validation messages', () => {
 		]);
 	});
 });
+describe('Password validation messages with non-string input', () => {
+	it.each([[null], [undefined]])('should not crash and should treat %p as an empty password', (input) => {
+		const passwordPolicy = new PasswordPolicy({
+			enabled: true,
+			minLength: 1,
+			mustContainAtLeastOneNumber: true,
+		});
+
+		expect(passwordPolicy.sendValidationMessage(input as any)).toEqual([
+			{ name: 'get-password-policy-minLength', limit: 1, isValid: false },
+			{ name: 'get-password-policy-mustContainAtLeastOneNumber', isValid: false },
+		]);
+	});
+
+	it('should return no messages for null input when the policy is disabled', () => {
+		expect(new PasswordPolicy({ enabled: false, minLength: 5 }).sendValidationMessage(null)).toEqual([]);
+	});
+});
 
 describe('Password policy errors', () => {
 	it('should throw a PasswordPolicyError for an empty password by default', () => {
