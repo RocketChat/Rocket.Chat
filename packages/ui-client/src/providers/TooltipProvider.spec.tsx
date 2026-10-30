@@ -202,14 +202,17 @@ describe('with a `data-tooltip`-only anchor', () => {
 	});
 });
 
-describe('with an anchor covered by a stretched `ItemLink`', () => {
+describe('with an anchor covered by a link stretched over its row', () => {
+	// jsdom has no layout: the link's box holds only its text, its stretched pseudo-element covers the row, and the
+	// badge sits at x = 100
+	const onText = { clientX: 10, clientY: 10 };
+	const onBadge = { clientX: 100, clientY: 10 };
+
 	const setupStretchedLink = () => {
 		render(
 			<TooltipProvider>
-				<div className='rcx-item' data-testid='row'>
-					<a className='rcx-item__link' href='#room'>
-						<span>Room</span>
-					</a>
+				<div data-testid='row'>
+					<a href='#room'>Room</a>
 					<span data-testid='badge' title='3 unread messages'>
 						3
 					</span>
@@ -221,12 +224,11 @@ describe('with an anchor covered by a stretched `ItemLink`', () => {
 		const link = screen.getByRole('link');
 		const badge = screen.getByTestId('badge');
 
-		// jsdom has no layout, so each test sets the stack of elements under the pointer
-		const pointAt = (element: Element) => {
-			document.elementsFromPoint = jest.fn(() => [link, element, row]);
-		};
+		Object.defineProperty(link, 'offsetParent', { value: row });
+		link.getBoundingClientRect = () => new DOMRect(0, 0, 50, 20);
+		document.elementsFromPoint = jest.fn((x: number) => (x === onBadge.clientX ? [link, badge, row] : [link, row]));
 
-		return { link, badge, pointAt };
+		return { link, badge };
 	};
 
 	afterEach(() => {
@@ -235,35 +237,40 @@ describe('with an anchor covered by a stretched `ItemLink`', () => {
 	});
 
 	it('should show the tooltip of the content under the pointer', () => {
-		const { link, badge, pointAt } = setupStretchedLink();
+		const { link, badge } = setupStretchedLink();
 
-		pointAt(badge);
-		fireEvent.mouseOver(link);
+		fireEvent.mouseOver(link, onBadge);
 		waitForTooltipDebounce();
 
 		expect(screen.getByRole('tooltip', { hidden: true })).toHaveTextContent('3 unread messages');
 		expect(badge).toHaveAttribute('data-title', '3 unread messages');
 	});
 
-	it('should close the tooltip when the pointer moves off the content within the link', () => {
-		const { link, badge, pointAt } = setupStretchedLink();
+	it('should show the tooltip when the pointer moves onto the content within the link', () => {
+		const { link } = setupStretchedLink();
 
-		pointAt(badge);
-		fireEvent.mouseOver(link);
+		fireEvent.mouseOver(link, onText);
+		fireEvent.mouseMove(link, onBadge);
 		waitForTooltipDebounce();
 
-		pointAt(screen.getByText('Room'));
-		fireEvent.mouseMove(link);
+		expect(screen.getByRole('tooltip', { hidden: true })).toHaveTextContent('3 unread messages');
+	});
+
+	it('should close the tooltip when the pointer moves off the content within the link', () => {
+		const { link, badge } = setupStretchedLink();
+
+		fireEvent.mouseOver(link, onBadge);
+		waitForTooltipDebounce();
+		fireEvent.mouseMove(link, onText);
 
 		expect(screen.queryByRole('tooltip', { hidden: true })).not.toBeInTheDocument();
 		expect(badge).toHaveAttribute('title', '3 unread messages');
 	});
 
 	it('should close the tooltip and restore the title when the pointer leaves the link', () => {
-		const { link, badge, pointAt } = setupStretchedLink();
+		const { link, badge } = setupStretchedLink();
 
-		pointAt(badge);
-		fireEvent.mouseOver(link);
+		fireEvent.mouseOver(link, onBadge);
 		waitForTooltipDebounce();
 		fireEvent.mouseLeave(link);
 
@@ -272,10 +279,9 @@ describe('with an anchor covered by a stretched `ItemLink`', () => {
 	});
 
 	it('should restore the title when the pointer leaves the link after a click-dismiss', () => {
-		const { link, badge, pointAt } = setupStretchedLink();
+		const { link, badge } = setupStretchedLink();
 
-		pointAt(badge);
-		fireEvent.mouseOver(link);
+		fireEvent.mouseOver(link, onBadge);
 		waitForTooltipDebounce();
 		fireEvent.click(link);
 		fireEvent.mouseLeave(link);

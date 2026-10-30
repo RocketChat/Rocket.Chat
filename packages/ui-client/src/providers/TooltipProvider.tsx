@@ -28,23 +28,29 @@ const restoreAnchorTitle = (anchor: HTMLElement): void => {
 	anchor.removeAttribute('data-title');
 };
 
-const isStretchedLink = (element: HTMLElement): boolean => element.matches('.rcx-item__link');
+type Hovered = {
+	element: HTMLElement;
+	rect: DOMRect;
+};
 
-// A link stretched over its row covers the row's content, so the pointer hovers the link instead of the content beneath it.
-const findAnchor = (target: HTMLElement, x: number, y: number): HTMLElement | null => {
-	const row = isStretchedLink(target) ? target.closest('.rcx-item') : null;
-	if (row) {
-		const covered = target.ownerDocument
-			.elementsFromPoint(x, y)
-			.find((element) => !target.contains(element) && row.contains(element) && element !== row);
-		const anchor = covered?.closest<HTMLElement>('[title], [data-tooltip]');
-		if (anchor && row.contains(anchor)) {
-			return anchor;
-		}
+// When the pointer is outside the hovered element's box, a pseudo-element stretched over its container, such as a
+// link that covers its whole row, is taking the hover from the content beneath it.
+const findCoveredAnchor = ({ element, rect }: Hovered, x: number, y: number): HTMLElement | null => {
+	const container = element.offsetParent;
+	if (!container || (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom)) {
+		return null;
 	}
 
-	return target.closest<HTMLElement>('[title], [data-tooltip]');
+	const covered = element.ownerDocument
+		.elementsFromPoint(x, y)
+		.find((candidate) => !element.contains(candidate) && container.contains(candidate) && candidate !== container);
+	const anchor = covered?.closest<HTMLElement>('[title], [data-tooltip]');
+
+	return anchor && container.contains(anchor) ? anchor : null;
 };
+
+const findAnchor = (hovered: Hovered, x: number, y: number): HTMLElement | null =>
+	findCoveredAnchor(hovered, x, y) ?? hovered.element.closest<HTMLElement>('[title], [data-tooltip]');
 
 const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipProviderProps) => {
 	const lastAnchor = useRef<HTMLElement>(undefined);
@@ -96,13 +102,15 @@ const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipP
 			return;
 		}
 
-		const handleMouseOver = (e: MouseEvent): void => {
-			const target = e.target as HTMLElement;
-			if (lastAnchor.current === target && !isStretchedLink(target)) {
+		let hovered: Hovered | undefined;
+
+		const showTooltipAt = (e: MouseEvent): void => {
+			if (!hovered) {
 				return;
 			}
 
-			const anchor = findAnchor(target, e.clientX, e.clientY);
+			const target = hovered.element;
+			const anchor = findAnchor(hovered, e.clientX, e.clientY);
 
 			if ((lastAnchor.current ?? null) === anchor) {
 				return;
@@ -161,10 +169,16 @@ const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipP
 			lastLeaveTarget.current = leaveTarget;
 		};
 
-		// Moving across a stretched link stays on the same target, so `mouseover` alone misses the content beneath it.
+		const handleMouseOver = (e: MouseEvent): void => {
+			const element = e.target as HTMLElement;
+			hovered = { element, rect: element.getBoundingClientRect() };
+			showTooltipAt(e);
+		};
+
+		// Moving across a stretched pseudo-element stays on the same target, so `mouseover` alone misses what is beneath it.
 		const handleMouseMove = (e: MouseEvent): void => {
-			if (isStretchedLink(e.target as HTMLElement)) {
-				handleMouseOver(e);
+			if (e.target === hovered?.element) {
+				showTooltipAt(e);
 			}
 		};
 
