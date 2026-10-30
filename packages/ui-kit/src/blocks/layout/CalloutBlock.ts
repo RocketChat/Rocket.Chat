@@ -1,7 +1,7 @@
-import type { LayoutBlockish } from '../LayoutBlockish';
-import type { TextObject } from '../TextObject';
-import type { ButtonElement } from '../elements/ButtonElement';
-import type { OverflowElement } from '../elements/OverflowElement';
+import type { LayoutBlockish } from '../LayoutBlockish.js';
+import type { TextObject } from '../TextObject.js';
+import type { ButtonElement } from '../elements/ButtonElement.js';
+import type { OverflowElement } from '../elements/OverflowElement.js';
 
 export type CalloutBlock = LayoutBlockish<{
 	type: 'callout';
