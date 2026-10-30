@@ -12,6 +12,7 @@ import { API } from '../../../api';
 import { serveAuthorizationServerMetadata } from '../../../oauth2-server/metadata';
 import { OAuth2Server } from '../../../oauth2-server/oauth';
 import { settings } from '../../../settings/cached';
+import { httpApp } from '../../http/httpServer';
 
 const oauth2server = new OAuth2Server({
 	// If you're developing something related to oauth servers, you should change this to true
@@ -114,7 +115,4 @@ API.v1.addAuthMethod((routeContext) => {
 });
 
 (WebApp.connectHandlers as unknown as ReturnType<typeof express>).use(oauth2server.app);
-(WebApp.rawConnectHandlers as unknown as ReturnType<typeof express>).use(
-	'/.well-known/oauth-authorization-server',
-	serveAuthorizationServerMetadata,
-);
+httpApp.get('/.well-known/oauth-authorization-server/*', serveAuthorizationServerMetadata);

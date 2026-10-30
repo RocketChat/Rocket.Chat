@@ -4199,6 +4199,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@hono/node-server@npm:2.1.5":
+  version: 2.1.5
+  resolution: "@hono/node-server@npm:2.1.5"
+  peerDependencies:
+    hono: ^4 || ^5.0.0-0
+  checksum: 10/4b6f21fe37f956a61856b6f517f91543962f32466a88477d362e8cff77272e541ea6388b8026275e1a2a1976d098c9bf4c3e1d8f8087505e8eac777f0f872901
+  languageName: node
+  linkType: hard
+
 "@humanfs/core@npm:^0.19.1":
   version: 0.19.1
   resolution: "@humanfs/core@npm:0.19.1"
@@ -10434,15 +10443,14 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@rocket.chat/http-router@workspace:packages/http-router"
   dependencies:
+    "@hono/node-server": "npm:2.1.5"
     "@rocket.chat/core-typings": "workspace:^"
     "@rocket.chat/jest-presets": "workspace:^"
     "@rocket.chat/logger": "workspace:^"
     "@rocket.chat/rest-typings": "workspace:^"
     "@rocket.chat/tsconfig": "workspace:*"
-    "@types/express": "npm:^4.17.25"
     "@types/supertest": "npm:~6.0.3"
     ajv: "npm:^8.20.0"
-    express: "npm:^4.21.2"
     hono: "npm:4.13.13"
     jest: "npm:~30.5.2"
     qs: "npm:^6.15.3"
@@ -10813,6 +10821,7 @@ __metadata:
     "@emotion/hash": "npm:^0.9.2"
     "@faker-js/faker": "npm:~10.5.0"
     "@google-cloud/storage": "npm:^7.21.0"
+    "@hono/node-server": "npm:2.1.5"
     "@kaciras/deasync": "npm:^1.1.0"
     "@livekit/components-react": "npm:2.9.23"
     "@nivo/bar": "npm:0.88.0"
@@ -10845,6 +10854,7 @@ __metadata:
     "@rocket.chat/css-in-js": "workspace:~"
     "@rocket.chat/css-supports": "workspace:~"
     "@rocket.chat/ddp-client": "workspace:^"
+    "@rocket.chat/ddp-server": "workspace:^"
     "@rocket.chat/desktop-api": "workspace:~"
     "@rocket.chat/emitter": "workspace:~"
     "@rocket.chat/favicon": "workspace:^"
@@ -10995,6 +11005,7 @@ __metadata:
     "@types/textarea-caret": "npm:^3.0.4"
     "@types/ua-parser-js": "npm:^0.7.39"
     "@types/underscore": "npm:^1.13.0"
+    "@types/ws": "npm:^8.18.2"
     "@types/xml-encryption": "npm:~1.2.4"
     "@vitejs/plugin-react": "npm:~6.0.5"
     "@xmldom/xmldom": "npm:~0.8.15"
@@ -11191,9 +11202,11 @@ __metadata:
     ua-parser-js: "npm:~1.0.41"
     underscore: "npm:^1.13.8"
     universal-perf-hooks: "npm:^1.0.1"
+    uuid: "npm:^11.1.1"
     virtua: "npm:^0.49.3"
     vite: "npm:~8.2.2"
     webpack: "npm:~5.104.1"
+    ws: "npm:~8.21.3"
     xml-crypto: "npm:~6.1.2"
     xml-encryption: "npm:~4.0.1"
     xml2js: "npm:~0.6.2"
@@ -14219,7 +14232,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/react@npm:9.1.21, @storybook/react@npm:~9.1.21":
+"@storybook/react@npm:9.1.21, @storybook/react@npm:^9.1.21, @storybook/react@npm:~9.1.21":
   version: 9.1.21
   resolution: "@storybook/react@npm:9.1.21"
   dependencies:
@@ -36856,7 +36869,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"storybook@npm:~9.1.21":
+"storybook@npm:^9.1.21, storybook@npm:~9.1.21":
   version: 9.1.21
   resolution: "storybook@npm:9.1.21"
   dependencies:

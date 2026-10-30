@@ -1,5 +1,4 @@
-import express from 'express';
-import request from 'supertest';
+import { createRootApp } from '@rocket.chat/http-router';
 
 import { getAuthorizationServerMetadata, getOAuthIssuer, getWellKnownUrl, serveAuthorizationServerMetadata } from './metadata';
 import { settings } from '../settings';
@@ -15,7 +14,7 @@ const deploy = (siteUrl: string, pathPrefix = '') => {
 	runtimeGlobal.__meteor_runtime_config__ = { ROOT_URL_PATH_PREFIX: pathPrefix };
 };
 
-const app = express().use('/.well-known/oauth-authorization-server', serveAuthorizationServerMetadata);
+const app = createRootApp().get('/.well-known/oauth-authorization-server/*', serveAuthorizationServerMetadata);
 
 describe('getOAuthIssuer', () => {
 	it('derives the issuer from the site URL without a trailing slash', () => {
@@ -78,32 +77,32 @@ describe('serveAuthorizationServerMetadata', () => {
 	it('serves the metadata at the well-known path', async () => {
 		deploy('https://chat.example.com');
 
-		const response = await request(app).get('/.well-known/oauth-authorization-server');
+		const response = await app.request('/.well-known/oauth-authorization-server');
 
 		expect(response.status).toBe(200);
-		expect(response.body).toMatchObject({ issuer: 'https://chat.example.com' });
+		expect(await response.json()).toMatchObject({ issuer: 'https://chat.example.com' });
 	});
 
 	it('serves the metadata of a workspace under a prefix at the host root, followed by the prefix', async () => {
 		deploy('https://example.com/chat', '/chat');
 
-		const response = await request(app).get('/.well-known/oauth-authorization-server/chat');
+		const response = await app.request('/.well-known/oauth-authorization-server/chat');
 
 		expect(response.status).toBe(200);
-		expect(response.body).toMatchObject({ issuer: 'https://example.com/chat' });
-		expect((await request(app).get('/.well-known/oauth-authorization-server')).status).toBe(404);
+		expect(await response.json()).toMatchObject({ issuer: 'https://example.com/chat' });
+		expect((await app.request('/.well-known/oauth-authorization-server')).status).toBe(404);
 	});
 
 	it('accepts a trailing slash', async () => {
 		deploy('https://chat.example.com');
 
-		expect((await request(app).get('/.well-known/oauth-authorization-server/')).status).toBe(200);
+		expect((await app.request('/.well-known/oauth-authorization-server/')).status).toBe(200);
 	});
 
 	it('answers GET and HEAD only', async () => {
 		deploy('https://chat.example.com');
 
-		expect((await request(app).head('/.well-known/oauth-authorization-server')).status).toBe(200);
-		expect((await request(app).post('/.well-known/oauth-authorization-server')).status).toBe(404);
+		expect((await app.request('/.well-known/oauth-authorization-server', { method: 'HEAD' })).status).toBe(200);
+		expect((await app.request('/.well-known/oauth-authorization-server', { method: 'POST' })).status).toBe(404);
 	});
 });

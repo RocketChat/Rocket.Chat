@@ -43,6 +43,15 @@ describe('ConnectionRegistry', () => {
 		expect(registry.size).toBe(1);
 	});
 
+	it('lists the user of every logged-in session, once per session', () => {
+		lifecycle.emit('connected', makeSession('user1', 's1'));
+		lifecycle.emit('connected', makeSession('user1', 's2'));
+		lifecycle.emit('connected', makeSession('user2', 's3'));
+		lifecycle.emit('connected', makeSession(undefined, 's4'));
+
+		expect(registry.userIds().sort()).toEqual(['user1', 'user1', 'user2']);
+	});
+
 	describe('closeSession', () => {
 		it('closes only the socket of the named session, whoever owns it, and never terminates', () => {
 			const target = makeSession('user1', 's1');
@@ -95,6 +104,28 @@ describe('ConnectionRegistry', () => {
 			expect(stuck.ws.terminate).toHaveBeenCalledTimes(1);
 			expect(closing.ws.terminate).not.toHaveBeenCalled();
 			expect(alreadyClosed.ws.terminate).not.toHaveBeenCalled();
+		});
+	});
+
+	describe('forceLogout', () => {
+		it('closes only the named session when one is given', () => {
+			const closeSession = jest.spyOn(registry, 'closeSession');
+			const closeForUser = jest.spyOn(registry, 'closeForUser');
+
+			registry.forceLogout('user1', 's1');
+
+			expect(closeSession).toHaveBeenCalledWith('s1');
+			expect(closeForUser).not.toHaveBeenCalled();
+		});
+
+		it('closes every session of the user otherwise', () => {
+			const closeSession = jest.spyOn(registry, 'closeSession');
+			const closeForUser = jest.spyOn(registry, 'closeForUser');
+
+			registry.forceLogout('user1');
+
+			expect(closeForUser).toHaveBeenCalledWith('user1');
+			expect(closeSession).not.toHaveBeenCalled();
 		});
 	});
 

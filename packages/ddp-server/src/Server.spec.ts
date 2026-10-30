@@ -127,6 +127,46 @@ describe('Server method contracts', () => {
 		});
 	});
 
+	describe('with a call check', () => {
+		const checkCall = jest.fn();
+
+		beforeEach(() => {
+			checkCall.mockReset();
+			server = new Server(remoteCall, checkCall);
+		});
+
+		it.each(['local', 'remote'] as const)('checks a %s method call by its name before running it', async (source) => {
+			const method = jest.fn();
+			if (source === 'local') {
+				server.methods({ save: method });
+			}
+
+			await server.call(session, makePacket('save'));
+
+			expect(checkCall).toHaveBeenCalledWith(session, 'method', 'save');
+			expect(checkCall.mock.invocationCallOrder[0]).toBeLessThan((source === 'local' ? method : remoteCall).mock.invocationCallOrder[0]);
+		});
+
+		it.each(['local', 'remote'] as const)('answers a rejected %s method call with the check error, without running it', async (source) => {
+			const method = jest.fn();
+			if (source === 'local') {
+				server.methods({ save: method });
+			}
+			checkCall.mockImplementation(() => {
+				throw new ClientSafeError('too-many-requests', 'Slow down', { timeToReset: 1000 });
+			});
+
+			await server.call(session, makePacket('save'));
+
+			expect(method).not.toHaveBeenCalled();
+			expect(remoteCall).not.toHaveBeenCalled();
+			expect(sentPackets(session)).toEqual([
+				{ msg: 'result', id: 'test-id', error: new ClientSafeError('too-many-requests', 'Slow down', { timeToReset: 1000 }).toJSON() },
+				{ msg: 'updated', methods: ['test-id'] },
+			]);
+		});
+	});
+
 	it('does not execute a registered method or send messages to a disconnected session', async () => {
 		const method = jest.fn();
 		server.methods({ save: method });
@@ -191,6 +231,43 @@ describe('Server subscriptions', () => {
 		expect(handler).not.toHaveBeenCalled();
 		expect(session.subscriptions.size).toBe(0);
 		expect(session.send).not.toHaveBeenCalled();
+	});
+
+	it('checks a subscription by its publication name before running it', async () => {
+		const checkCall = jest.fn();
+		server = new Server(undefined, checkCall);
+		const handler = jest.fn();
+		server.publish('messages', handler);
+
+		await server.subscribe(session, makeSubscription());
+
+		expect(checkCall).toHaveBeenCalledWith(session, 'subscription', 'messages');
+		expect(checkCall.mock.invocationCallOrder[0]).toBeLessThan(handler.mock.invocationCallOrder[0]);
+	});
+
+	it('answers a rejected subscription with a nosub carrying the check error, without running it', async () => {
+		server = new Server(undefined, () => {
+			throw new ClientSafeError('too-many-requests', 'Slow down', { timeToReset: 1000 });
+		});
+		const handler = jest.fn();
+		server.publish('messages', handler);
+
+		await server.subscribe(session, makeSubscription());
+
+		expect(handler).not.toHaveBeenCalled();
+		expect(sentPackets(session)).toEqual([
+			{ msg: 'nosub', id: 'test-id', error: new ClientSafeError('too-many-requests', 'Slow down', { timeToReset: 1000 }).toJSON() },
+		]);
+		expect(session.subscriptions.size).toBe(0);
+	});
+
+	it('does not check a subscription to a missing publication', async () => {
+		const checkCall = jest.fn();
+		server = new Server(undefined, checkCall);
+
+		await server.subscribe(session, makeSubscription('missing'));
+
+		expect(checkCall).not.toHaveBeenCalled();
 	});
 
 	it('sends a 404 nosub response for a missing publication', async () => {

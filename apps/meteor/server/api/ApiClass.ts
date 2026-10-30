@@ -53,6 +53,7 @@ import { authenticationMiddlewareForHono } from './v1/middlewares/authentication
 import { permissionsMiddleware } from './v1/middlewares/permissions';
 import { license } from '../../ee/server/api/v1/middlewares/license';
 import { licenseRequired } from '../../ee/server/api/v1/middlewares/licenseRequired';
+import { createMeteorInvocation } from '../lib/utils/createMeteorInvocation';
 import { getDefaultUserFields } from '../lib/utils/functions/getDefaultUserFields';
 import { settings } from '../settings';
 
@@ -816,10 +817,9 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 							this.parseJsonQuery = () => api.parseJsonQuery(this);
 
 							if (options.applyMeteorContext) {
-								const invocation = APIClass.createMeteorInvocation(connection, this.userId, this.token);
-								result = await invocation
-									.applyInvocation(() => originalAction.apply(this))
-									.finally(() => invocation[Symbol.asyncDispose]());
+								result = await createMeteorInvocation(connection, this.userId, this.token).applyInvocation(() =>
+									originalAction.apply(this),
+								);
 							} else {
 								result = await originalAction.apply(this);
 							}
@@ -1106,39 +1106,5 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 				},
 			},
 		);
-	}
-
-	static createMeteorInvocation(
-		connection: {
-			id: string;
-			close: () => void;
-			clientAddress: string;
-			httpHeaders: Record<string, any>;
-		},
-		userId?: string,
-		token?: string,
-	) {
-		const invocation = new DDPCommon.MethodInvocation({
-			connection,
-			isSimulation: false,
-			userId,
-		});
-
-		Accounts._accountData[connection.id] = {
-			connection,
-		};
-		if (token) {
-			Accounts._setAccountData(connection.id, 'loginToken', token);
-		}
-
-		return {
-			invocation,
-			applyInvocation: <F extends () => Promise<any>>(action: F): ReturnType<F> => {
-				return DDP._CurrentInvocation.withValue(invocation as any, async () => action()) as ReturnType<F>;
-			},
-			[Symbol.asyncDispose]() {
-				return Promise.resolve();
-			},
-		};
 	}
 }
