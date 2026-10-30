@@ -2638,6 +2638,21 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.col.countDocuments(query, options);
 	}
 
+	findConnectedByRoomId<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
+		roomId: IRoom['_id'],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>> {
+		const query = {
+			active: true,
+			__rooms: roomId,
+			statusConnection: {
+				$in: [UserStatus.ONLINE, UserStatus.AWAY, UserStatus.BUSY],
+			},
+		};
+
+		return this.find<T, O>(query, options);
+	}
+
 	findNotIdUpdatedFrom<T extends Document = IUser, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		uid: IUser['_id'],
 		from: Date,

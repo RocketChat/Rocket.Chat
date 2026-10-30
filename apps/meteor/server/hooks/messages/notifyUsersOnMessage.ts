@@ -1,7 +1,7 @@
-import type { IMessage, IRoom, IUser, RoomType } from '@rocket.chat/core-typings';
+import type { IMessage, IRoom, ISubscription, IUser, RoomType } from '@rocket.chat/core-typings';
 import { isEditedMessage } from '@rocket.chat/core-typings';
 import type { Updater } from '@rocket.chat/models';
-import { Subscriptions, Rooms } from '@rocket.chat/models';
+import { Subscriptions, Rooms, Users } from '@rocket.chat/models';
 import moment from 'moment';
 
 import { callbacks } from '../../lib/callbacks';
@@ -84,6 +84,18 @@ const getUnreadSettingCount = (roomType: RoomType): UnreadCountType => {
 	return settings.get(unreadSetting);
 };
 
+const roomTypesTrackedInUserRooms: RoomType[] = ['c', 'p'];
+
+async function findSubscriptionsOfConnectedMembers(rid: IRoom['_id'], senderId: IUser['_id']): Promise<ISubscription[]> {
+	const connected = await Users.findConnectedByRoomId<Pick<IUser, '_id'>>(rid, { projection: { _id: 1 } }).toArray();
+	const userIds = connected.map(({ _id }) => _id).filter((uid) => uid !== senderId);
+	if (!userIds.length) {
+		return [];
+	}
+
+	return Subscriptions.findByRoomIdAndUserIds(rid, userIds).toArray();
+}
+
 async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise<void> {
 	if (!room || message.tmid) {
 		return;
@@ -99,14 +111,19 @@ async function updateUsersSubscriptions(message: IMessage, room: IRoom): Promise
 	const userMentionInc = getUserMentions(room.t, unreadCount as Exclude<UnreadCountType, 'group_mentions_only'>);
 	const groupMentionInc = getGroupMentions(room.t, unreadCount as Exclude<UnreadCountType, 'user_mentions_only'>);
 
+	const onlyRead = !toAll && !toHere && !unreadAllMessages;
+	const notifyConnectedMembersOnly = !onlyRead && roomTypesTrackedInUserRooms.includes(room.t);
+
 	// find all subscriptions that will need to be notified after the update.
 	// we need to use toArray() here and keep results in memory because we'll update the them later
-	const subs = await Subscriptions.findByRoomIdAndNotAlertOrOpenExcludingUserIds({
-		roomId: room._id,
-		uidsExclude: [message.u._id],
-		uidsInclude: userIds,
-		onlyRead: !toAll && !toHere && !unreadAllMessages,
-	}).toArray();
+	const subs = notifyConnectedMembersOnly
+		? await findSubscriptionsOfConnectedMembers(room._id, message.u._id)
+		: await Subscriptions.findByRoomIdAndNotAlertOrOpenExcludingUserIds({
+				roomId: room._id,
+				uidsExclude: [message.u._id],
+				uidsInclude: userIds,
+				onlyRead,
+			}).toArray();
 
 	// Give priority to user mentions over group mentions
 	if (userIds.length) {
