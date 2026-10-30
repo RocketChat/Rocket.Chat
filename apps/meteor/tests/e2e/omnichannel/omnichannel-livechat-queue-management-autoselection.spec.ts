@@ -12,8 +12,7 @@ const firstVisitor = createFakeVisitor();
 
 const secondVisitor = createFakeVisitor();
 
-// The queue worker takes one waiting chat per cycle and runs a cycle every `Omnichannel_queue_delay_timeout`
-// seconds (5 by default), so a chat leaving the queue has to be waited for across a whole cycle and then some.
+// Long enough for a queued chat to be taken on the queue's next cycle (`Omnichannel_queue_delay_timeout`, 5s by default).
 const queueCycleTimeout = 15_000;
 
 test.use({ storageState: Users.user1.state });
