@@ -12,6 +12,7 @@ import { STATUS_SETTING_IDS } from './SettingsTab';
 import StatusAndPresencePage from './StatusAndPresencePage';
 import type { StatusAndPresenceTab } from './StatusAndPresenceTabs';
 import { useCanManageUserStatus } from '../../../hooks/useCanManageUserStatus';
+import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
 import EditableSettingsProvider from '../settings/EditableSettingsProvider';
 
@@ -30,6 +31,7 @@ const StatusAndPresenceRoute = () => {
 	const hasPrivateSettings = useIsPrivilegedSettingsContext();
 	const statusSettings = useSettings(statusSettingsQuery);
 	const canManageUserPresence = useCanManageUserStatus();
+	const { isLoading: isLicenseLoading } = useHasLicenseModule('unlimited-presence');
 
 	const settingIds = useMemo(
 		() => (hasPrivateSettings ? STATUS_SETTING_IDS.filter((id) => statusSettings.some((setting) => setting._id === id)) : []),
@@ -39,17 +41,17 @@ const StatusAndPresenceRoute = () => {
 	const allowed: Record<StatusAndPresenceTab, boolean> = {
 		'settings': settingIds.length > 0,
 		'custom-status': canManageCustomStatus,
-		'user-presence': canManageUserPresence === true,
+		'user-presence': canManageUserPresence,
 	};
 
 	const firstAllowedTab = TAB_ORDER.find((name) => allowed[name]);
 	const currentTab = TAB_ORDER.find((name) => name === tab && allowed[name]);
 
 	useLayoutEffect(() => {
-		if (canManageUserPresence !== undefined && firstAllowedTab && !currentTab) {
+		if (!isLicenseLoading && firstAllowedTab && !currentTab) {
 			router.navigate({ name: 'user-status', params: { tab: firstAllowedTab } }, { replace: true });
 		}
-	}, [router, canManageUserPresence, firstAllowedTab, currentTab]);
+	}, [router, isLicenseLoading, firstAllowedTab, currentTab]);
 
 	useEffect(() => {
 		if (!presenceDisabled) {
@@ -68,7 +70,7 @@ const StatusAndPresenceRoute = () => {
 		}
 	}, [presenceDisabled, canManageCustomStatus, currentTab, context, router]);
 
-	if (canManageUserPresence === undefined) {
+	if (isLicenseLoading) {
 		return null;
 	}
 
