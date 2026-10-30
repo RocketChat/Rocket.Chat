@@ -44,6 +44,9 @@ add an `options: UpdateOptions` parameter and forward it, as its own refactor co
   finder in the same model.
 - Reuse an existing method only when it does exactly the same write. A method with a similar
   name may also touch other fields or skip `_updatedAt`.
+- Build it on the methods inherited from `BaseRaw` (`findOne`, `updateOne`, `findOneAndUpdate`,
+  …), not on the raw driver collection `this.col`. The `BaseRaw` methods set `_updatedAt` on
+  every write and generate string `_id`s on upserts; `this.col` skips both.
 
 ## Models hold no business logic
 
