@@ -12,6 +12,13 @@ jest.mock('@rocket.chat/ui-client', () => ({
 	},
 }));
 
+jest.mock('./rocketchat.e2e.room', () => ({}));
+jest.mock('../../stores', () => ({}));
+jest.mock('../settings', () => ({ settings: { peek: jest.fn() } }));
+jest.mock('../../views/e2e/EnterE2EPasswordModal', () => ({ __esModule: true, default: () => null }));
+jest.mock('../../views/e2e/SaveE2EPasswordModal', () => ({ __esModule: true, default: () => null }));
+jest.mock('../sdk/ddpSdk', () => ({ getDdpSdk: () => ({ account: { onLogout: jest.fn() } }) }));
+
 jest.mock('../../../client/lib/getUserAvatarURL', () => ({
 	getUserAvatarURL: jest.fn(),
 }));

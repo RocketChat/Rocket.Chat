@@ -23,13 +23,9 @@ export const requestSubscriptionKeysMethod = async (userId: string): Promise<voi
 		return;
 	}
 
-	const rooms = await Rooms.find<Pick<IRoom, '_id'>>(
-		{
-			'_id': { $in: subscriptions.map(({ rid }) => rid) },
-			'encrypted': true,
-			'e2eKeyId': { $exists: true },
-			'usersWaitingForE2EKeys.userId': { $ne: userId },
-		},
+	const rooms = await Rooms.findEncryptedByIdsWithE2eKeyIdAndUserNotQueued<Pick<IRoom, '_id'>>(
+		subscriptions.map(({ rid }) => rid),
+		userId,
 		{ projection: { _id: 1 } },
 	).toArray();
 

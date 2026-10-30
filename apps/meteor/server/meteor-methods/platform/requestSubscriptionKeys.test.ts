@@ -4,22 +4,24 @@ import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
 
+const sandbox = sinon.createSandbox();
+
 const models = {
 	Subscriptions: {
-		findByUserIdWithoutE2E: sinon.stub(),
+		findByUserIdWithoutE2E: sandbox.stub(),
 	},
 	Rooms: {
-		find: sinon.stub(),
-		addUserIdToE2EEQueueByRoomIds: sinon.stub(),
+		findEncryptedByIdsWithE2eKeyIdAndUserNotQueued: sandbox.stub(),
+		addUserIdToE2EEQueueByRoomIds: sandbox.stub(),
 	},
 	Users: {
-		findOneById: sinon.stub(),
+		findOneById: sandbox.stub(),
 	},
 };
 
-const settingsGet = sinon.stub();
-const notifyOnRoomChangedById = sinon.stub();
-const broadcast = sinon.stub();
+const settingsGet = sandbox.stub();
+const notifyOnRoomChangedById = sandbox.stub();
+const broadcast = sandbox.stub();
 
 const { requestSubscriptionKeysMethod } = proxyquire.noCallThru().load('./requestSubscriptionKeys.ts', {
 	'@rocket.chat/models': models,
@@ -28,15 +30,15 @@ const { requestSubscriptionKeysMethod } = proxyquire.noCallThru().load('./reques
 	'../../settings': { settings: { get: settingsGet } },
 });
 
-const cursor = <T>(items: T[]) => ({ toArray: sinon.stub().resolves(items), forEach: (fn: (item: T) => void) => items.forEach(fn) });
+const cursor = <T>(items: T[]) => ({ toArray: sandbox.stub().resolves(items), forEach: (fn: (item: T) => void) => items.forEach(fn) });
 
 describe('requestSubscriptionKeysMethod', () => {
 	beforeEach(() => {
-		sinon.resetHistory();
+		sandbox.resetHistory();
 		settingsGet.withArgs('E2E_Enable').returns(true);
 		models.Users.findOneById.resolves({ _id: 'uid', e2e: { public_key: 'pub' } });
 		models.Subscriptions.findByUserIdWithoutE2E.returns(cursor([{ rid: 'r1' }, { rid: 'r2' }]));
-		models.Rooms.find.returns(cursor([{ _id: 'r1', e2eKeyId: 'k1' }]));
+		models.Rooms.findEncryptedByIdsWithE2eKeyIdAndUserNotQueued.returns(cursor([{ _id: 'r1', e2eKeyId: 'k1' }]));
 		models.Rooms.addUserIdToE2EEQueueByRoomIds.resolves({ modifiedCount: 1 });
 	});
 
@@ -50,13 +52,11 @@ describe('requestSubscriptionKeysMethod', () => {
 	it('should only look up encrypted rooms with a key that do not have the caller in the queue', async () => {
 		await requestSubscriptionKeysMethod('uid');
 
-		const [query] = models.Rooms.find.firstCall.args;
-		expect(query).to.deep.include({
-			'_id': { $in: ['r1', 'r2'] },
-			'encrypted': true,
-			'e2eKeyId': { $exists: true },
-			'usersWaitingForE2EKeys.userId': { $ne: 'uid' },
-		});
+		expect(
+			models.Rooms.findEncryptedByIdsWithE2eKeyIdAndUserNotQueued.calledOnceWithExactly(['r1', 'r2'], 'uid', {
+				projection: { _id: 1 },
+			}),
+		).to.be.true;
 	});
 
 	it('should not broadcast the unused key request event', async () => {
@@ -84,7 +84,7 @@ describe('requestSubscriptionKeysMethod', () => {
 	});
 
 	it('should not notify when no room needs the caller in the queue', async () => {
-		models.Rooms.find.returns(cursor([]));
+		models.Rooms.findEncryptedByIdsWithE2eKeyIdAndUserNotQueued.returns(cursor([]));
 
 		await requestSubscriptionKeysMethod('uid');
 
