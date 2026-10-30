@@ -65,6 +65,44 @@ afterEach(() => {
 	VideoConfManager.setConferenceWindowEnabled(false);
 });
 
+describe('VideoConfManager subscription lifecycle', () => {
+	it('handles a rejected subscription and permits the next connection attempt', async () => {
+		const error = new Error('not-allowed');
+		const stop = jest.fn();
+		const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+		(sdk.stream as jest.Mock).mockReturnValueOnce({ stop, ready: () => Promise.reject(error) });
+		try {
+			VideoConfManager.updateUser('subscription-user', false, true);
+			await flushPromises();
+			expect(warn).toHaveBeenCalledWith('[VideoConf] Could not connect the user subscription', error);
+			expect(stop).toHaveBeenCalledTimes(1);
+			VideoConfManager.updateUser('subscription-user', false, true);
+			await flushPromises();
+			expect(sdk.stream).toHaveBeenCalledTimes(2);
+		} finally {
+			VideoConfManager.updateUser(null, false, true);
+			warn.mockRestore();
+		}
+	});
+
+	it('stops a pending subscription when logout occurs before it is ready', async () => {
+		const stop = jest.fn();
+		let ready!: () => void;
+		(sdk.stream as jest.Mock).mockReturnValueOnce({
+			stop,
+			ready: () =>
+				new Promise<void>((resolve) => {
+					ready = resolve;
+				}),
+		});
+		VideoConfManager.updateUser('pending-user', false, true);
+		VideoConfManager.updateUser(null, false, true);
+		expect(stop).toHaveBeenCalledTimes(1);
+		ready();
+		await flushPromises();
+	});
+});
+
 // Without `VideoConf_Conference_Window_Enabled` the manager must behave exactly as it did before the call window
 // existed. Everything in here is that behaviour, pinned so a gate cannot quietly go missing.
 describe('VideoConfManager without the call window', () => {
