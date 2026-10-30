@@ -630,9 +630,19 @@ export const VideoConfManager = new (class VideoConfManager extends Emitter<Vide
 
 		const { stop, ready } = sdk.stream('notify-user', [`${userId}/video-conference`], (data) => this.onVideoConfNotification(data));
 
-		await ready();
-
-		this.hooks.push(stop);
+		const cleanup = () => stop();
+		this.hooks.push(cleanup);
+		try {
+			await ready();
+		} catch (error) {
+			const pending = this.hooks.indexOf(cleanup);
+			if (pending !== -1) {
+				this.hooks.splice(pending, 1);
+				stop();
+				if (this.userId === userId) this.userId = undefined;
+			}
+			console.warn('[VideoConf] Could not connect the user subscription', error);
+		}
 	}
 
 	private abortIncomingCall(callId: string): void {
