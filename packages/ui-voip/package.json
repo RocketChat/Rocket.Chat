@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/ui-voip",
-	"version": "25.0.0",
+	"version": "26.0.0-rc.0",
 	"private": true,
 	"main": "./dist/index.js",
 	"typings": "./dist/index.d.ts",
@@ -67,11 +67,11 @@
 	},
 	"peerDependencies": {
 		"@rocket.chat/css-in-js": "workspace:^",
-		"@rocket.chat/fuselage": "*",
-		"@rocket.chat/fuselage-hooks": "*",
+		"@rocket.chat/fuselage": "1.0.0-rc.0",
+		"@rocket.chat/fuselage-hooks": "0.44.0-rc.0",
 		"@rocket.chat/fuselage-ui-kit": "workspace:^",
-		"@rocket.chat/icons": "*",
-		"@rocket.chat/styled": "*",
+		"@rocket.chat/icons": "0.52.0-rc.0",
+		"@rocket.chat/styled": "0.34.2-rc.0",
 		"@rocket.chat/ui-avatar": "workspace:^",
 		"@rocket.chat/ui-client": "workspace:^",
 		"@rocket.chat/ui-contexts": "workspace:^",

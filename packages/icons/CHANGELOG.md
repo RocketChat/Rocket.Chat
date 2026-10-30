@@ -1,5 +1,15 @@
 # Change Log
 
+## 0.52.0-rc.0
+
+### Minor Changes
+
+- ([#42659](https://github.com/RocketChat/Rocket.Chat/pull/42659)) Redraws the `login` and `sign-out` icons to match the current iconography. `login` now has its bracket on the right, with the arrow pointing into it. `sign-out` is an alias of `exit`, so `exit` changes too.
+
+### Patch Changes
+
+- ([#42607](https://github.com/RocketChat/Rocket.Chat/pull/42607)) Moved `@rocket.chat/icons` into the Rocket.Chat monorepo, continuing from the frozen Fuselage 0.51.0 release. The icon set, its names and its code points are unchanged.
+
 ## 0.51.0
 
 ### Minor Changes

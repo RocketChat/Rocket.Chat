@@ -152,7 +152,7 @@ export class UserChangedAuditStore {
 
 		const eventData = this.getEventData(this.originalUser, this.updateFilter);
 
-		if (Object.keys(eventData.user_data).length === 0 || Object.keys(eventData.operation).length === 0) {
+		if (Object.keys(eventData.operation).length === 0) {
 			// UpdaterImpl throws an error when trying to build the filter if no changes are detected
 			// so we should never get here
 			throw new Error('UserChangedAuditStore - No changes detected');

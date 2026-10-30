@@ -1,7 +1,7 @@
 {
 	"$schema": "https://www.schemastore.org/package",
 	"name": "@rocket.chat/ui-preview",
-	"version": "0.0.0",
+	"version": "0.1.0-rc.0",
 	"description": "Runs the web client built for a Rocket.Chat pull request against any Rocket.Chat server",
 	"repository": {
 		"type": "git",

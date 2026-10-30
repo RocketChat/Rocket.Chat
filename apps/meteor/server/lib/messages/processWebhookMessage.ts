@@ -178,7 +178,11 @@ export async function processWebhookMessage(
 			await validateRoomMessagePermissionsAsync(room, { uid: user._id, ...user });
 			await validateWebhookMessage(message, room, user);
 			rooms.push({ room, channel });
-		} catch (_error: any) {
+		} catch (caught: any) {
+			// A room the user cannot access must look the same as one that does not exist.
+			const _error = ['error-not-allowed', 'invalid-channel'].includes(caught?.error ?? caught?.message)
+				? new Error('error-invalid-room')
+				: caught;
 			if (messageObj.separateResponse) {
 				const { error, message } = _error || {};
 				const errorMessage = error || message || 'unknown-error';

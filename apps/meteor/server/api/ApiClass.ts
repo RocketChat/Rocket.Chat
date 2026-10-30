@@ -6,6 +6,7 @@ import { License } from '@rocket.chat/license';
 import { Logger } from '@rocket.chat/logger';
 import { Sessions, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
+import { validateForbiddenErrorResponse } from '@rocket.chat/rest-typings';
 import type { JoinPathPattern, Method } from '@rocket.chat/rest-typings';
 import { wrapExceptions } from '@rocket.chat/tools';
 import type { ValidateFunction } from 'ajv';
@@ -384,19 +385,13 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 		};
 	}
 
-	public forbidden(): ForbiddenResult<string>;
-
-	public forbidden<T>(msg: T): ForbiddenResult<T>;
-
-	public forbidden<T>(msg?: T): ForbiddenResult<T> {
+	public forbidden(message = 'You are not allowed to do this'): ForbiddenResult {
 		return {
 			statusCode: 403,
 			body: {
 				success: false,
-				// TODO: MAJOR remove 'unauthorized' in favor of 'forbidden'
-				// because of reasons beyond my control we were used to send `unauthorized` to 403 cases, to avoid a breaking change we just adapted here
-				// but thanks to the semver check tests should break as soon we bump to a new version
-				error: msg || (applyBreakingChanges ? 'forbidden' : 'unauthorized'),
+				error: message,
+				errorType: 'error-forbidden',
 			},
 		};
 	}
@@ -597,7 +592,9 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 				} & Omit<TOptions, 'response'>
 		  >
 	> {
-		this.addRoute([subpath], { tags: [], ...options, typed: true }, { [method.toLowerCase()]: { action } } as any);
+		// any thrown refusal answers 403, so every typed route can answer it
+		const response = options.response && { 403: validateForbiddenErrorResponse, ...options.response };
+		this.addRoute([subpath], { tags: [], ...options, response, typed: true }, { [method.toLowerCase()]: { action } } as any);
 		return this;
 	}
 
@@ -828,14 +825,21 @@ export class APIClass<TBasePath extends string = '', TOperations extends Record<
 							}
 						} catch (e: any) {
 							result = ((e: any) => {
-								switch (e.error) {
+								// plain `Error`s carry the code in `message`
+								const code = typeof e === 'string' ? e : (e.error ?? e.message);
+								switch (code) {
 									case 'error-too-many-requests':
 										return api.tooManyRequests(typeof e === 'string' ? e : e.message);
 									case 'error-unauthenticated':
 										return api.unauthorized(typeof e === 'string' ? e : e.message);
 									case 'unauthorized':
 									case 'error-unauthorized':
+									case 'not-authorized':
 									case 'error-not-authorized':
+									case 'error-not-allowed':
+									case 'not-allowed':
+									case 'no-permission':
+									case 'error-not-authorized-federation':
 									case 'forbidden':
 									case 'error-forbidden':
 										return api.forbidden(typeof e === 'string' ? e : e.message);

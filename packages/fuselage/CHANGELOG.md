@@ -1,5 +1,200 @@
 # Change Log
 
+## 1.0.0-rc.0
+
+### Minor Changes
+
+- ([#43100](https://github.com/RocketChat/Rocket.Chat/pull/43100)) Adds the component variations and the hook that replace Box styling props on Fuselage components:
+
+  - `TableCell` accepts `truncate`, which keeps its content on one line cut with an ellipsis, `color='default' | 'hint'`, and `strong`, which renders the text in the medium weight.
+  - `Contextualbar` accepts `stretch`, which makes it as wide as its container.
+  - `ContextualbarContent` accepts `flush`, which drops its inline padding, and `spaced`, which adds a 12px block padding.
+  - `ModalFooter` accepts `justify='space-between'`, and `ModalIcon` accepts `align='end'`.
+  - `Table` `columns` take pixel and percentage widths (`'150px'`, `40`, `'20%'`) besides Fuselage sizes.
+  - `useStyle` is exported: it turns a style built with `css` into a class name, for a `className` that takes strings only.
+
+- ([#43100](https://github.com/RocketChat/Rocket.Chat/pull/43100)) Fuselage components no longer accept `Box` styling props. Their props are now the DOM and ARIA attributes of the element they render plus the variations each component declares, so TypeScript rejects `margin*`, `width`, `flexGrow`, `fontScale`, `color` and the other `Box` styling props, a free `is`, and a `className` built with `css` or passed as an array (it must be a string; `useStyle` turns a `css` style into one). `rcx-*` props are not part of any component's API either. To lay out or style a component, place it in a `Box` (a container with `gap`, or a wrapper) or use one of the component's own variations. `Box`, `Flex`, `Margins` and `Scrollable` keep accepting styling props.
+
+  Some components swap a styling prop they used to read for a named variation:
+
+  - `Contextualbar` takes `stretch` instead of `width='100%'`, no longer takes `backgroundColor`, and its `position` is one of `static`, `relative`, `absolute` or `fixed`.
+  - `ModalFooter` takes `justify` instead of `justifyContent`, and `ModalIcon` takes `align` instead of `alignItems`.
+  - `Tile` takes `flush` instead of `padding`.
+  - `Modal` keeps `width` and `height` and also takes `maxHeight`; `Options` keeps `maxHeight`; `Tile` keeps `elevation`; `Throbber` and `ModalIcon` keep `size`; `InputBox` keeps `invisible`.
+  - `Select`, `PaginatedSelect` and `PaginatedMultiSelect` take `name`.
+
+- ([#43061](https://github.com/RocketChat/Rocket.Chat/pull/43061)) Adds `Listbox` and `ListboxOption`, the popup list of a combobox whose focus stays on the combobox, and the `focusVisible` prop of `Option`
+
+- ([#42974](https://github.com/RocketChat/Rocket.Chat/pull/42974)) Fuselage components no longer take Box styling props from their callers: containers own layout through `gap`, and components declare the variations they support.
+
+  **fuselage**
+
+  - `Button` accepts `compact`, which lowers its minimum width so a label of one or two characters fits.
+  - `ButtonGroup` accepts `stretch='equal'`, which stretches its buttons and gives them all the same width.
+  - Square buttons, such as `IconButton`, keep their size inside a `ButtonGroup` with `stretch` instead of growing with the other buttons.
+  - The icon inside a `Button` takes its spacing from the Button styles instead of a styling prop.
+  - `CardGrid` accepts `CardGridItem` children with their own column spans and a `minRowHeight`, and skips empty children instead of rendering empty cells.
+  - `CardGrid` stretches each card to the height of its row, so cards no longer need `height='full'`.
+  - `Chip` accepts `label`, which renders its text in uppercase for chips that categorize rather than select.
+  - `Chip` accepts `small`, which renders a 20px tall chip.
+  - Inputs with an addon have the same minimum height as the other inputs.
+  - `AutoComplete` and `MultiSelect` space their input and selected items with a 4px gap instead of wrapping them in `Margins`, so a `renderSelected` item no longer needs to forward its class name or bring its own margin to be spaced.
+  - Button and IconButton render only as a button or a link: `is` accepts `'button'` or `'a'`.
+  - Button and IconButton rendered as links no longer carry `type="button"`, and IconButton accepts `external` to open its link in a new tab.
+  - `Chip` has a fixed 28px height, so chips holding an inline avatar no longer grow past it; `small` chips stay 20px.
+  - Date and time inputs match the other inputs' height
+  - Adds a `flush` prop to `Divider` that removes its own margin, so its container sets the spacing.
+  - Adds a `light` variation to `Divider`, drawn with the `stroke-light` color.
+  - A vertical `Divider` with `variation='danger'` is drawn in the error colour instead of the default grey.
+  - Adds `small` and `stretch` props to the vertical `Divider`: `small` uses a 4px inline margin, `stretch` makes it as tall as its container.
+  - Adds a `justify='end'` variation to `FieldRow` that packs the row's content at the end of the line.
+  - Declares `color` on `Icon`, `MenuItemIcon` and `MessageStatusIndicatorItem`, restricted to the semantic text and status font tokens.
+  - Icons no longer shrink in a flex container.
+  - Adds `endAddonFlush` to `InputBox` and the inputs built on it, so a button in `endAddon` sits flush with the input edge without negative margins
+  - Adds a `transparent` flag to `ModalBackdrop` that drops its overlay colour.
+  - Declares `width` and `height` on `ModalHeroImage`, the size the image renders at.
+  - Adds a `variant` (`danger`, `warning`, `info`, `success`) to `ModalIcon` that tints the icon, and a `subtle` flag to `ModalTagline` that mutes its colour.
+  - Declares `width` and `height` on `Modal`, makes its `hidden` attribute hide it while keeping it mounted, and adds a `fill` mode to `ModalContent` that stretches the content to the modal's height.
+  - Adds `PopoverSurface`, the raised and scrolling surface of a dropdown or popover, which takes `maxHeight`, `flush` and `elevation` instead of `Box` styling props.
+  - Adds the `inverted` variation to `Skeleton`, for placeholders on a dark surface such as a tooltip.
+  - Adds `Stack`, a flex container that lays out its children in a row or a column spaced by `gap`, without taking `Box` styling props.
+  - TableCell renders only as a data or header cell: `is` accepts `'td'` or `'th'`.
+  - `Tag` now spaces its `icon` from the label, so the icon no longer needs a margin of its own.
+  - Adds a `flush` flag to `Tile` that drops its default padding, for surfaces whose content brings its own.
+  - Adds `badgePosition` to `IconButton`, which pins the badge to the top end (default) or bottom end corner.
+  - Fixes the `IconButton` badge jumping toward the button's center while the button is pressed; it now keeps its corner and moves 1px with the icon.
+  - `IconButton` accepts `color`, `'default'` or `'danger'`, which paints the icon with that font color.
+  - A Divider with a label no longer adds 20px of inline padding, so its bars run from edge to edge of its container.
+  - `SelectLegacy`, `SelectFiltered`, `PaginatedSelectFiltered` and `PaginatedMultiSelectFiltered` put `id` on their focusable control, so clicking a `FieldLabel` whose `htmlFor` points to that `id` focuses the field.
+  - `SelectLegacy`, `SelectFiltered`, `PaginatedSelectFiltered` and `PaginatedMultiSelectFiltered` put `aria-labelledby`, `aria-describedby` and `aria-invalid` on their focusable control instead of the wrapper, so screen readers announce the field's label instead of its placeholder.
+  - `MessageGenericPreviewIcon` takes its icon colour from the preview's styles and no longer accepts a `color` prop.
+  - Fixes `Select` adding an extra gap before its trigger when placed directly inside a container that spaces its children with `gap`.
+  - `TableCell` accepts `rowHeader`, which renders the cell as the header of its row, styled as the label of a key/value pair.
+  - `Table` accepts `columns`, which declares the width of each column once instead of on every cell.
+  - `Tabs` accepts `stretch`, which grows its items to fill the whole width.
+
+  **fuselage-ui-kit**
+
+  - The `context` block spaces its elements with an 8px column gap instead of margins, so it no longer overhangs the surface edges and its images sit 8px from their neighbours.
+  - The `linear_scale` element spaces its buttons with the button group's gap alone, so they sit 8px apart instead of 12px.
+  - UiKit surfaces space their blocks with a 16px gap instead of per-block margins, so blocks sit 16px apart, divider and tabs no longer add their own 24px margins, and only the message surface keeps 16px of space after its last block.
+  - Colours UiKit icon elements with `danger`, `warning` and `secondary` variants through Fuselage's `Icon` `color`; `secondary` now uses the hint colour.
+
+  **layout**
+
+  - `Form` renders a form element that wraps its `Tile`, instead of rendering the `Tile` itself as the form.
+  - Narrows `ListItem`'s `iconColor` to a status (`hint`, `info`, `danger`, `warning` or `success`); without one the icon follows the item's text colour, as it already did.
+  - `VerticalWizardLayoutForm` sizes its `Tile` with a full-width wrapper instead of a `width` prop on `Tile`.
+
+  **meteor**
+
+  - When an app has no price, its status tags on the details page sit 8px closer to the Buy button.
+  - The author row of quote and message attachments spaces its avatar, name, timestamp and jump link 4px apart.
+  - Audited messages on the Message auditing page no longer inherit an extra vertical margin, so each one is 8px shorter.
+  - The contact details panel no longer draws a divider above the custom fields; they follow the other fields with the same spacing.
+  - The custom emoji upload button and the canned response preview toggle sit next to their label in a `FieldRow` instead of inside the label.
+  - Form labels in the thread composer, the workspace registration terms, the onboarding terms and the new-user password options use the default field label typography, and the close-chat modal note is shown as a field hint.
+  - Fixes the "Counters" header of the import history table so it also spans the "Total" column.
+  - Fixes the instances modal announcing each property name as a column header instead of a row header
+  - Colours the icons of the room priority menu like the priority icon shown in the room, by the priority's status.
+  - The room header leaves 4px instead of 8px after the encrypted and translated status icons.
+  - Fixes the user menu button so screen readers announce the user's current status and its changes.
+
+  **onboarding-ui**
+
+  - The cloud workspace form spaces its server region and language fields with padding around the grid instead of a margin on it, which adds 24 to 32px of height to the form.
+
+  **ui-client**
+
+  - Fixes the warning and success icons of `GenericModal` showing in the default text colour instead of their status colours.
+  - `HeaderTagIcon` no longer carries a trailing margin; pass it to `HeaderTag`'s `icon` prop, which spaces it from the text.
+  - Page header spaces its sidebar toggler and back button with gap; `SidebarToggler` no longer carries a trailing margin.
+  - `HeaderContentRow` spaces its items 4px apart, and `HeaderState` no longer adds its own trailing margin.
+  - The `MultiSelectCustom` list is drawn on Fuselage's `PopoverSurface`, so its corners are rounded like the other dropdowns.
+
+  **ui-composer**
+
+  - `MessageFooterCallout` spaces its children with an 8px gap instead of margins on `MessageComposerIcon`, `MessageFooterCalloutContent`, `MessageFooterCalloutDivider` and `MessageFooterCalloutAction`, so the action button now sits flush with the callout padding.
+
+  **ui-voip**
+
+  - Call history footer buttons lay out their icon and label with gap.
+  - The keypad keys take their size and corner radius from their own class instead of styling props on `Button`.
+  - Call widget info slots lay out their icon and text with gap.
+
+  **web-ui-registration**
+
+  - The desktop app's "Log in on the web" button sits in the same button group as the login services.
+  - The login services divider takes its spacing from a padded container.
+  - The login language switch buttons are spaced with an 8px gap instead of a trailing margin, so they are centred in the footer.
+
+- ([#43087](https://github.com/RocketChat/Rocket.Chat/pull/43087)) Adds `usePreventScrollOutside`, which holds the page still while an element is shown, and the `preventScroll` prop of `Position` and `PositionAnimated`, which uses it so a popup cannot drift away from its anchor
+
+- ([#43061](https://github.com/RocketChat/Rocket.Chat/pull/43061)) Rebuilds `Select` as a select-only combobox: a `label` pointing at its `id` now names it, as it names any other input, and its popup list is named after it. `Select` no longer accepts React Aria's select props, such as `isDisabled`, `selectedKey`, `onSelectionChange`, `isOpen`, `onOpenChange` and `disabledKeys`; use `disabled`, `value` and `onChange`
+
+- ([#43021](https://github.com/RocketChat/Rocket.Chat/pull/43021)) Keeps margins, paddings and gaps the same size when the user changes the font size: spacing tokens (`'x8'`) and Fuselage's own component spacing now resolve to pixels, as numbers already did. Widths, heights and insets still follow the font size.
+
+- ([#43021](https://github.com/RocketChat/Rocket.Chat/pull/43021)) Exports the spacing scale as `spacingScale` and its keys as the `SpacingToken` type; `spacing()` now resolves scale tokens from it, with the same output
+
+- ([#43158](https://github.com/RocketChat/Rocket.Chat/pull/43158)) Adds `Text`, which sets text in one of the design system's font scales (`fontScale`) and text or status colours (`color`), and can keep it on one line cut with an ellipsis (`truncate`). It renders a `div` unless `is` names the element the text is (`p`, `h2`, `label`, `span`…), and takes no `Box` styling props.
+
+- ([#43157](https://github.com/RocketChat/Rocket.Chat/pull/43157)) `IconButton` takes `variant` and `size`, like `Button`. `variant` is one of `primary`, `secondary`, `info`, `danger`, `warning`, `success`, `secondary-danger`, `secondary-warning` or `secondary-success`; `size` is one of `mini`, `tiny`, `small`, `medium` or `large`. The boolean props they replace (`primary`, `secondary`, `info`, `danger`, `warning`, `success`, `mini`, `tiny`, `small`, `medium`, `large`) are deprecated and keep working. `variant='primary'` looks the way `primary` and `secondary` with `info` did.
+
+- ([#42820](https://github.com/RocketChat/Rocket.Chat/pull/42820)) Add `truncate` to `ItemMeta`
+
+- ([#42818](https://github.com/RocketChat/Rocket.Chat/pull/42818)) Render `Menu` items, submenu triggers and sections with the `Item` family, so menu rows compose `ItemIcon`, `ItemContent`, `ItemTitle` and `ItemActions`
+
+- ([#43157](https://github.com/RocketChat/Rocket.Chat/pull/43157)) `Menu` takes `size`, one of `mini`, `tiny`, `small`, `medium` or `large`, for the size of its trigger; `small` stays the default. The boolean props it replaces (`mini`, `tiny`, `small`, `medium`, `large`) are deprecated and keep working. A custom trigger passed as `is` now receives `size` instead of those boolean props, which an `IconButton` it renders understands as before.
+
+- ([#42818](https://github.com/RocketChat/Rocket.Chat/pull/42818)) Render `OptionHeader` and `OptionTitle` as `ItemGroupHeader`, `Options` dividers as `ItemDivider`, and `Select` listbox sections as `ItemGroupHeader` and `ItemGroup`
+
+- ([#42818](https://github.com/RocketChat/Rocket.Chat/pull/42818)) Add `iconLabel` to `Option` to name what its `icon` conveys; without it, the icon stays decorative
+
+- ([#42818](https://github.com/RocketChat/Rocket.Chat/pull/42818)) Render `Option` as an `Item` row, so every `Options`, `AutoComplete`, `Select` and `MultiSelect` option shares the `Item` layout and states while keeping the `rcx-option` classes
+
+- ([#42818](https://github.com/RocketChat/Rocket.Chat/pull/42818)) Render the `Option*` parts and their `MenuItem*` aliases as `Item` parts: `OptionAvatar` and `OptionColumn` as `ItemMedia`, `OptionIcon` as `ItemIcon`, `OptionContent` as `ItemContent` and `ItemTitle`, `OptionDescription` as an inline `ItemDescription`, `OptionInput` as `ItemActions`, and `OptionMenu` as `ItemActions` revealed on hover
+
+- ([#42819](https://github.com/RocketChat/Rocket.Chat/pull/42819)) Render `SidebarGroupTitle`, `SidebarCollapseGroup` and `SidebarCollapseGroupMenu` with `ItemGroupHeader`, `ItemGroup` and `ItemActions`, name the collapse group list by its title, and render `SidebarDivider` as `ItemDivider`
+
+- ([#42819](https://github.com/RocketChat/Rocket.Chat/pull/42819)) Let `SidebarItem` render as a container row (`is='div'`) whose title holds the link, so menus and buttons sit beside the link instead of inside it. Adds `SidebarItemLink` and `SidebarItemActions`, and a `highlighted` prop on `SidebarItem`; a `div` row drops `href`, `target`, `rel` and `download`
+
+- ([#42819](https://github.com/RocketChat/Rocket.Chat/pull/42819)) Render `SidebarItem`, its parts and `SidebarLink` with the `Item` family while keeping the `rcx-sidebar-item` classes, and add an optional `label` to `SidebarItemIcon` that names the icon for assistive technology
+
+- ([#42819](https://github.com/RocketChat/Rocket.Chat/pull/42819)) Render `SidepanelList` as an `ItemGroup` and `SidepanelDivider` as an `ItemDivider`, keeping the full-width line under `SidepanelHeader`
+
+### Patch Changes
+
+- ([#42818](https://github.com/RocketChat/Rocket.Chat/pull/42818)) Hide the `CheckOption` checkbox from assistive technology, so selection is announced once through `aria-selected`
+
+- ([#42818](https://github.com/RocketChat/Rocket.Chat/pull/42818)) Make the `CheckOption` checkbox inert, so assistive technology cannot reach it inside the option
+
+- ([#43087](https://github.com/RocketChat/Rocket.Chat/pull/43087)) Fixes animated popups, such as the lists of `AutoComplete` and `MultiSelect`, flashing back for a frame at the end of their fade-out
+
+- ([#42763](https://github.com/RocketChat/Rocket.Chat/pull/42763)) Moved `@rocket.chat/fuselage` into the Rocket.Chat monorepo, continuing from the frozen Fuselage 0.96.0 release. The exported components and the published bundles and stylesheet are unchanged; `@rocket.chat/css-in-js`, `@rocket.chat/fuselage-tokens` and `@rocket.chat/memo` now resolve to their monorepo versions.
+
+- ([#43047](https://github.com/RocketChat/Rocket.Chat/pull/43047)) Removes the contextual bar header icon's own inline padding, so the header's gap alone spaces it from the title, and moves the label info margin onto the design system's scale (2px becomes 4px)
+
+- ([#42829](https://github.com/RocketChat/Rocket.Chat/pull/42829)) Stop a hidden `ItemActions` with `reveal='hover'` from leaving a gap at the end of `Item`, `ItemRow` and `ItemGroupHeader`, so trailing content lines up with rows without actions and no longer shifts when the actions appear
+
+- ([#42962](https://github.com/RocketChat/Rocket.Chat/pull/42962)) Fixes quick-reaction emojis from the message toolbar being included when copying a text selection across messages
+
+- ([#42818](https://github.com/RocketChat/Rocket.Chat/pull/42818)) Hide `OptionSkeleton` placeholder rows from assistive technology, as `ItemSkeleton` does
+
+- ([#42818](https://github.com/RocketChat/Rocket.Chat/pull/42818)) Announce the `Options` empty state as a disabled option, so the listbox only holds options
+
+- ([#42818](https://github.com/RocketChat/Rocket.Chat/pull/42818)) Scroll `Options` to the row the keyboard cursor is on when `renderItem` renders an `Item`
+
+- ([#42819](https://github.com/RocketChat/Rocket.Chat/pull/42819)) Stop `SidebarCollapseGroup` from passing its `actions` prop to the DOM
+
+- <details><summary>Updated dependencies [4c379a0d016fcf010bab86ddd94a22ff2401606e, 766ac93fba3c991c79c9bfcb404f6ec7fd1e30f8, 7fbb5676fe0d2c034f4c52586ab858b3796e5dc6, 7fbb5676fe0d2c034f4c52586ab858b3796e5dc6, ec381cf4a88002601fd2b83b7eed734a2e8165b6, 25fd477c2c38f71e9a16b7e2896d39efd43bfc61, ec381cf4a88002601fd2b83b7eed734a2e8165b6, 0285f08c086dae6beb0f1365a85f522fb4818435, a9e0d93eb3c6e17476f5bf6081199a3ed8b253ec, a9e0d93eb3c6e17476f5bf6081199a3ed8b253ec, a9e0d93eb3c6e17476f5bf6081199a3ed8b253ec, a838cc5af0652f59d0ab30aa1a488abded0622b1]:</summary>
+  - @rocket.chat/fuselage-hooks@0.44.0-rc.0
+  - @rocket.chat/fuselage-tokens@0.36.0-rc.0
+  - @rocket.chat/icons@0.52.0-rc.0
+  - @rocket.chat/memo@0.31.26-rc.0
+  - @rocket.chat/css-in-js@0.33.3-rc.0
+
+  </details>
+
 ## 0.96.0
 
 ### Minor Changes

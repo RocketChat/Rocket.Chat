@@ -1,6 +1,6 @@
 {
 	"name": "@rocket.chat/styled",
-	"version": "0.34.1",
+	"version": "0.34.2-rc.0",
 	"description": "A simple styled API for React components",
 	"keywords": [
 		"react",

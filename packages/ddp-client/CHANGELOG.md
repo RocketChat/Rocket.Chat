@@ -1,5 +1,73 @@
 # @rocket.chat/ddp-client
 
+## 2.0.0-rc.0
+
+### Major Changes
+
+- ([#41948](https://github.com/RocketChat/Rocket.Chat/pull/41948)) Removes the deprecated `query` and `fields` REST API parameters, along with the `ALLOW_UNSAFE_QUERY_AND_FIELDS_API_PARAMS` environment variable that re-enabled them. Deprecated in 6.3.0 and disabled by default since 7.0.0, they let callers run raw MongoDB queries and projections against the database.
+
+  Endpoints that validate their query string now reject both with `400 error-invalid-params` instead of ignoring them; the few without validation keep accepting and ignoring them. `users.create` likewise rejects a `fields` property in its body. `channels.online` and `groups.online` now require `_id`. On `users.list`, fields outside the default projection — `customFields`, `utcOffset`, `nickname`, `bio`, `statusText`, `federated` and `freeSwitchExtension` — are no longer reachable in bulk; use `users.info` instead. Callers should move to the dedicated filter parameters each endpoint exposes, such as `name`, `type`, `_id` and `text`.
+
+### Minor Changes
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Changes the reconnection strategy to an exponential backoff with jitter, capped at 30 seconds, and makes `DDPSDK.create` and `RocketchatSdkLegacyImpl.create` keep reconnecting by default (`retryCount: Infinity`, `retryTime: 1000`) instead of giving up after one retry at 100 ms. `LivechatClientImpl` keeps its own defaults (3 retries from 10 seconds).
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Adds `encode`, `decode` and `WebSocket` options to `DDPSDK.create` and `DDPSDK.createAndConnect`, next to `retryCount` and `retryTime`, so clients can use EJSON or a custom WebSocket without reaching into the SDK internals. `LivechatClientImpl.create` and `RocketchatSdkLegacyImpl.create` share the same factory: they now also log in again after a reconnection, log the account out when the server refuses the token on that login, and send the account's credentials with REST calls.
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Adds `account.setCredentials()` to adopt a login made outside the SDK and `account.clearCredentials()` to forget the logged-in user locally
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Adds the `inFlightMethods` option (`'reject'` by default, or `'resend'`) to choose whether method calls lost with the connection reject or are sent again after the reconnection's login, and the `logoutOnRefusedResume` option (`true` by default) to keep the account logged in when the server refuses the token after a reconnection. Only a refusal (a 401/403 answer) logs the account out; other failures of that login keep it. `connection.close()` now rejects every pending call.
+
+- ([#42979](https://github.com/RocketChat/Rocket.Chat/pull/42979)) Exposes the connection's reconnection attempt count and when the next attempt is due (`retryCount`, `nextRetryAt`).
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Adds `Subscription.onStop(listener)`, called with the reason when the server stops a subscription or stream
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Adds `sdk.publish(name, key, ...args)` to emit events on streams that accept them from clients, typed from `StreamerEvents`
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Adds `connection.whenConnected()`, which resolves once the connection is established
+
+### Patch Changes
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Fixes `client.call()` and `client.callWithOptions()` sending `[null]` as the parameters of a call made without parameters or callback
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Fixes the heartbeat timers and a pending reconnect timer that kept running after `connection.close()`
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Fixes `connection.connect()` never settling when the socket closes before the DDP handshake, and the process crashing on an unreachable server when the `ws` package provides `WebSocket`
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Fixes method calls hanging forever when the connection drops before their result arrives. They now reject with `ConnectionLostError`, and calls queued behind a lost `login` are sent after the reconnection instead of staying blocked.
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Fixes `RocketchatSdkLegacyImpl` never restoring subscriptions after a reconnection and `unsubscribeAll()` unsubscribing from nothing
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Fixes the Livechat client ignoring a visitor token set through `credentials.token`, `onQueuePositionChange` subscribing without the visitor token, and visitor endpoints throwing synchronously instead of rejecting when there is no token
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Fixes subscriptions stopped by the server: a `nosub` without an error no longer counts as ready, a subscription stopped after it was ready is no longer kept and resent on every reconnection, and `Subscription.onChange` now fires on every change instead of only the first
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Fixes subscriptions restored after a reconnection being refused because they went out before the new login, and the session staying "logged in" with a token the server refused during that login. A refused token now logs the account out (`onLogout` fires) instead of surfacing as an unhandled rejection.
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Fixes `sdk.rest` calls failing when the SDK is created with a `ws(s)://` URL, and the socket path doubling when the URL already ends with `/websocket`
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Fixes stream callbacks firing once per listener for each event when the same stream key is listened to more than once: `sdk.stream` now shares one server subscription per stream key and unsubscribes when its last listener stops
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Fixes the login token expiry becoming an invalid date when the client decodes EJSON, and `loginWithToken` resolving with the raw server result instead of its declared `{ id, token, tokenExpires: Date }`
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Fixes `client.callAsync` and `client.callAsyncWithOptions` returning `any` for the methods declared in `ServerMethods`; they now resolve with the declared return type
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Fixes the published typings depending on `@rocket.chat/ui-kit` without declaring it, and on Node.js types for a timer field
+
+- ([#42953](https://github.com/RocketChat/Rocket.Chat/pull/42953)) Fixes `account.user` taking the id and username of other users' documents the server publishes once logged in, instead of only the logged-in user's
+
+- ([#43036](https://github.com/RocketChat/Rocket.Chat/pull/43036)) Fixes UI Kit buttons in messages sending the clicker's credentials to an endpoint other than the app's interaction endpoint when their `appId` is not a valid app ID
+
+- <details><summary>Updated dependencies [4f350b4ffb76024d9bf44c02f3322c8f9071f1cf, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 1034e1f85d8e82788ca9590a185370aaf6efc4fb, 12f0c0a9d48ded61bd12ba2e3dcee7b3d877e860, dd082311778ac467d36a72589bc675f1ab2b2cbe, 6bb0d3bca9b5da401050697d51bc99e89871bbb7, 6be3614cd2660ab4024635802fdf9cd7dd7b502f, 588311c49bfce08e7106e7c0bb32741334fa5321, 10b4e00e08951ace8f9c27d83fc0c48be010bdc7, a11ffff8acb74fd016e9ddb972da6eebda0c3e5e, 5e82e67eaa4c998870d3eb0597f485b30c244f02, a9b2bb76d88e4d2743e0817b15e6447e7c9c46eb, cdd948cb67ecf282f6cc8f411615c3de0db0b9f1, 6b3ec3e667c99015e381a4e8ea43146accb5f7f7, 9e401e55fbd71b95dc7c4b273024219ce2564856, a11ffff8acb74fd016e9ddb972da6eebda0c3e5e, bb69cb6c2e190cc3dffe33c3970f0e7c706d24a1, cc5554d63e7341925dd7fd5844d77bd51834b572, 2559423eb2c897c5f1fe8c968c02380009a97df9, 9a520fcd54321e154374182698c825aa09e87cc7, f3fa7abd6b9d311f76619d0fe27793ac68f6d208, daa677895dad92d6aab1e84a09f190efd2755ef9, 642d9e528a8572208e2f0bb51f45ea78400bcea3, bd92e8abc5a8f0161f3de5308979a0f88d09f351, 39a6e6e1397e1e89bc631fe4ab1cc10fa93b59e8, 61bdf0d5afb6714ea3cef087758f1d0eb3bfef45, c3e4da2025942803ddcf19f5298fe707e37bf9c4, a39b03fe5c248079365162e31994e1dece63e7c2, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, 9dfedc72439d12f5d2985b9dd54daccd97e11e74, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, 9dfedc72439d12f5d2985b9dd54daccd97e11e74, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, bb586dc723b3dccdf725d28f530b28cfa857020a, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, ec12f66a28435f99fbce9cbb00ef49193f5b0d34, 23698f9d08d34d3c145f116b5303b542e8342f9e, 9dfedc72439d12f5d2985b9dd54daccd97e11e74, e1070288debfecc5e49e118c3dc535f95936281f, 9dfedc72439d12f5d2985b9dd54daccd97e11e74, 6c23db12912236374f41ae8f43ca7409b7b8b56c, 5feb08c8d83883c4142fda5d98cd1e1435d5d3b8]:</summary>
+  - @rocket.chat/core-typings@9.0.0-rc.0
+  - @rocket.chat/rest-typings@9.0.0-rc.0
+  - @rocket.chat/emitter@0.33.1-rc.0
+  - @rocket.chat/ui-kit@2.0.0-rc.0
+  - @rocket.chat/media-signaling@1.4.0-rc.0
+  - @rocket.chat/api-client@0.2.57
+
+  </details>
+
 ## 1.2.0
 
 ### Minor Changes

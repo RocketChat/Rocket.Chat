@@ -1,7 +1,7 @@
 import { AbacContractError } from '@rocket.chat/abac';
 import { Apps, AppEvents } from '@rocket.chat/apps';
 import { AppsEngineException } from '@rocket.chat/apps-engine/definition/exceptions';
-import { Message, Team, Room, ClientSafeError } from '@rocket.chat/core-services';
+import { Message, Team, Room, ClientSafeError, isClientSafeError } from '@rocket.chat/core-services';
 import { isBannedSubscription, isRoomNativeFederated, type IUser } from '@rocket.chat/core-typings';
 import { Subscriptions, Users, Rooms } from '@rocket.chat/models';
 
@@ -61,7 +61,7 @@ export const addUserToRoom = async (
 		await beforeAddUserToRoomPatch([userToBeAdded.username!], room, inviterUser);
 		await beforeAddUserToRoom.run({ user: userToBeAdded, inviter: inviterUser }, room);
 	} catch (error) {
-		if (error instanceof AbacContractError) {
+		if (error instanceof AbacContractError || isClientSafeError(error)) {
 			throw error;
 		}
 		throw new ClientSafeError((error as any)?.message);

@@ -218,7 +218,7 @@ describe('[Groups]', () => {
 						},
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
 						expect(res.body).to.have.property('error').that.is.a('string');
@@ -416,10 +416,10 @@ describe('[Groups]', () => {
 					name: `team-group-${Date.now()}`,
 					extraData: { teamId },
 				})
-				.expect(400)
+				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-not-allowed');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 	});
@@ -1117,10 +1117,10 @@ describe('[Groups]', () => {
 				})
 				.expect('Content-Type', 'application/json')
 
-				.expect(400)
+				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-not-allowed');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 
@@ -1692,10 +1692,10 @@ describe('[Groups]', () => {
 				.query({
 					_id: room._id,
 				})
-				.expect(400)
+				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('errorType', 'error-not-allowed');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 	});
@@ -1771,7 +1771,7 @@ describe('[Groups]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 	});
@@ -1995,7 +1995,7 @@ describe('[Groups]', () => {
 				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'User does not have the permissions required for this action [error-unauthorized]');
+					expect(res.body).to.have.property('errorType', 'error-forbidden');
 				});
 		});
 	});
@@ -2502,11 +2502,11 @@ describe('[Groups]', () => {
 					roomName: testTeamGroup.name,
 				})
 				.expect('Content-Type', 'application/json')
-				.expect(400)
+				.expect(403)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
 					expect(res.body).to.have.a.property('error');
-					expect(res.body).to.have.a.property('errorType', 'error-not-allowed');
+					expect(res.body).to.have.a.property('errorType', 'error-forbidden');
 				});
 		});
 		it(`should fail deleting a team's group when member has the necessary permission in the team, but not in the deleted room`, async () => {
