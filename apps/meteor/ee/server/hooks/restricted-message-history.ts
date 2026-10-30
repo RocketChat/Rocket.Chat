@@ -1,6 +1,6 @@
 import type { IMessage, IRoom, ISubscription, IUser } from '@rocket.chat/core-typings';
 import { License } from '@rocket.chat/license';
-import { Messages, Subscriptions } from '@rocket.chat/models';
+import { Messages, Rooms, Subscriptions } from '@rocket.chat/models';
 
 import { canRestrictMessageHistory } from '../../../lib/rooms/canRestrictMessageHistory';
 import type { HistoryCheckedMessage } from '../../../server/lib/messages/historyVisibility';
@@ -17,11 +17,24 @@ type ThreadRoot = Pick<IMessage, 'ts' | 'replies'> | null;
 
 const isActive = () => License.hasModule('experimental-enterprise-features') && settings.get<boolean>('Restricted_Message_History_Enabled');
 
-const findHistoryVisibleFrom = async (uid: IUser['_id'], rid: IRoom['_id']): Promise<Date | undefined> => {
-	const subscription = await Subscriptions.findOneByRoomIdAndUserId<Pick<ISubscription, 'historyVisibleFrom'>>(rid, uid, {
+const findSubscriptionCutoff = async (uid: IUser['_id'], rid: IRoom['_id']) =>
+	Subscriptions.findOneByRoomIdAndUserId<Pick<ISubscription, 'historyVisibleFrom'>>(rid, uid, {
 		projection: { historyVisibleFrom: 1 },
 	});
-	return subscription?.historyVisibleFrom;
+
+/** A member's cutoff in a room; a discussion they read through its parent room takes their cutoff there. */
+const findHistoryVisibleFrom = async (uid: IUser['_id'], rid: IRoom['_id']): Promise<Date | undefined> => {
+	const subscription = await findSubscriptionCutoff(uid, rid);
+	if (subscription) {
+		return subscription.historyVisibleFrom;
+	}
+
+	const room = await Rooms.findOneById<Pick<IRoom, 'prid'>>(rid, { projection: { prid: 1 } });
+	if (!room?.prid) {
+		return undefined;
+	}
+
+	return (await findSubscriptionCutoff(uid, room.prid))?.historyVisibleFrom;
 };
 
 /** Thread roots looked up at most once while answering one question. */

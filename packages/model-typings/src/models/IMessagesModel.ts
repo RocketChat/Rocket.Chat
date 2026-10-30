@@ -78,6 +78,7 @@ export interface IMessagesModel extends IBaseModel<IMessage> {
 		rid: IRoom['_id'],
 		text: string,
 		options?: O,
+		visibility?: MessageHistoryVisibility,
 	): FindPaginated<FindCursor<DocumentWithProjection<T, O>>>;
 
 	findAllNumberOfTransferredRooms(p: {

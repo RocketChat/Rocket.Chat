@@ -1,10 +1,12 @@
 import { AppEvents, Apps } from '@rocket.chat/apps';
-import { Message } from '@rocket.chat/core-services';
-import type { IMessage, IRoom } from '@rocket.chat/core-typings';
+import { ClientSafeError, Message } from '@rocket.chat/core-services';
+import type { IMessage, IRoom, IUser } from '@rocket.chat/core-typings';
 import { Messages } from '@rocket.chat/models';
 import { isAbsoluteURL } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
 
+import type { HistoryCheckedMessage } from './historyVisibility';
+import { canSeeMessage, historyCheckedMessageProjection } from './historyVisibility';
 import { isRelativeURL } from '../../../lib/utils/isRelativeURL';
 import { afterSaveMessage } from '../../hooks/messages/afterSaveMessage';
 import { settings } from '../../settings';
@@ -187,6 +189,18 @@ export const validateMessage = async (message: any, room: any, user: any) => {
 	}
 };
 
+/** Refuses a reply to a thread its sender isn't allowed to read, since replying would make them follow it. */
+const validateThreadReply = async (message: Partial<IMessage>, user: Pick<IUser, '_id'>) => {
+	if (!message.tmid) {
+		return;
+	}
+
+	const threadRoot = await Messages.findOneById<HistoryCheckedMessage>(message.tmid, { projection: historyCheckedMessageProjection });
+	if (threadRoot && !(await canSeeMessage(user._id, threadRoot))) {
+		throw new ClientSafeError('error-not-allowed', 'Not allowed', { method: 'sendMessage' });
+	}
+};
+
 export function prepareMessageObject(
 	message: Partial<IMessage>,
 	rid: IRoom['_id'],
@@ -230,6 +244,7 @@ export const sendMessage = async function (user: any, message: any, room: any, o
 	}
 
 	await validateMessage(message, room, user);
+	await validateThreadReply(message, user);
 	prepareMessageObject(message, room._id, user);
 
 	if (settings.get('Message_Read_Receipt_Enabled')) {
@@ -254,6 +269,7 @@ export const sendMessage = async function (user: any, message: any, room: any, o
 
 			// Some app may have inserted malicious/invalid values in the message, let's check it again
 			await validateMessage(message, room, user);
+			await validateThreadReply(message, user);
 		}
 	}
 
