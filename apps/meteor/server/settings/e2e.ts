@@ -48,4 +48,65 @@ export const createE2ESettings = () =>
 			public: true,
 			enableQuery: { _id: 'E2E_Enable', value: true },
 		});
+
+		await this.add('E2E_Enable_Local_Search', false, {
+			type: 'boolean',
+			i18nLabel: 'E2E_Enable_Local_Search',
+			i18nDescription: 'E2E_Enable_Local_Search_Description',
+			public: true,
+			enableQuery: { _id: 'E2E_Enable', value: true },
+		});
+
+		const localSearchEnableQuery = [
+			{ _id: 'E2E_Enable', value: true },
+			{ _id: 'E2E_Enable_Local_Search', value: true },
+		];
+
+		await this.add('E2E_Local_Search_Backfill_Months', 12, {
+			type: 'int',
+			i18nLabel: 'E2E_Local_Search_Backfill_Months',
+			i18nDescription: 'E2E_Local_Search_Backfill_Months_Description',
+			public: true,
+			enableQuery: localSearchEnableQuery,
+		});
+
+		await this.add('E2E_Local_Search_Backfill_Max_Messages_Per_Room', 0, {
+			type: 'int',
+			i18nLabel: 'E2E_Local_Search_Backfill_Max_Messages_Per_Room',
+			i18nDescription: 'E2E_Local_Search_Backfill_Max_Messages_Per_Room_Description',
+			public: true,
+			enableQuery: localSearchEnableQuery,
+		});
+
+		await this.add('E2E_Local_Search_Backfill_Page_Size', 100, {
+			type: 'int',
+			i18nLabel: 'E2E_Local_Search_Backfill_Page_Size',
+			i18nDescription: 'E2E_Local_Search_Backfill_Page_Size_Description',
+			public: true,
+			enableQuery: localSearchEnableQuery,
+		});
+
+		await this.add('E2E_Local_Search_Backfill_Pause', 12, {
+			type: 'int',
+			i18nLabel: 'E2E_Local_Search_Backfill_Pause',
+			i18nDescription: 'E2E_Local_Search_Backfill_Pause_Description',
+			public: true,
+			enableQuery: localSearchEnableQuery,
+		});
+
+		await this.add('E2E_Local_Search_Backoff_Min', 10, {
+			type: 'int',
+			i18nLabel: 'E2E_Local_Search_Backoff_Min',
+			i18nDescription: 'E2E_Local_Search_Backoff_Min_Description',
+			public: true,
+			enableQuery: localSearchEnableQuery,
+		});
+
+		await this.add('E2E_Local_Search_Backoff_Max', 600, {
+			type: 'int',
+			i18nLabel: 'E2E_Local_Search_Backoff_Max',
+			i18nDescription: 'E2E_Local_Search_Backoff_Max_Description',
+			public: true,
+			enableQuery: localSearchEnableQuery,
+		});
 	});
