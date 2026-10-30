@@ -11,7 +11,7 @@ const RestrictedHistoryNotice = ({ historyVisibleFrom }: RestrictedHistoryNotice
 	const formatDate = useFormatDate();
 
 	return (
-		<Box display='flex' justifyContent='center' paddingInline={20} marginBlock={8}>
+		<Box display='flex' justifyContent='center' paddingInline='x20' marginBlock='x8'>
 			<Bubble role='status' small secondary>
 				{t('Messages_before_date_not_available_to_you', { date: formatDate(historyVisibleFrom) })}
 			</Bubble>
