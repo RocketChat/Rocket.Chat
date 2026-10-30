@@ -1,7 +1,7 @@
 import type { SetStateAction } from 'react';
 import { useState } from 'react';
 
-import { useStableCallback } from './useStableCallback';
+import { useStableCallback } from './useStableCallback.js';
 
 /**
  * Tracks the active option of a listbox whose DOM focus stays on its combobox, and whether that option shows its focus ring:

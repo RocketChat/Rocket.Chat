@@ -1,1 +1,1 @@
-export * from './useSafeRefCallback';
+export * from './useSafeRefCallback.js';
