@@ -41,6 +41,8 @@ export * from './models/OAuthAccessTokens';
 export * from './models/OAuthApps';
 export * from './models/OAuthAuthCodes';
 export * from './models/LoginCodes';
+export * from './models/Passkeys';
+export * from './models/PasskeyChallenges';
 export * from './models/OAuthRefreshTokens';
 export * from './models/OEmbedCache';
 export * from './models/Permissions';

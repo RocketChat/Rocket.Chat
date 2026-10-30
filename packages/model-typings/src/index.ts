@@ -7,6 +7,8 @@ export type * from './models/IBaseUploadsModel';
 export type * from './models/ICannedResponseModel';
 export type * from './models/ICredentialTokensModel';
 export type * from './models/ILoginCodesModel';
+export type * from './models/IPasskeysModel';
+export type * from './models/IPasskeyChallengesModel';
 export type * from './models/ICustomSoundsModel';
 export type * from './models/ICustomUserStatusModel';
 export type * from './models/IEmailInboxModel';

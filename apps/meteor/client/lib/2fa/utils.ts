@@ -18,3 +18,6 @@ export const isTotpMaxAttemptsError = (
 ): error is MeteorErrorLike & ({ error: 'totp-max-attempts' } | { errorType: 'totp-max-attempts' }) =>
 	(error as { error?: unknown } | undefined)?.error === 'totp-max-attempts' ||
 	(error as { errorType?: unknown } | undefined)?.errorType === 'totp-max-attempts';
+
+/** The user closed the two-factor prompt an endpoint asked for. */
+export const isTwoFactorCancelledError = (error: unknown): boolean => error instanceof Error && error.message === 'totp-canceled';

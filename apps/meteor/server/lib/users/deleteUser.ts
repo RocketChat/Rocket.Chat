@@ -13,6 +13,7 @@ import {
 	ReadReceiptsArchive,
 	LivechatUnitMonitors,
 	ModerationReports,
+	Passkeys,
 } from '@rocket.chat/models';
 
 import { getUserSingleOwnedRooms } from './getUserSingleOwnedRooms';
@@ -165,6 +166,8 @@ export async function deleteUser(userId: string, confirmRelinquish = false, dele
 			});
 		}
 	}
+
+	await Passkeys.removeByUserId(userId);
 
 	// Remove user from users database
 	await Users.removeById(userId);

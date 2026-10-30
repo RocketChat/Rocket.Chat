@@ -275,6 +275,7 @@ export class MockedAppRootBuilder {
 	private authentication: ContextType<typeof AuthenticationContext> = {
 		isLoggingIn: false,
 		loginWithPassword: () => Promise.resolve(),
+		loginWithPasskey: () => Promise.resolve(),
 		loginWithToken: () => Promise.resolve(),
 		loginWithService: () => () => Promise.resolve(true),
 		loginWithIframe: async () => Promise.reject('loginWithIframe not implemented'),

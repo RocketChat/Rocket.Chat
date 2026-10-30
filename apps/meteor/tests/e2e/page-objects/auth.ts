@@ -59,6 +59,14 @@ class LoginForm {
 		return this.root.getByRole('button', { name: 'Login', exact: true });
 	}
 
+	get btnLoginWithPasskey(): Locator {
+		return this.root.getByRole('button', { name: 'Sign in with a passkey', exact: true });
+	}
+
+	get textPasskeyCannotSignIn(): Locator {
+		return this.root.getByText("This passkey can't sign you in.", { exact: false });
+	}
+
 	async fillForm(username: string, password: string) {
 		await this.username.fill(username);
 		await this.inputPassword.fill(password);

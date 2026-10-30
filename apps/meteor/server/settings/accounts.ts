@@ -95,6 +95,13 @@ export const createAccountSettings = () =>
 				public: true,
 			});
 		});
+
+		await this.section('Passkeys', async function () {
+			await this.add('Accounts_Passkeys_Enabled', false, {
+				type: 'boolean',
+				public: true,
+			});
+		});
 		const enableQueryCollectData = { _id: 'Block_Multiple_Failed_Logins_Enabled', value: true };
 
 		await this.section('Login_Attempts', async function () {

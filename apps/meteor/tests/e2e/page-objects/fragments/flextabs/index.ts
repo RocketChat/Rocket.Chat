@@ -11,6 +11,7 @@ export * from './export-messages-flextab';
 export * from './files-flextab';
 export * from './members-flextab';
 export * from './notification-preferences-flextab';
+export * from './passkey-details-flextab';
 export * from './prune-messages-flextab';
 export * from './room-info-flextab';
 export * from './threads-flextab';
