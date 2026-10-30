@@ -1,6 +1,6 @@
-import { renderHook, act } from './testing';
-import { useMediaQuery } from './useMediaQuery';
-import { withMatchMediaMock } from '../mocks/withMatchMediaMock';
+import { renderHook, act } from './testing.js';
+import { useMediaQuery } from './useMediaQuery.js';
+import { withMatchMediaMock } from '../mocks/withMatchMediaMock.js';
 
 const setViewport = withMatchMediaMock();
 
