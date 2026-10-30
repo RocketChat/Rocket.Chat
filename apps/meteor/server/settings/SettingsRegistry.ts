@@ -235,8 +235,8 @@ export class SettingsRegistry {
 
 		if (!this.store.has(_id)) {
 			options.ts = new Date();
-			this.store.set(options as ISetting);
-			await this.model.insertIfNotExists(options as ISetting);
+			const storedGroup = await this.model.insertIfNotExists(options as ISetting);
+			this.store.set(storedGroup ?? (options as ISetting));
 		}
 
 		if (!callback) {

@@ -4,4 +4,4 @@
 '@rocket.chat/models': patch
 ---
 
-Fixes instances started at the same time after an upgrade hanging at startup on a duplicate key error, without serving requests or restarting
+Fixes instances started at the same time after an upgrade hanging at startup on a duplicate key error; they now start without a restart
