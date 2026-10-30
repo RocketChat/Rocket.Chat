@@ -255,12 +255,8 @@ export class SettingsRaw extends BaseRaw<ISetting> implements ISettingsModel {
 	}
 
 	insertIfNotExists(setting: ISetting): Promise<WithId<ISetting> | null> {
-		const { _id, ...fields } = setting;
+		const { _id, _updatedAt, ...fields } = setting;
 
-		return this.col.findOneAndUpdate(
-			{ _id },
-			{ $setOnInsert: { ...fields, _updatedAt: new Date() } },
-			{ upsert: true, returnDocument: 'after' },
-		);
+		return this.findOneAndUpdate({ _id }, { $setOnInsert: fields }, { upsert: true, returnDocument: 'after' });
 	}
 }
