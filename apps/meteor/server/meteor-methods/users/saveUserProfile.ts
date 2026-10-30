@@ -52,10 +52,12 @@ async function saveUserProfile(
 		});
 	}
 
+	const username = settings.username || undefined;
+
 	await validateUserEditing(this.userId, {
 		_id: this.userId,
 		email: settings.email,
-		username: settings.username,
+		username,
 		name: settings.realname,
 		password: settings.newPassword,
 		statusText: settings.statusText,
@@ -69,14 +71,9 @@ async function saveUserProfile(
 		});
 	}
 
-	if (settings.realname || settings.username) {
-		if (
-			!(await saveUserIdentity({
-				_id: this.userId,
-				name: settings.realname,
-				username: settings.username,
-			}))
-		) {
+	// An empty name removes the optional display name; a username can be changed but never removed, so an empty one is ignored.
+	if (settings.realname !== undefined || username !== undefined) {
+		if (!(await saveUserIdentity({ _id: this.userId, name: settings.realname, username }))) {
 			throw new ClientSafeError('error-could-not-save-identity', 'Could not save user identity', {
 				method: 'saveUserProfile',
 			});
