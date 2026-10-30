@@ -329,10 +329,15 @@ export abstract class CachedStore<T extends IRocketChatRecord, U = T> implements
 		clearTimeout(this.timer);
 		// Wait for an empty queue to load data again and sync
 		this.timer = setTimeout(async () => {
-			if (!(await this.sync())) {
-				return this.trySync(delay);
+			try {
+				if (!(await this.sync())) {
+					this.trySync(delay);
+					return;
+				}
+				await this.save();
+			} catch (error) {
+				console.warn(`CachedCollection ${this.name}: could not synchronize`, error);
 			}
-			await this.save();
 		}, delay);
 	}
 

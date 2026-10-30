@@ -66,6 +66,39 @@ describe('CachedStore', () => {
 
 	afterEach(cancelPendingSaves);
 
+	it('handles a rejected scheduled sync without an unhandled rejection', async () => {
+		jest.useFakeTimers();
+		const error = new Error('not-allowed');
+		const warn = jest.spyOn(console, 'warn').mockImplementation(() => undefined);
+		const cachedStore = new TestCachedStore();
+		const scheduled = cachedStore as unknown as { trySync(): void; sync(): Promise<boolean> };
+		jest.spyOn(scheduled, 'sync').mockRejectedValue(error);
+		try {
+			scheduled.trySync();
+			await jest.advanceTimersByTimeAsync(10);
+			expect(warn).toHaveBeenCalledWith('CachedCollection subscriptions: could not synchronize', error);
+		} finally {
+			warn.mockRestore();
+			jest.useRealTimers();
+		}
+	});
+
+	it('keeps the scheduled catch-up when the session token changes', async () => {
+		jest.useFakeTimers();
+		const cachedStore = new TestCachedStore();
+		const scheduled = cachedStore as unknown as { trySync(): void; sync(): Promise<boolean> };
+		const sync = jest.spyOn(scheduled, 'sync').mockResolvedValue(true);
+		try {
+			localStorage.setItem(STORAGE_KEYS.LOGIN_TOKEN, 'old');
+			scheduled.trySync();
+			localStorage.setItem(STORAGE_KEYS.LOGIN_TOKEN, 'new');
+			await jest.advanceTimersByTimeAsync(10);
+			expect(sync).toHaveBeenCalledTimes(1);
+		} finally {
+			jest.useRealTimers();
+		}
+	});
+
 	it('drops records left in memory by a previous session when loading from the server after a cache miss', async () => {
 		const cachedStore = new TestCachedStore();
 		cachedStore.store.getState().store(stale);
