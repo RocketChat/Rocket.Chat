@@ -72,6 +72,21 @@ describe('createPredicateFromFilter', () => {
 		expect(fn({ foo: 1 })).toBe(false);
 	});
 
+	it.each(['array', 4] as const)('matches $type %s against any array', (type) => {
+		const fn = createPredicateFromFilter({ foo: { $type: type } });
+		expect(fn({ foo: [1, 2] })).toBe(true);
+		expect(fn({ foo: [] })).toBe(true);
+		expect(fn({ foo: [[1]] })).toBe(true);
+		expect(fn({ foo: 1 })).toBe(false);
+		expect(fn({ foo: { bar: [1] } })).toBe(false);
+	});
+
+	it('matches $type against the elements of an array', () => {
+		const fn = createPredicateFromFilter({ foo: { $type: 'string' } });
+		expect(fn({ foo: [1, 'bar'] })).toBe(true);
+		expect(fn({ foo: [1, 2] })).toBe(false);
+	});
+
 	it('matches $regex', () => {
 		const fn = createPredicateFromFilter({ foo: { $regex: '^b' } });
 		expect(fn({ foo: 'bar' })).toBe(true);
