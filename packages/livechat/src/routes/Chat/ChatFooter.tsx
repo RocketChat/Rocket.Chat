@@ -3,7 +3,7 @@ import { useCallback, useMemo, useState } from 'preact/hooks';
 import { route } from 'preact-router';
 import { useTranslation } from 'react-i18next';
 
-import styles from './styles.scss';
+import styles from './styles.module.scss';
 import { useStableCallback } from './useStableCallback';
 import { Livechat } from '../../api';
 import { Button } from '../../components/Button';
