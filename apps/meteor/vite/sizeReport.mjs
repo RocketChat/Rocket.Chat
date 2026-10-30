@@ -4,7 +4,7 @@
 //   node vite/sizeReport.mjs                        print the report
 //   node vite/sizeReport.mjs --json out.json        also write it as JSON
 //   node vite/sizeReport.mjs --compare base.json    print the change against a report written with --json
-import { existsSync, readFileSync, writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { dirname, join, relative } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parseArgs } from 'node:util';
@@ -58,9 +58,10 @@ await build({
 	],
 });
 
-// Tamagui writes its zero-runtime stylesheet once the bundle is closed.
-const zeroStylesheet = join(dist, 'tamagui-zero.css');
-if (existsSync(zeroStylesheet)) count('css', readFileSync(zeroStylesheet));
+// Tamagui's zero-runtime stylesheet joins the bundle once it is closed, so it is not among the assets counted above.
+const manifest = JSON.parse(readFileSync(join(dist, '.vite/manifest.json'), 'utf8'));
+const entry = Object.values(manifest).find((chunk) => chunk.isEntry);
+for (const file of entry.css.filter((css) => css.includes('tamagui-zero-'))) count('css', readFileSync(join(dist, file)));
 
 const sum = (filter) =>
 	Object.entries(modules)
