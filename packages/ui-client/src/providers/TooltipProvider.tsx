@@ -28,16 +28,16 @@ const restoreAnchorTitle = (anchor: HTMLElement): void => {
 	anchor.removeAttribute('data-title');
 };
 
-type Hovered = {
-	element: HTMLElement;
-	rect: DOMRect;
-};
-
 // When the pointer is outside the hovered element's box, a pseudo-element stretched over its container, such as a
 // link that covers its whole row, is taking the hover from the content beneath it.
-const findCoveredAnchor = ({ element, rect }: Hovered, x: number, y: number): HTMLElement | null => {
+const findCoveredAnchor = (element: HTMLElement, x: number, y: number): HTMLElement | null => {
 	const container = element.offsetParent;
-	if (!container || (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom)) {
+	if (!container) {
+		return null;
+	}
+
+	const rect = element.getBoundingClientRect();
+	if (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom) {
 		return null;
 	}
 
@@ -49,8 +49,8 @@ const findCoveredAnchor = ({ element, rect }: Hovered, x: number, y: number): HT
 	return anchor && container.contains(anchor) ? anchor : null;
 };
 
-const findAnchor = (hovered: Hovered, x: number, y: number): HTMLElement | null =>
-	findCoveredAnchor(hovered, x, y) ?? hovered.element.closest<HTMLElement>('[title], [data-tooltip]');
+const findAnchor = (element: HTMLElement, x: number, y: number): HTMLElement | null =>
+	findCoveredAnchor(element, x, y) ?? element.closest<HTMLElement>('[title], [data-tooltip]');
 
 const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipProviderProps) => {
 	const lastAnchor = useRef<HTMLElement>(undefined);
@@ -102,15 +102,22 @@ const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipP
 			return;
 		}
 
-		let hovered: Hovered | undefined;
+		let hovered: HTMLElement | undefined;
 
 		const showTooltipAt = (e: MouseEvent): void => {
 			if (!hovered) {
 				return;
 			}
 
-			const target = hovered.element;
-			const anchor = findAnchor(hovered, e.clientX, e.clientY);
+			const target = hovered;
+			const anchor = findAnchor(target, e.clientX, e.clientY);
+
+			// A covered anchor never receives `mouseleave`, so the pointer resolving elsewhere is what ends its dismissal.
+			const dismissed = dismissedAnchor.current;
+			if (dismissed && dismissed !== anchor) {
+				restoreAnchorTitle(dismissed);
+				dismissedAnchor.current = undefined;
+			}
 
 			if ((lastAnchor.current ?? null) === anchor) {
 				return;
@@ -170,14 +177,13 @@ const TooltipProvider = ({ children, ownerDocument = window.document }: TooltipP
 		};
 
 		const handleMouseOver = (e: MouseEvent): void => {
-			const element = e.target as HTMLElement;
-			hovered = { element, rect: element.getBoundingClientRect() };
+			hovered = e.target as HTMLElement;
 			showTooltipAt(e);
 		};
 
 		// Moving across a stretched pseudo-element stays on the same target, so `mouseover` alone misses what is beneath it.
 		const handleMouseMove = (e: MouseEvent): void => {
-			if (e.target === hovered?.element) {
+			if (e.target === hovered) {
 				showTooltipAt(e);
 			}
 		};

@@ -289,4 +289,40 @@ describe('with an anchor covered by a link stretched over its row', () => {
 		expect(badge).toHaveAttribute('title', '3 unread messages');
 		expect(badge).not.toHaveAttribute('data-title');
 	});
+
+	it('should leave the click to the link', () => {
+		const { link } = setupStretchedLink();
+
+		fireEvent.mouseOver(link, onBadge);
+		waitForTooltipDebounce();
+
+		// `fireEvent` returns false when a listener prevented the default action
+		expect(fireEvent.click(link, onBadge)).toBe(true);
+	});
+
+	it('should show the tooltip again after a click-dismiss when the pointer moves off and back within the link', () => {
+		const { link } = setupStretchedLink();
+
+		fireEvent.mouseOver(link, onBadge);
+		waitForTooltipDebounce();
+		fireEvent.click(link);
+		fireEvent.mouseMove(link, onText);
+		fireEvent.mouseMove(link, onBadge);
+		waitForTooltipDebounce();
+
+		expect(screen.getByRole('tooltip', { hidden: true })).toHaveTextContent('3 unread messages');
+	});
+
+	it('should find the covered content after the link resizes while hovered', () => {
+		const { link } = setupStretchedLink();
+
+		// the link spans the badge's position when hovered, then shrinks as the row reveals its actions
+		link.getBoundingClientRect = () => new DOMRect(0, 0, 200, 20);
+		fireEvent.mouseOver(link, onText);
+		link.getBoundingClientRect = () => new DOMRect(0, 0, 50, 20);
+		fireEvent.mouseMove(link, onBadge);
+		waitForTooltipDebounce();
+
+		expect(screen.getByRole('tooltip', { hidden: true })).toHaveTextContent('3 unread messages');
+	});
 });
