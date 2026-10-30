@@ -16,7 +16,6 @@ import { Logger } from '@rocket.chat/logger';
 import type { InsertionModel } from '@rocket.chat/model-typings';
 import { LivechatContacts, LivechatDepartment, LivechatInquiry, LivechatRooms, Users } from '@rocket.chat/models';
 import { Random } from '@rocket.chat/random';
-import { Match, check } from 'meteor/check';
 
 import { createLivechatRoom, createLivechatInquiry, allowAgentSkipQueue, prepareLivechatRoom } from './Helper';
 import { RoutingManager } from './RoutingManager';
@@ -302,17 +301,6 @@ export class QueueManager {
 		extraData?: IOmnichannelRoomExtraData;
 	}) {
 		logger.debug({ msg: 'Requesting room for guest', guestId: guest._id });
-		check(
-			guest,
-			Match.ObjectIncluding({
-				_id: String,
-				username: String,
-				status: Match.Maybe(String),
-				department: Match.Maybe(String),
-				name: Match.Maybe(String),
-				activity: Match.Maybe([String]),
-			}),
-		);
 
 		const defaultAgent =
 			(await beforeDelegateAgent(agent, {

@@ -30,10 +30,6 @@ const { createDirectMessage } = p.noCallThru().load('./createDirectMessage', {
 			methods: sandbox.stub(),
 		},
 	},
-	'meteor/check': {
-		check: sandbox.stub(),
-		Match: { Optional: sandbox.stub() },
-	},
 	'@rocket.chat/models': modelsMock,
 	'@rocket.chat/federation-matrix': { validateFederatedUsername: validateFederatedUsernameMock },
 	'../../lib/RateLimiter': { RateLimiterClass: { limitMethod: sandbox.stub() } },

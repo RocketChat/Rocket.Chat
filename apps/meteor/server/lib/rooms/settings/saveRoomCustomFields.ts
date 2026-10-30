@@ -1,12 +1,12 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
-import { Match } from 'meteor/check';
+import { isRecord } from '@rocket.chat/tools';
 import type { UpdateResult } from 'mongodb';
 
 import { notifyOnSubscriptionChangedByRoomId } from '../../notifyListener';
 
 export const saveRoomCustomFields = async function (rid: string, roomCustomFields: Record<string, any>): Promise<UpdateResult> {
-	if (!Match.test(roomCustomFields, Object)) {
+	if (!isRecord(roomCustomFields)) {
 		throw new ClientSafeError('invalid-roomCustomFields-type', 'Invalid roomCustomFields type', {
 			function: 'RocketChat.saveRoomCustomFields',
 		});

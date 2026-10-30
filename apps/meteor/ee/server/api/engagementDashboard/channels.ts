@@ -1,17 +1,17 @@
 import type { IDirectMessageRoom, IRoom } from '@rocket.chat/core-typings';
 import {
 	ajv,
+	ajvQuery,
 	paginatedResponseProperties,
 	validateBadRequestErrorResponse,
 	validateForbiddenErrorResponse,
 	validateUnauthorizedErrorResponse,
 } from '@rocket.chat/rest-typings';
-import { check, Match } from 'meteor/check';
 
 import { API } from '../../../../server/api';
 import { getPaginationItems } from '../../../../server/api/lib/getPaginationItems';
 import { findChannelsWithNumberOfMessages } from '../../lib/engagementDashboard/channels';
-import { isDateISOString, mapDateForAPI } from '../../lib/engagementDashboard/date';
+import { mapDateForAPI } from '../../lib/engagementDashboard/date';
 
 declare module '@rocket.chat/rest-typings' {
 	interface Endpoints {
@@ -37,6 +37,17 @@ declare module '@rocket.chat/rest-typings' {
 		};
 	}
 }
+
+const isChannelsListParams = ajvQuery.compile<{ start: string; end: string; offset?: string; count?: string }>({
+	type: 'object',
+	properties: {
+		start: { type: 'string', format: 'date-time' },
+		end: { type: 'string', format: 'date-time' },
+		offset: { type: 'string' },
+		count: { type: 'string' },
+	},
+	required: ['start', 'end'],
+});
 
 const channelsListResponseSchema = ajv.compile<{
 	channels: {
@@ -97,6 +108,7 @@ API.v1.get(
 		authRequired: true,
 		permissionsRequired: ['view-engagement-dashboard'],
 		license: ['engagement-dashboard'],
+		query: isChannelsListParams,
 		response: {
 			200: channelsListResponseSchema,
 			400: validateBadRequestErrorResponse,
@@ -105,16 +117,6 @@ API.v1.get(
 		},
 	},
 	async function action() {
-		check(
-			this.queryParams,
-			Match.ObjectIncluding({
-				start: Match.Where(isDateISOString),
-				end: Match.Where(isDateISOString),
-				offset: Match.Maybe(String),
-				count: Match.Maybe(String),
-			}),
-		);
-
 		const { start, end } = this.queryParams;
 		const { offset, count } = await getPaginationItems(this.queryParams);
 

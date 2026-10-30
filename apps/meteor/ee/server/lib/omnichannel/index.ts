@@ -8,7 +8,6 @@ import '../../hooks/omnichannel/beforeNewRoom';
 import '../../hooks/omnichannel/beforeRoutingChat';
 import '../../hooks/omnichannel/checkAgentBeforeTakeInquiry';
 import '../../hooks/omnichannel/handleNextAgentPreferredEvents';
-import '../../hooks/omnichannel/onCheckRoomParamsApi';
 import '../../hooks/omnichannel/onLoadConfigApi';
 import '../../hooks/omnichannel/onSaveVisitorInfo';
 import '../../hooks/omnichannel/scheduleAutoTransfer';

@@ -555,7 +555,7 @@ import { IS_EE } from '../../e2e/config/constants';
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Match error: Unknown key in field departmentUnit.invalidProperty');
+					expect(res.body).to.have.property('error', 'must NOT have additional properties [error-invalid-params]');
 				});
 		});
 
@@ -566,13 +566,13 @@ import { IS_EE } from '../../e2e/config/constants';
 				.set(credentials)
 				.send({
 					department: { name: updatedName, enabled: true, showOnOfflineForm: true, showOnRegistration: true, email: 'bla@bla' },
-					departmentUnit: { _id: true },
+					departmentUnit: { _id: { invalid: true } },
 				})
 				.expect('Content-Type', 'application/json')
 				.expect(400)
 				.expect((res) => {
 					expect(res.body).to.have.property('success', false);
-					expect(res.body).to.have.property('error', 'Match error: Expected string, got boolean in field departmentUnit._id');
+					expect(res.body).to.have.property('error', 'must be string [error-invalid-params]');
 				});
 		});
 

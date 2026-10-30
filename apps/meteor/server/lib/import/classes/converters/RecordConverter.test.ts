@@ -17,7 +17,6 @@ const modelsMock = {
 };
 
 const { RecordConverter } = proxyquire.noCallThru().load('./RecordConverter', {
-	'meteor/check': sinon.stub(),
 	'meteor/meteor': sinon.stub(),
 	'@rocket.chat/models': { ...modelsMock, '@global': true },
 });
