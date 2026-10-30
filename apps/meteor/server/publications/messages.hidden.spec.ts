@@ -7,8 +7,8 @@ jest.mock('@rocket.chat/core-services', () => ({ ClientSafeError: Error }));
 jest.mock('@rocket.chat/models', () => ({
 	Messages: {
 		findForUpdates: jest.fn(),
-		trashFindDeletedAfter: jest.fn(),
-		trashFind: jest.fn(),
+		findDeletedByRoomIdAfter: jest.fn(),
+		findDeletedByRoomIdAndDeletedAt: jest.fn(),
 	},
 }));
 jest.mock('../lib/authorization/canAccessRoom', () => ({}));
@@ -42,8 +42,8 @@ describe('hidden message deletion synchronization', () => {
 	beforeEach(() => {
 		jest.clearAllMocks();
 		jest.mocked(Messages.findForUpdates).mockReturnValue({ toArray: async () => [hidden] } as never);
-		jest.mocked(Messages.trashFindDeletedAfter).mockReturnValue({ toArray: async () => [] } as never);
-		jest.mocked(Messages.trashFind).mockReturnValue({ toArray: async () => [] } as never);
+		jest.mocked(Messages.findDeletedByRoomIdAfter).mockReturnValue({ toArray: async () => [] } as never);
+		jest.mocked(Messages.findDeletedByRoomIdAndDeletedAt).mockReturnValue({ toArray: async () => [] } as never);
 	});
 
 	it('returns a sanitized deletion placeholder after an offline hidden-only delete', async () => {
