@@ -12,6 +12,10 @@
 	.rcx-grid--#{$breakpoint-name} > & {
 		@content;
 	}
+
+	&.rcx-grid--#{$breakpoint-name} {
+		@content;
+	}
 }
 
 .rcx-grid {
