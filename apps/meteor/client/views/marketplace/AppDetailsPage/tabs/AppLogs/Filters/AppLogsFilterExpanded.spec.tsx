@@ -1,6 +1,6 @@
 import { mockAppRoot } from '@rocket.chat/mock-providers';
 import { composeStories } from '@storybook/react';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
@@ -61,4 +61,62 @@ it('Time select should open modal when custom time range is selected', async () 
 	await userEvent.click(await screen.findByRole('option', { name: 'Custom_time_range' }));
 
 	expect(screen.getByRole('dialog')).toBeVisible();
+
+	// The story decorator shares one modal context across tests, so leave no modal open behind
+	await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Cancel' }));
+});
+
+it('Time select should reopen the modal after a custom time range is applied', async () => {
+	render(<Default />, {
+		wrapper: mockAppRoot().build(),
+	});
+
+	await userEvent.click(screen.getByRole('combobox', { name: 'Time' }));
+	await userEvent.click(await screen.findByRole('option', { name: 'Custom_time_range' }));
+
+	const dialog = screen.getByRole('dialog');
+	await userEvent.type(within(dialog).getByLabelText('Start_Date'), '2026-03-01');
+	await userEvent.type(within(dialog).getByLabelText('End_Date'), '2026-03-05');
+	await userEvent.click(within(dialog).getByRole('button', { name: 'Apply' }));
+
+	await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+	expect(screen.getByRole('combobox', { name: 'Time' })).toHaveTextContent('Mar 01, 2026 - Mar 05, 2026');
+
+	await userEvent.click(screen.getByRole('combobox', { name: 'Time' }));
+	await userEvent.click(await screen.findByRole('option', { name: 'Custom_time_range' }));
+
+	expect(screen.getByRole('dialog')).toBeVisible();
+
+	// The story decorator shares one modal context across tests, so leave no modal open behind
+	await userEvent.click(within(screen.getByRole('dialog')).getByRole('button', { name: 'Cancel' }));
+});
+
+it('Time select should prefill the modal with the last custom time range after picking another option', async () => {
+	render(<Default />, {
+		wrapper: mockAppRoot().build(),
+	});
+
+	const openCustomTimeRange = async () => {
+		await userEvent.click(screen.getByRole('combobox', { name: 'Time' }));
+		await userEvent.click(await screen.findByRole('option', { name: 'Custom_time_range' }));
+		return screen.getByRole('dialog');
+	};
+
+	const dialog = await openCustomTimeRange();
+	await userEvent.type(within(dialog).getByLabelText('Start_Date'), '2026-03-01');
+	await userEvent.type(within(dialog).getByLabelText('End_Date'), '2026-03-05');
+	await userEvent.click(within(dialog).getByRole('button', { name: 'Apply' }));
+	await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+
+	for await (const option of ['All_time', 'Today']) {
+		await userEvent.click(screen.getByRole('combobox', { name: 'Time' }));
+		await userEvent.click(await screen.findByRole('option', { name: option }));
+
+		const reopened = await openCustomTimeRange();
+		expect(within(reopened).getByLabelText('Start_Date')).toHaveValue('2026-03-01');
+		expect(within(reopened).getByLabelText('End_Date')).toHaveValue('2026-03-05');
+		await userEvent.click(within(reopened).getByRole('button', { name: 'Cancel' }));
+		await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+		expect(screen.getByRole('combobox', { name: 'Time' })).toHaveTextContent(option);
+	}
 });
