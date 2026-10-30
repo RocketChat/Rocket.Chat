@@ -12,7 +12,7 @@ type Node = {
 	[key: string]: any;
 };
 
-type DiagnosticReason = 'styling-prop-after-spread' | 'dynamic-styling-prop' | 'too-many-conditionals';
+type DiagnosticReason = 'styling-prop-after-spread' | 'dynamic-styling-prop' | 'too-many-conditionals' | 'expression-between-conditionals';
 
 type Diagnostic = {
 	file: string;
@@ -231,6 +231,21 @@ export const staticBox = ({ report = false }: { report?: boolean } = {}): Plugin
 
 				if (conditionals.length > maxConditionals) {
 					reportDiagnostic(node, 'too-many-conditionals');
+					return;
+				}
+
+				// Every test runs where the first conditional was, so none may follow an attribute that runs code.
+				const between = (node.openingElement.attributes as Node[]).find(
+					(attribute) =>
+						conditionals.length > 1 &&
+						attribute.start > conditionals[0].attribute.start &&
+						attribute.start < conditionals[conditionals.length - 1].attribute.start &&
+						!stylingAttributes.includes(attribute) &&
+						!literalValue(attribute.value),
+				);
+
+				if (between) {
+					reportDiagnostic(between, 'expression-between-conditionals', between.name.name);
 					return;
 				}
 
