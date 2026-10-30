@@ -89,10 +89,11 @@ describe('validateLoginAttempt', () => {
 		);
 	});
 
-	it('requires a verified email only from password logins', async () => {
+	it('requires a verified email only from password and passkey logins', async () => {
 		settingsGet.withArgs('Accounts_EmailVerification').returns(true);
 
 		await expect(validateLoginAttempt(createAttempt())).to.be.rejectedWith('error-invalid-email');
+		await expect(validateLoginAttempt(createAttempt({ type: 'passkey' }))).to.be.rejectedWith('error-invalid-email');
 		expect(await validateLoginAttempt(createAttempt({ type: 'cas' }))).to.equal(true);
 	});
 

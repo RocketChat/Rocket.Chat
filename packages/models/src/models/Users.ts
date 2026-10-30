@@ -1939,6 +1939,10 @@ export class UsersRaw extends BaseRaw<IUser, DefaultFields<IUser>> implements IU
 		return this.find<ILoginToken>(query, { projection: { 'services.resume.loginTokens': 1 } });
 	}
 
+	addLoginToken(userId: IUser['_id'], loginToken: IMeteorLoginToken) {
+		return this.updateOne({ _id: userId }, { $addToSet: { 'services.resume.loginTokens': loginToken } });
+	}
+
 	addPersonalAccessTokenToUser({ userId, loginTokenObject }: { userId: IUser['_id']; loginTokenObject: ILoginToken }) {
 		return this.updateOne(
 			{ _id: userId },

@@ -4199,6 +4199,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@hexagon/base64@npm:^1.1.27":
+  version: 1.1.28
+  resolution: "@hexagon/base64@npm:1.1.28"
+  checksum: 10/e002644dfdcc932dfbfe95ff188e83b24520d179d77019506429ff77be1c76562e7d9eafbbcf539264da34cfd7a8a8b99fb9ba3ab4ae126716af57ccd8e641f7
+  languageName: node
+  linkType: hard
+
 "@humanfs/core@npm:^0.19.1":
   version: 0.19.1
   resolution: "@humanfs/core@npm:0.19.1"
@@ -5665,6 +5672,13 @@ __metadata:
   version: 2.0.4
   resolution: "@leichtgewicht/ip-codec@npm:2.0.4"
   checksum: 10/3c7ffb0afb86c731a02813aa4370da27eac037abf8a15fce211226c11b644610382c8eca7efadace9471ee1959afe72fc1d43a62227d974b9fca8eae8b8d2124
+  languageName: node
+  linkType: hard
+
+"@levischuck/tiny-cbor@npm:^0.2.2":
+  version: 0.2.11
+  resolution: "@levischuck/tiny-cbor@npm:0.2.11"
+  checksum: 10/b278004882fc9153b6337f04591a8c95471369d4a2eed1ef9c715c12ddb1a6a5bc85d7ef1d45a9757eaac9b9da8f98d99a44dfdf7162c901a82f8bc8fb7add82
   languageName: node
   linkType: hard
 
@@ -7426,7 +7440,31 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@peculiar/asn1-cms@npm:^2.10.0, @peculiar/asn1-cms@npm:^2.6.0":
+"@peculiar/asn1-android@npm:^2.6.0":
+  version: 2.10.0
+  resolution: "@peculiar/asn1-android@npm:2.10.0"
+  dependencies:
+    "@peculiar/asn1-schema": "npm:^2.10.0"
+    asn1js: "npm:^3.0.10"
+    tslib: "npm:^2.8.1"
+  checksum: 10/4b18e603ca489848b9a9e7be0d7095ff70f9fad71472164cf5903ad11c3de08a8f74b265c4329cad0a2b328fe2c6633eeba21781145cf745c4cfe4f405a33ac7
+  languageName: node
+  linkType: hard
+
+"@peculiar/asn1-asym-key@npm:^2.10.0":
+  version: 2.10.0
+  resolution: "@peculiar/asn1-asym-key@npm:2.10.0"
+  dependencies:
+    "@peculiar/asn1-pkcs8": "npm:^2.10.0"
+    "@peculiar/asn1-schema": "npm:^2.10.0"
+    "@peculiar/asn1-x509": "npm:^2.10.0"
+    asn1js: "npm:^3.0.10"
+    tslib: "npm:^2.8.1"
+  checksum: 10/3a5a479d8f5e059a90090a5c6722dcc3f903923ce8bd5a4b6843e7e44256f9f929e6c3c02f0fc1b81ef7a2789880c61f2abcfca282113624a60e2c26edab77e6
+  languageName: node
+  linkType: hard
+
+"@peculiar/asn1-cms@npm:^2.10.0, @peculiar/asn1-cms@npm:^2.6.0, @peculiar/asn1-cms@npm:^2.9.4":
   version: 2.10.0
   resolution: "@peculiar/asn1-cms@npm:2.10.0"
   dependencies:
@@ -7439,7 +7477,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@peculiar/asn1-csr@npm:^2.6.0":
+"@peculiar/asn1-csr@npm:^2.6.0, @peculiar/asn1-csr@npm:^2.9.4":
   version: 2.10.0
   resolution: "@peculiar/asn1-csr@npm:2.10.0"
   dependencies:
@@ -7451,7 +7489,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@peculiar/asn1-ecc@npm:^2.6.0":
+"@peculiar/asn1-ecc@npm:^2.6.0, @peculiar/asn1-ecc@npm:^2.6.1, @peculiar/asn1-ecc@npm:^2.9.4":
   version: 2.10.0
   resolution: "@peculiar/asn1-ecc@npm:2.10.0"
   dependencies:
@@ -7489,7 +7527,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@peculiar/asn1-pkcs9@npm:^2.6.0":
+"@peculiar/asn1-pkcs9@npm:^2.6.0, @peculiar/asn1-pkcs9@npm:^2.9.4":
   version: 2.10.0
   resolution: "@peculiar/asn1-pkcs9@npm:2.10.0"
   dependencies:
@@ -7505,7 +7543,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@peculiar/asn1-rsa@npm:^2.10.0, @peculiar/asn1-rsa@npm:^2.6.0":
+"@peculiar/asn1-rsa@npm:^2.10.0, @peculiar/asn1-rsa@npm:^2.6.0, @peculiar/asn1-rsa@npm:^2.6.1, @peculiar/asn1-rsa@npm:^2.9.4":
   version: 2.10.0
   resolution: "@peculiar/asn1-rsa@npm:2.10.0"
   dependencies:
@@ -7517,7 +7555,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@peculiar/asn1-schema@npm:^2.10.0, @peculiar/asn1-schema@npm:^2.6.0":
+"@peculiar/asn1-schema@npm:^2.10.0, @peculiar/asn1-schema@npm:^2.6.0, @peculiar/asn1-schema@npm:^2.9.4":
   version: 2.10.0
   resolution: "@peculiar/asn1-schema@npm:2.10.0"
   dependencies:
@@ -7540,7 +7578,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@peculiar/asn1-x509@npm:^2.10.0, @peculiar/asn1-x509@npm:^2.6.0":
+"@peculiar/asn1-x509-post-quantum@npm:^2.9.4":
+  version: 2.10.0
+  resolution: "@peculiar/asn1-x509-post-quantum@npm:2.10.0"
+  dependencies:
+    "@peculiar/asn1-asym-key": "npm:^2.10.0"
+    "@peculiar/asn1-schema": "npm:^2.10.0"
+    "@peculiar/asn1-x509": "npm:^2.10.0"
+    asn1js: "npm:^3.0.10"
+    tslib: "npm:^2.8.1"
+  checksum: 10/6855908b78b43d1979fcddba6e367c2e73c4ca479e778c3ee737d40dcf75f4b4ffa2a1371ff8091ffa91c9e93fab5fddc7dc645fccea9522996dff91a93237f2
+  languageName: node
+  linkType: hard
+
+"@peculiar/asn1-x509@npm:^2.10.0, @peculiar/asn1-x509@npm:^2.6.0, @peculiar/asn1-x509@npm:^2.6.1, @peculiar/asn1-x509@npm:^2.9.4":
   version: 2.10.0
   resolution: "@peculiar/asn1-x509@npm:2.10.0"
   dependencies:
@@ -7577,6 +7628,25 @@ __metadata:
     tslib: "npm:^2.8.1"
     tsyringe: "npm:^4.10.0"
   checksum: 10/d37c56fa5f2c644141948d85010e14f0e4963089e3b0b81edd0bfe85bdfea0eb3f38ab6ff20d322db2bd6977117824cc498a77b2d35af111983b4d58b5e2ccd1
+  languageName: node
+  linkType: hard
+
+"@peculiar/x509@npm:^2.1.0":
+  version: 2.1.0
+  resolution: "@peculiar/x509@npm:2.1.0"
+  dependencies:
+    "@peculiar/asn1-cms": "npm:^2.9.4"
+    "@peculiar/asn1-csr": "npm:^2.9.4"
+    "@peculiar/asn1-ecc": "npm:^2.9.4"
+    "@peculiar/asn1-pkcs9": "npm:^2.9.4"
+    "@peculiar/asn1-rsa": "npm:^2.9.4"
+    "@peculiar/asn1-schema": "npm:^2.9.4"
+    "@peculiar/asn1-x509": "npm:^2.9.4"
+    "@peculiar/asn1-x509-post-quantum": "npm:^2.9.4"
+    pvtsutils: "npm:^1.3.6"
+    tslib: "npm:^2.8.1"
+    tsyringe: "npm:^4.10.0"
+  checksum: 10/a665d5a71c38fa6786c469271aeec780aa769a7ba6ac4d3131c33883a463a7ec1d238d36a44f9aa9acffb42dc2d52f1e63ea61f6ae0b7aae22673342c940e11f
   languageName: node
   linkType: hard
 
@@ -10925,6 +10995,7 @@ __metadata:
     "@rocket.chat/web-ui-registration": "workspace:^"
     "@rocket.chat/xmpp-server": "workspace:^"
     "@sapphi-red/web-noise-suppressor": "npm:^0.4.0"
+    "@simplewebauthn/server": "npm:~14.0.3"
     "@slack/bolt": "npm:^3.22.0"
     "@slack/rtm-api": "npm:~7.0.4"
     "@storybook/react": "npm:~9.1.21"
@@ -13073,6 +13144,24 @@ __metadata:
   version: 2.0.0
   resolution: "@sideway/pinpoint@npm:2.0.0"
   checksum: 10/1ed21800128b2b23280ba4c9db26c8ff6142b97a8683f17639fd7f2128aa09046461574800b30fb407afc5b663c2331795ccf3b654d4b38fa096e41a5c786bf8
+  languageName: node
+  linkType: hard
+
+"@simplewebauthn/server@npm:~14.0.3":
+  version: 14.0.3
+  resolution: "@simplewebauthn/server@npm:14.0.3"
+  dependencies:
+    "@hexagon/base64": "npm:^1.1.27"
+    "@levischuck/tiny-cbor": "npm:^0.2.2"
+    "@peculiar/asn1-android": "npm:^2.6.0"
+    "@peculiar/asn1-ecc": "npm:^2.6.1"
+    "@peculiar/asn1-rsa": "npm:^2.6.1"
+    "@peculiar/asn1-schema": "npm:^2.6.0"
+    "@peculiar/asn1-x509": "npm:^2.6.1"
+    "@peculiar/asn1-x509-post-quantum": "npm:^2.9.4"
+    "@peculiar/x509": "npm:^2.1.0"
+    reflect-metadata: "npm:^0.2.2"
+  checksum: 10/9acead6cedc003967253fdd5c63ed7f2c65bd9989ec7c2bd1298c5fd34795cffb08acebab4c780938a45d40d69b4eb60b8b3d2d756d7ce13ec551d6ab8ec06a0
   languageName: node
   linkType: hard
 

@@ -49,6 +49,8 @@ import {
 	OAuthAppsRaw,
 	OAuthAuthCodesRaw,
 	LoginCodesRaw,
+	PasskeysRaw,
+	PasskeyChallengesRaw,
 	OAuthRefreshTokensRaw,
 	OEmbedCacheRaw,
 	PermissionsRaw,
@@ -136,6 +138,8 @@ registerModel('IOAuthAccessTokensModel', new OAuthAccessTokensRaw(db));
 registerModel('IOAuthAppsModel', new OAuthAppsRaw(db));
 registerModel('IOAuthAuthCodesModel', new OAuthAuthCodesRaw(db));
 registerModel('ILoginCodesModel', new LoginCodesRaw(db));
+registerModel('IPasskeysModel', new PasskeysRaw(db));
+registerModel('IPasskeyChallengesModel', new PasskeyChallengesRaw(db));
 registerModel('IOAuthRefreshTokensModel', new OAuthRefreshTokensRaw(db));
 registerModel('IOEmbedCacheModel', new OEmbedCacheRaw(db));
 registerModel('IPermissionsModel', new PermissionsRaw(db, trashCollection));

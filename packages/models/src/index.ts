@@ -41,6 +41,8 @@ import type {
 	IOAuthAuthCodesModel,
 	IOAuthAccessTokensModel,
 	ILoginCodesModel,
+	IPasskeysModel,
+	IPasskeyChallengesModel,
 	IOAuthRefreshTokensModel,
 	IOEmbedCacheModel,
 	IPushTokenModel,
@@ -175,6 +177,8 @@ export const OAuthApps = proxify<IOAuthAppsModel>('IOAuthAppsModel');
 export const OAuthAuthCodes = proxify<IOAuthAuthCodesModel>('IOAuthAuthCodesModel');
 export const OAuthAccessTokens = proxify<IOAuthAccessTokensModel>('IOAuthAccessTokensModel');
 export const LoginCodes = proxify<ILoginCodesModel>('ILoginCodesModel');
+export const Passkeys = proxify<IPasskeysModel>('IPasskeysModel');
+export const PasskeyChallenges = proxify<IPasskeyChallengesModel>('IPasskeyChallengesModel');
 export const OAuthRefreshTokens = proxify<IOAuthRefreshTokensModel>('IOAuthRefreshTokensModel');
 export const OEmbedCache = proxify<IOEmbedCacheModel>('IOEmbedCacheModel');
 export const PushToken = proxify<IPushTokenModel>('IPushTokenModel');

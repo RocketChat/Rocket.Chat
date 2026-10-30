@@ -20,6 +20,7 @@ callbacks.add(
 			login.type === 'resume' ||
 			login.type === 'proxy' ||
 			login.type === 'cas' ||
+			login.type === 'passkey' ||
 			(login.type === 'password' && login.methodName === 'resetPassword') ||
 			login.methodName === 'verifyEmail'
 		) {

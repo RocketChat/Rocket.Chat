@@ -376,6 +376,7 @@ export interface IUsersModel extends IBaseModel<IUser> {
 	addRoomRolePriorityByUserId(userId: string, rid: string, rolePriority: number): Promise<UpdateResult>;
 	assignRoomRolePrioritiesByUserIdPriorityMap(rolePrioritiesMap: Record<string, number>, rid: string): Promise<number>;
 	getLoginTokensByUserId(userId: string): FindCursor<ILoginToken>;
+	addLoginToken(userId: IUser['_id'], loginToken: IMeteorLoginToken): Promise<UpdateResult>;
 	addPersonalAccessTokenToUser(data: { userId: string; loginTokenObject: IPersonalAccessToken }): Promise<UpdateResult>;
 	removePersonalAccessTokenOfUser(data: {
 		userId: string;
