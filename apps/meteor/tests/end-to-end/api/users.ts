@@ -3824,48 +3824,8 @@ describe('[Users]', () => {
 			expect(user).to.not.have.property('e2e');
 		});
 
-		describe.only('clearing the name', () => {
+		describe('clearing the name', () => {
 			after(() => updateSetting('Accounts_RequireNameForSignUp', true));
-
-			it('should remove the name when it is optional and sent alone', async () => {
-				await updateSetting('Accounts_RequireNameForSignUp', false);
-
-				const res = await request
-					.post(api('users.updateOwnBasicInfo'))
-					.set(userCredentials)
-					.send({ data: { name: '' } })
-					.expect('Content-Type', 'application/json')
-					.expect(200);
-
-				expect(res.body).to.have.property('success', true);
-				expect(res.body.user).to.not.have.property('name');
-				expect(res.body.user.username).to.be.equal(editedUsername);
-			});
-
-			it('should keep the username when it is sent as null alongside an empty name', async () => {
-				const res = await request
-					.post(api('users.updateOwnBasicInfo'))
-					.set(userCredentials)
-					.send({ data: { name: '', username: null } })
-					.expect('Content-Type', 'application/json')
-					.expect(200);
-
-				expect(res.body).to.have.property('success', true);
-				expect(res.body.user).to.not.have.property('name');
-				expect(res.body.user.username).to.be.equal(editedUsername);
-			});
-
-			it('should restore a name sent alone', async () => {
-				const res = await request
-					.post(api('users.updateOwnBasicInfo'))
-					.set(userCredentials)
-					.send({ data: { name: editedName } })
-					.expect('Content-Type', 'application/json')
-					.expect(200);
-
-				expect(res.body).to.have.property('success', true);
-				expect(res.body.user.name).to.be.equal(editedName);
-			});
 
 			it('should reject removing the name when it is required', async () => {
 				await updateSetting('Accounts_RequireNameForSignUp', true);
@@ -3883,6 +3843,34 @@ describe('[Users]', () => {
 
 				const res = await request.get(api('me')).set(userCredentials).expect(200);
 				expect(res.body.name).to.be.equal(editedName);
+			});
+
+			it('should remove the name when it is optional and sent alone', async () => {
+				await updateSetting('Accounts_RequireNameForSignUp', false);
+
+				const res = await request
+					.post(api('users.updateOwnBasicInfo'))
+					.set(userCredentials)
+					.send({ data: { name: '' } })
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body.user).to.not.have.property('name');
+				expect(res.body.user.username).to.be.equal(editedUsername);
+			});
+
+			it('should ignore an empty username sent alongside a name', async () => {
+				const res = await request
+					.post(api('users.updateOwnBasicInfo'))
+					.set(userCredentials)
+					.send({ data: { name: editedName, username: '' } })
+					.expect('Content-Type', 'application/json')
+					.expect(200);
+
+				expect(res.body).to.have.property('success', true);
+				expect(res.body.user.name).to.be.equal(editedName);
+				expect(res.body.user.username).to.be.equal(editedUsername);
 			});
 		});
 
