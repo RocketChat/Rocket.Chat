@@ -8,7 +8,7 @@ import remarkStringify from 'remark-stringify';
 import semver from 'semver';
 import unified from 'unified';
 
-import { getAppsEngineVersion, getMongoVersion, getNodeNpmVersions } from './getMetadata';
+import { getAppsEngineVersion, getMongoVersion, getNodeNpmVersions } from './getMetadata.js';
 
 export const BumpLevels = {
 	dep: 0,
