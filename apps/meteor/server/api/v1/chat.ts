@@ -1235,10 +1235,12 @@ const chatEndpoints = API.v1
 							projection: fields,
 						},
 					).toArray(),
-					remove: await Messages.trashFindDeletedAfter(updatedSinceDate, threadQuery, {
-						sort,
-						projection: { _id: 1, _deletedAt: 1 },
-					}).toArray(),
+					remove: (
+						await Messages.trashFindDeletedAfter(updatedSinceDate, threadQuery, {
+							sort,
+							projection: { _id: 1, _deletedAt: 1 },
+						}).toArray()
+					).map(({ _id, _deletedAt }) => ({ _id, _deletedAt: _deletedAt.toISOString() })),
 				},
 			});
 		},
@@ -1386,11 +1388,9 @@ const chatEndpoints = API.v1
 			return API.v1.success({
 				messages: {
 					update: await Messages.find({ tmid, _updatedAt: { $gt: updatedSinceDate } }, { projection: fields, sort }).toArray(),
-					remove: await Messages.trashFindDeletedAfter(
-						updatedSinceDate,
-						{ tmid },
-						{ projection: { _id: 1, _deletedAt: 1 }, sort },
-					).toArray(),
+					remove: (
+						await Messages.trashFindDeletedAfter(updatedSinceDate, { tmid }, { projection: { _id: 1, _deletedAt: 1 }, sort }).toArray()
+					).map(({ _id, _deletedAt }) => ({ _id, _deletedAt: _deletedAt.toISOString() })),
 				},
 			});
 		},
