@@ -51,6 +51,7 @@ export class UploadsRaw extends BaseUploadModelRaw implements IUploadsModel {
 				rid,
 				_hidden: { $ne: true },
 				typeGroup: 'image',
+				expiresAt: { $exists: false },
 				...(Boolean(uploadedAt) && {
 					uploadedAt: {
 						$lte: uploadedAt,

@@ -3495,6 +3495,37 @@ describe('[Rooms]', () => {
 
 			await deleteRoom({ type: 'p', roomId });
 		});
+		it('should not return images that were uploaded but never sent', async () => {
+			const { body } = await createRoom({ type: 'p', name: `test-${Date.now()}` });
+			const {
+				group: { _id: roomId },
+			} = body;
+			const { title_link } = await uploadFile({
+				roomId,
+				file: fs.createReadStream(path.join(process.cwd(), imgURL)),
+			});
+			const sentFileId = getIdFromImgPath(title_link);
+
+			await request
+				.post(api(`rooms.media/${roomId}`))
+				.set(credentials)
+				.attach('file', fs.createReadStream(path.join(process.cwd(), imgURL)))
+				.expect(200);
+
+			await request
+				.get(api('rooms.images'))
+				.set(credentials)
+				.query({ roomId })
+				.expect(200)
+				.expect((res) => {
+					expect(res.body).to.have.property('success', true);
+					expect(res.body).to.have.property('files').and.to.be.an('array').and.to.have.lengthOf(1);
+					expect(res.body.files[0]).to.have.property('_id', sentFileId);
+					expect(res.body).to.have.property('total', 1);
+				});
+
+			await deleteRoom({ type: 'p', roomId });
+		});
 		it('should allow to filter images passing the startingFromId parameter', async () => {
 			const { body } = await createRoom({ type: 'p', name: `test-${Date.now()}` });
 			const {
