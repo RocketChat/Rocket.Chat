@@ -28,4 +28,8 @@ describe('getSessionDevice', () => {
 		expect(device).to.deep.include({ type: 'mobile-app', name: 'RC Mobile', version: '3.4.0' });
 		expect(device.os).to.include({ name: 'iOS', version: '12.2' });
 	});
+
+	it('describes a mobile app that reports no version without one', () => {
+		expect(getSessionDevice('RC Mobile')).to.deep.include({ type: 'mobile-app', name: 'RC Mobile', longVersion: '', version: '' });
+	});
 });

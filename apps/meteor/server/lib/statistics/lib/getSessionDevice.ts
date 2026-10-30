@@ -59,10 +59,7 @@ export const getSessionDevice = (uaString: string): ISessionDevice => {
 
 		if (result.hasOwnProperty('app') && result.app?.name) {
 			info.name = result.app.name;
-			info.longVersion = result.app.version;
-			if (result.app.bundle) {
-				info.longVersion += ` ${result.app.bundle}`;
-			}
+			info.longVersion = [result.app.version, result.app.bundle].filter(Boolean).join(' ');
 		}
 	}
 
