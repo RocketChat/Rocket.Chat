@@ -11,7 +11,11 @@ export type HoverCardHeaderProps = {
 
 const HoverCardHeader = ({ avatar, title, subtitle, end }: HoverCardHeaderProps) => (
 	<Box display='flex' alignItems='center'>
-		{avatar}
+		{avatar && (
+			<Box display='flex' flexShrink={0}>
+				{avatar}
+			</Box>
+		)}
 		<Box display='flex' flexDirection='column' flexGrow={1} flexShrink={1} marginInlineStart={avatar ? 'x4' : undefined} withTruncatedText>
 			<Box fontScale='h4' color='titles-labels' withTruncatedText>
 				{title}
