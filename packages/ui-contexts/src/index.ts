@@ -51,6 +51,7 @@ export { useLayoutHiddenActions } from './hooks/useLayoutHiddenActions';
 export { useLocationHash } from './hooks/useLocationHash';
 export { useLoadLanguage } from './hooks/useLoadLanguage';
 export { useLoginWithPassword } from './hooks/useLoginWithPassword';
+export { useLoginWithPasskey } from './hooks/useLoginWithPasskey';
 export { useLoginServices } from './hooks/useLoginServices';
 export { useLoginWithService } from './hooks/useLoginWithService';
 export { useLoginWithIframe } from './hooks/useLoginWithIframe';

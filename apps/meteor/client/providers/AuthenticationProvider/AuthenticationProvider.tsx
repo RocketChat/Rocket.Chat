@@ -6,6 +6,7 @@ import type { ContextType, ReactNode } from 'react';
 import { useMemo, useSyncExternalStore } from 'react';
 
 import { loginServices } from '../../lib/loginServices';
+import { loginWithPasskey } from '../../lib/passkeys/loginWithPasskey';
 import { getDdpSdk } from '../../lib/sdk/ddpSdk';
 import { STORAGE_KEYS, getStoredItem, removeStoredItem } from '../../lib/sdk/storage';
 import {
@@ -54,6 +55,7 @@ const AuthenticationProvider = ({ children }: AuthenticationProviderProps) => {
 						resolve();
 					});
 				}),
+			loginWithPasskey,
 			loginWithService: <T extends LoginServiceConfiguration>(serviceConfig: T): (() => Promise<true>) => {
 				const { service: serviceName } = serviceConfig;
 				const clientConfig = ('clientConfig' in serviceConfig && serviceConfig.clientConfig) || {};

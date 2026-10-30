@@ -7,6 +7,7 @@ export enum AccountSectionsHref {
 	preferences = '/account/preferences',
 	profile = '/account/profile',
 	security = '/account/security',
+	passkeys = '/account/passkeys',
 	integrations = '/account/integrations',
 	tokens = '/account/tokens',
 	omnichannel = '/account/omnichannel',

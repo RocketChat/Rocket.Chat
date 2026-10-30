@@ -10995,6 +10995,7 @@ __metadata:
     "@rocket.chat/web-ui-registration": "workspace:^"
     "@rocket.chat/xmpp-server": "workspace:^"
     "@sapphi-red/web-noise-suppressor": "npm:^0.4.0"
+    "@simplewebauthn/browser": "npm:~14.0.0"
     "@simplewebauthn/server": "npm:~14.0.3"
     "@slack/bolt": "npm:^3.22.0"
     "@slack/rtm-api": "npm:~7.0.4"
@@ -13144,6 +13145,13 @@ __metadata:
   version: 2.0.0
   resolution: "@sideway/pinpoint@npm:2.0.0"
   checksum: 10/1ed21800128b2b23280ba4c9db26c8ff6142b97a8683f17639fd7f2128aa09046461574800b30fb407afc5b663c2331795ccf3b654d4b38fa096e41a5c786bf8
+  languageName: node
+  linkType: hard
+
+"@simplewebauthn/browser@npm:~14.0.0":
+  version: 14.0.0
+  resolution: "@simplewebauthn/browser@npm:14.0.0"
+  checksum: 10/b27c5ff04c35ba2491aea4b59d5852f2ef7ffa58bcc58c71dc17f86573223e71ae82fdc3ed232dc1864f2a0aa12d71548715a6ba01298f7ff8d92b53db24153f
   languageName: node
   linkType: hard
 

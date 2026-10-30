@@ -31,6 +31,12 @@ export const {
 			(settings.peek('Accounts_AllowPasswordChange') ?? true),
 	},
 	{
+		href: '/account/passkeys',
+		i18nLabel: 'Passkeys',
+		icon: 'fingerprint',
+		permissionGranted: (): boolean => settings.peek('Accounts_Passkeys_Enabled') ?? false,
+	},
+	{
 		href: '/account/tokens',
 		i18nLabel: 'Personal_Access_Tokens',
 		icon: 'key',

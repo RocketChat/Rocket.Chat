@@ -244,6 +244,10 @@ export class AccountSidebar extends Sidebar {
 		return this.root.getByRole('link', { name: 'Security' });
 	}
 
+	get linkPasskeys(): Locator {
+		return this.root.getByRole('link', { name: 'Passkeys' });
+	}
+
 	async close(): Promise<void> {
 		await this.btnClose.click();
 		await this.waitForDismissal();

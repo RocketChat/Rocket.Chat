@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import type { LoginErrorState } from './LoginForm';
 import LoginServicesButton from './LoginServicesButton';
+import PasskeyLoginButton from './PasskeyLoginButton';
 
 const servicesToBeShownOnDesktop = ['cas', 'ldap'];
 
@@ -14,6 +15,7 @@ const LoginServices = ({ disabled, setError }: LoginServicesProps) => {
 	const { t } = useTranslation();
 	const services = useLoginServices();
 	const showFormLogin = useSetting('Accounts_ShowFormLogin');
+	const showPasskeyLogin = useSetting('Accounts_Passkeys_Enabled', false) && typeof window.PublicKeyCredential === 'function';
 
 	const isDesktopApp = !!window.RocketChatDesktop?.openInBrowser;
 
@@ -22,7 +24,7 @@ const LoginServices = ({ disabled, setError }: LoginServicesProps) => {
 		[isDesktopApp, services],
 	);
 
-	if (services.length === 0) {
+	if (services.length === 0 && !showPasskeyLogin) {
 		return null;
 	}
 
@@ -45,8 +47,9 @@ const LoginServices = ({ disabled, setError }: LoginServicesProps) => {
 				</Box>
 			)}
 
-			{(servicesToShow.length > 0 || isDesktopApp) && (
+			{(servicesToShow.length > 0 || isDesktopApp || showPasskeyLogin) && (
 				<ButtonGroup vertical stretch small>
+					{showPasskeyLogin && <PasskeyLoginButton disabled={disabled} setError={setError} />}
 					{servicesToShow.map((service) => (
 						<LoginServicesButton disabled={disabled} key={service.service} {...service} setError={setError} />
 					))}

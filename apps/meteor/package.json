@@ -170,6 +170,7 @@
 		"@rocket.chat/web-ui-registration": "workspace:^",
 		"@rocket.chat/xmpp-server": "workspace:^",
 		"@sapphi-red/web-noise-suppressor": "^0.4.0",
+		"@simplewebauthn/browser": "~14.0.0",
 		"@simplewebauthn/server": "~14.0.3",
 		"@slack/bolt": "^3.22.0",
 		"@slack/rtm-api": "~7.0.4",

@@ -115,6 +115,10 @@ export const deviceManagementQueryKeys = {
 	sessionInfo: (sessionId: string) => [...deviceManagementQueryKeys.all, 'session-info', sessionId] as const,
 };
 
+export const passkeysQueryKeys = {
+	all: ['passkeys'] as const,
+};
+
 export const miscQueryKeys = {
 	lookup: (endpoint: string) => ['lookup', endpoint] as const,
 	autotranslateSupportedLanguages: (targetLanguage: string) => ['autotranslate', 'supported-languages', targetLanguage] as const,

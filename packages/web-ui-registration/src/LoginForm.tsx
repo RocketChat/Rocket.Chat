@@ -10,6 +10,7 @@ import {
 	ButtonGroup,
 	Button,
 	Callout,
+	Stack,
 } from '@rocket.chat/fuselage';
 import { Form, FormContainer, FormFooter, FormHeader, FormTitle, ActionLink } from '@rocket.chat/layout';
 import { useDocumentTitle } from '@rocket.chat/ui-client';
@@ -47,6 +48,14 @@ const LOGIN_SUBMIT_ERRORS = {
 	'error-invalid-email': {
 		type: 'danger',
 		i18n: 'registration.page.login.errors.invalidEmail',
+	},
+	'error-passkey-invalid': {
+		type: 'danger',
+		i18n: 'registration.page.login.errors.passkeyInvalid',
+	},
+	'passkey-failed': {
+		type: 'danger',
+		i18n: 'registration.page.login.errors.passkeyFailed',
 	},
 } as const;
 
@@ -158,6 +167,8 @@ export const LoginForm = ({ setLoginRoute }: LoginFormProps) => {
 
 	const hasAuthError = errors.password?.type === 'user-not-found';
 
+	const loginServices = <LoginServices disabled={loginMutation.isPending} setError={setErrorOnSubmit} />;
+
 	return (
 		<Form
 			tabIndex={-1}
@@ -249,7 +260,14 @@ export const LoginForm = ({ setLoginRoute }: LoginFormProps) => {
 					</FormFooter>
 				</>
 			)}
-			<LoginServices disabled={loginMutation.isPending} setError={setErrorOnSubmit} />
+			{showFormLogin ? (
+				loginServices
+			) : (
+				<Stack gap='x16'>
+					{errorOnSubmit && renderErrorOnSubmit(errorOnSubmit)}
+					{loginServices}
+				</Stack>
+			)}
 		</Form>
 	);
 };
