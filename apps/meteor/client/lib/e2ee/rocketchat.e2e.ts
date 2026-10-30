@@ -40,6 +40,8 @@ type KeyPair = {
 
 const ROOM_KEY_EXCHANGE_SIZE = 10;
 
+const getQuoteChainLimit = (): number => Math.max(1, settings.peek<number>('Message_QuoteChainLimit') ?? 2);
+
 class E2E extends Emitter {
 	private userId: string | false = false;
 
@@ -753,7 +755,11 @@ class E2E extends Emitter {
 		return e2eRoom.decryptContent(file);
 	}
 
-	async decryptMessage(message: IMessage | IE2EEMessage): Promise<IMessage> {
+	/** Decrypts a message with bounded quote resolution. An explicit zero depth leaves quotes unresolved. */
+	async decryptMessage(
+		message: IMessage | IE2EEMessage,
+		{ quoteDepth = getQuoteChainLimit() }: { quoteDepth?: number } = {},
+	): Promise<IMessage> {
 		if (!isE2EEMessage(message) || message.e2e === 'done') {
 			return message;
 		}
@@ -766,7 +772,7 @@ class E2E extends Emitter {
 
 		const decryptedMessage = (await e2eRoom.decryptMessage(message)) as IE2EEMessage;
 
-		const decryptedMessageWithQuote = await this.parseQuoteAttachment(decryptedMessage);
+		const decryptedMessageWithQuote = quoteDepth > 0 ? await this.parseQuoteAttachment(decryptedMessage, quoteDepth) : decryptedMessage;
 
 		return decryptedMessageWithQuote;
 	}
@@ -836,8 +842,8 @@ class E2E extends Emitter {
 		banners.closeById('e2e');
 	}
 
-	async parseQuoteAttachment(message: IE2EEMessage): Promise<IE2EEMessage> {
-		if (!message?.msg) {
+	async parseQuoteAttachment(message: IE2EEMessage, quoteDepth = getQuoteChainLimit()): Promise<IE2EEMessage> {
+		if (!message?.msg || quoteDepth <= 0) {
 			return message;
 		}
 		const urls = message.msg.match(getMessageUrlRegex()) || [];
@@ -878,7 +884,7 @@ class E2E extends Emitter {
 					return;
 				}
 
-				const decryptedQuoteMessage = await this.decryptMessage(mapMessageFromApi(quotedMessage));
+				const decryptedQuoteMessage = await this.decryptMessage(mapMessageFromApi(quotedMessage), { quoteDepth: quoteDepth - 1 });
 
 				message.attachments = message.attachments || [];
 				const useRealName = settings.peek('UI_Use_Real_Name');
@@ -889,7 +895,7 @@ class E2E extends Emitter {
 					getUserAvatarURL(decryptedQuoteMessage.u.username || '') as string,
 				);
 
-				message.attachments.push(limitQuoteChain(quoteAttachment, settings.peek('Message_QuoteChainLimit') ?? 2));
+				message.attachments.push(limitQuoteChain(quoteAttachment, getQuoteChainLimit()));
 			}),
 		);
 
