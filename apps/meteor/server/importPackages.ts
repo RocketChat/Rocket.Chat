@@ -1,4 +1,4 @@
-import './lib/cors';
+import './lib/cors/cors';
 import './lib/2fa/MethodInvocationOverride';
 import './lib/2fa/loginHandler';
 import './api';
