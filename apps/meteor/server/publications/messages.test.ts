@@ -8,8 +8,8 @@ import sinon from 'sinon';
 
 const messagesMock = {
 	findForUpdates: sinon.stub(),
-	trashFindDeletedAfter: sinon.stub(),
-	trashFind: sinon.stub(),
+	findDeletedByRoomIdAfter: sinon.stub(),
+	findDeletedByRoomIdAndDeletedAt: sinon.stub(),
 };
 
 const canAccessRoomIdAsyncStub = sinon.stub().resolves(true);
@@ -191,7 +191,7 @@ describe('mountPreviousCursor', () => {
 describe('handleWithoutPagination', () => {
 	afterEach(() => {
 		messagesMock.findForUpdates.reset();
-		messagesMock.trashFindDeletedAfter.reset();
+		messagesMock.findDeletedByRoomIdAfter.reset();
 	});
 
 	it('should return updated and deleted messages', async () => {
@@ -202,22 +202,16 @@ describe('handleWithoutPagination', () => {
 		const deletedMessages = [{ _id: '2', _deletedAt: new Date() }];
 
 		messagesMock.findForUpdates.returns({ toArray: sinon.stub().resolves(updatedMessages) });
-		messagesMock.trashFindDeletedAfter.returns({ toArray: sinon.stub().resolves(deletedMessages) });
+		messagesMock.findDeletedByRoomIdAfter.returns({ toArray: sinon.stub().resolves(deletedMessages) });
 
 		const result = await handleWithoutPagination(rid, lastUpdate);
 
-		expect(result).to.deep.equal({
-			updated: updatedMessages,
-			deleted: deletedMessages,
-		});
-
+		expect(result).to.deep.equal({ updated: updatedMessages, deleted: deletedMessages });
 		sinon.assert.calledWith(messagesMock.findForUpdates, rid, { updatedAt: { $gt: lastUpdate }, minTs: undefined }, { sort: { ts: -1 } });
-		sinon.assert.calledWith(
-			messagesMock.trashFindDeletedAfter,
-			lastUpdate,
-			{ rid },
-			{ projection: { _id: 1, _deletedAt: 1 }, sort: { ts: -1 } },
-		);
+		sinon.assert.calledWith(messagesMock.findDeletedByRoomIdAfter, rid, lastUpdate, undefined, {
+			projection: { _id: 1, _deletedAt: 1 },
+			sort: { ts: -1 },
+		});
 	});
 
 	it('should bound both queries by `ts` when fromTs is provided', async () => {
@@ -226,17 +220,15 @@ describe('handleWithoutPagination', () => {
 		const fromTs = new Date('2024-01-01T00:00:00.000Z');
 
 		messagesMock.findForUpdates.returns({ toArray: sinon.stub().resolves([]) });
-		messagesMock.trashFindDeletedAfter.returns({ toArray: sinon.stub().resolves([]) });
+		messagesMock.findDeletedByRoomIdAfter.returns({ toArray: sinon.stub().resolves([]) });
 
 		await handleWithoutPagination(rid, lastUpdate, fromTs);
 
 		sinon.assert.calledWith(messagesMock.findForUpdates, rid, { updatedAt: { $gt: lastUpdate }, minTs: fromTs }, { sort: { ts: -1 } });
-		sinon.assert.calledWith(
-			messagesMock.trashFindDeletedAfter,
-			lastUpdate,
-			{ rid, ts: { $gte: fromTs } },
-			{ projection: { _id: 1, _deletedAt: 1 }, sort: { ts: -1 } },
-		);
+		sinon.assert.calledWith(messagesMock.findDeletedByRoomIdAfter, rid, lastUpdate, fromTs, {
+			projection: { _id: 1, _deletedAt: 1 },
+			sort: { ts: -1 },
+		});
 	});
 
 	it('should handle empty results', async () => {
@@ -244,14 +236,11 @@ describe('handleWithoutPagination', () => {
 		const lastUpdate = new Date();
 
 		messagesMock.findForUpdates.returns({ toArray: sinon.stub().resolves([]) });
-		messagesMock.trashFindDeletedAfter.returns({ toArray: sinon.stub().resolves([]) });
+		messagesMock.findDeletedByRoomIdAfter.returns({ toArray: sinon.stub().resolves([]) });
 
 		const result = await handleWithoutPagination(rid, lastUpdate);
 
-		expect(result).to.deep.equal({
-			updated: [],
-			deleted: [],
-		});
+		expect(result).to.deep.equal({ updated: [], deleted: [] });
 	});
 });
 
@@ -275,11 +264,20 @@ describe('handleCursorPagination', () => {
 		const rid = 'roomId';
 		const count = 10;
 		const messages = [{ _id: 'msg1', _deletedAt: new Date() }];
-		messagesMock.trashFind.returns({ toArray: sinon.stub().resolves(messages) });
+		messagesMock.findDeletedByRoomIdAndDeletedAt.returns({ toArray: sinon.stub().resolves(messages) });
 
 		const result = await handleCursorPagination('DELETED', rid, count);
 
-		expect(messagesMock.trashFind.calledOnce).to.be.true;
+		expect(messagesMock.findDeletedByRoomIdAndDeletedAt.calledOnce).to.be.true;
+		sinon.assert.calledWith(
+			messagesMock.findDeletedByRoomIdAndDeletedAt,
+			rid,
+			{ $gt: new Date(0) },
+			{
+				projection: { _id: 1, _deletedAt: 1 },
+				sort: { _updatedAt: 1 },
+			},
+		);
 		expect(result.deleted).to.deep.equal(messages);
 		expect(result.cursor).to.have.keys(['next', 'previous']);
 	});
@@ -312,8 +310,8 @@ describe('getMessageHistory', () => {
 
 	beforeEach(() => {
 		messagesMock.findForUpdates.reset();
-		messagesMock.trashFindDeletedAfter.reset();
-		messagesMock.trashFind.reset();
+		messagesMock.findDeletedByRoomIdAfter.reset();
+		messagesMock.findDeletedByRoomIdAndDeletedAt.reset();
 		getChannelHistoryStub.reset();
 	});
 
@@ -336,7 +334,7 @@ describe('getMessageHistory', () => {
 		const fromTs = new Date('2024-01-01T00:00:00.000Z');
 
 		messagesMock.findForUpdates.returns({ toArray: sinon.stub().resolves([]) });
-		messagesMock.trashFindDeletedAfter.returns({ toArray: sinon.stub().resolves([]) });
+		messagesMock.findDeletedByRoomIdAfter.returns({ toArray: sinon.stub().resolves([]) });
 
 		await getMessageHistory(rid, fromId, { lastUpdate, fromTs });
 

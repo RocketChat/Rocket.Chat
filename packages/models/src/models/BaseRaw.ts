@@ -61,7 +61,8 @@ export abstract class BaseRaw<
 	T extends { _id: string },
 	C extends DefaultFields<T> = undefined,
 	TDeleted extends RocketChatRecordDeleted<T> = RocketChatRecordDeleted<T>,
-> implements IBaseModel<T, C, TDeleted> {
+> implements IBaseModel<T, C, TDeleted>
+{
 	protected defaultFields: C | undefined;
 
 	public readonly col: Collection<T>;
@@ -517,6 +518,12 @@ export abstract class BaseRaw<
 	}
 
 	trashFindDeletedAfter(deletedAt: Date): FindCursor<WithId<TDeleted>>;
+
+	trashFindDeletedAfter<P extends Document = TDeleted>(
+		deletedAt: Date,
+		query?: Filter<TDeleted>,
+		options?: FindOptions<P extends TDeleted ? TDeleted : P>,
+	): FindCursor<WithId<TDeleted>>;
 
 	trashFindDeletedAfter<P extends Document = TDeleted>(
 		deletedAt: Date,
