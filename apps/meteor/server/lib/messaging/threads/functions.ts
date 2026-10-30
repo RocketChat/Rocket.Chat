@@ -26,7 +26,7 @@ export async function reply({ tmid }: { tmid?: string }, message: IMessage, pare
 			...mentionIds,
 			...(Array.isArray(parentMessage.replies) && parentMessage.replies.length ? [u._id] : [parentMessage.u._id, u._id]),
 		]),
-	];
+	].filter((userId) => !membersWithoutAccess.has(userId));
 
 	await Messages.updateRepliesByThreadId(tmid, addToReplies, ts);
 
