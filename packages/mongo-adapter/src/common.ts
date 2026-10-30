@@ -93,6 +93,14 @@ export const equals = <T>(a: T, b: T): boolean => {
 		return false;
 	}
 
+	if (getBSONType(a) !== getBSONType(b)) {
+		return false;
+	}
+
+	if (a instanceof RegExp && b instanceof RegExp) {
+		return a.source === b.source && a.flags === b.flags;
+	}
+
 	if (a instanceof Date && b instanceof Date) {
 		return a.valueOf() === b.valueOf();
 	}
