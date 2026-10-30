@@ -2,6 +2,11 @@ import { createHash, webcrypto } from 'node:crypto';
 
 import { E2ERoom } from './rocketchat.e2e.room';
 
+jest.mock('./rocketchat.e2e', () => ({ e2e: { isReady: () => false } }));
+jest.mock('../rooms/roomCoordinator', () => ({ roomCoordinator: {} }));
+jest.mock('../../stores', () => ({}));
+jest.mock('../../../lib/i18n', () => ({ t: (key: string) => key }));
+
 jest.mock('../../../client/lib/SDKClient', () => ({
 	sdk: { rest: { post: jest.fn() } },
 }));
