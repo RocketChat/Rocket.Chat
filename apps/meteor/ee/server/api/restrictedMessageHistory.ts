@@ -32,7 +32,7 @@ const restrictedMessageHistoryEndpoints = API.v1.post(
 			400: validateBadRequestErrorResponse,
 			401: validateUnauthorizedErrorResponse,
 		},
-		license: ['restricted-message-history'],
+		license: ['experimental-enterprise-features'],
 	},
 	async function action() {
 		const { roomId, userId, restricted } = this.bodyParams;
