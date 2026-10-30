@@ -4,6 +4,7 @@ import { Box } from '@rocket.chat/fuselage';
 import { useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 
 import MarkdownText from '../../../components/MarkdownText';
+import { _relativeToSiteRootUrl } from '../../../lib/absoluteUrl';
 import { useCanEditRoom } from '../contextualBar/Info/hooks/useCanEditRoom';
 
 export type RoomTopicProps = {
@@ -23,8 +24,8 @@ const RoomTopic = ({ room }: RoomTopicProps) => {
 	}
 
 	if (!topic && canEditTopic) {
-		const { path } = router.getRoomRoute(room.t, { name: room.name });
-		const href = isTeamRoom(room) ? `${path}/team-info` : `${path}/channel-settings`;
+		const { path } = router.getRoomRoute(room.t, { name: encodeURIComponent(room.name ?? '') });
+		const href = _relativeToSiteRootUrl(isTeamRoom(room) ? `${path}/team-info` : `${path}/channel-settings`);
 
 		return (
 			<Box is='a' href={href}>
