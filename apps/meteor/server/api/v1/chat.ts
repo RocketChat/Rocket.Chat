@@ -1226,7 +1226,7 @@ const chatEndpoints = API.v1
 					).toArray(),
 					remove: await Messages.trashFindDeletedAfter(updatedSinceDate, threadQuery, {
 						sort,
-						projection: fields,
+						projection: { _id: 1, _deletedAt: 1 },
 					}).toArray(),
 				},
 			});
@@ -1364,7 +1364,11 @@ const chatEndpoints = API.v1
 			return API.v1.success({
 				messages: {
 					update: await Messages.find({ tmid, _updatedAt: { $gt: updatedSinceDate } }, { projection: fields, sort }).toArray(),
-					remove: await Messages.trashFindDeletedAfter(updatedSinceDate, { tmid }, { projection: fields, sort }).toArray(),
+					remove: await Messages.trashFindDeletedAfter(
+						updatedSinceDate,
+						{ tmid },
+						{ projection: { _id: 1, _deletedAt: 1 }, sort },
+					).toArray(),
 				},
 			});
 		},
