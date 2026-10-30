@@ -131,7 +131,7 @@ export const staticBox = ({ report = false }: { report?: boolean } = {}): Plugin
 		load: (id) => (id.startsWith(virtualPrefix) ? stylesheets.get(id.slice(virtualPrefix.length, -'.css'.length)) : undefined),
 
 		transform(code, id) {
-			if (id.includes('?') || id.includes('/node_modules/') || !/.[jt]sx$/.test(id) || !code.includes('@rocket.chat/fuselage')) {
+			if (id.includes('?') || id.includes('/node_modules/') || !/\.[jt]sx$/.test(id) || !code.includes('@rocket.chat/fuselage')) {
 				return null;
 			}
 
@@ -183,7 +183,7 @@ export const staticBox = ({ report = false }: { report?: boolean } = {}): Plugin
 				boxes++;
 
 				const styling: Record<string, unknown> = {};
-				const conditionals: { name: string; test: Node; values: [unknown, unknown] }[] = [];
+				const conditionals: { name: string; test: Node; values: [unknown, unknown]; attribute: Node }[] = [];
 				const stylingAttributes: Node[] = [];
 				let spread = false;
 
@@ -220,7 +220,7 @@ export const staticBox = ({ report = false }: { report?: boolean } = {}): Plugin
 							return;
 						}
 
-						conditionals.push({ name, test: expression.test, values: [consequent.value, alternate.value] });
+						conditionals.push({ name, test: expression.test, values: [consequent.value, alternate.value], attribute });
 					} else {
 						reportDiagnostic(attribute, 'dynamic-styling-prop', name);
 						return;
@@ -238,12 +238,13 @@ export const staticBox = ({ report = false }: { report?: boolean } = {}): Plugin
 				if (conditionals.length) conditional++;
 
 				const tag = '__RcxStaticBox';
-				let extra = '';
+				let variant = '';
 
 				// One variant per combination of the conditional props; bit `j` of the index is set when the test of
 				// conditional `j` is falsy.
 				const variants = Array.from({ length: 2 ** conditionals.length }, (_, index) => {
-					const props = { ...styling };
+					// In JSX order, as later declarations win (a `border` after a `borderColor`).
+					const props = Object.fromEntries(stylingAttributes.map(({ name }) => [name.name, styling[name.name]]));
 
 					conditionals.forEach(({ name, values }, j) => {
 						props[name] = values[(index >> j) & 1];
@@ -273,10 +274,12 @@ export const staticBox = ({ report = false }: { report?: boolean } = {}): Plugin
 						? conditionals.map(({ test }, j) => `(${code.slice(test.start, test.end)} ? 0 : ${1 << j})`).join(' | ')
 						: '0';
 
-					extra = ` {...${constant}[${index}]}`;
+					variant = `{...${constant}[${index}]}`;
 				}
 
-				if (spread) extra += ' __rcxSpread';
+				// Where the first conditional was, so its test still runs after the attributes before it.
+				const variantAttribute = conditionals[0]?.attribute;
+				const extra = `${variant && !variantAttribute ? ` ${variant}` : ''}${spread ? ' __rcxSpread' : ''}`;
 
 				const { name } = node.openingElement;
 
@@ -290,7 +293,7 @@ export const staticBox = ({ report = false }: { report?: boolean } = {}): Plugin
 					edits.push({
 						start: attribute.start,
 						end: attribute.end,
-						text: '',
+						text: attribute === variantAttribute ? variant : '',
 					});
 				}
 
