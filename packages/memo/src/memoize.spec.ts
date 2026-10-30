@@ -1,4 +1,4 @@
-import { memoize, clear } from './memoize';
+import { memoize, clear } from './memoize.js';
 
 it('should memoize a function that takes no parameter', () => {
 	const fn = jest.fn(() => 'foo');
