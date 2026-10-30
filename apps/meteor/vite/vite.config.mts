@@ -1,5 +1,6 @@
 import { execSync } from 'node:child_process';
-import { existsSync, readdirSync, readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { existsSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -11,7 +12,7 @@ import postcssCustomProperties from 'postcss-custom-properties';
 import postcssEasyImport from 'postcss-easy-import';
 import postcssMediaMinmax from 'postcss-media-minmax';
 import postcssNested from 'postcss-nested';
-import type { Plugin } from 'vite';
+import type { Plugin, ResolvedConfig } from 'vite';
 import { defineConfig } from 'vite';
 
 import { staticBox } from './staticBox/plugin';
@@ -131,6 +132,53 @@ const nativeModules = (): Plugin => {
 
 			const resolved = await this.resolve(source, importer, { ...options, skipSelf: true });
 			return (resolved && replacements.get(resolved.id.split('?')[0])) ?? null;
+		},
+	};
+};
+
+// Moves Tamagui's zero-runtime stylesheet into the bundle under a content hash, linked from `index.html` and listed
+// with the entry's stylesheets in the manifest, so `index.html` and the bundle load without anything else.
+const zeroStylesheetInBundle = (): Plugin => {
+	let config: ResolvedConfig;
+
+	return {
+		name: 'rocketchat-zero-stylesheet-in-bundle',
+		apply: 'build',
+		configResolved(resolved) {
+			config = resolved;
+		},
+		// Tamagui writes the stylesheet when the bundle closes.
+		closeBundle: {
+			order: 'post',
+			sequential: true,
+			handler() {
+				const { assetsDir } = config.build;
+				const outDir = resolve(config.root, config.build.outDir);
+				const written = join(outDir, 'tamagui-zero.css');
+				if (!existsSync(written)) {
+					throw new Error(`Tamagui's zero-runtime stylesheet is missing from ${outDir}`);
+				}
+
+				const css = readFileSync(written);
+				const file = `${assetsDir}/tamagui-zero-${createHash('sha256').update(css).digest('hex').slice(0, 8)}.css`;
+				writeFileSync(join(outDir, file), css);
+				rmSync(written);
+
+				const indexHtml = join(outDir, 'index.html');
+				const html = readFileSync(indexHtml, 'utf8');
+				const href = `href="${config.base}tamagui-zero.css"`;
+				if (!html.includes(href)) {
+					throw new Error(`index.html does not link Tamagui's zero-runtime stylesheet as ${href}`);
+				}
+				writeFileSync(indexHtml, html.replace(href, `href="${config.base}${file}"`));
+
+				const manifestFile = join(outDir, '.vite/manifest.json');
+				const manifest = JSON.parse(readFileSync(manifestFile, 'utf8')) as Record<string, { isEntry?: boolean; css?: string[] }>;
+				for (const chunk of Object.values(manifest)) {
+					if (chunk.isEntry) chunk.css = [...(chunk.css ?? []), file];
+				}
+				writeFileSync(manifestFile, JSON.stringify(manifest, null, 2));
+			},
 		},
 	};
 };
@@ -338,6 +386,7 @@ export default defineConfig({
 			outputCSS: './.tamagui/zero/tamagui-zero.css',
 			experimental: { zeroRuntime: true },
 		}),
+		zeroStylesheetInBundle(),
 	],
 	resolve: {
 		alias: [
