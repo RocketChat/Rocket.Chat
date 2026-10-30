@@ -1,4 +1,4 @@
-import { Box, Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow, PasswordInput } from '@rocket.chat/fuselage';
+import { Field, FieldError, FieldGroup, FieldHint, FieldLabel, FieldRow, PasswordInput } from '@rocket.chat/fuselage';
 import { PasswordVerifier, useValidatePassword } from '@rocket.chat/ui-client';
 import { useEndpoint, useToastMessageDispatch } from '@rocket.chat/ui-contexts';
 import type { AllHTMLAttributes } from 'react';
@@ -57,7 +57,7 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 	};
 
 	return (
-		<Box {...props} is='form' autoComplete='off' onSubmit={handleSubmit(handleSave)}>
+		<form {...props} autoComplete='off' onSubmit={handleSubmit(handleSave)}>
 			<FieldGroup>
 				<Field>
 					<FieldLabel htmlFor={passwordId}>{t('New_password')}</FieldLabel>
@@ -124,7 +124,7 @@ const ChangePassword = (props: AllHTMLAttributes<HTMLFormElement>) => {
 					)}
 				</Field>
 			</FieldGroup>
-		</Box>
+		</form>
 	);
 };
 
