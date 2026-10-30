@@ -83,10 +83,10 @@ describe('[Outgoing Integrations]', () => {
 						event: 'sendMessage',
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'not_authorized');
+						expect(res.body).to.have.property('errorType', 'error-forbidden');
 					})
 					.end(done);
 			});
@@ -112,10 +112,10 @@ describe('[Outgoing Integrations]', () => {
 						event: 'sendMessage',
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'not_authorized');
+						expect(res.body).to.have.property('errorType', 'error-forbidden');
 					})
 					.end(done);
 			});
@@ -572,8 +572,6 @@ describe('[Outgoing Integrations]', () => {
 			await Promise.all([updatePermission('manage-outgoing-integrations', []), updatePermission('manage-own-outgoing-integrations', [])]);
 		});
 
-		// the shared method enforces the permission (no route-level permissionsRequired), so a permission
-		// failure surfaces as 400 + errorType 'not_authorized', matching integrations.create above.
 		afterEach(() => updatePermission('manage-outgoing-integrations', ['admin']));
 
 		describe('[/integrations.clearHistory]', () => {
@@ -594,16 +592,17 @@ describe('[Outgoing Integrations]', () => {
 					.expect((res) => expect(res.body).to.have.property('success', false));
 			});
 
-			it('should fail with 400 when the user lacks the manage-outgoing-integrations permission', async () => {
+			it('should fail with 403 when the user lacks the manage-outgoing-integrations permission', async () => {
 				await Promise.all([updatePermission('manage-outgoing-integrations', []), updatePermission('manage-own-outgoing-integrations', [])]);
 				await request
 					.post(api('integrations.clearHistory'))
 					.set(credentials)
 					.send({ integrationId })
-					.expect(400)
+					.expect(403)
 					.expect((res) => {
 						expect(res.body).to.have.property('success', false);
-						expect(res.body).to.have.property('errorType', 'not_authorized');
+						expect(res.body).to.have.property('errorType', 'error-forbidden');
+						expect(res.body).to.have.property('error', 'Unauthorized');
 					});
 			});
 

@@ -78,10 +78,10 @@ describe('[Incoming Integrations]', () => {
 						channel: '#general',
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400);
+					.expect(403);
 
 				expect(res.body).to.have.property('success', false);
-				expect(res.body).to.have.property('errorType', 'not_authorized');
+				expect(res.body).to.have.property('errorType', 'error-forbidden');
 			});
 
 			it('should return an error when the user DOES NOT have the permission "manage-own-incoming-integrations" to add an incoming integration', async () => {
@@ -99,10 +99,10 @@ describe('[Incoming Integrations]', () => {
 						channel: '#general',
 					})
 					.expect('Content-Type', 'application/json')
-					.expect(400);
+					.expect(403);
 
 				expect(res.body).to.have.property('success', false);
-				expect(res.body).to.have.property('errorType', 'not_authorized');
+				expect(res.body).to.have.property('errorType', 'error-forbidden');
 			});
 		});
 
@@ -353,6 +353,20 @@ describe('[Incoming Integrations]', () => {
 						expect(res.body).to.have.property('success', true);
 						expect(res.body).to.have.property('messages').and.to.be.an('array');
 						expect(!!(res.body.messages as IMessage[]).find((m) => m.msg === successfulMessage)).to.be.true;
+					});
+			});
+
+			it('should return 400 when the channel override is an empty list', async () => {
+				await request
+					.post(`/hooks/${integration._id}/${integration.token}`)
+					.send({
+						text: 'no destination',
+						channel: [],
+					})
+					.expect(400)
+					.expect((res) => {
+						expect(res.body).to.have.property('success', false);
+						expect(res.body).to.have.property('error', 'invalid-channel');
 					});
 			});
 
