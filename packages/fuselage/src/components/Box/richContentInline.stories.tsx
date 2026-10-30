@@ -1,4 +1,4 @@
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
 import Box from './Box';
 
@@ -38,6 +38,7 @@ export const I: Story = {
 
 export const A: Story = {
 	name: 'a',
+	parameters: { pseudo: { focus: '#focused-link', focusVisible: '#focused-link' } },
 	render: () => (
 		<>
 			<div>
@@ -45,7 +46,7 @@ export const A: Story = {
 			</div>
 			<br />
 			<div>
-				<a href='#any' className='is-focused'>
+				<a href='#any' id='focused-link'>
 					Focused
 				</a>
 			</div>

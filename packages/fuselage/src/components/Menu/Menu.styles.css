@@ -1,0 +1,8 @@
+/* The frames' display outranks the user agent's `hidden` */
+.rcx-menu-item__description[hidden] {
+	display: none;
+}
+
+.rcx-menu-item--with-description.rcx-menu-item--with-description {
+	flex-wrap: wrap;
+}

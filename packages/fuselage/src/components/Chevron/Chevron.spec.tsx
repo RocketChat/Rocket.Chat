@@ -1,4 +1,4 @@
-import { composeStories } from '@storybook/react-webpack5';
+import { composeStories } from '@storybook/react-vite';
 
 import * as stories from './Chevron.stories';
 import { render } from '../../testing';

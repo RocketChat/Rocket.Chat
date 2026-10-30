@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
-import { PropsVariationSection } from '../../../.storybook/helpers';
+import { PropsVariationSection, variationPseudoStates } from '../../../.storybook/helpers';
 import { Icon } from '../Icon';
 import SearchInput from './SearchInput';
 
@@ -105,6 +105,7 @@ export const WithValue: Story = {
 };
 
 export const States: Story = {
+	parameters: { pseudo: variationPseudoStates },
 	render: () => (
 		<>
 			<PropsVariationSection
@@ -121,14 +122,14 @@ export const States: Story = {
 				}}
 				yAxis={{
 					'default': {},
-					'hover': { className: 'hover' },
-					'active': { className: 'active' },
-					'focus': { className: 'focus' },
+					'hover': {},
+					'active': {},
+					'focus': {},
 					'disabled': { disabled: true },
 					'errored': { error: 'Error' },
-					'errored + hover': { className: 'hover', error: 'Error' },
-					'errored + active': { className: 'active', error: 'Error' },
-					'errored + focus': { className: 'focus', error: 'Error' },
+					'errored + hover': { error: 'Error' },
+					'errored + active': { error: 'Error' },
+					'errored + focus': { error: 'Error' },
 				}}
 			/>
 			<PropsVariationSection
@@ -145,14 +146,14 @@ export const States: Story = {
 				}}
 				yAxis={{
 					'small': {},
-					'hover': { className: 'hover' },
-					'active': { className: 'active' },
-					'focus': { className: 'focus' },
+					'hover': {},
+					'active': {},
+					'focus': {},
 					'disabled': { disabled: true },
 					'errored': { error: 'Error' },
-					'errored + hover': { className: 'hover', error: 'Error' },
-					'errored + active': { className: 'active', error: 'Error' },
-					'errored + focus': { className: 'focus', error: 'Error' },
+					'errored + hover': { error: 'Error' },
+					'errored + active': { error: 'Error' },
+					'errored + focus': { error: 'Error' },
 				}}
 			/>
 		</>

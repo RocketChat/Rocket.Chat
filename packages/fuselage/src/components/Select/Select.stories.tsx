@@ -1,10 +1,10 @@
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 import type { Key } from 'react';
 import { useState } from 'react';
 
 import Select from './Select';
 import type { SelectOption } from './SelectLegacy';
-import PropsVariationSection from '../../../.storybook/PropsVariation';
+import { PropsVariationSection, variationPseudoStates } from '../../../.storybook/helpers';
 
 const options: SelectOption[] = Array.from({
 	length: 12,
@@ -100,6 +100,7 @@ export const NoPlaceholder: Story = {
 };
 
 export const States: Story = {
+	parameters: { pseudo: variationPseudoStates },
 	render: () => (
 		<>
 			<PropsVariationSection
@@ -115,14 +116,14 @@ export const States: Story = {
 				}}
 				yAxis={{
 					'default': {},
-					'hover': { className: 'hover' },
-					'active': { className: 'active' },
-					'focus': { className: 'focus' },
+					'hover': {},
+					'active': {},
+					'focus': {},
 					'disabled': { disabled: true },
 					'errored': { error: 'Error' },
-					'errored + hover': { className: 'hover', error: 'Error' },
-					'errored + active': { className: 'active', error: 'Error' },
-					'errored + focus': { className: 'focus', error: 'Error' },
+					'errored + hover': { error: 'Error' },
+					'errored + active': { error: 'Error' },
+					'errored + focus': { error: 'Error' },
 				}}
 			/>
 		</>

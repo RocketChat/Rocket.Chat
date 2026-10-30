@@ -1,5 +1,5 @@
-import { composeStories } from '@storybook/react-webpack5';
-import { screen } from '@testing-library/react';
+import { composeStories } from '@storybook/react-vite';
+import { act, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { axe } from 'jest-axe';
 
@@ -65,7 +65,7 @@ describe('[Select Component]', () => {
 	it('should open on the selected option with the keyboard, in a listbox named after the select', async () => {
 		const { combobox } = renderUnitSelect();
 
-		combobox.focus();
+		act(() => combobox.focus());
 		await userEvent.keyboard('{ArrowDown}');
 
 		const listbox = await screen.findByRole('listbox', { name: 'Time unit' });
@@ -79,7 +79,7 @@ describe('[Select Component]', () => {
 	it('should move the active option with the arrows, Home and End, and select it with Enter', async () => {
 		const { combobox, onChange } = renderUnitSelect();
 
-		combobox.focus();
+		act(() => combobox.focus());
 		await userEvent.keyboard('{ArrowDown}{ArrowDown}');
 		expect(combobox).toHaveAttribute('aria-activedescendant', (await screen.findByRole('option', { name: 'Days' })).id);
 
@@ -99,7 +99,7 @@ describe('[Select Component]', () => {
 	it('should close on Escape without changing the value', async () => {
 		const { combobox, onChange } = renderUnitSelect();
 
-		combobox.focus();
+		act(() => combobox.focus());
 		await userEvent.keyboard('{ArrowDown}{ArrowDown}{Escape}');
 
 		expect(onChange).not.toHaveBeenCalled();
@@ -110,7 +110,7 @@ describe('[Select Component]', () => {
 	it('should select the active option on Tab', async () => {
 		const { combobox, onChange } = renderUnitSelect();
 
-		combobox.focus();
+		act(() => combobox.focus());
 		await userEvent.keyboard('{ArrowDown}{ArrowDown}');
 		await userEvent.tab();
 
@@ -121,7 +121,7 @@ describe('[Select Component]', () => {
 	it('should open on the option that matches the typed characters', async () => {
 		const { combobox } = renderUnitSelect();
 
-		combobox.focus();
+		act(() => combobox.focus());
 		await userEvent.keyboard('d');
 
 		expect(combobox).toHaveAttribute('aria-activedescendant', (await screen.findByRole('option', { name: 'Days' })).id);
@@ -142,7 +142,7 @@ describe('[Select Component]', () => {
 		);
 		const combobox = screen.getByRole('combobox');
 
-		combobox.focus();
+		act(() => combobox.focus());
 		await userEvent.keyboard('{ArrowDown}a test 2');
 
 		expect(onChange).not.toHaveBeenCalled();
@@ -184,7 +184,7 @@ describe('[Select Component]', () => {
 		const { container } = render(<Select aria-label='Time unit' options={units} defaultSelectedKey='minutes' name='unit' />);
 		const combobox = screen.getByRole('combobox');
 
-		combobox.focus();
+		act(() => combobox.focus());
 		await userEvent.keyboard('{ArrowDown}{End}{Enter}');
 
 		expect(combobox).toHaveTextContent('Days');

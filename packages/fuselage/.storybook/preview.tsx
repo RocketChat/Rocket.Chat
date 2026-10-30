@@ -1,7 +1,7 @@
 import breakpointTokens from '@rocket.chat/fuselage-tokens/dist/breakpoints.json';
 import surface from '@rocket.chat/fuselage-tokens/dist/surface.json';
 import { useDarkMode } from '@rocket.chat/storybook-dark-mode';
-import type { Preview } from '@storybook/react-webpack5';
+import type { Preview } from '@storybook/react-vite';
 import { themes } from 'storybook/theming';
 
 import manifest from '../package.json';
@@ -11,6 +11,8 @@ import logo from './logo.svg';
 
 import 'normalize.css/normalize.css';
 import '@rocket.chat/icons/dist/rocketchat.css';
+// Stories render on the same reset as the web client, which every component is styled against
+import '../../../apps/meteor/client/styles/imports/general/reset.css';
 
 export default {
 	parameters: {
@@ -66,7 +68,7 @@ export default {
 	},
 	// Stories that place elements by their measured size, like tooltips, must be measured in the final fonts,
 	// or the visual regression snapshots render where the fallback font left them.
-	loaders: [() => Promise.all([...document.fonts].map((font) => font.load()))],
+	loaders: [() => import('fuselage-tamagui-config'), () => Promise.all([...document.fonts].map((font) => font.load()))],
 	decorators: [
 		(Story) => {
 			const dark = useDarkMode();

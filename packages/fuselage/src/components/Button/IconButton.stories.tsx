@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from '@storybook/react-webpack5';
+import type { Meta, StoryObj } from '@storybook/react-vite';
 
-import { PropsVariationSection } from '../../../.storybook/helpers';
+import { PropsVariationSection, variationPseudoStatesWithFocusVisible } from '../../../.storybook/helpers';
 import { Avatar } from '../Avatar';
 import { Badge } from '../Badge';
 import { ButtonGroup } from '../ButtonGroup';
@@ -90,6 +90,7 @@ export const _IconButton: Story = {
 };
 
 export const States: Story = {
+	parameters: { pseudo: variationPseudoStatesWithFocusVisible },
 	render: () => (
 		<>
 			<PropsVariationSection
@@ -101,9 +102,9 @@ export const States: Story = {
 				}}
 				xAxis={{
 					default: {},
-					hover: { className: 'hover' },
-					active: { className: 'active' },
-					focus: { className: 'focus focus-visible' },
+					hover: {},
+					active: {},
+					focus: {},
 					pressed: { pressed: true },
 					disabled: { disabled: true },
 				}}
@@ -129,9 +130,9 @@ export const States: Story = {
       }}
       xAxis={{
         large: {},
-        hover: { className: 'hover' },
-        active: { className: 'active' },
-        focus: { className: 'focus focus-visible' },
+        hover: {},
+        active: {},
+        focus: {},
         pressed: { pressed: true },
         disabled: { disabled: true },
       }}
@@ -154,6 +155,7 @@ export const States: Story = {
 };
 
 export const Variants: Story = {
+	parameters: { pseudo: variationPseudoStatesWithFocusVisible },
 	render: () => (
 		<>
 			<PropsVariationSection
@@ -165,9 +167,9 @@ export const Variants: Story = {
 				}}
 				xAxis={{
 					default: {},
-					hover: { className: 'hover' },
-					active: { className: 'active' },
-					focus: { className: 'focus focus-visible' },
+					hover: {},
+					active: {},
+					focus: {},
 					disabled: { disabled: true },
 				}}
 				yAxis={{

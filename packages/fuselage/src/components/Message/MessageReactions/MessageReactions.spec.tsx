@@ -1,8 +1,9 @@
-import { composeStories } from '@storybook/react-webpack5';
+import { composeStories } from '@storybook/react-vite';
 import { axe } from 'jest-axe';
 
+import MessageReactionEmoji from './MessageReactionEmoji';
 import * as stories from './MessageReactions.stories';
-import { render } from '../../../testing';
+import { render, screen } from '../../../testing';
 
 const testCases = Object.values(composeStories(stories)).map((Story) => [Story.storyName || 'Story', Story]);
 
@@ -12,5 +13,12 @@ describe('[MessageReactions Rendering]', () => {
 
 		const results = await axe(container);
 		expect(results).toHaveNoViolations();
+	});
+});
+
+describe('[MessageReactionEmoji children]', () => {
+	it('renders text children', () => {
+		render(<MessageReactionEmoji name='grinning'>😀</MessageReactionEmoji>);
+		expect(screen.getByText('😀')).toBeInTheDocument();
 	});
 });
