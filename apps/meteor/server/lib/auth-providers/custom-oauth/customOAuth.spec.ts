@@ -185,6 +185,36 @@ describe('CustomOAuthStrategy', () => {
 			expect(env.createStrategy({ tokenPath }).tokenPath).toBe(tokenPath);
 		});
 
+		it('passes absolute provider endpoints to Passport unchanged', () => {
+			const strategy = env.createStrategy({
+				authorizePath: 'https://authorize.example.com/authorize',
+				tokenPath: 'https://tokens.example.com/token',
+			});
+			expect(strategy.options.authorizationURL).toBe('https://authorize.example.com/authorize');
+			expect(strategy.options.tokenURL).toBe('https://tokens.example.com/token');
+		});
+
+		it.each(['', undefined])('passes the default token endpoint to Passport when tokenPath is %p', (tokenPath) => {
+			expect(env.createStrategy({ tokenPath: tokenPath as string }).options.tokenURL).toBe('https://identity.example.com/oauth/token');
+		});
+
+		it.each([
+			['https://identity.example.com', '/token'],
+			['https://identity.example.com/', '/token'],
+			['https://identity.example.com/', 'token'],
+			['https://identity.example.com', 'token'],
+		])('joins serverURL %s and path %s with a single slash', (serverURL, path) => {
+			const strategy = env.createStrategy({ serverURL, authorizePath: path, tokenPath: path });
+			expect(strategy.options.authorizationURL).toBe('https://identity.example.com/token');
+			expect(strategy.options.tokenURL).toBe('https://identity.example.com/token');
+			expect(strategy.tokenPath).toBe('https://identity.example.com/token');
+		});
+
+		it('keeps the provider path prefix when serverURL has a trailing slash', () => {
+			const strategy = env.createStrategy({ serverURL: 'https://identity.example.com/realms/main/', authorizePath: '/authorize' });
+			expect(strategy.options.authorizationURL).toBe('https://identity.example.com/realms/main/authorize');
+		});
+
 		it.each([undefined, 'default'] as const)('falls back to token transport when identity transport is %s', (identityTokenSentVia) => {
 			const header = jest.spyOn(env.oauth.prototype, 'useAuthorizationHeaderforGET');
 			const strategy = env.createStrategy({ tokenSentVia: 'header', identityTokenSentVia });
