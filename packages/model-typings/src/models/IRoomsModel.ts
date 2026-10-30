@@ -466,7 +466,7 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 	addUserIdsToE2EEQueueByRoomId(roomId: IRoom['_id'], uids: IUser['_id'][]): Promise<UpdateResult>;
 	addUserIdToE2EEQueueByRoomIds(roomIds: IRoom['_id'][], uid: IUser['_id']): Promise<Document | UpdateResult>;
 	getSubscribedRoomIdsWithoutE2EKeys(uid: IUser['_id']): Promise<IRoom['_id'][]>;
-	removeUsersFromE2EEQueueByRoomId(roomId: IRoom['_id'], uids: IUser['_id'][]): Promise<Document | UpdateResult>;
+	removeUsersFromE2EEQueueByRoomId(roomId: IRoom['_id'], uids: IUser['_id'][], options?: UpdateOptions): Promise<Document | UpdateResult>;
 	removeUserFromE2EEQueue(uid: IUser['_id']): Promise<Document | UpdateResult>;
 	findChildrenOfTeam(
 		teamId: string,
