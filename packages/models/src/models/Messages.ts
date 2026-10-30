@@ -861,13 +861,18 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 
 	findForUpdates<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		roomId: IMessage['rid'],
-		{ updatedAt, minTs }: { updatedAt: { $lt: Date } | { $gt: Date }; minTs?: Date },
+		{ updatedAt, minTs, idTieBreaker }: { updatedAt: { $lt: Date } | { $gt: Date }; minTs?: Date; idTieBreaker?: string },
 		options?: O,
 	): FindCursor<DocumentWithProjection<T, O>> {
+		// With an id tie-breaker, messages that share the boundary `_updatedAt` are ordered by `_id`,
+		// so a page boundary inside one millisecond neither skips nor repeats a message.
+		const [boundary, idRange] = '$gt' in updatedAt ? [updatedAt.$gt, { $gt: idTieBreaker }] : [updatedAt.$lt, { $lt: idTieBreaker }];
 		const query = {
 			rid: roomId,
 			_hidden: { $ne: true },
-			_updatedAt: updatedAt,
+			...(idTieBreaker !== undefined
+				? { $or: [{ _updatedAt: updatedAt }, { _updatedAt: boundary, _id: idRange }] }
+				: { _updatedAt: updatedAt }),
 			...(minTs && { ts: { $gte: minTs } }),
 		};
 
@@ -889,8 +894,18 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 		roomId: IMessage['rid'],
 		deletedAt: { $gt: Date } | { $lt: Date },
 		options?: O,
+		idTieBreaker?: string,
 	): FindCursor<DocumentWithProjection<T, O>> {
-		return this.trashFind({ rid: roomId, _deletedAt: deletedAt }, options) as unknown as FindCursor<DocumentWithProjection<T, O>>;
+		const [boundary, idRange] = '$gt' in deletedAt ? [deletedAt.$gt, { $gt: idTieBreaker }] : [deletedAt.$lt, { $lt: idTieBreaker }];
+		return this.trashFind(
+			{
+				rid: roomId,
+				...(idTieBreaker !== undefined
+					? { $or: [{ _deletedAt: deletedAt }, { _deletedAt: boundary, _id: idRange }] }
+					: { _deletedAt: deletedAt }),
+			},
+			options,
+		) as unknown as FindCursor<DocumentWithProjection<T, O>>;
 	}
 
 	findVisibleByRoomIdBeforeTimestamp<T extends Document = IMessage, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
