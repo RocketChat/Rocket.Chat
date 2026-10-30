@@ -1,6 +1,6 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 
-import { mountInline } from './testUtils';
+import { mountInline } from './testUtils.js';
 
 const plain = (value: string): MessageParser.Plain => ({ type: 'PLAIN_TEXT', value });
 

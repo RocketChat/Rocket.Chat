@@ -1,6 +1,6 @@
 import type { ReactElement } from 'react';
 
-import { sanitizeUrl } from './sanitizeUrl';
+import { sanitizeUrl } from './sanitizeUrl.js';
 
 type ComposerLinkSpanProps = {
 	href: string;

@@ -5,6 +5,7 @@ export default {
 	preset: client.preset,
 	setupFilesAfterEnv: [...client.setupFilesAfterEnv],
 	moduleNameMapper: {
+		'^(\\.{1,2}/.*)\\.js$': '$1',
 		'^react($|/.+)': '<rootDir>/../../node_modules/react$1',
 		'^react-dom($|/.+)': '<rootDir>/../../node_modules/react-dom$1',
 	},
