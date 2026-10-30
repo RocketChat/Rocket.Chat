@@ -1,5 +1,5 @@
-import { renderHook } from './testing';
-import { useStableCallback } from './useStableCallback';
+import { renderHook } from './testing.js';
+import { useStableCallback } from './useStableCallback.js';
 
 it('returns a callback that invokes the mutable one', () => {
 	const fn = jest.fn();
