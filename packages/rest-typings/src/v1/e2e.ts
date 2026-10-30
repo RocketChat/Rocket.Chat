@@ -65,6 +65,9 @@ export type E2eEndpoints = {
 	'/v1/e2e.fetchMyKeys': {
 		GET: (params?: never) => { public_key?: string; private_key?: string };
 	};
+	'/v1/e2e.fetchMyPublicKey': {
+		GET: (params?: never) => { public_key: string | null };
+	};
 	'/v1/e2e.getUsersOfRoomWithoutKey': {
 		GET: (params: e2eGetUsersOfRoomWithoutKeyParamsGET) => { users: Pick<IUser, '_id' | 'e2e'>[] };
 	};
