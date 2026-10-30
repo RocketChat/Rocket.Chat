@@ -7,12 +7,18 @@ export default {
 		{
 			displayName: 'client',
 			preset: client.preset,
+			moduleNameMapper: {
+				'^(\\.{1,2}/.*)\\.js$': '$1',
+			},
 			setupFilesAfterEnv: [...client.setupFilesAfterEnv],
 			testMatch: ['<rootDir>/src/**/*.client.spec.[jt]s?(x)'],
 		},
 		{
 			displayName: 'server',
 			preset: server.preset,
+			moduleNameMapper: {
+				'^(\\.{1,2}/.*)\\.js$': '$1',
+			},
 			testMatch: ['<rootDir>/src/**/*.server.spec.[jt]s?(x)'],
 		},
 	],
