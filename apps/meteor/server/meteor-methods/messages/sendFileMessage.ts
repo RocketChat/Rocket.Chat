@@ -10,6 +10,7 @@ import type {
 	FileProp,
 } from '@rocket.chat/core-typings';
 import { Rooms, Uploads, Users } from '@rocket.chat/models';
+import { ajv } from '@rocket.chat/rest-typings';
 
 import { executeSendMessage } from './sendMessage';
 import { getFileExtension } from '../../../lib/utils/getFileExtension';
@@ -160,7 +161,25 @@ export const parseFileIntoMessageAttachments = async (
 	return { files, attachments };
 };
 
-const msgDataStringFields = ['avatar', 'emoji', 'alias', 'msg', 'tmid', 'customFields', 't'];
+const isFileMessageData = ajv.compile({
+	type: 'object',
+	properties: {
+		avatar: { type: 'string' },
+		emoji: { type: 'string' },
+		alias: { type: 'string' },
+		groupable: { type: 'boolean' },
+		msg: { type: 'string' },
+		tmid: { type: 'string' },
+		customFields: { type: 'string' },
+		t: { type: 'string' },
+		content: {
+			type: 'object',
+			properties: { algorithm: { type: 'string' }, ciphertext: { type: 'string' } },
+			required: ['algorithm', 'ciphertext'],
+		},
+	},
+	additionalProperties: false,
+});
 
 export const sendFileMessage = async (
 	userId: string,
@@ -191,19 +210,7 @@ export const sendFileMessage = async (
 		return false;
 	}
 
-	if (
-		msgData != null &&
-		(typeof msgData !== 'object' ||
-			Object.entries(msgData).some(([key, value]) => {
-				if (key === 'groupable') {
-					return value !== undefined && typeof value !== 'boolean';
-				}
-				if (key === 'content') {
-					return value !== undefined && (typeof value?.algorithm !== 'string' || typeof value.ciphertext !== 'string');
-				}
-				return !msgDataStringFields.includes(key) || (value !== undefined && typeof value !== 'string');
-			}))
-	) {
+	if (msgData != null && !isFileMessageData(msgData)) {
 		throw new ClientSafeError('error-invalid-arguments', 'Invalid arguments', {
 			method: 'sendFileMessage',
 		});

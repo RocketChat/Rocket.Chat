@@ -301,14 +301,6 @@ export class QueueManager {
 		extraData?: IOmnichannelRoomExtraData;
 	}) {
 		logger.debug({ msg: 'Requesting room for guest', guestId: guest._id });
-		if (
-			typeof guest?._id !== 'string' ||
-			typeof guest.username !== 'string' ||
-			![guest.status, guest.department, guest.name].every((value) => value == null || typeof value === 'string') ||
-			(guest.activity != null && !(Array.isArray(guest.activity) && guest.activity.every((value) => typeof value === 'string')))
-		) {
-			throw new Error('error-invalid-guest');
-		}
 
 		const defaultAgent =
 			(await beforeDelegateAgent(agent, {
