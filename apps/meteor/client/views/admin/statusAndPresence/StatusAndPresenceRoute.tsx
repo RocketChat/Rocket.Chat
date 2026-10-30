@@ -39,17 +39,17 @@ const StatusAndPresenceRoute = () => {
 	const allowed: Record<StatusAndPresenceTab, boolean> = {
 		'settings': settingIds.length > 0,
 		'custom-status': canManageCustomStatus,
-		'user-presence': canManageUserPresence,
+		'user-presence': canManageUserPresence === true,
 	};
 
 	const firstAllowedTab = TAB_ORDER.find((name) => allowed[name]);
 	const currentTab = TAB_ORDER.find((name) => name === tab && allowed[name]);
 
 	useLayoutEffect(() => {
-		if (firstAllowedTab && !currentTab) {
+		if (canManageUserPresence !== undefined && firstAllowedTab && !currentTab) {
 			router.navigate({ name: 'user-status', params: { tab: firstAllowedTab } }, { replace: true });
 		}
-	}, [router, firstAllowedTab, currentTab]);
+	}, [router, canManageUserPresence, firstAllowedTab, currentTab]);
 
 	useEffect(() => {
 		if (!presenceDisabled) {
@@ -67,6 +67,10 @@ const StatusAndPresenceRoute = () => {
 			router.navigate({ name: 'user-status', params: { tab: currentTab, context: 'presence-service' } }, { replace: true });
 		}
 	}, [presenceDisabled, canManageCustomStatus, currentTab, context, router]);
+
+	if (canManageUserPresence === undefined) {
+		return null;
+	}
 
 	if (!firstAllowedTab) {
 		return <NotAuthorizedPage />;
