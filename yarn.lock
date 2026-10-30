@@ -10625,6 +10625,8 @@ __metadata:
     "@storybook/addon-docs": "npm:~10.6.5"
     "@storybook/preact": "npm:~10.6.5"
     "@storybook/preact-vite": "npm:~10.6.5"
+    "@tamagui/static": "npm:3.0.18"
+    "@tamagui/vite-plugin": "npm:3.0.18"
     "@types/crypto-js": "npm:~4.2.2"
     "@types/emoji-mart": "npm:~3.0.14"
     "@types/react": "npm:~19.2.18"

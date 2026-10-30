@@ -1,14 +1,17 @@
-import { readFileSync } from 'node:fs';
+import { createHash } from 'node:crypto';
+import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import type { Plugin } from 'vite';
+import { tamaguiPlugin } from '@tamagui/vite-plugin';
+import type { Plugin, ResolvedConfig } from 'vite';
 import { defineConfig } from 'vite';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const require = createRequire(import.meta.url);
 const dateFnsRoot = dirname(require.resolve('date-fns/package.json'));
+const fuselageRoot = join(here, '../fuselage');
 
 // Imports an SVG as a Preact component that renders the file's markup inside an `<svg>` taking the file's attributes.
 const svgComponent = (): Plugin => {
@@ -51,14 +54,83 @@ export default function SvgComponent(props) {
 	};
 };
 
+// The widget never loaded Fuselage's global stylesheet (fonts, normalize, every component's classes), and the
+// widget's own styles are written without it.
+const withoutFuselageGlobalStylesheet = (): Plugin => ({
+	name: 'livechat-without-fuselage-global-stylesheet',
+	enforce: 'pre',
+	resolveId(source, importer) {
+		return source === './index.scss' && importer === join(fuselageRoot, 'src/index.ts') ? '\0livechat-fuselage-index.scss' : null;
+	},
+	load(id) {
+		return id === '\0livechat-fuselage-index.scss' ? '' : null;
+	},
+});
+
+// Moves Tamagui's zero-runtime stylesheet next to the widget's other files under a content hash, linked from
+// `index.html` the way its scripts are.
+const zeroStylesheetWithWidget = (): Plugin => {
+	let config: ResolvedConfig;
+
+	return {
+		name: 'livechat-zero-stylesheet-with-widget',
+		apply: 'build',
+		configResolved(resolved) {
+			config = resolved;
+		},
+		// Tamagui writes the stylesheet when the bundle closes.
+		closeBundle: {
+			order: 'post',
+			sequential: true,
+			handler() {
+				const { outDir } = config.build;
+				const written = join(outDir, 'tamagui-zero.css');
+				if (!existsSync(written)) {
+					throw new Error(`Tamagui's zero-runtime stylesheet is missing from ${outDir}`);
+				}
+
+				const css = readFileSync(written);
+				const file = `tamagui-zero-${createHash('sha256').update(css).digest('hex').slice(0, 8)}.css`;
+				writeFileSync(join(outDir, file), css);
+				rmSync(written);
+
+				const indexHtml = join(outDir, 'index.html');
+				const html = readFileSync(indexHtml, 'utf8');
+				const href = `href="${config.base}tamagui-zero.css"`;
+				if (!html.includes(href)) {
+					throw new Error(`index.html does not link Tamagui's zero-runtime stylesheet as ${href}`);
+				}
+				writeFileSync(indexHtml, html.replace(href, `href="livechat/${file}"`));
+			},
+		},
+	};
+};
+
 export default defineConfig(({ command }) => ({
 	root: join(here, 'src'),
 	publicDir: false,
+	cacheDir: join(here, 'node_modules/.vite'),
 	// Relative, so chunks and assets load from wherever the server mounts the widget.
 	base: command === 'build' ? './' : '/',
-	plugins: [svgComponent()],
+	plugins: [
+		svgComponent(),
+		withoutFuselageGlobalStylesheet(),
+		// Fuselage's `styled()` frames compile to static classes and CSS, so no Tamagui code ships to the browser.
+		// `components` stays empty: warming up Fuselage evaluates its stylesheets outside this config and fails.
+		tamaguiPlugin({
+			config: join(fuselageRoot, 'src/tamagui.config.ts'),
+			components: [],
+			// The compiler only transforms the JSX under Vite's root; Fuselage's sources sit outside it.
+			appSourceDirs: [join(fuselageRoot, 'src')],
+			outputCSS: './.tamagui/zero/tamagui-zero.css',
+			experimental: { zeroRuntime: true },
+		}),
+		zeroStylesheetWithWidget(),
+	],
 	resolve: {
 		alias: [
+			// Fuselage is compiled from its source, by the Tamagui compiler above.
+			{ find: /^@rocket\.chat\/fuselage$/, replacement: join(fuselageRoot, 'src/index.ts') },
 			{ find: 'react', replacement: 'preact/compat' },
 			{ find: 'react-dom', replacement: 'preact/compat' },
 			// date-fns' `exports` map hides the locale files from the dynamic import that picks one.
@@ -78,18 +150,17 @@ export default defineConfig(({ command }) => ({
 		renderBuiltUrl: (filename, { hostType }) => (hostType === 'html' ? `livechat/${filename}` : { relative: true }),
 	},
 	optimizeDeps: {
-		// Linked workspace packages ship CommonJS, which the dev server only converts to ESM when listed here.
+		// Linked workspace packages shipping CommonJS, which the dev server only converts to ESM when listed here. The
+		// ones reaching Fuselage ship ESM and stay out, so the Tamagui compiler sees Fuselage in dev too.
 		include: [
 			'@rocket.chat/core-typings',
 			'@rocket.chat/ddp-client',
-			'@rocket.chat/emitter',
-			'@rocket.chat/gazzodown/dist/Markup',
-			'@rocket.chat/logo',
-			'@rocket.chat/message-parser',
+			'@rocket.chat/icons',
+			'@rocket.chat/message-types',
 			'@rocket.chat/random',
-			'@rocket.chat/ui-contexts',
-			'@rocket.chat/ui-kit',
+			'@rocket.chat/tools',
 		],
+		rolldownOptions: { shimMissingExports: true },
 	},
 	server: {
 		port: 8080,
@@ -104,5 +175,10 @@ export default defineConfig(({ command }) => ({
 		sourcemap: true,
 		// Keeps index.html free of inline scripts.
 		modulePreload: { polyfill: false },
+		rolldownOptions: {
+			// Fuselage's sources import React 19 APIs Preact's compat layer lacks (`use`), from components the widget never
+			// renders; they stay undefined, as they were when Fuselage came prebuilt.
+			shimMissingExports: true,
+		},
 	},
 }));
