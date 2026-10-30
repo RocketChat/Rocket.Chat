@@ -866,7 +866,7 @@ export class MessagesRaw extends BaseRaw<IMessage> implements IMessagesModel {
 	): FindCursor<DocumentWithProjection<T, O>> {
 		const query = {
 			rid: roomId,
-			_hidden: { $ne: true },
+			$or: [{ _hidden: { $ne: true } }, { parent: { $exists: false } }],
 			_updatedAt: updatedAt,
 			...(minTs && { ts: { $gte: minTs } }),
 		};
