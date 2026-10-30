@@ -13,6 +13,16 @@ Classify each change before writing it:
 
 A pull request carries one classification and one concern. "While I'm here" edits, flags or conditionals for hypothetical cases, and changes a reviewer would call "not related" go to their own pull request.
 
+## Title the pull request after what changes
+
+The title says **what** changes, not **how** the code does it. The diff already shows the mechanism. The title is what people read in the changelog, the release notes and `git log`, without the code in front of them.
+
+- **fix**: name the broken behavior that goes away: `fix: instances started at the same time hang on startup`, not `fix: create settings idempotently`.
+- **feature**: name what someone can now do.
+- **refactor**: name the area and the goal: `refactor: move the Setup Wizard into its own package`. Here the "how" is the change.
+
+If the title needs "so", "by" or "to avoid" to explain itself, the part after it is usually the real title.
+
 ## Order work as a stack
 
 When a feature needs fixes or enabling refactors, order them: **fixes → refactors → feature**. Changes that don't depend on the feature go straight to `develop` instead of into the stack.
