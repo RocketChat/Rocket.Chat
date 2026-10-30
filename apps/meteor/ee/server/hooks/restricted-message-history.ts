@@ -15,7 +15,7 @@ import { settings } from '../../../server/settings';
 
 type ThreadRoot = Pick<IMessage, 'ts' | 'replies'> | null;
 
-const isActive = () => License.hasModule('restricted-message-history') && settings.get<boolean>('Restricted_Message_History_Enabled');
+const isActive = () => License.hasModule('experimental-enterprise-features') && settings.get<boolean>('Restricted_Message_History_Enabled');
 
 const findHistoryVisibleFrom = async (uid: IUser['_id'], rid: IRoom['_id']): Promise<Date | undefined> => {
 	const subscription = await Subscriptions.findOneByRoomIdAndUserId<Pick<ISubscription, 'historyVisibleFrom'>>(rid, uid, {

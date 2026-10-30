@@ -6,7 +6,8 @@ Rooms can hide their earlier messages from people who join later. A member's sub
 date from which they can read the room (`historyVisibleFrom`); everything sent before it is hidden from
 them. Members without that date see the full history, as before.
 
-This is an Enterprise feature (license module `restricted-message-history`). It's off unless both hold:
+This is an Enterprise feature, licensed under `experimental-enterprise-features` until Cloud can grant it a
+module of its own. It's off unless both hold:
 
 - the workspace setting **Restricted_Message_History_Enabled** (Message section) is on — it defaults
   to off and reads as off without the license;
