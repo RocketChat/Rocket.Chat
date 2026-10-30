@@ -10,8 +10,8 @@
 
 import { Bench, type Task } from 'tinybench';
 
-import { parse } from '../src';
-import type { Options } from '../src';
+import { parse } from '../src/index.js';
+import type { Options } from '../src/index.js';
 
 // ── Options presets ────────────────────────────────────────────────────────
 

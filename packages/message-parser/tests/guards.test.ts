@@ -1,6 +1,6 @@
-import { isNodeOfType, parse } from '../src';
-import type { Image, OrderedList, Timestamp } from '../src/definitions';
-import { timestamp } from '../src/utils';
+import type { Image, OrderedList, Timestamp } from '../src/definitions.js';
+import { isNodeOfType, parse } from '../src/index.js';
+import { timestamp } from '../src/utils.js';
 
 describe('isNodeOfType', () => {
 	it('narrows timestamp nodes', () => {

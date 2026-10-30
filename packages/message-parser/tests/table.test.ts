@@ -1,6 +1,6 @@
-import type { Table } from '../src';
-import { parse } from '../src';
-import { bold, link, plain, table, tableCell, tableRow } from './helpers';
+import { bold, link, plain, table, tableCell, tableRow } from './helpers.js';
+import type { Table } from '../src/index.js';
+import { parse } from '../src/index.js';
 
 // `fallback` is the [start, end] offset span of the table in the source; since
 // each input is exactly the table, that span is [0, input.length].

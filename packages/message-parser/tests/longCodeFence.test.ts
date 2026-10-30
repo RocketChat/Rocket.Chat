@@ -1,5 +1,5 @@
-import { parse } from '../src';
-import { code, codeLine, lineBreak, paragraph, plain } from './helpers';
+import { code, codeLine, lineBreak, paragraph, plain } from './helpers.js';
+import { parse } from '../src/index.js';
 
 test.each([
 	[

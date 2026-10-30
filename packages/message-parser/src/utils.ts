@@ -23,7 +23,7 @@ import type {
 	Table,
 	TableRow,
 	TableCell,
-} from './definitions';
+} from './definitions.js';
 
 const generate =
 	<Type extends keyof Types>(type: Type) =>
