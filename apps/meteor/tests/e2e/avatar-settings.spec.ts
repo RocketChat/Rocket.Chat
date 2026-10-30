@@ -1,10 +1,9 @@
-import { faker } from '@faker-js/faker';
 import type { Page, Route } from '@playwright/test';
 
 import { createAuxContext } from './fixtures/createAuxContext';
 import { Users } from './fixtures/userStates';
 import { HomeChannel } from './page-objects';
-import { createDirectMessageRoom, createTargetChannelAndReturnFullRoom, deleteRoom } from './utils';
+import { createDirectMessageRoom, createTargetChannelAndReturnFullRoom, createTargetGroupAndReturnFullRoom, deleteRoom } from './utils';
 import { setSettingValueById } from './utils/setSettingValueById';
 import { test, expect } from './utils/test';
 
@@ -66,12 +65,12 @@ test.describe.serial('avatar-settings', () => {
 	});
 
 	test.describe('private channels', () => {
-		const channelName = faker.string.uuid();
+		let channelName = '';
 		let roomId = '';
 
 		test.beforeAll(async ({ api }) => {
-			const response = await api.post('/groups.create', { name: channelName });
-			const { group } = await response.json();
+			const { group } = await createTargetGroupAndReturnFullRoom(api);
+			channelName = group.name as string;
 			roomId = group._id;
 		});
 
