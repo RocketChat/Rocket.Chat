@@ -7,14 +7,13 @@ import { Match } from 'meteor/check';
 import { Meteor } from 'meteor/meteor';
 import _ from 'underscore';
 
-import { isValidAttemptByUser, isValidLoginAttemptByIp } from './restrictLoginAttempts';
+import { validateLoginAttempt } from './validateLoginAttempt';
 import { parseCSV } from '../../../lib/utils/parseCSV';
 import { safeHtmlDots } from '../../../lib/utils/safeHtmlDots';
 import { getNewUserRoles } from '../../services/user/lib/getNewUserRoles';
 import { settings } from '../../settings';
 import { callbacks } from '../callbacks';
 import { beforeCreateUserCallback } from '../callbacks/beforeCreateUserCallback';
-import { getClientAddress } from '../getClientAddress';
 import { getMaxLoginTokens } from '../getMaxLoginTokens';
 import { i18n } from '../i18n';
 import * as Mailer from '../notifications/email/api';
@@ -375,77 +374,8 @@ Accounts.insertUserDoc = async function (options, user) {
 	return _id;
 };
 
-const validateLoginAttemptAsync = async function (login) {
-	login = await callbacks.run('beforeValidateLogin', login);
-
-	if (!(await isValidLoginAttemptByIp(getClientAddress(login.connection)))) {
-		throw new ClientSafeError('error-login-blocked-for-ip', 'Login has been temporarily blocked For IP', {
-			function: 'Accounts.validateLoginAttempt',
-		});
-	}
-
-	if (!(await isValidAttemptByUser(login))) {
-		throw new ClientSafeError('error-login-blocked-for-user', 'Login has been temporarily blocked For User', {
-			function: 'Accounts.validateLoginAttempt',
-		});
-	}
-
-	if (login.allowed !== true) {
-		return login.allowed;
-	}
-
-	if (login.user.type === 'visitor') {
-		return true;
-	}
-
-	if (login.user.type === 'app') {
-		throw new ClientSafeError('error-app-user-is-not-allowed-to-login', 'App user is not allowed to login', {
-			function: 'Accounts.validateLoginAttempt',
-		});
-	}
-
-	if (!!login.user.active !== true) {
-		throw new ClientSafeError('error-user-is-not-activated', 'User is not activated', {
-			function: 'Accounts.validateLoginAttempt',
-		});
-	}
-
-	if (!login.user.roles || !Array.isArray(login.user.roles)) {
-		throw new ClientSafeError('error-user-has-no-roles', 'User has no roles', {
-			function: 'Accounts.validateLoginAttempt',
-		});
-	}
-
-	if (login.user.roles.includes('admin') === false && login.type === 'password' && settings.get('Accounts_EmailVerification') === true) {
-		const validEmail = login.user.emails.filter((email) => email.verified === true);
-		if (validEmail.length === 0) {
-			throw new ClientSafeError('error-invalid-email', 'Invalid email __email__');
-		}
-	}
-
-	login = await callbacks.run('onValidateLogin', login);
-
-	await Users.updateLastLoginById(login.user._id);
-	setImmediate(() => {
-		return callbacks.run('afterValidateLogin', login);
-	});
-
-	/**
-	 * Trigger the event only when the
-	 * user does login in Rocket.chat
-	 */
-	if (login.type !== 'resume') {
-		// App IPostUserLoggedIn event hook
-		await Apps.self?.triggerEvent(AppEvents.IPostUserLoggedIn, login.user);
-	}
-
-	return true;
-};
-
-Accounts.validateLoginAttempt(function (...args) {
-	// Depends on meteor support for Async
-	return validateLoginAttemptAsync.call(this, ...args);
-});
+// Depends on meteor support for Async
+Accounts.validateLoginAttempt((login) => validateLoginAttempt(login));
 
 Accounts.validateNewUser((user) => {
 	if (user.type === 'visitor') {
