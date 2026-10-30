@@ -42,6 +42,10 @@ describe('Markdown entry points', () => {
 		expect(message.html).to.equal(message.tokens?.[0].token);
 	});
 
+	it('should leave links unparsed', () => {
+		expect(Markdown.parseNotEscaped('[Home](http://example.com/)')).to.equal('[Home](http://example.com/)');
+	});
+
 	it('should expose the code parser', () => {
 		const message = Markdown.code({ html: '`code`' });
 

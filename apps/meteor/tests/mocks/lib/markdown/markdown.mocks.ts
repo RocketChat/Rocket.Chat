@@ -6,15 +6,7 @@ export type ParsedMessage = { html?: string; msg?: string; tokens?: MarkdownToke
 
 export type MarkdownOptions = { supportSchemesForLink?: string; headers?: boolean; rootUrl?: string };
 
-const mocks = {
-	'meteor/meteor': {
-		Meteor: {
-			absoluteUrl() {
-				return 'http://localhost:3000/';
-			},
-		},
-	},
-};
+const mocks = {};
 
 export const { Markdown, createMarkdownMessageRenderer, createMarkdownNotificationRenderer } = proxyquire
 	.noCallThru()
