@@ -5032,14 +5032,15 @@ describe('Threads', () => {
 		);
 
 		it('lists a deleted reply without its content', async () => {
-			const reply = (await sendSimpleMessage({ roomId: testChannel._id, text: 'reply that gets deleted', tmid: createdThreadMessage._id }))
-				.body.message;
+			const root = (await sendSimpleMessage({ roomId: testChannel._id, text: 'thread with a deleted reply' })).body.message;
+			await sendSimpleMessage({ roomId: testChannel._id, text: 'reply that stays', tmid: root._id });
+			const reply = (await sendSimpleMessage({ roomId: testChannel._id, text: 'reply that gets deleted', tmid: root._id })).body.message;
 			await deleteMessage({ roomId: testChannel._id, msgId: reply._id }).expect(200);
 
 			const res = await request
 				.get(api('chat.syncThreadMessages'))
 				.set(credentials)
-				.query({ tmid: createdThreadMessage._id, updatedSince: new Date('2019-04-01').toISOString() })
+				.query({ tmid: root._id, updatedSince: new Date('2019-04-01').toISOString() })
 				.expect(200);
 
 			const removed = (res.body.messages.remove as IMessage[]).find(({ _id }) => _id === reply._id);
