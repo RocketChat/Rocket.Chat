@@ -30,14 +30,13 @@ const casTicket = function (req: IncomingMessageWithUrl, token: string, callback
 	const ticketId = parsedUrl.query.ticket as string;
 	const baseUrl = settings.get<string>('CAS_base_url');
 	const version = parseFloat(settings.get('CAS_version') ?? '1.0') as 1.0 | 2.0;
-	const appUrl = getWorkspaceURL() + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX;
 	logger.debug({ msg: 'Using CAS_base_url', baseUrl });
 
 	validate(
 		{
 			base_url: baseUrl,
 			version,
-			service: `${appUrl}/_cas/${token}`,
+			service: getWorkspaceURL(`_cas/${token}`),
 		},
 		ticketId,
 		async (err, status, username, details) => {
