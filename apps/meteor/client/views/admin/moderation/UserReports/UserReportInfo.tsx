@@ -10,7 +10,7 @@ import {
 	FieldLabel,
 	FieldRow,
 } from '@rocket.chat/fuselage';
-import { ContextualbarFooter, ContextualbarScrollableContent, UserCardRole, GenericNoResults } from '@rocket.chat/ui-client';
+import { ContextualbarFooter, ContextualbarScrollableContent, UserCardRole, GenericNoResults, UserCardRoles } from '@rocket.chat/ui-client';
 import { useEndpoint } from '@rocket.chat/ui-contexts';
 import { useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
@@ -86,11 +86,11 @@ const UserReportInfo = ({ userId }: UserReportInfoProps) => {
 								<Field>
 									<FieldLabel>{t('Roles')}</FieldLabel>
 									<FieldRow>
-										<Box display='flex' alignItems='center' minWidth={0}>
+										<UserCardRoles>
 											{report.user.roles.map((role, index) => (
 												<UserCardRole key={index}>{role}</UserCardRole>
 											))}
-										</Box>
+										</UserCardRoles>
 									</FieldRow>
 								</Field>
 								<Field>
