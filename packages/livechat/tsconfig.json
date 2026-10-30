@@ -2,7 +2,7 @@
 	"extends": "@rocket.chat/tsconfig/client.json",
 	"compilerOptions": {
 		"module": "preserve",
-		"types": ["node", "jest", "webpack-env"],
+		"types": ["node", "jest", "webpack-env", "vite/client"],
 		"outDir": "./dist",
 		"allowJs": true,
 		"checkJs": false,
@@ -16,6 +16,6 @@
 		"declaration": false,
 		"declarationMap": false
 	},
-	"include": ["./src", "./webpack.config.ts", "./svg-component-loader.ts", ".storybook/**/*.ts"],
+	"include": ["./src", "./vite.config.mts", "./vite.widget.config.mts", ".storybook/**/*.ts"],
 	"exclude": ["./node_modules", "./dist"]
 }
