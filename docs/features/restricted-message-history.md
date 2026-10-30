@@ -32,10 +32,13 @@ change the restriction. Room creation and imports never set a date.
 ## What a restricted member can't see
 
 Every server path that returns room messages applies the same rule: timeline, sync, jump-to-message,
-single-message fetches, threads, pinned, starred, mentions, search, AI search, exports, read receipts
-and the Files list. Actions that take a message ID (react, pin, star, report, follow, translate,
-start a discussion from a message) refuse hidden messages. Live updates (edits, reactions, deletions)
-to hidden messages aren't delivered either.
+single-message fetches, push notification content, threads, pinned, starred, mentions, discussions,
+search, AI search, exports, read receipts and the Files list. Actions that take a message ID (react,
+pin, star, report, follow, translate, start a discussion from a message) refuse hidden messages. Live
+updates (edits, reactions, deletions) to hidden messages aren't delivered either.
+
+Discussions started before the date aren't listed. A member who reads a discussion through its parent
+room, without joining the discussion, gets their parent room date there too.
 
 ### Threads
 
@@ -46,6 +49,8 @@ A thread belongs to the side of the date its first message is on:
   replies sent after the date. A reply also sent to the channel still appears in the main timeline.
 - **Following is access.** A restricted member can read a hidden thread — every message in it — while
   they follow it. Unfollowing hides it again, and they can't follow a hidden thread themselves.
+- Replying is a way of following, so no client, integration, email reply or app can post a restricted
+  member's reply to a hidden thread, and no reply makes someone without access follow one.
 
 Mentioning a restricted member inside a hidden thread doesn't make them follow it and doesn't notify
 them.
@@ -74,4 +79,7 @@ can't get a hidden message through it.
 
 - Direct file download URLs aren't checked against the date; only the Files list and search are.
 - Federated rooms and DMs.
+- People who read a room without being a member of it. In a public channel, anyone allowed to preview
+  it (`preview-c-room`), and anonymous readers where allowed, see its full history — including a
+  restricted member who leaves. Where that matters, use a private group or remove the preview permission.
 - A message that quotes a hidden one carries the quoted text, like a copy-paste would.
