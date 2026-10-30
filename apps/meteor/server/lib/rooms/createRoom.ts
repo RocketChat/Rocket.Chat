@@ -16,12 +16,13 @@ import { isBareJid, normalizeBareJid } from '@rocket.chat/tools';
 import { createDirectRoom } from './createDirectRoom';
 import { filterUsersAllowedInRoom } from './filterUsersAllowedInRoom';
 import { calculateRoomRolePriorityFromRoles } from '../../../lib/roles/calculateRoomRolePriorityFromRoles';
+import { settings } from '../../settings';
 import { callbacks } from '../callbacks';
 import { afterCreateRoomCallback } from '../callbacks/afterCreateRoomCallback';
 import { beforeAddUserToRoom } from '../callbacks/beforeAddUserToRoom';
 import { beforeCreateRoomCallback, prepareCreateRoomCallback } from '../callbacks/beforeCreateRoomCallback';
 import { getSubscriptionAutotranslateDefaultConfig } from '../getSubscriptionAutotranslateDefaultConfig';
-import { notifyOnRoomChanged, notifyOnSubscriptionChangedById } from '../notifyListener';
+import { notifyOnRoomChanged, notifyOnRoomChangedById, notifyOnSubscriptionChangedById } from '../notifyListener';
 import { syncRoomRolePriorityForUserAndRoom } from '../roles/syncRoomRolePriority';
 import { getDefaultSubscriptionPref } from '../utils/lib/getDefaultSubscriptionPref';
 import { getValidRoomName } from '../utils/lib/getValidRoomName';
@@ -159,6 +160,16 @@ async function createUsersSubscriptions({
 	Object.values(insertedIds).forEach((subId) => notifyOnSubscriptionChangedById(subId, 'inserted'));
 
 	await Rooms.incUsersCountById(room._id, subs.length);
+
+	// Members added after creation enter the E2EE key queue in addUserToRoom; the initial members must
+	// enter it here, so that any member who holds the room key can hand it to them.
+	if (room.encrypted && settings.get('E2E_Enable')) {
+		const usersWaitingForKeys = subs.flatMap(({ user }) => (user.e2e?.public_key ? [user._id] : []));
+		if (usersWaitingForKeys.length) {
+			await Rooms.addUserIdsToE2EEQueueByRoomId(room._id, usersWaitingForKeys);
+			void notifyOnRoomChangedById(room._id);
+		}
+	}
 
 	return skippedMembers;
 }

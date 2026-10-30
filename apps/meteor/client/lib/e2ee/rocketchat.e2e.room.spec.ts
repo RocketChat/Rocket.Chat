@@ -4,7 +4,7 @@ import { sdk } from '../SDKClient';
 
 jest.mock('./crypto/aes');
 jest.mock('../../../client/lib/SDKClient', () => ({
-	sdk: { rest: { post: jest.fn() } },
+	sdk: { rest: { post: jest.fn(), get: jest.fn() } },
 }));
 jest.mock('../../../rocketchat.info', () => ({
 	Info: { version: '8.7.0' },
@@ -77,5 +77,50 @@ describe('E2ERoom.createGroupKey', () => {
 
 		expect(encryptForOthersSpy).toHaveBeenCalledTimes(1);
 		expect(sdk.rest.post).toHaveBeenCalledTimes(2); // both setRoomKeyID and updateGroupKey are called
+	});
+});
+
+describe('E2ERoom.encryptKeyForOtherParticipants', () => {
+	beforeEach(() => {
+		jest.clearAllMocks();
+	});
+
+	afterEach(() => {
+		jest.restoreAllMocks();
+	});
+
+	it('should keep handing out the key to the other members when encryption fails for one member', async () => {
+		(sdk.rest.get as jest.Mock).mockResolvedValue({
+			users: [
+				{ _id: 'bad-key', e2e: { public_key: 'not-a-key' } },
+				{ _id: 'member-a', e2e: { public_key: 'key-a' } },
+				{ _id: 'member-b', e2e: { public_key: 'key-b' } },
+			],
+		});
+		(sdk.rest.post as jest.Mock).mockResolvedValue({});
+		jest
+			.spyOn(E2ERoom.prototype as any, 'encryptGroupKeyForParticipant')
+			.mockImplementation(async (publicKey) => (publicKey === 'not-a-key' ? undefined : `encrypted-for-${publicKey}`));
+
+		await makeRoom().encryptKeyForOtherParticipants();
+
+		expect(sdk.rest.post).toHaveBeenCalledTimes(1);
+		expect(sdk.rest.post).toHaveBeenCalledWith('/v1/e2e.provideUsersSuggestedGroupKeys', {
+			usersSuggestedGroupKeys: {
+				'room-1': [
+					{ _id: 'member-a', key: 'encrypted-for-key-a', oldKeys: undefined },
+					{ _id: 'member-b', key: 'encrypted-for-key-b', oldKeys: undefined },
+				],
+			},
+		});
+	});
+
+	it('should not post when the key could not be encrypted for any member', async () => {
+		(sdk.rest.get as jest.Mock).mockResolvedValue({ users: [{ _id: 'bad-key', e2e: { public_key: 'not-a-key' } }] });
+		jest.spyOn(E2ERoom.prototype as any, 'encryptGroupKeyForParticipant').mockResolvedValue(undefined);
+
+		await makeRoom().encryptKeyForOtherParticipants();
+
+		expect(sdk.rest.post).not.toHaveBeenCalled();
 	});
 });
