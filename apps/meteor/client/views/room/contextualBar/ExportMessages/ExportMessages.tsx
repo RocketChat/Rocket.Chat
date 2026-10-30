@@ -13,7 +13,7 @@ import {
 	ContextualbarDialog,
 } from '@rocket.chat/ui-client';
 import { usePermission, useRoomToolbox } from '@rocket.chat/ui-contexts';
-import { useContext, useEffect, useId, useMemo } from 'react';
+import { useEffect, useId, useMemo } from 'react';
 import { Controller, useForm } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
@@ -22,7 +22,7 @@ import { useExportMessagesAsPDFMutation } from './useExportMessagesAsPDFMutation
 import { useRoomExportMutation } from './useRoomExportMutation';
 import UserAutoCompleteMultiple from '../../../../components/UserAutoCompleteMultiple';
 import { roomCoordinator } from '../../../../lib/rooms/roomCoordinator';
-import { SelectedMessageContext, useCountSelected } from '../../MessageList/contexts/SelectedMessagesContext';
+import { useCountSelected, useSelectedMessageStore } from '../../MessageList/contexts/SelectedMessagesContext';
 import { useRoom } from '../../contexts/RoomContext';
 
 export type ExportMessagesFormValues = {
@@ -103,7 +103,7 @@ const ExportMessages = () => {
 	const { mutateAsync: exportRoom } = useRoomExportMutation();
 	const { mutateAsync: exportAndDownload } = useDownloadExportMutation();
 
-	const { selectedMessageStore } = useContext(SelectedMessageContext);
+	const selectedMessageStore = useSelectedMessageStore();
 	const messageCount = useCountSelected();
 
 	const { type, toUsers } = watch();
