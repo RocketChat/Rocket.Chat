@@ -12,6 +12,9 @@ const firstVisitor = createFakeVisitor();
 
 const secondVisitor = createFakeVisitor();
 
+// Long enough for a queued chat to be taken on the queue's next cycle (`Omnichannel_queue_delay_timeout`, 5s by default).
+const queueCycleTimeout = 15_000;
+
 test.use({ storageState: Users.user1.state });
 
 test.describe('OC - Livechat - Queue Management', () => {
@@ -109,7 +112,7 @@ test.describe('OC - Livechat - Queue Management', () => {
 			});
 
 			await test.step('user1 should get assigned to the first chat', async () => {
-				await expect(poLiveChat.queuePosition(1)).not.toBeVisible();
+				await expect(poLiveChat.queuePosition(1)).not.toBeVisible({ timeout: queueCycleTimeout });
 			});
 
 			await test.step('secondary session should be on position #1', async () => {
@@ -117,7 +120,7 @@ test.describe('OC - Livechat - Queue Management', () => {
 			});
 
 			await test.step('secondary session should be taken by user1', async () => {
-				await expect(poLiveChat2.queuePosition(1)).not.toBeVisible();
+				await expect(poLiveChat2.queuePosition(1)).not.toBeVisible({ timeout: queueCycleTimeout });
 			});
 		});
 	});
