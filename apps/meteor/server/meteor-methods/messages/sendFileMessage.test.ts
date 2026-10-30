@@ -122,7 +122,7 @@ describe('sendFileMessage - msgData validation', () => {
 		expect(executeSendMessage.calledOnce).to.equal(true);
 	});
 
-	for (const msgData of [{ u: { _id: 'other' } }, { msg: 1 }, { groupable: 'true' }, { content: { algorithm: 'a' } }, { content: null }]) {
+	for (const msgData of [{ u: { _id: 'other' } }, { msg: {} }, { groupable: 'yes' }, { content: { algorithm: 'a' } }, { content: null }]) {
 		it(`should reject msgData ${JSON.stringify(msgData)}`, async () => {
 			await expect(sendFileMessage('user123', { roomId: 'room123', file, msgData })).to.be.rejectedWith('Invalid arguments');
 			expect(executeSendMessage.called).to.equal(false);

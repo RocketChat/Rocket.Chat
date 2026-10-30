@@ -1,4 +1,5 @@
 import type { ILivechatUnitMonitor, IOmnichannelBusinessUnit, OmnichannelBusinessUnitPayload } from '@rocket.chat/core-typings';
+import { ajv } from '@rocket.chat/rest-typings';
 import type { PaginatedResult, PaginatedRequest } from '@rocket.chat/rest-typings';
 
 import { findUnits, findUnitById, findUnitMonitors, findUnitsOfUser } from './lib/units';
@@ -25,6 +26,42 @@ declare module '@rocket.chat/rest-typings' {
 	}
 }
 
+const isUnitPayload = ajv.compile<OmnichannelBusinessUnitPayload>({
+	type: 'object',
+	properties: {
+		unitData: {
+			type: 'object',
+			properties: {
+				name: { type: 'string' },
+				visibility: { type: 'string' },
+				enabled: { type: 'boolean' },
+				description: { type: 'string' },
+				email: { type: 'string' },
+				showOnOfflineForm: { type: 'boolean' },
+			},
+			required: ['name', 'visibility'],
+			additionalProperties: false,
+		},
+		unitMonitors: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: { monitorId: { type: 'string' }, username: { type: 'string' } },
+				required: ['monitorId', 'username'],
+			},
+		},
+		unitDepartments: {
+			type: 'array',
+			items: {
+				type: 'object',
+				properties: { departmentId: { type: 'string' } },
+				required: ['departmentId'],
+			},
+		},
+	},
+	required: ['unitData', 'unitMonitors', 'unitDepartments'],
+});
+
 API.v1.addRoute(
 	'livechat/units/:unitId/monitors',
 	{ authRequired: true, permissionsRequired: ['manage-livechat-monitors'], license: ['livechat-enterprise'] },
@@ -46,7 +83,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/units',
-	{ authRequired: true, permissionsRequired: { POST: ['manage-livechat-units'], GET: [] }, license: ['livechat-enterprise'] },
+	{
+		authRequired: true,
+		permissionsRequired: { POST: ['manage-livechat-units'], GET: [] },
+		license: ['livechat-enterprise'],
+		validateParams: { POST: isUnitPayload },
+	},
 	{
 		async get() {
 			const params = this.queryParams;
@@ -78,7 +120,12 @@ API.v1.addRoute(
 
 API.v1.addRoute(
 	'livechat/units/:id',
-	{ authRequired: true, permissionsRequired: ['manage-livechat-units'], license: ['livechat-enterprise'] },
+	{
+		authRequired: true,
+		permissionsRequired: ['manage-livechat-units'],
+		license: ['livechat-enterprise'],
+		validateParams: { POST: isUnitPayload },
+	},
 	{
 		async get() {
 			const { id } = this.urlParams;

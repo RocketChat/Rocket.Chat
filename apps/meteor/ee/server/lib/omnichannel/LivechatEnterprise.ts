@@ -1,11 +1,5 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
-import type {
-	IOmnichannelBusinessUnit,
-	IOmnichannelServiceLevelAgreements,
-	IUser,
-	ILivechatTag,
-	OmnichannelBusinessUnitPayload,
-} from '@rocket.chat/core-typings';
+import type { IOmnichannelBusinessUnit, IOmnichannelServiceLevelAgreements, IUser, ILivechatTag } from '@rocket.chat/core-typings';
 import { Users, OmnichannelServiceLevelAgreements, LivechatTag, LivechatUnitMonitors, LivechatUnit } from '@rocket.chat/models';
 import { getUnitsFromUser } from '@rocket.chat/omni-core-ee';
 
@@ -75,30 +69,6 @@ export const LivechatEnterprise = {
 		unitDepartments: { departmentId: string }[],
 		userId: string,
 	) {
-		const {
-			name,
-			visibility,
-			enabled,
-			description,
-			email,
-			showOnOfflineForm,
-			...unknownUnitData
-		}: Partial<OmnichannelBusinessUnitPayload['unitData']> = unitData ?? {};
-
-		if (
-			typeof name !== 'string' ||
-			typeof visibility !== 'string' ||
-			![enabled, showOnOfflineForm].every((value) => value === undefined || typeof value === 'boolean') ||
-			![description, email].every((value) => value === undefined || typeof value === 'string') ||
-			Object.keys(unknownUnitData).length > 0 ||
-			!Array.isArray(unitMonitors) ||
-			!unitMonitors.every((monitor) => typeof monitor?.monitorId === 'string' && typeof monitor.username === 'string') ||
-			!Array.isArray(unitDepartments) ||
-			!unitDepartments.every((department) => typeof department?.departmentId === 'string')
-		) {
-			throw new ClientSafeError('error-invalid-params', 'Invalid unit data', { method: 'livechat:saveUnit' });
-		}
-
 		let ancestors: string[] = [];
 		if (_id) {
 			const unitsFromUser = await getUnitsFromUser(userId);
