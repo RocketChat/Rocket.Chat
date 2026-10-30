@@ -1,11 +1,11 @@
 import type { Emitter } from '@rocket.chat/emitter';
 
-import type { IClientMediaCall } from '../../call';
-import type { IMediaSignalLogger } from '../../logger';
-import type { IMediaStreamManager } from '../../media/IMediaStreamManager';
-import type { MediaStreamIdentification } from '../../media/MediaStreamIdentification';
-import type { ServerMediaSignalRemoteSDP } from '../../signals';
-import type { IServiceProcessor, ServiceProcessorEvents } from '../IServiceProcessor';
+import type { IClientMediaCall } from '../../call/index.js';
+import type { IMediaSignalLogger } from '../../logger.js';
+import type { IMediaStreamManager } from '../../media/IMediaStreamManager.js';
+import type { MediaStreamIdentification } from '../../media/MediaStreamIdentification.js';
+import type { ServerMediaSignalRemoteSDP } from '../../signals/index.js';
+import type { IServiceProcessor, ServiceProcessorEvents } from '../IServiceProcessor.js';
 
 export type WebRTCInternalStateMap = {
 	signaling: RTCSignalingState;
