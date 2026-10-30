@@ -316,6 +316,14 @@ const $pop = <TField extends string>(target: Record<TField, unknown[]>, field: T
 	}
 };
 
+const logicalOperators = ['$and', '$or', '$nor', '$where'];
+
+// a $pull condition made only of query operators applies to each element itself, as in MongoDB
+const isElementCondition = (arg: Record<string, unknown>) => {
+	const keys = Object.keys(arg);
+	return keys.length > 0 && keys.every((key) => key.startsWith('$') && !logicalOperators.includes(key));
+};
+
 const $pull = <TField extends string, TDocument extends object>(
 	target: Record<TField, TDocument[]>,
 	field: TField,
@@ -335,10 +343,14 @@ const $pull = <TField extends string, TDocument extends object>(
 	}
 
 	let out;
-	if (arg != null && typeof arg === 'object' && !Array.isArray(arg)) {
+	if (isPlainObject(arg) && !isElementCondition(arg)) {
 		const predicate = createPredicateFromFilter(arg);
 
 		out = toPull.filter((element) => !predicate(element));
+	} else if (isPlainObject(arg) || (arg as unknown) instanceof RegExp) {
+		const predicate = createPredicateFromFilter<{ element: unknown }>({ element: arg });
+
+		out = toPull.filter((element) => !predicate({ element }));
 	} else {
 		out = toPull.filter((element) => !equals(element, arg as any));
 	}
