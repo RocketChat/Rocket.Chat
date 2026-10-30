@@ -65,4 +65,104 @@ describe('useSearchItems', () => {
 			expect(result.current.items).toHaveLength(2);
 		});
 	});
+
+	it('should hoist exact name match from local subscriptions to the top', () => {
+		const wrapper = mockAppRoot()
+			.withSubscriptions([
+				{
+					_id: 'room_1',
+					t: 'c',
+					name: 'marketing-team-ideas',
+					lm: new Date('2026-01-02'),
+				} as unknown as SubscriptionWithRoom,
+				{
+					_id: 'room_2',
+					t: 'c',
+					name: 'marketing-team',
+					lm: new Date('2026-01-01'),
+				} as unknown as SubscriptionWithRoom,
+			])
+			.withEndpoint('GET', '/v1/spotlight', () => ({ users: [], rooms: [] }))
+			.build();
+
+		const { result } = renderHook(() => useSearchItems('marketing-team'), { wrapper });
+
+		expect(result.current.items).toHaveLength(2);
+		expect(result.current.items[0]._id).toBe('room_2');
+		expect(result.current.items[0].name).toBe('marketing-team');
+		expect(result.current.items[1]._id).toBe('room_1');
+	});
+
+	it('should hoist exact name match case-insensitively', () => {
+		const wrapper = mockAppRoot()
+			.withSubscriptions([
+				{
+					_id: 'room_1',
+					t: 'c',
+					name: 'marketing-team-ideas',
+				} as unknown as SubscriptionWithRoom,
+				{
+					_id: 'room_2',
+					t: 'c',
+					name: 'marketing-team',
+				} as unknown as SubscriptionWithRoom,
+			])
+			.withEndpoint('GET', '/v1/spotlight', () => ({ users: [], rooms: [] }))
+			.build();
+
+		const { result } = renderHook(() => useSearchItems('Marketing-Team'), { wrapper });
+
+		expect(result.current.items).toHaveLength(2);
+		expect(result.current.items[0]._id).toBe('room_2');
+		expect(result.current.items[0].name).toBe('marketing-team');
+	});
+
+	it('should hoist exact match from server ahead of local partial matches', async () => {
+		const wrapper = mockAppRoot()
+			.withSubscriptions([
+				{
+					_id: 'room_1',
+					t: 'c',
+					name: 'marketing-team-ideas',
+				} as unknown as SubscriptionWithRoom,
+			])
+			.withEndpoint('GET', '/v1/spotlight', () => ({
+				users: [],
+				rooms: [{ _id: 'room_server', t: 'c', name: 'marketing-team' }],
+			}))
+			.build();
+
+		const { result } = renderHook(() => useSearchItems('marketing-team'), { wrapper });
+
+		await waitFor(() => {
+			expect(result.current.isLoading).toBe(false);
+			expect(result.current.items).toHaveLength(2);
+			expect(result.current.items[0]._id).toBe('room_server');
+			expect(result.current.items[0].name).toBe('marketing-team');
+		});
+	});
+
+	it('should fetch and hoist exact match from server even when local subscriptions reach LIMIT', async () => {
+		const localSubscriptions = Array.from({ length: 20 }, (_, i) => ({
+			_id: `local_room_${i}`,
+			t: 'c',
+			name: `marketing-team-ideas${i}`,
+		})) as unknown as SubscriptionWithRoom[];
+
+		const wrapper = mockAppRoot()
+			.withSubscriptions(localSubscriptions)
+			.withEndpoint('GET', '/v1/spotlight', () => ({
+				users: [],
+				rooms: [{ _id: 'room_server_exact', t: 'c', name: 'marketing-team' }],
+			}))
+			.build();
+
+		const { result } = renderHook(() => useSearchItems('marketing-team'), { wrapper });
+
+		await waitFor(() => {
+			expect(result.current.isLoading).toBe(false);
+			expect(result.current.items[0]._id).toBe('room_server_exact');
+			expect(result.current.items[0].name).toBe('marketing-team');
+		});
+	});
 });
