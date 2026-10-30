@@ -10534,6 +10534,8 @@ __metadata:
     "@storybook/addon-webpack5-compiler-swc": "npm:^4.0.3"
     "@storybook/preact": "npm:9.0.0-alpha.11"
     "@storybook/preact-webpack5": "npm:9.0.0-alpha.11"
+    "@tamagui/static": "npm:3.0.18"
+    "@tamagui/vite-plugin": "npm:3.0.18"
     "@types/crypto-js": "npm:~4.2.2"
     "@types/emoji-mart": "npm:~3.0.14"
     "@types/react": "npm:~19.2.18"

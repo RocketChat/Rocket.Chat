@@ -67,6 +67,8 @@
 		"@storybook/addon-webpack5-compiler-swc": "^4.0.3",
 		"@storybook/preact": "9.0.0-alpha.11",
 		"@storybook/preact-webpack5": "9.0.0-alpha.11",
+		"@tamagui/static": "3.0.18",
+		"@tamagui/vite-plugin": "3.0.18",
 		"@types/crypto-js": "~4.2.2",
 		"@types/emoji-mart": "~3.0.14",
 		"@types/react": "~19.2.18",
