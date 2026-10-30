@@ -3,7 +3,7 @@ import { Addon_TypesEnum } from 'storybook/internal/types';
 import { addons } from 'storybook/manager-api';
 import { themes } from 'storybook/theming';
 
-import Tool, { prefersDark, store } from '../Tool';
+import Tool, { prefersDark, store } from '../Tool.js';
 
 const currentStore = store();
 const currentTheme = currentStore.current || (prefersDark.matches && 'dark') || 'light';
