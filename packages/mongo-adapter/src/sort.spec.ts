@@ -115,6 +115,69 @@ describe('createComparatorFromSort', () => {
 
 			expect(sorter(a, b)).toBeLessThan(0);
 		});
+
+		it('should sort descending for a numeric direction in a field and direction pair', () => {
+			const sorter = createComparatorFromSort([['name', -1]]);
+
+			const a = { name: 'Alice' };
+			const b = { name: 'Bob' };
+
+			expect(sorter(a, b)).toBeGreaterThan(0);
+		});
+
+		it('should sort by a single field and direction pair', () => {
+			const sorter = createComparatorFromSort(['name', 'desc']);
+
+			const a = { name: 'Alice' };
+			const b = { name: 'Bob' };
+
+			expect(sorter(a, b)).toBeGreaterThan(0);
+		});
+	});
+
+	describe('other specification formats', () => {
+		it.each([
+			['asc', true],
+			['ascending', true],
+			['desc', false],
+			['descending', false],
+		] as const)('should honour the %s direction in object format', (direction, ascending) => {
+			const sorter = createComparatorFromSort({ name: direction });
+
+			const a = { name: 'Alice' };
+			const b = { name: 'Bob' };
+
+			expect(sorter(a, b) < 0).toBe(ascending);
+		});
+
+		it('should sort by a single field name', () => {
+			const sorter = createComparatorFromSort('name');
+
+			const a = { name: 'Alice', age: 40 };
+			const b = { name: 'Bob', age: 30 };
+
+			expect(sorter(a, b)).toBeLessThan(0);
+		});
+
+		it('should sort using map format', () => {
+			const sorter = createComparatorFromSort(
+				new Map([
+					['age', 1],
+					['name', -1],
+				]),
+			);
+
+			const a = { age: 30, name: 'Alice' };
+			const b = { age: 30, name: 'Bob' };
+			const c = { age: 20, name: 'Carol' };
+
+			expect(sorter(a, b)).toBeGreaterThan(0);
+			expect(sorter(c, a)).toBeLessThan(0);
+		});
+
+		it('should reject an unknown direction', () => {
+			expect(() => createComparatorFromSort({ name: 'up' as any })).toThrow('Invalid sort direction');
+		});
 	});
 
 	describe('array values handling', () => {
@@ -205,6 +268,16 @@ describe('createComparatorFromSort', () => {
 			expect(sorter(a, c)).toBeLessThan(0); // null is less than 0
 			expect(sorter(b, c)).toBeLessThan(0); // undefined is less than 0
 			expect(sorter(a, b)).toBeGreaterThan(0); // undefined is less than null
+		});
+
+		it('should treat a path through an empty array as missing', () => {
+			const sorter = createComparatorFromSort({ 'users.name': 1 });
+
+			const a = { users: [] };
+			const b = { users: [{ name: 'Bob' }] };
+
+			expect(sorter(a, b)).toBeLessThan(0);
+			expect(sorter(b, a)).toBeGreaterThan(0);
 		});
 	});
 });
