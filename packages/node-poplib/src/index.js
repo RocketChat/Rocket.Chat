@@ -534,7 +534,7 @@ POP3Client.prototype.stat = function () {
 			self.setCallback(function () {});
 
 			if (resp !== false) {
-				listitem = data.split(' ');
+				var listitem = data.split(' ');
 				returnValue = {
 					count: listitem[1].trim(),
 					octets: listitem[2].trim(),
