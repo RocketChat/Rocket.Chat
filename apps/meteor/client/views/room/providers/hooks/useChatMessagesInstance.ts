@@ -1,9 +1,9 @@
 import type { IMessage, IRoom } from '@rocket.chat/core-typings';
 import { useUserId } from '@rocket.chat/ui-contexts';
+import { useEmojiPicker } from '@rocket.chat/ui-emoji-picker';
 import { useEffect } from 'react';
 
 import { useInstance } from './useInstance';
-import { useEmojiPicker } from '../../../../contexts/EmojiPickerContext';
 import { useUiKitActionManager } from '../../../../hooks/uikit/useUiKitActionManager';
 import { ChatMessages } from '../../../../lib/ChatMessages';
 import type { ChatAPI } from '../../../../lib/chats/ChatAPI';

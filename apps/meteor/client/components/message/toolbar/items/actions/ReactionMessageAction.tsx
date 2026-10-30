@@ -7,12 +7,11 @@ import {
 	type ISubscription,
 } from '@rocket.chat/core-typings';
 import { useUser, useEndpoint, usePermission } from '@rocket.chat/ui-contexts';
+import { EmojiElement, useEmojiPickerData } from '@rocket.chat/ui-emoji-picker';
 import { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useEmojiPickerData } from '../../../../../contexts/EmojiPickerContext';
 import { roomCoordinator } from '../../../../../lib/rooms/roomCoordinator';
-import EmojiElement from '../../../../../views/composer/EmojiPicker/EmojiElement';
 import { useChat } from '../../../../../views/room/contexts/ChatContext';
 import MessageToolbarItem from '../../MessageToolbarItem';
 

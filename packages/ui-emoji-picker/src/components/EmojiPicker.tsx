@@ -1,37 +1,36 @@
 import { Box, TextInput, Icon, Button, Divider } from '@rocket.chat/fuselage';
 import { useMediaQuery, useOutsideClick } from '@rocket.chat/fuselage-hooks';
-import {
-	EmojiPickerCategoryHeader,
-	EmojiPickerContainer,
-	EmojiPickerPreviewArea,
-	EmojiPickerHeader,
-	EmojiPickerListArea,
-	EmojiPickerPreview,
-} from '@rocket.chat/ui-client';
-import { useTranslation, usePermission, useRoute } from '@rocket.chat/ui-contexts';
+import { useMergedRefsV2, useIsVisible } from '@rocket.chat/ui-client';
+import { useTranslation, usePermission } from '@rocket.chat/ui-contexts';
 import type { ChangeEvent, KeyboardEvent, MouseEvent, RefObject } from 'react';
 import { useLayoutEffect, useState, useEffect, useRef } from 'react';
 import type { ListRange, VirtuosoHandle } from 'react-virtuoso';
 
 import CategoriesResult from './CategoriesResult';
+import EmojiPickerCategoryHeader from './EmojiPickerCategoryHeader';
 import EmojiPickerCategoryItem from './EmojiPickerCategoryItem';
+import EmojiPickerContainer from './EmojiPickerContainer';
 import EmojiPickerDropdown from './EmojiPickerDropDown';
+import EmojiPickerHeader from './EmojiPickerHeader';
+import EmojiPickerListArea from './EmojiPickerListArea';
+import EmojiPickerPreview from './EmojiPickerPreview';
+import EmojiPickerPreviewArea from './EmojiPickerPreviewArea';
 import SearchingResult from './SearchingResult';
 import ToneSelector from './ToneSelector';
 import ToneSelectorWrapper from './ToneSelector/ToneSelectorWrapper';
-import { usePreviewEmoji, useEmojiPickerData } from '../../../contexts/EmojiPickerContext';
-import { useMergedRefsV2 } from '../../../hooks/useMergedRefsV2';
-import { emoji, getCategoriesList, getEmojisBySearchTerm } from '../../../lib/emoji';
-import type { EmojiItem } from '../../../lib/emoji';
-import { useIsVisible } from '../../room/hooks/useIsVisible';
+import { usePreviewEmoji, useEmojiPickerData } from '../contexts/EmojiPickerContext';
+import { useEmojiRegistry } from '../contexts/EmojiRegistryContext';
+import { getCategoriesList, getEmojisBySearchTerm } from '../lib/emoji';
+import type { EmojiItem } from '../lib/types';
 
 export type EmojiPickerProps = {
 	reference: Element;
 	onClose: () => void;
 	onPickEmoji: (emoji: string) => void;
+	onAddCustomEmoji: () => void;
 };
 
-const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
+const EmojiPicker = ({ reference, onClose, onPickEmoji, onAddCustomEmoji }: EmojiPickerProps) => {
 	const t = useTranslation();
 
 	const ref = useRef<Element | null>(reference);
@@ -43,10 +42,10 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 
 	const mergedTextInputRef = useMergedRefsV2(isVisibleRef, textInputRef);
 
-	const emojiCategories = getCategoriesList();
+	const emojiRegistry = useEmojiRegistry();
+	const emojiCategories = getCategoriesList(emojiRegistry);
 
 	const canManageEmoji = usePermission('manage-emoji');
-	const customEmojiRoute = useRoute('emoji-custom');
 
 	const [searching, setSearching] = useState(false);
 	const [searchTerm, setSearchTerm] = useState('');
@@ -116,10 +115,10 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 		// Custom emoji should overwrite native emoji with the same name
 		// Custom emoji with name `:point_right:` should overwrite every tone
 		// Custom emoji with name `:point_right_tone1:` should overwrite only tone1, and not the original or other tones
-		if (emoji.list[`:${_emoji}:`].emojiPackage !== 'emojiCustom') {
-			for (const emojiPackage in emoji.packages) {
-				if (emoji.packages.hasOwnProperty(emojiPackage)) {
-					if (actualTone > 0 && emoji.packages[emojiPackage].toneList.hasOwnProperty(_emoji)) {
+		if (emojiRegistry.list[`:${_emoji}:`].emojiPackage !== 'emojiCustom') {
+			for (const emojiPackage in emojiRegistry.packages) {
+				if (emojiRegistry.packages.hasOwnProperty(emojiPackage)) {
+					if (actualTone > 0 && emojiRegistry.packages[emojiPackage].toneList.hasOwnProperty(_emoji)) {
 						tone = `_tone${actualTone}`;
 					}
 				}
@@ -142,7 +141,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 		setCurrentCategory('');
 		setSearching(e.target.value !== '');
 
-		const emojisResult = getEmojisBySearchTerm(e.target.value, actualTone, recentEmojis, setRecentEmojis);
+		const emojisResult = getEmojisBySearchTerm(emojiRegistry, e.target.value, actualTone, recentEmojis, setRecentEmojis);
 
 		if (emojisResult.filter((emoji) => emoji.image).length === 0) {
 			setCurrentCategory('no-results');
@@ -191,7 +190,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 	};
 
 	const handleGoToAddCustom = () => {
-		customEmojiRoute.push();
+		onAddCustomEmoji();
 		onClose();
 	};
 
@@ -220,7 +219,7 @@ const EmojiPicker = ({ reference, onClose, onPickEmoji }: EmojiPickerProps) => {
 						/>
 					))}
 				</EmojiPickerCategoryHeader>
-				<Box paddingBlock={12}>
+				<Box paddingBlock='x12'>
 					<Divider flush />
 				</Box>
 				<EmojiPickerListArea role='tabpanel'>
