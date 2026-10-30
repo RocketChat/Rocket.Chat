@@ -3,5 +3,8 @@ import type { Config } from 'jest';
 
 export default {
 	preset: server.preset,
+	moduleNameMapper: {
+		'^(\\.{1,2}/.*)\\.js$': '$1',
+	},
 	testMatch: ['<rootDir>/src/**/*.spec.(ts|js|mjs)'],
 } satisfies Config;

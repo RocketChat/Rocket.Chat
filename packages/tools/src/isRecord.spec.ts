@@ -1,4 +1,4 @@
-import { isRecord } from './isRecord';
+import { isRecord } from './isRecord.js';
 
 describe('isRecord', () => {
 	test.each([

@@ -1,4 +1,4 @@
-import { convertFromDaysToMilliseconds } from './converter';
+import { convertFromDaysToMilliseconds } from './converter.js';
 
 const ACCOUNTS_DEFAULT_LOGIN_EXPIRATION_DAYS = 90;
 
