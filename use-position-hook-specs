@@ -1,0 +1,131 @@
+--- a/packages/fuselage-hooks/src/usePosition/index.spec.ts
++++ b/packages/fuselage-hooks/src/usePosition/index.spec.ts
+@@ -1,8 +1,8 @@
+-import { getPositionStyle } from '.';
++import { getPositionStyle, usePosition } from '.';
+ import { getTargetBoundaries } from './getTargetBoundaries';
+ import { getVariantBoundaries } from './getVariantBoundaries';
+ import { withResizeObserverMock } from '../../mocks/withResizeObserverMock';
+-// TODO: add tests targeting the hook itself
++import { renderHook, act } from '../testing';
+
+ withResizeObserverMock();
+
+@@ -333,3 +333,121 @@ describe('getPositionStyle function', () => {
+       expect(result.style.top).toEqual(-5);
+    });
+ });
++
++describe('usePosition hook', () => {
++   const createMockElement = (rect: Partial<DOMRect>) => {
++      const el = document.createElement('div');
++      jest.spyOn(el, 'getBoundingClientRect').mockReturnValue({
++         x: rect.x ?? 0,
++         y: rect.y ?? 0,
++         top: rect.top ?? 0,
++         left: rect.left ?? 0,
++         right: rect.right ?? 0,
++         bottom: rect.bottom ?? 0,
++         width: rect.width ?? 0,
++         height: rect.height ?? 0,
++         toJSON: () => {},
++      } as DOMRect);
++      return el;
++   };
++
++   it('returns initial empty style when refs are not mounted', () => {
++      const anchorRef = { current: null };
++      const targetRef = { current: null };
++
++      const { result } = renderHook(() => usePosition(anchorRef, targetRef));
++
++      expect(result.current.style).toEqual({
++         position: 'fixed',
++         visibility: 'hidden',
++      });
++      expect(result.current.placement).toBeUndefined();
++   });
++
++   it('computes position style when anchor and target are connected to DOM', () => {
++      const anchor = createMockElement({
++         x: 0,
++         y: 100,
++         top: 100,
++         left: 0,
++         right: 100,
++         bottom: 200,
++         width: 100,
++         height: 100,
++      });
++      const target = createMockElement({
++         x: 0,
++         y: 0,
++         top: 0,
++         left: 0,
++         right: 50,
++         bottom: 50,
++         width: 50,
++         height: 50,
++      });
++
++      document.body.appendChild(anchor);
++      document.body.appendChild(target);
++
++      const anchorRef = { current: anchor };
++      const targetRef = { current: target };
++
++      const { result } = renderHook(() =>
++         usePosition(anchorRef, targetRef, { placement: 'bottom-start' }),
++      );
++
++      expect(result.current.style.position).toBe('fixed');
++      expect(result.current.style.visibility).toBeUndefined();
++      expect(result.current.placement).toBe('bottom-start');
++
++      anchor.remove();
++      target.remove();
++   });
++
++   it('updates position when placement prop changes', () => {
++      const anchor = createMockElement({
++         x: 0,
++         y: 200,
++         top: 200,
++         left: 0,
++         right: 100,
++         bottom: 300,
++         width: 100,
++         height: 100,
++      });
++      const target = createMockElement({
++         x: 0,
++         y: 0,
++         top: 0,
++         left: 0,
++         right: 50,
++         bottom: 50,
++         width: 50,
++         height: 50,
++      });
++
++      document.body.appendChild(anchor);
++      document.body.appendChild(target);
++
++      const anchorRef = { current: anchor };
++      const targetRef = { current: target };
++
++      const { result, rerender } = renderHook(
++         ({ placement }) =>
++            usePosition(anchorRef, targetRef, { placement }),
++         { initialProps: { placement: 'bottom-start' as const } },
++      );
++
++      expect(result.current.placement).toBe('bottom-start');
++
++      rerender({ placement: 'bottom-end' as const });
++      expect(result.current.placement).toBe('bottom-end');
++
++      anchor.remove();
++      target.remove();
++   });
++});
