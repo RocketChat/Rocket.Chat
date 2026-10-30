@@ -4,7 +4,7 @@ import type { LicenseManager } from '../license';
 import { onLicense } from './deprecated';
 
 interface IOverrideClassProperties {
-	[key: string]: (...args: any[]) => any;
+	[key: string]: (...args: any[]) => unknown;
 }
 
 type Class = { new (...args: any[]): any };
@@ -19,7 +19,7 @@ export async function overwriteClassOnLicense(
 	await onLicense.call(this, license, () => {
 		Object.entries(overwrite).forEach(([key, value]) => {
 			const originalFn = original.prototype[key];
-			original.prototype[key] = function (...args: any[]): any {
+			original.prototype[key] = function (...args: unknown[]): unknown {
 				return value.call(this, originalFn, ...args);
 			};
 		});
