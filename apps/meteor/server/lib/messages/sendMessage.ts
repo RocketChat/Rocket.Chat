@@ -5,13 +5,13 @@ import { Messages } from '@rocket.chat/models';
 import { isAbsoluteURL } from '@rocket.chat/tools';
 import { Match, check } from 'meteor/check';
 
+import type { HistoryCheckedMessage } from './historyVisibility';
+import { canSeeMessage, historyCheckedMessageProjection } from './historyVisibility';
 import { isRelativeURL } from '../../../lib/utils/isRelativeURL';
 import { afterSaveMessage } from '../../hooks/messages/afterSaveMessage';
 import { settings } from '../../settings';
 import { hasPermissionAsync } from '../authorization/hasPermission';
 import { FileUpload } from '../media/file-upload';
-import type { HistoryCheckedMessage } from './historyVisibility';
-import { canSeeMessage, historyCheckedMessageProjection } from './historyVisibility';
 import { validateCustomMessageFields } from '../messaging/validateCustomMessageFields';
 import { notifyOnRoomChangedById } from '../notifyListener';
 
