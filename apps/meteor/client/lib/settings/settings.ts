@@ -33,7 +33,7 @@ class Settings {
 	private handleChange(key: string, value: SettingValue): void {
 		for (const _key of ['*', key]) {
 			const callbacks = this.callbacks.get(_key);
-			callbacks?.forEach((callback) => callback(_key, value));
+			callbacks?.forEach((callback) => callback(key, value));
 		}
 	}
 
