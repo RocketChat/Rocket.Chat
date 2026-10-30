@@ -1,6 +1,6 @@
-import type { CallFeature, CallFlag, CallService, CallState } from '../IClientMediaCall';
-import type { IClientMediaCallLocalParticipant, IClientMediaCallRemoteParticipant } from '../IClientMediaCallParticipant';
-import type { CallContact } from '../common';
+import type { CallFeature, CallFlag, CallService, CallState } from '../IClientMediaCall.js';
+import type { IClientMediaCallLocalParticipant, IClientMediaCallRemoteParticipant } from '../IClientMediaCallParticipant.js';
+import type { CallContact } from '../common.js';
 
 export interface IDirectMediaCallData {
 	readonly confirmed: true;

@@ -1,7 +1,7 @@
 import { Emitter } from '@rocket.chat/emitter';
 
-import { SDP } from './sdp';
-import type { IMediaSignalLogger, IWebRTCProcessor, NegotiationData, NegotiationEvents } from '../../../definition';
+import { SDP } from './sdp.js';
+import type { IMediaSignalLogger, IWebRTCProcessor, NegotiationData, NegotiationEvents } from '../../../definition/index.js';
 
 export class Negotiation {
 	public readonly emitter: Emitter<NegotiationEvents>;

@@ -1,4 +1,4 @@
-import type { IMediaSignalLogger } from '../logger';
+import type { IMediaSignalLogger } from '../logger.js';
 
 export type NegotiationManagerEvents = {
 	'error': { errorCode: string; negotiationId: string };

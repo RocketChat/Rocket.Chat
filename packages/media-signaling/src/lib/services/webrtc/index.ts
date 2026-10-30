@@ -1,2 +1,2 @@
-export * from './Processor';
-export * from './sdp';
+export * from './Processor.js';
+export * from './sdp.js';
