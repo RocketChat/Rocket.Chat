@@ -143,7 +143,7 @@ export type ChatAPI = {
 		setMID(mid: IMessage['_id']): void;
 		getMID(): string | undefined;
 		reset(): Promise<boolean>;
-		stop(): Promise<void>;
+		stop(options?: { messageDeleted?: boolean }): Promise<void>;
 		cancel(): Promise<void>;
 	};
 
