@@ -1,6 +1,6 @@
 import type { IMessage, MessageTypesValues } from '@rocket.chat/core-typings';
 
-import { MessageTypes } from './MessageTypes';
+import { MessageTypes } from './MessageTypes.js';
 
 let messageTypes: MessageTypes;
 const baseMessage: IMessage = {

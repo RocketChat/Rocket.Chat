@@ -1,9 +1,9 @@
-import { MessageTypes } from './MessageTypes';
-import registerCommonTypes from './registrations/common';
-import registerE2EEETypes from './registrations/e2ee';
-import registerLivechatTypes from './registrations/livechat';
-import registerOmnichannelTypes from './registrations/omnichannel';
-import registerVideoconfTypes from './registrations/videoconf';
+import { MessageTypes } from './MessageTypes.js';
+import registerCommonTypes from './registrations/common.js';
+import registerE2EEETypes from './registrations/e2ee.js';
+import registerLivechatTypes from './registrations/livechat.js';
+import registerOmnichannelTypes from './registrations/omnichannel.js';
+import registerVideoconfTypes from './registrations/videoconf.js';
 
 const instance = new MessageTypes();
 
