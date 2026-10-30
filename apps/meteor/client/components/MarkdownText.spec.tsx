@@ -437,6 +437,24 @@ describe('code handling', () => {
 		});
 		expect(screen.getByRole('code').outerHTML).toEqual(expected);
 	});
+
+	it.each([
+		{
+			caseName: 'inline with special characters',
+			content: '`2 < 3 > 1 & 4 "Test"`',
+			expected: '<code>2 &lt; 3 &gt; 1 &amp; 4 "Test"</code>',
+		},
+		{
+			caseName: 'inline with encoded special characters',
+			content: '`< = &lt; > = &gt; & = &amp;`',
+			expected: '<code>&lt; = &amp;lt; &gt; = &amp;gt; &amp; = &amp;amp;</code>',
+		},
+	] as const)('should render $caseName for inline variant', ({ content, expected }) => {
+		render(<MarkdownText content={`${content}`} variant='inline' />, {
+			wrapper: mockAppRoot().build(),
+		});
+		expect(screen.getByRole('code').outerHTML).toEqual(expected);
+	});
 });
 
 describe('line breaks handling', () => {
