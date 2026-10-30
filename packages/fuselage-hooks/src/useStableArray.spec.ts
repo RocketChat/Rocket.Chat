@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
-import { renderHook, act } from './testing';
-import { useStableArray } from './useStableArray';
+import { renderHook, act } from './testing.js';
+import { useStableArray } from './useStableArray.js';
 
 it('uses same-value equality by default', () => {
 	const initialSymbolValue = Symbol('initial');
