@@ -35,7 +35,12 @@ describe('normalizeLegacyUfsLocation', () => {
 	});
 
 	it('should leave stores other than Uploads unchanged', () => {
-		const file = { _id: 'abc', name: 'a.png', path: '/ufs/GridFS:Avatars/abc/a.png', url: 'https://example.com/ufs/GridFS:Avatars/abc/a.png' };
+		const file = {
+			_id: 'abc',
+			name: 'a.png',
+			path: '/ufs/GridFS:Avatars/abc/a.png',
+			url: 'https://example.com/ufs/GridFS:Avatars/abc/a.png',
+		};
 
 		expect(normalizeLegacyUfsLocation(file)).to.equal(file);
 	});
