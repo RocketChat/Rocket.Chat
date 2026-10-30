@@ -27,17 +27,21 @@ emoji boxes, which load after this file. */
 .emoji.emoji {
 	font-family: 'Apple Color Emoji', rc-emoji-segoe, rc-emoji-noto, 'Noto Color Emoji', 'Twemoji Mozilla', 'Android Emoji', sans-serif;
 	font-size: var(--emoji-size, 1.25rem);
-	display: inline-block;
+
+	/* Flex centering keeps a glyph wider than its box centered, where text-align would
+	spill it all to the right and into the line's clip edge. */
+	display: inline-flex;
+	justify-content: center;
 	overflow: visible;
 	width: var(--emoji-size, 1.25rem);
 	height: var(--emoji-size, 1.25rem);
 	margin: 0 2px;
-	text-align: center;
 	vertical-align: top;
 	line-height: var(--emoji-size, 1.25rem);
 }
 
 .emoji.emoji--custom {
+	display: inline-block;
 	overflow: hidden;
 	white-space: nowrap;
 	text-indent: 100%;
