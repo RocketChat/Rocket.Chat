@@ -1,0 +1,27 @@
+apps/meteor/client/navbar/NavBarSearch/hooks/useAISearchRooms.spec.ts
+  ai_agent 92-129
+apps/meteor/client/navbar/NavBarSearch/hooks/useAISearchRooms.ts
+  ai_agent 103,109-110
+apps/meteor/client/navbar/NavBarSearch/hooks/useSearchItems.ts
+  ai_agent 128,149,152,156-159
+.changeset/quiet-phones-search.md
+  s_dc0b1f2785d1b2::t_4b7d5aee762c04 1-5
+apps/meteor/client/navbar/NavBarSearch/hooks/useSearchItems.spec.ts
+  ai_agent 68-148
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.5.2",
+  "base_commit_sha": "c428e54c4709bc05951b56e8757fa64a304ca672",
+  "prompts": {},
+  "sessions": {
+    "s_dc0b1f2785d1b2": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "c2885c0d-11d7-46e0-9eae-a8b3216cac21",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Ricardo Garim <rswarovsky@gmail.com>"
+    }
+  }
+}
