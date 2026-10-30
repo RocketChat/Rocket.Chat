@@ -263,11 +263,7 @@ export class ConferenceWindow {
 		return this.dialogAddPeople.getByRole('button', { name: 'Add', exact: true });
 	}
 
-	/**
-	 * Picks `username` in the picker and confirms. The picker keeps listing the previous search until its debounced
-	 * search answers, and its list can close while being swapped, leaving nothing to click until it is typed in
-	 * again — so the pick is retried, re-typing whenever the option is not on screen.
-	 */
+	/** Picks `username` and confirms, typing the name again whenever the list it was picked from closes first. */
 	async addPeople(username: string): Promise<void> {
 		const option = this.page.getByRole('option', { name: username, exact: true });
 
