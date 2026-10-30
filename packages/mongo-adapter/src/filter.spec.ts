@@ -172,6 +172,24 @@ describe('createPredicateFromFilter', () => {
 		expect(fn({ a: undefined, b: false })).toBe(true);
 	});
 
+	describe('bitwise operators on binary views', () => {
+		// each view shows a single byte between bytes that must not be read
+		const mask = new Uint8Array([255, 1, 255]).subarray(1, 2);
+		const bitSet = new Uint8Array([0, 1, 0]).subarray(1, 2);
+		const bitClear = new Uint8Array([255, 0, 255]).subarray(1, 2);
+
+		it.each([
+			['$bitsAllSet', true, false],
+			['$bitsAnySet', true, false],
+			['$bitsAllClear', false, true],
+			['$bitsAnyClear', false, true],
+		] as const)('%s only reads the bytes of the views', (operator, whenSet, whenClear) => {
+			const fn = createPredicateFromFilter({ foo: { [operator]: mask } });
+			expect(fn({ foo: bitSet })).toBe(whenSet);
+			expect(fn({ foo: bitClear })).toBe(whenClear);
+		});
+	});
+
 	it('throws error for unsupported operators', () => {
 		expect(() => createPredicateFromFilter({ $unsupported: 'value' })).toThrow('Unrecognized logical operator: $unsupported');
 	});
