@@ -1,4 +1,4 @@
-import { isSafeUrl } from './isSafeUrl';
+import { isSafeUrl } from './isSafeUrl.js';
 
 it.each([
 	'https://rocket.chat',
