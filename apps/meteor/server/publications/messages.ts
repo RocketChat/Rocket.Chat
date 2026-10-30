@@ -111,11 +111,7 @@ export async function handleWithoutPagination(rid: IRoom['_id'], lastUpdate: Dat
 
 	const [updatedMessages, deletedMessages] = await Promise.all([
 		Messages.findForUpdates(rid, { updatedAt: { $gt: lastUpdate }, minTs: fromTs }, options).toArray(),
-		Messages.trashFindDeletedAfter(
-			lastUpdate,
-			{ rid, ...(fromTs && { ts: { $gte: fromTs } }) },
-			{ projection: { _id: 1, _deletedAt: 1 }, ...options },
-		).toArray(),
+		Messages.findDeletedByRoomIdAfter(rid, lastUpdate, fromTs, { projection: { _id: 1, _deletedAt: 1 }, ...options }).toArray(),
 	]);
 
 	return {
@@ -143,10 +139,10 @@ export async function handleCursorPagination(
 	const response =
 		type === 'UPDATED'
 			? await Messages.findForUpdates(rid, { updatedAt: query }, options).toArray()
-			: ((await Messages.trashFind(
-					{ rid, _deletedAt: query },
-					{ projection: { _id: 1, _deletedAt: 1 }, ...options },
-				)!.toArray()) as IMessage[]);
+			: ((await Messages.findDeletedByRoomIdAndDeletedAt(rid, query, {
+					projection: { _id: 1, _deletedAt: 1 },
+					...options,
+				})!.toArray()) as IMessage[]);
 
 	const cursor = {
 		next: mountNextCursor(response, count, type, next, previous),
