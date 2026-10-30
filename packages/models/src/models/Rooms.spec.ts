@@ -19,6 +19,7 @@ describe('addUserIdsToE2EEQueueByRoomId', () => {
 	it('should push every user to the E2EE queue of the encrypted room in one update', async () => {
 		await model.addUserIdsToE2EEQueueByRoomId('rid', ['u1', 'u2']);
 
+		expect(updateOne).toHaveBeenCalledTimes(1);
 		const [query, update] = updateOne.mock.calls[0];
 		expect(query).toEqual({ _id: 'rid', encrypted: true });
 		expect(update.$push.usersWaitingForE2EKeys.$slice).toBe(-50);

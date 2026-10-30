@@ -4,58 +4,60 @@ import { ClientSafeError } from '@rocket.chat/core-services';
 import p from 'proxyquire';
 import sinon from 'sinon';
 
+const sandbox = sinon.createSandbox();
+
 const owner = { _id: 'owner', username: 'owner', name: 'Owner', e2e: { public_key: 'owner-key' } };
 const memberWithKey = { _id: 'member-a', username: 'member-a', e2e: { public_key: 'key-a' } };
 const memberWithoutKey = { _id: 'member-b', username: 'member-b' };
 
 const modelsMock = {
 	Rooms: {
-		createWithFullRoomData: sinon.stub(),
-		incUsersCountById: sinon.stub(),
-		addUserIdsToE2EEQueueByRoomId: sinon.stub(),
+		createWithFullRoomData: sandbox.stub(),
+		incUsersCountById: sandbox.stub(),
+		addUserIdsToE2EEQueueByRoomId: sandbox.stub(),
 	},
 	Subscriptions: {
-		createWithRoomAndManyUsers: sinon.stub(),
+		createWithRoomAndManyUsers: sandbox.stub(),
 	},
 	Users: {
-		findUsersByUsernames: sinon.stub(),
-		addRoomByUserIds: sinon.stub(),
-		assignRoomRolePrioritiesByUserIdPriorityMap: sinon.stub(),
+		findUsersByUsernames: sandbox.stub(),
+		addRoomByUserIds: sandbox.stub(),
+		assignRoomRolePrioritiesByUserIdPriorityMap: sandbox.stub(),
 	},
 };
 
-const settingsMock = { get: sinon.stub() };
-const notifyOnRoomChangedByIdMock = sinon.stub();
-const noopCallback = { run: sinon.stub().resolves() };
+const settingsMock = { get: sandbox.stub() };
+const notifyOnRoomChangedByIdMock = sandbox.stub();
+const noopCallback = { run: sandbox.stub().resolves() };
 
 const { createRoom } = p.noCallThru().load('./createRoom.ts', {
-	'@rocket.chat/apps': { Apps: { self: undefined, triggerEvent: sinon.stub().resolves(undefined) }, AppEvents: {} },
+	'@rocket.chat/apps': { Apps: { self: undefined, triggerEvent: sandbox.stub().resolves(undefined) }, AppEvents: {} },
 	'@rocket.chat/apps-engine/definition/exceptions': { AppsEngineException: class {} },
 	'@rocket.chat/core-services': {
 		ClientSafeError,
 		FederationMatrix: {},
-		Message: { saveSystemMessage: sinon.stub() },
+		Message: { saveSystemMessage: sandbox.stub() },
 		Room: {},
-		Team: { getOneById: sinon.stub() },
+		Team: { getOneById: sandbox.stub() },
 		XMPPServer: {},
 	},
 	'@rocket.chat/core-typings': { isRoomXMPPHostedMuc: () => false, isUserNativeFederated: () => false },
 	'@rocket.chat/models': modelsMock,
 	'@rocket.chat/tools': { isBareJid: () => false, normalizeBareJid: (value: string) => value },
-	'./createDirectRoom': { createDirectRoom: sinon.stub() },
-	'./filterUsersAllowedInRoom': { filterUsersAllowedInRoom: sinon.stub() },
+	'./createDirectRoom': { createDirectRoom: sandbox.stub() },
+	'./filterUsersAllowedInRoom': { filterUsersAllowedInRoom: sandbox.stub() },
 	'../../../lib/roles/calculateRoomRolePriorityFromRoles': { calculateRoomRolePriorityFromRoles: () => 0 },
-	'../callbacks': { callbacks: { run: sinon.stub().resolves(), runAsync: sinon.stub() } },
+	'../callbacks': { callbacks: { run: sandbox.stub().resolves(), runAsync: sandbox.stub() } },
 	'../callbacks/afterCreateRoomCallback': { afterCreateRoomCallback: noopCallback },
 	'../callbacks/beforeAddUserToRoom': { beforeAddUserToRoom: noopCallback },
 	'../callbacks/beforeCreateRoomCallback': { beforeCreateRoomCallback: noopCallback, prepareCreateRoomCallback: noopCallback },
 	'../getSubscriptionAutotranslateDefaultConfig': { getSubscriptionAutotranslateDefaultConfig: () => ({}) },
 	'../notifyListener': {
-		notifyOnRoomChanged: sinon.stub(),
+		notifyOnRoomChanged: sandbox.stub(),
 		notifyOnRoomChangedById: notifyOnRoomChangedByIdMock,
-		notifyOnSubscriptionChangedById: sinon.stub(),
+		notifyOnSubscriptionChangedById: sandbox.stub(),
 	},
-	'../roles/syncRoomRolePriority': { syncRoomRolePriorityForUserAndRoom: sinon.stub() },
+	'../roles/syncRoomRolePriority': { syncRoomRolePriorityForUserAndRoom: sandbox.stub() },
 	'../../settings': { settings: settingsMock },
 	'../utils/lib/getDefaultSubscriptionPref': { getDefaultSubscriptionPref: () => ({}) },
 	'../utils/lib/getValidRoomName': { getValidRoomName: async (name: string) => name },
@@ -63,7 +65,7 @@ const { createRoom } = p.noCallThru().load('./createRoom.ts', {
 
 describe('createRoom E2EE key queue', () => {
 	beforeEach(() => {
-		sinon.resetHistory();
+		sandbox.resetHistory();
 		modelsMock.Users.findUsersByUsernames.returns([owner, memberWithKey, memberWithoutKey]);
 		modelsMock.Subscriptions.createWithRoomAndManyUsers.resolves({ insertedIds: {} });
 		modelsMock.Rooms.createWithFullRoomData.callsFake(async (props: Record<string, unknown>) => ({ _id: 'room-id', ...props }));
