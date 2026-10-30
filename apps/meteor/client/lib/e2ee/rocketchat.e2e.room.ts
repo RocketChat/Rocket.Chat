@@ -352,7 +352,7 @@ export class E2ERoom extends Emitter {
 
 			this.setState('WAITING_KEYS');
 			span.info('Requesting room key');
-			sdk.publish('notify-room-users', [`${this.roomId}/e2ekeyRequest`, this.roomId, room.e2eKeyId]);
+			e2e.requestSubscriptionKeys().catch((error) => span.set('error', error).error('Error requesting room key'));
 		} catch (error) {
 			span.set('error', error);
 			span.error('Error during handshake');

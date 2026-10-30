@@ -429,6 +429,7 @@ class E2E extends Emitter {
 			clearInterval(this.keyDistributionInterval);
 		}
 		this.keyDistributionInterval = null;
+		this.pendingSubscriptionKeysRequest = undefined;
 		this.setState('DISABLED');
 	}
 
@@ -509,8 +510,27 @@ class E2E extends Emitter {
 		await this.requestSubscriptionKeys();
 	}
 
-	async requestSubscriptionKeys(): Promise<void> {
-		await sdk.rest.post('/v1/e2e.requestSubscriptionKeys');
+	private pendingSubscriptionKeysRequest: Promise<void> | undefined;
+
+	// Asks the server to queue this user for the keys of every encrypted room where the user has no key.
+	// The server checks all the rooms in one call, so concurrent callers share the request in flight.
+	requestSubscriptionKeys(): Promise<void> {
+		if (this.pendingSubscriptionKeysRequest) {
+			return this.pendingSubscriptionKeysRequest;
+		}
+
+		const request: Promise<void> = sdk.rest
+			.post('/v1/e2e.requestSubscriptionKeys')
+			.then(() => undefined)
+			.finally(() => {
+				// After stopClient, a newer request can be in flight. Only the request that set the field clears it.
+				if (this.pendingSubscriptionKeysRequest === request) {
+					this.pendingSubscriptionKeysRequest = undefined;
+				}
+			});
+		this.pendingSubscriptionKeysRequest = request;
+
+		return request;
 	}
 
 	async createRandomPassword(): Promise<string> {

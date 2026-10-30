@@ -69,7 +69,6 @@ export interface StreamerEvents {
 			];
 		},
 		{ key: `${string}/deleteMessage`; args: [{ _id: IMessage['_id'] }] },
-		{ key: `${string}/e2e.keyRequest`; args: [unknown] },
 		{ key: `${string}/videoconf`; args: [id: string] },
 		{ key: `${string}/messagesRead`; args: [{ until: Date; tmid?: string }] },
 		{ key: `${string}/messagesImported`; args: [null] },
@@ -165,7 +164,6 @@ export interface StreamerEvents {
 
 		{ key: `${string}/message`; args: [IMessage] },
 		{ key: `${string}/force_logout`; args: [ISession['sessionId'] | undefined] },
-		{ key: `${string}/e2ekeyRequest`; args: [string, string] },
 		{ key: `${string}/notification`; args: [INotificationDesktop] },
 		{ key: `${string}/call.hangup`; args: [{ roomId: string }] },
 		{ key: `${string}/uiInteraction`; args: [UiKit.ServerInteraction] },
