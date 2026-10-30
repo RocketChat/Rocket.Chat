@@ -1,7 +1,7 @@
 import type { Dispatch, SetStateAction } from 'react';
 import { useState } from 'react';
 
-import { useDebouncedUpdates } from './useDebouncedUpdates';
+import { useDebouncedUpdates } from './useDebouncedUpdates.js';
 
 /**
  * Hook to create a state with a debounced setter function.

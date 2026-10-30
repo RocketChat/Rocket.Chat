@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
-import { act, renderHook } from './testing';
-import { useStableCallback } from './useStableCallback';
+import { act, renderHook } from './testing.js';
+import { useStableCallback } from './useStableCallback.js';
 
 it('returns a stable callback', () => {
 	const fn = jest.fn();

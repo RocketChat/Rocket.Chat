@@ -1,5 +1,5 @@
-import { renderHook } from './testing';
-import { useLazyRef } from './useLazyRef';
+import { renderHook } from './testing.js';
+import { useLazyRef } from './useLazyRef.js';
 
 it('returns the computed value immediately', () => {
 	const computedValue = Symbol('computed');

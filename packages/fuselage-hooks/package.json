@@ -2,6 +2,13 @@
 	"name": "@rocket.chat/fuselage-hooks",
 	"version": "0.44.0-rc.0",
 	"description": "React hooks for Fuselage, Rocket.Chat's design system and UI toolkit",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
 	"keywords": [
 		"react",
 		"hooks",
@@ -23,7 +30,6 @@
 		"url": "https://rocket.chat/"
 	},
 	"main": "dist/index.js",
-	"module": "dist/index.module.js",
 	"source": "src/index.ts",
 	"types": "dist/index.d.ts",
 	"files": [

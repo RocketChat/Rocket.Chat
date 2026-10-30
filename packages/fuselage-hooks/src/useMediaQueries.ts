@@ -1,6 +1,6 @@
 import { useCallback, useRef, useSyncExternalStore } from 'react';
 
-import { useStableArray } from './useStableArray';
+import { useStableArray } from './useStableArray.js';
 
 /**
  * Hook to listen to a set of media queries.
