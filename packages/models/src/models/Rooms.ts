@@ -158,6 +158,20 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.findOne<T, O>(query, options);
 	}
 
+	findEncryptedByIdsWithE2eKeyIdAndUserNotQueued<
+		T extends Document = IRoom,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(roomIds: Array<IRoom['_id']>, userId: IUser['_id'], options?: O): FindCursor<DocumentWithProjection<T, O>> {
+		const query: Filter<IRoom> = {
+			'_id': { $in: roomIds },
+			'encrypted': true,
+			'e2eKeyId': { $exists: true },
+			'usersWaitingForE2EKeys.userId': { $ne: userId },
+		};
+
+		return this.find<T, O>(query, options);
+	}
+
 	findManyByRoomIds<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		roomIds: Array<IRoom['_id']>,
 		options?: O,

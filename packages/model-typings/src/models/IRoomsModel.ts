@@ -57,6 +57,15 @@ export interface IRoomsModel extends IBaseModel<IRoom> {
 		options?: O,
 	): Promise<DocumentWithProjection<T, O> | null>;
 
+	findEncryptedByIdsWithE2eKeyIdAndUserNotQueued<
+		T extends Document = IRoom,
+		O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>,
+	>(
+		roomIds: Array<IRoom['_id']>,
+		userId: IUser['_id'],
+		options?: O,
+	): FindCursor<DocumentWithProjection<T, O>>;
+
 	findManyByRoomIds<T extends Document = IRoom, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		roomIds: Array<IRoom['_id']>,
 		options?: O,
