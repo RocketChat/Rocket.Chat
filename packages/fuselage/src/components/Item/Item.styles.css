@@ -217,7 +217,8 @@
 	grid-template-columns: 1fr;
 }
 
-.rcx-item:focus-within .rcx-item__actions-inner {
+.rcx-item:focus-within .rcx-item__actions-inner,
+.rcx-item-group-header:focus-within .rcx-item__actions-inner {
 	overflow: visible;
 }
 
