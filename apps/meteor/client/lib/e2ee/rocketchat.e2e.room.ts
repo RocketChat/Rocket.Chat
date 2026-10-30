@@ -444,8 +444,16 @@ export class E2ERoom extends Emitter {
 		const span = log.span('createGroupKey');
 		await this.createNewGroupKey();
 
+		// The key id and the creator's key go in one request. With two requests, a page that unloads between them
+		// leaves a room key id that no member holds.
+		const myKey = await this.encryptGroupKeyForParticipant(e2e.publicKey!);
+		if (!myKey) {
+			this.discardGroupKey();
+			throw new Error('Could not encrypt the new room key for the current user');
+		}
+
 		try {
-			await sdk.rest.post('/v1/e2e.setRoomKeyID', { rid: this.roomId, keyID: this.keyID });
+			await sdk.rest.post('/v1/e2e.setRoomKeyID', { rid: this.roomId, keyID: this.keyID, key: myKey });
 		} catch (error) {
 			if (error instanceof Response && (await isRoomKeyAlreadyExistsError(error))) {
 				span.info('Room key already established by another member; discarding local key');
@@ -454,15 +462,7 @@ export class E2ERoom extends Emitter {
 			}
 			throw error;
 		}
-		const myKey = await this.encryptGroupKeyForParticipant(e2e.publicKey!);
-		if (myKey) {
-			await sdk.rest.post('/v1/e2e.updateGroupKey', {
-				rid: this.roomId,
-				uid: this.userId,
-				key: myKey,
-			});
-			await this.encryptKeyForOtherParticipants();
-		}
+		await this.encryptKeyForOtherParticipants();
 		return true;
 	}
 
