@@ -49,7 +49,7 @@ emoji boxes, which load after this file. */
 }
 
 .rcx-message-reactions__reaction {
-	--emoji-size: 1rem;
+	--emoji-size: 0.875rem;
 }
 
 .rcx-message-thread__emoji {
