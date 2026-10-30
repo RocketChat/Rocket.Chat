@@ -29,8 +29,8 @@ const SidebarFooterDefault = () => {
 			<SidebarDivider />
 			<Footer>
 				<Box
-					paddingBlockStart={4}
-					paddingBlockEnd={12}
+					paddingBlockStart='x4'
+					paddingBlockEnd='x12'
 					height='x40'
 					width='auto'
 					className={sidebarFooterStyle}
