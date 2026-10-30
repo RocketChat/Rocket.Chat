@@ -1,10 +1,10 @@
 import { MessageTypes } from '@rocket.chat/message-types';
 import { Messages, SmarshHistory, Users, Rooms } from '@rocket.chat/models';
-import { Meteor } from 'meteor/meteor';
 import moment from 'moment-timezone';
 
 import { sendEmail } from './sendEmail';
 import { i18n } from '../../../lib/i18n';
+import { getWorkspaceURL } from '../../../lib/utils/getURL';
 import { settings } from '../../../settings';
 
 const start =
@@ -22,7 +22,7 @@ function _getLink(attachment: { title_link: string }): string {
 	if (url.match(/^(https?:)?\/\//i)) {
 		return url;
 	}
-	return Meteor.absoluteUrl().replace(/\/$/, '') + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url;
+	return getWorkspaceURL() + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url;
 }
 
 export const generateEml = async (): Promise<void> => {
