@@ -118,8 +118,19 @@ WebAppInternals.staticFilesMiddleware = function (
 		res.setHeader('Cache-Control', 'public, max-age=3600');
 	}
 
+	// The web client's files are named by their content hash, so they never change under the same URL.
+	if (path.startsWith('/bundle/')) {
+		res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+	}
+
 	return _staticFilesMiddleware(staticFiles, req, res, next);
 };
+
+// A chunk missing from the build must fail to load, not be cached for good as the page.
+WebApp.connectHandlers.use('/bundle/', (_req: http.IncomingMessage, res: http.ServerResponse) => {
+	res.writeHead(404, { 'Cache-Control': 'no-cache' });
+	res.end();
+});
 
 const oldHttpServerListeners = WebApp.httpServer.listeners('request').slice(0);
 

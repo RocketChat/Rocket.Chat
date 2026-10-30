@@ -10,7 +10,6 @@ export const executeSetUserActiveStatus = async (
 	active: boolean,
 	confirmRelinquish?: boolean,
 ): Promise<boolean> => {
-	check(userId, String);
 	check(active, Boolean);
 
 	if (!fromUserId || (await hasPermissionAsync(fromUserId, 'edit-other-user-active-status')) !== true) {

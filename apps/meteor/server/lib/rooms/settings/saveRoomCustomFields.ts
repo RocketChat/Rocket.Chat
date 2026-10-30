@@ -6,12 +6,6 @@ import type { UpdateResult } from 'mongodb';
 import { notifyOnSubscriptionChangedByRoomId } from '../../notifyListener';
 
 export const saveRoomCustomFields = async function (rid: string, roomCustomFields: Record<string, any>): Promise<UpdateResult> {
-	if (!Match.test(rid, String)) {
-		throw new ClientSafeError('invalid-room', 'Invalid room', {
-			function: 'RocketChat.saveRoomCustomFields',
-		});
-	}
-
 	if (!Match.test(roomCustomFields, Object)) {
 		throw new ClientSafeError('invalid-roomCustomFields-type', 'Invalid roomCustomFields type', {
 			function: 'RocketChat.saveRoomCustomFields',

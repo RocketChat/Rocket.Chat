@@ -11,6 +11,7 @@ import { withDebouncing } from '../../../lib/utils/highOrderFunctions';
 import { settings } from '../../settings';
 import { getURL } from '../utils/getURL';
 
+import './clientEntry';
 import './scripts';
 
 export * from './inject';

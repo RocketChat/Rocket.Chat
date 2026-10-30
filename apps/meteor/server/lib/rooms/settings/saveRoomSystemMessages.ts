@@ -1,20 +1,11 @@
 import { ClientSafeError } from '@rocket.chat/core-services';
 import type { MessageTypesValues } from '@rocket.chat/core-typings';
 import { Rooms } from '@rocket.chat/models';
-import { Match } from 'meteor/check';
 
 import { MessageTypesValues as messageTypesValues } from '../../../../lib/MessageTypes';
 
 export const saveRoomSystemMessages = async function (rid: string, systemMessages: MessageTypesValues[]) {
-	if (!Match.test(rid, String)) {
-		throw new ClientSafeError('invalid-room', 'Invalid room', {
-			function: 'RocketChat.saveRoomSystemMessages',
-		});
-	}
-	if (
-		systemMessages &&
-		(!Match.test(systemMessages, [String]) || systemMessages.some((value) => !messageTypesValues.map(({ key }) => key).includes(value)))
-	) {
+	if (systemMessages?.some((value) => !messageTypesValues.map(({ key }) => key).includes(value))) {
 		throw new ClientSafeError('invalid-room', 'Invalid option', {
 			function: 'RocketChat.saveRoomSystemMessages',
 		});

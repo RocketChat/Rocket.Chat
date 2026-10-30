@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 
 import type { StorybookConfig } from '@storybook/react-webpack5';
@@ -23,6 +24,10 @@ const baseConfig = (customConfig?: Partial<StorybookConfig>): StorybookConfig =>
 		typescript: {
 			reactDocgen: 'react-docgen',
 		},
+		env: (config, { configDir }) => ({
+			...config,
+			STORYBOOK_PACKAGE_NAME: JSON.parse(readFileSync(join(configDir, '..', 'package.json'), 'utf8')).name,
+		}),
 		...customConfig,
 	};
 };
