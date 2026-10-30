@@ -2,6 +2,13 @@
 	"name": "@rocket.chat/peggy-loader",
 	"version": "0.31.28",
 	"description": "Peggy loader for webpack",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
 	"keywords": [
 		"peggy",
 		"loader",
