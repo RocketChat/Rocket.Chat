@@ -1,6 +1,6 @@
-import { UiKitParserMessage } from './UiKitParserMessage';
-import { uiKitMessage } from './uiKitMessage';
-import { BlockContext } from '../../rendering/BlockContext';
+import { UiKitParserMessage } from './UiKitParserMessage.js';
+import { uiKitMessage } from './uiKitMessage.js';
+import { BlockContext } from '../../rendering/BlockContext.js';
 
 class TestParser extends UiKitParserMessage<unknown> {
 	plain_text = (element: any, context: any, index: any): any => ({

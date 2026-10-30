@@ -1,4 +1,4 @@
-import type { BlockElement } from './BlockElement';
+import type { BlockElement } from './BlockElement.js';
 
 export const BlockElementType = {
 	BUTTON: 'button',

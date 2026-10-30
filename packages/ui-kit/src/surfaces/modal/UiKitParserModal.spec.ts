@@ -1,8 +1,8 @@
-import { UiKitParserModal } from './UiKitParserModal';
-import { uiKitModal } from './uiKitModal';
-import type { OverflowElement } from '../../blocks/elements/OverflowElement';
-import type { PlainText } from '../../blocks/text/PlainText';
-import { BlockContext } from '../../rendering/BlockContext';
+import { UiKitParserModal } from './UiKitParserModal.js';
+import { uiKitModal } from './uiKitModal.js';
+import type { OverflowElement } from '../../blocks/elements/OverflowElement.js';
+import type { PlainText } from '../../blocks/text/PlainText.js';
+import { BlockContext } from '../../rendering/BlockContext.js';
 
 class TestParser extends UiKitParserModal<unknown> {
 	plain_text = (element: any, context: any, index: any): any => ({

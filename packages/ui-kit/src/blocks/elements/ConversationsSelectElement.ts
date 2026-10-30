@@ -1,6 +1,6 @@
-import type { Actionable } from '../Actionable';
-import type { ConversationsSelectFilter } from './ConversationsSelectFilter';
-import type { PlainText } from '../text/PlainText';
+import type { Actionable } from '../Actionable.js';
+import type { ConversationsSelectFilter } from './ConversationsSelectFilter.js';
+import type { PlainText } from '../text/PlainText.js';
 
 /** Picks one conversation the user belongs to: a channel, a private group or a direct message. Its value is the room id. */
 export type ConversationsSelectElement = Actionable<{

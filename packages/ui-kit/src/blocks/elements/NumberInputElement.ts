@@ -1,5 +1,5 @@
-import type { Actionable } from '../Actionable';
-import type { PlainText } from '../text/PlainText';
+import type { Actionable } from '../Actionable.js';
+import type { PlainText } from '../text/PlainText.js';
 
 /** A field that only takes numbers; the value is the number as typed, as a string. */
 export type NumberInputElement = Actionable<{

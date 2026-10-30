@@ -1,5 +1,5 @@
-import type { LayoutBlockish } from '../LayoutBlockish';
-import type { TextObject } from '../TextObject';
+import type { LayoutBlockish } from '../LayoutBlockish.js';
+import type { TextObject } from '../TextObject.js';
 
 /** Text shown as is, with no formatting. */
 export type RawTextTableCell = {

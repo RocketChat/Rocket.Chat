@@ -3,9 +3,7 @@
 	"compilerOptions": {
 		"rootDir": "./src",
 		"outDir": "./dist",
-		"removeComments": false,
-		// ttsc/TS7 build only: the shared base still uses the removed moduleResolution node.
-		"moduleResolution": "bundler"
+		"removeComments": false
 	},
 	"include": ["./src/**/*"],
 	"exclude": ["./src/**/*.spec.ts"]

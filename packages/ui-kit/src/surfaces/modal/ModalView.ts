@@ -1,9 +1,9 @@
 import typia from 'typia';
 
-import type { TextObject } from '../../blocks/TextObject';
-import type { ButtonElement } from '../../blocks/elements/ButtonElement';
-import type { View } from '../View';
-import type { ModalSurfaceLayout } from './UiKitParserModal';
+import type { TextObject } from '../../blocks/TextObject.js';
+import type { ButtonElement } from '../../blocks/elements/ButtonElement.js';
+import type { View } from '../View.js';
+import type { ModalSurfaceLayout } from './UiKitParserModal.js';
 
 /**
  * A view that is displayed as a modal dialog.

@@ -1,6 +1,6 @@
 import typia from 'typia';
 
-import type { LayoutBlock } from '../blocks/LayoutBlock';
+import type { LayoutBlock } from '../blocks/LayoutBlock.js';
 
 /**
  * An instance of a UiKit surface and its metadata.

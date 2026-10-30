@@ -1,4 +1,4 @@
-import type { ContextualBarSurfaceLayout } from './UiKitParserContextualBar';
-import { createSurfaceRenderer } from '../../rendering/createSurfaceRenderer';
+import type { ContextualBarSurfaceLayout } from './UiKitParserContextualBar.js';
+import { createSurfaceRenderer } from '../../rendering/createSurfaceRenderer.js';
 
 export const uiKitContextualBar = createSurfaceRenderer<ContextualBarSurfaceLayout[number]>();

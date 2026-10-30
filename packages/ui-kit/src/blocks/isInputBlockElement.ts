@@ -1,6 +1,6 @@
-import type { BlockElement } from './BlockElement';
-import { BlockElementType } from './BlockElementType';
-import type { InputBlock } from './layout/InputBlock';
+import type { BlockElement } from './BlockElement.js';
+import { BlockElementType } from './BlockElementType.js';
+import type { InputBlock } from './layout/InputBlock.js';
 
 export const isInputBlockElement = (block: BlockElement): block is InputBlock['element'] => {
 	switch (block.type) {
