@@ -22,7 +22,7 @@ function _getLink(attachment: { title_link: string }): string {
 	if (url.match(/^(https?:)?\/\//i)) {
 		return url;
 	}
-	return getWorkspaceURL() + __meteor_runtime_config__.ROOT_URL_PATH_PREFIX + url;
+	return getWorkspaceURL(url);
 }
 
 export const generateEml = async (): Promise<void> => {
