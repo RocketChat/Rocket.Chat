@@ -1,5 +1,5 @@
-import { renderHook } from './testing';
-import { useClipboard } from './useClipboard';
+import { renderHook } from './testing.js';
+import { useClipboard } from './useClipboard.js';
 
 it('has hasCopied and copy properties', () => {
 	const { result } = renderHook(() => useClipboard('Lorem Ipsum'));

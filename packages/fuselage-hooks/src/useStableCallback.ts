@@ -1,6 +1,6 @@
 import { useRef } from 'react';
 
-import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
+import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect.js';
 
 /**
  * Hook that lets you extract non-reactive logic into a stable callback.

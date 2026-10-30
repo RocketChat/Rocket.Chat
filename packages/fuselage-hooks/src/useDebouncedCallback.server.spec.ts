@@ -1,5 +1,5 @@
-import { renderHook } from './testing';
-import { useDebouncedCallback } from './useDebouncedCallback';
+import { renderHook } from './testing.js';
+import { useDebouncedCallback } from './useDebouncedCallback.js';
 
 beforeAll(() => {
 	jest.useFakeTimers();

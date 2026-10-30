@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { useStableCallback } from './useStableCallback';
+import { useStableCallback } from './useStableCallback.js';
 
 export type UseClipboardParams = {
 	clearTime?: number;

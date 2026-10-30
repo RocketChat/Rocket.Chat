@@ -1,7 +1,7 @@
 import { useState } from 'react';
 
-import { renderHook, act } from './testing';
-import { useSafely } from './useSafely';
+import { renderHook, act } from './testing.js';
+import { useSafely } from './useSafely.js';
 
 it('returns a new dispatcher that invokes the previous one', () => {
 	const state = Symbol();

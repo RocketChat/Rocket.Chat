@@ -1,6 +1,6 @@
-import { renderHook } from './testing';
-import { usePrefersColorScheme } from './usePrefersColorScheme';
-import { withMatchMediaMock } from '../mocks/withMatchMediaMock';
+import { renderHook } from './testing.js';
+import { usePrefersColorScheme } from './usePrefersColorScheme.js';
+import { withMatchMediaMock } from '../mocks/withMatchMediaMock.js';
 
 const setViewport = withMatchMediaMock();
 

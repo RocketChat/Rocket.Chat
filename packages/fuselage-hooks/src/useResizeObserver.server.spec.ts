@@ -1,5 +1,5 @@
-import { renderHook } from './testing';
-import { useResizeObserver } from './useResizeObserver';
+import { renderHook } from './testing.js';
+import { useResizeObserver } from './useResizeObserver.js';
 
 it('immediately returns undefined sizes', () => {
 	const { result } = renderHook(() => useResizeObserver());

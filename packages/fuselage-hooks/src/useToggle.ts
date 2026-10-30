@@ -1,7 +1,7 @@
 import type { SetStateAction } from 'react';
 import { useState } from 'react';
 
-import { useStableCallback } from './useStableCallback';
+import { useStableCallback } from './useStableCallback.js';
 
 /**
  * Hook to create a toggleable boolean state.

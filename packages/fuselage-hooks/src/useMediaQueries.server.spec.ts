@@ -1,5 +1,5 @@
-import { renderHook } from './testing';
-import { useMediaQueries } from './useMediaQueries';
+import { renderHook } from './testing.js';
+import { useMediaQueries } from './useMediaQueries.js';
 
 it('returns empty array for undefined media query', () => {
 	const { result } = renderHook(() => useMediaQueries());

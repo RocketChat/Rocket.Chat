@@ -1,21 +1,21 @@
 import type { RefObject, CSSProperties } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
-import { useSafely } from '../useSafely';
-import { useStableCallback } from '../useStableCallback';
-import type { Placement } from './Placement';
-import type { PlacementVariant } from './PlacementVariant';
-import type { Position } from './Position';
-import type { TargetBoundaries } from './getTargetBoundaries';
-import { getTargetBoundaries } from './getTargetBoundaries';
-import type { VariantBoundaries } from './getVariantBoundaries';
-import { getVariantBoundaries } from './getVariantBoundaries';
+import { useSafely } from '../useSafely.js';
+import { useStableCallback } from '../useStableCallback.js';
+import type { Placement } from './Placement.js';
+import type { PlacementVariant } from './PlacementVariant.js';
+import type { Position } from './Position.js';
+import type { TargetBoundaries } from './getTargetBoundaries.js';
+import { getTargetBoundaries } from './getTargetBoundaries.js';
+import type { VariantBoundaries } from './getVariantBoundaries.js';
+import { getVariantBoundaries } from './getVariantBoundaries.js';
 
-export type { Placement } from './Placement';
-export type { Position } from './Position';
-export type { PlacementVariant } from './PlacementVariant';
-export type { TargetBoundaries } from './getTargetBoundaries';
-export type { VariantBoundaries } from './getVariantBoundaries';
+export type { Placement } from './Placement.js';
+export type { Position } from './Position.js';
+export type { PlacementVariant } from './PlacementVariant.js';
+export type { TargetBoundaries } from './getTargetBoundaries.js';
+export type { VariantBoundaries } from './getVariantBoundaries.js';
 
 export type UsePositionOptions = {
 	margin?: number;

@@ -1,5 +1,5 @@
-import { renderHook, act } from './testing';
-import { useToggle } from './useToggle';
+import { renderHook, act } from './testing.js';
+import { useToggle } from './useToggle.js';
 
 it('has false value when an initial value is undefined', () => {
 	const { result } = renderHook(() => useToggle());

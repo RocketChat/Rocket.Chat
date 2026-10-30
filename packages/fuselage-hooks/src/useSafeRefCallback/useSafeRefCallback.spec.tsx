@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
 
-import type { SafeCallbackRef } from './useSafeRefCallback';
-import { useSafeRefCallback } from './useSafeRefCallback';
+import type { SafeCallbackRef } from './useSafeRefCallback.js';
+import { useSafeRefCallback } from './useSafeRefCallback.js';
 
 type TestComponentProps = {
 	callback: SafeCallbackRef<HTMLElement>;
