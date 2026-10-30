@@ -115,11 +115,16 @@ export async function findDiscussionsFromRoom({
 		throw new Error('error-not-allowed');
 	}
 
-	const { cursor, totalCount } = await Messages.findDiscussionsByRoomAndText(roomId, text, {
-		sort: sort || { ts: -1 },
-		skip: offset,
-		limit: count,
-	});
+	const { cursor, totalCount } = await Messages.findDiscussionsByRoomAndText(
+		roomId,
+		text,
+		{
+			sort: sort || { ts: -1 },
+			skip: offset,
+			limit: count,
+		},
+		await getHistoryVisibility(uid, roomId),
+	);
 
 	const [messages, total] = await Promise.all([cursor.toArray(), totalCount]);
 

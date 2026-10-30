@@ -644,9 +644,7 @@ API.v1.get(
 			return API.v1.failure('not-allowed', 'Not Allowed');
 		}
 
-		const ourQuery = { prid: room._id };
-
-		const { cursor, totalCount } = await Rooms.findPaginated(ourQuery, {
+		const { cursor, totalCount } = Rooms.findPaginatedDiscussionsByParentId(room._id, await getHistoryVisibleFrom(this.userId, room._id), {
 			sort: sort || { fname: 1 },
 			skip: offset,
 			limit: count,
