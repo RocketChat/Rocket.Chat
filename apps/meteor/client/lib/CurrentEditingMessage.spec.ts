@@ -37,6 +37,7 @@ describe('CurrentEditingMessage', () => {
 
 		expect(chat.data.discardDraft).toHaveBeenCalledWith('message-id');
 		expect(chat.data.findMessageByID).not.toHaveBeenCalled();
+		expect(chat.data.getDraft).toHaveBeenCalledWith(undefined);
 		expect(chat.composer?.setText).toHaveBeenCalledWith('normal draft');
 		expect(chat.composer?.setEditingMode).toHaveBeenCalledWith(false);
 		expect(currentEditingMessage.getMID()).toBeUndefined();
@@ -50,6 +51,7 @@ describe('CurrentEditingMessage', () => {
 
 		expect(chat.data.discardDraft).not.toHaveBeenCalled();
 		expect(chat.data.getDraft).not.toHaveBeenCalled();
+		expect(chat.composer?.setText).not.toHaveBeenCalled();
 		expect(chat.composer?.setEditingMode).not.toHaveBeenCalled();
 		expect(clearHighlightMessageMock).not.toHaveBeenCalled();
 	});
