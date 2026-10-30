@@ -31,6 +31,10 @@ export class SubscriptionsRaw extends BaseRaw<ISubscription> implements ISubscri
 		super(db, 'subscription', trash);
 	}
 
+	findDeletedAfterByUserId(userId: string, deletedAt: Date, options?: FindOptions<RocketChatRecordDeleted<ISubscription>>) {
+		return this.trashFindDeletedAfter(deletedAt, { 'u._id': userId }, options);
+	}
+
 	protected override modelIndexes(): IndexDescription[] {
 		// Add all indexes from constructor to here
 		return [

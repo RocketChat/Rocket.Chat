@@ -1,4 +1,13 @@
-import type { ISubscription, IRole, IUser, IRoom, IMessage, SpotlightUser, AtLeast } from '@rocket.chat/core-typings';
+import type {
+	ISubscription,
+	IRole,
+	IUser,
+	IRoom,
+	IMessage,
+	SpotlightUser,
+	AtLeast,
+	RocketChatRecordDeleted,
+} from '@rocket.chat/core-typings';
 import type {
 	FindOptions,
 	FindCursor,
@@ -21,6 +30,12 @@ import type { DocumentWithProjection, FindOptionsWithProjection } from '../types
 
 export interface ISubscriptionsModel extends IBaseModel<ISubscription> {
 	getBadgeCount(uid: string): Promise<number>;
+
+	findDeletedAfterByUserId(
+		userId: string,
+		deletedAt: Date,
+		options?: FindOptions<RocketChatRecordDeleted<ISubscription>>,
+	): FindCursor<WithId<RocketChatRecordDeleted<ISubscription>>>;
 
 	findOneByRoomIdAndUserId<T extends Document = ISubscription, O extends FindOptionsWithProjection<T> = FindOptionsWithProjection<T>>(
 		rid: string,
