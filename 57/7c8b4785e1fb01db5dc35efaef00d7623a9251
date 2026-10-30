@@ -1,0 +1,19 @@
+docs/adr/0010-own-http-server-in-front-of-meteor.md
+  s_29c461251ce55f::t_a5cca33906fdba 65
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "577c8b4785e1fb01db5dc35efaef00d7623a9251",
+  "prompts": {},
+  "sessions": {
+    "s_29c461251ce55f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "98ca5981-8946-4d8b-820e-c90a203f06a2",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
