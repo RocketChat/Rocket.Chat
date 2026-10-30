@@ -8,8 +8,6 @@ import { getChannelHistory } from '../meteor-methods/messages/getChannelHistory'
 
 type CursorPaginationType = 'UPDATED' | 'DELETED';
 
-type IdTieBreaker = { $gt: string } | { $lt: string };
-
 // A cursor is either a bare timestamp (`<ms>`) or a compound `<ms>_<_id>`.
 // The compound form orders messages that share one timestamp by `_id`, so a page boundary inside one
 // millisecond does not skip messages. A request with a bare timestamp keeps the original behavior and
@@ -45,20 +43,31 @@ export function isCompoundCursor(cursor?: string): boolean {
 	return !!cursor && cursor.includes(COMPOUND_CURSOR_SEPARATOR);
 }
 
-export function mountCursorQuery({ next, previous, count }: { next?: string; previous?: string; count: number }): {
+export function mountCursorQuery({
+	next,
+	previous,
+	count,
+	type = 'UPDATED',
+}: {
+	next?: string;
+	previous?: string;
+	count: number;
+	type?: CursorPaginationType;
+}): {
 	query: { $gt: Date } | { $lt: Date };
-	idTieBreaker?: IdTieBreaker;
+	idTieBreaker?: string;
 	options: FindOptions<IMessage>;
 } {
 	const options: FindOptions<IMessage> = {
 		sort: { _updatedAt: 1 },
 		...(next || previous ? { limit: count + 1 } : {}),
 	};
+	const cursorField = type === 'DELETED' ? '_deletedAt' : '_updatedAt';
 
 	if (next) {
 		const { timestamp, id } = parseCursor(next);
 		if (id !== undefined) {
-			return { query: { $gt: timestamp }, idTieBreaker: { $gt: id }, options: { ...options, sort: { _updatedAt: 1, _id: 1 } } };
+			return { query: { $gt: timestamp }, idTieBreaker: id, options: { ...options, sort: { [cursorField]: 1, _id: 1 } } };
 		}
 		return { query: { $gt: timestamp }, options };
 	}
@@ -66,7 +75,7 @@ export function mountCursorQuery({ next, previous, count }: { next?: string; pre
 	if (previous) {
 		const { timestamp, id } = parseCursor(previous);
 		if (id !== undefined) {
-			return { query: { $lt: timestamp }, idTieBreaker: { $lt: id }, options: { ...options, sort: { _updatedAt: -1, _id: -1 } } };
+			return { query: { $lt: timestamp }, idTieBreaker: id, options: { ...options, sort: { [cursorField]: -1, _id: -1 } } };
 		}
 		return { query: { $lt: timestamp }, options: { ...options, sort: { _updatedAt: -1 } } };
 	}
@@ -147,11 +156,7 @@ export async function handleWithoutPagination(rid: IRoom['_id'], lastUpdate: Dat
 
 	const [updatedMessages, deletedMessages] = await Promise.all([
 		Messages.findForUpdates(rid, { updatedAt: { $gt: lastUpdate }, minTs: fromTs }, options).toArray(),
-		Messages.trashFindDeletedAfter(
-			lastUpdate,
-			{ rid, ...(fromTs && { ts: { $gte: fromTs } }) },
-			{ projection: { _id: 1, _deletedAt: 1 }, ...options },
-		).toArray(),
+		Messages.findDeletedByRoomIdAfter(rid, lastUpdate, fromTs, { projection: { _id: 1, _deletedAt: 1 }, ...options }).toArray(),
 	]);
 
 	return {
@@ -174,20 +179,18 @@ export async function handleCursorPagination(
 		previous: string | null;
 	};
 }> {
-	const { query, idTieBreaker, options } = mountCursorQuery({ next, previous, count });
+	const { query, idTieBreaker, options } = mountCursorQuery({ next, previous, count, type });
 	const compound = isCompoundCursor(next ?? previous);
-	const boundary = '$gt' in query ? query.$gt : query.$lt;
 
 	const response =
 		type === 'UPDATED'
-			? await Messages.findForUpdates(rid, { updatedAt: query, ...(idTieBreaker && { idTieBreaker }) }, options).toArray()
-			: ((await Messages.trashFind(
-					{
-						rid,
-						...(idTieBreaker ? { $or: [{ _deletedAt: query }, { _deletedAt: boundary, _id: idTieBreaker }] } : { _deletedAt: query }),
-					},
+			? await Messages.findForUpdates(rid, { updatedAt: query, ...(idTieBreaker !== undefined && { idTieBreaker }) }, options).toArray()
+			: await Messages.findDeletedByRoomIdAndDeletedAt(
+					rid,
+					query,
 					{ projection: { _id: 1, _deletedAt: 1 }, ...options },
-				)!.toArray()) as IMessage[]);
+					idTieBreaker,
+				).toArray();
 
 	const cursor = {
 		next: mountNextCursor(response, count, type, next, previous, compound),

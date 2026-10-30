@@ -24,7 +24,7 @@ describe('findForUpdates', () => {
 	});
 
 	it('should order messages inside the boundary timestamp by _id with an id tie-breaker', () => {
-		model.findForUpdates('rid', { updatedAt: { $gt: boundary }, idTieBreaker: { $gt: 'abc' } });
+		model.findForUpdates('rid', { updatedAt: { $gt: boundary }, idTieBreaker: 'abc' });
 
 		expect(find.mock.calls[0][0]).toEqual({
 			rid: 'rid',
@@ -34,7 +34,7 @@ describe('findForUpdates', () => {
 	});
 
 	it('should use the $lt boundary when paging backward', () => {
-		model.findForUpdates('rid', { updatedAt: { $lt: boundary }, idTieBreaker: { $lt: 'abc' } });
+		model.findForUpdates('rid', { updatedAt: { $lt: boundary }, idTieBreaker: 'abc' });
 
 		expect(find.mock.calls[0][0]).toEqual({
 			rid: 'rid',
