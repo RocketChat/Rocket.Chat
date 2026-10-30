@@ -94,7 +94,7 @@ test.describe.serial('avatar-settings', () => {
 
 	test.describe('direct messages', () => {
 		const { username } = Users.user2.data;
-		const avatarPath = new RegExp(`/avatar/${username}(\\?.*)?$`);
+		const avatarPath = new RegExp(`^/avatar/${username}(\\?.*)?$`);
 		let roomId = '';
 		let user2Page: Page | undefined;
 
