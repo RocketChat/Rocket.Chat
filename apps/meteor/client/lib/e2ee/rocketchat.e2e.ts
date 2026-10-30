@@ -285,13 +285,16 @@ class E2E extends Emitter {
 	private async persistKeys(
 		{ public_key, private_key }: KeyPair,
 		password: string,
-		{ force }: { force: boolean } = { force: false },
+		{ force = false, generation = this.startGeneration }: { force?: boolean; generation?: number } = {},
 	): Promise<void> {
 		if (typeof public_key !== 'string' || typeof private_key !== 'string') {
 			throw new Error('Failed to persist keys as they are not strings.');
 		}
 
 		const encodedPrivateKey = await this.keychain.encryptKey(private_key, password);
+		if (this.isStale(generation)) {
+			return;
+		}
 
 		if (!encodedPrivateKey) {
 			throw new Error('Failed to encode private key with provided password.');
@@ -363,7 +366,12 @@ class E2E extends Emitter {
 		if (this.userId) {
 			// Another user logged in on this page with no logout (login with a token). The stored keys and the saved
 			// password are not stored per user, so drop the previous user's session before the new one reads them.
-			await this.stopClient();
+			const stopping = this.stopClient();
+			const stoppedGeneration = this.startGeneration;
+			await stopping;
+			if (this.isStale(stoppedGeneration)) {
+				return;
+			}
 		}
 
 		const generation = ++this.startGeneration;
@@ -431,7 +439,7 @@ class E2E extends Emitter {
 			if (this.isStale(generation)) {
 				return;
 			}
-			await this.persistKeys(keys, password);
+			await this.persistKeys(keys, password, { generation });
 			if (this.isStale(generation)) {
 				return;
 			}
@@ -479,7 +487,11 @@ class E2E extends Emitter {
 	}
 
 	async changePassword(newPassword: string): Promise<void> {
-		await this.persistKeys(this.getKeysFromLocalStorage(), newPassword, { force: true });
+		const generation = this.startGeneration;
+		await this.persistKeys(this.getKeysFromLocalStorage(), newPassword, { force: true, generation });
+		if (this.isStale(generation)) {
+			return;
+		}
 
 		if (getStoredItem(STORAGE_KEYS.E2EE_RANDOM_PASSWORD)) {
 			setStoredItem(STORAGE_KEYS.E2EE_RANDOM_PASSWORD, newPassword);
@@ -502,6 +514,9 @@ class E2E extends Emitter {
 
 			span.info('fetched keys from db');
 		} catch (error) {
+			if (this.isStale(generation)) {
+				return;
+			}
 			this.setState('ERROR');
 			span.error('Error fetching RSA keys: ', error);
 			// Stop any process since we can't communicate with the server
