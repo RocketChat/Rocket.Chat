@@ -1,5 +1,5 @@
 import { parse } from '../src';
-import { paragraph, plain, mentionUser, mentionChannel } from './helpers';
+import { bold, paragraph, plain, mentionUser, mentionChannel } from './helpers';
 
 test.each([
 	['@guilherme.gazzo', [paragraph([mentionUser('guilherme.gazzo')])]],
@@ -17,6 +17,8 @@ test.each([
 	['@Владимир', [paragraph([mentionUser('Владимир')])]],
 	['@Кириллица', [paragraph([mentionUser('Кириллица')])]],
 	['test @Кириллица test', [paragraph([plain('test '), mentionUser('Кириллица'), plain(' test')])]],
+	['@here\u00a0@john.doe', [paragraph([mentionUser('here'), plain('\u00a0'), mentionUser('john.doe')])]],
+	['**hi\u00a0@john.doe**', [paragraph([bold([plain('hi\u00a0'), mentionUser('john.doe')])])]],
 ])('parses %p', (input, output) => {
 	expect(parse(input)).toEqual(output);
 });
