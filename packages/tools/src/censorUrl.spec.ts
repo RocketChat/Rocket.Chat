@@ -1,4 +1,4 @@
-import { censorUrl } from './censorUrl';
+import { censorUrl } from './censorUrl.js';
 
 describe('censorUrl', () => {
 	it('returns the original value when URL parsing fails', () => {

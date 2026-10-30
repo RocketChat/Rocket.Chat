@@ -1,4 +1,4 @@
-import { escapeRegExp } from './escapeRegExp';
+import { escapeRegExp } from './escapeRegExp.js';
 
 describe('escapeRegExp', () => {
 	it('should keep strings with letters only unchanged', () => {

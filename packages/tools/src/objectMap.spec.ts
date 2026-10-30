@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { objectMap } from './objectMap';
+import { objectMap } from './objectMap.js';
 
 describe('objectMap', () => {
 	it('should map a simple object non-recursively', () => {

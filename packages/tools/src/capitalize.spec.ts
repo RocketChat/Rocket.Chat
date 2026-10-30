@@ -1,4 +1,4 @@
-import { capitalize } from './capitalize';
+import { capitalize } from './capitalize.js';
 
 describe('capitalize', () => {
 	it('should convert "xyz" to "Xyz"', () => {

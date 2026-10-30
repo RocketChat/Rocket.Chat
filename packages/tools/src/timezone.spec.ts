@@ -1,4 +1,4 @@
-import { canonicalizeTimezone, getTimezoneNames } from './timezone';
+import { canonicalizeTimezone, getTimezoneNames } from './timezone.js';
 
 describe('canonicalizeTimezone', () => {
 	it('returns the same value for a canonical IANA zone', () => {

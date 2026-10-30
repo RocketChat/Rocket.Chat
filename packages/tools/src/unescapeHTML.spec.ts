@@ -1,4 +1,4 @@
-import { unescapeHTML } from './unescapeHTML';
+import { unescapeHTML } from './unescapeHTML.js';
 
 describe('unescapeHTML', () => {
 	it('works', () => {

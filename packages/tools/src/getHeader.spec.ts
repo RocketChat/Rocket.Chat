@@ -1,6 +1,6 @@
 import type { IncomingHttpHeaders } from 'node:http';
 
-import { getHeader } from './getHeader';
+import { getHeader } from './getHeader.js';
 
 describe('getHeader', () => {
 	describe('default mode (string)', () => {

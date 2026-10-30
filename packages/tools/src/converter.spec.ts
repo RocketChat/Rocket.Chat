@@ -1,4 +1,4 @@
-import { convertFromDaysToMilliseconds } from './converter';
+import { convertFromDaysToMilliseconds } from './converter.js';
 
 describe('convertFromDaysToMilliseconds', () => {
 	it('should throw an error when a non number is passed', () => {
