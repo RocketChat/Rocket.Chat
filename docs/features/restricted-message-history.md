@@ -50,6 +50,26 @@ A thread belongs to the side of the date its first message is on:
 Mentioning a restricted member inside a hidden thread doesn't make them follow it and doesn't notify
 them.
 
+## Adding a path that returns messages
+
+Nothing below the server code enforces the restriction: the database, the models and the client
+all return whatever they're asked for. A new path that skips the check leaks every hidden message
+through it. So any server code that gives a user message content from a channel, group or
+discussion, or acts on a message ID for them, applies the check that fits:
+
+| The path…                                                                  | Applies                                                                                                                              |
+| -------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------ |
+| queries a room's messages                                                  | `getHistoryVisibility(uid, rid)`, passed as the model method's `visibility` argument (add the argument to the method if it has none) |
+| fetches messages the user named by ID: open, react, pin, quote, translate… | `canSeeMessage(uid, message)`, answering as if the message didn't exist; `getHiddenMessageIds` for several                           |
+| returns messages from several rooms, like global search                    | `getHiddenMessageIds` per room on the results                                                                                        |
+| notifies, mentions or adds followers                                       | `getMembersWithoutAccessToMessage` on the thread root, skipping those members                                                        |
+| lists a room's uploads                                                     | `getHistoryVisibleFrom(uid, rid)` as the model's `uploadedSince` argument                                                            |
+| emits to a room or user stream                                             | `canReceiveMessage` / `canMemberReceiveMessage` in `packages/streamer/src/historyVisibility.ts`                                      |
+
+The other helpers are in `apps/meteor/server/lib/messages/historyVisibility.ts`. Each new path also gets a
+case in `apps/meteor/tests/end-to-end/api/restricted-message-history.ts` showing that a newcomer
+can't get a hidden message through it.
+
 ## Not covered
 
 - Direct file download URLs aren't checked against the date; only the Files list and search are.
