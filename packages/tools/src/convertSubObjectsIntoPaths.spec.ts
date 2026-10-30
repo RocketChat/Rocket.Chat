@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 
-import { convertSubObjectsIntoPaths } from './convertSubObjectsIntoPaths';
+import { convertSubObjectsIntoPaths } from './convertSubObjectsIntoPaths.js';
 
 describe('convertSubObjectsIntoPaths', () => {
 	it('should flatten a simple object with no nested structure', () => {

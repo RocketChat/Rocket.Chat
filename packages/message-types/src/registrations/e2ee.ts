@@ -1,4 +1,4 @@
-import type { MessageTypes } from '../MessageTypes';
+import type { MessageTypes } from '../MessageTypes.js';
 
 export default (instance: MessageTypes) => {
 	instance.registerType({

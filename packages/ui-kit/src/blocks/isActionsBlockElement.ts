@@ -1,6 +1,6 @@
-import type { BlockElement } from './BlockElement';
-import { BlockElementType } from './BlockElementType';
-import type { ActionsBlock } from './layout/ActionsBlock';
+import type { BlockElement } from './BlockElement.js';
+import { BlockElementType } from './BlockElementType.js';
+import type { ActionsBlock } from './layout/ActionsBlock.js';
 
 export const isActionsBlockElement = (block: BlockElement): block is ActionsBlock['elements'][number] => {
 	switch (block.type) {

@@ -1,4 +1,4 @@
-export type * from './webrtc/IWebRTCProcessor';
-export type * from './IServiceProcessorFactoryList';
-export type * from './MediaStreamFactory';
-export type * from './negotiation';
+export type * from './webrtc/IWebRTCProcessor.js';
+export type * from './IServiceProcessorFactoryList.js';
+export type * from './MediaStreamFactory.js';
+export type * from './negotiation.js';

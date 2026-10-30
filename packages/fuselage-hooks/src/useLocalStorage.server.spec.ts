@@ -1,5 +1,5 @@
-import { renderHook } from './testing';
-import { useLocalStorage } from './useStorage';
+import { renderHook } from './testing.js';
+import { useLocalStorage } from './useStorage.js';
 
 it('returns a default value', () => {
 	const { result } = renderHook(() => useLocalStorage('value-key', 'value-default'));

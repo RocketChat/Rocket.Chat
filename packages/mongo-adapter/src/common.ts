@@ -1,5 +1,5 @@
-import { getBSONType } from './bson';
-import { BSONType } from './types';
+import { getBSONType } from './bson.js';
+import { BSONType } from './types.js';
 
 export function assertHasValidFieldNames(doc: unknown) {
 	if (doc && typeof doc === 'object') {

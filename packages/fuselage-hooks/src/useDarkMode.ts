@@ -1,4 +1,4 @@
-import { usePrefersColorScheme } from './usePrefersColorScheme';
+import { usePrefersColorScheme } from './usePrefersColorScheme.js';
 
 export const useDarkMode = (forced?: boolean): boolean => {
 	const systemDarkMode = usePrefersColorScheme('dark');

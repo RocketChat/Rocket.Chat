@@ -1,6 +1,6 @@
 import type { Dispatch, DispatchWithoutAction } from 'react';
 
-import { useDebouncedCallback } from './useDebouncedCallback';
+import { useDebouncedCallback } from './useDebouncedCallback.js';
 
 /**
  * Hook to debounce the state dispatcher function returned by hooks like `useState()` and `useReducer()`.

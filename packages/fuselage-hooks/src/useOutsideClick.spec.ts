@@ -1,8 +1,8 @@
-import userEvent from '@testing-library/user-event';
+import { userEvent } from '@testing-library/user-event';
 import type { RefObject } from 'react';
 
-import { renderHook } from './testing';
-import { useOutsideClick } from './useOutsideClick';
+import { renderHook } from './testing.js';
+import { useOutsideClick } from './useOutsideClick.js';
 
 it('should call the callback when the user clicked outside the element', async () => {
 	const ref: RefObject<HTMLElement> = {

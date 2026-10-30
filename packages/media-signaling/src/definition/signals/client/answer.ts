@@ -1,7 +1,7 @@
 import type { JSONSchemaType } from 'ajv';
 
-import type { CallAnswer, CallFeature } from '../../call';
-import { callAnswerList, callFeatureList } from '../../call/IClientMediaCall';
+import { callAnswerList, callFeatureList } from '../../call/IClientMediaCall.js';
+import type { CallAnswer, CallFeature } from '../../call/index.js';
 
 /** Client is saying that the user accepted or rejected a call, or simply reporting that the user can or can't be reached */
 export type ClientMediaSignalAnswer = {

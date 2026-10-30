@@ -2,9 +2,9 @@ import { createHash } from 'crypto';
 import { readFile } from 'fs/promises';
 import { join } from 'path';
 
-import { WavHeader } from './lame/WavHeader';
+import { WavHeader } from './lame/WavHeader.js';
 
-import './index';
+import './index.js';
 
 declare const self: any;
 

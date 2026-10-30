@@ -38,21 +38,12 @@ const external = (id, importer) => {
 export default defineConfig({
 	external,
 	input: 'src/index.ts',
-	output: [
-		{
-			dir: dirname(pkg.main),
-			entryFileNames: basename(pkg.main),
-			format: 'cjs',
-			sourcemap: true,
-			interop: 'compat',
-		},
-		{
-			dir: dirname(pkg.module),
-			entryFileNames: basename(pkg.module),
-			format: 'es',
-			sourcemap: true,
-		},
-	],
+	output: {
+		dir: dirname(pkg.main),
+		entryFileNames: basename(pkg.main),
+		format: 'es',
+		sourcemap: true,
+	},
 	plugins: [
 		terser({
 			compress: true,

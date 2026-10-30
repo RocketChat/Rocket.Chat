@@ -1,10 +1,10 @@
-import { INTELLIGENT_SEARCH_RRF_CONSTANT } from './constants';
+import { INTELLIGENT_SEARCH_RRF_CONSTANT } from './constants.js';
 import type {
 	FusedIntelligentSearchCandidate,
 	IntelligentSearchCandidate,
 	IntelligentSearchCandidateSource,
 	TemporalRerankOptions,
-} from './types';
+} from './types.js';
 
 const clampPercent = (value: unknown): number => {
 	const numeric = Number(value);

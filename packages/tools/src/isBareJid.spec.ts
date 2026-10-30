@@ -1,4 +1,4 @@
-import { isBareJid, normalizeBareJid } from './isBareJid';
+import { isBareJid, normalizeBareJid } from './isBareJid.js';
 
 describe('isBareJid', () => {
 	test.each([

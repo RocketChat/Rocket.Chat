@@ -1,8 +1,8 @@
-import type { BlockElement } from './BlockElement';
-import { BlockElementType } from './BlockElementType';
-import type { TextObject } from './TextObject';
-import { TextObjectType } from './TextObjectType';
-import type { ContextBlock } from './layout/ContextBlock';
+import type { BlockElement } from './BlockElement.js';
+import { BlockElementType } from './BlockElementType.js';
+import type { TextObject } from './TextObject.js';
+import { TextObjectType } from './TextObjectType.js';
+import type { ContextBlock } from './layout/ContextBlock.js';
 
 export const isContextBlockElement = (block: TextObject | BlockElement): block is ContextBlock['elements'][number] => {
 	switch (block.type) {

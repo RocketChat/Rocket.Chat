@@ -1,2 +1,2 @@
-export * from './definition';
-export * from './lib';
+export * from './definition/index.js';
+export * from './lib/index.js';

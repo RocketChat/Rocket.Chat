@@ -1,9 +1,9 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 import type { ReactElement } from 'react';
 
-import ComposerInlineElements from './ComposerInlineElements';
-import ComposerPlainSpan from './ComposerPlainSpan';
-import { nestedSourceOf } from './sourceLines';
+import ComposerInlineElements from './ComposerInlineElements.js';
+import ComposerPlainSpan from './ComposerPlainSpan.js';
+import { nestedSourceOf } from './sourceLines.js';
 
 type ComposerListProps = {
 	items: MessageParser.ListItem[];

@@ -2,6 +2,13 @@
 	"name": "@rocket.chat/message-parser",
 	"version": "0.33.0-rc.0",
 	"description": "Rocket.Chat parser for messages",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/messageParser.js"
+		}
+	},
 	"homepage": "https://github.com/RocketChat/Rocket.Chat#readme",
 	"bugs": {
 		"url": "https://github.com/RocketChat/Rocket.Chat/issues"
@@ -16,14 +23,7 @@
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
 	},
-	"exports": {
-		".": {
-			"default": "./dist/messageParser.js",
-			"types": "./dist/index.d.ts"
-		}
-	},
 	"main": "dist/messageParser.js",
-	"module": "dist/messageParser.js",
 	"types": "dist/index.d.ts",
 	"directories": {
 		"test": "test"
@@ -33,7 +33,7 @@
 	],
 	"scripts": {
 		"build": "rm -rf dist && webpack-cli",
-		"bench": "ts-node --compiler-options '{\"module\":\"commonjs\"}' -r ./loaders/pegjs-register.js benchmarks/parser.bench.ts",
+		"bench": "ts-node --compiler-options '{\"module\":\"commonjs\"}' -r ./loaders/pegjs-register.cjs benchmarks/parser.bench.ts",
 		"bench:size": "node -e \"const fs=require('fs'),zlib=require('zlib'),p='dist/messageParser.js';try{const s=fs.statSync(p),c=fs.readFileSync(p),g=zlib.gzipSync(c);console.log('Bundle:',p);console.log('Raw:',s.size,'bytes ('+(s.size/1024).toFixed(1),'KB)');console.log('Gzip:',g.length,'bytes ('+(g.length/1024).toFixed(1),'KB)')}catch(e){console.error('Build first: yarn build');process.exit(1)}\"",
 		"lint": "yarn run -T oxlint",
 		"test": "jest",

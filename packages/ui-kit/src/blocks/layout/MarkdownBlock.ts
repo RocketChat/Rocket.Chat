@@ -1,4 +1,4 @@
-import type { LayoutBlockish } from '../LayoutBlockish';
+import type { LayoutBlockish } from '../LayoutBlockish.js';
 
 /** A longer piece of formatted text, written in Markdown, rendered like a chat message. */
 export type MarkdownBlock = LayoutBlockish<{

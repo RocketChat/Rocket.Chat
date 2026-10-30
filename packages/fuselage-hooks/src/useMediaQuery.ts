@@ -1,4 +1,4 @@
-import { useMediaQueries } from './useMediaQueries';
+import { useMediaQueries } from './useMediaQueries.js';
 
 /**
  * Hook to listen to a media query.

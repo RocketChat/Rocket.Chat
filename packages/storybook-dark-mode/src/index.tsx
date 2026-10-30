@@ -1,7 +1,7 @@
 import { addons, useState, useEffect } from 'storybook/preview-api';
 
-import { store } from './Tool';
-import { DARK_MODE_EVENT_NAME } from './constants';
+import { store } from './Tool.js';
+import { DARK_MODE_EVENT_NAME } from './constants.js';
 
 /**
  * Returns the current state of storybook's dark-mode
@@ -18,4 +18,4 @@ export function useDarkMode(): boolean {
 	return isDark;
 }
 
-export * from './constants';
+export * from './constants.js';

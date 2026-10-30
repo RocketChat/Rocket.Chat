@@ -2,13 +2,10 @@
 	"extends": "./tsconfig.json",
 	"compilerOptions": {
 		"rootDir": "./src",
-		"module": "commonjs",
-		"moduleResolution": "bundler",
+		"outDir": "./dist",
 		"declaration": true,
 		"declarationMap": true,
-		"sourceMap": true,
-		"rootDir": "./src",
-		"outDir": "./dist/cjs"
+		"sourceMap": true
 	},
 	"exclude": ["**/*.spec.*", "jest.config.*"]
 }

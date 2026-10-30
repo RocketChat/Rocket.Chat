@@ -1,6 +1,6 @@
 import { basename, dirname } from 'path';
 
-import { buildCss, buildCommonJsModule, buildEsmModule, buildSvgImages, buildFont, buildDefinition } from './builders.mjs';
+import { buildCss, buildEsmModule, buildSvgImages, buildFont, buildDefinition } from './builders.mjs';
 import { removeFile, listFiles } from './utils.mjs';
 
 const fromSourceToIcon = async (path) => {
@@ -33,4 +33,4 @@ const icons = await fromSourcesToIcons(sources);
 // buildFont assigns the characters the module builders read
 await buildFont(icons);
 
-await Promise.all([buildCss(), buildCommonJsModule(icons), buildEsmModule(icons), buildSvgImages(icons), buildDefinition(icons)]);
+await Promise.all([buildCss(), buildEsmModule(icons), buildSvgImages(icons), buildDefinition(icons)]);

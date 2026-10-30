@@ -1,3 +1,3 @@
-export { type BannerView, isBannerView } from './BannerView';
-export { type BannerSurfaceLayout, UiKitParserBanner, bannerSurfaceLayoutBlockTypes } from './UiKitParserBanner';
-export { uiKitBanner } from './uiKitBanner';
+export { type BannerView, isBannerView } from './BannerView.js';
+export { type BannerSurfaceLayout, UiKitParserBanner, bannerSurfaceLayoutBlockTypes } from './UiKitParserBanner.js';
+export { uiKitBanner } from './uiKitBanner.js';

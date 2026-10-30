@@ -1,6 +1,6 @@
 import type * as MessageParser from '@rocket.chat/message-parser';
 
-import { blockSourceOf } from './sourceOf';
+import { blockSourceOf } from './sourceOf.js';
 
 type Block = MessageParser.Root[number];
 

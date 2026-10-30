@@ -2,6 +2,13 @@
 	"name": "@rocket.chat/ai-search",
 	"version": "0.4.0-rc.0",
 	"private": true,
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"typings": "./dist/index.d.ts",

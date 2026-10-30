@@ -1,4 +1,4 @@
-import type { IDirectMediaCallData } from './IDirectMediaCallData';
-import type { ITempMediaCallData } from './ITempMediaCallData';
+import type { IDirectMediaCallData } from './IDirectMediaCallData.js';
+import type { ITempMediaCallData } from './ITempMediaCallData.js';
 
 export type AnyMediaCallData = ITempMediaCallData | IDirectMediaCallData;

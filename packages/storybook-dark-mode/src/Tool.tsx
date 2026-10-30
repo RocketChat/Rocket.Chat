@@ -9,7 +9,7 @@ import { useParameter } from 'storybook/manager-api';
 import type { ThemeVars } from 'storybook/theming';
 import { themes } from 'storybook/theming';
 
-import { DARK_MODE_EVENT_NAME, UPDATE_DARK_MODE_EVENT_NAME } from './constants';
+import { DARK_MODE_EVENT_NAME, UPDATE_DARK_MODE_EVENT_NAME } from './constants.js';
 
 const { document, window } = global as { document: Document; window: Window };
 type Mode = 'light' | 'dark';

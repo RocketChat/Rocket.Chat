@@ -2,6 +2,13 @@
 	"name": "@rocket.chat/memo",
 	"version": "0.31.26-rc.0",
 	"description": "Memoization utilities",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"default": "./dist/index.js"
+		}
+	},
 	"keywords": [
 		"memoize"
 	],
@@ -18,14 +25,13 @@
 		"name": "Rocket.Chat",
 		"url": "https://rocket.chat/"
 	},
-	"main": "dist/cjs/index.js",
-	"module": "dist/esm/index.js",
-	"types": "dist/esm/index.d.ts",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
 	"files": [
 		"/dist"
 	],
 	"scripts": {
-		"build": "rm -rf dist && tsc -p tsconfig.cjs.json && tsc -p tsconfig.esm.json",
+		"build": "rm -rf dist && tsc -p tsconfig.build.json",
 		"lint": "yarn run -T oxlint",
 		"lint:fix": "yarn run -T oxlint --fix",
 		"test": "jest",

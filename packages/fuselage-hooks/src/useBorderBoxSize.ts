@@ -1,9 +1,9 @@
 import type { RefObject } from 'react';
 import { useState } from 'react';
 
-import { extractBorderBoxSizeFromObserver } from './extractSizeFromObserver';
-import { useDebouncedCallback } from './useDebouncedCallback';
-import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect';
+import { extractBorderBoxSizeFromObserver } from './extractSizeFromObserver.js';
+import { useDebouncedCallback } from './useDebouncedCallback.js';
+import { useIsomorphicLayoutEffect } from './useIsomorphicLayoutEffect.js';
 
 export const useBorderBoxSize = (
 	ref: RefObject<HTMLElement | null>,

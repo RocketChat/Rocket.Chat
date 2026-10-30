@@ -1,8 +1,8 @@
-import { ABRPresets } from './ABRPresets';
-import type { LameGlobalFlags } from './LameGlobalFlags';
-import type { Quality } from './Quality';
-import { VBRPresets } from './VBRPresets';
-import { VbrMode } from './VbrMode';
+import { ABRPresets } from './ABRPresets.js';
+import type { LameGlobalFlags } from './LameGlobalFlags.js';
+import type { Quality } from './Quality.js';
+import { VBRPresets } from './VBRPresets.js';
+import { VbrMode } from './VbrMode.js';
 
 const enum Preset {
 	V9 = 410,

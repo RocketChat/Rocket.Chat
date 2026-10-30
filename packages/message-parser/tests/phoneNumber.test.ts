@@ -1,5 +1,5 @@
-import { parse } from '../src';
-import { link, paragraph, plain, bold } from './helpers';
+import { link, paragraph, plain, bold } from './helpers.js';
+import { parse } from '../src/index.js';
 
 test.each([
 	['+07563546725', [paragraph([link('tel:07563546725', [plain('+07563546725')])])]],

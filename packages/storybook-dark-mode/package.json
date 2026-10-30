@@ -2,6 +2,15 @@
 	"name": "@rocket.chat/storybook-dark-mode",
 	"version": "4.3.0",
 	"description": "Toggle between light and dark mode in Storybook (Rocket.Chat fork)",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/ts/index.d.ts",
+			"default": "./dist/esm/index.js"
+		},
+		"./manager": "./manager.js",
+		"./package.json": "./package.json"
+	},
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/RocketChat/Rocket.Chat.git",
@@ -12,16 +21,15 @@
 	"contributors": [
 		"Rocket.Chat Technologies Corp."
 	],
-	"main": "dist/cjs/index.js",
-	"module": "dist/esm/index.js",
-	"types": "dist/ts/index.d.ts",
+	"main": "./dist/esm/index.js",
+	"types": "./dist/ts/index.d.ts",
 	"files": [
 		"src",
 		"dist",
-		"preset.js"
+		"manager.js"
 	],
 	"scripts": {
-		"build": "rm -rf dist && tsc -p tsconfig.esm.json && tsc -p tsconfig.cjs.json && tsc -p tsconfig.build.json",
+		"build": "rm -rf dist && tsc -p tsconfig.esm.json && tsc -p tsconfig.build.json",
 		"lint": "yarn run -T oxlint",
 		"lint:fix": "yarn run -T oxlint --fix",
 		"typecheck": "tsc --noEmit"

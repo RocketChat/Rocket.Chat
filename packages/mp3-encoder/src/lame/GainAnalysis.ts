@@ -1,6 +1,6 @@
-import type { ReplayGain } from './ReplayGain';
-import { copyArray, fillArray } from './arrays';
-import { fsqr } from './math';
+import type { ReplayGain } from './ReplayGain.js';
+import { copyArray, fillArray } from './arrays.js';
+import { fsqr } from './math.js';
 
 export class GainAnalysis {
 	static readonly STEPS_per_dB = 100;

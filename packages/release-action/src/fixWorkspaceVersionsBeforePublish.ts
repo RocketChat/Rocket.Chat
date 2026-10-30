@@ -13,7 +13,7 @@ import path from 'node:path';
 
 import { getExecOutput } from '@actions/exec';
 
-import { readPackageJson } from './utils';
+import { readPackageJson } from './utils.js';
 
 const DEPENDENCY_TYPES = ['dependencies', 'devDependencies', 'peerDependencies'];
 
