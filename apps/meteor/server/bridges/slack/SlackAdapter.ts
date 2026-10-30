@@ -25,6 +25,7 @@ import { archiveRoom } from '../../lib/rooms/archiveRoom';
 import { removeUserFromRoom } from '../../lib/rooms/removeUserFromRoom';
 import { saveRoomName, saveRoomTopic } from '../../lib/rooms/settings';
 import { unarchiveRoom } from '../../lib/rooms/unarchiveRoom';
+import { getWorkspaceURL } from '../../lib/utils/getURL';
 import { getUserAvatarURL } from '../../lib/utils/getUserAvatarURL';
 import { settings } from '../../settings';
 
@@ -841,10 +842,8 @@ export default class SlackAdapter {
 
 	async postMessage(slackChannel, rocketMessage) {
 		if (slackChannel?.id) {
-			let iconUrl = getUserAvatarURL(rocketMessage.u?.username);
-			if (iconUrl) {
-				iconUrl = Meteor.absoluteUrl().replace(/\/$/, '') + iconUrl;
-			}
+			const username = rocketMessage.u?.username;
+			const iconUrl = username != null ? getWorkspaceURL(`/avatar/${encodeURIComponent(username)}`) : undefined;
 			const data = {
 				text: rocketMessage.msg,
 				channel: slackChannel.id,

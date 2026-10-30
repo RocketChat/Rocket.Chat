@@ -43,7 +43,6 @@ import { Random } from '@rocket.chat/random';
 import type { PaginatedResult } from '@rocket.chat/rest-typings';
 import { wrapExceptions } from '@rocket.chat/tools';
 import type * as UiKit from '@rocket.chat/ui-kit';
-import { Meteor } from 'meteor/meteor';
 
 import { RoomMemberActions } from '../../../definition/IRoomTypeConfig';
 import { resolveChatAccessMode } from '../../../lib/videoConference/chatAccess';
@@ -68,6 +67,7 @@ import { notifyOnMessageChange } from '../../lib/notifyListener';
 import { createRoom } from '../../lib/rooms/createRoom';
 import { roomCoordinator } from '../../lib/rooms/roomCoordinator';
 import { updateCounter } from '../../lib/statistics/functions/updateStatsCounter';
+import { getWorkspaceURL } from '../../lib/utils/getURL';
 import { getUserAvatarURL } from '../../lib/utils/getUserAvatarURL';
 import { getUserPreference } from '../../lib/utils/lib/getUserPreference';
 import { videoConfProviders } from '../../lib/videoConfProviders';
@@ -785,7 +785,7 @@ export class VideoConfService extends ServiceClassInternal implements IVideoConf
 			title: `@${call.createdBy.username}`,
 			text: i18n.t('Video_Conference'),
 			payload: {
-				host: Meteor.absoluteUrl(),
+				host: `${getWorkspaceURL()}/`,
 				rid: call.rid,
 				notificationType: 'videoconf',
 				caller: call.createdBy,

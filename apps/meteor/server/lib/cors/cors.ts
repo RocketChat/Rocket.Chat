@@ -3,12 +3,12 @@ import url from 'node:url';
 
 import type { RootMiddleware } from '@rocket.chat/http-router';
 import { Logger } from '@rocket.chat/logger';
-import { Meteor } from 'meteor/meteor';
 import type { StaticFiles } from 'meteor/webapp';
 import { WebApp, WebAppInternals } from 'meteor/webapp';
 
 import { getWebAppHash } from '../../configuration/configureBoilerplate';
 import { settings } from '../../settings';
+import { getWorkspaceURL } from '../utils/getURL';
 
 // Taken from 'connect' types
 type NextFunction = (err?: any) => void;
@@ -39,7 +39,7 @@ export const forceSsl: RootMiddleware = async (c, next) => {
 	logger.debug({ msg: 'CORS request info', url: req.url, remoteAddress, isLocal, isSsl, headers: req.headers });
 
 	if (!isLocal && !isSsl) {
-		let host = req.headers.host || url.parse(Meteor.absoluteUrl()).hostname || '';
+		let host = req.headers.host || url.parse(getWorkspaceURL()).hostname || '';
 		host = host.replace(/:\d+$/, '');
 		return c.redirect(`https://${host}${req.url}`, 302);
 	}
