@@ -17,29 +17,33 @@ describe('findForUpdates', () => {
 
 	beforeEach(() => find.mockReset().mockReturnValue({}));
 
-	it('should filter on _updatedAt alone without an id tie-breaker', () => {
+	it('should include visible messages and hidden messages that are not replies', () => {
 		model.findForUpdates('rid', { updatedAt: { $gt: boundary } });
 
-		expect(find.mock.calls[0][0]).toEqual({ rid: 'rid', _hidden: { $ne: true }, _updatedAt: { $gt: boundary } });
+		expect(find.mock.calls[0][0]).toEqual({
+			rid: 'rid',
+			$or: [{ _hidden: { $ne: true } }, { parent: { $exists: false } }],
+			_updatedAt: { $gt: boundary },
+		});
 	});
 
-	it('should order messages inside the boundary timestamp by _id with an id tie-breaker', () => {
+	it('should combine visibility and the forward compound cursor predicates', () => {
 		model.findForUpdates('rid', { updatedAt: { $gt: boundary }, idTieBreaker: 'abc' });
 
 		expect(find.mock.calls[0][0]).toEqual({
 			rid: 'rid',
-			_hidden: { $ne: true },
-			$or: [{ _updatedAt: { $gt: boundary } }, { _updatedAt: boundary, _id: { $gt: 'abc' } }],
+			$or: [{ _hidden: { $ne: true } }, { parent: { $exists: false } }],
+			$and: [{ $or: [{ _updatedAt: { $gt: boundary } }, { _updatedAt: boundary, _id: { $gt: 'abc' } }] }],
 		});
 	});
 
-	it('should use the $lt boundary when paging backward', () => {
+	it('should combine visibility and the backward compound cursor predicates', () => {
 		model.findForUpdates('rid', { updatedAt: { $lt: boundary }, idTieBreaker: 'abc' });
 
 		expect(find.mock.calls[0][0]).toEqual({
 			rid: 'rid',
-			_hidden: { $ne: true },
-			$or: [{ _updatedAt: { $lt: boundary } }, { _updatedAt: boundary, _id: { $lt: 'abc' } }],
+			$or: [{ _hidden: { $ne: true } }, { parent: { $exists: false } }],
+			$and: [{ $or: [{ _updatedAt: { $lt: boundary } }, { _updatedAt: boundary, _id: { $lt: 'abc' } }] }],
 		});
 	});
 });
