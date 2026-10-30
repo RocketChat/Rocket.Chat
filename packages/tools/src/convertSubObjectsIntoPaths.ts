@@ -1,4 +1,4 @@
-import { isRecord } from './isRecord';
+import { isRecord } from './isRecord.js';
 
 export function convertSubObjectsIntoPaths(object: Record<string, any>, parentPath?: string): Record<string, any> {
 	return Object.fromEntries(
