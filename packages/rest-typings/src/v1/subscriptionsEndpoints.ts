@@ -110,7 +110,7 @@ export type SubscriptionsEndpoints = {
 	'/v1/subscriptions.get': {
 		GET: (params: SubscriptionsGet) => {
 			update: ISubscription[];
-			remove: (Pick<ISubscription, '_id'> & { _deletedAt: Date })[];
+			remove: (Pick<ISubscription, '_id'> & Partial<Pick<ISubscription, 'rid'>> & { _deletedAt: Date })[];
 		};
 	};
 

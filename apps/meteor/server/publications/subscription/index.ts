@@ -7,14 +7,16 @@ import { subscriptionFields } from '../../../lib/publishFields';
 
 declare module '@rocket.chat/ddp-client' {
 	interface ServerMethods {
-		'subscriptions/get'(updatedAt?: Date): ISubscription[] | { update: ISubscription[]; remove: { _id: string; _deletedAt: Date }[] };
+		'subscriptions/get'(
+			updatedAt?: Date,
+		): ISubscription[] | { update: ISubscription[]; remove: { _id: string; rid?: string; _deletedAt: Date }[] };
 	}
 }
 
 export const getSubscriptions = async (
 	uid: string,
 	updatedAt?: Date,
-): Promise<ISubscription[] | { update: ISubscription[]; remove: { _id: string; _deletedAt: Date }[] }> => {
+): Promise<ISubscription[] | { update: ISubscription[]; remove: { _id: string; rid?: string; _deletedAt: Date }[] }> => {
 	const options = { projection: subscriptionFields };
 
 	const records: ISubscription[] = await Subscriptions.findByUserId(uid, options).toArray();
@@ -24,18 +26,13 @@ export const getSubscriptions = async (
 			update: records.filter((record) => {
 				return record._updatedAt > updatedAt;
 			}),
-			remove: await Subscriptions.trashFindDeletedAfter(
-				updatedAt,
-				{
-					'u._id': uid,
+			remove: await Subscriptions.findDeletedAfterByUserId(uid, updatedAt, {
+				projection: {
+					_id: 1,
+					rid: 1,
+					_deletedAt: 1,
 				},
-				{
-					projection: {
-						_id: 1,
-						_deletedAt: 1,
-					},
-				},
-			).toArray(),
+			}).toArray(),
 		};
 	}
 
