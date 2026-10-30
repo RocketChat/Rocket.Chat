@@ -11,6 +11,7 @@ import {
 	usePagination,
 	useSort,
 	GenericNoResults,
+	links,
 } from '@rocket.chat/ui-client';
 import { useTranslation, useRouter } from '@rocket.chat/ui-contexts';
 import { hashKey } from '@tanstack/react-query';
@@ -18,7 +19,6 @@ import { useMemo, useState } from 'react';
 
 import { useRemoveCustomField } from './useRemoveCustomField';
 import FilterByText from '../../../components/FilterByText';
-import { links } from '../../../lib/links';
 import { useCustomFieldsQuery } from '../hooks/useCustomFieldsQuery';
 
 const CustomFieldsTable = () => {

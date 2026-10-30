@@ -53,8 +53,6 @@ export const LivechatEnterprise = {
 	},
 
 	async removeUnit(_id: string, userId: string) {
-		check(_id, String);
-
 		const unitsFromUser = await getUnitsFromUser(userId);
 
 		const result = await LivechatUnit.removeByIdAndUnit(_id, unitsFromUser);
@@ -72,8 +70,6 @@ export const LivechatEnterprise = {
 		unitDepartments: { departmentId: string }[],
 		userId: string,
 	) {
-		check(_id, Match.Maybe(String));
-
 		check(unitData, {
 			name: String,
 			visibility: String,

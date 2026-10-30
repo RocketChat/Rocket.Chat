@@ -1,4 +1,5 @@
 import { settingsRegistry } from '../../../server/settings';
+import { validCron } from '../../../server/settings/functions/validationRuleBuilders';
 
 export const ldapIntervalValuesToCronMap: Record<string, string> = {
 	every_1_hour: '0 * * * *',
@@ -89,6 +90,7 @@ export function addSettings(): Promise<void> {
 
 					await this.add('LDAP_Background_Sync_Avatars_Interval', '0 0 * * *', {
 						type: 'string',
+						validation: [validCron()],
 						enableQuery: [enableQuery, { _id: 'LDAP_Background_Sync_Avatars', value: true }],
 						invalidValue: '0 0 * * *',
 					});
@@ -124,6 +126,7 @@ export function addSettings(): Promise<void> {
 
 					await this.add('LDAP_Sync_AutoLogout_Interval', '*/5 * * * *', {
 						type: 'string',
+						validation: [validCron()],
 						enableQuery: [enableQuery, { _id: 'LDAP_Sync_AutoLogout_Enabled', value: true }],
 						invalidValue: '',
 					});
@@ -296,6 +299,7 @@ export function addSettings(): Promise<void> {
 
 					await this.add('LDAP_Background_Sync_ABAC_Attributes_Interval', '0 0 * * *', {
 						type: 'string',
+						validation: [validCron()],
 						enableQuery: [enableQuery, { _id: 'LDAP_Background_Sync_ABAC_Attributes', value: true }],
 						invalidValue: '0 0 * * *',
 						modules: ['abac', 'ldap-enterprise'],

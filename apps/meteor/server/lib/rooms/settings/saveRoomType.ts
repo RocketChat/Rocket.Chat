@@ -2,7 +2,6 @@ import { Message, ClientSafeError } from '@rocket.chat/core-services';
 import type { IRoom, IUser } from '@rocket.chat/core-typings';
 import { isPublicRoom } from '@rocket.chat/core-typings';
 import { Rooms, Subscriptions } from '@rocket.chat/models';
-import { Match } from 'meteor/check';
 import type { UpdateResult, Document } from 'mongodb';
 
 import { RoomSettingsEnum } from '../../../../definition/IRoomTypeConfig';
@@ -28,11 +27,6 @@ export const saveRoomType = async function (
 	user: IUser,
 	sendMessage = true,
 ): Promise<UpdateResult | Document> {
-	if (!Match.test(rid, String)) {
-		throw new ClientSafeError('invalid-room', 'Invalid room', {
-			function: 'RocketChat.saveRoomType',
-		});
-	}
 	if (roomType !== 'c' && roomType !== 'p') {
 		throw new ClientSafeError('error-invalid-room-type', 'error-invalid-room-type', {
 			function: 'RocketChat.saveRoomType',

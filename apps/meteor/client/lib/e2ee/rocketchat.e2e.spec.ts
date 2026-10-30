@@ -6,6 +6,7 @@ import { sdk } from '../SDKClient';
 import { dispatchToastMessage } from '../toast';
 
 jest.mock('@rocket.chat/ui-client', () => ({
+	...jest.requireActual('@rocket.chat/ui-client'),
 	imperativeModal: {
 		open: jest.fn(),
 		close: jest.fn(),

@@ -1,5 +1,6 @@
 import { useStableCallback } from '@rocket.chat/fuselage-hooks';
 import { validateEmail } from '@rocket.chat/tools';
+import { clientCallbacks, useInvalidateLicense } from '@rocket.chat/ui-client';
 import {
 	useToastMessageDispatch,
 	useSessionDispatch,
@@ -13,8 +14,6 @@ import type { ContextType, ReactNode } from 'react';
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 
-import { useInvalidateLicense } from '../../../hooks';
-import { clientCallbacks } from '../../../lib';
 import { SetupWizardContext } from '../contexts/SetupWizardContext';
 import { useParameters } from '../hooks/useParameters';
 import { useStepRouting } from '../hooks/useStepRouting';

@@ -13,13 +13,13 @@ import {
 	MultiSelect,
 	FieldHint,
 } from '@rocket.chat/fuselage';
+import { useHasLicenseModule } from '@rocket.chat/ui-client';
 import { useId, type ChangeEvent } from 'react';
 import { Controller, useFormContext } from 'react-hook-form';
 import { useTranslation } from 'react-i18next';
 
 import AppearanceFieldLabel from './AppearanceFieldLabel';
 import MarkdownText from '../../../components/MarkdownText';
-import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 
 const AppearanceForm = () => {
 	const { t } = useTranslation();

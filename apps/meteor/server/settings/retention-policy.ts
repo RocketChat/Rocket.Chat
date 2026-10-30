@@ -1,4 +1,5 @@
 import { settingsRegistry } from '.';
+import { validCron } from './functions/validationRuleBuilders';
 
 const THIRTY_DAYS = 2592000000;
 
@@ -59,6 +60,7 @@ export const createRetentionSettings = () =>
 
 		await this.add('RetentionPolicy_Advanced_Precision_Cron', '*/30 * * * *', {
 			type: 'string',
+			validation: [validCron()],
 			public: true,
 			i18nLabel: 'RetentionPolicy_Advanced_Precision_Cron',
 			i18nDescription: 'RetentionPolicy_Advanced_Precision_Cron_Description',
