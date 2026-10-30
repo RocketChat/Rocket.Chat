@@ -1,3 +1,5 @@
+import { writeFile } from 'node:fs/promises';
+
 import { kebabCase } from 'change-case';
 import StyleDictionary from 'style-dictionary';
 import { minifyDictionary } from 'style-dictionary/utils';
@@ -79,7 +81,7 @@ StyleDictionary.registerFormat({
 		const moduleName = Object.keys(dictionary.tokens)[0];
 		const tokens = minifyDictionary(dictionary.tokens[moduleName], false);
 
-		return `export default ${moduleName};\ndeclare const ${moduleName}: ${JSON.stringify(tokens, null, 2)};`;
+		return `declare const ${moduleName}: ${JSON.stringify(tokens, null, 2)};\nexport = ${moduleName};`;
 	},
 });
 
@@ -96,6 +98,9 @@ await StyleDictionaryExtended.hasInitialized;
 
 // Build all platforms
 await StyleDictionaryExtended.buildAllPlatforms();
+
+// The declarations describe JSON modules, which are CommonJS to every module resolution mode.
+await writeFile('dist/package.json', `${JSON.stringify({ type: 'commonjs' }, null, '\t')}\n`);
 
 console.log('\n==============================================');
 console.log('\nBuild completed!');
