@@ -5,16 +5,18 @@ import { expect } from 'chai';
 import p from 'proxyquire';
 import sinon from 'sinon';
 
+const sandbox = sinon.createSandbox();
+
 const modelsMock = {
-	Messages: { findOneById: sinon.stub() },
-	Subscriptions: { addUnreadThreadByRoomIdAndUserIds: sinon.stub() },
+	Messages: { findOneById: sandbox.stub() },
+	Subscriptions: { addUnreadThreadByRoomIdAndUserIds: sandbox.stub() },
 };
-const followMock = sinon.stub();
-const canAccessRoomIdAsyncMock = sinon.stub();
-const canSeeMessageMock = sinon.stub();
-const getMembersWithoutAccessToMessageMock = sinon.stub();
-const notifyOnMessageChangeMock = sinon.stub();
-const notifyOnSubscriptionChangedByRoomIdAndUserIdsMock = sinon.stub();
+const followMock = sandbox.stub();
+const canAccessRoomIdAsyncMock = sandbox.stub();
+const canSeeMessageMock = sandbox.stub();
+const getMembersWithoutAccessToMessageMock = sandbox.stub();
+const notifyOnMessageChangeMock = sandbox.stub();
+const notifyOnSubscriptionChangedByRoomIdAndUserIdsMock = sandbox.stub();
 
 const { giveThreadAccess } = p.noCallThru().load('./giveThreadAccess.ts', {
 	'@rocket.chat/models': modelsMock,
@@ -36,7 +38,7 @@ describe('giveThreadAccess', () => {
 	const threadRoot = { _id: 'thread', rid: 'room', ts: new Date('2026-09-01T00:00:00Z') };
 
 	beforeEach(() => {
-		sinon.resetHistory();
+		sandbox.resetHistory();
 		modelsMock.Messages.findOneById.resolves(threadRoot);
 		canAccessRoomIdAsyncMock.resolves(true);
 		canSeeMessageMock.resolves(true);
