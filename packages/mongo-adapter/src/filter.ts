@@ -1,9 +1,9 @@
 import type { Filter, FilterOperators } from 'mongodb';
 
-import { compareBSONValues, getBSONType } from './bson';
-import { isBinary, isIndexable, isPlainObject, isTruthy, equals } from './common';
-import { createLookupFunction } from './lookups';
-import type { ArrayIndices, LookupBranch } from './types';
+import { compareBSONValues, getBSONType } from './bson.js';
+import { isBinary, isIndexable, isPlainObject, isTruthy, equals } from './common.js';
+import { createLookupFunction } from './lookups.js';
+import type { ArrayIndices, LookupBranch } from './types.js';
 
 type Match = {
 	readonly result: boolean;

@@ -1,4 +1,4 @@
-import { createPredicateFromFilter } from './filter';
+import { createPredicateFromFilter } from './filter.js';
 
 describe('createPredicateFromFilter', () => {
 	it('matches simple equality', () => {

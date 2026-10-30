@@ -1,4 +1,4 @@
-import { createLookupFunction } from './lookups';
+import { createLookupFunction } from './lookups.js';
 
 describe('createLookupFunction', () => {
 	it('should lookup `a`', () => {
