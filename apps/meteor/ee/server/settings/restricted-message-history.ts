@@ -5,7 +5,7 @@ export function addSettings(): Promise<void> {
 		await this.with(
 			{
 				enterprise: true,
-				modules: ['restricted-message-history'],
+				modules: ['experimental-enterprise-features'],
 			},
 			async function () {
 				await this.add('Restricted_Message_History_Enabled', false, {
