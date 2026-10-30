@@ -2148,7 +2148,11 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 		return this.updateMany(query, update);
 	}
 
-	async removeUsersFromE2EEQueueByRoomId(roomId: IRoom['_id'], uids: IUser['_id'][]): Promise<Document | UpdateResult> {
+	async removeUsersFromE2EEQueueByRoomId(
+		roomId: IRoom['_id'],
+		uids: IUser['_id'][],
+		options?: UpdateOptions,
+	): Promise<Document | UpdateResult> {
 		const query: Filter<IRoom> = {
 			'_id': roomId,
 			'usersWaitingForE2EKeys.userId': {
@@ -2163,7 +2167,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 			},
 		};
 
-		await this.updateMany(query, update);
+		await this.updateMany(query, update, options);
 
 		return this.updateMany(
 			{
@@ -2172,6 +2176,7 @@ export class RoomsRaw extends BaseRaw<IRoom> implements IRoomsModel {
 				'encrypted': true,
 			},
 			{ $unset: { usersWaitingForE2EKeys: 1 } },
+			options,
 		);
 	}
 
