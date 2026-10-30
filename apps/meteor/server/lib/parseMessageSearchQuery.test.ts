@@ -1,16 +1,14 @@
 import { describe, it } from 'node:test';
 
+import type { IUser } from '@rocket.chat/core-typings';
 import { expect } from 'chai';
 
 import { parseMessageSearchQuery } from './parseMessageSearchQuery';
-import { createFakeUser } from '../../tests/mocks/data';
 
 describe('parseMessageSearchQuery', () => {
 	const params = {
-		user: createFakeUser(),
+		user: { _id: 'user-1', username: 'user', utcOffset: 0 } as IUser,
 	};
-
-	const utcOffset = new Date().getTimezoneOffset() / 60;
 
 	[
 		{
@@ -177,17 +175,17 @@ describe('parseMessageSearchQuery', () => {
 		},
 		{
 			text: 'before:01-01-2023',
-			query: { ts: { $lte: new Date(2023, 0, 1, utcOffset) } },
+			query: { ts: { $lte: new Date('2023-01-01T00:00:00.000Z') } },
 			options: { projection: {}, sort: { ts: -1 }, skip: 0, limit: 20 },
 		},
 		{
 			text: 'after:01-01-2023',
-			query: { ts: { $gte: new Date(2023, 0, 2, utcOffset) } },
+			query: { ts: { $gte: new Date('2023-01-02T00:00:00.000Z') } },
 			options: { projection: {}, sort: { ts: -1 }, skip: 0, limit: 20 },
 		},
 		{
 			text: 'on:01-01-2023',
-			query: { ts: { $gte: new Date(2023, 0, 1, utcOffset), $lt: new Date(2023, 0, 2, utcOffset) } },
+			query: { ts: { $gte: new Date('2023-01-01T00:00:00.000Z'), $lt: new Date('2023-01-02T00:00:00.000Z') } },
 			options: { projection: {}, sort: { ts: -1 }, skip: 0, limit: 20 },
 		},
 		{
@@ -205,6 +203,25 @@ describe('parseMessageSearchQuery', () => {
 			const { query, options } = parseMessageSearchQuery(text, params);
 			expect(query).to.deep.equal(expectedQuery);
 			expect(options).to.deep.equal(expectedOptions);
+		});
+	});
+
+	describe('date filters in the time zone of the user', () => {
+		[
+			{ utcOffset: -3, start: '2026-03-15T03:00:00.000Z', end: '2026-03-16T03:00:00.000Z' },
+			{ utcOffset: 0, start: '2026-03-15T00:00:00.000Z', end: '2026-03-16T00:00:00.000Z' },
+			{ utcOffset: 5.5, start: '2026-03-14T18:30:00.000Z', end: '2026-03-15T18:30:00.000Z' },
+			{ utcOffset: 9, start: '2026-03-14T15:00:00.000Z', end: '2026-03-15T15:00:00.000Z' },
+		].forEach(({ utcOffset, start, end }) => {
+			const user = { ...params.user, utcOffset };
+
+			it(`should start the day at ${start} for utcOffset ${utcOffset}`, () => {
+				expect(parseMessageSearchQuery('on:15-03-2026', { user }).query).to.deep.equal({
+					ts: { $gte: new Date(start), $lt: new Date(end) },
+				});
+				expect(parseMessageSearchQuery('before:15-03-2026', { user }).query).to.deep.equal({ ts: { $lte: new Date(start) } });
+				expect(parseMessageSearchQuery('after:14-03-2026', { user }).query).to.deep.equal({ ts: { $gte: new Date(start) } });
+			});
 		});
 	});
 });
