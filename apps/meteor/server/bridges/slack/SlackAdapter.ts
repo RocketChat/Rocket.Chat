@@ -842,10 +842,8 @@ export default class SlackAdapter {
 
 	async postMessage(slackChannel, rocketMessage) {
 		if (slackChannel?.id) {
-			let iconUrl = getUserAvatarURL(rocketMessage.u?.username);
-			if (iconUrl) {
-				iconUrl = getWorkspaceURL() + iconUrl;
-			}
+			const username = rocketMessage.u?.username;
+			const iconUrl = username != null ? getWorkspaceURL(`/avatar/${encodeURIComponent(username)}`) : undefined;
 			const data = {
 				text: rocketMessage.msg,
 				channel: slackChannel.id,
