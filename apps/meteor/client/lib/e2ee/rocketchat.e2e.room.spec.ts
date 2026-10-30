@@ -1,8 +1,18 @@
 import * as Aes from './crypto/aes';
+import { e2e } from './rocketchat.e2e';
 import { E2ERoom } from './rocketchat.e2e.room';
+import { Rooms, Subscriptions } from '../../stores';
 import { sdk } from '../SDKClient';
 
 jest.mock('./crypto/aes');
+jest.mock('./rocketchat.e2e', () => ({ e2e: { isReady: jest.fn(), requestSubscriptionKeys: jest.fn() } }));
+jest.mock('../rooms/roomCoordinator', () => ({ roomCoordinator: {} }));
+jest.mock('../../stores', () => ({
+	Messages: {},
+	Rooms: { state: { get: jest.fn() } },
+	Subscriptions: { state: { find: jest.fn() } },
+}));
+jest.mock('../../../lib/i18n', () => ({ t: (key: string) => key }));
 jest.mock('../../../client/lib/SDKClient', () => ({
 	sdk: { rest: { post: jest.fn(), get: jest.fn() } },
 }));
