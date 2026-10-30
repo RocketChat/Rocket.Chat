@@ -1,7 +1,7 @@
 import type { RefObject } from 'react';
 import { useEffect } from 'react';
 
-import { useStableCallback } from './useStableCallback';
+import { useStableCallback } from './useStableCallback.js';
 
 /**
  * Hook to verify if the user clicked outside the element.
