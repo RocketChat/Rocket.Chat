@@ -2,7 +2,7 @@ import type { Document, Filter, FilterOperators, Sort, UpdateFilter } from 'mong
 
 import { getBSONType } from './bson';
 import { assertHasValidFieldNames, assertIsValidFieldName, clone, isIndexable, isNumericKey, isPlainObject, equals } from './common';
-import { createPredicateFromFilter } from './filter';
+import { createPredicateFromFilter, isLogicalOperator } from './filter';
 import { createComparatorFromSort } from './sort';
 import { BSONType, type ArrayIndices } from './types';
 
@@ -316,12 +316,10 @@ const $pop = <TField extends string>(target: Record<TField, unknown[]>, field: T
 	}
 };
 
-const logicalOperators = ['$and', '$or', '$nor', '$where'];
-
 // a $pull condition made only of query operators applies to each element itself, as in MongoDB
 const isElementCondition = (arg: Record<string, unknown>) => {
 	const keys = Object.keys(arg);
-	return keys.length > 0 && keys.every((key) => key.startsWith('$') && !logicalOperators.includes(key));
+	return keys.length > 0 && keys.every((key) => key.startsWith('$') && !isLogicalOperator(key));
 };
 
 const $pull = <TField extends string, TDocument extends object>(
