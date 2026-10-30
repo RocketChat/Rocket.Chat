@@ -1,3 +1,7 @@
+import type { ISearchIndexBackend } from './e2eeSearch.js';
+
+export * from './e2eeSearch.js';
+
 export type ServerInfo = {
 	version: string;
 };
@@ -113,6 +117,7 @@ export interface IRocketChatDesktop {
 	reloadServer: () => void;
 	getE2ePdfPreviewSizeLimit: () => number;
 	openInBrowser: (url: string) => void;
+	e2eeSearch?: ISearchIndexBackend;
 	/**
 	 * Present only in the desktop app's video call window (4.18 and later), whose `RocketChatDesktop` carries this and
 	 * nothing of the main window's but no-op setters.

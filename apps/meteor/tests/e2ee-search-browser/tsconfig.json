@@ -1,0 +1,15 @@
+{
+	"extends": "../../../../packages/tsconfig/client.json",
+	"compilerOptions": {
+		"target": "es2024",
+		"moduleResolution": "bundler",
+		"types": ["node", "jest"],
+		"noEmit": true,
+		"skipLibCheck": true,
+		"paths": {
+			"@rocket.chat/desktop-api": ["../../../../packages/desktop-api/src/e2eeSearch.ts"]
+		}
+	},
+	"include": ["../../client/lib/e2eeSearch/browser/*.ts", "../../client/lib/e2eeSearch/searchIndex*.ts", "*.ts"],
+	"exclude": [".build", ".playwright"]
+}

@@ -19,6 +19,8 @@
 	"scripts": {
 		"build": "rm -rf dist && tsc -p tsconfig.json",
 		"lint": "yarn run -T oxlint",
+		"test": "node --test tests/e2eeSearch.test.ts",
+		"typecheck:tests": "tsc -p tsconfig.tests.json --noEmit",
 		"typecheck": "tsc -p tsconfig.json --noEmit"
 	},
 	"devDependencies": {
