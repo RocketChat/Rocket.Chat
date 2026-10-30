@@ -1,0 +1,19 @@
+docs/proposals/finish-moving-http-and-ddp-off-meteor.md
+  s_29c461251ce55f::t_ae942a60a0fcf4 20
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.5",
+  "base_commit_sha": "dd0a453133daa0be565bf8747cb2437da6c9b4b6",
+  "prompts": {},
+  "sessions": {
+    "s_29c461251ce55f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "98ca5981-8946-4d8b-820e-c90a203f06a2",
+        "model": "claude-opus-5-5"
+      },
+      "human_author": "Diego Sampaio <chinello@gmail.com>"
+    }
+  }
+}
