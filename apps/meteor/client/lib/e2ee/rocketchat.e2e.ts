@@ -57,6 +57,12 @@ class E2E extends Emitter {
 
 	private keyDistributionInterval: ReturnType<typeof setInterval> | null = null;
 
+	/**
+	 * Moves on each start and stop of the client. A key load that began under an older value belongs to a session that
+	 * ended (logout or another user), so it stops at its next step and writes no key to memory or storage.
+	 */
+	private startGeneration = 0;
+
 	private state: E2EEState;
 
 	constructor() {
@@ -279,13 +285,16 @@ class E2E extends Emitter {
 	private async persistKeys(
 		{ public_key, private_key }: KeyPair,
 		password: string,
-		{ force }: { force: boolean } = { force: false },
+		{ force = false, generation = this.startGeneration }: { force?: boolean; generation?: number } = {},
 	): Promise<void> {
 		if (typeof public_key !== 'string' || typeof private_key !== 'string') {
 			throw new Error('Failed to persist keys as they are not strings.');
 		}
 
 		const encodedPrivateKey = await this.keychain.encryptKey(private_key, password);
+		if (this.isStale(generation)) {
+			return;
+		}
 
 		if (!encodedPrivateKey) {
 			throw new Error('Failed to encode private key with provided password.');
@@ -354,12 +363,29 @@ class E2E extends Emitter {
 
 		span.info(this.state);
 
+		if (this.userId) {
+			// Another user logged in on this page with no logout (login with a token). The stored keys and the saved
+			// password are not stored per user, so drop the previous user's session before the new one reads them.
+			const stopping = this.stopClient();
+			const stoppedGeneration = this.startGeneration;
+			await stopping;
+			if (this.isStale(stoppedGeneration)) {
+				return;
+			}
+		}
+
+		const generation = ++this.startGeneration;
 		this.userId = userId;
 		this.keychain = new Keychain(userId);
 
 		let { public_key, private_key } = this.getKeysFromLocalStorage();
 
-		await this.loadKeysFromDB();
+		await this.loadKeysFromDB(generation);
+
+		// A logout or a start for another user happened while this one waited: that session owns the keys now.
+		if (this.isStale(generation)) {
+			return;
+		}
 
 		if (!public_key && this.db_public_key) {
 			public_key = this.db_public_key;
@@ -370,6 +396,9 @@ class E2E extends Emitter {
 				this.setState('ENTER_PASSWORD');
 				private_key = await this.decodePrivateKey(this.db_private_key);
 			} catch (error) {
+				if (this.isStale(generation)) {
+					return;
+				}
 				this.userId = false;
 				failedToDecodeKey = true;
 				this.openAlert({
@@ -385,19 +414,35 @@ class E2E extends Emitter {
 				});
 				return span.error('E2E -> Error decoding private key: ', error);
 			}
+
+			if (this.isStale(generation)) {
+				return;
+			}
 		}
 
 		if (public_key && private_key) {
-			await this.loadKeys({ public_key, private_key });
-			this.setState('READY');
+			await this.loadKeys({ public_key, private_key }, generation);
 		} else {
-			await this.createAndLoadKeys();
-			this.setState('READY');
+			await this.createAndLoadKeys(generation);
 		}
+
+		if (this.isStale(generation)) {
+			return;
+		}
+
+		this.setState('READY');
 
 		if (!this.db_public_key || !this.db_private_key) {
 			this.setState('LOADING_KEYS');
-			await this.persistKeys(this.getKeysFromLocalStorage(), await this.createRandomPassword());
+			const keys = this.getKeysFromLocalStorage();
+			const password = await this.createRandomPassword(generation);
+			if (this.isStale(generation)) {
+				return;
+			}
+			await this.persistKeys(keys, password, { generation });
+			if (this.isStale(generation)) {
+				return;
+			}
 		}
 
 		const randomPassword = getStoredItem(STORAGE_KEYS.E2EE_RANDOM_PASSWORD);
@@ -414,16 +459,25 @@ class E2E extends Emitter {
 		}
 	}
 
+	private isStale(generation: number): boolean {
+		return generation !== this.startGeneration;
+	}
+
 	async stopClient(): Promise<void> {
 		const span = log.span('stopClient');
 		span.info(this.state);
 		this.closeAlert();
+		this.startGeneration++;
 
+		// Every E2EE item in storage belongs to this user. The next user on this browser must not read any of them.
 		removeStoredItem(STORAGE_KEYS.E2EE_PUBLIC_KEY);
 		removeStoredItem(STORAGE_KEYS.E2EE_PRIVATE_KEY);
+		removeStoredItem(STORAGE_KEYS.E2EE_RANDOM_PASSWORD);
 		this.instancesByRoomId = {};
 		this.privateKey = undefined;
 		this.publicKey = undefined;
+		this.db_public_key = undefined;
+		this.db_private_key = undefined;
 		this.userId = false;
 		if (this.keyDistributionInterval) {
 			clearInterval(this.keyDistributionInterval);
@@ -434,24 +488,36 @@ class E2E extends Emitter {
 	}
 
 	async changePassword(newPassword: string): Promise<void> {
-		await this.persistKeys(this.getKeysFromLocalStorage(), newPassword, { force: true });
+		const generation = this.startGeneration;
+		await this.persistKeys(this.getKeysFromLocalStorage(), newPassword, { force: true, generation });
+		if (this.isStale(generation)) {
+			return;
+		}
 
 		if (getStoredItem(STORAGE_KEYS.E2EE_RANDOM_PASSWORD)) {
 			setStoredItem(STORAGE_KEYS.E2EE_RANDOM_PASSWORD, newPassword);
 		}
 	}
 
-	async loadKeysFromDB(): Promise<void> {
+	async loadKeysFromDB(generation = this.startGeneration): Promise<void> {
 		const span = log.span('loadKeysFromDB');
 		try {
 			this.setState('LOADING_KEYS');
 			const { public_key, private_key } = await sdk.rest.get('/v1/e2e.fetchMyKeys');
+
+			// The session ended while the request was in flight: these keys belong to the previous user.
+			if (this.isStale(generation)) {
+				return;
+			}
 
 			this.db_public_key = public_key;
 			this.db_private_key = private_key;
 
 			span.info('fetched keys from db');
 		} catch (error) {
+			if (this.isStale(generation)) {
+				return;
+			}
 			this.setState('ERROR');
 			span.error('Error fetching RSA keys: ', error);
 			// Stop any process since we can't communicate with the server
@@ -460,49 +526,83 @@ class E2E extends Emitter {
 		}
 	}
 
-	async loadKeys({ public_key, private_key }: { public_key: string; private_key: string }): Promise<void> {
+	async loadKeys(
+		{ public_key, private_key }: { public_key: string; private_key: string },
+		generation = this.startGeneration,
+	): Promise<void> {
 		const span = log.span('loadKeys');
+		if (this.isStale(generation)) {
+			return;
+		}
 		setStoredItem(STORAGE_KEYS.E2EE_PUBLIC_KEY, public_key);
 		this.publicKey = public_key;
 
 		try {
-			this.privateKey = await Rsa.importPrivateKey(JSON.parse(private_key));
+			const privateKey = await Rsa.importPrivateKey(JSON.parse(private_key));
+			if (this.isStale(generation)) {
+				return;
+			}
+			this.privateKey = privateKey;
 
 			setStoredItem(STORAGE_KEYS.E2EE_PRIVATE_KEY, private_key);
 		} catch (error) {
+			if (this.isStale(generation)) {
+				return;
+			}
 			this.setState('ERROR');
 			return span.error('Error importing private key: ', error);
 		}
 	}
 
-	async createAndLoadKeys(): Promise<void> {
+	async createAndLoadKeys(generation = this.startGeneration): Promise<void> {
 		const span = log.span('createAndLoadKeys');
+		if (this.isStale(generation)) {
+			return;
+		}
 		// Could not obtain public-private keypair from server.
 		this.setState('LOADING_KEYS');
 		let keyPair;
 		try {
 			keyPair = await Rsa.generate();
+			if (this.isStale(generation)) {
+				return;
+			}
 			this.privateKey = keyPair.privateKey;
 		} catch (error) {
+			if (this.isStale(generation)) {
+				return;
+			}
 			this.setState('ERROR');
 			return span.set('error', error).error('Error generating key');
 		}
 
 		try {
 			const publicKey = await Rsa.exportPublicKey(keyPair.publicKey);
+			if (this.isStale(generation)) {
+				return;
+			}
 
 			this.publicKey = JSON.stringify(publicKey);
 			setStoredItem(STORAGE_KEYS.E2EE_PUBLIC_KEY, JSON.stringify(publicKey));
 		} catch (error) {
+			if (this.isStale(generation)) {
+				return;
+			}
 			this.setState('ERROR');
 			return span.set('error', error).error('Error exporting public key');
 		}
 
 		try {
 			const privateKey = await Rsa.exportPrivateKey(keyPair.privateKey);
+			if (this.isStale(generation)) {
+				return;
+			}
 
 			setStoredItem(STORAGE_KEYS.E2EE_PRIVATE_KEY, JSON.stringify(privateKey));
 		} catch (error) {
+			if (this.isStale(generation)) {
+				return;
+			}
 			this.setState('ERROR');
 			return span.set('error', error).error('Error exporting private key');
 		}
@@ -533,9 +633,11 @@ class E2E extends Emitter {
 		return request;
 	}
 
-	async createRandomPassword(): Promise<string> {
+	async createRandomPassword(generation = this.startGeneration): Promise<string> {
 		const randomPassword = await generatePassphrase();
-		setStoredItem(STORAGE_KEYS.E2EE_RANDOM_PASSWORD, randomPassword);
+		if (!this.isStale(generation)) {
+			setStoredItem(STORAGE_KEYS.E2EE_RANDOM_PASSWORD, randomPassword);
+		}
 		return randomPassword;
 	}
 
