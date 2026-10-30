@@ -15,9 +15,6 @@ const RoomTopic = ({ room }: RoomTopicProps) => {
 	const canEdit = useCanEditRoom(room);
 	const router = useRouter();
 
-	const currentRoute = router.getLocationPathname();
-	const href = isTeamRoom(room) ? `${currentRoute}/team-info` : `${currentRoute}/channel-settings`;
-
 	const { topic } = room;
 	const canEditTopic = canEdit && (isPublicRoom(room) || isPrivateRoom(room));
 
@@ -26,6 +23,9 @@ const RoomTopic = ({ room }: RoomTopicProps) => {
 	}
 
 	if (!topic && canEditTopic) {
+		const { path } = router.getRoomRoute(room.t, { name: room.name });
+		const href = isTeamRoom(room) ? `${path}/team-info` : `${path}/channel-settings`;
+
 		return (
 			<Box is='a' href={href}>
 				{t('Add_topic')}
