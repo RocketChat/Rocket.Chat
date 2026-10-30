@@ -9,10 +9,9 @@ import {
 	StatesSubtitle,
 	StatesTitle,
 } from '@rocket.chat/fuselage';
-import { useThemeMode } from '@rocket.chat/ui-client';
+import { useCopyErrorReport, useThemeMode } from '@rocket.chat/ui-client';
 
 import { Info } from '../../../rocketchat.info';
-import { useCopyErrorReport } from '../../components/ErrorReport/useCopyErrorReport';
 import { router } from '../../providers/RouterProvider';
 
 export type AppErrorPageProps = {

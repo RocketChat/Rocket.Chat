@@ -6,10 +6,13 @@ import { render } from '@testing-library/react';
 import EngagementDashboardRoute from './EngagementDashboardRoute';
 import { useUpsellActions } from '../../../components/GenericUpsellModal/hooks';
 
-jest.mock('@rocket.chat/ui-client', () => ({ ...jest.requireActual('@rocket.chat/ui-client'), useHasLicenseModule: jest.fn() }));
+jest.mock('@rocket.chat/ui-client', () => ({
+	...jest.requireActual('@rocket.chat/ui-client'),
+	useHasLicenseModule: jest.fn(),
+	PageSkeleton: () => null,
+}));
 jest.mock('../../../components/GenericUpsellModal/hooks', () => ({ useUpsellActions: jest.fn() }));
 jest.mock('./EngagementDashboardPage', () => () => null);
-jest.mock('../../../components/PageSkeleton', () => () => null);
 jest.mock('../../notAuthorized/NotAuthorizedPage', () => () => null);
 jest.mock('../../../../client/lib/getURL', () => ({ getURL: (path: string) => path }));
 
