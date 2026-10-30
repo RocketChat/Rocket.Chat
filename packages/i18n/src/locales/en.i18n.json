@@ -2380,6 +2380,15 @@
   "E2E_Local_Search_Backoff_Max_Description": "The longest the app waits before trying again after rate limit (429) or server (5xx) errors. Default: 600. Values below the minimum retry wait count as that minimum. A Retry-After time from the server always wins.",
   "E2E_Local_Search_Backoff_Min": "Local search minimum retry wait (seconds)",
   "E2E_Local_Search_Backoff_Min_Description": "The base retry wait. After a rate limit (429) or server (5xx) error, the app waits a random time. The wait is between half of this value and the full value. Each new error doubles the base up to the maximum. Default: 10. Values below 1 count as 1. Lower values add load on a busy server. A Retry-After time from the server takes precedence.",
+  "E2E_Local_Search_Indexing_Progress": {
+    "one": "Indexing encrypted history: {{done}} of {{count}} room",
+    "other": "Indexing encrypted history: {{done}} of {{count}} rooms"
+  },
+  "E2E_Local_Search_Locked": "Local search is locked on this device. Unlock end-to-end encryption to search encrypted messages.",
+  "E2E_Local_Search_Memory_Only": "On this device, the app keeps the search index in memory only. The app rebuilds it after a restart.",
+  "E2E_Local_Search_Opt_In": "Index my encrypted messages on this device",
+  "E2E_Local_Search_Opt_In_Description": "Keep an encrypted index of your decrypted messages on this device to search encrypted rooms here. The server never receives the index or your search terms. Turn this option off to delete the index from this device.",
+  "E2E_Local_Search_Unavailable": "Local search is unavailable on this device. Try again later.",
   "E2E_message_encrypted_placeholder": "This message is end-to-end encrypted. To view it, you must enter your encryption key in your account settings.",
   "E2E_password_request_text": "To access your encrypted channels and direct messages, enter your encryption password. This is not stored on the server, so you’ll need to use it on every device.",
   "E2E_password_reveal_text": "Create secure private rooms and direct messages with end-to-end encryption. This password won’t be stored on the server. You can use it on all your devices.",

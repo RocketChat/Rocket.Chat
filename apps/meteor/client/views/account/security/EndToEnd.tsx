@@ -1,17 +1,18 @@
-import { Box, Divider } from '@rocket.chat/fuselage';
+import { Divider } from '@rocket.chat/fuselage';
 
 import { ChangePassphrase } from './ChangePassphrase';
+import LocalSearchOptIn from './LocalSearchOptIn';
 import { ResetPassphrase } from './ResetPassphrase';
+import EndToEndSettingsLayout from './layout/EndToEndSettingsLayout';
 
 const EndToEnd = () => {
 	return (
-		<Box display='flex' flexDirection='column' alignItems='flex-start'>
+		<EndToEndSettingsLayout>
 			<ChangePassphrase />
-			<Box alignSelf='stretch' paddingBlock='x32'>
-				<Divider flush />
-			</Box>
+			<Divider flush />
 			<ResetPassphrase />
-		</Box>
+			<LocalSearchOptIn />
+		</EndToEndSettingsLayout>
 	);
 };
 

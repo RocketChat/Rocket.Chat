@@ -1,0 +1,9 @@
+{
+	"extends": "./tsconfig.json",
+	"include": [
+		"./desktop.d.ts",
+		"../../client/lib/e2eeSearch/searchIndexRuntime.ts",
+		"../../client/lib/e2eeSearch/searchIndexRuntime.spec.ts"
+	],
+	"exclude": []
+}

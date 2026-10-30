@@ -1,0 +1,9 @@
+{
+	"extends": "../../../../tsconfig.json",
+	"compilerOptions": {
+		"allowJs": false,
+		"types": ["node", "jest", "@testing-library/jest-dom", "jest-axe"]
+	},
+	"include": ["./**/*.ts", "./**/*.tsx"],
+	"exclude": []
+}

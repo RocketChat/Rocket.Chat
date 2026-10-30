@@ -1,0 +1,21 @@
+{
+	"extends": "./tsconfig.integration.json",
+	"compilerOptions": {
+		"types": ["node", "jest", "@testing-library/jest-dom", "jest-axe"]
+	},
+	"include": [
+		"./desktop.d.ts",
+		"../../definition/externals/**/*.d.ts",
+		"../../client/views/account/security/EndToEnd.tsx",
+		"../../client/views/account/security/EndToEnd.spec.tsx",
+		"../../client/views/account/security/ResetPassphrase.tsx",
+		"../../client/views/account/security/ResetPassphrase.spec.tsx",
+		"../../client/views/account/security/ResetPassphrase.stories.tsx",
+		"../../client/views/account/security/LocalSearchOptIn.tsx",
+		"../../client/views/account/security/LocalSearchOptIn.spec.tsx",
+		"../../client/views/account/security/LocalSearchOptInField.tsx",
+		"../../client/views/account/security/LocalSearchOptInField.stories.tsx",
+		"../../client/views/account/security/layout/*.tsx"
+	],
+	"exclude": []
+}

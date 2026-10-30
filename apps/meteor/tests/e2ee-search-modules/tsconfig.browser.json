@@ -1,0 +1,5 @@
+{
+	"extends": "./tsconfig.json",
+	"include": ["./clientBrowserEntry.ts", "./clientBrowser.pw.ts", "./playwright.config.ts"],
+	"exclude": []
+}

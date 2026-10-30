@@ -1,5 +1,5 @@
 import type { IMessageSearchProvider } from '@rocket.chat/core-typings';
-import { Box, Callout, Field, FieldHint, FieldLabel, Icon, Text, TextInput, ToggleSwitch } from '@rocket.chat/fuselage';
+import { Callout, Field, FieldGroup, FieldHint, FieldLabel, Icon, Text, TextInput, ToggleSwitch } from '@rocket.chat/fuselage';
 import { useDebouncedCallback, useStableCallback } from '@rocket.chat/fuselage-hooks';
 import DOMPurify from 'dompurify';
 import { useEffect, useId } from 'react';
@@ -8,15 +8,17 @@ import { useTranslation } from 'react-i18next';
 
 import { getRoomTypeTranslation } from '../../../../../lib/getRoomTypeTranslation';
 import { useRoom } from '../../../contexts/RoomContext';
+import MessageSearchFormLayout from '../layout/MessageSearchFormLayout';
 
 export type MessageSearchFormProps = {
 	provider: IMessageSearchProvider;
 	onSearch: (params: { searchText: string; globalSearch: boolean }) => void;
 	searchListId: string;
 	isSuccess: boolean;
+	localSearch?: boolean;
 };
 
-const MessageSearchForm = ({ provider, onSearch, searchListId, isSuccess }: MessageSearchFormProps) => {
+const MessageSearchForm = ({ provider, onSearch, searchListId, isSuccess, localSearch = false }: MessageSearchFormProps) => {
 	const { handleSubmit, register, setFocus, control } = useForm({
 		defaultValues: {
 			searchText: '',
@@ -50,8 +52,8 @@ const MessageSearchForm = ({ provider, onSearch, searchListId, isSuccess }: Mess
 	const { t } = useTranslation();
 
 	return (
-		<Box is='form' onSubmit={submitHandler} width='full' display='flex' flexDirection='column' gap={12}>
-			<Box>
+		<MessageSearchFormLayout onSubmit={submitHandler}>
+			<FieldGroup>
 				<Field>
 					<TextInput
 						endAddon={<Icon name='magnifier' size='x20' />}
@@ -61,22 +63,24 @@ const MessageSearchForm = ({ provider, onSearch, searchListId, isSuccess }: Mess
 						autoComplete='off'
 						{...register('searchText')}
 					/>
-					{provider.description && <FieldHint dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t(provider.description)) }} />}
+					{!localSearch && provider.description && (
+						<FieldHint dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(t(provider.description)) }} />
+					)}
 				</Field>
-				{globalSearchEnabled && (
+				{globalSearchEnabled && !localSearch && (
 					<Field>
 						<FieldLabel htmlFor={globalSearchToggleId}>{t('Global_Search')}</FieldLabel>
 						<ToggleSwitch id={globalSearchToggleId} {...register('globalSearch')} />
 					</Field>
 				)}
-			</Box>
-			{room.encrypted && (
+			</FieldGroup>
+			{room.encrypted && !localSearch && (
 				<Callout type='warning' icon='circle-exclamation'>
 					<Text fontScale='p2b'>{t('Encrypted_RoomType', { roomType: getRoomTypeTranslation(room).toLowerCase() })}</Text>
 					{t('Encrypted_content_cannot_be_searched')}
 				</Callout>
 			)}
-		</Box>
+		</MessageSearchFormLayout>
 	);
 };
 

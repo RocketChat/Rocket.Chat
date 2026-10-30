@@ -1,0 +1,14 @@
+{
+	"extends": "./tsconfig.json",
+	"include": [
+		"./desktop.d.ts",
+		"../../definition/externals/global.d.ts",
+		"../../client/lib/e2eeSearch/getSearchIndexBackend.ts",
+		"../../client/lib/e2eeSearch/getSearchIndexBackend.spec.ts",
+		"../../client/lib/e2eeSearch/fakeSearchIndexBackend.ts",
+		"../../client/lib/e2eeSearch/fakeSearchIndexBackend.spec.ts",
+		"../../client/lib/e2eeSearch/searchIndexDeletes.ts",
+		"../../client/lib/e2eeSearch/searchIndexDeletes.spec.ts"
+	],
+	"exclude": []
+}

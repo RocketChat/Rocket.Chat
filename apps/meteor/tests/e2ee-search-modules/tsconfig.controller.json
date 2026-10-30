@@ -1,0 +1,13 @@
+{
+	"extends": "./tsconfig.json",
+	"compilerOptions": {
+		"types": ["node", "jest", "@testing-library/jest-dom", "jest-axe"]
+	},
+	"include": [
+		"./desktop.d.ts",
+		"../../definition/externals/**/*.d.ts",
+		"../../client/views/room/contextualBar/MessageSearchTab/**/*.ts",
+		"../../client/views/room/contextualBar/MessageSearchTab/**/*.tsx"
+	],
+	"exclude": []
+}

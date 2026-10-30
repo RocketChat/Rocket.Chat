@@ -1,0 +1,38 @@
+{
+	"extends": "../../tsconfig.json",
+	"compilerOptions": {
+		"allowJs": false,
+		"paths": {
+			"@rocket.chat/core-typings": ["../../../../packages/core-typings/src/index.ts"],
+			"@rocket.chat/desktop-api": ["../../../../packages/desktop-api/src/e2eeSearch.ts"]
+		}
+	},
+	"include": [
+		"./desktop.d.ts",
+		"../../client/lib/e2eeSearch/toSearchDoc.ts",
+		"../../client/lib/e2eeSearch/toSearchDoc.spec.ts",
+		"../../client/lib/e2eeSearch/searchIndexCrawler.ts",
+		"../../client/lib/e2eeSearch/searchIndexCrawler.spec.ts",
+		"../../client/lib/e2eeSearch/searchIndexScheduler.ts",
+		"../../client/lib/e2eeSearch/searchIndexScheduler.spec.ts",
+		"../../client/lib/e2eeSearch/desktopSearchIndexBackend.integration.spec.ts",
+		"../../client/lib/e2eeSearch/searchIndexSession.ts",
+		"../../client/lib/e2eeSearch/searchIndexSession.spec.ts",
+		"../../client/lib/e2eeSearch/searchIndexLifecycle.ts",
+		"../../client/lib/e2eeSearch/searchIndexLifecycle.spec.ts",
+		"../../client/lib/e2eeSearch/searchIndexSessionBackend.ts",
+		"../../client/lib/e2eeSearch/searchIndexSessionBackend.spec.ts",
+		"../../client/lib/e2eeSearch/searchIndexSessionBackend.integration.spec.ts",
+		"../../client/lib/e2eeSearch/searchIndexWriter.ts",
+		"../../client/lib/e2eeSearch/searchIndexWriter.spec.ts",
+		"../../client/lib/e2eeSearch/parseLocalSearchQuery.ts",
+		"../../client/lib/e2eeSearch/parseLocalSearchQuery.spec.ts",
+		"../../client/lib/e2eeSearch/searchLocalIndex.ts",
+		"../../client/lib/e2eeSearch/searchLocalIndex.spec.ts",
+		"../../client/lib/e2eeSearch/desktopSearchIndexBackend.ts",
+		"../../client/lib/e2eeSearch/desktopSearchIndexBackend.spec.ts",
+		"../../client/lib/e2eeSearch/searchIndexOptIn.ts",
+		"../../client/lib/e2eeSearch/searchIndexOptIn.spec.ts"
+	],
+	"exclude": []
+}

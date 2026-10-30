@@ -1,6 +1,7 @@
+import { createSearchIndexSyncTimeStore, isSearchIndexOptedIn, setSearchIndexOptIn } from './e2eeSearch/searchIndexOptIn';
 import { clearStoredCredentials } from './sdk/ddpSdk';
 import { STORAGE_KEYS } from './sdk/storage';
-import { synchronizeUserData } from './userData';
+import { removeLocalUserData, synchronizeUserData } from './userData';
 
 type StreamHandler = (data: { type: string; id: string }) => void;
 
@@ -19,6 +20,27 @@ jest.mock('./SDKClient', () => ({
 jest.mock('./sdk/ddpSdk', () => ({
 	clearStoredCredentials: jest.fn(),
 }));
+
+describe('removeLocalUserData', () => {
+	it('removes credentials while preserving scoped local-search consent and catch-up time', () => {
+		localStorage.clear();
+		const workspace = 'https://chat.example/a/';
+		setSearchIndexOptIn(workspace, 'uid-1', true);
+		const syncTime = createSearchIndexSyncTimeStore(workspace, () => 'uid-1');
+		syncTime.write(1234);
+		localStorage.setItem(STORAGE_KEYS.USER_ID, 'uid-1');
+		localStorage.setItem('Meteor.loginToken', 'secret');
+		localStorage.setItem('E2EESearch_OptIn_uid-1', 'true');
+
+		removeLocalUserData();
+
+		expect(localStorage.getItem(STORAGE_KEYS.USER_ID)).toBeNull();
+		expect(localStorage.getItem('Meteor.loginToken')).toBeNull();
+		expect(localStorage.getItem('E2EESearch_OptIn_uid-1')).toBeNull();
+		expect(isSearchIndexOptedIn(workspace, 'uid-1')).toBe(true);
+		expect(syncTime.read()).toBe(1234);
+	});
+});
 
 describe('synchronizeUserData', () => {
 	beforeEach(() => {

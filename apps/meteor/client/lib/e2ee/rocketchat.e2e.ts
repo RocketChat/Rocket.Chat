@@ -21,6 +21,8 @@ import SaveE2EPasswordModal from '../../views/e2e/SaveE2EPasswordModal';
 import { sdk } from '../SDKClient';
 import * as banners from '../banners';
 import type { LegacyBannerPayload } from '../banners';
+import { createE2EESearchIntegration } from '../e2eeSearch/createE2EESearchIntegration';
+import { isDecryptFailed, isDeletionPlaceholder } from '../e2eeSearch/toSearchDoc';
 import { getUserAvatarURL } from '../getUserAvatarURL';
 import { limitQuoteChain } from '../limitQuoteChain';
 import { getDdpSdk } from '../sdk/ddpSdk';
@@ -264,7 +266,14 @@ class E2E extends Emitter {
 		}
 
 		if (!this.instancesByRoomId[rid] && this.userId) {
-			this.instancesByRoomId[rid] = new E2ERoom(this.userId, room);
+			const e2eRoom = new E2ERoom(this.userId, room);
+			const emitRoomReady = () => {
+				if (this.instancesByRoomId[rid] === e2eRoom) this.emit('E2E_ROOM_READY', rid);
+			};
+			e2eRoom.on('READY', () => {
+				void e2eRoom.whenOldRoomKeysLoaded().then(emitRoomReady, emitRoomReady);
+			});
+			this.instancesByRoomId[rid] = e2eRoom;
 		}
 
 		// When the key was already set and is changed via an update, we update the room instance
@@ -760,10 +769,17 @@ class E2E extends Emitter {
 		message: IMessage | IE2EEMessage,
 		{ quoteDepth = getQuoteChainLimit() }: { quoteDepth?: number } = {},
 	): Promise<IMessage> {
+		if (isDeletionPlaceholder(message)) {
+			e2eSearchIndexWriter.index(message);
+			return message;
+		}
+
 		if (!isE2EEMessage(message) || message.e2e === 'done') {
 			return message;
 		}
 
+		const generation = this.startGeneration;
+		const indexDecrypted = e2eSearchIndexWriter.bindToOpenIndex();
 		const e2eRoom = await this.getInstanceByRoomId(message.rid);
 
 		if (!e2eRoom) {
@@ -774,6 +790,9 @@ class E2E extends Emitter {
 
 		const decryptedMessageWithQuote = quoteDepth > 0 ? await this.parseQuoteAttachment(decryptedMessage, quoteDepth) : decryptedMessage;
 
+		if (this.isStale(generation)) return decryptedMessageWithQuote;
+		indexDecrypted(decryptedMessageWithQuote);
+		if (isDecryptFailed(decryptedMessageWithQuote)) e2eSearchIndexRuntime.onDecryptFailed(message);
 		return decryptedMessageWithQuote;
 	}
 
@@ -1006,6 +1025,15 @@ class E2E extends Emitter {
 }
 
 export const e2e = new E2E();
+
+export const {
+	session: e2eSearchIndexSession,
+	writer: e2eSearchIndexWriter,
+	runtime: e2eSearchIndexRuntime,
+} = createE2EESearchIntegration(e2e, {
+	error: (error) => log.span('localSearch').error('Error updating the local search index', error),
+	warn: (message) => log.span('localSearch').warn(message),
+});
 
 window.__rocketChatE2E = e2e;
 

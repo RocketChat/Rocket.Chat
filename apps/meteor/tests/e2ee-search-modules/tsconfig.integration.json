@@ -1,0 +1,12 @@
+{
+	"extends": "./tsconfig.selection.json",
+	"include": [
+		"./desktop.d.ts",
+		"../../definition/externals/global.d.ts",
+		"../../client/lib/e2eeSearch/createE2EESearchIntegration.ts",
+		"../../client/lib/e2eeSearch/createE2EESearchIntegration.spec.ts",
+		"../../client/lib/e2ee/rocketchat.e2e.searchIndex.spec.ts",
+		"../../client/lib/e2ee/rocketchat.e2e.room.searchIndex.spec.ts"
+	],
+	"exclude": []
+}
