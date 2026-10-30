@@ -21,7 +21,7 @@ class Settings {
 			}
 
 			for (const setting of state.records.values()) {
-				if (setting.value !== prevState.get(setting._id)?.value) {
+				if (setting.value !== prevState.records.get(setting._id)?.value) {
 					this.handleChange(setting._id, setting.value);
 				}
 			}
