@@ -6,7 +6,7 @@
 it('should report every query as unsupported instead of throwing', async () => {
 	expect(typeof window).toBe('undefined');
 
-	const { cssSupports } = await import('./index');
+	const { cssSupports } = await import('./index.js');
 
 	expect(cssSupports('display:flex')).toBe(false);
 	expect(cssSupports('margin-inline-start:0')).toBe(false);
