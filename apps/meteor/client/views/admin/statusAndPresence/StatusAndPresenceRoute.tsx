@@ -11,6 +11,7 @@ import { memo, useEffect, useLayoutEffect, useMemo, useRef } from 'react';
 import { STATUS_SETTING_IDS } from './SettingsTab';
 import StatusAndPresencePage from './StatusAndPresencePage';
 import type { StatusAndPresenceTab } from './StatusAndPresenceTabs';
+import PageSkeleton from '../../../components/PageSkeleton';
 import { useCanManageUserStatus } from '../../../hooks/useCanManageUserStatus';
 import { useHasLicenseModule } from '../../../hooks/useHasLicenseModule';
 import NotAuthorizedPage from '../../notAuthorized/NotAuthorizedPage';
@@ -71,7 +72,7 @@ const StatusAndPresenceRoute = () => {
 	}, [presenceDisabled, canManageCustomStatus, currentTab, context, router]);
 
 	if (isLicenseLoading) {
-		return null;
+		return <PageSkeleton />;
 	}
 
 	if (!firstAllowedTab) {
