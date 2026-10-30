@@ -5,7 +5,9 @@ import { streamToBuffer } from './stream';
 describe('streamToBuffer', () => {
 	it('rejects when a readable closes before it ends', async () => {
 		const stream = new Readable({
-			read() {},
+			read() {
+				// never produces data, so the stream can only close early
+			},
 		});
 		const result = streamToBuffer(stream);
 		stream.destroy();
@@ -46,6 +48,35 @@ describe('streamToBuffer', () => {
 				this.destroy(error);
 			},
 		});
+
+		await expect(streamToBuffer(stream)).rejects.toBe(error);
+	});
+
+	const createSlowDestroyDuplex = () =>
+		new Duplex({
+			read() {
+				// never produces data, so the stream can only close early
+			},
+			write(_chunk, _encoding, callback) {
+				callback();
+			},
+			destroy(error, callback) {
+				setTimeout(() => callback(error), 10);
+			},
+		});
+
+	it('rejects when a duplex was destroyed before the call', async () => {
+		const stream = createSlowDestroyDuplex();
+		stream.destroy();
+
+		await expect(streamToBuffer(stream)).rejects.toMatchObject({ code: 'ERR_STREAM_PREMATURE_CLOSE' });
+	});
+
+	it('rejects with the source error when a duplex was destroyed with one before the call', async () => {
+		const error = new Error('source failed');
+		const stream = createSlowDestroyDuplex();
+		stream.on('error', () => undefined);
+		stream.destroy(error);
 
 		await expect(streamToBuffer(stream)).rejects.toBe(error);
 	});
