@@ -1,5 +1,5 @@
-import { buildSearchAnswerPrompt, generateOpenAICompatibleSearchAnswer, listOpenAICompatibleModels } from './llm';
-import type { AIServiceFetch } from './types';
+import { buildSearchAnswerPrompt, generateOpenAICompatibleSearchAnswer, listOpenAICompatibleModels } from './llm.js';
+import type { AIServiceFetch } from './types.js';
 
 describe('AI Search LLM helpers', () => {
 	describe('buildSearchAnswerPrompt', () => {

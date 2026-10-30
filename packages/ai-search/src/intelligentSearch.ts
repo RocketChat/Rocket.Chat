@@ -1,4 +1,4 @@
-import { CLASSIFICATION_SEARCH_TYPE, MAX_AI_SERVICE_RESPONSE_SIZE } from './constants';
+import { CLASSIFICATION_SEARCH_TYPE, MAX_AI_SERVICE_RESPONSE_SIZE } from './constants.js';
 import type {
 	AIServiceFetch,
 	AIServiceLogger,
@@ -7,8 +7,8 @@ import type {
 	IntelligentSearchFilters,
 	IntelligentSearchPipelineFilters,
 	IntelligentSearchPipelineRequest,
-} from './types';
-import { getErrorType } from './utils';
+} from './types.js';
+import { getErrorType } from './utils.js';
 
 export const INTELLIGENT_SEARCH_ERROR_CODES = [
 	'error-ai-search-credentials-rejected',
