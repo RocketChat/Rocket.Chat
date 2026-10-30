@@ -185,12 +185,12 @@ export async function handleCursorPagination(
 	const response =
 		type === 'UPDATED'
 			? await Messages.findForUpdates(rid, { updatedAt: query, ...(idTieBreaker !== undefined && { idTieBreaker }) }, options).toArray()
-			: await Messages.findDeletedByRoomIdAndDeletedAt(
+			: ((await Messages.findDeletedByRoomIdAndDeletedAt(
 					rid,
 					query,
 					{ projection: { _id: 1, _deletedAt: 1 }, ...options },
 					idTieBreaker,
-				).toArray();
+				).toArray()) as IMessage[]);
 
 	const cursor = {
 		next: mountNextCursor(response, count, type, next, previous, compound),
