@@ -1,35 +1,35 @@
 {
-	"name": "@rocket.chat/random",
-	"version": "1.2.4",
-	"private": true,
-	"description": "Random number generator and utilities; Fork of Meteor's Random package",
-	"type": "module",
-	"exports": {
-		".": {
-			"types": "./dist/main.server.d.ts",
-			"browser": "./dist/main.client.js",
-			"default": "./dist/main.server.js"
-		}
-	},
-	"main": "./dist/main.server.js",
-	"browser": "./dist/main.client.js",
-	"types": "./dist/main.server.d.ts",
-	"scripts": {
-		"build": "rm -rf dist && tsc -p tsconfig.build.json",
-		"dev": "tsc -p tsconfig.build.json --watch --preserveWatchOutput",
-		"lint": "yarn run -T oxlint",
-		"lint:fix": "yarn run -T oxlint --fix",
-		"test": "jest",
-		"testunit": "jest",
-		"typecheck": "tsc --noEmit"
-	},
-	"devDependencies": {
-		"@rocket.chat/jest-presets": "workspace:~",
-		"@rocket.chat/tsconfig": "workspace:*",
-		"jest": "~30.5.2",
-		"typescript": "~7.0.2"
-	},
-	"volta": {
-		"extends": "../../package.json"
-	}
+  "name": "@rocket.chat/random",
+  "version": "1.2.4",
+  "private": true,
+  "description": "Random number generator and utilities; Fork of Meteor's Random package",
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/main.server.d.ts",
+      "browser": "./dist/main.client.js",
+      "default": "./dist/main.server.js"
+    }
+  },
+  "main": "./dist/main.server.js",
+  "browser": "./dist/main.client.js",
+  "types": "./dist/main.server.d.ts",
+  "scripts": {
+    "build": "node init && rm -rf dist && tsc -p tsconfig.build.json",
+    "dev": "node init && tsc -p tsconfig.build.json --watch --preserveWatchOutput",
+    "lint": "yarn run -T oxlint",
+    "lint:fix": "yarn run -T oxlint --fix",
+    "test": "jest",
+    "testunit": "jest",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@rocket.chat/jest-presets": "workspace:~",
+    "@rocket.chat/tsconfig": "workspace:*",
+    "jest": "~30.5.2",
+    "typescript": "~7.0.2"
+  },
+  "volta": {
+    "extends": "../../package.json"
+  }
 }

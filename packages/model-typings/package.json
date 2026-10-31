@@ -1,27 +1,27 @@
 {
-	"name": "@rocket.chat/model-typings",
-	"version": "3.0.0-rc.0",
-	"private": true,
-	"main": "./dist/index.js",
-	"typings": "./dist/index.d.ts",
-	"files": [
-		"/dist"
-	],
-	"scripts": {
-		"build": "rm -rf dist && tsc -p tsconfig.build.json",
-		"typecheck": "tsc --noEmit -p tsconfig.json",
-		"lint": "yarn run -T oxlint",
-		"lint:fix": "yarn run -T oxlint --fix"
-	},
-	"dependencies": {
-		"@rocket.chat/core-typings": "workspace:^"
-	},
-	"devDependencies": {
-		"@types/node-rsa": "^1.1.4",
-		"mongodb": "6.16.0",
-		"typescript": "~7.0.2"
-	},
-	"volta": {
-		"extends": "../../package.json"
-	}
+  "name": "@rocket.chat/model-typings",
+  "version": "3.0.0-rc.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
+  "scripts": {
+    "build": "node init && rm -rf dist && tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "lint": "yarn run -T oxlint",
+    "lint:fix": "yarn run -T oxlint --fix"
+  },
+  "dependencies": {
+    "@rocket.chat/core-typings": "workspace:^"
+  },
+  "devDependencies": {
+    "@types/node-rsa": "^1.1.4",
+    "mongodb": "6.16.0",
+    "typescript": "~7.0.2"
+  },
+  "volta": {
+    "extends": "../../package.json"
+  }
 }
