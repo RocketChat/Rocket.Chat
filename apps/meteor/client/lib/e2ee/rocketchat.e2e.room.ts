@@ -110,7 +110,9 @@ export class E2ERoom extends Emitter {
 			return this.decryptPendingMessages();
 		});
 		this.once('READY', () => this.decryptSubscription());
-		this.on('STATE_CHANGED', () => this.handshake());
+		this.on('STATE_CHANGED', () => {
+			if (!this.isWaitingKeys()) void this.handshake();
+		});
 
 		this.setState('NOT_STARTED');
 	}
@@ -315,6 +317,11 @@ export class E2ERoom extends Emitter {
 			return;
 		}
 
+		if (this.state === 'WAITING_KEYS') {
+			this.requestRoomKey();
+			return;
+		}
+
 		if (this.state !== 'KEYS_RECEIVED' && this.state !== 'NOT_STARTED') {
 			return;
 		}
@@ -344,6 +351,7 @@ export class E2ERoom extends Emitter {
 				if (!created) {
 					// another member won the race
 					this.setState('WAITING_KEYS');
+					this.requestRoomKey();
 					return;
 				}
 				this.setState('READY');
@@ -352,7 +360,7 @@ export class E2ERoom extends Emitter {
 
 			this.setState('WAITING_KEYS');
 			span.info('Requesting room key');
-			e2e.requestSubscriptionKeys().catch((error) => span.set('error', error).error('Error requesting room key'));
+			this.requestRoomKey();
 		} catch (error) {
 			span.set('error', error);
 			span.error('Error during handshake');
@@ -499,12 +507,30 @@ export class E2ERoom extends Emitter {
 		}
 
 		span.set('new_key_id', keyID).info('Room key has been reset');
-		this.setState('WAITING_KEYS');
 		this.keyID = keyID;
 		this.groupSessionKey = null;
 		this.sessionKeyExportedString = undefined;
 		this.sessionKeyExported = undefined;
 		this.oldKeys = undefined;
+		this.setState('WAITING_KEYS');
+		this.requestRoomKey(true);
+	}
+
+	private pendingRoomKeyRequest: Promise<void> | undefined;
+
+	private requestRoomKey(followUp = false) {
+		if (this.pendingRoomKeyRequest) {
+			if (followUp) void e2e.requestSubscriptionKeys();
+			return;
+		}
+		const span = log.span('requestRoomKey');
+		const admission = e2e.requestSubscriptionKeys();
+		this.pendingRoomKeyRequest = admission;
+		void admission
+			.catch((error) => span.set('error', error).error('Error requesting room key'))
+			.finally(() => {
+				if (this.pendingRoomKeyRequest === admission) this.pendingRoomKeyRequest = undefined;
+			});
 	}
 
 	async encryptKeyForOtherParticipants() {

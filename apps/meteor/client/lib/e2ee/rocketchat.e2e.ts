@@ -430,6 +430,7 @@ class E2E extends Emitter {
 		}
 		this.keyDistributionInterval = null;
 		this.pendingSubscriptionKeysRequest = undefined;
+		this.subscriptionKeysRequestDirty = false;
 		this.setState('DISABLED');
 	}
 
@@ -512,22 +513,37 @@ class E2E extends Emitter {
 
 	private pendingSubscriptionKeysRequest: Promise<void> | undefined;
 
-	// Asks the server to queue this user for the keys of every encrypted room where the user has no key.
-	// The server checks all the rooms in one call, so concurrent callers share the request in flight.
+	private subscriptionKeysRequestDirty = false;
+
+	// A caller that arrives after the server read needs another admission pass, not another pending request.
 	requestSubscriptionKeys(): Promise<void> {
 		if (this.pendingSubscriptionKeysRequest) {
+			this.subscriptionKeysRequestDirty = true;
 			return this.pendingSubscriptionKeysRequest;
 		}
 
-		const request: Promise<void> = sdk.rest
-			.post('/v1/e2e.requestSubscriptionKeys')
-			.then(() => undefined)
-			.finally(() => {
-				// After stopClient, a newer request can be in flight. Only the request that set the field clears it.
-				if (this.pendingSubscriptionKeysRequest === request) {
-					this.pendingSubscriptionKeysRequest = undefined;
+		const post = async () => {
+			await sdk.rest.post('/v1/e2e.requestSubscriptionKeys');
+		};
+		const admit = async () => {
+			let retries = 1;
+			do {
+				this.subscriptionKeysRequestDirty = false;
+				try {
+					await post();
+				} catch (error) {
+					if (this.pendingSubscriptionKeysRequest !== request) return;
+					if (retries-- === 0) throw error;
+					this.subscriptionKeysRequestDirty = true;
 				}
-			});
+			} while (this.pendingSubscriptionKeysRequest === request && this.subscriptionKeysRequestDirty);
+		};
+		const request: Promise<void> = admit().finally(() => {
+			if (this.pendingSubscriptionKeysRequest === request) {
+				this.pendingSubscriptionKeysRequest = undefined;
+				if (this.subscriptionKeysRequestDirty) return this.requestSubscriptionKeys();
+			}
+		});
 		this.pendingSubscriptionKeysRequest = request;
 
 		return request;
