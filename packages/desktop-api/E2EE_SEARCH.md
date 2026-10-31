@@ -28,7 +28,7 @@ Document and batch body limits count UTF-16 code units. They do not count encode
 
 ## Open sessions and events
 
-An open result with `locked: true` creates no index and writes nothing. Search and mutation methods reject while locked.
+An open result with `locked: true` creates no index and writes nothing. Search and index-update methods reject while locked. Explicit `wipe` can delete the requested scope without an unlocked open session.
 
 A `lost` event invalidates crawler checkpoints for the affected open index. A `changed` event invalidates displayed search results.
 
