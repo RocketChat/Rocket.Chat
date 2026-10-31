@@ -11076,7 +11076,7 @@ __metadata:
     http-proxy-agent: "npm:^7.0.2"
     human-interval: "npm:^2.0.1"
     i18next: "npm:~26.4.2"
-    i18next-http-backend: "npm:^4.0.2"
+    i18next-http-backend: "npm:^4.0.4"
     i18next-sprintf-postprocessor: "npm:^0.2.2"
     iconv-lite: "npm:^0.6.3"
     imap: "npm:^0.8.19"
@@ -14232,7 +14232,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/react@npm:9.1.21, @storybook/react@npm:~9.1.21":
+"@storybook/react@npm:9.1.21, @storybook/react@npm:^9.1.21, @storybook/react@npm:~9.1.21":
   version: 9.1.21
   resolution: "@storybook/react@npm:9.1.21"
   dependencies:
@@ -26207,10 +26207,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"i18next-http-backend@npm:^4.0.2":
-  version: 4.0.2
-  resolution: "i18next-http-backend@npm:4.0.2"
-  checksum: 10/74a596938612fe331f4f65af3b5dafc69d84fd50feb60fc25a914344e046c3079ade8903e989399ec5c3780026787a063f8c8d20bdb90216887a94a499921f78
+"i18next-http-backend@npm:^4.0.4":
+  version: 4.0.4
+  resolution: "i18next-http-backend@npm:4.0.4"
+  checksum: 10/cf4a80238fec8f88940312f36486f299148f01401c5bb6d55a76c912d6475458c1b9deb48c48d8599ad741e058988652a338c5f792647a9edaf42927e4c6a9fc
   languageName: node
   linkType: hard
 
@@ -36869,7 +36869,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"storybook@npm:~9.1.21":
+"storybook@npm:^9.1.21, storybook@npm:~9.1.21":
   version: 9.1.21
   resolution: "storybook@npm:9.1.21"
   dependencies:
