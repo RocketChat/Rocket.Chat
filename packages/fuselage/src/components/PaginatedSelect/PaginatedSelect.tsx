@@ -92,7 +92,7 @@ export const PaginatedSelect = ({
 		>
 			<Box is='div' rcx-select__wrapper display='flex' marginInline='neg-x4' rcx-select__wrapper--hidden={!!visibleText}>
 				{visibleText && (
-					<Box flexGrow={1} is='span' marginInline={4} rcx-select__item fontScale='p2m' color={valueLabel ? 'titles-labels' : 'hint'}>
+					<Box flexGrow={1} is='span' marginInline={4} rcx-input-box__item fontScale='p2m' color={valueLabel ? 'titles-labels' : 'hint'}>
 						{visibleText}
 					</Box>
 				)}
