@@ -1,5 +1,7 @@
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
+import type { IRoomsModel, ISubscriptionsModel, ITeamMemberModel, ITeamModel, IUsersModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import sinon from 'sinon';
@@ -42,13 +44,6 @@ const { TeamService } = proxyquire.noCallThru().load('./service', {
 		ServiceClassInternal: class {},
 		api: {},
 	},
-	'@rocket.chat/models': {
-		Team,
-		Rooms,
-		Subscriptions: {},
-		Users,
-		TeamMember,
-	},
 	'@rocket.chat/tools': {
 		escapeRegExp: (value: string) => value,
 	},
@@ -85,6 +80,14 @@ const { TeamService } = proxyquire.noCallThru().load('./service', {
 const service = new TeamService();
 
 describe('Team service', () => {
+	before(() => {
+		registerModel('ITeamModel', Team as unknown as ITeamModel);
+		registerModel('IRoomsModel', Rooms as unknown as IRoomsModel);
+		registerModel('ISubscriptionsModel', {} as unknown as ISubscriptionsModel);
+		registerModel('IUsersModel', Users as unknown as IUsersModel);
+		registerModel('ITeamMemberModel', TeamMember as unknown as ITeamMemberModel);
+	});
+
 	beforeEach(() => {
 		addUserToRoom.reset();
 		Rooms.findDefaultRoomsForTeam.reset();

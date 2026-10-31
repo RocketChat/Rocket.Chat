@@ -1,7 +1,15 @@
 import fs from 'node:fs';
-import { beforeEach, describe, it } from 'node:test';
+import { before, beforeEach, describe, it } from 'node:test';
 
 import type { IExportOperation } from '@rocket.chat/core-typings';
+import type {
+	IAvatarsModel,
+	IExportOperationsModel,
+	IMessagesModel,
+	ISubscriptionsModel,
+	IUserDataFilesModel,
+} from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 import { expect } from 'chai';
 import proxyquire from 'proxyquire';
 import Sinon from 'sinon';
@@ -107,7 +115,6 @@ const modelsMock = {
 };
 
 const { exportRoomMessagesToFile } = proxyquire.noCallThru().load('./exportRoomMessagesToFile.ts', {
-	'@rocket.chat/models': modelsMock,
 	'../../settings': {
 		settings: {
 			get: (_key: string) => {
@@ -123,7 +130,6 @@ const { exportRoomMessagesToFile } = proxyquire.noCallThru().load('./exportRoomM
 });
 
 const { requestDataDownload } = proxyquire.noCallThru().load('../../meteor-methods/platform/requestDataDownload.ts', {
-	'@rocket.chat/models': modelsMock,
 	'../../settings': {
 		settings: {
 			get: (_key: string) => {
@@ -149,7 +155,6 @@ const { requestDataDownload } = proxyquire.noCallThru().load('../../meteor-metho
 };
 
 const { processDataDownloads } = proxyquire.noCallThru().load('./processDataDownloads.ts', {
-	'@rocket.chat/models': modelsMock,
 	'../media/file-upload': {
 		FileUpload: {
 			copy: async (fileId: string, _options: any) => {
@@ -203,7 +208,17 @@ const { processDataDownloads } = proxyquire.noCallThru().load('./processDataDown
 
 const userData = { _id: 'user1', username: 'userone' };
 
+const registerModels = () => {
+	registerModel('IExportOperationsModel', modelsMock.ExportOperations as unknown as IExportOperationsModel);
+	registerModel('IUserDataFilesModel', modelsMock.UserDataFiles as unknown as IUserDataFilesModel);
+	registerModel('IAvatarsModel', modelsMock.Avatars as unknown as IAvatarsModel);
+	registerModel('ISubscriptionsModel', modelsMock.Subscriptions as unknown as ISubscriptionsModel);
+	registerModel('IMessagesModel', modelsMock.Messages as unknown as IMessagesModel);
+};
+
 describe('requestDataDownload', () => {
+	before(registerModels);
+
 	beforeEach(() => {
 		exportOperation = null;
 	});
@@ -222,6 +237,8 @@ describe('requestDataDownload', () => {
 });
 
 describe('export user data', async () => {
+	before(registerModels);
+
 	beforeEach(() => {
 		exportOperation = null;
 	});

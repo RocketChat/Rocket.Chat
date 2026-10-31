@@ -1,4 +1,5 @@
 import type { AbacRoomAttributesGrant, AbacRoomMembershipPreviewPage } from '@rocket.chat/core-services';
+import { registerModel } from '@rocket.chat/models';
 
 import { Audit } from './audit';
 import { VirtruClient } from './clients/virtru/VirtruClient';
@@ -81,65 +82,63 @@ const mockUsersFindUsersByIdentifiers = jest.fn();
 const mockLdapSyncByIds = jest.fn();
 const mockSubscriptionsFindByRoomIdAndUserIds = jest.fn();
 
-jest.mock('@rocket.chat/models', () => ({
-	Rooms: {
-		findOneByIdAndType: (...args: any[]) => mockFindOneByIdAndType(...args),
-		isAbacAttributeInUse: (...args: any[]) => mockRoomsIsAbacAttributeInUse(...args),
-		findPaginated: (...args: any[]) => mockRoomsFindPaginated(...args),
-		setAbacAttributesById: (...args: any[]) => mockSetAbacAttributesById(...args),
-		updateSingleAbacAttributeValuesById: (...args: any[]) => mockUpdateSingleAbacAttributeValuesById(...args),
-		updateAbacAttributeValuesArrayFilteredById: (...args: any[]) => mockUpdateAbacAttributeValuesArrayFilteredById(...args),
-		removeAbacAttributeByRoomIdAndKey: (...args: any[]) => mockRemoveAbacAttributeByRoomIdAndKey(...args),
-		insertAbacAttributeIfNotExistsById: (...args: any[]) => mockInsertAbacAttributeIfNotExistsById(...args),
-		unsetAbacAttributesById: (...args: any[]) => mockUnsetAbacAttributesById(...args),
-		unsetAllAbacAttributes: (...args: any[]) => mockRoomsUnsetAllAbacAttributes(...args),
-		findAllPrivateRoomsWithAbacAttributes: (...args: any[]) => mockRoomsFindAllPrivateAbac(...args),
+registerModel('IRoomsModel', {
+	findOneByIdAndType: (...args: any[]) => mockFindOneByIdAndType(...args),
+	isAbacAttributeInUse: (...args: any[]) => mockRoomsIsAbacAttributeInUse(...args),
+	findPaginated: (...args: any[]) => mockRoomsFindPaginated(...args),
+	setAbacAttributesById: (...args: any[]) => mockSetAbacAttributesById(...args),
+	updateSingleAbacAttributeValuesById: (...args: any[]) => mockUpdateSingleAbacAttributeValuesById(...args),
+	updateAbacAttributeValuesArrayFilteredById: (...args: any[]) => mockUpdateAbacAttributeValuesArrayFilteredById(...args),
+	removeAbacAttributeByRoomIdAndKey: (...args: any[]) => mockRemoveAbacAttributeByRoomIdAndKey(...args),
+	insertAbacAttributeIfNotExistsById: (...args: any[]) => mockInsertAbacAttributeIfNotExistsById(...args),
+	unsetAbacAttributesById: (...args: any[]) => mockUnsetAbacAttributesById(...args),
+	unsetAllAbacAttributes: (...args: any[]) => mockRoomsUnsetAllAbacAttributes(...args),
+	findAllPrivateRoomsWithAbacAttributes: (...args: any[]) => mockRoomsFindAllPrivateAbac(...args),
+} as any);
+registerModel('IAbacAttributesModel', {
+	insertOne: (...args: any[]) => mockAbacInsertOne(...args),
+	findPaginated: (...args: any[]) => mockAbacFindPaginated(...args),
+	findOne: (...args: any[]) => mockAbacFindOne(...args),
+	findOneById: (...args: any[]) => mockAbacFindOne(...args), // map findOneById calls to same mock
+	findOneByKey: (...args: any[]) => mockAbacFindOne(...args), // map findOneByKey to same mock
+	updateOne: (...args: any[]) => mockAbacUpdateOne(...args),
+	findOneAndUpdate: (...args: any[]) => mockAbacFindOneAndUpdate(...args),
+	deleteOne: (...args: any[]) => mockAbacDeleteOne(...args),
+	removeById: (...args: any[]) => mockAbacDeleteOne(...args),
+	find: (...args: any[]) => {
+		const cursor = mockAbacFind(...args);
+		return { ...cursor, map: (fn: (doc: any) => unknown) => ({ toArray: async () => (await cursor.toArray()).map(fn) }) };
 	},
-	AbacAttributes: {
-		insertOne: (...args: any[]) => mockAbacInsertOne(...args),
-		findPaginated: (...args: any[]) => mockAbacFindPaginated(...args),
-		findOne: (...args: any[]) => mockAbacFindOne(...args),
-		findOneById: (...args: any[]) => mockAbacFindOne(...args), // map findOneById calls to same mock
-		findOneByKey: (...args: any[]) => mockAbacFindOne(...args), // map findOneByKey to same mock
-		updateOne: (...args: any[]) => mockAbacUpdateOne(...args),
-		findOneAndUpdate: (...args: any[]) => mockAbacFindOneAndUpdate(...args),
-		deleteOne: (...args: any[]) => mockAbacDeleteOne(...args),
-		removeById: (...args: any[]) => mockAbacDeleteOne(...args),
-		find: (...args: any[]) => {
-			const cursor = mockAbacFind(...args);
-			return { ...cursor, map: (fn: (doc: any) => unknown) => ({ toArray: async () => (await cursor.toArray()).map(fn) }) };
-		},
-		findAll: (...args: any[]) => {
-			const cursor = mockAbacFindAll(...args);
-			return { ...cursor, map: (fn: (doc: any) => unknown) => ({ toArray: async () => (await cursor.toArray()).map(fn) }) };
-		},
+	findAll: (...args: any[]) => {
+		const cursor = mockAbacFindAll(...args);
+		return { ...cursor, map: (fn: (doc: any) => unknown) => ({ toArray: async () => (await cursor.toArray()).map(fn) }) };
 	},
-	Users: {
-		find: (...args: any[]) => mockUsersFind(...args),
-		findUsersByUsernames: (...args: any[]) => mockUsersFindUsersByUsernames(...args),
-		findByIds: (...args: any[]) => mockUsersFindByIds(...args),
-		findOneById: (...args: any[]) => mockUsersFindOneById(...args),
-		findOneByIdAndRoomId: (...args: any[]) => mockUsersFindOneByIdAndRoomId(...args),
-		findActiveByRoomIdAfterUsername: (...args: any[]) => mockUsersFindActiveByRoomIdAfterUsername(...args),
-		countActiveByRoomIdAfterUsername: (...args: any[]) => mockUsersCountActiveByRoomIdAfterUsername(...args),
-		findActiveByRoomIds: (...args: any[]) => mockUsersFindActiveByRoomIds(...args),
-		findUsersByIdentifiers: (...args: any[]) => mockUsersFindUsersByIdentifiers(...args),
-		setAbacAttributesById: (...args: any[]) => mockUsersSetAbacAttributesById(...args),
-		unsetAbacAttributesById: (...args: any[]) => mockUsersUnsetAbacAttributesById(...args),
-		findOneAndUpdate: (...args: any[]) => mockUsersUpdateOne(...args),
-		updateOne: (...args: any[]) => mockUsersUpdateOne(...args),
-	},
-	ServerEvents: {
-		createAuditServerEvent: async (...args: any[]) => mockCreateAuditServerEvent(...args),
-		createAuditServerEvents: async (...args: any[]) => mockCreateAuditServerEvents(...args),
-	},
-	Settings: {
-		updateValueById: (...args: any[]) => mockSettingsSet(...args),
-	},
-	Subscriptions: {
-		findByRoomIdAndUserIds: (...args: any[]) => mockSubscriptionsFindByRoomIdAndUserIds(...args),
-	},
-}));
+} as any);
+registerModel('IUsersModel', {
+	find: (...args: any[]) => mockUsersFind(...args),
+	findUsersByUsernames: (...args: any[]) => mockUsersFindUsersByUsernames(...args),
+	findByIds: (...args: any[]) => mockUsersFindByIds(...args),
+	findOneById: (...args: any[]) => mockUsersFindOneById(...args),
+	findOneByIdAndRoomId: (...args: any[]) => mockUsersFindOneByIdAndRoomId(...args),
+	findActiveByRoomIdAfterUsername: (...args: any[]) => mockUsersFindActiveByRoomIdAfterUsername(...args),
+	countActiveByRoomIdAfterUsername: (...args: any[]) => mockUsersCountActiveByRoomIdAfterUsername(...args),
+	findActiveByRoomIds: (...args: any[]) => mockUsersFindActiveByRoomIds(...args),
+	findUsersByIdentifiers: (...args: any[]) => mockUsersFindUsersByIdentifiers(...args),
+	setAbacAttributesById: (...args: any[]) => mockUsersSetAbacAttributesById(...args),
+	unsetAbacAttributesById: (...args: any[]) => mockUsersUnsetAbacAttributesById(...args),
+	findOneAndUpdate: (...args: any[]) => mockUsersUpdateOne(...args),
+	updateOne: (...args: any[]) => mockUsersUpdateOne(...args),
+} as any);
+registerModel('IServerEventsModel', {
+	createAuditServerEvent: async (...args: any[]) => mockCreateAuditServerEvent(...args),
+	createAuditServerEvents: async (...args: any[]) => mockCreateAuditServerEvents(...args),
+} as any);
+registerModel('ISettingsModel', {
+	updateValueById: (...args: any[]) => mockSettingsSet(...args),
+} as any);
+registerModel('ISubscriptionsModel', {
+	findByRoomIdAndUserIds: (...args: any[]) => mockSubscriptionsFindByRoomIdAndUserIds(...args),
+} as any);
 
 // Partial mock for @rocket.chat/core-services: keep real ClientSafeError, override ServiceClass and Room
 jest.mock('@rocket.chat/core-services', () => {
@@ -599,7 +598,7 @@ describe('AbacService (unit)', () => {
 	});
 
 	describe('setRoomAbacAttributes', () => {
-		// Using top-level mocks (mockSetAbacAttributesById, mockAbacFind) defined in jest.mock factory above
+		// Using top-level mocks (mockSetAbacAttributesById, mockAbacFind) registered above
 
 		beforeEach(() => {
 			mockSetAbacAttributesById.mockReset();

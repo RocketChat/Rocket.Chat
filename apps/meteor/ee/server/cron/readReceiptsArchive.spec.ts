@@ -1,20 +1,23 @@
-import { ReadReceipts, ReadReceiptsArchive, Messages } from '@rocket.chat/models';
+import type { IMessagesModel, IReadReceiptsModel } from '@rocket.chat/model-typings';
+import { registerModel } from '@rocket.chat/models';
 
 import { archiveOldReadReceipts } from './readReceiptsArchive';
 import { settings } from '../../../server/settings';
 
-jest.mock('@rocket.chat/models', () => ({
-	ReadReceipts: {
-		findOlderThan: jest.fn(),
-		removeByIds: jest.fn(),
-	},
-	ReadReceiptsArchive: {
-		insertMany: jest.fn(),
-	},
-	Messages: {
-		setReceiptsArchivedById: jest.fn(),
-	},
-}));
+const readReceiptsModel = {
+	findOlderThan: jest.fn(),
+	removeByIds: jest.fn(),
+};
+const readReceiptsArchiveModel = {
+	insertMany: jest.fn(),
+};
+const messagesModel = {
+	setReceiptsArchivedById: jest.fn(),
+};
+
+registerModel('IReadReceiptsModel', readReceiptsModel as unknown as IReadReceiptsModel);
+registerModel('IReadReceiptsArchiveModel', readReceiptsArchiveModel as unknown as IReadReceiptsModel);
+registerModel('IMessagesModel', messagesModel as unknown as IMessagesModel);
 
 jest.mock('@rocket.chat/logger', () => ({
 	Logger: jest.fn().mockImplementation(() => ({
@@ -54,13 +57,13 @@ describe('Read Receipts Archive', () => {
 		(settings.get as jest.Mock).mockReturnValue(undefined);
 
 		const limitMock = jest.fn().mockReturnValue({ toArray: jest.fn().mockResolvedValue([]) });
-		(ReadReceipts.findOlderThan as jest.Mock).mockReturnValue({ limit: limitMock });
+		readReceiptsModel.findOlderThan.mockReturnValue({ limit: limitMock });
 
 		await archiveOldReadReceipts();
 
-		expect(ReadReceipts.findOlderThan).toHaveBeenCalled();
+		expect(readReceiptsModel.findOlderThan).toHaveBeenCalled();
 		expect(limitMock).toHaveBeenCalledWith(10000); // Default batch size
-		const cutoffDate = (ReadReceipts.findOlderThan as jest.Mock).mock.calls[0][0];
+		const cutoffDate = readReceiptsModel.findOlderThan.mock.calls[0][0];
 		const daysDiff = Math.floor((Date.now() - cutoffDate.getTime()) / (24 * 60 * 60 * 1000));
 		expect(daysDiff).toBe(30); // Default 30 days
 	});
@@ -73,13 +76,13 @@ describe('Read Receipts Archive', () => {
 		});
 
 		const limitMock = jest.fn().mockReturnValue({ toArray: jest.fn().mockResolvedValue([]) });
-		(ReadReceipts.findOlderThan as jest.Mock).mockReturnValue({ limit: limitMock });
+		readReceiptsModel.findOlderThan.mockReturnValue({ limit: limitMock });
 
 		await archiveOldReadReceipts();
 
-		expect(ReadReceipts.findOlderThan).toHaveBeenCalled();
+		expect(readReceiptsModel.findOlderThan).toHaveBeenCalled();
 		expect(limitMock).toHaveBeenCalledWith(5000); // Custom batch size
-		const cutoffDate = (ReadReceipts.findOlderThan as jest.Mock).mock.calls[0][0];
+		const cutoffDate = readReceiptsModel.findOlderThan.mock.calls[0][0];
 		const daysDiff = Math.floor((Date.now() - cutoffDate.getTime()) / (24 * 60 * 60 * 1000));
 		expect(daysDiff).toBe(45);
 	});
@@ -88,13 +91,13 @@ describe('Read Receipts Archive', () => {
 		(settings.get as jest.Mock).mockReturnValue(30);
 
 		const limitMock = jest.fn().mockReturnValue({ toArray: jest.fn().mockResolvedValue([]) });
-		(ReadReceipts.findOlderThan as jest.Mock).mockReturnValue({ limit: limitMock });
+		readReceiptsModel.findOlderThan.mockReturnValue({ limit: limitMock });
 
 		await archiveOldReadReceipts();
 
-		expect(ReadReceiptsArchive.insertMany).not.toHaveBeenCalled();
-		expect(Messages.setReceiptsArchivedById).not.toHaveBeenCalled();
-		expect(ReadReceipts.removeByIds).not.toHaveBeenCalled();
+		expect(readReceiptsArchiveModel.insertMany).not.toHaveBeenCalled();
+		expect(messagesModel.setReceiptsArchivedById).not.toHaveBeenCalled();
+		expect(readReceiptsModel.removeByIds).not.toHaveBeenCalled();
 	});
 
 	it('should archive old receipts in single batch and mark messages', async () => {
@@ -107,21 +110,21 @@ describe('Read Receipts Archive', () => {
 		];
 
 		const limitMock = jest.fn().mockReturnValue({ toArray: jest.fn().mockResolvedValue(oldReceipts) });
-		(ReadReceipts.findOlderThan as jest.Mock).mockReturnValue({ limit: limitMock });
-		(ReadReceiptsArchive.insertMany as jest.Mock).mockResolvedValue({ insertedCount: 3 });
-		(Messages.setReceiptsArchivedById as jest.Mock).mockResolvedValue({ modifiedCount: 2 });
-		(ReadReceipts.removeByIds as jest.Mock).mockResolvedValue({ deletedCount: 3 });
+		readReceiptsModel.findOlderThan.mockReturnValue({ limit: limitMock });
+		readReceiptsArchiveModel.insertMany.mockResolvedValue({ insertedCount: 3 });
+		messagesModel.setReceiptsArchivedById.mockResolvedValue({ modifiedCount: 2 });
+		readReceiptsModel.removeByIds.mockResolvedValue({ deletedCount: 3 });
 
 		await archiveOldReadReceipts();
 
 		// Verify insertMany was called with receipts
-		expect(ReadReceiptsArchive.insertMany).toHaveBeenCalledWith(oldReceipts, { ordered: false });
+		expect(readReceiptsArchiveModel.insertMany).toHaveBeenCalledWith(oldReceipts, { ordered: false });
 
 		// Verify messages were marked
-		expect(Messages.setReceiptsArchivedById).toHaveBeenCalledWith(['msg1', 'msg2'], true);
+		expect(messagesModel.setReceiptsArchivedById).toHaveBeenCalledWith(['msg1', 'msg2'], true);
 
 		// Verify old receipts were deleted by ID
-		expect(ReadReceipts.removeByIds).toHaveBeenCalledWith(['1', '2', '3']);
+		expect(readReceiptsModel.removeByIds).toHaveBeenCalledWith(['1', '2', '3']);
 	});
 
 	it('should process multiple batches with delay', async () => {
@@ -147,10 +150,10 @@ describe('Read Receipts Archive', () => {
 			}),
 		}));
 
-		(ReadReceipts.findOlderThan as jest.Mock).mockReturnValue({ limit: limitMock });
-		(ReadReceiptsArchive.insertMany as jest.Mock).mockResolvedValue({ insertedCount: 2 });
-		(Messages.setReceiptsArchivedById as jest.Mock).mockResolvedValue({ modifiedCount: 1 });
-		(ReadReceipts.removeByIds as jest.Mock).mockResolvedValue({ deletedCount: 2 });
+		readReceiptsModel.findOlderThan.mockReturnValue({ limit: limitMock });
+		readReceiptsArchiveModel.insertMany.mockResolvedValue({ insertedCount: 2 });
+		messagesModel.setReceiptsArchivedById.mockResolvedValue({ modifiedCount: 1 });
+		readReceiptsModel.removeByIds.mockResolvedValue({ deletedCount: 2 });
 
 		const archivePromise = archiveOldReadReceipts();
 
@@ -159,9 +162,9 @@ describe('Read Receipts Archive', () => {
 		await archivePromise;
 
 		// Should process 2 batches
-		expect(ReadReceiptsArchive.insertMany).toHaveBeenCalledTimes(2);
-		expect(Messages.setReceiptsArchivedById).toHaveBeenCalledTimes(2);
-		expect(ReadReceipts.removeByIds).toHaveBeenCalledTimes(2);
+		expect(readReceiptsArchiveModel.insertMany).toHaveBeenCalledTimes(2);
+		expect(messagesModel.setReceiptsArchivedById).toHaveBeenCalledTimes(2);
+		expect(readReceiptsModel.removeByIds).toHaveBeenCalledTimes(2);
 	});
 
 	it('should handle duplicate key errors gracefully', async () => {
@@ -170,22 +173,22 @@ describe('Read Receipts Archive', () => {
 		const oldReceipts = [{ _id: '1', messageId: 'msg1', userId: 'user1', ts: new Date('2020-01-01') }];
 
 		const limitMock = jest.fn().mockReturnValue({ toArray: jest.fn().mockResolvedValue(oldReceipts) });
-		(ReadReceipts.findOlderThan as jest.Mock).mockReturnValue({ limit: limitMock });
+		readReceiptsModel.findOlderThan.mockReturnValue({ limit: limitMock });
 
 		// Simulate duplicate key error
 		const duplicateError = Object.assign(new Error('Duplicate key'), {
 			code: 11000,
 			result: { insertedCount: 0 },
 		});
-		(ReadReceiptsArchive.insertMany as jest.Mock).mockRejectedValue(duplicateError);
-		(Messages.setReceiptsArchivedById as jest.Mock).mockResolvedValue({ modifiedCount: 1 });
-		(ReadReceipts.removeByIds as jest.Mock).mockResolvedValue({ deletedCount: 1 });
+		readReceiptsArchiveModel.insertMany.mockRejectedValue(duplicateError);
+		messagesModel.setReceiptsArchivedById.mockResolvedValue({ modifiedCount: 1 });
+		readReceiptsModel.removeByIds.mockResolvedValue({ deletedCount: 1 });
 
 		await archiveOldReadReceipts();
 
 		// Should continue despite duplicate error
-		expect(Messages.setReceiptsArchivedById).toHaveBeenCalled();
-		expect(ReadReceipts.removeByIds).toHaveBeenCalled();
+		expect(messagesModel.setReceiptsArchivedById).toHaveBeenCalled();
+		expect(readReceiptsModel.removeByIds).toHaveBeenCalled();
 	});
 
 	it('should rethrow non-duplicate errors', async () => {
@@ -194,11 +197,11 @@ describe('Read Receipts Archive', () => {
 		const oldReceipts = [{ _id: '1', messageId: 'msg1', userId: 'user1', ts: new Date('2020-01-01') }];
 
 		const limitMock = jest.fn().mockReturnValue({ toArray: jest.fn().mockResolvedValue(oldReceipts) });
-		(ReadReceipts.findOlderThan as jest.Mock).mockReturnValue({ limit: limitMock });
+		readReceiptsModel.findOlderThan.mockReturnValue({ limit: limitMock });
 
 		// Simulate other error
 		const otherError = new Error('Connection failed');
-		(ReadReceiptsArchive.insertMany as jest.Mock).mockRejectedValue(otherError);
+		readReceiptsArchiveModel.insertMany.mockRejectedValue(otherError);
 
 		await expect(archiveOldReadReceipts()).rejects.toThrow('Connection failed');
 	});
