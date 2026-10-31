@@ -54,6 +54,16 @@ emoji boxes, which load after this file. */
 	--emoji-size: 3rem;
 }
 
+/* A heading emoji matches the heading's font size. Every heading's line is 8px taller
+than its font, so a 4px top margin centers the box in the line. */
+.rcx-message-body :is(h1, h2, h3, h4) {
+	--emoji-size: 1em;
+}
+
+.rcx-message-body :is(h1, h2, h3, h4) .emoji.emoji {
+	margin-block-start: 4px;
+}
+
 .rcx-message-reactions__reaction {
 	--emoji-size: 0.875rem;
 }
