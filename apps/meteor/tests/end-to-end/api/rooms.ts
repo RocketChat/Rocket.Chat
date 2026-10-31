@@ -3366,6 +3366,156 @@ describe('[Rooms]', () => {
 					expect(res.body.room).to.not.have.property('favorite');
 				});
 		});
+
+		describe('limits on who changes what', () => {
+			let owner: TestUser<IUser>;
+			let member: TestUser<IUser>;
+			let ownerCredentials: Credentials;
+			let memberCredentials: Credentials;
+			const createdRooms: { type: 'c' | 'p' | 'd'; roomId: string }[] = [];
+
+			const createOwnedRoom = async (type: 'c' | 'p', extraData?: Record<string, unknown>): Promise<IRoom> => {
+				const { body } = await createRoom({
+					type,
+					name: `room-settings-${Date.now()}-${Random.id()}`,
+					members: [member.username],
+					credentials: ownerCredentials,
+					extraData,
+				});
+				const room: IRoom = type === 'c' ? body.channel : body.group;
+				createdRooms.push({ type, roomId: room._id });
+				return room;
+			};
+
+			const saveSettings = (rid: IRoom['_id'], settings: Record<string, unknown>, userCredentials: Credentials = ownerCredentials) =>
+				request
+					.post(api('rooms.saveRoomSettings'))
+					.set(userCredentials)
+					.send({ rid, ...settings });
+
+			const expectRefused = async (rid: IRoom['_id'], settings: Record<string, unknown>, userCredentials?: Credentials) => {
+				const { body } = await saveSettings(rid, settings, userCredentials).expect(400);
+
+				expect(body).to.have.property('errorType', 'error-action-not-allowed');
+			};
+
+			const getRoom = async (roomId: IRoom['_id']): Promise<IRoom & { retention?: Record<string, unknown> }> => {
+				const { body } = await request.get(api('rooms.info')).set(ownerCredentials).query({ roomId }).expect(200);
+				return body.room;
+			};
+
+			before(async () => {
+				[owner, member] = await Promise.all([createUser(), createUser()]);
+				[ownerCredentials, memberCredentials] = await Promise.all([login(owner.username, password), login(member.username, password)]);
+			});
+
+			after(async () => {
+				await Promise.all(createdRooms.map(deleteRoom));
+				await Promise.all([deleteUser(owner, { confirmRelinquish: true }), deleteUser(member)]);
+			});
+
+			it('should refuse a member who cannot edit the room', async () => {
+				const room = await createOwnedRoom('c');
+
+				await expectRefused(room._id, { roomTopic: 'from a member' }, memberCredentials);
+
+				expect((await getRoom(room._id)).topic).to.be.undefined;
+			});
+
+			it('should save nothing when one setting of the request is refused', async () => {
+				const room = await createOwnedRoom('c');
+
+				await expectRefused(room._id, { roomTopic: 'new topic', featured: true });
+
+				expect((await getRoom(room._id)).topic).to.be.undefined;
+			});
+
+			describe('broadcast rooms', () => {
+				it('should refuse setting read-only', async () => {
+					const room = await createOwnedRoom('c', { broadcast: true });
+
+					await expectRefused(room._id, { readOnly: true });
+				});
+
+				it('should let an owner turn read-only off', async () => {
+					const room = await createOwnedRoom('c', { broadcast: true });
+
+					await saveSettings(room._id, { readOnly: false }).expect(200);
+
+					expect((await getRoom(room._id)).ro).to.be.false;
+				});
+			});
+
+			describe('retention policy', () => {
+				it('should refuse an owner without the retention permission', async () => {
+					const room = await createOwnedRoom('c');
+
+					await expectRefused(room._id, { retentionMaxAge: 30 });
+
+					expect((await getRoom(room._id)).retention).to.be.undefined;
+				});
+
+				it('should save the policy for a user with the retention permission', async () => {
+					const room = await createOwnedRoom('c');
+
+					await saveSettings(room._id, { retentionMaxAge: 30 }, credentials).expect(200);
+
+					expect((await getRoom(room._id)).retention).to.have.property('maxAge', 30);
+				});
+
+				it('should let an owner without the retention permission change the global override', async () => {
+					const room = await createOwnedRoom('c');
+
+					await saveSettings(room._id, { retentionOverrideGlobal: true }).expect(200);
+
+					expect((await getRoom(room._id)).retention).to.have.property('overrideGlobal', true);
+				});
+			});
+
+			describe('encryption', () => {
+				before(() => updateSetting('E2E_Enable', true));
+
+				after(() => updateSetting('E2E_Enable', false));
+
+				describe('without the encryption permission', () => {
+					before(() => updatePermission('toggle-room-e2e-encryption', ['admin']));
+
+					after(() => restorePermissionToRoles('toggle-room-e2e-encryption'));
+
+					it('should refuse an owner of a private room', async () => {
+						const room = await createOwnedRoom('p');
+
+						await expectRefused(room._id, { encrypted: true });
+
+						expect((await getRoom(room._id)).encrypted).to.not.equal(true);
+					});
+				});
+
+				it('should let a member of a direct message turn encryption on, and change nothing else', async () => {
+					const { body } = await createRoom({ type: 'd', username: member.username, credentials: ownerCredentials });
+					createdRooms.push({ type: 'd', roomId: body.room._id });
+
+					await saveSettings(body.room._id, { encrypted: true, roomTopic: 'new topic' }).expect(200);
+
+					const room = await getRoom(body.room._id);
+					expect(room.encrypted).to.be.true;
+					expect(room.topic).to.be.undefined;
+				});
+			});
+
+			describe('without the avatar permission', () => {
+				before(() => updatePermission('edit-room-avatar', ['admin']));
+
+				after(() => restorePermissionToRoles('edit-room-avatar'));
+
+				it('should refuse a new avatar', async () => {
+					const room = await createOwnedRoom('c');
+					const roomAvatar = `data:image/png;base64,${fs.readFileSync(path.join(process.cwd(), imgURL)).toString('base64')}`;
+
+					await expectRefused(room._id, { roomAvatar });
+				});
+			});
+		});
 	});
 
 	describe('rooms.images', () => {
