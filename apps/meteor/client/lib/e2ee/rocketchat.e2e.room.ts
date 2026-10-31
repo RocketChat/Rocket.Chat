@@ -207,7 +207,7 @@ export class E2ERoom extends Emitter {
 		this[KEY_ID] = keyID;
 	}
 
-	async decryptSubscription() {
+	async decryptSubscription(isActive = () => true) {
 		const span = log.span('decryptSubscription');
 		const subscription = Subscriptions.state.find((record) => record.rid === this.roomId);
 
@@ -229,6 +229,7 @@ export class E2ERoom extends Emitter {
 		}
 
 		const message = await this.decryptMessage(lastMessage);
+		if (!isActive()) return;
 
 		if (message.msg !== subscription.lastMessage?.msg) {
 			span.info('decryptSubscriptions updating lastMessage');
