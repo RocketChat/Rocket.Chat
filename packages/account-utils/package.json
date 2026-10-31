@@ -1,23 +1,23 @@
 {
-	"name": "@rocket.chat/account-utils",
-	"version": "0.0.3",
-	"private": true,
-	"main": "./dist/index.js",
-	"typings": "./dist/index.d.ts",
-	"files": [
-		"/dist"
-	],
-	"scripts": {
-		"build": "rm -rf dist && tsc -p tsconfig.json",
-		"dev": "tsc -p tsconfig.json --watch --preserveWatchOutput",
-		"lint": "yarn run -T oxlint",
-		"lint:fix": "yarn run -T oxlint --fix",
-		"typecheck": "tsc --noEmit"
-	},
-	"devDependencies": {
-		"typescript": "~7.0.2"
-	},
-	"volta": {
-		"extends": "../../package.json"
-	}
+  "name": "@rocket.chat/account-utils",
+  "version": "0.0.3",
+  "private": true,
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
+  "scripts": {
+    "build": "node init && rm -rf dist && tsc -p tsconfig.json",
+    "dev": "node init && tsc -p tsconfig.json --watch --preserveWatchOutput",
+    "lint": "yarn run -T oxlint",
+    "lint:fix": "yarn run -T oxlint --fix",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "~7.0.2"
+  },
+  "volta": {
+    "extends": "../../package.json"
+  }
 }

@@ -1,29 +1,29 @@
 {
-	"name": "@rocket.chat/instance-status",
-	"version": "0.1.62-rc.0",
-	"private": true,
-	"main": "./dist/index.js",
-	"typings": "./dist/index.d.ts",
-	"files": [
-		"/dist"
-	],
-	"scripts": {
-		"build": "rm -rf dist && tsc -p tsconfig.json",
-		"dev": "tsc --watch --preserveWatchOutput -p tsconfig.json",
-		"lint": "yarn run -T oxlint",
-		"lint:fix": "yarn run -T oxlint --fix",
-		"typecheck": "tsc --noEmit"
-	},
-	"dependencies": {
-		"@rocket.chat/models": "workspace:^",
-		"@rocket.chat/tracing": "workspace:^"
-	},
-	"devDependencies": {
-		"@rocket.chat/tsconfig": "workspace:*",
-		"mongodb": "6.16.0",
-		"typescript": "~7.0.2"
-	},
-	"volta": {
-		"extends": "../../package.json"
-	}
+  "name": "@rocket.chat/instance-status",
+  "version": "0.1.62-rc.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
+  "scripts": {
+    "build": "node init && rm -rf dist && tsc -p tsconfig.json",
+    "dev": "node init && tsc --watch --preserveWatchOutput -p tsconfig.json",
+    "lint": "yarn run -T oxlint",
+    "lint:fix": "yarn run -T oxlint --fix",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@rocket.chat/models": "workspace:^",
+    "@rocket.chat/tracing": "workspace:^"
+  },
+  "devDependencies": {
+    "@rocket.chat/tsconfig": "workspace:*",
+    "mongodb": "6.16.0",
+    "typescript": "~7.0.2"
+  },
+  "volta": {
+    "extends": "../../package.json"
+  }
 }

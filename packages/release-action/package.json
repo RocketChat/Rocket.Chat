@@ -1,32 +1,32 @@
 {
-	"name": "@rocket.chat/release-action",
-	"version": "2.2.5",
-	"private": true,
-	"main": "dist/index.js",
-	"scripts": {
-		"build": "tsc --noEmit && esbuild src/index.ts --bundle --platform=node --target=node24 --format=cjs --outfile=dist/index.js",
-		"lint": "yarn run -T oxlint",
-		"lint:fix": "yarn run -T oxlint --fix",
-		"typecheck": "tsc --noEmit"
-	},
-	"dependencies": {
-		"@actions/core": "^3.0.1",
-		"@actions/exec": "^3.0.0",
-		"@actions/github": "^9.1.1",
-		"@octokit/core": "^7.0.8",
-		"@octokit/plugin-throttling": "^11.0.5",
-		"mdast-util-to-string": "2.0.0",
-		"remark-parse": "9.0.0",
-		"remark-stringify": "9.0.1",
-		"semver": "^7.6.3",
-		"unified": "9.2.2"
-	},
-	"devDependencies": {
-		"@types/node": "~24.13.6",
-		"esbuild": "~0.28.2",
-		"typescript": "~7.0.2"
-	},
-	"volta": {
-		"extends": "../../package.json"
-	}
+  "name": "@rocket.chat/release-action",
+  "version": "2.2.5",
+  "private": true,
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "node init && tsc --noEmit && esbuild src/index.ts --bundle --platform=node --target=node24 --format=cjs --outfile=dist/index.js",
+    "lint": "yarn run -T oxlint",
+    "lint:fix": "yarn run -T oxlint --fix",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@actions/core": "^3.0.1",
+    "@actions/exec": "^3.0.0",
+    "@actions/github": "^9.1.1",
+    "@octokit/core": "^7.0.8",
+    "@octokit/plugin-throttling": "^11.0.5",
+    "mdast-util-to-string": "2.0.0",
+    "remark-parse": "9.0.0",
+    "remark-stringify": "9.0.1",
+    "semver": "^7.6.3",
+    "unified": "9.2.2"
+  },
+  "devDependencies": {
+    "@types/node": "~24.13.6",
+    "esbuild": "~0.28.2",
+    "typescript": "~7.0.2"
+  },
+  "volta": {
+    "extends": "../../package.json"
+  }
 }

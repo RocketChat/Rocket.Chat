@@ -1,52 +1,52 @@
 {
-	"name": "@rocket.chat/jest-presets",
-	"version": "0.0.4-rc.0",
-	"private": true,
-	"type": "module",
-	"exports": {
-		"./server": {
-			"types": "./dist/server/index.d.ts",
-			"default": "./dist/server/index.js"
-		},
-		"./server/jest-preset": "./dist/server/jest-preset.js",
-		"./client": {
-			"types": "./dist/client/index.d.ts",
-			"default": "./dist/client/index.js"
-		},
-		"./client/jest-preset": "./dist/client/jest-preset.js",
-		"./client/jest-setup": "./dist/client/jest-setup.js"
-	},
-	"files": [
-		"/dist",
-		"/client",
-		"/server"
-	],
-	"scripts": {
-		"build": "tsc",
-		"clean": "rm -rf ./dist",
-		"lint": "yarn run -T oxlint",
-		"typecheck": "tsc --noEmit"
-	},
-	"dependencies": {
-		"@swc/core": "1.15.47",
-		"@swc/jest": "~0.2.39",
-		"@testing-library/dom": "~10.4.2",
-		"@testing-library/jest-dom": "~7.0.1",
-		"@types/jest": "~30.0.0",
-		"@types/jest-axe": "~3.5.9",
-		"identity-obj-proxy": "~3.0.0",
-		"jest-axe": "~11.0.0",
-		"jest-environment-jsdom": "~30.5.2",
-		"jest-environment-node": "~30.5.2",
-		"uuid": "~11.1.1"
-	},
-	"devDependencies": {
-		"@types/identity-obj-proxy": "^3.0.2",
-		"@types/uuid": "^10.0.0",
-		"jest": "~30.5.2",
-		"typescript": "~7.0.2"
-	},
-	"volta": {
-		"extends": "../../package.json"
-	}
+  "name": "@rocket.chat/jest-presets",
+  "version": "0.0.4-rc.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./server": {
+      "types": "./dist/server/index.d.ts",
+      "default": "./dist/server/index.js"
+    },
+    "./server/jest-preset": "./dist/server/jest-preset.js",
+    "./client": {
+      "types": "./dist/client/index.d.ts",
+      "default": "./dist/client/index.js"
+    },
+    "./client/jest-preset": "./dist/client/jest-preset.js",
+    "./client/jest-setup": "./dist/client/jest-setup.js"
+  },
+  "files": [
+    "/dist",
+    "/client",
+    "/server"
+  ],
+  "scripts": {
+    "build": "node init && tsc",
+    "clean": "rm -rf ./dist",
+    "lint": "yarn run -T oxlint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@swc/core": "1.15.47",
+    "@swc/jest": "~0.2.39",
+    "@testing-library/dom": "~10.4.2",
+    "@testing-library/jest-dom": "~7.0.1",
+    "@types/jest": "~30.0.0",
+    "@types/jest-axe": "~3.5.9",
+    "identity-obj-proxy": "~3.0.0",
+    "jest-axe": "~11.0.0",
+    "jest-environment-jsdom": "~30.5.2",
+    "jest-environment-node": "~30.5.2",
+    "uuid": "~11.1.1"
+  },
+  "devDependencies": {
+    "@types/identity-obj-proxy": "^3.0.2",
+    "@types/uuid": "^10.0.0",
+    "jest": "~30.5.2",
+    "typescript": "~7.0.2"
+  },
+  "volta": {
+    "extends": "../../package.json"
+  }
 }

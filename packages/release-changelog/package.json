@@ -1,23 +1,23 @@
 {
-	"name": "@rocket.chat/release-changelog",
-	"version": "0.1.1",
-	"private": true,
-	"main": "dist/index.js",
-	"scripts": {
-		"build": "tsc",
-		"lint": "yarn run -T oxlint",
-		"typecheck": "tsc --noEmit"
-	},
-	"dependencies": {
-		"dataloader": "^2.2.3",
-		"node-fetch": "^2.7.0"
-	},
-	"devDependencies": {
-		"@changesets/types": "^6.0.0",
-		"@types/node": "~24.13.6",
-		"typescript": "~7.0.2"
-	},
-	"volta": {
-		"extends": "../../package.json"
-	}
+  "name": "@rocket.chat/release-changelog",
+  "version": "0.1.1",
+  "private": true,
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "node init && tsc",
+    "lint": "yarn run -T oxlint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "dataloader": "^2.2.3",
+    "node-fetch": "^2.7.0"
+  },
+  "devDependencies": {
+    "@changesets/types": "^6.0.0",
+    "@types/node": "~24.13.6",
+    "typescript": "~7.0.2"
+  },
+  "volta": {
+    "extends": "../../package.json"
+  }
 }

@@ -1,34 +1,34 @@
 {
-	"name": "@rocket.chat/jwt",
-	"version": "0.3.0-rc.0",
-	"private": true,
-	"main": "./dist/index.js",
-	"typings": "./dist/index.d.ts",
-	"files": [
-		"/dist"
-	],
-	"scripts": {
-		"build": "rm -rf dist && tsc",
-		"dev": "tsc --watch --preserveWatchOutput",
-		"lint": "yarn run -T oxlint",
-		"lint:fix": "yarn run -T oxlint --fix",
-		"test": "jest",
-		"testunit": "jest",
-		"typecheck": "tsc --noEmit"
-	},
-	"dependencies": {
-		"jose": "^4.15.9"
-	},
-	"devDependencies": {
-		"@rocket.chat/jest-presets": "workspace:~",
-		"@rocket.chat/tsconfig": "workspace:*",
-		"jest": "~30.5.2",
-		"typescript": "~7.0.2"
-	},
-	"volta": {
-		"extends": "../../package.json"
-	},
-	"installConfig": {
-		"hoistingLimits": "workspaces"
-	}
+  "name": "@rocket.chat/jwt",
+  "version": "0.3.0-rc.0",
+  "private": true,
+  "main": "./dist/index.js",
+  "typings": "./dist/index.d.ts",
+  "files": [
+    "/dist"
+  ],
+  "scripts": {
+    "build": "node init && rm -rf dist && tsc",
+    "dev": "node init && tsc --watch --preserveWatchOutput",
+    "lint": "yarn run -T oxlint",
+    "lint:fix": "yarn run -T oxlint --fix",
+    "test": "jest",
+    "testunit": "jest",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "jose": "^4.15.9"
+  },
+  "devDependencies": {
+    "@rocket.chat/jest-presets": "workspace:~",
+    "@rocket.chat/tsconfig": "workspace:*",
+    "jest": "~30.5.2",
+    "typescript": "~7.0.2"
+  },
+  "volta": {
+    "extends": "../../package.json"
+  },
+  "installConfig": {
+    "hoistingLimits": "workspaces"
+  }
 }
