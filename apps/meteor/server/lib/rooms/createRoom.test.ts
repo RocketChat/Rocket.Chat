@@ -1,3 +1,4 @@
+import assert from 'node:assert/strict';
 import { beforeEach, describe, it } from 'node:test';
 
 import { ClientSafeError } from '@rocket.chat/core-services';
@@ -28,6 +29,7 @@ const modelsMock = {
 
 const settingsMock = { get: sandbox.stub() };
 const notifyOnRoomChangedByIdMock = sandbox.stub();
+const notifyOnSubscriptionChangedByIdMock = sandbox.stub();
 const noopCallback = { run: sandbox.stub().resolves() };
 
 const { createRoom } = p.noCallThru().load('./createRoom.ts', {
@@ -55,7 +57,7 @@ const { createRoom } = p.noCallThru().load('./createRoom.ts', {
 	'../notifyListener': {
 		notifyOnRoomChanged: sandbox.stub(),
 		notifyOnRoomChangedById: notifyOnRoomChangedByIdMock,
-		notifyOnSubscriptionChangedById: sandbox.stub(),
+		notifyOnSubscriptionChangedById: notifyOnSubscriptionChangedByIdMock,
 	},
 	'../roles/syncRoomRolePriority': { syncRoomRolePriorityForUserAndRoom: sandbox.stub() },
 	'../../settings': { settings: settingsMock },
@@ -99,5 +101,38 @@ describe('createRoom E2EE key queue', () => {
 		await createRoom('p', 'secret-group', owner, ['member-b'], true, false, { encrypted: true });
 
 		sinon.assert.notCalled(modelsMock.Rooms.addUserIdsToE2EEQueueByRoomId);
+	});
+
+	it('finishes queue admission before a published member receives its key', async () => {
+		const queued = new Set<string>();
+		let releaseCount!: () => void;
+		let countStarted!: () => void;
+		const counting = new Promise<void>((resolve) => {
+			countStarted = resolve;
+		});
+		const count = new Promise<void>((resolve) => {
+			releaseCount = resolve;
+		});
+		modelsMock.Subscriptions.createWithRoomAndManyUsers.resolves({ insertedIds: { 0: 'member-sub' } });
+		modelsMock.Rooms.addUserIdsToE2EEQueueByRoomId.callsFake(async (_rid: string, users: string[]) => {
+			users.forEach((user) => queued.add(user));
+		});
+		notifyOnSubscriptionChangedByIdMock.callsFake(() => {
+			queued.delete('member-a');
+		});
+		modelsMock.Rooms.incUsersCountById.callsFake(() => {
+			countStarted();
+			return count;
+		});
+
+		const creating = createRoom('p', 'secret-group', owner, ['member-a'], false, false, { encrypted: true });
+		await counting;
+		assert.equal(queued.has('member-a'), false);
+		sinon.assert.callOrder(modelsMock.Rooms.addUserIdsToE2EEQueueByRoomId, notifyOnSubscriptionChangedByIdMock);
+		releaseCount();
+		await creating;
+
+		assert.equal(queued.has('member-a'), false);
+		sinon.assert.calledOnce(modelsMock.Rooms.addUserIdsToE2EEQueueByRoomId);
 	});
 });
