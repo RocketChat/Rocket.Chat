@@ -6,7 +6,7 @@
 
 The [Rocket.Chat Desktop app](https://github.com/RocketChat/Rocket.Chat.Electron) loads a workspace's web client and injects a `window.RocketChatDesktop` object into it. The web client calls that object to update the app's badge, title and favicon, show native notifications, report the user's presence, open the video call window, and more.
 
-This package is the contract between the two sides. It contains types only: `IRocketChatDesktop`, which describes `window.RocketChatDesktop`, `IVideoCallWindow`, which describes the video call window's bridge, and the option types they use.
+This package is the contract between the two sides. Its types include `IRocketChatDesktop`, which describes `window.RocketChatDesktop`, and `IVideoCallWindow`, which describes the video call window's bridge. It also exports the runtime constant `E2EE_SEARCH_LIMITS` for client and backend input limits.
 
 ## Installation
 
@@ -14,7 +14,7 @@ This package is the contract between the two sides. It contains types only: `IRo
 npm install --save-dev @rocket.chat/desktop-api
 ```
 
-The package has no runtime code and no dependencies. It is published as an ES module.
+The package has no dependencies. The bridge declarations are type-only, but `E2EE_SEARCH_LIMITS` is available at runtime. The package uses ES modules.
 
 ## Usage
 
