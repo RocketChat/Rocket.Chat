@@ -130,12 +130,11 @@ export class SAMLUtils {
 	public static fillTemplateData(template: string, data: Record<string, string>): string {
 		let newTemplate = template;
 
+		// The setting description documents {{name}} (the i18n build rewrites __name__), so accept both forms
 		for (const variable in data) {
 			if (variable in data) {
-				const key = `__${variable}__`;
-				while (newTemplate.includes(key)) {
-					newTemplate = newTemplate.replace(key, data[variable]);
-				}
+				const value = () => data[variable];
+				newTemplate = newTemplate.replaceAll(`__${variable}__`, value).replaceAll(`{{${variable}}}`, value);
 			}
 		}
 
@@ -297,7 +296,7 @@ export class SAMLUtils {
 				throw new Error(`SAML User Map: Invalid configuration for ${spFieldName} field.`);
 			}
 
-			if (spFieldName === '__identifier__') {
+			if (spFieldName === '__identifier__' || spFieldName === '{{identifier}}') {
 				if (typeof attribute !== 'string') {
 					throw new Error('SAML User Map: Invalid identifier.');
 				}
@@ -405,7 +404,7 @@ export class SAMLUtils {
 		let shouldRunTemplate = false;
 		if (typeof mapping.template === 'string') {
 			// unless the regex result is used on the template, we process the template first
-			if (mapping.template.includes('__regex__')) {
+			if (mapping.template.includes('__regex__') || mapping.template.includes('{{regex}}')) {
 				shouldRunTemplate = true;
 			} else {
 				mainValue = this.fillTemplateData(mapping.template, values);
