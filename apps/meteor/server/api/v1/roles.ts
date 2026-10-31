@@ -274,7 +274,12 @@ const rolesRoutes = API.v1
 		async function action() {
 			const { bodyParams } = this;
 
-			const { roleId, username, scope } = bodyParams;
+			const { roleId, username, roomId } = bodyParams;
+
+			// A subscription-scoped role is scoped to a room. `roles.addUserToRole` names that
+			// room `roomId`, so removal accepts it too, while `scope` stays supported for the
+			// callers already using it.
+			const scope = bodyParams.scope ?? roomId;
 
 			if (!roleId) {
 				return API.v1.failure('error-invalid-role-properties');
