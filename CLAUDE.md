@@ -13,9 +13,12 @@ outside a model never passes a filter or update document to `find`, `findOne`, `
 and the like. Models hold no business logic: they don't call other models or validate their
 arguments. Full rules: [docs/database-access.md](docs/database-access.md).
 
-Each pull request carries one classification and one concern, and can be reverted alone.
-Fixes and enabling refactors are their own commits, ordered below the feature so
-they can be extracted, even in a POC. Full rules:
+Work starts from a written intent and spec, and records its decisions and gaps in the draft
+pull request. While in draft, fixes and enabling refactors are their own commits, ordered
+below the feature. Before leaving draft, plan which of them become their own pull requests,
+and merge those first; small enabling ones stay as commits. Agent loops are fine during a
+POC or once the spec defines the expected behavior, but opening a pull request and taking
+it out of draft are a person's decisions: never do either without confirmation. Full rules:
 [docs/change-organization.md](docs/change-organization.md).
 
 ## Documentation index
@@ -25,7 +28,7 @@ Read the doc that matches the task instead of scanning `docs/` wholesale.
 ### Cross-cutting
 
 - [docs/code-comments.md](docs/code-comments.md) — what a comment may say, and where reasoning goes when it is not a comment
-- [docs/change-organization.md](docs/change-organization.md) — one concern per pull request, fixes → refactors → feature as a stack (POCs included), rebasing stacks after squash merges
+- [docs/change-organization.md](docs/change-organization.md) — intent and spec first, decisions and gaps in the draft, fixes → refactors → feature commits, planning which become their own pull requests before leaving draft, rebasing after squash merges
 - [docs/i18n.md](docs/i18n.md) — translation keys: where they live, naming, namespaces, interpolation, plurals, server-side `lng`, what the i18n linter enforces
 
 ### Frontend
