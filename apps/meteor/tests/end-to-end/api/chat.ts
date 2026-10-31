@@ -4736,6 +4736,22 @@ describe('Threads', () => {
 			expect(res.body.threads.remove).to.have.lengthOf(0);
 			expect(res.body.threads.update[0]._id).to.be.equal(threadMessage.tmid);
 		});
+
+		it('lists a deleted thread without its content', async () => {
+			const root = (await sendSimpleMessage({ roomId: testChannel._id, text: 'thread that gets deleted' })).body.message;
+			const reply = (await sendSimpleMessage({ roomId: testChannel._id, text: 'its only reply', tmid: root._id })).body.message;
+			await deleteMessage({ roomId: testChannel._id, msgId: reply._id }).expect(200);
+			await deleteMessage({ roomId: testChannel._id, msgId: root._id }).expect(200);
+
+			const res = await request
+				.get(api('chat.syncThreadsList'))
+				.set(credentials)
+				.query({ rid: testChannel._id, updatedSince: new Date('2019-04-01').toISOString() })
+				.expect(200);
+
+			const removed = (res.body.threads.remove as IMessage[]).find(({ _id }) => _id === root._id);
+			expect(removed).to.have.all.keys('_id', '_deletedAt');
+		});
 	});
 
 	describe('[/chat.getThreadMessages]', () => {
@@ -5014,6 +5030,22 @@ describe('Threads', () => {
 				deleteUser(user),
 			]),
 		);
+
+		it('lists a deleted reply without its content', async () => {
+			const root = (await sendSimpleMessage({ roomId: testChannel._id, text: 'thread with a deleted reply' })).body.message;
+			await sendSimpleMessage({ roomId: testChannel._id, text: 'reply that stays', tmid: root._id });
+			const reply = (await sendSimpleMessage({ roomId: testChannel._id, text: 'reply that gets deleted', tmid: root._id })).body.message;
+			await deleteMessage({ roomId: testChannel._id, msgId: reply._id }).expect(200);
+
+			const res = await request
+				.get(api('chat.syncThreadMessages'))
+				.set(credentials)
+				.query({ tmid: root._id, updatedSince: new Date('2019-04-01').toISOString() })
+				.expect(200);
+
+			const removed = (res.body.messages.remove as IMessage[]).find(({ _id }) => _id === reply._id);
+			expect(removed).to.have.all.keys('_id', '_deletedAt');
+		});
 
 		it('should return an error for chat.syncThreadMessages when threads are not allowed in this server', async () => {
 			await updateSetting('Threads_enabled', false);
